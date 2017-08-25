@@ -14,45 +14,21 @@
     limitations under the License.
 
 ================
- Renga-Deployer
+ Renga-Web-Frontend
 ================
 
-.. image:: https://travis-ci.com/SwissDataScienceCenter/renga-deployer.svg?token=mxu4owK3eZsAmMTeJPg1&branch=master
-    :target: https://travis-ci.com/SwissDataScienceCenter/renga-deployer
-
-.. .. image:: https://img.shields.io/coveralls/SwissDataScienceCenter/renga-deployer.svg
-..         :target: https://coveralls.io/r/SwissDataScienceCenter/renga-deployer
-
-.. .. image:: https://img.shields.io/github/tag/SwissDataScienceCenter/renga-deployer.svg
-..         :target: https://github.com/SwissDataScienceCenter/renga-deployer/releases
-
-.. .. image:: https://img.shields.io/pypi/dm/renga-deployer.svg
-..         :target: https://pypi.python.org/pypi/renga-deployer
-
-.. .. image:: https://img.shields.io/github/license/SwissDataScienceCenter/renga-deployer.svg
-..         :target: https://github.com/SwissDataScienceCenter/renga-deployer/blob/master/LICENSE
-
-Renga Deployer Service.
-
-.. Further documentation is available on
-.. https://renga-deployer.readthedocs.io/
 
 Local
 -----
 
-::
-
-   $ export FLASK_APP=renga_deployer/app.py
-   $ flask run
-
-The first time you run the app locally, you may need to build the database
-tables:
+You need python and npm
 
 ::
 
-    $ flask shell
-    >>> from renga_deployer.app import db
-    >>> db.create_all()
+   $ pip install server/requirements.txt
+   $ npm install
+   $ npm run build
+   $ python server/run.py
 
 
 Docker
@@ -60,30 +36,10 @@ Docker
 
 ::
 
-   $ docker build --tag renga-deployer:latest .
-   $ docker run -p 5000:5000 -v /var/run/docker.sock:/var/run/docker.sock renga-deployer:latest
-
-For development, mount the code directly and enable flask debug mode:
-
-::
-
-   $ docker run -p 5000:5000 \
-         -e FLASK_DEBUG=1 \
-         -v `pwd`:/code \
-         -v /var/run/docker.sock:/var/run/docker.sock \
-         renga-deployer:latest
+   $ npm install
+   $ npm run build
+   $ docker build --tag renga-web-frontend:latest .
+   $ docker run -p 5000:5000 renga-web-frontend:latest
 
 
-You can test the API by pointing your browser to http://localhost:5000/v1/ui
-
-
-Platform integration
---------------------
-
-The deployer can optionally integrate with other Renga Platform services.
-To enable integration, set the appropriate environment variables in the
-form of ``<SERVICE_NAME_URL>`` to point to the api URL. For example,
-setting ``KNOWLEDGE_GRAPH_URL`` will ensure that deployment contexts and
-executions are automatically added to the knowledge graph. Note that to
-use the resource manager, you will need to additionally set the
-``DEPLOYER_JWT_KEY``.
+You can test it by pointing your browser to http://localhost:5000/

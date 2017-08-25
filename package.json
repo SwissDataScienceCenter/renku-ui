@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "build": "cross-env NODE_ENV=production npm run sass && npm run copy:material && concurrently --kill-others \"webpack --progress --colors\"",
     "dev": "cross-env NODE_ENV=development npm run sass && npm run copy:material && concurrently --kill-others \"webpack --progress --colors --watch\" \"node-sass --watch --include-path node_modules --output ./src/css ./src/sass/main.scss\" \"npm run backend\"",
     "copy:material": "ncp node_modules/material-components-web/dist/material-components-web.css src/css/material-components-web.css && ncp node_modules/material-components-web/dist/material-components-web.js dist/js/material-components-web.js",
     "sass": "node-sass --include-path node_modules --output ./src/css ./src/sass/main.scss",
