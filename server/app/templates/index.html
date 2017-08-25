@@ -1,0 +1,57 @@
+{#
+# Copyright 2017 - Swiss Data Science Center (SDSC)
+# A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
+# Eidgenössische Technische Hochschule Zürich (ETHZ).
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#}
+{% extends "base.html" %}
+
+{% block title %}SDSC Platform{% endblock %}
+
+{% block head %}
+{{ super() }}
+<script type="text/javascript">
+</script>
+{% endblock %}
+
+{% block content %}
+<div id="loading-sdsc" role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
+  <div class="mdc-linear-progress__buffering-dots"></div>
+  <div class="mdc-linear-progress__buffer"></div>
+  <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+    <span class="mdc-linear-progress__bar-inner"></span>
+  </div>
+  <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+    <span class="mdc-linear-progress__bar-inner"></span>
+  </div>
+</div>
+  <v-app id="sdsc" dark v-cloak>
+    <v-navigation-drawer absolute persistent v-model="drawer" overflow>
+      <user-menu></user-menu>
+    </v-navigation-drawer>
+    <v-toolbar fixed class="indigo darken-4">
+      <v-toolbar-side-icon @click.native.stop="drawer = !drawer"></v-toolbar-side-icon>
+      <v-toolbar-title>SDSC Platform</v-toolbar-title>
+    </v-toolbar>
+    <main>
+      <v-container fluid>
+        <transition name="slide-fade">
+          <keep-alive>
+            <router-view>loading...</router-view>
+          </keep-alive>
+        </transition>
+      </v-container>
+    </main>
+  </v-app>
+{% endblock %}

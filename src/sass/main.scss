@@ -1,0 +1,38 @@
+@import "colors";
+@import "vuetify/dist/vuetify.min";
+@import "material-components-web/material-components-web";
+@import "qtip2/dist/jquery.qtip.min";
+
+html, body, #content {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    background-color: $mdc-theme-background;
+}
+
+.content-inner {
+    display: flex;
+    flex: 1 1 auto;
+    height: 100%;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    box-sizing: border-box;
+}
+
+main > .mdc-layout-grid {
+    width: 100%;
+}
+
+.qtip {
+    max-width: 900px !important;
+}
+
+[v-cloak] {
+  display: none;
+}
