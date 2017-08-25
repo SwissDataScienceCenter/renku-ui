@@ -1,0 +1,25 @@
+<div>
+    <v-progress-linear v-bind:indeterminate="true" v-show="progress" ></v-progress-linear>
+    <graph-item-list icon="folder" url_list="/api/explorer/storage/list" url_details="/storage/[ID]" v-bind:parser="parser">
+      <span slot="title">Storage buckets</span>
+      <span slot="panel">Bucket details</span>
+    </graph-item-list>
+    </v-navigation-drawer>
+    <v-dialog v-model="bucketDialog">
+      <v-btn class="teal" dark fixed bottom right fab slot="activator"><v-icon>add</v-icon></v-btn>
+      <v-card>
+        <v-card-title>
+          <span class="headline">Create a bucket</span>
+        </v-card-title>
+        <v-card-text>
+          <v-text-field label="Name" required v-model="bucketName"></v-text-field>
+          <v-select label="Backend" required :items="['local', 'swift']" v-model="bucketBackend"></v-select>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn class="teal--text darken-1" flat @click.native="bucketDialog = false">Cancel</v-btn>
+          <v-btn class="teal--text darken-1" flat v-on:click="addBucket($event)">Create</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+</div>

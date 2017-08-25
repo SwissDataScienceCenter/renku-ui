@@ -1,0 +1,28 @@
+<div>
+    <v-progress-linear v-bind:indeterminate="true" v-show="progress" ></v-progress-linear>
+    <graph-item-table v-bind:headers="headers" v-bind:url_list="'/api/explorer/storage/' + this.$route.params.id + '/files'" v-on:selected="onSelect" v-bind:parser="parser">
+      <span slot="title">Bucket files</span>
+    </graph-item-table>
+    </v-navigation-drawer>
+    <v-dialog v-model="bucketDialog">
+      <v-btn class="teal" dark fixed bottom right fab slot="activator"><v-icon>add</v-icon></v-btn>
+      <v-card>
+        <v-card-title>
+          <span class="headline">Upload a file</span>
+        </v-card-title>
+        <v-card-text>
+          <v-text-field label="Name" required v-model="bucketfile"></v-text-field>
+          <v-text-field prepend-icon="attach_file" single-line
+                      v-model="filename" label="File" required
+                      @click.native="onFocus"
+                      ref="fileTextField"></v-text-field>
+        <input type="file" accept="accept" ref="fileInput" @change="onFileChange" style="display:none">
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn class="teal--text darken-1" flat @click.native="bucketDialog = false">Cancel</v-btn>
+          <v-btn class="teal--text darken-1" flat @click.native="addFile($event)">Upload</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+</div>

@@ -1,0 +1,24 @@
+<div>
+    <v-progress-linear v-bind:indeterminate="true" v-show="progress" ></v-progress-linear>
+    <graph-item-table v-bind:headers="headers" name_key="resource:file_name" v-bind:url_list="'/api/deployer/contexts/' + this.$route.params.id + '/executions'" v-on:selected="onSelect" v-bind:parser="parser">
+      <span slot="title">Executions</span>
+    </graph-item-table>
+    </v-navigation-drawer>
+    <v-dialog v-model="execDialog">
+      <v-btn class="teal" dark fixed bottom right fab slot="activator"><v-icon>play_arrow</v-icon></v-btn>
+      <v-card>
+        <v-card-title>
+          <span class="headline">Start an Execution</span>
+        </v-card-title>
+        <v-card-text>
+          <v-select label="Engine" required :items="['docker', 'k8s']" v-model="exec_engine"></v-select>
+          <v-text-field label="Namespace" required v-model="exec_namespace"></v-text-field>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn class="teal--text darken-1" flat @click.native="execDialog = false">Cancel</v-btn>
+          <v-btn class="teal--text darken-1" flat @click.native="addExec($event)">Start</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+</div>

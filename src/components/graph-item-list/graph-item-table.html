@@ -1,0 +1,27 @@
+<div>
+    <h1 class="mdc-theme--text-primary-on-background mdc-typography--display3"><slot name="title">Item list</slot></h1>
+      <v-text-field
+        append-icon="search"
+        label="Search"
+        single-line
+        hide-details
+        v-model="search"
+      ></v-text-field>
+    <template>
+    <v-data-table
+        v-bind:headers="headers"
+        v-bind:items="item_list.list"
+        v-bind:search="search"
+        dark
+      >
+      <template slot="items" scope="props">
+        <td>{{ props.item.id }}</td>
+        <td class="text-xs-right"><a v-bind:name="props.item.id" v-on:click="$emit('selected', props.item.id)" style="cursor: pointer;" class="teal--text text--ligthen-2">{{ props.item.name }}</a></td>
+        <td class="text-xs-right" v-for="p in props.item.properties" v-bind:key="p.key">{{ p.value }}</td>
+      </template>
+      <template slot="pageText" scope="{ pageStart, pageStop }">
+        From {{ pageStart }} to {{ pageStop }}
+      </template>
+    </v-data-table>
+    </template>
+</div>

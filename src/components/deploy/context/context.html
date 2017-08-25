@@ -1,0 +1,24 @@
+<div>
+    <v-progress-linear v-bind:indeterminate="true" v-show="progress" ></v-progress-linear>
+    <graph-item-table v-bind:headers="headers" name_key="resource:file_name" v-bind:url_list="'/api/deployer/contexts'" v-on:selected="onSelect" v-bind:parser="parser">
+      <span slot="title">Execution Contexts</span>
+    </graph-item-table>
+    </v-navigation-drawer>
+    <v-dialog v-model="contextDialog">
+      <v-btn class="teal" dark fixed bottom right fab slot="activator"><v-icon>add</v-icon></v-btn>
+      <v-card>
+        <v-card-title>
+          <span class="headline">Create a context</span>
+        </v-card-title>
+        <v-card-text>
+          <v-text-field label="Image" required v-model="context_image"></v-text-field>
+          <v-text-field label="Comma-separated ports" required v-model="context_ports"></v-text-field>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn class="teal--text darken-1" flat @click.native="contextDialog = false">Cancel</v-btn>
+          <v-btn class="teal--text darken-1" flat @click.native="addContext($event)">Create</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+</div>
