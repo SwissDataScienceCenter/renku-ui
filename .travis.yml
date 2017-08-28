@@ -1,0 +1,19 @@
+branches:
+  only:
+  - master
+language: node_js
+node_js:
+- 'node'
+sudo: true
+script:
+- npm run build
+deploy:
+- provider: script
+  skip_cleanup: true
+  script: bash ./.travis/deploy-docker.sh
+  on:
+    branch: master
+
+cache:
+  directories:
+    - node_modules
