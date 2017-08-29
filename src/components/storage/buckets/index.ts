@@ -30,7 +30,7 @@ export class BucketsComponent extends Vue {
           request_type: 'create_bucket'
         })
 
-        fetch('/api/storage/authorize/create_bucket',
+        fetch('./api/storage/authorize/create_bucket',
             {
                 method: 'POST',
                 headers: {

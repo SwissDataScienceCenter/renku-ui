@@ -84,12 +84,12 @@ export class GraphComponent extends Vue {
     }
 
     updateGraphInfo(): void {
-        loadVertices('/api/navigation/vertex', this.addVertex, () => {
+        loadVertices('./api/navigation/vertex', this.addVertex, () => {
     console.log('end v')
 
     this.cy.makeLayout({ name: 'cose' }).run()
 
-    loadEdges('/api/navigation/edge', this.addEdge, () => {
+    loadEdges('./api/navigation/edge', this.addEdge, () => {
         console.log('end e')
         this.cy.makeLayout({ name: 'cose' }).run()
     })
