@@ -75,7 +75,7 @@ function fetchUserInfo(): Promise<UserState> {
     // headers.append('pragma', 'no-cache')
     // headers.append('cache-control', 'no-cache')
 
-    return fetch('/user_info', { headers: headers, redirect: 'error', credentials: 'include' }).then(response => {
+    return fetch('./user_info', { headers: headers, redirect: 'error', credentials: 'include' }).then(response => {
         if (response.status === 200) {
             return response.json().then(json => {
                 if (json.logged_in !== undefined) {

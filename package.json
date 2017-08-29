@@ -7,7 +7,7 @@
     "dev": "cross-env NODE_ENV=development npm run sass && npm run copy:material && concurrently --kill-others \"webpack --progress --colors --watch\" \"node-sass --watch --include-path node_modules --output ./src/css ./src/sass/main.scss\" \"npm run backend\"",
     "copy:material": "ncp node_modules/material-components-web/dist/material-components-web.css src/css/material-components-web.css && ncp node_modules/material-components-web/dist/material-components-web.js dist/js/material-components-web.js",
     "sass": "node-sass --include-path node_modules --output ./src/css ./src/sass/main.scss",
-    "backend": "FLASK_APP=server/run.py FLASK_DEBUG=1 flask run --port 5000",
+    "backend": "FLASK_DEBUG=1 APPLICATION_ROOT=/ui python server/run.py",
     "lint": "tslint src/**/*.ts"
   },
   "dependencies": {

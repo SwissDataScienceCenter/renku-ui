@@ -63,7 +63,7 @@ export class ExecutionComponent extends Vue {
           namespace: this.exec_namespace
         })
 
-        fetch('/api/deployer/contexts/' + this.$route.params.id + '/executions',
+        fetch('./api/deployer/contexts/' + this.$route.params.id + '/executions',
             {
                 method: 'POST',
                 headers: {

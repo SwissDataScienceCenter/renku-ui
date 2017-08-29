@@ -61,7 +61,7 @@ export class FilesComponent extends Vue {
           request_type: 'create_file'
         })
 
-        fetch('/api/storage/authorize/create_file',
+        fetch('./api/storage/authorize/create_file',
             {
                 method: 'POST',
                 headers: {
@@ -78,7 +78,7 @@ export class FilesComponent extends Vue {
             let e = this.$refs.fileInput as HTMLInputElement
             const reader = new FileReader()
             reader.onload = aFile => {
-                fetch('/api/storage/io/write',
+                fetch('./api/storage/io/write',
                     {
                         method: 'POST',
                         credentials: 'include',
@@ -116,7 +116,7 @@ export class FilesComponent extends Vue {
 
     onSelect(id) {
 
-        window.location.href = '/download?id=' + id
+        window.location.href = './download?id=' + id
        /* this.progress = true
         let that = this
         let payload = JSON.stringify({

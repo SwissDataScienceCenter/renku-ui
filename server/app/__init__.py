@@ -18,13 +18,16 @@
 """Flask initialization."""
 
 import logging
+import os
 
 from flask import Flask
+from .utils import ReverseProxied
 
 logging.basicConfig(level=logging.DEBUG)
 
 app = Flask(__name__, static_folder='../../dist', static_url_path='/static')
-app.secret_key = b',\x99@uyF\x94p\xc8\xa9\x0e\xa7,rT\xbe\xe8\xa0C0\xd54\x89-'
+app.secret_key = os.getenv('APPLICATION_SECRET_KEY', b',\x99@uyF\x94p\xc8\xa9\x0e\xa7,rT\xbe\xe8\xa0C0\xd54\x89-')
+app.wsgi_app = ReverseProxied(app.wsgi_app)
 
 
 @app.after_request

@@ -67,7 +67,7 @@ export class ContextComponent extends Vue {
           ports: this.context_ports.split(/\s*,\s*/)
         })
 
-        fetch('/api/deployer/contexts',
+        fetch('./api/deployer/contexts',
             {
                 method: 'POST',
                 headers: {
