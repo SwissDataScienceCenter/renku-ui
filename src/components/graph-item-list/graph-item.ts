@@ -8,7 +8,7 @@ export class GraphItem {
     readonly properties: Property[] = []
 
     constructor(json: object, nameKey: string, descriptionKey: string) {
-        if (!json===undefined) {
+        if (json !== undefined) {
             this.id = json['id']
             let that = this
             _.forEach(json['properties'], function(p) {
