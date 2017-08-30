@@ -8,7 +8,8 @@ RUN apk add --no-cache gcc g++ make libffi-dev openssl-dev python3-dev build-bas
 COPY ./server/requirements.txt /app/
 WORKDIR /app
 RUN pip3 install -r requirements.txt
-COPY . /app
+COPY ./server /app/server
+COPY ./dist /app/dist
 
 ENTRYPOINT ["python3"]
 CMD ["/app/server/run.py"]

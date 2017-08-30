@@ -16,7 +16,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Keycloak sub-module."""
-
+import requests
+from urllib.parse import urlparse
 from functools import wraps
 
 from flask import redirect, request, session
@@ -36,6 +37,30 @@ class KeycloakClient(OpenIDClient):
             audience=self.client_id,
             issuer=self.issuer,
             access_token=token_response.access_token, )
+
+    def get_userinfo(self, access_token):
+        g = settings()
+        r = requests.get(self.userinfo_endpoint, headers=dict(
+            Authorization="Bearer " + access_token,
+            HOST=urlparse(g['KEYCLOAK_REDIRECT_URL']).netloc
+        ))
+        r.raise_for_status()
+        data = r.json()
+        return self.translate_userinfo(data)
+
+    @property
+    def authorization_endpoint(self):
+        g = settings()
+        endpoint = self._configuration["authorization_endpoint"]
+        return endpoint.replace(g['KEYCLOAK_URL'], g['KEYCLOAK_REDIRECT_URL'], 1)
+
+    @property
+    def issuer(self):
+        issuer = self._configuration["issuer"]
+        g = settings()
+        k_url = g['KEYCLOAK_URL'][:-1] if g['KEYCLOAK_URL'].endswith('/') else g['KEYCLOAK_URL']
+        r_url = g['KEYCLOAK_REDIRECT_URL'][:-1] if g['KEYCLOAK_REDIRECT_URL'].endswith('/') else g['KEYCLOAK_REDIRECT_URL']
+        return issuer.replace(k_url, r_url, 1)
 
     def decode(self, token):
         return jwt.decode(
