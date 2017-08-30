@@ -25,12 +25,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>{% block title %}{% endblock %}</title>
-
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='img/sdsc-icon.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/sdsc-icon.png') }}"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <!-- build:remove -->
-    <!--<link rel="stylesheet" href="static/css/bootstrap.css">-->
-    <!--<link rel="stylesheet" href="/static/css/material-components-web.css">-->
-    <!-- /build -->
 
     <!-- build:css css/main.min.css -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
@@ -45,7 +42,6 @@
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     <!-- /build -->
     <script src="{{ url_for('static', filename='js/material-components-web.js') }}"></script>
-    <!--<script>window.mdc.autoInit();</script>-->
     {% endblock %}
 </body>
 

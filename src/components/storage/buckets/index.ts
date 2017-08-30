@@ -64,6 +64,7 @@ export class BucketsComponent extends Vue {
                         this.item_list.list = res
                     }*/
                     this.progress = false
+                    location.reload()
                 // })
         })
     }

@@ -82,6 +82,7 @@ export class ContextComponent extends Vue {
         ).then(response => {
             console.log('create', response)
             this.progress = false
+            location.reload()
         })
     }
 

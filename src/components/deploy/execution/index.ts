@@ -78,10 +78,12 @@ export class ExecutionComponent extends Vue {
         ).then(response => {
             console.log('create', response)
             this.progress = false
+            location.reload()
         })
     }
 
     onSelect(id) {
         //router.push("/deploy/context/" + id)
+        //or link to the open port ? (needs the ip !)
     }
 }

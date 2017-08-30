@@ -49,7 +49,8 @@ export class FilesComponent extends Vue {
             value: 'id'
           },
           { text: 'Name', value: 'name' },
-          { text: 'resource:file_name', value: 'resource:file_name' }
+          { text: 'resource:file_name', value: 'resource:file_name' },
+          { text: 'resource:owner', value: 'resource:owner' }
         ]
 
     addFile(event: Event): void {
@@ -89,6 +90,7 @@ export class FilesComponent extends Vue {
                     }
                 ).then(r => {
                     this.progress = false
+                    location.reload()
                 })
             }
             reader.readAsArrayBuffer(e.files[0])
