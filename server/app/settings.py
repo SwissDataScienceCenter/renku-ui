@@ -32,6 +32,8 @@ def setup_globals():
         'API_ROOT_URL', 'http://localhost/api/')
     g['KEYCLOAK_URL'] = os.environ.get(
         'KEYCLOAK_URL', 'http://localhost/auth/realms/Renga/')
+    g['KEYCLOAK_REDIRECT_URL'] = os.environ.get(
+        'KEYCLOAK_REDIRECT_URL', 'http://localhost/auth/realms/Renga/')
     g['CLIENT_ID'] = os.environ.get(
         'CLIENT_ID', 'demo-client')
     g['CLIENT_SECRET'] = os.environ.get(

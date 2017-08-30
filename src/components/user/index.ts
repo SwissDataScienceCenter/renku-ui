@@ -108,9 +108,9 @@ export class UserMenuComponent extends Vue {
 
     clickItem(path: string, event: Event): void {
         if (path === 'login') {
-            window.location.href = '/login?redir=/'
+            window.location.href = './login?redir=./'
         } else if (path === 'logout') {
-            window.location.href = '/logout'
+            window.location.href = './logout'
         } else {
             router.push(path)
         }
