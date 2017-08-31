@@ -1,6 +1,6 @@
 {
-  "name": "renga-web-frontend",
-  "version": "0.1.0",
+  "name": "renga-ui",
+  "version": "0.1.0-SNAPSHOT",
   "private": true,
   "scripts": {
     "build": "cross-env NODE_ENV=production npm run sass && npm run copy:material && concurrently --kill-others \"webpack --progress --colors\"",
