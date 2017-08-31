@@ -16,7 +16,7 @@
   limitations under the License.
 
 ================
- Renga-Web-Frontend
+ Renga-UI
 ================
 
 
