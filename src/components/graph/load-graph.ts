@@ -30,6 +30,7 @@ export function loadVertices(url: string, onVertex: (v: PersistedVertex) => void
         method: 'GET',
         headers: headers,
         mode: 'cors',
+        credentials: 'include',
         cache: 'default'
     }
 
@@ -102,6 +103,7 @@ export function loadEdges(url: string, onVertex: (v: PersistedEdge) => void, onC
         method: 'GET',
         headers: headers,
         mode: 'cors',
+        credentials: 'include',
         cache: 'default'
     }
 
