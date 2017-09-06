@@ -49,7 +49,6 @@ export class FilesComponent extends Vue {
             value: 'id'
           },
           { text: 'Name', value: 'name' },
-          { text: 'resource:file_name', value: 'resource:file_name' },
           { text: 'resource:owner', value: 'resource:owner' }
         ]
 
