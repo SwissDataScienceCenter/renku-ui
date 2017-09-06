@@ -1,6 +1,6 @@
 <div>
     <v-progress-linear v-bind:indeterminate="true" v-show="progress" ></v-progress-linear>
-    <graph-item-list icon="folder" url_list="./api/explorer/storage/list" url_details="/storage/[ID]" v-bind:parser="parser">
+    <graph-item-list icon="folder" url_list="./api/explorer/storage/bucket" url_details="/storage/[ID]" v-bind:parser="parser">
       <span slot="title">Storage buckets</span>
       <span slot="panel">Bucket details</span>
     </graph-item-list>
