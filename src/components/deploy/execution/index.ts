@@ -26,7 +26,7 @@ export class ExecutionComponent extends Vue {
           { text: 'Engine', value: 'resource:spec_ports' }
         ]
 
-    parser(json:any): GraphItem[] {
+    parser(json: any): GraphItem[] {
         const array = <object[]> json['executions']
         return array.map(obj => {
             let g = new GraphItem(undefined, undefined, undefined)
@@ -65,7 +65,7 @@ export class ExecutionComponent extends Vue {
     }
 
     onSelect(id) {
-        //router.push("/deploy/context/" + id)
-        //or link to the open port ? (needs the ip !)
+        // router.push("/deploy/context/" + id)
+        // or link to the open port ? (needs the ip !)
     }
 }

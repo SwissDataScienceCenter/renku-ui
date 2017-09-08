@@ -90,7 +90,7 @@ export class GraphItemTableComponent extends Vue {
 
 }
 
-function fetchItemList(url: string, path: string, parser:any): Promise<null | GraphItem[]> {
+function fetchItemList(url: string, path: string, parser: any): Promise<null | GraphItem[]> {
     const headers = new Headers()
     // headers.append('pragma', 'no-cache')
     // headers.append('cache-control', 'no-cache')

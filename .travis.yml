@@ -7,6 +7,7 @@ node_js:
 sudo: true
 script:
 - npm run build
+- npm run lint
 deploy:
 - provider: script
   skip_cleanup: true
