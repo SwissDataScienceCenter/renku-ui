@@ -26,16 +26,16 @@ export class ContextComponent extends Vue {
           { text: 'Ports', value: 'ports', align: 'right' }
         ]
 
-    parser(json:any): GraphItem[] {
+    parser(json: any): GraphItem[] {
         const array = <any[]> json['contexts']
         return array.map(obj => {
             let g = new GraphItem(undefined, undefined, undefined)
             g.id = obj['identifier']
             g.name = obj['spec']['image']
-            if (!(obj['spec']['ports']===undefined)) {
-                g.properties.push({'key': 'ports', 'value': obj['spec']['ports'].join(", ")})
+            if (!(obj['spec']['ports'] === undefined)) {
+                g.properties.push({'key': 'ports', 'value': obj['spec']['ports'].join(', ')})
             } else {
-                g.properties.push({'key': 'ports', 'value': "-"})
+                g.properties.push({'key': 'ports', 'value': '-'})
             }
             return g
         })
@@ -69,6 +69,6 @@ export class ContextComponent extends Vue {
     }
 
     onSelect(id) {
-        router.push("/deploy/context/" + id)
+        router.push(`/deploy/context/${id}`)
     }
 }
