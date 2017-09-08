@@ -74,7 +74,7 @@ export class GraphComponent extends Vue {
                 {
                     'selector': 'node',
                     'style': {
-                        'label': 'data(label)',
+                        'label': 'data(display_name)',
                         'background-color': '#252b5f',
                         'text-valign': 'center',
                         'color': 'white',
@@ -85,7 +85,7 @@ export class GraphComponent extends Vue {
                 {
                     'selector': 'edge',
                     'style': {
-                        'label': 'data(label)',
+                        'label': 'data(display_name)',
                         'curve-style': 'bezier',
                         'target-arrow-shape': 'triangle',
                         'line-color': '#252b5f',
@@ -125,6 +125,7 @@ export class GraphComponent extends Vue {
                 label: `${edge.label}`,
                 source: `v${edge.from}`,
                 target: `v${edge.to}`,
+                display_name: `${edge.label.replace(/([^:]*):(.*)/, '$2')}`,
                 self: edge
             }
         })
@@ -155,6 +156,7 @@ export class GraphComponent extends Vue {
             data: {
                 id: `v${vertex.id}`,
                 label: `${vertex.id}`,
+                display_name: this.findDisplayName(vertex),
                 self: vertex
             }
         })
@@ -176,5 +178,19 @@ export class GraphComponent extends Vue {
     }
 }
 
+    findDisplayName(vertex: PersistedVertex): string {
+        const nameProperties = new Set([
+            'resource:bucket_name',
+            'resource:file_name',
+            'deployer:context_spec_image',
+            'project:project_name'
+        ])
+
+        const prop: undefined | any = vertex.properties.find(prop => nameProperties.has(prop.key))
+        if (prop === undefined)
+            return `id=${vertex.id}`
+        else
+            return `${prop.values[0].value}`
+    }
 
 }
