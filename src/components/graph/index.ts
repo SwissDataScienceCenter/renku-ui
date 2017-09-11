@@ -49,7 +49,7 @@ function edgeQTip(edge: PersistedEdge): String {
 
     return `<table>
         <tr><td>id</td><td style="padding-left: 30px;">${edge.id}</td></tr>
-        <tr><td>label</td><td style="padding-left: 30px;">${edge.label}</td></tr>
+        <tr><td>label</td><td style="padding-left: 30px;"><code>${edge.label}</code></td></tr>
         ${rows.join('')}
     </table>
     `
@@ -63,6 +63,7 @@ function edgeQTip(edge: PersistedEdge): String {
 export class GraphComponent extends Vue {
 
     cy: any = null
+    layout: any = null
 
     mounted () {
         this.cy = cytoscape({
@@ -93,7 +94,8 @@ export class GraphComponent extends Vue {
                         'text-valign': 'center',
                         'color': 'white',
                         'text-outline-width': 2,
-                        'text-outline-color': '#252b5f'
+                        'text-outline-color': '#252b5f',
+                        'font-size': '12px'
                     }
                 },
             ]
@@ -104,12 +106,16 @@ export class GraphComponent extends Vue {
     updateGraphInfo(): void {
         loadVertices('./api/navigation/vertex', this.addVertex, () => {
     console.log('end v')
-
-    this.cy.makeLayout({ name: 'cose' }).run()
+    this.layout = {
+        name: 'breadthfirst',
+        spacingFactor: 1,
+        nodeDimensionsIncludeLabels: true
+    }
+    this.cy.makeLayout(this.layout).run()
 
     loadEdges('./api/navigation/edge', this.addEdge, () => {
         console.log('end e')
-        this.cy.makeLayout({ name: 'cose' }).run()
+        this.cy.makeLayout(this.layout).run()
     })
 })
     }
