@@ -36,12 +36,12 @@
     <span class="mdc-linear-progress__bar-inner"></span>
   </div>
 </div>
-  <v-app id="sdsc" dark v-cloak>
-    <v-navigation-drawer absolute persistent v-model="drawer" overflow>
+  <v-app id="sdsc" dark v-cloak toolbar>
+    <v-navigation-drawer enable-resize-watcher persistent v-model="drawer" overflow>
       <user-menu></user-menu>
     </v-navigation-drawer>
     <v-toolbar fixed class="indigo darken-4">
-      <v-toolbar-side-icon @click.native.stop="drawer = !drawer"></v-toolbar-side-icon>
+      <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
       <v-toolbar-title>Renga Platform</v-toolbar-title>
     </v-toolbar>
     <main>
