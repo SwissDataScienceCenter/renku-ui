@@ -40,8 +40,8 @@ Docker
 
    $ npm install
    $ npm run build
-   $ docker build --tag renga-web-frontend:latest .
-   $ docker run -p 5000:5000 renga-web-frontend:latest
+   $ docker build --tag renga-ui:latest .
+   $ docker run -p 5000:5000 renga-ui:latest
 
 
 You can test it by pointing your browser to http://localhost:5000/
