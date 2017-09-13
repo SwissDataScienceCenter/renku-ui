@@ -19,22 +19,29 @@
  Renga-UI
 ================
 
+Renga's Web User Interface
 
 Local
 -----
 
-You need python and npm
+Requirements:
+
+- `Python 3 <https://www.python.org/>`_
+- `Node.js (LTS) <https://nodejs.org/>`_
 
 ::
 
    $ pip install server/requirements.txt
    $ npm install
-   $ npm run build
-   $ python server/run.py
+   $ npm run dev
 
 
 Docker
 ------
+
+Also required:
+
+- `Docker <http://www.docker.com>`_
 
 ::
 
