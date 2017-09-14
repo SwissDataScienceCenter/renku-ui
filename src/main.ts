@@ -26,7 +26,7 @@ import VueLodash from 'vue-lodash/dist/vue-lodash.min'
 import * as mdc from 'material-components-web'
 
 import { HomeComponent } from './components/home'
-import { ContextComponent, ExecutionComponent } from './components/deploy'
+import { ContextComponent, ExecutionComponent, DetailExecutionComponent } from './components/deploy'
 import { BucketsComponent, FilesComponent } from './components/storage'
 import { NavigationComponent } from './components/navigation'
 
@@ -51,6 +51,7 @@ export const router = new VueRouter({
     // { path: '/deploy', component: DeployComponent },
     { path: '/deploy/context', component: ContextComponent },
     { path: '/deploy/context/:id', component: ExecutionComponent },
+    { path: '/deploy/context/:id/execution/:eid', component: DetailExecutionComponent },
     { path: '/storage', component: BucketsComponent },
     { path: '/storage/:id(\\d+)', component: FilesComponent },
     { path: '/graph', component: NavigationComponent },

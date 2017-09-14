@@ -18,3 +18,4 @@
 
 export * from './context'
 export * from './execution'
+export * from './details'
