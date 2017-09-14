@@ -82,8 +82,8 @@ export class ExecutionComponent extends Vue {
         })
     }
 
-    onSelect(id) {
-        // router.push("/deploy/context/" + id)
-        // or link to the open port ? (needs the ip !)
+    onSelect(eid) {
+        router.push("/deploy/context/" + this.$route.params.id + "/execution/" + eid)
+        //or link to the open port ? (needs the ip !)
     }
 }

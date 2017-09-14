@@ -1,0 +1,31 @@
+<div>
+  <v-layout>
+    <v-flex xs12 sm6>
+      <v-card light>
+        <v-card-title primary-title>
+          <div>
+            <h3 class="headline mb-0">Exposed services</h3>
+            <div v-if="port != ''"> {{ ip }}:{{ port }}</div>
+            <div v-else>No service</div>
+          </div>
+        </v-card-title>
+        <v-card-actions>
+          <v-btn flat class="teal--text" v-on:click="clickItem($event)" v-if="port != ''">Open in a new window</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-flex>
+    <v-flex xs12 sm6>
+      <v-card light>
+        <v-card-title primary-title>
+          <div>
+            <h3 class="headline mb-0">Logs</h3>
+            <div v-html="logs"></div>
+          </div>
+        </v-card-title>
+        <v-card-actions>
+          <v-btn flat class="teal--text" v-on:click="clickRefresh($event)">Refresh</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-flex>
+  </v-layout>
+</div>
