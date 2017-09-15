@@ -29,6 +29,9 @@ import { GraphItem } from './graph-item'
         url_details: String,
         icon: String,
         parser: null
+    },
+    watch: {
+        'url_list' : 'updateList'
     }
 })
 export class GraphItemListComponent extends Vue {
@@ -47,6 +50,10 @@ export class GraphItemListComponent extends Vue {
     detailsPanel: boolean = false
 
     created () {
+        this.updateList()
+    }
+
+    updateList () {
 
         fetchItemList(this.url_list, '', this.parser).then(res => {
             if (res !== null) {
@@ -70,6 +77,9 @@ export class GraphItemListComponent extends Vue {
         url_details: String,
         headers: Array,
         parser: null
+    },
+    watch: {
+        'url_list' : 'updateList'
     }
 })
 export class GraphItemTableComponent extends Vue {
@@ -91,6 +101,10 @@ export class GraphItemTableComponent extends Vue {
     pagination: any = {}
 
     created () {
+        this.updateList()
+    }
+
+    updateList () {
 
         fetchItemList(this.url_list, '', this.parser).then(res => {
             if (res !== null) {

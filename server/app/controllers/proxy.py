@@ -96,9 +96,8 @@ def download():
         response = requests.request('GET', url, headers=headers, stream=True)
 
     def generate():
-        for c in response.iter_lines():
-            logger.debug(c)
-            yield c + "\r".encode()
+        for c in response.iter_content():
+            yield c
 
     resp = Response(generate(), response.status_code)
     resp.headers['Content-Disposition'] = 'attachment'
