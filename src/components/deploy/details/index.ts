@@ -31,9 +31,9 @@ export class DetailExecutionComponent extends Vue {
     ip: string = 'localhost'
     port: string = ''
 
-    created () {
+    mounted () {
 
-        fetch('./api/deployer/contexts/' + this.$route.params.id + '/executions/' + this.$route.params.eid + '/logs',
+        fetch(`./api/deployer/contexts/${this.$route.params.id}/executions/${this.$route.params.eid}/logs`,
             {
                 method: 'GET',
                 headers: {
@@ -48,7 +48,7 @@ export class DetailExecutionComponent extends Vue {
             this.logs = response.replace(/(?:\r\n|\r|\n)/g, '<br />')
         })
 
-        fetch('./api/deployer/contexts/' + this.$route.params.id + '/executions/' + this.$route.params.eid + '/ports',
+        fetch(`./api/deployer/contexts/${this.$route.params.id}/executions/${this.$route.params.eid}/ports`,
             {
                 method: 'GET',
                 headers: {
@@ -68,7 +68,7 @@ export class DetailExecutionComponent extends Vue {
     }
 
     clickRefresh(event: Event): void {
-        fetch('./api/deployer/contexts/' + this.$route.params.id + '/executions/' + this.$route.params.eid + '/logs',
+        fetch(`./api/deployer/contexts/${this.$route.params.id}/executions/${this.$route.params.eid}/logs`,
             {
                 method: 'GET',
                 headers: {
@@ -85,7 +85,7 @@ export class DetailExecutionComponent extends Vue {
     }
 
     clickItem(event: Event): void {
-        window.open("http://" + this.ip + ":" + this.port)
+        window.open(`http://${this.ip}:${this.port}`)
         // router.push("/deploy/context/" + id)
         // or link to the open port ? (needs the ip !)
     }

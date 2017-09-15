@@ -23,6 +23,12 @@ import { router } from '../../../main'
 
 import { GraphItem } from '../../graph-item-list/graph-item'
 
+Component.registerHooks([
+  'beforeRouteEnter',
+  'beforeRouteLeave',
+  'beforeRouteUpdate'
+])
+
 @Component({
     template: require('./execution.html')
 })
@@ -32,6 +38,7 @@ export class ExecutionComponent extends Vue {
     execDialog: boolean = false
     exec_engine: string = ''
     exec_namespace: string = ''
+    url_list: string = ''
 
     headers: any[] = [
         {
@@ -43,6 +50,19 @@ export class ExecutionComponent extends Vue {
           { text: 'Namespace', value: 'name' },
           { text: 'Engine', value: 'resource:spec_ports' }
         ]
+
+    created ()  {
+        this.url_list = './api/deployer/contexts/' + this.$route.params.id + '/executions'
+    }
+
+    beforeRouteUpdate (to, from, next) {
+        this.url_list = './api/deployer/contexts/' + to.params.id + '/executions'
+        next()
+    }
+
+    beforeRouteEnter (to, from, next) {
+        next(vm => vm.url_list = './api/deployer/contexts/' + this.$route.params.id + '/executions')
+    }
 
     parser(json: any): GraphItem[] {
         const array = <object[]> json['executions']
@@ -63,7 +83,7 @@ export class ExecutionComponent extends Vue {
           namespace: this.exec_namespace
         })
 
-        fetch('./api/deployer/contexts/' + this.$route.params.id + '/executions',
+        fetch(`./api/deployer/contexts/${this.$route.params.id}/executions`,
             {
                 method: 'POST',
                 headers: {
@@ -83,7 +103,7 @@ export class ExecutionComponent extends Vue {
     }
 
     onSelect(eid) {
-        router.push("/deploy/context/" + this.$route.params.id + "/execution/" + eid)
-        //or link to the open port ? (needs the ip !)
+        router.push(`/deploy/context/${this.$route.params.id}/execution/${eid}`)
+        // or link to the open port ? (needs the ip !)
     }
 }

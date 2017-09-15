@@ -23,6 +23,12 @@ import download from 'downloadjs'
 
 import { GraphItem } from '../../graph-item-list/graph-item'
 
+Component.registerHooks([
+  'beforeRouteEnter',
+  'beforeRouteLeave',
+  'beforeRouteUpdate'
+])
+
 @Component({
     template: require('./files.html')
 })
@@ -32,6 +38,8 @@ export class FilesComponent extends Vue {
     bucketDialog: boolean = false
     bucketfile: string = ''
     filename: string = ''
+
+    url_list: string = ''
 
     parser: any = json => {
                 console.log('list', json)
@@ -51,6 +59,19 @@ export class FilesComponent extends Vue {
           { text: 'Name', value: 'name' },
           { text: 'resource:owner', value: 'resource:owner' }
         ]
+
+    created ()  {
+        this.url_list = './api/explorer/storage/bucket/' + this.$route.params.id + '/files'
+    }
+
+    beforeRouteUpdate (to, from, next) {
+        this.url_list = './api/explorer/storage/bucket/' + to.params.id + '/files'
+        next()
+    }
+
+    beforeRouteEnter (to, from, next) {
+        next(vm => vm.url_list = './api/explorer/storage/bucket/' + to.params.id + '/files')
+    }
 
     addFile(event: Event): void {
         this.progress = true
