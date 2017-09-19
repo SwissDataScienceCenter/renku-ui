@@ -51,7 +51,7 @@ def pass_through(path):
     logger.debug('Headers: {}'.format(headers))
     logger.debug('Data: {}'.format(request.data))
 
-    response = requests.request(request.method, url, headers=headers, data=request.data, stream=True, timeout=3)
+    response = requests.request(request.method, url, headers=headers, data=request.data, stream=True, timeout=300)
 
     logger.debug('Response: {}'.format(response.status_code))
 
@@ -83,7 +83,7 @@ def download():
     logger.debug('Headers: {}'.format(headers))
     logger.debug('Data: {}'.format(json.dumps({"resource_id": int(request.args.get('id')), "request_type": "read_file"})))
 
-    response = requests.request('POST', url, headers=headers, data=json.dumps({"resource_id": int(request.args.get('id')), "request_type": "read_file"}), timeout=3)
+    response = requests.request('POST', url, headers=headers, data=json.dumps({"resource_id": int(request.args.get('id')), "request_type": "read_file"}), timeout=300)
 
     if response.status_code == 200:
         logger.debug('Response: {}'.format(response.status_code))
@@ -93,7 +93,7 @@ def download():
         token = "Bearer {}".format(response.json().get('access_token'))
         headers['Authorization'] = token
 
-        response = requests.request('GET', url, headers=headers, stream=True)
+        response = requests.request('GET', url, headers=headers, stream=True, timeout=300)
 
     def generate():
         for c in response.iter_content():
