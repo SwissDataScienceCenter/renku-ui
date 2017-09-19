@@ -28,7 +28,7 @@ import { router } from '../../../main'
 export class DetailExecutionComponent extends Vue {
 
     logs: string = ''
-    ip: string = 'localhost' //to be changed once the deployer can be aware of the load balancer/proxy IP
+    ip: string = 'localhost' // to be changed once the deployer can be aware of the load balancer/proxy IP
     port: string = ''
 
     mounted () {
