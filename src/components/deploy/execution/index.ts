@@ -61,7 +61,7 @@ export class ExecutionComponent extends Vue {
     }
 
     beforeRouteEnter (to, from, next) {
-        next(vm => vm.url_list = './api/deployer/contexts/' + this.$route.params.id + '/executions')
+        next(vm => vm.url_list = './api/deployer/contexts/' + to.params.id + '/executions')
     }
 
     parser(json: any): GraphItem[] {
