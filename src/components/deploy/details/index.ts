@@ -28,11 +28,36 @@ import { router } from '../../../main'
 export class DetailExecutionComponent extends Vue {
 
     logs: string = ''
-    ip: string = 'localhost'
+    ip: string = 'localhost' // to be changed once the deployer can be aware of the load balancer/proxy IP
     port: string = ''
 
     mounted () {
+        this.updateLogs()
+        this.updatePorts()
+    }
 
+    beforeRouteUpdate (to, from, next) {
+        this.updateLogs()
+        this.updatePorts()
+        next()
+    }
+
+    beforeRouteEnter (to, from, next) {
+        next(vm => {
+            vm.updateLogs()
+            vm.updatePorts()
+            })
+    }
+
+    clickRefresh(event: Event): void {
+        this.updateLogs()
+    }
+
+    clickItem(event: Event): void {
+        window.open(`http://${this.ip}:${this.port}`)
+    }
+
+    updateLogs(): void {
         fetch(`./api/deployer/contexts/${this.$route.params.id}/executions/${this.$route.params.eid}/logs`,
             {
                 method: 'GET',
@@ -47,6 +72,9 @@ export class DetailExecutionComponent extends Vue {
         ).then(response => {
             this.logs = response.replace(/(?:\r\n|\r|\n)/g, '<br />')
         })
+    }
+
+    updatePorts(): void {
 
         fetch(`./api/deployer/contexts/${this.$route.params.id}/executions/${this.$route.params.eid}/ports`,
             {
@@ -64,29 +92,5 @@ export class DetailExecutionComponent extends Vue {
                 this.port = response.ports[0].exposed
             }
         })
-
-    }
-
-    clickRefresh(event: Event): void {
-        fetch(`./api/deployer/contexts/${this.$route.params.id}/executions/${this.$route.params.eid}/logs`,
-            {
-                method: 'GET',
-                headers: {
-                    'Accept' : 'text/plain'
-                },
-                credentials: 'include'
-            }
-        ).then(response => {
-            return response.text()
-            }
-        ).then(response => {
-            this.logs = response.replace(/(?:\r\n|\r|\n)/g, '<br />')
-        })
-    }
-
-    clickItem(event: Event): void {
-        window.open(`http://${this.ip}:${this.port}`)
-        // router.push("/deploy/context/" + id)
-        // or link to the open port ? (needs the ip !)
     }
 }

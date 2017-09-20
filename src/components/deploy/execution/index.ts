@@ -47,8 +47,9 @@ export class ExecutionComponent extends Vue {
             sortable: false,
             value: 'id'
           },
-          { text: 'Namespace', value: 'name' },
-          { text: 'Engine', value: 'resource:spec_ports' }
+          { text: 'Identifier', value: 'name' },
+          { text: 'Engine', value: 'resource:spec_ports' },
+          { text: 'Namespace', value: 'deployer:execution_namespace' }
         ]
 
     created ()  {
@@ -61,7 +62,7 @@ export class ExecutionComponent extends Vue {
     }
 
     beforeRouteEnter (to, from, next) {
-        next(vm => vm.url_list = './api/deployer/contexts/' + this.$route.params.id + '/executions')
+        next(vm => vm.url_list = './api/deployer/contexts/' + to.params.id + '/executions')
     }
 
     parser(json: any): GraphItem[] {
@@ -69,8 +70,9 @@ export class ExecutionComponent extends Vue {
         return array.map(obj => {
             let g = new GraphItem(undefined, undefined, undefined)
             g.id = obj['identifier']
-            g.name = obj['namespace']
+            g.name = obj['identifier']
             g.properties.push({'key': 'engine', 'value': obj['engine']})
+            g.properties.push({'key': 'namespace', 'value': obj['namespace']})
             return g
         })
     }
