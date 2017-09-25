@@ -16,37 +16,42 @@
  * limitations under the License.
  */
 
-const helpers = require("./helpers"),
-  CopyWebpackPlugin = require('copy-webpack-plugin');
+const path = require('path'),
+  helpers = require('./helpers'),
+  CopyWebpackPlugin = require('copy-webpack-plugin'),
+  ManifestPlugin = require('webpack-manifest-plugin');
 
 let config = {
   entry: {
-    "main": helpers.root("/src/main.ts"),
+    'main': helpers.root('/src/main.ts'),
   },
   output: {
-    path: helpers.root("/dist/js"),
-    filename: "[name].js"
+    path: helpers.root('/dist'),
+    filename: 'js/[name].[hash].js'
   },
-  devtool: "source-map",
+  devtool: 'source-map',
   resolve: {
-    extensions: [".ts", ".js", ".html"],
+    extensions: ['.ts', '.js', '.html'],
     alias: {
-      'vue$': 'vue/dist/vue.common.js',
+      'vue$': 'vue/dist/vue.esm.js',
     }
   },
   module: {
     rules: [
-      {test: /\.css$/, loader: 'css-loader'},
-      {test: /\.ts$/, exclude: /node_modules/, enforce: 'pre', loader: 'tslint-loader'},
-      {test: /\.ts$/, exclude: /node_modules/, loader: "awesome-typescript-loader"},
-      {test: /\.html$/, loader: 'raw-loader', exclude: ['./src/index.html']}
+      { test: /\.ts$/, exclude: /node_modules/, enforce: 'pre', loader: 'tslint-loader' },
+      { test: /\.ts$/, exclude: /node_modules/, loader: 'awesome-typescript-loader' },
+      { test: /\.html$/, loader: 'raw-loader' },
     ],
   },
   plugins: [
     new CopyWebpackPlugin([
-     // {from: 'src/assets', to: '../assets'},
-      {from: 'src/css', to: '../css'}
+      { from: 'src/assets', to: './assets' },
     ]),
+    new ManifestPlugin({
+      fileName: 'manifest.json',
+      seed: { assets: {}, publicPath: '/static/' },
+      reduce: (manifest, {name, path}) => Object.assign(manifest, { assets: Object.assign(manifest.assets, {[name]: path}) })
+    }),
   ]
 };
 

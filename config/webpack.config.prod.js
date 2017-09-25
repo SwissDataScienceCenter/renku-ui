@@ -16,11 +16,16 @@
  * limitations under the License.
  */
 
-const helpers = require("./helpers"),
-  webpackConfig = require("./webpack.config.base"),
+const glob = require('glob'),
+  path = require('path'),
+  MinifyPlugin = require("babel-minify-webpack-plugin"),
+  CompressionPlugin = require('compression-webpack-plugin'),
   ExtractTextPlugin = require('extract-text-webpack-plugin'),
+  autoprefixer = require('autoprefixer'),
+  webpackConfig = require('./webpack.config.base'),
+  helpers = require('./helpers'),
   DefinePlugin = require('webpack/lib/DefinePlugin'),
-  env = require('../environment/dev.env');
+  env = require('../environment/prod.env');
 
 const extractSass = new ExtractTextPlugin({
   filename: 'css/[name].[contenthash].css'
@@ -31,34 +36,57 @@ webpackConfig.module.rules = [...webpackConfig.module.rules,
     test: /\.scss$/,
     use: extractSass.extract({
       use: [{
-          loader: 'css-loader'
+          loader: 'css-loader',
+          options: {
+            minimize: true,
+            sourceMap: true,
+            importLoaders: 2
+          }
+        },
+        {
+          loader: 'postcss-loader',
+          options: {
+            plugins: () => [autoprefixer],
+            sourceMap: true
+          }
         },
         {
           loader: 'sass-loader',
           options: {
-            includePaths: [helpers.root('node_modules')]
+            includePaths: [helpers.root('node_modules')],
+            outputStyle: 'expanded',
+            sourceMap: true,
+            sourceMapContents: true
           }
         }
       ]
     })
   },
-  { test: /\.(jpg|png|gif|eot|svg|ttf|woff|woff2)$/, loader: 'file-loader' },
+  {
+    test: /\.(jpg|png|gif|svg)$/,
+    loader: 'file-loader?name=assets/img/[name].[ext]'
+  },
+  {
+    test: /\.(eot|ttf|woff|woff2)$/,
+    loader: 'file-loader?name=fonts/[name].[ext]'
+  }
 ];
+
+// ensure ts lint fails the build
+webpackConfig.module.rules[0].options = {
+  failOnHint: true
+};
 
 webpackConfig.plugins = [...webpackConfig.plugins,
   extractSass,
+  new MinifyPlugin(),
+  new CompressionPlugin({
+    asset: '[path].gz[query]',
+    test: /\.min\.js$/
+  }),
   new DefinePlugin({
     'process.env': env
-  })
+  }),
 ];
-
-webpackConfig.devServer = {
-  port: 8080,
-  host: 'localhost',
-  historyApiFallback: true,
-  watchOptions: { aggregateTimeout: 300, poll: 1000 },
-  contentBase: './src',
-  open: true
-};
 
 module.exports = webpackConfig;
