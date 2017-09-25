@@ -1,4 +1,4 @@
-FROM node:boron
+FROM node:8
 
 COPY package.json /code/renga-ui/package.json
 COPY package-lock.json /code/renga-ui/package-lock.json

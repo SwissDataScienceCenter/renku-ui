@@ -1,7 +1,7 @@
 @import "colors";
-@import "vuetify/dist/vuetify.min";
-@import "material-components-web/material-components-web";
-@import "qtip2/dist/jquery.qtip.min";
+@import "~vuetify/dist/vuetify.min";
+@import "~material-components-web/material-components-web";
+@import "~qtip2/dist/jquery.qtip.min";
 
 html, body, #content {
     height: 100%;

@@ -25,12 +25,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>{% block title %}{% endblock %}</title>
-    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='img/sdsc-icon.png') }}">
-    <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/sdsc-icon.png') }}"/>
+    <link rel="shortcut icon" type="image/x-icon" href="{{ url_for('static', filename='assets/img/sdsc-icon.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='assets/img/sdsc-icon.png') }}"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
     <!-- build:css css/main.min.css -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="stylesheet" href="{{ asset_url_for('main.css') }}">
     <!-- /build -->
     {% endblock %}
 </head>
@@ -39,9 +39,9 @@
     {% block content %}{% endblock %}
     {% block main_script %}
     <!-- build:js js/main.min.js -->
-    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ asset_url_for('main.js') }}"></script>
     <!-- /build -->
-    <script src="{{ url_for('static', filename='js/material-components-web.js') }}"></script>
+    <!-- <script src="{{ url_for('static', filename='js/material-components-web.js') }}"></script> -->
     {% endblock %}
 </body>
 

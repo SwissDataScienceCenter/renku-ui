@@ -16,4 +16,8 @@
  * limitations under the License.
  */
 
-module.exports = require('./config/webpack.config.dev');
+module.exports = {
+  ENV: '"production"',
+  NODE_ENV: '"production"',
+  DEBUG_MODE: false,
+}

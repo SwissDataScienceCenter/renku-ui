@@ -1,4 +1,4 @@
-/*
+/*!
  * Copyright 2017 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import * as Vue from 'vue'
+import Vue from 'vue'
 import VueRouter from 'vue-router'
 import lodash from 'lodash'
 import Vuetify from 'vuetify'
@@ -24,6 +24,8 @@ import Vuetify from 'vuetify'
 import VueLodash from 'vue-lodash/dist/vue-lodash.min'
 
 import * as mdc from 'material-components-web'
+
+import './sass/main.scss';
 
 import { HomeComponent } from './components/home'
 import { ContextComponent, ExecutionComponent, DetailExecutionComponent } from './components/deploy'
