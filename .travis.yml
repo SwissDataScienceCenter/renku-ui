@@ -4,6 +4,10 @@ branches:
 language: node_js
 node_js:
 - 'lts/*'
+- 'node'
+matrix:
+  allow_failures:
+  - node_js: 'node'
 sudo: true
 script:
 - npm run build
