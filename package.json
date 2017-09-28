@@ -12,8 +12,7 @@
     "lint": "tslint src/**/*.ts"
   },
   "dependencies": {
-    "cytoscape": "^3.2.3",
-    "cytoscape-qtip": "^2.7.1",
+    "d3": "^4.11.0",
     "fetch-readablestream": "^0.1.0",
     "text-encoding": "^0.6.4",
     "vue": "~2.4.4",
@@ -25,6 +24,7 @@
     "whatwg-fetch": "^2.0.3"
   },
   "devDependencies": {
+    "@types/d3": "^4.11.0",
     "@types/node": "^8.0.28",
     "awesome-typescript-loader": "^3.2.3",
     "babel-minify-webpack-plugin": "^0.2.0",
