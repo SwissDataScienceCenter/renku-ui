@@ -1,17 +1,11 @@
-FROM python:3.6-alpine
-RUN apk add --no-cache gcc g++ make libffi-dev openssl-dev python3-dev build-base && \
-    python3 -m ensurepip && \
-    rm -r /usr/lib/python*/ensurepip && \
-    pip3 install --upgrade pycrypto>=2.6.1 flask>=0.12.2 && \
-    apk del --purge gcc g++ make libffi-dev openssl-dev python3-dev build-base && \
-    rm -r /root/.cache
-COPY ./server/requirements.txt /app/
-WORKDIR /app
-RUN pip3 install -r requirements.txt
-COPY ./server /app/server
-COPY ./dist /app/dist
+FROM node:alpine
 
-ENTRYPOINT ["python3"]
-CMD ["/app/server/run.py"]
+COPY package.json /code/renga-ui/package.json
+WORKDIR /code/renga-ui
 
-EXPOSE 5000
+RUN npm install
+
+COPY . /code/renga-ui
+RUN npm run build
+
+VOLUME ["/code/renga-ui/dist"]
