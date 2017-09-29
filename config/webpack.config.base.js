@@ -49,7 +49,7 @@ let config = {
     ]),
     new ManifestPlugin({
       fileName: 'manifest.json',
-      seed: { assets: {}, publicPath: '/static/' },
+      seed: { assets: {}, publicPath: '/ui/static/' },
       reduce: (manifest, {name, path}) => Object.assign(manifest, { assets: Object.assign(manifest.assets, {[name]: path}) })
     }),
   ]
