@@ -18,7 +18,6 @@
 
 import Vue from 'vue'
 import Component from 'vue-class-component'
-import _ from 'lodash'
 import { router } from '../../../main'
 
 import { GraphItem } from '../../graph-item-list/graph-item'

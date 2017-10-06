@@ -18,9 +18,6 @@
 
 import Vue from 'vue'
 import Component from 'vue-class-component'
-import _ from 'lodash'
-import download from 'downloadjs'
-
 import { GraphItem } from '../../graph-item-list/graph-item'
 
 Component.registerHooks([
@@ -66,16 +63,16 @@ export class FilesComponent extends Vue {
         ]
 
     created ()  {
-        this.url_list = './api/explorer/storage/bucket/' + this.$route.params.id + '/files'
+        this.url_list = `./api/explorer/storage/bucket/${this.$route.params.id}/files`
     }
 
     beforeRouteUpdate (to, from, next) {
-        this.url_list = './api/explorer/storage/bucket/' + to.params.id + '/files'
+        this.url_list = `./api/explorer/storage/bucket/${to.params.id}/files`
         next()
     }
 
     beforeRouteEnter (to, from, next) {
-        next(vm => vm.url_list = './api/explorer/storage/bucket/' + to.params.id + '/files')
+        next(vm => vm.url_list = `./api/explorer/storage/bucket/${to.params.id}/files`)
     }
 
     addFile(event: Event): void {
@@ -157,7 +154,7 @@ export class FilesComponent extends Vue {
         const files = $event.target.files || $event.dataTransfer.files;
         if (files) {
             if (files.length > 0) {
-                this.filename = _.map(files, 'name').join(', ');
+                this.filename = files.map(function(x){ return x['name'] }).join(', ');
             } else {
                 this.filename = null;
             }
@@ -173,7 +170,7 @@ export class FilesComponent extends Vue {
 
         let that = this
 
-        fetch('./api/explorer/storage/file/' + oid + '/versions',
+        fetch(`./api/explorer/storage/file/${oid}/versions`,
             {
                 method: 'GET',
                 headers: {

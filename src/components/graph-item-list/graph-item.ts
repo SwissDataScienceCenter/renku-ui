@@ -16,8 +16,6 @@
  * limitations under the License.
  */
 
-import _ from 'lodash'
-
 export class GraphItem {
 
     id: null | number = null
@@ -29,7 +27,7 @@ export class GraphItem {
         if (json !== undefined) {
             this.id = json['id']
             let that = this
-            _.forEach(json['properties'], function(p) {
+            json['properties'].forEach(function(p) {
                 if (p.key === nameKey) {
                     that.name = p.values[0]['value']
                 }
