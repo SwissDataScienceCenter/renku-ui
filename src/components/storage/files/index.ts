@@ -36,10 +36,15 @@ export class FilesComponent extends Vue {
 
     progress: boolean = false
     bucketDialog: boolean = false
+    versionDialog: boolean = false
+    detailsPanel: boolean = false
     bucketfile: string = ''
     filename: string = ''
+    selected_file: string = ''
 
     url_list: string = ''
+
+    file_versions = []
 
     parser: any = json => {
                 console.log('list', json)
@@ -82,7 +87,7 @@ export class FilesComponent extends Vue {
           request_type: 'create_file'
         })
 
-        fetch('./api/storage/authorize/create_file',
+        this.executeUpload(fetch('./api/storage/authorize/create_file',
             {
                 method: 'POST',
                 headers: {
@@ -91,7 +96,32 @@ export class FilesComponent extends Vue {
                 credentials: 'include',
                 body: payload
             }
-        ).then(response => {
+        ))
+    }
+
+    addFileVersion(event: Event): void {
+        this.progress = true
+        this.versionDialog = false
+        let payload = JSON.stringify({
+          resource_id: this.selected_file,
+          request_type: 'write_file'
+        })
+
+        this.executeUpload(fetch('./api/storage/authorize/write',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: payload
+            }
+        ))
+    }
+
+    executeUpload(fetchData): void {
+
+        fetchData.then(response => {
             return response.json()
             }
         ).then(response => {
@@ -115,6 +145,7 @@ export class FilesComponent extends Vue {
             }
             reader.readAsArrayBuffer(e.files[0])
         })
+
     }
 
     onFocus() {
@@ -136,46 +167,28 @@ export class FilesComponent extends Vue {
         this.$emit('input', this.filename);
     }
 
-    onSelect(id) {
+    onSelect(oid) {
 
-        window.location.href = './download?id=' + id
-       /* this.progress = true
+        this.selected_file = oid
+
         let that = this
-        let payload = JSON.stringify({
-          resource_id: id,
-          request_type: 'read_file'
-        })
 
-        fetch('/api/storage/authorize/read',
+        fetch('./api/explorer/storage/file/' + oid + '/versions',
             {
-                method: 'POST',
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
                 },
                 credentials: 'include',
-                body: payload
             }
         ).then(response => {
             return response.json()
             }
         ).then(response => {
-            console.log('create', response)
-            fetch('/api/storage/io/read',
-                {
-                    credentials: 'include',
-                    headers: {
-                        'Authorization': 'Bearer ' + response.access_token
-                    }
-                }
-            ).then(r => {
-                console.log(r)
-
-                return r.blob()
-            }).then(function(blob) {
-                that.progress = false
-                download(blob)
-                })
-        })*/
+            this.file_versions = response
+            this.file_versions.sort(function(a, b){ return a.properties[1].values[0].value - b.properties[1].values[0].value })
+            this.detailsPanel = true
+        })
 
     }
 
