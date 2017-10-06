@@ -18,10 +18,7 @@
 
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import lodash from 'lodash'
 import Vuetify from 'vuetify'
-
-import VueLodash from 'vue-lodash/dist/vue-lodash.min'
 
 import * as mdc from 'material-components-web'
 
@@ -39,7 +36,6 @@ import { GraphItemListComponent, GraphItemTableComponent } from './components/gr
 // register the plugin
 Vue.use(VueRouter)
 Vue.use(Vuetify)
-Vue.use(VueLodash, lodash)
 
 Vue.component('user-menu', UserMenuComponent)
 
