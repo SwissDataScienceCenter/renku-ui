@@ -153,10 +153,9 @@ export class FilesComponent extends Vue {
     onFileChange($event) {
         const files = $event.target.files || $event.dataTransfer.files;
         if (files) {
-            if (files.length > 0) {
-                this.filename = files.map(function(x){ return x['name'] }).join(', ');
-            } else {
-                this.filename = null;
+            this.filename = ''
+            for(var j=0;j<files.length;j++){
+                this.filename += `${files[j]['name']} `
             }
         } else {
             this.filename = $event.target.value.split('\\').pop();
