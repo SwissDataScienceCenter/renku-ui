@@ -12,14 +12,14 @@
                   <v-list-tile-sub-title>{{ new Date(item.properties[1].values[0].value).toISOString() }}</v-list-tile-sub-title>
               </v-list-tile-content>
               <v-list-tile-action>
-                <a v-bind:href="'./download?id=' + item.id" target="_blank">
+                <v-btn flat v-bind:href="'./download?id=' + item.id">
                   <v-icon class="teal--text">file_download</v-icon>
-                </a>
+                </v-btn>
               </v-list-tile-action>
           </v-list-tile>
           <v-list-tile>
               <v-list-tile-content>
-                <v-btn flat class="teal--text" v-on:click="versionDialog = true">Add new version</v-btn>
+                <v-btn class="teal--text" @click.native.stop="versionDialog = true">Add new version</v-btn>
               </v-list-tile-content>
           </v-list-tile>
       </v-list>
@@ -59,7 +59,7 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn class="teal--text darken-1" flat @click.native="bucketDialog = false">Cancel</v-btn>
+          <v-btn class="teal--text darken-1" flat @click.native="versionDialog = false">Cancel</v-btn>
           <v-btn class="teal--text darken-1" flat @click.native="addFileVersion($event)">Upload</v-btn>
         </v-card-actions>
       </v-card>

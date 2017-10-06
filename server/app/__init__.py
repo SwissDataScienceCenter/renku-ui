@@ -28,7 +28,6 @@ logging.basicConfig(level=logging.DEBUG)
 
 webpack = Webpack()
 
-# app = Flask(__name__, static_folder='../../dist', static_url_path='/static')
 app = Flask(__name__, static_folder='../../dist', static_url_path='/static')
 app.config['WEBPACK_MANIFEST_PATH'] = os.getenv('WEBPACK_MANIFEST_PATH', '../../dist/manifest.json')
 app.secret_key = os.getenv('APPLICATION_SECRET_KEY', b',\x99@uyF\x94p\xc8\xa9\x0e\xa7,rT\xbe\xe8\xa0C0\xd54\x89-')
