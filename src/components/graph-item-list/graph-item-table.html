@@ -15,9 +15,11 @@
         dark
       >
       <template slot="items" scope="props">
-        <td>{{ props.item.id }}</td>
-        <td class="text-xs-right"><a v-bind:name="props.item.id" v-on:click="$emit('selected', props.item.id)" style="cursor: pointer;" class="teal--text text--ligthen-2">{{ props.item.name }}</a></td>
-        <td class="text-xs-right" v-for="p in props.item.properties" v-bind:key="p.key">{{ p.value }}</td>
+        <tr v-on:click="$emit('selected', props.item.id)" style="cursor: pointer;">
+          <td>{{ props.item.id }}</td>
+          <td class="text-xs-right">{{ props.item.name }}</td>
+          <td class="text-xs-right" v-for="p in props.item.properties" v-bind:key="p.key">{{ p.value }}</td>
+        </tr>
       </template>
       <template slot="pageText" scope="{ pageStart, pageStop }">
         From {{ pageStart }} to {{ pageStop }}
