@@ -16,7 +16,7 @@
     "downloadjs": "^1.4.7",
     "fetch-readablestream": "^0.1.0",
     "lodash": "^4.17.4",
-    "material-components-web": "^0.19.0",
+    "material-components-web": "^0.22.0",
     "text-encoding": "^0.6.4",
     "vue": "^2.4.3",
     "vue-class-component": "^5.0.2",
