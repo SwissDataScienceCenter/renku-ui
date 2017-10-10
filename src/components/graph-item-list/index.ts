@@ -138,7 +138,7 @@ function fetchItemList(url: string, path: string, parser: any): Promise<null | G
         console.log(response)
 
         if (response.status === 401) {
-            const redir = encodeURIComponent('/#' + path)
+            const redir = encodeURIComponent('./#' + path)
             window.location.replace(`./login?redir=${redir}`)
             return null
         }
