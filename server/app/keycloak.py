@@ -17,13 +17,15 @@
 # limitations under the License.
 """Keycloak sub-module."""
 import requests
+import time
 from urllib.parse import urlparse
 from functools import wraps
 
 from flask import redirect, request, session
 from jose import jwt
 from openid_connect import OpenIDClient
-
+from openid_connect._oidc import TokenResponse
+from requests.auth import HTTPBasicAuth
 from .settings import settings
 
 
@@ -49,6 +51,13 @@ class KeycloakClient(OpenIDClient):
         return self.translate_userinfo(data)
 
     @property
+    def auth(self):
+        if self.client_secret:
+            return HTTPBasicAuth(self.client_id, self.client_secret)
+        else:
+            return None
+
+    @property
     def authorization_endpoint(self):
         g = settings()
         endpoint = self._configuration["authorization_endpoint"]
@@ -72,6 +81,22 @@ class KeycloakClient(OpenIDClient):
             issuer=self.issuer,
         )
 
+    def refresh_token(self, redirect_uri, refresh_token):
+        r = requests.post(self.token_endpoint, auth=self.auth, data=dict(
+            grant_type="refresh_token",
+            refresh_token=refresh_token,
+        ), headers={'Accept': 'application/json'})
+        if r.status_code == 400:  # Keycloak response when refresh token or user session expires
+            return None
+        r.raise_for_status()
+        resp = TokenResponse(r.json(), self)
+        if "scope" in resp._data:
+            resp.scope = set(self.translate_scope_out(set(resp._data["scope"].split(" "))))
+        if not hasattr(resp, "scope") or "openid" in resp.scope:
+            resp.id = self.get_id(resp)
+
+        return resp
+
 
 def keycloak_client():
     g = settings()
@@ -92,10 +117,22 @@ def require_tokens(f):
     """Function decorator to ensure we have OIDC tokens"""
     @wraps(f)
     def wrapper(*args, **kwargs):
+        kc = keycloak_client()
         if 'tokens' in session:
-            # TODO: refresh tokens if expired
-            pass
-        if 'tokens' not in session:
+            if session['tokens']['expired_at'] < int(time.time()) + 5:
+                response = kc.refresh_token(request.base_url, session['tokens']['refresh_token'])
+                if response is None:
+                    del session['tokens']
+                    return 'Unauthorized', 401
+                kc_id = kc.get_id(response)
+                session['tokens'] = dict(
+                    access_token=response.access_token,
+                    expired_at=kc_id['exp'],
+                    id_token=response.id_token,
+                    userinfo=response.userinfo,
+                    refresh_token=response._data.get('refresh_token', None),
+                )
+        else:
             return 'Unauthorized', 401
         return f(*args, **kwargs)
     return wrapper
@@ -105,22 +142,37 @@ def with_tokens(f):
     """Function decorator to ensure we have OIDC tokens"""
     @wraps(f)
     def wrapper(*args, **kwargs):
+        kc = keycloak_client()
+
         if 'tokens' in session:
-            # TODO: refresh tokens if expired
-            pass
-        if 'tokens' not in session:
+            if session['tokens']['expired_at'] < int(time.time()) + 5:
+                response = kc.refresh_token(request.base_url, session['tokens']['refresh_token'])
+                if response is None:
+                    del session['tokens']
+                    session['redirect-to'] = request.args.get('redir', None)
+                    return redirect_to_keycloak(request.base_url)
+                kc_id = kc.get_id(response)
+                session['tokens'] = dict(
+                    access_token=response.access_token,
+                    expired_at=kc_id['exp'],
+                    id_token=response.id_token,
+                    userinfo=response.userinfo,
+                    refresh_token=response._data.get('refresh_token', None),
+                )
+
+        else:
             code = request.args.get('code', None)
             if code is None:
                 session['redirect-to'] = request.args.get('redir', None)
                 return redirect_to_keycloak(request.base_url)
             response = fetch_tokens(request.base_url, code)
-            kc = keycloak_client()
+            kc_id = kc.get_id(response)
             session['tokens'] = dict(
                 access_token=response.access_token,
+                expired_at=kc_id['exp'],
                 id_token=response.id_token,
                 userinfo=response.userinfo,
                 refresh_token=response._data.get('refresh_token', None),
-                # refresh_token2=kc.decode(response._data.get('refresh_token', None)),
             )
         return f(*args, **kwargs)
     return wrapper
