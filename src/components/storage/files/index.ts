@@ -154,7 +154,7 @@ export class FilesComponent extends Vue {
         const files = $event.target.files || $event.dataTransfer.files;
         if (files) {
             this.filename = ''
-            for(var j=0;j<files.length;j++){
+            for (let j = 0; j < files.length; j++) {
                 this.filename += `${files[j]['name']} `
             }
         } else {
