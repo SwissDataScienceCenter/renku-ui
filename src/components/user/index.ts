@@ -30,6 +30,7 @@ export interface LoginState {
 
 export class NoUser implements LoginState {
     get logged_in(): boolean { return false }
+    get user(): any { return undefined }
 }
 
 export class LoggedUser implements LoginState {
@@ -117,8 +118,10 @@ export class UserMenuComponent extends Vue {
                 this.items.push({ title: 'Storage', icon: 'folder', path: '/storage' })
                 this.items.push({ title: 'Graph', icon: 'share', path: '/graph' })
                 this.items.push({ title: 'Logout', icon: 'account_box', path: 'logout' })
+                this.$emit('login', state)
             } else {
                 this.items.push({ title: 'Login', icon: 'account_box', path: 'login' })
+                this.$emit('logout', state)
             }
         })
     }
