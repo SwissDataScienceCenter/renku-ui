@@ -45,19 +45,6 @@ Vue.component('graph-display', GraphComponent)
 Vue.component('graph-item-list', GraphItemListComponent)
 Vue.component('graph-item-table', GraphItemTableComponent)
 
-export const router = new VueRouter({
-  routes: [
-    { path: '/', component: HomeComponent },
-    // { path: '/deploy', component: DeployComponent },
-    { path: '/deploy/context', component: ContextComponent },
-    { path: '/deploy/context/:id', component: ExecutionComponent },
-    { path: '/deploy/context/:id/execution/:eid', component: DetailExecutionComponent },
-    { path: '/storage', component: BucketsComponent },
-    { path: '/storage/:id(\\d+)', component: FilesComponent },
-    { path: '/graph', component: NavigationComponent },
-    { path: '/profile', component: ProfileComponent }
-  ],
-})
 
 @Component({})
 class MainComponent extends Vue {
@@ -66,6 +53,7 @@ class MainComponent extends Vue {
     mini: boolean = false
     project: Project | null = null
     user: UserState = new NoUser
+    test: String = 'This is a test'
 
   doLogin (user: UserState): void {
     this.user = user
@@ -75,6 +63,26 @@ class MainComponent extends Vue {
     this.user = user
   }
 
+  project_select (project: Project): void {
+    this.project = project
+  }
+
 }
 
-new MainComponent({el: '#sdsc', router: router})
+let mc = new MainComponent({
+  el: '#sdsc',
+  router: new VueRouter({
+    routes: [
+      { path: '/', component: HomeComponent },
+      { path: '/deploy/context', component: ContextComponent },
+      { path: '/deploy/context/:id', component: ExecutionComponent },
+      { path: '/deploy/context/:id/execution/:eid', component: DetailExecutionComponent },
+      { path: '/storage', component: BucketsComponent },
+      { path: '/storage/:id(\\d+)', component: FilesComponent },
+      { path: '/graph', component: NavigationComponent },
+      { path: '/profile', component: ProfileComponent }
+    ],
+  })
+})
+
+export const router = mc.$router

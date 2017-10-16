@@ -18,11 +18,88 @@
 
 import Vue from 'vue'
 import Component from 'vue-class-component'
+import { GraphItem } from '../graph-item-list/graph-item'
+import fetchItemList from '../graph-item-list'
+import { UserState, NoUser, LoggedUser } from '../user'
+import { Project}  from '../project'
+
 
 @Component({
+    props: {
+        user: undefined,
+    },
+    watch: {
+      'user' : 'updateProjectList'
+    },
     template: require('./home.html')
 })
 export class HomeComponent extends Vue {
+
+    e1 = 1
+    steps = 2
+
+    project = ''
+    user: UserState
+
+    projectDialog = false
+    project_name = ''
+    projects = []
+    existing_project = ''
+
+    nextStep (n) {
+        if (n === this.steps) {
+          this.e1 = 1
+        } else {
+          this.e1 = n + 1
+        }
+    }
+
+    constructor() {
+        super()
+        this.updateProjectList()
+    }
+
+    updateProjectList(): void {
+        let parser = json => {
+            const array = <object[]> json
+            return array.map(obj => {
+                return new Project(obj)
+            })
+        }
+
+        if (!(this.user instanceof NoUser)) {
+            fetchItemList(`./api/explorer/projects/user?userId=${(<LoggedUser> this.user).user.sub}`, '', parser).then(res => {
+                if (res !== null) {
+                    this.projects = res
+                }
+            })
+        }
+    }
+
+    addProject(event: Event): void {
+        this.projectDialog = false
+        let payload = JSON.stringify({
+          name: this.project_name,
+        })
+
+        fetch('./api/projects',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: payload
+            }
+        ).then(response => {
+                console.log('create_project', response)
+                this.updateProjectList()
+        })
+    }
+
+    clickItem(project: Project): void {
+        this.$emit('project_select', project)
+    }
 
 
 }

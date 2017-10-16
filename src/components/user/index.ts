@@ -102,7 +102,7 @@ export class UserMenuComponent extends Vue {
     raw_user: any = {}
 
     items: any[] = [
-        { title: 'Home', icon: 'dashboard', path: '/home'},
+        { title: 'Home', icon: 'dashboard', path: '/'},
     ]
 
     constructor() {
