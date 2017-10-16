@@ -19,6 +19,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Vuetify from 'vuetify'
+import Component from 'vue-class-component'
 
 import * as mdc from 'material-components-web'
 
@@ -29,7 +30,8 @@ import { ContextComponent, ExecutionComponent, DetailExecutionComponent } from '
 import { BucketsComponent, FilesComponent } from './components/storage'
 import { NavigationComponent } from './components/navigation'
 
-import { UserMenuComponent, ProfileComponent } from './components/user'
+import { UserMenuComponent, ProfileComponent, UserState, NoUser } from './components/user'
+import { ProjectSelectorComponent, Project } from './components/project'
 import { GraphComponent } from './components/graph'
 import { GraphItemListComponent, GraphItemTableComponent } from './components/graph-item-list'
 
@@ -38,6 +40,7 @@ Vue.use(VueRouter)
 Vue.use(Vuetify)
 
 Vue.component('user-menu', UserMenuComponent)
+Vue.component('project-selector', ProjectSelectorComponent)
 
 Vue.component('graph-display', GraphComponent)
 Vue.component('graph-item-list', GraphItemListComponent)
@@ -57,16 +60,28 @@ export const router = new VueRouter({
   ],
 })
 
-new Vue({
-  el: '#sdsc',
-  router: router,
-  data: {
-    drawer: true,
-    mini: false,
-  },
+@Component({})
+class MainComponent extends Vue {
+
+    drawer: boolean = true
+    mini: boolean = false
+    project: Project | null = null
+    user: UserState = new NoUser
+
   mounted() {
     document.getElementById('loading-sdsc').remove()
   }
-})
+
+  doLogin (user: UserState): void {
+    this.user = user
+  }
+
+  doLogout (user: UserState): void {
+    this.user = user
+  }
+
+}
+
+new MainComponent({el: '#sdsc', router: router})
 
 mdc.autoInit()
