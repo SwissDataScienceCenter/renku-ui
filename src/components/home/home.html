@@ -1,71 +1,32 @@
 <div class="container">
-  	<h2>Get started with Renga</h2>
-    <v-stepper v-model="e1">
-      <v-stepper-header>
-        <template v-for="n in steps">
-          <v-stepper-step
-            :key="n"
-            :step="n"
-            :complete="e1 > n"
-            editable
-          >
-            Step {{ n }}
-          </v-stepper-step>
-          <v-divider v-if="n !== steps"></v-divider>
-        </template>
-      </v-stepper-header>
-      <v-stepper-content :step="1">
-         <v-layout>
-          <v-flex xs12 sm6>
-            <v-card class="ma-5">
-              <v-card-title primary-title>
-                <div>
-                  <h3 class="headline mb-0">Create a new project</h3>
-                </div>
-              </v-card-title>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn flat class="teal--text" @click.native.stop="projectDialog = true">Create</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-flex>
-          <v-flex xs12 sm6>
-            <v-card class="ma-5">
-              <v-card-title primary-title>
-                <div>
-                  <h3 class="headline mb-0">Choose an existing one</h3>
-                  <v-radio-group v-model="existing_project" column>
-                    <v-radio v-for="o in projects" :label="o.name" :value="o.id" :key="o.id"></v-radio>
-                  </v-radio-group>
-                </div>
-              </v-card-title>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn flat class="teal--text" @click="nextStep(2)">Next</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-flex>
-        </v-layout>
-      </v-stepper-content>
-      <v-stepper-content :step="2">
-        <v-card class="grey lighten-1 mb-5" height="200px"></v-card>
-        <v-btn primary @click="nextStep(1)">Continue</v-btn>
-        <v-btn flat>Cancel</v-btn>
-      </v-stepper-content>
-    </v-stepper>
-    <v-dialog v-model="projectDialog">
-      <v-card>
-        <v-card-title>
-          <span class="headline">Create a new project</span>
-        </v-card-title>
-        <v-card-text>
-          <v-text-field label="Name" required v-model="project_name"></v-text-field>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn class="teal--text darken-1" flat @click.native="projectDialog = false">Cancel</v-btn>
-          <v-btn class="teal--text darken-1" flat @click.native="addProject($event)">Create</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+  	<h2>Welcome to Renga</h2>
+    <h3>The one-stop-shop for data science</h3>
+    <v-layout>
+      <v-flex sm6 offset-sm3>
+        <v-card class="ma-5" v-if="user.user !== undefined">
+          <v-card-title primary-title>
+            <div>
+              <h3 class="headline mb-0">Get started</h3>
+              <p>
+                A step by step tutorial to discover the platform
+              </p>
+            </div>
+          </v-card-title>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn flat class="teal--text" @click.native.stop="$router.push('/tutorial')">Go!</v-btn>
+          </v-card-actions>
+        </v-card>
+        <v-card class="ma-5" v-else>
+          <v-card-title primary-title>
+            <div>
+              <h3 class="headline mb-0">Get started</h3>
+              <p>
+                Please login first...
+              </p>
+            </div>
+          </v-card-title>
+        </v-card>
+      </v-flex>
+    </v-layout>
 </div>

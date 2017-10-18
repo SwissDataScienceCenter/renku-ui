@@ -22,6 +22,7 @@ import Vuetify from 'vuetify'
 import Component from 'vue-class-component'
 
 import { HomeComponent } from './components/home'
+import { TutorialComponent } from './components/tutorial'
 import { ContextComponent, ExecutionComponent, DetailExecutionComponent } from './components/deploy'
 import { BucketsComponent, FilesComponent } from './components/storage'
 import { NavigationComponent } from './components/navigation'
@@ -53,7 +54,6 @@ class MainComponent extends Vue {
     mini: boolean = false
     project: Project | null = null
     user: UserState = new NoUser
-    test: String = 'This is a test'
 
   doLogin (user: UserState): void {
     this.user = user
@@ -74,6 +74,7 @@ let mc = new MainComponent({
   router: new VueRouter({
     routes: [
       { path: '/', component: HomeComponent },
+      { path: '/tutorial', component: TutorialComponent },
       { path: '/deploy/context', component: ContextComponent },
       { path: '/deploy/context/:id', component: ExecutionComponent },
       { path: '/deploy/context/:id/execution/:eid', component: DetailExecutionComponent },
