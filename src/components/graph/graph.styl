@@ -1,0 +1,45 @@
+@require '../../main.styl'
+
+.links line {
+  stroke: $grey.lighten-1
+  stroke-width: 3.5px
+}
+
+.nodes path {
+  fill: $theme.accent
+  stroke: white
+  stroke-width: 0.5px
+}
+
+.nodes circle {
+  fill: white
+  stroke-width: 0px
+}
+
+.tooltip {
+  opacity: 0.9
+  position: absolute
+  top: 5px
+  left: 5px
+  padding: 6px
+  font: 12px sans-serif
+  border-width: 10px
+  border-radius: 6px
+  pointer-events: none
+  box-shadow: 10px 10px 5px $grey.lighten-2
+  max-width: 900px
+}
+
+.node-tooltip {
+  @extend .tooltip
+  background-color: $theme.accent
+}
+
+.edge-tooltip {
+  @extend .tooltip
+  background-color: $grey.lighten-1
+}
+
+.invisible {
+ opacity: 0
+}

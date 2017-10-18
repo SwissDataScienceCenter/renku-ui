@@ -8,6 +8,10 @@ src/**/*.map
 # virtualenv
 env/
 
+# JetBrains IDE (PyCharm, WebStorm,...) files. gitignore.io leaves some
+# of the IDE files under version control, therefore removing them 'by hand'.
+.idea/
+
 # Created by https://www.gitignore.io/api/node,sass,visualstudiocode, python
 
 ### Node ###

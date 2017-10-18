@@ -16,10 +16,20 @@
  * limitations under the License.
  */
 
+import * as d3 from 'd3';
+
 export interface PersistedVertex {
     id: number,
     types: string[],
     properties: any[]
+}
+
+export interface DisplayVertex extends d3.SimulationNodeDatum {
+    id: string,
+    label: string,
+    display_name: string,
+    detailUrl: string,
+    self: PersistedVertex
 }
 
 export interface PersistedEdge {
@@ -30,7 +40,28 @@ export interface PersistedEdge {
     properties: Property[]
 }
 
+export interface DisplayEdge extends d3.SimulationLinkDatum<DisplayVertex> {
+    id: string,
+    label: string,
+    // d3 replaces source and target ids with the actual objects.
+    source: string | DisplayVertex,
+    target: string | DisplayVertex,
+    display_name: string,
+    self: PersistedEdge
+}
+
 export interface Property {
     key: string,
     value: any
+}
+
+export interface ScreenTransform {
+    x: number,
+    y: number,
+    k: number
+}
+
+export interface Coordinates {
+    x?: number,
+    y?: number
 }
