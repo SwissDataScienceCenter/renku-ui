@@ -26,34 +26,24 @@
 {% endblock %}
 
 {% block content %}
-<div id="loading-sdsc" role="progressbar" class="mdc-linear-progress mdc-linear-progress--indeterminate">
-  <div class="mdc-linear-progress__buffering-dots"></div>
-  <div class="mdc-linear-progress__buffer"></div>
-  <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
-    <span class="mdc-linear-progress__bar-inner"></span>
-  </div>
-  <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
-    <span class="mdc-linear-progress__bar-inner"></span>
-  </div>
-</div>
-  <v-app id="sdsc" dark v-cloak toolbar>
-    <v-navigation-drawer enable-resize-watcher persistent v-model="drawer" overflow>
-      <user-menu v-on:login="doLogin" v-on:logout="doLogout"></user-menu>
-    </v-navigation-drawer>
-    <v-toolbar fixed class="indigo darken-4">
-      <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-      <v-toolbar-title>Renga Platform</v-toolbar-title>
-      <v-spacer></v-spacer>
-      <project-selector v-model="project" v-bind:user="user"></project-selector>
-    </v-toolbar>
-    <main>
-      <v-container fluid>
-        <transition name="slide-fade">
-          <keep-alive>
-            <router-view>loading...</router-view>
-          </keep-alive>
-        </transition>
-      </v-container>
-    </main>
-  </v-app>
+<v-app id="sdsc" dark v-cloak toolbar>
+  <v-navigation-drawer enable-resize-watcher persistent v-model="drawer" overflow>
+    <user-menu v-on:login="doLogin" v-on:logout="doLogout"></user-menu>
+  </v-navigation-drawer>
+  <v-toolbar fixed class="indigo darken-4">
+    <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
+    <v-toolbar-title>Renga Platform</v-toolbar-title>
+    <v-spacer></v-spacer>
+    <project-selector v-model="project" v-bind:user="user"></project-selector>
+  </v-toolbar>
+  <main>
+    <v-container fluid>
+      <transition name="slide-fade">
+        <keep-alive>
+          <router-view>loading...</router-view>
+        </keep-alive>
+      </transition>
+    </v-container>
+  </main>
+</v-app>
 {% endblock %}

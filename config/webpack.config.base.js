@@ -41,6 +41,7 @@ let config = {
       { test: /\.ts$/, exclude: /node_modules/, enforce: 'pre', loader: 'tslint-loader' },
       { test: /\.ts$/, exclude: /node_modules/, loader: 'awesome-typescript-loader' },
       { test: /\.html$/, loader: 'raw-loader' },
+      { test: /\.styl$/, loader: ['style-loader', 'css-loader', 'stylus-loader'] },
     ],
   },
   plugins: [

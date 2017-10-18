@@ -21,10 +21,6 @@ import VueRouter from 'vue-router'
 import Vuetify from 'vuetify'
 import Component from 'vue-class-component'
 
-import * as mdc from 'material-components-web'
-
-import './sass/main.scss';
-
 import { HomeComponent } from './components/home'
 import { ContextComponent, ExecutionComponent, DetailExecutionComponent } from './components/deploy'
 import { BucketsComponent, FilesComponent } from './components/storage'
@@ -34,6 +30,9 @@ import { UserMenuComponent, ProfileComponent, UserState, NoUser } from './compon
 import { ProjectSelectorComponent, Project } from './components/project'
 import { GraphComponent } from './components/graph'
 import { GraphItemListComponent, GraphItemTableComponent } from './components/graph-item-list'
+
+// Vuetify style
+require('./main.styl')
 
 // register the plugin
 Vue.use(VueRouter)
@@ -68,10 +67,6 @@ class MainComponent extends Vue {
     project: Project | null = null
     user: UserState = new NoUser
 
-  mounted() {
-    document.getElementById('loading-sdsc').remove()
-  }
-
   doLogin (user: UserState): void {
     this.user = user
   }
@@ -83,5 +78,3 @@ class MainComponent extends Vue {
 }
 
 new MainComponent({el: '#sdsc', router: router})
-
-mdc.autoInit()

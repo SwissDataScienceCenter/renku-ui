@@ -22,31 +22,11 @@ const helpers = require("./helpers"),
   DefinePlugin = require('webpack/lib/DefinePlugin'),
   env = require('../environment/dev.env');
 
-const extractSass = new ExtractTextPlugin({
-  filename: 'css/[name].[contenthash].css'
-});
-
 webpackConfig.module.rules = [...webpackConfig.module.rules,
-  {
-    test: /\.scss$/,
-    use: extractSass.extract({
-      use: [{
-          loader: 'css-loader'
-        },
-        {
-          loader: 'sass-loader',
-          options: {
-            includePaths: [helpers.root('node_modules')]
-          }
-        }
-      ]
-    })
-  },
   { test: /\.(jpg|png|gif|eot|svg|ttf|woff|woff2)$/, loader: 'file-loader' },
 ];
 
 webpackConfig.plugins = [...webpackConfig.plugins,
-  extractSass,
   new DefinePlugin({
     'process.env': env
   })

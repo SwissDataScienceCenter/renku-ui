@@ -27,41 +27,7 @@ const glob = require('glob'),
   DefinePlugin = require('webpack/lib/DefinePlugin'),
   env = require('../environment/prod.env');
 
-const extractSass = new ExtractTextPlugin({
-  filename: 'css/[name].[contenthash].css'
-});
-
 webpackConfig.module.rules = [...webpackConfig.module.rules,
-  {
-    test: /\.scss$/,
-    use: extractSass.extract({
-      use: [{
-          loader: 'css-loader',
-          options: {
-            minimize: true,
-            sourceMap: true,
-            importLoaders: 2
-          }
-        },
-        {
-          loader: 'postcss-loader',
-          options: {
-            plugins: () => [autoprefixer],
-            sourceMap: true
-          }
-        },
-        {
-          loader: 'sass-loader',
-          options: {
-            includePaths: [helpers.root('node_modules')],
-            outputStyle: 'expanded',
-            sourceMap: true,
-            sourceMapContents: true
-          }
-        }
-      ]
-    })
-  },
   {
     test: /\.(jpg|png|gif|svg)$/,
     loader: 'file-loader?name=assets/img/[name].[ext]'
@@ -78,7 +44,6 @@ webpackConfig.module.rules[0].options = {
 };
 
 webpackConfig.plugins = [...webpackConfig.plugins,
-  extractSass,
   new MinifyPlugin(),
   new CompressionPlugin({
     asset: '[path].gz[query]',
