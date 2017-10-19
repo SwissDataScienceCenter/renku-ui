@@ -24,7 +24,7 @@ import {router} from '../../main'
 import {loadVertices, loadEdges} from './load-graph'
 import {PersistedVertex, DisplayVertex, PersistedEdge, DisplayEdge, Property,
     ScreenTransform, Coordinates} from './elements'
-import * as icons from './icons.json';
+import {icons} from './icons'
 require('./graph.styl');
 
 @Component({
