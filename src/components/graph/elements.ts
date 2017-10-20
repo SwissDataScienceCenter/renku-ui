@@ -29,7 +29,12 @@ export interface DisplayVertex extends d3.SimulationNodeDatum {
     label: string,
     display_name: string,
     detailUrl: string,
-    self: PersistedVertex
+    self: PersistedVertex,
+    startingLinks?: DisplayEdge[],
+    endingLinks?: DisplayEdge[],
+    aggregated?: boolean,
+    mergedTo?: DisplayEdge,
+    collapsible: boolean
 }
 
 export interface PersistedEdge {
@@ -64,4 +69,9 @@ export interface ScreenTransform {
 export interface Coordinates {
     x?: number,
     y?: number
+}
+
+export interface LinkCoordinates {
+    start: Coordinates,
+    end: Coordinates
 }
