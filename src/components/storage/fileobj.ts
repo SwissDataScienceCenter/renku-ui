@@ -16,6 +16,18 @@
  * limitations under the License.
  */
 
-export * from './buckets'
-export * from './files'
-export * from './fileobj'
+export class FileObj {
+
+    id: null | number = null
+    name: string
+
+    constructor(json: object) {
+        if (json['identifier'] !== undefined) {
+          this.id = json['identifier']
+          this.name = json['name']
+        } else {
+          this.id = json['id']
+          this.name = json['properties'][1].values[0]['value']
+        }
+    }
+}

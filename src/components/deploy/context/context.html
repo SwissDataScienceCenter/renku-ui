@@ -5,7 +5,7 @@
     </graph-item-table>
     </v-navigation-drawer>
     <v-dialog v-model="contextDialog">
-      <v-btn class="teal" dark fixed bottom right fab slot="activator"><v-icon>add</v-icon></v-btn>
+      <v-btn secondary fixed bottom right fab slot="activator"><v-icon>add</v-icon></v-btn>
       <v-card>
         <v-card-title>
           <span class="headline">Create a context</span>
@@ -16,8 +16,8 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn class="teal--text darken-1" flat @click.native="contextDialog = false">Cancel</v-btn>
-          <v-btn class="teal--text darken-1" flat @click.native="addContext($event)">Create</v-btn>
+          <v-btn secondary flat @click.native="contextDialog = false">Cancel</v-btn>
+          <v-btn secondary @click.native="addContext($event)">Create</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

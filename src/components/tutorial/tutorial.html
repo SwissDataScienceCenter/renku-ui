@@ -24,7 +24,7 @@
               </v-card-title>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn flat class="teal--text" @click.native.stop="projectDialog = true">Create</v-btn>
+                <v-btn secondary @click.native.stop="projectDialog = true">Create</v-btn>
               </v-card-actions>
             </v-card>
           </v-flex>
@@ -46,16 +46,69 @@
               </v-card-title>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn primary @click="chooseProject()">Next</v-btn>
+                <v-btn secondary @click="chooseProject()">Next</v-btn>
               </v-card-actions>
             </v-card>
           </v-flex>
         </v-layout>
       </v-stepper-content>
       <v-stepper-content :step="2">
-        <v-card class="grey lighten-1 mb-5" height="200px"></v-card>
-        <v-btn primary @click="addProject">Continue</v-btn>
-        <v-btn flat>Cancel</v-btn>
+        <v-card class="mb-5" height="200px">
+          <v-card-title>
+            <div>
+              <h3 class="headline mb-0">Input datasets</h3>
+            </div>
+            <v-list two-line subheader>
+              <v-subheader inset>Local files</v-subheader>
+              <v-list-tile avatar v-for="item in datasets" v-bind:key="item.id" @click="">
+                <v-list-tile-avatar>
+                  <v-icon>file</v-icon>
+                </v-list-tile-avatar>
+                <v-list-tile-content>
+                  <v-list-tile-title>{{ item.name }}</v-list-tile-title>
+                  <v-list-tile-sub-title>{{ item.id }}</v-list-tile-sub-title>
+                </v-list-tile-content>
+                <v-list-tile-action>
+                  <v-btn icon ripple>
+                    <v-icon class="grey--text text--lighten-1">info</v-icon>
+                  </v-btn>
+                </v-list-tile-action>
+              </v-list-tile>
+              <v-divider inset></v-divider>
+              <v-subheader inset>External files</v-subheader>
+            </v-list>
+          </v-card-title>
+        </v-card>
+        <v-layout>
+          <v-flex xs12 sm6>
+            <v-card class="ma-1">
+              <v-card-title primary-title>
+                <div>
+                  <h5 class="headline mb-0">Import from other projects</h5>
+                </div>
+              </v-card-title>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn secondary @click.native.stop="projectDialog = true">Search</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-flex>
+          <v-flex xs12 sm6>
+            <v-card class="ma-1">
+              <v-card-title primary-title>
+                <div>
+                  <h5 class="headline mb-0">Upload directly</h5>
+                </div>
+              </v-card-title>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn secondary @click.native.stop="projectDialog = true">Upload</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-flex>
+        </v-layout>
+        <v-spacer></v-spacer>
+        <v-btn secondary @click="addProject">Continue</v-btn>
       </v-stepper-content>
     </v-stepper>
     <v-dialog v-model="projectDialog">
@@ -68,8 +121,8 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn class="teal--text darken-1" flat @click.native="projectDialog = false">Cancel</v-btn>
-          <v-btn class="teal--text darken-1" flat @click.native="addProject($event)">Create</v-btn>
+          <v-btn secondary flat @click.native="projectDialog = false">Cancel</v-btn>
+          <v-btn secondary @click.native="addProject($event)">Create</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

@@ -13,19 +13,19 @@
               </v-list-tile-content>
               <v-list-tile-action>
                 <v-btn flat v-bind:href="'./download?id=' + item.id">
-                  <v-icon class="teal--text">file_download</v-icon>
+                  <v-icon secondary>file_download</v-icon>
                 </v-btn>
               </v-list-tile-action>
           </v-list-tile>
           <v-list-tile>
               <v-list-tile-content>
-                <v-btn class="teal--text" @click.native.stop="versionDialog = true">Add new version</v-btn>
+                <v-btn secondary @click.native.stop="versionDialog = true">Add new version</v-btn>
               </v-list-tile-content>
           </v-list-tile>
       </v-list>
     </v-navigation-drawer>
     <v-dialog v-model="bucketDialog">
-      <v-btn class="teal" dark fixed bottom right fab slot="activator"><v-icon>add</v-icon></v-btn>
+      <v-btn secondary fixed bottom right fab slot="activator"><v-icon>add</v-icon></v-btn>
       <v-card>
         <v-card-title>
           <span class="headline">Upload a file</span>
@@ -40,8 +40,8 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn class="teal--text darken-1" flat @click.native="bucketDialog = false">Cancel</v-btn>
-          <v-btn class="teal--text darken-1" flat @click.native="addFile($event)">Upload</v-btn>
+          <v-btn secondary flat @click.native="bucketDialog = false">Cancel</v-btn>
+          <v-btn secondary @click.native="addFile($event)">Upload</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -59,8 +59,8 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn class="teal--text darken-1" flat @click.native="versionDialog = false">Cancel</v-btn>
-          <v-btn class="teal--text darken-1" flat @click.native="addFileVersion($event)">Upload</v-btn>
+          <v-btn secondary flat @click.native="versionDialog = false">Cancel</v-btn>
+          <v-btn secondary @click.native="addFileVersion($event)">Upload</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

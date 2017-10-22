@@ -21,15 +21,18 @@ import Component from 'vue-class-component'
 import { GraphItem } from '../graph-item-list/graph-item'
 import fetchItemList from '../graph-item-list'
 import { UserState, NoUser, LoggedUser } from '../user'
-import { Project}  from '../project'
+import { Project }  from '../project'
+import { FileObj }  from '../storage'
 
 
 @Component({
     props: {
         user: undefined,
+        project: undefined,
     },
     watch: {
-      'user' : 'updateProjectList'
+      'user' : 'updateProjectList',
+      'project' : 'updateDatasetList',
     },
     template: require('./tutorial.html')
 })
@@ -38,13 +41,15 @@ export class TutorialComponent extends Vue {
     e1 = 1
     steps = 2
 
-    project = ''
+    project: Project
     user: UserState
 
     projectDialog = false
     project_name = ''
     projects: Project[] = []
     existingProject = 0
+
+    datasets: any[] = []
 
     nextStep (n) {
         if (n === this.steps) {
@@ -57,6 +62,23 @@ export class TutorialComponent extends Vue {
     constructor() {
         super()
         this.updateProjectList()
+    }
+
+    updateDatasetList(): void {
+        let parser = json => {
+            const array = <object[]> json
+            return array.map(obj => {
+                return new FileObj(obj)
+            })
+        }
+
+        if (!(this.user instanceof NoUser)) {
+            fetchItemList(`./api/explorer/projects/${this.project.id}/resources?resource=file`, '', parser).then(res => {
+                if (res !== null) {
+                    this.datasets = res
+                }
+            })
+        }
     }
 
     updateProjectList(): void {
