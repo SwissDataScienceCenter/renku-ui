@@ -53,56 +53,57 @@
         </v-layout>
       </v-stepper-content>
       <v-stepper-content :step="2">
-        <v-card class="mb-5" height="200px">
-          <v-card-title>
-            <div>
-              <h3 class="headline mb-0">Input datasets</h3>
-            </div>
-            <v-list two-line subheader>
-              <v-subheader inset>Local files</v-subheader>
-              <v-list-tile avatar v-for="item in datasets" v-bind:key="item.id" @click="">
-                <v-list-tile-avatar>
-                  <v-icon>file</v-icon>
-                </v-list-tile-avatar>
-                <v-list-tile-content>
-                  <v-list-tile-title>{{ item.name }}</v-list-tile-title>
-                  <v-list-tile-sub-title>{{ item.id }}</v-list-tile-sub-title>
-                </v-list-tile-content>
-                <v-list-tile-action>
-                  <v-btn icon ripple>
-                    <v-icon class="grey--text text--lighten-1">info</v-icon>
-                  </v-btn>
-                </v-list-tile-action>
-              </v-list-tile>
-              <v-divider inset></v-divider>
-              <v-subheader inset>External files</v-subheader>
-            </v-list>
-          </v-card-title>
-        </v-card>
+        <div>
+          <h3 class="headline mb-0">Input datasets</h3>
+        </div>
         <v-layout>
           <v-flex xs12 sm6>
             <v-card class="ma-1">
-              <v-card-title primary-title>
-                <div>
-                  <h5 class="headline mb-0">Import from other projects</h5>
-                </div>
-              </v-card-title>
+              <v-list two-line subheader>
+                <v-subheader inset>Project's files</v-subheader>
+                <v-list-tile avatar v-for="item in datasets_local" v-bind:key="item.id">
+                  <v-list-tile-avatar>
+                    <v-icon>file</v-icon>
+                  </v-list-tile-avatar>
+                  <v-list-tile-content>
+                    <v-list-tile-title>{{ item.name }}</v-list-tile-title>
+                    <v-list-tile-sub-title>{{ item.id }}</v-list-tile-sub-title>
+                  </v-list-tile-content>
+                  <v-list-tile-action>
+                    <v-btn icon ripple>
+                      <v-icon class="grey--text text--lighten-1">info</v-icon>
+                    </v-btn>
+                  </v-list-tile-action>
+                </v-list-tile>
+              </v-list>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn secondary @click.native.stop="projectDialog = true">Search</v-btn>
+                <v-btn secondary @click.native.stop="fileDialog = true">Upload</v-btn>
               </v-card-actions>
             </v-card>
           </v-flex>
           <v-flex xs12 sm6>
             <v-card class="ma-1">
-              <v-card-title primary-title>
-                <div>
-                  <h5 class="headline mb-0">Upload directly</h5>
-                </div>
-              </v-card-title>
+              <v-list two-line subheader>
+                <v-subheader inset>Imported files</v-subheader>
+                <v-list-tile avatar v-for="item in datasets_import" v-bind:key="item.id">
+                  <v-list-tile-avatar>
+                    <v-icon>file</v-icon>
+                  </v-list-tile-avatar>
+                  <v-list-tile-content>
+                    <v-list-tile-title>{{ item.name }}</v-list-tile-title>
+                    <v-list-tile-sub-title>{{ item.id }}</v-list-tile-sub-title>
+                  </v-list-tile-content>
+                  <v-list-tile-action>
+                    <v-btn icon ripple>
+                      <v-icon class="grey--text text--lighten-1">info</v-icon>
+                    </v-btn>
+                  </v-list-tile-action>
+                </v-list-tile>
+              </v-list>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn secondary @click.native.stop="projectDialog = true">Upload</v-btn>
+                <v-btn secondary @click.native.stop="openImportDialog">Import</v-btn>
               </v-card-actions>
             </v-card>
           </v-flex>
@@ -123,6 +124,51 @@
           <v-spacer></v-spacer>
           <v-btn secondary flat @click.native="projectDialog = false">Cancel</v-btn>
           <v-btn secondary @click.native="addProject($event)">Create</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="fileDialog">
+      <v-card>
+        <v-card-title>
+          <span class="headline">Upload a file</span>
+        </v-card-title>
+        <v-card-text>
+          <v-text-field label="Name" required v-model="bucketfile"></v-text-field>
+          <v-text-field prepend-icon="attach_file" single-line
+                      v-model="filename" label="File" required
+                      @click.native="onFocus"
+                      ref="fileTextField"></v-text-field>
+        <input type="file" accept="accept" ref="fileInput" @change="onFileChange" style="display:none">
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn secondary flat @click.native="fileDialog = false">Cancel</v-btn>
+          <v-btn secondary @click.native.stop="addFile($event)">Upload</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="importDialog">
+      <v-card>
+        <v-card-title>
+          <span class="headline">Select a file to import {{datasets_all.length}}</span>
+        </v-card-title>
+        <v-card-text>
+          <v-text-field append-icon="search" label="Search" single-line hide-details v-model="searchImport"></v-text-field>
+          <v-list two-line>
+            <v-list-tile avatar v-for="item in datasets_filter" v-bind:key="item.id" @click="addImport(item)">
+              <v-list-tile-avatar>
+                <v-icon>file</v-icon>
+              </v-list-tile-avatar>
+              <v-list-tile-content>
+                <v-list-tile-title>{{ item.name }}</v-list-tile-title>
+                <v-list-tile-sub-title>{{ item.id }}</v-list-tile-sub-title>
+              </v-list-tile-content>
+            </v-list-tile>
+          </v-list>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn secondary flat @click.native="importDialog = false">Cancel</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

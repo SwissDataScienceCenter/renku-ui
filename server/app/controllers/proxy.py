@@ -40,6 +40,8 @@ def pass_through(path):
     access_token = 'Bearer {}'.format(session['tokens']['access_token'])
 
     url = '{base}{path}'.format(base=g['API_ROOT_URL'], path=path)
+    if request.query_string:
+        url += '?{}'.format(request.query_string.decode())
     headers = dict(request.headers)
     del headers['Host']
     del headers['Cookie']

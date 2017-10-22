@@ -27,6 +27,22 @@ export class FileObj {
           this.name = json['name']
         } else {
           this.id = json['id']
+          this.name = json['properties'][0].values[0]['value']
+        }
+    }
+}
+
+export class Bucket {
+
+    id: null | number = null
+    name: string
+
+    constructor(json: object) {
+        if (json['identifier'] !== undefined) {
+          this.id = json['identifier']
+          this.name = json['name']
+        } else {
+          this.id = json['id']
           this.name = json['properties'][1].values[0]['value']
         }
     }
