@@ -1,4 +1,5 @@
 <div class="container">
+    <v-progress-linear v-bind:indeterminate="true" v-show="progress" ></v-progress-linear>
   	<h2>Get started with Renga</h2>
     <v-stepper v-model="e1">
       <v-stepper-header>
@@ -8,7 +9,7 @@
             :step="n"
             :complete="e1 > n"
           >
-            Step {{ n }}
+            {{ step_names[n-1] }}
           </v-stepper-step>
           <v-divider v-if="n !== steps"></v-divider>
         </template>
@@ -109,7 +110,54 @@
           </v-flex>
         </v-layout>
         <v-spacer></v-spacer>
-        <v-btn secondary @click="addProject">Continue</v-btn>
+        <v-btn secondary @click="inputNextStep">Continue</v-btn>
+      </v-stepper-content>
+      <v-stepper-content :step="3">
+        <div>
+          <h3 class="headline mb-0">Launch an execution</h3>
+        </div>
+        <v-layout>
+          <v-flex xs12 sm4>
+            <v-card class="ma-1 pa-3">
+              <v-list two-line subheader>
+                <v-subheader inset>From an IDE</v-subheader>
+              </v-list>
+              <v-select label="base image" required :items="[{text: 'jupyter notebook', value: 'jupyter/scipy-notebook'}, {text: 'R studio', value:'rocker/rstudio'}]" v-model="imageIDE"></v-select>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn secondary @click="executeIDE">Execute</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-flex>
+          <v-flex xs12 sm4>
+            <v-card class="ma-1 pa-3">
+              <v-list two-line subheader>
+                <v-subheader inset>From a docker image</v-subheader>
+              </v-list>
+              <v-text-field label="image" single-line hide-details v-model="imageDocker"></v-text-field>
+              <v-text-field label="exposed ports" single-line hide-details v-model="portsDocker"></v-text-field>
+              <v-text-field label="env. variables" single-line hide-details v-model="envDocker"></v-text-field>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn secondary @click="executeDocker">Execute</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-flex>
+          <v-flex xs12 sm4>
+            <v-card class="ma-1 pa-3">
+              <v-list two-line subheader>
+                <v-subheader inset>From a code repository</v-subheader>
+              </v-list>
+              <v-select label="base image" required :items="['python3', 'python2', 'R', 'C', 'C++', 'Fortran']" v-model="baseCode"></v-select>
+              <v-text-field label="code repository" single-line hide-details v-model="repositoryCode"></v-text-field>
+              <v-text-field label="env. variables" single-line hide-details v-model="envCode"></v-text-field>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn secondary @click="executeCode">Execute</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-flex>
+        </v-layout>
       </v-stepper-content>
     </v-stepper>
     <v-dialog v-model="projectDialog">

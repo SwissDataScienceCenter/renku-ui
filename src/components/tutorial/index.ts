@@ -17,6 +17,7 @@
  */
 
 import Vue from 'vue'
+import { router } from '../../main'
 import Component from 'vue-class-component'
 import { GraphItem } from '../graph-item-list/graph-item'
 import fetchItemList from '../graph-item-list'
@@ -41,6 +42,8 @@ export class TutorialComponent extends Vue {
 
     e1 = 1
     steps = 2
+    step_names = ['Project', 'Data', 'Execution']
+    progress = false
 
     project: Project
     user: UserState
@@ -63,12 +66,18 @@ export class TutorialComponent extends Vue {
     importDialog = false
     searchImport = ''
 
-    nextStep (n) {
-        if (n === this.steps) {
-          this.e1 = 1
-        } else {
-          this.e1 = n + 1
-        }
+    imageIDE = ''
+    imageDocker = ''
+    portsDocker = ''
+    envDocker = ''
+    baseCode = ''
+    repositoryCode = ''
+    envCode = ''
+
+
+    inputNextStep () {
+        this.steps = 3
+        this.e1 = 3
     }
 
     parser = json => {
@@ -104,6 +113,7 @@ export class TutorialComponent extends Vue {
     }
 
     updateDatasetList(): void {
+        this.progress = true
 
         let bparser = json => {
             const array = <object[]> json
@@ -112,11 +122,22 @@ export class TutorialComponent extends Vue {
             })
         }
 
+        let lparser = json => {
+            const array = <object[]> json
+            return array.map(obj => {
+                let o = obj['vertex']
+                if (o['types'][0] === 'resource:file') {
+                    return new FileObj(o)
+                }
+                return null
+            })
+        }
+
         if (!(this.user instanceof NoUser)) {
             this.datasets_local = []
-            fetchItemList(`./api/explorer/projects/${this.project.id}/resources?resource=file`, '', this.parser).then(res => {
+            fetchItemList(`./api/explorer/lineage/project/${this.project.id}/`, '', lparser).then(res => {
                 if (res !== null) {
-                    this.datasets_import = res
+                    this.datasets_import = res.filter(n => n)
                 }
             })
             fetchItemList(`./api/explorer/projects/${this.project.id}/resources?resource=bucket`, '', bparser).then(res => {
@@ -127,6 +148,7 @@ export class TutorialComponent extends Vue {
                             this.datasets_local = this.datasets_local.concat(result)
                         })
                     }
+                    this.progress = false
                 }
             })
         }
@@ -206,6 +228,7 @@ export class TutorialComponent extends Vue {
     }
 
     addFile(event: Event): void {
+        this.progress = true
         this.fileDialog = false
         let payload = JSON.stringify({
             file_name: this.bucketfile,
@@ -241,6 +264,7 @@ export class TutorialComponent extends Vue {
                     }
                 ).then(r => {
                     this.updateDatasetList()
+                    this.progress = false
                 })
             }
             reader.readAsArrayBuffer(e.files[0])
@@ -269,7 +293,7 @@ export class TutorialComponent extends Vue {
     addImport(item: any): void {
         this.importDialog = false
         let payload = JSON.stringify({
-          resourceId: item.id,
+          resource: item.id,
         })
 
         fetch(`./api/projects/${this.project.id}/imports`,
@@ -284,5 +308,67 @@ export class TutorialComponent extends Vue {
         ).then(response => {
             this.updateDatasetList()
         })
+    }
+
+    do_execution(_image, _ports, _env): void {
+        this.progress = true
+        let payload = JSON.stringify({
+          image: _image,
+          ports: _ports.split(/\s*,\s*/)
+        })
+
+        fetch('./api/deployer/contexts',
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: payload
+            }
+        ).then(response => {
+            return response.json()
+            }
+        ).then(response => {
+            let payload = JSON.stringify({
+              engine: 'docker',
+              namespace: 'namespace',
+              environment: _env.split(/\s*,\s*/).reduce(function(prev, curr) {let a = curr.split(/\s*=\s*/); prev[a[0]] = a[1]; return prev}, { })
+            })
+
+            fetch(`./api/deployer/contexts/${response.identifier}/executions`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: payload
+                }
+            ).then(response2 => {
+                return response2.json()
+                }
+            ).then(response2 => {
+                console.log('executing', response2)
+                this.progress = false
+                router.push(`/deploy/context/${response.identifier}/execution/${response2.identifier}`)
+            })
+        })
+    }
+
+    executeIDE() {
+        if (this.imageIDE === 'rocker/rstudio') {
+            this.do_execution(this.imageIDE, '8787', '')
+        } else {
+            this.do_execution(this.imageIDE, '8888', '')
+        }
+    }
+
+    executeDocker() {
+        this.do_execution(this.imageDocker, this.portsDocker, this.envDocker)
+    }
+
+    executeCode() {
+
     }
 }
