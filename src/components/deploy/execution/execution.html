@@ -5,7 +5,7 @@
     </graph-item-table>
     </v-navigation-drawer>
     <v-dialog v-model="execDialog">
-      <v-btn class="teal" dark fixed bottom right fab slot="activator"><v-icon>play_arrow</v-icon></v-btn>
+      <v-btn secondary fixed bottom right fab slot="activator"><v-icon>play_arrow</v-icon></v-btn>
       <v-card>
         <v-card-title>
           <span class="headline">Start an Execution</span>
@@ -16,8 +16,8 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn class="teal--text darken-1" flat @click.native="execDialog = false">Cancel</v-btn>
-          <v-btn class="teal--text darken-1" flat @click.native="addExec($event)">Start</v-btn>
+          <v-btn secondary flat @click.native="execDialog = false">Cancel</v-btn>
+          <v-btn secondary @click.native="addExec($event)">Start</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

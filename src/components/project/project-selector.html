@@ -3,10 +3,10 @@
         offset-x
         :nudge-width="200"
         v-model="menu"
-        v-if="user.user !== ''"
+        v-if="user.user !== undefined"
       >
-        <v-btn class="indigo" dark slot="activator" v-if="value !== null" >Project: {{ value.name }}</v-btn>
-        <v-btn class="indigo" dark slot="activator" v-else >Select a project</v-btn>
+        <v-btn secondary slot="activator" v-if="value !== null" >Project: {{ value.name }}</v-btn>
+        <v-btn secondary slot="activator" v-else >Select a project</v-btn>
         <v-list>
             <v-list-tile v-for="item in projects" :key="item.id" @click="clickItem(item)">
                 <v-list-tile-title>{{ item.name }}</v-list-tile-title>
@@ -26,8 +26,8 @@
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn class="teal--text darken-1" flat @click.native="projectDialog = false">Cancel</v-btn>
-          <v-btn class="teal--text darken-1" flat @click.native="addProject($event)">Create</v-btn>
+          <v-btn secondary flat @click.native="projectDialog = false">Cancel</v-btn>
+          <v-btn secondary @click.native="addProject($event)">Create</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

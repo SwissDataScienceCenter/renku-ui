@@ -22,7 +22,12 @@ export class Project {
     name: string
 
     constructor(json: object) {
-        this.id = json['id']
-        this.name = json['properties'][1].values[0]['value']
+        if (json['identifier'] !== undefined) {
+          this.id = json['identifier']
+          this.name = json['name']
+        } else {
+          this.id = json['id']
+          this.name = json['properties'][1].values[0]['value']
+        }
     }
 }

@@ -22,6 +22,7 @@ import Vuetify from 'vuetify'
 import Component from 'vue-class-component'
 
 import { HomeComponent } from './components/home'
+import { TutorialComponent } from './components/tutorial'
 import { ContextComponent, ExecutionComponent, DetailExecutionComponent } from './components/deploy'
 import { BucketsComponent, FilesComponent } from './components/storage'
 import { NavigationComponent } from './components/navigation'
@@ -45,19 +46,6 @@ Vue.component('graph-display', GraphComponent)
 Vue.component('graph-item-list', GraphItemListComponent)
 Vue.component('graph-item-table', GraphItemTableComponent)
 
-export const router = new VueRouter({
-  routes: [
-    { path: '/', component: HomeComponent },
-    // { path: '/deploy', component: DeployComponent },
-    { path: '/deploy/context', component: ContextComponent },
-    { path: '/deploy/context/:id', component: ExecutionComponent },
-    { path: '/deploy/context/:id/execution/:eid', component: DetailExecutionComponent },
-    { path: '/storage', component: BucketsComponent },
-    { path: '/storage/:id(\\d+)', component: FilesComponent },
-    { path: '/graph', component: NavigationComponent },
-    { path: '/profile', component: ProfileComponent }
-  ],
-})
 
 @Component({})
 class MainComponent extends Vue {
@@ -75,6 +63,27 @@ class MainComponent extends Vue {
     this.user = user
   }
 
+  project_select (project: Project): void {
+    this.project = project
+  }
+
 }
 
-new MainComponent({el: '#sdsc', router: router})
+let mc = new MainComponent({
+  el: '#sdsc',
+  router: new VueRouter({
+    routes: [
+      { path: '/', component: HomeComponent },
+      { path: '/tutorial', component: TutorialComponent },
+      { path: '/deploy/context', component: ContextComponent },
+      { path: '/deploy/context/:id', component: ExecutionComponent },
+      { path: '/deploy/context/:id/execution/:eid', component: DetailExecutionComponent },
+      { path: '/storage', component: BucketsComponent },
+      { path: '/storage/:id(\\d+)', component: FilesComponent },
+      { path: '/graph', component: NavigationComponent },
+      { path: '/profile', component: ProfileComponent }
+    ],
+  })
+})
+
+export const router = mc.$router

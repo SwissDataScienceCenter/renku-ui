@@ -12,7 +12,6 @@
         v-bind:headers="headers"
         v-bind:items="item_list.list"
         v-bind:search="search"
-        dark
       >
       <template slot="items" scope="props">
         <tr v-on:click="$emit('selected', props.item.id)" style="cursor: pointer;">

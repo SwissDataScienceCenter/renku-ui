@@ -56,6 +56,23 @@ export class DetailExecutionComponent extends Vue {
         window.open(`http://${this.ip}:${this.port}`)
     }
 
+    clickStop(event: Event): void {
+        fetch(`./api/deployer/contexts/${this.$route.params.id}/executions/${this.$route.params.eid}`,
+            {
+                method: 'DELETE',
+                headers: {
+                    'Accept' : 'text/plain'
+                },
+                credentials: 'include'
+            }
+        ).then(response => {
+            return response.text()
+            }
+        ).then(response => {
+            this.logs += '<br /> Stopped.'
+        })
+    }
+
     updateLogs(): void {
         fetch(`./api/deployer/contexts/${this.$route.params.id}/executions/${this.$route.params.eid}/logs`,
             {

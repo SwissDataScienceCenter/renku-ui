@@ -1,22 +1,22 @@
 <div>
-    <v-toolbar v-if="raw_user.logged_in" flat class="transparent">
-        <v-list class="pa-0">
+    <v-toolbar v-if="raw_user.logged_in" flat class="accent">
+        <v-list class="pa-0 transparent">
             <v-list-tile avatar tag="div">
                 <v-list-tile-avatar>
                     <img v-bind:src="raw_user._user.picture" />
                 </v-list-tile-avatar>
                 <v-list-tile-content>
-                    <v-list-tile-title>{{ raw_user._user.name }}</v-list-tile-title>
+                    <v-list-tile-title class="white--text">{{ raw_user._user.name }}</v-list-tile-title>
                 </v-list-tile-content>
             </v-list-tile>
         </v-list>
     </v-toolbar>
 
-    <v-toolbar v-else flat class="transparent">
-        <v-list class="pa-0">
+    <v-toolbar v-else flat class="accent">
+        <v-list class="pa-0 transparent">
             <v-list-tile avatar tag="div">
                 <v-list-tile-content>
-                    <v-list-tile-title>Welcome</v-list-tile-title>
+                    <v-list-tile-title class="white--text">Welcome</v-list-tile-title>
                 </v-list-tile-content>
             </v-list-tile>
         </v-list>

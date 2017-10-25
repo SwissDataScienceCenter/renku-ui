@@ -18,3 +18,4 @@
 
 export * from './buckets'
 export * from './files'
+export * from './fileobj'

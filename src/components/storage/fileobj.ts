@@ -16,19 +16,34 @@
  * limitations under the License.
  */
 
-import Vue from 'vue'
-import Component from 'vue-class-component'
-import { UserState } from '../user'
+export class FileObj {
 
+    id: null | number = null
+    name: string
 
-@Component({
-    props: {
-        user: undefined,
-    },
-    template: require('./home.html')
-})
-export class HomeComponent extends Vue {
+    constructor(json: object) {
+        if (json['identifier'] !== undefined) {
+          this.id = json['identifier']
+          this.name = json['name']
+        } else {
+          this.id = json['id']
+          this.name = json['properties'][0].values[0]['value']
+        }
+    }
+}
 
-    user: UserState
+export class Bucket {
 
+    id: null | number = null
+    name: string
+
+    constructor(json: object) {
+        if (json['identifier'] !== undefined) {
+          this.id = json['identifier']
+          this.name = json['name']
+        } else {
+          this.id = json['id']
+          this.name = json['properties'][1].values[0]['value']
+        }
+    }
 }
