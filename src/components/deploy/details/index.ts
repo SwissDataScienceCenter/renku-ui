@@ -22,13 +22,16 @@ import { router } from '../../../main'
 
 
 @Component({
+    props: {
+        deploy_ip: String,
+       },
     template: require('./details.html')
 })
 export class DetailExecutionComponent extends Vue {
 
     logs: string = ''
-    ip: string = 'localhost' // to be changed once the deployer can be aware of the load balancer/proxy IP
     port: string = ''
+    deploy_ip: string = 'localhost'
 
     mounted () {
         this.updateLogs()
@@ -53,7 +56,7 @@ export class DetailExecutionComponent extends Vue {
     }
 
     clickItem(event: Event): void {
-        window.open(`http://${this.ip}:${this.port}`)
+        window.open(`http://${this.deploy_ip}:${this.port}`)
     }
 
     clickStop(event: Event): void {
