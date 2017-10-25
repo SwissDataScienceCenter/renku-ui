@@ -20,8 +20,9 @@
 from flask import render_template
 
 from .. import app
+from app.settings import settings
 
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', ip=settings()['DEPLOY_IP'])

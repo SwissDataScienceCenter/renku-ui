@@ -40,7 +40,7 @@
     <v-container fluid>
       <transition name="slide-fade">
         <keep-alive>
-          <router-view :user="user" :project="project" v-on:project_select="project_select">loading...</router-view>
+          <router-view :user="user" :project="project" v-on:project_select="project_select" deploy_ip="{{ ip }}">loading...</router-view>
         </keep-alive>
       </transition>
     </v-container>
