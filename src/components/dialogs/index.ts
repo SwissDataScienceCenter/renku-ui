@@ -36,25 +36,25 @@ import { PersistedVertex } from '../graph/elements'
 })
 
 export class ProjectDialogComponent extends Vue {
-    progress: boolean = false;
-    bucketName: string = 'bucket';
-    bucketBackend: string = 'local';
-    projectId: number;
+    progress: boolean = false
+    bucketName: string = 'bucket'
+    bucketBackend: string = 'local'
+    projectId: number
 
     addBucket(): void {
-        this.progress = true;
+        this.progress = true
 
         createBucket(this.bucketName, this.bucketBackend, this.projectId)
             .then(response => {
-                console.log('create', response);
-                this.progress = false;
-                this.closeDialog();
-                location.reload();
+                console.log('create', response)
+                this.progress = false
+                this.closeDialog()
+                location.reload()
 
             })
     }
     closeDialog() {
-        this.$emit('closeDialog');
+        this.$emit('closeDialog')
     }
 }
 
@@ -69,27 +69,27 @@ export class ProjectDialogComponent extends Vue {
 })
 
 export class ExecutionDialogComponent extends Vue {
-    progress: boolean = false;
-    engine: string = '';
-    namespace: string = '';
-    contextUUID: string;
+    progress: boolean = false
+    engine: string = ''
+    namespace: string = ''
+    contextUUID: string
 
     addExec(): void {
-        this.progress = true;
+        this.progress = true
 
         runContext(this.engine, this.namespace, this.contextUUID)
             .then(response => {
                 return response.json()
             })
             .then(response => {
-                console.log('create', response);
-                this.progress = false;
-                this.closeDialog();
-                location.reload();
+                console.log('create', response)
+                this.progress = false
+                this.closeDialog()
+                location.reload()
             })
     }
     closeDialog() {
-        this.$emit('closeDialog');
+        this.$emit('closeDialog')
     }
 }
 
@@ -105,23 +105,23 @@ export class ExecutionDialogComponent extends Vue {
 })
 
 export class BucketDialogComponent extends Vue {
-    progress: boolean = false;
-    filename: string = '';
-    bucketfile: string = '';
-    bucketId: number;
+    progress: boolean = false
+    filename: string = ''
+    bucketfile: string = ''
+    bucketId: number
 
     addFile() {
-        this.progress = true;
+        this.progress = true
         addFile(this.bucketfile, this.bucketId, this.$refs.fileInput)
             .then(() => {
-                this.progress = false;
-                this.closeDialog();
-                location.reload();
+                this.progress = false
+                this.closeDialog()
+                location.reload()
             })
     }
 
     closeDialog() {
-        this.$emit('closeDialog');
+        this.$emit('closeDialog')
     }
 
     onFileChange($event) {
@@ -146,22 +146,22 @@ export class BucketDialogComponent extends Vue {
 })
 
 export class VersionDialogComponent extends Vue {
-    progress: boolean = false;
-    filename: string = '';
-    selectedFileId: number;
+    progress: boolean = false
+    filename: string = ''
+    selectedFileId: number
 
     addFileVersion() {
-        this.progress = true;
+        this.progress = true
         addFileVersion(this.selectedFileId, this.$refs.fileInput)
             .then(() => {
-                this.progress = false;
-                this.closeDialog();
-                location.reload();
+                this.progress = false
+                this.closeDialog()
+                location.reload()
             })
     }
 
     closeDialog() {
-        this.$emit('closeDialog');
+        this.$emit('closeDialog')
     }
 
     onFileChange($event) {
@@ -175,20 +175,20 @@ export class VersionDialogComponent extends Vue {
 
 
 function onFileChange($event, context) {
-    let files = $event.target.files || $event.dataTransfer.files;
+    let files = $event.target.files || $event.dataTransfer.files
     if (files) {
-        context.filename = '';
+        context.filename = ''
         for (let j = 0; j < files.length; j++) {
             context.filename += `${files[j]['name']} `
         }
     } else {
-        context.filename = $event.target.value.split('\\').pop();
+        context.filename = $event.target.value.split('\\').pop()
     }
-    context.$emit('input', context.filename);
+    context.$emit('input', context.filename)
 }
 
 
 function onFocus(context) {
-    let e = context.$refs.fileInput as HTMLElement;
-    e.click();
+    let e = context.$refs.fileInput as HTMLElement
+    e.click()
 }

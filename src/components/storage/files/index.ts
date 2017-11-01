@@ -26,32 +26,32 @@ Component.registerHooks([
   'beforeRouteEnter',
   'beforeRouteLeave',
   'beforeRouteUpdate'
-]);
+])
 
 @Component({
     template: require('./files.html'),
     computed: {
         'bucketId': function () {
-            return parseInt(this.$route.params.id);
+            return parseInt(this.$route.params.id)
         }
     }
 })
 export class FilesComponent extends Vue {
 
-    selectedFileId: number = null;
-    progress: boolean = false;
-    detailsPanel: boolean = false;
-    url_list: string = '';
-    file_versions = [];
-    dialog: string = null;
+    selectedFileId: number = null
+    progress: boolean = false
+    detailsPanel: boolean = false
+    url_list: string = ''
+    file_versions = []
+    dialog: string = null
 
     parser: any = json => {
-                console.log('list', json);
-                const array = <object[]> json;
+                console.log('list', json)
+                const array = <object[]> json
                 return array.map(obj => {
                     return new GraphItem(obj, 'resource:file_name', '')
                 })
-            };
+            }
 
     headers: any[] = [
         {
@@ -62,10 +62,10 @@ export class FilesComponent extends Vue {
           },
           { text: 'Name', value: 'name' },
           { text: 'resource:owner', value: 'resource:owner' }
-        ];
+        ]
 
     closeDialog () {
-        this.dialog = null;
+        this.dialog = null
     }
 
     created ()  {
@@ -73,7 +73,7 @@ export class FilesComponent extends Vue {
     }
 
     beforeRouteUpdate (to, from, next) {
-        this.url_list = `./api/explorer/storage/bucket/${to.params.id}/files`;
+        this.url_list = `./api/explorer/storage/bucket/${to.params.id}/files`
         next()
     }
 
@@ -82,7 +82,7 @@ export class FilesComponent extends Vue {
     }
 
     onSelect(oid) {
-        this.selectedFileId = oid;
+        this.selectedFileId = oid
 
         fetch(`./api/explorer/storage/file/${oid}/versions`,
             {
@@ -96,9 +96,9 @@ export class FilesComponent extends Vue {
             return response.json()
             }
         ).then(response => {
-            this.file_versions = response;
-            this.file_versions.sort(function(a, b) { return a.properties[1].values[0].value - b.properties[1].values[0].value });
-            this.detailsPanel = true;
+            this.file_versions = response
+            this.file_versions.sort(function(a, b) { return a.properties[1].values[0].value - b.properties[1].values[0].value })
+            this.detailsPanel = true
         })
     }
 }
