@@ -30,9 +30,7 @@
         <execution-dialog
                 v-on:success="success"
                 v-on:cancel="cancel"
-                v-bind:contextUUID="selectedVertex.self.properties[1].values[0].value">
-            <!--Why is the context UUID hidden so deeply in the vertex? Can I actually
-            rely on the order of the objects in the properties/values array?-->
+                v-bind:contextUUID="selectedVertex.self.UUID">
         </execution-dialog>
     </v-dialog>
     <v-dialog v-model="dialog" v-if="dialog === 'bucket'">

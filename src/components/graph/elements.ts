@@ -20,8 +20,9 @@ import * as d3 from 'd3';
 
 export interface PersistedVertex {
     id: number,
+    UUID?: string,
     types: string[],
-    properties: any[]
+    properties: any[],
 }
 
 export interface DisplayVertex extends d3.SimulationNodeDatum {
