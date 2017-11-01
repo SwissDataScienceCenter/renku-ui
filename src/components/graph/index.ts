@@ -109,30 +109,19 @@ export class GraphComponent extends Vue {
             )
             this.edgeIds.push(`v${edge.id}`)
 
-            // Use this to temporarily enrich executions with the context that has produced them in order to construct
-            // the correct url for this execution (full url should be part of the API response)
-            if (this.edges[this.edges.length - 1].display_name === 'launch') {
-                for (let source of this.vertices) {
-                    if (source.id === this.edges[this.edges.length - 1].source) {
-                        for (let target of this.vertices) {
-                            if (target.id === this.edges[this.edges.length - 1].target) {
-                                let contextUUID
-                                let executionUUID
-                                for (let prop of source.self.properties) {
-                                    if (prop.key === 'deployer:context_id') {
-                                        contextUUID = prop.values[0].value
-                                    }
-                                }
-                                for (let prop of target.self.properties) {
-                                    if (prop.key === 'deployer:execution_id') {
-                                        executionUUID = prop.values[0].value
-                                    }
-                                }
-                                target.detailUrl = `deploy/context/${contextUUID}/execution/${executionUUID}`
-                            }
-                        }
-                    }
-                }
+            // Use this temporarily to enrich executions with the context that has produced them in order to construct
+            // the correct url for this execution (contextUUID should be part of the API response)
+
+            let newEdge = this.edges[this.edges.length - 1]
+
+            if (newEdge.display_name === 'launch') {
+                let context = this.vertices.find( vertex => {
+                    return vertex.id === newEdge.source
+                })
+                let execution = this.vertices.find( vertex => {
+                    return vertex.id === newEdge.target
+                })
+                execution.detailUrl = `deploy/context/${context.self.UUID}/execution/${execution.self.UUID}`
             }
         }
     }
@@ -150,16 +139,26 @@ export class GraphComponent extends Vue {
             })
             this.vertexIds.push(`v${vertex.id}`)
 
+            let newVertex = this.vertices[this.vertices.length - 1]
 
-            if (this.vertices[this.vertices.length - 1].self.types[0] === 'deployer:context') {
-                for (let prop of this.vertices[this.vertices.length - 1].self.properties) {
-                    if (prop.key === 'deployer:context_id') {
-                        this.vertices[this.vertices.length - 1].detailUrl = `deploy/context/${prop.values[0].value}`
-                    }
-                }
-            } else if (this.vertices[this.vertices.length - 1].self.types[0] === 'resource:bucket') {
-                this.vertices[this.vertices.length - 1].detailUrl =
-                    `storage/${this.vertices[this.vertices.length - 1].self.id}`
+            switch (newVertex.self.types[0]) {
+                case 'deployer:context':
+                    newVertex.self.UUID = newVertex.self.properties.find( prop => {
+                        return prop.key === 'deployer:context_id'
+                    }).values[0].value
+                    newVertex.detailUrl = `deploy/context/${newVertex.self.UUID}`
+                    break
+
+                case 'resource:bucket':
+                    newVertex.detailUrl = `storage/${newVertex.self.id}`
+                    break
+
+                case 'deployer:execution':
+                    newVertex.self.UUID = newVertex.self.properties.find( prop => {
+                        return prop.key === 'deployer:execution_id'
+                    }).values[0].value
+                    // detailUrl is added once we know about the edges
+                    break
             }
         }
     }
