@@ -25,17 +25,17 @@ export function createBucket(bucketName: string, bucketBackend: string, projectI
         name: bucketName,
         backend: bucketBackend,
         request_type: 'create_bucket'
-    });
+    })
 
     let headers = {
         'Content-Type': 'application/json'
-    };
-
-    if (projectId) {
-        headers['Renga-Projects-Project'] = projectId;
     }
 
-    console.log(projectId);
+    if (projectId) {
+        headers['Renga-Projects-Project'] = projectId
+    }
+
+    console.log(projectId)
 
     return fetch('./api/storage/authorize/create_bucket',
         {
@@ -44,7 +44,7 @@ export function createBucket(bucketName: string, bucketBackend: string, projectI
             headers: headers,
             body: payload
         }
-    );
+    )
 }
 
 export function runContext(engine: string, namespace: string, contextUUID: string) {
@@ -52,7 +52,7 @@ export function runContext(engine: string, namespace: string, contextUUID: strin
     let payload = JSON.stringify({
         engine: engine,
         namespace: namespace
-    });
+    })
 
     return fetch(`./api/deployer/contexts/${contextUUID}/executions`,
         {
@@ -63,7 +63,7 @@ export function runContext(engine: string, namespace: string, contextUUID: strin
             },
             body: payload
         }
-    );
+    )
 }
 
 export function addFile(filename: string, bucketId: number, fileInput: any) {
@@ -72,7 +72,7 @@ export function addFile(filename: string, bucketId: number, fileInput: any) {
         file_name: filename,
         bucket_id: bucketId,
         request_type: 'create_file'
-    });
+    })
 
     // Let's be explicit here to make clear it's a promise...
     let authorization: Promise<any> = fetch('./api/storage/authorize/create_file',
@@ -84,17 +84,17 @@ export function addFile(filename: string, bucketId: number, fileInput: any) {
             credentials: 'include',
             body: payload
         }
-    );
+    )
 
     return executeUpload(authorization, fileInput)
 }
 
 export function addFileVersion(fileId: number, fileInput: any) {
-    console.log(fileId);
+    console.log(fileId)
     let payload = JSON.stringify({
         resource_id: fileId,
         request_type: 'write_file'
-    });
+    })
 
     // Let's be explicit here to make clear it's a promise...
     let authorization: Promise<any> = fetch('./api/storage/authorize/write',
@@ -106,7 +106,7 @@ export function addFileVersion(fileId: number, fileInput: any) {
             credentials: 'include',
             body: payload
         }
-    );
+    )
     return executeUpload(authorization, fileInput)
 }
 
@@ -116,9 +116,9 @@ function executeUpload(authorization: Promise<any>, fileInput: any) {
             return response.json()
         })
         .then(response => {
-            console.log('create', response);
-            let e = fileInput as HTMLInputElement;
-            const reader = new FileReader();
+            console.log('create', response)
+            let e = fileInput as HTMLInputElement
+            const reader = new FileReader()
             reader.onload = () => {
                 return fetch('./api/storage/io/write',
                     {
@@ -130,7 +130,7 @@ function executeUpload(authorization: Promise<any>, fileInput: any) {
                         body: reader.result
                     }
                 )
-            };
+            }
             return reader.readAsArrayBuffer(e.files[0])
         })
 }

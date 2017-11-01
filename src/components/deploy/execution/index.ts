@@ -27,7 +27,7 @@ Component.registerHooks([
   'beforeRouteEnter',
   'beforeRouteLeave',
   'beforeRouteUpdate'
-]);
+])
 
 @Component({
     template: require('./execution.html'),
@@ -39,8 +39,8 @@ Component.registerHooks([
 })
 export class ExecutionComponent extends Vue {
 
-    progress: boolean = false;
-    url_list: string = '';
+    progress: boolean = false
+    url_list: string = ''
 
     headers: any[] = [
         {
@@ -56,7 +56,7 @@ export class ExecutionComponent extends Vue {
 
     dialog: string = null;
     closeDialog () {
-        this.dialog = null;
+        this.dialog = null
     }
 
     created ()  {
@@ -64,7 +64,7 @@ export class ExecutionComponent extends Vue {
     }
 
     beforeRouteUpdate (to, from, next) {
-        this.url_list = './api/deployer/contexts/' + to.params.id + '/executions';
+        this.url_list = './api/deployer/contexts/' + to.params.id + '/executions'
         next()
     }
 
@@ -73,13 +73,13 @@ export class ExecutionComponent extends Vue {
     }
 
     parser(json: any): GraphItem[] {
-        const array = <object[]> json['executions'];
+        const array = <object[]> json['executions']
         return array.map(obj => {
-            let g = new GraphItem(undefined, undefined, undefined);
-            g.id = obj['identifier'];
-            g.name = obj['identifier'];
-            g.properties.push({'key': 'engine', 'value': obj['engine']});
-            g.properties.push({'key': 'namespace', 'value': obj['namespace']});
+            let g = new GraphItem(undefined, undefined, undefined)
+            g.id = obj['identifier']
+            g.name = obj['identifier']
+            g.properties.push({'key': 'engine', 'value': obj['engine']})
+            g.properties.push({'key': 'namespace', 'value': obj['namespace']})
             return g
         })
     }

@@ -28,7 +28,7 @@ export class BucketsComponent extends Vue {
 
     dialog = null
     closeDialog() {
-        this.dialog = null;
+        this.dialog = null
     }
 
     parser: any = json => {

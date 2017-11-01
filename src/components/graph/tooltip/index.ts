@@ -22,7 +22,7 @@ import Component from 'vue-class-component'
 import { router } from '../../../main'
 import { DisplayVertex, DisplayEdge } from '../elements'
 
-// require('./tooltip.styl');
+// require('./tooltip.styl')
 
 @Component({
     template: require('./vertex-tooltip.html'),
@@ -40,14 +40,14 @@ import { DisplayVertex, DisplayEdge } from '../elements'
 })
 
 export class VertexTooltipComponent extends Vue {
-    selectedVertex: DisplayVertex;
+    selectedVertex: DisplayVertex
 
     closeTooltip() {
         this.$emit('closeTooltip')
     }
 
     goDetail() {
-        router.push(this.selectedVertex.detailUrl);
+        router.push(this.selectedVertex.detailUrl)
     }
 
     showDialog(i: number) {
@@ -69,5 +69,5 @@ export class VertexTooltipComponent extends Vue {
 })
 
 export class EdgeTooltipComponent extends Vue {
-    selectedEdge: DisplayEdge;
+    selectedEdge: DisplayEdge
 }
