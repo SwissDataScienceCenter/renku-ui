@@ -19,49 +19,25 @@
           </v-list-tile>
           <v-list-tile>
               <v-list-tile-content>
-                <v-btn secondary @click.native.stop="versionDialog = true">Add new version</v-btn>
+                <v-btn secondary @click.stop="dialog = 'version'">Add new version</v-btn>
               </v-list-tile-content>
           </v-list-tile>
       </v-list>
     </v-navigation-drawer>
-    <v-dialog v-model="bucketDialog">
-      <v-btn secondary fixed bottom right fab slot="activator"><v-icon>add</v-icon></v-btn>
-      <v-card>
-        <v-card-title>
-          <span class="headline">Upload a file</span>
-        </v-card-title>
-        <v-card-text>
-          <v-text-field label="Name" required v-model="bucketfile"></v-text-field>
-          <v-text-field prepend-icon="attach_file" single-line
-                      v-model="filename" label="File" required
-                      @click.native="onFocus"
-                      ref="fileTextField"></v-text-field>
-        <input type="file" accept="accept" ref="fileInput" @change="onFileChange" style="display:none">
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn secondary flat @click.native="bucketDialog = false">Cancel</v-btn>
-          <v-btn secondary @click.native="addFile($event)">Upload</v-btn>
-        </v-card-actions>
-      </v-card>
+
+    <v-btn secondary fixed bottom right fab @click.stop="dialog = 'bucket'"><v-icon>add</v-icon></v-btn>
+
+    <v-dialog v-model="dialog" v-if="dialog === 'bucket'">
+        <bucket-dialog
+                v-on:closeDialog="closeDialog"
+                v-bind:bucketId="bucketId">
+        </bucket-dialog>
     </v-dialog>
-    <v-dialog v-model="versionDialog">
-      <v-card>
-        <v-card-title>
-          <span class="headline">Upload a file version</span>
-        </v-card-title>
-        <v-card-text>
-          <v-text-field prepend-icon="attach_file" single-line
-                      v-model="filename" label="File" required
-                      @click.native="onFocus"
-                      ref="fileTextField"></v-text-field>
-        <input type="file" accept="accept" ref="fileInput" @change="onFileChange" style="display:none">
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn secondary flat @click.native="versionDialog = false">Cancel</v-btn>
-          <v-btn secondary @click.native="addFileVersion($event)">Upload</v-btn>
-        </v-card-actions>
-      </v-card>
+
+    <v-dialog v-model="dialog" v-if="dialog === 'version'">
+        <version-dialog
+                v-on:closeDialog="closeDialog"
+                v-bind:selectedFileId="selectedFileId">
+        </version-dialog>
     </v-dialog>
 </div>

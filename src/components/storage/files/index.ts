@@ -18,38 +18,40 @@
 
 import Vue from 'vue'
 import Component from 'vue-class-component'
+
 import { GraphItem } from '../../graph-item-list/graph-item'
+
 
 Component.registerHooks([
   'beforeRouteEnter',
   'beforeRouteLeave',
   'beforeRouteUpdate'
-])
+]);
 
 @Component({
-    template: require('./files.html')
+    template: require('./files.html'),
+    computed: {
+        'bucketId': function () {
+            return parseInt(this.$route.params.id);
+        }
+    }
 })
 export class FilesComponent extends Vue {
 
-    progress: boolean = false
-    bucketDialog: boolean = false
-    versionDialog: boolean = false
-    detailsPanel: boolean = false
-    bucketfile: string = ''
-    filename: string = ''
-    selected_file: string = ''
-
-    url_list: string = ''
-
-    file_versions = []
+    selectedFileId: number = null;
+    progress: boolean = false;
+    detailsPanel: boolean = false;
+    url_list: string = '';
+    file_versions = [];
+    dialog: string = null;
 
     parser: any = json => {
-                console.log('list', json)
-                const array = <object[]> json
+                console.log('list', json);
+                const array = <object[]> json;
                 return array.map(obj => {
                     return new GraphItem(obj, 'resource:file_name', '')
                 })
-            }
+            };
 
     headers: any[] = [
         {
@@ -60,14 +62,18 @@ export class FilesComponent extends Vue {
           },
           { text: 'Name', value: 'name' },
           { text: 'resource:owner', value: 'resource:owner' }
-        ]
+        ];
+
+    closeDialog () {
+        this.dialog = null;
+    }
 
     created ()  {
         this.url_list = `./api/explorer/storage/bucket/${this.$route.params.id}/files`
     }
 
     beforeRouteUpdate (to, from, next) {
-        this.url_list = `./api/explorer/storage/bucket/${to.params.id}/files`
+        this.url_list = `./api/explorer/storage/bucket/${to.params.id}/files`;
         next()
     }
 
@@ -75,99 +81,8 @@ export class FilesComponent extends Vue {
         next(vm => vm.url_list = `./api/explorer/storage/bucket/${to.params.id}/files`)
     }
 
-    addFile(event: Event): void {
-        this.progress = true
-        this.bucketDialog = false
-        let payload = JSON.stringify({
-          file_name: this.bucketfile,
-          bucket_id: parseInt(this.$route.params.id),
-          request_type: 'create_file'
-        })
-
-        this.executeUpload(fetch('./api/storage/authorize/create_file',
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include',
-                body: payload
-            }
-        ))
-    }
-
-    addFileVersion(event: Event): void {
-        this.progress = true
-        this.versionDialog = false
-        let payload = JSON.stringify({
-          resource_id: this.selected_file,
-          request_type: 'write_file'
-        })
-
-        this.executeUpload(fetch('./api/storage/authorize/write',
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include',
-                body: payload
-            }
-        ))
-    }
-
-    executeUpload(fetchData): void {
-
-        fetchData.then(response => {
-            return response.json()
-            }
-        ).then(response => {
-            console.log('create', response)
-            let e = this.$refs.fileInput as HTMLInputElement
-            const reader = new FileReader()
-            reader.onload = aFile => {
-                fetch('./api/storage/io/write',
-                    {
-                        method: 'POST',
-                        credentials: 'include',
-                        headers: {
-                            'Authorization': 'Bearer ' + response.access_token
-                        },
-                        body: reader.result
-                    }
-                ).then(r => {
-                    this.progress = false
-                    location.reload()
-                })
-            }
-            reader.readAsArrayBuffer(e.files[0])
-        })
-
-    }
-
-    onFocus() {
-        let e = this.$refs.fileInput as HTMLElement
-        e.click()
-    }
-
-    onFileChange($event) {
-        const files = $event.target.files || $event.dataTransfer.files;
-        if (files) {
-            this.filename = ''
-            for (let j = 0; j < files.length; j++) {
-                this.filename += `${files[j]['name']} `
-            }
-        } else {
-            this.filename = $event.target.value.split('\\').pop();
-        }
-        this.$emit('input', this.filename);
-    }
-
     onSelect(oid) {
-
-        this.selected_file = oid
-
-        let that = this
+        this.selectedFileId = oid;
 
         fetch(`./api/explorer/storage/file/${oid}/versions`,
             {
@@ -181,11 +96,9 @@ export class FilesComponent extends Vue {
             return response.json()
             }
         ).then(response => {
-            this.file_versions = response
-            this.file_versions.sort(function(a, b){ return a.properties[1].values[0].value - b.properties[1].values[0].value })
-            this.detailsPanel = true
+            this.file_versions = response;
+            this.file_versions.sort(function(a, b) { return a.properties[1].values[0].value - b.properties[1].values[0].value });
+            this.detailsPanel = true;
         })
-
     }
-
 }

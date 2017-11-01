@@ -20,15 +20,36 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import * as d3 from 'd3';
 
-import {router} from '../../main'
-import {loadVertices, loadEdges} from './load-graph'
-import {PersistedVertex, DisplayVertex, PersistedEdge, DisplayEdge, Property,
-    ScreenTransform, Coordinates, LinkCoordinates} from './elements'
-import {icons} from './icons'
+import { loadVertices, loadEdges } from './load-graph'
+import { PersistedVertex, DisplayVertex, PersistedEdge, DisplayEdge,
+    ScreenTransform, Coordinates, LinkCoordinates } from './elements'
+import { icons } from './icons'
+import { VertexTooltipComponent, EdgeTooltipComponent } from './tooltip'
+
 require('./graph.styl');
 
+
+// Constants affecting the graph display
+const MIN_ZOOM = 0.1;
+const MAX_ZOOM = 10.0;
+const ICON_SIZE: Coordinates = {
+    x: 24,
+    y: 24
+};
+const LABEL_OFFSET: Coordinates = {
+    x: 24,
+    y: 24
+};
+// Colorscale for multiple clusters, projects, etc. Not used at the moment...
+const COLOR = d3.scaleOrdinal(d3.schemeCategory10);
+const COLLAPSIBLE_TYPES = ['resource:file', 'deployer:context'];
+
+// We register these components locally since they are only used here.
+Vue.component('vertex-tooltip', VertexTooltipComponent);
+Vue.component('edge-tooltip', EdgeTooltipComponent);
+
 @Component({
-    template: require('./graph.html')
+    template: require('./graph.html'),
 })
 
 export class GraphComponent extends Vue {
@@ -38,6 +59,24 @@ export class GraphComponent extends Vue {
     edges: DisplayEdge[] = [];
     edgeIds: string[] = [];
 
+    selectedVertex: DisplayVertex = null;
+    activeVertex: DisplayVertex = null;
+    activeEdge: DisplayEdge = null;
+
+    get tooltipVertex () {
+        return (this.selectedVertex ? this.selectedVertex : this.activeVertex);
+    }
+
+    dialog: string = null;
+
+    closeDialog() {
+        this.dialog = null;
+    }
+
+    showDialog(i: number) {
+        this.dialog = this.selectedVertex.dialogs[i].dialogType;
+    }
+
     mounted() {
         this.updateGraphInfo()
     }
@@ -46,7 +85,7 @@ export class GraphComponent extends Vue {
         // Use nested callbacks for the time being just to be sure all data has been loaded.
         loadVertices('./api/navigation/vertex', this.addVertex, () => {
             loadEdges('./api/navigation/edge', this.addEdge, () => {
-                drawGraph(this.vertices, this.edges);
+                this.drawGraph(this.vertices, this.edges);
             })
         })
     }
@@ -101,7 +140,8 @@ export class GraphComponent extends Vue {
                 display_name: this.findDisplayName(vertex),
                 detailUrl: null,
                 self: vertex,
-                collapsible: COLLAPSIBLE_TYPES.indexOf(vertex.types[0]) >= 0
+                collapsible: COLLAPSIBLE_TYPES.indexOf(vertex.types[0]) >= 0,
+                dialogs: this.addDialogs(vertex)
             });
             this.vertexIds.push(`v${vertex.id}`);
 
@@ -119,6 +159,35 @@ export class GraphComponent extends Vue {
         }
     }
 
+    addDialogs(vertex: PersistedVertex) {
+        let dialogs = [];
+        if (vertex.types[0] === 'project:project') {
+            dialogs.push({
+                name: 'Add Bucket',
+                dialogType: 'project'
+            })
+        }
+        if (vertex.types[0] === 'deployer:context') {
+            dialogs.push({
+                name: 'Launch execution',
+                dialogType: 'execution'
+            })
+        }
+        if (vertex.types[0] === 'resource:bucket') {
+            dialogs.push({
+                name: 'Add file',
+                dialogType: 'bucket'
+            })
+        }
+        if (vertex.types[0] === 'resource:file') {
+            dialogs.push({
+                name: 'Add version',
+                dialogType: 'version'
+            })
+        }
+        return dialogs;
+    }
+
     findDisplayName(vertex: PersistedVertex): string {
         const nameProperties = new Set([
             'resource:bucket_name',
@@ -134,311 +203,297 @@ export class GraphComponent extends Vue {
             return `${prop.values[0].value}`;
         }
     }
-}
-
-// Constants affecting the graph display
-const MIN_ZOOM = 0.1;
-const MAX_ZOOM = 10.0;
-const ICON_SIZE: Coordinates = {
-    x: 24,
-    y: 24
-};
-const LABEL_OFFSET: Coordinates = {
-    x: 24,
-    y: 24
-};
-// Colorscale for multiple clusters, projects, etc. Not used at the moment...
-const COLOR = d3.scaleOrdinal(d3.schemeCategory10);
-const COLLAPSIBLE_TYPES = ['resource:file', 'deployer:context'];
 
 
 // TODO: I have used "any" in a few cases to avoid typescript compilation errors
 // TODO: related to d3 functions, objects. Fix this.
-function drawGraph(vertices: DisplayVertex[], edges: any[]) {
+    drawGraph(vertices: DisplayVertex[], edges: any[]) {
 
-    // Select and store the div which will contain the entire graph.
-    let graphDiv = d3.select('#d3-graph')
+        // Small workaround to use this of the enclosing function.
+        let graphComponent = this;
 
-    // Get bounding box of div from html template
-    let nodeElement: any = graphDiv.node();
-    let height: number = nodeElement.getBoundingClientRect().height;
-    let width: number = nodeElement.getBoundingClientRect().width;
+        // Select and store the div which will contain the entire graph.
+        let graphDiv = d3.select('#d3-graph')
 
-    // Temporary variables used for re-centering when resizing the window.
-    let w = width;
-    let h = height;
-    let forceCenter: Coordinates = {
-        x: width / 2,
-        y: height / 2
-    };
+        // Get bounding box of div from html template
+        let nodeElement: any = graphDiv.node();
+        let height: number = nodeElement.getBoundingClientRect().height;
+        let width: number = nodeElement.getBoundingClientRect().width;
 
-    // Set up svg.
-    let svg = graphDiv.append('svg');
-    svg.style('cursor', 'move')
-        .style('width', '100%')
-        .style('height', '100%');
-
-    // Initialize zoom behaviour, set up the initial zoom transform.
-    let zoom = d3.zoom().scaleExtent([MIN_ZOOM, MAX_ZOOM]);
-    let currentZoomTransform: ScreenTransform = {
-        x: 0.0,
-        y: 0.0,
-        k: 1.0
-    }
-
-    // Append tooltip to DOM and hide it.
-    let tooltip = graphDiv.append('div')
-        .classed('invisible', true);
-
-    // Initialize simulation
-    let simulation: any = d3.forceSimulation()
-        .force('link', d3.forceLink().id((d: DisplayEdge) => {
-                return d.id;
-            })
-                .distance(20)
-                .strength(0.5)
-        )
-        .force('charge', d3.forceManyBody().strength(-300).distanceMax(200))
-        .force('center', d3.forceCenter(forceCenter.x, forceCenter.y));
-
-    // Pass link and node data to the simulation, define redraw action per
-    // 'tick' (simulation time step)
-    simulation.nodes(vertices)
-        .on('tick', ticked);
-    simulation.force('link').links(edges);
-
-    // Build an array of starting and ending links for each node containing the actual link
-    // object (not just the ids). Note that the ids have been replaced with the objects by
-    // d3 when initializing the force simulation.
-    for (let node of vertices) {
-        node.startingLinks = [];
-        node.endingLinks = [];
-        node.aggregated = false;
-        node.mergedTo = null;
-    }
-    for (let link of edges) {
-        link.source.startingLinks.push(link);
-        link.target.endingLinks.push(link);
-    }
-
-    // Add the links
-    svg.selectAll('.links')
-        .data(edges)
-        .enter()
-        .append('g')
-        .attr('class', 'links')
-        .append('line')
-        .on('mouseover', mouseoverLink)
-        .on('mouseout', mouseout);
-
-    // Add a svg group for each node and assign it to the node class
-    svg.selectAll('.nodes')
-        .data(vertices)
-        .enter()
-        .append('g')
-        .attr('class', 'nodes');
-
-    // Add an underlying white circle to each node
-    svg.selectAll('.nodes')
-        .append('circle')
-        .attr('r', Math.max(ICON_SIZE.x, ICON_SIZE.y) / 2)
-        .attr('cx', ICON_SIZE.x / 2)
-        .attr('cy', ICON_SIZE.y / 2);
-
-    // Add the icon path to each node
-    svg.selectAll('.nodes')
-        .append('path')
-        .attr('d', (d: DisplayVertex) => {
-            return icons[d.self.types[0]].path
-        });
-
-    // Deactivate double-click zoom and determine zoom behaviour on
-    // regular zoom.
-    svg.call(zoom).on('dblclick.zoom', null);
-    zoom.on('zoom', () => {
-        repositionLinks(d3.event.transform);
-        repositionNodes(d3.event.transform);
-        currentZoomTransform = d3.event.transform;
-    });
-
-    // Recenter the graph on window resize
-    d3.select(window).on('resize', resize);
-
-    updateGraph();
-
-    function updateGraph() {
-
-        // Add or remove interactions to/from the nodes.
-        svg.selectAll('.nodes')
-            .call(d3.drag()
-                .on('start', (d: DisplayVertex) => {
-                    return d.mergedTo === null ? dragstarted(d) : null
-                })
-                .on('drag', (d: DisplayVertex) => {
-                    return d.mergedTo === null ? dragged(d) : null
-                })
-                .on('end', (d: DisplayVertex) => {
-                    return d.mergedTo === null ? dragended(d) : null
-                })
-            )
-            .on('mouseover', (d: DisplayVertex) => {
-                return d.mergedTo === null ? mouseoverNode(d) : null
-            })
-            .on('mouseout', mouseout)
-            .on('dblclick', (d: DisplayVertex) => {
-                return d.mergedTo === null ? doubleClick(d) : null
-            })
-            .on('click', clicked);
-
-        // Adapt visibility of the nodes
-        svg.selectAll('.nodes')
-            .classed('invisible', (d: DisplayVertex) => {
-                return d.mergedTo !== null;
-            });
-    }
-
-    // Event listeners which need access to the SVG drawing context.
-    // -------------------------------------------------------------
-
-    function ticked() {
-        repositionLinks(currentZoomTransform);
-        repositionNodes(currentZoomTransform);
-    }
-
-    function repositionLinks(transform: ScreenTransform) {
-        svg.selectAll('.links').selectAll('line')
-            .attr('x1', (d: DisplayEdge) => {
-                return zoomedCoords(linkCoords(d).start, transform).x;
-            })
-            .attr('y1', (d: DisplayEdge) => {
-                return zoomedCoords(linkCoords(d).start, transform).y;
-            })
-            .attr('x2', (d: DisplayEdge) => {
-                return zoomedCoords(linkCoords(d).end, transform).x;
-            })
-            .attr('y2', (d: DisplayEdge) => {
-                return zoomedCoords(linkCoords(d).end, transform).y;
-            });
-    }
-
-    function repositionNodes(transform: ScreenTransform) {
-        svg.selectAll('.nodes')
-            .attr('transform', (d: DisplayVertex) => {
-                return zoomedCoordsTransform(d, transform);
-            });
-    }
-
-    function dragstarted(d: DisplayVertex) {
-        if (!d3.event.active) simulation.alphaTarget(0.3).restart();
-        d.fx = d.x;
-        d.fy = d.y;
-    }
-
-    // Using shift in coordinates between two events is the easiest since
-    // we don't have to deal with offsets.
-    function dragged(d: d3.SimulationNodeDatum) {
-        d.fx += d3.event.sourceEvent.movementX / currentZoomTransform.k;
-        d.fy += d3.event.sourceEvent.movementY / currentZoomTransform.k;
-    }
-
-    function dragended(d: DisplayVertex) {
-        if (!d3.event.active) simulation.alphaTarget(0);
-        d.fx = null;
-        d.fy = null;
-    }
-
-    function mouseoverNode (d: DisplayVertex) {
-        tooltip
-            .classed('invisible edge-tooltip', false)
-            .classed('node-tooltip', true);
-        tooltip.html(vertexQTip(d.self))
-            .style('left', (zoomedCoords(d, currentZoomTransform).x
-                + LABEL_OFFSET.x * currentZoomTransform.k) + 'px')
-            .style('top', (zoomedCoords(d, currentZoomTransform).y
-                + LABEL_OFFSET.y * currentZoomTransform.k) + 'px');
-        svg.style('cursor', 'pointer');
-    }
-
-    function mouseoverLink (d: any) {
-        let linkCenter: Coordinates = {
-            x: 0.5 * (d.x1 + d.x2),
-            y: 0.5 * (d.y1 + d.y2)
+        // Temporary variables used for re-centering when resizing the window.
+        let w = width;
+        let h = height;
+        let forceCenter: Coordinates = {
+            x: width / 2,
+            y: height / 2
         };
 
-        tooltip
-            .classed('invisible node-tooltip', false)
-            .classed('edge-tooltip', true);
+        // Set up svg.
+        let svg = graphDiv.append('svg');
+        svg.style('cursor', 'move')
+            .style('width', '100%')
+            .style('height', '100%')
 
-        tooltip.html(edgeQTip(d.self))
-            .style('left', zoomedCoords(linkCenter, currentZoomTransform).x
-                + LABEL_OFFSET.x * currentZoomTransform.k + 'px')
-            .style('top', zoomedCoords(linkCenter, currentZoomTransform).y
-                + LABEL_OFFSET.y * currentZoomTransform.k + 'px');
-        svg.style('cursor', 'pointer');
-    }
-
-    function mouseout() {
-        tooltip
-            .classed('edge-tooltip node-tooltip', false)
-            .classed('invisible', true);
-        svg.style('cursor', 'move');
-    }
-
-    function doubleClick(d: DisplayVertex) {
-        if (d.detailUrl !== undefined) {
-            router.push(d.detailUrl);
-        }
-    }
-
-    // Collapse or expand nodes on click
-    function clicked(d: any) {
-        if (d.mergedTo !== null || !d.collapsible) {
-            return;
+        // Initialize zoom behaviour, set up the initial zoom transform.
+        let zoom = d3.zoom().scaleExtent([MIN_ZOOM, MAX_ZOOM]);
+        let currentZoomTransform: ScreenTransform = {
+            x: 0.0,
+            y: 0.0,
+            k: 1.0
         }
 
-        // Relink edges.
-        let collapsing = !d.aggregated;
-        d.aggregated = !d.aggregated;
-        for (let link of d.endingLinks) {
-            if (link.source.mergedTo === null && collapsing) {
-                link.source.mergedTo = d;
-            } else if (link.source.mergedTo === d && !collapsing) {
-                link.source.mergedTo = null;
-            }
+        // Initialize simulation
+        let simulation: any = d3.forceSimulation()
+            .force('link', d3.forceLink().id((d: DisplayEdge) => {
+                    return d.id;
+                })
+                    .distance(20)
+                    .strength(0.5)
+            )
+            .force('charge', d3.forceManyBody().strength(-300).distanceMax(200))
+            .force('center', d3.forceCenter(forceCenter.x, forceCenter.y));
+
+        // Pass link and node data to the simulation, define redraw action per
+        // 'tick' (simulation time step)
+        simulation.nodes(vertices)
+            .on('tick', ticked);
+        simulation.force('link').links(edges);
+
+        // Build an array of starting and ending links for each node containing the actual link
+        // object (not just the ids). Note that the ids have been replaced with the objects by
+        // d3 when initializing the force simulation.
+        for (let node of vertices) {
+            node.startingLinks = [];
+            node.endingLinks = [];
+            node.aggregated = false;
+            node.mergedTo = null;
         }
-        for (let link of d.startingLinks) {
-            if (link.target.mergedTo === null && collapsing) {
-                link.target.mergedTo = d;
-            } else if (link.target.mergedTo === d && !collapsing) {
-                link.target.mergedTo = null;
-            }
+        for (let link of edges) {
+            link.source.startingLinks.push(link);
+            link.target.endingLinks.push(link);
         }
 
-        // Change path of clicked vertices.
-        d3.select(this)
-            .select('path')
+        // Add the links
+        svg.selectAll('.links')
+            .data(edges)
+            .enter()
+            .append('g')
+            .attr('class', 'links')
+            .append('line')
+            .on('mouseover', mouseoverLink)
+            .on('mouseout', mouseout);
+
+        // Add a svg group for each node and assign it to the node class
+        svg.selectAll('.nodes')
+            .data(vertices)
+            .enter()
+            .append('g')
+            .attr('class', 'nodes');
+
+        // Add an underlying white circle to each node
+        svg.selectAll('.nodes')
+            .append('circle')
+            .attr('r', Math.max(ICON_SIZE.x, ICON_SIZE.y) / 2)
+            .attr('cx', ICON_SIZE.x / 2)
+            .attr('cy', ICON_SIZE.y / 2);
+
+        // Add the icon path to each node
+        svg.selectAll('.nodes')
+            .append('path')
             .attr('d', (d: DisplayVertex) => {
-                if (d.aggregated) {
-                    return icons[d.self.types[0]].aggregatedPath
-                } else {
-                    return icons[d.self.types[0]].path
-                }
+                return icons[d.self.types[0]].path
             });
+
+        // Deactivate double-click zoom and determine zoom behaviour on
+        // regular zoom.
+        svg.call(zoom).on('dblclick.zoom', null);
+        zoom.on('zoom', () => {
+            repositionLinks(d3.event.transform);
+            repositionNodes(d3.event.transform);
+            currentZoomTransform = d3.event.transform;
+        });
+
+        // Recenter the graph on window resize
+        d3.select(window).on('resize', resize);
+
         updateGraph();
-    }
 
-    function resize() {
-        // Reset the dimensions of the SVG.
-        height = nodeElement.getBoundingClientRect().height;
-        width = nodeElement.getBoundingClientRect().width;
-        svg.attr('width', width).attr('height', height);
+        function updateGraph() {
 
-        // Shift center for centerForce by half the change in window size
-        forceCenter.x = forceCenter.x + 0.5 * (width - w ) / currentZoomTransform.k;
-        forceCenter.y = forceCenter.y + 0.5 * (height - h) / currentZoomTransform.k;
-        simulation.force('center', d3.forceCenter(forceCenter.x, forceCenter.y)).restart();
-        w = width;
-        h = height;
+            // Add or remove interactions to/from the nodes.
+            svg.selectAll('.nodes')
+                .call(d3.drag()
+                    .on('start', (d: DisplayVertex) => {
+                        return d.mergedTo === null ? dragstarted(d) : null
+                    })
+                    .on('drag', (d: DisplayVertex) => {
+                        return d.mergedTo === null ? dragged(d) : null
+                    })
+                    .on('end', (d: DisplayVertex) => {
+                        return d.mergedTo === null ? dragended(d) : null
+                    })
+                )
+                .on('mouseover', (d: DisplayVertex) => {
+                    return d.mergedTo === null ? mouseoverNode(d) : null
+                })
+                .on('mouseout', mouseout)
+                .on('click', (d: DisplayVertex) => {
+                    return d.mergedTo === null ? clicked(d) : null
+                })
+                .on('dblclick', doubleClick);
+
+            svg.selectAll('.links')
+
+            // Adapt visibility of the nodes
+            svg.selectAll('.nodes')
+                .classed('invisible', (d: DisplayVertex) => {
+                    return d.mergedTo !== null;
+                });
+        }
+
+        // Event listeners which need access to the SVG drawing context.
+        // -------------------------------------------------------------
+
+        function ticked() {
+            repositionLinks(currentZoomTransform);
+            repositionNodes(currentZoomTransform);
+        }
+
+        function repositionLinks(transform: ScreenTransform) {
+            svg.selectAll('.links').selectAll('line')
+                .attr('x1', (d: DisplayEdge) => {
+                    return zoomedCoords(linkCoords(d).start, transform).x;
+                })
+                .attr('y1', (d: DisplayEdge) => {
+                    return zoomedCoords(linkCoords(d).start, transform).y;
+                })
+                .attr('x2', (d: DisplayEdge) => {
+                    return zoomedCoords(linkCoords(d).end, transform).x;
+                })
+                .attr('y2', (d: DisplayEdge) => {
+                    return zoomedCoords(linkCoords(d).end, transform).y;
+                });
+        }
+
+        function repositionNodes(transform: ScreenTransform) {
+            svg.selectAll('.nodes')
+                .attr('transform', (d: DisplayVertex) => {
+                    return zoomedCoordsTransform(d, transform);
+                });
+        }
+
+        function dragstarted(d: DisplayVertex) {
+            graphComponent.activeVertex = null;
+            if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+            d.fx = d.x;
+            d.fy = d.y;
+        }
+
+        // Using shift in coordinates between two events is the easiest since
+        // we don't have to deal with offsets.
+        function dragged(d: d3.SimulationNodeDatum) {
+            graphComponent.activeVertex = null;
+            d.fx += d3.event.sourceEvent.movementX / currentZoomTransform.k;
+            d.fy += d3.event.sourceEvent.movementY / currentZoomTransform.k;
+        }
+
+        function dragended(d: DisplayVertex) {
+            graphComponent.activeVertex = d;
+            if (!d3.event.active) simulation.alphaTarget(0);
+            d.fx = null;
+            d.fy = null;
+        }
+
+        function mouseoverNode (d: DisplayVertex) {
+            if (graphComponent.selectedVertex === null) {
+                d3.select('#nodeTooltip')
+                    .style('left', (zoomedCoords(d, currentZoomTransform).x
+                        + LABEL_OFFSET.x * currentZoomTransform.k) + 'px')
+                    .style('top', (zoomedCoords(d, currentZoomTransform).y
+                        + LABEL_OFFSET.y * currentZoomTransform.k) + 'px');
+                svg.style('cursor', 'pointer');
+                graphComponent.activeVertex = d;
+            }
+        }
+
+        function mouseoverLink(d) {
+            let linkCenter: Coordinates = {
+                x: 0.5 * (linkCoords(d).start.x + linkCoords(d).end.x),
+                y: 0.5 * (linkCoords(d).start.y + linkCoords(d).end.y)
+            };
+            d3.select('#edgeTooltip')
+                .style('left', (zoomedCoords(linkCenter, currentZoomTransform).x
+                    + LABEL_OFFSET.x * currentZoomTransform.k) + 'px')
+                .style('top', (zoomedCoords(linkCenter, currentZoomTransform).y
+                    + LABEL_OFFSET.y * currentZoomTransform.k) + 'px');
+            svg.style('cursor', 'pointer');
+            graphComponent.activeEdge = d;
+        }
+
+        function mouseout() {
+            svg.style('cursor', 'move');
+            graphComponent.activeVertex = null;
+            graphComponent.activeEdge = null;
+        }
+
+        function clicked(d: DisplayVertex) {
+            if (graphComponent.selectedVertex === d) {
+                graphComponent.selectedVertex = null;
+            } else if (graphComponent.selectedVertex === null) {
+                graphComponent.selectedVertex = d;
+            }
+        }
+
+        // Collapse or expand nodes on click
+        function doubleClick(d: any) {
+            if (d.mergedTo !== null || !d.collapsible) {
+                return;
+            }
+
+            // Relink edges.
+            let collapsing = !d.aggregated;
+            d.aggregated = !d.aggregated;
+            for (let link of d.endingLinks) {
+                if (link.source.mergedTo === null && collapsing) {
+                    link.source.mergedTo = d;
+                } else if (link.source.mergedTo === d && !collapsing) {
+                    link.source.mergedTo = null;
+                }
+            }
+            for (let link of d.startingLinks) {
+                if (link.target.mergedTo === null && collapsing) {
+                    link.target.mergedTo = d;
+                } else if (link.target.mergedTo === d && !collapsing) {
+                    link.target.mergedTo = null;
+                }
+            }
+
+            // Change path of clicked vertices.
+            d3.select(this)
+                .select('path')
+                .attr('d', (d: DisplayVertex) => {
+                    if (d.aggregated) {
+                        return icons[d.self.types[0]].aggregatedPath
+                    } else {
+                        return icons[d.self.types[0]].path
+                    }
+                });
+            updateGraph();
+        }
+
+        function resize() {
+            // Reset the dimensions of the SVG.
+            height = nodeElement.getBoundingClientRect().height;
+            width = nodeElement.getBoundingClientRect().width;
+            svg.attr('width', width).attr('height', height);
+
+            // Shift center for centerForce by half the change in window size
+            forceCenter.x = forceCenter.x + 0.5 * (width - w ) / currentZoomTransform.k;
+            forceCenter.y = forceCenter.y + 0.5 * (height - h) / currentZoomTransform.k;
+            simulation.force('center', d3.forceCenter(forceCenter.x, forceCenter.y)).restart();
+            w = width;
+            h = height;
+        }
     }
 }
 
@@ -488,33 +543,4 @@ function zoomedCoords(coords: any, transform: ScreenTransform): Coordinates {
         x: transform.x + coords.x * transform.k,
         y: transform.y + coords.y * transform.k
     };
-}
-
-function vertexQTip(vertex: PersistedVertex): string {
-    const types = vertex.types.map(x => `<code>${x}</code>`);
-    let propValues: Property[] = [];
-    vertex.properties.forEach(prop => prop.values.forEach(vp => propValues.push(vp)));
-    const rows = propValues.map(
-        prop => `<tr><td>${prop.key}</td><td style="padding-left: 30px;">${prop.value}</td></tr>`
-    );
-
-    return `<table>
-        <tr><td>id</td><td style="padding-left: 30px;">${vertex.id}</td></tr>
-        <tr><td>types</td><td style="padding-left: 30px;">${types.join(' ')}</td></tr>
-        ${rows.join('')}
-    </table>
-    `
-}
-
-function edgeQTip(edge: PersistedEdge): string {
-    const rows = edge.properties.map(
-        prop => `<tr><td>${prop.key}</td><td style="padding-left: 30px;">${prop.value}</td></tr>`
-    );
-
-    return `<table>
-        <tr><td>id</td><td style="padding-left: 30px;">${edge.id}</td></tr>
-        <tr><td>label</td><td style="padding-left: 30px;"><code>${edge.label}</code></td></tr>
-        ${rows.join('')}
-    </table>
-    `
 }

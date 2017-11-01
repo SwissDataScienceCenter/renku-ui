@@ -1,0 +1,20 @@
+<v-card>
+    <v-card-title>
+        <v-progress-linear v-bind:indeterminate="true" v-show="progress" ></v-progress-linear>
+        <span class="headline">Upload a file</span>
+    </v-card-title>
+    <v-card-text>
+        <v-text-field label="Name" required v-model="bucketfile"></v-text-field>
+        <v-text-field prepend-icon="attach_file" single-line
+                      v-model="filename" label="File" required
+                      @click.native="onFocus"
+                      ref="fileTextField">
+        </v-text-field>
+        <input type="file" accept="accept" ref="fileInput" @change="onFileChange" style="display:none">
+    </v-card-text>
+    <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn secondary flat v-on:click="closeDialog">Cancel</v-btn>
+        <v-btn secondary @click.native="addFile">Upload</v-btn>
+    </v-card-actions>
+</v-card>

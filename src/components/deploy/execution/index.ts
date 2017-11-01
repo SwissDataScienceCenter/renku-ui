@@ -18,26 +18,29 @@
 
 import Vue from 'vue'
 import Component from 'vue-class-component'
-import { router } from '../../../main'
 
+import { router } from '../../../main'
 import { GraphItem } from '../../graph-item-list/graph-item'
+
 
 Component.registerHooks([
   'beforeRouteEnter',
   'beforeRouteLeave',
   'beforeRouteUpdate'
-])
+]);
 
 @Component({
-    template: require('./execution.html')
+    template: require('./execution.html'),
+    computed: {
+        'contextUUID' : function () {
+            return this.$route.params.id
+        }
+    }
 })
 export class ExecutionComponent extends Vue {
 
-    progress: boolean = false
-    execDialog: boolean = false
-    exec_engine: string = ''
-    exec_namespace: string = ''
-    url_list: string = ''
+    progress: boolean = false;
+    url_list: string = '';
 
     headers: any[] = [
         {
@@ -51,12 +54,17 @@ export class ExecutionComponent extends Vue {
           { text: 'Namespace', value: 'deployer:execution_namespace' }
         ]
 
+    dialog: string = null;
+    closeDialog () {
+        this.dialog = null;
+    }
+
     created ()  {
         this.url_list = './api/deployer/contexts/' + this.$route.params.id + '/executions'
     }
 
     beforeRouteUpdate (to, from, next) {
-        this.url_list = './api/deployer/contexts/' + to.params.id + '/executions'
+        this.url_list = './api/deployer/contexts/' + to.params.id + '/executions';
         next()
     }
 
@@ -65,41 +73,14 @@ export class ExecutionComponent extends Vue {
     }
 
     parser(json: any): GraphItem[] {
-        const array = <object[]> json['executions']
+        const array = <object[]> json['executions'];
         return array.map(obj => {
-            let g = new GraphItem(undefined, undefined, undefined)
-            g.id = obj['identifier']
-            g.name = obj['identifier']
-            g.properties.push({'key': 'engine', 'value': obj['engine']})
-            g.properties.push({'key': 'namespace', 'value': obj['namespace']})
+            let g = new GraphItem(undefined, undefined, undefined);
+            g.id = obj['identifier'];
+            g.name = obj['identifier'];
+            g.properties.push({'key': 'engine', 'value': obj['engine']});
+            g.properties.push({'key': 'namespace', 'value': obj['namespace']});
             return g
-        })
-    }
-
-    addExec(event: Event): void {
-        this.progress = true
-        this.execDialog = false
-        let payload = JSON.stringify({
-          engine: this.exec_engine,
-          namespace: this.exec_namespace
-        })
-
-        fetch(`./api/deployer/contexts/${this.$route.params.id}/executions`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include',
-                body: payload
-            }
-        ).then(response => {
-            return response.json()
-            }
-        ).then(response => {
-            console.log('create', response)
-            this.progress = false
-            location.reload()
         })
     }
 

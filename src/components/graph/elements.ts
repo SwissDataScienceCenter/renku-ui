@@ -35,6 +35,12 @@ export interface DisplayVertex extends d3.SimulationNodeDatum {
     aggregated?: boolean,
     mergedTo?: DisplayEdge,
     collapsible: boolean
+    dialogs: Dialog[]
+}
+
+export interface Dialog {
+    name: string,
+    dialogType: string
 }
 
 export interface PersistedEdge {
