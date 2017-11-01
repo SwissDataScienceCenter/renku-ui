@@ -4,21 +4,11 @@
       <span slot="title">Executions</span>
     </graph-item-table>
     </v-navigation-drawer>
-    <v-dialog v-model="execDialog">
-      <v-btn secondary fixed bottom right fab slot="activator"><v-icon>play_arrow</v-icon></v-btn>
-      <v-card>
-        <v-card-title>
-          <span class="headline">Start an Execution</span>
-        </v-card-title>
-        <v-card-text>
-          <v-select label="Engine" required :items="['docker', 'k8s']" v-model="exec_engine"></v-select>
-          <v-text-field label="Namespace" required v-model="exec_namespace"></v-text-field>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn secondary flat @click.native="execDialog = false">Cancel</v-btn>
-          <v-btn secondary @click.native="addExec($event)">Start</v-btn>
-        </v-card-actions>
-      </v-card>
+    <v-dialog v-model="dialog">
+        <v-btn secondary fixed bottom right fab slot="activator"><v-icon>play_arrow</v-icon></v-btn>
+        <execution-dialog
+                v-on:closeDialog="closeDialog"
+                v-bind:contextUUID="contextUUID"
+        ></execution-dialog>
     </v-dialog>
 </div>

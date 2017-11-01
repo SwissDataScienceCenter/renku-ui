@@ -1,1 +1,49 @@
-<div id="d3-graph" style="width: 100%; height: 800px;"></div>
+<div id="graph-component">
+    <h2>Knowledge Graph</h2>
+    <v-card class="white">
+
+        <div id="d3-graph" style="width: 100%; height: 800px;">
+            <vertex-tooltip
+                    class="node-tooltip"
+                    v-bind:class="{ invisible: tooltipVertex===null }"
+                    v-on:closeTooltip="selectedVertex = null"
+                    v-on:showDialog="showDialog"
+                    :selectedVertex="tooltipVertex"
+                    id="nodeTooltip">
+            </vertex-tooltip>
+            <edge-tooltip
+                    class="edge-tooltip"
+                    v-bind:class="{ invisible: activeEdge===null }"
+                    :selectedEdge="activeEdge"
+                    id="edgeTooltip">
+            </edge-tooltip>
+        </div>
+    </v-card>
+    <v-dialog v-model="dialog" v-if="dialog === 'project'">
+        <project-dialog
+                v-on:closeDialog="closeDialog"
+                v-bind:projectId="selectedVertex.self.id">
+        </project-dialog>
+    </v-dialog>
+    <v-dialog v-model="dialog" v-if="dialog === 'execution'">
+        <execution-dialog
+                v-on:closeDialog="closeDialog"
+                v-bind:contextUUID="selectedVertex.self.properties[1].values[0].value">
+            <!--Why is the context UUID hidden so deeply in the vertex? Can I actually
+            rely on the order of the objects in the properties/values array?-->
+        </execution-dialog>
+    </v-dialog>
+    <v-dialog v-model="dialog" v-if="dialog === 'bucket'">
+        <bucket-dialog
+                v-on:closeDialog="closeDialog"
+                v-bind:bucketId="selectedVertex.self.id">
+        </bucket-dialog>
+    </v-dialog>
+    <v-dialog v-model="dialog" v-if="dialog === 'version'">
+        <version-dialog
+                v-on:closeDialog="closeDialog"
+                v-bind:selectedFileId="selectedVertex.self.id">
+        </version-dialog>
+    </v-dialog>
+</div>
+

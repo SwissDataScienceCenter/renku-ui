@@ -1,0 +1,15 @@
+<div :id="id" >
+    <div  v-if="selectedEdge !== null">
+        <table>
+            <tr>
+                <td>id</td><td style="padding-left: 30px;">{{ selectedEdge.id }}</td>
+            </tr>
+            <tr>
+                <td>label</td><td style="padding-left: 30px;"><code>{{ selectedEdge.label }}</code></td>
+            </tr>
+            <tr v-for="prop in selectedEdge.self.properties">
+                <td>{{ prop.values[0].key }}</td><td style="padding-left: 30px;">{{ prop.values[0].value }}</td>
+            </tr>
+        </table>
+    </div>
+</div>
