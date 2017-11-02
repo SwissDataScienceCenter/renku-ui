@@ -1,7 +1,13 @@
 <div id="graph-component">
     <h2>Knowledge Graph</h2>
+    <v-checkbox
+            style="postion: fixed"
+            color="grey lighten-1"
+            v-model="allCollapsed"
+            label="collapse all"
+            @click="toggle()">
+    </v-checkbox>
     <v-card class="white">
-
         <div id="d3-graph" style="width: 100%; height: 800px;">
             <vertex-tooltip
                     class="node-tooltip"
