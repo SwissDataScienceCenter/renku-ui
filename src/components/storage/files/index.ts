@@ -64,8 +64,13 @@ export class FilesComponent extends Vue {
           { text: 'resource:owner', value: 'resource:owner' }
         ]
 
-    closeDialog () {
+    cancel() {
         this.dialog = null
+    }
+
+    success() {
+        this.dialog = null
+        location.reload()
     }
 
     created ()  {

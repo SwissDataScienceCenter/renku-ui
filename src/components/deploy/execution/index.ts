@@ -55,8 +55,14 @@ export class ExecutionComponent extends Vue {
         ]
 
     dialog: string = null;
-    closeDialog () {
+
+    cancel() {
         this.dialog = null
+    }
+
+    success() {
+        this.dialog = null
+        location.reload()
     }
 
     created ()  {

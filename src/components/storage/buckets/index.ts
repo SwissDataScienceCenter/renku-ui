@@ -27,8 +27,14 @@ import { GraphItem } from '../../graph-item-list/graph-item'
 export class BucketsComponent extends Vue {
 
     dialog = null
-    closeDialog() {
+
+    cancel() {
         this.dialog = null
+    }
+
+    success() {
+        this.dialog = null
+        location.reload()
     }
 
     parser: any = json => {

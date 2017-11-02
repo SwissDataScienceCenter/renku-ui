@@ -7,7 +7,8 @@
     <v-dialog v-model="dialog">
         <v-btn secondary fixed bottom right fab slot="activator"><v-icon>play_arrow</v-icon></v-btn>
         <execution-dialog
-                v-on:closeDialog="closeDialog"
+                v-on:cancel="cancel"
+                v-on:success="success"
                 v-bind:contextUUID="contextUUID"
         ></execution-dialog>
     </v-dialog>

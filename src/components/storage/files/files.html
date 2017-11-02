@@ -29,14 +29,16 @@
 
     <v-dialog v-model="dialog" v-if="dialog === 'bucket'">
         <bucket-dialog
-                v-on:closeDialog="closeDialog"
+                v-on:success="success"
+                v-on:cancel="cancel"
                 v-bind:bucketId="bucketId">
         </bucket-dialog>
     </v-dialog>
 
     <v-dialog v-model="dialog" v-if="dialog === 'version'">
         <version-dialog
-                v-on:closeDialog="closeDialog"
+                v-on:success="success"
+                v-on:cancel="cancel"
                 v-bind:selectedFileId="selectedFileId">
         </version-dialog>
     </v-dialog>
