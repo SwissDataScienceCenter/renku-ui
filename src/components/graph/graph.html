@@ -21,13 +21,15 @@
     </v-card>
     <v-dialog v-model="dialog" v-if="dialog === 'project'">
         <project-dialog
-                v-on:closeDialog="closeDialog"
+                v-on:success="success"
+                v-on:cancel="cancel"
                 v-bind:projectId="selectedVertex.self.id">
         </project-dialog>
     </v-dialog>
     <v-dialog v-model="dialog" v-if="dialog === 'execution'">
         <execution-dialog
-                v-on:closeDialog="closeDialog"
+                v-on:success="success"
+                v-on:cancel="cancel"
                 v-bind:contextUUID="selectedVertex.self.properties[1].values[0].value">
             <!--Why is the context UUID hidden so deeply in the vertex? Can I actually
             rely on the order of the objects in the properties/values array?-->
@@ -35,13 +37,15 @@
     </v-dialog>
     <v-dialog v-model="dialog" v-if="dialog === 'bucket'">
         <bucket-dialog
-                v-on:closeDialog="closeDialog"
+                v-on:success="success"
+                v-on:cancel="cancel"
                 v-bind:bucketId="selectedVertex.self.id">
         </bucket-dialog>
     </v-dialog>
     <v-dialog v-model="dialog" v-if="dialog === 'version'">
         <version-dialog
-                v-on:closeDialog="closeDialog"
+                v-on:success="success"
+                v-on:cancel="cancel"
                 v-bind:selectedFileId="selectedVertex.self.id">
         </version-dialog>
     </v-dialog>

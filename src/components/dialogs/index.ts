@@ -48,13 +48,12 @@ export class ProjectDialogComponent extends Vue {
             .then(response => {
                 console.log('create', response)
                 this.progress = false
-                this.closeDialog()
-                location.reload()
+                this.$emit('success')
 
             })
     }
-    closeDialog() {
-        this.$emit('closeDialog')
+    cancel() {
+        this.$emit('cancel')
     }
 }
 
@@ -84,12 +83,11 @@ export class ExecutionDialogComponent extends Vue {
             .then(response => {
                 console.log('create', response)
                 this.progress = false
-                this.closeDialog()
-                location.reload()
+                this.$emit('success')
             })
     }
-    closeDialog() {
-        this.$emit('closeDialog')
+    cancel() {
+        this.$emit('cancel')
     }
 }
 
@@ -115,13 +113,12 @@ export class BucketDialogComponent extends Vue {
         addFile(this.bucketfile, this.bucketId, this.$refs.fileInput)
             .then(() => {
                 this.progress = false
-                this.closeDialog()
-                location.reload()
+                this.$emit('success')
             })
     }
 
-    closeDialog() {
-        this.$emit('closeDialog')
+    cancel() {
+        this.$emit('cancel')
     }
 
     onFileChange($event) {
@@ -155,13 +152,12 @@ export class VersionDialogComponent extends Vue {
         addFileVersion(this.selectedFileId, this.$refs.fileInput)
             .then(() => {
                 this.progress = false
-                this.closeDialog()
-                location.reload()
+                this.$emit('success')
             })
     }
 
-    closeDialog() {
-        this.$emit('closeDialog')
+    cancel() {
+        this.$emit('cancel')
     }
 
     onFileChange($event) {
