@@ -35,13 +35,35 @@ export function createBucket(bucketName: string, bucketBackend: string, projectI
         headers['Renga-Projects-Project'] = projectId
     }
 
-    console.log(projectId)
-
     return fetch('./api/storage/authorize/create_bucket',
         {
             method: 'POST',
             credentials: 'include',
             headers: headers,
+            body: payload
+        }
+    )
+}
+
+export function createContext(image: string, ports: string[], projectId?: number) {
+    let payload = JSON.stringify({
+        image: image,
+        ports: ports
+    })
+
+    let headers = {
+        'Content-Type': 'application/json'
+    }
+
+    if (projectId) {
+        headers['Renga-Projects-Project'] = projectId
+    }
+
+    return fetch('./api/deployer/contexts',
+        {
+            method: 'POST',
+            headers: headers,
+            credentials: 'include',
             body: payload
         }
     )

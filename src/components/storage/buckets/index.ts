@@ -23,6 +23,9 @@ import { GraphItem } from '../../graph-item-list/graph-item'
 
 @Component({
     template: require('./buckets.html'),
+    props: {
+        project: Object
+    }
 })
 export class BucketsComponent extends Vue {
 

@@ -19,8 +19,8 @@
 import Vue from 'vue'
 import Component from 'vue-class-component'
 
-import { addFile, addFileVersion, createBucket, runContext } from '../../utils/renga-api'
-import { PersistedVertex } from '../graph/elements'
+import { addFile, addFileVersion, createBucket, createContext, runContext } from '../../utils/renga-api'
+import { GraphItem } from '../graph-item-list/graph-item'
 
 
 // The different dialog components could probably be unified further or at
@@ -50,6 +50,40 @@ export class ProjectDialogComponent extends Vue {
                 this.progress = false
                 this.$emit('success')
 
+            })
+    }
+    cancel() {
+        this.$emit('cancel')
+    }
+}
+
+
+@Component({
+    template: require('./context-dialog.html'),
+    props: {
+        projectId: {
+            default: null
+        }
+    }
+})
+
+export class ContextDialogComponent extends Vue {
+    progress: boolean = false
+    context_image: string = ''
+    context_ports: string = ''
+    projectId: number
+
+    addContext() {
+        this.progress = true
+
+        createContext(this.context_image, this.context_ports.split(/\s*,\s*/), this.projectId)
+            .then(response => {
+                    return response.json()
+                }
+            ).then(response => {
+                console.log('create', response)
+                this.progress = false
+                this.$emit('success')
             })
     }
     cancel() {
