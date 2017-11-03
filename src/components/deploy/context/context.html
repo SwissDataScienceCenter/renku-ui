@@ -4,21 +4,12 @@
       <span slot="title">Execution Contexts</span>
     </graph-item-table>
     </v-navigation-drawer>
-    <v-dialog v-model="contextDialog">
+    <v-dialog v-model="dialog">
       <v-btn secondary fixed bottom right fab slot="activator"><v-icon>add</v-icon></v-btn>
-      <v-card>
-        <v-card-title>
-          <span class="headline">Create a context</span>
-        </v-card-title>
-        <v-card-text>
-          <v-text-field label="Image" required v-model="context_image"></v-text-field>
-          <v-text-field label="Comma-separated ports" required v-model="context_ports"></v-text-field>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn secondary flat @click.native="contextDialog = false">Cancel</v-btn>
-          <v-btn secondary @click.native="addContext($event)">Create</v-btn>
-        </v-card-actions>
-      </v-card>
+      <context-dialog
+              v-on:cancel="cancel"
+              v-on:success="success"
+              v-bind:projectId="project ? project.id : null">
+      </context-dialog>
     </v-dialog>
 </div>

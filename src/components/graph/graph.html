@@ -53,5 +53,12 @@
                 v-bind:selectedFileId="selectedVertex.self.id">
         </version-dialog>
     </v-dialog>
+    <v-dialog v-model="dialog" v-if="dialog === 'context'">
+        <context-dialog
+                v-on:success="success"
+                v-on:cancel="cancel"
+                v-bind:projectId="selectedVertex.self.id">
+        </context-dialog>
+    </v-dialog>
 </div>
 

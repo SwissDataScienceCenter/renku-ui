@@ -182,8 +182,12 @@ export class GraphComponent extends Vue {
         let dialogs = []
         if (vertex.types[0] === PROJECT) {
             dialogs.push({
-                name: 'Add Bucket',
+                name: 'Add bucket',
                 dialogType: 'project'
+            })
+            dialogs.push({
+                name: 'Add execution context',
+                dialogType: 'context'
             })
         }
         if (vertex.types[0] === CONTEXT) {
