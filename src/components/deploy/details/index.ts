@@ -18,7 +18,7 @@
 
 import Vue from 'vue'
 import Component from 'vue-class-component'
-import { router } from '../../../main'
+import { getContext } from '../../../utils/renga-api'
 
 
 @Component({
@@ -29,15 +29,25 @@ export class DetailExecutionComponent extends Vue {
     logs: string = ''
     port: string = ''
     deploy_ip: string = 'localhost'
+    context: any = null
 
     mounted () {
         this.updateLogs()
         this.updatePorts()
+        this.loadContext()
+    }
+
+    loadContext() {
+        getContext(this.$route.params.id)
+            .then(data => {
+                this.context = data
+            })
     }
 
     beforeRouteUpdate (to, from, next) {
         this.updateLogs()
         this.updatePorts()
+        this.loadContext()
         next()
     }
 
@@ -45,6 +55,7 @@ export class DetailExecutionComponent extends Vue {
         next(vm => {
             vm.updateLogs()
             vm.updatePorts()
+            vm.loadContext()
             })
     }
 
@@ -53,7 +64,18 @@ export class DetailExecutionComponent extends Vue {
     }
 
     clickItem(event: Event): void {
-        window.open(`http://${this.deploy_ip}:${this.port}`)
+        let url = `http://${this.deploy_ip}:${this.port}`
+
+        // Only for rengahub/minimal-notebook we add the token to the url and adapt the path
+        if (this.context.spec.image.includes('rengahub/minimal-notebook')) {
+            let notebookToken = this.context.spec.labels
+                .find(label => label.includes('renga.notebook.token='))
+                .replace('renga.notebook.token=', '')
+
+            url += `/notebooks/current_context/inputs/notebook?token=${notebookToken}`
+        }
+
+        window.open(url)
     }
 
     clickStop(event: Event): void {

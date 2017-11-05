@@ -1,10 +1,9 @@
 <div>
-    <v-progress-linear v-bind:indeterminate="true" v-show="progress" ></v-progress-linear>
     <graph-item-table v-bind:headers="headers" name_key="resource:file_name" v-bind:url_list="'./api/deployer/contexts'" v-on:selected="onSelect" v-bind:parser="parser">
       <span slot="title">Execution Contexts</span>
     </graph-item-table>
     </v-navigation-drawer>
-    <v-dialog v-model="dialog">
+    <v-dialog v-model="dialog" width="700px">
       <v-btn secondary fixed bottom right fab slot="activator"><v-icon>add</v-icon></v-btn>
       <context-dialog
               v-on:cancel="cancel"

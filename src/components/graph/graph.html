@@ -53,7 +53,7 @@
                 v-bind:selectedFileId="selectedVertex.self.id">
         </version-dialog>
     </v-dialog>
-    <v-dialog v-model="dialog" v-if="dialog === 'context'">
+    <v-dialog v-model="dialog" v-if="dialog === 'context'" width="700px">
         <context-dialog
                 v-on:success="success"
                 v-on:cancel="cancel"

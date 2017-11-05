@@ -612,3 +612,19 @@ function zoomedCoords(coords: any, transform: ScreenTransform): Coordinates {
         y: transform.y + coords.y * transform.k
     }
 }
+
+export function findDisplayName(vertex: PersistedVertex): string {
+    const nameProperties = new Set([
+        'resource:bucket_name',
+        'resource:file_name',
+        'deployer:context_spec_image',
+        'project:project_name'
+    ])
+
+    const prop: undefined | any = vertex.properties.find(prop => nameProperties.has(prop.key))
+    if (prop === undefined) {
+        return `id=${vertex.id}`
+    } else {
+        return `${prop.values[0].value}`
+    }
+}
