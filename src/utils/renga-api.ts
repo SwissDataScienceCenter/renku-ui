@@ -17,6 +17,7 @@
  */
 
 
+
 export function createBucket(bucketName: string, bucketBackend: string, projectId?: number) {
 
     let payload = JSON.stringify({
@@ -43,11 +44,35 @@ export function createBucket(bucketName: string, bucketBackend: string, projectI
     )
 }
 
-export function createContext(image: string, ports: string[], projectId?: number) {
-    let payload = JSON.stringify({
+export function createContext(image: string, ports: string[], labels: string[] = [], projectId?: number,
+                              notebookId?: number) {
+    let postData = {
         image: image,
-        ports: ports
-    })
+        ports: ports,
+        labels: labels
+    }
+
+    let isNotebookImage = image.includes('rengahub/minimal-notebook')
+
+    if (isNotebookImage) {
+
+        if (notebookId) postData.labels.push(`renga.context.inputs.notebook=${notebookId}`)
+
+        // This is a bit clumsy (the now deprecated npm crypto package on npm had
+        // simple to use randomBytes method.
+        let token = ''
+        let randomBytes: any = crypto.getRandomValues(new Uint32Array(6))
+        randomBytes.forEach(i => {
+                token += i.toString(16)
+            })
+
+        postData.labels.push(`renga.notebook.token=${token}`)
+        postData['command'] = 'start-notebook.sh ' +
+            '--ContentsManager.untitled_notebook=notebook ' +
+            '--NotebookApp.ip=\'*\' ' +
+            `--NotebookApp.token=${token} ` +
+            '--NotebookApp.contents_manager_class=renga.notebook.RengaStorageManager'
+    }
 
     let headers = {
         'Content-Type': 'application/json'
@@ -62,17 +87,33 @@ export function createContext(image: string, ports: string[], projectId?: number
             method: 'POST',
             headers: headers,
             credentials: 'include',
-            body: payload
+            body: JSON.stringify(postData)
         }
     )
 }
 
-export function runContext(engine: string, namespace: string, contextUUID: string) {
+export function getContext(contextUUID: string) {
+    return fetch( `./api/deployer/contexts/${contextUUID}`,
+        {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            return response.json()
+        })
+}
 
-    let payload = JSON.stringify({
+export function runContext(engine: string, namespace: string, contextUUID: string, environment?: object) {
+
+    let payload = {
         engine: engine,
-        namespace: namespace
-    })
+        namespace: namespace,
+    }
+
+    if (environment) payload['environment'] = environment
 
     return fetch(`./api/deployer/contexts/${contextUUID}/executions`,
         {
@@ -81,7 +122,7 @@ export function runContext(engine: string, namespace: string, contextUUID: strin
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: payload
+            body: JSON.stringify(payload)
         }
     )
 }
@@ -181,3 +222,59 @@ function executeUpload(authorization: Promise<any>, fileInput: any, fileUrl: str
             }
         })
 }
+
+export function getProjectResources(projectId: number) {
+    return fetch( `./api/explorer/projects/${projectId}/resources`,
+        {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            return response.json()
+        })
+}
+
+export function getBucketFiles(bucketId: number) {
+    return fetch( `./api/explorer/storage/bucket/${bucketId}/files`,
+        {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            return response.json()
+        })
+}
+
+export function getProjects() {
+    return fetch( `./api/explorer/projects`,
+        {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            return response.json()
+        })
+}
+
+export function getProjectFiles(projectId: number) {
+    return getProjectResources(projectId)
+        .then(responseJSON => {
+            return responseJSON
+                .filter( (item) => {
+                    return item.types.indexOf('resource:bucket') >= 0
+                })
+                .map( (bucketResource) => {
+                    return getBucketFiles(bucketResource.id)
+                })
+        })
+}
+

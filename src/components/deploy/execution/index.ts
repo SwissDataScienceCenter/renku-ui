@@ -54,7 +54,7 @@ export class ExecutionComponent extends Vue {
           { text: 'Namespace', value: 'deployer:execution_namespace' }
         ]
 
-    dialog: string = null;
+    dialog: string = null
 
     cancel() {
         this.dialog = null

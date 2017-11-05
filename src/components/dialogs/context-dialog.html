@@ -4,8 +4,52 @@
         <span class="headline">Create a context</span>
     </v-card-title>
     <v-card-text>
-        <v-text-field label="Image" required v-model="context_image"></v-text-field>
-        <v-text-field label="Comma-separated ports" required v-model="context_ports"></v-text-field>
+        <v-container grid-list-md>
+            <v-layout wrap>
+                <v-flex xs12 sm6 md4>
+                    <v-text-field label="Image" required v-model="context_image"></v-text-field>
+                </v-flex>
+                <v-flex xs12 sm6 md4>
+                    <v-text-field label="Comma-separated ports" required v-model="context_ports"></v-text-field>
+                </v-flex>
+                <v-flex xs12 sm6 md4>
+                    <v-select
+                            v-model="context_notebook"
+                            v-bind:items="notebooks"
+                            label="Add notebook input"
+                            autocomplete>
+                    </v-select>
+                </v-flex>
+            </v-layout>
+        </v-container>
+        <v-container grid-list-md >
+            <v-layout wrap v-for="(_, i) in inputSlotNames">
+                <v-flex xs12 sm6>
+                    <v-text-field  label="Add input slot" v-model="inputSlotNames[i]"></v-text-field>
+                </v-flex>
+                <v-flex xs12 sm6>
+                    <v-select
+                        v-model="inputSlotFiles[i]"
+                        v-bind:items="files"
+                        label="Select default"
+                        autocomplete>
+                    </v-select>
+                </v-flex>
+            </v-layout>
+            <v-layout wrap v-for="(_, i) in outputSlotNames">
+                <v-flex xs12 sm6>
+                    <v-text-field  label="Add output slot" v-model="outputSlotNames[i]"></v-text-field>
+                </v-flex>
+                <v-flex xs12 sm6>
+                    <v-select
+                            v-model="outputSlotFiles[i]"
+                            v-bind:items="files"
+                            label="Select default"
+                            autocomplete>
+                    </v-select>
+                </v-flex>
+            </v-layout>
+        </v-container>
     </v-card-text>
     <v-card-actions>
         <v-spacer></v-spacer>
