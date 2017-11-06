@@ -40,5 +40,3 @@ def setup_globals():
         'CLIENT_ID', 'demo-client')
     g['CLIENT_SECRET'] = os.environ.get(
         'CLIENT_SECRET', '5294a18e-e784-4e39-a927-ce816c91c83e')
-    g['DEPLOY_IP'] = os.environ.get(
-        'DEPLOY_IP', 'localhost')

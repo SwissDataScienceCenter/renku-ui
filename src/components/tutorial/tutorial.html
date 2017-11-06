@@ -122,7 +122,7 @@
               <v-list two-line subheader>
                 <v-subheader inset>From an IDE</v-subheader>
               </v-list>
-              <v-select label="base image" required :items="[{text: 'jupyter notebook', value: 'jupyter/scipy-notebook'}, {text: 'R studio', value:'rocker/rstudio'}]" v-model="imageIDE"></v-select>
+              <v-select label="base image" required :items="[{text: 'jupyter notebook', value: 'jupyter'}, {text: 'R studio', value:'rstudio'}]" v-model="imageIDE"></v-select>
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn secondary @click="executeIDE">Execute</v-btn>
