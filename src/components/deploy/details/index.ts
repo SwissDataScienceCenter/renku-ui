@@ -22,9 +22,6 @@ import { router } from '../../../main'
 
 
 @Component({
-    props: {
-        deploy_ip: String,
-       },
     template: require('./details.html')
 })
 export class DetailExecutionComponent extends Vue {
@@ -109,6 +106,7 @@ export class DetailExecutionComponent extends Vue {
         ).then(response => {
             if (response.ports.length > 0) {
                 this.port = response.ports[0].exposed
+                this.deploy_ip = response.ports[0].host
             }
         })
     }
