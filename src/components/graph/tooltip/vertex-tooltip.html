@@ -1,0 +1,31 @@
+<div :id="id" >
+    <div v-if="selectedVertex !== null">
+        <v-btn secondary absolute top right small fab
+               v-on:click="closeTooltip">
+            <v-icon>close</v-icon>
+        </v-btn>
+        <table>
+            <tr>
+                <td>id</td><td style="padding-left: 30px;">{{ selectedVertex.id }}</td>
+            </tr>
+            <tr v-for="(type, i) in selectedVertex.self.types">
+                <td v-if=" i==0 ">types</td>
+                <td v-else> </td> <td style="padding-left: 30px;"><code>{{ type }}</code></td>
+            </tr>
+            <tr v-for="prop in selectedVertex.self.properties">
+                <td>{{ prop.values[0].key }}</td><td style="padding-left: 30px;">{{ prop.values[0].value }}</td>
+            </tr>
+        </table>
+
+        <v-btn secondary
+               v-if="selectedVertex.detailUrl != null"
+               v-on:click="goDetail">
+            Detail
+        </v-btn>
+        <v-btn secondary
+                v-for="(dialog, i) in selectedVertex.dialogs"
+               @click.stop="showDialog(i)">
+            {{ dialog.name }}
+        </v-btn>
+    </div>
+</div>

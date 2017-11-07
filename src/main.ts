@@ -25,12 +25,14 @@ import { HomeComponent } from './components/home'
 import { TutorialComponent } from './components/tutorial'
 import { ContextComponent, ExecutionComponent, DetailExecutionComponent } from './components/deploy'
 import { BucketsComponent, FilesComponent } from './components/storage'
-import { NavigationComponent } from './components/navigation'
 
 import { UserMenuComponent, ProfileComponent, UserState, NoUser } from './components/user'
 import { ProjectSelectorComponent, Project } from './components/project'
 import { GraphComponent } from './components/graph'
 import { GraphItemListComponent, GraphItemTableComponent } from './components/graph-item-list'
+
+import { BucketDialogComponent, ExecutionDialogComponent,
+    ProjectDialogComponent, VersionDialogComponent } from './components/dialogs'
 
 // Vuetify style
 require('./main.styl')
@@ -41,6 +43,11 @@ Vue.use(Vuetify)
 
 Vue.component('user-menu', UserMenuComponent)
 Vue.component('project-selector', ProjectSelectorComponent)
+
+Vue.component('project-dialog', ProjectDialogComponent);
+Vue.component('execution-dialog', ExecutionDialogComponent);
+Vue.component('bucket-dialog', BucketDialogComponent);
+Vue.component('version-dialog', VersionDialogComponent);
 
 Vue.component('graph-display', GraphComponent)
 Vue.component('graph-item-list', GraphItemListComponent)
@@ -80,7 +87,7 @@ let mc = new MainComponent({
       { path: '/deploy/context/:id/execution/:eid', component: DetailExecutionComponent },
       { path: '/storage', component: BucketsComponent },
       { path: '/storage/:id(\\d+)', component: FilesComponent },
-      { path: '/graph', component: NavigationComponent },
+      { path: '/graph', component: GraphComponent },
       { path: '/profile', component: ProfileComponent }
     ],
   })

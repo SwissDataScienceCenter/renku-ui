@@ -1,0 +1,15 @@
+<v-card>
+    <v-card-title>
+        <v-progress-linear v-bind:indeterminate="true" v-show="progress" ></v-progress-linear>
+        <span class="headline">Create a bucket</span>
+    </v-card-title>
+    <v-card-text>
+        <v-text-field label="Name" required v-model="bucketName"></v-text-field>
+        <v-select label="Backend" required :items="['local', 'swift']" v-model="bucketBackend"></v-select>
+    </v-card-text>
+    <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn secondary flat v-on:click="cancel">Cancel</v-btn>
+        <v-btn secondary v-on:click="addBucket">Create</v-btn>
+    </v-card-actions>
+</v-card>
