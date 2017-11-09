@@ -16,36 +16,10 @@
  * limitations under the License.
  */
 
-import Vue from 'vue'
-import Component from 'vue-class-component'
-
-import { GraphItem } from '../../graph-item-list/graph-item'
-
-@Component({
-    template: require('./buckets.html'),
-    props: {
-        project: Object
-    }
-})
-export class BucketsComponent extends Vue {
-
-    dialog = null
-
-    cancel() {
-        this.dialog = null
-    }
-
-    success() {
-        this.dialog = null
-        location.reload()
-    }
-
-    parser: any = json => {
-                console.log('list', json)
-                const array = <object[]> json
-                return array.map(obj => {
-                    return new GraphItem(obj, 'resource:bucket_name', 'resource:bucket_backend')
-                })
-            }
-
-}
+export const CONTEXT = 'deployer:context'
+export const EXECUTION = 'deployer:execution'
+export const FILE = 'resource:file'
+export const FILE_VERSION = 'resource:file_version'
+export const FILE_LOCATION = 'resource:file_location'
+export const BUCKET = 'resource:bucket'
+export const PROJECT = 'project:project'

@@ -1,15 +1,15 @@
 <v-card>
     <v-card-title>
         <v-progress-linear v-bind:indeterminate="true" v-show="progress" ></v-progress-linear>
-        <span class="headline">Create a bucket</span>
+        <span class="headline">Create a context</span>
     </v-card-title>
     <v-card-text>
-        <v-text-field label="Name" required v-model="bucketName"></v-text-field>
-        <v-select label="Backend" required :items="['local', 'swift']" v-model="bucketBackend"></v-select>
+        <v-text-field label="Image" required v-model="context_image"></v-text-field>
+        <v-text-field label="Comma-separated ports" required v-model="context_ports"></v-text-field>
     </v-card-text>
     <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn secondary flat v-on:click="cancel">Cancel</v-btn>
-        <v-btn secondary v-on:click="addBucket">Create</v-btn>
+        <v-btn secondary v-on:click="addContext">Add</v-btn>
     </v-card-actions>
 </v-card>

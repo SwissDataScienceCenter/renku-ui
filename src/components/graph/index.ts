@@ -24,7 +24,9 @@ import { loadVertices, loadEdges } from './load-graph'
 import { PersistedVertex, DisplayVertex, PersistedEdge, DisplayEdge,
     ScreenTransform, Coordinates, LinkCoordinates } from './elements'
 import { icons } from './icons'
+import { EXECUTION, CONTEXT, BUCKET, FILE, FILE_LOCATION, FILE_VERSION, PROJECT } from './vertex-types'
 import { VertexTooltipComponent, EdgeTooltipComponent } from './tooltip'
+import { BaseType } from 'd3-selection'
 
 require('./graph.styl')
 
@@ -42,7 +44,14 @@ const LABEL_OFFSET: Coordinates = {
 }
 // Colorscale for multiple clusters, projects, etc. Not used at the moment...
 const COLOR = d3.scaleOrdinal(d3.schemeCategory10)
-const COLLAPSIBLE_TYPES = ['resource:file', 'deployer:context']
+const COLLAPSIBLE_TYPES = [FILE, CONTEXT, PROJECT]
+const COLLAPSIBLE_NEIGHBORS = {}
+COLLAPSIBLE_NEIGHBORS[FILE] = [FILE_VERSION, FILE_LOCATION]
+COLLAPSIBLE_NEIGHBORS[PROJECT] = [BUCKET]
+COLLAPSIBLE_NEIGHBORS[CONTEXT] = [EXECUTION]
+
+const START_COLLAPSED = true
+
 
 // We register these components locally since they are only used here.
 Vue.component('vertex-tooltip', VertexTooltipComponent)
@@ -59,18 +68,26 @@ export class GraphComponent extends Vue {
     edges: DisplayEdge[] = []
     edgeIds: string[] = []
 
+    allCollapsed: boolean = START_COLLAPSED
+
     selectedVertex: DisplayVertex = null
     activeVertex: DisplayVertex = null
     activeEdge: DisplayEdge = null
+
+    dialog: string = null
+    dispatcher = d3.dispatch('collapse')
 
     get tooltipVertex () {
         return (this.selectedVertex ? this.selectedVertex : this.activeVertex)
     }
 
-    dialog: string = null
-
     cancel() {
         this.dialog = null
+    }
+
+    toggle() {
+        this.allCollapsed = !this.allCollapsed
+        this.dispatcher.call('collapse')
     }
 
     success() {
@@ -95,96 +112,97 @@ export class GraphComponent extends Vue {
         })
     }
 
-    addEdge(edge: PersistedEdge): void {
-        if (this.edgeIds.indexOf(`#e${edge.id}`) === -1) {
-            this.edges.push(
-                {
-                    id: `n${edge.id}`,
-                    label: `${edge.label}`,
-                    source: `v${edge.from}`,
-                    target: `v${edge.to}`,
-                    display_name: `${edge.label.replace(/([^:]*):(.*)/, '$2')}`,
-                    self: edge
-                }
-            )
-            this.edgeIds.push(`v${edge.id}`)
+    addEdge(edge: PersistedEdge) {
 
-            // Use this to temporarily enrich executions with the context that has produced them in order to construct
-            // the correct url for this execution (full url should be part of the API response)
-            if (this.edges[this.edges.length - 1].display_name === 'launch') {
-                for (let source of this.vertices) {
-                    if (source.id === this.edges[this.edges.length - 1].source) {
-                        for (let target of this.vertices) {
-                            if (target.id === this.edges[this.edges.length - 1].target) {
-                                let contextUUID
-                                let executionUUID
-                                for (let prop of source.self.properties) {
-                                    if (prop.key === 'deployer:context_id') {
-                                        contextUUID = prop.values[0].value
-                                    }
-                                }
-                                for (let prop of target.self.properties) {
-                                    if (prop.key === 'deployer:execution_id') {
-                                        executionUUID = prop.values[0].value
-                                    }
-                                }
-                                target.detailUrl = `deploy/context/${contextUUID}/execution/${executionUUID}`
-                            }
-                        }
-                    }
-                }
+        if (this.edgeIds.indexOf(`#e${edge.id}`) !== -1) return
+
+        this.edges.push(
+            {
+                id: `n${edge.id}`,
+                label: `${edge.label}`,
+                source: `v${edge.from}`,
+                target: `v${edge.to}`,
+                display_name: `${edge.label.replace(/([^:]*):(.*)/, '$2')}`,
+                self: edge
             }
+        )
+        this.edgeIds.push(`v${edge.id}`)
+
+        // Use this temporarily to enrich executions with the context that has produced them in order to construct
+        // the correct url for this execution (contextUUID should be part of the API response)
+
+        let newEdge = this.edges[this.edges.length - 1]
+
+        if (newEdge.display_name === 'launch') {
+            let context = this.vertices.find( vertex => vertex.id === newEdge.source)
+            let execution = this.vertices.find( vertex => vertex.id === newEdge.target)
+            execution.detailUrl = `deploy/context/${context.self.UUID}/execution/${execution.self.UUID}`
         }
     }
 
-    addVertex(vertex: PersistedVertex): void {
-        if (this.vertexIds.indexOf(`#v${vertex.id}`) === -1) {
-            this.vertices.push({
-                id: `v${vertex.id}`,
-                label: `${vertex.id}`,
-                display_name: this.findDisplayName(vertex),
-                detailUrl: null,
-                self: vertex,
-                collapsible: COLLAPSIBLE_TYPES.indexOf(vertex.types[0]) >= 0,
-                dialogs: this.addDialogs(vertex)
-            })
-            this.vertexIds.push(`v${vertex.id}`)
+    addVertex(vertex: PersistedVertex) {
 
+        if (this.vertexIds.indexOf(`#v${vertex.id}`) !== -1) return
 
-            if (this.vertices[this.vertices.length - 1].self.types[0] === 'deployer:context') {
-                for (let prop of this.vertices[this.vertices.length - 1].self.properties) {
-                    if (prop.key === 'deployer:context_id') {
-                        this.vertices[this.vertices.length - 1].detailUrl = `deploy/context/${prop.values[0].value}`
-                    }
-                }
-            } else if (this.vertices[this.vertices.length - 1].self.types[0] === 'resource:bucket') {
-                this.vertices[this.vertices.length - 1].detailUrl =
-                    `storage/${this.vertices[this.vertices.length - 1].self.id}`
-            }
+        this.vertices.push({
+            id: `v${vertex.id}`,
+            label: `${vertex.id}`,
+            display_name: this.findDisplayName(vertex),
+            detailUrl: null,
+            self: vertex,
+            collapsible: COLLAPSIBLE_TYPES.indexOf(vertex.types[0]) >= 0,
+            dialogs: this.addDialogs(vertex)
+        })
+        this.vertexIds.push(`v${vertex.id}`)
+
+        let newVertex = this.vertices[this.vertices.length - 1]
+
+        switch (newVertex.self.types[0]) {
+            case CONTEXT:
+                newVertex.self.UUID = newVertex.self.properties.find( prop => {
+                    return prop.key === 'deployer:context_id'
+                }).values[0].value
+                newVertex.detailUrl = `deploy/context/${newVertex.self.UUID}`
+                break
+
+            case BUCKET:
+                newVertex.detailUrl = `storage/${newVertex.self.id}`
+                break
+
+            case EXECUTION:
+                newVertex.self.UUID = newVertex.self.properties.find( prop => {
+                    return prop.key === 'deployer:execution_id'
+                }).values[0].value
+                // detailUrl is added once we know about the edges
+                break
         }
     }
 
     addDialogs(vertex: PersistedVertex) {
         let dialogs = []
-        if (vertex.types[0] === 'project:project') {
+        if (vertex.types[0] === PROJECT) {
             dialogs.push({
-                name: 'Add Bucket',
+                name: 'Add bucket',
                 dialogType: 'project'
             })
+            dialogs.push({
+                name: 'Add execution context',
+                dialogType: 'context'
+            })
         }
-        if (vertex.types[0] === 'deployer:context') {
+        if (vertex.types[0] === CONTEXT) {
             dialogs.push({
                 name: 'Launch execution',
                 dialogType: 'execution'
             })
         }
-        if (vertex.types[0] === 'resource:bucket') {
+        if (vertex.types[0] === BUCKET) {
             dialogs.push({
                 name: 'Add file',
                 dialogType: 'bucket'
             })
         }
-        if (vertex.types[0] === 'resource:file') {
+        if (vertex.types[0] === FILE) {
             dialogs.push({
                 name: 'Add version',
                 dialogType: 'version'
@@ -209,7 +227,7 @@ export class GraphComponent extends Vue {
         }
     }
 
-
+    
 // TODO: I have used "any" in a few cases to avoid typescript compilation errors
 // TODO: related to d3 functions, objects. Fix this.
     drawGraph(vertices: DisplayVertex[], edges: any[]) {
@@ -238,6 +256,18 @@ export class GraphComponent extends Vue {
         svg.style('cursor', 'move')
             .style('width', '100%')
             .style('height', '100%')
+
+        // Define a reusable arrowhead marker
+        svg.append('marker')
+            .attr('id', 'arrowhead')
+            .attr('class', 'links')
+            .attr('viewBox', '-4 -2 4 4')
+            .attr('refX', 4)
+            .attr('markerWidth', 4)
+            .attr('markerHeight', 4)
+            .attr('orient', 'auto')
+            .append('polygon')
+            .attr('points', '-4,-2 0,0 -4,2')
 
         // Initialize zoom behaviour, set up the initial zoom transform.
         let zoom = d3.zoom().scaleExtent([MIN_ZOOM, MAX_ZOOM])
@@ -283,6 +313,7 @@ export class GraphComponent extends Vue {
             .data(edges)
             .enter()
             .append('g')
+            .attr('id', d => d.id)
             .attr('class', 'links')
             .append('line')
             .on('mouseover', mouseoverLink)
@@ -316,12 +347,18 @@ export class GraphComponent extends Vue {
             repositionLinks(d3.event.transform)
             repositionNodes(d3.event.transform)
             currentZoomTransform = d3.event.transform
+            d3.select('#arrowhead')
+                .attr('refX', 4 * currentZoomTransform.k)
         })
 
         // Recenter the graph on window resize
         d3.select(window).on('resize', resize)
 
         updateGraph()
+
+        aggregateAll()
+
+        graphComponent.dispatcher.on('collapse', aggregateAll)
 
         function updateGraph() {
 
@@ -345,7 +382,11 @@ export class GraphComponent extends Vue {
                 .on('click', (d: DisplayVertex) => {
                     return d.mergedTo === null ? clicked(d) : null
                 })
-                .on('dblclick', doubleClick)
+                .on('dblclick', (d, i, group) => {
+                    graphComponent.activeVertex = null
+                    graphComponent.selectedVertex = null
+                    aggregate(d, i, group, true)
+                })
 
             svg.selectAll('.links')
 
@@ -450,40 +491,62 @@ export class GraphComponent extends Vue {
         }
 
         // Collapse or expand nodes on click
-        function doubleClick(d: any) {
+        function aggregate(d: any, i: number, group: ArrayLike<BaseType>, update: boolean) {
             if (d.mergedTo !== null || !d.collapsible) {
                 return
             }
+
+            let vertexType = d.self.types[0]
+            let oktypes = COLLAPSIBLE_NEIGHBORS[vertexType]
 
             // Relink edges.
             let collapsing = !d.aggregated
             d.aggregated = !d.aggregated
             for (let link of d.endingLinks) {
-                if (link.source.mergedTo === null && collapsing) {
+                if (link.source.mergedTo === null && collapsing && oktypes.indexOf(link.source.self.types[0]) >= 0) {
                     link.source.mergedTo = d
                 } else if (link.source.mergedTo === d && !collapsing) {
                     link.source.mergedTo = null
                 }
             }
             for (let link of d.startingLinks) {
-                if (link.target.mergedTo === null && collapsing) {
+                if (link.target.mergedTo === null && collapsing && oktypes.indexOf(link.target.self.types[0]) >= 0) {
                     link.target.mergedTo = d
                 } else if (link.target.mergedTo === d && !collapsing) {
                     link.target.mergedTo = null
                 }
             }
 
-            // Change path of clicked vertices.
-            d3.select(this)
+            // Check for other zero-length links and make them (or their heads) invisible
+            for (let link of edges) {
+                let linkC = linkCoords(link)
+                let invisible = linkC.start.x === linkC.end.x && linkC.start.y === linkC.end.y
+                d3.select(`#${link.id}`).classed('invisible', invisible)
+            }
+
+            // Change path of clicked vertices
+            d3.select(group[i])
                 .select('path')
                 .attr('d', (d: DisplayVertex) => {
                     if (d.aggregated) {
-                        return icons[d.self.types[0]].aggregatedPath
+                        return icons[vertexType].aggregatedPath
                     } else {
-                        return icons[d.self.types[0]].path
+                        return icons[vertexType].path
+                    }
+                })
+            if (update) updateGraph()
+        }
+
+        function aggregateAll() {
+            d3.selectAll('.nodes')
+                .each((d: any, i, group) => {
+                    if (d.aggregated !== graphComponent.allCollapsed) {
+                        aggregate(d, i, group, false)
                     }
                 })
             updateGraph()
+            // Run one tick to make sure the lines are redrawn.
+            ticked()
         }
 
         function resize() {

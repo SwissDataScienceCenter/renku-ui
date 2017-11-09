@@ -31,7 +31,7 @@ import { ProjectSelectorComponent, Project } from './components/project'
 import { GraphComponent } from './components/graph'
 import { GraphItemListComponent, GraphItemTableComponent } from './components/graph-item-list'
 
-import { BucketDialogComponent, ExecutionDialogComponent,
+import { BucketDialogComponent, ContextDialogComponent, ExecutionDialogComponent,
     ProjectDialogComponent, VersionDialogComponent } from './components/dialogs'
 
 // Vuetify style
@@ -45,6 +45,7 @@ Vue.component('user-menu', UserMenuComponent)
 Vue.component('project-selector', ProjectSelectorComponent)
 
 Vue.component('project-dialog', ProjectDialogComponent);
+Vue.component('context-dialog', ContextDialogComponent);
 Vue.component('execution-dialog', ExecutionDialogComponent);
 Vue.component('bucket-dialog', BucketDialogComponent);
 Vue.component('version-dialog', VersionDialogComponent);

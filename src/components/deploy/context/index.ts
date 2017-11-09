@@ -23,14 +23,24 @@ import { router } from '../../../main'
 import { GraphItem } from '../../graph-item-list/graph-item'
 
 @Component({
-    template: require('./context.html')
+    template: require('./context.html'),
+    props: {
+        project: Object
+    }
 })
 export class ContextComponent extends Vue {
 
     progress: boolean = false
-    contextDialog: boolean = false
-    context_image: string = ''
-    context_ports: string = ''
+    dialog: string = null
+
+    cancel() {
+        this.dialog = null
+    }
+
+    success() {
+        this.dialog = null
+        location.reload()
+    }
 
     headers: any[] = [
         {
@@ -55,33 +65,6 @@ export class ContextComponent extends Vue {
                 g.properties.push({'key': 'ports', 'value': '-'})
             }
             return g
-        })
-    }
-
-    addContext(event: Event): void {
-        this.progress = true
-        this.contextDialog = false
-        let payload = JSON.stringify({
-          image: this.context_image,
-          ports: this.context_ports.split(/\s*,\s*/)
-        })
-
-        fetch('./api/deployer/contexts',
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include',
-                body: payload
-            }
-        ).then(response => {
-            return response.json()
-            }
-        ).then(response => {
-            console.log('create', response)
-            this.progress = false
-            location.reload()
         })
     }
 
