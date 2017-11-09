@@ -53,7 +53,7 @@ export class ProjectSelectorComponent extends Vue {
         this.updateProjectList()
     }
 
-    updateProjectList(): void {
+    updateProjectList(): Promise<any> {
         let parser = json => {
             const array = <object[]> json
             return array.map(obj => {
@@ -62,10 +62,16 @@ export class ProjectSelectorComponent extends Vue {
         }
 
         if (!(this.user instanceof NoUser)) {
-            fetchItemList(`./api/explorer/projects/user?userId=${(<LoggedUser> this.user).user.sub}`, '', parser).then(res => {
-                if (res !== null) {
-                    this.projects = res
-                }
+            return fetchItemList(`./api/explorer/projects/user?userId=${(<LoggedUser> this.user).user.sub}`, '', parser)
+                .then(res => {
+                    if (res !== null) {
+                        this.projects = res
+                    }
+
+                    // Return a dummy promise once the the projects are updated.
+                    return new Promise( (resolve) => {
+                        resolve()
+                    })
             })
         }
     }
@@ -87,7 +93,16 @@ export class ProjectSelectorComponent extends Vue {
             }
         ).then(response => {
                 console.log('create_project', response)
-                this.updateProjectList()
+                return response.json()
+        }).then( responseJSON => {
+            // A bit ugly, but already the call creating the inner promise depends on
+            // resolution of the outer one, so we nest them.
+            this.updateProjectList().then( () => {
+                let newProject = this.projects.find( (project) => {
+                    return project.id === parseInt(responseJSON.identifier)
+                })
+                this.clickItem(newProject)
+            })
         })
     }
 

@@ -18,9 +18,10 @@
 
 import Vue from 'vue'
 import Component from 'vue-class-component'
-import { router } from '../../../main'
 
+import { router } from '../../../main'
 import { GraphItem } from '../../graph-item-list/graph-item'
+
 
 Component.registerHooks([
   'beforeRouteEnter',
@@ -29,14 +30,16 @@ Component.registerHooks([
 ])
 
 @Component({
-    template: require('./execution.html')
+    template: require('./execution.html'),
+    computed: {
+        'contextUUID' : function () {
+            return this.$route.params.id
+        }
+    }
 })
 export class ExecutionComponent extends Vue {
 
     progress: boolean = false
-    execDialog: boolean = false
-    exec_engine: string = ''
-    exec_namespace: string = ''
     url_list: string = ''
 
     headers: any[] = [
@@ -50,6 +53,17 @@ export class ExecutionComponent extends Vue {
           { text: 'Engine', value: 'resource:spec_ports' },
           { text: 'Namespace', value: 'deployer:execution_namespace' }
         ]
+
+    dialog: string = null;
+
+    cancel() {
+        this.dialog = null
+    }
+
+    success() {
+        this.dialog = null
+        location.reload()
+    }
 
     created ()  {
         this.url_list = './api/deployer/contexts/' + this.$route.params.id + '/executions'
@@ -73,33 +87,6 @@ export class ExecutionComponent extends Vue {
             g.properties.push({'key': 'engine', 'value': obj['engine']})
             g.properties.push({'key': 'namespace', 'value': obj['namespace']})
             return g
-        })
-    }
-
-    addExec(event: Event): void {
-        this.progress = true
-        this.execDialog = false
-        let payload = JSON.stringify({
-          engine: this.exec_engine,
-          namespace: this.exec_namespace
-        })
-
-        fetch(`./api/deployer/contexts/${this.$route.params.id}/executions`,
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include',
-                body: payload
-            }
-        ).then(response => {
-            return response.json()
-            }
-        ).then(response => {
-            console.log('create', response)
-            this.progress = false
-            location.reload()
         })
     }
 
