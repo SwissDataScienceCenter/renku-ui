@@ -74,6 +74,24 @@ export class TutorialComponent extends Vue {
     repositoryCode = ''
     envCode = ''
 
+    dockers(): any {
+
+        let nb_token = Math.random().toString(36).slice(2)
+
+        return {
+            'jupyter': {
+                command: `start-notebook.sh --NotebookApp.ip='*' --NotebookApp.token=${nb_token} --NotebookApp.contents_manager_class=renga.notebook.RengaStorageManager`,
+                ports: ['8888'],
+                image: 'rengahub/minimal-notebook:latest',
+                labels: [`renga.notebook.token=${nb_token}`]
+                },
+            'rstudio': {
+                image: 'rocker/rstudio',
+                ports: ['8787']
+            }
+        }
+    }
+
 
     inputNextStep () {
         this.steps = 3
@@ -310,12 +328,8 @@ export class TutorialComponent extends Vue {
         })
     }
 
-    do_execution(_image, _ports, _env): void {
+    do_execution(_payload, _env): void {
         this.progress = true
-        let payload = JSON.stringify({
-          image: _image,
-          ports: _ports.split(/\s*,\s*/)
-        })
 
         fetch('./api/deployer/contexts',
             {
@@ -324,7 +338,7 @@ export class TutorialComponent extends Vue {
                     'Content-Type': 'application/json'
                 },
                 credentials: 'include',
-                body: payload
+                body: JSON.stringify(_payload)
             }
         ).then(response => {
             return response.json()
@@ -357,15 +371,17 @@ export class TutorialComponent extends Vue {
     }
 
     executeIDE() {
-        if (this.imageIDE === 'rocker/rstudio') {
-            this.do_execution(this.imageIDE, '8787', '')
-        } else {
-            this.do_execution(this.imageIDE, '8888', '')
-        }
+        this.do_execution(this.dockers()[this.imageIDE], '')
+
     }
 
     executeDocker() {
-        this.do_execution(this.imageDocker, this.portsDocker, this.envDocker)
+        let payload = {
+          image: this.imageDocker,
+          ports: this.portsDocker.split(/\s*,\s*/)
+        }
+
+        this.do_execution(payload, this.envDocker)
     }
 
     executeCode() {
