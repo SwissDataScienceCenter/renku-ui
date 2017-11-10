@@ -28,6 +28,7 @@ from ..settings import settings
 
 logger = logging.getLogger(__name__)
 
+CHUNK_SIZE = 1024
 
 @app.route('/api/<path:path>', methods=['GET', 'POST', 'PUT', 'DELETE'])
 @require_tokens
@@ -65,6 +66,34 @@ def pass_through(path):
     return Response(generate(), response.status_code)
 
 
+@app.route('/webproxy', methods=['GET'])
+@require_tokens
+def webproxy():
+    """Simplest possible webproxy to avoid CORS problems when loading external datasets in the UI."""
+    logger.debug(request)
+
+    url = request.headers.get('fileUrl')
+    logger.debug('resolving URL: {}'.format(url))
+    response = requests.request('GET', url, stream=True, timeout=3000)
+
+    def generate():
+        for c in response.iter_content(1024):
+            yield c
+
+    headers = dict(response.headers)
+
+    # TODO: We go unencoded for the moment (otherwise zip-files etc. are broken)
+    try:
+        del headers["Transfer-Encoding"]
+    except KeyError:
+        pass
+    try:
+        del headers["Content-Encoding"]
+    except KeyError:
+        pass
+
+    return Response(generate(), response.status_code,  headers=headers)
+
 @app.route('/download', methods=['GET'])
 @require_tokens
 def download():
@@ -98,7 +127,7 @@ def download():
         response = requests.request('GET', url, headers=headers, stream=True, timeout=300)
 
     def generate():
-        for c in response.iter_content():
+        for c in response.iter_content(CHUNK_SIZE):
             yield c
 
     resp = Response(generate(), response.status_code)
