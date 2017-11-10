@@ -17,8 +17,6 @@
  */
 
 
-
-
 export function createBucket(bucketName: string, bucketBackend: string, projectId?: number) {
 
     let payload = JSON.stringify({
@@ -88,7 +86,7 @@ export function runContext(engine: string, namespace: string, contextUUID: strin
     )
 }
 
-export function addFile(filename: string, bucketId: number, fileInput: any) {
+export function addFile(filename: string, bucketId: number, { fileInput = null, fileUrl = null } ) {
 
     let payload = JSON.stringify({
         file_name: filename,
@@ -108,11 +106,10 @@ export function addFile(filename: string, bucketId: number, fileInput: any) {
         }
     )
 
-    return executeUpload(authorization, fileInput)
+    return executeUpload(authorization, fileInput, fileUrl)
 }
 
-export function addFileVersion(fileId: number, fileInput: any) {
-    console.log(fileId)
+export function addFileVersion(fileId: number, { fileInput = null, fileUrl = null }) {
     let payload = JSON.stringify({
         resource_id: fileId,
         request_type: 'write_file'
@@ -129,30 +126,58 @@ export function addFileVersion(fileId: number, fileInput: any) {
             body: payload
         }
     )
-    return executeUpload(authorization, fileInput)
+    return executeUpload(authorization, fileInput, fileUrl)
 }
 
-function executeUpload(authorization: Promise<any>, fileInput: any) {
+function executeUpload(authorization: Promise<any>, fileInput: any, fileUrl: string) {
+
+    if ( (fileInput && fileUrl) || (!fileInput && !fileUrl) ) {
+        throw('You have to provide either a file input or a url')
+    }
+
+    let postRequest: RequestInit = {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+        }
+    }
+
+    // Get request is used if file ist fetched from URL
+    let getRequest: RequestInit = {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+            'fileUrl': fileUrl,
+        }
+    }
+
     return authorization
-        .then(response => {
-            return response.json()
-        })
-        .then(response => {
+        .then( response => response.json())
+        .then( response => {
             console.log('create', response)
-            let e = fileInput as HTMLInputElement
-            const reader = new FileReader()
-            reader.onload = () => {
-                return fetch('./api/storage/io/write',
-                    {
-                        method: 'POST',
-                        credentials: 'include',
-                        headers: {
-                            'Authorization': 'Bearer ' + response.access_token
-                        },
-                        body: reader.result
+            postRequest.headers['Authorization'] = 'Bearer ' + response.access_token
+
+            if (fileInput) {
+
+                // TODO: reject if reader fails
+                let readerPromise = new Promise( resolve => {
+                    let e = fileInput as HTMLInputElement
+                    let reader = new FileReader()
+                    reader.onload = () => {
+                        postRequest['body'] = reader.result
+                        resolve( fetch('./api/storage/io/write', postRequest) )
                     }
-                )
+                    reader.readAsArrayBuffer(e.files[0])
+                })
+                return readerPromise
+
+            } else if (fileUrl) {
+                return fetch('./webproxy', getRequest)
+                    .then( response => response.blob())
+                    .then(blob => {
+                        postRequest['body'] = blob
+                        return fetch('./api/storage/io/write', postRequest)
+                    })
             }
-            return reader.readAsArrayBuffer(e.files[0])
         })
 }

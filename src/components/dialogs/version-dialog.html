@@ -4,11 +4,24 @@
         <span class="headline">Upload a file version</span>
     </v-card-title>
     <v-card-text>
+        <v-btn-toggle v-model="fileOrigin">
+            <v-btn flat value="local">
+                Local File
+            </v-btn>
+            <v-btn flat value="URL">
+                File from URL
+            </v-btn>
+        </v-btn-toggle>
+        <span v-if="fileOrigin === 'local'">
         <v-text-field prepend-icon="attach_file" single-line
                       v-model="filename" label="File" required
                       @click.native="onFocus"
                       ref="fileTextField"></v-text-field>
         <input type="file" accept="accept" ref="fileInput" @change="onFileChange" style="display:none">
+        </span>
+        <span v-if="fileOrigin === 'URL'">
+            <v-text-field label="URL" v-model="fileUrl"></v-text-field>
+        </span>
     </v-card-text>
     <v-card-actions>
         <v-spacer></v-spacer>

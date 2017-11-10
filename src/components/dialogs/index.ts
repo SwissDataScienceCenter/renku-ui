@@ -20,8 +20,6 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 
 import { addFile, addFileVersion, createBucket, createContext, runContext } from '../../utils/renga-api'
-import { GraphItem } from '../graph-item-list/graph-item'
-
 
 // The different dialog components could probably be unified further or at
 // least share some some of their templates.
@@ -141,10 +139,20 @@ export class BucketDialogComponent extends Vue {
     filename: string = ''
     bucketfile: string = ''
     bucketId: number
+    fileOrigin: string = 'local'
+    fileUrl: string = null
 
     addFile() {
         this.progress = true
-        addFile(this.bucketfile, this.bucketId, this.$refs.fileInput)
+
+        let options = {}
+        if (this.fileOrigin === 'local') {
+          options['fileInput'] = this.$refs.fileInput
+        } else if (this.fileOrigin === 'URL') {
+            options['fileUrl'] = this.fileUrl
+        }
+
+        addFile(this.bucketfile, this.bucketId, options)
             .then(() => {
                 this.progress = false
                 this.$emit('success')
@@ -180,10 +188,20 @@ export class VersionDialogComponent extends Vue {
     progress: boolean = false
     filename: string = ''
     selectedFileId: number
+    fileOrigin: string = 'local'
+    fileUrl: string = null
 
     addFileVersion() {
         this.progress = true
-        addFileVersion(this.selectedFileId, this.$refs.fileInput)
+
+        let options = {}
+        if (this.fileOrigin === 'local') {
+            options['fileInput'] = this.$refs.fileInput
+        } else if (this.fileOrigin === 'URL') {
+            options['fileUrl'] = this.fileUrl
+        }
+
+        addFileVersion(this.selectedFileId, options)
             .then(() => {
                 this.progress = false
                 this.$emit('success')
