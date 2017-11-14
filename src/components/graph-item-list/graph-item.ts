@@ -20,10 +20,11 @@ export class GraphItem {
 
     id: null | number = null
     name: string
+    labels: string [] = []
     description: string
-    readonly properties: Property[] = []
+    properties: Property[] = []
 
-    constructor(json: object, nameKey: string, descriptionKey: string) {
+    constructor(json: object, nameKey: string, labelKey: string, descriptionKey: string) {
         if (json !== undefined) {
             this.id = json['id']
             let that = this
@@ -34,8 +35,13 @@ export class GraphItem {
                 else if (p.key === descriptionKey) {
                     that.description = p.values[0]['value']
                 }
-                else {
+                else if (p.key !== labelKey) {
                     that.properties.push({'key': p.key, 'value': p.values[0]['value']})
+                }
+
+                if (p.key === labelKey) {
+                    that.labels = p.values.map( value => value.value )
+                    that.properties.push({'key': p.key, 'value': p.values.map( el => el['value']).join(', ')})
                 }
             })
         }

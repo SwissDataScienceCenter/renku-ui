@@ -81,7 +81,7 @@ export class ExecutionComponent extends Vue {
     parser(json: any): GraphItem[] {
         const array = <object[]> json['executions']
         return array.map(obj => {
-            let g = new GraphItem(undefined, undefined, undefined)
+            let g = new GraphItem(undefined, undefined, undefined, undefined)
             g.id = obj['identifier']
             g.name = obj['identifier']
             g.properties.push({'key': 'engine', 'value': obj['engine']})

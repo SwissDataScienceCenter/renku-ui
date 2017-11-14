@@ -44,7 +44,7 @@ export class BucketsComponent extends Vue {
                 console.log('list', json)
                 const array = <object[]> json
                 return array.map(obj => {
-                    return new GraphItem(obj, 'resource:bucket_name', 'resource:bucket_backend')
+                    return new GraphItem(obj, 'resource:bucket_name', '', 'resource:bucket_backend')
                 })
             }
 

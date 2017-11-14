@@ -20,6 +20,10 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 
 import { GraphItem } from '../../graph-item-list/graph-item'
+import { LabelsDialogComponent, RenameDialogComponent } from '../../dialogs/index'
+
+Vue.component('file-label-dialog', LabelsDialogComponent)
+Vue.component('file-rename-dialog', RenameDialogComponent)
 
 
 Component.registerHooks([
@@ -38,7 +42,7 @@ Component.registerHooks([
 })
 export class FilesComponent extends Vue {
 
-    selectedFileId: number = null
+    selectedFile: object = null
     progress: boolean = false
     detailsPanel: boolean = false
     url_list: string = ''
@@ -49,8 +53,18 @@ export class FilesComponent extends Vue {
                 console.log('list', json)
                 const array = <object[]> json
                 return array.map(obj => {
-                    return new GraphItem(obj, 'resource:file_name', '')
+                    let graphItem = new GraphItem(obj, 'resource:file_name', 'annotation:label', '')
+
+                    // TODO: Currently, the correct display in the table relies on the order of the properties array in
+                    // TODO: API response to match the order of the given headers. This should be fixed ASAP!
+                    if (graphItem.properties[0].key !== 'annotation:label') {
+                        graphItem.properties = [{key: 'annotation:label', value: ''}].concat(graphItem.properties)
+                    }
+                    return graphItem
                 })
+
+
+
             }
 
     headers: any[] = [
@@ -60,7 +74,8 @@ export class FilesComponent extends Vue {
             sortable: false,
             value: 'id'
           },
-          { text: 'Name', value: 'name' },
+          { text: 'Name', value: 'name'},
+          { text: 'Labels', value: 'labels', sortable: false },
           { text: 'resource:owner', value: 'resource:owner' }
         ]
 
@@ -86,10 +101,10 @@ export class FilesComponent extends Vue {
         next(vm => vm.url_list = `./api/explorer/storage/bucket/${to.params.id}/files`)
     }
 
-    onSelect(oid) {
-        this.selectedFileId = oid
+    onSelect(file) {
+        this.selectedFile = file
 
-        fetch(`./api/explorer/storage/file/${oid}/versions`,
+        fetch(`./api/explorer/storage/file/${file.id}/versions`,
             {
                 method: 'GET',
                 headers: {

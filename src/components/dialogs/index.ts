@@ -21,8 +21,9 @@ import Component from 'vue-class-component'
 import { Watch } from 'vue-property-decorator'
 
 import { addFile, addFileVersion, createBucket, createContext,
-    getContext, getProjects, getProjectFiles, runContext } from '../../utils/renga-api'
+    getContext, getProjects, getProjectFiles, runContext, updateFile } from '../../utils/renga-api'
 import { findDisplayName } from '../graph/index'
+import { GraphItem } from '../graph-item-list/graph-item'
 
 
 // The different dialog components could probably be unified further or at
@@ -290,22 +291,54 @@ export class BucketDialogComponent extends DialogBaseComponent {
     bucketId: number
     fileOrigin: string = 'local'
     fileUrl: string = null
+    labels: string[] = []
 
     addFile() {
         this.progress = true
 
         let options = {}
         if (this.fileOrigin === 'local') {
-          options['fileInput'] = this.$refs.fileInput
+            options['fileInput'] = this.$refs.fileInput
         } else if (this.fileOrigin === 'URL') {
             options['fileUrl'] = this.fileUrl
         }
 
-        addFile(this.bucketfile, this.bucketId, options)
+        addFile(this.bucketfile, this.bucketId, this.labels, options)
             .then(() => {
                 this.onSuccess()
             })
     }
+
+    onFileChange($event) {
+        onFileChange($event, this)
+    }
+
+    onFocus() {
+        onFocus(this)
+    }
+
+    // TODO: Fix code duplication here
+    removeLabel(i) {
+        this.labels.splice(i, 1)
+    }
+
+    addEmptyLabel() {
+        this.labels.push('')
+    }
+}
+
+
+@Component({
+    props: {
+        selectedFile: {
+            type: Object,
+            required: true
+        }
+    }
+})
+export class FileDialogBaseComponent extends DialogBaseComponent {
+    progress: boolean = false
+    selectedFile: GraphItem
 
     onFileChange($event) {
         onFileChange($event, this)
@@ -319,16 +352,9 @@ export class BucketDialogComponent extends DialogBaseComponent {
 
 @Component({
     template: require('./version-dialog.html'),
-    props: {
-        selectedFileId: {
-            type: Number,
-            required: true
-        }
-
-    }
 })
-export class VersionDialogComponent extends DialogBaseComponent {
-    filename: string = ''
+export class VersionDialogComponent extends FileDialogBaseComponent {
+    filename: string = null
     selectedFileId: number
     fileOrigin: string = 'local'
     fileUrl: string = null
@@ -349,16 +375,53 @@ export class VersionDialogComponent extends DialogBaseComponent {
                 this.onSuccess()
             })
     }
+}
 
-    onFileChange($event) {
-        onFileChange($event, this)
-    }
 
-    onFocus() {
-        onFocus(this)
+@Component({
+    template: require('./rename-dialog.html'),
+})
+export class RenameDialogComponent extends FileDialogBaseComponent {
+    changeFilename() {
+        this.progress = true
+        updateFile(this.selectedFile.id, this.selectedFile.name, null)
+            .then(() => {
+                this.progress = false
+                this.$emit('success')
+            })
     }
 }
 
+
+@Component({
+    template: require('./labels-dialog.html'),
+})
+export class LabelsDialogComponent extends FileDialogBaseComponent {
+
+    // We create a dummy object here for Vue to correctly track changes
+    labels: string[] = []
+    mounted() {
+        this.labels = this.selectedFile.labels
+    }
+
+    updateLabels() {
+        this.progress = true
+        
+        updateFile(this.selectedFile.id, null, this.labels)
+            .then(() => {
+                this.progress = false
+                this.$emit('success')
+            })
+    }
+
+    removeLabel(i) {
+        this.labels.splice(i, 1)
+    }
+
+    addEmptyLabel() {
+        this.labels.push('')
+    }
+}
 
 function onFileChange($event, context) {
     let files = $event.target.files || $event.dataTransfer.files

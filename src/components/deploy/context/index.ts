@@ -56,7 +56,7 @@ export class ContextComponent extends Vue {
     parser(json: any): GraphItem[] {
         const array = <any[]> json['contexts']
         return array.map(obj => {
-            let g = new GraphItem(undefined, undefined, undefined)
+            let g = new GraphItem(undefined, undefined, undefined, undefined)
             g.id = obj['identifier']
             g.name = obj['spec']['image']
             if (!(obj['spec']['ports'] === undefined)) {
