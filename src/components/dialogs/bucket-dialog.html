@@ -29,6 +29,30 @@
             <v-text-field label="URL" v-model="fileUrl"></v-text-field>
         </span>
     </v-card-text>
+    <v-card-title>
+        <span class="subheading">Add labels</span>
+    </v-card-title>
+    <v-layout v-for="(_, i) in labels">
+        <v-flex xs10>
+            <v-card-text class="pt-1 pb-1 pr-0">
+                <v-text-field
+                        v-model="labels[i]">
+                </v-text-field>
+            </v-card-text>
+        </v-flex>
+        <v-flex xs1>
+            <v-btn icon
+                   class="mt-3"
+                   @click.stop="removeLabel(i)">
+                <v-icon>remove_circle</v-icon>
+            </v-btn>
+        </v-flex>
+    </v-layout>
+    <v-btn icon
+           @click.stop="addEmptyLabel"
+           class="mt-1">
+        <v-icon>add_circle</v-icon>
+    </v-btn>
     <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn secondary flat v-on:click="cancel">Cancel</v-btn>

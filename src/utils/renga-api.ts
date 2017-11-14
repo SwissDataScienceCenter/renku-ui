@@ -127,12 +127,13 @@ export function runContext(engine: string, namespace: string, contextUUID: strin
     )
 }
 
-export function addFile(filename: string, bucketId: number, { fileInput = null, fileUrl = null } ) {
+export function addFile(filename: string, bucketId: number, labels: string[], { fileInput = null, fileUrl = null } ) {
 
     let payload = JSON.stringify({
         file_name: filename,
         bucket_id: bucketId,
-        request_type: 'create_file'
+        request_type: 'create_file',
+        labels: labels
     })
 
     // Let's be explicit here to make clear it's a promise...
@@ -223,6 +224,7 @@ function executeUpload(authorization: Promise<any>, fileInput: any, fileUrl: str
         })
 }
 
+
 export function getProjectResources(projectId: number) {
     return fetch( `./api/explorer/projects/${projectId}/resources`,
         {
@@ -278,3 +280,26 @@ export function getProjectFiles(projectId: number) {
         })
 }
 
+export function updateFile(fileId: number, fileName: string = null, labels: string[] = null) {
+    let body = {}
+
+    if (fileName) {
+        body['file_name'] = fileName
+    }
+
+    // Note that an empty array evaluates to true
+    if (labels) {
+        body['labels'] = labels
+    }
+
+    return fetch(`./api/storage/file/${fileId}`,
+        {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include',
+            body: JSON.stringify(body)
+        }
+    )
+}

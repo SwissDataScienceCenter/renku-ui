@@ -17,7 +17,9 @@
  */
 
 import Vue from 'vue'
-import Component from 'vue-class-component'
+import { Component, Watch} from 'vue-property-decorator'
+
+'vue-class-component'
 import * as d3 from 'd3'
 
 import { loadVertices, loadEdges } from './load-graph'
@@ -27,6 +29,7 @@ import { icons } from './icons'
 import { EXECUTION, CONTEXT, BUCKET, FILE, FILE_LOCATION, FILE_VERSION, PROJECT } from './vertex-types'
 import { VertexTooltipComponent, EdgeTooltipComponent } from './tooltip'
 import { BaseType } from 'd3-selection'
+import { GraphItem } from '../graph-item-list/graph-item'
 
 require('./graph.styl')
 
@@ -71,6 +74,7 @@ export class GraphComponent extends Vue {
     allCollapsed: boolean = START_COLLAPSED
 
     selectedVertex: DisplayVertex = null
+    selectedGraphItem: GraphItem
     activeVertex: DisplayVertex = null
     activeEdge: DisplayEdge = null
 
@@ -79,6 +83,20 @@ export class GraphComponent extends Vue {
 
     get tooltipVertex () {
         return (this.selectedVertex ? this.selectedVertex : this.activeVertex)
+    }
+
+    // TODO: Different parts of the UI currently need a differnt representation of
+    // TODO: their data. Fix this
+    @Watch('selectedVertex')
+    updateGraphItem(newSelect) {
+        if (newSelect === null) return
+
+        if (newSelect.self.types[0] === FILE) {
+            this.selectedGraphItem = new GraphItem(JSON.parse(JSON.stringify(newSelect.self)),
+                'resource:file_name', 'annotation:label', '')
+        } else {
+            this.selectedGraphItem = null
+        }
     }
 
     cancel() {
@@ -206,6 +224,14 @@ export class GraphComponent extends Vue {
             dialogs.push({
                 name: 'Add version',
                 dialogType: 'version'
+            })
+            dialogs.push({
+                name: 'Rename',
+                dialogType: 'rename'
+            })
+            dialogs.push({
+                name: 'Labels',
+                dialogType: 'labels'
             })
         }
         return dialogs

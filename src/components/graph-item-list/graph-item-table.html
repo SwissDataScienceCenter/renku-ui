@@ -14,7 +14,7 @@
         v-bind:search="search"
       >
       <template slot="items" scope="props">
-        <tr v-on:click="$emit('selected', props.item.id)" style="cursor: pointer;">
+        <tr v-on:click="$emit('selected', props.item)" style="cursor: pointer;">
           <td>{{ props.item.id }}</td>
           <td class="text-xs-right">{{ props.item.name }}</td>
           <td class="text-xs-right" v-for="p in props.item.properties" v-bind:key="p.key">{{ p.value }}</td>

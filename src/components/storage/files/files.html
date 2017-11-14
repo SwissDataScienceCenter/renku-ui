@@ -22,6 +22,16 @@
                 <v-btn secondary @click.stop="dialog = 'version'">Add new version</v-btn>
               </v-list-tile-content>
           </v-list-tile>
+          <v-list-tile>
+              <v-list-tile-content>
+                  <v-btn secondary @click.stop="dialog = 'rename'">Rename</v-btn>
+              </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile>
+              <v-list-tile-content>
+                  <v-btn secondary @click.stop="dialog = 'labels'">Labels</v-btn>
+              </v-list-tile-content>
+          </v-list-tile>
       </v-list>
     </v-navigation-drawer>
 
@@ -39,7 +49,23 @@
         <version-dialog
                 v-on:success="success"
                 v-on:cancel="cancel"
-                v-bind:selectedFileId="selectedFileId">
+                v-bind:selectedFile="selectedFile">
         </version-dialog>
+    </v-dialog>
+
+    <v-dialog v-model="dialog" v-if="dialog === 'rename'">
+        <file-rename-dialog
+                v-on:success="dialog = null"
+                v-on:cancel="cancel"
+                v-bind:selectedFile="selectedFile">
+        </file-rename-dialog>
+    </v-dialog>
+
+    <v-dialog v-model="dialog" v-if="dialog === 'labels'">
+        <file-label-dialog
+                v-on:success="success"
+                v-on:cancel="cancel"
+                v-bind:selectedFile="selectedFile">
+        </file-label-dialog>
     </v-dialog>
 </div>

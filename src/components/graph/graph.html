@@ -50,7 +50,7 @@
         <version-dialog
                 v-on:success="success"
                 v-on:cancel="cancel"
-                v-bind:selectedFileId="selectedVertex.self.id">
+                v-bind:selectedFile="selectedVertex.self">
         </version-dialog>
     </v-dialog>
     <v-dialog v-model="dialog" v-if="dialog === 'context'" width="700px">
@@ -59,6 +59,20 @@
                 v-on:cancel="cancel"
                 v-bind:projectId="selectedVertex.self.id">
         </context-dialog>
+    </v-dialog>
+    <v-dialog v-model="dialog" v-if="dialog === 'rename'">
+        <file-rename-dialog
+                v-on:success="dialog = null"
+                v-on:cancel="cancel"
+                v-bind:selectedFile="selectedGraphItem">
+        </file-rename-dialog>
+    </v-dialog>
+    <v-dialog v-model="dialog" v-if="dialog === 'labels'">
+        <file-label-dialog
+                v-on:success="success"
+                v-on:cancel="cancel"
+                v-bind:selectedFile="selectedGraphItem">
+        </file-label-dialog>
     </v-dialog>
 </div>
 

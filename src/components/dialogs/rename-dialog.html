@@ -1,0 +1,14 @@
+<v-card>
+    <v-card-title>
+        <v-progress-linear v-bind:indeterminate="true" v-show="progress" ></v-progress-linear>
+        <span class="headline">Filename</span>
+    </v-card-title>
+    <v-card-text>
+        <v-text-field label="Filename" required v-model="selectedFile.name"></v-text-field>
+    </v-card-text>
+    <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn secondary flat v-on:click="cancel">Cancel</v-btn>
+        <v-btn secondary @click.native="changeFilename">OK</v-btn>
+    </v-card-actions>
+</v-card>
