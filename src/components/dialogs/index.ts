@@ -38,10 +38,6 @@ class DialogBaseComponent extends Vue {
         this.progress = false
         this.$emit('success')
     }
-
-    cancel() {
-        this.$emit('cancel')
-    }
 }
 
 class DeployerDialogComponent extends DialogBaseComponent {
@@ -273,6 +269,10 @@ export class ExecutionDialogComponent extends DeployerDialogComponent {
                 this.onSuccess()
             })
     }
+
+    cancel() {
+        this.$emit('cancel')
+    }
 }
 
 
@@ -324,6 +324,10 @@ export class BucketDialogComponent extends DialogBaseComponent {
 
     addEmptyLabel() {
         this.labels.push('')
+    }
+
+    cancel() {
+        this.$emit('cancel')
     }
 }
 
@@ -389,6 +393,10 @@ export class RenameDialogComponent extends FileDialogBaseComponent {
                 this.progress = false
                 this.$emit('success')
             })
+    }
+
+    cancel() {
+        this.$emit('cancel')
     }
 }
 

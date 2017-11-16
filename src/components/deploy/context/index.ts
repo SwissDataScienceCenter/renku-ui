@@ -68,7 +68,7 @@ export class ContextComponent extends Vue {
         })
     }
 
-    onSelect(id) {
-        router.push(`/deploy/context/${id}`)
+    onSelect(context) {
+        router.push(`/deploy/context/${context.id}`)
     }
 }
