@@ -50,6 +50,7 @@ export class ContextComponent extends Vue {
             value: 'id'
           },
           { text: 'Image', value: 'name' },
+          { text: 'Labels', value: 'labels', sortable: false},
           { text: 'Ports', value: 'ports', align: 'right' }
         ]
 
@@ -59,6 +60,14 @@ export class ContextComponent extends Vue {
             let g = new GraphItem(undefined, undefined, undefined, undefined)
             g.id = obj['identifier']
             g.name = obj['spec']['image']
+
+            let labelString = obj['spec']['labels']
+                .filter( label => label.includes('renga.meta_data.label='))
+                .map( label => label.replace('renga.meta_data.label=', ''))
+                .join(', ')
+            g.labels = labelString
+            g.properties.push({'key': 'labels', 'value': labelString})
+
             if (!(obj['spec']['ports'] === undefined)) {
                 g.properties.push({'key': 'ports', 'value': obj['spec']['ports'].join(', ')})
             } else {
