@@ -21,7 +21,7 @@ import Component from 'vue-class-component'
 import { Watch } from 'vue-property-decorator'
 
 import { addFile, addFileVersion, createBucket, createContext,
-    getContext, getProjects, getProjectFiles, runContext, updateFile } from '../../utils/renga-api'
+    getContext, getBucketBackends, getProjects, getProjectFiles, runContext, updateFile } from '../../utils/renga-api'
 import { findDisplayName } from '../graph/index'
 import { GraphItem } from '../graph-item-list/graph-item'
 
@@ -96,6 +96,13 @@ class DeployerDialogComponent extends DialogBaseComponent {
 export class ProjectDialogComponent extends DialogBaseComponent {
     bucketName: string = 'bucket'
     bucketBackend: string = 'local'
+    backendItems: string[] = ['local']
+
+    mounted() {
+        getBucketBackends().then(response => {
+            this.backendItems = response
+        })
+    }
 
     addBucket(): void {
         this.progress = true
@@ -414,7 +421,7 @@ export class LabelsDialogComponent extends FileDialogBaseComponent {
 
     updateLabels() {
         this.progress = true
-        
+
         updateFile(this.selectedFile.id, null, this.labels)
             .then(() => {
                 this.progress = false

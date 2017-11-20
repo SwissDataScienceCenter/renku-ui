@@ -5,7 +5,7 @@
     </v-card-title>
     <v-card-text>
         <v-text-field label="Name" required v-model="bucketName"></v-text-field>
-        <v-select label="Backend" required :items="['local', 'swift']" v-model="bucketBackend"></v-select>
+        <v-select label="Backend" required :items="backendItems" v-model="bucketBackend"></v-select>
     </v-card-text>
     <v-card-actions>
         <v-spacer></v-spacer>

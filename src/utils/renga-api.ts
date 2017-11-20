@@ -239,6 +239,20 @@ export function getProjectResources(projectId: number) {
         })
 }
 
+export function getBucketBackends() {
+    return fetch( './api/storage/io/backends',
+        {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            return response.json()
+        })
+}
+
 export function getBucketFiles(bucketId: number) {
     return fetch( `./api/explorer/storage/bucket/${bucketId}/files`,
         {
