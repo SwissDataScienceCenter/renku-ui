@@ -131,6 +131,7 @@ export class ContextDialogComponent extends DeployerDialogComponent {
     notebooks: any[] = []
     context_notebook: any = null
     featuredImages: string[] = ['rengahub/minimal-notebook']
+    labels: string[] = []
 
     mounted() {
         // Put a first empty line
@@ -192,6 +193,8 @@ export class ContextDialogComponent extends DeployerDialogComponent {
         let labels = collectLabels(this.inputSlotNames, this.inputSlotFiles, 'inputs')
         labels = labels.concat(collectLabels(this.outputSlotNames, this.outputSlotFiles, 'outputs'))
 
+        labels = labels.concat(this.labels.map( label => 'renga.meta_data.label=' + label ))
+
         let notebookId = this.context_notebook ? this.context_notebook.file.id : null
 
         if (!notebookId && this.context_image.includes('rengahub/minimal-notebook')) {
@@ -210,6 +213,15 @@ export class ContextDialogComponent extends DeployerDialogComponent {
     cancel() {
         this.context_notebook = null
         this.$emit('cancel')
+    }
+
+    // TODO: Fix code duplication here
+    removeLabel(i) {
+        this.labels.splice(i, 1)
+    }
+
+    addEmptyLabel() {
+        this.labels.push('')
     }
 }
 
