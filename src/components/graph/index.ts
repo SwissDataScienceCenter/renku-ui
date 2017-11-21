@@ -17,9 +17,8 @@
  */
 
 import Vue from 'vue'
-import { Component, Watch} from 'vue-property-decorator'
+import { Component, Watch } from 'vue-property-decorator'
 
-'vue-class-component'
 import * as d3 from 'd3'
 
 import { loadVertices, loadEdges } from './load-graph'
@@ -66,10 +65,10 @@ Vue.component('edge-tooltip', EdgeTooltipComponent)
 
 export class GraphComponent extends Vue {
 
-    vertices: DisplayVertex[] = []
-    vertexIds: string[] = []
-    edges: DisplayEdge[] = []
-    edgeIds: string[] = []
+    vertices: DisplayVertex[]
+    vertexIds: string[]
+    edges: DisplayEdge[]
+    edgeIds: string[]
 
     allCollapsed: boolean = START_COLLAPSED
 
@@ -110,7 +109,9 @@ export class GraphComponent extends Vue {
 
     success() {
         this.dialog = null
-        location.reload()
+        this.activeVertex = null
+        this.selectedVertex = null
+        this.updateGraphInfo()
     }
 
     showDialog(i: number) {
@@ -122,6 +123,10 @@ export class GraphComponent extends Vue {
     }
 
     updateGraphInfo() {
+        this.vertices = []
+        this.vertexIds = []
+        this.edges = []
+        this.edgeIds = []
         // Use nested callbacks for the time being just to be sure all data has been loaded.
         loadVertices('./api/navigation/vertex', this.addVertex, () => {
             loadEdges('./api/navigation/edge', this.addEdge, () => {
@@ -264,6 +269,9 @@ export class GraphComponent extends Vue {
         // Select and store the div which will contain the entire graph.
         let graphDiv = d3.select('#d3-graph')
 
+        // Remove a potentially existing SVG drawing.
+        d3.select('#graphSVG').remove()
+
         // Get bounding box of div from html template
         let nodeElement: any = graphDiv.node()
         let height: number = nodeElement.getBoundingClientRect().height
@@ -282,6 +290,7 @@ export class GraphComponent extends Vue {
         svg.style('cursor', 'move')
             .style('width', '100%')
             .style('height', '100%')
+            .attr('id', 'graphSVG')
 
         // Define a reusable arrowhead marker
         svg.append('marker')
