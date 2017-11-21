@@ -324,6 +324,10 @@ export class BucketDialogComponent extends DialogBaseComponent {
     fileUrl: string = null
     labels: string[] = []
 
+    get displayFilename() {
+        return this.filename === '' ? 'File' : this.filename
+    }
+
     addFile() {
         this.progress = true
 
@@ -343,6 +347,13 @@ export class BucketDialogComponent extends DialogBaseComponent {
                 this.labels = []
                 this.onSuccess()
             })
+    }
+
+    @Watch('filename')
+    onFileSelect(filenameNew, filenameOld) {
+        if (this.bucketfile === '' || this.bucketfile === this.filename) {
+            this.bucketfile = filenameNew.trim()
+        }
     }
 
     onFileChange($event) {
@@ -395,9 +406,12 @@ export class FileDialogBaseComponent extends DialogBaseComponent {
 })
 export class VersionDialogComponent extends FileDialogBaseComponent {
     filename: string = null
-    selectedFileId: number
     fileOrigin: string = 'local'
     fileUrl: string = null
+
+    get displayFilename() {
+        return this.filename === '' ? 'File' : this.filename
+    }
 
     addFileVersion() {
         this.progress = true
@@ -409,7 +423,7 @@ export class VersionDialogComponent extends FileDialogBaseComponent {
             options['fileUrl'] = this.fileUrl
         }
 
-        addFileVersion(this.selectedFileId, options)
+        addFileVersion(this.selectedFile.id, options)
             .then(() => {
                 this.progress = false
                 this.onSuccess()
