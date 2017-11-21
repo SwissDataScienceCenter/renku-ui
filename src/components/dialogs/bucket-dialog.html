@@ -16,7 +16,7 @@
         <span v-if="fileOrigin === 'local'">
             <v-text-field
                     prepend-icon="attach_file" single-line
-                    v-model="filename" label="File" required
+                    :label="displayFilename" required
                     @click.native="onFocus"
                     ref="fileTextField">
             </v-text-field>
