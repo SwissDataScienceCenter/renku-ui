@@ -86,7 +86,8 @@ export class ContextComponent extends Vue {
           },
           { text: 'Image', value: 'name' },
           { text: 'Labels', value: 'labels', sortable: false},
-          { text: 'Ports', value: 'ports', align: 'right' }
+          { text: 'Ports', value: 'ports', align: 'right' },
+          { text: 'Created', value: 'created', align: 'right', sortable: true},
         ]
 
     parser(json: any): GraphItem[] {
@@ -109,6 +110,10 @@ export class ContextComponent extends Vue {
                 } else {
                     g.properties.push({'key': 'ports', 'value': '-'})
                 }
+
+                let creationDate = new Date(obj['created'])
+                g.properties.push({'key': 'created', 'value': creationDate.toLocaleString()})
+
                 return g
             })
             .filter( (g: any) => {
