@@ -235,7 +235,11 @@ export function getProjectResources(projectId: number) {
             }
         })
         .then(response => {
-            return response.json()
+            if (response.ok) {
+                return response.json()
+            } else {
+                return []
+            }
         })
 }
 
