@@ -45,7 +45,20 @@ export class ContextComponent extends Vue {
 
     success() {
         this.dialog = null
-        this.update = true
+        this.updateContexts()
+        this.$parent['KGupdated'] = true
+    }
+
+    activated() {
+        this.updateContexts()
+    }
+
+    updateContexts() {
+        if (this.project) {
+            this.onProjectChange()
+        } else {
+            this.update = true
+        }
     }
 
     // This is a temporary solution  for displaying only contexts for the selected project.

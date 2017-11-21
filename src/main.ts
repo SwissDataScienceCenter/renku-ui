@@ -62,6 +62,7 @@ class MainComponent extends Vue {
     mini: boolean = false
     project: Project | null = null
     user: UserState = new NoUser
+    KGupdated: boolean = false
 
   doLogin (user: UserState): void {
     this.user = user
