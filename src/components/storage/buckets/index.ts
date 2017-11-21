@@ -18,8 +18,10 @@
 
 import Vue from 'vue'
 import Component from 'vue-class-component'
+import { Watch } from 'vue-property-decorator'
 
 import { GraphItem } from '../../graph-item-list/graph-item'
+import { getProjectResources} from '../../../utils/renga-api'
 
 @Component({
     template: require('./buckets.html'),
@@ -31,6 +33,8 @@ export class BucketsComponent extends Vue {
 
     dialog = null
     update = false
+    project: object
+    bucketIds: number[] = []
 
     cancel() {
         this.dialog = null
@@ -41,12 +45,32 @@ export class BucketsComponent extends Vue {
         this.update = true
     }
 
-    parser: any = json => {
+    // This is a  temporary solution  for displaying only buckets for the selected project.
+    @Watch('project')
+    onProjectChange() {
+        getProjectResources(this.project['id'])
+            .then( (resources: any[]) => {
+                this.bucketIds = resources
+                    .filter( resource => resource['types'][0] === 'resource:bucket')
+                    .map( resource => resource.id )
+                this.update = true
+            })
+    }
+
+    parser(json: any): GraphItem[] {
                 console.log('list', json)
                 const array = <object[]> json
-                return array.map(obj => {
-                    return new GraphItem(obj, 'resource:bucket_name', '', 'resource:bucket_backend')
-                })
+                return array
+                    .map(obj => {
+                        return new GraphItem(obj, 'resource:bucket_name', '', 'resource:bucket_backend')
+                    })
+                    .filter( (graphItem: any) => {
+                        if (this.project) {
+                            return this.bucketIds.indexOf(graphItem.id) >= 0
+                        } else {
+                            return true
+                        }
+                    })
             }
 
 }
