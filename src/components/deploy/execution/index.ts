@@ -64,6 +64,11 @@ export class ExecutionComponent extends Vue {
     success() {
         this.dialog = null
         this.update = true
+        this.$parent['KGupdated'] = true
+    }
+
+    activated() {
+        this.update = true
     }
 
     created ()  {

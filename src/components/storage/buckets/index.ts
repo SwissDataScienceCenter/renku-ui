@@ -42,7 +42,20 @@ export class BucketsComponent extends Vue {
 
     success() {
         this.dialog = null
-        this.update = true
+        this.$parent['KGupdated'] = true
+        this.updateBuckets()
+    }
+
+    activated() {
+        this.updateBuckets()
+    }
+
+    updateBuckets() {
+        if (this.project) {
+            this.onProjectChange()
+        } else {
+            this.update = true
+        }
     }
 
     // This is a  temporary solution  for displaying only buckets for the selected project.

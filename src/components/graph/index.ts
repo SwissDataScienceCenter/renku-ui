@@ -122,6 +122,14 @@ export class GraphComponent extends Vue {
         this.updateGraphInfo()
     }
 
+    // TODO: Stop accessing the parents properties directly. Use VUEX instead?
+    activated() {
+        if (this.$parent['KGupdated']) {
+            this.updateGraphInfo()
+            this.$parent['KGupdated'] = false
+        }
+    }
+
     updateGraphInfo() {
         this.vertices = []
         this.vertexIds = []
