@@ -94,8 +94,8 @@ class DeployerDialogComponent extends DialogBaseComponent {
     }
 })
 export class ProjectDialogComponent extends DialogBaseComponent {
-    bucketName: string = 'bucket'
-    bucketBackend: string = 'local'
+    bucketName: string = ''
+    bucketBackend: string = ''
     backendItems: string[] = ['local']
 
     mounted() {
@@ -110,8 +110,8 @@ export class ProjectDialogComponent extends DialogBaseComponent {
         createBucket(this.bucketName, this.bucketBackend, this.projectId)
             .then(response => {
                 console.log('create', response)
-                this.bucketName = 'bucket'
-                this.bucketBackend = 'local'
+                this.bucketName = ''
+                this.bucketBackend = ''
                 this.onSuccess()
 
             })
