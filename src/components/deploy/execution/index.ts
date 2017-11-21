@@ -41,6 +41,7 @@ export class ExecutionComponent extends Vue {
 
     progress: boolean = false
     url_list: string = ''
+    update: boolean = false
 
     headers: any[] = [
         {
@@ -62,7 +63,7 @@ export class ExecutionComponent extends Vue {
 
     success() {
         this.dialog = null
-        location.reload()
+        this.update = true
     }
 
     created ()  {

@@ -30,6 +30,7 @@ import { GraphItem } from '../../graph-item-list/graph-item'
 })
 export class ContextComponent extends Vue {
 
+    update = false
     progress: boolean = false
     dialog: string = null
 
@@ -39,7 +40,7 @@ export class ContextComponent extends Vue {
 
     success() {
         this.dialog = null
-        location.reload()
+        this.update = true
     }
 
     headers: any[] = [

@@ -48,6 +48,7 @@ export class FilesComponent extends Vue {
     url_list: string = ''
     file_versions = []
     dialog: string = null
+    update = true
 
     parser: any = json => {
                 console.log('list', json)
@@ -85,7 +86,7 @@ export class FilesComponent extends Vue {
 
     success() {
         this.dialog = null
-        location.reload()
+        this.update = true
     }
 
     created ()  {

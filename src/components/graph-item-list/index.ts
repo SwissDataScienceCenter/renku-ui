@@ -20,6 +20,7 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 
 import { GraphItem } from './graph-item'
+import { Watch } from 'vue-property-decorator'
 
 
 @Component({
@@ -28,10 +29,15 @@ import { GraphItem } from './graph-item'
         url_list: String,
         url_details: String,
         icon: String,
-        parser: null
+        parser: null,
+        update: {
+            type: Boolean,
+            default: false
+        },
     },
     watch: {
-        'url_list' : 'updateList'
+        'url_list' : 'updateList',
+        'update': 'updateList'
     }
 })
 export class GraphItemListComponent extends Vue {
@@ -40,6 +46,7 @@ export class GraphItemListComponent extends Vue {
     url_list: string
     icon: string
     parser: any
+    update: boolean
 
     item_list = {
         list: [],
@@ -60,6 +67,7 @@ export class GraphItemListComponent extends Vue {
                 this.item_list.list = res
             }
         })
+        this.$emit('updated')
 
     }
 
@@ -76,16 +84,22 @@ export class GraphItemListComponent extends Vue {
         url_list: String,
         url_details: String,
         headers: Array,
-        parser: null
+        parser: null,
+        update: {
+            type: Boolean,
+            default: false
+        },
     },
     watch: {
-        'url_list' : 'updateList'
+        'url_list' : 'updateList',
+        'update': 'updateList'
     }
 })
 export class GraphItemTableComponent extends Vue {
 
     url_details: string
     url_list: string
+    update: boolean
 
     parser: any
 
@@ -113,7 +127,7 @@ export class GraphItemTableComponent extends Vue {
                 this.item_list.list = res
             }
         })
-
+        this.$emit('updated')
     }
 
     itemSelect(item: GraphItem, event: Event): void {

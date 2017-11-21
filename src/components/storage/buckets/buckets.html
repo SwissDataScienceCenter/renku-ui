@@ -1,5 +1,11 @@
 <div id="bucket-component">
-    <graph-item-list icon="folder" url_list="./api/explorer/storage/bucket" url_details="/storage/[ID]" v-bind:parser="parser">
+    <graph-item-list
+            icon="folder"
+            url_list="./api/explorer/storage/bucket"
+            url_details="/storage/[ID]"
+            v-bind:parser="parser"
+            v-bind:update="update"
+            v-on:updated="update = false">
       <span slot="title">Storage buckets</span>
       <span slot="panel">Bucket details</span>
     </graph-item-list>

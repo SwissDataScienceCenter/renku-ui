@@ -110,6 +110,8 @@ export class ProjectDialogComponent extends DialogBaseComponent {
         createBucket(this.bucketName, this.bucketBackend, this.projectId)
             .then(response => {
                 console.log('create', response)
+                this.bucketName = 'bucket'
+                this.bucketBackend = 'local'
                 this.onSuccess()
 
             })
@@ -206,6 +208,10 @@ export class ContextDialogComponent extends DeployerDialogComponent {
             this.projectId, notebookId)
             .then(response => {
                 console.log('create', response)
+                this.context_image = ''
+                this.context_ports = ''
+                this.context_notebook = null
+                this.labels = []
                 this.onSuccess()
             })
     }
@@ -285,6 +291,8 @@ export class ExecutionDialogComponent extends DeployerDialogComponent {
         runContext(this.engine, this.namespace, this.contextUUID, environment)
             .then(response => {
                 console.log('create', response.json())
+                this.engine = ''
+                this.namespace = ''
                 this.onSuccess()
             })
     }
@@ -324,6 +332,11 @@ export class BucketDialogComponent extends DialogBaseComponent {
 
         addFile(this.bucketfile, this.bucketId, this.labels, options)
             .then(() => {
+                this.filename = ''
+                this.bucketfile = ''
+                this.fileOrigin = 'local'
+                this.fileUrl = null
+                this.labels = []
                 this.onSuccess()
             })
     }
@@ -437,6 +450,7 @@ export class LabelsDialogComponent extends FileDialogBaseComponent {
         updateFile(this.selectedFile.id, null, this.labels)
             .then(() => {
                 this.progress = false
+                this.labels = []
                 this.$emit('success')
             })
     }

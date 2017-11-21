@@ -1,6 +1,12 @@
 <div>
     <v-progress-linear v-bind:indeterminate="true" v-show="progress" ></v-progress-linear>
-    <graph-item-table v-bind:headers="headers" v-bind:url_list="url_list" v-on:selected="onSelect" v-bind:parser="parser">
+    <graph-item-table
+            v-bind:headers="headers"
+            v-bind:url_list="url_list"
+            v-on:selected="onSelect"
+            v-bind:parser="parser"
+            v-bind:update="update"
+            v-on:updated="update = false">
       <span slot="title">Bucket files</span>
     </graph-item-table>
     <v-navigation-drawer right temporary v-model="detailsPanel" overflow>
