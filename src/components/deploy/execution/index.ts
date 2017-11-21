@@ -52,7 +52,8 @@ export class ExecutionComponent extends Vue {
           },
           { text: 'Identifier', value: 'name' },
           { text: 'Engine', value: 'resource:spec_ports' },
-          { text: 'Namespace', value: 'deployer:execution_namespace' }
+          { text: 'Namespace', value: 'deployer:execution_namespace' },
+          { text: 'Created', value: 'created', align: 'right', sortable: true},
         ]
 
     dialog: string = null
@@ -92,6 +93,9 @@ export class ExecutionComponent extends Vue {
             g.name = obj['identifier']
             g.properties.push({'key': 'engine', 'value': obj['engine']})
             g.properties.push({'key': 'namespace', 'value': obj['namespace']})
+
+            let creationDate = new Date(obj['created'])
+            g.properties.push({'key': 'created', 'value': creationDate.toLocaleString()})
             return g
         })
     }
