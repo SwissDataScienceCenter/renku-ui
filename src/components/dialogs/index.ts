@@ -116,6 +116,10 @@ export class ProjectDialogComponent extends DialogBaseComponent {
 
             })
     }
+
+    cancel() {
+        this.$emit('cancel')
+    }
 }
 
 
@@ -411,6 +415,10 @@ export class VersionDialogComponent extends FileDialogBaseComponent {
                 this.onSuccess()
             })
     }
+
+    cancel() {
+        this.$emit('cancel')
+    }
 }
 
 
@@ -461,6 +469,10 @@ export class LabelsDialogComponent extends FileDialogBaseComponent {
 
     addEmptyLabel() {
         this.labels.push('')
+    }
+
+    cancel() {
+        this.$emit('cancel')
     }
 }
 
