@@ -183,7 +183,6 @@ export class ContextDialogComponent extends DeployerDialogComponent {
     }
 
     addContext() {
-        this.progress = true
 
         // Leave out the dummy element '' of the inputSlot / outputSlot arrays and create the labels.
         function collectLabels(names, files, path) {
@@ -204,9 +203,11 @@ export class ContextDialogComponent extends DeployerDialogComponent {
         let notebookId = this.context_notebook ? this.context_notebook.file.id : null
 
         if (!notebookId && this.context_image.includes('rengahub/minimal-notebook')) {
-            alert('You are running a notebook context without specifying a notebook file as input.' +
+            let ok = confirm('You are running a notebook context without specifying a notebook file as input.' +
                 'Your work will not be tracked!')
+            if (!ok) return
         }
+        this.progress = true
 
         createContext(this.context_image, this.context_ports.split(/\s*,\s*/), labels,
             this.projectId, notebookId)

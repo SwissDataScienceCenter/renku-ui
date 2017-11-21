@@ -66,14 +66,18 @@ export class DetailExecutionComponent extends Vue {
     clickItem(event: Event): void {
         let url = `http://${this.deploy_ip}:${this.port}`
 
-        // Only for rengahub/minimal-notebook we add the token to the url and adapt the path
-        if (this.context.spec.image.includes('rengahub/minimal-notebook')) {
-            let notebookToken = this.context.spec.labels
-                .find(label => label.includes('renga.notebook.token='))
-                .replace('renga.notebook.token=', '')
+        // For rengahub/minimal-notebook with a notebook input we adapt the path
+        if (this.context.spec.image.includes('rengahub/minimal-notebook') &&
+            this.context.spec.labels.find( label => label.includes('renga.context.inputs.notebook='))) {
 
-            url += `/notebooks/current_context/inputs/notebook?token=${notebookToken}`
+            url += '/notebooks/current_context/inputs/notebook'
         }
+
+        // If the deployer knows about the token, we append it as parameter to the URL.
+        let notebookToken = this.context.spec.labels
+            .find(label => label.includes('renga.notebook.token='))
+            .replace('renga.notebook.token=', '')
+        if (notebookToken) url += `?token=${notebookToken}`
 
         window.open(url)
     }
