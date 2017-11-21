@@ -18,9 +18,12 @@
 
 import Vue from 'vue'
 import Component from 'vue-class-component'
+import { Watch } from 'vue-property-decorator'
 import { router } from '../../../main'
 
 import { GraphItem } from '../../graph-item-list/graph-item'
+import { getProjectResources } from '../../../utils/renga-api'
+
 
 @Component({
     template: require('./context.html'),
@@ -33,6 +36,8 @@ export class ContextComponent extends Vue {
     update = false
     progress: boolean = false
     dialog: string = null
+    project: object
+    contextUUIDs: string[] = []
 
     cancel() {
         this.dialog = null
@@ -41,6 +46,22 @@ export class ContextComponent extends Vue {
     success() {
         this.dialog = null
         this.update = true
+    }
+
+    // This is a temporary solution  for displaying only contexts for the selected project.
+    @Watch('project')
+    onProjectChange() {
+        getProjectResources(this.project['id'])
+            .then( (resources: any[]) => {
+                this.contextUUIDs = resources
+                    .filter( resource => resource['types'][0] === 'deployer:context')
+                    .map( resource => {
+                            let property = resource.properties.find(prop => prop['key'] === 'deployer:context_id')
+                            return property.values[0]['value']
+                        }
+                    )
+                this.update = true
+            })
     }
 
     headers: any[] = [
@@ -57,25 +78,35 @@ export class ContextComponent extends Vue {
 
     parser(json: any): GraphItem[] {
         const array = <any[]> json['contexts']
-        return array.map(obj => {
-            let g = new GraphItem(undefined, undefined, undefined, undefined)
-            g.id = obj['identifier']
-            g.name = obj['spec']['image']
+        return array
+            .map(obj => {
+                let g = new GraphItem(undefined, undefined, undefined, undefined)
+                g.id = obj['identifier']
+                g.name = obj['spec']['image']
 
-            let labelString = obj['spec']['labels']
-                .filter( label => label.includes('renga.meta_data.label='))
-                .map( label => label.replace('renga.meta_data.label=', ''))
-                .join(', ')
-            g.labels = labelString
-            g.properties.push({'key': 'labels', 'value': labelString})
+                let labelString = obj['spec']['labels']
+                    .filter( label => label.includes('renga.meta_data.label='))
+                    .map( label => label.replace('renga.meta_data.label=', ''))
+                    .join(', ')
+                g.labels = labelString
+                g.properties.push({'key': 'labels', 'value': labelString})
 
-            if (!(obj['spec']['ports'] === undefined)) {
-                g.properties.push({'key': 'ports', 'value': obj['spec']['ports'].join(', ')})
-            } else {
-                g.properties.push({'key': 'ports', 'value': '-'})
-            }
-            return g
-        })
+                if (!(obj['spec']['ports'] === undefined)) {
+                    g.properties.push({'key': 'ports', 'value': obj['spec']['ports'].join(', ')})
+                } else {
+                    g.properties.push({'key': 'ports', 'value': '-'})
+                }
+                return g
+            })
+            .filter( (g: any) => {
+                if (this.project) {
+                    return this.contextUUIDs.indexOf(g.id) >= 0
+                } else {
+                    return true
+                }
+            })
+
+
     }
 
     onSelect(context) {
