@@ -24,6 +24,8 @@ import fetchItemList from '../graph-item-list'
 import { UserState, NoUser, LoggedUser } from '../user'
 import { Project }  from '../project'
 import { FileObj, Bucket }  from '../storage'
+import { addFile, addFileVersion, createBucket, createContext,
+    getContext, getBucketBackends, getProjects, getProjectFiles, runContext, updateFile } from '../../utils/renga-api'
 
 
 @Component({
@@ -67,30 +69,14 @@ export class TutorialComponent extends Vue {
     searchImport = ''
 
     imageIDE = ''
+    nbIDE = 0
+    notebooks: any[] = []
     imageDocker = ''
     portsDocker = ''
     envDocker = ''
     baseCode = ''
     repositoryCode = ''
     envCode = ''
-
-    dockers(): any {
-
-        let nb_token = Math.random().toString(36).slice(2)
-
-        return {
-            'jupyter': {
-                command: `start-notebook.sh --NotebookApp.ip='*' --NotebookApp.token=${nb_token} --NotebookApp.contents_manager_class=renga.notebook.RengaStorageManager`,
-                ports: ['8888'],
-                image: 'rengahub/minimal-notebook:latest',
-                labels: [`renga.notebook.token=${nb_token}`]
-                },
-            'rstudio': {
-                image: 'rocker/rstudio',
-                ports: ['8787']
-            }
-        }
-    }
 
 
     inputNextStep () {
@@ -164,6 +150,7 @@ export class TutorialComponent extends Vue {
                     for (let i = 0; i < res.length; i++) {
                         fetchItemList(`./api/explorer/storage/bucket/${res[i].id}/files`, '', this.parser).then(result => {
                             this.datasets_local = this.datasets_local.concat(result)
+                            this.notebooks = this.datasets_local.filter((file: any) => file.name.slice(-6) === '.ipynb')
                         })
                     }
                     this.progress = false
@@ -328,63 +315,49 @@ export class TutorialComponent extends Vue {
         })
     }
 
-    do_execution(_payload, _env): void {
+    executeIDE() {
         this.progress = true
 
-        fetch('./api/deployer/contexts',
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include',
-                body: JSON.stringify(_payload)
-            }
+        createContext(this.imageIDE, ['8888'], [],
+            this.project.id, this.nbIDE
         ).then(response => {
+            console.log('create', response)
             return response.json()
-            }
-        ).then(response => {
-            let payload = JSON.stringify({
-              engine: 'docker',
-              namespace: 'namespace',
-              environment: _env.split(/\s*,\s*/).reduce(function(prev, curr) {let a = curr.split(/\s*=\s*/); prev[a[0]] = a[1]; return prev}, { })
-            })
-
-            fetch(`./api/deployer/contexts/${response.identifier}/executions`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    credentials: 'include',
-                    body: payload
+        }).then(responsej => {
+            runContext('k8s', '', responsej.identifier).then(r => {
+                console.log('run', r)
+                return r.json()
+            }).then(
+                rj => {
+                    this.progress = false
+                    router.push(`/deploy/context/${responsej.identifier}/execution/${rj.identifier}`)
                 }
-            ).then(response2 => {
-                return response2.json()
-                }
-            ).then(response2 => {
-                console.log('executing', response2)
-                this.progress = false
-                router.push(`/deploy/context/${response.identifier}/execution/${response2.identifier}`)
-            })
+            )
         })
-    }
-
-    executeIDE() {
-        this.do_execution(this.dockers()[this.imageIDE], '')
 
     }
 
     executeDocker() {
-        let payload = {
-          image: this.imageDocker,
-          ports: this.portsDocker.split(/\s*,\s*/)
-        }
+        this.progress = true
 
-        this.do_execution(payload, this.envDocker)
+        createContext(this.imageDocker, this.portsDocker.split(/\s*,\s*/), [],
+            this.project.id
+        ).then(response => {
+            console.log('create', response)
+            return response.json()
+        }).then(responsej => {
+            runContext('k8s', '', responsej.identifier,
+                this.envDocker.split(/\s*,\s*/).reduce(function(prev, curr) {let a = curr.split(/\s*=\s*/); prev[a[0]] = a[1]; return prev},
+                { })).then(r => {
+            console.log('run', r)
+            return r.json()
+        }).then(
+                rj => {
+                    this.progress = false
+                    router.push(`/deploy/context/${responsej.identifier}/execution/${rj.identifier}`)
+                }
+            )
+        })
     }
 
-    executeCode() {
-
-    }
 }

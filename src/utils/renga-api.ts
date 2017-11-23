@@ -52,7 +52,7 @@ export function createContext(image: string, ports: string[], labels: string[] =
         labels: labels
     }
 
-    let isNotebookImage = image.includes('rengahub/minimal-notebook')
+    let isNotebookImage = image.includes('rengahub/') && image.includes('-notebook')
 
     if (isNotebookImage) {
 
