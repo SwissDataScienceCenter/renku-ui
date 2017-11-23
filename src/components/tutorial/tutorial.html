@@ -16,25 +16,12 @@
       </v-stepper-header>
       <v-stepper-content :step="1">
          <v-layout>
-          <v-flex xs12 sm6>
-            <v-card class="ma-5">
+          <v-flex xs12 sm8 offset-sm2>
+            <v-card flat class="ma-5">
               <v-card-title primary-title>
-                <div>
-                  <h3 class="headline mb-0">Create a new project</h3>
-                </div>
+                  <h3 class="headline mb-0">Select a project</h3>
               </v-card-title>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn secondary @click.native.stop="projectDialog = true">Create</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-flex>
-          <v-flex xs12 sm6>
-            <v-card class="ma-5">
-              <v-card-title primary-title>
-                <div>
-                  <h3 class="headline mb-0">Choose an existing one</h3>
-                  <v-select
+              <v-select
                     v-bind:items="projects"
                     v-model="existingProject"
                     label="Select"
@@ -43,23 +30,22 @@
                     single-line
                     bottom
                   ></v-select>
-                </div>
-              </v-card-title>
               <v-card-actions>
+                <v-btn secondary @click.native.stop="projectDialog = true">Create new...</v-btn>
                 <v-spacer></v-spacer>
-                <v-btn secondary @click="chooseProject()">Next</v-btn>
+                <v-btn secondary @click="chooseProject()">Select and continue</v-btn>
               </v-card-actions>
             </v-card>
           </v-flex>
         </v-layout>
       </v-stepper-content>
       <v-stepper-content :step="2">
-        <div>
-          <h3 class="headline mb-0">Input datasets</h3>
-        </div>
         <v-layout>
-          <v-flex xs12 sm6>
-            <v-card class="ma-1">
+          <v-flex xs12 sm8 offset-sm2>
+            <v-card flat class="ma-1">
+              <v-card-title primary-title>
+                  <h3 class="headline mb-0">Input datasets</h3>
+              </v-card-title>
               <v-list two-line subheader>
                 <v-subheader inset>Project's files</v-subheader>
                 <v-list-tile avatar v-for="item in datasets_local" v-bind:key="item.id">
@@ -71,93 +57,67 @@
                     <v-list-tile-sub-title>{{ item.id }}</v-list-tile-sub-title>
                   </v-list-tile-content>
                   <v-list-tile-action>
-                    <v-btn icon ripple>
+                    <!--<v-btn icon ripple>
                       <v-icon class="grey--text text--lighten-1">info</v-icon>
-                    </v-btn>
+                    </v-btn>-->
                   </v-list-tile-action>
                 </v-list-tile>
               </v-list>
               <v-card-actions>
+                <v-btn secondary @click.native.stop="fileDialog = true">Upload more...</v-btn>
                 <v-spacer></v-spacer>
-                <v-btn secondary @click.native.stop="fileDialog = true">Upload</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-flex>
-          <v-flex xs12 sm6>
-            <v-card class="ma-1">
-              <v-list two-line subheader>
-                <v-subheader inset>Imported files</v-subheader>
-                <v-list-tile avatar v-for="item in datasets_import" v-bind:key="item.id">
-                  <v-list-tile-avatar>
-                    <v-icon>file</v-icon>
-                  </v-list-tile-avatar>
-                  <v-list-tile-content>
-                    <v-list-tile-title>{{ item.name }}</v-list-tile-title>
-                    <v-list-tile-sub-title>{{ item.id }}</v-list-tile-sub-title>
-                  </v-list-tile-content>
-                  <v-list-tile-action>
-                    <v-btn icon ripple>
-                      <v-icon class="grey--text text--lighten-1">info</v-icon>
-                    </v-btn>
-                  </v-list-tile-action>
-                </v-list-tile>
-              </v-list>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn secondary @click.native.stop="openImportDialog">Import</v-btn>
+                <v-btn secondary @click="inputNextStep">Continue</v-btn>
               </v-card-actions>
             </v-card>
           </v-flex>
         </v-layout>
-        <v-spacer></v-spacer>
-        <v-btn secondary @click="inputNextStep">Continue</v-btn>
+
       </v-stepper-content>
       <v-stepper-content :step="3">
         <div>
           <h3 class="headline mb-0">Launch an execution</h3>
         </div>
-        <v-layout>
-          <v-flex xs12 sm4>
-            <v-card class="ma-1 pa-3">
-              <v-list two-line subheader>
-                <v-subheader inset>From an IDE</v-subheader>
-              </v-list>
-              <v-select label="base image" required :items="[{text: 'jupyter notebook', value: 'jupyter'}, {text: 'R studio', value:'rstudio'}]" v-model="imageIDE"></v-select>
+        <v-tabs dark fixed centered>
+          <v-tabs-bar class="primary">
+            <v-tabs-slider class="secondary"></v-tabs-slider>
+            <v-tabs-item href="#tab-ide">
+              From an IDE
+            </v-tabs-item>
+            <v-tabs-item href="#tab-docker">
+              From a docker image
+            </v-tabs-item>
+          </v-tabs-bar>
+          <v-tabs-items>
+            <v-tabs-content id="tab-ide">
+              <v-card flat class="ma-1 pa-3">
+              <v-select label="base image" required :items="[{text: 'minimal-notebook', value: 'rengahub/minimal-notebook'}, {text: 'datascience-notebook', value: 'rengahub/datascience-notebook'}, {text: 'r-notebook', value: 'rengahub/r-notebook'}, {text: 'scipy-notebook', value: 'rengahub/scipy-notebook'}, {text: 'tensorflow-notebook', value: 'rengahub/tensorflow-notebook'}]" v-model="imageIDE"></v-select>
+               <v-select
+                  v-model="nbIDE"
+                  v-bind:items="notebooks"
+                  label="Add notebook input"
+                  autocomplete
+                  item-text="name"
+                  item-value="id">
+                </v-select>
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn secondary @click="executeIDE">Execute</v-btn>
               </v-card-actions>
             </v-card>
-          </v-flex>
-          <v-flex xs12 sm4>
-            <v-card class="ma-1 pa-3">
-              <v-list two-line subheader>
-                <v-subheader inset>From a docker image</v-subheader>
-              </v-list>
-              <v-text-field label="image" single-line hide-details v-model="imageDocker"></v-text-field>
-              <v-text-field label="exposed ports" single-line hide-details v-model="portsDocker"></v-text-field>
-              <v-text-field label="env. variables" single-line hide-details v-model="envDocker"></v-text-field>
+            </v-tabs-content>
+            <v-tabs-content id="tab-docker">
+              <v-card flat class="ma-1 pa-3">
+                <v-text-field label="image" single-line hide-details v-model="imageDocker"></v-text-field>
+                <v-text-field label="exposed ports" single-line hide-details v-model="portsDocker"></v-text-field>
+                <v-text-field label="env. variables" single-line hide-details hint="as comma-separated assignations, e.g.: FOO=42,BAR=john" v-model="envDocker"></v-text-field>
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn secondary @click="executeDocker">Execute</v-btn>
               </v-card-actions>
             </v-card>
-          </v-flex>
-          <v-flex xs12 sm4>
-            <v-card class="ma-1 pa-3">
-              <v-list two-line subheader>
-                <v-subheader inset>From a code repository</v-subheader>
-              </v-list>
-              <v-select label="base image" required :items="['python3', 'python2', 'R', 'C', 'C++', 'Fortran']" v-model="baseCode"></v-select>
-              <v-text-field label="code repository" single-line hide-details v-model="repositoryCode"></v-text-field>
-              <v-text-field label="env. variables" single-line hide-details v-model="envCode"></v-text-field>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn secondary @click="executeCode">Execute</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-flex>
-        </v-layout>
+            </v-tabs-content>
+          </v-tabs-items>
+        </v-tabs>
       </v-stepper-content>
     </v-stepper>
     <v-dialog v-model="projectDialog">
