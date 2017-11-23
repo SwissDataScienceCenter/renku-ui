@@ -25,6 +25,7 @@ from flask import session, request, redirect, jsonify, url_for
 
 from .. import app
 from ..keycloak import with_tokens
+from ..settings import settings
 
 logger = logging.getLogger(__name__)
 
@@ -72,4 +73,7 @@ def tokens():
 @app.route('/logout')
 def logout():
     session.clear()
-    return redirect(url_for('index'))
+    g = settings()
+    r_url = g['KEYCLOAK_REDIRECT_URL'][:-1] if g['KEYCLOAK_REDIRECT_URL'].endswith('/') else g['KEYCLOAK_REDIRECT_URL']
+    url = '{}/protocol/openid-connect/logout?{}'.format(r_url, urllib.parse.urlencode({'redirect_uri': url_for('index', _external=True)}))
+    return redirect(url)
