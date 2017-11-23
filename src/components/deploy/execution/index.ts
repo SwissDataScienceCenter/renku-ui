@@ -54,6 +54,7 @@ export class ExecutionComponent extends Vue {
           { text: 'Engine', value: 'resource:spec_ports' },
           { text: 'Namespace', value: 'deployer:execution_namespace' },
           { text: 'Created', value: 'created', align: 'right', sortable: true},
+          { text: 'State', value: 'state', align: 'right', sortable: true}
         ]
 
     dialog: string = null
@@ -96,6 +97,9 @@ export class ExecutionComponent extends Vue {
 
             let creationDate = new Date(obj['created'])
             g.properties.push({'key': 'created', 'value': creationDate.toLocaleString()})
+
+            g.properties.push({'key': 'state', 'value': obj['state']})
+
             return g
         })
     }
