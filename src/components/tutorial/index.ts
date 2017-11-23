@@ -209,7 +209,7 @@ export class TutorialComponent extends Vue {
                 if (response.status === 201) {
                     let payload = JSON.stringify({
                         name: this.project_name,
-                        backend: 'local',
+                        backend: 's3',
                         request_type: 'create_bucket'
                     })
 
