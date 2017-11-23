@@ -20,10 +20,17 @@
 import logging
 import os
 
+import pkg_resources
 from flask import Flask
 from flask_webpack import Webpack
 from werkzeug.contrib.fixers import ProxyFix
 from .utils import ReverseProxied
+
+try:
+    pkg_resources.get_distribution('raven')
+    from raven.contrib.flask import Sentry
+except pkg_resources.DistributionNotFound:  # pragma: no cover
+    Sentry = None
 
 logging.basicConfig(level=logging.DEBUG)
 
@@ -37,6 +44,10 @@ app.wsgi_app = ProxyFix(ReverseProxied(app.wsgi_app))
 
 
 webpack.init_app(app)
+
+# Setup Sentry service:
+if Sentry and os.environ.get('SENTRY_DSN'):  # pragma: no cover
+    Sentry(api.app, dsn=os.environ['SENTRY_DSN'])
 
 
 @app.after_request
