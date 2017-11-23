@@ -47,7 +47,7 @@ webpack.init_app(app)
 
 # Setup Sentry service:
 if Sentry and os.environ.get('SENTRY_DSN'):  # pragma: no cover
-    Sentry(api.app, dsn=os.environ['SENTRY_DSN'])
+    Sentry(app, dsn=os.environ['SENTRY_DSN'])
 
 
 @app.after_request
