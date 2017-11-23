@@ -233,6 +233,10 @@ export class TutorialComponent extends Vue {
     }
 
     addFile(event: Event): void {
+        if (this.datasets_buckets.length === 0) {
+            alert('No bucket defined for this project. Please create one first.')
+            return
+        }
         this.progress = true
         this.fileDialog = false
         let payload = JSON.stringify({
