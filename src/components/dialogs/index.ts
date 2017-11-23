@@ -139,7 +139,7 @@ export class ContextDialogComponent extends DeployerDialogComponent {
     featuredImages: string[] = ['rengahub/minimal-notebook']
     labels: string[] = []
 
-    mounted() {
+    activated() {
         // Put a first empty line
         this.inputSlotNames = ['']
         this.outputSlotNames = ['']
