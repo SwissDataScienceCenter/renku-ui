@@ -116,7 +116,7 @@ export class UserMenuComponent extends Vue {
             if (state.logged_in) {
                 this.items.push({ title: 'Execution contexts', icon: 'settings_applications', path: '/deploy/context' })
                 this.items.push({ title: 'Storage', icon: 'folder', path: '/storage' })
-                this.items.push({ title: 'Graph', icon: 'share', path: '/graph' })
+//                this.items.push({ title: 'Graph', icon: 'share', path: '/graph' })
                 this.items.push({ title: 'Logout', icon: 'account_box', path: 'logout' })
                 this.$emit('login', state)
             } else {

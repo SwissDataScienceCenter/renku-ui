@@ -85,6 +85,7 @@ export class ContextComponent extends Vue {
             value: 'id'
           },
           { text: 'Image', value: 'name' },
+          { text: 'Notebook file id', value: 'notebookId', align: 'right', sortable: true},
           { text: 'Labels', value: 'labels', sortable: false},
           { text: 'Ports', value: 'ports', align: 'right' },
           { text: 'Created', value: 'created', align: 'right', sortable: true},
@@ -98,11 +99,22 @@ export class ContextComponent extends Vue {
                 g.id = obj['identifier']
                 g.name = obj['spec']['image']
 
+                let notebookLabel = obj['spec']['labels']
+                    .find( label => label.includes('renga.context.inputs.notebook='))
+
+                let displayLabel = ''
+                if (notebookLabel) {
+                    displayLabel += notebookLabel.replace('renga.context.inputs.notebook=', '')
+                }
+                g.labels = [displayLabel]
+                g.properties.push({'key': 'notebookId', 'value': displayLabel})
+
+
                 let labelString = obj['spec']['labels']
                     .filter( label => label.includes('renga.meta_data.label='))
                     .map( label => label.replace('renga.meta_data.label=', ''))
                     .join(', ')
-                g.labels = labelString
+                g.labels = g.labels.concat(labelString)
                 g.properties.push({'key': 'labels', 'value': labelString})
 
                 if (!(obj['spec']['ports'] === undefined)) {
