@@ -131,6 +131,6 @@ def download():
             yield c
 
     resp = Response(generate(), response.status_code)
-    resp.headers['Content-Disposition'] = 'attachment'
+    resp.headers['Content-Disposition'] = 'attachment; filename={}'.format(request.args.get('name', 'untitled'))
 
     return resp

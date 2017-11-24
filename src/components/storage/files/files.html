@@ -10,15 +10,15 @@
       <span slot="title">Bucket files</span>
     </graph-item-table>
     <v-navigation-drawer right temporary v-model="detailsPanel" overflow>
-      <v-subheader inset><slot name="panel">File versions</slot></v-subheader>
+      <v-subheader inset><slot name="panel">File versions of {{ selectedFile === null ? '' : selectedFile.name }}</slot></v-subheader>
       <v-list two-line>
           <v-list-tile v-for="item in file_versions" v-bind:key="item.id">
               <v-list-tile-content>
                   <v-list-tile-title>{{ item.id }}</v-list-tile-title>
-                  <v-list-tile-sub-title>{{ new Date(item.properties[1].values[0].value).toISOString() }}</v-list-tile-sub-title>
+                  <v-list-tile-sub-title>{{ new Date(item.properties[1].values[0].value).toLocaleString() }}</v-list-tile-sub-title>
               </v-list-tile-content>
               <v-list-tile-action>
-                <v-btn flat v-bind:href="'./download?id=' + item.id">
+                <v-btn flat v-bind:href="'./download?id=' + item.id + '&name=' + encodeURI(selectedFile.name)">
                   <v-icon secondary>file_download</v-icon>
                 </v-btn>
               </v-list-tile-action>
