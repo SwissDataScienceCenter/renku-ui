@@ -24,7 +24,7 @@ import fetchItemList from '../graph-item-list'
 import { UserState, NoUser, LoggedUser } from '../user'
 import { Project }  from '../project'
 import { FileObj, Bucket }  from '../storage'
-import { addFile, addFileVersion, createBucket, createContext,
+import { addFile, addFileVersion, createBucket, createContext, duplicateFile,
     getContext, getBucketBackends, getProjects, getProjectFiles, runContext, updateFile } from '../../utils/renga-api'
 
 
@@ -322,6 +322,21 @@ export class TutorialComponent extends Vue {
     executeIDE() {
         this.progress = true
 
+        if (this.nbIDE > 0) {
+            duplicateFile(this.nbIDE, 0, 'Notebook copy.ipynb', this.project.id).then(r => {
+                console.log('duplicate', r)
+                return r.json()
+            }).then( result => {
+                this.nbIDE = result.id
+                this.do_executeIDE()
+            })
+        } else {
+            this.do_executeIDE()
+        }
+    }
+
+    do_executeIDE() {
+
         createContext(this.imageIDE, ['8888'], [],
             this.project.id, this.nbIDE
         ).then(response => {
@@ -338,7 +353,6 @@ export class TutorialComponent extends Vue {
                 }
             )
         })
-
     }
 
     executeDocker() {

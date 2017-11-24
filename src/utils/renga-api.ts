@@ -224,6 +224,33 @@ function executeUpload(authorization: Promise<any>, fileInput: any, fileUrl: str
         })
 }
 
+export function duplicateFile(fileID: number, bucketID: number, filename: string, projectId?: number) {
+
+    let payload = JSON.stringify({
+        resource_id: fileID,
+        bucket_id: bucketID,
+        file_name: filename,
+        labels: [`copy of ${fileID}`],
+        request_type: 'copy_file'
+    })
+
+    let headers = {
+        'Content-Type': 'application/json'
+    }
+
+    if (projectId) {
+        headers['Renga-Projects-Project'] = projectId
+    }
+
+    return fetch('./api/storage/authorize/copy_file',
+        {
+            method: 'POST',
+            credentials: 'include',
+            headers: headers,
+            body: payload
+        }
+    )
+}
 
 export function getProjectResources(projectId: number) {
     return fetch( `./api/explorer/projects/${projectId}/resources`,
