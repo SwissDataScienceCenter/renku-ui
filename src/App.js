@@ -88,9 +88,14 @@ class RengaNavBar extends Component {
 
         <div className="collapse navbar-collapse" id="navbarSupportedContent">
           <form className="form-inline my-2 my-lg-0">
-            <input className="form-control mr-sm-2" type="search" placeholder="Search RENGA" aria-label="Search" />
-            <button className="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            <div className="input-group">
+              <input className="form-control" type="search" placeholder="Search RENGA" aria-label="Search" />
+              <span class="input-group-btn">
+                <button className="btn btn-outline-success my-2 my-sm-0" type="submit"><FontAwesome name="search" /></button>
+              </span>
+            </div>
           </form>
+
           <ul className="navbar-nav mr-auto">
             <li className="nav-item active">
               <a className="nav-link" href="/">Timeline <span className="sr-only">(current)</span></a>
