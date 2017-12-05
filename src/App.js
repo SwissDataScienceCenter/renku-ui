@@ -104,7 +104,7 @@ class RengaNavBar extends Component {
               <a className="nav-link" href="/link">Ku</a>
             </li>
           </ul>
-          <ul className="navbar-nav ml-auto">
+          <ul className="navbar-nav">
             <li className="nav-item dropdown">
               <a className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 <FontAwesome name="plus" />
@@ -117,7 +117,7 @@ class RengaNavBar extends Component {
               </div>
             </li>
             <li className="nav-item">
-              <a className="nav-link" href="/user">User</a>
+              <a className="nav-link" href="/user"><FontAwesome name="user-circle" /></a>
             </li>
           </ul>
         </div>
