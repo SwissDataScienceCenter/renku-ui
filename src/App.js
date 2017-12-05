@@ -1,22 +1,22 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import { Container, Row, Col } from 'reactstrap';
 import './App.css';
 
 class App extends Component {
   render() {
     return (
-      <div className="container-fluid">
+      <Container fluid={true}>
         <header className="App-header">
           <h1 className="App-title">Welcome to SDSC/RENGA</h1>
         </header>
-        <div className="row">
-          <div className="col-sm offset-sm-4">
+        <Row>
+          <Col sm={{size: 4, offset: 4}}>
             <p className="App-intro">
               To get started, edit <code>src/App.js</code> and save to reload.
             </p>
-          </div>
-        </div>
-      </div>
+          </Col>
+        </Row>
+      </Container>
     );
   }
 }
