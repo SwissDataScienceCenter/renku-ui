@@ -42,10 +42,8 @@ import FontAwesome from 'react-fontawesome'
 
 class RengaNavItem extends Component {
   render() {
-    const current = this.props.currentPage;
     const to = this.props.to;
     const title = this.props.title;
-    // return <IndexLinkContainer to={to}><NavItem active={to === current ? true : false}>{title}</NavItem></IndexLinkContainer>
     return <NavLink exact to={to} tag={RRNavLink}>{title}</NavLink>
   }
 }
@@ -81,7 +79,7 @@ class RengaNavBar extends Component {
   render() {
     return (
       <nav className="navbar navbar-expand-lg navbar-light bg-light justify-content-between">
-        <a className="navbar-brand" href="/"><img src={logo} alt="Renga" height="24" /></a>
+        <span className="navbar-brand"><Link to="/"><img src={logo} alt="Renga" height="24" /></Link></span>
         <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span className="navbar-toggler-icon"></span>
         </button>
@@ -90,19 +88,15 @@ class RengaNavBar extends Component {
           <form className="form-inline my-2 my-lg-0">
             <div className="input-group">
               <input className="form-control" type="search" placeholder="Search RENGA" aria-label="Search" />
-              <span class="input-group-btn">
+              <span className="input-group-btn">
                 <button className="btn btn-outline-success my-2 my-sm-0" type="submit"><FontAwesome name="search" /></button>
               </span>
             </div>
           </form>
 
           <ul className="navbar-nav mr-auto">
-            <li className="nav-item active">
-              <a className="nav-link" href="/">Timeline <span className="sr-only">(current)</span></a>
-            </li>
-            <li className="nav-item">
-              <a className="nav-link" href="/link">Ku</a>
-            </li>
+            <RengaNavItem to="/" title="Timeline" />
+            <RengaNavItem to="/kus" title="Ku" />
           </ul>
           <ul className="navbar-nav">
             <li className="nav-item dropdown">
@@ -116,9 +110,7 @@ class RengaNavBar extends Component {
                 <a className="dropdown-item" href="/thing">Something else here</a>
               </div>
             </li>
-            <li className="nav-item">
-              <a className="nav-link" href="/user"><FontAwesome name="user-circle" /></a>
-            </li>
+            <RengaNavItem to="/user" title={<FontAwesome name="user-circle" />} />
           </ul>
         </div>
       </nav>
