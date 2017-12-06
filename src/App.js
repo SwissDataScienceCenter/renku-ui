@@ -78,55 +78,54 @@ class RengaNavBar extends Component {
   }
   render() {
     return (
-      <nav className="navbar navbar-expand-lg navbar-light bg-light justify-content-between">
-        <span className="navbar-brand"><Link to="/"><img src={logo} alt="Renga" height="24" /></Link></span>
-        <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span className="navbar-toggler-icon"></span>
-        </button>
+      <header>
+        <nav className="navbar navbar-expand-lg navbar-light bg-light justify-content-between">
+          <span className="navbar-brand"><Link to="/"><img src={logo} alt="Renga" height="24" /></Link></span>
+          <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span className="navbar-toggler-icon"></span>
+          </button>
 
-        <div className="collapse navbar-collapse" id="navbarSupportedContent">
-          <form className="form-inline my-2 my-lg-0">
-            <div className="input-group">
-              <input className="form-control" type="search" placeholder="Search RENGA" aria-label="Search" />
-              <span className="input-group-btn">
-                <button className="btn btn-outline-success my-2 my-sm-0" type="submit"><FontAwesome name="search" /></button>
-              </span>
-            </div>
-          </form>
-
-          <ul className="navbar-nav mr-auto">
-            <RengaNavItem to="/" title="Timeline" />
-            <RengaNavItem to="/kus" title="Ku" />
-          </ul>
-          <ul className="navbar-nav">
-            <li className="nav-item dropdown">
-              <a className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <FontAwesome name="plus" />
-              </a>
-              <div className="dropdown-menu" aria-labelledby="navbarDropdown">
-                <a className="dropdown-item" href="/action">Dataset</a>
-                <a className="dropdown-item" href="/anotherAction">Ku</a>
-                <div className="dropdown-divider"></div>
-                <a className="dropdown-item" href="/thing">Something else here</a>
+          <div className="collapse navbar-collapse" id="navbarSupportedContent">
+            <form className="form-inline my-2 my-lg-0">
+              <div className="input-group">
+                <input className="form-control" type="search" placeholder="Search RENGA" aria-label="Search" />
+                <span className="input-group-btn">
+                  <button className="btn btn-outline-success my-2 my-sm-0" type="submit"><FontAwesome name="search" /></button>
+                </span>
               </div>
-            </li>
-            <RengaNavItem to="/user" title={<FontAwesome name="user-circle" />} />
-          </ul>
-        </div>
-      </nav>
+            </form>
+
+            <ul className="navbar-nav mr-auto">
+              <RengaNavItem to="/" title="Timeline" />
+              <RengaNavItem to="/kus" title="Ku" />
+            </ul>
+            <ul className="navbar-nav">
+              <li className="nav-item dropdown">
+                <a className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <FontAwesome name="plus" />
+                </a>
+                <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+                  <a className="dropdown-item" href="/action">Dataset</a>
+                  <a className="dropdown-item" href="/anotherAction">Ku</a>
+                  <div className="dropdown-divider"></div>
+                  <a className="dropdown-item" href="/thing">Something else here</a>
+                </div>
+              </li>
+              <RengaNavItem to="/user" title={<FontAwesome name="user-circle" />} />
+            </ul>
+          </div>
+        </nav>
+      </header>
     )
   }
 }
 
 class RengaFooter extends Component {
   render() {
-    // TODO Use react-measure to determine if footer should be absolutely positioned
-    //  position: absolute;
-    return <footer>
-      <ul>
-        <li><a href="https://datascience.ch">&copy; SDSC 2017</a></li>
-        <li><Link to="/about">About</Link></li>
-      </ul>
+    return <footer className="footer">
+      <div className="container">
+        <span className="text-muted"><a href="https://datascience.ch">&copy; SDSC 2017</a></span>
+      </div>
     </footer>
   }
 }
@@ -137,6 +136,7 @@ class App extends Component {
       <Router>
           <div>
             <Route component={RengaNavBar} />
+            <main role="main" className="container">
             {/* <div className='container-fluid'>
               <Switch>
                 <Route exact path="/"
@@ -147,6 +147,8 @@ class App extends Component {
                 <Route path="/about" component={About} />
               </Switch>
             </div> */}
+            </main>
+            <Route component={RengaFooter} />
           </div>
       </Router>
     );
