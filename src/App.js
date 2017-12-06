@@ -37,8 +37,7 @@ import FontAwesome from 'react-fontawesome'
 
 // import About from './About'
 // import Landing from './Landing'
-// import Dataset from './Dataset'
-// import State from './State'
+import Dataset from './dataset/Dataset'
 
 class RengaNavItem extends Component {
   render() {
@@ -105,10 +104,8 @@ class RengaNavBar extends Component {
                   <FontAwesome name="plus" />
                 </a>
                 <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                  <a className="dropdown-item" href="/action">Dataset</a>
-                  <a className="dropdown-item" href="/anotherAction">Ku</a>
-                  <div className="dropdown-divider"></div>
-                  <a className="dropdown-item" href="/thing">Something else here</a>
+                  <a className="dropdown-item" href="/dataset_new">Dataset</a>
+                  <a className="dropdown-item" href="/ku_new">Ku</a>
                 </div>
               </li>
               <RengaNavItem to="/user" title={<FontAwesome name="user-circle" />} />
@@ -130,23 +127,24 @@ class RengaFooter extends Component {
   }
 }
 
+class Landing extends Component {
+  render() {
+    return <h1>Landing</h1>
+  }
+}
+
 class App extends Component {
   render() {
     return (
       <Router>
           <div>
             <Route component={RengaNavBar} />
-            <main role="main" className="container">
-            {/* <div className='container-fluid'>
+            <main role="main" className="container-fluid">
               <Switch>
                 <Route exact path="/"
-                  render={p => <Landing key="landing" events={State.landingEvents} {...p} />} />
-                <Route exact path="/dataset" component={Dataset.New} />
-                <Route path="/dataset/:id"
-                  render={p => <Dataset.View key="landing" dataset={State.datasets[p.match.params.id]} {...p} />} />
-                <Route path="/about" component={About} />
+                  render={p => <Landing key="landing" {...p} />} />
+                <Route exact path="/dataset_new" component={Dataset.New} />
               </Switch>
-            </div> */}
             </main>
             <Route component={RengaFooter} />
           </div>
