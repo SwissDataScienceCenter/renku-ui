@@ -32,7 +32,7 @@ class FieldGroup extends Component {
   render() {
     const id = this.props.id,
       label = this.props.label,
-      help = false, // this.props.help,
+      help = this.props.help,
       props = this.props;
     return <FormGroup>
       <Label>{label}</Label>
@@ -55,12 +55,25 @@ class DataRegistration extends Component {
 }
 
 class NewDataSet extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { title: "" }
+    this.onTitleChange = this.handleTitleChange.bind(this);
+  }
+
+  handleTitleChange(e) {
+    this.setState({title: e.target.value});
+  }
+
   render() {
+    // TODO short name should be computed from the title with spaces and non-ascii chars removed
+    // TODO there should be a test for the short-name computation.
     return <form action="" method="post" encType="multipart/form-data" id="js-upload-form">
       <FieldGroup id="title" type="text" label="Title"
-        placeholder="A brief name to identify the dataset" />
-      <FieldGroup id="description" type="textarea" label="Description (recommended)"
-        placeholder="A description of the dataset" />
+        placeholder="A brief name to identify the dataset" onChange={this.onTitleChange} />
+      <FieldGroup id="description" type="textarea" label="Description"
+        placeholder="A description of the dataset" help="A description of the data set helps users understand it and is highly recommended." />
+      <div>Short Name: {this.state.title}</div>
       <DataVisibility />
       <DataRegistration />
       <Button color="primary" type="submit">
@@ -73,8 +86,8 @@ class NewDataSet extends Component {
 class New extends Component {
   render() {
     return [
-      <Row><Col md={8}><h1>New Data Set</h1></Col></Row>,
-      <Row><Col md={8}><NewDataSet /></Col></Row>,
+      <Row key="header"><Col md={8}><h1>New Data Set</h1></Col></Row>,
+      <Row key="new"><Col md={8}><NewDataSet /></Col></Row>,
     ]
   }
 }
