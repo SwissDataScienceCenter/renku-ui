@@ -104,7 +104,7 @@ class RengaNavBar extends Component {
                 <a className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   <FontAwesome name="plus" />
                 </a>
-                <div className="dropdown-menu" aria-labelledby="navbarDropdown">
+                <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                   <a className="dropdown-item" href="/action">Dataset</a>
                   <a className="dropdown-item" href="/anotherAction">Ku</a>
                   <div className="dropdown-divider"></div>
