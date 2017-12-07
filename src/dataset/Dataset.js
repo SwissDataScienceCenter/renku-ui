@@ -26,7 +26,8 @@
 
 import React, { Component } from 'react';
 import { Row, Col } from 'reactstrap';
-import { Button, FormGroup, FormText, Input, Label } from 'reactstrap';
+import { Button, ButtonGroup, FormGroup, FormText, Input, Label } from 'reactstrap';
+import { Card, CardHeader, CardBody, CardTitle } from 'reactstrap'
 
 function displayIdFromTitle(title) {
   // title.Author: Alex K. - https://stackoverflow.com/users/246342/alex-k
@@ -61,9 +62,58 @@ class DataVisibility extends Component {
   }
 }
 
-class DataRegistration extends Component {
+class FileUpload extends Component {
+  // From https://bootsnipp.com/snippets/featured/bootstrap-drag-and-drop-upload
   render() {
-    return <div>data registration</div>
+    return (<div>
+      <CardTitle>Select Files</CardTitle>
+      <div className="form-inline">
+        <div className="form-group">
+          <input type="file" name="files[]" id="js-upload-files" multiple />
+        </div>
+        <button type="submit" className="btn btn-sm btn-primary" id="js-upload-submit">Upload</button>
+      </div>
+    </div>)
+  }
+}
+
+class ReferenceSpecification extends Component {
+  render() {
+    return [
+      <CardTitle key="title">Reference</CardTitle>,
+      <FieldGroup key="url" id="url" type="text" label="URL or DOI"
+        placeholder="The URL or DOI for the dataset" />,
+      <FieldGroup key="author" id="author" type="text" label="Author"
+        placeholder="The author of the original data" />,
+    ]
+  }
+}
+
+class DataRegistration extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { registration: "reference" }
+    this.onChange = this.handleChange.bind(this);
+  }
+
+  handleChange(v) {
+    this.setState({registration: v});
+  }
+
+  render() {
+    const buttonToolbar = (
+      <ButtonGroup>
+        <Button onClick={() => this.handleChange("reference")} active={this.state.registration === "reference"}>Reference</Button>
+        <Button onClick={() => this.handleChange("upload")} active={this.state.registration === "upload"}>Upload</Button>
+      </ButtonGroup>);
+    // const panelChild = this.state.registration === "reference" ? <UrlSpecification /> : <FileUpload />
+    const panelChild = this.state.registration === "reference" ? <ReferenceSpecification /> : <FileUpload />
+    return (
+      <Card>
+        <CardHeader>{buttonToolbar}</CardHeader>
+        <CardBody>{panelChild}</CardBody>
+      </Card>
+    )
   }
 }
 
@@ -88,6 +138,7 @@ class NewDataSet extends Component {
         placeholder="A description of the dataset" help="A description of the data set helps users understand it and is highly recommended." />
       <DataVisibility />
       <DataRegistration />
+      <br />
       <Button color="primary" type="submit">
         Create
       </Button>
