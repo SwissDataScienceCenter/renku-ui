@@ -51,7 +51,13 @@ class FieldGroup extends Component {
 
 class DataVisibility extends Component {
   render() {
-    return <div>data visibility</div>
+    return <FormGroup>
+        <Label>Visibility</Label>
+        <Input type="select" placeholder="visibility">
+          <option value="public">Public</option>
+          <option value="restricted">Restricted</option>
+        </Input>
+      </FormGroup>
   }
 }
 
@@ -92,7 +98,7 @@ class NewDataSet extends Component {
 class New extends Component {
   render() {
     return [
-      <Row key="header"><Col md={8}><h1>New Data Set</h1></Col></Row>,
+      <Row key="header"><Col md={8}><h1>New Dataset</h1></Col></Row>,
       <Row key="new"><Col md={8}><NewDataSet /></Col></Row>,
     ]
   }
