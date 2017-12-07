@@ -54,7 +54,7 @@ class DataVisibility extends Component {
   render() {
     return <FormGroup>
         <Label>Visibility</Label>
-        <Input type="select" placeholder="visibility">
+        <Input type="select" placeholder="visibility" onChange={this.props.onChange}>
           <option value="public">Public</option>
           <option value="restricted">Restricted</option>
         </Input>
@@ -78,13 +78,17 @@ class FileUpload extends Component {
 }
 
 class ReferenceSpecification extends Component {
+
   render() {
+    let urlValue = this.props.state['url'] ? this.props.state['url'] : "";
+    let authorValue = this.props.state['author'] ? this.props.state['author'] : "";
     return [
       <CardTitle key="title">Reference</CardTitle>,
       <FieldGroup key="url" id="url" type="text" label="URL or DOI"
-        placeholder="The URL or DOI for the dataset" />,
+        placeholder="The URL or DOI for the dataset" value={urlValue} onChange={(v) => this.props.onChange("url", v)} />,
       <FieldGroup key="author" id="author" type="text" label="Author"
-        placeholder="The author of the original data" />,
+        placeholder="The author of the original data" value={authorValue}
+        onChange={(v) => this.props.onChange("author", v)} />,
     ]
   }
 }
@@ -92,12 +96,21 @@ class ReferenceSpecification extends Component {
 class DataRegistration extends Component {
   constructor(props) {
     super(props);
-    this.state = { registration: "reference" }
+    this.state = { registration: "reference", reference: {} }
     this.onChange = this.handleChange.bind(this);
+    this.onReferenceChange = this.handleReferenceChange.bind(this);
   }
 
   handleChange(v) {
     this.setState({registration: v});
+    this.props.onChange(this.state);
+  }
+
+  handleReferenceChange(key, e) {
+    let reference = this.state.reference;
+    reference[key] = e.target.value;
+    this.setState({reference: reference });
+    this.props.onChange(this.state);
   }
 
   render() {
@@ -107,7 +120,10 @@ class DataRegistration extends Component {
         <Button onClick={() => this.handleChange("upload")} active={this.state.registration === "upload"}>Upload</Button>
       </ButtonGroup>);
     // const panelChild = this.state.registration === "reference" ? <UrlSpecification /> : <FileUpload />
-    const panelChild = this.state.registration === "reference" ? <ReferenceSpecification /> : <FileUpload />
+    const panelChild =
+      this.state.registration === "reference" ?
+        <ReferenceSpecification onChange={this.onReferenceChange} state={this.state.reference} /> :
+        <FileUpload />
     return (
       <Card>
         <CardHeader>{buttonToolbar}</CardHeader>
@@ -120,12 +136,33 @@ class DataRegistration extends Component {
 class NewDataSet extends Component {
   constructor(props) {
     super(props);
-    this.state = { displayId: "" }
+    this.state = { displayId: "", dataRegistrationState: { } };
     this.onTitleChange = this.handleTitleChange.bind(this);
+    this.onDescriptionChange = this.handleDescriptionChange.bind(this);
+    this.onVisibilityChange = this.handleVisibilityChange.bind(this);
+    this.onDataRegistrationChange = this.handleDataRegistrationChange.bind(this);
+    this.onSubmit = this.handleSubmit.bind(this);
   }
 
   handleTitleChange(e) {
-    this.setState({displayId: displayIdFromTitle(e.target.value)});
+    this.setState({
+      title: e.target.value,
+      displayId: displayIdFromTitle(e.target.value)
+    });
+  }
+
+  handleDescriptionChange(e) { this.setState({ description: e.target.value }); }
+  handleVisibilityChange(e) { this.setState({ visibility: e.target.value }); }
+  handleDataRegistrationChange(dataRegistrationState) {
+    this.setState({dataRegistrationState});
+  }
+
+  submitData() {
+    return this.state;
+  }
+
+  handleSubmit() {
+    console.log("Submit", this.submitData());
   }
 
   render() {
@@ -134,12 +171,12 @@ class NewDataSet extends Component {
       <FieldGroup id="title" type="text" label="Title"
         placeholder="A brief name to identify the dataset" onChange={this.onTitleChange}
         help={titleHelp} />
-      <FieldGroup id="description" type="textarea" label="Description"
+      <FieldGroup id="description" type="textarea" label="Description" onChange={this.onDescriptionChange}
         placeholder="A description of the dataset" help="A description of the data set helps users understand it and is highly recommended." />
-      <DataVisibility />
-      <DataRegistration />
+      <DataVisibility onChange={this.onVisibilityChange} />
+      <DataRegistration onChange={this.onDataRegistrationChange} state={this.state.dataRegistration} />
       <br />
-      <Button color="primary" type="submit">
+      <Button color="primary" onClick={this.onSubmit}>
         Create
       </Button>
     </form>
