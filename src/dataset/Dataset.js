@@ -28,10 +28,17 @@ import React, { Component } from 'react';
 import { Row, Col } from 'reactstrap';
 import { Button, FormGroup, FormText, Input, Label } from 'reactstrap';
 
+function displayIdFromTitle(title) {
+  // title.Author: Alex K. - https://stackoverflow.com/users/246342/alex-k
+  // Source: https://stackoverflow.com/questions/6507056/replace-all-whitespace-characters/6507078#6507078
+  title = title.replace(/\s/g, "-");
+  title = title.toLowerCase();
+  return title;
+}
+
 class FieldGroup extends Component {
   render() {
-    const id = this.props.id,
-      label = this.props.label,
+    const label = this.props.label,
       help = this.props.help,
       props = this.props;
     return <FormGroup>
@@ -57,23 +64,22 @@ class DataRegistration extends Component {
 class NewDataSet extends Component {
   constructor(props) {
     super(props);
-    this.state = { title: "" }
+    this.state = { displayId: "" }
     this.onTitleChange = this.handleTitleChange.bind(this);
   }
 
   handleTitleChange(e) {
-    this.setState({title: e.target.value});
+    this.setState({displayId: displayIdFromTitle(e.target.value)});
   }
 
   render() {
-    // TODO short name should be computed from the title with spaces and non-ascii chars removed
-    // TODO there should be a test for the short-name computation.
+    const titleHelp = this.state.displayId.length > 0 ? `Id: ${this.state.displayId}` : null;
     return <form action="" method="post" encType="multipart/form-data" id="js-upload-form">
       <FieldGroup id="title" type="text" label="Title"
-        placeholder="A brief name to identify the dataset" onChange={this.onTitleChange} />
+        placeholder="A brief name to identify the dataset" onChange={this.onTitleChange}
+        help={titleHelp} />
       <FieldGroup id="description" type="textarea" label="Description"
         placeholder="A description of the dataset" help="A description of the data set helps users understand it and is highly recommended." />
-      <div>Short Name: {this.state.title}</div>
       <DataVisibility />
       <DataRegistration />
       <Button color="primary" type="submit">
@@ -99,3 +105,4 @@ class View extends Component {
 }
 
 export default { New, View };
+export { displayIdFromTitle };
