@@ -25,15 +25,25 @@
 
 import { combineReducers } from 'redux'
 
+function displayIdFromTitle(title) {
+  // title.Author: Alex K. - https://stackoverflow.com/users/246342/alex-k
+  // Source: https://stackoverflow.com/questions/6507056/replace-all-whitespace-characters/6507078#6507078
+  title = title.replace(/\s/g, "-");
+  title = title.toLowerCase();
+  return title;
+}
+
 const Core = {
   set: (name, value) => {
-    return {type: 'core', payload: {[name]: value}}
+    const payload = {[name]: value};
+    if (name === 'title') payload['displayId'] = displayIdFromTitle(value);
+    return {type: 'core', payload}
   },
   reduce: (state, action) => {
     if (state == null) {
-      state = {title: "", description: ""} // initial state of core fields
+      state = {title: "", description: "", displayId: ""} // initial state of core fields
     }
-    if (action.type != 'core') return state;
+    if (action.type !== 'core') return state;
     // Can also use the explicit version below
     // return Object.assign({}, state, action.payload)
     return {...state, ...action.payload}
@@ -48,7 +58,7 @@ const Visibility = {
     if (state == null) {
       state = {level: "public"} // initial state of visibility field
     }
-    if (action.type != 'visibility') return state;
+    if (action.type !== 'visibility') return state;
     return {...state, ...action.payload}
   }
 }
@@ -56,3 +66,4 @@ const Visibility = {
 const reducer = combineReducers({core: Core.reduce, visibility: Visibility.reduce});
 
 export default { Core, Visibility, reducer };
+export { displayIdFromTitle };
