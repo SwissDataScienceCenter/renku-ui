@@ -25,33 +25,34 @@
 
 import { combineReducers } from 'redux'
 
-function setCore(name, value) {
-  return {type: 'core', payload: {[name]: value}}
-}
-
-function setVisibility(level) {
-  return {type: 'visibility', payload: {level} }
-}
-
-function core(state, action) {
-  if (state == null) {
-    state = {title: "", description: ""} // initial state of core fields
+const Core = {
+  set: (name, value) => {
+    return {type: 'core', payload: {[name]: value}}
+  },
+  reduce: (state, action) => {
+    if (state == null) {
+      state = {title: "", description: ""} // initial state of core fields
+    }
+    if (action.type != 'core') return state;
+    // Can also use the explicit version below
+    // return Object.assign({}, state, action.payload)
+    return {...state, ...action.payload}
   }
-  if (action.type != 'core') return state;
-  // Can also use the explicit version below
-  // return Object.assign({}, state, action.payload)
-  return {...state, ...action.payload}
-
 }
 
-function visibility(state, action) {
-  if (state == null) {
-    state = {level: "public"} // initial state of visibility field
+const Visibility = {
+  set: (level) => {
+    return {type: 'visibility', payload: {level} }
+  },
+  reduce: (state, action) => {
+    if (state == null) {
+      state = {level: "public"} // initial state of visibility field
+    }
+    if (action.type != 'visibility') return state;
+    return {...state, ...action.payload}
   }
-  if (action.type != 'visibility') return state;
-  return {...state, ...action.payload}
 }
 
-const newDataSetReducer = combineReducers({core, visibility});
+const reducer = combineReducers({core: Core.reduce, visibility: Visibility.reduce});
 
-export { setCore, setVisibility, newDataSetReducer };
+export default { Core, Visibility, reducer };

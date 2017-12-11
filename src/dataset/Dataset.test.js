@@ -26,7 +26,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Dataset, { displayIdFromTitle } from './Dataset';
-import { setCore, setVisibility, newDataSetReducer } from  './DatasetState';
+import State from  './DatasetState';
 
 it('renders without crashing', () => {
   const div = document.createElement('div');
@@ -39,27 +39,27 @@ it('computes display Id correctly', () => {
 
 describe('dataset state actions', () => {
   it('creates a core field set action', () => {
-    expect(setCore('title', 'a title')).toEqual({type: 'core', payload: {title: 'a title'}});
+    expect(State.Core.set('title', 'a title')).toEqual({type: 'core', payload: {title: 'a title'}});
   });
   it('creates a visibility set action', () => {
-    expect(setVisibility('private')).toEqual({type: 'visibility', payload: {level: 'private'}});
+    expect(State.Visibility.set('private')).toEqual({type: 'visibility', payload: {level: 'private'}});
   });
 });
 
 describe('dataset reducer', () => {
   it('returns initial state', () => {
-    const initialState = newDataSetReducer(undefined, {});
+    const initialState = State.reducer(undefined, {});
     expect(initialState).toEqual({
       core: {title: "", description: ""},
       visibility: {level: "public"}
     });
-    const state1 = newDataSetReducer(initialState, setCore('title', 'new title'));
+    const state1 = State.reducer(initialState, State.Core.set('title', 'new title'));
     expect(state1)
     .toEqual({
       core: {title: "new title", description: ""},
       visibility: {level: "public"}
     });
-    const state2 = newDataSetReducer(state1, setVisibility('private'));
+    const state2 = State.reducer(state1, State.Visibility.set('private'));
     expect(state2)
     .toEqual({
       core: {title: "new title", description: ""},
