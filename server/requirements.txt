@@ -16,8 +16,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-openid-connect==0.3.1
-requests==2.18.1
+beautifulsoup4==4.6.0
 flask==0.12.2
 Flask-Webpack==0.1.0
+openid-connect==0.3.1
 raven[flask]==6.3.0
+requests==2.18.1

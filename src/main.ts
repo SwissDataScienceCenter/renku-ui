@@ -34,6 +34,19 @@ import { GraphItemListComponent, GraphItemTableComponent } from './components/gr
 import { BucketDialogComponent, ContextDialogComponent, ExecutionDialogComponent,
     ProjectDialogComponent, VersionDialogComponent } from './components/dialogs'
 
+// Activate sentry if a sentry_ui_dsn is provided in the head of index.html
+import Raven from 'raven-js';
+import RavenVue from 'raven-js/plugins/vue.js';
+
+let sentryHeader = document.head.getElementsByTagName('meta')['sentry_ui_dsn']
+if (sentryHeader) {
+    console.log(`Sending error-logs to ${sentryHeader['content']}`)
+    Raven
+        .config(sentryHeader['content'])
+        .addPlugin(RavenVue, Vue)
+        .install()
+}
+
 // Vuetify style
 require('./main.styl')
 

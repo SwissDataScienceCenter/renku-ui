@@ -18,6 +18,24 @@
 """Server entrypoint."""
 
 import app
+import os
+from bs4 import BeautifulSoup
+
+# Add the env variable SENTRY_UI_DSN to the base.html header from where it's picked up by
+# the vue application.
+
+if os.environ.get('SENTRY_UI_DSN'):
+
+    with open('/app/server/app/templates/base.html', 'r') as f:
+        soup = BeautifulSoup(f, 'html.parser')
+
+    sentry_header = soup.new_tag('meta')
+    sentry_header['name'] = 'sentry_ui_dsn'
+    sentry_header['content'] = os.environ.get('SENTRY_UI_DSN')
+    soup.head.append(sentry_header)
+
+    with open('/app/server/app/templates/base.html', 'w') as f:
+        f.write(soup.prettify())
 
 if __name__ == "__main__":
     app.app.run(host='0.0.0.0')

@@ -46,8 +46,8 @@ app.wsgi_app = ProxyFix(ReverseProxied(app.wsgi_app))
 webpack.init_app(app)
 
 # Setup Sentry service:
-if Sentry and os.environ.get('SENTRY_DSN'):  # pragma: no cover
-    Sentry(app, dsn=os.environ['SENTRY_DSN'])
+if Sentry and os.environ.get('SENTRY_UI_SERVER_DSN'):  # pragma: no cover
+    Sentry(app, dsn=os.environ['SENTRY_UI_SERVER_DSN'])
 
 
 @app.after_request
