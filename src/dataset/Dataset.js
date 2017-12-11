@@ -1,4 +1,3 @@
-
 /*!
  * Copyright 2017 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
@@ -25,9 +24,15 @@
  */
 
 import React, { Component } from 'react';
+
+import { Provider, connect } from 'react-redux'
+import { createStore } from 'redux'
+
 import { Row, Col } from 'reactstrap';
 import { Button, ButtonGroup, FormGroup, FormText, Input, Label } from 'reactstrap';
 import { Card, CardHeader, CardBody, CardTitle } from 'reactstrap'
+
+import State from './DatasetState'
 
 function displayIdFromTitle(title) {
   // title.Author: Alex K. - https://stackoverflow.com/users/246342/alex-k
@@ -136,47 +141,29 @@ class DataRegistration extends Component {
 class NewDataSet extends Component {
   constructor(props) {
     super(props);
-    this.state = { displayId: "", dataRegistrationState: { } };
-    this.onTitleChange = this.handleTitleChange.bind(this);
-    this.onDescriptionChange = this.handleDescriptionChange.bind(this);
+    this.state = { dataRegistrationState: { } };
+    // TODO Move handling of visibility and data registration state to redux
     this.onVisibilityChange = this.handleVisibilityChange.bind(this);
     this.onDataRegistrationChange = this.handleDataRegistrationChange.bind(this);
-    this.onSubmit = this.handleSubmit.bind(this);
   }
 
-  handleTitleChange(e) {
-    this.setState({
-      title: e.target.value,
-      displayId: displayIdFromTitle(e.target.value)
-    });
-  }
-
-  handleDescriptionChange(e) { this.setState({ description: e.target.value }); }
   handleVisibilityChange(e) { this.setState({ visibility: e.target.value }); }
   handleDataRegistrationChange(dataRegistrationState) {
     this.setState({dataRegistrationState});
   }
 
-  submitData() {
-    return this.state;
-  }
-
-  handleSubmit() {
-    console.log("Submit", this.submitData());
-  }
-
   render() {
-    const titleHelp = this.state.displayId.length > 0 ? `Id: ${this.state.displayId}` : null;
+    const titleHelp = this.props.core.displayId.length > 0 ? `Id: ${this.props.core.displayId}` : null;
     return <form action="" method="post" encType="multipart/form-data" id="js-upload-form">
-      <FieldGroup id="title" type="text" label="Title"
-        placeholder="A brief name to identify the dataset" onChange={this.onTitleChange}
+      <FieldGroup id="title" type="text" label="Title" value={this.props.core.title}
+        placeholder="A brief name to identify the dataset" onChange={this.props.onTitleChange}
         help={titleHelp} />
-      <FieldGroup id="description" type="textarea" label="Description" onChange={this.onDescriptionChange}
+      <FieldGroup id="description" type="textarea" label="Description" value={this.props.core.description} onChange={this.props.onDescriptionChange}
         placeholder="A description of the dataset" help="A description of the data set helps users understand it and is highly recommended." />
       <DataVisibility onChange={this.onVisibilityChange} />
       <DataRegistration onChange={this.onDataRegistrationChange} state={this.state.dataRegistration} />
       <br />
-      <Button color="primary" onClick={this.onSubmit}>
+      <Button color="primary" onClick={this.props.onSubmit}>
         Create
       </Button>
     </form>
@@ -184,10 +171,36 @@ class NewDataSet extends Component {
 }
 
 class New extends Component {
+  constructor(props) {
+    super(props);
+    this.store = createStore(State.reducer);
+    this.onSubmit = this.handleSubmit.bind(this);
+  }
+
+  submitData() {
+    return this.store.getState();
+  }
+
+  handleSubmit() {
+    console.log("Submit", this.submitData());
+  }
+
+  mapStateToProps(state, ownProps) { return state  }
+
+  mapDispatchToProps(dispatch, ownProps) {
+    return {
+      onTitleChange: (e) => { dispatch(State.Core.set('title', e.target.value)) },
+      onDescriptionChange: (e) => { dispatch(State.Core.set('description', e.target.value)) }
+    }
+  }
+
   render() {
+    const VisibleNewDataSet = connect(this.mapStateToProps, this.mapDispatchToProps)(NewDataSet);
     return [
       <Row key="header"><Col md={8}><h1>New Dataset</h1></Col></Row>,
-      <Row key="new"><Col md={8}><NewDataSet /></Col></Row>,
+      <Provider key="new" store={this.store}>
+        <Row><Col md={8}><VisibleNewDataSet onSubmit={this.onSubmit} /></Col></Row>
+      </Provider>
     ]
   }
 }
