@@ -20,7 +20,7 @@ import Vue from 'vue'
 import Component from 'vue-class-component'
 import { Watch } from 'vue-property-decorator'
 
-import { addFile, addFileVersion, createBucket, createContext,
+import { addFile, addFileVersion, createBucket, createContext, duplicateFile,
     getContext, getBucketBackends, getProjects, getProjectFiles, runContext, updateFile } from '../../utils/renga-api'
 import { findDisplayName } from '../graph/index'
 import { GraphItem } from '../graph-item-list/graph-item'
@@ -216,10 +216,10 @@ export class ContextDialogComponent extends DeployerDialogComponent {
                 return r.json()
             }).then( result => {
                 notebookId = result.id
-                doCreateContext(labels, notebookId)
+                this.doCreateContext(labels, notebookId)
             })
         } else {
-            doCreateContext(labels, notebookId)
+            this.doCreateContext(labels, notebookId)
         }
     }
 

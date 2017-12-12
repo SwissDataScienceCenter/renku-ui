@@ -38,6 +38,8 @@ import { BucketDialogComponent, ContextDialogComponent, ExecutionDialogComponent
 import Raven from 'raven-js';
 import RavenVue from 'raven-js/plugins/vue.js';
 
+declare var SENTRY_UI_DSN: string;
+
 if ( SENTRY_UI_DSN !== '' ) {
   Raven
       .config(SENTRY_UI_DSN)
