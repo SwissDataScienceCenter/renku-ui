@@ -59,7 +59,7 @@ class DataVisibility extends Component {
   render() {
     return <FormGroup>
         <Label>Visibility</Label>
-        <Input type="select" placeholder="visibility" onChange={this.props.onChange}>
+        <Input type="select" placeholder="visibility" value={this.props.value.level} onChange={this.props.onChange}>
           <option value="public">Public</option>
           <option value="restricted">Restricted</option>
         </Input>
@@ -143,11 +143,9 @@ class NewDataSet extends Component {
     super(props);
     this.state = { dataRegistrationState: { } };
     // TODO Move handling of visibility and data registration state to redux
-    this.onVisibilityChange = this.handleVisibilityChange.bind(this);
     this.onDataRegistrationChange = this.handleDataRegistrationChange.bind(this);
   }
 
-  handleVisibilityChange(e) { this.setState({ visibility: e.target.value }); }
   handleDataRegistrationChange(dataRegistrationState) {
     this.setState({dataRegistrationState});
   }
@@ -160,7 +158,7 @@ class NewDataSet extends Component {
         help={titleHelp} />
       <FieldGroup id="description" type="textarea" label="Description" value={this.props.core.description} onChange={this.props.onDescriptionChange}
         placeholder="A description of the dataset" help="A description of the data set helps users understand it and is highly recommended." />
-      <DataVisibility onChange={this.onVisibilityChange} />
+      <DataVisibility value={this.props.visibility} onChange={this.props.onVisibilityChange} />
       <DataRegistration onChange={this.onDataRegistrationChange} state={this.state.dataRegistration} />
       <br />
       <Button color="primary" onClick={this.props.onSubmit}>
@@ -190,7 +188,8 @@ class New extends Component {
   mapDispatchToProps(dispatch, ownProps) {
     return {
       onTitleChange: (e) => { dispatch(State.Core.set('title', e.target.value)) },
-      onDescriptionChange: (e) => { dispatch(State.Core.set('description', e.target.value)) }
+      onDescriptionChange: (e) => { dispatch(State.Core.set('description', e.target.value)) },
+      onVisibilityChange: (e) => { dispatch(State.Visibility.set(e.target.value)) }
     }
   }
 
