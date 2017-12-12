@@ -135,6 +135,7 @@ export class ContextDialogComponent extends DeployerDialogComponent {
     context_image: string = ''
     context_ports: string = ''
     notebooks: any[] = []
+    doCopy: boolean = false
     context_notebook: any = null
     featuredImages: string[] = ['rengahub/minimal-notebook']
     labels: string[] = []
@@ -209,16 +210,30 @@ export class ContextDialogComponent extends DeployerDialogComponent {
         }
         this.progress = true
 
+        if (notebookId !== null && this.doCopy) {
+            duplicateFile(notebookId, 0, `copy_${this.context_notebook.file.text}`, null).then(r => {
+                console.log('duplicate', r)
+                return r.json()
+            }).then( result => {
+                notebookId = result.id
+                doCreateContext(labels, notebookId)
+            })
+        } else {
+            doCreateContext(labels, notebookId)
+        }
+    }
+
+    doCreateContext(labels, notebookId) {
         createContext(this.context_image, this.context_ports.split(/\s*,\s*/), labels,
             this.projectId, notebookId)
-            .then(response => {
-                console.log('create', response)
-                this.context_image = ''
-                this.context_ports = ''
-                this.context_notebook = null
-                this.labels = []
-                this.onSuccess()
-            })
+        .then(response => {
+            console.log('create', response)
+            this.context_image = ''
+            this.context_ports = ''
+            this.context_notebook = null
+            this.labels = []
+            this.onSuccess()
+        })
     }
 
     cancel() {

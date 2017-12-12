@@ -20,8 +20,15 @@
 from flask import render_template
 
 from .. import app
+from ..settings import settings
 
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    g = settings()
+    return render_template(
+        'index.html',
+        DEPLOY_DEFAULT_BACKEND=g['DEPLOY_DEFAULT_BACKEND'],
+        STORAGE_DEFAULT_BACKEND=g['STORAGE_DEFAULT_BACKEND'],
+        SENTRY_UI_DSN=g['SENTRY_UI_DSN'],
+    )

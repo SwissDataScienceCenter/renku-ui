@@ -40,3 +40,9 @@ def setup_globals():
         'CLIENT_ID', 'demo-client')
     g['CLIENT_SECRET'] = os.environ.get(
         'CLIENT_SECRET', '5294a18e-e784-4e39-a927-ce816c91c83e')
+    g['STORAGE_DEFAULT_BACKEND'] = os.environ.get(
+        'STORAGE_DEFAULT_BACKEND', 'local')
+    g['DEPLOY_DEFAULT_BACKEND'] = os.environ.get(
+        'DEPLOY_DEFAULT_BACKEND', 'docker')
+    g['SENTRY_UI_DSN'] = os.environ.get(
+        'SENTRY_UI_DSN', '')

@@ -38,10 +38,13 @@ import { BucketDialogComponent, ContextDialogComponent, ExecutionDialogComponent
 import Raven from 'raven-js';
 import RavenVue from 'raven-js/plugins/vue.js';
 
-Raven
-    .config('https://250bfa79136d4bc2b19d4f8d977b4f5f@sentry.io/246730')
-    .addPlugin(RavenVue, Vue)
-    .install();
+if ( SENTRY_UI_DSN !== '' ) {
+  Raven
+      .config(SENTRY_UI_DSN)
+      .addPlugin(RavenVue, Vue)
+      .install();
+}
+
 
 // Vuetify style
 require('./main.styl')
