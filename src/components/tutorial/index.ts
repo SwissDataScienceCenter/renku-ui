@@ -28,6 +28,9 @@ import { addFile, addFileVersion, createBucket, createContext, duplicateFile,
     getContext, getBucketBackends, getProjects, getProjectFiles, runContext, updateFile } from '../../utils/renga-api'
 
 
+declare var STORAGE_DEFAULT_BACKEND: string;
+declare var DEPLOY_DEFAULT_BACKEND: string;
+
 @Component({
     props: {
         user: undefined,
