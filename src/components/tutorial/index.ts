@@ -327,7 +327,7 @@ export class TutorialComponent extends Vue {
         this.progress = true
 
         if (this.nbIDE > 0 && this.nbCopy) {
-            duplicateFile(this.nbIDE, 0, 'Notebook copy.ipynb', this.project.id).then(r => {
+            duplicateFile(this.nbIDE, 0, `Notebook copy of ${this.nbIDE}.ipynb`, this.project.id).then(r => {
                 console.log('duplicate', r)
                 return r.json()
             }).then( result => {
