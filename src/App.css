@@ -33,7 +33,7 @@ html {
   min-height: 100%;
 }
 body {
-  margin-bottom: 60px; /* Margin bottom by footer height */
+  margin-bottom: 70px; /* Margin bottom by footer height */
 }
 .footer {
   position: absolute;
