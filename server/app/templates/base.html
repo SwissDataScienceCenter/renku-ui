@@ -29,6 +29,12 @@
     <link rel="apple-touch-icon" href="{{ url_for('static', filename='assets/img/sdsc-icon.png') }}"/>
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
+    <script type="text/javascript">
+        var STORAGE_DEFAULT_BACKEND = '{{ STORAGE_DEFAULT_BACKEND }}';
+        var DEPLOY_DEFAULT_BACKEND = '{{ DEPLOY_DEFAULT_BACKEND }}';
+        var SENTRY_UI_DSN = '{{ SENTRY_UI_DSN }}';
+    </script>
+
     <!-- build:css css/main.min.css -->
     <!-- <link rel="stylesheet" href="{{ asset_url_for('main.css') }}"> -->
     <!-- /build -->

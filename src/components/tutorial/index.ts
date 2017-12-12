@@ -70,6 +70,7 @@ export class TutorialComponent extends Vue {
 
     imageIDE = ''
     nbIDE = 0
+    nbCopy = true
     notebooks: any[] = []
     imageDocker = ''
     portsDocker = ''
@@ -209,7 +210,7 @@ export class TutorialComponent extends Vue {
                 if (response.status === 201) {
                     let payload = JSON.stringify({
                         name: this.project_name,
-                        backend: 's3',
+                        backend: STORAGE_DEFAULT_BACKEND,
                         request_type: 'create_bucket'
                     })
 
@@ -322,7 +323,7 @@ export class TutorialComponent extends Vue {
     executeIDE() {
         this.progress = true
 
-        if (this.nbIDE > 0) {
+        if (this.nbIDE > 0 && this.nbCopy) {
             duplicateFile(this.nbIDE, 0, 'Notebook copy.ipynb', this.project.id).then(r => {
                 console.log('duplicate', r)
                 return r.json()
@@ -343,7 +344,7 @@ export class TutorialComponent extends Vue {
             console.log('create', response)
             return response.json()
         }).then(responsej => {
-            runContext('k8s', '', responsej.identifier).then(r => {
+            runContext(DEPLOY_DEFAULT_BACKEND, '', responsej.identifier).then(r => {
                 console.log('run', r)
                 return r.json()
             }).then(
@@ -364,7 +365,7 @@ export class TutorialComponent extends Vue {
             console.log('create', response)
             return response.json()
         }).then(responsej => {
-            runContext('k8s', '', responsej.identifier,
+            runContext(DEPLOY_DEFAULT_BACKEND, '', responsej.identifier,
                 this.envDocker.split(/\s*,\s*/).reduce(function(prev, curr) {let a = curr.split(/\s*=\s*/); prev[a[0]] = a[1]; return prev},
                 { })).then(r => {
             console.log('run', r)
