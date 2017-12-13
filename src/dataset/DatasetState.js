@@ -33,59 +33,54 @@ function displayIdFromTitle(title) {
   return title;
 }
 
+function createSetAction(type, field, value) {
+  const payload = {[field]: value};
+  return {type, payload}
+}
+
+function reduceState(type, state, action, initial) {
+  if (state == null) state = initial
+  if (action.type !== type) return state;
+  // Can also use the explicit version below
+  // return Object.assign({}, state, action.payload)
+  return {...state, ...action.payload}
+}
+
 const Core = {
-  set: (name, value) => {
-    const payload = {[name]: value};
-    if (name === 'title') payload['displayId'] = displayIdFromTitle(value);
-    return {type: 'core', payload}
+  set: (field, value) => {
+    const action = createSetAction('core', field, value);
+    if (field === 'title') action.payload['displayId'] = displayIdFromTitle(value);
+    return action
   },
   reduce: (state, action) => {
-    if (state == null) {
-      state = {title: "", description: "", displayId: ""} // initial state of core fields
-    }
-    if (action.type !== 'core') return state;
-    // Can also use the explicit version below
-    // return Object.assign({}, state, action.payload)
-    return {...state, ...action.payload}
+    return reduceState('core', state, action, {title: "", description: "", displayId: ""})
   }
 }
 
 const Visibility = {
   set: (level) => {
-    return {type: 'visibility', payload: {level} }
+    return createSetAction('visibility', 'level', level)
   },
   reduce: (state, action) => {
-    if (state == null) {
-      state = {level: "public"} // initial state of visibility field
-    }
-    if (action.type !== 'visibility') return state;
-    return {...state, ...action.payload}
+    return reduceState('visibility', state, action, {level: "public"})
   }
 }
 
 const DataReference = {
   set: (field, value) => {
-    return {type: 'data_reference', payload: {[field]: value} }
+    return createSetAction('data_reference', field, value)
   },
   reduce: (state, action) => {
-    if (state == null) {
-      state = {url_or_doi:"", author: ""} // initial state
-    }
-    if (action.type !== 'data_reference') return state;
-    return {...state, ...action.payload}
+    return reduceState('data_reference', state, action, {url_or_doi:"", author: ""})
   }
 }
 
 const DataUpload = {
   set: (field, value) => {
-    return {type: 'data_upload', payload: {[field]: value} }
+    return createSetAction('data_upload', field, value)
   },
   reduce: (state, action) => {
-    if (state == null) {
-      state = {files: []} // initial state
-    }
-    if (action.type !== 'data_upload') return state;
-    return {...state, ...action.payload}
+    return reduceState('data_upload', state, action, {files: []})
   }
 }
 
