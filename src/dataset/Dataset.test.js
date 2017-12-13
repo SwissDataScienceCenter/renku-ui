@@ -44,6 +44,9 @@ describe('dataset state actions', () => {
   it('creates a visibility set action', () => {
     expect(State.Visibility.set('private')).toEqual({type: 'visibility', payload: {level: 'private'}});
   });
+  it('creates a data set action', () => {
+    expect(State.Data.set('reference', 'url_or_doi', "http://foo.bar/data.csv")).toEqual({type: 'data_reference', payload: {'url_or_doi': "http://foo.bar/data.csv"}});
+  });
 });
 
 describe('dataset reducer', () => {
@@ -51,7 +54,11 @@ describe('dataset reducer', () => {
   it('returns initial state', () => {
     expect(initialState).toEqual({
       core: {title: "", description: "", displayId: ""},
-      visibility: {level: "public"}
+      visibility: {level: "public"},
+      data: {
+        reference: {url_or_doi:"", author: ""},
+        upload: {files: []}
+      }
     });
   });
   it('advances state', () => {
@@ -59,13 +66,31 @@ describe('dataset reducer', () => {
     expect(state1)
     .toEqual({
       core: {title: "new title", description: "", displayId: "new-title"},
-      visibility: {level: "public"}
+      visibility: {level: "public"},
+      data: {
+        reference: {url_or_doi:"", author: ""},
+        upload: {files: []}
+      }
     });
     const state2 = State.reducer(state1, State.Visibility.set('private'));
     expect(state2)
     .toEqual({
       core: {title: "new title", description: "", displayId: "new-title"},
-      visibility: {level: "private"}
+      visibility: {level: "private"},
+      data: {
+        reference: {url_or_doi:"", author: ""},
+        upload: {files: []}
+      }
+    });
+    const state3 = State.reducer(state2, State.Data.set('reference', 'url_or_doi', 'http://foo.bar/data.csv'));
+    expect(state3)
+    .toEqual({
+      core: {title: "new title", description: "", displayId: "new-title"},
+      visibility: {level: "private"},
+      data: {
+        reference: {url_or_doi:"http://foo.bar/data.csv", author: ""},
+        upload: {files: []}
+      }
     });
   });
 });

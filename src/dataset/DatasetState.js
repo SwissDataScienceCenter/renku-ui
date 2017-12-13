@@ -63,7 +63,41 @@ const Visibility = {
   }
 }
 
-const reducer = combineReducers({core: Core.reduce, visibility: Visibility.reduce});
+const DataReference = {
+  set: (field, value) => {
+    return {type: 'data_reference', payload: {[field]: value} }
+  },
+  reduce: (state, action) => {
+    if (state == null) {
+      state = {url_or_doi:"", author: ""} // initial state
+    }
+    if (action.type !== 'data_reference') return state;
+    return {...state, ...action.payload}
+  }
+}
 
-export default { Core, Visibility, reducer };
+const DataUpload = {
+  set: (field, value) => {
+    return {type: 'data_upload', payload: {[field]: value} }
+  },
+  reduce: (state, action) => {
+    if (state == null) {
+      state = {files: []} // initial state
+    }
+    if (action.type !== 'data_upload') return state;
+    return {...state, ...action.payload}
+  }
+}
+
+const Data = {
+  set: (subtype, field, value) => {
+    if ('reference' === subtype) return DataReference.set(field, value);
+    if ('upload' === subtype) return DataUpload.set(field, value);
+  },
+  reduce: combineReducers({reference: DataReference.reduce, upload: DataUpload.reduce})
+}
+
+const reducer = combineReducers({core: Core.reduce, visibility: Visibility.reduce, data: Data.reduce});
+
+export default { Core, Visibility, Data, reducer };
 export { displayIdFromTitle };
