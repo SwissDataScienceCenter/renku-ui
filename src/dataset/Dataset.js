@@ -34,14 +34,6 @@ import { Card, CardHeader, CardBody, CardTitle } from 'reactstrap'
 
 import State from './DatasetState'
 
-function displayIdFromTitle(title) {
-  // title.Author: Alex K. - https://stackoverflow.com/users/246342/alex-k
-  // Source: https://stackoverflow.com/questions/6507056/replace-all-whitespace-characters/6507078#6507078
-  title = title.replace(/\s/g, "-");
-  title = title.toLowerCase();
-  return title;
-}
-
 class FieldGroup extends Component {
   render() {
     const label = this.props.label,
@@ -85,14 +77,12 @@ class FileUpload extends Component {
 class ReferenceSpecification extends Component {
 
   render() {
-    let urlValue = this.props.state['url'] ? this.props.state['url'] : "";
-    let authorValue = this.props.state['author'] ? this.props.state['author'] : "";
     return [
       <CardTitle key="title">Reference</CardTitle>,
       <FieldGroup key="url" id="url" type="text" label="URL or DOI"
-        placeholder="The URL or DOI for the dataset" value={urlValue} onChange={(v) => this.props.onChange("url", v)} />,
+        placeholder="The URL or DOI for the dataset" value={this.props.value.url_or_doi} onChange={(v) => this.props.onChange("url_or_doi", v)} />,
       <FieldGroup key="author" id="author" type="text" label="Author"
-        placeholder="The author of the original data" value={authorValue}
+        placeholder="The author of the original data" value={this.props.value.author}
         onChange={(v) => this.props.onChange("author", v)} />,
     ]
   }
@@ -101,21 +91,11 @@ class ReferenceSpecification extends Component {
 class DataRegistration extends Component {
   constructor(props) {
     super(props);
-    this.state = { registration: "reference", reference: {} }
-    this.onChange = this.handleChange.bind(this);
-    this.onReferenceChange = this.handleReferenceChange.bind(this);
+    this.state = { registration: "reference" }
   }
 
   handleChange(v) {
     this.setState({registration: v});
-    this.props.onChange(this.state);
-  }
-
-  handleReferenceChange(key, e) {
-    let reference = this.state.reference;
-    reference[key] = e.target.value;
-    this.setState({reference: reference });
-    this.props.onChange(this.state);
   }
 
   render() {
@@ -124,11 +104,10 @@ class DataRegistration extends Component {
         <Button onClick={() => this.handleChange("reference")} active={this.state.registration === "reference"}>Reference</Button>
         <Button onClick={() => this.handleChange("upload")} active={this.state.registration === "upload"}>Upload</Button>
       </ButtonGroup>);
-    // const panelChild = this.state.registration === "reference" ? <UrlSpecification /> : <FileUpload />
     const panelChild =
       this.state.registration === "reference" ?
-        <ReferenceSpecification onChange={this.onReferenceChange} state={this.state.reference} /> :
-        <FileUpload />
+        <ReferenceSpecification value={this.props.value.reference} onChange={this.props.onReferenceChange} /> :
+        <FileUpload value={this.props.value.upload} onChange={null}  />
     return (
       <Card>
         <CardHeader>{buttonToolbar}</CardHeader>
@@ -139,27 +118,16 @@ class DataRegistration extends Component {
 }
 
 class NewDataSet extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { dataRegistrationState: { } };
-    // TODO Move handling of visibility and data registration state to redux
-    this.onDataRegistrationChange = this.handleDataRegistrationChange.bind(this);
-  }
-
-  handleDataRegistrationChange(dataRegistrationState) {
-    this.setState({dataRegistrationState});
-  }
 
   render() {
     const titleHelp = this.props.core.displayId.length > 0 ? `Id: ${this.props.core.displayId}` : null;
     return <form action="" method="post" encType="multipart/form-data" id="js-upload-form">
-      <FieldGroup id="title" type="text" label="Title" value={this.props.core.title}
-        placeholder="A brief name to identify the dataset" onChange={this.props.onTitleChange}
-        help={titleHelp} />
-      <FieldGroup id="description" type="textarea" label="Description" value={this.props.core.description} onChange={this.props.onDescriptionChange}
-        placeholder="A description of the dataset" help="A description of the data set helps users understand it and is highly recommended." />
+      <FieldGroup id="title" type="text" label="Title" placeholder="A brief name to identify the dataset" help={titleHelp}
+        value={this.props.core.title} onChange={this.props.onTitleChange} />
+      <FieldGroup id="description" type="textarea" label="Description" placeholder="A description of the dataset" help="A description of the data set helps users understand it and is highly recommended."
+        value={this.props.core.description} onChange={this.props.onDescriptionChange} />
       <DataVisibility value={this.props.visibility} onChange={this.props.onVisibilityChange} />
-      <DataRegistration onChange={this.onDataRegistrationChange} state={this.state.dataRegistration} />
+      <DataRegistration value={this.props.data} onReferenceChange={this.props.onDataReferenceChange} />
       <br />
       <Button color="primary" onClick={this.props.onSubmit}>
         Create
@@ -189,7 +157,8 @@ class New extends Component {
     return {
       onTitleChange: (e) => { dispatch(State.Core.set('title', e.target.value)) },
       onDescriptionChange: (e) => { dispatch(State.Core.set('description', e.target.value)) },
-      onVisibilityChange: (e) => { dispatch(State.Visibility.set(e.target.value)) }
+      onVisibilityChange: (e) => { dispatch(State.Visibility.set(e.target.value)) },
+      onDataReferenceChange: (key, e) => { dispatch(State.Data.set("reference", key, e.target.value)) }
     }
   }
 
@@ -211,4 +180,3 @@ class View extends Component {
 }
 
 export default { New, View };
-export { displayIdFromTitle };
