@@ -4,7 +4,6 @@
         <span class="headline">Upload a file</span>
     </v-card-title>
     <v-card-text>
-        <v-text-field label="Name" required v-model="bucketfile"></v-text-field>
         <v-btn-toggle v-model="fileOrigin">
             <v-btn flat value="local">
                 Local File
@@ -13,6 +12,7 @@
                 File from URL
             </v-btn>
         </v-btn-toggle>
+        <v-text-field label="Name" required v-model="bucketfile"></v-text-field>
         <span v-if="fileOrigin === 'local'">
             <v-text-field
                     prepend-icon="attach_file" single-line

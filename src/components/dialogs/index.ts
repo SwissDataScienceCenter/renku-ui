@@ -327,8 +327,7 @@ export class ExecutionDialogComponent extends DeployerDialogComponent {
     template: require('./bucket-dialog.html'),
     props: {
         bucketId: {
-            type: Number,
-            required: true
+            type: Number
         }
     }
 })
@@ -345,6 +344,14 @@ export class BucketDialogComponent extends DialogBaseComponent {
     }
 
     addFile() {
+        // Deactivate upload butten while nothing is selected
+        if (this.bucketfile === '' && this.fileUrl === null) return
+        // This should not happen!
+        if (this.bucketId === null) {
+            alert('Can not upload. No bucket selected.')
+            return
+        }
+
         this.progress = true
 
         let options = {}
