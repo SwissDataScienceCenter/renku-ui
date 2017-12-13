@@ -52,7 +52,7 @@ def pass_through(path):
     logger.debug('Method: {}'.format(request.method))
     logger.debug('URL: {}'.format(url))
     logger.debug('Headers: {}'.format(headers))
-    logger.debug('Data: {}'.format(request.data))
+    logger.debug('Data (maybe truncated): {}'.format(request.data[0:1000]))
 
     response = requests.request(request.method, url, headers=headers, data=request.data, stream=True, timeout=300)
 
