@@ -82,6 +82,13 @@ export class TutorialComponent extends Vue {
     repositoryCode = ''
     envCode = ''
 
+    get activeBucketId() {
+        if (this.datasets_buckets[0]) {
+            return this.datasets_buckets[0].id
+        } else {
+            return null
+        }
+    }
 
     inputNextStep () {
         this.steps = 3
@@ -236,53 +243,9 @@ export class TutorialComponent extends Vue {
         })
     }
 
-    addFile(event: Event): void {
-        if (this.datasets_buckets.length === 0) {
-            alert('No bucket defined for this project. Please create one first.')
-            return
-        }
-        this.progress = true
+    fileUploadSuccess() {
         this.fileDialog = false
-        let payload = JSON.stringify({
-            file_name: this.bucketfile,
-            bucket_id: this.datasets_buckets[0].id,
-            request_type: 'create_file'
-        })
-
-        fetch('./api/storage/authorize/create_file',
-            {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include',
-                body: payload
-            }
-        ).then(response => {
-            return response.json()
-            }
-        ).then(response => {
-            console.log('create', response)
-            let e = this.$refs.fileInput as HTMLInputElement
-            const reader = new FileReader()
-            reader.onload = aFile => {
-                fetch('./api/storage/io/write',
-                    {
-                        method: 'POST',
-                        credentials: 'include',
-                        headers: {
-                            'Authorization': 'Bearer ' + response.access_token
-                        },
-                        body: reader.result
-                    }
-                ).then(r => {
-                    this.updateDatasetList()
-                    this.progress = false
-                })
-            }
-            reader.readAsArrayBuffer(e.files[0])
-        })
-
+        this.updateDatasetList()
     }
 
     onFocus() {
