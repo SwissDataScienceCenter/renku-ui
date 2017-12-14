@@ -97,6 +97,7 @@ class RengaNavBar extends Component {
             <ul className="navbar-nav mr-auto">
               <RengaNavItem to="/" title="Timeline" />
               <RengaNavItem to="/kus" title="Ku" />
+              <RengaNavItem to="/datasets" title="Dataset" />
             </ul>
             <ul className="navbar-nav">
               <li className="nav-item dropdown">
@@ -143,6 +144,8 @@ class App extends Component {
               <Switch>
                 <Route exact path="/"
                   render={p => <Landing key="landing" {...p} />} />
+                <Route exact path="/datasets"
+                  render={p => <Dataset.List key="datasets" {...p} />} />
                 <Route exact path="/dataset_new" component={Dataset.New} />
               </Switch>
             </main>

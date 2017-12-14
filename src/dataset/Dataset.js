@@ -179,4 +179,10 @@ class View extends Component {
   }
 }
 
-export default { New, View };
+class List extends Component {
+  render() {
+    return <h1 key="header">Dataset List</h1>
+  }
+}
+
+export default { New, View, List };
