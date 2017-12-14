@@ -34,6 +34,7 @@ import { Button, ButtonGroup, FormGroup, FormText, Input, Label } from 'reactstr
 import { Card, CardHeader, CardBody, CardTitle } from 'reactstrap'
 
 import State from './DatasetState'
+import { Avatar } from '../UIComponents'
 
 class FieldGroup extends Component {
   render() {
@@ -209,13 +210,6 @@ function createStoreWithReduxUi(reducer) {
   return createStore(reducer, enhancer);
 }
 
-
-class Avatar extends Component {
-  render() {
-    return <p>Coming</p>
-  }
-}
-
 class DataSetListRow extends Component {
   displayMetadataValue(field, defaultValue) {
     let value = this.props.metadata[field];
@@ -256,9 +250,9 @@ class DataSetList extends Component {
 class List extends Component {
   constructor(props) {
     super(props);
-    this.store = createStore(State.ServerReturn.reduce, applyMiddleware(thunk));
+    // this.store = createStore(State.ServerReturn.reduce, applyMiddleware(thunk));
 
-    // this.store = createStoreWithReduxUi(State.ServerReturn.reduce);
+    this.store = createStoreWithReduxUi(State.ServerReturn.reduce);
     this.store.dispatch(listDatasets());
   }
 
