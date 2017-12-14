@@ -25,8 +25,9 @@
 
 import React, { Component } from 'react';
 
+import { createStore, applyMiddleware} from 'redux'
 import { Provider, connect } from 'react-redux'
-import { createStore } from 'redux'
+import thunk from 'redux-thunk';
 
 import { Row, Col } from 'reactstrap';
 import { Button, ButtonGroup, FormGroup, FormText, Input, Label } from 'reactstrap';
@@ -179,9 +180,87 @@ class View extends Component {
   }
 }
 
-class List extends Component {
+function fetchDatasets() {
+  const headers = new Headers();
+  headers.append('Accept', 'application/json');
+  return fetch("/api/datasets/", {headers});
+}
+
+function listDatasets() {
+  return (dispatch) => {
+    return fetchDatasets().then(
+      results => results.json().then(d => dispatch(State.ServerReturn.set(d)))
+    )
+  }
+}
+
+
+class Avatar extends Component {
   render() {
-    return <h1 key="header">Dataset List</h1>
+    return <p>Coming</p>
+  }
+}
+
+class DataSetListRow extends Component {
+  displayMetadataValue(field, defaultValue) {
+    let value = this.props.metadata[field];
+    if (value == null) value = defaultValue;
+    return value;
+  }
+  formatTime() {
+
+  }
+  render() {
+    const title = this.displayMetadataValue('title', "no title");
+    const description = this.displayMetadataValue('description', "no description");
+    const time = this.props.updated;
+
+    return (
+      <Row className="dataset-list-row">
+         <Col md={1}><Avatar  /></Col>
+         <Col md={9}><p><b>{title}</b></p><p>{description}</p></Col>
+         <Col md={2}><p>{time}</p></Col>
+       </Row>
+      );
+  }
+}
+
+class DataSetList extends Component {
+  render() {
+    const datasets = this.props.datasets;
+    const rows = datasets.map((d, i) => <DataSetListRow key={i} {...d} />);
+    return [
+      <Row key="header"><Col md={8}><h1>Dataset List</h1></Col></Row>,
+      <Row key="spacer"><Col md={8}>&nbsp;</Col></Row>,
+      <Row key="timeline"><Col md={8}>{rows}</Col></Row>
+   ]
+  }
+}
+
+
+class List extends Component {
+  constructor(props) {
+    super(props);
+    this.store = createStore(State.ServerReturn.reduce, applyMiddleware(thunk));
+
+    // this.store = createStoreWithReduxUi(State.ServerReturn.reduce);
+    this.store.dispatch(listDatasets());
+  }
+
+  mapStateToProps(state, ownProps) { return state  }
+
+  mapDispatchToProps(dispatch, ownProps) {
+    return {
+    }
+  }
+
+  render() {
+    const VisibleDataSetList = connect(this.mapStateToProps, this.mapDispatchToProps)(DataSetList);
+    return [
+      <Provider key="new" store={this.store}>
+        <VisibleDataSetList onSubmit={this.onSubmit} />
+      </Provider>
+    ]
   }
 }
 
