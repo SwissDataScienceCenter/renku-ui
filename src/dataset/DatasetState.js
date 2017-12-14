@@ -92,7 +92,20 @@ const Data = {
   reduce: combineReducers({reference: DataReference.reduce, upload: DataUpload.reduce})
 }
 
+const ServerReturn = {
+  set: (results) => {
+    const action = {type:'server_return', payload: results.hits };
+    return action
+  },
+  reduce: (state, action) => {
+    if (state == null) state = {datasets:[]}
+    if (action.type !== 'server_return') return state;
+    const results = {datasets: state.datasets.concat(action.payload.hits)};
+    return results
+  }
+}
+
 const reducer = combineReducers({core: Core.reduce, visibility: Visibility.reduce, data: Data.reduce});
 
-export default { Core, Visibility, Data, reducer };
+export default { Core, Visibility, Data, ServerReturn, reducer };
 export { displayIdFromTitle };
