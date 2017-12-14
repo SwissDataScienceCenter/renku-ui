@@ -18,13 +18,17 @@
 
 import Vue from 'vue'
 import Component from 'vue-class-component'
+import VueFullScreenFileDrop from 'vue-full-screen-file-drop'
+import 'vue-full-screen-file-drop/dist/vue-full-screen-file-drop.css'
 
 import { GraphItem } from '../../graph-item-list/graph-item'
 import { LabelsDialogComponent, RenameDialogComponent } from '../../dialogs/index'
+import { addFile } from '../../../utils/renga-api'
+
 
 Vue.component('file-label-dialog', LabelsDialogComponent)
 Vue.component('file-rename-dialog', RenameDialogComponent)
-
+Vue.component('file-drop', VueFullScreenFileDrop)
 
 Component.registerHooks([
   'beforeRouteEnter',
@@ -33,12 +37,7 @@ Component.registerHooks([
 ])
 
 @Component({
-    template: require('./files.html'),
-    computed: {
-        'bucketId': function () {
-            return parseInt(this.$route.params.id)
-        }
-    }
+    template: require('./files.html')
 })
 export class FilesComponent extends Vue {
 
@@ -49,6 +48,13 @@ export class FilesComponent extends Vue {
     file_versions = []
     dialog: string = null
     update = true
+    snackbar: boolean = false
+    snackbarTimeout: number = 2000
+    infoText: string = ''
+
+    get bucketId () {
+        return parseInt(this.$route.params.id)
+    }
 
     parser: any = json => {
                 console.log('list', json)
@@ -127,4 +133,35 @@ export class FilesComponent extends Vue {
             this.detailsPanel = true
         })
     }
+
+    onDrop(formData, files) {
+
+        this.progress = true
+        let fi = []
+
+        for (let i = 0; i < files.length; i++) {
+            fi.push(files[i])
+        }
+
+        this.processNext(fi)
+    }
+
+    processNext(files) {
+
+        if (files.length === 0) {
+            this.progress = false
+            this.success()
+        } else {
+            let f = files.pop()
+            addFile(f.name, this.bucketId, [], { fileObj: f})
+            .then(() => {
+                this.snackbar = true
+                this.infoText = `file ${f.name} uploaded`
+                this.processNext(files)
+            })
+        }
+
+
+    }
+
 }
