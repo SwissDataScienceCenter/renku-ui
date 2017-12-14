@@ -127,7 +127,7 @@ export function runContext(engine: string, namespace: string, contextUUID: strin
     )
 }
 
-export function addFile(filename: string, bucketId: number, labels: string[], { fileInput = null, fileUrl = null } ) {
+export function addFile(filename: string, bucketId: number, labels: string[], { fileInput = null, fileUrl = null, fileObj = null } ) {
 
     let payload = JSON.stringify({
         file_name: filename,
@@ -148,10 +148,10 @@ export function addFile(filename: string, bucketId: number, labels: string[], { 
         }
     )
 
-    return executeUpload(authorization, fileInput, fileUrl)
+    return executeUpload(authorization, fileInput, fileUrl, fileObj)
 }
 
-export function addFileVersion(fileId: number, { fileInput = null, fileUrl = null }) {
+export function addFileVersion(fileId: number, { fileInput = null, fileUrl = null, fileObj = null }) {
     let payload = JSON.stringify({
         resource_id: fileId,
         request_type: 'write_file'
@@ -168,12 +168,12 @@ export function addFileVersion(fileId: number, { fileInput = null, fileUrl = nul
             body: payload
         }
     )
-    return executeUpload(authorization, fileInput, fileUrl)
+    return executeUpload(authorization, fileInput, fileUrl, fileObj)
 }
 
-function executeUpload(authorization: Promise<any>, fileInput: any, fileUrl: string) {
+function executeUpload(authorization: Promise<any>, fileInput: any, fileUrl: string, fileObj: File) {
 
-    if ( (fileInput && fileUrl) || (!fileInput && !fileUrl) ) {
+    if ( (fileInput && fileUrl && fileObj) || (!fileInput && !fileUrl && !fileObj) ) {
         throw('You have to provide either a file input or a url')
     }
 
@@ -220,6 +220,20 @@ function executeUpload(authorization: Promise<any>, fileInput: any, fileUrl: str
                         postRequest['body'] = blob
                         return fetch('./api/storage/io/write', postRequest)
                     })
+
+            } else if (fileObj) {
+
+                // TODO: reject if reader fails
+                let readerPromise = new Promise( resolve => {
+                    let e = fileInput as HTMLInputElement
+                    let reader = new FileReader()
+                    reader.onload = () => {
+                        postRequest['body'] = reader.result
+                        resolve( fetch('./api/storage/io/write', postRequest) )
+                    }
+                    reader.readAsArrayBuffer(fileObj)
+                })
+                return readerPromise
             }
         })
 }

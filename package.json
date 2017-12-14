@@ -18,6 +18,7 @@
     "text-encoding": "^0.6.4",
     "vue": "~2.4.4",
     "vue-class-component": "^5.0.2",
+    "vue-full-screen-file-drop": "^1.0.0",
     "vue-property-decorator": "^5.3.0",
     "vue-router": "^2.7.0",
     "vuetify": "^0.15.7",

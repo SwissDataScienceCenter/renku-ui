@@ -34,6 +34,7 @@ import { GraphItemListComponent, GraphItemTableComponent } from './components/gr
 import { BucketDialogComponent, ContextDialogComponent, ExecutionDialogComponent,
     ProjectDialogComponent, VersionDialogComponent } from './components/dialogs'
 
+
 // Activate sentry if a DSN is provided through the environment variables
 import Raven from 'raven-js';
 import RavenVue from 'raven-js/plugins/vue.js';
