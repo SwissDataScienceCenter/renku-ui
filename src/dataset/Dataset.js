@@ -24,6 +24,7 @@
  */
 
 import React, { Component } from 'react';
+import human from 'human-time';
 
 import { createStore, applyMiddleware, compose } from 'redux'
 import { Provider, connect } from 'react-redux'
@@ -216,8 +217,8 @@ class DataSetListRow extends Component {
     if (value == null) value = defaultValue;
     return value;
   }
-  formatTime() {
-
+  formatTime(time) {
+    return human((new Date() - new Date(time)) / 1000)
   }
   render() {
     const title = this.displayMetadataValue('title', "no title");
@@ -228,7 +229,7 @@ class DataSetListRow extends Component {
       <Row className="dataset-list-row">
          <Col md={1}><Avatar  /></Col>
          <Col md={9}><p><b>{title}</b></p><p>{description}</p></Col>
-         <Col md={2}><p>{time}</p></Col>
+         <Col md={2}><p>{this.formatTime(time)}</p></Col>
        </Row>
       );
   }
