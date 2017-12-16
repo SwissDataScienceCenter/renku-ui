@@ -147,11 +147,23 @@ class New extends Component {
   }
 
   submitData() {
-    return this.store.getState();
+    // For the moment we submit only limited information.
+    return this.store.getState()['core'];
   }
 
   handleSubmit() {
-    console.log("Submit", this.submitData());
+    const body = JSON.stringify(this.submitData());
+    const headers = new Headers();
+    headers.append('Accept', 'application/json');
+    headers.append('Content-Type', 'application/json');
+    fetch("api/datasets/", {method: 'POST', headers: headers, body: body})
+        .then( (response) => {
+            if (response.ok) {
+              response.json().then( newDataset => {
+                console.log("New Dataset created", newDataset)
+              });
+            }
+        });
   }
 
   mapStateToProps(state, ownProps) { return state  }
