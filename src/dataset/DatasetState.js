@@ -94,10 +94,17 @@ const Data = {
 
 const ServerReturn = {
   set: (results) => {
+      console.log('Set is running')
     const action = {type:'server_return', payload: results.hits };
     return action
   },
+  append: (results) => {
+      console.log('Append is running')
+      const action = {type:'server_return', payload: { hits: results } };
+      return action
+  },
   reduce: (state, action) => {
+    console.log('Reducer is running')
     if (state == null) state = {datasets:[]}
     if (action.type !== 'server_return') return state;
     const results = {datasets: state.datasets.concat(action.payload.hits)};

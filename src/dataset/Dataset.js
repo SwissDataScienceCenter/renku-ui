@@ -160,8 +160,12 @@ class New extends Component {
         .then( (response) => {
             if (response.ok) {
               response.json().then( newDataset => {
-                console.log("New Dataset created", newDataset)
+                this.store.dispatch(State.ServerReturn.append([newDataset]))
               });
+              this.props.history.push({
+                  pathname: '/datasets/',
+                  maintainState: true
+              })
             }
         });
   }
@@ -263,10 +267,11 @@ class DataSetList extends Component {
 class List extends Component {
   constructor(props) {
     super(props);
-    // this.store = createStore(State.ServerReturn.reduce, applyMiddleware(thunk));
-
-    this.store = createStoreWithReduxUi(State.ServerReturn.reduce);
-    this.store.dispatch(listDatasets());
+    if (!this.props.location.maintainState){
+      // this.store = createStore(State.ServerReturn.reduce, applyMiddleware(thunk));
+      this.store = createStoreWithReduxUi(State.ServerReturn.reduce);
+      this.store.dispatch(listDatasets());
+    }
   }
 
   mapStateToProps(state, ownProps) { return state  }
