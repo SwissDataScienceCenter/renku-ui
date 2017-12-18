@@ -37,20 +37,20 @@ it('computes display Id correctly', () => {
   expect(displayIdFromTitle("This is my Dataset")).toEqual("this-is-my-dataset");
 });
 
-describe('dataset state actions', () => {
+describe('new dataset state actions', () => {
   it('creates a core field set action', () => {
-    expect(State.Core.set('title', 'a title')).toEqual({type: 'core', payload: {title: 'a title', displayId: 'a-title'}});
+    expect(State.New.Core.set('title', 'a title')).toEqual({type: 'core', payload: {title: 'a title', displayId: 'a-title'}});
   });
   it('creates a visibility set action', () => {
-    expect(State.Visibility.set('private')).toEqual({type: 'visibility', payload: {level: 'private'}});
+    expect(State.New.Visibility.set('private')).toEqual({type: 'visibility', payload: {level: 'private'}});
   });
   it('creates a data set action', () => {
-    expect(State.Data.set('reference', 'url_or_doi', "http://foo.bar/data.csv")).toEqual({type: 'data_reference', payload: {'url_or_doi': "http://foo.bar/data.csv"}});
+    expect(State.New.Data.set('reference', 'url_or_doi', "http://foo.bar/data.csv")).toEqual({type: 'data_reference', payload: {'url_or_doi': "http://foo.bar/data.csv"}});
   });
 });
 
-describe('dataset reducer', () => {
-  const initialState = State.reducer(undefined, {});
+describe('new dataset reducer', () => {
+  const initialState = State.New.reducer(undefined, {});
   it('returns initial state', () => {
     expect(initialState).toEqual({
       core: {title: "", description: "", displayId: ""},
@@ -62,7 +62,7 @@ describe('dataset reducer', () => {
     });
   });
   it('advances state', () => {
-    const state1 = State.reducer(initialState, State.Core.set('title', 'new title'));
+    const state1 = State.New.reducer(initialState, State.New.Core.set('title', 'new title'));
     expect(state1)
     .toEqual({
       core: {title: "new title", description: "", displayId: "new-title"},
@@ -72,7 +72,7 @@ describe('dataset reducer', () => {
         upload: {files: []}
       }
     });
-    const state2 = State.reducer(state1, State.Visibility.set('private'));
+    const state2 = State.New.reducer(state1, State.New.Visibility.set('private'));
     expect(state2)
     .toEqual({
       core: {title: "new title", description: "", displayId: "new-title"},
@@ -82,7 +82,7 @@ describe('dataset reducer', () => {
         upload: {files: []}
       }
     });
-    const state3 = State.reducer(state2, State.Data.set('reference', 'url_or_doi', 'http://foo.bar/data.csv'));
+    const state3 = State.New.reducer(state2, State.New.Data.set('reference', 'url_or_doi', 'http://foo.bar/data.csv'));
     expect(state3)
     .toEqual({
       core: {title: "new title", description: "", displayId: "new-title"},

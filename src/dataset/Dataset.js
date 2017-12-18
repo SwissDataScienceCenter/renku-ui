@@ -141,7 +141,7 @@ class NewDataSet extends Component {
 class New extends Component {
   constructor(props) {
     super(props);
-    this.store = createStore(State.reducer);
+    this.store = createStore(State.New.reducer);
     this.onSubmit = this.handleSubmit.bind(this);
   }
 
@@ -173,10 +173,10 @@ class New extends Component {
 
   mapDispatchToProps(dispatch, ownProps) {
     return {
-      onTitleChange: (e) => { dispatch(State.Core.set('title', e.target.value)) },
-      onDescriptionChange: (e) => { dispatch(State.Core.set('description', e.target.value)) },
-      onVisibilityChange: (e) => { dispatch(State.Visibility.set(e.target.value)) },
-      onDataReferenceChange: (key, e) => { dispatch(State.Data.set("reference", key, e.target.value)) }
+      onTitleChange: (e) => { dispatch(State.New.Core.set('title', e.target.value)) },
+      onDescriptionChange: (e) => { dispatch(State.New.Core.set('description', e.target.value)) },
+      onVisibilityChange: (e) => { dispatch(State.New.Visibility.set(e.target.value)) },
+      onDataReferenceChange: (key, e) => { dispatch(State.New.Data.set("reference", key, e.target.value)) }
     }
   }
 
