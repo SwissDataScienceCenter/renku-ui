@@ -103,12 +103,12 @@ describe('dataset list state actions', () => {
 });
 
 describe('dataset list reducer', () => {
-  const initialState = State.List.reduce(undefined, {});
+  const initialState = State.List.reducer(undefined, {});
   it('returns initial state', () => {
     expect(initialState).toEqual({datasets:[]});
   });
   it('advances state', () => {
-    const state1 = State.List.reduce(initialState, State.List.set({aggregations: {}, links: {}, hits: {hits: [{id: 1}], total: 1}}));
+    const state1 = State.List.reducer(initialState, State.List.set({aggregations: {}, links: {}, hits: {hits: [{id: 1}], total: 1}}));
     expect(state1)
     .toEqual({
       datasets: [{id: 1}]

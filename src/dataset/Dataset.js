@@ -53,6 +53,12 @@ function createStore(reducer) {
   return reduxCreateStore(reducer, enhancer);
 }
 
+function displayMetadataValue(metadata, field, defaultValue) {
+  let value = metadata[field];
+  if (value == null) value = defaultValue;
+  return value;
+}
+
 class DataVisibility extends Component {
   render() {
     return <FormGroup>
@@ -165,10 +171,7 @@ class New extends Component {
               response.json().then( newDataset => {
                 this.store.dispatch(State.List.append([newDataset]))
               });
-              this.props.history.push({
-                  pathname: '/datasets/',
-                  maintainState: true
-              })
+              this.props.history.push({pathname: '/datasets/'});
             }
         });
   }
@@ -195,32 +198,64 @@ class New extends Component {
   }
 }
 
-class View extends Component {
+class DataSetView extends Component {
+  displayMetadataValue(field, defaultValue) {
+    return displayMetadataValue(this.props, field, defaultValue)
+  }
   render() {
-    return <h1 key="header">Dataset View</h1>
+    const title = this.displayMetadataValue("title", "no title");
+    const description = this.displayMetadataValue("description", "no description");
+    return [
+      <h1 key="header">{title}</h1>,
+      <p key="desc">{description}</p>
+    ]
   }
 }
 
-function fetchDatasets() {
-  const headers = new Headers();
-  headers.append('Accept', 'application/json');
-  return fetch("/api/datasets/", {headers});
-}
+class View extends Component {
+  constructor(props) {
+    super(props);
+    this.store = createStore(State.View.reducer);
+    this.store.dispatch(this.retrieveDataset());
+  }
 
-function listDatasets() {
-  return (dispatch) => {
-    return fetchDatasets().then(
-      results => results.json().then(d => dispatch(State.List.set(d)))
-    )
+  fetchDataset() {
+    const headers = new Headers();
+    headers.append('Accept', 'application/json');
+    return fetch(`/api/datasets/${this.props.id}`, {headers});
+  }
+
+  retrieveDataset() {
+    return (dispatch) => {
+      return this.fetchDataset().then(
+        results => results.json().then(d => {
+          dispatch(State.View.setAll(d))
+        })
+      )
+    }
+  }
+
+  mapStateToProps(state, ownProps) { return state  }
+
+  mapDispatchToProps(dispatch, ownProps) {
+    return {
+    }
+  }
+
+  render() {
+    const VisibleDataSetView = connect(this.mapStateToProps, this.mapDispatchToProps)(DataSetView);
+    return (
+      <Provider key="new" store={this.store}>
+        <VisibleDataSetView />
+      </Provider>)
   }
 }
 
 class DataSetListRow extends Component {
   displayMetadataValue(field, defaultValue) {
-    let value = this.props.metadata[field];
-    if (value == null) value = defaultValue;
-    return value;
+    return displayMetadataValue(this.props.metadata, field, defaultValue)
   }
+
   render() {
     const datasetId = this.props.id;
     const title = <Link to={`/dataset/${datasetId}`}>{this.displayMetadataValue('title', "no title")}</Link>
@@ -244,7 +279,7 @@ class DataSetList extends Component {
     const datasets = this.props.datasets;
     const rows = datasets.map((d, i) => <DataSetListRow key={i} {...d} />);
     return [
-      <Row key="header"><Col md={8}><h1>Dataset List</h1></Col></Row>,
+      <Row key="header"><Col md={8}><h1>Datasets</h1></Col></Row>,
       <Row key="spacer"><Col md={8}>&nbsp;</Col></Row>,
       <Row key="timeline"><Col md={8}>{rows}</Col></Row>
    ]
@@ -255,9 +290,21 @@ class DataSetList extends Component {
 class List extends Component {
   constructor(props) {
     super(props);
-    if (!this.props.location.maintainState) {
-      this.store = createStore(State.List.reduce);
-      this.store.dispatch(listDatasets());
+    this.store = createStore(State.List.reducer);
+    this.store.dispatch(this.listDatasets());
+  }
+
+  fetchDatasets() {
+    const headers = new Headers();
+    headers.append('Accept', 'application/json');
+    return fetch("/api/datasets/", {headers});
+  }
+
+  listDatasets() {
+    return (dispatch) => {
+      return this.fetchDatasets().then(
+        results => results.json().then(d => dispatch(State.List.set(d)))
+      )
     }
   }
 

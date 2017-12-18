@@ -92,8 +92,19 @@ const Data = {
   reduce: combineReducers({reference: DataReference.reduce, upload: DataUpload.reduce})
 }
 
+const combinedFieldReducer = combineReducers({core: Core.reduce, visibility: Visibility.reduce, data: Data.reduce});
+
 const New = { Core, Visibility, Data,
-  reducer: combineReducers({core: Core.reduce, visibility: Visibility.reduce, data: Data.reduce})
+  reducer: combinedFieldReducer
+};
+
+const View = { Core, Visibility, Data,
+  setAll: (result) => ({type:'server_return', payload: result }),
+  reducer: (state, action) => {
+    if (action.type !== 'server_return') return combinedFieldReducer(state, action);
+    // Take server result and set it to the state
+    return {...state, ...action.payload.metadata}
+  }
 };
 
 const List = {
@@ -105,7 +116,7 @@ const List = {
       const action = {type:'server_return', payload: { hits: results } };
       return action
   },
-  reduce: (state, action) => {
+  reducer: (state, action) => {
     if (state == null) state = {datasets:[]}
     if (action.type !== 'server_return') return state;
     const results = {datasets: state.datasets.concat(action.payload.hits)};
@@ -113,5 +124,5 @@ const List = {
   }
 }
 
-export default { New, List };
+export default { New, View, List };
 export { displayIdFromTitle };
