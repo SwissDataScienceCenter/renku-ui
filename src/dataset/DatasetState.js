@@ -96,7 +96,7 @@ const New = { Core, Visibility, Data,
   reducer: combineReducers({core: Core.reduce, visibility: Visibility.reduce, data: Data.reduce})
 };
 
-const ServerReturn = {
+const List = {
   set: (results) => {
     const action = {type:'server_return', payload: results.hits };
     return action
@@ -113,5 +113,5 @@ const ServerReturn = {
   }
 }
 
-export default { New, ServerReturn };
+export default { New, List };
 export { displayIdFromTitle };

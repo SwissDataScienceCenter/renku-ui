@@ -97,18 +97,18 @@ describe('new dataset reducer', () => {
 
 describe('dataset list state actions', () => {
   it('creates a server return action', () => {
-    expect(State.ServerReturn.set({aggregations: {}, links: {}, hits: {hits: [{id: 1}], total: 1}}))
+    expect(State.List.set({aggregations: {}, links: {}, hits: {hits: [{id: 1}], total: 1}}))
       .toEqual({type: 'server_return', payload: {hits: [{id: 1}], total: 1}});
   });
 });
 
 describe('dataset list reducer', () => {
-  const initialState = State.ServerReturn.reduce(undefined, {});
+  const initialState = State.List.reduce(undefined, {});
   it('returns initial state', () => {
     expect(initialState).toEqual({datasets:[]});
   });
   it('advances state', () => {
-    const state1 = State.ServerReturn.reduce(initialState, State.ServerReturn.set({aggregations: {}, links: {}, hits: {hits: [{id: 1}], total: 1}}));
+    const state1 = State.List.reduce(initialState, State.List.set({aggregations: {}, links: {}, hits: {hits: [{id: 1}], total: 1}}));
     expect(state1)
     .toEqual({
       datasets: [{id: 1}]
