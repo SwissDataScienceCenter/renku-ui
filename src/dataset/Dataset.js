@@ -25,7 +25,7 @@
 
 import React, { Component } from 'react';
 
-import { createStore, applyMiddleware, compose } from 'redux'
+import { createStore as reduxCreateStore, applyMiddleware, compose } from 'redux'
 import { Provider, connect } from 'react-redux'
 import thunk from 'redux-thunk';
 
@@ -37,6 +37,22 @@ import { Card, CardHeader, CardBody, CardTitle } from 'reactstrap'
 
 import State from './DatasetState'
 import { Avatar, TimeCaption } from '../UIComponents'
+
+function createStore(reducer) {
+  const composeEnhancers =
+  typeof window === 'object' &&
+  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
+    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
+      // Specify extension’s options like name, actionsBlacklist, actionsCreators, serialize...
+    }) : compose;
+
+  const enhancer = composeEnhancers(
+    applyMiddleware(thunk),
+    // other store enhancers if any
+  );
+  return reduxCreateStore(reducer, enhancer);
+}
+
 
 class FieldGroup extends Component {
   render() {
@@ -213,21 +229,6 @@ function listDatasets() {
   }
 }
 
-function createStoreWithReduxUi(reducer) {
-  const composeEnhancers =
-  typeof window === 'object' &&
-  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
-    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
-      // Specify extension’s options like name, actionsBlacklist, actionsCreators, serialize...
-    }) : compose;
-
-  const enhancer = composeEnhancers(
-    applyMiddleware(thunk),
-    // other store enhancers if any
-  );
-  return createStore(reducer, enhancer);
-}
-
 class DataSetListRow extends Component {
   displayMetadataValue(field, defaultValue) {
     let value = this.props.metadata[field];
@@ -268,9 +269,8 @@ class DataSetList extends Component {
 class List extends Component {
   constructor(props) {
     super(props);
-    if (!this.props.location.maintainState){
-      // this.store = createStore(State.List.reduce, applyMiddleware(thunk));
-      this.store = createStoreWithReduxUi(State.List.reduce);
+    if (!this.props.location.maintainState) {
+      this.store = createStore(State.List.reduce);
       this.store.dispatch(listDatasets());
     }
   }
