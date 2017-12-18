@@ -96,8 +96,8 @@ class RengaNavBar extends Component {
 
             <ul className="navbar-nav mr-auto">
               <RengaNavItem to="/" title="Timeline" />
-              <RengaNavItem to="/kus" title="Ku" />
-              <RengaNavItem to="/datasets" title="Dataset" />
+              <RengaNavItem to="/kus" title="Kus" />
+              <RengaNavItem to="/datasets" title="Datasets" />
             </ul>
             <ul className="navbar-nav">
               <li className="nav-item dropdown">
