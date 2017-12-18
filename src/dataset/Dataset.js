@@ -29,6 +29,8 @@ import { createStore, applyMiddleware, compose } from 'redux'
 import { Provider, connect } from 'react-redux'
 import thunk from 'redux-thunk';
 
+import { Link }  from 'react-router-dom'
+
 import { Row, Col } from 'reactstrap';
 import { Button, ButtonGroup, FormGroup, FormText, Input, Label } from 'reactstrap';
 import { Card, CardHeader, CardBody, CardTitle } from 'reactstrap'
@@ -233,7 +235,8 @@ class DataSetListRow extends Component {
     return value;
   }
   render() {
-    const title = this.displayMetadataValue('title', "no title");
+    const datasetId = this.props.id;
+    const title = <Link to={`/dataset/${datasetId}`}>{this.displayMetadataValue('title', "no title")}</Link>
     const description = this.displayMetadataValue('description', "no description");
     const time = this.props.updated;
 

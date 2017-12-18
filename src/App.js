@@ -146,6 +146,8 @@ class App extends Component {
                   render={p => <Landing key="landing" {...p} />} />
                 <Route exact path="/datasets"
                   render={p => <Dataset.List key="datasets" {...p} />} />
+                <Route path="/dataset/:id"
+                  render={p => <Dataset.View key="dataset" id={p.match.params.id} {...p} />} />
                 <Route exact path="/dataset_new" component={Dataset.New} />
               </Switch>
             </main>
