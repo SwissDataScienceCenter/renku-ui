@@ -25,6 +25,7 @@
  */
 
 import React, { Component } from 'react';
+import { FormGroup, FormText, Input, Label } from 'reactstrap';
 import FontAwesome from 'react-fontawesome'
 import human from 'human-time';
 
@@ -38,6 +39,19 @@ class Avatar extends Component {
   }
 }
 
+class FieldGroup extends Component {
+  render() {
+    const label = this.props.label,
+      help = this.props.help,
+      props = this.props;
+    return <FormGroup>
+      <Label>{label}</Label>
+      <Input {...props} />
+      {help && <FormText color="muted">{help}</FormText>}
+    </FormGroup>
+  }
+}
+
 class TimeCaption extends Component {
   // Take a time and caption and generate a span that shows it
   render() {
@@ -48,4 +62,4 @@ class TimeCaption extends Component {
   }
 }
 
-export { Avatar, TimeCaption };
+export { Avatar, TimeCaption, FieldGroup };

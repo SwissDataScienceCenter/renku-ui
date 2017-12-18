@@ -32,11 +32,11 @@ import thunk from 'redux-thunk';
 import { Link }  from 'react-router-dom'
 
 import { Row, Col } from 'reactstrap';
-import { Button, ButtonGroup, FormGroup, FormText, Input, Label } from 'reactstrap';
+import { Button, ButtonGroup, FormGroup, Input, Label } from 'reactstrap';
 import { Card, CardHeader, CardBody, CardTitle } from 'reactstrap'
 
 import State from './DatasetState'
-import { Avatar, TimeCaption } from '../UIComponents'
+import { Avatar, TimeCaption, FieldGroup } from '../UIComponents'
 
 function createStore(reducer) {
   const composeEnhancers =
@@ -51,20 +51,6 @@ function createStore(reducer) {
     // other store enhancers if any
   );
   return reduxCreateStore(reducer, enhancer);
-}
-
-
-class FieldGroup extends Component {
-  render() {
-    const label = this.props.label,
-      help = this.props.help,
-      props = this.props;
-    return <FormGroup>
-      <Label>{label}</Label>
-      <Input {...props} />
-      {help && <FormText color="muted">{help}</FormText>}
-    </FormGroup>
-  }
 }
 
 class DataVisibility extends Component {
