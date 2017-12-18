@@ -24,7 +24,6 @@
  */
 
 import React, { Component } from 'react';
-import human from 'human-time';
 
 import { createStore, applyMiddleware, compose } from 'redux'
 import { Provider, connect } from 'react-redux'
@@ -35,7 +34,7 @@ import { Button, ButtonGroup, FormGroup, FormText, Input, Label } from 'reactstr
 import { Card, CardHeader, CardBody, CardTitle } from 'reactstrap'
 
 import State from './DatasetState'
-import { Avatar } from '../UIComponents'
+import { Avatar, TimeCaption } from '../UIComponents'
 
 class FieldGroup extends Component {
   render() {
@@ -233,9 +232,6 @@ class DataSetListRow extends Component {
     if (value == null) value = defaultValue;
     return value;
   }
-  formatTime(time) {
-    return human((new Date() - new Date(time)) / 1000)
-  }
   render() {
     const title = this.displayMetadataValue('title', "no title");
     const description = this.displayMetadataValue('description', "no description");
@@ -244,8 +240,10 @@ class DataSetListRow extends Component {
     return (
       <Row className="dataset-list-row">
          <Col md={1}><Avatar  /></Col>
-         <Col md={9}><p><b>{title}</b></p><p>{description}</p></Col>
-         <Col md={2}><p>{this.formatTime(time)}</p></Col>
+         <Col md={9}>
+           <p><b>{title}</b></p>
+           <p>{description} <TimeCaption caption="Updated" time={time} /> </p>
+         </Col>
        </Row>
       );
   }
