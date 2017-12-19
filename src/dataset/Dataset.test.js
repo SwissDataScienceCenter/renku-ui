@@ -28,16 +28,29 @@ import ReactDOM from 'react-dom';
 import Dataset from './Dataset';
 import State, { displayIdFromTitle } from  './DatasetState';
 
-it('renders without crashing', () => {
-  const div = document.createElement('div');
-  ReactDOM.render(<Dataset.New />, div);
+describe('rendering', () => {
+  it('renders new without crashing', () => {
+    const div = document.createElement('div');
+    ReactDOM.render(<Dataset.New />, div);
+  });
+  // Need to mock fetch for these to work.
+  // it('renders list without crashing', () => {
+  //   const div = document.createElement('div');
+  //   ReactDOM.render(<Dataset.List />, div);
+  // });
+  // it('renders view without crashing', () => {
+  //   const div = document.createElement('div');
+  //   ReactDOM.render(<Dataset.View />, div);
+  // });
 });
 
-it('computes display Id correctly', () => {
-  expect(displayIdFromTitle("This is my Dataset")).toEqual("this-is-my-dataset");
+describe('helpers', () => {
+  it('computes display id correctly', () => {
+    expect(displayIdFromTitle("This is my Dataset")).toEqual("this-is-my-dataset");
+  });
 });
 
-describe('new dataset state actions', () => {
+describe('new dataset actions', () => {
   it('creates a core field set action', () => {
     expect(State.New.Core.set('title', 'a title')).toEqual({type: 'core', payload: {title: 'a title', displayId: 'a-title'}});
   });
@@ -95,7 +108,7 @@ describe('new dataset reducer', () => {
   });
 });
 
-describe('dataset list state actions', () => {
+describe('dataset list actions', () => {
   it('creates a server return action', () => {
     expect(State.List.set({aggregations: {}, links: {}, hits: {hits: [{id: 1}], total: 1}}))
       .toEqual({type: 'server_return', payload: {hits: [{id: 1}], total: 1}});
@@ -112,6 +125,39 @@ describe('dataset list reducer', () => {
     expect(state1)
     .toEqual({
       datasets: [{id: 1}]
+    });
+  });
+});
+
+describe('dataset view actions', () => {
+  it('creates a server return action', () => {
+    expect(State.View.setAll({metadata:{core:{title: "A Title", description: "A desc", displayId: "a-title"}}}))
+      .toEqual({type: 'server_return', payload:{metadata:{core:{title: "A Title", description: "A desc", displayId: "a-title"}}}});
+  });
+});
+
+describe('dataset view reducer', () => {
+  const initialState = State.View.reducer(undefined, {});
+  it('returns initial state', () => {
+    expect(initialState).toEqual({
+      core: {title: "", description: "", displayId: ""},
+      visibility: {level: "public"},
+      data: {
+        reference: {url_or_doi:"", author: ""},
+        upload: {files: []}
+      }
+    });
+  });
+  it('advances state', () => {
+    const state1 = State.View.reducer(initialState, State.View.setAll({metadata:{core:{title: "A Title", description: "A desc", displayId: "a-title"}}}));
+    expect(state1)
+    .toEqual({
+      core: {title: "A Title", description: "A desc", displayId: "a-title"},
+      visibility: {level: "public"},
+      data: {
+        reference: {url_or_doi:"", author: ""},
+        upload: {files: []}
+      }
     });
   });
 });
