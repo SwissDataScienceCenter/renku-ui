@@ -156,8 +156,7 @@ class New extends Component {
   }
 
   submitData() {
-    // For the moment we submit only limited information.
-    return this.store.getState()['core'];
+    return this.store.getState();
   }
 
   handleSubmit() {
@@ -200,7 +199,7 @@ class New extends Component {
 
 class DataSetView extends Component {
   displayMetadataValue(field, defaultValue) {
-    return displayMetadataValue(this.props, field, defaultValue)
+    return displayMetadataValue(this.props.core, field, defaultValue)
   }
   render() {
     const title = this.displayMetadataValue("title", "no title");
@@ -253,7 +252,7 @@ class View extends Component {
 
 class DataSetListRow extends Component {
   displayMetadataValue(field, defaultValue) {
-    return displayMetadataValue(this.props.metadata, field, defaultValue)
+    return displayMetadataValue(this.props.metadata.core, field, defaultValue)
   }
 
   render() {
@@ -319,7 +318,7 @@ class List extends Component {
     const VisibleDataSetList = connect(this.mapStateToProps, this.mapDispatchToProps)(DataSetList);
     return [
       <Provider key="new" store={this.store}>
-        <VisibleDataSetList onSubmit={this.onSubmit} />
+        <VisibleDataSetList />
       </Provider>
     ]
   }
