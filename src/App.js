@@ -29,7 +29,7 @@ import './App.css';
 import logo from './logo.svg';
 
 import { BrowserRouter as Router, Route, Switch, Link, NavLink as RRNavLink }  from 'react-router-dom'
-import { Container, Jumbotron, NavLink } from 'reactstrap';
+import { NavLink } from 'reactstrap';
 // import { IndexLinkContainer } from 'react-router-bootstrap';
 // import { FormGroup, FormControl, InputGroup } from 'react-bootstrap'
 // import { MenuItem, Nav, Navbar, NavItem, NavDropdown } from 'react-bootstrap'
@@ -130,21 +130,17 @@ class RengaFooter extends Component {
 
 class Landing extends Component {
   render() {
-    return [
-      <div key="gap">&nbsp;</div>,
-      <Jumbotron key="containt" fluid>
-        <Container fluid>
-          <h1>Renga Prototype UI</h1>
-          <p className="lead">Welcome to the prototype UI for Renga</p>
-          <p>This is a work in progress, but once you have the metadata server running, you can try out the following:</p>
-          <ul>
-            <li><Link to="/dataset_new">Create a new dataset</Link></li>
-            <li><Link to="/datasets">List datasets</Link></li>
-          </ul>
-          And once you have created a dataset, you can view it from the list page. Naturally, these actions are available from the top menu bar as well.
-        </Container>
-      </Jumbotron>
-    ]
+    return (
+      <div key="content">
+        <h1>Renga Prototype UI</h1>
+        <p className="lead">Welcome to the prototype UI for Renga</p>
+        <p>This is a work in progress, but once you have the metadata server running, you can try out the following:</p>
+        <ul>
+          <li><Link to="/dataset_new">Create a new dataset (only URL/DOI references supported at the moment)</Link></li>
+          <li><Link to="/datasets">List datasets</Link></li>
+        </ul>
+        And once you have created a dataset, you can view it from the list page. Naturally, these actions are available from the top menu bar as well.
+      </div>)
   }
 }
 
@@ -155,6 +151,7 @@ class App extends Component {
           <div>
             <Route component={RengaNavBar} />
             <main role="main" className="container-fluid">
+              <div key="gap">&nbsp;</div>
               <Switch>
                 <Route exact path="/"
                   render={p => <Landing key="landing" {...p} />} />
