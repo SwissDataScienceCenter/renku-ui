@@ -27,13 +27,15 @@ import React, { Component } from 'react';
 
 import { createStore as reduxCreateStore, applyMiddleware, compose } from 'redux'
 import { Provider, connect } from 'react-redux'
-import thunk from 'redux-thunk';
+import thunk from 'redux-thunk'
 
 import { Link }  from 'react-router-dom'
 
 import { Row, Col } from 'reactstrap';
-import { Button, ButtonGroup, FormGroup, Input, Label } from 'reactstrap';
+import { Button, ButtonGroup, FormGroup, Input, Label } from 'reactstrap'
 import { Card, CardHeader, CardBody, CardTitle } from 'reactstrap'
+import { Container, Jumbotron } from 'reactstrap'
+import { Table } from 'reactstrap'
 
 import State from './DatasetState'
 import { Avatar, TimeCaption, FieldGroup } from '../UIComponents'
@@ -197,16 +199,52 @@ class New extends Component {
   }
 }
 
-class DataSetView extends Component {
+class DataSetViewHeader extends Component {
   displayMetadataValue(field, defaultValue) {
     return displayMetadataValue(this.props.core, field, defaultValue)
   }
+
   render() {
     const title = this.displayMetadataValue("title", "no title");
     const description = this.displayMetadataValue("description", "no description");
+    return (
+      <Jumbotron key="header" fluid>
+        <Container fluid>
+          <h1>{title}</h1>
+          <p className="lead">{description}</p>
+        </Container>
+      </Jumbotron>
+    )
+  }
+}
+
+class DataSetViewDetails extends Component {
+
+  render() {
+    const visibilityLevel = this.props.visibility.level;
+    const referenceUrl = this.props.data.reference.url_or_doi;
+    return (
+      <Table key="metadata" size="sm">
+        <tbody>
+          <tr>
+            <th scope="row">Visibility</th>
+            <td>{visibilityLevel}</td>
+          </tr>
+          <tr>
+            <th scope="row">URL or DOI</th>
+            <td>{referenceUrl}</td>
+          </tr>
+        </tbody>
+      </Table>)
+  }
+}
+
+class DataSetView extends Component {
+
+  render() {
     return [
-      <h1 key="header">{title}</h1>,
-      <p key="desc">{description}</p>
+      <DataSetViewHeader key="header" {...this.props} />,
+      <DataSetViewDetails key="details" {...this.props} />
     ]
   }
 }
