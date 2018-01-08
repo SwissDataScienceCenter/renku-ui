@@ -38,6 +38,7 @@ import FontAwesome from 'react-fontawesome'
 // import About from './About'
 // import Landing from './Landing'
 import Dataset from './dataset/Dataset'
+import Ku from './ku/Ku'
 
 class RengaNavItem extends Component {
   render() {
@@ -160,6 +161,11 @@ class App extends Component {
                 <Route path="/dataset/:id"
                   render={p => <Dataset.View key="dataset" id={p.match.params.id} {...p} />} />
                 <Route exact path="/dataset_new" component={Dataset.New} />
+                <Route exact path="/kus"
+                  render={p => <Ku.List key="kus" {...p} />} />
+                <Route path="/ku/:id"
+                  render={p => <Ku.View key="ku" id={p.match.params.id} {...p} />} />
+                <Route exact path="/ku_new" component={Ku.New} />
               </Switch>
             </main>
             <Route component={RengaFooter} />
