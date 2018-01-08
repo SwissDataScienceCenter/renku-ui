@@ -66,12 +66,21 @@ const Visibility = {
   }
 }
 
+function dataset_object(id, asRef=true) {
+  // Currently ignore addReff, but could later be used to refer to the url for the dataset
+  // if (asRef) return {"$ref": `http://localhost:5000/datasets/${id}`} or {"$ref": `../datasets/${id}`}
+  return {id}
+}
+
 const Datasets = {
+  set: (id) => {
+    return createSetAction('datasets', 'set', dataset_object(id, true))
+  },
   append: (id) => {
-    return createSetAction('datasets', 'append', {dataset: id, "$ref": `/dataset/${id}`})
+    return createSetAction('datasets', 'append', dataset_object(id, true))
   },
   remove: (id) => {
-    return createSetAction('datasets', 'remove', {dataset: id})
+    return createSetAction('datasets', 'remove', dataset_object(id, false))
   },
   reduce: (state, action) => {
     if (state == null) state = {refs: []}
@@ -82,7 +91,9 @@ const Datasets = {
     if (payload.append != null) {
       refs = [...oldRefs, payload.append];
     } else if (payload.remove != null) {
-      refs = oldRefs.filter(d => d.dataset !== payload.remove.dataset);
+      refs = oldRefs.filter(d => d.id !== payload.remove.id);
+    } else if (payload.set != null) {
+      refs = [payload.set];
     }
     return {...state, ...{refs}}
   }

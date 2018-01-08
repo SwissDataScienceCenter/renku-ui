@@ -77,15 +77,15 @@ class DatasetReferenceSpecification extends Component {
   render() {
     return [
       <FieldGroup key="dataset" id="dataset" type="text" label="Dataset"
-        placeholder="The dataset for the ku" value={this.props.dataset} onChange={(v) => this.props.onChange("url_or_doi", v)} />,
+        placeholder="The dataset for the ku" value={this.props.dataset} onChange={(v) => this.props.onChange(v)} />,
     ]
   }
 }
 
 class DataRegistration extends Component {
   render() {
-    let dataset = (this.props.value.refs.length > 0) ? this.props.value.refs[0].dataset : ""
-    return <DatasetReferenceSpecification value={dataset} onChange={this.props.onReferenceChange} />;
+    let dataset = (this.props.value.refs.length > 0) ? this.props.value.refs[0].id : ""
+    return <DatasetReferenceSpecification value={dataset} onChange={this.props.onChange} />;
   }
 }
 
@@ -99,7 +99,7 @@ class NewDataSet extends Component {
       <FieldGroup id="description" type="textarea" label="Description" placeholder="A description of the ku" help="A description of the ku helps users understand it and is highly recommended."
         value={this.props.core.description} onChange={this.props.onDescriptionChange} />
       <DataVisibility value={this.props.visibility} onChange={this.props.onVisibilityChange} />
-      <DataRegistration value={this.props.datasets} onReferenceChange={this.props.onDataReferenceChange} />
+      <DataRegistration value={this.props.datasets} onChange={this.props.onDatasetsChange} />
       <br />
       <Button color="primary" onClick={this.props.onSubmit}>
         Create
@@ -124,6 +124,7 @@ class New extends Component {
     const headers = new Headers();
     headers.append('Accept', 'application/json');
     headers.append('Content-Type', 'application/json');
+    console.log({ headers, body});
     fetch("api/kus/", {method: 'POST', headers: headers, body: body})
         .then( (response) => {
             if (response.ok) {
@@ -142,7 +143,7 @@ class New extends Component {
       onTitleChange: (e) => { dispatch(State.New.Core.set('title', e.target.value)) },
       onDescriptionChange: (e) => { dispatch(State.New.Core.set('description', e.target.value)) },
       onVisibilityChange: (e) => { dispatch(State.New.Visibility.set(e.target.value)) },
-      onDataReferenceChange: (key, e) => { dispatch(State.New.Data.set("reference", key, e.target.value)) }
+      onDatasetsChange: (e) => { dispatch(State.New.Datasets.set(e.target.value)) }
     }
   }
 
@@ -180,7 +181,7 @@ class DataSetViewDetails extends Component {
 
   render() {
     const visibilityLevel = this.props.visibility.level;
-    const referenceUrl = this.props.data.reference.url_or_doi;
+    const dataset = (this.props.datasets.refs.length > 0) ? this.props.datasets.refs[0].id : ""
     return (
       <Table key="metadata" size="sm">
         <tbody>
@@ -189,8 +190,8 @@ class DataSetViewDetails extends Component {
             <td>{visibilityLevel}</td>
           </tr>
           <tr>
-            <th scope="row">URL or DOI</th>
-            <td>{referenceUrl}</td>
+            <th scope="row">Dataset</th>
+            <td><Link to={`/dataset/${dataset}`}>{dataset}</Link></td>
           </tr>
         </tbody>
       </Table>)

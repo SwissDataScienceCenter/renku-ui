@@ -221,11 +221,17 @@ class DataSetViewHeader extends Component {
 class DataSetViewDetails extends Component {
 
   render() {
+    const displayId = this.props.core.displayId;
+    const internalId = this.props.control_number;
     const visibilityLevel = this.props.visibility.level;
     const referenceUrl = this.props.data.reference.url_or_doi;
     return (
       <Table key="metadata" size="sm">
         <tbody>
+          <tr>
+            <th scope="row">Id</th>
+            <td>{displayId} / {internalId}</td>
+          </tr>
           <tr>
             <th scope="row">Visibility</th>
             <td>{visibilityLevel}</td>

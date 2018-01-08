@@ -58,10 +58,13 @@ describe('new ku actions', () => {
     expect(State.New.Visibility.set('private')).toEqual({type: 'visibility', payload: {level: 'private'}});
   });
   it('creates a dataset append action', () => {
-    expect(State.New.Datasets.append(1)).toEqual({type: 'datasets', payload: {append: {dataset: 1, "$ref": "/dataset/1"}}});
+    expect(State.New.Datasets.append(1)).toEqual({type: 'datasets', payload: {append: {id: 1}}});
   });
   it('creates a dataset remove action', () => {
-    expect(State.New.Datasets.remove(1)).toEqual({type: 'datasets', payload: {remove: {dataset: 1}}});
+    expect(State.New.Datasets.remove(1)).toEqual({type: 'datasets', payload: {remove: {id: 1}}});
+  });
+  it('creates a dataset set action', () => {
+    expect(State.New.Datasets.set(1)).toEqual({type: 'datasets', payload: {set: {id: 1}}});
   });
 });
 
@@ -94,21 +97,28 @@ describe('new ku reducer', () => {
     .toEqual({
       core: {title: "new title", description: "", displayId: "new-title"},
       visibility: {level: "private"},
-      datasets: { refs: [{dataset: 1, "$ref": "/dataset/1"}] }
+      datasets: { refs: [{id: 1}] }
     });
     const state4 = State.New.reducer(state3, State.New.Datasets.append(2));
     expect(state4)
     .toEqual({
       core: {title: "new title", description: "", displayId: "new-title"},
       visibility: {level: "private"},
-      datasets: { refs: [{dataset: 1, "$ref": "/dataset/1"}, {dataset: 2, "$ref": "/dataset/2"}] }
+      datasets: { refs: [{id: 1}, {id: 2}] }
     });
     const state5 = State.New.reducer(state4, State.New.Datasets.remove(1));
     expect(state5)
     .toEqual({
       core: {title: "new title", description: "", displayId: "new-title"},
       visibility: {level: "private"},
-      datasets: { refs: [{dataset: 2, "$ref": "/dataset/2"}] }
+      datasets: { refs: [{id: 2}] }
+    });
+    const state6 = State.New.reducer(state5, State.New.Datasets.set(8));
+    expect(state6)
+    .toEqual({
+      core: {title: "new title", description: "", displayId: "new-title"},
+      visibility: {level: "private"},
+      datasets: { refs: [{id: 8}] }
     });
   });
 });
