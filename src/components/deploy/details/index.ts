@@ -29,6 +29,7 @@ export class DetailExecutionComponent extends Vue {
     logs: string = ''
     port: string = ''
     deploy_ip: string = 'localhost'
+    path: string = ''
     context: any = null
 
     mounted () {
@@ -64,7 +65,11 @@ export class DetailExecutionComponent extends Vue {
     }
 
     clickItem(event: Event): void {
-        let url = `http://${this.deploy_ip}:${this.port}`
+        let url = 'http'
+
+        if (`${this.port}` === '443') url += 's'
+
+        url = `${url}://${this.deploy_ip}:${this.port}${this.path}`
 
         // For rengahub/minimal-notebook with a notebook input we adapt the path
         if (this.context.spec.image.includes('rengahub/minimal-notebook') &&
@@ -133,6 +138,7 @@ export class DetailExecutionComponent extends Vue {
             if (response.ports.length > 0) {
                 this.port = response.ports[0].exposed
                 this.deploy_ip = response.ports[0].host
+                this.path = response.ports[0].path || ''
             }
         })
     }

@@ -67,11 +67,12 @@ export function createContext(image: string, ports: string[], labels: string[] =
             })
 
         postData.labels.push(`renga.notebook.token=${token}`)
-        postData['command'] = 'start-notebook.sh ' +
+        postData['command'] = 'sh -c "start-notebook.sh ' +
             '--ContentsManager.untitled_notebook=notebook ' +
             '--NotebookApp.ip=\'*\' ' +
             `--NotebookApp.token=${token} ` +
-            '--NotebookApp.contents_manager_class=renga.notebook.RengaStorageManager'
+            '--NotebookApp.contents_manager_class=renga.notebook.RengaStorageManager ' +
+            '--NotebookApp.base_url=${DEPLOYER_BASE_URL}"'
     }
 
     let headers = {
