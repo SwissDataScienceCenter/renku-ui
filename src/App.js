@@ -139,6 +139,8 @@ class Landing extends Component {
         <ul>
           <li><Link to="/dataset_new">Create a new dataset (only URL/DOI references supported at the moment)</Link></li>
           <li><Link to="/datasets">List datasets</Link></li>
+          <li><Link to="/ku_new">Create a new ku (can only reference at most one dataset at the moment)</Link></li>
+          <li><Link to="/kus">List kus</Link></li>
         </ul>
         And once you have created a dataset, you can view it from the list page. Naturally, these actions are available from the top menu bar as well.
       </div>)
