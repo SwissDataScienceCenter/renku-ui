@@ -25,9 +25,7 @@
 
 import React, { Component } from 'react';
 
-import { createStore as reduxCreateStore, applyMiddleware, compose } from 'redux'
 import { Provider, connect } from 'react-redux'
-import thunk from 'redux-thunk'
 
 import { Link }  from 'react-router-dom'
 
@@ -37,23 +35,9 @@ import { Card, CardHeader, CardBody, CardTitle } from 'reactstrap'
 import { Container, Jumbotron } from 'reactstrap'
 import { Table } from 'reactstrap'
 
+import { createStore } from '../UIState'
 import State from './DatasetState'
 import { Avatar, TimeCaption, FieldGroup } from '../UIComponents'
-
-function createStore(reducer) {
-  const composeEnhancers =
-  typeof window === 'object' &&
-  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
-    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
-      // Specify extension’s options like name, actionsBlacklist, actionsCreators, serialize...
-    }) : compose;
-
-  const enhancer = composeEnhancers(
-    applyMiddleware(thunk),
-    // other store enhancers if any
-  );
-  return reduxCreateStore(reducer, enhancer);
-}
 
 function displayMetadataValue(metadata, field, defaultValue) {
   let value = metadata[field];

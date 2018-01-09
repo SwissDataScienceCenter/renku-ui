@@ -20,8 +20,8 @@
 /**
  *  incubator-renga-ui
  *
- *  App.js
- *  Coordinator for the application.
+ *  UIComponents.js
+ *  Utility UI components for the application.
  */
 
 import React, { Component } from 'react';
