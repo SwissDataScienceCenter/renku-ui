@@ -25,23 +25,113 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { MemoryRouter } from 'react-router-dom';
+import fetchMock from 'fetch-mock';
+
 import Dataset from './Dataset';
 import State, { displayIdFromTitle } from  './DatasetState';
+
+const mockDatasetListResponse = {
+    "aggregations": {},
+    "hits": {
+        "hits": [
+            {
+                "created": "2018-01-09T17:24:48.370008+00:00",
+                "id": 1,
+                "links": {
+                    "self": "http://localhost:3000/datasets/1"
+                },
+                "metadata": {
+                    "control_number": "1",
+                    "core": {
+                        "description": "just for testing",
+                        "displayId": "a-test-dataset",
+                        "title": "A test dataset"
+                    },
+                    "data": {
+                        "reference": {
+                            "author": "me",
+                            "url_or_doi": "www.testing.com"
+                        },
+                        "upload": {
+                            "files": []
+                        }
+                    },
+                    "visibility": {
+                        "level": "public"
+                    }
+                },
+                "updated": "2018-01-09T17:24:48.370019+00:00"
+            }
+        ],
+        "total": 1
+    },
+    "links": {
+        "self": "http://localhost:3000/datasets/?page=1&size=10"
+    }
+};
+
+const mockDatasetDetailResponse = {
+    "created": "2018-01-09T17:24:48.370008+00:00",
+    "id": 1,
+    "links": {
+        "self": "http://localhost:3000/datasets/1"
+    },
+    "metadata": {
+        "control_number": "1",
+        "core": {
+            "description": "just for testing",
+            "displayId": "a-test-dataset",
+            "title": "A test dataset"
+        },
+        "data": {
+            "reference": {
+                "author": "me",
+                "url_or_doi": "www.testing.com"
+            },
+            "upload": {
+                "files": []
+            }
+        },
+        "visibility": {
+            "level": "public"
+        }
+    },
+    "updated": "2018-01-09T17:24:48.370019+00:00"
+};
+
+
+
+fetchMock.get('/api/datasets/', () => {
+    return mockDatasetListResponse
+});
+
+fetchMock.get('/api/datasets/1', () => {
+    return mockDatasetDetailResponse
+});
+
 
 describe('rendering', () => {
   it('renders new without crashing', () => {
     const div = document.createElement('div');
     ReactDOM.render(<Dataset.New />, div);
   });
-  // Need to mock fetch for these to work.
-  // it('renders list without crashing', () => {
-  //   const div = document.createElement('div');
-  //   ReactDOM.render(<Dataset.List />, div);
-  // });
-  // it('renders view without crashing', () => {
-  //   const div = document.createElement('div');
-  //   ReactDOM.render(<Dataset.View />, div);
-  // });
+  it('renders list without crashing', () => {
+    const div = document.createElement('div');
+    ReactDOM.render(
+        <MemoryRouter>
+            <Dataset.List />
+        </MemoryRouter>
+        , div);
+  });
+  it('renders view without crashing', () => {
+    const div = document.createElement('div');
+    ReactDOM.render(
+        <MemoryRouter>
+          <Dataset.View id="1" />
+        </MemoryRouter>
+        , div);
+  });
 });
 
 describe('helpers', () => {

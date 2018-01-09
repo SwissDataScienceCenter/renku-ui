@@ -31,5 +31,8 @@
         "^/api(.*)": "$1"
       }
     }
+  },
+  "devDependencies": {
+    "fetch-mock": "^6.0.0-beta.7"
   }
 }

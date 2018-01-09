@@ -25,23 +25,106 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { MemoryRouter } from 'react-router-dom';
+import fetchMock from 'fetch-mock';
+
 import Ku from './Ku';
 import State, { displayIdFromTitle } from  './Ku.state';
+
+const mockKuListResponse = {
+    "aggregations": {},
+    "hits": {
+        "hits": [
+            {
+                "created": "2018-01-09T21:21:01.648602+00:00",
+                "id": 1,
+                "links": {
+                    "self": "http://localhost:3000/kus/1"
+                },
+                "metadata": {
+                    "control_number": "1",
+                    "core": {
+                        "description": "For testing purposes",
+                        "displayId": "my-first-ku",
+                        "title": "My first ku"
+                    },
+                    "datasets": {
+                        "refs": [
+                            {
+                                "id": "my cool dataset"
+                            }
+                        ]
+                    },
+                    "visibility": {
+                        "level": "public"
+                    }
+                },
+                "updated": "2018-01-09T21:21:01.648614+00:00"
+            }
+        ],
+        "total": 1
+    },
+    "links": {
+        "self": "http://localhost:3000/kus/?page=1&size=10"
+    }
+};
+
+const mockKuDetailResponse = {
+    "created": "2018-01-09T21:21:01.648602+00:00",
+    "id": 1,
+    "links": {
+        "self": "http://localhost:3000/kus/1"
+    },
+    "metadata": {
+        "control_number": "1",
+        "core": {
+            "description": "For testing purposes",
+            "displayId": "my-first-ku",
+            "title": "My first ku"
+        },
+        "datasets": {
+            "refs": [
+                {
+                    "id": "my cool dataset"
+                }
+            ]
+        },
+        "visibility": {
+            "level": "public"
+        }
+    },
+    "updated": "2018-01-09T21:21:01.648614+00:00"
+};
+
+fetchMock.get('/api/kus/', () => {
+    return mockKuListResponse
+});
+
+fetchMock.get('/api/kus/1', () => {
+    return mockKuDetailResponse
+});
 
 describe('rendering', () => {
   it('renders new without crashing', () => {
     const div = document.createElement('div');
     ReactDOM.render(<Ku.New />, div);
   });
-  // Need to mock fetch for these to work.
-  // it('renders list without crashing', () => {
-  //   const div = document.createElement('div');
-  //   ReactDOM.render(<Ku.List />, div);
-  // });
-  // it('renders view without crashing', () => {
-  //   const div = document.createElement('div');
-  //   ReactDOM.render(<Ku.View />, div);
-  // });
+  it('renders list without crashing', () => {
+    const div = document.createElement('div');
+    ReactDOM.render(
+        <MemoryRouter>
+            <Ku.List />
+        </MemoryRouter>
+        , div);
+  });
+  it('renders view without crashing', () => {
+    const div = document.createElement('div');
+    ReactDOM.render(
+        <MemoryRouter>
+            <Ku.View id="1" />
+        </MemoryRouter>
+        , div);
+  });
 });
 
 describe('helpers', () => {
