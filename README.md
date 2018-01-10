@@ -58,6 +58,6 @@ $ curl -i -H 'Accept: application/json' http://localhost:5000/kus/
 ### Create Entities
 
 ```
-$ curl -i -XPOST -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{"title": "dataset 1"}' http://localhost:5000/datasets/
-$ curl -i -XPOST -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{"title": "ku 1"}' http://localhost:5000/kus/
+$ curl -i -XPOST -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{"core": {"description": "For testing purposes","displayId": "my-first-ku","title": "My first ku"},"datasets": {"refs": [{"id": "my cool dataset"}]},"visibility": {"level": "public"}}' http://localhost:5000/datasets/
+$ curl -i -XPOST -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{"core": {"description": "For testing purposes","displayId": "my-first-ku","title": "My first ku"},"datasets": {"refs": [{"$ref": "http://localhost:5000/datasets/1"}]},"visibility": {"level": "public"}}' http://localhost:5000/kus/
 ```
