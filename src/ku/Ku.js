@@ -47,12 +47,12 @@ function displayMetadataValue(metadata, field, defaultValue) {
 class DataVisibility extends Component {
   render() {
     return <FormGroup>
-        <Label>Visibility</Label>
-        <Input type="select" placeholder="visibility" value={this.props.value.level} onChange={this.props.onChange}>
-          <option value="public">Public</option>
-          <option value="restricted">Restricted</option>
-        </Input>
-      </FormGroup>
+      <Label>Visibility</Label>
+      <Input type="select" placeholder="visibility" value={this.props.value.level} onChange={this.props.onChange}>
+        <option value="public">Public</option>
+        <option value="restricted">Restricted</option>
+      </Input>
+    </FormGroup>
   }
 }
 
@@ -68,7 +68,7 @@ class DatasetReferenceSpecification extends Component {
 
 class DataRegistration extends Component {
   render() {
-    let dataset = (this.props.value.refs.length > 0) ? this.props.value.refs[0].id : ""
+    let dataset = (this.props.value.refs.length > 0) ? this.props.value.refs[0].id : ''
     return <DatasetReferenceSpecification value={dataset} onChange={this.props.onChange} />;
   }
 }
@@ -109,15 +109,15 @@ class New extends Component {
     headers.append('Accept', 'application/json');
     headers.append('Content-Type', 'application/json');
     console.log({ headers, body});
-    fetch("api/kus/", {method: 'POST', headers: headers, body: body})
-        .then( (response) => {
-            if (response.ok) {
-              response.json().then( newDataset => {
-                this.store.dispatch(State.List.append([newDataset]))
-              });
-              this.props.history.push({pathname: '/kus/'});
-            }
-        });
+    fetch('api/kus/', {method: 'POST', headers: headers, body: body})
+      .then( (response) => {
+        if (response.ok) {
+          response.json().then( newDataset => {
+            this.store.dispatch(State.List.append([newDataset]))
+          });
+          this.props.history.push({pathname: '/kus/'});
+        }
+      });
   }
 
   mapStateToProps(state, ownProps) { return state  }
@@ -148,8 +148,8 @@ class DataSetViewHeader extends Component {
   }
 
   render() {
-    const title = this.displayMetadataValue("title", "no title");
-    const description = this.displayMetadataValue("description", "no description");
+    const title = this.displayMetadataValue('title', 'no title');
+    const description = this.displayMetadataValue('description', 'no description');
     return (
       <Jumbotron key="header" fluid>
         <Container fluid>
@@ -165,7 +165,7 @@ class DataSetViewDetails extends Component {
 
   render() {
     const visibilityLevel = this.props.visibility.level;
-    const dataset = (this.props.datasets.refs.length > 0) ? this.props.datasets.refs[0].id : ""
+    const dataset = (this.props.datasets.refs.length > 0) ? this.props.datasets.refs[0].id : ''
     return (
       <Table key="metadata" size="sm">
         <tbody>
@@ -238,19 +238,19 @@ class KuListRow extends Component {
 
   render() {
     const kuId = this.props.id;
-    const title = <Link to={`/ku/${kuId}`}>{this.displayMetadataValue('title', "no title")}</Link>
-    const description = this.displayMetadataValue('description', "no description");
+    const title = <Link to={`/ku/${kuId}`}>{this.displayMetadataValue('title', 'no title')}</Link>
+    const description = this.displayMetadataValue('description', 'no description');
     const time = this.props.updated;
 
     return (
       <Row className="ku-list-row">
-         <Col md={1}><Avatar  /></Col>
-         <Col md={9}>
-           <p><b>{title}</b></p>
-           <p>{description} <TimeCaption caption="Updated" time={time} /> </p>
-         </Col>
-       </Row>
-      );
+        <Col md={1}><Avatar  /></Col>
+        <Col md={9}>
+          <p><b>{title}</b></p>
+          <p>{description} <TimeCaption caption="Updated" time={time} /> </p>
+        </Col>
+      </Row>
+    );
   }
 }
 
@@ -262,7 +262,7 @@ class KuList extends Component {
       <Row key="header"><Col md={8}><h1>Kus</h1></Col></Row>,
       <Row key="spacer"><Col md={8}>&nbsp;</Col></Row>,
       <Row key="timeline"><Col md={8}>{rows}</Col></Row>
-   ]
+    ]
   }
 }
 
@@ -277,7 +277,7 @@ class List extends Component {
   fetchKus() {
     const headers = new Headers();
     headers.append('Accept', 'application/json');
-    return fetch("/api/kus/", {headers});
+    return fetch('/api/kus/', {headers});
   }
 
   listKus() {

@@ -57,7 +57,7 @@ class TimeCaption extends Component {
   render() {
     const time = this.props.time;
     const displayTime = human((new Date() - new Date(time)) / 1000);
-    const caption = (this.props.caption) ? this.props.caption : "Updated";
+    const caption = (this.props.caption) ? this.props.caption : 'Updated';
     return <span className="time-caption">{caption} {displayTime}.</span>
   }
 }

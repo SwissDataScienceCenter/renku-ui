@@ -68,11 +68,11 @@ class RengaNavBar extends Component {
   handleSelect(eventKey, event) {
     let nextRoute = null;
     switch(eventKey) {
-      case 'new.dataset':
-        nextRoute = '/dataset';
-        break;
-      default:
-        break;
+    case 'new.dataset':
+      nextRoute = '/dataset';
+      break;
+    default:
+      break;
     }
     if (null != nextRoute) this.props.history.push(nextRoute);
   }
@@ -151,27 +151,27 @@ class App extends Component {
   render() {
     return (
       <Router>
-          <div>
-            <Route component={RengaNavBar} />
-            <main role="main" className="container-fluid">
-              <div key="gap">&nbsp;</div>
-              <Switch>
-                <Route exact path="/"
-                  render={p => <Landing key="landing" {...p} />} />
-                <Route exact path="/datasets"
-                  render={p => <Dataset.List key="datasets" {...p} />} />
-                <Route path="/dataset/:id"
-                  render={p => <Dataset.View key="dataset" id={p.match.params.id} {...p} />} />
-                <Route exact path="/dataset_new" component={Dataset.New} />
-                <Route exact path="/kus"
-                  render={p => <Ku.List key="kus" {...p} />} />
-                <Route path="/ku/:id"
-                  render={p => <Ku.View key="ku" id={p.match.params.id} {...p} />} />
-                <Route exact path="/ku_new" component={Ku.New} />
-              </Switch>
-            </main>
-            <Route component={RengaFooter} />
-          </div>
+        <div>
+          <Route component={RengaNavBar} />
+          <main role="main" className="container-fluid">
+            <div key="gap">&nbsp;</div>
+            <Switch>
+              <Route exact path="/"
+                render={p => <Landing key="landing" {...p} />} />
+              <Route exact path="/datasets"
+                render={p => <Dataset.List key="datasets" {...p} />} />
+              <Route path="/dataset/:id"
+                render={p => <Dataset.View key="dataset" id={p.match.params.id} {...p} />} />
+              <Route exact path="/dataset_new" component={Dataset.New} />
+              <Route exact path="/kus"
+                render={p => <Ku.List key="kus" {...p} />} />
+              <Route path="/ku/:id"
+                render={p => <Ku.View key="ku" id={p.match.params.id} {...p} />} />
+              <Route exact path="/ku_new" component={Ku.New} />
+            </Switch>
+          </main>
+          <Route component={RengaFooter} />
+        </div>
       </Router>
     );
   }

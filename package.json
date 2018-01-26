@@ -22,7 +22,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "lint": "node_modules/eslint/bin/eslint.js --ignore-pattern *.css  --ignore-pattern *.svg --ignore-pattern *.test.js src/**",
+    "lint-fix": "node_modules/eslint/bin/eslint.js --ignore-pattern *.css  --ignore-pattern *.svg --ignore-pattern *.test.js src/** --fix"
   },
   "proxy": {
     "/api": {
@@ -33,6 +35,8 @@
     }
   },
   "devDependencies": {
+    "babel-eslint": "^8.2.1",
+    "eslint": "^4.16.0",
     "fetch-mock": "^6.0.0-beta.7"
   }
 }

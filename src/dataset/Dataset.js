@@ -48,12 +48,12 @@ function displayMetadataValue(metadata, field, defaultValue) {
 class DataVisibility extends Component {
   render() {
     return <FormGroup>
-        <Label>Visibility</Label>
-        <Input type="select" placeholder="visibility" value={this.props.value.level} onChange={this.props.onChange}>
-          <option value="public">Public</option>
-          <option value="restricted">Restricted</option>
-        </Input>
-      </FormGroup>
+      <Label>Visibility</Label>
+      <Input type="select" placeholder="visibility" value={this.props.value.level} onChange={this.props.onChange}>
+        <option value="public">Public</option>
+        <option value="restricted">Restricted</option>
+      </Input>
+    </FormGroup>
   }
 }
 
@@ -78,10 +78,10 @@ class ReferenceSpecification extends Component {
     return [
       <CardTitle key="title">Reference</CardTitle>,
       <FieldGroup key="url" id="url" type="text" label="URL or DOI"
-        placeholder="The URL or DOI for the dataset" value={this.props.value.url_or_doi} onChange={(v) => this.props.onChange("url_or_doi", v)} />,
+        placeholder="The URL or DOI for the dataset" value={this.props.value.url_or_doi} onChange={(v) => this.props.onChange('url_or_doi', v)} />,
       <FieldGroup key="author" id="author" type="text" label="Author"
         placeholder="The author of the original data" value={this.props.value.author}
-        onChange={(v) => this.props.onChange("author", v)} />,
+        onChange={(v) => this.props.onChange('author', v)} />,
     ]
   }
 }
@@ -89,7 +89,7 @@ class ReferenceSpecification extends Component {
 class DataRegistration extends Component {
   constructor(props) {
     super(props);
-    this.state = { registration: "reference" }
+    this.state = { registration: 'reference' }
   }
 
   handleChange(v) {
@@ -99,11 +99,11 @@ class DataRegistration extends Component {
   render() {
     const buttonToolbar = (
       <ButtonGroup>
-        <Button onClick={() => this.handleChange("reference")} active={this.state.registration === "reference"}>Reference</Button>
-        <Button onClick={() => this.handleChange("upload")} active={this.state.registration === "upload"}>Upload</Button>
+        <Button onClick={() => this.handleChange('reference')} active={this.state.registration === 'reference'}>Reference</Button>
+        <Button onClick={() => this.handleChange('upload')} active={this.state.registration === 'upload'}>Upload</Button>
       </ButtonGroup>);
     const panelChild =
-      this.state.registration === "reference" ?
+      this.state.registration === 'reference' ?
         <ReferenceSpecification value={this.props.value.reference} onChange={this.props.onReferenceChange} /> :
         <FileUpload value={this.props.value.upload} onChange={null}  />
     return (
@@ -150,15 +150,15 @@ class New extends Component {
     const headers = new Headers();
     headers.append('Accept', 'application/json');
     headers.append('Content-Type', 'application/json');
-    fetch("api/datasets/", {method: 'POST', headers: headers, body: body})
-        .then( (response) => {
-            if (response.ok) {
-              response.json().then( newDataset => {
-                this.store.dispatch(State.List.append([newDataset]))
-              });
-              this.props.history.push({pathname: '/datasets/'});
-            }
-        });
+    fetch('api/datasets/', {method: 'POST', headers: headers, body: body})
+      .then( (response) => {
+        if (response.ok) {
+          response.json().then( newDataset => {
+            this.store.dispatch(State.List.append([newDataset]))
+          });
+          this.props.history.push({pathname: '/datasets/'});
+        }
+      });
   }
 
   mapStateToProps(state, ownProps) { return state  }
@@ -168,7 +168,7 @@ class New extends Component {
       onTitleChange: (e) => { dispatch(State.New.Core.set('title', e.target.value)) },
       onDescriptionChange: (e) => { dispatch(State.New.Core.set('description', e.target.value)) },
       onVisibilityChange: (e) => { dispatch(State.New.Visibility.set(e.target.value)) },
-      onDataReferenceChange: (key, e) => { dispatch(State.New.Data.set("reference", key, e.target.value)) }
+      onDataReferenceChange: (key, e) => { dispatch(State.New.Data.set('reference', key, e.target.value)) }
     }
   }
 
@@ -189,8 +189,8 @@ class DataSetViewHeader extends Component {
   }
 
   render() {
-    const title = this.displayMetadataValue("title", "no title");
-    const description = this.displayMetadataValue("description", "no description");
+    const title = this.displayMetadataValue('title', 'no title');
+    const description = this.displayMetadataValue('description', 'no description');
     return (
       <Jumbotron key="header" fluid>
         <Container fluid>
@@ -285,19 +285,19 @@ class DataSetListRow extends Component {
 
   render() {
     const datasetId = this.props.id;
-    const title = <Link to={`/dataset/${datasetId}`}>{this.displayMetadataValue('title', "no title")}</Link>
-    const description = this.displayMetadataValue('description', "no description");
+    const title = <Link to={`/dataset/${datasetId}`}>{this.displayMetadataValue('title', 'no title')}</Link>
+    const description = this.displayMetadataValue('description', 'no description');
     const time = this.props.updated;
 
     return (
       <Row className="dataset-list-row">
-         <Col md={1}><Avatar  /></Col>
-         <Col md={9}>
-           <p><b>{title}</b></p>
-           <p>{description} <TimeCaption caption="Updated" time={time} /> </p>
-         </Col>
-       </Row>
-      );
+        <Col md={1}><Avatar  /></Col>
+        <Col md={9}>
+          <p><b>{title}</b></p>
+          <p>{description} <TimeCaption caption="Updated" time={time} /> </p>
+        </Col>
+      </Row>
+    );
   }
 }
 
@@ -309,7 +309,7 @@ class DataSetList extends Component {
       <Row key="header"><Col md={8}><h1>Datasets</h1></Col></Row>,
       <Row key="spacer"><Col md={8}>&nbsp;</Col></Row>,
       <Row key="timeline"><Col md={8}>{rows}</Col></Row>
-   ]
+    ]
   }
 }
 
@@ -324,7 +324,7 @@ class List extends Component {
   fetchDatasets() {
     const headers = new Headers();
     headers.append('Accept', 'application/json');
-    return fetch("/api/datasets/", {headers});
+    return fetch('/api/datasets/', {headers});
   }
 
   listDatasets() {

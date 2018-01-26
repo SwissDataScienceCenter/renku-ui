@@ -28,7 +28,7 @@ import { combineReducers } from 'redux'
 function displayIdFromTitle(title) {
   // title.Author: Alex K. - https://stackoverflow.com/users/246342/alex-k
   // Source: https://stackoverflow.com/questions/6507056/replace-all-whitespace-characters/6507078#6507078
-  title = title.replace(/\s/g, "-");
+  title = title.replace(/\s/g, '-');
   title = title.toLowerCase();
   return title;
 }
@@ -53,7 +53,7 @@ const Core = {
     return action
   },
   reduce: (state, action) => {
-    return reduceState('core', state, action, {title: "", description: "", displayId: ""})
+    return reduceState('core', state, action, {title: '', description: '', displayId: ''})
   }
 }
 
@@ -62,7 +62,7 @@ const Visibility = {
     return createSetAction('visibility', 'level', level)
   },
   reduce: (state, action) => {
-    return reduceState('visibility', state, action, {level: "public"})
+    return reduceState('visibility', state, action, {level: 'public'})
   }
 }
 
@@ -120,8 +120,8 @@ const List = {
     return action
   },
   append: (results) => {
-      const action = {type:'server_return', payload: { hits: results } };
-      return action
+    const action = {type:'server_return', payload: { hits: results } };
+    return action
   },
   reducer: (state, action) => {
     if (state == null) state = {kus:[]}
