@@ -2,62 +2,47 @@
 
 Repo for exploring UI ideas
 
-# Running the UI
+# Running GitLab as Metadata Server
+
+The easiest way to get a local GitLab instance up and running is to use the [GitLab community edition docker image](https://hub.docker.com/r/gitlab/gitlab-ce/).
+
+## Example configuration
+
+You can create the necessary directories through `mkdir config git-data lfs-data logs` and then run `docker-compose up -d --build` using a docker-compose.yml file similar to this:
 
 ```
+web:
+  image: 'gitlab/gitlab-ce:latest'
+  restart: always
+  hostname: 'localhost'
+  environment:
+    GITLAB_OMNIBUS_CONFIG: |
+      external_url 'http://localhost'
+      gitlab_rails['lfs_enabled'] = true      
+      gitlab_rails['lfs_storage_path'] = '/var/storage/lfs-objects'
+      gitlab_rails['initial_root_password'] = 'root_password'
+      # Add any other gitlab.rb configuration here, each on its own line
+  ports:
+    - '80:80'
+    - '443:443'
+    - '22:22'
+  volumes:
+    - './config:/etc/gitlab'
+    - './logs:/var/log/gitlab'
+    - './git-data:/var/opt/gitlab'
+    - './lfs-data:/var/storage/lfs-objects'
+
+```
+
+## Creating a GitLab token
+After starting GitLab locally you can open http://localhost in your browser and explore the GitLab user interface, create projects, users, issues, etc. For the first login, use "root" as username and the initial password you have set in the docker-compose file ("root-password" above). In order to act on behalf of a user through the incubator UI, you first **have to create an access token** for that user through the GitLab client http://localhost/profile/personal_access_tokens.
+
+# Running the incubator UI
+
+Export the created access token and start the development server:
+```
+$ export GITLAB_SECRET_TOKEN=previously-created-token
 $ npm install        # normally only necessary the first time or if dependencies have changed
 $ npm start
 ```
-
-Then point your browser at http://localhost:3000/ (this should automatically happen). This will show you a welcome page. To actually do anything interesting, you need a metadata server.
-
-# Running the Metadata Server
-
-Get the renga-metadata project: https://github.com/SwissDataScienceCenter/renga-metadata. The README.rst file in the project explains how to get it up and running, but here is a condensed version.
-
-## First Time
-
-The first time, you will need to build and initialize it.
-
-```
-$ docker-compose up --build -d
-$ docker-compose exec web renga-metadata db init create
-$ docker-compose exec web renga-metadata index init
-```
-
-## Second Time+
-
-Subsequently, it will be sufficient to just bring it up.
-
-```
-$ docker-compose up -d
-```
-
-## Reinitialization
-
-During development, the schema or other information may change, necessitating a reinitialization of the server. If more gentle methods fail, you can destroy everything and start again:
-
-```
-$ docker-compose down
-```
-
-Then follow the instructions in [First Time](#first-time).
-
-
-## Useful Commands
-
-Here are some commands that may be useful for interacting with the metadata server.
-
-### Retrieve Entities
-
-```
-$ curl -i -H 'Accept: application/json' http://localhost:5000/datasets/
-$ curl -i -H 'Accept: application/json' http://localhost:5000/kus/
-```
-
-### Create Entities
-
-```
-$ curl -i -XPOST -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{"core": {"description": "For testing purposes","displayId": "my-first-ku","title": "My first ku"},"datasets": {"refs": [{"id": "my cool dataset"}]},"visibility": {"level": "public"}}' http://localhost:5000/datasets/
-$ curl -i -XPOST -H 'Accept: application/json' -H 'Content-Type: application/json' -d '{"core": {"description": "For testing purposes","displayId": "my-first-ku","title": "My first ku"},"datasets": {"refs": [{"$ref": "http://localhost:5000/datasets/1"}]},"visibility": {"level": "public"}}' http://localhost:5000/kus/
-```
+Then point your browser at http://localhost:3000/ (this should automatically happen). This will show you a welcome page.
