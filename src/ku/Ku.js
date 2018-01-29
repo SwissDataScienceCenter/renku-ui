@@ -80,7 +80,8 @@ class NewDataSet extends Component {
     return <form action="" method="post" encType="multipart/form-data" id="js-upload-form">
       <FieldGroup id="title" type="text" label="Title" placeholder="A brief name to identify the ku" help={titleHelp}
         value={this.props.core.title} onChange={this.props.onTitleChange} />
-      <FieldGroup id="description" type="textarea" label="Description" placeholder="A description of the ku" help="A description of the ku helps users understand it and is highly recommended."
+      <FieldGroup id="description" type="textarea" label="Description" placeholder="A description of the ku"
+        help="A description of the ku helps users understand it and is highly recommended."
         value={this.props.core.description} onChange={this.props.onDescriptionChange} />
       <DataVisibility value={this.props.visibility} onChange={this.props.onVisibilityChange} />
       <DataRegistration value={this.props.datasets} onChange={this.props.onDatasetsChange} />

@@ -79,7 +79,8 @@ class ReferenceSpecification extends Component {
     return [
       <CardTitle key="title">Reference</CardTitle>,
       <FieldGroup key="url" id="url" type="text" label="URL or DOI"
-        placeholder="The URL or DOI for the dataset" value={this.props.value.url_or_doi} onChange={(v) => this.props.onChange('url_or_doi', v)} />,
+        placeholder="The URL or DOI for the dataset" value={this.props.value.url_or_doi}
+        onChange={(v) => this.props.onChange('url_or_doi', v)} />,
       <FieldGroup key="author" id="author" type="text" label="Author"
         placeholder="The author of the original data" value={this.props.value.author}
         onChange={(v) => this.props.onChange('author', v)} />,
@@ -100,8 +101,12 @@ class DataRegistration extends Component {
   render() {
     const buttonToolbar = (
       <ButtonGroup>
-        <Button onClick={() => this.handleChange('reference')} active={this.state.registration === 'reference'}>Reference</Button>
-        <Button onClick={() => this.handleChange('upload')} active={this.state.registration === 'upload'}>Upload</Button>
+        <Button onClick={() => this.handleChange('reference')} active={this.state.registration === 'reference'}>
+          Reference
+        </Button>
+        <Button onClick={() => this.handleChange('upload')} active={this.state.registration === 'upload'}>
+          Upload
+        </Button>
       </ButtonGroup>);
     const panelChild =
       this.state.registration === 'reference' ?
@@ -121,9 +126,10 @@ class NewDataSet extends Component {
   render() {
     const titleHelp = this.props.core.displayId.length > 0 ? `Id: ${this.props.core.displayId}` : null;
     return <form action="" method="post" encType="multipart/form-data" id="js-upload-form">
-      <FieldGroup id="title" type="text" label="Title" placeholder="A brief name to identify the dataset" help={titleHelp}
-        value={this.props.core.title} onChange={this.props.onTitleChange} />
-      <FieldGroup id="description" type="textarea" label="Description" placeholder="A description of the dataset" help="A description of the dataset helps users understand it and is highly recommended."
+      <FieldGroup id="title" type="text" label="Title" placeholder="A brief name to identify the dataset"
+        help={titleHelp} value={this.props.core.title} onChange={this.props.onTitleChange} />
+      <FieldGroup id="description" type="textarea" label="Description" placeholder="A description of the dataset"
+        help="A description of the dataset helps users understand it and is highly recommended."
         value={this.props.core.description} onChange={this.props.onDescriptionChange} />
       <DataVisibility value={this.props.visibility} onChange={this.props.onVisibilityChange} />
       <DataRegistration value={this.props.data} onReferenceChange={this.props.onDataReferenceChange} />

@@ -86,7 +86,8 @@ class RengaNavBar extends Component {
       <header>
         <nav className="navbar navbar-expand-sm navbar-light bg-light justify-content-between">
           <span className="navbar-brand"><Link to="/"><img src={logo} alt="Renga" height="24" /></Link></span>
-          <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon"></span>
           </button>
 
@@ -95,7 +96,9 @@ class RengaNavBar extends Component {
               <div className="input-group">
                 <input className="form-control" type="search" placeholder="Search RENGA" aria-label="Search" />
                 <span className="input-group-btn">
-                  <button className="btn btn-outline-primary my-2 my-sm-0" type="submit"><FontAwesome name="search" /></button>
+                  <button className="btn btn-outline-primary my-2 my-sm-0" type="submit">
+                    <FontAwesome name="search" />
+                  </button>
                 </span>
               </div>
             </form>
@@ -107,7 +110,8 @@ class RengaNavBar extends Component {
             </ul>
             <ul className="navbar-nav">
               <li className="nav-item dropdown">
-                <a className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
+                  aria-haspopup="true" aria-expanded="false">
                   <FontAwesome name="plus" />
                 </a>
                 <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
@@ -147,7 +151,8 @@ class Landing extends Component {
           <li><Link to="/ku_new">Create a new ku (can only reference at most one dataset at the moment)</Link></li>
           <li><Link to="/kus">List kus</Link></li>
         </ul>
-        And once you have created a dataset, you can view it from the list page. Naturally, these actions are available from the top menu bar as well.
+        And once you have created a dataset, you can view it from the list page.
+        Naturally, these actions are available from the top menu bar as well.
       </div>)
   }
 }
