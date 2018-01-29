@@ -39,6 +39,11 @@ import FontAwesome from 'react-fontawesome'
 // import Landing from './Landing'
 import Dataset from './dataset/Dataset'
 import Ku from './ku/Ku'
+import GitlabClient from './gitlab-api'
+
+// Instanciate a gitlab client. For the time being, inject a secret-token
+// through an environment variable.
+export const client = new GitlabClient('/api/v4/', process.env.REACT_APP_GITLAB_SECRET_TOKEN);
 
 class RengaNavItem extends Component {
   render() {

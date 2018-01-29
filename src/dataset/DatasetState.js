@@ -109,7 +109,7 @@ const View = { Core, Visibility, Data,
 
 const List = {
   set: (results) => {
-    const action = {type:'server_return', payload: results.hits };
+    const action = {type:'server_return', payload: results };
     return action
   },
   append: (results) => {
@@ -119,7 +119,7 @@ const List = {
   reducer: (state, action) => {
     if (state == null) state = {datasets:[]}
     if (action.type !== 'server_return') return state;
-    const results = {datasets: state.datasets.concat(action.payload.hits)};
+    const results = {datasets: state.datasets.concat(action.payload)};
     return results
   }
 }

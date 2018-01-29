@@ -38,6 +38,7 @@ import { Table } from 'reactstrap'
 import { createStore } from '../UIState'
 import State from './DatasetState'
 import { Avatar, TimeCaption, FieldGroup } from '../UIComponents'
+import { client } from '../App'
 
 function displayMetadataValue(metadata, field, defaultValue) {
   let value = metadata[field];
@@ -280,21 +281,18 @@ class View extends Component {
 
 class DataSetListRow extends Component {
   displayMetadataValue(field, defaultValue) {
-    return displayMetadataValue(this.props.metadata.core, field, defaultValue)
+    return displayMetadataValue(this.props, field, defaultValue)
   }
 
   render() {
-    const datasetId = this.props.id;
-    const title = <Link to={`/dataset/${datasetId}`}>{this.displayMetadataValue('title', 'no title')}</Link>
-    const description = this.displayMetadataValue('description', 'no description');
-    const time = this.props.updated;
-
+    const title = <Link to={`/dataset/${this.props.id}`}>{this.displayMetadataValue('name', 'no title')}</Link>
+    const description = this.props.description !== '' ? this.props.description : 'No description available';
     return (
       <Row className="dataset-list-row">
         <Col md={1}><Avatar  /></Col>
         <Col md={9}>
           <p><b>{title}</b></p>
-          <p>{description} <TimeCaption caption="Updated" time={time} /> </p>
+          <p>{description} <TimeCaption caption="Updated" time={this.props.last_activity_at} /> </p>
         </Col>
       </Row>
     );
@@ -321,17 +319,10 @@ class List extends Component {
     this.store.dispatch(this.listDatasets());
   }
 
-  fetchDatasets() {
-    const headers = new Headers();
-    headers.append('Accept', 'application/json');
-    return fetch('/api/datasets/', {headers});
-  }
 
   listDatasets() {
     return (dispatch) => {
-      return this.fetchDatasets().then(
-        results => results.json().then(d => dispatch(State.List.set(d)))
-      )
+      return client.getProjects().then(d => dispatch(State.List.set(d)))
     }
   }
 
