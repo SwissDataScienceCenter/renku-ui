@@ -17,7 +17,14 @@
     "quotes": ["warn", "single"],
     "jsx-quotes": ["warn", "prefer-double"],
     "no-unused-vars": "warn",
-    "no-console": "off"
+    "no-console": "off",
+    "react/prop-types": "off"
   },
-  "extends": "eslint:recommended"
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended"
+  ],
+  "plugins": [
+    "react"
+  ]
 }
