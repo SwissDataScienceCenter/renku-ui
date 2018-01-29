@@ -23,8 +23,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "lint": "node_modules/eslint/bin/eslint.js --ignore-pattern *.css  --ignore-pattern *.svg --ignore-pattern *.test.js src/**",
-    "lint-fix": "node_modules/eslint/bin/eslint.js --ignore-pattern *.css  --ignore-pattern *.svg --ignore-pattern *.test.js src/** --fix"
+    "lint": "node_modules/eslint/bin/eslint.js src/",
+    "lint-fix": "node_modules/eslint/bin/eslint.js src/ --fix"
   },
   "proxy": {
     "/api": {
