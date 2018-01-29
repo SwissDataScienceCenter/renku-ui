@@ -16,7 +16,7 @@
     "no-eval": "warn",
     "quotes": ["warn", "single"],
     "jsx-quotes": ["warn", "prefer-double"],
-    "no-unused-vars": "warn",
+    "no-unused-vars": ["warn", { "vars": "all", "args": "none", "ignoreRestSiblings": false }],
     "no-console": "off",
     "react/prop-types": "off"
   },
