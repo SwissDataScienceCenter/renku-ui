@@ -55,7 +55,7 @@ const Core = {
   reduce: (state, action) => {
     return reduceState('core', state, action, {title: '', description: '', displayId: ''})
   }
-}
+};
 
 const Visibility = {
   set: (level) => {
@@ -64,69 +64,40 @@ const Visibility = {
   reduce: (state, action) => {
     return reduceState('visibility', state, action, {level: 'public'})
   }
-}
+};
 
-function dataset_object(id, asRef=true) {
-  // Currently ignore addReff, but could later be used to refer to the url for the dataset
-  // if (asRef) return {"$ref": `http://localhost:5000/datasets/${id}`} or {"$ref": `../datasets/${id}`}
-  return {id}
-}
+const combinedFieldReducer = combineReducers({
+  core: Core.reduce,
+  visibility: Visibility.reduce
+});
 
-const Datasets = {
-  set: (id) => {
-    return createSetAction('datasets', 'set', dataset_object(id, true))
-  },
-  append: (id) => {
-    return createSetAction('datasets', 'append', dataset_object(id, true))
-  },
-  remove: (id) => {
-    return createSetAction('datasets', 'remove', dataset_object(id, false))
-  },
-  reduce: (state, action) => {
-    if (state == null) state = {refs: []}
-    if (action.type !== 'datasets') return state;
-    const payload = action.payload;
-    const oldRefs = state.refs;
-    let refs;
-    if (payload.append != null) {
-      refs = [...oldRefs, payload.append];
-    } else if (payload.remove != null) {
-      refs = oldRefs.filter(d => d.id !== payload.remove.id);
-    } else if (payload.set != null) {
-      refs = [payload.set];
-    }
-    return {...state, ...{refs}}
-  }
-}
-
-const combinedFieldReducer = combineReducers({core: Core.reduce, visibility: Visibility.reduce, datasets: Datasets.reduce});
-
-const New = { Core, Visibility, Datasets,
+const New = { Core, Visibility,
   reducer: combinedFieldReducer
 };
 
-const View = { Core, Visibility, Datasets,
+const View = { Core, Visibility,
   setAll: (result) => ({type:'server_return', payload: result }),
   reducer: (state, action) => {
     if (action.type !== 'server_return') return combinedFieldReducer(state, action);
     // Take server result and set it to the state
-    return {...state, ...action.payload.metadata}
+    return {...state, ...action.payload}
   }
 };
 
 const List = {
   set: (results) => {
-    const action = {type:'server_return', payload: results.hits };
+    console.log('setting state')
+    const action = {type:'server_return', payload: results };
     return action
   },
   append: (results) => {
-    const action = {type:'server_return', payload: { hits: results } };
+    const action = {type:'server_return', payload: results };
     return action
   },
   reducer: (state, action) => {
     if (state == null) state = {kus:[]}
     if (action.type !== 'server_return') return state;
-    const results = {kus: state.kus.concat(action.payload.hits)};
+    const results = {kus: state.kus.concat(action.payload)};
     return results
   }
 }

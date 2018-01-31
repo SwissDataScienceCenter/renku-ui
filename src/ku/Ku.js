@@ -23,28 +23,24 @@
  *  Module for ku features.
  */
 
-import React, { Component } from 'react';
+import React, {Component} from 'react';
 
-import { Provider, connect } from 'react-redux'
+import {Provider, connect} from 'react-redux'
 
-import { Link }  from 'react-router-dom'
+import {Link} from 'react-router-dom'
 
-import { Row, Col } from 'reactstrap';
-import { Button, FormGroup, Input, Label } from 'reactstrap'
-import { Container, Jumbotron } from 'reactstrap'
-import { Table } from 'reactstrap'
+import {Row, Col} from 'reactstrap';
+import {Button, FormGroup, Input, Label} from 'reactstrap'
+import {Container, Jumbotron} from 'reactstrap'
+import {Table} from 'reactstrap'
 
-import { createStore } from '../UIState'
+import {createStore} from '../UIState'
 import State from './Ku.state'
-import { Avatar, TimeCaption, FieldGroup } from '../UIComponents'
+import {Avatar, TimeCaption, FieldGroup} from '../UIComponents'
+import {client, getActiveProjectId} from '../App'
 
-function displayMetadataValue(metadata, field, defaultValue) {
-  let value = metadata[field];
-  if (value == null) value = defaultValue;
-  return value;
-}
 
-class DataVisibility extends Component {
+class KuVisibility extends Component {
   render() {
     return <FormGroup>
       <Label>Visibility</Label>
@@ -56,38 +52,22 @@ class DataVisibility extends Component {
   }
 }
 
-class DatasetReferenceSpecification extends Component {
 
-  render() {
-    return [
-      <FieldGroup key="dataset" id="dataset" type="text" label="Dataset"
-        placeholder="The dataset for the ku" value={this.props.dataset} onChange={(v) => this.props.onChange(v)} />,
-    ]
-  }
-}
-
-class DataRegistration extends Component {
-  render() {
-    let dataset = (this.props.value.refs.length > 0) ? this.props.value.refs[0].id : ''
-    return <DatasetReferenceSpecification value={dataset} onChange={this.props.onChange} />;
-  }
-}
-
-class NewDataSet extends Component {
+class NewKu extends Component {
 
   render() {
     const titleHelp = this.props.core.displayId.length > 0 ? `Id: ${this.props.core.displayId}` : null;
     return <form action="" method="post" encType="multipart/form-data" id="js-upload-form">
-      <FieldGroup id="title" type="text" label="Title" placeholder="A brief name to identify the ku" help={titleHelp}
-        value={this.props.core.title} onChange={this.props.onTitleChange} />
+      <FieldGroup id="title" type="text" label="Title" placeholder="A brief name to identify the ku"
+        help={titleHelp}
+        value={this.props.core.title} onChange={this.props.onTitleChange}/>
       <FieldGroup id="description" type="textarea" label="Description" placeholder="A description of the ku"
         help="A description of the ku helps users understand it and is highly recommended."
-        value={this.props.core.description} onChange={this.props.onDescriptionChange} />
-      <DataVisibility value={this.props.visibility} onChange={this.props.onVisibilityChange} />
-      <DataRegistration value={this.props.datasets} onChange={this.props.onDatasetsChange} />
-      <br />
+        value={this.props.core.description} onChange={this.props.onDescriptionChange}/>
+      <KuVisibility value={this.props.visibility} onChange={this.props.onVisibilityChange}/>
+      <br/>
       <Button color="primary" onClick={this.props.onSubmit}>
-        Create
+                Create
       </Button>
     </form>
   }
@@ -98,59 +78,61 @@ class New extends Component {
     super(props);
     this.store = createStore(State.New.reducer);
     this.onSubmit = this.handleSubmit.bind(this);
+    this.projectId = getActiveProjectId(this.props.location.pathname);
   }
 
   submitData() {
-    return this.store.getState();
+    const state = this.store.getState();
+    let body = {}
+    body.confidential = state.visibility.level === 'Restricted';
+    body.title = state.core.title;
+    body.description = state.core.description;
+    return [this.projectId, body]
   }
 
   handleSubmit() {
-    const body = JSON.stringify(this.submitData());
-    const headers = new Headers();
-    headers.append('Accept', 'application/json');
-    headers.append('Content-Type', 'application/json');
-    console.log({ headers, body});
-    fetch('api/kus/', {method: 'POST', headers: headers, body: body})
-      .then( (response) => {
-        if (response.ok) {
-          response.json().then( newDataset => {
-            this.store.dispatch(State.List.append([newDataset]))
-          });
-          this.props.history.push({pathname: '/kus/'});
-        }
+    client.postProjectKu(...this.submitData())
+      .then(newKu => {
+        this.store.dispatch(State.List.append([newKu]));
+        this.props.history.push({pathname: `/projects/${this.projectId}/kus/`});
       });
   }
 
-  mapStateToProps(state, ownProps) { return state  }
+  mapStateToProps(state, ownProps) {
+    return state
+  }
 
   mapDispatchToProps(dispatch, ownProps) {
     return {
-      onTitleChange: (e) => { dispatch(State.New.Core.set('title', e.target.value)) },
-      onDescriptionChange: (e) => { dispatch(State.New.Core.set('description', e.target.value)) },
-      onVisibilityChange: (e) => { dispatch(State.New.Visibility.set(e.target.value)) },
-      onDatasetsChange: (e) => { dispatch(State.New.Datasets.set(e.target.value)) }
+      onTitleChange: (e) => {
+        dispatch(State.New.Core.set('title', e.target.value))
+      },
+      onDescriptionChange: (e) => {
+        dispatch(State.New.Core.set('description', e.target.value))
+      },
+      onVisibilityChange: (e) => {
+        dispatch(State.New.Visibility.set(e.target.value))
+      }
     }
   }
 
   render() {
-    const VisibleNewDataSet = connect(this.mapStateToProps, this.mapDispatchToProps)(NewDataSet);
+    const VisibleNewKu = connect(this.mapStateToProps, this.mapDispatchToProps)(NewKu);
     return [
       <Row key="header"><Col md={8}><h1>New Ku</h1></Col></Row>,
       <Provider key="new" store={this.store}>
-        <Row><Col md={8}><VisibleNewDataSet onSubmit={this.onSubmit} /></Col></Row>
+        <Row><Col md={8}><VisibleNewKu onSubmit={this.onSubmit}/></Col></Row>
       </Provider>
     ]
   }
 }
 
-class DataSetViewHeader extends Component {
-  displayMetadataValue(field, defaultValue) {
-    return displayMetadataValue(this.props.core, field, defaultValue)
-  }
+
+class KuViewHeader extends Component {
 
   render() {
-    const title = this.displayMetadataValue('title', 'no title');
-    const description = this.displayMetadataValue('description', 'no description');
+    const title = this.props.title || 'no title';
+    const description = this.props.description || 'no description';
     return (
       <Jumbotron key="header" fluid>
         <Container fluid>
@@ -162,11 +144,11 @@ class DataSetViewHeader extends Component {
   }
 }
 
-class DataSetViewDetails extends Component {
+
+class KuViewDetails extends Component {
 
   render() {
-    const visibilityLevel = this.props.visibility.level;
-    const dataset = (this.props.datasets.refs.length > 0) ? this.props.datasets.refs[0].id : ''
+    const visibilityLevel = this.props.confidential ? 'restricted' : 'public';
     return (
       <Table key="metadata" size="sm">
         <tbody>
@@ -174,21 +156,16 @@ class DataSetViewDetails extends Component {
             <th scope="row">Visibility</th>
             <td>{visibilityLevel}</td>
           </tr>
-          <tr>
-            <th scope="row">Dataset</th>
-            <td><Link to={`/dataset/${dataset}`}>{dataset}</Link></td>
-          </tr>
         </tbody>
       </Table>)
   }
 }
 
-class DataSetView extends Component {
-
+class KuView extends Component {
   render() {
     return [
-      <DataSetViewHeader key="header" {...this.props} />,
-      <DataSetViewDetails key="details" {...this.props} />
+      <KuViewHeader key="header" {...this.props} />,
+      <KuViewDetails key="details" {...this.props} />
     ]
   }
 }
@@ -197,58 +174,51 @@ class View extends Component {
   constructor(props) {
     super(props);
     this.store = createStore(State.View.reducer);
-    this.store.dispatch(this.retrieveDataset());
+    this.store.dispatch(this.retrieveKu());
   }
 
-  fetchDataset() {
-    const headers = new Headers();
-    headers.append('Accept', 'application/json');
-    return fetch(`/api/kus/${this.props.id}`, {headers});
-  }
-
-  retrieveDataset() {
+  retrieveKu() {
     return (dispatch) => {
-      return this.fetchDataset().then(
-        results => results.json().then(d => {
-          dispatch(State.View.setAll(d))
-        })
-      )
+      return client.getProjectKu(this.props.projectId, this.props.kuIid).then(d => {
+        dispatch(State.View.setAll(d))
+      })
     }
   }
 
-  mapStateToProps(state, ownProps) { return state  }
+  mapStateToProps(state, ownProps) {
+    return state
+  }
 
   mapDispatchToProps(dispatch, ownProps) {
-    return {
-    }
+    return {}
   }
 
   render() {
-    const VisibleDataSetView = connect(this.mapStateToProps, this.mapDispatchToProps)(DataSetView);
+    console.log(this.props);
+    const VisibleKuView = connect(this.mapStateToProps, this.mapDispatchToProps)(KuView);
     return (
       <Provider key="new" store={this.store}>
-        <VisibleDataSetView />
+        <VisibleKuView datasetId={this.props.datasetId}/>
       </Provider>)
   }
 }
 
 class KuListRow extends Component {
-  displayMetadataValue(field, defaultValue) {
-    return displayMetadataValue(this.props.metadata.core, field, defaultValue)
-  }
 
   render() {
-    const kuId = this.props.id;
-    const title = <Link to={`/ku/${kuId}`}>{this.displayMetadataValue('title', 'no title')}</Link>
-    const description = this.displayMetadataValue('description', 'no description');
-    const time = this.props.updated;
+    const kuIid = this.props.iid;
+    const title = <Link
+      to={`/projects/${this.props.projectId}/kus/${kuIid}`}> {this.props.title || 'no title'}
+    </Link>;
+    const description = this.props.description || 'no description';
+    const time = this.props.updated_at;
 
     return (
       <Row className="ku-list-row">
-        <Col md={1}><Avatar  /></Col>
+        <Col md={1}><Avatar/></Col>
         <Col md={9}>
           <p><b>{title}</b></p>
-          <p>{description} <TimeCaption caption="Updated" time={time} /> </p>
+          <p>{description} <TimeCaption caption="Updated" time={time}/></p>
         </Col>
       </Row>
     );
@@ -258,7 +228,7 @@ class KuListRow extends Component {
 class KuList extends Component {
   render() {
     const kus = this.props.kus;
-    const rows = kus.map((d, i) => <KuListRow key={i} {...d} />);
+    const rows = kus.map((d, i) => <KuListRow key={i} {...d} projectId={this.props.projectId}/>);
     return [
       <Row key="header"><Col md={8}><h1>Kus</h1></Col></Row>,
       <Row key="spacer"><Col md={8}>&nbsp;</Col></Row>,
@@ -275,35 +245,30 @@ class List extends Component {
     this.store.dispatch(this.listKus());
   }
 
-  fetchKus() {
-    const headers = new Headers();
-    headers.append('Accept', 'application/json');
-    return fetch('/api/kus/', {headers});
-  }
 
   listKus() {
     return (dispatch) => {
-      return this.fetchKus().then(
-        results => results.json().then(d => dispatch(State.List.set(d)))
-      )
+      return client.getProjectKus(this.props.projectId)
+        .then(d => dispatch(State.List.set(d)))
     }
   }
 
-  mapStateToProps(state, ownProps) { return state  }
+  mapStateToProps(state, ownProps) {
+    return state
+  }
 
   mapDispatchToProps(dispatch, ownProps) {
-    return {
-    }
+    return {}
   }
 
   render() {
     const VisibleKuList = connect(this.mapStateToProps, this.mapDispatchToProps)(KuList);
     return [
       <Provider key="new" store={this.store}>
-        <VisibleKuList />
+        <VisibleKuList projectId={this.props.projectId}/>
       </Provider>
     ]
   }
 }
 
-export default { New, View, List };
+export default {New, View, List};

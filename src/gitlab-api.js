@@ -1,4 +1,13 @@
 export default class GitlabClient {
+
+  // GitLab api client for Renga. Note that we do some
+  // renaming of GitLab resources within this client:
+  //
+  // Renga      GitLab
+  // -----------------
+  // ku    -->  issue
+
+
   constructor(baseUrl, privateToken) {
     console.log('called constructor on api client');
     this._baseUrl = baseUrl;
@@ -58,7 +67,7 @@ export default class GitlabClient {
       .then(text => ({text}))
   }
 
-  getProjectIssues(projectId) {
+  getProjectKus(projectId) {
     let headers = this.getBasicHeaders();
 
     return fetch(this._baseUrl + `projects/${projectId}/issues`, {
@@ -68,16 +77,28 @@ export default class GitlabClient {
       .then(response => response.json())
   }
 
-  postProjectIssue(projectId, issue) {
-    console.log(issue);
+  postProjectKu(projectId, ku) {
+    console.log(ku);
     let headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
     return fetch(this._baseUrl + `projects/${projectId}/issues`, {
       method: 'POST',
       headers: headers,
-      body: JSON.stringify(issue)
+      body: JSON.stringify(ku)
     })
       .then(response => response.json())
   }
+
+  getProjectKu(projectId, kuIid) {
+    let headers = this.getBasicHeaders();
+    headers.append('Content-Type', 'application/json');
+
+    return fetch(this._baseUrl + `projects/${projectId}/issues/${kuIid}/`, {
+      method: 'GET',
+      headers: headers,
+    })
+      .then(response => response.json())
+  }
+
 }

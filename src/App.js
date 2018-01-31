@@ -28,7 +28,7 @@ import React, { Component } from 'react';
 import './App.css';
 import logo from './logo.svg';
 
-import { BrowserRouter as Router, Route, Switch, Link, NavLink as RRNavLink }  from 'react-router-dom'
+import { BrowserRouter as Router, Route, Switch, Link, NavLink as RRNavLink, Redirect }  from 'react-router-dom'
 import { NavLink } from 'reactstrap';
 // import { IndexLinkContainer } from 'react-router-bootstrap';
 // import { FormGroup, FormControl, InputGroup } from 'react-bootstrap'
@@ -43,13 +43,21 @@ import GitlabClient from './gitlab-api'
 
 // Instanciate a gitlab client. For the time being, inject a secret-token
 // through an environment variable.
-export const client = new GitlabClient('/api/v4/', process.env.REACT_APP_GITLAB_SECRET_TOKEN);
+const client = new GitlabClient('/api/v4/', process.env.REACT_APP_GITLAB_SECRET_TOKEN);
 
 class RengaNavItem extends Component {
   render() {
     const to = this.props.to;
     const title = this.props.title;
     return <NavLink exact to={to} tag={RRNavLink}>{title}</NavLink>
+  }
+}
+
+function getActiveProjectId(currentPath) {
+  try {
+    return currentPath.match(/\/projects\/(\d+)/)[0].replace('/projects/', '')
+  } catch(TypeError) {
+    return null
   }
 }
 
@@ -82,6 +90,12 @@ class RengaNavBar extends Component {
     if (null != nextRoute) this.props.history.push(nextRoute);
   }
   render() {
+
+    // Display the Ku related header options only if a project is active.
+    const activeProjectId = getActiveProjectId(this.props.location.pathname);
+    const kuNavelement = activeProjectId ? <RengaNavItem to={`/projects/${activeProjectId}/kus`} title="Kus" /> : null;
+    const kuDropdown = activeProjectId ? <a className="dropdown-item" href="ku_new">Ku</a> : null;
+
     return (
       <header>
         <nav className="navbar navbar-expand-sm navbar-light bg-light justify-content-between">
@@ -105,8 +119,8 @@ class RengaNavBar extends Component {
 
             <ul className="navbar-nav mr-auto">
               <RengaNavItem to="/" title="Home" />
-              <RengaNavItem to="/projects" title="Projects" />
-              <RengaNavItem to="/kus" title="Kus" />
+              <RengaNavItem to="/projects" title="Projects"/>
+              {kuNavelement}
             </ul>
             <ul className="navbar-nav">
               <li className="nav-item dropdown">
@@ -116,7 +130,7 @@ class RengaNavBar extends Component {
                 </a>
                 <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                   <a className="dropdown-item" href="/project_new">Project</a>
-                  <a className="dropdown-item" href="/ku_new">Ku</a>
+                  {kuDropdown}
                 </div>
               </li>
               <RengaNavItem to="/user" title={<FontAwesome name="user-circle" />} />
@@ -166,18 +180,23 @@ class App extends Component {
           <main role="main" className="container-fluid">
             <div key="gap">&nbsp;</div>
             <Switch>
+
+              {/* Route forces trailing slashes on routes ending with a numerical id */}
+              <Route exact strict path="/*(\d+)" render={props => <Redirect to={`${props.location.pathname}/`}/>}/>
+
               <Route exact path="/"
                 render={p => <Landing key="landing" {...p} />} />
               <Route exact path="/projects"
                 render={p => <Project.List key="projects" {...p} />} />
-              <Route path="/projects/:id"
+              <Route exact path="/projects/:id(\d+)"
                 render={p => <Project.View key="project" id={p.match.params.id} {...p} />} />
               <Route exact path="/project_new" component={Project.New} />
-              <Route exact path="/kus"
-                render={p => <Ku.List key="kus" {...p} />} />
-              <Route path="/ku/:id"
-                render={p => <Ku.View key="ku" id={p.match.params.id} {...p} />} />
-              <Route exact path="/ku_new" component={Ku.New} />
+              <Route exact path="/projects/:projectId(\d+)/kus"
+                render={p => <Ku.List key="kus" projectId={p.match.params.projectId} {...p} />} />
+              <Route path="/projects/:projectId(\d+)/kus/:kuIid(\d+)"
+                render={p => <Ku.View key="ku" projectId={p.match.params.projectId}
+                  kuIid={p.match.params.kuIid} {...p} /> } />
+              <Route exact path="/projects/:projectId(\d+)/ku_new" component={Ku.New}/>
             </Switch>
           </main>
           <Route component={RengaFooter} />
@@ -188,3 +207,4 @@ class App extends Component {
 }
 
 export default App;
+export { client, getActiveProjectId };
