@@ -19,7 +19,7 @@
 /**
  *  incubator-renga-ui
  *
- *  DatasetState.js
+ *  Project.state.js
  *  Redux-based state-management code.
  */
 
@@ -84,12 +84,21 @@ const DataUpload = {
   }
 }
 
+const Readme = {
+  set: (field, value) => {
+    return createSetAction('readme', field, value)
+  },
+  reduce: (state, action) => {
+    return reduceState('readme', state, action, {text: ''})
+  }
+}
+
 const Data = {
   set: (subtype, field, value) => {
     if ('reference' === subtype) return DataReference.set(field, value);
     if ('upload' === subtype) return DataUpload.set(field, value);
   },
-  reduce: combineReducers({reference: DataReference.reduce, upload: DataUpload.reduce})
+  reduce: combineReducers({reference: DataReference.reduce, upload: DataUpload.reduce, readme: Readme.reduce})
 }
 
 const combinedFieldReducer = combineReducers({core: Core.reduce, visibility: Visibility.reduce, data: Data.reduce});
@@ -99,16 +108,51 @@ const New = { Core, Visibility, Data,
 };
 
 const View = { Core, Visibility, Data,
-  setAll: (result) => ({type:'server_return', payload: result }),
+  fetchMetadata: (client, id) => {
+    const entity = 'metadata';
+    return (dispatch) => {
+      dispatch(View.request(entity));
+      client.getProject(id).then(d => dispatch(View.receive(d, entity)))
+    }
+  },
+  fetchReadme: (client, id) => {
+    const entity = 'readme';
+    return (dispatch) => {
+      dispatch(View.request(entity));
+      client.getProjectReadme(id).then(d => dispatch(View.receive(d, entity)))
+    }
+  },
+  request: (entity) => {
+    const action = {type:'server_request', entity};
+    return action
+  },
+  receive: (result, entity) => ({type:'server_return', entity, payload: result }),
   reducer: (state, action) => {
     if (action.type !== 'server_return') return combinedFieldReducer(state, action);
     // Take server result and set it to the state
-    return {...state, ...action.payload.metadata}
+    if (action.entity === 'metadata') return {...state, ...action.payload.metadata}
+    if (action.entity === 'readme') {
+      const newState = {...state};
+      newState.data.readme.text = action.payload.text;
+      return newState
+    }
+    console.log('Unknown action', action.payload);
+    return state
   }
 };
 
 const List = {
-  set: (results) => {
+  fetch: (client) => {
+    return (dispatch) => {
+      dispatch(List.request());
+      client.getProjects().then(d => dispatch(List.receive(d)))
+    }
+  },
+  request: () => {
+    const action = {type:'server_request' };
+    return action
+  },
+  receive: (results) => {
     const action = {type:'server_return', payload: results };
     return action
   },
@@ -117,9 +161,9 @@ const List = {
     return action
   },
   reducer: (state, action) => {
-    if (state == null) state = {datasets:[]}
+    if (state == null) state = {projects:[]}
     if (action.type !== 'server_return') return state;
-    const results = {datasets: state.datasets.concat(action.payload)};
+    const results = {projects: state.projects.concat(action.payload)};
     return results
   }
 }

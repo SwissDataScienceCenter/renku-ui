@@ -37,7 +37,7 @@ import FontAwesome from 'react-fontawesome'
 
 // import About from './About'
 // import Landing from './Landing'
-import Dataset from './dataset/Dataset'
+import Project from './project/Project'
 import Ku from './ku/Ku'
 import GitlabClient from './gitlab-api'
 
@@ -73,8 +73,8 @@ class RengaNavBar extends Component {
   handleSelect(eventKey, event) {
     let nextRoute = null;
     switch(eventKey) {
-    case 'new.dataset':
-      nextRoute = '/dataset';
+    case 'new.projects':
+      nextRoute = '/projects';
       break;
     default:
       break;
@@ -105,8 +105,8 @@ class RengaNavBar extends Component {
 
             <ul className="navbar-nav mr-auto">
               <RengaNavItem to="/" title="Home" />
+              <RengaNavItem to="/projects" title="Projects" />
               <RengaNavItem to="/kus" title="Kus" />
-              <RengaNavItem to="/datasets" title="Datasets" />
             </ul>
             <ul className="navbar-nav">
               <li className="nav-item dropdown">
@@ -115,7 +115,7 @@ class RengaNavBar extends Component {
                   <FontAwesome name="plus" />
                 </a>
                 <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                  <a className="dropdown-item" href="/dataset_new">Dataset</a>
+                  <a className="dropdown-item" href="/project_new">Project</a>
                   <a className="dropdown-item" href="/ku_new">Ku</a>
                 </div>
               </li>
@@ -146,12 +146,12 @@ class Landing extends Component {
         <p className="lead">Welcome to the prototype UI for Renga</p>
         <p>This is a work in progress, but once you have the metadata server running, you can try out the following:</p>
         <ul>
-          <li><Link to="/dataset_new">Create a new dataset (only URL/DOI references supported at the moment)</Link></li>
-          <li><Link to="/datasets">List datasets</Link></li>
-          <li><Link to="/ku_new">Create a new ku (can only reference at most one dataset at the moment)</Link></li>
+          <li><Link to="/project_new">Create a new project</Link></li>
+          <li><Link to="/projects">List projects</Link></li>
+          <li><Link to="/ku_new">Create a new ku (can only reference at most one project at the moment)</Link></li>
           <li><Link to="/kus">List kus</Link></li>
         </ul>
-        And once you have created a dataset, you can view it from the list page.
+        And once you have created a project, you can view it from the list page.
         Naturally, these actions are available from the top menu bar as well.
       </div>)
   }
@@ -168,11 +168,11 @@ class App extends Component {
             <Switch>
               <Route exact path="/"
                 render={p => <Landing key="landing" {...p} />} />
-              <Route exact path="/datasets"
-                render={p => <Dataset.List key="datasets" {...p} />} />
-              <Route path="/dataset/:id"
-                render={p => <Dataset.View key="dataset" id={p.match.params.id} {...p} />} />
-              <Route exact path="/dataset_new" component={Dataset.New} />
+              <Route exact path="/projects"
+                render={p => <Project.List key="projects" {...p} />} />
+              <Route path="/projects/:id"
+                render={p => <Project.View key="project" id={p.match.params.id} {...p} />} />
+              <Route exact path="/project_new" component={Project.New} />
               <Route exact path="/kus"
                 render={p => <Ku.List key="kus" {...p} />} />
               <Route path="/ku/:id"
