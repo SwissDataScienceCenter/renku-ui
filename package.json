@@ -29,7 +29,7 @@
   },
   "proxy": {
     "/api": {
-      "target": "http://localhost",
+      "target": "http://dev.gitlab",
       "pathRewrite": {
         "^/api(.*)": "api/$1"
       }

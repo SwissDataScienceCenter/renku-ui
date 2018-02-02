@@ -86,3 +86,6 @@ virtualenv
 
 # Jet Brains IDE specifics
 .idea
+
+# All traces of the GitLab server running locally
+/gitlab
