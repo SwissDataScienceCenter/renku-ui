@@ -115,7 +115,10 @@ class ProjectViewReadme extends Component {
 
   render() {
     const readmeText = this.props.readmeText;
-    return (<ReactMarkdown source={readmeText} />)
+    return [
+      <hr key="break" />,
+      <ReactMarkdown key="readme" source={readmeText} />
+    ]
   }
 }
 
@@ -123,9 +126,9 @@ class ProjectView extends Component {
 
   render() {
     return [
-      <ProjectViewHeader key="header" {...this.props} />,
-      <ProjectViewDetails key="details" {...this.props} />,
-      <ProjectViewReadme key="readme" {...this.props} />
+      <Row key="header"><Col md={12}><ProjectViewHeader key="header" {...this.props} /></Col></Row>,
+      <Row key="header"><Col md={12}><ProjectViewDetails key="details" {...this.props} /></Col></Row>,
+      <Row key="header"><Col md={12}><ProjectViewReadme key="readme" {...this.props} /></Col></Row>
     ]
   }
 }
