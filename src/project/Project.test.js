@@ -26,113 +26,32 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { MemoryRouter } from 'react-router-dom';
-import fetchMock from 'fetch-mock';
 
 import Project from './Project';
 import State, { displayIdFromTitle } from  './Project.state';
+import client from '../gitlab/test-client'
 
-const mockDatasetListResponse = {
-    "aggregations": {},
-    "hits": {
-        "hits": [
-            {
-                "created": "2018-01-09T17:24:48.370008+00:00",
-                "id": 1,
-                "links": {
-                    "self": "http://localhost:3000/datasets/1"
-                },
-                "metadata": {
-                    "control_number": "1",
-                    "core": {
-                        "description": "just for testing",
-                        "displayId": "a-test-dataset",
-                        "title": "A test dataset"
-                    },
-                    "data": {
-                        "reference": {
-                            "author": "me",
-                            "url_or_doi": "www.testing.com"
-                        },
-                        "upload": {
-                            "files": []
-                        }
-                    },
-                    "visibility": {
-                        "level": "public"
-                    }
-                },
-                "updated": "2018-01-09T17:24:48.370019+00:00"
-            }
-        ],
-        "total": 1
-    },
-    "links": {
-        "self": "http://localhost:3000/datasets/?page=1&size=10"
-    }
-};
-
-const mockDatasetDetailResponse = {
-    "created": "2018-01-09T17:24:48.370008+00:00",
-    "id": 1,
-    "links": {
-        "self": "http://localhost:3000/datasets/1"
-    },
-    "metadata": {
-        "control_number": "1",
-        "core": {
-            "description": "just for testing",
-            "displayId": "a-test-project",
-            "title": "A test project"
-        },
-        "data": {
-            "reference": {
-                "author": "me",
-                "url_or_doi": "www.testing.com"
-            },
-            "upload": {
-                "files": []
-            }
-        },
-        "visibility": {
-            "level": "public"
-        }
-    },
-    "updated": "2018-01-09T17:24:48.370019+00:00"
-};
-
-
-
-fetchMock.get('/api/datasets/', () => {
-    return mockDatasetListResponse
-});
-
-fetchMock.get('/api/datasets/1', () => {
-    return mockDatasetDetailResponse
-});
-
-
-// TODO Update to mock the gitlab api
 describe('rendering', () => {
   it('renders new without crashing', () => {
     const div = document.createElement('div');
     ReactDOM.render(<Project.New />, div);
   });
-//   it('renders list without crashing', () => {
-//     const div = document.createElement('div');
-//     ReactDOM.render(
-//         <MemoryRouter>
-//             <Project.List />
-//         </MemoryRouter>
-//         , div);
-//   });
-//   it('renders view without crashing', () => {
-//     const div = document.createElement('div');
-//     ReactDOM.render(
-//         <MemoryRouter>
-//           <Project.View id="1" />
-//         </MemoryRouter>
-//         , div);
-//   });
+  it('renders list without crashing', () => {
+    const div = document.createElement('div');
+    ReactDOM.render(
+      <MemoryRouter>
+        <Project.List client={client}/>
+      </MemoryRouter>
+      , div);
+  });
+  it('renders view without crashing', () => {
+    const div = document.createElement('div');
+    ReactDOM.render(
+      <MemoryRouter>
+        <Project.View id="1" client={client} />
+      </MemoryRouter>
+      , div);
+  });
 });
 
 describe('helpers', () => {
@@ -160,6 +79,9 @@ describe('new project reducer', () => {
       core: {title: "", description: "", displayId: ""},
       visibility: {level: "public"},
       data: {
+        readme: {
+          text: ""
+        },
         reference: {url_or_doi:"", author: ""},
         upload: {files: []}
       }
@@ -172,6 +94,9 @@ describe('new project reducer', () => {
       core: {title: "new title", description: "", displayId: "new-title"},
       visibility: {level: "public"},
       data: {
+        readme: {
+          text: ""
+        },
         reference: {url_or_doi:"", author: ""},
         upload: {files: []}
       }
@@ -182,6 +107,9 @@ describe('new project reducer', () => {
       core: {title: "new title", description: "", displayId: "new-title"},
       visibility: {level: "private"},
       data: {
+        readme: {
+          text: ""
+        },
         reference: {url_or_doi:"", author: ""},
         upload: {files: []}
       }
@@ -192,6 +120,9 @@ describe('new project reducer', () => {
       core: {title: "new title", description: "", displayId: "new-title"},
       visibility: {level: "private"},
       data: {
+        readme: {
+          text: ""
+        },
         reference: {url_or_doi:"http://foo.bar/data.csv", author: ""},
         upload: {files: []}
       }
@@ -234,18 +165,32 @@ describe('project view reducer', () => {
       core: {title: "", description: "", displayId: ""},
       visibility: {level: "public"},
       data: {
+        readme: {
+          text: ""
+        },
         reference: {url_or_doi:"", author: ""},
         upload: {files: []}
       }
     });
   });
   it('advances state', () => {
-    const state1 = State.View.reducer(initialState, State.View.receive({metadata:{core:{title: "A Title", description: "A desc", displayId: "a-title"}}}));
-    expect(state1)
+    const action = State.View.receive({
+      metadata: {
+        core: {
+          title: "A Title",
+          description: "A desc",
+          displayId: "a-title"
+        }
+      }
+    }, 'metadata');
+    expect(State.View.reducer(initialState, action))
     .toEqual({
       core: {title: "A Title", description: "A desc", displayId: "a-title"},
       visibility: {level: "public"},
       data: {
+        readme: {
+          text: ""
+        },
         reference: {url_or_doi:"", author: ""},
         upload: {files: []}
       }

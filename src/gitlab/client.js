@@ -31,20 +31,6 @@ export default class GitlabClient {
       .then(response => response.json())
   }
 
-  carveProject(projectJson) {
-    const result = {metadata: {core: {}, visibility: {}}, all: projectJson};
-    result['metadata']['visibility']['level'] = projectJson['visibility'];
-
-    result['metadata']['core']['created_at'] = projectJson['created_at'];
-    result['metadata']['core']['id'] = projectJson['id'];
-    result['metadata']['core']['description'] = projectJson['description'];
-    result['metadata']['core']['displayId'] = projectJson['path_with_namespace'];
-    result['metadata']['core']['title'] = projectJson['name'];
-    result['metadata']['core']['external_url'] = projectJson['web_url'];
-
-    return result;
-  }
-
   getProject(projectId) {
     let headers = this.getBasicHeaders();
 
@@ -53,7 +39,7 @@ export default class GitlabClient {
       headers: headers
     })
       .then(response => response.json())
-      .then(d => this.carveProject(d))
+      .then(d => carveProject(d))
   }
 
   getProjectReadme(projectId) {
@@ -102,3 +88,20 @@ export default class GitlabClient {
   }
 
 }
+
+
+function carveProject(projectJson) {
+  const result = {metadata: {core: {}, visibility: {}}, all: projectJson};
+  result['metadata']['visibility']['level'] = projectJson['visibility'];
+
+  result['metadata']['core']['created_at'] = projectJson['created_at'];
+  result['metadata']['core']['id'] = projectJson['id'];
+  result['metadata']['core']['description'] = projectJson['description'];
+  result['metadata']['core']['displayId'] = projectJson['path_with_namespace'];
+  result['metadata']['core']['title'] = projectJson['name'];
+  result['metadata']['core']['external_url'] = projectJson['web_url'];
+
+  return result;
+}
+
+export { carveProject };

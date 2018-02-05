@@ -39,11 +39,6 @@ import FontAwesome from 'react-fontawesome'
 // import Landing from './Landing'
 import Project from './project/Project'
 import Ku from './ku/Ku'
-import GitlabClient from './gitlab-api'
-
-// Instanciate a gitlab client. For the time being, inject a secret-token
-// through an environment variable.
-const client = new GitlabClient('/api/v4/', process.env.REACT_APP_GITLAB_SECRET_TOKEN);
 
 class RengaNavItem extends Component {
   render() {
@@ -187,16 +182,18 @@ class App extends Component {
               <Route exact path="/"
                 render={p => <Landing key="landing" {...p} />} />
               <Route exact path="/projects"
-                render={p => <Project.List key="projects" {...p} />} />
+                render={p => <Project.List key="projects" {...p} client={this.props.client} />} />
               <Route exact path="/projects/:id(\d+)"
-                render={p => <Project.View key="project" id={p.match.params.id} {...p} />} />
-              <Route exact path="/project_new" component={Project.New} />
+                render={p => <Project.View key="project" id={p.match.params.id} {...p} client={this.props.client}/>} />
+              <Route exact path="/project_new" component={Project.New} client={this.props.client} />
               <Route exact path="/projects/:projectId(\d+)/kus"
-                render={p => <Ku.List key="kus" projectId={p.match.params.projectId} {...p} />} />
+                render={p => <Ku.List key="kus" projectId={p.match.params.projectId} {...p}
+                  client={this.props.client} />} />
               <Route path="/projects/:projectId(\d+)/kus/:kuIid(\d+)"
                 render={p => <Ku.View key="ku" projectId={p.match.params.projectId}
-                  kuIid={p.match.params.kuIid} {...p} /> } />
-              <Route exact path="/projects/:projectId(\d+)/ku_new" component={Ku.New}/>
+                  kuIid={p.match.params.kuIid} {...p} client={this.props.client}/> } />
+              <Route exact path="/projects/:projectId(\d+)/ku_new"
+                render={(p) => <Ku.New key="ku_new" client={this.props.client} {...p}/>}/>
             </Switch>
           </main>
           <Route component={RengaFooter} />
@@ -207,4 +204,4 @@ class App extends Component {
 }
 
 export default App;
-export { client, getActiveProjectId };
+export { getActiveProjectId };

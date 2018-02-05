@@ -26,104 +26,31 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { MemoryRouter } from 'react-router-dom';
-import fetchMock from 'fetch-mock';
 
-import Ku from './Ku';
-import State, { displayIdFromTitle } from  './Ku.state';
-
-const mockKuListResponse = {
-    "aggregations": {},
-    "hits": {
-        "hits": [
-            {
-                "created": "2018-01-09T21:21:01.648602+00:00",
-                "id": 1,
-                "links": {
-                    "self": "http://localhost:3000/kus/1"
-                },
-                "metadata": {
-                    "control_number": "1",
-                    "core": {
-                        "description": "For testing purposes",
-                        "displayId": "my-first-ku",
-                        "title": "My first ku"
-                    },
-                    "datasets": {
-                        "refs": [
-                            {
-                                "id": "my cool dataset"
-                            }
-                        ]
-                    },
-                    "visibility": {
-                        "level": "public"
-                    }
-                },
-                "updated": "2018-01-09T21:21:01.648614+00:00"
-            }
-        ],
-        "total": 1
-    },
-    "links": {
-        "self": "http://localhost:3000/kus/?page=1&size=10"
-    }
-};
-
-const mockKuDetailResponse = {
-    "created": "2018-01-09T21:21:01.648602+00:00",
-    "id": 1,
-    "links": {
-        "self": "http://localhost:3000/kus/1"
-    },
-    "metadata": {
-        "control_number": "1",
-        "core": {
-            "description": "For testing purposes",
-            "displayId": "my-first-ku",
-            "title": "My first ku"
-        },
-        "datasets": {
-            "refs": [
-                {
-                    "id": "my cool dataset"
-                }
-            ]
-        },
-        "visibility": {
-            "level": "public"
-        }
-    },
-    "updated": "2018-01-09T21:21:01.648614+00:00"
-};
-
-fetchMock.get('/api/kus/', () => {
-    return mockKuListResponse
-});
-
-fetchMock.get('/api/kus/1', () => {
-    return mockKuDetailResponse
-});
+import Ku from './Ku'
+import State, { displayIdFromTitle } from  './Ku.state'
+import client from '../gitlab/test-client'
 
 describe('rendering', () => {
   it('renders new without crashing', () => {
     const div = document.createElement('div');
-    ReactDOM.render(<Ku.New />, div);
+    ReactDOM.render(<Ku.New location={ {pathname: '/projects/1/ku_new'} } />, div);
   });
   it('renders list without crashing', () => {
     const div = document.createElement('div');
     ReactDOM.render(
-        <MemoryRouter>
-            <Ku.List />
-        </MemoryRouter>
-        , div);
+      <MemoryRouter>
+        <Ku.List client={client}/>
+      </MemoryRouter>
+      , div);
   });
   it('renders view without crashing', () => {
     const div = document.createElement('div');
     ReactDOM.render(
-        <MemoryRouter>
-            <Ku.View id="1" />
-        </MemoryRouter>
-        , div);
+      <MemoryRouter>
+        <Ku.View id="1" client={client} />
+      </MemoryRouter>
+      , div);
   });
 });
 
@@ -140,15 +67,6 @@ describe('new ku actions', () => {
   it('creates a visibility set action', () => {
     expect(State.New.Visibility.set('private')).toEqual({type: 'visibility', payload: {level: 'private'}});
   });
-  it('creates a dataset append action', () => {
-    expect(State.New.Datasets.append(1)).toEqual({type: 'datasets', payload: {append: {id: 1}}});
-  });
-  it('creates a dataset remove action', () => {
-    expect(State.New.Datasets.remove(1)).toEqual({type: 'datasets', payload: {remove: {id: 1}}});
-  });
-  it('creates a dataset set action', () => {
-    expect(State.New.Datasets.set(1)).toEqual({type: 'datasets', payload: {set: {id: 1}}});
-  });
 });
 
 describe('new ku reducer', () => {
@@ -156,8 +74,7 @@ describe('new ku reducer', () => {
   it('returns initial state', () => {
     expect(initialState).toEqual({
       core: {title: "", description: "", displayId: ""},
-      visibility: {level: "public"},
-      datasets: { refs: [] }
+      visibility: {level: "public"}
     });
   });
   it('advances state', () => {
@@ -165,50 +82,20 @@ describe('new ku reducer', () => {
     expect(state1)
     .toEqual({
       core: {title: "new title", description: "", displayId: "new-title"},
-      visibility: {level: "public"},
-      datasets: { refs: [] }
+      visibility: {level: "public"}
     });
     const state2 = State.New.reducer(state1, State.New.Visibility.set('private'));
     expect(state2)
     .toEqual({
       core: {title: "new title", description: "", displayId: "new-title"},
-      visibility: {level: "private"},
-      datasets: { refs: [] }
-    });
-    const state3 = State.New.reducer(state2, State.New.Datasets.append(1));
-    expect(state3)
-    .toEqual({
-      core: {title: "new title", description: "", displayId: "new-title"},
-      visibility: {level: "private"},
-      datasets: { refs: [{id: 1}] }
-    });
-    const state4 = State.New.reducer(state3, State.New.Datasets.append(2));
-    expect(state4)
-    .toEqual({
-      core: {title: "new title", description: "", displayId: "new-title"},
-      visibility: {level: "private"},
-      datasets: { refs: [{id: 1}, {id: 2}] }
-    });
-    const state5 = State.New.reducer(state4, State.New.Datasets.remove(1));
-    expect(state5)
-    .toEqual({
-      core: {title: "new title", description: "", displayId: "new-title"},
-      visibility: {level: "private"},
-      datasets: { refs: [{id: 2}] }
-    });
-    const state6 = State.New.reducer(state5, State.New.Datasets.set(8));
-    expect(state6)
-    .toEqual({
-      core: {title: "new title", description: "", displayId: "new-title"},
-      visibility: {level: "private"},
-      datasets: { refs: [{id: 8}] }
+      visibility: {level: "private"}
     });
   });
 });
 
 describe('ku list actions', () => {
   it('creates a server return action', () => {
-    expect(State.List.set({aggregations: {}, links: {}, hits: {hits: [{id: 1}], total: 1}}))
+    expect(State.List.set({hits: [{id: 1}], total: 1}))
       .toEqual({type: 'server_return', payload: {hits: [{id: 1}], total: 1}});
   });
 });
@@ -219,7 +106,7 @@ describe('ku list reducer', () => {
     expect(initialState).toEqual({kus:[]});
   });
   it('advances state', () => {
-    const state1 = State.List.reducer(initialState, State.List.set({aggregations: {}, links: {}, hits: {hits: [{id: 1}], total: 1}}));
+    const state1 = State.List.reducer(initialState, State.List.set([{id: 1}]));
     expect(state1)
     .toEqual({
       kus: [{id: 1}]
@@ -229,8 +116,8 @@ describe('ku list reducer', () => {
 
 describe('ku view actions', () => {
   it('creates a server return action', () => {
-    expect(State.View.setAll({metadata:{core:{title: "A Title", description: "A desc", displayId: "a-title"}}}))
-      .toEqual({type: 'server_return', payload:{metadata:{core:{title: "A Title", description: "A desc", displayId: "a-title"}}}});
+    expect(State.View.setAll({core:{title: "A Title", description: "A desc", displayId: "a-title"}}))
+      .toEqual({type: 'server_return', payload:{core:{title: "A Title", description: "A desc", displayId: "a-title"}}});
   });
 });
 
@@ -239,17 +126,15 @@ describe('ku view reducer', () => {
   it('returns initial state', () => {
     expect(initialState).toEqual({
       core: {title: "", description: "", displayId: ""},
-      visibility: {level: "public"},
-      datasets: { refs: [] }
+      visibility: {level: "public"}
     });
   });
   it('advances state', () => {
-    const state1 = State.View.reducer(initialState, State.View.setAll({metadata:{core:{title: "A Title", description: "A desc", displayId: "a-title"}}}));
+    const state1 = State.View.reducer(initialState, State.View.setAll({core: {title: "A Title", description: "A desc", displayId: "a-title"}}));
     expect(state1)
     .toEqual({
       core: {title: "A Title", description: "A desc", displayId: "a-title"},
-      visibility: {level: "public"},
-      datasets: { refs: [] }
+      visibility: {level: "public"}
     });
   });
 });

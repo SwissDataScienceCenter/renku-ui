@@ -37,7 +37,7 @@ import {Table} from 'reactstrap'
 import {createStore} from '../UIState'
 import State from './Ku.state'
 import {Avatar, TimeCaption, FieldGroup} from '../UIComponents'
-import {client, getActiveProjectId} from '../App'
+import { getActiveProjectId } from '../App'
 
 
 class KuVisibility extends Component {
@@ -77,7 +77,7 @@ class New extends Component {
   constructor(props) {
     super(props);
     this.store = createStore(State.New.reducer);
-    this.onSubmit = this.handleSubmit.bind(this);
+    this.onSubmit = client => this.handleSubmit.bind(this, client);
     this.projectId = getActiveProjectId(this.props.location.pathname);
   }
 
@@ -90,7 +90,8 @@ class New extends Component {
     return [this.projectId, body]
   }
 
-  handleSubmit() {
+  handleSubmit(client) {
+    console.log(this)
     client.postProjectKu(...this.submitData())
       .then(newKu => {
         this.store.dispatch(State.List.append([newKu]));
@@ -121,7 +122,7 @@ class New extends Component {
     return [
       <Row key="header"><Col md={8}><h1>New Ku</h1></Col></Row>,
       <Provider key="new" store={this.store}>
-        <Row><Col md={8}><VisibleNewKu onSubmit={this.onSubmit}/></Col></Row>
+        <Row><Col md={8}><VisibleNewKu onSubmit={this.onSubmit(this.props.client)}/></Col></Row>
       </Provider>
     ]
   }
@@ -179,7 +180,7 @@ class View extends Component {
 
   retrieveKu() {
     return (dispatch) => {
-      return client.getProjectKu(this.props.projectId, this.props.kuIid).then(d => {
+      return this.props.client.getProjectKu(this.props.projectId, this.props.kuIid).then(d => {
         dispatch(State.View.setAll(d))
       })
     }
@@ -194,7 +195,6 @@ class View extends Component {
   }
 
   render() {
-    console.log(this.props);
     const VisibleKuView = connect(this.mapStateToProps, this.mapDispatchToProps)(KuView);
     return (
       <Provider key="new" store={this.store}>
@@ -248,7 +248,7 @@ class List extends Component {
 
   listKus() {
     return (dispatch) => {
-      return client.getProjectKus(this.props.projectId)
+      return this.props.client.getProjectKus(this.props.projectId)
         .then(d => dispatch(State.List.set(d)))
     }
   }
@@ -271,4 +271,4 @@ class List extends Component {
   }
 }
 
-export default {New, View, List};
+export default { New, View, List};

@@ -32,7 +32,6 @@ import { Row, Col } from 'reactstrap';
 import { createStore } from '../UIState'
 import Present from './Project.present'
 import State from './Project.state'
-import { client } from '../App'
 
 class New extends Component {
   constructor(props) {
@@ -100,8 +99,8 @@ class View extends Component {
   }
 
   retrieveProject() {
-    this.store.dispatch(State.View.fetchMetadata(client, this.props.id));
-    this.store.dispatch(State.View.fetchReadme(client, this.props.id));
+    this.store.dispatch(State.View.fetchMetadata(this.props.client, this.props.id));
+    this.store.dispatch(State.View.fetchReadme(this.props.client, this.props.id));
   }
 
   mapStateToProps(state, ownProps) {
@@ -135,7 +134,7 @@ class List extends Component {
   }
 
   listProjects() {
-    this.store.dispatch(State.List.fetch(client));
+    this.store.dispatch(State.List.fetch(this.props.client));
   }
 
   mapStateToProps(state, ownProps) { return state  }

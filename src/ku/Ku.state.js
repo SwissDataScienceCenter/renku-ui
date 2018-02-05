@@ -86,7 +86,6 @@ const View = { Core, Visibility,
 
 const List = {
   set: (results) => {
-    console.log('setting state')
     const action = {type:'server_return', payload: results };
     return action
   },
