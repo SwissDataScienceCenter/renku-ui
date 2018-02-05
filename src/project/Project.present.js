@@ -127,8 +127,8 @@ class ProjectView extends Component {
   render() {
     return [
       <Row key="header"><Col md={12}><ProjectViewHeader key="header" {...this.props} /></Col></Row>,
-      <Row key="header"><Col md={12}><ProjectViewDetails key="details" {...this.props} /></Col></Row>,
-      <Row key="header"><Col md={12}><ProjectViewReadme key="readme" {...this.props} /></Col></Row>
+      <Row key="details"><Col md={12}><ProjectViewDetails key="details" {...this.props} /></Col></Row>,
+      <Row key="readme"><Col md={12}><ProjectViewReadme key="readme" {...this.props} /></Col></Row>
     ]
   }
 }
