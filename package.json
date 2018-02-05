@@ -29,7 +29,7 @@
   },
   "proxy": {
     "/api": {
-      "target": "http://dev.gitlab",
+      "target": "http://dev.gitlab:5080",
       "pathRewrite": {
         "^/api(.*)": "api/$1"
       }

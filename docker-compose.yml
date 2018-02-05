@@ -4,15 +4,16 @@ gitlab:
   hostname: 'localhost'
   environment:
     GITLAB_OMNIBUS_CONFIG: |
-      external_url 'http://localhost'
-      gitlab_rails['lfs_enabled'] = true      
+      external_url 'http://localhost:5080'
+      gitlab_rails['gitlab_shell_ssh_port'] = 5022
+      gitlab_rails['lfs_enabled'] = true
       gitlab_rails['lfs_storage_path'] = '/var/storage/lfs-objects'
       gitlab_rails['initial_root_password'] = 'root_password'
       # Add any other gitlab.rb configuration here, each on its own line
   ports:
-    - '80:80'
-    - '443:443'
-    - '22:22'
+    - '5080:5080'
+    - '5443:443'
+    - '5022:22'
   volumes:
     - './gitlab/config:/etc/gitlab'
     - './gitlab/logs:/var/log/gitlab'
@@ -29,5 +30,5 @@ ui:
   environment:
     - GITLAB_SECRET_TOKEN
   volumes:
-      - ./src:/app/src
-      - ./public:/app/public
+    - ./src:/app/src
+    - ./public:/app/public
