@@ -39,6 +39,7 @@ import FontAwesome from 'react-fontawesome'
 // import Landing from './Landing'
 import Project from './project/Project'
 import Ku from './ku/Ku'
+import Landing from './landing/Landing'
 
 class RengaNavItem extends Component {
   render() {
@@ -149,25 +150,6 @@ class RengaFooter extends Component {
   }
 }
 
-class Landing extends Component {
-  render() {
-    return (
-      <div key="content">
-        <h1>Renga Prototype UI</h1>
-        <p className="lead">Welcome to the prototype UI for Renga</p>
-        <p>This is a work in progress, but once you have the metadata server running, you can try out the following:</p>
-        <ul>
-          <li><Link to="/project_new">Create a new project</Link></li>
-          <li><Link to="/projects">List projects</Link></li>
-          <li><Link to="/ku_new">Create a new ku (can only reference at most one project at the moment)</Link></li>
-          <li><Link to="/kus">List kus</Link></li>
-        </ul>
-        And once you have created a project, you can view it from the list page.
-        Naturally, these actions are available from the top menu bar as well.
-      </div>)
-  }
-}
-
 class App extends Component {
   render() {
     return (
@@ -182,7 +164,7 @@ class App extends Component {
               <Route exact strict path="/*(\d+)" render={props => <Redirect to={`${props.location.pathname}/`}/>}/>
 
               <Route exact path="/"
-                render={p => <Landing key="landing" {...p} />} />
+                render={p => <Landing.Home key="landing" {...p} />} />
               <Route exact path="/projects"
                 render={p => <Project.List key="projects" {...p} client={this.props.client} />} />
               <Route exact path="/projects/:id(\d+)"
