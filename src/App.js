@@ -141,7 +141,9 @@ class RengaFooter extends Component {
   render() {
     return <footer className="footer">
       <div className="container">
-        <span className="text-muted"><a href="https://datascience.ch">&copy; SDSC 2017</a></span>
+        <span className="text-muted">
+          <a href="https://datascience.ch">&copy; SDSC {(new Date()).getFullYear()}</a>
+        </span>
       </div>
     </footer>
   }
