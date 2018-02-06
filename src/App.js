@@ -92,6 +92,7 @@ class RengaNavBar extends Component {
     const activeProjectId = getActiveProjectId(this.props.location.pathname);
     const kuNavelement = activeProjectId ? <RengaNavItem to={`/projects/${activeProjectId}/kus`} title="Kus" /> : null;
     const kuDropdown = activeProjectId ? <a className="dropdown-item" href="ku_new">Ku</a> : null;
+    // TODO If there is is an active project, show it in the navbar
 
     return (
       <header>
@@ -174,8 +175,9 @@ class App extends Component {
               <Route exact path="/projects/:projectId(\d+)/kus"
                 render={p => <Ku.List key="kus" projectId={p.match.params.projectId} {...p}
                   client={this.props.client} />} />
+              {/* TODO Should we handle each type of file or just have a generic project files viewer? */}
               <Route exact path="/projects/:projectId(\d+)/notebooks/:notebookPath"
-                render={p => <Notebook.Show key="kus" projectId={p.match.params.projectId} {...p}
+                render={p => <Notebook.Show key="notebook" projectId={p.match.params.projectId} {...p}
                   client={this.props.client} />} />
               <Route path="/projects/:projectId(\d+)/kus/:kuIid(\d+)"
                 render={p => <Ku.View key="ku" projectId={p.match.params.projectId}
