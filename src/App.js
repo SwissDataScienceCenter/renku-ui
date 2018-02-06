@@ -40,6 +40,7 @@ import FontAwesome from 'react-fontawesome'
 import Project from './project/Project'
 import Ku from './ku/Ku'
 import Landing from './landing/Landing'
+import Notebook from './notebook/Notebook'
 
 class RengaNavItem extends Component {
   render() {
@@ -172,6 +173,9 @@ class App extends Component {
               <Route exact path="/project_new" component={Project.New} client={this.props.client} />
               <Route exact path="/projects/:projectId(\d+)/kus"
                 render={p => <Ku.List key="kus" projectId={p.match.params.projectId} {...p}
+                  client={this.props.client} />} />
+              <Route exact path="/projects/:projectId(\d+)/notebooks/:notebookPath"
+                render={p => <Notebook.Show key="kus" projectId={p.match.params.projectId} {...p}
                   client={this.props.client} />} />
               <Route path="/projects/:projectId(\d+)/kus/:kuIid(\d+)"
                 render={p => <Ku.View key="ku" projectId={p.match.params.projectId}
