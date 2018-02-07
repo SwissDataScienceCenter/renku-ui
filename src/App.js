@@ -183,7 +183,8 @@ class App extends Component {
               {/* TODO Should we handle each type of file or just have a generic project files viewer? */}
               <Route exact path="/projects/:projectId(\d+)/notebooks/:notebookPath"
                 render={p => <Notebook.Show key="notebook" projectId={p.match.params.projectId}
-                  client={this.props.client} path={`notebooks/${p.match.params.notebookPath}`}{...p} />} />
+                  path={`notebooks/${p.match.params.notebookPath}`}
+                  client={this.props.client} {...p} />} />
             </Switch>
           </main>
           <Route component={RengaFooter} />

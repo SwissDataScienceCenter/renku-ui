@@ -53,6 +53,17 @@ export default class GitlabClient {
       .then(text => ({text}))
   }
 
+  getProjectFile(projectId, path) {
+    let headers = this.getBasicHeaders();
+    const encodedPath = encodeURIComponent(path);
+    return fetch(this._baseUrl + `projects/${projectId}/repository/files/${encodedPath}/raw?ref=master`, {
+      method: 'GET',
+      headers: headers
+    })
+      .then(response => response.text())
+      .then(content => ({content}))
+  }
+
   getProjectKus(projectId) {
     let headers = this.getBasicHeaders();
 

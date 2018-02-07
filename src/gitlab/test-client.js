@@ -11,6 +11,9 @@ const methods = {
   getProjectReadme: {
     responseData: samples.projectReadme
   },
+  getProjectFile: {
+    responseData: samples.projectNotebookFile
+  },
   getProjectKus: {
     responseData: samples.kus
   },

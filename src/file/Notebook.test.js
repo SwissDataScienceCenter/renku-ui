@@ -19,38 +19,21 @@
 /**
  *  incubator-renga-ui
  *
- *  Notebook.js
- *  Container components for rendering notebooks.
+ *  Notebook.test.js
+ *  Tests for the notebook renderer.
  */
 
-import React, { Component } from 'react';
-import JupyterNotebook from 'react-jupyter'
+import React from 'react';
+import ReactDOM from 'react-dom';
+import { MemoryRouter } from 'react-router-dom';
 
+import Notebook from './Notebook'
+import client from '../gitlab/test-client'
 
-class Show extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {notebook: null}
-  }
-  componentDidMount() {
-    this.retrieveNotebook()
-  }
+describe('rendering', () => {
+  it('renders new without crashing', () => {
+    const div = document.createElement('div');
+    ReactDOM.render(<Notebook.Show path="notebooks/test.js" client={client} />, div);
+  });
 
-  retrieveNotebook() {
-    this.props.client.getProjectFile(this.props.projectId, this.props.path)
-      .then(json => {
-        console.log(json);
-        const notebook = JSON.parse(json);
-        this.setState({notebook});
-      });
-  }
-
-  render() {
-    if (this.state.notebook == null) return <div>Loading...</div>
-    return (<JupyterNotebook
-      notebook={this.state.notebook}
-      showCode={true} />)
-  }
-}
-
-export default { Show };
+});
