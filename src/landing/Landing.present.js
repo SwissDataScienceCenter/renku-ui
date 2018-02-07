@@ -35,7 +35,9 @@ import { Row, Col } from 'reactstrap';
 class Explore extends Component {
   render() {
     return (<div>
-      Here are some things we think you might like. (Coming soon)
+      <h1>Explore</h1>
+      Here are some things we think you might like based on what you have been working on.
+      You also have access to an advanced search here. (Coming soon)
     </div>
     )
   }
@@ -44,6 +46,7 @@ class Explore extends Component {
 class YourNetwork extends Component {
   render() {
     return (<div>
+      <h1>Your Network</h1>
       Here is some activity from your network. (Not yet implemented)
     </div>
     )
@@ -53,8 +56,9 @@ class YourNetwork extends Component {
 class YourActivity extends Component {
   render() {
     return (<div>
-      Soon, you will see recent activity here.<br /><br />
-      In the meantime, take a look at <Link to="/projects">Projects</Link>.
+      <h1>Your Activity</h1>
+      This is what you have been working on.<br /><br />
+      Not yet implemented, but in the meantime, take a look at <Link to="/projects">Projects</Link>.
     </div>
     )
   }
@@ -73,10 +77,10 @@ class Home extends Component {
           <Nav pills>
             <NavItem>
               <NavLink href="#" active={selected === 'your_activity'}
-                onClick={this.props.onYourActivity}>Your Activity</NavLink>
+                onClick={this.props.onYourActivity}>Activity</NavLink>
             </NavItem>
             <NavItem><NavLink href="#" active={selected === 'your_network'}
-              onClick={this.props.onYourNetwork}>Your Network</NavLink></NavItem>
+              onClick={this.props.onYourNetwork}>Network</NavLink></NavItem>
             <NavItem><NavLink href="#" active={selected === 'explore'}
               onClick={this.props.onExplore}>Explore</NavLink></NavItem>
           </Nav>
