@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+docker network create review
+
 # Create gitlab folders if necessary
 if [ ! -d "./gitlab" ]; then
   mkdir ./gitlab
