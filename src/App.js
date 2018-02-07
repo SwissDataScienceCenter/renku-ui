@@ -40,7 +40,7 @@ import FontAwesome from 'react-fontawesome'
 import Project from './project/Project'
 import Ku from './ku/Ku'
 import Landing from './landing/Landing'
-import Notebook from './notebook/Notebook'
+import Notebook from './file/Notebook'
 
 class RengaNavItem extends Component {
   render() {
@@ -175,15 +175,15 @@ class App extends Component {
               <Route exact path="/projects/:projectId(\d+)/kus"
                 render={p => <Ku.List key="kus" projectId={p.match.params.projectId} {...p}
                   client={this.props.client} />} />
-              {/* TODO Should we handle each type of file or just have a generic project files viewer? */}
-              <Route exact path="/projects/:projectId(\d+)/notebooks/:notebookPath"
-                render={p => <Notebook.Show key="notebook" projectId={p.match.params.projectId} {...p}
-                  client={this.props.client} />} />
               <Route path="/projects/:projectId(\d+)/kus/:kuIid(\d+)"
                 render={p => <Ku.View key="ku" projectId={p.match.params.projectId}
                   kuIid={p.match.params.kuIid} {...p} client={this.props.client}/> } />
               <Route exact path="/projects/:projectId(\d+)/ku_new"
                 render={(p) => <Ku.New key="ku_new" client={this.props.client} {...p}/>}/>
+              {/* TODO Should we handle each type of file or just have a generic project files viewer? */}
+              <Route exact path="/projects/:projectId(\d+)/notebooks/:notebookPath"
+                render={p => <Notebook.Show key="notebook" projectId={p.match.params.projectId}
+                  client={this.props.client} path={`notebooks/${p.match.params.notebookPath}`}{...p} />} />
             </Switch>
           </main>
           <Route component={RengaFooter} />

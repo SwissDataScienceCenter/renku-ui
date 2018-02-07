@@ -24,23 +24,16 @@
  */
 
 import React, { Component } from 'react';
+import JupyterNotebook from 'react-jupyter'
 
 
 class Show extends Component {
-  constructor(props) {
-    super(props);
-    // this.store = createStore(State.Home.reduce);
-  }
-
   componentDidMount() {
-    // this.retrieveNotebook();
+    this.retrieveNotebook()
   }
 
-  mapStateToProps(state, ownProps) { return state  }
-
-  mapDispatchToProps(dispatch, ownProps) {
-    return {
-    }
+  retrieveNotebook() {
+    console.log(`Retrieve notebook: ${this.props.path}`);
   }
 
   render() {
