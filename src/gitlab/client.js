@@ -61,7 +61,6 @@ export default class GitlabClient {
       headers: headers
     })
       .then(response => response.text())
-      .then(content => ({content}))
   }
 
   getProjectKus(projectId) {
