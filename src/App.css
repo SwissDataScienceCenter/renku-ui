@@ -49,3 +49,35 @@ body {
   color: #AAA;
   font-size: smaller;
 }
+
+.comment-block {
+  display: inline
+}
+
+.expanded-reference {
+  border: 1px solid #AAA;
+  border-radius: 15px;
+  padding: 15px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.image-preview {
+  max-width: 100%;
+  min-width: 100%;
+  height: auto;
+}
+
+.text-link {
+  background: none;
+  border: none;
+  margin: 0px;
+  padding: 0px;
+  color: blue;
+  cursor: pointer;
+  outline: none;
+}
+
+.text-link input[type="button"]:focus {
+  outline: none;
+}

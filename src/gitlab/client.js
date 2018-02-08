@@ -43,13 +43,7 @@ export default class GitlabClient {
   }
 
   getProjectReadme(projectId) {
-    let headers = this.getBasicHeaders();
-
-    return fetch(this._baseUrl + `projects/${projectId}/repository/files/README.md/raw?ref=master`, {
-      method: 'GET',
-      headers: headers
-    })
-      .then(response => response.text())
+    return this.getRepositoryFile(projectId, 'README.md', 'master', 'raw')
       .then(text => ({text}))
   }
 
@@ -97,6 +91,32 @@ export default class GitlabClient {
       .then(response => response.json())
   }
 
+  getContributions(projectId, kuIid) {
+    let headers = this.getBasicHeaders();
+    headers.append('Content-Type', 'application/json');
+
+    return fetch(this._baseUrl + `projects/${projectId}/issues/${kuIid}/notes`, {
+      method: 'GET',
+      headers: headers,
+    })
+      .then(response => response.json())
+  }
+
+  getRepositoryFile(projectId, path, ref='master', encoding='base64') {
+    let headers = this.getBasicHeaders();
+    const pathEncoded = encodeURIComponent(path);
+    const raw = encoding === 'raw' ? '/raw' : '';
+    return fetch(this._baseUrl + `projects/${projectId}/repository/files/${pathEncoded}${raw}?ref=${ref}`, {
+      method: 'GET',
+      headers: headers
+    })
+      .then(response => {
+        if (encoding === 'raw') return response.text();
+        if (encoding === 'base64') return response.json();
+        console.error('Unknown encoding');
+      })
+      .catch(error => {console.log(error)})
+  }
 }
 
 

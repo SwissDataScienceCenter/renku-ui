@@ -38,6 +38,7 @@ import {createStore} from '../UIState'
 import State from './Ku.state'
 import {Avatar, TimeCaption, FieldGroup} from '../UIComponents'
 import { getActiveProjectId } from '../App'
+import { Contribution } from '../contribution'
 
 
 class KuVisibility extends Component {
@@ -162,20 +163,29 @@ class KuViewDetails extends Component {
   }
 }
 
+// We sort the date strings instead of actual Date objects here - ok due to format.
+const KuViewContributions = (props) => props.contributions
+  .sort((el1, el2) => el1.created_at > el2.created_at)
+  .map(cont => <Contribution key={cont.id} contribution={cont} client={props.client} projectId={props.projectId}/>);
+
+
 class KuView extends Component {
   render() {
     return [
       <KuViewHeader key="header" {...this.props} />,
-      <KuViewDetails key="details" {...this.props} />
+      <KuViewDetails key="details" {...this.props} />,
+      <KuViewContributions key="contributions" {...this.props} />
     ]
   }
 }
 
 class View extends Component {
+
   constructor(props) {
     super(props);
     this.store = createStore(State.View.reducer);
     this.store.dispatch(this.retrieveKu());
+    this.retrieveContributions();
   }
 
   retrieveKu() {
@@ -185,6 +195,16 @@ class View extends Component {
       })
     }
   }
+
+  retrieveContributions() {
+    this.props.client.getContributions(this.props.projectId, this.props.kuIid)
+      .then(d => {
+        this.setState((prevState, props) => {
+          return {contributions: d}
+        });
+      })
+  }
+
 
   mapStateToProps(state, ownProps) {
     return state
@@ -196,10 +216,9 @@ class View extends Component {
 
   render() {
     const VisibleKuView = connect(this.mapStateToProps, this.mapDispatchToProps)(KuView);
-    return (
-      <Provider key="new" store={this.store}>
-        <VisibleKuView datasetId={this.props.datasetId}/>
-      </Provider>)
+    return <Provider key="new" store={this.store}>
+      <VisibleKuView contributions={this.state ? this.state.contributions : []} {...this.props}/>
+    </Provider>
   }
 }
 
