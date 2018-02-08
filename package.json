@@ -7,6 +7,8 @@
     "font-awesome": "^4.7.0",
     "human-time": "0.0.1",
     "jquery": "^3.2.1",
+    "node-sass-chokidar": "0.0.3",
+    "npm-run-all": "^4.1.2",
     "popper.js": "^1.12.9",
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
