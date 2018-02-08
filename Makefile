@@ -50,11 +50,11 @@ DOCKER_COMPOSE_ENV=\
 	DOCKER_LABEL=$(DOCKER_LABEL)
 
 start: docker-network $(GITLAB_DIRS:%=gitlab/%)
-ifndef $(GITLAB_SECRET_TOKEN)
+ifeq (${GITLAB_SECRET_TOKEN}, )
 	@echo "[Warning] Renga UI will not work until you acquire and set GITLAB_SECRET_TOKEN"
 	@echo
 endif
-	$(DOCKER_COMPOSE_ENV) docker-compose up -d ${DOCKER_SCALE}
+	$(DOCKER_COMPOSE_ENV) docker-compose up --build -d ${DOCKER_SCALE}
 	@echo
 	@echo "[Success] Renga UI should be under http://$(DOCKER_DOMAIN):5000 and GitLab under $(GITLAB_URL)"
 	@echo
