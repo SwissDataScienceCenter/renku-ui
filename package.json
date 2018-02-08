@@ -23,8 +23,11 @@
     "redux-thunk": "^2.2.0"
   },
   "scripts": {
-    "start": "REACT_APP_GITLAB_SECRET_TOKEN=$GITLAB_SECRET_TOKEN react-scripts start",
-    "build": "react-scripts build",
+    "build-css": "node-sass-chokidar --include-path ./src/styles --include-path ./node_modules src/styles/ -o src/styles/",
+    "watch-css": "npm run build-css && node-sass-chokidar --include-path ./src/styles --include-path ./node_modules src/styles/ -o src/styles --watch --recursive",
+    "start-js": "REACT_APP_GITLAB_SECRET_TOKEN=$GITLAB_SECRET_TOKEN react-scripts start",
+    "start": "npm-run-all -p watch-css start-js",
+    "build": "npm run build-css && react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "lint": "node_modules/eslint/bin/eslint.js src/",
