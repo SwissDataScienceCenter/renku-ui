@@ -74,7 +74,7 @@ class Home extends Component {
     return [
       <Row key="nav">
         <Col md={12}>
-          <Nav pills>
+          <Nav pills className={'nav-pills-underline'}>
             <NavItem>
               <NavLink href="#" active={selected === 'your_activity'}
                 onClick={this.props.onYourActivity}>Activity</NavLink>
