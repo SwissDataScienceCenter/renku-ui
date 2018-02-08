@@ -18,11 +18,13 @@ in the docker-compose file). \]
 Once you have logged in, you should create an access token for the current user
 `http://localhost:5080/profile/personal_access_tokens`. Now export the created access token and restart the services:
 
+Bash 
 ```bash
 $ export GITLAB_SECRET_TOKEN=access-token
 $ docker-compose up -d
 ```
 
+Fish
 ```fish
 $ set -x GITLAB_SECRET_TOKEN access-token
 $ docker-compose up -d
