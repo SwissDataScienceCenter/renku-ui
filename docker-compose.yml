@@ -1,11 +1,11 @@
 version: '3'
 services:
   gitlab:
-    image: 'gitlab/gitlab-ce:latest'
+    image: gitlab/gitlab-ce:latest
     restart: always
     environment:
       GITLAB_OMNIBUS_CONFIG: |
-        external_url 'http://docker.for.mac.localhost:5080'
+        external_url '${GITLAB_URL}'
         gitlab_rails['gitlab_shell_ssh_port'] = 5022
         gitlab_rails['lfs_enabled'] = true
         gitlab_rails['lfs_storage_path'] = '/var/storage/lfs-objects'
@@ -20,6 +20,17 @@ services:
       - './gitlab/logs:/var/log/gitlab'
       - './gitlab/git-data:/var/opt/gitlab'
       - './gitlab/lfs-data:/var/storage/lfs-objects'
+    networks:
+      - default
+
+  gitlab-runner:
+    image: ${DOCKER_PREFIX}gitlab-runner:${DOCKER_LABEL}
+    restart: always
+    volumes:
+      - ./gitlab/runner:/etc/gitlab-runner
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - default
 
   ui:
     build: .
@@ -37,7 +48,7 @@ services:
   reverse-proxy:
     image: traefik
     command: --web --web.address=:81 \
-      --docker --docker.watch --docker.domain=docker.for.mac.localhost \
+      --docker --docker.watch --docker.domain=${DOCKER_DOMAIN} \
       --debug --logLevel=DEBUG \
       --defaultentrypoints=http \
       --entrypoints='Name:http Address::8080' \
