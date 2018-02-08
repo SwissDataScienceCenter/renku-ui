@@ -107,7 +107,7 @@ ifeq (${RUNNER_TOKEN},)
 endif
 	@for container in $(shell docker-compose ps -q gitlab-runner) ; do \
 		docker exec -ti $$container gitlab-runner register \
-			-n -u http://gitlab:5080/ \
+			-n -u $(GITLAB_URL) \
 			-r ${RUNNER_TOKEN} \
 			--executor shell \
 			--locked=false \
