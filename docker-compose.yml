@@ -25,6 +25,8 @@ services:
 
   gitlab-runner:
     image: ${DOCKER_PREFIX}gitlab-runner:${DOCKER_LABEL}
+    environment:
+      RENGA_REVIEW_DOMAIN: ${DOCKER_DOMAIN}:8080
     restart: always
     volumes:
       - ./gitlab/runner:/etc/gitlab-runner

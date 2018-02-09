@@ -110,5 +110,18 @@ endif
 			-n -u http://gitlab:5080/ \
 			-r ${RUNNER_TOKEN} \
 			--executor shell \
-			--locked=false; \
+			--locked=false \
+			--run-untagged=false \
+			--tag-list notebook \
+			--docker-image $(DOCKER_PREFIX)renga-python:$(DOCKER_LABEL) \
+			--docker-pull-policy "if-not-present"; \
+		docker exec -ti $$container gitlab-runner register \
+			-n -u $(GITLAB_URL) \
+			-r ${RUNNER_TOKEN} \
+			--executor docker \
+			--locked=false \
+			--run-untagged=false \
+			--tag-list cwl \
+			--docker-image $(DOCKER_PREFIX)renga-python:$(DOCKER_LABEL) \
+			--docker-pull-policy "if-not-present"; \
 	done
