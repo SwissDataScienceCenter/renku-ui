@@ -26,6 +26,7 @@ services:
   gitlab-runner:
     image: ${DOCKER_PREFIX}gitlab-runner:${DOCKER_LABEL}
     environment:
+      RENGA_RUNNER_IMAGE: ${DOCKER_PREFIX}minimal-notebook:${DOCKER_LABEL}
       RENGA_REVIEW_DOMAIN: ${DOCKER_DOMAIN}:8080
     restart: always
     volumes:

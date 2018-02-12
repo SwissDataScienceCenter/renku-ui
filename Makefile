@@ -49,7 +49,7 @@ DOCKER_COMPOSE_ENV=\
 	DOCKER_PREFIX=$(DOCKER_PREFIX) \
 	DOCKER_LABEL=$(DOCKER_LABEL)
 
-start: docker-network $(GITLAB_DIRS:%=gitlab/%)
+start: docker-network $(GITLAB_DIRS:%=gitlab/%) unregister-runners
 ifeq (${GITLAB_SECRET_TOKEN}, )
 	@echo "[Warning] Renga UI will not work until you acquire and set GITLAB_SECRET_TOKEN"
 	@echo
@@ -65,7 +65,7 @@ ifeq (${DOCKER_SCALE},)
 	@echo "[Info] You can configure scale parameters: DOCKER_SCALE=\"--scale gitlab-runner=4\" make start"
 endif
 
-stop:
+stop: unregister-runners
 	$(DOCKER_COMPOSE_ENV) docker-compose stop
 ifneq ($(shell docker network ls -q -f name=review), )
 	@docker network rm review
@@ -100,14 +100,15 @@ ifeq ($(shell docker network ls -q -f name=review), )
 endif
 	@echo "[Info] Using Docker network: review=$(shell docker network ls -q -f name=review)"
 
-register-runners:
+register-runners: unregister-runners
 ifeq (${RUNNER_TOKEN},)
 	@echo "[Error] RUNNER_TOKEN needs to be configured. Check $(GITLAB_URL)/admin/runners"
 	@exit 1
 endif
-	@for container in $(shell docker-compose ps -q gitlab-runner) ; do \
+	@for container in $(shell $(DOCKER_COMPOSE_ENV) docker-compose ps -q gitlab-runner) ; do \
 		docker exec -ti $$container gitlab-runner register \
 			-n -u $(GITLAB_URL) \
+			--name $$container-shell \
 			-r ${RUNNER_TOKEN} \
 			--executor shell \
 			--locked=false \
@@ -117,6 +118,7 @@ endif
 			--docker-pull-policy "if-not-present"; \
 		docker exec -ti $$container gitlab-runner register \
 			-n -u $(GITLAB_URL) \
+			--name $$container-docker \
 			-r ${RUNNER_TOKEN} \
 			--executor docker \
 			--locked=false \
@@ -124,4 +126,16 @@ endif
 			--tag-list cwl \
 			--docker-image $(DOCKER_PREFIX)renga-python:$(DOCKER_LABEL) \
 			--docker-pull-policy "if-not-present"; \
+	done
+
+unregister-runners:
+ifeq (${RUNNER_TOKEN},)
+	@echo "[Error] RUNNER_TOKEN needs to be configured. Check $(GITLAB_URL)/admin/runners"
+	@exit 1
+endif
+	@for container in $(shell $(DOCKER_COMPOSE_ENV) docker-compose ps -q gitlab-runner) ; do \
+		docker exec -ti $$container gitlab-runner unregister \
+			--name $$container-shell || echo ok; \
+		docker exec -ti $$container gitlab-runner unregister \
+			--name $$container-docker || echo ok; \
 	done
