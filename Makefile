@@ -36,7 +36,7 @@ ifeq ($(DOCKER_LABEL), master)
 	DOCKER_LABEL=latest
 endif
 
-IMAGES=incubator-renga-ui
+IMAGES=renga-ui
 
 GIT_MASTER_HEAD_SHA:=$(shell git rev-parse --short=12 --verify HEAD)
 
@@ -48,6 +48,8 @@ DOCKER_COMPOSE_ENV=\
 	GITLAB_URL=$(GITLAB_URL) \
 	DOCKER_PREFIX=$(DOCKER_PREFIX) \
 	DOCKER_LABEL=$(DOCKER_LABEL)
+
+tag-docker-images: $(IMAGES:%=tag/%)
 
 start: docker-network $(GITLAB_DIRS:%=gitlab/%) unregister-runners
 ifeq (${GITLAB_SECRET_TOKEN}, )
@@ -74,9 +76,7 @@ endif
 clean:
 	@rm -rf gitlab
 
-build-docker-images: $(IMAGES:%=build/%)
-
-build/incubator-renga-ui: Dockerfile
+build/renga-ui: Dockerfile
 	docker build --rm --force-rm -t rengahub/$(notdir $@):$(GIT_MASTER_HEAD_SHA) -f $< .
 
 push-docker-images: $(IMAGES:%=push/%)
