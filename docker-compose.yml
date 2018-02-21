@@ -10,6 +10,29 @@ services:
         gitlab_rails['lfs_enabled'] = true
         gitlab_rails['lfs_storage_path'] = '/var/storage/lfs-objects'
         gitlab_rails['initial_root_password'] = 'root_password'
+
+        gitlab_rails['omniauth_enabled'] = true
+        gitlab_rails['omniauth_allow_single_sign_on'] = ['oauth2_generic']
+        gitlab_rails['omniauth_block_auto_created_users'] = false
+        gitlab_rails['omniauth_providers'] = [
+          {
+            'name' => 'oauth2_generic',
+            'app_id' => 'gitlab',
+            'app_secret' => '79d5a711-3be9-4827-979c-70bb0ae75fe8',
+            'args' => {
+              client_options: {
+                'site' => 'http://docker.for.mac.localhost:8080/auth/', # including port if necessary
+                'authorize_url' => '/auth/realms/Renga/protocol/openid-connect/auth',
+                'user_info_url' => '/auth/realms/Renga/protocol/openid-connect/userinfo',
+                'token_url' => '/auth/realms/Renga/protocol/openid-connect/token'
+              },
+              user_response_structure: {
+                attributes: { email:'email', first_name:'given_name', last_name:'family_name', name:'name', nickname:'preferred_username' }, # if the nickname attribute of a user is called 'username'
+                id_path: 'preferred_username'
+              }
+            }
+          }
+        ]
         # Add any other gitlab.rb configuration here, each on its own line
     ports:
       - '5080:5080'
@@ -23,50 +46,16 @@ services:
     networks:
       - default
 
-  gitlab-runner:
-    image: ${DOCKER_PREFIX}gitlab-runner:${DOCKER_LABEL}
-    environment:
-      RENGA_RUNNER_IMAGE: ${DOCKER_PREFIX}minimal-notebook:${DOCKER_LABEL}
-      RENGA_REVIEW_DOMAIN: ${DOCKER_DOMAIN}:8080
-    restart: always
-    volumes:
-      - ./gitlab/runner:/etc/gitlab-runner
-      - /var/run/docker.sock:/var/run/docker.sock
-    networks:
-      - default
 
   ui:
     build: .
     restart: always
-    links:
-      - gitlab:dev.gitlab
     ports:
       - 5000:3000
-    environment:
-      - GITLAB_SECRET_TOKEN
     volumes:
       - ./src:/app/src
       - ./public:/app/public
-
-  reverse-proxy:
-    image: traefik
-    command: --web --web.address=:81 \
-      --docker --docker.watch --docker.domain=${DOCKER_DOMAIN} \
-      --debug --logLevel=DEBUG \
-      --defaultentrypoints=http \
-      --entrypoints='Name:http Address::8080' \
-      --docker.exposedbydefault=false
-    # FIXME usage of self signed certs --entrypoints='Name:http Address::80 Redirect.EntryPoint:https' \
-    ports:
-      - 8080:8080
-      - 81:81
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-      - /dev/null:/traefik.toml
-    networks:
-      - default
-      - review
-
-networks:
-  review:
-    external: true
+    environment:
+      - RENGA_ENDPOINT
+      - RENGA_UI_URL
+      - GITLAB_URL
