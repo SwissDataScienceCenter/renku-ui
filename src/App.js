@@ -41,6 +41,7 @@ import Project from './project/Project'
 import Ku from './ku/Ku'
 import Landing from './landing/Landing'
 import Notebook from './file/Notebook'
+import Login from './login'
 
 class RengaNavItem extends Component {
   render() {
@@ -131,7 +132,18 @@ class RengaNavBar extends Component {
                   {kuDropdown}
                 </div>
               </li>
-              <RengaNavItem to="/user" title={<FontAwesome name="user-circle" />} />
+              <li className="nav-item dropdown">
+                <a className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
+                  aria-haspopup="true" aria-expanded="false">
+                  <FontAwesome name="user-circle" />
+                </a>
+                <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                  {/*FIXME: Fix styling of dropdown items here and avoid using html links in dropdown items (above)*/}
+                  {/*FIXME: as this will trigger a complete reload of the page.*/}
+                  <RengaNavItem to="/user" title="Profile" />
+                  <RengaNavItem to="/logout" title="Logout" />
+                </div>
+              </li>
             </ul>
           </div>
         </nav>
@@ -164,7 +176,10 @@ class App extends Component {
 
               {/* Route forces trailing slashes on routes ending with a numerical id */}
               <Route exact strict path="/*(\d+)" render={props => <Redirect to={`${props.location.pathname}/`}/>}/>
-
+              <Route exact path="/logout"
+                render={p => <Login.Logout key="logout" {...p} {...this.props} />} />
+              <Route exact path="/login/redirect/gitlab"
+                render={p => <Login.GitlabRedirect key="gitlabRedirect" {...p} cookies={this.props.cookies}/>} />
               <Route exact path="/"
                 render={p => <Landing.Home key="landing" {...p} />} />
               <Route exact path="/projects"
@@ -194,5 +209,34 @@ class App extends Component {
   }
 }
 
+class AppLoggedOut extends Component {
+  // We have two special routes which are allowed when logged out:
+  // 1. gitlab redirect route to obtain a token
+  // 2. logged-out route which is shown after logout.
+  // Everything else will try to log the user in automatically.
+  render() {
+    return (
+      <Router>
+        <div>
+          <main role="main" className="container-fluid">
+            <div key="gap">&nbsp;</div>
+            <Switch>
+              <Route exact path="/login/redirect/gitlab"
+                render={p => <Login.GitlabRedirect key="gitlabRedirect" {...p} cookies={this.props.cookies}/>} />
+              <Route path="/logged_out"
+                // For this route we actually want a reload of the page when going back to renga.
+                render={p => <p>You are logged out. Back to <a href={this.props.params.BASE_URL}>Renga!</a></p>} />
+              <Route path="/"  render = {
+                p => <Login.Login key="login" {...p} {...this.props}/>
+              } />
+            </Switch>
+          </main>
+          <Route component={RengaFooter} />
+        </div>
+      </Router>
+    );
+  }
+}
+
 export default App;
-export { getActiveProjectId };
+export { getActiveProjectId, AppLoggedOut };

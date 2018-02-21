@@ -8,17 +8,21 @@ export default class GitlabClient {
   // ku    -->  issue
 
 
-  constructor(baseUrl, privateToken) {
+  constructor(baseUrl, token, tokenType) {
     console.log('called constructor on api client');
     this._baseUrl = baseUrl;
-    this._privateToken = privateToken;
+    this._token = token;
+    this._tokenType = tokenType;
   }
 
   getBasicHeaders() {
-    return  new Headers({
-      'Accept': 'application/json',
-      'Private-Token': this._privateToken
-    })
+    let headers = {
+      'Accept': 'application/json'
+    };
+    if (this._tokenType === 'private') headers['Private-Token'] = this._token;
+    if (this._tokenType === 'bearer') headers['Authorization'] = `Bearer ${this._token}`;
+
+    return  new Headers(headers)
   }
 
   getProjects() {
