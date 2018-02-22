@@ -14,7 +14,7 @@
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
-# limitations under the License..PHONY: build-docker-images push-docker-images login
+# limitations under the License.
 
 ifeq ($(OS),Windows_NT)
     detected_OS := Windows
@@ -24,7 +24,7 @@ endif
 
 DOCKER_REPOSITORY?=rengahub/
 DOCKER_PREFIX:=${DOCKER_REGISTRY}$(DOCKER_REPOSITORY)
-DOCKER_LABEL?=$(or ${TRAVIS_BRANCH},${TRAVIS_BRANCH},$(shell git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/^* //'))
+DOCKER_LABEL?=$(shell git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/^* //')
 
 ifeq ($(detected_OS), Darwin)
 	DOCKER_DOMAIN?=docker.for.mac.localhost
@@ -83,16 +83,25 @@ clean:
 	@rm -rf gitlab
 
 build/renga-ui: Dockerfile
-	docker build --rm --force-rm -t rengahub/$(notdir $@):$(GIT_MASTER_HEAD_SHA) -f $< .
+	docker build --rm --force-rm -t $(DOCKER_PREFIX)$(notdir $@):$(GIT_MASTER_HEAD_SHA) -f $< .
 
 push-docker-images: $(IMAGES:%=push/%)
 
 tag/%: build/%
+ifeq (${DOCKER_LABEL}, master)
+	docker tag $(DOCKER_PREFIX)$(notdir $@):$(GIT_MASTER_HEAD_SHA) $(DOCKER_PREFIX)$(notdir $@):latest
+endif
 	docker tag $(DOCKER_PREFIX)$(notdir $@):$(GIT_MASTER_HEAD_SHA) $(DOCKER_PREFIX)$(notdir $@):$(DOCKER_LABEL)
 
 push/%: tag/%
+ifeq (${DOCKER_LABEL}, master)
+	docker push $(DOCKER_PREFIX)$(notdir $@):latest
+endif
 	docker push $(DOCKER_PREFIX)$(notdir $@):$(DOCKER_LABEL)
 	docker push $(DOCKER_PREFIX)$(notdir $@):$(GIT_MASTER_HEAD_SHA)
+
+test/%: tag/%
+	docker run -e CI=true $(DOCKER_PREFIX)$(notdir $@):$(DOCKER_LABEL) ./run-tests.sh
 
 login:
 	@docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}" ${DOCKER_REGISTRY}
