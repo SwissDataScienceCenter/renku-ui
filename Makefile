@@ -49,6 +49,12 @@ DOCKER_COMPOSE_ENV=\
 	DOCKER_PREFIX=$(DOCKER_PREFIX) \
 	DOCKER_LABEL=$(DOCKER_LABEL)
 
+DEV_ENV=\
+	GITLAB_URL=$(GITLAB_URL) \
+	RENGA_ENDPOINT=http://localhost \
+	RENGA_UI_URL=http://localhost:3000 \
+	UI_DEV_MODE=true
+
 tag-docker-images: $(IMAGES:%=tag/%)
 
 start: docker-network $(GITLAB_DIRS:%=gitlab/%) unregister-runners
@@ -139,3 +145,6 @@ endif
 		docker exec -ti $$container gitlab-runner unregister \
 			--name $$container-docker || echo ok; \
 	done
+
+dev:
+	$(DEV_ENV) npm start

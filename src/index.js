@@ -24,22 +24,37 @@ const params = {
   KEYCLOAK_CLIENT_ID: 'renga-ui'
 };
 
+const keycloakDef = {
+  realm: params.KEYCLOAK_REALM,
+  url: params.KEYCLOAK_URL + '/auth',
+  clientId: params.KEYCLOAK_CLIENT_ID
+};
 
-// We use the keycloak.js loaded in index.html (-> best practice).
-// A json serialized object which can be used to define the keycloak instance can also be downloaded
-// from the keycloak server once the renga ui client has been defined.
-// eslint-disable-next-line
-const keycloak = Keycloak({
-  'realm': params.KEYCLOAK_REALM,
-  'auth-server-url': params.KEYCLOAK_URL + '/auth',
-  'clientId': params.KEYCLOAK_CLIENT_ID
-});
+function getKeykloak() {
+  if (process.env.REACT_APP_UI_DEV_MODE !== 'true') {
+
+    // We follow the best practice described in
+    // http://www.keycloak.org/docs/latest/securing_apps/index.html#_javascript_adapter
+    // and load keycloak.js from the keycloak server to ensure consistency of the keycloak server with the used js
+    // adapter.
+
+    // A json serialized object which can be used to define the keycloak instance can also be downloaded
+    // from the keycloak server once the renga ui client has been defined.
+    // eslint-disable-next-line
+    return Keycloak(keycloakDef);
+  } else {
+    const npmKeycloak = require('keycloak-js');
+    return npmKeycloak(keycloakDef);
+  }
+}
+
+const keycloak = getKeykloak();
 
 keycloak.init()
   .success((authenticated) => {
     if (authenticated) {
 
-      const client = new GitlabClient('/api/v4/', cookies.get('gitlab_token'), 'bearer');
+      const client = new GitlabClient(params.GITLAB_URL + '/api/v4/', cookies.get('gitlab_token'), 'bearer');
 
       ReactDOM.render(<App client={client} keycloak={keycloak} cookies={cookies} params={params}/>,
         document.getElementById('root'));
