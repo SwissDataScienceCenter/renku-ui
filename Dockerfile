@@ -1,10 +1,7 @@
 FROM node:alpine
 
 WORKDIR /app
-COPY package.json ./
-COPY ./src /app/src
-COPY ./public /app/public
-COPY docker-entrypoint.sh ./
+COPY . /app
 # We rename index.html so we can add the right source for the keyckoak apdaptor into the script tag
 # inside the entrypoint and rename it back to index.html. This will allow to change RENGA_ENDPOINT without
 # rebuilding the image.
