@@ -4,6 +4,11 @@ WORKDIR /app
 COPY package.json ./
 COPY ./src /app/src
 COPY ./public /app/public
-RUN npm install --silent
+COPY docker-entrypoint.sh ./
+# We rename index.html so we can add the right source for the keyckoak apdaptor into the script tag
+# inside the entrypoint and rename it back to index.html. This will allow to change RENGA_ENDPOINT without
+# rebuilding the image.
+RUN npm install --silent && mv public/index.html public/index-template.html
 EXPOSE 3000
-CMD sed -i -e "s|{{RENGA_ENDPOINT}}|${RENGA_ENDPOINT}|" public/index.html && npm start
+ENTRYPOINT ["/bin/sh", "/app/docker-entrypoint.sh"]
+CMD ["/usr/local/bin/npm",  "start"]
