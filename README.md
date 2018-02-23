@@ -1,46 +1,23 @@
-# incubator-renga-ui
+# Renga-ui
 
-Repo for exploring UI ideas
+The development branch of the Renga user interface contains a complete rewrite of the old ui which reflects the redesign
+of the Renga platform in general.   
 
 # Quickstart
-After cloning the repository simply run `./start.sh`. This will launch create any needed folders, start a
-a [GitLab instance](https://hub.docker.com/r/gitlab/gitlab-ce/) and the incubator-renga-ui in two separate docker containers.
-Note that the GitLab instance might take several minutes to start. Once everything is up and running you can access
-the Renga ui under `http://localhost:5000` and the GitLab UI under `http://localhost:5080`.
-
-# First Time
-For the time being, you have to create a GitLab token before you can do anything useful through the UI.
-Open `http://localhost:5080`. You should go through the steps to create a user and then log in.
-
-\[ If you prefer not to create a user, you can use `root/root-password` as initial username/password and the initial password ("root-password" or whatever you have set
-in the docker-compose file). \]
-
-Once you have logged in, you should create an access token for the current user
-`http://localhost:5080/profile/personal_access_tokens`. Now export the created access token and restart the services:
-
-Bash 
-```bash
-$ export GITLAB_SECRET_TOKEN=access-token
-$ docker-compose up -d
-```
-
-Fish
-```fish
-$ set -x GITLAB_SECRET_TOKEN access-token
-$ docker-compose up -d
-```
+The new Renga ui depends on a running instace of the development version of Renga being present (more precisely, it relies on 
+correctly prconfigured instances of gitlab and keycloak). Clone the main renga repository, checkout the development branch 
+and run `make start`. The ui should now be available under `http://localhost`.
 
 # Developing the UI
-The docker-compose file mounts the `./src` and `./public` into the ui container. You can therefore simply open the source
-code files and start editing. The development server running inside the container will detect these changes and update
-the UI automatically. However, for serious development you might want to run the development server on your machine directly
-and not inside a docker container. For this, change the target of the proxy definition inside `package.json` from
-`http://dev.gitlab:5080` to `http://localhost:5080` and the following commands:
+For a proper development setting run the following two commands after checking out the development branch of the 
+renga-ui repository:
 ```
 npm install
-npm start
+make dev
 ```
-This will make the ui available under `http://localhost:3000` (a browser tab should open automatically).
+This will run the ui outside of docker and make it available under `http://localhost:3000` (a browser tab 
+should open automatically). Note that also the development setting relies on a running instace of renga for gitlab and 
+keycloak.
 
 As long as you have executed `npm install` in your environment, you will have other commands defined in `package.json`,
-such as `npm run lint`, `npm build`, etc., available to you.
+such as `npm run lint`, etc., available to you.
