@@ -16,8 +16,20 @@
  * limitations under the License.
  */
 
-import { Contribution } from './render'
-import { NewContribution } from './new'
+/**
+ *  renga-ui
+ *
+ *  app-state/reducers.js
+ *  Put all reducers for the gloabal application state here.
+ */
 
-export { Contribution, NewContribution };
+import { SET_USER_INFO } from './actions.js'
 
+export const reducer = (state = {}, action) => {
+  switch (action.type) {
+  case SET_USER_INFO:
+    return {...state, user: action.user};
+  default:
+    return state;
+  }
+};

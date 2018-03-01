@@ -16,8 +16,16 @@
  * limitations under the License.
  */
 
-import { Contribution } from './render'
-import { NewContribution } from './new'
+/**
+ *  renga-ui
+ *
+ *  app-state/actions.js
+ *  Put all actions related to the gloabal application state here.
+ */
 
-export { Contribution, NewContribution };
+export const SET_USER_INFO = 'SET_USER_INFO';
 
+export const setUserInfo = (user) => ({
+  type: SET_USER_INFO,
+  user: user
+});

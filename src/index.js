@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { createStore } from './app-state/enhanced-state';
 import 'font-awesome/css/font-awesome.min.css';
 // Use our version of bootstrap, not the one in import 'bootstrap/dist/css/bootstrap.css';
 import './styles/index.css';
@@ -9,6 +10,8 @@ import { AppLoggedOut } from './App';
 import registerServiceWorker from './registerServiceWorker';
 import GitlabClient from './gitlab/client'
 import Cookies from 'universal-cookie'
+import { reducer } from './app-state/reducers';
+import { setUserInfo } from './app-state/actions';
 
 
 const cookies = new Cookies();
@@ -29,6 +32,9 @@ const keycloakDef = {
   url: params.KEYCLOAK_URL + '/auth',
   clientId: params.KEYCLOAK_CLIENT_ID
 };
+
+// We use a redux store to hold some global application state.
+const store = createStore(reducer);
 
 function getKeycloak() {
   if (process.env.REACT_APP_UI_DEV_MODE !== 'true') {
@@ -56,7 +62,11 @@ keycloak.init()
 
       const client = new GitlabClient(params.GITLAB_URL + '/api/v4/', cookies.get('gitlab_token'), 'bearer');
 
-      ReactDOM.render(<App client={client} keycloak={keycloak} cookies={cookies} params={params}/>,
+      // Load the user profile and dispatch the result to the store.
+      keycloak.loadUserProfile()
+        .success(profile => {store.dispatch(setUserInfo(profile))});
+
+      ReactDOM.render(<App client={client} keycloak={keycloak} cookies={cookies} params={params} store={store}/>,
         document.getElementById('root'));
     } else {
       ReactDOM.render(<AppLoggedOut keycloak={keycloak} cookies={cookies} params={params}/>,
