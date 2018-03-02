@@ -19,7 +19,7 @@ const params = {
   BASE_URL: process.env.REACT_APP_RENGA_UI_URL || 'http://localhost:5000',
   GITLAB_URL: process.env.REACT_APP_GITLAB_URL || 'http://docker.for.mac.localhost:5080',
   GITLAB_CLIENT_ID: 'renga-ui',
-  KEYCLOAK_URL: process.env.REACT_APP_RENGA_ENDPOINT || 'http://localhost',
+  KEYCLOAK_URL: process.env.REACT_APP_KEYCLOAK_URL || 'http://localhost',
   KEYCLOAK_REALM: 'Renga',
   KEYCLOAK_CLIENT_ID: 'renga-ui'
 };
@@ -30,7 +30,7 @@ const keycloakDef = {
   clientId: params.KEYCLOAK_CLIENT_ID
 };
 
-function getKeykloak() {
+function getKeycloak() {
   if (process.env.REACT_APP_UI_DEV_MODE !== 'true') {
 
     // We follow the best practice described in
@@ -48,7 +48,7 @@ function getKeykloak() {
   }
 }
 
-const keycloak = getKeykloak();
+const keycloak = getKeycloak();
 
 keycloak.init()
   .success((authenticated) => {

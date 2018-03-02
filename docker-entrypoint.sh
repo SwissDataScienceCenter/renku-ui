@@ -18,16 +18,16 @@
 
 echo "==================================================="
 echo " Configuration:"
-echo " RENGA_ENDPOINT=$RENGA_ENDPOINT"
+echo " KEYCLOAK_URL=$KEYCLOAK_URL"
 echo " GITLAB_URL=$GITLAB_URL"
 echo " RENGA_UI_URL=$RENGA_UI_URL"
 echo "==================================================="
 
-ESCAPED_RENGA_ENDPOINT=$(echo $RENGA_ENDPOINT | sed -e 's/\//\\\//g')
+ESCAPED_KEYCLOAK_URL=$(echo $KEYCLOAK_URL | sed -e 's/\//\\\//g')
 
 # Add the script tag which loads the keycloak js adapter from the keycloak server
 cat /app/public/index-template.html \
-  | sed "/<head>/s/.*/&<script src=\"$ESCAPED_RENGA_ENDPOINT\/auth\/js\/keycloak.js\"><\/script>/" \
+  | sed "/<head>/s/.*/&<script src=\"$ESCAPED_KEYCLOAK_URL\/auth\/js\/keycloak.js\"><\/script>/" \
   > /app/public/index.html
 
 cat /app/public/index.html

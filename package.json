@@ -29,7 +29,7 @@
   "scripts": {
     "build-css": "node-sass-chokidar --include-path ./src/styles --include-path ./node_modules src/styles/ -o src/styles/",
     "watch-css": "npm run build-css && node-sass-chokidar --include-path ./src/styles --include-path ./node_modules src/styles/ -o src/styles --watch --recursive",
-    "start-js": "REACT_APP_UI_DEV_MODE=$UI_DEV_MODE REACT_APP_RENGA_ENDPOINT=$RENGA_ENDPOINT REACT_APP_GITLAB_URL=$GITLAB_URL REACT_APP_RENGA_UI_URL=$RENGA_UI_URL react-scripts start",
+    "start-js": "REACT_APP_UI_DEV_MODE=$UI_DEV_MODE REACT_APP_RENGA_ENDPOINT=$RENGA_ENDPOINT REACT_APP_GITLAB_URL=$GITLAB_URL REACT_APP_RENGA_UI_URL=$RENGA_UI_URL REACT_APP_KEYCLOAK_URL=$KEYCLOAK_URL react-scripts start",
     "start": "npm-run-all -p watch-css start-js",
     "build": "npm run build-css && react-scripts build",
     "test": "react-scripts test --env=jsdom",
