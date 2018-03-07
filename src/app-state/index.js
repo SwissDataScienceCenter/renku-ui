@@ -16,7 +16,13 @@
  * limitations under the License.
  */
 
-import { Contribution } from './Contribution.present'
-import { NewContribution } from './Contribution.container'
+import { combineReducers } from 'redux';
 
-export { Contribution, NewContribution };
+import { User as UserState } from './AppState.user';
+
+// Combine all reducers here
+const reducer = combineReducers({
+  user: UserState.reducer
+});
+
+export { reducer, UserState };

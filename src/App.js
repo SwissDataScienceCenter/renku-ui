@@ -192,7 +192,8 @@ class App extends Component {
                   client={this.props.client} />} />
               <Route path="/projects/:projectId(\d+)/kus/:kuIid(\d+)"
                 render={p => <Ku.View key="ku" projectId={p.match.params.projectId}
-                  kuIid={p.match.params.kuIid} {...p} client={this.props.client}/> } />
+                  kuIid={p.match.params.kuIid} {...p} client={this.props.client}
+                  store={this.props.store}/> } />
               <Route exact path="/projects/:projectId(\d+)/ku_new"
                 render={(p) => <Ku.New key="ku_new" client={this.props.client} {...p}/>}/>
               {/* TODO Should we handle each type of file or just have a generic project files viewer? */}

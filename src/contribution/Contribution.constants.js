@@ -16,7 +16,19 @@
  * limitations under the License.
  */
 
-import { Contribution } from './Contribution.present'
-import { NewContribution } from './Contribution.container'
+const EDIT = 'edit';
+const PREVIEW = 'preview';
 
-export { Contribution, NewContribution };
+const patterns = {
+
+  // Matches (!)[linkText](filePath) references.
+  // linkText goes to first, filePath to second match group.
+  fileRefFull: /!?\[(.*?)]\((.*?)\)/g,
+
+  // Matches ![linkText](queryString references.
+  // (!)[linkText] goes to first, query to second match group.
+  fileRefTrigger: /(!?\[[^\])]+])\(([^)]*$)/
+};
+
+
+export { EDIT, PREVIEW, patterns };

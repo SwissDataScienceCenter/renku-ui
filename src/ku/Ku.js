@@ -34,11 +34,11 @@ import {Button, FormGroup, Input, Label} from 'reactstrap'
 import {Container, Jumbotron} from 'reactstrap'
 import {Table} from 'reactstrap'
 
-import {createStore} from '../UIState'
+import {createStore} from '../utils/EnhancedState'
 import State from './Ku.state'
-import {Avatar, TimeCaption, FieldGroup} from '../UIComponents'
+import {Avatar, TimeCaption, FieldGroup} from '../utils/UIComponents'
 import { getActiveProjectId } from '../App'
-import { Contribution } from '../contribution'
+import { Contribution, NewContribution } from '../contribution'
 
 
 class KuVisibility extends Component {
@@ -163,9 +163,9 @@ class KuViewDetails extends Component {
   }
 }
 
-// We sort the date strings instead of actual Date objects here - ok due to format.
+// We sort the date strings instead of actual Date objects here - ok due to ISO format.
 const KuViewContributions = (props) => props.contributions
-  .sort((el1, el2) => el1.created_at > el2.created_at)
+  .sort((el1, el2) => el1.created_at > el2.created_at ? 1 : -1)
   .map(cont => <Contribution key={cont.id} contribution={cont} client={props.client} projectId={props.projectId}/>);
 
 
@@ -174,7 +174,8 @@ class KuView extends Component {
     return [
       <KuViewHeader key="header" {...this.props} />,
       <KuViewDetails key="details" {...this.props} />,
-      <KuViewContributions key="contributions" {...this.props} />
+      <KuViewContributions key="contributions" {...this.props} />,
+      <NewContribution key="newContribution" {...this.props} />
     ]
   }
 }
@@ -186,6 +187,7 @@ class View extends Component {
     this.store = createStore(State.View.reducer);
     this.store.dispatch(this.retrieveKu());
     this.retrieveContributions();
+    this.state = {contributions: []}
   }
 
   retrieveKu() {
@@ -194,6 +196,14 @@ class View extends Component {
         dispatch(State.View.setAll(d))
       })
     }
+  }
+
+  appendContribution(newContribution) {
+    this.setState(prevState => {
+      let newContributions = [...prevState.contributions];
+      newContributions.push({...newContribution});
+      return {...prevState, contributions: newContributions}
+    })
   }
 
   retrieveContributions() {
@@ -217,7 +227,10 @@ class View extends Component {
   render() {
     const VisibleKuView = connect(this.mapStateToProps, this.mapDispatchToProps)(KuView);
     return <Provider key="new" store={this.store}>
-      <VisibleKuView contributions={this.state ? this.state.contributions : []} {...this.props}/>
+      <VisibleKuView
+        contributions={this.state ? this.state.contributions : []}
+        appendContribution={this.appendContribution.bind(this)}
+        {...this.props}/>
     </Provider>
   }
 }

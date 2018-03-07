@@ -101,7 +101,19 @@ export default class GitlabClient {
 
     return fetch(this._baseUrl + `projects/${projectId}/issues/${kuIid}/notes`, {
       method: 'GET',
+      headers: headers
+    })
+      .then(response => response.json())
+  }
+
+  postContribution(projectId, kuIid, contribution) {
+    let headers = this.getBasicHeaders();
+    headers.append('Content-Type', 'application/json');
+
+    return fetch(this._baseUrl + `projects/${projectId}/issues/${kuIid}/notes`, {
+      method: 'POST',
       headers: headers,
+      body: JSON.stringify({body: contribution})
     })
       .then(response => response.json())
   }
@@ -120,6 +132,15 @@ export default class GitlabClient {
         console.error('Unknown encoding');
       })
       .catch(error => {console.log(error)})
+  }
+
+  getRepositoryTree(projectId, path) {  
+    let headers = this.getBasicHeaders();
+    return fetch(this._baseUrl + `projects/${projectId}/repository/tree?path=${path}`, {
+      method: 'GET',
+      headers: headers
+    })
+      .then(response => response.json())
   }
 }
 

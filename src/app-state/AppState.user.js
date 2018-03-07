@@ -16,7 +16,23 @@
  * limitations under the License.
  */
 
-import { Contribution } from './Contribution.present'
-import { NewContribution } from './Contribution.container'
 
-export { Contribution, NewContribution };
+const SET_USER_INFO = 'SET_USER_INFO';
+
+const User = {
+  // Actions related to user state...
+  set: (user) => {
+    return { type: SET_USER_INFO, payload: user };
+  },
+  // ... and the reducer.
+  reducer: (state = null, action) => {
+    switch (action.type) {
+    case SET_USER_INFO:
+      return action.payload;
+    default:
+      return state;
+    }
+  }
+};
+
+export { User };

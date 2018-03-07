@@ -27,7 +27,7 @@ import React, { Component } from 'react';
 
 import { Provider, connect } from 'react-redux'
 
-import { createStore } from '../UIState'
+import { createStore } from '../utils/EnhancedState'
 import Present from './Landing.present'
 import State from './Landing.state'
 
