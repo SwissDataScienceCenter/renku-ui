@@ -15,12 +15,12 @@ import { UserState, reducer} from './app-state';
 const cookies = new Cookies();
 
 // We define a parameter object and pass it down via props. This could maybe be stored
-// in redux instead. For lazy (mac) developers the right defaults are provided...
+// in redux instead.
 const params = {
-  BASE_URL: process.env.REACT_APP_RENGA_UI_URL || 'http://localhost:5000',
-  GITLAB_URL: process.env.REACT_APP_GITLAB_URL || 'http://docker.for.mac.localhost:5080',
+  BASE_URL: process.env.REACT_APP_RENGA_UI_URL,
+  GITLAB_URL: process.env.REACT_APP_GITLAB_URL,
   GITLAB_CLIENT_ID: 'renga-ui',
-  KEYCLOAK_URL: process.env.REACT_APP_KEYCLOAK_URL || 'http://localhost',
+  KEYCLOAK_URL: process.env.REACT_APP_KEYCLOAK_URL,
   KEYCLOAK_REALM: 'Renga',
   KEYCLOAK_CLIENT_ID: 'renga-ui'
 };
