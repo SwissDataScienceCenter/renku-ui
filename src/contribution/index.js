@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-import { Contribution } from './render'
-import { NewContribution } from './new'
+import { Contribution, NewContribution } from './Contribution.present'
+import { NewContributionContainer } from './Contribution.container'
 
-export { Contribution, NewContribution };
+export { Contribution, NewContribution, NewContributionContainer };
 

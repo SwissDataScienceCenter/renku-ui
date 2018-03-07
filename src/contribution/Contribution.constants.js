@@ -1,3 +1,6 @@
+const EDIT = 'edit';
+const PREVIEW = 'preview';
+
 const patterns = {
 
   // Matches (!)[linkText](filePath) references.
@@ -9,4 +12,5 @@ const patterns = {
   fileRefTrigger: /(!?\[[^\])]+])\(([^)]*$)/
 };
 
-export default patterns;
+
+export { EDIT, PREVIEW, patterns };

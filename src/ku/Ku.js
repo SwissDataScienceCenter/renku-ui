@@ -38,7 +38,7 @@ import {createStore} from '../app-state/enhanced-state'
 import State from './Ku.state'
 import {Avatar, TimeCaption, FieldGroup} from '../UIComponents'
 import { getActiveProjectId } from '../App'
-import { Contribution, NewContribution } from '../contribution'
+import { Contribution, NewContributionContainer } from '../contribution'
 
 
 class KuVisibility extends Component {
@@ -175,7 +175,7 @@ class KuView extends Component {
       <KuViewHeader key="header" {...this.props} />,
       <KuViewDetails key="details" {...this.props} />,
       <KuViewContributions key="contributions" {...this.props} />,
-      <NewContribution key="newContribution" {...this.props} />
+      <NewContributionContainer key="newContribution" {...this.props} />
     ]
   }
 }
