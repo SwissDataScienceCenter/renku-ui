@@ -29,7 +29,7 @@ import { Provider, connect } from 'react-redux'
 
 import { Row, Col } from 'reactstrap';
 
-import { createStore } from '../app-state/enhanced-state'
+import { createStore } from '../utils/EnhancedState'
 import Present from './Project.present'
 import State from './Project.state'
 

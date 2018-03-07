@@ -16,20 +16,23 @@
  * limitations under the License.
  */
 
-/**
- *  renga-ui
- *
- *  app-state/reducers.js
- *  Put all reducers for the gloabal application state here.
- */
 
-import { SET_USER_INFO } from './actions.js'
+const SET_USER_INFO = 'SET_USER_INFO';
 
-export const reducer = (state = {}, action) => {
-  switch (action.type) {
-  case SET_USER_INFO:
-    return {...state, user: action.user};
-  default:
-    return state;
+const User = {
+  // Actions related to user state...
+  set: (user) => {
+    return { type: SET_USER_INFO, payload: user };
+  },
+  // ... and the reducer.
+  reducer: (state = null, action) => {
+    switch (action.type) {
+    case SET_USER_INFO:
+      return action.payload;
+    default:
+      return state;
+    }
   }
 };
+
+export { User };

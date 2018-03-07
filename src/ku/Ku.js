@@ -34,11 +34,11 @@ import {Button, FormGroup, Input, Label} from 'reactstrap'
 import {Container, Jumbotron} from 'reactstrap'
 import {Table} from 'reactstrap'
 
-import {createStore} from '../app-state/enhanced-state'
+import {createStore} from '../utils/EnhancedState'
 import State from './Ku.state'
-import {Avatar, TimeCaption, FieldGroup} from '../UIComponents'
+import {Avatar, TimeCaption, FieldGroup} from '../utils/UIComponents'
 import { getActiveProjectId } from '../App'
-import { Contribution, NewContributionContainer } from '../contribution'
+import { Contribution, NewContribution } from '../contribution'
 
 
 class KuVisibility extends Component {
@@ -175,7 +175,7 @@ class KuView extends Component {
       <KuViewHeader key="header" {...this.props} />,
       <KuViewDetails key="details" {...this.props} />,
       <KuViewContributions key="contributions" {...this.props} />,
-      <NewContributionContainer key="newContribution" {...this.props} />
+      <NewContribution key="newContribution" {...this.props} />
     ]
   }
 }

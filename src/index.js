@@ -1,18 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { createStore } from './app-state/enhanced-state';
+import { createStore } from './utils/EnhancedState';
 import 'font-awesome/css/font-awesome.min.css';
 // Use our version of bootstrap, not the one in import 'bootstrap/dist/css/bootstrap.css';
 import './styles/index.css';
 import './index.css';
 import App from './App';
 import { AppLoggedOut } from './App';
-import registerServiceWorker from './registerServiceWorker';
+import registerServiceWorker from './utils/ServiceWorker';
 import GitlabClient from './gitlab/client'
 import Cookies from 'universal-cookie'
-import { reducer } from './app-state/reducers';
-import { setUserInfo } from './app-state/actions';
-
+import { UserState, reducer} from './app-state';
 
 const cookies = new Cookies();
 
@@ -64,7 +62,7 @@ keycloak.init()
 
       // Load the user profile and dispatch the result to the store.
       keycloak.loadUserProfile()
-        .success(profile => {store.dispatch(setUserInfo(profile))});
+        .success(profile => {store.dispatch(UserState.set(profile))});
 
       ReactDOM.render(<App client={client} keycloak={keycloak} cookies={cookies} params={params} store={store}/>,
         document.getElementById('root'));

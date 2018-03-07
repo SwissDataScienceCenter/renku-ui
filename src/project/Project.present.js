@@ -36,7 +36,7 @@ import { Table } from 'reactstrap'
 
 import ReactMarkdown from 'react-markdown'
 
-import { Avatar, TimeCaption, FieldGroup } from '../UIComponents'
+import { Avatar, TimeCaption, FieldGroup } from '../utils/UIComponents'
 
 
 

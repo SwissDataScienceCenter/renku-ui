@@ -16,16 +16,13 @@
  * limitations under the License.
  */
 
-/**
- *  renga-ui
- *
- *  app-state/actions.js
- *  Put all actions related to the gloabal application state here.
- */
+import { combineReducers } from 'redux';
 
-export const SET_USER_INFO = 'SET_USER_INFO';
+import { User as UserState } from './AppState.user';
 
-export const setUserInfo = (user) => ({
-  type: SET_USER_INFO,
-  user: user
+// Combine all reducers here
+const reducer = combineReducers({
+  user: UserState.reducer
 });
+
+export { reducer, UserState };
