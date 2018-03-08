@@ -27,7 +27,7 @@ import React from 'react';
 import ReactDom from 'react-dom';
 import ReactMarkdown from 'react-markdown'
 import hljs from 'highlight.js'
-import JupyterNotebook from 'react-jupyter'
+import { JupyterNotebook } from './File.container'
 import '../../node_modules/highlight.js/styles/atom-one-light.css'
 
 
@@ -96,8 +96,11 @@ export class FilePreview extends React.Component {
     }
     // Jupyter Notebook
     if (this.getFileExtension() === 'ipynb'){
-      console.log(atob(this.props.file.content));
-      return <JupyterNotebook notebook={JSON.parse(atob(this.props.file.content))} showCode={true}/>;
+      return <JupyterNotebook
+        notebook={JSON.parse(atob(this.props.file.content))}
+        filePath={this.props.file.file_path}
+        projectId={this.props.projectId}
+        client={this.props.client}/>;
     }
 
     // File extension not supported

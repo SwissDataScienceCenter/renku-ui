@@ -16,44 +16,31 @@
  * limitations under the License.
  */
 
-/**
- *  incubator-renga-ui
- *
- *  Notebook.js
- *  Container components for rendering notebooks.
- */
-
 import React, { Component } from 'react';
 
-import { JupyterNotebook } from './File.container'
+import { JupyterNotebookPresent } from './File.present';
 
 
-class Show extends Component {
-  constructor(props) {
+class JupyterNotebookContainer extends Component {
+  constructor(props){
     super(props);
-    this.state = {notebook: null}
-  }
-  componentDidMount() {
-    this.retrieveNotebook()
+    this.state = {deploymentUrl: undefined}
   }
 
-  retrieveNotebook() {
-    this.props.client.getProjectFile(this.props.projectId, this.props.path)
-      .then(json => {
-        console.log(json);
-        const notebook = JSON.parse(json);
-        this.setState({notebook});
-      });
+  componentDidMount() {
+    this.getDetploymentUrl()
+  }
+
+  getDetploymentUrl() {
+    this.props.client.getDeploymentUrl(this.props.projectId, this.props.filePath)
+      .then(url => this.setState({deploymentUrl: url}))
   }
 
   render() {
-    if (this.state.notebook == null) return <div>Loading...</div>
-    return (<JupyterNotebook
-      notebook={this.state.notebook}
-      filePath={this.props.path}
-      client={this.props.client}
-      projectId={this.props.projectId}/>)
+    return <JupyterNotebookPresent
+      notebook={this.props.notebook}
+      deploymentUrl={this.state.deploymentUrl}/>
   }
 }
 
-export default { Show };
+export { JupyterNotebookContainer as JupyterNotebook };

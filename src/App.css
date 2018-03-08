@@ -81,3 +81,13 @@ body {
 .text-link input[type="button"]:focus {
   outline: none;
 }
+
+.deployButton {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+}
+
+.positioned {
+  position: relative
+}
