@@ -52,7 +52,9 @@ class ContributionBody extends React.Component {
 
   render() {
     return <ContributionBodyPresent
+      client={this.props.client}
       blocks={this.state.blocks}
+      projectId={this.props.projectId}
       onReferenceClick={iBlock => this.modifyBlock(iBlock, 'isOpened', !this.state.blocks[iBlock].isOpened)}
     />
   }
