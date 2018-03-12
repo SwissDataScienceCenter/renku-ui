@@ -23,13 +23,13 @@ echo " GITLAB_URL=$GITLAB_URL"
 echo " RENGA_UI_URL=$RENGA_UI_URL"
 echo "==================================================="
 
-ESCAPED_KEYCLOAK_URL=$(echo $KEYCLOAK_URL | sed -e 's/\//\\\//g')
+# Optimized production build
+npm run-script build
 
 # Add the script tag which loads the keycloak js adapter from the keycloak server
-cat /app/public/index-template.html \
-  | sed "/<head>/s/.*/&<script src=\"$ESCAPED_KEYCLOAK_URL\/auth\/js\/keycloak.js\"><\/script>/" \
-  > /app/public/index.html
+ESCAPED_KEYCLOAK_URL=$(echo $KEYCLOAK_URL | sed -e 's/\//\\\//g')
+sed -i -e "s/<head>/<head><script src=\"$ESCAPED_KEYCLOAK_URL\/auth\/js\/keycloak.js\"><\/script>/" /app/build/index.html
 
-cat /app/public/index.html
+cat /app/build/index.html
 
 exec -- $@
