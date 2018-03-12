@@ -134,7 +134,7 @@ export default class GitlabClient {
       .catch(error => {console.log(error)})
   }
 
-  getRepositoryTree(projectId, path) {  
+  getRepositoryTree(projectId, path) {
     let headers = this.getBasicHeaders();
     return fetch(this._baseUrl + `projects/${projectId}/repository/tree?path=${path}`, {
       method: 'GET',
@@ -168,6 +168,7 @@ function carveProject(projectJson) {
   result['metadata']['visibility']['level'] = projectJson['visibility'];
 
   result['metadata']['core']['created_at'] = projectJson['created_at'];
+  result['metadata']['core']['last_activity_at'] = projectJson['last_activity_at'];
   result['metadata']['core']['id'] = projectJson['id'];
   result['metadata']['core']['description'] = projectJson['description'];
   result['metadata']['core']['displayId'] = projectJson['path_with_namespace'];
