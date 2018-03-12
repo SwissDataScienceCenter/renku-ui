@@ -111,7 +111,8 @@ class View extends Component {
     const title = displayMetadataValue(state.core, 'title', 'no title');
     const description = displayMetadataValue(state.core, 'description', 'no description');
     const readmeText = state.data.readme.text;
-    return {title, description, displayId, internalId, visibilityLevel, externalUrl, readmeText}
+    const lastActivityAt = state.core.last_activity_at;
+    return {title, description, displayId, internalId, visibilityLevel, externalUrl, readmeText, lastActivityAt}
   }
 
   render() {

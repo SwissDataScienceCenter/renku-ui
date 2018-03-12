@@ -31,15 +31,14 @@ import { Link }  from 'react-router-dom'
 
 import { Row, Col } from 'reactstrap';
 import { Button, FormGroup, Input, Label } from 'reactstrap'
-import { Container, Jumbotron } from 'reactstrap'
-import { Table } from 'reactstrap'
+import { Container } from 'reactstrap'
+import { Nav, NavItem, NavLink } from 'reactstrap';
+import { Card, CardHeader } from 'reactstrap';
+import { Badge } from 'reactstrap';
 
 import ReactMarkdown from 'react-markdown'
 
 import { Avatar, TimeCaption, FieldGroup } from '../utils/UIComponents'
-
-
-
 
 class DataVisibility extends Component {
   render() {
@@ -78,36 +77,55 @@ class ProjectViewHeader extends Component {
     const title = this.props.title;
     const description = this.props.description;
     return (
-      <Jumbotron key="header" fluid>
-        <Container fluid>
-          <h1>{title}</h1>
-          <p className="lead">{description}</p>
-        </Container>
-      </Jumbotron>
+      <Container fluid>
+        <Row>
+          <Col sm={12} md={8}>
+            <h3>{title}</h3>
+            <p className="lead">{description}</p>
+          </Col>
+          <Col sm={12} md={4}>
+            <p>
+              <Badge color="primary">python</Badge>&nbsp;
+              <Badge color="primary">linear model</Badge>&nbsp;
+              <Badge color="primary">weather</Badge>&nbsp;
+            </p>
+            <p><b>Stars</b> 5</p>
+          </Col>
+        </Row>
+      </Container>
     )
   }
 }
 
-class ProjectViewDetails extends Component {
+class ProjectNav extends Component {
 
   render() {
-    const displayId = this.props.displayId;
-    const internalId = this.props.internalId;
-    const visibilityLevel = this.props.visibilityLevel;
-    const externalUrl = this.props.externalUrl;
+    const selected = 'overview';
+    const dummy = () => { }
+    const onOverview = dummy
+    const onKus = dummy;
+    const onData = dummy;
+    const onWorkflows = dummy;
+    const onFiles = dummy;
+    // const visibleTab = <ProjectList {...this.props} />
+    // let visibleTab = <YourActivity />
+    // if (selected === 'your_network') visibleTab = <YourNetwork />
+    // if (selected === 'explore') visibleTab = <Explore />
     return (
-      <Table key="metadata" size="sm">
-        <tbody>
-          <tr>
-            <th scope="row">Id</th>
-            <td><a href={externalUrl}>{displayId} [{internalId}]</a></td>
-          </tr>
-          <tr>
-            <th scope="row">Visibility</th>
-            <td>{visibilityLevel}</td>
-          </tr>
-        </tbody>
-      </Table>)
+      <Nav pills className={'nav-pills-underline'}>
+        <NavItem>
+          <NavLink href="#" active={selected === 'overview'}
+            onClick={onOverview}>Overview</NavLink>
+        </NavItem>
+        <NavItem><NavLink href="#" active={selected === 'kus'}
+          onClick={onKus}>Kus</NavLink></NavItem>
+        <NavItem><NavLink href="#" active={selected === 'data'}
+          onClick={onData}>Data</NavLink></NavItem>
+        <NavItem><NavLink href="#" active={selected === 'workflows'}
+          onClick={onWorkflows}>Workflows</NavLink></NavItem>
+        <NavItem><NavLink href="#" active={selected === 'files'}
+          onClick={onFiles}>Files</NavLink></NavItem>
+      </Nav>)
   }
 }
 
@@ -115,9 +133,37 @@ class ProjectViewReadme extends Component {
 
   render() {
     const readmeText = this.props.readmeText;
+    return (
+      <Card body className="border-0">
+        <CardHeader>README.md</CardHeader>
+        <ReactMarkdown key="readme" source={readmeText} />
+      </Card>
+    )
+  }
+}
+
+class ProjectViewStats extends Component {
+
+  render() {
+    const lastActivityAt = this.props.lastActivityAt;
     return [
-      <hr key="break" />,
-      <ReactMarkdown key="readme" source={readmeText} />
+      <h3 key="header">Stats</h3>,
+      <TimeCaption key="time-caption" time={lastActivityAt} />,
+      <p key="stats">
+        <b>Kus</b> 5; 1 closed, 2 active<br />
+        <b>Contributors</b> 3<br />
+        <b>Notebooks</b> 3
+      </p>,
+    ]
+  }
+}
+
+class ProjectViewOverview extends Component {
+
+  render() {
+    return [
+      <Col key="ststs" sm={12} md={3}><br /><ProjectViewStats {...this.props} /></Col>,
+      <Col key="readme" sm={12} md={9}><ProjectViewReadme key="readme" {...this.props} /></Col>
     ]
   }
 }
@@ -127,8 +173,10 @@ class ProjectView extends Component {
   render() {
     return [
       <Row key="header"><Col md={12}><ProjectViewHeader key="header" {...this.props} /></Col></Row>,
-      <Row key="details"><Col md={12}><ProjectViewDetails key="details" {...this.props} /></Col></Row>,
-      <Row key="readme"><Col md={12}><ProjectViewReadme key="readme" {...this.props} /></Col></Row>
+      <Row key="nav"><Col md={12}><ProjectNav key="nav" {...this.props} /></Col></Row>,
+      <Row key="readme">
+        <ProjectViewOverview key="overview" {...this.props} />
+      </Row>
     ]
   }
 }
