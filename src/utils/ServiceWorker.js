@@ -45,6 +45,9 @@ export default function register() {
 
 function registerValidSW(swUrl) {
   navigator.serviceWorker
+  // Chrome dev tools break on uncaught exception thrown inside the Promise constructor
+  // https://bugs.chromium.org/p/chromium/issues/detail?id=465666
+  // A bit annoying, but it will go away for proper deployments using https.
     .register(swUrl)
     .then(registration => {
       registration.onupdatefound = () => {
