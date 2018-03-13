@@ -28,8 +28,7 @@ import React, { Component } from 'react';
 import './App.css';
 import logo from './logo.svg';
 
-import { BrowserRouter as Router, Route, Switch, Link, NavLink as RRNavLink, Redirect }  from 'react-router-dom'
-import { NavLink } from 'reactstrap';
+import { BrowserRouter as Router, Route, Switch, Link, Redirect }  from 'react-router-dom'
 // import { IndexLinkContainer } from 'react-router-bootstrap';
 // import { FormGroup, FormControl, InputGroup } from 'react-bootstrap'
 // import { MenuItem, Nav, Navbar, NavItem, NavDropdown } from 'react-bootstrap'
@@ -42,14 +41,8 @@ import Ku from './ku/Ku'
 import Landing from './landing/Landing'
 import Notebook from './file/Notebook'
 import Login from './login'
+import { RengaNavLink } from './utils/UIComponents'
 
-class RengaNavItem extends Component {
-  render() {
-    const to = this.props.to;
-    const title = this.props.title;
-    return <NavLink exact to={to} tag={RRNavLink}>{title}</NavLink>
-  }
-}
 
 function getActiveProjectId(currentPath) {
   try {
@@ -91,7 +84,6 @@ class RengaNavBar extends Component {
 
     // Display the Ku related header options only if a project is active.
     const activeProjectId = getActiveProjectId(this.props.location.pathname);
-    const kuNavelement = activeProjectId ? <RengaNavItem to={`/projects/${activeProjectId}/kus`} title="Kus" /> : null;
     const kuDropdown = activeProjectId ? <a className="dropdown-item" href="ku_new">Ku</a> : null;
     // TODO If there is is an active project, show it in the navbar
 
@@ -117,9 +109,8 @@ class RengaNavBar extends Component {
             </form>
 
             <ul className="navbar-nav mr-auto">
-              <RengaNavItem to="/" title="Home" />
-              <RengaNavItem to="/projects" title="Projects"/>
-              {kuNavelement}
+              <RengaNavLink to="/" title="Home" />
+              <RengaNavLink to="/projects" title="Projects"/>
             </ul>
             <ul className="navbar-nav">
               <li className="nav-item dropdown">
@@ -140,8 +131,8 @@ class RengaNavBar extends Component {
                 <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                   {/*FIXME: Fix styling of dropdown items here and avoid using html links in dropdown items (above)*/}
                   {/*FIXME: as this will trigger a complete reload of the page.*/}
-                  <RengaNavItem to="/user" title="Profile" />
-                  <RengaNavItem to="/logout" title="Logout" />
+                  <RengaNavLink to="/user" title="Profile" />
+                  <RengaNavLink to="/logout" title="Logout" />
                 </div>
               </li>
             </ul>
@@ -184,16 +175,11 @@ class App extends Component {
                 render={p => <Landing.Home key="landing" {...p} />} />
               <Route exact path="/projects"
                 render={p => <Project.List key="projects" {...p} client={this.props.client} />} />
-              <Route exact path="/projects/:id(\d+)"
-                render={p => <Project.View key="project" id={p.match.params.id} {...p} client={this.props.client}/>} />
+              {/* pull out the underlying parts of the url and pass them to the project view */}
+              <Route path="/projects/:id(\d+)"
+                render={p => <Project.View key="project" id={p.match.params.id} {...p}
+                  client={this.props.client} store={this.props.store} />} />
               <Route exact path="/project_new" component={Project.New} client={this.props.client} />
-              <Route exact path="/projects/:projectId(\d+)/kus"
-                render={p => <Ku.List key="kus" projectId={p.match.params.projectId} {...p}
-                  client={this.props.client} />} />
-              <Route path="/projects/:projectId(\d+)/kus/:kuIid(\d+)"
-                render={p => <Ku.View key="ku" projectId={p.match.params.projectId}
-                  kuIid={p.match.params.kuIid} {...p} client={this.props.client}
-                  store={this.props.store}/> } />
               <Route exact path="/projects/:projectId(\d+)/ku_new"
                 render={(p) => <Ku.New key="ku_new" client={this.props.client} {...p}/>}/>
               {/* TODO Should we handle each type of file or just have a generic project files viewer? */}

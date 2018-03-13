@@ -248,7 +248,7 @@ class KuListRow extends Component {
     return (
       <Row className="ku-list-row">
         <Col md={1}><Avatar/></Col>
-        <Col md={9}>
+        <Col md={11}>
           <p><b>{title}</b></p>
           <p>{description} <TimeCaption caption="Updated" time={time}/></p>
         </Col>
@@ -264,7 +264,7 @@ class KuList extends Component {
     return [
       <Row key="header"><Col md={8}><h1>Kus</h1></Col></Row>,
       <Row key="spacer"><Col md={8}>&nbsp;</Col></Row>,
-      <Row key="timeline"><Col md={8}>{rows}</Col></Row>
+      <Row key="timeline"><Col md={12}>{rows}</Col></Row>
     ]
   }
 }

@@ -27,7 +27,7 @@
 
 import React, { Component } from 'react';
 
-import { Link }  from 'react-router-dom'
+import {  Link, Route }  from 'react-router-dom'
 
 import { Row, Col } from 'reactstrap';
 import { Button, FormGroup, Input, Label } from 'reactstrap'
@@ -38,7 +38,7 @@ import { Badge } from 'reactstrap';
 
 import ReactMarkdown from 'react-markdown'
 
-import { Avatar, TimeCaption, FieldGroup } from '../utils/UIComponents'
+import { Avatar, TimeCaption, FieldGroup, RengaNavLink } from '../utils/UIComponents'
 
 class DataVisibility extends Component {
   render() {
@@ -101,9 +101,7 @@ class ProjectNav extends Component {
 
   render() {
     const selected = 'overview';
-    const dummy = () => { }
-    const onOverview = dummy
-    const onKus = dummy;
+    const dummy = () => { };
     const onData = dummy;
     const onWorkflows = dummy;
     const onFiles = dummy;
@@ -114,11 +112,11 @@ class ProjectNav extends Component {
     return (
       <Nav pills className={'nav-pills-underline'}>
         <NavItem>
-          <NavLink href="#" active={selected === 'overview'}
-            onClick={onOverview}>Overview</NavLink>
+          <RengaNavLink to={this.props.overviewUrl} title="Overview" />
         </NavItem>
-        <NavItem><NavLink href="#" active={selected === 'kus'}
-          onClick={onKus}>Kus</NavLink></NavItem>
+        <NavItem>
+          <RengaNavLink exact={false} to={this.props.kusUrl} title="Kus" />
+        </NavItem>
         <NavItem><NavLink href="#" active={selected === 'data'}
           onClick={onData}>Data</NavLink></NavItem>
         <NavItem><NavLink href="#" active={selected === 'workflows'}
@@ -162,8 +160,23 @@ class ProjectViewOverview extends Component {
 
   render() {
     return [
-      <Col key="ststs" sm={12} md={3}><br /><ProjectViewStats {...this.props} /></Col>,
+      <Col key="stats" sm={12} md={3}><br /><ProjectViewStats {...this.props} /></Col>,
       <Col key="readme" sm={12} md={9}><ProjectViewReadme key="readme" {...this.props} /></Col>
+    ]
+  }
+}
+
+class ProjectViewKus extends Component {
+
+  render() {
+    return [
+      <Col key="kulist" sm={12} md={4}><br />
+        {this.props.kuList}
+      </Col>,
+      <Col key="ku" sm={12} md={8}>
+        <Route path={this.props.kuUrl}
+          render={props => this.props.kuView(props) }/>
+      </Col>
     ]
   }
 }
@@ -174,9 +187,14 @@ class ProjectView extends Component {
     return [
       <Row key="header"><Col md={12}><ProjectViewHeader key="header" {...this.props} /></Col></Row>,
       <Row key="nav"><Col md={12}><ProjectNav key="nav" {...this.props} /></Col></Row>,
-      <Row key="readme">
-        <ProjectViewOverview key="overview" {...this.props} />
-      </Row>
+      <Container key="content" fluid>
+        <Row>
+          <Route exact path={this.props.overviewUrl}
+            render={props => <ProjectViewOverview key="overview" {...this.props} /> }/>
+          <Route path={this.props.kusUrl}
+            render={props => <ProjectViewKus key="kus" {...this.props} /> }/>
+        </Row>
+      </Container>
     ]
   }
 }
@@ -193,6 +211,7 @@ class ProjectListRow extends Component {
   }
 
   render() {
+    // TODO: Replace all paths with props to allow routing to be controlled at the top level
     const title = <Link to={`/projects/${this.props.id}`}>{this.displayMetadataValue('name', 'no title')}</Link>
     const description = this.props.description !== '' ? this.props.description : 'No description available';
     return (
