@@ -32,6 +32,7 @@ import { Row, Col } from 'reactstrap';
 import { createStore } from '../utils/EnhancedState'
 import Present from './Project.present'
 import State from './Project.state'
+import Ku from '../ku/Ku'
 
 class New extends Component {
   constructor(props) {
@@ -82,12 +83,6 @@ class New extends Component {
   }
 }
 
-function displayMetadataValue(metadata, field, defaultValue) {
-  let value = metadata[field];
-  if (value == null) value = defaultValue;
-  return value;
-}
-
 class View extends Component {
   constructor(props) {
     super(props);
@@ -104,22 +99,40 @@ class View extends Component {
   }
 
   mapStateToProps(state, ownProps) {
+    // Display properties
     const displayId = state.core.displayId;
-    const internalId = state.core.id;
+    const internalId = state.core.id || ownProps.match.params.id;
     const visibilityLevel = state.visibility.level;
     const externalUrl = state.core.external_url;
-    const title = displayMetadataValue(state.core, 'title', 'no title');
-    const description = displayMetadataValue(state.core, 'description', 'no description');
+    const title = state.core.title || 'no title';
+    const description = state.core.description || 'no description';
     const readmeText = state.data.readme.text;
     const lastActivityAt = state.core.last_activity_at;
-    return {title, description, displayId, internalId, visibilityLevel, externalUrl, readmeText, lastActivityAt}
+
+    // Routing properties
+    const baseUrl = ownProps.match.isExact ? ownProps.match.url.slice(0, -1) : ownProps.match.url;
+    const overviewUrl = `${baseUrl}/`;
+    const kusUrl = `${baseUrl}/kus`;
+    const kuUrl = `${baseUrl}/kus/:kuIid(\\d+)`;
+    const kuList = <Ku.List key="kus" projectId={internalId} {...ownProps} client={ownProps.client} />
+    const kuView = (p) => <Ku.View key="ku" projectId={internalId}
+      kuIid={p.match.params.kuIid} {...p} client={ownProps.client}
+      store={ownProps.rootStore} />
+    return {title, description, displayId, internalId, visibilityLevel,
+      externalUrl, readmeText, lastActivityAt,
+      overviewUrl, kusUrl,
+      kuList, kuUrl, kuView}
   }
 
   render() {
     const VisibleProjectView = connect(this.mapStateToProps)(Present.ProjectView);
     return (
-      <Provider key="new" store={this.store}>
-        <VisibleProjectView />
+      <Provider key="view" store={this.store}>
+        <VisibleProjectView
+          client={this.props.client}
+          rootStore={this.props.store}
+          match={this.props.match}
+        />
       </Provider>)
   }
 }

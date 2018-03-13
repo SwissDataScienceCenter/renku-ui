@@ -29,6 +29,9 @@ import { FormGroup, FormText, Input, Label } from 'reactstrap';
 import FontAwesome from 'react-fontawesome'
 import human from 'human-time';
 
+import { NavLink as RRNavLink }  from 'react-router-dom'
+import { NavLink } from 'reactstrap';
+
 class Avatar extends Component {
   render() {
     const img = this.props.avatar;
@@ -62,4 +65,13 @@ class TimeCaption extends Component {
   }
 }
 
-export { Avatar, TimeCaption, FieldGroup };
+class RengaNavLink extends Component {
+  render() {
+    const to = this.props.to;
+    const title = this.props.title;
+    const exact = (this.props.exact != null) ? this.props.exact : true;
+    return <NavLink exact={exact} to={to} tag={RRNavLink}>{title}</NavLink>
+  }
+}
+
+export { Avatar, TimeCaption, FieldGroup, RengaNavLink };
