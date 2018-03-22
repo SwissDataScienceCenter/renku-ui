@@ -28,6 +28,10 @@ class ContributionBody extends React.Component {
     super(props);
     const blocks = matchRefs(this.props.contribution.body);
     this.state = {blocks};
+  }
+
+  componentDidMount() {
+    const blocks = this.state.blocks;
     this.fetchRefs(blocks);
   }
 
