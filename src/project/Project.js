@@ -33,6 +33,7 @@ import { createStore } from '../utils/EnhancedState'
 import Present from './Project.present'
 import State from './Project.state'
 import Ku from '../ku/Ku'
+import Notebook from '../file/Notebook'
 
 class New extends Component {
   constructor(props) {
@@ -114,14 +115,22 @@ class View extends Component {
     const overviewUrl = `${baseUrl}/`;
     const kusUrl = `${baseUrl}/kus`;
     const kuUrl = `${baseUrl}/kus/:kuIid(\\d+)`;
+    const notebooksUrl = `${baseUrl}/notebooks`;
+    const notebookUrl = `${baseUrl}/notebooks/:notebookPath`;
     const kuList = <Ku.List key="kus" projectId={internalId} {...ownProps} client={ownProps.client} />
     const kuView = (p) => <Ku.View key="ku" projectId={internalId}
       kuIid={p.match.params.kuIid} {...p} client={ownProps.client}
       store={ownProps.rootStore} />
+    {/* TODO Should we handle each type of file or just have a generic project files viewer? */}
+    const notebookView = (p) => <Notebook.Show key="notebook"
+      projectId={internalId}
+      path={`notebooks/${p.match.params.notebookPath}`}
+      client={ownProps.client} {...p} />;
     return {title, description, displayId, internalId, visibilityLevel,
       externalUrl, readmeText, lastActivityAt,
-      overviewUrl, kusUrl,
-      kuList, kuUrl, kuView}
+      overviewUrl,
+      kusUrl, kuList, kuUrl, kuView,
+      notebooksUrl, notebookUrl, notebookView}
   }
 
   render() {

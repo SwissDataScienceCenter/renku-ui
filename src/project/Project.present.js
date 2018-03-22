@@ -117,6 +117,9 @@ class ProjectNav extends Component {
         <NavItem>
           <RengaNavLink exact={false} to={this.props.kusUrl} title="Kus" />
         </NavItem>
+        <NavItem>
+          <RengaNavLink exact={false} to={this.props.notebooksUrl} title="Notebooks" />
+        </NavItem>
         <NavItem><NavLink href="#" active={selected === 'data'}
           onClick={onData}>Data</NavLink></NavItem>
         <NavItem><NavLink href="#" active={selected === 'workflows'}
@@ -181,6 +184,21 @@ class ProjectViewKus extends Component {
   }
 }
 
+class ProjectViewNotebooks extends Component {
+
+  render() {
+    return [
+      <Col key="notebooks" sm={12} md={4}><br />
+        <h3>Notebooks</h3>
+      </Col>,
+      <Col key="notebook" sm={12} md={8}>
+        <Route path={this.props.notebookUrl}
+          render={props => this.props.notebookView(props) }/>
+      </Col>
+    ]
+  }
+}
+
 class ProjectView extends Component {
 
   render() {
@@ -193,6 +211,8 @@ class ProjectView extends Component {
             render={props => <ProjectViewOverview key="overview" {...this.props} /> }/>
           <Route path={this.props.kusUrl}
             render={props => <ProjectViewKus key="kus" {...this.props} /> }/>
+          <Route path={this.props.notebooksUrl}
+            render={props => <ProjectViewNotebooks key="notebooks" {...this.props} /> }/>
         </Row>
       </Container>
     ]
