@@ -173,10 +173,12 @@ class ProjectViewKus extends Component {
 
   render() {
     return [
-      <Col key="kulist" sm={12} md={4}><br />
+      <Col key="kulist" sm={12} md={4}>
+        <br key="spacer" />
         {this.props.kuList}
       </Col>,
       <Col key="ku" sm={12} md={8}>
+        <br key="spacer"/>
         <Route path={this.props.kuUrl}
           render={props => this.props.kuView(props) }/>
       </Col>
