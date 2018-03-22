@@ -31,8 +31,6 @@ import {Link} from 'react-router-dom'
 
 import {Row, Col} from 'reactstrap';
 import {Button, FormGroup, Input, Label} from 'reactstrap'
-import {Container, Jumbotron} from 'reactstrap'
-import {Table} from 'reactstrap'
 
 import {createStore} from '../utils/EnhancedState'
 import State from './Ku.state'
@@ -135,37 +133,17 @@ class KuViewHeader extends Component {
   render() {
     const title = this.props.title || 'no title';
     const description = this.props.description || 'no description';
-    return (
-      <Jumbotron key="header" fluid>
-        <Container fluid>
-          <h1>{title}</h1>
-          <p className="lead">{description}</p>
-        </Container>
-      </Jumbotron>
-    )
-  }
-}
-
-
-class KuViewDetails extends Component {
-
-  render() {
-    const visibilityLevel = this.props.confidential ? 'restricted' : 'public';
-    return (
-      <Table key="metadata" size="sm">
-        <tbody>
-          <tr>
-            <th scope="row">Visibility</th>
-            <td>{visibilityLevel}</td>
-          </tr>
-        </tbody>
-      </Table>)
+    return [
+      <h3 key="title">{title}</h3>,
+      <p key="lead" className="lead">{description}</p>
+    ]
   }
 }
 
 // We sort the date strings instead of actual Date objects here - ok due to ISO format.
 const KuViewContributions = (props) => props.contributions
   .sort((el1, el2) => el1.created_at > el2.created_at ? 1 : -1)
+  .filter(c => c.system === false)
   .map(cont => <Contribution key={cont.id} contribution={cont} client={props.client} projectId={props.projectId}/>);
 
 
@@ -173,7 +151,6 @@ class KuView extends Component {
   render() {
     return [
       <KuViewHeader key="header" {...this.props} />,
-      <KuViewDetails key="details" {...this.props} />,
       <KuViewContributions key="contributions" {...this.props} />,
       <NewContribution key="newContribution" {...this.props} />
     ]
@@ -230,7 +207,7 @@ class View extends Component {
       <VisibleKuView
         contributions={this.state ? this.state.contributions : []}
         appendContribution={this.appendContribution.bind(this)}
-        {...this.props}/>
+        {...this.props} />
     </Provider>
   }
 }
@@ -262,7 +239,7 @@ class KuList extends Component {
     const kus = this.props.kus;
     const rows = kus.map((d, i) => <KuListRow key={i} {...d} projectId={this.props.projectId}/>);
     return [
-      <Row key="header"><Col md={8}><h1>Kus</h1></Col></Row>,
+      <Row key="header"><Col md={8}><h3>Kus</h3></Col></Row>,
       <Row key="spacer"><Col md={8}>&nbsp;</Col></Row>,
       <Row key="timeline"><Col md={12}>{rows}</Col></Row>
     ]
