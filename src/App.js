@@ -39,7 +39,6 @@ import FontAwesome from 'react-fontawesome'
 import Project from './project/Project'
 import Ku from './ku/Ku'
 import Landing from './landing/Landing'
-import Notebook from './file/Notebook'
 import Login from './login'
 import { RengaNavLink } from './utils/UIComponents'
 
@@ -182,11 +181,6 @@ class App extends Component {
               <Route exact path="/project_new" component={Project.New} client={this.props.client} />
               <Route exact path="/projects/:projectId(\d+)/ku_new"
                 render={(p) => <Ku.New key="ku_new" client={this.props.client} {...p}/>}/>
-              {/* TODO Should we handle each type of file or just have a generic project files viewer? */}
-              <Route exact path="/projects/:projectId(\d+)/notebooks/:notebookPath"
-                render={p => <Notebook.Show key="notebook" projectId={p.match.params.projectId}
-                  path={`notebooks/${p.match.params.notebookPath}`}
-                  client={this.props.client} {...p} />} />
             </Switch>
           </main>
           <Route component={RengaFooter} />
