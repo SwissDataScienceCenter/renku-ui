@@ -188,10 +188,10 @@ class ProjectViewNotebooks extends Component {
 
   render() {
     return [
-      <Col key="notebooks" sm={12} md={4}><br />
+      <Col key="notebooks" sm={12} md={2}><br />
         <h3>Notebooks</h3>
       </Col>,
-      <Col key="notebook" sm={12} md={8}>
+      <Col key="notebook" sm={12} md={10}>
         <Route path={this.props.notebookUrl}
           render={props => this.props.notebookView(props) }/>
       </Col>

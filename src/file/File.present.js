@@ -32,7 +32,7 @@ const JupyterNotebookPresent = props => {
         event.preventDefault();
         props.deploymentUrl ? window.open(props.deploymentUrl) : alert('I\'m sorry, this notebook is not deployed')
       }}>
-      Connect to Notebook
+      Launch Notebook
     </Button>
     <JupyterNotebook
       notebook={props.notebook}
