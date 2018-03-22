@@ -36,12 +36,13 @@ class Contribution extends React.Component {
   //  - projectId: id of the current project
 
   render() {
+    const contribution = this.props.contribution;
     return (
       <Row className="contribution">
-        <Col md={1}><Avatar/></Col>
+        <Col md={1}><Avatar person={contribution.author} /></Col>
         <Col md={9}>
-          <b>{this.props.contribution.author.username} </b>
-          <TimeCaption caption="Updated" time={this.props.contribution.updated_at} />
+          <b>{contribution.author.name} </b>
+          <TimeCaption caption="Updated" time={contribution.updated_at} />
           <ContributionBodyContainer {...this.props} />
         </Col>
       </Row>

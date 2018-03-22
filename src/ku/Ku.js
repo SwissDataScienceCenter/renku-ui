@@ -224,8 +224,8 @@ class KuListRow extends Component {
 
     return (
       <Row className="ku-list-row">
-        <Col md={1}><Avatar/></Col>
-        <Col md={11}>
+        <Col md={2}><Avatar person={this.props.author} /></Col>
+        <Col md={10} >
           <p><b>{title}</b></p>
           <p>{description} <TimeCaption caption="Updated" time={time}/></p>
         </Col>

@@ -236,7 +236,7 @@ class ProjectListRow extends Component {
     const description = this.props.description !== '' ? this.props.description : 'No description available';
     return (
       <Row className="project-list-row">
-        <Col md={1}><Avatar  /></Col>
+        <Col md={1}><Avatar person={this.props.owner} /></Col>
         <Col md={9}>
           <p><b>{title}</b></p>
           <p>{description} <TimeCaption caption="Updated" time={this.props.last_activity_at} /> </p>

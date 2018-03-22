@@ -34,10 +34,17 @@ import { NavLink } from 'reactstrap';
 
 class Avatar extends Component {
   render() {
-    const img = this.props.avatar;
-    const user = this.props.user;
+    let img, user;
+    const person = this.props.person;
+    if (person != null) {
+      img = person.avatar_url;
+      user = person.username;
+    } else {
+      img = this.props.avatar;
+      user = this.props.user;
+    }
     return (img) ?
-      <img height={48} src={img} alt={user} /> :
+      <img width={36} src={img} alt={user} /> :
       <FontAwesome alt={user} name="user-circle-o" size="2x" style={{textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)'}} />;
   }
 }
