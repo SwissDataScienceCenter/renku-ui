@@ -300,7 +300,21 @@ export function getBucketBackends() {
 }
 
 export function getBucketFiles(bucketId: number) {
-    return fetch( `./api/explorer/storage/bucket/${bucketId}/files`,
+    return fetch( `./api/explorer/storage/bucket/${bucketId}/files?n=100`,
+        {
+            method: 'GET',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            return response.json()
+        })
+}
+
+export function getBucketNotebooks(bucketId: number) {
+    return fetch( `./api/explorer/storage/bucket/${bucketId}/notebooks`,
         {
             method: 'GET',
             credentials: 'include',
@@ -327,7 +341,7 @@ export function getProjects() {
         })
 }
 
-export function getProjectFiles(projectId: number) {
+export function getProjectFiles(projectId: number, onlyNB: boolean) {
     return getProjectResources(projectId)
         .then(responseJSON => {
             return responseJSON
@@ -335,7 +349,11 @@ export function getProjectFiles(projectId: number) {
                     return item.types.indexOf('resource:bucket') >= 0
                 })
                 .map( (bucketResource) => {
-                    return getBucketFiles(bucketResource.id)
+                    if (onlyNB) {
+                        return getBucketNotebooks(bucketResource.id)
+                    } else {
+                        return getBucketFiles(bucketResource.id)
+                    }
                 })
         })
 }

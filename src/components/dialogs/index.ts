@@ -65,7 +65,7 @@ class DeployerDialogComponent extends DialogBaseComponent {
     }
 
     addProjectFiles(projectId: number) {
-        getProjectFiles(projectId)
+        getProjectFiles(projectId, false)
             .then( promises => {
                 promises
                     .forEach(promise => {
@@ -181,6 +181,38 @@ export class ContextDialogComponent extends DeployerDialogComponent {
     @Watch('files')
     onFilesChanged() {
         this.notebooks = this.files.filter((file: any) => file.text.slice(-6) === '.ipynb')
+    }
+
+    getNBs() {
+        this.notebooks = []
+        if (this.projectId) {
+            this.addProjectFiles(this.projectId)
+        } else {
+            getProjects()
+                .then( projects => {
+                    projects.forEach( project => {
+                        this.addProjectNBs(project.id)
+                    })
+                })
+        }
+    }
+
+    addProjectNBs(projectId: number) {
+        getProjectFiles(projectId, true)
+            .then( promises => {
+                promises
+                    .forEach(promise => {
+                        promise.then(fileArray => {
+                            fileArray
+                                .forEach(file => {
+                                    this.notebooks.push({
+                                        file: file,
+                                        text: findDisplayName(file)
+                                    })
+                                })
+                        })
+                    })
+            })
     }
 
     addContext() {

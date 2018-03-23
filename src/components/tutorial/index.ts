@@ -159,9 +159,11 @@ export class TutorialComponent extends Vue {
                 if (res !== null) {
                     this.datasets_buckets = res
                     for (let i = 0; i < res.length; i++) {
-                        fetchItemList(`./api/explorer/storage/bucket/${res[i].id}/files`, '', this.parser).then(result => {
+                        fetchItemList(`./api/explorer/storage/bucket/${res[i].id}/files?n=100`, '', this.parser).then(result => {
                             this.datasets_local = this.datasets_local.concat(result)
-                            this.notebooks = this.datasets_local.filter((file: any) => file.name.slice(-6) === '.ipynb')
+                        })
+                        fetchItemList(`./api/explorer/storage/bucket/${res[i].id}/notebooks`, '', this.parser).then(result => {
+                            this.notebooks = this.notebooks.concat(result)
                         })
                     }
                     this.progress = false
