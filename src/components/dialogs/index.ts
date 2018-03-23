@@ -148,6 +148,7 @@ export class ContextDialogComponent extends DeployerDialogComponent {
         this.outputSlotFiles = [null]
 
         this.getFiles()
+        this.getNBs()
     }
 
     @Watch('context_notebook')
@@ -166,6 +167,7 @@ export class ContextDialogComponent extends DeployerDialogComponent {
     @Watch('projectId')
     onProjectIdChanged() {
         this.getFiles()
+        this.getNBs()
     }
 
     @Watch('inputSlotNames')
@@ -176,11 +178,6 @@ export class ContextDialogComponent extends DeployerDialogComponent {
     @Watch('outputSlotNames')
     onOutputsChanged() {
         appendEmpty(this.outputSlotNames, this.outputSlotFiles)
-    }
-
-    @Watch('files')
-    onFilesChanged() {
-        this.notebooks = this.files.filter((file: any) => file.text.slice(-6) === '.ipynb')
     }
 
     getNBs() {

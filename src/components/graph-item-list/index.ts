@@ -57,10 +57,12 @@ export class GraphItemListComponent extends Vue {
     detailsPanel: boolean = false
 
     created () {
-        this.updateList()
+        this.updateList('', null)
     }
 
-    updateList () {
+    updateList (n, o) {
+
+        if (typeof n !== 'string' || n === o) return
 
         fetchItemList(this.url_list, '', this.parser).then(res => {
             if (res !== null) {
@@ -115,10 +117,12 @@ export class GraphItemTableComponent extends Vue {
     pagination: any = {}
 
     created () {
-        this.updateList()
+        this.updateList('', null)
     }
 
-    updateList () {
+    updateList (n, o) {
+
+        if (typeof n !== 'string' || n === o) return
 
         fetchItemList(this.url_list, '', this.parser).then(res => {
             if (res !== null) {
