@@ -17,8 +17,30 @@
  */
 
 import React from 'react';
+import ReactDOM from 'react-dom';
 import JupyterNotebook from 'react-jupyter';
 import { Button } from 'reactstrap';
+import './notebook.css'
+
+class StyledNotebook extends React.Component {
+
+  componentDidMount() {
+    /*  eslint-disable-next-line react/no-find-dom-node */
+    const domNode = ReactDOM.findDOMNode(this.notebook);
+    this.fixUpDom(domNode);
+  }
+
+  fixUpDom(domNode) {
+    // TODO go through the dom and modify the nodes, e.g., with D3
+    // console.log(domNode);
+  }
+
+  render() {
+    return <JupyterNotebook ref={c => {this.notebook = c}}
+      notebook={this.props.notebook}
+      showCode={this.props.showCode} />
+  }
+}
 
 
 const JupyterNotebookPresent = props => {
@@ -34,9 +56,7 @@ const JupyterNotebookPresent = props => {
       }}>
       Launch Notebook
     </Button>
-    <JupyterNotebook
-      notebook={props.notebook}
-      showCode={true} />
+    <StyledNotebook notebook={props.notebook} showCode={true} />
   </div>;
 };
 

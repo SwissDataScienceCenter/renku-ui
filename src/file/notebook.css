@@ -1,0 +1,8 @@
+/* Hide the input/output information -- we don't care */
+.showCode .input:before {
+  content: "";
+}
+
+.showCode .output:before {
+  content: "";
+}
