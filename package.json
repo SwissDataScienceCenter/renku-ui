@@ -6,6 +6,7 @@
     "bootstrap": "^4.0.0",
     "font-awesome": "^4.7.0",
     "human-time": "0.0.1",
+    "immutability-helper": "^2.6.6",
     "jquery": "^3.2.1",
     "node-sass-chokidar": "0.0.3",
     "npm-run-all": "^4.1.2",
@@ -24,7 +25,8 @@
     "reactstrap": "^5.0.0-alpha.4",
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0",
-    "universal-cookie": "^2.1.2"
+    "universal-cookie": "^2.1.2",
+    "uuid": "^3.2.1"
   },
   "scripts": {
     "build-css": "node-sass-chokidar --include-path ./src/styles --include-path ./node_modules src/styles/ -o src/styles/",
