@@ -27,12 +27,13 @@
 import { createStore as reduxCreateStore, applyMiddleware, compose } from 'redux'
 import thunk from 'redux-thunk'
 
-function createStore(reducer) {
+function createStore(reducer, name='renga') {
   const composeEnhancers =
   typeof window === 'object' &&
   window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
     window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
       // Specify extension’s options like name, actionsBlacklist, actionsCreators, serialize...
+      name
     }) : compose;
 
   const enhancer = composeEnhancers(

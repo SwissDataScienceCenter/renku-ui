@@ -87,7 +87,7 @@ class New extends Component {
 class View extends Component {
   constructor(props) {
     super(props);
-    this.store = createStore(State.View.reducer);
+    this.store = createStore(State.View.reducer, 'project details');
   }
 
   componentDidMount() {
@@ -148,7 +148,7 @@ class View extends Component {
 class List extends Component {
   constructor(props) {
     super(props);
-    this.store = createStore(State.List.reducer);
+    this.store = createStore(State.List.reducer, 'project list');
   }
 
   componentDidMount() {
