@@ -71,11 +71,20 @@ class ProjectNew extends Component {
   }
 }
 
+
+class ProjectTag extends Component {
+  render() {
+    return <span><Badge color="primary">{this.props.tag}</Badge>&nbsp;</span>;
+  }
+}
+
 class ProjectViewHeader extends Component {
 
   render() {
     const title = this.props.title;
+    const tag_list = this.props.tag_list || [];
     const description = this.props.description;
+    const tags = (tag_list.length > 0) ? tag_list.map(t => <ProjectTag key={t} tag={t} />) : <br />;
     return (
       <Container fluid>
         <Row>
@@ -85,9 +94,7 @@ class ProjectViewHeader extends Component {
           </Col>
           <Col sm={12} md={4}>
             <p>
-              <Badge color="primary">python</Badge>&nbsp;
-              <Badge color="primary">linear model</Badge>&nbsp;
-              <Badge color="primary">weather</Badge>&nbsp;
+              {tags}
             </p>
             <p><b>Stars</b> 5</p>
           </Col>

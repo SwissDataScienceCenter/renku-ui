@@ -109,6 +109,7 @@ class View extends Component {
     const description = state.core.description || 'no description';
     const readmeText = state.data.readme.text;
     const lastActivityAt = state.core.last_activity_at;
+    const tag_list = state.system.tag_list;
 
     // Routing properties
     const baseUrl = ownProps.match.isExact ? ownProps.match.url.slice(0, -1) : ownProps.match.url;
@@ -126,7 +127,7 @@ class View extends Component {
       path={`notebooks/${p.match.params.notebookPath}`}
       client={ownProps.client} {...p} />;
     return {title, description, displayId, internalId, visibilityLevel,
-      externalUrl, readmeText, lastActivityAt,
+      externalUrl, readmeText, lastActivityAt, tag_list,
       overviewUrl,
       kusUrl, kuList, kuUrl, kuView,
       notebooksUrl, notebookUrl, notebookView}

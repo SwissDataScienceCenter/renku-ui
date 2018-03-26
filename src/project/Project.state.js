@@ -57,6 +57,15 @@ const Core = {
   }
 }
 
+const System = {
+  set: (field, value) => {
+    return  createSetAction('system', field, value);
+  },
+  reduce: (state, action) => {
+    return reduceState('system', state, action, {tag_list: [], star_count: '', forks_count: ''})
+  }
+}
+
 const Visibility = {
   set: (level) => {
     return createSetAction('visibility', 'level', level)
@@ -101,9 +110,10 @@ const Data = {
   reduce: combineReducers({reference: DataReference.reduce, upload: DataUpload.reduce, readme: Readme.reduce})
 }
 
-const combinedFieldReducer = combineReducers({core: Core.reduce, visibility: Visibility.reduce, data: Data.reduce});
+const combinedFieldReducer = combineReducers({core: Core.reduce, visibility: Visibility.reduce,
+  data: Data.reduce, system: System.reduce});
 
-const New = { Core, Visibility, Data,
+const New = { Core, Visibility, Data, System,
   reducer: combinedFieldReducer
 };
 
