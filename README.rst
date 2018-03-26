@@ -19,6 +19,10 @@
  Renga-UI
 ================
 
+**Renga is currently undergoing a major restructuring effort. For a preview,
+you can look at the development branch, but keep in mind it is highly
+volatile.**
+
 Renga's Web User Interface
 
 Local
