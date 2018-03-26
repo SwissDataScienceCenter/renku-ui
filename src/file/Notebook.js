@@ -40,7 +40,6 @@ class Show extends Component {
   retrieveNotebook() {
     this.props.client.getProjectFile(this.props.projectId, this.props.path)
       .then(json => {
-        console.log(json);
         const notebook = JSON.parse(json);
         this.setState({notebook});
       });

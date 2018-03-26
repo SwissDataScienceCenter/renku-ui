@@ -1,0 +1,30 @@
+
+.dataframe {
+    @extend .table
+}
+
+.dataframe tbody td {
+  text-align: right;
+}
+
+.jupyter .output td {
+  border-bottom: 0px solid #FFF;
+  border-left: 0px solid #FFF;
+  border-right: 0px solid #FFF;
+}
+
+.jupyter .output th {
+  border-bottom: 0px solid #FFF;
+  border-left: 0px solid #FFF;
+  border-right: 0px solid #FFF;
+}
+
+
+.jupyter .output table  {
+  border: none;
+}
+
+.jupyter .output  {
+  @extend .table;
+  // border: 0px solid #FFF;
+}
