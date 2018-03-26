@@ -164,7 +164,7 @@ export default class GitlabClient {
 
 
 function carveProject(projectJson) {
-  const result = {metadata: {core: {}, visibility: {}}, all: projectJson};
+  const result = {metadata: {core: {}, visibility: {}, system: {}}, all: projectJson};
   result['metadata']['visibility']['level'] = projectJson['visibility'];
 
   result['metadata']['core']['created_at'] = projectJson['created_at'];
@@ -174,6 +174,10 @@ function carveProject(projectJson) {
   result['metadata']['core']['displayId'] = projectJson['path_with_namespace'];
   result['metadata']['core']['title'] = projectJson['name'];
   result['metadata']['core']['external_url'] = projectJson['web_url'];
+
+  result['metadata']['system']['tag_list'] = projectJson['tag_list'];
+  result['metadata']['system']['star_count'] = projectJson['star_count'];
+  result['metadata']['system']['forks_count'] = projectJson['forks_count'];
 
   return result;
 }
