@@ -83,6 +83,7 @@ class ProjectViewHeader extends Component {
   render() {
     const title = this.props.title;
     const tag_list = this.props.tag_list || [];
+    const star_count = this.props.star_count || 0;
     const description = this.props.description;
     const tags = (tag_list.length > 0) ? tag_list.map(t => <ProjectTag key={t} tag={t} />) : <br />;
     return (
@@ -96,7 +97,7 @@ class ProjectViewHeader extends Component {
             <p>
               {tags}
             </p>
-            <p><b>Stars</b> 5</p>
+            <p><b>Stars</b> {star_count}</p>
           </Col>
         </Row>
       </Container>
