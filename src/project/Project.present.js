@@ -90,7 +90,7 @@ class ProjectViewHeader extends Component {
       <Container fluid>
         <Row>
           <Col sm={12} md={8}>
-            <h3>{title}</h3>
+            <h1>{title}</h1>
             <p className="lead">{description}</p>
           </Col>
           <Col sm={12} md={4}>
