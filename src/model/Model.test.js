@@ -23,15 +23,18 @@
  *  Tests for models.
  */
 
-import { Schema, modelUpdateReducer } from './Model';
-import { createStore, combineReducers } from 'redux';
+
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
+
+import {Schema, StateModel, REDUX_STORE, REACT_STATE, StateModelComponent} from './Model';
+import { createStore } from 'redux';
+
 
 const simpleSchema = new Schema({
-  name: {initial: '', mandatory: true},
+  name: {initial: 'Jane Doe', mandatory: true},
   purpose: {initial: '', mandatory: false}
 });
-
-const SimpleModel = simpleSchema.toModel();
 
 const complexSchema = new Schema({
   basics: {schema: simpleSchema, mandatory: true},
@@ -39,12 +42,16 @@ const complexSchema = new Schema({
   createdAt: {initial: () => 'right now'}
 });
 
-const ComplexModel = complexSchema.toModel();
+const simpleObject = {name: 'Jane Doe', purpose: '' };
 
+const complexObject = {
+  basics: simpleObject,
+  createdAt: 'right now',
+  subthing: {age: 0}
+};
 
 describe('simple creation', () => {
 
-  const simpleObject = {name: '', purpose: '' };
   const emptyObject = {name: undefined, purpose: undefined };
 
   it('creates empty object from schema', () => {
@@ -55,25 +62,21 @@ describe('simple creation', () => {
     const initializedThing = simpleSchema.createInitialized();
     expect(initializedThing).toEqual(simpleObject);
   });
-  // Object containing allows for the model instances to have an uncontrolled _uuid
-  it('creates empty instance', () => {
-    expect(SimpleModel.createEmpty()).toEqual(expect.objectContaining(emptyObject));
-  });
   it('creates initialized instance', () => {
-    expect(new SimpleModel()).toEqual(expect.objectContaining(simpleObject));
+    const store = createStore(simpleSchema.reducer());
+    const simpleModel = new StateModel(simpleSchema, store, REDUX_STORE);
+    expect(simpleModel.get()).toEqual((simpleObject));
   });
-  it('creates initialized instance from schema', () => {
-    expect(simpleSchema.modelInstance()).toEqual(expect.objectContaining(simpleObject))
+  it('creates instance from initial object', () => {
+    const store = createStore(simpleSchema.reducer());
+    const initialObject = {...simpleSchema.createInitialized(), name: 'John Doe'};
+    const simpleModel = new StateModel(simpleSchema, store, REDUX_STORE, initialObject);
+    expect(simpleModel.get()).toEqual(initialObject);
   });
 });
 
 describe('complex creation', () => {
 
-  const complexObject = {
-    basics: {name: '', purpose: ''},
-    createdAt: 'right now',
-    subthing: {age: 0}
-  };
   const emptyObject = {
     basics: {name: undefined, purpose: undefined},
     subthing: {age: undefined},
@@ -88,14 +91,16 @@ describe('complex creation', () => {
     const initializedThing =  complexSchema.createInitialized();
     expect(initializedThing).toEqual(complexObject);
   });
-  it('creates empty instance', () => {
-    expect(ComplexModel.createEmpty()).toEqual(expect.objectContaining(emptyObject));
+  it('creates instance from initial object', () => {
+    const store = createStore(complexSchema.reducer());
+    const initialObject = {...complexSchema.createInitialized(), subthing: {age: 1}};
+    const complexModel = new StateModel(complexSchema, store, REDUX_STORE, initialObject);
+    expect(complexModel.get()).toEqual(initialObject);
   });
   it('creates initialized instance', () => {
-    expect(new ComplexModel()).toEqual(expect.objectContaining(complexObject))
-  });
-  it('creates initialized instance from schema', () => {
-    expect(complexSchema.modelInstance()).toEqual(expect.objectContaining(complexObject))
+    const store = createStore(complexSchema.reducer());
+    const complexModel = new StateModel(complexSchema, store, REDUX_STORE);
+    expect(complexModel.get()).toEqual((complexObject));
   });
 });
 
@@ -105,7 +110,6 @@ describe('validation', () => {
     result: false,
     errors: [{name: 'name must be provided and non-empty'}]
   };
-
   const complexErrors = {
     result: false,
     errors: [
@@ -116,68 +120,79 @@ describe('validation', () => {
 
   it('simple empty validates false', () => {
     const initializedThing =  simpleSchema.createInitialized();
-    expect(simpleSchema.validate(initializedThing)).toEqual(simpleErrors);
+    expect(simpleSchema.validate({...initializedThing, name: ''})).toEqual(simpleErrors);
   });
   it('complex empty validates false', () => {
     const initializedThing =  complexSchema.createInitialized();
     initializedThing.subthing.age = undefined;
+    initializedThing.basics.name = null;
     expect(complexSchema.validate(initializedThing)).toEqual(complexErrors);
   });
-  it('simple empty instance validates false', () => {
-    const simpleInstance =  new SimpleModel();
-    expect(simpleInstance.validate()).toEqual(simpleErrors);
-  });
-  it('complex empty instance validates false', () => {
-    const complexInstance =  new ComplexModel();
-    complexInstance.subthing.age = undefined;
-    expect(complexInstance.validate()).toEqual(complexErrors);
+});
+
+describe('update react state', () => {
+  class TestReactStateComponent extends StateModelComponent {
+    constructor(props) {
+      super(props, complexSchema, REACT_STATE);
+    }
+
+    componentWillMount() {
+      this.model.setOne('subthing.age', 1)
+    }
+
+    render(){
+      expect(this.model.get()).toEqual({...complexObject, subthing: {age: 1}});
+      return null;
+    }
+  }
+  it('updates complex state', () => {
+    const div = document.createElement('div');
+    ReactDOM.render(
+      <TestReactStateComponent/>, div);
   });
 });
 
-describe('immutable updates', () => {
-  it('simple instance updates correctly to new instance using set', () => {
-    const simpleInstance =  new SimpleModel();
-    const updatedInstance = simpleInstance.set('name', 'John Doe');
-    expect(updatedInstance).toEqual({...simpleInstance, name: 'John Doe'});
-    expect(updatedInstance).not.toBe(simpleInstance);
-  });
-  it('simple instance updates correctly to new instance original syntax', () => {
-    const simpleInstance =  new SimpleModel();
-    const updatedInstance = simpleInstance.update({name: {$set: 'John Doe'}});
-    expect(updatedInstance).toEqual({...simpleInstance, name: 'John Doe'});
-    expect(updatedInstance).not.toBe(simpleInstance);
-  });
-  it('complex instance updates correctly to new instance using set', () => {
-    const complexInstance = new ComplexModel();
-    const updatedInstance = complexInstance.set('subthing.age', 1);
-    expect(updatedInstance).toEqual({...complexInstance, subthing: {age: 1}});
-    expect(updatedInstance).not.toBe(complexInstance);
-  });
-  it('complex instance updates correctly to new instane using original syntax', () => {
-    const complexInstance = new ComplexModel();
-    const updatedInstance = complexInstance.update({subthing: {age: {$set: 1}}});
-    expect(updatedInstance).toEqual({...complexInstance, subthing: {age: 1}});
-    expect(updatedInstance).not.toBe(complexInstance);
-  });
-});
-
-describe('update redux store', () => {
+describe('update disconnected redux store', () => {
   it('updates simple instance in redux store', () => {
-    const store = createStore(SimpleModel.getReducer());
-    const simple = store.getState();
-    store.dispatch(simple.setAction('name', 'John Doe'));
-    expect(store.getState()).toEqual({...simple, name: 'John Doe'});
+    const store = createStore(simpleSchema.reducer());
+    const simpleModel = new StateModel(simpleSchema, store, REDUX_STORE);
+    simpleModel.set({name: 'John Doe'});
+    expect(simpleModel.get()).toEqual({...simpleObject, name: 'John Doe'});
   });
+  it('updates complex instance in redux store', () => {
+    const store = createStore(complexSchema.reducer());
+    const complexModel = new StateModel(complexSchema, store, REDUX_STORE);
+    complexModel.set({subthing: {age: 1}});
+    expect(complexModel.get()).toEqual({...complexObject, subthing: {age: 1}});
+  });
+  it('updates complex instance in redux store using property accessor syntax', () => {
+    const store = createStore(complexSchema.reducer());
+    const complexModel = new StateModel(complexSchema, store, REDUX_STORE);
+    complexModel.setOne('subthing.age', 1);
+    expect(complexModel.get()).toEqual({...complexObject, subthing: {age: 1}});
+  });
+});
 
-  it('updates both instances in combined redux store', () => {
-    const reducer = combineReducers({simple: simpleSchema.getReducer(), complex: complexSchema.getReducer()});
-    const store = createStore(reducer);
-    const simple = store.getState().simple;
-    const complex = store.getState().complex;
-    store.dispatch(simple.setAction('name', 'John Doe'));
-    store.dispatch(complex.setAction('subthing.age', 1));
-    expect(store.getState()).toEqual({
-      simple: {...simple, name: 'John Doe'},
-      complex: {...complex, subthing: {age: 1}}});
+describe('update connected redux store', () => {
+
+  class TestReduxStateComponent extends StateModelComponent {
+    constructor(props) {
+      super(props, complexSchema, REDUX_STORE);
+    }
+
+    componentWillMount() {
+      this.model.setOne('subthing.age', 1)
+    }
+
+    render(){
+      expect(this.model.get()).toEqual({...complexObject, subthing: {age: 1}});
+      return null;
+    }
+  }
+
+  it('updates complex state', () => {
+    const div = document.createElement('div');
+    ReactDOM.render(
+      <TestReduxStateComponent/>, div);
   });
 });

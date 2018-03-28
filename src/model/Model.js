@@ -25,35 +25,37 @@
  *    {[property name]: {initial: [initial value], mandatory: [true/false], ...}
  *
  *
- *  A model is a class created from a schema definition. Instances of a model have
- *  methods to create, initialize, validate, update, etc. the object properties
- *  according to the schema definitions.
+ *  A model is an instance of the StateModel class, created from a schema definition.
+ *  Instances of StateModel have bindings to the corresponding react state / redux store
+ *  to facilitate state access, immutable updates, etc and ensure a structure of the state
+ *  in accordance with the schema definition.
  *
- *  Models are created from the Model base class by overriding the getSchema method
- *
- *  class modelName extends Model {
- *    getSchema() {return someSchema}
- *  }
- *
- *  or by using a convenience method:
- *
- *  const modelName = someSchema.toModel();
- *
- *  The latter variant creates instances with a nameless constructor
- *  (instance.constructor.name = "").
+ *  Examples for how to use the Schema / StateModel classes can be found in ./Model.example.js
  */
 
 // TODO: Maybe use [jsdoc](http://usejsdoc.org/) here?
 
 import immutableUpdate from 'immutability-helper';
-import uuid from 'uuid';
+import { Component } from 'react';
+// Todo: Resolve dependency from our custom store
+import { createStore } from '../utils/EnhancedState';
 
-
+// Property names for the field specs.
 const SCHEMA_PROP = 'schema';
 const INITIAL_PROP = 'initial';
 const MANDATORY_PROP = 'mandatory';
-
 const FIELD_SPEC_PROPS = [SCHEMA_PROP, INITIAL_PROP, MANDATORY_PROP];
+
+// Named consts for the bindings to the store.
+const REDUX_STORE = 'redux_store_binding';
+const REACT_STATE = 'react_state_binding';
+
+// We need only one action type. The information about which
+// part of the state has to be modified is contained in the action payload.
+const UPDATE_ACTION_TYPE = 'update';
+
+// Fields which are updating are set to this value.
+const UPDATING_PROP_VAL = 'is_updating';
 
 
 class FieldSpec {
@@ -93,107 +95,124 @@ class Schema {
 
   validate(obj) { return validate(this, obj)}
 
-  toModel() { return modelFromSchema(this) }
-
-  modelInstance(obj) {
-    return new (modelFromSchema(this))(obj);
-  }
-
-  getReducer() {
-    return (state=this.modelInstance(), action) => modelUpdateReducer(state, action);
+  reducer() {
+    return (state=this.createEmpty(), action) => modelUpdateReducer(state, action);
   }
 }
 
+class StateModel {
+  constructor(schema, stateHolder, stateBinding, initialState) {
 
-class Model {
-  constructor(obj){
-
-    // Check if getSchema has been overridden, raise error if not.
-    if (!this.getSchema()) {
-      throw(`ModelError: No schema defined for model ${this.constructor.name}`)
+    if (stateBinding === REDUX_STORE) {
+      this.reduxStore = stateHolder;
     }
-
-    // We create a uuid to identify an instance in the redux store.
-    if (!(obj && obj._uuid)) this._uuid = uuid.v4();
-
-    // If an object is passed into the constructor, we use this object. Otherwise,
-    // we create all the defaults according to schema.
-    if(obj){
-      Object.keys(obj).forEach((prop) => {
-        this[prop] = obj[prop];
-      });
+    else if (stateBinding === REACT_STATE) {
+      this.reactComponent = stateHolder;
     }
     else {
-      this.getSchema().createEmpty(this);
-      this.getSchema().applyDefaults(this);
+      throw(`State binding ${stateBinding} not implemented`)
+    }
+
+
+    this.stateBinding = stateBinding;
+    this.schema = schema;
+
+    const initializedState = initialState ? initialState : schema.createInitialized();
+
+    if (stateBinding === REACT_STATE) {
+      this.reactComponent.state = initializedState;
+    }
+    else if (stateBinding === REDUX_STORE) {
+      this.set(initializedState);
     }
   }
 
+  get(propertyAccessorString) {
+    let stateObject;
+    if (this.stateBinding === REDUX_STORE) {
+      stateObject = this.reduxStore.getState();
+    }
+    else if (this.stateBinding === REACT_STATE) {
+      stateObject = this.reactComponent.state;
+    }
 
-  // We make the static method accessible on each instance.
-  getSchema() { return this.constructor.getSchema() }
-
-  // For nameless models (created though .toModel() from a schema)
-  // this convenience method returns the schema name.
-  getSchemaName() { return this.getSchema().constructor.name }
-
-  // Apply the defaults to undefined properties.
-  applyDefaults() { applyDefaults(this.getSchema(), this)}
-
-  // Validate instance against the schema of its class.
-  validate() { return validate(this.getSchema(), this)}
-
-  // Immutable update: create new modified instance.
-  update(updateObj){
-    return new this.constructor(immutableUpdate(this, updateObj))
-  }
-
-  // Immutably set a value to a property using dot-notation syntax for
-  // the property accessor.
-  set(propertyAccessor, value) {
-    return this.update(createUpdateObject(propertyAccessor, value))
-  }
-
-  updateActionType() { return `UPDATE-${this._uuid}`}
-
-  updateAction(updateObj) {
-    return {
-      type: this.updateActionType(),
-      payload: updateObj,
+    if (!propertyAccessorString) {
+      return stateObject;
+    }
+    else {
+      return nestedPropertyAccess(propertyAccessorString, stateObject);
     }
   }
 
-  setAction(propertyAccessor, value) {
-    return this.updateAction(createUpdateObject(propertyAccessor, value))
+  setOne(propertyAccessorString, value, callback) {
+    const updateObj = updateObjectFromString(propertyAccessorString, value);
+    this.immutableUpdate(updateObj, callback);
   }
 
-  reduce(action) { return this.update(action.payload) }
-
-  // Dummy method. MUST be overridden in child class definition.
-  static getSchema() { return undefined }
-
-  // Alternative initialization method: Create all the properties but leave
-  // them undefined.
-  static createEmpty() {
-    const emptyObject = this.getSchema().createEmpty();
-    // 'this' refers to the class itself in static methods.
-    return new this(emptyObject)
+  setUpdating(options){
+    const updateObj = updateObjectFromOptions(options);
+    this.immutableUpdate(updateObj);
   }
 
-  static getReducer() {
-    return (state=new this(), action) => modelUpdateReducer(state, action);
+  set(obj, callback) {
+    const updateObj = updateObjectFromObject(obj);
+    this.immutableUpdate(updateObj, callback);
+  }
+
+  immutableUpdate(updateObj, callback) {
+
+    const validation = this.schema.validate(immutableUpdate(this.get(), updateObj));
+    if (!validation.result) {
+      let errorString = 'Skipping update to prevent invalid state:';
+      validation.errors.forEach((error) => {
+        errorString = errorString.concat(JSON.stringify(error));
+      });
+      throw(errorString);
+    }
+
+    if (this.stateBinding === REACT_STATE) {
+      this.reactComponent.setState((prevState) => immutableUpdate(prevState, updateObj), callback);
+    }
+    else if (this.stateBinding === REDUX_STORE) {
+      this.reduxStore.dispatch({
+        type: UPDATE_ACTION_TYPE,
+        payload: updateObj,
+      });
+
+      // We provide this just to keep the interface for the react state and the redux case similar.
+      if (callback) {
+        console.error('Unnecessary callback: The update of the REDUX store is synchronous.');
+        callback.call();
+      }
+    }
   }
 }
+
+
+// A regular react component, enriched with some stateModel boilerplate.
+class StateModelComponent extends Component {
+
+  constructor(props, schema, stateBindings, initialState) {
+    super(props);
+    this.schema = schema;
+    if (stateBindings === REDUX_STORE) {
+      this.store = createStore(this.schema.reducer());
+      this.model = new StateModel(this.schema, this.store, stateBindings, initialState);
+    }
+    else if (stateBindings === REACT_STATE) {
+      this.model = new StateModel(this.schema, this, stateBindings, initialState);
+    }
+  }
+
+  mapStateToProps = (state, ownProps) => {
+    return {...state, ...ownProps}
+  };
+}
+
 
 // The following functions are not exported and probably never called directly, we use
-// them to define schema/model object methods.
+// them to define Schema / StateModel object methods.
 
-// Create a 'nameless' model sub-class from a schema.
-function modelFromSchema(schema) {
-  return class extends Model{
-    static getSchema() { return schema }
-  }
-}
 
 // Create an empty object according to the schema
 // where all values are undefined
@@ -264,11 +283,9 @@ function isEmpty(value) {
   return false;
 }
 
-// Convenience method to immutably set a value to a property of a deeply nested
-// object using a syntax inspired by the JS dot-notation for property access.
-// This function creates the updateObject from the property accessor string and
-// the desired value.
-function createUpdateObject(propAccessorString, value) {
+// Create a mongodb-style update object from a dot-separated property
+// accessor string and the desired value.
+function updateObjectFromString(propAccessorString, value) {
   const updateObj = {};
   let leafObj = updateObj;
   propAccessorString.split('.').forEach((prop) => {
@@ -279,15 +296,55 @@ function createUpdateObject(propAccessorString, value) {
   return updateObj
 }
 
-// A redux reducer that will handle updates for the part of the
-// state tree corresponding to the model instance.
-function modelUpdateReducer(state, action) {
-  if (state.updateActionType() === action.type) {
-    return state.reduce(action)
-  }
-  else {
-    return state
-  }
+// Create a mongodb-style update object from a plain
+// object containing the desired (potentially nested) values.
+function updateObjectFromObject(obj){
+  let updateObj = {};
+  Object.keys(obj).forEach((prop) => {
+    if (obj[prop] instanceof Object) {
+      updateObj[prop] = updateObjectFromObject(obj[prop])
+    }
+    else {
+      updateObj[prop] = {$set: obj[prop]}
+    }
+  });
+  return updateObj
 }
 
-export { Schema, Model, modelUpdateReducer }
+// Create a mongodb-style update object from a plain
+// object containing the information about which fields are updating.
+function updateObjectFromOptions(options){
+  let updateObj = {};
+  Object.keys(options).forEach((prop) => {
+    if (options[prop] instanceof Object) {
+      updateObj[prop] = updateObjectFromOptions(options[prop])
+    }
+    else {
+      if (options[prop] === true) {
+        updateObj[prop] = {$set: UPDATING_PROP_VAL}
+      }
+    }
+  });
+  return updateObj
+}
+
+// Translate nestedPropertyAccess('some.string.with.dots', obj)
+// into obj[some][string][with][dots]
+function nestedPropertyAccess(propAccessorString, obj) {
+  let leaf = obj;
+  propAccessorString.split('.').forEach((prop) => {
+    leaf = leaf[prop];
+  });
+  return leaf;
+}
+
+// A redux reducer that will handle immutability-helper
+// updates.
+function modelUpdateReducer(state, action) {
+  if (action.type === UPDATE_ACTION_TYPE) {
+    return immutableUpdate(state, action.payload);
+  }
+  return state
+}
+
+export { Schema, StateModel, StateModelComponent, REDUX_STORE, REACT_STATE }
