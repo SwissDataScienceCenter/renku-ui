@@ -27,7 +27,7 @@ import React, {Component} from 'react';
 
 import {Provider, connect} from 'react-redux'
 
-import {Link} from 'react-router-dom'
+import {Link, Route, Switch} from 'react-router-dom'
 
 import {Row, Col} from 'reactstrap';
 import {Button, FormGroup, Input, Label} from 'reactstrap'
@@ -212,23 +212,41 @@ class View extends Component {
   }
 }
 
+class KuListRowContent extends Component {
+
+  render() {
+    const active = this.props.active;
+    const kuUrl = this.props.kuUrl
+    const title = active ?
+      <span>{this.props.title}</span> :
+      <Link to={kuUrl}>{this.props.title || 'no title'}</Link>
+    const description = this.props.description || 'no description';
+    const time = this.props.updated_at;
+    const className = (active) ? 'underline-nav font-weight-bold' : 'font-weight-normal';
+
+    return [
+      <Col key="avatar" md={2}><Avatar person={this.props.author} /></Col>,
+      <Col key="summary" md={10}>
+        <p className={className}>{title}</p>
+        <p>{description} <TimeCaption caption="Updated" time={time}/></p>
+      </Col>
+    ]
+  }
+}
+
 class KuListRow extends Component {
 
   render() {
     const kuIid = this.props.iid;
-    const title = <Link
-      to={`/projects/${this.props.projectId}/kus/${kuIid}`}> {this.props.title || 'no title'}
-    </Link>;
-    const description = this.props.description || 'no description';
-    const time = this.props.updated_at;
-
+    const kuUrl = `${this.props.kuBaseUrl}/${kuIid}`;
     return (
       <Row className="ku-list-row">
-        <Col md={2}><Avatar person={this.props.author} /></Col>
-        <Col md={10} >
-          <p><b>{title}</b></p>
-          <p>{description} <TimeCaption caption="Updated" time={time}/></p>
-        </Col>
+        <Switch>
+          <Route exact path={kuUrl}
+            render={props =><KuListRowContent active={true} kuUrl={kuUrl} {...this.props} /> }/>
+          <Route path={this.props.kusUrl}
+            render={props => <KuListRowContent active={false} kuUrl={kuUrl} {...this.props} /> }/>
+        </Switch>
       </Row>
     );
   }
@@ -237,7 +255,8 @@ class KuListRow extends Component {
 class KuList extends Component {
   render() {
     const kus = this.props.kus;
-    const rows = kus.map((d, i) => <KuListRow key={i} {...d} projectId={this.props.projectId}/>);
+    const rows = kus.map((d, i) =>
+      <KuListRow key={i} {...d} kuBaseUrl={this.props.kuBaseUrl} projectId={this.props.projectId}/>);
     return [
       <Row key="header"><Col md={8}><h3>Kus</h3></Col></Row>,
       <Row key="spacer"><Col md={8}>&nbsp;</Col></Row>,
@@ -263,7 +282,7 @@ class List extends Component {
   }
 
   mapStateToProps(state, ownProps) {
-    return state
+    return {...state, ...ownProps}
   }
 
   mapDispatchToProps(dispatch, ownProps) {
@@ -274,7 +293,7 @@ class List extends Component {
     const VisibleKuList = connect(this.mapStateToProps, this.mapDispatchToProps)(KuList);
     return [
       <Provider key="new" store={this.store}>
-        <VisibleKuList projectId={this.props.projectId}/>
+        <VisibleKuList kuBaseUrl={this.props.kuBaseUrl} projectId={this.props.projectId}/>
       </Provider>
     ]
   }

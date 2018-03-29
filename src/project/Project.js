@@ -119,7 +119,8 @@ class View extends Component {
     const kuUrl = `${baseUrl}/kus/:kuIid(\\d+)`;
     const notebooksUrl = `${baseUrl}/notebooks`;
     const notebookUrl = `${baseUrl}/notebooks/:notebookPath`;
-    const kuList = <Ku.List key="kus" projectId={internalId} {...ownProps} client={ownProps.client} />
+    const kuList = <Ku.List {...ownProps}
+      key="kus" kuBaseUrl={kusUrl} projectId={internalId}  client={ownProps.client} />
     const kuView = (p) => <Ku.View key="ku" projectId={internalId}
       kuIid={p.match.params.kuIid} {...p} client={ownProps.client} />
     /* TODO Should we handle each type of file or just have a generic project files viewer? */
