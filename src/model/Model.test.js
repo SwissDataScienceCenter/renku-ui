@@ -33,26 +33,43 @@ import { createStore } from 'redux';
 
 const simpleSchema = new Schema({
   name: {initial: 'Jane Doe', mandatory: true},
-  purpose: {initial: '', mandatory: false}
+  purpose: {initial: '', mandatory: false},
+  numbers: {schema: [], initial: [0, 1]}
 });
+
+const simpleObject = {name: 'Jane Doe', purpose: '', numbers: [0, 1]};
+
+const arraySchema = new Schema({
+  manyLetters: {schema: [] , initial: ['a', 'b', 'c']},
+  manyNumbers: {schema: []},
+  manyThings: {schema: [simpleSchema], initial: [{...simpleObject}]},
+});
+
+const arrayObject = {
+  manyLetters: ['a', 'b', 'c'],
+  manyNumbers: [],
+  manyThings: [{...simpleObject}]
+};
 
 const complexSchema = new Schema({
   basics: {schema: simpleSchema, mandatory: true},
   subthing: {schema: {age: {initial: 0, mandatory: true }}, mandatory: true},
-  createdAt: {initial: () => 'right now'}
+  createdAt: {initial: () => 'right now'},
+  simpleThings: {schema: [simpleSchema], initial: [{...simpleObject}, {...simpleObject, name: 'Johnny'}]}
 });
 
-const simpleObject = {name: 'Jane Doe', purpose: '' };
-
 const complexObject = {
-  basics: simpleObject,
+  basics: {...simpleObject},
   createdAt: 'right now',
-  subthing: {age: 0}
+  subthing: {age: 0},
+  simpleThings: [{...simpleObject}, {...simpleObject, name: 'Johnny'}]
 };
+
+
 
 describe('simple creation', () => {
 
-  const emptyObject = {name: undefined, purpose: undefined };
+  const emptyObject = {name: undefined, purpose: undefined, numbers:[]};
 
   it('creates empty object from schema', () => {
     const emptyThing =  simpleSchema.createEmpty();
@@ -69,18 +86,48 @@ describe('simple creation', () => {
   });
   it('creates instance from initial object', () => {
     const store = createStore(simpleSchema.reducer());
-    const initialObject = {...simpleSchema.createInitialized(), name: 'John Doe'};
+    const initialObject = {...simpleSchema.createInitialized(), name: 'John Doe', numbers: [0,1]};
     const simpleModel = new StateModel(simpleSchema, store, REDUX_STORE, initialObject);
     expect(simpleModel.get()).toEqual(initialObject);
+  });
+});
+
+describe('array creation', () => {
+
+  const emptyObject = {
+    manyLetters: [],
+    manyNumbers: [],
+    manyThings: [],
+  };
+
+  it('creates empty object from schema', () => {
+    const emptyThing = arraySchema.createEmpty();
+    expect(emptyThing).toEqual(emptyObject);
+  });
+  it('creates initialized object from schema', () => {
+    const initializedThing =  arraySchema.createInitialized();
+    expect(initializedThing).toEqual(arrayObject);
+  });
+  it('creates instance from initial object', () => {
+    const store = createStore(arraySchema.reducer());
+    const initialObject = {...arraySchema.createInitialized(), manyNumbers: [0, 1, 0, 1]};
+    const arrayModel = new StateModel(arraySchema, store, REDUX_STORE, initialObject);
+    expect(arrayModel.get()).toEqual(initialObject);
+  });
+  it('creates initialized instance', () => {
+    const store = createStore(arraySchema.reducer());
+    const arrayModel = new StateModel(arraySchema, store, REDUX_STORE);
+    expect(arrayModel.get()).toEqual((arrayObject));
   });
 });
 
 describe('complex creation', () => {
 
   const emptyObject = {
-    basics: {name: undefined, purpose: undefined},
+    basics: {name: undefined, purpose: undefined, numbers: []},
     subthing: {age: undefined},
-    createdAt: undefined
+    createdAt: undefined,
+    simpleThings: []
   };
 
   it('creates empty object from schema', () => {
@@ -104,17 +151,27 @@ describe('complex creation', () => {
   });
 });
 
+
+
 describe('validation', () => {
 
   const simpleErrors = {
     result: false,
     errors: [{name: 'name must be provided and non-empty'}]
   };
+  const arrayErrors = {
+    result: false,
+    errors: [
+      {manyNumbers: 'manyNumbers must be an array'},
+      {manyThings: 'manyThings[1] must be an object'}
+    ]
+  };
   const complexErrors = {
     result: false,
     errors: [
       {name: 'name must be provided and non-empty'},
-      {age: 'age must be provided and non-empty'}
+      {subthing: 'subthing must be an object'},
+      {name: 'name must be provided and non-empty'}
     ]
   };
 
@@ -122,10 +179,17 @@ describe('validation', () => {
     const initializedThing =  simpleSchema.createInitialized();
     expect(simpleSchema.validate({...initializedThing, name: ''})).toEqual(simpleErrors);
   });
+  it('complex array validates false', () => {
+    const initializedThing =  arraySchema.createInitialized();
+    initializedThing.manyNumbers = 'something';
+    initializedThing.manyThings[1] = 'somethingElse';
+    expect(arraySchema.validate(initializedThing)).toEqual(arrayErrors);
+  });
   it('complex empty validates false', () => {
     const initializedThing =  complexSchema.createInitialized();
-    initializedThing.subthing.age = undefined;
+    initializedThing.subthing = 'a string';
     initializedThing.basics.name = null;
+    initializedThing.simpleThings[1].name = null;
     expect(complexSchema.validate(initializedThing)).toEqual(complexErrors);
   });
 });
@@ -133,15 +197,18 @@ describe('validation', () => {
 describe('update react state', () => {
   class TestReactStateComponent extends StateModelComponent {
     constructor(props) {
-      super(props, complexSchema, REACT_STATE);
+      super(props, complexSchema, REACT_STATE, complexSchema.createInitialized());
     }
 
     componentWillMount() {
-      this.model.setOne('subthing.age', 1)
+      this.model.setOne('subthing.age', 1);
+      this.model.setOne('simpleThings.0.numbers.2', 2)
     }
 
     render(){
-      expect(this.model.get()).toEqual({...complexObject, subthing: {age: 1}});
+      let updatedSimpleThings = [...complexObject.simpleThings];
+      updatedSimpleThings[0] = {...complexObject.simpleThings[0], numbers: [0, 1, 2]};
+      expect(this.model.get()).toEqual({...complexObject, subthing: {age: 1}, simpleThings: updatedSimpleThings});
       return null;
     }
   }
@@ -162,8 +229,14 @@ describe('update disconnected redux store', () => {
   it('updates complex instance in redux store', () => {
     const store = createStore(complexSchema.reducer());
     const complexModel = new StateModel(complexSchema, store, REDUX_STORE);
-    complexModel.set({subthing: {age: 1}});
-    expect(complexModel.get()).toEqual({...complexObject, subthing: {age: 1}});
+    complexModel.set({subthing: {age: 1}, simpleThings: {1: {name: 'Jenny'}}});
+
+    // Build the more complex comparison Object
+    const comparisonObject = {...complexObject, subthing: {age: 1}};
+    comparisonObject.simpleThings = [...comparisonObject.simpleThings];
+    comparisonObject.simpleThings[1] = {...comparisonObject.simpleThings[1], name: 'Jenny'};
+
+    expect(complexModel.get()).toEqual(comparisonObject);
   });
   it('updates complex instance in redux store using property accessor syntax', () => {
     const store = createStore(complexSchema.reducer());
