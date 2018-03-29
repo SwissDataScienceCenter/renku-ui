@@ -82,6 +82,7 @@ class ProjectViewHeader extends Component {
 
   render() {
     const title = this.props.title;
+    const lastActivityAt = this.props.lastActivityAt;
     const tag_list = this.props.tag_list || [];
     const star_count = this.props.star_count || 0;
     const description = this.props.description;
@@ -91,7 +92,10 @@ class ProjectViewHeader extends Component {
         <Row>
           <Col xs={12} md={9}>
             <h1>{title}</h1>
-            <p className="lead">{description}</p>
+            <p>
+              <span className="lead">{description}</span> <br />
+              <TimeCaption key="time-caption" time={lastActivityAt} />
+            </p>
           </Col>
           <Col xs={12} md={3}>
             <p>
@@ -151,6 +155,8 @@ class ProjectViewReadme extends Component {
   }
 }
 
+
+/* eslint-disable-next-line no-unused-vars */
 class ProjectViewStats extends Component {
 
   render() {
@@ -170,10 +176,12 @@ class ProjectViewStats extends Component {
 class ProjectViewOverview extends Component {
 
   render() {
-    return [
-      <Col key="stats" sm={12} md={3}><br /><ProjectViewStats {...this.props} /></Col>,
-      <Col key="readme" sm={12} md={9}><ProjectViewReadme key="readme" {...this.props} /></Col>
-    ]
+    // return [
+    //   <Col key="stats" sm={12} md={3}><br /><ProjectViewStats {...this.props} /></Col>,
+    //   <Col key="readme" sm={12} md={9}><ProjectViewReadme key="readme" {...this.props} /></Col>
+    // ]
+    // Hide the stats until we can actually get them from the server
+    return <Col key="readme" sm={12} md={9}><ProjectViewReadme key="readme" {...this.props} /></Col>
   }
 }
 
