@@ -27,7 +27,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 
-import {Schema, StateModel, REDUX_STORE, REACT_STATE, StateModelComponent} from './Model';
+import {Schema, StateModel, StateKind, StateModelComponent} from './Model';
 import { createStore } from 'redux';
 
 
@@ -81,13 +81,13 @@ describe('simple creation', () => {
   });
   it('creates initialized instance', () => {
     const store = createStore(simpleSchema.reducer());
-    const simpleModel = new StateModel(simpleSchema, store, REDUX_STORE);
+    const simpleModel = new StateModel(simpleSchema, store, StateKind.REDUX);
     expect(simpleModel.get()).toEqual((simpleObject));
   });
   it('creates instance from initial object', () => {
     const store = createStore(simpleSchema.reducer());
     const initialObject = {...simpleSchema.createInitialized(), name: 'John Doe', numbers: [0,1]};
-    const simpleModel = new StateModel(simpleSchema, store, REDUX_STORE, initialObject);
+    const simpleModel = new StateModel(simpleSchema, store, StateKind.REDUX, initialObject);
     expect(simpleModel.get()).toEqual(initialObject);
   });
 });
@@ -111,12 +111,12 @@ describe('array creation', () => {
   it('creates instance from initial object', () => {
     const store = createStore(arraySchema.reducer());
     const initialObject = {...arraySchema.createInitialized(), manyNumbers: [0, 1, 0, 1]};
-    const arrayModel = new StateModel(arraySchema, store, REDUX_STORE, initialObject);
+    const arrayModel = new StateModel(arraySchema, store, StateKind.REDUX, initialObject);
     expect(arrayModel.get()).toEqual(initialObject);
   });
   it('creates initialized instance', () => {
     const store = createStore(arraySchema.reducer());
-    const arrayModel = new StateModel(arraySchema, store, REDUX_STORE);
+    const arrayModel = new StateModel(arraySchema, store, StateKind.REDUX);
     expect(arrayModel.get()).toEqual((arrayObject));
   });
 });
@@ -141,12 +141,12 @@ describe('complex creation', () => {
   it('creates instance from initial object', () => {
     const store = createStore(complexSchema.reducer());
     const initialObject = {...complexSchema.createInitialized(), subthing: {age: 1}};
-    const complexModel = new StateModel(complexSchema, store, REDUX_STORE, initialObject);
+    const complexModel = new StateModel(complexSchema, store, StateKind.REDUX, initialObject);
     expect(complexModel.get()).toEqual(initialObject);
   });
   it('creates initialized instance', () => {
     const store = createStore(complexSchema.reducer());
-    const complexModel = new StateModel(complexSchema, store, REDUX_STORE);
+    const complexModel = new StateModel(complexSchema, store, StateKind.REDUX);
     expect(complexModel.get()).toEqual((complexObject));
   });
 });
@@ -197,7 +197,7 @@ describe('validation', () => {
 describe('update react state', () => {
   class TestReactStateComponent extends StateModelComponent {
     constructor(props) {
-      super(props, complexSchema, REACT_STATE, complexSchema.createInitialized());
+      super(props, complexSchema, StateKind.REACT, complexSchema.createInitialized());
     }
 
     componentWillMount() {
@@ -222,13 +222,13 @@ describe('update react state', () => {
 describe('update disconnected redux store', () => {
   it('updates simple instance in redux store', () => {
     const store = createStore(simpleSchema.reducer());
-    const simpleModel = new StateModel(simpleSchema, store, REDUX_STORE);
+    const simpleModel = new StateModel(simpleSchema, store, StateKind.REDUX);
     simpleModel.set({name: 'John Doe'});
     expect(simpleModel.get()).toEqual({...simpleObject, name: 'John Doe'});
   });
   it('updates complex instance in redux store', () => {
     const store = createStore(complexSchema.reducer());
-    const complexModel = new StateModel(complexSchema, store, REDUX_STORE);
+    const complexModel = new StateModel(complexSchema, store, StateKind.REDUX);
     complexModel.set({subthing: {age: 1}, simpleThings: {1: {name: 'Jenny'}}});
 
     // Build the more complex comparison Object
@@ -240,7 +240,7 @@ describe('update disconnected redux store', () => {
   });
   it('updates complex instance in redux store using property accessor syntax', () => {
     const store = createStore(complexSchema.reducer());
-    const complexModel = new StateModel(complexSchema, store, REDUX_STORE);
+    const complexModel = new StateModel(complexSchema, store, StateKind.REDUX);
     complexModel.setOne('subthing.age', 1);
     expect(complexModel.get()).toEqual({...complexObject, subthing: {age: 1}});
   });
@@ -250,7 +250,7 @@ describe('update connected redux store', () => {
 
   class TestReduxStateComponent extends StateModelComponent {
     constructor(props) {
-      super(props, complexSchema, REDUX_STORE);
+      super(props, complexSchema, StateKind.REDUX);
     }
 
     componentWillMount() {

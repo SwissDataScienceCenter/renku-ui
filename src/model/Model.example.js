@@ -20,7 +20,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import {REACT_STATE, REDUX_STORE, Schema, StateModelComponent} from './Model';
+import {StateKind, Schema, StateModelComponent} from './Model';
 
 // 'Fake' API request.
 function onClick() {
@@ -57,7 +57,7 @@ class TestPresent extends Component {
 
 class ExampleReduxStateComponent extends StateModelComponent {
   constructor(props) {
-    super(props, complexSchema, REDUX_STORE);
+    super(props, complexSchema, StateKind.REDUX);
   }
 
   render(){
@@ -73,7 +73,7 @@ class ExampleReduxStateComponent extends StateModelComponent {
 
 class ExampleReactStateComponent extends StateModelComponent {
   constructor(props) {
-    super(props, complexSchema, REACT_STATE);
+    super(props, complexSchema, StateKind.REACT);
   }
 
   render(){

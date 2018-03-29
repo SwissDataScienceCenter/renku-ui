@@ -40,33 +40,39 @@ import { Component } from 'react';
 // Todo: Resolve dependency from our custom store
 import { createStore } from '../utils/EnhancedState';
 
-// Property names for the field specs.
-const SCHEMA_PROP = 'schema';
-const INITIAL_PROP = 'initial';
-const MANDATORY_PROP = 'mandatory';
-const FIELD_SPEC_PROPS = [SCHEMA_PROP, INITIAL_PROP, MANDATORY_PROP];
+
+const PropertyName = {
+  SCHEMA: 'schema',
+  INITIAL: 'initial',
+  MANDATORY: 'mandatory'
+};
 
 // Named consts for the bindings to the store.
-const REDUX_STORE = 'redux_store_binding';
-const REACT_STATE = 'react_state_binding';
+const StateKind = {
+  REDUX: 'redux_store',
+  REACT: 'react_State'
+};
 
-// We need only one action type. The information about which
+// We currently need only one action type. The information about which
 // part of the state has to be modified is contained in the action payload.
-const UPDATE_ACTION_TYPE = 'update';
+const ActionType = {
+  UPDATE: 'update'
+};
 
 // Fields which are updating are set to this value.
-const UPDATING_PROP_VAL = 'is_updating';
-
+const SpecialPropVal = {
+  UPDATING: 'is_updating'
+};
 
 class FieldSpec {
   constructor(spec) {
     Object.keys(spec).forEach((prop) => {
 
       // We ignore properties which are not part of the known field specification properties.
-      if (FIELD_SPEC_PROPS.indexOf(prop) < 0) return;
+      if (Object.values(PropertyName).indexOf(prop) < 0) return;
 
       // Handle arrays in Field spec definitions
-      if (prop === SCHEMA_PROP && spec[prop] instanceof Array) {
+      if (prop === PropertyName.SCHEMA && spec[prop] instanceof Array) {
         if (spec[prop][0] && !(spec[prop] instanceof Schema)) {
           this[prop] = [new Schema(spec[prop][0])]
         }
@@ -75,7 +81,7 @@ class FieldSpec {
         }
       }
       // Sub-objects in field spec definitions are turned into schema definitions.
-      else if (prop === SCHEMA_PROP && !(spec[prop] instanceof Schema)) {
+      else if (prop === PropertyName.SCHEMA && !(spec[prop] instanceof Schema)) {
         this[prop] = new Schema(spec[prop]);
       }
       else {
@@ -112,10 +118,10 @@ class Schema {
 class StateModel {
   constructor(schema, stateHolder, stateBinding, initialState) {
 
-    if (stateBinding === REDUX_STORE) {
+    if (stateBinding === StateKind.REDUX) {
       this.reduxStore = stateHolder;
     }
-    else if (stateBinding === REACT_STATE) {
+    else if (stateBinding === StateKind.REACT) {
       this.reactComponent = stateHolder;
     }
     else {
@@ -128,20 +134,20 @@ class StateModel {
 
     const initializedState = initialState ? initialState : schema.createInitialized();
 
-    if (stateBinding === REACT_STATE) {
+    if (stateBinding === StateKind.REACT) {
       this.reactComponent.state = initializedState;
     }
-    else if (stateBinding === REDUX_STORE) {
+    else if (stateBinding === StateKind.REDUX) {
       this.set(initializedState);
     }
   }
 
   get(propertyAccessorString) {
     let stateObject;
-    if (this.stateBinding === REDUX_STORE) {
+    if (this.stateBinding === StateKind.REDUX) {
       stateObject = this.reduxStore.getState();
     }
-    else if (this.stateBinding === REACT_STATE) {
+    else if (this.stateBinding === StateKind.REACT) {
       stateObject = this.reactComponent.state;
     }
 
@@ -179,12 +185,12 @@ class StateModel {
       throw(errorString);
     }
 
-    if (this.stateBinding === REACT_STATE) {
+    if (this.stateBinding === StateKind.REACT) {
       this.reactComponent.setState((prevState) => immutableUpdate(prevState, updateObj), callback);
     }
-    else if (this.stateBinding === REDUX_STORE) {
+    else if (this.stateBinding === StateKind.REDUX) {
       this.reduxStore.dispatch({
-        type: UPDATE_ACTION_TYPE,
+        type: ActionType.UPDATE,
         payload: updateObj,
       });
 
@@ -204,11 +210,11 @@ class StateModelComponent extends Component {
   constructor(props, schema, stateBindings, initialState) {
     super(props);
     this.schema = schema;
-    if (stateBindings === REDUX_STORE) {
+    if (stateBindings === StateKind.REDUX) {
       this.store = createStore(this.schema.reducer());
       this.model = new StateModel(this.schema, this.store, stateBindings, initialState);
     }
-    else if (stateBindings === REACT_STATE) {
+    else if (stateBindings === StateKind.REACT) {
       this.model = new StateModel(this.schema, this, stateBindings, initialState);
     }
   }
@@ -227,11 +233,11 @@ class StateModelComponent extends Component {
 // where all values are undefined
 function createEmpty(schema, newObj={}) {
   Object.keys(schema).forEach((prop) => {
-    if (schema[prop].hasOwnProperty(SCHEMA_PROP) && schema[prop][SCHEMA_PROP] instanceof Array) {
+    if (schema[prop].hasOwnProperty(PropertyName.SCHEMA) && schema[prop][PropertyName.SCHEMA] instanceof Array) {
       newObj[prop] = []
     }
-    else if (schema[prop].hasOwnProperty(SCHEMA_PROP)) {
-      newObj[prop] = createEmpty(schema[prop][SCHEMA_PROP])
+    else if (schema[prop].hasOwnProperty(PropertyName.SCHEMA)) {
+      newObj[prop] = createEmpty(schema[prop][PropertyName.SCHEMA])
     }
     else {
       newObj[prop] = undefined
@@ -245,19 +251,19 @@ function createEmpty(schema, newObj={}) {
 function applyDefaults(schema, obj) {
   Object.keys(schema).forEach((prop) => {
 
-    if (schema[prop][INITIAL_PROP] !== undefined) {
-      if (schema[prop][INITIAL_PROP] instanceof Function) {
-        obj[prop] = schema[prop][INITIAL_PROP]()
+    if (schema[prop][PropertyName.INITIAL] !== undefined) {
+      if (schema[prop][PropertyName.INITIAL] instanceof Function) {
+        obj[prop] = schema[prop][PropertyName.INITIAL]()
       }
       else {
         // TODO: Add proper check here to make sure only JSON-serializable initial
         // TODO: values are accepted
-        obj[prop] = JSON.parse(JSON.stringify(schema[prop][INITIAL_PROP]));
+        obj[prop] = JSON.parse(JSON.stringify(schema[prop][PropertyName.INITIAL]));
       }
     }
     // If the sub-schema is an array, we leave it empty, otherwise we apply the defaults to the sub-objects.
-    else if (schema[prop].hasOwnProperty(SCHEMA_PROP) && !(schema[prop][SCHEMA_PROP] instanceof Array)) {
-      schema[prop][SCHEMA_PROP].applyDefaults(obj[prop])
+    else if (schema[prop].hasOwnProperty(PropertyName.SCHEMA) && !(schema[prop][PropertyName.SCHEMA] instanceof Array)) {
+      schema[prop][PropertyName.SCHEMA].applyDefaults(obj[prop])
     }
   });
   return obj;
@@ -272,23 +278,23 @@ function validate(schema, obj) {
   Object.keys(schema).forEach((prop) => {
     let subErrors = [];
     // schema[prop] conatains another schema but the corresponding obj property is NOT an object itself.
-    if (schema[prop].hasOwnProperty(SCHEMA_PROP) && !(obj[prop] instanceof Object)) {
+    if (schema[prop].hasOwnProperty(PropertyName.SCHEMA) && !(obj[prop] instanceof Object)) {
       subErrors = validateField(prop, schema[prop], obj[prop]);
     }
     // schema[prop] conatains another schema which is not an array
-    else if (schema[prop].hasOwnProperty(SCHEMA_PROP) && (schema[prop][SCHEMA_PROP] instanceof Schema)) {
-      subErrors = schema[prop][SCHEMA_PROP].validate(obj[prop]).errors;
+    else if (schema[prop].hasOwnProperty(PropertyName.SCHEMA) && (schema[prop][PropertyName.SCHEMA] instanceof Schema)) {
+      subErrors = schema[prop][PropertyName.SCHEMA].validate(obj[prop]).errors;
     }
     // schema[prop] contains another schema which is an array
     else if (
-      schema[prop].hasOwnProperty(SCHEMA_PROP)
-      && (schema[prop][SCHEMA_PROP] instanceof Array)
-      && (schema[prop][SCHEMA_PROP].length > 0)
+      schema[prop].hasOwnProperty(PropertyName.SCHEMA)
+      && (schema[prop][PropertyName.SCHEMA] instanceof Array)
+      && (schema[prop][PropertyName.SCHEMA].length > 0)
     ) {
       subErrors = obj[prop]
         .map((el, i) => {
           if (el instanceof Object) {
-            return schema[prop][SCHEMA_PROP][0].validate(el).errors
+            return schema[prop][PropertyName.SCHEMA][0].validate(el).errors
           }
           else {
             return [{[prop]: `${prop}[${i}] must be an object`}];
@@ -309,13 +315,13 @@ function validate(schema, obj) {
 // Validate an individual field.
 function validateField(fieldName, fieldSpec, fieldValue){
   const errors = [];
-  if (fieldSpec[SCHEMA_PROP] instanceof Array && !(fieldValue instanceof Array)) {
+  if (fieldSpec[PropertyName.SCHEMA] instanceof Array && !(fieldValue instanceof Array)) {
     errors.push({[fieldName]: `${fieldName} must be an array`})
   }
-  else if (fieldSpec[SCHEMA_PROP] instanceof Object && !(fieldValue instanceof Object)) {
+  else if (fieldSpec[PropertyName.SCHEMA] instanceof Object && !(fieldValue instanceof Object)) {
     errors.push({[fieldName]: `${fieldName} must be an object`})
   }
-  else if (fieldSpec[MANDATORY_PROP] && isEmpty(fieldValue)) {
+  else if (fieldSpec[PropertyName.MANDATORY] && isEmpty(fieldValue)) {
     errors.push({[fieldName]: `${fieldName} must be provided and non-empty`});
   }
   return errors;
@@ -367,7 +373,7 @@ function updateObjectFromOptions(options){
     }
     else {
       if (options[prop] === true) {
-        updateObj[prop] = {$set: UPDATING_PROP_VAL}
+        updateObj[prop] = {$set: SpecialPropVal.UPDATING}
       }
     }
   });
@@ -387,10 +393,10 @@ function nestedPropertyAccess(propAccessorString, obj) {
 // A redux reducer that will handle immutability-helper
 // updates.
 function modelUpdateReducer(state, action) {
-  if (action.type === UPDATE_ACTION_TYPE) {
+  if (action.type === ActionType.UPDATE) {
     return immutableUpdate(state, action.payload);
   }
   return state
 }
 
-export { Schema, StateModel, StateModelComponent, REDUX_STORE, REACT_STATE }
+export { Schema, StateModel, StateModelComponent, StateKind }
