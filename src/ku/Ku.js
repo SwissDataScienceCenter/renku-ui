@@ -23,14 +23,15 @@
  *  Module for ku features.
  */
 
-import React, {Component} from 'react';
+import React, {Component} from 'react'
 
 import {Provider, connect} from 'react-redux'
 
 import {Link, Route, Switch} from 'react-router-dom'
 
-import {Row, Col} from 'reactstrap';
+import {Row, Col} from 'reactstrap'
 import {Button, FormGroup, Input, Label} from 'reactstrap'
+import { Badge } from 'reactstrap'
 
 import {createStore} from '../utils/EnhancedState'
 import State from './Ku.state'
@@ -38,6 +39,15 @@ import {Avatar, TimeCaption, FieldGroup} from '../utils/UIComponents'
 import { getActiveProjectId } from '../App'
 import { Contribution, NewContribution } from '../contribution'
 
+
+function kuStateBadge(kuStateValue) {
+  let kuState = <Badge color="secondary">{kuStateValue}</Badge>;
+  if (kuStateValue === 'opened')
+    kuState = <Badge color="success">open</Badge>;
+  if (kuStateValue === 'closed')
+    kuState = <Badge color="primary">complete</Badge>;
+  return kuState
+}
 
 class KuVisibility extends Component {
   render() {
@@ -133,8 +143,12 @@ class KuViewHeader extends Component {
   render() {
     const title = this.props.title || 'no title';
     const description = this.props.description || 'no description';
+    const kuState = kuStateBadge(this.props.state);
     return [
-      <h3 key="title">{title}</h3>,
+      <Row key="title">
+        <Col xs={9}><h3>{title}</h3></Col>
+        <Col xs={1}>{kuState}</Col>
+      </Row>,
       <p key="lead" className="lead">{description}</p>
     ]
   }
@@ -216,10 +230,11 @@ class KuListRowContent extends Component {
 
   render() {
     const active = this.props.active;
-    const kuUrl = this.props.kuUrl
+    const kuUrl = this.props.kuUrl;
+    const kuState = kuStateBadge(this.props.state);
     const title = active ?
-      <span>{this.props.title}</span> :
-      <Link to={kuUrl}>{this.props.title || 'no title'}</Link>
+      <span>{this.props.title} {kuState}</span> :
+      <Link to={kuUrl}>{this.props.title || 'no title'} {kuState}</Link>
     const description = this.props.description || 'no description';
     const time = this.props.updated_at;
     const className = (active) ? 'underline-nav font-weight-bold' : 'font-weight-normal';
@@ -258,9 +273,9 @@ class KuList extends Component {
     const rows = kus.map((d, i) =>
       <KuListRow key={i} {...d} kuBaseUrl={this.props.kuBaseUrl} projectId={this.props.projectId}/>);
     return [
-      <Row key="header"><Col md={8}><h3>Kus</h3></Col></Row>,
-      <Row key="spacer"><Col md={8}>&nbsp;</Col></Row>,
-      <Row key="timeline"><Col md={12}>{rows}</Col></Row>
+      <Row key="header"><Col xs={8}><h3>Kus</h3></Col></Row>,
+      <Row key="spacer"><Col xs={8}>&nbsp;</Col></Row>,
+      <Row key="timeline"><Col xs={12}>{rows}</Col></Row>
     ]
   }
 }

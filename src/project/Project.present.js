@@ -89,11 +89,11 @@ class ProjectViewHeader extends Component {
     return (
       <Container fluid>
         <Row>
-          <Col sm={12} md={8}>
+          <Col xs={12} md={9}>
             <h1>{title}</h1>
             <p className="lead">{description}</p>
           </Col>
-          <Col sm={12} md={4}>
+          <Col xs={12} md={3}>
             <p>
               {tags}
             </p>
@@ -213,8 +213,8 @@ class ProjectView extends Component {
 
   render() {
     return [
-      <Row key="header"><Col md={12}><ProjectViewHeader key="header" {...this.props} /></Col></Row>,
-      <Row key="nav"><Col md={12}><ProjectNav key="nav" {...this.props} /></Col></Row>,
+      <Row key="header"><Col xs={12}><ProjectViewHeader key="header" {...this.props} /></Col></Row>,
+      <Row key="nav"><Col xs={12}><ProjectNav key="nav" {...this.props} /></Col></Row>,
       <Container key="content" fluid>
         <Row>
           <Route exact path={this.props.overviewUrl}
