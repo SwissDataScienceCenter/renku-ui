@@ -112,15 +112,6 @@ class ProjectViewHeader extends Component {
 class ProjectNav extends Component {
 
   render() {
-    const selected = 'overview';
-    const dummy = () => { };
-    const onData = dummy;
-    const onWorkflows = dummy;
-    const onFiles = dummy;
-    // const visibleTab = <ProjectList {...this.props} />
-    // let visibleTab = <YourActivity />
-    // if (selected === 'your_network') visibleTab = <YourNetwork />
-    // if (selected === 'explore') visibleTab = <Explore />
     return (
       <Nav pills className={'nav-pills-underline'}>
         <NavItem>
@@ -130,14 +121,34 @@ class ProjectNav extends Component {
           <RengaNavLink exact={false} to={this.props.kusUrl} title="Kus" />
         </NavItem>
         <NavItem>
-          <RengaNavLink exact={false} to={this.props.notebooksUrl} title="Notebooks" />
+          <RengaNavLink exact={false} to={this.props.notebooksUrl} title="Files" />
         </NavItem>
+      </Nav>)
+  }
+}
+
+class ProjectFilesNav extends Component {
+
+  render() {
+    const selected = 'notebooks';
+    const dummy = () => { };
+    const onData = dummy;
+    const onWorkflows = dummy;
+    const onOther = dummy;
+    // const visibleTab = <ProjectList {...this.props} />
+    // let visibleTab = <YourActivity />
+    // if (selected === 'your_network') visibleTab = <YourNetwork />
+    // if (selected === 'explore') visibleTab = <Explore />
+    return (
+      <Nav pills className={'nav-pills-underline flex-column'}>
+        <NavItem><NavLink href="#" active={selected === 'notebooks'}
+          onClick={onData}>Notebooks</NavLink></NavItem>
         <NavItem><NavLink href="#" active={selected === 'data'}
           onClick={onData}>Data</NavLink></NavItem>
         <NavItem><NavLink href="#" active={selected === 'workflows'}
           onClick={onWorkflows}>Workflows</NavLink></NavItem>
-        <NavItem><NavLink href="#" active={selected === 'files'}
-          onClick={onFiles}>Files</NavLink></NavItem>
+        <NavItem><NavLink href="#" active={selected === 'other'}
+          onClick={onOther}>Other</NavLink></NavItem>
       </Nav>)
   }
 }
@@ -155,23 +166,21 @@ class ProjectViewReadme extends Component {
   }
 }
 
-
-/* eslint-disable-next-line no-unused-vars */
-class ProjectViewStats extends Component {
-
-  render() {
-    const lastActivityAt = this.props.lastActivityAt;
-    return [
-      <h3 key="header">Stats</h3>,
-      <TimeCaption key="time-caption" time={lastActivityAt} />,
-      <p key="stats">
-        <b>Kus</b> 5; 1 closed, 2 active<br />
-        <b>Contributors</b> 3<br />
-        <b>Notebooks</b> 3
-      </p>,
-    ]
-  }
-}
+// class ProjectViewStats extends Component {
+//
+//   render() {
+//     const lastActivityAt = this.props.lastActivityAt;
+//     return [
+//       <h3 key="header">Stats</h3>,
+//       <TimeCaption key="time-caption" time={lastActivityAt} />,
+//       <p key="stats">
+//         <b>Kus</b> 5; 1 closed, 2 active<br />
+//         <b>Contributors</b> 3<br />
+//         <b>Notebooks</b> 3
+//       </p>,
+//     ]
+//   }
+// }
 
 class ProjectViewOverview extends Component {
 
@@ -202,14 +211,14 @@ class ProjectViewKus extends Component {
   }
 }
 
-class ProjectViewNotebooks extends Component {
+class ProjectViewFiles extends Component {
 
   render() {
     return [
-      <Col key="notebooks" sm={12} md={2}><br />
-        <h3>Notebooks</h3>
+      <Col key="files" sm={12} md={2}>
+        <ProjectFilesNav />
       </Col>,
-      <Col key="notebook" sm={12} md={10}>
+      <Col key="notebook" sm={12} md={9}>
         <Route path={this.props.notebookUrl}
           render={props => this.props.notebookView(props) }/>
       </Col>
@@ -230,7 +239,7 @@ class ProjectView extends Component {
           <Route path={this.props.kusUrl}
             render={props => <ProjectViewKus key="kus" {...this.props} /> }/>
           <Route path={this.props.notebooksUrl}
-            render={props => <ProjectViewNotebooks key="notebooks" {...this.props} /> }/>
+            render={props => <ProjectViewFiles key="files" {...this.props} /> }/>
         </Row>
       </Container>
     ]
