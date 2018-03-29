@@ -65,8 +65,17 @@ class FieldSpec {
       // We ignore properties which are not part of the known field specification properties.
       if (FIELD_SPEC_PROPS.indexOf(prop) < 0) return;
 
+      // Handle arrays in Field spec definitions
+      if (prop === SCHEMA_PROP && spec[prop] instanceof Array) {
+        if (spec[prop][0] && !(spec[prop] instanceof Schema)) {
+          this[prop] = [new Schema(spec[prop][0])]
+        }
+        else {
+          this[prop] = []
+        }
+      }
       // Sub-objects in field spec definitions are turned into schema definitions.
-      if (prop === SCHEMA_PROP && !(spec[prop] instanceof Schema)) {
+      else if (prop === SCHEMA_PROP && !(spec[prop] instanceof Schema)) {
         this[prop] = new Schema(spec[prop]);
       }
       else {
@@ -155,7 +164,7 @@ class StateModel {
   }
 
   set(obj, callback) {
-    const updateObj = updateObjectFromObject(obj);
+    const updateObj = updateObjectFromObject(obj, this.get());
     this.immutableUpdate(updateObj, callback);
   }
 
@@ -218,8 +227,10 @@ class StateModelComponent extends Component {
 // where all values are undefined
 function createEmpty(schema, newObj={}) {
   Object.keys(schema).forEach((prop) => {
-
-    if (schema[prop].hasOwnProperty(SCHEMA_PROP)) {
+    if (schema[prop].hasOwnProperty(SCHEMA_PROP) && schema[prop][SCHEMA_PROP] instanceof Array) {
+      newObj[prop] = []
+    }
+    else if (schema[prop].hasOwnProperty(SCHEMA_PROP)) {
       newObj[prop] = createEmpty(schema[prop][SCHEMA_PROP])
     }
     else {
@@ -229,7 +240,7 @@ function createEmpty(schema, newObj={}) {
   return newObj;
 }
 
-// Apply the defaults defined in a schema to a generic object. WE don't overwrite
+// Apply the defaults defined in a schema to a generic object. We don't overwrite
 // already existing values, defaults are only applied to undefined values.
 function applyDefaults(schema, obj) {
   Object.keys(schema).forEach((prop) => {
@@ -239,10 +250,13 @@ function applyDefaults(schema, obj) {
         obj[prop] = schema[prop][INITIAL_PROP]()
       }
       else {
-        obj[prop] = schema[prop][INITIAL_PROP]
+        // TODO: Add proper check here to make sure only JSON-serializable initial
+        // TODO: values are accepted
+        obj[prop] = JSON.parse(JSON.stringify(schema[prop][INITIAL_PROP]));
       }
     }
-    else if (schema[prop].hasOwnProperty(SCHEMA_PROP)) {
+    // If the sub-schema is an array, we leave it empty, otherwise we apply the defaults to the sub-objects.
+    else if (schema[prop].hasOwnProperty(SCHEMA_PROP) && !(schema[prop][SCHEMA_PROP] instanceof Array)) {
       schema[prop][SCHEMA_PROP].applyDefaults(obj[prop])
     }
   });
@@ -251,12 +265,38 @@ function applyDefaults(schema, obj) {
 
 // Validate a generic object against a schema.
 function validate(schema, obj) {
+  if (!(obj instanceof Object)) {
+    throw('Only objects should be passed to this routine')
+  }
   let errors = [];
   Object.keys(schema).forEach((prop) => {
     let subErrors = [];
-    if (schema[prop].hasOwnProperty(SCHEMA_PROP)) {
+    // schema[prop] conatains another schema but the corresponding obj property is NOT an object itself.
+    if (schema[prop].hasOwnProperty(SCHEMA_PROP) && !(obj[prop] instanceof Object)) {
+      subErrors = validateField(prop, schema[prop], obj[prop]);
+    }
+    // schema[prop] conatains another schema which is not an array
+    else if (schema[prop].hasOwnProperty(SCHEMA_PROP) && (schema[prop][SCHEMA_PROP] instanceof Schema)) {
       subErrors = schema[prop][SCHEMA_PROP].validate(obj[prop]).errors;
     }
+    // schema[prop] contains another schema which is an array
+    else if (
+      schema[prop].hasOwnProperty(SCHEMA_PROP)
+      && (schema[prop][SCHEMA_PROP] instanceof Array)
+      && (schema[prop][SCHEMA_PROP].length > 0)
+    ) {
+      subErrors = obj[prop]
+        .map((el, i) => {
+          if (el instanceof Object) {
+            return schema[prop][SCHEMA_PROP][0].validate(el).errors
+          }
+          else {
+            return [{[prop]: `${prop}[${i}] must be an object`}];
+          }
+        })
+        .reduce((arr1, arr2) => arr1.concat(arr2));
+    }
+    // schema[prop] contains no schema
     else {
       subErrors = validateField(prop, schema[prop], obj[prop]);
     }
@@ -269,7 +309,13 @@ function validate(schema, obj) {
 // Validate an individual field.
 function validateField(fieldName, fieldSpec, fieldValue){
   const errors = [];
-  if (fieldSpec[MANDATORY_PROP] && isEmpty(fieldValue)) {
+  if (fieldSpec[SCHEMA_PROP] instanceof Array && !(fieldValue instanceof Array)) {
+    errors.push({[fieldName]: `${fieldName} must be an array`})
+  }
+  else if (fieldSpec[SCHEMA_PROP] instanceof Object && !(fieldValue instanceof Object)) {
+    errors.push({[fieldName]: `${fieldName} must be an object`})
+  }
+  else if (fieldSpec[MANDATORY_PROP] && isEmpty(fieldValue)) {
     errors.push({[fieldName]: `${fieldName} must be provided and non-empty`});
   }
   return errors;
@@ -298,11 +344,11 @@ function updateObjectFromString(propAccessorString, value) {
 
 // Create a mongodb-style update object from a plain
 // object containing the desired (potentially nested) values.
-function updateObjectFromObject(obj){
+function updateObjectFromObject(obj, currentObject){
   let updateObj = {};
   Object.keys(obj).forEach((prop) => {
-    if (obj[prop] instanceof Object) {
-      updateObj[prop] = updateObjectFromObject(obj[prop])
+    if (obj[prop] instanceof Object && currentObject[prop]) {
+      updateObj[prop] = updateObjectFromObject(obj[prop], currentObject[prop])
     }
     else {
       updateObj[prop] = {$set: obj[prop]}
