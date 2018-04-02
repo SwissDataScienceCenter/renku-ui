@@ -128,7 +128,6 @@ class StateModel {
       throw(`State binding ${stateBinding} not implemented`)
     }
 
-
     this.stateBinding = stateBinding;
     this.schema = schema;
 
@@ -204,6 +203,39 @@ class StateModel {
 }
 
 
+class SubModel {
+  constructor(model, path) {
+    this.get = (propAccessorString) => {
+      const fullPropAccessorString = path + (propAccessorString ? '.' + propAccessorString : '');
+      return model.get(fullPropAccessorString);
+    };
+    this.setOne = (propAccessorString, value) => model.setOne(path + '.' + propAccessorString, value);
+    this.set = (obj) => {
+      const fullObj = {};
+      let leafObj = fullObj;
+      path.split('.').forEach((prop) => {
+        leafObj[prop] = {};
+        leafObj = leafObj[prop];
+      });
+      Object.keys(obj).forEach((prop) => leafObj[prop] = obj[prop]);
+      model.set(fullObj);
+    };
+    this.setUpdating = (options) => {
+      const fullOptions = {};
+      let leafOptions = fullOptions;
+      path.split('.').forEach((prop) => {
+        leafOptions[prop] = {};
+        leafOptions = leafOptions[prop];
+      });
+      Object.keys(options).forEach((prop) => leafOptions[prop] = options[prop]);
+      model.setUpdating(fullOptions);
+    }
+  }
+}
+
+// The following functions are not exported and probably never called directly, we use
+// them to define schema/model object methods.
+
 // A regular react component, enriched with some stateModel boilerplate.
 class StateModelComponent extends Component {
 
@@ -219,11 +251,32 @@ class StateModelComponent extends Component {
     }
   }
 
+  // We map the entire state tree to props.
   mapStateToProps = (state, ownProps) => {
-    return {...state, ...ownProps}
+    if (this.model instanceof SubModel) {
+      return {...state}
+    }
+    else {
+      return {...state, ...ownProps}
+    }
   };
 }
 
+// We provide a StateModelSubComponent which must be passed a model and a path
+// as props. From these, a SubModel is created which allows convenient access
+// to the inherited state.
+class StateModelSubComponent extends Component {
+  constructor(props) {
+    super(props);
+    this.model = new SubModel(this.props.model, this.props.path);
+
+    // We provide a default implementation of mapStateToProps which returns the
+    // sub-region of the entire store tree.
+    this.mapStateToProps = (state, ownProps) => {
+      return {...nestedPropertyAccess(this.props.path, state), ...ownProps}
+    }
+  }
+}
 
 // The following functions are not exported and probably never called directly, we use
 // them to define Schema / StateModel object methods.
@@ -250,19 +303,20 @@ function createEmpty(schema, newObj={}) {
 // already existing values, defaults are only applied to undefined values.
 function applyDefaults(schema, obj) {
   Object.keys(schema).forEach((prop) => {
-
-    if (schema[prop][PropertyName.INITIAL] !== undefined) {
-      if (schema[prop][PropertyName.INITIAL] instanceof Function) {
-        obj[prop] = schema[prop][PropertyName.INITIAL]()
+    const initialValue = schema[prop][PropertyName.INITIAL];
+    if (initialValue !== undefined) {
+      if (initialValue instanceof Function) {
+        obj[prop] = initialValue()
       }
       else {
         // TODO: Add proper check here to make sure only JSON-serializable initial
         // TODO: values are accepted
-        obj[prop] = JSON.parse(JSON.stringify(schema[prop][PropertyName.INITIAL]));
+        obj[prop] = JSON.parse(JSON.stringify(initialValue));
       }
     }
     // If the sub-schema is an array, we leave it empty, otherwise we apply the defaults to the sub-objects.
-    else if (schema[prop].hasOwnProperty(PropertyName.SCHEMA) && !(schema[prop][PropertyName.SCHEMA] instanceof Array)) {
+    else if (schema[prop].hasOwnProperty(PropertyName.SCHEMA)
+      && !(schema[prop][PropertyName.SCHEMA] instanceof Array)) {
       schema[prop][PropertyName.SCHEMA].applyDefaults(obj[prop])
     }
   });
@@ -282,7 +336,8 @@ function validate(schema, obj) {
       subErrors = validateField(prop, schema[prop], obj[prop]);
     }
     // schema[prop] conatains another schema which is not an array
-    else if (schema[prop].hasOwnProperty(PropertyName.SCHEMA) && (schema[prop][PropertyName.SCHEMA] instanceof Schema)) {
+    else if (schema[prop].hasOwnProperty(PropertyName.SCHEMA) &&
+      (schema[prop][PropertyName.SCHEMA] instanceof Schema)) {
       subErrors = schema[prop][PropertyName.SCHEMA].validate(obj[prop]).errors;
     }
     // schema[prop] contains another schema which is an array
@@ -399,4 +454,4 @@ function modelUpdateReducer(state, action) {
   return state
 }
 
-export { Schema, StateModel, StateModelComponent, StateKind }
+export { Schema, StateModel, StateModelComponent, StateKind , SubModel, StateModelSubComponent}
