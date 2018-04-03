@@ -115,16 +115,15 @@ const NewContribution = props => {
 
   return <span>
     <Row className="contribution">
-      <Col md={1}><Avatar/></Col>
-      <Col md={9}>
-        <Nav tabs>
+      <Col md={10}>
+        <Nav pills className={'nav-pills-underline'}>
           <NavItem>
             <NavLink
               className={classnames({active: props.tab === EDIT})}
               onClick={() => {
                 props.onTabClick(EDIT)
               }}
-            >Edit</NavLink>
+            >Write</NavLink>
           </NavItem>
           <NavItem>
             <NavLink

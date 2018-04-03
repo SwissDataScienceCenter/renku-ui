@@ -55,3 +55,10 @@ $nav-pills-underline-border-color:    map-get($theme-colors, "primary");
     }
   }
 }
+
+.underline-nav {
+  color: $nav-pills-underline-border-color;
+  border-bottom-width: $nav-pills-underline-border-width;
+  border-bottom-style: solid;
+  border-bottom-color: $nav-pills-underline-border-color;
+}
