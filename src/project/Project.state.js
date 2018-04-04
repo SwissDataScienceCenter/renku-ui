@@ -113,9 +113,7 @@ const Data = {
 const combinedFieldReducer = combineReducers({core: Core.reduce, visibility: Visibility.reduce,
   data: Data.reduce, system: System.reduce});
 
-const New = { Core, Visibility, Data, System,
-  reducer: combinedFieldReducer
-};
+
 
 const View = { Core, Visibility, Data,
   fetchMetadata: (client, id) => {
@@ -178,5 +176,4 @@ const List = {
   }
 }
 
-export default { New, View, List };
-export { displayIdFromTitle };
+export default { View, List };

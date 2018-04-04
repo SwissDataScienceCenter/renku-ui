@@ -46,6 +46,23 @@ export default class GitlabClient {
       .then(d => carveProject(d))
   }
 
+  postProject(rengaProject) {
+    const gitlabProject = {
+      name: rengaProject.display.title,
+      description: rengaProject.display.description,
+      visibility: rengaProject.meta.visibility === 'public' ? 'public' : 'private'
+    };
+    const headers = this.getBasicHeaders();
+    headers.append('Content-Type', 'application/json');
+
+    return fetch(this._baseUrl + `projects`, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(gitlabProject)
+    })
+      .then(response => response.json())
+  }
+
   getProjectReadme(projectId) {
     return this.getRepositoryFile(projectId, 'README.md', 'master', 'raw')
       .then(text => ({text}))
