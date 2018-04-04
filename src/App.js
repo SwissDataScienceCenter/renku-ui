@@ -174,13 +174,17 @@ class App extends Component {
                 render={p => <Landing.Home key="landing" {...p} />} />
               <Route exact path="/projects"
                 render={p => <Project.List key="projects" {...p} client={this.props.client} />} />
+
+              {/*TODO: This route should be handled by <Route path="/projects/:id(\d+)" too. Until this is the
+                 TODO: case, the ku_new route must be listed BEFORE the project one.   */}
+              <Route exact path="/projects/:projectId(\d+)/ku_new"
+                     render={(p) => <Ku.New key="ku_new" client={this.props.client} {...p}/>}/>
               {/* pull out the underlying parts of the url and pass them to the project view */}
               <Route path="/projects/:id(\d+)"
                 render={p => <Project.View key="project" id={p.match.params.id} {...p}
-                  client={this.props.client} store={this.props.store} />} />
-              <Route exact path="/project_new" component={Project.New} client={this.props.client} />
-              <Route exact path="/projects/:projectId(\d+)/ku_new"
-                render={(p) => <Ku.New key="ku_new" client={this.props.client} {...p}/>}/>
+                  client={this.props.client} store={this.props.store} />}/>
+              <Route exact path="/project_new"
+                render={(p) => <Project.New key="project_new" client={this.props.client} {...p}/> }/>
             </Switch>
           </main>
           <Route component={RengaFooter} />

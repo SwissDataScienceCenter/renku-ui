@@ -24,61 +24,52 @@
  */
 
 import React, { Component } from 'react';
-
 import { Provider, connect } from 'react-redux'
 
-import { Row, Col } from 'reactstrap';
-
+import { StateKind, StateModelComponent } from '../model/Model';
+import { projectSchema} from '../model/RengaModels';
 import { createStore } from '../utils/EnhancedState'
+import { slugFromTitle } from '../utils/HelperFunctions';
 import Present from './Project.present'
 import State from './Project.state'
 import Ku from '../ku/Ku'
 import Notebook from '../file/Notebook'
 
-class New extends Component {
+
+class New extends StateModelComponent {
   constructor(props) {
-    super(props);
-    this.store = createStore(State.New.reducer);
-    this.onSubmit = this.handleSubmit.bind(this);
+    super(props, projectSchema, StateKind.REDUX);
+    this.handlers = {
+      onSubmit: this.onSubmit.bind(this),
+      onTitleChange: this.onTitleChange.bind(this),
+      onDescriptionChange: this.onDescriptionChange.bind(this),
+      onVisibilityChange: this.onVisibilityChange.bind(this),
+    };
   }
 
-  submitData() {
-    return this.store.getState();
-  }
-
-  handleSubmit() {
-    const body = JSON.stringify(this.submitData());
-    const headers = new Headers();
-    headers.append('Accept', 'application/json');
-    headers.append('Content-Type', 'application/json');
-    fetch('api/datasets/', {method: 'POST', headers: headers, body: body})
-      .then( (response) => {
-        if (response.ok) {
-          response.json().then( newProject => {
-            this.store.dispatch(State.List.append([newProject]))
-          });
-          this.props.history.push({pathname: '/projects/'});
-        }
-      });
-  }
-
-  mapStateToProps(state, ownProps) { return state  }
-
-  mapDispatchToProps(dispatch, ownProps) {
-    return {
-      onTitleChange: (e) => { dispatch(State.New.Core.set('title', e.target.value)) },
-      onDescriptionChange: (e) => { dispatch(State.New.Core.set('description', e.target.value)) },
-      onVisibilityChange: (e) => { dispatch(State.New.Visibility.set(e.target.value)) },
-      onDataReferenceChange: (key, e) => { dispatch(State.New.Data.set('reference', key, e.target.value)) }
+  onSubmit = () => {
+    const validation = this.model.validate()
+    if (validation.result) {
+      this.props.client.postProject(this.model.get())
     }
-  }
+    else {
+      // This should be done by proper form validation.
+      console.error('Can not create new project - insufficient information: ', validation.errors)
+    }
+  };
+  onTitleChange = (e) => {
+    this.model.setOne('display.title', e.target.value);
+    this.model.setOne('display.slug', slugFromTitle(e.target.value));
+  };
+  onDescriptionChange = (e) => { this.model.setOne('display.description', e.target.value) };
+  onVisibilityChange = (e) => { this.model.setOne('meta.visibility', e.target.value) };
+  // onDataReferenceChange = (key, e) => { this.model.setOne('reference', key, e.target.value) };
 
   render() {
-    const VisibleNewProject = connect(this.mapStateToProps, this.mapDispatchToProps)(Present.ProjectNew);
+    const VisibleNewProject = connect(this.mapStateToProps)(Present.ProjectNew);
     return [
-      <Row key="header"><Col md={8}><h1>New Project</h1></Col></Row>,
       <Provider key="new" store={this.store}>
-        <Row><Col md={8}><VisibleNewProject onSubmit={this.onSubmit} /></Col></Row>
+        <VisibleNewProject handlers={this.handlers} />
       </Provider>
     ]
   }

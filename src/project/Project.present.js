@@ -55,19 +55,26 @@ class DataVisibility extends Component {
 class ProjectNew extends Component {
 
   render() {
-    const titleHelp = this.props.core.displayId.length > 0 ? `Id: ${this.props.core.displayId}` : null;
-    return <form action="" method="post" encType="multipart/form-data" id="js-upload-form">
-      <FieldGroup id="title" type="text" label="Title" placeholder="A brief name to identify the project"
-        help={titleHelp} value={this.props.core.title} onChange={this.props.onTitleChange} />
-      <FieldGroup id="description" type="textarea" label="Description" placeholder="A description of the project"
-        help="A description of the project helps users understand it and is highly recommended."
-        value={this.props.core.description} onChange={this.props.onDescriptionChange} />
-      <DataVisibility value={this.props.visibility} onChange={this.props.onVisibilityChange} />
-      <br />
-      <Button color="primary" onClick={this.props.onSubmit}>
-        Create
-      </Button>
-    </form>
+    const titleHelp = this.props.display.slug.length > 0 ? `Id: ${this.props.display.slug}` : null;
+    return [
+      <Row key="header"><Col md={8}>
+        <h1>New Project</h1>
+      </Col></Row>,
+      <Row key="body"><Col md={8}>
+        <form action="" method="post" encType="multipart/form-data" id="js-upload-form">
+          <FieldGroup id="title" type="text" label="Title" placeholder="A brief name to identify the project"
+                      help={titleHelp} value={this.props.display.title} onChange={this.props.handlers.onTitleChange} />
+          <FieldGroup id="description" type="textarea" label="Description" placeholder="A description of the project"
+                      help="A description of the project helps users understand it and is highly recommended."
+                      value={this.props.display.description} onChange={this.props.handlers.onDescriptionChange} />
+          <DataVisibility value={this.props.meta.visibility} onChange={this.props.handlers.onVisibilityChange} />
+          <br/>
+          <Button color="primary" onClick={this.props.handlers.onSubmit}>
+            Create
+          </Button>
+        </form>
+      </Col></Row>
+    ]
   }
 }
 

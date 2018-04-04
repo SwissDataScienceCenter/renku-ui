@@ -26,29 +26,30 @@
 import { Schema } from './Model'
 
 const userSchema = new Schema({
-  name: {initial: '', mandatory: true}
+  name: {initial: '', mandatory: false},
+  username: {initial: '', mandatory: true},
+  avatarUrl: {initial: '', mandatory: false}
 });
-const User = userSchema.toModel();
 
 const metaSchema = new Schema({
-  author: {schema: userSchema, mandatory: true},
-  description: {initial: '', mandatory: true},
-  displayId: {initial: '', mandatory: true},
-  createdAt: {initial: () => new Date()}
+  id: {initial: '', mandatory: false},
+  // author: {schema: userSchema, mandatory: false},
+  createdAt: {initial: () => new Date()},
+  updatedAt: {initial: () => new Date()},
+  lastActivityAt: {initial: () => new Date()},
+  visibility: {initial: 'public', mandatory: true},
 });
-const Meta = metaSchema.toModel();
 
 const displaySchema = new Schema({
   title: {initial:'', mandatory: true},
   description: {initial: '', mandatory: true},
+  displayId: {initial: '', mandatory: false},
   slug: {initial: '', mandatory: true},
 });
-const Display = displaySchema.toModel();
 
 const projectSchema = new Schema({
   meta: {schema: metaSchema, mandatory: true},
   display: {schema: displaySchema, mandatory: true}
 });
-const Project = projectSchema.toModel();
 
-export { User, userSchema, Meta, metaSchema, Display, displaySchema, Project, projectSchema };
+export { userSchema, metaSchema, displaySchema, projectSchema };

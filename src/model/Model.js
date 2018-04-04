@@ -175,14 +175,15 @@ class StateModel {
 
   immutableUpdate(updateObj, callback) {
 
-    const validation = this.schema.validate(immutableUpdate(this.get(), updateObj));
-    if (!validation.result) {
-      let errorString = 'Skipping update to prevent invalid state:';
-      validation.errors.forEach((error) => {
-        errorString = errorString.concat(JSON.stringify(error));
-      });
-      throw(errorString);
-    }
+    // TODO: Reconsider validation, for what and when it should be used.
+    // const validation = this.schema.validate(immutableUpdate(this.get(), updateObj));
+    // if (!validation.result) {
+    //   let errorString = 'Skipping update to prevent invalid state:';
+    //   validation.errors.forEach((error) => {
+    //     errorString = errorString.concat(JSON.stringify(error));
+    //   });
+    //   throw(errorString);
+    // }
 
     if (this.stateBinding === StateKind.REACT) {
       this.reactComponent.setState((prevState) => immutableUpdate(prevState, updateObj), callback);
@@ -199,6 +200,10 @@ class StateModel {
         callback.call();
       }
     }
+  }
+
+  validate() {
+    return this.schema.validate(this.get())
   }
 }
 
@@ -368,6 +373,7 @@ function validate(schema, obj) {
 }
 
 // Validate an individual field.
+// TODO: Validation of mandatory sub-fields of non-mandatory fields seems to give unexpected results.
 function validateField(fieldName, fieldSpec, fieldValue){
   const errors = [];
   if (fieldSpec[PropertyName.SCHEMA] instanceof Array && !(fieldValue instanceof Array)) {
