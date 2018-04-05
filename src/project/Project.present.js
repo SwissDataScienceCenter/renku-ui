@@ -147,7 +147,7 @@ class ProjectFilesNav extends Component {
     // if (selected === 'your_network') visibleTab = <YourNetwork />
     // if (selected === 'explore') visibleTab = <Explore />
     return (
-      <Nav pills className={'nav-pills-underline flex-column'}>
+      <Nav pills className={'flex-column'}>
         <NavItem><NavLink href="#" active={selected === 'notebooks'}
           onClick={onData}>Notebooks</NavLink></NavItem>
         <NavItem><NavLink href="#" active={selected === 'data'}
@@ -222,6 +222,9 @@ class ProjectViewFiles extends Component {
 
   render() {
     return [
+      <Col key="space" xs={12}>
+        &nbsp;
+      </Col>,
       <Col key="files" sm={12} md={2}>
         <ProjectFilesNav />
       </Col>,
