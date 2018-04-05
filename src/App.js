@@ -98,7 +98,7 @@ class RengaNavBar extends Component {
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <form className="form-inline my-2 my-lg-0">
               <div className="input-group">
-                <input className="form-control" type="search" placeholder="Search RENGA" aria-label="Search" />
+                <input className="form-control border-primary" type="search" placeholder="Search RENGA" aria-label="Search" />
                 <span className="input-group-append">
                   <button className="btn btn-outline-primary my-2 my-sm-0" type="submit">
                     <FontAwesome name="search" />
