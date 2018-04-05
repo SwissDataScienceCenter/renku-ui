@@ -108,7 +108,6 @@ class RengaNavBar extends Component {
             </form>
 
             <ul className="navbar-nav mr-auto">
-              <RengaNavLink to="/" title="Home" />
               <RengaNavLink to="/projects" title="Projects"/>
             </ul>
             <ul className="navbar-nav">
