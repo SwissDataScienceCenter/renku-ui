@@ -170,11 +170,9 @@ export default class GitlabClient {
       .then(envs => envs.filter(env => env.name === `review/${branchName}`)[0])
       .then(env => {
         if (!env) return undefined;
-        const urlParamRegex = /(.*)\?(.*)/;
-        const url = urlParamRegex.exec(env.external_url)[1];
-        const tokenString = urlParamRegex.exec(env.external_url)[2];
-
-        return `${url}tree/${env.project.path_with_namespace}/${env.slug}/${notebookPath}?${tokenString}`;
+        // TODO: Add the path to the actual notebook file once the CI/CD part
+        // TODO: has stabilized.
+        return `${env.external_url}`;
       })
   }
 }
