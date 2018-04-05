@@ -233,15 +233,18 @@ class KuListRowContent extends Component {
     const kuUrl = this.props.kuUrl;
     const kuState = kuStateBadge(this.props.state);
     const title = active ?
-      <span>{this.props.title} {kuState}</span> :
-      <Link to={kuUrl}>{this.props.title || 'no title'} {kuState}</Link>
+      <span>{this.props.title}</span> :
+      <Link to={kuUrl}>{this.props.title || 'no title'}</Link>
     const description = this.props.description || 'no description';
     const time = this.props.updated_at;
     const className = (active) ? 'underline-nav font-weight-bold' : 'font-weight-normal';
 
     return [
-      <Col key="avatar" md={2}><Avatar person={this.props.author} /></Col>,
-      <Col key="summary" md={10}>
+      <Col key="avatar" md={3}>
+        <div style={{marginBottom: 5}}>{kuState}</div>
+        <Avatar person={this.props.author} />
+      </Col>,
+      <Col key="summary" md={9}>
         <p className={className}>{title}</p>
         <p>{description} <TimeCaption caption="Updated" time={time}/></p>
       </Col>
