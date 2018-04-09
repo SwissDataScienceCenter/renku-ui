@@ -275,11 +275,7 @@ class KuList extends Component {
     const kus = this.props.kus;
     const rows = kus.map((d, i) =>
       <KuListRow key={i} {...d} kuBaseUrl={this.props.kuBaseUrl} projectId={this.props.projectId}/>);
-    return [
-      <Row key="header"><Col xs={8}><h3>Kus</h3></Col></Row>,
-      <Row key="spacer"><Col xs={8}>&nbsp;</Col></Row>,
-      <Row key="timeline"><Col xs={12}>{rows}</Col></Row>
-    ]
+    return <Row key="timeline"><Col xs={12}>{rows}</Col></Row>
   }
 }
 

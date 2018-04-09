@@ -63,10 +63,10 @@ class ProjectNew extends Component {
       <Row key="body"><Col md={8}>
         <form action="" method="post" encType="multipart/form-data" id="js-upload-form">
           <FieldGroup id="title" type="text" label="Title" placeholder="A brief name to identify the project"
-                      help={titleHelp} value={this.props.display.title} onChange={this.props.handlers.onTitleChange} />
+            help={titleHelp} value={this.props.display.title} onChange={this.props.handlers.onTitleChange} />
           <FieldGroup id="description" type="textarea" label="Description" placeholder="A description of the project"
-                      help="A description of the project helps users understand it and is highly recommended."
-                      value={this.props.display.description} onChange={this.props.handlers.onDescriptionChange} />
+            help="A description of the project helps users understand it and is highly recommended."
+            value={this.props.display.description} onChange={this.props.handlers.onDescriptionChange} />
           <DataVisibility value={this.props.meta.visibility} onChange={this.props.handlers.onVisibilityChange} />
           <br/>
           <Button color="primary" onClick={this.props.handlers.onSubmit}>
@@ -208,11 +208,9 @@ class ProjectViewKus extends Component {
   render() {
     return [
       <Col key="kulist" sm={12} md={4}>
-        <br key="spacer" />
         {this.props.kuList}
       </Col>,
       <Col key="ku" sm={12} md={8}>
-        <br key="spacer"/>
         <Route path={this.props.kuUrl}
           render={props => this.props.kuView(props) }/>
       </Col>
@@ -224,9 +222,6 @@ class ProjectViewFiles extends Component {
 
   render() {
     return [
-      <Col key="space" xs={12}>
-        &nbsp;
-      </Col>,
       <Col key="files" sm={12} md={2}>
         <ProjectFilesNav />
       </Col>,
@@ -244,6 +239,7 @@ class ProjectView extends Component {
     return [
       <Row key="header"><Col xs={12}><ProjectViewHeader key="header" {...this.props} /></Col></Row>,
       <Row key="nav"><Col xs={12}><ProjectNav key="nav" {...this.props} /></Col></Row>,
+      <Row key="space"><Col key="space" xs={12}>&nbsp;</Col></Row>,
       <Container key="content" fluid>
         <Row>
           <Route exact path={this.props.overviewUrl}
