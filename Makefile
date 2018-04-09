@@ -28,7 +28,7 @@ IMAGES=renga-ui
 
 GIT_MASTER_HEAD_SHA:=$(shell git rev-parse --short=12 --verify HEAD)
 
-PLATFORM_DOMAIN?=renga.local
+PLATFORM_DOMAIN?=renga.build
 GITLAB_URL?=http://gitlab.$(PLATFORM_DOMAIN)
 KEYCLOAK_URL?=http://keycloak.$(PLATFORM_DOMAIN):8080
 
