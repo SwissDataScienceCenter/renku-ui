@@ -32,10 +32,13 @@ export default class GitlabClient {
     return  new Headers(headers)
   }
 
-  getProjects() {
+  getProjects(queryParams={}) {
     let headers = this.getBasicHeaders();
 
-    return fetch(this._baseUrl + 'projects/', {
+    const url = new URL(this._baseUrl + 'projects');
+    Object.keys(queryParams).forEach((key) => url.searchParams.append(key, queryParams[key]));
+
+    return fetch(url, {
       method: 'GET',
       headers: headers
     })

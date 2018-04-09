@@ -18,17 +18,23 @@
 
 
 const SET_USER_INFO = 'SET_USER_INFO';
+const SET_STARRED_PROJECTS = 'SET_STARRED_PROJECTS';
 
 const User = {
   // Actions related to user state...
   set: (user) => {
     return { type: SET_USER_INFO, payload: user };
   },
+  setStarred: (projectIds) => {
+    return { type: SET_STARRED_PROJECTS, payload: projectIds };
+  },
   // ... and the reducer.
   reducer: (state = null, action) => {
     switch (action.type) {
     case SET_USER_INFO:
-      return action.payload;
+      return {...state, ...action.payload};
+    case SET_STARRED_PROJECTS:
+      return {...state, starredProjects: action.payload};
     default:
       return state;
     }

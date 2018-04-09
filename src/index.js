@@ -64,6 +64,17 @@ keycloak.init()
       keycloak.loadUserProfile()
         .success(profile => {store.dispatch(UserState.set(profile))});
 
+      // TODO: Replace this after re-implementation of user state.
+      client.getProjects({starred: true})
+        .then((projects) => {
+          const reducedProjects = projects.map((project) => {
+            return {
+              id: project.id,
+              path_with_namespace: project.path_with_namespace
+            }});
+          store.dispatch(UserState.setStarred(reducedProjects));
+        });
+
       ReactDOM.render(<App client={client} keycloak={keycloak} cookies={cookies} params={params} store={store}/>,
         document.getElementById('root'));
     } else {
