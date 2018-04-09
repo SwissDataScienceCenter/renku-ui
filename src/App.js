@@ -83,7 +83,7 @@ class RengaNavBar extends Component {
 
     // Display the Ku related header options only if a project is active.
     const activeProjectId = getActiveProjectId(this.props.location.pathname);
-    const kuDropdown = activeProjectId ? <a className="dropdown-item" href="ku_new">Ku</a> : null;
+    const kuDropdown = activeProjectId ? <RengaNavLink to="ku_new" title="Ku" /> : null;
     // TODO If there is is an active project, show it in the navbar
 
     return (
@@ -118,7 +118,7 @@ class RengaNavBar extends Component {
                   <FontAwesome name="plus" />
                 </a>
                 <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                  <a className="dropdown-item" href="/project_new">Project</a>
+                  <RengaNavLink to="/project_new" title="Project" />
                   {kuDropdown}
                 </div>
               </li>
@@ -128,8 +128,6 @@ class RengaNavBar extends Component {
                   <FontAwesome name="user-circle" />
                 </a>
                 <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                  {/*FIXME: Fix styling of dropdown items here and avoid using html links in dropdown items (above)*/}
-                  {/*FIXME: as this will trigger a complete reload of the page.*/}
                   <RengaNavLink to="/user" title="Profile" />
                   <RengaNavLink to="/logout" title="Logout" />
                 </div>
