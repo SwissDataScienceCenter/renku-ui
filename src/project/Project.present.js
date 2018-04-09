@@ -130,6 +130,9 @@ class ProjectNav extends Component {
         <NavItem>
           <RengaNavLink exact={false} to={this.props.notebooksUrl} title="Files" />
         </NavItem>
+        <NavItem>
+          <RengaNavLink exact={false} to={this.props.settingsUrl} title="Settings" />
+        </NavItem>
       </Nav>)
   }
 }
@@ -233,6 +236,17 @@ class ProjectViewFiles extends Component {
   }
 }
 
+class ProjectSettings extends Component {
+
+  render() {
+    return [
+      <Col key="settings" sm={12}>
+        <p>Project settings</p>
+      </Col>,
+    ]
+  }
+}
+
 class ProjectView extends Component {
 
   render() {
@@ -248,6 +262,8 @@ class ProjectView extends Component {
             render={props => <ProjectViewKus key="kus" {...this.props} /> }/>
           <Route path={this.props.notebooksUrl}
             render={props => <ProjectViewFiles key="files" {...this.props} /> }/>
+          <Route path={this.props.settingsUrl}
+            render={props => <ProjectSettings key="settings" {...this.props} /> }/>
         </Row>
       </Container>
     ]

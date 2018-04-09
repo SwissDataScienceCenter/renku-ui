@@ -110,6 +110,7 @@ class View extends Component {
     const kuUrl = `${baseUrl}/kus/:kuIid(\\d+)`;
     const notebooksUrl = `${baseUrl}/notebooks`;
     const notebookUrl = `${baseUrl}/notebooks/:notebookPath`;
+    const settingsUrl = `${baseUrl}/settings`;
     const kuList = <Ku.List {...ownProps}
       key="kus" kuBaseUrl={kusUrl} projectId={internalId}  client={ownProps.client} />
     const kuView = (p) => <Ku.View key="ku" projectId={internalId}
@@ -124,7 +125,8 @@ class View extends Component {
       tag_list, star_count,
       overviewUrl,
       kusUrl, kuList, kuUrl, kuView,
-      notebooksUrl, notebookUrl, notebookView}
+      notebooksUrl, notebookUrl, notebookView,
+      settingsUrl}
   }
 
   render() {
