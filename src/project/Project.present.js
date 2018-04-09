@@ -27,13 +27,13 @@
 
 import React, { Component } from 'react';
 
-import {  Link, Route }  from 'react-router-dom'
+import { Link, Route }  from 'react-router-dom'
 
 import { Row, Col } from 'reactstrap';
 import { Button, FormGroup, Input, Label } from 'reactstrap'
 import { Container } from 'reactstrap'
 import { Nav, NavItem, NavLink } from 'reactstrap';
-import { Card, CardHeader } from 'reactstrap';
+import { Card, CardBody, CardHeader } from 'reactstrap';
 import { Badge } from 'reactstrap';
 
 import ReactMarkdown from 'react-markdown'
@@ -165,9 +165,11 @@ class ProjectViewReadme extends Component {
   render() {
     const readmeText = this.props.readmeText;
     return (
-      <Card body className="border-0">
+      <Card className="border-0">
         <CardHeader>README.md</CardHeader>
-        <ReactMarkdown key="readme" source={readmeText} />
+        <CardBody>
+          <ReactMarkdown key="readme" source={readmeText} />
+        </CardBody>
       </Card>
     )
   }
