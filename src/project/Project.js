@@ -102,6 +102,8 @@ class View extends Component {
     const lastActivityAt = state.core.last_activity_at;
     const tag_list = state.system.tag_list;
     const star_count = state.system.star_count;
+    const ssh_url = state.system.ssh_url;
+    const http_url = state.system.http_url;
 
     // Routing properties
     const baseUrl = ownProps.match.isExact ? ownProps.match.url.slice(0, -1) : ownProps.match.url;
@@ -122,7 +124,7 @@ class View extends Component {
       client={ownProps.client} {...p} />;
     return {title, description, displayId, internalId, visibilityLevel,
       externalUrl, readmeText, lastActivityAt,
-      tag_list, star_count,
+      tag_list, star_count, ssh_url, http_url,
       overviewUrl,
       kusUrl, kuList, kuUrl, kuView,
       notebooksUrl, notebookUrl, notebookView,
