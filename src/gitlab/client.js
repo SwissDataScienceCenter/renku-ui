@@ -1,3 +1,10 @@
+const SPECIAL_FOLDERS = {
+  data: 'data',
+  notebooks: 'notebooks',
+  workflows: 'workflows',
+};
+
+
 export default class GitlabClient {
 
   // GitLab api client for Renga. Note that we do some
@@ -35,15 +42,33 @@ export default class GitlabClient {
       .then(response => response.json())
   }
 
-  getProject(projectId) {
+  getProject(projectId, options={}) {
     let headers = this.getBasicHeaders();
 
-    return fetch(this._baseUrl + `projects/${projectId}`, {
+    const projectPromise = fetch(this._baseUrl + `projects/${projectId}`, {
       method: 'GET',
       headers: headers
     })
       .then(response => response.json())
-      .then(d => carveProject(d))
+      .then(d => carveProject(d));
+
+    const treePromise = this.getRepositoryTree(projectId, undefined, true);
+
+    return Promise.all([projectPromise, treePromise]).then((vals) => {
+
+      let project = vals[0];
+
+      const files = vals[1]
+        .filter((treeObj) => treeObj.type==='blob')
+        .map((treeObj) => treeObj.path);
+
+      Object.keys(SPECIAL_FOLDERS)
+        .filter((key) => options[key])
+        .forEach((folderKey) => {
+          project[folderKey] = files.filter((filePath) => filePath.indexOf(folderKey) === 0)
+        });
+      return project;
+    })
   }
 
   postProject(rengaProject) {
@@ -55,7 +80,7 @@ export default class GitlabClient {
     const headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return fetch(this._baseUrl + `projects`, {
+    return fetch(this._baseUrl + 'projects', {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(gitlabProject)
@@ -151,9 +176,17 @@ export default class GitlabClient {
       .catch(error => {console.log(error)})
   }
 
-  getRepositoryTree(projectId, path) {
+  getRepositoryTree(projectId, path='', recursive=false) {
     let headers = this.getBasicHeaders();
-    return fetch(this._baseUrl + `projects/${projectId}/repository/tree?path=${path}`, {
+    const queryParams = {
+      path,
+      recursive
+    };
+
+    const url = new URL(this._baseUrl + `projects/${projectId}/repository/tree`);
+    Object.keys(queryParams).forEach((key) => url.searchParams.append(key, queryParams[key]));
+
+    return fetch(url, {
       method: 'GET',
       headers: headers
     })
