@@ -98,7 +98,8 @@ class RengaNavBar extends Component {
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <form className="form-inline my-2 my-lg-0">
               <div className="input-group">
-                <input className="form-control border-primary" type="search" placeholder="Search RENGA" aria-label="Search" />
+                <input className="form-control border-primary" type="search"
+                  placeholder="Search RENGA" aria-label="Search" />
                 <span className="input-group-append">
                   <button className="btn btn-outline-primary my-2 my-sm-0" type="submit">
                     <FontAwesome name="search" />
@@ -175,7 +176,7 @@ class App extends Component {
               {/*TODO: This route should be handled by <Route path="/projects/:id(\d+)" too. Until this is the
                  TODO: case, the ku_new route must be listed BEFORE the project one.   */}
               <Route exact path="/projects/:projectId(\d+)/ku_new"
-                     render={(p) => <Ku.New key="ku_new" client={this.props.client} {...p}/>}/>
+                render={(p) => <Ku.New key="ku_new" client={this.props.client} {...p}/>}/>
               {/* pull out the underlying parts of the url and pass them to the project view */}
               <Route path="/projects/:id(\d+)"
                 render={p => <Project.View key="project" id={p.match.params.id} {...p}
