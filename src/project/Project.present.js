@@ -27,14 +27,15 @@
 
 import React, { Component } from 'react';
 
-import { Link, Route }  from 'react-router-dom'
+import { Link, Route }  from 'react-router-dom';
 
 import { Row, Col } from 'reactstrap';
-import { Button, FormGroup, Input, Label } from 'reactstrap'
-import { Container } from 'reactstrap'
+import { Button, FormGroup, Input, Label } from 'reactstrap';
+import { Container } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { Card, CardBody, CardHeader } from 'reactstrap';
 import { Badge } from 'reactstrap';
+import { Table } from 'reactstrap';
 
 import ReactMarkdown from 'react-markdown'
 
@@ -236,14 +237,44 @@ class ProjectViewFiles extends Component {
   }
 }
 
+class RepositoryUrls extends Component {
+  render() {
+    return <Col xs={4}>
+      <strong>Repository URL</strong>
+      <Table size="sm">
+        <tbody>
+          <tr>
+            <th scope="row">SSH</th>
+            <td>{this.props.ssh_url}</td>
+          </tr>
+          <tr>
+            <th scope="row">HTTP</th>
+            <td>{this.props.http_url}</td>
+          </tr>
+        </tbody>
+      </Table>
+    </Col>
+  }
+}
+
+class ProjectTags extends Component {
+  render() {
+    return <Col xs={4}>
+      <strong>Project Tags</strong>
+      <p>{this.props.tag_list.join(', ')}</p>
+    </Col>
+  }
+}
+
 class ProjectSettings extends Component {
 
   render() {
-    return [
-      <Col key="settings" sm={12}>
-        <p>Project settings</p>
-      </Col>,
-    ]
+    return <Col key="settings" xs={12}>
+      <Row>
+        <RepositoryUrls {...this.props} />
+        <ProjectTags {...this.props} />
+      </Row>
+    </Col>
   }
 }
 

@@ -55,7 +55,7 @@ export default class GitlabClient {
     const headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return fetch(this._baseUrl + `projects`, {
+    return fetch(this._baseUrl + 'projects', {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(gitlabProject)
@@ -193,6 +193,8 @@ function carveProject(projectJson) {
   result['metadata']['system']['tag_list'] = projectJson['tag_list'];
   result['metadata']['system']['star_count'] = projectJson['star_count'];
   result['metadata']['system']['forks_count'] = projectJson['forks_count'];
+  result['metadata']['system']['ssh_url'] = projectJson['ssh_url_to_repo'];
+  result['metadata']['system']['http_url'] = projectJson['http_url_to_repo'];
 
   return result;
 }

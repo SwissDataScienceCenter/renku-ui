@@ -62,7 +62,8 @@ const System = {
     return  createSetAction('system', field, value);
   },
   reduce: (state, action) => {
-    return reduceState('system', state, action, {tag_list: [], star_count: '', forks_count: ''})
+    return reduceState('system', state, action,
+      {tag_list: [], star_count: '', forks_count: '', ssh_url: '', http_url: ''})
   }
 }
 
