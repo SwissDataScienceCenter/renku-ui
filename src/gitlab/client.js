@@ -193,7 +193,17 @@ export default class GitlabClient {
       method: 'GET',
       headers: headers
     })
-      .then(response => response.json())
+      .then(response => {
+        // I think the expected behaviour for the absence
+        // of a tree should be an empty array.
+        if (response.status === 404) {
+          return [];
+        }
+        else {
+          return response.json()
+        }
+      });
+
   }
 
   getDeploymentUrl(projectId, notebookPath, branchName = 'master') {
