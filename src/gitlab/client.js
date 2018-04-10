@@ -63,6 +63,24 @@ export default class GitlabClient {
       .then(response => response.json())
   }
 
+  setTags(projectId, name, tags) {
+    return this.putProjectField(projectId, name, 'tag_list', tags);
+  }
+
+  putProjectField(projectId, name, field_name, field_value) {
+    const putData = { id: projectId, name, [field_name]: field_value };
+    const headers = this.getBasicHeaders();
+    headers.append('Content-Type', 'application/json');
+
+    return fetch(this._baseUrl + `projects/${projectId}`, {
+      method: 'PUT',
+      headers: headers,
+      body: JSON.stringify(putData)
+    })
+      .then(response => response.json())
+  }
+
+
   getProjectReadme(projectId) {
     return this.getRepositoryFile(projectId, 'README.md', 'master', 'raw')
       .then(text => ({text}))

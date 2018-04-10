@@ -131,8 +131,17 @@ class View extends Component {
       settingsUrl}
   }
 
+  mapDispatchToProps(dispatch, ownProps) {
+    return {
+      onProjectTagsChange: (tags) => {
+        const state = this.store.getState();
+        dispatch(State.View.setTags(ownProps.client, state.core.id, state.core.title, tags))
+      }
+    }
+  }
+
   render() {
-    const VisibleProjectView = connect(this.mapStateToProps)(Present.ProjectView);
+    const VisibleProjectView = connect(this.mapStateToProps, this.mapDispatchToProps.bind(this))(Present.ProjectView);
     return (
       <Provider key="view" store={this.store}>
         <VisibleProjectView
@@ -159,13 +168,8 @@ class List extends Component {
 
   mapStateToProps(state, ownProps) { return state  }
 
-  mapDispatchToProps(dispatch, ownProps) {
-    return {
-    }
-  }
-
   render() {
-    const VisibleProjectList = connect(this.mapStateToProps, this.mapDispatchToProps)(Present.ProjectList);
+    const VisibleProjectList = connect(this.mapStateToProps)(Present.ProjectList);
     return [
       <Provider key="new" store={this.store}>
         <VisibleProjectList />
