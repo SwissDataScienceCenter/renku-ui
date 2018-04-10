@@ -157,7 +157,7 @@ class KuViewHeader extends Component {
 // We sort the date strings instead of actual Date objects here - ok due to ISO format.
 const KuViewContributions = (props) => props.contributions
   .sort((el1, el2) => el1.created_at > el2.created_at ? 1 : -1)
-  .filter(c => c.system === false)
+  .filter(c => c.system !== true)
   .map(cont => <Contribution key={cont.id} contribution={cont} client={props.client} projectId={props.projectId}/>);
 
 
