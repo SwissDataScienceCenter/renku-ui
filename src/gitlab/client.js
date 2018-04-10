@@ -246,14 +246,14 @@ export default class GitlabClient {
       })
   }
 
-  getDeploymentUrl(projectId, notebookPath, branchName = 'master') {
+  getDeploymentUrl(projectId, envName, branchName = 'master') {
     let headers = this.getBasicHeaders();
     return fetch(this._baseUrl + `projects/${projectId}/environments`, {
       method: 'GET',
       headers: headers
     })
       .then(response => response.json())
-      .then(envs => envs.filter(env => env.name === `review/${branchName}`)[0])
+      .then(envs => envs.filter(env => env.name === `${envName}/${branchName}`)[0])
       .then(env => {
         if (!env) return undefined;
         // TODO: Add the path to the actual notebook file once the CI/CD part
