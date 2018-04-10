@@ -125,7 +125,7 @@ class StateModel {
       this.reactComponent = stateHolder;
     }
     else {
-      throw(`State binding ${stateBinding} not implemented`)
+      throw new Error(`State binding ${stateBinding} not implemented`)
     }
 
     this.stateBinding = stateBinding;
@@ -331,7 +331,7 @@ function applyDefaults(schema, obj) {
 // Validate a generic object against a schema.
 function validate(schema, obj) {
   if (!(obj instanceof Object)) {
-    throw('Only objects should be passed to this routine')
+    throw new Error('Only objects should be passed to this routine')
   }
   let errors = [];
   Object.keys(schema).forEach((prop) => {
