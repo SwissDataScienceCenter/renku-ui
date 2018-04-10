@@ -180,7 +180,7 @@ class App extends Component {
               {/* pull out the underlying parts of the url and pass them to the project view */}
               <Route path="/projects/:id(\d+)"
                 render={p => <Project.View key="project" id={p.match.params.id} {...p}
-                  client={this.props.client} store={this.props.store} />}/>
+                  client={this.props.client} userState={this.props.userState} />}/>
               <Route exact path="/project_new"
                 render={(p) => <Project.New key="project_new" client={this.props.client} {...p}/> }/>
             </Switch>

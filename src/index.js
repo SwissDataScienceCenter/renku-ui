@@ -75,7 +75,7 @@ keycloak.init()
           store.dispatch(UserState.setStarred(reducedProjects));
         });
 
-      ReactDOM.render(<App client={client} keycloak={keycloak} cookies={cookies} params={params} store={store}/>,
+      ReactDOM.render(<App client={client} keycloak={keycloak} cookies={cookies} params={params} userState={store}/>,
         document.getElementById('root'));
     } else {
       ReactDOM.render(<AppLoggedOut keycloak={keycloak} cookies={cookies} params={params}/>,
