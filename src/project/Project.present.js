@@ -30,7 +30,7 @@ import React, { Component } from 'react';
 import { Link, Route }  from 'react-router-dom';
 
 import { Row, Col } from 'reactstrap';
-import { Button, FormGroup, Input, Label } from 'reactstrap';
+import { Button, Form, FormGroup, Input, Label, FormText } from 'reactstrap';
 import { Container } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { Card, CardBody, CardHeader } from 'reactstrap';
@@ -239,9 +239,9 @@ class ProjectViewFiles extends Component {
 
 class RepositoryUrls extends Component {
   render() {
-    return <Col xs={4}>
-      <strong>Repository URL</strong>
-      <Table size="sm">
+    return [
+      <strong key="header">Repository URL</strong>,
+      <Table key="table" size="sm">
         <tbody>
           <tr>
             <th scope="row">SSH</th>
@@ -253,16 +253,48 @@ class RepositoryUrls extends Component {
           </tr>
         </tbody>
       </Table>
-    </Col>
+    ]
   }
 }
 
 class ProjectTags extends Component {
+  constructor(props) {
+    super(props);
+    this.state = ProjectTags.getDerivedStateFromProps(props, {});
+    this.onValueChange = this.handleChange.bind(this);
+    this.onSubmit = this.handleSubmit.bind(this);
+  }
+
+  static tagListString(props) {
+    return props.tag_list.join(', ');
+  }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    const update = {value: ProjectTags.tagListString(nextProps) };
+    return {...prevState, ...update};
+  }
+
+  // N.b. This works in react 16.2, but has been deprecated in favor in getDerivedStateFromProps in 16.3
+  componentWillReceiveProps(nextProps) {
+    this.setState(ProjectTags.getDerivedStateFromProps(nextProps, this.state));
+  }
+
+  handleChange(e) { this.setState({value: e.target.value}); }
+
+  handleSubmit(e) { e.preventDefault(); this.props.onProjectTagsChange(this.state.value); }
+
   render() {
-    return <Col xs={4}>
-      <strong>Project Tags</strong>
-      <p>{this.props.tag_list.join(', ')}</p>
-    </Col>
+    let submit = (ProjectTags.tagListString(this.props) !== this.state.value) ?
+      <Button color="primary">Update</Button> :
+      <span></span>
+    return <Form onSubmit={this.onSubmit}>
+      <FormGroup>
+        <Label for="project_tags">Project Tags</Label>
+        <Input value={this.state.value} onChange={this.onValueChange} />
+        <FormText>Comma-separated list of tags.</FormText>
+      </FormGroup>
+      {submit}
+    </Form>
   }
 }
 
@@ -271,8 +303,8 @@ class ProjectSettings extends Component {
   render() {
     return <Col key="settings" xs={12}>
       <Row>
-        <RepositoryUrls {...this.props} />
-        <ProjectTags {...this.props} />
+        <Col xs={12} md={10} lg={6}><RepositoryUrls {...this.props} /></Col>
+        <Col xs={12} md={10} lg={6}><ProjectTags {...this.props} /></Col>
       </Row>
     </Col>
   }

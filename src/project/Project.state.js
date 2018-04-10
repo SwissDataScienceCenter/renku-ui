@@ -131,6 +131,20 @@ const View = { Core, Visibility, Data,
       client.getProjectReadme(id).then(d => dispatch(View.receive(d, entity)))
     }
   },
+  setTags: (client, id, name, tags) => {
+    const entity = 'metadata';
+    return (dispatch) => {
+      dispatch(View.update(entity));
+      client.setTags(id, name, tags).then(d => {
+        dispatch(View.request(entity));
+        client.getProject(id).then(d => dispatch(View.receive(d, entity)));
+      })
+    }
+  },
+  update: (property) => {
+    const action = {type:'server_update', property};
+    return action
+  },
   request: (entity) => {
     const action = {type:'server_request', entity};
     return action
