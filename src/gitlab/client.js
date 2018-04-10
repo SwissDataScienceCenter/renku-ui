@@ -52,7 +52,7 @@ export default class GitlabClient {
       .then(response => response.json())
       .then(d => carveProject(d));
 
-    const treePromise = this.getRepositoryTree(projectId, undefined, true);
+    const treePromise = this.getRepositoryTree(projectId, {path:'', recursive: true});
 
     return Promise.all([projectPromise, treePromise]).then((vals) => {
 
@@ -176,21 +176,41 @@ export default class GitlabClient {
       .catch(error => {console.log(error)})
   }
 
-  getRepositoryTree(projectId, path='', recursive=false) {
+  getRepositoryTree(projectId, {path='', recursive=false, per_page=100, page = 1, previousResults=[]} = {}) {
     let headers = this.getBasicHeaders();
     const queryParams = {
       path,
-      recursive
+      recursive,
+      per_page,
+      page
     };
 
     const url = new URL(this._baseUrl + `projects/${projectId}/repository/tree`);
     Object.keys(queryParams).forEach((key) => url.searchParams.append(key, queryParams[key]));
 
+    // TODO: Think about general pagination strategy for API client.
     return fetch(url, {
       method: 'GET',
       headers: headers
     })
-      .then(response => response.json())
+      .then(response => {
+        if(response.headers.get('X-Next-Page')) {
+          return response.json().then(data => {
+            return this.getRepositoryTree(projectId, {
+              path,
+              recursive,
+              per_page,
+              previousResults: previousResults.concat(data),
+              page: response.headers.get('X-Next-Page')
+            })
+          });
+        }
+        else {
+          return response.json().then(data => {
+            return previousResults.concat(data)
+          });
+        }
+      })
   }
 
   getDeploymentUrl(projectId, notebookPath, branchName = 'master') {
