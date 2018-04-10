@@ -61,10 +61,22 @@ keycloak.init()
       const client = new GitlabClient(params.GITLAB_URL + '/api/v4/', cookies.get('gitlab_token'), 'bearer');
 
       // Load the user profile and dispatch the result to the store.
-      keycloak.loadUserProfile()
-        .success(profile => {store.dispatch(UserState.set(profile))});
+      client.getUser().then(profile => {
+        store.dispatch(UserState.set(profile))
+      });
 
-      ReactDOM.render(<App client={client} keycloak={keycloak} cookies={cookies} params={params} store={store}/>,
+      // TODO: Replace this after re-implementation of user state.
+      client.getProjects({starred: true})
+        .then((projects) => {
+          const reducedProjects = projects.map((project) => {
+            return {
+              id: project.id,
+              path_with_namespace: project.path_with_namespace
+            }});
+          store.dispatch(UserState.setStarred(reducedProjects));
+        });
+
+      ReactDOM.render(<App client={client} keycloak={keycloak} cookies={cookies} params={params} userState={store}/>,
         document.getElementById('root'));
     } else {
       ReactDOM.render(<AppLoggedOut keycloak={keycloak} cookies={cookies} params={params}/>,

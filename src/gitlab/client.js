@@ -32,10 +32,13 @@ export default class GitlabClient {
     return  new Headers(headers)
   }
 
-  getProjects() {
+  getProjects(queryParams={}) {
     let headers = this.getBasicHeaders();
 
-    return fetch(this._baseUrl + 'projects/', {
+    const url = new URL(this._baseUrl + 'projects');
+    Object.keys(queryParams).forEach((key) => url.searchParams.append(key, queryParams[key]));
+
+    return fetch(url, {
       method: 'GET',
       headers: headers
     })
@@ -194,21 +197,28 @@ export default class GitlabClient {
       headers: headers
     })
       .then(response => {
-        if(response.headers.get('X-Next-Page')) {
-          return response.json().then(data => {
-            return this.getRepositoryTree(projectId, {
-              path,
-              recursive,
-              per_page,
-              previousResults: previousResults.concat(data),
-              page: response.headers.get('X-Next-Page')
-            })
-          });
+        // I think the expected behaviour for the absence
+        // of a tree should be an empty array.
+        if (response.status === 404) {
+          return [];
         }
         else {
-          return response.json().then(data => {
-            return previousResults.concat(data)
-          });
+          if(response.headers.get('X-Next-Page')) {
+            return response.json().then(data => {
+              return this.getRepositoryTree(projectId, {
+                path,
+                recursive,
+                per_page,
+                previousResults: previousResults.concat(data),
+                page: response.headers.get('X-Next-Page')
+              })
+            });
+          }
+          else {
+            return response.json().then(data => {
+              return previousResults.concat(data)
+            });
+          }
         }
       })
   }
@@ -227,6 +237,15 @@ export default class GitlabClient {
         // TODO: has stabilized.
         return `${env.external_url}`;
       })
+  }
+
+  getUser() {
+    let headers = this.getBasicHeaders();
+    return fetch(this._baseUrl + 'user', {
+      method: 'GET',
+      headers: headers
+    })
+      .then(response => response.json())
   }
 }
 
