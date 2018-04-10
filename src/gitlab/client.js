@@ -221,6 +221,15 @@ export default class GitlabClient {
         return `${env.external_url}`;
       })
   }
+
+  getUser() {
+    let headers = this.getBasicHeaders();
+    return fetch(this._baseUrl + 'user', {
+      method: 'GET',
+      headers: headers
+    })
+      .then(response => response.json())
+  }
 }
 
 

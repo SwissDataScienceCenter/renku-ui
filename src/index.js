@@ -61,8 +61,9 @@ keycloak.init()
       const client = new GitlabClient(params.GITLAB_URL + '/api/v4/', cookies.get('gitlab_token'), 'bearer');
 
       // Load the user profile and dispatch the result to the store.
-      keycloak.loadUserProfile()
-        .success(profile => {store.dispatch(UserState.set(profile))});
+      client.getUser().then(profile => {
+        store.dispatch(UserState.set(profile))
+      });
 
       // TODO: Replace this after re-implementation of user state.
       client.getProjects({starred: true})
