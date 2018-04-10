@@ -162,7 +162,7 @@ class NewContribution extends React.Component {
   getFiles(searchPath){
     this.setState({loading: true});
 
-    this.props.client.getRepositoryTree(this.props.projectId, searchPath)
+    this.props.client.getRepositoryTree(this.props.projectId, {path: searchPath})
       .then(results => {
         if (!this.abortPromise) {
           this.setState({files: results.map(file => {
@@ -247,7 +247,7 @@ class NewContribution extends React.Component {
 function buildContribution(state, props){
   return {
     body: state.contribution.body,
-    author: props.store.getState().user,
+    author: props.userState.getState().user,
     created_at: (new Date()).toISOString(),
     updated_at: (new Date()).toISOString()
   }

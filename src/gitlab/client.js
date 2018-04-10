@@ -1,3 +1,10 @@
+const SPECIAL_FOLDERS = {
+  data: 'data',
+  notebooks: 'notebooks',
+  workflows: 'workflows',
+};
+
+
 export default class GitlabClient {
 
   // GitLab api client for Renga. Note that we do some
@@ -25,25 +32,46 @@ export default class GitlabClient {
     return  new Headers(headers)
   }
 
-  getProjects() {
+  getProjects(queryParams={}) {
     let headers = this.getBasicHeaders();
 
-    return fetch(this._baseUrl + 'projects/', {
+    const url = new URL(this._baseUrl + 'projects');
+    Object.keys(queryParams).forEach((key) => url.searchParams.append(key, queryParams[key]));
+
+    return fetch(url, {
       method: 'GET',
       headers: headers
     })
       .then(response => response.json())
   }
 
-  getProject(projectId) {
+  getProject(projectId, options={}) {
     let headers = this.getBasicHeaders();
 
-    return fetch(this._baseUrl + `projects/${projectId}`, {
+    const projectPromise = fetch(this._baseUrl + `projects/${projectId}`, {
       method: 'GET',
       headers: headers
     })
       .then(response => response.json())
-      .then(d => carveProject(d))
+      .then(d => carveProject(d));
+
+    const treePromise = this.getRepositoryTree(projectId, {path:'', recursive: true});
+
+    return Promise.all([projectPromise, treePromise]).then((vals) => {
+
+      let project = vals[0];
+
+      const files = vals[1]
+        .filter((treeObj) => treeObj.type==='blob')
+        .map((treeObj) => treeObj.path);
+
+      Object.keys(SPECIAL_FOLDERS)
+        .filter((key) => options[key])
+        .forEach((folderKey) => {
+          project[folderKey] = files.filter((filePath) => filePath.indexOf(folderKey) === 0)
+        });
+      return project;
+    })
   }
 
   postProject(rengaProject) {
@@ -169,13 +197,48 @@ export default class GitlabClient {
       .catch(error => {console.log(error)})
   }
 
-  getRepositoryTree(projectId, path) {
+  getRepositoryTree(projectId, {path='', recursive=false, per_page=100, page = 1, previousResults=[]} = {}) {
     let headers = this.getBasicHeaders();
-    return fetch(this._baseUrl + `projects/${projectId}/repository/tree?path=${path}`, {
+    const queryParams = {
+      path,
+      recursive,
+      per_page,
+      page
+    };
+
+    const url = new URL(this._baseUrl + `projects/${projectId}/repository/tree`);
+    Object.keys(queryParams).forEach((key) => url.searchParams.append(key, queryParams[key]));
+
+    // TODO: Think about general pagination strategy for API client.
+    return fetch(url, {
       method: 'GET',
       headers: headers
     })
-      .then(response => response.json())
+      .then(response => {
+        // I think the expected behaviour for the absence
+        // of a tree should be an empty array.
+        if (response.status === 404) {
+          return [];
+        }
+        else {
+          if(response.headers.get('X-Next-Page')) {
+            return response.json().then(data => {
+              return this.getRepositoryTree(projectId, {
+                path,
+                recursive,
+                per_page,
+                previousResults: previousResults.concat(data),
+                page: response.headers.get('X-Next-Page')
+              })
+            });
+          }
+          else {
+            return response.json().then(data => {
+              return previousResults.concat(data)
+            });
+          }
+        }
+      })
   }
 
   getDeploymentUrl(projectId, notebookPath, branchName = 'master') {
@@ -192,6 +255,15 @@ export default class GitlabClient {
         // TODO: has stabilized.
         return `${env.external_url}`;
       })
+  }
+
+  getUser() {
+    let headers = this.getBasicHeaders();
+    return fetch(this._baseUrl + 'user', {
+      method: 'GET',
+      headers: headers
+    })
+      .then(response => response.json())
   }
 }
 

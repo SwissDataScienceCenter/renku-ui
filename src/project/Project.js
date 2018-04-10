@@ -116,7 +116,7 @@ class View extends Component {
     const kuList = <Ku.List {...ownProps}
       key="kus" kuBaseUrl={kusUrl} projectId={internalId}  client={ownProps.client} />
     const kuView = (p) => <Ku.View key="ku" projectId={internalId}
-      kuIid={p.match.params.kuIid} {...p} client={ownProps.client} />
+      kuIid={p.match.params.kuIid} {...p} client={ownProps.client} userState={ownProps.userState}/>
     /* TODO Should we handle each type of file or just have a generic project files viewer? */
     const notebookView = (p) => <Notebook.Show key="notebook"
       projectId={internalId}
@@ -146,6 +146,7 @@ class View extends Component {
       <Provider key="view" store={this.store}>
         <VisibleProjectView
           client={this.props.client}
+          userState={this.props.userState}
           match={this.props.match}
         />
       </Provider>)
