@@ -162,7 +162,7 @@ class NewContribution extends React.Component {
   getFiles(searchPath){
     this.setState({loading: true});
 
-    this.props.client.getRepositoryTree(this.props.projectId, searchPath)
+    this.props.client.getRepositoryTree(this.props.projectId, {path: searchPath})
       .then(results => {
         if (!this.abortPromise) {
           this.setState({files: results.map(file => {
