@@ -59,6 +59,7 @@ export default class GitlabClient {
     return Promise.all([projectPromise, treePromise]).then((vals) => {
 
       let project = vals[0];
+      let projectFiles = (project.files != null) ? project.files : {} ;
 
       const files = vals[1]
         .filter((treeObj) => treeObj.type==='blob')
@@ -67,8 +68,9 @@ export default class GitlabClient {
       Object.keys(SPECIAL_FOLDERS)
         .filter((key) => options[key])
         .forEach((folderKey) => {
-          project[folderKey] = files.filter((filePath) => filePath.indexOf(folderKey) === 0)
+          projectFiles[folderKey] = files.filter((filePath) => filePath.indexOf(folderKey) === 0)
         });
+      project.files = projectFiles;
       return project;
     })
   }

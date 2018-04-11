@@ -67,6 +67,16 @@ const System = {
   }
 }
 
+const Files = {
+  set: (field, value) => {
+    return  createSetAction('files', field, value);
+  },
+  reduce: (state, action) => {
+    return reduceState('files', state, action,
+      {notebooks: [], data: [], workflows: []})
+  }
+}
+
 const Visibility = {
   set: (level) => {
     return createSetAction('visibility', 'level', level)
@@ -111,8 +121,9 @@ const Data = {
   reduce: combineReducers({reference: DataReference.reduce, upload: DataUpload.reduce, readme: Readme.reduce})
 }
 
+// TODO -- incorporate files fields
 const combinedFieldReducer = combineReducers({core: Core.reduce, visibility: Visibility.reduce,
-  data: Data.reduce, system: System.reduce});
+  data: Data.reduce, system: System.reduce, files: Files.reduce});
 
 
 
@@ -121,7 +132,8 @@ const View = { Core, Visibility, Data,
     const entity = 'metadata';
     return (dispatch) => {
       dispatch(View.request(entity));
-      client.getProject(id).then(d => dispatch(View.receive(d, entity)))
+      client.getProject(id, {notebooks:true, data:true})
+        .then(d => dispatch(View.receive(d, entity)))
     }
   },
   fetchReadme: (client, id) => {
@@ -163,13 +175,17 @@ const View = { Core, Visibility, Data,
   reducer: (state, action) => {
     if (action.type !== 'server_return') return combinedFieldReducer(state, action);
     // Take server result and set it to the state
-    if (action.entity === 'metadata') return {...state, ...action.payload.metadata}
+    if (action.entity === 'metadata') {
+      const newState =  {...state, ...action.payload.metadata}
+      newState.files = action.payload.files;
+      return newState;
+    }
     if (action.entity === 'readme') {
       const newState = {...state};
       newState.data.readme.text = action.payload.text;
       return newState
     }
-    console.log('Unknown action', action.payload);
+    console.log('Unknown action', action);
     return state
   }
 };
