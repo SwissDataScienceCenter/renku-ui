@@ -136,6 +136,10 @@ class View extends Component {
       onProjectTagsChange: (tags) => {
         const state = this.store.getState();
         dispatch(State.View.setTags(ownProps.client, state.core.id, state.core.title, tags))
+      },
+      onProjectDescriptionChange: (description) => {
+        const state = this.store.getState();
+        dispatch(State.View.setDescription(ownProps.client, state.core.id, state.core.title, description))
       }
     }
   }

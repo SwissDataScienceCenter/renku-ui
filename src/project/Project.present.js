@@ -298,13 +298,53 @@ class ProjectTags extends Component {
   }
 }
 
+class ProjectDescription extends Component {
+  constructor(props) {
+    super(props);
+    this.state = ProjectDescription.getDerivedStateFromProps(props, {});
+    this.onValueChange = this.handleChange.bind(this);
+    this.onSubmit = this.handleSubmit.bind(this);
+  }
+
+  static getDerivedStateFromProps(nextProps, prevState) {
+    const update = {value: nextProps.description };
+    return {...prevState, ...update};
+  }
+
+  // N.b. This works in react 16.2, but has been deprecated in favor in getDerivedStateFromProps in 16.3
+  componentWillReceiveProps(nextProps) {
+    this.setState(ProjectDescription.getDerivedStateFromProps(nextProps, this.state));
+  }
+
+  handleChange(e) { this.setState({value: e.target.value}); }
+
+  handleSubmit(e) { e.preventDefault(); this.props.onProjectDescriptionChange(this.state.value); }
+
+  render() {
+    let submit = (this.props.description !== this.state.value) ?
+      <Button color="primary">Update</Button> :
+      <span></span>
+    return <Form onSubmit={this.onSubmit}>
+      <FormGroup>
+        <Label for="project_tags">Project Description</Label>
+        <Input value={this.state.value} onChange={this.onValueChange} />
+        <FormText>A short description for the project</FormText>
+      </FormGroup>
+      {submit}
+    </Form>
+  }
+}
+
 class ProjectSettings extends Component {
 
   render() {
     return <Col key="settings" xs={12}>
       <Row>
-        <Col xs={12} md={10} lg={6}><RepositoryUrls {...this.props} /></Col>
         <Col xs={12} md={10} lg={6}><ProjectTags {...this.props} /></Col>
+        <Col xs={12} md={10} lg={6}><RepositoryUrls {...this.props} /></Col>
+      </Row>
+      <Row>
+        <Col xs={12} md={10} lg={6}><ProjectDescription {...this.props} /></Col>
       </Row>
     </Col>
   }

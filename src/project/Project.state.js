@@ -141,6 +141,16 @@ const View = { Core, Visibility, Data,
       })
     }
   },
+  setDescription: (client, id, name, description) => {
+    const entity = 'metadata';
+    return (dispatch) => {
+      dispatch(View.update(entity));
+      client.setDescription(id, name, description).then(d => {
+        dispatch(View.request(entity));
+        client.getProject(id).then(d => dispatch(View.receive(d, entity)));
+      })
+    }
+  },
   update: (property) => {
     const action = {type:'server_update', property};
     return action
