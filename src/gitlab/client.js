@@ -94,6 +94,10 @@ export default class GitlabClient {
     return this.putProjectField(projectId, name, 'tag_list', tags);
   }
 
+  setDescription(projectId, name, description) {
+    return this.putProjectField(projectId, name, 'description', description);
+  }
+
   putProjectField(projectId, name, field_name, field_value) {
     const putData = { id: projectId, name, [field_name]: field_value };
     const headers = this.getBasicHeaders();
