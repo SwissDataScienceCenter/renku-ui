@@ -16,7 +16,6 @@ export default class GitlabClient {
 
 
   constructor(baseUrl, token, tokenType) {
-    console.log('called constructor on api client');
     this._baseUrl = baseUrl;
     this._token = token;
     this._tokenType = tokenType;
