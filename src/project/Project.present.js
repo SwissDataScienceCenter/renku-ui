@@ -291,7 +291,7 @@ class ProjectTags extends Component {
       <FormGroup>
         <Label for="project_tags">Project Tags</Label>
         <Input value={this.state.value} onChange={this.onValueChange} />
-        <FormText>Comma-separated list of tags.</FormText>
+        <FormText>Comma-separated list of tags</FormText>
       </FormGroup>
       {submit}
     </Form>
