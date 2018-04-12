@@ -27,7 +27,7 @@
 
 import React, { Component } from 'react';
 
-import { Link, Route }  from 'react-router-dom';
+import { Link, Route, Switch }  from 'react-router-dom';
 
 import { Row, Col } from 'reactstrap';
 import { Button, Form, FormGroup, Input, Label, FormText } from 'reactstrap';
@@ -143,19 +143,17 @@ class ProjectFilesNav extends Component {
   render() {
     const selected = 'notebooks';
     const dummy = () => { };
-    const onData = dummy;
     const onWorkflows = dummy;
     const onOther = dummy;
-    // const visibleTab = <ProjectList {...this.props} />
-    // let visibleTab = <YourActivity />
-    // if (selected === 'your_network') visibleTab = <YourNetwork />
-    // if (selected === 'explore') visibleTab = <Explore />
+
     return (
       <Nav pills className={'flex-column'}>
-        <NavItem><NavLink href="#" active={selected === 'notebooks'}
-          onClick={onData}>Notebooks</NavLink></NavItem>
-        <NavItem><NavLink href="#" active={selected === 'data'}
-          onClick={onData}>Data</NavLink></NavItem>
+        <NavItem>
+          <RengaNavLink to={this.props.notebooksUrl} title="Notebooks" />
+        </NavItem>
+        <NavItem>
+          <RengaNavLink to={this.props.dataUrl} title="Data" />
+        </NavItem>
         <NavItem><NavLink href="#" active={selected === 'workflows'}
           onClick={onWorkflows}>Workflows</NavLink></NavItem>
         <NavItem><NavLink href="#" active={selected === 'other'}
@@ -222,16 +220,43 @@ class ProjectViewKus extends Component {
   }
 }
 
+class FileFolderList extends Component {
+  render() {
+    const rows = this.props.paths.map(p => {
+      return <tr key={p}><td><Link to={p}>{p}</Link></td></tr>
+    });
+    return <Table>
+      <tbody>{rows}</tbody>
+    </Table>
+  }
+}
+
+class ProjectFilesCategorizedList extends Component {
+  render() {
+    const project = this.props.project;
+    return <Switch>
+      <Route path={this.props.notebooksUrl} render={props => <FileFolderList paths={project.files.notebooks} /> } />
+      <Route path={this.props.dataUrl} render={props => <FileFolderList paths={project.files.data} /> } />
+      <Route render={props => <p>Files</p> } />
+    </Switch>
+  }
+}
+
 class ProjectViewFiles extends Component {
 
   render() {
     return [
       <Col key="files" sm={12} md={2}>
-        <ProjectFilesNav />
+        <ProjectFilesNav
+          notebooksUrl={this.props.notebooksUrl}
+          dataUrl={this.props.dataUrl} />
       </Col>,
       <Col key="notebook" sm={12} md={9}>
-        <Route path={this.props.notebookUrl}
-          render={props => this.props.notebookView(props) }/>
+        <Switch>
+          <Route path={this.props.notebookUrl}
+            render={props => this.props.notebookView(props) } />
+          <Route render={props => <ProjectFilesCategorizedList {...props } {...this.props } /> } />
+        </Switch>
       </Col>
     ]
   }
@@ -364,7 +389,9 @@ class ProjectView extends Component {
           <Route path={this.props.kusUrl}
             render={props => <ProjectViewKus key="kus" {...this.props} /> }/>
           <Route path={this.props.notebooksUrl}
-            render={props => <ProjectViewFiles key="files" {...this.props} /> }/>
+            render={props => <ProjectViewFiles key="files-notebook" {...this.props} /> }/>
+          <Route path={this.props.dataUrl}
+            render={props => <ProjectViewFiles key="files-data" {...this.props} /> }/>
           <Route path={this.props.settingsUrl}
             render={props => <ProjectSettings key="settings" {...this.props} /> }/>
         </Row>

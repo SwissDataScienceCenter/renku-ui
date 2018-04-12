@@ -112,6 +112,8 @@ class View extends Component {
     const kuUrl = `${baseUrl}/kus/:kuIid(\\d+)`;
     const notebooksUrl = `${baseUrl}/notebooks`;
     const notebookUrl = `${baseUrl}/notebooks/:notebookPath`;
+    const dataUrl = `${baseUrl}/data`;
+    const datumUrl = `${baseUrl}/data/:datumPath`;
     const settingsUrl = `${baseUrl}/settings`;
     const kuList = <Ku.List {...ownProps}
       key="kus" kuBaseUrl={kusUrl} projectId={internalId}  client={ownProps.client} />
@@ -122,12 +124,13 @@ class View extends Component {
       projectId={internalId}
       path={`notebooks/${p.match.params.notebookPath}`}
       client={ownProps.client} {...p} />;
-    return {title, description, displayId, internalId, visibilityLevel,
+    return {title, description, displayId, internalId, visibilityLevel, project: state,
       externalUrl, readmeText, lastActivityAt,
       tag_list, star_count, ssh_url, http_url,
       overviewUrl,
       kusUrl, kuList, kuUrl, kuView,
       notebooksUrl, notebookUrl, notebookView,
+      dataUrl, datumUrl,
       settingsUrl}
   }
 
