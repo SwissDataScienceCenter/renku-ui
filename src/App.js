@@ -177,9 +177,9 @@ class App extends Component {
               {/*TODO: This route should be handled by <Route path="/projects/:id(\d+)" too. Until this is the
                  TODO: case, the ku_new route must be listed BEFORE the project one.   */}
               <Route exact path="/projects/:projectId(\d+)/ku_new"
-                     render={(p) => <Ku.New key="ku_new" client={this.props.client} {...p}/>}/>
+                render={(p) => <Ku.New key="ku_new" client={this.props.client} {...p}/>}/>
               <Route exact path="/projects/:projectId(\d+)/lineage"
-                     render={(p) => <Lineage key="lineage" client={this.props.client} {...p}/>}/>
+                render={(p) => <Lineage key="lineage" client={this.props.client} {...p}/>}/>
               {/* pull out the underlying parts of the url and pass them to the project view */}
               <Route path="/projects/:id(\d+)"
                 render={p => <Project.View key="project" id={p.match.params.id} {...p}
