@@ -41,7 +41,7 @@ import Ku from './ku/Ku'
 import Landing from './landing/Landing'
 import Login from './login'
 import { RengaNavLink } from './utils/UIComponents'
-import Lineage from './lineage'
+// import Lineage from './lineage'
 
 
 function getActiveProjectId(currentPath) {
@@ -178,8 +178,10 @@ class App extends Component {
                  TODO: case, the ku_new route must be listed BEFORE the project one.   */}
               <Route exact path="/projects/:projectId(\d+)/ku_new"
                 render={(p) => <Ku.New key="ku_new" client={this.props.client} {...p}/>}/>
+              {/* TODO Reincorporate this when the missing commits are found
               <Route exact path="/projects/:projectId(\d+)/lineage"
                 render={(p) => <Lineage key="lineage" client={this.props.client} {...p}/>}/>
+              */}
               {/* pull out the underlying parts of the url and pass them to the project view */}
               <Route path="/projects/:id(\d+)"
                 render={p => <Project.View key="project" id={p.match.params.id} {...p}

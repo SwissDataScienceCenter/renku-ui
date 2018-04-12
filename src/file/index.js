@@ -25,7 +25,7 @@
 
 
 import { FilePreview } from './File.container'
-import { FileLineage } from './Lineage.present'
+import { FileLineage } from './Lineage.container'
 
 
 export { FilePreview, FileLineage }

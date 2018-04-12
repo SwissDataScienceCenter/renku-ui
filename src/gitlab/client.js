@@ -262,6 +262,32 @@ export default class GitlabClient {
       })
   }
 
+  getArtifactsUrl(projectId, job, branch='master') {
+    const headers = this.getBasicHeaders();
+    return fetch(`${this._baseUrl}projects/${projectId}/jobs`, {
+      method: 'GET',
+      headers: headers
+    })
+      .then(response => response.json())
+      .then(jobs => {
+        const filteredJobs = jobs.filter(j => j.name === job && j.ref === branch);
+        // Sort in reverse finishing order and take the most recent
+        const jobObj =
+          filteredJobs
+            .sort((a, b) => (a.finished_at > b.finished_at) ? -1 : +(a.finished_at < b.finished_at))[0]
+        return `${this._baseUrl}projects/${projectId}/jobs/${jobObj.id}/artifacts`;
+      })
+  }
+
+  getArtifact(projectId, job, artifact, branch='master') {
+    const options = { method: 'GET', headers: this.getBasicHeaders() };
+    return this.getArtifactsUrl(projectId, job, branch)
+      .then(url => {
+        const resourceUrl = `${url}/${artifact}`;
+        return Promise.all([resourceUrl, fetch(resourceUrl, options)])
+      })
+  }
+
   getUser() {
     let headers = this.getBasicHeaders();
     return fetch(this._baseUrl + 'user', {
