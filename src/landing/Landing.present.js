@@ -99,7 +99,7 @@ class Home extends Component {
     let visibleTab = <YourActivity />
     if (selected === 'your_network') visibleTab = <YourNetwork />
     if (selected === 'explore') visibleTab = <Explore />
-    if (selected == 'starred') visibleTab = this.props.starred;
+    if (selected === 'starred') visibleTab = this.props.starred;
     return [
       <Row key="nav">
         <Col md={12}>
