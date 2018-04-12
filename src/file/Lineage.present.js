@@ -18,14 +18,27 @@
 
 import React, { Component } from 'react';
 import { Row, Col } from 'reactstrap';
+import { Graph } from 'react-d3-graph';
+import dot from 'graphlib-dot';
+
+class FileLineageGraph extends Component {
+  render() {
+    let graph = dot.read(this.props.dot);
+    let nodes = graph.nodes().map(n => ({id: n}));
+    if (nodes.length < 1) return <p></p>;
+    let links = graph.edges().map(e => ({source: e.v, target: e.w}));
+    return <Graph id="lineage" data={{nodes, links}} />
+  }
+}
 
 class FileLineage extends Component {
-
-
   render() {
-    return <Row>
-      <Col><h3>{this.props.path}</h3></Col>
-    </Row>
+    const graph = (this.props.dot) ?
+      <FileLineageGraph dot={this.props.dot} /> :
+      <p>Loading...</p>;
+    return [<Row key="header"><Col><h3>{this.props.path}</h3></Col></Row>,
+      <Row key="graph"><Col>{graph}</Col></Row>
+    ]
   }
 }
 
