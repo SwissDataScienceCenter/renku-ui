@@ -83,6 +83,9 @@ const NetworkActivity = {
 };
 
 const Ui = {
+  selectStarred: () => {
+    return createSetAction('ui', 'selected', 'starred');
+  },
   selectYourActivity: () => {
     return createSetAction('ui', 'selected', 'your_activity');
   },
@@ -93,7 +96,7 @@ const Ui = {
     return createSetAction('ui', 'selected', 'explore');
   },
   reduce: (state, action) => {
-    return reduceState('ui', state, action, {selected: 'your_activity'})
+    return reduceState('ui', state, action, {selected: 'starred'})
   }
 }
 
