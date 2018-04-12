@@ -32,6 +32,27 @@ import Present from './Landing.present'
 import State from './Landing.state'
 
 
+class Starred extends Component {
+  constructor(props) {
+    super(props);
+    this.store = this.props.userState;
+  }
+  mapStateToProps(state, ownProps) {
+    const projects = (state.user) ? state.user.starredProjects : []
+    return {projects}
+  }
+
+  render() {
+    const VisibleStarred = connect(this.mapStateToProps)(Present.Starred);
+    return [
+      <Provider key="new" store={this.store}>
+        <VisibleStarred />
+      </Provider>
+    ]
+  }
+}
+
+
 class Home extends Component {
   constructor(props) {
     super(props);
@@ -42,10 +63,17 @@ class Home extends Component {
     // this.listProjects();
   }
 
-  mapStateToProps(state, ownProps) { return state  }
+  mapStateToProps(state, ownProps) {
+    const local = {
+      starred: <Starred userState={ownProps.userState} />
+    };
+    return {...state, ...local}
+  }
+
 
   mapDispatchToProps(dispatch, ownProps) {
     return {
+      onStarred: (e) => { dispatch(State.Home.Ui.selectStarred()) },
       onYourActivity: (e) => { dispatch(State.Home.Ui.selectYourActivity()) },
       onYourNetwork: (e) => { dispatch(State.Home.Ui.selectYourNetwork()) },
       onExplore: (e) => { dispatch(State.Home.Ui.selectExplore()) },
@@ -56,7 +84,7 @@ class Home extends Component {
     const VisibleHome = connect(this.mapStateToProps, this.mapDispatchToProps)(Present.Home);
     return [
       <Provider key="new" store={this.store}>
-        <VisibleHome />
+        <VisibleHome userState={this.props.userState}/>
       </Provider>
     ]
   }

@@ -64,6 +64,34 @@ class YourActivity extends Component {
   }
 }
 
+class ProjectListRow extends Component {
+
+  render() {
+    // TODO: Replace all paths with props to allow routing to be controlled at the top level
+    const title = <Link to={`/projects/${this.props.id}`}>{this.props.path_with_namespace}</Link>
+    return (
+      <Row className="project-list-row">
+        <Col md={9}>
+          <p><b>{title}</b></p>
+        </Col>
+      </Row>
+    );
+  }
+}
+
+class Starred extends Component {
+  render() {
+    const projects = this.props.projects || [];
+    const rows = projects.map(p => <ProjectListRow key={p.id} {...p} />);
+    return (<div>
+      <h1>Starred Projects</h1>
+      These are the projects you have starred.<br /><br />
+      {rows}
+    </div>
+    )
+  }
+}
+
 class Home extends Component {
   render() {
     const selected = this.props.ui.selected;
@@ -71,10 +99,15 @@ class Home extends Component {
     let visibleTab = <YourActivity />
     if (selected === 'your_network') visibleTab = <YourNetwork />
     if (selected === 'explore') visibleTab = <Explore />
+    if (selected == 'starred') visibleTab = this.props.starred;
     return [
       <Row key="nav">
         <Col md={12}>
           <Nav pills className={'nav-pills-underline'}>
+            <NavItem>
+              <NavLink href="#" active={selected === 'starred'}
+                onClick={this.props.onStarred}>Starred</NavLink>
+            </NavItem>
             <NavItem>
               <NavLink href="#" active={selected === 'your_activity'}
                 onClick={this.props.onYourActivity}>Activity</NavLink>
@@ -96,4 +129,4 @@ class Home extends Component {
   }
 }
 
-export default { Home };
+export default { Home, Starred };
