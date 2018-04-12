@@ -1,5 +1,5 @@
 /*!
- * Copyright 2017 - Swiss Data Science Center (SDSC)
+ * Copyright 2018 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,16 +16,17 @@
  * limitations under the License.
  */
 
-/**
- *  incubator-renga-ui
- *
- *  file/index.js
- *  Module for file rendering in Renga.
- */
+import React, { Component } from 'react';
+import { Row, Col } from 'reactstrap';
+
+class FileLineage extends Component {
 
 
-import { FilePreview } from './File.container'
-import { FileLineage } from './Lineage.present'
+  render() {
+    return <Row>
+      <Col><h3>{this.props.path}</h3></Col>
+    </Row>
+  }
+}
 
-
-export { FilePreview, FileLineage }
+export { FileLineage };

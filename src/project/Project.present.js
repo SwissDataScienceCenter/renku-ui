@@ -255,6 +255,8 @@ class ProjectViewFiles extends Component {
         <Switch>
           <Route path={this.props.notebookUrl}
             render={props => this.props.notebookView(props) } />
+          <Route path={this.props.datumUrl}
+            render={p => this.props.lineageView(p) } />
           <Route render={props => <ProjectFilesCategorizedList {...props } {...this.props } /> } />
         </Switch>
       </Col>

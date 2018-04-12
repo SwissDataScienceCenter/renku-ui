@@ -34,6 +34,7 @@ import Present from './Project.present'
 import State from './Project.state'
 import Ku from '../ku/Ku'
 import Notebook from '../file/Notebook'
+import { FileLineage } from '../file'
 
 
 class New extends StateModelComponent {
@@ -124,12 +125,17 @@ class View extends Component {
       projectId={internalId}
       path={`notebooks/${p.match.params.notebookPath}`}
       client={ownProps.client} {...p} />;
+    const lineageView = (p) => <FileLineage key="lineage"
+      projectId={internalId}
+      path={`data/${p.match.params.datumPath}`}
+      client={ownProps.client} {...p} />
     return {title, description, displayId, internalId, visibilityLevel, project: state,
       externalUrl, readmeText, lastActivityAt,
       tag_list, star_count, ssh_url, http_url,
       overviewUrl,
       kusUrl, kuList, kuUrl, kuView,
       notebooksUrl, notebookUrl, notebookView,
+      lineageView,
       dataUrl, datumUrl,
       settingsUrl}
   }
