@@ -22,19 +22,23 @@ import { Graph } from 'react-d3-graph';
 import dot from 'graphlib-dot';
 
 class FileLineageGraph extends Component {
+  graph() { return dot.read(this.props.dot) }
+
   render() {
-    let graph = dot.read(this.props.dot);
-    let nodes = graph.nodes().map(n => ({id: n}));
+    const graph = this.graph();
+    // label should be name of file without quotes
+    const nodes = graph.nodes().map(n => ({id: n, label: n.split(',')[1].slice(2, -2)}));
     if (nodes.length < 1) return <p></p>;
-    let links = graph.edges().map(e => ({source: e.v, target: e.w}));
-    return <Graph id="lineage" data={{nodes, links}} />
+    const links = graph.edges().map(e => ({source: e.v, target: e.w}));
+    const config = {node: {fontSize: 12, labelProperty: 'label'}};
+    return <Graph id="lineage" config={config} data={{nodes, links}} />
   }
 }
 
 class FileLineage extends Component {
   render() {
     const graph = (this.props.dot) ?
-      <FileLineageGraph dot={this.props.dot} /> :
+      <FileLineageGraph path={this.props.path} dot={this.props.dot} /> :
       <p>Loading...</p>;
     return [<Row key="header"><Col><h3>{this.props.path}</h3></Col></Row>,
       <Row key="graph"><Col>{graph}</Col></Row>
