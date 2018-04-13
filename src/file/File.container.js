@@ -32,7 +32,7 @@ class JupyterNotebookContainer extends Component {
   }
 
   getDetploymentUrl() {
-    this.props.client.getDeploymentUrl(this.props.projectId, 'review', this.props.filePath)
+    this.props.client.getDeploymentUrl(this.props.projectId, 'review')
       .then(url => this.setState({deploymentUrl: url}))
   }
 
