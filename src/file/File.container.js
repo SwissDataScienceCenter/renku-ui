@@ -33,7 +33,11 @@ class JupyterNotebookContainer extends Component {
 
   getDetploymentUrl() {
     this.props.client.getDeploymentUrl(this.props.projectId, 'review')
-      .then(url => this.setState({deploymentUrl: url}))
+      .then(jupyterhubUrl => {
+        const jh = new URL(jupyterhubUrl);
+        const url = `${jh.origin}${jh.pathname}/${this.props.filePath}/${jh.search}`;
+        this.setState({deploymentUrl: url})
+      })
   }
 
   render() {
