@@ -114,7 +114,7 @@ class View extends Component {
     const notebooksUrl = `${baseUrl}/notebooks`;
     const notebookUrl = `${baseUrl}/notebooks/:notebookPath`;
     const dataUrl = `${baseUrl}/data`;
-    const datumUrl = `${baseUrl}/data/:datumPath`;
+    const datumUrl = `${baseUrl}/data/:datumPath+`;
     const settingsUrl = `${baseUrl}/settings`;
     const kuList = <Ku.List {...ownProps}
       key="kus" kuBaseUrl={kusUrl} projectId={internalId}  client={ownProps.client} />
