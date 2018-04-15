@@ -21,15 +21,42 @@ import { Row, Col } from 'reactstrap';
 import { Graph } from 'react-d3-graph';
 import dot from 'graphlib-dot';
 
+function nodeIdToPath(nodeId) { return nodeId.split(',')[1].slice(2, -2) }
+
 class FileLineageGraph extends Component {
   graph() { return dot.read(this.props.dot) }
 
+  allPredecessors(centralNode, accum={}) {
+    const graph = this.graph();
+    const directPreds = graph.predecessors(centralNode);
+    directPreds.map(p => this.allPredecessors(p, accum));
+    directPreds.forEach(p => { accum[p] = p });
+    return accum;
+  }
+
+  allSuccessors(centralNode, accum={}) {
+    const graph = this.graph();
+    const directSuccs = graph.successors(centralNode);
+    directSuccs.map(p => this.allSuccessors(p, accum));
+    directSuccs.forEach(p => { accum[p] = p });
+    return accum;
+  }
+
   render() {
     const graph = this.graph();
+    // This is an array with 1 or 0 elements
+    const centralNode =
+      graph.nodes().filter(n => nodeIdToPath(n) === this.props.path);
+    const centralClosure = this.allPredecessors(centralNode);
+    this.allSuccessors(centralNode, centralClosure);
+    centralClosure[centralNode] = centralNode;
     // label should be name of file without quotes
-    const nodes = graph.nodes().map(n => ({id: n, label: n.split(',')[1].slice(2, -2)}));
+    const nodes = Object.keys(centralClosure).map(n => ({id: n, label: nodeIdToPath(n)}));
     if (nodes.length < 1) return <p></p>;
-    const links = graph.edges().map(e => ({source: e.v, target: e.w}));
+    const links =
+      graph.edges()
+        .filter(e => (centralClosure[e.v] != null) && (centralClosure[e.w] != null))
+        .map(e => ({source: e.v, target: e.w}));
     const config = {node: {fontSize: 12, labelProperty: 'label'}};
     return <Graph id="lineage" config={config} data={{nodes, links}} />
   }
