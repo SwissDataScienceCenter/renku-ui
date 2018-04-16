@@ -18,12 +18,23 @@
 
 import React, { Component } from 'react';
 import { Row, Col } from 'reactstrap';
-import { Graph } from 'react-d3-graph';
 import dot from 'graphlib-dot';
+import dagreD3 from 'dagre-d3';
+import * as d3 from 'd3';
+import './Lineage.css';
 
 function nodeIdToPath(nodeId) { return nodeId.split(',')[1].slice(2, -2) }
 
+function nodeIdToClass(nodeId, centralNode) {
+  return (nodeId === centralNode[0]) ? 'central': 'normal'
+}
+
 class FileLineageGraph extends Component {
+  constructor(props) {
+    super(props);
+    this._vizRoot = null;
+  }
+
   graph() { return dot.read(this.props.dot) }
 
   allPredecessors(centralNode, accum={}) {
@@ -42,23 +53,66 @@ class FileLineageGraph extends Component {
     return accum;
   }
 
-  render() {
+  nodesAndEdges() {
+    // Filter the graph to what is reachable from the central element
     const graph = this.graph();
     // This is an array with 1 or 0 elements
-    const centralNode =
-      graph.nodes().filter(n => nodeIdToPath(n) === this.props.path);
+    const centralNode = graph.nodes().filter(n => nodeIdToPath(n) === this.props.path);
     const centralClosure = this.allPredecessors(centralNode);
     this.allSuccessors(centralNode, centralClosure);
     centralClosure[centralNode] = centralNode;
-    // label should be name of file without quotes
-    const nodes = Object.keys(centralClosure).map(n => ({id: n, label: nodeIdToPath(n)}));
-    if (nodes.length < 1) return <p></p>;
-    const links =
+    const nodes = Object.keys(centralClosure)
+    const edges =
       graph.edges()
-        .filter(e => (centralClosure[e.v] != null) && (centralClosure[e.w] != null))
-        .map(e => ({source: e.v, target: e.w}));
-    const config = {node: {fontSize: 12, labelProperty: 'label'}};
-    return <Graph id="lineage" config={config} data={{nodes, links}} />
+        .filter(e => (centralClosure[e.v] != null) && (centralClosure[e.w] != null));
+    return {nodes, edges, centralNode};
+  }
+
+  componentDidMount() {
+    this.renderD3();
+  }
+
+  componentDidUpdate() {
+    this.renderD3();
+  }
+
+  renderD3() {
+    // Create the input graph
+    const g = new dagreD3.graphlib.Graph()
+      .setGraph({})
+      .setDefaultEdgeLabel(function() { return {}; });
+
+    const {nodes, edges, centralNode} = this.nodesAndEdges();
+    console.log(centralNode);
+    nodes.forEach(n => { g.setNode(n, {id: n, label: nodeIdToPath(n), class: nodeIdToClass(n, centralNode)}) });
+    edges.forEach(e => { g.setEdge(e) });
+
+    g.nodes().forEach(function(v) {
+      const node = g.node(v);
+      // Round the corners of the nodes
+      node.rx = node.ry = 5;
+    });
+
+
+    // Create the renderer
+    const render = new dagreD3.render();
+
+    // Set up an SVG group so that we can translate the final graph.
+    const svg = d3.select(this._vizRoot).select('svg'),
+      svgGroup = svg.append('g');
+
+    // Run the renderer. This is what draws the final graph.
+    render(d3.select('svg g'), g);
+
+    // Center the graph
+    svg.attr('width', 500);
+    const xCenterOffset = (svg.attr('width') - g.graph().width) / 2;
+    svgGroup.attr('transform', 'translate(' + xCenterOffset + ', 20)');
+    svg.attr('height', g.graph().height + 40);
+  }
+
+  render() {
+    return <div ref={(r) => this._vizRoot = r}><svg><g></g></svg></div>
   }
 }
 
