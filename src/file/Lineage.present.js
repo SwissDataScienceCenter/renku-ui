@@ -19,6 +19,7 @@
 import React, { Component } from 'react';
 import { Row, Col } from 'reactstrap';
 import dot from 'graphlib-dot';
+import graphlib from 'graphlib';
 import dagreD3 from 'dagre-d3';
 import * as d3 from 'd3';
 import './Lineage.css';
@@ -78,12 +79,11 @@ class FileLineageGraph extends Component {
 
   renderD3() {
     // Create the input graph
-    const g = new dagreD3.graphlib.Graph()
+    const g = new graphlib.Graph()
       .setGraph({})
       .setDefaultEdgeLabel(function() { return {}; });
 
     const {nodes, edges, centralNode} = this.nodesAndEdges();
-    console.log(centralNode);
     nodes.forEach(n => { g.setNode(n, {id: n, label: nodeIdToPath(n), class: nodeIdToClass(n, centralNode)}) });
     edges.forEach(e => { g.setEdge(e) });
 
