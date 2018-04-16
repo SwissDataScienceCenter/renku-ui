@@ -47,30 +47,37 @@ export default class GitlabClient {
   getProject(projectId, options={}) {
     let headers = this.getBasicHeaders();
 
-    const projectPromise = fetch(this._baseUrl + `projects/${projectId}`, {
-      method: 'GET',
-      headers: headers
-    })
-      .then(response => response.json())
-      .then(d => carveProject(d));
+    const apiPromises = [
+      fetch(this._baseUrl + `projects/${projectId}`, {
+        method: 'GET',
+        headers: headers
+      })
+        .then(response => response.json())
+        .then(d => carveProject(d))
+    ];
 
-    const treePromise = this.getRepositoryTree(projectId, {path:'', recursive: true});
 
-    return Promise.all([projectPromise, treePromise]).then((vals) => {
+    if (Object.keys(options).length > 0) {
+      apiPromises.push(this.getRepositoryTree(projectId, {path:'', recursive: true}));
+    }
+
+    return Promise.all(apiPromises).then((vals) => {
 
       let project = vals[0];
-      let projectFiles = (project.files != null) ? project.files : {} ;
+      if (vals.length > 1) {
+        let projectFiles = (project.files != null) ? project.files : {};
 
-      const files = vals[1]
-        .filter((treeObj) => treeObj.type==='blob')
-        .map((treeObj) => treeObj.path);
+        const files = vals[1]
+          .filter((treeObj) => treeObj.type === 'blob')
+          .map((treeObj) => treeObj.path);
 
-      Object.keys(SPECIAL_FOLDERS)
-        .filter((key) => options[key])
-        .forEach((folderKey) => {
-          projectFiles[folderKey] = files.filter((filePath) => filePath.indexOf(folderKey) === 0)
-        });
-      project.files = projectFiles;
+        Object.keys(SPECIAL_FOLDERS)
+          .filter((key) => options[key])
+          .forEach((folderKey) => {
+            projectFiles[folderKey] = files.filter((filePath) => filePath.indexOf(folderKey) === 0)
+          });
+        project.files = projectFiles;
+      }
       return project;
     })
   }
