@@ -177,7 +177,9 @@ const View = { Core, Visibility, Data,
     // Take server result and set it to the state
     if (action.entity === 'metadata') {
       const newState =  {...state, ...action.payload.metadata}
-      newState.files = action.payload.files;
+      if (action.payload.files) {
+        newState.files = action.payload.files;
+      }
       return newState;
     }
     if (action.entity === 'readme') {
