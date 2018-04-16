@@ -91,3 +91,11 @@ body {
 .positioned {
   position: relative
 }
+
+.fixed-width-120 {
+  width: 120px;
+}
+
+.fixed-width-100 {
+  width: 100px;
+}

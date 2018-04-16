@@ -107,6 +107,18 @@ export default class GitlabClient {
     return this.putProjectField(projectId, name, 'description', description);
   }
 
+  starProject(projectId, starred) {
+    const headers = this.getBasicHeaders();
+    headers.append('Content-Type', 'application/json');
+    const endpoint = starred ? 'unstar' : 'star';
+
+    return fetch(this._baseUrl + `projects/${projectId}/${endpoint}`, {
+      method: 'POST',
+      headers: headers,
+    })
+      .then(response => response.json())
+  }
+
   putProjectField(projectId, name, field_name, field_value) {
     const putData = { id: projectId, name, [field_name]: field_value };
     const headers = this.getBasicHeaders();
