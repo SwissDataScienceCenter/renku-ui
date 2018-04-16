@@ -40,6 +40,23 @@ class FileLineageGraph extends Component {
 
   graph() { return dot.read(this.props.dot) }
 
+  subGraph() {
+    const subGraph = new graphlib.Graph()
+      .setGraph({})
+      .setDefaultEdgeLabel(function() { return {}; });
+
+    const {nodes, edges, centralNode} = this.nodesAndEdges();
+    if (nodes.length < 2) {
+      subGraph.setNode(centralNode, {id: centralNode, label: `Introduced in commit ${nodeIdToSha(centralNode)}` });
+    } else {
+      nodes.forEach(n => {
+        subGraph.setNode(n, {id: n, label: nodeIdToPath(n), class: nodeIdToClass(n, centralNode)})
+      });
+      edges.forEach(e => { subGraph.setEdge(e) });
+    }
+    return subGraph
+  }
+
   allPredecessors(centralNode, accum={}) {
     const graph = this.graph();
     const directPreds = graph.predecessors(centralNode);
@@ -82,18 +99,7 @@ class FileLineageGraph extends Component {
 
   renderD3() {
     // Create the input graph
-    const g = new graphlib.Graph()
-      .setGraph({})
-      .setDefaultEdgeLabel(function() { return {}; });
-
-    const {nodes, edges, centralNode} = this.nodesAndEdges();
-    if (nodes.length < 2) {
-      g.setNode(centralNode, {id: centralNode, label: `Introduced in commit ${nodeIdToSha(centralNode)}` });
-    } else {
-      nodes.forEach(n => { g.setNode(n, {id: n, label: nodeIdToPath(n), class: nodeIdToClass(n, centralNode)}) });
-      edges.forEach(e => { g.setEdge(e) });
-    }
-
+    const g = this.subGraph()
     // Create the renderer
     const render = new dagreD3.render();
 
