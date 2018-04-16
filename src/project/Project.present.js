@@ -36,6 +36,7 @@ import { Nav, NavItem, NavLink } from 'reactstrap';
 import { Card, CardBody, CardHeader } from 'reactstrap';
 import { Badge } from 'reactstrap';
 import { Table } from 'reactstrap';
+import FontAwesome from 'react-fontawesome';
 
 import ReactMarkdown from 'react-markdown'
 
@@ -93,6 +94,7 @@ class ProjectViewHeader extends Component {
     const lastActivityAt = this.props.lastActivityAt;
     const tag_list = this.props.tag_list || [];
     const star_count = this.props.star_count || 0;
+    const starButtonText = this.props.starred ? 'unstar' : 'star';
     const description = this.props.description;
     const tags = (tag_list.length > 0) ? tag_list.map(t => <ProjectTag key={t} tag={t} />) : <br />;
     return (
@@ -109,7 +111,18 @@ class ProjectViewHeader extends Component {
             <p>
               {tags}
             </p>
-            <p><b>Stars</b> {star_count}</p>
+            {/*TODO: Adapting the width in a more elegant manner would be nice...*/}
+            <div className={this.props.starred ? 'fixed-width-120' : 'fixed-width-100'}>
+              <form className="input-group input-group-sm">
+                <div className="input-group-prepend">
+                  <button className="btn btn-outline-primary" onClick={this.props.onStar}>
+                    {starButtonText} <FontAwesome name="star"/>
+                  </button>
+                </div>
+                <input className="form-control border-primary text-right"
+                  placeholder={star_count} aria-label="starCount" readOnly={true}/>
+              </form>
+            </div>
           </Col>
         </Row>
       </Container>

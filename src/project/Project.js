@@ -91,10 +91,21 @@ class View extends Component {
     this.store.dispatch(State.View.fetchReadme(this.props.client, this.props.id));
   }
 
+  getStarred(userState, projectId) {
+    const user = userState.getState().user;
+    if (user && user.starredProjects) {
+      return user.starredProjects.map((project) => project.id).indexOf(projectId) >= 0
+    }
+    else {
+      return undefined
+    }
+  }
+
   mapStateToProps(state, ownProps) {
     // Display properties
     const displayId = state.core.displayId;
-    const internalId = state.core.id || ownProps.match.params.id;
+    const internalId = state.core.id || parseInt(ownProps.match.params.id);
+    const starred = this.getStarred(ownProps.userState, internalId);
     const visibilityLevel = state.visibility.level;
     const externalUrl = state.core.external_url;
     const title = state.core.title || 'no title';
@@ -131,7 +142,7 @@ class View extends Component {
       client={ownProps.client} {...p} />
     return {title, description, displayId, internalId, visibilityLevel, project: state,
       externalUrl, readmeText, lastActivityAt,
-      tag_list, star_count, ssh_url, http_url,
+      tag_list, star_count, starred, ssh_url, http_url,
       overviewUrl,
       kusUrl, kuList, kuUrl, kuView,
       notebooksUrl, notebookUrl, notebookView,
@@ -141,20 +152,26 @@ class View extends Component {
   }
 
   mapDispatchToProps(dispatch, ownProps) {
+    const state = this.store.getState();
     return {
       onProjectTagsChange: (tags) => {
-        const state = this.store.getState();
         dispatch(State.View.setTags(ownProps.client, state.core.id, state.core.title, tags))
       },
       onProjectDescriptionChange: (description) => {
-        const state = this.store.getState();
         dispatch(State.View.setDescription(ownProps.client, state.core.id, state.core.title, description))
+      },
+      onStar: (e) => {
+        e.preventDefault();
+        const projectId = state.core.id || parseInt(ownProps.match.params.id);
+        const starred = this.getStarred(ownProps.userState, projectId);
+        dispatch(State.View.star(ownProps.client, projectId, ownProps.userState, starred))
       }
     }
   }
 
   render() {
-    const VisibleProjectView = connect(this.mapStateToProps, this.mapDispatchToProps.bind(this))(Present.ProjectView);
+    const VisibleProjectView = connect(this.mapStateToProps.bind(this),
+      this.mapDispatchToProps.bind(this))(Present.ProjectView);
     return (
       <Provider key="view" store={this.store}>
         <VisibleProjectView

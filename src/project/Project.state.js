@@ -24,6 +24,7 @@
  */
 
 import { combineReducers } from 'redux'
+import { UserState } from '../app-state';
 
 function displayIdFromTitle(title) {
   // title.Author: Alex K. - https://stackoverflow.com/users/246342/alex-k
@@ -160,6 +161,18 @@ const View = { Core, Visibility, Data,
       client.setDescription(id, name, description).then(d => {
         dispatch(View.request(entity));
         client.getProject(id).then(d => dispatch(View.receive(d, entity)));
+      })
+    }
+  },
+  star: (client, id, userState, starred) => {
+    const entity = 'metadata';
+    return (dispatch) => {
+      dispatch(View.update(entity));
+      client.starProject(id, starred).then(() => {
+        dispatch(View.request(entity));
+        client.getProject(id).then(d => dispatch(View.receive(d, entity)));
+        // TODO: Bad naming here - will be resolved once the user state is re-implemented.
+        userState.dispatch(UserState.star(id))
       })
     }
   },
