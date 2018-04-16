@@ -271,6 +271,8 @@ export default class GitlabClient {
       .then(response => response.json())
       .then(jobs => {
         const filteredJobs = jobs.filter(j => j.name === job && j.ref === branch);
+        if (filteredJobs.length < 1)
+          throw new Error(`There are no artifacts for project/job (${projectId}/${job}) because there are no jobs`);
         // Sort in reverse finishing order and take the most recent
         const jobObj =
           filteredJobs
