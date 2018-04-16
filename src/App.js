@@ -84,7 +84,7 @@ class RengaNavBar extends Component {
 
     // Display the Ku related header options only if a project is active.
     const activeProjectId = getActiveProjectId(this.props.location.pathname);
-    const kuDropdown = activeProjectId ? <RengaNavLink to="ku_new" title="Ku" /> : null;
+    const kuDropdown = activeProjectId ? <RengaNavLink to={`/projects/${activeProjectId}/ku_new`} title="Ku" /> : null;
     // TODO If there is is an active project, show it in the navbar
 
     return (
