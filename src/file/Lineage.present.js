@@ -121,7 +121,7 @@ class FileLineage extends Component {
     const graph = (this.props.dot) ?
       <FileLineageGraph path={this.props.path} dot={this.props.dot} /> :
       <p>Loading...</p>;
-    return [<Row key="header"><Col><h3>{this.props.path}</h3></Col></Row>,
+    return [<Row key="header"><Col><h3><em>{this.props.path}</em> &mdash; lineage and use</h3></Col></Row>,
       <Row key="graph"><Col>{graph}</Col></Row>
     ]
   }
