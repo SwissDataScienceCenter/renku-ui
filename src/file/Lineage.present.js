@@ -26,8 +26,10 @@ import './Lineage.css';
 
 function nodeIdToPath(nodeId) { return nodeId.split(',')[1].slice(2, -2) }
 
+function nodeIdToSha(nodeId) { return nodeId.split(',')[0].slice(2, 10) }
+
 function nodeIdToClass(nodeId, centralNode) {
-  return (nodeId === centralNode[0]) ? 'central': 'normal'
+  return (nodeId === centralNode) ? 'central': 'normal'
 }
 
 class FileLineageGraph extends Component {
@@ -57,8 +59,9 @@ class FileLineageGraph extends Component {
   nodesAndEdges() {
     // Filter the graph to what is reachable from the central element
     const graph = this.graph();
-    // This is an array with 1 or 0 elements
-    const centralNode = graph.nodes().filter(n => nodeIdToPath(n) === this.props.path);
+    let centralNode = graph.nodes().filter(n => nodeIdToPath(n) === this.props.path);
+    if (centralNode.length < 1) return {nodes: [], edges: [], centralNode: null}
+    centralNode = centralNode[0];
     const centralClosure = this.allPredecessors(centralNode);
     this.allSuccessors(centralNode, centralClosure);
     centralClosure[centralNode] = centralNode;
@@ -84,15 +87,12 @@ class FileLineageGraph extends Component {
       .setDefaultEdgeLabel(function() { return {}; });
 
     const {nodes, edges, centralNode} = this.nodesAndEdges();
-    nodes.forEach(n => { g.setNode(n, {id: n, label: nodeIdToPath(n), class: nodeIdToClass(n, centralNode)}) });
-    edges.forEach(e => { g.setEdge(e) });
-
-    g.nodes().forEach(function(v) {
-      const node = g.node(v);
-      // Round the corners of the nodes
-      node.rx = node.ry = 5;
-    });
-
+    if (nodes.length < 2) {
+      g.setNode(centralNode, {id: centralNode, label: `Introduced in commit ${nodeIdToSha(centralNode)}` });
+    } else {
+      nodes.forEach(n => { g.setNode(n, {id: n, label: nodeIdToPath(n), class: nodeIdToClass(n, centralNode)}) });
+      edges.forEach(e => { g.setEdge(e) });
+    }
 
     // Create the renderer
     const render = new dagreD3.render();
