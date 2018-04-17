@@ -91,7 +91,7 @@ class FilePreview extends React.Component {
   highlightBlock = () => {
     // FIXME: Usage of findDOMNode is discouraged.
     // eslint-disable-next-line
-    const baseNode = ReactDom.findDOMNode(this);
+    const baseNode = ReactDOM.findDOMNode(this);
     hljs.highlightBlock(baseNode);
   };
 
