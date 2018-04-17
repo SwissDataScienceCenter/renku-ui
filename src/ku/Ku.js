@@ -166,11 +166,12 @@ const KuViewContributions = (props) => props.contributions
 
 class KuView extends Component {
   render() {
-    return [
+    const components = [
       <KuViewHeader key="header" {...this.props} />,
       <KuViewContributions key="contributions" {...this.props} />,
-      <NewContribution key="newContribution" {...this.props} />
-    ]
+    ];
+    if (this.props.state === 'opened') components.push(<NewContribution key="newContribution" {...this.props} />);
+    return components;
   }
 }
 
