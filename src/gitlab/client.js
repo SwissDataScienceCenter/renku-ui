@@ -205,6 +205,27 @@ export default class GitlabClient {
       .then(response => response.json())
   }
 
+  _modifiyIssue(projectId, issueIid, body) {
+    console.log(body);
+    let headers = this.getBasicHeaders();
+    headers.append('Content-Type', 'application/json');
+
+    return fetch(this._baseUrl + `projects/${projectId}/issues/${issueIid}`, {
+      method: 'PUT',
+      headers: headers,
+      body: JSON.stringify(body)
+    })
+      .then(response => response.json())
+  }
+
+  closeKu(projectId, kuIid) {
+    return this._modifiyIssue(projectId, kuIid, {state_event: 'close'})
+  }
+
+  reopenKu(projectId, kuIid) {
+    return this._modifiyIssue(projectId, kuIid, {state_event: 'reopen'})
+  }
+
   getRepositoryFile(projectId, path, ref='master', encoding='base64') {
     let headers = this.getBasicHeaders();
     const pathEncoded = encodeURIComponent(path);

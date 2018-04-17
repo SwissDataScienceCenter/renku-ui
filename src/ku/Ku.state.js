@@ -66,6 +66,15 @@ const Visibility = {
   }
 };
 
+const KuState = {
+  change: () => ({type: 'change_ku_state', payload: null}),
+  reduce: (appState, action) => {
+    if (!appState) return null;
+    const newKuState = appState.state === 'closed' ? 'opened' : 'closed';
+    return {...appState, state: newKuState }
+  }
+};
+
 const combinedFieldReducer = combineReducers({
   core: Core.reduce,
   visibility: Visibility.reduce
@@ -75,9 +84,10 @@ const New = { Core, Visibility,
   reducer: combinedFieldReducer
 };
 
-const View = { Core, Visibility,
+const View = { Core, Visibility, KuState,
   setAll: (result) => ({type:'server_return', payload: result }),
   reducer: (state, action) => {
+    if (action.type === 'change_ku_state') return KuState.reduce(state, action);
     if (action.type !== 'server_return') return combinedFieldReducer(state, action);
     // Take server result and set it to the state
     return {...state, ...action.payload}
