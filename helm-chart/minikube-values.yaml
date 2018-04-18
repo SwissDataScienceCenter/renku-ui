@@ -1,0 +1,9 @@
+global:
+  renga:
+    domain: renga.build
+
+baseUrl: "http://localhost:3000"
+gitlabUrl: "http://gitlab.renga.build"
+
+ingress:
+  enabled: false

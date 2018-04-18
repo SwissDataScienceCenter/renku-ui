@@ -1,0 +1,65 @@
+# Default values for ui.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+## Global variables
+## Shared values/secrets
+global:
+  gitlab:
+    ## Client secret, set this to a random string.
+    ## To change this value after deploying, first generate a new secret using the Keycloak admin console
+    ## then paste the generated secret here
+    clientSecret: open_secret
+    ## Name of the postgres database to be used by Gitlab
+    postgresDatabase: gitlabhq_production
+    ## Postgres user for the gitlab database
+    postgresUser: gitlab
+    ## Postgres password for the gitlab database
+    postgresPassword: gitlab
+  keycloak:
+    ## Name of the postgres database to be used by Keycloak
+    postgresDatabase: keycloak
+    ## Postgres user for the Keycloak database
+    postgresUser: keycloak
+    ## Postgres password for the Keycloak database
+    postgresPassword: keycloak
+  renga:
+    ## Set to true if using https
+    https: false
+    ## Domain name for the deployed instance of renga
+    domain: example.local
+
+replicaCount: 1
+
+## Set to a custom base URL if deployed manually
+# baseUrl: "http://127.0.0.1:8080"
+## Set to a custom GitLab URL if deployed manually
+# gitlabUrl: "http://gitlab.renga.build"
+
+image:
+  name: rengahub/renga-ui
+  repository: rengahub/renga-ui
+  tag: development
+  pullPolicy: Always
+
+service:
+  type: ClusterIP
+  port: 80
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
