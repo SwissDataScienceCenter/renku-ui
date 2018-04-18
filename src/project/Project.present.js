@@ -36,7 +36,10 @@ import { Nav, NavItem, NavLink } from 'reactstrap';
 import { Card, CardBody, CardHeader } from 'reactstrap';
 import { Badge } from 'reactstrap';
 import { Table } from 'reactstrap';
-import FontAwesome from 'react-fontawesome';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome'
+import faStarRegular from '@fortawesome/fontawesome-free-regular/faStar'
+import faStarSolid from '@fortawesome/fontawesome-free-solid/faStar'
+
 
 import ReactMarkdown from 'react-markdown'
 
@@ -95,6 +98,7 @@ class ProjectViewHeader extends Component {
     const tag_list = this.props.tag_list || [];
     const star_count = this.props.star_count || 0;
     const starButtonText = this.props.starred ? 'unstar' : 'star';
+    const starIcon = this.props.starred ? faStarSolid : faStarRegular;
     const description = this.props.description;
     const tags = (tag_list.length > 0) ? tag_list.map(t => <ProjectTag key={t} tag={t} />) : <br />;
     return (
@@ -116,7 +120,7 @@ class ProjectViewHeader extends Component {
               <form className="input-group input-group-sm">
                 <div className="input-group-prepend">
                   <button className="btn btn-outline-primary" onClick={this.props.onStar}>
-                    {starButtonText} <FontAwesome name="star"/>
+                    <FontAwesomeIcon icon={starIcon} /> {starButtonText}
                   </button>
                 </div>
                 <input className="form-control border-primary text-right"
