@@ -3,8 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "ajv": "^6.4.0",
     "bootstrap": "^4.0.0",
+    "d3": "^5.0.0",
+    "dagre-d3": "^0.6.1",
     "font-awesome": "^4.7.0",
+    "graphlib-dot": "^0.6.2",
+    "http-proxy": "^1.16.2",
     "human-time": "0.0.1",
     "immutability-helper": "^2.6.6",
     "jquery": "^3.2.1",

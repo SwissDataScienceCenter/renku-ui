@@ -40,7 +40,8 @@ import Project from './project/Project'
 import Ku from './ku/Ku'
 import Landing from './landing/Landing'
 import Login from './login'
-import { RengaNavLink } from './utils/UIComponents'
+import { RengaNavLink, UserAvatar } from './utils/UIComponents'
+// import Lineage from './lineage'
 
 
 function getActiveProjectId(currentPath) {
@@ -125,7 +126,7 @@ class RengaNavBar extends Component {
               <li className="nav-item dropdown">
                 <a className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
                   aria-haspopup="true" aria-expanded="false">
-                  <FontAwesome name="user-circle" />
+                  {this.props.userAvatar}
                 </a>
                 <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                   <RengaNavLink to="/user" title="Profile" />
@@ -154,10 +155,11 @@ class RengaFooter extends Component {
 
 class App extends Component {
   render() {
+    const userAvatar = <UserAvatar userState={this.props.userState} />
     return (
       <Router>
         <div>
-          <Route component={RengaNavBar} />
+          <Route render={props => <RengaNavBar userAvatar={userAvatar} {...props} />} />
           <main role="main" className="container-fluid">
             <div key="gap">&nbsp;</div>
             <Switch>

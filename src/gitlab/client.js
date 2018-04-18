@@ -246,19 +246,47 @@ export default class GitlabClient {
       })
   }
 
-  getDeploymentUrl(projectId, notebookPath, branchName = 'master') {
+  getDeploymentUrl(projectId, envName, branchName = 'master') {
     let headers = this.getBasicHeaders();
     return fetch(this._baseUrl + `projects/${projectId}/environments`, {
       method: 'GET',
       headers: headers
     })
       .then(response => response.json())
-      .then(envs => envs.filter(env => env.name === `review/${branchName}`)[0])
+      .then(envs => envs.filter(env => env.name === `${envName}/${branchName}`)[0])
       .then(env => {
         if (!env) return undefined;
         // TODO: Add the path to the actual notebook file once the CI/CD part
         // TODO: has stabilized.
         return `${env.external_url}`;
+      })
+  }
+
+  getArtifactsUrl(projectId, job, branch='master') {
+    const headers = this.getBasicHeaders();
+    return fetch(`${this._baseUrl}projects/${projectId}/jobs`, {
+      method: 'GET',
+      headers: headers
+    })
+      .then(response => response.json())
+      .then(jobs => {
+        const filteredJobs = jobs.filter(j => j.name === job && j.ref === branch);
+        if (filteredJobs.length < 1)
+          throw new Error(`There are no artifacts for project/job (${projectId}/${job}) because there are no jobs`);
+        // Sort in reverse finishing order and take the most recent
+        const jobObj =
+          filteredJobs
+            .sort((a, b) => (a.finished_at > b.finished_at) ? -1 : +(a.finished_at < b.finished_at))[0]
+        return `${this._baseUrl}projects/${projectId}/jobs/${jobObj.id}/artifacts`;
+      })
+  }
+
+  getArtifact(projectId, job, artifact, branch='master') {
+    const options = { method: 'GET', headers: this.getBasicHeaders() };
+    return this.getArtifactsUrl(projectId, job, branch)
+      .then(url => {
+        const resourceUrl = `${url}/${artifact}`;
+        return Promise.all([resourceUrl, fetch(resourceUrl, options)])
       })
   }
 

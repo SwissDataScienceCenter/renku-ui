@@ -32,9 +32,24 @@ import human from 'human-time';
 import { NavLink as RRNavLink }  from 'react-router-dom'
 import { NavLink } from 'reactstrap';
 
+import { Provider, connect } from 'react-redux'
+
 class Avatar extends Component {
+  computeWidgetSize() {
+    const size = this.props.size || 'lg';
+    let widgetSize = {img: 36, fa: '2x'};
+    switch(size) {
+    case 'sm': widgetSize = {img: 18, fa: null}; break;
+    case 'md': widgetSize = {img: 18*2, fa: '2x'}; break;
+    case 'lg': widgetSize = {img: 18*3, fa: '3x'}; break;
+    default: break;
+    }
+    return widgetSize;
+  }
+
   render() {
     let img, user;
+    const widgetSize = this.computeWidgetSize();
     const person = this.props.person;
     if (person != null) {
       img = person.avatar_url;
@@ -44,8 +59,9 @@ class Avatar extends Component {
       user = this.props.user;
     }
     return (img) ?
-      <img width={36} src={img} alt={user} /> :
-      <FontAwesome alt={user} name="user-circle-o" size="2x" style={{textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)'}} />;
+      <img width={widgetSize.img} src={img} alt={user} /> :
+      <FontAwesome alt={user} name="user-circle-o" size={widgetSize.fa}
+        style={{textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)'}} />;
   }
 }
 
@@ -81,4 +97,30 @@ class RengaNavLink extends Component {
   }
 }
 
-export { Avatar, TimeCaption, FieldGroup, RengaNavLink };
+class UserAvatarPresent extends Component {
+  render() {
+    return <Avatar size="sm" person={this.props.user} />
+  }
+}
+
+class UserAvatar extends Component {
+  constructor(props) {
+    super(props);
+    this.store = this.props.userState;
+  }
+
+  mapStateToProps(state, ownProps) {
+    return {...state}
+  }
+
+  render() {
+    const VisibleAvatar = connect(this.mapStateToProps)(UserAvatarPresent);
+    return [
+      <Provider key="new" store={this.store}>
+        <VisibleAvatar userState={this.props.userState}/>
+      </Provider>
+    ]
+  }
+}
+
+export { Avatar, TimeCaption, FieldGroup, RengaNavLink, UserAvatar };

@@ -24,8 +24,7 @@
  */
 
 
-import { FilePreview } from './File.container'
-import { FileLineage } from './Lineage.present'
-
+import { FilePreview } from './File.present'
+import { FileLineage } from './Lineage.container'
 
 export { FilePreview, FileLineage }
