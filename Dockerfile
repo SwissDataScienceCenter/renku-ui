@@ -3,8 +3,8 @@ FROM node:alpine
 WORKDIR /app
 COPY . /app
 RUN npm install --silent && \
-    npm install -g serve
+    npm run-script build
 
-EXPOSE 3000
-ENTRYPOINT ["/bin/sh", "/app/docker-entrypoint.sh"]
-CMD ["/usr/local/bin/serve", "-s", "-p", "3000", "./build/"]
+FROM nginx
+
+COPY --from=0 /app/build /usr/share/nginx/html
