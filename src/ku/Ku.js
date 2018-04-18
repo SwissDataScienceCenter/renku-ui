@@ -143,11 +143,14 @@ class KuViewHeader extends Component {
   render() {
     const title = this.props.title || 'no title';
     const description = this.props.description || 'no description';
-    const kuState = kuStateBadge(this.props.state);
+    const buttonText = this.props.state === 'opened' ? 'close' : 'reopen';
     return [
       <Row key="title">
         <Col xs={9}><h3>{title}</h3></Col>
-        <Col xs={1}>{kuState}</Col>
+        <Col xs={1}>
+          <Button className="btn btn-outline-primary py-0 px-1"
+                  onClick={this.props.onKuStateChange}>{buttonText}</Button>
+        </Col>
       </Row>,
       <p key="lead" className="lead">{description}</p>
     ]
@@ -163,11 +166,12 @@ const KuViewContributions = (props) => props.contributions
 
 class KuView extends Component {
   render() {
-    return [
+    const components = [
       <KuViewHeader key="header" {...this.props} />,
       <KuViewContributions key="contributions" {...this.props} />,
-      <NewContribution key="newContribution" {...this.props} />
-    ]
+    ];
+    if (this.props.state === 'opened') components.push(<NewContribution key="newContribution" {...this.props} />);
+    return components;
   }
 }
 
@@ -212,11 +216,38 @@ class View extends Component {
   }
 
   mapDispatchToProps(dispatch, ownProps) {
-    return {}
+    return {
+      onKuStateChange: (e) => {
+        e.preventDefault();
+        const kuState = this.store.getState().state;
+
+        // FIXME: This is a terrible hack which relies on the ku being updated on the server before force-updating the
+        // FIXME: entire project component. The problem here ist that the Ku list and the Ku detail components
+        // FIXME: are siblings and they both hold the same information in their state (which is therefore duplicated).
+        // FIXME: On click, the respective state information in both siblings state needs to be updated.
+        // FIXME: The proper solution would be to elevate this information to the state their common parent and update
+        // FIXME: it there.
+
+        if (kuState === 'opened') {
+          this.props.client.closeKu(this.props.projectId, this.props.kuIid)
+            .then(() => this.props.updateProjectView());
+        }
+        else if (kuState === 'closed') {
+          this.props.client.reopenKu(this.props.projectId, this.props.kuIid)
+            .then(() => this.props.updateProjectView());
+        }
+        else {
+          console.log(`Unknown state ${this.props.state}`)
+        }
+        // We don't even need to dispatch anything as the entire project component needs to be re-rendered
+        // (and the information reloaded from the server) anyway.
+        // dispatch(State.View.KuState.change());
+      }
+    }
   }
 
   render() {
-    const VisibleKuView = connect(this.mapStateToProps, this.mapDispatchToProps)(KuView);
+    const VisibleKuView = connect(this.mapStateToProps, this.mapDispatchToProps.bind(this))(KuView);
     return <Provider key="new" store={this.store}>
       <VisibleKuView
         contributions={this.state ? this.state.contributions : []}
