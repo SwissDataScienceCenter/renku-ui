@@ -16,9 +16,6 @@ class Login extends Component {
         'response_type=token&' +
         'state=';
       return <p>logging in with gitlab</p>;
-    } else {
-      this.props.keycloak.login();
-      return <p>logging in with keycloak</p>
     }
   }
 }
@@ -26,7 +23,6 @@ class Login extends Component {
 class Logout extends Component {
   render() {
     this.props.cookies.remove('gitlab_token');
-    this.props.keycloak.logout({redirectUri: this.props.params.BASE_URL + '/logged_out'});
     return <p>logging out</p>
   }
 }
