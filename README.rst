@@ -65,7 +65,7 @@ Alternatively, the UI can also be run from a docker container:
 ::
 
     $ make tag/renga-ui
-    $ docker run -d -p 3000:3000 rengahub/renga-ui:development
+    $ docker run -d -p 3000:80 -e GITLAB_URL=http://gitlab.renga.build rengahub/renga-ui:development
 
 
 Tests
@@ -82,4 +82,3 @@ or
 ::
 
     $ docker run -e CI=true rengahub/renga-ui:development npm test
-
