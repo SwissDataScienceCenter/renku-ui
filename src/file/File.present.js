@@ -20,6 +20,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import ReactMarkdown from 'react-markdown'
 import JupyterNotebook from 'react-jupyter';
+import { JupyterNotebook as RengaJupyterNotebook } from './File.container';
 import { Button } from 'reactstrap';
 import hljs from 'highlight.js'
 import '../../node_modules/highlight.js/styles/atom-one-light.css'
@@ -129,7 +130,7 @@ class FilePreview extends React.Component {
     }
     // Jupyter Notebook
     if (this.getFileExtension() === 'ipynb'){
-      return <JupyterNotebook
+      return <RengaJupyterNotebook
         notebook={JSON.parse(atob(this.props.file.content))}
         filePath={this.props.file.file_path}
         projectId={this.props.projectId}
