@@ -39,7 +39,7 @@ class StyledNotebook extends React.Component {
   render() {
     return <JupyterNotebook ref={c => {this.notebook = c}}
       notebook={this.props.notebook}
-      showCode={this.props.showCode} />
+      showCode={this.props.showCode || true} />
   }
 }
 
