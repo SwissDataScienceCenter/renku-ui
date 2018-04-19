@@ -14,75 +14,49 @@ import { UserState, reducer} from './app-state';
 
 const cookies = new Cookies();
 
-// We define a parameter object and pass it down via props. This could maybe be stored
-// in redux instead.
-const params = {
-  BASE_URL: process.env.REACT_APP_RENGA_UI_URL,
-  GITLAB_URL: process.env.REACT_APP_GITLAB_URL,
-  GITLAB_CLIENT_ID: 'renga-ui',
-  KEYCLOAK_URL: process.env.REACT_APP_KEYCLOAK_URL,
-  KEYCLOAK_REALM: 'Renga',
-  KEYCLOAK_CLIENT_ID: 'renga-ui'
-};
+const configPromise = fetch('/config.json');
 
-const keycloakDef = {
-  realm: params.KEYCLOAK_REALM,
-  url: params.KEYCLOAK_URL + '/auth',
-  clientId: params.KEYCLOAK_CLIENT_ID
-};
+configPromise.then((res) => {
+  res.json().then((params) => {
 
-// We use a redux store to hold some global application state.
-const store = createStore(reducer);
+    if (!cookies.get('gitlab_token')){
+      ReactDOM.render(<AppLoggedOut cookies={cookies} params={params}/>,
+        document.getElementById('root'));
+    }
+    else {
 
-function getKeycloak() {
-  if (process.env.REACT_APP_UI_DEV_MODE !== 'true') {
-
-    // We follow the best practice described in
-    // http://www.keycloak.org/docs/latest/securing_apps/index.html#_javascript_adapter
-    // and load keycloak.js from the keycloak server to ensure consistency of the keycloak server with the used js
-    // adapter.
-
-    // A json serialized object which can be used to define the keycloak instance can also be downloaded
-    // from the keycloak server once the renga ui client has been defined.
-    // eslint-disable-next-line
-    return Keycloak(keycloakDef);
-  } else {
-    const npmKeycloak = require('keycloak-js');
-    return npmKeycloak(keycloakDef);
-  }
-}
-
-const keycloak = getKeycloak();
-
-keycloak.init()
-  .success((authenticated) => {
-    if (authenticated) {
+      // We use a redux store to hold some global application state.
+      const store = createStore(reducer);
 
       const client = new GitlabClient(params.GITLAB_URL + '/api/v4/', cookies.get('gitlab_token'), 'bearer');
 
       // Load the user profile and dispatch the result to the store.
-      client.getUser().then(profile => {
-        store.dispatch(UserState.set(profile))
+      client.getUser().then(response => {
+        // TODO: Make the api client throw exceptions on api errors.
+        if (response.message === '401 Unauthorized') {
+          ReactDOM.render(<AppLoggedOut cookies={cookies} params={params}/>,
+            document.getElementById('root'));
+        }
+        else {
+          store.dispatch(UserState.set(response))
+          // TODO: Replace this after re-implementation of user state.
+          client.getProjects({starred: true})
+            .then((projects) => {
+              const reducedProjects = projects.map((project) => {
+                return {
+                  id: project.id,
+                  path_with_namespace: project.path_with_namespace
+                }
+              });
+              store.dispatch(UserState.setStarred(reducedProjects));
+            });
+
+          ReactDOM.render(<App client={client} cookies={cookies} params={params} userState={store}/>,
+            document.getElementById('root'));
+
+          registerServiceWorker();
+        }
       });
-
-      // TODO: Replace this after re-implementation of user state.
-      client.getProjects({starred: true})
-        .then((projects) => {
-          const reducedProjects = projects.map((project) => {
-            return {
-              id: project.id,
-              path_with_namespace: project.path_with_namespace
-            }});
-          store.dispatch(UserState.setStarred(reducedProjects));
-        });
-
-      ReactDOM.render(<App client={client} keycloak={keycloak} cookies={cookies} params={params} userState={store}/>,
-        document.getElementById('root'));
-    } else {
-      ReactDOM.render(<AppLoggedOut keycloak={keycloak} cookies={cookies} params={params}/>,
-        document.getElementById('root'));
     }
-    registerServiceWorker();
-  }).error(() => {
-    alert('failed to initialize Keycloak.');
   });
+});

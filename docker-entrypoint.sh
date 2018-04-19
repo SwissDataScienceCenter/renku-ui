@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright 2017 - Swiss Data Science Center (SDSC)
+# Copyright 2017-2018 - Swiss Data Science Center (SDSC)
 # A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
 # Eidgenössische Technische Hochschule Zürich (ETHZ).
 #
@@ -18,18 +18,16 @@
 
 echo "==================================================="
 echo " Configuration:"
-echo " KEYCLOAK_URL=$KEYCLOAK_URL"
-echo " GITLAB_URL=$GITLAB_URL"
-echo " RENGA_UI_URL=$RENGA_UI_URL"
+echo " GITLAB_URL=${GITLAB_URL:-http://gitlab.renga.build}"
+echo " BASE_URL=${BASE_URL:-http://renga.build}"
 echo "==================================================="
 
-# Optimized production build
-npm run-script build
+tee > /usr/share/nginx/html/config.json << EOF
+{
+  "BASE_URL": "${BASE_URL:-http://renga.build}",
+  "GITLAB_URL": "${GITLAB_URL:-http://gitlab.renga.build}",
+  "GITLAB_CLIENT_ID": "renga-ui"
+}
+EOF
 
-# Add the script tag which loads the keycloak js adapter from the keycloak server
-ESCAPED_KEYCLOAK_URL=$(echo $KEYCLOAK_URL | sed -e 's/\//\\\//g')
-sed -i -e "s/<head>/<head><script src=\"$ESCAPED_KEYCLOAK_URL\/auth\/js\/keycloak.js\"><\/script>/" /app/build/index.html
-
-cat /app/build/index.html
-
-exec -- $@
+exec -- "$@"
