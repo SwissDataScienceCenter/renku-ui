@@ -51,7 +51,9 @@ class New extends StateModelComponent {
   onSubmit = () => {
     const validation = this.model.validate()
     if (validation.result) {
-      this.props.client.postProject(this.model.get())
+      this.props.client.postProject(this.model.get()).then((project) => {
+        this.props.history.push(`/projects/${project.id}`);
+      })
     }
     else {
       // This should be done by proper form validation.
