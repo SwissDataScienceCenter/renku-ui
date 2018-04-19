@@ -46,7 +46,14 @@ class StyledNotebook extends React.Component {
 
     .showCode .output:before {
       content: "";
-    }`;
+    }
+    .jupyter .output img {
+      max-width: 100%;
+      margin-left: auto;
+      margin-right: auto;
+      display: block;
+    }
+    `;
     return [
       <style key="notebook-style">{notebookStyle}</style>,
       <JupyterNotebook
