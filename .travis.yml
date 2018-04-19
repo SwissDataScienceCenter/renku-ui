@@ -1,7 +1,23 @@
 language: node_js
+
 node_js:
   - lts/*
+
 sudo: true
+
+env:
+  global:
+    - DOCKER_LABEL=$TRAVIS_BRANCH
+    - DOCKER_PUSH_LATEST=true
+    - DOCKER_REPOSITORY=rengahub/
+
+git:
+  depth: false
+
+cache:
+  directories:
+  - node_modules
+
 script:
   - make tag/renga-ui
   # FIXME - once tests are passing, uncomment below
@@ -21,12 +37,3 @@ deploy:
     - make login push-docker-images
     on:
       branch: development
-
-cache:
-  directories:
-  - node_modules
-env:
-  global:
-    - DOCKER_LABEL=$TRAVIS_BRANCH
-    - DOCKER_PUSH_LATEST=true
-    - DOCKER_REPOSITORY=rengahub/
