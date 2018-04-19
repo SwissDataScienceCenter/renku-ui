@@ -208,9 +208,6 @@ class AppLoggedOut extends Component {
             <Switch>
               <Route exact path="/login/redirect/gitlab"
                 render={p => <Login.GitlabRedirect key="gitlabRedirect" {...p} cookies={this.props.cookies}/>} />
-              <Route path="/logged_out"
-                // For this route we actually want a reload of the page when going back to renga.
-                render={p => <p>You are logged out. Back to <a href={this.props.params.BASE_URL}>Renga!</a></p>} />
               <Route path="/"  render = {
                 p => <Login.Login key="login" {...p} {...this.props}/>
               } />
