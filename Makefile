@@ -32,12 +32,6 @@ PLATFORM_DOMAIN?=renga.build
 GITLAB_URL?=http://gitlab.$(PLATFORM_DOMAIN)
 KEYCLOAK_URL?=http://keycloak.$(PLATFORM_DOMAIN):8080
 
-DEV_ENV=\
-	GITLAB_URL=$(GITLAB_URL) \
-	KEYCLOAK_URL=$(KEYCLOAK_URL) \
-	RENGA_UI_URL=http://localhost:3000 \
-	UI_DEV_MODE=true
-
 tag-docker-images: $(IMAGES:%=tag/%)
 
 build/renga-ui: Dockerfile
@@ -65,4 +59,5 @@ login:
 	@docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}" ${DOCKER_REGISTRY}
 
 dev:
-	$(DEV_ENV) npm start
+	@echo "You might want to edit ''./public/config.json'. Happy Hacking!!!"
+	npm start
