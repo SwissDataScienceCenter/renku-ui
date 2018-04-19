@@ -104,7 +104,7 @@ class View extends Component {
   mapStateToProps(state, ownProps) {
     // Display properties
     const displayId = state.core.displayId;
-    const internalId = state.core.id || parseInt(ownProps.match.params.id);
+    const internalId = state.core.id || parseInt(ownProps.match.params.id, 10);
     const starred = this.getStarred(ownProps.userState, internalId);
     const visibilityLevel = state.visibility.level;
     const externalUrl = state.core.external_url;
@@ -163,7 +163,7 @@ class View extends Component {
       },
       onStar: (e) => {
         e.preventDefault();
-        const projectId = state.core.id || parseInt(ownProps.match.params.id);
+        const projectId = state.core.id || parseInt(ownProps.match.params.id, 10);
         const starred = this.getStarred(ownProps.userState, projectId);
         dispatch(State.View.star(ownProps.client, projectId, ownProps.userState, starred))
       }
