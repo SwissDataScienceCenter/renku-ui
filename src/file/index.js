@@ -24,7 +24,7 @@
  */
 
 
-import { FilePreview } from './File.container'
+import { FilePreview, LaunchNotebookServerButton } from './File.container'
 import { FileLineage } from './Lineage.container'
 
-export { FilePreview, FileLineage }
+export { FilePreview, FileLineage, LaunchNotebookServerButton }

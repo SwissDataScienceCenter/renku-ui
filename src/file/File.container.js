@@ -20,7 +20,7 @@ import React, { Component } from 'react';
 import ReactMarkdown from 'react-markdown'
 import hljs from 'highlight.js'
 
-import { JupyterNotebookPresent } from './File.present';
+import { JupyterNotebookPresent, LaunchNotebookButton } from './File.present';
 
 
 class JupyterNotebookContainer extends Component {
@@ -46,6 +46,32 @@ class JupyterNotebookContainer extends Component {
     return <JupyterNotebookPresent
       notebook={this.props.notebook}
       deploymentUrl={this.state.deploymentUrl}/>
+  }
+}
+
+class LaunchNotebookServerButton extends Component {
+  constructor(props){
+    super(props);
+    this.state = {deploymentUrl: undefined}
+  }
+
+  componentDidMount() {
+    this.getDetploymentUrl()
+  }
+
+  getDetploymentUrl() {
+
+    this.props.client.getDeploymentUrl(this.props.projectId, 'review')
+      .then(jupyterhubUrl => {
+        if (jupyterhubUrl == null) return null;
+        this.setState({deploymentUrl: jupyterhubUrl})
+      })
+  }
+
+  render() {
+    return (this.state.deploymentUrl != null) ?
+      <LaunchNotebookButton deploymentUrl={this.state.deploymentUrl} label="Launch Notebook Server" /> :
+      <p></p>
   }
 }
 
@@ -127,4 +153,4 @@ class FilePreview extends React.Component {
   }
 }
 
-export { FilePreview, JupyterNotebookContainer as JupyterNotebook };
+export { FilePreview, JupyterNotebookContainer as JupyterNotebook, LaunchNotebookServerButton };

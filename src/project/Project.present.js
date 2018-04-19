@@ -239,6 +239,8 @@ class ProjectViewKus extends Component {
 
 class FileFolderList extends Component {
   render() {
+    const emptyView = this.props.emptyView;
+    if ((this.props.paths.length < 1) && emptyView != null) return emptyView;
     const rows = this.props.paths.map(p => {
       return <tr key={p}><td><Link to={p}>{p}</Link></td></tr>
     });
@@ -252,7 +254,9 @@ class ProjectFilesCategorizedList extends Component {
   render() {
     const project = this.props.project;
     return <Switch>
-      <Route path={this.props.notebooksUrl} render={props => <FileFolderList paths={project.files.notebooks} /> } />
+      <Route path={this.props.notebooksUrl} render={props => {
+        return <FileFolderList paths={project.files.notebooks} emptyView={this.props.launchNotebookButton}/> }
+      } />
       <Route path={this.props.dataUrl} render={props => <FileFolderList paths={project.files.data} /> } />
       <Route render={props => <p>Files</p> } />
     </Switch>

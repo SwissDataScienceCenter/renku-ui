@@ -66,22 +66,31 @@ class StyledNotebook extends React.Component {
   }
 }
 
+class LaunchNotebookButton extends React.Component {
+  render() {
+    const props = this.props;
+    const label = props.label || 'Launch Notebook';
+    const className = props.className;
+    return <Button
+      className={className}
+      color="primary" onClick={event => {
+        event.preventDefault();
+        props.deploymentUrl ? window.open(props.deploymentUrl) : alert('I\'m sorry, this notebook is not deployed')
+      }}>
+      {label}
+    </Button>
+  }
+}
+
 
 const JupyterNotebookPresent = props => {
 
   if (props.notebook == null) return <div>Loading...</div>;
 
   return <div className="positioned">
-    <Button
-      className="deployButton"
-      color="primary" onClick={event => {
-        event.preventDefault();
-        props.deploymentUrl ? window.open(props.deploymentUrl) : alert('I\'m sorry, this notebook is not deployed')
-      }}>
-      Launch Notebook
-    </Button>
+    <LaunchNotebookButton deploymentUrl={props.deploymentUrl} label="Launch Notebook" className="deployButton" />
     <StyledNotebook notebook={props.notebook} showCode={true} />
   </div>;
 };
 
-export { JupyterNotebookPresent };
+export { JupyterNotebookPresent, LaunchNotebookButton };
