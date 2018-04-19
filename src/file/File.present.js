@@ -19,9 +19,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import JupyterNotebook from 'react-jupyter';
+// Do not import the style because this does not work after webpack bundles things for production mode.
+// Instead define the style below
+//import './notebook.css'
 import { Button } from 'reactstrap';
 import '../../node_modules/highlight.js/styles/atom-one-light.css'
-import './notebook.css'
 
 class StyledNotebook extends React.Component {
 
@@ -37,9 +39,23 @@ class StyledNotebook extends React.Component {
   }
 
   render() {
-    return <JupyterNotebook ref={c => {this.notebook = c}}
-      notebook={this.props.notebook}
-      showCode={this.props.showCode || true} />
+    const notebookStyle = `
+    .showCode .input:before {
+      content: "";
+    }
+
+    .showCode .output:before {
+      content: "";
+    }`;
+    return [
+      <style key="notebook-style">{notebookStyle}</style>,
+      <JupyterNotebook
+        key="notebook"
+        ref={c => {this.notebook = c}}
+        defaultStyle={false}
+        loadMathjax={false}
+        notebook={this.props.notebook}
+        showCode={this.props.showCode} />]
   }
 }
 
