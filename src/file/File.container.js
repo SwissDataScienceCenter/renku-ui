@@ -17,7 +17,8 @@
  */
 
 import React, { Component } from 'react';
-import ReactMarkdown from 'react-markdown'
+import ReactMarkdown from 'react-markdown';
+import ReactDOM from 'react-dom';
 import hljs from 'highlight.js'
 
 import { JupyterNotebookPresent, LaunchNotebookButton } from './File.present';
