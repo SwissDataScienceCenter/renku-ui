@@ -1,15 +1,23 @@
-language: node_js
+notifications:
+  email: false
 
-node_js:
-  - lts/*
+sudo: required
 
-sudo: true
+services:
+  - docker
+
+language: python
+
+python:
+  - 3.6
 
 env:
   global:
     - DOCKER_LABEL=$TRAVIS_BRANCH
     - DOCKER_PUSH_LATEST=true
     - DOCKER_REPOSITORY=rengahub/
+    - HELM_URL=https://storage.googleapis.com/kubernetes-helm
+    - HELM_TGZ=helm-v2.8.2-linux-amd64.tar.gz
 
 git:
   depth: false
@@ -18,22 +26,62 @@ cache:
   directories:
   - node_modules
 
+addons:
+  apt:
+    packages:
+      - nodejs
+
+before_install:
+  # Make sure the node LTS is installed and used.
+  - "nvm install 'lts/*'; nvm use 'lts/*'"
+  # Setup ssh keys for pushing to helm-charts repo.
+  - openssl aes-256-cbc -K $encrypted_5c6845b5ee69_key -iv $encrypted_5c6845b5ee69_iv -in github_deploy_key.enc -out github_deploy_key -d
+  - chmod 600 github_deploy_key
+  - eval $(ssh-agent -s)
+  - ssh-add github_deploy_key
+  # Login to a Docker registry.
+  - make login
+
+install:
+  - travis_retry pip install -U pip
+  - travis_retry pip install -e git+https://github.com/jirikuncar/chartpress#egg=chartpress
+  # Installing Helm
+  - wget -q ${HELM_URL}/${HELM_TGZ}
+  - tar xzfv ${HELM_TGZ}
+  - PATH=`pwd`/linux-amd64/:$PATH
+  - helm init --client-only
+
 script:
   - make tag/renga-ui
   # FIXME - once tests are passing, uncomment below
   # - make test/renga-ui
+  - helm lint helm-chart/renga-ui -f helm-chart/minikube-values.yaml
 
 deploy:
   - provider: script
     skip_cleanup: true
-    script:
-    - make login push-docker-images
+    script: make push-docker-images
     on:
       branch: master
 
   - provider: script
     skip_cleanup: true
-    script:
-    - make login push-docker-images
+    script: >-
+      cd helm-chart;
+      chartpress --commit-range "${TRAVIS_COMMIT_RANGE}" --push --publish-chart;
+      git diff;
+      cd ..
     on:
-      branch: development
+      branch:
+        - development
+      tags: false
+
+  - provider: script
+    skip_cleanup: true
+    script: >-
+      cd helm-chart;
+      chartpress --commit-range "${TRAVIS_COMMIT_RANGE}" --push --publish-chart --tag ${TRAVIS_TAG};
+      git diff;
+      cd ..
+    on:
+      tags: true
