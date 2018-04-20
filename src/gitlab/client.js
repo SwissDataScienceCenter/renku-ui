@@ -135,7 +135,17 @@ export default class GitlabClient {
 
   getProjectReadme(projectId) {
     return this.getRepositoryFile(projectId, 'README.md', 'master', 'raw')
-      .then(text => ({text}))
+      .then(text => {
+        // TODO: This is a temporary fix until better error handling is implemented.
+        if(text === '{"message":"404 Commit Not Found"}') {
+          return {
+            text: 'This repository seems to be empty. Why don\'t you start by committing a README.md file?'
+          }
+        }
+        else {
+          return {text}
+        }
+      })
   }
 
   getProjectFile(projectId, path) {
