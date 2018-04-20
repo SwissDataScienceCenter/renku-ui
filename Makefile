@@ -56,7 +56,7 @@ test/%: tag/%
 	docker run -e CI=true $(DOCKER_PREFIX)$(notdir $@):$(DOCKER_LABEL) ./run-tests.sh
 
 login:
-	@docker login -u="${DOCKER_USERNAME}" -p="${DOCKER_PASSWORD}" ${DOCKER_REGISTRY}
+	@echo "${DOCKER_PASSWORD}" | docker login -u="${DOCKER_USERNAME}" --password-stdin ${DOCKER_REGISTRY}
 
 dev:
 	@echo "You might want to edit ''./public/config.json'. Happy Hacking!!!"
