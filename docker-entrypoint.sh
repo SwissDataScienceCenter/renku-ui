@@ -19,6 +19,7 @@
 echo "==================================================="
 echo " Configuration:"
 echo " GITLAB_URL=${GITLAB_URL:-http://gitlab.renga.build}"
+echo " GITLAB_CLIENT_ID=${GITLAB_CLIENT_ID:-renga-ui}"
 echo " BASE_URL=${BASE_URL:-http://renga.build}"
 echo "==================================================="
 
@@ -26,7 +27,7 @@ tee > /usr/share/nginx/html/config.json << EOF
 {
   "BASE_URL": "${BASE_URL:-http://renga.build}",
   "GITLAB_URL": "${GITLAB_URL:-http://gitlab.renga.build}",
-  "GITLAB_CLIENT_ID": "renga-ui"
+  "GITLAB_CLIENT_ID": "${GITLAB_CLIENT_ID:-renga-ui}"
 }
 EOF
 
