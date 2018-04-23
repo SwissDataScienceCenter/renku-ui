@@ -67,21 +67,10 @@ deploy:
   - provider: script
     skip_cleanup: true
     script: >-
-      cd helm-chart;
-      chartpress --commit-range "${TRAVIS_COMMIT_RANGE}" --push --publish-chart;
-      git diff;
-      cd ..
-    on:
-      branch:
-        - development
-      tags: false
-
-  - provider: script
-    skip_cleanup: true
-    script: >-
+      make push-docker-images;
       cd helm-chart;
       chartpress --commit-range "${TRAVIS_COMMIT_RANGE}" --push --publish-chart --tag ${TRAVIS_TAG};
       git diff;
       cd ..
     on:
-      tags: true
+      branch: development
