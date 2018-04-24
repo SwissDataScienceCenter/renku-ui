@@ -25,6 +25,7 @@
 
 import { combineReducers } from 'redux'
 import { UserState } from '../app-state';
+import { API_ERRORS } from '../gitlab/errors';
 
 function displayIdFromTitle(title) {
   // title.Author: Alex K. - https://stackoverflow.com/users/246342/alex-k
@@ -141,7 +142,14 @@ const View = { Core, Visibility, Data,
     const entity = 'readme';
     return (dispatch) => {
       dispatch(View.request(entity));
-      client.getProjectReadme(id).then(d => dispatch(View.receive(d, entity)))
+      client.getProjectReadme(id)
+        .then(d => dispatch(View.receive(d, entity)))
+        .catch(error => {
+          console.error(error.case);
+          if (error.case === API_ERRORS.notFoundError) {
+            return dispatch(View.receive({text: 'No readme file found.'}, entity))
+          }
+        })
     }
   },
   setTags: (client, id, name, tags) => {
@@ -209,7 +217,9 @@ const List = {
   fetch: (client) => {
     return (dispatch) => {
       dispatch(List.request());
-      client.getProjects().then(d => dispatch(List.receive(d)))
+      client.getProjects()
+        .then(d => dispatch(List.receive(d)))
+        .catch(() => dispatch(List.receive([])));
     }
   },
   request: () => {

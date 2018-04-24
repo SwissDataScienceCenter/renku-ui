@@ -1,3 +1,5 @@
+import {alertAPIErrors, API_ERRORS, rengaFetch} from './errors';
+
 const SPECIAL_FOLDERS = {
   data: 'data',
   notebooks: 'notebooks',
@@ -5,7 +7,7 @@ const SPECIAL_FOLDERS = {
 };
 
 
-export default class GitlabClient {
+class GitlabClient {
 
   // GitLab api client for Renga. Note that we do some
   // renaming of GitLab resources within this client:
@@ -27,32 +29,27 @@ export default class GitlabClient {
     };
     if (this._tokenType === 'private') headers['Private-Token'] = this._token;
     if (this._tokenType === 'bearer') headers['Authorization'] = `Bearer ${this._token}`;
-
-    return  new Headers(headers)
+    return new Headers(headers);
   }
 
   getProjects(queryParams={}) {
     let headers = this.getBasicHeaders();
-
     const url = new URL(this._baseUrl + 'projects');
     Object.keys(queryParams).forEach((key) => url.searchParams.append(key, queryParams[key]));
 
-    return fetch(url, {
+    return rengaFetch(url, {
       method: 'GET',
       headers: headers
     })
-      .then(response => response.json())
   }
 
   getProject(projectId, options={}) {
     let headers = this.getBasicHeaders();
-
     const apiPromises = [
-      fetch(this._baseUrl + `projects/${projectId}`, {
+      rengaFetch(this._baseUrl + `projects/${projectId}`, {
         method: 'GET',
         headers: headers
       })
-        .then(response => response.json())
         .then(d => carveProject(d))
     ];
 
@@ -91,12 +88,12 @@ export default class GitlabClient {
     const headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return fetch(this._baseUrl + 'projects', {
+    return rengaFetch(this._baseUrl + 'projects', {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(gitlabProject)
     })
-      .then(response => response.json())
+
   }
 
   setTags(projectId, name, tags) {
@@ -112,11 +109,11 @@ export default class GitlabClient {
     headers.append('Content-Type', 'application/json');
     const endpoint = starred ? 'unstar' : 'star';
 
-    return fetch(this._baseUrl + `projects/${projectId}/${endpoint}`, {
+    return rengaFetch(this._baseUrl + `projects/${projectId}/${endpoint}`, {
       method: 'POST',
       headers: headers,
     })
-      .then(response => response.json())
+
   }
 
   putProjectField(projectId, name, field_name, field_value) {
@@ -129,43 +126,35 @@ export default class GitlabClient {
       headers: headers,
       body: JSON.stringify(putData)
     })
-      .then(response => response.json())
+
   }
 
 
   getProjectReadme(projectId) {
     return this.getRepositoryFile(projectId, 'README.md', 'master', 'raw')
       .then(text => {
-        // TODO: This is a temporary fix until better error handling is implemented.
-        if(text === '{"message":"404 Commit Not Found"}') {
-          return {
-            text: 'This repository seems to be empty. Why don\'t you start by committing a README.md file?'
-          }
-        }
-        else {
-          return {text}
-        }
-      })
+        return {text: text || 'Could not find a README.md file. Why don\'t you add one to the repository?'}
+      });
   }
+
 
   getProjectFile(projectId, path) {
     let headers = this.getBasicHeaders();
     const encodedPath = encodeURIComponent(path);
-    return fetch(this._baseUrl + `projects/${projectId}/repository/files/${encodedPath}/raw?ref=master`, {
+    return rengaFetch(this._baseUrl + `projects/${projectId}/repository/files/${encodedPath}/raw?ref=master`, {
       method: 'GET',
       headers: headers
-    })
-      .then(response => response.text())
+    }, 'text')
   }
 
   getProjectKus(projectId) {
     let headers = this.getBasicHeaders();
 
-    return fetch(this._baseUrl + `projects/${projectId}/issues`, {
+    return rengaFetch(this._baseUrl + `projects/${projectId}/issues`, {
       method: 'GET',
       headers: headers
     })
-      .then(response => response.json())
+
   }
 
   postProjectKu(projectId, ku) {
@@ -173,59 +162,58 @@ export default class GitlabClient {
     let headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return fetch(this._baseUrl + `projects/${projectId}/issues`, {
+    return rengaFetch(this._baseUrl + `projects/${projectId}/issues`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(ku)
     })
-      .then(response => response.json())
+
   }
 
   getProjectKu(projectId, kuIid) {
     let headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return fetch(this._baseUrl + `projects/${projectId}/issues/${kuIid}/`, {
+    return rengaFetch(this._baseUrl + `projects/${projectId}/issues/${kuIid}/`, {
       method: 'GET',
       headers: headers,
     })
-      .then(response => response.json())
+
   }
 
   getContributions(projectId, kuIid) {
     let headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return fetch(this._baseUrl + `projects/${projectId}/issues/${kuIid}/notes`, {
+    return rengaFetch(this._baseUrl + `projects/${projectId}/issues/${kuIid}/notes`, {
       method: 'GET',
       headers: headers
     })
-      .then(response => response.json())
+
   }
 
   postContribution(projectId, kuIid, contribution) {
     let headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return fetch(this._baseUrl + `projects/${projectId}/issues/${kuIid}/notes`, {
+    return rengaFetch(this._baseUrl + `projects/${projectId}/issues/${kuIid}/notes`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify({body: contribution})
     })
-      .then(response => response.json())
+
   }
 
   _modifiyIssue(projectId, issueIid, body) {
-    console.log(body);
     let headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return fetch(this._baseUrl + `projects/${projectId}/issues/${issueIid}`, {
+    return rengaFetch(this._baseUrl + `projects/${projectId}/issues/${issueIid}`, {
       method: 'PUT',
       headers: headers,
       body: JSON.stringify(body)
     })
-      .then(response => response.json())
+
   }
 
   closeKu(projectId, kuIid) {
@@ -240,16 +228,20 @@ export default class GitlabClient {
     let headers = this.getBasicHeaders();
     const pathEncoded = encodeURIComponent(path);
     const raw = encoding === 'raw' ? '/raw' : '';
-    return fetch(this._baseUrl + `projects/${projectId}/repository/files/${pathEncoded}${raw}?ref=${ref}`, {
+    return rengaFetch(this._baseUrl + `projects/${projectId}/repository/files/${pathEncoded}${raw}?ref=${ref}`, {
       method: 'GET',
       headers: headers
-    })
+    }, 'fullResponse', false)
       .then(response => {
         if (encoding === 'raw') return response.text();
         if (encoding === 'base64') return response.json();
-        console.error('Unknown encoding');
       })
-      .catch(error => {console.log(error)})
+      // .catch((error) => {
+      //   if (error.case === API_ERRORS.notFoundError) {
+      //     console.error(`Attempted to access non-existing repository file ${path}`)
+      //     return undefined;
+      //   }
+      // })
   }
 
   getRepositoryTree(projectId, {path='', recursive=false, per_page=100, page = 1, previousResults=[]} = {}) {
@@ -265,44 +257,44 @@ export default class GitlabClient {
     Object.keys(queryParams).forEach((key) => url.searchParams.append(key, queryParams[key]));
 
     // TODO: Think about general pagination strategy for API client.
-    return fetch(url, {
+    return rengaFetch(url, {
       method: 'GET',
       headers: headers
-    })
+    }, 'fullResponse', false)
       .then(response => {
-        // I think the expected behaviour for the absence
-        // of a tree should be an empty array.
-        if (response.status === 404) {
-          return [];
+        if(response.headers.get('X-Next-Page')) {
+          return response.json().then(data => {
+            return this.getRepositoryTree(projectId, {
+              path,
+              recursive,
+              per_page,
+              previousResults: previousResults.concat(data),
+              page: response.headers.get('X-Next-Page')
+            }, 'fullResponse', false)
+          });
         }
         else {
-          if(response.headers.get('X-Next-Page')) {
-            return response.json().then(data => {
-              return this.getRepositoryTree(projectId, {
-                path,
-                recursive,
-                per_page,
-                previousResults: previousResults.concat(data),
-                page: response.headers.get('X-Next-Page')
-              })
-            });
-          }
-          else {
-            return response.json().then(data => {
-              return previousResults.concat(data)
-            });
-          }
+          return response.json().then(data => {
+            return previousResults.concat(data)
+          });
+        }
+      })
+      .catch((error) => {
+        if (error.case === API_ERRORS.notFoundError) {
+          return []
+        }
+        else {
+          alertAPIErrors(error);
         }
       })
   }
 
   getDeploymentUrl(projectId, envName, branchName = 'master') {
     let headers = this.getBasicHeaders();
-    return fetch(this._baseUrl + `projects/${projectId}/environments`, {
+    return rengaFetch(this._baseUrl + `projects/${projectId}/environments`, {
       method: 'GET',
       headers: headers
     })
-      .then(response => response.json())
       .then(envs => envs.filter(env => env.name === `${envName}/${branchName}`)[0])
       .then(env => {
         if (!env) return undefined;
@@ -314,11 +306,11 @@ export default class GitlabClient {
 
   getArtifactsUrl(projectId, job, branch='master') {
     const headers = this.getBasicHeaders();
-    return fetch(`${this._baseUrl}projects/${projectId}/jobs`, {
+    return rengaFetch(`${this._baseUrl}projects/${projectId}/jobs`, {
       method: 'GET',
       headers: headers
     })
-      .then(response => response.json())
+
       .then(jobs => {
         const filteredJobs = jobs.filter(j => j.name === job && j.ref === branch);
         if (filteredJobs.length < 1)
@@ -336,17 +328,17 @@ export default class GitlabClient {
     return this.getArtifactsUrl(projectId, job, branch)
       .then(url => {
         const resourceUrl = `${url}/${artifact}`;
-        return Promise.all([resourceUrl, fetch(resourceUrl, options)])
+        return Promise.all([resourceUrl, rengaFetch(resourceUrl, options)])
       })
   }
 
   getUser() {
     let headers = this.getBasicHeaders();
-    return fetch(this._baseUrl + 'user', {
+    return rengaFetch(this._baseUrl + 'user', {
       method: 'GET',
       headers: headers
     })
-      .then(response => response.json())
+
   }
 }
 
@@ -372,4 +364,4 @@ function carveProject(projectJson) {
   return result;
 }
 
-export { carveProject };
+export { GitlabClient, carveProject };
