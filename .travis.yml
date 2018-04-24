@@ -69,7 +69,7 @@ deploy:
     script: >-
       make push-docker-images;
       cd helm-chart;
-      chartpress --commit-range "${TRAVIS_COMMIT_RANGE}" --push --publish-chart --tag ${TRAVIS_TAG};
+      chartpress --commit-range "${TRAVIS_COMMIT_RANGE}" --push --publish-chart;
       git diff;
       cd ..
     on:
