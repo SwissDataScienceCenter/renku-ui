@@ -35,6 +35,10 @@ replicaCount: 1
 # baseUrl: "http://127.0.0.1:8080"
 ## Set to a custom GitLab URL if deployed manually
 # gitlabUrl: "http://gitlab.renga.build"
+## Configure application ID from "{{ gitlabUrl }}/oauth/application"
+## by setting redirect URL to "{{ baseUrl }}/login/redirect/gitlab"
+## and set the application ID as the "gitlabClientId" chart value.
+# gitlabClientId: "renga-ui"
 
 image:
   name: rengahub/renga-ui

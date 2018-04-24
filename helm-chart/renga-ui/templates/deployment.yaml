@@ -30,10 +30,12 @@ spec:
               containerPort: {{ .Values.service.port }}
               protocol: TCP
           env:
-            - name: GITLAB_URL
-              value: {{ .Values.gitlabUrl | default (printf "%s://gitlab.%s" (include "renga-ui.protocol" .) .Values.global.renga.domain) | quote }}
             - name: BASE_URL
               value: {{ .Values.baseUrl | default (printf "%s://%s" (include "renga-ui.protocol" .) .Values.global.renga.domain) | quote }}
+            - name: GITLAB_URL
+              value: {{ .Values.gitlabUrl | default (printf "%s://gitlab.%s" (include "renga-ui.protocol" .) .Values.global.renga.domain) | quote }}
+            - name: GITLAB_CLIENT_ID
+              value: {{ .Values.gitlabClientId | default "renga-ui" | quote }}
           livenessProbe:
             httpGet:
               path: /
