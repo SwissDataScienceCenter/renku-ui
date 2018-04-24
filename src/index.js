@@ -8,7 +8,7 @@ import './index.css';
 import App from './App';
 import { AppLoggedOut } from './App';
 import registerServiceWorker from './utils/ServiceWorker';
-import GitlabClient from './gitlab/client'
+import GitlabClient from './gitlab'
 import Cookies from 'universal-cookie'
 import { UserState, reducer} from './app-state';
 
@@ -31,14 +31,9 @@ configPromise.then((res) => {
       const client = new GitlabClient(params.GITLAB_URL + '/api/v4/', cookies.get('gitlab_token'), 'bearer');
 
       // Load the user profile and dispatch the result to the store.
-      client.getUser().then(response => {
-        // TODO: Make the api client throw exceptions on api errors.
-        if (response.message === '401 Unauthorized') {
-          ReactDOM.render(<AppLoggedOut cookies={cookies} params={params}/>,
-            document.getElementById('root'));
-        }
-        else {
-          store.dispatch(UserState.set(response))
+      client.getUser()
+        .then(response => {
+          store.dispatch(UserState.set(response));
           // TODO: Replace this after re-implementation of user state.
           client.getProjects({starred: true})
             .then((projects) => {
@@ -49,14 +44,15 @@ configPromise.then((res) => {
                 }
               });
               store.dispatch(UserState.setStarred(reducedProjects));
-            });
+            })
+            .catch(() => store.dispatch(UserState.setStarred([])));
 
           ReactDOM.render(<App client={client} cookies={cookies} params={params} userState={store}/>,
             document.getElementById('root'));
 
           registerServiceWorker();
-        }
-      });
+        })
+        .catch((error) => console.error(error));
     }
   });
 });
