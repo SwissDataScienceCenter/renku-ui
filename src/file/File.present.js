@@ -68,6 +68,8 @@ class StyledNotebook extends React.Component {
 
 class LaunchNotebookButton extends React.Component {
   render() {
+    if (!this.props.deploymentUrl) return null;
+
     const props = this.props;
     const label = props.label || 'Launch Notebook';
     const className = props.className;
@@ -75,7 +77,7 @@ class LaunchNotebookButton extends React.Component {
       className={className}
       color="primary" onClick={event => {
         event.preventDefault();
-        props.deploymentUrl ? window.open(props.deploymentUrl) : alert('I\'m sorry, this notebook is not deployed')
+        window.open(props.deploymentUrl)
       }}>
       {label}
     </Button>

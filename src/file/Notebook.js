@@ -49,9 +49,8 @@ class Show extends Component {
     if (this.state.notebook == null) return <div>Loading...</div>
     return (<JupyterNotebook
       notebook={this.state.notebook}
-      filePath={this.props.path}
-      client={this.props.client}
-      projectId={this.props.projectId}/>)
+      {...this.props}
+    />)
   }
 }
 

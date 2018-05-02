@@ -31,7 +31,7 @@ class JupyterNotebookContainer extends Component {
   }
 
   componentDidMount() {
-    this.getDetploymentUrl()
+    if (this.props.accessLevel >= 30) this.getDetploymentUrl()
   }
 
   getDetploymentUrl() {
@@ -57,22 +57,19 @@ class LaunchNotebookServerButton extends Component {
   }
 
   componentDidMount() {
-    this.getDetploymentUrl()
+    if (this.props.accessLevel >= 30) this.getDetploymentUrl()
   }
 
   getDetploymentUrl() {
-
     this.props.client.getDeploymentUrl(this.props.projectId, 'review')
       .then(jupyterhubUrl => {
-        if (jupyterhubUrl == null) return null;
         this.setState({deploymentUrl: jupyterhubUrl})
       })
   }
 
   render() {
     return (this.state.deploymentUrl != null) ?
-      <LaunchNotebookButton deploymentUrl={this.state.deploymentUrl} label="Launch Notebook Server" /> :
-      <p></p>
+      <LaunchNotebookButton deploymentUrl={this.state.deploymentUrl} label="Launch Notebook Server" /> : null
   }
 }
 
@@ -145,8 +142,8 @@ class FilePreview extends React.Component {
       return <JupyterNotebookContainer
         notebook={JSON.parse(atob(this.props.file.content))}
         filePath={this.props.file.file_path}
-        projectId={this.props.projectId}
-        client={this.props.client}/>;
+        {...this.props}
+      />;
     }
 
     // File extension not supported
