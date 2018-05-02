@@ -45,8 +45,12 @@ function rengaFetch(url, options, returnType='json', alert=true) {
     })
     // We alert on most errors already here, yet allow to turn this off.
     .catch((error) => {
-      if (alert) alertAPIErrors(error);
-      return Promise.reject(error);
+      if (alert) {
+        alertAPIErrors(error);
+      }
+      else {
+        return Promise.reject(error);
+      }
     })
 }
 
