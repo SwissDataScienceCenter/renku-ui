@@ -109,6 +109,7 @@ class View extends Component {
     const internalId = state.core.id || parseInt(ownProps.match.params.id, 10);
     const starred = this.getStarred(ownProps.userState, internalId);
     const visibilityLevel = state.visibility.level;
+    const accessLevel = state.visibility.accessLevel;
     const externalUrl = state.core.external_url;
     const title = state.core.title || 'no title';
     const description = state.core.description || 'no description';
@@ -133,18 +134,18 @@ class View extends Component {
       key="kus" kuBaseUrl={kusUrl} projectId={internalId}  client={ownProps.client} />
     const kuView = (p) => <Ku.View key="ku" projectId={internalId}
       kuIid={p.match.params.kuIid} {...p} client={ownProps.client} userState={ownProps.userState}
-      updateProjectView={this.forceUpdate.bind(this)}/>
+      updateProjectView={this.forceUpdate.bind(this)} accessLevel={accessLevel}/>
     /* TODO Should we handle each type of file or just have a generic project files viewer? */
     const notebookView = (p) => <Notebook.Show key="notebook"
       projectId={internalId}
       path={`notebooks/${p.match.params.notebookPath}`}
-      client={ownProps.client} {...p} />;
+      client={ownProps.client} {...p} accessLevel={accessLevel}/>;
     const lineageView = (p) => <FileLineage key="lineage"
       projectId={internalId}
       path={`data/${p.match.params.datumPath}`}
       client={ownProps.client} {...p} />
-    const launchNotebookButton = <LaunchNotebookServerButton client={ownProps.client} projectId={internalId} />
-    return {title, description, displayId, internalId, visibilityLevel, project: state,
+    const launchNotebookButton = <LaunchNotebookServerButton client={ownProps.client} projectId={internalId} />;
+    return {title, description, displayId, internalId, visibilityLevel, accessLevel, project: state,
       externalUrl, readmeText, lastActivityAt,
       tag_list, star_count, starred, ssh_url, http_url,
       overviewUrl,

@@ -328,7 +328,7 @@ class GitlabClient {
     return this.getArtifactsUrl(projectId, job, branch)
       .then(url => {
         const resourceUrl = `${url}/${artifact}`;
-        return Promise.all([resourceUrl, rengaFetch(resourceUrl, options)])
+        return Promise.all([resourceUrl, rengaFetch(resourceUrl, options, 'fullResponse')])
       })
   }
 
@@ -346,6 +346,9 @@ class GitlabClient {
 function carveProject(projectJson) {
   const result = {metadata: {core: {}, visibility: {}, system: {}}, all: projectJson};
   result['metadata']['visibility']['level'] = projectJson['visibility'];
+
+  const projectAccess  = projectJson['permissions']['project_access'];
+  result['metadata']['visibility']['accessLevel'] = !projectAccess ? 0 : projectAccess.access_level;
 
   result['metadata']['core']['created_at'] = projectJson['created_at'];
   result['metadata']['core']['last_activity_at'] = projectJson['last_activity_at'];

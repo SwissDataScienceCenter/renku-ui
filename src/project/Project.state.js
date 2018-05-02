@@ -80,8 +80,8 @@ const Files = {
 }
 
 const Visibility = {
-  set: (level) => {
-    return createSetAction('visibility', 'level', level)
+  set: (field, value) => {
+    return createSetAction('visibility', field, value);
   },
   reduce: (state, action) => {
     return reduceState('visibility', state, action, {level: 'public'})

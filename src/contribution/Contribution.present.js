@@ -78,9 +78,9 @@ class ContributionBody extends React.Component {
               <div className="expanded-reference">
                 <FilePreview
                   file={block.data}
-                  client={this.props.client}
-                  projectId={this.props.projectId}
-                  springConfig={{STIFFNESS, DAMPING}}/>
+                  {...this.props}
+                  springConfig={{STIFFNESS, DAMPING}}
+                />
               </div>
             </Collapse>
           </span>);

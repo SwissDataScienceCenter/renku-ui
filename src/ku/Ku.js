@@ -161,7 +161,7 @@ class KuViewHeader extends Component {
 const KuViewContributions = (props) => props.contributions
   .sort((el1, el2) => el1.created_at > el2.created_at ? 1 : -1)
   .filter(c => c.system !== true)
-  .map(cont => <Contribution key={cont.id} contribution={cont} client={props.client} projectId={props.projectId}/>);
+  .map(cont => <Contribution key={cont.id} contribution={cont} {...props}/>);
 
 
 class KuView extends Component {
