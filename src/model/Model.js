@@ -36,9 +36,9 @@
 // TODO: Maybe use [jsdoc](http://usejsdoc.org/) here?
 
 import immutableUpdate from 'immutability-helper';
-import { Component } from 'react';
-// Todo: Resolve dependency from our custom store
-import { createStore } from '../utils/EnhancedState';
+// import { Component } from 'react';
+// // Todo: Resolve dependency from our custom store
+// import { createStore } from '../utils/EnhancedState';
 
 
 const PropertyName = {
@@ -205,83 +205,60 @@ class StateModel {
   validate() {
     return this.schema.validate(this.get())
   }
+
+  mapStateToProps = _mapStateToProps.bind(this);
+
+  subModel = (path) => new SubModel(this, path);
+
 }
 
-
+// Note that the SubModel can not be implemented as a child class as an instance of a SubModel
+// can not be created without an already existing instance of a Model.
 class SubModel {
   constructor(model, path) {
-    this.get = (propAccessorString) => {
-      const fullPropAccessorString = path + (propAccessorString ? '.' + propAccessorString : '');
-      return model.get(fullPropAccessorString);
-    };
-    this.setOne = (propAccessorString, value) => model.setOne(path + '.' + propAccessorString, value);
-    this.set = (obj) => {
-      const fullObj = {};
-      let leafObj = fullObj;
-      path.split('.').forEach((prop) => {
-        leafObj[prop] = {};
-        leafObj = leafObj[prop];
-      });
-      Object.keys(obj).forEach((prop) => leafObj[prop] = obj[prop]);
-      model.set(fullObj);
-    };
-    this.setUpdating = (options) => {
-      const fullOptions = {};
-      let leafOptions = fullOptions;
-      path.split('.').forEach((prop) => {
-        leafOptions[prop] = {};
-        leafOptions = leafOptions[prop];
-      });
-      Object.keys(options).forEach((prop) => leafOptions[prop] = options[prop]);
-      model.setUpdating(fullOptions);
-    }
-  }
-}
-
-// The following functions are not exported and probably never called directly, we use
-// them to define schema/model object methods.
-
-// A regular react component, enriched with some stateModel boilerplate.
-class StateModelComponent extends Component {
-
-  constructor(props, schema, stateBindings, initialState) {
-    super(props);
-    this.schema = schema;
-    if (stateBindings === StateKind.REDUX) {
-      this.store = createStore(this.schema.reducer());
-      this.model = new StateModel(this.schema, this.store, stateBindings, initialState);
-    }
-    else if (stateBindings === StateKind.REACT) {
-      this.model = new StateModel(this.schema, this, stateBindings, initialState);
-    }
+    this.reduxStore = model.reduxStore;
+    this.reactComponent = model.reactComponent;
+    this.stateBinding = model.stateBinding;
+    this.baseModel = model;
+    this.baseModelPath = path;
   }
 
-  // We map the entire state tree to props.
-  mapStateToProps = (state, ownProps) => {
-    if (this.model instanceof SubModel) {
-      return {...state}
-    }
-    else {
-      return {...state, ...ownProps}
-    }
-  };
-}
-
-// We provide a StateModelSubComponent which must be passed a model and a path
-// as props. From these, a SubModel is created which allows convenient access
-// to the inherited state.
-class StateModelSubComponent extends Component {
-  constructor(props) {
-    super(props);
-    this.model = new SubModel(this.props.model, this.props.path);
-
-    // We provide a default implementation of mapStateToProps which returns the
-    // sub-region of the entire store tree.
-    this.mapStateToProps = (state, ownProps) => {
-      return {...nestedPropertyAccess(this.props.path, state), ...ownProps}
-    }
+  get(propAccessorString) {
+    const fullPropAccessorString = this.baseModelPath + (propAccessorString ? '.' + propAccessorString : '');
+    return this.baseModel.get(fullPropAccessorString);
   }
+
+  setOne(propAccessorString, value) {
+    this.baseModel.setOne(this.baseModelPath + '.' + propAccessorString, value);
+  }
+
+  set(obj) {
+    const fullObj = {};
+    let leafObj = fullObj;
+    this.baseModelPath.split('.').forEach((prop) => {
+      leafObj[prop] = {};
+      leafObj = leafObj[prop];
+    });
+    Object.keys(obj).forEach((prop) => leafObj[prop] = obj[prop]);
+    this.baseModel.set(fullObj);
+  }
+
+  setUpdating(options) {
+    const fullOptions = {};
+    let leafOptions = fullOptions;
+    this.baseModelPath.split('.').forEach((prop) => {
+      leafOptions[prop] = {};
+      leafOptions = leafOptions[prop];
+    });
+    Object.keys(options).forEach((prop) => leafOptions[prop] = options[prop]);
+    this.baseModel.setUpdating(fullOptions);
+  }
+
+  mapStateToProps = _mapStateToProps.bind(this);
+
+  subModel = (path) => new SubModel(this.baseModel, this.baseModelPath + '.' + path);
 }
+
 
 // The following functions are not exported and probably never called directly, we use
 // them to define Schema / StateModel object methods.
@@ -460,4 +437,10 @@ function modelUpdateReducer(state, action) {
   return state
 }
 
-export { Schema, StateModel, StateModelComponent, StateKind , SubModel, StateModelSubComponent}
+// A default mapStateToProps. Note that this needs to be bound.
+function _mapStateToProps(state, ownProps) {
+  return {...this.get(), ...ownProps};
+}
+
+
+export { Schema, StateModel, StateKind , SubModel}

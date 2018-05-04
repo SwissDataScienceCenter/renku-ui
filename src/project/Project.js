@@ -26,7 +26,7 @@
 import React, { Component } from 'react';
 import { Provider, connect } from 'react-redux'
 
-import { StateKind, StateModelComponent } from '../model/Model';
+import { StateKind, StateModel } from '../model/Model';
 import { projectSchema} from '../model/RengaModels';
 import { createStore } from '../utils/EnhancedState'
 import { slugFromTitle } from '../utils/HelperFunctions';
@@ -38,9 +38,12 @@ import { FileLineage, LaunchNotebookServerButton } from '../file'
 import { ACCESS_LEVELS } from '../gitlab';
 
 
-class New extends StateModelComponent {
+
+class New extends Component {
   constructor(props) {
     super(props, projectSchema, StateKind.REDUX);
+    this.newProjectStore = createStore(projectSchema.reducer());
+    this.newProject = new StateModel(projectSchema, this.newProjectStore, StateKind.REDUX);
     this.handlers = {
       onSubmit: this.onSubmit.bind(this),
       onTitleChange: this.onTitleChange.bind(this),
@@ -50,9 +53,9 @@ class New extends StateModelComponent {
   }
 
   onSubmit = () => {
-    const validation = this.model.validate()
+    const validation = this.newProject.validate()
     if (validation.result) {
-      this.props.client.postProject(this.model.get()).then((project) => {
+      this.props.client.postProject(this.newProject.get()).then((project) => {
         this.props.history.push(`/projects/${project.id}`);
       })
     }
@@ -62,20 +65,16 @@ class New extends StateModelComponent {
     }
   };
   onTitleChange = (e) => {
-    this.model.setOne('display.title', e.target.value);
-    this.model.setOne('display.slug', slugFromTitle(e.target.value));
+    this.newProject.setOne('display.title', e.target.value);
+    this.newProject.setOne('display.slug', slugFromTitle(e.target.value));
   };
-  onDescriptionChange = (e) => { this.model.setOne('display.description', e.target.value) };
-  onVisibilityChange = (e) => { this.model.setOne('meta.visibility', e.target.value) };
-  // onDataReferenceChange = (key, e) => { this.model.setOne('reference', key, e.target.value) };
+  onDescriptionChange = (e) => { this.newProject.setOne('display.description', e.target.value) };
+  onVisibilityChange = (e) => { this.newProject.setOne('meta.visibility', e.target.value) };
+  // onDataReferenceChange = (key, e) => { this.newProject.setOne('reference', key, e.target.value) };
 
   render() {
-    const VisibleNewProject = connect(this.mapStateToProps)(Present.ProjectNew);
-    return [
-      <Provider key="new" store={this.store}>
-        <VisibleNewProject handlers={this.handlers} />
-      </Provider>
-    ]
+    const ConnectedNewProject = connect(this.newProject.mapStateToProps)(Present.ProjectNew);
+    return <ConnectedNewProject handlers={this.handlers} store={this.newProjectStore}/>;
   }
 }
 
@@ -180,14 +179,16 @@ class View extends Component {
   render() {
     const VisibleProjectView = connect(this.mapStateToProps.bind(this),
       this.mapDispatchToProps.bind(this))(Present.ProjectView);
-    return (
+    return [
       <Provider key="view" store={this.store}>
         <VisibleProjectView
           client={this.props.client}
           userState={this.props.userState}
           match={this.props.match}
         />
-      </Provider>)
+      </Provider>,
+      <Example/>
+    ]
   }
 }
 
