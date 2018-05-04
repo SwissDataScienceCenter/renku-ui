@@ -27,6 +27,7 @@ class GitlabClient {
     let headers = {
       'Accept': 'application/json'
     };
+    if (!this._token) return new Headers(headers);
     if (this._tokenType === 'private') headers['Private-Token'] = this._token;
     if (this._tokenType === 'bearer') headers['Authorization'] = `Bearer ${this._token}`;
     return new Headers(headers);
@@ -150,7 +151,7 @@ class GitlabClient {
   getProjectKus(projectId) {
     let headers = this.getBasicHeaders();
 
-    return rengaFetch(this._baseUrl + `projects/${projectId}/issues`, {
+    return rengaFetch(this._baseUrl + `projects/${projectId}/issues?scope=all`, {
       method: 'GET',
       headers: headers
     })
@@ -312,6 +313,7 @@ class GitlabClient {
     })
 
       .then(jobs => {
+        if (!jobs) return;
         const filteredJobs = jobs.filter(j => j.name === job && j.ref === branch);
         if (filteredJobs.length < 1)
           throw new Error(`There are no artifacts for project/job (${projectId}/${job}) because there are no jobs`);
@@ -327,6 +329,8 @@ class GitlabClient {
     const options = { method: 'GET', headers: this.getBasicHeaders() };
     return this.getArtifactsUrl(projectId, job, branch)
       .then(url => {
+        // If the url is undefined, we return an object with a dummy text() method.
+        if (!url) return ['', {text: () => ''}];
         const resourceUrl = `${url}/${artifact}`;
         return Promise.all([resourceUrl, rengaFetch(resourceUrl, options, 'fullResponse')])
       })
@@ -347,8 +351,14 @@ function carveProject(projectJson) {
   const result = {metadata: {core: {}, visibility: {}, system: {}}, all: projectJson};
   result['metadata']['visibility']['level'] = projectJson['visibility'];
 
-  const projectAccess  = projectJson['permissions']['project_access'];
-  result['metadata']['visibility']['accessLevel'] = !projectAccess ? 0 : projectAccess.access_level;
+  // We use try and catch here because the command can go wrong at various levels permissions, project_access, ...
+  try {
+    result['metadata']['visibility']['accessLevel'] = projectJson.permissions.project_access.access_level
+  }
+  catch (TypeError) {
+    result['metadata']['visibility']['accessLevel'] = 0
+  }
+
 
   result['metadata']['core']['created_at'] = projectJson['created_at'];
   result['metadata']['core']['last_activity_at'] = projectJson['last_activity_at'];

@@ -81,6 +81,8 @@ class RengaNavBar extends Component {
     if (null != nextRoute) this.props.history.push(nextRoute);
   }
   render() {
+    const userState = this.props.userState.getState();
+    const loggedIn =  Object.keys(userState.user || {}).length > 0;
 
     // Display the Ku related header options only if a project is active.
     const activeProjectId = getActiveProjectId(this.props.location.pathname);
@@ -129,8 +131,8 @@ class RengaNavBar extends Component {
                   {this.props.userAvatar}
                 </a>
                 <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                  <RengaNavLink to="/user" title="Profile" />
-                  <RengaNavLink to="/logout" title="Logout" />
+                  {loggedIn ? <RengaNavLink to="/user" title="Profile" /> : null }
+                  {loggedIn ? <RengaNavLink to="/logout" title="Logout" /> : <RengaNavLink to="/login" title="Login" />}
                 </div>
               </li>
             </ul>
@@ -159,7 +161,7 @@ class App extends Component {
     return (
       <Router>
         <div>
-          <Route render={props => <RengaNavBar userAvatar={userAvatar} {...props} />} />
+          <Route render={props => <RengaNavBar userAvatar={userAvatar} {...props} {...this.props}/>} />
           <main role="main" className="container-fluid">
             <div key="gap">&nbsp;</div>
             <Switch>
@@ -168,8 +170,10 @@ class App extends Component {
               <Route exact strict path="/*(\d+)" render={props => <Redirect to={`${props.location.pathname}/`}/>}/>
               <Route exact path="/logout"
                 render={p => <Login.Logout key="logout" {...p} {...this.props} />} />
+              <Route exact path="/login"  render = {
+                p => <Login.Login key="login" {...p} {...this.props}/>} />
               <Route exact path="/login/redirect/gitlab"
-                render={p => <Login.GitlabRedirect key="gitlabRedirect" {...p} cookies={this.props.cookies}/>} />
+                render={p => <Login.GitlabRedirect key="gitlabRedirect" {...p} {...this.props}/>} />
               <Route exact path="/"
                 render={p => <Landing.Home key="landing" userState={this.props.userState} {...p} />} />
               <Route exact path="/projects"
@@ -194,31 +198,5 @@ class App extends Component {
   }
 }
 
-class AppLoggedOut extends Component {
-  // We have two special routes which are allowed when logged out:
-  // 1. gitlab redirect route to obtain a token
-  // 2. logged-out route which is shown after logout.
-  // Everything else will try to log the user in automatically.
-  render() {
-    return (
-      <Router>
-        <div>
-          <main role="main" className="container-fluid">
-            <div key="gap">&nbsp;</div>
-            <Switch>
-              <Route exact path="/login/redirect/gitlab"
-                render={p => <Login.GitlabRedirect key="gitlabRedirect" {...p} cookies={this.props.cookies}/>} />
-              <Route path="/"  render = {
-                p => <Login.Login key="login" {...p} {...this.props}/>
-              } />
-            </Switch>
-          </main>
-          <Route component={RengaFooter} />
-        </div>
-      </Router>
-    );
-  }
-}
-
 export default App;
-export { getActiveProjectId, AppLoggedOut };
+export { getActiveProjectId };

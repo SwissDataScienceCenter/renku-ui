@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { connect } from 'react-redux'
 import { createStore } from './utils/EnhancedState';
 import 'font-awesome/css/font-awesome.min.css';
 // Use our version of bootstrap, not the one in import 'bootstrap/dist/css/bootstrap.css';
 import './styles/index.css';
 import './index.css';
 import App from './App';
-import { AppLoggedOut } from './App';
 import registerServiceWorker from './utils/ServiceWorker';
 import GitlabClient from './gitlab'
 import Cookies from 'universal-cookie'
@@ -19,18 +19,17 @@ const configPromise = fetch('/config.json');
 configPromise.then((res) => {
   res.json().then((params) => {
 
-    if (!cookies.get('gitlab_token')){
-      ReactDOM.render(<AppLoggedOut cookies={cookies} params={params}/>,
-        document.getElementById('root'));
+    // We use a redux store to hold some global application state.
+    const store = createStore(reducer);
+
+    const client = new GitlabClient(params.GITLAB_URL + '/api/v4/', cookies.get('gitlab_token'), 'bearer');
+
+    function mapStateToProps(state, ownProps){
+      return {...state, ...ownProps}
     }
-    else {
 
-      // We use a redux store to hold some global application state.
-      const store = createStore(reducer);
-
-      const client = new GitlabClient(params.GITLAB_URL + '/api/v4/', cookies.get('gitlab_token'), 'bearer');
-
-      // Load the user profile and dispatch the result to the store.
+    // Load the user profile and dispatch the result to the store.
+    if (client._token){
       client.getUser()
         .then(response => {
           store.dispatch(UserState.set(response));
@@ -47,12 +46,19 @@ configPromise.then((res) => {
             })
             .catch(() => store.dispatch(UserState.setStarred([])));
 
-          ReactDOM.render(<App client={client} cookies={cookies} params={params} userState={store}/>,
-            document.getElementById('root'));
-
-          registerServiceWorker();
         })
         .catch((error) => console.error(error));
     }
+    else {
+      store.dispatch(UserState.set({}));
+    }
+
+    const VisibleApp = connect(mapStateToProps, null, null, {storeKey: 'userState'})(App);
+    ReactDOM.render(
+      <VisibleApp client={client} cookies={cookies} params={params} userState={store}/>,
+      document.getElementById('root')
+    );
+
+    registerServiceWorker()
   });
 });

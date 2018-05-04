@@ -6,7 +6,7 @@ class APIError extends Error {
 
 
 const API_ERRORS = {
-  forbiddenError: 'FORBIDDEN',
+  permissionError: 'NO_PERMISSION',
   notFoundError: 'NOT_FOUND',
   internalServerError: 'SERVER_ERROR',
   networkError: 'NETWORK_PROBLEM'
@@ -24,9 +24,6 @@ function rengaFetch(url, options, returnType='json', alert=true) {
     })
     .then((response) => {
       if (response.status >= 200 && response.status < 300) {
-
-        // Per default we already return the json data to avoid excessive repetition of
-        // .then(response => response.json())
 
         switch (returnType) {
         case 'json':
@@ -60,9 +57,10 @@ function throwAPIErrors(response) {
   let error;
 
   switch (response.status) {
+  case 401:
   case 403:
     error = new APIError();
-    error.case = API_ERRORS.forbiddenError;
+    error.case = API_ERRORS.permissionError;
     break;
   case 404:
     error = new APIError();
@@ -82,8 +80,8 @@ function throwAPIErrors(response) {
 
 function alertAPIErrors(error) {
   switch (error.case) {
-  case API_ERRORS.forbiddenError:
-    alert('You don\'t have the necessary permission to perform this action.');
+  case API_ERRORS.permissionError:
+    alert('You don\'t have the necessary permission to view this information or perform this action.');
     break;
   case API_ERRORS.notFoundError:
     alert('We could not find the requested resource on the server.');
