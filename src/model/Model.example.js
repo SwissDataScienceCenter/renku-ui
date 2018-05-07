@@ -21,23 +21,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
 import {StateKind, Schema, StateModel} from './Model';
-import { createStore } from '../utils/EnhancedState';
 
-// 'Fake' API request.
-function onClickNested() {
-  this.setUpdating({subthing: {age: true}});
-  setTimeout(() => {
-    this.setOne('subthing.age', Math.random())
-  }, 1000);
-}
-
-
-function onClick() {
-  this.setUpdating({age: true});
-  setTimeout(() => {
-    this.setOne('age', Math.random())
-  }, 1000);
-}
 
 const simpleSchema = new Schema({
   name: {initial: 'Jane Doe', mandatory: true},
@@ -49,6 +33,22 @@ const complexSchema = new Schema({
   subthing: {schema: {age: {initial: 0, mandatory: true }}, mandatory: true},
   createdAt: {initial: () => 'right now'}
 });
+
+
+class ComplexModel extends StateModel {
+  constructor(stateBinding, stateHolder, initialState) {
+    super(complexSchema, stateBinding, stateHolder, initialState)
+  }
+
+  // 'Fake' API request
+  updateAge = () => {
+    this.setUpdating({subthing: {age: true}});
+    setTimeout(() => {
+      this.setOne('subthing.age', Math.random())
+    }, 1000);
+  }
+}
+
 
 class Example extends Component {
   render() {
@@ -84,8 +84,8 @@ class ReduxStateComponent extends Component {
 
   constructor(props) {
     super(props);
-    this.thingStore = createStore(complexSchema.reducer());
-    this.thing = new StateModel(complexSchema, this.thingStore, StateKind.REDUX)
+    //this.thing = new StateModel(complexSchema, StateKind.REDUX)
+    this.thing = new ComplexModel(StateKind.REDUX);
   }
 
   render(){
@@ -96,7 +96,7 @@ class ReduxStateComponent extends Component {
         {/*Here we show the entire redux store and we update a sub-property of it on click*/}
         <ConnectedShowProps
           case="REDUX STATE"
-          onClick={onClickNested.bind(this.thing)}
+          onClick={this.thing.updateAge}
           thingStore={this.thing.reduxStore}
         />
 
@@ -120,7 +120,7 @@ class ReduxSubStateComponent extends Component {
 
     return <ConnectedShowProps
       case="REDUX SUBSTATE"
-      onClick={onClick.bind(subthing)}
+      onClick={subthing.baseModel.updateAge}
       subthingStore={subthing.reduxStore}
     />
   }
@@ -131,7 +131,7 @@ class ReduxSubStateComponent extends Component {
 class ReactStateComponent extends Component {
   constructor(props) {
     super(props);
-    this.thing = new StateModel(complexSchema, this, StateKind.REACT);
+    this.thing = new ComplexModel(StateKind.REACT, this);
   }
 
   render(){
@@ -140,7 +140,7 @@ class ReactStateComponent extends Component {
         case="REACT STATE"
         // The react state can also be passed using {...this.state}, but we use the access using the model
         {...this.thing.get()}
-        onClick={onClickNested.bind(this.thing)}/>
+        onClick={this.thing.updateAge}/>
 
       <ReactSubStateComponent subthing={this.thing.subModel('subthing')} />
     </span>
@@ -152,7 +152,7 @@ class ReactSubStateComponent extends Component {
     return <ShowProps
       case="REACT SUBSTATE"
       {...this.props.subthing.get()}
-      onClick={onClick.bind(this.props.subthing)}/>
+      onClick={this.props.subthing.baseModel.updateAge}/>
   }
 }
 

@@ -159,7 +159,6 @@ class GitlabClient {
   }
 
   postProjectKu(projectId, ku) {
-    console.log(ku);
     let headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 

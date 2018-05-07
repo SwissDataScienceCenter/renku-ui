@@ -33,7 +33,7 @@ import client from '../gitlab/test-client'
 describe('rendering', () => {
   it('renders new without crashing', () => {
     const div = document.createElement('div');
-    ReactDOM.render(<Notebook.Show path="notebooks/test.js" client={client} />, div);
+    ReactDOM.render(<Notebook.Show filePath="notebooks/test.js" client={client} />, div);
   });
 
 });

@@ -36,6 +36,7 @@
 // TODO: Maybe use [jsdoc](http://usejsdoc.org/) here?
 
 import immutableUpdate from 'immutability-helper';
+import {createStore} from "../utils/EnhancedState";
 // import { Component } from 'react';
 // // Todo: Resolve dependency from our custom store
 // import { createStore } from '../utils/EnhancedState';
@@ -116,7 +117,11 @@ class Schema {
 }
 
 class StateModel {
-  constructor(schema, stateHolder, stateBinding, initialState) {
+  constructor(schema, stateBinding, stateHolder, initialState) {
+
+    if (!stateHolder && stateBinding === StateKind.REDUX) {
+      stateHolder = createStore(schema.reducer(), this.constructor.name)
+    }
 
     if (stateBinding === StateKind.REDUX) {
       this.reduxStore = stateHolder;
