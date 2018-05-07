@@ -332,13 +332,16 @@ class ProjectTags extends Component {
   handleSubmit(e) { e.preventDefault(); this.props.onProjectTagsChange(this.state.value); }
 
   render() {
+    const inputField = this.props.readOnly ?
+      <Input readOnly value={this.state.value} /> :
+      <Input value={this.state.value} onChange={this.onValueChange} />
     let submit = (ProjectTags.tagListString(this.props) !== this.state.value) ?
       <Button color="primary">Update</Button> :
       <span></span>
     return <Form onSubmit={this.onSubmit}>
       <FormGroup>
         <Label for="project_tags">Project Tags</Label>
-        <Input value={this.state.value} onChange={this.onValueChange} />
+        {inputField}
         <FormText>Comma-separated list of tags</FormText>
       </FormGroup>
       {submit}
@@ -369,13 +372,16 @@ class ProjectDescription extends Component {
   handleSubmit(e) { e.preventDefault(); this.props.onProjectDescriptionChange(this.state.value); }
 
   render() {
+    const inputField = this.props.readOnly ?
+      <Input readOnly value={this.state.value} /> :
+      <Input value={this.state.value} onChange={this.onValueChange} />;
     let submit = (this.props.description !== this.state.value) ?
       <Button color="primary">Update</Button> :
       <span></span>
     return <Form onSubmit={this.onSubmit}>
       <FormGroup>
         <Label for="project_tags">Project Description</Label>
-        <Input value={this.state.value} onChange={this.onValueChange} />
+        {inputField}
         <FormText>A short description for the project</FormText>
       </FormGroup>
       {submit}
@@ -388,11 +394,11 @@ class ProjectSettings extends Component {
   render() {
     return <Col key="settings" xs={12}>
       <Row>
-        <Col xs={12} md={10} lg={6}><ProjectTags {...this.props} /></Col>
+        <Col xs={12} md={10} lg={6}><ProjectTags {...this.props} readOnly={this.props.accessLevel < 40}/></Col>
         <Col xs={12} md={10} lg={6}><RepositoryUrls {...this.props} /></Col>
       </Row>
       <Row>
-        <Col xs={12} md={10} lg={6}><ProjectDescription {...this.props} /></Col>
+        <Col xs={12} md={10} lg={6}><ProjectDescription {...this.props} readOnly={this.props.accessLevel < 40}/></Col>
       </Row>
     </Col>
   }
