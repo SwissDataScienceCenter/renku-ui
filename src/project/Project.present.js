@@ -390,7 +390,6 @@ class ProjectDescription extends Component {
 }
 
 class ProjectSettings extends Component {
-
   render() {
     return <Col key="settings" xs={12}>
       <Row>
