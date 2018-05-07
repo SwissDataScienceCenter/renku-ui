@@ -67,7 +67,7 @@ class ProjectModel extends StateModel {
   fetchProject = (client, id) => {
     client.getProject(id, {notebooks:true, data:true})
       .then(d => {
-        this.set({
+        this.setObject({
           core: d.metadata.core,
           system: d.metadata.system,
           visibility: d.metadata.visibility,
@@ -78,11 +78,11 @@ class ProjectModel extends StateModel {
 
   fetchReadme = (client, id) => {
     client.getProjectReadme(id)
-      .then(d => this.setOne('data.readme', d))
+      .then(d => this.set('data.readme', d))
       .catch(error => {
         console.log(error.case);
         if (error.case === API_ERRORS.notFoundError) {
-          this.setOne('data.readme.text', 'No readme file found.')
+          this.set('data.readme.text', 'No readme file found.')
         }
       })
   };

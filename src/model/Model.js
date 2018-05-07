@@ -36,7 +36,7 @@
 // TODO: Maybe use [jsdoc](http://usejsdoc.org/) here?
 
 import immutableUpdate from 'immutability-helper';
-import {createStore} from "../utils/EnhancedState";
+import { createStore } from "../utils/EnhancedState";
 // import { Component } from 'react';
 // // Todo: Resolve dependency from our custom store
 // import { createStore } from '../utils/EnhancedState';
@@ -142,7 +142,7 @@ class StateModel {
       this.reactComponent.state = initializedState;
     }
     else if (stateBinding === StateKind.REDUX) {
-      this.set(initializedState);
+      this.setObject(initializedState);
     }
   }
 
@@ -163,7 +163,7 @@ class StateModel {
     }
   }
 
-  setOne(propertyAccessorString, value, callback) {
+  set(propertyAccessorString, value, callback) {
     const updateObj = updateObjectFromString(propertyAccessorString, value);
     this.immutableUpdate(updateObj, callback);
   }
@@ -173,7 +173,7 @@ class StateModel {
     this.immutableUpdate(updateObj);
   }
 
-  set(obj, callback) {
+  setObject(obj, callback) {
     const updateObj = updateObjectFromObject(obj, this.get());
     this.immutableUpdate(updateObj, callback);
   }
@@ -233,11 +233,11 @@ class SubModel {
     return this.baseModel.get(fullPropAccessorString);
   }
 
-  setOne(propAccessorString, value) {
-    this.baseModel.setOne(this.baseModelPath + '.' + propAccessorString, value);
+  set(propAccessorString, value) {
+    this.baseModel.set(this.baseModelPath + '.' + propAccessorString, value);
   }
 
-  set(obj) {
+  setObject(obj) {
     const fullObj = {};
     let leafObj = fullObj;
     this.baseModelPath.split('.').forEach((prop) => {

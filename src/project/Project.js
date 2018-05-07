@@ -65,12 +65,12 @@ class New extends Component {
     }
   };
   onTitleChange = (e) => {
-    this.newProject.setOne('display.title', e.target.value);
-    this.newProject.setOne('display.slug', slugFromTitle(e.target.value));
+    this.newProject.set('display.title', e.target.value);
+    this.newProject.set('display.slug', slugFromTitle(e.target.value));
   };
-  onDescriptionChange = (e) => { this.newProject.setOne('display.description', e.target.value) };
-  onVisibilityChange = (e) => { this.newProject.setOne('meta.visibility', e.target.value) };
-  // onDataReferenceChange = (key, e) => { this.newProject.setOne('reference', key, e.target.value) };
+  onDescriptionChange = (e) => { this.newProject.set('display.description', e.target.value) };
+  onVisibilityChange = (e) => { this.newProject.set('meta.visibility', e.target.value) };
+  // onDataReferenceChange = (key, e) => { this.newProject.setObject('reference', key, e.target.value) };
 
   render() {
     const ConnectedNewProject = connect(this.newProject.mapStateToProps)(Present.ProjectNew);

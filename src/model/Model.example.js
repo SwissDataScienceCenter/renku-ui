@@ -44,7 +44,7 @@ class ComplexModel extends StateModel {
   updateAge = () => {
     this.setUpdating({subthing: {age: true}});
     setTimeout(() => {
-      this.setOne('subthing.age', Math.random())
+      this.set('subthing.age', Math.random())
     }, 1000);
   }
 }

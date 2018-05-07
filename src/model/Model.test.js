@@ -202,8 +202,8 @@ describe('update react state', () => {
     }
 
     componentWillMount() {
-      this.model.setOne('subthing.age', 1);
-      this.model.setOne('simpleThings.0.numbers.2', 2)
+      this.model.set('subthing.age', 1);
+      this.model.set('simpleThings.0.numbers.2', 2)
     }
 
     render(){
@@ -224,13 +224,13 @@ describe('update disconnected redux store', () => {
   it('updates simple instance in redux store', () => {
     const store = createStore(simpleSchema.reducer());
     const simpleModel = new StateModel(simpleSchema, StateKind.REDUX, store);
-    simpleModel.set({name: 'John Doe'});
+    simpleModel.setObject({name: 'John Doe'});
     expect(simpleModel.get()).toEqual({...simpleObject, name: 'John Doe'});
   });
   it('updates complex instance in redux store', () => {
     const store = createStore(complexSchema.reducer());
     const complexModel = new StateModel(complexSchema, StateKind.REDUX, store);
-    complexModel.set({subthing: {age: 1}, simpleThings: {1: {name: 'Jenny'}}});
+    complexModel.setObject({subthing: {age: 1}, simpleThings: {1: {name: 'Jenny'}}});
 
     // Build the more complex comparison Object
     const comparisonObject = {...complexObject, subthing: {age: 1}};
@@ -242,7 +242,7 @@ describe('update disconnected redux store', () => {
   it('updates complex instance in redux store using property accessor syntax', () => {
     const store = createStore(complexSchema.reducer());
     const complexModel = new StateModel(complexSchema, StateKind.REDUX, store);
-    complexModel.setOne('subthing.age', 1);
+    complexModel.set('subthing.age', 1);
     expect(complexModel.get()).toEqual({...complexObject, subthing: {age: 1}});
   });
 });
@@ -256,7 +256,7 @@ describe('update connected redux store', () => {
     }
 
     componentWillMount() {
-      this.model.setOne('subthing.age', 1)
+      this.model.set('subthing.age', 1)
     }
 
     render(){
