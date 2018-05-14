@@ -35,6 +35,7 @@ import State from './Project.state'
 import Ku from '../ku/Ku'
 import Notebook from '../file/Notebook'
 import { FileLineage, LaunchNotebookServerButton } from '../file'
+import { ACCESS_LEVELS } from '../gitlab';
 
 
 class New extends StateModelComponent {
@@ -110,6 +111,7 @@ class View extends Component {
     const starred = this.getStarred(ownProps.userState, internalId);
     const visibilityLevel = state.visibility.level;
     const accessLevel = state.visibility.accessLevel;
+    const settingsReadOnly = state.visibility.accessLevel < ACCESS_LEVELS.MASTER;
     const externalUrl = state.core.external_url;
     const title = state.core.title || 'no title';
     const description = state.core.description || 'no description';
@@ -145,7 +147,7 @@ class View extends Component {
       path={`data/${p.match.params.datumPath}`}
       client={ownProps.client} {...p} />
     const launchNotebookButton = <LaunchNotebookServerButton client={ownProps.client} projectId={internalId} />;
-    return {title, description, displayId, internalId, visibilityLevel, accessLevel, project: state,
+    return {title, description, displayId, internalId, visibilityLevel, accessLevel, settingsReadOnly, project: state,
       externalUrl, readmeText, lastActivityAt,
       tag_list, star_count, starred, ssh_url, http_url,
       overviewUrl,

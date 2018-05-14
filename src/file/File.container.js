@@ -22,6 +22,7 @@ import ReactDOM from 'react-dom';
 import hljs from 'highlight.js'
 
 import { JupyterNotebookPresent, LaunchNotebookButton } from './File.present';
+import { ACCESS_LEVELS } from '../gitlab';
 
 
 class JupyterNotebookContainer extends Component {
@@ -31,7 +32,7 @@ class JupyterNotebookContainer extends Component {
   }
 
   componentDidMount() {
-    if (this.props.accessLevel >= 30) this.getDetploymentUrl()
+    if (this.props.accessLevel >= ACCESS_LEVELS.DEVELOPER) this.getDetploymentUrl()
   }
 
   getDetploymentUrl() {
@@ -57,7 +58,7 @@ class LaunchNotebookServerButton extends Component {
   }
 
   componentDidMount() {
-    if (this.props.accessLevel >= 30) this.getDetploymentUrl()
+    if (this.props.accessLevel >= ACCESS_LEVELS.DEVELOPER) this.getDetploymentUrl()
   }
 
   getDetploymentUrl() {
