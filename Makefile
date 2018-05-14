@@ -31,6 +31,7 @@ GIT_MASTER_HEAD_SHA:=$(shell git rev-parse --short=7 --verify HEAD)
 PLATFORM_DOMAIN?=renku.build
 GITLAB_URL?=http://gitlab.$(PLATFORM_DOMAIN)
 KEYCLOAK_URL?=http://keycloak.$(PLATFORM_DOMAIN):8080
+JUPYTERHUB_URL?=http://jupyterhub.$(PLATFORM_DOMAIN)
 
 tag-docker-images: $(IMAGES:%=tag/%)
 
