@@ -63,6 +63,8 @@ class ProjectModel extends StateModel {
     super(projectSchema, stateBinding, stateHolder, initialState)
   }
 
+  // TODO: Do we really want to re-fetch the entire project on every change?
+
   // TODO: Once state and client are fully adapted to each other, these functions should be trivial
   fetchProject = (client, id) => {
     client.getProject(id, {notebooks:true, data:true})
@@ -77,6 +79,7 @@ class ProjectModel extends StateModel {
   };
 
   fetchReadme = (client, id) => {
+    this.setUpdating({data: {readme: true}});
     client.getProjectReadme(id)
       .then(d => this.set('data.readme', d))
       .catch(error => {
@@ -88,12 +91,14 @@ class ProjectModel extends StateModel {
   };
 
   setTags = (client, id, name, tags) => {
+    this.setUpdating({system: {tag_list: [true]}});
     client.setTags(id, name, tags).then(() => {
       this.fetchProject(client, id);
     })
   };
 
   setDescription = (client, id, name, description) => {
+    this.setUpdating({core: {description: true}});
     client.setDescription(id, name, description).then(() => {
       this.fetchProject(client, id);
     })
