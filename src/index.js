@@ -22,7 +22,12 @@ configPromise.then((res) => {
     // We use a redux store to hold some global application state.
     const store = createStore(reducer);
 
-    const client = new GitlabClient(params.GITLAB_URL + '/api/v4/', cookies.get('gitlab_token'), 'bearer');
+    const client = new GitlabClient(
+      params.GITLAB_URL + '/api/v4/',
+      cookies.get('gitlab_token'),
+      'bearer',
+      params.JUPYTERHUB_URL)
+    ;
 
     function mapStateToProps(state, ownProps){
       return {...state, ...ownProps}

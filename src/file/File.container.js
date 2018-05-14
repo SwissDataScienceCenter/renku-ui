@@ -19,11 +19,20 @@
 import React, { Component } from 'react';
 import ReactMarkdown from 'react-markdown';
 import ReactDOM from 'react-dom';
-import hljs from 'highlight.js'
+import hljs from 'highlight.js';
 
 import { JupyterNotebookPresent, LaunchNotebookButton } from './File.present';
 import { ACCESS_LEVELS } from '../gitlab';
 
+
+function getNotebookServerUrl(component) {
+  component.props.client.getNotebookServerUrl(
+    component.props.projectId,
+    component.props.projectPath,
+    component.props.filePath
+  )
+    .then(notebookUrl => component.setState({deploymentUrl: notebookUrl}));
+}
 
 class JupyterNotebookContainer extends Component {
   constructor(props){
@@ -32,16 +41,7 @@ class JupyterNotebookContainer extends Component {
   }
 
   componentDidMount() {
-    if (this.props.accessLevel >= ACCESS_LEVELS.DEVELOPER) this.getDetploymentUrl()
-  }
-
-  getDetploymentUrl() {
-    this.props.client.getDeploymentUrl(this.props.projectId, 'review')
-      .then(jupyterhubUrl => {
-        const jh = new URL(jupyterhubUrl);
-        const url = `${jh.origin}${jh.pathname}/${this.props.filePath}?${jh.search}`;
-        this.setState({deploymentUrl: url});
-      })
+    if (this.props.accessLevel >= ACCESS_LEVELS.DEVELOPER) getNotebookServerUrl(this);
   }
 
   render() {
@@ -58,14 +58,7 @@ class LaunchNotebookServerButton extends Component {
   }
 
   componentDidMount() {
-    if (this.props.accessLevel >= ACCESS_LEVELS.DEVELOPER) this.getDetploymentUrl()
-  }
-
-  getDetploymentUrl() {
-    this.props.client.getDeploymentUrl(this.props.projectId, 'review')
-      .then(jupyterhubUrl => {
-        this.setState({deploymentUrl: jupyterhubUrl})
-      })
+    if (this.props.accessLevel >= ACCESS_LEVELS.DEVELOPER) getNotebookServerUrl(this);
   }
 
   render() {
