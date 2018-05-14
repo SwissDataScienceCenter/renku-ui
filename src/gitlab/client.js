@@ -159,7 +159,6 @@ class GitlabClient {
   }
 
   postProjectKu(projectId, ku) {
-    console.log(ku);
     let headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
@@ -359,7 +358,7 @@ function carveProject(projectJson) {
     result['metadata']['visibility']['accessLevel'] = 0
   }
 
-
+  
   result['metadata']['core']['created_at'] = projectJson['created_at'];
   result['metadata']['core']['last_activity_at'] = projectJson['last_activity_at'];
   result['metadata']['core']['id'] = projectJson['id'];

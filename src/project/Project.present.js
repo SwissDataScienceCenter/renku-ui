@@ -93,22 +93,19 @@ class ProjectTag extends Component {
 class ProjectViewHeader extends Component {
 
   render() {
-    const title = this.props.title;
-    const lastActivityAt = this.props.lastActivityAt;
-    const tag_list = this.props.tag_list || [];
-    const star_count = this.props.star_count || 0;
+    const core = this.props.core;
+    const system = this.props.system;
     const starButtonText = this.props.starred ? 'unstar' : 'star';
     const starIcon = this.props.starred ? faStarSolid : faStarRegular;
-    const description = this.props.description;
-    const tags = (tag_list.length > 0) ? tag_list.map(t => <ProjectTag key={t} tag={t} />) : <br />;
+    const tags = (system.tag_list.length > 0) ? system.tag_list.map(t => <ProjectTag key={t} tag={t} />) : <br />;
     return (
       <Container fluid>
         <Row>
           <Col xs={12} md={9}>
-            <h1>{title}</h1>
+            <h1>{core.title}</h1>
             <p>
-              <span className="lead">{description}</span> <br />
-              <TimeCaption key="time-caption" time={lastActivityAt} />
+              <span className="lead">{core.description}</span> <br />
+              <TimeCaption key="time-caption" time={core.last_activity_at} />
             </p>
           </Col>
           <Col xs={12} md={3}>
@@ -124,7 +121,7 @@ class ProjectViewHeader extends Component {
                   </button>
                 </div>
                 <input className="form-control border-primary text-right"
-                  placeholder={star_count} aria-label="starCount" readOnly={true}/>
+                  placeholder={system.star_count} aria-label="starCount" readOnly={true}/>
               </form>
             </div>
           </Col>
@@ -182,7 +179,7 @@ class ProjectFilesNav extends Component {
 class ProjectViewReadme extends Component {
 
   render() {
-    const readmeText = this.props.readmeText;
+    const readmeText = this.props.readme.text;
     return (
       <Card className="border-0">
         <CardHeader>README.md</CardHeader>
@@ -218,7 +215,7 @@ class ProjectViewOverview extends Component {
     //   <Col key="readme" sm={12} md={9}><ProjectViewReadme key="readme" {...this.props} /></Col>
     // ]
     // Hide the stats until we can actually get them from the server
-    return <Col key="readme" sm={12} md={9}><ProjectViewReadme key="readme" {...this.props} /></Col>
+    return <Col key="readme" sm={12} md={9}><ProjectViewReadme key="readme" readme={this.props.data.readme} /></Col>
   }
 }
 
@@ -252,12 +249,11 @@ class FileFolderList extends Component {
 
 class ProjectFilesCategorizedList extends Component {
   render() {
-    const project = this.props.project;
     return <Switch>
       <Route path={this.props.notebooksUrl} render={props => {
-        return <FileFolderList paths={project.files.notebooks} emptyView={this.props.launchNotebookButton}/> }
+        return <FileFolderList paths={this.props.files.notebooks} emptyView={this.props.launchNotebookButton}/> }
       } />
-      <Route path={this.props.dataUrl} render={props => <FileFolderList paths={project.files.data} /> } />
+      <Route path={this.props.dataUrl} render={props => <FileFolderList paths={this.props.files.data} /> } />
       <Route render={props => <p>Files</p> } />
     </Switch>
   }
@@ -293,11 +289,11 @@ class RepositoryUrls extends Component {
         <tbody>
           <tr>
             <th scope="row">SSH</th>
-            <td>{this.props.ssh_url}</td>
+            <td>{this.props.system.ssh_url}</td>
           </tr>
           <tr>
             <th scope="row">HTTP</th>
-            <td>{this.props.http_url}</td>
+            <td>{this.props.system.http_url}</td>
           </tr>
         </tbody>
       </Table>
@@ -334,7 +330,7 @@ class ProjectTags extends Component {
   render() {
     const inputField = this.props.settingsReadOnly ?
       <Input readOnly value={this.state.value} /> :
-      <Input value={this.state.value} onChange={this.onValueChange} />
+      <Input value={this.state.value} onChange={this.onValueChange} />;
     let submit = (ProjectTags.tagListString(this.props) !== this.state.value) ?
       <Button color="primary">Update</Button> :
       <span></span>
@@ -358,7 +354,7 @@ class ProjectDescription extends Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    const update = {value: nextProps.description };
+    const update = {value: nextProps.core.description };
     return {...prevState, ...update};
   }
 
@@ -375,7 +371,7 @@ class ProjectDescription extends Component {
     const inputField = this.props.settingsReadOnly ?
       <Input readOnly value={this.state.value} /> :
       <Input value={this.state.value} onChange={this.onValueChange} />;
-    let submit = (this.props.description !== this.state.value) ?
+    let submit = (this.props.core.description !== this.state.value) ?
       <Button color="primary">Update</Button> :
       <span></span>
     return <Form onSubmit={this.onSubmit}>
@@ -390,15 +386,20 @@ class ProjectDescription extends Component {
 }
 
 class ProjectSettings extends Component {
-
   render() {
     return <Col key="settings" xs={12}>
       <Row>
-        <Col xs={12} md={10} lg={6}><ProjectTags {...this.props}/></Col>
+        <Col xs={12} md={10} lg={6}>
+          <ProjectTags tag_list={this.props.system.tag_list}
+            onProjectTagsChange={this.props.onProjectTagsChange}
+            settingsReadOnly={this.props.settingsReadOnly} />
+        </Col>
         <Col xs={12} md={10} lg={6}><RepositoryUrls {...this.props} /></Col>
       </Row>
       <Row>
-        <Col xs={12} md={10} lg={6}><ProjectDescription {...this.props}/></Col>
+        <Col xs={12} md={10} lg={6}>
+          <ProjectDescription {...this.props}/>
+        </Col>
       </Row>
     </Col>
   }

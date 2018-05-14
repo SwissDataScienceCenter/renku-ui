@@ -26,21 +26,24 @@
 import React, { Component } from 'react';
 import { Provider, connect } from 'react-redux'
 
-import { StateKind, StateModelComponent } from '../model/Model';
-import { projectSchema} from '../model/RengaModels';
+import { StateKind, StateModel } from '../model/Model';
+// TODO: ONLY use one projectSchema after the refactoring has been finished.
+import { newProjectSchema } from '../model/RengaModels';
 import { createStore } from '../utils/EnhancedState'
 import { slugFromTitle } from '../utils/HelperFunctions';
 import Present from './Project.present'
 import State from './Project.state'
+import { ProjectModel } from './Project.state'
 import Ku from '../ku/Ku'
 import Notebook from '../file/Notebook'
 import { FileLineage, LaunchNotebookServerButton } from '../file'
 import { ACCESS_LEVELS } from '../gitlab';
 
 
-class New extends StateModelComponent {
+class New extends Component {
   constructor(props) {
-    super(props, projectSchema, StateKind.REDUX);
+    super(props);
+    this.newProject = new StateModel(newProjectSchema, StateKind.REDUX);
     this.handlers = {
       onSubmit: this.onSubmit.bind(this),
       onTitleChange: this.onTitleChange.bind(this),
@@ -50,9 +53,9 @@ class New extends StateModelComponent {
   }
 
   onSubmit = () => {
-    const validation = this.model.validate()
+    const validation = this.newProject.validate()
     if (validation.result) {
-      this.props.client.postProject(this.model.get()).then((project) => {
+      this.props.client.postProject(this.newProject.get()).then((project) => {
         this.props.history.push(`/projects/${project.id}`);
       })
     }
@@ -62,36 +65,29 @@ class New extends StateModelComponent {
     }
   };
   onTitleChange = (e) => {
-    this.model.setOne('display.title', e.target.value);
-    this.model.setOne('display.slug', slugFromTitle(e.target.value));
+    this.newProject.set('display.title', e.target.value);
+    this.newProject.set('display.slug', slugFromTitle(e.target.value));
   };
-  onDescriptionChange = (e) => { this.model.setOne('display.description', e.target.value) };
-  onVisibilityChange = (e) => { this.model.setOne('meta.visibility', e.target.value) };
-  // onDataReferenceChange = (key, e) => { this.model.setOne('reference', key, e.target.value) };
+  onDescriptionChange = (e) => { this.newProject.set('display.description', e.target.value) };
+  onVisibilityChange = (e) => { this.newProject.set('meta.visibility', e.target.value) };
+  // onDataReferenceChange = (key, e) => { this.newProject.setObject('reference', key, e.target.value) };
 
   render() {
-    const VisibleNewProject = connect(this.mapStateToProps)(Present.ProjectNew);
-    return [
-      <Provider key="new" store={this.store}>
-        <VisibleNewProject handlers={this.handlers} />
-      </Provider>
-    ]
+    const ConnectedNewProject = connect(this.newProject.mapStateToProps)(Present.ProjectNew);
+    return <ConnectedNewProject handlers={this.handlers} store={this.newProject.reduxStore}/>;
   }
 }
+
 
 class View extends Component {
   constructor(props) {
     super(props);
-    this.store = createStore(State.View.reducer, 'project details');
+    this.projectState = new ProjectModel(StateKind.REDUX);
   }
 
   componentDidMount() {
-    this.retrieveProject();
-  }
-
-  retrieveProject() {
-    this.store.dispatch(State.View.fetchMetadata(this.props.client, this.props.id));
-    this.store.dispatch(State.View.fetchReadme(this.props.client, this.props.id));
+    this.projectState.fetchProject(this.props.client, this.props.id);
+    this.projectState.fetchReadme(this.props.client, this.props.id);
   }
 
   getStarred(userState, projectId) {
@@ -99,97 +95,89 @@ class View extends Component {
     if (user && user.starredProjects) {
       return user.starredProjects.map((project) => project.id).indexOf(projectId) >= 0
     }
-    else {
-      return undefined
+  }
+
+  subUrls(baseUrl) {
+    return {
+      overviewUrl: `${baseUrl}/`,
+      kusUrl: `${baseUrl}/kus`,
+      kuUrl: `${baseUrl}/kus/:kuIid(\\d+)`,
+      notebooksUrl: `${baseUrl}/notebooks`,
+      notebookUrl: `${baseUrl}/notebooks/:notebookPath`,
+      dataUrl: `${baseUrl}/data`,
+      datumUrl: `${baseUrl}/data/:datumPath+`,
+      settingsUrl: `${baseUrl}/settings`,
     }
   }
 
-  mapStateToProps(state, ownProps) {
-    // Display properties
-    const displayId = state.core.displayId;
-    const internalId = state.core.id || parseInt(ownProps.match.params.id, 10);
-    const starred = this.getStarred(ownProps.userState, internalId);
-    const visibilityLevel = state.visibility.level;
-    const accessLevel = state.visibility.accessLevel;
-    const settingsReadOnly = state.visibility.accessLevel < ACCESS_LEVELS.MASTER;
-    const externalUrl = state.core.external_url;
-    const title = state.core.title || 'no title';
-    const description = state.core.description || 'no description';
-    const readmeText = state.data.readme.text;
-    const lastActivityAt = state.core.last_activity_at;
-    const tag_list = state.system.tag_list;
-    const star_count = state.system.star_count;
-    const ssh_url = state.system.ssh_url;
-    const http_url = state.system.http_url;
+  subComponents(projectId, baseUrl, ownProps) {
+    const accessLevel = this.projectState.get('visibility.accessLevel');
+    const updateProjectView = this.forceUpdate.bind(this);
 
-    // Routing properties
-    const baseUrl = ownProps.match.isExact ? ownProps.match.url.slice(0, -1) : ownProps.match.url;
-    const overviewUrl = `${baseUrl}/`;
-    const kusUrl = `${baseUrl}/kus`;
-    const kuUrl = `${baseUrl}/kus/:kuIid(\\d+)`;
-    const notebooksUrl = `${baseUrl}/notebooks`;
-    const notebookUrl = `${baseUrl}/notebooks/:notebookPath`;
-    const dataUrl = `${baseUrl}/data`;
-    const datumUrl = `${baseUrl}/data/:datumPath+`;
-    const settingsUrl = `${baseUrl}/settings`;
-    const kuList = <Ku.List {...ownProps}
-      key="kus" kuBaseUrl={kusUrl} projectId={internalId}  client={ownProps.client} />
-    const kuView = (p) => <Ku.View key="ku" projectId={internalId}
-      kuIid={p.match.params.kuIid} {...p} client={ownProps.client} userState={ownProps.userState}
-      updateProjectView={this.forceUpdate.bind(this)} accessLevel={accessLevel}/>
-    /* TODO Should we handle each type of file or just have a generic project files viewer? */
-    const notebookView = (p) => <Notebook.Show key="notebook"
-      projectId={internalId}
-      path={`notebooks/${p.match.params.notebookPath}`}
-      client={ownProps.client} {...p} accessLevel={accessLevel}/>;
-    const lineageView = (p) => <FileLineage key="lineage"
-      projectId={internalId}
-      path={`data/${p.match.params.datumPath}`}
-      client={ownProps.client} {...p} />
-    const launchNotebookButton = <LaunchNotebookServerButton client={ownProps.client} projectId={internalId} />;
-    return {title, description, displayId, internalId, visibilityLevel, accessLevel, settingsReadOnly, project: state,
-      externalUrl, readmeText, lastActivityAt,
-      tag_list, star_count, starred, ssh_url, http_url,
-      overviewUrl,
-      kusUrl, kuList, kuUrl, kuView,
-      notebooksUrl, notebookUrl, notebookView,
-      lineageView,
-      launchNotebookButton,
-      dataUrl, datumUrl,
-      settingsUrl}
+    // Access to the project state could be given to the subComponents by connecting them here to
+    // the projectStore. This is not yet necessary.
+    const subProps = {...ownProps, projectId, accessLevel};
+    return {
+      kuList: <Ku.List key="kus" {...subProps} kuBaseUrl={`${baseUrl}/kus`} />,
+
+      kuView: (p) => <Ku.View key="ku" {...subProps}
+        kuIid={p.match.params.kuIid}
+        updateProjectView={updateProjectView}/>,
+      /* TODO Should we handle each type of file or just have a generic project files viewer? */
+
+      notebookView: (p) => <Notebook.Show key="notebook" {...subProps}
+        filePath={`notebooks/${p.match.params.notebookPath}`}/>,
+
+      lineageView: (p) => <FileLineage key="lineage" {...subProps}
+        path={`data/${p.match.params.datumPath}`} />,
+
+      launchNotebookButton: <LaunchNotebookServerButton key= "launch notebook" {...subProps} />,
+    }
   }
 
-  mapDispatchToProps(dispatch, ownProps) {
-    const state = this.store.getState();
+  eventHandlers = {
+    onProjectTagsChange: (tags) => {
+      const core = this.projectState.get('core');
+      this.projectState.setTags(this.props.client, core.id, core.title, tags);
+    },
+    onProjectDescriptionChange: (description) => {
+      const core = this.projectState.get('core');
+      this.projectState.setDescription(this.props.client, core.id, core.title, description);
+    },
+    onStar: (e) => {
+      e.preventDefault();
+      const projectId = this.projectState.get('core.id') || parseInt(this.props.match.params.id, 10);
+      const starred = this.getStarred(this.props.userState, projectId);
+      this.projectState.star(this.props.client, projectId, this.props.userState, starred)
+    }
+  };
+
+  mapStateToProps(state, ownProps) {
+    const internalId = this.projectState.get('core.id') || parseInt(ownProps.match.params.id, 10);
+    const starred = this.getStarred(ownProps.userState, internalId);
+    const settingsReadOnly = state.visibility.accessLevel < ACCESS_LEVELS.MASTER;
+    const baseUrl = ownProps.match.isExact ? ownProps.match.url.slice(0, -1) : ownProps.match.url;
+
     return {
-      onProjectTagsChange: (tags) => {
-        dispatch(State.View.setTags(ownProps.client, state.core.id, state.core.title, tags))
-      },
-      onProjectDescriptionChange: (description) => {
-        dispatch(State.View.setDescription(ownProps.client, state.core.id, state.core.title, description))
-      },
-      onStar: (e) => {
-        e.preventDefault();
-        const projectId = state.core.id || parseInt(ownProps.match.params.id, 10);
-        const starred = this.getStarred(ownProps.userState, projectId);
-        dispatch(State.View.star(ownProps.client, projectId, ownProps.userState, starred))
-      }
+      ...this.projectState.get(),
+      ...ownProps,
+      ...this.subUrls(baseUrl),
+      ...this.subComponents.bind(this)(internalId, baseUrl, ownProps),
+      starred,
+      settingsReadOnly
     }
   }
 
   render() {
-    const VisibleProjectView = connect(this.mapStateToProps.bind(this),
-      this.mapDispatchToProps.bind(this))(Present.ProjectView);
-    return (
-      <Provider key="view" store={this.store}>
-        <VisibleProjectView
-          client={this.props.client}
-          userState={this.props.userState}
-          match={this.props.match}
-        />
-      </Provider>)
+    const ConnectedProjectView = connect(
+      this.mapStateToProps.bind(this), null, null, {storeKey: 'projectStore'}
+    )(Present.ProjectView);
+    const props = {...this.props, ...this.eventHandlers, projectStore: this.projectState.reduxStore};
+    return <ConnectedProjectView {...props} />
+
   }
 }
+
 
 class List extends Component {
   constructor(props) {

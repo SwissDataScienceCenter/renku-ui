@@ -23,195 +23,11 @@
  *  Redux-based state-management code.
  */
 
-import { combineReducers } from 'redux'
 import { UserState } from '../app-state';
 import { API_ERRORS } from '../gitlab/errors';
+import { StateModel} from '../model/Model';
+import { projectSchema } from '../model/RengaModels';
 
-function displayIdFromTitle(title) {
-  // title.Author: Alex K. - https://stackoverflow.com/users/246342/alex-k
-  // Source: https://stackoverflow.com/questions/6507056/replace-all-whitespace-characters/6507078#6507078
-  title = title.replace(/\s/g, '-');
-  title = title.toLowerCase();
-  return title;
-}
-
-function createSetAction(type, field, value) {
-  const payload = {[field]: value};
-  return {type, payload}
-}
-
-function reduceState(type, state, action, initial) {
-  if (state == null) state = initial
-  if (action.type !== type) return state;
-  // Can also use the explicit version below
-  // return Object.assign({}, state, action.payload)
-  return {...state, ...action.payload}
-}
-
-const Core = {
-  set: (field, value) => {
-    const action = createSetAction('core', field, value);
-    if (field === 'title') action.payload['displayId'] = displayIdFromTitle(value);
-    return action
-  },
-  reduce: (state, action) => {
-    return reduceState('core', state, action, {title: '', description: '', displayId: ''})
-  }
-}
-
-const System = {
-  set: (field, value) => {
-    return  createSetAction('system', field, value);
-  },
-  reduce: (state, action) => {
-    return reduceState('system', state, action,
-      {tag_list: [], star_count: '', forks_count: '', ssh_url: '', http_url: ''})
-  }
-}
-
-const Files = {
-  set: (field, value) => {
-    return  createSetAction('files', field, value);
-  },
-  reduce: (state, action) => {
-    return reduceState('files', state, action,
-      {notebooks: [], data: [], workflows: []})
-  }
-}
-
-const Visibility = {
-  set: (field, value) => {
-    return createSetAction('visibility', field, value);
-  },
-  reduce: (state, action) => {
-    return reduceState('visibility', state, action, {level: 'public'})
-  }
-}
-
-const DataReference = {
-  set: (field, value) => {
-    return createSetAction('data_reference', field, value)
-  },
-  reduce: (state, action) => {
-    return reduceState('data_reference', state, action, {url_or_doi:'', author: ''})
-  }
-}
-
-const DataUpload = {
-  set: (field, value) => {
-    return createSetAction('data_upload', field, value)
-  },
-  reduce: (state, action) => {
-    return reduceState('data_upload', state, action, {files: []})
-  }
-}
-
-const Readme = {
-  set: (field, value) => {
-    return createSetAction('readme', field, value)
-  },
-  reduce: (state, action) => {
-    return reduceState('readme', state, action, {text: ''})
-  }
-}
-
-const Data = {
-  set: (subtype, field, value) => {
-    if ('reference' === subtype) return DataReference.set(field, value);
-    if ('upload' === subtype) return DataUpload.set(field, value);
-  },
-  reduce: combineReducers({reference: DataReference.reduce, upload: DataUpload.reduce, readme: Readme.reduce})
-}
-
-// TODO -- incorporate files fields
-const combinedFieldReducer = combineReducers({core: Core.reduce, visibility: Visibility.reduce,
-  data: Data.reduce, system: System.reduce, files: Files.reduce});
-
-
-
-const View = { Core, Visibility, Data,
-  fetchMetadata: (client, id) => {
-    const entity = 'metadata';
-    return (dispatch) => {
-      dispatch(View.request(entity));
-      client.getProject(id, {notebooks:true, data:true})
-        .then(d => dispatch(View.receive(d, entity)))
-    }
-  },
-  fetchReadme: (client, id) => {
-    const entity = 'readme';
-    return (dispatch) => {
-      dispatch(View.request(entity));
-      client.getProjectReadme(id)
-        .then(d => dispatch(View.receive(d, entity)))
-        .catch(error => {
-          console.error(error.case);
-          if (error.case === API_ERRORS.notFoundError) {
-            return dispatch(View.receive({text: 'No readme file found.'}, entity))
-          }
-        })
-    }
-  },
-  setTags: (client, id, name, tags) => {
-    const entity = 'metadata';
-    return (dispatch) => {
-      dispatch(View.update(entity));
-      client.setTags(id, name, tags).then(d => {
-        dispatch(View.request(entity));
-        client.getProject(id).then(d => dispatch(View.receive(d, entity)));
-      })
-    }
-  },
-  setDescription: (client, id, name, description) => {
-    const entity = 'metadata';
-    return (dispatch) => {
-      dispatch(View.update(entity));
-      client.setDescription(id, name, description).then(d => {
-        dispatch(View.request(entity));
-        client.getProject(id).then(d => dispatch(View.receive(d, entity)));
-      })
-    }
-  },
-  star: (client, id, userState, starred) => {
-    const entity = 'metadata';
-    return (dispatch) => {
-      dispatch(View.update(entity));
-      client.starProject(id, starred).then(() => {
-        dispatch(View.request(entity));
-        client.getProject(id).then(d => dispatch(View.receive(d, entity)));
-        // TODO: Bad naming here - will be resolved once the user state is re-implemented.
-        userState.dispatch(UserState.star(id))
-      })
-    }
-  },
-  update: (property) => {
-    const action = {type:'server_update', property};
-    return action
-  },
-  request: (entity) => {
-    const action = {type:'server_request', entity};
-    return action
-  },
-  receive: (result, entity) => ({type:'server_return', entity, payload: result }),
-  reducer: (state, action) => {
-    if (action.type !== 'server_return') return combinedFieldReducer(state, action);
-    // Take server result and set it to the state
-    if (action.entity === 'metadata') {
-      const newState =  {...state, ...action.payload.metadata}
-      if (action.payload.files) {
-        newState.files = action.payload.files;
-      }
-      return newState;
-    }
-    if (action.entity === 'readme') {
-      const newState = {...state};
-      newState.data.readme.text = action.payload.text;
-      return newState
-    }
-    console.log('Unknown action', action);
-    return state
-  }
-};
 
 const List = {
   fetch: (client) => {
@@ -240,6 +56,63 @@ const List = {
     const results = {projects: state.projects.concat(action.payload)};
     return results
   }
+};
+
+
+class ProjectModel extends StateModel {
+  constructor(stateBinding, stateHolder, initialState) {
+    super(projectSchema, stateBinding, stateHolder, initialState)
+  }
+
+  // TODO: Do we really want to re-fetch the entire project on every change?
+
+  // TODO: Once state and client are fully adapted to each other, these functions should be trivial
+  fetchProject = (client, id) => {
+    client.getProject(id, {notebooks:true, data:true})
+      .then(d => {
+        this.setObject({
+          core: d.metadata.core,
+          system: d.metadata.system,
+          visibility: d.metadata.visibility,
+          files: d.files
+        })
+      })
+  };
+
+  fetchReadme = (client, id) => {
+    this.setUpdating({data: {readme: true}});
+    client.getProjectReadme(id)
+      .then(d => this.set('data.readme', d))
+      .catch(error => {
+        console.log(error.case);
+        if (error.case === API_ERRORS.notFoundError) {
+          this.set('data.readme.text', 'No readme file found.')
+        }
+      })
+  };
+
+  setTags = (client, id, name, tags) => {
+    this.setUpdating({system: {tag_list: [true]}});
+    client.setTags(id, name, tags).then(() => {
+      this.fetchProject(client, id);
+    })
+  };
+
+  setDescription = (client, id, name, description) => {
+    this.setUpdating({core: {description: true}});
+    client.setDescription(id, name, description).then(() => {
+      this.fetchProject(client, id);
+    })
+  };
+
+  star = (client, id, userState, starred) => {
+    client.starProject(id, starred).then((d) => {
+      this.fetchProject(client, id);
+      // TODO: Bad naming here - will be resolved once the user state is re-implemented.
+      userState.dispatch(UserState.star(id))
+    })
+  };
 }
 
-export default { View, List };
+export default { List };
+export { ProjectModel };

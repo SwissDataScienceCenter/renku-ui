@@ -18,25 +18,10 @@
 
 
 import React, { Component } from 'react';
-import { Provider, connect } from 'react-redux';
+import { connect } from 'react-redux';
 
-import {StateKind, Schema, StateModelComponent, StateModelSubComponent} from './Model';
+import {StateKind, Schema, StateModel} from './Model';
 
-// 'Fake' API request.
-function onClickNested() {
-  this.model.setUpdating({subthing: {age: true}});
-  setTimeout(() => {
-    this.model.setOne('subthing.age', Math.random())
-  }, 1000);
-}
-
-
-function onClick() {
-  this.model.setUpdating({age: true});
-  setTimeout(() => {
-    this.model.setOne('age', Math.random())
-  }, 1000);
-}
 
 const simpleSchema = new Schema({
   name: {initial: 'Jane Doe', mandatory: true},
@@ -48,6 +33,22 @@ const complexSchema = new Schema({
   subthing: {schema: {age: {initial: 0, mandatory: true }}, mandatory: true},
   createdAt: {initial: () => 'right now'}
 });
+
+
+class ComplexModel extends StateModel {
+  constructor(stateBinding, stateHolder, initialState) {
+    super(complexSchema, stateBinding, stateHolder, initialState)
+  }
+
+  // 'Fake' API request
+  updateAge = () => {
+    this.setUpdating({subthing: {age: true}});
+    setTimeout(() => {
+      this.set('subthing.age', Math.random())
+    }, 1000);
+  }
+}
+
 
 class Example extends Component {
   render() {
@@ -79,77 +80,79 @@ class ShowProps extends Component {
 }
 
 // First the redux case...
-class ReduxStateComponent extends StateModelComponent {
+class ReduxStateComponent extends Component {
 
   constructor(props) {
-    super(props, complexSchema, StateKind.REDUX);
+    super(props);
+    //this.thing = new StateModel(complexSchema, StateKind.REDUX)
+    this.thing = new ComplexModel(StateKind.REDUX);
   }
 
   render(){
-    // Our StateModelComponent class already has a default mapStateToProps method defined.
-    const VisibleShowProps = connect(this.mapStateToProps)(ShowProps);
+    const ConnectedShowProps = connect(this.thing.mapStateToProps, null, null, {storeKey: 'thingStore'})(ShowProps);
+
     return (
-      <Provider store={this.store}>
-        <span>
+      <span>
+        {/*Here we show the entire redux store and we update a sub-property of it on click*/}
+        <ConnectedShowProps
+          case="REDUX STATE"
+          onClick={this.thing.updateAge}
+          thingStore={this.thing.reduxStore}
+        />
 
-          {/*Here we show the entire redux store and we update a sub-property of it on click*/}
-          <VisibleShowProps
-            case="REDUX STATE"
-            onClick={onClickNested.bind(this)}
-          />
-
-          {/*This is a stateful sub-component which inherits only a sub-part of the state tree.
-          This sub-component will then invoke the presentational component on the sub-state only. */}
-          <ReduxSubStateComponent
-            model={this.model}
-            path={'subthing'}
-          />
-
-        </span>
-      </Provider>
+        {/*This is a stateful sub-component which inherits only a sub-part of the state tree.
+        This sub-component will then invoke the presentational component on the sub-state only. */}
+        <ReduxSubStateComponent subthing={this.thing.subModel('subthing')} />
+      </span>
     );
   }
 }
 
-class ReduxSubStateComponent extends StateModelSubComponent {
+class ReduxSubStateComponent extends Component {
   render() {
+    const subthing = this.props.subthing;
+
     // The default implementation of mapStateToProps maps the entire sub-tree
     // of the state to the props which are passed to the presentational component.
-    const VisibleShowProps = connect(this.mapStateToProps)(ShowProps);
-    return <VisibleShowProps case="REDUX SUBSTATE" onClick={onClick.bind(this)}/>
+    const ConnectedShowProps = connect(
+      subthing.mapStateToProps, undefined, undefined, {storeKey: 'subthingStore'}
+    )(ShowProps);
+
+    return <ConnectedShowProps
+      case="REDUX SUBSTATE"
+      onClick={subthing.baseModel.updateAge}
+      subthingStore={subthing.reduxStore}
+    />
   }
 }
 
 
 // Same for the react case...
-class ReactStateComponent extends StateModelComponent {
+class ReactStateComponent extends Component {
   constructor(props) {
-    super(props, complexSchema, StateKind.REACT);
+    super(props);
+    this.thing = new ComplexModel(StateKind.REACT, this);
   }
 
   render(){
     return <span>
       <ShowProps
         case="REACT STATE"
-        // The entire redux state can also be passed to using {...this.state},
-        // but we try use the access through the model
-        {...this.model.get()}
-        onClick={onClickNested.bind(this)}/>
+        // The react state can also be passed using {...this.state}, but we use the access using the model
+        {...this.thing.get()}
+        onClick={this.thing.updateAge}/>
 
-      <ReactSubStateComponent
-        model={this.model}
-        path="subthing"/>
+      <ReactSubStateComponent subthing={this.thing.subModel('subthing')} />
     </span>
   }
 }
 
-class ReactSubStateComponent extends StateModelSubComponent {
+class ReactSubStateComponent extends Component {
   render(){
-
     return <ShowProps
       case="REACT SUBSTATE"
-      {...this.model.get()}
-      onClick={onClick.bind(this)}/>
+      {...this.props.subthing.get()}
+      onClick={this.props.subthing.baseModel.updateAge}/>
   }
 }
 

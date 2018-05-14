@@ -40,7 +40,7 @@ class JupyterNotebookContainer extends Component {
       .then(jupyterhubUrl => {
         const jh = new URL(jupyterhubUrl);
         const url = `${jh.origin}${jh.pathname}/${this.props.filePath}?${jh.search}`;
-        this.setState({deploymentUrl: url})
+        this.setState({deploymentUrl: url});
       })
   }
 

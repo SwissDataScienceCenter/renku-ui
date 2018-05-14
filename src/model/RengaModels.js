@@ -47,9 +47,64 @@ const displaySchema = new Schema({
   slug: {initial: '', mandatory: true},
 });
 
-const projectSchema = new Schema({
+const newProjectSchema = new Schema({
   meta: {schema: metaSchema, mandatory: true},
   display: {schema: displaySchema, mandatory: true}
 });
 
-export { userSchema, metaSchema, displaySchema, projectSchema };
+const projectSchema = new Schema({
+  core: {
+    schema: {
+      created_at: {initial: null,},
+      last_activity_at: {initial: null,},
+      id: {initial: null,},
+      description: {initial: 'no description', mandatory: true},
+      displayId: {initial: '',},
+      title: {initial: 'no title', mandatory: true},
+      external_url: {initial: '',},
+    }
+  },
+  visibility: {
+    schema: {
+      level: {initial: 'private', mandatory: true},
+      accessLevel: {initial: 0, mandatory: true}
+    }
+  },
+  data: {
+    schema: {
+      reference: {
+        schema: {
+          url_or_doi: {initial:''},
+          author: {initial: ''}
+        },
+      },
+      upload: {
+        schema: {
+          files: {schema: []}
+        }
+      },
+      readme: {
+        schema: {
+          text: {initial: '', mandatory: false}
+        }
+      }
+    },
+  },
+  system: {
+    schema: {
+      tag_list: {schema: []},
+      star_count: {initial: 0, mandatory: true},
+      forks_count: {initial: 0, mandatory: true},
+      ssh_url: {initial: '',},
+      http_url: {initial: '',}
+    }
+  },
+  files: {
+    schema: {
+      notebooks: {schema: []},
+      data: {schema: []},
+    }
+  }
+});
+
+export { userSchema, metaSchema, displaySchema, newProjectSchema, projectSchema };
