@@ -61,7 +61,6 @@ deploy:
   - provider: script
     skip_cleanup: true
     script: >-
-      make push-docker-images;
       cd helm-chart;
       chartpress --commit-range "${TRAVIS_COMMIT_RANGE}" --push --publish-chart;
       git diff;

@@ -5,12 +5,7 @@ charts:
       git: SwissDataScienceCenter/helm-charts
       published: https://swissdatasciencecenter.github.io/helm-charts
     paths:
-      - .
-      - ../src
-      - ../public
-      - ../package.json
-      - ../nginx.vh.default.conf
-      - ../docker-entrypoint.sh
+      - ..
     images:
       renku-ui:
         # Context to send to docker build for use by the Dockerfile
@@ -19,8 +14,3 @@ charts:
         dockerfilePath: ../Dockerfile
         valuesPath: image
         paths:
-          - ../src
-          - ../public
-          - ../package.json
-          - ../nginx.vh.default.conf
-          - ../docker-entrypoint.sh
