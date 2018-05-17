@@ -10,6 +10,10 @@ We looked at the following sources for inspiration:
 
 This should be conceptually backend-agnostic, but this document provides a mapping to the GitLab API.
 
+# Guidelines
+
+Some information is provided by the system and is not editable. This belongs in a ```system``` subentity.
+
 # Recurring Keys
 
 ## metadata
