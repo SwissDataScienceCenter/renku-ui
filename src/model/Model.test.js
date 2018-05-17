@@ -17,7 +17,7 @@
  */
 
 /**
- *  renga-ui
+ *  renku-ui
  *
  *  Model.test.js
  *  Tests for models.

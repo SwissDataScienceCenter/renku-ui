@@ -14,7 +14,7 @@ const API_ERRORS = {
 
 // Wrapper around fetch which will throw exceptions on all non 20x responses.
 // Adapted from https://github.com/github/fetch/issues/155
-function rengaFetch(url, options, returnType='json', alert=true) {
+function renkuFetch(url, options, returnType='json', alert=true) {
   return fetch(url, options)
     .catch((fetchError) => {
       const networkError = new APIError();
@@ -97,4 +97,4 @@ function alertAPIErrors(error) {
   }
 }
 
-export { rengaFetch, APIError, API_ERRORS, alertAPIErrors}
+export { renkuFetch, APIError, API_ERRORS, alertAPIErrors}

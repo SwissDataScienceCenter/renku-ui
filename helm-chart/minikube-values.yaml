@@ -1,9 +1,9 @@
 global:
-  renga:
-    domain: renga.build
+  renku:
+    domain: renku.build
 
 baseUrl: "http://localhost:3000"
-gitlabUrl: "http://gitlab.renga.build"
+gitlabUrl: "http://gitlab.renku.build"
 
 ingress:
   enabled: false

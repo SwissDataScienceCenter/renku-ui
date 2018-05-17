@@ -18,7 +18,7 @@
  */
 
 /**
- *  incubator-renga-ui
+ *  incubator-renku-ui
  *
  *  UIState.js
  *  Utility UI state management.
@@ -27,7 +27,7 @@
 import { createStore as reduxCreateStore, applyMiddleware, compose } from 'redux'
 import thunk from 'redux-thunk'
 
-function createStore(reducer, name='renga') {
+function createStore(reducer, name='renku') {
   const composeEnhancers =
   typeof window === 'object' &&
   window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?

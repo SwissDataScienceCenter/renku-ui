@@ -1,5 +1,5 @@
 {
   "BASE_URL": "http://localhost:3000",
-  "GITLAB_URL": "http://gitlab.renga.build",
-  "GITLAB_CLIENT_ID": "renga-ui"
+  "GITLAB_URL": "http://gitlab.renku.build",
+  "GITLAB_CLIENT_ID": "renku-ui"
 }

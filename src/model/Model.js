@@ -17,7 +17,7 @@
  */
 
 /**
- *  renga-ui
+ *  renku-ui
  *
  *  Model.js
  *

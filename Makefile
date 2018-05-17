@@ -16,7 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-DOCKER_REPOSITORY?=rengahub/
+DOCKER_REPOSITORY?=renku/
 DOCKER_PREFIX:=${DOCKER_REGISTRY}$(DOCKER_REPOSITORY)
 DOCKER_LABEL?=$(shell git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/^* //')
 
@@ -24,17 +24,17 @@ ifeq ($(DOCKER_LABEL), master)
 	DOCKER_LABEL=latest
 endif
 
-IMAGES=renga-ui
+IMAGES=renku-ui
 
 GIT_MASTER_HEAD_SHA:=$(shell git rev-parse --short=12 --verify HEAD)
 
-PLATFORM_DOMAIN?=renga.build
+PLATFORM_DOMAIN?=renku.build
 GITLAB_URL?=http://gitlab.$(PLATFORM_DOMAIN)
 KEYCLOAK_URL?=http://keycloak.$(PLATFORM_DOMAIN):8080
 
 tag-docker-images: $(IMAGES:%=tag/%)
 
-build/renga-ui: Dockerfile
+build/renku-ui: Dockerfile
 	docker build --rm --force-rm -t $(DOCKER_PREFIX)$(notdir $@):$(GIT_MASTER_HEAD_SHA) -f $< .
 
 push-docker-images: $(IMAGES:%=push/%)

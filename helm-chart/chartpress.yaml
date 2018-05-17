@@ -1,6 +1,6 @@
 charts:
-  - name: renga-ui
-    imagePrefix: rengahub/
+  - name: renku-ui
+    imagePrefix: renku/
     repo:
       git: SwissDataScienceCenter/helm-charts
       published: https://swissdatasciencecenter.github.io/helm-charts
@@ -12,7 +12,7 @@ charts:
       - ../nginx.vh.default.conf
       - ../docker-entrypoint.sh
     images:
-      renga-ui:
+      renku-ui:
         # Context to send to docker build for use by the Dockerfile
         contextPath: ..
         # Dockerfile path relative to chartpress.yaml

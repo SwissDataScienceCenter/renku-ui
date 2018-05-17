@@ -1,7 +1,7 @@
-Renga UI Helm Chart
+Renku UI Helm Chart
 ===================
 
-Provide a basic chart for deploying Renga UI application.
+Provide a basic chart for deploying Renku UI application.
 
 Configuration
 -------------
@@ -9,7 +9,7 @@ Configuration
 - `baseUrl` define URL on which will be the application available
   (default: `http://localhost:3000`)
 - `gitlabUrl` define URL of a running GitLab instance
-  (default: `http://gitlab.renga.build`)
+  (default: `http://gitlab.renku.build`)
 
 Usage
 -----
@@ -17,5 +17,5 @@ Usage
 In the `helm-chart` directory:
 
 ```
-helm upgrade --install renga-ui --values minikube-values.yaml renga-ui
+helm upgrade --install renku-ui --values minikube-values.yaml renku-ui
 ```

@@ -17,10 +17,10 @@
  */
 
 /**
- *  incubator-renga-ui
+ *  incubator-renku-ui
  *
  *  file/index.js
- *  Module for file rendering in Renga.
+ *  Module for file rendering in Renku.
  */
 
 

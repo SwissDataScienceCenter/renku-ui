@@ -17,9 +17,9 @@
  */
 
 /**
- *  renga-ui
+ *  renku-ui
  *
- *  RengaModels.js
+ *  RenkuModels.js
  *
  */
 
