@@ -35,6 +35,7 @@ Metadata is not a self-contained entity, but it appears as a key in many places.
 - last_activity_at
 - permissions
 - id
+- iid (this is an id that is only unique in the context of the parent entity, but not globablly unique)
 
 ## settings
 
@@ -89,10 +90,11 @@ These are GitLab issues. https://docs.gitlab.com/ce/api/issues.html
 - assignees
 - reactions (issue:award_emoji)
 
-## Note (previously Contribution)
+## Contribution
 
 These are GitLab Notes. https://docs.gitlab.com/ce/api/notes.html
 
-- noteable_id
+- ku_id (noteable_id in GitLab)
+- ku_iid (noteable_iid in GitLab)
 - metadata (see above)
 - body
