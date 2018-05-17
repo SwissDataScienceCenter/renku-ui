@@ -12,29 +12,37 @@ This should be conceptually backend-agnostic, but this document provides a mappi
 
 # Guidelines
 
-Some information is provided by the system and is not editable. This belongs in a ```system``` subentity.
+
 
 # Recurring Keys
 
+## display
+
+Display includes information that is commonly used to display the entity. Almost every entity contains a display field, and these values contained therein are computed from entity metadata and not directly editable, but they fields used to compute the values may vary from entity to entity. 
+
+- title (project:name, issue:title in GitLab)
+- slug (project:path or issue:iid in GitLab)
+- display_id (project:path_with_namespace or issue:tail of web_url in GitLab)
+- short_description (project:description, issue:title in GitLab)
+
 ## metadata
 
-Metadata is not a self-contained entity, but it appears as a key in many places. It contains information about who created the entity, when it was created, etc.
+Metadata is not a self-contained entity, but it appears as a key in many places. It contains system information about the entity, such as who created the entity, when it was created, etc. Not all keys apppear for all entities, but these are some common ones. 
 
 - author (a User object)
-- visibility
 - created_at
 - updated_at
 - last_activity_at
+- permissions
 - id
 
-## display
+## settings
 
-Display includes information that is commonly used to display the entity
+Settings is not a self-contained entity, but appears as a key in many places.
 
-- title (project:name, issue:title in Gitlab)
-- slug (project:path or issue:iid in GitLab)
-- display_id (project:path_with_namespace or issue:tail of web_url in GitLab)
-- description
+- visibility
+- user_permissions
+- group_permissions
 
 # Entities
 
@@ -49,26 +57,32 @@ Display includes information that is commonly used to display the entity
 
 These are GitLab projects. https://docs.gitlab.com/ce/api/projects.html
 
-- metadata (see above)
 - display (see above)
+- metadata (see above)
+- settings (see above)
+- description
 - long_description (Contents of readme file)
+- name
+- namespace
 - forks_count
 - star_count
-- kus
-- datasets
-- notebooks
-- workflows
-- sources
-- libraries
 - tags
+- kus
+- repository_content (these are computed values based on the content in the repo)
+  - datasets
+  - notebooks
+  - workflows
+  - sources
+  - libraries
 
 ## Ku
 
 These are GitLab issues. https://docs.gitlab.com/ce/api/issues.html
 
 - project_id
-- metadata (see above)
 - display (see above)
+- metadata (see above)
+- settings (see above)
 - long_description
 - labels
 - notes
