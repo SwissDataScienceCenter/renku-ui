@@ -17,7 +17,7 @@
  */
 
 /**
- *  incubator-renga-ui
+ *  incubator-renku-ui
  *
  *  Landing.test.js
  *  Tests for landing.

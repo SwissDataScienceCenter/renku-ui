@@ -17,7 +17,7 @@
  */
 
 /**
- *  incubator-renga-ui
+ *  incubator-renku-ui
  *
  *  Landing.state.js
  *  Redux-based state-management code.

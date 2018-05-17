@@ -17,7 +17,7 @@
  */
 
 /**
- *  incubator-renga-ui
+ *  incubator-renku-ui
  *
  *  Project.present.js
  *  Presentational components.
@@ -43,7 +43,7 @@ import faStarSolid from '@fortawesome/fontawesome-free-solid/faStar'
 
 import ReactMarkdown from 'react-markdown'
 
-import { Avatar, TimeCaption, FieldGroup, RengaNavLink } from '../utils/UIComponents'
+import { Avatar, TimeCaption, FieldGroup, RenkuNavLink } from '../utils/UIComponents'
 
 class DataVisibility extends Component {
   render() {
@@ -137,16 +137,16 @@ class ProjectNav extends Component {
     return (
       <Nav pills className={'nav-pills-underline'}>
         <NavItem>
-          <RengaNavLink to={this.props.overviewUrl} title="Overview" />
+          <RenkuNavLink to={this.props.overviewUrl} title="Overview" />
         </NavItem>
         <NavItem>
-          <RengaNavLink exact={false} to={this.props.kusUrl} title="Kus" />
+          <RenkuNavLink exact={false} to={this.props.kusUrl} title="Kus" />
         </NavItem>
         <NavItem>
-          <RengaNavLink exact={false} to={this.props.notebooksUrl} title="Files" />
+          <RenkuNavLink exact={false} to={this.props.notebooksUrl} title="Files" />
         </NavItem>
         <NavItem>
-          <RengaNavLink exact={false} to={this.props.settingsUrl} title="Settings" />
+          <RenkuNavLink exact={false} to={this.props.settingsUrl} title="Settings" />
         </NavItem>
       </Nav>)
   }
@@ -163,10 +163,10 @@ class ProjectFilesNav extends Component {
     return (
       <Nav pills className={'flex-column'}>
         <NavItem>
-          <RengaNavLink to={this.props.notebooksUrl} title="Notebooks" />
+          <RenkuNavLink to={this.props.notebooksUrl} title="Notebooks" />
         </NavItem>
         <NavItem>
-          <RengaNavLink to={this.props.dataUrl} title="Data" />
+          <RenkuNavLink to={this.props.dataUrl} title="Data" />
         </NavItem>
         <NavItem><NavLink href="#" active={selected === 'workflows'}
           onClick={onWorkflows}>Workflows</NavLink></NavItem>

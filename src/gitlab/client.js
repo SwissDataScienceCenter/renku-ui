@@ -1,4 +1,4 @@
-import {alertAPIErrors, API_ERRORS, rengaFetch} from './errors';
+import {alertAPIErrors, API_ERRORS, renkuFetch} from './errors';
 
 const SPECIAL_FOLDERS = {
   data: 'data',
@@ -9,10 +9,10 @@ const SPECIAL_FOLDERS = {
 
 class GitlabClient {
 
-  // GitLab api client for Renga. Note that we do some
+  // GitLab api client for Renku. Note that we do some
   // renaming of GitLab resources within this client:
   //
-  // Renga      GitLab
+  // Renku      GitLab
   // -----------------
   // ku    -->  issue
 
@@ -38,7 +38,7 @@ class GitlabClient {
     const url = new URL(this._baseUrl + 'projects');
     Object.keys(queryParams).forEach((key) => url.searchParams.append(key, queryParams[key]));
 
-    return rengaFetch(url, {
+    return renkuFetch(url, {
       method: 'GET',
       headers: headers
     })
@@ -47,7 +47,7 @@ class GitlabClient {
   getProject(projectId, options={}) {
     let headers = this.getBasicHeaders();
     const apiPromises = [
-      rengaFetch(this._baseUrl + `projects/${projectId}`, {
+      renkuFetch(this._baseUrl + `projects/${projectId}`, {
         method: 'GET',
         headers: headers
       })
@@ -80,16 +80,16 @@ class GitlabClient {
     })
   }
 
-  postProject(rengaProject) {
+  postProject(renkuProject) {
     const gitlabProject = {
-      name: rengaProject.display.title,
-      description: rengaProject.display.description,
-      visibility: rengaProject.meta.visibility === 'public' ? 'public' : 'private'
+      name: renkuProject.display.title,
+      description: renkuProject.display.description,
+      visibility: renkuProject.meta.visibility === 'public' ? 'public' : 'private'
     };
     const headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return rengaFetch(this._baseUrl + 'projects', {
+    return renkuFetch(this._baseUrl + 'projects', {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(gitlabProject)
@@ -110,7 +110,7 @@ class GitlabClient {
     headers.append('Content-Type', 'application/json');
     const endpoint = starred ? 'unstar' : 'star';
 
-    return rengaFetch(this._baseUrl + `projects/${projectId}/${endpoint}`, {
+    return renkuFetch(this._baseUrl + `projects/${projectId}/${endpoint}`, {
       method: 'POST',
       headers: headers,
     })
@@ -142,7 +142,7 @@ class GitlabClient {
   getProjectFile(projectId, path) {
     let headers = this.getBasicHeaders();
     const encodedPath = encodeURIComponent(path);
-    return rengaFetch(this._baseUrl + `projects/${projectId}/repository/files/${encodedPath}/raw?ref=master`, {
+    return renkuFetch(this._baseUrl + `projects/${projectId}/repository/files/${encodedPath}/raw?ref=master`, {
       method: 'GET',
       headers: headers
     }, 'text')
@@ -151,7 +151,7 @@ class GitlabClient {
   getProjectKus(projectId) {
     let headers = this.getBasicHeaders();
 
-    return rengaFetch(this._baseUrl + `projects/${projectId}/issues?scope=all`, {
+    return renkuFetch(this._baseUrl + `projects/${projectId}/issues?scope=all`, {
       method: 'GET',
       headers: headers
     })
@@ -162,7 +162,7 @@ class GitlabClient {
     let headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return rengaFetch(this._baseUrl + `projects/${projectId}/issues`, {
+    return renkuFetch(this._baseUrl + `projects/${projectId}/issues`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(ku)
@@ -174,7 +174,7 @@ class GitlabClient {
     let headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return rengaFetch(this._baseUrl + `projects/${projectId}/issues/${kuIid}/`, {
+    return renkuFetch(this._baseUrl + `projects/${projectId}/issues/${kuIid}/`, {
       method: 'GET',
       headers: headers,
     })
@@ -185,7 +185,7 @@ class GitlabClient {
     let headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return rengaFetch(this._baseUrl + `projects/${projectId}/issues/${kuIid}/notes`, {
+    return renkuFetch(this._baseUrl + `projects/${projectId}/issues/${kuIid}/notes`, {
       method: 'GET',
       headers: headers
     })
@@ -196,7 +196,7 @@ class GitlabClient {
     let headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return rengaFetch(this._baseUrl + `projects/${projectId}/issues/${kuIid}/notes`, {
+    return renkuFetch(this._baseUrl + `projects/${projectId}/issues/${kuIid}/notes`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify({body: contribution})
@@ -208,7 +208,7 @@ class GitlabClient {
     let headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return rengaFetch(this._baseUrl + `projects/${projectId}/issues/${issueIid}`, {
+    return renkuFetch(this._baseUrl + `projects/${projectId}/issues/${issueIid}`, {
       method: 'PUT',
       headers: headers,
       body: JSON.stringify(body)
@@ -228,7 +228,7 @@ class GitlabClient {
     let headers = this.getBasicHeaders();
     const pathEncoded = encodeURIComponent(path);
     const raw = encoding === 'raw' ? '/raw' : '';
-    return rengaFetch(this._baseUrl + `projects/${projectId}/repository/files/${pathEncoded}${raw}?ref=${ref}`, {
+    return renkuFetch(this._baseUrl + `projects/${projectId}/repository/files/${pathEncoded}${raw}?ref=${ref}`, {
       method: 'GET',
       headers: headers
     }, 'fullResponse', false)
@@ -257,7 +257,7 @@ class GitlabClient {
     Object.keys(queryParams).forEach((key) => url.searchParams.append(key, queryParams[key]));
 
     // TODO: Think about general pagination strategy for API client.
-    return rengaFetch(url, {
+    return renkuFetch(url, {
       method: 'GET',
       headers: headers
     }, 'fullResponse', false)
@@ -291,7 +291,7 @@ class GitlabClient {
 
   getDeploymentUrl(projectId, envName, branchName = 'master') {
     let headers = this.getBasicHeaders();
-    return rengaFetch(this._baseUrl + `projects/${projectId}/environments`, {
+    return renkuFetch(this._baseUrl + `projects/${projectId}/environments`, {
       method: 'GET',
       headers: headers
     })
@@ -306,7 +306,7 @@ class GitlabClient {
 
   getArtifactsUrl(projectId, job, branch='master') {
     const headers = this.getBasicHeaders();
-    return rengaFetch(`${this._baseUrl}projects/${projectId}/jobs`, {
+    return renkuFetch(`${this._baseUrl}projects/${projectId}/jobs`, {
       method: 'GET',
       headers: headers
     })
@@ -331,13 +331,13 @@ class GitlabClient {
         // If the url is undefined, we return an object with a dummy text() method.
         if (!url) return ['', {text: () => ''}];
         const resourceUrl = `${url}/${artifact}`;
-        return Promise.all([resourceUrl, rengaFetch(resourceUrl, options, 'fullResponse')])
+        return Promise.all([resourceUrl, renkuFetch(resourceUrl, options, 'fullResponse')])
       })
   }
 
   getUser() {
     let headers = this.getBasicHeaders();
-    return rengaFetch(this._baseUrl + 'user', {
+    return renkuFetch(this._baseUrl + 'user', {
       method: 'GET',
       headers: headers
     })

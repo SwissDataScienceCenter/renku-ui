@@ -17,7 +17,7 @@
  */
 
 /**
- *  incubator-renga-ui
+ *  incubator-renku-ui
  *
  *  Ku.test.js
  *  Tests for ku.

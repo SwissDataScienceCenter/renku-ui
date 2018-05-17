@@ -15,7 +15,7 @@ env:
   global:
     - DOCKER_LABEL=$TRAVIS_BRANCH
     - DOCKER_PUSH_LATEST=true
-    - DOCKER_REPOSITORY=rengahub/
+    - DOCKER_REPOSITORY=renku/
     - HELM_URL=https://storage.googleapis.com/kubernetes-helm
     - HELM_TGZ=helm-v2.8.2-linux-amd64.tar.gz
 
@@ -52,10 +52,10 @@ install:
   - helm init --client-only
 
 script:
-  - make tag/renga-ui
+  - make tag/renku-ui
   # FIXME - once tests are passing, uncomment below
-  # - make test/renga-ui
-  - helm lint helm-chart/renga-ui -f helm-chart/minikube-values.yaml
+  # - make test/renku-ui
+  - helm lint helm-chart/renku-ui -f helm-chart/minikube-values.yaml
 
 deploy:
   - provider: script

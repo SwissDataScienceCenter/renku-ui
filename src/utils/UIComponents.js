@@ -18,7 +18,7 @@
  */
 
 /**
- *  incubator-renga-ui
+ *  incubator-renku-ui
  *
  *  UIComponents.js
  *  Utility UI components for the application.
@@ -88,7 +88,7 @@ class TimeCaption extends Component {
   }
 }
 
-class RengaNavLink extends Component {
+class RenkuNavLink extends Component {
   render() {
     const to = this.props.to;
     const title = this.props.title;
@@ -123,4 +123,4 @@ class UserAvatar extends Component {
   }
 }
 
-export { Avatar, TimeCaption, FieldGroup, RengaNavLink, UserAvatar };
+export { Avatar, TimeCaption, FieldGroup, RenkuNavLink, UserAvatar };

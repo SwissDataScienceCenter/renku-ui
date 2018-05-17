@@ -17,7 +17,7 @@
  */
 
 /**
- *  incubator-renga-ui
+ *  incubator-renku-ui
  *
  *  Project.js
  *  Container components for project.
@@ -28,7 +28,7 @@ import { Provider, connect } from 'react-redux'
 
 import { StateKind, StateModel } from '../model/Model';
 // TODO: ONLY use one projectSchema after the refactoring has been finished.
-import { newProjectSchema } from '../model/RengaModels';
+import { newProjectSchema } from '../model/RenkuModels';
 import { createStore } from '../utils/EnhancedState'
 import { slugFromTitle } from '../utils/HelperFunctions';
 import Present from './Project.present'

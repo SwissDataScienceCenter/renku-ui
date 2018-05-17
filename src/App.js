@@ -18,7 +18,7 @@
  */
 
 /**
- *  incubator-renga-ui
+ *  incubator-renku-ui
  *
  *  App.js
  *  Coordinator for the application.
@@ -40,7 +40,7 @@ import Project from './project/Project'
 import Ku from './ku/Ku'
 import Landing from './landing/Landing'
 import Login from './login'
-import { RengaNavLink, UserAvatar } from './utils/UIComponents'
+import { RenkuNavLink, UserAvatar } from './utils/UIComponents'
 // import Lineage from './lineage'
 
 
@@ -52,7 +52,7 @@ function getActiveProjectId(currentPath) {
   }
 }
 
-class RengaNavBar extends Component {
+class RenkuNavBar extends Component {
 
   constructor(props) {
     super(props);
@@ -86,13 +86,13 @@ class RengaNavBar extends Component {
 
     // Display the Ku related header options only if a project is active.
     const activeProjectId = getActiveProjectId(this.props.location.pathname);
-    const kuDropdown = activeProjectId ? <RengaNavLink to={`/projects/${activeProjectId}/ku_new`} title="Ku" /> : null;
+    const kuDropdown = activeProjectId ? <RenkuNavLink to={`/projects/${activeProjectId}/ku_new`} title="Ku" /> : null;
     // TODO If there is is an active project, show it in the navbar
 
     return (
       <header>
         <nav className="navbar navbar-expand-sm navbar-light bg-light justify-content-between">
-          <span className="navbar-brand"><Link to="/"><img src={logo} alt="Renga" height="24" /></Link></span>
+          <span className="navbar-brand"><Link to="/"><img src={logo} alt="Renku" height="24" /></Link></span>
           <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon"></span>
@@ -102,7 +102,7 @@ class RengaNavBar extends Component {
             <form className="form-inline my-2 my-lg-0">
               <div className="input-group">
                 <input className="form-control border-primary" type="search"
-                  placeholder="Search RENGA" aria-label="Search" />
+                  placeholder="Search Renku" aria-label="Search" />
                 <span className="input-group-append">
                   <button className="btn btn-outline-primary my-2 my-sm-0" type="submit">
                     <FontAwesome name="search" />
@@ -112,7 +112,7 @@ class RengaNavBar extends Component {
             </form>
 
             <ul className="navbar-nav mr-auto">
-              <RengaNavLink to="/projects" title="Projects"/>
+              <RenkuNavLink to="/projects" title="Projects"/>
             </ul>
             <ul className="navbar-nav">
               <li className="nav-item dropdown">
@@ -121,7 +121,7 @@ class RengaNavBar extends Component {
                   <FontAwesome name="plus" />
                 </a>
                 <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                  <RengaNavLink to="/project_new" title="Project" />
+                  <RenkuNavLink to="/project_new" title="Project" />
                   {kuDropdown}
                 </div>
               </li>
@@ -131,8 +131,8 @@ class RengaNavBar extends Component {
                   {this.props.userAvatar}
                 </a>
                 <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                  {loggedIn ? <RengaNavLink to="/user" title="Profile" /> : null }
-                  {loggedIn ? <RengaNavLink to="/logout" title="Logout" /> : <RengaNavLink to="/login" title="Login" />}
+                  {loggedIn ? <RenkuNavLink to="/user" title="Profile" /> : null }
+                  {loggedIn ? <RenkuNavLink to="/logout" title="Logout" /> : <RenkuNavLink to="/login" title="Login" />}
                 </div>
               </li>
             </ul>
@@ -143,7 +143,7 @@ class RengaNavBar extends Component {
   }
 }
 
-class RengaFooter extends Component {
+class RenkuFooter extends Component {
   render() {
     return <footer className="footer">
       <div className="container">
@@ -161,7 +161,7 @@ class App extends Component {
     return (
       <Router>
         <div>
-          <Route render={props => <RengaNavBar userAvatar={userAvatar} {...props} {...this.props}/>} />
+          <Route render={props => <RenkuNavBar userAvatar={userAvatar} {...props} {...this.props}/>} />
           <main role="main" className="container-fluid">
             <div key="gap">&nbsp;</div>
             <Switch>
@@ -191,7 +191,7 @@ class App extends Component {
                 render={(p) => <Project.New key="project_new" client={this.props.client} {...p}/> }/>
             </Switch>
           </main>
-          <Route component={RengaFooter} />
+          <Route component={RenkuFooter} />
         </div>
       </Router>
     );

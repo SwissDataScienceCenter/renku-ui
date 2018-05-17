@@ -22,9 +22,9 @@ services:
             'args' => {
               client_options: {
                 'site' => 'http://docker.for.mac.localhost:8080/auth/', # including port if necessary
-                'authorize_url' => '/auth/realms/Renga/protocol/openid-connect/auth',
-                'user_info_url' => '/auth/realms/Renga/protocol/openid-connect/userinfo',
-                'token_url' => '/auth/realms/Renga/protocol/openid-connect/token'
+                'authorize_url' => '/auth/realms/Renku/protocol/openid-connect/auth',
+                'user_info_url' => '/auth/realms/Renku/protocol/openid-connect/userinfo',
+                'token_url' => '/auth/realms/Renku/protocol/openid-connect/token'
               },
               user_response_structure: {
                 attributes: { email:'email', first_name:'given_name', last_name:'family_name', name:'name', nickname:'preferred_username' }, # if the nickname attribute of a user is called 'username'
@@ -56,6 +56,6 @@ services:
       - ./src:/app/src
       - ./public:/app/public
     environment:
-      - RENGA_ENDPOINT
-      - RENGA_UI_URL
+      - RENKU_ENDPOINT
+      - RENKU_UI_URL
       - GITLAB_URL

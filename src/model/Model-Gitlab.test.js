@@ -1,6 +1,6 @@
 import client from '../gitlab/test-client'
 import ReactDOM from "react-dom";
-import { Project, projectSchema } from './RengaModels';
+import { Project, projectSchema } from './RenkuModels';
 import {Component} from "react";
 import State from "../project/Project.state";
 import {connect} from "react-redux";

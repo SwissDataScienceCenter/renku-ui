@@ -23,10 +23,10 @@ global:
     postgresUser: keycloak
     ## Postgres password for the Keycloak database
     postgresPassword: keycloak
-  renga:
+  renku:
     ## Set to true if using https
     https: false
-    ## Domain name for the deployed instance of renga
+    ## Domain name for the deployed instance of renku
     domain: example.local
 
 replicaCount: 1
@@ -34,15 +34,15 @@ replicaCount: 1
 ## Set to a custom base URL if deployed manually
 # baseUrl: "http://127.0.0.1:8080"
 ## Set to a custom GitLab URL if deployed manually
-# gitlabUrl: "http://gitlab.renga.build"
+# gitlabUrl: "http://gitlab.renku.build"
 ## Configure application ID from "{{ gitlabUrl }}/oauth/application"
 ## by setting redirect URL to "{{ baseUrl }}/login/redirect/gitlab"
 ## and set the application ID as the "gitlabClientId" chart value.
-# gitlabClientId: "renga-ui"
+# gitlabClientId: "renku-ui"
 
 image:
-  name: rengahub/renga-ui
-  repository: rengahub/renga-ui
+  name: renku/renku-ui
+  repository: renku/renku-ui
   tag: development
   pullPolicy: Always
 

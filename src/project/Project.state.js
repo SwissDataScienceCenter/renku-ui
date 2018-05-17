@@ -17,7 +17,7 @@
  */
 
 /**
- *  incubator-renga-ui
+ *  incubator-renku-ui
  *
  *  Project.state.js
  *  Redux-based state-management code.
@@ -26,7 +26,7 @@
 import { UserState } from '../app-state';
 import { API_ERRORS } from '../gitlab/errors';
 import { StateModel} from '../model/Model';
-import { projectSchema } from '../model/RengaModels';
+import { projectSchema } from '../model/RenkuModels';
 
 
 const List = {

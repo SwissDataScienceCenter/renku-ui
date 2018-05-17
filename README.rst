@@ -16,21 +16,21 @@
   limitations under the License.
 
 ================
- Renga-UI
+ Renku-UI
 ================
 
-**This is the development branch of Renga-UI, and should be considered highly
+**This is the development branch of Renku-UI, and should be considered highly
 volatile.**
 
-The development branch of the Renga user interface contains a complete rewrite
-of the old ui which reflects the redesign of the Renga platform in general.
+The development branch of the Renku user interface contains a complete rewrite
+of the old ui which reflects the redesign of the Renku platform in general.
 
 Quickstart
 ----------
 
-The new Renga ui depends on a running instace of the development
-version of Renga being present (more precisely, it relies on  correctly
-preconfigured instances of gitlab and keycloak). Clone the main renga
+The new Renku ui depends on a running instace of the development
+version of Renku being present (more precisely, it relies on  correctly
+preconfigured instances of gitlab and keycloak). Clone the main renku
 repository, checkout the development branch  and run `make start`. The ui
 should now be available under `http://localhost`.
 
@@ -39,7 +39,7 @@ Developing the UI
 -----------------
 
 For a proper development setting run the following two commands after checking out the development branch of the
-renga-ui repository:
+renku-ui repository:
 
 ::
 
@@ -49,7 +49,7 @@ renga-ui repository:
 
 This will run the ui outside of docker and make it available under
 `http://localhost:3000` (a browser tab should open automatically). Note that
-also the development setting relies on a running instace of renga for gitlab
+also the development setting relies on a running instace of renku for gitlab
 and keycloak.
 
 As long as you have executed `npm install` in your environment, you will have
@@ -64,8 +64,8 @@ Alternatively, the UI can also be run from a docker container:
 
 ::
 
-    $ make tag/renga-ui
-    $ docker run -d -p 3000:80 -e GITLAB_URL=http://gitlab.renga.build rengahub/renga-ui:development
+    $ make tag/renku-ui
+    $ docker run -d -p 3000:80 -e GITLAB_URL=http://gitlab.renku.build renku/renku-ui:development
 
 
 Tests
@@ -75,10 +75,10 @@ You can run tests with
 
 ::
 
-    $ make test/renga-ui
+    $ make test/renku-ui
 
 or
 
 ::
 
-    $ docker run -e CI=true rengahub/renga-ui:development npm test
+    $ docker run -e CI=true renku/renku-ui:development npm test
