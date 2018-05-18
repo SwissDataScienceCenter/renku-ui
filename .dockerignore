@@ -1,2 +1,12 @@
+/node_modules
+/gitlab
+/doc
+.editorconfig
+.eslintignore
+.eslintrc.json
+.gitignore
+.travis.yml
+docker-compose.yml
+Dockerfile
 Makefile
-node_modules/
+README.md

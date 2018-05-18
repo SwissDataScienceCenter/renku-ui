@@ -1,25 +1,76 @@
-branches:
-  only:
-  - master
-language: node_js
-node_js:
-- "6"
-sudo: true
-script:
-- npm run build
-- npm run lint
-deploy:
-- provider: script
-  skip_cleanup: true
-  script: bash ./.travis/deploy-docker.sh
-  on:
-    branch: master
+notifications:
+  email: false
+
+sudo: required
+
+services:
+  - docker
+
+language: python
+
+python:
+  - 3.6
+
+env:
+  global:
+    - DOCKER_LABEL=$TRAVIS_BRANCH
+    - DOCKER_PUSH_LATEST=true
+    - DOCKER_REPOSITORY=renku/
+    - HELM_URL=https://storage.googleapis.com/kubernetes-helm
+    - HELM_TGZ=helm-v2.8.2-linux-amd64.tar.gz
+
+git:
+  depth: false
+
 cache:
   directories:
   - node_modules
-env:
-  global:
-  - DOCKER_PUSH_LATEST=true
-  - DOCKER_REPOSITORY=rengahub/
-  - secure: n41V6PNjzT9bsD9COaa8kD395a7X8kPhx8sYylBGJUpeLppwKAVyO4B0wL75+ATFio9VpsMecAfR4PVbc7QIZYNGKjBD40egGVdiX6IGAiyJMAKJ/uG3hlxFjsWJhANufBO49JSLEFPu4XIs7SJy3ShZIE5VboIXxbTqWbCmurVI9k9x0kL6iIrb1MKY27KMuXUJB/GPO34862xt0w4oab5gAWQNlBy5El2E46M5NfFfZKmeiAubNorBjZA6SoXb/Cz/p38F0mi708428o480ZL12BunR6GuIHL9fK7n2KUberhwKMvZWR9D8wwdqmx9GHujYMKmnT9JQxKGgBcuSmhGTBkKDG/KBgoAKWPrjJ9d8uagz5LXcMXlTt59leUKFd1x6f9JX4ZFwbZ4Tl9Cl3Pyou2nf15TpvnfETelDEZRCftTNgqiCtlmcZc/IOsGEnkPBaZgVEqNiTfD7qoApgzAYTlCNIiCIILh4wWBUOGnkQi7yNA1yLpMLehPeXXQ0CmAnr/5TICG7LoBYSi8OUGyNLOOE3kpM1pLD/fnTiIobmn6ayk48RSurAS7AfWRhfYP4V3MkdTtJpCUyLWucJ+q5jaRA9q3p4i+QDBsbaQWtz/qL67t2eXAWoH87/1gJukVg5Uhe1SjRIKa3Ksnl3MTxgbc78xkjNa2jHC4VBc=
-  - secure: arHAPb9G4+Y+pkkDcg5thTjxpLUuhmvgb1ANq0Uvg/upH53K1jWtu26j/lDhYouVTWvKIi28Bdu5aNNCLgkaK4fstvIMk34hhvNkdyGnris1cIC9yLDO+QBJF+73wuCyb5ewZ4VgmgIwhTrrYmOVKRV8xQlZAv45sTjaMe6GcjXEPZeCN1GJaRab8Jb5vQETu+VLrRjmsNCsPweJ9O7i3nAhwX5tJHCZJzMxpKp+d6BLh04BO8O1aCGODaj/wlQPH678uYwVG11iEEGO2sVlmCb9Yl/KMfdIsvF1VYUvS2rDtudLhOzwYAjzdbLHMBvsN3NGfREScFlW4eT3aRgRuwUyJl+TanqgnhaUiMktXgyCWdJqpXeV4HP3ehRuYG1qYNri6h9vgRv0J69kSenWBki6l117138VHkNCsnkLcIAwLoUPOBrsiLYb7Fkf7EA3UufdEMRy2RjfnZLVo2E9Hdoog0fBz5k2FjiQOaoJ04alkY2BugNNR6OsCazv2tnfqjcSVjl08fogjJ3wbuIq2sumkfu0E16EmYpvA67e+9WtPWlqByLT9GtNJXh4vDR9v0tlFz3hdEnIfNlcQvQi3wYJIBHtTUbC8xZpaW/JPBjXq+tNurgErySGnDd0BG9M39gKJ+XWjT2qPyym0J41+nTtmZLINh1io2fty1/4nao=
+
+addons:
+  apt:
+    packages:
+      - nodejs
+
+before_install:
+  # Make sure the node LTS is installed and used.
+  - "nvm install 'lts/*'; nvm use 'lts/*'"
+  # Setup ssh keys for pushing to helm-charts repo.
+  - openssl aes-256-cbc -K $encrypted_5c6845b5ee69_key -iv $encrypted_5c6845b5ee69_iv -in github_deploy_key.enc -out github_deploy_key -d
+  - chmod 600 github_deploy_key
+  - eval $(ssh-agent -s)
+  - ssh-add github_deploy_key
+  # Login to a Docker registry.
+  - make login
+
+install:
+  - travis_retry pip install -U pip
+  - travis_retry pip install -e git+https://github.com/jirikuncar/chartpress#egg=chartpress
+  # Installing Helm
+  - wget -q ${HELM_URL}/${HELM_TGZ}
+  - tar xzfv ${HELM_TGZ}
+  - PATH=`pwd`/linux-amd64/:$PATH
+  - helm init --client-only
+
+script:
+  - make tag/renku-ui
+  # FIXME - once tests are passing, uncomment below
+  # - make test/renku-ui
+  - helm lint helm-chart/renku-ui -f helm-chart/minikube-values.yaml
+
+deploy:
+  - provider: script
+    skip_cleanup: true
+    script: make push-docker-images
+    on:
+      branch: master
+
+  - provider: script
+    skip_cleanup: true
+    script: >-
+      make push-docker-images;
+      cd helm-chart;
+      chartpress --commit-range "${TRAVIS_COMMIT_RANGE}" --push --publish-chart;
+      git diff;
+      cd ..
+    on:
+      branch: development

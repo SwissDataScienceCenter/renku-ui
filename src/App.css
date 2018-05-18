@@ -1,0 +1,101 @@
+.App {
+  text-align: center;
+}
+
+.App-logo {
+  animation: App-logo-spin infinite 20s linear;
+  height: 80px;
+}
+
+.App-header {
+  background-color: #222;
+  height: 150px;
+  padding: 20px;
+  color: white;
+}
+
+.App-title {
+  font-size: 1.5em;
+}
+
+.App-intro {
+  font-size: large;
+}
+
+@keyframes App-logo-spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Sticky Footer */
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  margin-bottom: 70px; /* Margin bottom by footer height */
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 60px; /* Set the fixed height of the footer here */
+  line-height: 60px; /* Vertically center the text there */
+  background-color: #f5f5f5;
+}
+
+/* Component classes */
+.time-caption {
+  color: #AAA;
+  font-size: smaller;
+}
+
+.comment-block {
+  display: inline
+}
+
+.expanded-reference {
+  border: 1px solid #AAA;
+  border-radius: 15px;
+  padding: 15px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+
+.image-preview {
+  max-width: 100%;
+  min-width: 100%;
+  height: auto;
+}
+
+.text-link {
+  background: none;
+  border: none;
+  margin: 0px;
+  padding: 0px;
+  color: blue;
+  cursor: pointer;
+  outline: none;
+}
+
+.text-link input[type="button"]:focus {
+  outline: none;
+}
+
+.deployButton {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+}
+
+.positioned {
+  position: relative
+}
+
+.fixed-width-120 {
+  width: 120px;
+}
+
+.fixed-width-100 {
+  width: 100px;
+}

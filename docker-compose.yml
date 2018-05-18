@@ -1,0 +1,61 @@
+version: '3'
+services:
+  gitlab:
+    image: gitlab/gitlab-ce:latest
+    restart: always
+    environment:
+      GITLAB_OMNIBUS_CONFIG: |
+        external_url '${GITLAB_URL}'
+        gitlab_rails['gitlab_shell_ssh_port'] = 5022
+        gitlab_rails['lfs_enabled'] = true
+        gitlab_rails['lfs_storage_path'] = '/var/storage/lfs-objects'
+        gitlab_rails['initial_root_password'] = 'root_password'
+
+        gitlab_rails['omniauth_enabled'] = true
+        gitlab_rails['omniauth_allow_single_sign_on'] = ['oauth2_generic']
+        gitlab_rails['omniauth_block_auto_created_users'] = false
+        gitlab_rails['omniauth_providers'] = [
+          {
+            'name' => 'oauth2_generic',
+            'app_id' => 'gitlab',
+            'app_secret' => '79d5a711-3be9-4827-979c-70bb0ae75fe8',
+            'args' => {
+              client_options: {
+                'site' => 'http://docker.for.mac.localhost:8080/auth/', # including port if necessary
+                'authorize_url' => '/auth/realms/Renku/protocol/openid-connect/auth',
+                'user_info_url' => '/auth/realms/Renku/protocol/openid-connect/userinfo',
+                'token_url' => '/auth/realms/Renku/protocol/openid-connect/token'
+              },
+              user_response_structure: {
+                attributes: { email:'email', first_name:'given_name', last_name:'family_name', name:'name', nickname:'preferred_username' }, # if the nickname attribute of a user is called 'username'
+                id_path: 'preferred_username'
+              }
+            }
+          }
+        ]
+        # Add any other gitlab.rb configuration here, each on its own line
+    ports:
+      - '5080:5080'
+      - '5443:443'
+      - '5022:22'
+    volumes:
+      - './gitlab/config:/etc/gitlab'
+      - './gitlab/logs:/var/log/gitlab'
+      - './gitlab/git-data:/var/opt/gitlab'
+      - './gitlab/lfs-data:/var/storage/lfs-objects'
+    networks:
+      - default
+
+
+  ui:
+    build: .
+    restart: always
+    ports:
+      - 5000:3000
+    volumes:
+      - ./src:/app/src
+      - ./public:/app/public
+    environment:
+      - RENKU_ENDPOINT
+      - RENKU_UI_URL
+      - GITLAB_URL

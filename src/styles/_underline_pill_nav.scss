@@ -1,0 +1,64 @@
+// From https://stackoverflow.com/questions/14983776/bootstrap-pills-rendered-with-underlines
+
+$nav-pills-underline-link-active-color: $link-color !default;
+$nav-pills-underline-link-hover-color: map-get($theme-colors, "secondary") !default;
+
+$nav-pills-underline-bg:    transparent !default;
+$nav-pills-underline-active-bg:    transparent !default;
+$nav-pills-underline-hover-bg:    transparent !default;
+
+$nav-pills-underline-border-width:    3px !default;
+$nav-pills-underline-border-color:    map-get($theme-colors, "primary");
+
+.nav-pills-underline {
+  .nav-link {
+    @include border-radius(0);
+
+    &.active,
+    .show > & {
+      color: $nav-pills-underline-link-active-color;
+      //background-color: $nav-pills-underline-active-bg;
+    }
+  }
+
+  > li.nav-item {
+    > a.nav-link {
+
+      background-color: $nav-pills-underline-bg !important;
+
+      border-bottom-width: $nav-pills-underline-border-width;
+      border-bottom-style: solid;
+      border-bottom-color: transparent;
+    }
+
+    > a.nav-link.active,
+    > a.nav-link.active:hover
+    {
+      text-decoration: none;
+      color: $nav-pills-underline-border-color;
+      border-bottom-width: $nav-pills-underline-border-width;
+      border-bottom-style: solid;
+      border-bottom-color: $nav-pills-underline-border-color;
+    }
+
+    // bg
+    > a.nav-link.active {
+      background-color: $nav-pills-underline-active-bg !important;
+    }
+
+    // color
+    > a.nav-link:hover
+    {
+      color: $nav-pills-underline-link-hover-color;
+      border-bottom-color: $nav-pills-underline-link-hover-color;
+      background-color: $nav-pills-underline-hover-bg !important;
+    }
+  }
+}
+
+.underline-nav {
+  color: $nav-pills-underline-border-color;
+  border-bottom-width: $nav-pills-underline-border-width;
+  border-bottom-style: solid;
+  border-bottom-color: $nav-pills-underline-border-color;
+}

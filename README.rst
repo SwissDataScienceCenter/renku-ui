@@ -1,5 +1,5 @@
 ..
-  Copyright 2017 - Swiss Data Science Center (SDSC)
+  Copyright 2017-2018 - Swiss Data Science Center (SDSC)
   A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
   Eidgenössische Technische Hochschule Zürich (ETHZ).
 
@@ -16,43 +16,69 @@
   limitations under the License.
 
 ================
- Renga-UI
+ Renku-UI
 ================
 
-**Renga is currently undergoing a major restructuring effort. For a preview,
-you can look at the development branch, but keep in mind it is highly
+**This is the development branch of Renku-UI, and should be considered highly
 volatile.**
 
-Renga's Web User Interface
+The development branch of the Renku user interface contains a complete rewrite
+of the old ui which reflects the redesign of the Renku platform in general.
 
-Local
------
+Quickstart
+----------
 
-Requirements:
+The new Renku ui depends on a running instace of the development
+version of Renku being present (more precisely, it relies on  correctly
+preconfigured instances of gitlab and keycloak). Clone the main renku
+repository, checkout the development branch  and run `make start`. The ui
+should now be available under `http://localhost`.
 
-- `Python 3 <https://www.python.org/>`_
-- `Node.js (LTS) <https://nodejs.org/>`_
+
+Developing the UI
+-----------------
+
+For a proper development setting run the following two commands after checking out the development branch of the
+renku-ui repository:
 
 ::
 
-   $ pip install server/requirements.txt
-   $ npm install
-   $ npm run dev
+    $ npm install
+    $ make dev
+
+
+This will run the ui outside of docker and make it available under
+`http://localhost:3000` (a browser tab should open automatically). Note that
+also the development setting relies on a running instace of renku for gitlab
+and keycloak.
+
+As long as you have executed `npm install` in your environment, you will have
+other commands defined in `package.json`, such as `npm run lint`, etc.,
+available to you.
 
 
 Docker
 ------
 
-Also required:
-
-- `Docker <http://www.docker.com>`_
+Alternatively, the UI can also be run from a docker container:
 
 ::
 
-   $ npm install
-   $ npm run build
-   $ docker build --tag renga-ui:latest .
-   $ docker run -p 5000:5000 renga-ui:latest
+    $ make tag/renku-ui
+    $ docker run -d -p 3000:80 -e GITLAB_URL=http://gitlab.renku.build renku/renku-ui:development
 
 
-You can test it by pointing your browser to http://localhost:5000/
+Tests
+-----
+
+You can run tests with
+
+::
+
+    $ make test/renku-ui
+
+or
+
+::
+
+    $ docker run -e CI=true renku/renku-ui:development npm test

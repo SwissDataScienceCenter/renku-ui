@@ -1,17 +1,22 @@
-FROM python:3.6-alpine
-RUN apk add --no-cache gcc g++ make libffi-dev openssl-dev python3-dev build-base && \
-    python3 -m ensurepip && \
-    rm -r /usr/lib/python*/ensurepip && \
-    pip3 install --upgrade pycryptodome==3.5.1 flask>=0.12.2 && \
-    apk del --purge gcc g++ make libffi-dev openssl-dev python3-dev build-base && \
-    rm -r /root/.cache
-COPY ./server/requirements.txt /app/
+FROM node:8.11.1-alpine
+
 WORKDIR /app
-RUN pip3 install -r requirements.txt
-COPY ./server /app/server
-COPY ./dist /app/dist
 
-ENTRYPOINT ["python3"]
-CMD ["/app/server/run.py"]
+#: Use only required files.
+COPY package.json package-lock.json /app/
+COPY public /app/public
+COPY src /app/src/
 
-EXPOSE 5000
+RUN npm install --silent && \
+    npm run-script build
+
+FROM nginx:1.13-alpine
+
+COPY --from=0 /app/build /usr/share/nginx/html
+COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
+COPY docker-entrypoint.sh /app/docker-entrypoint.sh
+
+HEALTHCHECK --interval=20s --timeout=10s --retries=5 CMD test -e /var/run/nginx.pid
+
+ENTRYPOINT ["/bin/sh", "/app/docker-entrypoint.sh"]
+CMD ["nginx", "-g", "daemon off;"]
