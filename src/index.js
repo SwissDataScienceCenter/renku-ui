@@ -23,11 +23,10 @@ configPromise.then((res) => {
     const store = createStore(reducer);
 
     const client = new GitlabClient(
-      params.GITLAB_URL + '/api/v4/',
+      'http://localhost:5000' + '/api/v4/',
       cookies.get('gitlab_token'),
       'bearer',
-      params.JUPYTERHUB_URL)
-    ;
+      params.JUPYTERHUB_URL);
 
     function mapStateToProps(state, ownProps){
       return {...state, ...ownProps}
