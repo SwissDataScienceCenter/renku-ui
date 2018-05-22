@@ -60,12 +60,6 @@ script:
 deploy:
   - provider: script
     skip_cleanup: true
-    script: make push-docker-images
-    on:
-      branch: master
-
-  - provider: script
-    skip_cleanup: true
     script: >-
       make push-docker-images;
       cd helm-chart;
@@ -73,4 +67,4 @@ deploy:
       git diff;
       cd ..
     on:
-      branch: development
+      branch: master
