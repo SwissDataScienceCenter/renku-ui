@@ -84,9 +84,10 @@ const JupyterNotebookPresent = props => {
 
   return [
     <Row key="controls">
-      <Col xs={{size: 2, offset: 10}}>
-      <LaunchNotebookButton
-        key="launchbutton" deploymentUrl={props.deploymentUrl} label="Launch Notebook" className="deployButton" />
+      <Col>
+        <LaunchNotebookButton
+          className="deployButton float-right"
+          key="launchbutton" deploymentUrl={props.deploymentUrl} label="Launch Notebook"  />
       </Col>
     </Row>,
     <Row key="notebook">
