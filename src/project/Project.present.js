@@ -109,11 +109,11 @@ class ProjectViewHeader extends Component {
             </p>
           </Col>
           <Col xs={12} md={3}>
-            <p>
+            <p className="text-md-right">
               {tags}
             </p>
             {/*TODO: Adapting the width in a more elegant manner would be nice...*/}
-            <div className={this.props.starred ? 'fixed-width-120' : 'fixed-width-100'}>
+            <div className={`float-md-right fixed-width-${this.props.starred ? '120' : '100'}`}>
               <form className="input-group input-group-sm">
                 <div className="input-group-prepend">
                   <button className="btn btn-outline-primary" onClick={this.props.onStar}>
@@ -268,7 +268,7 @@ class ProjectViewFiles extends Component {
           notebooksUrl={this.props.notebooksUrl}
           dataUrl={this.props.dataUrl} />
       </Col>,
-      <Col key="notebook" sm={12} md={9}>
+      <Col key="notebook" sm={12} md={10}>
         <Switch>
           <Route path={this.props.notebookUrl}
             render={props => this.props.notebookView(props) } />
@@ -319,6 +319,7 @@ class ProjectTags extends Component {
   }
 
   // N.b. This works in react 16.2, but has been deprecated in favor in getDerivedStateFromProps in 16.3
+  // TODO Remove this method when we switch to React 16.3
   componentWillReceiveProps(nextProps) {
     this.setState(ProjectTags.getDerivedStateFromProps(nextProps, this.state));
   }
