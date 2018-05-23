@@ -53,7 +53,7 @@ endif
 	docker push $(DOCKER_PREFIX)$(notdir $@):$(GIT_MASTER_HEAD_SHA)
 
 test/%: tag/%
-	docker run -e CI=true $(DOCKER_PREFIX)$(notdir $@):$(DOCKER_LABEL) ./run-tests.sh
+	docker run -e CI=true -v run-tests.sh:/tmp/run-tests.sh $(DOCKER_PREFIX)$(notdir $@):$(DOCKER_LABEL) sh /tmp/run-tests.sh
 
 login:
 	@echo "${DOCKER_PASSWORD}" | docker login -u="${DOCKER_USERNAME}" --password-stdin ${DOCKER_REGISTRY}

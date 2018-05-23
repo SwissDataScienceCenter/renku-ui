@@ -46,8 +46,7 @@ install:
 
 script:
   - make tag/renku-ui
-  # FIXME - once tests are passing, uncomment below
-  # - make test/renku-ui
+  - make test/renku-ui
   - helm lint helm-chart/renku-ui -f helm-chart/minikube-values.yaml
 
 deploy:
