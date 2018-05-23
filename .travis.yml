@@ -37,7 +37,7 @@ before_install:
 
 install:
   - travis_retry pip install -U pip
-  - travis_retry pip install -e git+https://github.com/jirikuncar/chartpress#egg=chartpress
+  - travis_retry pip install chartpress
   # Installing Helm
   - wget -q ${HELM_URL}/${HELM_TGZ}
   - tar xzfv ${HELM_TGZ}
@@ -54,4 +54,4 @@ deploy:
     skip_cleanup: true
     script: bash travis-deploy.sh
     on:
-      branch: fix-travis-deploy
+      branch: master

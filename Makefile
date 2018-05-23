@@ -26,7 +26,7 @@ endif
 
 IMAGES=renku-ui
 
-GIT_MASTER_HEAD_SHA:=$(shell git rev-parse --short=12 --verify HEAD)
+GIT_MASTER_HEAD_SHA:=$(shell git rev-parse --short=7 --verify HEAD)
 
 PLATFORM_DOMAIN?=renku.build
 GITLAB_URL?=http://gitlab.$(PLATFORM_DOMAIN)
