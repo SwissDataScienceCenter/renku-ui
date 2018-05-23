@@ -31,7 +31,8 @@ import logo from './logo.svg';
 import { BrowserRouter as Router, Route, Switch, Link, Redirect }  from 'react-router-dom'
 // import { IndexLinkContainer } from 'react-router-bootstrap';
 // import { FormGroup, FormControl, InputGroup } from 'react-bootstrap'
-// import { MenuItem, Nav, Navbar, NavItem, NavDropdown } from 'react-bootstrap'
+
+import { DropdownItem } from 'reactstrap'
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faSearch from '@fortawesome/fontawesome-free-solid/faSearch'
 import faPlus from '@fortawesome/fontawesome-free-solid/faPlus'
@@ -41,8 +42,8 @@ import faPlus from '@fortawesome/fontawesome-free-solid/faPlus'
 import Project from './project/Project'
 import Ku from './ku/Ku'
 import Landing from './landing/Landing'
-import Login from './login'
 import Notebooks from './notebooks';
+import { loginURL, logoutURL } from './utils/AuthURLs'
 import { RenkuNavLink, UserAvatar } from './utils/UIComponents'
 // import Lineage from './lineage'
 
@@ -148,7 +149,28 @@ class RenkuNavBar extends Component {
                   {kuDropdown}
                 </div>
               </li>
-              <RenkuToolbarItemUser loggedIn={loggedIn} userAvatar={this.props.userAvatar} user={this.props.user} />
+              {/* TODO: Bring back user avatar! */}
+              {/* <RenkuToolbarItemUser loggedIn={loggedIn} userAvatar={this.props.userAvatar} user={this.props.user} />*/}
+              <li className="nav-item dropdown">
+                <a className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
+                  aria-haspopup="true" aria-expanded="false">
+                  {this.props.userAvatar}
+                </a>
+                <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+                  {loggedIn ? <RenkuNavLink to="/user" title="Profile" /> : null }
+                  {/*TODO: Fix user state and stiling issues later*/}
+                  {/*{loggedIn ? <RenkuNavLink to="/logout" title="Logout" /> :
+                  <RenkuNavLink to="/login" title="Login" />}*/}
+                  <DropdownItem
+                    toggle={false}
+                    onClick={() => {window.location = loginURL(this.props.params)}}
+                  >Login</DropdownItem>
+                  <DropdownItem
+                    toggle={false}
+                    onClick={() => {window.location = logoutURL(this.props.params)}}
+                  >Logout</DropdownItem>
+                </div>
+              </li>
             </ul>
           </div>
         </nav>
@@ -182,12 +204,6 @@ class App extends Component {
 
               {/* Route forces trailing slashes on routes ending with a numerical id */}
               <Route exact strict path="/*(\d+)" render={props => <Redirect to={`${props.location.pathname}/`}/>}/>
-              <Route exact path="/logout"
-                render={p => <Login.Logout key="logout" {...p} {...this.props} />} />
-              <Route exact path="/login"  render = {
-                p => <Login.Login key="login" {...p} {...this.props}/>} />
-              <Route exact path="/login/redirect/gitlab"
-                render={p => <Login.GitlabRedirect key="gitlabRedirect" {...p} {...this.props}/>} />
               <Route exact path="/"
                 render={p => <Landing.Home key="landing" user={this.props.userState.getState().user} {...p} />} />
               <Route exact path="/projects"
