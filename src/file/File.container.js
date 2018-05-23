@@ -141,7 +141,7 @@ class FilePreview extends React.Component {
     // Jupyter Notebook
     if (this.getFileExtension() === 'ipynb'){
       return <JupyterNotebookContainer
-        notebook={JSON.parse(atob(this.props.file.content))}
+        notebook={JSON.parse(atob(this.props.file.content), (key, value) => Object.freeze(value))}
         filePath={this.props.file.file_path}
         {...this.props}
       />;
