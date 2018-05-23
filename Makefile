@@ -61,4 +61,11 @@ login:
 
 dev:
 	@echo "You might want to edit ''./public/config.json'. Happy Hacking!!!"
+	@echo "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	@echo "Note that currently the dev setting of the"
+	@echo "ui is assuming that one is developing"
+	@echo "against a locally running version of the"
+	@echo "gateway too (http://localhost:5000)"
+	@echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
+	sleep 5
 	npm start

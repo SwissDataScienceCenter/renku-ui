@@ -18,8 +18,7 @@
 
 echo "==================================================="
 echo " Configuration:"
-echo " GITLAB_URL=${GITLAB_URL:-http://gitlab.renku.build}"
-echo " GITLAB_CLIENT_ID=${GITLAB_CLIENT_ID:-renku-ui}"
+echo " GATEWAY_URL=${GATEWAY_URL:-http://gateway.renku.build}"
 echo " BASE_URL=${BASE_URL:-http://renku.build}"
 echo " JUPYTERHUB_URL=${JUPYTERHUB_URL:-http://juptyerhub.renku.build}"
 echo "==================================================="
@@ -27,9 +26,8 @@ echo "==================================================="
 tee > /usr/share/nginx/html/config.json << EOF
 {
   "BASE_URL": "${BASE_URL:-http://renku.build}",
-  "GITLAB_URL": "${GITLAB_URL:-http://gitlab.renku.build}",
-  "GITLAB_CLIENT_ID": "${GITLAB_CLIENT_ID:-renku-ui}",
-  "JUPYTERHUB_URL": "${JUPYTERHUB_URL:-http://jupyterhub.renku.build}"
+  "JUPYTERHUB_URL": "${JUPYTERHUB_URL:-http://jupyterhub.renku.build}",
+  "GATEWAY_URL": "${GATEWAY_URL:-http://gateway.renku.build}"
 }
 EOF
 
