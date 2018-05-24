@@ -13,4 +13,3 @@ charts:
         # Dockerfile path relative to chartpress.yaml
         dockerfilePath: ../Dockerfile
         valuesPath: image
-        paths:
