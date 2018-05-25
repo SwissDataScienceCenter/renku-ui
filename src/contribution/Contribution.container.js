@@ -26,13 +26,19 @@ import { EDIT, patterns } from './Contribution.constants'
 class ContributionBody extends React.Component {
   constructor(props) {
     super(props);
+    this._mounted = false;
     const blocks = matchRefs(this.props.contribution.body);
     this.state = {blocks};
   }
 
   componentDidMount() {
+    this._mounted = true;
     const blocks = this.state.blocks;
     this.fetchRefs(blocks);
+  }
+
+  componentWillUnmount() {
+    this._mounted = false;
   }
 
   // Fetch all the references and add them to the app-state.
@@ -51,7 +57,7 @@ class ContributionBody extends React.Component {
     let updateBlock = {...blocks[iBlock]};
     updateBlock[property] = value;
     blocks[iBlock] = updateBlock;
-    this.setState({blocks})
+    if (this._mounted) this.setState({blocks})
   }
 
   render() {
