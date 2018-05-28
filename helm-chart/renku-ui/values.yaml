@@ -43,8 +43,8 @@ replicaCount: 1
 image:
   name: renku/renku-ui
   repository: renku/renku-ui
-  tag: development
-  pullPolicy: Always
+  tag: latest
+  pullPolicy: IfNotPresent
 
 service:
   type: ClusterIP
