@@ -224,7 +224,7 @@ class GitlabClient {
 
   // TODO: Once the gateway is up and running, the client should not need to be aware of the
   // TODO: JUPYTERHUB_URL anymore but simply query the notebook url from the gateway
-  async getNotebookServerUrl(projectId, projectPath, filePath,commitSha='latest', ref='master') {
+  async getNotebookServerUrl(projectId, projectPath, filePath, commitSha='latest', ref='master') {
     if (commitSha === 'latest') {
       commitSha = await (this.getCommits(projectId).then(commits => commits[0].id));
     }
