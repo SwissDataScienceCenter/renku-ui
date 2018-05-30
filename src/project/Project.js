@@ -122,11 +122,13 @@ class View extends Component {
 
       kuView: (p) => <Ku.View key="ku" {...subProps}
         kuIid={p.match.params.kuIid}
-        updateProjectView={updateProjectView}/>,
+        updateProjectView={updateProjectView}
+        projectPath={this.projectState.get('core.path_with_namespace')}/>,
       /* TODO Should we handle each type of file or just have a generic project files viewer? */
 
       notebookView: (p) => <Notebook.Show key="notebook" {...subProps}
-        filePath={`notebooks/${p.match.params.notebookPath}`}/>,
+        filePath={`notebooks/${p.match.params.notebookPath}`}
+        projectPath={this.projectState.get('core.path_with_namespace')}/>,
 
       lineageView: (p) => <FileLineage key="lineage" {...subProps}
         path={`data/${p.match.params.datumPath}`} />,

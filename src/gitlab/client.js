@@ -17,10 +17,11 @@ class GitlabClient {
   // ku    -->  issue
 
 
-  constructor(baseUrl, token, tokenType) {
+  constructor(baseUrl, token, tokenType, jupyterhub_url) {
     this._baseUrl = baseUrl;
     this._token = token;
     this._tokenType = tokenType;
+    this._jupyterhub_url = jupyterhub_url;
   }
 
   getBasicHeaders() {
@@ -181,6 +182,23 @@ class GitlabClient {
 
   }
 
+  getCommits(projectId, ref='master') {
+    let headers = this.getBasicHeaders();
+    headers.append('Content-Type', 'application/json');
+    return renkuFetch(this._baseUrl + `projects/${projectId}/repository/commits?ref_name=${ref}`, {
+      method: 'GET',
+      headers: headers
+    })
+      .then(commits => {
+        if (commits.length > 0) {
+          return commits;
+        }
+        else {
+          throw API_ERRORS.notFoundError;
+        }
+      })
+  }
+
   getContributions(projectId, kuIid) {
     let headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
@@ -202,6 +220,15 @@ class GitlabClient {
       body: JSON.stringify({body: contribution})
     })
 
+  }
+
+  // TODO: Once the gateway is up and running, the client should not need to be aware of the
+  // TODO: JUPYTERHUB_URL anymore but simply query the notebook url from the gateway
+  async getNotebookServerUrl(projectId, projectPath, filePath, commitSha='latest', ref='master') {
+    if (commitSha === 'latest') {
+      commitSha = await (this.getCommits(projectId).then(commits => commits[0].id));
+    }
+    return `${this._jupyterhub_url}/services/notebooks/${projectPath}/${commitSha}/${filePath}?branch=${ref}`
   }
 
   _modifiyIssue(projectId, issueIid, body) {
@@ -298,8 +325,6 @@ class GitlabClient {
       .then(envs => envs.filter(env => env.name === `${envName}/${branchName}`)[0])
       .then(env => {
         if (!env) return undefined;
-        // TODO: Add the path to the actual notebook file once the CI/CD part
-        // TODO: has stabilized.
         return `${env.external_url}`;
       })
   }
@@ -358,7 +383,7 @@ function carveProject(projectJson) {
     result['metadata']['visibility']['accessLevel'] = 0
   }
 
-  
+
   result['metadata']['core']['created_at'] = projectJson['created_at'];
   result['metadata']['core']['last_activity_at'] = projectJson['last_activity_at'];
   result['metadata']['core']['id'] = projectJson['id'];
@@ -366,6 +391,7 @@ function carveProject(projectJson) {
   result['metadata']['core']['displayId'] = projectJson['path_with_namespace'];
   result['metadata']['core']['title'] = projectJson['name'];
   result['metadata']['core']['external_url'] = projectJson['web_url'];
+  result['metadata']['core']['path_with_namespace'] = projectJson['path_with_namespace'];
 
   result['metadata']['system']['tag_list'] = projectJson['tag_list'];
   result['metadata']['system']['star_count'] = projectJson['star_count'];
