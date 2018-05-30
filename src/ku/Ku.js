@@ -179,10 +179,19 @@ class View extends Component {
 
   constructor(props) {
     super(props);
+    this._mounted = false;
     this.store = createStore(State.View.reducer);
     this.store.dispatch(this.retrieveKu());
-    this.retrieveContributions();
     this.state = {contributions: []}
+  }
+
+  componentDidMount() {
+    this._mounted = true;
+    this.retrieveContributions();
+  }
+
+  componentWillUnmount() {
+    this._mounted = false;
   }
 
   retrieveKu() {
@@ -204,6 +213,7 @@ class View extends Component {
   retrieveContributions() {
     this.props.client.getContributions(this.props.projectId, this.props.kuIid)
       .then(d => {
+        if (!this._mounted) return;
         this.setState((prevState, props) => {
           return {contributions: d}
         });
