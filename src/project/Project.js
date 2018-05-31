@@ -127,13 +127,14 @@ class View extends Component {
       /* TODO Should we handle each type of file or just have a generic project files viewer? */
 
       notebookView: (p) => <Notebook.Show key="notebook" {...subProps}
-        filePath={`notebooks/${p.match.params.notebookPath}`}
+        filePath={`/notebooks/${p.match.params.notebookPath}`}
         projectPath={this.projectState.get('core.path_with_namespace')}/>,
 
       lineageView: (p) => <FileLineage key="lineage" {...subProps}
         path={`data/${p.match.params.datumPath}`} />,
 
-      launchNotebookButton: <LaunchNotebookServerButton key= "launch notebook" {...subProps} />,
+      launchNotebookServerButton: <LaunchNotebookServerButton key= "launch notebook" {...subProps}
+        projectPath={this.projectState.get('core.path_with_namespace')}/>,
     }
   }
 

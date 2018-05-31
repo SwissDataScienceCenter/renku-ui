@@ -251,7 +251,7 @@ class ProjectFilesCategorizedList extends Component {
   render() {
     return <Switch>
       <Route path={this.props.notebooksUrl} render={props => {
-        return <FileFolderList paths={this.props.files.notebooks} emptyView={this.props.launchNotebookButton}/> }
+        return <FileFolderList paths={this.props.files.notebooks} emptyView={this.props.launchNotebookServerButton}/> }
       } />
       <Route path={this.props.dataUrl} render={props => <FileFolderList paths={this.props.files.data} /> } />
       <Route render={props => <p>Files</p> } />
