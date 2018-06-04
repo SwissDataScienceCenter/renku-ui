@@ -26,10 +26,14 @@ import { ACCESS_LEVELS } from '../gitlab';
 
 
 function getNotebookServerUrl(component) {
+  // Accept paths starting with or without slash
+  let filePath = component.props.filePath;
+  if (filePath[0] !== '/') filePath = '/' + filePath;
+
   component.props.client.getNotebookServerUrl(
     component.props.projectId,
     component.props.projectPath,
-    component.props.filePath
+    filePath
   )
     .then(notebookUrl => component.setState({deploymentUrl: notebookUrl}));
 }
