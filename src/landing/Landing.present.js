@@ -92,31 +92,79 @@ class Starred extends Component {
   }
 }
 
+class Welcome extends Component {
+  render() {
+    return (<div>
+      <h1>Welcome</h1>
+      Welcome to Renku!<br /><br />
+    </div>
+    )
+  }
+}
+
+class LoggedInNav extends Component {
+  render() {
+    const selected = this.props.selected;
+    return <Nav pills className={'nav-pills-underline'}>
+      <NavItem>
+        <NavLink href="#" active={selected === 'starred'}
+          onClick={this.props.onStarred}>Starred</NavLink>
+      </NavItem>
+      <NavItem>
+        <NavLink href="#" active={selected === 'your_activity'}
+          onClick={this.props.onYourActivity}>Activity</NavLink>
+      </NavItem>
+      <NavItem><NavLink href="#" active={selected === 'your_network'}
+        onClick={this.props.onYourNetwork}>Network</NavLink></NavItem>
+      <NavItem><NavLink href="#" active={selected === 'explore'}
+        onClick={this.props.onExplore}>Explore</NavLink></NavItem>
+    </Nav>
+  }
+}
+
+class AnonymousNav extends Component {
+  render() {
+    const selected = this.props.selected;
+    return <Nav pills className={'nav-pills-underline'}>
+      <NavItem>
+        <NavLink href="#" active={selected === 'welcome'}
+          onClick={this.props.onWelcome}>Welcome</NavLink>
+      </NavItem>
+      <NavItem><NavLink href="#" active={selected === 'explore'}
+        onClick={this.props.onExplore}>Explore</NavLink></NavItem>
+    </Nav>
+  }
+}
+
 class Home extends Component {
   render() {
-    const selected = this.props.ui.selected;
+    let selected = this.props.ui.selected;
+    let nav = null;
+    // Make sure the selected tab is valid for the user
+    if (this.props.user != null && this.props.user.id != null) {
+      if (selected === 'welcome') selected = 'starred';
+      nav = <LoggedInNav selected={selected}
+        onStarred={this.props.onStarred}
+        onYourActivity={this.props.onYourActivity}
+        onYourNetwork={this.props.onYourNetwork}
+        onExplore={this.props.onExplore} />
+    } else {
+      if (selected === 'your_network') selected = 'welcome';
+      else if (selected === 'starred') selected = 'welcome';
+      nav = <AnonymousNav selected={selected}
+        onWelcome={this.props.onWelcome}
+        onExplore={this.props.onExplore} />
+    }
     // const visibleTab = <ProjectList {...this.props} />
     let visibleTab = <YourActivity />
     if (selected === 'your_network') visibleTab = <YourNetwork />
     if (selected === 'explore') visibleTab = <Explore />
     if (selected === 'starred') visibleTab = this.props.starred;
+    if (selected === 'welcome') visibleTab = <Welcome />
     return [
       <Row key="nav">
         <Col md={12}>
-          <Nav pills className={'nav-pills-underline'}>
-            <NavItem>
-              <NavLink href="#" active={selected === 'starred'}
-                onClick={this.props.onStarred}>Starred</NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink href="#" active={selected === 'your_activity'}
-                onClick={this.props.onYourActivity}>Activity</NavLink>
-            </NavItem>
-            <NavItem><NavLink href="#" active={selected === 'your_network'}
-              onClick={this.props.onYourNetwork}>Network</NavLink></NavItem>
-            <NavItem><NavLink href="#" active={selected === 'explore'}
-              onClick={this.props.onExplore}>Explore</NavLink></NavItem>
-          </Nav>
+          {nav}
         </Col>
       </Row>,
       <Row key="spacer"><Col md={12}>&nbsp;</Col></Row>,
