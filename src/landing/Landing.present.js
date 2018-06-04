@@ -92,12 +92,18 @@ class Starred extends Component {
   }
 }
 
-class Welcome extends Component {
+class AnonymousWelcome extends Component {
   render() {
-    return (<div>
-      <h1>Welcome</h1>
-      Welcome to Renku!<br /><br />
-    </div>
+    return (<Row>
+      <Col md={8} lg={6} xl={4}>
+        <h1>Welcome to Renku!</h1>
+        <p>Renku is software for collaborative data science.</p>
+        <p>Here, you can share code, data, discuss solutions, and carry out data-science projects.
+        </p>
+        <p>You are not logged in, but you can still view public projects. If you wish to contribute to an existing
+           project or create a new one, please <Link to="/login">log in.</Link></p>
+      </Col>
+    </Row>
     )
   }
 }
@@ -140,6 +146,7 @@ class Home extends Component {
   render() {
     let selected = this.props.ui.selected;
     let nav = null;
+    let welcome = <AnonymousWelcome />;
     // Make sure the selected tab is valid for the user
     if (this.props.user != null && this.props.user.id != null) {
       if (selected === 'welcome') selected = 'starred';
@@ -160,7 +167,7 @@ class Home extends Component {
     if (selected === 'your_network') visibleTab = <YourNetwork />
     if (selected === 'explore') visibleTab = <Explore />
     if (selected === 'starred') visibleTab = this.props.starred;
-    if (selected === 'welcome') visibleTab = <Welcome />
+    if (selected === 'welcome') visibleTab = welcome;
     return [
       <Row key="nav">
         <Col md={12}>
