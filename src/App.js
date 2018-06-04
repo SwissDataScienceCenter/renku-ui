@@ -52,6 +52,25 @@ function getActiveProjectId(currentPath) {
   }
 }
 
+class RenkuToolbarItemUser extends Component {
+  render() {
+    if (this.props.user == null || this.props.user.id == null) {
+      return <RenkuNavLink to="/login" title="Login" />
+    }
+    const loggedIn = this.props.loggedIn;
+    return <li className="nav-item dropdown">
+      <a key="button" className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
+        aria-haspopup="true" aria-expanded="false">
+        {this.props.userAvatar}
+      </a>
+      <div key="menu" className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+        {loggedIn ? <RenkuNavLink to="/user" title="Profile" /> : null }
+        {loggedIn ? <RenkuNavLink to="/logout" title="Logout" /> : <RenkuNavLink to="/login" title="Login" />}
+      </div>
+    </li>
+  }
+}
+
 class RenkuNavBar extends Component {
 
   constructor(props) {
@@ -125,16 +144,7 @@ class RenkuNavBar extends Component {
                   {kuDropdown}
                 </div>
               </li>
-              <li className="nav-item dropdown">
-                <a className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
-                  aria-haspopup="true" aria-expanded="false">
-                  {this.props.userAvatar}
-                </a>
-                <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                  {loggedIn ? <RenkuNavLink to="/user" title="Profile" /> : null }
-                  {loggedIn ? <RenkuNavLink to="/logout" title="Logout" /> : <RenkuNavLink to="/login" title="Login" />}
-                </div>
-              </li>
+              <RenkuToolbarItemUser loggedIn={loggedIn} userAvatar={this.props.userAvatar} user={this.props.user} />
             </ul>
           </div>
         </nav>
