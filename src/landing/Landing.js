@@ -65,7 +65,8 @@ class Home extends Component {
 
   mapStateToProps(state, ownProps) {
     const local = {
-      starred: <Starred userState={ownProps.userState} />
+      starred: <Starred userState={ownProps.userState} />,
+      user: ownProps.userState.getState().user
     };
     return {...state, ...local}
   }
