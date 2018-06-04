@@ -7,7 +7,8 @@ import 'font-awesome/css/font-awesome.min.css';
 import './styles/index.css';
 import './index.css';
 import App from './App';
-import registerServiceWorker from './utils/ServiceWorker';
+// Disable service workers for the moment -- see below where registerServiceWorker is called
+// import registerServiceWorker from './utils/ServiceWorker';
 import GitlabClient from './gitlab'
 import Cookies from 'universal-cookie'
 import { UserState, reducer} from './app-state';
@@ -64,6 +65,7 @@ configPromise.then((res) => {
       document.getElementById('root')
     );
 
-    registerServiceWorker()
+    // The service worker is used for caching content offline, but it causes problems for URL routing.
+    // registerServiceWorker()
   });
 });
