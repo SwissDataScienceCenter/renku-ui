@@ -95,6 +95,9 @@ const Ui = {
   selectExplore: () => {
     return createSetAction('ui', 'selected', 'explore');
   },
+  selectWelcome: () => {
+    return createSetAction('ui', 'selected', 'welcome');
+  },
   reduce: (state, action) => {
     return reduceState('ui', state, action, {selected: 'starred'})
   }

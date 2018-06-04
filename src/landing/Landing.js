@@ -78,6 +78,7 @@ class Home extends Component {
       onYourActivity: (e) => { dispatch(State.Home.Ui.selectYourActivity()) },
       onYourNetwork: (e) => { dispatch(State.Home.Ui.selectYourNetwork()) },
       onExplore: (e) => { dispatch(State.Home.Ui.selectExplore()) },
+      onWelcome: (e) => { dispatch(State.Home.Ui.selectWelcome()) },
     }
   }
 
