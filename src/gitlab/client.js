@@ -1,4 +1,4 @@
-import {alertAPIErrors, API_ERRORS, renkuFetch} from './errors';
+import {alertAPIErrors, API_ERRORS, renkuFetch} from './renkuFetch';
 
 const SPECIAL_FOLDERS = {
   data: 'data',
