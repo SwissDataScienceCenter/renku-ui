@@ -31,62 +31,75 @@ import { Link }  from 'react-router-dom'
 
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { Row, Col } from 'reactstrap';
+import { Table } from 'reactstrap';
+
+import { TimeCaption } from '../utils/UIComponents';
 
 class Explore extends Component {
   render() {
-    return (<div>
-      <h1>Explore</h1>
-      Here are some things we think you might like based on what you have been working on.
-      You also have access to an advanced search here. (Coming soon)
-    </div>
-    )
+    return (<Row>
+      <Col md={8} lg={6} xl={4}>
+        <h1>Explore</h1>
+        <p>We are still working on this. When complete, you will be able to browse and search for projects.
+          In the meantime, you can look at all <Link to={this.props.urlMap.projectsUrl}>Projects</Link>.</p>
+      </Col>
+    </Row>)
   }
 }
 
 class YourNetwork extends Component {
   render() {
-    return (<div>
-      <h1>Your Network</h1>
-      Here is some activity from your network. (Not yet implemented)
-    </div>
-    )
+    return (<Row>
+      <Col md={8} lg={6} xl={4}>
+        <h1>Your Network</h1>
+        <p>Currently a placeholder, but here you will be able to see what is going on in your network.
+        Until this functionality arrives, you can look at
+        all <Link to={this.props.urlMap.projectsUrl}>Projects</Link>.</p>
+      </Col>
+    </Row>)
   }
 }
 
 class YourActivity extends Component {
   render() {
-    return (<div>
-      <h1>Your Activity</h1>
-      This is what you have been working on.<br /><br />
-      Not yet implemented, but in the meantime, take a look at <Link to="/projects">Projects</Link>.
-    </div>
-    )
+    return (<Row>
+      <Col md={8} lg={6} xl={4}>
+        <h1>Your Activity</h1>
+        <p>What are you working on? What is going on in the projects you contribute to?<br /><br />
+          These are the kinds of questions that will be answered here when this functionality is implemented.
+          Until then, take a look at <Link to={this.props.urlMap.projectsUrl}>Projects</Link>.</p>
+      </Col>
+    </Row>)
   }
 }
 
 class ProjectListRow extends Component {
 
   render() {
-    // TODO: Replace all paths with props to allow routing to be controlled at the top level
-    const title = <Link to={`/projects/${this.props.id}`}>{this.props.path_with_namespace}</Link>
-    return (
-      <Row className="project-list-row">
-        <Col md={9}>
-          <p><b>{title}</b></p>
-        </Col>
-      </Row>
-    );
+    const title = <Link to={`${this.props.projectsUrl}/${this.props.id}`}>{this.props.path_with_namespace}</Link>
+    return (<tr>
+      <td>{title}</td>
+      <td>{this.props.description}</td>
+      <td>{this.props.tag_list.join(', ')}</td>
+      <td><TimeCaption key="time-caption" time={this.props.last_activity_at} /></td>
+    </tr>);
   }
 }
 
 class Starred extends Component {
   render() {
     const projects = this.props.projects || [];
-    const rows = projects.map(p => <ProjectListRow key={p.id} {...p} />);
+    const projectsUrl = this.props.urlMap.projectsUrl;
+    const rows = projects.map(p => <ProjectListRow key={p.id} projectsUrl={projectsUrl} {...p} />);
     return (<div>
       <h1>Starred Projects</h1>
-      These are the projects you have starred.<br /><br />
-      {rows}
+      <br />
+      <Table>
+        <thead><tr><th>Project</th><th>Description</th><th>Tags</th><th>Last Activity</th></tr></thead>
+        <tbody>
+          {rows}
+        </tbody>
+      </Table>
     </div>
     )
   }
@@ -98,7 +111,7 @@ class AnonymousWelcome extends Component {
       <Col md={8} lg={6} xl={4}>
         <h1>Welcome to Renku!</h1>
         <p>Renku is software for collaborative data science.</p>
-        <p>Here, you can share code, data, discuss solutions, and carry out data-science projects.
+        <p>Here you can share code and data, discuss problems and solutions, and carry out data-science projects.
         </p>
         <p>You are not logged in, but you can still view public projects. If you wish to contribute to an existing
            project or create a new one, please <Link to="/login">log in.</Link></p>
@@ -146,11 +159,12 @@ class Home extends Component {
   render() {
     let selected = this.props.ui.selected;
     let nav = null;
-    let welcome = <AnonymousWelcome />;
+    const urlMap = this.props.urlMap;
+    let welcome = <AnonymousWelcome urlMap={urlMap} />;
     // Make sure the selected tab is valid for the user
     if (this.props.user != null && this.props.user.id != null) {
       if (selected === 'welcome') selected = 'starred';
-      nav = <LoggedInNav selected={selected}
+      nav = <LoggedInNav selected={selected} urlMap={urlMap}
         onStarred={this.props.onStarred}
         onYourActivity={this.props.onYourActivity}
         onYourNetwork={this.props.onYourNetwork}
@@ -163,9 +177,9 @@ class Home extends Component {
         onExplore={this.props.onExplore} />
     }
     // const visibleTab = <ProjectList {...this.props} />
-    let visibleTab = <YourActivity />
-    if (selected === 'your_network') visibleTab = <YourNetwork />
-    if (selected === 'explore') visibleTab = <Explore />
+    let visibleTab = <YourActivity urlMap={urlMap} />
+    if (selected === 'your_network') visibleTab = <YourNetwork urlMap={urlMap} />
+    if (selected === 'explore') visibleTab = <Explore urlMap={urlMap} />
     if (selected === 'starred') visibleTab = this.props.starred;
     if (selected === 'welcome') visibleTab = welcome;
     return [
