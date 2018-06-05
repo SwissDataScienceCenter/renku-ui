@@ -443,13 +443,13 @@ class ProjectListRow extends Component {
   }
 
   render() {
-    // TODO: Replace all paths with props to allow routing to be controlled at the top level
-    const title = <Link to={`/projects/${this.props.id}`}>{this.displayMetadataValue('name', 'no title')}</Link>
+    const projectsUrl = this.props.projectsUrl;
+    const title = <Link to={`${projectsUrl}/${this.props.id}`}>{this.displayMetadataValue('name', 'no title')}</Link>
     const description = this.props.description !== '' ? this.props.description : 'No description available';
     return (
       <Row className="project-list-row">
-        <Col md={1}><Avatar person={this.props.owner} /></Col>
-        <Col md={9}>
+        <Col md={2} lg={1}><Avatar person={this.props.owner} /></Col>
+        <Col md={10} lg={11}>
           <p><b>{title}</b></p>
           <p>{description} <TimeCaption caption="Updated" time={this.props.last_activity_at} /> </p>
         </Col>
@@ -461,9 +461,13 @@ class ProjectListRow extends Component {
 class ProjectList extends Component {
   render() {
     const projects = this.props.projects;
-    const rows = projects.map((d, i) => <ProjectListRow key={i} {...d} />);
+    const rows = projects.map((d, i) => <ProjectListRow key={i} projectsUrl={this.props.urlMap.projectsUrl} {...d} />);
     return [
-      <Row key="header"><Col md={8}><h1>Projects</h1></Col></Row>,
+      <Row key="header">
+        <Col md={8}><h1>Projects</h1></Col>
+        <Col md={4} className="text-right">
+          <Link className="btn btn-primary" role="button" to={this.props.urlMap.projectNewUrl}>New Project</Link>
+        </Col></Row>,
       <Row key="spacer"><Col md={8}>&nbsp;</Col></Row>,
       <Row key="timeline"><Col md={8}>{rows}</Col></Row>
     ]
