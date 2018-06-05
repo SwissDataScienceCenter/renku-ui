@@ -368,6 +368,60 @@ class GitlabClient {
     })
 
   }
+
+  getMergeRequests(projectId, queryParams={}) {
+    let headers = this.getBasicHeaders();
+    const url = projectId ? `${this._baseUrl}projects/${projectId}/merge_requests` :
+      `${this._baseUrl}/merge_requests`
+    return renkuFetch(url, {
+      method: 'GET',
+      headers,
+      queryParams
+    })
+  }
+
+  getMergeRequestChanges(projectId, requestIid) {
+    let headers = this.getBasicHeaders();
+    return renkuFetch(`${this._baseUrl}projects/${projectId}/merge_requests/${requestIid}/changes`, {
+      method: 'GET',
+      headers
+    })
+  }
+
+  // Get all files in a project that have modifications in an open merge request.
+  // Return an object giving for each file with modifications an array of merge requests (iids)
+  // in which the file is modified.
+  // TODO: This method should go to the gateway.
+  getModifiedFiles(projectId) {
+    return this.getMergeRequests(projectId, {scope: 'all', state: 'opened'})
+      .then((mergeRequests) => {
+        if (!mergeRequests) return;
+
+        // For each MR get the changes introduced by the MR, creates an array
+        // of promises.
+        const mergeRequestsChanges = mergeRequests.map((mergeRequest) => {
+          return this.getMergeRequestChanges(projectId, mergeRequest.iid)
+        });
+
+        // On resolution of all promises, form an object which lists for each file
+        // the merge requests that modify this file.
+        return Promise.all(mergeRequestsChanges)
+          .then((MRchanges) => {
+            const openMrs = {};
+            MRchanges.forEach((MRchange) => {
+              const changesArray = MRchange.changes;
+              const MRIid = MRchange.iid;
+              changesArray
+                .filter((change) => change.old_path === change.new_path)
+                .forEach((change) => {
+                  if (!openMrs[change.old_path]) openMrs[change.old_path] = [];
+                  openMrs[change.old_path] = openMrs[change.old_path].concat(MRIid)
+                })
+            });
+            return openMrs;
+          });
+      })
+  }
 }
 
 
