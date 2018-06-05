@@ -88,6 +88,7 @@ class View extends Component {
   componentDidMount() {
     this.projectState.fetchProject(this.props.client, this.props.id);
     this.projectState.fetchReadme(this.props.client, this.props.id);
+    this.projectState.fetchModifiedFiles(this.props.client, this.props.id);
   }
 
   getStarred(userState, projectId) {
