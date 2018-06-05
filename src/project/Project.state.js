@@ -79,6 +79,13 @@ class ProjectModel extends StateModel {
       })
   };
 
+  fetchModifiedFiles = (client, id) => {
+    client.getModifiedFiles(id)
+      .then(d => {
+        this.set('files.modifiedFiles', d)
+      })
+  };
+
   fetchReadme = (client, id) => {
     this.setUpdating({data: {readme: true}});
     client.getProjectReadme(id)
