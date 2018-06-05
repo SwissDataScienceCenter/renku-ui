@@ -24,7 +24,7 @@
  */
 
 import { UserState } from '../app-state';
-import { API_ERRORS } from '../gitlab/errors';
+import { API_ERRORS } from '../gitlab/renkuFetch';
 import { StateModel} from '../model/Model';
 import { projectSchema } from '../model/RenkuModels';
 

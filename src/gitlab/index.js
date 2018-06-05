@@ -1,4 +1,4 @@
-import { APIError, alertAPIErrors } from './errors';
+import { APIError, alertAPIErrors } from './renkuFetch';
 import { GitlabClient } from './client';
 
 const ACCESS_LEVELS = {
