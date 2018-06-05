@@ -149,7 +149,7 @@ class KuViewHeader extends Component {
         <Col xs={9}><h3>{title}</h3></Col>
         <Col xs={1}>
           <Button className="btn btn-outline-primary py-0 px-1"
-                  onClick={this.props.onKuStateChange}>{buttonText}</Button>
+            onClick={this.props.onKuStateChange}>{buttonText}</Button>
         </Col>
       </Row>,
       <p key="lead" className="lead">{description}</p>
