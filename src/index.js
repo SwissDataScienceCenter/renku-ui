@@ -35,27 +35,9 @@ configPromise.then((res) => {
     }
 
     // Load the user profile and dispatch the result to the store.
-    if (client._token){
-      client.getUser()
-        .then(response => {
-          store.dispatch(UserState.set(response));
-          // TODO: Replace this after re-implementation of user state.
-          client.getProjects({starred: true})
-            .then((projects) => {
-              const reducedProjects = projects.map((project) => {
-                return {
-                  id: project.id,
-                  path_with_namespace: project.path_with_namespace
-                }
-              });
-              store.dispatch(UserState.setStarred(reducedProjects));
-            })
-            .catch(() => store.dispatch(UserState.setStarred([])));
-
-        })
-        .catch((error) => console.error(error));
-    }
-    else {
+    if (client._token) {
+      UserState.fetchAppUser(client, store.dispatch);
+    } else {
       store.dispatch(UserState.set({}));
     }
 
