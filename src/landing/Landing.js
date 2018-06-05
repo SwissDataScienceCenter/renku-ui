@@ -31,22 +31,29 @@ import { createStore } from '../utils/EnhancedState'
 import Present from './Landing.present'
 import State from './Landing.state'
 
+function urlMap() {
+  return {
+    projectsUrl: '/projects'
+  }
+}
+
 
 class Starred extends Component {
   constructor(props) {
     super(props);
     this.store = this.props.userState;
   }
+
   mapStateToProps(state, ownProps) {
     const projects = (state.user) ? state.user.starredProjects : []
-    return {projects}
+    return {projects, urlMap: ownProps.urlMap}
   }
 
   render() {
     const VisibleStarred = connect(this.mapStateToProps)(Present.Starred);
     return [
       <Provider key="new" store={this.store}>
-        <VisibleStarred />
+        <VisibleStarred urlMap={this.props.urlMap} />
       </Provider>
     ]
   }
@@ -64,9 +71,11 @@ class Home extends Component {
   }
 
   mapStateToProps(state, ownProps) {
+    const urls = urlMap();
     const local = {
-      starred: <Starred userState={ownProps.userState} />,
-      user: ownProps.userState.getState().user
+      starred: <Starred userState={ownProps.userState} urlMap={urls} />,
+      user: ownProps.userState.getState().user,
+      urlMap: urls
     };
     return {...state, ...local}
   }
