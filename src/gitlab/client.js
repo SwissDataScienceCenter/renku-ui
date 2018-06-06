@@ -36,19 +36,18 @@ class GitlabClient {
 
   getProjects(queryParams={}) {
     let headers = this.getBasicHeaders();
-    const url = new URL(this._baseUrl + 'projects');
-    Object.keys(queryParams).forEach((key) => url.searchParams.append(key, queryParams[key]));
 
-    return renkuFetch(url, {
+    return renkuFetch(`${this._baseUrl}/projects`, {
       method: 'GET',
-      headers: headers
+      headers,
+      queryParams,
     })
   }
 
   getProject(projectId, options={}) {
     let headers = this.getBasicHeaders();
     const apiPromises = [
-      renkuFetch(this._baseUrl + `projects/${projectId}`, {
+      renkuFetch(`${this._baseUrl}/projects/${projectId}`, {
         method: 'GET',
         headers: headers
       })
@@ -90,7 +89,7 @@ class GitlabClient {
     const headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return renkuFetch(this._baseUrl + 'projects', {
+    return renkuFetch(`${this._baseUrl}/projects`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(gitlabProject)
@@ -111,7 +110,7 @@ class GitlabClient {
     headers.append('Content-Type', 'application/json');
     const endpoint = starred ? 'unstar' : 'star';
 
-    return renkuFetch(this._baseUrl + `projects/${projectId}/${endpoint}`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/${endpoint}`, {
       method: 'POST',
       headers: headers,
     })
@@ -123,7 +122,7 @@ class GitlabClient {
     const headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return fetch(this._baseUrl + `projects/${projectId}`, {
+    return fetch(`${this._baseUrl}/projects/${projectId}`, {
       method: 'PUT',
       headers: headers,
       body: JSON.stringify(putData)
@@ -143,7 +142,7 @@ class GitlabClient {
   getProjectFile(projectId, path) {
     let headers = this.getBasicHeaders();
     const encodedPath = encodeURIComponent(path);
-    return renkuFetch(this._baseUrl + `projects/${projectId}/repository/files/${encodedPath}/raw?ref=master`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/repository/files/${encodedPath}/raw?ref=master`, {
       method: 'GET',
       headers: headers
     }, 'text')
@@ -152,7 +151,7 @@ class GitlabClient {
   getProjectKus(projectId) {
     let headers = this.getBasicHeaders();
 
-    return renkuFetch(this._baseUrl + `projects/${projectId}/issues?scope=all`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/issues?scope=all`, {
       method: 'GET',
       headers: headers
     })
@@ -163,7 +162,7 @@ class GitlabClient {
     let headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return renkuFetch(this._baseUrl + `projects/${projectId}/issues`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/issues`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(ku)
@@ -175,7 +174,7 @@ class GitlabClient {
     let headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return renkuFetch(this._baseUrl + `projects/${projectId}/issues/${kuIid}/`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/issues/${kuIid}/`, {
       method: 'GET',
       headers: headers,
     })
@@ -185,7 +184,7 @@ class GitlabClient {
   getCommits(projectId, ref='master') {
     let headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
-    return renkuFetch(this._baseUrl + `projects/${projectId}/repository/commits?ref_name=${ref}`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/repository/commits?ref_name=${ref}`, {
       method: 'GET',
       headers: headers
     })
@@ -203,7 +202,7 @@ class GitlabClient {
     let headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return renkuFetch(this._baseUrl + `projects/${projectId}/issues/${kuIid}/notes`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/issues/${kuIid}/notes`, {
       method: 'GET',
       headers: headers
     })
@@ -214,7 +213,7 @@ class GitlabClient {
     let headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return renkuFetch(this._baseUrl + `projects/${projectId}/issues/${kuIid}/notes`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/issues/${kuIid}/notes`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify({body: contribution})
@@ -235,7 +234,7 @@ class GitlabClient {
     let headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return renkuFetch(this._baseUrl + `projects/${projectId}/issues/${issueIid}`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/issues/${issueIid}`, {
       method: 'PUT',
       headers: headers,
       body: JSON.stringify(body)
@@ -255,7 +254,7 @@ class GitlabClient {
     let headers = this.getBasicHeaders();
     const pathEncoded = encodeURIComponent(path);
     const raw = encoding === 'raw' ? '/raw' : '';
-    return renkuFetch(this._baseUrl + `projects/${projectId}/repository/files/${pathEncoded}${raw}?ref=${ref}`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/repository/files/${pathEncoded}${raw}?ref=${ref}`, {
       method: 'GET',
       headers: headers
     }, 'fullResponse', false)
@@ -280,13 +279,11 @@ class GitlabClient {
       page
     };
 
-    const url = new URL(this._baseUrl + `projects/${projectId}/repository/tree`);
-    Object.keys(queryParams).forEach((key) => url.searchParams.append(key, queryParams[key]));
-
     // TODO: Think about general pagination strategy for API client.
-    return renkuFetch(url, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/repository/tree`, {
       method: 'GET',
-      headers: headers
+      headers,
+      queryParams
     }, 'fullResponse', false)
       .then(response => {
         if(response.headers.get('X-Next-Page')) {
@@ -318,7 +315,7 @@ class GitlabClient {
 
   getDeploymentUrl(projectId, envName, branchName = 'master') {
     let headers = this.getBasicHeaders();
-    return renkuFetch(this._baseUrl + `projects/${projectId}/environments`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/environments`, {
       method: 'GET',
       headers: headers
     })
@@ -331,7 +328,7 @@ class GitlabClient {
 
   getArtifactsUrl(projectId, job, branch='master') {
     const headers = this.getBasicHeaders();
-    return renkuFetch(`${this._baseUrl}projects/${projectId}/jobs`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/jobs`, {
       method: 'GET',
       headers: headers
     })
@@ -345,7 +342,7 @@ class GitlabClient {
         const jobObj =
           filteredJobs
             .sort((a, b) => (a.finished_at > b.finished_at) ? -1 : +(a.finished_at < b.finished_at))[0]
-        return `${this._baseUrl}projects/${projectId}/jobs/${jobObj.id}/artifacts`;
+        return `${this._baseUrl}/projects/${projectId}/jobs/${jobObj.id}/artifacts`;
       })
   }
 
@@ -362,7 +359,7 @@ class GitlabClient {
 
   getUser() {
     let headers = this.getBasicHeaders();
-    return renkuFetch(this._baseUrl + 'user', {
+    return renkuFetch(`${this._baseUrl}/user`, {
       method: 'GET',
       headers: headers
     })
@@ -371,7 +368,7 @@ class GitlabClient {
 
   getMergeRequests(projectId, queryParams={}) {
     let headers = this.getBasicHeaders();
-    const url = projectId ? `${this._baseUrl}projects/${projectId}/merge_requests` :
+    const url = projectId ? `${this._baseUrl}/projects/${projectId}/merge_requests` :
       `${this._baseUrl}/merge_requests`
     return renkuFetch(url, {
       method: 'GET',
@@ -382,7 +379,7 @@ class GitlabClient {
 
   getMergeRequestChanges(projectId, requestIid) {
     let headers = this.getBasicHeaders();
-    return renkuFetch(`${this._baseUrl}projects/${projectId}/merge_requests/${requestIid}/changes`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/merge_requests/${requestIid}/changes`, {
       method: 'GET',
       headers
     })
