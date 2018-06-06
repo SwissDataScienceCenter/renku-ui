@@ -87,11 +87,10 @@ class ProjectModel extends StateModel {
   };
 
   fetchReadme = (client, id) => {
-    this.setUpdating({data: {readme: true}});
+    this.setUpdating({data: {readme: {text: true}}});
     client.getProjectReadme(id)
-      .then(d => this.set('data.readme', d))
+      .then(d => this.set('data.readme.text', d.text))
       .catch(error => {
-        console.log(error.case);
         if (error.case === API_ERRORS.notFoundError) {
           this.set('data.readme.text', 'No readme file found.')
         }
