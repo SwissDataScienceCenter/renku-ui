@@ -91,7 +91,7 @@ class ProjectTag extends Component {
 
 class ProjectTagList extends Component {
   render() {
-    const taglist = this.props.taglist;
+    const taglist = this.props.taglist || [];
     return (taglist.length > 0) ? taglist.map(t => <ProjectTag key={t} tag={t} />) : <br />;
   }
 }
