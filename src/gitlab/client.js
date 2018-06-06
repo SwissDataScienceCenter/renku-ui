@@ -403,16 +403,16 @@ class GitlabClient {
         // On resolution of all promises, form an object which lists for each file
         // the merge requests that modify this file.
         return Promise.all(mergeRequestsChanges)
-          .then((MRchanges) => {
+          .then((mrChanges) => {
             const openMrs = {};
-            MRchanges.forEach((MRchange) => {
-              const changesArray = MRchange.changes;
-              const MRIid = MRchange.iid;
+            mrChanges.forEach((mrChange) => {
+              const changesArray = mrChange.changes;
+              const mrIid = mrChange.iid;
               changesArray
                 .filter((change) => change.old_path === change.new_path)
                 .forEach((change) => {
                   if (!openMrs[change.old_path]) openMrs[change.old_path] = [];
-                  openMrs[change.old_path] = openMrs[change.old_path].concat(MRIid)
+                  openMrs[change.old_path].push(mrIid)
                 })
             });
             return openMrs;
