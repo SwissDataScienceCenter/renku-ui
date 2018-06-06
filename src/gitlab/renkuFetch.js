@@ -21,9 +21,9 @@ function renkuFetch(url, options, returnType='json', alert=true) {
   // and the parameters.
 
   const URLobject = new URL(url);
-  if (options.queryParameters) {
-    Object.keys(options.queryParameters).forEach((key) => {
-      URLobject.searchParams.append(key, options.queryParameters[key])
+  if (options.queryParams) {
+    Object.keys(options.queryParams).forEach((key) => {
+      URLobject.searchParams.append(key, options.queryParams[key])
     });
   }
 
