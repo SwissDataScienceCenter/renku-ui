@@ -83,10 +83,16 @@ class ProjectNew extends Component {
   }
 }
 
-
 class ProjectTag extends Component {
   render() {
     return <span><Badge color="primary">{this.props.tag}</Badge>&nbsp;</span>;
+  }
+}
+
+class ProjectTagList extends Component {
+  render() {
+    const taglist = this.props.taglist;
+    return (taglist.length > 0) ? taglist.map(t => <ProjectTag key={t} tag={t} />) : <br />;
   }
 }
 
@@ -97,7 +103,6 @@ class ProjectViewHeader extends Component {
     const system = this.props.system;
     const starButtonText = this.props.starred ? 'unstar' : 'star';
     const starIcon = this.props.starred ? faStarSolid : faStarRegular;
-    const tags = (system.tag_list.length > 0) ? system.tag_list.map(t => <ProjectTag key={t} tag={t} />) : <br />;
     return (
       <Container fluid>
         <Row>
@@ -110,7 +115,7 @@ class ProjectViewHeader extends Component {
           </Col>
           <Col xs={12} md={3}>
             <p className="text-md-right">
-              {tags}
+              <ProjectTagList taglist={system.tag_list} />
             </p>
             {/*TODO: Adapting the width in a more elegant manner would be nice...*/}
             <div className={`float-md-right fixed-width-${this.props.starred ? '120' : '100'}`}>
@@ -431,26 +436,19 @@ class ProjectView extends Component {
   }
 }
 
-function displayMetadataValue(metadata, field, defaultValue) {
-  let value = metadata[field];
-  if (value == null) value = defaultValue;
-  return value;
-}
-
 class ProjectListRow extends Component {
-  displayMetadataValue(field, defaultValue) {
-    return displayMetadataValue(this.props, field, defaultValue)
-  }
-
   render() {
     const projectsUrl = this.props.projectsUrl;
-    const title = <Link to={`${projectsUrl}/${this.props.id}`}>{this.displayMetadataValue('name', 'no title')}</Link>
+    const title =
+      <Link to={`${projectsUrl}/${this.props.id}`}>
+        {this.props.path_with_namespace || 'no title'}
+      </Link>
     const description = this.props.description !== '' ? this.props.description : 'No description available';
     return (
       <Row className="project-list-row">
         <Col md={2} lg={1}><Avatar person={this.props.owner} /></Col>
         <Col md={10} lg={11}>
-          <p><b>{title}</b></p>
+          <p><b>{title}</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<ProjectTagList taglist={this.props.tag_list} /></p>
           <p>{description} <TimeCaption caption="Updated" time={this.props.last_activity_at} /> </p>
         </Col>
       </Row>
@@ -467,11 +465,13 @@ class ProjectList extends Component {
         <Col md={3} lg={2}><h1>Projects</h1></Col>
         <Col md={2}>
           <Link className="btn btn-primary" role="button" to={this.props.urlMap.projectNewUrl}>New Project</Link>
-        </Col></Row>,
+        </Col>
+      </Row>,
       <Row key="spacer"><Col md={8}>&nbsp;</Col></Row>,
-      <Row key="timeline"><Col md={8}>{rows}</Col></Row>
+      <Row key="projects"><Col md={8}>{rows}</Col></Row>
     ]
   }
 }
 
 export default { ProjectNew, ProjectView, ProjectList };
+export { ProjectListRow };
