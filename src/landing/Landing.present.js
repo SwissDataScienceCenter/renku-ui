@@ -33,7 +33,7 @@ import { Nav, NavItem, NavLink } from 'reactstrap';
 import { Row, Col } from 'reactstrap';
 import { Table } from 'reactstrap';
 
-import { TimeCaption } from '../utils/UIComponents';
+import { ProjectListRow } from '../project/Project.present';
 
 class Explore extends Component {
   render() {
@@ -73,35 +73,51 @@ class YourActivity extends Component {
   }
 }
 
-class ProjectListRow extends Component {
 
-  render() {
-    const title = <Link to={`${this.props.projectsUrl}/${this.props.id}`}>{this.props.path_with_namespace}</Link>
-    return (<tr>
-      <td>{title}</td>
-      <td>{this.props.description}</td>
-      <td>{this.props.tag_list.join(', ')}</td>
-      <td><TimeCaption key="time-caption" time={this.props.last_activity_at} /></td>
-    </tr>);
-  }
-}
+// NOTE: Not yet sure if the table or standard display is better.
+// class ProjectTableRow extends Component {
+//   render() {
+//     const title = <Link to={`${this.props.projectsUrl}/${this.props.id}`}>{this.props.path_with_namespace}</Link>
+//     return (<tr>
+//       <td>{title}</td>
+//       <td>{this.props.description}</td>
+//       <td>{this.props.tag_list.join(', ')}</td>
+//       <td><TimeCaption key="time-caption" time={this.props.last_activity_at} /></td>
+//     </tr>);
+//   }
+// }
+//
+// class StarredTable extends Component {
+//   render() {
+//     const projects = this.props.projects || [];
+//     const projectsUrl = this.props.urlMap.projectsUrl;
+//     const rows = projects.map(p => <ProjectTableRow key={p.id} projectsUrl={projectsUrl} {...p} />);
+//     return (<div>
+//       <h1>Starred Projects</h1>
+//       <br />
+//       <Table>
+//         <thead><tr><th>Project</th><th>Description</th><th>Tags</th><th>Last Activity</th></tr></thead>
+//         <tbody>
+//           {rows}
+//         </tbody>
+//       </Table>
+//     </div>
+//     )
+//   }
+// }
 
 class Starred extends Component {
   render() {
     const projects = this.props.projects || [];
     const projectsUrl = this.props.urlMap.projectsUrl;
     const rows = projects.map(p => <ProjectListRow key={p.id} projectsUrl={projectsUrl} {...p} />);
-    return (<div>
-      <h1>Starred Projects</h1>
-      <br />
-      <Table>
-        <thead><tr><th>Project</th><th>Description</th><th>Tags</th><th>Last Activity</th></tr></thead>
-        <tbody>
-          {rows}
-        </tbody>
-      </Table>
-    </div>
-    )
+    return [
+      <Row key="header">
+        <Col md={3} lg={2}><h1>Starred</h1></Col>
+      </Row>,
+      <Row key="spacer"><Col md={8}>&nbsp;</Col></Row>,
+      <Row key="projects"><Col md={8}>{rows}</Col></Row>
+    ]
   }
 }
 
