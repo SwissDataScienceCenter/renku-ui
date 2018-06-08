@@ -68,14 +68,15 @@ class ProjectModel extends StateModel {
 
   // TODO: Once state and client are fully adapted to each other, these functions should be trivial
   fetchProject = (client, id) => {
-    client.getProject(id, {notebooks:true, data:true})
+    return client.getProject(id, {notebooks:true, data:true})
       .then(d => {
         this.setObject({
           core: d.metadata.core,
           system: d.metadata.system,
           visibility: d.metadata.visibility,
           files: d.files
-        })
+        });
+        return d;
       })
   };
 
@@ -113,9 +114,9 @@ class ProjectModel extends StateModel {
 
   star = (client, id, userState, starred) => {
     client.starProject(id, starred).then((d) => {
-      this.fetchProject(client, id);
       // TODO: Bad naming here - will be resolved once the user state is re-implemented.
-      userState.dispatch(UserState.star(id))
+      this.fetchProject(client, id).then(p => userState.dispatch(UserState.star(p.metadata.core)))
+
     })
   };
 }

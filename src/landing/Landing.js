@@ -33,7 +33,8 @@ import State from './Landing.state'
 
 function urlMap() {
   return {
-    projectsUrl: '/projects'
+    projectsUrl: '/projects',
+    projectNewUrl: '/project_new'
   }
 }
 
