@@ -31,7 +31,6 @@ import { Link }  from 'react-router-dom'
 
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { Row, Col } from 'reactstrap';
-import { Table } from 'reactstrap';
 
 import { ProjectListRow } from '../project/Project.present';
 
@@ -106,18 +105,45 @@ class YourActivity extends Component {
 //   }
 // }
 
+class StarredEmptyProjects extends Component {
+  render() {
+    return (<Row>
+      <Col md={8} lg={6} xl={4}>
+        <h1>Welcome to Renku!</h1>
+        <p>Renku is software for collaborative data science.</p>
+        <p>Here you can share code and data, discuss problems and solutions, and carry out data-science projects.
+        </p>
+        <p>
+          You are logged in, but you have not yet starred any projects.
+          Starring a project declares your interest in it.
+          If there is a project you work on or want to follow, you should find it in
+          the <Link to={this.props.projectsUrl}>project listing</Link>, click on it to view, and star it.
+        </p>
+        <p>
+          Alternatively, you can <Link to={this.props.projectNewUrl}>create a new project</Link>.
+        </p>
+      </Col>
+    </Row>)
+  }
+}
+
 class Starred extends Component {
   render() {
     const projects = this.props.projects || [];
     const projectsUrl = this.props.urlMap.projectsUrl;
     const rows = projects.map(p => <ProjectListRow key={p.id} projectsUrl={projectsUrl} {...p} />);
-    return [
-      <Row key="header">
-        <Col md={3} lg={2}><h1>Starred</h1></Col>
-      </Row>,
-      <Row key="spacer"><Col md={8}>&nbsp;</Col></Row>,
-      <Row key="projects"><Col md={8}>{rows}</Col></Row>
-    ]
+    if (rows.length > 0)
+      return [
+        <Row key="header">
+          <Col md={3} lg={2}><h1>Starred</h1></Col>
+        </Row>,
+        <Row key="spacer"><Col md={8}>&nbsp;</Col></Row>,
+        <Row key="projects"><Col md={8}>{rows}</Col></Row>
+      ]
+    else {
+      const projectNewUrl = this.props.urlMap.projectNewUrl;
+      return <StarredEmptyProjects projectsUrl={projectsUrl}  projectNewUrl={projectNewUrl} />
+    }
   }
 }
 
@@ -132,8 +158,7 @@ class AnonymousWelcome extends Component {
         <p>You are not logged in, but you can still view public projects. If you wish to contribute to an existing
            project or create a new one, please <Link to="/login">log in.</Link></p>
       </Col>
-    </Row>
-    )
+    </Row>)
   }
 }
 
