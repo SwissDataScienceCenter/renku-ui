@@ -461,6 +461,7 @@ function carveProject(projectJson) {
   result['metadata']['core']['title'] = projectJson['name'];
   result['metadata']['core']['external_url'] = projectJson['web_url'];
   result['metadata']['core']['path_with_namespace'] = projectJson['path_with_namespace'];
+  result['metadata']['core']['owner'] = projectJson['owner'];
 
   result['metadata']['system']['tag_list'] = projectJson['tag_list'];
   result['metadata']['system']['star_count'] = projectJson['star_count'];
