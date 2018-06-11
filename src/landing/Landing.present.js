@@ -105,14 +105,23 @@ class YourActivity extends Component {
 //   }
 // }
 
+class RenkuIntroText extends Component {
+  render() {
+    return [
+      <h1 key="heading">Welcome to Renku!</h1>,
+      <p key="summary">Renku is software for collaborative data science.</p>,
+      <p key="details">With Renku you can share code and data, discuss problems and solutions, and
+        coordinate data-science projects.</p>
+    ]
+  }
+
+}
+
 class StarredEmptyProjects extends Component {
   render() {
     return (<Row>
       <Col md={8} lg={6} xl={4}>
-        <h1>Welcome to Renku!</h1>
-        <p>Renku is software for collaborative data science.</p>
-        <p>Here you can share code and data, discuss problems and solutions, and carry out data-science projects.
-        </p>
+        <RenkuIntroText />
         <p>
           You are logged in, but you have not yet starred any projects.
           Starring a project declares your interest in it.
@@ -151,10 +160,7 @@ class AnonymousWelcome extends Component {
   render() {
     return (<Row>
       <Col md={8} lg={6} xl={4}>
-        <h1>Welcome to Renku!</h1>
-        <p>Renku is software for collaborative data science.</p>
-        <p>Here you can share code and data, discuss problems and solutions, and carry out data-science projects.
-        </p>
+        <RenkuIntroText />
         <p>You are not logged in, but you can still view public projects. If you wish to contribute to an existing
            project or create a new one, please <Link to="/login">log in.</Link></p>
       </Col>
