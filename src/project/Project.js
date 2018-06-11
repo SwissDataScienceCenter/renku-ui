@@ -38,6 +38,7 @@ import Ku from '../ku/Ku'
 import Notebook from '../file/Notebook'
 import { FileLineage, LaunchNotebookServerButton } from '../file'
 import { ACCESS_LEVELS } from '../gitlab';
+import { alertError } from '../utils/Errors';
 
 
 class New extends Component {
@@ -150,6 +151,11 @@ class View extends Component {
     },
     onStar: (e) => {
       e.preventDefault();
+      const user = this.props.userState.getState();
+      if (!(user && user.user && user.user.id != null)) {
+        alertError('Please login to star a project.');
+        return;
+      }
       const projectId = this.projectState.get('core.id') || parseInt(this.props.match.params.id, 10);
       const starred = this.getStarred(this.props.userState, projectId);
       this.projectState.star(this.props.client, projectId, this.props.userState, starred)
