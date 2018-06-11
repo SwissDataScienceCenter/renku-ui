@@ -459,12 +459,17 @@ class ProjectListRow extends Component {
 class ProjectList extends Component {
   render() {
     const projects = this.props.projects;
+    const hasUser = this.props.user && this.props.user.id != null;
     const rows = projects.map((d, i) => <ProjectListRow key={i} projectsUrl={this.props.urlMap.projectsUrl} {...d} />);
     return [
       <Row key="header">
         <Col md={3} lg={2}><h1>Projects</h1></Col>
         <Col md={2}>
-          <Link className="btn btn-primary" role="button" to={this.props.urlMap.projectNewUrl}>New Project</Link>
+          {
+            (hasUser) ?
+              <Link className="btn btn-primary" role="button" to={this.props.urlMap.projectNewUrl}>New Project</Link> :
+              <span></span>
+          }
         </Col>
       </Row>,
       <Row key="spacer"><Col md={8}>&nbsp;</Col></Row>,
