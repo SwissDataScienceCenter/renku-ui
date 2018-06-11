@@ -204,13 +204,13 @@ class List extends Component {
     this.store.dispatch(State.List.fetch(this.props.client));
   }
 
-  mapStateToProps(state, ownProps) { return ({...state, ...ownProps }) }
+  mapStateToProps(state, ownProps) { return ({...ownProps.userState.getState(), ...state, ...ownProps }) }
 
   render() {
     const VisibleProjectList = connect(this.mapStateToProps)(Present.ProjectList);
     return [
-      <Provider key="new" store={this.store}>
-        <VisibleProjectList urlMap={this.urlMap()}/>
+      <Provider key="list" store={this.store}>
+        <VisibleProjectList urlMap={this.urlMap()} {...this.props} />
       </Provider>
     ]
   }
