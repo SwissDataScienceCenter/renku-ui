@@ -104,6 +104,7 @@ const projectSchema = new Schema({
     schema: {
       notebooks: {schema: []},
       data: {schema: []},
+      modifiedFiles: {initial: {}, mandatory: true}
     }
   }
 });

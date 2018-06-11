@@ -24,7 +24,7 @@
  */
 
 import { UserState } from '../app-state';
-import { API_ERRORS } from '../gitlab/errors';
+import { API_ERRORS } from '../gitlab/renkuFetch';
 import { StateModel} from '../model/Model';
 import { projectSchema } from '../model/RenkuModels';
 
@@ -76,6 +76,13 @@ class ProjectModel extends StateModel {
           visibility: d.metadata.visibility,
           files: d.files
         })
+      })
+  };
+
+  fetchModifiedFiles = (client, id) => {
+    client.getModifiedFiles(id)
+      .then(d => {
+        this.set('files.modifiedFiles', d)
       })
   };
 
