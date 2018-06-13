@@ -185,7 +185,7 @@ class App extends Component {
               <Route exact path="/login/redirect/gitlab"
                 render={p => <Login.GitlabRedirect key="gitlabRedirect" {...p} {...this.props}/>} />
               <Route exact path="/"
-                render={p => <Landing.Home key="landing" userState={this.props.userState} {...p} />} />
+                render={p => <Landing.Home key="landing" user={this.props.userState.getState().user} {...p} />} />
               <Route exact path="/projects"
                 render={p => <Project.List key="projects"
                   user={this.props.userState.getState().user}
