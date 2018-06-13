@@ -70,7 +70,7 @@ class ProjectModel extends StateModel {
   fetchProject(client, id) {
     return client.getProject(id, {notebooks:true, data:true})
       .then(d => {
-        const files = d.files | this.get('files');
+        const files = d.files || this.get('files');
         this.setObject({
           core: d.metadata.core,
           system: d.metadata.system,
