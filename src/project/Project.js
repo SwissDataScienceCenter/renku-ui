@@ -92,8 +92,7 @@ class View extends Component {
     this.projectState.fetchModifiedFiles(this.props.client, this.props.id);
   }
 
-  getStarred(userState, projectId) {
-    const user = userState.getState().user;
+  getStarred(user, projectId) {
     if (user && user.starredProjects) {
       return user.starredProjects.map((project) => project.id).indexOf(projectId) >= 0
     }
@@ -151,20 +150,20 @@ class View extends Component {
     },
     onStar: (e) => {
       e.preventDefault();
-      const user = this.props.userState.getState();
-      if (!(user && user.user && user.user.id != null)) {
+      const user = this.props.user;
+      if (!(user && user.id != null)) {
         alertError('Please login to star a project.');
         return;
       }
       const projectId = this.projectState.get('core.id') || parseInt(this.props.match.params.id, 10);
-      const starred = this.getStarred(this.props.userState, projectId);
-      this.projectState.star(this.props.client, projectId, this.props.userState, starred)
+      const starred = this.getStarred(this.props.user, projectId);
+      this.projectState.star(this.props.client, projectId, this.props.userStateDispatch, starred)
     }
   };
 
   mapStateToProps(state, ownProps) {
     const internalId = this.projectState.get('core.id') || parseInt(ownProps.match.params.id, 10);
-    const starred = this.getStarred(ownProps.userState, internalId);
+    const starred = this.getStarred(ownProps.user, internalId);
     const settingsReadOnly = state.visibility.accessLevel < ACCESS_LEVELS.MASTER;
     const baseUrl = ownProps.match.isExact ? ownProps.match.url.slice(0, -1) : ownProps.match.url;
 
@@ -210,7 +209,7 @@ class List extends Component {
     this.store.dispatch(State.List.fetch(this.props.client));
   }
 
-  mapStateToProps(state, ownProps) { return ({...ownProps.userState.getState(), ...state, ...ownProps }) }
+  mapStateToProps(state, ownProps) { return ({...{user: ownProps.user}, ...state, ...ownProps }) }
 
   render() {
     const VisibleProjectList = connect(this.mapStateToProps)(Present.ProjectList);

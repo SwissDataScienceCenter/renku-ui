@@ -112,10 +112,10 @@ class ProjectModel extends StateModel {
     })
   };
 
-  star = (client, id, userState, starred) => {
+  star = (client, id, userStateDispatch, starred) => {
     client.starProject(id, starred).then((d) => {
       // TODO: Bad naming here - will be resolved once the user state is re-implemented.
-      this.fetchProject(client, id).then(p => userState.dispatch(UserState.star(p.metadata.core)))
+      this.fetchProject(client, id).then(p => userStateDispatch(UserState.star(p.metadata.core)))
 
     })
   };
