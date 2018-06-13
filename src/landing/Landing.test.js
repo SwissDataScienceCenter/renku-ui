@@ -28,7 +28,7 @@ import ReactDOM from 'react-dom';
 import { MemoryRouter } from 'react-router-dom';
 
 import Landing from './Landing';
-import State, { displayIdFromTitle } from  './Landing.state';
+import State from  './Landing.state';
 import client from '../gitlab/test-client'
 
 describe('rendering', () => {

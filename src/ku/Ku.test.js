@@ -27,9 +27,10 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { MemoryRouter } from 'react-router-dom';
 
-import Ku from './Ku'
-import State, { displayIdFromTitle } from  './Ku.state'
-import client from '../gitlab/test-client'
+import Ku from './Ku';
+import State from  './Ku.state';
+import client from '../gitlab/test-client';
+import { slugFromTitle } from '../utils/HelperFunctions';
 
 describe('rendering', () => {
   it('renders new without crashing', () => {
@@ -56,7 +57,7 @@ describe('rendering', () => {
 
 describe('helpers', () => {
   it('computes display id correctly', () => {
-    expect(displayIdFromTitle("This is my Ku")).toEqual("this-is-my-ku");
+    expect(slugFromTitle("This is my Ku")).toEqual("this-is-my-ku");
   });
 });
 

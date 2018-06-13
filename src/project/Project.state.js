@@ -67,27 +67,28 @@ class ProjectModel extends StateModel {
   // TODO: Do we really want to re-fetch the entire project on every change?
 
   // TODO: Once state and client are fully adapted to each other, these functions should be trivial
-  fetchProject = (client, id) => {
+  fetchProject(client, id) {
     return client.getProject(id, {notebooks:true, data:true})
       .then(d => {
+        const files = d.files | this.get('files');
         this.setObject({
           core: d.metadata.core,
           system: d.metadata.system,
           visibility: d.metadata.visibility,
-          files: d.files
+          files: files
         });
         return d;
       })
-  };
+  }
 
-  fetchModifiedFiles = (client, id) => {
+  fetchModifiedFiles(client, id) {
     client.getModifiedFiles(id)
       .then(d => {
         this.set('files.modifiedFiles', d)
       })
-  };
+  }
 
-  fetchReadme = (client, id) => {
+  fetchReadme(client, id) {
     this.setUpdating({data: {readme: {text: true}}});
     client.getProjectReadme(id)
       .then(d => this.set('data.readme.text', d.text))
@@ -96,29 +97,29 @@ class ProjectModel extends StateModel {
           this.set('data.readme.text', 'No readme file found.')
         }
       })
-  };
+  }
 
-  setTags = (client, id, name, tags) => {
+  setTags(client, id, name, tags) {
     this.setUpdating({system: {tag_list: [true]}});
     client.setTags(id, name, tags).then(() => {
       this.fetchProject(client, id);
     })
-  };
+  }
 
-  setDescription = (client, id, name, description) => {
+  setDescription(client, id, name, description) {
     this.setUpdating({core: {description: true}});
     client.setDescription(id, name, description).then(() => {
       this.fetchProject(client, id);
     })
-  };
+  }
 
-  star = (client, id, userStateDispatch, starred) => {
+  star(client, id, userStateDispatch, starred) {
     client.starProject(id, starred).then((d) => {
       // TODO: Bad naming here - will be resolved once the user state is re-implemented.
       this.fetchProject(client, id).then(p => userStateDispatch(UserState.star(p.metadata.core)))
 
     })
-  };
+  }
 }
 
 export default { List };
