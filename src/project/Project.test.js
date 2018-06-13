@@ -27,9 +27,12 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { MemoryRouter } from 'react-router-dom';
 
+import { StateKind, StateModel } from '../model/Model';
 import Project from './Project';
-import State, { displayIdFromTitle } from  './Project.state';
-import client from '../gitlab/test-client'
+import State, { ProjectModel } from  './Project.state';
+import client from '../gitlab/test-client';
+import { slugFromTitle } from '../utils/HelperFunctions'
+
 
 describe('rendering', () => {
   it('renders new without crashing', () => {
@@ -48,7 +51,7 @@ describe('rendering', () => {
     const div = document.createElement('div');
     ReactDOM.render(
       <MemoryRouter>
-        <Project.View id="1" client={client} />
+        <Project.View id="1" client={client} match={{params: {id: "1"}}} />
       </MemoryRouter>
       , div);
   });
@@ -56,77 +59,21 @@ describe('rendering', () => {
 
 describe('helpers', () => {
   it('computes display id correctly', () => {
-    expect(displayIdFromTitle("This is my Project")).toEqual("this-is-my-project");
+    expect(slugFromTitle("This is my Project")).toEqual("this-is-my-project");
   });
 });
 
 describe('new project actions', () => {
-  it('creates a core field set action', () => {
-    expect(State.New.Core.set('title', 'a title')).toEqual({type: 'core', payload: {title: 'a title', displayId: 'a-title'}});
+  const model = new ProjectModel(StateKind.REDUX);
+  it('sets a core field', () => {
+    expect(model.get('core.title')).toEqual('no title');
+    model.set('core.title', 'a title')
+    expect(model.get('core.title')).toEqual('a title');
   });
-  it('creates a visibility set action', () => {
-    expect(State.New.Visibility.set('private')).toEqual({type: 'visibility', payload: {level: 'private'}});
-  });
-  it('creates a data set action', () => {
-    expect(State.New.Data.set('reference', 'url_or_doi', "http://foo.bar/data.csv")).toEqual({type: 'data_reference', payload: {'url_or_doi': "http://foo.bar/data.csv"}});
-  });
-});
-
-describe('new project reducer', () => {
-  const initialState = State.New.reducer(undefined, {});
-  it('returns initial state', () => {
-    expect(initialState).toEqual({
-      core: {title: "", description: "", displayId: ""},
-      visibility: {level: "public"},
-      data: {
-        readme: {
-          text: ""
-        },
-        reference: {url_or_doi:"", author: ""},
-        upload: {files: []}
-      }
-    });
-  });
-  it('advances state', () => {
-    const state1 = State.New.reducer(initialState, State.New.Core.set('title', 'new title'));
-    expect(state1)
-    .toEqual({
-      core: {title: "new title", description: "", displayId: "new-title"},
-      visibility: {level: "public"},
-      data: {
-        readme: {
-          text: ""
-        },
-        reference: {url_or_doi:"", author: ""},
-        upload: {files: []}
-      }
-    });
-    const state2 = State.New.reducer(state1, State.New.Visibility.set('private'));
-    expect(state2)
-    .toEqual({
-      core: {title: "new title", description: "", displayId: "new-title"},
-      visibility: {level: "private"},
-      data: {
-        readme: {
-          text: ""
-        },
-        reference: {url_or_doi:"", author: ""},
-        upload: {files: []}
-      }
-    });
-    const state3 = State.New.reducer(state2, State.New.Data.set('reference', 'url_or_doi', 'http://foo.bar/data.csv'));
-    expect(state3)
-    .toEqual({
-      core: {title: "new title", description: "", displayId: "new-title"},
-      visibility: {level: "private"},
-      data: {
-        readme: {
-          text: ""
-        },
-        reference: {url_or_doi:"http://foo.bar/data.csv", author: ""},
-        upload: {files: []}
-      }
-    });
+  it('sets a visibility field', () => {
+    expect(model.get('visibility.level')).toEqual('private');
+    model.set('visibility.level', 'public')
+    expect(model.get('visibility.level')).toEqual('public');
   });
 });
 
@@ -152,48 +99,10 @@ describe('project list reducer', () => {
 });
 
 describe('project view actions', () => {
-  it('creates a server return action', () => {
-    expect(State.View.receive({metadata:{core:{title: "A Title", description: "A desc", displayId: "a-title"}}}))
-      .toEqual({type: 'server_return', payload:{metadata:{core:{title: "A Title", description: "A desc", displayId: "a-title"}}}});
-  });
-});
-
-describe('project view reducer', () => {
-  const initialState = State.View.reducer(undefined, {});
-  it('returns initial state', () => {
-    expect(initialState).toEqual({
-      core: {title: "", description: "", displayId: ""},
-      visibility: {level: "public"},
-      data: {
-        readme: {
-          text: ""
-        },
-        reference: {url_or_doi:"", author: ""},
-        upload: {files: []}
-      }
-    });
-  });
-  it('advances state', () => {
-    const action = State.View.receive({
-      metadata: {
-        core: {
-          title: "A Title",
-          description: "A desc",
-          displayId: "a-title"
-        }
-      }
-    }, 'metadata');
-    expect(State.View.reducer(initialState, action))
-    .toEqual({
-      core: {title: "A Title", description: "A desc", displayId: "a-title"},
-      visibility: {level: "public"},
-      data: {
-        readme: {
-          text: ""
-        },
-        reference: {url_or_doi:"", author: ""},
-        upload: {files: []}
-      }
-    });
-  });
+  it('retrieves a project from server', () => {
+    const model = new ProjectModel(StateKind.REDUX);
+    model.fetchProject(client, 1).then(() => {
+      expect(model.get('core.title')).toEqual('A-first-project')
+    })
+  })
 });

@@ -20,6 +20,15 @@ const methods = {
   getProjectKu: {
     responseData: samples.kus[0]
   },
+  getModifiedFiles: {
+    responseData: []
+  },
+  getContributions: {
+    responseData: []
+  },
+  getRepositoryTree: {
+    responseData: []
+  },
 };
 
 let client = {};

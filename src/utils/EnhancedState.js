@@ -43,5 +43,12 @@ function createStore(reducer, name='renku') {
   return reduxCreateStore(reducer, enhancer);
 }
 
+// TODO: Introduce a mock store for testing
+// import configureMockStore from 'redux-mock-store'
+// function createMockStore(reducer, name='renku') {
+//   const mockStore = configureMockStore([thunk]);
+//   return mockStore;
+// }
+
 
 export { createStore };
