@@ -63,6 +63,7 @@ const projectSchema = new Schema({
       title: {initial: 'no title', mandatory: true},
       external_url: {initial: '',},
       path_with_namespace: {initial: null},
+      owner: {initial: null}
     }
   },
   visibility: {
