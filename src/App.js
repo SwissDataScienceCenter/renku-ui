@@ -187,7 +187,8 @@ class App extends Component {
               <Route exact path="/"
                 render={p => <Landing.Home key="landing" userState={this.props.userState} {...p} />} />
               <Route exact path="/projects"
-                render={p => <Project.List key="projects" userState={this.props.userState} 
+                render={p => <Project.List key="projects"
+                  user={this.props.userState.getState().user}
                   client={this.props.client} {...p} />} />
 
               {/*TODO: This route should be handled by <Route path="/projects/:id(\d+)" too. Until this is the
@@ -197,7 +198,8 @@ class App extends Component {
               {/* pull out the underlying parts of the url and pass them to the project view */}
               <Route path="/projects/:id(\d+)"
                 render={p => <Project.View key="project" id={p.match.params.id} {...p}
-                  client={this.props.client} userState={this.props.userState} params={this.props.params}/>}/>
+                  user={this.props.userState.getState().user} userStateDispatch={this.props.userState.dispatch}
+                  client={this.props.client} params={this.props.params}/>}/>
               <Route exact path="/project_new"
                 render={(p) => <Project.New key="project_new" client={this.props.client} {...p}/> }/>
             </Switch>
