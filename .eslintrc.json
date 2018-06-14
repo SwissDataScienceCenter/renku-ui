@@ -15,7 +15,6 @@
     "max-len": ["warn", 120],
     "indent": ["warn", 2],
     "no-eval": "warn",
-    "quotes": ["warn", "single"],
     "jsx-quotes": ["warn", "prefer-double"],
     "no-unused-vars": ["warn", { "vars": "all", "args": "none", "ignoreRestSiblings": false }],
     "no-console": "off",
