@@ -40,6 +40,7 @@ import Project from './project/Project'
 import Ku from './ku/Ku'
 import Landing from './landing/Landing'
 import Login from './login'
+import Notebooks from './notebooks';
 import { RenkuNavLink, UserAvatar } from './utils/UIComponents'
 // import Lineage from './lineage'
 
@@ -132,6 +133,7 @@ class RenkuNavBar extends Component {
 
             <ul className="navbar-nav mr-auto">
               <RenkuNavLink to="/projects" title="Projects"/>
+              <RenkuNavLink to="/notebooks" title="Notebooks"/>
             </ul>
             <ul className="navbar-nav">
               <li className="nav-item dropdown">
@@ -202,6 +204,10 @@ class App extends Component {
                   client={this.props.client} params={this.props.params}/>}/>
               <Route exact path="/project_new"
                 render={(p) => <Project.New key="project_new" client={this.props.client} {...p}/> }/>
+              <Route exact path="/notebooks"
+                render={p => <Notebooks.Admin key="notebooks"
+                  user={this.props.userState.getState().user}
+                  client={this.props.client} {...p} />} />
             </Switch>
           </main>
           <Route component={RenkuFooter} />
