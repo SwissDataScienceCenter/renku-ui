@@ -39,6 +39,7 @@ import { Table } from 'reactstrap';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faStarRegular from '@fortawesome/fontawesome-free-regular/faStar'
 import faStarSolid from '@fortawesome/fontawesome-free-solid/faStar'
+import faExclamationCircle from '@fortawesome/fontawesome-free-solid/faExclamationCircle'
 
 
 import ReactMarkdown from 'react-markdown'
@@ -241,10 +242,19 @@ class ProjectViewKus extends Component {
 
 class FileFolderList extends Component {
   render() {
+    // TODO: Add tooltip here
+    const alertIcon = <FontAwesomeIcon icon={faExclamationCircle} />;
+    let alerts;
+    if (this.props.alerts) {
+      alerts = this.props.alerts.map((el) => el ? alertIcon : '')
+    }
+    else {
+      alerts = this.props.paths.map(() => '')
+    }
     const emptyView = this.props.emptyView;
     if ((this.props.paths.length < 1) && emptyView != null) return emptyView;
-    const rows = this.props.paths.map(p => {
-      return <tr key={p}><td><Link to={p}>{p}</Link></td></tr>
+    const rows = this.props.paths.map((p, i) => {
+      return <tr key={p}><td><Link to={p}>{p}</Link> {alerts[i]}</td></tr>
     });
     return <Table>
       <tbody>{rows}</tbody>
@@ -254,10 +264,16 @@ class FileFolderList extends Component {
 
 class ProjectFilesCategorizedList extends Component {
   render() {
+    const alerts = this.props.files.notebooks ?
+      this.props.files.notebooks.map(path => this.props.files.modifiedFiles[path] !== undefined) : undefined;
     return <Switch>
       <Route path={this.props.notebooksUrl} render={props => {
-        return <FileFolderList paths={this.props.files.notebooks} emptyView={this.props.launchNotebookServerButton}/> }
-      } />
+        return <FileFolderList
+          paths={this.props.files.notebooks}
+          alerts={alerts}
+          emptyView={this.props.launchNotebookServerButton}
+        /> }}
+      />
       <Route path={this.props.dataUrl} render={props => <FileFolderList paths={this.props.files.data} /> } />
       <Route render={props => <p>Files</p> } />
     </Switch>
