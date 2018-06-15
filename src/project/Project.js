@@ -39,7 +39,7 @@ import Notebook from '../file/Notebook'
 import { FileLineage, LaunchNotebookServerButton } from '../file'
 import { ACCESS_LEVELS } from '../gitlab';
 import { alertError } from '../utils/Errors';
-
+import { MergeRequest, MergeRequestList } from '../merge-request';
 
 class New extends Component {
   constructor(props) {
@@ -90,6 +90,7 @@ class View extends Component {
     this.projectState.fetchProject(this.props.client, this.props.id);
     this.projectState.fetchReadme(this.props.client, this.props.id);
     this.projectState.fetchModifiedFiles(this.props.client, this.props.id);
+    this.projectState.fetchMergeRequests(this.props.client, this.props.id);
   }
 
   getStarred(user, projectId) {
@@ -98,7 +99,11 @@ class View extends Component {
     }
   }
 
-  subUrls(baseUrl) {
+  subUrls() {
+    // For exact matches, we strip the trailing / from the baseUrl
+    const match = this.props.match;
+    const baseUrl = match.isExact ? match.url.slice(0, -1) : match.url;
+
     return {
       overviewUrl: `${baseUrl}/`,
       kusUrl: `${baseUrl}/kus`,
@@ -108,18 +113,30 @@ class View extends Component {
       dataUrl: `${baseUrl}/data`,
       datumUrl: `${baseUrl}/data/:datumPath+`,
       settingsUrl: `${baseUrl}/settings`,
+      mrOverviewUrl: `${baseUrl}/mergeRequests`,
+      mrUrl: `${baseUrl}/mergeRequests/:mrIid`,
     }
   }
 
-  subComponents(projectId, baseUrl, ownProps) {
+  subComponents(projectId, ownProps) {
     const accessLevel = this.projectState.get('visibility.accessLevel');
     const updateProjectView = this.forceUpdate.bind(this);
 
     // Access to the project state could be given to the subComponents by connecting them here to
     // the projectStore. This is not yet necessary.
     const subProps = {...ownProps, projectId, accessLevel};
+
+
+    const mapStateToProps = (state, ownProps) => {
+      return {
+        mergeRequests: this.projectState.get('system.merge_requests'),
+        ...ownProps
+      };
+    };
+    const ConnectedMergeRequestList = connect(mapStateToProps)(MergeRequestList);
+
     return {
-      kuList: <Ku.List key="kus" {...subProps} kuBaseUrl={`${baseUrl}/kus`} />,
+      kuList: <Ku.List key="kus" {...subProps} kuBaseUrl={this.subUrls().kusUrl} />,
 
       kuView: (p) => <Ku.View key="ku" {...subProps}
         kuIid={p.match.params.kuIid}
@@ -136,6 +153,10 @@ class View extends Component {
 
       launchNotebookServerButton: <LaunchNotebookServerButton key= "launch notebook" {...subProps}
         projectPath={this.projectState.get('core.path_with_namespace')}/>,
+
+      mrList: <ConnectedMergeRequestList key="mrList" store={this.projectState.reduxStore}
+        mrOverviewUrl={this.subUrls().mrOverviewUrl}/>,
+      mrView: (p) => <MergeRequest key="mr" {...subProps} iid={p.match.params.mrIid} />,
     }
   }
 
@@ -165,13 +186,12 @@ class View extends Component {
     const internalId = this.projectState.get('core.id') || parseInt(ownProps.match.params.id, 10);
     const starred = this.getStarred(ownProps.user, internalId);
     const settingsReadOnly = state.visibility.accessLevel < ACCESS_LEVELS.MASTER;
-    const baseUrl = ownProps.match.isExact ? ownProps.match.url.slice(0, -1) : ownProps.match.url;
 
     return {
       ...this.projectState.get(),
       ...ownProps,
-      ...this.subUrls(baseUrl),
-      ...this.subComponents.bind(this)(internalId, baseUrl, ownProps),
+      ...this.subUrls(),
+      ...this.subComponents.bind(this)(internalId, ownProps),
       starred,
       settingsReadOnly
     }

@@ -88,6 +88,13 @@ class ProjectModel extends StateModel {
       })
   }
 
+  fetchMergeRequests(client, id) {
+    client.getMergeRequests(id)
+      .then(d => {
+        this.set('system.merge_requests', d)
+      })
+  }
+
   fetchReadme(client, id) {
     this.setUpdating({data: {readme: {text: true}}});
     client.getProjectReadme(id)

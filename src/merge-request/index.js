@@ -16,15 +16,6 @@
  * limitations under the License.
  */
 
-/**
- *  incubator-renku-ui
- *
- *  file/index.js
- *  Module for file rendering in Renku.
- */
-
-
-import { FilePreview, LaunchNotebookServerButton, FileCompareContainer as FileComparison} from './File.container'
-import { FileLineage } from './Lineage.container'
-
-export { FilePreview, FileComparison, FileLineage, LaunchNotebookServerButton }
+import { MergeRequestContainer as MergeRequest} from './MergeRequest.container'
+import { MergeRequestList } from './MergeRequest.present'
+export { MergeRequest, MergeRequestList }

@@ -157,10 +157,10 @@ class GitlabClient {
   }
 
 
-  getProjectFile(projectId, path) {
+  getProjectFile(projectId, path, ref='master') {
     let headers = this.getBasicHeaders();
     const encodedPath = encodeURIComponent(path);
-    return renkuFetch(`${this._baseUrl}/projects/${projectId}/repository/files/${encodedPath}/raw?ref=master`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/repository/files/${encodedPath}/raw?ref=${ref}`, {
       method: 'GET',
       headers: headers
     }, 'text')
@@ -384,7 +384,7 @@ class GitlabClient {
 
   }
 
-  getMergeRequests(projectId, queryParams={}) {
+  getMergeRequests(projectId, queryParams={scope: 'all', state: 'opened'}) {
     let headers = this.getBasicHeaders();
     const url = projectId ? `${this._baseUrl}/projects/${projectId}/merge_requests` :
       `${this._baseUrl}/merge_requests`
@@ -395,9 +395,9 @@ class GitlabClient {
     })
   }
 
-  getMergeRequestChanges(projectId, requestIid) {
+  getMergeRequestChanges(projectId, mrIid) {
     let headers = this.getBasicHeaders();
-    return renkuFetch(`${this._baseUrl}/projects/${projectId}/merge_requests/${requestIid}/changes`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/merge_requests/${mrIid}/changes`, {
       method: 'GET',
       headers
     })
@@ -408,7 +408,7 @@ class GitlabClient {
   // in which the file is modified.
   // TODO: This method should go to the gateway.
   getModifiedFiles(projectId) {
-    return this.getMergeRequests(projectId, {scope: 'all', state: 'opened'})
+    return this.getMergeRequests(projectId)
       .then((mergeRequests) => {
         if (!mergeRequests) return;
 
@@ -436,6 +436,15 @@ class GitlabClient {
             return openMrs;
           });
       })
+  }
+
+  mergeMergeRequest(projectId, mrIid) {
+    let headers = this.getBasicHeaders();
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/merge_requests/${mrIid}/merge`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({should_remove_source_branch: true})
+    })
   }
 }
 
