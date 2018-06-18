@@ -49,6 +49,9 @@ class MergeRequestContainer extends Component {
   }
 
   render() {
+
+    const externalMRUrl = `${this.props.externalUrl}/merge_requests/${this.props.iid}/diffs`
+
     const simpleChanges = this.state.changes
       .filter((change) => change.new_path.split('.').pop() !== 'ipynb')
       .map((change, i) => <SimpleChange {...change} key={i}/>);
@@ -65,11 +68,14 @@ class MergeRequestContainer extends Component {
         />;
       });
     return <MergeRequestPresent
+      title={this.props.title}
+      externalMRUrl={externalMRUrl}
       simpleChanges={simpleChanges}
       notebookChanges={notebookChanges}
       source_branch={this.state.source_branch}
       target_branch={this.state.target_branch}
       onMergeClick={this.merge.bind(this)}
+      canBeMerged={this.state.merge_status === 'can_be_merged'}
     />
   }
 }

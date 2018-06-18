@@ -25,19 +25,33 @@ class MergeRequestPresent extends Component {
   render() {
     const mergeButton = <Button
       size="sm"
-      color="primary"
+      color="success"
       onClick={event => {
         event.preventDefault();
         this.props.onMergeClick();
       }}>
-      {'Accept Changes'}
+      {'Merge'}
+    </Button>;
+
+    const gitLabMRLink = <Button
+      size="sm"
+      color="link"
+      onClick={event => {
+        event.preventDefault();
+        window.open(`${this.props.externalMRUrl}`);
+      }}>
+      {'Open merge request in GitLab'}
     </Button>;
 
     return <Table>
-      <thead><tr>
-        <th>{this.props.target_branch}&ensp;&ensp;{mergeButton}</th>
-        <th>{this.props.source_branch}</th>
-      </tr></thead>
+      <thead>
+        <tr style={{borderTopWidth:'0px'}}>
+          <th>{this.props.target_branch}&ensp;
+            {this.props.canBeMerged ? mergeButton : null}&ensp;
+            {gitLabMRLink}</th>
+          <th>{this.props.source_branch}</th>
+        </tr>
+      </thead>
       <tbody>{this.props.simpleChanges}{this.props.notebookChanges}</tbody>
     </Table>
   }
@@ -62,7 +76,7 @@ class MergeRequestListItem extends Component {
   render() {
     const className = this.props.active ? 'underline-nav font-weight-bold' : 'font-weight-normal';
 
-    const badgeText = this.props.merge_status === 'can_be_merged' ? 'Can be merged' : 'Conflicts when merging';
+    const badgeText = this.props.merge_status === 'can_be_merged' ? 'Can be merged' : 'Conflicts';
     const badgeColor = this.props.merge_status === 'can_be_merged' ? 'success' : 'danger';
     const statusBadge = <Badge color={badgeColor}>{badgeText}</Badge>;
 

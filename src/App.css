@@ -99,3 +99,26 @@ body {
 .fixed-width-100 {
   width: 100px;
 }
+
+.simple-tooltip {
+  position: relative;
+  display: inline-block;
+  color: #DD0000;
+}
+
+.simple-tooltip .tooltiptext {
+  visibility: hidden;
+  background-color: #CCC;
+  width: 260px;
+  color: #000000;
+  text-align: center;
+  padding: 5px 10px;
+  border-radius: 6px;
+
+  position: absolute;
+  z-index: 1;
+}
+
+.simple-tooltip:hover .tooltiptext {
+  visibility: visible;
+}

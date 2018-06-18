@@ -120,11 +120,12 @@ class View extends Component {
 
   subComponents(projectId, ownProps) {
     const accessLevel = this.projectState.get('visibility.accessLevel');
+    const externalUrl = this.projectState.get('core.external_url')
     const updateProjectView = this.forceUpdate.bind(this);
 
     // Access to the project state could be given to the subComponents by connecting them here to
     // the projectStore. This is not yet necessary.
-    const subProps = {...ownProps, projectId, accessLevel};
+    const subProps = {...ownProps, projectId, accessLevel, externalUrl};
 
 
     const mapStateToProps = (state, ownProps) => {

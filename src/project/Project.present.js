@@ -29,13 +29,10 @@ import React, { Component } from 'react';
 
 import { Link, Route, Switch }  from 'react-router-dom';
 
-import { Row, Col } from 'reactstrap';
-import { Button, Form, FormGroup, Input, Label, FormText } from 'reactstrap';
-import { Container } from 'reactstrap';
+import { Container, Row, Col } from 'reactstrap';
+import { Badge, Button, Form, FormGroup, FormText, Input, Label, Table } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { Card, CardBody, CardHeader } from 'reactstrap';
-import { Badge } from 'reactstrap';
-import { Table } from 'reactstrap';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faStarRegular from '@fortawesome/fontawesome-free-regular/faStar'
 import faStarSolid from '@fortawesome/fontawesome-free-solid/faStar'
@@ -260,19 +257,23 @@ class ProjectMergeRequestList extends Component {
 
 class FileFolderList extends Component {
   render() {
-    // TODO: Add tooltip here
-    const alertIcon = <FontAwesomeIcon icon={faExclamationCircle} />;
-    let alerts;
+    const alertIcon = <div className="simple-tooltip">
+      <FontAwesomeIcon icon={faExclamationCircle} />
+      <span className="tooltiptext">This file has open modifications!</span>
+    </div>;
+    let alerts, mrIids;
     if (this.props.alerts) {
-      alerts = this.props.alerts.map((el) => el ? alertIcon : '')
+      alerts = this.props.alerts.map((el) => el ? alertIcon : '');
+      mrIids = this.props.mrIids;
     }
     else {
-      alerts = this.props.paths.map(() => '')
+      alerts = this.props.paths.map(() => '');
+      mrIids = this.props.paths.map(() => []);
     }
     const emptyView = this.props.emptyView;
     if ((this.props.paths.length < 1) && emptyView != null) return emptyView;
     const rows = this.props.paths.map((p, i) => {
-      return <tr key={p}><td><Link to={p}>{p}</Link> {alerts[i]}</td></tr>
+      return <tr key={p}><td><Link to={p}>{p}</Link> {alerts[i]} {mrIids[i]}</td></tr>
     });
     return <Table>
       <tbody>{rows}</tbody>
@@ -284,16 +285,25 @@ class ProjectFilesCategorizedList extends Component {
   render() {
     const alerts = this.props.files.notebooks ?
       this.props.files.notebooks.map(path => this.props.files.modifiedFiles[path] !== undefined) : undefined;
+    const mrIids = this.props.files.notebooks ?
+      this.props.files.notebooks.map(path => {
+        if (!this.props.files.modifiedFiles[path]) return [];
+        return this.props.files.modifiedFiles[path].map((mrIid, i) => {
+          return <Link key={i} to={`/projects/${this.props.id}/mergeRequests/${mrIid}`}>&nbsp;{mrIid}</Link>;
+        });
+      }) : undefined;
+
     return <Switch>
       <Route path={this.props.notebooksUrl} render={props => {
         return <FileFolderList
           paths={this.props.files.notebooks}
           alerts={alerts}
+          mrIids={mrIids}
           emptyView={this.props.launchNotebookServerButton}
         /> }}
       />
       <Route path={this.props.dataUrl} render={props => <FileFolderList paths={this.props.files.data} /> } />
-      <Route render={props => <p>Files</p> } />
+      <Route render={() => <p>Files</p> } />
     </Switch>
   }
 }
