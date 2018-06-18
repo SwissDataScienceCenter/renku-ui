@@ -27,4 +27,4 @@
 import { FilePreview, LaunchNotebookServerButton, FileCompareContainer as FileComparison} from './File.container'
 import { FileLineage } from './Lineage.container'
 
-export { FilePreview, FileComparison, FileLineage, LaunchNotebookServerButton }
+export { FilePreview, FileLineage, LaunchNotebookServerButton }

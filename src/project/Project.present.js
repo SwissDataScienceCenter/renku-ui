@@ -247,10 +247,10 @@ class ProjectMergeRequestList extends Component {
 
   render() {
     return [
-      <Col key="mrList" sm={12} md={4}>
+      <Col key="mrList" sm={12} md={4} lg={3} xl={2}>
         {this.props.mrList}
       </Col>,
-      <Col key="mr" sm={12} md={8}>
+      <Col key="mr" sm={12} md={8} lg={9} xl={10}>
         <Route path={this.props.mrUrl}
           render={props => this.props.mrView(props) }/>
       </Col>

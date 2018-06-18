@@ -17,9 +17,8 @@
  */
 
 import React, { Component } from 'react';
-import { SimpleChange, NotebookComparisonPresent } from './MergeRequest.present';
+import { SimpleChange, NotebookComparisonPresent, MergeRequestPresent } from './MergeRequest.present';
 import Notebook from '../file/Notebook'
-import { Button } from 'reactstrap'
 
 class MergeRequestContainer extends Component {
   constructor(props){
@@ -50,40 +49,41 @@ class MergeRequestContainer extends Component {
   }
 
   render() {
-    const mergeButton = <Button
-      color="primary" onClick={event => {
-        event.preventDefault();
-        this.merge.bind(this)()
-      }}>
-      {'Accept Changes'}
-    </Button>;
+    const simpleChanges = this.state.changes
+      .filter((change) => change.new_path.split('.').pop() !== 'ipynb')
+      .map((change, i) => <SimpleChange {...change} key={i}/>);
 
-    const changes = this.state.changes.map((change, i) => {
-      if (change.new_path.split('.').pop() !== 'ipynb') {
-        return <SimpleChange {...change} key={i}/>
-      }
-
+    const notebookChanges = this.state.changes
+      .filter((change) => change.new_path.split('.').pop() === 'ipynb')
+      .map((change, i) => {
       //TODO: What if a notebook has been modified and renamed at the same time?
-      return <NotebookComparisonContainer
-        key={i} {...this.props}
-        filePath={change.new_path}
-        ref1={this.state.target_branch}
-        ref2={this.state.source_branch}
-      />;
-    });
-    return <span>
-      {mergeButton}
-      {changes}
-    </span>;
+        return <NotebookComparisonContainer
+          key={i} {...this.props}
+          filePath={change.new_path}
+          ref1={this.state.target_branch}
+          ref2={this.state.source_branch}
+        />;
+      });
+    return <MergeRequestPresent
+      simpleChanges={simpleChanges}
+      notebookChanges={notebookChanges}
+      source_branch={this.state.source_branch}
+      target_branch={this.state.target_branch}
+      onMergeClick={this.merge.bind(this)}
+    />
   }
 }
 
 class NotebookComparisonContainer extends Component {
   render() {
-    const notebook1 = <Notebook.Show {...this.props} branchName={this.props.ref1} />;
-    const notebook2 = <Notebook.Show {...this.props} branchName={this.props.ref2} />;
+    const notebook1 = <Notebook.Show {...this.props} accessLevel={0} branchName={this.props.ref1} />;
+    const notebook2 = <Notebook.Show {...this.props} accessLevel={0} branchName={this.props.ref2} />;
 
-    return <NotebookComparisonPresent leftNotebookComponent={notebook1} rightNotebookComponent={notebook2} />;
+    return <NotebookComparisonPresent
+      filePath={this.props.filePath}
+      leftNotebookComponent={notebook1}
+      rightNotebookComponent={notebook2}
+    />;
   }
 }
 

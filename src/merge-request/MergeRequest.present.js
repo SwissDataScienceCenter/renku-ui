@@ -17,8 +17,31 @@
  */
 
 import React, { Component } from 'react';
-import { Row, Col } from 'reactstrap';
+import { Table, Row, Col, Button, Badge } from 'reactstrap';
 import { Link, Route, Switch } from 'react-router-dom'
+
+
+class MergeRequestPresent extends Component {
+  render() {
+    const mergeButton = <Button
+      size="sm"
+      color="primary"
+      onClick={event => {
+        event.preventDefault();
+        this.props.onMergeClick();
+      }}>
+      {'Accept Changes'}
+    </Button>;
+
+    return <Table>
+      <thead><tr>
+        <th>{this.props.target_branch}&ensp;&ensp;{mergeButton}</th>
+        <th>{this.props.source_branch}</th>
+      </tr></thead>
+      <tbody>{this.props.simpleChanges}{this.props.notebookChanges}</tbody>
+    </Table>
+  }
+}
 
 class MergeRequestList extends Component {
   render() {
@@ -31,23 +54,29 @@ class MergeRequestList extends Component {
           render={() => <MergeRequestListItem active={false} {...d} mrUrl={mrUrl}/> }/>
       </Switch>;
     });
-    return <Row key="mr"><Col xs={12}>{rows}</Col></Row>
+    return <Row key="mr"><Col>{rows}</Col></Row>
   }
 }
 
 class MergeRequestListItem extends Component {
   render() {
     const className = this.props.active ? 'underline-nav font-weight-bold' : 'font-weight-normal';
-    const title = this.props.active ?
-      <span>{this.props.title}</span> :
-      <Link to={this.props.mrUrl}> {this.props.title || 'no title'} </Link>;
 
-    return <Col key="branches" md={9}>
-      <p className={className}>{title}</p>
-      <p>source: {this.props.source_branch}</p>
-      <p>target: {this.props.target_branch}</p>
-      <p>status: {this.props.merge_status}</p>
-    </Col>
+    const badgeText = this.props.merge_status === 'can_be_merged' ? 'Can be merged' : 'Conflicts when merging';
+    const badgeColor = this.props.merge_status === 'can_be_merged' ? 'success' : 'danger';
+    const statusBadge = <Badge color={badgeColor}>{badgeText}</Badge>;
+
+    const title = this.props.active ? this.props.title :
+      <Link to={this.props.mrUrl}>{this.props.title}</Link>;
+
+    return <span>
+      <p className={className} style={{marginBottom: '0px'}}>{title}</p>
+      <p style={{marginTop: '0px'}}>
+        <Badge color="light">{this.props.target_branch}</Badge> {'<--'}
+        <Badge color="light">{this.props.source_branch}</Badge> &nbsp;&nbsp;
+        {statusBadge}
+      </p>
+    </span>
   }
 }
 
@@ -67,7 +96,7 @@ class SimpleChange extends Component {
     else {
       line = `Modified file: ${this.props.new_path}`
     }
-    return <p>{line}</p>
+    return <tr><td></td><td>{line}</td></tr>
   }
 }
 
@@ -75,19 +104,23 @@ class SimpleChange extends Component {
 class NotebookComparisonPresent extends Component {
   render() {
     return (
-      <Row>
-        <Col className="notebook-comparison" sm={5}>
-          {this.props.leftNotebookComponent}
-        </Col>
-        <Col sm={1}>
-        </Col>
-        <Col className="notebook-comparison" sm={5}>
-          {this.props.rightNotebookComponent}
-        </Col>
-      </Row>
+      <tr>
+        <td>
+          <p><br/>{this.props.filePath}</p>
+          <div className="notebook-comparison">
+            {this.props.leftNotebookComponent}
+          </div>
+        </td>
+        <td>
+          <p><br/>{this.props.filePath}</p>
+          <div className="notebook-comparison">
+            {this.props.rightNotebookComponent}
+          </div>
+        </td>
+      </tr>
     )
   }
 }
 
 
-export { MergeRequestList, SimpleChange, NotebookComparisonPresent }
+export { MergeRequestList, SimpleChange, NotebookComparisonPresent, MergeRequestPresent }
