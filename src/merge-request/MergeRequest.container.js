@@ -19,6 +19,7 @@
 import React, { Component } from 'react';
 import { SimpleChange, NotebookComparisonPresent, MergeRequestPresent } from './MergeRequest.present';
 import Notebook from '../file/Notebook'
+import { ACCESS_LEVELS } from '../gitlab';
 
 class MergeRequestContainer extends Component {
   constructor(props){
@@ -69,6 +70,10 @@ class MergeRequestContainer extends Component {
           ref2={this.state.source_branch}
         />;
       });
+
+    const showMergeButton = this.state.merge_status === 'can_be_merged' &&
+      this.props.accessLevel >= ACCESS_LEVELS.DEVELOPER
+
     return <MergeRequestPresent
       title={this.state.title}
       author={this.state.author}
@@ -78,7 +83,7 @@ class MergeRequestContainer extends Component {
       source_branch={this.state.source_branch}
       target_branch={this.state.target_branch}
       onMergeClick={this.merge.bind(this)}
-      canBeMerged={this.state.merge_status === 'can_be_merged'}
+      showMergeButton={showMergeButton}
     />
   }
 }
