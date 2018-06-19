@@ -23,7 +23,7 @@ import { Link, Route, Switch } from 'react-router-dom'
 
 class MergeRequestPresent extends Component {
   render() {
-    const mergeButton = <Button
+    const mergeButton = this.props.canBeMerged ? <Button
       size="sm"
       color="success"
       onClick={event => {
@@ -31,7 +31,7 @@ class MergeRequestPresent extends Component {
         this.props.onMergeClick();
       }}>
       {'Merge'}
-    </Button>;
+    </Button> : undefined
 
     const gitLabMRLink = <Button
       size="sm"
@@ -43,11 +43,15 @@ class MergeRequestPresent extends Component {
       {'Open merge request in GitLab'}
     </Button>;
 
+    const description = `${this.props.author.name} wants to merge the following changes 
+      from ${this.props.source_branch} into ${this.props.target_branch}.`;
+
     return <span>
       <Row key="title">
         <Col xs={6}><h3 style={{padding: '10px'}}>{this.props.title}</h3></Col>
         <Col xs={6}><p align="right" style={{padding: '10px'}}>{gitLabMRLink}&nbsp;{mergeButton}</p></Col>
       </Row>
+      <p key="lead" className="lead" style={{padding: '10px'}}>{description}</p>
       <Table>
         <thead>
           <tr style={{borderTopWidth:'0px'}}>

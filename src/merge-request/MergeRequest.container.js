@@ -24,7 +24,8 @@ class MergeRequestContainer extends Component {
   constructor(props){
     super(props);
     this.state = {
-      changes: []
+      changes: [],
+      author: {name: ''}
     }
   }
 
@@ -69,6 +70,7 @@ class MergeRequestContainer extends Component {
       });
     return <MergeRequestPresent
       title={this.state.title}
+      author={this.state.author}
       externalMRUrl={externalMRUrl}
       simpleChanges={simpleChanges}
       notebookChanges={notebookChanges}
