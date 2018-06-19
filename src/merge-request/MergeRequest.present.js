@@ -43,17 +43,21 @@ class MergeRequestPresent extends Component {
       {'Open merge request in GitLab'}
     </Button>;
 
-    return <Table>
-      <thead>
-        <tr style={{borderTopWidth:'0px'}}>
-          <th>{this.props.target_branch}&ensp;
-            {this.props.canBeMerged ? mergeButton : null}&ensp;
-            {gitLabMRLink}</th>
-          <th>{this.props.source_branch}</th>
-        </tr>
-      </thead>
-      <tbody>{this.props.simpleChanges}{this.props.notebookChanges}</tbody>
-    </Table>
+    return <span>
+      <Row key="title">
+        <Col xs={6}><h3 style={{padding: '10px'}}>{this.props.title}</h3></Col>
+        <Col xs={6}><p align="right" style={{padding: '10px'}}>{gitLabMRLink}&nbsp;{mergeButton}</p></Col>
+      </Row>
+      <Table>
+        <thead>
+          <tr style={{borderTopWidth:'0px'}}>
+            <th>{this.props.target_branch}</th>
+            <th>{this.props.source_branch}</th>
+          </tr>
+        </thead>
+        <tbody>{this.props.simpleChanges}{this.props.notebookChanges}</tbody>
+      </Table>
+    </span>
   }
 }
 
