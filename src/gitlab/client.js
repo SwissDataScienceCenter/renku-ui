@@ -384,6 +384,39 @@ class GitlabClient {
 
   }
 
+  // TODO: Unfotunately, the API doesn't offer a way to query only for unmerged branches -
+  // TODO: add this capability to the gateway.
+  // TODO: Page through results in gateway, for the moment assuming a max of 100 branches seems ok.
+  getBranches(projectId) {
+    let headers = this.getBasicHeaders();
+    const url = `${this._baseUrl}/projects/${projectId}/repository/branches`;
+    return renkuFetch(url, {
+      method: 'GET',
+      headers,
+      queryParams: {per_page: 100}
+    })
+  }
+
+
+  createMergeRequest(projectId, title, source_branch, target_branch, options={
+    allow_collaboration: true,
+    remove_source_branch: true
+  }) {
+    let headers = this.getBasicHeaders();
+    headers.append('Content-Type', 'application/json');
+
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/merge_requests`, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify({
+        ...options,
+        title,
+        source_branch,
+        target_branch,
+      })
+    })
+  }
+
   getMergeRequests(projectId, queryParams={scope: 'all', state: 'opened'}) {
     let headers = this.getBasicHeaders();
     const url = projectId ? `${this._baseUrl}/projects/${projectId}/merge_requests` :
@@ -391,7 +424,7 @@ class GitlabClient {
     return renkuFetch(url, {
       method: 'GET',
       headers,
-      queryParams
+      queryParams: {...queryParams, per_page:100}
     })
   }
 

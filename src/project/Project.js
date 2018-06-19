@@ -87,10 +87,15 @@ class View extends Component {
   }
 
   componentDidMount() {
+    this.fetchAll()
+  }
+
+  fetchAll() {
     this.projectState.fetchProject(this.props.client, this.props.id);
     this.projectState.fetchReadme(this.props.client, this.props.id);
     this.projectState.fetchModifiedFiles(this.props.client, this.props.id);
     this.projectState.fetchMergeRequests(this.props.client, this.props.id);
+    this.projectState.fetchBranches(this.props.client, this.props.id);
   }
 
   getStarred(user, projectId) {
@@ -118,19 +123,37 @@ class View extends Component {
     }
   }
 
+  // TODO: Fix for MRs across forks.
+  getMrSuggestions() {
+
+    // Don't display any suggestions while the state is updating - leads to annoying flashing fo
+    // wrong information while branches are there but merge_requests are not...
+    if (this.projectState.get('system.merge_requests') === this.projectState._updatingPropVal) return [];
+    if (this.projectState.get('system.branches') === this.projectState._updatingPropVal) return [];
+
+    const mergeRequestBranches = this.projectState.get('system.merge_requests')
+      .map(mr => mr.source_branch);
+
+    return this.projectState.get('system.branches')
+      .filter(branch => branch.name !== 'master')
+      .filter(branch => !branch.merged)
+      .filter(branch => mergeRequestBranches.indexOf(branch.name) < 0);
+  }
+
   subComponents(projectId, ownProps) {
     const accessLevel = this.projectState.get('visibility.accessLevel');
-    const externalUrl = this.projectState.get('core.external_url')
+    const externalUrl = this.projectState.get('core.external_url');
     const updateProjectView = this.forceUpdate.bind(this);
 
     // Access to the project state could be given to the subComponents by connecting them here to
     // the projectStore. This is not yet necessary.
     const subProps = {...ownProps, projectId, accessLevel, externalUrl};
 
+    const mergeRequests = this.projectState.get('system.merge_requests');
 
     const mapStateToProps = (state, ownProps) => {
       return {
-        mergeRequests: this.projectState.get('system.merge_requests'),
+        mergeRequests: mergeRequests === this.projectState._updatingPropVal ? [] : mergeRequests,
         ...ownProps
       };
     };
@@ -157,7 +180,10 @@ class View extends Component {
 
       mrList: <ConnectedMergeRequestList key="mrList" store={this.projectState.reduxStore}
         mrOverviewUrl={this.subUrls().mrOverviewUrl}/>,
-      mrView: (p) => <MergeRequest key="mr" {...subProps} iid={p.match.params.mrIid} />,
+      mrView: (p) => <MergeRequest
+        key="mr" {...subProps}
+        iid={p.match.params.mrIid}
+        updateProjectState={this.fetchAll.bind(this)}/>,
     }
   }
 
@@ -180,6 +206,18 @@ class View extends Component {
       const projectId = this.projectState.get('core.id') || parseInt(this.props.match.params.id, 10);
       const starred = this.getStarred(this.props.user, projectId);
       this.projectState.star(this.props.client, projectId, this.props.userStateDispatch, starred)
+    },
+    onCreateMergeRequest: (branch) => {
+      const core = this.projectState.get('core');
+      let newMRiid;
+      // TODO: Again, it would be nice to update the local state rather than relying on the server
+      // TODO: updating the information fast enough through all possible layers of caches, etc...
+      this.props.client.createMergeRequest(core.id, branch.name, branch.name, 'master')
+        .then((d) => {
+          newMRiid = d.iid;
+          return this.fetchAll()
+        })
+        .then(() => this.props.history.push(`/projects/${core.id}/mergeRequests/${newMRiid}`))
     }
   };
 
@@ -187,6 +225,8 @@ class View extends Component {
     const internalId = this.projectState.get('core.id') || parseInt(ownProps.match.params.id, 10);
     const starred = this.getStarred(ownProps.user, internalId);
     const settingsReadOnly = state.visibility.accessLevel < ACCESS_LEVELS.MASTER;
+    const suggestedMRBranches = this.getMrSuggestions();
+    const externalUrl = this.projectState.get('core.external_url');
 
     return {
       ...this.projectState.get(),
@@ -194,7 +234,9 @@ class View extends Component {
       ...this.subUrls(),
       ...this.subComponents.bind(this)(internalId, ownProps),
       starred,
-      settingsReadOnly
+      settingsReadOnly,
+      suggestedMRBranches,
+      externalUrl
     }
   }
 

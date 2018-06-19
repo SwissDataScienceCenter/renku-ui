@@ -41,6 +41,7 @@ class MergeRequestContainer extends Component {
   merge() {
     this.props.client.mergeMergeRequest(this.props.projectId, this.props.iid)
       .then(() => {
+        this.props.updateProjectState();
         this.props.history.push(`/projects/${this.props.projectId}/mergeRequests`)
       });
   }
@@ -51,7 +52,7 @@ class MergeRequestContainer extends Component {
 
   render() {
 
-    const externalMRUrl = `${this.props.externalUrl}/merge_requests/${this.props.iid}/diffs`
+    const externalMRUrl = `${this.props.externalUrl}/merge_requests/${this.props.iid}/diffs`;
 
     const simpleChanges = this.state.changes
       .filter((change) => change.new_path.split('.').pop() !== 'ipynb')

@@ -30,7 +30,7 @@ import React, { Component } from 'react';
 import { Link, Route, Switch }  from 'react-router-dom';
 
 import { Container, Row, Col } from 'reactstrap';
-import { Badge, Button, Form, FormGroup, FormText, Input, Label, Table } from 'reactstrap';
+import { Alert, Badge, Button, Form, FormGroup, FormText, Input, Label, Table } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { Card, CardBody, CardHeader } from 'reactstrap';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
@@ -97,12 +97,36 @@ class ProjectTagList extends Component {
 class ProjectViewHeader extends Component {
 
   render() {
+
+    const mrSuggestions = this.props.suggestedMRBranches.map((branch, i) => {
+      return <Alert color="warning" key={i}>
+        <p style={{float:'left'}}> Do you want to create a merge request for branch <b>{branch.name}</b>?</p>
+        <p style={{float:'right'}}>
+          &nbsp; <Button color="link" onClick={(e) => {
+          e.preventDefault();
+          window.open(`${this.props.externalUrl}/tree/${branch.name}`);
+        }
+        }>View branch in GitLab</Button>
+          &nbsp; <Button color="success" onClick={(e) => {
+            e.preventDefault();
+            this.props.onCreateMergeRequest(branch)
+          }}
+          >Create merge request</Button>
+
+          {/*TODO: Enable the 'no' option once the alert can be dismissed permanently!*/}
+          {/*&nbsp; <Button color="warning" onClick={this.props.createMR(branch.iid)}>No</Button>*/}
+        </p>
+        <div style={{clear: 'left'}}></div>
+      </Alert>
+    });
+
     const core = this.props.core;
     const system = this.props.system;
     const starButtonText = this.props.starred ? 'unstar' : 'star';
     const starIcon = this.props.starred ? faStarSolid : faStarRegular;
     return (
       <Container fluid>
+        {mrSuggestions}
         <Row>
           <Col xs={12} md={9}>
             <h1>{core.title}</h1>
