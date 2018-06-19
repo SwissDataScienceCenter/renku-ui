@@ -99,6 +99,7 @@ class ProjectViewHeader extends Component {
   render() {
 
     const mrSuggestions = this.props.suggestedMRBranches.map((branch, i) => {
+      if (!this.props.canCreateMR) return null;
       return <Alert color="warning" key={i}>
         <p style={{float:'left'}}> Do you want to create a merge request for branch <b>{branch.name}</b>?</p>
         <p style={{float:'right'}}>

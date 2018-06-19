@@ -227,6 +227,7 @@ class View extends Component {
     const settingsReadOnly = state.visibility.accessLevel < ACCESS_LEVELS.MAINTAINER;
     const suggestedMRBranches = this.getMrSuggestions();
     const externalUrl = this.projectState.get('core.external_url');
+    const canCreateMR = state.visibility.accessLevel >= ACCESS_LEVELS.DEVELOPER;
 
     return {
       ...this.projectState.get(),
@@ -236,7 +237,8 @@ class View extends Component {
       starred,
       settingsReadOnly,
       suggestedMRBranches,
-      externalUrl
+      externalUrl,
+      canCreateMR
     }
   }
 
