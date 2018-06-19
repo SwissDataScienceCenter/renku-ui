@@ -224,7 +224,7 @@ class View extends Component {
   mapStateToProps(state, ownProps) {
     const internalId = this.projectState.get('core.id') || parseInt(ownProps.match.params.id, 10);
     const starred = this.getStarred(ownProps.user, internalId);
-    const settingsReadOnly = state.visibility.accessLevel < ACCESS_LEVELS.MASTER;
+    const settingsReadOnly = state.visibility.accessLevel < ACCESS_LEVELS.MAINTAINER;
     const suggestedMRBranches = this.getMrSuggestions();
     const externalUrl = this.projectState.get('core.external_url');
 
