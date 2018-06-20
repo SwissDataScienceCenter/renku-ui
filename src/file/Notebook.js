@@ -38,7 +38,8 @@ class Show extends Component {
   }
 
   retrieveNotebook() {
-    this.props.client.getProjectFile(this.props.projectId, this.props.filePath)
+    const branchName = this.props.branchName || 'master';
+    this.props.client.getProjectFile(this.props.projectId, this.props.filePath, branchName)
       .then(json => {
         const notebook = JSON.parse(json);
         this.setState({notebook});

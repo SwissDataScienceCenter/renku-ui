@@ -39,7 +39,7 @@ import Notebook from '../file/Notebook'
 import { FileLineage, LaunchNotebookServerButton } from '../file'
 import { ACCESS_LEVELS } from '../gitlab';
 import { alertError } from '../utils/Errors';
-
+import { MergeRequest, MergeRequestList } from '../merge-request';
 
 class New extends Component {
   constructor(props) {
@@ -80,6 +80,9 @@ class New extends Component {
 }
 
 
+// TODO: This component has grown too much and needs restructuring. One option would be to insert
+// TODO: another container component between this top-level project component and the presentational
+// TODO: component displaying the project overview.
 class View extends Component {
   constructor(props) {
     super(props);
@@ -87,9 +90,15 @@ class View extends Component {
   }
 
   componentDidMount() {
+    this.fetchAll()
+  }
+
+  fetchAll() {
     this.projectState.fetchProject(this.props.client, this.props.id);
     this.projectState.fetchReadme(this.props.client, this.props.id);
     this.projectState.fetchModifiedFiles(this.props.client, this.props.id);
+    this.projectState.fetchMergeRequests(this.props.client, this.props.id);
+    this.projectState.fetchBranches(this.props.client, this.props.id);
   }
 
   getStarred(user, projectId) {
@@ -98,7 +107,11 @@ class View extends Component {
     }
   }
 
-  subUrls(baseUrl) {
+  subUrls() {
+    // For exact matches, we strip the trailing / from the baseUrl
+    const match = this.props.match;
+    const baseUrl = match.isExact ? match.url.slice(0, -1) : match.url;
+
     return {
       overviewUrl: `${baseUrl}/`,
       kusUrl: `${baseUrl}/kus`,
@@ -108,18 +121,49 @@ class View extends Component {
       dataUrl: `${baseUrl}/data`,
       datumUrl: `${baseUrl}/data/:datumPath+`,
       settingsUrl: `${baseUrl}/settings`,
+      mrOverviewUrl: `${baseUrl}/mergeRequests`,
+      mrUrl: `${baseUrl}/mergeRequests/:mrIid`,
     }
   }
 
-  subComponents(projectId, baseUrl, ownProps) {
+  // TODO: Fix for MRs across forks.
+  getMrSuggestions() {
+
+    // Don't display any suggestions while the state is updating - leads to annoying flashing fo
+    // wrong information while branches are there but merge_requests are not...
+    if (this.projectState.get('system.merge_requests') === this.projectState._updatingPropVal) return [];
+    if (this.projectState.get('system.branches') === this.projectState._updatingPropVal) return [];
+
+    const mergeRequestBranches = this.projectState.get('system.merge_requests')
+      .map(mr => mr.source_branch);
+
+    return this.projectState.get('system.branches')
+      .filter(branch => branch.name !== 'master')
+      .filter(branch => !branch.merged)
+      .filter(branch => mergeRequestBranches.indexOf(branch.name) < 0);
+  }
+
+  subComponents(projectId, ownProps) {
     const accessLevel = this.projectState.get('visibility.accessLevel');
+    const externalUrl = this.projectState.get('core.external_url');
     const updateProjectView = this.forceUpdate.bind(this);
 
     // Access to the project state could be given to the subComponents by connecting them here to
     // the projectStore. This is not yet necessary.
-    const subProps = {...ownProps, projectId, accessLevel};
+    const subProps = {...ownProps, projectId, accessLevel, externalUrl};
+
+    const mergeRequests = this.projectState.get('system.merge_requests');
+
+    const mapStateToProps = (state, ownProps) => {
+      return {
+        mergeRequests: mergeRequests === this.projectState._updatingPropVal ? [] : mergeRequests,
+        ...ownProps
+      };
+    };
+    const ConnectedMergeRequestList = connect(mapStateToProps)(MergeRequestList);
+
     return {
-      kuList: <Ku.List key="kus" {...subProps} kuBaseUrl={`${baseUrl}/kus`} />,
+      kuList: <Ku.List key="kus" {...subProps} kuBaseUrl={this.subUrls().kusUrl} />,
 
       kuView: (p) => <Ku.View key="ku" {...subProps}
         kuIid={p.match.params.kuIid}
@@ -136,6 +180,13 @@ class View extends Component {
 
       launchNotebookServerButton: <LaunchNotebookServerButton key= "launch notebook" {...subProps}
         projectPath={this.projectState.get('core.path_with_namespace')}/>,
+
+      mrList: <ConnectedMergeRequestList key="mrList" store={this.projectState.reduxStore}
+        mrOverviewUrl={this.subUrls().mrOverviewUrl}/>,
+      mrView: (p) => <MergeRequest
+        key="mr" {...subProps}
+        iid={p.match.params.mrIid}
+        updateProjectState={this.fetchAll.bind(this)}/>,
     }
   }
 
@@ -158,22 +209,39 @@ class View extends Component {
       const projectId = this.projectState.get('core.id') || parseInt(this.props.match.params.id, 10);
       const starred = this.getStarred(this.props.user, projectId);
       this.projectState.star(this.props.client, projectId, this.props.userStateDispatch, starred)
+    },
+    onCreateMergeRequest: (branch) => {
+      const core = this.projectState.get('core');
+      let newMRiid;
+      // TODO: Again, it would be nice to update the local state rather than relying on the server
+      // TODO: updating the information fast enough through all possible layers of caches, etc...
+      this.props.client.createMergeRequest(core.id, branch.name, branch.name, 'master')
+        .then((d) => {
+          newMRiid = d.iid;
+          return this.fetchAll()
+        })
+        .then(() => this.props.history.push(`/projects/${core.id}/mergeRequests/${newMRiid}`))
     }
   };
 
   mapStateToProps(state, ownProps) {
     const internalId = this.projectState.get('core.id') || parseInt(ownProps.match.params.id, 10);
     const starred = this.getStarred(ownProps.user, internalId);
-    const settingsReadOnly = state.visibility.accessLevel < ACCESS_LEVELS.MASTER;
-    const baseUrl = ownProps.match.isExact ? ownProps.match.url.slice(0, -1) : ownProps.match.url;
+    const settingsReadOnly = state.visibility.accessLevel < ACCESS_LEVELS.MAINTAINER;
+    const suggestedMRBranches = this.getMrSuggestions();
+    const externalUrl = this.projectState.get('core.external_url');
+    const canCreateMR = state.visibility.accessLevel >= ACCESS_LEVELS.DEVELOPER;
 
     return {
       ...this.projectState.get(),
       ...ownProps,
-      ...this.subUrls(baseUrl),
-      ...this.subComponents.bind(this)(internalId, baseUrl, ownProps),
+      ...this.subUrls(),
+      ...this.subComponents.bind(this)(internalId, ownProps),
       starred,
-      settingsReadOnly
+      settingsReadOnly,
+      suggestedMRBranches,
+      externalUrl,
+      canCreateMR
     }
   }
 

@@ -98,7 +98,9 @@ const projectSchema = new Schema({
       star_count: {initial: 0, mandatory: true},
       forks_count: {initial: 0, mandatory: true},
       ssh_url: {initial: '',},
-      http_url: {initial: '',}
+      http_url: {initial: '',},
+      merge_requests: {schema: [], initial:[]},
+      branches: {schema: [], initial:[]}
     }
   },
   files: {

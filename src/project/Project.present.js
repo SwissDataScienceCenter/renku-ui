@@ -29,16 +29,14 @@ import React, { Component } from 'react';
 
 import { Link, Route, Switch }  from 'react-router-dom';
 
-import { Row, Col } from 'reactstrap';
-import { Button, Form, FormGroup, Input, Label, FormText } from 'reactstrap';
-import { Container } from 'reactstrap';
+import { Container, Row, Col } from 'reactstrap';
+import { Alert, Badge, Button, Form, FormGroup, FormText, Input, Label, Table } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { Card, CardBody, CardHeader } from 'reactstrap';
-import { Badge } from 'reactstrap';
-import { Table } from 'reactstrap';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faStarRegular from '@fortawesome/fontawesome-free-regular/faStar'
 import faStarSolid from '@fortawesome/fontawesome-free-solid/faStar'
+import faExclamationCircle from '@fortawesome/fontawesome-free-solid/faExclamationCircle'
 
 
 import ReactMarkdown from 'react-markdown'
@@ -98,13 +96,50 @@ class ProjectTagList extends Component {
 
 class ProjectViewHeader extends Component {
 
+  getGitLabLink(branch) {
+    return (
+      <Button
+        color="link"
+        onClick={(e) => {
+          e.preventDefault();
+          window.open(`${this.props.externalUrl}/tree/${branch.name}`);
+        }}
+      >View branch in GitLab</Button>
+    );
+  }
+
+  getCreateMRButton(branch) {
+    return (
+      <Button color="success" onClick={(e) => {
+        e.preventDefault();
+        this.props.onCreateMergeRequest(branch)
+      }}
+      >Create merge request</Button>
+    );
+  }
+
   render() {
+    const mrSuggestions = this.props.suggestedMRBranches.map((branch, i) => {
+      if (!this.props.canCreateMR) return null;
+      return <Alert color="warning" key={i}>
+        <p style={{float:'left'}}> Do you want to create a merge request for branch <b>{branch.name}</b>?</p>
+        <p style={{float:'right'}}>
+          &nbsp; {this.getGitLabLink(branch)}
+          &nbsp; {this.getCreateMRButton(branch)}
+          {/*TODO: Enable the 'no' option once the alert can be dismissed permanently!*/}
+          {/*&nbsp; <Button color="warning" onClick={this.props.createMR(branch.iid)}>No</Button>*/}
+        </p>
+        <div style={{clear: 'left'}}></div>
+      </Alert>
+    });
+
     const core = this.props.core;
     const system = this.props.system;
     const starButtonText = this.props.starred ? 'unstar' : 'star';
     const starIcon = this.props.starred ? faStarSolid : faStarRegular;
     return (
       <Container fluid>
+        {mrSuggestions}
         <Row>
           <Col xs={12} md={9}>
             <h1>{core.title}</h1>
@@ -149,6 +184,9 @@ class ProjectNav extends Component {
         </NavItem>
         <NavItem>
           <RenkuNavLink exact={false} to={this.props.notebooksUrl} title="Files" />
+        </NavItem>
+        <NavItem>
+          <RenkuNavLink exact={false} to={this.props.mrOverviewUrl} title="Merge Requests" />
         </NavItem>
         <NavItem>
           <RenkuNavLink exact={false} to={this.props.settingsUrl} title="Settings" />
@@ -239,12 +277,40 @@ class ProjectViewKus extends Component {
   }
 }
 
+class ProjectMergeRequestList extends Component {
+
+  render() {
+    return [
+      <Col key="mrList" sm={12} md={4} lg={3} xl={2}>
+        {this.props.mrList}
+      </Col>,
+      <Col key="mr" sm={12} md={8} lg={9} xl={10}>
+        <Route path={this.props.mrUrl}
+          render={props => this.props.mrView(props) }/>
+      </Col>
+    ]
+  }
+}
+
 class FileFolderList extends Component {
   render() {
+    const alertIcon = <div className="simple-tooltip">
+      <FontAwesomeIcon icon={faExclamationCircle} />
+      <span className="tooltiptext">This file has open modifications!</span>
+    </div>;
+    let alerts, mrIids;
+    if (this.props.alerts) {
+      alerts = this.props.alerts.map((el) => el ? alertIcon : '');
+      mrIids = this.props.mrIids;
+    }
+    else {
+      alerts = this.props.paths.map(() => '');
+      mrIids = this.props.paths.map(() => []);
+    }
     const emptyView = this.props.emptyView;
     if ((this.props.paths.length < 1) && emptyView != null) return emptyView;
-    const rows = this.props.paths.map(p => {
-      return <tr key={p}><td><Link to={p}>{p}</Link></td></tr>
+    const rows = this.props.paths.map((p, i) => {
+      return <tr key={p}><td><Link to={p}>{p}</Link> {alerts[i]} {mrIids[i]}</td></tr>
     });
     return <Table>
       <tbody>{rows}</tbody>
@@ -254,12 +320,27 @@ class FileFolderList extends Component {
 
 class ProjectFilesCategorizedList extends Component {
   render() {
+    const alerts = this.props.files.notebooks ?
+      this.props.files.notebooks.map(path => this.props.files.modifiedFiles[path] !== undefined) : undefined;
+    const mrIids = this.props.files.notebooks ?
+      this.props.files.notebooks.map(path => {
+        if (!this.props.files.modifiedFiles[path]) return [];
+        return this.props.files.modifiedFiles[path].map((mrIid, i) => {
+          return <Link key={i} to={`/projects/${this.props.id}/mergeRequests/${mrIid}`}>&nbsp;{mrIid}</Link>;
+        });
+      }) : undefined;
+
     return <Switch>
       <Route path={this.props.notebooksUrl} render={props => {
-        return <FileFolderList paths={this.props.files.notebooks} emptyView={this.props.launchNotebookServerButton}/> }
-      } />
+        return <FileFolderList
+          paths={this.props.files.notebooks}
+          alerts={alerts}
+          mrIids={mrIids}
+          emptyView={this.props.launchNotebookServerButton}
+        /> }}
+      />
       <Route path={this.props.dataUrl} render={props => <FileFolderList paths={this.props.files.data} /> } />
-      <Route render={props => <p>Files</p> } />
+      <Route render={() => <p>Files</p> } />
     </Switch>
   }
 }
@@ -430,6 +511,8 @@ class ProjectView extends Component {
             render={props => <ProjectViewFiles key="files-data" {...this.props} /> }/>
           <Route path={this.props.settingsUrl}
             render={props => <ProjectSettings key="settings" {...this.props} /> }/>
+          <Route path={this.props.mrOverviewUrl}
+            render={props => <ProjectMergeRequestList key="settings" {...this.props} /> }/>
         </Row>
       </Container>
     ]

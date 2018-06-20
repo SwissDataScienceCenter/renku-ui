@@ -157,10 +157,10 @@ class GitlabClient {
   }
 
 
-  getProjectFile(projectId, path) {
+  getProjectFile(projectId, path, ref='master') {
     let headers = this.getBasicHeaders();
     const encodedPath = encodeURIComponent(path);
-    return renkuFetch(`${this._baseUrl}/projects/${projectId}/repository/files/${encodedPath}/raw?ref=master`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/repository/files/${encodedPath}/raw?ref=${ref}`, {
       method: 'GET',
       headers: headers
     }, 'text')
@@ -384,20 +384,53 @@ class GitlabClient {
 
   }
 
-  getMergeRequests(projectId, queryParams={}) {
+  // TODO: Unfotunately, the API doesn't offer a way to query only for unmerged branches -
+  // TODO: add this capability to the gateway.
+  // TODO: Page through results in gateway, for the moment assuming a max of 100 branches seems ok.
+  getBranches(projectId) {
+    let headers = this.getBasicHeaders();
+    const url = `${this._baseUrl}/projects/${projectId}/repository/branches`;
+    return renkuFetch(url, {
+      method: 'GET',
+      headers,
+      queryParams: {per_page: 100}
+    })
+  }
+
+
+  createMergeRequest(projectId, title, source_branch, target_branch, options={
+    allow_collaboration: true,
+    remove_source_branch: true
+  }) {
+    let headers = this.getBasicHeaders();
+    headers.append('Content-Type', 'application/json');
+
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/merge_requests`, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify({
+        ...options,
+        title,
+        source_branch,
+        target_branch,
+      })
+    })
+  }
+
+  getMergeRequests(projectId, queryParams={scope: 'all', state: 'opened'}) {
     let headers = this.getBasicHeaders();
     const url = projectId ? `${this._baseUrl}/projects/${projectId}/merge_requests` :
       `${this._baseUrl}/merge_requests`
     return renkuFetch(url, {
       method: 'GET',
       headers,
-      queryParams
+      queryParams: {...queryParams, per_page:100}
     })
   }
 
-  getMergeRequestChanges(projectId, requestIid) {
+  getMergeRequestChanges(projectId, mrIid) {
     let headers = this.getBasicHeaders();
-    return renkuFetch(`${this._baseUrl}/projects/${projectId}/merge_requests/${requestIid}/changes`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/merge_requests/${mrIid}/changes`, {
       method: 'GET',
       headers
     })
@@ -408,7 +441,7 @@ class GitlabClient {
   // in which the file is modified.
   // TODO: This method should go to the gateway.
   getModifiedFiles(projectId) {
-    return this.getMergeRequests(projectId, {scope: 'all', state: 'opened'})
+    return this.getMergeRequests(projectId)
       .then((mergeRequests) => {
         if (!mergeRequests) return;
 
@@ -436,6 +469,15 @@ class GitlabClient {
             return openMrs;
           });
       })
+  }
+
+  mergeMergeRequest(projectId, mrIid) {
+    let headers = this.getBasicHeaders();
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/merge_requests/${mrIid}/merge`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({should_remove_source_branch: true})
+    })
   }
 }
 
