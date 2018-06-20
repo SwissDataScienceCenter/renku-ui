@@ -22,18 +22,23 @@ import { Link, Route, Switch } from 'react-router-dom'
 
 
 class MergeRequestPresent extends Component {
-  render() {
-    const mergeButton = this.props.showMergeButton ? <Button
+
+  getMergeButton() {
+    if (!this.props.showMergeButton) return null;
+
+    return <Button
       size="sm"
       color="success"
-      onClick={event => {
-        event.preventDefault();
+      onClick={(e) => {
+        e.preventDefault();
         this.props.onMergeClick();
       }}>
       {'Merge'}
-    </Button> : undefined;
+    </Button>
+  }
 
-    const gitLabMRLink = <Button
+  getGitLabLink() {
+    return <Button
       size="sm"
       color="link"
       onClick={event => {
@@ -42,14 +47,20 @@ class MergeRequestPresent extends Component {
       }}>
       {'Open merge request in GitLab'}
     </Button>;
+  }
 
+  render() {
+    const mergeButton= this.getMergeButton();
+    const gitLabMRLink = this.getGitLabLink();
     const description = `${this.props.author.name} wants to merge the following changes 
       from ${this.props.source_branch} into ${this.props.target_branch}.`;
 
     return <span>
       <Row key="title">
         <Col xs={6}><h3 style={{padding: '10px'}}>{this.props.title}</h3></Col>
-        <Col xs={6}><p align="right" style={{padding: '10px'}}>{gitLabMRLink}&nbsp;{mergeButton}</p></Col>
+        <Col xs={6}>
+          <p align="right" style={{padding: '10px'}}>{gitLabMRLink}&nbsp;{mergeButton}</p>
+        </Col>
       </Row>
       <p key="lead" className="lead" style={{padding: '10px'}}>{description}</p>
       <Table>
@@ -83,7 +94,6 @@ class MergeRequestList extends Component {
 class MergeRequestListItem extends Component {
   render() {
     const className = this.props.active ? 'underline-nav font-weight-bold' : 'font-weight-normal';
-
     const badgeText = this.props.merge_status === 'can_be_merged' ? 'Can be merged' : 'Conflicts';
     const badgeColor = this.props.merge_status === 'can_be_merged' ? 'success' : 'danger';
     const statusBadge = <Badge color={badgeColor}>{badgeText}</Badge>;

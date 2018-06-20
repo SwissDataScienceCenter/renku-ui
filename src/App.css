@@ -100,6 +100,7 @@ body {
   width: 100px;
 }
 
+/* TODO: Try to replace css tooltip by reactstraps tooltip component */
 .simple-tooltip {
   position: relative;
   display: inline-block;
@@ -114,7 +115,6 @@ body {
   text-align: center;
   padding: 5px 10px;
   border-radius: 6px;
-
   position: absolute;
   z-index: 1;
 }

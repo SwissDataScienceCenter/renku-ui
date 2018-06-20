@@ -80,6 +80,9 @@ class New extends Component {
 }
 
 
+// TODO: This component has grown too much and needs restructuring. One option would be to insert
+// TODO: another container component between this top-level project component and the presentational
+// TODO: component displaying the project overview.
 class View extends Component {
   constructor(props) {
     super(props);

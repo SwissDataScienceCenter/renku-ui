@@ -96,24 +96,36 @@ class ProjectTagList extends Component {
 
 class ProjectViewHeader extends Component {
 
-  render() {
+  getGitLabLink(branch) {
+    return (
+      <Button
+        color="link"
+        onClick={(e) => {
+          e.preventDefault();
+          window.open(`${this.props.externalUrl}/tree/${branch.name}`);
+        }}
+      >View branch in GitLab</Button>
+    );
+  }
 
+  getCreateMRButton(branch) {
+    return (
+      <Button color="success" onClick={(e) => {
+        e.preventDefault();
+        this.props.onCreateMergeRequest(branch)
+      }}
+      >Create merge request</Button>
+    );
+  }
+
+  render() {
     const mrSuggestions = this.props.suggestedMRBranches.map((branch, i) => {
       if (!this.props.canCreateMR) return null;
       return <Alert color="warning" key={i}>
         <p style={{float:'left'}}> Do you want to create a merge request for branch <b>{branch.name}</b>?</p>
         <p style={{float:'right'}}>
-          &nbsp; <Button color="link" onClick={(e) => {
-          e.preventDefault();
-          window.open(`${this.props.externalUrl}/tree/${branch.name}`);
-        }
-        }>View branch in GitLab</Button>
-          &nbsp; <Button color="success" onClick={(e) => {
-            e.preventDefault();
-            this.props.onCreateMergeRequest(branch)
-          }}
-          >Create merge request</Button>
-
+          &nbsp; {this.getGitLabLink(branch)}
+          &nbsp; {this.getCreateMRButton(branch)}
           {/*TODO: Enable the 'no' option once the alert can be dismissed permanently!*/}
           {/*&nbsp; <Button color="warning" onClick={this.props.createMR(branch.iid)}>No</Button>*/}
         </p>
