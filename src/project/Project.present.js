@@ -43,6 +43,22 @@ import ReactMarkdown from 'react-markdown'
 
 import { Avatar, TimeCaption, FieldGroup, RenkuNavLink } from '../utils/UIComponents'
 
+const imageBuildStatusText = {
+  failed : 'Your notebook image build has not been triggered or failed. You can still open a notebook server based' +
+    'on a default image',
+  canceled : 'Your notebook image build has been cancelled.  You can still open a notebook server based ' +
+    'on a default image',
+  running : 'Your notebook image build is still ongoing. Wait a bit before launching a notebook...',
+  pending : 'Your notebook image build is still pending. Wait a bit before launching a notebook...'
+};
+
+const imageBuildAlertColor = {
+  failed : 'danger',
+  canceled : 'danger',
+  running : 'warning',
+  pending : 'warning'
+};
+
 class DataVisibility extends Component {
   render() {
     return <FormGroup>
@@ -108,6 +124,18 @@ class ProjectViewHeader extends Component {
     );
   }
 
+  getGitLabCILink(job) {
+    return (
+      <Button
+        color="link"
+        onClick={(e) => {
+          e.preventDefault();
+          window.open(`${this.props.externalUrl}/-/jobs/${job.id}`);
+        }}
+      >View job in GitLab</Button>
+    );
+  }
+
   getCreateMRButton(branch) {
     return (
       <Button color="success" onClick={(e) => {
@@ -119,6 +147,22 @@ class ProjectViewHeader extends Component {
   }
 
   render() {
+    const imageBuild = this.props.imageBuild || {status: 'success'};
+    const imageBuildAlert = imageBuild.status === 'success' ? null :
+      <Alert color={imageBuildAlertColor[imageBuild.status]}>
+        <p style={{float:'left'}}>{imageBuildStatusText[imageBuild.status] || imageBuildStatusText['failed']}</p>
+        <p style={{float:'right'}}>
+          <Button
+            color={imageBuildAlertColor[imageBuild.status]}
+            onClick={this.props.onProjectRefresh}
+          >Refresh</Button>
+        </p>
+        <p style={{float:'right'}}>
+          &nbsp; {this.getGitLabCILink(imageBuild)}
+        </p>
+        <div style={{clear: 'left'}}></div>
+      </Alert>;
+
     const mrSuggestions = this.props.suggestedMRBranches.map((branch, i) => {
       if (!this.props.canCreateMR) return null;
       return <Alert color="warning" key={i}>
@@ -139,6 +183,7 @@ class ProjectViewHeader extends Component {
     const starIcon = this.props.starred ? faStarSolid : faStarRegular;
     return (
       <Container fluid>
+        {imageBuildAlert}
         {mrSuggestions}
         <Row>
           <Col xs={12} md={9}>

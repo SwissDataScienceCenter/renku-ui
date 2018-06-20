@@ -100,7 +100,8 @@ const projectSchema = new Schema({
       ssh_url: {initial: '',},
       http_url: {initial: '',},
       merge_requests: {schema: [], initial:[]},
-      branches: {schema: [], initial:[]}
+      branches: {schema: [], initial:[]},
+      ci_jobs: {schema: [], initial:[]}
     }
   },
   files: {
