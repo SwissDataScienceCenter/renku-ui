@@ -111,9 +111,8 @@ class FileLineageGraph extends Component {
     render(d3.select('svg g'), g);
 
     // Center the graph
-    svg.attr('width', 500);
-    const xCenterOffset = (svg.attr('width') - g.graph().width) / 2;
-    svgGroup.attr('transform', 'translate(' + xCenterOffset + ', 20)');
+    svg.attr('width', g.graph().width + 40);
+    svgGroup.attr('transform', 'translate(20, 20)');
     svg.attr('height', g.graph().height + 40);
   }
 
