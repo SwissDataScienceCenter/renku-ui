@@ -252,7 +252,7 @@ class NewContribution extends React.Component {
 function buildContribution(state, props){
   return {
     body: state.contribution.body,
-    author: props.userState.getState().user,
+    author: props.user,
     created_at: (new Date()).toISOString(),
     updated_at: (new Date()).toISOString()
   }
