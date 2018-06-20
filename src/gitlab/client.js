@@ -471,6 +471,15 @@ class GitlabClient {
       })
   }
 
+  getJobs(projectId) {
+    let headers = this.getBasicHeaders();
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/jobs`, {
+      method: 'GET',
+      headers,
+      queryParams: {per_page: 100}
+    }, 'json', false)
+  }
+
   mergeMergeRequest(projectId, mrIid) {
     let headers = this.getBasicHeaders();
     return renkuFetch(`${this._baseUrl}/projects/${projectId}/merge_requests/${mrIid}/merge`, {

@@ -99,6 +99,7 @@ class View extends Component {
     this.projectState.fetchModifiedFiles(this.props.client, this.props.id);
     this.projectState.fetchMergeRequests(this.props.client, this.props.id);
     this.projectState.fetchBranches(this.props.client, this.props.id);
+    this.projectState.fetchCIJobs(this.props.client, this.props.id);
   }
 
   getStarred(user, projectId) {
@@ -141,6 +142,24 @@ class View extends Component {
       .filter(branch => branch.name !== 'master')
       .filter(branch => !branch.merged)
       .filter(branch => mergeRequestBranches.indexOf(branch.name) < 0);
+  }
+
+  getImageBuildStatus() {
+    const ciJobs = this.projectState.get('system.ci_jobs');
+
+    // We don't want to flash an alert while the state is updating.
+    if (ciJobs === this.projectState._updatingPropVal) return;
+
+    const buildJobs = ciJobs
+      .filter((job) => job.name === 'image_build')
+      .sort((job1, job2) => job1.created_at > job2.created_at ? -1 : 1);
+
+    if (buildJobs.length === 0) {
+      return;
+    }
+    else {
+      return buildJobs[0]
+    }
   }
 
   subComponents(projectId, ownProps) {
@@ -221,6 +240,10 @@ class View extends Component {
           return this.fetchAll()
         })
         .then(() => this.props.history.push(`/projects/${core.id}/mergeRequests/${newMRiid}`))
+    },
+    onProjectRefresh: (e) => {
+      e.preventDefault();
+      this.fetchAll()
     }
   };
 
@@ -231,6 +254,7 @@ class View extends Component {
     const suggestedMRBranches = this.getMrSuggestions();
     const externalUrl = this.projectState.get('core.external_url');
     const canCreateMR = state.visibility.accessLevel >= ACCESS_LEVELS.DEVELOPER;
+    const imageBuild = this.getImageBuildStatus();
 
     return {
       ...this.projectState.get(),
@@ -241,7 +265,8 @@ class View extends Component {
       settingsReadOnly,
       suggestedMRBranches,
       externalUrl,
-      canCreateMR
+      canCreateMR,
+      imageBuild
     }
   }
 
