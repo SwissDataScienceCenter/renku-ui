@@ -369,6 +369,7 @@ class ProjectViewFiles extends Component {
 
 class RepositoryUrls extends Component {
   render() {
+    const externalUrl = this.props.externalUrl;
     return [
       <strong key="header">Repository URL</strong>,
       <Table key="table" size="sm">
@@ -382,7 +383,8 @@ class RepositoryUrls extends Component {
             <td>{this.props.system.http_url}</td>
           </tr>
         </tbody>
-      </Table>
+      </Table>,
+      <a key="link" href={externalUrl} className="btn btn-primary" role="button">View in GitLab</a>
     ]
   }
 }
