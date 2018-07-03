@@ -33,6 +33,7 @@ import { Container, Row, Col } from 'reactstrap';
 import { Alert, Badge, Button, Form, FormGroup, FormText, Input, Label, Table } from 'reactstrap';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { Card, CardBody, CardHeader } from 'reactstrap';
+
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faStarRegular from '@fortawesome/fontawesome-free-regular/faStar'
 import faStarSolid from '@fortawesome/fontawesome-free-solid/faStar'

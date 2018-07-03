@@ -32,7 +32,9 @@ import { BrowserRouter as Router, Route, Switch, Link, Redirect }  from 'react-r
 // import { IndexLinkContainer } from 'react-router-bootstrap';
 // import { FormGroup, FormControl, InputGroup } from 'react-bootstrap'
 // import { MenuItem, Nav, Navbar, NavItem, NavDropdown } from 'react-bootstrap'
-import FontAwesome from 'react-fontawesome'
+import FontAwesomeIcon from '@fortawesome/react-fontawesome'
+import faSearch from '@fortawesome/fontawesome-free-solid/faSearch'
+import faPlus from '@fortawesome/fontawesome-free-solid/faPlus'
 
 // import About from './About'
 // import Landing from './Landing'
@@ -125,7 +127,7 @@ class RenkuNavBar extends Component {
                   placeholder="Search Renku" aria-label="Search" />
                 <span className="input-group-append">
                   <button className="btn btn-outline-primary my-2 my-sm-0" type="submit">
-                    <FontAwesome name="search" />
+                    <FontAwesomeIcon icon={faSearch} />
                   </button>
                 </span>
               </div>
@@ -139,7 +141,7 @@ class RenkuNavBar extends Component {
               <li className="nav-item dropdown">
                 <a className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
                   aria-haspopup="true" aria-expanded="false">
-                  <FontAwesome name="plus" />
+                  <FontAwesomeIcon icon={faPlus} />
                 </a>
                 <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                   <RenkuNavLink to="/project_new" title="Project" />
