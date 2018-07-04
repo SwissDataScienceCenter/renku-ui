@@ -104,9 +104,17 @@ class ProjectTag extends Component {
   }
 }
 
+function sortedTagList(taglistOrNull) {
+  const taglist = taglistOrNull || [];
+  const tlSet = new Set(taglist);
+  const tl = Array.from(tlSet);
+  tl.sort();
+  return tl;
+}
+
 class ProjectTagList extends Component {
   render() {
-    const taglist = this.props.taglist || [];
+    const taglist = sortedTagList(this.props.taglist);
     return (taglist.length > 0) ? taglist.map(t => <ProjectTag key={t} tag={t} />) : <br />;
   }
 }
@@ -430,7 +438,7 @@ class RepositoryUrls extends Component {
           </tr>
         </tbody>
       </Table>,
-      <a key="link" href={externalUrl} className="btn btn-primary" role="button">View in GitLab</a>
+      <a key="link" target="_blank" href={externalUrl} className="btn btn-primary" role="button">View in GitLab</a>
     ]
   }
 }
@@ -444,18 +452,13 @@ class ProjectTags extends Component {
   }
 
   static tagListString(props) {
-    return props.tag_list.join(', ');
+    const tagList = sortedTagList(props.tag_list)
+    return tagList.join(', ');
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
     const update = {value: ProjectTags.tagListString(nextProps) };
     return {...prevState, ...update};
-  }
-
-  // N.b. This works in react 16.2, but has been deprecated in favor in getDerivedStateFromProps in 16.3
-  // TODO Remove this method when we switch to React 16.3
-  componentWillReceiveProps(nextProps) {
-    this.setState(ProjectTags.getDerivedStateFromProps(nextProps, this.state));
   }
 
   handleChange(e) { this.setState({value: e.target.value}); }
@@ -493,11 +496,6 @@ class ProjectDescription extends Component {
     return {...prevState, ...update};
   }
 
-  // N.b. This works in react 16.2, but has been deprecated in favor in getDerivedStateFromProps in 16.3
-  componentWillReceiveProps(nextProps) {
-    this.setState(ProjectDescription.getDerivedStateFromProps(nextProps, this.state));
-  }
-
   handleChange(e) { this.setState({value: e.target.value}); }
 
   handleSubmit(e) { e.preventDefault(); this.props.onProjectDescriptionChange(this.state.value); }
@@ -525,7 +523,8 @@ class ProjectSettings extends Component {
     return <Col key="settings" xs={12}>
       <Row>
         <Col xs={12} md={10} lg={6}>
-          <ProjectTags tag_list={this.props.system.tag_list}
+          <ProjectTags
+            tag_list={this.props.system.tag_list}
             onProjectTagsChange={this.props.onProjectTagsChange}
             settingsReadOnly={this.props.settingsReadOnly} />
         </Col>
