@@ -240,7 +240,7 @@ class ProjectNav extends Component {
           <RenkuNavLink exact={false} to={this.props.notebooksUrl} title="Files" />
         </NavItem>
         <NavItem>
-          <RenkuNavLink exact={false} to={this.props.mrOverviewUrl} title="Merge Requests" />
+          <RenkuNavLink exact={false} to={this.props.mrOverviewUrl} title="Pending Changes" />
         </NavItem>
         <NavItem>
           <RenkuNavLink exact={false} to={this.props.settingsUrl} title="Settings" />
@@ -406,6 +406,7 @@ class ProjectViewFiles extends Component {
       <Col key="files" sm={12} md={2}>
         <ProjectFilesNav
           notebooksUrl={this.props.notebooksUrl}
+          mrOverviewUrl={this.props.mrOverviewUrl}
           dataUrl={this.props.dataUrl} />
       </Col>,
       <Col key="notebook" sm={12} md={10}>
@@ -559,7 +560,7 @@ class ProjectView extends Component {
           <Route path={this.props.settingsUrl}
             render={props => <ProjectSettings key="settings" {...this.props} /> }/>
           <Route path={this.props.mrOverviewUrl}
-            render={props => <ProjectMergeRequestList key="settings" {...this.props} /> }/>
+            render={props => <ProjectMergeRequestList key="files-changes" {...this.props} /> }/>
         </Row>
       </Container>
     ]

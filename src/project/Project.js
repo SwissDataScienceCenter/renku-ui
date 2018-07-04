@@ -122,8 +122,8 @@ class View extends Component {
       dataUrl: `${baseUrl}/data`,
       datumUrl: `${baseUrl}/data/:datumPath+`,
       settingsUrl: `${baseUrl}/settings`,
-      mrOverviewUrl: `${baseUrl}/mergeRequests`,
-      mrUrl: `${baseUrl}/mergeRequests/:mrIid`,
+      mrOverviewUrl: `${baseUrl}/pending`,
+      mrUrl: `${baseUrl}/pending/:mrIid`,
     }
   }
 
