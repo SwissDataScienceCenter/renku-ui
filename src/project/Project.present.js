@@ -137,6 +137,16 @@ class ImageBuildInfo extends Component {
   }
 }
 
+class ImageBuildInfoBadge extends Component {
+  render() {
+    const imageBuild = this.props.imageBuild || {status: 'success'};
+    if (imageBuild.status === 'success') return null;
+    return <Link className={`badge badge-${imageBuildAlertColor[imageBuild.status]}`}
+      title={imageBuildStatusText[imageBuild.status] || imageBuildStatusText['failed']}
+      to={this.props.notebooksUrl}>Notebooks</Link>
+  }
+}
+
 class MergeRequestSuggestions extends Component {
   handleCreateMergeRequest(e, onCreateMergeRequest, branch) {
     e.preventDefault();
@@ -197,18 +207,22 @@ class ProjectViewHeader extends Component {
             <p className="text-md-right">
               <ProjectTagList taglist={system.tag_list} />
             </p>
-            {/*TODO: Adapting the width in a more elegant manner would be nice...*/}
-            <div className={`float-md-right fixed-width-${this.props.starred ? '120' : '100'}`}>
-              <form className="input-group input-group-sm">
-                <div className="input-group-prepend">
-                  <button className="btn btn-outline-primary" onClick={this.props.onStar}>
-                    <FontAwesomeIcon icon={starIcon} /> {starButtonText}
-                  </button>
-                </div>
-                <input className="form-control border-primary text-right"
-                  placeholder={system.star_count} aria-label="starCount" readOnly={true}/>
-              </form>
+            <div className="d-flex flex-row-reverse">
+              <div className={`fixed-width-${this.props.starred ? '120' : '100'}`}>
+                <form className="input-group input-group-sm">
+                  <div className="input-group-prepend">
+                    <button className="btn btn-outline-primary" onClick={this.props.onStar}>
+                      <FontAwesomeIcon icon={starIcon} /> {starButtonText}
+                    </button>
+                  </div>
+                  <input className="form-control border-primary text-right"
+                    placeholder={system.star_count} aria-label="starCount" readOnly={true}/>
+                </form>
+              </div>
             </div>
+            <p className="text-md-right pt-3">
+              <ImageBuildInfoBadge notebooksUrl={this.props.notebooksUrl} imageBuild={this.props.imageBuild} />
+            </p>
           </Col>
         </Row>
       </Container>
