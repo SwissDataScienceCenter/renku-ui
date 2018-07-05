@@ -33,16 +33,21 @@ class Show extends Component {
     super(props);
     this.state = {notebook: null}
   }
+
+  // TODO: Write a wrapper to make promises cancellable to avoid usage of this._isMounted
   componentDidMount() {
+    this._isMounted = true;
     this.retrieveNotebook()
   }
+
+  componentWillUnmount() { this._isMounted = false;  }
 
   retrieveNotebook() {
     const branchName = this.props.branchName || 'master';
     this.props.client.getProjectFile(this.props.projectId, this.props.filePath, branchName)
       .then(json => {
         const notebook = JSON.parse(json);
-        this.setState({notebook});
+        if (this._isMounted) this.setState({notebook});
       });
   }
 
