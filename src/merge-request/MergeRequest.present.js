@@ -62,7 +62,7 @@ class MergeRequestPresent extends Component {
           <p align="right">{gitLabMRLink}&nbsp;{mergeButton}</p>
         </Col>
       </Row>,
-      <p key="lead" className="lead" style={{padding: '10px'}}>
+      <p key="lead" className="lead">
         {this.props.author.name} wants to merge changes from
         branch <em>{this.props.source_branch}</em> into <em>{this.props.target_branch}</em>.
       </p>,
@@ -81,7 +81,15 @@ class MergeRequestPresent extends Component {
 
 class MergeRequestList extends Component {
   render() {
-    const rows = this.props.mergeRequests.map((d, i) => {
+    const mrs = this.props.mergeRequests;
+    if (mrs.length < 1) {
+      return <Row key="mr"><Col>
+        <p>No pending changes.</p>
+        <a className="btn btn-primary btn-sm" role="button" target="_blank" size="sm"
+          href={this.props.externalMROverviewUrl}>View in GitLab</a>
+      </Col></Row>
+    }
+    const rows = mrs.map((d, i) => {
       const mrUrl = `${this.props.mrOverviewUrl}/${d.iid}`;
       return <Switch key={i}>
         <Route exact path={mrUrl}
