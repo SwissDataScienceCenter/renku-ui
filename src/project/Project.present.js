@@ -119,20 +119,7 @@ class ProjectTagList extends Component {
   }
 }
 
-class ProjectViewHeader extends Component {
-
-  getGitLabLink(branch) {
-    return (
-      <Button
-        color="link"
-        onClick={(e) => {
-          e.preventDefault();
-          window.open(`${this.props.externalUrl}/tree/${branch.name}`);
-        }}
-      >View branch in GitLab</Button>
-    );
-  }
-
+class ImageBuildInfo extends Component {
   getGitLabCILink(job) {
     return (
       <Button
@@ -144,17 +131,7 @@ class ProjectViewHeader extends Component {
       >View job in GitLab</Button>
     );
   }
-
-  getCreateMRButton(branch) {
-    return (
-      <Button color="success" onClick={(e) => {
-        e.preventDefault();
-        this.props.onCreateMergeRequest(branch)
-      }}
-      >Create merge request</Button>
-    );
-  }
-
+  
   render() {
     const imageBuild = this.props.imageBuild || {status: 'success'};
     const imageBuildAlert = imageBuild.status === 'success' ? null :
@@ -171,7 +148,35 @@ class ProjectViewHeader extends Component {
         </p>
         <div style={{clear: 'left'}}></div>
       </Alert>;
+    return imageBuildAlert
+  }
+}
 
+class ProjectViewHeader extends Component {
+
+  getGitLabLink(branch) {
+    return (
+      <Button
+        color="link"
+        onClick={(e) => {
+          e.preventDefault();
+          window.open(`${this.props.externalUrl}/tree/${branch.name}`);
+        }}
+      >View branch in GitLab</Button>
+    );
+  }
+
+  getCreateMRButton(branch) {
+    return (
+      <Button color="success" onClick={(e) => {
+        e.preventDefault();
+        this.props.onCreateMergeRequest(branch)
+      }}
+      >Create merge request</Button>
+    );
+  }
+
+  render() {
     const mrSuggestions = this.props.suggestedMRBranches.map((branch, i) => {
       if (!this.props.canCreateMR) return null;
       return <Alert color="warning" key={i}>
@@ -192,7 +197,7 @@ class ProjectViewHeader extends Component {
     const starIcon = this.props.starred ? faStarSolid : faStarRegular;
     return (
       <Container fluid>
-        {imageBuildAlert}
+        <ImageBuildInfo imageBuild={this.props.imageBuild} onProjectRefresh={this.props.onProjectRefresh} />
         {mrSuggestions}
         <Row>
           <Col xs={12} md={9}>
