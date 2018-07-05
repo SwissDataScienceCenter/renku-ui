@@ -458,12 +458,12 @@ class GitlabClient {
             const openMrs = {};
             mrChanges.forEach((mrChange) => {
               const changesArray = mrChange.changes;
-              const mrIid = mrChange.iid;
+              const mrInfo = {mrIid: mrChange.iid, source_branch: mrChange.source_branch}
               changesArray
                 .filter((change) => change.old_path === change.new_path)
                 .forEach((change) => {
                   if (!openMrs[change.old_path]) openMrs[change.old_path] = [];
-                  openMrs[change.old_path].push(mrIid)
+                  openMrs[change.old_path].push(mrInfo)
                 })
             });
             return openMrs;
