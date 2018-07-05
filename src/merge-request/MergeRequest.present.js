@@ -38,23 +38,13 @@ class MergeRequestPresent extends Component {
   }
 
   getGitLabLink() {
-    return <Button
-      size="sm"
-      color="link"
-      onClick={event => {
-        event.preventDefault();
-        window.open(`${this.props.externalMRUrl}`);
-      }}>
-      {'Open merge request in GitLab'}
-    </Button>;
+    return <a className="btn btn-primary btn-sm" role="button" target="_blank" size="sm"
+      href={this.props.externalMRUrl}>View in GitLab</a>;
   }
 
   render() {
     const mergeButton= this.getMergeButton();
     const gitLabMRLink = this.getGitLabLink();
-    const description = `${this.props.author.name} wants to merge the following changes 
-      from ${this.props.source_branch} into ${this.props.target_branch}.`;
-
     return <span>
       <Row key="title">
         <Col xs={6}><h3 style={{padding: '10px'}}>{this.props.title}</h3></Col>
@@ -62,7 +52,10 @@ class MergeRequestPresent extends Component {
           <p align="right" style={{padding: '10px'}}>{gitLabMRLink}&nbsp;{mergeButton}</p>
         </Col>
       </Row>
-      <p key="lead" className="lead" style={{padding: '10px'}}>{description}</p>
+      <p key="lead" className="lead" style={{padding: '10px'}}>
+        {this.props.author.name} wants to merge changes from
+        branch <em>{this.props.source_branch}</em> into <em>{this.props.target_branch}</em>.
+      </p>
       <Table>
         <thead>
           <tr style={{borderTopWidth:'0px'}}>
