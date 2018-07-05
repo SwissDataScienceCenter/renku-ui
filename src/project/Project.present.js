@@ -120,31 +120,18 @@ class ProjectTagList extends Component {
 }
 
 class ImageBuildInfo extends Component {
-  getGitLabCILink(job) {
-    return (
-      <Button
-        color="link"
-        onClick={(e) => {
-          e.preventDefault();
-          window.open(`${this.props.externalUrl}/-/jobs/${job.id}`);
-        }}
-      >View job in GitLab</Button>
-    );
-  }
-  
   render() {
     const imageBuild = this.props.imageBuild || {status: 'success'};
     const imageBuildAlert = imageBuild.status === 'success' ? null :
       <Alert color={imageBuildAlertColor[imageBuild.status]}>
         <p style={{float:'left'}}>{imageBuildStatusText[imageBuild.status] || imageBuildStatusText['failed']}</p>
         <p style={{float:'right'}}>
+          <a href={`${this.props.externalUrl}/-/jobs/${imageBuild.id}`}
+            className="btn btn-primary btn" role="button" target="_blank">View in GitLab</a>
+          &nbsp;
           <Button
             color={imageBuildAlertColor[imageBuild.status]}
-            onClick={this.props.onProjectRefresh}
-          >Refresh</Button>
-        </p>
-        <p style={{float:'right'}}>
-          &nbsp; {this.getGitLabCILink(imageBuild)}
+            onClick={this.props.onProjectRefresh}>Refresh</Button>
         </p>
         <div style={{clear: 'left'}}></div>
       </Alert>;
@@ -152,20 +139,11 @@ class ImageBuildInfo extends Component {
   }
 }
 
-class ProjectViewHeader extends Component {
-
-  getGitLabLink(branch) {
-    return (
-      <Button
-        color="link"
-        onClick={(e) => {
-          e.preventDefault();
-          window.open(`${this.props.externalUrl}/tree/${branch.name}`);
-        }}
-      >View branch in GitLab</Button>
-    );
+class MergeRequestSuggestions extends Component {
+  handleCreateMergeRequest(e, onCreateMergeRequest, branch) {
+    e.preventDefault();
+    onCreateMergeRequest(branch);
   }
-
   getCreateMRButton(branch) {
     return (
       <Button color="success" onClick={(e) => {
@@ -180,16 +158,26 @@ class ProjectViewHeader extends Component {
     const mrSuggestions = this.props.suggestedMRBranches.map((branch, i) => {
       if (!this.props.canCreateMR) return null;
       return <Alert color="warning" key={i}>
-        <p style={{float:'left'}}> Do you want to create a merge request for branch <b>{branch.name}</b>?</p>
+        <p style={{float:'left'}}> Do you want to create a pending change for branch <b>{branch.name}</b>?</p>
         <p style={{float:'right'}}>
-          &nbsp; {this.getGitLabLink(branch)}
-          &nbsp; {this.getCreateMRButton(branch)}
+          &nbsp; <a href={`${this.props.externalUrl}/tree/${branch.name}`}
+            className="btn btn-primary btn" role="button" target="_blank">View in GitLab</a>
+          &nbsp; <Button color="success" onClick={(e) => {
+            this.handleCreateMergeRequest(e, this.props.onCreateMergeRequest, branch)
+          }}>Create Pending Change</Button>
           {/*TODO: Enable the 'no' option once the alert can be dismissed permanently!*/}
           {/*&nbsp; <Button color="warning" onClick={this.props.createMR(branch.iid)}>No</Button>*/}
         </p>
         <div style={{clear: 'left'}}></div>
       </Alert>
     });
+    return mrSuggestions
+  }
+}
+
+class ProjectViewHeader extends Component {
+
+  render() {
 
     const core = this.props.core;
     const system = this.props.system;
@@ -198,7 +186,8 @@ class ProjectViewHeader extends Component {
     return (
       <Container fluid>
         <ImageBuildInfo imageBuild={this.props.imageBuild} onProjectRefresh={this.props.onProjectRefresh} />
-        {mrSuggestions}
+        <MergeRequestSuggestions externalUrl={this.props.externalUrl} canCreateMR={this.props.canCreateMR}
+          onCreateMergeRequest={this.props.onCreateMergeRequest} suggestedMRBranches={this.props.suggestedMRBranches} />
         <Row>
           <Col xs={12} md={9}>
             <h1>{core.title}</h1>
