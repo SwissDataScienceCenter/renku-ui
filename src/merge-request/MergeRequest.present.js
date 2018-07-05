@@ -20,6 +20,9 @@ import React, { Component } from 'react';
 import { Table, Row, Col, Button, Badge } from 'reactstrap';
 import { Link, Route, Switch } from 'react-router-dom'
 
+import FontAwesomeIcon from '@fortawesome/react-fontawesome'
+import faLeftArrow from '@fortawesome/fontawesome-free-solid/faLongArrowAltLeft'
+
 
 class MergeRequestPresent extends Component {
 
@@ -43,29 +46,36 @@ class MergeRequestPresent extends Component {
   }
 
   render() {
+    if (this.props.title == null) return <p></p>
+
     const mergeButton= this.getMergeButton();
     const gitLabMRLink = this.getGitLabLink();
-    return <span>
+    const opaqueChanges = this.props.changes
+      .filter((change) => change.new_path.split('.').pop() !== 'ipynb');
+    const notebookChanges = this.props.changes
+      .filter((change) => change.new_path.split('.').pop() === 'ipynb');
+
+    return [
       <Row key="title">
-        <Col xs={6}><h3 style={{padding: '10px'}}>{this.props.title}</h3></Col>
+        <Col xs={6}><h3>{this.props.title}</h3></Col>
         <Col xs={6}>
-          <p align="right" style={{padding: '10px'}}>{gitLabMRLink}&nbsp;{mergeButton}</p>
+          <p align="right">{gitLabMRLink}&nbsp;{mergeButton}</p>
         </Col>
-      </Row>
+      </Row>,
       <p key="lead" className="lead" style={{padding: '10px'}}>
         {this.props.author.name} wants to merge changes from
         branch <em>{this.props.source_branch}</em> into <em>{this.props.target_branch}</em>.
-      </p>
-      <Table>
-        <thead>
-          <tr style={{borderTopWidth:'0px'}}>
-            <th>{this.props.target_branch}</th>
-            <th>{this.props.source_branch}</th>
-          </tr>
-        </thead>
-        <tbody>{this.props.simpleChanges}{this.props.notebookChanges}</tbody>
-      </Table>
-    </span>
+      </p>,
+      (opaqueChanges.length > 0) ?
+        <OpaqueChanges key="opaque" changes={opaqueChanges}
+          target_branch={this.props.target_branch} source_branch={this.props.source_branch} /> :
+        null,
+      (notebookChanges.length > 0) ?
+        <NotebookComparisonList key="notebooks" changes={notebookChanges}
+          notebookComparisonView={this.props.notebookComparisonView}
+          target_branch={this.props.target_branch} source_branch={this.props.source_branch} /> :
+        null
+    ]
   }
 }
 
@@ -97,7 +107,7 @@ class MergeRequestListItem extends Component {
     return <span>
       <p className={className} style={{marginBottom: '0px'}}>{title}</p>
       <p style={{marginTop: '0px'}}>
-        <Badge color="light">{this.props.target_branch}</Badge> {'<--'}
+        <Badge color="light">{this.props.target_branch}</Badge> <FontAwesomeIcon icon={faLeftArrow} />
         <Badge color="light">{this.props.source_branch}</Badge> &nbsp;&nbsp;
         {statusBadge}
       </p>
@@ -125,25 +135,58 @@ class SimpleChange extends Component {
   }
 }
 
+class NotebookComparisonList extends Component {
+  render() {
+    const notebookChanges = this.props.changes
+      .map((change, i) => this.props.notebookComparisonView(change, i));
+    return [
+      <Row key="header"><Col><h3>Notebook Changes</h3></Col></Row>,
+      <Row key="titles">
+        <Col xs={6}><p><strong>{this.props.target_branch}</strong></p></Col>
+        <Col xs={6}><p><strong>{this.props.source_branch}</strong></p></Col>
+      </Row>,
+      notebookChanges
+    ]
+  }
+}
 
 class NotebookComparisonPresent extends Component {
   render() {
     return (
-      <tr>
-        <td>
+      <Row>
+        <Col xs={6}>
           <p><br/>{this.props.filePath}</p>
           <div className="notebook-comparison">
             {this.props.leftNotebookComponent}
           </div>
-        </td>
-        <td>
+        </Col>
+        <Col xs={6}>
           <p><br/>{this.props.filePath}</p>
           <div className="notebook-comparison">
             {this.props.rightNotebookComponent}
           </div>
-        </td>
-      </tr>
+        </Col>
+      </Row>
     )
+  }
+}
+
+class OpaqueChanges extends Component {
+  render() {
+    const opaqueChanges = this.props.changes
+      .map((change, i) => <SimpleChange {...change} key={i}/>)
+    return (<Row key="simple"><Col>
+      <h3>Opaque Changes</h3>
+      <Table>
+        <thead>
+          <tr style={{borderTopWidth:'0px'}}>
+            <th>{this.props.target_branch}</th>
+            <th>{this.props.source_branch}</th>
+          </tr>
+        </thead>
+        <tbody>{opaqueChanges}</tbody>
+      </Table>
+    </Col></Row>)
   }
 }
 

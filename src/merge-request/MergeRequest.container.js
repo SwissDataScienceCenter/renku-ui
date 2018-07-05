@@ -78,6 +78,12 @@ class MergeRequestContainer extends Component {
       title={this.state.title}
       author={this.state.author}
       externalMRUrl={externalMRUrl}
+      changes={this.state.changes}
+      notebookComparisonView={(change, i) => <NotebookComparisonContainer
+        key={i} {...this.props}
+        filePath={change.new_path}
+        ref1={this.state.target_branch}
+        ref2={this.state.source_branch} /> }
       simpleChanges={simpleChanges}
       notebookChanges={notebookChanges}
       source_branch={this.state.source_branch}
