@@ -373,8 +373,8 @@ class ProjectFilesCategorizedList extends Component {
     const mrIids = this.props.files.notebooks ?
       this.props.files.notebooks.map(path => {
         if (!this.props.files.modifiedFiles[path]) return [];
-        return this.props.files.modifiedFiles[path].map((mrIid, i) => {
-          return <Link key={i} to={`${this.props.mrOverviewUrl}/${mrIid}`}>&nbsp;{mrIid}</Link>;
+        return this.props.files.modifiedFiles[path].map((mrInfo, i) => {
+          return <Link key={i} to={`${this.props.mrOverviewUrl}/${mrInfo.mrIid}`}>&nbsp;[{mrInfo.source_branch}]</Link>;
         });
       }) : undefined;
 
