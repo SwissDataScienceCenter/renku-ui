@@ -17,7 +17,7 @@
  */
 
 import React, { Component } from 'react';
-import { SimpleChange, NotebookComparisonPresent, MergeRequestPresent } from './MergeRequest.present';
+import { NotebookComparisonPresent, MergeRequestPresent } from './MergeRequest.present';
 import Notebook from '../file/Notebook'
 import { ACCESS_LEVELS } from '../gitlab';
 
@@ -53,23 +53,16 @@ class MergeRequestContainer extends Component {
 
   render() {
 
-    const externalMRUrl = `${this.props.externalUrl}/merge_requests/${this.props.iid}/diffs`;
+    const externalMROverviewUrl = `${this.props.externalUrl}/merge_requests`;
+    const externalMRUrl = `${this.props.externalMROverviewUrl}/${this.props.iid}/diffs`;
 
-    const simpleChanges = this.state.changes
-      .filter((change) => change.new_path.split('.').pop() !== 'ipynb')
-      .map((change, i) => <SimpleChange {...change} key={i}/>);
-
-    const notebookChanges = this.state.changes
-      .filter((change) => change.new_path.split('.').pop() === 'ipynb')
-      .map((change, i) => {
-      //TODO: What if a notebook has been modified and renamed at the same time?
-        return <NotebookComparisonContainer
-          key={i} {...this.props}
-          filePath={change.new_path}
-          ref1={this.state.target_branch}
-          ref2={this.state.source_branch}
-        />;
-      });
+    const notebookComparisonView = (change, i) => {
+      return <NotebookComparisonContainer
+        key={i} {...this.props}
+        filePath={change.new_path}
+        ref1={this.state.target_branch}
+        ref2={this.state.source_branch} />
+    }
 
     const showMergeButton = this.state.merge_status === 'can_be_merged' &&
       this.props.accessLevel >= ACCESS_LEVELS.DEVELOPER
@@ -78,14 +71,9 @@ class MergeRequestContainer extends Component {
       title={this.state.title}
       author={this.state.author}
       externalMRUrl={externalMRUrl}
+      externalMROverviewUrl={externalMROverviewUrl}
       changes={this.state.changes}
-      notebookComparisonView={(change, i) => <NotebookComparisonContainer
-        key={i} {...this.props}
-        filePath={change.new_path}
-        ref1={this.state.target_branch}
-        ref2={this.state.source_branch} /> }
-      simpleChanges={simpleChanges}
-      notebookChanges={notebookChanges}
+      notebookComparisonView={notebookComparisonView}
       source_branch={this.state.source_branch}
       target_branch={this.state.target_branch}
       onMergeClick={this.merge.bind(this)}

@@ -176,6 +176,7 @@ class View extends Component {
     const mapStateToProps = (state, ownProps) => {
       return {
         mergeRequests: mergeRequests === this.projectState._updatingPropVal ? [] : mergeRequests,
+        externalMROverviewUrl: `${externalUrl}/merge_requests`,
         ...ownProps
       };
     };
