@@ -7,6 +7,16 @@ const SPECIAL_FOLDERS = {
   workflows: 'workflows',
 };
 
+function groupedFiles(files, options, projectFiles) {
+  projectFiles = (projectFiles != null) ? projectFiles : {};
+  Object.keys(SPECIAL_FOLDERS)
+    .filter((key) => options[key])
+    .forEach((folderKey) => {
+      projectFiles[folderKey] = files.filter((filePath) => filePath.indexOf(folderKey) === 0)
+    });
+  return projectFiles
+}
+
 
 class GitlabClient {
 
@@ -64,18 +74,11 @@ class GitlabClient {
 
       let project = vals[0];
       if (vals.length > 1) {
-        let projectFiles = (project.files != null) ? project.files : {};
-
         const files = vals[1]
           .filter((treeObj) => treeObj.type === 'blob')
           .map((treeObj) => treeObj.path);
 
-        Object.keys(SPECIAL_FOLDERS)
-          .filter((key) => options[key])
-          .forEach((folderKey) => {
-            projectFiles[folderKey] = files.filter((filePath) => filePath.indexOf(folderKey) === 0)
-          });
-        project.files = projectFiles;
+        project.files = groupedFiles(files, options, project.files);
       }
       return project;
     })
