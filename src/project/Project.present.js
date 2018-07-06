@@ -344,7 +344,7 @@ class FileFolderList extends Component {
   render() {
     const alertIcon = <div className="simple-tooltip">
       <FontAwesomeIcon icon={faExclamationCircle} />
-      <span className="tooltiptext">This file has open modifications!</span>
+      <span className="tooltiptext">This file has pending changes!</span>
     </div>;
     let alerts, mrIids;
     if (this.props.alerts) {
