@@ -26,7 +26,7 @@ import './Lineage.css';
 
 function nodeIdToPath(nodeId) { return nodeId.split(',')[1].slice(2, -2) }
 
-function nodeIdToSha(nodeId) { return nodeId.split(',')[0].slice(2, 10) }
+function nodeIdToSha(nodeId) { return (nodeId == null) ? "unknown" : nodeId.split(',')[0].slice(2, 10) }
 
 function nodeIdToClass(nodeId, centralNode) {
   return (nodeId === centralNode) ? 'central': 'normal'

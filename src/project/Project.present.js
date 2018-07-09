@@ -31,7 +31,7 @@ import { Link, Route, Switch }  from 'react-router-dom';
 
 import { Container, Row, Col } from 'reactstrap';
 import { Alert, Badge, Button, Form, FormGroup, FormText, Input, Label, Table } from 'reactstrap';
-import { Nav, NavItem, NavLink } from 'reactstrap';
+import { Nav, NavItem } from 'reactstrap';
 import { Card, CardBody, CardHeader } from 'reactstrap';
 
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
@@ -242,7 +242,7 @@ class ProjectNav extends Component {
           <RenkuNavLink exact={false} to={this.props.kusUrl} title="Kus" />
         </NavItem>
         <NavItem>
-          <RenkuNavLink exact={false} to={this.props.notebooksUrl} title="Files" />
+          <RenkuNavLink exact={false} to={this.props.filesUrl} title="Files" />
         </NavItem>
         <NavItem>
           <RenkuNavLink exact={false} to={this.props.mrOverviewUrl} title="Pending Changes" />
@@ -257,23 +257,15 @@ class ProjectNav extends Component {
 class ProjectFilesNav extends Component {
 
   render() {
-    const selected = 'notebooks';
-    const dummy = () => { };
-    const onWorkflows = dummy;
-    const onOther = dummy;
-
     return (
       <Nav pills className={'flex-column'}>
+        <NavItem><RenkuNavLink to={this.props.filesUrl} title="All" /></NavItem>
         <NavItem>
           <RenkuNavLink to={this.props.notebooksUrl} title="Notebooks" />
         </NavItem>
         <NavItem>
           <RenkuNavLink to={this.props.dataUrl} title="Data" />
         </NavItem>
-        <NavItem><NavLink href="#" active={selected === 'workflows'}
-          onClick={onWorkflows}>Workflows</NavLink></NavItem>
-        <NavItem><NavLink href="#" active={selected === 'other'}
-          onClick={onOther}>Other</NavLink></NavItem>
       </Nav>)
   }
 }
@@ -351,8 +343,22 @@ class ProjectMergeRequestList extends Component {
   }
 }
 
+class FileFolderTableRow extends Component {
+  render() {
+    const p = this.props.path;
+    const url = `${this.props.linkUrl}/${p}`;
+    const alert = this.props.alert;
+    const mrIid = this.props.mrIid;
+    return <tr key={p}><td><Link to={url}>{p}</Link> {alert} {mrIid}</td></tr>
+  }
+}
+
 class FileFolderList extends Component {
   render() {
+    const paths = this.props.paths || [];
+    const emptyView = this.props.emptyView || <p></p>;
+    if (paths.length < 1) return emptyView;
+
     const alertIcon = <div className="simple-tooltip">
       <FontAwesomeIcon icon={faExclamationCircle} />
       <span className="tooltiptext">This file has pending changes!</span>
@@ -366,11 +372,10 @@ class FileFolderList extends Component {
       alerts = this.props.paths.map(() => '');
       mrIids = this.props.paths.map(() => []);
     }
-    const emptyView = this.props.emptyView;
-    if ((this.props.paths.length < 1) && emptyView != null) return emptyView;
-    const rows = this.props.paths.map((p, i) => {
-      return <tr key={p}><td><Link to={p}>{p}</Link> {alerts[i]} {mrIids[i]}</td></tr>
-    });
+
+    const linkUrl = this.props.linkUrl;
+    const rows = paths.map((p, i) =>
+      <FileFolderTableRow key={p} path={p} alert={alerts[i]} mrIid={mrIids[i]} linkUrl={linkUrl} />)
     return <Table>
       <tbody>{rows}</tbody>
     </Table>
@@ -397,6 +402,7 @@ class NotebookFolderList extends Component {
         paths={this.props.paths}
         alerts={alerts}
         mrIids={mrIids}
+        linkUrl={this.props.filesUrl}
         emptyView={this.props.launchNotebookServerButton} />
     ]
   }
@@ -404,20 +410,22 @@ class NotebookFolderList extends Component {
 
 class ProjectFilesCategorizedList extends Component {
   render() {
-
     return <Switch>
       <Route path={this.props.notebooksUrl} render={props => {
         return <NotebookFolderList
           externalUrl={this.props.externalUrl}
           imageBuild={this.props.imageBuild}
+          mrOverviewUrl={this.props.mrOverviewUrl}
           onProjectRefresh={this.props.onProjectRefresh}
           paths={this.props.files.notebooks}
           files={this.props.files}
+          filesUrl={this.props.filesUrl}
           launchNotebookServerButton={this.props.launchNotebookServerButton}
-        /> }}
+        />} }
       />
-      <Route path={this.props.dataUrl} render={props => <FileFolderList paths={this.props.files.data} /> } />
-      <Route render={() => <p>Files</p> } />
+      <Route path={this.props.dataUrl} render={props =>
+        <FileFolderList paths={this.props.files.data} linkUrl={this.props.lineagesUrl} />} />
+      <Route render={props => <FileFolderList paths={this.props.files.all} linkUrl={this.props.lineagesUrl} />} />
     </Switch>
   }
 }
@@ -430,13 +438,16 @@ class ProjectViewFiles extends Component {
         <ProjectFilesNav
           notebooksUrl={this.props.notebooksUrl}
           mrOverviewUrl={this.props.mrOverviewUrl}
-          dataUrl={this.props.dataUrl} />
+          dataUrl={this.props.dataUrl}
+          filesUrl={this.props.filesUrl} />
       </Col>,
-      <Col key="notebook" sm={12} md={10}>
+      <Col key="content" sm={12} md={10}>
         <Switch>
           <Route path={this.props.notebookUrl}
             render={props => this.props.notebookView(props) } />
           <Route path={this.props.datumUrl}
+            render={p => this.props.lineageView(p) } />
+          <Route path={this.props.lineageUrl}
             render={p => this.props.lineageView(p) } />
           <Route render={props => <ProjectFilesCategorizedList {...props } {...this.props } /> } />
         </Switch>
@@ -573,17 +584,15 @@ class ProjectView extends Component {
       <Container key="content" fluid>
         <Row>
           <Route exact path={this.props.overviewUrl}
-            render={props => <ProjectViewOverview key="overview" {...this.props} /> }/>
+            render={props => <ProjectViewOverview key="overview" {...this.props} />} />
           <Route path={this.props.kusUrl}
-            render={props => <ProjectViewKus key="kus" {...this.props} /> }/>
-          <Route path={this.props.notebooksUrl}
-            render={props => <ProjectViewFiles key="files-notebook" {...this.props} /> }/>
-          <Route path={this.props.dataUrl}
-            render={props => <ProjectViewFiles key="files-data" {...this.props} /> }/>
+            render={props => <ProjectViewKus key="kus" {...this.props} />} />
+          <Route path={this.props.filesUrl}
+            render={props => <ProjectViewFiles key="files" {...this.props} />} />
           <Route path={this.props.settingsUrl}
-            render={props => <ProjectSettings key="settings" {...this.props} /> }/>
+            render={props => <ProjectSettings key="settings" {...this.props} />} />
           <Route path={this.props.mrOverviewUrl}
-            render={props => <ProjectMergeRequestList key="files-changes" {...this.props} /> }/>
+            render={props => <ProjectMergeRequestList key="files-changes" {...this.props} />} />
         </Row>
       </Container>
     ]
