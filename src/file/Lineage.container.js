@@ -31,8 +31,12 @@ class FileLineage extends Component {
     // - Get the dot/master deployment URL (environment external_url) from gitlab
     // - Get the job from gitlab
     // - Combine the file name from the external_url and the job information to retreive the file
+    // TODO: Write a wrapper to make promises cancellable to avoid usage of this._isMounted
+    this._isMounted = true;
     this.retrieveArtifact('dot', 'graph.dot');
   }
+
+  componentWillUnmount() { this._isMounted = false;  }
 
   retrieveDeploymentUrl() {
     this.props.client
@@ -43,7 +47,7 @@ class FileLineage extends Component {
   async retrieveArtifact(job, artifact) {
     const [url, r] = await this.props.client.getArtifact(this.props.projectId, job, artifact);
     const dot = await r.text();
-    this.setState({url, dot});
+    if (this._isMounted) this.setState({url, dot});
   }
 
   render() {
