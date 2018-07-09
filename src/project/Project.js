@@ -125,6 +125,7 @@ class View extends Component {
       notebookUrl: `${filesUrl}/notebooks/:notebookPath`,
       dataUrl: `${filesUrl}/data`,
       datumUrl: `${filesUrl}/data/:filePath+`,
+      workflowsUrl: `${filesUrl}/workflows`,
       settingsUrl: `${baseUrl}/settings`,
       mrOverviewUrl: `${baseUrl}/pending`,
       mrUrl: `${baseUrl}/pending/:mrIid`,

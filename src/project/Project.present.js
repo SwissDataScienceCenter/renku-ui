@@ -261,10 +261,13 @@ class ProjectFilesNav extends Component {
       <Nav pills className={'flex-column'}>
         <NavItem><RenkuNavLink to={this.props.filesUrl} title="All" /></NavItem>
         <NavItem>
+          <RenkuNavLink to={this.props.dataUrl} title="Data" />
+        </NavItem>
+        <NavItem>
           <RenkuNavLink to={this.props.notebooksUrl} title="Notebooks" />
         </NavItem>
         <NavItem>
-          <RenkuNavLink to={this.props.dataUrl} title="Data" />
+          <RenkuNavLink to={this.props.workflowsUrl} title="Workflows" />
         </NavItem>
       </Nav>)
   }
@@ -424,7 +427,11 @@ class ProjectFilesCategorizedList extends Component {
         />} }
       />
       <Route path={this.props.dataUrl} render={props =>
-        <FileFolderList paths={this.props.files.data} linkUrl={this.props.lineagesUrl} />} />
+        <FileFolderList paths={this.props.files.data} linkUrl={this.props.lineagesUrl} />}
+      />
+      <Route path={this.props.workflowsUrl} render={props =>
+        <FileFolderList paths={this.props.files.workflows} linkUrl={this.props.lineagesUrl} />}
+      />
       <Route render={props => <FileFolderList paths={this.props.files.all} linkUrl={this.props.lineagesUrl} />} />
     </Switch>
   }
@@ -439,7 +446,8 @@ class ProjectViewFiles extends Component {
           notebooksUrl={this.props.notebooksUrl}
           mrOverviewUrl={this.props.mrOverviewUrl}
           dataUrl={this.props.dataUrl}
-          filesUrl={this.props.filesUrl} />
+          filesUrl={this.props.filesUrl}
+          workflowsUrl={this.props.workflowsUrl} />
       </Col>,
       <Col key="content" sm={12} md={10}>
         <Switch>

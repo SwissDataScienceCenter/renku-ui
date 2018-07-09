@@ -3,7 +3,8 @@ import { payload } from './initRenkuProject';
 
 const FileCategories = {
   data: (path) => path.startsWith('data'),
-  notebooks: (path) => path.endsWith('ipynb')
+  notebooks: (path) => path.endsWith('ipynb'),
+  workflows: (path) => path.startsWith('.renku/workflow/'),
 };
 
 function groupedFiles(files, projectFiles) {
