@@ -19,11 +19,8 @@
  Renku-UI
 ================
 
-**This is the development branch of Renku-UI, and should be considered highly
+**The Renku platform is under very active development and should be considered highly
 volatile.**
-
-The development branch of the Renku user interface contains a complete rewrite
-of the old ui which reflects the redesign of the Renku platform in general.
 
 Quickstart
 ----------

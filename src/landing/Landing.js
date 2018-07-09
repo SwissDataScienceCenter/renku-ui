@@ -31,24 +31,19 @@ import { createStore } from '../utils/EnhancedState'
 import Present from './Landing.present'
 import State from './Landing.state'
 
+function urlMap() {
+  return {
+    projectsUrl: '/projects',
+    projectNewUrl: '/project_new'
+  }
+}
+
 
 class Starred extends Component {
-  constructor(props) {
-    super(props);
-    this.store = this.props.userState;
-  }
-  mapStateToProps(state, ownProps) {
-    const projects = (state.user) ? state.user.starredProjects : []
-    return {projects}
-  }
-
   render() {
-    const VisibleStarred = connect(this.mapStateToProps)(Present.Starred);
-    return [
-      <Provider key="new" store={this.store}>
-        <VisibleStarred />
-      </Provider>
-    ]
+    const user = this.props.user;
+    const projects = (user) ? user.starredProjects : []
+    return <Present.Starred urlMap={this.props.urlMap} projects={projects} />
   }
 }
 
@@ -64,8 +59,11 @@ class Home extends Component {
   }
 
   mapStateToProps(state, ownProps) {
+    const urls = urlMap();
     const local = {
-      starred: <Starred userState={ownProps.userState} />
+      starred: <Starred user={ownProps.user} urlMap={urls} />,
+      user: ownProps.user,
+      urlMap: urls
     };
     return {...state, ...local}
   }
@@ -77,6 +75,7 @@ class Home extends Component {
       onYourActivity: (e) => { dispatch(State.Home.Ui.selectYourActivity()) },
       onYourNetwork: (e) => { dispatch(State.Home.Ui.selectYourNetwork()) },
       onExplore: (e) => { dispatch(State.Home.Ui.selectExplore()) },
+      onWelcome: (e) => { dispatch(State.Home.Ui.selectWelcome()) },
     }
   }
 
@@ -84,7 +83,7 @@ class Home extends Component {
     const VisibleHome = connect(this.mapStateToProps, this.mapDispatchToProps)(Present.Home);
     return [
       <Provider key="new" store={this.store}>
-        <VisibleHome userState={this.props.userState}/>
+        <VisibleHome user={this.props.user}/>
       </Provider>
     ]
   }

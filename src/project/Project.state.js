@@ -24,7 +24,7 @@
  */
 
 import { UserState } from '../app-state';
-import { API_ERRORS } from '../gitlab/errors';
+import { API_ERRORS } from '../gitlab/renkuFetch';
 import { StateModel} from '../model/Model';
 import { projectSchema } from '../model/RenkuModels';
 
@@ -67,51 +67,84 @@ class ProjectModel extends StateModel {
   // TODO: Do we really want to re-fetch the entire project on every change?
 
   // TODO: Once state and client are fully adapted to each other, these functions should be trivial
-  fetchProject = (client, id) => {
-    client.getProject(id, {notebooks:true, data:true})
+  fetchProject(client, id) {
+    return client.getProject(id, {notebooks:true, data:true})
       .then(d => {
+        const files = d.files || this.get('files');
         this.setObject({
           core: d.metadata.core,
           system: d.metadata.system,
           visibility: d.metadata.visibility,
-          files: d.files
-        })
+          files: files
+        });
+        return d;
       })
-  };
+  }
 
-  fetchReadme = (client, id) => {
-    this.setUpdating({data: {readme: true}});
+  fetchModifiedFiles(client, id) {
+    client.getModifiedFiles(id)
+      .then(d => {
+        this.set('files.modifiedFiles', d)
+      })
+  }
+
+  fetchMergeRequests(client, id) {
+    this.setUpdating({system: {merge_requests: true}});
+    client.getMergeRequests(id)
+      .then(d => {
+        this.set('system.merge_requests', d)
+      })
+  }
+
+  fetchBranches(client, id) {
+    this.setUpdating({system: {branches: true}});
+    client.getBranches(id)
+      .then(d => {
+        this.set('system.branches', d)
+      })
+  }
+
+  fetchReadme(client, id) {
+    this.setUpdating({data: {readme: {text: true}}});
     client.getProjectReadme(id)
-      .then(d => this.set('data.readme', d))
+      .then(d => this.set('data.readme.text', d.text))
       .catch(error => {
-        console.log(error.case);
         if (error.case === API_ERRORS.notFoundError) {
           this.set('data.readme.text', 'No readme file found.')
         }
       })
-  };
+  }
 
-  setTags = (client, id, name, tags) => {
+  setTags(client, id, name, tags) {
     this.setUpdating({system: {tag_list: [true]}});
     client.setTags(id, name, tags).then(() => {
       this.fetchProject(client, id);
     })
-  };
+  }
 
-  setDescription = (client, id, name, description) => {
+  setDescription(client, id, name, description) {
     this.setUpdating({core: {description: true}});
     client.setDescription(id, name, description).then(() => {
       this.fetchProject(client, id);
     })
-  };
+  }
 
-  star = (client, id, userState, starred) => {
+  star(client, id, userStateDispatch, starred) {
     client.starProject(id, starred).then((d) => {
-      this.fetchProject(client, id);
       // TODO: Bad naming here - will be resolved once the user state is re-implemented.
-      userState.dispatch(UserState.star(id))
+      this.fetchProject(client, id).then(p => userStateDispatch(UserState.star(p.metadata.core)))
+
     })
-  };
+  }
+
+  fetchCIJobs(client, id) {
+    this.setUpdating({system: {ci_jobs: true}});
+    client.getJobs(id)
+      .then((d) => {
+        this.set('system.ci_jobs', d)
+      })
+      .catch((error) => this.set('system.ci_jobs', []));
+  }
 }
 
 export default { List };

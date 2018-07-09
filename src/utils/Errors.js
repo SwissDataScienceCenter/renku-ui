@@ -1,5 +1,5 @@
 /*!
- * Copyright 2017 - Swiss Data Science Center (SDSC)
+ * Copyright 2018 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -17,26 +17,14 @@
  */
 
 /**
- *  incubator-renku-ui
+ *  renku-ui
  *
- *  Landing.test.js
- *  Tests for landing.
+ *  Errors.js
+ *  Utility functions for handling errors
  */
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { MemoryRouter } from 'react-router-dom';
+function alertError(text) {
+  alert(text);
+}
 
-import Landing from './Landing';
-import State from  './Landing.state';
-import client from '../gitlab/test-client'
-
-describe('rendering', () => {
-  it('renders home without crashing', () => {
-    const div = document.createElement('div');
-    ReactDOM.render(
-      <MemoryRouter>
-        <Landing.Home />
-      </MemoryRouter>, div);
-  });
-});
+export { alertError };

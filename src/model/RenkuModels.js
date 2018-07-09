@@ -62,6 +62,8 @@ const projectSchema = new Schema({
       displayId: {initial: '',},
       title: {initial: 'no title', mandatory: true},
       external_url: {initial: '',},
+      path_with_namespace: {initial: null},
+      owner: {initial: null}
     }
   },
   visibility: {
@@ -96,13 +98,17 @@ const projectSchema = new Schema({
       star_count: {initial: 0, mandatory: true},
       forks_count: {initial: 0, mandatory: true},
       ssh_url: {initial: '',},
-      http_url: {initial: '',}
+      http_url: {initial: '',},
+      merge_requests: {schema: [], initial:[]},
+      branches: {schema: [], initial:[]},
+      ci_jobs: {schema: [], initial:[]}
     }
   },
   files: {
     schema: {
       notebooks: {schema: []},
       data: {schema: []},
+      modifiedFiles: {initial: {}, mandatory: true}
     }
   }
 });

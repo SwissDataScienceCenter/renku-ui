@@ -21,7 +21,34 @@ const SET_USER_INFO = 'SET_USER_INFO';
 const SET_STARRED_PROJECTS = 'SET_STARRED_PROJECTS';
 const STAR_PROJECT = 'STAR_PROJECT';
 
+function starredProjectMetadata(project) {
+  return {
+    id: project.id,
+    path_with_namespace: project.path_with_namespace,
+    description: project.description,
+    tag_list: project.tag_list,
+    star_count: project.star_count,
+    owner: project.owner,
+    last_activity_at: project.last_activity_at
+  }
+}
+
 const User = {
+  // Actions for connecting to the server
+  fetchAppUser: (client, dispatch) => {
+    client.getUser()
+      .then(response => {
+        dispatch(User.set(response));
+        // TODO: Replace this after re-implementation of user state.
+        client.getProjects({starred: true})
+          .then((projects) => {
+            const reducedProjects = projects.map((project) => starredProjectMetadata(project));
+            dispatch(User.setStarred(reducedProjects));
+          })
+          .catch(() => dispatch(this.setStarred([])));
+      })
+      .catch((error) => console.error(error));
+  },
   // Actions related to user state...
   set: (user) => {
     return { type: SET_USER_INFO, payload: user };
@@ -41,12 +68,13 @@ const User = {
       return {...state, starredProjects: action.payload};
     case STAR_PROJECT: {
       let newStarredProjects = state.starredProjects ? [...state.starredProjects] : [];
-      const ind = newStarredProjects.map(p => p.id).indexOf(action.payload);
+      const project = action.payload;
+      const ind = newStarredProjects.map(p => p.id).indexOf(project.id);
       if (ind >= 0) {
         newStarredProjects.splice(ind, 1);
       }
       else {
-        newStarredProjects.push({id: action.payload});
+        newStarredProjects.push(starredProjectMetadata(project));
       }
       return {...state, starredProjects: newStarredProjects}
     }

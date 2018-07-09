@@ -1,5 +1,5 @@
 /*!
- * Copyright 2017 - Swiss Data Science Center (SDSC)
+ * Copyright 2018 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -17,26 +17,23 @@
  */
 
 /**
- *  incubator-renku-ui
+ *  renku-ui
  *
- *  Landing.test.js
- *  Tests for landing.
+ * Components for interacting with the notebook server (renku-notebooks)
+ *
  */
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { MemoryRouter } from 'react-router-dom';
+import React, { Component } from 'react';
+import { NotebookAdmin } from './Notebooks.container';
 
-import Landing from './Landing';
-import State from  './Landing.state';
-import client from '../gitlab/test-client'
+class Admin extends Component {
+  render() {
+    const client = this.props.client;
+    // FIXME Using a private field, but this code will all change soon anyway.
+    const jupyterHubUrl = client._jupyterhub_url
+    const adminUiUrl = `${jupyterHubUrl}/services/notebooks/ui/`
+    return <NotebookAdmin adminUiUrl={adminUiUrl} />
+  }
+}
 
-describe('rendering', () => {
-  it('renders home without crashing', () => {
-    const div = document.createElement('div');
-    ReactDOM.render(
-      <MemoryRouter>
-        <Landing.Home />
-      </MemoryRouter>, div);
-  });
-});
+export default { Admin };

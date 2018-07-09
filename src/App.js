@@ -32,7 +32,9 @@ import { BrowserRouter as Router, Route, Switch, Link, Redirect }  from 'react-r
 // import { IndexLinkContainer } from 'react-router-bootstrap';
 // import { FormGroup, FormControl, InputGroup } from 'react-bootstrap'
 // import { MenuItem, Nav, Navbar, NavItem, NavDropdown } from 'react-bootstrap'
-import FontAwesome from 'react-fontawesome'
+import FontAwesomeIcon from '@fortawesome/react-fontawesome'
+import faSearch from '@fortawesome/fontawesome-free-solid/faSearch'
+import faPlus from '@fortawesome/fontawesome-free-solid/faPlus'
 
 // import About from './About'
 // import Landing from './Landing'
@@ -40,6 +42,7 @@ import Project from './project/Project'
 import Ku from './ku/Ku'
 import Landing from './landing/Landing'
 import Login from './login'
+import Notebooks from './notebooks';
 import { RenkuNavLink, UserAvatar } from './utils/UIComponents'
 // import Lineage from './lineage'
 
@@ -49,6 +52,25 @@ function getActiveProjectId(currentPath) {
     return currentPath.match(/\/projects\/(\d+)/)[0].replace('/projects/', '')
   } catch(TypeError) {
     return null
+  }
+}
+
+class RenkuToolbarItemUser extends Component {
+  render() {
+    if (this.props.user == null || this.props.user.id == null) {
+      return <RenkuNavLink to="/login" title="Login" />
+    }
+    const loggedIn = this.props.loggedIn;
+    return <li className="nav-item dropdown">
+      <a key="button" className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
+        aria-haspopup="true" aria-expanded="false">
+        {this.props.userAvatar}
+      </a>
+      <div key="menu" className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+        {loggedIn ? <RenkuNavLink to="/user" title="Profile" /> : null }
+        {loggedIn ? <RenkuNavLink to="/logout" title="Logout" /> : <RenkuNavLink to="/login" title="Login" />}
+      </div>
+    </li>
   }
 }
 
@@ -105,7 +127,7 @@ class RenkuNavBar extends Component {
                   placeholder="Search Renku" aria-label="Search" />
                 <span className="input-group-append">
                   <button className="btn btn-outline-primary my-2 my-sm-0" type="submit">
-                    <FontAwesome name="search" />
+                    <FontAwesomeIcon icon={faSearch} />
                   </button>
                 </span>
               </div>
@@ -113,28 +135,20 @@ class RenkuNavBar extends Component {
 
             <ul className="navbar-nav mr-auto">
               <RenkuNavLink to="/projects" title="Projects"/>
+              <RenkuNavLink to="/notebooks" title="Notebooks"/>
             </ul>
             <ul className="navbar-nav">
               <li className="nav-item dropdown">
                 <a className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
                   aria-haspopup="true" aria-expanded="false">
-                  <FontAwesome name="plus" />
+                  <FontAwesomeIcon icon={faPlus} />
                 </a>
                 <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                   <RenkuNavLink to="/project_new" title="Project" />
                   {kuDropdown}
                 </div>
               </li>
-              <li className="nav-item dropdown">
-                <a className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
-                  aria-haspopup="true" aria-expanded="false">
-                  {this.props.userAvatar}
-                </a>
-                <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                  {loggedIn ? <RenkuNavLink to="/user" title="Profile" /> : null }
-                  {loggedIn ? <RenkuNavLink to="/logout" title="Logout" /> : <RenkuNavLink to="/login" title="Login" />}
-                </div>
-              </li>
+              <RenkuToolbarItemUser loggedIn={loggedIn} userAvatar={this.props.userAvatar} user={this.props.user} />
             </ul>
           </div>
         </nav>
@@ -175,9 +189,11 @@ class App extends Component {
               <Route exact path="/login/redirect/gitlab"
                 render={p => <Login.GitlabRedirect key="gitlabRedirect" {...p} {...this.props}/>} />
               <Route exact path="/"
-                render={p => <Landing.Home key="landing" userState={this.props.userState} {...p} />} />
+                render={p => <Landing.Home key="landing" user={this.props.userState.getState().user} {...p} />} />
               <Route exact path="/projects"
-                render={p => <Project.List key="projects" {...p} client={this.props.client} />} />
+                render={p => <Project.List key="projects"
+                  user={this.props.userState.getState().user}
+                  client={this.props.client} {...p} />} />
 
               {/*TODO: This route should be handled by <Route path="/projects/:id(\d+)" too. Until this is the
                  TODO: case, the ku_new route must be listed BEFORE the project one.   */}
@@ -186,9 +202,14 @@ class App extends Component {
               {/* pull out the underlying parts of the url and pass them to the project view */}
               <Route path="/projects/:id(\d+)"
                 render={p => <Project.View key="project" id={p.match.params.id} {...p}
-                  client={this.props.client} userState={this.props.userState} />}/>
+                  user={this.props.userState.getState().user} userStateDispatch={this.props.userState.dispatch}
+                  client={this.props.client} params={this.props.params}/>}/>
               <Route exact path="/project_new"
                 render={(p) => <Project.New key="project_new" client={this.props.client} {...p}/> }/>
+              <Route exact path="/notebooks"
+                render={p => <Notebooks.Admin key="notebooks"
+                  user={this.props.userState.getState().user}
+                  client={this.props.client} {...p} />} />
             </Switch>
           </main>
           <Route component={RenkuFooter} />

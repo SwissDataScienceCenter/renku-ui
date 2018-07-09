@@ -1,4 +1,5 @@
-import {alertAPIErrors, API_ERRORS, renkuFetch} from './errors';
+import {alertAPIErrors, API_ERRORS, renkuFetch} from './renkuFetch';
+import { payload } from './initRenkuProject';
 
 const SPECIAL_FOLDERS = {
   data: 'data',
@@ -17,10 +18,11 @@ class GitlabClient {
   // ku    -->  issue
 
 
-  constructor(baseUrl, token, tokenType) {
+  constructor(baseUrl, token, tokenType, jupyterhub_url) {
     this._baseUrl = baseUrl;
     this._token = token;
     this._tokenType = tokenType;
+    this._jupyterhub_url = jupyterhub_url;
   }
 
   getBasicHeaders() {
@@ -35,19 +37,18 @@ class GitlabClient {
 
   getProjects(queryParams={}) {
     let headers = this.getBasicHeaders();
-    const url = new URL(this._baseUrl + 'projects');
-    Object.keys(queryParams).forEach((key) => url.searchParams.append(key, queryParams[key]));
 
-    return renkuFetch(url, {
+    return renkuFetch(`${this._baseUrl}/projects`, {
       method: 'GET',
-      headers: headers
+      headers,
+      queryParams,
     })
   }
 
   getProject(projectId, options={}) {
     let headers = this.getBasicHeaders();
     const apiPromises = [
-      renkuFetch(this._baseUrl + `projects/${projectId}`, {
+      renkuFetch(`${this._baseUrl}/projects/${projectId}`, {
         method: 'GET',
         headers: headers
       })
@@ -89,12 +90,29 @@ class GitlabClient {
     const headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return renkuFetch(this._baseUrl + 'projects', {
+    return renkuFetch(`${this._baseUrl}/projects`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(gitlabProject)
     })
+    // TODO: This way of creating a proper renku project should be replaced ASAP by either
+    // TODO: using the same template files served from a public URL that the cli uses, or by
+    // TODO: calling renku init on the gateway and creating the initial commit in the gateway.
+      .then((data) => {
+        this.postCommit(data.id, payload);
+        return data;
+      })
+  }
 
+  postCommit(projectId, commitPayload) {
+    const headers = this.getBasicHeaders();
+    headers.append('Content-Type', 'application/json');
+
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/repository/commits`, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(commitPayload)
+    })
   }
 
   setTags(projectId, name, tags) {
@@ -110,7 +128,7 @@ class GitlabClient {
     headers.append('Content-Type', 'application/json');
     const endpoint = starred ? 'unstar' : 'star';
 
-    return renkuFetch(this._baseUrl + `projects/${projectId}/${endpoint}`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/${endpoint}`, {
       method: 'POST',
       headers: headers,
     })
@@ -122,7 +140,7 @@ class GitlabClient {
     const headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return fetch(this._baseUrl + `projects/${projectId}`, {
+    return fetch(`${this._baseUrl}/projects/${projectId}`, {
       method: 'PUT',
       headers: headers,
       body: JSON.stringify(putData)
@@ -139,10 +157,10 @@ class GitlabClient {
   }
 
 
-  getProjectFile(projectId, path) {
+  getProjectFile(projectId, path, ref='master') {
     let headers = this.getBasicHeaders();
     const encodedPath = encodeURIComponent(path);
-    return renkuFetch(this._baseUrl + `projects/${projectId}/repository/files/${encodedPath}/raw?ref=master`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/repository/files/${encodedPath}/raw?ref=${ref}`, {
       method: 'GET',
       headers: headers
     }, 'text')
@@ -151,7 +169,7 @@ class GitlabClient {
   getProjectKus(projectId) {
     let headers = this.getBasicHeaders();
 
-    return renkuFetch(this._baseUrl + `projects/${projectId}/issues?scope=all`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/issues?scope=all`, {
       method: 'GET',
       headers: headers
     })
@@ -162,7 +180,7 @@ class GitlabClient {
     let headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return renkuFetch(this._baseUrl + `projects/${projectId}/issues`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/issues`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(ku)
@@ -174,18 +192,35 @@ class GitlabClient {
     let headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return renkuFetch(this._baseUrl + `projects/${projectId}/issues/${kuIid}/`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/issues/${kuIid}/`, {
       method: 'GET',
       headers: headers,
     })
 
   }
 
+  getCommits(projectId, ref='master') {
+    let headers = this.getBasicHeaders();
+    headers.append('Content-Type', 'application/json');
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/repository/commits?ref_name=${ref}`, {
+      method: 'GET',
+      headers: headers
+    })
+      .then(commits => {
+        if (commits.length > 0) {
+          return commits;
+        }
+        else {
+          throw API_ERRORS.notFoundError;
+        }
+      })
+  }
+
   getContributions(projectId, kuIid) {
     let headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return renkuFetch(this._baseUrl + `projects/${projectId}/issues/${kuIid}/notes`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/issues/${kuIid}/notes`, {
       method: 'GET',
       headers: headers
     })
@@ -196,7 +231,7 @@ class GitlabClient {
     let headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return renkuFetch(this._baseUrl + `projects/${projectId}/issues/${kuIid}/notes`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/issues/${kuIid}/notes`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify({body: contribution})
@@ -204,11 +239,20 @@ class GitlabClient {
 
   }
 
+  // TODO: Once the gateway is up and running, the client should not need to be aware of the
+  // TODO: JUPYTERHUB_URL anymore but simply query the notebook url from the gateway
+  async getNotebookServerUrl(projectId, projectPath, filePath='', commitSha='latest', ref='master') {
+    if (commitSha === 'latest') {
+      commitSha = await (this.getCommits(projectId).then(commits => commits[0].id));
+    }
+    return `${this._jupyterhub_url}/services/notebooks/${projectPath}/${commitSha}${filePath}?branch=${ref}`
+  }
+
   _modifiyIssue(projectId, issueIid, body) {
     let headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return renkuFetch(this._baseUrl + `projects/${projectId}/issues/${issueIid}`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/issues/${issueIid}`, {
       method: 'PUT',
       headers: headers,
       body: JSON.stringify(body)
@@ -228,7 +272,7 @@ class GitlabClient {
     let headers = this.getBasicHeaders();
     const pathEncoded = encodeURIComponent(path);
     const raw = encoding === 'raw' ? '/raw' : '';
-    return renkuFetch(this._baseUrl + `projects/${projectId}/repository/files/${pathEncoded}${raw}?ref=${ref}`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/repository/files/${pathEncoded}${raw}?ref=${ref}`, {
       method: 'GET',
       headers: headers
     }, 'fullResponse', false)
@@ -253,13 +297,11 @@ class GitlabClient {
       page
     };
 
-    const url = new URL(this._baseUrl + `projects/${projectId}/repository/tree`);
-    Object.keys(queryParams).forEach((key) => url.searchParams.append(key, queryParams[key]));
-
     // TODO: Think about general pagination strategy for API client.
-    return renkuFetch(url, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/repository/tree`, {
       method: 'GET',
-      headers: headers
+      headers,
+      queryParams
     }, 'fullResponse', false)
       .then(response => {
         if(response.headers.get('X-Next-Page')) {
@@ -291,22 +333,20 @@ class GitlabClient {
 
   getDeploymentUrl(projectId, envName, branchName = 'master') {
     let headers = this.getBasicHeaders();
-    return renkuFetch(this._baseUrl + `projects/${projectId}/environments`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/environments`, {
       method: 'GET',
       headers: headers
     })
       .then(envs => envs.filter(env => env.name === `${envName}/${branchName}`)[0])
       .then(env => {
         if (!env) return undefined;
-        // TODO: Add the path to the actual notebook file once the CI/CD part
-        // TODO: has stabilized.
         return `${env.external_url}`;
       })
   }
 
   getArtifactsUrl(projectId, job, branch='master') {
     const headers = this.getBasicHeaders();
-    return renkuFetch(`${this._baseUrl}projects/${projectId}/jobs`, {
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/jobs`, {
       method: 'GET',
       headers: headers
     })
@@ -320,7 +360,7 @@ class GitlabClient {
         const jobObj =
           filteredJobs
             .sort((a, b) => (a.finished_at > b.finished_at) ? -1 : +(a.finished_at < b.finished_at))[0]
-        return `${this._baseUrl}projects/${projectId}/jobs/${jobObj.id}/artifacts`;
+        return `${this._baseUrl}/projects/${projectId}/jobs/${jobObj.id}/artifacts`;
       })
   }
 
@@ -337,11 +377,116 @@ class GitlabClient {
 
   getUser() {
     let headers = this.getBasicHeaders();
-    return renkuFetch(this._baseUrl + 'user', {
+    return renkuFetch(`${this._baseUrl}/user`, {
       method: 'GET',
       headers: headers
     })
 
+  }
+
+  // TODO: Unfotunately, the API doesn't offer a way to query only for unmerged branches -
+  // TODO: add this capability to the gateway.
+  // TODO: Page through results in gateway, for the moment assuming a max of 100 branches seems ok.
+  getBranches(projectId) {
+    let headers = this.getBasicHeaders();
+    const url = `${this._baseUrl}/projects/${projectId}/repository/branches`;
+    return renkuFetch(url, {
+      method: 'GET',
+      headers,
+      queryParams: {per_page: 100}
+    })
+  }
+
+
+  createMergeRequest(projectId, title, source_branch, target_branch, options={
+    allow_collaboration: true,
+    remove_source_branch: true
+  }) {
+    let headers = this.getBasicHeaders();
+    headers.append('Content-Type', 'application/json');
+
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/merge_requests`, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify({
+        ...options,
+        title,
+        source_branch,
+        target_branch,
+      })
+    })
+  }
+
+  getMergeRequests(projectId, queryParams={scope: 'all', state: 'opened'}) {
+    let headers = this.getBasicHeaders();
+    const url = projectId ? `${this._baseUrl}/projects/${projectId}/merge_requests` :
+      `${this._baseUrl}/merge_requests`
+    return renkuFetch(url, {
+      method: 'GET',
+      headers,
+      queryParams: {...queryParams, per_page:100}
+    })
+  }
+
+  getMergeRequestChanges(projectId, mrIid) {
+    let headers = this.getBasicHeaders();
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/merge_requests/${mrIid}/changes`, {
+      method: 'GET',
+      headers
+    })
+  }
+
+  // Get all files in a project that have modifications in an open merge request.
+  // Return an object giving for each file with modifications an array of merge requests (iids)
+  // in which the file is modified.
+  // TODO: This method should go to the gateway.
+  getModifiedFiles(projectId) {
+    return this.getMergeRequests(projectId)
+      .then((mergeRequests) => {
+        if (!mergeRequests) return;
+
+        // For each MR get the changes introduced by the MR, creates an array
+        // of promises.
+        const mergeRequestsChanges = mergeRequests.map((mergeRequest) => {
+          return this.getMergeRequestChanges(projectId, mergeRequest.iid)
+        });
+
+        // On resolution of all promises, form an object which lists for each file
+        // the merge requests that modify this file.
+        return Promise.all(mergeRequestsChanges)
+          .then((mrChanges) => {
+            const openMrs = {};
+            mrChanges.forEach((mrChange) => {
+              const changesArray = mrChange.changes;
+              const mrInfo = {mrIid: mrChange.iid, source_branch: mrChange.source_branch}
+              changesArray
+                .filter((change) => change.old_path === change.new_path)
+                .forEach((change) => {
+                  if (!openMrs[change.old_path]) openMrs[change.old_path] = [];
+                  openMrs[change.old_path].push(mrInfo)
+                })
+            });
+            return openMrs;
+          });
+      })
+  }
+
+  getJobs(projectId) {
+    let headers = this.getBasicHeaders();
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/jobs`, {
+      method: 'GET',
+      headers,
+      queryParams: {per_page: 100}
+    }, 'json', false)
+  }
+
+  mergeMergeRequest(projectId, mrIid) {
+    let headers = this.getBasicHeaders();
+    return renkuFetch(`${this._baseUrl}/projects/${projectId}/merge_requests/${mrIid}/merge`, {
+      method: 'PUT',
+      headers,
+      body: JSON.stringify({should_remove_source_branch: true})
+    })
   }
 }
 
@@ -358,7 +503,7 @@ function carveProject(projectJson) {
     result['metadata']['visibility']['accessLevel'] = 0
   }
 
-  
+
   result['metadata']['core']['created_at'] = projectJson['created_at'];
   result['metadata']['core']['last_activity_at'] = projectJson['last_activity_at'];
   result['metadata']['core']['id'] = projectJson['id'];
@@ -366,6 +511,8 @@ function carveProject(projectJson) {
   result['metadata']['core']['displayId'] = projectJson['path_with_namespace'];
   result['metadata']['core']['title'] = projectJson['name'];
   result['metadata']['core']['external_url'] = projectJson['web_url'];
+  result['metadata']['core']['path_with_namespace'] = projectJson['path_with_namespace'];
+  result['metadata']['core']['owner'] = projectJson['owner'];
 
   result['metadata']['system']['tag_list'] = projectJson['tag_list'];
   result['metadata']['system']['star_count'] = projectJson['star_count'];

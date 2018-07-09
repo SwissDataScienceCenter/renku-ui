@@ -119,6 +119,8 @@ class Schema {
 class StateModel {
   constructor(schema, stateBinding, stateHolder, initialState) {
 
+    this._updatingPropVal = SpecialPropVal.UPDATING;
+
     if (!stateHolder && stateBinding === StateKind.REDUX) {
       stateHolder = createStore(schema.reducer(), this.constructor.name)
     }
@@ -221,6 +223,7 @@ class StateModel {
 // can not be created without an already existing instance of a Model.
 class SubModel {
   constructor(model, path) {
+    this._updatingPropVal = model._updatingPropVal;
     this.reduxStore = model.reduxStore;
     this.reactComponent = model.reactComponent;
     this.stateBinding = model.stateBinding;

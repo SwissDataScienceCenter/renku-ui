@@ -23,15 +23,8 @@
  *  Redux-based state-management code.
  */
 
-import { combineReducers } from 'redux'
-
-function displayIdFromTitle(title) {
-  // title.Author: Alex K. - https://stackoverflow.com/users/246342/alex-k
-  // Source: https://stackoverflow.com/questions/6507056/replace-all-whitespace-characters/6507078#6507078
-  title = title.replace(/\s/g, '-');
-  title = title.toLowerCase();
-  return title;
-}
+import { combineReducers } from 'redux';
+import { slugFromTitle } from '../utils/HelperFunctions';
 
 function createSetAction(type, field, value) {
   const payload = {[field]: value};
@@ -49,7 +42,7 @@ function reduceState(type, state, action, initial) {
 const Core = {
   set: (field, value) => {
     const action = createSetAction('core', field, value);
-    if (field === 'title') action.payload['displayId'] = displayIdFromTitle(value);
+    if (field === 'title') action.payload['displayId'] = slugFromTitle(value);
     return action
   },
   reduce: (state, action) => {
@@ -112,4 +105,3 @@ const List = {
 }
 
 export default { New, View, List };
-export { displayIdFromTitle };

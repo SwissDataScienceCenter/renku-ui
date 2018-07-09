@@ -26,7 +26,8 @@
 
 import React, { Component } from 'react';
 import { FormGroup, FormText, Input, Label } from 'reactstrap';
-import FontAwesome from 'react-fontawesome'
+import FontAwesomeIcon from '@fortawesome/react-fontawesome'
+import faUser from '@fortawesome/fontawesome-free-solid/faUser'
 import human from 'human-time';
 
 import { NavLink as RRNavLink }  from 'react-router-dom'
@@ -60,7 +61,7 @@ class Avatar extends Component {
     }
     return (img) ?
       <img width={widgetSize.img} src={img} alt={user} /> :
-      <FontAwesome alt={user} name="user-circle-o" size={widgetSize.fa}
+      <FontAwesomeIcon alt={user} icon={faUser} size={widgetSize.fa}
         style={{textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)'}} />;
   }
 }

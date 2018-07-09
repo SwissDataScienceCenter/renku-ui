@@ -1,11 +1,11 @@
-import { APIError, alertAPIErrors } from './errors';
+import { APIError, alertAPIErrors } from './renkuFetch';
 import { GitlabClient } from './client';
 
 const ACCESS_LEVELS = {
   GUEST: 10,
   REPORTER: 20,
   DEVELOPER: 30,
-  MASTER: 40,
+  MAINTAINER: 40,
   OWNER: 50,
 };
 
