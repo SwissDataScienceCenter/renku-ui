@@ -45,12 +45,10 @@ import ReactMarkdown from 'react-markdown'
 import { Avatar, TimeCaption, FieldGroup, RenkuNavLink } from '../utils/UIComponents'
 
 const imageBuildStatusText = {
-  failed : 'Your notebook image build has not been triggered or failed. You can still open a notebook server based' +
-    'on a default image',
-  canceled : 'Your notebook image build has been cancelled.  You can still open a notebook server based ' +
-    'on a default image',
-  running : 'Your notebook image build is still ongoing. Wait a bit before launching a notebook...',
-  pending : 'Your notebook image build is still pending. Wait a bit before launching a notebook...'
+  failed: 'No notebook image has been build. You can still open a notebook server with the default image.',
+  canceled: 'The notebook image build has been cancelled.  You can still open a notebook server with the default image',
+  running: 'The notebook image build is still ongoing. Wait a bit before launching a notebook...',
+  pending: 'The notebook image build is still pending. Wait a bit before launching a notebook...'
 };
 
 const imageBuildAlertColor = {
@@ -139,6 +137,16 @@ class ImageBuildInfo extends Component {
   }
 }
 
+class ImageBuildInfoBadge extends Component {
+  render() {
+    const imageBuild = this.props.imageBuild || {status: 'success'};
+    if (imageBuild.status === 'success') return null;
+    return <Link className={`badge badge-${imageBuildAlertColor[imageBuild.status]}`}
+      title={imageBuildStatusText[imageBuild.status] || imageBuildStatusText['failed']}
+      to={this.props.notebooksUrl}>Notebooks</Link>
+  }
+}
+
 class MergeRequestSuggestions extends Component {
   handleCreateMergeRequest(e, onCreateMergeRequest, branch) {
     e.preventDefault();
@@ -185,7 +193,6 @@ class ProjectViewHeader extends Component {
     const starIcon = this.props.starred ? faStarSolid : faStarRegular;
     return (
       <Container fluid>
-        <ImageBuildInfo imageBuild={this.props.imageBuild} onProjectRefresh={this.props.onProjectRefresh} />
         <MergeRequestSuggestions externalUrl={this.props.externalUrl} canCreateMR={this.props.canCreateMR}
           onCreateMergeRequest={this.props.onCreateMergeRequest} suggestedMRBranches={this.props.suggestedMRBranches} />
         <Row>
@@ -200,18 +207,22 @@ class ProjectViewHeader extends Component {
             <p className="text-md-right">
               <ProjectTagList taglist={system.tag_list} />
             </p>
-            {/*TODO: Adapting the width in a more elegant manner would be nice...*/}
-            <div className={`float-md-right fixed-width-${this.props.starred ? '120' : '100'}`}>
-              <form className="input-group input-group-sm">
-                <div className="input-group-prepend">
-                  <button className="btn btn-outline-primary" onClick={this.props.onStar}>
-                    <FontAwesomeIcon icon={starIcon} /> {starButtonText}
-                  </button>
-                </div>
-                <input className="form-control border-primary text-right"
-                  placeholder={system.star_count} aria-label="starCount" readOnly={true}/>
-              </form>
+            <div className="d-flex flex-row-reverse">
+              <div className={`fixed-width-${this.props.starred ? '120' : '100'}`}>
+                <form className="input-group input-group-sm">
+                  <div className="input-group-prepend">
+                    <button className="btn btn-outline-primary" onClick={this.props.onStar}>
+                      <FontAwesomeIcon icon={starIcon} /> {starButtonText}
+                    </button>
+                  </div>
+                  <input className="form-control border-primary text-right"
+                    placeholder={system.star_count} aria-label="starCount" readOnly={true}/>
+                </form>
+              </div>
             </div>
+            <p className="text-md-right pt-3">
+              <ImageBuildInfoBadge notebooksUrl={this.props.notebooksUrl} imageBuild={this.props.imageBuild} />
+            </p>
           </Col>
         </Row>
       </Container>
@@ -366,25 +377,43 @@ class FileFolderList extends Component {
   }
 }
 
-class ProjectFilesCategorizedList extends Component {
+class NotebookFolderList extends Component {
   render() {
-    const alerts = this.props.files.notebooks ?
-      this.props.files.notebooks.map(path => this.props.files.modifiedFiles[path] !== undefined) : undefined;
-    const mrIids = this.props.files.notebooks ?
-      this.props.files.notebooks.map(path => {
+    const alerts = this.props.paths ?
+      this.props.paths.map(path => this.props.files.modifiedFiles[path] !== undefined) : undefined;
+    const mrIids = this.props.paths ?
+      this.props.paths.map(path => {
         if (!this.props.files.modifiedFiles[path]) return [];
         return this.props.files.modifiedFiles[path].map((mrInfo, i) => {
           return <Link key={i} to={`${this.props.mrOverviewUrl}/${mrInfo.mrIid}`}>&nbsp;[{mrInfo.source_branch}]</Link>;
         });
       }) : undefined;
 
+    return [
+      <ImageBuildInfo key="imagebuild" imageBuild={this.props.imageBuild}
+        externalUrl={this.props.externalUrl}
+        onProjectRefresh={this.props.onProjectRefresh} />,
+      <FileFolderList key="filelist"
+        paths={this.props.paths}
+        alerts={alerts}
+        mrIids={mrIids}
+        emptyView={this.props.launchNotebookServerButton} />
+    ]
+  }
+}
+
+class ProjectFilesCategorizedList extends Component {
+  render() {
+
     return <Switch>
       <Route path={this.props.notebooksUrl} render={props => {
-        return <FileFolderList
+        return <NotebookFolderList
+          externalUrl={this.props.externalUrl}
+          imageBuild={this.props.imageBuild}
+          onProjectRefresh={this.props.onProjectRefresh}
           paths={this.props.files.notebooks}
-          alerts={alerts}
-          mrIids={mrIids}
-          emptyView={this.props.launchNotebookServerButton}
+          files={this.props.files}
+          launchNotebookServerButton={this.props.launchNotebookServerButton}
         /> }}
       />
       <Route path={this.props.dataUrl} render={props => <FileFolderList paths={this.props.files.data} /> } />
