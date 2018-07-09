@@ -385,27 +385,37 @@ class FileFolderList extends Component {
   }
 }
 
-class NotebookFolderList extends Component {
+class AnnotatedFileFolderList extends Component {
   render() {
     const alerts = this.props.paths ?
-      this.props.paths.map(path => this.props.files.modifiedFiles[path] !== undefined) : undefined;
+      this.props.paths.map(path => this.props.annotations.modifiedFiles[path] !== undefined) : undefined;
     const mrIids = this.props.paths ?
       this.props.paths.map(path => {
-        if (!this.props.files.modifiedFiles[path]) return [];
-        return this.props.files.modifiedFiles[path].map((mrInfo, i) => {
+        if (!this.props.annotations.modifiedFiles[path]) return [];
+        return this.props.annotations.modifiedFiles[path].map((mrInfo, i) => {
           return <Link key={i} to={`${this.props.mrOverviewUrl}/${mrInfo.mrIid}`}>&nbsp;[{mrInfo.source_branch}]</Link>;
         });
       }) : undefined;
+    return <FileFolderList key="filelist"
+      paths={this.props.paths}
+      alerts={alerts}
+      mrIids={mrIids}
+      linkUrl={this.props.linkUrl}
+      emptyView={this.props.emptyView} />
+  }
+}
 
+class NotebookFolderList extends Component {
+  render() {
     return [
       <ImageBuildInfo key="imagebuild" imageBuild={this.props.imageBuild}
         externalUrl={this.props.externalUrl}
         onProjectRefresh={this.props.onProjectRefresh} />,
-      <FileFolderList key="filelist"
+      <AnnotatedFileFolderList key="filelist"
         paths={this.props.paths}
-        alerts={alerts}
-        mrIids={mrIids}
+        annotations={this.props.files}
         linkUrl={this.props.filesUrl}
+        mrOverviewUrl={this.props.mrOverviewUrl}
         emptyView={this.props.launchNotebookServerButton} />
     ]
   }
@@ -413,6 +423,7 @@ class NotebookFolderList extends Component {
 
 class ProjectFilesCategorizedList extends Component {
   render() {
+    const annotations = this.props.files;
     return <Switch>
       <Route path={this.props.notebooksUrl} render={props => {
         return <NotebookFolderList
@@ -427,12 +438,17 @@ class ProjectFilesCategorizedList extends Component {
         />} }
       />
       <Route path={this.props.dataUrl} render={props =>
-        <FileFolderList paths={this.props.files.data} linkUrl={this.props.lineagesUrl} />}
+        <AnnotatedFileFolderList paths={this.props.files.data} annotations={annotations}
+          linkUrl={this.props.lineagesUrl} mrOverviewUrl={this.props.mrOverviewUrl} />}
       />
       <Route path={this.props.workflowsUrl} render={props =>
-        <FileFolderList paths={this.props.files.workflows} linkUrl={this.props.lineagesUrl} />}
+        <AnnotatedFileFolderList paths={this.props.files.workflows} annotations={annotations}
+          linkUrl={this.props.lineagesUrl} mrOverviewUrl={this.props.mrOverviewUrl} />}
       />
-      <Route render={props => <FileFolderList paths={this.props.files.all} linkUrl={this.props.lineagesUrl} />} />
+      <Route render={props =>
+        <AnnotatedFileFolderList paths={this.props.files.all} annotations={annotations}
+          linkUrl={this.props.lineagesUrl} mrOverviewUrl={this.props.mrOverviewUrl} />}
+      />
     </Switch>
   }
 }
