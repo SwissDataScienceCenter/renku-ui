@@ -1,19 +1,17 @@
 import {alertAPIErrors, API_ERRORS, renkuFetch} from './renkuFetch';
 import { payload } from './initRenkuProject';
 
-const SPECIAL_FOLDERS = {
-  data: 'data',
-  notebooks: 'notebooks',
-  workflows: 'workflows',
+const FileCategories = {
+  data: (path) => path.startsWith('data'),
+  notebooks: (path) => path.endsWith('ipynb')
 };
 
-function groupedFiles(files, options, projectFiles) {
+function groupedFiles(files, projectFiles) {
   projectFiles = (projectFiles != null) ? projectFiles : {};
-  Object.keys(SPECIAL_FOLDERS)
-    .filter((key) => options[key])
-    .forEach((folderKey) => {
-      projectFiles[folderKey] = files.filter((filePath) => filePath.indexOf(folderKey) === 0)
-    });
+  Object.keys(FileCategories).forEach((cat) => {
+    projectFiles[cat] = files.filter(FileCategories[cat])
+  });
+  projectFiles['all'] = files;
   return projectFiles
 }
 
@@ -78,7 +76,7 @@ class GitlabClient {
           .filter((treeObj) => treeObj.type === 'blob')
           .map((treeObj) => treeObj.path);
 
-        project.files = groupedFiles(files, options, project.files);
+        project.files = groupedFiles(files, project.files);
       }
       return project;
     })
