@@ -152,15 +152,6 @@ class MergeRequestSuggestions extends Component {
     e.preventDefault();
     onCreateMergeRequest(branch);
   }
-  getCreateMRButton(branch) {
-    return (
-      <Button color="success" onClick={(e) => {
-        e.preventDefault();
-        this.props.onCreateMergeRequest(branch)
-      }}
-      >Create merge request</Button>
-    );
-  }
 
   render() {
     const mrSuggestions = this.props.suggestedMRBranches.map((branch, i) => {
