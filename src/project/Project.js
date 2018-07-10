@@ -244,7 +244,7 @@ class View extends Component {
           newMRiid = d.iid;
           return this.fetchAll()
         })
-        .then(() => this.props.history.push(`/projects/${core.id}/mergeRequests/${newMRiid}`))
+        .then(() => this.props.history.push(`${this.subUrls().mrOverviewUrl}/${newMRiid}`))
     },
     onProjectRefresh: (e) => {
       e.preventDefault();

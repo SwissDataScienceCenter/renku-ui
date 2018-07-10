@@ -43,7 +43,7 @@ class MergeRequestContainer extends Component {
     this.props.client.mergeMergeRequest(this.props.projectId, this.props.iid)
       .then(() => {
         this.props.updateProjectState();
-        this.props.history.push(`/projects/${this.props.projectId}/mergeRequests`)
+        this.props.history.push(`/projects/${this.props.projectId}/pending`)
       });
   }
 
@@ -54,7 +54,7 @@ class MergeRequestContainer extends Component {
   render() {
 
     const externalMROverviewUrl = `${this.props.externalUrl}/merge_requests`;
-    const externalMRUrl = `${this.props.externalMROverviewUrl}/${this.props.iid}/diffs`;
+    const externalMRUrl = `${externalMROverviewUrl}/${this.props.iid}/diffs`;
 
     const notebookComparisonView = (change, i) => {
       return <NotebookComparisonContainer
