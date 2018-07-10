@@ -584,13 +584,9 @@ class ProjectSettings extends Component {
             tag_list={this.props.system.tag_list}
             onProjectTagsChange={this.props.onProjectTagsChange}
             settingsReadOnly={this.props.settingsReadOnly} />
-        </Col>
-        <Col xs={12} md={10} lg={6}><RepositoryUrls {...this.props} /></Col>
-      </Row>
-      <Row>
-        <Col xs={12} md={10} lg={6}>
           <ProjectDescription {...this.props}/>
         </Col>
+        <Col xs={12} md={10} lg={6}><RepositoryUrls {...this.props} /></Col>
       </Row>
     </Col>
   }
