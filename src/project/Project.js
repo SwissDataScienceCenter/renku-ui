@@ -112,15 +112,19 @@ class View extends Component {
     // For exact matches, we strip the trailing / from the baseUrl
     const match = this.props.match;
     const baseUrl = match.isExact ? match.url.slice(0, -1) : match.url;
+    const filesUrl = `${baseUrl}/files`;
 
     return {
       overviewUrl: `${baseUrl}/`,
       kusUrl: `${baseUrl}/kus`,
       kuUrl: `${baseUrl}/kus/:kuIid(\\d+)`,
-      notebooksUrl: `${baseUrl}/notebooks`,
-      notebookUrl: `${baseUrl}/notebooks/:notebookPath`,
-      dataUrl: `${baseUrl}/data`,
-      datumUrl: `${baseUrl}/data/:datumPath+`,
+      filesUrl: `${filesUrl}`,
+      lineagesUrl: `${filesUrl}/lineage`,
+      lineageUrl: `${filesUrl}/lineage/:filePath+`,
+      notebooksUrl: `${filesUrl}/notebooks`,
+      notebookUrl: `${filesUrl}/notebooks/:notebookPath`,
+      dataUrl: `${filesUrl}/data`,
+      workflowsUrl: `${filesUrl}/workflows`,
       settingsUrl: `${baseUrl}/settings`,
       mrOverviewUrl: `${baseUrl}/pending`,
       mrUrl: `${baseUrl}/pending/:mrIid`,
@@ -196,7 +200,7 @@ class View extends Component {
         projectPath={this.projectState.get('core.path_with_namespace')}/>,
 
       lineageView: (p) => <FileLineage key="lineage" {...subProps}
-        path={`data/${p.match.params.datumPath}`} />,
+        path={p.match.params.filePath} />,
 
       launchNotebookServerButton: <LaunchNotebookServerButton key= "launch notebook" {...subProps}
         projectPath={this.projectState.get('core.path_with_namespace')}/>,
