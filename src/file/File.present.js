@@ -70,7 +70,13 @@ class LaunchNotebookButton extends React.Component {
       className={className}
       color="primary" onClick={event => {
         event.preventDefault();
-        window.open(props.deploymentUrl)
+        fetch(props.deploymentUrl, {
+          method: 'POST',
+          body: JSON.stringify({
+            gitlabToken: this.props.gitlabToken
+          })
+        })
+          .then(() => window.open(props.deploymentUrl));
       }}>
       {label}
     </Button>
@@ -87,12 +93,13 @@ const JupyterNotebookPresent = props => {
       <Col>
         <LaunchNotebookButton
           className="deployButton float-right"
-          key="launchbutton" deploymentUrl={props.deploymentUrl} label="Launch Notebook"  />
+          key="launchbutton" deploymentUrl={props.deploymentUrl}
+          gitlabToken={props.gitlabToken} label="Launch Notebook"  />
       </Col>
     </Row>,
     <Row key="notebook">
       <Col>
-        <StyledNotebook key="notebook" notebook={props.notebook} showCode={true} />
+        <StyledNotebook key="notebook" notebook={props.notebook} showCode={true}/>
       </Col>
     </Row>
   ]
