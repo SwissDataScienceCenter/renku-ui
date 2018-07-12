@@ -71,12 +71,18 @@ class LaunchNotebookButton extends React.Component {
       color="primary" onClick={event => {
         event.preventDefault();
         fetch(props.deploymentUrl, {
-          method: 'POST',
-          body: JSON.stringify({
-            gitlabToken: this.props.gitlabToken
-          })
+          method: 'GET'
         })
-          .then(() => window.open(props.deploymentUrl));
+        .then(() => {
+          fetch(props.deploymentUrl, {
+            method: 'POST',
+            credentials: 'include',
+            body: JSON.stringify({
+              gitlabToken: this.props.gitlabToken
+            })
+          }).then(() => window.open(props.deploymentUrl));
+        })
+
       }}>
       {label}
     </Button>

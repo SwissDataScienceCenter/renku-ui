@@ -247,7 +247,7 @@ class GitlabClient {
     if (commitSha === 'latest') {
       commitSha = await (this.getCommits(projectId).then(commits => commits[0].id));
     }
-    return `${this._jupyterhub_url}/services/notebooks/${projectPath}/${commitSha}${filePath}?branch=${ref}`
+    return `${this._jupyterhub_url}/services/notebooks/${projectPath}/${commitSha}${filePath}`
   }
 
   _modifiyIssue(projectId, issueIid, body) {
