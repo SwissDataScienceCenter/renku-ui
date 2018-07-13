@@ -54,4 +54,4 @@ deploy:
     skip_cleanup: true
     script: bash travis-deploy.sh
     on:
-      branch: master
+      branch: gateway-integration-renku
