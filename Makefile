@@ -59,8 +59,9 @@ test/%: tag/%
 login:
 	@echo "${DOCKER_PASSWORD}" | docker login -u="${DOCKER_USERNAME}" --password-stdin ${DOCKER_REGISTRY}
 
-dev:
-	@echo "You might want to edit ''./public/config.json'. Happy Hacking!!!"
+dev-docker:
+	echo '{"BASE_URL": "http://localhost:3000", "JUPYTERHUB_URL": "http://jupyterhub.renku.build", "GATEWAY_URL": "http://localhost:5000" }' > ./public/config.json
+
 	@echo "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 	@echo "Note that currently the dev setting of the"
 	@echo "ui is assuming that one is developing"
@@ -69,3 +70,16 @@ dev:
 	@echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
 	sleep 5
 	npm start
+
+dev-minikube:
+	echo '{"BASE_URL": "http://localhost:3000", "JUPYTERHUB_URL": "http://$(shell minikube ip)/jupyterhub", "GATEWAY_URL": "http://localhost:5000" }' > ./public/config.json
+
+	@echo "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	@echo "Note that currently the dev setting of the"
+	@echo "ui is assuming that one is developing"
+	@echo "against a locally running version of the"
+	@echo "gateway too (http://localhost:5000)"
+	@echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
+	sleep 5
+	npm start
+
