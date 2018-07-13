@@ -116,47 +116,71 @@ class Schema {
   }
 }
 
+class ReduxStateModel {
+
+  constructor(owner, stateBinding, stateHolder, initialState) {
+    this.stateBinding = stateBinding; // We know stateBinding === StateKind.REDUX
+    this.reduxStore = stateHolder;
+    // Initialize state
+    const updateObj = updateObjectFromObject(initialState, this.reduxStore.getState());
+    this.immutableUpdate(updateObj, null);
+  }
+
+  getStateObject() { return this.reduxStore.getState(); }
+
+  immutableUpdate(updateObj, callback) {
+    this.reduxStore.dispatch({
+      type: ActionType.UPDATE,
+      payload: updateObj,
+    });
+
+    // We provide this just to keep the interface for the react state and the redux case similar.
+    if (callback) {
+      console.error('Unnecessary callback: The update of the REDUX store is synchronous.');
+      callback.call();
+    }
+  }
+}
+
+class ReactStateModel {
+
+  constructor(owner, stateBinding, stateHolder, initialState) {
+    this.owner = owner
+    this.stateBinding = stateBinding; // We know stateBinding === StateKind.REACT
+    this.reactComponent = stateHolder;
+    this.reactComponent.state = initialState;
+  }
+
+  getStateObject() {return this.reactComponent.state; }
+
+  immutableUpdate(updateObj, callback) {
+    this.reactComponent.setState((prevState) => immutableUpdate(prevState, updateObj), callback);
+  }
+
+}
+
 class StateModel {
   constructor(schema, stateBinding, stateHolder, initialState) {
-
-    this._updatingPropVal = SpecialPropVal.UPDATING;
-
-    if (!stateHolder && stateBinding === StateKind.REDUX) {
-      stateHolder = createStore(schema.reducer(), this.constructor.name)
-    }
-
-    if (stateBinding === StateKind.REDUX) {
-      this.reduxStore = stateHolder;
-    }
-    else if (stateBinding === StateKind.REACT) {
-      this.reactComponent = stateHolder;
-    }
-    else {
-      throw new Error(`State binding ${stateBinding} not implemented`)
-    }
-
     this.stateBinding = stateBinding;
     this.schema = schema;
 
+    this._updatingPropVal = SpecialPropVal.UPDATING;
     const initializedState = initialState ? initialState : schema.createInitialized();
 
-    if (stateBinding === StateKind.REACT) {
-      this.reactComponent.state = initializedState;
-    }
-    else if (stateBinding === StateKind.REDUX) {
-      this.setObject(initializedState);
+    if (stateBinding === StateKind.REDUX) {
+      if (!stateHolder) stateHolder = createStore(schema.reducer(), this.constructor.name)
+      this._stateModel = new ReduxStateModel(this, stateBinding, stateHolder, initializedState)
+      this.reduxStore = this._stateModel.reduxStore;
+    } else if (stateBinding === StateKind.REACT) {
+      this._stateModel = new ReactStateModel(this, stateBinding, stateHolder, initializedState)
+      this.reactComponent = this._stateModel.reactComponent;
+    } else {
+      throw new Error(`State binding ${stateBinding} not implemented`)
     }
   }
 
   get(propertyAccessorString) {
-    let stateObject;
-    if (this.stateBinding === StateKind.REDUX) {
-      stateObject = this.reduxStore.getState();
-    }
-    else if (this.stateBinding === StateKind.REACT) {
-      stateObject = this.reactComponent.state;
-    }
-
+    const stateObject = this._stateModel.getStateObject();
     if (!propertyAccessorString) {
       return stateObject;
     }
@@ -191,22 +215,7 @@ class StateModel {
     //   });
     //   throw(errorString);
     // }
-
-    if (this.stateBinding === StateKind.REACT) {
-      this.reactComponent.setState((prevState) => immutableUpdate(prevState, updateObj), callback);
-    }
-    else if (this.stateBinding === StateKind.REDUX) {
-      this.reduxStore.dispatch({
-        type: ActionType.UPDATE,
-        payload: updateObj,
-      });
-
-      // We provide this just to keep the interface for the react state and the redux case similar.
-      if (callback) {
-        console.error('Unnecessary callback: The update of the REDUX store is synchronous.');
-        callback.call();
-      }
-    }
+    this._stateModel.immutableUpdate(updateObj, callback);
   }
 
   validate() {
