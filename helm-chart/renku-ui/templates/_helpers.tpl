@@ -35,7 +35,7 @@ Create chart name and version as used by the chart label.
 Define URL protocol.
 */}}
 {{- define "renku-ui.protocol" -}}
-{{- if .Values.global.renku.https -}}
+{{- if .Values.global.useHTTPS -}}
 https
 {{- else -}}
 http
