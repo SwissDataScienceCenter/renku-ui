@@ -36,6 +36,8 @@ spec:
               value: {{ .Values.gitlabClientId | default "renku-ui" | quote }}
             - name: JUPYTERHUB_URL
               value: {{ .Values.jupyterhubUrl | default (printf "%s://jupyterhub.%s" (include "ui.protocol" .) .Values.global.renku.domain) | quote }}
+            - name: GATEWAY_URL
+              value: {{ .Values.gatewayUrl | default (printf "%s://gateway.%s" (include "ui.protocol" .) .Values.global.renku.domain) | quote }}
           livenessProbe:
             httpGet:
               path: /

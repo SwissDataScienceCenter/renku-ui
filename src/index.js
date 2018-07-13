@@ -23,7 +23,7 @@ configPromise.then((res) => {
     const store = createStore(reducer);
 
     const client = new GitlabClient(
-      params.GATEWAY_URL + '/api/v4/',
+      params.GATEWAY_URL + '/v4/',
       cookies.get('access_token'),
       'bearer',
       params.JUPYTERHUB_URL
