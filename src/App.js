@@ -1,4 +1,3 @@
-
 /*!
  * Copyright 2017 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
@@ -148,6 +147,7 @@ class RenkuNavBar extends Component {
                   {kuDropdown}
                 </div>
               </li>
+              <RenkuToolbarItemUser loggedIn={loggedIn} userAvatar={this.props.userAvatar} user={this.props.user} />
             </ul>
           </div>
         </nav>
