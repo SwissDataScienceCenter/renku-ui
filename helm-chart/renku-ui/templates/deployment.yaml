@@ -1,22 +1,22 @@
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  name: {{ template "renku-ui.fullname" . }}
+  name: {{ template "ui.fullname" . }}
   labels:
-    app: {{ template "renku-ui.name" . }}
-    chart: {{ template "renku-ui.chart" . }}
+    app: {{ template "ui.name" . }}
+    chart: {{ template "ui.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "renku-ui.name" . }}
+      app: {{ template "ui.name" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ template "renku-ui.name" . }}
+        app: {{ template "ui.name" . }}
         release: {{ .Release.Name }}
     spec:
       containers:
@@ -29,13 +29,13 @@ spec:
               protocol: TCP
           env:
             - name: BASE_URL
-              value: {{ .Values.baseUrl | default (printf "%s://%s" (include "renku-ui.protocol" .) .Values.global.renku.domain) | quote }}
+              value: {{ .Values.baseUrl | default (printf "%s://%s" (include "ui.protocol" .) .Values.global.renku.domain) | quote }}
             - name: GITLAB_URL
-              value: {{ .Values.gitlabUrl | default (printf "%s://gitlab.%s" (include "renku-ui.protocol" .) .Values.global.renku.domain) | quote }}
+              value: {{ .Values.gitlabUrl | default (printf "%s://gitlab.%s" (include "ui.protocol" .) .Values.global.renku.domain) | quote }}
             - name: GITLAB_CLIENT_ID
               value: {{ .Values.gitlabClientId | default "renku-ui" | quote }}
             - name: JUPYTERHUB_URL
-              value: {{ .Values.jupyterhubUrl | default (printf "%s://jupyterhub.%s" (include "renku-ui.protocol" .) .Values.global.renku.domain) | quote }}
+              value: {{ .Values.jupyterhubUrl | default (printf "%s://jupyterhub.%s" (include "ui.protocol" .) .Values.global.renku.domain) | quote }}
           livenessProbe:
             httpGet:
               path: /
