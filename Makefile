@@ -60,26 +60,9 @@ login:
 	@echo "${DOCKER_PASSWORD}" | docker login -u="${DOCKER_USERNAME}" --password-stdin ${DOCKER_REGISTRY}
 
 dev-docker:
-	echo '{"BASE_URL": "http://localhost:3000", "JUPYTERHUB_URL": "http://jupyterhub.renku.build", "GATEWAY_URL": "http://localhost:5000" }' > ./public/config.json
-
-	@echo "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-	@echo "Note that currently the dev setting of the"
-	@echo "ui is assuming that one is developing"
-	@echo "against a locally running version of the"
-	@echo "gateway too (http://localhost:5000)"
-	@echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
-	sleep 5
+	echo '{"BASE_URL": "http://localhost:3000", "JUPYTERHUB_URL": "http://jupyterhub.renku.build", "GATEWAY_URL": "http://gateway.renku.build/api" }' > ./public/config.json
 	npm start
 
-dev-minikube:
-	echo '{"BASE_URL": "http://localhost:3000", "JUPYTERHUB_URL": "http://$(shell minikube ip)/jupyterhub", "GATEWAY_URL": "http://localhost:5000" }' > ./public/config.json
-
-	@echo "\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-	@echo "Note that currently the dev setting of the"
-	@echo "ui is assuming that one is developing"
-	@echo "against a locally running version of the"
-	@echo "gateway too (http://localhost:5000)"
-	@echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n"
-	sleep 5
-	npm start
-
+# You need to install telepresence before you can run this command: https://www.telepresence.io/reference/install
+dev:
+	./run-telepresence.sh
