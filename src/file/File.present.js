@@ -70,19 +70,16 @@ class LaunchNotebookButton extends React.Component {
       className={className}
       color="primary" onClick={event => {
         event.preventDefault();
-        fetch(props.deploymentUrl, {
-          method: 'GET'
-        })
-        .then(() => {
+        window.open(props.deploymentUrl);
+        // TODO: Temporary fix for notebook launching!
+        // TODO: Improve as soon as communication between
+        // TODO: ui and notebook service is routed through gateway.
+        setTimeout(() => {
           fetch(props.deploymentUrl, {
             method: 'POST',
             credentials: 'include',
-            body: JSON.stringify({
-              gitlabToken: this.props.gitlabToken
-            })
-          }).then(() => window.open(props.deploymentUrl));
-        })
-
+            body: JSON.stringify({})
+          })}, 5000);
       }}>
       {label}
     </Button>
@@ -99,8 +96,7 @@ const JupyterNotebookPresent = props => {
       <Col>
         <LaunchNotebookButton
           className="deployButton float-right"
-          key="launchbutton" deploymentUrl={props.deploymentUrl}
-          gitlabToken={props.gitlabToken} label="Launch Notebook"  />
+          key="launchbutton" deploymentUrl={props.deploymentUrl} label="Launch Notebook"  />
       </Col>
     </Row>,
     <Row key="notebook">

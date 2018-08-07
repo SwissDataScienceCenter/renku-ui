@@ -51,8 +51,7 @@ class JupyterNotebookContainer extends Component {
   render() {
     return <JupyterNotebookPresent
       notebook={this.props.notebook}
-      deploymentUrl={this.state.deploymentUrl}
-      gitlabToken={this.props.client._token}/>
+      deploymentUrl={this.state.deploymentUrl}/>
   }
 }
 
