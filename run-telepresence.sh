@@ -34,4 +34,4 @@ tee > ./public/config.json << EOF
   "GATEWAY_URL": "http://${MINIKUBE_IP}/api"
 }
 EOF
-BROWSER=none telepresence --swap-deployment renku-ui --namespace renku --expose 3000:80 --run npm start
+BROWSER=none telepresence --swap-deployment renku-ui --namespace renku --method inject-tcp --expose 3000:80 --run npm start
