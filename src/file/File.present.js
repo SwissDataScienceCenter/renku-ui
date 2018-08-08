@@ -70,7 +70,16 @@ class LaunchNotebookButton extends React.Component {
       className={className}
       color="primary" onClick={event => {
         event.preventDefault();
-        window.open(props.deploymentUrl)
+        window.open(props.deploymentUrl);
+        // TODO: Temporary fix for notebook launching!
+        // TODO: Improve as soon as communication between
+        // TODO: ui and notebook service is routed through gateway.
+        setTimeout(() => {
+          fetch(props.deploymentUrl, {
+            method: 'POST',
+            credentials: 'include',
+            body: JSON.stringify({})
+          })}, 5000);
       }}>
       {label}
     </Button>
@@ -92,7 +101,7 @@ const JupyterNotebookPresent = props => {
     </Row>,
     <Row key="notebook">
       <Col>
-        <StyledNotebook key="notebook" notebook={props.notebook} showCode={true} />
+        <StyledNotebook key="notebook" notebook={props.notebook} showCode={true}/>
       </Col>
     </Row>
   ]
