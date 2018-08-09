@@ -350,8 +350,6 @@ class FileFolderTableRow extends Component {
 class FileFolderList extends Component {
   render() {
     const paths = this.props.paths || [];
-    const emptyView = this.props.emptyView || <p></p>;
-    if (paths.length < 1) return emptyView;
 
     const alertIcon = <div className="simple-tooltip">
       <FontAwesomeIcon icon={faExclamationCircle} />
@@ -370,9 +368,12 @@ class FileFolderList extends Component {
     const linkUrl = this.props.linkUrl;
     const rows = paths.map((p, i) =>
       <FileFolderTableRow key={p} path={p} alert={alerts[i]} mrIid={mrIids[i]} linkUrl={linkUrl} />)
-    return <Table>
-      <tbody>{rows}</tbody>
-    </Table>
+    return <span>
+      {this.props.serverLaunchButton}
+      <Table>
+        <tbody>{rows}</tbody>
+      </Table>
+    </span>
   }
 }
 
@@ -392,7 +393,7 @@ class AnnotatedFileFolderList extends Component {
       alerts={alerts}
       mrIids={mrIids}
       linkUrl={this.props.linkUrl}
-      emptyView={this.props.emptyView} />
+      serverLaunchButton={this.props.serverLaunchButton} />
   }
 }
 
@@ -407,7 +408,7 @@ class NotebookFolderList extends Component {
         annotations={this.props.files}
         linkUrl={this.props.filesUrl}
         mrOverviewUrl={this.props.mrOverviewUrl}
-        emptyView={this.props.launchNotebookServerButton} />
+        serverLaunchButton={this.props.launchNotebookServerButton} />
     ]
   }
 }

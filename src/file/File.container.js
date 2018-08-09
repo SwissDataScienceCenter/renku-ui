@@ -67,7 +67,11 @@ class LaunchNotebookServerButton extends Component {
 
   render() {
     return (this.state.deploymentUrl != null) ?
-      <LaunchNotebookButton deploymentUrl={this.state.deploymentUrl} label="Launch Notebook Server" /> : null
+      <LaunchNotebookButton
+        className="deployButton float-left"
+        deploymentUrl={this.state.deploymentUrl}
+        label="Launch Notebook Server"
+      /> : null
   }
 }
 
