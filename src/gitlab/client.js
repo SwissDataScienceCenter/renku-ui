@@ -497,13 +497,14 @@ function carveProject(projectJson) {
   const result = {metadata: {core: {}, visibility: {}, system: {}}, all: projectJson};
   result['metadata']['visibility']['level'] = projectJson['visibility'];
 
-  // We use try and catch here because the command can go wrong at various levels permissions, project_access, ...
-  try {
-    result['metadata']['visibility']['accessLevel'] = projectJson.permissions.project_access.access_level
+  let accessLevel = 0;
+  if (projectJson.permissions.project_access) {
+    accessLevel = Math.max(accessLevel, projectJson.permissions.project_access.access_level)
   }
-  catch (TypeError) {
-    result['metadata']['visibility']['accessLevel'] = 0
+  if (projectJson.permissions.group_access) {
+    accessLevel = Math.max(accessLevel, projectJson.permissions.group_access.access_level)
   }
+  result['metadata']['visibility']['accessLevel'] = accessLevel
 
 
   result['metadata']['core']['created_at'] = projectJson['created_at'];
