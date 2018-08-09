@@ -122,7 +122,7 @@ class View extends Component {
       lineagesUrl: `${filesUrl}/lineage`,
       lineageUrl: `${filesUrl}/lineage/:filePath+`,
       notebooksUrl: `${filesUrl}/notebooks`,
-      notebookUrl: `${filesUrl}/notebooks/:notebookPath`,
+      notebookUrl: `${filesUrl}:filePath([^.]+.ipynb)`,
       dataUrl: `${filesUrl}/data`,
       workflowsUrl: `${filesUrl}/workflows`,
       settingsUrl: `${baseUrl}/settings`,
@@ -196,7 +196,7 @@ class View extends Component {
       /* TODO Should we handle each type of file or just have a generic project files viewer? */
 
       notebookView: (p) => <Notebook.Show key="notebook" {...subProps}
-        filePath={`/notebooks/${p.match.params.notebookPath}`}
+        filePath={p.match.params.filePath}
         projectPath={this.projectState.get('core.path_with_namespace')}/>,
 
       lineageView: (p) => <FileLineage key="lineage" {...subProps}
