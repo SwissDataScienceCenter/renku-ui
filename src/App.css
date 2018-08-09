@@ -122,3 +122,7 @@ body {
 .simple-tooltip:hover .tooltiptext {
   visibility: visible;
 }
+
+.deployButton {
+  margin-bottom: 10px;
+}
