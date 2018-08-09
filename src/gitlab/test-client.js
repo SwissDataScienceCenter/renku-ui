@@ -29,6 +29,15 @@ const methods = {
   getRepositoryTree: {
     responseData: []
   },
+  getMergeRequests: {
+    responseData: []
+  },
+  getBranches: {
+    responseData: []
+  },
+  getJobs: {
+    responseData: []
+  },
 };
 
 let client = {};
