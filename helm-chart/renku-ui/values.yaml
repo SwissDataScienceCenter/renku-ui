@@ -41,7 +41,6 @@ replicaCount: 1
 # gitlabClientId: "renku-ui"
 
 image:
-  name: renku/renku-ui
   repository: renku/renku-ui
   tag: latest
   pullPolicy: IfNotPresent
