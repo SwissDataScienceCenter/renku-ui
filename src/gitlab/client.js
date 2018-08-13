@@ -1,5 +1,5 @@
-import {alertAPIErrors, API_ERRORS, renkuFetch} from './renkuFetch';
-import { payload } from './initRenkuProject';
+import { alertAPIErrors, API_ERRORS, renkuFetch } from './renkuFetch';
+import { getPayload } from './initRenkuProject';
 
 const FileCategories = {
   data: (path) => path.startsWith('data'),
@@ -92,18 +92,17 @@ class GitlabClient {
     const headers = this.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return renkuFetch(`${this._baseUrl}/projects`, {
+    const postPromise = renkuFetch(`${this._baseUrl}/projects`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(gitlabProject)
-    })
-    // TODO: This way of creating a proper renku project should be replaced ASAP by either
-    // TODO: using the same template files served from a public URL that the cli uses, or by
-    // TODO: calling renku init on the gateway and creating the initial commit in the gateway.
-      .then((data) => {
-        this.postCommit(data.id, payload);
-        return data;
-      })
+    });
+
+    const payloadPromise = getPayload(gitlabProject.name);
+
+    return Promise.all([postPromise, payloadPromise]).then(([data, payload]) => {
+      return this.postCommit(data.id, payload).then(() => data);
+    });
   }
 
   postCommit(projectId, commitPayload) {
