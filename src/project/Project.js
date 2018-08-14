@@ -117,6 +117,7 @@ class View extends Component {
     return {
       overviewUrl: `${baseUrl}/`,
       kusUrl: `${baseUrl}/kus`,
+      kuNewUrl: `${baseUrl}/ku_new`,
       kuUrl: `${baseUrl}/kus/:kuIid(\\d+)`,
       filesUrl: `${filesUrl}`,
       lineagesUrl: `${filesUrl}/lineage`,
@@ -187,7 +188,7 @@ class View extends Component {
     const ConnectedMergeRequestList = connect(mapStateToProps)(MergeRequestList);
 
     return {
-      kuList: <Ku.List key="kus" {...subProps} kuBaseUrl={this.subUrls().kusUrl} />,
+      kuList: <Ku.List key="kus" {...subProps} urlMap={this.subUrls()} />,
 
       kuView: (p) => <Ku.View key="ku" {...subProps}
         kuIid={p.match.params.kuIid}

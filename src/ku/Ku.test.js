@@ -38,10 +38,16 @@ describe('rendering', () => {
     ReactDOM.render(<Ku.New location={ {pathname: '/projects/1/ku_new'} } />, div);
   });
   it('renders list without crashing', () => {
+    const baseUrl = "base";
+    const urlMap = {
+      kusUrl: `${baseUrl}/kus`,
+      kuNewUrl: `${baseUrl}/ku_new`,
+      kuUrl: `${baseUrl}/kus/:kuIid(\\d+)`,
+    };
     const div = document.createElement('div');
     ReactDOM.render(
       <MemoryRouter>
-        <Ku.List client={client}/>
+        <Ku.List client={client} urlMap={urlMap} />
       </MemoryRouter>
       , div);
   });
