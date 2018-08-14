@@ -303,7 +303,7 @@ class KuListRow extends Component {
         <Switch>
           <Route exact path={kuUrl}
             render={props =><KuListRowContent active={true} kuUrl={kuUrl} {...this.props} /> }/>
-          <Route path={this.props.kusUrl}
+          <Route path={this.props.kuBaseUrl}
             render={props => <KuListRowContent active={false} kuUrl={kuUrl} {...this.props} /> }/>
         </Switch>
       </Row>
@@ -314,9 +314,23 @@ class KuListRow extends Component {
 class KuList extends Component {
   render() {
     const kus = this.props.kus;
+    const hasUser = this.props.user && this.props.user.id != null;
     const rows = kus.map((d, i) =>
-      <KuListRow key={i} {...d} kuBaseUrl={this.props.kuBaseUrl} projectId={this.props.projectId}/>);
-    return <Row key="timeline"><Col xs={12}>{rows}</Col></Row>
+      <KuListRow key={i} {...d} kuBaseUrl={this.props.urlMap.kusUrl} projectId={this.props.projectId}/>);
+    return [
+      <Row key="header">
+        <Col sm={2} md={3}><h1>Kus</h1></Col>
+        <Col sm={2}>
+          {
+            (hasUser) ?
+              <Link className="btn btn-primary" role="button" to={this.props.urlMap.kuNewUrl}>New Ku</Link> :
+              <span></span>
+          }
+        </Col>
+      </Row>,
+      <Row key="spacer"><Col md={12}>&nbsp;</Col></Row>,
+      <Row key="kus"><Col xs={12}>{rows}</Col></Row>
+    ]
   }
 }
 
@@ -328,7 +342,6 @@ class List extends Component {
     this.store.dispatch(this.listKus());
   }
 
-
   listKus() {
     return (dispatch) => {
       return this.props.client.getProjectKus(this.props.projectId)
@@ -337,7 +350,7 @@ class List extends Component {
   }
 
   mapStateToProps(state, ownProps) {
-    return {...state, ...ownProps}
+    return {...{user: ownProps.user}, ...state, ...ownProps}
   }
 
   mapDispatchToProps(dispatch, ownProps) {
@@ -348,7 +361,8 @@ class List extends Component {
     const VisibleKuList = connect(this.mapStateToProps, this.mapDispatchToProps)(KuList);
     return [
       <Provider key="new" store={this.store}>
-        <VisibleKuList kuBaseUrl={this.props.kuBaseUrl} projectId={this.props.projectId}/>
+        <VisibleKuList urlMap={this.props.urlMap}
+          projectId={this.props.projectId} {...this.props}/>
       </Provider>
     ]
   }
