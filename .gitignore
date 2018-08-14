@@ -1,3 +1,6 @@
+# Machine-specific configuration files
+public/config.json
+
 # Logs
 logs
 *.log
