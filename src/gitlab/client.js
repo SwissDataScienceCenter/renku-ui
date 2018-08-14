@@ -158,13 +158,13 @@ class GitlabClient {
   }
 
 
-  getProjectFile(projectId, path, ref='master') {
+  getProjectFile(projectId, path, ref='master', alertOnErr=true) {
     let headers = this.getBasicHeaders();
     const encodedPath = encodeURIComponent(path);
     return renkuFetch(`${this._baseUrl}/projects/${projectId}/repository/files/${encodedPath}/raw?ref=${ref}`, {
       method: 'GET',
       headers: headers
-    }, 'text')
+    }, 'text', alertOnErr)
   }
 
   getProjectKus(projectId) {

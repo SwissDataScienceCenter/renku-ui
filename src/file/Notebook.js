@@ -25,13 +25,14 @@
 
 import React, { Component } from 'react';
 
-import { JupyterNotebook } from './File.container'
+import { JupyterNotebook } from './File.container';
+import { API_ERRORS } from '../gitlab/renkuFetch';
 
 
 class Show extends Component {
   constructor(props) {
     super(props);
-    this.state = {notebook: null}
+    this.state = {notebook: null, error: null}
   }
 
   // TODO: Write a wrapper to make promises cancellable to avoid usage of this._isMounted
@@ -44,14 +45,26 @@ class Show extends Component {
 
   retrieveNotebook() {
     const branchName = this.props.branchName || 'master';
-    this.props.client.getProjectFile(this.props.projectId, this.props.filePath, branchName)
+    this.props.client.getProjectFile(this.props.projectId, this.props.filePath, branchName, false)
+      .catch(e => {
+        if (e.case === API_ERRORS.notFoundError) {
+          return '{"error": "Notebook does not exist."}';
+        }
+        return '{"error": "Could not load notebook."}';
+      })
       .then(json => {
+        if (!this._isMounted) return;
+
         const notebook = JSON.parse(json);
-        if (this._isMounted) this.setState({notebook});
+        if (notebook.error != null)
+          this.setState({error: notebook.error});
+        else
+          this.setState({notebook});
       });
   }
 
   render() {
+    if (this.state.error != null) return <div>{this.state.error}</div>
     if (this.state.notebook == null) return <div>Loading...</div>
     return (<JupyterNotebook
       notebook={this.state.notebook}

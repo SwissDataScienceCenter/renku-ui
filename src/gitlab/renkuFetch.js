@@ -14,7 +14,7 @@ const API_ERRORS = {
 
 // Wrapper around fetch which will throw exceptions on all non 20x responses.
 // Adapted from https://github.com/github/fetch/issues/155
-function renkuFetch(url, options, returnType='json', alert=true) {
+function renkuFetch(url, options, returnType='json', alertOnErr=true) {
 
   // Add query parameters to URL instance. This will also work
   // if url is already an instance of URL. Note that this also encodes the URL
@@ -54,7 +54,7 @@ function renkuFetch(url, options, returnType='json', alert=true) {
     })
     // We alert on most errors already here, yet allow to turn this off.
     .catch((error) => {
-      if (alert) {
+      if (alertOnErr) {
         alertAPIErrors(error);
       }
       else {
