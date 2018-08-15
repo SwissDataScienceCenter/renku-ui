@@ -144,6 +144,8 @@ class KuViewHeader extends Component {
     const title = this.props.title || 'no title';
     const description = this.props.description || 'no description';
     const buttonText = this.props.state === 'opened' ? 'close' : 'reopen';
+    const externalUrl = this.props.externalUrl;
+    const externalIssueUrl = `${externalUrl}/issues/${this.props.iid}`;
     return [
       <Row key="title">
         <Col xs={9}><h3>{title}</h3></Col>
@@ -152,7 +154,18 @@ class KuViewHeader extends Component {
             onClick={this.props.onKuStateChange}>{buttonText}</Button>
         </Col>
       </Row>,
-      <p key="lead" className="lead">{description}</p>
+      <Row key="details">
+        <Col xs={9}><p key="lead" className="lead">{description}</p></Col>
+        <Col xs={1}>
+          <div>
+            <a key="link"
+              target="_blank"
+              href={externalIssueUrl}
+              className="btn btn-primary" role="button">View in GitLab</a>
+          </div>
+        </Col>
+      </Row>,
+
     ]
   }
 }
