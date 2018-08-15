@@ -368,12 +368,9 @@ class FileFolderList extends Component {
     const linkUrl = this.props.linkUrl;
     const rows = paths.map((p, i) =>
       <FileFolderTableRow key={p} path={p} alert={alerts[i]} mrIid={mrIids[i]} linkUrl={linkUrl} />)
-    return <span>
-      {this.props.serverLaunchButton}
-      <Table>
-        <tbody>{rows}</tbody>
-      </Table>
-    </span>
+    return <Table>
+      <tbody>{rows}</tbody>
+    </Table>
   }
 }
 
@@ -388,12 +385,19 @@ class AnnotatedFileFolderList extends Component {
           return <Link key={i} to={`${this.props.mrOverviewUrl}/${mrInfo.mrIid}`}>&nbsp;[{mrInfo.source_branch}]</Link>;
         });
       }) : undefined;
-    return <FileFolderList key="filelist"
-      paths={this.props.paths}
-      alerts={alerts}
-      mrIids={mrIids}
-      linkUrl={this.props.linkUrl}
-      serverLaunchButton={this.props.serverLaunchButton} />
+    const headertext = this.props.headertext || "Lineage and Usage";
+    return [
+      <div key="header" className="d-flex justify-content-between">
+        <div><h3>{headertext}</h3></div>
+        <div>{this.props.serverLaunchButton}</div>
+      </div>,
+      <FileFolderList key="filelist"
+        paths={this.props.paths}
+        alerts={alerts}
+        mrIids={mrIids}
+        linkUrl={this.props.linkUrl}
+        emptyView={this.props.emptyView} />
+    ]
   }
 }
 
@@ -404,6 +408,7 @@ class NotebookFolderList extends Component {
         externalUrl={this.props.externalUrl}
         onProjectRefresh={this.props.onProjectRefresh} />,
       <AnnotatedFileFolderList key="filelist"
+        headertext="Notebooks"
         paths={this.props.paths}
         annotations={this.props.files}
         linkUrl={this.props.filesUrl}
