@@ -242,11 +242,11 @@ class GitlabClient {
 
   // TODO: Once the gateway is up and running, the client should not need to be aware of the
   // TODO: JUPYTERHUB_URL anymore but simply query the notebook url from the gateway
-  async getNotebookServerUrl(projectId, projectPath, filePath='', commitSha='latest', ref='master') {
+  async getNotebookServerUrl(projectId, projectPath, commitSha='latest', ref='master') {
     if (commitSha === 'latest') {
       commitSha = await (this.getCommits(projectId).then(commits => commits[0].id));
     }
-    return `${this._jupyterhub_url}/services/notebooks/${projectPath}/${commitSha}${filePath}`
+    return `${this._jupyterhub_url}/services/notebooks/${projectPath}/${commitSha}`
   }
 
   _modifiyIssue(projectId, issueIid, body) {
@@ -497,13 +497,13 @@ function carveProject(projectJson) {
   result['metadata']['visibility']['level'] = projectJson['visibility'];
 
   let accessLevel = 0;
-  if (projectJson.permissions.project_access) {
+  if (projectJson.permissions && projectJson.permissions.project_access) {
     accessLevel = Math.max(accessLevel, projectJson.permissions.project_access.access_level)
   }
-  if (projectJson.permissions.group_access) {
+  if (projectJson.permissions && projectJson.permissions.group_access) {
     accessLevel = Math.max(accessLevel, projectJson.permissions.group_access.access_level)
   }
-  result['metadata']['visibility']['accessLevel'] = accessLevel
+  result['metadata']['visibility']['accessLevel'] = accessLevel;
 
 
   result['metadata']['core']['created_at'] = projectJson['created_at'];

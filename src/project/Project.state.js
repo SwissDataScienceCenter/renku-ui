@@ -71,14 +71,23 @@ class ProjectModel extends StateModel {
     return client.getProject(id, {notebooks:true, data:true})
       .then(d => {
         const files = d.files || this.get('files');
-        this.setObject({
+        const updatedState = {
           core: d.metadata.core,
           system: d.metadata.system,
           visibility: d.metadata.visibility,
           files: files
-        });
+        };
+        this.setObject(updatedState);
+        this.fetchNotebookServerUrl(client, id, updatedState);
         return d;
       })
+  }
+
+  fetchNotebookServerUrl(client, id, projectState) {
+    client.getNotebookServerUrl(id, projectState.core.path_with_namespace)
+      .then(notebookUrl => {
+        this.set('core.notebookServerUrl', notebookUrl);
+      });
   }
 
   fetchModifiedFiles(client, id) {

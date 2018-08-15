@@ -25,53 +25,32 @@ import { JupyterNotebookPresent, LaunchNotebookButton } from './File.present';
 import { ACCESS_LEVELS } from '../gitlab';
 
 
-function getNotebookServerUrl(component) {
-  // Accept paths starting with or without slash
-  let filePath = component.props.filePath;
-  if (filePath && filePath[0] !== '/') filePath = '/' + filePath;
-
-  component.props.client.getNotebookServerUrl(
-    component.props.projectId,
-    component.props.projectPath,
-    filePath
-  )
-    .then(notebookUrl => component.setState({deploymentUrl: notebookUrl}));
-}
-
 class JupyterNotebookContainer extends Component {
-  constructor(props){
-    super(props);
-    this.state = {deploymentUrl: undefined}
-  }
-
-  componentDidMount() {
-    if (this.props.accessLevel >= ACCESS_LEVELS.DEVELOPER) getNotebookServerUrl(this);
-  }
 
   render() {
+    let filePath = this.props.filePath;
+    if (filePath && filePath[0] !== '/') filePath = '/' + filePath;
+
+    const deploymentUrl = this.props.accessLevel >= ACCESS_LEVELS.DEVELOPER ?
+      `${this.props.notebookServerUrl}${filePath}` : null;
+
     return <JupyterNotebookPresent
       notebook={this.props.notebook}
-      deploymentUrl={this.state.deploymentUrl}/>
+      deploymentUrl={deploymentUrl}/>
   }
 }
 
 class LaunchNotebookServerButton extends Component {
-  constructor(props){
-    super(props);
-    this.state = {deploymentUrl: undefined}
-  }
-
-  componentDidMount() {
-    if (this.props.accessLevel >= ACCESS_LEVELS.DEVELOPER) getNotebookServerUrl(this);
-  }
-
   render() {
-    return (this.state.deploymentUrl != null) ?
-      <LaunchNotebookButton
-        className="deployButton float-left"
-        deploymentUrl={this.state.deploymentUrl}
-        label="Launch Notebook Server"
-      /> : null
+
+    const deploymentUrl = this.props.accessLevel >= ACCESS_LEVELS.DEVELOPER ? this.props.notebookServerUrl : null;
+
+    if (this.props.accessLevel < ACCESS_LEVELS.DEVELOPER) return null;
+    return <LaunchNotebookButton
+      className="btn btn-primary"
+      deploymentUrl={deploymentUrl}
+      label="Launch JupyterLab"
+    />;
   }
 }
 
