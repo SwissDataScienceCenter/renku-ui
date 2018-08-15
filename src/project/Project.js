@@ -171,10 +171,11 @@ class View extends Component {
     const accessLevel = this.projectState.get('visibility.accessLevel');
     const externalUrl = this.projectState.get('core.external_url');
     const updateProjectView = this.forceUpdate.bind(this);
+    const notebookServerUrl = this.projectState.get('core.notebookServerUrl');
 
     // Access to the project state could be given to the subComponents by connecting them here to
     // the projectStore. This is not yet necessary.
-    const subProps = {...ownProps, projectId, accessLevel, externalUrl};
+    const subProps = {...ownProps, projectId, accessLevel, externalUrl, notebookServerUrl};
 
     const mergeRequests = this.projectState.get('system.merge_requests');
 
@@ -205,7 +206,7 @@ class View extends Component {
         path={p.match.params.filePath} />,
 
       launchNotebookServerButton: <LaunchNotebookServerButton key= "launch notebook" {...subProps}
-        projectPath={this.projectState.get('core.path_with_namespace')}/>,
+        notebookServerUrl={this.projectState.get('core.notebookServerUrl')}/>,
 
       mrList: <ConnectedMergeRequestList key="mrList" store={this.projectState.reduxStore}
         mrOverviewUrl={this.subUrls().mrOverviewUrl}/>,

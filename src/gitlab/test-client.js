@@ -38,6 +38,9 @@ const methods = {
   getJobs: {
     responseData: []
   },
+  getNotebookServerUrl: {
+    responseData: ''
+  },
 };
 
 let client = {};

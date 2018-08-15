@@ -212,6 +212,11 @@ class ProjectViewHeader extends Component {
               </div>
             </div>
             <p className="text-md-right pt-3">
+              {this.props.launchNotebookServerButton} &nbsp;
+              <a key="link" target="_blank" href={this.props.externalUrl}
+                className="btn btn-primary" role="button">View Project in GitLab</a>
+            </p>
+            <p className="text-md-right pt-3">
               <ImageBuildInfoBadge notebooksUrl={this.props.notebooksUrl} imageBuild={this.props.imageBuild} />
             </p>
           </Col>
@@ -385,18 +390,17 @@ class AnnotatedFileFolderList extends Component {
           return <Link key={i} to={`${this.props.mrOverviewUrl}/${mrInfo.mrIid}`}>&nbsp;[{mrInfo.source_branch}]</Link>;
         });
       }) : undefined;
+
     const headertext = this.props.headertext || "Lineage and Usage";
     return [
       <div key="header" className="d-flex justify-content-between">
         <div><h3>{headertext}</h3></div>
-        <div>{this.props.serverLaunchButton}</div>
       </div>,
       <FileFolderList key="filelist"
         paths={this.props.paths}
         alerts={alerts}
         mrIids={mrIids}
-        linkUrl={this.props.linkUrl}
-        emptyView={this.props.emptyView} />
+        linkUrl={this.props.linkUrl} />
     ]
   }
 }
@@ -412,8 +416,7 @@ class NotebookFolderList extends Component {
         paths={this.props.paths}
         annotations={this.props.files}
         linkUrl={this.props.filesUrl}
-        mrOverviewUrl={this.props.mrOverviewUrl}
-        serverLaunchButton={this.props.launchNotebookServerButton} />
+        mrOverviewUrl={this.props.mrOverviewUrl} />
     ]
   }
 }
@@ -431,7 +434,6 @@ class ProjectFilesCategorizedList extends Component {
           paths={this.props.files.notebooks}
           files={this.props.files}
           filesUrl={this.props.filesUrl}
-          launchNotebookServerButton={this.props.launchNotebookServerButton}
         />} }
       />
       <Route path={this.props.dataUrl} render={props =>
@@ -477,7 +479,6 @@ class ProjectViewFiles extends Component {
 
 class RepositoryUrls extends Component {
   render() {
-    const externalUrl = this.props.externalUrl;
     return [
       <strong key="header">Repository URL</strong>,
       <Table key="table" size="sm">
@@ -491,8 +492,7 @@ class RepositoryUrls extends Component {
             <td>{this.props.system.http_url}</td>
           </tr>
         </tbody>
-      </Table>,
-      <a key="link" target="_blank" href={externalUrl} className="btn btn-primary" role="button">View in GitLab</a>
+      </Table>
     ]
   }
 }
