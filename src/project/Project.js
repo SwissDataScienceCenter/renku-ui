@@ -44,6 +44,7 @@ import { MergeRequest, MergeRequestList } from '../merge-request';
 class New extends Component {
   constructor(props) {
     super(props);
+    this.state = {statuses: []}
     this.newProject = new StateModel(newProjectSchema, StateKind.REDUX);
     this.handlers = {
       onSubmit: this.onSubmit.bind(this),
@@ -51,31 +52,46 @@ class New extends Component {
       onDescriptionChange: this.onDescriptionChange.bind(this),
       onVisibilityChange: this.onVisibilityChange.bind(this),
     };
+    this.mapStateToProps = this.doMapStateToProps.bind(this);
   }
 
-  onSubmit = () => {
-    const validation = this.newProject.validate()
+  onSubmit() {
+    const validation = this.validate();
     if (validation.result) {
       this.props.client.postProject(this.newProject.get()).then((project) => {
         this.props.history.push(`/projects/${project.id}`);
       })
     }
-    else {
-      // This should be done by proper form validation.
-      console.error('Can not create new project - insufficient information: ', validation.errors)
+  }
+
+  validate() {
+    const validation = this.newProject.validate()
+    if (!validation.result) {
+      this.setState({statuses: validation.errors});
     }
-  };
-  onTitleChange = (e) => {
+    return validation;
+  }
+
+  onTitleChange(e) {
     this.newProject.set('display.title', e.target.value);
     this.newProject.set('display.slug', slugFromTitle(e.target.value));
-  };
-  onDescriptionChange = (e) => { this.newProject.set('display.description', e.target.value) };
-  onVisibilityChange = (e) => { this.newProject.set('meta.visibility', e.target.value) };
+  }
+
+  onDescriptionChange(e) { this.newProject.set('display.description', e.target.value); }
+  onVisibilityChange(e) { this.newProject.set('meta.visibility', e.target.value); }
   // onDataReferenceChange = (key, e) => { this.newProject.setObject('reference', key, e.target.value) };
 
+  doMapStateToProps(state, ownProps) {
+    const model = this.newProject.mapStateToProps(state, ownProps);
+    const statuses = {}
+    this.state.statuses.forEach((d) => { Object.keys(d).forEach(k => statuses[k] = d[k])});
+    const handlers = this.handlers;
+    return {model, handlers, statuses}
+  }
+
   render() {
-    const ConnectedNewProject = connect(this.newProject.mapStateToProps)(Present.ProjectNew);
-    return <ConnectedNewProject handlers={this.handlers} store={this.newProject.reduxStore}/>;
+    const ConnectedNewProject = connect(this.mapStateToProps)(Present.ProjectNew);
+    return <ConnectedNewProject store={this.newProject.reduxStore}/>;
   }
 }
 

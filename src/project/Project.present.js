@@ -73,7 +73,8 @@ class DataVisibility extends Component {
 class ProjectNew extends Component {
 
   render() {
-    const titleHelp = this.props.display.slug.length > 0 ? `Id: ${this.props.display.slug}` : null;
+    const statuses = this.props.statuses;
+    const titleHelp = this.props.model.display.slug.length > 0 ? `Id: ${this.props.model.display.slug}` : null;
     return [
       <Row key="header"><Col md={8}>
         <h1>New Project</h1>
@@ -81,11 +82,14 @@ class ProjectNew extends Component {
       <Row key="body"><Col md={8}>
         <form action="" method="post" encType="multipart/form-data" id="js-upload-form">
           <FieldGroup id="title" type="text" label="Title" placeholder="A brief name to identify the project"
-            help={titleHelp} value={this.props.display.title} onChange={this.props.handlers.onTitleChange} />
+            help={titleHelp} value={this.props.model.display.title}
+            feedback={statuses.title} invalid={statuses.title != null}
+            onChange={this.props.handlers.onTitleChange} />
           <FieldGroup id="description" type="textarea" label="Description" placeholder="A description of the project"
             help="A description of the project helps users understand it and is highly recommended."
-            value={this.props.display.description} onChange={this.props.handlers.onDescriptionChange} />
-          <DataVisibility value={this.props.meta.visibility} onChange={this.props.handlers.onVisibilityChange} />
+            feedback={statuses.description} invalid={statuses.description != null}
+            value={this.props.model.display.description} onChange={this.props.handlers.onDescriptionChange} />
+          <DataVisibility value={this.props.model.meta.visibility} onChange={this.props.handlers.onVisibilityChange} />
           <br/>
           <Button color="primary" onClick={this.props.handlers.onSubmit}>
             Create
