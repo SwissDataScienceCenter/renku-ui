@@ -201,6 +201,7 @@ class View extends Component {
         projectPath={this.projectState.get('core.path_with_namespace')}/>,
 
       lineageView: (p) => <FileLineage key="lineage" {...subProps}
+        externalUrl={externalUrl}
         path={p.match.params.filePath} />,
 
       launchNotebookServerButton: <LaunchNotebookServerButton key= "launch notebook" {...subProps}
