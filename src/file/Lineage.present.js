@@ -126,13 +126,23 @@ class FileLineage extends Component {
     const graph = (this.props.dot) ?
       <FileLineageGraph path={this.props.path} dot={this.props.dot} /> :
       <p>Loading...</p>;
+    const externalUrl = this.props.externalUrl;
+    const externalFileUrl = `${externalUrl}/blob/master/${this.props.path}`;
     return [
       <Row key="header">
-        <Col>
+        <Col sm={8}>
           <div className="d-flex flex-row align-items-baseline">
             <div><h3><em>{this.props.path}</em></h3></div>
             <div className="caption">&nbsp;lineage and usage</div>
           </div>
+        </Col>
+        <Col sm={4}>
+          <p className="text-sm-right">
+            <a key="link"
+              target="_blank"
+              href={externalFileUrl}
+              className="btn btn-primary" role="button">View in GitLab</a>
+          </p>
         </Col>
       </Row>,
       <Row key="graph"><Col>{graph}</Col></Row>
