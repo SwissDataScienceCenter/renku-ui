@@ -25,7 +25,7 @@
  */
 
 import React, { Component } from 'react';
-import { FormGroup, FormText, Input, Label } from 'reactstrap';
+import { FormFeedback, FormGroup, FormText, Input, Label } from 'reactstrap';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faUser from '@fortawesome/fontawesome-free-solid/faUser'
 import human from 'human-time';
@@ -66,14 +66,36 @@ class Avatar extends Component {
   }
 }
 
+// Old FieldGroup implementation
+//
+// class FieldGroup extends Component {
+//   render() {
+//     const label = this.props.label,
+//       help = this.props.help,
+//       props = this.props;
+//     return <FormGroup>
+//       <Label>{label}</Label>
+//       <Input {...props} />
+//       {help && <FormText color="muted">{help}</FormText>}
+//     </FormGroup>
+//   }
+// }
+
 class FieldGroup extends Component {
   render() {
     const label = this.props.label,
       help = this.props.help,
+      feedback = this.props.feedback,
       props = this.props;
+    const subprops = {}
+    if (props.valid === true)
+      subprops.valid = "true";
+    if (props.invalid === true)
+      subprops.invalid = "true";
     return <FormGroup>
       <Label>{label}</Label>
       <Input {...props} />
+      {feedback && <FormFeedback {...subprops}>{feedback}</FormFeedback>}
       {help && <FormText color="muted">{help}</FormText>}
     </FormGroup>
   }
