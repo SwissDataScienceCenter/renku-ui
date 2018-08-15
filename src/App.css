@@ -50,6 +50,10 @@ body {
   font-size: smaller;
 }
 
+.caption {
+  color: #AAA;
+}
+
 .comment-block {
   display: inline
 }
