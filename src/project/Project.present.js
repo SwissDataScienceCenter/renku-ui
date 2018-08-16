@@ -215,18 +215,16 @@ class ProjectViewHeader extends Component {
                 </form>
               </div>
             </div>
-            <p className="pt-3">
-              <div className="d-flex flex-md-row-reverse">
-                <div>
-                  <a key="link" target="_blank" href={this.props.externalUrl}
-                    className="btn btn-primary" role="button">View Project in GitLab</a>
-                </div>
-                <div>&nbsp;</div>
-                <div>
-                  {this.props.launchNotebookServerButton}
-                </div>
+            <div className="d-flex flex-md-row-reverse pt-3">
+              <div>
+                <a key="link" target="_blank" href={this.props.externalUrl}
+                  className="btn btn-primary" role="button">View Project in GitLab</a>
               </div>
-            </p>
+              <div>&nbsp;</div>
+              <div>
+                {this.props.launchNotebookServerButton}
+              </div>
+            </div>
             <p className="text-md-right pt-3">
               <ImageBuildInfoBadge notebooksUrl={this.props.notebooksUrl} imageBuild={this.props.imageBuild} />
             </p>
