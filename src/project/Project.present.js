@@ -422,7 +422,7 @@ class NotebookFolderList extends Component {
         headertext="Notebooks"
         paths={this.props.paths}
         annotations={this.props.files}
-        linkUrl={this.props.filesUrl}
+        linkUrl={this.props.fileContentUrl}
         mrOverviewUrl={this.props.mrOverviewUrl} />
     ]
   }
@@ -440,7 +440,7 @@ class ProjectFilesCategorizedList extends Component {
           onProjectRefresh={this.props.onProjectRefresh}
           paths={this.props.files.notebooks}
           files={this.props.files}
-          filesUrl={this.props.filesUrl}
+          fileContentUrl={this.props.fileContentUrl}
         />} }
       />
       <Route path={this.props.dataUrl} render={props =>
