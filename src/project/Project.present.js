@@ -198,7 +198,7 @@ class ProjectViewHeader extends Component {
             <p className="text-md-right">
               <ProjectTagList taglist={system.tag_list} />
             </p>
-            <div className="d-flex flex-row-reverse">
+            <div className="d-flex flex-md-row-reverse">
               <div className={`fixed-width-${this.props.starred ? '120' : '100'}`}>
                 <form className="input-group input-group-sm">
                   <div className="input-group-prepend">
@@ -211,10 +211,17 @@ class ProjectViewHeader extends Component {
                 </form>
               </div>
             </div>
-            <p className="text-md-right pt-3">
-              {this.props.launchNotebookServerButton} &nbsp;
-              <a key="link" target="_blank" href={this.props.externalUrl}
-                className="btn btn-primary" role="button">View Project in GitLab</a>
+            <p className="pt-3">
+              <div className="d-flex flex-md-row-reverse">
+                <div>
+                  <a key="link" target="_blank" href={this.props.externalUrl}
+                    className="btn btn-primary" role="button">View Project in GitLab</a>
+                </div>
+                <div>&nbsp;</div>
+                <div>
+                  {this.props.launchNotebookServerButton}
+                </div>
+              </div>
             </p>
             <p className="text-md-right pt-3">
               <ImageBuildInfoBadge notebooksUrl={this.props.notebooksUrl} imageBuild={this.props.imageBuild} />
