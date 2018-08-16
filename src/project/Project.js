@@ -113,6 +113,7 @@ class View extends Component {
     const match = this.props.match;
     const baseUrl = match.isExact ? match.url.slice(0, -1) : match.url;
     const filesUrl = `${baseUrl}/files`;
+    const fileContentUrl = `${filesUrl}/blob`;
 
     return {
       overviewUrl: `${baseUrl}/`,
@@ -120,10 +121,11 @@ class View extends Component {
       kuNewUrl: `${baseUrl}/ku_new`,
       kuUrl: `${baseUrl}/kus/:kuIid(\\d+)`,
       filesUrl: `${filesUrl}`,
+      fileContentUrl: `${fileContentUrl}`,
       lineagesUrl: `${filesUrl}/lineage`,
       lineageUrl: `${filesUrl}/lineage/:filePath+`,
       notebooksUrl: `${filesUrl}/notebooks`,
-      notebookUrl: `${filesUrl}:filePath([^.]+.ipynb)`,
+      notebookUrl: `${fileContentUrl}/:filePath([^.]+.ipynb)`,
       dataUrl: `${filesUrl}/data`,
       workflowsUrl: `${filesUrl}/workflows`,
       settingsUrl: `${baseUrl}/settings`,
