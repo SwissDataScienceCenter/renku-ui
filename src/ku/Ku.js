@@ -65,15 +65,17 @@ class KuVisibility extends Component {
 class NewKu extends Component {
 
   render() {
-    const titleHelp = this.props.core.displayId.length > 0 ? `Id: ${this.props.core.displayId}` : null;
+    const titleHelp = this.props.model.core.displayId.length > 0 ? `Id: ${this.props.model.core.displayId}` : null;
+    const statuses = this.props.statuses;
     return <form action="" method="post" encType="multipart/form-data" id="js-upload-form">
       <FieldGroup id="title" type="text" label="Title" placeholder="A brief name to identify the ku"
-        help={titleHelp}
-        value={this.props.core.title} onChange={this.props.onTitleChange}/>
+        help={titleHelp} value={this.props.model.core.title}
+        feedback={statuses.title} invalid={statuses.title != null}
+        onChange={this.props.onTitleChange}/>
       <FieldGroup id="description" type="textarea" label="Description" placeholder="A description of the ku"
         help="A description of the ku helps users understand it and is highly recommended."
-        value={this.props.core.description} onChange={this.props.onDescriptionChange}/>
-      <KuVisibility value={this.props.visibility} onChange={this.props.onVisibilityChange}/>
+        value={this.props.model.core.description} onChange={this.props.onDescriptionChange}/>
+      <KuVisibility value={this.props.model.visibility} onChange={this.props.onVisibilityChange}/>
       <br/>
       <Button color="primary" onClick={this.props.onSubmit}>
                 Create
@@ -85,6 +87,7 @@ class NewKu extends Component {
 class New extends Component {
   constructor(props) {
     super(props);
+    this.state = {statuses: []}
     this.store = createStore(State.New.reducer);
     this.onSubmit = client => this.handleSubmit.bind(this, client);
     this.projectId = getActiveProjectId(this.props.location.pathname);
@@ -100,16 +103,18 @@ class New extends Component {
   }
 
   handleSubmit(client) {
-    console.log(this)
-    client.postProjectKu(...this.submitData())
-      .then(newKu => {
-        this.store.dispatch(State.List.append([newKu]));
-        this.props.history.push({pathname: `/projects/${this.projectId}/kus/`});
-      });
+    const validation = this.validate();
+    if (validation.result) {
+      client.postProjectKu(...this.submitData())
+        .then(newKu => {
+          this.store.dispatch(State.List.append([newKu]));
+          this.props.history.push({pathname: `/projects/${this.projectId}/kus/`});
+        });
+    }
   }
 
   mapStateToProps(state, ownProps) {
-    return state
+    return {model: state}
   }
 
   mapDispatchToProps(dispatch, ownProps) {
@@ -126,12 +131,30 @@ class New extends Component {
     }
   }
 
+  validate() {
+    const state = this.store.getState();
+    const errors = [];
+    if (state.core.title.trim() === "") {
+      errors.push({title: "Please provide a title."});
+    }
+
+    const result = errors.length === 0;
+    if (!result) {
+      this.setState({statuses: errors});
+    }
+    return {result, errors};
+  }
+
   render() {
+    const statuses = {}
+    this.state.statuses.forEach((d) => { Object.keys(d).forEach(k => statuses[k] = d[k])});
     const VisibleNewKu = connect(this.mapStateToProps, this.mapDispatchToProps)(NewKu);
     return [
       <Row key="header"><Col md={8}><h1>New Ku</h1></Col></Row>,
       <Provider key="new" store={this.store}>
-        <Row><Col md={8}><VisibleNewKu onSubmit={this.onSubmit(this.props.client)}/></Col></Row>
+        <Row><Col md={8}>
+          <VisibleNewKu statuses={statuses} onSubmit={this.onSubmit(this.props.client)}/>
+        </Col></Row>
       </Provider>
     ]
   }
