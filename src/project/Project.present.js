@@ -373,8 +373,8 @@ class FileFolderList extends Component {
       mrIids = this.props.mrIids;
     }
     else {
-      alerts = this.props.paths.map(() => '');
-      mrIids = this.props.paths.map(() => []);
+      alerts = paths.map(() => '');
+      mrIids = paths.map(() => []);
     }
 
     const linkUrl = this.props.linkUrl;
