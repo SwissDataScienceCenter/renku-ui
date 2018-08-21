@@ -83,15 +83,17 @@ class New extends Component {
 
   doMapStateToProps(state, ownProps) {
     const model = this.newProject.mapStateToProps(state, ownProps);
-    const statuses = {}
-    this.state.statuses.forEach((d) => { Object.keys(d).forEach(k => statuses[k] = d[k])});
-    const handlers = this.handlers;
-    return {model, handlers, statuses}
+    return {model}
   }
 
   render() {
     const ConnectedNewProject = connect(this.mapStateToProps)(Present.ProjectNew);
-    return <ConnectedNewProject store={this.newProject.reduxStore}/>;
+    const statuses = {}
+    this.state.statuses.forEach((d) => { Object.keys(d).forEach(k => statuses[k] = d[k])});
+    return <ConnectedNewProject
+      statuses={statuses}
+      handlers={this.handlers}
+      store={this.newProject.reduxStore}/>;
   }
 }
 
