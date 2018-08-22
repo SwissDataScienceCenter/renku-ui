@@ -28,9 +28,9 @@
 import React, { Component } from 'react';
 
 import { Link }  from 'react-router-dom'
-
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { Row, Col } from 'reactstrap';
+import ReactMarkdown from 'react-markdown';
 
 import { ProjectListRow } from '../project/Project.present';
 
@@ -107,12 +107,7 @@ class YourActivity extends Component {
 
 class RenkuIntroText extends Component {
   render() {
-    return [
-      <h1 key="heading">Welcome to Renku!</h1>,
-      <p key="summary">Renku is software for collaborative data science.</p>,
-      <p key="details">With Renku you can share code and data, discuss problems and solutions, and
-        coordinate data-science projects.</p>
-    ]
+    return <ReactMarkdown key="readme" source={this.props.welcomePage} />
   }
 
 }
@@ -121,7 +116,7 @@ class StarredEmptyProjects extends Component {
   render() {
     return (<Row>
       <Col md={8} lg={6} xl={4}>
-        <RenkuIntroText />
+        <RenkuIntroText welcomePage={this.props.welcomePage}/>
         <p>
           You are logged in, but you have not yet starred any projects.
           Starring a project declares your interest in it.
@@ -151,7 +146,8 @@ class Starred extends Component {
       ]
     else {
       const projectNewUrl = this.props.urlMap.projectNewUrl;
-      return <StarredEmptyProjects projectsUrl={projectsUrl}  projectNewUrl={projectNewUrl} />
+      return <StarredEmptyProjects projectsUrl={projectsUrl}
+        projectNewUrl={projectNewUrl} welcomePage={this.props.welcomePage} />
     }
   }
 }
@@ -160,7 +156,7 @@ class AnonymousWelcome extends Component {
   render() {
     return (<Row>
       <Col md={8} lg={6} xl={4}>
-        <RenkuIntroText />
+        <RenkuIntroText welcomePage={this.props.welcomePage}/>
         <p>You are not logged in, but you can still view public projects. If you wish to contribute to an existing
            project or create a new one, please <Link to="/login">log in.</Link></p>
       </Col>
@@ -207,7 +203,7 @@ class Home extends Component {
     let selected = this.props.ui.selected;
     let nav = null;
     const urlMap = this.props.urlMap;
-    let welcome = <AnonymousWelcome urlMap={urlMap} />;
+    let welcome = <AnonymousWelcome urlMap={urlMap} welcomePage={this.props.welcomePage} />;
     // Make sure the selected tab is valid for the user
     if (this.props.user != null && this.props.user.id != null) {
       if (selected === 'welcome') selected = 'starred';

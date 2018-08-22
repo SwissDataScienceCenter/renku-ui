@@ -38,6 +38,8 @@ spec:
               value: {{ .Values.jupyterhubUrl | default (printf "%s://jupyterhub.%s" (include "ui.protocol" .) .Values.global.renku.domain) | quote }}
             - name: GATEWAY_URL
               value: {{ .Values.gatewayUrl | default (printf "%s://gateway.%s" (include "ui.protocol" .) .Values.global.renku.domain) | quote }}
+            - name: WELCOME_PAGE
+              value: {{ .Values.welcomePage.text | b64enc | quote }}
           livenessProbe:
             httpGet:
               path: /

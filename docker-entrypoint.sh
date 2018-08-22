@@ -27,7 +27,8 @@ tee > /usr/share/nginx/html/config.json << EOF
 {
   "BASE_URL": "${BASE_URL:-http://renku.build}",
   "JUPYTERHUB_URL": "${JUPYTERHUB_URL:-http://jupyterhub.renku.build}",
-  "GATEWAY_URL": "${GATEWAY_URL:-http://gateway.renku.build}"
+  "GATEWAY_URL": "${GATEWAY_URL:-http://gateway.renku.build}",
+  "WELCOME_PAGE": "${WELCOME_PAGE}"
 }
 EOF
 

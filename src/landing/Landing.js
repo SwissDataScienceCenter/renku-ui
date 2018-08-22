@@ -42,8 +42,8 @@ function urlMap() {
 class Starred extends Component {
   render() {
     const user = this.props.user;
-    const projects = (user) ? user.starredProjects : []
-    return <Present.Starred urlMap={this.props.urlMap} projects={projects} />
+    const projects = (user) ? user.starredProjects : [];
+    return <Present.Starred urlMap={this.props.urlMap} projects={projects} welcomePage={this.props.welcomePage} />
   }
 }
 
@@ -61,7 +61,7 @@ class Home extends Component {
   mapStateToProps(state, ownProps) {
     const urls = urlMap();
     const local = {
-      starred: <Starred user={ownProps.user} urlMap={urls} />,
+      starred: <Starred user={ownProps.user} urlMap={urls} welcomePage={ownProps.welcomePage}/>,
       user: ownProps.user,
       urlMap: urls
     };
@@ -83,7 +83,7 @@ class Home extends Component {
     const VisibleHome = connect(this.mapStateToProps, this.mapDispatchToProps)(Present.Home);
     return [
       <Provider key="new" store={this.store}>
-        <VisibleHome user={this.props.user}/>
+        <VisibleHome user={this.props.user} welcomePage={atob(this.props.welcomePage)}/>
       </Provider>
     ]
   }

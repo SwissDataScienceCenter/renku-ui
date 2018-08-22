@@ -76,3 +76,9 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+welcomePage:
+  text: |
+    ## Welcome to Renku!
+    Renku is software for collaborative data science. With Renku you can share code and data,
+    discuss problems and solutions, and coordinate data-science projects.

@@ -36,7 +36,7 @@ describe('rendering', () => {
     const div = document.createElement('div');
     ReactDOM.render(
       <MemoryRouter>
-        <Landing.Home />
+        <Landing.Home welcomePage={btoa('## Welcome to Renku')}/>
       </MemoryRouter>, div);
   });
 });
