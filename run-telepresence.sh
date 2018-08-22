@@ -20,6 +20,8 @@ set -e
 
 MINIKUBE_IP=`minikube ip`
 CURRENT_CONTEXT=`kubectl config current-context`
+WELCOME_PAGE=`echo "## Welcome to Renku through telepresence
+Some deployment-specific information will be read from the your values.yaml file and be displayed as markdown file." | base64`
 
 echo "You are going to exchange k8s deployments using the following context: ${CURRENT_CONTEXT}"
 read -p "Do you want to proceed? [y/n]"
@@ -31,7 +33,8 @@ tee > ./public/config.json << EOF
 {
   "BASE_URL": "http://${MINIKUBE_IP}",
   "JUPYTERHUB_URL": "http://${MINIKUBE_IP}/jupyterhub",
-  "GATEWAY_URL": "http://${MINIKUBE_IP}/api"
+  "GATEWAY_URL": "http://${MINIKUBE_IP}/api",
+  "WELCOME_PAGE": "${WELCOME_PAGE}"
 }
 EOF
 BROWSER=none telepresence --swap-deployment renku-ui --namespace renku --method inject-tcp --expose 3000:80 --run npm start

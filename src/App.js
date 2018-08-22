@@ -185,7 +185,9 @@ class App extends Component {
                 render ={p => <Login key="login" {...p} {...this.props} /> } />
               <Route exact strict path="/*(\d+)" render={props => <Redirect to={`${props.location.pathname}/`}/>}/>
               <Route exact path="/"
-                render={p => <Landing.Home key="landing" user={this.props.userState.getState().user} {...p} />} />
+                render={p => <Landing.Home
+                  key="landing" user={this.props.userState.getState().user}
+                  welcomePage={this.props.params['WELCOME_PAGE']} {...p} />} />
               <Route exact path="/projects"
                 render={p => <Project.List key="projects"
                   user={this.props.userState.getState().user}
