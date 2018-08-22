@@ -45,7 +45,7 @@ import ReactMarkdown from 'react-markdown'
 import { Avatar, TimeCaption, FieldGroup, RenkuNavLink } from '../utils/UIComponents'
 
 const imageBuildStatusText = {
-  failed: 'No notebook image has been build. You can still open a notebook server with the default image.',
+  failed: 'No notebook image has been built. You can still open a notebook server with the default image.',
   canceled: 'The notebook image build has been cancelled.  You can still open a notebook server with the default image',
   running: 'The notebook image build is still ongoing. Wait a bit before launching a notebook...',
   pending: 'The notebook image build is still pending. Wait a bit before launching a notebook...'
