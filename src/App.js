@@ -66,8 +66,8 @@ class RenkuToolbarItemUser extends Component {
         {this.props.userAvatar}
       </a>
       <div key="menu" className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-        {loggedIn ? <RenkuNavLink to="/user" title="Profile" /> : null }
-        {loggedIn ? <RenkuNavLink to="/logout" title="Logout" /> : <RenkuNavLink to="/login" title="Login" />}
+        {loggedIn ? <a class="dropdown-item" href="/auth/realms/Renku/account?referrer=renku-ui">Profile</a> : null }
+        {loggedIn ? <a class="dropdown-item" href="/logout">Logout</a> : <a class="dropdown-item" href="/login">Login</a>}
       </div>
     </li>
   }
