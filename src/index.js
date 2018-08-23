@@ -19,13 +19,14 @@ const configPromise = fetch('/config.json');
 configPromise.then((res) => {
   res.json().then((params) => {
 
+    const loggedIn = cookies.get('access_token') !== undefined;
+
     // We use a redux store to hold some global application state.
     const store = createStore(reducer);
 
     const client = new GitlabClient(
-      params.GATEWAY_URL + '/v4',
-      cookies.get('access_token'),
-      'bearer',
+      params.GATEWAY_URL,
+      cookies,
       params.JUPYTERHUB_URL
     );
 
@@ -34,7 +35,7 @@ configPromise.then((res) => {
     }
 
     // Load the user profile and dispatch the result to the store.
-    if (client._token) {
+    if (loggedIn) {
       UserState.fetchAppUser(client, store.dispatch);
     } else {
       store.dispatch(UserState.set({}));
@@ -42,7 +43,7 @@ configPromise.then((res) => {
 
     const VisibleApp = connect(mapStateToProps, null, null, {storeKey: 'userState'})(App);
     ReactDOM.render(
-      <VisibleApp client={client} cookies={cookies} params={params} userState={store}/>,
+      <VisibleApp loggedIn={loggedIn} client={client} cookies={cookies} params={params} userState={store}/>,
       document.getElementById('root')
     );
 

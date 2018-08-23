@@ -56,20 +56,22 @@ function getActiveProjectId(currentPath) {
 
 class RenkuToolbarItemUser extends Component {
   render() {
-    if (this.props.user == null || this.props.user.id == null) {
+
+    if (!this.props.loggedIn) {
       return <RenkuNavLink to="/login" title="Login" />
     }
-    const loggedIn = this.props.loggedIn;
-    return <li className="nav-item dropdown">
-      <a key="button" className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
-        aria-haspopup="true" aria-expanded="false">
-        {this.props.userAvatar}
-      </a>
-      <div key="menu" className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-        {loggedIn ? <a class="dropdown-item" href="/auth/realms/Renku/account?referrer=renku-ui">Profile</a> : null }
-        {loggedIn ? <a class="dropdown-item" href="/logout">Logout</a> : <a class="dropdown-item" href="/login">Login</a>}
-      </div>
-    </li>
+    else {
+      return <li className="nav-item dropdown">
+        <a key="button" className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
+          aria-haspopup="true" aria-expanded="false">
+          {this.props.userAvatar}
+        </a>
+        <div key="menu" className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+          <a className="dropdown-item" href="/auth/realms/Renku/account?referrer=renku-ui">Profile</a>
+          <a className="dropdown-item" href="/logout">Logout</a>
+        </div>
+      </li>
+    }
   }
 }
 
@@ -102,9 +104,6 @@ class RenkuNavBar extends Component {
     if (null != nextRoute) this.props.history.push(nextRoute);
   }
   render() {
-    const userState = this.props.userState.getState();
-    const loggedIn =  Object.keys(userState.user || {}).length > 0;
-
     // Display the Ku related header options only if a project is active.
     const activeProjectId = getActiveProjectId(this.props.location.pathname);
     const kuDropdown = activeProjectId ? <RenkuNavLink to={`/projects/${activeProjectId}/ku_new`} title="Ku" /> : null;
@@ -147,7 +146,7 @@ class RenkuNavBar extends Component {
                   {kuDropdown}
                 </div>
               </li>
-              <RenkuToolbarItemUser loggedIn={loggedIn} userAvatar={this.props.userAvatar} user={this.props.user} />
+              <RenkuToolbarItemUser {...this.props} />
             </ul>
           </div>
         </nav>
@@ -170,7 +169,7 @@ class RenkuFooter extends Component {
 
 class App extends Component {
   render() {
-    const userAvatar = <UserAvatar userState={this.props.userState} />
+    const userAvatar = <UserAvatar userState={this.props.userState} />;
     return (
       <Router>
         <div>
