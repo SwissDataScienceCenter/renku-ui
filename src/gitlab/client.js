@@ -27,27 +27,65 @@ class GitlabClient {
   // ku    -->  issue
 
 
-  constructor(baseUrl, token, tokenType, jupyterhub_url) {
+  constructor(baseUrl, cookies, jupyterhub_url) {
     this._baseUrl = baseUrl;
-    this._token = token;
-    this._tokenType = tokenType;
+    // TODO: Which GitLab API version to use should actually be a
+    //       a concern of the Gateway.
+    this._apiUrl = baseUrl + '/v4';
+    this._cookies = cookies;
+    this._accessToken = cookies.get('access_token');
+    this._refreshToken = cookies.get('refresh_token');
     this._jupyterhub_url = jupyterhub_url;
+    this._doLogin = () => {
+      this._cookies.remove('access_token');
+      this._cookies.remove('refresh_token');
+      this._cookies.remove('id_token');
+      window.location = `${this._baseUrl}/auth/login?redirect_url=${encodeURIComponent(window.location.href)}`;
+    };
   }
 
-  getBasicHeaders() {
+  _clientFetch(url, options, returnType='json', alertOnErr=true) {
+    return renkuFetch(url, options, returnType, alertOnErr)
+      .catch((error) => {
+        if (error.case === API_ERRORS.tokenExpired) {
+          return this._getRefreshedTokens()
+            .then(() => {
+              // Use the refreshed token and try again
+              options.headers.set('Authorization', `Bearer ${this._accessToken}`);
+              return renkuFetch(url, options, returnType, alertOnErr)
+            })
+        }
+      })
+  }
+
+  _getRefreshedTokens() {
+    let headers = this._getBasicHeaders();
+    // Overwrite access_token with refresh_token
+    headers.set('Authorization', `Bearer ${this._refreshToken}`);
+    return fetch(`${this._baseUrl}/auth/token/refresh`, {headers})
+      .then(response => response.json())
+      .then(responseData => {
+        if (responseData.error) return this._doLogin();
+
+        this._accessToken = responseData.access_token;
+        this._refreshToken = responseData.refresh_token;
+        this._cookies.set('access_token', responseData.access_token);
+        this._cookies.set('refresh_token', responseData.refresh_token);
+      })
+  }
+
+  _getBasicHeaders() {
     let headers = {
       'Accept': 'application/json'
     };
-    if (!this._token) return new Headers(headers);
-    if (this._tokenType === 'private') headers['Private-Token'] = this._token;
-    if (this._tokenType === 'bearer') headers['Authorization'] = `Bearer ${this._token}`;
+    if (this._accessToken) headers['Authorization'] = `Bearer ${this._accessToken}`;
     return new Headers(headers);
   }
 
   getProjects(queryParams={}) {
-    let headers = this.getBasicHeaders();
+    let headers = this._getBasicHeaders();
 
-    return renkuFetch(`${this._baseUrl}/projects`, {
+    return this._clientFetch(`${this._apiUrl}/projects`, {
       method: 'GET',
       headers,
       queryParams,
@@ -55,9 +93,9 @@ class GitlabClient {
   }
 
   getProject(projectId, options={}) {
-    let headers = this.getBasicHeaders();
+    let headers = this._getBasicHeaders();
     const apiPromises = [
-      renkuFetch(`${this._baseUrl}/projects/${projectId}`, {
+      this._clientFetch(`${this._apiUrl}/projects/${projectId}`, {
         method: 'GET',
         headers: headers
       })
@@ -89,10 +127,10 @@ class GitlabClient {
       description: renkuProject.display.description,
       visibility: renkuProject.meta.visibility === 'public' ? 'public' : 'private'
     };
-    const headers = this.getBasicHeaders();
+    const headers = this._getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    const postPromise = renkuFetch(`${this._baseUrl}/projects`, {
+    const postPromise = this._clientFetch(`${this._apiUrl}/projects`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(gitlabProject)
@@ -106,10 +144,10 @@ class GitlabClient {
   }
 
   postCommit(projectId, commitPayload) {
-    const headers = this.getBasicHeaders();
+    const headers = this._getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return renkuFetch(`${this._baseUrl}/projects/${projectId}/repository/commits`, {
+    return this._clientFetch(`${this._apiUrl}/projects/${projectId}/repository/commits`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(commitPayload)
@@ -125,11 +163,11 @@ class GitlabClient {
   }
 
   starProject(projectId, starred) {
-    const headers = this.getBasicHeaders();
+    const headers = this._getBasicHeaders();
     headers.append('Content-Type', 'application/json');
     const endpoint = starred ? 'unstar' : 'star';
 
-    return renkuFetch(`${this._baseUrl}/projects/${projectId}/${endpoint}`, {
+    return this._clientFetch(`${this._apiUrl}/projects/${projectId}/${endpoint}`, {
       method: 'POST',
       headers: headers,
     })
@@ -138,10 +176,10 @@ class GitlabClient {
 
   putProjectField(projectId, name, field_name, field_value) {
     const putData = { id: projectId, name, [field_name]: field_value };
-    const headers = this.getBasicHeaders();
+    const headers = this._getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return fetch(`${this._baseUrl}/projects/${projectId}`, {
+    return this._clientFetch(`${this._apiUrl}/projects/${projectId}`, {
       method: 'PUT',
       headers: headers,
       body: JSON.stringify(putData)
@@ -159,18 +197,18 @@ class GitlabClient {
 
 
   getProjectFile(projectId, path, ref='master', alertOnErr=true) {
-    let headers = this.getBasicHeaders();
+    let headers = this._getBasicHeaders();
     const encodedPath = encodeURIComponent(path);
-    return renkuFetch(`${this._baseUrl}/projects/${projectId}/repository/files/${encodedPath}/raw?ref=${ref}`, {
+    return this._clientFetch(`${this._apiUrl}/projects/${projectId}/repository/files/${encodedPath}/raw?ref=${ref}`, {
       method: 'GET',
       headers: headers
     }, 'text', alertOnErr)
   }
 
   getProjectKus(projectId) {
-    let headers = this.getBasicHeaders();
+    let headers = this._getBasicHeaders();
 
-    return renkuFetch(`${this._baseUrl}/projects/${projectId}/issues?scope=all`, {
+    return this._clientFetch(`${this._apiUrl}/projects/${projectId}/issues?scope=all`, {
       method: 'GET',
       headers: headers
     })
@@ -178,10 +216,10 @@ class GitlabClient {
   }
 
   postProjectKu(projectId, ku) {
-    let headers = this.getBasicHeaders();
+    let headers = this._getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return renkuFetch(`${this._baseUrl}/projects/${projectId}/issues`, {
+    return this._clientFetch(`${this._apiUrl}/projects/${projectId}/issues`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(ku)
@@ -190,10 +228,10 @@ class GitlabClient {
   }
 
   getProjectKu(projectId, kuIid) {
-    let headers = this.getBasicHeaders();
+    let headers = this._getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return renkuFetch(`${this._baseUrl}/projects/${projectId}/issues/${kuIid}/`, {
+    return this._clientFetch(`${this._apiUrl}/projects/${projectId}/issues/${kuIid}/`, {
       method: 'GET',
       headers: headers,
     })
@@ -201,9 +239,9 @@ class GitlabClient {
   }
 
   getCommits(projectId, ref='master') {
-    let headers = this.getBasicHeaders();
+    let headers = this._getBasicHeaders();
     headers.append('Content-Type', 'application/json');
-    return renkuFetch(`${this._baseUrl}/projects/${projectId}/repository/commits?ref_name=${ref}`, {
+    return this._clientFetch(`${this._apiUrl}/projects/${projectId}/repository/commits?ref_name=${ref}`, {
       method: 'GET',
       headers: headers
     })
@@ -218,10 +256,10 @@ class GitlabClient {
   }
 
   getContributions(projectId, kuIid) {
-    let headers = this.getBasicHeaders();
+    let headers = this._getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return renkuFetch(`${this._baseUrl}/projects/${projectId}/issues/${kuIid}/notes`, {
+    return this._clientFetch(`${this._apiUrl}/projects/${projectId}/issues/${kuIid}/notes`, {
       method: 'GET',
       headers: headers
     })
@@ -229,10 +267,10 @@ class GitlabClient {
   }
 
   postContribution(projectId, kuIid, contribution) {
-    let headers = this.getBasicHeaders();
+    let headers = this._getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return renkuFetch(`${this._baseUrl}/projects/${projectId}/issues/${kuIid}/notes`, {
+    return this._clientFetch(`${this._apiUrl}/projects/${projectId}/issues/${kuIid}/notes`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify({body: contribution})
@@ -250,10 +288,10 @@ class GitlabClient {
   }
 
   _modifiyIssue(projectId, issueIid, body) {
-    let headers = this.getBasicHeaders();
+    let headers = this._getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return renkuFetch(`${this._baseUrl}/projects/${projectId}/issues/${issueIid}`, {
+    return this._clientFetch(`${this._apiUrl}/projects/${projectId}/issues/${issueIid}`, {
       method: 'PUT',
       headers: headers,
       body: JSON.stringify(body)
@@ -270,10 +308,10 @@ class GitlabClient {
   }
 
   getRepositoryFile(projectId, path, ref='master', encoding='base64') {
-    let headers = this.getBasicHeaders();
+    let headers = this._getBasicHeaders();
     const pathEncoded = encodeURIComponent(path);
     const raw = encoding === 'raw' ? '/raw' : '';
-    return renkuFetch(`${this._baseUrl}/projects/${projectId}/repository/files/${pathEncoded}${raw}?ref=${ref}`, {
+    return this._clientFetch(`${this._apiUrl}/projects/${projectId}/repository/files/${pathEncoded}${raw}?ref=${ref}`, {
       method: 'GET',
       headers: headers
     }, 'fullResponse', false)
@@ -290,7 +328,7 @@ class GitlabClient {
   }
 
   getRepositoryTree(projectId, {path='', recursive=false, per_page=100, page = 1, previousResults=[]} = {}) {
-    let headers = this.getBasicHeaders();
+    let headers = this._getBasicHeaders();
     const queryParams = {
       path,
       recursive,
@@ -299,7 +337,7 @@ class GitlabClient {
     };
 
     // TODO: Think about general pagination strategy for API client.
-    return renkuFetch(`${this._baseUrl}/projects/${projectId}/repository/tree`, {
+    return this._clientFetch(`${this._apiUrl}/projects/${projectId}/repository/tree`, {
       method: 'GET',
       headers,
       queryParams
@@ -333,8 +371,8 @@ class GitlabClient {
   }
 
   getDeploymentUrl(projectId, envName, branchName = 'master') {
-    let headers = this.getBasicHeaders();
-    return renkuFetch(`${this._baseUrl}/projects/${projectId}/environments`, {
+    let headers = this._getBasicHeaders();
+    return this._clientFetch(`${this._apiUrl}/projects/${projectId}/environments`, {
       method: 'GET',
       headers: headers
     })
@@ -346,8 +384,8 @@ class GitlabClient {
   }
 
   getArtifactsUrl(projectId, job, branch='master') {
-    const headers = this.getBasicHeaders();
-    return renkuFetch(`${this._baseUrl}/projects/${projectId}/jobs`, {
+    const headers = this._getBasicHeaders();
+    return this._clientFetch(`${this._apiUrl}/projects/${projectId}/jobs`, {
       method: 'GET',
       headers: headers
     })
@@ -361,24 +399,24 @@ class GitlabClient {
         const jobObj =
           filteredJobs
             .sort((a, b) => (a.finished_at > b.finished_at) ? -1 : +(a.finished_at < b.finished_at))[0]
-        return `${this._baseUrl}/projects/${projectId}/jobs/${jobObj.id}/artifacts`;
+        return `${this._apiUrl}/projects/${projectId}/jobs/${jobObj.id}/artifacts`;
       })
   }
 
   getArtifact(projectId, job, artifact, branch='master') {
-    const options = { method: 'GET', headers: this.getBasicHeaders() };
+    const options = { method: 'GET', headers: this._getBasicHeaders() };
     return this.getArtifactsUrl(projectId, job, branch)
       .then(url => {
         // If the url is undefined, we return an object with a dummy text() method.
         if (!url) return ['', {text: () => ''}];
         const resourceUrl = `${url}/${artifact}`;
-        return Promise.all([resourceUrl, renkuFetch(resourceUrl, options, 'fullResponse')])
+        return Promise.all([resourceUrl, this._clientFetch(resourceUrl, options, 'fullResponse')])
       })
   }
 
   getUser() {
-    let headers = this.getBasicHeaders();
-    return renkuFetch(`${this._baseUrl}/user`, {
+    let headers = this._getBasicHeaders();
+    return this._clientFetch(`${this._apiUrl}/user`, {
       method: 'GET',
       headers: headers
     })
@@ -389,9 +427,9 @@ class GitlabClient {
   // TODO: add this capability to the gateway.
   // TODO: Page through results in gateway, for the moment assuming a max of 100 branches seems ok.
   getBranches(projectId) {
-    let headers = this.getBasicHeaders();
-    const url = `${this._baseUrl}/projects/${projectId}/repository/branches`;
-    return renkuFetch(url, {
+    let headers = this._getBasicHeaders();
+    const url = `${this._apiUrl}/projects/${projectId}/repository/branches`;
+    return this._clientFetch(url, {
       method: 'GET',
       headers,
       queryParams: {per_page: 100}
@@ -403,10 +441,10 @@ class GitlabClient {
     allow_collaboration: true,
     remove_source_branch: true
   }) {
-    let headers = this.getBasicHeaders();
+    let headers = this._getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return renkuFetch(`${this._baseUrl}/projects/${projectId}/merge_requests`, {
+    return this._clientFetch(`${this._apiUrl}/projects/${projectId}/merge_requests`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify({
@@ -419,10 +457,10 @@ class GitlabClient {
   }
 
   getMergeRequests(projectId, queryParams={scope: 'all', state: 'opened'}) {
-    let headers = this.getBasicHeaders();
-    const url = projectId ? `${this._baseUrl}/projects/${projectId}/merge_requests` :
-      `${this._baseUrl}/merge_requests`
-    return renkuFetch(url, {
+    let headers = this._getBasicHeaders();
+    const url = projectId ? `${this._apiUrl}/projects/${projectId}/merge_requests` :
+      `${this._apiUrl}/merge_requests`
+    return this._clientFetch(url, {
       method: 'GET',
       headers,
       queryParams: {...queryParams, per_page:100}
@@ -430,8 +468,8 @@ class GitlabClient {
   }
 
   getMergeRequestChanges(projectId, mrIid) {
-    let headers = this.getBasicHeaders();
-    return renkuFetch(`${this._baseUrl}/projects/${projectId}/merge_requests/${mrIid}/changes`, {
+    let headers = this._getBasicHeaders();
+    return this._clientFetch(`${this._apiUrl}/projects/${projectId}/merge_requests/${mrIid}/changes`, {
       method: 'GET',
       headers
     })
@@ -473,8 +511,8 @@ class GitlabClient {
   }
 
   getJobs(projectId) {
-    let headers = this.getBasicHeaders();
-    return renkuFetch(`${this._baseUrl}/projects/${projectId}/jobs`, {
+    let headers = this._getBasicHeaders();
+    return this._clientFetch(`${this._apiUrl}/projects/${projectId}/jobs`, {
       method: 'GET',
       headers,
       queryParams: {per_page: 100}
@@ -482,8 +520,8 @@ class GitlabClient {
   }
 
   mergeMergeRequest(projectId, mrIid) {
-    let headers = this.getBasicHeaders();
-    return renkuFetch(`${this._baseUrl}/projects/${projectId}/merge_requests/${mrIid}/merge`, {
+    let headers = this._getBasicHeaders();
+    return this._clientFetch(`${this._apiUrl}/projects/${projectId}/merge_requests/${mrIid}/merge`, {
       method: 'PUT',
       headers,
       body: JSON.stringify({should_remove_source_branch: true})

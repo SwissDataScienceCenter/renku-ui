@@ -6,6 +6,7 @@ class APIError extends Error {
 
 
 const API_ERRORS = {
+  tokenExpired: 'TOKEN_EXPIRED',
   permissionError: 'NO_PERMISSION',
   notFoundError: 'NOT_FOUND',
   internalServerError: 'SERVER_ERROR',
@@ -26,6 +27,9 @@ function renkuFetch(url, options, returnType='json', alertOnErr=true) {
       URLobject.searchParams.append(key, options.queryParams[key])
     });
   }
+
+  // We do not send cookies unless we explicitly add them to headers
+  options['credentials'] = 'omit';
 
   return fetch(URLobject, options)
     .catch((fetchError) => {
@@ -54,6 +58,9 @@ function renkuFetch(url, options, returnType='json', alertOnErr=true) {
     })
     // We alert on most errors already here, yet allow to turn this off.
     .catch((error) => {
+      if (error.case === API_ERRORS.tokenExpired) {
+        return Promise.reject(error)
+      }
       if (alertOnErr) {
         alertAPIErrors(error);
       }
@@ -66,27 +73,35 @@ function renkuFetch(url, options, returnType='json', alertOnErr=true) {
 
 
 function throwAPIErrors(response) {
-  let error;
+  return response.json().then(errorData => {
+    let error;
+    if (errorData.error === 'token_expired') {
+      error = new APIError();
+      error.case = API_ERRORS.tokenExpired;
+      return Promise.reject(error);
+    }
+    switch (response.status) {
+    case 401:
+    case 403:
+      error = new APIError();
+      error.case = API_ERRORS.permissionError;
+      break;
+    case 404:
+      error = new APIError();
+      error.case = API_ERRORS.notFoundError;
+      break;
+    case 500:
+      error = new APIError();
+      error.case = API_ERRORS.internalServerError;
+      break;
+    default:
+      error = new APIError();
+    }
+    error.response = response;
+    return Promise.reject(error);
+  });
 
-  switch (response.status) {
-  case 401:
-  case 403:
-    error = new APIError();
-    error.case = API_ERRORS.permissionError;
-    break;
-  case 404:
-    error = new APIError();
-    error.case = API_ERRORS.notFoundError;
-    break;
-  case 500:
-    error = new APIError();
-    error.case = API_ERRORS.internalServerError;
-    break;
-  default:
-    error = new APIError();
-  }
-  error.response = response;
-  return Promise.reject(error);
+
 }
 
 
