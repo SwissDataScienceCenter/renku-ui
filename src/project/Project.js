@@ -175,7 +175,7 @@ class View extends Component {
     // We don't want to flash an alert while the state is updating.
     if (ciJobs === this.projectState._updatingPropVal) return;
 
-    const buildJobs = ciJobs
+    const buildJobs = (ciJobs || [])
       .filter((job) => job.name === 'image_build')
       .sort((job1, job2) => job1.created_at > job2.created_at ? -1 : 1);
 
