@@ -112,7 +112,11 @@ class RenkuNavBar extends Component {
     return (
       <header>
         <nav className="navbar navbar-expand-sm navbar-light bg-light justify-content-between">
-          <span className="navbar-brand"><Link to="/"><img src={logo} alt="Renku" height="24" /></Link></span>
+          {/* TODO: Revert back to using a react router link (no page reload) as soon as issue 304 has been
+              TODO: resolved */}
+          <span className="navbar-brand">
+            <a href={this.props.params.BASE_URL}><img src={logo} alt="Renku" height="24" /></a>
+          </span>
           <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span className="navbar-toggler-icon"></span>
@@ -185,8 +189,8 @@ class App extends Component {
               <Route exact strict path="/*(\d+)" render={props => <Redirect to={`${props.location.pathname}/`}/>}/>
               <Route exact path="/"
                 render={p => <Landing.Home
-                  key="landing" user={this.props.userState.getState().user}
-                  welcomePage={this.props.params['WELCOME_PAGE']} {...p} />} />
+                  key="landing" welcomePage={this.props.params['WELCOME_PAGE']}
+                  loggedIn={this.props.loggedIn} {...p} />} />
               <Route exact path="/projects"
                 render={p => <Project.List key="projects"
                   user={this.props.userState.getState().user}
