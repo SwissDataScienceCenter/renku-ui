@@ -99,7 +99,7 @@ const Ui = {
     return createSetAction('ui', 'selected', 'welcome');
   },
   reduce: (state, action) => {
-    return reduceState('ui', state, action, {selected: 'starred'})
+    return reduceState('ui', state, action, {selected: 'welcome'})
   }
 }
 

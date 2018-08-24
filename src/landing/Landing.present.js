@@ -152,13 +152,13 @@ class Starred extends Component {
   }
 }
 
-class AnonymousWelcome extends Component {
+class Welcome extends Component {
   render() {
     return (<Row>
       <Col md={8} lg={6} xl={4}>
         <RenkuIntroText welcomePage={this.props.welcomePage}/>
-        <p>You are not logged in, but you can still view public projects. If you wish to contribute to an existing
-           project or create a new one, please <Link to="/login">log in.</Link></p>
+        {!this.props.loggedIn ? <p>You are not logged in, but you can still view public projects. If you wish to
+            contribute to an existing project or create a new one, please <Link to="/login">log in.</Link></p> : null }
       </Col>
     </Row>)
   }
@@ -203,10 +203,9 @@ class Home extends Component {
     let selected = this.props.ui.selected;
     let nav = null;
     const urlMap = this.props.urlMap;
-    let welcome = <AnonymousWelcome urlMap={urlMap} welcomePage={this.props.welcomePage} />;
+    const welcome = <Welcome {...this.props} />;
     // Make sure the selected tab is valid for the user
-    if (this.props.user != null && this.props.user.id != null) {
-      if (selected === 'welcome') selected = 'starred';
+    if (this.props.loggedIn) {
       nav = <LoggedInNav selected={selected} urlMap={urlMap}
         onStarred={this.props.onStarred}
         onYourActivity={this.props.onYourActivity}
