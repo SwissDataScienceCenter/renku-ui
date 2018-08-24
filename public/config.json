@@ -1,5 +1,0 @@
-{
-  "BASE_URL": "http://192.168.99.100",
-  "JUPYTERHUB_URL": "http://192.168.99.100/jupyterhub",
-  "GATEWAY_URL": "http://192.168.99.100/api"
-}
