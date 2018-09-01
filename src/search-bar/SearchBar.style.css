@@ -1,0 +1,8 @@
+.searchBarSuggestionsContainer {
+  position: fixed;
+  background-color: white;
+  z-index: 1;
+}
+.searchBarSuggestionsContainer ul {
+  padding: 0;
+}

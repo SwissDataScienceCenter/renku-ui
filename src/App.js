@@ -32,7 +32,6 @@ import { BrowserRouter as Router, Route, Switch, Link, Redirect }  from 'react-r
 // import { FormGroup, FormControl, InputGroup } from 'react-bootstrap'
 
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
-import faSearch from '@fortawesome/fontawesome-free-solid/faSearch'
 import faPlus from '@fortawesome/fontawesome-free-solid/faPlus'
 
 // import About from './About'
@@ -43,6 +42,7 @@ import Landing from './landing/Landing'
 import Notebooks from './notebooks';
 import { Login, Logout } from './login'
 import { RenkuNavLink, UserAvatar } from './utils/UIComponents'
+import SearchBar from './search-bar'
 // import Lineage from './lineage'
 
 
@@ -125,13 +125,7 @@ class RenkuNavBar extends Component {
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <form className="form-inline my-2 my-lg-0">
               <div className="input-group">
-                <input className="form-control border-primary" type="search"
-                  placeholder="Search Renku" aria-label="Search" />
-                <span className="input-group-append">
-                  <button className="btn btn-outline-primary my-2 my-sm-0" type="submit">
-                    <FontAwesomeIcon icon={faSearch} />
-                  </button>
-                </span>
+                <SearchBar client={this.props.client}/>
               </div>
             </form>
 

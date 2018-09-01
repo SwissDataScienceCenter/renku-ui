@@ -23,6 +23,7 @@
     "popper.js": "^1.12.9",
     "qs": "^6.5.1",
     "react": "^16.2.0",
+    "react-autosuggest": "^9.4.0",
     "react-collapse": "^4.0.3",
     "react-dom": "^16.2.0",
     "react-markdown": "^3.1.4",
