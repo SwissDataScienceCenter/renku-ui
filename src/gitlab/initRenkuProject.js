@@ -16,47 +16,37 @@
  * limitations under the License.
  */
 
-function getPayload(projectName){
-
-  const TEMPLATE_URL = 'https://raw.githubusercontent.com/SwissDataScienceCenter/renku-project-template/master/latest/';
-
-  const actions = [
-    {
-      'action': 'create',
-      'file_path': '.gitlab-ci.yml',
-    },
-    {
-      'action': 'create',
-      'file_path': '.gitignore',
-    },
-    {
-      'action': 'create',
-      'file_path': '.renku/metadata.yml',
-    },
-    {
-      'action': 'create',
-      'file_path': 'Dockerfile',
-    },
-    {
-      'action': 'create',
-      'file_path': 'requirements.txt',
-    },
-    {
-      'action': 'create',
-      'file_path': 'README.md',
-    }
-  ];
+import { fetchJson } from './renkuFetch';
 
 
-  const actionPromises = actions.map((action) => {
-    return fetch(`${TEMPLATE_URL}${action.file_path}`)
-      .then((resp) => resp.text())
-      .then((content) => {
-        return {...action, 'content': evaluateTemplate(content, projectName)}
-      });
-  });
+// NOTE: An unregistered user can do 60 GitHub api requests per hour max meaning,
+//       that this approach fails when trying to create more than 30 projects
+//       per hour. I think we can live with that for the moment. However, it might
+//       make sense at some point to serve the project template from the GitLab
+//       instance we're working with.
 
-  return Promise.all(actionPromises).then((resolvedActions) => {
+function getPayload(projectName, renkuVersion){
+
+  const TEMPLATE_REPO_URL = 'https://api.github.com/repos/SwissDataScienceCenter/renku-project-template/git/trees/'
+
+  // Promise which will resolve into the repository sub-tree
+  // which matches the desired version of the renku project template.
+  const subTreePromise = fetchJson(TEMPLATE_REPO_URL + 'master')
+    .then(data => data.tree.filter(obj => obj.path === renkuVersion)[0]['sha'])
+    .then(treeSha => fetchJson(`${TEMPLATE_REPO_URL}${treeSha}?recursive=1`));
+
+  // Promise which will resolve into a list of file creation actions
+  // ready to be passed to the GitLab API.
+  const actionsPromise = subTreePromise.then(subtree => {
+    const actionPromises = subtree.tree
+      .filter(treeObject => treeObject.type === 'blob')
+      .map(treeObject => getActionPromise(treeObject, projectName));
+    return Promise.all(actionPromises);
+  })
+
+  // We finally return a promise which will resolve into the full
+  // payload for the first commit to the newly created project.
+  return actionsPromise.then((resolvedActions) => {
     return {
       'branch': 'master',
       'commit_message': 'init renku repository',
@@ -66,7 +56,22 @@ function getPayload(projectName){
 }
 
 
+function getActionPromise(treeObject, projectName) {
+
+  return fetchJson(treeObject.url)
+    .then(data => atob(data.content))
+    .then(fileContent => {
+      return {
+        'action': 'create',
+        'file_path': treeObject.path,
+        'content': evaluateTemplate(fileContent, projectName)
+      }
+    });
+}
+
+
 function evaluateTemplate(content, projectName) {
+
   const now = new Date();
   const templatedVariables = {
     'name': projectName,

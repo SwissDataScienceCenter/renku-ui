@@ -28,6 +28,8 @@ spec:
               containerPort: {{ .Values.service.port }}
               protocol: TCP
           env:
+            - name: RENKU_VERSION
+              value: {{ .Values.global.renku.version | default ( .Chart.Version ) | quote }}
             - name: BASE_URL
               value: {{ .Values.baseUrl | default (printf "%s://%s" (include "ui.protocol" .) .Values.global.renku.domain) | quote }}
             - name: GITLAB_URL
