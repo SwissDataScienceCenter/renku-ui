@@ -124,4 +124,8 @@ function alertAPIErrors(error) {
   }
 }
 
-export { renkuFetch, APIError, API_ERRORS, alertAPIErrors}
+function fetchJson(...args) {
+  return fetch(...args).then(response => response.json())
+}
+
+export { renkuFetch, fetchJson, APIError, API_ERRORS, alertAPIErrors}

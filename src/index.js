@@ -27,7 +27,8 @@ configPromise.then((res) => {
     const client = new GitlabClient(
       params.GATEWAY_URL,
       cookies,
-      params.JUPYTERHUB_URL
+      params.JUPYTERHUB_URL,
+      params.RENKU_VERSION
     );
 
     function mapStateToProps(state, ownProps){

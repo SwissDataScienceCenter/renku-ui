@@ -34,7 +34,8 @@ tee > ./public/config.json << EOF
   "BASE_URL": "http://${MINIKUBE_IP}",
   "JUPYTERHUB_URL": "http://${MINIKUBE_IP}/jupyterhub",
   "GATEWAY_URL": "http://${MINIKUBE_IP}/api",
-  "WELCOME_PAGE": "${WELCOME_PAGE}"
+  "WELCOME_PAGE": "${WELCOME_PAGE}",
+  "RENKU_VERSION": "latest"
 }
 EOF
 

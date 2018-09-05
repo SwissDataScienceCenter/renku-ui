@@ -27,7 +27,7 @@ class GitlabClient {
   // ku    -->  issue
 
 
-  constructor(baseUrl, cookies, jupyterhub_url) {
+  constructor(baseUrl, cookies, jupyterhub_url, renkuVersion) {
     this._baseUrl = baseUrl;
     // TODO: Which GitLab API version to use should actually be a
     //       a concern of the Gateway.
@@ -36,6 +36,7 @@ class GitlabClient {
     this._accessToken = cookies.get('access_token');
     this._refreshToken = cookies.get('refresh_token');
     this._jupyterhub_url = jupyterhub_url;
+    this._renkuVersion = renkuVersion;
     this._doLogin = () => {
       this._cookies.remove('access_token');
       this._cookies.remove('refresh_token');
@@ -136,7 +137,15 @@ class GitlabClient {
       body: JSON.stringify(gitlabProject)
     });
 
-    const payloadPromise = getPayload(gitlabProject.name);
+    // When the provided version does not exist, we log an error and uses latest.
+    // Maybe this should raise a more prominent alarm?
+    const payloadPromise = getPayload(gitlabProject.name, this._renkuVersion)
+      .catch(error => {
+        console.error(`Problem when retrieving project template ${this._renkuVersion}`);
+        console.error(error);
+        console.error('Trying again with \'latest\'');
+        return getPayload(gitlabProject.name, 'latest')
+      });
 
     return Promise.all([postPromise, payloadPromise]).then(([data, payload]) => {
       return this.postCommit(data.id, payload).then(() => data);
