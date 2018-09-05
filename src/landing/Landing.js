@@ -83,7 +83,7 @@ class Home extends Component {
     const VisibleHome = connect(this.mapStateToProps, this.mapDispatchToProps)(Present.Home);
     return [
       <Provider key="new" store={this.store}>
-        <VisibleHome user={this.props.user} welcomePage={atob(this.props.welcomePage)}/>
+        <VisibleHome welcomePage={atob(this.props.welcomePage)} loggedIn={this.props.loggedIn}/>
       </Provider>
     ]
   }
