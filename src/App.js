@@ -190,6 +190,7 @@ class App extends Component {
               <Route exact path="/"
                 render={p => <Landing.Home
                   key="landing" welcomePage={this.props.params['WELCOME_PAGE']}
+                  user={this.props.userState.getState().user}
                   loggedIn={this.props.loggedIn} {...p} />} />
               <Route exact path="/projects"
                 render={p => <Project.List key="projects"
