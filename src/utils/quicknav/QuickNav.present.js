@@ -21,9 +21,9 @@ import { RenkuNavLink } from '../UIComponents';
 import Autosuggest from 'react-autosuggest';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import faSearch from '@fortawesome/fontawesome-free-solid/faSearch';
-import './SearchBar.style.css';
+import './QuickNav.style.css';
 
-class SearchBarPresent extends Component {
+class QuickNavPresent extends Component {
 
   renderSuggestion = (suggestion) => <RenkuNavLink
     to={`/projects/${suggestion.id}`}
@@ -53,4 +53,4 @@ class SearchBarPresent extends Component {
   }
 }
 
-export { SearchBarPresent }
+export { QuickNavPresent }
