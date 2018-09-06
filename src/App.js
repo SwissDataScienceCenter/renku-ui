@@ -27,7 +27,7 @@ import React, { Component } from 'react';
 import './App.css';
 import logo from './logo.svg';
 
-import { BrowserRouter as Router, Route, Switch, Link, Redirect }  from 'react-router-dom'
+import { BrowserRouter as Router, Route, Switch, Redirect }  from 'react-router-dom'
 // import { IndexLinkContainer } from 'react-router-bootstrap';
 // import { FormGroup, FormControl, InputGroup } from 'react-bootstrap'
 
