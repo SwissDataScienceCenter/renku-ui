@@ -18,7 +18,7 @@
 
 import React, { Component } from 'react';
 
-import { StateKind, Schema, StateModel } from './../model/Model';
+import { StateKind, Schema, StateModel } from '../../model/Model';
 import { SearchBarPresent } from './SearchBar.present';
 
 const suggestionSchema = new Schema({
