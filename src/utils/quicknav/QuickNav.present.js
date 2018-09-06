@@ -25,10 +25,16 @@ import './QuickNav.style.css';
 
 class QuickNavPresent extends Component {
 
-  renderSuggestion = (suggestion) => <RenkuNavLink
-    to={`/projects/${suggestion.id}`}
-    title={suggestion.path}
-  />
+  constructor(props) {
+    super(props);
+    this.renderSuggestion = (suggestion) =>
+      <RenkuNavLink
+        to={`/projects/${suggestion.id}`}
+        title={suggestion.path}
+      />
+  }
+
+
 
   render () {
     const theme = {
@@ -45,7 +51,7 @@ class QuickNavPresent extends Component {
     };
 
 
-    return <form className="form-inline my-2 my-lg-0">
+    return <form className="form-inline my-2 my-lg-0" onSubmit={this.props.callbacks.onSubmit}>
       <div className="input-group">
         <Autosuggest
           suggestions={this.props.suggestions}
