@@ -41,9 +41,12 @@ class QuickNavContainer extends Component {
   constructor(props) {
     super(props)
     this.bar = new searchBarModel(StateKind.REACT, this);
+    this.onChange = this.doChange.bind(this);
+    this.onSuggestionsFetchRequested = this.doSuggestionsFetchRequested.bind(this);
+    this.onSuggestionsClearRequested = this.doSuggestionsClearRequested.bind(this);
   }
 
-  onSuggestionsFetchRequested({ value, reason }) {
+  doSuggestionsFetchRequested({ value, reason }) {
 
     // We only start searching after the second
     // letter has been typed.
@@ -65,28 +68,26 @@ class QuickNavContainer extends Component {
       });
   }
 
-  onSuggestionsClearRequested() {
+  doSuggestionsClearRequested() {
     this.bar.set('suggestions', []);
   }
 
-  onChange = (event, { newValue }) => {
+  doChange = (event, { newValue }) => {
     this.bar.set('value', newValue);
   };
 
   render () {
-    const inputProps = {
-      placeholder: 'Search Renku',
-      value: this.bar.get('value'),
-      onChange: this.onChange.bind(this)
-    };
+    const callbacks = {
+      onChange: this.onChange,
+      onSuggestionsClearRequested: this.onSuggestionsClearRequested,
+      onSuggestionsFetchRequested: this.onSuggestionsFetchRequested,
+      getSuggestionValue: (suggestion) => ''
+    }
 
     return <QuickNavPresent
       suggestions={this.bar.get('suggestions')}
-      renderSuggestion={this.renderSuggestion}
-      getSuggestionValue={(suggestion) => ''}
-      onSuggestionsFetchRequested={this.onSuggestionsFetchRequested.bind(this)}
-      onSuggestionsClearRequested={this.onSuggestionsClearRequested.bind(this)}
-      inputProps={inputProps}
+      value={this.bar.get('value')}
+      callbacks={callbacks}
     />
   }
 }
