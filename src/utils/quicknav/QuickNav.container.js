@@ -44,6 +44,11 @@ class QuickNavContainer extends Component {
     this.onChange = this.doChange.bind(this);
     this.onSuggestionsFetchRequested = this.doSuggestionsFetchRequested.bind(this);
     this.onSuggestionsClearRequested = this.doSuggestionsClearRequested.bind(this);
+    // Ignore submissions
+    this.onSubmit = (e) => {
+      this.bar.set('value', '');
+      e.preventDefault();
+    }
   }
 
   doSuggestionsFetchRequested({ value, reason }) {
@@ -79,6 +84,7 @@ class QuickNavContainer extends Component {
   render () {
     const callbacks = {
       onChange: this.onChange,
+      onSubmit: this.onSubmit,
       onSuggestionsClearRequested: this.onSuggestionsClearRequested,
       onSuggestionsFetchRequested: this.onSuggestionsFetchRequested,
       getSuggestionValue: (suggestion) => ''
