@@ -123,11 +123,7 @@ class RenkuNavBar extends Component {
           </button>
 
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <form className="form-inline my-2 my-lg-0">
-              <div className="input-group">
-                <SearchBar client={this.props.client}/>
-              </div>
-            </form>
+            <SearchBar client={this.props.client}/>
 
             <ul className="navbar-nav mr-auto">
               <RenkuNavLink to="/projects" title="Projects"/>

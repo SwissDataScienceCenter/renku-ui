@@ -19,6 +19,8 @@
 import React, { Component } from 'react';
 import { RenkuNavLink } from './../utils/UIComponents';
 import Autosuggest from 'react-autosuggest';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import faSearch from '@fortawesome/fontawesome-free-solid/faSearch';
 import './SearchBar.style.css';
 
 class SearchBarPresent extends Component {
@@ -30,15 +32,24 @@ class SearchBarPresent extends Component {
 
   render () {
     const theme = {
+      container: 'input-group',
+      input: 'form-control border-primary',
       suggestionsContainer: 'searchBarSuggestionsContainer',
       suggestion: {listStyle: 'none'}
     };
 
-    return <Autosuggest
-      {...this.props}
-      theme={theme}
-      renderSuggestion={this.renderSuggestion}
-    />;
+    return <form className="form-inline my-2 my-lg-0">
+      <div className="input-group">
+        <Autosuggest {...this.props} type="search"
+          theme={theme} renderSuggestion={this.renderSuggestion} />
+        <span className="input-group-append">
+          <button className="btn btn-outline-primary my-2 my-sm-0" type="submit">
+            <FontAwesomeIcon icon={faSearch} />
+          </button>
+        </span>
+      </div>
+    </form>
+
   }
 }
 
