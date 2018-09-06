@@ -17,7 +17,7 @@
  */
 
 import React, { Component } from 'react';
-import { RenkuNavLink } from '../UIComponents';
+import { Link }  from 'react-router-dom'
 import Autosuggest from 'react-autosuggest';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import faSearch from '@fortawesome/fontawesome-free-solid/faSearch';
@@ -27,13 +27,15 @@ class QuickNavPresent extends Component {
 
   constructor(props) {
     super(props);
-    this.renderSuggestion = (suggestion) =>
-      <RenkuNavLink
-        to={`/projects/${suggestion.id}`}
-        title={suggestion.path}
-      />
+    this.onRenderSuggestion = this.doRenderSuggestion.bind(this);
   }
 
+  doRenderSuggestion(suggestion, {query, isHighlighted}) {
+    const link = <Link to={`/projects/${suggestion.id}`}>{suggestion.path}</Link>
+    return (isHighlighted) ?
+      <div className="bg-light">{link}</div> :
+      <div>{link}</div>;
+  }
 
 
   render () {
@@ -46,6 +48,7 @@ class QuickNavPresent extends Component {
 
     const inputProps = {
       placeholder: 'Jump to...',
+      type: 'search',
       value: this.props.value,
       onChange: this.props.callbacks.onChange
     };
@@ -60,7 +63,7 @@ class QuickNavPresent extends Component {
           onSuggestionsClearRequested={this.props.callbacks.onSuggestionsClearRequested}
           inputProps={inputProps}
           theme={theme}
-          renderSuggestion={this.renderSuggestion} />
+          renderSuggestion={this.onRenderSuggestion} />
         <span className="input-group-append">
           <button className="btn btn-outline-primary my-2 my-sm-0" type="submit">
             <FontAwesomeIcon icon={faSearch} />
