@@ -38,10 +38,23 @@ class QuickNavPresent extends Component {
       suggestion: {listStyle: 'none'}
     };
 
+    const inputProps = {
+      placeholder: 'Jump to...',
+      value: this.props.value,
+      onChange: this.props.callbacks.onChange
+    };
+
+
     return <form className="form-inline my-2 my-lg-0">
       <div className="input-group">
-        <Autosuggest {...this.props} type="search"
-          theme={theme} renderSuggestion={this.renderSuggestion} />
+        <Autosuggest
+          suggestions={this.props.suggestions}
+          getSuggestionValue={this.props.callbacks.getSuggestionValue}
+          onSuggestionsFetchRequested={this.props.callbacks.onSuggestionsFetchRequested}
+          onSuggestionsClearRequested={this.props.callbacks.onSuggestionsClearRequested}
+          inputProps={inputProps}
+          theme={theme}
+          renderSuggestion={this.renderSuggestion} />
         <span className="input-group-append">
           <button className="btn btn-outline-primary my-2 my-sm-0" type="submit">
             <FontAwesomeIcon icon={faSearch} />
