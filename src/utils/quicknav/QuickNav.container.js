@@ -17,6 +17,7 @@
  */
 
 import React, { Component } from 'react';
+import { withRouter } from 'react-router';
 
 import { StateKind, Schema, StateModel } from '../../model/Model';
 import { QuickNavPresent } from './QuickNav.present';
@@ -28,7 +29,8 @@ const suggestionSchema = new Schema({
 
 const searchBarSchema = new Schema({
   value: {initial: '', mandatory: false},
-  suggestions: {schema: [suggestionSchema], mandatory: true, initial: []}
+  suggestions: {schema: [suggestionSchema], mandatory: true, initial: []},
+  selectedSuggestion: {schema: suggestionSchema, mandatory: false}
 });
 
 class SearchBarModel extends StateModel {
@@ -37,25 +39,32 @@ class SearchBarModel extends StateModel {
   }
 }
 
-class QuickNavContainer extends Component {
+class QuickNavContainerWithRouter extends Component {
   constructor(props) {
     super(props)
     this.bar = new SearchBarModel(StateKind.REACT, this);
     this.onChange = this.doChange.bind(this);
+    this.onSubmit = this.doSubmit.bind(this);
     this.onSuggestionsFetchRequested = this.doSuggestionsFetchRequested.bind(this);
     this.onSuggestionsClearRequested = this.doSuggestionsClearRequested.bind(this);
-    // Ignore submissions
-    this.onSubmit = (e) => {
-      this.bar.set('value', '');
-      e.preventDefault();
-    }
+  }
+
+  doSubmit(e) {
+    e.preventDefault();
+    this.bar.set('value', '');
+    const suggestion = this.bar.get('selectedSuggestion');
+    this.bar.set('selectedSuggestion', null);
+
+    if (suggestion == null) return;
+    this.props.history.push(`/projects/${suggestion.id}`);
   }
 
   doSuggestionsFetchRequested({ value, reason }) {
-
     // We only start searching after the second
     // letter has been typed.
     if (value.length < 2) return;
+    // constants come from react-autosuggest
+    if (reason === 'suggestions-revealed') return;
 
     this.props.client.getProjects({
       search: value
@@ -77,8 +86,14 @@ class QuickNavContainer extends Component {
     this.bar.set('suggestions', []);
   }
 
-  doChange = (event, { newValue }) => {
+  doChange = (event, { newValue, method }) => {
     this.bar.set('value', newValue);
+    const suggestions = this.bar.get('suggestions')
+      .filter((s) => s.path === newValue);
+    if (suggestions.length > 0)
+      this.bar.set('selectedSuggestion', suggestions[0])
+    else
+      this.bar.set('selectedSuggestion', null);
   };
 
   render () {
@@ -87,7 +102,7 @@ class QuickNavContainer extends Component {
       onSubmit: this.onSubmit,
       onSuggestionsClearRequested: this.onSuggestionsClearRequested,
       onSuggestionsFetchRequested: this.onSuggestionsFetchRequested,
-      getSuggestionValue: (suggestion) => ''
+      getSuggestionValue: (suggestion) =>  suggestion ? suggestion.path : ''
     }
 
     return <QuickNavPresent
@@ -97,5 +112,7 @@ class QuickNavContainer extends Component {
     />
   }
 }
+
+const QuickNavContainer = withRouter(QuickNavContainerWithRouter)
 
 export { QuickNavContainer }
