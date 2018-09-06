@@ -17,7 +17,7 @@
  */
 
 import React, { Component } from 'react';
-import { RenkuNavLink } from './../utils/UIComponents';
+import { RenkuNavLink } from '../UIComponents';
 import Autosuggest from 'react-autosuggest';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import faSearch from '@fortawesome/fontawesome-free-solid/faSearch';

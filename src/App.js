@@ -42,7 +42,7 @@ import Landing from './landing/Landing'
 import Notebooks from './notebooks';
 import { Login, Logout } from './login'
 import { RenkuNavLink, UserAvatar } from './utils/UIComponents'
-import SearchBar from './search-bar'
+import QuickNav from './utils/quicknav'
 // import Lineage from './lineage'
 
 
@@ -123,7 +123,7 @@ class RenkuNavBar extends Component {
           </button>
 
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <SearchBar client={this.props.client}/>
+            <QuickNav client={this.props.client}/>
 
             <ul className="navbar-nav mr-auto">
               <RenkuNavLink to="/projects" title="Projects"/>
