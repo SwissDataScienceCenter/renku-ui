@@ -16,5 +16,5 @@
  * limitations under the License.
  */
 
-import { SearchBarContainer as SearchBar } from './SearchBar.container.js';
-export default SearchBar;
+import { QuickNavContainer as QuickNav } from './QuickNav.container.js';
+export default QuickNav;

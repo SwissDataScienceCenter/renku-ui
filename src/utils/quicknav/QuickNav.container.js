@@ -19,7 +19,7 @@
 import React, { Component } from 'react';
 
 import { StateKind, Schema, StateModel } from '../../model/Model';
-import { SearchBarPresent } from './SearchBar.present';
+import { QuickNavPresent } from './QuickNav.present';
 
 const suggestionSchema = new Schema({
   path: {mandatory: true},
@@ -37,7 +37,7 @@ class searchBarModel extends StateModel {
   }
 }
 
-class SearchBarContainer extends Component {
+class QuickNavContainer extends Component {
   constructor(props) {
     super(props)
     this.bar = new searchBarModel(StateKind.REACT, this);
@@ -80,7 +80,7 @@ class SearchBarContainer extends Component {
       onChange: this.onChange.bind(this)
     };
 
-    return <SearchBarPresent
+    return <QuickNavPresent
       suggestions={this.bar.get('suggestions')}
       renderSuggestion={this.renderSuggestion}
       getSuggestionValue={(suggestion) => ''}
@@ -91,4 +91,4 @@ class SearchBarContainer extends Component {
   }
 }
 
-export { SearchBarContainer }
+export { QuickNavContainer }
