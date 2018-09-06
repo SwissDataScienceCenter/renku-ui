@@ -31,7 +31,7 @@ const searchBarSchema = new Schema({
   suggestions: {schema: [suggestionSchema], mandatory: true, initial: []}
 });
 
-class searchBarModel extends StateModel {
+class SearchBarModel extends StateModel {
   constructor(stateBinding, stateHolder, initialState) {
     super(searchBarSchema, stateBinding, stateHolder, initialState)
   }
@@ -40,7 +40,7 @@ class searchBarModel extends StateModel {
 class QuickNavContainer extends Component {
   constructor(props) {
     super(props)
-    this.bar = new searchBarModel(StateKind.REACT, this);
+    this.bar = new SearchBarModel(StateKind.REACT, this);
     this.onChange = this.doChange.bind(this);
     this.onSuggestionsFetchRequested = this.doSuggestionsFetchRequested.bind(this);
     this.onSuggestionsClearRequested = this.doSuggestionsClearRequested.bind(this);
