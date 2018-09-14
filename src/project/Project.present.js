@@ -58,6 +58,12 @@ const imageBuildAlertColor = {
   pending : 'warning'
 };
 
+function filterPaths(paths, blacklist) {
+  // Return paths to do not match the blacklist of regexps.
+  const result = paths.filter(p => blacklist.every(b => p.match(b) === null))
+  return result;
+}
+
 class DataVisibility extends Component {
   render() {
     return <FormGroup>
@@ -363,7 +369,8 @@ class FileFolderTableRow extends Component {
 
 class FileFolderList extends Component {
   render() {
-    const paths = this.props.paths || [];
+    const blacklist = this.props.blacklist || [/^\..*/, /\/\..*/];
+    const paths = filterPaths(this.props.paths || [], blacklist)
 
     const alertIcon = <div className="simple-tooltip">
       <FontAwesomeIcon icon={faExclamationCircle} />
@@ -390,10 +397,11 @@ class FileFolderList extends Component {
 
 class AnnotatedFileFolderList extends Component {
   render() {
+    const paths = this.props.paths;
     const alerts = this.props.paths ?
-      this.props.paths.map(path => this.props.annotations.modifiedFiles[path] !== undefined) : undefined;
-    const mrIids = this.props.paths ?
-      this.props.paths.map(path => {
+      paths.map(path => this.props.annotations.modifiedFiles[path] !== undefined) : undefined;
+    const mrIids = paths ?
+      paths.map(path => {
         if (!this.props.annotations.modifiedFiles[path]) return [];
         return this.props.annotations.modifiedFiles[path].map((mrInfo, i) => {
           return <Link key={i} to={`${this.props.mrOverviewUrl}/${mrInfo.mrIid}`}>&nbsp;[{mrInfo.source_branch}]</Link>;
@@ -406,7 +414,7 @@ class AnnotatedFileFolderList extends Component {
         <div><h3>{headertext}</h3></div>
       </div>,
       <FileFolderList key="filelist"
-        paths={this.props.paths}
+        paths={paths}
         alerts={alerts}
         mrIids={mrIids}
         linkUrl={this.props.linkUrl} />
@@ -666,4 +674,4 @@ class ProjectList extends Component {
 }
 
 export default { ProjectNew, ProjectView, ProjectList };
-export { ProjectListRow };
+export { ProjectListRow, filterPaths };

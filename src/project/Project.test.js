@@ -29,6 +29,7 @@ import { MemoryRouter } from 'react-router-dom';
 
 import { StateKind, StateModel } from '../model/Model';
 import Project from './Project';
+import { filterPaths } from './Project.present'
 import State, { ProjectModel } from  './Project.state';
 import client from '../gitlab/test-client';
 import { slugFromTitle } from '../utils/HelperFunctions'
@@ -104,5 +105,26 @@ describe('project view actions', () => {
     model.fetchProject(client, 1).then(() => {
       expect(model.get('core.title')).toEqual('A-first-project')
     })
+  })
+});
+
+describe('path filtering', () => {
+  const origPaths = ['.foo', '.renku', '.renku/foo', 'foo.txt', 'bar',
+    'myfolder/.hidden', 'myfolder/visible',
+    'myfolder/.alsohidden/readme.md', 'myfolder/.alsohidden/other.txt',
+    'myfolder/alsovisible/.hidden', 'myfolder/alsovisible/readme.md', 'myfolder/alsovisible/other.txt',
+  ];
+  it('filters the default blacklist [/^\..*/, /\/\..*/]', () => {
+    const blacklist = [/^\..*/, /\/\..*/];
+    const paths = filterPaths(origPaths, blacklist);
+    expect(paths).toEqual(['foo.txt', 'bar', 'myfolder/visible', 'myfolder/alsovisible/readme.md', 'myfolder/alsovisible/other.txt']);
+  })
+
+  it('filters the another blacklist [/^\..*/, /readme.md/]', () => {
+    const blacklist = [/^\..*/, /readme.md/];
+    const paths = filterPaths(origPaths, blacklist);
+    expect(paths).toEqual(['foo.txt', 'bar', 'myfolder/.hidden', 'myfolder/visible',
+    'myfolder/.alsohidden/other.txt',
+    'myfolder/alsovisible/.hidden', 'myfolder/alsovisible/other.txt']);
   })
 });
