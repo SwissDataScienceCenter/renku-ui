@@ -28,9 +28,13 @@
 import React, { Component } from 'react';
 
 import { Link, Route, Switch }  from 'react-router-dom';
+import Autosuggest from 'react-autosuggest';
+import ReactMarkdown from 'react-markdown'
 
 import { Container, Row, Col } from 'reactstrap';
-import { Alert, Badge, Button, Form, FormGroup, FormText, Input, Label, Table } from 'reactstrap';
+import { Alert, Badge, Table } from 'reactstrap';
+import { Button, Form, FormGroup, FormText, Label } from 'reactstrap';
+import { Input, InputGroup, InputGroupAddon, InputGroupText } from 'reactstrap';
 import { Nav, NavItem } from 'reactstrap';
 import { Card, CardBody, CardHeader } from 'reactstrap';
 
@@ -39,11 +43,9 @@ import faStarRegular from '@fortawesome/fontawesome-free-regular/faStar'
 import faStarSolid from '@fortawesome/fontawesome-free-solid/faStar'
 import faExclamationCircle from '@fortawesome/fontawesome-free-solid/faExclamationCircle'
 
-import ReactMarkdown from 'react-markdown'
-
-import { Avatar, TimeCaption, FieldGroup,
-  Pagination, RenkuNavLink } from '../utils/UIComponents';
-
+import collection from 'lodash/collection';
+import { Avatar, TimeCaption, FieldGroup, Pagination, RenkuNavLink } from '../utils/UIComponents'
+import './Project.style.css';
 
 const imageBuildStatusText = {
   failed: 'No notebook image has been built. You can still open a notebook server with the default image.',
@@ -65,14 +67,157 @@ function filterPaths(paths, blacklist) {
   return result;
 }
 
+class ProjectPath extends Component {
+  constructor(props) {
+    super(props);
+
+    this.onChange = this.doChange.bind(this);
+    this.onBlur = this.doBlur.bind(this);
+    this.onSuggestionsFetchRequested = this.doSuggestionsFetchRequested.bind(this);
+    this.onSuggestionsClearRequested = this.doSuggestionsClearRequested.bind(this);
+
+    this.state = {
+      suggestions: [],
+      input: this.props.namespace.name
+    };
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.props.namespace.name !== prevProps.namespace.name) {
+      this.setState({input: this.props.namespace.name});
+    }
+  }
+
+  getSuggestionValue(suggestion) {
+    return suggestion;
+  }
+
+  renderSuggestion(suggestion) {
+    return <span>{suggestion.name}</span>;
+  }
+
+  renderSectionTitle(section) {
+    return (
+      <strong>{section.kind}</strong>
+    );
+  }
+
+  getSectionSuggestions(section) {
+    return section.namespaces;
+  }
+
+  doBlur(event, {highlightedSuggestion}) {
+    // Take the highlighted suggestion or return to the selected namespace
+    if (null != highlightedSuggestion) {
+      this.props.onChange(highlightedSuggestion);
+      this.props.onAccept();
+    }
+    this.setState({input: this.props.namespace.name})
+  }
+
+  doChange(event, { newValue, method }) {
+    // If the user typed, store it as local input, otherwise set the selection
+    if (method === 'type') {
+      this.setState({input: newValue});
+    } else {
+      this.props.onChange(newValue)
+    }
+    if (method === 'enter' || method === 'click') {
+      this.props.onAccept();
+    }
+  }
+
+  async doSuggestionsFetchRequested({ value, reason }) {
+    // if (reason === 'suggestions-revealed') return;
+    const matches = await this.props.fetchMatchingNamespaces(value);
+    const namespaces = collection.groupBy(matches, 'kind');
+    const suggestions = ['user', 'group']
+      .map(section => {
+        const sectionNs = namespaces[section];
+        return {
+          kind: section,
+          namespaces: (sectionNs == null) ? [] : sectionNs
+        };
+      })
+      .filter(section => section.namespaces.length > 0);
+    this.setState({ suggestions });
+  }
+
+  doSuggestionsClearRequested() {
+    this.setState({
+      suggestions: [],
+    });
+  }
+
+  render() {
+    const { suggestions } = this.state;
+    const inputProps = {
+      placeholder: "{user}",
+      value: this.state.input || '',
+      onChange: this.onChange,
+      onBlur: this.onBlur
+    };
+    // See https://github.com/moroshko/react-autosuggest#themeProp
+    const defaultTheme = {
+      container:                'react-autosuggest__container',
+      containerOpen:            'react-autosuggest__container--open',
+      input:                    'react-autosuggest__input',
+      inputOpen:                'react-autosuggest__input--open',
+      inputFocused:             'react-autosuggest__input--focused',
+      suggestionsContainer:     'react-autosuggest__suggestions-container',
+      suggestionsContainerOpen: 'react-autosuggest__suggestions-container--open',
+      suggestionsList:          'react-autosuggest__suggestions-list',
+      suggestion:               'react-autosuggest__suggestion',
+      suggestionFirst:          'react-autosuggest__suggestion--first',
+      suggestionHighlighted:    'react-autosuggest__suggestion--highlighted',
+      sectionContainer:         'react-autosuggest__section-container',
+      sectionContainerFirst:    'react-autosuggest__section-container--first',
+      sectionTitle:             'react-autosuggest__section-title'
+    };
+    // Override the input theme to match our visual style
+    const theme = {...defaultTheme, ...{input: 'form-control'}};
+    return <FormGroup>
+      <Label>Project Home</Label>
+      <InputGroup>
+        <Autosuggest
+          multiSection={true}
+          highlightFirstSuggestion={true}
+          suggestions={suggestions}
+          inputProps={inputProps}
+          theme={theme}
+          shouldRenderSuggestions={(v) => true}
+          onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
+          onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+          getSuggestionValue={this.getSuggestionValue}
+          renderSuggestion={this.renderSuggestion}
+          renderSectionTitle={this.renderSectionTitle}
+          getSectionSuggestions={this.getSectionSuggestions} />
+        <InputGroupAddon addonType="append">
+          <InputGroupText>/</InputGroupText>
+          <InputGroupText>{this.props.slug}</InputGroupText>
+        </InputGroupAddon>
+      </InputGroup>
+      <FormText color="muted">{"By default, a project is owned by the user that created it, but \
+        it can optionally be created within a group."}</FormText>
+    </FormGroup>
+  }
+}
+
 class DataVisibility extends Component {
   render() {
+    const visibilities = this.props.visibilities;
+    const vizExplanation = (visibilities.length === 3) ?
+      "" :
+      "The project home's visibility setting limits the project visibility options.";
+    const options = visibilities.map(v =>
+      <option key={v.value} value={v.value}>{v.name}</option>
+    )
     return <FormGroup>
       <Label>Visibility</Label>
-      <Input type="select" placeholder="visibility" value={this.props.value.level} onChange={this.props.onChange}>
-        <option value="public">Public</option>
-        <option value="restricted">Restricted</option>
+      <Input type="select" placeholder="visibility" value={this.props.value} onChange={this.props.onChange}>
+        {options}
       </Input>
+      <FormText color="muted">{vizExplanation}</FormText>
     </FormGroup>
   }
 }
@@ -96,7 +241,15 @@ class ProjectNew extends Component {
             help="A description of the project helps users understand it and is highly recommended."
             feedback={statuses.description} invalid={statuses.description != null}
             value={this.props.model.display.description} onChange={this.props.handlers.onDescriptionChange} />
-          <DataVisibility value={this.props.model.meta.visibility} onChange={this.props.handlers.onVisibilityChange} />
+          <ProjectPath namespace={this.props.model.meta.projectNamespace} slug={this.props.model.display.slug}
+            namespaces={this.props.namespaces}
+            onChange={this.props.handlers.onProjectNamespaceChange}
+            onAccept={this.props.handlers.onProjectNamespaceAccept}
+            fetchMatchingNamespaces={this.props.handlers.fetchMatchingNamespaces} />
+          <DataVisibility
+            value={this.props.model.meta.visibility}
+            visibilities={this.props.visibilities}
+            onChange={this.props.handlers.onVisibilityChange} />
           <br/>
           <Button color="primary" onClick={this.props.handlers.onSubmit}>
             Create

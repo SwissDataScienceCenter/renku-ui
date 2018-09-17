@@ -46,9 +46,10 @@ fakeHistory.push({
 })
 
 describe('rendering', () => {
+  const user = {username: "test"};
   it('renders new without crashing', () => {
     const div = document.createElement('div');
-    ReactDOM.render(<Project.New />, div);
+    ReactDOM.render(<Project.New client={client} user={user}/>, div);
   });
   it('renders list without crashing', () => {
     const div = document.createElement('div');

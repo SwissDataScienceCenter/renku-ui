@@ -82,8 +82,9 @@ function addProjectMethods(client) {
     const gitlabProject = {
       name: renkuProject.display.title,
       description: renkuProject.display.description,
-      visibility: renkuProject.meta.visibility === 'public' ? 'public' : 'private'
+      visibility: renkuProject.meta.visibility
     };
+    if (renkuProject.meta.projectNamespace != null) gitlabProject.namespace_id = renkuProject.meta.projectNamespace.id;
     const headers = client.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 

@@ -41,28 +41,71 @@ import { alertError } from '../utils/Errors';
 import { MergeRequest, MergeRequestList } from '../merge-request';
 import { LaunchNotebookServer } from '../notebooks';
 
-import qs from 'query-string'
+import qs from 'query-string';
+
+function groupVisibilitySupportsVisibility(groupVisibility, visibility) {
+  if (visibility === 'private') return true;
+  if (visibility === 'internal') return (groupVisibility === 'internal' || groupVisibility === 'public');
+  // Public is the last remaining
+  return (groupVisibility === 'public');
+}
+
+function projectVisibilitiesForGroupVisibility(groupVisibility='public') {
+  const visibilities = [];
+  visibilities.push({name: "Private", value: "private"});
+  if (groupVisibilitySupportsVisibility(groupVisibility, 'internal'))
+    visibilities.push({name: "Internal", value: "internal"});
+  if (groupVisibilitySupportsVisibility(groupVisibility, 'public'))
+    visibilities.push({name: "Public", value: "public"});
+  return visibilities
+}
 
 class New extends Component {
   constructor(props) {
     super(props);
-    this.state = {statuses: []}
+
     this.newProject = new StateModel(newProjectSchema, StateKind.REDUX);
+    this.state = {statuses: [], namespaces: [], namespaceGroup: null,
+      visibilities: projectVisibilitiesForGroupVisibility()
+    };
+
     this.handlers = {
       onSubmit: this.onSubmit.bind(this),
       onTitleChange: this.onTitleChange.bind(this),
       onDescriptionChange: this.onDescriptionChange.bind(this),
       onVisibilityChange: this.onVisibilityChange.bind(this),
+      onProjectNamespaceChange: this.onProjectNamespaceChange.bind(this),
+      onProjectNamespaceAccept: this.onProjectNamespaceAccept.bind(this),
+      fetchMatchingNamespaces: this.fetchMatchingNamespaces.bind(this)
     };
     this.mapStateToProps = this.doMapStateToProps.bind(this);
+  }
+
+  async componentDidMount() {
+    const namespaces = await this.fetchNamespaces();
+    const username = this.props.user.username;
+    const namespace = namespaces.data.filter(n => n.name === username)
+    if (namespace.length > 0) this.newProject.set('meta.projectNamespace', namespace[0]);
+    this.setState({namespaces});
   }
 
   onSubmit() {
     const validation = this.validate();
     if (validation.result) {
-      this.props.client.postProject(this.newProject.get()).then((project) => {
-        this.props.history.push(`/projects/${project.id}`);
-      })
+      this.props.client.postProject(this.newProject.get())
+        .then((project) => {
+          this.props.history.push(`/projects/${project.id}`);
+        })
+        .catch(error => {
+          const errorData = error.errorData;
+          if (errorData != null) {
+            if (errorData.message.path != null) {
+              alert(`Path ${errorData.message.path}`);
+            } else {
+              alert(JSON.stringify(errorData.message))
+            }
+          }
+        })
     }
   }
 
@@ -81,11 +124,54 @@ class New extends Component {
 
   onDescriptionChange(e) { this.newProject.set('display.description', e.target.value); }
   onVisibilityChange(e) { this.newProject.set('meta.visibility', e.target.value); }
-  // onDataReferenceChange = (key, e) => { this.newProject.setObject('reference', key, e.target.value) };
+  onProjectNamespaceChange(value) {
+    this.newProject.set('meta.projectNamespace', value);
+  }
+  onProjectNamespaceAccept() {
+    const namespace = this.newProject.get('meta.projectNamespace');
+    if (namespace.kind !== 'group') {
+      const visibilities = projectVisibilitiesForGroupVisibility();
+      this.setState({namespaceGroup: null, visibilities});
+      return;
+    }
+
+    this.props.client.getGroupByPath(namespace.full_path).then(r => {
+      const group = r.data;
+      const visibilities = projectVisibilitiesForGroupVisibility(group.visibility);
+      const visibility = this.newProject.get('meta.visibility');
+      if (!groupVisibilitySupportsVisibility(group.visibility, visibility)) {
+        // Default to the highest available visibility
+        this.newProject.set('meta.visibility', visibilities[visibilities.length - 1].value);
+      }
+      this.setState({namespaceGroup: group, visibilities});
+    })
+  }
 
   doMapStateToProps(state, ownProps) {
     const model = this.newProject.mapStateToProps(state, ownProps);
     return {model}
+  }
+
+  fetchNamespaces(search=null) {
+    const queryParams = {};
+    if (search != null) queryParams['search'] = search;
+    return this.props.client.getNamespaces(queryParams);
+  }
+
+  // https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions#Using_Special_Characters
+  escapeRegexCharacters(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  async fetchMatchingNamespaces(search) {
+    const namespaces = this.state.namespaces;
+    if (namespaces.pagination.totalPages > 1) return this.fetchNamespaces(search);
+
+    // We have all the data, just filter in the browser
+    let escapedValue = this.escapeRegexCharacters(search.trim());
+    if (escapedValue === '') escapedValue = '.*';
+    const regex = new RegExp(escapedValue, 'i');
+    return Promise.resolve(namespaces.data.filter(namespace => regex.test(namespace.name)))
   }
 
   render() {
@@ -94,8 +180,11 @@ class New extends Component {
     this.state.statuses.forEach((d) => { Object.keys(d).forEach(k => statuses[k] = d[k])});
     return <ConnectedNewProject
       statuses={statuses}
+      namespaces={this.state.namespaces.data}
+      visibilities={this.state.visibilities}
       handlers={this.handlers}
-      store={this.newProject.reduxStore}/>;
+      store={this.newProject.reduxStore}
+      user={this.props.user} />;
   }
 }
 

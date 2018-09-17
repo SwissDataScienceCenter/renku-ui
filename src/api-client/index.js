@@ -24,6 +24,7 @@ import addProjectMethods  from './project';
 import addRepositoryMethods  from './repository';
 import addUserMethods  from './user';
 import addKuMethods  from './ku';
+import addInstanceMethods from './instance';
 
 import testClient from './test-client'
 
@@ -34,7 +35,6 @@ const ACCESS_LEVELS = {
   MAINTAINER: 40,
   OWNER: 50,
 };
-
 
 class APIClient {
 
@@ -62,6 +62,7 @@ class APIClient {
     addRepositoryMethods(this);
     addUserMethods(this);
     addKuMethods(this);
+    addInstanceMethods(this);
   }
 
   // A fetch method which is attached to a API client instance so that it can
