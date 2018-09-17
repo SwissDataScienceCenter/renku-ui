@@ -1,4 +1,5 @@
 import { kus } from './ku-samples';
 import { projects, projectReadme, projectNotebookFile } from './project-samples';
+import { namespaces } from './namespaces';
 
-export { kus, projects, projectReadme, projectNotebookFile };
+export { kus, namespaces, projects, projectReadme, projectNotebookFile };

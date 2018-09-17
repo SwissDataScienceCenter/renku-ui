@@ -82,6 +82,9 @@ const methods = {
   getNotebookServerUrl: {
     response: ''
   },
+  getNamespaces: {
+    responseData: samples.namespaces
+  },
 };
 
 let client = {};

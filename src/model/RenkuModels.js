@@ -34,9 +34,7 @@ const userSchema = new Schema({
 const metaSchema = new Schema({
   id: {initial: '', mandatory: false},
   // author: {schema: userSchema, mandatory: false},
-  createdAt: {initial: () => new Date()},
-  updatedAt: {initial: () => new Date()},
-  lastActivityAt: {initial: () => new Date()},
+  projectNamespace: {initial: {}, mandatory: false},
   visibility: {initial: 'public', mandatory: true},
 });
 
@@ -44,7 +42,7 @@ const displaySchema = new Schema({
   title: {initial:'', mandatory: true},
   description: {initial: '', mandatory: true},
   displayId: {initial: '', mandatory: false},
-  slug: {initial: '', mandatory: true},
+  slug: {initial: '', mandatory: true}
 });
 
 const newProjectSchema = new Schema({

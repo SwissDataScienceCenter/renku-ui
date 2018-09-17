@@ -56,6 +56,7 @@ function throwAPIErrors(response) {
       error = new APIError();
     }
     error.response = response;
+    error.errorData = errorData;
     return Promise.reject(error);
   });
 

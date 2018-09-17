@@ -184,12 +184,12 @@ class App extends Component {
                   loggedIn={this.props.loggedIn} {...p} />} />
 
               <Route exact path="/projects" render={
-                  p => <Project.List
-                    key="projects"
-                    user={this.props.userState.getState().user}
-                    client={this.props.client}
-                    {...p}
-                  />
+                p => <Project.List
+                  key="projects"
+                  user={this.props.userState.getState().user}
+                  client={this.props.client}
+                  {...p}
+                />
               }/>
 
               {/*TODO: This route should be handled by <Route path="/projects/:id(\d+)" too. Until this is the
@@ -202,7 +202,9 @@ class App extends Component {
                   user={this.props.userState.getState().user} userStateDispatch={this.props.userState.dispatch}
                   client={this.props.client} params={this.props.params}/>}/>
               <Route exact path="/project_new"
-                render={(p) => <Project.New key="project_new" client={this.props.client} {...p}/> }/>
+                render={(p) =>
+                  <Project.New key="project_new" client={this.props.client}
+                    user={this.props.userState.getState().user} {...p}/> }/>
               <Route exact path="/notebooks"
                 render={p => <Notebooks.Admin key="notebooks"
                   user={this.props.userState.getState().user}
