@@ -1,35 +1,21 @@
 import { testClient as client } from '../api-client'
-import ReactDOM from "react-dom";
+import { StateKind, StateModel } from '../model/Model';
 import { Project, projectSchema } from './RenkuModels';
-import {Component} from "react";
-import State from "../project/Project.state";
-import {connect} from "react-redux";
-import {createStore} from "../utils/EnhancedState";
-import Present from "../project/Project.present";
+import { ProjectModel } from "../project/Project.state";
 
-// We need at least one tests so the test runner does not complain
-describe('dummy tests', () => {
-  it('does nothing', () => {
-    expect(true === true);
-  })
-})
+describe('fetch project', () => {
+  it('fetches project', () => {
+    const projectId = 3;
+    const project = new ProjectModel(StateKind.REDUX);
+    project.fetchProject(client, projectId).then(() => {
+      expect(project.get("core.id")).toEqual(projectId);
+      expect(project.get("core.title")).toEqual('A-first-project');
+    })
+  });
+});
 
 
 // TODO: CREATE API RELATED TESTS
-
-
-// describe('fetch project', () => {
-//   it('fetches project', () => {
-//     const projectId = 1;
-//     const options = {metadata: true, display: true};
-//     const project = client.getProject(projectId, options);
-//     project.set('readme', client.getProject(projectId, {readme: true}));
-//   });
-//   it('fetches project', () => {
-//     const options = {metadata: true, display: true};
-//     const project = Project.fetch(client, 1, options);
-//   });
-// });
 //
 // describe('fetch project', () => {
 //   const store = createStore(projectSchema.reducer());
