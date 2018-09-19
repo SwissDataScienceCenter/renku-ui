@@ -1,4 +1,4 @@
-import client from '../gitlab/test-client'
+import { testClient as client } from '../api-client'
 import ReactDOM from "react-dom";
 import { Project, projectSchema } from './RenkuModels';
 import {Component} from "react";

@@ -30,7 +30,7 @@ class Admin extends Component {
   render() {
     const client = this.props.client;
     // FIXME Using a private field, but this code will all change soon anyway.
-    const jupyterHubUrl = client._jupyterhub_url
+    const jupyterHubUrl = client.jupyterhubUrl
     const adminUiUrl = `${jupyterHubUrl}/services/notebooks/ui/`
     return <NotebookAdmin adminUiUrl={adminUiUrl} />
   }

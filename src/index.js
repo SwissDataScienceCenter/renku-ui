@@ -8,7 +8,7 @@ import './index.css';
 import App from './App';
 // Disable service workers for the moment -- see below where registerServiceWorker is called
 // import registerServiceWorker from './utils/ServiceWorker';
-import GitlabClient from './gitlab'
+import APIClient from './api-client'
 import Cookies from 'universal-cookie'
 import { UserState, reducer} from './app-state';
 
@@ -24,7 +24,7 @@ configPromise.then((res) => {
     // We use a redux store to hold some global application state.
     const store = createStore(reducer);
 
-    const client = new GitlabClient(
+    const client = new APIClient(
       params.GATEWAY_URL,
       cookies,
       params.JUPYTERHUB_URL,

@@ -22,7 +22,7 @@ import ReactDOM from 'react-dom';
 import hljs from 'highlight.js';
 
 import { JupyterNotebookPresent, LaunchNotebookButton } from './File.present';
-import { ACCESS_LEVELS } from '../gitlab';
+import { ACCESS_LEVELS } from '../api-client';
 
 
 class JupyterNotebookContainer extends Component {

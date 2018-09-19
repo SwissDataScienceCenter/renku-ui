@@ -31,7 +31,7 @@ import { StateKind, StateModel } from '../model/Model';
 import Project from './Project';
 import { filterPaths } from './Project.present'
 import State, { ProjectModel } from  './Project.state';
-import client from '../gitlab/test-client';
+import { testClient as client } from '../api-client';
 import { slugFromTitle } from '../utils/HelperFunctions'
 
 
