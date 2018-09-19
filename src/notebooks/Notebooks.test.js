@@ -27,7 +27,7 @@ import ReactDOM from 'react-dom';
 import { MemoryRouter } from 'react-router-dom';
 
 import { NotebookAdmin } from './Notebooks.container';
-import client from '../gitlab/test-client'
+import { testClient as client } from '../api-client'
 
 describe('rendering', () => {
   it('renders home without crashing', () => {

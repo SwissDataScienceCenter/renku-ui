@@ -37,7 +37,7 @@ import { ProjectModel } from './Project.state'
 import Ku from '../ku/Ku'
 import Notebook from '../file/Notebook'
 import { FileLineage, LaunchNotebookServerButton } from '../file'
-import { ACCESS_LEVELS } from '../gitlab';
+import { ACCESS_LEVELS } from '../api-client';
 import { alertError } from '../utils/Errors';
 import { MergeRequest, MergeRequestList } from '../merge-request';
 

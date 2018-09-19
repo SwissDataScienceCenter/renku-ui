@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2017 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,24 +16,16 @@
  * limitations under the License.
  */
 
-/**
- *  incubator-renku-ui
- *
- *  Notebook.test.js
- *  Tests for the notebook renderer.
- */
+ 
+function addUserMethods(client) {
+  client.getUser = () => {
+    let headers = client.getBasicHeaders();
+    return client.clientFetch(`${client.apiUrl}/user`, {
+      method: 'GET',
+      headers: headers
+    })
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { MemoryRouter } from 'react-router-dom';
+  }
+}
 
-import Notebook from './Notebook'
-import { testClient as client } from '../api-client'
-
-describe('rendering', () => {
-  it('renders new without crashing', () => {
-    const div = document.createElement('div');
-    ReactDOM.render(<Notebook.Show filePath="notebooks/test.js" client={client} />, div);
-  });
-
-});
+export default addUserMethods;

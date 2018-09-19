@@ -29,7 +29,7 @@ import { MemoryRouter } from 'react-router-dom';
 
 import Landing from './Landing';
 import State from  './Landing.state';
-import client from '../gitlab/test-client'
+import { testClient as client } from '../api-client'
 
 describe('rendering', () => {
   it('renders home without crashing', () => {

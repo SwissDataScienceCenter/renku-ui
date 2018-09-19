@@ -26,7 +26,7 @@
 import React, { Component } from 'react';
 
 import { JupyterNotebook } from './File.container';
-import { API_ERRORS } from '../gitlab/renkuFetch';
+import { API_ERRORS } from '../api-client';
 
 
 class Show extends Component {

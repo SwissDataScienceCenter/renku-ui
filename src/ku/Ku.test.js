@@ -29,7 +29,7 @@ import { MemoryRouter } from 'react-router-dom';
 
 import Ku from './Ku';
 import State from  './Ku.state';
-import client from '../gitlab/test-client';
+import { testClient as client } from '../api-client';
 import { slugFromTitle } from '../utils/HelperFunctions';
 
 describe('rendering', () => {
