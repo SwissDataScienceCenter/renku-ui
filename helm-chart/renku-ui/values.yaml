@@ -42,7 +42,7 @@ replicaCount: 1
 
 image:
   repository: renku/renku-ui
-  tag: latest
+  tag: '0.2.0'
   pullPolicy: IfNotPresent
 
   ## Optionally specify an array of imagePullSecrets.
@@ -55,7 +55,7 @@ image:
 service:
   type: ClusterIP
   port: 80
-  
+
 ingress:
   enabled: false
 
