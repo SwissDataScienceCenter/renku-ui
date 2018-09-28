@@ -34,8 +34,8 @@ class MergeRequestContainer extends Component {
   componentDidMount() {
     this._isMounted = true;
     this.props.client.getMergeRequestChanges(this.props.projectId, this.props.iid)
-      .then(d => {
-        if (this._isMounted) this.setState({...d});
+      .then(resp => {
+        if (this._isMounted) this.setState({...resp.data});
       });
   }
 

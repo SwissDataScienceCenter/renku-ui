@@ -29,6 +29,7 @@ import { FormFeedback, FormGroup, FormText, Input, Label } from 'reactstrap';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faUser from '@fortawesome/fontawesome-free-solid/faUser'
 import human from 'human-time';
+import ReactPagination from "react-js-pagination";
 
 import { NavLink as RRNavLink }  from 'react-router-dom'
 import { NavLink } from 'reactstrap';
@@ -146,4 +147,23 @@ class UserAvatar extends Component {
   }
 }
 
-export { Avatar, TimeCaption, FieldGroup, RenkuNavLink, UserAvatar };
+class Pagination extends Component {
+  render() {
+    return <ReactPagination
+      activePage={this.props.currentPage}
+      itemsCountPerPage={this.props.perPage}
+      totalItemsCount={this.props.totalItems}
+      onChange={this.props.onPageChange}
+
+      // Some defaults for the styling
+      prevPageText={'Previous'}
+      nextPageText={'Next'}
+      itemClass={'page-item'}
+      linkClass={'page-link'}
+      activeClass={'page-item active'}
+      hideFirstLastPages={true}
+    />
+  }
+}
+
+export { Avatar, TimeCaption, FieldGroup, RenkuNavLink, UserAvatar, Pagination };

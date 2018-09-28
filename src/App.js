@@ -182,10 +182,15 @@ class App extends Component {
                   key="landing" welcomePage={this.props.params['WELCOME_PAGE']}
                   user={this.props.userState.getState().user}
                   loggedIn={this.props.loggedIn} {...p} />} />
-              <Route exact path="/projects"
-                render={p => <Project.List key="projects"
-                  user={this.props.userState.getState().user}
-                  client={this.props.client} {...p} />} />
+
+              <Route exact path="/projects" render={
+                  p => <Project.List
+                    key="projects"
+                    user={this.props.userState.getState().user}
+                    client={this.props.client}
+                    {...p}
+                  />
+              }/>
 
               {/*TODO: This route should be handled by <Route path="/projects/:id(\d+)" too. Until this is the
                  TODO: case, the ku_new route must be listed BEFORE the project one.   */}

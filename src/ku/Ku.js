@@ -232,9 +232,10 @@ class View extends Component {
 
   retrieveKu() {
     return (dispatch) => {
-      return this.props.client.getProjectKu(this.props.projectId, this.props.kuIid).then(d => {
-        dispatch(State.View.setAll(d))
-      })
+      return this.props.client.getProjectKu(this.props.projectId, this.props.kuIid)
+        .then(resp => {
+          dispatch(State.View.setAll(resp.data))
+        })
     }
   }
 
@@ -248,10 +249,10 @@ class View extends Component {
 
   retrieveContributions() {
     this.props.client.getContributions(this.props.projectId, this.props.kuIid)
-      .then(d => {
+      .then(resp => {
         if (!this._mounted) return;
         this.setState((prevState, props) => {
-          return {contributions: d}
+          return {contributions: resp.data}
         });
       })
   }
@@ -381,7 +382,7 @@ class List extends Component {
   listKus() {
     return (dispatch) => {
       return this.props.client.getProjectKus(this.props.projectId)
-        .then(d => dispatch(State.List.set(d)))
+        .then(resp => dispatch(State.List.set(resp.data)))
     }
   }
 

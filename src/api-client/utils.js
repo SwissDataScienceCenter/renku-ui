@@ -26,7 +26,7 @@ const RETURN_TYPES = {
 
 // Wrapper around fetch which will throw exceptions on all non 20x responses.
 // Adapted from https://github.com/github/fetch/issues/155
-function renkuFetch(url, options, returnType, alertOnErr) {
+function renkuFetch(url, options) {
 
   // Add query parameters to URL instance. This will also work
   // if url is already an instance of URL. Note that this also encodes the URL
@@ -55,22 +55,7 @@ function renkuFetch(url, options, returnType, alertOnErr) {
     // Raise an errror for all 200 responses.
     .then((response) => {
       if (response.status >= 200 && response.status < 300) {
-
-        switch (returnType) {
-
-        case RETURN_TYPES.json:
-          return response.json();
-
-        case RETURN_TYPES.text:
-          return response.text();
-
-        case RETURN_TYPES.full:
-          return response;
-
-        default:
-          return response;
-        }
-
+        return response;
       } else {
         return throwAPIErrors(response)
       }

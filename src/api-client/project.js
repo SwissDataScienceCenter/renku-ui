@@ -54,7 +54,9 @@ function addProjectMethods(client) {
         method: 'GET',
         headers: headers
       })
-        .then(d => carveProject(d))
+        .then(resp => {
+          return {...resp, data: carveProject(resp.data)};
+        })
     ];
 
     if (Object.keys(options).length > 0) {
@@ -69,7 +71,7 @@ function addProjectMethods(client) {
           .filter((treeObj) => treeObj.type === 'blob')
           .map((treeObj) => treeObj.path);
 
-        project.files = groupedFiles(files, project.files);
+        project.data.files = groupedFiles(files, project.data.files);
       }
       return project;
     })
@@ -85,11 +87,12 @@ function addProjectMethods(client) {
     const headers = client.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    const postPromise = client.clientFetch(`${client.apiUrl}/projects`, {
+    const newProjectPromise = client.clientFetch(`${client.apiUrl}/projects`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(gitlabProject)
-    });
+    })
+      .then(resp => resp.data);
 
     // When the provided version does not exist, we log an error and uses latest.
     // Maybe this should raise a more prominent alarm?
@@ -101,9 +104,10 @@ function addProjectMethods(client) {
         return getPayload(gitlabProject.name, 'latest')
       });
 
-    return Promise.all([postPromise, payloadPromise]).then(([data, payload]) => {
-      return client.postCommit(data.id, payload).then(() => data);
-    });
+    return Promise.all([newProjectPromise, payloadPromise])
+      .then(([data, payload]) => {
+        return client.postCommit(data.id, payload).then(() => data);
+      });
   }
 
 
@@ -148,7 +152,7 @@ function addProjectMethods(client) {
   // TODO: JUPYTERHUB_URL anymore but simply query the notebook url from the gateway
   client.getNotebookServerUrl = async (projectId, projectPath, commitSha='latest', ref='master') => {
     if (commitSha === 'latest') {
-      commitSha = await (client.getCommits(projectId).then(commits => commits[0].id));
+      commitSha = await (client.getCommits(projectId).then(resp => resp.data[0].id));
     }
     return `${client.jupyterhubUrl}/services/notebooks/${projectPath}/${commitSha}`
   }
@@ -174,7 +178,7 @@ function addProjectMethods(client) {
       method: 'GET',
       headers: headers
     })
-
+      .then(resp => resp.data)
       .then(jobs => {
         if (!jobs) return;
         const filteredJobs = jobs.filter(j => j.name === job && j.ref === branch);

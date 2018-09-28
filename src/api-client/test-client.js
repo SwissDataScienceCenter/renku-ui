@@ -21,51 +21,75 @@ import { carveProject } from './project';
 
 const methods = {
   getProjects: {
-    responseData: samples.projects
+    response: {
+      data: samples.projects,
+      pagination: {
+        currentPage: 1,
+      }
+    }
   },
   getProject: {
-    responseData: carveProject(samples.projects[0])
+    response: {
+      data: carveProject(samples.projects[0])
+    }
   },
   getProjectReadme: {
-    responseData: samples.projectReadme
+    response: {
+      data: samples.projectReadme
+    }
   },
   getProjectFile: {
-    responseData: samples.projectNotebookFile
+    response: samples.projectNotebookFile
   },
   getProjectKus: {
-    responseData: samples.kus
+    response: {
+      data: samples.kus
+    }
   },
   getProjectKu: {
-    responseData: samples.kus[0]
+    response: {
+      data: samples.kus[0]
+    }
   },
   getModifiedFiles: {
-    responseData: []
+    response: {
+      data: []
+    }
   },
   getContributions: {
-    responseData: []
+    response: {
+      data: []
+    }
   },
   getRepositoryTree: {
-    responseData: []
+    response: []
   },
   getMergeRequests: {
-    responseData: []
+    response: {
+      data: []
+    }
   },
   getBranches: {
-    responseData: []
+    response: {
+      data: []
+    }
   },
   getJobs: {
-    responseData: []
+    response: {
+      data: []
+    }
   },
   getNotebookServerUrl: {
-    responseData: ''
+    response: ''
   },
 };
 
 let client = {};
 for (let key in methods) {
+
   client[key] = function(){
     return new Promise(resolve => {
-      resolve(methods[key].responseData)
+      resolve(methods[key].response)
     });
   }
 }

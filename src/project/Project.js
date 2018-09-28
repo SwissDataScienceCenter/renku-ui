@@ -24,22 +24,23 @@
  */
 
 import React, { Component } from 'react';
-import { Provider, connect } from 'react-redux'
+import { connect } from 'react-redux'
 
 import { StateKind, StateModel } from '../model/Model';
 // TODO: ONLY use one projectSchema after the refactoring has been finished.
 import { newProjectSchema } from '../model/RenkuModels';
-import { createStore } from '../utils/EnhancedState'
 import { slugFromTitle } from '../utils/HelperFunctions';
 import Present from './Project.present'
-import State from './Project.state'
-import { ProjectModel } from './Project.state'
+
+import { ProjectModel, ProjectListModel } from './Project.state'
 import Ku from '../ku/Ku'
 import Notebook from '../file/Notebook'
 import { FileLineage, LaunchNotebookServerButton } from '../file'
 import { ACCESS_LEVELS } from '../api-client';
 import { alertError } from '../utils/Errors';
 import { MergeRequest, MergeRequestList } from '../merge-request';
+
+import qs from 'query-string'
 
 class New extends Component {
   constructor(props) {
@@ -312,9 +313,18 @@ class View extends Component {
 class List extends Component {
   constructor(props) {
     super(props);
-    this.store = createStore(State.List.reducer, 'project list');
+    this.projectPages = new ProjectListModel(props.client);
+    this.perPage = this.props.perPage || 10;
+
+    // Register listener for route changes (back/forward buttons)
+    this.props.history.listen(location => {
+      this.onPageChange(this.getPageNumber(location));
+    });
+
+
   }
 
+  // TODO: Replace this by URLs which are passed down from the app level.
   urlMap() {
     return {
       projectsUrl: '/projects',
@@ -323,22 +333,43 @@ class List extends Component {
   }
 
   componentDidMount() {
-    this.listProjects();
+    this.projectPages.set('perPage', this.perPage);
+    this.projectPages.setPage(this.getPageNumber(this.props.location));
   }
 
-  listProjects() {
-    this.store.dispatch(State.List.fetch(this.props.client));
+  getPageNumber(location) {
+    return parseInt(qs.parse(location.search).page, 10) || 1;
   }
 
-  mapStateToProps(state, ownProps) { return ({...{user: ownProps.user}, ...state, ...ownProps }) }
+  setPageInUrl(newPageNumber) {
+    const projectsUrl = this.urlMap().projectsUrl
+    this.props.history.push(`${projectsUrl}?page=${newPageNumber}`)
+  }
+
+  onPageChange(newPageNumber) {
+    this.projectPages.setPage(newPageNumber);
+  }
+
+  mapStateToProps(state, ownProps) {
+    const currentPage = this.projectPages.get('currentPage');
+    return {
+      user: ownProps.user,
+      page: this.projectPages.get('pages')[currentPage] || {projects: []},
+      currentPage: this.projectPages.get('currentPage'),
+      totalItems: this.projectPages.get('totalItems'),
+      perPage: this.projectPages.get('perPage'),
+      onPageChange: this.setPageInUrl.bind(this),
+    }
+  }
 
   render() {
-    const VisibleProjectList = connect(this.mapStateToProps)(Present.ProjectList);
-    return [
-      <Provider key="list" store={this.store}>
-        <VisibleProjectList urlMap={this.urlMap()} {...this.props} />
-      </Provider>
-    ]
+    const VisibleProjectList =
+      connect(this.mapStateToProps.bind(this))(Present.ProjectList);
+
+    return <VisibleProjectList
+      store={this.projectPages.reduxStore}
+      urlMap={this.urlMap()}
+    />
   }
 }
 

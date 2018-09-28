@@ -18,6 +18,7 @@
 
 import { APIError, alertAPIErrors, API_ERRORS } from './errors';
 import { renkuFetch, fetchJson, RETURN_TYPES } from './utils';
+import processPaginationHeaders from './pagination';
 
 import addProjectMethods  from './project';
 import addRepositoryMethods  from './repository';
@@ -76,7 +77,7 @@ class APIClient {
       options.headers.set('Authorization', `Bearer ${this.accessToken}`);
     }
 
-    return renkuFetch(url, options, returnType, alertOnErr)
+    return renkuFetch(url, options)
       .catch((error) => {
 
         // Token expired errors can be handled
@@ -99,6 +100,28 @@ class APIClient {
           return Promise.reject(error);
         }
 
+      })
+
+      .then(response => {
+        switch (returnType) {
+
+        case RETURN_TYPES.json:
+          return response.json().then(data => {
+            return {
+              data,
+              pagination: processPaginationHeaders(this, response.headers)
+            }
+          })
+
+        case RETURN_TYPES.text:
+          return response.text();
+
+        case RETURN_TYPES.full:
+          return response;
+
+        default:
+          return response;
+        }
       })
   }
 
