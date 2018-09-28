@@ -39,10 +39,11 @@ import faStarRegular from '@fortawesome/fontawesome-free-regular/faStar'
 import faStarSolid from '@fortawesome/fontawesome-free-solid/faStar'
 import faExclamationCircle from '@fortawesome/fontawesome-free-solid/faExclamationCircle'
 
-
 import ReactMarkdown from 'react-markdown'
 
-import { Avatar, TimeCaption, FieldGroup, RenkuNavLink } from '../utils/UIComponents'
+import { Avatar, TimeCaption, FieldGroup,
+  Pagination, RenkuNavLink } from '../utils/UIComponents';
+
 
 const imageBuildStatusText = {
   failed: 'No notebook image has been built. You can still open a notebook server with the default image.',
@@ -653,7 +654,7 @@ class ProjectListRow extends Component {
 
 class ProjectList extends Component {
   render() {
-    const projects = this.props.projects;
+    const projects = this.props.page.projects || [];
     const hasUser = this.props.user && this.props.user.id != null;
     const rows = projects.map((d, i) => <ProjectListRow key={i} projectsUrl={this.props.urlMap.projectsUrl} {...d} />);
     return [
@@ -668,7 +669,8 @@ class ProjectList extends Component {
         </Col>
       </Row>,
       <Row key="spacer"><Col md={8}>&nbsp;</Col></Row>,
-      <Row key="projects"><Col md={8}>{rows}</Col></Row>
+      <Row key="projects"><Col md={8}>{rows}</Col></Row>,
+      <Pagination key="pagination" {...this.props} />
     ]
   }
 }

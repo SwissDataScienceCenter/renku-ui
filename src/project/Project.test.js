@@ -26,6 +26,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { MemoryRouter } from 'react-router-dom';
+import { createMemoryHistory } from 'history';
 
 import { StateKind, StateModel } from '../model/Model';
 import Project from './Project';
@@ -34,6 +35,15 @@ import State, { ProjectModel } from  './Project.state';
 import { testClient as client } from '../api-client';
 import { slugFromTitle } from '../utils/HelperFunctions'
 
+
+const fakeHistory = createMemoryHistory({
+  initialEntries: [ '/' ],
+  initialIndex: 0,
+})
+fakeHistory.push({
+  pathname: '/projects',
+  search: '?page=1'
+})
 
 describe('rendering', () => {
   it('renders new without crashing', () => {
@@ -44,7 +54,7 @@ describe('rendering', () => {
     const div = document.createElement('div');
     ReactDOM.render(
       <MemoryRouter>
-        <Project.List client={client}/>
+        <Project.List client={client} history={fakeHistory} location={fakeHistory.location}/>
       </MemoryRouter>
       , div);
   });
@@ -75,27 +85,6 @@ describe('new project actions', () => {
     expect(model.get('visibility.level')).toEqual('private');
     model.set('visibility.level', 'public')
     expect(model.get('visibility.level')).toEqual('public');
-  });
-});
-
-describe('project list actions', () => {
-  it('creates a server return action', () => {
-    expect(State.List.receive({aggregations: {}, links: {}, hits: {hits: [{id: 1}], total: 1}}))
-      .toEqual({type: 'server_return', payload: {aggregations: {}, links: {}, hits: {hits: [{id: 1}], total: 1}}})
-  });
-});
-
-describe('project list reducer', () => {
-  const initialState = State.List.reducer(undefined, {});
-  it('returns initial state', () => {
-    expect(initialState).toEqual({projects:[]});
-  });
-  it('advances state', () => {
-    const state1 = State.List.reducer(initialState, State.List.receive({aggregations: {}, links: {}, hits: {hits: [{id: 1}], total: 1}}));
-    expect(state1)
-    .toEqual({
-      projects: [{aggregations: {}, links: {}, hits: {hits: [{id: 1}], total: 1}}]
-    });
   });
 });
 

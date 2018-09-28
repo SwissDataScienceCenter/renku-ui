@@ -27,37 +27,51 @@ import { UserState } from '../app-state';
 import { API_ERRORS } from '../api-client';
 import { StateModel} from '../model/Model';
 import { projectSchema } from '../model/RenkuModels';
+import { Schema, StateKind } from '../model/Model'
 
+const projectPageItemSchema = new Schema({
+  title: {initial: '', mandatory: true},
+  path: {initial: '', mandatory: true},
+  description: {initial: '', mandatory: true}
+});
 
-const List = {
-  fetch: (client) => {
-    return (dispatch) => {
-      dispatch(List.request());
-      client.getProjects()
-        .then(d => dispatch(List.receive(d)))
-        .catch(() => dispatch(List.receive([])));
-    }
-  },
-  request: () => {
-    const action = {type:'server_request' };
-    return action
-  },
-  receive: (results) => {
-    const action = {type:'server_return', payload: results };
-    return action
-  },
-  append: (results) => {
-    const action = {type:'server_return', payload: { hits: results } };
-    return action
-  },
-  reducer: (state, action) => {
-    if (state == null) state = {projects:[]}
-    if (action.type !== 'server_return') return state;
-    const results = {projects: state.projects.concat(action.payload)};
-    return results
+const projectsPageSchema = new Schema({
+  projects: {initial: [], schema: [{projectPageItemSchema}]}
+});
+
+const projectListSchema = new Schema({
+  totalItems: {mandatory: true},
+  currentPage: {mandatory: true},
+  perPage: {mandatory: true},
+  pages: {initial: [], schema: [{projectsPageSchema}]}
+});
+
+class ProjectListModel extends StateModel {
+  constructor(client) {
+    super(projectListSchema, StateKind.REDUX)
+    this.client = client
   }
-};
 
+  setPage(newPageNumber) {
+    this.set('currentPage', newPageNumber);
+    // We always relaod the current page on page change.
+    this.getPageData(newPageNumber, this.get('perPage'));
+  }
+
+  // TODO: For a smoother experience we could always preload the next page
+  //       in advance.
+  getPageData(pageNumber, perPage) {
+    this.client.getProjects({page: pageNumber, per_page: perPage})
+      .then(response => {
+        const pagination = response.pagination;
+        this.set('currentPage', pagination.currentPage);
+        this.set('totalItems', pagination.totalItems);
+        this.set(`pages.${pagination.currentPage}`, {
+          projects: response.data,
+        })
+      });
+  }
+}
 
 class ProjectModel extends StateModel {
   constructor(stateBinding, stateHolder, initialState) {
@@ -69,6 +83,7 @@ class ProjectModel extends StateModel {
   // TODO: Once state and client are fully adapted to each other, these functions should be trivial
   fetchProject(client, id) {
     return client.getProject(id, {notebooks:true, data:true})
+      .then(resp => resp.data)
       .then(d => {
         const files = d.files || this.get('files');
         const updatedState = {
@@ -100,6 +115,7 @@ class ProjectModel extends StateModel {
   fetchMergeRequests(client, id) {
     this.setUpdating({system: {merge_requests: true}});
     client.getMergeRequests(id)
+      .then(resp => resp.data)
       .then(d => {
         this.set('system.merge_requests', d)
       })
@@ -108,6 +124,7 @@ class ProjectModel extends StateModel {
   fetchBranches(client, id) {
     this.setUpdating({system: {branches: true}});
     client.getBranches(id)
+      .then(resp => resp.data)
       .then(d => {
         this.set('system.branches', d)
       })
@@ -139,7 +156,7 @@ class ProjectModel extends StateModel {
   }
 
   star(client, id, userStateDispatch, starred) {
-    client.starProject(id, starred).then((d) => {
+    client.starProject(id, starred).then(() => {
       // TODO: Bad naming here - will be resolved once the user state is re-implemented.
       this.fetchProject(client, id).then(p => userStateDispatch(UserState.star(p.metadata.core)))
 
@@ -149,6 +166,7 @@ class ProjectModel extends StateModel {
   fetchCIJobs(client, id) {
     this.setUpdating({system: {ci_jobs: true}});
     client.getJobs(id)
+      .then(resp => resp.data)
       .then((d) => {
         this.set('system.ci_jobs', d)
       })
@@ -156,5 +174,4 @@ class ProjectModel extends StateModel {
   }
 }
 
-export default { List };
-export { ProjectModel };
+export { ProjectModel, ProjectListModel };

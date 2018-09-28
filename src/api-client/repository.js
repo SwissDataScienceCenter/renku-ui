@@ -40,9 +40,9 @@ function addRepositoryMethods(client) {
       method: 'GET',
       headers: headers
     })
-      .then(commits => {
-        if (commits.length > 0) {
-          return commits;
+      .then(resp => {
+        if (resp.data.length > 0) {
+          return resp;
         }
         else {
           throw API_ERRORS.notFoundError;
@@ -125,7 +125,7 @@ function addRepositoryMethods(client) {
               per_page,
               previousResults: previousResults.concat(data),
               page: response.headers.get('X-Next-Page')
-            }, client.returnTypes.full, false)
+            })
           });
         }
         else {
@@ -205,21 +205,21 @@ function addRepositoryMethods(client) {
   // TODO: This method should go to the gateway.
   client.getModifiedFiles = (projectId) => {
     return client.getMergeRequests(projectId)
-      .then((mergeRequests) => {
-        if (!mergeRequests) return;
+      .then(resp => {
 
         // For each MR get the changes introduced by the MR, creates an array
         // of promises.
-        const mergeRequestsChanges = mergeRequests.map((mergeRequest) => {
+        const mergeRequestsChanges = resp.data.map((mergeRequest) => {
           return client.getMergeRequestChanges(projectId, mergeRequest.iid)
         });
 
         // On resolution of all promises, form an object which lists for each file
         // the merge requests that modify this file.
         return Promise.all(mergeRequestsChanges)
-          .then((mrChanges) => {
+          .then((mrChangeResponses) => {
             const openMrs = {};
-            mrChanges.forEach((mrChange) => {
+            mrChangeResponses.forEach((mrChangeResponse) => {
+              const mrChange = mrChangeResponse.data
               const changesArray = mrChange.changes;
               const mrInfo = {mrIid: mrChange.iid, source_branch: mrChange.source_branch}
               changesArray

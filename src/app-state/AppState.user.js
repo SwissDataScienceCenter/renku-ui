@@ -38,14 +38,14 @@ const User = {
   fetchAppUser: (client, dispatch) => {
     client.getUser()
       .then(response => {
-        dispatch(User.set(response));
+        dispatch(User.set(response.data));
         // TODO: Replace this after re-implementation of user state.
         client.getProjects({starred: true})
-          .then((projects) => {
-            const reducedProjects = projects.map((project) => starredProjectMetadata(project));
+          .then((projectResponse) => {
+            const reducedProjects = projectResponse.data.map((project) => starredProjectMetadata(project));
             dispatch(User.setStarred(reducedProjects));
           })
-          .catch(() => dispatch(this.setStarred([])));
+          .catch(() => dispatch(User.setStarred([])));
       })
       .catch((error) => console.error(error));
   },
