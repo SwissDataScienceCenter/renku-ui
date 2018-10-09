@@ -149,6 +149,12 @@ class UserAvatar extends Component {
 
 class Pagination extends Component {
   render() {
+
+    // We do not display the pagination footer when there's only one page
+    if (this.props.totalItems <= this.props.perPage) {
+      return null;
+    }
+
     return <ReactPagination
       activePage={this.props.currentPage}
       itemsCountPerPage={this.props.perPage}
