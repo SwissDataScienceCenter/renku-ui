@@ -45,6 +45,8 @@ import { RenkuNavLink, UserAvatar } from './utils/UIComponents'
 import QuickNav from './utils/quicknav'
 // import Lineage from './lineage'
 
+import { Input, Button, Row, Col } from 'reactstrap';
+
 
 function getActiveProjectId(currentPath) {
   try {
@@ -161,14 +163,65 @@ class RenkuFooter extends Component {
   }
 }
 
+// TODO: This is just a temporary solution,
+// Jupyterhub user tokens belong to the gateway.
+class PasteJHToken extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      token: ''
+    }
+  }
+
+  onChange(event) {
+    this.setState({token: event.target.value});
+  }
+
+  onSubmit() {
+    if (this.state.token === '') {
+      return;
+    }
+    else {
+      this.props.cookies.set('jh_token', this.state.token);
+      window.location.reload();
+    }
+  }
+
+  render() {
+    return <div className="container" style={{border: '1px solid red', padding: '5px'}}>
+      <Row>
+        <Col md={8}>
+          <p>Please click the button to the right, request a new Jupyterhub access token and paste it here.</p>
+        </Col>
+        <Col md={2}>
+          <Button
+            color="primary"
+            onClick={() => window.open(`${this.props.params.JUPYTERHUB_URL}/hub/token`)}
+            >Get token
+          </Button>
+        </Col>
+
+        <Col md={8}>
+          <Input type="text" id="jhTokenText" value={this.state.token} onChange={this.onChange.bind(this)}/>
+        </Col>
+        <Col md={2}>
+          <Button color="primary" onClick={this.onSubmit.bind(this)}>Store token</Button>
+        </Col>
+      </Row>
+    </div>
+  }
+}
+
 class App extends Component {
   render() {
     const userAvatar = <UserAvatar userState={this.props.userState} />;
+    const tokenPromptJH = this.props.loggedIn && !this.props.cookies.get('jh_token')
     return (
       <Router>
         <div>
           <Route render={props => <RenkuNavBar userAvatar={userAvatar} {...props} {...this.props}/>} />
           <main role="main" className="container-fluid">
+            {tokenPromptJH ? <PasteJHToken {...this.props} /> : null}
             <div key="gap">&nbsp;</div>
             <Switch>
 
