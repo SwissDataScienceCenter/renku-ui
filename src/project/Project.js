@@ -379,6 +379,7 @@ class List extends Component {
 
     return <VisibleProjectList
       store={this.projectPages.reduxStore}
+      user={this.props.user}
       urlMap={this.urlMap()}
     />
   }
