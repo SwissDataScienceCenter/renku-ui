@@ -22,7 +22,8 @@ import NotebookPreview from '@nteract/notebook-preview';
 // Do not import the style because this does not work after webpack bundles things for production mode.
 // Instead define the style below
 //import './notebook.css'
-import { Button, Row, Col } from 'reactstrap';
+import { Button, Row, Col, Tooltip } from 'reactstrap';
+import Cookies from 'universal-cookie';
 import '../../node_modules/highlight.js/styles/atom-one-light.css'
 
 class StyledNotebook extends React.Component {
@@ -60,29 +61,99 @@ class StyledNotebook extends React.Component {
 }
 
 class LaunchNotebookButton extends React.Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      serverRunning: false
+    };
+    this.cookies = new Cookies();
+    this.state.showTooltip = false;
+  }
+
+  componentDidMount() {
+    this.componentDidUpdate()
+  }
+
+  componentDidUpdate() {
+    if (this.props.notebookServerUrl === this.previousNotebookServerUrl) return;
+    if (!this.props.notebookServerUrl || !this.cookies.get('jh_token')) return;
+
+    const headers = new Headers({
+      Accept: 'application/json',
+      Authorization: `token ${this.cookies.get('jh_token')}`
+    });
+    fetch(this.props.notebookServerUrl, {
+      method: 'GET',
+      headers: headers,
+      credentials: 'omit'
+    })
+      .then(response => {
+        if (response.status >= 300) {
+          return {};
+        }
+        else {
+          return response.json()
+        }
+      })
+      .then(data => {
+        if ((data.pending || data.ready) && !this.state.serverRunning) {
+          this.setState({serverRunning: true})
+        }
+      });
+    this.previousNotebookServerUrl = this.props.notebookServerUrl;
+  }
+
   render() {
-    if (!this.props.deploymentUrl) return null;
+    if (!this.props.notebookServerUrl) return null;
 
     const props = this.props;
-    const label = props.label || 'Launch Notebook';
+    const label = props.label || 'Open Notebook';
     const className = props.className;
-    return <Button
-      className={className}
-      color="primary" onClick={event => {
-        event.preventDefault();
-        window.open(props.deploymentUrl);
-        // TODO: Temporary fix for notebook launching!
-        // TODO: Improve as soon as communication between
-        // TODO: ui and notebook service is routed through gateway.
-        setTimeout(() => {
+
+    // Create a tooltip that will explain the deactivated button
+    const tooltip = this.state.serverRunning ? null :
+      <Tooltip
+        id="JupyterButtonTooltip"
+        target="createPlus"
+        placement="bottom"
+        isOpen={this.state.showTooltip}
+      >
+        You have to launch Jupyter first!
+      </Tooltip>
+
+
+    return <div>
+      {tooltip}
+      <Button
+        id="tooltipButton"
+        onMouseEnter={() => {
+          this.setState({showTooltip: true});
+          // just a dirty trick because the mouseout event does not fire...
+          setTimeout(() => this.setState({showTooltip: false}), 3000)
+        }}
+        disabled={!this.state.serverRunning}
+        className={className}
+        color="primary" onClick={event => {
+          event.preventDefault();
+
+          // TODO: Improve as soon as communication between
+          // TODO: ui and notebook service is routed through gateway.
+          const headers = new Headers({
+            Accept: 'application/json',
+            Authorization: `token ${this.cookies.get('jh_token')}`
+          });
           fetch(props.deploymentUrl, {
             method: 'POST',
-            credentials: 'include',
+            headers: headers,
+            credentials: 'omit',
             body: JSON.stringify({})
-          })}, 5000);
-      }}>
-      {label}
-    </Button>
+          })
+
+          window.open(this.props.deploymentUrl || this.props.notebookServerUrl);
+        }}>
+        {label}
+      </Button>
+    </div>
   }
 }
 
@@ -96,7 +167,11 @@ const JupyterNotebookPresent = props => {
       <Col>
         <LaunchNotebookButton
           className="deployButton float-right"
-          key="launchbutton" deploymentUrl={props.deploymentUrl} label="Launch Notebook"  />
+          key="launchbutton"
+          deploymentUrl={props.deploymentUrl}
+          notebookServerUrl={props.notebookServerUrl}
+          label="Open Notebook"
+        />
       </Col>
     </Row>,
     <Row key="notebook">

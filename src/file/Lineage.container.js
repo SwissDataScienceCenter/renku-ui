@@ -38,11 +38,12 @@ class FileLineage extends Component {
 
   componentWillUnmount() { this._isMounted = false;  }
 
-  retrieveDeploymentUrl() {
-    this.props.client
-      .getDeploymentUrl(this.props.projectId, 'dot', this.props.filePath)
-      .then(url => this.retrieveGraph(url))
-  }
+  // TODO: This method is not used!!! Should it?
+  // retrieveDeploymentUrl() {
+  //   this.props.client
+  //     .getDeploymentUrl(this.props.projectId, 'dot', this.props.filePath)
+  //     .then(url => this.retrieveGraph(url))
+  // }
 
   async retrieveArtifact(job, artifact) {
     const [url, r] = await this.props.client.getArtifact(this.props.projectId, job, artifact);

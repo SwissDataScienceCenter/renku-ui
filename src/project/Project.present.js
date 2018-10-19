@@ -626,6 +626,8 @@ class ProjectView extends Component {
             render={props => <ProjectSettings key="settings" {...this.props} />} />
           <Route path={this.props.mrOverviewUrl}
             render={props => <ProjectMergeRequestList key="files-changes" {...this.props} />} />
+          <Route path={this.props.launchNotebookUrl}
+            render={this.props.launchNotebookServer}/>
         </Row>
       </Container>
     ]
