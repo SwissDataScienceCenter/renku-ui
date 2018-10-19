@@ -150,8 +150,8 @@ class UserAvatar extends Component {
 class Pagination extends Component {
   render() {
 
-    // We do not display the pagination footer when there's only one page
-    if (this.props.totalItems <= this.props.perPage) {
+    // We do not display the pagination footer when there are no pages or only one page
+    if (this.props.totalItems == null || this.props.totalItems <= this.props.perPage) {
       return null;
     }
 
