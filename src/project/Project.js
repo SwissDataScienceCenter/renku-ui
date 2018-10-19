@@ -83,6 +83,11 @@ class New extends Component {
 
   async componentDidMount() {
     const namespaces = await this.fetchNamespaces();
+    if (namespaces == null) {
+      // This seems to break in a test on Travis, but this code is not necessary locally. Need to investigate.
+      this.setState({namespaces: []});
+      return;
+    }
     const username = this.props.user.username;
     const namespace = namespaces.data.filter(n => n.name === username)
     if (namespace.length > 0) this.newProject.set('meta.projectNamespace', namespace[0]);
