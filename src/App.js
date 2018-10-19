@@ -106,9 +106,10 @@ class RenkuNavBar extends Component {
     if (null != nextRoute) this.props.history.push(nextRoute);
   }
   render() {
-    // Display the Ku related header options only if a project is active.
+    // Display the Ku/Notebook server related header options only if a project is active.
     const activeProjectId = getActiveProjectId(this.props.location.pathname);
     const kuDropdown = activeProjectId ? <RenkuNavLink to={`/projects/${activeProjectId}/ku_new`} title="Ku" /> : null;
+    const jupyterDropdown = activeProjectId ? <RenkuNavLink to={`/projects/${activeProjectId}/launchNotebook`} title="Launch Jupyter" /> : null;
     // TODO If there is is an active project, show it in the navbar
 
     return (
@@ -135,11 +136,12 @@ class RenkuNavBar extends Component {
               <li className="nav-item dropdown">
                 <a className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
                   aria-haspopup="true" aria-expanded="false">
-                  <FontAwesomeIcon icon={faPlus} />
+                  <FontAwesomeIcon icon={faPlus} id="createPlus"/>
                 </a>
                 <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                   <RenkuNavLink to="/project_new" title="Project" />
                   {kuDropdown}
+                  {jupyterDropdown}
                 </div>
               </li>
               <RenkuToolbarItemUser {...this.props} />

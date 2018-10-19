@@ -19,6 +19,8 @@
 import React, { Component } from 'react';
 // import { Notebooks as NotebooksPresent } from './Notebooks.present';
 
+import { NotebookServerOptions } from './Notebooks.present';
+import Cookies from 'universal-cookie';
 
 class NotebookAdmin extends Component {
   render() {
@@ -31,5 +33,156 @@ class NotebookAdmin extends Component {
   }
 }
 
+class LaunchNotebookServer extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      serverOptions: {},
+      serverRunning: false
+    };
+    this.cookies = new Cookies();
+    this._unmounting = false;
+  }
 
-export { NotebookAdmin };
+  componentWillUnmount() {
+    this._unmounting = true;
+  }
+
+  componentDidMount() {
+    this.componentDidUpdate()
+  }
+
+  componentDidUpdate() {
+    if (this.props.core.notebookServerUrl !== this.previousNotebookServerUrl){
+      this.serverStatusSet = false;
+      this.serverOptionsSet = false;
+    }
+    this.previousNotebookServerUrl = this.props.core.notebookServerUrl;
+    this.setServerStatus()
+    this.setServerOptions()
+  }
+
+
+  setServerStatus() {
+    if (this.serverStatusSet) return;
+    if (!this.props.core.notebookServerUrl || !this.cookies.get('jh_token')) return;
+
+    // Check for already running servers
+    fetch(this.props.core.notebookServerUrl, {
+      method: 'GET',
+      headers: new Headers({
+        Accept: 'application/json',
+        Authorization: `token ${this.cookies.get('jh_token')}`
+      }),
+      credentials: 'omit'
+    })
+      .then(response => {
+        if (response.status >= 300) {
+          return {};
+        }
+        else {
+          return response.json()
+        }
+      })
+      .then(data => {
+        const serverStatus = !(!data.pending && !data.ready);
+        if (!this._unmounting) {
+          this.setState({serverRunning: serverStatus});
+          this.serverStatusSet = true;
+        }
+      });
+  }
+
+  setServerOptions() {
+    if (this.serverOptionsSet) return;
+    if (!this.props.core.notebookServerUrl || !this.cookies.get('jh_token')) return;
+    // Load options and save them to state,
+    // set intial selection values to defaults.
+    fetch(`${this.props.core.notebookServerUrl}/server_options`, {
+      method: 'GET',
+      headers: new Headers({
+        Accept: 'application/json',
+        Authorization: `token ${this.cookies.get('jh_token')}`
+      }),
+      cache: 'no-store',
+      credentials: 'omit',
+    })
+      .then(response => response.json())
+      .then(data => {
+        Object.keys(data).forEach(key => {
+          data[key].selected = data[key].default;
+        })
+        if (!this._unmounting) {
+          this.setState({serverOptions: data});
+          this.serverOptionsSet = true;
+        }
+      })
+  }
+
+
+  getChangeHandlers() {
+
+    const handlers = {};
+
+    // Add all resource change handlers.
+    Object.keys(this.state.serverOptions).forEach(key => {
+      handlers[key] = (e) => {
+        const newValue = this.state.serverOptions[key].type === 'boolean' ?
+          e.target.checked : e.target.value;
+
+        this.setState((prevState) => {
+          const newState = {...prevState};
+          newState.serverOptions[key].selected = newValue;
+          return newState;
+        })
+      }
+    });
+    return handlers;
+  }
+
+
+  onSubmit(event) {
+    event.preventDefault();
+
+    const postData = {
+      serverOptions: {}
+    };
+    Object.keys(this.state.serverOptions).forEach(key => {
+      postData.serverOptions[key] = this.state.serverOptions[key].selected
+    });
+
+    // TODO: Temporary fix for notebook launching!
+    // TODO: Improve as soon as communication between
+    // TODO: ui and notebook service is routed through gateway.
+    fetch(this.props.core.notebookServerUrl, {
+      method: 'POST',
+      headers: new Headers({
+        Accept: 'application/json',
+        Authorization: `token ${this.cookies.get('jh_token')}`,
+        'Content-Type': 'application/json'
+      }),
+      credentials: 'omit',
+      body: JSON.stringify(postData)
+    })
+      .then(() => {
+        this.props.onSuccess()
+      })
+      window.open(this.props.core.notebookServerUrl)
+  }
+
+
+  render() {
+    if (this.state.serverRunning) {
+      return <p>You already have a server running.</p>
+    }
+    else {
+      return <NotebookServerOptions
+        onSubmit={this.onSubmit.bind(this)}
+        changeHandlers={this.getChangeHandlers()}
+        serverOptions={this.state.serverOptions}
+      />
+    }
+  }
+}
+
+export { NotebookAdmin, LaunchNotebookServer };
