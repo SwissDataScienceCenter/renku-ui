@@ -36,7 +36,9 @@ class JupyterNotebookContainer extends Component {
 
     return <JupyterNotebookPresent
       notebook={this.props.notebook}
-      deploymentUrl={deploymentUrl}/>
+      deploymentUrl={deploymentUrl}
+      notebookServerUrl={this.props.notebookServerUrl}
+    />
   }
 }
 
@@ -48,8 +50,8 @@ class LaunchNotebookServerButton extends Component {
     if (this.props.accessLevel < ACCESS_LEVELS.DEVELOPER) return null;
     return <LaunchNotebookButton
       className="btn btn-primary"
-      deploymentUrl={deploymentUrl}
-      label="Launch JupyterLab"
+      notebookServerUrl={deploymentUrl}
+      label="Connect to Jupyter"
     />;
   }
 }

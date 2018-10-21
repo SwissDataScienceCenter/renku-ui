@@ -39,6 +39,7 @@ import { FileLineage, LaunchNotebookServerButton } from '../file'
 import { ACCESS_LEVELS } from '../api-client';
 import { alertError } from '../utils/Errors';
 import { MergeRequest, MergeRequestList } from '../merge-request';
+import { LaunchNotebookServer } from '../notebooks';
 
 import qs from 'query-string';
 
@@ -244,6 +245,7 @@ class View extends Component {
       settingsUrl: `${baseUrl}/settings`,
       mrOverviewUrl: `${baseUrl}/pending`,
       mrUrl: `${baseUrl}/pending/:mrIid`,
+      launchNotebookUrl: `${baseUrl}/launchNotebook`
     }
   }
 
@@ -301,7 +303,9 @@ class View extends Component {
         ...ownProps
       };
     };
+
     const ConnectedMergeRequestList = connect(mapStateToProps)(MergeRequestList);
+    const ConnectedLaunchNotebookServer = connect(this.projectState.mapStateToProps)(LaunchNotebookServer);
 
     return {
       kuList: <Ku.List key="kus" {...subProps} urlMap={this.subUrls()} />,
@@ -321,7 +325,8 @@ class View extends Component {
         path={p.match.params.filePath} />,
 
       launchNotebookServerButton: <LaunchNotebookServerButton key= "launch notebook" {...subProps}
-        notebookServerUrl={this.projectState.get('core.notebookServerUrl')}/>,
+        notebookServerUrl={this.projectState.get('core.notebookServerUrl')}
+      />,
 
       mrList: <ConnectedMergeRequestList key="mrList" store={this.projectState.reduxStore}
         mrOverviewUrl={this.subUrls().mrOverviewUrl}/>,
@@ -329,6 +334,12 @@ class View extends Component {
         key="mr" {...subProps}
         iid={p.match.params.mrIid}
         updateProjectState={this.fetchAll.bind(this)}/>,
+
+      launchNotebookServer: (p) => <ConnectedLaunchNotebookServer
+        key="launchNotebook"
+        store={this.projectState.reduxStore}
+        onSuccess={() => this.props.history.push(`/projects/${this.projectState.get('core.id')}`)}
+      />
     }
   }
 
