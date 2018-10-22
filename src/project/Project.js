@@ -170,7 +170,7 @@ class New extends Component {
 
   async fetchMatchingNamespaces(search) {
     const namespaces = this.state.namespaces;
-    if (namespaces.pagination.totalPages > 1) return this.fetchNamespaces(search);
+    if (namespaces.pagination.totalPages > 1) return this.fetchNamespaces(search).then(r => r.data);
 
     // We have all the data, just filter in the browser
     let escapedValue = this.escapeRegexCharacters(search.trim());
