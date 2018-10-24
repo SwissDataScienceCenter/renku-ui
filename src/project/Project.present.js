@@ -128,8 +128,10 @@ class ProjectPath extends Component {
   }
 
   async doSuggestionsFetchRequested({ value, reason }) {
-    // if (reason === 'suggestions-revealed') return;
-    const matches = await this.props.fetchMatchingNamespaces(value);
+    let searchValue = value;
+    // Do a broad search on input-focused to show many options
+    if (reason === 'input-focused') searchValue = '';
+    const matches = await this.props.fetchMatchingNamespaces(searchValue);
     const namespaces = collection.groupBy(matches, 'kind');
     const suggestions = ['user', 'group']
       .map(section => {
@@ -140,6 +142,12 @@ class ProjectPath extends Component {
         };
       })
       .filter(section => section.namespaces.length > 0);
+
+    // Show current as first on input-focused, otherwise do not show
+    if (reason === 'input-focused') {
+      const current = {kind: 'current', namespaces: [this.props.namespace]};
+      suggestions.splice(0, 0, current);
+    }
     this.setState({ suggestions });
   }
 
