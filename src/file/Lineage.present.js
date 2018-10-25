@@ -17,12 +17,17 @@
  */
 
 import React, { Component } from 'react';
+
 import { Row, Col } from 'reactstrap';
 import dot from 'graphlib-dot';
 import graphlib from 'graphlib';
 import dagreD3 from 'dagre-d3';
 import * as d3 from 'd3';
+
+import { ExternalLink } from '../utils/UIComponents'
+
 import './Lineage.css';
+
 
 function nodeIdToPath(nodeId) { return nodeId.split(',')[1].slice(2, -2) }
 
@@ -140,10 +145,7 @@ class FileLineage extends Component {
         </Col>
         <Col sm={4}>
           <p className="text-sm-right">
-            <a key="link"
-              target="_blank"
-              href={externalFileUrl}
-              className="btn btn-primary" role="button">View in GitLab</a>
+            <ExternalLink url={externalFileUrl} title="View in GitLab" />
           </p>
         </Col>
       </Row>,

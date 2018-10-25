@@ -37,7 +37,7 @@ import ReactMarkdown from 'react-markdown';
 
 import {createStore} from '../utils/EnhancedState'
 import State from './Ku.state'
-import {Avatar, TimeCaption, FieldGroup} from '../utils/UIComponents'
+import {Avatar, ExternalLink, FieldGroup, TimeCaption } from '../utils/UIComponents'
 import { getActiveProjectId } from '../App'
 import { Contribution, NewContribution } from '../contribution'
 
@@ -187,10 +187,7 @@ class KuViewHeader extends Component {
         </Col>
         <Col xs={1}>
           <div>
-            <a key="link"
-              target="_blank"
-              href={externalIssueUrl}
-              className="btn btn-primary" role="button">View in GitLab</a>
+            <ExternalLink url={externalIssueUrl} title="View in GitLab" />
           </div>
         </Col>
       </Row>,
