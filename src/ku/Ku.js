@@ -33,6 +33,8 @@ import {Row, Col} from 'reactstrap'
 import {Button, FormGroup, Input, Label} from 'reactstrap'
 import { Badge } from 'reactstrap'
 
+import ReactMarkdown from 'react-markdown';
+
 import {createStore} from '../utils/EnhancedState'
 import State from './Ku.state'
 import {Avatar, TimeCaption, FieldGroup} from '../utils/UIComponents'
@@ -178,7 +180,11 @@ class KuViewHeader extends Component {
         </Col>
       </Row>,
       <Row key="details">
-        <Col xs={9}><p key="lead" className="lead">{description}</p></Col>
+        <Col xs={9}>
+          <div key="lead" className="lead">
+            <ReactMarkdown source={description} />
+          </div>
+        </Col>
         <Col xs={1}>
           <div>
             <a key="link"
@@ -324,7 +330,9 @@ class KuListRowContent extends Component {
       </Col>,
       <Col key="summary" md={9}>
         <p className={className}>{title}</p>
-        <p>{description} <TimeCaption caption="Updated" time={time}/></p>
+        <div>
+          <ReactMarkdown source={description} /> <TimeCaption caption="Updated" time={time}/>
+        </div>
       </Col>
     ]
   }
