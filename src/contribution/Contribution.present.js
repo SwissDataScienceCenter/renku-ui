@@ -21,6 +21,7 @@ import { Row, Col, Button, Input, TabContent, TabPane, NavItem,
   Nav, NavLink, DropdownMenu, DropdownItem, DropdownToggle, Dropdown} from 'reactstrap';
 import classnames from 'classnames';
 import Collapse from 'react-collapse';
+import ReactMarkdown from 'react-markdown';
 
 import { Avatar, TimeCaption } from '../utils/UIComponents'
 import { FilePreview } from '../file';
@@ -85,7 +86,9 @@ class ContributionBody extends React.Component {
             </Collapse>
           </span>);
       }
-      return <p key={block.iBlock} className="comment-block">{block.text}</p> ;
+      return <div key={block.iBlock} className="comment-block">
+        <ReactMarkdown source={block.text} />
+      </div>;
     });
   }
 
