@@ -21,6 +21,7 @@ import React, { Component } from 'react';
 
 import { NotebookServerOptions } from './Notebooks.present';
 import Cookies from 'universal-cookie';
+import { ExternalLink } from '../utils/UIComponents';
 
 class NotebookAdmin extends Component {
   render() {
@@ -28,8 +29,7 @@ class NotebookAdmin extends Component {
     // return <iframe width="100%" height="100%"
     //   style={{border:"none"}}
     //   src={adminUiUrl}></iframe>
-    return <a href={adminUiUrl} target="_blank"
-      className="btn btn-primary" role="button">Launch Notebook Admin UI</a>
+    return <ExternalLink url={adminUiUrl} title="Launch Notebook Admin UI" />
   }
 }
 
