@@ -125,7 +125,9 @@ class FileLineage extends Component {
   render() {
     const graph = (this.props.dot) ?
       <FileLineageGraph path={this.props.path} dot={this.props.dot} /> :
-      <p>Loading...</p>;
+      (this.props.error) ?
+        <p>{this.props.error}</p> :
+        <p>Loading...</p>;
     const externalUrl = this.props.externalUrl;
     const externalFileUrl = `${externalUrl}/blob/master/${this.props.path}`;
     return [

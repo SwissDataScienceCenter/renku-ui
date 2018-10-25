@@ -23,7 +23,7 @@ import { FileLineage as FileLineagePresent } from './Lineage.present';
 class FileLineage extends Component {
   constructor(props){
     super(props);
-    this.state = {url: null, dot: null}
+    this.state = {url: null, dot: null, error: null}
   }
 
   componentDidMount() {
@@ -46,13 +46,18 @@ class FileLineage extends Component {
   // }
 
   async retrieveArtifact(job, artifact) {
-    const [url, r] = await this.props.client.getArtifact(this.props.projectId, job, artifact);
-    const dot = await r.text();
-    if (this._isMounted) this.setState({url, dot});
+    try {
+      const [url, r] = await this.props.client.getArtifact(this.props.projectId, job, artifact);
+      const dot = await r.text();
+      if (this._isMounted) this.setState({url, dot});
+    } catch(error) {
+      console.error(error);
+      if (this._isMounted) this.setState({error: 'Could not load lineage.'});
+    }
   }
 
   render() {
-    return <FileLineagePresent dotUrl={this.state.url} dot={this.state.dot} {...this.props} />
+    return <FileLineagePresent dotUrl={this.state.url} dot={this.state.dot} error={this.state.error} {...this.props} />
   }
 }
 
