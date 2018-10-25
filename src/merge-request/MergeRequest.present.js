@@ -18,10 +18,12 @@
 
 import React, { Component } from 'react';
 import { Table, Row, Col, Button, Badge } from 'reactstrap';
-import { Link, Route, Switch } from 'react-router-dom'
+import { Link, Route, Switch } from 'react-router-dom';
 
-import FontAwesomeIcon from '@fortawesome/react-fontawesome'
-import faLeftArrow from '@fortawesome/fontawesome-free-solid/faLongArrowAltLeft'
+import { ExternalLink } from '../utils/UIComponents';
+
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import faLeftArrow from '@fortawesome/fontawesome-free-solid/faLongArrowAltLeft';
 
 
 class MergeRequestPresent extends Component {
@@ -41,8 +43,7 @@ class MergeRequestPresent extends Component {
   }
 
   getGitLabLink() {
-    return <a className="btn btn-primary btn-sm" role="button" target="_blank" size="sm"
-      href={this.props.externalMRUrl}>View in GitLab</a>;
+    return <ExternalLink url={this.props.externalMRUrl} size="sm" title="View in GitLab" />
   }
 
   render() {
@@ -85,8 +86,7 @@ class MergeRequestList extends Component {
     if (mrs.length < 1) {
       return <Row key="mr"><Col>
         <p>No pending changes.</p>
-        <a className="btn btn-primary btn-sm" role="button" target="_blank" size="sm"
-          href={this.props.externalMROverviewUrl}>View in GitLab</a>
+        <ExternalLink url={this.props.externalMROverviewUrl} size="sm" title="View in GitLab" />
       </Col></Row>
     }
     const rows = mrs.map((d, i) => {

@@ -44,7 +44,7 @@ import faStarSolid from '@fortawesome/fontawesome-free-solid/faStar'
 import faExclamationCircle from '@fortawesome/fontawesome-free-solid/faExclamationCircle'
 
 import collection from 'lodash/collection';
-import { Avatar, TimeCaption, FieldGroup, Pagination, RenkuNavLink } from '../utils/UIComponents'
+import { Avatar, ExternalLink, FieldGroup, Pagination, RenkuNavLink, TimeCaption } from '../utils/UIComponents'
 import './Project.style.css';
 
 const imageBuildStatusText = {
@@ -296,8 +296,7 @@ class ImageBuildInfo extends Component {
       <Alert color={imageBuildAlertColor[imageBuild.status]}>
         <p style={{float:'left'}}>{imageBuildStatusText[imageBuild.status] || imageBuildStatusText['failed']}</p>
         <p style={{float:'right'}}>
-          <a href={`${this.props.externalUrl}/-/jobs/${imageBuild.id}`}
-            className="btn btn-primary btn" role="button" target="_blank">View in GitLab</a>
+          <ExternalLink url={`${this.props.externalUrl}/-/jobs/${imageBuild.id}`} title="View in GitLab" />
           &nbsp;
           <Button
             color={imageBuildAlertColor[imageBuild.status]}
@@ -331,8 +330,7 @@ class MergeRequestSuggestions extends Component {
       return <Alert color="warning" key={i}>
         <p style={{float:'left'}}> Do you want to create a pending change for branch <b>{branch.name}</b>?</p>
         <p style={{float:'right'}}>
-          &nbsp; <a href={`${this.props.externalUrl}/tree/${branch.name}`}
-            className="btn btn-primary btn" role="button" target="_blank">View in GitLab</a>
+          &nbsp; <ExternalLink url={`${this.props.externalUrl}/tree/${branch.name}`} title="View in GitLab" />
           &nbsp; <Button color="success" onClick={(e) => {
             this.handleCreateMergeRequest(e, this.props.onCreateMergeRequest, branch)
           }}>Create Pending Change</Button>
@@ -385,8 +383,7 @@ class ProjectViewHeader extends Component {
             </div>
             <div className="d-flex flex-md-row-reverse pt-3">
               <div>
-                <a key="link" target="_blank" href={this.props.externalUrl}
-                  className="btn btn-primary" role="button">View Project in GitLab</a>
+                <ExternalLink url={this.props.externalUrl} title="View Project in GitLab" />
               </div>
               <div>&nbsp;</div>
               <div>

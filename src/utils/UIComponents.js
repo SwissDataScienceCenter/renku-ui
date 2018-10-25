@@ -172,4 +172,16 @@ class Pagination extends Component {
   }
 }
 
+class ExternalLink extends Component {
+  render() {
+    const className = (this.props.size == null) ?
+      "btn btn-primary" :
+      `btn btn-primary btn-${this.props.size}`;
+    return <a href={this.props.url}
+      className={className} role="button" target="_blank"
+      rel="noreferrer noopener">{this.props.title}</a>
+  }
+}
+
 export { Avatar, TimeCaption, FieldGroup, RenkuNavLink, UserAvatar, Pagination };
+export { ExternalLink };
