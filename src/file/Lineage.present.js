@@ -19,7 +19,6 @@
 import React, { Component } from 'react';
 
 import { Row, Col } from 'reactstrap';
-import dot from 'graphlib-dot';
 import graphlib from 'graphlib';
 import dagreD3 from 'dagre-d3';
 import * as d3 from 'd3';
@@ -43,7 +42,7 @@ class FileLineageGraph extends Component {
     this._vizRoot = null;
   }
 
-  graph() { return dot.read(this.props.dot) }
+  graph() { return this.props.graph }
 
   subGraph() {
     const subGraph = new graphlib.Graph()
@@ -128,8 +127,9 @@ class FileLineageGraph extends Component {
 
 class FileLineage extends Component {
   render() {
-    const graph = (this.props.dot) ?
-      <FileLineageGraph path={this.props.path} dot={this.props.dot} /> :
+    const graphObj = this.props.graph;
+    const graph = (graphObj) ?
+      <FileLineageGraph path={this.props.path} graph={graphObj} /> :
       (this.props.error) ?
         <p>{this.props.error}</p> :
         <p>Loading...</p>;

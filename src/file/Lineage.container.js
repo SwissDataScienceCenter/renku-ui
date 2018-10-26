@@ -17,6 +17,9 @@
  */
 
 import React, { Component } from 'react';
+
+import dot from 'graphlib-dot';
+
 import { FileLineage as FileLineagePresent } from './Lineage.present';
 
 
@@ -48,10 +51,11 @@ class FileLineage extends Component {
   async retrieveArtifact(job, artifact) {
     try {
       const [url, r] = await this.props.client.getArtifact(this.props.projectId, job, artifact);
-      const dot = await r.text();
-      if (this._isMounted) this.setState({url, dot});
+      const dotFile = await r.text();
+      const graph = dot.read(dotFile)
+      if (this._isMounted) this.setState({url, dot: dotFile, graph});
     } catch(error) {
-      console.error(error);
+      console.error("load graph:", error);
       if (this._isMounted) this.setState({error: 'Could not load lineage.'});
     }
   }
