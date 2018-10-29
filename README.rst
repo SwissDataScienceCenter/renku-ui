@@ -29,7 +29,7 @@ The Renku ui depends on a running instance of Renku being present (more precisel
 it relies on a running instance of the Renku API gateway). Clone the main Renku
 repository and follow these instructions_ to get Renku up and running.
 
-.. _instructions: https://renku.readthedocs.io/en/latest/developer/minikube.html
+.. _instructions: https://renku.readthedocs.io/en/latest/developer/setup.html?highlight=minikube
 
 Developing the UI
 -----------------
