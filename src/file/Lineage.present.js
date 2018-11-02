@@ -28,9 +28,11 @@ import { ExternalLink } from '../utils/UIComponents'
 import './Lineage.css';
 
 
-function nodeIdToPath(nodeId) { return nodeId.split(',')[1].slice(2, -2) }
+function nodeIdToPath(nodeId) { return nodeId.split(':')[1].slice(1,) } // Strip the initial / from the path
 
-function nodeIdToSha(nodeId) { return (nodeId == null) ? "unknown" : nodeId.split(',')[0].slice(2, 10) }
+function nodeToLabel(node) { return node.label; }
+
+function nodeIdToSha(nodeId) { return (nodeId == null) ? "unknown" : nodeId.split(':')[0] }
 
 function nodeIdToClass(nodeId, centralNode) {
   return (nodeId === centralNode) ? 'central': 'normal'
@@ -49,12 +51,14 @@ class FileLineageGraph extends Component {
       .setGraph({})
       .setDefaultEdgeLabel(function() { return {}; });
 
-    const {nodes, edges, centralNode} = this.nodesAndEdges();
-    if (nodes.length < 2) {
+    const graph = this.graph();
+    const {nodeIds, edges, centralNode} = this.nodesAndEdges();
+    if (nodeIds.length < 2) {
       subGraph.setNode(centralNode, {id: centralNode, label: `Introduced in commit ${nodeIdToSha(centralNode)}` });
     } else {
-      nodes.forEach(n => {
-        subGraph.setNode(n, {id: n, label: nodeIdToPath(n), class: nodeIdToClass(n, centralNode)})
+      nodeIds.forEach(n => {
+        const node = graph.node(n);
+        subGraph.setNode(n, {id: n, label: nodeToLabel(node), class: nodeIdToClass(n, centralNode)})
       });
       edges.forEach(e => { subGraph.setEdge(e) });
     }
@@ -86,11 +90,11 @@ class FileLineageGraph extends Component {
     const centralClosure = this.allPredecessors(centralNode);
     this.allSuccessors(centralNode, centralClosure);
     centralClosure[centralNode] = centralNode;
-    const nodes = Object.keys(centralClosure)
+    const nodeIds = Object.keys(centralClosure)
     const edges =
       graph.edges()
         .filter(e => (centralClosure[e.v] != null) && (centralClosure[e.w] != null));
-    return {nodes, edges, centralNode};
+    return {nodeIds, edges, centralNode};
   }
 
   componentDidMount() {

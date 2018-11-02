@@ -52,7 +52,7 @@ class FileLineage extends Component {
     try {
       const [url, r] = await this.props.client.getArtifact(this.props.projectId, job, artifact);
       const dotFile = await r.text();
-      const graph = dot.read(dotFile)
+      const graph = dot.read(dotFile);
       if (this._isMounted) this.setState({url, dot: dotFile, graph});
     } catch(error) {
       console.error("load graph:", error);
@@ -61,7 +61,7 @@ class FileLineage extends Component {
   }
 
   render() {
-    return <FileLineagePresent dotUrl={this.state.url} dot={this.state.dot} error={this.state.error} {...this.props} />
+    return <FileLineagePresent dotUrl={this.state.url} dot={this.state.dot} graph={this.state.graph} error={this.state.error} {...this.props} />
   }
 }
 
