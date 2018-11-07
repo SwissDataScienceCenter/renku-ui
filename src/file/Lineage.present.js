@@ -53,7 +53,9 @@ class FileLineageGraph extends Component {
 
     const graph = this.graph();
     const {nodeIds, edges, centralNode} = this.nodesAndEdges();
-    if (nodeIds.length < 2) {
+    if (centralNode == null) {
+      subGraph.setNode("0", {id: "0", label: "No lineage information." });
+    } else if (nodeIds.length < 2) {
       subGraph.setNode(centralNode, {id: centralNode, label: `Introduced in commit ${nodeIdToSha(centralNode)}` });
     } else {
       nodeIds.forEach(n => {
