@@ -35,7 +35,6 @@
     "redux": "^3.7.2",
     "redux-thunk": "^2.2.0",
     "styled-jsx": "^2.2.6",
-    "universal-cookie": "^2.1.2",
     "uuid": "^3.2.1"
   },
   "scripts": {

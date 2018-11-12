@@ -20,7 +20,6 @@ import React, { Component } from 'react';
 // import { Notebooks as NotebooksPresent } from './Notebooks.present';
 
 import { NotebookServerOptions } from './Notebooks.present';
-import Cookies from 'universal-cookie';
 import { ExternalLink } from '../utils/UIComponents';
 
 class NotebookAdmin extends Component {
@@ -40,7 +39,6 @@ class LaunchNotebookServer extends Component {
       serverOptions: {},
       serverRunning: false
     };
-    this.cookies = new Cookies();
     this._unmounting = false;
   }
 
@@ -53,11 +51,11 @@ class LaunchNotebookServer extends Component {
   }
 
   componentDidUpdate() {
-    if (this.props.core.notebookServerUrl !== this.previousNotebookServerUrl){
+    if (this.props.core.notebookServerAPI !== this.previousNotebookServerAPI){
       this.serverStatusSet = false;
       this.serverOptionsSet = false;
     }
-    this.previousNotebookServerUrl = this.props.core.notebookServerUrl;
+    this.previousNotebookServerAPI = this.props.core.notebookServerAPI;
     this.setServerStatus()
     this.setServerOptions()
   }
@@ -65,27 +63,14 @@ class LaunchNotebookServer extends Component {
 
   setServerStatus() {
     if (this.serverStatusSet) return;
-    if (!this.props.core.notebookServerUrl || !this.cookies.get('jh_token')) return;
+    if (!this.props.core.notebookServerAPI) return;
+    if (!this.props.client) return;
 
     // Check for already running servers
-    fetch(this.props.core.notebookServerUrl, {
-      method: 'GET',
-      headers: new Headers({
-        Accept: 'application/json',
-        Authorization: `token ${this.cookies.get('jh_token')}`
-      }),
-      credentials: 'omit'
-    })
+    const headers = this.props.client.getBasicHeaders();
+    this.props.client.clientFetch(this.props.core.notebookServerAPI, {headers})
       .then(response => {
-        if (response.status >= 300) {
-          return {};
-        }
-        else {
-          return response.json()
-        }
-      })
-      .then(data => {
-        const serverStatus = !(!data.pending && !data.ready);
+        const serverStatus = !(!response.data.pending && !response.data.ready);
         if (!this._unmounting) {
           this.setState({serverRunning: serverStatus});
           this.serverStatusSet = true;
@@ -95,20 +80,17 @@ class LaunchNotebookServer extends Component {
 
   setServerOptions() {
     if (this.serverOptionsSet) return;
-    if (!this.props.core.notebookServerUrl || !this.cookies.get('jh_token')) return;
+    if (!this.props.core.notebookServerAPI) return;
+    if (!this.props.client) return;
     // Load options and save them to state,
     // set intial selection values to defaults.
-    fetch(`${this.props.core.notebookServerUrl}/server_options`, {
-      method: 'GET',
-      headers: new Headers({
-        Accept: 'application/json',
-        Authorization: `token ${this.cookies.get('jh_token')}`
-      }),
+    const headers = this.props.client.getBasicHeaders();
+    this.props.client.clientFetch(`${this.props.core.notebookServerAPI}/server_options`, {
       cache: 'no-store',
-      credentials: 'omit',
+      headers
     })
-      .then(response => response.json())
-      .then(data => {
+      .then(response => {
+        const data = response.data;
         Object.keys(data).forEach(key => {
           data[key].selected = data[key].default;
         })
@@ -151,27 +133,25 @@ class LaunchNotebookServer extends Component {
       postData.serverOptions[key] = this.state.serverOptions[key].selected
     });
 
-    // TODO: Temporary fix for notebook launching!
-    // TODO: Improve as soon as communication between
-    // TODO: ui and notebook service is routed through gateway.
-    fetch(this.props.core.notebookServerUrl, {
+    const headers = this.props.client.getBasicHeaders();
+    headers.set('Content-Type', 'application/json');
+    this.props.client.clientFetch(this.props.core.notebookServerAPI, {
       method: 'POST',
-      headers: new Headers({
-        Accept: 'application/json',
-        Authorization: `token ${this.cookies.get('jh_token')}`,
-        'Content-Type': 'application/json'
-      }),
-      credentials: 'omit',
+      headers: headers,
       body: JSON.stringify(postData)
     })
       .then(() => {
         this.props.onSuccess()
       })
-      window.open(this.props.core.notebookServerUrl)
+
+    // Note that the opening of the new tab must happen
+    // on click and can not be delayed (pop-up blocking)
+    window.open(this.props.core.notebookServerUrl);
   }
 
 
   render() {
+    if (!this.props.client) return null;
     if (this.state.serverRunning) {
       return <p>You already have a server running.</p>
     }

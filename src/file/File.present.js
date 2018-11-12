@@ -23,7 +23,6 @@ import NotebookPreview from '@nteract/notebook-preview';
 // Instead define the style below
 //import './notebook.css'
 import { Button, Row, Col, Tooltip } from 'reactstrap';
-import Cookies from 'universal-cookie';
 import '../../node_modules/highlight.js/styles/atom-one-light.css'
 
 class StyledNotebook extends React.Component {
@@ -66,7 +65,6 @@ class LaunchNotebookButton extends React.Component {
     this.state = {
       serverRunning: false
     };
-    this.cookies = new Cookies();
     this.state.showTooltip = false;
   }
 
@@ -75,32 +73,18 @@ class LaunchNotebookButton extends React.Component {
   }
 
   componentDidUpdate() {
-    if (this.props.notebookServerUrl === this.previousNotebookServerUrl) return;
-    if (!this.props.notebookServerUrl || !this.cookies.get('jh_token')) return;
+    if (this.props.notebookServerAPI === this.previousNotebookServerAPI) return;
+    if (!this.props.notebookServerAPI) return;
 
-    const headers = new Headers({
-      Accept: 'application/json',
-      Authorization: `token ${this.cookies.get('jh_token')}`
-    });
-    fetch(this.props.notebookServerUrl, {
-      method: 'GET',
-      headers: headers,
-      credentials: 'omit'
-    })
+    // TODO: Method setServerStatus in LaunchNotebookServer component does the
+    // TODO: same. Move to client library.
+    const headers = this.props.client.getBasicHeaders();
+    this.props.client.clientFetch(this.props.core.notebookServerAPI, {headers})
       .then(response => {
-        if (response.status >= 300) {
-          return {};
-        }
-        else {
-          return response.json()
-        }
-      })
-      .then(data => {
-        if ((data.pending || data.ready) && !this.state.serverRunning) {
-          this.setState({serverRunning: true})
-        }
+        const serverStatus = !(!response.data.pending && !response.data.ready);
+        this.setState({serverRunning: serverStatus})
       });
-    this.previousNotebookServerUrl = this.props.notebookServerUrl;
+    this.previousNotebookServerAPI = this.props.notebookServerAPI;
   }
 
   render() {
@@ -135,21 +119,7 @@ class LaunchNotebookButton extends React.Component {
         className={className}
         color="primary" onClick={event => {
           event.preventDefault();
-
-          // TODO: Improve as soon as communication between
-          // TODO: ui and notebook service is routed through gateway.
-          const headers = new Headers({
-            Accept: 'application/json',
-            Authorization: `token ${this.cookies.get('jh_token')}`
-          });
-          fetch(props.deploymentUrl, {
-            method: 'POST',
-            headers: headers,
-            credentials: 'omit',
-            body: JSON.stringify({})
-          })
-
-          window.open(this.props.deploymentUrl || this.props.notebookServerUrl);
+          window.open(this.props.notebookServerUrl);
         }}>
         {label}
       </Button>

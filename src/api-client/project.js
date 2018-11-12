@@ -39,7 +39,7 @@ function addProjectMethods(client) {
   client.getProjects = (queryParams={}) => {
     let headers = client.getBasicHeaders();
 
-    return client.clientFetch(`${client.apiUrl}/projects`, {
+    return client.clientFetch(`${client.baseUrl}/projects`, {
       method: 'GET',
       headers,
       queryParams,
@@ -50,7 +50,7 @@ function addProjectMethods(client) {
   client.getProject = (projectId, options={}) => {
     let headers = client.getBasicHeaders();
     const apiPromises = [
-      client.clientFetch(`${client.apiUrl}/projects/${projectId}`, {
+      client.clientFetch(`${client.baseUrl}/projects/${projectId}`, {
         method: 'GET',
         headers: headers
       })
@@ -88,7 +88,7 @@ function addProjectMethods(client) {
     const headers = client.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    const newProjectPromise = client.clientFetch(`${client.apiUrl}/projects`, {
+    const newProjectPromise = client.clientFetch(`${client.baseUrl}/projects`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(gitlabProject)
@@ -127,7 +127,7 @@ function addProjectMethods(client) {
     headers.append('Content-Type', 'application/json');
     const endpoint = starred ? 'unstar' : 'star';
 
-    return client.clientFetch(`${client.apiUrl}/projects/${projectId}/${endpoint}`, {
+    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/${endpoint}`, {
       method: 'POST',
       headers: headers,
     })
@@ -140,7 +140,7 @@ function addProjectMethods(client) {
     const headers = client.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return client.clientFetch(`${client.apiUrl}/projects/${projectId}`, {
+    return client.clientFetch(`${client.baseUrl}/projects/${projectId}`, {
       method: 'PUT',
       headers: headers,
       body: JSON.stringify(putData)
@@ -155,27 +155,16 @@ function addProjectMethods(client) {
     if (commitSha === 'latest') {
       commitSha = await (client.getCommits(projectId).then(resp => resp.data[0].id));
     }
-    return `${client.jupyterhubUrl}/services/notebooks/${projectPath}/${commitSha}`
-  }
-
-
-  client.getDeploymentUrl = (projectId, envName, branchName = 'master') => {
-    let headers = client.getBasicHeaders();
-    return client.clientFetch(`${client.apiUrl}/projects/${projectId}/environments`, {
-      method: 'GET',
-      headers: headers
-    })
-      .then(envs => envs.filter(env => env.name === `${envName}/${branchName}`)[0])
-      .then(env => {
-        if (!env) return undefined;
-        return `${env.external_url}`;
-      })
+    return {
+      notebookServerUrl: `${client.jupyterhubUrl}/services/notebooks/${projectPath}/${commitSha}`,
+      notebookServerAPI: `${client.baseUrl}/notebooks/${projectPath}/${commitSha}`
+    };
   }
 
 
   client.getArtifactsUrl = (projectId, job, branch='master') => {
     const headers = client.getBasicHeaders();
-    return client.clientFetch(`${client.apiUrl}/projects/${projectId}/jobs`, {
+    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/jobs`, {
       method: 'GET',
       headers: headers
     })
@@ -189,7 +178,7 @@ function addProjectMethods(client) {
         const jobObj =
           filteredJobs
             .sort((a, b) => (a.finished_at > b.finished_at) ? -1 : +(a.finished_at < b.finished_at))[0]
-        return `${client.apiUrl}/projects/${projectId}/jobs/${jobObj.id}/artifacts`;
+        return `${client.baseUrl}/projects/${projectId}/jobs/${jobObj.id}/artifacts`;
       })
   }
 
@@ -208,7 +197,7 @@ function addProjectMethods(client) {
 
   client.getJobs = (projectId) => {
     let headers = client.getBasicHeaders();
-    return client.clientFetch(`${client.apiUrl}/projects/${projectId}/jobs`, {
+    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/jobs`, {
       method: 'GET',
       headers,
       queryParams: {per_page: 100}

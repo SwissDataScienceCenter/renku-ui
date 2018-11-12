@@ -39,8 +39,11 @@ function renkuFetch(url, options) {
     });
   }
 
-  // We do not send cookies unless we explicitly add them to headers
-  options['credentials'] = 'omit';
+  // This is the default behaviour for most browsers.
+  options['credentials'] = 'same-origin';
+
+  // Add a custom header for protection against CSRF attacks.
+  options.headers.set('X-Requested-With', 'XMLHttpRequest');
 
   return fetch(URLobject, options)
 

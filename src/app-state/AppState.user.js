@@ -47,7 +47,10 @@ const User = {
           })
           .catch(() => dispatch(User.setStarred([])));
       })
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.error(error)
+        User.set(undefined)
+      });
   },
   // Actions related to user state...
   set: (user) => {

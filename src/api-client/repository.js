@@ -25,7 +25,7 @@ function addRepositoryMethods(client) {
     const headers = client.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return client.clientFetch(`${client.apiUrl}/projects/${projectId}/repository/commits`, {
+    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/repository/commits`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(commitPayload)
@@ -36,7 +36,7 @@ function addRepositoryMethods(client) {
   client.getCommits = (projectId, ref='master') => {
     let headers = client.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
-    return client.clientFetch(`${client.apiUrl}/projects/${projectId}/repository/commits?ref_name=${ref}`, {
+    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/repository/commits?ref_name=${ref}`, {
       method: 'GET',
       headers: headers
     })
@@ -63,7 +63,7 @@ function addRepositoryMethods(client) {
     let headers = client.getBasicHeaders();
     const encodedPath = encodeURIComponent(path);
     return client.clientFetch(
-      `${client.apiUrl}/projects/${projectId}/repository/files/${encodedPath}/raw?ref=${ref}`, {
+      `${client.baseUrl}/projects/${projectId}/repository/files/${encodedPath}/raw?ref=${ref}`, {
         method: 'GET',
         headers: headers
       }, client.returnTypes.text, alertOnErr
@@ -77,7 +77,7 @@ function addRepositoryMethods(client) {
     const pathEncoded = encodeURIComponent(path);
     const raw = encoding === 'raw' ? '/raw' : '';
     return client.clientFetch(
-      `${client.apiUrl}/projects/${projectId}/repository/files/${pathEncoded}${raw}?ref=${ref}`, {
+      `${client.baseUrl}/projects/${projectId}/repository/files/${pathEncoded}${raw}?ref=${ref}`, {
         method: 'GET',
         headers: headers
       },
@@ -111,7 +111,7 @@ function addRepositoryMethods(client) {
 
 
     // TODO: Think about general pagination strategy for API client.
-    return client.clientFetch(`${client.apiUrl}/projects/${projectId}/repository/tree`, {
+    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/repository/tree`, {
       method: 'GET',
       headers,
       queryParams
@@ -149,7 +149,7 @@ function addRepositoryMethods(client) {
   // TODO: Page through results in gateway, for the moment assuming a max of 100 branches seems ok.
   client.getBranches = (projectId) => {
     let headers = client.getBasicHeaders();
-    const url = `${client.apiUrl}/projects/${projectId}/repository/branches`;
+    const url = `${client.baseUrl}/projects/${projectId}/repository/branches`;
     return client.clientFetch(url, {
       method: 'GET',
       headers,
@@ -165,7 +165,7 @@ function addRepositoryMethods(client) {
     let headers = client.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return client.clientFetch(`${client.apiUrl}/projects/${projectId}/merge_requests`, {
+    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/merge_requests`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify({
@@ -180,8 +180,8 @@ function addRepositoryMethods(client) {
 
   client.getMergeRequests = (projectId, queryParams={scope: 'all', state: 'opened'}) => {
     let headers = client.getBasicHeaders();
-    const url = projectId ? `${client.apiUrl}/projects/${projectId}/merge_requests` :
-      `${client.apiUrl}/merge_requests`
+    const url = projectId ? `${client.baseUrl}/projects/${projectId}/merge_requests` :
+      `${client.baseUrl}/merge_requests`
     return client.clientFetch(url, {
       method: 'GET',
       headers,
@@ -192,7 +192,7 @@ function addRepositoryMethods(client) {
 
   client.getMergeRequestChanges = (projectId, mrIid) => {
     let headers = client.getBasicHeaders();
-    return client.clientFetch(`${client.apiUrl}/projects/${projectId}/merge_requests/${mrIid}/changes`, {
+    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/merge_requests/${mrIid}/changes`, {
       method: 'GET',
       headers
     })
@@ -237,7 +237,7 @@ function addRepositoryMethods(client) {
 
   client.mergeMergeRequest = (projectId, mrIid) => {
     let headers = client.getBasicHeaders();
-    return client.clientFetch(`${client.apiUrl}/projects/${projectId}/merge_requests/${mrIid}/merge`, {
+    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/merge_requests/${mrIid}/merge`, {
       method: 'PUT',
       headers,
       body: JSON.stringify({should_remove_source_branch: true})

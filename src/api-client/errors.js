@@ -23,8 +23,8 @@ class APIError extends Error {
 }
 
 const API_ERRORS = {
-  tokenExpired: 'TOKEN_EXPIRED',
-  permissionError: 'NO_PERMISSION',
+  unauthorizedError: 'UNAUTHORIZED',
+  forbiddenError: 'FORBIDDEN',
   notFoundError: 'NOT_FOUND',
   internalServerError: 'SERVER_ERROR',
   networkError: 'NETWORK_PROBLEM'
@@ -33,16 +33,14 @@ const API_ERRORS = {
 function throwAPIErrors(response) {
   return response.json().then(errorData => {
     let error;
-    if (errorData.error === 'token_expired') {
-      error = new APIError();
-      error.case = API_ERRORS.tokenExpired;
-      return Promise.reject(error);
-    }
     switch (response.status) {
     case 401:
+      error = new APIError();
+      error.case = API_ERRORS.unauthorizedError;
+      break;
     case 403:
       error = new APIError();
-      error.case = API_ERRORS.permissionError;
+      error.case = API_ERRORS.forbiddenError;
       break;
     case 404:
       error = new APIError();

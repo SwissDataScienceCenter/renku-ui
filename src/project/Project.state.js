@@ -100,8 +100,9 @@ class ProjectModel extends StateModel {
 
   fetchNotebookServerUrl(client, id, projectState) {
     client.getNotebookServerUrl(id, projectState.core.path_with_namespace)
-      .then(notebookUrl => {
-        this.set('core.notebookServerUrl', notebookUrl);
+      .then(urls => {
+        this.set('core.notebookServerUrl', urls.notebookServerUrl);
+        this.set('core.notebookServerAPI', urls.notebookServerAPI);
       });
   }
 
