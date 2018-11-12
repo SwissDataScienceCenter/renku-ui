@@ -20,7 +20,7 @@
 function addUserMethods(client) {
   client.getUser = () => {
     let headers = client.getBasicHeaders();
-    return client.clientFetch(`${client.apiUrl}/user`, {
+    return client.clientFetch(`${client.baseUrl}/user`, {
       method: 'GET',
       headers: headers
     })

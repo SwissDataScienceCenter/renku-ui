@@ -338,6 +338,7 @@ class View extends Component {
       launchNotebookServer: (p) => <ConnectedLaunchNotebookServer
         key="launchNotebook"
         store={this.projectState.reduxStore}
+        client={ownProps.client}
         onSuccess={() => this.props.history.push(`/projects/${this.projectState.get('core.id')}`)}
       />
     }

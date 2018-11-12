@@ -17,7 +17,7 @@
  */
 
 import { APIError, alertAPIErrors, API_ERRORS } from './errors';
-import { renkuFetch, fetchJson, RETURN_TYPES } from './utils';
+import { renkuFetch, RETURN_TYPES } from './utils';
 import processPaginationHeaders from './pagination';
 
 import addProjectMethods  from './project';
@@ -46,14 +46,8 @@ class APIClient {
   // ku    -->  issue
 
 
-  constructor(baseUrl, cookies, jupyterhubUrl, renkuVersion) {
+  constructor(baseUrl, jupyterhubUrl, renkuVersion) {
     this.baseUrl = baseUrl;
-    // TODO: Which GitLab API version to use should actually be a
-    //       a concern of the Gateway.
-    this.apiUrl = baseUrl + '/v4';
-    this.cookies = cookies;
-    this.accessToken = cookies.get('access_token');
-    this.refreshToken = cookies.get('refresh_token');
     this.jupyterhubUrl = jupyterhubUrl;
     this.renkuVersion = renkuVersion;
     this.returnTypes = RETURN_TYPES
@@ -73,21 +67,13 @@ class APIClient {
     returnType=RETURN_TYPES.json,
     alertOnErr=false
   ) {
-    // Add the users token to the request.
-    if (this.accessToken) {
-      options.headers.set('Authorization', `Bearer ${this.accessToken}`);
-    }
 
     return renkuFetch(url, options)
       .catch((error) => {
 
-        // Token expired errors can be handled
-        if (error.case === API_ERRORS.tokenExpired) {
-          return this.getRefreshedTokens()
-            .then(() => {
-              // Use the refreshed token and try again
-              return this.clientFetch(url, options, returnType, alertOnErr)
-            })
+        // For permission errors we send the user to login
+        if (error.case === API_ERRORS.permissionError) {
+          return this.doLogin()
         }
 
         // Alert only if corresponding option is set to true
@@ -126,24 +112,7 @@ class APIClient {
       })
   }
 
-  getRefreshedTokens() {
-    const headers = new Headers();
-    headers.set('Authorization', `Bearer ${this.refreshToken}`);
-    return fetchJson(`${this.baseUrl}/auth/token/refresh`, {headers})
-      .then(responseData => {
-        if (responseData.error) return this.doLogin();
-
-        this.accessToken = responseData.access_token;
-        this.refreshToken = responseData.refresh_token;
-        this.cookies.set('access_token', responseData.access_token);
-        this.cookies.set('refresh_token', responseData.refresh_token);
-      })
-  }
-
   doLogin() {
-    this.cookies.remove('access_token');
-    this.cookies.remove('refresh_token');
-    this.cookies.remove('id_token');
     window.location = `${this.baseUrl}/auth/login?redirect_url=${encodeURIComponent(window.location.href)}`;
   }
 

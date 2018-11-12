@@ -28,18 +28,4 @@ class Login extends Component {
   }
 }
 
-class Logout extends Component {
-  render() {
-    this.props.cookies.remove('access_token');
-    this.props.cookies.remove('refresh_token');
-    this.props.cookies.remove('id_token');
-    this.props.cookies.remove('jh_token');
-
-    window.location = `${this.props.params.GATEWAY_URL}/auth/logout?` +
-      `redirect_url=${encodeURIComponent(this.props.params.BASE_URL)}`;
-    return <p>logging out</p>;
-  }
-}
-
-
-export { Logout, Login };
+export { Login };

@@ -40,12 +40,10 @@ import Project from './project/Project'
 import Ku from './ku/Ku'
 import Landing from './landing/Landing'
 import Notebooks from './notebooks';
-import { Login, Logout } from './login'
+import { Login } from './login'
 import { RenkuNavLink, UserAvatar } from './utils/UIComponents'
 import QuickNav from './utils/quicknav'
 // import Lineage from './lineage'
-
-import { Input, Button, Row, Col } from 'reactstrap';
 
 
 function getActiveProjectId(currentPath) {
@@ -58,8 +56,7 @@ function getActiveProjectId(currentPath) {
 
 class RenkuToolbarItemUser extends Component {
   render() {
-
-    if (!this.props.loggedIn) {
+    if (!this.props.user) {
       return <RenkuNavLink to="/login" title="Login" />
     }
     else {
@@ -69,8 +66,15 @@ class RenkuToolbarItemUser extends Component {
           {this.props.userAvatar}
         </a>
         <div key="menu" className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-          <a className="dropdown-item" href="/auth/realms/Renku/account?referrer=renku-ui">Profile</a>
-          <a className="dropdown-item" href="/logout">Logout</a>
+          {/* TODO: This is going to break as soon as we're trying to use another keycloak instance - replace by proper ui route. */}
+          <a
+            className="dropdown-item"
+            href="/auth/realms/Renku/account?referrer=renku-ui"
+          >Profile</a>
+          <a
+            className="dropdown-item"
+            href={`${this.props.params.GATEWAY_URL}/auth/logout?redirect_url=${encodeURIComponent(this.props.params.BASE_URL)}`}
+          >Logout</a>
         </div>
       </li>
     }
@@ -165,70 +169,19 @@ class RenkuFooter extends Component {
   }
 }
 
-// TODO: This is just a temporary solution,
-// Jupyterhub user tokens belong to the gateway.
-class PasteJHToken extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      token: ''
-    }
-  }
-
-  onChange(event) {
-    this.setState({token: event.target.value});
-  }
-
-  onSubmit() {
-    if (this.state.token === '') {
-      return;
-    }
-    else {
-      this.props.cookies.set('jh_token', this.state.token);
-      window.location.reload();
-    }
-  }
-
-  render() {
-    return <div className="container" style={{border: '1px solid red', padding: '5px'}}>
-      <Row>
-        <Col md={8}>
-          <p>Please click the button to the right, request a new Jupyterhub access token and paste it here.</p>
-        </Col>
-        <Col md={2}>
-          <Button
-            color="primary"
-            onClick={() => window.open(`${this.props.params.JUPYTERHUB_URL}/hub/token`)}
-            >Get token
-          </Button>
-        </Col>
-
-        <Col md={8}>
-          <Input type="text" id="jhTokenText" value={this.state.token} onChange={this.onChange.bind(this)}/>
-        </Col>
-        <Col md={2}>
-          <Button color="primary" onClick={this.onSubmit.bind(this)}>Store token</Button>
-        </Col>
-      </Row>
-    </div>
-  }
-}
 
 class App extends Component {
   render() {
     const userAvatar = <UserAvatar userState={this.props.userState} />;
-    const tokenPromptJH = this.props.loggedIn && !this.props.cookies.get('jh_token')
     return (
       <Router>
         <div>
           <Route render={props => <RenkuNavBar userAvatar={userAvatar} {...props} {...this.props}/>} />
           <main role="main" className="container-fluid">
-            {tokenPromptJH ? <PasteJHToken {...this.props} /> : null}
             <div key="gap">&nbsp;</div>
             <Switch>
 
               {/* Route forces trailing slashes on routes ending with a numerical id */}
-              <Route exact path="/logout" render={p => <Logout key="logout" {...p} {...this.props} />} />
               <Route exact path="/login"
                 render ={p => <Login key="login" {...p} {...this.props} /> } />
               <Route exact strict path="/*(\d+)" render={props => <Redirect to={`${props.location.pathname}/`}/>}/>
@@ -236,7 +189,7 @@ class App extends Component {
                 render={p => <Landing.Home
                   key="landing" welcomePage={this.props.params['WELCOME_PAGE']}
                   user={this.props.userState.getState().user}
-                  loggedIn={this.props.loggedIn} {...p} />} />
+                  {...p} />} />
 
               <Route exact path="/projects" render={
                 p => <Project.List

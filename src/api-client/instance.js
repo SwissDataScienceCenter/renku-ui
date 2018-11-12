@@ -23,7 +23,7 @@ function addInstanceMethods(client) {
     // Default the number of rows to 100
     if (undefined === queryParams.per_page) queryParams.per_page = 100;
     const headers = client.getBasicHeaders();
-    return client.clientFetch(`${client.apiUrl}/namespaces`, {
+    return client.clientFetch(`${client.baseUrl}/namespaces`, {
       method: 'GET',
       headers,
       queryParams
@@ -33,7 +33,7 @@ function addInstanceMethods(client) {
   client.getGroupByPath = (path) => {
     const headers = client.getBasicHeaders();
     const urlEncodedPath = encodeURIComponent(path);
-    return client.clientFetch(`${client.apiUrl}/groups/${urlEncodedPath}`, {
+    return client.clientFetch(`${client.baseUrl}/groups/${urlEncodedPath}`, {
       method: 'GET',
       headers
     })

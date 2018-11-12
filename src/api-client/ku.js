@@ -21,7 +21,7 @@ function addKuMethods(client) {
   client.getProjectKus = (projectId) => {
     let headers = client.getBasicHeaders();
 
-    return client.clientFetch(`${client.apiUrl}/projects/${projectId}/issues?scope=all`, {
+    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/issues?scope=all`, {
       method: 'GET',
       headers: headers
     })
@@ -33,7 +33,7 @@ function addKuMethods(client) {
     let headers = client.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return client.clientFetch(`${client.apiUrl}/projects/${projectId}/issues`, {
+    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/issues`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(ku)
@@ -46,7 +46,7 @@ function addKuMethods(client) {
     let headers = client.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return client.clientFetch(`${client.apiUrl}/projects/${projectId}/issues/${kuIid}/`, {
+    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/issues/${kuIid}/`, {
       method: 'GET',
       headers: headers,
     })
@@ -58,7 +58,7 @@ function addKuMethods(client) {
     let headers = client.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return client.clientFetch(`${client.apiUrl}/projects/${projectId}/issues/${kuIid}/notes`, {
+    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/issues/${kuIid}/notes`, {
       method: 'GET',
       headers: headers
     })
@@ -70,7 +70,7 @@ function addKuMethods(client) {
     let headers = client.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return client.clientFetch(`${client.apiUrl}/projects/${projectId}/issues/${kuIid}/notes`, {
+    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/issues/${kuIid}/notes`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify({body: contribution})
@@ -93,7 +93,7 @@ function updateIssue(client, projectId, issueIid, body) {
   let headers = client.getBasicHeaders();
   headers.append('Content-Type', 'application/json');
 
-  return client.clientFetch(`${client.apiUrl}/projects/${projectId}/issues/${issueIid}`, {
+  return client.clientFetch(`${client.baseUrl}/projects/${projectId}/issues/${issueIid}`, {
     method: 'PUT',
     headers: headers,
     body: JSON.stringify(body)
