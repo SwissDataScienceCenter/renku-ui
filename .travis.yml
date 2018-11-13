@@ -43,7 +43,7 @@ install:
   - tar xzfv ${HELM_TGZ}
   - PATH=`pwd`/linux-amd64/:$PATH
   - helm init --client-only
-  - npm install
+  - npm ci
 
 script:
   - make tag/renku-ui
