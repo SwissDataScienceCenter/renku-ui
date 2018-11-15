@@ -79,7 +79,7 @@ class LaunchNotebookButton extends React.Component {
     // TODO: Method setServerStatus in LaunchNotebookServer component does the
     // TODO: same. Move to client library.
     const headers = this.props.client.getBasicHeaders();
-    this.props.client.clientFetch(this.props.core.notebookServerAPI, {headers})
+    this.props.client.clientFetch(this.props.notebookServerAPI, {headers})
       .then(response => {
         const serverStatus = !(!response.data.pending && !response.data.ready);
         this.setState({serverRunning: serverStatus})

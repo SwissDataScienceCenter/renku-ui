@@ -51,6 +51,8 @@ class LaunchNotebookServerButton extends Component {
     return <LaunchNotebookButton
       className="btn btn-primary"
       notebookServerUrl={deploymentUrl}
+      notebookServerAPI={this.props.notebookServerAPI}
+      client={this.props.client}
       label="Connect to Jupyter"
     />;
   }
