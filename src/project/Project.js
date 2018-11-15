@@ -289,10 +289,11 @@ class View extends Component {
     const externalUrl = this.projectState.get('core.external_url');
     const updateProjectView = this.forceUpdate.bind(this);
     const notebookServerUrl = this.projectState.get('core.notebookServerUrl');
+    const notebookServerAPI = this.projectState.get('core.notebookServerAPI');
 
     // Access to the project state could be given to the subComponents by connecting them here to
     // the projectStore. This is not yet necessary.
-    const subProps = {...ownProps, projectId, accessLevel, externalUrl, notebookServerUrl};
+    const subProps = {...ownProps, projectId, accessLevel, externalUrl, notebookServerUrl, notebookServerAPI};
 
     const mergeRequests = this.projectState.get('system.merge_requests');
 
