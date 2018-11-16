@@ -33,11 +33,12 @@ class JupyterNotebookContainer extends Component {
 
     const deploymentUrl = this.props.accessLevel >= ACCESS_LEVELS.DEVELOPER ?
       `${this.props.notebookServerUrl}${filePath}` : null;
-
     return <JupyterNotebookPresent
       notebook={this.props.notebook}
       deploymentUrl={deploymentUrl}
       notebookServerUrl={this.props.notebookServerUrl}
+      notebookServerAPI={this.props.notebookServerAPI}
+      client={this.props.client}
     />
   }
 }

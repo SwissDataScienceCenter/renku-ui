@@ -105,6 +105,8 @@ class LaunchNotebookButton extends React.Component {
         You have to launch Jupyter first!
       </Tooltip>
 
+    const externalUrl = this.props.deploymentUrl || this.props.notebookServerUrl;
+
 
     return <div>
       {tooltip}
@@ -119,7 +121,7 @@ class LaunchNotebookButton extends React.Component {
         className={className}
         color="primary" onClick={event => {
           event.preventDefault();
-          window.open(this.props.notebookServerUrl);
+          window.open(externalUrl);
         }}>
         {label}
       </Button>
@@ -140,6 +142,8 @@ const JupyterNotebookPresent = props => {
           key="launchbutton"
           deploymentUrl={props.deploymentUrl}
           notebookServerUrl={props.notebookServerUrl}
+          notebookServerAPI={props.notebookServerAPI}
+          client={props.client}
           label="Open Notebook"
         />
       </Col>
