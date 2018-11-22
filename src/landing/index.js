@@ -1,5 +1,5 @@
 /*!
- * Copyright 2017 - Swiss Data Science Center (SDSC)
+ * Copyright 2018 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,16 +16,14 @@
  * limitations under the License.
  */
 
-// title.Author: Alex K. - https://stackoverflow.com/users/246342/alex-k
-// Source: https://stackoverflow.com/questions/6507056/replace-all-whitespace-characters/6507078#6507078
-const slugFromTitle = (title) => title.replace(/\s/g, '-').toLowerCase();
+/**
+ *  renku-ui
+ *
+ *  landing
+ *  Components for the landing page
+ */
 
-function getActiveProjectId(currentPath) {
-  try {
-    return currentPath.match(/\/projects\/(\d+)/)[0].replace('/projects/', '')
-  } catch(TypeError) {
-    return null
-  }
-}
+import Landing from './Landing';
+import { LoggedInNavBar } from './NavBar';
 
-export { slugFromTitle, getActiveProjectId }
+export { Landing, LoggedInNavBar };

@@ -25,21 +25,14 @@
 
 import React, { Component } from 'react';
 import './App.css';
-import logo from './logo.svg';
 
 import { BrowserRouter as Router, Route, Switch, Redirect }  from 'react-router-dom'
-// import { IndexLinkContainer } from 'react-router-bootstrap';
-// import { FormGroup, FormControl, InputGroup } from 'react-bootstrap'
 
-import FontAwesomeIcon from '@fortawesome/react-fontawesome'
-import faPlus from '@fortawesome/fontawesome-free-solid/faPlus'
-
-// import About from './About'
-// import Landing from './Landing'
 import Project from './project/Project'
 import Ku from './ku/Ku'
-import Landing from './landing/Landing'
+import { Landing, LoggedInNavBar } from './landing'
 import Notebooks from './notebooks';
+<<<<<<< HEAD
 import { Login } from './login'
 import { RenkuNavLink, UserAvatar } from './utils/UIComponents'
 import QuickNav from './utils/quicknav'
@@ -80,81 +73,17 @@ class RenkuToolbarItemUser extends Component {
     }
   }
 }
+=======
+import { Login, Logout } from './login'
+import { UserAvatar } from './utils/UIComponents'
+
+import { Input, Button, Row, Col } from 'reactstrap';
+>>>>>>> Extracted the NavBar to its own file.
 
 class RenkuNavBar extends Component {
 
-  constructor(props) {
-    super(props);
-    this.onSelect = this.handleSelect.bind(this);
-    this.toggle = this.toggle.bind(this);
-    this.state = {
-      isOpen: true
-    };
-  }
-
-  toggle() {
-    this.setState({
-      isOpen: !this.state.isOpen
-    });
-  }
-
-  handleSelect(eventKey, event) {
-    let nextRoute = null;
-    switch(eventKey) {
-    case 'new.projects':
-      nextRoute = '/projects';
-      break;
-    default:
-      break;
-    }
-    if (null != nextRoute) this.props.history.push(nextRoute);
-  }
   render() {
-    // Display the Ku/Notebook server related header options only if a project is active.
-    const activeProjectId = getActiveProjectId(this.props.location.pathname);
-    const kuDropdown = activeProjectId ? <RenkuNavLink to={`/projects/${activeProjectId}/ku_new`} title="Ku" /> : null;
-    const jupyterDropdown = activeProjectId ? <RenkuNavLink to={`/projects/${activeProjectId}/launchNotebook`}
-      title="Launch Jupyter" /> : null;
-    // TODO If there is is an active project, show it in the navbar
-
-    return (
-      <header>
-        <nav className="navbar navbar-expand-sm navbar-light bg-light justify-content-between">
-          {/* TODO: Revert back to using a react router link (no page reload) as soon as issue 304 has been
-              TODO: resolved */}
-          <span className="navbar-brand">
-            <a href={this.props.params.BASE_URL}><img src={logo} alt="Renku" height="24" /></a>
-          </span>
-          <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span className="navbar-toggler-icon"></span>
-          </button>
-
-          <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <QuickNav client={this.props.client}/>
-
-            <ul className="navbar-nav mr-auto">
-              <RenkuNavLink to="/projects" title="Projects"/>
-              <RenkuNavLink to="/notebooks" title="Notebooks"/>
-            </ul>
-            <ul className="navbar-nav">
-              <li className="nav-item dropdown">
-                <a className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
-                  aria-haspopup="true" aria-expanded="false">
-                  <FontAwesomeIcon icon={faPlus} id="createPlus"/>
-                </a>
-                <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                  <RenkuNavLink to="/project_new" title="Project" />
-                  {kuDropdown}
-                  {jupyterDropdown}
-                </div>
-              </li>
-              <RenkuToolbarItemUser {...this.props} />
-            </ul>
-          </div>
-        </nav>
-      </header>
-    )
+    return <LoggedInNavBar {...this.props} />
   }
 }
 
@@ -228,4 +157,3 @@ class App extends Component {
 }
 
 export default App;
-export { getActiveProjectId };
