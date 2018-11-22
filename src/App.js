@@ -113,7 +113,8 @@ class RenkuNavBar extends Component {
     // Display the Ku/Notebook server related header options only if a project is active.
     const activeProjectId = getActiveProjectId(this.props.location.pathname);
     const kuDropdown = activeProjectId ? <RenkuNavLink to={`/projects/${activeProjectId}/ku_new`} title="Ku" /> : null;
-    const jupyterDropdown = activeProjectId ? <RenkuNavLink to={`/projects/${activeProjectId}/launchNotebook`} title="Launch Jupyter" /> : null;
+    const jupyterDropdown = activeProjectId ? <RenkuNavLink to={`/projects/${activeProjectId}/launchNotebook`}
+      title="Launch Jupyter" /> : null;
     // TODO If there is is an active project, show it in the navbar
 
     return (
