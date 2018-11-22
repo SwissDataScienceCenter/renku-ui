@@ -38,7 +38,7 @@ import ReactMarkdown from 'react-markdown';
 import {createStore} from '../utils/EnhancedState'
 import State from './Ku.state'
 import {Avatar, ExternalLink, FieldGroup, TimeCaption } from '../utils/UIComponents'
-import { getActiveProjectId } from '../App'
+import { getActiveProjectId } from '../utils/HelperFunctions'
 import { Contribution, NewContribution } from '../contribution'
 
 
