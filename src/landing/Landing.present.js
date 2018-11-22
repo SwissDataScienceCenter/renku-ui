@@ -180,24 +180,23 @@ class AnonymousHome extends Component {
       <Row key="content-body">
         <Col md={6}>
           <RenkuProvidesHeader title="Reproducibility" icon={faClone} />
-          <p>{loremIpsum}</p>
+          <p className="mb-5">{loremIpsum}</p>
 
           <RenkuProvidesHeader title="Sharability" icon={faCloudUp} />
-          <p>{loremIpsum}</p>
+          <p className="mb-5">{loremIpsum}</p>
 
           <RenkuProvidesHeader title="Federation" icon={faUserFriends} />
-          <p>{loremIpsum}</p>
+          <p className="mb-5">{loremIpsum}</p>
         </Col>
-        <Col md={6}>
-          <h3>&nbsp;</h3>
+        <Col md={6} className="mt-md-5">
           <RenkuProvidesHeader title="Reusability" icon={faCodeBranch} />
-          <p>{loremIpsum}</p>
+          <p className="mb-5">{loremIpsum}</p>
 
           <RenkuProvidesHeader title="Security" icon={faShield} />
-          <p>{loremIpsum}</p>
+          <p className="mb-5">{loremIpsum}</p>
 
           <RenkuProvidesHeader title="Discoverability" icon={faSearch} />
-          <p>{loremIpsum}</p>
+          <p className="mb-5">{loremIpsum}</p>
         </Col>
       </Row>,
       <Row key="closing">
