@@ -28,9 +28,20 @@
 import React, { Component } from 'react';
 
 import { Link }  from 'react-router-dom'
+import ReactMarkdown from 'react-markdown';
+
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import { Row, Col } from 'reactstrap';
-import ReactMarkdown from 'react-markdown';
+import { Jumbotron } from 'reactstrap';
+
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import faClone from '@fortawesome/fontawesome-free-solid/faClone';
+import faCloudUp from '@fortawesome/fontawesome-free-solid/faCloudUploadAlt';
+import faCodeBranch from '@fortawesome/fontawesome-free-solid/faCodeBranch';
+import faHeart from '@fortawesome/fontawesome-free-solid/faHeart';
+import faSearch from '@fortawesome/fontawesome-free-solid/faSearch';
+import faShield from '@fortawesome/fontawesome-free-solid/faShieldAlt';
+import faUserFriends from '@fortawesome/fontawesome-free-solid/faUserFriends';
 
 import { ProjectListRow } from '../project/Project.present';
 
@@ -71,39 +82,6 @@ class YourActivity extends Component {
     </Row>)
   }
 }
-
-
-// NOTE: Not yet sure if the table or standard display is better.
-// class ProjectTableRow extends Component {
-//   render() {
-//     const title = <Link to={`${this.props.projectsUrl}/${this.props.id}`}>{this.props.path_with_namespace}</Link>
-//     return (<tr>
-//       <td>{title}</td>
-//       <td>{this.props.description}</td>
-//       <td>{this.props.tag_list.join(', ')}</td>
-//       <td><TimeCaption key="time-caption" time={this.props.last_activity_at} /></td>
-//     </tr>);
-//   }
-// }
-//
-// class StarredTable extends Component {
-//   render() {
-//     const projects = this.props.projects || [];
-//     const projectsUrl = this.props.urlMap.projectsUrl;
-//     const rows = projects.map(p => <ProjectTableRow key={p.id} projectsUrl={projectsUrl} {...p} />);
-//     return (<div>
-//       <h1>Starred Projects</h1>
-//       <br />
-//       <Table>
-//         <thead><tr><th>Project</th><th>Description</th><th>Tags</th><th>Last Activity</th></tr></thead>
-//         <tbody>
-//           {rows}
-//         </tbody>
-//       </Table>
-//     </div>
-//     )
-//   }
-// }
 
 class RenkuIntroText extends Component {
   render() {
@@ -164,6 +142,73 @@ class Welcome extends Component {
   }
 }
 
+class RenkuProvidesHeader extends Component {
+  render() {
+    return <h3 className="text-primary">
+      {this.props.title} <FontAwesomeIcon icon={this.props.icon} id={this.props.title.toLowerCase()}/>
+    </h3>
+  }
+}
+
+class AnonymousHome extends Component {
+  render() {
+    const loremIpsum = `Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+    Suspendisse dolor justo, faucibus non lectus nec, dapibus feugiat orci.
+    Aliquam iaculis eros vel interdum tincidunt. Sed consectetur sem nunc, laoreet cursus risus posuere eu.
+    Integer a dictum ex, ut aliquam quam. Donec placerat pulvinar elit vitae viverra.
+    Nulla facilisi. Nullam dictum lacus nulla, eget congue eros convallis nec.
+    Etiam vehicula a sapien eget facilisis.`;
+
+    return [
+      <Row key="marquee">
+        <Col>
+          <Jumbotron className="bg-white text-secondary">
+            <Row>
+              <Col md={6}>
+                <h1>RENKU</h1>
+                <h2>Collaborative Data Science</h2>
+              </Col>
+            </Row>
+          </Jumbotron>
+        </Col>
+      </Row>,
+      <Row key="content-header">
+        <Col>
+          <h1 className="text-center">Renku Provides</h1>
+        </Col>
+      </Row>,
+      <Row key="content-body">
+        <Col md={6}>
+          <RenkuProvidesHeader title="Reproducibility" icon={faClone} />
+          <p>{loremIpsum}</p>
+
+          <RenkuProvidesHeader title="Sharability" icon={faCloudUp} />
+          <p>{loremIpsum}</p>
+
+          <RenkuProvidesHeader title="Federation" icon={faUserFriends} />
+          <p>{loremIpsum}</p>
+        </Col>
+        <Col md={6}>
+          <h3>&nbsp;</h3>
+          <RenkuProvidesHeader title="Reusability" icon={faCodeBranch} />
+          <p>{loremIpsum}</p>
+
+          <RenkuProvidesHeader title="Security" icon={faShield} />
+          <p>{loremIpsum}</p>
+
+          <RenkuProvidesHeader title="Discoverability" icon={faSearch} />
+          <p>{loremIpsum}</p>
+        </Col>
+      </Row>,
+      <Row key="closing">
+        <Col>
+          <h3><FontAwesomeIcon icon={faHeart} id="love"/></h3>
+        </Col>
+      </Row>
+    ]
+  }
+}
+
 class LoggedInNav extends Component {
   render() {
     const selected = this.props.selected;
@@ -184,40 +229,16 @@ class LoggedInNav extends Component {
   }
 }
 
-class AnonymousNav extends Component {
-  render() {
-    const selected = this.props.selected;
-    return <Nav pills className={'nav-pills-underline'}>
-      <NavItem>
-        <NavLink href="#" active={selected === 'welcome'}
-          onClick={this.props.onWelcome}>Welcome</NavLink>
-      </NavItem>
-      <NavItem><NavLink href="#" active={selected === 'explore'}
-        onClick={this.props.onExplore}>Explore</NavLink></NavItem>
-    </Nav>
-  }
-}
-
-class Home extends Component {
+class LoggedInHome extends Component {
   render() {
     let selected = this.props.ui.selected;
-    let nav = null;
     const urlMap = this.props.urlMap;
     const welcome = <Welcome {...this.props} />;
-    // Make sure the selected tab is valid for the user
-    if (this.props.loggedIn) {
-      nav = <LoggedInNav selected={selected} urlMap={urlMap}
-        onStarred={this.props.onStarred}
-        onYourActivity={this.props.onYourActivity}
-        onYourNetwork={this.props.onYourNetwork}
-        onExplore={this.props.onExplore} />
-    } else {
-      if (selected === 'your_network') selected = 'welcome';
-      else if (selected === 'starred') selected = 'welcome';
-      nav = <AnonymousNav selected={selected}
-        onWelcome={this.props.onWelcome}
-        onExplore={this.props.onExplore} />
-    }
+    const nav = <LoggedInNav selected={selected} urlMap={urlMap}
+      onStarred={this.props.onStarred}
+      onYourActivity={this.props.onYourActivity}
+      onYourNetwork={this.props.onYourNetwork}
+      onExplore={this.props.onExplore} />
     // const visibleTab = <ProjectList {...this.props} />
     let visibleTab = <YourActivity urlMap={urlMap} />
     if (selected === 'your_network') visibleTab = <YourNetwork urlMap={urlMap} />
@@ -237,6 +258,12 @@ class Home extends Component {
         </Col>
       </Row>
     ]
+  }
+}
+
+class Home extends Component {
+  render() {
+    return (this.props.loggedIn) ? <LoggedInHome {...this.props} /> : <AnonymousHome {...this.props} />
   }
 }
 
