@@ -24,6 +24,6 @@
  */
 
 import Landing from './Landing';
-import { LoggedInNavBar } from './NavBar';
+import { LoggedInNavBar, AnonymousNavBar } from './NavBar';
 
-export { Landing, LoggedInNavBar };
+export { Landing, LoggedInNavBar, AnonymousNavBar };

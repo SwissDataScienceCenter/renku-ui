@@ -30,7 +30,7 @@ import { BrowserRouter as Router, Route, Switch, Redirect }  from 'react-router-
 
 import Project from './project/Project'
 import Ku from './ku/Ku'
-import { Landing, LoggedInNavBar } from './landing'
+import { Landing, LoggedInNavBar, AnonymousNavBar } from './landing'
 import Notebooks from './notebooks';
 import { Login } from './login'
 import { UserAvatar } from './utils/UIComponents'
@@ -38,7 +38,8 @@ import { UserAvatar } from './utils/UIComponents'
 class RenkuNavBar extends Component {
 
   render() {
-    return <LoggedInNavBar {...this.props} />
+    const user = this.props.userState.getState().user || {};
+    return (user.id) ? <LoggedInNavBar {...this.props} /> : <AnonymousNavBar {...this.props} />
   }
 }
 

@@ -132,4 +132,36 @@ class LoggedInNavBar extends Component {
   }
 }
 
-export { LoggedInNavBar }
+class AnonymousNavBar extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      isOpen: true
+    };
+  }
+
+  render() {
+    return (
+      <header>
+        <nav className="navbar navbar-expand-sm navbar-light bg-light justify-content-between">
+          <span className="navbar-brand">
+            <a href={this.props.params.BASE_URL}><img src={logo} alt="Renku" height="24" /></a>
+          </span>
+          <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span className="navbar-toggler-icon"></span>
+          </button>
+
+          <div className="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul className="navbar-nav ml-auto">
+              <RenkuToolbarItemUser {...this.props} />
+            </ul>
+          </div>
+        </nav>
+      </header>
+    )
+  }
+}
+
+export { LoggedInNavBar, AnonymousNavBar }
