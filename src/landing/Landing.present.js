@@ -152,13 +152,6 @@ class RenkuProvidesHeader extends Component {
 
 class AnonymousHome extends Component {
   render() {
-    const loremIpsum = `Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-    Suspendisse dolor justo, faucibus non lectus nec, dapibus feugiat orci.
-    Aliquam iaculis eros vel interdum tincidunt. Sed consectetur sem nunc, laoreet cursus risus posuere eu.
-    Integer a dictum ex, ut aliquam quam. Donec placerat pulvinar elit vitae viverra.
-    Nulla facilisi. Nullam dictum lacus nulla, eget congue eros convallis nec.
-    Etiam vehicula a sapien eget facilisis.`;
-
     return [
       <Row key="marquee">
         <Col>
@@ -168,40 +161,69 @@ class AnonymousHome extends Component {
                 <h1>RENKU</h1>
                 <h2>Collaborative Data Science</h2>
               </Col>
+              <Col md={6} className="d-md-flex justify-content-center align-items-center">
+                <div>
+                  <Link to="/login" className="btn btn-primary btn-lg">Login or Sign Up</Link>
+                </div>
+              </Col>
             </Row>
           </Jumbotron>
         </Col>
       </Row>,
       <Row key="content-header">
         <Col>
-          <h1 className="text-center">Renku Provides</h1>
+          <h1 className="text-center">Renku Enables</h1>
         </Col>
       </Row>,
       <Row key="content-body">
         <Col md={6}>
           <RenkuProvidesHeader title="Reproducibility" icon={faClone} />
-          <p className="mb-5">{loremIpsum}</p>
+          <p className="mb-5">Renku knows about the environments your data science projects run in.
+            With this knowledge, Renku can clone an environment on demand so <b>others can recreate your results</b>.
+            And we realize that data and code are always evolving.
+            Renku makes it possible to <b>run previous versions of a project</b> as well.</p>
 
           <RenkuProvidesHeader title="Sharability" icon={faCloudUp} />
-          <p className="mb-5">{loremIpsum}</p>
+          <p className="mb-5">Need to <b>share your results</b> with a colleague? <b>Make your data available</b> to
+            a project partner? <b>Work together</b> on a project with a teammate?
+            Renku makes all of these easy. And Renku lets you <b>track everyone&#8217;s contribution</b> to
+            the final result.
+          </p>
 
           <RenkuProvidesHeader title="Federation" icon={faUserFriends} />
-          <p className="mb-5">{loremIpsum}</p>
+          <p className="mb-5">
+            Collaborate across instituational boundries, while maintaining complete control of your resources.
+            Federation lets you <b>share</b> information, data, or code <b>without having to make any compromises</b>.
+          </p>
         </Col>
         <Col md={6} className="mt-md-5">
           <RenkuProvidesHeader title="Reusability" icon={faCodeBranch} />
-          <p className="mb-5">{loremIpsum}</p>
+          <p className="mb-5">
+            Stand on the shoulders of giants: <i>your colleagues</i>. Renku makes it simple
+            to <b>reuse code and data</b> in other projects. No need for you to reinvent the
+            wheel, and everyone profits from your improvements.
+          </p>
 
           <RenkuProvidesHeader title="Security" icon={faShield} />
-          <p className="mb-5">{loremIpsum}</p>
+          <p className="mb-5">You have to freedom to share code or data with others, with the
+            security of having <b>fine-grained control</b> over what is visible and what is kept private.
+            You decide what information about your project is available to whom.
+          </p>
 
           <RenkuProvidesHeader title="Discoverability" icon={faSearch} />
-          <p className="mb-5">{loremIpsum}</p>
+          <p className="mb-5">
+            The extensible Renku knowledge graph captures information about your
+            project&#8217;s data, code, proceses, and lineage. With its <b>powerful search capabilities</b>,
+            if it is in the system, you can always find the information you are looking for.
+          </p>
         </Col>
       </Row>,
       <Row key="closing">
         <Col>
-          <h3><FontAwesomeIcon icon={faHeart} id="love"/></h3>
+          <h3 className="text-primary">
+            <FontAwesomeIcon icon={faHeart} id="love"/> Give Renku a try.
+            We think you&#8217;ll love it!
+          </h3>
         </Col>
       </Row>
     ]
