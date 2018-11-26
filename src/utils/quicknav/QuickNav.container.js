@@ -47,6 +47,7 @@ class QuickNavContainerWithRouter extends Component {
     this.onSubmit = this.doSubmit.bind(this);
     this.onSuggestionsFetchRequested = this.doSuggestionsFetchRequested.bind(this);
     this.onSuggestionsClearRequested = this.doSuggestionsClearRequested.bind(this);
+    this.currentSearchValue = null;
   }
 
   doSubmit(e) {
@@ -60,26 +61,31 @@ class QuickNavContainerWithRouter extends Component {
   }
 
   doSuggestionsFetchRequested({ value, reason }) {
-    // We only start searching after the second
-    // letter has been typed.
-    if (value.length < 2) return;
-    // constants come from react-autosuggest
-    if (reason === 'suggestions-revealed') return;
 
-    this.props.client.getProjects({
-      search: value
-    })
-      .then((projects) => {
-        return projects.map((project) => {
-          return {
-            path: project.path_with_namespace,
-            id: project.id
-          };
-        });
+    // We only do the API call when no letter has been
+    // typed for one second.
+    this.currentSearchValue = value;
+    setTimeout(() => {
+      if (this.currentSearchValue !== value) return;
+
+      // constants come from react-autosuggest
+      if (reason === 'suggestions-revealed') return;
+
+      this.props.client.getProjects({
+        search: value
       })
-      .then((parsedProjects) => {
-        this.bar.set('suggestions', parsedProjects);
-      });
+        .then((response) => {
+          return response.data.map((project) => {
+            return {
+              path: project.path_with_namespace,
+              id: project.id
+            };
+          });
+        })
+        .then((parsedProjects) => {
+          this.bar.set('suggestions', parsedProjects);
+        });
+    }, 1000);
   }
 
   doSuggestionsClearRequested() {
