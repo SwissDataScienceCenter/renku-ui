@@ -85,7 +85,7 @@ class Home extends Component {
       <Provider key="new" store={this.store}>
         <VisibleHome
           welcomePage={atob(this.props.welcomePage)}
-          loggedIn={this.props.loggedIn}
+          loggedIn={this.props.user != null}
           user={this.props.user}
         />
       </Provider>

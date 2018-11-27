@@ -36,8 +36,7 @@ import QuickNav from '../utils/quicknav'
 
 class RenkuToolbarItemUser extends Component {
   render() {
-
-    if (!this.props.loggedIn) {
+    if (!this.props.user) {
       return <RenkuNavLink to="/login" title="Login" />
     }
     else {
