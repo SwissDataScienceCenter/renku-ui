@@ -176,12 +176,11 @@ class AnonymousHome extends Component {
       <Row key="content-body">
         <Col md={6}>
           <RenkuProvidesHeader title="Reproducibility" icon={faClone} />
-          <p className="mb-5">Renku knows about the environments your data science projects run in.
-            With this knowledge, Renku can clone an environment on demand so <b>others can recreate your results</b>.
-            And we realize that data and code are always evolving.
-            Renku makes it possible to <b>run previous versions of a project</b> as well.</p>
+          <p className="mb-5">Renku <b>captures the lineage</b> of your work so recreating a
+            critical piece of analysis is always possible. In addition, it tracks the details of
+            your <b>computational environment</b> so that others can reliably work with your data and code.</p>
 
-          <RenkuProvidesHeader title="Sharability" icon={faCloudUp} />
+          <RenkuProvidesHeader title="Shareability" icon={faCloudUp} />
           <p className="mb-5">Need to <b>share your results</b> with a colleague? <b>Make your data available</b> to
             a project partner? <b>Work together</b> on a project with a teammate?
             Renku makes all of these easy. And Renku lets you <b>track everyone&#8217;s contribution</b> to
