@@ -32,53 +32,8 @@ import Project from './project/Project'
 import Ku from './ku/Ku'
 import { Landing, LoggedInNavBar } from './landing'
 import Notebooks from './notebooks';
-<<<<<<< HEAD
 import { Login } from './login'
-import { RenkuNavLink, UserAvatar } from './utils/UIComponents'
-import QuickNav from './utils/quicknav'
-// import Lineage from './lineage'
-
-
-function getActiveProjectId(currentPath) {
-  try {
-    return currentPath.match(/\/projects\/(\d+)/)[0].replace('/projects/', '')
-  } catch(TypeError) {
-    return null
-  }
-}
-
-class RenkuToolbarItemUser extends Component {
-  render() {
-    if (!this.props.user) {
-      return <RenkuNavLink to="/login" title="Login" />
-    }
-    else {
-      return <li className="nav-item dropdown">
-        <a key="button" className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false">
-          {this.props.userAvatar}
-        </a>
-        <div key="menu" className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-          {/* TODO: This is going to break as soon as we're trying to use another keycloak instance - replace by proper ui route. */}
-          <a
-            className="dropdown-item"
-            href="/auth/realms/Renku/account?referrer=renku-ui"
-          >Profile</a>
-          <a
-            className="dropdown-item"
-            href={`${this.props.params.GATEWAY_URL}/auth/logout?redirect_url=${encodeURIComponent(this.props.params.BASE_URL)}`}
-          >Logout</a>
-        </div>
-      </li>
-    }
-  }
-}
-=======
-import { Login, Logout } from './login'
 import { UserAvatar } from './utils/UIComponents'
-
-import { Input, Button, Row, Col } from 'reactstrap';
->>>>>>> Extracted the NavBar to its own file.
 
 class RenkuNavBar extends Component {
 
