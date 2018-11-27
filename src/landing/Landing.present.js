@@ -215,6 +215,12 @@ class AnonymousHome extends Component {
           </p>
         </Col>
       </Row>,
+      <Row key="tutorial" className="mb-3">
+        <Col>
+          Want to learn more? Create an account
+          and <a href="https://renku.readthedocs.io/en/latest/user/firststeps.html">follow the tutorial</a>.
+        </Col>
+      </Row>,
       <Row key="closing">
         <Col>
           <h3 className="text-primary">
