@@ -51,8 +51,14 @@ script:
   - helm lint helm-chart/renku-ui -f helm-chart/minikube-values.yaml
 
 deploy:
-  - provider: script
+  - &script
+    provider: script
     skip_cleanup: true
     script: bash travis-deploy.sh
-    on:
+    on: &script_on
       branch: master
+      repo: SwissDataScienceCenter/renku-ui
+  - <<: *script
+    on:
+      <<: *script_on
+      tags: true
