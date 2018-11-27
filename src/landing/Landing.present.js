@@ -135,8 +135,6 @@ class Welcome extends Component {
     return (<Row>
       <Col md={8} lg={6} xl={4}>
         <RenkuIntroText welcomePage={this.props.welcomePage}/>
-        {!this.props.loggedIn ? <p>You are not logged in, but you can still view public projects. If you wish to
-            contribute to an existing project or create a new one, please <Link to="/login">log in.</Link></p> : null }
       </Col>
     </Row>)
   }
@@ -284,7 +282,8 @@ class LoggedInHome extends Component {
 
 class Home extends Component {
   render() {
-    return (this.props.loggedIn) ? <LoggedInHome {...this.props} /> : <AnonymousHome {...this.props} />
+    const loggedIn = this.props.user != null
+    return (loggedIn) ? <LoggedInHome {...this.props} /> : <AnonymousHome {...this.props} />
   }
 }
 
