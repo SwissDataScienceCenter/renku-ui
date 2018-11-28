@@ -28,6 +28,15 @@ make login
 # build charts/images and push
 cd helm-chart
 chartpress --push --publish-chart
-chartpress --tag latest --push
 git diff
+
+# push also images tagged with "latest"
+chartpress --tag latest --push
+
+# if it's a tag, push the tagged chart
+if [[ -n $TRAVIS_TAG ]]; then
+    git clean -dffx
+    chartpress --tag $TRAVIS_TAG --push --publish-chart
+fi
+
 cd ..
