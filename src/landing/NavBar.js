@@ -47,7 +47,10 @@ class RenkuToolbarItemUser extends Component {
         </a>
         <div key="menu" className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
           <a className="dropdown-item" href="/auth/realms/Renku/account?referrer=renku-ui">Profile</a>
-          <a className="dropdown-item" href="/logout">Logout</a>
+          <a
+            className="dropdown-item"
+            href={`${this.props.params.GATEWAY_URL}/auth/logout?redirect_url=${encodeURIComponent(this.props.params.BASE_URL)}`}
+          >Logout</a>
         </div>
       </li>
     }
