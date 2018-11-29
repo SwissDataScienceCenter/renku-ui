@@ -202,7 +202,7 @@ class AnonymousHome extends Component {
           </p>
 
           <RenkuProvidesHeader title="Security" icon={faShield} />
-          <p className="mb-5">You have to freedom to share code or data with others, with the
+          <p className="mb-5">You have the freedom to share code or data with others, with the
             security of having <b>fine-grained control</b> over what is visible and what is kept private.
             You decide what information about your project is available to whom.
           </p>
