@@ -24,11 +24,12 @@
  */
 
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import { Link }  from 'react-router-dom'
 
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faPlus from '@fortawesome/fontawesome-free-solid/faPlus'
 
+import logo from './logo.svg';
 import { RenkuNavLink } from '../utils/UIComponents'
 import { getActiveProjectId } from '../utils/HelperFunctions'
 import QuickNav from '../utils/quicknav'
@@ -36,11 +37,14 @@ import QuickNav from '../utils/quicknav'
 
 class RenkuToolbarItemUser extends Component {
   render() {
+    const gatewayURL = this.props.params.GATEWAY_URL;
+    const redirect_url =  encodeURIComponent(this.props.params.BASE_URL);
     if (!this.props.user) {
       return <RenkuNavLink to="/login" title="Login" />
     }
     else {
       return <li className="nav-item dropdown">
+        { /* eslint-disable-next-line */ }
         <a key="button" className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
           aria-haspopup="true" aria-expanded="false">
           {this.props.userAvatar}
@@ -49,7 +53,7 @@ class RenkuToolbarItemUser extends Component {
           <a className="dropdown-item" href="/auth/realms/Renku/account?referrer=renku-ui">Profile</a>
           <a
             className="dropdown-item"
-            href={`${this.props.params.GATEWAY_URL}/auth/logout?redirect_url=${encodeURIComponent(this.props.params.BASE_URL)}`}
+            href={`${gatewayURL}/auth/logout?redirect_url=${redirect_url}`}
           >Logout</a>
         </div>
       </li>
@@ -99,7 +103,7 @@ class LoggedInNavBar extends Component {
           {/* TODO: Revert back to using a react router link (no page reload) as soon as issue 304 has been
               TODO: resolved */}
           <span className="navbar-brand">
-            <a href={this.props.params.BASE_URL}><img src={logo} alt="Renku" height="24" /></a>
+            <Link to="/"><img src={logo} alt="Renku" height="24" /></Link>
           </span>
           <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -115,6 +119,7 @@ class LoggedInNavBar extends Component {
             </ul>
             <ul className="navbar-nav">
               <li className="nav-item dropdown">
+                { /* eslint-disable-next-line */ }
                 <a className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
                   aria-haspopup="true" aria-expanded="false">
                   <FontAwesomeIcon icon={faPlus} id="createPlus"/>
