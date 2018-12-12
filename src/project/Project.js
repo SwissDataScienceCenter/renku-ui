@@ -208,6 +208,7 @@ class View extends Component {
 
       lineageView: (p) => <FileLineage key="lineage" {...subProps}
         externalUrl={externalUrl}
+        projectPath={this.projectState.get('core.path_with_namespace')}
         path={p.match.params.filePath} />,
 
       mrList: <ConnectedMergeRequestList key="mrList" store={this.projectState.reduxStore}

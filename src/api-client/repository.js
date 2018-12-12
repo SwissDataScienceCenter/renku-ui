@@ -59,6 +59,30 @@ function addRepositoryMethods(client) {
   }
 
 
+  client.getRepositoryFileMeta = (projectId, path, ref='master') => {
+    let headers = client.getBasicHeaders();
+    const encodedPath = encodeURIComponent(path);
+    return client.clientFetch(
+      `${client.baseUrl}/projects/${projectId}/repository/files/${encodedPath}?ref=${ref}`, {
+        method: 'HEAD',
+        headers: headers
+      }, client.returnTypes.full, false
+    ).then(response => {
+      const headers = response.headers
+      return {
+        blobId: headers.get('X-Gitlab-Blob-Id'),
+        commitId: headers.get('X-Gitlab-Commit-Id'),
+        contentSha256: headers.get('X-Gitlab-Content-Sha256'),
+        encoding: headers.get('X-Gitlab-Encoding'),
+        fileName: headers.get('X-Gitlab-File-Name'),
+        filePath: headers.get('X-Gitlab-File-Path'),
+        lastCommitId: headers.get('X-Gitlab-Last-Commit-Id'),
+        ref: headers.get('X-Gitlab-Ref'),
+        size: headers.get('X-Gitlab-Size')
+      };
+    })
+  }
+
   client.getProjectFile = (projectId, path, ref='master', alertOnErr=true) => {
     let headers = client.getBasicHeaders();
     const encodedPath = encodeURIComponent(path);

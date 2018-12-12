@@ -18,15 +18,13 @@
 
 import React, { Component } from 'react';
 
-import dot from 'graphlib-dot';
-
 import { FileLineage as FileLineagePresent } from './Lineage.present';
 
 
 class FileLineage extends Component {
   constructor(props){
     super(props);
-    this.state = {url: null, dot: null, error: null}
+    this.state = {error: null}
   }
 
   componentDidMount() {
@@ -36,17 +34,33 @@ class FileLineage extends Component {
     // - Combine the file name from the external_url and the job information to retreive the file
     // TODO: Write a wrapper to make promises cancellable to avoid usage of this._isMounted
     this._isMounted = true;
-    this.retrieveArtifact('dot', 'graph.dot');
+    this.retrieveGraph();
   }
 
   componentWillUnmount() { this._isMounted = false;  }
 
-  async retrieveArtifact(job, artifact) {
+  parseNodeIds(graph) {
+    // regex to split file:///<type>/<commitSha><path>
+    const nodeRegex = /\/\/\/([^/]*)\/([^/]*)(.*)/;
+    graph.nodes.forEach(node => {
+      const matches = nodeRegex.exec(node.id)
+      node.type = matches[1]
+      node.commitSha = matches[2]
+      if (matches[3]) node.filePath = matches[3]
+    })
+    return graph;
+  }
+
+  async retrieveGraph() {
+    if (!this.props.projectPath) return;
     try {
-      const [url, r] = await this.props.client.getArtifact(this.props.projectId, job, artifact);
-      const dotFile = await r.text();
-      const graph = dot.read(dotFile);
-      if (this._isMounted) this.setState({url, dot: dotFile, graph});
+      const fileMeta = await this.props.client.getRepositoryFileMeta(this.props.projectId, this.props.path, 'master')
+      this.props.client.getFileLineage(this.props.projectPath, fileMeta.lastCommitId, this.props.path)
+        .then(response => response.data)
+        .then(graph => this.parseNodeIds(graph))
+        .then(graph => {
+          if (this._isMounted) this.setState({graph});
+        })
     } catch(error) {
       console.error("load graph:", error);
       if (this._isMounted) this.setState({error: 'Could not load lineage.'});
@@ -54,7 +68,7 @@ class FileLineage extends Component {
   }
 
   render() {
-    return <FileLineagePresent dotUrl={this.state.url} dot={this.state.dot} graph={this.state.graph} error={this.state.error} {...this.props} />
+    return <FileLineagePresent graph={this.state.graph} error={this.state.error} {...this.props} />
   }
 }
 
