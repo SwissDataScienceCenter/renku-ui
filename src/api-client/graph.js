@@ -17,7 +17,7 @@
  */
 
 function addGraphMethods(client) {
-  // using simpleFetch instead of clientFetch because we can get a 4xx response and we never have a body
+  // using simpleFetch instead of clientFetch because we can get a 4xx response
   // https://github.com/SwissDataScienceCenter/renku-graph/tree/master/webhook-service
   client.checkGraphWebhook = (projectId) => {
     const url = `${client.baseUrl}/projects/${projectId}/graph-hooks/validation`;
@@ -51,6 +51,16 @@ function addGraphMethods(client) {
     });
   }
 
+  client.getFileLineage = (projectPath, commit, filePath) => {
+    let headers = client.getBasicHeaders();
+    return client.clientFetch(
+      `${client.baseUrl}/graph/${projectPath}/lineage/${commit}/${filePath}`,
+      {
+        method: 'GET',
+        headers: headers
+      }
+    )
+  }
 }
 
 export default addGraphMethods;
