@@ -461,6 +461,7 @@ class List extends Component {
     const currentPage = this.projectPages.get('currentPage');
     return {
       user: ownProps.user,
+      loading: this.projectPages.get('loading'),
       page: this.projectPages.get('pages')[currentPage] || {projects: []},
       currentPage: this.projectPages.get('currentPage'),
       totalItems: this.projectPages.get('totalItems'),
