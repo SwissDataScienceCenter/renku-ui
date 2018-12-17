@@ -476,6 +476,10 @@ class ProjectViewReadme extends Component {
 
 class ProjectViewOverview extends Component {
 
+  componentDidMount() {
+    this.props.fetchOverviewData();
+  }
+
   render() {
     // return [
     //   <Col key="stats" sm={12} md={3}><br /><ProjectViewStats {...this.props} /></Col>,
@@ -629,6 +633,10 @@ class ProjectFilesCategorizedList extends Component {
 }
 
 class ProjectViewFiles extends Component {
+
+  componentDidMount() {
+    this.props.fetchFiles();
+  }
 
   render() {
     return [
