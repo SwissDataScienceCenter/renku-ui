@@ -40,6 +40,7 @@ const projectsPageSchema = new Schema({
 });
 
 const projectListSchema = new Schema({
+  loading: {initial: false},
   totalItems: {mandatory: true},
   currentPage: {mandatory: true},
   perPage: {mandatory: true},
@@ -61,6 +62,7 @@ class ProjectListModel extends StateModel {
   // TODO: For a smoother experience we could always preload the next page
   //       in advance.
   getPageData(pageNumber, perPage) {
+    this.set('loading', true);
     this.client.getProjects({page: pageNumber, per_page: perPage})
       .then(response => {
         const pagination = response.pagination;
@@ -68,7 +70,8 @@ class ProjectListModel extends StateModel {
         this.set('totalItems', pagination.totalItems);
         this.set(`pages.${pagination.currentPage}`, {
           projects: response.data,
-        })
+        });
+        this.set('loading', false);
       });
   }
 }

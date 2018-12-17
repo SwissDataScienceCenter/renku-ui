@@ -44,7 +44,7 @@ import faStarSolid from '@fortawesome/fontawesome-free-solid/faStar'
 import faExclamationCircle from '@fortawesome/fontawesome-free-solid/faExclamationCircle'
 
 import collection from 'lodash/collection';
-import { Avatar, ExternalLink, FieldGroup, Pagination, RenkuNavLink, TimeCaption } from '../utils/UIComponents'
+import { Avatar, ExternalLink, FieldGroup, Loader, Pagination, RenkuNavLink, TimeCaption } from '../utils/UIComponents'
 import './Project.style.css';
 
 const imageBuildStatusText = {
@@ -814,9 +814,13 @@ class ProjectListRow extends Component {
 
 class ProjectList extends Component {
   render() {
+    const loading = this.props.loading || false;
     const projects = this.props.page.projects || [];
     const hasUser = this.props.user && this.props.user.id != null;
     const rows = projects.map((d, i) => <ProjectListRow key={i} projectsUrl={this.props.urlMap.projectsUrl} {...d} />);
+    const projectsCol = (projects.length < 1 && loading) ?
+      <Col md={{size: 2,  offset: 3}}><Loader /></Col> :
+      <Col md={8}>{rows}</Col>
     return [
       <Row key="header">
         <Col md={3} lg={2}><h1>Projects</h1></Col>
@@ -829,7 +833,7 @@ class ProjectList extends Component {
         </Col>
       </Row>,
       <Row key="spacer"><Col md={8}>&nbsp;</Col></Row>,
-      <Row key="projects"><Col md={8}>{rows}</Col></Row>,
+      <Row key="projects">{projectsCol}</Row>,
       <Pagination key="pagination" {...this.props} />
     ]
   }
