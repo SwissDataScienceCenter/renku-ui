@@ -151,7 +151,9 @@ class Pagination extends Component {
   render() {
 
     // We do not display the pagination footer when there are no pages or only one page
-    if (this.props.totalItems == null || this.props.totalItems <= this.props.perPage) {
+    if (this.props.totalItems == null
+        || this.props.totalItems < 1
+        || this.props.totalItems <= this.props.perPage) {
       return null;
     }
 
@@ -183,5 +185,18 @@ class ExternalLink extends Component {
   }
 }
 
+class Loader extends Component {
+  render() {
+    const size = this.props.size || 120;
+    const d = `${size}px`;
+    // Inspired from https://www.w3schools.com/howto/howto_css_loader.asp
+    const border = `${size / 10}px solid #f3f3f3`;
+    const borderTop = `${size / 10}px solid #5561A6`; // Use SDSC Dark Blue
+    const borderRadius = "50%";
+    const animation =  "spin 2s linear infinite";
+    return <div style={{width: d, height: d, border, borderTop, borderRadius, animation}}></div>
+  }
+}
+
 export { Avatar, TimeCaption, FieldGroup, RenkuNavLink, UserAvatar, Pagination };
-export { ExternalLink };
+export { ExternalLink, Loader };
