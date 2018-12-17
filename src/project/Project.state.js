@@ -27,7 +27,7 @@ import { UserState } from '../app-state';
 import { API_ERRORS } from '../api-client';
 import { StateModel} from '../model/Model';
 import { projectSchema } from '../model/RenkuModels';
-import { Schema, StateKind } from '../model/Model'
+import { Schema, StateKind, SpecialPropVal } from '../model/Model'
 
 const projectPageItemSchema = new Schema({
   title: {initial: '', mandatory: true},
@@ -135,6 +135,10 @@ class ProjectModel extends StateModel {
   }
 
   fetchReadme(client, id) {
+    // Do not fetch if a fetch is in progress
+    if (this.get('data.readme.text') === SpecialPropVal.UPDATING) return;
+
+    // TODO: Do not fetch if the data is less than a few seconds old
     this.setUpdating({data: {readme: {text: true}}});
     client.getProjectReadme(id)
       .then(d => this.set('data.readme.text', d.text))

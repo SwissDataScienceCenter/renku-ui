@@ -204,16 +204,24 @@ class View extends Component {
   }
 
   componentDidMount() {
-    this.fetchAll()
+    this.fetchAll();
+    // TODO Simplify this method to just fetch basic project information.
+    // this.fetchProject();
   }
 
-  fetchAll() {
-    this.projectState.fetchProject(this.props.client, this.props.id);
-    this.projectState.fetchReadme(this.props.client, this.props.id);
-    this.projectState.fetchModifiedFiles(this.props.client, this.props.id);
-    this.projectState.fetchMergeRequests(this.props.client, this.props.id);
-    this.projectState.fetchBranches(this.props.client, this.props.id);
-    this.projectState.fetchCIJobs(this.props.client, this.props.id);
+  async fetchProject() { await this.projectState.fetchProject(this.props.client, this.props.id); }
+  async fetchReadme() { await this.projectState.fetchReadme(this.props.client, this.props.id); }
+  async fetchMergeRequests() { await this.projectState.fetchMergeRequests(this.props.client, this.props.id); }
+  async fetchModifiedFiles() { await this.projectState.fetchModifiedFiles(this.props.client, this.props.id); }
+  async fetchBranches() { await this.projectState.fetchBranches(this.props.client, this.props.id); }
+  async fetchCIJobs() { await this.projectState.fetchCIJobs(this.props.client, this.props.id); }
+
+  async fetchAll() {
+    console.log("fetchAll -- use a more specific method");
+    await this.fetchProject();
+    await this.fetchMergeRequests();
+    await this.fetchBranches();
+    await this.fetchCIJobs();
   }
 
   getStarred(user, projectId) {
@@ -380,7 +388,15 @@ class View extends Component {
     onProjectRefresh: (e) => {
       e.preventDefault();
       this.fetchAll()
-    }
+    },
+    fetchOverviewData: () => { this.fetchReadme() },
+    fetchMergeRequests: () => { this.fetchMergeRequests() },
+    fetchFiles: () => {
+      // TODO Fetch files first
+      this.fetchModifiedFiles();
+    },
+    fetchBranches: () => { this.fetchBranches() },
+    fetchCIJobs: () => { this.fetchCIJobs() }
   };
 
   mapStateToProps(state, ownProps) {
