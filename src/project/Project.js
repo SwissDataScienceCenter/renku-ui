@@ -215,6 +215,7 @@ class View extends Component {
   async fetchModifiedFiles() { await this.projectState.fetchModifiedFiles(this.props.client, this.props.id); }
   async fetchBranches() { await this.projectState.fetchBranches(this.props.client, this.props.id); }
   async fetchCIJobs() { await this.projectState.fetchCIJobs(this.props.client, this.props.id); }
+  async fetchProjectFiles() { await this.projectState.fetchProjectFiles(this.props.client, this.props.id); }
 
   async fetchAll() {
     console.log("fetchAll -- use a more specific method");
@@ -392,7 +393,7 @@ class View extends Component {
     fetchOverviewData: () => { this.fetchReadme() },
     fetchMergeRequests: () => { this.fetchMergeRequests() },
     fetchFiles: () => {
-      // TODO Fetch files first
+      this.fetchProjectFiles();
       this.fetchModifiedFiles();
     },
     fetchBranches: () => { this.fetchBranches() },

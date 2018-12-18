@@ -49,31 +49,20 @@ function addProjectMethods(client) {
 
   client.getProject = (projectId, options={}) => {
     let headers = client.getBasicHeaders();
-    const apiPromises = [
-      client.clientFetch(`${client.baseUrl}/projects/${projectId}`, {
-        method: 'GET',
-        headers: headers
-      })
-        .then(resp => {
-          return {...resp, data: carveProject(resp.data)};
-        })
-    ];
+    return client.clientFetch(`${client.baseUrl}/projects/${projectId}`, {
+      method: 'GET',
+      headers: headers
+    }).then(resp => {
+      return {...resp, data: carveProject(resp.data)};
+    });
+  }
 
-    if (Object.keys(options).length > 0) {
-      apiPromises.push(client.getRepositoryTree(projectId, {path:'', recursive: true}));
-    }
-
-    return Promise.all(apiPromises).then((vals) => {
-
-      let project = vals[0];
-      if (vals.length > 1) {
-        const files = vals[1]
-          .filter((treeObj) => treeObj.type === 'blob')
-          .map((treeObj) => treeObj.path);
-
-        project.data.files = groupedFiles(files, project.data.files);
-      }
-      return project;
+  client.getProjectFiles = (projectId) => {
+    return client.getRepositoryTree(projectId, {path:'', recursive: true}).then((tree) => {
+      const files = tree
+        .filter((treeObj) => treeObj.type === 'blob')
+        .map((treeObj) => treeObj.path);
+      return groupedFiles(files, {});
     })
   }
 
