@@ -98,10 +98,11 @@ class ProjectModel extends StateModel {
   }
 
   fetchProjectFiles(client, id) {
+    this.setUpdating({transient:{requests:{files: true}}});
     return client.getProjectFiles(id)
       .then(resp => resp)
       .then(d => {
-        const updatedState = { files: d };
+        const updatedState = { files: d, transient:{requests:{files: false}} };
         this.setObject(updatedState);
         return d;
       })
