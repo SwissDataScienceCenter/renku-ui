@@ -45,6 +45,7 @@ import faExclamationCircle from '@fortawesome/fontawesome-free-solid/faExclamati
 
 import collection from 'lodash/collection';
 import { Avatar, ExternalLink, FieldGroup, Loader, Pagination, RenkuNavLink, TimeCaption } from '../utils/UIComponents'
+import { SpecialPropVal } from '../model/Model'
 import './Project.style.css';
 
 const imageBuildStatusText = {
@@ -603,7 +604,14 @@ class NotebookFolderList extends Component {
 
 class ProjectFilesCategorizedList extends Component {
   render() {
-    const annotations = this.props.files;
+    const files = this.props.files;
+    const transient = this.props.transient || {};
+    const requests = transient.requests || {}
+    const loading = requests.files === SpecialPropVal.UPDATING;
+    const allFiles = files.all || []
+    if (loading && Object.keys(allFiles).length < 1) {
+      return <Loader />
+    }
     return <Switch>
       <Route path={this.props.notebooksUrl} render={props => {
         return <NotebookFolderList
@@ -611,21 +619,21 @@ class ProjectFilesCategorizedList extends Component {
           imageBuild={this.props.imageBuild}
           mrOverviewUrl={this.props.mrOverviewUrl}
           onProjectRefresh={this.props.onProjectRefresh}
-          paths={this.props.files.notebooks}
-          files={this.props.files}
+          paths={files.notebooks}
+          files={files}
           fileContentUrl={this.props.fileContentUrl}
         />} }
       />
       <Route path={this.props.dataUrl} render={props =>
-        <AnnotatedFileFolderList paths={this.props.files.data} annotations={annotations}
+        <AnnotatedFileFolderList paths={files.data} annotations={files}
           linkUrl={this.props.lineagesUrl} mrOverviewUrl={this.props.mrOverviewUrl} />}
       />
       <Route path={this.props.workflowsUrl} render={props =>
-        <AnnotatedFileFolderList paths={this.props.files.workflows} annotations={annotations}
+        <AnnotatedFileFolderList paths={files.workflows} annotations={files}
           linkUrl={this.props.lineagesUrl} mrOverviewUrl={this.props.mrOverviewUrl} />}
       />
       <Route render={props =>
-        <AnnotatedFileFolderList paths={this.props.files.all} annotations={annotations}
+        <AnnotatedFileFolderList paths={files.all} annotations={files}
           linkUrl={this.props.lineagesUrl} mrOverviewUrl={this.props.mrOverviewUrl} />}
       />
     </Switch>

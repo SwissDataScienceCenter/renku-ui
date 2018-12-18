@@ -108,6 +108,11 @@ const projectSchema = new Schema({
       data: {schema: []},
       modifiedFiles: {initial: {}, mandatory: true}
     }
+  },
+  transient: {
+    schema: {
+      requests: {initial: {}}
+    }
   }
 });
 
