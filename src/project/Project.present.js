@@ -361,8 +361,6 @@ class ProjectViewHeader extends Component {
     const starIcon = this.props.starred ? faStarSolid : faStarRegular;
     return (
       <Container fluid>
-        <MergeRequestSuggestions externalUrl={this.props.externalUrl} canCreateMR={this.props.canCreateMR}
-          onCreateMergeRequest={this.props.onCreateMergeRequest} suggestedMRBranches={this.props.suggestedMRBranches} />
         <Row>
           <Col xs={12} md={9}>
             <h1>{core.title}</h1>
@@ -497,7 +495,9 @@ class ProjectViewOverview extends Component {
     //   <Col key="readme" sm={12} md={9}><ProjectViewReadme key="readme" {...this.props} /></Col>
     // ]
     // Hide the stats until we can actually get them from the server
-    return <Col key="readme" sm={12} md={9}><ProjectViewReadme key="readme" readme={this.props.data.readme} {...this.props} /></Col>
+    return <Col key="readme" sm={12} md={9}>
+      <ProjectViewReadme key="readme" readme={this.props.data.readme} {...this.props} />
+    </Col>
   }
 }
 
@@ -518,16 +518,31 @@ class ProjectViewKus extends Component {
 
 class ProjectMergeRequestList extends Component {
 
+  componentDidMount() {
+    this.props.fetchMrSuggestions();
+  }
+
   render() {
-    return [
-      <Col key="mrList" sm={12} md={4} lg={3} xl={2}>
-        {this.props.mrList}
-      </Col>,
-      <Col key="mr" sm={12} md={8} lg={9} xl={10}>
-        <Route path={this.props.mrUrl}
-          render={props => this.props.mrView(props) }/>
-      </Col>
-    ]
+    return <Col>
+      <Row>
+        <Col>
+          <MergeRequestSuggestions
+            externalUrl={this.props.externalUrl}
+            canCreateMR={this.props.canCreateMR}
+            onCreateMergeRequest={this.props.onCreateMergeRequest}
+            suggestedMRBranches={this.props.suggestedMRBranches} />
+        </Col>
+      </Row>
+      <Row>
+        <Col key="mrList" sm={12} md={4} lg={3} xl={2}>
+          {this.props.mrList}
+        </Col>
+        <Col key="mr" sm={12} md={8} lg={9} xl={10}>
+          <Route path={this.props.mrUrl}
+            render={props => this.props.mrView(props) }/>
+        </Col>
+      </Row>
+    </Col>
   }
 }
 
