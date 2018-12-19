@@ -209,20 +209,18 @@ class View extends Component {
     // this.fetchProject();
   }
 
-  async fetchProject() { await this.projectState.fetchProject(this.props.client, this.props.id); }
-  async fetchReadme() { await this.projectState.fetchReadme(this.props.client, this.props.id); }
-  async fetchMergeRequests() { await this.projectState.fetchMergeRequests(this.props.client, this.props.id); }
-  async fetchModifiedFiles() { await this.projectState.fetchModifiedFiles(this.props.client, this.props.id); }
-  async fetchBranches() { await this.projectState.fetchBranches(this.props.client, this.props.id); }
-  async fetchCIJobs() { await this.projectState.fetchCIJobs(this.props.client, this.props.id); }
-  async fetchProjectFiles() { await this.projectState.fetchProjectFiles(this.props.client, this.props.id); }
+  async fetchProject() { return this.projectState.fetchProject(this.props.client, this.props.id); }
+  async fetchReadme() { return this.projectState.fetchReadme(this.props.client, this.props.id); }
+  async fetchMergeRequests() { return this.projectState.fetchMergeRequests(this.props.client, this.props.id); }
+  async fetchModifiedFiles() { return this.projectState.fetchModifiedFiles(this.props.client, this.props.id); }
+  async fetchBranches() { return this.projectState.fetchBranches(this.props.client, this.props.id); }
+  async fetchCIJobs() { return this.projectState.fetchCIJobs(this.props.client, this.props.id); }
+  async fetchProjectFiles() { return this.projectState.fetchProjectFiles(this.props.client, this.props.id); }
 
   async fetchAll() {
     console.log("fetchAll -- use a more specific method");
     await this.fetchProject();
-    await this.fetchMergeRequests();
-    await this.fetchBranches();
-    await this.fetchCIJobs();
+    this.fetchCIJobs();
   }
 
   getStarred(user, projectId) {
@@ -391,12 +389,14 @@ class View extends Component {
       this.fetchAll()
     },
     fetchOverviewData: () => { this.fetchReadme() },
-    fetchMergeRequests: () => { this.fetchMergeRequests() },
+    fetchMrSuggestions: async () => {
+      await this.fetchMergeRequests();
+      this.fetchBranches();
+    },
     fetchFiles: () => {
       this.fetchProjectFiles();
       this.fetchModifiedFiles();
     },
-    fetchBranches: () => { this.fetchBranches() },
     fetchCIJobs: () => { this.fetchCIJobs() }
   };
 
