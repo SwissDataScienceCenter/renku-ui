@@ -68,6 +68,12 @@ function filterPaths(paths, blacklist) {
   return result;
 }
 
+function isRequestPending(props, request) {
+  const transient = props.transient || {};
+  const requests = transient.requests || {}
+  return requests[request] === SpecialPropVal.UPDATING;
+}
+
 class ProjectPath extends Component {
   constructor(props) {
     super(props);
@@ -448,6 +454,10 @@ class ProjectViewReadme extends Component {
 
   render() {
     const readmeText = this.props.readme.text;
+    const loading = isRequestPending(this.props, 'readme');
+    if (loading && readmeText === '') {
+      return <Loader />
+    }
     return (
       <Card className="border-0">
         <CardHeader>README.md</CardHeader>
@@ -487,7 +497,7 @@ class ProjectViewOverview extends Component {
     //   <Col key="readme" sm={12} md={9}><ProjectViewReadme key="readme" {...this.props} /></Col>
     // ]
     // Hide the stats until we can actually get them from the server
-    return <Col key="readme" sm={12} md={9}><ProjectViewReadme key="readme" readme={this.props.data.readme} /></Col>
+    return <Col key="readme" sm={12} md={9}><ProjectViewReadme key="readme" readme={this.props.data.readme} {...this.props} /></Col>
   }
 }
 
@@ -605,9 +615,7 @@ class NotebookFolderList extends Component {
 class ProjectFilesCategorizedList extends Component {
   render() {
     const files = this.props.files;
-    const transient = this.props.transient || {};
-    const requests = transient.requests || {}
-    const loading = requests.files === SpecialPropVal.UPDATING;
+    const loading = isRequestPending(this.props, 'files');
     const allFiles = files.all || []
     if (loading && Object.keys(allFiles).length < 1) {
       return <Loader />
