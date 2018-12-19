@@ -143,10 +143,9 @@ class ProjectModel extends StateModel {
 
   fetchReadme(client, id) {
     // Do not fetch if a fetch is in progress
-    if (this.get('data.readme.text') === SpecialPropVal.UPDATING) return;
+    if (this.get('transient.requests.readme') === SpecialPropVal.UPDATING) return;
 
-    // TODO: Do not fetch if the data is less than a few seconds old
-    this.setUpdating({data: {readme: {text: true}}});
+    this.setUpdating({transient:{requests:{readme: true}}});
     client.getProjectReadme(id)
       .then(d => this.set('data.readme.text', d.text))
       .catch(error => {
@@ -154,6 +153,7 @@ class ProjectModel extends StateModel {
           this.set('data.readme.text', 'No readme file found.')
         }
       })
+      .finally(() => this.set('transient.requests.readme', false))
   }
 
   setTags(client, id, name, tags) {
