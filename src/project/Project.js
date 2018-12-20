@@ -218,7 +218,6 @@ class View extends Component {
   async fetchProjectFiles() { return this.projectState.fetchProjectFiles(this.props.client, this.props.id); }
 
   async fetchAll() {
-    console.log("fetchAll -- use a more specific method");
     await this.fetchProject();
     this.fetchCIJobs();
   }
