@@ -192,9 +192,16 @@ class Loader extends Component {
     // Inspired from https://www.w3schools.com/howto/howto_css_loader.asp
     const border = `${size / 10}px solid #f3f3f3`;
     const borderTop = `${size / 10}px solid #5561A6`; // Use SDSC Dark Blue
+    const borderRight = borderTop; // Added a borderRight to make a half-circle
     const borderRadius = "50%";
     const animation =  "spin 2s linear infinite";
-    return <div style={{width: d, height: d, border, borderTop, borderRadius, animation}}></div>
+    return <div style={{
+      width: d, height: d,
+      border, borderTop, borderRight, borderRadius, animation,
+      position: 'relative',
+      left: "40%",
+      top: "40%"
+    }}></div>
   }
 }
 
