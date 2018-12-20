@@ -23,11 +23,16 @@ CURRENT_CONTEXT=`kubectl config current-context`
 WELCOME_PAGE=`echo "## Welcome to Renku through telepresence
 Some deployment-specific information will be read from the your values.yaml file and be displayed as markdown file." | base64`
 
-echo "You are going to exchange k8s deployments using the following context: ${CURRENT_CONTEXT}"
-read -p "Do you want to proceed? [y/n]"
-if [[ ! $REPLY =~ ^[Yy]$ ]]
+if [[ $CURRENT_CONTEXT == 'minikube' ]]
 then
-    exit 1
+  echo "Exchanging k8s deployments using the following context: ${CURRENT_CONTEXT}"
+else
+  echo "You are going to exchange k8s deployments using the following context: ${CURRENT_CONTEXT}"
+  read -p "Do you want to proceed? [y/n]"
+  if [[ ! $REPLY =~ ^[Yy]$ ]]
+  then
+      exit 1
+  fi
 fi
 tee > ./public/config.json << EOF
 {
