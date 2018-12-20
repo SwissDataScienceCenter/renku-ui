@@ -43,7 +43,7 @@ import faSearch from '@fortawesome/fontawesome-free-solid/faSearch';
 import faShield from '@fortawesome/fontawesome-free-solid/faShieldAlt';
 import faUserFriends from '@fortawesome/fontawesome-free-solid/faUserFriends';
 
-import { ProjectListRow } from '../project/Project.present';
+import { ProjectListRow } from '../project';
 
 class Explore extends Component {
   render() {
