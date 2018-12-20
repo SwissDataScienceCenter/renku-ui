@@ -26,13 +26,10 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
 
-import { StateKind, StateModel } from '../model/Model';
-// TODO: ONLY use one projectSchema after the refactoring has been finished.
-import { newProjectSchema } from '../model/RenkuModels';
-import { slugFromTitle } from '../utils/HelperFunctions';
+import { StateKind } from '../model/Model';
 import Present from './Project.present'
 
-import { ProjectModel, ProjectListModel } from './Project.state'
+import { ProjectModel } from './Project.state'
 import Ku from '../ku/Ku'
 import Notebook from '../file/Notebook'
 import { FileLineage, LaunchNotebookServerButton } from '../file'
@@ -41,158 +38,8 @@ import { alertError } from '../utils/Errors';
 import { MergeRequest, MergeRequestList } from '../merge-request';
 import { LaunchNotebookServer } from '../notebooks';
 
-import qs from 'query-string';
-
-function groupVisibilitySupportsVisibility(groupVisibility, visibility) {
-  if (visibility === 'private') return true;
-  if (visibility === 'internal') return (groupVisibility === 'internal' || groupVisibility === 'public');
-  // Public is the last remaining
-  return (groupVisibility === 'public');
-}
-
-function projectVisibilitiesForGroupVisibility(groupVisibility='public') {
-  const visibilities = [];
-  visibilities.push({name: "Private", value: "private"});
-  if (groupVisibilitySupportsVisibility(groupVisibility, 'internal'))
-    visibilities.push({name: "Internal", value: "internal"});
-  if (groupVisibilitySupportsVisibility(groupVisibility, 'public'))
-    visibilities.push({name: "Public", value: "public"});
-  return visibilities
-}
-
-class New extends Component {
-  constructor(props) {
-    super(props);
-
-    this.newProject = new StateModel(newProjectSchema, StateKind.REDUX);
-    this.state = {statuses: [], namespaces: [], namespaceGroup: null,
-      visibilities: projectVisibilitiesForGroupVisibility()
-    };
-
-    this.handlers = {
-      onSubmit: this.onSubmit.bind(this),
-      onTitleChange: this.onTitleChange.bind(this),
-      onDescriptionChange: this.onDescriptionChange.bind(this),
-      onVisibilityChange: this.onVisibilityChange.bind(this),
-      onProjectNamespaceChange: this.onProjectNamespaceChange.bind(this),
-      onProjectNamespaceAccept: this.onProjectNamespaceAccept.bind(this),
-      fetchMatchingNamespaces: this.fetchMatchingNamespaces.bind(this)
-    };
-    this.mapStateToProps = this.doMapStateToProps.bind(this);
-  }
-
-  async componentDidMount() {
-    const namespaces = await this.fetchNamespaces();
-    if (namespaces == null) {
-      // This seems to break in a test on Travis, but this code is not necessary locally. Need to investigate.
-      this.setState({namespaces: []});
-      return;
-    }
-    const username = this.props.user.username;
-    const namespace = namespaces.data.filter(n => n.name === username)
-    if (namespace.length > 0) this.newProject.set('meta.projectNamespace', namespace[0]);
-    this.setState({namespaces});
-  }
-
-  onSubmit() {
-    const validation = this.validate();
-    if (validation.result) {
-      this.props.client.postProject(this.newProject.get())
-        .then((project) => {
-          this.props.history.push(`/projects/${project.id}`);
-        })
-        .catch(error => {
-          const errorData = error.errorData;
-          if (errorData != null) {
-            if (errorData.message.path != null) {
-              alert(`Path ${errorData.message.path}`);
-            } else {
-              alert(JSON.stringify(errorData.message))
-            }
-          }
-        })
-    }
-  }
-
-  validate() {
-    const validation = this.newProject.validate()
-    if (!validation.result) {
-      this.setState({statuses: validation.errors});
-    }
-    return validation;
-  }
-
-  onTitleChange(e) {
-    this.newProject.set('display.title', e.target.value);
-    this.newProject.set('display.slug', slugFromTitle(e.target.value));
-  }
-
-  onDescriptionChange(e) { this.newProject.set('display.description', e.target.value); }
-  onVisibilityChange(e) { this.newProject.set('meta.visibility', e.target.value); }
-  onProjectNamespaceChange(value) {
-    this.newProject.set('meta.projectNamespace', value);
-  }
-  onProjectNamespaceAccept() {
-    const namespace = this.newProject.get('meta.projectNamespace');
-    if (namespace.kind !== 'group') {
-      const visibilities = projectVisibilitiesForGroupVisibility();
-      this.setState({namespaceGroup: null, visibilities});
-      return;
-    }
-
-    this.props.client.getGroupByPath(namespace.full_path).then(r => {
-      const group = r.data;
-      const visibilities = projectVisibilitiesForGroupVisibility(group.visibility);
-      const visibility = this.newProject.get('meta.visibility');
-      if (!groupVisibilitySupportsVisibility(group.visibility, visibility)) {
-        // Default to the highest available visibility
-        this.newProject.set('meta.visibility', visibilities[visibilities.length - 1].value);
-      }
-      this.setState({namespaceGroup: group, visibilities});
-    })
-  }
-
-  doMapStateToProps(state, ownProps) {
-    const model = this.newProject.mapStateToProps(state, ownProps);
-    return {model}
-  }
-
-  fetchNamespaces(search=null) {
-    const queryParams = {};
-    if (search != null) queryParams['search'] = search;
-    return this.props.client.getNamespaces(queryParams);
-  }
-
-  // https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions#Using_Special_Characters
-  escapeRegexCharacters(str) {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  }
-
-  async fetchMatchingNamespaces(search) {
-    const namespaces = this.state.namespaces;
-    if (namespaces.pagination.totalPages > 1) return this.fetchNamespaces(search).then(r => r.data);
-
-    // We have all the data, just filter in the browser
-    let escapedValue = this.escapeRegexCharacters(search.trim());
-    if (escapedValue === '') escapedValue = '.*';
-    const regex = new RegExp(escapedValue, 'i');
-    return Promise.resolve(namespaces.data.filter(namespace => regex.test(namespace.name)))
-  }
-
-  render() {
-    const ConnectedNewProject = connect(this.mapStateToProps)(Present.ProjectNew);
-    const statuses = {}
-    this.state.statuses.forEach((d) => { Object.keys(d).forEach(k => statuses[k] = d[k])});
-    return <ConnectedNewProject
-      statuses={statuses}
-      namespaces={this.state.namespaces.data}
-      visibilities={this.state.visibilities}
-      handlers={this.handlers}
-      store={this.newProject.reduxStore}
-      user={this.props.user} />;
-  }
-}
-
+import List from './list';
+import New from './new';
 
 // TODO: This component has grown too much and needs restructuring. One option would be to insert
 // TODO: another container component between this top-level project component and the presentational
@@ -430,72 +277,6 @@ class View extends Component {
     const props = {...this.props, ...this.eventHandlers, projectStore: this.projectState.reduxStore};
     return <ConnectedProjectView {...props} />
 
-  }
-}
-
-
-class List extends Component {
-  constructor(props) {
-    super(props);
-    this.projectPages = new ProjectListModel(props.client);
-    this.perPage = this.props.perPage || 10;
-
-    // Register listener for route changes (back/forward buttons)
-    this.props.history.listen(location => {
-      this.onPageChange(this.getPageNumber(location));
-    });
-
-
-  }
-
-  // TODO: Replace this by URLs which are passed down from the app level.
-  urlMap() {
-    return {
-      projectsUrl: '/projects',
-      projectNewUrl: '/project_new'
-    }
-  }
-
-  componentDidMount() {
-    this.projectPages.set('perPage', this.perPage);
-    this.projectPages.setPage(this.getPageNumber(this.props.location));
-  }
-
-  getPageNumber(location) {
-    return parseInt(qs.parse(location.search).page, 10) || 1;
-  }
-
-  setPageInUrl(newPageNumber) {
-    const projectsUrl = this.urlMap().projectsUrl
-    this.props.history.push(`${projectsUrl}?page=${newPageNumber}`)
-  }
-
-  onPageChange(newPageNumber) {
-    this.projectPages.setPage(newPageNumber);
-  }
-
-  mapStateToProps(state, ownProps) {
-    const currentPage = this.projectPages.get('currentPage');
-    return {
-      user: ownProps.user,
-      loading: this.projectPages.get('loading'),
-      page: this.projectPages.get('pages')[currentPage] || {projects: []},
-      currentPage: this.projectPages.get('currentPage'),
-      totalItems: this.projectPages.get('totalItems'),
-      perPage: this.projectPages.get('perPage'),
-      onPageChange: this.setPageInUrl.bind(this),
-    }
-  }
-
-  render() {
-    const VisibleProjectList =
-      connect(this.mapStateToProps.bind(this))(Present.ProjectList);
-
-    return <VisibleProjectList
-      store={this.projectPages.reduxStore}
-      user={this.props.user}
-      urlMap={this.urlMap()}
-    />
   }
 }
 
