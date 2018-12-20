@@ -351,10 +351,12 @@ class MergeRequestSuggestions extends Component {
   }
 }
 
-class ProjectViewHeader extends Component {
+class ProjectViewHeaderOverview extends Component {
 
   render() {
-
+    const forkedFrom = (this.props.forkedFromLink == null) ?
+      null :
+      [" ", "forked from", " ", this.props.forkedFromLink];
     const core = this.props.core;
     const system = this.props.system;
     const starButtonText = this.props.starred ? 'unstar' : 'star';
@@ -366,6 +368,7 @@ class ProjectViewHeader extends Component {
             <h1>{core.title}</h1>
             <p>
               <span className="lead">{core.description}</span> <br />
+              <span>{this.props.core.path_with_namespace}{forkedFrom}</span> <br />
               <TimeCaption key="time-caption" time={core.last_activity_at} />
             </p>
           </Col>
@@ -402,6 +405,56 @@ class ProjectViewHeader extends Component {
         </Row>
       </Container>
     )
+  }
+}
+
+class ProjectViewHeaderStandard extends Component {
+
+  render() {
+    const forkedFrom = (this.props.forkedFromLink == null) ?
+      null :
+      [" ", "forked from", " ", this.props.forkedFromLink];
+    return (
+      <Container fluid>
+        <Row>
+          <Col xs={12} md={9}>
+            <h3>{this.props.core.path_with_namespace}</h3> {forkedFrom}
+          </Col>
+          <Col xs={12} md={3}>
+            <div className="d-flex flex-md-row-reverse pt-3">
+              <div>
+                {this.props.launchNotebookServerButton}
+              </div>
+            </div>
+            <p className="text-md-right pt-3">
+              <ImageBuildInfoBadge notebooksUrl={this.props.notebooksUrl} imageBuild={this.props.imageBuild} />
+            </p>
+          </Col>
+        </Row>
+      </Container>
+    )
+  }
+}
+
+class ProjectViewHeader extends Component {
+
+  render() {
+    let forkedFromLink = null;
+    if (this.props.system.forked_from_project != null &&
+      Object.keys(this.props.system.forked_from_project).length > 0) {
+      const forkedFrom = this.props.system.forked_from_project;
+      const projectsUrl = this.props.projectsUrl;
+      forkedFromLink = <Link key="forkedfrom" to={`${projectsUrl}/${forkedFrom.metadata.core.id}`}>
+        {forkedFrom.metadata.core.path_with_namespace || 'no title'}
+      </Link>;
+    }
+
+    return <Switch>
+      <Route exact path={this.props.overviewUrl} render={props => <ProjectViewHeaderOverview key="overviewheader"
+        forkedFromLink={forkedFromLink} {...this.props} />} />
+      <Route render={props => <ProjectViewHeaderStandard key="standardheader"
+        forkedFromLink={forkedFromLink} {...this.props} />} />
+    </Switch>
   }
 }
 

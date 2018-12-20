@@ -61,7 +61,7 @@ const projectSchema = new Schema({
       title: {initial: 'no title', mandatory: true},
       external_url: {initial: '',},
       path_with_namespace: {initial: null},
-      owner: {initial: null}
+      owner: {initial: null},
     }
   },
   visibility: {
@@ -95,6 +95,7 @@ const projectSchema = new Schema({
       tag_list: {schema: []},
       star_count: {initial: 0, mandatory: true},
       forks_count: {initial: 0, mandatory: true},
+      forked_from_project: {initial: {}},
       ssh_url: {initial: '',},
       http_url: {initial: '',},
       merge_requests: {schema: [], initial:[]},
