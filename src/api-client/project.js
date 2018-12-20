@@ -224,7 +224,9 @@ function carveProject(projectJson) {
   result['metadata']['system']['forks_count'] = projectJson['forks_count'];
   result['metadata']['system']['ssh_url'] = projectJson['ssh_url_to_repo'];
   result['metadata']['system']['http_url'] = projectJson['http_url_to_repo'];
-
+  result['metadata']['system']['forked_from_project'] = (projectJson['forked_from_project'] != null) ?
+    carveProject(projectJson['forked_from_project']) :
+    null;
   return result;
 }
 

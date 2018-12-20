@@ -236,6 +236,7 @@ class View extends Component {
     const fileContentUrl = `${filesUrl}/blob`;
 
     return {
+      projectsUrl: '/projects',
       overviewUrl: `${baseUrl}/`,
       kusUrl: `${baseUrl}/kus`,
       kuNewUrl: `${baseUrl}/ku_new`,
