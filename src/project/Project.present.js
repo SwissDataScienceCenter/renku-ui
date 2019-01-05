@@ -141,17 +141,12 @@ class ProjectViewHeaderOverview extends Component {
       <Container fluid>
         <Row>
           <Col xs={12} md={9}>
-            <h1>{core.title}</h1>
+            <h3>{core.title}</h3>
             <p>
-              <span className="lead">{core.description}</span> <br />
               <span>{this.props.core.path_with_namespace}{forkedFrom}</span> <br />
-              <TimeCaption key="time-caption" time={core.last_activity_at} />
             </p>
           </Col>
           <Col xs={12} md={3}>
-            <p className="text-md-right">
-              <ProjectTagList taglist={system.tag_list} />
-            </p>
             <div className="d-flex flex-md-row-reverse">
               <div className={`fixed-width-${this.props.starred ? '120' : '100'}`}>
                 <form className="input-group input-group-sm">
@@ -165,44 +160,15 @@ class ProjectViewHeaderOverview extends Component {
                 </form>
               </div>
             </div>
-            <div className="d-flex flex-md-row-reverse pt-3">
+            <div className="d-flex flex-md-row-reverse pt-2 pb-2">
               <div>
-                <ExternalLink url={this.props.externalUrl} title="View Project in GitLab" />
+                <ExternalLink url={this.props.externalUrl} title="View in GitLab" />
               </div>
-              <div>&nbsp;</div>
-              <div>
+              <div className="pr-2">
                 {this.props.launchNotebookServerButton}
               </div>
             </div>
-            <p className="text-md-right pt-3">
-              <ImageBuildInfoBadge notebooksUrl={this.props.notebooksUrl} imageBuild={this.props.imageBuild} />
-            </p>
-          </Col>
-        </Row>
-      </Container>
-    )
-  }
-}
-
-class ProjectViewHeaderStandard extends Component {
-
-  render() {
-    const forkedFrom = (this.props.forkedFromLink == null) ?
-      null :
-      [" ", "forked from", " ", this.props.forkedFromLink];
-    return (
-      <Container fluid>
-        <Row>
-          <Col xs={12} md={9}>
-            <h3>{this.props.core.path_with_namespace}</h3> {forkedFrom}
-          </Col>
-          <Col xs={12} md={3}>
-            <div className="d-flex flex-md-row-reverse pt-3">
-              <div>
-                {this.props.launchNotebookServerButton}
-              </div>
-            </div>
-            <p className="text-md-right pt-3">
+            <p className="text-md-right">
               <ImageBuildInfoBadge notebooksUrl={this.props.notebooksUrl} imageBuild={this.props.imageBuild} />
             </p>
           </Col>
@@ -225,12 +191,9 @@ class ProjectViewHeader extends Component {
       </Link>;
     }
 
-    return <Switch>
-      <Route exact path={this.props.overviewUrl} render={props => <ProjectViewHeaderOverview key="overviewheader"
-        forkedFromLink={forkedFromLink} {...this.props} />} />
-      <Route render={props => <ProjectViewHeaderStandard key="standardheader"
-        forkedFromLink={forkedFromLink} {...this.props} />} />
-    </Switch>
+    return <ProjectViewHeaderOverview
+      key="overviewheader"
+      forkedFromLink={forkedFromLink} {...this.props} />
   }
 }
 
@@ -240,7 +203,7 @@ class ProjectNav extends Component {
     return (
       <Nav pills className={'nav-pills-underline'}>
         <NavItem>
-          <RenkuNavLink to={this.props.overviewUrl} title="Overview" />
+          <RenkuNavLink to={this.props.baseUrl} alternate={this.props.overviewUrl} title="Overview" />
         </NavItem>
         <NavItem>
           <RenkuNavLink exact={false} to={this.props.kusUrl} title="Kus" />
@@ -296,6 +259,40 @@ class ProjectViewReadme extends Component {
   }
 }
 
+class ProjectViewStats extends Component {
+
+  render() {
+    const stats = this.props.system;
+    return (
+      <Card className="border-0">
+        <CardHeader>Project Statistics</CardHeader>
+        <CardBody>
+          <Row>
+            <Col md={6}>
+              <Table key="stats-table" size="sm">
+                <tbody>
+                  <tr>
+                    <th scope="row">Number of Branches</th>
+                    <td>{stats.branches.length + 1}</td>
+                    <td>
+                      <ExternalLink size="sm" url={`${this.props.externalUrl}/branches`} title="Branches in Gitlab"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Number of Forks</th>
+                    <td>{stats.forks_count}</td>
+                    <td><ExternalLink size="sm" url={`${this.props.externalUrl}/forks`} title="Forks in Gitlab"/></td>
+                  </tr>
+                </tbody>
+              </Table>
+            </Col>
+          </Row>
+        </CardBody>
+      </Card>
+    )
+  }
+}
+
 // class ProjectViewStats extends Component {
 //
 //   render() {
@@ -312,6 +309,25 @@ class ProjectViewReadme extends Component {
 //   }
 // }
 
+class ProjectViewOverviewNav extends Component {
+
+  render() {
+    // Add when results are handled:
+    // <NavItem>
+    //   <RenkuNavLink to={`${this.props.overviewUrl}/results`} title="Results" />
+    // </NavItem>
+    return (
+      <Nav pills className={'flex-column'}>
+        <NavItem>
+          <RenkuNavLink to={this.props.baseUrl} title="Description" />
+        </NavItem>
+        <NavItem>
+          <RenkuNavLink to={`${this.props.statsUrl}`} title="Stats" />
+        </NavItem>
+      </Nav>)
+  }
+}
+
 class ProjectViewOverview extends Component {
 
   componentDidMount() {
@@ -324,8 +340,37 @@ class ProjectViewOverview extends Component {
     //   <Col key="readme" sm={12} md={9}><ProjectViewReadme key="readme" {...this.props} /></Col>
     // ]
     // Hide the stats until we can actually get them from the server
-    return <Col key="readme" sm={12} md={9}>
-      <ProjectViewReadme key="readme" readme={this.props.data.readme} {...this.props} />
+    const core = this.props.core;
+    const system = this.props.system;
+    return <Col key="overview">
+      <Row>
+        <Col xs={12} md={9}>
+          <p>
+            <span className="lead">{core.description}</span> <br />
+            <TimeCaption key="time-caption" time={core.last_activity_at} />
+          </p>
+        </Col>
+        <Col xs={12} md={3}>
+          <p className="text-md-right">
+            <ProjectTagList taglist={system.tag_list} />
+          </p>
+        </Col>
+      </Row>
+      <Row>
+        <Col key="nav" sm={12} md={2}>
+          <ProjectViewOverviewNav {...this.props} />
+        </Col>
+        <Col key="content" sm={12} md={10}>
+          <Switch>
+            <Route exact path={this.props.baseUrl} render={props => {
+              return <ProjectViewReadme readme={this.props.data.readme} {...this.props} />
+            }} />
+            <Route path={this.props.statusUrl} render={props =>
+              <ProjectViewStats {...this.props} />}
+            />
+          </Switch>
+        </Col>
+      </Row>
     </Col>
   }
 }
@@ -602,7 +647,9 @@ class ProjectView extends Component {
       <Row key="space"><Col key="space" xs={12}>&nbsp;</Col></Row>,
       <Container key="content" fluid>
         <Row>
-          <Route exact path={this.props.overviewUrl}
+          <Route exact path={this.props.baseUrl}
+            render={props => <ProjectViewOverview key="overview" {...this.props} />} />
+          <Route path={this.props.overviewUrl}
             render={props => <ProjectViewOverview key="overview" {...this.props} />} />
           <Route path={this.props.kusUrl}
             render={props => <ProjectViewKus key="kus" {...this.props} />} />

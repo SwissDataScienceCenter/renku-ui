@@ -84,7 +84,9 @@ class View extends Component {
 
     return {
       projectsUrl: '/projects',
-      overviewUrl: `${baseUrl}/`,
+      baseUrl: baseUrl,
+      overviewUrl: `${baseUrl}/overview`,
+      statsUrl: `${baseUrl}/overview/stats`,
       kusUrl: `${baseUrl}/kus`,
       kuNewUrl: `${baseUrl}/ku_new`,
       kuUrl: `${baseUrl}/kus/:kuIid(\\d+)`,
