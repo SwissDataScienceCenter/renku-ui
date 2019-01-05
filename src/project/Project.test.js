@@ -63,7 +63,7 @@ describe('rendering', () => {
     const div = document.createElement('div');
     ReactDOM.render(
       <MemoryRouter>
-        <Project.View id="1" client={client} match={{params: {id: "1"}}} />
+        <Project.View id="1" client={client} match={{params: {id: "1"}, url:"/projects/1/"}} />
       </MemoryRouter>
       , div);
   });
