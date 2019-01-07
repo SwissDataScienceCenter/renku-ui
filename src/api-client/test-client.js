@@ -83,8 +83,15 @@ const methods = {
     response: ''
   },
   getNamespaces: {
-    responseData: samples.namespaces
+    response: {
+      data: samples.namespaces
+    }
   },
+  getUser: {
+    response: {
+      data: samples.user
+    }
+  }
 };
 
 let client = {};

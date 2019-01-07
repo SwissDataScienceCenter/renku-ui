@@ -17,9 +17,13 @@
  */
 
 
-const SET_USER_INFO = 'SET_USER_INFO';
-const SET_STARRED_PROJECTS = 'SET_STARRED_PROJECTS';
-const STAR_PROJECT = 'STAR_PROJECT';
+const Actions = {
+  SET_USER_INFO: 'UserState.SET_USER_INFO',
+  SET_STARRED_PROJECTS: 'UserState.SET_STARRED_PROJECTS',
+  SET_MEMBER_PROJECTS: 'UserState.SET_MEMBER_PROJECTS',
+  STAR_PROJECT: 'UserState.STAR_PROJECT',
+}
+
 
 function starredProjectMetadata(project) {
   return {
@@ -33,43 +37,54 @@ function starredProjectMetadata(project) {
   }
 }
 
-const User = {
+const UserState = {
   // Actions for connecting to the server
   fetchAppUser: (client, dispatch) => {
-    client.getUser()
+    return client.getUser()
       .then(response => {
-        dispatch(User.set(response.data));
+        dispatch(UserState.set(response.data));
         // TODO: Replace this after re-implementation of user state.
         client.getProjects({starred: true})
           .then((projectResponse) => {
             const reducedProjects = projectResponse.data.map((project) => starredProjectMetadata(project));
-            dispatch(User.setStarred(reducedProjects));
+            dispatch(UserState.setStarred(reducedProjects));
           })
-          .catch(() => dispatch(User.setStarred([])));
+          .catch(() => dispatch(UserState.setStarred([])));
+        client.getProjects({membership: true})
+          .then((projectResponse) => {
+            const reducedProjects = projectResponse.data.map((project) => starredProjectMetadata(project));
+            dispatch(UserState.setMember(reducedProjects));
+          })
+          .catch(() => dispatch(UserState.setMember([])));
       })
       .catch((error) => {
         console.error(error)
-        User.set(undefined)
+        UserState.set(undefined)
       });
   },
   // Actions related to user state...
   set: (user) => {
-    return { type: SET_USER_INFO, payload: user };
+    return { type: Actions.SET_USER_INFO, payload: user };
   },
   setStarred: (projectIds) => {
-    return { type: SET_STARRED_PROJECTS, payload: projectIds };
+    return { type: Actions.SET_STARRED_PROJECTS, payload: projectIds };
+  },
+  setMember: (projectIds) => {
+    return { type: Actions.SET_MEMBER_PROJECTS, payload: projectIds };
   },
   star: (projectId) => {
-    return { type: STAR_PROJECT, payload: projectId };
+    return { type: Actions.STAR_PROJECT, payload: projectId };
   },
   // ... and the reducer.
   reducer: (state = null, action) => {
     switch (action.type) {
-    case SET_USER_INFO:
+    case Actions.SET_USER_INFO:
       return {...state, ...action.payload};
-    case SET_STARRED_PROJECTS:
+    case Actions.SET_STARRED_PROJECTS:
       return {...state, starredProjects: action.payload};
-    case STAR_PROJECT: {
+    case Actions.SET_MEMBER_PROJECTS:
+      return {...state, memberProjects: action.payload};
+    case Actions.STAR_PROJECT: {
       let newStarredProjects = state.starredProjects ? [...state.starredProjects] : [];
       const project = action.payload;
       const ind = newStarredProjects.map(p => p.id).indexOf(project.id);
@@ -87,4 +102,4 @@ const User = {
   }
 };
 
-export { User };
+export default UserState;

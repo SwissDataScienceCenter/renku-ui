@@ -18,7 +18,7 @@
 
 import { combineReducers } from 'redux';
 
-import { User as UserState } from './AppState.user';
+import UserState from './UserState';
 
 // Combine all reducers here
 const reducer = combineReducers({
