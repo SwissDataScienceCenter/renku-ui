@@ -162,7 +162,11 @@ class ProjectViewHeaderOverview extends Component {
             </div>
             <div className="d-flex flex-md-row-reverse pt-2 pb-2">
               <div>
-                <ExternalLink url={this.props.externalUrl} title="View in GitLab" />
+                {
+                  (this.props.externalUrl !== "") ?
+                    <ExternalLink url={this.props.externalUrl} title="View in GitLab" /> :
+                    null
+                }
               </div>
               <div className="pr-2">
                 {this.props.launchNotebookServerButton}
