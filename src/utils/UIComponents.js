@@ -112,12 +112,29 @@ class TimeCaption extends Component {
   }
 }
 
+/**
+ * Provide a react-router-compatible link to a URL. Show the link as active
+ * if it matches either the to or alternate URL.
+ */
 class RenkuNavLink extends Component {
+
+  constructor() {
+    super()
+    this.isActive = this.testActive.bind(this);
+  }
+
+  testActive(match, location) {
+    const alt = this.props.alternate;
+    let haveMatch = match != null;
+    if (alt == null) return haveMatch;
+    return haveMatch || location.pathname.startsWith(alt);
+  }
+
   render() {
     const to = this.props.to;
     const title = this.props.title;
     const exact = (this.props.exact != null) ? this.props.exact : true;
-    return <NavLink exact={exact} to={to} tag={RRNavLink}>{title}</NavLink>
+    return <NavLink exact={exact} to={to} isActive={this.isActive} tag={RRNavLink}>{title}</NavLink>
   }
 }
 
