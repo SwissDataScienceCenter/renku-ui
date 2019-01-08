@@ -28,16 +28,23 @@ class QuickNavPresent extends Component {
   constructor(props) {
     super(props);
     this.onRenderSuggestion = this.doRenderSuggestion.bind(this);
+    this.onSectionTitle = this.doSectionTitle.bind(this);
   }
 
   doRenderSuggestion(suggestion, {query, isHighlighted}) {
-    const link = <Link to={`/projects/${suggestion.id}`}>{suggestion.path}</Link>
+    // If the suggestion is actually a query, make an appropriate link
+    const link = (suggestion.query == null) ?
+      <Link to={suggestion.url}>{suggestion.path}</Link>:
+      <Link to={suggestion.url}>{suggestion.query}</Link>
     const style = { padding: '5px 0', borderBottom: '1px solid #e1e4e8' };
     return (isHighlighted) ?
       <div style={style} className="bg-light">{link}</div> :
       <div style={style}>{link}</div>;
   }
 
+  doSectionTitle(section) {
+    return <strong>{section.title}</strong>
+  }
 
   render () {
     const theme = {
@@ -48,12 +55,11 @@ class QuickNavPresent extends Component {
     };
 
     const inputProps = {
-      placeholder: 'Jump to...',
+      placeholder: 'Jump to or search...',
       type: 'search',
       value: this.props.value,
       onChange: this.props.callbacks.onChange
     };
-
 
     return <form className="form-inline my-2 my-lg-0" onSubmit={this.props.callbacks.onSubmit}>
       <div className="input-group">
@@ -62,6 +68,10 @@ class QuickNavPresent extends Component {
           getSuggestionValue={this.props.callbacks.getSuggestionValue}
           onSuggestionsFetchRequested={this.props.callbacks.onSuggestionsFetchRequested}
           onSuggestionsClearRequested={this.props.callbacks.onSuggestionsClearRequested}
+          onSuggestionSelected={this.props.callbacks.onSuggestionSelected}
+          multiSection={true}
+          renderSectionTitle={this.onSectionTitle}
+          getSectionSuggestions={(section) => section.suggestions}
           inputProps={inputProps}
           theme={theme}
           renderSuggestion={this.onRenderSuggestion} />
