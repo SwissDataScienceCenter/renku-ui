@@ -109,7 +109,7 @@ class LoggedInNavBar extends Component {
           </button>
 
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <QuickNav client={this.props.client}/>
+            <QuickNav user={this.props.user} client={this.props.client}/>
 
             <ul className="navbar-nav mr-auto">
               <RenkuNavLink to="/projects" title="Projects"/>
