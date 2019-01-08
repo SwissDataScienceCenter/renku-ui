@@ -83,13 +83,14 @@ class ProjectModel extends StateModel {
 
   // TODO: Do we really want to re-fetch the entire project on every change?
   fetchProject(client, id) {
-    return client.getProject(id, {notebooks:true, data:true})
+    return client.getProject(id, {statistics:true})
       .then(resp => resp.data)
       .then(d => {
         const updatedState = {
           core: d.metadata.core,
           system: d.metadata.system,
           visibility: d.metadata.visibility,
+          statistics: d.metadata.statistics
         };
         this.setObject(updatedState);
         this.fetchNotebookServerUrl(client, id, updatedState);

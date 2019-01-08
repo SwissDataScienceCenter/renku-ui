@@ -48,10 +48,14 @@ function addProjectMethods(client) {
 
 
   client.getProject = (projectId, options={}) => {
-    let headers = client.getBasicHeaders();
+    const headers = client.getBasicHeaders();
+    const queryParams = {
+      statistics: options.statistics || false
+    };
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}`, {
       method: 'GET',
-      headers: headers
+      headers,
+      queryParams
     }).then(resp => {
       return {...resp, data: carveProject(resp.data)};
     });
@@ -196,7 +200,7 @@ function addProjectMethods(client) {
 
 
 function carveProject(projectJson) {
-  const result = {metadata: {core: {}, visibility: {}, system: {}}, all: projectJson};
+  const result = {metadata: {core: {}, visibility: {}, system: {}, statistics: {}}, all: projectJson};
   result['metadata']['visibility']['level'] = projectJson['visibility'];
 
   let accessLevel = 0;
@@ -227,6 +231,14 @@ function carveProject(projectJson) {
   result['metadata']['system']['forked_from_project'] = (projectJson['forked_from_project'] != null) ?
     carveProject(projectJson['forked_from_project']) :
     null;
+
+  if (projectJson.statistics != null) {
+    result['metadata']['statistics']['commit_count'] = projectJson['statistics']['commit_count'];
+    result['metadata']['statistics']['storage_size'] = projectJson['statistics']['storage_size'];
+    result['metadata']['statistics']['repository_size'] = projectJson['statistics']['repository_size'];
+    result['metadata']['statistics']['lfs_objects_size'] = projectJson['statistics']['lfs_objects_size'];
+    result['metadata']['statistics']['job_artificats_size'] = projectJson['statistics']['job_artificats_size'];
+  }
   return result;
 }
 

@@ -110,6 +110,15 @@ const projectSchema = new Schema({
       modifiedFiles: {initial: {}, mandatory: true}
     }
   },
+  statistics: {
+    schema: {
+      "commit_count": {initial: 0},
+      "storage_size": {initial: 0},
+      "repository_size": {initial: 0},
+      "lfs_objects_size": {initial: 0},
+      "job_artifacts_size": {initial: 0}
+    },
+  },
   transient: {
     schema: {
       requests: {initial: {}}
