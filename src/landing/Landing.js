@@ -72,7 +72,7 @@ class Home extends Component {
   mapDispatchToProps(dispatch, ownProps) {
     return {
       onStarred: (e) => { dispatch(State.Home.Ui.selectStarred()) },
-      onYourActivity: (e) => { dispatch(State.Home.Ui.selectYourActivity()) },
+      onMember: (e) => { dispatch(State.Home.Ui.selectMember()) },
       onYourNetwork: (e) => { dispatch(State.Home.Ui.selectYourNetwork()) },
       onExplore: (e) => { dispatch(State.Home.Ui.selectExplore()) },
       onWelcome: (e) => { dispatch(State.Home.Ui.selectWelcome()) },
