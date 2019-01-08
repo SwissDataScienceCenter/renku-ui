@@ -29,6 +29,7 @@ import React, { Component } from 'react';
 
 import { Link, Route, Switch }  from 'react-router-dom';
 import ReactMarkdown from 'react-markdown'
+import filesize from 'filesize';
 
 import { Container, Row, Col } from 'reactstrap';
 import { Alert, Table } from 'reactstrap';
@@ -41,6 +42,7 @@ import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faStarRegular from '@fortawesome/fontawesome-free-regular/faStar'
 import faStarSolid from '@fortawesome/fontawesome-free-solid/faStar'
 import faExclamationCircle from '@fortawesome/fontawesome-free-solid/faExclamationCircle'
+
 
 import { ExternalLink, Loader, RenkuNavLink, TimeCaption } from '../utils/UIComponents'
 import { SpecialPropVal } from '../model/Model'
@@ -266,9 +268,14 @@ class ProjectViewReadme extends Component {
 class ProjectViewStats extends Component {
 
   render() {
-    const stats = this.props.system;
-    return (
-      <Card className="border-0">
+    const loading = (this.props.core.id == null);
+    if (loading) {
+      return <Loader />
+    }
+    const system = this.props.system;
+    const stats = this.props.statistics;
+    return [
+      <Card key="project-stats" className="border-0">
         <CardHeader>Project Statistics</CardHeader>
         <CardBody>
           <Row>
@@ -277,15 +284,47 @@ class ProjectViewStats extends Component {
                 <tbody>
                   <tr>
                     <th scope="row">Number of Branches</th>
-                    <td>{stats.branches.length + 1}</td>
+                    <td>{system.branches.length + 1}</td>
                     <td>
                       <ExternalLink size="sm" url={`${this.props.externalUrl}/branches`} title="Branches in Gitlab"/>
                     </td>
                   </tr>
                   <tr>
                     <th scope="row">Number of Forks</th>
-                    <td>{stats.forks_count}</td>
+                    <td>{system.forks_count}</td>
                     <td><ExternalLink size="sm" url={`${this.props.externalUrl}/forks`} title="Forks in Gitlab"/></td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Number of Commits</th>
+                    <td>{stats.commit_count}</td>
+                    <td>
+                      <ExternalLink size="sm" url={`${this.props.externalUrl}/commits`} title="Commits in Gitlab"/>
+                    </td>
+                  </tr>
+                </tbody>
+              </Table>
+            </Col>
+          </Row>
+        </CardBody>
+      </Card>,
+      <Card key="storage-stats" className="border-0">
+        <CardHeader>Storage Statistics</CardHeader>
+        <CardBody>
+          <Row>
+            <Col md={6}>
+              <Table key="stats-table" size="sm">
+                <tbody>
+                  <tr>
+                    <th scope="row">Storage Size</th>
+                    <td>{filesize(stats.storage_size)}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Repository Size</th>
+                    <td>{filesize(stats.repository_size)}</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">LFS Size</th>
+                    <td>{filesize(stats.lfs_objects_size)}</td>
                   </tr>
                 </tbody>
               </Table>
@@ -293,25 +332,9 @@ class ProjectViewStats extends Component {
           </Row>
         </CardBody>
       </Card>
-    )
+    ]
   }
 }
-
-// class ProjectViewStats extends Component {
-//
-//   render() {
-//     const lastActivityAt = this.props.lastActivityAt;
-//     return [
-//       <h3 key="header">Stats</h3>,
-//       <TimeCaption key="time-caption" time={lastActivityAt} />,
-//       <p key="stats">
-//         <b>Kus</b> 5; 1 closed, 2 active<br />
-//         <b>Contributors</b> 3<br />
-//         <b>Notebooks</b> 3
-//       </p>,
-//     ]
-//   }
-// }
 
 class ProjectViewOverviewNav extends Component {
 
