@@ -32,9 +32,10 @@ class QuickNavPresent extends Component {
 
   doRenderSuggestion(suggestion, {query, isHighlighted}) {
     const link = <Link to={`/projects/${suggestion.id}`}>{suggestion.path}</Link>
+    const style = { padding: '5px 0', borderBottom: '1px solid #e1e4e8' };
     return (isHighlighted) ?
-      <div className="bg-light">{link}</div> :
-      <div>{link}</div>;
+      <div style={style} className="bg-light">{link}</div> :
+      <div style={style}>{link}</div>;
   }
 
 
