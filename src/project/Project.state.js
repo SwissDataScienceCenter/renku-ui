@@ -27,54 +27,9 @@ import { UserState } from '../app-state';
 import { API_ERRORS } from '../api-client';
 import { StateModel} from '../model/Model';
 import { projectSchema } from '../model/RenkuModels';
-import { Schema, StateKind, SpecialPropVal } from '../model/Model'
+import { SpecialPropVal } from '../model/Model'
 
-const projectPageItemSchema = new Schema({
-  title: {initial: '', mandatory: true},
-  path: {initial: '', mandatory: true},
-  description: {initial: '', mandatory: true}
-});
 
-const projectsPageSchema = new Schema({
-  projects: {initial: [], schema: [{projectPageItemSchema}]}
-});
-
-const projectListSchema = new Schema({
-  loading: {initial: false},
-  totalItems: {mandatory: true},
-  currentPage: {mandatory: true},
-  perPage: {mandatory: true},
-  pages: {initial: [], schema: [{projectsPageSchema}]}
-});
-
-class ProjectListModel extends StateModel {
-  constructor(client) {
-    super(projectListSchema, StateKind.REDUX)
-    this.client = client
-  }
-
-  setPage(newPageNumber) {
-    this.set('currentPage', newPageNumber);
-    // We always relaod the current page on page change.
-    this.getPageData(newPageNumber, this.get('perPage'));
-  }
-
-  // TODO: For a smoother experience we could always preload the next page
-  //       in advance.
-  getPageData(pageNumber, perPage) {
-    this.set('loading', true);
-    this.client.getProjects({page: pageNumber, per_page: perPage})
-      .then(response => {
-        const pagination = response.pagination;
-        this.set('currentPage', pagination.currentPage);
-        this.set('totalItems', pagination.totalItems);
-        this.set(`pages.${pagination.currentPage}`, {
-          projects: response.data,
-        });
-        this.set('loading', false);
-      });
-  }
-}
 
 class ProjectModel extends StateModel {
   constructor(stateBinding, stateHolder, initialState) {
@@ -190,4 +145,4 @@ class ProjectModel extends StateModel {
   }
 }
 
-export { ProjectModel, ProjectListModel };
+export { ProjectModel };

@@ -21,7 +21,7 @@ import { connect } from 'react-redux'
 
 import ProjectList from './ProjectList.present'
 
-import { ProjectListModel } from '../Project.state'
+import ProjectListModel from './ProjectList.state'
 
 import qs from 'query-string';
 
