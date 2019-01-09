@@ -100,8 +100,6 @@ class LoggedInNavBar extends Component {
     return (
       <header>
         <nav className="navbar navbar-expand-sm navbar-light bg-light justify-content-between">
-          {/* TODO: Revert back to using a react router link (no page reload) as soon as issue 304 has been
-              TODO: resolved */}
           <span className="navbar-brand">
             <Link to="/"><img src={logo} alt="Renku" height="24" /></Link>
           </span>
@@ -153,7 +151,7 @@ class AnonymousNavBar extends Component {
       <header>
         <nav className="navbar navbar-expand-sm navbar-light bg-light justify-content-between">
           <span className="navbar-brand">
-            <a href={this.props.params.BASE_URL}><img src={logo} alt="Renku" height="24" /></a>
+            <Link to="/"><img src={logo} alt="Renku" height="24" /></Link>
           </span>
           <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
