@@ -44,9 +44,10 @@ tee > ./public/config.json << EOF
 }
 EOF
 
-echo "================================================================================================================="
-echo "Once telepresence has started, type the following command to start the development server:"
-echo "BROWSER=none npm start"
-echo "================================================================================================================="
+# The following is necessary if we start telepresence with --run-shell
+# echo "================================================================================================================="
+# echo "Once telepresence has started, type the following command to start the development server:"
+# echo "BROWSER=none npm start"
+# echo "================================================================================================================="
 
-BROWSER=none telepresence --swap-deployment renku-ui --namespace renku --method inject-tcp --expose 3000:80 --run-shell
+BROWSER=none telepresence --swap-deployment renku-ui --namespace renku --method inject-tcp --expose 3000:80 --run npm start
