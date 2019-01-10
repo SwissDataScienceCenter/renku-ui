@@ -39,6 +39,7 @@ const projectsPageSchema = new Schema({
 
 const projectListSchema = new Schema({
   loading: {initial: false},
+  query: {initial: "", mandatory: true},
   totalItems: {mandatory: true},
   currentPage: {mandatory: true},
   perPage: {mandatory: true},
@@ -52,17 +53,26 @@ class ProjectListModel extends StateModel {
     this.client = client
   }
 
-  setPage(newPageNumber) {
-    this.set('currentPage', newPageNumber);
-    // We always relaod the current page on page change.
-    return this.getPageData(newPageNumber, this.get('perPage'));
+  setQuery(query) {
+    this.set('query', query.trim());
   }
 
-  // TODO: For a smoother experience we could always preload the next page
-  //       in advance.
-  getPageData(pageNumber, perPage) {
+  setPage(newPageNumber) {
+    this.set('currentPage', newPageNumber);
+    return this.getPageData();
+  }
+
+  setQueryAndPageNumber(query, pageNumber) {
+    this.setQuery(query)
+    return this.setPage(pageNumber)
+  }
+
+  getPageData() {
     this.set('loading', true);
-    return this.client.getProjects({page: pageNumber, per_page: perPage})
+    const pageNumber = this.get('currentPage');
+    const perPage = this.get('perPage');
+    const query = this.get('query');
+    return this.client.getProjects({search: query, page: pageNumber, per_page: perPage})
       .then(response => {
         const pagination = response.pagination;
         this.set('currentPage', pagination.currentPage);
