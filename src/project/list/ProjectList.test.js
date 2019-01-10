@@ -59,9 +59,16 @@ describe('new project actions', () => {
   it('is initialized correctly', () => {
     expect(model.get('currentPage')).toEqual(undefined);
   });
-  it('retrieves initial page', () => {
+  it('does search with a query', () => {
+    return model.setQueryAndPageNumber("", 1).then(() => {
+      expect(model.get('currentPage')).toEqual(1);
+      expect(model.get('totalItems')).toEqual(1);
+    })
+  });
+  it('moves to page', () => {
     return model.setPage(1).then(() => {
       expect(model.get('currentPage')).toEqual(1);
+      expect(model.get('totalItems')).toEqual(1);
     })
   });
 });

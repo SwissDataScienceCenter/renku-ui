@@ -19,6 +19,7 @@
 import React, { Component } from 'react';
 import { Link }  from 'react-router-dom';
 import { Row, Col } from 'reactstrap';
+import { Button, Form, FormGroup, FormText, Input, Label } from 'reactstrap';
 
 import { Avatar, Loader, Pagination,  TimeCaption } from '../../utils/UIComponents';
 import { ProjectTagList } from '../shared';
@@ -43,13 +44,32 @@ class ProjectListRow extends Component {
   }
 }
 
+class ProjectSearchForm extends Component {
+
+  render() {
+    return [<Form key="form" onSubmit={this.props.handlers.onSearchSubmit} inline>
+      <FormGroup>
+        <Label for="searchQuery" hidden>Query</Label>
+        <Input name="searchQuery" id="searchQuery" placeholder="Search Text" style={{minWidth: "300px"}}
+          value={this.props.searchQuery} onChange={this.props.handlers.onSearchQueryChange} />
+      </FormGroup>
+      &nbsp;
+      <Button color="primary" onClick={this.props.handlers.onSearchSubmit}>
+        Search
+      </Button>
+    </Form>,
+    <FormText key="help" color="muted">Search with empty text to browse all projects.</FormText>
+    ]
+  }
+}
+
 class ProjectList extends Component {
   render() {
     const loading = this.props.loading || false;
     const projects = this.props.page.projects || [];
     const hasUser = this.props.user && this.props.user.id != null;
     const rows = projects.map((d, i) => <ProjectListRow key={i} projectsUrl={this.props.urlMap.projectsUrl} {...d} />);
-    const projectsCol = (projects.length < 1 && loading) ?
+    const projectsCol = (loading) ?
       <Col md={{size: 2,  offset: 3}}><Loader /></Col> :
       <Col md={8}>{rows}</Col>
     return [
@@ -63,7 +83,13 @@ class ProjectList extends Component {
           }
         </Col>
       </Row>,
-      <Row key="spacer"><Col md={8}>&nbsp;</Col></Row>,
+      <Row key="spacer1"><Col md={8}>&nbsp;</Col></Row>,
+      <Row key="form">
+        <Col md={8}>
+          <ProjectSearchForm searchQuery={this.props.searchQuery} handlers={this.props.handlers} />
+        </Col>
+      </Row>,
+      <Row key="spacer2"><Col md={8}>&nbsp;</Col></Row>,
       <Row key="projects">{projectsCol}</Row>,
       <Pagination key="pagination" {...this.props} />
     ]

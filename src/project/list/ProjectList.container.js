@@ -28,14 +28,20 @@ import qs from 'query-string';
 class List extends Component {
   constructor(props) {
     super(props);
-    this.projectPages = new ProjectListModel(props.client);
+    this.model = new ProjectListModel(props.client);
     this.perPage = this.props.perPage || 10;
 
     // Register listener for route changes (back/forward buttons)
     this.props.history.listen(location => {
-      this.onPageChange(this.getPageNumber(location));
+      const {query, pageNumber} = this.getUrlSearchParameters(location);
+      this.onUrlParametersChange(query, pageNumber);
     });
 
+    this.handlers = {
+      onSearchQueryChange: this.onSearchQueryChange.bind(this),
+      onSearchSubmit: this.onSearchSubmit.bind(this),
+      onPaginationPageChange: this.onPaginationPageChange.bind(this)
+    };
 
   }
 
@@ -47,34 +53,54 @@ class List extends Component {
     }
   }
 
-  componentDidMount() {
-    this.projectPages.set('perPage', this.perPage);
-    this.projectPages.setPage(this.getPageNumber(this.props.location));
-  }
-
-  getPageNumber(location) {
-    return parseInt(qs.parse(location.search).page, 10) || 1;
-  }
-
-  setPageInUrl(newPageNumber) {
+  urlFromQueryAndPageNumber(query, pageNumber) {
     const projectsUrl = this.urlMap().projectsUrl
-    this.props.history.push(`${projectsUrl}?page=${newPageNumber}`)
+    return `${projectsUrl}/?q=${query}&page=${pageNumber}`
   }
 
-  onPageChange(newPageNumber) {
-    this.projectPages.setPage(newPageNumber);
+  componentDidMount() {
+    this.model.set('perPage', this.perPage);
+    const {query, pageNumber} = this.getUrlSearchParameters(this.props.location);
+    this.model.setQuery(query);
+    // Automatically search if the query is not empty
+    if (this.model.get('query') !== '')
+      this.model.setPage(pageNumber);
+  }
+
+  getUrlSearchParameters(location) {
+    const pageNumber = parseInt(qs.parse(location.search).page, 10) || 1
+    const query = qs.parse(location.search).q || '';
+    return {query, pageNumber};
+  }
+
+  onUrlParametersChange(query, pageNumber) {
+    this.model.setQueryAndPageNumber(query, pageNumber);
+  }
+
+  onPaginationPageChange(newPageNumber) {
+    this.props.history.push(this.urlFromQueryAndPageNumber(this.model.get('query'), newPageNumber))
+  }
+
+  onSearchQueryChange(e) {
+    this.model.setQuery(e.target.value);
+  }
+
+  onSearchSubmit(e) {
+    e.preventDefault();
+    this.props.history.push(this.urlFromQueryAndPageNumber(this.model.get('query'), 1))
   }
 
   mapStateToProps(state, ownProps) {
-    const currentPage = this.projectPages.get('currentPage');
+    const currentPage = this.model.get('currentPage');
     return {
       user: ownProps.user,
-      loading: this.projectPages.get('loading'),
-      page: this.projectPages.get('pages')[currentPage] || {projects: []},
-      currentPage: this.projectPages.get('currentPage'),
-      totalItems: this.projectPages.get('totalItems'),
-      perPage: this.projectPages.get('perPage'),
-      onPageChange: this.setPageInUrl.bind(this),
+      searchQuery: this.model.get('query'),
+      loading: this.model.get('loading'),
+      page: this.model.get('pages')[currentPage] || {projects: []},
+      currentPage: this.model.get('currentPage'),
+      totalItems: this.model.get('totalItems'),
+      perPage: this.model.get('perPage'),
+      onPageChange: this.handlers.onPaginationPageChange,
     }
   }
 
@@ -83,8 +109,9 @@ class List extends Component {
       connect(this.mapStateToProps.bind(this))(ProjectList);
 
     return <VisibleProjectList
-      store={this.projectPages.reduxStore}
+      store={this.model.reduxStore}
       user={this.props.user}
+      handlers={this.handlers}
       urlMap={this.urlMap()}
     />
   }

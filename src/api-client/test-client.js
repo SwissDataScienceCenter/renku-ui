@@ -25,6 +25,7 @@ const methods = {
       data: samples.projects,
       pagination: {
         currentPage: 1,
+        totalItems: 1,
       }
     }
   },
