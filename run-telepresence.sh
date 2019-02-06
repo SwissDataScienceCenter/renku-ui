@@ -18,7 +18,7 @@
 
 set -e
 
-MINIKUBE_IP=`minikube ip`
+
 CURRENT_CONTEXT=`kubectl config current-context`
 WELCOME_PAGE=`echo "## Welcome to Renku through telepresence
 Some deployment-specific information will be read from the your values.yaml file and be displayed as markdown file." | base64`
@@ -26,6 +26,10 @@ Some deployment-specific information will be read from the your values.yaml file
 if [[ $CURRENT_CONTEXT == 'minikube' ]]
 then
   echo "Exchanging k8s deployments using the following context: ${CURRENT_CONTEXT}"
+  MINIKUBE_IP=`minikube ip`
+  BASE_URL=http://${MINIKUBE_IP}
+  SERVICE_NAME=renku-ui
+  DEV_NAMESPACE=renku
 else
   echo "You are going to exchange k8s deployments using the following context: ${CURRENT_CONTEXT}"
   read -p "Do you want to proceed? [y/n]"
@@ -33,12 +37,21 @@ else
   then
       exit 1
   fi
+
+  if [[ ! $DEV_NAMESPACE ]]
+  then
+    read -p "enter your k8s namespace: "
+    DEV_NAMESPACE=$REPLY
+  fi
+  BASE_URL=https://${DEV_NAMESPACE}.dev.renku.ch
+  SERVICE_NAME=${DEV_NAMESPACE}-renku-ui
 fi
+
 tee > ./public/config.json << EOF
 {
-  "BASE_URL": "http://${MINIKUBE_IP}",
-  "JUPYTERHUB_URL": "http://${MINIKUBE_IP}/jupyterhub",
-  "GATEWAY_URL": "http://${MINIKUBE_IP}/api",
+  "BASE_URL": "${BASE_URL}",
+  "JUPYTERHUB_URL": "${BASE_URL}/jupyterhub",
+  "GATEWAY_URL": "${BASE_URL}/api",
   "WELCOME_PAGE": "${WELCOME_PAGE}",
   "RENKU_VERSION": "latest"
 }
@@ -50,4 +63,4 @@ EOF
 # echo "BROWSER=none npm start"
 # echo "================================================================================================================="
 
-BROWSER=none telepresence --swap-deployment renku-ui --namespace renku --method inject-tcp --expose 3000:80 --run npm start
+BROWSER=none telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --method inject-tcp --expose 3000:80 --run npm start
