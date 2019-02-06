@@ -20,8 +20,18 @@ set -e
 
 
 CURRENT_CONTEXT=`kubectl config current-context`
-WELCOME_PAGE=`echo "## Welcome to Renku through telepresence
-Some deployment-specific information will be read from the your values.yaml file and be displayed as markdown file." | base64`
+WELCOME_MESSAGE="## Welcome to Renku through telepresence
+Some deployment-specific information will be read from the your values.yaml file and be displayed as markdown file."
+if [[ "$OSTYPE" == "linux-gnu" ]]
+then
+  WELCOME_PAGE=`echo "${WELCOME_MESSAGE}" | base64 -w 0`
+elif [[ "$OSTYPE" == "darwin"* ]]
+then
+  WELCOME_PAGE=`echo "${WELCOME_MESSAGE}" | base64`
+else
+  WELCOME_PAGE=`echo "${WELCOME_MESSAGE}" | base64`
+  echo "Warning! your OS has not been tested yet"
+fi
 
 if [[ $CURRENT_CONTEXT == 'minikube' ]]
 then
@@ -63,4 +73,13 @@ EOF
 # echo "BROWSER=none npm start"
 # echo "================================================================================================================="
 
-BROWSER=none telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --method inject-tcp --expose 3000:80 --run npm start
+# The `inject-tcp` proxying switch helps when running multiple instances of telepresence but creates problems when
+# suid bins need to run. Please switch the following two lines when trying to run multiple telepresence.
+# Reference: https://www.telepresence.io/reference/methods
+
+if [[ "$OSTYPE" == "linux-gnu" ]]
+then
+  BROWSER=none telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 3000:80 --run npm start
+else
+  BROWSER=none telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --method inject-tcp --expose 3000:80 --run npm start
+fi
