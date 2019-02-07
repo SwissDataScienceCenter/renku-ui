@@ -43,78 +43,91 @@ class QuickNavContainerWithRouter extends Component {
   constructor(props) {
     super(props)
     this.bar = new SearchBarModel(StateKind.REACT, this);
-    this.onChange = this.doChange.bind(this);
-    this.onSubmit = this.doSubmit.bind(this);
-    this.onSuggestionsFetchRequested = this.doSuggestionsFetchRequested.bind(this);
-    this.onSuggestionsClearRequested = this.doSuggestionsClearRequested.bind(this);
+    this.callbacks = {
+      onChange: this.onChange.bind(this),
+      onSubmit: this.onSubmit.bind(this),
+      onSuggestionsFetchRequested: this.onSuggestionsFetchRequested.bind(this),
+      onSuggestionsClearRequested: this.onSuggestionsClearRequested.bind(this),
+      onSuggestionSelected: this.onSuggestionSelected.bind(this),
+      getSuggestionValue: (suggestion) =>  suggestion ? suggestion.path : ''
+    }
     this.currentSearchValue = null;
   }
 
-  doSubmit(e) {
+  onSubmit(e) {
     e.preventDefault();
-    this.bar.set('value', '');
     const suggestion = this.bar.get('selectedSuggestion');
+    const value = this.bar.get('value');
+    this.bar.set('value', '');
     this.bar.set('selectedSuggestion', null);
 
-    if (suggestion == null) return;
-    this.props.history.push(`/projects/${suggestion.id}`);
+    let url = null;
+    if (suggestion == null || suggestion.url == null)
+      url = this.searchUrlForValue(value)
+    else
+      url = suggestion.url;
+
+    if (url == null) return;
+    this.props.history.push(url);
   }
 
-  doSuggestionsFetchRequested({ value, reason }) {
+  onSuggestionsFetchRequested({ value, reason }) {
 
-    // We only do the API call when no letter has been
-    // typed for one second.
     this.currentSearchValue = value;
-    setTimeout(() => {
-      if (this.currentSearchValue !== value) return;
+    if (this.currentSearchValue !== value) return;
 
-      // constants come from react-autosuggest
-      if (reason === 'suggestions-revealed') return;
+    // constants come from react-autosuggest
+    if (reason === 'suggestions-revealed') return;
+    if (this.props.user.memberProjects == null || this.props.user.starredProjects == null) return;
 
-      this.props.client.getProjects({
-        search: value
-      })
-        .then((response) => {
-          return response.data.map((project) => {
-            return {
-              path: project.path_with_namespace,
-              id: project.id
-            };
-          });
-        })
-        .then((parsedProjects) => {
-          this.bar.set('suggestions', parsedProjects);
-        });
-    }, 1000);
+    // Search member projects and starred project
+    const regex = new RegExp(value, 'i');
+    const searchDomain = this.props.user.memberProjects.concat(this.props.user.starredProjects);
+    const hits = {};
+    searchDomain.forEach(d => {
+      if (regex.exec(d.path_with_namespace) != null) {
+        hits[d.path_with_namespace] = d;
+      }
+    });
+    const suggestions = [];
+    if (value.length > 0) {
+      suggestions.push({title: 'Search',
+        suggestions: [{query: value, id: -1, path: value, url: this.searchUrlForValue(value)}]
+      });
+    }
+    const hitKeys = Object.keys(hits);
+    if (hitKeys.length > 0) {
+      suggestions.push({
+        title: 'Projects',
+        suggestions: hitKeys.sort().map(k => ({path: k, id: hits[k].id, url: `/projects/${hits[k].id}`}))
+      });
+    }
+
+    this.bar.set('suggestions', suggestions);
   }
 
-  doSuggestionsClearRequested() {
+  searchUrlForValue(value) {
+    return (value != null) ? `/projects?q=${value}` : null;
+  }
+
+  onSuggestionsClearRequested() {
     this.bar.set('suggestions', []);
   }
 
-  doChange = (event, { newValue, method }) => {
+  onChange(event, { newValue, method }) {
     this.bar.set('value', newValue);
-    const suggestions = this.bar.get('suggestions')
-      .filter((s) => s.path === newValue);
-    if (suggestions.length > 0)
-      this.bar.set('selectedSuggestion', suggestions[0])
-    else
-      this.bar.set('selectedSuggestion', null);
-  };
+  }
+
+  onSuggestionSelected(event, { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }) {
+    const selectedSuggestion = this.bar.get('suggestions')[sectionIndex].suggestions[suggestionIndex];
+    this.bar.set('selectedSuggestion', selectedSuggestion)
+  }
 
   render () {
-    const callbacks = {
-      onChange: this.onChange,
-      onSubmit: this.onSubmit,
-      onSuggestionsClearRequested: this.onSuggestionsClearRequested,
-      onSuggestionsFetchRequested: this.onSuggestionsFetchRequested,
-      getSuggestionValue: (suggestion) =>  suggestion ? suggestion.path : ''
-    }
-
     return <QuickNavPresent
       suggestions={this.bar.get('suggestions')}
       value={this.bar.get('value')}
-      callbacks={callbacks}
+      callbacks={this.callbacks}
     />
   }
 }

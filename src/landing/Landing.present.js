@@ -45,41 +45,38 @@ import faUserFriends from '@fortawesome/fontawesome-free-solid/faUserFriends';
 
 import { ProjectListRow } from '../project';
 
-class Explore extends Component {
+class YourEmptyProjects extends Component {
   render() {
     return (<Row>
       <Col md={8} lg={6} xl={4}>
-        <h1>Explore</h1>
-        <p>We are still working on this. When complete, you will be able to browse and search for projects.
-          In the meantime, you can look at all <Link to={this.props.urlMap.projectsUrl}>Projects</Link>.</p>
+        <RenkuIntroText welcomePage={this.props.welcomePage}/>
+        <p>
+          You are logged in, but you are not yet a member of any projects.
+
+          If there is a project you work on, you should
+          search for it in the <Link to={this.props.projectsUrl}>project search</Link>, click on it to view,
+          and fork it.
+        </p>
+        <p>
+          Alternatively, you can <Link to={this.props.projectNewUrl}>create a new project</Link>.
+        </p>
       </Col>
     </Row>)
   }
 }
 
-class YourNetwork extends Component {
+class YourProjects extends Component {
   render() {
-    return (<Row>
-      <Col md={8} lg={6} xl={4}>
-        <h1>Your Network</h1>
-        <p>Currently a placeholder, but here you will be able to see what is going on in your network.
-        Until this functionality arrives, you can look at
-        all <Link to={this.props.urlMap.projectsUrl}>Projects</Link>.</p>
-      </Col>
-    </Row>)
-  }
-}
-
-class YourActivity extends Component {
-  render() {
-    return (<Row>
-      <Col md={8} lg={6} xl={4}>
-        <h1>Your Activity</h1>
-        <p>What are you working on? What is going on in the projects you contribute to?<br /><br />
-          These are the kinds of questions that will be answered here when this functionality is implemented.
-          Until then, take a look at <Link to={this.props.urlMap.projectsUrl}>Projects</Link>.</p>
-      </Col>
-    </Row>)
+    const projects = this.props.projects || [];
+    const projectsUrl = this.props.urlMap.projectsUrl;
+    const rows = projects.map(p => <ProjectListRow key={p.id} projectsUrl={projectsUrl} {...p} />);
+    if (rows.length > 0)
+      return <Row key="projects"><Col md={8}>{rows}</Col></Row>
+    else {
+      const projectNewUrl = this.props.urlMap.projectNewUrl;
+      return <YourEmptyProjects projectsUrl={projectsUrl}
+        projectNewUrl={projectNewUrl} welcomePage={this.props.welcomePage} />
+    }
   }
 }
 
@@ -98,8 +95,8 @@ class StarredEmptyProjects extends Component {
         <p>
           You are logged in, but you have not yet starred any projects.
           Starring a project declares your interest in it.
-          If there is a project you work on or want to follow, you should find it in
-          the <Link to={this.props.projectsUrl}>project listing</Link>, click on it to view, and star it.
+          If there is a project you work on or want to follow, you should search for it in
+          the <Link to={this.props.projectsUrl}>project search</Link>, click on it to view, and star it.
         </p>
         <p>
           Alternatively, you can <Link to={this.props.projectNewUrl}>create a new project</Link>.
@@ -115,13 +112,7 @@ class Starred extends Component {
     const projectsUrl = this.props.urlMap.projectsUrl;
     const rows = projects.map(p => <ProjectListRow key={p.id} projectsUrl={projectsUrl} {...p} />);
     if (rows.length > 0)
-      return [
-        <Row key="header">
-          <Col md={3} lg={2}><h1>Starred</h1></Col>
-        </Row>,
-        <Row key="spacer"><Col md={8}>&nbsp;</Col></Row>,
-        <Row key="projects"><Col md={8}>{rows}</Col></Row>
-      ]
+      return <Row key="projects"><Col md={8}>{rows}</Col></Row>
     else {
       const projectNewUrl = this.props.urlMap.projectNewUrl;
       return <StarredEmptyProjects projectsUrl={projectsUrl}
@@ -238,17 +229,13 @@ class LoggedInNav extends Component {
     const selected = this.props.selected;
     return <Nav pills className={'nav-pills-underline'}>
       <NavItem>
-        <NavLink href="#" active={selected === 'starred'}
-          onClick={this.props.onStarred}>Starred</NavLink>
+        <NavLink href="#" active={selected === 'your_activity'}
+          onClick={this.props.onMember}>Your Projects</NavLink>
       </NavItem>
       <NavItem>
-        <NavLink href="#" active={selected === 'your_activity'}
-          onClick={this.props.onYourActivity}>Activity</NavLink>
+        <NavLink href="#" active={selected === 'starred'}
+          onClick={this.props.onStarred}>Starred Projects</NavLink>
       </NavItem>
-      <NavItem><NavLink href="#" active={selected === 'your_network'}
-        onClick={this.props.onYourNetwork}>Network</NavLink></NavItem>
-      <NavItem><NavLink href="#" active={selected === 'explore'}
-        onClick={this.props.onExplore}>Explore</NavLink></NavItem>
     </Nav>
   }
 }
@@ -260,14 +247,15 @@ class LoggedInHome extends Component {
     const welcome = <Welcome {...this.props} />;
     const nav = <LoggedInNav selected={selected} urlMap={urlMap}
       onStarred={this.props.onStarred}
-      onYourActivity={this.props.onYourActivity}
-      onYourNetwork={this.props.onYourNetwork}
-      onExplore={this.props.onExplore} />
-    // const visibleTab = <ProjectList {...this.props} />
-    let visibleTab = <YourActivity urlMap={urlMap} />
-    if (selected === 'your_network') visibleTab = <YourNetwork urlMap={urlMap} />
-    if (selected === 'explore') visibleTab = <Explore urlMap={urlMap} />
-    if (selected === 'starred') visibleTab = this.props.starred;
+      onMember={this.props.onMember} />
+
+    const user = this.props.user;
+    const starredProjects = (user) ? user.starredProjects : [];
+    const memberProjects = (user) ? user.memberProjects : [];
+
+    let visibleTab = <YourProjects urlMap={urlMap} projects={memberProjects} />
+    if (selected === 'starred')
+      visibleTab = <Starred urlMap={urlMap} projects={starredProjects} welcomePage={this.props.welcomePage} />
     if (selected === 'welcome') visibleTab = welcome;
     return [
       <Row key="nav">

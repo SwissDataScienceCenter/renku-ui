@@ -86,7 +86,7 @@ const Ui = {
   selectStarred: () => {
     return createSetAction('ui', 'selected', 'starred');
   },
-  selectYourActivity: () => {
+  selectMember: () => {
     return createSetAction('ui', 'selected', 'your_activity');
   },
   selectYourNetwork: () => {
