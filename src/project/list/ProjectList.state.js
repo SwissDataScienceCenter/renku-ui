@@ -26,6 +26,7 @@
 
 
 import { Schema, StateKind, StateModel} from '../../model/Model';
+import { combineReducers } from 'redux'
 
 const projectPageItemSchema = new Schema({
   title: {initial: '', mandatory: true},
@@ -62,6 +63,10 @@ class ProjectListModel extends StateModel {
     return this.getPageData();
   }
 
+  setSelected(selected){
+    this.set('selected',selected);
+  }
+
   setQueryAndPageNumber(query, pageNumber) {
     this.setQuery(query)
     return this.setPage(pageNumber)
@@ -72,6 +77,7 @@ class ProjectListModel extends StateModel {
     const pageNumber = this.get('currentPage');
     const perPage = this.get('perPage');
     const query = this.get('query');
+    const selected = this.get('selected');
     return this.client.getProjects({search: query, page: pageNumber, per_page: perPage})
       .then(response => {
         const pagination = response.pagination;

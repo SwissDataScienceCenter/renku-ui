@@ -22,8 +22,18 @@ import { connect } from 'react-redux'
 import ProjectList from './ProjectList.present'
 
 import ProjectListModel from './ProjectList.state'
+import State from './ProjectList.state'
+import Present from './ProjectList.present'
 
 import qs from 'query-string';
+
+class Starred extends Component {
+  render() {
+    const user = this.props.user;
+    const projects = (user) ? user.starredProjects : [];
+    return <Present.Starred urlMap={this.props.urlMap} projects={projects}  />
+  }
+}
 
 class List extends Component {
   constructor(props) {
@@ -40,9 +50,24 @@ class List extends Component {
     this.handlers = {
       onSearchQueryChange: this.onSearchQueryChange.bind(this),
       onSearchSubmit: this.onSearchSubmit.bind(this),
-      onPaginationPageChange: this.onPaginationPageChange.bind(this)
+      onPaginationPageChange: this.onPaginationPageChange.bind(this),
+      onStarred: this.onStarred.bind(this),
+      onMember: this.onMember.bind(this),
+      onExplore: this.onExplore.bind(this)
     };
 
+  }
+
+  onStarred(){
+    this.model.setSelected('starred');
+  }
+
+  onMember(){
+    this.model.setSelected('your_projects');
+  }
+
+  onExplore(){
+    this.model.setSelected('explore');
   }
 
   // TODO: Replace this by URLs which are passed down from the app level.
@@ -65,6 +90,8 @@ class List extends Component {
     // Automatically search if the query is not empty
     if (this.model.get('query') !== '')
       this.model.setPage(pageNumber);
+
+    this.model.setSelected('your_projects');
   }
 
   getUrlSearchParameters(location) {
@@ -101,6 +128,7 @@ class List extends Component {
       totalItems: this.model.get('totalItems'),
       perPage: this.model.get('perPage'),
       onPageChange: this.handlers.onPaginationPageChange,
+      selected: this.model.get('selected')
     }
   }
 
