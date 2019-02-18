@@ -64,6 +64,25 @@ class ProjectModel extends StateModel {
       })
   }
 
+  fetchNotebookServers(client) {
+    this.set('core.notebookServersUpdating', true);
+    return client.getNotebookServers()
+      .then(resp => {
+        this.set('core.notebookServers', resp.data);
+        this.set('core.notebookServersUpdating', false);
+      });
+  }
+
+  stopNotebookServer(client, serverName) {
+    this.set('core.notebookServersUpdating', true);
+    return client.stopNotebookServer(serverName)
+      .then(() => {
+        this.set('core.notebookServersUpdating', false);
+        // the following is not effective, should find another solution like long polling to check server status
+        // this.fetchNotebookServers(client);
+      });
+  }
+
   fetchNotebookServerUrl(client, id, projectState) {
     client.getNotebookServerUrl(id, projectState.core.path_with_namespace)
       .then(urls => {
