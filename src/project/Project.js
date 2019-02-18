@@ -63,6 +63,8 @@ class View extends Component {
   async fetchBranches() { return this.projectState.fetchBranches(this.props.client, this.props.id); }
   async fetchCIJobs() { return this.projectState.fetchCIJobs(this.props.client, this.props.id); }
   async fetchProjectFiles() { return this.projectState.fetchProjectFiles(this.props.client, this.props.id); }
+  async fetchNotebookServers() { return this.projectState.fetchNotebookServers(this.props.client); }
+  async stopNotebookServer(serverName) { return this.projectState.stopNotebookServer(this.props.client, serverName); }
 
   async fetchAll() {
     await this.fetchProject();
@@ -101,7 +103,8 @@ class View extends Component {
       settingsUrl: `${baseUrl}/settings`,
       mrOverviewUrl: `${baseUrl}/pending`,
       mrUrl: `${baseUrl}/pending/:mrIid`,
-      launchNotebookUrl: `${baseUrl}/launchNotebook`
+      launchNotebookUrl: `${baseUrl}/launchNotebook`,
+      notebookServersUrl: `${baseUrl}/notebookServers`
     }
   }
 
@@ -246,7 +249,13 @@ class View extends Component {
       this.fetchProjectFiles();
       this.fetchModifiedFiles();
     },
-    fetchCIJobs: () => { this.fetchCIJobs() }
+    fetchCIJobs: () => { this.fetchCIJobs() },
+    fetchNotebookServers: () => {
+      this.fetchNotebookServers();
+    },
+    stopNotebookServer: (serverName) => {
+      this.stopNotebookServer(serverName);
+    }
   };
 
   mapStateToProps(state, ownProps) {

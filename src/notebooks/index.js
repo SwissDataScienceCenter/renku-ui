@@ -24,7 +24,7 @@
  */
 
 import React, { Component } from 'react';
-import { NotebookAdmin, LaunchNotebookServer } from './Notebooks.container';
+import { NotebookAdmin, LaunchNotebookServer, NotebookServers } from './Notebooks.container';
 
 class Admin extends Component {
   render() {
@@ -37,4 +37,4 @@ class Admin extends Component {
 }
 
 export default { Admin };
-export { LaunchNotebookServer }
+export { LaunchNotebookServer, NotebookServers }

@@ -47,6 +47,7 @@ import faExclamationCircle from '@fortawesome/fontawesome-free-solid/faExclamati
 import { ExternalLink, Loader, RenkuNavLink, TimeCaption } from '../utils/UIComponents'
 import { SpecialPropVal } from '../model/Model'
 import { ProjectTags, ProjectTagList } from './shared'
+import { NotebookServers } from '../notebooks'
 
 const imageBuildStatusText = {
   failed: 'No notebook image has been built. You can still open a notebook server with the default image.',
@@ -219,6 +220,9 @@ class ProjectNav extends Component {
         </NavItem>
         <NavItem>
           <RenkuNavLink exact={false} to={this.props.mrOverviewUrl} title="Pending Changes" />
+        </NavItem>
+        <NavItem>
+          <RenkuNavLink exact={false} to={this.props.notebookServersUrl} title="Notebook Servers" />
         </NavItem>
         <NavItem>
           <RenkuNavLink exact={false} to={this.props.settingsUrl} title="Settings" />
@@ -593,6 +597,29 @@ class ProjectViewFiles extends Component {
   }
 }
 
+class ProjectNotebookServers extends Component {
+  componentDidMount() {
+    this.props.fetchNotebookServers();
+  }
+
+  render() {
+    if (!this.props.core.notebookServers || this.props.core.notebookServersUpdating) {
+      return <Col xs={12}>
+        <Loader />
+      </Col>
+    }
+    return (
+      <Col xs={12}>
+        <NotebookServers
+          servers={ this.props.core.notebookServers }
+          stop= { this.props.stopNotebookServer }
+          url={ this.props.client.jupyterhubUrl }>
+        </NotebookServers>
+      </Col>
+    )
+  }
+}
+
 class RepositoryUrls extends Component {
   render() {
     return [
@@ -686,6 +713,8 @@ class ProjectView extends Component {
             render={props => <ProjectSettings key="settings" {...this.props} />} />
           <Route path={this.props.mrOverviewUrl}
             render={props => <ProjectMergeRequestList key="files-changes" {...this.props} />} />
+          <Route path={this.props.notebookServersUrl}
+            render={props => <ProjectNotebookServers key="notebook-servers" {...this.props} />} />
           <Route path={this.props.launchNotebookUrl}
             render={this.props.launchNotebookServer}/>
         </Row>

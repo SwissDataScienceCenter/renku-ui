@@ -17,7 +17,7 @@
  */
 
 import React, { Component } from 'react';
-import { Form, FormGroup, Label, Input, Button, Row, Col} from 'reactstrap';
+import { Form, FormGroup, Label, Input, Button, Row, Col, Table} from 'reactstrap';
 
 class NotebookServerOptions extends React.Component {
   render() {
@@ -60,7 +60,7 @@ class NotebookServerOptions extends React.Component {
     return (
       <div className="container">
         <Row key="header">
-            <Col sm={12} md={6}><h3>Launch new Jupyterlab server</h3></Col>
+          <Col sm={12} md={6}><h3>Launch new Jupyterlab server</h3></Col>
         </Row>
         <Row key="spacer"><Col sm={8} md={6} lg={4} xl={3}>&nbsp;</Col></Row>
         <Row key="form"><Col sm={8} md={6} lg={4} xl={3}>
@@ -71,7 +71,7 @@ class NotebookServerOptions extends React.Component {
             </Button>
           </Form>
         </Col></Row>
-    </div>
+      </div>
     );
   }
 }
@@ -117,4 +117,48 @@ class RangeOption extends Component {
   }
 }
 
-export { NotebookServerOptions }
+
+class NotebookServerRow extends Component {
+  render() {
+    const name = this.props.name;
+    const url = this.props.url;
+    return <tr>
+      <td>{name}</td>
+      <td>
+        <a className="btn btn-primary" role="button" href={url}>Connect</a>
+      </td>
+      <td>
+        <button className="btn btn-primary" type="button" onClick={(e) => this.props.onStopServer(name)}>
+          Stop
+        </button>
+      </td>
+    </tr>
+  }
+}
+
+class NotebookServers extends Component {
+  render() {
+    const serverData = this.props.servers;
+    const serverNames = Object.keys(serverData).sort();
+    if (serverNames.length === 0) {
+      return <p>No servers</p>
+    }
+    const rows = serverNames.map((k, i) =>
+      <NotebookServerRow key={i} onStopServer={this.props.stop} {...serverData[k]} />
+    )
+    return <Table size={"sm"}>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Connect</th>
+          <th>Stop</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows}
+      </tbody>
+    </Table>
+  }
+}
+
+export { NotebookServerOptions, NotebookServers }
