@@ -77,14 +77,9 @@ class App extends Component {
                   user={this.props.userState.getState().user}
                   {...p} />} />
 
-              <Route exact path="/projects" render={
-                p => <Project.List
-                  key="projects"
-                  user={this.props.userState.getState().user}
-                  client={this.props.client}
-                  {...p}
-                />
-              }/>
+
+
+
 
               {/*TODO: This route should be handled by <Route path="/projects/:id(\d+)" too. Until this is the
                  TODO: case, the ku_new route must be listed BEFORE the project one.   */}
@@ -95,6 +90,14 @@ class App extends Component {
                 render={p => <Project.View key="project" id={p.match.params.id} {...p}
                   user={this.props.userState.getState().user} userStateDispatch={this.props.userState.dispatch}
                   client={this.props.client} params={this.props.params}/>}/>
+              <Route path="/projects" render={
+                p => <Project.List
+                  key="projects"
+                  user={this.props.userState.getState().user}
+                  client={this.props.client}
+                  {...p}
+                />
+              }/>
               <Route exact path="/project_new"
                 render={(p) =>
                   <Project.New key="project_new" client={this.props.client}

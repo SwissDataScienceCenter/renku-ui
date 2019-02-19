@@ -18,22 +18,9 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
-
 import ProjectList from './ProjectList.present'
-
 import ProjectListModel from './ProjectList.state'
-import State from './ProjectList.state'
-import Present from './ProjectList.present'
-
 import qs from 'query-string';
-
-class Starred extends Component {
-  render() {
-    const user = this.props.user;
-    const projects = (user) ? user.starredProjects : [];
-    return <Present.Starred urlMap={this.props.urlMap} projects={projects}  />
-  }
-}
 
 class List extends Component {
   constructor(props) {
@@ -43,69 +30,55 @@ class List extends Component {
 
     // Register listener for route changes (back/forward buttons)
     this.props.history.listen(location => {
-      const {query, pageNumber} = this.getUrlSearchParameters(location);
-      this.onUrlParametersChange(query, pageNumber);
+        const {query, pageNumber, pathName} = this.getUrlSearchParameters(location);
+        this.onUrlParametersChange(query, pageNumber, pathName);
     });
 
     this.handlers = {
       onSearchQueryChange: this.onSearchQueryChange.bind(this),
       onSearchSubmit: this.onSearchSubmit.bind(this),
-      onPaginationPageChange: this.onPaginationPageChange.bind(this),
-      onStarred: this.onStarred.bind(this),
-      onMember: this.onMember.bind(this),
-      onExplore: this.onExplore.bind(this)
+      onPaginationPageChange: this.onPaginationPageChange.bind(this)
     };
-
-  }
-
-  onStarred(){
-    this.model.setSelected('starred');
-  }
-
-  onMember(){
-    this.model.setSelected('your_projects');
-  }
-
-  onExplore(){
-    this.model.setSelected('explore');
   }
 
   // TODO: Replace this by URLs which are passed down from the app level.
   urlMap() {
     return {
       projectsUrl: '/projects',
-      projectNewUrl: '/project_new'
+      projectsSearchUrl: '/projects/search',
+      projectNewUrl: '/project_new',
+      starred:'/projects/starred',
+      yourProjects:'/projects/your_projects'
     }
   }
 
-  urlFromQueryAndPageNumber(query, pageNumber) {
-    const projectsUrl = this.urlMap().projectsUrl
-    return `${projectsUrl}/?q=${query}&page=${pageNumber}`
+  urlFromQueryAndPageNumber(query, pageNumber , pathName) {
+    return `${pathName}/?q=${query}&page=${pageNumber}`
   }
 
   componentDidMount() {
     this.model.set('perPage', this.perPage);
-    const {query, pageNumber} = this.getUrlSearchParameters(this.props.location);
+    const {query, pageNumber, pathName} = this.getUrlSearchParameters(this.props.location);
     this.model.setQuery(query);
+    this.model.setPathName(pathName);
     // Automatically search if the query is not empty
-    if (this.model.get('query') !== '')
+    //if (this.model.get('query') !== '')
       this.model.setPage(pageNumber);
-
-    this.model.setSelected('your_projects');
   }
 
   getUrlSearchParameters(location) {
     const pageNumber = parseInt(qs.parse(location.search).page, 10) || 1
     const query = qs.parse(location.search).q || '';
-    return {query, pageNumber};
+    const pathName = location.pathname.endsWith('/') ? location.pathname.substring(0,location.pathname.length-1) : location.pathname;
+    return {query, pageNumber,pathName};
   }
 
-  onUrlParametersChange(query, pageNumber) {
-    this.model.setQueryAndPageNumber(query, pageNumber);
+  onUrlParametersChange(query, pageNumber, pathName) {
+    this.model.setQueryPageNumberAndPath(query, pageNumber,pathName);
   }
 
   onPaginationPageChange(newPageNumber) {
-    this.props.history.push(this.urlFromQueryAndPageNumber(this.model.get('query'), newPageNumber))
+    this.props.history.push(this.urlFromQueryAndPageNumber(this.model.get('query'), newPageNumber, this.model.get('pathName') ))
   }
 
   onSearchQueryChange(e) {
@@ -114,7 +87,7 @@ class List extends Component {
 
   onSearchSubmit(e) {
     e.preventDefault();
-    this.props.history.push(this.urlFromQueryAndPageNumber(this.model.get('query'), 1))
+    this.props.history.push(this.urlFromQueryAndPageNumber(this.model.get('query'), 1 , this.model.get('pathName') ))
   }
 
   mapStateToProps(state, ownProps) {
