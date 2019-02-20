@@ -38,7 +38,7 @@ const fakeHistory = createMemoryHistory({
   initialIndex: 0,
 })
 fakeHistory.push({
-  pathname: '/projects',
+  pathname: '/projects/search',
   search: '?page=1'
 })
 
@@ -60,9 +60,10 @@ describe('new project actions', () => {
     expect(model.get('currentPage')).toEqual(undefined);
   });
   it('does search with a query', () => {
-    return model.setQueryAndPageNumber("", 1).then(() => {
+    return model.setQueryPageNumberAndPath("", 1,fakeHistory.pathName).then(() => {
       expect(model.get('currentPage')).toEqual(1);
       expect(model.get('totalItems')).toEqual(1);
+      expect(model.get('pathName')).toEqual(fakeHistory.pathName);
     })
   });
   it('moves to page', () => {
