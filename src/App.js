@@ -77,10 +77,6 @@ class App extends Component {
                   user={this.props.userState.getState().user}
                   {...p} />} />
 
-
-
-
-
               {/*TODO: This route should be handled by <Route path="/projects/:id(\d+)" too. Until this is the
                  TODO: case, the ku_new route must be listed BEFORE the project one.   */}
               <Route exact path="/projects/:projectId(\d+)/ku_new"

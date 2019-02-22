@@ -107,7 +107,7 @@ class QuickNavContainerWithRouter extends Component {
   }
 
   searchUrlForValue(value) {
-    return (value != null) ? `/projects?q=${value}` : null;
+    return (value != null) ? `/projects/search?q=${value}` : null;
   }
 
   onSuggestionsClearRequested() {
