@@ -115,7 +115,6 @@ class Starred extends Component {
     if (rows.length > 0)
       return <Row key="projects"><Col md={8}>{rows}</Col></Row>
     else {
-      console.log(this.props.urlMap)
       const projectNewUrl = this.props.urlMap.projectNewUrl;
       const projectsSearchUrl = this.props.urlMap.projectsSearchUrl;
       return <StarredEmptyProjects projectsSearchUrl={projectsSearchUrl}
