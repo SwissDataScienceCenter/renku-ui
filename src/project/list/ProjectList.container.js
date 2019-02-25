@@ -63,7 +63,7 @@ class List extends Component {
     this.model.setPathName(pathName);
     // Automatically search if the query is not empty
     //if (this.model.get('query') !== '')
-      this.model.setPage(pageNumber);
+    this.model.setPage(pageNumber);
   }
 
   getUrlSearchParameters(location) {

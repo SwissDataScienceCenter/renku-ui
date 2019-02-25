@@ -123,16 +123,16 @@ class DisplayProjects extends Component{
       <Col md={{size: 2,  offset: 3}}><Loader /></Col> :
       <Col md={8}>{rows}</Col>;
 
-      if (rows.length > 0 ){
-        return (<Row key="projects">{projectsCol}</Row>);
-      }
-      else {
-        if(!loading){
-          return <DisplayEmptyProjects
-            projectsSearchUrl={projectsSearchUrl}
-            projectNewUrl={projectNewUrl}
-            emptyListText={emptyTextDisplay}/>
-        } else return " ";
+    if (rows.length > 0 ){
+      return (<Row key="projects">{projectsCol}</Row>);
+    }
+    else {
+      if(!loading){
+        return <DisplayEmptyProjects
+          projectsSearchUrl={projectsSearchUrl}
+          projectNewUrl={projectNewUrl}
+          emptyListText={emptyTextDisplay}/>
+      } else return " ";
     }
 
   }
@@ -149,20 +149,20 @@ class ProjectsSearch extends Component {
       <Col md={8}>{rows}</Col>;
 
     return [<Row key="form">
-              {
-                (this.props.loggedOutMessage !== undefined) ?
-                  <Col md={8} ><span>{this.props.loggedOutMessage}</span><br/><br/></Col>
-                :
-                  <span></span>
-              }
-              <Col md={8}>
-                <ProjectSearchForm searchQuery={this.props.searchQuery} handlers={this.props.handlers} />
-              </Col>
-            </Row>,
-            <Row key="spacer2"><Col md={8}>&nbsp;</Col></Row>,
-            <Row key="projects">{projectsCol}</Row>,
-            <Pagination key="pagination" {...this.props} />
-          ];
+      {
+        (this.props.loggedOutMessage !== undefined) ?
+          <Col md={8} ><span>{this.props.loggedOutMessage}</span><br/><br/></Col>
+          :
+          <span></span>
+      }
+      <Col md={8}>
+        <ProjectSearchForm searchQuery={this.props.searchQuery} handlers={this.props.handlers} />
+      </Col>
+    </Row>,
+    <Row key="spacer2"><Col md={8}>&nbsp;</Col></Row>,
+    <Row key="projects">{projectsCol}</Row>,
+    <Pagination key="pagination" {...this.props} />
+    ];
   }
 }
 
@@ -178,57 +178,60 @@ class ProjectList extends Component {
     return [
       <Row key="header">
         <Col md={3} lg={2}><h1>Projects</h1></Col>
-          <Col md={2}>
+        <Col md={2}>
           {
             (hasUser) ?
               <Link className="btn btn-primary" role="button" to={urlMap.projectNewUrl}>New Project</Link> :
               <span></span>
           }
-          </Col>
+        </Col>
       </Row>,
       <ProjectNavTabs logedIn={hasUser} key="navbar" urlMap={urlMap}/>,
       <Row key="spacer"><Col md={12}>&nbsp;</Col></Row>,
       <Row key="content">
         <Col key="" md={12}>
-            {
-              (hasUser) ?
-                <Switch>
-                  <Route path={urlMap.starred}
-                    render={props => <DisplayProjects
-                                        urlMap={urlMap}
-                                        user={user}
-                                        loading={loading}
-                                        displayProjects={starredProjects}
-                                        emptyListText="You are logged in, but you have not yet starred any projects. Starring a project declares your interest in it. "  />} />
-                  <Route path={urlMap.projectsSearchUrl}
-                    render={props =>  <ProjectsSearch  {...this.props} />} />
-                  <Route path={urlMap.yourProjects}
-                    render={props => <DisplayProjects
-                                      urlMap={urlMap}
-                                      user={user}
-                                      displayProjects={memberProjects}
-                                      loading={loading}
-                                      emptyListText="You are logged in, but you have not yet created any projects. " />} />
-                  <Route exact path={urlMap.projectsUrl}
-                    render={props => <DisplayProjects
-                                      urlMap={urlMap}
-                                      user={user}
-                                      displayProjects={memberProjects}
-                                      loading={loading}
-                                      emptyListText="You are logged in, but you have not yet created any projects. " />} />
-              </Switch>
-            :
+          {
+            (hasUser) ?
               <Switch>
                 <Route path={urlMap.starred}
+                  render={props => <DisplayProjects
+                    urlMap={urlMap}
+                    user={user}
+                    loading={loading}
+                    displayProjects={starredProjects}
+                    // eslint-disable-next-line max-len
+                    emptyListText="You are logged in, but you have not yet starred any projects. Starring a project declares your interest in it. "  />} />
+                <Route path={urlMap.projectsSearchUrl}
+                  render={props =>  <ProjectsSearch  {...this.props} />} />
+                <Route path={urlMap.yourProjects}
+                  render={props => <DisplayProjects
+                    urlMap={urlMap}
+                    user={user}
+                    displayProjects={memberProjects}
+                    loading={loading}
+                    emptyListText="You are logged in, but you have not yet created any projects. " />} />
+                <Route exact path={urlMap.projectsUrl}
+                  render={props => <DisplayProjects
+                    urlMap={urlMap}
+                    user={user}
+                    displayProjects={memberProjects}
+                    loading={loading}
+                    emptyListText="You are logged in, but you have not yet created any projects. " />} />
+              </Switch>
+              :
+              <Switch>
+                <Route path={urlMap.starred}
+                  // eslint-disable-next-line max-len
                   render= {props => <ProjectsSearch loggedOutMessage="You need to be logged in to be able to see a list with the projects you starred, therefore we will display all projects for you to explore." {...this.props} />} />
                 <Route path={urlMap.projectsSearchUrl}
                   render={ props =>  <ProjectsSearch  {...this.props} />} />
                 <Route path={urlMap.yourProjects}
+                  // eslint-disable-next-line max-len
                   render= { props => <ProjectsSearch loggedOutMessage="You need to be logged in to be able to see a list with your own projects, therefore we will display all projects for you to explore." {...this.props} />} />
                 <Route exact path={urlMap.projectsUrl}
                   render= { props => <ProjectsSearch {...this.props} />} />
               </Switch>
-            }
+          }
         </Col>
       </Row>
     ]
