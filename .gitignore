@@ -90,5 +90,8 @@ virtualenv
 # Jet Brains IDE specifics
 .idea
 
+# VS Code IDE stuff
+.vscode
+
 # All traces of the GitLab server running locally
 /gitlab
