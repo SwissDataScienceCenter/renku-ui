@@ -70,7 +70,6 @@ class ProjectNavTabs extends Component {
       <Row key="nav">
         <Col md={12}>
             {
-              (this.props.logedIn) ?
                 <Nav pills className={'nav-pills-underline'}>
                    <NavItem>
                      <RenkuNavLink to={this.props.urlMap.projectsUrl} alternate={this.props.urlMap.yourProjects}  title="Your Projects" />
@@ -85,6 +84,7 @@ class ProjectNavTabs extends Component {
                :
                <span></span>
             }
+            (this.props.loggedIn) ?
         </Col>
       </Row>
       )
@@ -186,7 +186,7 @@ class ProjectList extends Component {
           }
         </Col>
       </Row>,
-      <ProjectNavTabs logedIn={hasUser} key="navbar" urlMap={urlMap}/>,
+      <ProjectNavTabs loggedIn={hasUser} key="navbar" urlMap={urlMap}/>,
       <Row key="spacer"><Col md={12}>&nbsp;</Col></Row>,
       <Row key="content">
         <Col key="" md={12}>
