@@ -69,25 +69,29 @@ class ProjectNavTabs extends Component {
     return (
       <Row key="nav">
         <Col md={12}>
-            {
-                <Nav pills className={'nav-pills-underline'}>
-                   <NavItem>
-                     <RenkuNavLink to={this.props.urlMap.projectsUrl} alternate={this.props.urlMap.yourProjects}  title="Your Projects" />
-                   </NavItem>
-                   <NavItem>
-                     <RenkuNavLink exact={false} to={this.props.urlMap.starred}  title="Starred Projects" />
-                   </NavItem>
-                   <NavItem>
-                     <RenkuNavLink exact={false} to={this.props.urlMap.projectsSearchUrl}  title="Search" />
-                   </NavItem>
-                </Nav>
-               :
-               <span></span>
-            }
+          {
             (this.props.loggedIn) ?
+              [
+                <div key="top-space">&nbsp;</div>,
+                <Nav key="nav" pills className={'nav-pills-underline'}>
+                  <NavItem>
+                    <RenkuNavLink to={this.props.urlMap.projectsUrl}
+                      alternate={this.props.urlMap.yourProjects}  title="Your Projects" />
+                  </NavItem>
+                  <NavItem>
+                    <RenkuNavLink exact={false} to={this.props.urlMap.starred}  title="Starred Projects" />
+                  </NavItem>
+                  <NavItem>
+                    <RenkuNavLink exact={false} to={this.props.urlMap.projectsSearchUrl}  title="Search" />
+                  </NavItem>
+                </Nav>,
+                <div key="bottom-space">&nbsp;</div>]
+              :
+              <span></span>
+          }
         </Col>
       </Row>
-      )
+    )
   }
 }
 
