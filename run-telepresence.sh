@@ -41,7 +41,7 @@ then
   SERVICE_NAME=renku-ui
   DEV_NAMESPACE=renku
 else
-  echo "You are going to exchange k8s deployments using the following context: ${CURRENT_CONTEXT}"
+  echo "You are going to exchange k8s deployments using the following context/namespace: ${CURRENT_CONTEXT}/${DEV_NAMESPACE}"
   read -p "Do you want to proceed? [y/n]"
   if [[ ! $REPLY =~ ^[Yy]$ ]]
   then
