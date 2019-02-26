@@ -54,7 +54,7 @@ class YourEmptyProjects extends Component {
           You are logged in, but you are not yet a member of any projects.
 
           If there is a project you work on, you should
-          search for it in the <Link to={this.props.projectsUrl}>project search</Link>, click on it to view,
+          search for it in the <Link to={this.props.projectsSearchUrl}>project search</Link>, click on it to view,
           and fork it.
         </p>
         <p>
@@ -74,7 +74,8 @@ class YourProjects extends Component {
       return <Row key="projects"><Col md={8}>{rows}</Col></Row>
     else {
       const projectNewUrl = this.props.urlMap.projectNewUrl;
-      return <YourEmptyProjects projectsUrl={projectsUrl}
+      const projectsSearchUrl = this.props.urlMap.projectsSearchUrl;
+      return <YourEmptyProjects projectsSearchUrl={projectsSearchUrl}
         projectNewUrl={projectNewUrl} welcomePage={this.props.welcomePage} />
     }
   }
@@ -96,7 +97,7 @@ class StarredEmptyProjects extends Component {
           You are logged in, but you have not yet starred any projects.
           Starring a project declares your interest in it.
           If there is a project you work on or want to follow, you should search for it in
-          the <Link to={this.props.projectsUrl}>project search</Link>, click on it to view, and star it.
+          the <Link to={this.props.projectsSearchUrl}>project search</Link>, click on it to view, and star it.
         </p>
         <p>
           Alternatively, you can <Link to={this.props.projectNewUrl}>create a new project</Link>.
@@ -115,7 +116,8 @@ class Starred extends Component {
       return <Row key="projects"><Col md={8}>{rows}</Col></Row>
     else {
       const projectNewUrl = this.props.urlMap.projectNewUrl;
-      return <StarredEmptyProjects projectsUrl={projectsUrl}
+      const projectsSearchUrl = this.props.urlMap.projectsSearchUrl;
+      return <StarredEmptyProjects projectsSearchUrl={projectsSearchUrl}
         projectNewUrl={projectNewUrl} welcomePage={this.props.welcomePage} />
     }
   }

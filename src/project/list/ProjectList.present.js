@@ -17,11 +17,12 @@
  */
 
 import React, { Component } from 'react';
-import { Link }  from 'react-router-dom';
+import { Link, Route, Switch }  from 'react-router-dom';
 import { Row, Col } from 'reactstrap';
 import { Button, Form, FormGroup, FormText, Input, Label } from 'reactstrap';
+import { Nav, NavItem } from 'reactstrap';
 
-import { Avatar, Loader, Pagination,  TimeCaption } from '../../utils/UIComponents';
+import { Avatar, Loader, Pagination,  TimeCaption , RenkuNavLink } from '../../utils/UIComponents';
 import { ProjectTagList } from '../shared';
 
 class ProjectListRow extends Component {
@@ -63,35 +64,180 @@ class ProjectSearchForm extends Component {
   }
 }
 
-class ProjectList extends Component {
+class ProjectNavTabs extends Component {
+  render() {
+    return (
+      <Row key="nav">
+        <Col md={12}>
+          {
+            (this.props.loggedIn) ?
+              [
+                <div key="top-space">&nbsp;</div>,
+                <Nav key="nav" pills className={'nav-pills-underline'}>
+                  <NavItem>
+                    <RenkuNavLink to={this.props.urlMap.projectsUrl}
+                      alternate={this.props.urlMap.yourProjects}  title="Your Projects" />
+                  </NavItem>
+                  <NavItem>
+                    <RenkuNavLink exact={false} to={this.props.urlMap.starred}  title="Starred Projects" />
+                  </NavItem>
+                  <NavItem>
+                    <RenkuNavLink exact={false} to={this.props.urlMap.projectsSearchUrl}  title="Search" />
+                  </NavItem>
+                </Nav>,
+                <div key="bottom-space">&nbsp;</div>]
+              :
+              <span></span>
+          }
+        </Col>
+      </Row>
+    )
+  }
+}
+
+
+class DisplayEmptyProjects extends Component{
+  render() {
+    return (<Row>
+      <Col md={8} lg={6} xl={4}>
+        <p>
+          <strong>{this.props.emptyListText}</strong><br/>
+          If there is a project you work on or want to follow, you should search for it in
+          the <Link to={this.props.projectsSearchUrl}>project search</Link>, click on it to view, and star it.
+        </p>
+        <p>
+          Alternatively, you can <Link to={this.props.projectNewUrl}>create a new project</Link>.
+        </p>
+      </Col>
+    </Row>)
+  }
+}
+
+class DisplayProjects extends Component{
+  render() {
+    const loading = this.props.loading || false;
+    const projectsUrl = this.props.urlMap.projectsUrl;
+    const projectNewUrl = this.props.urlMap.projectNewUrl;
+    const projectsSearchUrl = this.props.urlMap.projectsSearchUrl;
+    const displayProjects = this.props.displayProjects || [];
+    const emptyTextDisplay = this.props.emptyListText;
+
+    const rows = displayProjects.map( p => <ProjectListRow key={p.id} projectsUrl={projectsUrl} {...p} />);
+    const projectsCol = (loading) ?
+      <Col md={{size: 2,  offset: 3}}><Loader /></Col> :
+      <Col md={8}>{rows}</Col>;
+
+    if (rows.length > 0 ){
+      return (<Row key="projects">{projectsCol}</Row>);
+    }
+    else {
+      if(!loading){
+        return <DisplayEmptyProjects
+          projectsSearchUrl={projectsSearchUrl}
+          projectNewUrl={projectNewUrl}
+          emptyListText={emptyTextDisplay}/>
+      } else return " ";
+    }
+
+  }
+}
+
+class ProjectsSearch extends Component {
   render() {
     const loading = this.props.loading || false;
     const projects = this.props.page.projects || [];
-    const hasUser = this.props.user && this.props.user.id != null;
-    const rows = projects.map((d, i) => <ProjectListRow key={i} projectsUrl={this.props.urlMap.projectsUrl} {...d} />);
+    const rows = projects.map( (p) => <ProjectListRow key={p.id} projectsUrl={this.props.urlMap.projectsUrl} {...p} />);
+
     const projectsCol = (loading) ?
       <Col md={{size: 2,  offset: 3}}><Loader /></Col> :
-      <Col md={8}>{rows}</Col>
+      <Col md={8}>{rows}</Col>;
+
+    return [<Row key="form">
+      {
+        (this.props.loggedOutMessage !== undefined) ?
+          <Col md={8} ><span>{this.props.loggedOutMessage}</span><br/><br/></Col>
+          :
+          <span></span>
+      }
+      <Col md={8}>
+        <ProjectSearchForm searchQuery={this.props.searchQuery} handlers={this.props.handlers} />
+      </Col>
+    </Row>,
+    <Row key="spacer2"><Col md={8}>&nbsp;</Col></Row>,
+    <Row key="projects">{projectsCol}</Row>,
+    <Pagination key="pagination" {...this.props} />
+    ];
+  }
+}
+
+class ProjectList extends Component {
+  render() {
+    const hasUser = this.props.user && this.props.user !== null && this.props.user.id !== null;
+    const user = this.props.user;
+    const starredProjects = (user) ? user.starredProjects : [];
+    const memberProjects = (user) ? user.memberProjects : [];
+    const urlMap = this.props.urlMap;
+    const loading = this.props.loading;
+
     return [
       <Row key="header">
         <Col md={3} lg={2}><h1>Projects</h1></Col>
         <Col md={2}>
           {
             (hasUser) ?
-              <Link className="btn btn-primary" role="button" to={this.props.urlMap.projectNewUrl}>New Project</Link> :
+              <Link className="btn btn-primary" role="button" to={urlMap.projectNewUrl}>New Project</Link> :
               <span></span>
           }
         </Col>
       </Row>,
-      <Row key="spacer1"><Col md={8}>&nbsp;</Col></Row>,
-      <Row key="form">
-        <Col md={8}>
-          <ProjectSearchForm searchQuery={this.props.searchQuery} handlers={this.props.handlers} />
+      <ProjectNavTabs loggedIn={hasUser} key="navbar" urlMap={urlMap}/>,
+      <Row key="spacer"><Col md={12}>&nbsp;</Col></Row>,
+      <Row key="content">
+        <Col key="" md={12}>
+          {
+            (hasUser) ?
+              <Switch>
+                <Route path={urlMap.starred}
+                  render={props => <DisplayProjects
+                    urlMap={urlMap}
+                    user={user}
+                    loading={loading}
+                    displayProjects={starredProjects}
+                    // eslint-disable-next-line max-len
+                    emptyListText="You are logged in, but you have not yet starred any projects. Starring a project declares your interest in it. "  />} />
+                <Route path={urlMap.projectsSearchUrl}
+                  render={props =>  <ProjectsSearch  {...this.props} />} />
+                <Route path={urlMap.yourProjects}
+                  render={props => <DisplayProjects
+                    urlMap={urlMap}
+                    user={user}
+                    displayProjects={memberProjects}
+                    loading={loading}
+                    emptyListText="You are logged in, but you have not yet created any projects. " />} />
+                <Route exact path={urlMap.projectsUrl}
+                  render={props => <DisplayProjects
+                    urlMap={urlMap}
+                    user={user}
+                    displayProjects={memberProjects}
+                    loading={loading}
+                    emptyListText="You are logged in, but you have not yet created any projects. " />} />
+              </Switch>
+              :
+              <Switch>
+                <Route path={urlMap.starred}
+                  // eslint-disable-next-line max-len
+                  render= {props => <ProjectsSearch loggedOutMessage="You need to be logged in to be able to see a list with the projects you starred, therefore we will display all projects for you to explore." {...this.props} />} />
+                <Route path={urlMap.projectsSearchUrl}
+                  render={ props =>  <ProjectsSearch  {...this.props} />} />
+                <Route path={urlMap.yourProjects}
+                  // eslint-disable-next-line max-len
+                  render= { props => <ProjectsSearch loggedOutMessage="You need to be logged in to be able to see a list with your own projects, therefore we will display all projects for you to explore." {...this.props} />} />
+                <Route exact path={urlMap.projectsUrl}
+                  render= { props => <ProjectsSearch {...this.props} />} />
+              </Switch>
+          }
         </Col>
-      </Row>,
-      <Row key="spacer2"><Col md={8}>&nbsp;</Col></Row>,
-      <Row key="projects">{projectsCol}</Row>,
-      <Pagination key="pagination" {...this.props} />
+      </Row>
     ]
   }
 }

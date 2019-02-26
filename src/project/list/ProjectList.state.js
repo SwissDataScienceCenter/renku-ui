@@ -62,8 +62,17 @@ class ProjectListModel extends StateModel {
     return this.getPageData();
   }
 
-  setQueryAndPageNumber(query, pageNumber) {
+  setPathName(pathName){
+    this.set('pathName',pathName)
+  }
+
+  setSelected(selected){
+    this.set('selected',selected);
+  }
+
+  setQueryPageNumberAndPath(query, pageNumber, pathName) {
     this.setQuery(query)
+    this.setPathName(pathName)
     return this.setPage(pageNumber)
   }
 

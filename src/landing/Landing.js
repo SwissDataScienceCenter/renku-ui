@@ -34,7 +34,8 @@ import State from './Landing.state'
 function urlMap() {
   return {
     projectsUrl: '/projects',
-    projectNewUrl: '/project_new'
+    projectNewUrl: '/project_new',
+    projectsSearchUrl:'/projects/search',
   }
 }
 
