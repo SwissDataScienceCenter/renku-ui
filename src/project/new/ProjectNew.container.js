@@ -85,21 +85,39 @@ class New extends Component {
   }
 
   onSubmit() {
+    if (this.newProject.get('display.errors')) {
+      this.newProject.set('display.errors', []);
+    }
     const validation = this.validate();
     if (validation.result) {
+      this.newProject.set('display.loading', true);
       this.props.client.postProject(this.newProject.get())
         .then((project) => {
+          this.newProject.set('display.loading', false);
           this.props.history.push(`/projects/${project.id}`);
         })
         .catch(error => {
-          const errorData = error.errorData;
-          if (errorData != null) {
-            if (errorData.message.path != null) {
-              alert(`Path ${errorData.message.path}`);
-            } else {
-              alert(JSON.stringify(errorData.message))
+          let display_messages = [];
+          if (error.errorData && error.errorData.message) {
+            const all_messages = error.errorData.message;
+            const messages = Object.keys(all_messages)
+              .filter(mex => all_messages[mex].length)
+              .reduce((obj, mex) => { obj[mex] = all_messages[mex]; return obj; }, {});
+            
+            // the most common error is the duplicate name, we can rewrite it for readability
+            if (Object.keys(messages).includes("name") && /already.+taken/.test(messages["name"].join("; "))) {
+              display_messages = [`title: ${messages["name"].join("; ")}`];
+            }
+            else {
+              display_messages = Object.keys(messages)
+                .map(mex => `${mex}: ${messages[mex].join("; ")}`);
             }
           }
+          else {
+            display_messages = ["unknown"];
+          }
+          this.newProject.set('display.errors', display_messages);
+          this.newProject.set('display.loading', false);
         })
     }
   }
