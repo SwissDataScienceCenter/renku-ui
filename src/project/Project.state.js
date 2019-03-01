@@ -64,23 +64,42 @@ class ProjectModel extends StateModel {
       })
   }
 
-  fetchNotebookServers(client) {
-    this.set('core.notebookServersUpdating', true);
+  startNotebookServersPolling(client) {
+    const oldPoller = this.get('core.notebookServersPoller');
+    if (oldPoller == null) {
+      const newPoller = setInterval(() => {
+        return this.fetchNotebookServers(client);
+      }, 3000);
+      this.set('core.notebookServersPoller', newPoller);
+
+      // invoke immediatly the first time
+      return this.fetchNotebookServers(client, true);
+    }
+  }
+
+  stopNotebookServersPolling() {
+    const poller = this.get('core.notebookServersPoller');
+    if (poller) {
+      this.set('core.notebookServersPoller', null);
+      clearTimeout(poller);
+    }
+  }
+
+  fetchNotebookServers(client, first) {
+    if (first) {
+      this.setUpdating({core: {notebookServers: true}});
+    }
     return client.getNotebookServers()
       .then(resp => {
         this.set('core.notebookServers', resp.data);
-        this.set('core.notebookServersUpdating', false);
       });
   }
 
   stopNotebookServer(client, serverName) {
-    this.set('core.notebookServersUpdating', true);
-    return client.stopNotebookServer(serverName)
-      .then(() => {
-        this.set('core.notebookServersUpdating', false);
-        // the following is not effective, should find another solution like long polling to check server status
-        // this.fetchNotebookServers(client);
-      });
+    const promise = client.stopNotebookServer(serverName);
+    // do not wait to resolve the promise, it takes a few seconds but the server states change much faster
+    this.fetchNotebookServers(client);
+    return promise;
   }
 
   fetchNotebookServerUrl(client, id, projectState) {

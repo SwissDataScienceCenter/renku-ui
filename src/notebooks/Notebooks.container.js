@@ -26,13 +26,9 @@ import { NotebookServers as NotebookServersPresent } from './Notebooks.present';
 class NotebookAdmin extends Component {
   render() {
     const adminUiUrl = this.props.adminUiUrl;
-    // return <iframe width="100%" height="100%"
-    //   style={{border:"none"}}
-    //   src={adminUiUrl}></iframe>
+    // TODO: don't open an external popup but display the content here
     return <div>
       <ExternalLink url={adminUiUrl} title="Launch Notebook Admin UI" />
-      {/* // TODO: attach the new interface Notebook Server display page also here instead of linking
-      to the external page */}
     </div>
   }
 }

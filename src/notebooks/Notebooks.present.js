@@ -19,6 +19,8 @@
 import React, { Component } from 'react';
 import { Form, FormGroup, Label, Input, Button, Row, Col, Table} from 'reactstrap';
 
+import { Loader, ExternalLink } from '../utils/UIComponents'
+
 class NotebookServerOptions extends React.Component {
   render() {
 
@@ -117,20 +119,24 @@ class RangeOption extends Component {
   }
 }
 
-
 class NotebookServerRow extends Component {
   render() {
     const name = this.props.name;
     const url = this.props.url;
+    const loader = !this.props.ready ? <Loader size="14" inline="true" margin="1" /> : null;
     return <tr>
-      <td>{name}</td>
       <td>
-        <a className="btn btn-primary" role="button" href={url}>Connect</a>
+        {name}
+        {loader}
       </td>
       <td>
-        <button className="btn btn-primary" type="button" onClick={(e) => this.props.onStopServer(name)}>
+        <ExternalLink url={url} disabled={!this.props.ready} title="Connect" />
+      </td>
+      <td>
+        <Button color="primary" disabled={!this.props.ready}
+          onClick={(e) => this.props.onStopServer(name)}>
           Stop
-        </button>
+        </Button>
       </td>
     </tr>
   }
@@ -139,6 +145,7 @@ class NotebookServerRow extends Component {
 class NotebookServers extends Component {
   render() {
     const serverData = this.props.servers;
+    if (!serverData) return null;
     const serverNames = Object.keys(serverData).sort();
     if (serverNames.length === 0) {
       return <p>No servers</p>
