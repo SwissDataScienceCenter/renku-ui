@@ -63,7 +63,8 @@ class View extends Component {
   async fetchBranches() { return this.projectState.fetchBranches(this.props.client, this.props.id); }
   async fetchCIJobs() { return this.projectState.fetchCIJobs(this.props.client, this.props.id); }
   async fetchProjectFiles() { return this.projectState.fetchProjectFiles(this.props.client, this.props.id); }
-  async fetchNotebookServers() { return this.projectState.fetchNotebookServers(this.props.client); }
+  async startNotebookServersPolling() { return this.projectState.startNotebookServersPolling(this.props.client); }
+  async stopNotebookServersPolling() { return this.projectState.stopNotebookServersPolling(); }
   async stopNotebookServer(serverName) { return this.projectState.stopNotebookServer(this.props.client, serverName); }
 
   async fetchAll() {
@@ -250,8 +251,11 @@ class View extends Component {
       this.fetchModifiedFiles();
     },
     fetchCIJobs: () => { this.fetchCIJobs() },
-    fetchNotebookServers: () => {
-      this.fetchNotebookServers();
+    startNotebookServersPolling: () => {
+      this.startNotebookServersPolling();
+    },
+    stopNotebookServersPolling: () => {
+      this.stopNotebookServersPolling();
     },
     stopNotebookServer: (serverName) => {
       this.stopNotebookServer(serverName);

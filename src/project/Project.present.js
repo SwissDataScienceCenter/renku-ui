@@ -599,15 +599,14 @@ class ProjectViewFiles extends Component {
 
 class ProjectNotebookServers extends Component {
   componentDidMount() {
-    this.props.fetchNotebookServers();
+    this.props.startNotebookServersPolling();
+  }
+
+  componentWillUnmount() {
+    this.props.stopNotebookServersPolling();
   }
 
   render() {
-    if (!this.props.core.notebookServers || this.props.core.notebookServersUpdating) {
-      return <Col xs={12}>
-        <Loader />
-      </Col>
-    }
     return (
       <Col xs={12}>
         <NotebookServers
