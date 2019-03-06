@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2019 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -19,11 +19,32 @@
 /**
  *  renku-ui
  *
- *  landing
- *  Components for the landing page
+ *  Help.container.js
+ *  Container components for help
  */
 
-import Landing from './Landing';
-import { LoggedInNavBar, AnonymousNavBar, FooterNavbar } from './NavBar';
+ 
+import React, { Component } from 'react';
 
-export { Landing, LoggedInNavBar, AnonymousNavBar, FooterNavbar };
+import { Help as HelpPresent } from './Help.present';
+
+class Help extends Component { 
+  urlMap() {
+    const baseUrl = this.props.match.url;
+    return {
+      base: baseUrl,
+      getting: `${baseUrl}/getting`,
+      tutorials: `${baseUrl}/tutorials`,
+      features: `${baseUrl}/features`,
+      setup: `${baseUrl}/setup`,
+    }
+  }
+
+  render() {
+    return (
+      <HelpPresent url={ this.urlMap() } />
+    )
+  }
+}
+
+export { Help };

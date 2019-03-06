@@ -25,6 +25,7 @@
 
 import React, { Component } from 'react';
 import { Link }  from 'react-router-dom'
+import { Navbar, NavLink, Nav } from 'reactstrap';
 
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faPlus from '@fortawesome/fontawesome-free-solid/faPlus'
@@ -34,6 +35,7 @@ import { RenkuNavLink } from '../utils/UIComponents'
 import { getActiveProjectId } from '../utils/HelperFunctions'
 import QuickNav from '../utils/quicknav'
 
+import './NavBar.css';
 
 class RenkuToolbarItemUser extends Component {
   render() {
@@ -51,6 +53,7 @@ class RenkuToolbarItemUser extends Component {
         </a>
         <div key="menu" className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
           <a className="dropdown-item" href="/auth/realms/Renku/account?referrer=renku-ui">Profile</a>
+          <Link className="dropdown-item" to="/help">Help</Link>
           <a
             className="dropdown-item"
             href={`${gatewayURL}/auth/logout?redirect_url=${redirect_url}`}
@@ -169,4 +172,26 @@ class AnonymousNavBar extends Component {
   }
 }
 
-export { LoggedInNavBar, AnonymousNavBar }
+class FooterNavbar extends Component {
+  render() {
+    return (
+      <footer className="footer">
+        <Navbar className="flex-nowrap">
+          <span>&copy; SDSC {(new Date()).getFullYear()}</span>
+          <Nav className="ml-auto">
+            <Link className="nav-link" to="/">
+              <img src={logo} alt="Renku" height="21" />
+            </Link>
+          </Nav>
+          <Nav className="ml-auto">
+            <RenkuNavLink to="/help" title="Help"/>
+            <NavLink target="_blank" href="https://gitter.im/SwissDataScienceCenter/renku">Gitter</NavLink>
+            <NavLink target="_blank" href="https://datascience.ch/who-we-are/">About</NavLink>
+          </Nav>
+        </Navbar>
+      </footer>
+    )
+  }
+}
+
+export { LoggedInNavBar, AnonymousNavBar, FooterNavbar }

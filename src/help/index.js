@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2019 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -19,11 +19,10 @@
 /**
  *  renku-ui
  *
- *  landing
- *  Components for the landing page
+ *  help
+ *  Components for the help page
  */
 
-import Landing from './Landing';
-import { LoggedInNavBar, AnonymousNavBar, FooterNavbar } from './NavBar';
+import { Help } from './Help.container';
 
-export { Landing, LoggedInNavBar, AnonymousNavBar, FooterNavbar };
+export default Help;
