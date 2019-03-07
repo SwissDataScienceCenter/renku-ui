@@ -17,7 +17,9 @@
  */
 
 import React, { Component } from 'react';
-import { Form, FormGroup, Label, Input, Button, Row, Col} from 'reactstrap';
+import { Form, FormGroup, Label, Input, Button, Row, Col, Table} from 'reactstrap';
+
+import { Loader, ExternalLink } from '../utils/UIComponents'
 
 class NotebookServerOptions extends React.Component {
   render() {
@@ -60,7 +62,7 @@ class NotebookServerOptions extends React.Component {
     return (
       <div className="container">
         <Row key="header">
-            <Col sm={12} md={6}><h3>Launch new Jupyterlab server</h3></Col>
+          <Col sm={12} md={6}><h3>Launch new Jupyterlab server</h3></Col>
         </Row>
         <Row key="spacer"><Col sm={8} md={6} lg={4} xl={3}>&nbsp;</Col></Row>
         <Row key="form"><Col sm={8} md={6} lg={4} xl={3}>
@@ -71,7 +73,7 @@ class NotebookServerOptions extends React.Component {
             </Button>
           </Form>
         </Col></Row>
-    </div>
+      </div>
     );
   }
 }
@@ -117,4 +119,53 @@ class RangeOption extends Component {
   }
 }
 
-export { NotebookServerOptions }
+class NotebookServerRow extends Component {
+  render() {
+    const name = this.props.name;
+    const url = this.props.url;
+    const loader = !this.props.ready ? <Loader size="14" inline="true" margin="1" /> : null;
+    return <tr>
+      <td>
+        {name}
+        {loader}
+      </td>
+      <td>
+        <ExternalLink url={url} disabled={!this.props.ready} title="Connect" />
+      </td>
+      <td>
+        <Button color="primary" disabled={!this.props.ready}
+          onClick={(e) => this.props.onStopServer(name)}>
+          Stop
+        </Button>
+      </td>
+    </tr>
+  }
+}
+
+class NotebookServers extends Component {
+  render() {
+    const serverData = this.props.servers;
+    if (!serverData) return null;
+    const serverNames = Object.keys(serverData).sort();
+    if (serverNames.length === 0) {
+      return <p>No servers</p>
+    }
+    const rows = serverNames.map((k, i) =>
+      <NotebookServerRow key={i} onStopServer={this.props.stop} {...serverData[k]} />
+    )
+    return <Table size={"sm"}>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Connect</th>
+          <th>Stop</th>
+        </tr>
+      </thead>
+      <tbody>
+        {rows}
+      </tbody>
+    </Table>
+  }
+}
+
+export { NotebookServerOptions, NotebookServers }

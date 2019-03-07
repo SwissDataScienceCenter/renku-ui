@@ -21,14 +21,15 @@ import React, { Component } from 'react';
 
 import { NotebookServerOptions } from './Notebooks.present';
 import { ExternalLink } from '../utils/UIComponents';
+import { NotebookServers as NotebookServersPresent } from './Notebooks.present';
 
 class NotebookAdmin extends Component {
   render() {
     const adminUiUrl = this.props.adminUiUrl;
-    // return <iframe width="100%" height="100%"
-    //   style={{border:"none"}}
-    //   src={adminUiUrl}></iframe>
-    return <ExternalLink url={adminUiUrl} title="Launch Notebook Admin UI" />
+    // TODO: don't open an external popup but display the content here
+    return <div>
+      <ExternalLink url={adminUiUrl} title="Launch Notebook Admin UI" />
+    </div>
   }
 }
 
@@ -165,4 +166,10 @@ class LaunchNotebookServer extends Component {
   }
 }
 
-export { NotebookAdmin, LaunchNotebookServer };
+class NotebookServers extends Component {
+  render() {
+    return <NotebookServersPresent {...this.props} />
+  }
+}
+
+export { NotebookAdmin, LaunchNotebookServer, NotebookServers };
