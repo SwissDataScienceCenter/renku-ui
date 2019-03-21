@@ -20,8 +20,8 @@ COPY docker-entrypoint.sh /app/docker-entrypoint.sh
 USER root
 RUN touch /usr/share/nginx/html/config.json
 RUN chmod a+r /usr/share/nginx/html/config.json
-RUN chown 1001 /usr/share/nginx/html/config.json
-USER 1001
+RUN chown nginx /usr/share/nginx/html/config.json
+USER nginx
 
 
 HEALTHCHECK --interval=20s --timeout=10s --retries=5 CMD test -e /var/run/nginx.pid
