@@ -115,6 +115,10 @@ class APIClient {
   doLogin() {
     window.location = `${this.baseUrl}/auth/login?redirect_url=${encodeURIComponent(window.location.href)}`;
   }
+  
+  doLogout(){
+    window.location=`${this.baseUrl}/auth/logout?redirect_url=${encodeURIComponent(window.location.href)}`
+  }
 
   getBasicHeaders() {
     let headers = {

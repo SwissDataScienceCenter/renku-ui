@@ -18,6 +18,45 @@
 
 import React, { Component } from 'react';
 import { Form, FormGroup, Label, Input, Button, Row, Col} from 'reactstrap';
+import {  Loader } from '../utils/UIComponents';
+
+class LogOutUser extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      timer: null,
+      logedout: false
+    }
+  }
+
+  componentWillUnmount() {
+    this.state.timer.clear()
+  }
+
+  componentDidMount() {
+    this.setState({
+      timer: setTimeout(() => {
+        this.setState({ logedout: true });
+        this.props.client.doLogout();
+      }, 6000)
+    });
+  }
+
+  render() {
+    return (
+      this.state.logedout ?
+        <Col md={8}>We logged you out.</Col>
+        :
+        <Col md={{ size: 6, offset: 3 }}>
+          <p align="center">You will be logged out because your JupyterLab token expired. 
+            <br /> Please log in again to continue working with Renku.
+          </p> 
+          <Loader />
+        </Col>
+    )
+  }
+}
 
 class NotebookServerOptions extends React.Component {
   render() {
@@ -28,39 +67,39 @@ class NotebookServerOptions extends React.Component {
 
       switch (serverOption.type) {
 
-        case 'enum':
-          return <FormGroup key={key}>
-            <Label>{serverOption.displayName}</Label>
-            <EnumOption {...serverOption} onChange={onChange}/>
-          </FormGroup>;
+      case 'enum':
+        return <FormGroup key={key}>
+          <Label>{serverOption.displayName}</Label>
+          <EnumOption {...serverOption} onChange={onChange}/>
+        </FormGroup>;
 
-        case 'int':
-          return <FormGroup key={key}>
-            <Label>{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
-            <RangeOption step={1} {...serverOption} onChange={onChange}/>
-          </FormGroup>;
+      case 'int':
+        return <FormGroup key={key}>
+          <Label>{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
+          <RangeOption step={1} {...serverOption} onChange={onChange}/>
+        </FormGroup>;
 
-        case 'float':
-          return <FormGroup key={key}>
-            <Label>{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
-            <RangeOption step={0.01} {...serverOption} onChange={onChange}/>
-          </FormGroup>;
+      case 'float':
+        return <FormGroup key={key}>
+          <Label>{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
+          <RangeOption step={0.01} {...serverOption} onChange={onChange}/>
+        </FormGroup>;
 
-        case 'boolean':
-          return <FormGroup key={key} check>
-            <BooleanOption {...serverOption} onChange={onChange}/>
-            <Label>{`${serverOption.displayName}`}</Label>
-          </FormGroup>;
+      case 'boolean':
+        return <FormGroup key={key} check>
+          <BooleanOption {...serverOption} onChange={onChange}/>
+          <Label>{`${serverOption.displayName}`}</Label>
+        </FormGroup>;
 
-        default:
-          return null;
+      default:
+        return null;
       }
     });
 
     return (
       <div className="container">
         <Row key="header">
-            <Col sm={12} md={6}><h3>Launch new Jupyterlab server</h3></Col>
+          <Col sm={12} md={6}><h3>Launch new Jupyterlab server</h3></Col>
         </Row>
         <Row key="spacer"><Col sm={8} md={6} lg={4} xl={3}>&nbsp;</Col></Row>
         <Row key="form"><Col sm={8} md={6} lg={4} xl={3}>
@@ -71,7 +110,7 @@ class NotebookServerOptions extends React.Component {
             </Button>
           </Form>
         </Col></Row>
-    </div>
+      </div>
     );
   }
 }
@@ -117,4 +156,4 @@ class RangeOption extends Component {
   }
 }
 
-export { NotebookServerOptions }
+export { NotebookServerOptions, LogOutUser }

@@ -19,7 +19,7 @@
 import React, { Component } from 'react';
 // import { Notebooks as NotebooksPresent } from './Notebooks.present';
 
-import { NotebookServerOptions } from './Notebooks.present';
+import { NotebookServerOptions, LogOutUser } from './Notebooks.present';
 import { ExternalLink } from '../utils/UIComponents';
 
 class NotebookAdmin extends Component {
@@ -37,7 +37,8 @@ class LaunchNotebookServer extends Component {
     super(props)
     this.state = {
       serverOptions: {},
-      serverRunning: false
+      serverRunning: false,
+      doLogOut: false
     };
     this._unmounting = false;
   }
@@ -47,17 +48,20 @@ class LaunchNotebookServer extends Component {
   }
 
   componentDidMount() {
-    this.componentDidUpdate()
+    if (this.state.doLogOut === false)
+      this.componentDidUpdate()
   }
 
   componentDidUpdate() {
-    if (this.props.core.notebookServerAPI !== this.previousNotebookServerAPI){
-      this.serverStatusSet = false;
-      this.serverOptionsSet = false;
+    if (this.state.doLogOut === false) {
+      if (this.props.core.notebookServerAPI !== this.previousNotebookServerAPI) {
+        this.serverStatusSet = false;
+        this.serverOptionsSet = false;
+      }
+      this.previousNotebookServerAPI = this.props.core.notebookServerAPI;
+      this.setServerStatus();
+      this.setServerOptions();
     }
-    this.previousNotebookServerAPI = this.props.core.notebookServerAPI;
-    this.setServerStatus()
-    this.setServerOptions()
   }
 
 
@@ -65,16 +69,18 @@ class LaunchNotebookServer extends Component {
     if (this.serverStatusSet) return;
     if (!this.props.core.notebookServerAPI) return;
     if (!this.props.client) return;
-
     // Check for already running servers
     const headers = this.props.client.getBasicHeaders();
-    this.props.client.clientFetch(this.props.core.notebookServerAPI, {headers})
+    this.props.client.clientFetch(this.props.core.notebookServerAPI, { headers })
       .then(response => {
         const serverStatus = !(!response.data.pending && !response.data.ready);
         if (!this._unmounting) {
-          this.setState({serverRunning: serverStatus});
+          this.setState({ serverRunning: serverStatus });
           this.serverStatusSet = true;
         }
+      }).catch(e => {
+        if (e.case === 'UNAUTHORIZED')
+          this.setState({ doLogOut: true });
       });
   }
 
@@ -95,17 +101,18 @@ class LaunchNotebookServer extends Component {
           data[key].selected = data[key].default;
         })
         if (!this._unmounting) {
-          this.setState({serverOptions: data});
+          this.setState({ serverOptions: data });
           this.serverOptionsSet = true;
         }
       })
+      .catch(e => {
+        if (e.case === 'UNAUTHORIZED')
+          this.setState({ doLogOut: true });
+      });
   }
 
-
   getChangeHandlers() {
-
     const handlers = {};
-
     // Add all resource change handlers.
     Object.keys(this.state.serverOptions).forEach(key => {
       handlers[key] = (e) => {
@@ -113,7 +120,7 @@ class LaunchNotebookServer extends Component {
           e.target.checked : e.target.value;
 
         this.setState((prevState) => {
-          const newState = {...prevState};
+          const newState = { ...prevState };
           newState.serverOptions[key].selected = newValue;
           return newState;
         })
@@ -152,7 +159,9 @@ class LaunchNotebookServer extends Component {
 
   render() {
     if (!this.props.client) return null;
-    if (this.state.serverRunning) {
+    if (this.state.doLogOut) {
+      return <LogOutUser client={this.props.client} />
+    } else if (this.state.serverRunning) {
       return <p>You already have a server running.</p>
     }
     else {
