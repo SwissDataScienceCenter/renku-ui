@@ -19,7 +19,7 @@
 import React, { Component } from 'react';
 import { Col } from 'reactstrap';
 
-import { NotebookServerOptions, NotebookServers as NotebookServersPresent } from './Notebooks.present';
+import { NotebookServerOptions, NotebookServers as NotebookServersPresent, LogOutUser } from './Notebooks.present';
 import { ExternalLink } from '../utils/UIComponents';
 
 
@@ -40,7 +40,8 @@ class LaunchNotebookServer extends Component {
     this.state = {
       serverOptions: {},
       serverRunning: false,
-      serverStarting: false
+      serverStarting: false,
+      doLogOut: false
     };
     this._unmounting = false;
   }
@@ -50,17 +51,20 @@ class LaunchNotebookServer extends Component {
   }
 
   componentDidMount() {
-    this.componentDidUpdate()
+    if (this.state.doLogOut === false)
+      this.componentDidUpdate()
   }
 
   componentDidUpdate() {
-    if (this.props.core.notebookServerAPI !== this.previousNotebookServerAPI){
+    if (this.state.doLogOut === true) return; // We are about to refresh anyway...
+
+    if (this.props.core.notebookServerAPI !== this.previousNotebookServerAPI) {
       this.serverStatusSet = false;
       this.serverOptionsSet = false;
     }
     this.previousNotebookServerAPI = this.props.core.notebookServerAPI;
-    this.setServerStatus()
-    this.setServerOptions()
+    this.setServerStatus();
+    this.setServerOptions();
   }
 
 
@@ -68,7 +72,6 @@ class LaunchNotebookServer extends Component {
     if (this.serverStatusSet) return;
     if (!this.props.core.notebookServerAPI) return;
     if (!this.props.client) return;
-
     // Check for already running servers
     const headers = this.props.client.getBasicHeaders();
     this.props.client.clientFetch(this.props.core.notebookServerAPI, {headers})
@@ -77,6 +80,10 @@ class LaunchNotebookServer extends Component {
         if (!this._unmounting) {
           this.setState({serverRunning: serverStatus});
           this.serverStatusSet = true;
+        }
+      }).catch(e => {
+        if (e.case === 'UNAUTHORIZED') {
+          this.setState({ doLogOut: true });
         }
       });
   }
@@ -102,13 +109,15 @@ class LaunchNotebookServer extends Component {
           this.serverOptionsSet = true;
         }
       })
+      .catch(e => {
+        if (e.case === 'UNAUTHORIZED'){
+          this.setState({ doLogOut: true });
+        }
+      });
   }
 
-
   getChangeHandlers() {
-
     const handlers = {};
-
     // Add all resource change handlers.
     Object.keys(this.state.serverOptions).forEach(key => {
       handlers[key] = (e) => {
@@ -156,7 +165,10 @@ class LaunchNotebookServer extends Component {
 
   render() {
     if (!this.props.client) return null;
-    if (this.state.serverRunning) {
+
+    if (this.state.doLogOut) {
+      return <LogOutUser client={this.props.client} />
+    } else if (this.state.serverRunning) {
       return <Col xs={12}>
         <p>You already have a server running.</p>
       </Col>
