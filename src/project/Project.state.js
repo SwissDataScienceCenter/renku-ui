@@ -64,6 +64,44 @@ class ProjectModel extends StateModel {
       })
   }
 
+  startNotebookServersPolling(client) {
+    const oldPoller = this.get('core.notebookServersPoller');
+    if (oldPoller == null) {
+      const newPoller = setInterval(() => {
+        return this.fetchNotebookServers(client);
+      }, 3000);
+      this.set('core.notebookServersPoller', newPoller);
+
+      // invoke immediatly the first time
+      return this.fetchNotebookServers(client, true);
+    }
+  }
+
+  stopNotebookServersPolling() {
+    const poller = this.get('core.notebookServersPoller');
+    if (poller) {
+      this.set('core.notebookServersPoller', null);
+      clearTimeout(poller);
+    }
+  }
+
+  fetchNotebookServers(client, first) {
+    if (first) {
+      this.setUpdating({core: {notebookServers: true}});
+    }
+    return client.getNotebookServers()
+      .then(resp => {
+        this.set('core.notebookServers', resp.data);
+      });
+  }
+
+  stopNotebookServer(client, serverName) {
+    const promise = client.stopNotebookServer(serverName);
+    // do not wait to resolve the promise, it takes a few seconds but the server states change much faster
+    this.fetchNotebookServers(client);
+    return promise;
+  }
+
   fetchNotebookServerUrl(client, id, projectState) {
     client.getNotebookServerUrl(id, projectState.core.path_with_namespace)
       .then(urls => {

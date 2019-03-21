@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2019 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -19,22 +19,10 @@
 /**
  *  renku-ui
  *
- * Components for interacting with the notebook server (renku-notebooks)
- *
+ *  help
+ *  Components for the help page
  */
 
-import React, { Component } from 'react';
-import { NotebookAdmin, LaunchNotebookServer, NotebookServers } from './Notebooks.container';
+import { Help } from './Help.container';
 
-class Admin extends Component {
-  render() {
-    const client = this.props.client;
-    // FIXME Using a private field, but this code will all change soon anyway.
-    const jupyterHubUrl = client.jupyterhubUrl
-    const adminUiUrl = `${jupyterHubUrl}/services/notebooks/ui/`
-    return <NotebookAdmin adminUiUrl={adminUiUrl} />
-  }
-}
-
-export default { Admin };
-export { LaunchNotebookServer, NotebookServers }
+export default Help;

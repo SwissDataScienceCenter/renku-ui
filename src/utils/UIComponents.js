@@ -193,9 +193,13 @@ class Pagination extends Component {
 
 class ExternalLink extends Component {
   render() {
-    const className = (this.props.size == null) ?
-      "btn btn-primary" :
-      `btn btn-primary btn-${this.props.size}`;
+    let className = "btn btn-primary";
+    if (this.props.size != null) {
+      className += ` btn-${this.props.size}`;
+    }
+    if (this.props.disabled) {
+      className += " disabled";
+    }
     return <a href={this.props.url}
       className={className} role="button" target="_blank"
       rel="noreferrer noopener">{this.props.title}</a>
@@ -212,12 +216,14 @@ class Loader extends Component {
     const borderRight = borderTop; // Added a borderRight to make a half-circle
     const borderRadius = "50%";
     const animation =  "spin 2s linear infinite";
-    return <div style={{
+    const left = this.props.inline ? "" : "40%", right = left;
+    const display = this.props.inline ? "inline-block" : "";
+    const verticalAlign = this.props.inline ? "middle" : "";
+    const margin = `m-${this.props.margin ? this.props.margin : 0}`;
+    return <div className={ margin } style={{
       width: d, height: d,
-      border, borderTop, borderRight, borderRadius, animation,
+      border, borderTop, borderRight, borderRadius, animation, left, right, display, verticalAlign,
       position: 'relative',
-      left: "40%",
-      top: "40%"
     }}></div>
   }
 }

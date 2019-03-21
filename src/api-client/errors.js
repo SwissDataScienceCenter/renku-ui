@@ -63,7 +63,7 @@ function throwAPIErrors(response) {
 
 function alertAPIErrors(error) {
   switch (error.case) {
-  case API_ERRORS.permissionError:
+  case API_ERRORS.forbiddenError:
     alert('You don\'t have the necessary permission to view this information or perform this action.');
     break;
   case API_ERRORS.notFoundError:

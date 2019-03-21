@@ -25,6 +25,7 @@ import addRepositoryMethods  from './repository';
 import addUserMethods  from './user';
 import addKuMethods  from './ku';
 import addInstanceMethods from './instance';
+import addNotebookServersMethods from './notebook-servers';
 
 import testClient from './test-client'
 
@@ -57,6 +58,7 @@ class APIClient {
     addUserMethods(this);
     addKuMethods(this);
     addInstanceMethods(this);
+    addNotebookServersMethods(this);
   }
 
   // A fetch method which is attached to a API client instance so that it can
@@ -72,7 +74,8 @@ class APIClient {
       .catch((error) => {
 
         // For permission errors we send the user to login
-        if (error.case === API_ERRORS.permissionError) {
+        // TODO: forbidden should not be included here, but test further
+        if (error.case === API_ERRORS.unauthorizedError) {
           return this.doLogin()
         }
 

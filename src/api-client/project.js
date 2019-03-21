@@ -100,6 +100,8 @@ function addProjectMethods(client) {
 
     return Promise.all([newProjectPromise, payloadPromise])
       .then(([data, payload]) => {
+        if (data.errorData)
+          return Promise.reject(data);
         return client.postCommit(data.id, payload).then(() => data);
       });
   }

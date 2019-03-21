@@ -42,7 +42,9 @@ const displaySchema = new Schema({
   title: {initial:'', mandatory: true},
   description: {initial: '', mandatory: true},
   displayId: {initial: '', mandatory: false},
-  slug: {initial: '', mandatory: true}
+  slug: {initial: '', mandatory: true},
+  loading: {initial: false, mandatory: false},
+  errors: {initial: [], mandatory: false},
 });
 
 const newProjectSchema = new Schema({

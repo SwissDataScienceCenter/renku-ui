@@ -32,9 +32,10 @@ import Autosuggest from 'react-autosuggest';
 import { Row, Col } from 'reactstrap';
 import { Button, FormGroup, FormText, Label } from 'reactstrap';
 import { Input, InputGroup, InputGroupAddon, InputGroupText } from 'reactstrap';
+import { Alert } from 'reactstrap';
 
 import collection from 'lodash/collection';
-import { FieldGroup } from '../../utils/UIComponents'
+import { FieldGroup, Loader } from '../../utils/UIComponents'
 import './Project.style.css';
 
 
@@ -230,13 +231,49 @@ class ProjectNew extends Component {
             visibilities={this.props.visibilities}
             onChange={this.props.handlers.onVisibilityChange} />
           <br/>
-          <Button color="primary" onClick={this.props.handlers.onSubmit}>
+          <SubmitErrors errors={this.props.model.display.errors} />
+          <Button color="primary" onClick={this.props.handlers.onSubmit} disabled={this.props.model.display.loading}>
             Create
           </Button>
+          <SubmitLoader loading={this.props.model.display.loading} />
         </form>
       </Col></Row>
     ]
   }
+}
+
+class SubmitLoader extends Component {
+  render() {
+    if (!this.props.loading) return null;
+    return(<Loader size="16" inline="true" margin="2" />)
+  }
+}
+
+class SubmitErrors extends Component {
+  render() {
+    if (!this.props.errors || !this.props.errors.length) return null;
+    return(
+      <div>
+        <Alert color="danger">
+          <Col>
+            <Row>
+              {
+                this.props.errors.length > 1
+                  ? <h5>Some errors occurred</h5>
+                  : <h5>An error occurred</h5>
+              }
+            </Row>
+            {this.props.errors.map(error => (
+              <Row key={error}>
+                {error}
+              </Row>
+            ))}
+          </Col>
+        </Alert>
+      </div>
+    )
+  }
+
 }
 
 export default ProjectNew;

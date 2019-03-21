@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2019 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -19,22 +19,32 @@
 /**
  *  renku-ui
  *
- * Components for interacting with the notebook server (renku-notebooks)
- *
+ *  Help.container.js
+ *  Container components for help
  */
 
+ 
 import React, { Component } from 'react';
-import { NotebookAdmin, LaunchNotebookServer, NotebookServers } from './Notebooks.container';
 
-class Admin extends Component {
+import { Help as HelpPresent } from './Help.present';
+
+class Help extends Component { 
+  urlMap() {
+    const baseUrl = this.props.match.url;
+    return {
+      base: baseUrl,
+      getting: `${baseUrl}/getting`,
+      tutorials: `${baseUrl}/tutorials`,
+      features: `${baseUrl}/features`,
+      setup: `${baseUrl}/setup`,
+    }
+  }
+
   render() {
-    const client = this.props.client;
-    // FIXME Using a private field, but this code will all change soon anyway.
-    const jupyterHubUrl = client.jupyterhubUrl
-    const adminUiUrl = `${jupyterHubUrl}/services/notebooks/ui/`
-    return <NotebookAdmin adminUiUrl={adminUiUrl} />
+    return (
+      <HelpPresent url={ this.urlMap() } />
+    )
   }
 }
 
-export default { Admin };
-export { LaunchNotebookServer, NotebookServers }
+export { Help };

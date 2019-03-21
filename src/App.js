@@ -30,9 +30,10 @@ import { BrowserRouter as Router, Route, Switch, Redirect }  from 'react-router-
 
 import Project from './project/Project'
 import Ku from './ku/Ku'
-import { Landing, LoggedInNavBar, AnonymousNavBar } from './landing'
+import { Landing, LoggedInNavBar, AnonymousNavBar, FooterNavbar } from './landing'
 import Notebooks from './notebooks';
 import { Login } from './login'
+import Help from './help'
 import { UserAvatar } from './utils/UIComponents'
 
 class RenkuNavBar extends Component {
@@ -45,13 +46,7 @@ class RenkuNavBar extends Component {
 
 class RenkuFooter extends Component {
   render() {
-    return <footer className="footer">
-      <div className="container">
-        <span className="text-muted">
-          <a href="https://datascience.ch">&copy; SDSC {(new Date()).getFullYear()}</a>
-        </span>
-      </div>
-    </footer>
+    return <FooterNavbar {...this.props} />
   }
 }
 
@@ -76,6 +71,8 @@ class App extends Component {
                   key="landing" welcomePage={this.props.params['WELCOME_PAGE']}
                   user={this.props.userState.getState().user}
                   {...p} />} />
+              <Route path="/help"
+                render ={p => <Help key="help" {...p} {...this.props} /> } />
 
               {/*TODO: This route should be handled by <Route path="/projects/:id(\d+)" too. Until this is the
                  TODO: case, the ku_new route must be listed BEFORE the project one.   */}
