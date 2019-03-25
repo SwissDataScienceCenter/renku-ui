@@ -16,9 +16,9 @@
   limitations under the License.
   
 .. image:: https://pullreminders.com/badge.svg
-  :target: https://pullreminders.com?ref=badge
-  :alt: Pull reminders
-  :align: right
+    :target: https://pullreminders.com?ref=badge
+    :alt: Pull reminders
+    :align: right
 
 ================
  Renku-UI
