@@ -14,6 +14,11 @@
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   See the License for the specific language governing permissions and
   limitations under the License.
+  
+.. image:: https://pullreminders.com/badge.svg
+  :target: https://pullreminders.com?ref=badge
+  :alt: Pull reminders
+  :align: right
 
 ================
  Renku-UI
