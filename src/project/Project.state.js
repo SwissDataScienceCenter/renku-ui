@@ -91,6 +91,7 @@ class ProjectModel extends StateModel {
     }
     return client.getNotebookServers()
       .then(resp => {
+        // TODO: filter for current project
         this.set('core.notebookServers', resp.data);
       });
   }

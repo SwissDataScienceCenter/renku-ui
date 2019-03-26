@@ -17,11 +17,12 @@
  */
 
 import React, { Component } from 'react';
-// import { Notebooks as NotebooksPresent } from './Notebooks.present';
+import { Col } from 'reactstrap';
 
-import { NotebookServerOptions } from './Notebooks.present';
+import { NotebookServerOptions, NotebookServers as NotebookServersPresent } from './Notebooks.present';
 import { ExternalLink } from '../utils/UIComponents';
-import { NotebookServers as NotebookServersPresent } from './Notebooks.present';
+
+
 
 class NotebookAdmin extends Component {
   render() {
@@ -38,7 +39,8 @@ class LaunchNotebookServer extends Component {
     super(props)
     this.state = {
       serverOptions: {},
-      serverRunning: false
+      serverRunning: false,
+      serverStarting: false
     };
     this._unmounting = false;
   }
@@ -134,6 +136,7 @@ class LaunchNotebookServer extends Component {
       postData.serverOptions[key] = this.state.serverOptions[key].selected
     });
 
+    this.setState({serverStarting: true});
     const headers = this.props.client.getBasicHeaders();
     headers.set('Content-Type', 'application/json');
     this.props.client.clientFetch(this.props.core.notebookServerAPI, {
@@ -154,10 +157,13 @@ class LaunchNotebookServer extends Component {
   render() {
     if (!this.props.client) return null;
     if (this.state.serverRunning) {
-      return <p>You already have a server running.</p>
+      return <Col xs={12}>
+        <p>You already have a server running.</p>
+      </Col>
     }
     else {
       return <NotebookServerOptions
+        loader={this.state.serverStarting}
         onSubmit={this.onSubmit.bind(this)}
         changeHandlers={this.getChangeHandlers()}
         serverOptions={this.state.serverOptions}
