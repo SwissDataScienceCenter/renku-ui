@@ -17,62 +17,71 @@
  */
 
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import { Form, FormGroup, Label, Input, Button, Row, Col, Table} from 'reactstrap';
+import { SpecialPropVal } from '../model/Model'
+import { ACCESS_LEVELS } from '../api-client';
 
 import { Loader, ExternalLink } from '../utils/UIComponents'
 
-class NotebookServerOptions extends React.Component {
+class RenderedServerOptions extends Component {
   render() {
-
+    if (this.props.loader) {
+      return <Loader />
+    }
     const renderedServerOptions = Object.keys(this.props.serverOptions).map(key => {
       const serverOption = this.props.serverOptions[key];
       const onChange = this.props.changeHandlers[key];
 
       switch (serverOption.type) {
+      case 'enum':
+        return <FormGroup key={key}>
+          <Label>{serverOption.displayName}</Label>
+          <EnumOption {...serverOption} onChange={onChange} />
+        </FormGroup>;
 
-        case 'enum':
-          return <FormGroup key={key}>
-            <Label>{serverOption.displayName}</Label>
-            <EnumOption {...serverOption} onChange={onChange}/>
-          </FormGroup>;
+      case 'int':
+        return <FormGroup key={key}>
+          <Label>{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
+          <RangeOption step={1} {...serverOption} onChange={onChange} />
+        </FormGroup>;
 
-        case 'int':
-          return <FormGroup key={key}>
-            <Label>{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
-            <RangeOption step={1} {...serverOption} onChange={onChange}/>
-          </FormGroup>;
+      case 'float':
+        return <FormGroup key={key}>
+          <Label>{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
+          <RangeOption step={0.01} {...serverOption} onChange={onChange} />
+        </FormGroup>;
 
-        case 'float':
-          return <FormGroup key={key}>
-            <Label>{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
-            <RangeOption step={0.01} {...serverOption} onChange={onChange}/>
-          </FormGroup>;
+      case 'boolean':
+        return <FormGroup key={key} check>
+          <BooleanOption {...serverOption} onChange={onChange} />
+          <Label>{`${serverOption.displayName}`}</Label>
+        </FormGroup>;
 
-        case 'boolean':
-          return <FormGroup key={key} check>
-            <BooleanOption {...serverOption} onChange={onChange}/>
-            <Label>{`${serverOption.displayName}`}</Label>
-          </FormGroup>;
-
-        default:
-          return null;
+      default:
+        return null;
       }
     });
+    return <Form>
+      {renderedServerOptions}
+      <Button onClick={this.props.onSubmit} color="primary">
+        Launch Server
+      </Button>
+    </Form>
+  }
+}
 
+class NotebookServerOptions extends Component {
+  render() {
     return (
       <div className="container">
         <Row key="header">
           <Col sm={12} md={6}><h3>Launch new Jupyterlab server</h3></Col>
         </Row>
         <Row key="spacer"><Col sm={8} md={6} lg={4} xl={3}>&nbsp;</Col></Row>
-        <Row key="form"><Col sm={8} md={6} lg={4} xl={3}>
-          <Form>
-            {renderedServerOptions}
-            <Button onClick={this.props.onSubmit} color="primary">
-              Launch Server
-            </Button>
-          </Form>
-        </Col></Row>
+        <Row key="form">
+          <Col sm={8} md={6} lg={4} xl={3}><RenderedServerOptions {...this.props} /></Col>
+        </Row>
       </div>
     );
   }
@@ -142,16 +151,14 @@ class NotebookServerRow extends Component {
   }
 }
 
-class NotebookServers extends Component {
+class NotebookServersList extends Component {
   render() {
-    const serverData = this.props.servers;
-    if (!serverData) return null;
-    const serverNames = Object.keys(serverData).sort();
+    const serverNames = Object.keys(this.props.servers).sort();
     if (serverNames.length === 0) {
       return <p>No servers</p>
     }
     const rows = serverNames.map((k, i) =>
-      <NotebookServerRow key={i} onStopServer={this.props.stop} {...serverData[k]} />
+      <NotebookServerRow key={i} onStopServer={this.props.stop} {...this.props.servers[k]} />
     )
     return <Table size={"sm"}>
       <thead>
@@ -165,6 +172,31 @@ class NotebookServers extends Component {
         {rows}
       </tbody>
     </Table>
+  }
+}
+
+class NotebookServersLaunch extends Component {
+  render () {
+    const permissions = this.props.accessLevel >= ACCESS_LEVELS.DEVELOPER ? true : false;
+    if (!permissions) {
+      return <p>You are missing the permissions to launch Jupyter from this project.</p>;
+    }
+    return <Link to={ this.props.start }>
+      <Button color="primary">Start new server</Button>
+    </Link>;
+  }
+}
+
+class NotebookServers extends Component {
+  render() {
+    const serverData = this.props.servers;
+    if (!serverData || serverData === SpecialPropVal.UPDATING ) {
+      return <Loader />
+    }
+    return <div>
+      <NotebookServersList {...this.props} />
+      <NotebookServersLaunch {...this.props} />
+    </div> 
   }
 }
 
