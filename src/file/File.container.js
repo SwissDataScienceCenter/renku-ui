@@ -21,7 +21,7 @@ import ReactMarkdown from 'react-markdown';
 import ReactDOM from 'react-dom';
 import hljs from 'highlight.js';
 
-import { JupyterNotebookPresent, LaunchNotebookButton } from './File.present';
+import { JupyterNotebookPresent } from './File.present';
 import { ACCESS_LEVELS } from '../api-client';
 
 
@@ -42,23 +42,6 @@ class JupyterNotebookContainer extends Component {
     />
   }
 }
-
-class LaunchNotebookServerButton extends Component {
-  render() {
-
-    const deploymentUrl = this.props.accessLevel >= ACCESS_LEVELS.DEVELOPER ? this.props.notebookServerUrl : null;
-
-    if (this.props.accessLevel < ACCESS_LEVELS.DEVELOPER) return null;
-    return <LaunchNotebookButton
-      className="btn btn-primary"
-      notebookServerUrl={deploymentUrl}
-      notebookServerAPI={this.props.notebookServerAPI}
-      client={this.props.client}
-      label="Connect to Jupyter"
-    />;
-  }
-}
-
 
 const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'tiff', 'pdf', 'gif'];
 const CODE_EXTENSIONS = ['py', 'js', 'json', 'sh', 'r', 'txt',];
@@ -137,4 +120,4 @@ class FilePreview extends React.Component {
   }
 }
 
-export { FilePreview, JupyterNotebookContainer as JupyterNotebook, LaunchNotebookServerButton };
+export { FilePreview, JupyterNotebookContainer as JupyterNotebook };

@@ -171,9 +171,6 @@ class ProjectViewHeaderOverview extends Component {
                     null
                 }
               </div>
-              <div className="pr-2">
-                {this.props.launchNotebookServerButton}
-              </div>
             </div>
             <p className="text-md-right">
               <ImageBuildInfoBadge notebooksUrl={this.props.notebooksUrl} imageBuild={this.props.imageBuild} />
@@ -610,6 +607,8 @@ class ProjectNotebookServers extends Component {
     return (
       <Col xs={12}>
         <NotebookServers
+          accessLevel={ this.props.visibility.accessLevel }
+          start={ `/projects/${this.props.id}/launchNotebook` }
           servers={ this.props.core.notebookServers }
           stop= { this.props.stopNotebookServer }
           url={ this.props.client.jupyterhubUrl }>

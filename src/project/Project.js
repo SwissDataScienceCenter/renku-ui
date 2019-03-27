@@ -32,7 +32,7 @@ import Present from './Project.present'
 import { ProjectModel } from './Project.state'
 import Ku from '../ku/Ku'
 import Notebook from '../file/Notebook'
-import { FileLineage, LaunchNotebookServerButton } from '../file'
+import { FileLineage } from '../file'
 import { ACCESS_LEVELS } from '../api-client';
 import { alertError } from '../utils/Errors';
 import { MergeRequest, MergeRequestList } from '../merge-request';
@@ -185,10 +185,6 @@ class View extends Component {
         externalUrl={externalUrl}
         path={p.match.params.filePath} />,
 
-      launchNotebookServerButton: <LaunchNotebookServerButton key= "launch notebook" {...subProps}
-        notebookServerUrl={this.projectState.get('core.notebookServerUrl')}
-      />,
-
       mrList: <ConnectedMergeRequestList key="mrList" store={this.projectState.reduxStore}
         mrOverviewUrl={this.subUrls().mrOverviewUrl}/>,
       mrView: (p) => <MergeRequest
@@ -200,7 +196,7 @@ class View extends Component {
         key="launchNotebook"
         store={this.projectState.reduxStore}
         client={ownProps.client}
-        onSuccess={() => this.props.history.push(`/projects/${this.projectState.get('core.id')}`)}
+        onSuccess={() => this.props.history.push(`/projects/${this.projectState.get('core.id')}/notebookServers`)}
       />
     }
   }
