@@ -52,8 +52,13 @@ class View extends Component {
 
   componentDidMount() {
     this.fetchAll();
-    // TODO Simplify this method to just fetch basic project information.
-    // this.fetchProject();
+  }
+
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    // re-fetch when user login data are available
+    if (!prevProps.user && this.props.user) {
+      this.fetchAll();
+    }
   }
 
   async fetchProject() { return this.projectState.fetchProject(this.props.client, this.props.id); }
@@ -69,7 +74,9 @@ class View extends Component {
 
   async fetchAll() {
     await this.fetchProject();
-    this.fetchCIJobs();
+    if (this.props.user) {
+      this.fetchCIJobs();
+    }
   }
 
   getStarred(user, projectId) {

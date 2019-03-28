@@ -204,6 +204,11 @@ class ProjectViewHeader extends Component {
 class ProjectNav extends Component {
 
   render() {
+    const notebookServers = this.props.user ?
+      <NavItem>
+        <RenkuNavLink exact={false} to={this.props.notebookServersUrl} title="Notebook Servers" />
+      </NavItem>:
+      null
     return (
       <Nav pills className={'nav-pills-underline'}>
         <NavItem>
@@ -218,9 +223,7 @@ class ProjectNav extends Component {
         <NavItem>
           <RenkuNavLink exact={false} to={this.props.mrOverviewUrl} title="Pending Changes" />
         </NavItem>
-        <NavItem>
-          <RenkuNavLink exact={false} to={this.props.notebookServersUrl} title="Notebook Servers" />
-        </NavItem>
+        {notebookServers}
         <NavItem>
           <RenkuNavLink exact={false} to={this.props.settingsUrl} title="Settings" />
         </NavItem>
