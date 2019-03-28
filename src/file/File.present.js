@@ -83,6 +83,9 @@ class LaunchNotebookButton extends React.Component {
       .then(response => {
         const serverStatus = !(!response.data.pending && !response.data.ready);
         this.setState({serverRunning: serverStatus})
+      })
+      .catch(e => {
+        console.log("Unexpected error in LaunchNotebook button", e)
       });
     this.previousNotebookServerAPI = this.props.notebookServerAPI;
   }

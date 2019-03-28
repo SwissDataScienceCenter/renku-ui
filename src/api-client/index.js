@@ -26,7 +26,6 @@ import addUserMethods  from './user';
 import addKuMethods  from './ku';
 import addInstanceMethods from './instance';
 import addNotebookServersMethods from './notebook-servers';
-
 import testClient from './test-client'
 
 const ACCESS_LEVELS = {
@@ -74,9 +73,11 @@ class APIClient {
       .catch((error) => {
 
         // For permission errors we send the user to login
-        // TODO: forbidden should not be included here, but test further
-        if (error.case === API_ERRORS.unauthorizedError) {
-          return this.doLogin()
+        if (error.case === API_ERRORS.unauthorizedError){
+          //TODO: when jupyterhub has refresh tokens we should remove the following if and return promise.
+          if( error.response && error.response.url && error.response.url.includes("/api/notebooks"))
+            return Promise.reject(error);
+          return this.doLogin();
         }
 
         // Alert only if corresponding option is set to true
@@ -117,6 +118,10 @@ class APIClient {
 
   doLogin() {
     window.location = `${this.baseUrl}/auth/login?redirect_url=${encodeURIComponent(window.location.href)}`;
+  }
+
+  doLogout(){
+    window.location=`${this.baseUrl}/auth/logout?redirect_url=${encodeURIComponent(window.location.href)}`
   }
 
   getBasicHeaders() {

@@ -24,6 +24,44 @@ import { ACCESS_LEVELS } from '../api-client';
 
 import { Loader, ExternalLink } from '../utils/UIComponents'
 
+class LogOutUser extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      timer: null,
+      logedout: false
+    }
+  }
+
+  componentWillUnmount() {
+    this.state.timer.clear()
+  }
+
+  componentDidMount() {
+    this.setState({
+      timer: setTimeout(() => {
+        this.setState({ logedout: true });
+        this.props.client.doLogout();
+      }, 6000)
+    });
+  }
+
+  render() {
+    return (
+      this.state.logedout ?
+        <Col md={8}>We logged you out.</Col>
+        :
+        <Col md={{ size: 6, offset: 3 }}>
+          <p align="center">You will be logged out because your JupyterLab token expired.
+            <br /> Please log in again to continue working with Renku.
+          </p>
+          <Loader />
+        </Col>
+    )
+  }
+}
+
 class RenderedServerOptions extends Component {
   render() {
     if (this.props.loader) {
@@ -196,8 +234,8 @@ class NotebookServers extends Component {
     return <div>
       <NotebookServersList {...this.props} />
       <NotebookServersLaunch {...this.props} />
-    </div> 
+    </div>
   }
 }
 
-export { NotebookServerOptions, NotebookServers }
+export { NotebookServerOptions, NotebookServers, LogOutUser }
