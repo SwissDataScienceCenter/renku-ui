@@ -20,7 +20,6 @@ import React, { Component } from 'react';
 
 import { FileLineage as FileLineagePresent } from './Lineage.present';
 
-
 class FileLineage extends Component {
   constructor(props){
     super(props);
@@ -68,9 +67,12 @@ class FileLineage extends Component {
   }
 
   render() {
-    return <FileLineagePresent graph={this.state.graph} error={this.state.error} {...this.props} />
+    return <FileLineagePresent 
+      graph={this.state.graph} 
+      error={this.state.error} 
+      filePath={this.props.match.url+'/files/blob/'+this.props.path} 
+      {...this.props} />
   }
 }
-
 
 export { FileLineage };

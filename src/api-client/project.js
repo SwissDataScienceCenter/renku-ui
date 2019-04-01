@@ -33,10 +33,54 @@ function groupedFiles(files, projectFiles) {
   return projectFiles
 }
 
+function buildTree(parts, treeNode, jsonObj, hash, currentPath) {
+  if (parts.length === 0) {
+    return;
+  }
+
+  currentPath = currentPath === "" ? parts[0] : currentPath+'/'+parts[0];
+
+  for (let i = 0; i < treeNode.length; i++) {
+    if (parts[0] === treeNode[i].text) {
+      buildTree(parts.splice(1, parts.length), treeNode[i].children, jsonObj, hash, currentPath+'/'+parts[0]);
+      return;
+    }
+  }
+
+  let newNode;
+  if (parts[0] === jsonObj.name)
+    newNode = { 'name': parts[0], 'children': [], 'jsonObj': jsonObj, 'path': currentPath  };
+  else
+    newNode = { 'name': parts[0], 'children': [], 'jsonObj': null, 'path': currentPath };
+
+  const currentNode = treeNode.filter(node => node.name === newNode.name);
+  
+  if (currentNode.length === 0) {
+    treeNode.push(newNode);
+    hash[newNode.path] = {'name': parts[0], 'selected':false, 'childrenOpen':false, 'path': currentPath };
+    buildTree(parts.splice(1, parts.length), newNode.children, jsonObj, hash, currentPath);
+  } else {
+    for (let j = 0; j < newNode.children.length; j++) {
+      currentNode[0].children.push(newNode.children[j]);
+    }
+    buildTree(parts.splice(1, parts.length), currentNode[0].children, jsonObj, hash, currentPath);
+  }
+}
+
+function getFilesTree(files) {
+  let list = files.filter((treeObj) => treeObj.type === 'blob');
+  let tree = [];
+  let hash = {};
+  for (let i = 0; i < list.length; i++) {
+    buildTree(list[i].path.split('/'), tree, list[i] , hash, "");
+  }
+  const treeObj = { tree:tree , hash:hash }
+  return treeObj;
+}
 
 function addProjectMethods(client) {
 
-  client.getProjects = (queryParams={}) => {
+  client.getProjects = (queryParams = {}) => {
     let headers = client.getBasicHeaders();
 
     return client.clientFetch(`${client.baseUrl}/projects`, {
@@ -46,8 +90,7 @@ function addProjectMethods(client) {
     })
   }
 
-
-  client.getProject = (projectId, options={}) => {
+  client.getProject = (projectId, options = {}) => {
     const headers = client.getBasicHeaders();
     const queryParams = {
       statistics: options.statistics || false
@@ -57,17 +100,24 @@ function addProjectMethods(client) {
       headers,
       queryParams
     }).then(resp => {
-      return {...resp, data: carveProject(resp.data)};
+      return { ...resp, data: carveProject(resp.data) };
     });
   }
 
   client.getProjectFiles = (projectId) => {
-    return client.getRepositoryTree(projectId, {path:'', recursive: true}).then((tree) => {
+    return client.getRepositoryTree(projectId, { path: '', recursive: true }).then((tree) => {
       const files = tree
         .filter((treeObj) => treeObj.type === 'blob')
         .map((treeObj) => treeObj.path);
       return groupedFiles(files, {});
     })
+  }
+
+  client.getProjectFilesTree = (projectId) => {
+    return client.getRepositoryTree(projectId, { path: '', recursive: true }).then((tree) => {
+      const fileStructure = getFilesTree(tree)
+      return fileStructure;
+    });
   }
 
 
@@ -150,7 +200,7 @@ function addProjectMethods(client) {
 
   // TODO: Once the gateway is up and running, the client should not need to be aware of the
   // TODO: JUPYTERHUB_URL anymore but simply query the notebook url from the gateway
-  client.getNotebookServerUrl = async (projectId, projectPath, commitSha='latest', ref='master') => {
+  client.getNotebookServerUrl = async (projectId, projectPath, commitSha = 'latest', ref = 'master') => {
     if (commitSha === 'latest') {
       commitSha = await (client.getCommits(projectId).then(resp => resp.data[0].id));
     }
@@ -161,7 +211,7 @@ function addProjectMethods(client) {
   }
 
 
-  client.getArtifactsUrl = (projectId, job, branch='master') => {
+  client.getArtifactsUrl = (projectId, job, branch = 'master') => {
     const headers = client.getBasicHeaders();
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}/jobs`, {
       method: 'GET',
@@ -182,12 +232,12 @@ function addProjectMethods(client) {
   }
 
 
-  client.getArtifact = (projectId, job, artifact, branch='master') => {
+  client.getArtifact = (projectId, job, artifact, branch = 'master') => {
     const options = { method: 'GET', headers: client.getBasicHeaders() };
     return client.getArtifactsUrl(projectId, job, branch)
       .then(url => {
         // If the url is undefined, we return an object with a dummy text() method.
-        if (!url) return ['', {text: () => ''}];
+        if (!url) return ['', { text: () => '' }];
         const resourceUrl = `${url}/${artifact}`;
         return Promise.all([resourceUrl, client.clientFetch(resourceUrl, options, client.returnTypes.full)])
       })
@@ -199,14 +249,14 @@ function addProjectMethods(client) {
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}/jobs`, {
       method: 'GET',
       headers,
-      queryParams: {per_page: 100}
+      queryParams: { per_page: 100 }
     }, 'json', false)
   }
 }
 
 
 function carveProject(projectJson) {
-  const result = {metadata: {core: {}, visibility: {}, system: {}, statistics: {}}, all: projectJson};
+  const result = { metadata: { core: {}, visibility: {}, system: {}, statistics: {} }, all: projectJson };
   result['metadata']['visibility']['level'] = projectJson['visibility'];
 
   let accessLevel = 0;
@@ -255,7 +305,7 @@ function carveProject(projectJson) {
 //       make sense at some point to serve the project template from the GitLab
 //       instance we're working with.
 
-function getPayload(projectName, renkuVersion){
+function getPayload(projectName, renkuVersion) {
 
   const TEMPLATE_REPO_URL = 'https://api.github.com/repos/SwissDataScienceCenter/renku-project-template/git/trees/'
 

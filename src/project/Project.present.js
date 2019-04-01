@@ -27,7 +27,7 @@
 
 import React, { Component } from 'react';
 
-import { Link, Route, Switch }  from 'react-router-dom';
+import { Link, Route, Switch } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown'
 import filesize from 'filesize';
 
@@ -40,13 +40,14 @@ import { Card, CardBody, CardHeader } from 'reactstrap';
 
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faStarRegular from '@fortawesome/fontawesome-free-regular/faStar'
-import { faExclamationCircle, faStar as faStarSolid, faInfoCircle } from '@fortawesome/fontawesome-free-solid'
+import { faStar as faStarSolid, faInfoCircle } from '@fortawesome/fontawesome-free-solid'
 
 import { ExternalLink, Loader, RenkuNavLink, TimeCaption} from '../utils/UIComponents'
 import { InfoAlert, SuccessAlert, WarnAlert, ErrorAlert } from '../utils/UIComponents'
 import { SpecialPropVal } from '../model/Model'
 import { ProjectTags, ProjectTagList } from './shared'
 import { NotebookServers } from '../notebooks'
+import FilesTreeView from './filestreeview/FilesTreeView';
 
 import './Project.css';
 
@@ -58,10 +59,10 @@ const imageBuildStatusText = {
 };
 
 const imageBuildAlertColor = {
-  failed : 'danger',
-  canceled : 'danger',
-  running : 'warning',
-  pending : 'warning'
+  failed: 'danger',
+  canceled: 'danger',
+  running: 'warning',
+  pending: 'warning'
 };
 
 function filterPaths(paths, blacklist) {
@@ -83,28 +84,9 @@ function webhookError(props) {
   return true;
 }
 
-class ImageBuildInfo extends Component {
-  render() {
-    const imageBuild = this.props.imageBuild || {status: 'success'};
-    const imageBuildAlert = imageBuild.status === 'success' ? null :
-      <Alert color={imageBuildAlertColor[imageBuild.status]}>
-        <p style={{float:'left'}}>{imageBuildStatusText[imageBuild.status] || imageBuildStatusText['failed']}</p>
-        <p style={{float:'right'}}>
-          <ExternalLink url={`${this.props.externalUrl}/-/jobs/${imageBuild.id}`} title="View in GitLab" />
-          &nbsp;
-          <Button
-            color={imageBuildAlertColor[imageBuild.status]}
-            onClick={this.props.onProjectRefresh}>Refresh</Button>
-        </p>
-        <div style={{clear: 'left'}}></div>
-      </Alert>;
-    return imageBuildAlert
-  }
-}
-
 class ImageBuildInfoBadge extends Component {
   render() {
-    const imageBuild = this.props.imageBuild || {status: 'success'};
+    const imageBuild = this.props.imageBuild || { status: 'success' };
     if (imageBuild.status === 'success') return null;
     return <Link className={`badge badge-${imageBuildAlertColor[imageBuild.status]}`}
       title={imageBuildStatusText[imageBuild.status] || imageBuildStatusText['failed']}
@@ -122,8 +104,8 @@ class MergeRequestSuggestions extends Component {
     const mrSuggestions = this.props.suggestedMRBranches.map((branch, i) => {
       if (!this.props.canCreateMR) return null;
       return <Alert color="warning" key={i}>
-        <p style={{float:'left'}}> Do you want to create a pending change for branch <b>{branch.name}</b>?</p>
-        <p style={{float:'right'}}>
+        <p style={{ float: 'left' }}> Do you want to create a pending change for branch <b>{branch.name}</b>?</p>
+        <p style={{ float: 'right' }}>
           &nbsp; <ExternalLink url={`${this.props.externalUrl}/tree/${branch.name}`} title="View in GitLab" />
           &nbsp; <Button color="success" onClick={(e) => {
             this.handleCreateMergeRequest(e, this.props.onCreateMergeRequest, branch)
@@ -131,7 +113,7 @@ class MergeRequestSuggestions extends Component {
           {/*TODO: Enable the 'no' option once the alert can be dismissed permanently!*/}
           {/*&nbsp; <Button color="warning" onClick={this.props.createMR(branch.iid)}>No</Button>*/}
         </p>
-        <div style={{clear: 'left'}}></div>
+        <div style={{ clear: 'left' }}></div>
       </Alert>
     });
     return mrSuggestions
@@ -259,7 +241,7 @@ class ProjectViewHeaderOverview extends Component {
                     </button>
                   </div>
                   <input className="form-control border-primary text-right"
-                    placeholder={system.star_count} aria-label="starCount" readOnly={true}/>
+                    placeholder={system.star_count} aria-label="starCount" readOnly={true} />
                 </form>
               </div>
             </div>
@@ -333,26 +315,22 @@ class ProjectNav extends Component {
 }
 
 class ProjectFilesNav extends Component {
-
   render() {
-    return (
-      <Nav pills className={'flex-column'}>
-        <NavItem><RenkuNavLink to={this.props.filesUrl} title="All" /></NavItem>
-        <NavItem>
-          <RenkuNavLink to={this.props.dataUrl} title="Data" />
-        </NavItem>
-        <NavItem>
-          <RenkuNavLink to={this.props.notebooksUrl} title="Notebooks" />
-        </NavItem>
-        <NavItem>
-          <RenkuNavLink to={this.props.workflowsUrl} title="Workflows" />
-        </NavItem>
-      </Nav>)
+    const loading = isRequestPending(this.props, 'filesTree');
+    const allFiles = this.props.filesTree || []
+    if ( (loading && Object.keys(allFiles).length < 1 ) || this.props.filesTree===undefined) {
+      return <Loader />
+    }
+    return <FilesTreeView
+      data={this.props.filesTree}
+      lineageUrl={this.props.lineagesUrl}
+      projectUrl={this.props.fileContentUrl}
+      setOpenFolder={this.props.setOpenFolder} 
+      hash={this.props.filesTree.hash}/>;
   }
 }
 
 class ProjectViewReadme extends Component {
-
   render() {
     const readmeText = this.props.readme.text;
     const loading = isRequestPending(this.props, 'readme');
@@ -391,19 +369,19 @@ class ProjectViewStats extends Component {
                     <th scope="row">Number of Branches</th>
                     <td>{system.branches.length + 1}</td>
                     <td>
-                      <ExternalLink size="sm" url={`${this.props.externalUrl}/branches`} title="Branches in Gitlab"/>
+                      <ExternalLink size="sm" url={`${this.props.externalUrl}/branches`} title="Branches in Gitlab" />
                     </td>
                   </tr>
                   <tr>
                     <th scope="row">Number of Forks</th>
                     <td>{system.forks_count}</td>
-                    <td><ExternalLink size="sm" url={`${this.props.externalUrl}/forks`} title="Forks in Gitlab"/></td>
+                    <td><ExternalLink size="sm" url={`${this.props.externalUrl}/forks`} title="Forks in Gitlab" /></td>
                   </tr>
                   <tr>
                     <th scope="row">Number of Commits</th>
                     <td>{stats.commit_count}</td>
                     <td>
-                      <ExternalLink size="sm" url={`${this.props.externalUrl}/commits`} title="Commits in Gitlab"/>
+                      <ExternalLink size="sm" url={`${this.props.externalUrl}/commits`} title="Commits in Gitlab" />
                     </td>
                   </tr>
                 </tbody>
@@ -516,7 +494,7 @@ class ProjectViewKus extends Component {
       </Col>,
       <Col key="ku" sm={12} md={8}>
         <Route path={this.props.kuUrl}
-          render={props => this.props.kuView(props) }/>
+          render={props => this.props.kuView(props)} />
       </Col>
     ]
   }
@@ -545,127 +523,10 @@ class ProjectMergeRequestList extends Component {
         </Col>
         <Col key="mr" sm={12} md={8} lg={9} xl={10}>
           <Route path={this.props.mrUrl}
-            render={props => this.props.mrView(props) }/>
+            render={props => this.props.mrView(props)} />
         </Col>
       </Row>
     </Col>
-  }
-}
-
-class FileFolderTableRow extends Component {
-  render() {
-    const p = this.props.path;
-    const url = `${this.props.linkUrl}/${p}`;
-    const alert = this.props.alert;
-    const mrIid = this.props.mrIid;
-    return <tr key={p}><td><Link to={url}>{p}</Link> {alert} {mrIid}</td></tr>
-  }
-}
-
-class FileFolderList extends Component {
-  render() {
-    const blacklist = this.props.blacklist || [/^\..*/, /\/\..*/];
-    const paths = filterPaths(this.props.paths || [], blacklist)
-
-    const alertIcon = <div className="simple-tooltip">
-      <FontAwesomeIcon icon={faExclamationCircle} />
-      <span className="tooltiptext">This file has pending changes!</span>
-    </div>;
-    let alerts, mrIids;
-    if (this.props.alerts) {
-      alerts = this.props.alerts.map((el) => el ? alertIcon : '');
-      mrIids = this.props.mrIids;
-    }
-    else {
-      alerts = paths.map(() => '');
-      mrIids = paths.map(() => []);
-    }
-
-    const linkUrl = this.props.linkUrl;
-    const rows = paths.map((p, i) =>
-      <FileFolderTableRow key={p} path={p} alert={alerts[i]} mrIid={mrIids[i]} linkUrl={linkUrl} />)
-    return <Table>
-      <tbody>{rows}</tbody>
-    </Table>
-  }
-}
-
-class AnnotatedFileFolderList extends Component {
-  render() {
-    const paths = this.props.paths;
-    const alerts = this.props.paths ?
-      paths.map(path => this.props.annotations.modifiedFiles[path] !== undefined) : undefined;
-    const mrIids = paths ?
-      paths.map(path => {
-        if (!this.props.annotations.modifiedFiles[path]) return [];
-        return this.props.annotations.modifiedFiles[path].map((mrInfo, i) => {
-          return <Link key={i} to={`${this.props.mrOverviewUrl}/${mrInfo.mrIid}`}>&nbsp;[{mrInfo.source_branch}]</Link>;
-        });
-      }) : undefined;
-
-    const headertext = this.props.headertext || "Lineage and Usage";
-    return [
-      <div key="header" className="d-flex justify-content-between">
-        <div><h3>{headertext}</h3></div>
-      </div>,
-      <FileFolderList key="filelist"
-        paths={paths}
-        alerts={alerts}
-        mrIids={mrIids}
-        linkUrl={this.props.linkUrl} />
-    ]
-  }
-}
-
-class NotebookFolderList extends Component {
-  render() {
-    return [
-      <ImageBuildInfo key="imagebuild" imageBuild={this.props.imageBuild}
-        externalUrl={this.props.externalUrl}
-        onProjectRefresh={this.props.onProjectRefresh} />,
-      <AnnotatedFileFolderList key="filelist"
-        headertext="Notebooks"
-        paths={this.props.paths}
-        annotations={this.props.files}
-        linkUrl={this.props.fileContentUrl}
-        mrOverviewUrl={this.props.mrOverviewUrl} />
-    ]
-  }
-}
-
-class ProjectFilesCategorizedList extends Component {
-  render() {
-    const files = this.props.files;
-    const loading = isRequestPending(this.props, 'files');
-    const allFiles = files.all || []
-    if (loading && Object.keys(allFiles).length < 1) {
-      return <Loader />
-    }
-    return <Switch>
-      <Route path={this.props.notebooksUrl} render={props => {
-        return <NotebookFolderList
-          externalUrl={this.props.externalUrl}
-          imageBuild={this.props.imageBuild}
-          mrOverviewUrl={this.props.mrOverviewUrl}
-          onProjectRefresh={this.props.onProjectRefresh}
-          paths={files.notebooks}
-          files={files}
-          fileContentUrl={this.props.fileContentUrl}
-        />} }
-      />
-      <Route path={this.props.dataUrl} render={props =>
-        <AnnotatedFileFolderList paths={files.data} annotations={files}
-          linkUrl={this.props.lineagesUrl} mrOverviewUrl={this.props.mrOverviewUrl} />}
-      />
-      <Route path={this.props.workflowsUrl} render={props =>
-        <AnnotatedFileFolderList paths={files.workflows} annotations={files}
-          linkUrl={this.props.lineagesUrl} mrOverviewUrl={this.props.mrOverviewUrl} />}
-      />
-      <Route render={props =>
-        <AnnotatedFileFolderList paths={files.all} annotations={files}
-          linkUrl={this.props.lineagesUrl} mrOverviewUrl={this.props.mrOverviewUrl} />}
-      />
-    </Switch>
   }
 }
 
@@ -679,19 +540,14 @@ class ProjectViewFiles extends Component {
     return [
       <Col key="files" sm={12} md={2}>
         <ProjectFilesNav
-          notebooksUrl={this.props.notebooksUrl}
-          mrOverviewUrl={this.props.mrOverviewUrl}
-          dataUrl={this.props.dataUrl}
-          filesUrl={this.props.filesUrl}
-          workflowsUrl={this.props.workflowsUrl} />
+          {...this.props} />
       </Col>,
       <Col key="content" sm={12} md={10}>
         <Switch>
-          <Route path={this.props.notebookUrl}
-            render={props => this.props.notebookView(props) } />
           <Route path={this.props.lineageUrl}
-            render={p => this.props.lineageView(p) } />
-          <Route render={props => <ProjectFilesCategorizedList {...props } {...this.props } /> } />
+            render={p => this.props.lineageView(p)} />
+          <Route path={this.props.fileContentUrl}
+            render={props => this.props.fileView(props)}/>
         </Switch>
       </Col>
     ]
@@ -751,11 +607,11 @@ class ProjectDescription extends Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    const update = {value: nextProps.core.description };
-    return {...prevState, ...update};
+    const update = { value: nextProps.core.description };
+    return { ...prevState, ...update };
   }
 
-  handleChange(e) { this.setState({value: e.target.value}); }
+  handleChange(e) { this.setState({ value: e.target.value }); }
 
   handleSubmit(e) { e.preventDefault(); this.props.onProjectDescriptionChange(this.state.value); }
 
@@ -786,7 +642,7 @@ class ProjectSettings extends Component {
             tag_list={this.props.system.tag_list}
             onProjectTagsChange={this.props.onProjectTagsChange}
             settingsReadOnly={this.props.settingsReadOnly} />
-          <ProjectDescription {...this.props}/>
+          <ProjectDescription {...this.props} />
         </Col>
         <Col xs={12} md={10} lg={6}><RepositoryUrls {...this.props} /></Col>
       </Row>

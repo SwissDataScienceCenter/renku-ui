@@ -21,7 +21,9 @@ import ReactMarkdown from 'react-markdown';
 import ReactDOM from 'react-dom';
 import hljs from 'highlight.js';
 
-import { JupyterNotebookPresent } from './File.present';
+import { atobUTF8 } from '../utils/Encoding';
+
+import { JupyterNotebookPresent, JupyterNotebookBody, JupyterNotebookButtonIcon } from './File.present';
 import { ACCESS_LEVELS } from '../api-client';
 
 
@@ -33,7 +35,27 @@ class JupyterNotebookContainer extends Component {
 
     const deploymentUrl = this.props.accessLevel >= ACCESS_LEVELS.DEVELOPER ?
       `${this.props.notebookServerUrl}${filePath}` : null;
+    if(this.props.justBody)
+      return <JupyterNotebookBody
+        fileName={this.props.filePath.replace(/^.*(\\|\/|:)/, '')}
+        notebook={this.props.notebook}
+        deploymentUrl={deploymentUrl}
+        notebookServerUrl={this.props.notebookServerUrl}
+        notebookServerAPI={this.props.notebookServerAPI}
+        client={this.props.client}
+      />
+    if(this.props.justButton)
+      return <JupyterNotebookButtonIcon
+        fileName={this.props.filePath.replace(/^.*(\\|\/|:)/, '')}
+        notebook={this.props.notebook}
+        deploymentUrl={deploymentUrl}
+        notebookServerUrl={this.props.notebookServerUrl}
+        notebookServerAPI={this.props.notebookServerAPI}
+        client={this.props.client}
+        user={this.props.user}
+      />
     return <JupyterNotebookPresent
+      fileName={this.props.filePath.replace(/^.*(\\|\/|:)/, '')}
       notebook={this.props.notebook}
       deploymentUrl={deploymentUrl}
       notebookServerUrl={this.props.notebookServerUrl}
@@ -45,8 +67,8 @@ class JupyterNotebookContainer extends Component {
 }
 
 const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'tiff', 'pdf', 'gif'];
-const CODE_EXTENSIONS = ['py', 'js', 'json', 'sh', 'r', 'txt',];
-
+const CODE_EXTENSIONS = ['py', 'js', 'json', 'sh', 'r', 'txt','yml','csv','parquet','cwl','job','prn'];
+const NO_EXTENSION_FILE = ['Dockerfile','errlog','log']
 
 // FIXME: Unify the file viewing for kus (embedded) and independent file viewing.
 // FIXME: Javascript highlighting is broken for large files.
@@ -58,7 +80,9 @@ class FilePreview extends React.Component {
     if (!this.props.file) {
       return null
     } else {
-      return this.props.file.file_name
+      if(this.props.file.file_name.match(/\.(.*)/)===null) 
+        return this.props.file.file_name;
+      else return this.props.file.file_name
         .match(/\.(.*)/)[0]
         .slice(1,)
         .toLowerCase();
@@ -67,6 +91,7 @@ class FilePreview extends React.Component {
 
   fileIsCode = () => CODE_EXTENSIONS.indexOf(this.getFileExtension()) >= 0;
   fileIsImage = () => IMAGE_EXTENSIONS.indexOf(this.getFileExtension()) >= 0;
+  fileHasNoExtension = () => NO_EXTENSION_FILE.indexOf(this.getFileExtension())>=0;
 
   highlightBlock = () => {
     // FIXME: Usage of findDOMNode is discouraged.
@@ -85,10 +110,12 @@ class FilePreview extends React.Component {
   render(){
     // File has not yet been fetched
     if (!this.props.file) {
-      return <p>Loading...</p>;
+      return "Loading...";
     }
     // Various types of images
     if (this.fileIsImage()) {
+      if(atob(this.props.file.content).includes("https://git-lfs.github.com/"))
+        return "The image can't be previewed because it's stored in Git LFS."
       return <img
         className="image-preview"
         alt={this.props.file.file_name}
@@ -99,21 +126,44 @@ class FilePreview extends React.Component {
     if (this.fileIsCode()) {
       return (
         <pre className={`hljs ${this.getFileExtension()}`}>
-          <code>{atob(this.props.file.content)}</code>
+          <code>{atobUTF8(this.props.file.content)}</code>
         </pre>
       );
     }
     // Markdown
     if (this.getFileExtension() === 'md'){
-      return <ReactMarkdown source={atob(this.props.file.content)}/>;
+      let content = atobUTF8(this.props.file.content);
+      return <ReactMarkdown source={content}/>;
     }
+
+    // Jupyter Notebook Button
+    if (this.getFileExtension() === 'ipynb' && this.props.getNotebookButton){
+      return <JupyterNotebookContainer  
+        key="notebook-button"
+        justButton={true}
+        notebook={JSON.parse(atobUTF8(this.props.file.content), (key, value) => Object.freeze(value))}
+        filePath={this.props.file.file_path}
+        {...this.props}
+      />
+    }
+
     // Jupyter Notebook
     if (this.getFileExtension() === 'ipynb'){
-      return <JupyterNotebookContainer
-        notebook={JSON.parse(atob(this.props.file.content), (key, value) => Object.freeze(value))}
+      return <JupyterNotebookContainer 
+        key="notebook-body"
+        justBody={true}
+        notebook={JSON.parse(atobUTF8(this.props.file.content), (key, value) => Object.freeze(value))}
         filePath={this.props.file.file_path}
         {...this.props}
       />;
+    }
+
+    if(this.fileHasNoExtension()){
+      return (
+        <pre className={`hljs ${this.getFileExtension()}`}>
+          <code>{atobUTF8(this.props.file.content)}</code>
+        </pre>
+      )
     }
 
     // File extension not supported

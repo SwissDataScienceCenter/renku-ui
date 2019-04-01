@@ -31,7 +31,6 @@ import Present from './Project.present'
 
 import { ProjectModel } from './Project.state'
 import Ku from '../ku/Ku'
-import Notebook from '../file/Notebook'
 import { FileLineage } from '../file'
 import { ACCESS_LEVELS } from '../api-client';
 import { alertError } from '../utils/Errors';
@@ -40,6 +39,7 @@ import { LaunchNotebookServer } from '../notebooks';
 
 import List from './list';
 import New from './new';
+import { ShowFile } from '../file/File.present';
 
 // TODO: This component has grown too much and needs restructuring. One option would be to insert
 // TODO: another container component between this top-level project component and the presentational
@@ -70,13 +70,14 @@ class View extends Component {
   async fetchModifiedFiles() { return this.projectState.fetchModifiedFiles(this.props.client, this.props.id); }
   async fetchBranches() { return this.projectState.fetchBranches(this.props.client, this.props.id); }
   async fetchCIJobs() { return this.projectState.fetchCIJobs(this.props.client, this.props.id); }
-  async fetchProjectFiles() { return this.projectState.fetchProjectFiles(this.props.client, this.props.id); }
   async startNotebookServersPolling() { return this.projectState.startNotebookServersPolling(this.props.client); }
   async stopNotebookServersPolling() { return this.projectState.stopNotebookServersPolling(); }
   async stopNotebookServer(serverName) { return this.projectState.stopNotebookServer(this.props.client, serverName); }
   async createGraphWebhook() { this.projectState.createGraphWebhook(this.props.client, this.props.id); }
   async stopCheckingWebhook() { this.projectState.stopCheckingWebhook(); }
   async fetchGraphWebhook() { this.projectState.fetchGraphWebhook(this.props.client, this.props.id, this.props.user) }
+  async fetchProjectFilesTree() { return this.projectState.fetchProjectFilesTree(this.props.client, this.props.id); }
+  async setPojectOpenFolder(filepath) {this.projectState.setPojectOpenFolder(filepath);}
 
   async fetchAll() {
     await this.fetchProject();
@@ -179,10 +180,11 @@ class View extends Component {
     const updateProjectView = this.forceUpdate.bind(this);
     const notebookServerUrl = this.projectState.get('core.notebookServerUrl');
     const notebookServerAPI = this.projectState.get('core.notebookServerAPI');
+    const filesTree = this.projectState.get('filesTree');
 
     // Access to the project state could be given to the subComponents by connecting them here to
     // the projectStore. This is not yet necessary.
-    const subProps = {...ownProps, projectId, accessLevel, externalUrl, notebookServerUrl, notebookServerAPI};
+    const subProps = {...ownProps, projectId, accessLevel, externalUrl, notebookServerUrl, notebookServerAPI, filesTree};
 
     const mergeRequests = this.projectState.get('system.merge_requests');
 
@@ -206,17 +208,20 @@ class View extends Component {
         projectPath={this.projectState.get('core.path_with_namespace')}/>,
       /* TODO Should we handle each type of file or just have a generic project files viewer? */
 
-      notebookView: (p) => <Notebook.Show key="notebook" {...subProps}
-        filePath={p.match.params.filePath}
-        projectPath={this.projectState.get('core.path_with_namespace')}/>,
-
       lineageView: (p) => <FileLineage key="lineage" {...subProps}
         externalUrl={externalUrl}
         projectPath={this.projectState.get('core.path_with_namespace')}
         path={p.match.params.filePath} />,
 
+      fileView: (p) => <ShowFile
+        key="filepreview" {...subProps}
+        filePath={p.location.pathname}
+        projectPath={this.projectState.get('core.path_with_namespace')}
+        lineagesPath={this.subUrls().lineagesUrl}/>,
+
       mrList: <ConnectedMergeRequestList key="mrList" store={this.projectState.reduxStore}
         mrOverviewUrl={this.subUrls().mrOverviewUrl}/>,
+
       mrView: (p) => <MergeRequest
         key="mr" {...subProps}
         iid={p.match.params.mrIid}
@@ -273,8 +278,12 @@ class View extends Component {
       this.fetchBranches();
     },
     fetchFiles: () => {
-      this.fetchProjectFiles();
-      this.fetchModifiedFiles();
+      this.fetchProjectFilesTree();
+      //this.fetchModifiedFiles();
+    },
+    setOpenFolder: (filePath) => {
+      this.setPojectOpenFolder(filePath);
+      //this.projectState.setPojectOpenFolder(filePath);
     },
     fetchCIJobs: () => { this.fetchCIJobs() },
     startNotebookServersPolling: () => {
@@ -324,7 +333,6 @@ class View extends Component {
     )(Present.ProjectView);
     const props = {...this.props, ...this.eventHandlers, projectStore: this.projectState.reduxStore};
     return <ConnectedProjectView {...props} />
-
   }
 }
 
