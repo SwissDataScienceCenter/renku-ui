@@ -64,6 +64,8 @@ const projectSchema = new Schema({
       external_url: {initial: '',},
       path_with_namespace: {initial: null},
       owner: {initial: null},
+      graphWebhookStatus: {initial: null},
+      graphWebhookCreated: {initial: null}
     }
   },
   visibility: {

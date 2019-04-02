@@ -36,6 +36,44 @@ class ProjectModel extends StateModel {
     super(projectSchema, stateBinding, stateHolder, initialState)
   }
 
+  stopCheckingWebhook() {
+    this.set('core.graphWebhookStop', true);
+  }
+
+  fetchGraphWebhook(client, id, user) {
+    if (user == null) {
+      this.set('core.graphWebhookPossible', false);
+    }
+    const userIsOwner = this.get('core.owner.id') === user.id;
+    this.set('core.graphWebhookPossible', userIsOwner);
+    if (userIsOwner) {
+      this.fetchGraphWebhookStatus(client, id);
+    }
+  }
+
+  fetchGraphWebhookStatus(client, id) {
+    this.set('core.graphWebhookCreated', false);
+    this.setUpdating({core: {graphWebhookStatus: true}});
+    return client.checkGraphWebhook(id)
+      .then((resp) => {
+        this.set('core.graphWebhookStatus', resp);
+      })
+      .catch((err) => {
+        this.set('core.graphWebhookStatus', err);
+      });
+  }
+
+  createGraphWebhook(client, id) {
+    this.setUpdating({core: {graphWebhookCreated: true}});
+    return client.createGraphWebhook(id)
+      .then((resp) => {
+        this.set('core.graphWebhookCreated', resp);
+      })
+      .catch((err) => {
+        this.set('core.graphWebhookCreated', err);
+      });
+  }
+
   // TODO: Do we really want to re-fetch the entire project on every change?
   fetchProject(client, id) {
     return client.getProject(id, {statistics:true})
