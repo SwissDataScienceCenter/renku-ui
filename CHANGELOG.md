@@ -1,5 +1,16 @@
 # Changes
 
+## 0.4.1 (released 2019-04-02)
+
+* Fixed bug that prevented launching a Jupyter server in certain situations [#370](https://github.com/SwissDataScienceCenter/renku-ui/issues/370)
+* Run nginx as an unprivileged user [#396](https://github.com/SwissDataScienceCenter/renku-ui/issues/396)
+* Added help page to Renku [#382](https://github.com/SwissDataScienceCenter/renku-ui/issues/382)
+* Present errors if project creation fails [#387](https://github.com/SwissDataScienceCenter/renku-ui/issues/387), [#391](https://github.com/SwissDataScienceCenter/renku-ui/pull/391)
+* Added Notebook Server tab to project page [#380](https://github.com/SwissDataScienceCenter/renku-ui/pull/380)
+* Added more control options to project search [#377](https://github.com/SwissDataScienceCenter/renku-ui/issues/377)
+
+A full list of changes is available for [milestone 0.4.1](https://github.com/SwissDataScienceCenter/renku-ui/issues?q=is%3Aclosed+milestone%3A0.4.1).
+
 ## 0.4.0 (released 2019-03-06)
 
 * Improved the functioning of the quick nav/search bar and project search [#379](https://github.com/SwissDataScienceCenter/renku-ui/pull/379), [#353](https://github.com/SwissDataScienceCenter/renku-ui/issues/353)
