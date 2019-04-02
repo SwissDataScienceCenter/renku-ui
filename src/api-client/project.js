@@ -81,12 +81,16 @@ function addProjectMethods(client) {
     const headers = client.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
+    let createGraphWebhookPromise;
     const newProjectPromise = client.clientFetch(`${client.baseUrl}/projects`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(gitlabProject)
     })
-      .then(resp => resp.data);
+      .then(resp => {
+        createGraphWebhookPromise = client.createGraphWebhook(resp.data.id);
+        return resp.data
+      });
 
     // When the provided version does not exist, we log an error and uses latest.
     // Maybe this should raise a more prominent alarm?
@@ -98,7 +102,7 @@ function addProjectMethods(client) {
         return getPayload(gitlabProject.name, 'latest')
       });
 
-    return Promise.all([newProjectPromise, payloadPromise])
+    return Promise.all([newProjectPromise, payloadPromise, createGraphWebhookPromise])
       .then(([data, payload]) => {
         if (data.errorData)
           return Promise.reject(data);

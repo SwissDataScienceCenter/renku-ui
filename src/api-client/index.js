@@ -26,6 +26,8 @@ import addUserMethods  from './user';
 import addKuMethods  from './ku';
 import addInstanceMethods from './instance';
 import addNotebookServersMethods from './notebook-servers';
+import addGraphMethods from './graph';
+
 import testClient from './test-client'
 
 const ACCESS_LEVELS = {
@@ -58,6 +60,7 @@ class APIClient {
     addKuMethods(this);
     addInstanceMethods(this);
     addNotebookServersMethods(this);
+    addGraphMethods(this);
   }
 
   // A fetch method which is attached to a API client instance so that it can
@@ -115,6 +118,22 @@ class APIClient {
           return response;
         }
       })
+  }
+
+  // clientFetch does't handle non-2xx responses (ex: graph APIs)
+  // can't suppress the error on chrome console on 404 anyway...
+  // REF: https://stackoverflow.com/questions/4500741/suppress-chrome-failed-to-load-resource-messages-in-console
+  simpleFetch(
+    url,
+    method='GET'
+  ) {
+    const urlObject = new URL(url);
+    let headers = new Headers({
+      'credentials': 'same-origin',
+      'X-Requested-With': 'XMLHttpRequest'
+    });
+
+    return fetch(urlObject, { headers, method });
   }
 
   doLogin() {

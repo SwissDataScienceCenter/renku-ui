@@ -192,11 +192,18 @@ class DataVisibility extends Component {
     const options = visibilities.map(v =>
       <option key={v.value} value={v.value}>{v.name}</option>
     )
+    let warningPrivate = null;
+    if (this.props.value === "private") {
+      warningPrivate = <FormText color="danger">
+        The Knowledge Graph may make some metadata public; the contents will remain private.
+      </FormText>;
+    }
     return <FormGroup>
       <Label>Visibility</Label>
       <Input type="select" placeholder="visibility" value={this.props.value} onChange={this.props.onChange}>
         {options}
       </Input>
+      {warningPrivate}
       <FormText color="muted">{vizExplanation}</FormText>
     </FormGroup>
   }

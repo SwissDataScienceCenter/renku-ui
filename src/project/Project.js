@@ -54,7 +54,7 @@ class View extends Component {
     this.fetchAll();
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
+  componentDidUpdate(prevProps) {
     // re-fetch when user login data are available
     if (!prevProps.user && this.props.user) {
       this.fetchAll();
@@ -71,11 +71,29 @@ class View extends Component {
   async startNotebookServersPolling() { return this.projectState.startNotebookServersPolling(this.props.client); }
   async stopNotebookServersPolling() { return this.projectState.stopNotebookServersPolling(); }
   async stopNotebookServer(serverName) { return this.projectState.stopNotebookServer(this.props.client, serverName); }
+  async createGraphWebhook() { this.projectState.createGraphWebhook(this.props.client, this.props.id); }
+  async stopCheckingWebhook() { this.projectState.stopCheckingWebhook(); }
+  async fetchGraphWebhook() { this.projectState.fetchGraphWebhook(this.props.client, this.props.id, this.props.user) }
 
   async fetchAll() {
     await this.fetchProject();
+    
     if (this.props.user) {
       this.fetchCIJobs();
+      this.checkGraphWebhook();
+    }
+  }
+
+  checkGraphWebhook() {
+    // check if user is also owner
+    if (this.props.user == null || this.projectState.get('core') == null) {
+      this.projectState.set('core.graphWebhookPossible', false);
+      return
+    }
+    const userIsOwner = this.projectState.get('core.owner.id') === this.props.user.id;
+    this.projectState.set('core.graphWebhookPossible', userIsOwner);
+    if (userIsOwner) {
+      this.projectState.fetchGraphWebhookStatus(this.props.client, this.props.id);
     }
   }
 
@@ -262,6 +280,13 @@ class View extends Component {
     },
     stopNotebookServer: (serverName) => {
       this.stopNotebookServer(serverName);
+    },
+    createGraphWebhook: (e) => { 
+      e.preventDefault();
+      this.createGraphWebhook();
+    },
+    onCloseGraphWebhook: () => {
+      this.stopCheckingWebhook();
     }
   };
 

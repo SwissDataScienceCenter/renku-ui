@@ -25,7 +25,7 @@
  */
 
 import React, { Component } from 'react';
-import { FormFeedback, FormGroup, FormText, Input, Label } from 'reactstrap';
+import { FormFeedback, FormGroup, FormText, Input, Label, Alert } from 'reactstrap';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faUser from '@fortawesome/fontawesome-free-solid/faUser'
 import human from 'human-time';
@@ -228,5 +228,111 @@ class Loader extends Component {
   }
 }
 
+/**
+ * Use `hidden` to completely hide the alert, `open` to manually control the visibility,
+ * `dismissCallback` to attach a function to be called when the alert is dismissed,
+ * `timeout` to control how many seconds the component should be visible: 0 for unlimited,
+ * default 10, it fires `dismissCallback` but keep in mind it is overwritten by `open`
+ */
+
+class RenkuAlert extends Component {
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      open: true,
+      timeout: null,
+    };
+
+    this.onDismiss = this.onDismiss.bind(this);
+  }
+
+  componentDidMount() {
+    this.addTimeout();
+  }
+
+  componentWillUnmount() {
+    this.removeTimeout();
+  }
+
+  addTimeout() {
+    // add the timeout and keep track of the timeout variable to clear it when the alert
+    // is manually closed
+    if (this.props.timeout === 0) {
+      return;
+    }
+    const timeout = this.props.timeout ? this.props.timeout : 10;
+    const timeoutController = setTimeout(() => {
+      this.onDismiss();
+    }, timeout * 1000);
+    this.setState({timeout: timeoutController});
+  }
+
+  removeTimeout() {
+    // remove the timeout when component is closed to avoid double firing callback function
+    if (this.state.timeout !== null) {
+      clearTimeout(this.state.timeout);
+    }
+  }
+
+  onDismiss() {
+    this.setState({ open: false });
+    this.removeTimeout();
+    if (this.props.dismissCallback) {
+      this.props.dismissCallback();
+    }
+  }
+
+  render() {
+    if (this.props.hidden || this.state.hidden) return null;
+    const isOpen = this.props.open ? this.props.open : this.state.open;
+    return (
+      <Alert color={this.props.color} isOpen={isOpen} toggle={this.onDismiss}>
+        {this.props.children}
+      </Alert>
+    );
+  }
+}
+
+class InfoAlert extends Component {
+  render() {
+    return(
+      <RenkuAlert color="primary" {...this.props} >
+        {this.props.children}
+      </RenkuAlert>
+    )
+  }
+}
+
+class SuccessAlert extends Component {
+  render() {
+    return(
+      <RenkuAlert color="success" {...this.props} >
+        {this.props.children}
+      </RenkuAlert>
+    )
+  }
+}
+
+class WarnAlert extends Component {
+  render() {
+    return(
+      <RenkuAlert color="warning" timeout={0} {...this.props} >
+        {this.props.children}
+      </RenkuAlert>
+    )
+  }
+}
+
+class ErrorAlert extends Component {
+  render() {
+    return(
+      <RenkuAlert color="danger" timeout={0} {...this.props} >
+        {this.props.children}
+      </RenkuAlert>
+    )
+  }
+}
+
 export { Avatar, TimeCaption, FieldGroup, RenkuNavLink, UserAvatar, Pagination };
-export { ExternalLink, Loader };
+export { ExternalLink, Loader, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert };

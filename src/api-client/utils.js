@@ -55,7 +55,7 @@ function renkuFetch(url, options) {
       return Promise.reject(networkError);
     })
 
-    // Raise an errror for all 200 responses.
+    // Raise an error for all non 200 responses.
     .then((response) => {
       if (response.status >= 200 && response.status < 300) {
         return response;
