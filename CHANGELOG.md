@@ -5,7 +5,7 @@
 * Fixed bug that prevented launching a Jupyter server in certain situations [#370](https://github.com/SwissDataScienceCenter/renku-ui/issues/370)
 * Run nginx as an unprivileged user [#396](https://github.com/SwissDataScienceCenter/renku-ui/issues/396)
 * Added help page to Renku [#382](https://github.com/SwissDataScienceCenter/renku-ui/issues/382)
-* Present errors if project creation fails [#387](https://github.com/SwissDataScienceCenter/renku-ui/issues/387), [#387](https://github.com/SwissDataScienceCenter/renku-ui/issues/387) [#391](https://github.com/SwissDataScienceCenter/renku-ui/pull/391)
+* Present errors if project creation fails [#387](https://github.com/SwissDataScienceCenter/renku-ui/issues/387), [#391](https://github.com/SwissDataScienceCenter/renku-ui/pull/391)
 * Added Notebook Server tab to project page [#380](https://github.com/SwissDataScienceCenter/renku-ui/pull/380)
 * Added more control options to project search [#377](https://github.com/SwissDataScienceCenter/renku-ui/issues/377)
 
