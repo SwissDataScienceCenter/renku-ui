@@ -34,6 +34,9 @@ import { Button, FormGroup, FormText, Label } from 'reactstrap';
 import { Input, InputGroup, InputGroupAddon, InputGroupText } from 'reactstrap';
 import { Alert } from 'reactstrap';
 
+import FontAwesomeIcon from '@fortawesome/react-fontawesome'
+import { faInfoCircle, faExternalLinkAlt } from '@fortawesome/fontawesome-free-solid'
+
 import collection from 'lodash/collection';
 import { FieldGroup, Loader } from '../../utils/UIComponents'
 import './Project.style.css';
@@ -193,9 +196,15 @@ class DataVisibility extends Component {
       <option key={v.value} value={v.value}>{v.name}</option>
     )
     let warningPrivate = null;
-    if (this.props.value === "private") {
-      warningPrivate = <FormText color="danger">
-        The Knowledge Graph may make some metadata public; the contents will remain private.
+    if (this.props.value !== "public") {
+      warningPrivate = <FormText color="primary">
+        <FontAwesomeIcon icon={faInfoCircle} /> The Knowledge Graph may make some metadata public;
+        the contents will remain private.
+        <br />
+        <a href="https://renku.readthedocs.io/en/latest/introduction/lineage.html"
+          target="_blank" rel="noopener noreferrer">
+          <FontAwesomeIcon icon={faExternalLinkAlt} /> Read more about Lineage.
+        </a>
       </FormText>;
     }
     return <FormGroup>
