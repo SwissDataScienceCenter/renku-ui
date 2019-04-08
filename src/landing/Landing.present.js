@@ -277,7 +277,7 @@ class LoggedInHome extends Component {
 
 class Home extends Component {
   render() {
-    const loggedIn = this.props.user != null
+    const loggedIn = this.props.user.id ? true : false;
     return (loggedIn) ? <LoggedInHome {...this.props} /> : <AnonymousHome {...this.props} />
   }
 }

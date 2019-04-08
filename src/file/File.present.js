@@ -98,7 +98,7 @@ class LaunchNotebookButton extends React.Component {
     const className = props.className;
 
     // Create a tooltip that will explain the deactivated button
-    const message = this.props.user && this.props.user.id ?
+    const message = this.props.user.id ?
       "You have to launch Jupyter in Notebook Servers":
       "Please login to open notebooks"
     const tooltip = this.state.serverRunning ? null :

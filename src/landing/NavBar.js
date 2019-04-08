@@ -31,7 +31,7 @@ import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faPlus from '@fortawesome/fontawesome-free-solid/faPlus'
 
 import logo from './logo.svg';
-import { RenkuNavLink } from '../utils/UIComponents'
+import { RenkuNavLink, Loader } from '../utils/UIComponents'
 import { getActiveProjectId } from '../utils/HelperFunctions'
 import QuickNav from '../utils/quicknav'
 
@@ -41,7 +41,10 @@ class RenkuToolbarItemUser extends Component {
   render() {
     const gatewayURL = this.props.params.GATEWAY_URL;
     const redirect_url =  encodeURIComponent(this.props.params.BASE_URL);
-    if (!this.props.user) {
+    if (this.props.user.available !== true) {
+      return <Loader size="16" inline="true" />
+    }
+    else if (!this.props.user.id) {
       return <RenkuNavLink to="/login" title="Login" />
     }
     else {
@@ -160,7 +163,7 @@ class AnonymousNavBar extends Component {
 
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <ul className="navbar-nav ml-auto">
-              <RenkuToolbarItemUser {...this.props} />
+              <RenkuToolbarItemUser {...this.props } user={this.props.userState.getState().user} />
             </ul>
           </div>
         </nav>

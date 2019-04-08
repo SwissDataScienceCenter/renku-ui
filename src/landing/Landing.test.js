@@ -27,16 +27,26 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { MemoryRouter } from 'react-router-dom';
 
+import { generateFakeUser } from '../app-state/UserState.test';
 import Landing from './Landing';
-import State from  './Landing.state';
-import { testClient as client } from '../api-client'
 
 describe('rendering', () => {
-  it('renders home without crashing', () => {
+  const anonymousUser = generateFakeUser(true);
+  const loggedUser = generateFakeUser();
+
+  it('renders home without crashing for anonymous user', () => {
     const div = document.createElement('div');
     ReactDOM.render(
       <MemoryRouter>
-        <Landing.Home welcomePage={btoa('## Welcome to Renku')}/>
+        <Landing.Home welcomePage={btoa('## Welcome to Renku')} user={anonymousUser} />
+      </MemoryRouter>, div);
+  });
+
+  it('renders home without crashing for logged user', () => {
+    const div = document.createElement('div');
+    ReactDOM.render(
+      <MemoryRouter>
+        <Landing.Home welcomePage={btoa('## Welcome to Renku')} user={loggedUser} />
       </MemoryRouter>, div);
   });
 });

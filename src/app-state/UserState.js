@@ -24,6 +24,13 @@ const Actions = {
   STAR_PROJECT: 'UserState.STAR_PROJECT',
 }
 
+const InitialState = {
+  available: false
+}
+
+const SpecialPropVal = {
+  UPDATING: 'is_updating'
+};
 
 function starredProjectMetadata(project) {
   return {
@@ -40,9 +47,10 @@ function starredProjectMetadata(project) {
 const UserState = {
   // Actions for connecting to the server
   fetchAppUser: (client, dispatch) => {
+    UserState.set({ available: SpecialPropVal.UPDATING })
     return client.getUser()
       .then(response => {
-        dispatch(UserState.set(response.data));
+        dispatch(UserState.set({...response.data, available: true}));
         // TODO: Replace this after re-implementation of user state.
         client.getProjects({starred: true})
           .then((projectResponse) => {
@@ -58,8 +66,7 @@ const UserState = {
           .catch(() => dispatch(UserState.setMember([])));
       })
       .catch((error) => {
-        console.error(error)
-        UserState.set(undefined)
+        dispatch(UserState.set({available: true}));
       });
   },
   // Actions related to user state...
@@ -76,7 +83,7 @@ const UserState = {
     return { type: Actions.STAR_PROJECT, payload: projectId };
   },
   // ... and the reducer.
-  reducer: (state = null, action) => {
+  reducer: (state = InitialState, action) => {
     switch (action.type) {
     case Actions.SET_USER_INFO:
       return {...state, ...action.payload};
@@ -102,4 +109,5 @@ const UserState = {
   }
 };
 
+export { InitialState };
 export default UserState;

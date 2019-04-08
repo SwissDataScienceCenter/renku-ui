@@ -34,6 +34,7 @@ import { filterPaths } from './Project.present'
 import State, { ProjectModel } from  './Project.state';
 import { testClient as client } from '../api-client';
 import { slugFromTitle } from '../utils/HelperFunctions'
+import { generateFakeUser } from '../app-state/UserState.test';
 
 
 const fakeHistory = createMemoryHistory({
@@ -46,24 +47,42 @@ fakeHistory.push({
 })
 
 describe('rendering', () => {
-  const user = {username: "test"};
-  it('renders new without crashing', () => {
+  const anonymousUser = generateFakeUser(true);
+  const loggedUser = generateFakeUser();
+
+  it('renders new without crashing for logged user', () => {
     const div = document.createElement('div');
-    ReactDOM.render(<Project.New client={client} user={user}/>, div);
+    ReactDOM.render(<Project.New client={client} user={loggedUser}/>, div);
   });
-  it('renders list without crashing', () => {
+  it('renders list without crashing for anonymous user', () => {
     const div = document.createElement('div');
     ReactDOM.render(
       <MemoryRouter>
-        <Project.List client={client} history={fakeHistory} location={fakeHistory.location}/>
+        <Project.List client={client} history={fakeHistory} user={anonymousUser} location={fakeHistory.location}/>
       </MemoryRouter>
       , div);
   });
-  it('renders view without crashing', () => {
+  it('renders list without crashing for logged user', () => {
     const div = document.createElement('div');
     ReactDOM.render(
       <MemoryRouter>
-        <Project.View id="1" client={client} match={{params: {id: "1"}, url:"/projects/1/"}} />
+        <Project.List client={client} history={fakeHistory} user={loggedUser} location={fakeHistory.location}/>
+      </MemoryRouter>
+      , div);
+  });
+  it('renders view without crashing for anonymous user', () => {
+    const div = document.createElement('div');
+    ReactDOM.render(
+      <MemoryRouter>
+        <Project.View id="1" client={client} user={anonymousUser} match={{params: {id: "1"}, url:"/projects/1/"}} />
+      </MemoryRouter>
+      , div);
+  });
+  it('renders view without crashing for logged user', () => {
+    const div = document.createElement('div');
+    ReactDOM.render(
+      <MemoryRouter>
+        <Project.View id="1" client={client} user={loggedUser} match={{params: {id: "1"}, url:"/projects/1/"}} />
       </MemoryRouter>
       , div);
   });

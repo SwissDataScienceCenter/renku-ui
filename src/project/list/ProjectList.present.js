@@ -172,7 +172,7 @@ class ProjectsSearch extends Component {
 
 class ProjectList extends Component {
   render() {
-    const hasUser = this.props.user && this.props.user !== null && this.props.user.id !== null;
+    const hasUser = this.props.user.id ? true : false;
     const user = this.props.user;
     const starredProjects = (user) ? user.starredProjects : [];
     const memberProjects = (user) ? user.memberProjects : [];
