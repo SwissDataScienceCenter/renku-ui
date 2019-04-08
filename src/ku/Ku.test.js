@@ -31,11 +31,14 @@ import Ku from './Ku';
 import State from  './Ku.state';
 import { testClient as client } from '../api-client';
 import { slugFromTitle } from '../utils/HelperFunctions';
+import { generateFakeUser } from '../app-state/UserState.test';
 
 describe('rendering', () => {
+  const user = generateFakeUser(true);
+
   it('renders new without crashing', () => {
     const div = document.createElement('div');
-    ReactDOM.render(<Ku.New location={ {pathname: '/projects/1/ku_new'} } />, div);
+    ReactDOM.render(<Ku.New location={ {pathname: '/projects/1/ku_new'} } user={user} />, div);
   });
   it('renders list without crashing', () => {
     const baseUrl = "base";
@@ -47,7 +50,7 @@ describe('rendering', () => {
     const div = document.createElement('div');
     ReactDOM.render(
       <MemoryRouter>
-        <Ku.List client={client} urlMap={urlMap} />
+        <Ku.List client={client} urlMap={urlMap} user={user} />
       </MemoryRouter>
       , div);
   });
@@ -55,7 +58,7 @@ describe('rendering', () => {
     const div = document.createElement('div');
     ReactDOM.render(
       <MemoryRouter>
-        <Ku.View id="1" client={client} />
+        <Ku.View id="1" client={client} user={user} />
       </MemoryRouter>
       , div);
   });

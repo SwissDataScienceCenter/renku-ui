@@ -31,6 +31,7 @@ import { createMemoryHistory } from 'history';
 import ProjectList from './';
 import ProjectListModel from  './ProjectList.state';
 import { testClient as client } from '../../api-client';
+import { generateFakeUser } from '../../app-state/UserState.test';
 
 
 const fakeHistory = createMemoryHistory({
@@ -43,12 +44,13 @@ fakeHistory.push({
 })
 
 describe('rendering', () => {
-  const user = {username: "test"};
+  const loggedUser = generateFakeUser();
+  
   it('renders list without crashing', () => {
     const div = document.createElement('div');
     ReactDOM.render(
       <MemoryRouter>
-        <ProjectList client={client} history={fakeHistory} location={fakeHistory.location}/>
+        <ProjectList client={client} history={fakeHistory} location={fakeHistory.location} user={loggedUser} />
       </MemoryRouter>
       , div);
   });

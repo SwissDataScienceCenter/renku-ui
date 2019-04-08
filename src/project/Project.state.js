@@ -37,50 +37,51 @@ class ProjectModel extends StateModel {
   }
 
   stopCheckingWebhook() {
-    this.set('core.graphWebhookStop', true);
+    this.set('webhook.stop', true);
   }
 
   fetchGraphWebhook(client, id, user) {
     if (user == null) {
-      this.set('core.graphWebhookPossible', false);
+      this.set('webhook.possible', false);
     }
     const userIsOwner = this.get('core.owner.id') === user.id;
-    this.set('core.graphWebhookPossible', userIsOwner);
+    this.set('webhook.possible', userIsOwner);
     if (userIsOwner) {
       this.fetchGraphWebhookStatus(client, id);
     }
   }
 
   fetchGraphWebhookStatus(client, id) {
-    this.set('core.graphWebhookCreated', false);
-    this.setUpdating({core: {graphWebhookStatus: true}});
+    this.set('webhook.created', false);
+    this.setUpdating({webhook: {status: true}});
     return client.checkGraphWebhook(id)
       .then((resp) => {
-        this.set('core.graphWebhookStatus', resp);
+        this.set('webhook.status', resp);
       })
       .catch((err) => {
-        this.set('core.graphWebhookStatus', err);
+        this.set('webhook.status', err);
       });
   }
 
   createGraphWebhook(client, id) {
-    this.setUpdating({core: {graphWebhookCreated: true}});
+    this.setUpdating({webhook: {created: true}});
     return client.createGraphWebhook(id)
       .then((resp) => {
-        this.set('core.graphWebhookCreated', resp);
+        this.set('webhook.created', resp);
       })
       .catch((err) => {
-        this.set('core.graphWebhookCreated', err);
+        this.set('webhook.created', err);
       });
   }
 
   // TODO: Do we really want to re-fetch the entire project on every change?
   fetchProject(client, id) {
+    this.setUpdating({core: {available: true}});
     return client.getProject(id, {statistics:true})
       .then(resp => resp.data)
       .then(d => {
         const updatedState = {
-          core: d.metadata.core,
+          core: { ...d.metadata.core, available: true },
           system: d.metadata.system,
           visibility: d.metadata.visibility,
           statistics: d.metadata.statistics
@@ -89,6 +90,12 @@ class ProjectModel extends StateModel {
         this.fetchNotebookServerUrl(client, id, updatedState);
         return d;
       })
+      .catch(err => {
+        if (err.case === API_ERRORS.notFoundError) {
+          this.set('core.available', false);
+        }
+        else throw err;
+      });
   }
 
   fetchProjectFiles(client, id) {

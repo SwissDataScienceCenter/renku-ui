@@ -55,6 +55,7 @@ const newProjectSchema = new Schema({
 const projectSchema = new Schema({
   core: {
     schema: {
+      available: {initial: null},
       created_at: {initial: null,},
       last_activity_at: {initial: null,},
       id: {initial: null,},
@@ -64,8 +65,6 @@ const projectSchema = new Schema({
       external_url: {initial: '',},
       path_with_namespace: {initial: null},
       owner: {initial: null},
-      graphWebhookStatus: {initial: null},
-      graphWebhookCreated: {initial: null}
     }
   },
   visibility: {
@@ -126,6 +125,14 @@ const projectSchema = new Schema({
   transient: {
     schema: {
       requests: {initial: {}}
+    }
+  },
+  webhook: {
+    schema: {
+      status: {initial: null},
+      created: {initial: null},
+      possible: {initial: null},
+      stop: {initial: null}
     }
   }
 });

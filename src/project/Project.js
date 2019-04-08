@@ -51,12 +51,15 @@ class View extends Component {
   }
 
   componentDidMount() {
-    this.fetchAll();
+    // fetch only if user data are already loaded
+    if (this.props.user.available === true) {
+      this.fetchAll();
+    }
   }
 
   componentDidUpdate(prevProps) {
-    // re-fetch when user login data are available
-    if (!prevProps.user && this.props.user) {
+    // re-fetch when user data are available
+    if (prevProps.user.available !== true && this.props.user.available === true) {
       this.fetchAll();
     }
   }
@@ -77,8 +80,9 @@ class View extends Component {
 
   async fetchAll() {
     await this.fetchProject();
-    
-    if (this.props.user) {
+
+    // these are fetched only if user is logged in
+    if (this.props.user.id) {
       this.fetchCIJobs();
       this.checkGraphWebhook();
     }
@@ -86,12 +90,12 @@ class View extends Component {
 
   checkGraphWebhook() {
     // check if user is also owner
-    if (this.props.user == null || this.projectState.get('core') == null) {
-      this.projectState.set('core.graphWebhookPossible', false);
-      return
+    if (this.projectState.get('core.available') !== true) {
+      this.projectState.set('webhook.possible', false);
+      return;
     }
     const userIsOwner = this.projectState.get('core.owner.id') === this.props.user.id;
-    this.projectState.set('core.graphWebhookPossible', userIsOwner);
+    this.projectState.set('webhook.possible', userIsOwner);
     if (userIsOwner) {
       this.projectState.fetchGraphWebhookStatus(this.props.client, this.props.id);
     }

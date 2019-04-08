@@ -40,12 +40,10 @@ import { Card, CardBody, CardHeader } from 'reactstrap';
 
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faStarRegular from '@fortawesome/fontawesome-free-regular/faStar'
-import faStarSolid from '@fortawesome/fontawesome-free-solid/faStar'
-import faExclamationCircle from '@fortawesome/fontawesome-free-solid/faExclamationCircle'
-
+import { faExclamationCircle, faStar as faStarSolid, faInfoCircle } from '@fortawesome/fontawesome-free-solid'
 
 import { ExternalLink, Loader, RenkuNavLink, TimeCaption} from '../utils/UIComponents'
-import { SuccessAlert, WarnAlert, ErrorAlert } from '../utils/UIComponents'
+import { InfoAlert, SuccessAlert, WarnAlert, ErrorAlert } from '../utils/UIComponents'
 import { SpecialPropVal } from '../model/Model'
 import { ProjectTags, ProjectTagList } from './shared'
 import { NotebookServers } from '../notebooks'
@@ -145,15 +143,15 @@ class MergeRequestSuggestions extends Component {
  */
 class KnowledgeGraphIntegrationWarningBanner extends Component {
   render() {
-    if (this.props.core.graphWebhookStop) return null;
+    if (this.props.webhook.stop) return null;
 
-    const status = this.props.core.graphWebhookStatus;
+    const status = this.props.webhook.status;
     if (status === false) {
       const isPrivate = this.props.visibility && this.props.visibility.level === "private" ? true : false;
       return (
         <KnowledgeGraphWarning
           close={this.props.onCloseGraphWebhook}
-          webhook={this.props.core.graphWebhookCreated}
+          webhook={this.props.webhook.created}
           create={this.props.createGraphWebhook}
           isPrivate={isPrivate} />
       )
@@ -307,7 +305,7 @@ class ProjectViewHeader extends Component {
 class ProjectNav extends Component {
 
   render() {
-    const notebookServers = this.props.user ?
+    const notebookServers = this.props.user.id ?
       <NavItem>
         <RenkuNavLink exact={false} to={this.props.notebookServersUrl} title="Notebook Servers" />
       </NavItem>:
@@ -796,34 +794,97 @@ class ProjectSettings extends Component {
   }
 }
 
+class ProjectViewNotFound extends Component {
+  render() {
+    let tip;
+    if (this.props.logged) {
+      tip = <InfoAlert timeout={0}>
+        <p>
+          <FontAwesomeIcon icon={faInfoCircle} /> If you are sure the project exists,
+          you may want to try the following:
+        </p>
+        <ul className="mb-0">
+          <li>Do you have multiple accounts? Are you logged in with the right user?</li>
+          <li>
+            If you received this link from someone, ask that person to make sure you have access to the project.
+          </li>
+        </ul>
+      </InfoAlert>
+    }
+    else {
+      tip = <InfoAlert timeout={0}>
+        <p className="mb-0">
+          <FontAwesomeIcon icon={faInfoCircle} /> You might need to be logged in to see this project.
+          Please try to log in.
+        </p>
+      </InfoAlert>
+    }
+
+    return <Row>
+      <Col>
+        <h1>404</h1>
+        <h2>Project not found</h2>
+        <p>We could not find project #{this.props.id}.</p>
+        <p>
+          It is possible that the project has been deleted by its owner or you don&apos;t have permission to access it.
+        </p>
+        {tip}
+      </Col>
+    </Row>
+  }
+}
+
+class ProjectViewLoading extends Component {
+  render() {
+    return <Container fluid>
+      <Row>
+        <Col>
+          <h3>Loading project #{this.props.id}...</h3>
+          <Loader />
+        </Col>
+      </Row>
+    </Container>
+  }
+}
+
 class ProjectView extends Component {
 
   render() {
-    return [
-      <Row key="header"><Col xs={12}><ProjectViewHeader key="header" {...this.props} /></Col></Row>,
-      <Row key="nav"><Col xs={12}><ProjectNav key="nav" {...this.props} /></Col></Row>,
-      <Row key="space"><Col key="space" xs={12}>&nbsp;</Col></Row>,
-      <Container key="content" fluid>
-        <Row>
-          <Route exact path={this.props.baseUrl}
-            render={props => <ProjectViewOverview key="overview" {...this.props} />} />
-          <Route path={this.props.overviewUrl}
-            render={props => <ProjectViewOverview key="overview" {...this.props} />} />
-          <Route path={this.props.kusUrl}
-            render={props => <ProjectViewKus key="kus" {...this.props} />} />
-          <Route path={this.props.filesUrl}
-            render={props => <ProjectViewFiles key="files" {...this.props} />} />
-          <Route path={this.props.settingsUrl}
-            render={props => <ProjectSettings key="settings" {...this.props} />} />
-          <Route path={this.props.mrOverviewUrl}
-            render={props => <ProjectMergeRequestList key="files-changes" {...this.props} />} />
-          <Route path={this.props.notebookServersUrl}
-            render={props => <ProjectNotebookServers key="notebook-servers" {...this.props} />} />
-          <Route path={this.props.launchNotebookUrl}
-            render={this.props.launchNotebookServer}/>
-        </Row>
-      </Container>
-    ]
+    const available = this.props.core ? this.props.core.available : null;
+    if (available === null || available === SpecialPropVal.UPDATING) {
+      return <ProjectViewLoading id={ this.props.id } />
+    }
+    else if (available === false) {
+      const logged = this.props.user.id ? true : false;
+      return <ProjectViewNotFound id={ this.props.id } logged={ logged } />
+    }
+    else {
+      return [
+        <Row key="header"><Col xs={12}><ProjectViewHeader key="header" {...this.props} /></Col></Row>,
+        <Row key="nav"><Col xs={12}><ProjectNav key="nav" {...this.props} /></Col></Row>,
+        <Row key="space"><Col key="space" xs={12}>&nbsp;</Col></Row>,
+        <Container key="content" fluid>
+          <Row>
+            <Route exact path={this.props.baseUrl}
+              render={props => <ProjectViewOverview key="overview" {...this.props} />} />
+            <Route path={this.props.overviewUrl}
+              render={props => <ProjectViewOverview key="overview" {...this.props} />} />
+            <Route path={this.props.kusUrl}
+              render={props => <ProjectViewKus key="kus" {...this.props} />} />
+            <Route path={this.props.filesUrl}
+              render={props => <ProjectViewFiles key="files" {...this.props} />} />
+            <Route path={this.props.settingsUrl}
+              render={props => <ProjectSettings key="settings" {...this.props} />} />
+            <Route path={this.props.mrOverviewUrl}
+              render={props => <ProjectMergeRequestList key="files-changes" {...this.props} />} />
+            <Route path={this.props.notebookServersUrl}
+              render={props => <ProjectNotebookServers key="notebook-servers" {...this.props} />} />
+            <Route path={this.props.launchNotebookUrl}
+              render={this.props.launchNotebookServer}/>
+          </Row>
+        </Container>
+      ]
+    }
   }
 }
 

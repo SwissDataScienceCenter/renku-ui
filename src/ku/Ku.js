@@ -356,7 +356,7 @@ class KuListRow extends Component {
 class KuList extends Component {
   render() {
     const kus = this.props.kus;
-    const hasUser = this.props.user && this.props.user.id != null;
+    const hasUser = this.props.user.id ? true : false;
     const rows = kus.map((d, i) =>
       <KuListRow key={i} {...d} kuBaseUrl={this.props.urlMap.kusUrl} projectId={this.props.projectId}/>);
     return [
