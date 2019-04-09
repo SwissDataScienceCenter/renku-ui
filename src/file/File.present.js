@@ -98,14 +98,17 @@ class LaunchNotebookButton extends React.Component {
     const className = props.className;
 
     // Create a tooltip that will explain the deactivated button
+    const message = this.props.user && this.props.user.id ?
+      "You have to launch Jupyter in Notebook Servers":
+      "Please login to open notebooks"
     const tooltip = this.state.serverRunning ? null :
       <Tooltip
         id="JupyterButtonTooltip"
-        target="createPlus"
-        placement="bottom"
+        target="tooltipButton"
+        placement="top"
         isOpen={this.state.showTooltip}
       >
-        You have to launch Jupyter first!
+        {message}
       </Tooltip>
 
     const externalUrl = this.props.deploymentUrl || this.props.notebookServerUrl;
@@ -148,6 +151,7 @@ const JupyterNotebookPresent = props => {
           notebookServerAPI={props.notebookServerAPI}
           client={props.client}
           label="Open Notebook"
+          user={props.user}
         />
       </Col>
     </Row>,
