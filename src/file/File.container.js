@@ -39,6 +39,7 @@ class JupyterNotebookContainer extends Component {
       notebookServerUrl={this.props.notebookServerUrl}
       notebookServerAPI={this.props.notebookServerAPI}
       client={this.props.client}
+      user={this.props.user}
     />
   }
 }
