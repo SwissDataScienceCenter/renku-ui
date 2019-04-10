@@ -134,6 +134,12 @@ const projectSchema = new Schema({
       possible: {initial: null},
       stop: {initial: null}
     }
+  },
+  notebooks: {
+    schema: {
+      polling: {initial: null},
+      all: {initial: {}}
+    }
   }
 });
 

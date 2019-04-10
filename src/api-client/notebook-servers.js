@@ -19,9 +19,7 @@
 function addNotebookServersMethods(client) {
   client.getNotebookServers = () => {
     let headers = client.getBasicHeaders();
-    headers.append('Content-Type', 'application/json');
-    const url = `${client.baseUrl}/notebooks/user`;
-
+    const url = `${client.baseUrl}/notebooks/servers`;
     return client.clientFetch(url, {
       method: 'GET',
       headers: headers

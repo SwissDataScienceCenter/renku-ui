@@ -124,12 +124,12 @@ class ProjectModel extends StateModel {
   }
 
   startNotebookServersPolling(client) {
-    const oldPoller = this.get('core.notebookServersPoller');
+    const oldPoller = this.get('notebooks.polling');
     if (oldPoller == null) {
       const newPoller = setInterval(() => {
         return this.fetchNotebookServers(client);
       }, 3000);
-      this.set('core.notebookServersPoller', newPoller);
+      this.set('notebooks.polling', newPoller);
 
       // invoke immediatly the first time
       return this.fetchNotebookServers(client, true);
@@ -137,21 +137,21 @@ class ProjectModel extends StateModel {
   }
 
   stopNotebookServersPolling() {
-    const poller = this.get('core.notebookServersPoller');
+    const poller = this.get('notebooks.polling');
     if (poller) {
-      this.set('core.notebookServersPoller', null);
+      this.set('notebooks.polling', null);
       clearTimeout(poller);
     }
   }
 
   fetchNotebookServers(client, first) {
     if (first) {
-      this.setUpdating({core: {notebookServers: true}});
+      this.setUpdating({notebooks: {all: true}});
     }
-    return client.getNotebookServers()
+    return client.getNotebookServers() // FILTER: I need the projectId, not the name...
       .then(resp => {
         // TODO: filter for current project
-        this.set('core.notebookServers', resp.data);
+        this.set('notebooks.all', resp.data);
       });
   }
 

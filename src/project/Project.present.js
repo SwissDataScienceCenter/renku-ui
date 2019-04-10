@@ -569,7 +569,7 @@ class ProjectNotebookServers extends Component {
         <NotebookServers
           accessLevel={ this.props.visibility.accessLevel }
           start={ `/projects/${this.props.id}/launchNotebook` }
-          servers={ this.props.core.notebookServers }
+          servers={ this.props.notebooks.all }
           stop= { this.props.stopNotebookServer }
           url={ this.props.client.jupyterhubUrl }>
         </NotebookServers>
