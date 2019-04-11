@@ -36,6 +36,7 @@ function urlMap() {
     projectsUrl: '/projects',
     projectNewUrl: '/project_new',
     projectsSearchUrl:'/projects/search',
+    projectsStarredUrl:'/projects/starred',
   }
 }
 

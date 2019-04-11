@@ -30,7 +30,6 @@ import React, { Component } from 'react';
 import { Link }  from 'react-router-dom'
 import ReactMarkdown from 'react-markdown';
 
-import { Nav, NavItem, NavLink } from 'reactstrap';
 import { Row, Col } from 'reactstrap';
 import { Jumbotron } from 'reactstrap';
 
@@ -45,11 +44,21 @@ import faUserFriends from '@fortawesome/fontawesome-free-solid/faUserFriends';
 
 import { ProjectListRow } from '../project';
 
+function truncatedProjectListRows(projects, projectsUrl, moreUrl) {
+  const maxProjectsRows = 5;
+  const projectSlice = projects.slice(0, maxProjectsRows);
+  const rows = projectSlice.map(p => <ProjectListRow key={p.id} projectsUrl={projectsUrl} {...p} />);
+  const more = (projects.length > maxProjectsRows) ? <Link key="more" to={moreUrl}>more...</Link> : null;
+  return [
+    <Row key="projects"><Col style={{overflowX: "auto"}}>{rows}</Col></Row>,
+    more
+  ]
+}
+
 class YourEmptyProjects extends Component {
   render() {
     return (<Row>
-      <Col md={8} lg={6} xl={4}>
-        <RenkuIntroText welcomePage={this.props.welcomePage}/>
+      <Col>
         <p>
           You are logged in, but you are not yet a member of any projects.
 
@@ -69,15 +78,19 @@ class YourProjects extends Component {
   render() {
     const projects = this.props.projects || [];
     const projectsUrl = this.props.urlMap.projectsUrl;
-    const rows = projects.map(p => <ProjectListRow key={p.id} projectsUrl={projectsUrl} {...p} />);
-    if (rows.length > 0)
-      return <Row key="projects"><Col md={8}>{rows}</Col></Row>
-    else {
+    const projectsSearchUrl = this.props.urlMap.projectsSearchUrl;
+    let projectsComponent = null;
+    if (projects.length > 0) {
+      projectsComponent = truncatedProjectListRows(projects, projectsUrl, projectsUrl);
+    } else {
       const projectNewUrl = this.props.urlMap.projectNewUrl;
-      const projectsSearchUrl = this.props.urlMap.projectsSearchUrl;
-      return <YourEmptyProjects projectsSearchUrl={projectsSearchUrl}
+      projectsComponent = <YourEmptyProjects key="empty-projects" projectsSearchUrl={projectsSearchUrl}
         projectNewUrl={projectNewUrl} welcomePage={this.props.welcomePage} />
     }
+    return [
+      <h2 key="header">Your Projects</h2>,
+      projectsComponent
+    ]
   }
 }
 
@@ -91,8 +104,7 @@ class RenkuIntroText extends Component {
 class StarredEmptyProjects extends Component {
   render() {
     return (<Row>
-      <Col md={8} lg={6} xl={4}>
-        <RenkuIntroText welcomePage={this.props.welcomePage}/>
+      <Col>
         <p>
           You are logged in, but you have not yet starred any projects.
           Starring a project declares your interest in it.
@@ -111,22 +123,27 @@ class Starred extends Component {
   render() {
     const projects = this.props.projects || [];
     const projectsUrl = this.props.urlMap.projectsUrl;
-    const rows = projects.map(p => <ProjectListRow key={p.id} projectsUrl={projectsUrl} {...p} />);
-    if (rows.length > 0)
-      return <Row key="projects"><Col md={8}>{rows}</Col></Row>
+    let projectsComponent = null;
+    if (projects.length > 0)
+      projectsComponent = projectsComponent = truncatedProjectListRows(projects, projectsUrl, this.props.urlMap.projectsStarredUrl);
     else {
       const projectNewUrl = this.props.urlMap.projectNewUrl;
       const projectsSearchUrl = this.props.urlMap.projectsSearchUrl;
-      return <StarredEmptyProjects projectsSearchUrl={projectsSearchUrl}
+      projectsComponent = <StarredEmptyProjects key="empty" projectsSearchUrl={projectsSearchUrl}
         projectNewUrl={projectNewUrl} welcomePage={this.props.welcomePage} />
     }
+
+    return [
+      <h2 key="header">Starred Projects</h2>,
+      projectsComponent
+    ]
   }
 }
 
 class Welcome extends Component {
   render() {
     return (<Row>
-      <Col md={8} lg={6} xl={4}>
+      <Col>
         <RenkuIntroText welcomePage={this.props.welcomePage}/>
       </Col>
     </Row>)
@@ -226,49 +243,38 @@ class AnonymousHome extends Component {
   }
 }
 
-class LoggedInNav extends Component {
-  render() {
-    const selected = this.props.selected;
-    return <Nav pills className={'nav-pills-underline'}>
-      <NavItem>
-        <NavLink href="#" active={selected === 'your_activity'}
-          onClick={this.props.onMember}>Your Projects</NavLink>
-      </NavItem>
-      <NavItem>
-        <NavLink href="#" active={selected === 'starred'}
-          onClick={this.props.onStarred}>Starred Projects</NavLink>
-      </NavItem>
-    </Nav>
-  }
-}
 
 class LoggedInHome extends Component {
   render() {
-    let selected = this.props.ui.selected;
     const urlMap = this.props.urlMap;
-    const welcome = <Welcome {...this.props} />;
-    const nav = <LoggedInNav selected={selected} urlMap={urlMap}
-      onStarred={this.props.onStarred}
-      onMember={this.props.onMember} />
 
     const user = this.props.user;
     const starredProjects = (user) ? user.starredProjects : [];
     const memberProjects = (user) ? user.memberProjects : [];
 
-    let visibleTab = <YourProjects urlMap={urlMap} projects={memberProjects} />
-    if (selected === 'starred')
-      visibleTab = <Starred urlMap={urlMap} projects={starredProjects} welcomePage={this.props.welcomePage} />
-    if (selected === 'welcome') visibleTab = welcome;
     return [
-      <Row key="nav">
-        <Col md={12}>
-          {nav}
+      <Row key="username">
+        <Col>
+          <h1>{user.username} @ Renku</h1>
         </Col>
       </Row>,
       <Row key="spacer"><Col md={12}>&nbsp;</Col></Row>,
       <Row key="content">
-        <Col md={12}>
-          {visibleTab}
+        <Col xs={{order:2}} md={{size: 4, order: 1}}>
+          <Row>
+            <Col>
+              <YourProjects urlMap={urlMap} projects={memberProjects} />
+            </Col>
+          </Row>
+          <Row key="spacer"><Col md={12}>&nbsp;</Col></Row>
+          <Row>
+            <Col>
+              <Starred urlMap={urlMap} projects={starredProjects} welcomePage={this.props.welcomePage} />
+            </Col>
+          </Row>
+        </Col>
+        <Col xs={{order:1}} md={{size: 6, order: 2}}>
+          <Welcome {...this.props} />
         </Col>
       </Row>
     ]

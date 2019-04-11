@@ -34,13 +34,13 @@ class ProjectListRow extends Component {
       </Link>
     const description = this.props.description !== '' ? this.props.description : 'No description available';
     return (
-      <Row className="project-list-row">
-        <Col md={2} lg={1}><Avatar person={this.props.owner} /></Col>
-        <Col md={10} lg={11}>
-          <p><b>{title}</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<ProjectTagList taglist={this.props.tag_list} /></p>
-          <p>{description} <TimeCaption caption="Updated" time={this.props.last_activity_at} /> </p>
-        </Col>
-      </Row>
+      <div className="d-flex project-list-row mb-3">
+        <div className="mr-2"><Avatar person={this.props.owner} /></div>
+        <div>
+          <p className="mb-1"><b>{title}</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<ProjectTagList taglist={this.props.tag_list} /></p>
+          <span>{description} <TimeCaption caption="Updated" time={this.props.last_activity_at} /></span>
+        </div>
+      </div>
     );
   }
 }
