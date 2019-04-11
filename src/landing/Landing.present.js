@@ -143,7 +143,7 @@ class RenkuProvidesHeader extends Component {
 
 class AnonymousHome extends Component {
   render() {
-    return [
+    return <div className="container">
       <Row key="marquee">
         <Col>
           <Jumbotron className="bg-white text-secondary">
@@ -160,12 +160,12 @@ class AnonymousHome extends Component {
             </Row>
           </Jumbotron>
         </Col>
-      </Row>,
+      </Row>
       <Row key="content-header">
         <Col>
           <h1 className="text-center">Renku Enables</h1>
         </Col>
-      </Row>,
+      </Row>
       <Row key="content-body">
         <Col md={6}>
           <RenkuProvidesHeader title="Reproducibility" icon={faClone} />
@@ -207,13 +207,13 @@ class AnonymousHome extends Component {
             if it is in the system, you can always find the information you are looking for.
           </p>
         </Col>
-      </Row>,
+      </Row>
       <Row key="tutorial" className="mb-3">
         <Col>
           Want to learn more? Create an account
           and <a href="https://renku.readthedocs.io/en/latest/user/firststeps.html">follow the tutorial</a>.
         </Col>
-      </Row>,
+      </Row>
       <Row key="closing">
         <Col>
           <h3 className="text-primary">
@@ -222,7 +222,7 @@ class AnonymousHome extends Component {
           </h3>
         </Col>
       </Row>
-    ]
+    </div>
   }
 }
 
