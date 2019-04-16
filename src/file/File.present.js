@@ -19,11 +19,96 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import NotebookPreview from '@nteract/notebook-preview';
+import { Link}  from 'react-router-dom';
+
 // Do not import the style because this does not work after webpack bundles things for production mode.
 // Instead define the style below
 //import './notebook.css'
-import { Button, Row, Col, Tooltip } from 'reactstrap';
+import { Button, Row, Col, Tooltip, Card, CardHeader, CardBody } from 'reactstrap';
 import '../../node_modules/highlight.js/styles/atom-one-light.css'
+import FontAwesomeIcon from '@fortawesome/react-fontawesome'
+import faProjectDiagram from '@fortawesome/fontawesome-free-solid/faProjectDiagram'
+import faGitlab from '@fortawesome/fontawesome-free-brands/faGitlab';
+
+import {  FilePreview } from './File.container';
+import { API_ERRORS } from '../api-client';
+
+
+class ShowFile extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { file: null, error: null }
+  }
+
+  // TODO: Write a wrapper to make promises cancellable to avoid usage of this._isMounted
+  componentDidMount() {
+    this._isMounted = true;
+    this.retrieveFile()
+  }
+
+  componentWillUnmount() { this._isMounted = false; }
+
+  retrieveFile() {
+    const branchName = this.props.branchName || 'master';
+    let filePath = this.props.filePath.replace(this.props.match.url + '/files/blob/', '')
+    this.props.client.getRepositoryFile(this.props.projectId, filePath, branchName, 'base64')
+      .catch(e => {
+        if (e.case === API_ERRORS.notFoundError) {
+          return '{"error": "File does not exist."}';
+        }
+        return '{"error": "Could not load file."}';
+      })
+      .then(json => {
+        if (!this._isMounted) return;
+        console.log(json)
+        this.setState({file:json});
+      });
+  }
+
+  render() {
+    if (this.state.error != null) return <div>{this.state.error}</div>;
+    if (this.state.file == null) return <Card>
+      <CardHeader className="align-items-baseline">&nbsp;</CardHeader>
+      <CardBody>{"Loading..."}</CardBody>
+    </Card>;
+    let filePath = this.props.filePath.replace(this.props.match.url + '/files/blob/', '')
+    let buttonGraph = this.props.lineagesPath !== undefined ? 
+      <Link to={this.props.lineagesPath+'/'+filePath} >
+        <FontAwesomeIcon className="icon-link" icon={faProjectDiagram} /> 
+      </Link>
+      : null;
+    let buttonGit = <a href={`${this.props.externalUrl}/blob/master/${filePath}`} role="button" target="_blank"
+      rel="noreferrer noopener"><FontAwesomeIcon className="icon-link" icon={faGitlab} /> </a>
+
+    let buttonJupyter = filePath.endsWith(".ipynb") ? 
+      <FilePreview
+        getNotebookButton={true}
+        file={this.state.file}
+        {...this.props}
+      /> : null; 
+       
+
+    return (
+      <Card>
+        <CardHeader className="align-items-baseline">
+          {this.state.file.file_name}
+          <span className="caption align-baseline">&nbsp;File view</span>
+          <div className="float-right" >
+            {buttonJupyter}
+            {buttonGit}
+            {buttonGraph}
+          </div>
+        </CardHeader>
+        <CardBody>
+          <FilePreview
+            file={this.state.file}
+            {...this.props}
+          />
+        </CardBody>
+      </Card>
+    )
+  }
+}
 
 class StyledNotebook extends React.Component {
 
@@ -51,7 +136,7 @@ class StyledNotebook extends React.Component {
       <style key="notebook-style">{notebookStyle}</style>,
       <NotebookPreview
         key="notebook"
-        ref={c => {this.notebook = c}}
+        ref={c => { this.notebook = c }}
         defaultStyle={false}
         loadMathjax={false}
         notebook={this.props.notebook}
@@ -79,7 +164,7 @@ class LaunchNotebookButton extends React.Component {
     // TODO: Method setServerStatus in LaunchNotebookServer component does the
     // TODO: same. Move to client library.
     const headers = this.props.client.getBasicHeaders();
-    this.props.client.clientFetch(this.props.notebookServerAPI, {headers})
+    this.props.client.clientFetch(this.props.notebookServerAPI, { headers })
       .then(response => {
         const serverStatus = !(!response.data.pending && !response.data.ready);
         this.setState({serverRunning: serverStatus})
@@ -91,6 +176,7 @@ class LaunchNotebookButton extends React.Component {
   }
 
   render() {
+    console.log({...this.props.user})
     if (!this.props.notebookServerUrl) return null;
 
     const props = this.props;
@@ -113,28 +199,84 @@ class LaunchNotebookButton extends React.Component {
 
     const externalUrl = this.props.deploymentUrl || this.props.notebookServerUrl;
 
-
-    return <div>
-      {tooltip}
-      <Button
-        id="tooltipButton"
-        onMouseEnter={() => {
-          this.setState({showTooltip: true});
-          // just a dirty trick because the mouseout event does not fire...
-          setTimeout(() => this.setState({showTooltip: false}), 3000)
-        }}
-        disabled={!this.state.serverRunning}
-        className={className}
-        color="primary" onClick={event => {
-          event.preventDefault();
-          window.open(externalUrl);
-        }}>
-        {label}
-      </Button>
-    </div>
+    return this.props.iconView ? 
+      <span>
+        {tooltip}
+        <span disabled={!this.state.serverRunning}
+          onClick={event => {
+            event.preventDefault();
+            window.open(externalUrl);
+          }}  
+          id="tooltipButton"
+          onMouseEnter={() => {
+            this.setState({ showTooltip: true });
+            // just a dirty trick because the mouseout event does not fire...
+            setTimeout(() => this.setState({ showTooltip: false }), 3000)
+          }}
+          role="button" target="_blank"
+          rel="noreferrer noopener">
+          <svg aria-hidden="true" 
+            data-prefix="fas" 
+            className="jupyter-icon fa-w-20 icon-link" 
+            role="img" xmlns="http://www.w3.org/2000/svg" 
+            viewBox="0 0 640 512"/>
+        </span> 
+      </span>
+      :
+      <div>
+        {tooltip}
+        <Button
+          id="tooltipButton"
+          onMouseEnter={() => {
+            this.setState({ showTooltip: true });
+            // just a dirty trick because the mouseout event does not fire...
+            setTimeout(() => this.setState({ showTooltip: false }), 3000)
+          }}
+          disabled={!this.state.serverRunning}
+          className={className}
+          color="primary" onClick={event => {
+            event.preventDefault();
+            window.open(externalUrl);
+          }}>
+          {label}
+        </Button>
+      </div>
   }
 }
 
+const JupyterNotebookButton = props => {
+  if(props.notebook == null) return null;
+  return  <LaunchNotebookButton
+    className="deployButton float-right"
+    key="launchbutton"
+    deploymentUrl={props.deploymentUrl}
+    notebookServerUrl={props.notebookServerUrl}
+    notebookServerAPI={props.notebookServerAPI}
+    client={props.client}
+    label="Open Notebook"
+    user={props.user}
+  />
+}
+
+const JupyterNotebookButtonIcon = props => {
+  if(props.notebook == null) return null;
+  return  <LaunchNotebookButton
+    className="deployButton float-right"
+    key="launchbutton"
+    iconView={true}
+    deploymentUrl={props.deploymentUrl}
+    notebookServerUrl={props.notebookServerUrl}
+    notebookServerAPI={props.notebookServerAPI}
+    client={props.client}
+    label="Open Notebook"
+    user={props.user}
+  />
+}
+
+const JupyterNotebookBody = props => {
+  if (props.notebook == null) return <div>Loading...</div>;
+  return <StyledNotebook key="notebook" notebook={props.notebook} showCode={true}/>;
+}
 
 const JupyterNotebookPresent = props => {
 
@@ -163,4 +305,11 @@ const JupyterNotebookPresent = props => {
   ]
 };
 
-export { JupyterNotebookPresent, LaunchNotebookButton };
+export { 
+  JupyterNotebookPresent, 
+  LaunchNotebookButton, 
+  ShowFile, 
+  JupyterNotebookBody, 
+  JupyterNotebookButton, 
+  JupyterNotebookButtonIcon 
+};

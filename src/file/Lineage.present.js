@@ -18,12 +18,17 @@
 
 import React, { Component } from 'react';
 
-import { Row, Col } from 'reactstrap';
 import graphlib from 'graphlib';
 import dagreD3 from 'dagre-d3';
 import * as d3 from 'd3';
 
-import { ExternalLink } from '../utils/UIComponents'
+import { Link}  from 'react-router-dom';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import faFile from '@fortawesome/fontawesome-free-solid/faFile';
+import faGitlab from '@fortawesome/fontawesome-free-brands/faGitlab';
+import {
+  Card, CardHeader, CardBody
+} from 'reactstrap';
 
 import './Lineage.css';
 
@@ -34,7 +39,7 @@ function getNodeLabel(node) {
 }
 
 function nodeIdToClass(nodeId, centralNode) {
-  return (nodeId === centralNode) ? 'central': 'normal'
+  return (nodeId === centralNode) ? 'central' : 'normal'
 }
 
 class FileLineageGraph extends Component {
@@ -48,8 +53,7 @@ class FileLineageGraph extends Component {
 
     const subGraph = new graphlib.Graph()
       .setGraph({})
-      .setDefaultEdgeLabel(function() { return {}; });
-
+      .setDefaultEdgeLabel(function(){ return {}; });
 
     graph.nodes.forEach(node => {
       if (node.id.includes(this.props.path)) {
@@ -71,9 +75,6 @@ class FileLineageGraph extends Component {
     }
     return subGraph
   }
-
-
-
 
   componentDidMount() {
     this.renderD3();
@@ -117,22 +118,28 @@ class FileLineage extends Component {
         <p>Loading...</p>;
     const externalUrl = this.props.externalUrl;
     const externalFileUrl = `${externalUrl}/blob/master/${this.props.path}`;
-    return [
-      <Row key="header">
-        <Col sm={8}>
-          <div className="d-flex flex-row align-items-baseline">
-            <div><h3><em>{this.props.path}</em></h3></div>
-            <div className="caption">&nbsp;lineage and usage</div>
-          </div>
-        </Col>
-        <Col sm={4}>
-          <p className="text-sm-right">
-            <ExternalLink url={externalFileUrl} title="View in GitLab" />
-          </p>
-        </Col>
-      </Row>,
-      <Row key="graph"><Col>{graph}</Col></Row>
-    ]
+    let buttonFile = this.props.filePath !== undefined ? 
+      <Link to={this.props.filePath} >
+        <FontAwesomeIcon className="icon-link" icon={faFile} /> 
+      </Link>
+      : null;
+
+    let buttonGit = <a href={externalFileUrl} role="button" target="_blank"
+      rel="noreferrer noopener"><FontAwesomeIcon className="icon-link" icon={faGitlab} /> </a>
+
+    return <Card>
+      <CardHeader className="align-items-baseline">
+        {this.props.path}
+        <span className="caption align-baseline">&nbsp;Lineage and usage</span>
+        <div className="float-right" >
+          <span>{buttonGit}</span>
+          <span>{buttonFile}</span>
+        </div>
+      </CardHeader>
+      <CardBody className="scroll-x">
+        {graph}
+      </CardBody>
+    </Card>
   }
 }
 

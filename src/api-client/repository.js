@@ -94,7 +94,6 @@ function addRepositoryMethods(client) {
     )
   }
 
-
   // TODO: Merge to following methods into one
   client.getRepositoryFile = (projectId, path, ref='master', encoding='base64') => {
     let headers = client.getBasicHeaders();
@@ -123,7 +122,7 @@ function addRepositoryMethods(client) {
 
   client.getRepositoryTree = (
     projectId,
-    {path='', recursive=false, per_page=100, page = 1, previousResults=[]} = {}
+    {path='', recursive=false, per_page=500, page = 1, previousResults=[]} = {}
   ) => {
     let headers = client.getBasicHeaders();
     const queryParams = {

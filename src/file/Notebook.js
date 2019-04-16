@@ -28,11 +28,10 @@ import React, { Component } from 'react';
 import { JupyterNotebook } from './File.container';
 import { API_ERRORS } from '../api-client';
 
-
 class Show extends Component {
   constructor(props) {
     super(props);
-    this.state = {notebook: null, error: null}
+    this.state = { notebook: null, error: null }
   }
 
   // TODO: Write a wrapper to make promises cancellable to avoid usage of this._isMounted
@@ -41,7 +40,7 @@ class Show extends Component {
     this.retrieveNotebook()
   }
 
-  componentWillUnmount() { this._isMounted = false;  }
+  componentWillUnmount() { this._isMounted = false; }
 
   retrieveNotebook() {
     const branchName = this.props.branchName || 'master';
@@ -57,9 +56,9 @@ class Show extends Component {
 
         const notebook = JSON.parse(json);
         if (notebook.error != null)
-          this.setState({error: notebook.error});
+          this.setState({ error: notebook.error });
         else
-          this.setState({notebook});
+          this.setState({ notebook });
       });
   }
 

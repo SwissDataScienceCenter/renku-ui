@@ -98,15 +98,29 @@ class ProjectModel extends StateModel {
       });
   }
 
-  fetchProjectFiles(client, id) {
-    this.setUpdating({transient:{requests:{files: true}}});
-    return client.getProjectFiles(id)
-      .then(resp => resp)
-      .then(d => {
-        const updatedState = { files: d, transient:{requests:{files: false}} };
-        this.setObject(updatedState);
-        return d;
-      })
+  fetchProjectFilesTree(client, id) {
+    const oldTree = this.get('filesTree');
+    if(oldTree === null || oldTree === undefined){
+      this.setUpdating({transient:{requests:{filesTree: true}}});
+      return client.getProjectFilesTree(id)
+        .then(resp => resp)
+        .then(d => {
+          const updatedState = { filesTree: d, transient:{requests:{filesTree: false}} };
+          this.setObject(updatedState);
+          this.set('filesTree', d);
+          return d;
+        });
+    } else {
+      return oldTree;
+    }
+  }
+
+  setPojectOpenFolder(filePath){
+    this.setUpdating({transient:{requests:{filesTree: true}}});
+    let filesTree = this.get('filesTree');
+    filesTree.hash[filePath].childrenOpen = ! filesTree.hash[filePath].childrenOpen;
+    this.set('filesTree',filesTree);
+    this.setObject({transient:{requests:{filesTree: false}}});
   }
 
   startNotebookServersPolling(client) {
