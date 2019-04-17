@@ -123,16 +123,16 @@ class ProjectModel extends StateModel {
     this.setObject({transient:{requests:{filesTree: false}}});
   }
 
-  startNotebookServersPolling(client) {
+  startNotebookServersPolling(client, id) {
     const oldPoller = this.get('notebooks.polling');
     if (oldPoller == null) {
       const newPoller = setInterval(() => {
-        return this.fetchNotebookServers(client);
+        return this.fetchNotebookServers(client, id);
       }, 3000);
       this.set('notebooks.polling', newPoller);
 
       // invoke immediatly the first time
-      return this.fetchNotebookServers(client, true);
+      return this.fetchNotebookServers(client, id, true);
     }
   }
 
@@ -144,11 +144,11 @@ class ProjectModel extends StateModel {
     }
   }
 
-  fetchNotebookServers(client, first) {
+  fetchNotebookServers(client, id, first) {
     if (first) {
       this.setUpdating({notebooks: {all: true}});
     }
-    return client.getNotebookServers() // FILTER: I need the projectId, not the name...
+    return client.getNotebookServers(id)
       .then(resp => {
         // TODO: filter for current project
         this.set('notebooks.all', resp.data);
@@ -156,10 +156,19 @@ class ProjectModel extends StateModel {
   }
 
   stopNotebookServer(client, serverName) {
-    const promise = client.stopNotebookServer(serverName);
-    // do not wait to resolve the promise, it takes a few seconds but the server states change much faster
-    this.fetchNotebookServers(client);
-    return promise;
+    // manually set the state instead of waiting for the promise to resolve
+    const updatedState = {
+      notebooks: {
+        all: {
+          [serverName]: {
+            ready: false,
+            pending: "stop"
+          }
+        }
+      }
+    }
+    this.setObject(updatedState);
+    return client.stopNotebookServer(serverName);
   }
 
   fetchNotebookServerUrl(client, id, projectState) {

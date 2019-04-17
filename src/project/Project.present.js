@@ -48,6 +48,7 @@ import { SpecialPropVal } from '../model/Model'
 import { ProjectTags, ProjectTagList } from './shared'
 import { NotebookServers } from '../notebooks'
 import FilesTreeView from './filestreeview/FilesTreeView';
+import { ACCESS_LEVELS } from '../api-client';
 
 import './Project.css';
 
@@ -564,15 +565,25 @@ class ProjectNotebookServers extends Component {
   }
 
   render() {
+    let launch = null;
+    if (this.props.visibility.accessLevel >= ACCESS_LEVELS.DEVELOPER) {
+      launch = <Link to={ `/projects/${this.props.id}/launchNotebook` }>
+        <Button color="primary">Start new server</Button>
+      </Link>
+    }
+    else {
+      launch = <p>You are missing the permissions to launch Jupyter from this project.</p>
+    }
+
     return (
       <Col xs={12}>
         <NotebookServers
-          accessLevel={ this.props.visibility.accessLevel }
-          start={ `/projects/${this.props.id}/launchNotebook` }
           servers={ this.props.notebooks.all }
           stop= { this.props.stopNotebookServer }
-          url={ this.props.client.jupyterhubUrl }>
-        </NotebookServers>
+          jupyterUrl={ this.props.client.jupyterhubUrl }
+          projectId={this.props.id}
+        />
+        {launch}
       </Col>
     )
   }

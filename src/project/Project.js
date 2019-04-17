@@ -70,7 +70,9 @@ class View extends Component {
   async fetchModifiedFiles() { return this.projectState.fetchModifiedFiles(this.props.client, this.props.id); }
   async fetchBranches() { return this.projectState.fetchBranches(this.props.client, this.props.id); }
   async fetchCIJobs() { return this.projectState.fetchCIJobs(this.props.client, this.props.id); }
-  async startNotebookServersPolling() { return this.projectState.startNotebookServersPolling(this.props.client); }
+  async startNotebookServersPolling() {
+    return this.projectState.startNotebookServersPolling(this.props.client, this.props.id);
+  }
   async stopNotebookServersPolling() { return this.projectState.stopNotebookServersPolling(); }
   async stopNotebookServer(serverName) { return this.projectState.stopNotebookServer(this.props.client, serverName); }
   async createGraphWebhook() { this.projectState.createGraphWebhook(this.props.client, this.props.id); }

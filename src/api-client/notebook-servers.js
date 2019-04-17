@@ -16,14 +16,44 @@
  * limitations under the License.
  */
 
+const ExpectedAnnotations = {
+  "renku.io": {
+    required: ["branch", "commit-sha", "namespace", "projectId", "projectName"],
+    default: {
+      "branch": "unknown",
+      "commit-sha": "00000000",
+      "namespace": "unknown",
+      "projectId": 0,
+      "projectName": "unknown"
+    }
+  }
+}
+
+function cleanAnnotations(annotations, domain) {
+  let cleaned = {};
+  if (domain === "renku.io") {
+    const prefix = `${domain}/`;
+    ExpectedAnnotations[domain].required.forEach(annotation => {
+      cleaned[annotation] = annotations[prefix+annotation] !== undefined ?
+        annotations[prefix+annotation] :
+        ExpectedAnnotations[domain].default[annotation];
+    });
+  }
+  return {...cleaned};
+}
+
 function addNotebookServersMethods(client) {
-  client.getNotebookServers = () => {
+  client.getNotebookServers = (id) => {
     let headers = client.getBasicHeaders();
     const url = `${client.baseUrl}/notebooks/servers`;
     return client.clientFetch(url, {
       method: 'GET',
       headers: headers
     }).then(resp => {
+      if (id) {
+        // TODO: the id filter should be applyed in the gateway, pass it as parameter
+      }
+
       return {
         "names": Object.keys(resp.data.servers),
         "data": { ...resp.data.servers }
@@ -45,4 +75,5 @@ function addNotebookServersMethods(client) {
   }
 }
 
+export { cleanAnnotations, ExpectedAnnotations };
 export default addNotebookServersMethods;

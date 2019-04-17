@@ -92,6 +92,11 @@ const methods = {
     response: {
       data: samples.user
     }
+  },
+  getNotebookServers: {
+    response: {
+      data: []
+    }
   }
 };
 

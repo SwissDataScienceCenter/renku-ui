@@ -17,12 +17,30 @@
  */
 
 import React, { Component } from 'react';
+import Media from 'react-media';
 import { Link } from 'react-router-dom';
-import { Form, FormGroup, Label, Input, Button, Row, Col, Table} from 'reactstrap';
-import { SpecialPropVal } from '../model/Model'
-import { ACCESS_LEVELS } from '../api-client';
 
-import { Loader, ExternalLink } from '../utils/UIComponents'
+import { Form, FormGroup, Label, Input, Button, Row, Col, Table} from 'reactstrap';
+import { UncontrolledButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { faStopCircle, faExternalLinkAlt, faInfoCircle } from '@fortawesome/fontawesome-free-solid';
+
+import { SpecialPropVal } from '../model/Model';
+import { Loader, InfoAlert } from '../utils/UIComponents';
+import Sizes from '../utils/Media';
+import { cleanAnnotations } from '../api-client/notebook-servers';
+
+
+const Columns = {
+  large: {
+    default: ["Project", "Commit", "Action"],
+    project: ["Branch", "Commit", "Action"]
+  },
+  compact: {
+    default: ["List"],
+    project: ["List"],
+  }
+};
 
 class LogOutUser extends Component {
 
@@ -166,26 +184,216 @@ class RangeOption extends Component {
   }
 }
 
+class NotebookServerRowAction extends Component {
+  render() {
+    const {status, name} = this.props;
+    const StatusText = {
+      "running": "Running",
+      "spawn": "Starting",
+      "stop": "Stopping",
+      "other": "Updating",
+    }
+    const color = status === "running" ? "success" :
+      status === "spawn" ? "warning" :
+        status === "stop" ? "danger" : "info";
+    const interactive = status === "running" ?
+      true :
+      false;
+    const size = this.props.small ?
+      "sm" :
+      "";
+
+    if (interactive) {
+      return (
+        <UncontrolledButtonDropdown>
+          <DropdownToggle caret color={color} disabled={!interactive} size={size}>
+            { StatusText[status] }
+          </DropdownToggle>
+          <DropdownMenu>
+            <DropdownItem href={this.props.fullUrl} target="_blank">
+              <FontAwesomeIcon icon={faExternalLinkAlt} /> Connect
+            </DropdownItem>
+            <DropdownItem onClick={(e) => this.props.onStopServer(name)}>
+              <FontAwesomeIcon icon={faStopCircle} /> Stop
+            </DropdownItem>
+            {/* TODO */}
+            {/* <DropdownItem divider /> */}
+            {/* <DropdownItem disabled>View Logs</DropdownItem> */}
+          </DropdownMenu>
+        </UncontrolledButtonDropdown>
+      )
+    }
+    else {
+      return (
+        <div>
+          <Button className="d-flex" color={color} disabled size={size}>
+            { StatusText[status] }
+            <Loader size="14" inline="true" margin="1" />
+          </Button>
+        </div>
+        
+      )
+    }
+  }
+}
+
+class NotebookServerRowProject extends Component {
+  render() {
+    return (
+      <Link to={ `/projects/${this.props.id}` }>
+        {this.props.display}
+      </Link>
+    )
+  }
+}
+
+class NotebookServerRowFull extends Component {
+  render() {
+    const {annotations, status, fullUrl} = this.props;
+    let columns;
+    if (this.props.projectId) {
+      columns = [annotations["branch"], annotations["commit-sha"].substring(0,8)];
+    }
+    else {
+      const projectLink = <NotebookServerRowProject
+        display={`${annotations["namespace"]}/${annotations["projectName"]}`}
+        id={annotations["projectId"]}
+      />
+      columns = [projectLink, `${annotations["branch"]}/${annotations["commit-sha"].substring(0,8)}`];
+    }
+    return (
+      <tr>
+        <td className="align-middle">
+          {columns[0]}
+        </td>
+        <td className="align-middle">
+          {columns[1]}
+        </td>
+        <td className="align-middle">
+          <NotebookServerRowAction
+            status={status}
+            name={this.props.name}
+            onStopServer={this.props.onStopServer}
+            fullUrl={fullUrl}
+          />
+        </td>
+      </tr>
+    )
+  }
+}
+
+class NotebookServerRowCompact extends Component {
+  render() {
+    const {annotations, status, projectId, fullUrl} = this.props;
+    let rowsHeader, rows;
+    if (projectId) {
+      rowsHeader = Columns.large.project;
+      rows = [annotations["branch"], annotations["commit-sha"].substring(0,8)];
+    }
+    else {
+      rowsHeader = Columns.large.default;
+      const projectLink = <NotebookServerRowProject
+        display={`${annotations["namespace"]}/${annotations["projectName"]}`}
+        id={annotations["projectId"]}
+      />
+      rows = [projectLink, `${annotations["branch"]}/${annotations["commit-sha"].substring(0,8)}`];
+    }
+
+    return (
+      <tr>
+        <td>
+          <span className="font-weight-bold">{rowsHeader[0]}: </span>
+          <br className="d-sm-none" />
+          <span>{rows[0]}</span>
+          <br />
+          <span className="font-weight-bold">{rowsHeader[1]}: </span>
+          <br className="d-sm-none" />
+          <span>{rows[1]}</span>
+          <br />
+          <NotebookServerRowAction
+            status={status}
+            name={this.props.name}
+            onStopServer={this.props.onStopServer}
+            fullUrl={fullUrl}
+            small={true}
+          />
+        </td>
+      </tr>
+    )
+  }
+}
+
 class NotebookServerRow extends Component {
   render() {
-    const name = this.props.name;
-    const url = this.props.url;
-    const loader = !this.props.ready ? <Loader size="14" inline="true" margin="1" /> : null;
-    return <tr>
-      <td>
-        {name}
-        {loader}
-      </td>
-      <td>
-        <ExternalLink url={url} disabled={!this.props.ready} title="Connect" />
-      </td>
-      <td>
-        <Button color="primary" disabled={!this.props.ready}
-          onClick={(e) => this.props.onStopServer(name)}>
-          Stop
-        </Button>
-      </td>
-    </tr>
+    const annotations = cleanAnnotations(this.props.annotations, "renku.io");
+    const status = this.props.ready ?
+      "running" :
+      this.props.pending === "spawn" || this.props.pending === "stop" ?
+        this.props.pending :
+        "other";
+    const fullUrl = this.props.jupyterUrl + this.props.url.replace("/jupyterhub", "");
+
+    return (
+      <Media query={ Sizes.md }>
+        { matches =>
+          matches ? (
+            <NotebookServerRowFull
+              {...this.props} status={status} annotations={annotations} fullUrl={fullUrl} />
+          ) : (
+            <NotebookServerRowCompact
+              {...this.props} status={status} annotations={annotations} fullUrl={fullUrl} />
+          )
+        }
+      </Media>
+    )
+  }
+}
+
+class NotebookServerHeaderFull extends Component {
+  render() {
+    const columns = this.props.projectId ?
+      Columns.large.project :
+      Columns.large.default
+    return (
+      <thead className="thead-light">
+        <tr>
+          <th className="align-middle">{columns[0]}</th>
+          <th className="align-middle">{columns[1]}</th>
+          <th className="align-middle" style={{width: "1px"}}>{columns[2]}</th>
+        </tr>
+      </thead>
+    )
+  }
+}
+
+class NotebookServerHeaderCompact extends Component {
+  render() {
+    const columns = this.props.projectId ?
+      Columns.compact.project :
+      Columns.compact.default
+    return (
+      <thead className="thead-light">
+        <tr>
+          <th className="align-middle">{columns[0]}</th>
+        </tr>
+      </thead>
+    )
+  }
+}
+
+class NotebookServersHeader extends Component {
+  render() {
+    return (
+      <Media query={ Sizes.md }>
+        { matches =>
+          matches ? (
+            <NotebookServerHeaderFull {...this.props} />
+          ) : (
+            <NotebookServerHeaderCompact {...this.props} />
+          )
+        }
+      </Media>
+    )
   }
 }
 
@@ -193,49 +401,83 @@ class NotebookServersList extends Component {
   render() {
     const serverNames = Object.keys(this.props.servers).sort();
     if (serverNames.length === 0) {
-      return <p>No servers</p>
+      return <p>No server is currently running. You have to start one to connect to Jupiter.</p>
     }
     const rows = serverNames.map((k, i) =>
-      <NotebookServerRow key={i} onStopServer={this.props.stop} {...this.props.servers[k]} />
+      <NotebookServerRow
+        key={i}
+        onStopServer={this.props.stop}
+        projectId={this.props.projectId}
+        {...this.props.servers[k]}
+        jupyterUrl={this.props.jupyterUrl}
+      />
     )
-    return <Table size={"sm"}>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Connect</th>
-          <th>Stop</th>
-        </tr>
-      </thead>
-      <tbody>
-        {rows}
-      </tbody>
-    </Table>
+    return (
+      <Table bordered>
+        <NotebookServersHeader projectId={this.props.projectId} />
+        <tbody>
+          {rows}
+        </tbody>
+      </Table>
+    )
   }
 }
 
-class NotebookServersLaunch extends Component {
-  render () {
-    const permissions = this.props.accessLevel >= ACCESS_LEVELS.DEVELOPER ? true : false;
-    if (!permissions) {
-      return <p>You are missing the permissions to launch Jupyter from this project.</p>;
-    }
-    return <Link to={ this.props.start }>
-      <Button color="primary">Start new server</Button>
-    </Link>;
-  }
-}
-
+/**
+ * Displays the list of available notebook servers.
+ * 
+ * @param {Object} servers   Servers as returned by renku-notebook "/servers" API
+ * @param {function} stop   Function to invoke to stop the target notebook, requiring server name as parameter
+ * @param {function} projectId   Required to focus on a single project (no project and namespace in the table)
+ *     
+ */
 class NotebookServers extends Component {
   render() {
     const serverData = this.props.servers;
     if (!serverData || serverData === SpecialPropVal.UPDATING ) {
       return <Loader />
     }
-    return <div>
-      <NotebookServersList {...this.props} />
-      <NotebookServersLaunch {...this.props} />
-    </div>
+    return (
+      <Row>
+        <Col md={12} lg={10} xl={8}>
+          <NotebookServersList {...this.props} />
+        </Col>
+      </Row>
+    )
   }
 }
 
-export { NotebookServerOptions, NotebookServers, LogOutUser }
+class NotebooksPopup extends Component {
+  render() {
+    if (this.props.servers) {
+      return null;
+    }
+    return (
+      <InfoAlert timeout={0}>
+        <FontAwesomeIcon icon={faInfoCircle} /> You can start a new notebook by navigating to a project page.
+        <br />Be sure to have at least Developer privileges, then open the Notebook Servers tab.
+      </InfoAlert>
+    ) 
+  }
+}
+
+class Notebooks extends Component {
+  render() {
+    const serverNumbers = Object.keys(this.props.notebooks.all).length;
+    return <Row>
+      <Col>
+        <h1>
+          Notebooks
+        </h1>
+        <NotebookServers
+          servers={this.props.notebooks.all}
+          stop={this.props.handlers.onStopNotebook}
+          jupyterUrl={this.props.jupyterUrl}
+        />
+        <NotebooksPopup servers={serverNumbers} />
+      </Col>
+    </Row>
+  }
+}
+
+export { NotebookServerOptions, NotebookServers, LogOutUser, Notebooks }
