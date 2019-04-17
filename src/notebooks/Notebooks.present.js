@@ -401,7 +401,7 @@ class NotebookServersList extends Component {
   render() {
     const serverNames = Object.keys(this.props.servers).sort();
     if (serverNames.length === 0) {
-      return <p>No server is currently running. You have to start one to connect to Jupiter.</p>
+      return <p>No server is currently running. You have to start one to connect to Jupyter.</p>
     }
     const rows = serverNames.map((k, i) =>
       <NotebookServerRow
