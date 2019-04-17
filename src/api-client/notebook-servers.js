@@ -50,14 +50,15 @@ function addNotebookServersMethods(client) {
       method: 'GET',
       headers: headers
     }).then(resp => {
+      const { servers } = resp.data; 
       if (id) {
-        // TODO: the id filter should be applyed in the gateway, pass it as parameter
+        // TODO: remove this filter when this API will support projectId filtering
+        const filteredServers = Object.keys(servers)
+          .filter(server => servers[server].annotations["renku.io/projectId"] === id)
+          .reduce((obj, key) => {obj[key] = servers[key]; return obj}, {});
+        return { "data": filteredServers };
       }
-
-      return {
-        "names": Object.keys(resp.data.servers),
-        "data": { ...resp.data.servers }
-      }
+      return { "data": servers };
     });
   }
 
