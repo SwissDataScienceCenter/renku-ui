@@ -26,15 +26,38 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { MemoryRouter } from 'react-router-dom';
 
-import { NotebookAdmin } from './Notebooks.container';
+import { Notebooks } from './Notebooks.container';
+import { cleanAnnotations, ExpectedAnnotations } from '../api-client/notebook-servers';
 import { testClient as client } from '../api-client'
+import { generateFakeUser } from '../app-state/UserState.test';
 
 describe('rendering', () => {
+  const loggedUser = generateFakeUser();
+
   it('renders home without crashing', () => {
     const div = document.createElement('div');
     ReactDOM.render(
       <MemoryRouter>
-        <NotebookAdmin client={client} />
+        <Notebooks client={client} user={loggedUser} />
       </MemoryRouter>, div);
+  });
+});
+
+describe('notebook server clean annotation', () => {
+  const baseAnnotations = ExpectedAnnotations["renku.io"].default;
+  it('renku.io default', () => {
+    const fakeAnswer = {};
+    const elaboratedAnnotations = cleanAnnotations(fakeAnswer, "renku.io");
+    const expectedAnnotations = {...baseAnnotations}
+    expect(JSON.stringify(elaboratedAnnotations)).toBe(JSON.stringify(expectedAnnotations)); 
+  });
+  it('renku.io elaborated', () => {
+    const namespace = "myCoolNampsace";
+    const branch = "anotherBranch"
+
+    const fakeAnswer = { "renku.io/namespace": namespace, "renku.io/branch": branch };
+    const elaboratedAnnotations = cleanAnnotations(fakeAnswer, "renku.io");
+    const expectedAnnotations = {...baseAnnotations, namespace, branch}
+    expect(JSON.stringify(elaboratedAnnotations)).toBe(JSON.stringify(expectedAnnotations)); 
   });
 });

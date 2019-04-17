@@ -17,22 +17,13 @@
  */
 
 import React, { Component } from 'react';
+import { connect } from 'react-redux'
 import { Col } from 'reactstrap';
 
-import { NotebookServerOptions, NotebookServers as NotebookServersPresent, LogOutUser } from './Notebooks.present';
-import { ExternalLink } from '../utils/UIComponents';
+import { NotebookServerOptions, NotebookServers, LogOutUser } from './Notebooks.present';
 
-
-
-class NotebookAdmin extends Component {
-  render() {
-    const adminUiUrl = this.props.adminUiUrl;
-    // TODO: don't open an external popup but display the content here
-    return <div>
-      <ExternalLink url={adminUiUrl} title="Launch Notebook Admin UI" />
-    </div>
-  }
-}
+import NotebooksModel from './Notebooks.state';
+import { Notebooks as NotebooksPresent } from './Notebooks.present';
 
 class LaunchNotebookServer extends Component {
   constructor(props) {
@@ -159,7 +150,7 @@ class LaunchNotebookServer extends Component {
 
     // Note that the opening of the new tab must happen
     // on click and can not be delayed (pop-up blocking)
-    window.open(this.props.core.notebookServerUrl);
+    // window.open(this.props.core.notebookServerUrl);
   }
 
 
@@ -184,10 +175,51 @@ class LaunchNotebookServer extends Component {
   }
 }
 
-class NotebookServers extends Component {
+class Notebooks extends Component {
+  constructor(props) {
+    super(props);
+    this.model = new NotebooksModel(props.client);
+
+    this.handlers = {
+      onStopNotebook: this.onStopNotebook.bind(this)
+    }
+  }
+
+  componentDidMount() {
+    this.startNotebookPolling();
+  }
+
+  componentWillUnmount() {
+    this.stopNotebookPolling();
+  }
+
+  startNotebookPolling() {
+    this.model.startNotebookPolling();
+  }
+  stopNotebookPolling() {
+    this.model.stopNotebookPolling();
+  }
+  onStopNotebook(serverName){
+    this.model.stopNotebook(serverName);
+  }
+
+  mapStateToProps(state, ownProps) {
+    return {
+      handlers: this.handlers,
+      ...state
+    }
+  }
+
   render() {
-    return <NotebookServersPresent {...this.props} />
+    const VisibleNotebooks = connect(this.mapStateToProps.bind(this))(NotebooksPresent);
+
+    return <VisibleNotebooks
+      store={this.model.reduxStore}
+      user={this.props.user}
+      jupyterUrl={this.props.client.jupyterhubUrl}
+    />
   }
 }
 
-export { NotebookAdmin, LaunchNotebookServer, NotebookServers };
+
+export { LaunchNotebookServer, NotebookServers, Notebooks };

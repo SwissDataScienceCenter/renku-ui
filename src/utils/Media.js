@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2019 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -19,11 +19,16 @@
 /**
  *  renku-ui
  *
- * Components for interacting with the notebook server (renku-notebooks)
- *
+ *  Media.js
+ *  Media query helper
  */
 
-import { LaunchNotebookServer, NotebookServers } from './Notebooks.container';
-import { Notebooks } from './Notebooks.container';
+const Sizes = {
+  xs: { maxWidth: 575 },
+  sm: { minWidth: 576 },
+  md: { minWidth: 768 },
+  lg: { minWidth: 992 },
+  xl: { minWidth: 1200 },
+}
 
-export { LaunchNotebookServer, NotebookServers, Notebooks }
+export default Sizes;

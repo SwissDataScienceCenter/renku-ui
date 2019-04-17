@@ -81,6 +81,8 @@ class APIClient {
           //TODO: when jupyterhub has refresh tokens we should remove the following if and return promise.
           if( error.response && error.response.url && error.response.url.includes("/api/notebooks"))
             return Promise.reject(error);
+            // TODO: instead of rejecting, redirect to a new page with short explanation and logout after a countdown
+            // return this.doLogout();
           return this.doLogin();
         }
 

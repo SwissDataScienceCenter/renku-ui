@@ -31,7 +31,7 @@ import { BrowserRouter as Router, Route, Switch, Redirect }  from 'react-router-
 import Project from './project/Project'
 import Ku from './ku/Ku'
 import { Landing, LoggedInNavBar, AnonymousNavBar, FooterNavbar } from './landing'
-import Notebooks from './notebooks';
+import { Notebooks } from './notebooks';
 import { Login } from './login'
 import Help from './help'
 import { UserAvatar } from './utils/UIComponents'
@@ -96,7 +96,7 @@ class App extends Component {
                   <Project.New key="project_new" client={this.props.client}
                     user={this.props.userState.getState().user} {...p}/> }/>
               <Route exact path="/notebooks"
-                render={p => <Notebooks.Admin key="notebooks"
+                render={p => <Notebooks key="notebooks"
                   user={this.props.userState.getState().user}
                   client={this.props.client} {...p} />} />
             </Switch>
