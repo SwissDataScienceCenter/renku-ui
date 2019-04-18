@@ -54,19 +54,22 @@ class ShowFile extends React.Component {
     this.props.client.getRepositoryFile(this.props.projectId, filePath, branchName, 'base64')
       .catch(e => {
         if (e.case === API_ERRORS.notFoundError) {
-          return '{"error": "File does not exist."}';
+          this.setState({error:"The file with path '"+ this.props.filePath +"' does not exist or could not be loaded."})
         }
-        return '{"error": "Could not load file."}';
+        else this.setState({error:"Could not load file with path "+this.props.filePath})
       })
       .then(json => {
         if (!this._isMounted) return;
-        console.log(json)
-        this.setState({file:json});
+        if(!this.state.error)
+          this.setState({file:json});
       });
   }
 
   render() {
-    if (this.state.error != null) return <div>{this.state.error}</div>;
+    if (this.state.error !== null) return  <Card>
+      <CardHeader className="align-items-baseline">&nbsp;</CardHeader>
+      <CardBody>{this.state.error}</CardBody>
+    </Card>;
     if (this.state.file == null) return <Card>
       <CardHeader className="align-items-baseline">&nbsp;</CardHeader>
       <CardBody>{"Loading..."}</CardBody>
@@ -176,7 +179,6 @@ class LaunchNotebookButton extends React.Component {
   }
 
   render() {
-    console.log({...this.props.user})
     if (!this.props.notebookServerUrl) return null;
 
     const props = this.props;
