@@ -1,5 +1,5 @@
 /*!
- * Copyright 2017 - Swiss Data Science Center (SDSC)
+ * Copyright 2019 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,14 +16,26 @@
  * limitations under the License.
  */
 
+/**
+*  renku-ui
+*
+*  authentication/Authentication.container.js
+*  Authentication components to log in and out.
+*/
+
+
 import React, { Component } from 'react';
 
-// TODO: Find a way to access the previous route (before login) for a more meaningful redirect url (or make
-// TODO: this a non-component).
+
+// always pass "previous" with the current `location.pathname`
 class Login extends Component {
   render() {
+    let redirectUrl = this.props.params.BASE_URL;
+    if (this.props.location.state && this.props.location.state.previous) {
+      redirectUrl += this.props.location.state.previous;
+    }
     window.location =
-      `${this.props.params.GATEWAY_URL}/auth/login?redirect_url=${encodeURIComponent(this.props.params.BASE_URL)}`;
+      `${this.props.params.GATEWAY_URL}/auth/login?redirect_url=${encodeURIComponent(redirectUrl)}`;
     return <p>logging in</p>;
   }
 }

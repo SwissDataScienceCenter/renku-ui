@@ -45,7 +45,7 @@ class RenkuToolbarItemUser extends Component {
       return <Loader size="16" inline="true" />
     }
     else if (!this.props.user.id) {
-      return <RenkuNavLink to="/login" title="Login" />
+      return <RenkuNavLink to="/login" title="Login" previous={this.props.location.pathname} />
     }
     else {
       return <li className="nav-item dropdown">
