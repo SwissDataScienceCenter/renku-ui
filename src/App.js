@@ -32,7 +32,7 @@ import Project from './project/Project'
 import Ku from './ku/Ku'
 import { Landing, LoggedInNavBar, AnonymousNavBar, FooterNavbar } from './landing'
 import { Notebooks } from './notebooks';
-import { Login } from './login'
+import { Login } from './authentication'
 import Help from './help'
 import { UserAvatar } from './utils/UIComponents'
 
