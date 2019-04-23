@@ -18,8 +18,8 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import NotebookPreview from '@nteract/notebook-preview';
-import { Link}  from 'react-router-dom';
+import NotebookPreview from '@nteract/notebook-render';
+import { Link }  from 'react-router-dom';
 
 // Do not import the style because this does not work after webpack bundles things for production mode.
 // Instead define the style below
@@ -135,6 +135,7 @@ class StyledNotebook extends React.Component {
       display: block;
     }
     `;
+
     return [
       <style key="notebook-style">{notebookStyle}</style>,
       <NotebookPreview
