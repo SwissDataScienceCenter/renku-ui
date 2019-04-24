@@ -92,14 +92,17 @@ class View extends Component {
   }
 
   checkGraphWebhook() {
-    // check if user is also owner
+    // check if data are available -- may remove this?
     if (this.projectState.get('core.available') !== true) {
       this.projectState.set('webhook.possible', false);
       return;
     }
-    const userIsOwner = this.projectState.get('core.owner.id') === this.props.user.id;
-    this.projectState.set('webhook.possible', userIsOwner);
-    if (userIsOwner) {
+    // check user permissions and fetch webhook status
+    const webhookCreator = this.projectState.get('visibility.accessLevel') >= ACCESS_LEVELS.MAINTAINER ?
+      true :
+      false;
+    this.projectState.set('webhook.possible', webhookCreator);
+    if (webhookCreator) {
       this.projectState.fetchGraphWebhookStatus(this.props.client, this.props.id);
     }
   }
