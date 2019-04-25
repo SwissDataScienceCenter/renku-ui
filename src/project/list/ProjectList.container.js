@@ -28,17 +28,35 @@ class List extends Component {
     this.model = new ProjectListModel(props.client);
     this.perPage = this.props.perPage || 10;
 
-    // Register listener for route changes (back/forward buttons)
-    this.props.history.listen(location => {
-        const {query, pageNumber, pathName} = this.getUrlSearchParameters(location);
-        this.onUrlParametersChange(query, pageNumber, pathName);
-    });
-
     this.handlers = {
       onSearchQueryChange: this.onSearchQueryChange.bind(this),
       onSearchSubmit: this.onSearchSubmit.bind(this),
       onPaginationPageChange: this.onPaginationPageChange.bind(this)
     };
+  }
+
+  componentDidMount() {
+    this.model.set('perPage', this.perPage);
+    const {query, pageNumber, pathName} = this.getUrlSearchParameters(this.props.location);
+    this.model.setQuery(query);
+    this.model.setPathName(pathName);
+    this.model.setPage(pageNumber);
+
+    // save listener to remove it when unmounting the component
+    // TODO: this could be removed if onPaginationPageChange/this.props.history.push worked
+    //    also when only the search part changed
+    const listener = this.props.history.listen(location => {
+      const {query, pageNumber, pathName} = this.getUrlSearchParameters(location);
+      this.onUrlParametersChange(query, pageNumber, pathName);
+    });
+    this.setState({listener});
+  }
+
+  componentWillUnmount() {
+    const { listener } = this.state;
+    if (listener) {
+      listener();
+    }
   }
 
   // TODO: Replace this by URLs which are passed down from the app level.
@@ -53,32 +71,33 @@ class List extends Component {
   }
 
   urlFromQueryAndPageNumber(query, pageNumber , pathName) {
-    return `${pathName}/?q=${query}&page=${pageNumber}`
-  }
-
-  componentDidMount() {
-    this.model.set('perPage', this.perPage);
-    const {query, pageNumber, pathName} = this.getUrlSearchParameters(this.props.location);
-    this.model.setQuery(query);
-    this.model.setPathName(pathName);
-    // Automatically search if the query is not empty
-    //if (this.model.get('query') !== '')
-    this.model.setPage(pageNumber);
+    return `${pathName}?q=${query}&page=${pageNumber}`
   }
 
   getUrlSearchParameters(location) {
     const pageNumber = parseInt(qs.parse(location.search).page, 10) || 1
     const query = qs.parse(location.search).q || '';
-    const pathName = location.pathname.endsWith('/') ? location.pathname.substring(0,location.pathname.length-1) : location.pathname;
+    const pathName = location.pathname.endsWith('/') ?
+      location.pathname.substring(0,location.pathname.length-1) :
+      location.pathname;
     return {query, pageNumber,pathName};
   }
 
   onUrlParametersChange(query, pageNumber, pathName) {
+    // workaround to prevent the listener of "this.props.history.listen" to trigger in the wrong path
+    // INFO: check if the path matches [/projects$, /projects/$, /projects?*, /projects/\D*]
+    const regExp = /\/projects($|\/$|(\/|\?)\D+.*)$/;
+    if (!regExp.test(pathName)) {
+      return;
+    }
     this.model.setQueryPageNumberAndPath(query, pageNumber,pathName);
   }
 
   onPaginationPageChange(newPageNumber) {
-    this.props.history.push(this.urlFromQueryAndPageNumber(this.model.get('query'), newPageNumber, this.model.get('pathName') ))
+    const query = this.model.get('query');
+    const pathName = this.model.get('pathName');
+    const newUrl = this.urlFromQueryAndPageNumber(query, newPageNumber, pathName);
+    this.props.history.push(newUrl);
   }
 
   onSearchQueryChange(e) {
