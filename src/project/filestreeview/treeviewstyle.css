@@ -31,6 +31,10 @@
     cursor: pointer;
 }
 
+.throw-right-in-flex{
+    margin-left: auto;
+}
+
 .fs-element{
     color: #212529;
     text-overflow: ellipsis;
@@ -46,6 +50,11 @@
     color:black;
 }
 
+.tree-header-title{
+    position: relative;
+    top: 2px;
+}
+
 .fs-element:hover{
     background-color:#e9ecef;
     border-radius: 0.15rem;
@@ -56,17 +65,21 @@
     padding: 6px;
 }
 
+.selected-file{
+    background-color: #e9ecef;
+}
+
 .tree-title{
     background-color: #5561A6;
     color:white;
     border-radius: 0.25rem;
     text-overflow: ellipsis;
-    overflow: hidden; 
+    /* overflow: hidden;   */
     white-space: nowrap;
     font-size: 1rem;
     font-weight: 300;
     line-height: 1.5;
-    display: block;
+    display: flex;
     padding: 0.75rem 1.25rem;
     margin-bottom: 10px;
 }
@@ -76,7 +89,8 @@
 }
 
 .scroll-x{
-    overflow-x: scroll;
+    overflow-x: auto;
+    /* overflow-x: scroll; */
 }
 
 .order-seccond{
@@ -111,6 +125,14 @@
 	/* Standard */
 	transform: rotate(360deg) ;
     cursor: pointer;
+}
+
+.lfs-badge{
+    border-color:#aaa;
+    border-width: 1.3px;
+    border-style: solid;
+    margin-right: 7px;
+    color:#aaa;
 }
 
 :root {

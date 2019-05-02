@@ -5,6 +5,9 @@ import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faFolderClosed from '@fortawesome/fontawesome-free-solid/faFolder'
 import faFolderOpen from '@fortawesome/fontawesome-free-solid/faFolderOpen'
 import faFile from '@fortawesome/fontawesome-free-solid/faFile'
+import faProjectDiagram from '@fortawesome/fontawesome-free-solid/faProjectDiagram'
+
+import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import './treeviewstyle.css';
 
 
@@ -12,18 +15,19 @@ class TreeNode extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isSelected:false,
-      childrenOpen: this.props.childrenOpen
+      isSelected: this.props.nodeInsideisSelected,
+      childrenOpen: this.props.childrenOpen 
     }
-    this.handleIconClick = this.handleIconClick.bind(this);
+    this.handleIconClick = this.handleIconClick.bind(this);  
   }
 
-  handleIconClick(e) {
+  handleIconClick() {
     this.props.setOpenFolder(this.props.path);
     this.setState((prevState) => ({ childrenOpen: !prevState.childrenOpen }));
   }
 
   render() {
+
     const icon = this.props.node.children.length ?
       (this.state.childrenOpen === false ? 
         <FontAwesomeIcon className="icon-purple" icon={faFolderClosed}  /> 
@@ -39,24 +43,39 @@ class TreeNode extends Component {
           path={node.path} 
           key={node.path} 
           node={node}
-          childrenOpen={this.props.hash[node.path].childrenOpen}
+          childrenOpen={this.props.hash[node.path].childrenOpen }
           projectUrl={this.props.projectUrl}
           lineageUrl={this.props.lineageUrl}
           setOpenFolder={this.props.setOpenFolder}
           hash={this.props.hash} 
+          fileView={this.props.fileView} 
+          isLfs={this.props.hash[node.path].isLfs}
+          nodeInsideIsSelected={this.props.currentUrl.endsWith(node.path)}
+          currentUrl={this.props.currentUrl}
         />
       })
       : null;
 
     let elementToRender;
+    let selected = this.props.nodeInsideIsSelected ? " selected-file " : "";
     if(this.props.node.jsonObj !== null){
       elementToRender = 
-        <div className={order+" "+hidden}>
-          <Link to= {`${this.props.projectUrl}/${this.props.node.jsonObj.path}`} >
-            <div className={"fs-element"}>
-              {icon} {this.props.node.name} 
-            </div>
-          </Link>
+        <div className={order+" "+hidden+" "+selected}>
+          <div className={"fs-element"} >
+            { this.props.fileView ? 
+              <Link to= {`${this.props.projectUrl}/${this.props.node.jsonObj.path}`} >
+                <div className={"fs-element"}>
+                  {icon} {this.props.node.name} 
+                </div>
+              </Link>
+              :
+              <Link to= {`${this.props.lineageUrl}/${this.props.node.jsonObj.path}`} >
+                <div className={"fs-element"}>
+                  {icon} {this.props.node.name} 
+                </div>
+              </Link>  
+            }
+          </div> 
         </div>
       ;
     } else {
@@ -76,7 +95,7 @@ class TreeNode extends Component {
           </div>
         </div>;
     }   
-      
+
     return elementToRender;
   }
 }
@@ -86,31 +105,78 @@ class FilesTreeView extends Component {
   constructor(props){
     super(props);
     this.state = {
-      tree : props.data ?
-        props.data.tree.map((node, index) => {
-          return <TreeNode
-            key={node.path} 
-            node={node} 
-            childrenOpen={this.props.hash[node.path].childrenOpen}
-            projectUrl={this.props.projectUrl}
-            lineageUrl={this.props.lineageUrl}
-            setOpenFolder={this.props.setOpenFolder}
-            path={node.path}
-            hash={this.props.data.hash} />
-        })
-        :
-        null
+      dropdownOpen:false
     }
+    this.toggle = this.toggle.bind(this);
+  }
+
+  toggle() {
+    this.setState({
+      dropdownOpen: !this.state.dropdownOpen
+    });
   }
 
   render() {
+    const fileView = ! this.props.currentUrl.startsWith(this.props.lineageUrl);
+
+    const emtpyView = this.props.projectUrl.startsWith(this.props.currentUrl) 
+    || this.props.lineageUrl.startsWith(this.props.currentUrl);
+
+    let redirectURL = "";
+    if(! emtpyView ){
+      redirectURL = fileView ? 
+        this.props.currentUrl.replace(this.props.projectUrl,"")
+        : this.props.currentUrl.replace(this.props.lineageUrl,"");   
+    }
+
+    const tree =  this.props.data ?
+      this.props.data.tree.map((node) => {
+        return <TreeNode
+          key={node.path} 
+          node={node} 
+          childrenOpen={this.props.hash[node.path].childrenOpen}
+          projectUrl={this.props.projectUrl}
+          lineageUrl={this.props.lineageUrl}
+          setOpenFolder={this.props.setOpenFolder}
+          path={node.path}
+          hash={this.props.data.hash}
+          fileView={fileView}
+          isLfs={this.props.hash[node.path].isLfs}
+          nodeInsideIsSelected={this.props.currentUrl.endsWith(node.path)}
+          currentUrl={this.props.currentUrl}
+        />
+      })
+      :
+      null;
+
+    const toFile = emtpyView ? this.props.projectUrl.replace("/blob","")+redirectURL 
+      : this.props.projectUrl+redirectURL;
+    const toLineage = this.props.lineageUrl+redirectURL
 
     return (
       <div className="tree-container">
         <div className="tree-title">
-          <span>Repository</span>
+          <span className="tree-header-title text-truncate">
+            {fileView ? "File View": "Lineage View"}
+          </span>
+          <span className="float-right throw-right-in-flex">
+            <Dropdown color="primary" size="sm" isOpen={this.state.dropdownOpen} toggle={this.toggle}>
+              <DropdownToggle caret size="sm" color="primary">
+                {  fileView  ? 
+                  <FontAwesomeIcon className="icon-white" icon={faFile} /> 
+                  : <FontAwesomeIcon className="icon-white" icon={faProjectDiagram} /> 
+                }
+              </DropdownToggle>
+              <DropdownMenu>
+                { fileView  ?
+                  <Link to={toLineage}><DropdownItem> Lineage View </DropdownItem></Link>
+                  : <Link to={toFile}><DropdownItem>File View</DropdownItem></Link>
+                }
+              </DropdownMenu>
+            </Dropdown>
+          </span>
         </div>
-        {this.state.tree}
+        {tree}
       </div>
     );
   }
