@@ -19,12 +19,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import NotebookPreview from '@nteract/notebook-render';
-import { Link }  from 'react-router-dom';
 
 // Do not import the style because this does not work after webpack bundles things for production mode.
 // Instead define the style below
 //import './notebook.css'
-import { Button, Row, Col, Tooltip, Card, CardHeader, CardBody } from 'reactstrap';
+import { Button, Row, Col, Tooltip, Card, CardHeader, CardBody, Badge } from 'reactstrap';
 import '../../node_modules/highlight.js/styles/atom-one-light.css'
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faProjectDiagram from '@fortawesome/fontawesome-free-solid/faProjectDiagram'
@@ -54,7 +53,7 @@ class ShowFile extends React.Component {
     this.props.client.getRepositoryFile(this.props.projectId, filePath, branchName, 'base64')
       .catch(e => {
         if (e.case === API_ERRORS.notFoundError) {
-          this.setState({error:"The file with path '"+ this.props.filePath +"' does not exist or could not be loaded."})
+          this.setState({error:"ERROR 404: The file with path '"+ this.props.filePath +"' does not exist."})
         }
         else this.setState({error:"Could not load file with path "+this.props.filePath})
       })
@@ -66,35 +65,119 @@ class ShowFile extends React.Component {
   }
 
   render() {
-    if (this.state.error !== null) return  <Card>
-      <CardHeader className="align-items-baseline">&nbsp;</CardHeader>
-      <CardBody>{this.state.error}</CardBody>
-    </Card>;
+    if (this.state.error !== null){
+      let filePath = this.props.filePath.replace(this.props.match.url + '/files/blob/', '')
+      let buttonGraph = this.props.lineagesPath !== undefined ? 
+        <span>
+          <Tooltip placement="top" isOpen={this.state.tooltipGraphViewOpen} target="TooltipGraphView">
+            Graph View
+          </Tooltip>
+          <FontAwesomeIcon className="icon-link" icon={faProjectDiagram} 
+            id="TooltipGraphView"
+            onClick={()=> { 
+              this.props.history.push(this.props.lineagesPath+'/'+filePath)} }
+            onMouseEnter={() => {
+              this.setState({ tooltipGraphViewOpen: true });
+            }} 
+            onMouseLeave={() => {
+              this.setState({ tooltipGraphViewOpen: false });
+            }} /> 
+        </span>
+        : null;
+
+      let buttonGit = <span>
+        <Tooltip placement="top" isOpen={this.state.tooltipGitViewOpen} target="TooltipGitView">
+            Open in GitLab
+        </Tooltip>
+        <a href={`${this.props.externalUrl}/blob/master/${filePath}`} 
+          role="button" 
+          target="_blank"
+          rel="noreferrer noopener"
+          id="TooltipGitView"
+          onMouseEnter={() => {
+            this.setState({ tooltipGitViewOpen: true });
+          }} 
+          onMouseLeave={() => {
+            this.setState({ tooltipGitViewOpen: false });
+          }}>
+          <FontAwesomeIcon className="icon-link" icon={faGitlab} /> 
+        </a>
+      </span>
+
+      return  <Card>
+        <CardHeader className="align-items-baseline">
+          {this.props.filePath.split('\\').pop().split('/').pop()}
+          <span className="caption align-baseline">&nbsp;File view</span>
+          <div className="float-right" >
+            {buttonGit}
+            {buttonGraph}
+          </div>
+        </CardHeader>
+        <CardBody>{this.state.error}</CardBody>
+      </Card>;
+    } 
+
     if (this.state.file == null) return <Card>
       <CardHeader className="align-items-baseline">&nbsp;</CardHeader>
       <CardBody>{"Loading..."}</CardBody>
     </Card>;
-    let filePath = this.props.filePath.replace(this.props.match.url + '/files/blob/', '')
-    let buttonGraph = this.props.lineagesPath !== undefined ? 
-      <Link to={this.props.lineagesPath+'/'+filePath} >
-        <FontAwesomeIcon className="icon-link" icon={faProjectDiagram} /> 
-      </Link>
+    
+    const isLFS = this.props.hashElement ? this.props.hashElement.isLfs : false;
+    const isLFSBadge = isLFS? 
+      <Badge className="lfs-badge" color="light">LFS</Badge> : null;
+         
+    const filePath = this.props.filePath.replace(this.props.match.url + '/files/blob/', '')
+    const buttonGraph = this.props.lineagesPath !== undefined ? 
+      <span>
+        <Tooltip placement="top" isOpen={this.state.tooltipGraphViewOpen} target="TooltipGraphView">
+          Graph View
+        </Tooltip>
+        <FontAwesomeIcon className="icon-link" icon={faProjectDiagram} 
+          id="TooltipGraphView"
+          onClick={()=> { 
+            this.props.history.push(this.props.lineagesPath+'/'+filePath) 
+          }} 
+          onMouseEnter={() => {
+            this.setState({ tooltipGraphViewOpen: true });
+          }} 
+          onMouseLeave={() => {
+            this.setState({ tooltipGraphViewOpen: false });
+          }} /> 
+      </span>
       : null;
-    let buttonGit = <a href={`${this.props.externalUrl}/blob/master/${filePath}`} role="button" target="_blank"
-      rel="noreferrer noopener"><FontAwesomeIcon className="icon-link" icon={faGitlab} /> </a>
 
-    let buttonJupyter = filePath.endsWith(".ipynb") ? 
+    const buttonGit = <span>
+      <Tooltip placement="top" isOpen={this.state.tooltipGitViewOpen} target="TooltipGitView">
+          Open in GitLab
+      </Tooltip>
+      <a href={`${this.props.externalUrl}/blob/master/${filePath}`} 
+        role="button" 
+        target="_blank"
+        rel="noreferrer noopener"
+        id="TooltipGitView"
+        onMouseEnter={() => {
+          this.setState({ tooltipGitViewOpen: true });
+        }} 
+        onMouseLeave={() => {
+          this.setState({ tooltipGitViewOpen: false });
+        }}>
+        <FontAwesomeIcon className="icon-link" icon={faGitlab} /> 
+      </a>
+    </span>
+
+    const buttonJupyter = filePath.endsWith(".ipynb") ? 
       <FilePreview
         getNotebookButton={true}
         file={this.state.file}
         {...this.props}
       /> : null; 
-       
+      
 
     return (
       <Card>
         <CardHeader className="align-items-baseline">
-          {this.state.file.file_name}
+          {isLFSBadge}
+          {this.props.filePath.replace(this.props.match.url + '/files/blob/', '')}
           <span className="caption align-baseline">&nbsp;File view</span>
           <div className="float-right" >
             {buttonJupyter}

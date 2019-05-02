@@ -26,9 +26,9 @@ import { Link}  from 'react-router-dom';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import faFile from '@fortawesome/fontawesome-free-solid/faFile';
 import faGitlab from '@fortawesome/fontawesome-free-brands/faGitlab';
-import {
-  Card, CardHeader, CardBody
-} from 'reactstrap';
+import { Card, CardHeader, CardBody, UncontrolledTooltip, Badge } from 'reactstrap';
+
+import {  JupyterNotebook } from './File.container';
 
 import './Lineage.css';
 
@@ -118,20 +118,48 @@ class FileLineage extends Component {
         <p>Loading...</p>;
     const externalUrl = this.props.externalUrl;
     const externalFileUrl = `${externalUrl}/blob/master/${this.props.path}`;
+    const isLFS = this.props.hashElement ? this.props.hashElement.isLfs : false;
+    const isLFSBadge = isLFS ? 
+      <Badge className="lfs-badge" color="light">LFS</Badge> : null;
+
     let buttonFile = this.props.filePath !== undefined ? 
-      <Link to={this.props.filePath} >
-        <FontAwesomeIcon className="icon-link" icon={faFile} /> 
-      </Link>
+      <span>
+        <UncontrolledTooltip placement="top" target="TooltipFileView">
+          File View
+        </UncontrolledTooltip>
+        <Link to={this.props.filePath} id="TooltipFileView">
+          <FontAwesomeIcon className="icon-link" icon={faFile} id="TooltipFileView"/> 
+        </Link>
+      </span>
       : null;
 
-    let buttonGit = <a href={externalFileUrl} role="button" target="_blank"
-      rel="noreferrer noopener"><FontAwesomeIcon className="icon-link" icon={faGitlab} /> </a>
+    let buttonGit = 
+    <span>
+      <UncontrolledTooltip placement="top" target="TooltipGitlabView">
+          Open in GitLab
+      </UncontrolledTooltip>
+      <a href={externalFileUrl} role="button" target="_blank" id="TooltipGitlabView"
+        rel="noreferrer noopener"><FontAwesomeIcon className="icon-link" icon={faGitlab} /></a>
+    </span>
+
+    let buttonJupyter = this.props.filePath.endsWith(".ipynb") ? 
+      <JupyterNotebook
+        key="notebook-button"
+        justButton={true}
+        filePath={this.props.filePath}
+        notebook={this.props.notebook}
+        accessLevel={this.props.accessLevel}
+        {...this.props}
+      /> : null; 
+
 
     return <Card>
       <CardHeader className="align-items-baseline">
+        {isLFSBadge}
         {this.props.path}
         <span className="caption align-baseline">&nbsp;Lineage and usage</span>
         <div className="float-right" >
+          <span>{buttonJupyter}</span>
           <span>{buttonGit}</span>
           <span>{buttonFile}</span>
         </div>

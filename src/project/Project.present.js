@@ -327,7 +327,9 @@ class ProjectFilesNav extends Component {
       lineageUrl={this.props.lineagesUrl}
       projectUrl={this.props.fileContentUrl}
       setOpenFolder={this.props.setOpenFolder} 
-      hash={this.props.filesTree.hash}/>;
+      hash={this.props.filesTree.hash}
+      fileView={this.props.filesTreeView} 
+      currentUrl={this.props.location.pathname}/>;
   }
 }
 
@@ -539,11 +541,11 @@ class ProjectViewFiles extends Component {
 
   render() {
     return [
-      <Col key="files" sm={12} md={2}>
+      <Col key="files" sm={12} md={4} lg={2}>
         <ProjectFilesNav
           {...this.props} />
       </Col>,
-      <Col key="content" sm={12} md={10}>
+      <Col key="content" sm={12} md={8} lg={10}>
         <Switch>
           <Route path={this.props.lineageUrl}
             render={p => this.props.lineageView(p)} />

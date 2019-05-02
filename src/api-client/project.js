@@ -33,23 +33,34 @@ function groupedFiles(files, projectFiles) {
   return projectFiles
 }
 
-function buildTree(parts, treeNode, jsonObj, hash, currentPath) {
+function buildTree(parts, treeNode, jsonObj, hash, currentPath, gitattributes, openFilePath) {
   if (parts.length === 0) {
     return;
   }
 
   currentPath = currentPath === "" ? parts[0] : currentPath+'/'+parts[0];
+  let nodeName = parts[0];
+
+
+  let fileInsideIsSelected = openFilePath.length > 0 
+    && openFilePath.substring(1).startsWith(nodeName);  
+
+  let openFilePathParam =  fileInsideIsSelected 
+    ? openFilePath.substring(1).replace(nodeName,"") : "" ;
+
 
   for (let i = 0; i < treeNode.length; i++) {
     if (parts[0] === treeNode[i].text) {
-      buildTree(parts.splice(1, parts.length), treeNode[i].children, jsonObj, hash, currentPath+'/'+parts[0]);
+      buildTree(parts.splice(1, parts.length), treeNode[i].children, jsonObj, hash, currentPath+'/'+parts[0], gitattributes, openFilePathParam);
       return;
     }
   }
 
+  const isLfs = gitattributes ? gitattributes.includes(currentPath+" filter=lfs diff=lfs merge=lfs -text") : false;
+  
   let newNode;
   if (parts[0] === jsonObj.name)
-    newNode = { 'name': parts[0], 'children': [], 'jsonObj': jsonObj, 'path': currentPath  };
+    newNode = { 'name': parts[0], 'children': [], 'jsonObj': jsonObj, 'path': currentPath ,'isLfs': isLfs};
   else
     newNode = { 'name': parts[0], 'children': [], 'jsonObj': null, 'path': currentPath };
 
@@ -57,25 +68,38 @@ function buildTree(parts, treeNode, jsonObj, hash, currentPath) {
   
   if (currentNode.length === 0) {
     treeNode.push(newNode);
-    hash[newNode.path] = {'name': parts[0], 'selected':false, 'childrenOpen':false, 'path': currentPath };
-    buildTree(parts.splice(1, parts.length), newNode.children, jsonObj, hash, currentPath);
+    hash[newNode.path] = {'name': parts[0], 'selected': false, 'childrenOpen': fileInsideIsSelected , 'path': currentPath, 'isLfs': isLfs };
+    buildTree(parts.splice(1, parts.length), newNode.children, jsonObj, hash, currentPath, gitattributes, openFilePathParam );
   } else {
     for (let j = 0; j < newNode.children.length; j++) {
       currentNode[0].children.push(newNode.children[j]);
     }
-    buildTree(parts.splice(1, parts.length), currentNode[0].children, jsonObj, hash, currentPath);
+    buildTree(parts.splice(1, parts.length), currentNode[0].children, jsonObj, hash, currentPath, gitattributes, openFilePathParam ) ;
   }
 }
 
-function getFilesTree(files) {
+function getFilesTree(client, files, projectId, openFilePath) {
   let list = files.filter((treeObj) => treeObj.type === 'blob');
   let tree = [];
   let hash = {};
-  for (let i = 0; i < list.length; i++) {
-    buildTree(list[i].path.split('/'), tree, list[i] , hash, "");
+  let lfs = files.filter((treeObj) => treeObj.path === '.gitattributes'); 
+
+  if(lfs.length >0){
+    return client.getRepositoryFile(projectId, lfs[0].path, 'master', 'raw')
+      .then(json => {
+        for (let i = 0; i < list.length; i++) {
+          buildTree(list[i].path.split('/'), tree, list[i] , hash, "", json, openFilePath);
+        }
+        const treeObj = { tree:tree , hash:hash }
+        return treeObj;
+      });
+  } else {
+    for (let i = 0; i < list.length; i++) {
+      buildTree(list[i].path.split('/'), tree, list[i] , hash, "", null , openFilePath);
+    }
+    const treeObj = { tree:tree , hash:hash }
+    return treeObj;
   }
-  const treeObj = { tree:tree , hash:hash }
-  return treeObj;
 }
 
 function addProjectMethods(client) {
@@ -113,9 +137,9 @@ function addProjectMethods(client) {
     })
   }
 
-  client.getProjectFilesTree = (projectId) => {
+  client.getProjectFilesTree = (projectId, openFilePath) => {
     return client.getRepositoryTree(projectId, { path: '', recursive: true }).then((tree) => {
-      const fileStructure = getFilesTree(tree)
+      const fileStructure = getFilesTree(client, tree, projectId, openFilePath);
       return fileStructure;
     });
   }

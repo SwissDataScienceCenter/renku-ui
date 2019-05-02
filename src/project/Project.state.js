@@ -98,11 +98,11 @@ class ProjectModel extends StateModel {
       });
   }
 
-  fetchProjectFilesTree(client, id) {
+  fetchProjectFilesTree(client, id, openFilePath) {
     const oldTree = this.get('filesTree');
     if(oldTree === null || oldTree === undefined){
       this.setUpdating({transient:{requests:{filesTree: true}}});
-      return client.getProjectFilesTree(id)
+      return client.getProjectFilesTree(id, openFilePath)
         .then(resp => resp)
         .then(d => {
           const updatedState = { filesTree: d, transient:{requests:{filesTree: false}} };
@@ -115,7 +115,7 @@ class ProjectModel extends StateModel {
     }
   }
 
-  setPojectOpenFolder(filePath){
+  setProjectOpenFolder(filePath){
     this.setUpdating({transient:{requests:{filesTree: true}}});
     let filesTree = this.get('filesTree');
     filesTree.hash[filePath].childrenOpen = ! filesTree.hash[filePath].childrenOpen;

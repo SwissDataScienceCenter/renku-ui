@@ -17,6 +17,7 @@
  */
 
 import React, { Component } from 'react';
+import { API_ERRORS } from '../api-client';
 
 import { FileLineage as FileLineagePresent } from './Lineage.present';
 
@@ -61,8 +62,16 @@ class FileLineage extends Component {
           if (this._isMounted) this.setState({graph});
         })
     } catch(error) {
-      console.error("load graph:", error);
-      if (this._isMounted) this.setState({error: 'Could not load lineage.'});
+      if(error.case === API_ERRORS.notFoundError){
+        console.error("load graph:", error);
+        if (this._isMounted) 
+          this.setState({error: 'ERROR 404: Could not load lineage. The file with path '+ this.props.filePath +' does not exist."'});
+      } else{
+        console.error("load graph:", error);
+        if (this._isMounted) 
+          this.setState({error: 'Could not load lineage.'});
+      }
+        
     }
   }
 
@@ -71,6 +80,7 @@ class FileLineage extends Component {
       graph={this.state.graph} 
       error={this.state.error} 
       filePath={this.props.match.url+'/files/blob/'+this.props.path} 
+      accessLevel={this.props.accessLevel}
       {...this.props} />
   }
 }

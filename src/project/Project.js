@@ -78,8 +78,8 @@ class View extends Component {
   async createGraphWebhook() { this.projectState.createGraphWebhook(this.props.client, this.props.id); }
   async stopCheckingWebhook() { this.projectState.stopCheckingWebhook(); }
   async fetchGraphWebhook() { this.projectState.fetchGraphWebhook(this.props.client, this.props.id, this.props.user) }
-  async fetchProjectFilesTree() { return this.projectState.fetchProjectFilesTree(this.props.client, this.props.id); }
-  async setPojectOpenFolder(filepath) {this.projectState.setPojectOpenFolder(filepath);}
+  async fetchProjectFilesTree() { return this.projectState.fetchProjectFilesTree(this.props.client, this.props.id , this.props.location.pathname.replace(this.props.match.projectPath,"").replace(this.subUrls().lineagesUrl,"").replace(this.subUrls().fileContentUrl,"")); }
+  async setProjectOpenFolder(filepath) {this.projectState.setProjectOpenFolder(filepath);}
 
   async fetchAll() {
     await this.fetchProject();
@@ -216,13 +216,18 @@ class View extends Component {
       lineageView: (p) => <FileLineage key="lineage" {...subProps}
         externalUrl={externalUrl}
         projectPath={this.projectState.get('core.path_with_namespace')}
-        path={p.match.params.filePath} />,
+        path={p.match.params.filePath}
+        notebook={"Notebook"}
+        accessLevel={accessLevel}
+        hashElement={filesTree !== undefined ? filesTree.hash[p.match.params.filePath] : undefined} />,
 
       fileView: (p) => <ShowFile
         key="filepreview" {...subProps}
         filePath={p.location.pathname}
         projectPath={this.projectState.get('core.path_with_namespace')}
-        lineagesPath={this.subUrls().lineagesUrl}/>,
+        lineagesPath={this.subUrls().lineagesUrl}
+        hashElement={filesTree !== undefined ? filesTree.hash[p.location.pathname.replace(this.props.match.url + '/files/blob/', '')]:undefined}
+      />,
 
       mrList: <ConnectedMergeRequestList key="mrList" store={this.projectState.reduxStore}
         mrOverviewUrl={this.subUrls().mrOverviewUrl}/>,
@@ -287,8 +292,7 @@ class View extends Component {
       //this.fetchModifiedFiles();
     },
     setOpenFolder: (filePath) => {
-      this.setPojectOpenFolder(filePath);
-      //this.projectState.setPojectOpenFolder(filePath);
+      this.setProjectOpenFolder(filePath);
     },
     fetchCIJobs: () => { this.fetchCIJobs() },
     startNotebookServersPolling: () => {
