@@ -99,6 +99,7 @@ class ProjectModel extends StateModel {
   }
 
   fetchProjectFilesTree(client, id, openFilePath) {
+    if (this.get('transient.requests.filesTree') === SpecialPropVal.UPDATING) return;
     const oldTree = this.get('filesTree');
     if(oldTree === null || oldTree === undefined){
       this.setUpdating({transient:{requests:{filesTree: true}}});
