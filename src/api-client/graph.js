@@ -20,7 +20,7 @@ function addGraphMethods(client) {
   // using simpleFetch instead of clientFetch because we can get a 4xx response
   // https://github.com/SwissDataScienceCenter/renku-graph/tree/master/webhook-service
   client.checkGraphWebhook = (projectId) => {
-    const url = `${client.baseUrl}/projects/${projectId}/graph-hooks/validation`;
+    const url = `${client.baseUrl}/projects/${projectId}/graph/webhooks/validation`;
     return client.simpleFetch(url, 'POST').then((resp) => {
       if (resp.status === 200) {
         return true;
@@ -36,7 +36,7 @@ function addGraphMethods(client) {
   }
 
   client.createGraphWebhook = (projectId) => {
-    const url = `${client.baseUrl}/projects/${projectId}/graph-hooks`;
+    const url = `${client.baseUrl}/projects/${projectId}/graph/webhooks`;
     return client.simpleFetch(url, 'POST').then((resp) => {
       if (resp.status === 200 || resp.status === 201) {
         return true;
