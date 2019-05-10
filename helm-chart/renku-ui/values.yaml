@@ -5,13 +5,7 @@
 ## Global variables
 ## Shared values/secrets
 global:
-  keycloak:
-    ## Name of the postgres database to be used by Keycloak
-    postgresDatabase: keycloak
-    ## Postgres user for the Keycloak database
-    postgresUser: keycloak
-    ## Postgres password for the Keycloak database
-    postgresPassword: keycloak
+
   renku:
     ## Set to true if using https
     https: false
