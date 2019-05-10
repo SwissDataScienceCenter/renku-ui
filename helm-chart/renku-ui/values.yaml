@@ -5,17 +5,6 @@
 ## Global variables
 ## Shared values/secrets
 global:
-  gitlab:
-    ## Client secret, set this to a random string.
-    ## To change this value after deploying, first generate a new secret using the Keycloak admin console
-    ## then paste the generated secret here
-    clientSecret: open_secret
-    ## Name of the postgres database to be used by Gitlab
-    postgresDatabase: gitlabhq_production
-    ## Postgres user for the gitlab database
-    postgresUser: gitlab
-    ## Postgres password for the gitlab database
-    postgresPassword: gitlab
   keycloak:
     ## Name of the postgres database to be used by Keycloak
     postgresDatabase: keycloak
@@ -33,12 +22,6 @@ replicaCount: 1
 
 ## Set to a custom base URL if deployed manually
 # baseUrl: "http://127.0.0.1:8080"
-## Set to a custom GitLab URL if deployed manually
-# gitlabUrl: "http://gitlab.renku.build"
-## Configure application ID from "{{ gitlabUrl }}/oauth/application"
-## by setting redirect URL to "{{ baseUrl }}/login/redirect/gitlab"
-## and set the application ID as the "gitlabClientId" chart value.
-# gitlabClientId: "renku-ui"
 
 image:
   repository: renku/renku-ui
