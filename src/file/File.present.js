@@ -235,35 +235,11 @@ class LaunchNotebookButton extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      serverRunning: false
+      showTooltip: false
     };
-    this.state.showTooltip = false;
-  }
-
-  componentDidMount() {
-    this.componentDidUpdate()
-  }
-
-  componentDidUpdate() {
-    if (this.props.notebookServerAPI === this.previousNotebookServerAPI) return;
-    if (!this.props.notebookServerAPI) return;
-
-    // TODO: Method setServerStatus in LaunchNotebookServer component does the
-    // TODO: same. Move to client library.
-    const headers = this.props.client.getBasicHeaders();
-    this.props.client.clientFetch(this.props.notebookServerAPI, { headers })
-      .then(response => {
-        const serverStatus = !(!response.data.pending && !response.data.ready);
-        this.setState({serverRunning: serverStatus})
-      })
-      .catch(e => {
-        console.log("Unexpected error in LaunchNotebook button", e)
-      });
-    this.previousNotebookServerAPI = this.props.notebookServerAPI;
   }
 
   render() {
-    if (!this.props.notebookServerUrl) return null;
 
     const props = this.props;
     const label = props.label || 'Open Notebook';
@@ -273,7 +249,7 @@ class LaunchNotebookButton extends React.Component {
     const message = this.props.user.id ?
       "You have to launch Jupyter in Notebook Servers":
       "Please login to open notebooks"
-    const tooltip = this.state.serverRunning ? null :
+    const tooltip = this.state.deploymentUrl ? null :
       <Tooltip
         id="JupyterButtonTooltip"
         target="tooltipButton"
@@ -288,7 +264,7 @@ class LaunchNotebookButton extends React.Component {
     return this.props.iconView ? 
       <span>
         {tooltip}
-        <span disabled={!this.state.serverRunning}
+        <span disabled={!externalUrl}
           onClick={event => {
             event.preventDefault();
             window.open(externalUrl);
@@ -318,7 +294,7 @@ class LaunchNotebookButton extends React.Component {
             // just a dirty trick because the mouseout event does not fire...
             setTimeout(() => this.setState({ showTooltip: false }), 3000)
           }}
-          disabled={!this.state.serverRunning}
+          disabled={!externalUrl}
           className={className}
           color="primary" onClick={event => {
             event.preventDefault();
@@ -337,7 +313,6 @@ const JupyterNotebookButton = props => {
     key="launchbutton"
     deploymentUrl={props.deploymentUrl}
     notebookServerUrl={props.notebookServerUrl}
-    notebookServerAPI={props.notebookServerAPI}
     client={props.client}
     label="Open Notebook"
     user={props.user}

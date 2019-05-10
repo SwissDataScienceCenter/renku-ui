@@ -4,7 +4,6 @@ global:
 
 baseUrl: "http://localhost:3000"
 gitlabUrl: "http://gitlab.renku.build"
-jupyterhubUrl: "http://jupyterhub.renku.build"
 
 ingress:
   enabled: false

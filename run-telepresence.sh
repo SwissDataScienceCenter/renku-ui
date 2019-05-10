@@ -60,7 +60,6 @@ fi
 tee > ./public/config.json << EOF
 {
   "BASE_URL": "${BASE_URL}",
-  "JUPYTERHUB_URL": "${BASE_URL}/jupyterhub",
   "GATEWAY_URL": "${BASE_URL}/api",
   "WELCOME_PAGE": "${WELCOME_PAGE}",
   "RENKU_VERSION": "latest"

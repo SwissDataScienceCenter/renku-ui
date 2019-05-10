@@ -31,10 +31,15 @@ class JupyterNotebookContainer extends Component {
 
   render() {
     let filePath = this.props.filePath;
+    let deploymentUrl = null;
     if (filePath && filePath[0] !== '/') filePath = '/' + filePath;
 
-    const deploymentUrl = this.props.accessLevel >= ACCESS_LEVELS.DEVELOPER ?
-      `${this.props.notebookServerUrl}${filePath}` : null;
+
+    if (this.props.accessLevel >= ACCESS_LEVELS.DEVELOPER &&
+      this.props.justButton && this.props.notebookServerUrl ) {
+      deploymentUrl = `${this.props.notebookServerUrl}`
+    }
+
     if(this.props.justBody)
       return <JupyterNotebookBody
         fileName={this.props.filePath.replace(/^.*(\\|\/|:)/, '')}
@@ -44,6 +49,7 @@ class JupyterNotebookContainer extends Component {
         notebookServerAPI={this.props.notebookServerAPI}
         client={this.props.client}
       />
+    
     if(this.props.justButton)
       return <JupyterNotebookButtonIcon
         fileName={this.props.filePath.replace(/^.*(\\|\/|:)/, '')}
@@ -54,6 +60,7 @@ class JupyterNotebookContainer extends Component {
         client={this.props.client}
         user={this.props.user}
       />
+
     return <JupyterNotebookPresent
       fileName={this.props.filePath.replace(/^.*(\\|\/|:)/, '')}
       notebook={this.props.notebook}

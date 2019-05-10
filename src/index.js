@@ -21,7 +21,6 @@ configPromise.then((res) => {
 
     const client = new APIClient(
       params.GATEWAY_URL,
-      params.JUPYTERHUB_URL,
       params.RENKU_VERSION
     );
 

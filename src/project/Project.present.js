@@ -588,7 +588,6 @@ class ProjectNotebookServers extends Component {
         <NotebookServers
           servers={ this.props.notebooks.all }
           stop= { this.props.stopNotebookServer }
-          jupyterUrl={ this.props.client.jupyterhubUrl }
           projectId={this.props.id}
         />
         {launch}

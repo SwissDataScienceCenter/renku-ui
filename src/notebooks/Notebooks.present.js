@@ -210,7 +210,7 @@ class NotebookServerRowAction extends Component {
             { StatusText[status] }
           </DropdownToggle>
           <DropdownMenu>
-            <DropdownItem href={this.props.fullUrl} target="_blank">
+            <DropdownItem href={this.props.url} target="_blank">
               <FontAwesomeIcon icon={faExternalLinkAlt} /> Connect
             </DropdownItem>
             <DropdownItem onClick={(e) => this.props.onStopServer(name)}>
@@ -249,7 +249,7 @@ class NotebookServerRowProject extends Component {
 
 class NotebookServerRowFull extends Component {
   render() {
-    const {annotations, status, fullUrl} = this.props;
+    const {annotations, status, url} = this.props;
     let columns;
     if (this.props.projectId) {
       columns = [annotations["branch"], annotations["commit-sha"].substring(0,8)];
@@ -274,7 +274,7 @@ class NotebookServerRowFull extends Component {
             status={status}
             name={this.props.name}
             onStopServer={this.props.onStopServer}
-            fullUrl={fullUrl}
+            url={url}
           />
         </td>
       </tr>
@@ -284,7 +284,7 @@ class NotebookServerRowFull extends Component {
 
 class NotebookServerRowCompact extends Component {
   render() {
-    const {annotations, status, projectId, fullUrl} = this.props;
+    const {annotations, status, projectId, url} = this.props;
     let rowsHeader, rows;
     if (projectId) {
       rowsHeader = Columns.large.project;
@@ -314,7 +314,7 @@ class NotebookServerRowCompact extends Component {
             status={status}
             name={this.props.name}
             onStopServer={this.props.onStopServer}
-            fullUrl={fullUrl}
+            url={url}
             small={true}
           />
         </td>
@@ -331,17 +331,16 @@ class NotebookServerRow extends Component {
       this.props.pending === "spawn" || this.props.pending === "stop" ?
         this.props.pending :
         "other";
-    const fullUrl = this.props.jupyterUrl + this.props.url.replace("/jupyterhub", "");
 
     return (
       <Media query={ Sizes.md }>
         { matches =>
           matches ? (
             <NotebookServerRowFull
-              {...this.props} status={status} annotations={annotations} fullUrl={fullUrl} />
+              {...this.props} status={status} annotations={annotations} />
           ) : (
             <NotebookServerRowCompact
-              {...this.props} status={status} annotations={annotations} fullUrl={fullUrl} />
+              {...this.props} status={status} annotations={annotations} />
           )
         }
       </Media>
@@ -409,7 +408,6 @@ class NotebookServersList extends Component {
         onStopServer={this.props.stop}
         projectId={this.props.projectId}
         {...this.props.servers[k]}
-        jupyterUrl={this.props.jupyterUrl}
       />
     )
     return (
@@ -472,7 +470,6 @@ class Notebooks extends Component {
         <NotebookServers
           servers={this.props.notebooks.all}
           stop={this.props.handlers.onStopNotebook}
-          jupyterUrl={this.props.jupyterUrl}
         />
         <NotebooksPopup servers={serverNumbers} />
       </Col>
