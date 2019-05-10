@@ -31,7 +31,6 @@ GIT_MASTER_HEAD_SHA:=$(shell git rev-parse --short=7 --verify HEAD)
 PLATFORM_DOMAIN?=renku.build
 GITLAB_URL?=http://gitlab.$(PLATFORM_DOMAIN)
 KEYCLOAK_URL?=http://keycloak.$(PLATFORM_DOMAIN):8080
-JUPYTERHUB_URL?=http://jupyterhub.$(PLATFORM_DOMAIN)
 
 tag-docker-images: $(IMAGES:%=tag/%)
 
@@ -60,7 +59,7 @@ login:
 	@echo "${DOCKER_PASSWORD}" | docker login -u="${DOCKER_USERNAME}" --password-stdin ${DOCKER_REGISTRY}
 
 dev-docker:
-	echo '{"BASE_URL": "http://localhost:3000", "JUPYTERHUB_URL": "http://jupyterhub.renku.build", "GATEWAY_URL": "http://gateway.renku.build/api" }' > ./public/config.json
+	echo '{"BASE_URL": "http://localhost:3000", "GATEWAY_URL": "http://gateway.renku.build/api" }' > ./public/config.json
 	npm start
 
 # You need to install telepresence before you can run this command: https://www.telepresence.io/reference/install

@@ -86,6 +86,8 @@ class LaunchNotebookServer extends Component {
     // Load options and save them to state,
     // set intial selection values to defaults.
     const headers = this.props.client.getBasicHeaders();
+
+    // TODO: Move this code to a method getServerOptions in api client library.
     this.props.client.clientFetch(`${this.props.core.notebookServerAPI}/server_options`, {
       cache: 'no-store',
       headers
@@ -216,7 +218,6 @@ class Notebooks extends Component {
     return <VisibleNotebooks
       store={this.model.reduxStore}
       user={this.props.user}
-      jupyterUrl={this.props.client.jupyterhubUrl}
     />
   }
 }

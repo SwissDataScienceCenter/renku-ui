@@ -48,9 +48,8 @@ class APIClient {
   // ku    -->  issue
 
 
-  constructor(baseUrl, jupyterhubUrl, renkuVersion) {
+  constructor(baseUrl, renkuVersion) {
     this.baseUrl = baseUrl;
-    this.jupyterhubUrl = jupyterhubUrl;
     this.renkuVersion = renkuVersion;
     this.returnTypes = RETURN_TYPES
 

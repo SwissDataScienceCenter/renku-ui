@@ -222,16 +222,23 @@ function addProjectMethods(client) {
   }
 
 
-  // TODO: Once the gateway is up and running, the client should not need to be aware of the
-  // TODO: JUPYTERHUB_URL anymore but simply query the notebook url from the gateway
+  // TODO: This method should not return the notebook server API.
   client.getNotebookServerUrl = async (projectId, projectPath, commitSha = 'latest', ref = 'master') => {
     if (commitSha === 'latest') {
       commitSha = await (client.getCommits(projectId).then(resp => resp.data[0].id));
     }
-    return {
-      notebookServerUrl: `${client.jupyterhubUrl}/services/notebooks/${projectPath}/${commitSha}`,
-      notebookServerAPI: `${client.baseUrl}/notebooks/${projectPath}/${commitSha}`
-    };
+    const headers = client.getBasicHeaders();
+    return client.clientFetch(`${client.baseUrl}/notebooks/${projectPath}/${commitSha}`, {
+      method: 'GET',
+      headers: headers
+    })
+      .then(resp => resp.data)
+      .then(server => {
+        return {
+          notebookServerUrl: server.url,
+          notebookServerAPI: `${client.baseUrl}/notebooks/${projectPath}/${commitSha}`
+        }
+      })
   }
 
 
