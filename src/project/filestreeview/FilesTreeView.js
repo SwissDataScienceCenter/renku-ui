@@ -26,19 +26,24 @@ class TreeNode extends Component {
     this.setState((prevState) => ({ childrenOpen: !prevState.childrenOpen }));
   }
 
-  render() {
+  componentDidUpdate(previousProps){ 
+    if(previousProps.childrenOpen !== this.props.childrenOpen){
+      this.setState({childrenOpen: this.props.childrenOpen})
+    }
+  }
 
-    const icon = this.props.node.children.length ?
+  render() {
+    const icon = this.props.node.type === "tree" ?
       (this.state.childrenOpen === false ? 
         <FontAwesomeIcon className="icon-purple" icon={faFolderClosed}  /> 
         : <FontAwesomeIcon className="icon-purple" icon={faFolderOpen}  />)
       : <FontAwesomeIcon className="icon-grey" icon={faFile} />
 
-    const order = this.props.node.children.length ? "order-seccond" : "order-third";
+    const order = this.props.node.type === "tree" ? "order-seccond" : "order-third";
     const hidden = this.props.node.name.startsWith(".") ? " hidden-folder " : "";
 
     const children = this.props.node.children ?
-      this.props.node.children.map((node, index) => {
+      this.props.node.children.map((node) => {
         return <TreeNode 
           path={node.path} 
           key={node.path} 
@@ -58,7 +63,9 @@ class TreeNode extends Component {
 
     let elementToRender;
     let selected = this.props.nodeInsideIsSelected ? " selected-file " : "";
-    if(this.props.node.jsonObj !== null){
+    
+
+    if(this.props.node.type === "blob"){
       elementToRender = 
         <div className={order+" "+hidden+" "+selected}>
           <div className={"fs-element"} >
@@ -79,21 +86,14 @@ class TreeNode extends Component {
         </div>
       ;
     } else {
-      elementToRender = this.state.childrenOpen ? 
+      const childrenOpen = this.state.childrenOpen ? <div className="pl-3">{children}</div> : null;
+      elementToRender = 
         <div className={order+" "+hidden} >
           <div className={"fs-element"} onClick={this.handleIconClick} >
             {icon} {this.props.node.name}
           </div>
-          <div className="pl-3">
-            {children}
-          </div> 
+          {childrenOpen}
         </div> 
-        : 
-        <div className={order+" "+hidden} > 
-          <div className={"fs-element"} onClick={this.handleIconClick}>
-            {icon} {this.props.node.name}
-          </div>
-        </div>;
     }   
 
     return elementToRender;
@@ -105,7 +105,8 @@ class FilesTreeView extends Component {
   constructor(props){
     super(props);
     this.state = {
-      dropdownOpen:false
+      dropdownOpen:false,
+      treeStructure: this.props.data
     }
     this.toggle = this.toggle.bind(this);
   }
@@ -129,19 +130,19 @@ class FilesTreeView extends Component {
         : this.props.currentUrl.replace(this.props.lineageUrl,"");   
     }
 
-    const tree =  this.props.data ?
-      this.props.data.tree.map((node) => {
+    const tree =  this.state.treeStructure.tree ?
+      this.state.treeStructure.tree.map((node) => {
         return <TreeNode
           key={node.path} 
           node={node} 
-          childrenOpen={this.props.hash[node.path].childrenOpen}
+          childrenOpen={this.state.treeStructure.hash[node.path].childrenOpen}
           projectUrl={this.props.projectUrl}
           lineageUrl={this.props.lineageUrl}
           setOpenFolder={this.props.setOpenFolder}
           path={node.path}
           hash={this.props.data.hash}
           fileView={fileView}
-          isLfs={this.props.hash[node.path].isLfs}
+          isLfs={this.state.treeStructure.hash[node.path].isLfs}
           nodeInsideIsSelected={this.props.currentUrl.endsWith(node.path)}
           currentUrl={this.props.currentUrl}
         />

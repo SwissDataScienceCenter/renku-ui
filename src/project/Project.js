@@ -78,8 +78,8 @@ class View extends Component {
   async createGraphWebhook() { this.projectState.createGraphWebhook(this.props.client, this.props.id); }
   async stopCheckingWebhook() { this.projectState.stopCheckingWebhook(); }
   async fetchGraphWebhook() { this.projectState.fetchGraphWebhook(this.props.client, this.props.id, this.props.user) }
-  async fetchProjectFilesTree() { return this.projectState.fetchProjectFilesTree(this.props.client, this.props.id , this.props.location.pathname.replace(this.props.match.projectPath,"").replace(this.subUrls().lineagesUrl,"").replace(this.subUrls().fileContentUrl,"")); }
-  async setProjectOpenFolder(filepath) {this.projectState.setProjectOpenFolder(filepath);}
+  async fetchProjectFilesTree() { return this.projectState.fetchProjectFilesTree(this.props.client, this.props.id , this.cleanCurrentURL() ); }
+  async setProjectOpenFolder(client, id ,filepath) {this.projectState.setProjectOpenFolder(this.props.client, this.props.id ,filepath);}
 
   async fetchAll() {
     await this.fetchProject();
@@ -89,6 +89,13 @@ class View extends Component {
       this.fetchCIJobs();
       this.checkGraphWebhook();
     }
+  }
+
+  cleanCurrentURL(){
+    if(this.subUrls().filesUrl===this.props.location.pathname || this.subUrls().filesUrl+'/'===this.props.location.pathname )
+      return ""
+    else 
+      return this.props.location.pathname.replace(this.props.match.projectPath,"").replace(this.subUrls().lineagesUrl,"").replace(this.subUrls().fileContentUrl,"");
   }
 
   checkGraphWebhook() {
@@ -291,8 +298,8 @@ class View extends Component {
       this.fetchProjectFilesTree();
       //this.fetchModifiedFiles();
     },
-    setOpenFolder: (filePath) => {
-      this.setProjectOpenFolder(filePath);
+    setOpenFolder: (filePath) => { 
+      this.setProjectOpenFolder(this.props.client, this.props.id, filePath);
     },
     fetchCIJobs: () => { this.fetchCIJobs() },
     startNotebookServersPolling: () => {
