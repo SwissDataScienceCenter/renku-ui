@@ -3,7 +3,6 @@ global:
     domain: renku.build
 
 baseUrl: "http://localhost:3000"
-gitlabUrl: "http://gitlab.renku.build"
 
 ingress:
   enabled: false
