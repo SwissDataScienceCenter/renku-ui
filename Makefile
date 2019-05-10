@@ -29,7 +29,6 @@ IMAGES=renku-ui
 GIT_MASTER_HEAD_SHA:=$(shell git rev-parse --short=7 --verify HEAD)
 
 PLATFORM_DOMAIN?=renku.build
-KEYCLOAK_URL?=http://keycloak.$(PLATFORM_DOMAIN):8080
 
 tag-docker-images: $(IMAGES:%=tag/%)
 
