@@ -245,6 +245,9 @@ class LaunchNotebookButton extends React.Component {
     const label = props.label || 'Open Notebook';
     const className = props.className;
 
+    // TODO: Have a tooltip also for the case where a server is running
+    // and the user is logged in.
+
     // Create a tooltip that will explain the deactivated button
     const message = this.props.user.id ?
       "You have to launch Jupyter in Notebook Servers":
@@ -288,6 +291,7 @@ class LaunchNotebookButton extends React.Component {
         </span> 
       </span>
       :
+      // TODO: Seems like the non-icon option (button) has become unreachable.
       <div>
         {tooltip}
         <Button
