@@ -264,11 +264,13 @@ class LaunchNotebookButton extends React.Component {
     return this.props.iconView ? 
       <span>
         {tooltip}
-        <span disabled={!externalUrl}
+        <span
           onClick={event => {
-            event.preventDefault();
-            window.open(externalUrl);
-          }}  
+            if (externalUrl) {
+              event.preventDefault();
+              window.open(externalUrl);
+            }
+          }}
           id="tooltipButton"
           onMouseEnter={() => {
             if (!externalUrl) this.setState({ showTooltip: true });
