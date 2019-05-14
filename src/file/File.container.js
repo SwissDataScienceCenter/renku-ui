@@ -49,7 +49,7 @@ class JupyterNotebookContainer extends Component {
         notebookServerAPI={this.props.notebookServerAPI}
         client={this.props.client}
       />
-    
+
     if(this.props.justButton)
       return <JupyterNotebookButtonIcon
         fileName={this.props.filePath.replace(/^.*(\\|\/|:)/, '')}
@@ -87,7 +87,7 @@ class FilePreview extends React.Component {
     if (!this.props.file) {
       return null
     } else {
-      if(this.props.file.file_name.match(/\.(.*)/)===null) 
+      if(this.props.file.file_name.match(/\.(.*)/)===null)
         return this.props.file.file_name;
       else return this.props.file.file_name
         .match(/\.(.*)/)[0]
@@ -145,7 +145,7 @@ class FilePreview extends React.Component {
 
     // Jupyter Notebook Button
     if (this.getFileExtension() === 'ipynb' && this.props.getNotebookButton){
-      return <JupyterNotebookContainer  
+      return <JupyterNotebookContainer
         key="notebook-button"
         justButton={true}
         notebook={JSON.parse(atobUTF8(this.props.file.content), (key, value) => Object.freeze(value))}
@@ -156,7 +156,7 @@ class FilePreview extends React.Component {
 
     // Jupyter Notebook
     if (this.getFileExtension() === 'ipynb'){
-      return <JupyterNotebookContainer 
+      return <JupyterNotebookContainer
         key="notebook-body"
         justBody={true}
         notebook={JSON.parse(atobUTF8(this.props.file.content), (key, value) => Object.freeze(value))}

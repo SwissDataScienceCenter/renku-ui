@@ -67,21 +67,21 @@ class ShowFile extends React.Component {
   render() {
     if (this.state.error !== null){
       let filePath = this.props.filePath.replace(this.props.match.url + '/files/blob/', '')
-      let buttonGraph = this.props.lineagesPath !== undefined ? 
+      let buttonGraph = this.props.lineagesPath !== undefined ?
         <span>
           <Tooltip placement="top" isOpen={this.state.tooltipGraphViewOpen} target="TooltipGraphView">
             Graph View
           </Tooltip>
-          <FontAwesomeIcon className="icon-link" icon={faProjectDiagram} 
+          <FontAwesomeIcon className="icon-link" icon={faProjectDiagram}
             id="TooltipGraphView"
-            onClick={()=> { 
+            onClick={()=> {
               this.props.history.push(this.props.lineagesPath+'/'+filePath)} }
             onMouseEnter={() => {
               this.setState({ tooltipGraphViewOpen: true });
-            }} 
+            }}
             onMouseLeave={() => {
               this.setState({ tooltipGraphViewOpen: false });
-            }} /> 
+            }} />
         </span>
         : null;
 
@@ -89,18 +89,18 @@ class ShowFile extends React.Component {
         <Tooltip placement="top" isOpen={this.state.tooltipGitViewOpen} target="TooltipGitView">
             Open in GitLab
         </Tooltip>
-        <a href={`${this.props.externalUrl}/blob/master/${filePath}`} 
-          role="button" 
+        <a href={`${this.props.externalUrl}/blob/master/${filePath}`}
+          role="button"
           target="_blank"
           rel="noreferrer noopener"
           id="TooltipGitView"
           onMouseEnter={() => {
             this.setState({ tooltipGitViewOpen: true });
-          }} 
+          }}
           onMouseLeave={() => {
             this.setState({ tooltipGitViewOpen: false });
           }}>
-          <FontAwesomeIcon className="icon-link" icon={faGitlab} /> 
+          <FontAwesomeIcon className="icon-link" icon={faGitlab} />
         </a>
       </span>
 
@@ -115,34 +115,34 @@ class ShowFile extends React.Component {
         </CardHeader>
         <CardBody>{this.state.error}</CardBody>
       </Card>;
-    } 
+    }
 
     if (this.state.file == null) return <Card>
       <CardHeader className="align-items-baseline">&nbsp;</CardHeader>
       <CardBody>{"Loading..."}</CardBody>
     </Card>;
-    
+
     const isLFS = this.props.hashElement ? this.props.hashElement.isLfs : false;
-    const isLFSBadge = isLFS? 
+    const isLFSBadge = isLFS?
       <Badge className="lfs-badge" color="light">LFS</Badge> : null;
-         
+
     const filePath = this.props.filePath.replace(this.props.match.url + '/files/blob/', '')
-    const buttonGraph = this.props.lineagesPath !== undefined ? 
+    const buttonGraph = this.props.lineagesPath !== undefined ?
       <span>
         <Tooltip placement="top" isOpen={this.state.tooltipGraphViewOpen} target="TooltipGraphView">
           Graph View
         </Tooltip>
-        <FontAwesomeIcon className="icon-link" icon={faProjectDiagram} 
+        <FontAwesomeIcon className="icon-link" icon={faProjectDiagram}
           id="TooltipGraphView"
-          onClick={()=> { 
-            this.props.history.push(this.props.lineagesPath+'/'+filePath) 
-          }} 
+          onClick={()=> {
+            this.props.history.push(this.props.lineagesPath+'/'+filePath)
+          }}
           onMouseEnter={() => {
             this.setState({ tooltipGraphViewOpen: true });
-          }} 
+          }}
           onMouseLeave={() => {
             this.setState({ tooltipGraphViewOpen: false });
-          }} /> 
+          }} />
       </span>
       : null;
 
@@ -150,28 +150,28 @@ class ShowFile extends React.Component {
       <Tooltip placement="top" isOpen={this.state.tooltipGitViewOpen} target="TooltipGitView">
           Open in GitLab
       </Tooltip>
-      <a href={`${this.props.externalUrl}/blob/master/${filePath}`} 
-        role="button" 
+      <a href={`${this.props.externalUrl}/blob/master/${filePath}`}
+        role="button"
         target="_blank"
         rel="noreferrer noopener"
         id="TooltipGitView"
         onMouseEnter={() => {
           this.setState({ tooltipGitViewOpen: true });
-        }} 
+        }}
         onMouseLeave={() => {
           this.setState({ tooltipGitViewOpen: false });
         }}>
-        <FontAwesomeIcon className="icon-link" icon={faGitlab} /> 
+        <FontAwesomeIcon className="icon-link" icon={faGitlab} />
       </a>
     </span>
 
-    const buttonJupyter = filePath.endsWith(".ipynb") ? 
+    const buttonJupyter = filePath.endsWith(".ipynb") ?
       <FilePreview
         getNotebookButton={true}
         file={this.state.file}
         {...this.props}
-      /> : null; 
-      
+      /> : null;
+
 
     return (
       <Card>
@@ -264,7 +264,7 @@ class LaunchNotebookButton extends React.Component {
 
     const externalUrl = this.props.deploymentUrl || this.props.notebookServerUrl;
 
-    return this.props.iconView ? 
+    return this.props.iconView ?
       <span>
         {tooltip}
         <span
@@ -283,12 +283,12 @@ class LaunchNotebookButton extends React.Component {
           }}
           role="button" target="_blank"
           rel="noreferrer noopener">
-          <svg aria-hidden="true" 
-            data-prefix="fas" 
-            className="jupyter-icon fa-w-20 icon-link" 
-            role="img" xmlns="http://www.w3.org/2000/svg" 
+          <svg aria-hidden="true"
+            data-prefix="fas"
+            className="jupyter-icon fa-w-20 icon-link"
+            role="img" xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 640 512"/>
-        </span> 
+        </span>
       </span>
       :
       // TODO: Seems like the non-icon option (button) has become unreachable.
@@ -373,11 +373,11 @@ const JupyterNotebookPresent = props => {
   ]
 };
 
-export { 
-  JupyterNotebookPresent, 
-  LaunchNotebookButton, 
-  ShowFile, 
-  JupyterNotebookBody, 
-  JupyterNotebookButton, 
-  JupyterNotebookButtonIcon 
+export {
+  JupyterNotebookPresent,
+  LaunchNotebookButton,
+  ShowFile,
+  JupyterNotebookBody,
+  JupyterNotebookButton,
+  JupyterNotebookButtonIcon
 };
