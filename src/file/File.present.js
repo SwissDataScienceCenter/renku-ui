@@ -271,9 +271,10 @@ class LaunchNotebookButton extends React.Component {
           }}  
           id="tooltipButton"
           onMouseEnter={() => {
-            this.setState({ showTooltip: true });
-            // just a dirty trick because the mouseout event does not fire...
-            setTimeout(() => this.setState({ showTooltip: false }), 3000)
+            if (!externalUrl) this.setState({ showTooltip: true });
+          }}
+          onMouseOut={() => {
+            this.setState({ showTooltip: false });
           }}
           role="button" target="_blank"
           rel="noreferrer noopener">
