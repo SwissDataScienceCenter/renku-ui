@@ -51,8 +51,16 @@ function addGraphMethods(client) {
     });
   }
 
+  client.checkGraphStatus = (projectId) => {
+    const url = `${client.baseUrl}/projects/${projectId}/graph/status`;
+    const headers = client.getBasicHeaders();
+    return client.clientFetch(url, {method:'GET', headers}).then((resp) => {
+      return resp.data;
+    });
+  }
+
   client.getFileLineage = (projectPath, commit, filePath) => {
-    let headers = client.getBasicHeaders();
+    const headers = client.getBasicHeaders();
     return client.clientFetch(
       `${client.baseUrl}/graph/${projectPath}/lineage/${commit}/${filePath}`,
       {

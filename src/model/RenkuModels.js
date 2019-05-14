@@ -132,7 +132,8 @@ const projectSchema = new Schema({
       status: {initial: null},
       created: {initial: null},
       possible: {initial: null},
-      stop: {initial: null}
+      stop: {initial: null},
+      progress: {initial: null}
     }
   },
   notebooks: {

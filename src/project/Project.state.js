@@ -31,7 +31,12 @@ import { SpecialPropVal } from '../model/Model'
 import { isNullOrUndefined } from 'util';
 
 
-
+const GraphIndexingStatus = {
+  NO_WEBHOOK: -2,
+  NO_PROGRESS: -1,
+  MIN_VALUE: 0,
+  MAX_VALUE: 100
+};
 class ProjectModel extends StateModel {
   constructor(stateBinding, stateHolder, initialState) {
     super(projectSchema, stateBinding, stateHolder, initialState)
@@ -50,6 +55,31 @@ class ProjectModel extends StateModel {
     if (userIsOwner) {
       this.fetchGraphWebhookStatus(client, id);
     }
+  }
+
+  fetchGraphStatus(client, id) {
+    return client.checkGraphStatus(id)
+      .then((resp) => {
+        let progress;
+        if (resp.progress == null) {
+          progress = GraphIndexingStatus.NO_PROGRESS;
+        }
+        if (resp.progress === 0 || resp.progress) {
+          progress = resp.progress;
+        }
+        this.set('webhook.progress', progress);
+        return progress;
+      })
+      .catch((err) => {
+        if (err.case === API_ERRORS.notFoundError) {
+          const progress = GraphIndexingStatus.NO_WEBHOOK;
+          this.set('webhook.progress', progress);
+          return progress;
+        }
+        else {
+          throw err;
+        }
+      });
   }
 
   fetchGraphWebhookStatus(client, id) {
@@ -306,4 +336,4 @@ class ProjectModel extends StateModel {
   }
 }
 
-export { ProjectModel };
+export { ProjectModel, GraphIndexingStatus };
