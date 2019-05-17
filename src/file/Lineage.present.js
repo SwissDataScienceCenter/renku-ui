@@ -58,7 +58,7 @@ class FileLineageGraph extends Component {
       .setDefaultEdgeLabel(function(){ return {}; });
 
     graph.nodes.forEach(node => {
-      if (node.id.includes(this.props.path)) {
+      if (node.id.endsWith(`/${this.props.path}`)) {
         graph.centralNode = node.id;
       }
     })
