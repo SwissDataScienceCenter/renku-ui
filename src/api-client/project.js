@@ -128,8 +128,10 @@ function addProjectMethods(client) {
       body: JSON.stringify(gitlabProject)
     })
       .then(resp => {
-        createGraphWebhookPromise = client.createGraphWebhook(resp.data.id);
-        return resp.data
+        if (!renkuProject.meta.optoutKg) {
+          createGraphWebhookPromise = client.createGraphWebhook(resp.data.id);
+        }
+        return resp.data;
       });
 
     // When the provided version does not exist, we log an error and uses latest.
@@ -142,7 +144,11 @@ function addProjectMethods(client) {
         return getPayload(gitlabProject.name, 'latest')
       });
 
-    return Promise.all([newProjectPromise, payloadPromise, createGraphWebhookPromise])
+    let promises = [newProjectPromise, payloadPromise];
+    if (createGraphWebhookPromise) {
+      promises = promises.concat(createGraphWebhookPromise);
+    }    
+    return Promise.all(promises)
       .then(([data, payload]) => {
         if (data.errorData)
           return Promise.reject(data);

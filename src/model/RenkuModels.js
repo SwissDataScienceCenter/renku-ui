@@ -36,6 +36,7 @@ const metaSchema = new Schema({
   // author: {schema: userSchema, mandatory: false},
   projectNamespace: {initial: {}, mandatory: false},
   visibility: {initial: 'public', mandatory: true},
+  optoutKg: {initial: false, mandatory: false},
 });
 
 const displaySchema = new Schema({
