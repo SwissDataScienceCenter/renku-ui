@@ -274,7 +274,7 @@ class ProjectModel extends StateModel {
       });
   }
 
-  stopNotebookServer(client, serverName) {
+  stopNotebookServer(client, serverName, id) {
     // manually set the state instead of waiting for the promise to resolve
     const updatedState = {
       notebooks: {
@@ -285,6 +285,11 @@ class ProjectModel extends StateModel {
           }
         }
       }
+    }
+
+    const oldInterval = this.get('notebooks.pollingInterval');
+    if (oldInterval !== PollingInterval.START) {
+      this.changeNotebookServerPollingInterval(client, id, PollingInterval.START);
     }
     this.setObject(updatedState);
     return client.stopNotebookServer(serverName);
@@ -317,10 +322,11 @@ class ProjectModel extends StateModel {
 
   fetchBranches(client, id) {
     this.setUpdating({system: {branches: true}});
-    client.getBranches(id)
+    return client.getBranches(id)
       .then(resp => resp.data)
       .then(d => {
         this.set('system.branches', d)
+        return d;
       })
   }
 

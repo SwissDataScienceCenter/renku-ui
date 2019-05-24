@@ -35,7 +35,6 @@ import { FileLineage } from '../file'
 import { ACCESS_LEVELS } from '../api-client';
 import { alertError } from '../utils/Errors';
 import { MergeRequest, MergeRequestList } from '../merge-request';
-import { LaunchNotebookServer } from '../notebooks';
 
 import List from './list';
 import New from './new';
@@ -74,7 +73,7 @@ class View extends Component {
     return this.projectState.startNotebookServersPolling(this.props.client, this.props.id,PollingInterval.START);
   }
   async stopNotebookServersPolling() { return this.projectState.stopNotebookServersPolling(); }
-  async stopNotebookServer(serverName) { return this.projectState.stopNotebookServer(this.props.client, serverName); }
+  async stopNotebookServer(serverName) { return this.projectState.stopNotebookServer(this.props.client, serverName, this.props.id); }
   async createGraphWebhook() { return this.projectState.createGraphWebhook(this.props.client, this.props.id); }
   async stopCheckingWebhook() { this.projectState.stopCheckingWebhook(); }
   async fetchGraphWebhook() { this.projectState.fetchGraphWebhook(this.props.client, this.props.id, this.props.user); }
@@ -224,7 +223,6 @@ class View extends Component {
     };
 
     const ConnectedMergeRequestList = connect(mapStateToProps)(MergeRequestList);
-    const ConnectedLaunchNotebookServer = connect(this.projectState.mapStateToProps)(LaunchNotebookServer);
 
     return {
       kuList: <Ku.List key="kus" {...subProps} urlMap={this.subUrls()} />,
@@ -260,14 +258,7 @@ class View extends Component {
       mrView: (p) => <MergeRequest
         key="mr" {...subProps}
         iid={p.match.params.mrIid}
-        updateProjectState={this.fetchAll.bind(this)}/>,
-
-      launchNotebookServer: (p) => <ConnectedLaunchNotebookServer
-        key="launchNotebook"
-        store={this.projectState.reduxStore}
-        client={ownProps.client}
-        onSuccess={() => this.props.history.push(`/projects/${this.projectState.get('core.id')}/notebookServers`)}
-      />
+        updateProjectState={this.fetchAll.bind(this)}/>
     }
   }
 
@@ -341,6 +332,9 @@ class View extends Component {
     },
     fetchNotebookServerUrl: () => {
       return this.fetchNotebookServerUrl();
+    },
+    fetchBranches: () => {
+      return this.fetchBranches();
     }
   };
 

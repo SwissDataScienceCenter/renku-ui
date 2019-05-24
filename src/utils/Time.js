@@ -38,7 +38,7 @@ class Time {
     if (this.isDate(convertedDate)) {
       return convertedDate;
     }
-    throw("Invalid date");
+    throw(new Error("Invalid date"));
   }
 
   static toISOString(inputDate, type="datetime") {
@@ -54,7 +54,7 @@ class Time {
       return readableDate.substring(11);
     }
     else {
-      throw(`Uknown type "${type}"`);
+      throw(new Error(`Uknown type "${type}"`));
     }
   }
 }

@@ -43,36 +43,66 @@ function cleanAnnotations(annotations, domain) {
 }
 
 function addNotebookServersMethods(client) {
-  client.getNotebookServers = (id) => {
-    let headers = client.getBasicHeaders();
+  client.getNotebookServers = (id, branch, commit) => {
+    // TODO: add filtering logic here, remove from Notebook
+    const headers = client.getBasicHeaders();
     const url = `${client.baseUrl}/notebooks/servers`;
     return client.clientFetch(url, {
       method: 'GET',
-      headers: headers
+      headers
     }).then(resp => {
-      const { servers } = resp.data; 
+      let { servers } = resp.data;
       if (id) {
         // TODO: remove this filter when this API will support projectId filtering
-        const filteredServers = Object.keys(servers)
+        servers = Object.keys(servers)
           .filter(server => servers[server].annotations["renku.io/projectId"] === id)
           .reduce((obj, key) => {obj[key] = servers[key]; return obj}, {});
-        return { "data": filteredServers };
       }
       return { "data": servers };
     });
   }
 
   client.stopNotebookServer = (serverName) => {
-    let headers = client.getBasicHeaders();
+    const headers = client.getBasicHeaders();
     const url = `${client.baseUrl}/notebooks/servers/${serverName}`;
 
     return client.clientFetch(url, {
       method: 'DELETE',
-      headers: headers
+      headers
     }, "text")
       .then(resp => {
         return true;
       });
+  }
+
+  client.getNotebookServerOptions = (projectUrl, commitId) => {
+    const headers = client.getBasicHeaders();
+    const url = `${client.baseUrl}/notebooks/${projectUrl}/${commitId}/server_options`;
+
+    return client.clientFetch(url, {
+      method: 'GET',
+      headers
+    }).then((resp) => {
+      let { data } = resp;
+      Object.keys(data).forEach(key => {
+        data[key].selected = data[key].default;
+      })
+      return data;
+    });
+  }
+
+  client.startNotebook = (projectUrl, branchName, commitId, options) => {
+    const headers = client.getBasicHeaders();
+    const url = `${client.baseUrl}/notebooks/${projectUrl}/${commitId}`;
+
+    return client.clientFetch(url, {
+      method: 'POST',
+      headers,
+      queryParams: { branch: branchName },
+      body: JSON.stringify(options)
+    }).then((resp) => {
+      return resp.data;
+    });
   }
 }
 

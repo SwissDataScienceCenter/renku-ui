@@ -65,6 +65,12 @@ const SpecialPropVal = {
   UPDATING: 'is_updating'
 };
 
+const StatusHelper = {
+  isUpdating: (value) => {
+    return value === SpecialPropVal.UPDATING ? true : false;
+  }
+}
+
 class FieldSpec {
   constructor(spec) {
     Object.keys(spec).forEach((prop) => {
@@ -271,6 +277,11 @@ class SubModel {
     this.baseModel.setUpdating(fullOptions);
   }
 
+  isUpdating(propAccessorString) {
+    const fullPropAccessorString = this.baseModelPath + (propAccessorString ? '.' + propAccessorString : '');
+    return StatusHelper.isUpdating(this.baseModel.get(fullPropAccessorString));
+  }
+
   mapStateToProps = _mapStateToProps.bind(this);
 
   subModel = (path) => new SubModel(this.baseModel, this.baseModelPath + '.' + path);
@@ -460,4 +471,4 @@ function _mapStateToProps(state, ownProps) {
 }
 
 
-export { Schema, StateModel, StateKind , SubModel, SpecialPropVal}
+export { Schema, StateModel, StateKind , SubModel, SpecialPropVal, StatusHelper }

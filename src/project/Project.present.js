@@ -47,7 +47,7 @@ import { ExternalLink, Loader, RenkuNavLink, TimeCaption} from '../utils/UICompo
 import { InfoAlert, SuccessAlert, WarnAlert, ErrorAlert } from '../utils/UIComponents'
 import { SpecialPropVal } from '../model/Model'
 import { ProjectTags, ProjectTagList } from './shared'
-import { NotebookServers } from '../notebooks'
+import { NotebookServers, StartNotebookServer } from '../notebooks'
 import FilesTreeView from './filestreeview/FilesTreeView';
 import { ACCESS_LEVELS } from '../api-client';
 
@@ -611,6 +611,24 @@ class ProjectNotebookServers extends Component {
   }
 }
 
+class ProjectStartNotebookServer extends Component {
+  render() {
+    return (
+      <Col xs={12}>
+        <StartNotebookServer
+          branches={this.props.system.branches}
+          refreshBranches={this.props.fetchBranches}
+          projectId={this.props.core.id}
+          projectPath={this.props.core.displayId}
+          client={this.props.client}
+          successUrl={this.props.notebookServersUrl}
+          history={this.props.history}
+        />
+      </Col>
+    )
+  }
+}
+
 class RepositoryUrls extends Component {
   render() {
     return [
@@ -769,7 +787,7 @@ class ProjectView extends Component {
             <Route path={this.props.notebookServersUrl}
               render={props => <ProjectNotebookServers key="notebook-servers" {...this.props} />} />
             <Route path={this.props.launchNotebookUrl}
-              render={this.props.launchNotebookServer}/>
+              render={props => <ProjectStartNotebookServer key="start-server" {...this.props} />}/>
           </Row>
         </Container>
       ]

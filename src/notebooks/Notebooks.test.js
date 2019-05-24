@@ -26,7 +26,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { MemoryRouter } from 'react-router-dom';
 
-import { Notebooks } from './Notebooks.container';
+import { Notebooks, StartNotebookServer } from './Notebooks.container';
 import { cleanAnnotations, ExpectedAnnotations } from '../api-client/notebook-servers';
 import { testClient as client } from '../api-client'
 import { generateFakeUser } from '../app-state/UserState.test';
@@ -39,6 +39,17 @@ describe('rendering', () => {
     ReactDOM.render(
       <MemoryRouter>
         <Notebooks client={client} user={loggedUser} />
+      </MemoryRouter>, div);
+  });
+
+  it('renders launch notebook page without crashing', () => {
+    const div = document.createElement('div');
+    const refreshBranches = async function() {
+      return [];
+    };
+    ReactDOM.render(
+      <MemoryRouter>
+        <StartNotebookServer client={client} user={loggedUser} branches={[]} refreshBranches={refreshBranches} projectId={1} />
       </MemoryRouter>, div);
   });
 });

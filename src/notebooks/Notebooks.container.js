@@ -18,162 +18,278 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
-import { Col } from 'reactstrap';
 
-import { NotebookServerOptions, NotebookServers, LogOutUser } from './Notebooks.present';
+import { NotebookServers } from './Notebooks.present';
+import { StartNotebookServer as StartNotebookServerPresent } from './Notebooks.present';
 
 import NotebooksModel from './Notebooks.state';
 import { Notebooks as NotebooksPresent } from './Notebooks.present';
+import { StatusHelper } from '../model/Model'
 
-class LaunchNotebookServer extends Component {
+/**
+ * Displays a start page for new Jupiterlab servers.
+ * 
+ * @param {Object[]} branches   Branches as redurnet by gitlab "/branches" API
+ * @param {function} refreshBranches   Function to invoke to refresh the list of branches
+ * @param {number} projectId   id of the reference project
+ * @param {number} projectPath   path of the reference project
+ * @param {Object[]} client   api-client used to query the gateway
+ * @param {string} successUrl  Optional: url to redirect when then notebook is succesfully started
+ * @param {Object} history  Optional: used with successUrl to properly set the new url without reloading the page
+ */
+class StartNotebookServer extends Component {
   constructor(props) {
-    super(props)
-    this.state = {
-      serverOptions: {},
-      serverRunning: false,
-      serverStarting: false,
-      doLogOut: false
-    };
-    this._unmounting = false;
-  }
+    super(props);
+    this.model = new NotebooksModel(props.client);
 
-  componentWillUnmount() {
-    this._unmounting = true;
+    this.handlers = {
+      refreshBranches: this.refreshBranches.bind(this),
+      refreshCommits: this.refreshCommits.bind(this),
+      setBranch: this.setBranchFromName.bind(this),
+      setCommit: this.setCommitFromId.bind(this),
+      toggleMergedBranches: this.toggleMergedBranches.bind(this),
+      setDisplayedCommits: this.setDisplayedCommits.bind(this),
+      setServerOption: this.setServerOptionFromEvent.bind(this),
+      startServer: this.startServer.bind(this)
+    }
+
+    this.state = { 
+      first: true,
+      startring: false
+    };
   }
 
   componentDidMount() {
-    if (this.state.doLogOut === false)
-      this.componentDidUpdate()
+    this._isMounted = true;
+    this.startNotebookPolling();
+    this.refreshBranches();
   }
 
-  componentDidUpdate() {
-    if (this.state.doLogOut === true) return; // We are about to refresh anyway...
+  componentWillUnmount() {
+    this.stopNotebookPolling();
+    this._isMounted = false;
+  }
 
-    if (this.props.core.notebookServerAPI !== this.previousNotebookServerAPI) {
-      this.serverStatusSet = false;
-      this.serverOptionsSet = false;
+  componentDidUpdate(previousProps) {
+    // TODO: this is a temporary fix, remove it once the component won't be
+    // rerendered multiple times at the first url load
+    if (this.state.first &&
+        StatusHelper.isUpdating(previousProps.branches) &&
+        !StatusHelper.isUpdating(this.props.branches)) {
+      this.autoselectBranch(this.props.branches);
+      this.setState({ first: false });
     }
-    this.previousNotebookServerAPI = this.props.core.notebookServerAPI;
-    this.setServerStatus();
-    this.setServerOptions();
   }
 
-
-  setServerStatus() {
-    if (this.serverStatusSet) return;
-    if (!this.props.core.notebookServerAPI) return;
-    if (!this.props.client) return;
-    // Check for already running servers
-    const headers = this.props.client.getBasicHeaders();
-    this.props.client.clientFetch(this.props.core.notebookServerAPI, {headers})
-      .then(response => {
-        const serverStatus = !(!response.data.pending && !response.data.ready);
-        if (!this._unmounting) {
-          this.setState({serverRunning: serverStatus});
-          this.serverStatusSet = true;
-        }
-      }).catch(e => {
-        if (e.case === 'UNAUTHORIZED') {
-          this.setState({ doLogOut: true });
-        }
-      });
+  refreshBranches() {
+    const { branches } = this.props;
+    if (StatusHelper.isUpdating(branches)) return;
+    this.props.refreshBranches().then((branches) => {
+      this.autoselectBranch(branches);
+    });
   }
 
-  setServerOptions() {
-    if (this.serverOptionsSet) return;
-    if (!this.props.core.notebookServerAPI) return;
-    if (!this.props.client) return;
-    // Load options and save them to state,
-    // set intial selection values to defaults.
-    const headers = this.props.client.getBasicHeaders();
-
-    // TODO: Move this code to a method getServerOptions in api client library.
-    this.props.client.clientFetch(`${this.props.core.notebookServerAPI}/server_options`, {
-      cache: 'no-store',
-      headers
-    })
-      .then(response => {
-        const data = response.data;
-        Object.keys(data).forEach(key => {
-          data[key].selected = data[key].default;
-        })
-        if (!this._unmounting) {
-          this.setState({serverOptions: data});
-          this.serverOptionsSet = true;
-        }
-      })
-      .catch(e => {
-        if (e.case === 'UNAUTHORIZED'){
-          this.setState({ doLogOut: true });
-        }
-      });
-  }
-
-  getChangeHandlers() {
-    const handlers = {};
-    // Add all resource change handlers.
-    Object.keys(this.state.serverOptions).forEach(key => {
-      handlers[key] = (e) => {
-        const newValue = this.state.serverOptions[key].type === 'boolean' ?
-          e.target.checked : e.target.value;
-
-        this.setState((prevState) => {
-          const newState = {...prevState};
-          newState.serverOptions[key].selected = newValue;
-          return newState;
-        })
+  setBranch(branch) {
+    const oldBranch = this.model.get("filters.branch");
+    if (!branch.name || branch.name === oldBranch.name)
+      return;
+    this.model.setBranch(branch);
+    this.refreshCommits(branch);
+  } 
+  
+  setBranchFromName(eventOrName) {
+    const { branches } = this.props;
+    const branchName = eventOrName.target ?
+      eventOrName.target.value :
+      eventOrName;
+    for (let branchCurrent of branches) {
+      if (branchName === branchCurrent.name) {
+        this.setBranch(branchCurrent);
       }
-    });
-    return handlers;
+    }
   }
 
+  validateBranch(updatedBranches, updatedBranch) {
+    const branch = updatedBranch ?
+      updatedBranch :
+      this.model.get("filters.branch");
+    if (branch.name === undefined)
+      return true;
+    
+    const branches = updatedBranches ?
+      updatedBranches :
+      this.props.branches;
+    const filterBranches = !this.model.get("filters.includeMergedBranches");
+    const filteredBranches = filterBranches ?
+      branches.filter(branch => !branch.merged ? branch : null ) :
+      branches;
+    for (let branchCurrent of filteredBranches) {
+      if (branch.name === branchCurrent.name) {
+        return true;
+      }
+    }
 
-  onSubmit(event) {
-    event.preventDefault();
-
-    const postData = {
-      serverOptions: {}
-    };
-    Object.keys(this.state.serverOptions).forEach(key => {
-      postData.serverOptions[key] = this.state.serverOptions[key].selected
-    });
-
-    this.setState({serverStarting: true});
-    const headers = this.props.client.getBasicHeaders();
-    headers.set('Content-Type', 'application/json');
-    this.props.client.clientFetch(this.props.core.notebookServerAPI, {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify(postData)
-    })
-      .then(() => {
-        this.props.onSuccess()
-      })
-
-    // Note that the opening of the new tab must happen
-    // on click and can not be delayed (pop-up blocking)
-    // window.open(this.props.core.notebookServerUrl);
+    this.setBranch({});
+    this.setCommit({});
+    return false;
   }
 
+  autoselectBranch(branches, defaultBranch = "master") {
+    if (this._isMounted) {
+      const branch = this.model.get("filters.branch");
+      if (!branch.name) {
+        const autoSelect = branches.filter(branch => branch.name === defaultBranch);
+        if (autoSelect.length !== 1) return; // improve this logic if necessary when defaultBranch will be dynamic
+        this.setBranch(autoSelect[0]);
+      }
+      else {
+        this.validateBranch(branches);
+      }
+    }
+  }
 
-  render() {
-    if (!this.props.client) return null;
+  refreshCommits(updatedBranch) {
+    const commits = this.model.get("data.commits");
+    if (StatusHelper.isUpdating(commits)) return;
+    const { projectId } = this.props;
+    const branch = updatedBranch && typeof updatedBranch === "string" ?
+      updatedBranch :
+      this.model.get("filters.branch");
+    this.model.fetchCommits(projectId, branch.name).then((commits) => {
+      this.autoselectCommit(commits);
+    });
+  }
 
-    if (this.state.doLogOut) {
-      return <LogOutUser client={this.props.client} />
-    } else if (this.state.serverRunning) {
-      return <Col xs={12}>
-        <p>You already have a server running.</p>
-      </Col>
+  setCommit(commit) {
+    const oldCommit = this.model.get("filters.commit");
+    if (commit.id === oldCommit.id) {
+      return;
+    }
+    this.model.setCommit(commit);
+    this.model.verifyIfRunning(this.props.projectId, this.props.projectPath);
+  }
+
+  setCommitFromId(eventOrId) {
+    const commits = this.model.get("data.commits");
+    const commitId = eventOrId.target ?
+      eventOrId.target.value :
+      eventOrId;
+    for (let commitCurrent of commits) {
+      if (commitId === commitCurrent.id) {
+        this.setCommit(commitCurrent);
+      }
+    }
+  }
+
+  validateCommit(updatedCommits, updatedCommit) {
+    const commit = updatedCommit ?
+      updatedCommit :
+      this.model.get("filters.commit");
+    if (commit.id === undefined) {
+      return true;
+    }
+
+    const commits = updatedCommits ?
+      updatedCommits :
+      this.model.get("data.commits");
+
+    const maxCommits = this.model.get("filters.displayedCommits");
+    const filteredCommits = maxCommits && maxCommits > 0 ?
+      commits.slice(0, maxCommits) :
+      commits;
+    for (let commitCurrent of filteredCommits) {
+      if (commit.id === commitCurrent.id) {
+        // necessary for istant refresh in the UI
+        this.model.verifyIfRunning(this.props.projectId, this.props.projectPath);
+        return true;
+      }
+    }
+
+    this.setCommit({});
+    return false;
+  }
+
+  autoselectCommit(commits, defaultCommit = 0) {
+    if (this._isMounted) {
+      if (this._isMounted) {
+        const commit = this.model.get("filters.commit");
+        if (!commit.id) {
+          const autoSelect = commits[defaultCommit];
+          if (!autoSelect) return; // improve this logic if "latest" won't be the default anymore
+          this.setCommit(autoSelect);
+        }
+        else {
+          this.validateCommit(commits);
+        }
+      }
+    }
+  }
+
+  setServerOptionFromEvent(option, event) {
+    const value = event.target.checked !== undefined ?
+      event.target.checked:
+      event.target.value;
+    this.model.setNotebookOptions(option, value);
+  }
+
+  startServer() {
+    // Data from notebooks/servers endpoint needs some time to update propery.
+    // To avoid flickering UI, just set a temporary state and display a loading wheel.
+    // TODO: change this when the notebook service will be updated.
+    const { successUrl } = this.props;
+    if (!successUrl) {
+      this.model.startServer(this.props.projectPath);
     }
     else {
-      return <NotebookServerOptions
-        loader={this.state.serverStarting}
-        onSubmit={this.onSubmit.bind(this)}
-        changeHandlers={this.getChangeHandlers()}
-        serverOptions={this.state.serverOptions}
-      />
+      this.setState({ "starting": true });
+      this.model.startServer(this.props.projectPath).then((data) => {
+        this.props.history.push(successUrl);
+      });
     }
+  }
+
+  toggleMergedBranches(event) {
+    const currentSetting = this.model.get("filters.includeMergedBranches");
+    this.model.setMergedBranches(!currentSetting);
+    this.validateBranch();
+  }
+
+  setDisplayedCommits(event) {
+    this.model.setDisplayedCommits(event.target.value);
+    this.validateCommit();
+  }
+
+  startNotebookPolling() {
+    this.model.startNotebookPolling(this.props.projectId, this.props.projectPath);
+  }
+
+  stopNotebookPolling() {
+    this.model.stopNotebookPolling();
+  }
+  
+  mapStateToProps(state, ownProps) {
+    const augmentedState = { ...state,
+      data: {...state.data,
+        branches: ownProps.inherited.branches
+      } // add "branches" to data
+    };
+    return {
+      handlers: this.handlers,
+      store: ownProps.store, // adds store and other props manually added to <ConnectedStartNotebookServer />
+      ...augmentedState
+    }
+  }
+
+  render() {
+    const ConnectedStartNotebookServer = connect(this.mapStateToProps.bind(this))(StartNotebookServerPresent);
+
+    return <ConnectedStartNotebookServer
+      store={this.model.reduxStore}
+      inherited={this.props} // need to espose them for mapStateToProps, but don't whan to pollute props
+      projectId={this.props.projectId}
+      projectPath={this.props.projectPath}
+      justStarted={this.state.starting}
+    />;
   }
 }
 
@@ -223,4 +339,4 @@ class Notebooks extends Component {
 }
 
 
-export { LaunchNotebookServer, NotebookServers, Notebooks };
+export { NotebookServers, Notebooks, StartNotebookServer };

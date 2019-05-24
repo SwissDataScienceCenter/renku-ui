@@ -23,7 +23,6 @@
  *
  */
 
-import { LaunchNotebookServer, NotebookServers } from './Notebooks.container';
-import { Notebooks } from './Notebooks.container';
+import { Notebooks, NotebookServers, StartNotebookServer } from './Notebooks.container';
 
-export { LaunchNotebookServer, NotebookServers, Notebooks }
+export { NotebookServers, Notebooks, StartNotebookServer }

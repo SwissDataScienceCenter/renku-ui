@@ -20,16 +20,18 @@ import React, { Component } from 'react';
 import Media from 'react-media';
 import { Link } from 'react-router-dom';
 
-import { Form, FormGroup, Label, Input, Button, Row, Col, Table} from 'reactstrap';
+import { Form, FormGroup, FormText, Label, Input, Button, Row, Col, Table} from 'reactstrap';
 import { UncontrolledButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap';
+import { UncontrolledTooltip, UncontrolledPopover, PopoverHeader, PopoverBody } from 'reactstrap';
+// temporary issue with UncontrolledTooltip --> https://github.com/reactstrap/reactstrap/issues/1255  
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faStopCircle, faExternalLinkAlt, faInfoCircle } from '@fortawesome/fontawesome-free-solid';
+import { faStopCircle, faExternalLinkAlt, faInfoCircle, faSyncAlt, faCogs } from '@fortawesome/fontawesome-free-solid';
 
-import { SpecialPropVal } from '../model/Model';
-import { Loader, InfoAlert } from '../utils/UIComponents';
+import { SpecialPropVal, StatusHelper } from '../model/Model';
+import { Loader, InfoAlert, ExternalLink } from '../utils/UIComponents';
+import Time from '../utils/Time';
 import Sizes from '../utils/Media';
 import { cleanAnnotations } from '../api-client/notebook-servers';
-
 
 const Columns = {
   large: {
@@ -41,148 +43,6 @@ const Columns = {
     project: ["List"],
   }
 };
-
-class LogOutUser extends Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      timer: null,
-      logedout: false
-    }
-  }
-
-  componentWillUnmount() {
-    this.state.timer.clear()
-  }
-
-  componentDidMount() {
-    this.setState({
-      timer: setTimeout(() => {
-        this.setState({ logedout: true });
-        this.props.client.doLogout();
-      }, 6000)
-    });
-  }
-
-  render() {
-    return (
-      this.state.logedout ?
-        <Col md={8}>We logged you out.</Col>
-        :
-        <Col md={{ size: 6, offset: 3 }}>
-          <p align="center">You will be logged out because your JupyterLab token expired.
-            <br /> Please log in again to continue working with Renku.
-          </p>
-          <Loader />
-        </Col>
-    )
-  }
-}
-
-class RenderedServerOptions extends Component {
-  render() {
-    if (this.props.loader) {
-      return <Loader />
-    }
-    const renderedServerOptions = Object.keys(this.props.serverOptions).map(key => {
-      const serverOption = this.props.serverOptions[key];
-      const onChange = this.props.changeHandlers[key];
-
-      switch (serverOption.type) {
-      case 'enum':
-        return <FormGroup key={key}>
-          <Label>{serverOption.displayName}</Label>
-          <EnumOption {...serverOption} onChange={onChange} />
-        </FormGroup>;
-
-      case 'int':
-        return <FormGroup key={key}>
-          <Label>{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
-          <RangeOption step={1} {...serverOption} onChange={onChange} />
-        </FormGroup>;
-
-      case 'float':
-        return <FormGroup key={key}>
-          <Label>{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
-          <RangeOption step={0.01} {...serverOption} onChange={onChange} />
-        </FormGroup>;
-
-      case 'boolean':
-        return <FormGroup key={key} check>
-          <BooleanOption {...serverOption} onChange={onChange} />
-          <Label>{`${serverOption.displayName}`}</Label>
-        </FormGroup>;
-
-      default:
-        return null;
-      }
-    });
-    return <Form>
-      {renderedServerOptions}
-      <Button onClick={this.props.onSubmit} color="primary">
-        Launch Server
-      </Button>
-    </Form>
-  }
-}
-
-class NotebookServerOptions extends Component {
-  render() {
-    return (
-      <div className="container">
-        <Row key="header">
-          <Col sm={12} md={6}><h3>Launch new JupyterLab server</h3></Col>
-        </Row>
-        <Row key="spacer"><Col sm={8} md={6} lg={4} xl={3}>&nbsp;</Col></Row>
-        <Row key="form">
-          <Col sm={8} md={6} lg={4} xl={3}><RenderedServerOptions {...this.props} /></Col>
-        </Row>
-      </div>
-    );
-  }
-}
-
-class EnumOption extends Component {
-  render() {
-    return (
-      <Input type="select" id={this.props.id} onChange={this.props.onChange}>
-        {this.props.options.map((optionName, i) => {
-          return <option key={i} value={optionName}>{optionName}</option>
-        })}
-      </Input>
-    );
-  }
-}
-
-class BooleanOption extends Component {
-  render() {
-    return (
-      <Input
-        type="checkbox"
-        id={this.props.id}
-        value={this.props.selected}
-        onChange={this.props.onChange}
-      />
-    );
-  }
-}
-
-class RangeOption extends Component {
-  render() {
-    return (
-      <Input
-        type="range"
-        id={this.props.id}
-        value={this.props.selected}
-        onChange={this.props.onChange}
-        min={this.props.range[0]}
-        max={this.props.range[1]}
-        step={this.props.step}
-      />
-    );
-  }
-}
 
 class NotebookServerRowAction extends Component {
   render() {
@@ -477,4 +337,375 @@ class Notebooks extends Component {
   }
 }
 
-export { NotebookServerOptions, NotebookServers, LogOutUser, Notebooks }
+class StartNotebookServer extends Component {
+  render() {
+    return (
+      <Row>
+        <Col xs={12} sm={10} md={8} lg={6}>
+          <h3>Start new Jupyterlab server</h3>
+          <Form>
+            <StartNotebookBranches {...this.props} />
+            <StartNotebookCommits {...this.props} />
+            <StartNotebookOptions {...this.props} />
+          </Form>
+        </Col>
+      </Row>
+    )
+  }
+}
+
+class StartNotebookBranches extends Component {
+  render() {
+    const { branches } = this.props.data;
+    let content;
+    if (StatusHelper.isUpdating(branches) || branches.length === 0) {
+      content = (
+        <Label>Updating branches... <Loader size="14" inline="true" /></Label>
+      )
+    }
+    else {
+      if (branches.length === 1) {
+        content = (
+          <FormGroup>
+            <Label>
+              Branch (only 1 available)
+              <StartNotebookBranchesUpdate {...this.props} />
+              <StartNotebookBranchesOptions {...this.props} />
+            </Label>
+            <Input type="input" disabled={true}
+              id="selectBranch" name="selectBranch"
+              value={branches[0].name}>
+            </Input>
+          </FormGroup>
+        )
+      }
+      else {
+        const filter = !this.props.filters.includeMergedBranches;
+        const filteredBranches = filter ?
+          branches.filter(branch => !branch.merged ? branch : null ) :
+          branches;
+        let branchOptions = filteredBranches.map((branch, index) => {
+          return <option key={index} value={branch.name}>{branch.name}</option>
+        });
+        content = (
+          <FormGroup>
+            <Label>
+              Branch
+              <StartNotebookBranchesUpdate {...this.props} />
+              <StartNotebookBranchesOptions {...this.props} />
+            </Label>
+            <Input type="select" id="selectBranch" name="selectBranch" 
+              value={this.props.filters.branch.name ? this.props.filters.branch.name : ""}
+              onChange={this.props.handlers.setBranch}>
+              <option disabled hidden></option>
+              {branchOptions}
+            </Input>
+          </FormGroup>
+        )
+      }
+    }
+    return (
+      <FormGroup>
+        {content}
+      </FormGroup>
+    )
+  }
+}
+
+class StartNotebookBranchesUpdate extends Component { 
+  render() {
+    return [
+      <Button key="button" className="ml-2 p-0" color="link" size="sm"
+        id="branchUpdateButton"
+        onClick={this.props.handlers.refreshBranches}>
+        <FontAwesomeIcon icon={faSyncAlt} />
+      </Button>,
+      <UncontrolledTooltip key="tooltip" placement="top" target="branchUpdateButton">
+        Refresh branches
+      </UncontrolledTooltip>
+    ]
+  }
+}
+
+class StartNotebookBranchesOptions extends Component {
+  render() {
+    return [
+      <Button key="button" className="ml-2 p-0" color="link" size="sm"
+        id="branchOptionsButton"
+        onClick={() => {}}>
+        <FontAwesomeIcon icon={faCogs} />
+      </Button>,
+      <UncontrolledTooltip key="tooltip" placement="top" target="branchOptionsButton">
+        Branch options
+      </UncontrolledTooltip>,
+      <UncontrolledPopover key="popover" trigger="legacy" placement="top" target="branchOptionsButton">
+        <PopoverHeader>Branch options</PopoverHeader>
+        <PopoverBody>
+          <FormGroup check>
+            <Label check>
+              <Input type="checkbox" id="myCheckbox"
+                checked={this.props.filters.includeMergedBranches}
+                onChange={this.props.handlers.toggleMergedBranches} />
+              Include merged branches
+            </Label>
+          </FormGroup>
+        </PopoverBody>
+      </UncontrolledPopover>
+    ]
+  }
+}
+
+class StartNotebookCommits extends Component {
+  render() {
+    const { branch } = this.props.filters;
+    const { branches, commits } = this.props.data;
+    if (!branch.name || StatusHelper.isUpdating(branches)) {
+      return null;
+    }
+    let content;
+    if (StatusHelper.isUpdating(commits)) {
+      content = (
+        <Label>Updating commits... <Loader size="14" inline="true" /></Label>
+      )
+    }
+    else {
+      const maxCommits = this.props.filters.displayedCommits;
+      const filteredCommits = maxCommits && maxCommits > 0 ?
+        commits.slice(0, maxCommits) :
+        commits;
+      const commitOptions = filteredCommits.map((commit) => {
+        return <option key={commit.id} value={commit.id}>
+          {commit.short_id} - {commit.author_name} - {Time.toISOString(commit.committed_date)}
+        </option>
+      });
+      content = (
+        <FormGroup>
+          <Label>
+            Commit
+            <StartNotebookCommitsUpdate {...this.props} />
+            <StartNotebookCommitsOptions {...this.props} />
+          </Label>
+          <Input type="select" id="selectCommit" name="selectCommit"
+            value={this.props.filters.commit.id ? this.props.filters.commit.id : "" }
+            onChange={this.props.handlers.setCommit}>
+            <option disabled hidden></option>
+            {commitOptions}
+          </Input>
+        </FormGroup>
+      )
+    }
+
+    return (
+      content
+    )
+  }
+}
+
+class StartNotebookCommitsUpdate extends Component { 
+  render() {
+    return [
+      <Button key="button" className="ml-2 p-0" color="link" size="sm"
+        id="commitUpdateButton"
+        onClick={this.props.handlers.refreshCommits}>
+        <FontAwesomeIcon icon={faSyncAlt} />
+      </Button>,
+      <UncontrolledTooltip key="tooltip" placement="top" target="commitUpdateButton">
+        Refresh commits
+      </UncontrolledTooltip>
+    ]
+  }
+}
+
+class StartNotebookCommitsOptions extends Component {
+  render() {
+    return [
+      <Button key="button" className="ml-2 p-0" color="link" size="sm"
+        id="commitOptionsButton"
+        onClick={() => {}}>
+        <FontAwesomeIcon icon={faCogs} />
+      </Button>,
+      <UncontrolledTooltip key="tooltip" placement="top" target="commitOptionsButton">
+        Commit options
+      </UncontrolledTooltip>,
+      <UncontrolledPopover key="popover" trigger="legacy" placement="top" target="commitOptionsButton">
+        <PopoverHeader>Commit options</PopoverHeader>
+        <PopoverBody>
+          <FormGroup>
+            <Label>Number of commits to display</Label>
+            <Input type="number" min={0} max={100} step={1}
+              onChange={this.props.handlers.setDisplayedCommits}
+              value={this.props.filters.displayedCommits} />
+            <FormText>1-100, 0 for unlimited</FormText>
+          </FormGroup>
+        </PopoverBody>
+      </UncontrolledPopover>
+    ]
+  }
+}
+
+class StartNotebookOptions extends Component {
+  render() {
+    const { commit } = this.props.filters;
+    const { branches, commits } = this.props.data;
+    if (!commit.id || StatusHelper.isUpdating(branches) || StatusHelper.isUpdating(commits)) {
+      return null;
+    }
+    const { justStarted } = this.props;
+    if (justStarted) {
+      return <Label>Starting new Jupyterlab server... <Loader size="14" inline="true" /></Label>
+    }
+    const { status, url } = this.props.notebooks;
+    let content;
+    if (status == null) {
+      content = (
+        <Label>Verifying running servers... <Loader size="14" inline="true" /></Label>
+      );
+    }
+    else if (status === false) {
+      const { notebookOptions } = this.props.data;
+      if (!notebookOptions.commitId || notebookOptions.commitId !== commit.id) {
+        content = (
+          <Label>Loading notebook parameters... <Loader size="14" inline="true" /></Label>
+        );
+      }
+      else {
+        content = [
+          <StartNotebookServerOptions key="options" {...this.props} />,
+          <ServerOptionLaunch key="button" {...this.props} />
+        ];
+      }
+    }
+    else {
+      if (status === "running") {
+        content = (
+          <FormGroup>
+            <Label>A Jupyterlab server is already running.</Label>
+            <br />
+            <ExternalLink url={url} title="Connect" />
+          </FormGroup>
+        );
+      }
+      else if (status === "spawn") {
+        content = (
+          <FormGroup>
+            <Label>A Jupyterlab server is already starting, please wait...</Label>
+          </FormGroup>
+        );
+      }
+      else if (status === "stop") {
+        content = (
+          <FormGroup>
+            <Label>A Jupyterlab server is stopping, please wait...</Label>
+          </FormGroup>
+        );
+      }
+      else {
+        content = (
+          <FormGroup>
+            <Label>A Jupyterlab server is already running but it is currently not available. Please wait...</Label>
+          </FormGroup>
+        );
+      }
+    }
+    return content;
+  }
+}
+
+class StartNotebookServerOptions extends Component {
+  render() {
+    const { notebookOptions, selectedOptions } = this.props.data;
+    const renderedServerOptions = Object.keys(notebookOptions)
+      .filter(key => key !== "commitId")
+      .map(key => {
+        const serverOption = { ...notebookOptions[key], selected: selectedOptions[key] };
+        const onChange = (event) => {
+          this.props.handlers.setServerOption(key, event);
+        };
+
+        switch (serverOption.type) {
+        case 'enum':
+          return <FormGroup key={key}>
+            <Label>{serverOption.displayName}</Label>
+            <ServerOptionEnum {...serverOption} onChange={onChange} />
+          </FormGroup>;
+
+        case 'int':
+          return <FormGroup key={key}>
+            <Label>{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
+            <ServerOptionRange step={1} {...serverOption} onChange={onChange} />
+          </FormGroup>;
+
+        case 'float':
+          return <FormGroup key={key}>
+            <Label>{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
+            <ServerOptionRange step={0.01} {...serverOption} onChange={onChange} />
+          </FormGroup>;
+
+        case 'boolean':
+          return <FormGroup key={key} check>
+            <ServerOptionBoolean {...serverOption} onChange={onChange} />
+            <Label>{`${serverOption.displayName}`}</Label>
+          </FormGroup>;
+
+        default:
+          return null;
+        }
+      });
+    return renderedServerOptions.length ?
+      renderedServerOptions :
+      <label>Notebook options not avilable</label>;
+  }
+}
+
+class ServerOptionEnum extends Component {
+  render() {
+    return (
+      <Input type="select" id={this.props.id} onChange={this.props.onChange}>
+        {this.props.options.map((optionName, i) => {
+          return <option key={i} value={optionName}>{optionName}</option>
+        })}
+      </Input>
+    );
+  }
+}
+
+class ServerOptionBoolean extends Component {
+  render() {
+    return (
+      <Input
+        type="checkbox"
+        id={this.props.id}
+        value={this.props.selected}
+        onChange={this.props.onChange}
+      />
+    );
+  }
+}
+
+class ServerOptionRange extends Component {
+  render() {
+    return (
+      <Input
+        type="range"
+        id={this.props.id}
+        value={this.props.selected}
+        onChange={this.props.onChange}
+        min={this.props.range[0]}
+        max={this.props.range[1]}
+        step={this.props.step}
+      />
+    );
+  }
+}
+
+class ServerOptionLaunch extends Component {
+  render() {
+    return (
+      <Button onClick={this.props.handlers.startServer} color="primary">
+        Launch Server
+      </Button>
+    );
+  }
+}
+
+export { NotebookServers, Notebooks, StartNotebookServer }
