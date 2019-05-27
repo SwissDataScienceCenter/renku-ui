@@ -36,6 +36,7 @@ const metaSchema = new Schema({
   // author: {schema: userSchema, mandatory: false},
   projectNamespace: {initial: {}, mandatory: false},
   visibility: {initial: 'public', mandatory: true},
+  optoutKg: {initial: false, mandatory: false},
 });
 
 const displaySchema = new Schema({
@@ -132,7 +133,8 @@ const projectSchema = new Schema({
       status: {initial: null},
       created: {initial: null},
       possible: {initial: null},
-      stop: {initial: null}
+      stop: {initial: null},
+      progress: {initial: null}
     }
   },
   notebooks: {

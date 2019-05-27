@@ -29,7 +29,7 @@ import { connect } from 'react-redux'
 import { StateKind } from '../model/Model';
 import Present from './Project.present'
 
-import { ProjectModel } from './Project.state'
+import { ProjectModel, GraphIndexingStatus } from './Project.state'
 import Ku from '../ku/Ku'
 import { FileLineage } from '../file'
 import { ACCESS_LEVELS } from '../api-client';
@@ -75,11 +75,12 @@ class View extends Component {
   }
   async stopNotebookServersPolling() { return this.projectState.stopNotebookServersPolling(); }
   async stopNotebookServer(serverName) { return this.projectState.stopNotebookServer(this.props.client, serverName); }
-  async createGraphWebhook() { this.projectState.createGraphWebhook(this.props.client, this.props.id); }
+  async createGraphWebhook() { return this.projectState.createGraphWebhook(this.props.client, this.props.id); }
   async stopCheckingWebhook() { this.projectState.stopCheckingWebhook(); }
-  async fetchGraphWebhook() { this.projectState.fetchGraphWebhook(this.props.client, this.props.id, this.props.user) }
-  async fetchProjectFilesTree() { return this.projectState.fetchProjectFilesTree(this.props.client, this.props.id , this.props.location.pathname.replace(this.props.match.projectPath,"").replace(this.subUrls().lineagesUrl,"").replace(this.subUrls().fileContentUrl,"")); }
-  async setProjectOpenFolder(filepath) {this.projectState.setProjectOpenFolder(filepath);}
+  async fetchGraphWebhook() { this.projectState.fetchGraphWebhook(this.props.client, this.props.id, this.props.user); }
+  async fetchProjectFilesTree() { return this.projectState.fetchProjectFilesTree(this.props.client, this.props.id , this.cleanCurrentURL() ); }
+  async setProjectOpenFolder(filepath) { this.projectState.setProjectOpenFolder(this.props.client, this.props.id, filepath); }
+  async fetchGraphStatus() { return this.projectState.fetchGraphStatus(this.props.client, this.props.id); }
 
   async fetchAll() {
     await this.fetchProject();
@@ -91,6 +92,14 @@ class View extends Component {
     }
   }
 
+  cleanCurrentURL(){
+    if(this.subUrls().filesUrl===this.props.location.pathname || this.subUrls().filesUrl+'/'===this.props.location.pathname )
+      return ""
+    else 
+      return this.props.location.pathname.replace(this.props.match.projectPath,"").replace(this.subUrls().lineagesUrl,"").replace(this.subUrls().fileContentUrl,"");
+  }
+
+  // TODO: move all .set actions to Project.state.js
   checkGraphWebhook() {
     // check if data are available -- may remove this?
     if (this.projectState.get('core.available') !== true) {
@@ -186,12 +195,19 @@ class View extends Component {
     const notebookServerUrl = this.projectState.get('core.notebookServerUrl');
     const notebookServerAPI = this.projectState.get('core.notebookServerAPI');
     const filesTree = this.projectState.get('filesTree');
+    const graphProgress = this.projectState.get('webhook.progress');
+    const mergeRequests = this.projectState.get('system.merge_requests');
+    const maintainer = this.projectState.get('visibility.accessLevel') >= ACCESS_LEVELS.MAINTAINER ?
+      true :
+      false;
+    const forkedData = this.projectState.get('system.forked_from_project');
+    const forked = (forkedData != null && Object.keys(forkedData).length > 0) ?
+      true :
+      false;
 
     // Access to the project state could be given to the subComponents by connecting them here to
     // the projectStore. This is not yet necessary.
     const subProps = {...ownProps, projectId, accessLevel, externalUrl, notebookServerUrl, notebookServerAPI, filesTree};
-
-    const mergeRequests = this.projectState.get('system.merge_requests');
 
     const mapStateToProps = (state, ownProps) => {
       return {
@@ -219,6 +235,9 @@ class View extends Component {
         path={p.match.params.filePath}
         notebook={"Notebook"}
         accessLevel={accessLevel}
+        progress={graphProgress}
+        maintainer={maintainer}
+        forked={forked}
         hashElement={filesTree !== undefined ? filesTree.hash[p.match.params.filePath] : undefined} />,
 
       fileView: (p) => <ShowFile
@@ -291,7 +310,7 @@ class View extends Component {
       this.fetchProjectFilesTree();
       //this.fetchModifiedFiles();
     },
-    setOpenFolder: (filePath) => {
+    setOpenFolder: (filePath) => { 
       this.setProjectOpenFolder(filePath);
     },
     fetchCIJobs: () => { this.fetchCIJobs() },
@@ -306,10 +325,13 @@ class View extends Component {
     },
     createGraphWebhook: (e) => { 
       e.preventDefault();
-      this.createGraphWebhook();
+      return this.createGraphWebhook();
     },
     onCloseGraphWebhook: () => {
       this.stopCheckingWebhook();
+    },
+    fetchGraphStatus: () => {
+      return this.fetchGraphStatus();
     }
   };
 
@@ -346,3 +368,4 @@ class View extends Component {
 }
 
 export default { New, View, List };
+export { GraphIndexingStatus };

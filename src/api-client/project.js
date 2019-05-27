@@ -33,71 +33,38 @@ function groupedFiles(files, projectFiles) {
   return projectFiles
 }
 
-function buildTree(parts, treeNode, jsonObj, hash, currentPath, gitattributes, openFilePath) {
-  if (parts.length === 0) {
+function buildTreeLazy(name, treeNode, jsonObj, hash, currentPath, gitattributes, openFilePath) {
+  if (name.length === 0) {
     return;
   }
-
-  currentPath = currentPath === "" ? parts[0] : currentPath+'/'+parts[0];
-  let nodeName = parts[0];
-
-
-  let fileInsideIsSelected = openFilePath.length > 0 
-    && openFilePath.substring(1).startsWith(nodeName);  
-
-  let openFilePathParam =  fileInsideIsSelected 
-    ? openFilePath.substring(1).replace(nodeName,"") : "" ;
-
-
-  for (let i = 0; i < treeNode.length; i++) {
-    if (parts[0] === treeNode[i].text) {
-      buildTree(parts.splice(1, parts.length), treeNode[i].children, jsonObj, hash, currentPath+'/'+parts[0], gitattributes, openFilePathParam);
-      return;
-    }
-  }
-
+  currentPath = jsonObj.path;
+  let nodeName = name;
+  let nodeType = jsonObj.type;  // "tree" "blob" "commit"
   const isLfs = gitattributes ? gitattributes.includes(currentPath+" filter=lfs diff=lfs merge=lfs -text") : false;
-  
-  let newNode;
-  if (parts[0] === jsonObj.name)
-    newNode = { 'name': parts[0], 'children': [], 'jsonObj': jsonObj, 'path': currentPath ,'isLfs': isLfs};
-  else
-    newNode = { 'name': parts[0], 'children': [], 'jsonObj': null, 'path': currentPath };
-
-  const currentNode = treeNode.filter(node => node.name === newNode.name);
-  
-  if (currentNode.length === 0) {
-    treeNode.push(newNode);
-    hash[newNode.path] = {'name': parts[0], 'selected': false, 'childrenOpen': fileInsideIsSelected , 'path': currentPath, 'isLfs': isLfs };
-    buildTree(parts.splice(1, parts.length), newNode.children, jsonObj, hash, currentPath, gitattributes, openFilePathParam );
-  } else {
-    for (let j = 0; j < newNode.children.length; j++) {
-      currentNode[0].children.push(newNode.children[j]);
-    }
-    buildTree(parts.splice(1, parts.length), currentNode[0].children, jsonObj, hash, currentPath, gitattributes, openFilePathParam ) ;
-  }
+  let newNode =  { 'name': nodeName, 'children': [], 'jsonObj': jsonObj, 'path': currentPath ,'isLfs': isLfs , 'type': nodeType};
+  hash[newNode.path] = {'name':nodeName, 'selected': false, 'childrenOpen': false , 'childrenLoaded':false , 'path': currentPath, 'isLfs': isLfs, 'type': nodeType , 'treeRef': newNode};
+  treeNode.push(newNode);
 }
 
-function getFilesTree(client, files, projectId, openFilePath) {
-  let list = files.filter((treeObj) => treeObj.type === 'blob');
+function getFilesTreeLazy(client, files, projectId, openFilePath, lfsFiles) {
   let tree = [];
   let hash = {};
-  let lfs = files.filter((treeObj) => treeObj.path === '.gitattributes'); 
+  let lfs = files.filter((treeObj) => treeObj.path === '.gitattributes');
 
-  if(lfs.length >0){
+  if(lfs.length > 0){
     return client.getRepositoryFile(projectId, lfs[0].path, 'master', 'raw')
       .then(json => {
-        for (let i = 0; i < list.length; i++) {
-          buildTree(list[i].path.split('/'), tree, list[i] , hash, "", json, openFilePath);
+        for (let i = 0; i < files.length; i++) {
+          buildTreeLazy(files[i].name, tree, files[i] , hash, "", json, openFilePath);
         }
-        const treeObj = { tree:tree , hash:hash }
+        const treeObj = { tree:tree , hash:hash , lfsFiles: json }
         return treeObj;
       });
   } else {
-    for (let i = 0; i < list.length; i++) {
-      buildTree(list[i].path.split('/'), tree, list[i] , hash, "", null , openFilePath);
+    for (let i = 0; i < files.length; i++) {
+      buildTreeLazy(files[i].name, tree, files[i] , hash, "", lfsFiles , openFilePath);
     }
-    const treeObj = { tree:tree , hash:hash }
+    const treeObj = { tree:tree , hash:hash, lfsFiles: lfsFiles }
     return treeObj;
   }
 }
@@ -137,13 +104,12 @@ function addProjectMethods(client) {
     })
   }
 
-  client.getProjectFilesTree = (projectId, openFilePath) => {
-    return client.getRepositoryTree(projectId, { path: '', recursive: true }).then((tree) => {
-      const fileStructure = getFilesTree(client, tree, projectId, openFilePath);
+  client.getProjectFilesTree = (projectId, openFilePath, currentPath = '', lfsFiles) => {
+    return client.getRepositoryTree(projectId, { path: currentPath, recursive: false }).then((tree) => {
+      const fileStructure = getFilesTreeLazy(client, tree, projectId, openFilePath, lfsFiles);
       return fileStructure;
     });
   }
-
 
   client.postProject = (renkuProject) => {
     const gitlabProject = {
@@ -162,8 +128,10 @@ function addProjectMethods(client) {
       body: JSON.stringify(gitlabProject)
     })
       .then(resp => {
-        createGraphWebhookPromise = client.createGraphWebhook(resp.data.id);
-        return resp.data
+        if (!renkuProject.meta.optoutKg) {
+          createGraphWebhookPromise = client.createGraphWebhook(resp.data.id);
+        }
+        return resp.data;
       });
 
     // When the provided version does not exist, we log an error and uses latest.
@@ -176,7 +144,11 @@ function addProjectMethods(client) {
         return getPayload(gitlabProject.name, 'latest')
       });
 
-    return Promise.all([newProjectPromise, payloadPromise, createGraphWebhookPromise])
+    let promises = [newProjectPromise, payloadPromise];
+    if (createGraphWebhookPromise) {
+      promises = promises.concat(createGraphWebhookPromise);
+    }    
+    return Promise.all(promises)
       .then(([data, payload]) => {
         if (data.errorData)
           return Promise.reject(data);

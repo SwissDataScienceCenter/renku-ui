@@ -195,26 +195,41 @@ class DataVisibility extends Component {
     const options = visibilities.map(v =>
       <option key={v.value} value={v.value}>{v.name}</option>
     )
-    let warningPrivate = null;
-    if (this.props.value !== "public") {
-      warningPrivate = <FormText color="primary">
-        <FontAwesomeIcon icon={faInfoCircle} /> The Knowledge Graph may make some metadata public;
-        the contents will remain private.
-        <br />
-        <a href="https://renku.readthedocs.io/en/latest/introduction/lineage.html"
-          target="_blank" rel="noopener noreferrer">
-          <FontAwesomeIcon icon={faExternalLinkAlt} /> Read more about Lineage.
-        </a>
-      </FormText>;
+    let content = [
+      <FormGroup key="visibility">
+        <Label>Visibility</Label>
+        <Input type="select" placeholder="visibility"
+          value={this.props.visibilityValue}
+          onChange={this.props.onVisibilityChange} >
+          {options}
+        </Input>
+        <FormText color="muted">{vizExplanation}</FormText>
+      </FormGroup>
+    ]
+    if (this.props.visibilityValue === "private") {
+      const optout = (
+        <FormGroup key="optout">
+          <Label check style={{marginLeft:"1.25rem"}}>
+            <Input type="checkbox" id="myCheckbox"
+              value={this.props.optoutKgValue}
+              onChange={this.props.onOptoutKgChange} />
+            Opt-out from Knowledge Graph
+          </Label>
+          <FormText color="primary">
+            <FontAwesomeIcon icon={faInfoCircle} /> The Knowledge Graph may make some metadata public,
+            opt-out if this is not acceptable.
+            <br />
+            <a href="https://renku.readthedocs.io/en/latest/user/knowledge-graph.html"
+              target="_blank" rel="noopener noreferrer">
+              <FontAwesomeIcon icon={faExternalLinkAlt} /> Read more about the Knowledge Graph integration.
+            </a>
+          </FormText>
+        </FormGroup>
+      )
+      content = content.concat(optout);
     }
-    return <FormGroup>
-      <Label>Visibility</Label>
-      <Input type="select" placeholder="visibility" value={this.props.value} onChange={this.props.onChange}>
-        {options}
-      </Input>
-      {warningPrivate}
-      <FormText color="muted">{vizExplanation}</FormText>
-    </FormGroup>
+
+    return content;
   }
 }
 
@@ -243,9 +258,11 @@ class ProjectNew extends Component {
             onAccept={this.props.handlers.onProjectNamespaceAccept}
             fetchMatchingNamespaces={this.props.handlers.fetchMatchingNamespaces} />
           <DataVisibility
-            value={this.props.model.meta.visibility}
             visibilities={this.props.visibilities}
-            onChange={this.props.handlers.onVisibilityChange} />
+            visibilityValue={this.props.model.meta.visibility}
+            optoutKgValue={this.props.model.meta.optoutKg}
+            onVisibilityChange={this.props.handlers.onVisibilityChange}
+            onOptoutKgChange={this.props.handlers.onOptoutKgChange} />
           <br/>
           <SubmitErrors errors={this.props.model.display.errors} />
           <Button color="primary" onClick={this.props.handlers.onSubmit} disabled={this.props.model.display.loading}>

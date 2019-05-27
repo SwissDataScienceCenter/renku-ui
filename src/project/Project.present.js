@@ -40,7 +40,8 @@ import { Card, CardBody, CardHeader } from 'reactstrap';
 
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faStarRegular from '@fortawesome/fontawesome-free-regular/faStar'
-import { faStar as faStarSolid, faInfoCircle } from '@fortawesome/fontawesome-free-solid'
+import { faStar as faStarSolid, faInfoCircle, faExternalLinkAlt } from '@fortawesome/fontawesome-free-solid'
+import { faExclamationTriangle } from '@fortawesome/fontawesome-free-solid'
 
 import { ExternalLink, Loader, RenkuNavLink, TimeCaption} from '../utils/UIComponents'
 import { InfoAlert, SuccessAlert, WarnAlert, ErrorAlert } from '../utils/UIComponents'
@@ -192,9 +193,14 @@ class KnowledgeGraphPrivateWarning extends Component {
     if (!this.props.isPrivate) return null;
     return (
       <p className="font-italic">
-        <span className="font-weight-bold">WARNING! </span>
-        This is a private project. Though contents remain private, the Knowledge Graph may make some metadata public;
-        only activate if that is acceptable.
+        {/* <span className="font-weight-bold">WARNING! </span> */}
+        <FontAwesomeIcon icon={faExclamationTriangle} /> This is a private project. Though contents remain private,
+        the Knowledge Graph may make some metadata public; only activate if that is acceptable.
+        <br />
+        <a href="https://renku.readthedocs.io/en/latest/user/knowledge-graph.html"
+          target="_blank" rel="noopener noreferrer">
+          <FontAwesomeIcon icon={faExternalLinkAlt} /> Read more about the Knowledge Graph integration.
+        </a>
       </p>
     )
   }

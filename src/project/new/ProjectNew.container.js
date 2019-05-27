@@ -64,6 +64,7 @@ class New extends Component {
       onTitleChange: this.onTitleChange.bind(this),
       onDescriptionChange: this.onDescriptionChange.bind(this),
       onVisibilityChange: this.onVisibilityChange.bind(this),
+      onOptoutKgChange: this.onOptoutKgChange.bind(this),
       onProjectNamespaceChange: this.onProjectNamespaceChange.bind(this),
       onProjectNamespaceAccept: this.onProjectNamespaceAccept.bind(this),
       fetchMatchingNamespaces: this.fetchMatchingNamespaces.bind(this)
@@ -136,10 +137,22 @@ class New extends Component {
   }
 
   onDescriptionChange(e) { this.newProject.set('display.description', e.target.value); }
-  onVisibilityChange(e) { this.newProject.set('meta.visibility', e.target.value); }
+  
+  onVisibilityChange(e) {
+    this.newProject.set('meta.visibility', e.target.value);
+    if (e.target.value !== "private") {
+      this.newProject.set('meta.optoutKg', false);
+    }
+  }
+
+  onOptoutKgChange(e) {
+    this.newProject.set('meta.optoutKg', e.target.checked);
+  }
+
   onProjectNamespaceChange(value) {
     this.newProject.set('meta.projectNamespace', value);
   }
+
   onProjectNamespaceAccept() {
     const namespace = this.newProject.get('meta.projectNamespace');
     if (namespace.kind !== 'group') {
