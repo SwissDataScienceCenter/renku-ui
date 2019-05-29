@@ -2,16 +2,21 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-## Global variables
-## Shared values/secrets
-global:
-
-  renku:
-    ## Domain name for the deployed instance of renku
-    domain: example.local
-
-  ## Set to true if using https
-  useHTTPS: false
+## Global chart section shared between all renku services.
+## The values here are most likely set through the parent chart.
+# global:
+#   ## ATTENTION: In principle it should be possible to run the UI and the gateway
+#   ## under different subdomains. However, this is experimental and not tested could
+#   ## lead to problems with cookies, etc. See the main renku chart for tested
+#   ## configurations that are known to work!
+#   ui:
+#     ## The URL of under which the UI is running. This should include the path
+#     ## if applicable (eg https://renku.some.domain or https://some.domain/renku)
+#     # url:
+#   gateway:
+#     ## The URL of under which the gateway is running. This should include the path
+#     ## if applicable (eg https://api.renku.some.domain or https://renku.some.domain/api)
+#     # url:
 
 replicaCount: 1
 

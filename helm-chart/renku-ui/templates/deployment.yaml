@@ -31,9 +31,9 @@ spec:
             - name: RENKU_VERSION
               value: {{ .Values.global.renku.version | default ( .Chart.Version ) | quote }}
             - name: BASE_URL
-              value: {{ .Values.baseUrl | default (printf "%s://%s" (include "ui.protocol" .) .Values.global.renku.domain) | quote }}
+              value: "{{ required "Missing value global.ui.url" .Values.global.ui.url }}"
             - name: GATEWAY_URL
-              value: {{ .Values.gatewayUrl | default (printf "%s://gateway.%s" (include "ui.protocol" .) .Values.global.renku.domain) | quote }}
+              value: "{{ required "Missing value global.gateway.url" .Values.global.gateway.url }}"
             - name: WELCOME_PAGE
               value: {{ .Values.welcomePage.text | b64enc | quote }}
           livenessProbe:
