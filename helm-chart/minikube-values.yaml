@@ -1,8 +1,0 @@
-global:
-  renku:
-    domain: renku.build
-
-baseUrl: "http://localhost:3000"
-
-ingress:
-  enabled: false

@@ -1,0 +1,7 @@
+global:
+  renku:
+    version: latest
+  ui:
+    url: 'http://renku.some.domain'
+  gateway:
+    url: 'http://renku.some.domain/api'

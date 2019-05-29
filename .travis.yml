@@ -48,7 +48,7 @@ install:
 script:
   - make tag/renku-ui
   - make test/renku-ui
-  - helm lint helm-chart/renku-ui -f helm-chart/minikube-values.yaml
+  - helm lint helm-chart/renku-ui -f helm-chart/test-values.yaml
 
 deploy:
   - &script
