@@ -233,6 +233,31 @@ class DataVisibility extends Component {
   }
 }
 
+
+class TemplatesDropdown extends Component {
+  
+  render() {
+    const templates = this.props.templates;
+    let selected = this.props.templates.filter(v=> v.folder === this.props.templateValue)
+
+    const options = templates.map(v =>
+      <option key={v.folder} value={v.folder}>{v.name}</option>
+    )
+    let content = [
+      <FormGroup key="templates">
+        <Label>Template</Label>
+        <Input type="select" placeholder="template"
+          value={this.props.templateValue}
+          onChange={this.props.onTemplateChange}>
+          {options}
+        </Input>
+       <FormText color="muted">{selected!== undefined && selected.length > 0 ? selected[0].description : "" }</FormText>
+      </FormGroup>
+    ]
+    return content;
+  }
+}
+
 class ProjectNew extends Component {
 
   render() {
@@ -257,6 +282,10 @@ class ProjectNew extends Component {
             onChange={this.props.handlers.onProjectNamespaceChange}
             onAccept={this.props.handlers.onProjectNamespaceAccept}
             fetchMatchingNamespaces={this.props.handlers.fetchMatchingNamespaces} />
+          <TemplatesDropdown
+            templates={this.props.templates}
+            templateValue={this.props.model.meta.template}
+            onTemplateChange={this.props.handlers.onTemplateChange} />
           <DataVisibility
             visibilities={this.props.visibilities}
             visibilityValue={this.props.model.meta.visibility}

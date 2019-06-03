@@ -56,7 +56,7 @@ class New extends Component {
 
     this.newProject = new StateModel(newProjectSchema, StateKind.REDUX);
     this.state = {statuses: [], namespaces: [], namespaceGroup: null,
-      visibilities: projectVisibilitiesForGroupVisibility()
+      visibilities: projectVisibilitiesForGroupVisibility(), templates: []
     };
 
     this.handlers = {
@@ -67,9 +67,15 @@ class New extends Component {
       onOptoutKgChange: this.onOptoutKgChange.bind(this),
       onProjectNamespaceChange: this.onProjectNamespaceChange.bind(this),
       onProjectNamespaceAccept: this.onProjectNamespaceAccept.bind(this),
-      fetchMatchingNamespaces: this.fetchMatchingNamespaces.bind(this)
+      fetchMatchingNamespaces: this.fetchMatchingNamespaces.bind(this),
+      onTemplateChange: this.onTemplateChange.bind(this),
+      fetchProjectTemplates: this.fetchProjectTemplates.bind(this)
     };
     this.mapStateToProps = this.doMapStateToProps.bind(this);
+  }
+
+  async fetchProjectTemplates(){
+    return this.props.client.getProjectTemplates();
   }
 
   async componentDidMount() {
@@ -83,6 +89,15 @@ class New extends Component {
     const namespace = namespaces.data.filter(n => n.name === username)
     if (namespace.length > 0) this.newProject.set('meta.projectNamespace', namespace[0]);
     this.setState({namespaces});
+
+    const templates = await this.fetchProjectTemplates();
+    if (templates == null) {
+      this.setState({templates: []});
+      return;
+    }
+    this.setState({templates})
+    if (templates.length > 0) this.newProject.set('meta.template', templates[0].folder);
+    
   }
 
   onSubmit() {
@@ -143,6 +158,10 @@ class New extends Component {
     if (e.target.value !== "private") {
       this.newProject.set('meta.optoutKg', false);
     }
+  }
+
+  onTemplateChange(e) {
+    this.newProject.set('meta.template', e.target.value);
   }
 
   onOptoutKgChange(e) {
@@ -208,6 +227,7 @@ class New extends Component {
       statuses={statuses}
       namespaces={this.state.namespaces.data}
       visibilities={this.state.visibilities}
+      templates={this.state.templates}
       handlers={this.handlers}
       store={this.newProject.reduxStore}
       user={this.props.user} />;
