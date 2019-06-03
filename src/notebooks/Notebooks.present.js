@@ -132,7 +132,7 @@ class NotebookServerOptions extends Component {
     return (
       <div className="container">
         <Row key="header">
-          <Col sm={12} md={6}><h3>Launch new Jupyterlab server</h3></Col>
+          <Col sm={12} md={6}><h3>Launch new JupyterLab server</h3></Col>
         </Row>
         <Row key="spacer"><Col sm={8} md={6} lg={4} xl={3}>&nbsp;</Col></Row>
         <Row key="form">
@@ -231,7 +231,7 @@ class NotebookServerRowAction extends Component {
             <Loader size="14" inline="true" margin="1" />
           </Button>
         </div>
-        
+
       )
     }
   }
@@ -423,11 +423,11 @@ class NotebookServersList extends Component {
 
 /**
  * Displays the list of available notebook servers.
- * 
+ *
  * @param {Object} servers   Servers as returned by renku-notebook "/servers" API
  * @param {function} stop   Function to invoke to stop the target notebook, requiring server name as parameter
  * @param {function} projectId   Required to focus on a single project (no project and namespace in the table)
- *     
+ *
  */
 class NotebookServers extends Component {
   render() {
@@ -455,7 +455,7 @@ class NotebooksPopup extends Component {
         <FontAwesomeIcon icon={faInfoCircle} /> You can start a new notebook by navigating to a project page.
         <br />Be sure to have at least Developer privileges, then open the Notebook Servers tab.
       </InfoAlert>
-    ) 
+    )
   }
 }
 
