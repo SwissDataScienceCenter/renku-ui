@@ -17,12 +17,19 @@
  */
 
 import { fetchJson } from './utils';
+import yaml from 'yaml-js';
 
 const FileCategories = {
   data: (path) => path.startsWith('data'),
   notebooks: (path) => path.endsWith('ipynb'),
   workflows: (path) => path.startsWith('.renku/workflow/'),
 };
+
+const TemplatesReposUrl = {
+  TREES: 'https://api.github.com/repos/SwissDataScienceCenter/renku-project-template/git/trees/',
+  TREES_MASTER: 'https://api.github.com/repos/SwissDataScienceCenter/renku-project-template/git/trees/master',
+  BLOBS: 'https://api.github.com/repos/SwissDataScienceCenter/renku-project-template/git/blobs/'
+}
 
 function groupedFiles(files, projectFiles) {
   projectFiles = (projectFiles != null) ? projectFiles : {};
@@ -136,12 +143,12 @@ function addProjectMethods(client) {
 
     // When the provided version does not exist, we log an error and uses latest.
     // Maybe this should raise a more prominent alarm?
-    const payloadPromise = getPayload(gitlabProject.name, client.renkuVersion)
+    const payloadPromise = getPayload(gitlabProject.name, client.renkuVersion, renkuProject.meta.template)
       .catch(error => {
         console.error(`Problem when retrieving project template ${client.renkuVersion}`);
         console.error(error);
         console.error('Trying again with \'latest\'');
-        return getPayload(gitlabProject.name, 'latest')
+        return getPayload(gitlabProject.name, 'latest', renkuProject.meta.template)
       });
 
     let promises = [newProjectPromise, payloadPromise];
@@ -255,6 +262,13 @@ function addProjectMethods(client) {
       queryParams: { per_page: 100 }
     }, 'json', false)
   }
+
+  client.getProjectTemplates = () => {
+    return fetchJson(TemplatesReposUrl.TREES_MASTER)
+      .then(data => data.tree.filter(obj => obj.path === 'manifest.yaml')[0]['sha'])
+      .then(manifestSha => fetchJson(`${TemplatesReposUrl.BLOBS}${manifestSha}`))
+      .then(data => {return yaml.load(atob(data.content))});
+  }
 }
 
 
@@ -308,15 +322,12 @@ function carveProject(projectJson) {
 //       make sense at some point to serve the project template from the GitLab
 //       instance we're working with.
 
-function getPayload(projectName, renkuVersion) {
-
-  const TEMPLATE_REPO_URL = 'https://api.github.com/repos/SwissDataScienceCenter/renku-project-template/git/trees/'
-
+function getPayload(projectName, renkuVersion, projectTemplate) {
   // Promise which will resolve into the repository sub-tree
   // which matches the desired version of the renku project template.
-  const subTreePromise = fetchJson(TEMPLATE_REPO_URL + 'master')
-    .then(data => data.tree.filter(obj => obj.path === renkuVersion)[0]['sha'])
-    .then(treeSha => fetchJson(`${TEMPLATE_REPO_URL}${treeSha}?recursive=1`));
+  const subTreePromise = fetchJson(TemplatesReposUrl.TREES_MASTER)
+    .then(data => data.tree.filter(obj => obj.path === projectTemplate)[0]['sha'])
+    .then(treeSha => fetchJson(`${TemplatesReposUrl.TREES}${treeSha}?recursive=1`));
 
   // Promise which will resolve into a list of file creation actions
   // ready to be passed to the GitLab API.
