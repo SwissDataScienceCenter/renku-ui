@@ -29,7 +29,7 @@ import { connect } from 'react-redux'
 import { StateKind } from '../model/Model';
 import Present from './Project.present'
 
-import { ProjectModel, GraphIndexingStatus } from './Project.state'
+import { ProjectModel, GraphIndexingStatus, PollingInterval } from './Project.state'
 import Ku from '../ku/Ku'
 import { FileLineage } from '../file'
 import { ACCESS_LEVELS } from '../api-client';
@@ -71,7 +71,7 @@ class View extends Component {
   async fetchBranches() { return this.projectState.fetchBranches(this.props.client, this.props.id); }
   async fetchCIJobs() { return this.projectState.fetchCIJobs(this.props.client, this.props.id); }
   async startNotebookServersPolling() {
-    return this.projectState.startNotebookServersPolling(this.props.client, this.props.id);
+    return this.projectState.startNotebookServersPolling(this.props.client, this.props.id,PollingInterval.START);
   }
   async stopNotebookServersPolling() { return this.projectState.stopNotebookServersPolling(); }
   async stopNotebookServer(serverName) { return this.projectState.stopNotebookServer(this.props.client, serverName); }
