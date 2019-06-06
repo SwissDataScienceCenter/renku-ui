@@ -1,5 +1,8 @@
 # Changes
 
+## 0.5.1 (released 2019-06-06)
+* Lower the rate of polling to prevent taxing JupyterHub [#485](https://github.com/SwissDataScienceCenter/renku-ui/pull/485)
+
 ## 0.5.0 (released 2019-05-22)
 
 * New top-level Notebooks and project Notebook Servers interfaces with more features [#415](https://github.com/SwissDataScienceCenter/renku-ui/issues/415), [#425](https://github.com/SwissDataScienceCenter/renku-ui/pull/425)
