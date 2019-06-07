@@ -39,6 +39,7 @@ import { MergeRequest, MergeRequestList } from '../merge-request';
 import List from './list';
 import New from './new';
 import { ShowFile } from '../file/File.present';
+import Fork from './fork';
 
 // TODO: This component has grown too much and needs restructuring. One option would be to insert
 // TODO: another container component between this top-level project component and the presentational
@@ -204,10 +205,10 @@ class View extends Component {
     const forked = (forkedData != null && Object.keys(forkedData).length > 0) ?
       true :
       false;
-
+    const forkModalOpen = this.projectState.get('forkModalOpen');
     // Access to the project state could be given to the subComponents by connecting them here to
     // the projectStore. This is not yet necessary.
-    const subProps = {...ownProps, projectId, accessLevel, externalUrl, notebookServerUrl, notebookServerAPI, filesTree};
+    const subProps = {...ownProps, projectId, accessLevel, externalUrl, notebookServerUrl, notebookServerAPI, filesTree, forkModalOpen};
 
     const mapStateToProps = (state, ownProps) => {
       return {
@@ -253,7 +254,17 @@ class View extends Component {
       mrView: (p) => <MergeRequest
         key="mr" {...subProps}
         iid={p.match.params.mrIid}
-        updateProjectState={this.fetchAll.bind(this)}/>
+        updateProjectState={this.fetchAll.bind(this)}/>,
+
+      fork: () => <Fork 
+        projectId={this.projectState.get('core.id')}
+        title={this.projectState.get('core.title')}
+        forkModalOpen={forkModalOpen} 
+        toogleForkModal={this.eventHandlers.toogleForkModal} 
+        history={this.props.history}
+        client={this.props.client} 
+        user={this.props.user} />
+
     }
   }
 
@@ -276,6 +287,10 @@ class View extends Component {
       const projectId = this.projectState.get('core.id') || parseInt(this.props.match.params.id, 10);
       const starred = this.getStarred(this.props.user, projectId);
       this.projectState.star(this.props.client, projectId, this.props.userStateDispatch, starred)
+    },
+    toogleForkModal: (e) => {
+      e.preventDefault();
+      this.projectState.toogleForkModal();
     },
     onCreateMergeRequest: (branch) => {
       const core = this.projectState.get('core');
@@ -332,6 +347,7 @@ class View extends Component {
     const externalUrl = this.projectState.get('core.external_url');
     const canCreateMR = state.visibility.accessLevel >= ACCESS_LEVELS.DEVELOPER;
     const imageBuild = this.getImageBuildStatus();
+    const forkModalOpen = this.projectState.get('forkModalOpen');
 
     return {
       ...this.projectState.get(),
@@ -339,6 +355,7 @@ class View extends Component {
       ...this.subUrls(),
       ...this.subComponents.bind(this)(internalId, ownProps),
       starred,
+      forkModalOpen,
       settingsReadOnly,
       suggestedMRBranches,
       externalUrl,

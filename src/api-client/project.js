@@ -164,6 +164,54 @@ function addProjectMethods(client) {
   }
 
 
+  client.forkProject = (projectMeta) => {
+    const gitlabProject = {
+      id: projectMeta.id
+    };
+    if (projectMeta.projectNamespace != null) gitlabProject.namespace_id = projectMeta.projectNamespace.id;
+    const headers = client.getBasicHeaders();
+    headers.append('Content-Type', 'application/json');
+
+    let createGraphWebhookPromise;
+    const newProjectPromise = client.clientFetch(`${client.baseUrl}/projects/${projectMeta.id}/fork`, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify(gitlabProject)
+    })
+      .then(resp => {
+        if (!projectMeta.optoutKg) {
+          createGraphWebhookPromise = client.createGraphWebhook(resp.data.id);
+        }
+        client.clientFetch(`${client.baseUrl}/projects/${resp.data.id}/triggers` , {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify({
+            description: `Automatic Fork trigger`
+          })
+        }).then(trigger => { client.clientFetch(`${client.baseUrl}/projects/${resp.data.id}/trigger/pipeline`, {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify({
+            ref:'master',
+            token: trigger.data.token
+          })
+        });
+        });
+        return resp;
+      });
+
+    let promises = [newProjectPromise];
+    if (createGraphWebhookPromise) {
+      promises = promises.concat(createGraphWebhookPromise);
+    }    
+    return Promise.all(promises)
+      .then((results) => {
+        if (results.errorData)
+          return Promise.reject(results);
+        return Promise.resolve(results).then(() => results[0].data);
+      });
+  }
+
   client.setTags = (projectId, name, tags) => {
     return client.putProjectField(projectId, name, 'tag_list', tags);
   }

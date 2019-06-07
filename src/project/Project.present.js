@@ -40,7 +40,7 @@ import { Card, CardBody, CardHeader } from 'reactstrap';
 
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faStarRegular from '@fortawesome/fontawesome-free-regular/faStar'
-import { faStar as faStarSolid, faInfoCircle, faExternalLinkAlt } from '@fortawesome/fontawesome-free-solid'
+import { faStar as faStarSolid, faInfoCircle, faExternalLinkAlt, faCodeBranch } from '@fortawesome/fontawesome-free-solid'
 import { faExclamationTriangle, faLock , faUserFriends, faGlobe, faSearch } from '@fortawesome/fontawesome-free-solid'
 
 import { ExternalLink, Loader, RenkuNavLink, TimeCaption} from '../utils/UIComponents'
@@ -244,16 +244,18 @@ class ProjectViewHeaderOverview extends Component {
     const system = this.props.system;
     const starButtonText = this.props.starred ? 'unstar' : 'star';
     const starIcon = this.props.starred ? faStarSolid : faStarRegular;
+    const forkButtonText = 'fork';
+    const forkIcon = faCodeBranch
     return (
       <Container fluid>
         <Row>
-          <Col xs={12} md={9}>
+          <Col xs={12} md={6}>
             <h3>{core.title} <ProjectVisibilityLabel visibilityLevel={this.props.visibility.level}/></h3>
             <p>
               <span>{this.props.core.path_with_namespace}{forkedFrom}</span> <br />
             </p>
           </Col>
-          <Col xs={12} md={3}>
+          <Col xs={12} md={6}>
             <div className="d-flex flex-md-row-reverse">
               <div className={`fixed-width-${this.props.starred ? '120' : '100'}`}>
                 <form className="input-group input-group-sm">
@@ -264,6 +266,17 @@ class ProjectViewHeaderOverview extends Component {
                   </div>
                   <input className="form-control border-primary text-right"
                     placeholder={system.star_count} aria-label="starCount" readOnly={true} />
+                </form>
+              </div>
+              <div className={`fixed-width-100 pr-1`}>
+                <form className="input-group input-group-sm">
+                  <div className="input-group-prepend">
+                    <button className="btn btn-outline-primary" onClick={this.props.toogleForkModal}>
+                      <FontAwesomeIcon icon={forkIcon} /> {forkButtonText}
+                    </button>
+                  </div>
+                  <input className="form-control border-primary text-right"
+                    placeholder={system.forks_count} aria-label="starCount" readOnly={true} />
                 </form>
               </div>
             </div>
@@ -282,6 +295,7 @@ class ProjectViewHeaderOverview extends Component {
           </Col>
         </Row>
         <KnowledgeGraphIntegrationWarningBanner {...this.props} />
+        {this.props.fork(this.props)}
       </Container>
     )
   }
