@@ -271,6 +271,11 @@ class ProjectModel extends StateModel {
     })
   }
 
+  toogleForkModal() {
+    let forkModalOpen = this.get('forkModalOpen');
+    this.set("forkModalOpen" , forkModalOpen === undefined || forkModalOpen === false ? true : false);
+  }
+
   star(client, id, userStateDispatch, starred) {
     client.starProject(id, starred).then(() => {
       // TODO: Bad naming here - will be resolved once the user state is re-implemented.

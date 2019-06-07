@@ -53,6 +53,25 @@ const newProjectSchema = new Schema({
   display: {schema: displaySchema, mandatory: true}
 });
 
+const forkDisplaySchema = new Schema({
+  title: {initial:'', mandatory: true},
+  description: {initial: '', mandatory: true},
+  displayId: {initial: '', mandatory: false},
+  slug: {initial: '', mandatory: true},
+  loading: {initial: false, mandatory: false},
+  errors: {initial: [], mandatory: false},
+
+  statuses: {initial: []},
+  namespaces: {initial: []},
+  namespaceGroup: {initial: null},
+  namespacesFetched: {initial: false}
+})
+
+const forkProjectSchema = new Schema({
+  meta: {schema: metaSchema, mandatory: true},
+  display: {schema: forkDisplaySchema, mandatory: true}
+});
+
 const projectSchema = new Schema({
   core: {
     schema: {
@@ -139,4 +158,4 @@ const projectSchema = new Schema({
   }
 });
 
-export { userSchema, metaSchema, displaySchema, newProjectSchema, projectSchema };
+export { userSchema, metaSchema, displaySchema, newProjectSchema, projectSchema, forkProjectSchema };
