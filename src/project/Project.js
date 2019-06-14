@@ -78,9 +78,14 @@ class View extends Component {
   async createGraphWebhook() { return this.projectState.createGraphWebhook(this.props.client, this.props.id); }
   async stopCheckingWebhook() { this.projectState.stopCheckingWebhook(); }
   async fetchGraphWebhook() { this.projectState.fetchGraphWebhook(this.props.client, this.props.id, this.props.user); }
-  async fetchProjectFilesTree() { return this.projectState.fetchProjectFilesTree(this.props.client, this.props.id , this.cleanCurrentURL() ); }
-  async setProjectOpenFolder(filepath) { this.projectState.setProjectOpenFolder(this.props.client, this.props.id, filepath); }
+  async fetchProjectFilesTree() {
+    return this.projectState.fetchProjectFilesTree(this.props.client, this.props.id, this.cleanCurrentURL());
+  }
+  async setProjectOpenFolder(filepath) {
+    this.projectState.setProjectOpenFolder(this.props.client, this.props.id, filepath);
+  }
   async fetchGraphStatus() { return this.projectState.fetchGraphStatus(this.props.client, this.props.id); }
+  async fetchNotebookServerUrl() { return this.projectState.fetchNotebookServerUrl(this.props.client, this.props.id); }
 
   async fetchAll() {
     await this.fetchProject();
@@ -89,6 +94,7 @@ class View extends Component {
     if (this.props.user.id) {
       this.fetchCIJobs();
       this.checkGraphWebhook();
+      this.fetchNotebookServerUrl();
     }
   }
 
@@ -332,6 +338,9 @@ class View extends Component {
     },
     fetchGraphStatus: () => {
       return this.fetchGraphStatus();
+    },
+    fetchNotebookServerUrl: () => {
+      return this.fetchNotebookServerUrl();
     }
   };
 

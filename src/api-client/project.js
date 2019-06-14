@@ -214,7 +214,7 @@ function addProjectMethods(client) {
       .then(resp => resp.data)
       .then(server => {
         return {
-          notebookServerUrl: server.url,
+          notebookServerUrl: server.url ? server.url : null,
           notebookServerAPI: `${client.baseUrl}/notebooks/${projectPath}/${commitSha}`
         }
       })
