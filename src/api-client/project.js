@@ -147,7 +147,7 @@ function addProjectMethods(client) {
     let promises = [newProjectPromise, payloadPromise];
     if (createGraphWebhookPromise) {
       promises = promises.concat(createGraphWebhookPromise);
-    }    
+    }
     return Promise.all(promises)
       .then(([data, payload]) => {
         if (data.errorData)
@@ -200,10 +200,18 @@ function addProjectMethods(client) {
     if (commitSha === 'latest') {
       commitSha = await (client.getCommits(projectId).then(resp => resp.data[0].id));
     }
-    return {
-      notebookServerUrl: `${client.jupyterhubUrl}/services/notebooks/${projectPath}/${commitSha}`,
-      notebookServerAPI: `${client.baseUrl}/notebooks/${projectPath}/${commitSha}`
-    };
+    const headers = client.getBasicHeaders();
+    return client.clientFetch(`${client.baseUrl}/notebooks/${projectPath}/${commitSha}`, {
+      method: 'GET',
+      headers: headers
+    })
+      .then(resp => resp.data)
+      .then(server => {
+        return {
+          notebookServerUrl: server.url ? server.url : null,
+          notebookServerAPI: `${client.baseUrl}/notebooks/${projectPath}/${commitSha}`
+        }
+      })
   }
 
 

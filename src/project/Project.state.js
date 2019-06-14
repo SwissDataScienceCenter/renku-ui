@@ -114,7 +114,7 @@ class ProjectModel extends StateModel {
   // TODO: Do we really want to re-fetch the entire project on every change?
   fetchProject(client, id) {
     this.setUpdating({core: {available: true}});
-    return client.getProject(id, {statistics:true})
+    return client.getProject(id, {statistics: true})
       .then(resp => resp.data)
       .then(d => {
         const updatedState = {
@@ -124,7 +124,6 @@ class ProjectModel extends StateModel {
           statistics: d.metadata.statistics
         };
         this.setObject(updatedState);
-        this.fetchNotebookServerUrl(client, id, updatedState);
         return d;
       })
       .catch(err => {
@@ -291,8 +290,9 @@ class ProjectModel extends StateModel {
     return client.stopNotebookServer(serverName);
   }
 
-  fetchNotebookServerUrl(client, id, projectState) {
-    client.getNotebookServerUrl(id, projectState.core.path_with_namespace)
+  fetchNotebookServerUrl(client, id) {
+    const pathWithNamespace = this.get('core.path_with_namespace');
+    client.getNotebookServerUrl(id, pathWithNamespace)
       .then(urls => {
         this.set('core.notebookServerUrl', urls.notebookServerUrl);
         this.set('core.notebookServerAPI', urls.notebookServerAPI);
