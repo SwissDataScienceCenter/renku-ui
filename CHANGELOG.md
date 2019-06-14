@@ -1,5 +1,10 @@
 # Changes
 
+## 0.5.2 (released 2019-07-02)
+* Add a project visibility label to the project page [#470](https://github.com/SwissDataScienceCenter/renku-ui/issues/470) [#497](https://github.com/SwissDataScienceCenter/renku-ui/pull/497)
+* Display files with extension `ran.ipynb` [#483](https://github.com/SwissDataScienceCenter/renku-ui/issues/483) [#496](https://github.com/SwissDataScienceCenter/renku-ui/pull/496)
+* Let anonymous users view projects [#491](https://github.com/SwissDataScienceCenter/renku-ui/pull/491)
+
 ## 0.5.1 (released 2019-06-06)
 * Lower the rate of polling to prevent taxing JupyterHub [#485](https://github.com/SwissDataScienceCenter/renku-ui/pull/485)
 
