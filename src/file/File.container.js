@@ -68,7 +68,7 @@ class JupyterNotebookContainer extends Component {
 
 const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'tiff', 'pdf', 'gif'];
 const CODE_EXTENSIONS = ['py', 'js', 'json', 'sh', 'r', 'txt','yml','csv','parquet','cwl','job','prn'];
-const NO_EXTENSION_FILE = ['Dockerfile','errlog','log']
+const NO_EXTENSION_FILE = ['Dockerfile','errlog','log', 'gitignore', 'gitattributes', 'dockerignore', 'lock']
 
 // FIXME: Unify the file viewing for kus (embedded) and independent file viewing.
 // FIXME: Javascript highlighting is broken for large files.
@@ -82,10 +82,7 @@ class FilePreview extends React.Component {
     } else {
       if(this.props.file.file_name.match(/\.(.*)/)===null) 
         return this.props.file.file_name;
-      else return this.props.file.file_name
-        .match(/\.(.*)/)[0]
-        .slice(1,)
-        .toLowerCase();
+      else return this.props.file.file_name.split('.').pop().toLowerCase();
     }
   };
 
