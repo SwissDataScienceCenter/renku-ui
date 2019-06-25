@@ -3,3 +3,11 @@ Button.alert-link {
   border: 0;
   vertical-align: bottom;
 }
+
+.visibilityLabel {
+  display: inline;
+  color: rgba(0, 0, 0, 0.5);
+  /* color: black; */
+  margin-left: 0.1em;
+  font-size: 0.55em;
+}

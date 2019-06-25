@@ -41,7 +41,7 @@ import { Card, CardBody, CardHeader } from 'reactstrap';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faStarRegular from '@fortawesome/fontawesome-free-regular/faStar'
 import { faStar as faStarSolid, faInfoCircle, faExternalLinkAlt } from '@fortawesome/fontawesome-free-solid'
-import { faExclamationTriangle } from '@fortawesome/fontawesome-free-solid'
+import { faExclamationTriangle, faLock , faUserFriends, faGlobe } from '@fortawesome/fontawesome-free-solid'
 
 import { ExternalLink, Loader, RenkuNavLink, TimeCaption} from '../utils/UIComponents'
 import { InfoAlert, SuccessAlert, WarnAlert, ErrorAlert } from '../utils/UIComponents'
@@ -93,6 +93,21 @@ class ImageBuildInfoBadge extends Component {
     return <Link className={`badge badge-${imageBuildAlertColor[imageBuild.status]}`}
       title={imageBuildStatusText[imageBuild.status] || imageBuildStatusText['failed']}
       to={this.props.notebooksUrl}>Notebooks</Link>
+  }
+}
+
+class ProjectVisibilityLabel extends Component {
+  render(){
+    switch(this.props.visibilityLevel) {
+    case "private":
+      return  <span className="visibilityLabel"><FontAwesomeIcon icon={faLock}/> Private</span>
+    case "internal":
+      return  <span className="visibilityLabel"><FontAwesomeIcon icon={faUserFriends}/> Internal</span>
+    case "public":
+      return  <span className="visibilityLabel"><FontAwesomeIcon icon={faGlobe}/> Public</span>
+    default:
+      return null;
+    }
   }
 }
 
@@ -233,7 +248,7 @@ class ProjectViewHeaderOverview extends Component {
       <Container fluid>
         <Row>
           <Col xs={12} md={9}>
-            <h3>{core.title}</h3>
+            <h3>{core.title} <ProjectVisibilityLabel visibilityLevel={this.props.visibility.level}/></h3>
             <p>
               <span>{this.props.core.path_with_namespace}{forkedFrom}</span> <br />
             </p>
