@@ -33,7 +33,7 @@ import { StatusHelper } from '../model/Model'
  * @param {function} refreshBranches   Function to invoke to refresh the list of branches
  * @param {number} projectId   id of the reference project
  * @param {number} projectPath   path of the reference project
- * @param {Object[]} client   api-client used to query the gateway
+ * @param {Object} client   api-client used to query the gateway
  * @param {string} successUrl  Optional: url to redirect when then notebook is succesfully started
  * @param {Object} history  Optional: used with successUrl to properly set the new url without reloading the page
  */
@@ -260,7 +260,7 @@ class StartNotebookServer extends Component {
   }
 
   startNotebookPolling() {
-    this.model.startNotebookPolling(this.props.projectId, this.props.projectPath);
+    this.model.startNotebookPolling(this.props.projectId, this.props.projectPath, true);
   }
 
   stopNotebookPolling() {
@@ -293,6 +293,11 @@ class StartNotebookServer extends Component {
   }
 }
 
+/**
+ * @param {Object} client   api-client used to query the gateway
+ * @param {boolean} standalone   Indicates whether it's displayed as standalone
+ * @param {number} projectId   Optional, used to focus on a single project
+ */
 class Notebooks extends Component {
   constructor(props) {
     super(props);
@@ -312,7 +317,7 @@ class Notebooks extends Component {
   }
 
   startNotebookPolling() {
-    this.model.startNotebookPolling();
+    this.model.startNotebookPolling(this.props.projectId);
   }
   stopNotebookPolling() {
     this.model.stopNotebookPolling();
@@ -334,6 +339,8 @@ class Notebooks extends Component {
     return <VisibleNotebooks
       store={this.model.reduxStore}
       user={this.props.user}
+      standalone={this.props.standalone ? this.props.standalone : false}
+      projectId={this.props.projectId}
     />
   }
 }

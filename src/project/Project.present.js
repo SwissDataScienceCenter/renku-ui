@@ -47,7 +47,7 @@ import { ExternalLink, Loader, RenkuNavLink, TimeCaption} from '../utils/UICompo
 import { InfoAlert, SuccessAlert, WarnAlert, ErrorAlert } from '../utils/UIComponents'
 import { SpecialPropVal } from '../model/Model'
 import { ProjectTags, ProjectTagList } from './shared'
-import { NotebookServers, StartNotebookServer } from '../notebooks'
+import { Notebooks, StartNotebookServer } from '../notebooks'
 import FilesTreeView from './filestreeview/FilesTreeView';
 import { ACCESS_LEVELS } from '../api-client';
 
@@ -579,14 +579,6 @@ class ProjectViewFiles extends Component {
 }
 
 class ProjectNotebookServers extends Component {
-  componentDidMount() {
-    this.props.startNotebookServersPolling();
-  }
-
-  componentWillUnmount() {
-    this.props.stopNotebookServersPolling();
-  }
-
   render() {
     let launch = null;
     if (this.props.visibility.accessLevel >= ACCESS_LEVELS.DEVELOPER) {
@@ -600,11 +592,7 @@ class ProjectNotebookServers extends Component {
 
     return (
       <Col xs={12}>
-        <NotebookServers
-          servers={ this.props.notebooks.all }
-          stop= { this.props.stopNotebookServer }
-          projectId={this.props.id}
-        />
+        <Notebooks projectId={this.props.id} client={this.props.client} standalone={false} />
         {launch}
       </Col>
     )

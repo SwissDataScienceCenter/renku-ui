@@ -27,7 +27,7 @@ import { UncontrolledTooltip, UncontrolledPopover, PopoverHeader, PopoverBody } 
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { faStopCircle, faExternalLinkAlt, faInfoCircle, faSyncAlt, faCogs } from '@fortawesome/fontawesome-free-solid';
 
-import { SpecialPropVal, StatusHelper } from '../model/Model';
+import { StatusHelper } from '../model/Model';
 import { Loader, InfoAlert, ExternalLink } from '../utils/UIComponents';
 import Time from '../utils/Time';
 import Sizes from '../utils/Media';
@@ -47,27 +47,35 @@ const Columns = {
 class NotebookServerRowAction extends Component {
   render() {
     const {status, name} = this.props;
-    const StatusText = {
-      "running": "Running",
-      "spawn": "Starting",
-      "stop": "Stopping",
-      "other": "Updating",
+    let color, statusText, interactive;
+    switch (status) {
+    case "running":
+      color = "success";
+      statusText = "Running";
+      interactive = true;
+      break;
+    case "pending":
+      color = "warning";
+      statusText = "Pending";
+      interactive = false;
+      break;
+    case "error":
+      color = "danger";
+      statusText = "Error";
+      interactive = false;
+      break;
+    default:
+      color = "danger";
+      statusText = "Unknown";
+      interactive = false;
     }
-    const color = status === "running" ? "success" :
-      status === "spawn" ? "warning" :
-        status === "stop" ? "danger" : "info";
-    const interactive = status === "running" ?
-      true :
-      false;
-    const size = this.props.small ?
-      "sm" :
-      "";
+    const size = this.props.small ? "sm" : "";
 
     if (interactive) {
       return (
         <UncontrolledButtonDropdown>
           <DropdownToggle caret color={color} disabled={!interactive} size={size}>
-            { StatusText[status] }
+            { statusText }
           </DropdownToggle>
           <DropdownMenu>
             <DropdownItem href={this.props.url} target="_blank">
@@ -87,7 +95,7 @@ class NotebookServerRowAction extends Component {
       return (
         <div>
           <Button className="d-flex" color={color} disabled size={size}>
-            { StatusText[status] }
+            { statusText }
             <Loader size="14" inline="true" margin="1" />
           </Button>
         </div>
@@ -186,11 +194,11 @@ class NotebookServerRowCompact extends Component {
 class NotebookServerRow extends Component {
   render() {
     const annotations = cleanAnnotations(this.props.annotations, "renku.io");
-    const status = this.props.ready ?
+    const status = this.props.status.ready ?
       "running" :
-      this.props.pending === "spawn" || this.props.pending === "stop" ?
-        this.props.pending :
-        "other";
+      this.props.status.step === "Unschedulable" ?
+        "error" :
+        "pending";
 
     return (
       <Media query={ Sizes.md }>
@@ -292,7 +300,7 @@ class NotebookServersList extends Component {
 class NotebookServers extends Component {
   render() {
     const serverData = this.props.servers;
-    if (!serverData || serverData === SpecialPropVal.UPDATING ) {
+    if (!serverData || StatusHelper.isUpdating(serverData)) {
       return <Loader />
     }
     return (
@@ -321,17 +329,23 @@ class NotebooksPopup extends Component {
 
 class Notebooks extends Component {
   render() {
-    const serverNumbers = Object.keys(this.props.notebooks.all).length;
+    const { standalone } = this.props;
+    let title, popup = null;
+    if (standalone) {
+      title = (<h1>Notebooks</h1>);
+      const serverNumbers = Object.keys(this.props.notebooks.all).length;
+      popup = (<NotebooksPopup servers={serverNumbers} />);
+    }
+
     return <Row>
       <Col>
-        <h1>
-          Notebooks
-        </h1>
+        {title}
         <NotebookServers
           servers={this.props.notebooks.all}
           stop={this.props.handlers.onStopNotebook}
+          projectId={this.props.projectId}
         />
-        <NotebooksPopup servers={serverNumbers} />
+        {popup}
       </Col>
     </Row>
   }
@@ -342,7 +356,7 @@ class StartNotebookServer extends Component {
     return (
       <Row>
         <Col xs={12} sm={10} md={8} lg={6}>
-          <h3>Start new Jupyterlab server</h3>
+          <h3>Start new JupyterLab server</h3>
           <Form>
             <StartNotebookBranches {...this.props} />
             <StartNotebookCommits {...this.props} />
@@ -552,7 +566,7 @@ class StartNotebookOptions extends Component {
     }
     const { justStarted } = this.props;
     if (justStarted) {
-      return <Label>Starting new Jupyterlab server... <Loader size="14" inline="true" /></Label>
+      return <Label>Starting new JupyterLab server... <Loader size="14" inline="true" /></Label>
     }
     const { status, url } = this.props.notebooks;
     let content;
@@ -579,30 +593,24 @@ class StartNotebookOptions extends Component {
       if (status === "running") {
         content = (
           <FormGroup>
-            <Label>A Jupyterlab server is already running.</Label>
+            <Label>A JupyterLab server is already running.</Label>
             <br />
             <ExternalLink url={url} title="Connect" />
           </FormGroup>
         );
       }
-      else if (status === "spawn") {
+      else if (status === "pending") {
         content = (
           <FormGroup>
-            <Label>A Jupyterlab server is already starting, please wait...</Label>
-          </FormGroup>
-        );
-      }
-      else if (status === "stop") {
-        content = (
-          <FormGroup>
-            <Label>A Jupyterlab server is stopping, please wait...</Label>
+            <Label>A JupyterLab server for this commit is starting or terminating, please wait...</Label>
           </FormGroup>
         );
       }
       else {
         content = (
           <FormGroup>
-            <Label>A Jupyterlab server is already running but it is currently not available. Please wait...</Label>
+            <Label>A JupyterLab server is already running, but it is currently not available.
+              You can check its status from the Notebooks page</Label>
           </FormGroup>
         );
       }

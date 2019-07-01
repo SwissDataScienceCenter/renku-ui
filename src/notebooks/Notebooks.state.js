@@ -92,11 +92,11 @@ class NotebooksModel extends StateModel {
     }
   }
 
-  fetchNotebooks(first) {
+  fetchNotebooks(first, projectId) {
     if (first) {
       this.setUpdating({notebooks: {all: true}});
     }
-    return this.client.getNotebookServers()
+    return this.client.getNotebookServers(projectId)
       .then(resp => {
         this.set('notebooks.all', resp.data);
         return resp.data;
@@ -115,9 +115,11 @@ class NotebooksModel extends StateModel {
       if (parseInt(annotations.projectId) !== projectId) continue;
       if (annotations["branch"] === branch.name && annotations["commit-sha"] === commit.id) {
         this.setObject({ notebooks: {
-          status: notebook.ready ?
+          status: notebook.status.ready ?
             "running" :
-            notebook.pending,
+            notebook.status.step === "Unschedulable" ?
+              "error" :
+              "pending",
           url: notebook.url
         }});
         return true;
@@ -133,11 +135,11 @@ class NotebooksModel extends StateModel {
     return false;
   }
 
-  notebookPollingIteration(verifyRunningId, projectPath) {
-    const fetchPromise = this.fetchNotebooks();
-    if (verifyRunningId) {
+  notebookPollingIteration(projectId, projectPath, first, checkRunning) {
+    const fetchPromise = this.fetchNotebooks(first, projectId);
+    if (checkRunning) {
       return fetchPromise.then((servers) => {
-        return this.verifyIfRunning(verifyRunningId, projectPath, servers);
+        return this.verifyIfRunning(projectId, projectPath, servers);
       });
     }
     else {
@@ -145,8 +147,8 @@ class NotebooksModel extends StateModel {
     }
   }
 
-  startNotebookPolling(verifyRunningId, projectPath) {
-    if (verifyRunningId) {
+  startNotebookPolling(projectId, projectPath, checkRunning) {
+    if (projectId) {
       this.setObject({notebooks: {
         status: false,
         url: null
@@ -155,12 +157,12 @@ class NotebooksModel extends StateModel {
     const oldPoller = this.get('notebooks.polling');
     if (oldPoller == null) {
       const newPoller = setInterval(() => {
-        this.notebookPollingIteration(verifyRunningId, projectPath);
+        this.notebookPollingIteration(projectId, projectPath, false, checkRunning);
       }, 3000);
       this.set('notebooks.polling', newPoller);
 
       // fetch immediatly
-      this.notebookPollingIteration(verifyRunningId, projectPath);
+      this.notebookPollingIteration(projectId, projectPath, true, checkRunning);
     }
   }
 
@@ -215,7 +217,7 @@ class NotebooksModel extends StateModel {
       }
     }
 
-    this.set('notebooks.status', 'spawn');
+    this.set('notebooks.status', 'pending');
     return this.client.startNotebook(projectPath, branch, commit, options);  
   }
 
@@ -229,16 +231,7 @@ class NotebooksModel extends StateModel {
 
   stopNotebook(serverName) {
     // manually set the state instead of waiting for the promise to resolve
-    const updatedState = {
-      notebooks: {
-        all: {
-          [serverName]: {
-            ready: false,
-            pending: "stop"
-          }
-        }
-      }
-    }
+    const updatedState = { notebooks: { all: { [serverName]: { status: { ready: false } } } } };
     this.setObject(updatedState);
     return this.client.stopNotebookServer(serverName);
   }

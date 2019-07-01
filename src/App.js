@@ -96,7 +96,7 @@ class App extends Component {
                   <Project.New key="project_new" client={this.props.client}
                     user={this.props.userState.getState().user} {...p}/> }/>
               <Route exact path="/notebooks"
-                render={p => <Notebooks key="notebooks"
+                render={p => <Notebooks key="notebooks" standalone={true}
                   user={this.props.userState.getState().user}
                   client={this.props.client} {...p} />} />
             </Switch>

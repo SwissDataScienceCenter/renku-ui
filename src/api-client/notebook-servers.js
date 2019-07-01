@@ -44,7 +44,6 @@ function cleanAnnotations(annotations, domain) {
 
 function addNotebookServersMethods(client) {
   client.getNotebookServers = (id, branch, commit) => {
-    // TODO: add filtering logic here, remove from Notebook
     const headers = client.getBasicHeaders();
     const url = `${client.baseUrl}/notebooks/servers`;
     return client.clientFetch(url, {
@@ -55,7 +54,12 @@ function addNotebookServersMethods(client) {
       if (id) {
         // TODO: remove this filter when this API will support projectId filtering
         servers = Object.keys(servers)
-          .filter(server => servers[server].annotations["renku.io/projectId"] === id)
+          .filter(server => {
+            const annotations = cleanAnnotations(servers[server]["annotations"], "renku.io");
+            if (parseInt(annotations.projectId) === parseInt(id)) {
+              return server;
+            }
+          })
           .reduce((obj, key) => {obj[key] = servers[key]; return obj}, {});
       }
       return { "data": servers };

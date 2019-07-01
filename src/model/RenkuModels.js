@@ -136,12 +136,6 @@ const projectSchema = new Schema({
       stop: {initial: null},
       progress: {initial: null}
     }
-  },
-  notebooks: {
-    schema: {
-      polling: {initial: null},
-      all: {initial: {}}
-    }
   }
 });
 

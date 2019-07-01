@@ -38,11 +38,6 @@ const GraphIndexingStatus = {
   MAX_VALUE: 100
 };
 
-export const PollingInterval = {
-  START: 3000,
-  READY: 60000
-}
-
 class ProjectModel extends StateModel {
   constructor(stateBinding, stateHolder, initialState) {
     super(projectSchema, stateBinding, stateHolder, initialState)
@@ -211,89 +206,6 @@ class ProjectModel extends StateModel {
     filesTree.hash[folderPath].childrenOpen = !filesTree.hash[folderPath].childrenOpen;
     this.set('filesTree',filesTree);
   } 
-
-  makeNotebookServerPollingStart(client,id,interval){
-    this.set('notebooks.pollingInterval', interval);
-    const newPoller = setInterval(() => {
-      return this.fetchNotebookServers(client, id);
-    }, interval);
-    this.set('notebooks.polling', newPoller);
-
-    // invoke immediatly the first time
-    return this.fetchNotebookServers(client, id, true);
-  }
-
-  startNotebookServersPolling(client, id, interval) {
-    const oldPoller = this.get('notebooks.polling');
-    const oldInterval = this.get('notebooks.pollingInterval');
-    if (oldPoller == null) {
-      this.set('notebooks.pollingInterval', interval);
-      return this.makeNotebookServerPollingStart(client,id,interval);
-    } else {
-      if(oldInterval !== undefined && oldInterval !== interval){
-        return this.changeNotebookServerPollingInterval(client,id,interval);
-      }
-    }
-  }
-
-  changeNotebookServerPollingInterval(client, id, newInterval){
-    this.stopNotebookServersPolling();
-    this.set('notebooks.pollingInterval', newInterval);
-    return this.makeNotebookServerPollingStart(client,id,newInterval);
-  }
-
-  stopNotebookServersPolling() {
-    const poller = this.get('notebooks.polling');
-    if (poller) {
-      this.set('notebooks.polling', null);
-      this.set('notebooks.pollingInterval', null);
-      clearTimeout(poller);
-    }
-  }
-
-  fetchNotebookServers(client, id, first) {
-    if(this.get('notebooks.all')=== SpecialPropVal.UPDATING) return;
-    if (first)  this.setUpdating({notebooks: {all: true}});
-    return client.getNotebookServers(id)
-      .then(resp => {
-        const serverNames = Object.keys(resp.data).sort();
-        if(serverNames && serverNames.length > 0){
-          const allServersReady = serverNames.map((k, i) =>
-            resp.data[k].ready
-          ).filter(ready => ready === false).length === 0;
-          if(allServersReady && this.get('notebooks.pollingInterval')!== PollingInterval.READY){
-            this.changeNotebookServerPollingInterval(client, id, PollingInterval.READY);
-          } else if(!allServersReady && this.get('notebooks.pollingInterval') !== PollingInterval.START){
-            this.changeNotebookServerPollingInterval(client, id, PollingInterval.START);
-          }
-        } else {
-          this.stopNotebookServersPolling();
-        }
-        // TODO: filter for current project
-        this.set('notebooks.all', resp.data);
-      });
-  }
-
-  stopNotebookServer(client, serverName, id) {
-    // manually set the state instead of waiting for the promise to resolve
-    const updatedState = {
-      notebooks: {
-        all: {
-          [serverName]: {
-            ready: false,
-            pending: "stop"
-          }
-        }
-      }
-    }
-
-    const oldInterval = this.get('notebooks.pollingInterval');
-    if (oldInterval !== PollingInterval.START) {
-      this.changeNotebookServerPollingInterval(client, id, PollingInterval.START);
-    }
-    this.setObject(updatedState);
-    return client.stopNotebookServer(serverName);
-  }
 
   fetchNotebookServerUrl(client, id) {
     const pathWithNamespace = this.get('core.path_with_namespace');
