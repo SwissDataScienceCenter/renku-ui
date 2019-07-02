@@ -43,9 +43,9 @@ const projectListSchema = new Schema({
   totalItems: {mandatory: true},
   currentPage: {mandatory: true},
   perPage: {mandatory: true},
+  orderBy: {initial:'last_activity_at', mandatory:true},
   pages: {initial: [], schema: [{projectsPageSchema}]}
 });
-
 
 class ProjectListModel extends StateModel {
   constructor(client) {
@@ -70,9 +70,23 @@ class ProjectListModel extends StateModel {
     this.set('selected',selected);
   }
 
-  setQueryPageNumberAndPath(query, pageNumber, pathName) {
+  setOrderDropdownOpen(value){
+    this.set('orderByDropdownOpen', value);
+  }
+
+  setOrderBy(orderBy){
+    this.set('orderBy', orderBy);
+  }
+
+  setOrderSearchAsc(orderSearchAsc){
+    this.set('orderSearchAsc', orderSearchAsc);
+  }
+
+  setQueryPageNumberAndPath(query, pageNumber, pathName, orderBy, orderSearchAsc) {
     this.setQuery(query)
     this.setPathName(pathName)
+    this.setOrderBy(orderBy)
+    this.setOrderSearchAsc(orderSearchAsc);
     return this.setPage(pageNumber)
   }
 
@@ -81,7 +95,9 @@ class ProjectListModel extends StateModel {
     const pageNumber = this.get('currentPage');
     const perPage = this.get('perPage');
     const query = this.get('query');
-    return this.client.getProjects({search: query, page: pageNumber, per_page: perPage})
+    const orderBy = this.get('orderBy');
+    const sort = this.get('orderSearchAsc') === true ? 'asc' : 'desc';
+    return this.client.getProjects({search: query, page: pageNumber, per_page: perPage, order_by: orderBy, sort:sort})
       .then(response => {
         const pagination = response.pagination;
         this.set('currentPage', pagination.currentPage);
