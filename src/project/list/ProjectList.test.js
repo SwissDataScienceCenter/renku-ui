@@ -62,7 +62,7 @@ describe('new project actions', () => {
     expect(model.get('currentPage')).toEqual(undefined);
   });
   it('does search with a query', () => {
-    return model.setQueryPageNumberAndPath("", 1,fakeHistory.pathName).then(() => {
+    return model.setQueryPageNumberAndPath("", 1,fakeHistory.pathName, 'last_activity_at').then(() => {
       expect(model.get('currentPage')).toEqual(1);
       expect(model.get('totalItems')).toEqual(1);
       expect(model.get('pathName')).toEqual(fakeHistory.pathName);

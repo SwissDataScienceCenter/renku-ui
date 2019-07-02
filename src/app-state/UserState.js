@@ -52,13 +52,13 @@ const UserState = {
       .then(response => {
         dispatch(UserState.set({...response.data, available: true}));
         // TODO: Replace this after re-implementation of user state.
-        client.getProjects({starred: true})
+        client.getProjects({starred: true, order_by: 'last_activity_at'})
           .then((projectResponse) => {
             const reducedProjects = projectResponse.data.map((project) => starredProjectMetadata(project));
             dispatch(UserState.setStarred(reducedProjects));
           })
           .catch(() => dispatch(UserState.setStarred([])));
-        client.getProjects({membership: true})
+        client.getProjects({membership: true, order_by: 'last_activity_at'})
           .then((projectResponse) => {
             const reducedProjects = projectResponse.data.map((project) => starredProjectMetadata(project));
             dispatch(UserState.setMember(reducedProjects));

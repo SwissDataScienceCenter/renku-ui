@@ -19,11 +19,15 @@
 import React, { Component } from 'react';
 import { Link, Route, Switch }  from 'react-router-dom';
 import { Row, Col } from 'reactstrap';
-import { Button, Form, FormGroup, FormText, Input, Label } from 'reactstrap';
-import { Nav, NavItem } from 'reactstrap';
+import { Button, Form, InputGroup, FormText, Input, Label } from 'reactstrap';
+import { Nav, NavItem, InputGroupButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap';
 
 import { Avatar, Loader, Pagination,  TimeCaption , RenkuNavLink } from '../../utils/UIComponents';
 import { ProjectTagList } from '../shared';
+import faCheck from '@fortawesome/fontawesome-free-solid/faCheck';
+import faSortAmountUp from '@fortawesome/fontawesome-free-solid/faSortAmountUp';
+import faSortAmountDown from '@fortawesome/fontawesome-free-solid/faSortAmountDown';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 
 class ProjectListRow extends Component {
   render() {
@@ -49,11 +53,30 @@ class ProjectSearchForm extends Component {
 
   render() {
     return [<Form key="form" onSubmit={this.props.handlers.onSearchSubmit} inline>
-      <FormGroup>
-        <Label for="searchQuery" hidden>Query</Label>
+      <InputGroup>
         <Input name="searchQuery" id="searchQuery" placeholder="Search Text" style={{minWidth: "300px"}}
-          value={this.props.searchQuery} onChange={this.props.handlers.onSearchQueryChange} />
-      </FormGroup>
+          value={this.props.searchQuery} onChange={this.props.handlers.onSearchQueryChange} className="border-primary" />
+        <Label for="searchQuery" hidden>Query</Label>
+        <InputGroupButtonDropdown addonType="append" toggle={this.props.handlers.onOrderByDropdownToogle} isOpen={this.props.orderByDropdownOpen} >
+          <Button outline color="primary" onClick={this.props.handlers.toogleSearchSorting}>
+            { this.props.orderSearchAsc ? <FontAwesomeIcon icon={faSortAmountUp}/> : <FontAwesomeIcon icon={faSortAmountDown}/> }
+          </Button>
+          <DropdownToggle outline caret color="primary" >
+            Order By
+          </DropdownToggle>
+          <DropdownMenu>
+            <DropdownItem value={this.props.orderByValuesMap.NAME} onClick={this.props.handlers.changeSearchDropdownOrder}>
+              {this.props.orderBy === this.props.orderByValuesMap.NAME ? <FontAwesomeIcon icon={faCheck} /> :null} Name
+            </DropdownItem>
+            <DropdownItem value={this.props.orderByValuesMap.CREATIONDATE} onClick={this.props.handlers.changeSearchDropdownOrder}>
+              {this.props.orderBy === this.props.orderByValuesMap.CREATIONDATE ? <FontAwesomeIcon icon={faCheck} /> :null} Creation Date
+            </DropdownItem>
+            <DropdownItem value={this.props.orderByValuesMap.UPDATEDDATE} onClick={this.props.handlers.changeSearchDropdownOrder}>
+              {this.props.orderBy === this.props.orderByValuesMap.UPDATEDDATE ? <FontAwesomeIcon icon={faCheck} /> :null} Updated Date
+            </DropdownItem>
+          </DropdownMenu>
+        </InputGroupButtonDropdown>
+      </InputGroup>
       &nbsp;
       <Button color="primary" onClick={this.props.handlers.onSearchSubmit}>
         Search
@@ -159,8 +182,14 @@ class ProjectsSearch extends Component {
           :
           <span></span>
       }
-      <Col md={8}>
-        <ProjectSearchForm searchQuery={this.props.searchQuery} handlers={this.props.handlers} />
+      <Col md={12}>
+        <ProjectSearchForm 
+          orderByValuesMap={this.props.orderByValuesMap} 
+          orderBy={this.props.orderBy} 
+          orderByDropdownOpen={this.props.orderByDropdownOpen} 
+          orderSearchAsc={this.props.orderSearchAsc}
+          searchQuery={this.props.searchQuery} 
+          handlers={this.props.handlers} />
       </Col>
     </Row>,
     <Row key="spacer2"><Col md={8}>&nbsp;</Col></Row>,
@@ -191,7 +220,6 @@ class ProjectList extends Component {
         </Col>
       </Row>,
       <ProjectNavTabs loggedIn={hasUser} key="navbar" urlMap={urlMap}/>,
-      <Row key="spacer"><Col md={12}>&nbsp;</Col></Row>,
       <Row key="content">
         <Col key="" md={12}>
           {
