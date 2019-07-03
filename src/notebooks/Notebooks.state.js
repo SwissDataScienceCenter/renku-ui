@@ -32,7 +32,8 @@ const notebooksSchema = new Schema({
       polling: {initial: null},
       all: {initial: {}},
       status: {initial: null},
-      url: {initial: null}
+      url: {initial: null},
+      fetching: {initial:false}
     }
   },
   filters: {
@@ -54,6 +55,8 @@ const notebooksSchema = new Schema({
     }
   }
 });
+
+const POLLING_INTERVAL = 3000;
 
 class NotebooksModel extends StateModel {
   constructor(client) {
@@ -93,13 +96,21 @@ class NotebooksModel extends StateModel {
   }
 
   fetchNotebooks(first, projectId) {
+    const fetching = this.get('notebooks.fetching');
+    if (fetching) return;
+    this.set('notebooks.fetching', true);
+
     if (first) {
       this.setUpdating({notebooks: {all: true}});
     }
     return this.client.getNotebookServers(projectId)
       .then(resp => {
+        this.set('notebooks.fetching', false);
         this.set('notebooks.all', resp.data);
         return resp.data;
+      })
+      .catch(error => {
+        this.set('notebooks.fetching', false);
       });
   }
 
@@ -158,7 +169,7 @@ class NotebooksModel extends StateModel {
     if (oldPoller == null) {
       const newPoller = setInterval(() => {
         this.notebookPollingIteration(projectId, projectPath, false, checkRunning);
-      }, 3000);
+      }, POLLING_INTERVAL);
       this.set('notebooks.polling', newPoller);
 
       // fetch immediatly
