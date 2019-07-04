@@ -34,6 +34,7 @@ import { Landing, LoggedInNavBar, AnonymousNavBar, FooterNavbar } from './landin
 import { Notebooks } from './notebooks';
 import { Login } from './authentication'
 import Help from './help'
+import NotFound from './not-found'
 import { UserAvatar } from './utils/UIComponents'
 
 class RenkuNavBar extends Component {
@@ -99,6 +100,8 @@ class App extends Component {
                 render={p => <Notebooks key="notebooks" standalone={true}
                   user={this.props.userState.getState().user}
                   client={this.props.client} {...p} />} />
+              <Route path="*"
+                render={p => <NotFound {...p} />} />
             </Switch>
           </main>
           <Route component={RenkuFooter} />

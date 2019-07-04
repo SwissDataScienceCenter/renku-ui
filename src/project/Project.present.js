@@ -41,7 +41,7 @@ import { Card, CardBody, CardHeader } from 'reactstrap';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faStarRegular from '@fortawesome/fontawesome-free-regular/faStar'
 import { faStar as faStarSolid, faInfoCircle, faExternalLinkAlt } from '@fortawesome/fontawesome-free-solid'
-import { faExclamationTriangle, faLock , faUserFriends, faGlobe } from '@fortawesome/fontawesome-free-solid'
+import { faExclamationTriangle, faLock , faUserFriends, faGlobe, faSearch } from '@fortawesome/fontawesome-free-solid'
 
 import { ExternalLink, Loader, RenkuNavLink, TimeCaption} from '../utils/UIComponents'
 import { InfoAlert, SuccessAlert, WarnAlert, ErrorAlert } from '../utils/UIComponents'
@@ -717,8 +717,9 @@ class ProjectViewNotFound extends Component {
 
     return <Row>
       <Col>
-        <h1>404</h1>
-        <h2>Project not found</h2>
+        <h1>Error 404</h1>
+        <h3>Project not found <FontAwesomeIcon icon={faSearch} flip="horizontal" /></h3>
+        <div>&nbsp;</div>
         <p>We could not find project #{this.props.id}.</p>
         <p>
           It is possible that the project has been deleted by its owner or you don&apos;t have permission to access it.
