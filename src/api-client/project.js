@@ -118,6 +118,8 @@ function addProjectMethods(client) {
     });
   }
 
+  client.getEmptyProjectObject = () => { return {folder:'empty-project-template', name:"Empty Project"} }
+
   client.postProject = (renkuProject) => {
     const gitlabProject = {
       name: renkuProject.display.title,
@@ -128,39 +130,66 @@ function addProjectMethods(client) {
     const headers = client.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    let createGraphWebhookPromise;
-    const newProjectPromise = client.clientFetch(`${client.baseUrl}/projects`, {
-      method: 'POST',
-      headers: headers,
-      body: JSON.stringify(gitlabProject)
-    })
-      .then(resp => {
+    if(renkuProject.meta.template === client.getEmptyProjectObject().folder){
+      let createGraphWebhookPromise;
+      const newProjectPromise = client.clientFetch(`${client.baseUrl}/projects`, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(gitlabProject)
+      }).then(resp => {
         if (!renkuProject.meta.optoutKg) {
           createGraphWebhookPromise = client.createGraphWebhook(resp.data.id);
         }
         return resp.data;
       });
 
-    // When the provided version does not exist, we log an error and uses latest.
-    // Maybe this should raise a more prominent alarm?
-    const payloadPromise = getPayload(gitlabProject.name, client.renkuVersion, renkuProject.meta.template)
-      .catch(error => {
-        console.error(`Problem when retrieving project template ${client.renkuVersion}`);
-        console.error(error);
-        console.error('Trying again with \'latest\'');
-        return getPayload(gitlabProject.name, 'latest', renkuProject.meta.template)
-      });
+      let promises = [newProjectPromise];
+      if (createGraphWebhookPromise) {
+        promises = promises.concat(createGraphWebhookPromise);
+      }
 
-    let promises = [newProjectPromise, payloadPromise];
-    if (createGraphWebhookPromise) {
-      promises = promises.concat(createGraphWebhookPromise);
-    }    
-    return Promise.all(promises)
-      .then(([data, payload]) => {
-        if (data.errorData)
-          return Promise.reject(data);
-        return client.postCommit(data.id, payload).then(() => data);
+      return Promise.all(promises)
+        .then(([data, payload]) => {
+          if (data.errorData)
+            return Promise.reject(data);
+          return Promise.resolve(data).then(() => data) ;
+        });
+
+    } else {
+      let createGraphWebhookPromise;
+      const newProjectPromise = client.clientFetch(`${client.baseUrl}/projects`, {
+        method: 'POST',
+        headers: headers,
+        body: JSON.stringify(gitlabProject)
+      }).then(resp => {
+        if (!renkuProject.meta.optoutKg) {
+          createGraphWebhookPromise = client.createGraphWebhook(resp.data.id);
+        }
+        return resp.data;
       });
+      
+      // When the provided version does not exist, we log an error and uses latest.
+      // Maybe this should raise a more prominent alarm?
+      const payloadPromise = getPayload(gitlabProject.name, client.renkuVersion, renkuProject.meta.template)
+        .catch(error => {
+          console.error(`Problem when retrieving project template ${client.renkuVersion}`);
+          console.error(error);
+          console.error('Trying again with \'latest\'');
+          return getPayload(gitlabProject.name, 'latest', renkuProject.meta.template)
+        });
+      let promises = [newProjectPromise, payloadPromise];
+
+      if (createGraphWebhookPromise) {
+        promises = promises.concat(createGraphWebhookPromise);
+      }
+
+      return Promise.all(promises)
+        .then(([data, payload]) => {
+          if (data.errorData)
+            return Promise.reject(data);
+          return client.postCommit(data.id, payload).then(() => data);
+        });
+    }
   }
 
 
@@ -315,7 +344,8 @@ function addProjectMethods(client) {
     return fetchJson(TemplatesReposUrl.TREES_MASTER)
       .then(data => data.tree.filter(obj => obj.path === 'manifest.yaml')[0]['sha'])
       .then(manifestSha => fetchJson(`${TemplatesReposUrl.BLOBS}${manifestSha}`))
-      .then(data => {return yaml.load(atob(data.content))});
+      .then(data => {return yaml.load(atob(data.content))})
+      .then(data => {data.push(client.getEmptyProjectObject()); return data;});
   }
 }
 
