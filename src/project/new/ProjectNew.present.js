@@ -243,6 +243,7 @@ class TemplatesDropdown extends Component {
     const options = templates.map(v =>
       <option key={v.folder} value={v.folder}>{v.name}</option>
     )
+
     let content = [
       <FormGroup key="templates">
         <Label>Template</Label>
@@ -251,7 +252,9 @@ class TemplatesDropdown extends Component {
           onChange={this.props.onTemplateChange}>
           {options}
         </Input>
-       <FormText color="muted">{selected!== undefined && selected.length > 0 ? selected[0].description : "" }</FormText>
+        <FormText color="muted">
+          {selected!== undefined && selected.length > 0 ? selected[0].description : "" }
+        </FormText>
       </FormGroup>
     ]
     return content;
