@@ -168,7 +168,7 @@ function addProjectMethods(client) {
     const gitlabProject = {
       id: projectMeta.id
     };
-    if (projectMeta.projectNamespace != null) gitlabProject.namespace_id = projectMeta.projectNamespace.id;
+    if (projectMeta.projectNamespace != null) gitlabProject.namespace = projectMeta.projectNamespace.id;
     const headers = client.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
