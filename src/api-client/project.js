@@ -192,8 +192,79 @@ function addProjectMethods(client) {
     }
   }
 
+  client.getProjectStatus = (projectId) =>{
+    const headers = client.getBasicHeaders();
+    headers.append('Content-Type', 'application/json');
+    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/import`, {
+      method: 'GET',
+      headers: headers
+    }).then(resp => {
+      return resp.data.import_status;
+    }).catch((error) => "error");
+  } 
 
-  client.forkProject = (projectMeta) => {
+  function runPipeline(projectId){
+    const headers = client.getBasicHeaders();
+    headers.append('Content-Type', 'application/json');
+    return  client.clientFetch(`${client.baseUrl}/projects/${projectId}/pipeline`, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify({
+        ref: "master"
+      })
+    })
+  }
+
+  client.startPipeline =  (projectId) => {
+    const headers = client.getBasicHeaders();
+    headers.append('Content-Type', 'application/json');
+    let pipelineStarted = false;
+    let counter= 0;
+    const projectStatusTimeout = setTimeout(() => {
+      if(pipelineStarted === true || counter === 10) 
+        clearTimeout(projectStatusTimeout);
+      else {
+        client.getProjectStatus(projectId).then((forkProjectStatus) => {
+          if(forkProjectStatus === 'finished'){
+            runPipeline(projectId).then(resp => {
+              pipelineStarted = true;
+              clearTimeout(projectStatusTimeout);
+            });    
+          } else if(forkProjectStatus === 'failed' || forkProjectStatus === 'error'){
+            clearTimeout(projectStatusTimeout);
+          } else {
+            counter++;
+          }
+        })
+      }
+    }, 3000);
+  }
+
+  function redirectWhenForkFinished(projectId, history){
+    const headers = client.getBasicHeaders();
+    headers.append('Content-Type', 'application/json');
+    let redirected = false;
+    let counter= 0;
+    const projectStatusTimeout = setTimeout(() => {
+      if(redirected === true || counter === 200) 
+        clearTimeout(projectStatusTimeout);
+      else {
+        client.getProjectStatus(projectId).then((forkProjectStatus) => {
+          if(forkProjectStatus === 'finished'){
+            redirected = true;
+            clearTimeout(projectStatusTimeout);
+            history.push(`/projects/${projectId}`);
+          } else if(forkProjectStatus === 'failed' || forkProjectStatus === 'error'){
+            clearTimeout(projectStatusTimeout);
+          } else {
+            counter++;
+          }
+        })
+      }
+    }, 3000);
+  }
+
+  client.forkProject = (projectMeta, history) => {
     const gitlabProject = {
       id: projectMeta.id
     };
@@ -201,43 +272,33 @@ function addProjectMethods(client) {
     const headers = client.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    let createGraphWebhookPromise;
+    let createGraphWebhookPromise, startPipelinePromise;
     const newProjectPromise = client.clientFetch(`${client.baseUrl}/projects/${projectMeta.id}/fork`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(gitlabProject)
-    })
-      .then(resp => {
-        if (!projectMeta.optoutKg) {
-          createGraphWebhookPromise = client.createGraphWebhook(resp.data.id);
-        }
-        client.clientFetch(`${client.baseUrl}/projects/${resp.data.id}/triggers` , {
-          method: 'POST',
-          headers: headers,
-          body: JSON.stringify({
-            description: `Automatic Fork trigger`
-          })
-        }).then(trigger => { client.clientFetch(`${client.baseUrl}/projects/${resp.data.id}/trigger/pipeline`, {
-          method: 'POST',
-          headers: headers,
-          body: JSON.stringify({
-            ref:'master',
-            token: trigger.data.token
-          })
-        });
-        });
-        return resp;
-      });
+    }).then(resp => {
+      if (!projectMeta.optoutKg) {
+        createGraphWebhookPromise = client.createGraphWebhook(resp.data.id);
+      }
+      return resp;
+    }).then(resp => {
+      client.startPipeline(resp.data.id);
+      return resp;
+    });
 
     let promises = [newProjectPromise];
     if (createGraphWebhookPromise) {
       promises = promises.concat(createGraphWebhookPromise);
     }    
+
+    promises = promises.concat(startPipelinePromise);
+
     return Promise.all(promises)
       .then((results) => {
         if (results.errorData)
           return Promise.reject(results);
-        return Promise.resolve(results).then(() => results[0].data);
+        return Promise.resolve(results).then(() => redirectWhenForkFinished(results[0].data.id, history));
       });
   }
 

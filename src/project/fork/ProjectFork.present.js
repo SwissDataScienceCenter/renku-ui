@@ -209,8 +209,18 @@ class ForkProjectModal extends Component {
           <SubmitLoader loading={this.props.model.display.loading} />
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={this.props.handlers.onSubmit}>Fork</Button>{' '}
-          <Button color="secondary" onClick={this.props.handlers.toogleForkModal}>Cancel</Button>
+          <Button 
+            color="primary" 
+            disabled={ this.props.model.display.loading } 
+            onClick={this.props.handlers.onSubmit}>
+            Fork
+          </Button>{' '}
+          <Button 
+            color="secondary" 
+            disabled={ this.props.model.display.loading } 
+            onClick={this.props.handlers.toogleForkModal}>
+            Cancel
+          </Button>
         </ModalFooter>
       </Modal>
     </div>
@@ -221,7 +231,11 @@ class ForkProjectModal extends Component {
 class SubmitLoader extends Component {
   render() {
     if (!this.props.loading) return null;
-    return(<Loader size="16" inline="true" margin="2" />)
+    return(
+      <FormText color="primary">
+        <Loader size="16" inline="true" margin="2"/>
+        The project is being forked...
+      </FormText> )
   }
 }
 
