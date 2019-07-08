@@ -70,11 +70,7 @@ class Fork extends Component {
     }
 
     this.forkProject.set('display.loading', true);
-    this.props.client.forkProject(this.forkProject.get().meta)
-      .then((project) => {
-        this.forkProject.set('display.loading', false);
-        this.props.history.push(`/projects/${project.id}`);
-      })
+    this.props.client.forkProject(this.forkProject.get().meta , this.props.history)
       .catch(error => {
         let display_messages = [];
         if (error.errorData && error.errorData.message) {
