@@ -59,6 +59,7 @@ function addNotebookServersMethods(client) {
             if (parseInt(annotations.projectId) === parseInt(id)) {
               return server;
             }
+            return null;
           })
           .reduce((obj, key) => {obj[key] = servers[key]; return obj}, {});
       }

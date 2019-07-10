@@ -25,6 +25,7 @@
 
 import { Schema, StateKind, StateModel } from '../model/Model';
 import { cleanAnnotations } from '../api-client/notebook-servers';
+import { StatusHelper } from '../model/Model'
 
 const notebooksSchema = new Schema({
   notebooks: {
@@ -118,6 +119,7 @@ class NotebooksModel extends StateModel {
     const notebooks = servers ?
       servers :
       this.get('notebooks.all');
+    if (StatusHelper.isUpdating(notebooks)) return;
     const branch = this.get('filters.branch');
     const commit = this.get('filters.commit');
     for (let notebookName of Object.keys(notebooks)) { 
@@ -148,6 +150,7 @@ class NotebooksModel extends StateModel {
 
   notebookPollingIteration(projectId, projectPath, first, checkRunning) {
     const fetchPromise = this.fetchNotebooks(first, projectId);
+    if (!fetchPromise) return;
     if (checkRunning) {
       return fetchPromise.then((servers) => {
         return this.verifyIfRunning(projectId, projectPath, servers);
@@ -249,3 +252,4 @@ class NotebooksModel extends StateModel {
 }
 
 export default NotebooksModel;
+
