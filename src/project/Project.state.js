@@ -29,6 +29,7 @@ import { StateModel} from '../model/Model';
 import { projectSchema } from '../model/RenkuModels';
 import { SpecialPropVal } from '../model/Model'
 import { isNullOrUndefined } from 'util';
+import { splitAutosavedBranches } from '../utils/HelperFunctions'
 
 
 const GraphIndexingStatus = {
@@ -236,9 +237,19 @@ class ProjectModel extends StateModel {
     this.setUpdating({system: {branches: true}});
     return client.getBranches(id)
       .then(resp => resp.data)
-      .then(d => {
-        this.set('system.branches', d)
-        return d;
+      .then(data => {
+        // split away autosaved branches and add external url
+        const { standard, autosaved } = splitAutosavedBranches(data);
+        this.set('system.branches', standard);
+        const externalUrl = this.get('core.external_url');
+        const autosavedUrl = autosaved.map(branch => {
+          const url = `${externalUrl}/tree/${branch.name}`;
+          branch.autosave.url = url;
+          return branch;
+        });
+        this.set('system.autosaved', autosavedUrl);
+
+        return standard;
       })
   }
 

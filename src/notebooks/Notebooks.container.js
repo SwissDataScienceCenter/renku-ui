@@ -29,7 +29,8 @@ import { StatusHelper } from '../model/Model'
 /**
  * Displays a start page for new Jupiterlab servers.
  * 
- * @param {Object[]} branches   Branches as redurnet by gitlab "/branches" API
+ * @param {Object[]} branches   Branches as returned by gitlab "/branches" API - no autosaved branches
+ * @param {Object[]} autosaved   Autosaved branches
  * @param {function} refreshBranches   Function to invoke to refresh the list of branches
  * @param {number} projectId   id of the reference project
  * @param {number} projectPath   path of the reference project
@@ -270,8 +271,9 @@ class StartNotebookServer extends Component {
   mapStateToProps(state, ownProps) {
     const augmentedState = { ...state,
       data: {...state.data,
-        branches: ownProps.inherited.branches
-      } // add "branches" to data
+        branches: ownProps.inherited.branches,
+        autosaved: ownProps.inherited.autosaved
+      }
     };
     return {
       handlers: this.handlers,

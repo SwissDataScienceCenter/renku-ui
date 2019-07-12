@@ -26,6 +26,7 @@ import { UncontrolledTooltip, UncontrolledPopover, PopoverHeader, PopoverBody } 
 // temporary issue with UncontrolledTooltip --> https://github.com/reactstrap/reactstrap/issues/1255  
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { faStopCircle, faExternalLinkAlt, faInfoCircle, faSyncAlt, faCogs } from '@fortawesome/fontawesome-free-solid';
+import {Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 import { StatusHelper } from '../model/Model';
 import { Loader, InfoAlert, ExternalLink } from '../utils/UIComponents';
@@ -707,12 +708,79 @@ class ServerOptionRange extends Component {
 }
 
 class ServerOptionLaunch extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      showModal: false,
+      current: {}
+    };
+
+    this.checkServer = this.checkServer.bind(this);
+    this.toggleModal = this.toggleModal.bind(this)
+  }
+
+  toggleModal() {
+    this.setState({ showModal: !this.state.showModal });
+  }
+
+  checkServer() {
+    const { filters } = this.props;
+    const { autosaved } = this.props.data;
+    const current = autosaved.filter(c =>
+      c.autosave.branch === filters.branch.name && c.autosave.commit === filters.commit.id.substr(0,7));
+    if (current.length > 0) {
+      this.setState({current: current[0]});
+      this.toggleModal();
+    }
+    else {
+      this.props.handlers.startServer();
+    }
+  }
+
   render() {
-    return (
-      <Button onClick={this.props.handlers.startServer} color="primary">
+    return [
+      <Button key="button" color="primary" onClick={this.checkServer}>
         Launch Server
-      </Button>
-    );
+      </Button>,
+      <AutosavedDataModal key="modal"
+        toggleModal={this.toggleModal.bind(this)}
+        showModal={this.state.showModal}
+        currentBranch={this.state.current}
+        {...this.props}
+      />
+    ];
+  }
+}
+
+class AutosavedDataModal extends Component {
+  render() {
+    const url = this.props.currentBranch && this.props.currentBranch.autosave ?
+      this.props.currentBranch.autosave.url :
+      "#";
+    return <div>
+      <Modal
+        isOpen={this.props.showModal}
+        toggle={this.props.toggleModal}>
+        <ModalHeader toggle={this.props.toggleModal}>Autosaved data</ModalHeader>
+        <ModalBody>
+          <p>
+            Renku has
+            recovered <a href={url} target="_blank" rel="noreferrer noopener">unsaved work</a> for
+            the <i>{this.props.filters.branch.name}</i> branch. We will automatically restore this
+            content so you do not lose any work.
+          </p>
+          <p>
+            Please refer to
+            this <a href="https://renku.readthedocs.io/en/latest/user/autosave.html"
+              target="_blank" rel="noreferrer noopener">documentation page</a> to
+            get further information.
+          </p>
+        </ModalBody>
+        <ModalFooter>
+          <Button color="primary" onClick={this.props.handlers.startServer}>Launch Server</Button>
+        </ModalFooter>
+      </Modal>
+    </div>
   }
 }
 

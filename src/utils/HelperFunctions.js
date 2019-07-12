@@ -18,6 +18,9 @@
 
 // title.Author: Alex K. - https://stackoverflow.com/users/246342/alex-k
 // Source: https://stackoverflow.com/questions/6507056/replace-all-whitespace-characters/6507078#6507078
+
+const AUTOSAVED_PREFIX = "renku/autosave/";
+
 const slugFromTitle = (title) => title.replace(/\s/g, '-').toLowerCase();
 
 function getActiveProjectId(currentPath) {
@@ -28,4 +31,17 @@ function getActiveProjectId(currentPath) {
   }
 }
 
-export { slugFromTitle, getActiveProjectId }
+function splitAutosavedBranches(branches) {
+  const autosaved = branches
+    .filter(branch => branch.name.startsWith(AUTOSAVED_PREFIX))
+    .map(branch => {
+      let autosave = {}
+      const autosaveData = branch.name.replace(AUTOSAVED_PREFIX, "").split("/");
+      [ autosave.namespace, autosave.branch, autosave.commit, autosave.finalCommit ] = autosaveData;
+      return {...branch, autosave};
+    });
+  const standard = branches.filter(branch => !branch.name.startsWith(AUTOSAVED_PREFIX));
+  return { standard, autosaved };
+}
+
+export { slugFromTitle, getActiveProjectId, splitAutosavedBranches }

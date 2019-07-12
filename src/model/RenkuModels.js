@@ -123,6 +123,7 @@ const projectSchema = new Schema({
       http_url: {initial: '',},
       merge_requests: {schema: [], initial:[]},
       branches: {schema: [], initial:[]},
+      autosaved: {schema: [], initial:[]},
       ci_jobs: {schema: [], initial:[]}
     }
   },

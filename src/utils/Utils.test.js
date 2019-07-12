@@ -23,7 +23,8 @@
  *  test fo utilities
  */
 
- import Time from './Time';
+import Time from './Time';
+import { splitAutosavedBranches } from './HelperFunctions';
 
 describe('Time class helper', () => {
   const Dates = {
@@ -53,5 +54,23 @@ describe('Time class helper', () => {
     expect(Time.toISOString(Dates.UTCZ_STRING, "time")).toEqual(Dates.ISO_READABLE_TIME);
     const fakeType = "not existing"
     expect(() => { Time.toISOString(Dates.UTCZ_STRING, fakeType) }).toThrow(`Uknown type "${fakeType}"`);
+  });
+});
+
+describe('Helper functions', () => {
+  const branches = [
+    { name: "master" },
+    { name: "renku/autosave/myuser/master/1234567/890acbd" }
+  ];
+
+  it('function splitAutosavedBranches', () => {
+    const splittedBranches = splitAutosavedBranches(branches);
+    expect(splittedBranches.standard.length).toEqual(1);
+    expect(splittedBranches.autosaved.length).toEqual(1);
+    const [ namespace, branch, commit, finalCommit ] = branches[1].name.replace("renku/autosave/", "").split("/");
+    expect(splittedBranches.autosaved[0].autosave.namespace).toEqual(namespace);
+    expect(splittedBranches.autosaved[0].autosave.branch).toEqual(branch);
+    expect(splittedBranches.autosaved[0].autosave.commit).toEqual(commit);
+    expect(splittedBranches.autosaved[0].autosave.finalCommit).toEqual(finalCommit);
   });
 });

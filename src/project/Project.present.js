@@ -619,6 +619,7 @@ class ProjectStartNotebookServer extends Component {
       <Col xs={12}>
         <StartNotebookServer
           branches={this.props.system.branches}
+          autosaved={this.props.system.autosaved}
           refreshBranches={this.props.fetchBranches}
           projectId={this.props.core.id}
           projectPath={this.props.core.displayId}
