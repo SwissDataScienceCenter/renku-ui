@@ -116,7 +116,47 @@ class NotebookServerRowProject extends Component {
   }
 }
 
+class StopNotebookModal extends Component {
+  render() {
+    return <div>
+      <Modal isOpen={this.props.show}>
+        <ModalHeader>Stopping server</ModalHeader>
+        <ModalBody>
+          <p>The following notebook server is going to stop soon</p>
+          <ul>
+            <li>Namespace: {this.props.namespace}</li>
+            <li>Project: {this.props.project}</li>
+            <li>Branch: {this.props.branch}</li>
+            <li>Commit: {this.props.commit}</li>
+          </ul>
+          <span>Please wait... <Loader size="14" inline="true" margin="1" /></span>
+        </ModalBody>
+      </Modal>
+    </div>
+  }
+}
+
 class NotebookServerRowFull extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      showModal: false,
+      currentServer: {}
+    };
+    this.stopServer = this.stopServer.bind(this);
+  }
+
+  showModal(option) {
+    this.setState({showModal: option });
+  }
+
+  stopServer(serverId) {
+    this.showModal(true);
+    this.props.onStopServer(serverId)
+      .then(data => { this.showModal(false); })
+      .catch(error => { this.showModal(false); });
+  }
+
   render() {
     const {annotations, status, url} = this.props;
     let columns;
@@ -134,6 +174,12 @@ class NotebookServerRowFull extends Component {
       <tr>
         <td className="align-middle">
           {columns[0]}
+          <StopNotebookModal key="modal" show={this.state.showModal}
+            namespace = {annotations["namespace"]}
+            project = {annotations["projectName"]}
+            branch = {annotations["branch"]}
+            commit = {annotations["commit-sha"].substring(0,8)}
+          />
         </td>
         <td className="align-middle">
           {columns[1]}
@@ -142,7 +188,7 @@ class NotebookServerRowFull extends Component {
           <NotebookServerRowAction
             status={status}
             name={this.props.name}
-            onStopServer={this.props.onStopServer}
+            onStopServer={this.stopServer}
             url={url}
           />
         </td>

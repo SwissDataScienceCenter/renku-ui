@@ -244,10 +244,11 @@ class NotebooksModel extends StateModel {
   }
 
   stopNotebook(serverName) {
-    // manually set the state instead of waiting for the promise to resolve
-    const updatedState = { notebooks: { all: { [serverName]: { status: { ready: false } } } } };
-    this.setObject(updatedState);
-    return this.client.stopNotebookServer(serverName);
+    return this.client.stopNotebookServer(serverName).then((resp => {
+      const updatedState = { notebooks: { all: { [serverName]: { status: { ready: false } } } } };
+      this.setObject(updatedState);
+      return resp;
+    }));
   }
 }
 

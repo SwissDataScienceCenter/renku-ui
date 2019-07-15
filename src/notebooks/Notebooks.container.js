@@ -325,7 +325,7 @@ class Notebooks extends Component {
     this.model.stopNotebookPolling();
   }
   onStopNotebook(serverName){
-    this.model.stopNotebook(serverName);
+    return this.model.stopNotebook(serverName);
   }
 
   mapStateToProps(state, ownProps) {
