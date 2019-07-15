@@ -85,6 +85,11 @@ class FileLineageGraph extends Component {
   componentDidUpdate() {
     this.renderD3();
   }
+  
+  hasLink(nodeId, centralNode){
+    return this.props.graph.nodes
+      .filter(function(node) { return (node.id === nodeId && node.id !== centralNode && node.type === "blob") })[0];
+  }
 
   renderD3() {
     // Create the input graph
@@ -96,6 +101,9 @@ class FileLineageGraph extends Component {
     const svg = d3.select(this._vizRoot).select('svg'),
       svgGroup = svg.append('g');
 
+    const history = this.props.history;
+    const projectPath = this.props.projectPath;
+
     // Run the renderer. This is what draws the final graph.
     render(d3.select('svg g'), g);
 
@@ -103,6 +111,19 @@ class FileLineageGraph extends Component {
     svg.attr('width', g.graph().width + 40);
     svgGroup.attr('transform', 'translate(20, 20)');
     svg.attr('height', g.graph().height + 40);
+
+    d3.selectAll('g.node').filter((d,i)=>{ return this.hasLink(d, this.props.graph.centralNode)})
+      .on("mouseover", function() {
+        d3.select(this).style("cursor","pointer").attr('r', 25)
+          .style("fill","grey");
+      })
+      .on("mouseout", function() {
+        d3.select(this).attr('r', 25)
+          .style("fill", "rgb(0, 0, 0)")
+      })
+      .on("click", function(){
+        history.push(projectPath+'/files/lineage'+d3.select(this).text().split(' ')[0])
+      });
   }
 
   render() {
@@ -173,7 +194,11 @@ class FileLineage extends Component {
 
     const graphObj = this.props.graph;
     const graph = (graphObj) ?
-      <FileLineageGraph path={this.props.path} graph={graphObj} /> :
+      <FileLineageGraph 
+        path={this.props.path} 
+        graph={graphObj} 
+        projectPath={this.props.match.url} 
+        history={this.props.history}/> :
       (this.props.error) ?
         <p>{this.props.error}</p> :
         <p>Loading...</p>;
