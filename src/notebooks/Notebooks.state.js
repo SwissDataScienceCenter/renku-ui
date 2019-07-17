@@ -34,7 +34,8 @@ const notebooksSchema = new Schema({
       all: {initial: {}},
       status: {initial: null},
       url: {initial: null},
-      fetching: {initial:false}
+      fetching: {initial:false},
+      discard: {initial: false}
     }
   },
   filters: {
@@ -107,7 +108,9 @@ class NotebooksModel extends StateModel {
     return this.client.getNotebookServers(projectId)
       .then(resp => {
         this.set('notebooks.fetching', false);
-        this.set('notebooks.all', resp.data);
+        if (!this.get('notebooks.discard')) {
+          this.set('notebooks.all', resp.data);
+        }
         return resp.data;
       })
       .catch(error => {
@@ -244,10 +247,21 @@ class NotebooksModel extends StateModel {
   }
 
   stopNotebook(serverName) {
-    // manually set the state instead of waiting for the promise to resolve
-    const updatedState = { notebooks: { all: { [serverName]: { status: { ready: false } } } } };
+    // manually set the state and temporarily throw away servers data until the promise resolves
+    const updatedState = { notebooks: {
+      discard: true,
+      all: { [serverName]: { status: { ready: false } } } }
+    };
     this.setObject(updatedState);
-    return this.client.stopNotebookServer(serverName);
+    return this.client.stopNotebookServer(serverName)
+      .then(response => {
+        this.set('notebooks.discard', false);
+        return response;
+      })
+      .catch(error => {
+        this.set('notebooks.discard', false);
+        throw error;
+      });
   }
 }
 
