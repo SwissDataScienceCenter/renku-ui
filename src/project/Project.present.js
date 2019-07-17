@@ -592,43 +592,45 @@ class ProjectViewFiles extends Component {
   }
 }
 
+function notebookLauncher(visibility, notebookLauncher) {
+  let content = null;
+  if (visibility.accessLevel >= ACCESS_LEVELS.DEVELOPER) {
+    content = notebookLauncher;
+  } else {
+    content = (<p>You are missing the permissions to launch Jupyter from this project.</p>);
+  }
+  return (<Col xs={12}>{content}</Col>);
+}
+
 class ProjectNotebookServers extends Component {
   render() {
-    let launch = null;
-    if (this.props.visibility.accessLevel >= ACCESS_LEVELS.DEVELOPER) {
-      launch = <Link to={ `/projects/${this.props.id}/launchNotebook` }>
+    const content = [
+      <Notebooks key="notebooks" standalone={false}
+        projectId={this.props.id} client={this.props.client}
+      />,
+      <Link key="launch" to={ `/projects/${this.props.id}/launchNotebook` }>
         <Button color="primary">Start new server</Button>
       </Link>
-    }
-    else {
-      launch = <p>You are missing the permissions to launch Jupyter from this project.</p>
-    }
+    ];
 
-    return (
-      <Col xs={12}>
-        <Notebooks projectId={this.props.id} client={this.props.client} standalone={false} />
-        {launch}
-      </Col>
-    )
+    return (notebookLauncher(this.props.visibility, content));
   }
 }
 
 class ProjectStartNotebookServer extends Component {
   render() {
-    return (
-      <Col xs={12}>
-        <StartNotebookServer
-          branches={this.props.system.branches}
-          autosaved={this.props.system.autosaved}
-          refreshBranches={this.props.fetchBranches}
-          projectId={this.props.core.id}
-          projectPath={this.props.core.displayId}
-          client={this.props.client}
-          successUrl={this.props.notebookServersUrl}
-          history={this.props.history}
-        />
-      </Col>
-    )
+    let content = (<StartNotebookServer
+      branches={this.props.system.branches}
+      autosaved={this.props.system.autosaved}
+      refreshBranches={this.props.fetchBranches}
+      projectId={this.props.core.id}
+      projectPath={this.props.core.displayId}
+      client={this.props.client}
+      successUrl={this.props.notebookServersUrl}
+      history={this.props.history}
+    />);
+
+    return (notebookLauncher(this.props.visibility, content));
   }
 }
 
