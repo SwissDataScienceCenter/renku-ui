@@ -162,7 +162,12 @@ class AnonymousNavBar extends Component {
           </button>
 
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul className="navbar-nav ml-auto">
+            <QuickNav user={this.props.userState.getState().user} client={this.props.client}/>
+            
+            <ul className="navbar-nav mr-auto">
+              <RenkuNavLink to="/projects" title="Projects"/>
+            </ul>
+            <ul className="navbar-nav">
               <RenkuToolbarItemUser {...this.props } user={this.props.userState.getState().user} />
             </ul>
           </div>
