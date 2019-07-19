@@ -1,10 +1,14 @@
 text {
   font-weight: 300;
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .node rect {
-  fill: #fff;
+  fill: #998ec399
+}
+
+.node polygon {
+  fill: #7fbf7bc9  
 }
 
 .node.central text {
@@ -15,4 +19,8 @@ text {
 .edgePath path {
   stroke: #333;
   stroke-width: 1.5px;
+}
+
+.graphContainer{
+  text-align: center;
 }

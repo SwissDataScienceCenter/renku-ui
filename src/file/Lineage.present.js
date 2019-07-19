@@ -34,14 +34,42 @@ import { GraphIndexingStatus } from '../project/Project';
 
 import './Lineage.css';
 
-function getNodeLabel(node) {
-  const commitShaShort = node.commitSha.slice(0, 8)
-  if (node.type === 'blob') return `${node.filePath} (${commitShaShort})`
-  if (node.type === 'commit') return `${node.label} (${commitShaShort})`
+function cropLabelStart(limit, label){
+  if(label.length > limit)
+    return "..."+label.substr(label.length-limit)
+  return label;
 }
 
-function nodeIdToClass(nodeId, centralNode) {
-  return (nodeId === centralNode) ? 'central' : 'normal'
+function getNodeLabel(node, NODE_COUNT) {
+  if (node.type === 'commit') {
+    const stringArray = node.label.split(" ");
+    const LABEL_LIMIT = 20;
+    return stringArray.length > 3 ? 
+      cropLabelStart(LABEL_LIMIT, stringArray[2])+"\n"+cropLabelStart(LABEL_LIMIT, stringArray[3])
+      : cropLabelStart(LABEL_LIMIT, stringArray[0])+" "+cropLabelStart(LABEL_LIMIT, stringArray[1])
+  }
+  
+  if(node.type === 'blob') {
+    const LABEL_LIMIT = NODE_COUNT > 15 ? 20  : 40;
+    return cropLabelStart(LABEL_LIMIT, node.filePath);
+  }
+}
+
+
+function nodeIdToClass(nodeId, centralNode, nodeType, label) {
+  let nodeClass = (nodeId === centralNode) ? 'central' : 'normal';
+  nodeClass+=" "+nodeType;
+  if(nodeType === "commit" && label.includes("\n"))
+    nodeClass+=" doubleLine";
+  return nodeClass
+}
+
+function getNodeBorder(node){
+  const FORMATS = {'py': true , 'r':true, 'ipynb':true}
+  return node.type === 'blob' 
+      && node.filePath.includes('.') 
+      && FORMATS[node.filePath.split('.').pop()] 
+    ? "stroke-width: 1.5px; stroke: #333;":  "stroke: unset"
 }
 
 class FileLineageGraph extends Component {
@@ -52,9 +80,14 @@ class FileLineageGraph extends Component {
 
   subGraph() {
     const graph = this.props.graph;
-
+    const NODE_COUNT = this.props.graph.length;
     const subGraph = new graphlib.Graph()
-      .setGraph({})
+      .setGraph({
+        nodesep: 20,
+        ranksep: 80,
+        marginx: 20,
+        marginy: 20
+      })
       .setDefaultEdgeLabel(function(){ return {}; });
 
     graph.nodes.forEach(node => {
@@ -69,8 +102,10 @@ class FileLineageGraph extends Component {
       graph.nodes.forEach(n => {
         subGraph.setNode(n.id, {
           id: n.id,
-          label: getNodeLabel(n),
-          class: nodeIdToClass(n.id, graph.centralNode)
+          label: getNodeLabel(n, NODE_COUNT),
+          class: nodeIdToClass(n.id, graph.centralNode, n.type, getNodeLabel(n, NODE_COUNT)),
+          shape: n.type === "commit" ? "diamond" : "rect",
+          style: getNodeBorder(n)
         });
       });
       graph.edges.forEach(e => { subGraph.setEdge(e.source, e.target)});
@@ -107,27 +142,27 @@ class FileLineageGraph extends Component {
     // Run the renderer. This is what draws the final graph.
     render(d3.select('svg g'), g);
 
-    // Center the graph
-    svg.attr('width', g.graph().width + 40);
-    svgGroup.attr('transform', 'translate(20, 20)');
-    svg.attr('height', g.graph().height + 40);
-
     d3.selectAll('g.node').filter((d,i)=>{ return this.hasLink(d, this.props.graph.centralNode)})
       .on("mouseover", function() {
         d3.select(this).style("cursor","pointer").attr('r', 25)
-          .style("fill","grey");
+          .style("text-decoration-line", "underline");
       })
       .on("mouseout", function() {
         d3.select(this).attr('r', 25)
-          .style("fill", "rgb(0, 0, 0)")
+          .style("text-decoration-line", "unset");
       })
       .on("click", function(){
         history.push(projectPath+'/files/lineage'+d3.select(this).text().split(' ')[0])
       });
+
+    // Center the graph
+    svg.attr('width', g.graph().width + 40);
+    svgGroup.attr('transform', 'translate(20, 20)');
+    svg.attr('height', g.graph().height + 40);  
   }
 
   render() {
-    return <div ref={(r) => this._vizRoot = r}><svg><g></g></svg></div>
+    return <div className="graphContainer" ref={(r) => this._vizRoot = r}><svg><g></g></svg></div>
   }
 }
 
