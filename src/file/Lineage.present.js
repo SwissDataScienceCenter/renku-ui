@@ -44,11 +44,11 @@ function getNodeLabel(node, NODE_COUNT) {
   if (node.type === 'commit') {
     const stringArray = node.label.split(" ");
     const LABEL_LIMIT = 20;
-    return stringArray.length > 3 ? 
+    return stringArray.length > 3 ?
       cropLabelStart(LABEL_LIMIT, stringArray[2])+"\n"+cropLabelStart(LABEL_LIMIT, stringArray[3])
       : cropLabelStart(LABEL_LIMIT, stringArray[0])+" "+cropLabelStart(LABEL_LIMIT, stringArray[1])
   }
-  
+
   if(node.type === 'blob') {
     const LABEL_LIMIT = NODE_COUNT > 15 ? 20  : 40;
     return cropLabelStart(LABEL_LIMIT, node.filePath);
@@ -66,9 +66,9 @@ function nodeIdToClass(nodeId, centralNode, nodeType, label) {
 
 function getNodeBorder(node){
   const FORMATS = {'py': true , 'r':true, 'ipynb':true}
-  return node.type === 'blob' 
-      && node.filePath.includes('.') 
-      && FORMATS[node.filePath.split('.').pop()] 
+  return node.type === 'blob'
+      && node.filePath.includes('.')
+      && FORMATS[node.filePath.split('.').pop()]
     ? "stroke-width: 1.5px; stroke: #333;":  "stroke: unset"
 }
 
@@ -120,7 +120,7 @@ class FileLineageGraph extends Component {
   componentDidUpdate() {
     this.renderD3();
   }
-  
+
   hasLink(nodeId, centralNode){
     return this.props.graph.nodes
       .filter(function(node) { return (node.id === nodeId && node.id !== centralNode && node.type === "blob") })[0];
@@ -158,7 +158,7 @@ class FileLineageGraph extends Component {
     // Center the graph
     svg.attr('width', g.graph().width + 40);
     svgGroup.attr('transform', 'translate(20, 20)');
-    svg.attr('height', g.graph().height + 40);  
+    svg.attr('height', g.graph().height + 40);
   }
 
   render() {
@@ -229,10 +229,10 @@ class FileLineage extends Component {
 
     const graphObj = this.props.graph;
     const graph = (graphObj) ?
-      <FileLineageGraph 
-        path={this.props.path} 
-        graph={graphObj} 
-        projectPath={this.props.match.url} 
+      <FileLineageGraph
+        path={this.props.path}
+        graph={graphObj}
+        projectPath={this.props.match.url}
         history={this.props.history}/> :
       (this.props.error) ?
         <p>{this.props.error}</p> :
@@ -240,21 +240,21 @@ class FileLineage extends Component {
     const externalUrl = this.props.externalUrl;
     const externalFileUrl = `${externalUrl}/blob/master/${this.props.path}`;
     const isLFS = this.props.hashElement ? this.props.hashElement.isLfs : false;
-    const isLFSBadge = isLFS ? 
+    const isLFSBadge = isLFS ?
       <Badge className="lfs-badge" color="light">LFS</Badge> : null;
 
-    let buttonFile = this.props.filePath !== undefined ? 
+    let buttonFile = this.props.filePath !== undefined ?
       <span>
         <UncontrolledTooltip placement="top" target="TooltipFileView">
           File View
         </UncontrolledTooltip>
         <Link to={this.props.filePath} id="TooltipFileView">
-          <FontAwesomeIcon className="icon-link" icon={faFile} id="TooltipFileView"/> 
+          <FontAwesomeIcon className="icon-link" icon={faFile} id="TooltipFileView"/>
         </Link>
       </span>
       : null;
 
-    let buttonGit = 
+    let buttonGit =
     <span>
       <UncontrolledTooltip placement="top" target="TooltipGitlabView">
           Open in GitLab
@@ -263,7 +263,7 @@ class FileLineage extends Component {
         rel="noreferrer noopener"><FontAwesomeIcon className="icon-link" icon={faGitlab} /></a>
     </span>
 
-    let buttonJupyter = this.props.filePath.endsWith(".ipynb") ? 
+    let buttonJupyter = this.props.filePath.endsWith(".ipynb") ?
       <JupyterNotebook
         key="notebook-button"
         justButton={true}
@@ -271,7 +271,7 @@ class FileLineage extends Component {
         notebook={this.props.notebook}
         accessLevel={this.props.accessLevel}
         {...this.props}
-      /> : null; 
+      /> : null;
 
 
     return <Card>
