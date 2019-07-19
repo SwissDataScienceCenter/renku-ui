@@ -3,12 +3,20 @@ text {
   font-size: 13px;
 }
 
-.node rect {
-  fill: #998ec399
+g.code rect {
+  fill: #998ec399;
+  stroke-width: 1.5px;
+  stroke: #333;
 }
 
-.node polygon {
-  fill: #7fbf7bc9  
+g.data rect {
+  fill: #998ec399;
+  stroke: unset;
+}
+
+g.workflow polygon {
+  fill: #7fbf7bc9;
+  stroke: unset;
 }
 
 .node.central text {

@@ -55,21 +55,29 @@ function getNodeLabel(node, NODE_COUNT) {
   }
 }
 
+function nodeToClass(node, centralNode, label) {
+  const nodeId = node.id;
+  const nodeType = node.type;
+  const FORMATS = {'py': true , 'r': true, 'ipynb': true}
+  const nodeClasses = [];
 
-function nodeIdToClass(nodeId, centralNode, nodeType, label) {
-  let nodeClass = (nodeId === centralNode) ? 'central' : 'normal';
-  nodeClass+=" "+nodeType;
-  if(nodeType === "commit" && label.includes("\n"))
-    nodeClass+=" doubleLine";
-  return nodeClass
-}
+  if (nodeId === centralNode)
+    nodeClasses.push('central');
+  else
+    nodeClasses.push('normal');
+  nodeClasses.push(nodeType);
+  if (nodeType === "commit" && label.includes("\n"))
+    nodeClasses.push('doubleLine');
 
-function getNodeBorder(node){
-  const FORMATS = {'py': true , 'r':true, 'ipynb':true}
-  return node.type === 'blob'
-      && node.filePath.includes('.')
-      && FORMATS[node.filePath.split('.').pop()]
-    ? "stroke-width: 1.5px; stroke: #333;":  "stroke: unset"
+  if (node.type === 'blob') {
+    if (node.filePath.includes('.') && FORMATS[node.filePath.split('.').pop()])
+      nodeClasses.push('code');
+    else
+      nodeClasses.push('data');
+  } else
+    nodeClasses.push('workflow');
+
+  return nodeClasses.join(" ")
 }
 
 class FileLineageGraph extends Component {
@@ -100,12 +108,13 @@ class FileLineageGraph extends Component {
       subGraph.setNode("0", {id: "0", label: "No lineage information." });
     } else {
       graph.nodes.forEach(n => {
+        const label = getNodeLabel(n, NODE_COUNT);
         subGraph.setNode(n.id, {
           id: n.id,
-          label: getNodeLabel(n, NODE_COUNT),
-          class: nodeIdToClass(n.id, graph.centralNode, n.type, getNodeLabel(n, NODE_COUNT)),
-          shape: n.type === "commit" ? "diamond" : "rect",
-          style: getNodeBorder(n)
+          label,
+          // class: nodeIdToClass(n.id, graph.centralNode, n.type, getNodeLabel(n, NODE_COUNT)),
+          class: nodeToClass(n, graph.centralNode, label),
+          shape: n.type === "commit" ? "diamond" : "rect"
         });
       });
       graph.edges.forEach(e => { subGraph.setEdge(e.source, e.target)});
