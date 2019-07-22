@@ -32,3 +32,11 @@ g.workflow polygon {
 .graphContainer{
   text-align: center;
 }
+
+g.nolineage text{
+  font-size: 16px;
+}
+
+g.nolineage rect{  
+  fill: #fff;
+}

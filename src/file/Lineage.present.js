@@ -105,14 +105,13 @@ class FileLineageGraph extends Component {
     })
 
     if (graph.centralNode == null) {
-      subGraph.setNode("0", {id: "0", label: "No lineage information." });
+      subGraph.setNode("0", {id: "0", class:"nolineage", label: "No lineage information." });
     } else {
       graph.nodes.forEach(n => {
         const label = getNodeLabel(n, NODE_COUNT);
         subGraph.setNode(n.id, {
           id: n.id,
           label,
-          // class: nodeIdToClass(n.id, graph.centralNode, n.type, getNodeLabel(n, NODE_COUNT)),
           class: nodeToClass(n, graph.centralNode, label),
           shape: n.type === "commit" ? "diamond" : "rect"
         });
