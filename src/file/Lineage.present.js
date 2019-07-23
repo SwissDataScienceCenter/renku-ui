@@ -104,30 +104,23 @@ class FileLineageGraph extends Component {
       }
     })
 
-    if (graph.centralNode == null) {
-      subGraph.setNode("0", {id: "0", label: "No lineage information." });
-    } else {
-      graph.nodes.forEach(n => {
-        const label = getNodeLabel(n, NODE_COUNT);
-        subGraph.setNode(n.id, {
-          id: n.id,
-          label,
-          // class: nodeIdToClass(n.id, graph.centralNode, n.type, getNodeLabel(n, NODE_COUNT)),
-          class: nodeToClass(n, graph.centralNode, label),
-          shape: n.type === "commit" ? "diamond" : "rect"
-        });
+    graph.nodes.forEach(n => {
+      const label = getNodeLabel(n, NODE_COUNT);
+      subGraph.setNode(n.id, {
+        id: n.id,
+        label,
+        class: nodeToClass(n, graph.centralNode, label),
+        shape: n.type === "commit" ? "diamond" : "rect"
       });
-      graph.edges.forEach(e => { subGraph.setEdge(e.source, e.target)});
-    }
+    });
+    graph.edges.forEach(e => { subGraph.setEdge(e.source, e.target)});
+    
     return subGraph
   }
 
   componentDidMount() {
-    this.renderD3();
-  }
-
-  componentDidUpdate() {
-    this.renderD3();
+    if (this.subGraph()._nodeCount >1)
+      this.renderD3();
   }
 
   hasLink(nodeId, centralNode){
@@ -142,14 +135,24 @@ class FileLineageGraph extends Component {
     const render = new dagreD3.render();
 
     // Set up an SVG group so that we can translate the final graph.
-    const svg = d3.select(this._vizRoot).select('svg'),
+    const svg = d3.select(this._vizRoot).select('svg');
+    let svgGroup;
+    if(this.appended === false){
       svgGroup = svg.append('g');
-
+      this.appended = true;
+    } else{  svgGroup= svg.select('g')}
+    
     const history = this.props.history;
     const projectPath = this.props.projectPath;
+    
+    render(svgGroup, g);
 
-    // Run the renderer. This is what draws the final graph.
-    render(d3.select('svg g'), g);
+    // Set up zoom support
+    const zoom = d3.zoom()
+      .on("zoom", function() {
+        svgGroup.attr("transform", d3.event.transform);
+      });
+    svg.call(zoom);
 
     d3.selectAll('g.node').filter((d,i)=>{ return this.hasLink(d, this.props.graph.centralNode)})
       .on("mouseover", function() {
@@ -163,15 +166,33 @@ class FileLineageGraph extends Component {
       .on("click", function(){
         history.push(projectPath+'/files/lineage'+d3.select(this).text().split(' ')[0])
       });
-
+    
     // Center the graph
-    svg.attr('width', g.graph().width + 40);
-    svgGroup.attr('transform', 'translate(20, 20)');
-    svg.attr('height', g.graph().height + 40);
+    const bbox = document.getElementsByClassName('graphContainer')[0].lastChild.getBBox();
+    svg.attr('viewBox', '0 0 '+bbox.width+' '+bbox.height)
+
+    d3.select("#zoom_in").on("click", function() {
+      zoom.scaleBy(svg.transition().duration(750), 1.5);
+    });
+    d3.select("#zoom_out").on("click", function() {
+      zoom.scaleBy(svg.transition().duration(750), 0.75);
+    });
+
+    var initialScale = 0.80;
+    svg.call(zoom.transform, 
+      d3.zoomIdentity.translate((bbox.width - g.graph().width * initialScale) / 2, 20)
+        .scale(initialScale));
   }
 
   render() {
-    return <div className="graphContainer" ref={(r) => this._vizRoot = r}><svg><g></g></svg></div>
+    return this.subGraph()._nodeCount >1 ?
+      <div className="graphContainer" ref={(r) => this._vizRoot = r}>
+        <button className="btn btn-outline-primary" id="zoom_in">+</button>
+        <button className="btn btn-outline-primary" id="zoom_out">-</button>
+        <svg><g></g></svg>
+      </div>
+      :
+      <div>No lineage information.</div>
   }
 }
 
