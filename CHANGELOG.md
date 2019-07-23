@@ -1,5 +1,15 @@
 # Changes
 
+## [0.6.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.6.1...0.6.0) (released 2019-07-23)
+
+### Bug Fixes
+* **lineage:** Fix the output while checking files without lineage ([#539](https://github.com/SwissDataScienceCenter/renku-ui/pull/539))
+* **notebook:** Propagate correctly the user selected options to the JupyterLab environment ([#540](https://github.com/SwissDataScienceCenter/renku-ui/issues/540), [#541](https://github.com/SwissDataScienceCenter/renku-ui/pull/541))
+
+### Features
+* **lineage:** Enable zoom in and out on the Knowledge Graph ([#534](https://github.com/SwissDataScienceCenter/renku-ui/issues/534), [#539](https://github.com/SwissDataScienceCenter/renku-ui/pull/539))
+
+
 ## [0.6.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.6.0...0.5.2) (released 2019-07-22)
 
 ### Bug Fixes
@@ -23,13 +33,16 @@
 ### BREAKING CHANGES
 * **notebook:** Adapt UI to the new backend API ([#494](https://github.com/SwissDataScienceCenter/renku-ui/issues/494), [#498](https://github.com/SwissDataScienceCenter/renku-ui/pull/498), [#514](https://github.com/SwissDataScienceCenter/renku-ui/pull/514))
 
+
 ## 0.5.2 (released 2019-07-02)
 * Add a project visibility label to the project page [#470](https://github.com/SwissDataScienceCenter/renku-ui/issues/470) [#497](https://github.com/SwissDataScienceCenter/renku-ui/pull/497)
 * Display files with extension `ran.ipynb` [#483](https://github.com/SwissDataScienceCenter/renku-ui/issues/483) [#496](https://github.com/SwissDataScienceCenter/renku-ui/pull/496)
 * Let anonymous users view projects [#491](https://github.com/SwissDataScienceCenter/renku-ui/pull/491)
 
+
 ## 0.5.1 (released 2019-06-06)
 * Lower the rate of polling to prevent taxing JupyterHub [#485](https://github.com/SwissDataScienceCenter/renku-ui/pull/485)
+
 
 ## 0.5.0 (released 2019-05-22)
 
@@ -45,6 +58,7 @@
 
 A full list of changes is available for [milestone 0.5.0](https://github.com/SwissDataScienceCenter/renku-ui/issues?q=is%3Aclosed+milestone%3A0.5.0).
 
+
 ## 0.4.1 (released 2019-04-02)
 
 * Fixed bug that prevented launching a Jupyter server in certain situations [#370](https://github.com/SwissDataScienceCenter/renku-ui/issues/370)
@@ -56,6 +70,7 @@ A full list of changes is available for [milestone 0.5.0](https://github.com/Swi
 
 A full list of changes is available for [milestone 0.4.1](https://github.com/SwissDataScienceCenter/renku-ui/issues?q=is%3Aclosed+milestone%3A0.4.1).
 
+
 ## 0.4.0 (released 2019-03-06)
 
 * Improved the functioning of the quick nav/search bar and project search [#379](https://github.com/SwissDataScienceCenter/renku-ui/pull/379), [#353](https://github.com/SwissDataScienceCenter/renku-ui/issues/353)
@@ -66,6 +81,7 @@ A full list of changes is available for [milestone 0.4.1](https://github.com/Swi
 * Fix security issues detected by npm audit [#367](https://github.com/SwissDataScienceCenter/renku-ui/pull/367)
 
 A full list of changes is available for [milestone 0.4.0](https://github.com/SwissDataScienceCenter/renku-ui/issues?q=is%3Aclosed+milestone%3A0.4.0).
+
 
 ## 0.3.0 (released 2018-11-27)
 
