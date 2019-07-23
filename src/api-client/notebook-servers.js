@@ -98,6 +98,7 @@ function addNotebookServersMethods(client) {
 
   client.startNotebook = (projectUrl, branchName, commitId, options) => {
     const headers = client.getBasicHeaders();
+    headers.append('Content-Type', 'application/json');
     const url = `${client.baseUrl}/notebooks/${projectUrl}/${commitId}`;
 
     return client.clientFetch(url, {
