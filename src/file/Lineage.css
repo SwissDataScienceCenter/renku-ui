@@ -30,5 +30,11 @@ g.workflow polygon {
 }
 
 .graphContainer{
-  text-align: center;
+ text-align: justify;
+}
+
+svg {
+  height: 65vh;
+  width: 80vw;
+  cursor:pointer;
 }
