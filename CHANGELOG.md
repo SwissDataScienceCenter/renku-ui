@@ -1,6 +1,12 @@
 # Changes
 
-## [0.6.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.6.1...0.6.0) (released 2019-07-23)
+## [0.6.2](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.6.1...0.6.2) (released 2019-07-24)
+
+### Bug Fixes
+* **lineage:** Fix the navigation of nodes with long paths ([#550](https://github.com/SwissDataScienceCenter/renku-ui/pull/550), [#546](https://github.com/SwissDataScienceCenter/renku-ui/issues/546))
+
+
+## [0.6.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.6.0...0.6.1) (released 2019-07-23)
 
 ### Bug Fixes
 * **lineage:** Fix the output while checking files without lineage ([#539](https://github.com/SwissDataScienceCenter/renku-ui/pull/539))
@@ -10,7 +16,7 @@
 * **lineage:** Enable zoom in and out on the Knowledge Graph ([#534](https://github.com/SwissDataScienceCenter/renku-ui/issues/534), [#539](https://github.com/SwissDataScienceCenter/renku-ui/pull/539))
 
 
-## [0.6.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.6.0...0.5.2) (released 2019-07-22)
+## [0.6.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.5.2...0.6.0) (released 2019-07-22)
 
 ### Bug Fixes
 * **notebook:** Avoid overlapping multiple API calls ([#500](https://github.com/SwissDataScienceCenter/renku-ui/pull/500))
