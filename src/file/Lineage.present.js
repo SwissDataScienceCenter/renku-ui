@@ -40,18 +40,22 @@ function cropLabelStart(limit, label){
   return label;
 }
 
-function getNodeLabel(node, NODE_COUNT) {
+function getNodeLabel(node, NODE_COUNT, projectPath) {
   if (node.type === 'commit') {
     const stringArray = node.label.split(" ");
     const LABEL_LIMIT = 20;
-    return stringArray.length > 3 ?
-      cropLabelStart(LABEL_LIMIT, stringArray[2])+"\n"+cropLabelStart(LABEL_LIMIT, stringArray[3])
+    const label= stringArray.length > 3 ?
+      cropLabelStart(LABEL_LIMIT, stringArray[2])+"<br/>"+cropLabelStart(LABEL_LIMIT, stringArray[3])
       : cropLabelStart(LABEL_LIMIT, stringArray[0])+" "+cropLabelStart(LABEL_LIMIT, stringArray[1])
+    return '<text><tspan xml:space="preserve" dy="1em" x="1">'+label+'</tspan></text>'
   }
 
   if(node.type === 'blob') {
     const LABEL_LIMIT = NODE_COUNT > 15 ? 20  : 40;
-    return cropLabelStart(LABEL_LIMIT, node.filePath);
+    const ref= projectPath+'/files/lineage'+node.filePath
+    return '<text><tspan xml:space="preserve" dy="1em" x="1" data-href='+ref+'>'
+      +cropLabelStart(LABEL_LIMIT, node.filePath)+
+      '</tspan></text>';
   }
 }
 
@@ -94,7 +98,7 @@ class FileLineageGraph extends Component {
         nodesep: 20,
         ranksep: 80,
         marginx: 20,
-        marginy: 20
+        marginy: 20,
       })
       .setDefaultEdgeLabel(function(){ return {}; });
 
@@ -105,9 +109,10 @@ class FileLineageGraph extends Component {
     })
 
     graph.nodes.forEach(n => {
-      const label = getNodeLabel(n, NODE_COUNT);
+      const label = getNodeLabel(n, NODE_COUNT, this.props.projectPath);
       subGraph.setNode(n.id, {
         id: n.id,
+        labelType:'html',
         label,
         class: nodeToClass(n, graph.centralNode, label),
         shape: n.type === "commit" ? "diamond" : "rect"
@@ -143,7 +148,6 @@ class FileLineageGraph extends Component {
     } else{  svgGroup= svg.select('g')}
     
     const history = this.props.history;
-    const projectPath = this.props.projectPath;
     
     render(svgGroup, g);
 
@@ -155,7 +159,7 @@ class FileLineageGraph extends Component {
     svg.call(zoom);
 
     d3.selectAll('g.node').filter((d,i)=>{ return this.hasLink(d, this.props.graph.centralNode)})
-      .on("mouseover", function() {
+      .select("tspan").on("mouseover", function() {
         d3.select(this).style("cursor","pointer").attr('r', 25)
           .style("text-decoration-line", "underline");
       })
@@ -164,7 +168,7 @@ class FileLineageGraph extends Component {
           .style("text-decoration-line", "unset");
       })
       .on("click", function(){
-        history.push(projectPath+'/files/lineage'+d3.select(this).text().split(' ')[0])
+        history.push(d3.select(this).attr("data-href"));
       });
     
     // Center the graph
@@ -187,8 +191,10 @@ class FileLineageGraph extends Component {
   render() {
     return this.subGraph()._nodeCount >1 ?
       <div className="graphContainer" ref={(r) => this._vizRoot = r}>
-        <button className="btn btn-outline-primary" id="zoom_in">+</button>
-        <button className="btn btn-outline-primary" id="zoom_out">-</button>
+        <div className="float-right zoomButtons">
+          <button className="btn btn-light btn-group-left" id="zoom_in">+</button>
+          <button className="btn btn-light btn-group-right" id="zoom_out">-</button>
+        </div>
         <svg><g></g></svg>
       </div>
       :
