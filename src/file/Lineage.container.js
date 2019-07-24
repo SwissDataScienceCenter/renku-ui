@@ -54,6 +54,8 @@ class FileLineage extends Component {
   parseNodeIds(graph) {
     // regex to split file:///<type>/<commitSha><path>
     const nodeRegex = /\/\/\/([^/]*)\/([^/]*)(.*)/;
+    if (!graph)
+      return { edges: [], nodes: [] };
     graph.nodes.forEach(node => {
       const matches = nodeRegex.exec(node.id)
       node.type = matches[1]
@@ -127,7 +129,6 @@ class FileLineage extends Component {
     try {
       const fileMeta = await this.props.client.getRepositoryFileMeta(this.props.projectId, this.props.path, 'master')
       this.props.client.getFileLineage(this.props.projectPath, fileMeta.lastCommitId, this.props.path)
-        .then(response => response.data)
         .then(graph => this.parseNodeIds(graph))
         .then(graph => {
           if (this._isMounted) this.setState({ graph });

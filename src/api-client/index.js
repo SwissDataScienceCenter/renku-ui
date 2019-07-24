@@ -19,6 +19,8 @@
 import { APIError, alertAPIErrors, API_ERRORS } from './errors';
 import { renkuFetch, RETURN_TYPES } from './utils';
 import processPaginationHeaders from './pagination';
+import ApolloClient from "apollo-boost";
+// ? Consider a minimal graphql lib: https://github.com/yoshuawuyts/nanographql
 
 import addProjectMethods  from './project';
 import addRepositoryMethods  from './repository';
@@ -52,6 +54,9 @@ class APIClient {
     this.baseUrl = baseUrl;
     this.renkuVersion = renkuVersion;
     this.returnTypes = RETURN_TYPES
+    this.graphqlClient = new ApolloClient({
+      uri: `${baseUrl}/graphql`
+    });
 
     addProjectMethods(this);
     addRepositoryMethods(this);
@@ -113,6 +118,17 @@ class APIClient {
           return response;
         }
       })
+  }
+
+  graphqlFetch(query, variables) {
+    return this.graphqlClient.query({query, variables})
+      .catch(error => {
+        // TODO implement here common error solutions (re-login, ...)
+        return Promise.reject(error);
+      })
+      .then(response => {
+        return response.data;
+      });
   }
 
   // clientFetch does't handle non-2xx responses (ex: graph APIs)

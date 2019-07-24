@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { gql } from "apollo-boost";
+
 function addGraphMethods(client) {
   // using simpleFetch instead of clientFetch because we can get a 4xx response
   // https://github.com/SwissDataScienceCenter/renku-graph/tree/master/webhook-service
@@ -59,15 +61,18 @@ function addGraphMethods(client) {
     });
   }
 
-  client.getFileLineage = (projectPath, commit, filePath) => {
-    const headers = client.getBasicHeaders();
-    return client.clientFetch(
-      `${client.baseUrl}/graph/${projectPath}/lineage/${commit}/${filePath}`,
-      {
-        method: 'GET',
-        headers: headers
+  client.getFileLineage = (projectPath, commitId, filePath) => {
+    const query = gql`
+      query getLineage($projectPath: ProjectPath!, $commitId: CommitId, $filePath: FilePath) {
+        lineage(projectPath: $projectPath, commitId: $commitId, filePath: $filePath) {
+          nodes { id, label }
+          edges { source, target }
+        }
       }
-    )
+    `;
+    const variables = { projectPath, commitId, filePath };
+
+    return client.graphqlFetch(query, variables).then(data => data.lineage);
   }
 }
 
