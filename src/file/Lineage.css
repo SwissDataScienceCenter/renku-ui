@@ -6,12 +6,12 @@ text {
 g.code rect {
   fill: #998ec399;
   stroke-width: 1.5px;
-  stroke: #333;
 }
 
 g.data rect {
-  fill: #998ec399;
-  stroke: unset;
+  fill: #ffffff;
+  stroke: #aaa;
+  stroke-width: 0.7px;
 }
 
 g.workflow {
