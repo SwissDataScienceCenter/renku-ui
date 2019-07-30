@@ -361,9 +361,9 @@ class ProjectFilesNav extends Component {
       data={this.props.filesTree}
       lineageUrl={this.props.lineagesUrl}
       projectUrl={this.props.fileContentUrl}
-      setOpenFolder={this.props.setOpenFolder} 
+      setOpenFolder={this.props.setOpenFolder}
       hash={this.props.filesTree.hash}
-      fileView={this.props.filesTreeView} 
+      fileView={this.props.filesTreeView}
       currentUrl={this.props.location.pathname}/>;
   }
 }
