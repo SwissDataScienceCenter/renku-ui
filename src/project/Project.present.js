@@ -666,7 +666,7 @@ class ProjectDescription extends Component {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     const update = { value: nextProps.core.description };
-    return { ...prevState, ...update };
+    return { ...update, ...prevState };
   }
 
   handleChange(e) { this.setState({ value: e.target.value }); }

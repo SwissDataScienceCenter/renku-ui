@@ -66,7 +66,7 @@ class ProjectTags extends Component {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     const update = {value: ProjectTags.tagListString(nextProps) };
-    return {...prevState, ...update};
+    return {...update, ...prevState};
   }
 
   handleChange(e) { this.setState({value: e.target.value}); }
