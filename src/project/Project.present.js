@@ -675,14 +675,14 @@ class ProjectDescription extends Component {
 
   render() {
     const inputField = this.props.settingsReadOnly ?
-      <Input readOnly value={this.state.value} /> :
-      <Input value={this.state.value} onChange={this.onValueChange} />;
+      <Input id="projectDescription" readOnly value={this.state.value} /> :
+      <Input id="projectDescription" value={this.state.value} onChange={this.onValueChange} />;
     let submit = (this.props.core.description !== this.state.value) ?
       <Button color="primary">Update</Button> :
       <span></span>
     return <Form onSubmit={this.onSubmit}>
       <FormGroup>
-        <Label for="project_tags">Project Description</Label>
+        <Label for="projectDescription">Project Description</Label>
         {inputField}
         <FormText>A short description for the project</FormText>
       </FormGroup>
