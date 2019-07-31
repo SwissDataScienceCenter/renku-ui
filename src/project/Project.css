@@ -20,3 +20,9 @@ Button.alert-link {
 .selected-dataset .fs-element{
   background-color: #e9ecef;
 }
+
+.datasetDescriptionText{
+  font-size: 14px;
+  margin-block-start: 0.5em;
+  margin-block-end: 0.5em;
+}

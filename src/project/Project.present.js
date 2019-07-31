@@ -445,6 +445,9 @@ class ProjectViewOverviewNav extends Component {
         <NavItem>
           <RenkuNavLink to={`${this.props.statsUrl}`} title="Stats" />
         </NavItem>
+        <NavItem>
+          <RenkuNavLink to={`${this.props.overviewDatasetsUrl}`} title="Datasets" />
+        </NavItem>
       </Nav>)
   }
 }
@@ -486,8 +489,11 @@ class ProjectViewOverview extends Component {
             <Route exact path={this.props.baseUrl} render={props => {
               return <ProjectViewReadme readme={this.props.data.readme} {...this.props} />
             }} />
-            <Route path={this.props.statusUrl} render={props =>
+            <Route exact path={this.props.statsUrl} render={props =>
               <ProjectViewStats {...this.props} />}
+            />
+            <Route exact path={this.props.overviewDatasetsUrl} render={props =>
+              <ProjectViewDatasetsOverview {...this.props} />}
             />
           </Switch>
         </Col>
@@ -641,6 +647,66 @@ function notebookLauncher(userId, accessLevel, notebookLauncher, fork, postLogin
   }
 
   return (<div>{content}</div>);
+}
+
+class ProjectViewDatasetRow extends Component{
+
+  HTMLtoText = (textContent) =>{
+    var temp = document.createElement("div");
+    temp.innerHTML = textContent;
+    return temp.textContent || temp.innerText || "";
+  }
+
+  render(){
+    return <Card style={{ marginBottom: '1rem'}} key={this.props.dataset.identifier}>
+      <CardBody>
+        <Link to={this.props.fullDatasetUrl}><strong style={{ display: 'block'}}>{this.props.dataset.name+"\n"}</strong></Link>
+        {
+          this.props.dataset.creator !== undefined &&  this.props.dataset.creator !== null?  
+            <small style={{ display: 'block'}} className="font-weight-light">
+              {this.props.dataset.creator.map((creator) => creator.name).join("; ")}
+            </small>
+            : null  
+        } 
+        {
+          this.props.dataset.description !== undefined && this.props.dataset.description !== null? 
+            <p className="datasetDescriptionText font-weight-normal">
+              {this.props.dataset.description.length > 500 ? 
+                this.HTMLtoText(this.props.dataset.description).substr(0,500)+"...":
+                this.HTMLtoText(this.props.dataset.description)
+              }
+            </p>
+            : null
+        }
+        {
+          this.props.dataset.date_published !== undefined && this.props.dataset.date_published !== null ?
+            <small className="font-italic">{"Date published: "+this.props.dataset.date_published["@value"]}</small>
+            : null
+        }
+      </CardBody>
+    </Card>
+  }
+}
+
+class ProjectViewDatasetsOverview extends Component {
+
+  componentDidMount() {
+    this.props.fetchDatasets();
+  }
+  
+  render() {
+    if(this.props.datasets === undefined) 
+      return <p>Loading datasets...</p>;
+
+    if(this.props.datasets.length === 0) 
+      return <p>No datasets to display...</p>
+
+    let datasets = this.props.datasets.map((dataset) => 
+      <ProjectViewDatasetRow key={dataset.identifier} dataset={dataset} fullDatasetUrl={`${this.props.datasetsUrl}/${dataset.identifier}`}/>
+    );
+
+    return <Col key="project-datasets" > {datasets} </Col>
+  }
 }
 
 class ProjectEnvironments extends Component {
