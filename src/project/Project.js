@@ -141,6 +141,7 @@ class View extends Component {
       baseUrl: baseUrl,
       overviewUrl: `${baseUrl}/overview`,
       statsUrl: `${baseUrl}/overview/stats`,
+      overviewDatasetsUrl: `${baseUrl}/overview/datasets`,
       kusUrl: `${baseUrl}/kus`,
       kuNewUrl: `${baseUrl}/ku_new`,
       kuUrl: `${baseUrl}/kus/:kuIid(\\d+)`,
