@@ -22,14 +22,14 @@ import graphlib from 'graphlib';
 import dagreD3 from 'dagre-d3';
 import * as d3 from 'd3';
 
-import { Link}  from 'react-router-dom';
+import { Link }  from 'react-router-dom';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { faInfoCircle, faFile } from '@fortawesome/fontawesome-free-solid'
 import faGitlab from '@fortawesome/fontawesome-free-brands/faGitlab';
 import { Card, CardHeader, CardBody, UncontrolledTooltip, Badge, Button, Alert, Progress } from 'reactstrap';
 
 import { Loader } from '../utils/UIComponents';
-import { JupyterNotebook } from './File.container';
+import { LaunchJupyter } from './File.container';
 import { GraphIndexingStatus } from '../project/Project';
 
 import './Lineage.css';
@@ -300,15 +300,8 @@ class FileLineage extends Component {
     </span>
 
     let buttonJupyter = this.props.filePath.endsWith(".ipynb") ?
-      <JupyterNotebook
-        key="notebook-button"
-        justButton={true}
-        filePath={this.props.filePath}
-        notebook={this.props.notebook}
-        accessLevel={this.props.accessLevel}
-        {...this.props}
-      /> : null;
-
+      <LaunchJupyter {...this.props} /> :
+      null;
 
     return <Card>
       <CardHeader className="align-items-baseline">
@@ -316,7 +309,7 @@ class FileLineage extends Component {
         {this.props.path}
         <span className="caption align-baseline">&nbsp;Lineage and usage</span>
         <div className="float-right" >
-          <span>{buttonJupyter}</span>
+          {buttonJupyter}
           <span>{buttonGit}</span>
           <span>{buttonFile}</span>
         </div>

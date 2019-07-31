@@ -80,9 +80,6 @@ const methods = {
       data: []
     }
   },
-  getNotebookServerUrl: {
-    response: ''
-  },
   getNamespaces: {
     response: {
       data: samples.namespaces
@@ -97,6 +94,12 @@ const methods = {
     response: {
       data: []
     }
+  },
+  getRepositoryFile: {
+    response: null
+  },
+  getNotebookServerUrl: {
+    response: null
   }
 };
 

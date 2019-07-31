@@ -206,15 +206,6 @@ class ProjectModel extends StateModel {
     }
     filesTree.hash[folderPath].childrenOpen = !filesTree.hash[folderPath].childrenOpen;
     this.set('filesTree',filesTree);
-  } 
-
-  fetchNotebookServerUrl(client, id) {
-    const pathWithNamespace = this.get('core.path_with_namespace');
-    client.getNotebookServerUrl(id, pathWithNamespace)
-      .then(urls => {
-        this.set('core.notebookServerUrl', urls.notebookServerUrl);
-        this.set('core.notebookServerAPI', urls.notebookServerAPI);
-      });
   }
 
   fetchModifiedFiles(client, id) {

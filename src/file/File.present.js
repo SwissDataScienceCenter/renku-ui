@@ -17,21 +17,55 @@
  */
 
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { Link }  from 'react-router-dom';
 import NotebookPreview from '@nteract/notebook-render';
 
 // Do not import the style because this does not work after webpack bundles things for production mode.
 // Instead define the style below
 //import './notebook.css'
-import { Button, Row, Col, Tooltip, Card, CardHeader, CardBody, Badge } from 'reactstrap';
+import { UncontrolledTooltip, Card, CardHeader, CardBody, Badge } from 'reactstrap';
 import '../../node_modules/highlight.js/styles/atom-one-light.css'
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faProjectDiagram from '@fortawesome/fontawesome-free-solid/faProjectDiagram'
 import faGitlab from '@fortawesome/fontawesome-free-brands/faGitlab';
 
-import {  FilePreview } from './File.container';
+import { FilePreview, LaunchJupyter } from './File.container';
 import { API_ERRORS } from '../api-client';
 
+
+class LaunchJupyterPresent extends React.Component { 
+  render() {
+    const { notebookUrl, launchNotebookUrl, file } = this.props;
+    const icon = (
+      <svg 
+        aria-hidden="true"
+        data-prefix="fas"
+        className="jupyter-icon fa-w-20 icon-link"
+        role="img" xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 640 512" />
+    );
+
+    let tooltipText, link;
+    if (notebookUrl) {
+      tooltipText = "Connect to Jupyter";
+      const filePath = file && file.file_path ? file.file_path : null;
+      // * Jupyterlab url reference: https://jupyterlab.readthedocs.io/en/stable/user/urls.html
+      const url = `${notebookUrl}lab/tree/${filePath}`;
+      link = (<a href={url} role="button" target="_blank" rel="noreferrer noopener">{icon}</a>);
+    }
+    else {
+      tooltipText = "Start a Jupyter server";
+      link = (<Link to={launchNotebookUrl}>{icon}</Link>);
+    }
+
+    return (
+      <span>
+        <span id="launchJupyterIcon">{link}</span>
+        <UncontrolledTooltip placement="top" target="launchJupyterIcon">{tooltipText}</UncontrolledTooltip>
+      </span>
+    );
+  }
+}
 
 class ShowFile extends React.Component {
   constructor(props) {
@@ -65,46 +99,31 @@ class ShowFile extends React.Component {
   }
 
   render() {
-    if (this.state.error !== null){
-      let filePath = this.props.filePath.replace(this.props.match.url + '/files/blob/', '')
-      let buttonGraph = this.props.lineagesPath !== undefined ?
-        <span>
-          <Tooltip placement="top" isOpen={this.state.tooltipGraphViewOpen} target="TooltipGraphView">
-            Graph View
-          </Tooltip>
-          <FontAwesomeIcon className="icon-link" icon={faProjectDiagram}
-            id="TooltipGraphView"
-            onClick={()=> {
-              this.props.history.push(this.props.lineagesPath+'/'+filePath)} }
-            onMouseEnter={() => {
-              this.setState({ tooltipGraphViewOpen: true });
-            }}
-            onMouseLeave={() => {
-              this.setState({ tooltipGraphViewOpen: false });
-            }} />
-        </span>
-        : null;
-
-      let buttonGit = <span>
-        <Tooltip placement="top" isOpen={this.state.tooltipGitViewOpen} target="TooltipGitView">
-            Open in GitLab
-        </Tooltip>
-        <a href={`${this.props.externalUrl}/blob/master/${filePath}`}
-          role="button"
-          target="_blank"
-          rel="noreferrer noopener"
-          id="TooltipGitView"
-          onMouseEnter={() => {
-            this.setState({ tooltipGitViewOpen: true });
-          }}
-          onMouseLeave={() => {
-            this.setState({ tooltipGitViewOpen: false });
-          }}>
-          <FontAwesomeIcon className="icon-link" icon={faGitlab} />
-        </a>
+    const filePath = this.props.filePath.replace(this.props.match.url + '/files/blob/', '');
+    const buttonGraph = this.props.lineagesPath !== undefined ?
+      <span>
+        <UncontrolledTooltip placement="top" target="tooltipGraphView">
+          Graph View
+        </UncontrolledTooltip>
+        <Link to={this.props.lineagesPath + '/' + filePath} id="tooltipGraphView">
+          <FontAwesomeIcon className="icon-link" icon={faProjectDiagram} id="TooltipFileView"/>
+        </Link>
       </span>
+      
+      : null;
 
-      return  <Card>
+    const buttonGit = <span>
+      <UncontrolledTooltip placement="top" target="tooltipGitView">
+          Open in GitLab
+      </UncontrolledTooltip>
+      <a id="tooltipGitView" href={`${this.props.externalUrl}/blob/master/${filePath}`}
+        role="button" target="_blank" rel="noreferrer noopener">
+        <FontAwesomeIcon className="icon-link" icon={faGitlab} />
+      </a>
+    </span>
+
+    if (this.state.error !== null){
+      return <Card>
         <CardHeader className="align-items-baseline">
           {this.props.filePath.split('\\').pop().split('/').pop()}
           <span className="caption align-baseline">&nbsp;File view</span>
@@ -123,55 +142,13 @@ class ShowFile extends React.Component {
     </Card>;
 
     const isLFS = this.props.hashElement ? this.props.hashElement.isLfs : false;
-    const isLFSBadge = isLFS?
-      <Badge className="lfs-badge" color="light">LFS</Badge> : null;
-
-    const filePath = this.props.filePath.replace(this.props.match.url + '/files/blob/', '')
-    const buttonGraph = this.props.lineagesPath !== undefined ?
-      <span>
-        <Tooltip placement="top" isOpen={this.state.tooltipGraphViewOpen} target="TooltipGraphView">
-          Graph View
-        </Tooltip>
-        <FontAwesomeIcon className="icon-link" icon={faProjectDiagram}
-          id="TooltipGraphView"
-          onClick={()=> {
-            this.props.history.push(this.props.lineagesPath+'/'+filePath)
-          }}
-          onMouseEnter={() => {
-            this.setState({ tooltipGraphViewOpen: true });
-          }}
-          onMouseLeave={() => {
-            this.setState({ tooltipGraphViewOpen: false });
-          }} />
-      </span>
-      : null;
-
-    const buttonGit = <span>
-      <Tooltip placement="top" isOpen={this.state.tooltipGitViewOpen} target="TooltipGitView">
-          Open in GitLab
-      </Tooltip>
-      <a href={`${this.props.externalUrl}/blob/master/${filePath}`}
-        role="button"
-        target="_blank"
-        rel="noreferrer noopener"
-        id="TooltipGitView"
-        onMouseEnter={() => {
-          this.setState({ tooltipGitViewOpen: true });
-        }}
-        onMouseLeave={() => {
-          this.setState({ tooltipGitViewOpen: false });
-        }}>
-        <FontAwesomeIcon className="icon-link" icon={faGitlab} />
-      </a>
-    </span>
-
-    const buttonJupyter = filePath.endsWith(".ipynb") ?
-      <FilePreview
-        getNotebookButton={true}
-        file={this.state.file}
-        {...this.props}
-      /> : null;
-
+    const isLFSBadge = isLFS ?
+      <Badge className="lfs-badge" color="light">LFS</Badge> :
+      null;
+    
+    const buttonJupyter = this.props.filePath.endsWith(".ipynb") ?
+      <LaunchJupyter {...this.props} file={this.state.file} /> :
+      null;
 
     return (
       <Card>
@@ -199,17 +176,13 @@ class ShowFile extends React.Component {
 class StyledNotebook extends React.Component {
 
   componentDidMount() {
-    /*  eslint-disable-next-line react/no-find-dom-node */
-    const domNode = ReactDOM.findDOMNode(this.notebook);
-    this.fixUpDom(domNode);
-  }
-
-  fixUpDom(domNode) {
     // TODO go through the dom and modify the nodes, e.g., with D3
-    // console.log(domNode);
+    //this.fixUpDom(ReactDOM.findDOMNode(this.notebook));
   }
 
   render() {
+    if (this.props.notebook == null) return <div>Loading...</div>;
+
     const notebookStyle = `
     .jupyter .output img {
       max-width: 100%;
@@ -227,157 +200,10 @@ class StyledNotebook extends React.Component {
         defaultStyle={false}
         loadMathjax={false}
         notebook={this.props.notebook}
-        showCode={this.props.showCode} />]
+        showCode={true}
+      />
+    ];
   }
 }
 
-class LaunchNotebookButton extends React.Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      showTooltip: false
-    };
-  }
-
-  render() {
-
-    const props = this.props;
-    const label = props.label || 'Open Notebook';
-    const className = props.className;
-
-    // TODO: Have a tooltip also for the case where a server is running
-    // and the user is logged in.
-
-    // Create a tooltip that will explain the deactivated button
-    const message = this.props.user.id ?
-      "You have to launch Jupyter in Notebook Servers":
-      "Please login to open notebooks"
-    const tooltip = this.state.deploymentUrl ? null :
-      <Tooltip
-        id="JupyterButtonTooltip"
-        target="tooltipButton"
-        placement="top"
-        isOpen={this.state.showTooltip}
-      >
-        {message}
-      </Tooltip>
-
-    const externalUrl = this.props.deploymentUrl || this.props.notebookServerUrl;
-
-    return this.props.iconView ?
-      <span>
-        {tooltip}
-        <span
-          onClick={event => {
-            if (externalUrl) {
-              event.preventDefault();
-              window.open(externalUrl);
-            }
-          }}
-          id="tooltipButton"
-          onMouseEnter={() => {
-            if (!externalUrl) this.setState({ showTooltip: true });
-          }}
-          onMouseOut={() => {
-            this.setState({ showTooltip: false });
-          }}
-          role="button" target="_blank"
-          rel="noreferrer noopener">
-          <svg aria-hidden="true"
-            data-prefix="fas"
-            className="jupyter-icon fa-w-20 icon-link"
-            role="img" xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 640 512"/>
-        </span>
-      </span>
-      :
-      // TODO: Seems like the non-icon option (button) has become unreachable.
-      <div>
-        {tooltip}
-        <Button
-          id="tooltipButton"
-          onMouseEnter={() => {
-            this.setState({ showTooltip: true });
-            // just a dirty trick because the mouseout event does not fire...
-            setTimeout(() => this.setState({ showTooltip: false }), 3000)
-          }}
-          disabled={!externalUrl}
-          className={className}
-          color="primary" onClick={event => {
-            event.preventDefault();
-            window.open(externalUrl);
-          }}>
-          {label}
-        </Button>
-      </div>
-  }
-}
-
-const JupyterNotebookButton = props => {
-  if(props.notebook == null) return null;
-  return  <LaunchNotebookButton
-    className="deployButton float-right"
-    key="launchbutton"
-    deploymentUrl={props.deploymentUrl}
-    notebookServerUrl={props.notebookServerUrl}
-    client={props.client}
-    label="Open Notebook"
-    user={props.user}
-  />
-}
-
-const JupyterNotebookButtonIcon = props => {
-  if(props.notebook == null) return null;
-  return  <LaunchNotebookButton
-    className="deployButton float-right"
-    key="launchbutton"
-    iconView={true}
-    deploymentUrl={props.deploymentUrl}
-    notebookServerUrl={props.notebookServerUrl}
-    notebookServerAPI={props.notebookServerAPI}
-    client={props.client}
-    label="Open Notebook"
-    user={props.user}
-  />
-}
-
-const JupyterNotebookBody = props => {
-  if (props.notebook == null) return <div>Loading...</div>;
-  return <StyledNotebook key="notebook" notebook={props.notebook} showCode={true}/>;
-}
-
-const JupyterNotebookPresent = props => {
-
-  if (props.notebook == null) return <div>Loading...</div>;
-
-  return [
-    <Row key="controls">
-      <Col>
-        <LaunchNotebookButton
-          className="deployButton float-right"
-          key="launchbutton"
-          deploymentUrl={props.deploymentUrl}
-          notebookServerUrl={props.notebookServerUrl}
-          notebookServerAPI={props.notebookServerAPI}
-          client={props.client}
-          label="Open Notebook"
-          user={props.user}
-        />
-      </Col>
-    </Row>,
-    <Row key="notebook">
-      <Col>
-        <StyledNotebook key="notebook" notebook={props.notebook} showCode={true}/>
-      </Col>
-    </Row>
-  ]
-};
-
-export {
-  JupyterNotebookPresent,
-  LaunchNotebookButton,
-  ShowFile,
-  JupyterNotebookBody,
-  JupyterNotebookButton,
-  JupyterNotebookButtonIcon
-};
+export { ShowFile, StyledNotebook, LaunchJupyterPresent };

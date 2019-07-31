@@ -117,13 +117,7 @@
 }
 
 .jupyter-icon:hover{
-    -moz-transform: rotate(360deg) ;
-	/* WebKit */
-	-webkit-transform:  rotate(360deg);
-	/* Opera */
-	-o-transform: rotate(360deg) ;
-	/* Standard */
-	transform: rotate(360deg) ;
+
     cursor: pointer;
 }
 

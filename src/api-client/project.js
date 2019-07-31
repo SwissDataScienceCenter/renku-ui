@@ -306,11 +306,9 @@ function addProjectMethods(client) {
     return client.putProjectField(projectId, name, 'tag_list', tags);
   }
 
-
   client.setDescription = (projectId, name, description) => {
     return client.putProjectField(projectId, name, 'description', description);
   }
-
 
   client.starProject = (projectId, starred) => {
     const headers = client.getBasicHeaders();
@@ -323,7 +321,6 @@ function addProjectMethods(client) {
     })
 
   }
-
 
   client.putProjectField = (projectId, name, field_name, field_value) => {
     const putData = { id: projectId, name, [field_name]: field_value };
@@ -338,26 +335,17 @@ function addProjectMethods(client) {
 
   }
 
-
-  // TODO: This method should not return the notebook server API.
+  // ! TODO: remove this and use client.getNotebookServers instead
   client.getNotebookServerUrl = async (projectId, projectPath, commitSha = 'latest', ref = 'master') => {
     if (commitSha === 'latest') {
       commitSha = await (client.getCommits(projectId).then(resp => resp.data[0].id));
     }
     const headers = client.getBasicHeaders();
-    return client.clientFetch(`${client.baseUrl}/notebooks/${projectPath}/${commitSha}`, {
-      method: 'GET',
-      headers: headers
-    })
+    const url = `${client.baseUrl}/notebooks/${projectPath}/${commitSha}`;
+    return client.clientFetch(url, { method: 'GET', headers})
       .then(resp => resp.data)
-      .then(server => {
-        return {
-          notebookServerUrl: server.url ? server.url : null,
-          notebookServerAPI: `${client.baseUrl}/notebooks/${projectPath}/${commitSha}`
-        }
-      })
+      .then(server => server.url ? server.url : null)
   }
-
 
   client.getArtifactsUrl = (projectId, job, branch = 'master') => {
     const headers = client.getBasicHeaders();
@@ -379,7 +367,6 @@ function addProjectMethods(client) {
       })
   }
 
-
   client.getArtifact = (projectId, job, artifact, branch = 'master') => {
     const options = { method: 'GET', headers: client.getBasicHeaders() };
     return client.getArtifactsUrl(projectId, job, branch)
@@ -390,7 +377,6 @@ function addProjectMethods(client) {
         return Promise.all([resourceUrl, client.clientFetch(resourceUrl, options, client.returnTypes.full)])
       })
   }
-
 
   client.getJobs = (projectId) => {
     let headers = client.getBasicHeaders();

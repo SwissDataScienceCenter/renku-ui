@@ -22,60 +22,12 @@ import ReactDOM from 'react-dom';
 import hljs from 'highlight.js';
 
 import { atobUTF8 } from '../utils/Encoding';
-
-import { JupyterNotebookPresent, JupyterNotebookBody, JupyterNotebookButtonIcon } from './File.present';
+import { StyledNotebook, LaunchJupyterPresent } from './File.present';
 import { ACCESS_LEVELS } from '../api-client';
 
-
-class JupyterNotebookContainer extends Component {
-
-  render() {
-    let filePath = this.props.filePath;
-    let deploymentUrl = null;
-    if (filePath && filePath[0] !== '/') filePath = '/' + filePath;
-
-
-    if (this.props.accessLevel >= ACCESS_LEVELS.DEVELOPER &&
-      this.props.justButton && this.props.notebookServerUrl ) {
-      deploymentUrl = `${this.props.notebookServerUrl}`
-    }
-
-    if(this.props.justBody)
-      return <JupyterNotebookBody
-        fileName={this.props.filePath.replace(/^.*(\\|\/|:)/, '')}
-        notebook={this.props.notebook}
-        deploymentUrl={deploymentUrl}
-        notebookServerUrl={this.props.notebookServerUrl}
-        notebookServerAPI={this.props.notebookServerAPI}
-        client={this.props.client}
-      />
-
-    if(this.props.justButton)
-      return <JupyterNotebookButtonIcon
-        fileName={this.props.filePath.replace(/^.*(\\|\/|:)/, '')}
-        notebook={this.props.notebook}
-        deploymentUrl={deploymentUrl}
-        notebookServerUrl={this.props.notebookServerUrl}
-        notebookServerAPI={this.props.notebookServerAPI}
-        client={this.props.client}
-        user={this.props.user}
-      />
-
-    return <JupyterNotebookPresent
-      fileName={this.props.filePath.replace(/^.*(\\|\/|:)/, '')}
-      notebook={this.props.notebook}
-      deploymentUrl={deploymentUrl}
-      notebookServerUrl={this.props.notebookServerUrl}
-      notebookServerAPI={this.props.notebookServerAPI}
-      client={this.props.client}
-      user={this.props.user}
-    />
-  }
-}
-
 const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'tiff', 'pdf', 'gif'];
-const CODE_EXTENSIONS = ['py', 'js', 'json', 'sh', 'r', 'txt','yml','csv','parquet','cwl','job','prn'];
-const NO_EXTENSION_FILE = ['Dockerfile','errlog','log', 'gitignore', 'gitattributes', 'dockerignore', 'lock']
+const CODE_EXTENSIONS = ['py', 'js', 'json', 'sh', 'r', 'txt', 'yml', 'csv', 'parquet', 'cwl', 'job', 'prn'];
+const NO_EXTENSION_FILE = ['Dockerfile', 'errlog', 'log', 'gitignore', 'gitattributes', 'dockerignore', 'lock']
 
 // FIXME: Unify the file viewing for kus (embedded) and independent file viewing.
 // FIXME: Javascript highlighting is broken for large files.
@@ -140,22 +92,10 @@ class FilePreview extends React.Component {
       return <ReactMarkdown source={content}/>;
     }
 
-    // Jupyter Notebook Button
-    if (this.getFileExtension() === 'ipynb' && this.props.getNotebookButton){
-      return <JupyterNotebookContainer
-        key="notebook-button"
-        justButton={true}
-        notebook={JSON.parse(atobUTF8(this.props.file.content), (key, value) => Object.freeze(value))}
-        filePath={this.props.file.file_path}
-        {...this.props}
-      />
-    }
-
     // Jupyter Notebook
     if (this.getFileExtension() === 'ipynb'){
       return <JupyterNotebookContainer
         key="notebook-body"
-        justBody={true}
         notebook={JSON.parse(atobUTF8(this.props.file.content), (key, value) => Object.freeze(value))}
         filePath={this.props.file.file_path}
         {...this.props}
@@ -175,4 +115,56 @@ class FilePreview extends React.Component {
   }
 }
 
-export { FilePreview, JupyterNotebookContainer as JupyterNotebook };
+class JupyterNotebookContainer extends Component {
+  render() {
+    let filePath = this.props.filePath;
+    if (filePath && filePath[0] !== '/') filePath = '/' + filePath;
+
+    return <StyledNotebook
+      fileName={this.props.filePath.replace(/^.*(\\|\/|:)/, '')}
+      notebook={this.props.notebook}
+      client={this.props.client}
+    />
+  }
+}
+
+class LaunchJupyter extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      running: null
+    };
+  }
+
+  componentDidMount() {
+    this._mounted = true;
+    if (this.props.user.id) {
+      this.checkNotebook();
+    }
+  }
+
+  componentWillUnmount() {
+    this._mounted = false;
+  }
+
+  checkNotebook() {
+    const { projectId, projectPath } = this.props;
+    this.props.client.getNotebookServerUrl(projectId, projectPath).then(data => {
+      if (this._mounted) {
+        this.setState({
+          running: data
+        });
+      }
+    })
+  }
+
+  render() {
+    if (this.props.accessLevel < ACCESS_LEVELS.DEVELOPER)
+      return null;
+    return (
+      <LaunchJupyterPresent {...this.props} notebookUrl={this.state.running} />
+    );
+  }
+}
+
+export { FilePreview, JupyterNotebookContainer as JupyterNotebook, LaunchJupyter };

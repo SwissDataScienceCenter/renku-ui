@@ -80,7 +80,6 @@ class View extends Component {
     this.projectState.setProjectOpenFolder(this.props.client, this.props.id, filepath);
   }
   async fetchGraphStatus() { return this.projectState.fetchGraphStatus(this.props.client, this.props.id); }
-  async fetchNotebookServerUrl() { return this.projectState.fetchNotebookServerUrl(this.props.client, this.props.id); }
 
   async fetchAll() {
     await this.fetchProject();
@@ -89,15 +88,18 @@ class View extends Component {
     if (this.props.user.id) {
       this.fetchCIJobs();
       this.checkGraphWebhook();
-      this.fetchNotebookServerUrl();
     }
   }
 
   cleanCurrentURL(){
-    if(this.subUrls().filesUrl===this.props.location.pathname || this.subUrls().filesUrl+'/'===this.props.location.pathname )
+    const subUrls = this.getSubUrls();
+    if (subUrls.filesUrl === this.props.location.pathname || subUrls.filesUrl + '/' === this.props.location.pathname)
       return ""
     else 
-      return this.props.location.pathname.replace(this.props.match.projectPath,"").replace(this.subUrls().lineagesUrl,"").replace(this.subUrls().fileContentUrl,"");
+      return this.props.location.pathname
+        .replace(this.props.match.projectPath, "")
+        .replace(subUrls.lineagesUrl, "")
+        .replace(subUrls.fileContentUrl, "");
   }
 
   // TODO: move all .set actions to Project.state.js
@@ -123,7 +125,7 @@ class View extends Component {
     }
   }
 
-  subUrls() {
+  getSubUrls() {
     // For exact matches, we strip the trailing / from the baseUrl
     const match = this.props.match;
     const baseUrl = match.isExact ? match.url.slice(0, -1) : match.url;
@@ -193,8 +195,6 @@ class View extends Component {
     const accessLevel = this.projectState.get('visibility.accessLevel');
     const externalUrl = this.projectState.get('core.external_url');
     const updateProjectView = this.forceUpdate.bind(this);
-    const notebookServerUrl = this.projectState.get('core.notebookServerUrl');
-    const notebookServerAPI = this.projectState.get('core.notebookServerAPI');
     const filesTree = this.projectState.get('filesTree');
     const graphProgress = this.projectState.get('webhook.progress');
     const mergeRequests = this.projectState.get('system.merge_requests');
@@ -208,7 +208,8 @@ class View extends Component {
     const forkModalOpen = this.projectState.get('forkModalOpen');
     // Access to the project state could be given to the subComponents by connecting them here to
     // the projectStore. This is not yet necessary.
-    const subProps = {...ownProps, projectId, accessLevel, externalUrl, notebookServerUrl, notebookServerAPI, filesTree, forkModalOpen};
+    const subUrls = this.getSubUrls();
+    const subProps = {...ownProps, projectId, accessLevel, externalUrl, filesTree, forkModalOpen};
 
     const mapStateToProps = (state, ownProps) => {
       return {
@@ -221,12 +222,12 @@ class View extends Component {
     const ConnectedMergeRequestList = connect(mapStateToProps)(MergeRequestList);
 
     return {
-      kuList: <Ku.List key="kus" {...subProps} urlMap={this.subUrls()} />,
+      kuList: <Ku.List key="kus" {...subProps} urlMap={subUrls} />,
 
       kuView: (p) => <Ku.View key="ku" {...subProps}
         kuIid={p.match.params.kuIid}
         updateProjectView={updateProjectView}
-        projectPath={this.projectState.get('core.path_with_namespace')}/>,
+        projectPath={this.projectState.get('core.path_with_namespace')} />,
       /* TODO Should we handle each type of file or just have a generic project files viewer? */
 
       lineageView: (p) => <FileLineage key="lineage" {...subProps}
@@ -244,17 +245,19 @@ class View extends Component {
         key="filepreview" {...subProps}
         filePath={p.location.pathname}
         projectPath={this.projectState.get('core.path_with_namespace')}
-        lineagesPath={this.subUrls().lineagesUrl}
-        hashElement={filesTree !== undefined ? filesTree.hash[p.location.pathname.replace(this.props.match.url + '/files/blob/', '')]:undefined}
-      />,
+        lineagesPath={subUrls.lineagesUrl}
+        launchNotebookUrl={subUrls.launchNotebookUrl}
+        hashElement={filesTree !== undefined ?
+          filesTree.hash[p.location.pathname.replace(this.props.match.url + '/files/blob/', '')] :
+          undefined} />,
 
       mrList: <ConnectedMergeRequestList key="mrList" store={this.projectState.reduxStore}
-        mrOverviewUrl={this.subUrls().mrOverviewUrl}/>,
+        mrOverviewUrl={subUrls.mrOverviewUrl} />,
 
       mrView: (p) => <MergeRequest
         key="mr" {...subProps}
         iid={p.match.params.mrIid}
-        updateProjectState={this.fetchAll.bind(this)}/>,
+        updateProjectState={this.fetchAll.bind(this)} />,
 
       fork: () => <Fork 
         projectId={this.projectState.get('core.id')}
@@ -302,7 +305,7 @@ class View extends Component {
           newMRiid = d.iid;
           return this.fetchAll()
         })
-        .then(() => this.props.history.push(`${this.subUrls().mrOverviewUrl}/${newMRiid}`))
+        .then(() => this.props.history.push(`${this.getSubUrls().mrOverviewUrl}/${newMRiid}`))
     },
     onProjectRefresh: (e) => {
       e.preventDefault();
@@ -331,9 +334,6 @@ class View extends Component {
     fetchGraphStatus: () => {
       return this.fetchGraphStatus();
     },
-    fetchNotebookServerUrl: () => {
-      return this.fetchNotebookServerUrl();
-    },
     fetchBranches: () => {
       return this.fetchBranches();
     }
@@ -352,7 +352,7 @@ class View extends Component {
     return {
       ...this.projectState.get(),
       ...ownProps,
-      ...this.subUrls(),
+      ...this.getSubUrls(),
       ...this.subComponents.bind(this)(internalId, ownProps),
       starred,
       forkModalOpen,
