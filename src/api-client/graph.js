@@ -60,12 +60,22 @@ function addGraphMethods(client) {
       return resp.data;
     });
   }
-
+  
+  /**
+   * Get the lineage nodes and edges
+   * 
+   * @param {string} projectPath   project slug (username/projectname)
+   * @param {string} commitId   full commit id in string format
+   * @param {string} filePath   full file path
+   * @example client.getFileLineage("myGitlabUser/myGitlabProject",
+   *  "3bf1c3c424833228708087686584afb77899f702",
+   *  "figs/grid_plot.png")
+   */
   client.getFileLineage = (projectPath, commitId, filePath) => {
     const query = gql`
-      query getLineage($projectPath: ProjectPath!, $commitId: CommitId, $filePath: FilePath) {
+      query getLineage($projectPath: ProjectPath!, $commitId: CommitId!, $filePath: FilePath!) {
         lineage(projectPath: $projectPath, commitId: $commitId, filePath: $filePath) {
-          nodes { id, label }
+          nodes { id, label },
           edges { source, target }
         }
       }
