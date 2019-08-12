@@ -48,6 +48,7 @@ import { SpecialPropVal } from '../model/Model'
 import { ProjectTags, ProjectTagList } from './shared'
 import { Notebooks, StartNotebookServer } from '../notebooks'
 import FilesTreeView from './filestreeview/FilesTreeView';
+import DatasetsListView from './datasets/DatasetsListView';
 import { ACCESS_LEVELS } from '../api-client';
 
 import './Project.css';
@@ -306,6 +307,9 @@ class ProjectNav extends Component {
           <RenkuNavLink exact={false} to={this.props.filesUrl} title="Files" />
         </NavItem>
         <NavItem>
+          <RenkuNavLink exact={false} to={this.props.datasetsUrl} title="Datasets" />
+        </NavItem>
+        <NavItem>
           <RenkuNavLink exact={false} to={this.props.mrOverviewUrl} title="Pending Changes" />
         </NavItem>
         <NavItem>
@@ -489,6 +493,42 @@ class ProjectViewOverview extends Component {
         </Col>
       </Row>
     </Col>
+  }
+}
+
+class ProjectDatasetsNav extends Component {
+
+  componentDidMount() {
+    this.props.fetchDatasets();
+  }
+
+  render() {
+    const loading = isRequestPending(this.props, 'datasets');
+    const allDatasets = this.props.core.datasets || []
+    if (loading && (allDatasets.length < 1 || this.props.core.datasets===undefined)) {
+      return <Loader />
+    }
+    return <DatasetsListView
+      datasets={this.props.core.datasets}
+      datasetsUrl={this.props.datasetsUrl}
+    />;
+  }
+}
+
+
+class ProjectViewDatasets extends Component {
+
+  render() {
+    return [
+      <Col key="datasetsnav" sm={12} md={4} lg={2}>
+        <ProjectDatasetsNav {...this.props} />
+      </Col>
+      ,
+      <Col key="datasetcontent" sm={12} md={8} lg={10}>
+        <Route path={this.props.datasetUrl}
+          render={p => this.props.datasetView(p)} />
+      </Col>
+    ]
   }
 }
 
@@ -844,6 +884,8 @@ class ProjectView extends Component {
                 render={props => <ProjectViewKus key="kus" {...this.props} />} />
               <Route path={this.props.filesUrl}
                 render={props => <ProjectViewFiles key="files" {...this.props} />} />
+              <Route path={this.props.datasetsUrl}
+                render={props => <ProjectViewDatasets key="datasets" {...this.props} />} />
               <Route path={this.props.settingsUrl}
                 render={props => <ProjectSettings key="settings" {...this.props} />} />
               <Route path={this.props.mrOverviewUrl}

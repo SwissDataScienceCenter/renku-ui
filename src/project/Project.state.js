@@ -205,7 +205,25 @@ class ProjectModel extends StateModel {
       this.fetchProjectFilesTree(client,"",folderPath);
     }
     filesTree.hash[folderPath].childrenOpen = !filesTree.hash[folderPath].childrenOpen;
-    this.set('filesTree',filesTree);
+    this.set('filesTree',filesTree);  
+  }
+
+  fetchProjectDatasets(client, id){
+    if(this.get('core.datasets')) return this.get('core.datasets');
+    if(this.get('transient.requests.datasets') === SpecialPropVal.UPDATING) return;
+    this.setUpdating({transient:{requests:{datasets: true}}});
+   
+    return client.getProjectDatasets(id)
+      .then(datasets => {
+        datasets = datasets.map(dataset => {
+          dataset.identifier = dataset.identifier.split('-').join("");
+          return dataset;
+        } )
+        const updatedState = { datasets: datasets, transient:{requests:{datasets: false}} };
+        this.set('core.datasets', datasets);
+        this.setObject(updatedState);
+        return datasets;
+      });
   }
 
   fetchModifiedFiles(client) {
