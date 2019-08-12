@@ -40,6 +40,7 @@ import List from './list';
 import New from './new';
 import { ShowFile } from '../file/File.present';
 import Fork from './fork';
+import ShowDataset from '../dataset/Dataset.container';
 
 // TODO: This component has grown too much and needs restructuring. One option would be to insert
 // TODO: another container component between this top-level project component and the presentational
@@ -78,6 +79,9 @@ class View extends Component {
   }
   async setProjectOpenFolder(filepath) {
     this.projectState.setProjectOpenFolder(this.props.client, this.props.id, filepath);
+  }
+  async fetchProjectDatasets() {
+    return this.projectState.fetchProjectDatasets(this.props.client, this.props.id);
   }
   async fetchGraphStatus() { return this.projectState.fetchGraphStatus(this.props.client, this.props.id); }
 
@@ -140,6 +144,8 @@ class View extends Component {
       kusUrl: `${baseUrl}/kus`,
       kuNewUrl: `${baseUrl}/ku_new`,
       kuUrl: `${baseUrl}/kus/:kuIid(\\d+)`,
+      datasetsUrl: `${baseUrl}/datasets`,
+      datasetUrl: `${baseUrl}/datasets/:datasetId`,
       filesUrl: `${filesUrl}`,
       fileContentUrl: `${fileContentUrl}`,
       lineagesUrl: `${filesUrl}/lineage`,
@@ -191,11 +197,27 @@ class View extends Component {
     }
   }
 
+  getSelectedDataset(datasets) {
+
+    if (datasets === undefined) return undefined;
+
+    const datasetPath = this.props.location.pathname.endsWith('/') 
+      ? this.props.location.pathname.slice(0, -1)
+      : this.props.location.pathname;
+    const datasetId = datasetPath.split('/').pop();
+
+    let selectedDataset = datasets.filter(d => datasetId === d.identifier )[0];
+
+    if(selectedDataset === undefined) return null;
+    return selectedDataset;
+  }
+
   subComponents(projectId, ownProps) {
     const accessLevel = this.projectState.get('visibility.accessLevel');
     const externalUrl = this.projectState.get('core.external_url');
     const updateProjectView = this.forceUpdate.bind(this);
     const filesTree = this.projectState.get('filesTree');
+    const datasets = this.projectState.get('core.datasets');
     const graphProgress = this.projectState.get('webhook.progress');
     const mergeRequests = this.projectState.get('system.merge_requests');
     const maintainer = this.projectState.get('visibility.accessLevel') >= ACCESS_LEVELS.MAINTAINER ?
@@ -209,7 +231,7 @@ class View extends Component {
     // Access to the project state could be given to the subComponents by connecting them here to
     // the projectStore. This is not yet necessary.
     const subUrls = this.getSubUrls();
-    const subProps = {...ownProps, projectId, accessLevel, externalUrl, filesTree, forkModalOpen};
+    const subProps = {...ownProps, projectId, accessLevel, externalUrl, filesTree, forkModalOpen, datasets};
 
     const mapStateToProps = (state, ownProps) => {
       return {
@@ -250,6 +272,15 @@ class View extends Component {
         hashElement={filesTree !== undefined ?
           filesTree.hash[p.location.pathname.replace(this.props.match.url + '/files/blob/', '')] :
           undefined} />,
+
+      datasetView: (p) => <ShowDataset
+        key="datasetpreview" {...subProps}
+        pathname={p.location.pathname}
+        dataset={this.getSelectedDataset(datasets)}
+        projectPath={this.projectState.get('core.path_with_namespace')}
+        datasetsPath={this.getSubUrls().datasetsUrl}
+      />
+      ,
 
       mrList: <ConnectedMergeRequestList key="mrList" store={this.projectState.reduxStore}
         mrOverviewUrl={subUrls.mrOverviewUrl} />,
@@ -319,6 +350,9 @@ class View extends Component {
     fetchFiles: () => {
       this.fetchProjectFilesTree();
       //this.fetchModifiedFiles();
+    },
+    fetchDatasets : () => {
+      this.fetchProjectDatasets();
     },
     setOpenFolder: (filePath) => { 
       this.setProjectOpenFolder(filePath);
