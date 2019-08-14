@@ -75,7 +75,7 @@ class New extends Component {
   }
 
   async fetchProjectTemplates(){
-    return this.props.client.getProjectTemplates();
+    return this.props.client.getProjectTemplates(this.props.renkuTemplatesUrl, this.props.renkuTemplatesRef);
   }
 
   async componentDidMount() {
@@ -107,7 +107,7 @@ class New extends Component {
     const validation = this.validate();
     if (validation.result) {
       this.newProject.set('display.loading', true);
-      this.props.client.postProject(this.newProject.get())
+      this.props.client.postProject(this.newProject.get(), this.props.renkuTemplatesUrl, this.props.renkuTemplatesRef)
         .then((project) => {
           this.newProject.set('display.loading', false);
           this.props.history.push(`/projects/${project.id}`);
