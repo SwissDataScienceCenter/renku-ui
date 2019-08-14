@@ -94,8 +94,12 @@ class App extends Component {
               }/>
               <Route exact path="/project_new"
                 render={(p) =>
-                  <Project.New key="project_new" client={this.props.client}
-                    user={this.props.userState.getState().user} {...p}/> }/>
+                  <Project.New key="project_new" 
+                    client={this.props.client}
+                    user={this.props.userState.getState().user} 
+                    renkuTemplatesUrl={this.props.params['RENKU_TEMPLATES_URL']} 
+                    renkuTemplatesRef={this.props.params['RENKU_TEMPLATES_REF']} 
+                    {...p}/> }/>
               <Route exact path="/notebooks"
                 render={p => <Notebooks key="notebooks" standalone={true}
                   client={this.props.client} {...p} />} />

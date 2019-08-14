@@ -57,3 +57,7 @@ welcomePage:
     ## Welcome to Renku!
     Renku is software for collaborative data science. With Renku you can share code and data,
     discuss problems and solutions, and coordinate data-science projects.
+
+templatesRepository:
+  url: https://github.com/SwissDataScienceCenter/renku-project-template
+  ref: 0.1.1
