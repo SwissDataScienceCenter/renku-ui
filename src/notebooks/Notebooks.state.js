@@ -24,46 +24,132 @@
  */
 
 import { Schema, StateKind, StateModel } from '../model/Model';
-import { cleanAnnotations } from '../api-client/notebook-servers';
-import { StatusHelper } from '../model/Model'
 
 const notebooksSchema = new Schema({
   notebooks: {
     schema: {
-      polling: {initial: null},
-      all: {initial: {}},
-      status: {initial: null},
-      url: {initial: null},
-      fetching: {initial:false},
-      discard: {initial: false}
+      all: { initial: {} },
+      poller: { initial: null },
+      fetched: { initial: null },
+      fetching: { initial: false },
+      options: { initial: {} },
+      lastParameters: { initial: null }
     }
   },
   filters: {
     schema: {
-      branch: {initial: {}},
-      commit: {initial: {}},
-      includeMergedBranches: {initial:false},
-      displayedCommits: {initial:10},
-      displayCommitAuthor: {initial:true},
-      displayCommitTimestamp: {initial:true}
+      namespace: { initial: null },
+      project: { initial: null },
+      branch: { initial: {} },
+      commit: { initial: {} },
+      discard: { initial: false },
+      options: { initial: {} },
+
+      includeMergedBranches: { initial: false },
+      displayedCommits: { initial: 10 },
     }
   },
   data: {
     schema: {
-      commits: {initial:[]}, // is this the proper place? should this logic moved to Project?
-      error: {initial:null},
-      notebookOptions: {initial:{}},
-      selectedOptions: {initial:{}}
+      commits: { initial: [] }, // ! TODO: move to Project pages, shouldn't be here
+      fetched: { initial: null },
+      fetching: { initial: false },
     }
   }
 });
 
 const POLLING_INTERVAL = 3000;
 
+const ExpectedAnnotations = {
+  "renku.io": {
+    required: ["branch", "commit-sha", "namespace", "projectId", "projectName"],
+    default: {
+      "branch": "unknown",
+      "commit-sha": "00000000",
+      "namespace": "unknown",
+      "projectId": 0,
+      "projectName": "unknown"
+    }
+  }
+}
+
+const NotebooksHelper = {
+  /**
+   * compute the status of a notebook
+   * 
+   * @param {Object} either the notebook or the notebook.status object as returned by the GET /servers API
+   */
+  getStatus: (data) => {
+    let status = data;
+    if (data.status)
+      status = data.status;
+
+    if (status.ready)
+      return "running";
+    if (status.step === "Unschedulable")
+      return "error";
+    return "pending";
+  },
+  /**
+   * add missing annotations from the notebook servers
+   * 
+   * @param {object} annotations 
+   * @param {string} domain 
+   */
+  cleanAnnotations(annotations, domain = "renku.io") {
+    let cleaned = {};
+    const prefix = `${domain}/`;
+    ExpectedAnnotations[domain].required.forEach(annotation => {
+      cleaned[annotation] = annotations[prefix + annotation] !== undefined ?
+        annotations[prefix + annotation] :
+        ExpectedAnnotations[domain].default[annotation];
+    });
+
+    return { ...cleaned };
+  }
+};
+
+
 class NotebooksModel extends StateModel {
   constructor(client) {
     super(notebooksSchema, StateKind.REDUX);
     this.client = client;
+  }
+
+  // * Filters * //
+  /**
+   * Set filtering parameters
+   * 
+   * @param {Object} data - the filters to be set
+   * @param {string} data.namespace - full namespace path
+   * @param {string} data.project - full project path
+   * @param {string|Object} data.branch - branch name or branch data as return by gitlab api
+   * @param {string|Object} data.commit - commit full id or commit data as return by gitlab api
+   */
+  setNotebookFilters(data = {}) {
+    let filters = {};
+    if (data.namespace !== undefined)
+      filters.namespace = data.namespace;
+    if (data.project !== undefined)
+      filters.project = data.project;
+    if (data.branch !== undefined)
+      data.branch instanceof Object ? filters.branch = data.branch : filters.branch = { name: data.branch }
+    if (data.commit !== undefined)
+      data.commit instanceof Object ? filters.commit = data.commit : filters.commit = { id: data.commit }
+
+    this.setObject({ filters });
+  }
+
+  setBranch(branch) {
+    this.set('notebooks.fetched', null);
+    this.set('filters.branch', branch);
+    this.fetchNotebooks();
+  }
+
+  setCommit(commit) {
+    this.set('notebooks.fetched', null);
+    this.set('filters.commit', commit);
+    this.fetchNotebooks();
   }
 
   setMergedBranches(value) {
@@ -74,195 +160,155 @@ class NotebooksModel extends StateModel {
     this.set('filters.displayedCommits', value);
   }
 
-  setBranch(branch) {
-    this.set('filters.branch', branch);
+  setNotebookOptions(option, value) {
+    this.set(`filters.options.${option}`, value);
   }
 
-  setCommit(commit) {
-    this.set('filters.commit', commit);
+  getQueryFilters() {
+    const filters = this.get('filters');
+    return {
+      namespace: filters.namespace,
+      project: filters.project,
+      branch: filters.branch.name ? filters.branch.name : null,
+      commit: filters.commit.id ? filters.commit.id : null
+    };
   }
 
-  async fetchCommits(projectId, branchName) {
-    if (branchName == null) {
-      this.set('data.commits', []);
-      return [];
-    }
-    else {
-      this.setUpdating({data: {commits: true}});
-      return this.client.getCommits(projectId, branchName)
-        .then(resp => {
-          this.set('data.commits', resp.data);
-          return resp.data;
-        });
-    }
-  }
 
-  fetchNotebooks(first, projectId) {
+  // * Fetch data * //
+  fetchNotebooks() {
     const fetching = this.get('notebooks.fetching');
-    if (fetching) return;
-    this.set('notebooks.fetching', true);
+    if (fetching)
+      return;
 
-    if (first) {
-      this.setUpdating({notebooks: {all: true}});
-    }
-    return this.client.getNotebookServers(projectId)
+    // get filters
+    const filters = this.getQueryFilters();
+    this.setObject({
+      notebooks: {
+        fetching: true,
+        lastParameters: JSON.stringify(filters)
+      }
+    });
+
+    // get notebooks
+    return this.client.getNotebookServers(filters.namespace, filters.project, filters.branch, filters.commit)
       .then(resp => {
-        this.set('notebooks.fetching', false);
-        if (!this.get('notebooks.discard')) {
-          this.set('notebooks.all', resp.data);
+        let updatedNotebooks = { fetching: false };
+        // check if result is still valid
+        if (!this.get('filters.discard')) {
+          const filters = this.getQueryFilters();
+          if (this.get('notebooks.lastParameters') === JSON.stringify(filters)) {
+            updatedNotebooks.fetched = new Date();
+            this.set('notebooks.all', resp.data);
+          }
+          // TODO: re-invoke `fetchNotebooks()` immediatly if parameters are outdated
         }
+        this.setObject({ notebooks: updatedNotebooks });
         return resp.data;
       })
       .catch(error => {
         this.set('notebooks.fetching', false);
+        throw error;
       });
-  }
-
-  verifyIfRunning(projectId, projectSlug, servers) {
-    const notebooks = servers ?
-      servers :
-      this.get('notebooks.all');
-    if (StatusHelper.isUpdating(notebooks)) return;
-    const branch = this.get('filters.branch');
-    const commit = this.get('filters.commit');
-    for (let notebookName of Object.keys(notebooks)) { 
-      const notebook = notebooks[notebookName];
-      const annotations = cleanAnnotations(notebook["annotations"], "renku.io");
-      if (parseInt(annotations.projectId) !== projectId) continue;
-      if (annotations["branch"] === branch.name && annotations["commit-sha"] === commit.id) {
-        this.setObject({ notebooks: {
-          status: notebook.status.ready ?
-            "running" :
-            notebook.status.step === "Unschedulable" ?
-              "error" :
-              "pending",
-          url: notebook.url
-        }});
-        return true;
-      }
-    }
-    this.setObject({notebooks: {
-      status: false,
-      url: null
-    }});
-
-    // fetch notebook options
-    this.fetchNotebookOptions(projectSlug, commit.id);
-    return false;
-  }
-
-  notebookPollingIteration(projectId, projectSlug, first, checkRunning) {
-    const fetchPromise = this.fetchNotebooks(first, projectId);
-    if (!fetchPromise) return;
-    if (checkRunning) {
-      return fetchPromise.then((servers) => {
-        return this.verifyIfRunning(projectId, projectSlug, servers);
-      });
-    }
-    else {
-      return fetchPromise;
-    }
-  }
-
-  startNotebookPolling(projectId, projectSlug, checkRunning) {
-    if (projectId) {
-      this.setObject({notebooks: {
-        status: false,
-        url: null
-      }});
-    }
-    const oldPoller = this.get('notebooks.polling');
-    if (oldPoller == null) {
-      const newPoller = setInterval(() => {
-        this.notebookPollingIteration(projectId, projectSlug, false, checkRunning);
-      }, POLLING_INTERVAL);
-      this.set('notebooks.polling', newPoller);
-
-      // fetch immediatly
-      this.notebookPollingIteration(projectId, projectSlug, true, checkRunning);
-    }
   }
 
   fetchNotebookOptions() {
-    const oldData = this.get('data.notebookOptions');
+    const oldData = this.get('notebooks.options');
     if (Object.keys(oldData).length !== 0)
       return;
-    this.set('data.notebookOptions', {});
-    return this.client.getNotebookServerOptions().then((notebookOptions)=> {
+    this.set('notebooks.options', {});
+    return this.client.getNotebookServerOptions().then((notebookOptions) => {
       let selectedOptions = {};
-      Object.keys(notebookOptions).forEach(option => { 
+      Object.keys(notebookOptions).forEach(option => {
         selectedOptions[option] = notebookOptions[option].default;
       })
       const options = {
-        data: {
-          notebookOptions,
-          selectedOptions
-        }
+        notebooks: { options: notebookOptions },
+        filters: { options: selectedOptions }
       };
       this.setObject(options);
       return options;
     });
   }
 
-  setNotebookOptions(option, value) {
-    this.set(`data.selectedOptions.${option}`, value);
-  }
 
-  startServer(namespacePath, projectPath, branchName, commitId) {
-    const options = {
-      serverOptions: this.get('data.selectedOptions')
-    };
-    let branch = branchName;
-    if (!branchName) {
-      const selctedBranch = this.get('filters.branch');
-      if (selctedBranch.name) {
-        branch = selctedBranch.name;
-      }
-      else {
-        branch = "master";
-      }
-    }
-    let commit = commitId;
-    if (!commitId) {
-      const selctedCommit = this.get('filters.commit');
-      if (selctedCommit.id) {
-        commit = selctedCommit.id;
-      }
-      else {
-        commit = "latest";
-      }
-    }
+  // * Handle polling * //
+  startNotebookPolling() {
+    const oldPoller = this.get('notebooks.poller');
+    if (oldPoller == null) {
+      const newPoller = setInterval(() => {
+        this.fetchNotebooks();
+      }, POLLING_INTERVAL);
+      this.set('notebooks.poller', newPoller);
 
-    this.set('notebooks.status', 'pending');
-    return this.client.startNotebook(namespacePath, projectPath, branch, commit, options);  
+      // fetch immediatly
+      this.fetchNotebooks();
+    }
   }
 
   stopNotebookPolling() {
-    const poller = this.get('notebooks.polling');
+    const poller = this.get('notebooks.poller');
     if (poller) {
-      this.set('notebooks.polling', null);
+      this.set('notebooks.poller', null);
       clearTimeout(poller);
     }
   }
 
+
+  // * Change notebook status * //
+  startServer() {
+    const options = {
+      serverOptions: this.get('filters.options')
+    };
+    const filters = this.get('filters');
+    const namespace = filters.namespace;
+    const project = filters.project;
+    const branch = filters.branch.name ? filters.branch.name : "master";
+    const commit = filters.commit.id ? filters.commit.id : "latest";
+
+    return this.client.startNotebook(namespace, project, branch, commit, options);
+  }
+
   stopNotebook(serverName) {
     // manually set the state and temporarily throw away servers data until the promise resolves
-    const updatedState = { notebooks: {
-      discard: true,
-      all: { [serverName]: { status: { ready: false } } } }
+    const updatedState = {
+      filters: { discard: true },
+      notebooks: { all: { [serverName]: { status: { ready: false } } } }
     };
     this.setObject(updatedState);
     return this.client.stopNotebookServer(serverName)
       .then(response => {
-        this.set('notebooks.discard', false);
+        this.set('filters.discard', false);
         return response;
       })
       .catch(error => {
-        this.set('notebooks.discard', false);
+        this.set('filters.discard', false);
+        throw error;
+      });
+  }
+
+
+  // * Fetch commits -- to be moved * //
+  async fetchCommits() {
+    this.set('data.fetching', true);
+    const filters = this.get('filters');
+    const projectSlug = `${filters.namespace}%2F${filters.project}`;
+    return this.client.getCommits(projectSlug, filters.branch.name)
+      .then(resp => {
+        this.setObject({
+          data: {
+            fetching: false,
+            fetched: new Date(),
+            commits: resp.data
+          }
+        })
+        return resp.data;
+      })
+      .catch(error => {
+        this.set('data.fetching', false);
         throw error;
       });
   }
 }
 
-export default NotebooksModel;
-
+export { NotebooksModel, NotebooksHelper, ExpectedAnnotations }

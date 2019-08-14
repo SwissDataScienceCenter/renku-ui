@@ -23,6 +23,7 @@
  *
  */
 
-import { Notebooks, NotebookServers, StartNotebookServer } from './Notebooks.container';
+import { Notebooks, StartNotebookServer } from './Notebooks.container';
+import { NotebooksHelper } from './Notebooks.state'
 
-export { NotebookServers, Notebooks, StartNotebookServer }
+export { Notebooks, StartNotebookServer, NotebooksHelper }

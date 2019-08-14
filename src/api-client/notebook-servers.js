@@ -16,54 +16,22 @@
  * limitations under the License.
  */
 
-const ExpectedAnnotations = {
-  "renku.io": {
-    required: ["branch", "commit-sha", "namespace", "projectId", "projectName"],
-    default: {
-      "branch": "unknown",
-      "commit-sha": "00000000",
-      "namespace": "unknown",
-      "projectId": 0,
-      "projectName": "unknown"
-    }
-  }
-}
-
-function cleanAnnotations(annotations, domain) {
-  let cleaned = {};
-  if (domain === "renku.io") {
-    const prefix = `${domain}/`;
-    ExpectedAnnotations[domain].required.forEach(annotation => {
-      cleaned[annotation] = annotations[prefix+annotation] !== undefined ?
-        annotations[prefix+annotation] :
-        ExpectedAnnotations[domain].default[annotation];
-    });
-  }
-  return {...cleaned};
-}
-
 function addNotebookServersMethods(client) {
-  client.getNotebookServers = (id, branch, commit) => {
+  client.getNotebookServers = (namespace, project, branch, commit) => {
     const headers = client.getBasicHeaders();
     const url = `${client.baseUrl}/notebooks/servers`;
+    let parameters = {};
+    if (namespace) parameters.namespace = namespace;
+    if (project) parameters.project = project;
+    if (branch) parameters.branch = branch;
+    if (commit) parameters.commit_sha = commit;
+
     return client.clientFetch(url, {
       method: 'GET',
-      headers
+      headers,
+      queryParams: parameters
     }).then(resp => {
-      let { servers } = resp.data;
-      if (id) {
-        // TODO: remove this filter when this API will support projectId filtering
-        servers = Object.keys(servers)
-          .filter(server => {
-            const annotations = cleanAnnotations(servers[server]["annotations"], "renku.io");
-            if (parseInt(annotations.projectId) === parseInt(id)) {
-              return server;
-            }
-            return null;
-          })
-          .reduce((obj, key) => {obj[key] = servers[key]; return obj}, {});
-      }
-      return { "data": servers };
+      return { "data": resp.data.servers };
     });
   }
 
@@ -118,5 +86,4 @@ function addNotebookServersMethods(client) {
   }
 }
 
-export { cleanAnnotations, ExpectedAnnotations };
 export default addNotebookServersMethods;

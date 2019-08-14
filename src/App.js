@@ -98,7 +98,6 @@ class App extends Component {
                     user={this.props.userState.getState().user} {...p}/> }/>
               <Route exact path="/notebooks"
                 render={p => <Notebooks key="notebooks" standalone={true}
-                  user={this.props.userState.getState().user}
                   client={this.props.client} {...p} />} />
               <Route path="*"
                 render={p => <NotFound {...p} />} />

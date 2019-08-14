@@ -605,8 +605,10 @@ function notebookLauncher(visibility, notebookLauncher) {
 class ProjectNotebookServers extends Component {
   render() {
     const content = [
-      <Notebooks key="notebooks" standalone={false}
-        projectId={this.props.id} client={this.props.client}
+      <Notebooks key="notebooks"
+        standalone={false}
+        client={this.props.client}
+        scope={{namespace: this.props.core.namespace_path, project: this.props.core.project_path}}
       />,
       <Link key="launch" to={ `/projects/${this.props.id}/launchNotebook` }>
         <Button color="primary">Start new server</Button>
@@ -620,14 +622,11 @@ class ProjectNotebookServers extends Component {
 class ProjectStartNotebookServer extends Component {
   render() {
     let content = (<StartNotebookServer
+      client={this.props.client}
       branches={this.props.system.branches}
       autosaved={this.props.system.autosaved}
       refreshBranches={this.props.fetchBranches}
-      projectId={this.props.core.id}
-      projectSlug={this.props.core.displayId}
-      namespacePath={this.props.core.namespace_path}
-      projectPath={this.props.core.project_path}
-      client={this.props.client}
+      scope={{namespace: this.props.core.namespace_path, project: this.props.core.project_path}}
       successUrl={this.props.notebookServersUrl}
       history={this.props.history}
     />);

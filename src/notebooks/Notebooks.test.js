@@ -24,51 +24,94 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { MemoryRouter } from 'react-router-dom';
 
-import { Notebooks, StartNotebookServer } from './Notebooks.container';
-import { cleanAnnotations, ExpectedAnnotations } from '../api-client/notebook-servers';
+import { Notebooks, StartNotebookServer, NotebooksHelper } from './index';
+import { ExpectedAnnotations } from './Notebooks.state';
 import { testClient as client } from '../api-client'
-import { generateFakeUser } from '../app-state/UserState.test';
 
-describe('rendering', () => {
-  const loggedUser = generateFakeUser();
-
-  it('renders home without crashing', () => {
-    const div = document.createElement('div');
-    ReactDOM.render(
-      <MemoryRouter>
-        <Notebooks client={client} user={loggedUser} />
-      </MemoryRouter>, div);
-  });
-
-  it('renders launch notebook page without crashing', () => {
-    const div = document.createElement('div');
-    const refreshBranches = async function() {
-      return [];
-    };
-    ReactDOM.render(
-      <MemoryRouter>
-        <StartNotebookServer client={client} user={loggedUser} branches={[]} refreshBranches={refreshBranches} projectId={1} />
-      </MemoryRouter>, div);
-  });
-});
 
 describe('notebook server clean annotation', () => {
   const baseAnnotations = ExpectedAnnotations["renku.io"].default;
   it('renku.io default', () => {
     const fakeAnswer = {};
-    const elaboratedAnnotations = cleanAnnotations(fakeAnswer, "renku.io");
-    const expectedAnnotations = {...baseAnnotations}
-    expect(JSON.stringify(elaboratedAnnotations)).toBe(JSON.stringify(expectedAnnotations)); 
+    const elaboratedAnnotations = NotebooksHelper.cleanAnnotations(fakeAnswer, "renku.io");
+    const expectedAnnotations = { ...baseAnnotations }
+    expect(JSON.stringify(elaboratedAnnotations)).toBe(JSON.stringify(expectedAnnotations));
   });
   it('renku.io elaborated', () => {
     const namespace = "myCoolNampsace";
     const branch = "anotherBranch"
 
     const fakeAnswer = { "renku.io/namespace": namespace, "renku.io/branch": branch };
-    const elaboratedAnnotations = cleanAnnotations(fakeAnswer, "renku.io");
-    const expectedAnnotations = {...baseAnnotations, namespace, branch}
-    expect(JSON.stringify(elaboratedAnnotations)).toBe(JSON.stringify(expectedAnnotations)); 
+    const elaboratedAnnotations = NotebooksHelper.cleanAnnotations(fakeAnswer, "renku.io");
+    const expectedAnnotations = { ...baseAnnotations, namespace, branch }
+    expect(JSON.stringify(elaboratedAnnotations)).toBe(JSON.stringify(expectedAnnotations));
+  });
+});
+
+describe('notebook status', () => {
+  const servers = [{
+    "status": {
+      "message": null,
+      "phase": "Running",
+      "ready": true,
+      "reason": null,
+      "step": "Ready"
+    },
+    "expected": "running"
+  }, {
+    "status": {
+      "message": "containers with unready status: [notebook]",
+      "phase": "Pending",
+      "ready": false,
+      "reason": "ContainersNotReady",
+      "step": "ContainersReady"
+    },
+    "expected": "pending"
+  }];
+
+  it('computed vs expected', () => {
+    for (let server of servers) {
+      expect(NotebooksHelper.getStatus(server)).toBe(server.expected);
+      expect(NotebooksHelper.getStatus(server.status)).toBe(server.expected);
+    }
+  });
+});
+
+describe('rendering', () => {
+  const scope = {
+    namespace: "fake",
+    project: "fake",
+    branch: { name: "master" }
+  }
+
+  it('renders standalone Notebooks', () => {
+    const div = document.createElement('div');
+    ReactDOM.render(
+      <Notebooks client={client} standalone={true} />
+    , div);
+    ReactDOM.render(
+      <Notebooks client={client} standalone={false} />
+    , div);
+    ReactDOM.render(
+      <Notebooks client={client} standalone={true} scope={scope} />
+    , div);
+  });
+
+  it('renders StartNotebookServer without crashing', () => {
+    const props = {
+      client: client,
+      branches: [],
+      autosaved: [],
+      refreshBranches: () => { },
+    }
+
+    const div = document.createElement('div');
+    ReactDOM.render(
+      <StartNotebookServer {...props} />
+    , div);
+    ReactDOM.render(
+      <StartNotebookServer {...props} scope={scope} />
+    , div);
   });
 });
