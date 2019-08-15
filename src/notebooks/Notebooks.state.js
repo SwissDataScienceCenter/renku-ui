@@ -118,7 +118,7 @@ class NotebooksModel extends StateModel {
       });
   }
 
-  verifyIfRunning(projectId, projectPath, servers) {
+  verifyIfRunning(projectId, projectSlug, servers) {
     const notebooks = servers ?
       servers :
       this.get('notebooks.all');
@@ -147,16 +147,16 @@ class NotebooksModel extends StateModel {
     }});
 
     // fetch notebook options
-    this.fetchNotebookOptions(projectPath, commit.id);
+    this.fetchNotebookOptions(projectSlug, commit.id);
     return false;
   }
 
-  notebookPollingIteration(projectId, projectPath, first, checkRunning) {
+  notebookPollingIteration(projectId, projectSlug, first, checkRunning) {
     const fetchPromise = this.fetchNotebooks(first, projectId);
     if (!fetchPromise) return;
     if (checkRunning) {
       return fetchPromise.then((servers) => {
-        return this.verifyIfRunning(projectId, projectPath, servers);
+        return this.verifyIfRunning(projectId, projectSlug, servers);
       });
     }
     else {
@@ -164,7 +164,7 @@ class NotebooksModel extends StateModel {
     }
   }
 
-  startNotebookPolling(projectId, projectPath, checkRunning) {
+  startNotebookPolling(projectId, projectSlug, checkRunning) {
     if (projectId) {
       this.setObject({notebooks: {
         status: false,
@@ -174,25 +174,24 @@ class NotebooksModel extends StateModel {
     const oldPoller = this.get('notebooks.polling');
     if (oldPoller == null) {
       const newPoller = setInterval(() => {
-        this.notebookPollingIteration(projectId, projectPath, false, checkRunning);
+        this.notebookPollingIteration(projectId, projectSlug, false, checkRunning);
       }, POLLING_INTERVAL);
       this.set('notebooks.polling', newPoller);
 
       // fetch immediatly
-      this.notebookPollingIteration(projectId, projectPath, true, checkRunning);
+      this.notebookPollingIteration(projectId, projectSlug, true, checkRunning);
     }
   }
 
-  fetchNotebookOptions(projectPath, commitId) {
+  fetchNotebookOptions() {
     const oldData = this.get('data.notebookOptions');
-    if (oldData.commitId === commitId)
+    if (Object.keys(oldData).length !== 0)
       return;
     this.set('data.notebookOptions', {});
-    return this.client.getNotebookServerOptions(projectPath, commitId).then((resp)=> {
-      const notebookOptions = { ...resp, commitId };
+    return this.client.getNotebookServerOptions().then((notebookOptions)=> {
       let selectedOptions = {};
-      Object.keys(resp).forEach(option => { 
-        selectedOptions[option] = resp[option].default;
+      Object.keys(notebookOptions).forEach(option => { 
+        selectedOptions[option] = notebookOptions[option].default;
       })
       const options = {
         data: {
@@ -209,7 +208,7 @@ class NotebooksModel extends StateModel {
     this.set(`data.selectedOptions.${option}`, value);
   }
 
-  startServer(projectPath, branchName, commitId) {
+  startServer(namespacePath, projectPath, branchName, commitId) {
     const options = {
       serverOptions: this.get('data.selectedOptions')
     };
@@ -235,7 +234,7 @@ class NotebooksModel extends StateModel {
     }
 
     this.set('notebooks.status', 'pending');
-    return this.client.startNotebook(projectPath, branch, commit, options);  
+    return this.client.startNotebook(namespacePath, projectPath, branch, commit, options);  
   }
 
   stopNotebookPolling() {

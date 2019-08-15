@@ -578,7 +578,7 @@ class StartNotebookOptions extends Component {
     }
     else if (status === false) {
       const { notebookOptions } = this.props.data;
-      if (!notebookOptions.commitId || notebookOptions.commitId !== commit.id) {
+      if (Object.keys(notebookOptions).length === 0) {
         content = (
           <Label>Loading notebook parameters... <Loader size="14" inline="true" /></Label>
         );

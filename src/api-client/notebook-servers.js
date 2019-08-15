@@ -80,9 +80,9 @@ function addNotebookServersMethods(client) {
       });
   }
 
-  client.getNotebookServerOptions = (projectUrl, commitId) => {
+  client.getNotebookServerOptions = () => {
     const headers = client.getBasicHeaders();
-    const url = `${client.baseUrl}/notebooks/${projectUrl}/${commitId}/server_options`;
+    const url = `${client.baseUrl}/notebooks/server_options`;
 
     return client.clientFetch(url, {
       method: 'GET',
@@ -96,16 +96,22 @@ function addNotebookServersMethods(client) {
     });
   }
 
-  client.startNotebook = (projectUrl, branchName, commitId, options) => {
+  client.startNotebook = (namespacePath, projectPath, branchName, commitId, options) => {
     const headers = client.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
-    const url = `${client.baseUrl}/notebooks/${projectUrl}/${commitId}`;
+    const url = `${client.baseUrl}/notebooks/servers`;
+    const parameters = {
+      namespace: namespacePath,
+      project: projectPath,
+      commit_sha: commitId,
+      branch: branchName,
+      ...options
+    };
 
     return client.clientFetch(url, {
       method: 'POST',
       headers,
-      queryParams: { branch: branchName },
-      body: JSON.stringify(options)
+      body: JSON.stringify(parameters)
     }).then((resp) => {
       return resp.data;
     });

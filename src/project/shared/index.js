@@ -66,7 +66,7 @@ class ProjectTags extends Component {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     const update = {value: ProjectTags.tagListString(nextProps) };
-    return {...prevState, ...update};
+    return {...update, ...prevState};
   }
 
   handleChange(e) { this.setState({value: e.target.value}); }
@@ -75,14 +75,14 @@ class ProjectTags extends Component {
 
   render() {
     const inputField = this.props.settingsReadOnly ?
-      <Input readOnly value={this.state.value} /> :
-      <Input value={this.state.value} onChange={this.onValueChange} />;
+      <Input id="projectTags" readOnly value={this.state.value} /> :
+      <Input id="projectTags" value={this.state.value} onChange={this.onValueChange} />;
     let submit = (ProjectTags.tagListString(this.props) !== this.state.value) ?
-      <Button color="primary">Update</Button> :
+      <Button className="mb-3" color="primary">Update</Button> :
       <span></span>
     return <Form onSubmit={this.onSubmit}>
       <FormGroup>
-        <Label for="project_tags">Project Tags</Label>
+        <Label for="projectTags">Project Tags</Label>
         {inputField}
         <FormText>Comma-separated list of tags</FormText>
       </FormGroup>

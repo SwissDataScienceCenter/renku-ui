@@ -33,7 +33,9 @@ import { StatusHelper } from '../model/Model'
  * @param {Object[]} autosaved   Autosaved branches
  * @param {function} refreshBranches   Function to invoke to refresh the list of branches
  * @param {number} projectId   id of the reference project
- * @param {number} projectPath   path of the reference project
+ * @param {string} projectSlug   slug of the reference project (namespace + project path)
+ * @param {string} namespacePath   full path of the reference namespace
+ * @param {string} projectPath   path of the reference project
  * @param {Object} client   api-client used to query the gateway
  * @param {string} successUrl  Optional: url to redirect when then notebook is succesfully started
  * @param {Object} history  Optional: used with successUrl to properly set the new url without reloading the page
@@ -167,7 +169,7 @@ class StartNotebookServer extends Component {
       return;
     }
     this.model.setCommit(commit);
-    this.model.verifyIfRunning(this.props.projectId, this.props.projectPath);
+    this.model.verifyIfRunning(this.props.projectId, this.props.projectSlug);
   }
 
   setCommitFromId(eventOrId) {
@@ -201,7 +203,7 @@ class StartNotebookServer extends Component {
     for (let commitCurrent of filteredCommits) {
       if (commit.id === commitCurrent.id) {
         // necessary for istant refresh in the UI
-        this.model.verifyIfRunning(this.props.projectId, this.props.projectPath);
+        this.model.verifyIfRunning(this.props.projectId, this.props.projectSlug);
         return true;
       }
     }
@@ -237,13 +239,13 @@ class StartNotebookServer extends Component {
     // Data from notebooks/servers endpoint needs some time to update propery.
     // To avoid flickering UI, just set a temporary state and display a loading wheel.
     // TODO: change this when the notebook service will be updated.
-    const { successUrl } = this.props;
+    const { successUrl, namespacePath, projectPath } = this.props;
     if (!successUrl) {
-      this.model.startServer(this.props.projectPath);
+      this.model.startServer(namespacePath, projectPath);
     }
     else {
       this.setState({ "starting": true });
-      this.model.startServer(this.props.projectPath).then((data) => {
+      this.model.startServer(namespacePath, projectPath).then((data) => {
         this.props.history.push(successUrl);
       });
     }
@@ -261,7 +263,7 @@ class StartNotebookServer extends Component {
   }
 
   startNotebookPolling() {
-    this.model.startNotebookPolling(this.props.projectId, this.props.projectPath, true);
+    this.model.startNotebookPolling(this.props.projectId, this.props.projectSlug, true);
   }
 
   stopNotebookPolling() {
@@ -289,7 +291,7 @@ class StartNotebookServer extends Component {
       store={this.model.reduxStore}
       inherited={this.props} // need to espose them for mapStateToProps, but don't whan to pollute props
       projectId={this.props.projectId}
-      projectPath={this.props.projectPath}
+      projectSlug={this.props.projectSlug}
       justStarted={this.state.starting}
     />;
   }

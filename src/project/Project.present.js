@@ -361,9 +361,9 @@ class ProjectFilesNav extends Component {
       data={this.props.filesTree}
       lineageUrl={this.props.lineagesUrl}
       projectUrl={this.props.fileContentUrl}
-      setOpenFolder={this.props.setOpenFolder} 
+      setOpenFolder={this.props.setOpenFolder}
       hash={this.props.filesTree.hash}
-      fileView={this.props.filesTreeView} 
+      fileView={this.props.filesTreeView}
       currentUrl={this.props.location.pathname}/>;
   }
 }
@@ -624,7 +624,9 @@ class ProjectStartNotebookServer extends Component {
       autosaved={this.props.system.autosaved}
       refreshBranches={this.props.fetchBranches}
       projectId={this.props.core.id}
-      projectPath={this.props.core.displayId}
+      projectSlug={this.props.core.displayId}
+      namespacePath={this.props.core.namespace_path}
+      projectPath={this.props.core.project_path}
       client={this.props.client}
       successUrl={this.props.notebookServersUrl}
       history={this.props.history}
@@ -664,7 +666,7 @@ class ProjectDescription extends Component {
 
   static getDerivedStateFromProps(nextProps, prevState) {
     const update = { value: nextProps.core.description };
-    return { ...prevState, ...update };
+    return { ...update, ...prevState };
   }
 
   handleChange(e) { this.setState({ value: e.target.value }); }
@@ -673,14 +675,14 @@ class ProjectDescription extends Component {
 
   render() {
     const inputField = this.props.settingsReadOnly ?
-      <Input readOnly value={this.state.value} /> :
-      <Input value={this.state.value} onChange={this.onValueChange} />;
+      <Input id="projectDescription" readOnly value={this.state.value} /> :
+      <Input id="projectDescription" value={this.state.value} onChange={this.onValueChange} />;
     let submit = (this.props.core.description !== this.state.value) ?
-      <Button color="primary">Update</Button> :
+      <Button className="mb-3" color="primary">Update</Button> :
       <span></span>
     return <Form onSubmit={this.onSubmit}>
       <FormGroup>
-        <Label for="project_tags">Project Description</Label>
+        <Label for="projectDescription">Project Description</Label>
         {inputField}
         <FormText>A short description for the project</FormText>
       </FormGroup>
