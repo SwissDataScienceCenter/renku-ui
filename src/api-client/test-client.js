@@ -100,6 +100,12 @@ const methods = {
   },
   getNotebookServerUrl: {
     response: null
+  },
+  getProjectTemplates: {
+    response: []
+  },
+  getNotebookServerOptions: {
+    response: {}
   }
 };
 
