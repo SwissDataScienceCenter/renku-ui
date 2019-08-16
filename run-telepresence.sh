@@ -62,7 +62,6 @@ tee > ./public/config.json << EOF
   "BASE_URL": "${BASE_URL}",
   "GATEWAY_URL": "${BASE_URL}/api",
   "WELCOME_PAGE": "${WELCOME_PAGE}",
-  "RENKU_VERSION": "latest",
   "RENKU_TEMPLATES_URL": "https://github.com/SwissDataScienceCenter/renku-project-template",
   "RENKU_TEMPLATES_REF": "master"
 }
