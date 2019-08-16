@@ -50,9 +50,8 @@ class APIClient {
   // ku    -->  issue
 
 
-  constructor(baseUrl, renkuVersion) {
+  constructor(baseUrl) {
     this.baseUrl = baseUrl;
-    this.renkuVersion = renkuVersion;
     this.returnTypes = RETURN_TYPES
     this.graphqlClient = new ApolloClient({
       uri: `${baseUrl}/graphql`

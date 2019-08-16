@@ -19,10 +19,7 @@ configPromise.then((res) => {
     // We use a redux store to hold some global application state.
     const store = createStore(reducer);
 
-    const client = new APIClient(
-      params.GATEWAY_URL,
-      params.RENKU_VERSION
-    );
+    const client = new APIClient(params.GATEWAY_URL);
 
     function mapStateToProps(state, ownProps){
       return {...state, ...ownProps}
