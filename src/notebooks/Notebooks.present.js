@@ -23,8 +23,10 @@ import { Link } from 'react-router-dom';
 import { Form, FormGroup, FormText, Label, Input, Button, Row, Col, Table } from 'reactstrap';
 import { UncontrolledButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { UncontrolledTooltip, UncontrolledPopover, PopoverHeader, PopoverBody } from 'reactstrap';
+import { Badge } from 'reactstrap';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faStopCircle, faExternalLinkAlt, faInfoCircle, faSyncAlt, faCogs } from '@fortawesome/fontawesome-free-solid';
+import { faStopCircle, faExternalLinkAlt, faInfoCircle, faSyncAlt} from '@fortawesome/fontawesome-free-solid';
+import { faCogs, faCog, faExclamationTriangle, faRedo } from '@fortawesome/fontawesome-free-solid';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 import { StatusHelper } from '../model/Model';
@@ -346,17 +348,32 @@ class NotebookServerRowAction extends Component {
 
 // * StartNotebookServer code * //
 class StartNotebookServer extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { ignorePipeline: null };
+  }
+
+  setIgnorePipeline(value) {
+    this.setState({ ignorePipeline: value });
+  }
+
   render() {
     const { branch, commit } = this.props.filters;
     const { branches } = this.props.data;
+    const { pipelines } = this.props;
     const fetching = {
       branches: StatusHelper.isUpdating(branches) ? true : false,
+      pipelines: pipelines.fetching,
       commits: this.props.data.fetching
     }
-    const show = {
-      commits: !fetching.branches && branch.name ? true : false,
-      options: !fetching.branches && branch.name && !fetching.commits && commit.id
-    }
+    let show = {};
+    show.commits = !fetching.branches && branch.name ? true : false;
+    show.pipelines = show.commits && !fetching.commits && commit.id;
+    show.options = show.pipelines && pipelines.fetched && (
+      pipelines.main.status === "success" || pipelines.main.status === undefined
+      || this.state.ignorePipeline
+      || this.props.justStarted
+    );
 
     return (
       <Row>
@@ -365,6 +382,9 @@ class StartNotebookServer extends Component {
           <Form>
             <StartNotebookBranches {...this.props} />
             {show.commits ? <StartNotebookCommits {...this.props} /> : null}
+            {show.pipelines ? <StartNotebookPipelines {...this.props}
+              ignorePipeline={this.state.ignorePipeline}
+              setIgnorePipeline={this.setIgnorePipeline.bind(this)} /> : null}
             {show.options ? <StartNotebookOptions {...this.props} /> : null}
           </Form>
         </Col>
@@ -427,7 +447,7 @@ class StartNotebookBranches extends Component {
       <FormGroup>
         {content}
       </FormGroup>
-    )
+    );
   }
 }
 
@@ -471,6 +491,152 @@ class StartNotebookBranchesOptions extends Component {
         </PopoverBody>
       </UncontrolledPopover>
     ]
+  }
+}
+
+class StartNotebookPipelines extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { justTriggered: false };
+  }
+
+  async retriggerPipeline() {
+    this.setState({ justTriggered: true });
+    await this.props.handlers.retriggerPipeline();
+    this.setState({ justTriggered: false });
+  }
+
+  render() {
+    if (!this.props.pipelines.fetched)
+      return (<Label>Checking Docker image status... <Loader size="14" inline="true" /></Label>);
+    if (this.state.justTriggered)
+      return (<Label>Triggering Docker image build... <Loader size="14" inline="true" /></Label>);
+
+    return (
+      <FormGroup>
+        <StartNotebookPipelinesBadge {...this.props} />
+        <StartNotebookPipelinesContent {...this.props} buildAgain={this.retriggerPipeline.bind(this)} />
+      </FormGroup>
+    );
+  }
+}
+
+class StartNotebookPipelinesBadge extends Component {
+  render() {
+    const pipeline = this.props.pipelines.main;
+    let color, text;
+    if (pipeline.status === "success") {
+      color = "success";
+      text = "available";
+    }
+    else if (pipeline.status === undefined) {
+      color = "danger";
+      text = "not available";
+    }
+    else if (pipeline.status === "running" || pipeline.status === "pending") {
+      color = "warning";
+      text = "building";
+    }
+    else {
+      color = "danger";
+      text = "error";
+    }
+
+    return (<p>Docker Image <Badge color={color}>{text}</Badge></p>);
+  }
+}
+
+class StartNotebookPipelinesContent extends Component {
+  render() {
+    const pipeline = this.props.pipelines.main;
+    if (pipeline.status === "success")
+      return null;
+
+    let content = null;
+    if (pipeline.status === "running" || pipeline.status === "pending") {
+      content = (
+        <Label>
+          <FontAwesomeIcon icon={faCog} spin /> The Docker image for the environment is being built.
+          Please wait a moment...
+          <FormText color="primary">
+            <a href={pipeline.web_url} target="_blank" rel="noreferrer noopener">
+              <FontAwesomeIcon icon={faExternalLinkAlt} /> View pipeline in GitLab.
+            </a>
+          </FormText>
+        </Label>
+      );
+    }
+    else if (pipeline.status === "failed" || pipeline.status === "canceled") {
+      let actions;
+      if (this.props.ignorePipeline || this.props.justStarted) {
+        actions = (
+          <div>
+            <FormText color="text">
+              The base image will be used instead. This may work fine, but it may lead to unexpected errors.
+            </FormText>
+            <FormText color="primary">
+              <a href={pipeline.web_url} target="_blank" rel="noreferrer noopener">
+                <FontAwesomeIcon icon={faExternalLinkAlt} /> View pipeline in GitLab.
+              </a>
+            </FormText>
+          </div>
+        );
+      }
+      else {
+        actions = (
+          <div>
+            <Button color="primary" size="sm" className="mb-1" id="image_build_again"
+              onClick={this.props.buildAgain}>
+              <FontAwesomeIcon icon={faRedo} /> Build again
+            </Button>
+            <UncontrolledPopover trigger="hover" placement="top" target="image_build_again">
+              <PopoverBody>Try this if it is the first time you see this error for this commit.</PopoverBody>
+            </UncontrolledPopover>
+            &nbsp;
+            <Button color="primary" size="sm" className="mb-1" id="image_ignore"
+              onClick={() => { this.props.setIgnorePipeline(true) }}>
+              <FontAwesomeIcon icon={faExclamationTriangle} /> Ignore
+            </Button>
+            <UncontrolledPopover trigger="hover" placement="top" target="image_ignore">
+              <PopoverBody>
+                The base image will be used instead.
+                <br /><FontAwesomeIcon icon={faExclamationTriangle} /> This may work fine, but it may lead
+                to unexpected errors.
+              </PopoverBody>
+            </UncontrolledPopover>
+            &nbsp;
+            <a className="btn btn-primary btn-sm mb-1" target="_blank" rel="noopener noreferrer"
+              href={pipeline.web_url} id="image_check_pipeline">
+              <FontAwesomeIcon icon={faExternalLinkAlt} /> View pipeline in GitLab
+            </a>
+            <UncontrolledPopover trigger="hover" placement="top" target="image_check_pipeline">
+              <PopoverBody>Check the GitLab pipeline. For expert users.</PopoverBody>
+            </UncontrolledPopover>
+          </div>
+        );
+      }
+      content = (
+        <div>
+          <Label key="message">
+            <FontAwesomeIcon icon={faExclamationTriangle} color="red" /> The Docker image build failed.
+          </Label>
+          {actions}
+        </div>
+      );
+    }
+    else if (pipeline.status === undefined) {
+      content = (
+        <Label>
+          <FontAwesomeIcon icon={faExclamationTriangle} /> The base image will be used instead. This may
+          work fine, but it may lead to unexpected errors.
+        </Label>
+      );
+    }
+    else {
+      content = (<Label>Unexpected state, we cannot check the Docker image availability.</Label>);
+    }
+
+    return (<div>{content}</div>);
   }
 }
 

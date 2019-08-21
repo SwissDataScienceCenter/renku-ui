@@ -49,6 +49,17 @@ const notebooksSchema = new Schema({
       displayedCommits: { initial: 10 },
     }
   },
+  pipelines: {
+    schema: {
+      main: { initial: {} },
+      poller: { initial: null },
+      fetched: { initial: null },
+      fetching: { initial: false },
+
+      lastParameters: { initial: null },
+      lastMainId: { initial: null },
+    }
+  },
   data: {
     schema: {
       commits: { initial: [] }, // ! TODO: move to Project pages, shouldn't be here
@@ -59,6 +70,7 @@ const notebooksSchema = new Schema({
 });
 
 const POLLING_INTERVAL = 3000;
+const IMAGE_BUILD_JOB = "image_build";
 
 const ExpectedAnnotations = {
   "renku.io": {
@@ -231,6 +243,86 @@ class NotebooksModel extends StateModel {
     });
   }
 
+  async fetchPipeline() {
+    // check if already fetching data
+    const fetching = this.get('pipelines.fetching');
+    if (fetching)
+      return;
+
+    // get filters and stop fetching if not all parameters are available
+    const filters = this.getQueryFilters();
+    if (filters.branch === null || filters.commit === null) {
+      this.stopPipelinePolling();
+      return;
+    }
+
+    // update current state and start fetching
+    this.setObject({
+      pipelines: {
+        fetching: true,
+        lastParameters: JSON.stringify(filters)
+      }
+    });
+    const projectId = `${filters.namespace}%2F${filters.project}`;
+    const pipelines = await this.client.getPipelines(projectId, filters.commit).catch(error => {
+      this.set('pipelines.fetching', false);
+      throw error;
+    });
+
+    // check if results are outdated
+    let pipelinesState = { fetching: false };
+    const lastParameters = this.get('pipelines.lastParameters');
+    if (lastParameters !== JSON.stringify(filters)) {
+      pipelinesState.fetched = null;
+      this.setObject({ pipelines: pipelinesState });
+      return {};
+    }
+
+    // stop if no pipelines are available
+    let mainPipeline = {}
+    pipelinesState.fetched = new Date();
+    if (pipelines.length === 0) {
+      pipelinesState.lastMainId = null;
+      pipelinesState.main = mainPipeline;
+      this.setObject({ pipelines: pipelinesState });
+      return mainPipeline;
+    }
+
+    // try to use cached data to find image_build pipeline id
+    const lastMainId = this.get('pipelines.lastMainId');
+    if (lastMainId) {
+      const mainPipelines = pipelines.filter(pipeline => pipeline.id === lastMainId);
+      if (mainPipelines.length === 1) {
+        mainPipeline = mainPipelines[0];
+        pipelinesState.main = mainPipeline;
+        this.setObject({ pipelines: pipelinesState });
+        return mainPipeline;
+      }
+    }
+
+    // search for the proper pipeline
+    for (let pipeline of pipelines) {
+      // fetch jobs
+      const jobs = await this.client.getPipelineJobs(projectId, pipeline.id).catch(error => {
+        this.set('pipelines.fetching', false);
+        throw error;
+      });
+      const imageJobs = jobs.filter(job => job.name === IMAGE_BUILD_JOB);
+      if (imageJobs.length > 0) {
+        mainPipeline = pipeline;
+        pipelinesState.lastMainId = pipeline.id;
+        pipelinesState.main = mainPipeline;
+        this.setObject({ pipelines: pipelinesState });
+        return mainPipeline;
+      }
+    }
+
+    pipelinesState.lastMainId = null;
+    pipelinesState.main = mainPipeline;
+    this.setObject({ pipelines: pipelinesState });
+    return mainPipeline;
+  }
+
 
   // * Handle polling * //
   startNotebookPolling() {
@@ -250,6 +342,31 @@ class NotebooksModel extends StateModel {
     const poller = this.get('notebooks.poller');
     if (poller) {
       this.set('notebooks.poller', null);
+      clearTimeout(poller);
+    }
+  }
+
+  startPipelinePolling() {
+    // start polling or invalidate previous data
+    const oldPoller = this.get('pipelines.poller');
+    if (oldPoller == null) {
+      const newPoller = setInterval(() => {
+        this.fetchPipeline();
+      }, POLLING_INTERVAL);
+      this.set('pipelines.poller', newPoller);
+
+      // fetch immediatly
+      return this.fetchPipeline();
+    }
+    else {
+      this.set('pipelines.fetched', null);
+    }
+  }
+
+  stopPipelinePolling() {
+    const poller = this.get('pipelines.poller');
+    if (poller) {
+      this.set('pipelines.poller', null);
       clearTimeout(poller);
     }
   }

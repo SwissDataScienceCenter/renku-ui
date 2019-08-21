@@ -29,6 +29,7 @@ import addKuMethods  from './ku';
 import addInstanceMethods from './instance';
 import addNotebookServersMethods from './notebook-servers';
 import addGraphMethods from './graph';
+import addPipelineMethods from './pipeline';
 
 import testClient from './test-client'
 
@@ -64,6 +65,7 @@ class APIClient {
     addInstanceMethods(this);
     addNotebookServersMethods(this);
     addGraphMethods(this);
+    addPipelineMethods(this);
   }
 
   // A fetch method which is attached to a API client instance so that it can

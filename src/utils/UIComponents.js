@@ -202,6 +202,9 @@ class ExternalLink extends Component {
     if (this.props.disabled) {
       className += " disabled";
     }
+    if (this.props.className) {
+      className += ` ${this.props.className}`;
+    }
     return <a href={this.props.url}
       className={className} role="button" target="_blank"
       rel="noreferrer noopener">{this.props.title}</a>

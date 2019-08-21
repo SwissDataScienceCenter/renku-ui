@@ -27,13 +27,13 @@ import { StatusHelper } from '../model/Model'
 /**
  * Displays a start page for new Jupiterlab servers.
  * 
- * @param {Object} client   api-client used to query the gateway
- * @param {Object[]} branches   Branches as returned by gitlab "/branches" API - no autosaved branches
- * @param {Object[]} autosaved   Autosaved branches
- * @param {function} refreshBranches   Function to invoke to refresh the list of branches
- * @param {Object} scope    object containing filtering parameters
- * @param {string} scope.namespace    full path of the reference namespace
- * @param {string} scope.project    path of the reference project
+ * @param {Object} client - api-client used to query the gateway
+ * @param {Object[]} branches - Branches as returned by gitlab "/branches" API - no autosaved branches
+ * @param {Object[]} autosaved - Autosaved branches
+ * @param {function} refreshBranches - Function to invoke to refresh the list of branches
+ * @param {Object} scope - object containing filtering parameters
+ * @param {string} scope.namespace - full path of the reference namespace
+ * @param {string} scope.project - path of the reference project
  * @param {string} [successUrl] - redirect url to be used when a notebook is succesfully started
  * @param {Object} [history] - mandatory if successUrl is provided
  */
@@ -49,6 +49,7 @@ class StartNotebookServer extends Component {
     this.handlers = {
       refreshBranches: this.refreshBranches.bind(this),
       refreshCommits: this.refreshCommits.bind(this),
+      retriggerPipeline: this.retriggerPipeline.bind(this),
       setBranch: this.selectBranch.bind(this),
       setCommit: this.selectCommit.bind(this),
       toggleMergedBranches: this.toggleMergedBranches.bind(this),
@@ -65,12 +66,13 @@ class StartNotebookServer extends Component {
 
   componentDidMount() {
     this._isMounted = true;
-    this.model.startNotebookPolling(true);
+    this.model.startNotebookPolling();
     this.refreshBranches();
   }
 
   componentWillUnmount() {
     this.model.stopNotebookPolling();
+    this.model.stopPipelinePolling();
     this._isMounted = false;
   }
 
@@ -164,8 +166,22 @@ class StartNotebookServer extends Component {
       }
 
       this.model.setCommit(commit);
+      this.refreshPipelines();
+    }
+  }
+
+  async refreshPipelines() {
+    if (this._isMounted) {
+      await this.model.startPipelinePolling();
       this.model.fetchNotebookOptions();
     }
+  }
+
+  async retriggerPipeline() {
+    const projectSlug = `${this.props.scope.namespace}%2F${this.props.scope.project}`;
+    const pipelineId = this.model.get('pipelines.main.id');
+    await this.props.client.retryPipeline(projectSlug, pipelineId);
+    return this.refreshPipelines();
   }
 
   setServerOptionFromEvent(option, event) {
@@ -228,13 +244,13 @@ class StartNotebookServer extends Component {
 /**
  * Display the list of Notebook servers
  * 
- * @param {Object} client   api-client used to query the gateway
- * @param {boolean} standalone   Indicates whether it's displayed as standalone
- * @param {Object} [scope]    object containing filtering parameters
- * @param {string} [scope.namespace]    full path of the reference namespace
- * @param {string} [scope.project]    path of the reference project
- * @param {string} [scope.branch]   branch name
- * @param {string} [scope.commit]   commit full id
+ * @param {Object} client - api-client used to query the gateway
+ * @param {boolean} standalone - Indicates whether it's displayed as standalone
+ * @param {Object} [scope] - object containing filtering parameters
+ * @param {string} [scope.namespace] - full path of the reference namespace
+ * @param {string} [scope.project] - path of the reference project
+ * @param {string} [scope.branch] - branch name
+ * @param {string} [scope.commit] - commit full id
  */
 class Notebooks extends Component {
   constructor(props) {
