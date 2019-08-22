@@ -34,7 +34,18 @@ describe('Time class helper', () => {
     ISO_READABLE_DATETIME: "2019-03-11 09:34:51",
     ISO_READABLE_DATE: "2019-03-11",
     ISO_READABLE_TIME: "09:34:51"
-  } 
+  };
+
+  const DatesTimezoneFriendly = {
+    Plus: {
+      UTCZ_STRING: "2019-08-23T18:00:00.000Z",
+      ISO_READABLE_DATETIME: "2019-08-23 18:00:00",
+    },
+    Minus: {
+      UTCZ_STRING: "2019-08-23T06:00:00.000Z",
+      ISO_READABLE_DATETIME: "2019-08-23 06:00:00",
+    }
+  };
 
   it('function isDate', () => {
     expect(Time.isDate(Dates.NOW)).toBeTruthy();
@@ -47,13 +58,54 @@ describe('Time class helper', () => {
     expect(Time.parseDate(Dates.UTCZ_STRING)).toEqual(new Date(Dates.UTCZ_STRING));
     expect(() => { Time.parseDate(Dates.INVALID) }).toThrow("Invalid date");
   });
-  it('function toISOString', () => {
-    expect(Time.toISOString(Dates.UTCZ_STRING)).toEqual(Dates.ISO_READABLE_DATETIME);
-    expect(Time.toISOString(Dates.UTCZ_STRING, "datetime")).toEqual(Dates.ISO_READABLE_DATETIME);
-    expect(Time.toISOString(Dates.UTCZ_STRING, "date")).toEqual(Dates.ISO_READABLE_DATE);
-    expect(Time.toISOString(Dates.UTCZ_STRING, "time")).toEqual(Dates.ISO_READABLE_TIME);
+  it('function toIsoString', () => {
+    expect(Time.toIsoString(Dates.UTCZ_STRING)).toEqual(Dates.ISO_READABLE_DATETIME);
+    expect(Time.toIsoString(Dates.UTCZ_STRING, "datetime")).toEqual(Dates.ISO_READABLE_DATETIME);
+    expect(Time.toIsoString(Dates.UTCZ_STRING, "date")).toEqual(Dates.ISO_READABLE_DATE);
+    expect(Time.toIsoString(Dates.UTCZ_STRING, "time")).toEqual(Dates.ISO_READABLE_TIME);
     const fakeType = "not existing"
-    expect(() => { Time.toISOString(Dates.UTCZ_STRING, fakeType) }).toThrow(`Uknown type "${fakeType}"`);
+    expect(() => { Time.toIsoString(Dates.UTCZ_STRING, fakeType) }).toThrow(`Uknown type "${fakeType}"`);
+
+    expect(Time.toIsoString(DatesTimezoneFriendly.Minus.UTCZ_STRING))
+      .toEqual(DatesTimezoneFriendly.Minus.ISO_READABLE_DATETIME);
+    expect(Time.toIsoString(DatesTimezoneFriendly.Minus.UTCZ_STRING))
+      .toEqual(DatesTimezoneFriendly.Minus.ISO_READABLE_DATETIME);
+  });
+  it('function toIsoTimezoneString', () => {
+    // Create the string manually. It's a creepy logic, but here string manipulation seems to be
+    // a valid way to avoid re-writing function code in the test.
+    const positive = (new Date().getTimezoneOffset()) >= 0 ?
+      true :
+      false;
+    const DatesTimezone = positive ?
+      DatesTimezoneFriendly.Plus :
+      DatesTimezoneFriendly.Minus;
+    const date = new Date(DatesTimezone.UTCZ_STRING)
+    const deltaHours = Math.abs(parseInt(date.getTimezoneOffset() / 60))
+    const deltaMinutes = Math.abs(date.getTimezoneOffset()) - (deltaHours * 60)
+    let expectedString = DatesTimezone.ISO_READABLE_DATETIME
+    if (deltaHours) {
+      let hour = parseInt(expectedString.substring(11, 13));
+      if (positive) {
+        hour = hour - deltaHours;
+        if (deltaMinutes)
+          hour--;
+      }
+      else {
+        hour = hour + deltaHours;
+      }
+      let stringHour = `0${hour}`.substring(0, 2);
+      expectedString = expectedString.substring(0, 11) + stringHour + expectedString.substring(13);
+    }
+    if (deltaMinutes) {
+      let minute = parseInt(expectedString.substring(14, 16));
+      minute = positive ?
+        minute - deltaMinutes :
+        minute + deltaMinutes;
+      let stringMinute = `0${minute}`.substring(0, 2);
+      expectedString = expectedString.substring(0, 14) + stringMinute + expectedString.substring(16);
+    }
+    expect(Time.toIsoTimezoneString(DatesTimezone.UTCZ_STRING)).toEqual(expectedString);
   });
 });
 

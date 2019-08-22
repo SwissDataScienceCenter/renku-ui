@@ -41,7 +41,7 @@ class Time {
     throw(new Error("Invalid date"));
   }
 
-  static toISOString(inputDate, type="datetime") {
+  static toIsoString(inputDate, type="datetime") {
     const date = this.parseDate(inputDate);
     const readableDate = date.toISOString().substring(0, 19).replace("T", " ");
     if (type === "datetime") {
@@ -56,6 +56,13 @@ class Time {
     else {
       throw(new Error(`Uknown type "${type}"`));
     }
+  }
+
+  static toIsoTimezoneString(inputDate, type="datetime") {
+    // add the timezone manually and then convert to ISO string
+    const date = this.parseDate(inputDate);
+    const isoDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
+    return this.toIsoString(isoDate, type);
   }
 }
 

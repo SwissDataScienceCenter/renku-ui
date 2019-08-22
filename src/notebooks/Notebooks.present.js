@@ -652,7 +652,7 @@ class StartNotebookCommits extends Component {
       commits;
     const commitOptions = filteredCommits.map((commit) => {
       return <option key={commit.id} value={commit.id}>
-        {commit.short_id} - {commit.author_name} - {Time.toISOString(commit.committed_date)}
+        {commit.short_id} - {commit.author_name} - {Time.toIsoTimezoneString(commit.committed_date)}
       </option>
     });
     return (
