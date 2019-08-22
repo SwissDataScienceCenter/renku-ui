@@ -75,11 +75,6 @@ const methods = {
       data: []
     }
   },
-  getJobs: {
-    response: {
-      data: []
-    }
-  },
   getNamespaces: {
     response: {
       data: samples.namespaces

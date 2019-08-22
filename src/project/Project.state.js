@@ -285,16 +285,6 @@ class ProjectModel extends StateModel {
 
     })
   }
-
-  fetchCIJobs(client, id) {
-    this.setUpdating({system: {ci_jobs: true}});
-    client.getJobs(id)
-      .then(resp => resp.data)
-      .then((d) => {
-        this.set('system.ci_jobs', d)
-      })
-      .catch((error) => this.set('system.ci_jobs', []));
-  }
 }
 
 export { ProjectModel, GraphIndexingStatus };

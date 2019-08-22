@@ -374,15 +374,6 @@ function addProjectMethods(client) {
       })
   }
 
-  client.getJobs = (projectId) => {
-    let headers = client.getBasicHeaders();
-    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/jobs`, {
-      method: 'GET',
-      headers,
-      queryParams: { per_page: 100 }
-    }, 'json', false)
-  }
-
   client.getProjectTemplates = (renkuTemplatesUrl, renkuTemplatesRef) => {
     const formatedApiURL = getApiURLfromRepoURL(renkuTemplatesUrl);
     return fetchJson(`${formatedApiURL}/git/trees/${renkuTemplatesRef}`)

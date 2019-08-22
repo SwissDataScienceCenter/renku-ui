@@ -53,20 +53,6 @@ import { ACCESS_LEVELS } from '../api-client';
 
 import './Project.css';
 
-const imageBuildStatusText = {
-  failed: 'No notebook image has been built. You can still open a notebook server with the default image.',
-  canceled: 'The notebook image build has been cancelled.  You can still open a notebook server with the default image',
-  running: 'The notebook image build is still ongoing. Wait a bit before launching a notebook...',
-  pending: 'The notebook image build is still pending. Wait a bit before launching a notebook...'
-};
-
-const imageBuildAlertColor = {
-  failed: 'danger',
-  canceled: 'danger',
-  running: 'warning',
-  pending: 'warning'
-};
-
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
   const result = paths.filter(p => blacklist.every(b => p.match(b) === null))
@@ -84,16 +70,6 @@ function webhookError(props) {
     return false;
   }
   return true;
-}
-
-class ImageBuildInfoBadge extends Component {
-  render() {
-    const imageBuild = this.props.imageBuild || { status: 'success' };
-    if (imageBuild.status === 'success') return null;
-    return <Link className={`badge badge-${imageBuildAlertColor[imageBuild.status]}`}
-      title={imageBuildStatusText[imageBuild.status] || imageBuildStatusText['failed']}
-      to={this.props.notebooksUrl}>Notebooks</Link>
-  }
 }
 
 class ProjectVisibilityLabel extends Component {
@@ -289,9 +265,6 @@ class ProjectViewHeaderOverview extends Component {
                 }
               </div>
             </div>
-            <p className="text-md-right">
-              <ImageBuildInfoBadge notebooksUrl={this.props.notebooksUrl} imageBuild={this.props.imageBuild} />
-            </p>
           </Col>
         </Row>
         <KnowledgeGraphIntegrationWarningBanner {...this.props} />
