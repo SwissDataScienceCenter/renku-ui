@@ -77,13 +77,20 @@ class App extends Component {
 
               {/*TODO: This route should be handled by <Route path="/projects/:id(\d+)" too. Until this is the
                  TODO: case, the ku_new route must be listed BEFORE the project one.   */}
-              <Route exact path="/projects/:projectId(\d+)/ku_new"
-                render={(p) => <Ku.New key="ku_new" client={this.props.client} {...p}/>}/>
+              <Route exact path="/projects/:projectNamespace/:projectName/ku_new"
+                render={(p) => <Ku.New key="ku_new" projectPathWithNamespace={`${p.match.params.projectNamespace}/${p.match.params.projectName}`} client={this.props.client} {...p}/>}/>
               {/* pull out the underlying parts of the url and pass them to the project view */}
-              <Route path="/projects/:id(\d+)"
-                render={p => <Project.View key="project" id={p.match.params.id} {...p}
+              <Route path="/projects/:projectNamespace/:projectName"
+                render={p => <Project.View key={`${p.match.params.projectNamespace}/${p.match.params.projectName}`} projectPathWithNamespace={`${p.match.params.projectNamespace}/${p.match.params.projectName}`} {...p}
                   user={this.props.userState.getState().user} userStateDispatch={this.props.userState.dispatch}
-                  client={this.props.client} params={this.props.params}/>}/>
+                  client={this.props.client} params={this.props.params}/>}
+              />
+              <Route path="/projects/:id(\d+)"
+                render={p =>  <Project.View key={`${p.match.params.id}`} projectId={`${p.match.params.id}`} {...p}
+                  user={this.props.userState.getState().user} userStateDispatch={this.props.userState.dispatch}
+                  client={this.props.client} params={this.props.params}/>
+                }
+              />
               <Route path="/projects" render={
                 p => <Project.List
                   key="projects"
@@ -94,11 +101,11 @@ class App extends Component {
               }/>
               <Route exact path="/project_new"
                 render={(p) =>
-                  <Project.New key="project_new" 
+                  <Project.New key="project_new"
                     client={this.props.client}
-                    user={this.props.userState.getState().user} 
-                    renkuTemplatesUrl={this.props.params['RENKU_TEMPLATES_URL']} 
-                    renkuTemplatesRef={this.props.params['RENKU_TEMPLATES_REF']} 
+                    user={this.props.userState.getState().user}
+                    renkuTemplatesUrl={this.props.params['RENKU_TEMPLATES_URL']}
+                    renkuTemplatesRef={this.props.params['RENKU_TEMPLATES_REF']}
                     {...p}/> }/>
               <Route exact path="/notebooks"
                 render={p => <Notebooks key="notebooks" standalone={true}

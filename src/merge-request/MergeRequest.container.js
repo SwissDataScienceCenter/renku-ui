@@ -43,7 +43,7 @@ class MergeRequestContainer extends Component {
     this.props.client.mergeMergeRequest(this.props.projectId, this.props.iid)
       .then(() => {
         this.props.updateProjectState();
-        this.props.history.push(`/projects/${this.props.projectId}/pending`)
+        this.props.history.push(`/projects/${this.props.projectPathWithNamespace}/pending`)
       });
   }
 

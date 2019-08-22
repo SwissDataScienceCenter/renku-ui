@@ -32,7 +32,7 @@ import faPlus from '@fortawesome/fontawesome-free-solid/faPlus'
 
 import logo from './logo.svg';
 import { RenkuNavLink, Loader } from '../utils/UIComponents'
-import { getActiveProjectId } from '../utils/HelperFunctions'
+import { getActiveProjectPathWithNamespace } from '../utils/HelperFunctions'
 import QuickNav from '../utils/quicknav'
 
 import './NavBar.css';
@@ -97,8 +97,10 @@ class LoggedInNavBar extends Component {
   }
   render() {
     // Display the Ku/Notebook server related header options only if a project is active.
-    const activeProjectId = getActiveProjectId(this.props.location.pathname);
-    const kuDropdown = activeProjectId ? <RenkuNavLink to={`/projects/${activeProjectId}/ku_new`} title="Ku" /> : null;
+    const activeProjectPathWithNamespace = getActiveProjectPathWithNamespace(this.props.location.pathname);
+    const kuDropdown = activeProjectPathWithNamespace ?
+      <RenkuNavLink to={`/projects/${activeProjectPathWithNamespace}/ku_new`} title="Ku" />
+      : null;
     // TODO If there is is an active project, show it in the navbar
 
     return (
@@ -163,7 +165,7 @@ class AnonymousNavBar extends Component {
 
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <QuickNav user={this.props.userState.getState().user} client={this.props.client}/>
-            
+
             <ul className="navbar-nav mr-auto">
               <RenkuNavLink to="/projects" title="Projects"/>
             </ul>

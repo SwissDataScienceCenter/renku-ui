@@ -18,7 +18,7 @@
 
 import React, { Component } from 'react';
 import { Link, Route, Switch }  from 'react-router-dom';
-import { Row, Col } from 'reactstrap';
+import { Row, Col, Alert } from 'reactstrap';
 import { Button, Form, InputGroup, FormText, Input, Label } from 'reactstrap';
 import { Nav, NavItem, InputGroupButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap';
 
@@ -33,7 +33,7 @@ class ProjectListRow extends Component {
   render() {
     const projectsUrl = this.props.projectsUrl;
     const title =
-      <Link to={`${projectsUrl}/${this.props.id}`}>
+      <Link to={`${projectsUrl}/${this.props.path_with_namespace}`}>
         {this.props.path_with_namespace || 'no title'}
       </Link>
     const description = this.props.description !== '' ? this.props.description : 'No description available';
@@ -199,6 +199,23 @@ class ProjectsSearch extends Component {
   }
 }
 
+class NotFoundInsideProject extends Component {
+  render(){
+    return <Col key="nofound">
+      <Row>
+        <Col xs={12} md={12}>
+          <Alert color="primary">
+            <h4>404 - Page not found</h4>
+          The URL
+            <strong> { this.props.location.pathname.replace(this.props.match.url,'') } </strong>
+           is not a subpath of <strong>/projects</strong>. You can navigate through renku projects using the tabs on top.
+          </Alert>
+        </Col>
+      </Row>
+    </Col>
+  }
+}
+
 class ProjectList extends Component {
   render() {
     const hasUser = this.props.user.id ? true : false;
@@ -249,6 +266,7 @@ class ProjectList extends Component {
                     displayProjects={memberProjects}
                     loading={loading}
                     emptyListText="You are logged in, but you have not yet created any projects. " />} />
+                <Route component={NotFoundInsideProject} />
               </Switch>
               :
               <Switch>
@@ -262,6 +280,7 @@ class ProjectList extends Component {
                   render= { props => <ProjectsSearch loggedOutMessage="You need to be logged in to be able to see a list with your own projects, therefore we will display all projects for you to explore." {...this.props} />} />
                 <Route exact path={urlMap.projectsUrl}
                   render= { props => <ProjectsSearch {...this.props} />} />
+                <Route component={NotFoundInsideProject} />
               </Switch>
           }
         </Col>

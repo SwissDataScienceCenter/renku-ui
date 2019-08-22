@@ -29,11 +29,11 @@ function addKuMethods(client) {
   }
 
 
-  client.postProjectKu = (projectId, ku) => {
+  client.postProjectKu = (projectPathWithNamespace, ku) => {
     let headers = client.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/issues`, {
+    return client.clientFetch(`${client.baseUrl}/projects/${encodeURIComponent(projectPathWithNamespace)}/issues`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify(ku)

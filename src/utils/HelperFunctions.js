@@ -23,9 +23,11 @@ const AUTOSAVED_PREFIX = "renku/autosave/";
 
 const slugFromTitle = (title) => title.replace(/\s/g, '-').toLowerCase();
 
-function getActiveProjectId(currentPath) {
+function getActiveProjectPathWithNamespace(currentPath) {
   try {
-    return currentPath.match(/\/projects\/(\d+)/)[0].replace('/projects/', '')
+    if(currentPath.includes('/projects/') && currentPath.split('/').length > 3 ){
+      return currentPath.split('/')[1]+'/'+currentPath.split('/')[2]
+    } return null;
   } catch(TypeError) {
     return null
   }
@@ -44,4 +46,4 @@ function splitAutosavedBranches(branches) {
   return { standard, autosaved };
 }
 
-export { slugFromTitle, getActiveProjectId, splitAutosavedBranches }
+export { slugFromTitle, getActiveProjectPathWithNamespace, splitAutosavedBranches }

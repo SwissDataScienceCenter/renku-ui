@@ -282,7 +282,7 @@ class ProjectViewHeader extends Component {
       Object.keys(this.props.system.forked_from_project).length > 0) {
       const forkedFrom = this.props.system.forked_from_project;
       const projectsUrl = this.props.projectsUrl;
-      forkedFromLink = <Link key="forkedfrom" to={`${projectsUrl}/${forkedFrom.metadata.core.id}`}>
+      forkedFromLink = <Link key="forkedfrom" to={`${projectsUrl}/${forkedFrom.metadata.core.path_with_namespace}`}>
         {forkedFrom.metadata.core.path_with_namespace || 'no title'}
       </Link>;
     }
@@ -612,7 +612,7 @@ class ProjectNotebookServers extends Component {
         client={this.props.client}
         scope={{namespace: this.props.core.namespace_path, project: this.props.core.project_path}}
       />,
-      <Link key="launch" to={ `/projects/${this.props.id}/launchNotebook` }>
+      <Link key="launch" to={ `/projects/${this.props.projectPathWithNamespace}/launchNotebook` }>
         <Button color="primary">Start new server</Button>
       </Link>
     ];
@@ -750,7 +750,7 @@ class ProjectViewNotFound extends Component {
         <h1>Error 404</h1>
         <h3>Project not found <FontAwesomeIcon icon={faSearch} flip="horizontal" /></h3>
         <div>&nbsp;</div>
-        <p>We could not find project #{this.props.id}.</p>
+        <p>We could not find project with path {this.props.projectPathWithNamespace}.</p>
         <p>
           It is possible that the project has been deleted by its owner or you don&apos;t have permission to access it.
         </p>
@@ -765,7 +765,7 @@ class ProjectViewLoading extends Component {
     return <Container fluid>
       <Row>
         <Col>
-          <h3>Loading project #{this.props.id}...</h3>
+          <h3>Loading project {this.props.projectPathWithNamespace}...</h3>
           <Loader />
         </Col>
       </Row>
@@ -773,16 +773,36 @@ class ProjectViewLoading extends Component {
   }
 }
 
+class NotFoundInsideProject extends Component {
+  render(){
+    return <Col key="nofound">
+      <Row>
+        <Col xs={12} md={12}>
+          <Alert color="primary">
+            <h4>404 - Page not found</h4>
+            The URL
+            <strong> { this.props.location.pathname.replace(this.props.match.url,'') } </strong>
+            was not found inside this project. You can explore the current project using the tabs on top.
+          </Alert>
+        </Col>
+      </Row>
+    </Col>
+  }
+}
+
 class ProjectView extends Component {
 
   render() {
     const available = this.props.core ? this.props.core.available : null;
-    if (available === null || available === SpecialPropVal.UPDATING) {
-      return <ProjectViewLoading id={ this.props.id } />
+    const projectPathWithNamespaceOrId = this.props.projectPathWithNamespace? 
+      this.props.projectPathWithNamespace 
+      : this.props.projectId;
+    if ((available === null && this.props.projectId === null) || available === SpecialPropVal.UPDATING) {
+      return <ProjectViewLoading projectPathWithNamespace={ projectPathWithNamespaceOrId } />
     }
-    else if (available === false) {
+    else if (available === false || (available === null && this.props.projectId !== null)) {
       const logged = this.props.user.id ? true : false;
-      return <ProjectViewNotFound id={ this.props.id } logged={ logged } />
+      return <ProjectViewNotFound projectPathWithNamespace={ projectPathWithNamespaceOrId } logged={ logged } />
     }
     else {
       return [
@@ -791,22 +811,25 @@ class ProjectView extends Component {
         <Row key="space"><Col key="space" xs={12}>&nbsp;</Col></Row>,
         <Container key="content" fluid>
           <Row>
-            <Route exact path={this.props.baseUrl}
-              render={props => <ProjectViewOverview key="overview" {...this.props} />} />
-            <Route path={this.props.overviewUrl}
-              render={props => <ProjectViewOverview key="overview" {...this.props} />} />
-            <Route path={this.props.kusUrl}
-              render={props => <ProjectViewKus key="kus" {...this.props} />} />
-            <Route path={this.props.filesUrl}
-              render={props => <ProjectViewFiles key="files" {...this.props} />} />
-            <Route path={this.props.settingsUrl}
-              render={props => <ProjectSettings key="settings" {...this.props} />} />
-            <Route path={this.props.mrOverviewUrl}
-              render={props => <ProjectMergeRequestList key="files-changes" {...this.props} />} />
-            <Route path={this.props.notebookServersUrl}
-              render={props => <ProjectNotebookServers key="notebook-servers" {...this.props} />} />
-            <Route path={this.props.launchNotebookUrl}
-              render={props => <ProjectStartNotebookServer key="start-server" {...this.props} />}/>
+            <Switch>
+              <Route exact path={this.props.baseUrl}
+                render={props => <ProjectViewOverview key="overview" {...this.props} />} />
+              <Route path={this.props.overviewUrl}
+                render={props => <ProjectViewOverview key="overview" {...this.props} />} />
+              <Route path={this.props.kusUrl}
+                render={props => <ProjectViewKus key="kus" {...this.props} />} />
+              <Route path={this.props.filesUrl}
+                render={props => <ProjectViewFiles key="files" {...this.props} />} />
+              <Route path={this.props.settingsUrl}
+                render={props => <ProjectSettings key="settings" {...this.props} />} />
+              <Route path={this.props.mrOverviewUrl}
+                render={props => <ProjectMergeRequestList key="files-changes" {...this.props} />} />
+              <Route path={this.props.notebookServersUrl}
+                render={props => <ProjectNotebookServers key="notebook-servers" {...this.props} />} />
+              <Route path={this.props.launchNotebookUrl}
+                render={props => <ProjectStartNotebookServer key="start-server" {...this.props} />}/>
+              <Route component={NotFoundInsideProject} />
+            </Switch>
           </Row>
         </Container>
       ]

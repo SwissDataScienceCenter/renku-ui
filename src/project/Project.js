@@ -50,10 +50,30 @@ class View extends Component {
     this.projectState = new ProjectModel(StateKind.REDUX);
   }
 
+  componentWillMount(){
+    if(this.props.projectPathWithNamespace === undefined && this.props.projectId !== undefined){
+      this.redirectProjectWithNumericId();
+    }
+  }
+
   componentDidMount() {
-    // fetch only if user data are already loaded
-    if (this.props.user.available === true) {
-      this.fetchAll();
+    if(this.props.projectPathWithNamespace !== undefined){
+      // fetch only if user data are already loaded
+      if (this.props.user.available === true) {
+        this.fetchAll();
+      }
+
+      // in case the route fails it tests weather it could be a projectid route
+      const routes=['overview','kus','ku_new','files','lineage','notebooks',
+        'data','workflows','settings','pending','launchNotebook','notebookServers'];
+      const available = this.props.core ? this.props.core.available : null;
+      const potentialProjectId = this.props.projectPathWithNamespace.split('/')[0];
+      const potentialRoute = this.props.projectPathWithNamespace.split('/')[1];
+
+      if(!available && !isNaN(potentialProjectId) && routes.indexOf(potentialRoute) > 0){
+        this.redirectAfterFetchFails(this.props.projectPathWithNamespace,
+          this.props.location.pathname.replace("/projects/"+potentialProjectId,''));
+      }
     }
   }
 
@@ -64,33 +84,48 @@ class View extends Component {
     }
   }
 
-  async fetchProject() { return this.projectState.fetchProject(this.props.client, this.props.id); }
-  async fetchReadme() { return this.projectState.fetchReadme(this.props.client, this.props.id); }
-  async fetchMergeRequests() { return this.projectState.fetchMergeRequests(this.props.client, this.props.id); }
-  async fetchModifiedFiles() { return this.projectState.fetchModifiedFiles(this.props.client, this.props.id); }
-  async fetchBranches() { return this.projectState.fetchBranches(this.props.client, this.props.id); }
-  async createGraphWebhook() { return this.projectState.createGraphWebhook(this.props.client, this.props.id); }
+  async fetchProject() { return this.projectState.fetchProject(this.props.client, this.props.projectPathWithNamespace);}
+  async fetchReadme() { return this.projectState.fetchReadme(this.props.client); }
+  async fetchMergeRequests() { return this.projectState.fetchMergeRequests(this.props.client); }
+  async fetchModifiedFiles() { return this.projectState.fetchModifiedFiles(this.props.client); }
+  async fetchBranches() { return this.projectState.fetchBranches(this.props.client); }
+  async createGraphWebhook() { return this.projectState.createGraphWebhook(this.props.client); }
   async stopCheckingWebhook() { this.projectState.stopCheckingWebhook(); }
-  async fetchGraphWebhook() { this.projectState.fetchGraphWebhook(this.props.client, this.props.id, this.props.user); }
+  async fetchGraphWebhook() { this.projectState.fetchGraphWebhook(this.props.client, this.props.user); }
   async fetchProjectFilesTree() {
-    return this.projectState.fetchProjectFilesTree(this.props.client, this.props.id, this.cleanCurrentURL());
+    return this.projectState.fetchProjectFilesTree(this.props.client, this.cleanCurrentURL());
   }
   async setProjectOpenFolder(filepath) {
-    this.projectState.setProjectOpenFolder(this.props.client, this.props.id, filepath);
+    this.projectState.setProjectOpenFolder(this.props.client, filepath);
   }
-  async fetchGraphStatus() { return this.projectState.fetchGraphStatus(this.props.client, this.props.id); }
+  async fetchGraphStatus() { return this.projectState.fetchGraphStatus(this.props.client); }
 
   async fetchAll() {
-    await this.fetchProject();
+    if(this.props.projectPathWithNamespace)
+      await this.fetchProject();
     if (this.props.user.id)
       this.checkGraphWebhook();
+  }
+
+  redirectProjectWithNumericId(){
+    this.props.client.getProjectById(this.props.projectId)
+      .then((project)=> {
+        this.props.history.push('/projects/'+project.data.metadata.core.path_with_namespace);
+      });
+  }
+
+  redirectAfterFetchFails(projectPathWithNamespace, urlInsideProject){
+    this.props.client.getProjectById(projectPathWithNamespace.split('/')[0])
+      .then((project)=> {
+        this.props.history.push('/projects/'+project.data.metadata.core.path_with_namespace+urlInsideProject);
+      })
   }
 
   cleanCurrentURL(){
     const subUrls = this.getSubUrls();
     if (subUrls.filesUrl === this.props.location.pathname || subUrls.filesUrl + '/' === this.props.location.pathname)
       return ""
-    else 
+    else
       return this.props.location.pathname
         .replace(this.props.match.projectPath, "")
         .replace(subUrls.lineagesUrl, "")
@@ -110,20 +145,19 @@ class View extends Component {
       false;
     this.projectState.set('webhook.possible', webhookCreator);
     if (webhookCreator) {
-      this.projectState.fetchGraphWebhookStatus(this.props.client, this.props.id);
+      this.projectState.fetchGraphWebhookStatus(this.props.client);
     }
   }
 
-  getStarred(user, projectId) {
+  getStarred(user) {
     if (user && user.starredProjects) {
-      return user.starredProjects.map((project) => project.id).indexOf(projectId) >= 0
+      return user.starredProjects.map((project) => project.id).indexOf(this.projectState.get('core.id')) >= 0
     }
   }
 
   getSubUrls() {
-    // For exact matches, we strip the trailing / from the baseUrl
     const match = this.props.match;
-    const baseUrl = match.isExact ? match.url.slice(0, -1) : match.url;
+    const baseUrl =  match.url.endsWith('/') ? match.url.slice(0, -1) : match.url;
     const filesUrl = `${baseUrl}/files`;
     const fileContentUrl = `${filesUrl}/blob`;
 
@@ -182,10 +216,11 @@ class View extends Component {
       true :
       false;
     const forkModalOpen = this.projectState.get('forkModalOpen');
+    const projectPathWithNamespace = this.projectState.get('core.path_with_namespace');
     // Access to the project state could be given to the subComponents by connecting them here to
     // the projectStore. This is not yet necessary.
     const subUrls = this.getSubUrls();
-    const subProps = {...ownProps, projectId, accessLevel, externalUrl, filesTree, forkModalOpen};
+    const subProps = {...ownProps, projectId, accessLevel, externalUrl, filesTree, projectPathWithNamespace, forkModalOpen};
 
     const mapStateToProps = (state, ownProps) => {
       return {
@@ -203,12 +238,12 @@ class View extends Component {
       kuView: (p) => <Ku.View key="ku" {...subProps}
         kuIid={p.match.params.kuIid}
         updateProjectView={updateProjectView}
-        projectPath={this.projectState.get('core.path_with_namespace')} />,
+        projectPath={projectPathWithNamespace} />,
       /* TODO Should we handle each type of file or just have a generic project files viewer? */
 
       lineageView: (p) => <FileLineage key="lineage" {...subProps}
         externalUrl={externalUrl}
-        projectPath={this.projectState.get('core.path_with_namespace')}
+        projectPath={projectPathWithNamespace}
         path={p.match.params.filePath}
         notebook={"Notebook"}
         accessLevel={accessLevel}
@@ -220,7 +255,7 @@ class View extends Component {
       fileView: (p) => <ShowFile
         key="filepreview" {...subProps}
         filePath={p.location.pathname}
-        projectPath={this.projectState.get('core.path_with_namespace')}
+        projectPath={projectPathWithNamespace}
         lineagesPath={subUrls.lineagesUrl}
         launchNotebookUrl={subUrls.launchNotebookUrl}
         hashElement={filesTree !== undefined ?
@@ -235,13 +270,13 @@ class View extends Component {
         iid={p.match.params.mrIid}
         updateProjectState={this.fetchAll.bind(this)} />,
 
-      fork: () => <Fork 
-        projectId={this.projectState.get('core.id')}
+      fork: () => <Fork
+        projectId={projectId}
         title={this.projectState.get('core.title')}
-        forkModalOpen={forkModalOpen} 
-        toogleForkModal={this.eventHandlers.toogleForkModal} 
+        forkModalOpen={forkModalOpen}
+        toogleForkModal={this.eventHandlers.toogleForkModal}
         history={this.props.history}
-        client={this.props.client} 
+        client={this.props.client}
         user={this.props.user} />
 
     }
@@ -249,12 +284,10 @@ class View extends Component {
 
   eventHandlers = {
     onProjectTagsChange: (tags) => {
-      const core = this.projectState.get('core');
-      this.projectState.setTags(this.props.client, core.id, core.title, tags);
+      this.projectState.setTags(this.props.client, tags);
     },
     onProjectDescriptionChange: (description) => {
-      const core = this.projectState.get('core');
-      this.projectState.setDescription(this.props.client, core.id, core.title, description);
+      this.projectState.setDescription(this.props.client, description);
     },
     onStar: (e) => {
       e.preventDefault();
@@ -263,9 +296,8 @@ class View extends Component {
         alertError('Please login to star a project.');
         return;
       }
-      const projectId = this.projectState.get('core.id') || parseInt(this.props.match.params.id, 10);
-      const starred = this.getStarred(this.props.user, projectId);
-      this.projectState.star(this.props.client, projectId, this.props.userStateDispatch, starred)
+      const starred = this.getStarred(this.props.user);
+      this.projectState.star(this.props.client, this.props.userStateDispatch, starred)
     },
     toogleForkModal: (e) => {
       e.preventDefault();
@@ -296,10 +328,10 @@ class View extends Component {
       this.fetchProjectFilesTree();
       //this.fetchModifiedFiles();
     },
-    setOpenFolder: (filePath) => { 
+    setOpenFolder: (filePath) => {
       this.setProjectOpenFolder(filePath);
     },
-    createGraphWebhook: (e) => { 
+    createGraphWebhook: (e) => {
       e.preventDefault();
       return this.createGraphWebhook();
     },
@@ -316,7 +348,7 @@ class View extends Component {
 
   mapStateToProps(state, ownProps) {
     const internalId = this.projectState.get('core.id') || parseInt(ownProps.match.params.id, 10);
-    const starred = this.getStarred(ownProps.user, internalId);
+    const starred = this.getStarred(ownProps.user);
     const settingsReadOnly = state.visibility.accessLevel < ACCESS_LEVELS.MAINTAINER;
     const suggestedMRBranches = this.getMrSuggestions();
     const externalUrl = this.projectState.get('core.external_url');

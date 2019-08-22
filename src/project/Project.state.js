@@ -48,19 +48,19 @@ class ProjectModel extends StateModel {
     this.set('webhook.stop', true);
   }
 
-  fetchGraphWebhook(client, id, user) {
+  fetchGraphWebhook(client, user) {
     if (user == null) {
       this.set('webhook.possible', false);
     }
     const userIsOwner = this.get('core.owner.id') === user.id;
     this.set('webhook.possible', userIsOwner);
     if (userIsOwner) {
-      this.fetchGraphWebhookStatus(client, id);
+      this.fetchGraphWebhookStatus(client, this.get('core.id'));
     }
   }
 
-  fetchGraphStatus(client, id) {
-    return client.checkGraphStatus(id)
+  fetchGraphStatus(client) {
+    return client.checkGraphStatus(this.get('core.id'))
       .then((resp) => {
         let progress;
         if (resp.progress == null) {
@@ -84,10 +84,10 @@ class ProjectModel extends StateModel {
       });
   }
 
-  fetchGraphWebhookStatus(client, id) {
+  fetchGraphWebhookStatus(client) {
     this.set('webhook.created', false);
     this.setUpdating({webhook: {status: true}});
-    return client.checkGraphWebhook(id)
+    return client.checkGraphWebhook(this.get('core.id'))
       .then((resp) => {
         this.set('webhook.status', resp);
       })
@@ -96,9 +96,9 @@ class ProjectModel extends StateModel {
       });
   }
 
-  createGraphWebhook(client, id) {
+  createGraphWebhook(client) {
     this.setUpdating({webhook: {created: true}});
-    return client.createGraphWebhook(id)
+    return client.createGraphWebhook(this.get('core.id'))
       .then((resp) => {
         this.set('webhook.created', resp);
       })
@@ -108,9 +108,9 @@ class ProjectModel extends StateModel {
   }
 
   // TODO: Do we really want to re-fetch the entire project on every change?
-  fetchProject(client, id) {
+  fetchProject(client, projectPathWithNamespace) {
     this.setUpdating({core: {available: true}});
-    return client.getProject(id, {statistics: true})
+    return client.getProject(projectPathWithNamespace, {statistics: true})
       .then(resp => resp.data)
       .then(d => {
         const updatedState = {
@@ -130,9 +130,9 @@ class ProjectModel extends StateModel {
       });
   }
 
-  initialFetchProjectFilesTree(client, id, openFilePath , openFolder ){
+  initialFetchProjectFilesTree(client, openFilePath , openFolder ){
     this.setUpdating({transient:{requests:{filesTree: true}}});
-    return client.getProjectFilesTree(id, openFilePath)
+    return client.getProjectFilesTree(this.get('core.id'), openFilePath)
       .then(d => {
         const updatedState = { filesTree: d, transient:{requests:{filesTree: false}} };
         this.setObject(updatedState);
@@ -140,33 +140,33 @@ class ProjectModel extends StateModel {
         return d;
       })
       .then(d=> {
-        return this.returnTreeOrFetchNext(client, id, openFilePath, openFolder, d)
+        return this.returnTreeOrFetchNext(client, openFilePath, openFolder, d)
       });
   }
 
-  deepFetchProjectFilesTree(client, id, openFilePath, openFolder, oldTree){
+  deepFetchProjectFilesTree(client, openFilePath, openFolder, oldTree){
     this.setUpdating({transient:{requests:{filesTree: true}}});
-    return client.getProjectFilesTree(id, openFilePath, openFolder, oldTree.lfsFiles)
+    return client.getProjectFilesTree(this.get('core.id'), openFilePath, openFolder, oldTree.lfsFiles)
       .then(d => {
         const updatedState = this.insertInParentTree(oldTree, d, openFolder);
         this.setObject(updatedState);
         this.set('filesTree', oldTree);
         return oldTree;
       }).then(d=> {
-        return this.returnTreeOrFetchNext(client, id, openFilePath, openFolder, d)
+        return this.returnTreeOrFetchNext(client, openFilePath, openFolder, d)
       });
   }
 
-  returnTreeOrFetchNext(client, id, openFilePath, openFolder, tree){
+  returnTreeOrFetchNext(client, openFilePath, openFolder, tree){
     if(openFilePath !== undefined && openFilePath.split('/').length > 1){
       const openFilePathArray = openFilePath.split('/');
-      const goto = openFolder !== undefined ?  
-        openFolder + "/" +openFilePathArray[0] 
+      const goto = openFolder !== undefined ?
+        openFolder + "/" +openFilePathArray[0]
         : openFilePathArray[0];
-      return this.fetchProjectFilesTree(client, id, openFilePath.replace(openFilePathArray[0],''), goto);
+      return this.fetchProjectFilesTree(client, openFilePath.replace(openFilePathArray[0],''), goto);
     } else {
       return tree;
-    } 
+    }
   }
 
   cleanFilePathUrl(openFilePath){
@@ -179,54 +179,54 @@ class ProjectModel extends StateModel {
     parentTree.hash[openFolder].treeRef.children=newTree.tree;
     parentTree.hash[openFolder].childrenLoaded=true;
     parentTree.hash[openFolder].childrenOpen = true;
-    for (const node in newTree.hash) 
+    for (const node in newTree.hash)
       parentTree.hash[node] = newTree.hash[node];
     return { filesTree: parentTree, transient:{requests:{filesTree: false}} };
   }
 
-  fetchProjectFilesTree(client, id, openFilePath, openFolder){
+  fetchProjectFilesTree(client, openFilePath, openFolder){
     if (this.get('transient.requests.filesTree') === SpecialPropVal.UPDATING) return;
     const oldTree = this.get('filesTree');
     openFilePath = this.cleanFilePathUrl(openFilePath);
     if(isNullOrUndefined(oldTree)){
-      return this.initialFetchProjectFilesTree(client, id, openFilePath , openFolder);
+      return this.initialFetchProjectFilesTree(client, openFilePath , openFolder);
     } else {
       if(openFolder !== undefined && oldTree.hash[openFolder].childrenLoaded === false) {
-        return this.deepFetchProjectFilesTree(client, id, openFilePath , openFolder, oldTree)
+        return this.deepFetchProjectFilesTree(client, openFilePath , openFolder, oldTree)
       } else {
         return oldTree;
       }
     }
   }
 
-  setProjectOpenFolder(client, id, folderPath){
+  setProjectOpenFolder(client, folderPath){
     let filesTree = this.get('filesTree');
     if (filesTree.hash[folderPath].childrenLoaded === false){
-      this.fetchProjectFilesTree(client,id,"",folderPath);
+      this.fetchProjectFilesTree(client,"",folderPath);
     }
     filesTree.hash[folderPath].childrenOpen = !filesTree.hash[folderPath].childrenOpen;
     this.set('filesTree',filesTree);
   }
 
-  fetchModifiedFiles(client, id) {
-    client.getModifiedFiles(id)
+  fetchModifiedFiles(client) {
+    client.getModifiedFiles(this.get('core.id'))
       .then(d => {
         this.set('files.modifiedFiles', d)
       })
   }
 
-  fetchMergeRequests(client, id) {
+  fetchMergeRequests(client) {
     this.setUpdating({system: {merge_requests: true}});
-    client.getMergeRequests(id)
+    client.getMergeRequests(this.get('core.id'))
       .then(resp => resp.data)
       .then(d => {
         this.set('system.merge_requests', d)
       })
   }
 
-  fetchBranches(client, id) {
+  fetchBranches(client) {
     this.setUpdating({system: {branches: true}});
-    return client.getBranches(id)
+    return client.getBranches(this.get('core.id'))
       .then(resp => resp.data)
       .then(data => {
         // split away autosaved branches and add external url
@@ -244,12 +244,12 @@ class ProjectModel extends StateModel {
       })
   }
 
-  fetchReadme(client, id) {
+  fetchReadme(client) {
     // Do not fetch if a fetch is in progress
     if (this.get('transient.requests.readme') === SpecialPropVal.UPDATING) return;
 
     this.setUpdating({transient:{requests:{readme: true}}});
-    client.getProjectReadme(id)
+    client.getProjectReadme(this.get('core.id'))
       .then(d => this.set('data.readme.text', d.text))
       .catch(error => {
         if (error.case === API_ERRORS.notFoundError) {
@@ -259,17 +259,17 @@ class ProjectModel extends StateModel {
       .finally(() => this.set('transient.requests.readme', false))
   }
 
-  setTags(client, id, name, tags) {
+  setTags(client, tags) {
     this.setUpdating({system: {tag_list: [true]}});
-    client.setTags(id, name, tags).then(() => {
-      this.fetchProject(client, id);
+    client.setTags(this.get('core.id'), this.get('core.title'), tags).then(() => {
+      this.fetchProject(client, this.get('core.id'));
     })
   }
 
-  setDescription(client, id, name, description) {
+  setDescription(client,description) {
     this.setUpdating({core: {description: true}});
-    client.setDescription(id, name, description).then(() => {
-      this.fetchProject(client, id);
+    client.setDescription(this.get('core.id'), this.get('core.title'), description).then(() => {
+      this.fetchProject(client, this.get('core.id'));
     })
   }
 
@@ -278,10 +278,10 @@ class ProjectModel extends StateModel {
     this.set("forkModalOpen" , forkModalOpen === undefined || forkModalOpen === false ? true : false);
   }
 
-  star(client, id, userStateDispatch, starred) {
-    client.starProject(id, starred).then(() => {
+  star(client, userStateDispatch, starred) {
+    client.starProject(this.get('core.id'), starred).then(() => {
       // TODO: Bad naming here - will be resolved once the user state is re-implemented.
-      this.fetchProject(client, id).then(p => userStateDispatch(UserState.star(p.metadata.core)))
+      this.fetchProject(client, this.get('core.id')).then(p => userStateDispatch(UserState.star(p.metadata.core)))
 
     })
   }
