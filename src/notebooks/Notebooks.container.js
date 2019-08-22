@@ -169,7 +169,7 @@ class StartNotebookServer extends Component {
   }
 
   setServerOptionFromEvent(option, event) {
-    const value = event.target.checked !== undefined ?
+    const value = event.target.type.toLowerCase() === "checkbox"?
       event.target.checked :
       event.target.value;
     this.model.setNotebookOptions(option, value);
