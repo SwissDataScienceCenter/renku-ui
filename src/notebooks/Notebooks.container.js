@@ -26,7 +26,7 @@ import { StatusHelper } from '../model/Model'
 
 /**
  * Displays a start page for new Jupiterlab servers.
- * 
+ *
  * @param {Object} client - api-client used to query the gateway
  * @param {Object[]} branches - Branches as returned by gitlab "/branches" API - no autosaved branches
  * @param {Object[]} autosaved - Autosaved branches
@@ -178,9 +178,9 @@ class StartNotebookServer extends Component {
   }
 
   async retriggerPipeline() {
-    const projectSlug = `${this.props.scope.namespace}%2F${this.props.scope.project}`;
+    const projectPathWithNamespace = `${this.props.scope.namespace}%2F${this.props.scope.project}`;
     const pipelineId = this.model.get('pipelines.main.id');
-    await this.props.client.retryPipeline(projectSlug, pipelineId);
+    await this.props.client.retryPipeline(projectPathWithNamespace, pipelineId);
     return this.refreshPipelines();
   }
 
@@ -243,7 +243,7 @@ class StartNotebookServer extends Component {
 
 /**
  * Display the list of Notebook servers
- * 
+ *
  * @param {Object} client - api-client used to query the gateway
  * @param {boolean} standalone - Indicates whether it's displayed as standalone
  * @param {Object} [scope] - object containing filtering parameters

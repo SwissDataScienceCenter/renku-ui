@@ -209,7 +209,7 @@ class NotebookServerRowFull extends Component {
     else {
       const projectLink = <NotebookServerRowProject
         display={`${annotations["namespace"]}/${annotations["projectName"]}`}
-        id={annotations["projectId"]}
+        link={`${annotations["namespace"]}/${annotations["projectName"]}`}
       />
       columns = [projectLink, `${annotations["branch"]}/${annotations["commit-sha"].substring(0, 8)}`];
     }
@@ -246,7 +246,7 @@ class NotebookServerRowCompact extends Component {
       rowsHeader = Columns.large.default;
       const projectLink = <NotebookServerRowProject
         display={`${annotations["namespace"]}/${annotations["projectName"]}`}
-        id={annotations["projectId"]}
+        link={`${annotations["namespace"]}/${annotations["projectName"]}`}
       />
       rows = [projectLink, `${annotations["branch"]}/${annotations["commit-sha"].substring(0, 8)}`];
     }
@@ -278,7 +278,7 @@ class NotebookServerRowCompact extends Component {
 class NotebookServerRowProject extends Component {
   render() {
     return (
-      <Link to={`/projects/${this.props.id}`}>
+      <Link to={`/projects/${this.props.link}`}>
         {this.props.display}
       </Link>
     )

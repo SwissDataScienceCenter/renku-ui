@@ -38,7 +38,6 @@ import ReactMarkdown from 'react-markdown';
 import {createStore} from '../utils/EnhancedState'
 import State from './Ku.state'
 import {Avatar, ExternalLink, FieldGroup, TimeCaption } from '../utils/UIComponents'
-import { getActiveProjectId } from '../utils/HelperFunctions'
 import { Contribution, NewContribution } from '../contribution'
 
 
@@ -92,7 +91,7 @@ class New extends Component {
     this.state = {statuses: []}
     this.store = createStore(State.New.reducer);
     this.onSubmit = client => this.handleSubmit.bind(this, client);
-    this.projectId = getActiveProjectId(this.props.location.pathname);
+    this.projectPathWithNamespace = this.props.projectPathWithNamespace;
   }
 
   submitData() {
@@ -101,7 +100,7 @@ class New extends Component {
     body.confidential = state.visibility.level === 'Restricted';
     body.title = state.core.title;
     body.description = state.core.description;
-    return [this.projectId, body]
+    return [this.projectPathWithNamespace, body]
   }
 
   handleSubmit(client) {
@@ -110,7 +109,7 @@ class New extends Component {
       client.postProjectKu(...this.submitData())
         .then(newKu => {
           this.store.dispatch(State.List.append([newKu]));
-          this.props.history.push({pathname: `/projects/${this.projectId}/kus/`});
+          this.props.history.push({pathname: `/projects/${this.projectPathWithNamespace}/kus/`});
         });
     }
   }

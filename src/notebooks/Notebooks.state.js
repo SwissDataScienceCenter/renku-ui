@@ -88,7 +88,7 @@ const ExpectedAnnotations = {
 const NotebooksHelper = {
   /**
    * compute the status of a notebook
-   * 
+   *
    * @param {Object} either the notebook or the notebook.status object as returned by the GET /servers API
    */
   getStatus: (data) => {
@@ -104,9 +104,9 @@ const NotebooksHelper = {
   },
   /**
    * add missing annotations from the notebook servers
-   * 
-   * @param {object} annotations 
-   * @param {string} domain 
+   *
+   * @param {object} annotations
+   * @param {string} domain
    */
   cleanAnnotations(annotations, domain = "renku.io") {
     let cleaned = {};
@@ -131,7 +131,7 @@ class NotebooksModel extends StateModel {
   // * Filters * //
   /**
    * Set filtering parameters
-   * 
+   *
    * @param {Object} data - the filters to be set
    * @param {string} data.namespace - full namespace path
    * @param {string} data.project - full project path
@@ -409,8 +409,8 @@ class NotebooksModel extends StateModel {
   async fetchCommits() {
     this.set('data.fetching', true);
     const filters = this.get('filters');
-    const projectSlug = `${filters.namespace}%2F${filters.project}`;
-    return this.client.getCommits(projectSlug, filters.branch.name)
+    const projectPathWithNamespace = `${filters.namespace}%2F${filters.project}`;
+    return this.client.getCommits(projectPathWithNamespace, filters.branch.name)
       .then(resp => {
         this.setObject({
           data: {

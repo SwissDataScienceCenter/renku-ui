@@ -32,7 +32,7 @@ function getApiURLfromRepoURL(url){
   if(url.includes("https://"))
     return url.replace("https://", "https://api.");
   if(url.includes("http://"))
-    return url.replace("http://", "http://api.");  
+    return url.replace("http://", "http://api.");
 }
 
 function groupedFiles(files, projectFiles) {
@@ -92,7 +92,21 @@ function addProjectMethods(client) {
     })
   }
 
-  client.getProject = (projectId, options = {}) => {
+  client.getProject = (projectPathWithNamespace, options = {}) => {
+    const headers = client.getBasicHeaders();
+    const queryParams = {
+      statistics: options.statistics || false
+    };
+    return client.clientFetch(`${client.baseUrl}/projects/${encodeURIComponent(projectPathWithNamespace)}`, {
+      method: 'GET',
+      headers,
+      queryParams
+    }).then(resp => {
+      return { ...resp, data: carveProject(resp.data) };
+    });
+  }
+
+  client.getProjectById = (projectId, options = {}) => {
     const headers = client.getBasicHeaders();
     const queryParams = {
       statistics: options.statistics || false
@@ -171,13 +185,13 @@ function addProjectMethods(client) {
         }
         return resp.data;
       });
-      
+
       // When the provided version does not exist, we log an error and uses latest.
       // Maybe this should raise a more prominent alarm?
       const payloadPromise = getPayload(
-        gitlabProject.name, 
-        renkuTemplatesUrl, 
-        renkuTemplatesRef, 
+        gitlabProject.name,
+        renkuTemplatesUrl,
+        renkuTemplatesRef,
         renkuProject.meta.template
       ).catch(error => {
         console.error(`Problem when retrieving project template with url ${renkuTemplatesUrl} and ref ${renkuTemplatesRef}`);
@@ -209,7 +223,7 @@ function addProjectMethods(client) {
     }).then(resp => {
       return resp.data.import_status;
     }).catch((error) => "error");
-  } 
+  }
 
   client.startPipeline = (projectId) => {
     const headers = client.getBasicHeaders();
@@ -236,7 +250,7 @@ function addProjectMethods(client) {
     }, 3000);
   }
 
-  function redirectWhenForkFinished(projectId, history) {
+  function redirectWhenForkFinished(projectId, projectPathWithNamespace, history){
     const headers = client.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
     let redirected = false;
@@ -249,8 +263,8 @@ function addProjectMethods(client) {
           if (forkProjectStatus === 'finished') {
             redirected = true;
             clearTimeout(projectStatusTimeout);
-            history.push(`/projects/${projectId}`);
-          } else if (forkProjectStatus === 'failed' || forkProjectStatus === 'error') {
+            history.push(`/projects/${projectPathWithNamespace}`);
+          } else if(forkProjectStatus === 'failed' || forkProjectStatus === 'error'){
             clearTimeout(projectStatusTimeout);
           } else {
             counter++;
@@ -294,7 +308,8 @@ function addProjectMethods(client) {
       .then((results) => {
         if (results.errorData)
           return Promise.reject(results);
-        return Promise.resolve(results).then(() => redirectWhenForkFinished(results[0].data.id, history));
+        return Promise.resolve(results)
+          .then(() => redirectWhenForkFinished(results[0].data.id ,results[0].data.path_with_namespace, history));
       });
   }
 
