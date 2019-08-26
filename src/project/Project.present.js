@@ -294,13 +294,7 @@ class ProjectViewHeader extends Component {
 }
 
 class ProjectNav extends Component {
-
   render() {
-    const notebookServers = this.props.user.id ?
-      <NavItem>
-        <RenkuNavLink exact={false} to={this.props.notebookServersUrl} title="Notebook Servers" />
-      </NavItem>:
-      null
     return (
       <Nav pills className={'nav-pills-underline'}>
         <NavItem>
@@ -315,11 +309,14 @@ class ProjectNav extends Component {
         <NavItem>
           <RenkuNavLink exact={false} to={this.props.mrOverviewUrl} title="Pending Changes" />
         </NavItem>
-        {notebookServers}
+        <NavItem>
+          <RenkuNavLink exact={false} to={this.props.notebookServersUrl} title="Notebook Servers" />
+        </NavItem>
         <NavItem>
           <RenkuNavLink exact={false} to={this.props.settingsUrl} title="Settings" />
         </NavItem>
-      </Nav>)
+      </Nav>
+    );
   }
 }
 
@@ -565,13 +562,45 @@ class ProjectViewFiles extends Component {
   }
 }
 
-function notebookLauncher(visibility, notebookLauncher) {
-  let content = null;
-  if (visibility.accessLevel >= ACCESS_LEVELS.DEVELOPER) {
-    content = notebookLauncher;
-  } else {
-    content = (<p>You are missing the permissions to launch Jupyter from this project.</p>);
+function notebookLauncher(userId, accessLevel, notebookLauncher, fork, postLoginUrl, externalUrl) {
+  if (accessLevel >= ACCESS_LEVELS.DEVELOPER)
+    return (<Col xs={12}>{notebookLauncher}</Col>);
+
+  let content = [<p key="no-permission">You do not have sufficient permissions to launch an interactive environment
+    for this project.</p>];
+  if (userId == null) {
+    const to = { "pathname": "/login", "state": { previous: postLoginUrl } };
+    content = content.concat(
+      <InfoAlert timeout={0} key="login-info">
+        <p className="mb-0">
+          <Link className="btn btn-primary btn-sm" to={to} previous={postLoginUrl}>Log in</Link> to use
+          interactive environments.
+        </p>
+      </InfoAlert>
+    );
   }
+  else {
+    content = content.concat(
+      <InfoAlert timeout={0} key="login-info">
+        <p>You can still do one of the following:</p>
+        <ul className="mb-0">
+          <li>
+            <Button size="sm" color="primary" onClick={(event) => fork(event)}>
+              Fork the project
+            </Button> and start an interactive environment from your fork.
+          </li>
+          <li className="pt-1">
+            <ExternalLink size="sm" url={`${externalUrl}/project_members`} title="Contact a maintainer" /> and ask them
+            to <a href="https://renku.readthedocs.io/en/latest/user/collaboration.html#added-to-project"
+              target="_blank" rel="noreferrer noopener">
+              grant you the necessary permissions
+            </a>.
+          </li>
+        </ul>
+      </InfoAlert>
+    );
+  }
+
   return (<Col xs={12}>{content}</Col>);
 }
 
@@ -588,7 +617,12 @@ class ProjectNotebookServers extends Component {
       </Link>
     ];
 
-    return (notebookLauncher(this.props.visibility, content));
+    return (notebookLauncher(this.props.user.id,
+      this.props.visibility.accessLevel,
+      content,
+      this.props.toogleForkModal,
+      this.props.location.pathname,
+      this.props.externalUrl));
   }
 }
 
@@ -604,7 +638,12 @@ class ProjectStartNotebookServer extends Component {
       history={this.props.history}
     />);
 
-    return (notebookLauncher(this.props.visibility, content));
+    return (notebookLauncher(this.props.user.id,
+      this.props.visibility.accessLevel,
+      content,
+      this.props.toggleModalFork,
+      this.props.location.pathname,
+      this.props.externalUrl));
   }
 }
 
