@@ -562,17 +562,18 @@ class ProjectViewFiles extends Component {
   }
 }
 
-function notebookLauncher(userId, accessLevel, notebookLauncher, fork) {
+function notebookLauncher(userId, accessLevel, notebookLauncher, fork, postLoginUrl, externalUrl) {
   if (accessLevel >= ACCESS_LEVELS.DEVELOPER)
     return (<Col xs={12}>{notebookLauncher}</Col>);
 
-  let content = [<p key="no-permission">You are missing the permissions to launch an interactive environment
-    from this project.</p>];
+  let content = [<p key="no-permission">You do not have sufficient permissions to launch an interactive environment
+    for this project.</p>];
   if (userId == null) {
+    const to = { "pathname": "/login", "state": { previous: postLoginUrl } };
     content = content.concat(
       <InfoAlert timeout={0} key="login-info">
         <p className="mb-0">
-          <FontAwesomeIcon icon={faInfoCircle} /> You need to be logged in to use our interactive environments.
+          <FontAwesomeIcon icon={faInfoCircle} /> <Link className="btn btn-primary btn-sm" to={to} previous={postLoginUrl}>Log in</Link> to use interactive environments.
         </p>
       </InfoAlert>
     );
@@ -580,15 +581,15 @@ function notebookLauncher(userId, accessLevel, notebookLauncher, fork) {
   else {
     content = content.concat(
       <InfoAlert timeout={0} key="login-info">
-        <p>Since this is not a private project, you can still do one of the following:</p>
+        <p>You can still do one of the following:</p>
         <ul className="mb-0">
           <li>
-            <Button className="p-0 border-0 align-baseline" color="link" onClick={(event) => fork(event)}>
+            <Button size="sm" color="primary" onClick={(event) => fork(event)}>
               Fork the project
-            </Button> and start an interactive environment from there.
+            </Button> and start an interactive environment from your fork.
           </li>
-          <li>
-            If you received the link to this project from a maintainer, ask them
+          <li className="pt-1">
+            <ExternalLink size="sm" url={`${externalUrl}/project_members`} title="Contact a maintainer" /> and ask them
             to <a href="https://renku.readthedocs.io/en/latest/user/collaboration.html#added-to-project"
               target="_blank" rel="noreferrer noopener">
               grant you the necessary permissions
@@ -618,7 +619,9 @@ class ProjectNotebookServers extends Component {
     return (notebookLauncher(this.props.user.id,
       this.props.visibility.accessLevel,
       content,
-      this.props.toogleForkModal));
+      this.props.toogleForkModal,
+      this.props.location.pathname,
+      this.props.externalUrl));
   }
 }
 
@@ -637,7 +640,9 @@ class ProjectStartNotebookServer extends Component {
     return (notebookLauncher(this.props.user.id,
       this.props.visibility.accessLevel,
       content,
-      this.props.toggleModalFork));
+      this.props.toggleModalFork,
+      this.props.location.pathname,
+      this.props.externalUrl));
   }
 }
 
