@@ -583,7 +583,7 @@ function notebookLauncher(userId, accessLevel, notebookLauncher, fork) {
         <p>Since this is not a private project, you can still do one of the following:</p>
         <ul className="mb-0">
           <li>
-            <Button className="p-0 border-0" color="link" onClick={(event) => fork(event)}>
+            <Button className="p-0 border-0 align-baseline" color="link" onClick={(event) => fork(event)}>
               Fork the project
             </Button> and start an interactive environment from there.
           </li>
