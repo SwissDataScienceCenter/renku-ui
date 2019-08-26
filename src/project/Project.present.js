@@ -573,7 +573,8 @@ function notebookLauncher(userId, accessLevel, notebookLauncher, fork, postLogin
     content = content.concat(
       <InfoAlert timeout={0} key="login-info">
         <p className="mb-0">
-          <FontAwesomeIcon icon={faInfoCircle} /> <Link className="btn btn-primary btn-sm" to={to} previous={postLoginUrl}>Log in</Link> to use interactive environments.
+          <Link className="btn btn-primary btn-sm" to={to} previous={postLoginUrl}>Log in</Link> to use
+          interactive environments.
         </p>
       </InfoAlert>
     );
