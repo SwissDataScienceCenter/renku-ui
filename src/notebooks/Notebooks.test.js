@@ -16,16 +16,17 @@
  * limitations under the License.
  */
 
- /**
-  *  renku-ui
-  *
-  * Tests for the notebook server component
-  */
+/**
+ *  renku-ui
+ *
+ * Tests for the notebook server component
+ */
 
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { MemoryRouter } from 'react-router-dom';
 
-import { Notebooks, StartNotebookServer, NotebooksHelper } from './index';
+import { NotebooksHelper, Notebooks, StartNotebookServer, CheckNotebookStatus } from './index';
 import { ExpectedAnnotations } from './Notebooks.state';
 import { testClient as client } from '../api-client'
 
@@ -83,19 +84,23 @@ describe('rendering', () => {
     namespace: "fake",
     project: "fake",
     branch: { name: "master" }
-  }
+  };
 
-  it('renders standalone Notebooks', () => {
+  it('renders Notebooks', () => {
     const div = document.createElement('div');
+    document.body.appendChild(div);
     ReactDOM.render(
-      <Notebooks client={client} standalone={true} />
-    , div);
+      <MemoryRouter>
+        <Notebooks client={client} standalone={true} />
+      </MemoryRouter>, div);
     ReactDOM.render(
-      <Notebooks client={client} standalone={false} />
-    , div);
+      <MemoryRouter>
+        <Notebooks client={client} standalone={false} />
+      </MemoryRouter>, div);
     ReactDOM.render(
-      <Notebooks client={client} standalone={true} scope={scope} />
-    , div);
+      <MemoryRouter>
+        <Notebooks client={client} standalone={true} scope={scope} />
+      </MemoryRouter>, div);
   });
 
   it('renders StartNotebookServer without crashing', () => {
@@ -107,11 +112,30 @@ describe('rendering', () => {
     }
 
     const div = document.createElement('div');
+    document.body.appendChild(div);
     ReactDOM.render(
-      <StartNotebookServer {...props} />
-    , div);
+      <MemoryRouter>
+        <StartNotebookServer {...props} />
+      </MemoryRouter>, div);
     ReactDOM.render(
-      <StartNotebookServer {...props} scope={scope} />
-    , div);
+      <MemoryRouter>
+        <StartNotebookServer {...props} scope={scope} />
+      </MemoryRouter>, div);
+  });
+
+  it('renders CheckNotebookStatus', () => {
+    const props = {
+      client: client,
+      scope,
+      launchNotebookUrl: "/projects/abc/def/launchNotebook",
+      filePath: "notebook.ypynb"
+    }
+
+    const div = document.createElement('div');
+    document.body.appendChild(div);
+    ReactDOM.render(
+      <MemoryRouter>
+        <CheckNotebookStatus {...props} />
+      </MemoryRouter>, div);
   });
 });

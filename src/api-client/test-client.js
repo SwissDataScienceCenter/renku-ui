@@ -93,14 +93,16 @@ const methods = {
   getRepositoryFile: {
     response: null
   },
-  getNotebookServerUrl: {
-    response: null
-  },
   getProjectTemplates: {
     response: []
   },
   getNotebookServerOptions: {
     response: {}
+  },
+  getCommits: {
+    response: {
+      data: []
+    }
   }
 };
 

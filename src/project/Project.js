@@ -250,14 +250,18 @@ class View extends Component {
         progress={graphProgress}
         maintainer={maintainer}
         forked={forked}
+        launchNotebookUrl={subUrls.launchNotebookUrl}
+        projectNamespace={this.projectState.get('core.namespace_path')}
+        projectPathOnly={this.projectState.get('core.project_path')}
         hashElement={filesTree !== undefined ? filesTree.hash[p.match.params.filePath] : undefined} />,
 
       fileView: (p) => <ShowFile
         key="filepreview" {...subProps}
         filePath={p.location.pathname}
-        projectPath={projectPathWithNamespace}
         lineagesPath={subUrls.lineagesUrl}
         launchNotebookUrl={subUrls.launchNotebookUrl}
+        projectNamespace={this.projectState.get('core.namespace_path')}
+        projectPath={this.projectState.get('core.project_path')}
         hashElement={filesTree !== undefined ?
           filesTree.hash[p.location.pathname.replace(this.props.match.url + '/files/blob/', '')] :
           undefined} />,
