@@ -33,11 +33,11 @@ import { FilePreview, LaunchJupyter } from './File.container';
 import { API_ERRORS } from '../api-client';
 
 
-class LaunchJupyterPresent extends React.Component { 
+class LaunchJupyterPresent extends React.Component {
   render() {
     const { notebookUrl, launchNotebookUrl, file } = this.props;
     const icon = (
-      <svg 
+      <svg
         aria-hidden="true"
         data-prefix="fas"
         className="jupyter-icon fa-w-20 icon-link"
@@ -52,10 +52,11 @@ class LaunchJupyterPresent extends React.Component {
       // * Jupyterlab url reference: https://jupyterlab.readthedocs.io/en/stable/user/urls.html
       const url = `${notebookUrl}lab/tree/${filePath}`;
       link = (<a href={url} role="button" target="_blank" rel="noreferrer noopener">{icon}</a>);
-    }
-    else {
+    } else if (launchNotebookUrl) {
       tooltipText = "Start a Jupyter server";
       link = (<Link to={launchNotebookUrl}>{icon}</Link>);
+    } else {
+      link = <div></div>
     }
 
     return (
@@ -109,7 +110,7 @@ class ShowFile extends React.Component {
           <FontAwesomeIcon className="icon-link" icon={faProjectDiagram} id="TooltipFileView"/>
         </Link>
       </span>
-      
+
       : null;
 
     const buttonGit = <span>
@@ -145,7 +146,7 @@ class ShowFile extends React.Component {
     const isLFSBadge = isLFS ?
       <Badge className="lfs-badge" color="light">LFS</Badge> :
       null;
-    
+
     const buttonJupyter = this.props.filePath.endsWith(".ipynb") ?
       <LaunchJupyter {...this.props} file={this.state.file} /> :
       null;

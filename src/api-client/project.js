@@ -354,7 +354,7 @@ function addProjectMethods(client) {
     const headers = client.getBasicHeaders();
     const url = `${client.baseUrl}/notebooks/${projectPath}/${commitSha}`;
     return client.clientFetch(url, { method: 'GET', headers})
-      .then(resp => resp.data)
+      .then(resp => resp.data, resp => ({url: null}))
       .then(server => server.url ? server.url : null)
   }
 
