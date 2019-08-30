@@ -60,10 +60,10 @@ function addGraphMethods(client) {
       return resp.data;
     });
   }
-  
+
   /**
    * Get the lineage nodes and edges
-   * 
+   *
    * @param {string} projectPath   project slug (username/projectname)
    * @param {string} commitId   full commit id in string format
    * @param {string} filePath   full file path
@@ -82,7 +82,7 @@ function addGraphMethods(client) {
     `;
     const variables = { projectPath, commitId, filePath };
 
-    return client.graphqlFetch(query, variables).then(data => data.lineage);
+    return client.graphqlFetch(query, variables).then(data => data.lineage, d => null);
   }
 }
 

@@ -30,35 +30,42 @@ const API_ERRORS = {
   networkError: 'NETWORK_PROBLEM'
 };
 
+function throwErrorWithData(response, data) {
+  let error;
+  switch (response.status) {
+  case 401:
+    error = new APIError();
+    error.case = API_ERRORS.unauthorizedError;
+    break;
+  case 403:
+    error = new APIError();
+    error.case = API_ERRORS.forbiddenError;
+    break;
+  case 404:
+    error = new APIError();
+    error.case = API_ERRORS.notFoundError;
+    break;
+  case 500:
+    error = new APIError();
+    error.case = API_ERRORS.internalServerError;
+    break;
+  default:
+    error = new APIError();
+  }
+  error.response = response;
+  error.errorData = data;
+  return Promise.reject(error);
+}
+
 function throwAPIErrors(response) {
-  return response.json().then(errorData => {
-    let error;
-    switch (response.status) {
-    case 401:
-      error = new APIError();
-      error.case = API_ERRORS.unauthorizedError;
-      break;
-    case 403:
-      error = new APIError();
-      error.case = API_ERRORS.forbiddenError;
-      break;
-    case 404:
-      error = new APIError();
-      error.case = API_ERRORS.notFoundError;
-      break;
-    case 500:
-      error = new APIError();
-      error.case = API_ERRORS.internalServerError;
-      break;
-    default:
-      error = new APIError();
-    }
-    error.response = response;
-    error.errorData = errorData;
-    return Promise.reject(error);
-  });
-
-
+  const contentType = response.headers.get('Content-Type');
+  // TODO The default should be to check for type application/json
+  // but I want to make a more minimal change to the code right now.
+  if (contentType === 'text/html') {
+    return response.text().then(d => throwErrorWithData(response, d))
+  } else {
+    return response.json().then(d => throwErrorWithData(response, d))
+  }
 }
 
 function alertAPIErrors(error) {
