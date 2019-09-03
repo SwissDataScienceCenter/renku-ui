@@ -26,6 +26,7 @@
 
 
 import { Schema, StateKind, StateModel} from '../../model/Model';
+import { searchInValuesMap } from './ProjectList.container';
 
 const projectPageItemSchema = new Schema({
   title: {initial: '', mandatory: true},
@@ -44,6 +45,8 @@ const projectListSchema = new Schema({
   currentPage: {mandatory: true},
   perPage: {mandatory: true},
   orderBy: {initial:'last_activity_at', mandatory:true},
+  searchIn: {initial:'projects', mandatory:true},
+  usersOrGroupsList: {initial: []},
   pages: {initial: [], schema: [{projectsPageSchema}]}
 });
 
@@ -66,6 +69,14 @@ class ProjectListModel extends StateModel {
     this.set('pathName',pathName)
   }
 
+  setSelectedUserOrGroup(selectedUserOrGroupId){
+    this.set('selectedUserOrGroup', selectedUserOrGroupId)
+  }
+
+  setUsersOrGroupsList(usersOrGroupsList){
+    this.set('usersOrGroupsList', usersOrGroupsList)
+  }
+
   setSelected(selected){
     this.set('selected',selected);
   }
@@ -74,30 +85,42 @@ class ProjectListModel extends StateModel {
     this.set('orderByDropdownOpen', value);
   }
 
+  setSearchInDropdownOpen(value){
+    this.set('searchInDropdownOpen', value);
+  }
+
   setOrderBy(orderBy){
     this.set('orderBy', orderBy);
+  }
+
+  setSearchIn(searchIn){
+    this.set('searchIn', searchIn);
   }
 
   setOrderSearchAsc(orderSearchAsc){
     this.set('orderSearchAsc', orderSearchAsc);
   }
 
-  setQueryPageNumberAndPath(query, pageNumber, pathName, orderBy, orderSearchAsc) {
+  setQueryPageNumberAndPath(query, pageNumber, pathName, orderBy, orderSearchAsc, searchIn, selectedUserOrGroup) {
     this.setQuery(query)
     this.setPathName(pathName)
     this.setOrderBy(orderBy)
-    this.setOrderSearchAsc(orderSearchAsc);
+    this.setOrderSearchAsc(orderSearchAsc)
+    this.setSearchIn(searchIn)
+    this.setSelectedUserOrGroup(selectedUserOrGroup)
     return this.setPage(pageNumber)
   }
 
-  getPageData() {
-    this.set('loading', true);
-    const pageNumber = this.get('currentPage');
-    const perPage = this.get('perPage');
-    const query = this.get('query');
-    const orderBy = this.get('orderBy');
-    const sort = this.get('orderSearchAsc') === true ? 'asc' : 'desc';
-    return this.client.getProjects({search: query, page: pageNumber, per_page: perPage, order_by: orderBy, sort:sort})
+  resetBeforeNewSearch(){
+    this.setSelectedUserOrGroup(undefined);
+    this.setUsersOrGroupsList(undefined);
+    this.set('currentPage', undefined);
+    this.set('totalItems', undefined);
+    this.set(`pages`, []);
+  }
+
+  searchProjects(searchParams){
+    return this.client.getProjects(searchParams)
       .then(response => {
         const pagination = response.pagination;
         this.set('currentPage', pagination.currentPage);
@@ -108,6 +131,60 @@ class ProjectListModel extends StateModel {
         this.set('loading', false);
       });
   }
-}
 
+  searchProjectsByUsernameOrGroup(searchIn, queryParams, search, selectedUserOrGroupId){
+    if(search.length < 3) {
+      this.setUsersOrGroupsList([]);
+      this.set('loading',false);
+      return [];
+    }
+    return this.client.searchUsersOrGroups({ search }, searchIn)
+      .then(response => {
+        this.setUsersOrGroupsList(response);
+        if(response.length === 0){
+          this.set('loading',false);
+          return response;
+        }
+        let selectedElement = selectedUserOrGroupId === undefined ? response[0].id : selectedUserOrGroupId;
+        if(selectedUserOrGroupId === undefined){
+          this.setSelectedUserOrGroup(selectedElement);  
+        }
+        this.client.getProjectsBy(searchIn, selectedElement, queryParams)
+          .then(response=> {
+            const pagination = response.pagination;
+            this.set('currentPage', pagination.currentPage);
+            this.set('totalItems', pagination.totalItems);
+            this.set(`pages.${pagination.currentPage}`, {
+              projects: response.data,
+            });
+            this.set('loading', false);
+          })
+      }).catch((error) => {
+        this.setUsersOrGroupsList([]);
+        this.set('loading',false);
+      });
+  }
+  
+  getPageData() {
+    const searchIn = this.get('searchIn');
+    this.set('loading', true);
+    const pageNumber = this.get('currentPage');
+    const perPage = this.get('perPage');
+    const query = this.get('query');
+    const orderBy = this.get('orderBy');
+    const selectedUserOrGroupId = this.get('selectedUserOrGroup');
+    const sort = this.get('orderSearchAsc') === true ? 'asc' : 'desc';
+    const queryParams = { page: pageNumber, per_page: perPage, order_by: orderBy, sort:sort}
+
+    switch(searchIn) {
+    case searchInValuesMap.PROJECTNAME :
+      return this.searchProjects({search:query, ...queryParams});
+    case searchInValuesMap.USERNAME :
+      return this.searchProjectsByUsernameOrGroup(  searchIn, queryParams, query, selectedUserOrGroupId ) 
+    case searchInValuesMap.GROUPNAME :
+      return this.searchProjectsByUsernameOrGroup(  searchIn, queryParams, query, selectedUserOrGroupId ) 
+    default : return [];
+    }
+  }
+}
 export default ProjectListModel;
