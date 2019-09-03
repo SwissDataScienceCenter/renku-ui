@@ -28,6 +28,12 @@ const orderByValuesMap = {
   UPDATEDDATE: 'last_activity_at'
 };
 
+const searchInValuesMap = {
+  PROJECTNAME: 'projects',
+  USERNAME: 'users',
+  GROUPNAME: 'groups'
+};
+
 class List extends Component {
   constructor(props) {
     super(props);
@@ -39,26 +45,33 @@ class List extends Component {
       onSearchSubmit: this.onSearchSubmit.bind(this),
       onPaginationPageChange: this.onPaginationPageChange.bind(this),
       onOrderByDropdownToogle: this.onOrderByDropdownToogle.bind(this),
+      onSearchInDropdownToogle: this.onSearchInDropdownToogle.bind(this),
       changeSearchDropdownOrder: this.changeSearchDropdownOrder.bind(this),
+      changeSearchDropdownFilter: this.changeSearchDropdownFilter.bind(this),
+      changeSelectedUserOrGroup: this.changeSelectedUserOrGroup.bind(this),
       toogleSearchSorting: this.toogleSearchSorting.bind(this) 
     };
   }
 
   componentDidMount() {
     this.model.set('perPage', this.perPage);
-    const {query, pageNumber, pathName, orderBy, orderSearchAsc} = this.getUrlSearchParameters(this.props.location);
+    const {query, pageNumber, pathName, orderBy, orderSearchAsc, searchIn, selectedUserOrGroup} = this.getUrlSearchParameters(this.props.location);
     this.model.setQuery(query);
     this.model.setPathName(pathName);
-    this.model.setPage(pageNumber);
     this.model.setOrderDropdownOpen(false);
+    this.model.setSearchInDropdownOpen(false);
     this.model.setOrderBy(orderBy);
+    this.model.setSearchIn(searchIn);
+    this.model.setSelectedUserOrGroup(selectedUserOrGroup);
+    this.model.setUsersOrGroupsList([]);
     this.model.setOrderSearchAsc(orderSearchAsc);
+    this.model.setPage(pageNumber);
     // save listener to remove it when unmounting the component
     // TODO: this could be removed if onPaginationPageChange/this.props.history.push worked
     //    also when only the search part changed
     const listener = this.props.history.listen(location => {
-      const {query, pageNumber, pathName, orderBy, orderSearchAsc} = this.getUrlSearchParameters(location);
-      this.onUrlParametersChange(query, pageNumber, pathName, orderBy, orderSearchAsc);
+      const {query, pageNumber, pathName, orderBy, orderSearchAsc, searchIn, selectedUserOrGroup} = this.getUrlSearchParameters(location);
+      this.onUrlParametersChange(query, pageNumber, pathName, orderBy, orderSearchAsc, searchIn, selectedUserOrGroup);
     });
     this.setState({listener});
   }
@@ -81,29 +94,32 @@ class List extends Component {
     }
   }
 
-  urlFromQueryAndPageNumber(query, pageNumber , pathName, orderBy, orderSearchAsc) {
-    return `${pathName}?q=${query}&page=${pageNumber}&orderBy=${orderBy}&orderSearchAsc=${orderSearchAsc}`
+  urlFromQueryAndPageNumber(query, pageNumber , pathName, orderBy, orderSearchAsc, searchIn, selectedUserOrGroup) {
+    const selectedUsr = selectedUserOrGroup !== undefined ? "&selectedUserOrGroup="+selectedUserOrGroup : "";
+    return `${pathName}?q=${query}&page=${pageNumber}&orderBy=${orderBy}&orderSearchAsc=${orderSearchAsc}&searchIn=${searchIn}${selectedUsr}`
   }
 
   getUrlSearchParameters(location) {
     const pageNumber = parseInt(qs.parse(location.search).page, 10) || 1
     const query = qs.parse(location.search).q || '';
     const orderBy = qs.parse(location.search).orderBy || orderByValuesMap.UPDATEDDATE;
+    const searchIn = qs.parse(location.search).searchIn || searchInValuesMap.PROJECTNAME;
+    const selectedUserOrGroup = qs.parse(location.search).selectedUserOrGroup || undefined ;
     const orderSearchAsc = qs.parse(location.search).orderSearchAsc === "true" ? true : false;
     const pathName = location.pathname.endsWith('/') ?
       location.pathname.substring(0,location.pathname.length-1) :
       location.pathname;
-    return {query, pageNumber, pathName, orderBy, orderSearchAsc};
+    return {query, pageNumber, pathName, orderBy, orderSearchAsc, searchIn, selectedUserOrGroup};
   }
 
-  onUrlParametersChange(query, pageNumber, pathName, orderBy, orderSearchAsc) {
+  onUrlParametersChange(query, pageNumber, pathName, orderBy, orderSearchAsc, searchIn, selectedUserOrGroup) {
     // workaround to prevent the listener of "this.props.history.listen" to trigger in the wrong path
     // INFO: check if the path matches [/projects$, /projects/$, /projects?*, /projects/\D*]
     const regExp = /\/projects($|\/$|(\/|\?)\D+.*)$/;
     if (!regExp.test(pathName)) {
       return;
     }
-    this.model.setQueryPageNumberAndPath(query, pageNumber,pathName, orderBy, orderSearchAsc);
+    this.model.setQueryPageNumberAndPath(query, pageNumber,pathName, orderBy, orderSearchAsc, searchIn, selectedUserOrGroup);
   }
 
   onPaginationPageChange(newPageNumber) {
@@ -111,38 +127,92 @@ class List extends Component {
     const pathName = this.model.get('pathName');
     const orderBy= this.model.get('orderBy');
     const orderSearchAsc= this.model.get('orderSearchAsc');
-    const newUrl = this.urlFromQueryAndPageNumber(query, newPageNumber, pathName, orderBy, orderSearchAsc);
+    const searchIn= this.model.get('searchIn');
+    const selectedUserOrGroup = this.model.get('selectedUserOrGroup');
+    const newUrl = this.urlFromQueryAndPageNumber(query, newPageNumber, pathName, orderBy, orderSearchAsc, searchIn, selectedUserOrGroup);
     this.props.history.push(newUrl);
+  }
+
+  pushNewSearchToHistory() {
+    this.props.history.push(
+      this.urlFromQueryAndPageNumber(
+        this.model.get('query'),
+        1,
+        this.model.get('pathName'),
+        this.model.get('orderBy'),
+        this.model.get('orderSearchAsc'),
+        this.model.get('searchIn'),
+        this.model.get('selectedUserOrGroup')
+      )
+    )
   }
 
   onOrderByDropdownToogle() {
     this.model.setOrderDropdownOpen(!this.model.get('orderByDropdownOpen'));
   }
 
+  onSearchInDropdownToogle() {
+    this.model.setSearchInDropdownOpen(!this.model.get('searchInDropdownOpen'));
+  }
+
+  changeSelectedUserOrGroup(userId){
+    this.model.setSelectedUserOrGroup(userId);
+    this.pushNewSearchToHistory();
+  }
+
+  changeSearchDropdownFilter(e){
+    this.model.resetBeforeNewSearch();
+    this.model.setSearchIn(e.target.value);
+    this.pushNewSearchToHistory();
+  }
+
+  getSearchText(){
+    switch(this.model.get('searchIn')){
+    case searchInValuesMap.PROJECTNAME:
+      return "Search by project name";
+    case searchInValuesMap.USERNAME:
+      return "Search by user name";
+    case searchInValuesMap.GROUPNAME:
+      return "Search by group name";
+    default :
+      return "Search Text"
+    }
+  }
+
+  getSearchInLabel(){
+    switch(this.model.get('searchIn')){
+    case searchInValuesMap.PROJECTNAME:
+      return "projects";
+    case searchInValuesMap.USERNAME:
+      return "users";
+    case searchInValuesMap.GROUPNAME:
+      return "groups";
+    default :
+      return ""
+    }
+  }
+  
+  getOrderByLabel(){
+    switch(this.model.get('orderBy')){
+    case orderByValuesMap.NAME:
+      return "name";
+    case orderByValuesMap.CREATIONDATE:
+      return "creation";
+    case orderByValuesMap.UPDATEDDATE:
+      return "updated";
+    default :
+      return ""
+    }
+  }
+
   changeSearchDropdownOrder(e){
     this.model.setOrderBy(e.target.value);
-    this.props.history.push(
-      this.urlFromQueryAndPageNumber(
-        this.model.get('query'),
-        1,
-        this.model.get('pathName'),
-        this.model.get('orderBy'),
-        this.model.get('orderSearchAsc')
-      )
-    )
+    this.pushNewSearchToHistory();
   }
 
   toogleSearchSorting(){
     this.model.setOrderSearchAsc(!this.model.get('orderSearchAsc'));
-    this.props.history.push(
-      this.urlFromQueryAndPageNumber(
-        this.model.get('query'),
-        1,
-        this.model.get('pathName'),
-        this.model.get('orderBy'),
-        this.model.get('orderSearchAsc')
-      )
-    )
+    this.pushNewSearchToHistory();
   }
 
   onSearchQueryChange(e) {
@@ -151,15 +221,8 @@ class List extends Component {
 
   onSearchSubmit(e) {
     e.preventDefault();
-    this.props.history.push(
-      this.urlFromQueryAndPageNumber(
-        this.model.get('query'),
-        1,
-        this.model.get('pathName'),
-        this.model.get('orderBy'),
-        this.model.get('orderSearchAsc')
-      )
-    )
+    this.model.resetBeforeNewSearch();
+    this.pushNewSearchToHistory();
   }
 
   mapStateToProps(state, ownProps) {
@@ -168,7 +231,11 @@ class List extends Component {
       user: ownProps.user,
       searchQuery: this.model.get('query'),
       orderBy: this.model.get('orderBy'),
+      searchIn: this.model.get('searchIn'),
+      selectedUserOrGroup: this.model.get('selectedUserOrGroup'),
+      usersOrGroupsList: this.model.get('usersOrGroupsList'),
       orderByDropdownOpen: this.model.get('orderByDropdownOpen'),
+      searchInDropdownOpen: this.model.get('searchInDropdownOpen'),
       orderSearchAsc: this.model.get('orderSearchAsc'),
       loading: this.model.get('loading'),
       page: this.model.get('pages')[currentPage] || {projects: []},
@@ -190,8 +257,13 @@ class List extends Component {
       handlers={this.handlers}
       urlMap={this.urlMap()}
       orderByValuesMap={orderByValuesMap}
+      searchInValuesMap={searchInValuesMap}
+      searchText={this.getSearchText()}
+      orderByLabel={this.getOrderByLabel()}
+      searchInLabel={this.getSearchInLabel()}
     />
   }
 }
 
 export default List;
+export { searchInValuesMap }

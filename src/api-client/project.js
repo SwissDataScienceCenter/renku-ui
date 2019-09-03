@@ -120,6 +120,24 @@ function addProjectMethods(client) {
     });
   }
 
+  client.getProjectsBy = (searchIn, userOrGroupId, queryParams) => {
+    let headers = client.getBasicHeaders();
+    return client.clientFetch(`${client.baseUrl}/${searchIn}/${userOrGroupId}/projects`, {
+      method: 'GET',
+      headers,
+      queryParams
+    });
+  }
+
+  client.searchUsersOrGroups = (queryParams, searchIn) => {
+    let headers = client.getBasicHeaders();
+    return client.clientFetch(`${client.baseUrl}/${searchIn}`, {
+      method: 'GET',
+      headers,
+      queryParams
+    }).then(result => result.data);
+  }
+
   client.getProjectFiles = (projectId) => {
     return client.getRepositoryTree(projectId, { path: '', recursive: true }).then((tree) => {
       const files = tree
