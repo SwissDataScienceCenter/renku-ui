@@ -138,31 +138,24 @@ class StartNotebookServer extends Component {
 
   async selectCommit(commitId) {
     if (this._isMounted) {
-      // get the useful commitId
-      if (!commitId) {
-        const oldCommit = this.model.get("filters.commit");
-        if (oldCommit && oldCommit.id)
-          commitId = oldCommit.id;
-        else
-          commitId = "latest";
-      }
-
-      // get the proper commit and set it
+      // filter the list of commits according to the constraints
       const maximum = this.model.get("filters.displayedCommits");
       const commits = maximum && parseInt(maximum) > 0 ?
         this.model.get("data.commits").slice(0, maximum) :
         this.model.get("data.commits");
+      let commit = commits[0];
 
-      let commit;
-      if (commitId === "latest")
-        commit = commits[0];
-      else {
-        commit = commits.filter(commit => commit.id === commitId);
-        if (commit.length !== 1) {
-          this.model.setCommit({});
+      // find the proper commit or return
+      if (commitId) {
+        const filteredCommits = commits.filter(commit => commit.id === commitId);
+        if (filteredCommits.length !== 1)
           return;
-        }
-        commit = commit[0];
+        commit = filteredCommits[0];
+      }
+      else {
+        const oldCommit = this.model.get("filters.commit");
+        if (oldCommit && oldCommit.id && oldCommit.id === commit.id)
+          return;
       }
 
       this.model.setCommit(commit);
