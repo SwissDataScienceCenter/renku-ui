@@ -397,10 +397,31 @@ class StartNotebookBranches extends Component {
   render() {
     const { branches } = this.props.data;
     let content;
-    if (StatusHelper.isUpdating(branches) || branches.length === 0) {
+    if (StatusHelper.isUpdating(branches)) {
       content = (
         <Label>Updating branches... <Loader size="14" inline="true" /></Label>
       )
+    }
+    else if (branches.length === 0) {
+      content = (
+        <React.Fragment>
+          <Label>A commit is necessary to start an interactive environment.</Label>
+          <InfoAlert timeout={0}>
+            <p>You can still do one of the following:</p>
+            <ul className="mb-0">
+              <li>
+                <ExternalLink size="sm" url={`${this.props.externalUrl}`} title="Clone the repository" /> locally
+                and add a first commit.
+              </li>
+              <li className="pt-1">
+                <Link className="btn btn-primary btn-sm" role="button" to="/project_new">
+                  Create a new project
+                </Link> from a non-empty template.
+              </li>
+            </ul>
+          </InfoAlert>
+        </React.Fragment>
+      );
     }
     else {
       if (branches.length === 1) {

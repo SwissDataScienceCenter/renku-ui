@@ -634,6 +634,7 @@ class ProjectStartNotebookServer extends Component {
       autosaved={this.props.system.autosaved}
       refreshBranches={this.props.fetchBranches}
       scope={{namespace: this.props.core.namespace_path, project: this.props.core.project_path}}
+      externalUrl={this.props.externalUrl}
       successUrl={this.props.notebookServersUrl}
       history={this.props.history}
     />);

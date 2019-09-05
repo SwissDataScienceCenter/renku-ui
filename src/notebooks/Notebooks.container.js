@@ -35,6 +35,7 @@ import { StatusHelper } from '../model/Model'
  * @param {Object} scope - object containing filtering parameters
  * @param {string} scope.namespace - full path of the reference namespace
  * @param {string} scope.project - path of the reference project
+ * @param {string} externalUrl - GitLabl repository url
  * @param {string} [successUrl] - redirect url to be used when a notebook is succesfully started
  * @param {Object} [history] - mandatory if successUrl is provided
  */
@@ -103,12 +104,15 @@ class StartNotebookServer extends Component {
   async selectBranch(branchName) {
     if (this._isMounted) {
       // get the useful branchName
+      let autoBranchName = false;
       if (!branchName) {
         const oldBranch = this.model.get("filters.branch");
         if (oldBranch && oldBranch.branchName)
           branchName = oldBranch.branchName;
         else
           branchName = "master";
+
+        autoBranchName = true;
       }
 
       // get the proper branch and set it
@@ -119,8 +123,14 @@ class StartNotebookServer extends Component {
         this.refreshCommits();
       }
       else {
-        this.model.setBranch({});
-        this.model.setCommit({});
+        if (autoBranchName && branches && branches.length) {
+          this.model.setBranch(branches[0]);
+          this.refreshCommits();
+        }
+        else {
+          this.model.setBranch({});
+          this.model.setCommit({});
+        }
       }
     }
   }
@@ -215,7 +225,8 @@ class StartNotebookServer extends Component {
         ...state.data,
         branches: ownProps.inherited.branches,
         autosaved: ownProps.inherited.autosaved
-      }
+      },
+      externalUrl: ownProps.inherited.externalUrl
     };
     return {
       handlers: this.handlers,
