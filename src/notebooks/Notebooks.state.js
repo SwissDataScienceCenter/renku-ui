@@ -285,6 +285,7 @@ class NotebooksModel extends StateModel {
       pipelinesState.lastMainId = null;
       pipelinesState.main = mainPipeline;
       this.setObject({ pipelines: pipelinesState });
+      this.set('pipelines.main', {}); // reset pipelines.main attributes
       return mainPipeline;
     }
 
@@ -320,6 +321,12 @@ class NotebooksModel extends StateModel {
     pipelinesState.lastMainId = null;
     pipelinesState.main = mainPipeline;
     this.setObject({ pipelines: pipelinesState });
+    
+    // reset pipelines.main object attributes if needed
+    const currentMain = this.get('pipelines.main');
+    if (currentMain && currentMain.id && !mainPipeline.id)
+      this.set('pipelines.main', {}); 
+
     return mainPipeline;
   }
 
