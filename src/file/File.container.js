@@ -27,7 +27,7 @@ import { ACCESS_LEVELS } from '../api-client';
 import { StatusHelper } from '../model/Model';
 
 const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'tiff', 'pdf', 'gif'];
-const CODE_EXTENSIONS = ['py', 'js', 'json', 'sh', 'r', 'txt', 'yml', 'csv', 'parquet', 'cwl', 'job', 'prn'];
+const CODE_EXTENSIONS = ['py', 'js', 'json', 'sh', 'r', 'txt', 'yml', 'csv', 'parquet', 'cwl', 'job', 'prn', 'rout', 'dcf', 'rproj', 'rst', 'bat'];
 const NO_EXTENSION_FILE = ['Dockerfile', 'errlog', 'log', 'gitignore', 'gitattributes', 'dockerignore', 'lock']
 
 // FIXME: Unify the file viewing for kus (embedded) and independent file viewing.
