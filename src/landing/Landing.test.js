@@ -26,7 +26,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { MemoryRouter } from 'react-router-dom';
-
+import { testClient as client } from '../api-client';
 import { generateFakeUser } from '../app-state/UserState.test';
 import Landing from './Landing';
 
@@ -38,7 +38,8 @@ describe('rendering', () => {
     const div = document.createElement('div');
     ReactDOM.render(
       <MemoryRouter>
-        <Landing.Home welcomePage={btoa('## Welcome to Renku')} user={anonymousUser} />
+        <Landing.Home welcomePage={btoa('## Welcome to Renku')} user={anonymousUser} 
+          client={client} />
       </MemoryRouter>, div);
   });
 
@@ -46,7 +47,7 @@ describe('rendering', () => {
     const div = document.createElement('div');
     ReactDOM.render(
       <MemoryRouter>
-        <Landing.Home welcomePage={btoa('## Welcome to Renku')} user={loggedUser} />
+        <Landing.Home welcomePage={btoa('## Welcome to Renku')} user={loggedUser} client={client}/>
       </MemoryRouter>, div);
   });
 });

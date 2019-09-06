@@ -71,6 +71,8 @@ class App extends Component {
                 render={p => <Landing.Home
                   key="landing" welcomePage={this.props.params['WELCOME_PAGE']}
                   user={this.props.userState.getState().user}
+                  userStateDispatch={this.props.userState.dispatch}
+                  client={this.props.client}
                   {...p} />} />
               <Route path="/help"
                 render ={p => <Help key="help" {...p} {...this.props} /> } />
@@ -104,6 +106,7 @@ class App extends Component {
                   <Project.New key="project_new"
                     client={this.props.client}
                     user={this.props.userState.getState().user}
+                    userStateDispatch={this.props.userState.dispatch}
                     renkuTemplatesUrl={this.props.params['RENKU_TEMPLATES_URL']}
                     renkuTemplatesRef={this.props.params['RENKU_TEMPLATES_REF']}
                     {...p}/> }/>

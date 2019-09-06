@@ -59,18 +59,30 @@ class ProjectSearchForm extends Component {
         <Label for="searchQuery" hidden>Query</Label>
         <InputGroupButtonDropdown addonType="append" toggle={this.props.handlers.onSearchInDropdownToogle} isOpen={this.props.searchInDropdownOpen} >
           <DropdownToggle outline caret color="primary" >
-            Search in: {this.props.searchInLabel}
+            Search by: {this.props.searchInLabel}
           </DropdownToggle>
           <DropdownMenu>
-            <DropdownItem value={this.props.searchInValuesMap.PROJECTNAME} onClick={this.props.handlers.changeSearchDropdownFilter}>
-              {this.props.searchIn === this.props.searchInValuesMap.PROJECTNAME ? <FontAwesomeIcon icon={faCheck} /> :null} Project Name
+            <DropdownItem value={this.props.searchInValuesMap.PROJECTNAME} 
+              onClick={this.props.handlers.changeSearchDropdownFilter}>
+              {this.props.searchIn === this.props.searchInValuesMap.PROJECTNAME ? 
+                <FontAwesomeIcon icon={faCheck} /> :null} Project Name
             </DropdownItem>
-            <DropdownItem value={this.props.searchInValuesMap.USERNAME} onClick={this.props.handlers.changeSearchDropdownFilter}>
-              {this.props.searchIn === this.props.searchInValuesMap.USERNAME ? <FontAwesomeIcon icon={faCheck} /> :null} User Name
-            </DropdownItem>
-            <DropdownItem value={this.props.searchInValuesMap.GROUPNAME} onClick={this.props.handlers.changeSearchDropdownFilter}>
-              {this.props.searchIn === this.props.searchInValuesMap.GROUPNAME ? <FontAwesomeIcon icon={faCheck} /> :null} Group Name
-            </DropdownItem>
+            { 
+              this.props.urlMap.projectsSearchUrl === this.props.currentTab || this.props.hasUser === false  ?
+                [<DropdownItem key={this.props.searchInValuesMap.USERNAME} 
+                  value={this.props.searchInValuesMap.USERNAME} 
+                  onClick={this.props.handlers.changeSearchDropdownFilter}>
+                  {this.props.searchIn === this.props.searchInValuesMap.USERNAME ? 
+                    <FontAwesomeIcon icon={faCheck} /> :null} User Name
+                </DropdownItem>,
+                <DropdownItem key={this.props.searchInValuesMap.GROUPNAME} 
+                  value={this.props.searchInValuesMap.GROUPNAME} 
+                  onClick= {this.props.handlers.changeSearchDropdownFilter}>
+                  {this.props.searchIn === this.props.searchInValuesMap.GROUPNAME ? 
+                    <FontAwesomeIcon icon={faCheck} /> :null} Group Name
+                </DropdownItem>]
+                : null
+            }
           </DropdownMenu>
         </InputGroupButtonDropdown>
         <InputGroupButtonDropdown addonType="append" toggle={this.props.handlers.onOrderByDropdownToogle} isOpen={this.props.orderByDropdownOpen} >
@@ -139,47 +151,18 @@ class ProjectNavTabs extends Component {
 
 class DisplayEmptyProjects extends Component{
   render() {
-    return (<Row>
-      <Col md={8} lg={6} xl={4}>
+    return (
+      <Col>
         <p>
           <strong>{this.props.emptyListText}</strong><br/>
           If there is a project you work on or want to follow, you should search for it in
-          the <Link to={this.props.projectsSearchUrl}>project search</Link>, click on it to view, and star it.
+          the <Link to={this.props.projectsSearchUrl}>project search</Link>, click on it to view it, and star it.
         </p>
         <p>
           Alternatively, you can <Link to={this.props.projectNewUrl}>create a new project</Link>.
         </p>
       </Col>
-    </Row>)
-  }
-}
-
-class DisplayProjects extends Component{
-  render() {
-    const loading = this.props.loading || false;
-    const projectsUrl = this.props.urlMap.projectsUrl;
-    const projectNewUrl = this.props.urlMap.projectNewUrl;
-    const projectsSearchUrl = this.props.urlMap.projectsSearchUrl;
-    const displayProjects = this.props.displayProjects || [];
-    const emptyTextDisplay = this.props.emptyListText;
-
-    const rows = displayProjects.map( p => <ProjectListRow key={p.id} projectsUrl={projectsUrl} {...p} />);
-    const projectsCol = (loading) ?
-      <Col md={{size: 2,  offset: 3}}><Loader /></Col> :
-      <Col md={8}>{rows}</Col>;
-
-    if (rows.length > 0 ){
-      return (<Row key="projects">{projectsCol}</Row>);
-    }
-    else {
-      if(!loading){
-        return <DisplayEmptyProjects
-          projectsSearchUrl={projectsSearchUrl}
-          projectNewUrl={projectNewUrl}
-          emptyListText={emptyTextDisplay}/>
-      } else return " ";
-    }
-
+    )
   }
 }
 
@@ -187,12 +170,17 @@ class ProjectsRows extends Component{
   render(){
     if(this.props.forbidden) return <Col>You need to be logged in to search projects per user name or group name</Col>;
 
+    if(this.props.loading) return <Col md={{size: 2,  offset: 3}}><Loader /></Col>
+
+    if(this.props.page.emptyResponseMessage) 
+      return <DisplayEmptyProjects
+        projectsSearchUrl={this.props.urlMap.projectsSearchUrl}
+        projectNewUrl={this.props.urlMap.projectNewUrl}
+        emptyListText={this.props.emptyListText}/>
+
     const projects = this.props.page.projects || [];
     const rows = projects.map( (p) => <ProjectListRow key={p.id} projectsUrl={this.props.urlMap.projectsUrl} {...p} />);
-
-    return (this.props.loading) ?
-      <Col md={{size: 2,  offset: 3}}><Loader /></Col> :
-      <Col md={8}>{rows}</Col>;
+    return <Col md={8}>{rows}</Col>;
   }
 }
 
@@ -250,7 +238,10 @@ class ProjectsSearch extends Component {
           searchInDropdownOpen={this.props.searchInDropdownOpen}
           orderSearchAsc={this.props.orderSearchAsc}
           searchQuery={this.props.searchQuery} 
-          handlers={this.props.handlers} />
+          handlers={this.props.handlers}
+          currentTab={this.props.currentTab}
+          urlMap={this.props.urlMap}
+          hasUser={hasUser} />
       </Col>
     </Row>,
     <Row key="spacer2"><Col md={8}>&nbsp;</Col></Row>,
@@ -275,6 +266,7 @@ class ProjectsSearch extends Component {
         urlMap={this.props.urlMap}
         loading={loading}
         forbidden={forbidden}
+        emptyListText={this.props.emptyListText}
       />
     </Row>,
     <Pagination key="pagination" {...this.props} />
@@ -301,12 +293,9 @@ class NotFoundInsideProject extends Component {
 
 class ProjectList extends Component {
   render() {
+    if(this.props.user.available === false) return "" ;
     const hasUser = this.props.user.id ? true : false;
-    const user = this.props.user;
-    const starredProjects = (user) ? user.starredProjects : [];
-    const memberProjects = (user) ? user.memberProjects : [];
     const urlMap = this.props.urlMap;
-    const loading = this.props.loading;
 
     return [
       <Row key="header">
@@ -326,28 +315,16 @@ class ProjectList extends Component {
             (hasUser) ?
               <Switch>
                 <Route path={urlMap.starred}
-                  render={props => <DisplayProjects
-                    urlMap={urlMap}
-                    user={user}
-                    loading={loading}
-                    displayProjects={starredProjects}
-                    // eslint-disable-next-line max-len
-                    emptyListText="You are logged in, but you have not yet starred any projects. Starring a project declares your interest in it. "  />} />
+                  render={props =>  <ProjectsSearch
+                    emptyListText="You are logged in, but you have not yet starred any projects. Starring a project declares your interest in it. "
+                    {...this.props} />}/>
                 <Route path={urlMap.projectsSearchUrl}
-                  render={props =>  <ProjectsSearch  {...this.props} />} />
+                  render={props =>  <ProjectsSearch {...this.props} />} />
                 <Route path={urlMap.yourProjects}
-                  render={props => <DisplayProjects
-                    urlMap={urlMap}
-                    user={user}
-                    displayProjects={memberProjects}
-                    loading={loading}
+                  render={props =>  <ProjectsSearch {...this.props}
                     emptyListText="You are logged in, but you have not yet created any projects. " />} />
-                <Route exact path={urlMap.projectsUrl}
-                  render={props => <DisplayProjects
-                    urlMap={urlMap}
-                    user={user}
-                    displayProjects={memberProjects}
-                    loading={loading}
+                <Route path={urlMap.projectsUrl}
+                  render={props =>  <ProjectsSearch {...this.props}
                     emptyListText="You are logged in, but you have not yet created any projects. " />} />
                 <Route component={NotFoundInsideProject} />
               </Switch>
