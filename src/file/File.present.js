@@ -29,44 +29,9 @@ import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faProjectDiagram from '@fortawesome/fontawesome-free-solid/faProjectDiagram'
 import faGitlab from '@fortawesome/fontawesome-free-brands/faGitlab';
 
-import { FilePreview, LaunchJupyter } from './File.container';
-import { API_ERRORS } from '../api-client';
-
-
-class LaunchJupyterPresent extends React.Component {
-  render() {
-    const { notebookUrl, launchNotebookUrl, file } = this.props;
-    const icon = (
-      <svg
-        aria-hidden="true"
-        data-prefix="fas"
-        className="jupyter-icon fa-w-20 icon-link"
-        role="img" xmlns="http://www.w3.org/2000/svg"
-        viewBox="0 0 640 512" />
-    );
-
-    let tooltipText, link;
-    if (notebookUrl) {
-      tooltipText = "Connect to Jupyter";
-      const filePath = file && file.file_path ? file.file_path : null;
-      // * Jupyterlab url reference: https://jupyterlab.readthedocs.io/en/stable/user/urls.html
-      const url = `${notebookUrl}lab/tree/${filePath}`;
-      link = (<a href={url} role="button" target="_blank" rel="noreferrer noopener">{icon}</a>);
-    } else if (launchNotebookUrl) {
-      tooltipText = "Start a Jupyter server";
-      link = (<Link to={launchNotebookUrl}>{icon}</Link>);
-    } else {
-      link = <div></div>
-    }
-
-    return (
-      <span>
-        <span id="launchJupyterIcon">{link}</span>
-        <UncontrolledTooltip placement="top" target="launchJupyterIcon">{tooltipText}</UncontrolledTooltip>
-      </span>
-    );
-  }
-}
+import { FilePreview } from './File.container';
+import { CheckNotebookStatus, CheckNotebookIcon } from '../notebooks'
+import { API_ERRORS, ACCESS_LEVELS } from '../api-client';
 
 class ShowFile extends React.Component {
   constructor(props) {
@@ -146,10 +111,10 @@ class ShowFile extends React.Component {
     const isLFSBadge = isLFS ?
       <Badge className="lfs-badge" color="light">LFS</Badge> :
       null;
-
-    const buttonJupyter = this.props.filePath.endsWith(".ipynb") ?
-      <LaunchJupyter {...this.props} file={this.state.file} /> :
-      null;
+    
+    let buttonJupyter = null;
+    if (this.props.filePath.endsWith(".ipynb"))
+      buttonJupyter = (<JupyterButton {...this.props} file={this.state.file} />);
 
     return (
       <Card>
@@ -207,4 +172,28 @@ class StyledNotebook extends React.Component {
   }
 }
 
-export { ShowFile, StyledNotebook, LaunchJupyterPresent };
+class JupyterButton extends React.Component {
+  render() {
+    if (this.props.accessLevel < ACCESS_LEVELS.MAINTAINER)
+      return (<CheckNotebookIcon fetched={true} launchNotebookUrl={this.props.launchNotebookUrl} />);
+
+    const scope = {
+      namespace: this.props.projectNamespace,
+      project: this.props.projectPath,
+      branch: "master",
+      commit: "latest"
+    }
+    const { file } = this.props;
+    const filePath = file && file.file_path ? file.file_path : "";
+
+    return (
+      <CheckNotebookStatus
+        scope={scope}
+        client={this.props.client}
+        launchNotebookUrl={this.props.launchNotebookUrl}
+        filePath={filePath} />
+    );
+  }
+}
+
+export { ShowFile, StyledNotebook, JupyterButton };

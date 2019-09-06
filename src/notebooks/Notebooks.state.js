@@ -332,12 +332,12 @@ class NotebooksModel extends StateModel {
 
 
   // * Handle polling * //
-  startNotebookPolling() {
+  startNotebookPolling(interval = POLLING_INTERVAL) {
     const oldPoller = this.get('notebooks.poller');
     if (oldPoller == null) {
       const newPoller = setInterval(() => {
         this.fetchNotebooks();
-      }, POLLING_INTERVAL);
+      }, interval);
       this.set('notebooks.poller', newPoller);
 
       // fetch immediatly
@@ -353,13 +353,13 @@ class NotebooksModel extends StateModel {
     }
   }
 
-  startPipelinePolling() {
+  startPipelinePolling(interval = POLLING_INTERVAL) {
     // start polling or invalidate previous data
     const oldPoller = this.get('pipelines.poller');
     if (oldPoller == null) {
       const newPoller = setInterval(() => {
         this.fetchPipeline();
-      }, POLLING_INTERVAL);
+      }, interval);
       this.set('pipelines.poller', newPoller);
 
       // fetch immediatly

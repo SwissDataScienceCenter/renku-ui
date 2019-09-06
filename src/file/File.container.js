@@ -22,8 +22,7 @@ import ReactDOM from 'react-dom';
 import hljs from 'highlight.js';
 
 import { atobUTF8 } from '../utils/Encoding';
-import { StyledNotebook, LaunchJupyterPresent } from './File.present';
-import { ACCESS_LEVELS } from '../api-client';
+import { StyledNotebook } from './File.present';
 
 const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'tiff', 'pdf', 'gif'];
 const CODE_EXTENSIONS = ['py', 'js', 'json', 'sh', 'r', 'txt', 'yml', 'csv', 'parquet', 'cwl', 'job', 'prn'];
@@ -128,43 +127,4 @@ class JupyterNotebookContainer extends Component {
   }
 }
 
-class LaunchJupyter extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      running: null
-    };
-  }
-
-  componentDidMount() {
-    this._mounted = true;
-    if (this.props.user.id) {
-      this.checkNotebook();
-    }
-  }
-
-  componentWillUnmount() {
-    this._mounted = false;
-  }
-
-  checkNotebook() {
-    const { projectId, projectPath } = this.props;
-    this.props.client.getNotebookServerUrl(projectId, projectPath).then(data => {
-      if (this._mounted) {
-        this.setState({
-          running: data
-        });
-      }
-    })
-  }
-
-  render() {
-    if (this.props.accessLevel < ACCESS_LEVELS.DEVELOPER)
-      return null;
-    return (
-      <LaunchJupyterPresent {...this.props} notebookUrl={this.state.running} />
-    );
-  }
-}
-
-export { FilePreview, JupyterNotebookContainer as JupyterNotebook, LaunchJupyter };
+export { FilePreview, JupyterNotebookContainer as JupyterNotebook };

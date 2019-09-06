@@ -364,18 +364,6 @@ function addProjectMethods(client) {
 
   }
 
-  // ! TODO: remove this and use client.getNotebookServers instead
-  client.getNotebookServerUrl = async (projectId, projectPath, commitSha = 'latest', ref = 'master') => {
-    if (commitSha === 'latest') {
-      commitSha = await (client.getCommits(projectId).then(resp => resp.data[0].id));
-    }
-    const headers = client.getBasicHeaders();
-    const url = `${client.baseUrl}/notebooks/${projectPath}/${commitSha}`;
-    return client.clientFetch(url, { method: 'GET', headers})
-      .then(resp => resp.data, resp => ({url: null}))
-      .then(server => server.url ? server.url : null)
-  }
-
   client.getArtifactsUrl = (projectId, job, branch = 'master') => {
     const headers = client.getBasicHeaders();
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}/jobs`, {

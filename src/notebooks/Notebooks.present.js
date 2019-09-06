@@ -31,7 +31,7 @@ import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 import { StatusHelper } from '../model/Model';
 import { NotebooksHelper } from './index'
-import { Loader, InfoAlert, ExternalLink } from '../utils/UIComponents';
+import { Loader, InfoAlert, ExternalLink, JupyterIcon } from '../utils/UIComponents';
 import Time from '../utils/Time';
 import Sizes from '../utils/Media';
 
@@ -940,4 +940,46 @@ class AutosavedDataModal extends Component {
   }
 }
 
-export { Notebooks, StartNotebookServer }
+// * CheckNotebookIcon code * //
+class CheckNotebookIcon extends Component {
+  render() {
+    const { fetched, notebook } = this.props;
+    if (!fetched)
+      return (<Loader size="16" inline="true" />);
+
+    let tooltip, link, icon;
+    if (notebook) {
+      const status = NotebooksHelper.getStatus(notebook.status);
+      if (status === "running") {
+        tooltip = "Connect to Jupyter";
+        icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" />);
+        const url = `${notebook.url}lab/tree/${this.props.filePath}`;
+        link = (<a href={url} role="button" target="_blank" rel="noreferrer noopener">{icon}</a>);
+      }
+      else if (status === "pending") {
+        tooltip = "Interactive environment status is changing, please wait...";
+        icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" greyscale={true} />);
+        link = (<span>{icon}</span>);
+      }
+      else {
+        tooltip = "Check interactive environment status";
+        icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" greyscale={true} />);
+        link = (<Link to={this.props.launchNotebookUrl}>{icon}</Link>);
+      }
+    }
+    else {
+      tooltip = "Start an interactive environment";
+      icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" greyscale={true} />);
+      link = (<Link to={this.props.launchNotebookUrl}>{icon}</Link>);
+    }
+
+    return (
+      <React.Fragment>
+        <span id="checkNotebookIcon">{link}</span>
+        <UncontrolledTooltip placement="top" target="checkNotebookIcon">{tooltip}</UncontrolledTooltip>
+      </React.Fragment>
+    );
+  }
+}
+
+export { Notebooks, StartNotebookServer, CheckNotebookIcon }

@@ -29,8 +29,8 @@ import faGitlab from '@fortawesome/fontawesome-free-brands/faGitlab';
 import { Card, CardHeader, CardBody, UncontrolledTooltip, Badge, Button, Alert, Progress } from 'reactstrap';
 
 import { Loader } from '../utils/UIComponents';
-import { LaunchJupyter } from './File.container';
 import { GraphIndexingStatus } from '../project/Project';
+import { JupyterButton } from './File.present'
 
 import './Lineage.css';
 
@@ -299,9 +299,13 @@ class FileLineage extends Component {
         rel="noreferrer noopener"><FontAwesomeIcon className="icon-link" icon={faGitlab} /></a>
     </span>
 
-    let buttonJupyter = this.props.filePath.endsWith(".ipynb") ?
-      <LaunchJupyter {...this.props} /> :
-      null;
+    let buttonJupyter = null;
+    if (this.props.filePath.endsWith(".ipynb"))
+      buttonJupyter = (
+        <JupyterButton {...this.props}
+          file={{ file_path: this.props.path }}
+          projectPath={this.props.projectPathOnly} />
+      );
 
     return <Card>
       <CardHeader className="align-items-baseline">

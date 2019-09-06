@@ -23,7 +23,8 @@
  *
  */
 
-import { Notebooks, StartNotebookServer } from './Notebooks.container';
+import { Notebooks, StartNotebookServer, CheckNotebookStatus } from './Notebooks.container';
+import { CheckNotebookIcon } from './Notebooks.present';
 import { NotebooksHelper } from './Notebooks.state'
 
-export { Notebooks, StartNotebookServer, NotebooksHelper }
+export { Notebooks, StartNotebookServer, NotebooksHelper, CheckNotebookStatus, CheckNotebookIcon }

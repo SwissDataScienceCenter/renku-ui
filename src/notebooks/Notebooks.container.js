@@ -22,6 +22,7 @@ import { connect } from 'react-redux'
 import { NotebooksModel } from './Notebooks.state';
 import { StartNotebookServer as StartNotebookServerPresent } from './Notebooks.present';
 import { Notebooks as NotebooksPresent } from './Notebooks.present';
+import { CheckNotebookIcon } from './Notebooks.present';
 import { StatusHelper } from '../model/Model'
 
 /**
@@ -290,4 +291,67 @@ class Notebooks extends Component {
   }
 }
 
-export { Notebooks, StartNotebookServer };
+/**
+ * Display the connect to Jupyter icon
+ * 
+ * @param {Object} client - api-client used to query the gateway
+ * @param {string} filePath - relative path of the target notebook file
+ * @param {string} launchNotebookUrl - launch notebook url
+ * @param {Object} scope - object containing filtering parameters
+ * @param {string} scope.namespace - full path of the reference namespace
+ * @param {string} scope.project - path of the reference project
+ * @param {string} scope.branch - branch name
+ * @param {string} scope.commit - commit full id or "latest"
+ * @param {number} [pollingInterval] - polling timeout interval in seconds
+ */
+class CheckNotebookStatus extends Component {
+  constructor(props) {
+    super(props);
+    this.model = new NotebooksModel(props.client);
+
+    if (props.scope) {
+      this.model.setNotebookFilters(props.scope);
+    }
+  }
+
+  async componentDidMount() {
+    // ! temporary -- get "latest" commit
+    let { scope } = this.props;
+    if (scope.commit === "latest") {
+      let commits = await this.model.fetchCommits();
+      scope.commit = commits[0];
+      this.model.setNotebookFilters(scope);
+    }
+
+    const pollingInterval = this.props.pollingInterval ?
+      parseInt(this.props.pollingInterval) * 1000 :
+      5000;
+
+    this.model.startNotebookPolling(pollingInterval);
+  }
+
+  componentWillUnmount() {
+    this.model.stopNotebookPolling();
+  }
+
+  mapStateToProps(state, ownProps) {
+    const notebookKeys = Object.keys(state.notebooks.all);
+    const notebook = notebookKeys.length > 0 ?
+      state.notebooks.all[notebookKeys] :
+      null;
+
+    return {
+      fetched: state.notebooks.fetched,
+      fetching: state.notebooks.fetching,
+      notebook
+    }
+  }
+
+  render() {
+    const VisibleNotebookIcon = connect(this.mapStateToProps.bind(this))(CheckNotebookIcon);
+
+    return (<VisibleNotebookIcon store={this.model.reduxStore} {...this.props} />);
+  }
+}
+
+export { Notebooks, StartNotebookServer, CheckNotebookStatus };
