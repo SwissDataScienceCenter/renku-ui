@@ -326,8 +326,10 @@ class CheckNotebookStatus extends Component {
   }
 
   async componentDidMount() {
-    // ! temporary -- get "latest" commit
+    // ! temporary -- ignore missing branch and get "latest" commit
     let { scope } = this.props;
+    if (!scope.branch || !scope.commit)
+      return;
     if (scope.commit === "latest") {
       let commits = await this.model.fetchCommits();
       scope.commit = commits[0];

@@ -22,7 +22,9 @@ import ReactDOM from 'react-dom';
 import hljs from 'highlight.js';
 
 import { atobUTF8 } from '../utils/Encoding';
-import { StyledNotebook } from './File.present';
+import { StyledNotebook, JupyterButtonPresent } from './File.present';
+import { ACCESS_LEVELS } from '../api-client';
+import { StatusHelper } from '../model/Model';
 
 const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'tiff', 'pdf', 'gif'];
 const CODE_EXTENSIONS = ['py', 'js', 'json', 'sh', 'r', 'txt', 'yml', 'csv', 'parquet', 'cwl', 'job', 'prn'];
@@ -127,4 +129,71 @@ class JupyterNotebookContainer extends Component {
   }
 }
 
-export { FilePreview, JupyterNotebookContainer as JupyterNotebook };
+/**
+ * Jupyter button container component
+ * 
+ * @param {Object} client - api-client used to query the gateway
+ * @param {number} accessLevel - current project access level
+ * @param {Object} branches - branches data, likely to change in a future release
+ * @param {Object} branches.all - list of available branches
+ * @param {Object} branches.fetch - function to invoke to refresh branches
+ * @param {string} scope.projectNamespace - full path of the reference namespace
+ * @param {string} scope.projectPath - path of the reference project
+ * @param {string} filePath - relative path of the target notebook file
+ * @param {string} launchNotebookUrl - launch notebook url
+ */
+class JupyterButton extends React.Component {
+  componentDidMount() {
+    if (this.props.accessLevel >= ACCESS_LEVELS.MAINTAINER) {
+      const { branches } = this.props;
+      if (branches && branches.all && !branches.all.length && !StatusHelper.isUpdating(branches.all))
+        branches.fetch();
+    }
+  }
+
+  getDefaultBranch() {
+    const { branches } = this.props;
+    if (!branches || !branches.all || StatusHelper.isUpdating(branches.all) || !branches.all.length)
+      return null;
+
+    const masterBranch = branches.all.filter(branch => branch.name === "master");
+    if (masterBranch.length)
+      return "master";
+
+    return branches[0].name;
+  }
+
+  getScope() {
+    const scope = {
+      namespace: this.props.projectNamespace,
+      project: this.props.projectPath,
+    }
+    // TODO: plug in branch and commit coming from project page when it available
+    scope.commit = "latest";
+    scope.branch = this.getDefaultBranch();
+    return scope;
+  }
+
+  render() {
+    if (this.props.accessLevel < ACCESS_LEVELS.MAINTAINER)
+      return (<JupyterButtonPresent access={false} launchNotebookUrl={this.props.launchNotebookUrl} />);
+
+    const { file, branches } = this.props;
+    let updating = false;
+    if (branches.all && StatusHelper.isUpdating(branches.all))
+      updating = true;
+    const filePath = file && file.file_path ? file.file_path : "";
+
+    return (
+      <JupyterButtonPresent
+        access={true}
+        scope={this.getScope()}
+        filePath={filePath}
+        updating={updating}
+        client={this.props.client}
+        launchNotebookUrl={this.props.launchNotebookUrl} />
+    );
+  }
+}
+
+export { FilePreview, JupyterNotebookContainer as JupyterNotebook, JupyterButton };

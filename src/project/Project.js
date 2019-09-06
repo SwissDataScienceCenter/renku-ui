@@ -221,6 +221,10 @@ class View extends Component {
     // the projectStore. This is not yet necessary.
     const subUrls = this.getSubUrls();
     const subProps = {...ownProps, projectId, accessLevel, externalUrl, filesTree, projectPathWithNamespace, forkModalOpen};
+    const branches = {
+      all: this.projectState.get('system.branches'),
+      fetch: () => { this.fetchBranches() }
+    };
 
     const mapStateToProps = (state, ownProps) => {
       return {
@@ -253,6 +257,7 @@ class View extends Component {
         launchNotebookUrl={subUrls.launchNotebookUrl}
         projectNamespace={this.projectState.get('core.namespace_path')}
         projectPathOnly={this.projectState.get('core.project_path')}
+        branches={branches}
         hashElement={filesTree !== undefined ? filesTree.hash[p.match.params.filePath] : undefined} />,
 
       fileView: (p) => <ShowFile
@@ -262,6 +267,7 @@ class View extends Component {
         launchNotebookUrl={subUrls.launchNotebookUrl}
         projectNamespace={this.projectState.get('core.namespace_path')}
         projectPath={this.projectState.get('core.project_path')}
+        branches={branches}
         hashElement={filesTree !== undefined ?
           filesTree.hash[p.location.pathname.replace(this.props.match.url + '/files/blob/', '')] :
           undefined} />,

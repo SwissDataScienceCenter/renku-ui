@@ -29,7 +29,8 @@ import { MemoryRouter } from 'react-router-dom';
 
 import { testClient as client } from '../api-client'
 import { generateFakeUser } from '../app-state/UserState.test';
-import { ShowFile, JupyterButton } from './File.present';
+import { JupyterButton } from './index';
+import { ShowFile } from './File.present';
 
 describe('rendering', () => {
   const users = [
@@ -38,6 +39,7 @@ describe('rendering', () => {
   ];
 
   const props = {
+    client: client,
     filePath: "/projects/1/files/blob/myFolder/myNotebook.ipynb",
     match: { url: "/projects/1", params: { id: "1" } },
     launchNotebookUrl: "/projects/1/launchNotebook",
@@ -48,9 +50,10 @@ describe('rendering', () => {
       const div = document.createElement('div');
       // * fix for tooltips https://github.com/reactstrap/reactstrap/issues/773#issuecomment-357409863
       document.body.appendChild(div);
+      const branches = { all: [], fetch: () => { } };
       ReactDOM.render(
         <MemoryRouter>
-          <JupyterButton user={user.data} client={client} {...props} />
+          <JupyterButton user={user.data} branches={branches} {...props} />
         </MemoryRouter>, div);
     });
 
@@ -59,7 +62,7 @@ describe('rendering', () => {
       document.body.appendChild(div);
       ReactDOM.render(
         <MemoryRouter>
-          <ShowFile user={user.data} client={client} {...props} />
+          <ShowFile user={user.data} {...props} />
         </MemoryRouter>, div);
     });
   }

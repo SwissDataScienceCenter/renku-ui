@@ -29,9 +29,10 @@ import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faProjectDiagram from '@fortawesome/fontawesome-free-solid/faProjectDiagram'
 import faGitlab from '@fortawesome/fontawesome-free-brands/faGitlab';
 
-import { FilePreview } from './File.container';
+import { FilePreview, JupyterButton } from './index';
 import { CheckNotebookStatus, CheckNotebookIcon } from '../notebooks'
-import { API_ERRORS, ACCESS_LEVELS } from '../api-client';
+import { Loader } from '../utils/UIComponents';
+import { API_ERRORS } from '../api-client';
 
 class ShowFile extends React.Component {
   constructor(props) {
@@ -172,28 +173,22 @@ class StyledNotebook extends React.Component {
   }
 }
 
-class JupyterButton extends React.Component {
+class JupyterButtonPresent extends React.Component {
   render() {
-    if (this.props.accessLevel < ACCESS_LEVELS.MAINTAINER)
+    if (!this.props.access)
       return (<CheckNotebookIcon fetched={true} launchNotebookUrl={this.props.launchNotebookUrl} />);
 
-    const scope = {
-      namespace: this.props.projectNamespace,
-      project: this.props.projectPath,
-      branch: "master",
-      commit: "latest"
-    }
-    const { file } = this.props;
-    const filePath = file && file.file_path ? file.file_path : "";
+    if (this.props.updating)
+      return (<Loader size="16" inline="true" />);
 
     return (
       <CheckNotebookStatus
-        scope={scope}
+        scope={this.props.scope}
         client={this.props.client}
         launchNotebookUrl={this.props.launchNotebookUrl}
-        filePath={filePath} />
+        filePath={this.props.filePath} />
     );
   }
 }
 
-export { ShowFile, StyledNotebook, JupyterButton };
+export { ShowFile, StyledNotebook, JupyterButtonPresent };

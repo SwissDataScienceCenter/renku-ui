@@ -30,7 +30,7 @@ import { Card, CardHeader, CardBody, UncontrolledTooltip, Badge, Button, Alert, 
 
 import { Loader } from '../utils/UIComponents';
 import { GraphIndexingStatus } from '../project/Project';
-import { JupyterButton } from './File.present'
+import { JupyterButton } from './index';
 
 import './Lineage.css';
 
