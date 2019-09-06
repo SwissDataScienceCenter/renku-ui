@@ -294,10 +294,10 @@ class View extends Component {
 
   eventHandlers = {
     onProjectTagsChange: (tags) => {
-      this.projectState.setTags(this.props.client, tags);
+      this.projectState.setTags(this.props.client, tags, this.props.userStateDispatch);
     },
     onProjectDescriptionChange: (description) => {
-      this.projectState.setDescription(this.props.client, description);
+      this.projectState.setDescription(this.props.client, description, this.props.userStateDispatch);
     },
     onStar: (e) => {
       e.preventDefault();

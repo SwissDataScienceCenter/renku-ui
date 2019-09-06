@@ -34,7 +34,30 @@ const searchInValuesMap = {
   GROUPNAME: 'groups'
 };
 
+const searchScopesValuesMap = {
+  MEMBERSHIP: 'membership',
+  STARRED: 'starred'
+};
+
+const urlMap = {
+  projectsUrl: '/projects',
+  projectsSearchUrl: '/projects/search',
+  projectNewUrl: '/project_new',
+  starred:'/projects/starred',
+  yourProjects:'/projects/your_projects'
+}
+
 class List extends Component {
+  render(){
+    //this prevents everything from loading until the user is available
+    //user.available doesn't determine weather the user is or not logged in
+    return this.props.user.available === false ? 
+      null:
+      <AvailableUserList {... this.props} />;
+  }
+}
+
+class AvailableUserList extends Component {
   constructor(props) {
     super(props);
     this.model = new ProjectListModel(props.client);
@@ -49,7 +72,7 @@ class List extends Component {
       changeSearchDropdownOrder: this.changeSearchDropdownOrder.bind(this),
       changeSearchDropdownFilter: this.changeSearchDropdownFilter.bind(this),
       changeSelectedUserOrGroup: this.changeSelectedUserOrGroup.bind(this),
-      toogleSearchSorting: this.toogleSearchSorting.bind(this) 
+      toogleSearchSorting: this.toogleSearchSorting.bind(this)
     };
   }
 
@@ -65,6 +88,7 @@ class List extends Component {
     this.model.setSelectedUserOrGroup(selectedUserOrGroup);
     this.model.setUsersOrGroupsList([]);
     this.model.setOrderSearchAsc(orderSearchAsc);
+    this.model.setLoggedIn(this.props.user.id ? true : false);
     this.model.setPage(pageNumber);
     // save listener to remove it when unmounting the component
     // TODO: this could be removed if onPaginationPageChange/this.props.history.push worked
@@ -83,21 +107,10 @@ class List extends Component {
     }
   }
 
-  // TODO: Replace this by URLs which are passed down from the app level.
-  urlMap() {
-    return {
-      projectsUrl: '/projects',
-      projectsSearchUrl: '/projects/search',
-      projectNewUrl: '/project_new',
-      starred:'/projects/starred',
-      yourProjects:'/projects/your_projects'
-    }
-  }
-
   urlFromQueryAndPageNumber(query, pageNumber , pathName, orderBy, orderSearchAsc, searchIn, selectedUserOrGroup) {
     const selectedUsr = selectedUserOrGroup !== undefined ? "&selectedUserOrGroup="+selectedUserOrGroup : "";
     return `${pathName}?q=${query}&page=${pageNumber}&orderBy=${orderBy}&orderSearchAsc=${orderSearchAsc}&searchIn=${searchIn}${selectedUsr}`
-  }
+  } 
 
   getUrlSearchParameters(location) {
     const pageNumber = parseInt(qs.parse(location.search).page, 10) || 1
@@ -109,6 +122,7 @@ class List extends Component {
     const pathName = location.pathname.endsWith('/') ?
       location.pathname.substring(0,location.pathname.length-1) :
       location.pathname;
+    this.model.setCurrentTab(pathName);
     return {query, pageNumber, pathName, orderBy, orderSearchAsc, searchIn, selectedUserOrGroup};
   }
 
@@ -243,7 +257,8 @@ class List extends Component {
       totalItems: this.model.get('totalItems'),
       perPage: this.model.get('perPage'),
       onPageChange: this.handlers.onPaginationPageChange,
-      selected: this.model.get('selected')
+      selected: this.model.get('selected'),
+      currentTab: this.model.get('currentTab')
     }
   }
 
@@ -255,7 +270,7 @@ class List extends Component {
       store={this.model.reduxStore}
       user={this.props.user}
       handlers={this.handlers}
-      urlMap={this.urlMap()}
+      urlMap={urlMap}
       orderByValuesMap={orderByValuesMap}
       searchInValuesMap={searchInValuesMap}
       searchText={this.getSearchText()}
@@ -266,4 +281,4 @@ class List extends Component {
 }
 
 export default List;
-export { searchInValuesMap }
+export { searchInValuesMap, searchScopesValuesMap, urlMap }

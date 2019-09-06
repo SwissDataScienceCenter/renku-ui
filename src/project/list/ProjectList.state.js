@@ -26,7 +26,7 @@
 
 
 import { Schema, StateKind, StateModel} from '../../model/Model';
-import { searchInValuesMap } from './ProjectList.container';
+import { searchInValuesMap, urlMap } from './ProjectList.container';
 
 const projectPageItemSchema = new Schema({
   title: {initial: '', mandatory: true},
@@ -40,6 +40,7 @@ const projectsPageSchema = new Schema({
 
 const projectListSchema = new Schema({
   loading: {initial: false},
+  loggedIn: {initial: false},
   query: {initial: "", mandatory: true},
   totalItems: {mandatory: true},
   currentPage: {mandatory: true},
@@ -47,7 +48,8 @@ const projectListSchema = new Schema({
   orderBy: {initial:'last_activity_at', mandatory:true},
   searchIn: {initial:'projects', mandatory:true},
   usersOrGroupsList: {initial: []},
-  pages: {initial: [], schema: [{projectsPageSchema}]}
+  pages: {initial: [], schema: [{projectsPageSchema}]},
+  currentTab: {initial: 'your_projects', mandatory: true}
 });
 
 class ProjectListModel extends StateModel {
@@ -101,6 +103,14 @@ class ProjectListModel extends StateModel {
     this.set('orderSearchAsc', orderSearchAsc);
   }
 
+  setCurrentTab(currentTab){
+    this.set('currentTab', currentTab);
+  }
+
+  setLoggedIn(loggedIn){
+    this.set('loggedIn', loggedIn);
+  }
+
   setQueryPageNumberAndPath(query, pageNumber, pathName, orderBy, orderSearchAsc, searchIn, selectedUserOrGroup) {
     this.setQuery(query)
     this.setPathName(pathName)
@@ -119,16 +129,29 @@ class ProjectListModel extends StateModel {
     this.set(`pages`, []);
   }
 
+  getEmptyResponseMessage(projects){
+    if(this.get('loggedIn') && this.get('query')==='' && projects.length === 0
+    && (this.get('currentTab') === urlMap.starred || this.get('currentTab') === urlMap.yourProjects))
+    {
+      return "EMPTY_PROJECTS_MESSAGE"
+    }
+  }
+
+  manageResponse(response){
+    const pagination = response.pagination;
+    this.set('currentPage', pagination.currentPage);
+    this.set('totalItems', pagination.totalItems);
+    this.set(`pages.${pagination.currentPage}`, {
+      projects: response.data,
+      emptyResponseMessage: this.getEmptyResponseMessage(response.data)
+    });
+    this.set('loading', false);
+  }
+
   searchProjects(searchParams){
     return this.client.getProjects(searchParams)
       .then(response => {
-        const pagination = response.pagination;
-        this.set('currentPage', pagination.currentPage);
-        this.set('totalItems', pagination.totalItems);
-        this.set(`pages.${pagination.currentPage}`, {
-          projects: response.data,
-        });
-        this.set('loading', false);
+        this.manageResponse(response);
       });
   }
 
@@ -151,13 +174,7 @@ class ProjectListModel extends StateModel {
         }
         this.client.getProjectsBy(searchIn, selectedElement, queryParams)
           .then(response=> {
-            const pagination = response.pagination;
-            this.set('currentPage', pagination.currentPage);
-            this.set('totalItems', pagination.totalItems);
-            this.set(`pages.${pagination.currentPage}`, {
-              projects: response.data,
-            });
-            this.set('loading', false);
+            this.manageResponse(response);
           })
       }).catch((error) => {
         this.setUsersOrGroupsList([]);
@@ -174,15 +191,31 @@ class ProjectListModel extends StateModel {
     const orderBy = this.get('orderBy');
     const selectedUserOrGroupId = this.get('selectedUserOrGroup');
     const sort = this.get('orderSearchAsc') === true ? 'asc' : 'desc';
-    const queryParams = { page: pageNumber, per_page: perPage, order_by: orderBy, sort:sort}
+    let queryParams = { page: pageNumber, per_page: perPage, order_by: orderBy, sort:sort }
 
+    if(this.get('loggedIn')){
+      switch(this.get('currentTab')){
+      case urlMap.projectsUrl:
+        queryParams = { ...queryParams , membership: true }
+        break;
+      case urlMap.starred :
+        queryParams = { ...queryParams, starred: true }
+        break;
+      case urlMap.yourProjects :
+        queryParams = { ...queryParams, membership: true }
+        break;
+      default:
+        break;
+      }
+    }
+    
     switch(searchIn) {
     case searchInValuesMap.PROJECTNAME :
       return this.searchProjects({search:query, ...queryParams});
     case searchInValuesMap.USERNAME :
-      return this.searchProjectsByUsernameOrGroup(  searchIn, queryParams, query, selectedUserOrGroupId ) 
+      return this.searchProjectsByUsernameOrGroup( searchIn, queryParams, query, selectedUserOrGroupId ) 
     case searchInValuesMap.GROUPNAME :
-      return this.searchProjectsByUsernameOrGroup(  searchIn, queryParams, query, selectedUserOrGroupId ) 
+      return this.searchProjectsByUsernameOrGroup( searchIn, queryParams, query, selectedUserOrGroupId ) 
     default : return [];
     }
   }

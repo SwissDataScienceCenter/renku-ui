@@ -25,7 +25,7 @@
 
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
-
+import { UserState } from '../../app-state';
 import { StateKind, StateModel } from '../../model/Model';
 // TODO: ONLY use one projectSchema after the refactoring has been finished.
 import { newProjectSchema } from '../../model/RenkuModels';
@@ -53,7 +53,7 @@ function projectVisibilitiesForGroupVisibility(groupVisibility='public') {
 class New extends Component {
   constructor(props) {
     super(props);
-
+    
     this.newProject = new StateModel(newProjectSchema, StateKind.REDUX);
     this.state = {statuses: [], namespaces: [], namespaceGroup: null,
       visibilities: projectVisibilitiesForGroupVisibility(), templates: []
@@ -100,6 +100,11 @@ class New extends Component {
     
   }
 
+  refreshUserProjects(client, userStateDispatch) {
+    client.getProjects({membership: true, order_by: 'last_activity_at'})
+      .then(p => userStateDispatch(UserState.reSetMember(p)));
+  }
+
   onSubmit() {
     if (this.newProject.get('display.errors')) {
       this.newProject.set('display.errors', []);
@@ -109,6 +114,7 @@ class New extends Component {
       this.newProject.set('display.loading', true);
       this.props.client.postProject(this.newProject.get(), this.props.renkuTemplatesUrl, this.props.renkuTemplatesRef)
         .then((project) => {
+          this.refreshUserProjects(this.props.client, this.props.userStateDispatch);
           this.newProject.set('display.loading', false);
           this.props.history.push(`/projects/${project.id}`);
         })

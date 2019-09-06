@@ -30,6 +30,7 @@ import { Provider, connect } from 'react-redux'
 import { createStore } from '../utils/EnhancedState'
 import Present from './Landing.present'
 import State from './Landing.state'
+import { UserState } from '../app-state'
 
 function urlMap() {
   return {
@@ -56,8 +57,9 @@ class Home extends Component {
     this.store = createStore(State.Home.reduce);
   }
 
-  componentDidMount() {
-    // this.listProjects();
+  componentWillMount(){
+    UserState.reSetAllProjects(this.props.client, this.props.userStateDispatch, 
+      this.props.user.starredProjects, this.props.user.memberProjects);
   }
 
   mapStateToProps(state, ownProps) {

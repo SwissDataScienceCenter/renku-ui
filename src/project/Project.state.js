@@ -259,18 +259,23 @@ class ProjectModel extends StateModel {
       .finally(() => this.set('transient.requests.readme', false))
   }
 
-  setTags(client, tags) {
-    this.setUpdating({system: {tag_list: [true]}});
-    client.setTags(this.get('core.id'), this.get('core.title'), tags).then(() => {
-      this.fetchProject(client, this.get('core.id'));
-    })
+  refreshUserProjects(client, userStateDispatch) {
+    client.getProjects({membership: true, order_by: 'last_activity_at'})
+      .then(p => userStateDispatch(UserState.reSetMember(p)));
   }
 
-  setDescription(client,description) {
+  setTags(client, tags, userStateDispatch) {
+    this.setUpdating({system: {tag_list: [true]}});
+    client.setTags(this.get('core.id'), this.get('core.title'), tags)
+      .then(() => { this.fetchProject(client, this.get('core.id'));})
+      .then(()=> this.refreshUserProjects(client, userStateDispatch))
+  }
+
+  setDescription(client, description, userStateDispatch) {
     this.setUpdating({core: {description: true}});
     client.setDescription(this.get('core.id'), this.get('core.title'), description).then(() => {
       this.fetchProject(client, this.get('core.id'));
-    })
+    }).then(()=> this.refreshUserProjects(client, userStateDispatch))
   }
 
   toogleForkModal() {
@@ -281,8 +286,8 @@ class ProjectModel extends StateModel {
   star(client, userStateDispatch, starred) {
     client.starProject(this.get('core.id'), starred).then(() => {
       // TODO: Bad naming here - will be resolved once the user state is re-implemented.
-      this.fetchProject(client, this.get('core.id')).then(p => userStateDispatch(UserState.star(p.metadata.core)))
-
+      this.fetchProject(client, this.get('core.id'))
+        .then(p => userStateDispatch(UserState.star(p.metadata.core)))
     })
   }
 }
