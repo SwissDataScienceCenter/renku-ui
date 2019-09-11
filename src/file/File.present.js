@@ -24,21 +24,26 @@ import NotebookPreview from '@nteract/notebook-render';
 // Instead define the style below
 //import './notebook.css'
 import { UncontrolledTooltip, Card, CardHeader, CardBody, Badge } from 'reactstrap';
+import { ListGroup, ListGroupItem } from 'reactstrap';
 import '../../node_modules/highlight.js/styles/atom-one-light.css'
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faProjectDiagram from '@fortawesome/fontawesome-free-solid/faProjectDiagram'
 import faGitlab from '@fortawesome/fontawesome-free-brands/faGitlab';
 
-import { FilePreview, JupyterButton } from './index';
+import { FilePreview } from './index';
 import { CheckNotebookStatus, CheckNotebookIcon } from '../notebooks'
 import { Loader } from '../utils/UIComponents';
+import { Time } from '../utils/Time';
+
+const commitMessageLengthLimit = 120;
 
 
 /**
  * Display the Card with file information. Has the following parameters:
  *
+ * @param {string} gitLabUrl - Url to GitLab.
  * @param {string} filePath - Path of the file
- * @param {string} commitHash - Commit hash for the file
+ * @param {Object} commit - Information from GitLab about the commit.
  * @param {Component} buttonGraph - Button to switch to graph view
  * @param {Component} buttonGit - Button to switch to GitLab.
  * @param {Component} buttonJupyter - Button to switch to Jupyter.
@@ -47,22 +52,58 @@ import { Loader } from '../utils/UIComponents';
  */
 class FileCard extends React.Component {
   render() {
+    let commitHeader = null;
+    if (this.props.commit) {
+      const commitLinkHref = `${this.props.gitLabUrl}/commit/${this.props.commit.id}`;
+      const title = (this.props.commit.title.length > commitMessageLengthLimit) ?
+        this.props.commit.title.slice(0, commitMessageLengthLimit) + "..." :
+        this.props.commit.title
+      commitHeader = <ListGroup flush>
+        <ListGroupItem>
+          <div className="d-flex justify-content-between flex-wrap">
+            <div>
+              <a href={commitLinkHref} target="_blank" rel="noreferrer noopener">
+                Commit: {this.props.commit.short_id}
+              </a> &nbsp;
+              {title}
+            </div>
+            <div className="caption">
+              {this.props.commit.author_name} &nbsp;
+              {Time.toIsoString(this.props.commit.committed_date)}
+            </div>
+          </div>
+        </ListGroupItem>
+      </ListGroup>
+    }
     return <Card>
       <CardHeader className="align-items-baseline">
         {this.props.lfsBadge}
         {this.props.filePath}
         <span className="caption align-baseline">&nbsp;File view</span>
-        <div className="float-right" >
+        <div className="float-right">
           {this.props.buttonJupyter}
           {this.props.buttonGit}
           {this.props.buttonGraph}
         </div>
       </CardHeader>
+      {commitHeader}
       <CardBody>{this.props.body}</CardBody>
     </Card>
   }
 }
 
+/**
+ * Display a file with some metadata. Has the following parameters:
+ *
+ * @param {string} externalUrl - Url to GitLab.
+ * @param {string} filePath - Path of the file
+ * @param {string} gitLabFilePath - Path of the file in gitLab
+ * @param {string} lineagesPath - Path to get the lineage
+ * @param {Component} buttonJupyter - A button to connect to jupyter
+ * @param {Object} file - The file object from GitLab (can be null)
+ * @param {Object} commit - The commit object from GitLab (can be null)
+ * @param {Object} error - The error object from GitLab (can be null)
+ */
 class ShowFile extends React.Component {
 
   render() {
@@ -92,10 +133,10 @@ class ShowFile extends React.Component {
     if (this.props.error !== null) {
       return <FileCard gitLabUrl={this.props.externalUrl}
         filePath={this.props.gitLabFilePath.split('\\').pop().split('/').pop()}
-        commitHash={this.props.file.last_commit_id}
+        commit={this.props.commit}
         buttonGraph={buttonGraph}
         buttonGit={buttonGit}
-        buttonJupyter={null}
+        buttonJupyter={this.props.buttonJupyter}
         body={this.props.error}
         lfsBadge={null} />
     }
@@ -110,10 +151,6 @@ class ShowFile extends React.Component {
       <Badge className="lfs-badge" color="light">LFS</Badge> :
       null;
 
-    let buttonJupyter = null;
-    if (this.props.filePath.endsWith(".ipynb"))
-      buttonJupyter = (<JupyterButton {...this.props} file={this.props.file} />);
-
     const body = <FilePreview
       file={this.props.file}
       {...this.props}
@@ -121,10 +158,10 @@ class ShowFile extends React.Component {
 
     return <FileCard gitLabUrl={this.props.externalUrl}
       filePath={this.props.filePath}
-      commitHash={this.props.file.last_commit_id}
+      commit={this.props.commit}
       buttonGraph={buttonGraph}
       buttonGit={buttonGit}
-      buttonJupyter={buttonJupyter}
+      buttonJupyter={this.props.buttonJupyter}
       body={body}
       lfsBadge={isLFSBadge} />
   }

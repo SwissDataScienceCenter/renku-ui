@@ -29,8 +29,7 @@ import { MemoryRouter } from 'react-router-dom';
 
 import { testClient as client } from '../api-client'
 import { generateFakeUser } from '../app-state/UserState.test';
-import { JupyterButton } from './index';
-import { ShowFile } from './File.present';
+import { ShowFile, JupyterButton } from './index';
 
 describe('rendering', () => {
   const users = [

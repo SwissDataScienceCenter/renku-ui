@@ -94,6 +94,21 @@ function addRepositoryMethods(client) {
     )
   }
 
+  client.getRepositoryCommit = (projectId, commitSHA) => {
+    let headers = client.getBasicHeaders();
+    return client.clientFetch(
+      `${client.baseUrl}/projects/${projectId}/repository/commits/${commitSHA}`, {
+        method: 'GET',
+        headers: headers
+      },
+      client.returnTypes.full,
+      false
+    ).then(response => {
+      return response.json();
+    })
+  }
+
+
   // TODO: Merge to following methods into one
   client.getRepositoryFile = (projectId, path, ref='master', encoding='base64') => {
     let headers = client.getBasicHeaders();
