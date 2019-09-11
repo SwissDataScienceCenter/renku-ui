@@ -34,6 +34,36 @@ import { CheckNotebookStatus, CheckNotebookIcon } from '../notebooks'
 import { Loader } from '../utils/UIComponents';
 import { API_ERRORS } from '../api-client';
 
+
+/**
+ * Display the Card with file information. Has the following parameters:
+ *
+ * @param {string} filePath - Path of the file
+ * @param {string} commitHash - Commit hash for the file
+ * @param {Component} buttonGraph - Button to switch to graph view
+ * @param {Component} buttonGit - Button to switch to GitLab.
+ * @param {Component} buttonJupyter - Button to switch to Jupyter.
+ * @param {Object} body - Content to show as the body of the card
+ * @param {Component} lfsBadge - Badge to show for LFS (or null)
+ */
+class FileCard extends React.Component {
+  render() {
+    return <Card>
+      <CardHeader className="align-items-baseline">
+        {this.props.lfsBadge}
+        {this.props.filePath}
+        <span className="caption align-baseline">&nbsp;File view</span>
+        <div className="float-right" >
+          {this.props.buttonJupyter}
+          {this.props.buttonGit}
+          {this.props.buttonGraph}
+        </div>
+      </CardHeader>
+      <CardBody>{this.props.body}</CardBody>
+    </Card>
+  }
+}
+
 class ShowFile extends React.Component {
   constructor(props) {
     super(props);
@@ -89,18 +119,14 @@ class ShowFile extends React.Component {
       </a>
     </span>
 
-    if (this.state.error !== null){
-      return <Card>
-        <CardHeader className="align-items-baseline">
-          {this.props.filePath.split('\\').pop().split('/').pop()}
-          <span className="caption align-baseline">&nbsp;File view</span>
-          <div className="float-right" >
-            {buttonGit}
-            {buttonGraph}
-          </div>
-        </CardHeader>
-        <CardBody>{this.state.error}</CardBody>
-      </Card>;
+    if (this.state.error !== null) {
+      return <FileCard filePath={this.props.filePath.split('\\').pop().split('/').pop()}
+        commitHash={this.state.file.commit_id}
+        buttonGraph={buttonGraph}
+        buttonGit={buttonGit}
+        buttonJupyter={null}
+        body={this.state.error}
+        lfsBadge={null} />
     }
 
     if (this.state.file == null) return <Card>
@@ -112,31 +138,22 @@ class ShowFile extends React.Component {
     const isLFSBadge = isLFS ?
       <Badge className="lfs-badge" color="light">LFS</Badge> :
       null;
-    
+
     let buttonJupyter = null;
     if (this.props.filePath.endsWith(".ipynb"))
       buttonJupyter = (<JupyterButton {...this.props} file={this.state.file} />);
 
-    return (
-      <Card>
-        <CardHeader className="align-items-baseline">
-          {isLFSBadge}
-          {this.props.filePath.replace(this.props.match.url + '/files/blob/', '')}
-          <span className="caption align-baseline">&nbsp;File view</span>
-          <div className="float-right" >
-            {buttonJupyter}
-            {buttonGit}
-            {buttonGraph}
-          </div>
-        </CardHeader>
-        <CardBody>
-          <FilePreview
-            file={this.state.file}
-            {...this.props}
-          />
-        </CardBody>
-      </Card>
-    )
+    const body = <FilePreview
+      file={this.state.file}
+      {...this.props}
+    />
+    return <FileCard filePath={this.props.filePath.replace(this.props.match.url + '/files/blob/', '')}
+      commitHash={this.state.file.commit_id}
+      buttonGraph={buttonGraph}
+      buttonGit={buttonGit}
+      buttonJupyter={buttonJupyter}
+      body={body}
+      lfsBadge={isLFSBadge} />
   }
 }
 
