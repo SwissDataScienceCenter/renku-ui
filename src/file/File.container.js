@@ -204,11 +204,12 @@ class JupyterButton extends React.Component {
  * @param {Object} client - api-client used to query the gateway
  * @param {string} filePath - path to the file
  * @param {string} branchName - optional branch name, defaults to master
+ * @param {Object} branches - for the JupyterNotebook button. See docs for JupyterButton
  */
 class ShowFile extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { file: null, error: null }
+    this.state = { file: null, commit: null, error: null}
   }
 
   // TODO: Write a wrapper to make promises cancellable to avoid usage of this._isMounted
@@ -220,20 +221,29 @@ class ShowFile extends React.Component {
   componentWillUnmount() { this._isMounted = false; }
 
   retrieveFile() {
+    const client = this.props.client;
     const branchName = this.props.branchName || 'master';
     let filePath = this.props.filePath.replace(this.props.match.url + '/files/blob/', '')
-    this.props.client.getRepositoryFile(this.props.projectId, filePath, branchName, 'base64')
+    client.getRepositoryFile(this.props.projectId, filePath, branchName, 'base64')
       .catch(e => {
+        if (!this._isMounted) return null;
         if (e.case === API_ERRORS.notFoundError) {
           this.setState({error:"ERROR 404: The file with path '"+ this.props.filePath +"' does not exist."})
         }
         else this.setState({error:"Could not load file with path "+this.props.filePath})
       })
       .then(json => {
-        if (!this._isMounted) return;
-        if(!this.state.error)
+        if (!this._isMounted) return null;
+        if (!this.state.error)
           this.setState({file:json});
-      });
+        return json;
+      }).then(fileJson => {
+        if (fileJson == null) return;
+        return client.getRepositoryCommit(this.props.projectId, fileJson.last_commit_id);
+      }).then(commitJson => {
+        if (!this._isMounted) return null;
+        this.setState({commit: commitJson});
+      })
   }
 
   render() {
@@ -244,10 +254,18 @@ class ShowFile extends React.Component {
       filePath = this.props.filePath.split('\\').pop().split('/').pop();
     }
 
+    let buttonJupyter = null;
+    if (this.props.filePath.endsWith(".ipynb"))
+      buttonJupyter = (<JupyterButton {...this.props} file={this.props.file} />);
+
     return <ShowFilePresent externalUrl={this.props.externalUrl}
       filePath={filePath}
       gitLabFilePath={gitLabFilePath}
+      lineagesPath={this.props.lineagesPath}
+      branches={this.props.branches}
+      buttonJupyter={buttonJupyter}
       file={this.state.file}
+      commit={this.state.commit}
       error={this.state.error} />
   }
 }
