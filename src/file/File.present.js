@@ -32,7 +32,6 @@ import faGitlab from '@fortawesome/fontawesome-free-brands/faGitlab';
 import { FilePreview, JupyterButton } from './index';
 import { CheckNotebookStatus, CheckNotebookIcon } from '../notebooks'
 import { Loader } from '../utils/UIComponents';
-import { API_ERRORS } from '../api-client';
 
 
 /**
@@ -65,44 +64,15 @@ class FileCard extends React.Component {
 }
 
 class ShowFile extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { file: null, error: null }
-  }
-
-  // TODO: Write a wrapper to make promises cancellable to avoid usage of this._isMounted
-  componentDidMount() {
-    this._isMounted = true;
-    this.retrieveFile()
-  }
-
-  componentWillUnmount() { this._isMounted = false; }
-
-  retrieveFile() {
-    const branchName = this.props.branchName || 'master';
-    let filePath = this.props.filePath.replace(this.props.match.url + '/files/blob/', '')
-    this.props.client.getRepositoryFile(this.props.projectId, filePath, branchName, 'base64')
-      .catch(e => {
-        if (e.case === API_ERRORS.notFoundError) {
-          this.setState({error:"ERROR 404: The file with path '"+ this.props.filePath +"' does not exist."})
-        }
-        else this.setState({error:"Could not load file with path "+this.props.filePath})
-      })
-      .then(json => {
-        if (!this._isMounted) return;
-        if(!this.state.error)
-          this.setState({file:json});
-      });
-  }
 
   render() {
-    const filePath = this.props.filePath.replace(this.props.match.url + '/files/blob/', '');
+    const gitLabFilePath = this.props.gitLabFilePath;
     const buttonGraph = this.props.lineagesPath !== undefined ?
       <span>
         <UncontrolledTooltip placement="top" target="tooltipGraphView">
           Graph View
         </UncontrolledTooltip>
-        <Link to={this.props.lineagesPath + '/' + filePath} id="tooltipGraphView">
+        <Link to={this.props.lineagesPath + '/' + gitLabFilePath} id="tooltipGraphView">
           <FontAwesomeIcon className="icon-link" icon={faProjectDiagram} id="TooltipFileView"/>
         </Link>
       </span>
@@ -113,23 +83,24 @@ class ShowFile extends React.Component {
       <UncontrolledTooltip placement="top" target="tooltipGitView">
           Open in GitLab
       </UncontrolledTooltip>
-      <a id="tooltipGitView" href={`${this.props.externalUrl}/blob/master/${filePath}`}
+      <a id="tooltipGitView" href={`${this.props.externalUrl}/blob/master/${gitLabFilePath}`}
         role="button" target="_blank" rel="noreferrer noopener">
         <FontAwesomeIcon className="icon-link" icon={faGitlab} />
       </a>
     </span>
 
-    if (this.state.error !== null) {
-      return <FileCard filePath={this.props.filePath.split('\\').pop().split('/').pop()}
-        commitHash={this.state.file.commit_id}
+    if (this.props.error !== null) {
+      return <FileCard gitLabUrl={this.props.externalUrl}
+        filePath={this.props.gitLabFilePath.split('\\').pop().split('/').pop()}
+        commitHash={this.props.file.last_commit_id}
         buttonGraph={buttonGraph}
         buttonGit={buttonGit}
         buttonJupyter={null}
-        body={this.state.error}
+        body={this.props.error}
         lfsBadge={null} />
     }
 
-    if (this.state.file == null) return <Card>
+    if (this.props.file == null) return <Card>
       <CardHeader className="align-items-baseline">&nbsp;</CardHeader>
       <CardBody>{"Loading..."}</CardBody>
     </Card>;
@@ -141,14 +112,16 @@ class ShowFile extends React.Component {
 
     let buttonJupyter = null;
     if (this.props.filePath.endsWith(".ipynb"))
-      buttonJupyter = (<JupyterButton {...this.props} file={this.state.file} />);
+      buttonJupyter = (<JupyterButton {...this.props} file={this.props.file} />);
 
     const body = <FilePreview
-      file={this.state.file}
+      file={this.props.file}
       {...this.props}
     />
-    return <FileCard filePath={this.props.filePath.replace(this.props.match.url + '/files/blob/', '')}
-      commitHash={this.state.file.commit_id}
+
+    return <FileCard gitLabUrl={this.props.externalUrl}
+      filePath={this.props.filePath}
+      commitHash={this.props.file.last_commit_id}
       buttonGraph={buttonGraph}
       buttonGit={buttonGit}
       buttonJupyter={buttonJupyter}
@@ -208,4 +181,4 @@ class JupyterButtonPresent extends React.Component {
   }
 }
 
-export { ShowFile, StyledNotebook, JupyterButtonPresent };
+export { StyledNotebook, JupyterButtonPresent, ShowFile };

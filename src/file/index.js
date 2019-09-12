@@ -24,7 +24,7 @@
  */
 
 
-import { FilePreview, JupyterButton } from './File.container'
+import { FilePreview, JupyterButton, ShowFile } from './File.container'
 import { FileLineage } from './Lineage.container'
 
-export { FilePreview, FileLineage, JupyterButton }
+export { FilePreview, FileLineage, JupyterButton, ShowFile }

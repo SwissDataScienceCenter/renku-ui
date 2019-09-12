@@ -22,9 +22,10 @@ import ReactDOM from 'react-dom';
 import hljs from 'highlight.js';
 
 import { atobUTF8 } from '../utils/Encoding';
-import { StyledNotebook, JupyterButtonPresent } from './File.present';
+import { StyledNotebook, JupyterButtonPresent, ShowFile as ShowFilePresent } from './File.present';
 import { ACCESS_LEVELS } from '../api-client';
 import { StatusHelper } from '../model/Model';
+import { API_ERRORS } from '../api-client';
 
 const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'tiff', 'pdf', 'gif'];
 const CODE_EXTENSIONS = ['py', 'js', 'json', 'sh', 'r', 'txt', 'yml', 'csv', 'parquet', 'cwl', 'job', 'prn', 'rout', 'dcf', 'rproj', 'rst', 'bat'];
@@ -131,7 +132,7 @@ class JupyterNotebookContainer extends Component {
 
 /**
  * Jupyter button container component
- * 
+ *
  * @param {Object} client - api-client used to query the gateway
  * @param {number} accessLevel - current project access level
  * @param {Object} branches - branches data, likely to change in a future release
@@ -196,4 +197,59 @@ class JupyterButton extends React.Component {
   }
 }
 
-export { FilePreview, JupyterNotebookContainer as JupyterNotebook, JupyterButton };
+
+/**
+ * File content display container component
+ *
+ * @param {Object} client - api-client used to query the gateway
+ * @param {string} filePath - path to the file
+ * @param {string} branchName - optional branch name, defaults to master
+ */
+class ShowFile extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { file: null, error: null }
+  }
+
+  // TODO: Write a wrapper to make promises cancellable to avoid usage of this._isMounted
+  componentDidMount() {
+    this._isMounted = true;
+    this.retrieveFile()
+  }
+
+  componentWillUnmount() { this._isMounted = false; }
+
+  retrieveFile() {
+    const branchName = this.props.branchName || 'master';
+    let filePath = this.props.filePath.replace(this.props.match.url + '/files/blob/', '')
+    this.props.client.getRepositoryFile(this.props.projectId, filePath, branchName, 'base64')
+      .catch(e => {
+        if (e.case === API_ERRORS.notFoundError) {
+          this.setState({error:"ERROR 404: The file with path '"+ this.props.filePath +"' does not exist."})
+        }
+        else this.setState({error:"Could not load file with path "+this.props.filePath})
+      })
+      .then(json => {
+        if (!this._isMounted) return;
+        if(!this.state.error)
+          this.setState({file:json});
+      });
+  }
+
+  render() {
+    const gitLabFilePath = this.props.filePath.replace(this.props.match.url + '/files/blob/', '');
+    let filePath = gitLabFilePath;
+
+    if (this.state.error !== null) {
+      filePath = this.props.filePath.split('\\').pop().split('/').pop();
+    }
+
+    return <ShowFilePresent externalUrl={this.props.externalUrl}
+      filePath={filePath}
+      gitLabFilePath={gitLabFilePath}
+      file={this.state.file}
+      error={this.state.error} />
+  }
+}
+
+export { FilePreview, JupyterNotebookContainer as JupyterNotebook, JupyterButton, ShowFile };

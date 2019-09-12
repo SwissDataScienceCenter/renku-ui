@@ -38,7 +38,7 @@ import { MergeRequest, MergeRequestList } from '../merge-request';
 
 import List from './list';
 import New from './new';
-import { ShowFile } from '../file/File.present';
+import { ShowFile } from '../file';
 import Fork from './fork';
 
 // TODO: This component has grown too much and needs restructuring. One option would be to insert
