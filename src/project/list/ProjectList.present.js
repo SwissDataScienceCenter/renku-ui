@@ -29,20 +29,26 @@ import faSortAmountUp from '@fortawesome/fontawesome-free-solid/faSortAmountUp';
 import faSortAmountDown from '@fortawesome/fontawesome-free-solid/faSortAmountDown';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 
+import '../Project.css';
+
 class ProjectListRow extends Component {
   render() {
+    const MAX_DESCRIPTION_LENGTH = 250;
     const projectsUrl = this.props.projectsUrl;
     const title =
       <Link to={`${projectsUrl}/${this.props.path_with_namespace}`}>
         {this.props.path_with_namespace || 'no title'}
       </Link>
-    const description = this.props.description !== '' ? this.props.description : 'No description available';
+    let description = (this.props.description !== '' && this.props.description !== null) ? this.props.description : 'No description available';
+    if (description.length > MAX_DESCRIPTION_LENGTH) {
+      description = description.slice(0, MAX_DESCRIPTION_LENGTH) + "...";
+    }
     return (
       <div className="d-flex project-list-row mb-3">
         <div className="mr-2"><Avatar person={this.props.owner} /></div>
         <div>
           <p className="mb-1"><b>{title}</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<ProjectTagList taglist={this.props.tag_list} /></p>
-          <span>{description} <TimeCaption caption="Updated" time={this.props.last_activity_at} /></span>
+          <span><span className="project-description-search">{description}</span> <TimeCaption caption="Updated" time={this.props.last_activity_at} /></span>
         </div>
       </div>
     );
