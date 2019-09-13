@@ -55,7 +55,7 @@ class RenkuToolbarItemUser extends Component {
           {this.props.userAvatar}
         </a>
         <div key="menu" className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-          <a className="dropdown-item" href="/auth/realms/Renku/account?referrer=renku-ui">Profile</a>
+          <a className="dropdown-item" target="_blank" rel="noreferrer noopener" href="/auth/realms/Renku/account?referrer=renku-ui">Profile</a>
           <Link className="dropdown-item" to="/help">Help</Link>
           <a
             className="dropdown-item"
