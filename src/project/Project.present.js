@@ -310,7 +310,7 @@ class ProjectNav extends Component {
           <RenkuNavLink exact={false} to={this.props.mrOverviewUrl} title="Pending Changes" />
         </NavItem>
         <NavItem>
-          <RenkuNavLink exact={false} to={this.props.notebookServersUrl} title="Notebook Servers" />
+          <RenkuNavLink exact={false} to={this.props.notebookServersUrl} title="Environments" />
         </NavItem>
         <NavItem>
           <RenkuNavLink exact={false} to={this.props.settingsUrl} title="Settings" />
@@ -613,7 +613,7 @@ class ProjectNotebookServers extends Component {
         scope={{namespace: this.props.core.namespace_path, project: this.props.core.project_path}}
       />,
       <Link key="launch" to={ `/projects/${this.props.projectPathWithNamespace}/launchNotebook` }>
-        <Button color="primary">Start new server</Button>
+        <Button color="primary">Start new environment</Button>
       </Link>
     ];
 

@@ -53,10 +53,10 @@ class Notebooks extends Component {
     const { standalone, loading } = this.props;
     let title, popup = null;
     if (standalone) {
-      title = (<h1>Notebooks</h1>);
+      title = (<h1>Interactive Environments</h1>);
       if (!loading) {
         const serverNumbers = Object.keys(this.props.notebooks.all).length;
-        if (serverNumbers)
+        if (!serverNumbers)
           popup = (<NotebooksPopup servers={serverNumbers} />);
       }
     }
@@ -83,8 +83,9 @@ class NotebooksPopup extends Component {
     }
     return (
       <InfoAlert timeout={0}>
-        <FontAwesomeIcon icon={faInfoCircle} /> You can start a new notebook by navigating to a project page.
-        <br />Be sure to have at least Developer privileges, then open the Notebook Servers tab.
+        <FontAwesomeIcon icon={faInfoCircle} /> You can start a new interactive environment by navigating
+        to a project page.
+        <br />Be sure to have at least Developer privileges, then open the Environments tab.
       </InfoAlert>
     )
   }
@@ -109,7 +110,7 @@ class NotebookServersList extends Component {
   render() {
     const serverNames = Object.keys(this.props.servers);
     if (serverNames.length === 0) {
-      return <p>No server is currently running. You have to start one to connect to Jupyter.</p>
+      return <p>You have to start at least one interactive environment to be able to start working.</p>
     }
     const rows = serverNames.map((k, i) =>
       <NotebookServerRow
@@ -378,7 +379,7 @@ class StartNotebookServer extends Component {
     return (
       <Row>
         <Col xs={12} sm={10} md={8} lg={6}>
-          <h3>Start new JupyterLab server</h3>
+          <h3>Start new interactive environment</h3>
           <Form>
             <StartNotebookBranches {...this.props} />
             {show.commits ? <StartNotebookCommits {...this.props} /> : null}
@@ -740,15 +741,15 @@ class StartNotebookOptions extends Component {
   render() {
     const { justStarted } = this.props;
     if (justStarted) {
-      return <Label>Starting new JupyterLab server... <Loader size="14" inline="true" /></Label>
+      return <Label>Starting new interactive environment... <Loader size="14" inline="true" /></Label>
     }
 
     const { fetched, options, all } = this.props.notebooks;
     if (!fetched) {
-      return (<Label>Verifying running servers... <Loader size="14" inline="true" /></Label>);
+      return (<Label>Verifying available environments... <Loader size="14" inline="true" /></Label>);
     }
     if (Object.keys(options).length === 0) {
-      return (<Label>Loading notebooks parameters... <Loader size="14" inline="true" /></Label>);
+      return (<Label>Loading environment parameters... <Loader size="14" inline="true" /></Label>);
     }
     if (Object.keys(all).length === 1) {
       return (<StartNotebookOptionsRunning {...this.props} />);
@@ -770,7 +771,7 @@ class StartNotebookOptionsRunning extends Component {
     if (status === "running") {
       return (
         <FormGroup>
-          <Label>A JupyterLab server is already running.</Label>
+          <Label>An interactive environment is already running.</Label>
           <br />
           <ExternalLink url={notebook.url} title="Connect" />
         </FormGroup>
@@ -779,7 +780,7 @@ class StartNotebookOptionsRunning extends Component {
     else if (status === "pending") {
       return (
         <FormGroup>
-          <Label>A JupyterLab server for this commit is starting or terminating, please wait...</Label>
+          <Label>An interactive environment for this commit is starting or terminating, please wait...</Label>
         </FormGroup>
       );
     }
@@ -787,8 +788,8 @@ class StartNotebookOptionsRunning extends Component {
       return (
         <FormGroup>
           <Label>
-            A JupyterLab server is already running but it is currently not available.
-            You can get further details from the Notebooks page.
+            An interactive environment is already running but it is currently not available.
+            You can get further details from the Environments page.
           </Label>
         </FormGroup>
       );
@@ -917,7 +918,7 @@ class ServerOptionLaunch extends Component {
   render() {
     return [
       <Button key="button" color="primary" onClick={this.checkServer}>
-        Launch Server
+        Start environment
       </Button>,
       <AutosavedDataModal key="modal"
         toggleModal={this.toggleModal.bind(this)}
@@ -954,7 +955,7 @@ class AutosavedDataModal extends Component {
           </p>
         </ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={this.props.handlers.startServer}>Launch Server</Button>
+          <Button color="primary" onClick={this.props.handlers.startServer}>Launch environment</Button>
         </ModalFooter>
       </Modal>
     </div>
@@ -972,7 +973,7 @@ class CheckNotebookIcon extends Component {
     if (notebook) {
       const status = NotebooksHelper.getStatus(notebook.status);
       if (status === "running") {
-        tooltip = "Connect to Jupyter";
+        tooltip = "Connect to JupyterLab";
         icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" />);
         const url = `${notebook.url}lab/tree/${this.props.filePath}`;
         link = (<a href={url} role="button" target="_blank" rel="noreferrer noopener">{icon}</a>);

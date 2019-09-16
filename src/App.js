@@ -110,8 +110,8 @@ class App extends Component {
                     renkuTemplatesUrl={this.props.params['RENKU_TEMPLATES_URL']}
                     renkuTemplatesRef={this.props.params['RENKU_TEMPLATES_REF']}
                     {...p}/> }/>
-              <Route exact path="/notebooks"
-                render={p => <Notebooks key="notebooks" standalone={true}
+              <Route exact path="/environments"
+                render={p => <Notebooks key="environments" standalone={true}
                   client={this.props.client} {...p} />} />
               <Route path="*"
                 render={p => <NotFound {...p} />} />
