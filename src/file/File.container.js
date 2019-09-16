@@ -29,7 +29,6 @@ import { API_ERRORS } from '../api-client';
 
 const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'tiff', 'pdf', 'gif'];
 const CODE_EXTENSIONS = ['py', 'js', 'json', 'sh', 'r', 'txt', 'yml', 'csv', 'parquet', 'cwl', 'job', 'prn', 'rout', 'dcf', 'rproj', 'rst', 'bat'];
-const NO_EXTENSION_FILE = ['Dockerfile', 'errlog', 'log', 'gitignore', 'gitattributes', 'dockerignore', 'lock']
 
 // FIXME: Unify the file viewing for kus (embedded) and independent file viewing.
 // FIXME: Javascript highlighting is broken for large files.
@@ -42,14 +41,14 @@ class FilePreview extends React.Component {
       return null
     } else {
       if(this.props.file.file_name.match(/\.(.*)/)===null)
-        return this.props.file.file_name;
+        return null;
       else return this.props.file.file_name.split('.').pop().toLowerCase();
     }
   };
 
   fileIsCode = () => CODE_EXTENSIONS.indexOf(this.getFileExtension()) >= 0;
   fileIsImage = () => IMAGE_EXTENSIONS.indexOf(this.getFileExtension()) >= 0;
-  fileHasNoExtension = () => NO_EXTENSION_FILE.indexOf(this.getFileExtension())>=0;
+  fileHasNoExtension = () => this.getFileExtension()===null;
 
   highlightBlock = () => {
     // FIXME: Usage of findDOMNode is discouraged.
