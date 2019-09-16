@@ -65,7 +65,7 @@ class TreeNode extends Component {
     let selected = this.props.nodeInsideIsSelected ? " selected-file " : "";
     
 
-    if(this.props.node.type === "blob"){
+    if(this.props.node.type === "blob" || this.props.node.type === "commit"){
       elementToRender = 
         <div className={order+" "+hidden+" "+selected}>
           <div className={"fs-element"} >
