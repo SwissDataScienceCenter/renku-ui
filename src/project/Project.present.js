@@ -310,7 +310,7 @@ class ProjectNav extends Component {
           <RenkuNavLink exact={false} to={this.props.mrOverviewUrl} title="Pending Changes" />
         </NavItem>
         <NavItem>
-          <RenkuNavLink exact={false} to={this.props.notebookServersUrl} title="Interactive Environments" />
+          <RenkuNavLink exact={false} to={this.props.notebookServersUrl} title="Environments" />
         </NavItem>
         <NavItem>
           <RenkuNavLink exact={false} to={this.props.settingsUrl} title="Settings" />

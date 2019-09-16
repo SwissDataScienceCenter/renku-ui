@@ -119,7 +119,7 @@ class LoggedInNavBar extends Component {
 
             <ul className="navbar-nav mr-auto">
               <RenkuNavLink to="/projects" title="Projects"/>
-              <RenkuNavLink to="/environments" title="Interactive Environments"/>
+              <RenkuNavLink to="/environments" title="Environments"/>
             </ul>
             <ul className="navbar-nav">
               <li className="nav-item dropdown">

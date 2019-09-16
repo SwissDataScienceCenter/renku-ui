@@ -85,7 +85,7 @@ class NotebooksPopup extends Component {
       <InfoAlert timeout={0}>
         <FontAwesomeIcon icon={faInfoCircle} /> You can start a new interactive environment by navigating
         to a project page.
-        <br />Be sure to have at least Developer privileges, then open the Interactive Environments tab.
+        <br />Be sure to have at least Developer privileges, then open the Environments tab.
       </InfoAlert>
     )
   }
@@ -789,7 +789,7 @@ class StartNotebookOptionsRunning extends Component {
         <FormGroup>
           <Label>
             An interactive environment is already running but it is currently not available.
-            You can get further details from the Interactive Environments page.
+            You can get further details from the Environments page.
           </Label>
         </FormGroup>
       );
