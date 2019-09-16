@@ -50,44 +50,51 @@ const Columns = {
 // * Notebooks code * //
 class Notebooks extends Component {
   render() {
-    const { standalone, loading } = this.props;
-    let title, popup = null;
-    if (standalone) {
-      title = (<h1>Interactive Environments</h1>);
-      if (!loading) {
-        const serverNumbers = Object.keys(this.props.notebooks.all).length;
-        if (!serverNumbers)
-          popup = (<NotebooksPopup servers={serverNumbers} />);
-      }
-    }
+    const serverNumbers = Object.keys(this.props.notebooks.all).length;
+    const loading = this.props.notebooks.fetched ?
+      false :
+      true;
 
     return <Row>
       <Col>
-        {title}
+        <NotebooksTitle standalone={this.props.standalone} />
         <NotebookServers
           servers={this.props.notebooks.all}
-          loading={this.props.notebooks.fetched ? false : true}
+          loading={loading}
           stopNotebook={this.props.handlers.stopNotebook}
-          scope={this.props.scope}
+          scope={this.props.scope} />
+        <NotebooksPopup
+          servers={serverNumbers}
+          standalone={this.props.standalone}
+          loading={loading}
         />
-        {popup}
       </Col>
     </Row>
   }
 }
 
+class NotebooksTitle extends Component {
+  render() {
+    if (this.props.standalone)
+      return (<h1>Interactive Environments</h1>);
+    return (<h3>Interactive Environments</h3>);
+  }
+}
+
 class NotebooksPopup extends Component {
   render() {
-    if (this.props.servers) {
+    if (this.props.servers || this.props.loading)
       return null;
-    }
+
+    const suggestion = this.props.standalone ?
+      "You can start a new interactive environment by navigating to a project page" :
+      "You can start a new interactive environment by clicking on New in the side bar";
+
     return (
       <InfoAlert timeout={0}>
-        <FontAwesomeIcon icon={faInfoCircle} /> You can start a new interactive environment by navigating
-        to a project page.
-        <br />Be sure to have at least Developer privileges, then open the Environments tab.
+        <FontAwesomeIcon icon={faInfoCircle} /> {suggestion}.
       </InfoAlert>
-    )
+    );
   }
 }
 
