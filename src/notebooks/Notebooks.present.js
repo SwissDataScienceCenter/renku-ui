@@ -20,7 +20,7 @@ import React, { Component } from 'react';
 import Media from 'react-media';
 import { Link } from 'react-router-dom';
 
-import { Form, FormGroup, FormText, Label, Input, Button, Row, Col, Table } from 'reactstrap';
+import { Form, FormGroup, FormText, Label, Input, Button, ButtonGroup, Row, Col, Table } from 'reactstrap';
 import { UncontrolledButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { UncontrolledTooltip, UncontrolledPopover, PopoverHeader, PopoverBody } from 'reactstrap';
 import { Badge } from 'reactstrap';
@@ -812,8 +812,8 @@ class StartNotebookServerOptions extends Component {
       .filter(key => key !== "commitId")
       .map(key => {
         const serverOption = { ...options[key], selected: selectedOptions[key] };
-        const onChange = (event) => {
-          this.props.handlers.setServerOption(key, event);
+        const onChange = (event, value) => {
+          this.props.handlers.setServerOption(key, event, value);
         };
 
         switch (serverOption.type) {
@@ -853,12 +853,21 @@ class StartNotebookServerOptions extends Component {
 
 class ServerOptionEnum extends Component {
   render() {
+    const { selected } = this.props;
     return (
-      <Input type="select" id={this.props.id} onChange={this.props.onChange}>
-        {this.props.options.map((optionName, i) => {
-          return <option key={i} value={optionName}>{optionName}</option>
-        })}
-      </Input>
+      <div>
+        <ButtonGroup>
+          {this.props.options.map((optionName, i) => {
+            const color = optionName === selected ? "primary" : "outline-primary";
+            return (
+              <Button
+                color={color}
+                key={optionName}
+                onClick={event => this.props.onChange(event, optionName)}>{optionName}</Button>
+            );
+          })}
+        </ButtonGroup>
+      </div>
     );
   }
 }
