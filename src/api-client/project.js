@@ -248,18 +248,18 @@ function addProjectMethods(client) {
     headers.append('Content-Type', 'application/json');
     let pipelineStarted = false;
     let counter = 0;
-    const projectStatusTimeout = setTimeout(() => {
-      if (pipelineStarted === true || counter === 10)
-        clearTimeout(projectStatusTimeout);
+    const projectStatusTimeout = setInterval(() => {
+      if (pipelineStarted === true || counter === 100)
+        clearInterval(projectStatusTimeout);
       else {
         client.getProjectStatus(projectId).then((forkProjectStatus) => {
           if (forkProjectStatus === 'finished') {
             client.runPipeline(projectId).then(resp => {
               pipelineStarted = true;
-              clearTimeout(projectStatusTimeout);
+              clearInterval(projectStatusTimeout);
             });
           } else if (forkProjectStatus === 'failed' || forkProjectStatus === 'error') {
-            clearTimeout(projectStatusTimeout);
+            clearInterval(projectStatusTimeout);
           } else {
             counter++;
           }
@@ -273,17 +273,17 @@ function addProjectMethods(client) {
     headers.append('Content-Type', 'application/json');
     let redirected = false;
     let counter = 0;
-    const projectStatusTimeout = setTimeout(() => {
+    const projectStatusTimeout = setInterval(() => {
       if (redirected === true || counter === 200)
-        clearTimeout(projectStatusTimeout);
+        clearInterval(projectStatusTimeout);
       else {
         client.getProjectStatus(projectId).then((forkProjectStatus) => {
           if (forkProjectStatus === 'finished') {
             redirected = true;
-            clearTimeout(projectStatusTimeout);
+            clearInterval(projectStatusTimeout);
             history.push(`/projects/${projectPathWithNamespace}`);
           } else if(forkProjectStatus === 'failed' || forkProjectStatus === 'error'){
-            clearTimeout(projectStatusTimeout);
+            clearInterval(projectStatusTimeout);
           } else {
             counter++;
           }
@@ -300,7 +300,7 @@ function addProjectMethods(client) {
     const headers = client.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    let createGraphWebhookPromise, startPipelinePromise;
+    let createGraphWebhookPromise;
     const newProjectPromise = client.clientFetch(`${client.baseUrl}/projects/${projectMeta.id}/fork`, {
       method: 'POST',
       headers: headers,
@@ -319,9 +319,7 @@ function addProjectMethods(client) {
     if (createGraphWebhookPromise) {
       promises = promises.concat(createGraphWebhookPromise);
     }
-
-    promises = promises.concat(startPipelinePromise);
-
+    
     return Promise.all(promises)
       .then((results) => {
         if (results.errorData)
