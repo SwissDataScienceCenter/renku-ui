@@ -48,7 +48,7 @@ class ProjectListRow extends Component {
         <div className="mr-2"><Avatar person={this.props.owner} /></div>
         <div>
           <p className="mb-1"><b>{title}</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<ProjectTagList taglist={this.props.tag_list} /></p>
-          <span><span className="project-description-search">{description}</span> <TimeCaption caption="Updated" time={this.props.last_activity_at} /></span>
+          <span>{description} <TimeCaption caption="Updated" time={this.props.last_activity_at} /></span>
         </div>
       </div>
     );
