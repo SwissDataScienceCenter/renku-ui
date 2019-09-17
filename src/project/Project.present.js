@@ -607,8 +607,8 @@ function notebookLauncher(userId, accessLevel, notebookLauncher, fork, postLogin
 class ProjectEnvironments extends Component {
   render() {
     return [
-      <Col key="nav" xs={12} md={2} lg={2}>
-        <Nav pills className={'flex-column'}>
+      <Col key="nav" xs={12} md={2}>
+        <Nav pills className="flex-column mb-3">
           <NavItem>
             <RenkuNavLink to={this.props.notebookServersUrl} title="Running" />
           </NavItem>
@@ -618,7 +618,7 @@ class ProjectEnvironments extends Component {
         </Nav>
         {/* <ProjectViewOverviewNav {...this.props} /> */}
       </Col>,
-      <Col key="content" xs={12} md={10} lg={10}>
+      <Col key="content" xs={12} md={10}>
         <Switch>
           <Route exact path={this.props.notebookServersUrl}
             render={props => <ProjectNotebookServers {...this.props} />} />
