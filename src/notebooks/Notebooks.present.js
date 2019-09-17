@@ -379,7 +379,7 @@ class StartNotebookServer extends Component {
     return (
       <Row>
         <Col xs={12} sm={10} md={8} lg={6}>
-          <h3>Start new interactive environment</h3>
+          <h3>Start a new interactive environment</h3>
           <Form>
             <StartNotebookBranches {...this.props} />
             {show.commits ? <StartNotebookCommits {...this.props} /> : null}
@@ -741,7 +741,7 @@ class StartNotebookOptions extends Component {
   render() {
     const { justStarted } = this.props;
     if (justStarted) {
-      return <Label>Starting new interactive environment... <Loader size="14" inline="true" /></Label>
+      return <Label>Starting a new interactive environment... <Loader size="14" inline="true" /></Label>
     }
 
     const { fetched, options, all } = this.props.notebooks;
