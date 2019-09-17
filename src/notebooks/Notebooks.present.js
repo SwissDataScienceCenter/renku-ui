@@ -818,7 +818,7 @@ class StartNotebookServerOptions extends Component {
 
         switch (serverOption.type) {
         case 'enum':
-          return <FormGroup key={key}>
+          return <FormGroup key={key} className={serverOption.options.length === 1 ? 'mb-0' : ''}>
             <Label>{serverOption.displayName}</Label>
             <ServerOptionEnum {...serverOption} onChange={onChange} />
           </FormGroup>;
@@ -854,6 +854,10 @@ class StartNotebookServerOptions extends Component {
 class ServerOptionEnum extends Component {
   render() {
     const { selected } = this.props;
+
+    if (this.props.options.length === 1)
+      return (<label>: {this.props.selected}</label>);
+
     return (
       <div>
         <ButtonGroup>
