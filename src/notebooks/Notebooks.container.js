@@ -262,6 +262,7 @@ class StartNotebookServer extends Component {
  *
  * @param {Object} client - api-client used to query the gateway
  * @param {boolean} standalone - Indicates whether it's displayed as standalone
+ * @param {string} [urlNewEnvironment] - url to "new environment" page
  * @param {Object} [scope] - object containing filtering parameters
  * @param {string} [scope.namespace] - full path of the reference namespace
  * @param {string} [scope.project] - path of the reference project
@@ -309,6 +310,7 @@ class Notebooks extends Component {
       user={this.props.user}
       standalone={this.props.standalone ? this.props.standalone : false}
       scope={this.props.scope}
+      urlNewEnvironment={this.props.urlNewEnvironment}
     />
   }
 }

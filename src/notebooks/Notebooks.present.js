@@ -67,6 +67,7 @@ class Notebooks extends Component {
           servers={serverNumbers}
           standalone={this.props.standalone}
           loading={loading}
+          urlNewEnvironment={this.props.urlNewEnvironment}
         />
       </Col>
     </Row>
@@ -86,13 +87,21 @@ class NotebooksPopup extends Component {
     if (this.props.servers || this.props.loading)
       return null;
 
-    const suggestion = this.props.standalone ?
-      "You can start a new interactive environment by navigating to a project page" :
-      "You can start a new interactive environment by clicking on New in the side bar";
+    let suggestion = "You can start a new interactive environment by navigating to a project page.";
+    if (!this.props.standalone) {
+      let newOutput = "New";
+      if (this.props.urlNewEnvironment)
+        newOutput = (<Link className="btn btn-primary btn-sm" role="button" to={this.props.urlNewEnvironment}>
+          New</Link>);
+
+      suggestion = (<span>
+        You can start a new interactive environment by clicking on {newOutput} in the side bar.
+      </span>);
+    }
 
     return (
       <InfoAlert timeout={0}>
-        <FontAwesomeIcon icon={faInfoCircle} /> {suggestion}.
+        <FontAwesomeIcon icon={faInfoCircle} /> {suggestion}
       </InfoAlert>
     );
   }

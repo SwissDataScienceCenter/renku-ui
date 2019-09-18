@@ -636,6 +636,7 @@ class ProjectNotebookServers extends Component {
       <Notebooks key="notebooks"
         standalone={false}
         client={this.props.client}
+        urlNewEnvironment={this.props.launchNotebookUrl}
         scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path }} />
     );
 
