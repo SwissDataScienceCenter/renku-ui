@@ -35,14 +35,15 @@ class Fork extends Component {
   constructor(props) {
     super(props);
     this.forkProject = new StateModel(forkProjectSchema, StateKind.REDUX);
-
     this.handlers = {
       onSubmit: this.onSubmit.bind(this),
       onProjectNamespaceChange: this.onProjectNamespaceChange.bind(this),
       onProjectNamespaceAccept: this.onProjectNamespaceAccept.bind(this),
       fetchMatchingNamespaces: this.fetchMatchingNamespaces.bind(this),
       fetchAllNamespaces: this.fetchAllNamespaces.bind(this),
-      toogleForkModal: this.toogleForkModal.bind(this)
+      toogleForkModal: this.toogleForkModal.bind(this),
+      onTitleChange: this.onTitleChange.bind(this),
+      setProjectTitle: this.setProjectTitle.bind(this)
     };
     this.mapStateToProps = this.doMapStateToProps.bind(this);
   }
@@ -63,6 +64,15 @@ class Fork extends Component {
     }
   }
 
+  setProjectTitle(title){
+    this.forkProject.set('display.title',title);
+    this.forkProject.set('display.slug', slugFromTitle(title));
+  }
+
+  onTitleChange(e) {
+    this.setProjectTitle(e.target.value);
+  }
+
   onSubmit() {
     this.forkProject.set('meta.id', this.props.projectId)
     if (this.forkProject.get('display.errors')) {
@@ -70,7 +80,7 @@ class Fork extends Component {
     }
 
     this.forkProject.set('display.loading', true);
-    this.props.client.forkProject(this.forkProject.get().meta , this.props.history)
+    this.props.client.forkProject(this.forkProject.get() , this.props.history)
       .catch(error => {
         let display_messages = [];
         if (error.errorData && error.errorData.message) {
@@ -163,7 +173,7 @@ class Fork extends Component {
       templates={this.forkProject.get('display.templates')}
       handlers={this.handlers}
       store={this.forkProject.reduxStore}
-      slug={slugFromTitle(this.props.title)}
+      title={this.props.title}
       user={this.props.user} />;
   }
 }
