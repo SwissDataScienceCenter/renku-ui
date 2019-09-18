@@ -34,7 +34,7 @@ import {  InputGroup, InputGroupAddon, InputGroupText } from 'reactstrap';
 import { Alert } from 'reactstrap';
 
 import collection from 'lodash/collection';
-import { Loader } from '../../utils/UIComponents'
+import { FieldGroup, Loader } from '../../utils/UIComponents'
 import '../new/Project.style.css'
 import {Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
@@ -189,7 +189,12 @@ class ProjectPath extends Component {
 
 class ForkProjectModal extends Component {
 
+  componentDidMount(){
+    this.props.handlers.setProjectTitle(this.props.title);
+  }
+
   render() {
+    const titleHelp = this.props.model.display.slug.length > 0 ? `Id: ${this.props.model.display.slug}` : null;
     return <div>
       <Modal 
         isOpen={this.props.forkModalOpen !== undefined && this.props.forkModalOpen !== false} 
@@ -197,9 +202,13 @@ class ForkProjectModal extends Component {
         className={this.props.className}>
         <ModalHeader toggle={this.props.handlers.toogleForkModal}>Fork Project</ModalHeader>
         <ModalBody>
+          <FieldGroup id="title" type="text" label="Title" placeholder="A brief name to identify the project"
+            help={titleHelp} value={this.props.model.display.title}
+            feedback={this.props.model.display.title} 
+            onChange={this.props.handlers.onTitleChange} />
           <ProjectPath 
-            namespace={this.props.model.meta.projectNamespace} 
-            slug={this.props.slug}
+            slug={this.props.model.display.slug}
+            namespace={this.props.model.meta.projectNamespace}
             namespaces={this.props.namespaces}
             onChange={this.props.handlers.onProjectNamespaceChange}
             onAccept={this.props.handlers.onProjectNamespaceAccept}

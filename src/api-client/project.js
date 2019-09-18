@@ -292,9 +292,12 @@ function addProjectMethods(client) {
     }, 3000);
   }
 
-  client.forkProject = (projectMeta, history) => {
+  client.forkProject = (projectSchema, history) => {
+    const projectMeta = projectSchema.meta
     const gitlabProject = {
-      id: projectMeta.id
+      id: projectMeta.id,
+      name: projectSchema.display.title,
+      path: projectSchema.display.slug
     };
     if (projectMeta.projectNamespace != null) gitlabProject.namespace = projectMeta.projectNamespace.id;
     const headers = client.getBasicHeaders();
