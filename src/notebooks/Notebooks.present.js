@@ -808,7 +808,9 @@ class StartNotebookServerOptions extends Component {
   render() {
     const { options } = this.props.notebooks;
     const selectedOptions = this.props.filters.options;
-    const renderedServerOptions = Object.keys(options)
+    const sortedOptionKeys = Object.keys(options)
+      .sort((a, b) => parseInt(options[a].order) - parseInt(options[b].order));
+    const renderedServerOptions = sortedOptionKeys
       .filter(key => key !== "commitId")
       .map(key => {
         const serverOption = { ...options[key], selected: selectedOptions[key] };
