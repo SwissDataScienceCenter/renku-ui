@@ -28,8 +28,9 @@
 import React, { Component } from 'react';
 
 import { Link, Route, Switch } from 'react-router-dom';
-import ReactMarkdown from 'react-markdown'
 import filesize from 'filesize';
+import showdown from 'showdown';
+import DOMPurify from 'dompurify'
 
 import { Container, Row, Col } from 'reactstrap';
 import { Alert, Table } from 'reactstrap';
@@ -341,6 +342,8 @@ class ProjectFilesNav extends Component {
 class ProjectViewReadme extends Component {
   render() {
     const readmeText = this.props.readme.text;
+    const converter = new showdown.Converter();
+    const htmlFromMarkdown = converter.makeHtml(readmeText);
     const loading = isRequestPending(this.props, 'readme');
     if (loading && readmeText === '') {
       return <Loader />
@@ -348,8 +351,8 @@ class ProjectViewReadme extends Component {
     return (
       <Card className="border-0">
         <CardHeader>README.md</CardHeader>
-        <CardBody>
-          <ReactMarkdown key="readme" source={readmeText} />
+        <CardBody style={{ overflow: 'auto' }}>
+          <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(htmlFromMarkdown)}}></div> 
         </CardBody>
       </Card>
     )
