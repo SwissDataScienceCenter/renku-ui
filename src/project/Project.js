@@ -179,7 +179,7 @@ class View extends Component {
       settingsUrl: `${baseUrl}/settings`,
       mrOverviewUrl: `${baseUrl}/pending`,
       mrUrl: `${baseUrl}/pending/:mrIid`,
-      launchNotebookUrl: `${baseUrl}/launchNotebook`,
+      launchNotebookUrl: `${baseUrl}/environments/new`,
       notebookServersUrl: `${baseUrl}/environments`
     }
   }

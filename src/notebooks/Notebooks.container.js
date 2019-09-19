@@ -188,10 +188,21 @@ class StartNotebookServer extends Component {
     return this.refreshPipelines();
   }
 
-  setServerOptionFromEvent(option, event) {
-    const value = event.target.type.toLowerCase() === "checkbox"?
-      event.target.checked :
-      event.target.value;
+  setServerOptionFromEvent(option, event, providedValue = null) {
+    const target = event.target.type.toLowerCase();
+    let value = providedValue;
+    if (!providedValue) {
+      if (target === "button") {
+        value = event.target.textContent;
+      }
+      else if (target === "checkbox") {
+        value = event.target.checked;
+      }
+      else {
+        value = event.target.value;
+      }
+    }
+
     this.model.setNotebookOptions(option, value);
   }
 
@@ -251,6 +262,7 @@ class StartNotebookServer extends Component {
  *
  * @param {Object} client - api-client used to query the gateway
  * @param {boolean} standalone - Indicates whether it's displayed as standalone
+ * @param {string} [urlNewEnvironment] - url to "new environment" page
  * @param {Object} [scope] - object containing filtering parameters
  * @param {string} [scope.namespace] - full path of the reference namespace
  * @param {string} [scope.project] - path of the reference project
@@ -298,6 +310,7 @@ class Notebooks extends Component {
       user={this.props.user}
       standalone={this.props.standalone ? this.props.standalone : false}
       scope={this.props.scope}
+      urlNewEnvironment={this.props.urlNewEnvironment}
     />
   }
 }

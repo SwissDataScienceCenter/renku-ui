@@ -20,7 +20,7 @@ import React, { Component } from 'react';
 import Media from 'react-media';
 import { Link } from 'react-router-dom';
 
-import { Form, FormGroup, FormText, Label, Input, Button, Row, Col, Table } from 'reactstrap';
+import { Form, FormGroup, FormText, Label, Input, Button, ButtonGroup, Row, Col, Table } from 'reactstrap';
 import { UncontrolledButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { UncontrolledTooltip, UncontrolledPopover, PopoverHeader, PopoverBody } from 'reactstrap';
 import { Badge } from 'reactstrap';
@@ -50,44 +50,62 @@ const Columns = {
 // * Notebooks code * //
 class Notebooks extends Component {
   render() {
-    const { standalone, loading } = this.props;
-    let title, popup = null;
-    if (standalone) {
-      title = (<h1>Interactive Environments</h1>);
-      if (!loading) {
-        const serverNumbers = Object.keys(this.props.notebooks.all).length;
-        if (!serverNumbers)
-          popup = (<NotebooksPopup servers={serverNumbers} />);
-      }
-    }
+    const serverNumbers = Object.keys(this.props.notebooks.all).length;
+    const loading = this.props.notebooks.fetched ?
+      false :
+      true;
 
     return <Row>
       <Col>
-        {title}
+        <NotebooksTitle standalone={this.props.standalone} />
         <NotebookServers
           servers={this.props.notebooks.all}
-          loading={this.props.notebooks.fetched ? false : true}
+          loading={loading}
           stopNotebook={this.props.handlers.stopNotebook}
-          scope={this.props.scope}
+          scope={this.props.scope} />
+        <NotebooksPopup
+          servers={serverNumbers}
+          standalone={this.props.standalone}
+          loading={loading}
+          urlNewEnvironment={this.props.urlNewEnvironment}
         />
-        {popup}
       </Col>
     </Row>
   }
 }
 
+class NotebooksTitle extends Component {
+  render() {
+    if (this.props.standalone)
+      return (<h1>Interactive Environments</h1>);
+    return (<h3>Interactive Environments</h3>);
+  }
+}
+
 class NotebooksPopup extends Component {
   render() {
-    if (this.props.servers) {
+    if (this.props.servers || this.props.loading)
       return null;
+
+    let suggestion = (<span>
+      You can start a new interactive environment from the <i>Environments</i> tab of a project.
+    </span>);
+    if (!this.props.standalone) {
+      let newOutput = "New";
+      if (this.props.urlNewEnvironment)
+        newOutput = (<Link className="btn btn-primary btn-sm" role="button" to={this.props.urlNewEnvironment}>
+          New</Link>);
+
+      suggestion = (<span>
+        You can start a new interactive environment by clicking on {newOutput} in the side bar.
+      </span>);
     }
+
     return (
       <InfoAlert timeout={0}>
-        <FontAwesomeIcon icon={faInfoCircle} /> You can start a new interactive environment by navigating
-        to a project page.
-        <br />Be sure to have at least Developer privileges, then open the Environments tab.
+        <FontAwesomeIcon icon={faInfoCircle} /> {suggestion}
       </InfoAlert>
-    )
+    );
   }
 }
 
@@ -110,7 +128,7 @@ class NotebookServersList extends Component {
   render() {
     const serverNames = Object.keys(this.props.servers);
     if (serverNames.length === 0) {
-      return <p>You have to start at least one interactive environment to be able to start working.</p>
+      return <p>No currently running environments.</p>
     }
     const rows = serverNames.map((k, i) =>
       <NotebookServerRow
@@ -801,17 +819,19 @@ class StartNotebookServerOptions extends Component {
   render() {
     const { options } = this.props.notebooks;
     const selectedOptions = this.props.filters.options;
-    const renderedServerOptions = Object.keys(options)
+    const sortedOptionKeys = Object.keys(options)
+      .sort((a, b) => parseInt(options[a].order) - parseInt(options[b].order));
+    const renderedServerOptions = sortedOptionKeys
       .filter(key => key !== "commitId")
       .map(key => {
         const serverOption = { ...options[key], selected: selectedOptions[key] };
-        const onChange = (event) => {
-          this.props.handlers.setServerOption(key, event);
+        const onChange = (event, value) => {
+          this.props.handlers.setServerOption(key, event, value);
         };
 
         switch (serverOption.type) {
         case 'enum':
-          return <FormGroup key={key}>
+          return <FormGroup key={key} className={serverOption.options.length === 1 ? 'mb-0' : ''}>
             <Label>{serverOption.displayName}</Label>
             <ServerOptionEnum {...serverOption} onChange={onChange} />
           </FormGroup>;
@@ -846,12 +866,25 @@ class StartNotebookServerOptions extends Component {
 
 class ServerOptionEnum extends Component {
   render() {
+    const { selected } = this.props;
+
+    if (this.props.options.length === 1)
+      return (<label>: {this.props.selected}</label>);
+
     return (
-      <Input type="select" id={this.props.id} onChange={this.props.onChange}>
-        {this.props.options.map((optionName, i) => {
-          return <option key={i} value={optionName}>{optionName}</option>
-        })}
-      </Input>
+      <div>
+        <ButtonGroup>
+          {this.props.options.map((optionName, i) => {
+            const color = optionName === selected ? "primary" : "outline-primary";
+            return (
+              <Button
+                color={color}
+                key={optionName}
+                onClick={event => this.props.onChange(event, optionName)}>{optionName}</Button>
+            );
+          })}
+        </ButtonGroup>
+      </div>
     );
   }
 }

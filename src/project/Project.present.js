@@ -564,7 +564,7 @@ class ProjectViewFiles extends Component {
 
 function notebookLauncher(userId, accessLevel, notebookLauncher, fork, postLoginUrl, externalUrl) {
   if (accessLevel >= ACCESS_LEVELS.DEVELOPER)
-    return (<Col xs={12}>{notebookLauncher}</Col>);
+    return (<div>{notebookLauncher}</div>);
 
   let content = [<p key="no-permission">You do not have sufficient permissions to launch an interactive environment
     for this project.</p>];
@@ -601,21 +601,43 @@ function notebookLauncher(userId, accessLevel, notebookLauncher, fork, postLogin
     );
   }
 
-  return (<Col xs={12}>{content}</Col>);
+  return (<div>{content}</div>);
+}
+
+class ProjectEnvironments extends Component {
+  render() {
+    return [
+      <Col key="nav" xs={12} md={2}>
+        <Nav pills className="flex-column mb-3">
+          <NavItem>
+            <RenkuNavLink to={this.props.notebookServersUrl} title="Running" />
+          </NavItem>
+          <NavItem>
+            <RenkuNavLink to={this.props.launchNotebookUrl} title="New" />
+          </NavItem>
+        </Nav>
+      </Col>,
+      <Col key="content" xs={12} md={10}>
+        <Switch>
+          <Route exact path={this.props.notebookServersUrl}
+            render={props => <ProjectNotebookServers {...this.props} />} />
+          <Route path={this.props.launchNotebookUrl}
+            render={props => <ProjectStartNotebookServer {...this.props} />} />
+        </Switch>
+      </Col>
+    ];
+  }
 }
 
 class ProjectNotebookServers extends Component {
   render() {
-    const content = [
+    const content = (
       <Notebooks key="notebooks"
         standalone={false}
         client={this.props.client}
-        scope={{namespace: this.props.core.namespace_path, project: this.props.core.project_path}}
-      />,
-      <Link key="launch" to={ `/projects/${this.props.projectPathWithNamespace}/launchNotebook` }>
-        <Button color="primary">Start new environment</Button>
-      </Link>
-    ];
+        urlNewEnvironment={this.props.launchNotebookUrl}
+        scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path }} />
+    );
 
     return (notebookLauncher(this.props.user.id,
       this.props.visibility.accessLevel,
@@ -826,9 +848,7 @@ class ProjectView extends Component {
               <Route path={this.props.mrOverviewUrl}
                 render={props => <ProjectMergeRequestList key="files-changes" {...this.props} />} />
               <Route path={this.props.notebookServersUrl}
-                render={props => <ProjectNotebookServers key="notebook-servers" {...this.props} />} />
-              <Route path={this.props.launchNotebookUrl}
-                render={props => <ProjectStartNotebookServer key="start-server" {...this.props} />}/>
+                render={props => <ProjectEnvironments key="environments" {...this.props} />} />
               <Route component={NotFoundInsideProject} />
             </Switch>
           </Row>
