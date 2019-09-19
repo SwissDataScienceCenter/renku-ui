@@ -616,7 +616,6 @@ class ProjectEnvironments extends Component {
             <RenkuNavLink to={this.props.launchNotebookUrl} title="New" />
           </NavItem>
         </Nav>
-        {/* <ProjectViewOverviewNav {...this.props} /> */}
       </Col>,
       <Col key="content" xs={12} md={10}>
         <Switch>
