@@ -73,6 +73,12 @@ function webhookError(props) {
   return true;
 }
 
+function sanitizedHTMLFromMarkdown(markdown) {
+  const converter = new showdown.Converter();
+  const htmlFromMarkdown = converter.makeHtml(markdown);
+  return DOMPurify.sanitize(htmlFromMarkdown)
+}
+
 class ProjectVisibilityLabel extends Component {
   render(){
     switch(this.props.visibilityLevel) {
@@ -342,8 +348,7 @@ class ProjectFilesNav extends Component {
 class ProjectViewReadme extends Component {
   render() {
     const readmeText = this.props.readme.text;
-    const converter = new showdown.Converter();
-    const htmlFromMarkdown = converter.makeHtml(readmeText);
+    const sanitizedHTML = sanitizedHTMLFromMarkdown(readmeText);
     const loading = isRequestPending(this.props, 'readme');
     if (loading && readmeText === '') {
       return <Loader />
@@ -352,7 +357,7 @@ class ProjectViewReadme extends Component {
       <Card className="border-0">
         <CardHeader>README.md</CardHeader>
         <CardBody style={{ overflow: 'auto' }}>
-          <div dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(htmlFromMarkdown)}}></div> 
+          <div dangerouslySetInnerHTML={{__html: sanitizedHTML}}></div>
         </CardBody>
       </Card>
     )
@@ -820,8 +825,8 @@ class ProjectView extends Component {
 
   render() {
     const available = this.props.core ? this.props.core.available : null;
-    const projectPathWithNamespaceOrId = this.props.projectPathWithNamespace? 
-      this.props.projectPathWithNamespace 
+    const projectPathWithNamespaceOrId = this.props.projectPathWithNamespace?
+      this.props.projectPathWithNamespace
       : this.props.projectId;
     if ((available === null && this.props.projectId === null) || available === SpecialPropVal.UPDATING) {
       return <ProjectViewLoading projectPathWithNamespace={ projectPathWithNamespaceOrId } />
@@ -862,4 +867,6 @@ class ProjectView extends Component {
 }
 
 export default { ProjectView };
-export { filterPaths };
+
+// For testing
+export { filterPaths, sanitizedHTMLFromMarkdown };
