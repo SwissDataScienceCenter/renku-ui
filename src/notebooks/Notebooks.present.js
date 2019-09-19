@@ -87,7 +87,9 @@ class NotebooksPopup extends Component {
     if (this.props.servers || this.props.loading)
       return null;
 
-    let suggestion = "You can start a new interactive environment by navigating to a project page.";
+    let suggestion = (<span>
+      You can start a new interactive environment from the <i>Environments</i> tab of a project.
+    </span>);
     if (!this.props.standalone) {
       let newOutput = "New";
       if (this.props.urlNewEnvironment)
@@ -126,7 +128,7 @@ class NotebookServersList extends Component {
   render() {
     const serverNames = Object.keys(this.props.servers);
     if (serverNames.length === 0) {
-      return <p>You have to start at least one interactive environment to be able to start working.</p>
+      return <p>No currently running environments.</p>
     }
     const rows = serverNames.map((k, i) =>
       <NotebookServerRow
