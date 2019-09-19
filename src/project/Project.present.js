@@ -29,8 +29,6 @@ import React, { Component } from 'react';
 
 import { Link, Route, Switch } from 'react-router-dom';
 import filesize from 'filesize';
-import showdown from 'showdown';
-import DOMPurify from 'dompurify'
 
 import { Container, Row, Col } from 'reactstrap';
 import { Alert, Table } from 'reactstrap';
@@ -44,7 +42,7 @@ import faStarRegular from '@fortawesome/fontawesome-free-regular/faStar'
 import { faStar as faStarSolid, faInfoCircle, faExternalLinkAlt, faCodeBranch } from '@fortawesome/fontawesome-free-solid'
 import { faExclamationTriangle, faLock , faUserFriends, faGlobe, faSearch } from '@fortawesome/fontawesome-free-solid'
 
-import { ExternalLink, Loader, RenkuNavLink, TimeCaption} from '../utils/UIComponents'
+import { ExternalLink, Loader, RenkuNavLink, TimeCaption, RenkuMarkdown} from '../utils/UIComponents'
 import { InfoAlert, SuccessAlert, WarnAlert, ErrorAlert } from '../utils/UIComponents'
 import { SpecialPropVal } from '../model/Model'
 import { ProjectTags, ProjectTagList } from './shared'
@@ -71,12 +69,6 @@ function webhookError(props) {
     return false;
   }
   return true;
-}
-
-function sanitizedHTMLFromMarkdown(markdown) {
-  const converter = new showdown.Converter();
-  const htmlFromMarkdown = converter.makeHtml(markdown);
-  return DOMPurify.sanitize(htmlFromMarkdown)
 }
 
 class ProjectVisibilityLabel extends Component {
@@ -348,7 +340,6 @@ class ProjectFilesNav extends Component {
 class ProjectViewReadme extends Component {
   render() {
     const readmeText = this.props.readme.text;
-    const sanitizedHTML = sanitizedHTMLFromMarkdown(readmeText);
     const loading = isRequestPending(this.props, 'readme');
     if (loading && readmeText === '') {
       return <Loader />
@@ -357,7 +348,7 @@ class ProjectViewReadme extends Component {
       <Card className="border-0">
         <CardHeader>README.md</CardHeader>
         <CardBody style={{ overflow: 'auto' }}>
-          <div dangerouslySetInnerHTML={{__html: sanitizedHTML}}></div>
+          <RenkuMarkdown markdownText={this.props.readme.text} />
         </CardBody>
       </Card>
     )
@@ -869,4 +860,4 @@ class ProjectView extends Component {
 export default { ProjectView };
 
 // For testing
-export { filterPaths, sanitizedHTMLFromMarkdown };
+export { filterPaths };

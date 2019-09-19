@@ -17,7 +17,6 @@
  */
 
 import React, { Component } from 'react';
-import ReactMarkdown from 'react-markdown';
 import ReactDOM from 'react-dom';
 import hljs from 'highlight.js';
 
@@ -26,6 +25,7 @@ import { StyledNotebook, JupyterButtonPresent, ShowFile as ShowFilePresent } fro
 import { ACCESS_LEVELS } from '../api-client';
 import { StatusHelper } from '../model/Model';
 import { API_ERRORS } from '../api-client';
+import { RenkuMarkdown } from '../utils/UIComponents';
 
 const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'tiff', 'pdf', 'gif'];
 const CODE_EXTENSIONS = ['py', 'js', 'json', 'sh', 'r', 'txt', 'yml', 'csv', 'parquet', 'cwl', 'job', 'prn', 'rout', 'dcf', 'rproj', 'rst', 'bat'];
@@ -90,7 +90,7 @@ class FilePreview extends React.Component {
     // Markdown
     if (this.getFileExtension() === 'md'){
       let content = atobUTF8(this.props.file.content);
-      return <ReactMarkdown source={content}/>;
+      return <RenkuMarkdown markdownText={content} />
     }
 
     // Jupyter Notebook

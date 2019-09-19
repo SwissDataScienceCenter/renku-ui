@@ -21,9 +21,8 @@ import { Row, Col, Button, Input, TabContent, TabPane, NavItem,
   Nav, NavLink, DropdownMenu, DropdownItem, DropdownToggle, Dropdown} from 'reactstrap';
 import classnames from 'classnames';
 import Collapse from 'react-collapse';
-import ReactMarkdown from 'react-markdown';
 
-import { Avatar, TimeCaption } from '../utils/UIComponents'
+import { Avatar, TimeCaption, RenkuMarkdown } from '../utils/UIComponents'
 import { FilePreview } from '../file';
 import { ContributionBody as ContributionBodyContainer } from './Contribution.container';
 import { EDIT, PREVIEW } from './Contribution.constants';
@@ -87,7 +86,7 @@ class ContributionBody extends React.Component {
           </span>);
       }
       return <div key={block.iBlock} className="comment-block">
-        <ReactMarkdown source={block.text} />
+        <RenkuMarkdown markdownText={block.text} />
       </div>;
     });
   }

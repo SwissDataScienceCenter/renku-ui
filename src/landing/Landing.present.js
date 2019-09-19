@@ -28,10 +28,10 @@
 import React, { Component } from 'react';
 
 import { Link }  from 'react-router-dom'
-import ReactMarkdown from 'react-markdown';
 
 import { Row, Col } from 'reactstrap';
 import { Jumbotron } from 'reactstrap';
+import { RenkuMarkdown } from '../utils/UIComponents';
 
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import faClone from '@fortawesome/fontawesome-free-solid/faClone';
@@ -96,7 +96,7 @@ class YourProjects extends Component {
 
 class RenkuIntroText extends Component {
   render() {
-    return <ReactMarkdown key="readme" source={this.props.welcomePage} />
+    return <RenkuMarkdown key="readme" markdownText={this.props.welcomePage} /> 
   }
 
 }
