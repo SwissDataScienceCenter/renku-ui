@@ -24,7 +24,7 @@
  */
 
 import Time from './Time';
-import { splitAutosavedBranches } from './HelperFunctions';
+import { splitAutosavedBranches, sanitizedHTMLFromMarkdown } from './HelperFunctions';
 
 describe('Time class helper', () => {
   const Dates = {
@@ -125,4 +125,113 @@ describe('Helper functions', () => {
     expect(splittedBranches.autosaved[0].autosave.commit).toEqual(commit);
     expect(splittedBranches.autosaved[0].autosave.finalCommit).toEqual(finalCommit);
   });
+});
+
+describe('html sanitization', () => {
+  it('handles empty markdown', () => {
+    const markdown = ""
+    const html = sanitizedHTMLFromMarkdown(markdown)
+    expect(html).toEqual("")
+  })
+
+  it('handles pure markdown', () => {
+    const markdown = "# internal-test\nA Renku project.\n\nThis is an *internal* project that is used for testing."
+    const html = sanitizedHTMLFromMarkdown(markdown)
+    expect(html).toEqual(`<h1 id="internaltest">internal-test</h1>\n<p>A Renku project.</p>\n<p>This is an <em>internal</em> project that is used for testing.</p>`)
+  })
+
+  it('handles mixed markdown', () => {
+    const markdown =`# internal-test
+
+A Renku project.
+
+This is an *internal* project that is used for testing.
+
+<div>
+  This is some HTML in a div, since that is valid Markdown.
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-8">
+      An 8 unit column here on the left.
+    </div>
+    <div class="col-sm-4">
+      A 4 unit column here on the right.
+    </div>
+  </div>
+</div>`
+    const expected = `<h1 id="internaltest">internal-test</h1>
+<p>A Renku project.</p>
+<p>This is an <em>internal</em> project that is used for testing.</p>
+<div>
+  This is some HTML in a div, since that is valid Markdown.
+</div>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-8">
+      An 8 unit column here on the left.
+    </div>
+    <div class="col-sm-4">
+      A 4 unit column here on the right.
+    </div>
+  </div>
+</div>`
+    const html = sanitizedHTMLFromMarkdown(markdown)
+    expect(html).toEqual(expected)
+  })
+
+  it('strips suspicious markdown', () => {
+    const markdown =`# internal-test
+
+A Renku project.
+
+This is an *internal* project that is used for testing.
+
+<div>
+  This is some HTML in a div, since that is valid Markdown.
+</div>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-8">
+      An 8 unit column here on the left.
+    </div>
+    <div class="col-sm-4">
+      A 4 unit column here on the right.
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-8">
+      The following alerts should get sanitized away.
+      <script>alert('xss');</script>
+      hello <a name="n" href="javascript:alert('xss')">*you*</a>
+    </div>
+  </div>
+</div>`
+    const expected = `<h1 id="internaltest">internal-test</h1>
+<p>A Renku project.</p>
+<p>This is an <em>internal</em> project that is used for testing.</p>
+<div>
+  This is some HTML in a div, since that is valid Markdown.
+</div>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-8">
+      An 8 unit column here on the left.
+    </div>
+    <div class="col-sm-4">
+      A 4 unit column here on the right.
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-8">
+      The following alerts should get sanitized away.
+      \n      hello <a name="n">*you*</a>
+    </div>
+  </div>
+</div>`
+    const html = sanitizedHTMLFromMarkdown(markdown)
+    expect(html).toEqual(expected)
+  })
 });

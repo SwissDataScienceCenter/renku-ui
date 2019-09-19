@@ -18,6 +18,8 @@
 
 // title.Author: Alex K. - https://stackoverflow.com/users/246342/alex-k
 // Source: https://stackoverflow.com/questions/6507056/replace-all-whitespace-characters/6507078#6507078
+import showdown from 'showdown';
+import DOMPurify from 'dompurify';
 
 const AUTOSAVED_PREFIX = "renku/autosave/";
 
@@ -46,4 +48,10 @@ function splitAutosavedBranches(branches) {
   return { standard, autosaved };
 }
 
-export { slugFromTitle, getActiveProjectPathWithNamespace, splitAutosavedBranches }
+function sanitizedHTMLFromMarkdown(markdown) {
+  const converter = new showdown.Converter();
+  const htmlFromMarkdown = converter.makeHtml(markdown);
+  return DOMPurify.sanitize(htmlFromMarkdown)
+}
+
+export { slugFromTitle, getActiveProjectPathWithNamespace, splitAutosavedBranches, sanitizedHTMLFromMarkdown }

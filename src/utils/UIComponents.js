@@ -30,6 +30,7 @@ import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import faUser from '@fortawesome/fontawesome-free-solid/faUser'
 import human from 'human-time';
 import ReactPagination from "react-js-pagination";
+import { sanitizedHTMLFromMarkdown } from './HelperFunctions';
 
 import { NavLink as RRNavLink }  from 'react-router-dom'
 import { NavLink } from 'reactstrap';
@@ -339,6 +340,12 @@ class ErrorAlert extends Component {
   }
 }
 
+class RenkuMarkdown extends Component {
+  render(){
+    return <div dangerouslySetInnerHTML={{__html: sanitizedHTMLFromMarkdown(this.props.markdownText)}}></div>   
+  }
+}
+
 /**
  * Jupyter icon
  * 
@@ -428,5 +435,5 @@ class JupyterIcon extends Component {
   }
 }
 
-export { Avatar, TimeCaption, FieldGroup, RenkuNavLink, UserAvatar, Pagination };
+export { Avatar, TimeCaption, FieldGroup, RenkuNavLink, UserAvatar, Pagination, RenkuMarkdown };
 export { ExternalLink, Loader, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, JupyterIcon };
