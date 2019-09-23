@@ -263,7 +263,7 @@ class SubModel {
       leafObj = leafObj[prop];
     });
     Object.keys(obj).forEach((prop) => leafObj[prop] = obj[prop]);
-    this.baseModel.set(fullObj);
+    this.baseModel.setObject(fullObj);
   }
 
   setUpdating(options) {
