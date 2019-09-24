@@ -396,7 +396,7 @@ class StartNotebookServer extends Component {
 
     return (
       <Row>
-        <Col xs={12} sm={10} md={8} lg={6}>
+        <Col sm={12} md={10} lg={8}>
           <h3>Start a new interactive environment</h3>
           <Form>
             <StartNotebookBranches {...this.props} />

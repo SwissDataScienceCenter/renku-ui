@@ -210,8 +210,9 @@ class JupyterButtonPresent extends React.Component {
 
     return (
       <CheckNotebookStatus
-        scope={this.props.scope}
         client={this.props.client}
+        model={this.props.model}
+        scope={this.props.scope}
         launchNotebookUrl={this.props.launchNotebookUrl}
         filePath={this.props.filePath} />
     );

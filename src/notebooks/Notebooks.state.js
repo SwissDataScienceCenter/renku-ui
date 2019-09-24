@@ -20,54 +20,8 @@
  *  renku-ui
  *
  *  Notebooks.state.js
- *  Redux-based state-management code.
+ *  Notebooks controller code.
  */
-
-import { Schema, StateKind, StateModel } from '../model/Model';
-
-const notebooksSchema = new Schema({
-  notebooks: {
-    schema: {
-      all: { initial: {} },
-      poller: { initial: null },
-      fetched: { initial: null },
-      fetching: { initial: false },
-      options: { initial: {} },
-      lastParameters: { initial: null }
-    }
-  },
-  filters: {
-    schema: {
-      namespace: { initial: null },
-      project: { initial: null },
-      branch: { initial: {} },
-      commit: { initial: {} },
-      discard: { initial: false },
-      options: { initial: {} },
-
-      includeMergedBranches: { initial: false },
-      displayedCommits: { initial: 10 },
-    }
-  },
-  pipelines: {
-    schema: {
-      main: { initial: {} },
-      poller: { initial: null },
-      fetched: { initial: null },
-      fetching: { initial: false },
-
-      lastParameters: { initial: null },
-      lastMainId: { initial: null },
-    }
-  },
-  data: {
-    schema: {
-      commits: { initial: [] }, // ! TODO: move to Project pages, shouldn't be here
-      fetched: { initial: null },
-      fetching: { initial: false },
-    }
-  }
-});
 
 const POLLING_INTERVAL = 3000;
 const IMAGE_BUILD_JOB = "image_build";
@@ -121,11 +75,33 @@ const NotebooksHelper = {
   }
 };
 
-
-class NotebooksModel extends StateModel {
-  constructor(client) {
-    super(notebooksSchema, StateKind.REDUX);
+class NotebooksCoordinator {
+  constructor(client, model) {
     this.client = client;
+    this.model = model;
+  }
+
+  /**
+   * Reset notebook Schema. Controller logic may be improved to avoid invoking this
+   */
+  reset() {
+    this.model.setObject({
+      notebooks: {
+        fetched: null,
+        lastParameters: null
+      },
+      filters: {
+        namespace: null,
+        project: null,
+        branch: { name: null }, // TODO: remove sub-property when "force" parameter will be available for setObject
+        commit: { id: null }
+      },
+      pipelines: {
+        fetched: null,
+        lastParameters: null,
+        lastMainId: null
+      }
+    });
   }
 
   // * Filters * //
@@ -149,35 +125,35 @@ class NotebooksModel extends StateModel {
     if (data.commit !== undefined)
       data.commit instanceof Object ? filters.commit = data.commit : filters.commit = { id: data.commit }
 
-    this.setObject({ filters });
+    this.model.setObject({ filters });
   }
 
   setBranch(branch) {
-    this.set('notebooks.fetched', null);
-    this.set('filters.branch', branch);
+    this.model.set('notebooks.fetched', null);
+    this.model.set('filters.branch', branch);
     this.fetchNotebooks();
   }
 
   setCommit(commit) {
-    this.set('notebooks.fetched', null);
-    this.set('filters.commit', commit);
+    this.model.set('notebooks.fetched', null);
+    this.model.set('filters.commit', commit);
     this.fetchNotebooks();
   }
 
   setMergedBranches(value) {
-    this.set('filters.includeMergedBranches', value);
+    this.model.set('filters.includeMergedBranches', value);
   }
 
   setDisplayedCommits(value) {
-    this.set('filters.displayedCommits', value);
+    this.model.set('filters.displayedCommits', value);
   }
 
   setNotebookOptions(option, value) {
-    this.set(`filters.options.${option}`, value);
+    this.model.set(`filters.options.${option}`, value);
   }
 
   getQueryFilters() {
-    const filters = this.get('filters');
+    const filters = this.model.get('filters');
     return {
       namespace: filters.namespace,
       project: filters.project,
@@ -189,13 +165,13 @@ class NotebooksModel extends StateModel {
 
   // * Fetch data * //
   fetchNotebooks() {
-    const fetching = this.get('notebooks.fetching');
+    const fetching = this.model.get('notebooks.fetching');
     if (fetching)
       return;
 
     // get filters
     const filters = this.getQueryFilters();
-    this.setObject({
+    this.model.setObject({
       notebooks: {
         fetching: true,
         lastParameters: JSON.stringify(filters)
@@ -207,28 +183,28 @@ class NotebooksModel extends StateModel {
       .then(resp => {
         let updatedNotebooks = { fetching: false };
         // check if result is still valid
-        if (!this.get('filters.discard')) {
+        if (!this.model.get('filters.discard')) {
           const filters = this.getQueryFilters();
-          if (this.get('notebooks.lastParameters') === JSON.stringify(filters)) {
+          if (this.model.get('notebooks.lastParameters') === JSON.stringify(filters)) {
             updatedNotebooks.fetched = new Date();
-            this.set('notebooks.all', resp.data);
+            this.model.set('notebooks.all', resp.data);
           }
           // TODO: re-invoke `fetchNotebooks()` immediatly if parameters are outdated
         }
-        this.setObject({ notebooks: updatedNotebooks });
+        this.model.setObject({ notebooks: updatedNotebooks });
         return resp.data;
       })
       .catch(error => {
-        this.set('notebooks.fetching', false);
+        this.model.set('notebooks.fetching', false);
         throw error;
       });
   }
 
   fetchNotebookOptions() {
-    const oldData = this.get('notebooks.options');
+    const oldData = this.model.get('notebooks.options');
     if (Object.keys(oldData).length !== 0)
       return;
-    this.set('notebooks.options', {});
+    this.model.set('notebooks.options', {});
     return this.client.getNotebookServerOptions().then((notebookOptions) => {
       let selectedOptions = {};
       Object.keys(notebookOptions).forEach(option => {
@@ -238,14 +214,14 @@ class NotebooksModel extends StateModel {
         notebooks: { options: notebookOptions },
         filters: { options: selectedOptions }
       };
-      this.setObject(options);
+      this.model.setObject(options);
       return options;
     });
   }
 
   async fetchPipeline() {
     // check if already fetching data
-    const fetching = this.get('pipelines.fetching');
+    const fetching = this.model.get('pipelines.fetching');
     if (fetching)
       return;
 
@@ -257,7 +233,7 @@ class NotebooksModel extends StateModel {
     }
 
     // update current state and start fetching
-    this.setObject({
+    this.model.setObject({
       pipelines: {
         fetching: true,
         lastParameters: JSON.stringify(filters)
@@ -265,16 +241,16 @@ class NotebooksModel extends StateModel {
     });
     const projectId = `${filters.namespace}%2F${filters.project}`;
     const pipelines = await this.client.getPipelines(projectId, filters.commit).catch(error => {
-      this.set('pipelines.fetching', false);
+      this.model.set('pipelines.fetching', false);
       throw error;
     });
 
     // check if results are outdated
     let pipelinesState = { fetching: false };
-    const lastParameters = this.get('pipelines.lastParameters');
+    const lastParameters = this.model.get('pipelines.lastParameters');
     if (lastParameters !== JSON.stringify(filters)) {
       pipelinesState.fetched = null;
-      this.setObject({ pipelines: pipelinesState });
+      this.model.setObject({ pipelines: pipelinesState });
       return {};
     }
 
@@ -284,19 +260,19 @@ class NotebooksModel extends StateModel {
     if (pipelines.length === 0) {
       pipelinesState.lastMainId = null;
       pipelinesState.main = mainPipeline;
-      this.setObject({ pipelines: pipelinesState });
-      this.set('pipelines.main', {}); // reset pipelines.main attributes
+      this.model.setObject({ pipelines: pipelinesState });
+      this.model.set('pipelines.main', {}); // reset pipelines.main attributes
       return mainPipeline;
     }
 
     // try to use cached data to find image_build pipeline id
-    const lastMainId = this.get('pipelines.lastMainId');
+    const lastMainId = this.model.get('pipelines.lastMainId');
     if (lastMainId) {
       const mainPipelines = pipelines.filter(pipeline => pipeline.id === lastMainId);
       if (mainPipelines.length === 1) {
         mainPipeline = mainPipelines[0];
         pipelinesState.main = mainPipeline;
-        this.setObject({ pipelines: pipelinesState });
+        this.model.setObject({ pipelines: pipelinesState });
         return mainPipeline;
       }
     }
@@ -305,7 +281,7 @@ class NotebooksModel extends StateModel {
     for (let pipeline of pipelines) {
       // fetch jobs
       const jobs = await this.client.getPipelineJobs(projectId, pipeline.id).catch(error => {
-        this.set('pipelines.fetching', false);
+        this.model.set('pipelines.fetching', false);
         throw error;
       });
       const imageJobs = jobs.filter(job => job.name === IMAGE_BUILD_JOB);
@@ -313,19 +289,19 @@ class NotebooksModel extends StateModel {
         mainPipeline = pipeline;
         pipelinesState.lastMainId = pipeline.id;
         pipelinesState.main = mainPipeline;
-        this.setObject({ pipelines: pipelinesState });
+        this.model.setObject({ pipelines: pipelinesState });
         return mainPipeline;
       }
     }
 
     pipelinesState.lastMainId = null;
     pipelinesState.main = mainPipeline;
-    this.setObject({ pipelines: pipelinesState });
-    
+    this.model.setObject({ pipelines: pipelinesState });
+
     // reset pipelines.main object attributes if needed
-    const currentMain = this.get('pipelines.main');
+    const currentMain = this.model.get('pipelines.main');
     if (currentMain && currentMain.id && !mainPipeline.id)
-      this.set('pipelines.main', {}); 
+      this.model.set('pipelines.main', {});
 
     return mainPipeline;
   }
@@ -333,12 +309,12 @@ class NotebooksModel extends StateModel {
 
   // * Handle polling * //
   startNotebookPolling(interval = POLLING_INTERVAL) {
-    const oldPoller = this.get('notebooks.poller');
+    const oldPoller = this.model.get('notebooks.poller');
     if (oldPoller == null) {
       const newPoller = setInterval(() => {
         this.fetchNotebooks();
       }, interval);
-      this.set('notebooks.poller', newPoller);
+      this.model.set('notebooks.poller', newPoller);
 
       // fetch immediatly
       this.fetchNotebooks();
@@ -346,34 +322,34 @@ class NotebooksModel extends StateModel {
   }
 
   stopNotebookPolling() {
-    const poller = this.get('notebooks.poller');
+    const poller = this.model.get('notebooks.poller');
     if (poller) {
-      this.set('notebooks.poller', null);
+      this.model.set('notebooks.poller', null);
       clearTimeout(poller);
     }
   }
 
   startPipelinePolling(interval = POLLING_INTERVAL) {
     // start polling or invalidate previous data
-    const oldPoller = this.get('pipelines.poller');
+    const oldPoller = this.model.get('pipelines.poller');
     if (oldPoller == null) {
       const newPoller = setInterval(() => {
         this.fetchPipeline();
       }, interval);
-      this.set('pipelines.poller', newPoller);
+      this.model.set('pipelines.poller', newPoller);
 
       // fetch immediatly
       return this.fetchPipeline();
     }
     else {
-      this.set('pipelines.fetched', null);
+      this.model.set('pipelines.fetched', null);
     }
   }
 
   stopPipelinePolling() {
-    const poller = this.get('pipelines.poller');
+    const poller = this.model.get('pipelines.poller');
     if (poller) {
-      this.set('pipelines.poller', null);
+      this.model.set('pipelines.poller', null);
       clearTimeout(poller);
     }
   }
@@ -382,9 +358,9 @@ class NotebooksModel extends StateModel {
   // * Change notebook status * //
   startServer() {
     const options = {
-      serverOptions: this.get('filters.options')
+      serverOptions: this.model.get('filters.options')
     };
-    const filters = this.get('filters');
+    const filters = this.model.get('filters');
     const namespace = filters.namespace;
     const project = filters.project;
     const branch = filters.branch.name ? filters.branch.name : "master";
@@ -399,14 +375,14 @@ class NotebooksModel extends StateModel {
       filters: { discard: true },
       notebooks: { all: { [serverName]: { status: { ready: false } } } }
     };
-    this.setObject(updatedState);
+    this.model.setObject(updatedState);
     return this.client.stopNotebookServer(serverName)
       .then(response => {
-        this.set('filters.discard', false);
+        this.model.set('filters.discard', false);
         return response;
       })
       .catch(error => {
-        this.set('filters.discard', false);
+        this.model.set('filters.discard', false);
         throw error;
       });
   }
@@ -414,12 +390,12 @@ class NotebooksModel extends StateModel {
 
   // * Fetch commits -- to be moved * //
   async fetchCommits() {
-    this.set('data.fetching', true);
-    const filters = this.get('filters');
+    this.model.set('data.fetching', true);
+    const filters = this.model.get('filters');
     const projectPathWithNamespace = `${filters.namespace}%2F${filters.project}`;
     return this.client.getCommits(projectPathWithNamespace, filters.branch.name)
       .then(resp => {
-        this.setObject({
+        this.model.setObject({
           data: {
             fetching: false,
             fetched: new Date(),
@@ -429,10 +405,10 @@ class NotebooksModel extends StateModel {
         return resp.data;
       })
       .catch(error => {
-        this.set('data.fetching', false);
+        this.model.set('data.fetching', false);
         throw error;
       });
   }
 }
 
-export { NotebooksModel, NotebooksHelper, ExpectedAnnotations }
+export { NotebooksHelper, ExpectedAnnotations, NotebooksCoordinator }

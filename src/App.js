@@ -83,15 +83,25 @@ class App extends Component {
                 render={(p) => <Ku.New key="ku_new" projectPathWithNamespace={`${p.match.params.projectNamespace}/${p.match.params.projectName}`} client={this.props.client} {...p}/>}/>
               {/* pull out the underlying parts of the url and pass them to the project view */}
               <Route path="/projects/:projectNamespace/:projectName"
-                render={p => <Project.View key={`${p.match.params.projectNamespace}/${p.match.params.projectName}`} projectPathWithNamespace={`${p.match.params.projectNamespace}/${p.match.params.projectName}`} {...p}
-                  user={this.props.userState.getState().user} userStateDispatch={this.props.userState.dispatch}
-                  client={this.props.client} params={this.props.params}/>}
+                render={p => <Project.View key={`${p.match.params.projectNamespace}/${p.match.params.projectName}`}
+                  projectPathWithNamespace={`${p.match.params.projectNamespace}/${p.match.params.projectName}`}
+                  client={this.props.client}
+                  params={this.props.params}
+                  model={this.props.model}
+                  user={this.props.userState.getState().user}
+                  userStateDispatch={this.props.userState.dispatch}
+                  {...p}
+                />}
               />
               <Route path="/projects/:id(\d+)"
-                render={p =>  <Project.View key={`${p.match.params.id}`} projectId={`${p.match.params.id}`} {...p}
-                  user={this.props.userState.getState().user} userStateDispatch={this.props.userState.dispatch}
-                  client={this.props.client} params={this.props.params}/>
-                }
+                render={p => <Project.View key={`${p.match.params.id}`}
+                  projectId={`${p.match.params.id}`} {...p}
+                  client={this.props.client}
+                  params={this.props.params}
+                  model={this.props.model}
+                  user={this.props.userState.getState().user}
+                  userStateDispatch={this.props.userState.dispatch}
+                />}
               />
               <Route path="/projects" render={
                 p => <Project.List
@@ -111,8 +121,13 @@ class App extends Component {
                     renkuTemplatesRef={this.props.params['RENKU_TEMPLATES_REF']}
                     {...p}/> }/>
               <Route exact path="/environments"
-                render={p => <Notebooks key="environments" standalone={true}
-                  client={this.props.client} {...p} />} />
+                render={p => <Notebooks key="environments"
+                  standalone={true}
+                  client={this.props.client}
+                  model={this.props.model}
+                  {...p}
+                />}
+              />
               <Route path="*"
                 render={p => <NotFound {...p} />} />
             </Switch>

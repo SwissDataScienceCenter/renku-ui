@@ -20,7 +20,7 @@
  *  renku-ui
  *
  *  Files.test.js
- *  Tests for file.
+ *  Tests for file components.
  */
 
 import React from 'react';
@@ -30,6 +30,10 @@ import { MemoryRouter } from 'react-router-dom';
 import { testClient as client } from '../api-client'
 import { generateFakeUser } from '../app-state/UserState.test';
 import { ShowFile, JupyterButton } from './index';
+import { StateModel, globalSchema } from '../model'
+
+
+const model = new StateModel(globalSchema);
 
 describe('rendering', () => {
   const users = [
@@ -38,7 +42,8 @@ describe('rendering', () => {
   ];
 
   const props = {
-    client: client,
+    client,
+    model,
     filePath: "/projects/1/files/blob/myFolder/myNotebook.ipynb",
     match: { url: "/projects/1", params: { id: "1" } },
     launchNotebookUrl: "/projects/1/launchNotebook",

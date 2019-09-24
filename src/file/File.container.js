@@ -182,15 +182,23 @@ class JupyterButton extends React.Component {
     let updating = false;
     if (branches.all && StatusHelper.isUpdating(branches.all))
       updating = true;
-    const filePath = file && file.file_path ? file.file_path : "";
+
+    let filePath = "";
+    if (file) {
+      if (file.file_path)
+        filePath = file.file_path;
+      else
+        filePath = file;
+    }
 
     return (
       <JupyterButtonPresent
+        client={this.props.client}
+        model={this.props.model}
         access={true}
         scope={this.getScope()}
         filePath={filePath}
         updating={updating}
-        client={this.props.client}
         launchNotebookUrl={this.props.launchNotebookUrl} />
     );
   }
@@ -255,7 +263,7 @@ class ShowFile extends React.Component {
 
     let buttonJupyter = null;
     if (this.props.filePath.endsWith(".ipynb"))
-      buttonJupyter = (<JupyterButton {...this.props} file={this.props.file} />);
+      buttonJupyter = (<JupyterButton {...this.props} file={filePath} />);
 
     return <ShowFilePresent externalUrl={this.props.externalUrl}
       filePath={filePath}

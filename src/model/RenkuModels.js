@@ -158,4 +158,49 @@ const projectSchema = new Schema({
   }
 });
 
+const notebooksSchema = new Schema({
+  notebooks: {
+    schema: {
+      all: { initial: {} },
+      poller: { initial: null },
+      fetched: { initial: null },
+      fetching: { initial: false },
+      options: { initial: {} },
+      lastParameters: { initial: null }
+    }
+  },
+  filters: {
+    schema: {
+      namespace: { initial: null },
+      project: { initial: null },
+      branch: { initial: {} },
+      commit: { initial: {} },
+      discard: { initial: false },
+      options: { initial: {} },
+
+      includeMergedBranches: { initial: false },
+      displayedCommits: { initial: 10 },
+    }
+  },
+  pipelines: {
+    schema: {
+      main: { initial: {} },
+      poller: { initial: null },
+      fetched: { initial: null },
+      fetching: { initial: false },
+
+      lastParameters: { initial: null },
+      lastMainId: { initial: null },
+    }
+  },
+  data: {
+    schema: {
+      commits: { initial: [] }, // ! TODO: move to Project pages, shouldn't be here
+      fetched: { initial: null },
+      fetching: { initial: false },
+    }
+  }
+});
+
 export { userSchema, metaSchema, displaySchema, newProjectSchema, projectSchema, forkProjectSchema };
+export { notebooksSchema };

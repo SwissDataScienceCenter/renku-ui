@@ -632,8 +632,9 @@ class ProjectNotebookServers extends Component {
   render() {
     const content = (
       <Notebooks key="notebooks"
-        standalone={false}
         client={this.props.client}
+        model={this.props.model}
+        standalone={false}
         urlNewEnvironment={this.props.launchNotebookUrl}
         scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path }} />
     );
@@ -651,10 +652,11 @@ class ProjectStartNotebookServer extends Component {
   render() {
     let content = (<StartNotebookServer
       client={this.props.client}
+      model={this.props.model}
       branches={this.props.system.branches}
       autosaved={this.props.system.autosaved}
       refreshBranches={this.props.fetchBranches}
-      scope={{namespace: this.props.core.namespace_path, project: this.props.core.project_path}}
+      scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path }}
       externalUrl={this.props.externalUrl}
       successUrl={this.props.notebookServersUrl}
       history={this.props.history}

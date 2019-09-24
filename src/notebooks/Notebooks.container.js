@@ -19,16 +19,79 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
 
-import { NotebooksModel } from './Notebooks.state';
+import { NotebooksCoordinator } from './Notebooks.state';
 import { StartNotebookServer as StartNotebookServerPresent } from './Notebooks.present';
 import { Notebooks as NotebooksPresent } from './Notebooks.present';
 import { CheckNotebookIcon } from './Notebooks.present';
 import { StatusHelper } from '../model/Model'
 
 /**
+ * Display the list of Notebook servers
+ *
+ * @param {Object} client - api-client used to query the gateway
+ * @param {Object} model - global model for the ui
+ * @param {boolean} standalone - Indicates whether it's displayed as standalone
+ * @param {string} [urlNewEnvironment] - url to "new environment" page
+ * @param {Object} [scope] - object containing filtering parameters
+ * @param {string} [scope.namespace] - full path of the reference namespace
+ * @param {string} [scope.project] - path of the reference project
+ * @param {string} [scope.branch] - branch name
+ * @param {string} [scope.commit] - commit full id
+ */
+class Notebooks extends Component {
+  constructor(props) {
+    super(props);
+    this.model = props.model.subModel("notebooks");
+    this.coordinator = new NotebooksCoordinator(props.client, this.model);
+    // temporarily reset data since notebooks model was not designed to be static
+    this.coordinator.reset();
+
+    if (props.scope) {
+      this.coordinator.setNotebookFilters(props.scope, true);
+    }
+
+    this.handlers = {
+      stopNotebook: this.stopNotebook.bind(this)
+    }
+  }
+
+  componentDidMount() {
+    this.coordinator.startNotebookPolling();
+  }
+
+  componentWillUnmount() {
+    this.coordinator.stopNotebookPolling();
+  }
+
+  stopNotebook(serverName) {
+    this.coordinator.stopNotebook(serverName);
+  }
+
+  mapStateToProps(state, ownProps) {
+    return {
+      handlers: this.handlers,
+      ...state.notebooks
+    }
+  }
+
+  render() {
+    const VisibleNotebooks = connect(this.mapStateToProps.bind(this))(NotebooksPresent);
+
+    return <VisibleNotebooks
+      store={this.model.reduxStore}
+      user={this.props.user}
+      standalone={this.props.standalone ? this.props.standalone : false}
+      scope={this.props.scope}
+      urlNewEnvironment={this.props.urlNewEnvironment}
+    />
+  }
+}
+
+/**
  * Displays a start page for new Jupiterlab servers.
  *
  * @param {Object} client - api-client used to query the gateway
+ * @param {Object} model - global model for the ui
  * @param {Object[]} branches - Branches as returned by gitlab "/branches" API - no autosaved branches
  * @param {Object[]} autosaved - Autosaved branches
  * @param {function} refreshBranches - Function to invoke to refresh the list of branches
@@ -42,10 +105,13 @@ import { StatusHelper } from '../model/Model'
 class StartNotebookServer extends Component {
   constructor(props) {
     super(props);
-    this.model = new NotebooksModel(props.client);
+    this.model = props.model.subModel("notebooks");
+    this.coordinator = new NotebooksCoordinator(props.client, this.model);
+    // temporarily reset data since notebooks model was not designed to be static
+    this.coordinator.reset();
 
     if (props.scope) {
-      this.model.setNotebookFilters(props.scope);
+      this.coordinator.setNotebookFilters(props.scope);
     }
 
     this.handlers = {
@@ -68,21 +134,21 @@ class StartNotebookServer extends Component {
 
   componentDidMount() {
     this._isMounted = true;
-    this.model.startNotebookPolling();
+    this.coordinator.startNotebookPolling();
     this.refreshBranches();
   }
 
   componentWillUnmount() {
-    this.model.stopNotebookPolling();
-    this.model.stopPipelinePolling();
+    this.coordinator.stopNotebookPolling();
+    this.coordinator.stopPipelinePolling();
     this._isMounted = false;
   }
 
   componentDidUpdate(previousProps) {
     // TODO: temporary fix to prevent issue with component rerendered multiple times at the first url load
     if (this.state.first &&
-        StatusHelper.isUpdating(previousProps.branches) &&
-        !StatusHelper.isUpdating(this.props.branches)) {
+      StatusHelper.isUpdating(previousProps.branches) &&
+      !StatusHelper.isUpdating(this.props.branches)) {
       this.setState({ first: false });
       if (this._isMounted) {
         this.selectBranch();
@@ -119,17 +185,17 @@ class StartNotebookServer extends Component {
       const { branches } = this.props;
       const branch = branches.filter(branch => branch.name === branchName);
       if (branch.length === 1) {
-        this.model.setBranch(branch[0]);
+        this.coordinator.setBranch(branch[0]);
         this.refreshCommits();
       }
       else {
         if (autoBranchName && branches && branches.length) {
-          this.model.setBranch(branches[0]);
+          this.coordinator.setBranch(branches[0]);
           this.refreshCommits();
         }
         else {
-          this.model.setBranch({});
-          this.model.setCommit({});
+          this.coordinator.setBranch({});
+          this.coordinator.setCommit({});
         }
       }
     }
@@ -140,7 +206,7 @@ class StartNotebookServer extends Component {
       if (this.model.get("data.fetching"))
         return;
 
-      await this.model.fetchCommits();
+      await this.coordinator.fetchCommits();
       if (this._isMounted) {
         this.selectCommit();
       }
@@ -169,15 +235,15 @@ class StartNotebookServer extends Component {
           return;
       }
 
-      this.model.setCommit(commit);
+      this.coordinator.setCommit(commit);
       this.refreshPipelines();
     }
   }
 
   async refreshPipelines() {
     if (this._isMounted) {
-      await this.model.startPipelinePolling();
-      this.model.fetchNotebookOptions();
+      await this.coordinator.startPipelinePolling();
+      this.coordinator.fetchNotebookOptions();
     }
   }
 
@@ -203,7 +269,7 @@ class StartNotebookServer extends Component {
       }
     }
 
-    this.model.setNotebookOptions(option, value);
+    this.coordinator.setNotebookOptions(option, value);
   }
 
   startServer() {
@@ -211,7 +277,7 @@ class StartNotebookServer extends Component {
     //* To avoid flickering UI, just set a temporary state and display a loading wheel.
     const { successUrl, history } = this.props;
     this.setState({ "starting": true });
-    this.model.startServer().then(() => {
+    this.coordinator.startServer().then(() => {
       this.setState({ "starting": false });
       if (successUrl && history)
         history.push(successUrl);
@@ -220,20 +286,20 @@ class StartNotebookServer extends Component {
 
   toggleMergedBranches() {
     const currentSetting = this.model.get("filters.includeMergedBranches");
-    this.model.setMergedBranches(!currentSetting);
+    this.coordinator.setMergedBranches(!currentSetting);
     this.selectBranch();
   }
 
   setDisplayedCommits(number) {
-    this.model.setDisplayedCommits(number);
+    this.coordinator.setDisplayedCommits(number);
     this.selectCommit();
   }
 
   mapStateToProps(state, ownProps) {
     const augmentedState = {
-      ...state,
+      ...state.notebooks,
       data: {
-        ...state.data,
+        ...state.notebooks.data,
         branches: ownProps.inherited.branches,
         autosaved: ownProps.inherited.autosaved
       },
@@ -258,67 +324,10 @@ class StartNotebookServer extends Component {
 }
 
 /**
- * Display the list of Notebook servers
- *
- * @param {Object} client - api-client used to query the gateway
- * @param {boolean} standalone - Indicates whether it's displayed as standalone
- * @param {string} [urlNewEnvironment] - url to "new environment" page
- * @param {Object} [scope] - object containing filtering parameters
- * @param {string} [scope.namespace] - full path of the reference namespace
- * @param {string} [scope.project] - path of the reference project
- * @param {string} [scope.branch] - branch name
- * @param {string} [scope.commit] - commit full id
- */
-class Notebooks extends Component {
-  constructor(props) {
-    super(props);
-    this.model = new NotebooksModel(props.client);
-
-    if (props.scope) {
-      this.model.setNotebookFilters(props.scope);
-    }
-
-    this.handlers = {
-      stopNotebook: this.stopNotebook.bind(this)
-    }
-  }
-
-  componentDidMount() {
-    this.model.startNotebookPolling();
-  }
-
-  componentWillUnmount() {
-    this.model.stopNotebookPolling();
-  }
-
-  stopNotebook(serverName) {
-    this.model.stopNotebook(serverName);
-  }
-
-  mapStateToProps(state, ownProps) {
-    return {
-      handlers: this.handlers,
-      ...state
-    }
-  }
-
-  render() {
-    const VisibleNotebooks = connect(this.mapStateToProps.bind(this))(NotebooksPresent);
-
-    return <VisibleNotebooks
-      store={this.model.reduxStore}
-      user={this.props.user}
-      standalone={this.props.standalone ? this.props.standalone : false}
-      scope={this.props.scope}
-      urlNewEnvironment={this.props.urlNewEnvironment}
-    />
-  }
-}
-
-/**
  * Display the connect to Jupyter icon
  * 
  * @param {Object} client - api-client used to query the gateway
+ * @param {Object} model - global model for the ui
  * @param {string} filePath - relative path of the target notebook file
  * @param {string} launchNotebookUrl - launch notebook url
  * @param {Object} scope - object containing filtering parameters
@@ -331,10 +340,13 @@ class Notebooks extends Component {
 class CheckNotebookStatus extends Component {
   constructor(props) {
     super(props);
-    this.model = new NotebooksModel(props.client);
+    this.model = props.model.subModel("notebooks");
+    this.coordinator = new NotebooksCoordinator(props.client, this.model);
+    // temporarily reset data since notebooks model was not designed to be static
+    this.coordinator.reset();
 
     if (props.scope) {
-      this.model.setNotebookFilters(props.scope);
+      this.coordinator.setNotebookFilters(props.scope);
     }
   }
 
@@ -344,31 +356,33 @@ class CheckNotebookStatus extends Component {
     if (!scope.branch || !scope.commit)
       return;
     if (scope.commit === "latest") {
-      let commits = await this.model.fetchCommits();
+      let commits = await this.coordinator.fetchCommits();
       scope.commit = commits[0];
-      this.model.setNotebookFilters(scope);
+      this.coordinator.setNotebookFilters(scope);
     }
 
     const pollingInterval = this.props.pollingInterval ?
       parseInt(this.props.pollingInterval) * 1000 :
       5000;
 
-    this.model.startNotebookPolling(pollingInterval);
+    this.coordinator.startNotebookPolling(pollingInterval);
   }
 
   componentWillUnmount() {
-    this.model.stopNotebookPolling();
+    this.coordinator.stopNotebookPolling();
   }
 
   mapStateToProps(state, ownProps) {
-    const notebookKeys = Object.keys(state.notebooks.all);
+    const subState = state.notebooks;
+
+    const notebookKeys = Object.keys(subState.notebooks.all);
     const notebook = notebookKeys.length > 0 ?
-      state.notebooks.all[notebookKeys] :
+      subState.notebooks.all[notebookKeys] :
       null;
 
     return {
-      fetched: state.notebooks.fetched,
-      fetching: state.notebooks.fetching,
+      fetched: subState.notebooks.fetched,
+      fetching: subState.notebooks.fetching,
       notebook
     }
   }

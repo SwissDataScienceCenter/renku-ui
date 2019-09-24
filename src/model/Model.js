@@ -166,7 +166,7 @@ class ReactStateModel {
 }
 
 class StateModel {
-  constructor(schema, stateBinding, stateHolder, initialState) {
+  constructor(schema, stateBinding = StateKind.REDUX, stateHolder = null, initialState = null) {
     this.stateBinding = stateBinding;
     this.schema = schema;
 

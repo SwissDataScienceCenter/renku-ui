@@ -19,7 +19,7 @@
 /**
  *  renku-ui
  *
- * Tests for the notebook server component
+ * Tests for the interactive environment components
  */
 
 import React from 'react';
@@ -28,8 +28,11 @@ import { MemoryRouter } from 'react-router-dom';
 
 import { NotebooksHelper, Notebooks, StartNotebookServer, CheckNotebookStatus } from './index';
 import { ExpectedAnnotations } from './Notebooks.state';
+import { StateModel, globalSchema } from '../model'
 import { testClient as client } from '../api-client'
 
+
+const model = new StateModel(globalSchema);
 
 describe('notebook server clean annotation', () => {
   const baseAnnotations = ExpectedAnnotations["renku.io"].default;
@@ -87,25 +90,31 @@ describe('rendering', () => {
   };
 
   it('renders Notebooks', () => {
+    const props = {
+      client,
+      model
+    }
+
     const div = document.createElement('div');
     document.body.appendChild(div);
     ReactDOM.render(
       <MemoryRouter>
-        <Notebooks client={client} standalone={true} />
+        <Notebooks {...props} standalone={true} />
       </MemoryRouter>, div);
     ReactDOM.render(
       <MemoryRouter>
-        <Notebooks client={client} standalone={false} />
+        <Notebooks {...props} standalone={false} />
       </MemoryRouter>, div);
     ReactDOM.render(
       <MemoryRouter>
-        <Notebooks client={client} standalone={true} scope={scope} />
+        <Notebooks {...props} standalone={true} scope={scope} />
       </MemoryRouter>, div);
   });
 
   it('renders StartNotebookServer without crashing', () => {
     const props = {
-      client: client,
+      client,
+      model,
       branches: [],
       autosaved: [],
       refreshBranches: () => { },
@@ -125,7 +134,8 @@ describe('rendering', () => {
 
   it('renders CheckNotebookStatus', () => {
     const props = {
-      client: client,
+      client,
+      model,
       scope,
       launchNotebookUrl: "/projects/abc/def/launchNotebook",
       filePath: "notebook.ypynb"
