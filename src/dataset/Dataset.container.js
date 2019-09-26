@@ -20,6 +20,18 @@ import React from 'react';
 import DatasetView from './Dataset.present';
 
 export default function ShowDataset(props) {
-
-  return <DatasetView dataset={props.dataset}/>
+  return <DatasetView 
+    fetchGraphStatus={props.fetchGraphStatus}
+    maintainer={props.maintainer}
+    createGraphWebhook={props.createGraphWebhook}
+    forked={props.forked}
+    insideProject={props.insideProject}
+    progress={props.progress}
+    lineagesUrl={props.lineagesUrl}
+    fileContentUrl={props.fileContentUrl}
+    projectsUrl={props.projectsUrl}
+    client={props.client} 
+    datasets={props.datasets} 
+    selectedDataset={props.selectedDataset}
+  />
 }

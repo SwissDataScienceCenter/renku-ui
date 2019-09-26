@@ -26,5 +26,6 @@
 
 import { FilePreview, JupyterButton, ShowFile } from './File.container'
 import { FileLineage } from './Lineage.container'
+import KnowledgeGraphStatus from './KnowledgeGraphStatus.container'
 
-export { FilePreview, FileLineage, JupyterButton, ShowFile }
+export { FilePreview, FileLineage, JupyterButton, ShowFile, KnowledgeGraphStatus }

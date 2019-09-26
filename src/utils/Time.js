@@ -64,6 +64,14 @@ class Time {
     const isoDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
     return this.toIsoString(isoDate, type);
   }
+  
+  static getReadableDate(inputDate){
+    const date = this.parseDate(inputDate);
+    let months=["January", "February", "March", "April", "May", "June", 
+      "July", "August", "September", "October", "November", "December"]
+    return months[date.getMonth()]+" "+date.getDate()+", "+date.getFullYear();
+  }
+
 }
 
 export default Time;

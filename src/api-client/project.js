@@ -410,6 +410,21 @@ function addProjectMethods(client) {
       .then(result => yaml.load(result));
   }
 
+  client.fetchDatasetFromKG = (datasetLink) => {
+    const headers = client.getBasicHeaders();
+    const datasetPromise = client.clientFetch(datasetLink, {method:'GET', headers});
+    return Promise.resolve(datasetPromise).then(dataset => dataset.data);
+  }
+
+  client.getProjectDatasetsFromKG = (projectPath) => {
+    let url = `${client.baseUrl}/knowledge-graph/projects/${projectPath}/datasets`;
+    url = url.replace('/api','');//The url should change in the backend so we don't have to do this
+    const headers = client.getBasicHeaders();
+    return client.clientFetch(url, {method:'GET', headers}).then((resp) => {
+      return resp.data;
+    });
+  }
+
   client.getProjectDatasets = (projectId) => {
     const datasetsPromise = client.getRepositoryTree(projectId, { path: '.renku/datasets', recursive: true })
       .then(data => 
