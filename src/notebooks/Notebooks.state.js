@@ -369,14 +369,14 @@ class NotebooksCoordinator {
     return this.client.startNotebook(namespace, project, branch, commit, options);
   }
 
-  stopNotebook(serverName) {
+  stopNotebook(serverName, force = false) {
     // manually set the state and temporarily throw away servers data until the promise resolves
     const updatedState = {
       filters: { discard: true },
       notebooks: { all: { [serverName]: { status: { ready: false } } } }
     };
     this.model.setObject(updatedState);
-    return this.client.stopNotebookServer(serverName)
+    return this.client.stopNotebookServer(serverName, force)
       .then(response => {
         this.model.set('filters.discard', false);
         return response;

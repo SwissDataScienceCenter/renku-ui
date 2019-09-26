@@ -35,13 +35,16 @@ function addNotebookServersMethods(client) {
     });
   }
 
-  client.stopNotebookServer = (serverName) => {
+  client.stopNotebookServer = (serverName, force = false) => {
     const headers = client.getBasicHeaders();
     const url = `${client.baseUrl}/notebooks/servers/${serverName}`;
+    let parameters = {};
+    if (force) parameters.force = true;
 
     return client.clientFetch(url, {
       method: 'DELETE',
-      headers
+      headers,
+      queryParams: parameters
     }, "text")
       .then(resp => {
         return true;

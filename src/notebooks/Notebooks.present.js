@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import Media from 'react-media';
 import { Link } from 'react-router-dom';
 
@@ -31,21 +31,11 @@ import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 import { StatusHelper } from '../model/Model';
 import { NotebooksHelper } from './index'
+import { simpleHash } from '../utils/HelperFunctions';
 import { Loader, InfoAlert, ExternalLink, JupyterIcon } from '../utils/UIComponents';
 import Time from '../utils/Time';
 import Sizes from '../utils/Media';
 
-
-const Columns = {
-  large: {
-    default: ["Project", "Commit", "Action"],
-    project: ["Branch", "Commit", "Action"]
-  },
-  compact: {
-    default: ["List"],
-    project: ["List"],
-  }
-};
 
 // * Notebooks code * //
 class Notebooks extends Component {
@@ -60,6 +50,7 @@ class Notebooks extends Component {
         <NotebooksTitle standalone={this.props.standalone} />
         <NotebookServers
           servers={this.props.notebooks.all}
+          standalone={this.props.standalone}
           loading={loading}
           stopNotebook={this.props.handlers.stopNotebook}
           scope={this.props.scope} />
@@ -128,24 +119,34 @@ class NotebookServersList extends Component {
   render() {
     const serverNames = Object.keys(this.props.servers);
     if (serverNames.length === 0) {
-      return <p>No currently running environments.</p>
+      return (<p>No currently running environments.</p>);
     }
-    const rows = serverNames.map((k, i) =>
-      <NotebookServerRow
+    const rows = serverNames.map((k, i) => {
+      const validAnnotations = Object.keys(this.props.servers[k].annotations)
+        .filter(key => key.startsWith("renku.io"))
+        .reduce((obj, key) => { obj[key] = this.props.servers[k].annotations[key]; return obj; }, {});
+
+      return (<NotebookServerRow
         key={i}
         stopNotebook={this.props.stopNotebook}
         scope={this.props.scope}
-        {...this.props.servers[k]}
-      />
-    )
+        standalone={this.props.standalone}
+        annotations={validAnnotations}
+        name={this.props.servers[k].name}
+        status={this.props.servers[k].status}
+        url={this.props.servers[k].url}
+      />);
+    });
     return (
       <Table bordered>
-        <NotebookServersHeader scope={this.props.scope} />
+        <thead className="thead-light">
+          <NotebookServersHeader scope={this.props.scope} standalone={this.props.standalone} />
+        </thead>
         <tbody>
           {rows}
         </tbody>
       </Table>
-    )
+    );
   }
 }
 
@@ -167,33 +168,25 @@ class NotebookServersHeader extends Component {
 
 class NotebookServerHeaderFull extends Component {
   render() {
-    const columns = this.props.scope && this.props.scope.project ?
-      Columns.large.project :
-      Columns.large.default
+    const project = this.props.standalone ?
+      <th className="align-middle">Project</th> :
+      null;
+
     return (
-      <thead className="thead-light">
-        <tr>
-          <th className="align-middle">{columns[0]}</th>
-          <th className="align-middle">{columns[1]}</th>
-          <th className="align-middle" style={{ width: "1px" }}>{columns[2]}</th>
-        </tr>
-      </thead>
-    )
+      <tr>
+        {project}
+        <th className="align-middle">Branch</th>
+        <th className="align-middle">Commit</th>
+        <th className="align-middle" style={{ width: "1px" }}>Status</th>
+        <th className="align-middle" style={{ width: "1px" }}>Action</th>
+      </tr>
+    );
   }
 }
 
 class NotebookServerHeaderCompact extends Component {
   render() {
-    const columns = this.props.scope && this.props.scope.project ?
-      Columns.compact.project :
-      Columns.compact.default
-    return (
-      <thead className="thead-light">
-        <tr>
-          <th className="align-middle">{columns[0]}</th>
-        </tr>
-      </thead>
-    )
+    return (<tr><th className="align-middle">List</th></tr>);
   }
 }
 
@@ -201,166 +194,211 @@ class NotebookServerRow extends Component {
   render() {
     const annotations = NotebooksHelper.cleanAnnotations(this.props.annotations, "renku.io");
     const status = NotebooksHelper.getStatus(this.props.status);
+    const details = {
+      message: this.props.status.message,
+      reason: this.props.status.reason,
+      step: this.props.status.step,
+    };
+    const uid = "uid_" + simpleHash(annotations["namespace"] + annotations["projectName"]
+      + annotations["branch"] + annotations["commit-sha"]);
+    const newProps = { annotations, status, details, uid };
 
     return (
       <Media query={Sizes.md}>
         { matches =>
           matches ? (
-            <NotebookServerRowFull
-              {...this.props} status={status} annotations={annotations} />
+            <NotebookServerRowFull {...this.props} {...newProps} />
           ) : (
-            <NotebookServerRowCompact
-              {...this.props} status={status} annotations={annotations} />
+            <NotebookServerRowCompact {...this.props} {...newProps} />
           )
         }
       </Media>
-    )
+    );
   }
 }
 
 class NotebookServerRowFull extends Component {
   render() {
-    const { annotations, status, url } = this.props;
-    let columns;
-    if (this.props.scope && this.props.scope.project) {
-      columns = [annotations["branch"], annotations["commit-sha"].substring(0, 8)];
-    }
-    else {
-      const projectLink = <NotebookServerRowProject
-        display={`${annotations["namespace"]}/${annotations["projectName"]}`}
-        link={`${annotations["namespace"]}/${annotations["projectName"]}`}
+    const { annotations, details, status, url, uid } = this.props;
+
+    const project = this.props.standalone ?
+      (<td className="align-middle"><NotebookServerRowProject annotations={this.props.annotations} /></td>) :
+      null;
+    const branch = (<td className="align-middle">{annotations["branch"]}</td>);
+    const commit = (<td className="align-middle">{annotations["commit-sha"].substring(0, 8)}</td>);
+    const statusOut = (<td className="align-middle">
+      <NotebooksServerRowStatus details={details} status={status} uid={uid} />
+    </td>);
+    const action = (<td className="align-middle">
+      <NotebookServerRowAction
+        name={this.props.name}
+        status={status}
+        stopNotebook={this.props.stopNotebook}
+        url={url}
       />
-      columns = [projectLink, `${annotations["branch"]}/${annotations["commit-sha"].substring(0, 8)}`];
-    }
+    </td>);
+
     return (
       <tr>
-        <td className="align-middle">
-          {columns[0]}
-        </td>
-        <td className="align-middle">
-          {columns[1]}
-        </td>
-        <td className="align-middle">
-          <NotebookServerRowAction
-            status={status}
-            name={this.props.name}
-            stopNotebook={this.props.stopNotebook}
-            url={url}
-          />
-        </td>
+        {project}
+        {branch}
+        {commit}
+        {statusOut}
+        {action}
       </tr>
-    )
+    );
   }
 }
 
 class NotebookServerRowCompact extends Component {
   render() {
-    const { annotations, status, scope, url } = this.props;
-    let rowsHeader, rows;
-    if (scope && scope.project) {
-      rowsHeader = Columns.large.project;
-      rows = [annotations["branch"], annotations["commit-sha"].substring(0, 8)];
-    }
-    else {
-      rowsHeader = Columns.large.default;
-      const projectLink = <NotebookServerRowProject
-        display={`${annotations["namespace"]}/${annotations["projectName"]}`}
-        link={`${annotations["namespace"]}/${annotations["projectName"]}`}
+    const { annotations, details, status, url, uid } = this.props;
+
+    const project = this.props.standalone ?
+      (<Fragment>
+        <span className="font-weight-bold">Project: </span>
+        <span><NotebookServerRowProject annotations={this.props.annotations} /></span>
+        <br />
+      </Fragment>) :
+      null;
+    const branch = (<Fragment>
+      <span className="font-weight-bold">Branch: </span>
+      <span>{annotations["branch"]}</span>
+      <br />
+    </Fragment>);
+    const commit = (<Fragment>
+      <span className="font-weight-bold">Commit: </span>
+      <span>{annotations["commit-sha"].substring(0, 8)}</span>
+      <br />
+    </Fragment>);
+    const statusOut = (<span>
+      <NotebooksServerRowStatus spaced={true} details={details} status={status} uid={uid} />
+    </span>);
+    const action = (<span>
+      <NotebookServerRowAction
+        name={this.props.name}
+        status={status}
+        stopNotebook={this.props.stopNotebook}
+        url={url}
       />
-      rows = [projectLink, `${annotations["branch"]}/${annotations["commit-sha"].substring(0, 8)}`];
-    }
+    </span>);
 
     return (
       <tr>
         <td>
-          <span className="font-weight-bold">{rowsHeader[0]}: </span>
-          <br className="d-sm-none" />
-          <span>{rows[0]}</span>
-          <br />
-          <span className="font-weight-bold">{rowsHeader[1]}: </span>
-          <br className="d-sm-none" />
-          <span>{rows[1]}</span>
-          <br />
-          <NotebookServerRowAction
-            status={status}
-            name={this.props.name}
-            stopNotebook={this.props.stopNotebook}
-            url={url}
-            small={true}
-          />
+          {project}
+          {branch}
+          {commit}
+          {statusOut}
+          {action}
         </td>
       </tr>
-    )
+    );
+  }
+}
+
+class NotebooksServerRowStatus extends Component {
+  render() {
+    const getStatusObject = (status) => {
+      switch (status) {
+      case "running":
+        return {
+          color: "success",
+          text: "Running"
+        }
+      case "pending":
+        return {
+          color: "warning",
+          text: "Pending"
+        }
+      case "error":
+        return {
+          color: "danger",
+          text: "Error"
+        }
+      default:
+        return {
+          color: "danger",
+          text: "Unknown"
+        }
+      }
+    }
+    const { status, details, uid } = this.props;
+    const data = getStatusObject(status);
+    const classes = this.props.spaced ?
+      "text-nowrap p-1 mb-2" :
+      "text-nowrap p-1";
+    const info = status !== "running" ?
+      (<span>
+        <FontAwesomeIcon icon={faInfoCircle} />
+        <UncontrolledPopover target={uid} trigger="legacy" placement="bottom">
+          <PopoverHeader>Kubernetes pod status</PopoverHeader>
+          <PopoverBody>
+            <span className="font-weight-bold">Step:</span> <span>{details.step}</span><br />
+            <span className="font-weight-bold">Reason:</span> <span>{details.reason}</span><br />
+            <span className="font-weight-bold">Message:</span> <span>{details.message}</span><br />
+          </PopoverBody>
+        </UncontrolledPopover>
+      </span>) :
+      null;
+
+    return (<div>
+      <Badge id={uid} color={data.color} className={classes}>{data.text} {info}</Badge>
+    </div>);
   }
 }
 
 class NotebookServerRowProject extends Component {
   render() {
-    return (
-      <Link to={`/projects/${this.props.link}`}>
-        {this.props.display}
-      </Link>
-    )
+    const { annotations } = this.props;
+    const url = `${annotations["namespace"]}/${annotations["projectName"]}`;
+    return (<Link to={`/projects/${url}`}>{url}</Link>);
   }
 }
 
 class NotebookServerRowAction extends Component {
   render() {
     const { status, name } = this.props;
-    let color, statusText, interactive;
-    switch (status) {
-    case "running":
-      color = "success";
-      statusText = "Running";
-      interactive = true;
-      break;
-    case "pending":
-      color = "warning";
-      statusText = "Pending";
-      interactive = false;
-      break;
-    case "error":
-      color = "danger";
-      statusText = "Error";
-      interactive = false;
-      break;
-    default:
-      color = "danger";
-      statusText = "Unknown";
-      interactive = false;
-    }
-    const size = this.props.small ? "sm" : "";
+    const actions = {
+      connect: null,
+      stop: null,
+      logs: null // TODO #414: add here the "Get Log" logic
+    };
+    let defaultAction = null;
 
-    if (interactive) {
-      return (
-        <UncontrolledButtonDropdown>
-          <DropdownToggle caret color={color} disabled={!interactive} size={size}>
-            {statusText}
-          </DropdownToggle>
-          <DropdownMenu>
-            <DropdownItem href={this.props.url} target="_blank">
-              <FontAwesomeIcon icon={faExternalLinkAlt} /> Connect
-            </DropdownItem>
-            <DropdownItem onClick={() => this.props.stopNotebook(name)}>
-              <FontAwesomeIcon icon={faStopCircle} /> Stop
-            </DropdownItem>
-            {/* TODO */}
-            {/* <DropdownItem divider /> */}
-            {/* <DropdownItem disabled>View Logs</DropdownItem> */}
-          </DropdownMenu>
-        </UncontrolledButtonDropdown>
-      )
+    if (status === "running") {
+      defaultAction = (<ExternalLink url={this.props.url} title="Connect" />);
+      actions.connect = (<DropdownItem href={this.props.url} target="_blank">
+        <FontAwesomeIcon icon={faExternalLinkAlt} /> Connect
+      </DropdownItem>);
+      actions.stop = (<DropdownItem onClick={() => this.props.stopNotebook(name)}>
+        <FontAwesomeIcon icon={faStopCircle} /> Stop
+      </DropdownItem>);
     }
     else {
-      return (
-        <div>
-          <Button className="d-flex" color={color} disabled size={size}>
-            {statusText}
-            <Loader size="14" inline="true" margin="1" />
-          </Button>
-        </div>
-      )
+      return null;
+      /* TODO #414: change default action to "Get Log"
+      const classes = { color: "primary", className: "text-nowrap" };
+      defaultAction = (<Button {...classes} onClick={() => this.props.stopNotebook(name, true)}>
+        <FontAwesomeIcon icon={faExclamationTriangle} /> Force stop
+      </Button>);
+      actions.stop = (<DropdownItem onClick={() => this.props.stopNotebook(name, true)}>
+        <FontAwesomeIcon icon={faExclamationTriangle} /> Force stop
+      </DropdownItem>);
+      */
     }
+
+    return (
+      <UncontrolledButtonDropdown size="sm">
+        {defaultAction}
+        <DropdownToggle caret color="primary" />
+        <DropdownMenu>
+          {actions.connect}
+          {actions.stop}
+          {actions.logs}
+        </DropdownMenu>
+      </UncontrolledButtonDropdown>
+    );
   }
 }
 

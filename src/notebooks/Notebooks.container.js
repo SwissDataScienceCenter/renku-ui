@@ -63,8 +63,8 @@ class Notebooks extends Component {
     this.coordinator.stopNotebookPolling();
   }
 
-  stopNotebook(serverName) {
-    this.coordinator.stopNotebook(serverName);
+  stopNotebook(serverName, force) {
+    this.coordinator.stopNotebook(serverName, force);
   }
 
   mapStateToProps(state, ownProps) {
