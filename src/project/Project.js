@@ -66,7 +66,7 @@ class View extends Component {
 
       // in case the route fails it tests weather it could be a projectid route
       const routes=['overview','kus','ku_new','files','lineage','notebooks',
-        'data','workflows','settings','pending','launchNotebook','notebookServers'];
+        'data','workflows','settings','pending','launchNotebook','notebookServers','datasets','environments'];
       const available = this.props.core ? this.props.core.available : null;
       const potentialProjectId = this.props.projectPathWithNamespace.split('/')[0];
       const potentialRoute = this.props.projectPathWithNamespace.split('/')[1];
@@ -100,7 +100,7 @@ class View extends Component {
     this.projectState.setProjectOpenFolder(this.props.client, filepath);
   }
   async fetchProjectDatasets() {
-    return this.projectState.fetchProjectDatasets(this.props.client, this.props.id);
+    return this.projectState.fetchProjectDatasets(this.props.client);
   }
   async fetchGraphStatus() { return this.projectState.fetchGraphStatus(this.props.client); }
 
@@ -208,21 +208,6 @@ class View extends Component {
       .filter(branch => mergeRequestBranches.indexOf(branch.name) < 0);
   }
 
-  getSelectedDataset(datasets) {
-
-    if (datasets === undefined) return undefined;
-
-    const datasetPath = this.props.location.pathname.endsWith('/') 
-      ? this.props.location.pathname.slice(0, -1)
-      : this.props.location.pathname;
-    const datasetId = datasetPath.split('/').pop();
-
-    let selectedDataset = datasets.filter(d => datasetId === d.identifier )[0];
-
-    if(selectedDataset === undefined) return null;
-    return selectedDataset;
-  }
-
   subComponents(projectId, ownProps) {
     const accessLevel = this.projectState.get('visibility.accessLevel');
     const externalUrl = this.projectState.get('core.external_url');
@@ -296,13 +281,17 @@ class View extends Component {
           undefined} />,
 
       datasetView: (p) => <ShowDataset
-        key="datasetpreview" {...subProps}
-        pathname={p.location.pathname}
-        dataset={this.getSelectedDataset(datasets)}
-        projectPath={this.projectState.get('core.path_with_namespace')}
-        datasetsPath={this.getSubUrls().datasetsUrl}
-      />
-      ,
+        key="datasetpreview"  {...subProps}
+        progress={graphProgress}
+        maintainer={maintainer}
+        forked={forked}
+        insideProject={true}
+        datasets={datasets}
+        lineagesUrl={subUrls.lineagesUrl}
+        fileContentUrl={subUrls.fileContentUrl}
+        projectsUrl={subUrls.projectsUrl}
+        selectedDataset={p.match.params.datasetId}
+      />,
 
       mrList: <ConnectedMergeRequestList key="mrList" store={this.projectState.reduxStore}
         mrOverviewUrl={subUrls.mrOverviewUrl} />,

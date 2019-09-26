@@ -24,11 +24,10 @@ import * as d3 from 'd3';
 
 import { Link }  from 'react-router-dom';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faInfoCircle, faFile } from '@fortawesome/fontawesome-free-solid'
+import { faFile } from '@fortawesome/fontawesome-free-solid'
 import faGitlab from '@fortawesome/fontawesome-free-brands/faGitlab';
-import { Card, CardHeader, CardBody, UncontrolledTooltip, Badge, Button, Alert, Progress } from 'reactstrap';
-
-import { Loader } from '../utils/UIComponents';
+import { Card, CardHeader, CardBody, UncontrolledTooltip, Badge } from 'reactstrap';
+import KnowledgeGraphStatus  from './KnowledgeGraphStatus.container';
 import { GraphIndexingStatus } from '../project/Project';
 import { JupyterButton } from './index';
 
@@ -204,64 +203,21 @@ class FileLineageGraph extends Component {
 
 class FileLineage extends Component {
   render() {
-    const {progress, webhookJustCreated} = this.props;
-    if (progress == null) {
-      return (
-        <Loader />
-      )
-    }
-    if (progress === GraphIndexingStatus.NO_WEBHOOK) {
-      if (webhookJustCreated) {
-        return (
-          <Alert color="warning">
-            Knowledge Graph activated! Lineage computation starting soon...
-          </Alert>
-        )
-      }
-      else {
-        const action = this.props.maintainer ?
-          <Button color="warning" onClick={this.props.createWebhook}>Activate Knowledge Graph</Button> :
-          <span>You do not have sufficient rights, but a project owner can do this.</span>
-
-        return (
-          <Alert color="warning">
-            Knowledge Graph integration must be activated to view the lineage.&nbsp;
-            {action}
-          </Alert>
-        )
-      }
-    }
-    else if (progress === GraphIndexingStatus.NO_PROGRESS) {
-      let forkedInfo = null;
-      if (this.props.forked) {
-        forkedInfo = (
-          <div>
-            <br />
-            <FontAwesomeIcon icon={faInfoCircle} /> <span className="font-italic">If you recenty forked
-            this project, the graph integration will not finish until you create at least one commit.</span>
-          </div>
-        );
-      }
-      return (
-        <div>
-          <Alert color="primary">
-            Please wait, Knowledge Graph integration recently triggered.
-            {forkedInfo}
-          </Alert>
-          <Loader />
-        </div>
-      )
-    }
-    else if (progress >= GraphIndexingStatus.MIN_VALUE && progress < GraphIndexingStatus.MAX_VALUE) {
-      return (
-        <div>
-          <Alert color="primary">
-            <p>Knowledge Graph is building... {parseInt(progress)}%</p>
-            <Progress value={progress} />
-          </Alert>
-        </div>
-      )
-    }
+    const { progress } = this.props;
+    
+    if(progress == null 
+      || progress === GraphIndexingStatus.NO_WEBHOOK
+      || progress === GraphIndexingStatus.NO_PROGRESS
+      || (progress >= GraphIndexingStatus.MIN_VALUE && progress < GraphIndexingStatus.MAX_VALUE)
+    )
+      return <KnowledgeGraphStatus
+        fetchGraphStatus={this.props.fetchGraphStatus}
+        retrieveGraph={this.props.retrieveGraph}
+        createGraphWebhook={this.props.createGraphWebhook}
+        maintainer={this.props.maintainer}
+        forked={this.props.forked}
+        progress={this.props.progress}
+      />;
 
     const graphObj = this.props.graph;
     const graph = (graphObj) ?

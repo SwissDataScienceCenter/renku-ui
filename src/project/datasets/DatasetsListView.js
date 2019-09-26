@@ -6,11 +6,11 @@ import '../filestreeview/treeviewstyle.css';
 import { Loader } from '../../utils/UIComponents';
 
 function DatasetListRow(props){
-  const dataset = props.dataset
+  const dataset = props.dataset;
   return <NavLink 
     activeClassName="selected-dataset" 
     key={dataset.identifier} 
-    to={`${props.datasetsUrl}/${dataset.identifier}/`} 
+    to={`${props.datasetsUrl}/${encodeURIComponent(dataset.identifier)}/`} 
   >
     <div className={"fs-element"}>
       <FontAwesomeIcon className="icon-grey" icon={faTable} /> {dataset.name}
@@ -47,5 +47,5 @@ export default function DatasetsListView(props){
       </nav>
     </div>
   )
-    
+
 }

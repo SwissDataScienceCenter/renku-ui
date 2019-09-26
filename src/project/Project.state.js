@@ -208,12 +208,35 @@ class ProjectModel extends StateModel {
     this.set('filesTree',filesTree);  
   }
 
-  fetchProjectDatasets(client, id){
+  fetchProjectDatasets(client){ //from KG
+    if(this.get('core.datasets')) return this.get('core.datasets');
+    if(this.get('transient.requests.datasets') === SpecialPropVal.UPDATING) return;
+    this.setUpdating({transient:{requests:{datasets: true}}});
+    return client.getProjectDatasetsFromKG(this.get('core.path_with_namespace'))
+      .then(datasets => {
+        datasets = datasets.map(dataset => {
+          dataset.identifier = dataset.identifier.split('-').join("");
+          return dataset;
+        } )
+        const updatedState = { datasets: datasets, transient:{requests:{datasets: false}} };
+        this.set('core.datasets', datasets);
+        this.setObject(updatedState);
+        return datasets;
+      }).catch(error => {
+        if (error.case === API_ERRORS.notFoundError) {
+          const updatedState = { datasets: [], transient:{requests:{datasets: false}} };
+          this.set('core.datasets', []);
+          this.setObject(updatedState);
+        }
+      });
+  }
+
+  fetchProjectDatasetsFromMetadata(client){
     if(this.get('core.datasets')) return this.get('core.datasets');
     if(this.get('transient.requests.datasets') === SpecialPropVal.UPDATING) return;
     this.setUpdating({transient:{requests:{datasets: true}}});
    
-    return client.getProjectDatasets(id)
+    return client.getProjectDatasets(this.get('core.id'))
       .then(datasets => {
         datasets = datasets.map(dataset => {
           dataset.identifier = dataset.identifier.split('-').join("");
