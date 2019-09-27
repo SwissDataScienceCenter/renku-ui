@@ -25,8 +25,10 @@ import { UncontrolledButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem 
 import { UncontrolledTooltip, UncontrolledPopover, PopoverHeader, PopoverBody } from 'reactstrap';
 import { Badge } from 'reactstrap';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faStopCircle, faExternalLinkAlt, faInfoCircle, faSyncAlt} from '@fortawesome/fontawesome-free-solid';
-import { faCogs, faCog, faExclamationTriangle, faRedo } from '@fortawesome/fontawesome-free-solid';
+import { faStopCircle, faExternalLinkAlt, faInfoCircle, faSyncAlt } from '@fortawesome/fontawesome-free-solid';
+import { faCogs, faCog, faEllipsisV, faExclamationTriangle, faRedo } from '@fortawesome/fontawesome-free-solid';
+import { faTimesCircle } from '@fortawesome/fontawesome-free-solid';
+import { faCheckCircle } from '@fortawesome/fontawesome-free-regular';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 import { StatusHelper } from '../model/Model';
@@ -138,7 +140,7 @@ class NotebookServersList extends Component {
       />);
     });
     return (
-      <Table bordered>
+      <Table>
         <thead className="thead-light">
           <NotebookServersHeader scope={this.props.scope} standalone={this.props.standalone} />
         </thead>
@@ -174,6 +176,7 @@ class NotebookServerHeaderFull extends Component {
 
     return (
       <tr>
+        <th className="align-middle" style={{ width: "1px" }}></th>
         {project}
         <th className="align-middle">Branch</th>
         <th className="align-middle">Commit</th>
@@ -221,6 +224,9 @@ class NotebookServerRowFull extends Component {
   render() {
     const { annotations, details, status, url, uid } = this.props;
 
+    const icon = <td className="align-middle">
+      <NotebooksServerRowStatusIcon details={details} status={status} uid={uid} />
+    </td>;
     const project = this.props.standalone ?
       (<td className="align-middle"><NotebookServerRowProject annotations={this.props.annotations} /></td>) :
       null;
@@ -240,6 +246,7 @@ class NotebookServerRowFull extends Component {
 
     return (
       <tr>
+        {icon}
         {project}
         {branch}
         {commit}
@@ -254,6 +261,9 @@ class NotebookServerRowCompact extends Component {
   render() {
     const { annotations, details, status, url, uid } = this.props;
 
+    const icon = <span>
+      <NotebooksServerRowStatusIcon details={details} status={status} uid={uid} />
+    </span>;
     const project = this.props.standalone ?
       (<Fragment>
         <span className="font-weight-bold">Project: </span>
@@ -289,48 +299,51 @@ class NotebookServerRowCompact extends Component {
           {project}
           {branch}
           {commit}
-          {statusOut}
-          {action}
+          <div className="d-inline-flex" >
+            {icon} &nbsp; {statusOut} &nbsp; {action}
+          </div>
         </td>
       </tr>
     );
   }
 }
 
+function getStatusObject(status) {
+  switch (status) {
+  case "running":
+    return {
+      color: "success",
+      icon: <FontAwesomeIcon icon={faCheckCircle} size="lg" />,
+      text: "Running"
+    }
+  case "pending":
+    return {
+      color: "warning",
+      icon: <Loader size="16" inline="true" />,
+      text: "Pending"
+    }
+  case "error":
+    return {
+      color: "danger",
+      icon: <FontAwesomeIcon icon={faTimesCircle} size="lg" />,
+      text: "Error"
+    }
+  default:
+    return {
+      color: "danger",
+      icon: <FontAwesomeIcon icon={faExclamationTriangle} size="lg" />,
+      text: "Unknown"
+    }
+  }
+}
+
 class NotebooksServerRowStatus extends Component {
   render() {
-    const getStatusObject = (status) => {
-      switch (status) {
-      case "running":
-        return {
-          color: "success",
-          text: "Running"
-        }
-      case "pending":
-        return {
-          color: "warning",
-          text: "Pending"
-        }
-      case "error":
-        return {
-          color: "danger",
-          text: "Error"
-        }
-      default:
-        return {
-          color: "danger",
-          text: "Unknown"
-        }
-      }
-    }
     const { status, details, uid } = this.props;
     const data = getStatusObject(status);
-    const classes = this.props.spaced ?
-      "text-nowrap p-1 mb-2" :
-      "text-nowrap p-1";
     const info = status !== "running" ?
       (<span>
-        <FontAwesomeIcon icon={faInfoCircle} />
+        <FontAwesomeIcon id={uid} style={{color: "#5561A6"}} icon={faInfoCircle} />
         <UncontrolledPopover target={uid} trigger="legacy" placement="bottom">
           <PopoverHeader>Kubernetes pod status</PopoverHeader>
           <PopoverBody>
@@ -342,8 +355,20 @@ class NotebooksServerRowStatus extends Component {
       </span>) :
       null;
 
+    return <div className="d-inline-flex">{data.text}&nbsp;{info}</div>;
+  }
+}
+
+class NotebooksServerRowStatusIcon extends Component {
+  render() {
+    const { status } = this.props;
+    const data = getStatusObject(status);
+    const classes = this.props.spaced ?
+      "text-nowrap p-1 mb-2" :
+      "text-nowrap p-1";
+
     return (<div>
-      <Badge id={uid} color={data.color} className={classes}>{data.text} {info}</Badge>
+      <Badge color={data.color} className={classes}>{data.icon}</Badge>
     </div>);
   }
 }
@@ -388,10 +413,15 @@ class NotebookServerRowAction extends Component {
       */
     }
 
+    const alternateToggleStyle = {whiteSpace: "nowrap", borderRadius: "0.2rem",
+      paddingRight: "0.5625rem", paddingLeft: "0.5625rem"};
+
     return (
       <UncontrolledButtonDropdown size="sm">
         {defaultAction}
-        <DropdownToggle caret color="primary" />
+        <DropdownToggle color="primary" style={alternateToggleStyle}>
+          <FontAwesomeIcon icon={faEllipsisV} style={{color: 'white', backgroundColor: "#5561A6"}} />
+        </DropdownToggle>
         <DropdownMenu>
           {actions.connect}
           {actions.stop}
