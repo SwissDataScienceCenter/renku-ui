@@ -50,7 +50,7 @@ class ProjectPath extends Component {
 
     this.state = {
       suggestions: [],
-      input: this.props.namespace.name
+      input: this.props.namespace.path
     };
   }
 
@@ -59,8 +59,8 @@ class ProjectPath extends Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if (this.props.namespace.name !== prevProps.namespace.name) {
-      this.setState({input: this.props.namespace.name});
+    if (this.props.namespace.path !== prevProps.namespace.path) {
+      this.setState({input: this.props.namespace.path});
     }
   }
 
@@ -69,7 +69,7 @@ class ProjectPath extends Component {
   }
 
   renderSuggestion(suggestion) {
-    return <span>{suggestion.name}</span>;
+    return <span>{suggestion.path}</span>;
   }
 
   renderSectionTitle(section) {
@@ -88,7 +88,7 @@ class ProjectPath extends Component {
       this.props.onChange(highlightedSuggestion);
       this.props.onAccept();
     }
-    this.setState({input: this.props.namespace.name})
+    this.setState({input: this.props.namespace.path})
   }
 
   doChange(event, { newValue, method }) {

@@ -53,13 +53,13 @@ class ProjectPath extends Component {
 
     this.state = {
       suggestions: [],
-      input: this.props.namespace.name
+      input: this.props.namespace.path
     };
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if (this.props.namespace.name !== prevProps.namespace.name) {
-      this.setState({input: this.props.namespace.name});
+    if (this.props.namespace.path !== prevProps.namespace.path) {
+      this.setState({input: this.props.namespace.path});
     }
   }
 
@@ -68,7 +68,7 @@ class ProjectPath extends Component {
   }
 
   renderSuggestion(suggestion) {
-    return <span>{suggestion.name}</span>;
+    return <span>{suggestion.path}</span>;
   }
 
   renderSectionTitle(section) {
@@ -87,7 +87,7 @@ class ProjectPath extends Component {
       this.props.onChange(highlightedSuggestion);
       this.props.onAccept();
     }
-    this.setState({input: this.props.namespace.name})
+    this.setState({input: this.props.namespace.path})
   }
 
   doChange(event, { newValue, method }) {
@@ -192,9 +192,9 @@ class DataVisibility extends Component {
     const vizExplanation = (visibilities.length === 3) ?
       "" :
       "The project home's visibility setting limits the project visibility options.";
-    const options = visibilities.map(v =>
-      <option key={v.value} value={v.value}>{v.name}</option>
-    )
+      const options = visibilities.map(v =>
+        <option key={v.value} value={v.value}>{v.name}</option>
+      )
     let content = [
       <FormGroup key="visibility">
         <Label>Visibility</Label>

@@ -58,7 +58,7 @@ class Fork extends Component {
         return;
       }
       const username = this.props.user.username;
-      const namespace = namespaces.data.filter(n => n.name === username)
+      const namespace = namespaces.data.filter(n => n.path === username)
       if (namespace.length > 0) this.forkProject.set('meta.projectNamespace', namespace[0]);
       this.forkProject.set('display.namespaces', namespaces)
     }
@@ -153,7 +153,7 @@ class Fork extends Component {
       let escapedValue = this.escapeRegexCharacters(search.trim());
       if (escapedValue === '') escapedValue = '.*';
       const regex = new RegExp(escapedValue, 'i');
-      return Promise.resolve(namespaces.data.filter(namespace => regex.test(namespace.name)))
+      return Promise.resolve(namespaces.data.filter(namespace => regex.test(namespace.path)))
     }
   }
 
