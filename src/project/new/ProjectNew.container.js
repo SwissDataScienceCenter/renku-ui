@@ -40,22 +40,23 @@ function groupVisibilitySupportsVisibility(groupVisibility, visibility) {
   return (groupVisibility === 'public');
 }
 
-function projectVisibilitiesForGroupVisibility(groupVisibility='public') {
+function projectVisibilitiesForGroupVisibility(groupVisibility = 'public') {
   const visibilities = [];
-  visibilities.push({name: "Private", value: "private"});
+  visibilities.push({ name: "Private", value: "private" });
   if (groupVisibilitySupportsVisibility(groupVisibility, 'internal'))
-    visibilities.push({name: "Internal", value: "internal"});
+    visibilities.push({ name: "Internal", value: "internal" });
   if (groupVisibilitySupportsVisibility(groupVisibility, 'public'))
-    visibilities.push({name: "Public", value: "public"});
+    visibilities.push({ name: "Public", value: "public" });
   return visibilities
 }
 
 class New extends Component {
   constructor(props) {
     super(props);
-    
+
     this.newProject = new StateModel(newProjectSchema, StateKind.REDUX);
-    this.state = {statuses: [], namespaces: [], namespaceGroup: null,
+    this.state = {
+      statuses: [], namespaces: [], namespaceGroup: null,
       visibilities: projectVisibilitiesForGroupVisibility(), templates: []
     };
 
@@ -74,7 +75,7 @@ class New extends Component {
     this.mapStateToProps = this.doMapStateToProps.bind(this);
   }
 
-  async fetchProjectTemplates(){
+  async fetchProjectTemplates() {
     return this.props.client.getProjectTemplates(this.props.renkuTemplatesUrl, this.props.renkuTemplatesRef);
   }
 
@@ -82,26 +83,26 @@ class New extends Component {
     const namespaces = await this.fetchNamespaces();
     if (namespaces == null) {
       // This seems to break in a test on Travis, but this code is not necessary locally. Need to investigate.
-      this.setState({namespaces: []});
+      this.setState({ namespaces: [] });
       return;
     }
     const username = this.props.user.username;
     const namespace = namespaces.data.filter(n => n.path === username)
     if (namespace.length > 0) this.newProject.set('meta.projectNamespace', namespace[0]);
-    this.setState({namespaces});
+    this.setState({ namespaces });
 
     const templates = await this.fetchProjectTemplates();
     if (templates == null) {
-      this.setState({templates: []});
+      this.setState({ templates: [] });
       return;
     }
-    this.setState({templates})
+    this.setState({ templates })
     if (templates.length > 0) this.newProject.set('meta.template', templates[0].folder);
-    
+
   }
 
   refreshUserProjects(client, userStateDispatch) {
-    client.getProjects({membership: true, order_by: 'last_activity_at'})
+    client.getProjects({ membership: true, order_by: 'last_activity_at' })
       .then(p => userStateDispatch(UserState.reSetMember(p)));
   }
 
@@ -125,7 +126,7 @@ class New extends Component {
             const messages = Object.keys(all_messages)
               .filter(mex => all_messages[mex].length)
               .reduce((obj, mex) => { obj[mex] = all_messages[mex]; return obj; }, {});
-            
+
             // the most common error is the duplicate name, we can rewrite it for readability
             if (Object.keys(messages).includes("name") && /already.+taken/.test(messages["name"].join("; "))) {
               display_messages = [`title: ${messages["name"].join("; ")}`];
@@ -147,7 +148,7 @@ class New extends Component {
   validate() {
     const validation = this.newProject.validate()
     if (!validation.result) {
-      this.setState({statuses: validation.errors});
+      this.setState({ statuses: validation.errors });
     }
     return validation;
   }
@@ -158,7 +159,7 @@ class New extends Component {
   }
 
   onDescriptionChange(e) { this.newProject.set('display.description', e.target.value); }
-  
+
   onVisibilityChange(e) {
     this.newProject.set('meta.visibility', e.target.value);
     if (e.target.value !== "private") {
@@ -182,7 +183,7 @@ class New extends Component {
     const namespace = this.newProject.get('meta.projectNamespace');
     if (namespace.kind !== 'group') {
       const visibilities = projectVisibilitiesForGroupVisibility();
-      this.setState({namespaceGroup: null, visibilities});
+      this.setState({ namespaceGroup: null, visibilities });
       return;
     }
 
@@ -194,16 +195,16 @@ class New extends Component {
         // Default to the highest available visibility
         this.newProject.set('meta.visibility', visibilities[visibilities.length - 1].value);
       }
-      this.setState({namespaceGroup: group, visibilities});
+      this.setState({ namespaceGroup: group, visibilities });
     })
   }
 
   doMapStateToProps(state, ownProps) {
     const model = this.newProject.mapStateToProps(state, ownProps);
-    return {model}
+    return { model }
   }
 
-  fetchNamespaces(search=null) {
+  fetchNamespaces(search = null) {
     const queryParams = {};
     if (search != null) queryParams['search'] = search;
     return this.props.client.getNamespaces(queryParams);
@@ -228,7 +229,7 @@ class New extends Component {
   render() {
     const ConnectedNewProject = connect(this.mapStateToProps)(ProjectNew);
     const statuses = {}
-    this.state.statuses.forEach((d) => { Object.keys(d).forEach(k => statuses[k] = d[k])});
+    this.state.statuses.forEach((d) => { Object.keys(d).forEach(k => statuses[k] = d[k]) });
     return <ConnectedNewProject
       statuses={statuses}
       namespaces={this.state.namespaces.data}

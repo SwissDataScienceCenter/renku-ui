@@ -59,7 +59,7 @@ class ProjectPath extends Component {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (this.props.namespace.path !== prevProps.namespace.path) {
-      this.setState({input: this.props.namespace.path});
+      this.setState({ input: this.props.namespace.path });
     }
   }
 
@@ -81,19 +81,19 @@ class ProjectPath extends Component {
     return section.namespaces;
   }
 
-  doBlur(event, {highlightedSuggestion}) {
+  doBlur(event, { highlightedSuggestion }) {
     // Take the highlighted suggestion or return to the selected namespace
     if (null != highlightedSuggestion) {
       this.props.onChange(highlightedSuggestion);
       this.props.onAccept();
     }
-    this.setState({input: this.props.namespace.path})
+    this.setState({ input: this.props.namespace.path })
   }
 
   doChange(event, { newValue, method }) {
     // If the user typed, store it as local input, otherwise set the selection
     if (method === 'type') {
-      this.setState({input: newValue});
+      this.setState({ input: newValue });
     } else {
       this.props.onChange(newValue)
     }
@@ -120,7 +120,7 @@ class ProjectPath extends Component {
 
     // Show current as first on input-focused, otherwise do not show
     if (reason === 'input-focused') {
-      const current = {kind: 'current', namespaces: [this.props.namespace]};
+      const current = { kind: 'current', namespaces: [this.props.namespace] };
       suggestions.splice(0, 0, current);
     }
     this.setState({ suggestions });
@@ -142,23 +142,23 @@ class ProjectPath extends Component {
     };
     // See https://github.com/moroshko/react-autosuggest#themeProp
     const defaultTheme = {
-      container:                'react-autosuggest__container',
-      containerOpen:            'react-autosuggest__container--open',
-      input:                    'react-autosuggest__input',
-      inputOpen:                'react-autosuggest__input--open',
-      inputFocused:             'react-autosuggest__input--focused',
-      suggestionsContainer:     'react-autosuggest__suggestions-container',
+      container: 'react-autosuggest__container',
+      containerOpen: 'react-autosuggest__container--open',
+      input: 'react-autosuggest__input',
+      inputOpen: 'react-autosuggest__input--open',
+      inputFocused: 'react-autosuggest__input--focused',
+      suggestionsContainer: 'react-autosuggest__suggestions-container',
       suggestionsContainerOpen: 'react-autosuggest__suggestions-container--open',
-      suggestionsList:          'react-autosuggest__suggestions-list',
-      suggestion:               'react-autosuggest__suggestion',
-      suggestionFirst:          'react-autosuggest__suggestion--first',
-      suggestionHighlighted:    'react-autosuggest__suggestion--highlighted',
-      sectionContainer:         'react-autosuggest__section-container',
-      sectionContainerFirst:    'react-autosuggest__section-container--first',
-      sectionTitle:             'react-autosuggest__section-title'
+      suggestionsList: 'react-autosuggest__suggestions-list',
+      suggestion: 'react-autosuggest__suggestion',
+      suggestionFirst: 'react-autosuggest__suggestion--first',
+      suggestionHighlighted: 'react-autosuggest__suggestion--highlighted',
+      sectionContainer: 'react-autosuggest__section-container',
+      sectionContainerFirst: 'react-autosuggest__section-container--first',
+      sectionTitle: 'react-autosuggest__section-title'
     };
     // Override the input theme to match our visual style
-    const theme = {...defaultTheme, ...{input: 'form-control'}};
+    const theme = { ...defaultTheme, ...{ input: 'form-control' } };
     return <FormGroup>
       <Label>Project Home</Label>
       <InputGroup>
@@ -192,9 +192,9 @@ class DataVisibility extends Component {
     const vizExplanation = (visibilities.length === 3) ?
       "" :
       "The project home's visibility setting limits the project visibility options.";
-      const options = visibilities.map(v =>
-        <option key={v.value} value={v.value}>{v.name}</option>
-      )
+    const options = visibilities.map(v =>
+      <option key={v.value} value={v.value}>{v.name}</option>
+    )
     let content = [
       <FormGroup key="visibility">
         <Label>Visibility</Label>
@@ -209,7 +209,7 @@ class DataVisibility extends Component {
     if (this.props.visibilityValue === "private") {
       const optout = (
         <FormGroup key="optout">
-          <Label check style={{marginLeft:"1.25rem"}}>
+          <Label check style={{ marginLeft: "1.25rem" }}>
             <Input type="checkbox" id="myCheckbox"
               value={this.props.optoutKgValue}
               onChange={this.props.onOptoutKgChange} />
@@ -235,10 +235,10 @@ class DataVisibility extends Component {
 
 
 class TemplatesDropdown extends Component {
-  
+
   render() {
     const templates = this.props.templates;
-    let selected = this.props.templates.filter(v=> v.folder === this.props.templateValue)
+    let selected = this.props.templates.filter(v => v.folder === this.props.templateValue)
 
     const options = templates.map(v =>
       <option key={v.folder} value={v.folder}>{v.name}</option>
@@ -253,7 +253,7 @@ class TemplatesDropdown extends Component {
           {options}
         </Input>
         <FormText color="muted">
-          {selected!== undefined && selected.length > 0 ? selected[0].description : "" }
+          {selected !== undefined && selected.length > 0 ? selected[0].description : ""}
         </FormText>
       </FormGroup>
     ]
@@ -295,7 +295,7 @@ class ProjectNew extends Component {
             optoutKgValue={this.props.model.meta.optoutKg}
             onVisibilityChange={this.props.handlers.onVisibilityChange}
             onOptoutKgChange={this.props.handlers.onOptoutKgChange} />
-          <br/>
+          <br />
           <SubmitErrors errors={this.props.model.display.errors} />
           <Button color="primary" onClick={this.props.handlers.onSubmit} disabled={this.props.model.display.loading}>
             Create
@@ -310,14 +310,14 @@ class ProjectNew extends Component {
 class SubmitLoader extends Component {
   render() {
     if (!this.props.loading) return null;
-    return(<Loader size="16" inline="true" margin="2" />)
+    return (<Loader size="16" inline="true" margin="2" />)
   }
 }
 
 class SubmitErrors extends Component {
   render() {
     if (!this.props.errors || !this.props.errors.length) return null;
-    return(
+    return (
       <div>
         <Alert color="danger">
           <Col>

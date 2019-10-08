@@ -30,13 +30,13 @@ import React, { Component } from 'react';
 import Autosuggest from 'react-autosuggest';
 
 import { Row, Col, Button, FormGroup, FormText, Label } from 'reactstrap';
-import {  InputGroup, InputGroupAddon, InputGroupText } from 'reactstrap';
+import { InputGroup, InputGroupAddon, InputGroupText } from 'reactstrap';
 import { Alert } from 'reactstrap';
 
 import collection from 'lodash/collection';
 import { FieldGroup, Loader } from '../../utils/UIComponents'
 import '../new/Project.style.css'
-import {Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 
 class ProjectPath extends Component {
@@ -54,13 +54,13 @@ class ProjectPath extends Component {
     };
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this.props.fetchAllNamespaces();
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     if (this.props.namespace.path !== prevProps.namespace.path) {
-      this.setState({input: this.props.namespace.path});
+      this.setState({ input: this.props.namespace.path });
     }
   }
 
@@ -82,19 +82,19 @@ class ProjectPath extends Component {
     return section.namespaces;
   }
 
-  doBlur(event, {highlightedSuggestion}) {
+  doBlur(event, { highlightedSuggestion }) {
     // Take the highlighted suggestion or return to the selected namespace
     if (null != highlightedSuggestion) {
       this.props.onChange(highlightedSuggestion);
       this.props.onAccept();
     }
-    this.setState({input: this.props.namespace.path})
+    this.setState({ input: this.props.namespace.path })
   }
 
   doChange(event, { newValue, method }) {
     // If the user typed, store it as local input, otherwise set the selection
     if (method === 'type') {
-      this.setState({input: newValue});
+      this.setState({ input: newValue });
     } else {
       this.props.onChange(newValue)
     }
@@ -121,7 +121,7 @@ class ProjectPath extends Component {
 
     // Show current as first on input-focused, otherwise do not show
     if (reason === 'input-focused') {
-      const current = {kind: 'current', namespaces: [this.props.namespace]};
+      const current = { kind: 'current', namespaces: [this.props.namespace] };
       suggestions.splice(0, 0, current);
     }
     this.setState({ suggestions });
@@ -143,23 +143,23 @@ class ProjectPath extends Component {
     };
     // See https://github.com/moroshko/react-autosuggest#themeProp
     const defaultTheme = {
-      container:                'react-autosuggest__container',
-      containerOpen:            'react-autosuggest__container--open',
-      input:                    'react-autosuggest__input',
-      inputOpen:                'react-autosuggest__input--open',
-      inputFocused:             'react-autosuggest__input--focused',
-      suggestionsContainer:     'react-autosuggest__suggestions-container',
+      container: 'react-autosuggest__container',
+      containerOpen: 'react-autosuggest__container--open',
+      input: 'react-autosuggest__input',
+      inputOpen: 'react-autosuggest__input--open',
+      inputFocused: 'react-autosuggest__input--focused',
+      suggestionsContainer: 'react-autosuggest__suggestions-container',
       suggestionsContainerOpen: 'react-autosuggest__suggestions-container--open',
-      suggestionsList:          'react-autosuggest__suggestions-list',
-      suggestion:               'react-autosuggest__suggestion',
-      suggestionFirst:          'react-autosuggest__suggestion--first',
-      suggestionHighlighted:    'react-autosuggest__suggestion--highlighted',
-      sectionContainer:         'react-autosuggest__section-container',
-      sectionContainerFirst:    'react-autosuggest__section-container--first',
-      sectionTitle:             'react-autosuggest__section-title'
+      suggestionsList: 'react-autosuggest__suggestions-list',
+      suggestion: 'react-autosuggest__suggestion',
+      suggestionFirst: 'react-autosuggest__suggestion--first',
+      suggestionHighlighted: 'react-autosuggest__suggestion--highlighted',
+      sectionContainer: 'react-autosuggest__section-container',
+      sectionContainerFirst: 'react-autosuggest__section-container--first',
+      sectionTitle: 'react-autosuggest__section-title'
     };
     // Override the input theme to match our visual style
-    const theme = {...defaultTheme, ...{input: 'form-control'}};
+    const theme = { ...defaultTheme, ...{ input: 'form-control' } };
     return <FormGroup>
       <Label>Project Home</Label>
       <InputGroup>
@@ -189,69 +189,69 @@ class ProjectPath extends Component {
 
 class ForkProjectModal extends Component {
 
-  componentDidMount(){
+  componentDidMount() {
     this.props.handlers.setProjectTitle(this.props.title);
   }
 
   render() {
     const titleHelp = this.props.model.display.slug.length > 0 ? `Id: ${this.props.model.display.slug}` : null;
     return <div>
-      <Modal 
-        isOpen={this.props.forkModalOpen !== undefined && this.props.forkModalOpen !== false} 
-        toggle={this.props.handlers.toogleForkModal} 
+      <Modal
+        isOpen={this.props.forkModalOpen !== undefined && this.props.forkModalOpen !== false}
+        toggle={this.props.handlers.toogleForkModal}
         className={this.props.className}>
         <ModalHeader toggle={this.props.handlers.toogleForkModal}>Fork Project</ModalHeader>
         <ModalBody>
           <FieldGroup id="title" type="text" label="Title" placeholder="A brief name to identify the project"
             help={titleHelp} value={this.props.model.display.title}
-            feedback={this.props.model.display.title} 
+            feedback={this.props.model.display.title}
             onChange={this.props.handlers.onTitleChange} />
-          <ProjectPath 
+          <ProjectPath
             slug={this.props.model.display.slug}
             namespace={this.props.model.meta.projectNamespace}
             namespaces={this.props.namespaces}
             onChange={this.props.handlers.onProjectNamespaceChange}
             onAccept={this.props.handlers.onProjectNamespaceAccept}
-            fetchMatchingNamespaces={this.props.handlers.fetchMatchingNamespaces} 
-            fetchAllNamespaces={this.props.handlers.fetchAllNamespaces}/>
+            fetchMatchingNamespaces={this.props.handlers.fetchMatchingNamespaces}
+            fetchAllNamespaces={this.props.handlers.fetchAllNamespaces} />
           <SubmitErrors errors={this.props.model.display.errors} />
           <SubmitLoader loading={this.props.model.display.loading} />
         </ModalBody>
         <ModalFooter>
-          <Button 
-            color="primary" 
-            disabled={ this.props.model.display.loading } 
+          <Button
+            color="primary"
+            disabled={this.props.model.display.loading}
             onClick={this.props.handlers.onSubmit}>
             Fork
           </Button>{' '}
-          <Button 
-            color="secondary" 
-            disabled={ this.props.model.display.loading } 
+          <Button
+            color="secondary"
+            disabled={this.props.model.display.loading}
             onClick={this.props.handlers.toogleForkModal}>
             Cancel
           </Button>
         </ModalFooter>
       </Modal>
     </div>
-      
+
   }
 }
 
 class SubmitLoader extends Component {
   render() {
     if (!this.props.loading) return null;
-    return(
+    return (
       <FormText color="primary">
-        <Loader size="16" inline="true" margin="2"/>
+        <Loader size="16" inline="true" margin="2" />
         The project is being forked...
-      </FormText> )
+      </FormText>)
   }
 }
 
 class SubmitErrors extends Component {
   render() {
     if (!this.props.errors || !this.props.errors.length) return null;
-    return(
+    return (
       <div>
         <Alert color="danger">
           <Col>
