@@ -50,9 +50,15 @@ class Notebooks extends Component {
       this.coordinator.setNotebookFilters(props.scope, true);
     }
 
+    this.state = {
+      showingLogs: false
+    };
+
     this.handlers = {
-      stopNotebook: this.stopNotebook.bind(this)
-    }
+      stopNotebook: this.stopNotebook.bind(this),
+      fetchLogs: this.fetchLogs.bind(this),
+      toggleLogs: this.toggleLogs.bind(this)
+    };
   }
 
   componentDidMount() {
@@ -67,11 +73,24 @@ class Notebooks extends Component {
     this.coordinator.stopNotebook(serverName, force);
   }
 
+  fetchLogs(serverName) {
+    this.coordinator.fetchLogs(serverName);
+  }
+
+  toggleLogs(serverName) {
+    const nextState = !this.state.showingLogs
+    this.setState({ showingLogs: nextState });
+
+    if (nextState)
+      this.fetchLogs(serverName)
+  }
+
   mapStateToProps(state, ownProps) {
     return {
       handlers: this.handlers,
-      ...state.notebooks
-    }
+      ...state.notebooks,
+      logs: { ...state.notebooks.logs, show: this.state.showingLogs }
+    };
   }
 
   render() {

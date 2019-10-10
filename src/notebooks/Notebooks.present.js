@@ -27,6 +27,7 @@ import { Badge } from 'reactstrap';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { faStopCircle, faExternalLinkAlt, faInfoCircle, faSyncAlt } from '@fortawesome/fontawesome-free-solid';
 import { faCogs, faCog, faEllipsisV, faExclamationTriangle, faRedo } from '@fortawesome/fontawesome-free-solid';
+import { faFileAlt } from '@fortawesome/fontawesome-free-solid';
 import { faTimesCircle } from '@fortawesome/fontawesome-free-solid';
 import { faCheckCircle } from '@fortawesome/fontawesome-free-regular';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
@@ -55,6 +56,9 @@ class Notebooks extends Component {
           standalone={this.props.standalone}
           loading={loading}
           stopNotebook={this.props.handlers.stopNotebook}
+          fetchLogs={this.props.handlers.fetchLogs}
+          toggleLogs={this.props.handlers.toggleLogs}
+          logs={this.props.logs}
           scope={this.props.scope} />
         <NotebooksPopup
           servers={serverNumbers}
@@ -131,6 +135,9 @@ class NotebookServersList extends Component {
       return (<NotebookServerRow
         key={i}
         stopNotebook={this.props.stopNotebook}
+        fetchLogs={this.props.fetchLogs}
+        toggleLogs={this.props.toggleLogs}
+        logs={this.props.logs}
         scope={this.props.scope}
         standalone={this.props.standalone}
         annotations={validAnnotations}
@@ -240,7 +247,14 @@ class NotebookServerRowFull extends Component {
         name={this.props.name}
         status={status}
         stopNotebook={this.props.stopNotebook}
+        toggleLogs={this.props.toggleLogs}
         url={url}
+      />
+      <EnvironmentLogs
+        fetchLogs={this.props.fetchLogs}
+        toggleLogs={this.props.toggleLogs}
+        logs={this.props.logs}
+        name={this.props.name}
       />
     </td>);
 
@@ -289,7 +303,14 @@ class NotebookServerRowCompact extends Component {
         name={this.props.name}
         status={status}
         stopNotebook={this.props.stopNotebook}
+        toggleLogs={this.props.toggleLogs}
         url={url}
+      />
+      <EnvironmentLogs
+        fetchLogs={this.props.fetchLogs}
+        toggleLogs={this.props.toggleLogs}
+        logs={this.props.logs}
+        name={this.props.name}
       />
     </span>);
 
@@ -387,9 +408,12 @@ class NotebookServerRowAction extends Component {
     const actions = {
       connect: null,
       stop: null,
-      logs: null // TODO #414: add here the "Get Log" logic
+      logs: null
     };
     let defaultAction = null;
+    actions.logs = (<DropdownItem onClick={() => this.props.toggleLogs(name)}>
+      <FontAwesomeIcon icon={faFileAlt} /> Get logs
+    </DropdownItem>);
 
     if (status === "running") {
       defaultAction = (<ExternalLink url={this.props.url} title="Connect" />);
@@ -401,28 +425,22 @@ class NotebookServerRowAction extends Component {
       </DropdownItem>);
     }
     else {
-      return null;
-      /* TODO #414: change default action to "Get Log"
       const classes = { color: "primary", className: "text-nowrap" };
-      defaultAction = (<Button {...classes} onClick={() => this.props.stopNotebook(name, true)}>
-        <FontAwesomeIcon icon={faExclamationTriangle} /> Force stop
-      </Button>);
-      actions.stop = (<DropdownItem onClick={() => this.props.stopNotebook(name, true)}>
-        <FontAwesomeIcon icon={faExclamationTriangle} /> Force stop
-      </DropdownItem>);
-      */
+      defaultAction = (<Button {...classes} onClick={() => this.props.toggleLogs(name)}>Get logs</Button>);
     }
 
-    const alternateToggleStyle = {whiteSpace: "nowrap", borderRadius: "0.2rem",
-      paddingRight: "0.5625rem", paddingLeft: "0.5625rem"};
+    const alternateToggleStyle = {
+      whiteSpace: "nowrap", borderRadius: "0.2rem",
+      paddingRight: "0.5625rem", paddingLeft: "0.5625rem"
+    };
 
     return (
       <UncontrolledButtonDropdown size="sm">
         {defaultAction}
         <DropdownToggle color="primary" style={alternateToggleStyle}>
-          <FontAwesomeIcon icon={faEllipsisV} style={{color: 'white', backgroundColor: "#5561A6"}} />
+          <FontAwesomeIcon icon={faEllipsisV} style={{ color: 'white', backgroundColor: "#5561A6" }} />
         </DropdownToggle>
-        <DropdownMenu>
+        <DropdownMenu right={true}>
           {actions.connect}
           {actions.stop}
           {actions.logs}
@@ -432,6 +450,55 @@ class NotebookServerRowAction extends Component {
   }
 }
 
+/**
+ * Simple environment logs container
+ * 
+ * @param {function} fetchLogs - async function to get logs as an array string
+ * @param {function} toggleLogs - toggle logs visibility and fetch logs on show
+ * @param {object} logs - log object from redux store enhanced with `show` property
+ * @param {string} name - server name
+ */
+class EnvironmentLogs extends Component {
+  render() {
+    const { logs, name, toggleLogs, fetchLogs } = this.props;
+    let body;
+    if (logs.fetching) {
+      body = (<Loader />);
+    }
+    else {
+      if (!logs.fetched) {
+        body = (<p>Logs unavailable. Please
+          <Button color="primary" onClick={() => { fetchLogs(name) }}>download</Button> them again.
+        </p>);
+      }
+      else {
+        if (logs.data && logs.data.length) {
+          body = (<pre style={{ whiteSpace: "preLine" }}>{logs.data.join("\n")}</pre>);
+        }
+        else {
+          body = (<div>
+            <p>No logs available for this pod yet.</p>
+            <p>You can try to <Button color="primary" onClick={() => { fetchLogs(name) }}>Refresh</Button>
+              them after a while.</p>
+          </div>);
+        }
+      }
+    }
+
+    return (
+      <Modal
+        isOpen={logs.show}
+        size="lg"
+        toggle={() => { toggleLogs(name) }}>
+        <ModalHeader toggle={() => { toggleLogs(name) }}>Logs</ModalHeader>
+        <ModalBody>{body}</ModalBody>
+        <ModalFooter>
+          <Button color="primary" onClick={() => { fetchLogs(name) }}>Refresh</Button>
+        </ModalFooter>
+      </Modal>
+    );
+  }
+}
 
 // * StartNotebookServer code * //
 class StartNotebookServer extends Component {
