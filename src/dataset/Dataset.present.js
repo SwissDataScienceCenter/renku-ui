@@ -41,24 +41,26 @@ function DisplayFiles(props){
         <thead>
           <tr>
             <th>Name</th>
-            <th className="text-center">File</th>
-            <th className="text-center">Lineage</th>
+            { props.insideProject ? <th className="text-center">File</th> : null }
+            { props.insideProject ? <th className="text-center">Lineage</th> : null }
           </tr>
         </thead>
         <tbody>
           { props.files.map((file)=>
             <tr key={file.atLocation}>
               <td className="text-break">{file.name}</td>
-              <td className="text-center">
-                <Link to={`${props.fileContentUrl}/${file.atLocation}`}>
-                  <FontAwesomeIcon icon={faFile} />
-                </Link>
-              </td>
-              <td className="text-center">
-                <Link to={`${props.lineagesUrl}/${file.atLocation}`}>
-                  <FontAwesomeIcon icon={faProjectDiagram} />
-                </Link>
-              </td>
+              { props.insideProject ?
+                <td className="text-center">
+                  <Link to={`${props.fileContentUrl}/${file.atLocation}`}>
+                    <FontAwesomeIcon icon={faFile} />
+                  </Link>
+                </td> : null }
+              { props.insideProject ?
+                <td className="text-center">
+                  <Link to={`${props.lineagesUrl}/${file.atLocation}`}>
+                    <FontAwesomeIcon icon={faProjectDiagram} />
+                  </Link>
+                </td> : null }
             </tr>  
           )}
         </tbody>
@@ -112,10 +114,26 @@ export default function DatasetView(props){
 
   useEffect(()=> { 
     let unmounted = false;
-    if( props.datasets!== undefined && dataset === undefined ){
+    if( props.insideProject && props.datasets!== undefined && dataset === undefined ){
       const selectedDataset = props.datasets.filter(d => props.selectedDataset === encodeURIComponent(d.identifier))[0];
       if(selectedDataset !== undefined){
         props.client.fetchDatasetFromKG(selectedDataset._links[0].href)
+          .then((datasetInfo) => {
+            if(!unmounted && dataset === undefined && datasetInfo !== undefined){
+              setDataset(datasetInfo)
+            }
+          }).catch(error => {
+            if(fetchError === null){
+              if (!unmounted && error.case === API_ERRORS.notFoundError){
+                setFetchError("Error 404: The dataset that was selected doesn't exist or couldn't be accessed.");}
+              else if(!unmounted && error.case === API_ERRORS.internalServerError){
+                setFetchError("Error 500: The dataset that was selected couldn't be fetched.");}
+            }
+          });
+      } else if(!unmounted) setDataset(null);
+    } else {
+      if(dataset === undefined){
+        props.client.fetchDatasetFromKG(props.client.baseUrl.replace('api','knowledge-graph/datasets/')+props.identifier)
           .then((datasetInfo) => {
             if(!unmounted && dataset === undefined && datasetInfo !== undefined){
               setDataset(datasetInfo)
@@ -128,7 +146,7 @@ export default function DatasetView(props){
                 setFetchError("Error 500: The dataset that was selected couldn't be fetched.");}
             }
           });
-      } else if(!unmounted) setDataset(null);
+      }
     }
     return () => {
       unmounted=true;
@@ -189,6 +207,7 @@ export default function DatasetView(props){
       fileContentUrl={props.fileContentUrl} 
       lineagesUrl={props.lineagesUrl} 
       files={dataset.hasPart} 
+      insideProject={props.insideProject} 
     />
     <br />
     <DisplayProjects 
