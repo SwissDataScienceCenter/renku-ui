@@ -30,12 +30,14 @@ import { BrowserRouter as Router, Route, Switch, Redirect }  from 'react-router-
 
 import Project from './project/Project'
 import Issue from './issue/Issue'
+import DatasetList from './dataset/list/DatasetList.container'
 import { Landing, LoggedInNavBar, AnonymousNavBar, FooterNavbar } from './landing'
 import { Notebooks } from './notebooks';
 import { Login } from './authentication'
 import Help from './help'
 import NotFound from './not-found'
 import { UserAvatar } from './utils/UIComponents'
+import ShowDataset from './dataset/Dataset.container'
 
 class RenkuNavBar extends Component {
 
@@ -125,6 +127,26 @@ class App extends Component {
                   standalone={true}
                   client={this.props.client}
                   model={this.props.model}
+                  {...p}
+                />}
+              />
+              <Route path="/datasets/:identifier"
+                render={p => 
+                  <ShowDataset
+                    key="datasetpreview"  {...p}
+                    insideProject={false}
+                    identifier={`${p.match.params.identifier}`}
+                    client={this.props.client}
+                    projectsUrl="/projects"
+                    selectedDataset={p.match.params.datasetId}
+                  />
+                }
+              /> 
+              <Route path="/datasets"
+                render={p => <DatasetList key="datasets"
+                  client={this.props.client}
+                  model={this.props.model}
+                  user={this.props.userState.getState().user}
                   {...p}
                 />}
               />

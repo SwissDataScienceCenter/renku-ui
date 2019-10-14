@@ -16,23 +16,13 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import DatasetView from './Dataset.present';
+/**
+ *  renku-ui
+ *
+ *  project/list
+ *  Components for the project listing.
+ */
 
-export default function ShowDataset(props) {
-  return <DatasetView 
-    fetchGraphStatus={props.fetchGraphStatus}
-    maintainer={props.maintainer}
-    createGraphWebhook={props.createGraphWebhook}
-    forked={props.forked}
-    insideProject={props.insideProject}
-    identifier={props.identifier}
-    progress={props.progress}
-    lineagesUrl={props.lineagesUrl}
-    fileContentUrl={props.fileContentUrl}
-    projectsUrl={props.projectsUrl}
-    client={props.client} 
-    datasets={props.datasets} 
-    selectedDataset={props.selectedDataset}
-  />
-}
+import List from './DatasetList.container';
+
+export default List;
