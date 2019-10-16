@@ -130,10 +130,17 @@ class RenkuNavLink extends Component {
   }
 
   testActive(match, location) {
-    const alt = this.props.alternate;
-    let haveMatch = match != null;
-    if (alt == null) return haveMatch;
-    return haveMatch || location.pathname.startsWith(alt);
+    if(this.props.matchpath === true){
+      const alt = this.props.alternate;
+      let haveMatch = (match != null || location.pathname.startsWith(this.props.to));
+      if (alt == null) return haveMatch;
+      return haveMatch || location.pathname.startsWith(alt);
+    } else {
+      const alt = this.props.alternate;
+      let haveMatch = match != null;
+      if (alt == null) return haveMatch;
+      return haveMatch || location.pathname.startsWith(alt);
+    }
   }
 
   render() {
@@ -347,7 +354,7 @@ class ErrorAlert extends Component {
 
 class RenkuMarkdown extends Component {
   render(){
-    return <div dangerouslySetInnerHTML={{__html: sanitizedHTMLFromMarkdown(this.props.markdownText)}}></div>
+    return <div className="text-break" dangerouslySetInnerHTML={{__html: sanitizedHTMLFromMarkdown(this.props.markdownText)}}></div>   
   }
 }
 

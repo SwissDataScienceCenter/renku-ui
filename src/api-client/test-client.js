@@ -42,14 +42,14 @@ const methods = {
   getProjectFile: {
     response: samples.projectNotebookFile
   },
-  getProjectKus: {
+  getProjectIssues: {
     response: {
-      data: samples.kus
+      data: samples.issues
     }
   },
-  getProjectKu: {
+  getProjectIssue: {
     response: {
-      data: samples.kus[0]
+      data: samples.issues[0]
     }
   },
   getModifiedFiles: {

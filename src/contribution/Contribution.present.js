@@ -26,7 +26,7 @@ import { Avatar, TimeCaption, RenkuMarkdown } from '../utils/UIComponents'
 import { FilePreview } from '../file';
 import { ContributionBody as ContributionBodyContainer } from './Contribution.container';
 import { EDIT, PREVIEW } from './Contribution.constants';
-
+import { Card, CardFooter, CardBody} from 'reactstrap';
 
 class Contribution extends React.Component {
 
@@ -37,16 +37,28 @@ class Contribution extends React.Component {
 
   render() {
     const contribution = this.props.contribution;
-    return (
-      <Row className="contribution">
-        <Col md={1}><Avatar person={contribution.author} /></Col>
-        <Col md={9}>
-          <b>{contribution.author.name} </b>
-          <TimeCaption caption="Updated" time={contribution.updated_at} />
-          <ContributionBodyContainer {...this.props} />
+
+    return <div>
+      <br/>
+      <Row>
+        <Col key="image" md={1}  sm={1} className="float-right text-center" style={{maxWidth:'62px'}}>
+          <Avatar size="lg" person={contribution.author} />
+          <small className="d-sm-inline-flex text-center">
+            {contribution.author ? contribution.author.name : null}
+          </small>
+        </Col>
+        <Col key="body" md={10} sm={10} className="float-left">
+          <Card className="triangle-border left">
+            <CardBody className="mb-0 pb-0">
+              <ContributionBodyContainer {...this.props} />
+            </CardBody>
+            <CardFooter className="border-0 bg-transparent text-muted pt-2 pb-2 pl-3"> 
+              <TimeCaption key="timecaption" caption="Updated" time={contribution.updated_at}/>
+            </CardFooter>
+          </Card>
         </Col>
       </Row>
-    );
+    </div>
   }
 }
 
@@ -117,37 +129,40 @@ const NewContribution = props => {
 
   return <span>
     <Row className="contribution">
-      <Col md={10}>
-        <Nav pills className={'nav-pills-underline'}>
-          <NavItem>
-            <NavLink
-              className={classnames({active: props.tab === EDIT})}
-              onClick={() => {
-                props.onTabClick(EDIT)
-              }}
-            >Write</NavLink>
-          </NavItem>
-          <NavItem>
-            <NavLink
-              className={classnames({active: props.tab === PREVIEW})}
-              onClick={() => {
-                props.onTabClick(PREVIEW)
-              }}
-            >Preview</NavLink>
-          </NavItem>
-        </Nav>
+      <Col md={1} sm={1} style={{maxWidth:'62px', minWidth:'62px'}}></Col>
+      <Col md={10} sm={10}>
+        <div className="margin-no-triangle">
+          <Nav pills className={'nav-pills-underline'}>
+            <NavItem>
+              <NavLink
+                className={classnames({active: props.tab === EDIT})}
+                onClick={() => {
+                  props.onTabClick(EDIT)
+                }}
+              >Write</NavLink>
+            </NavItem>
+            <NavItem>
+              <NavLink
+                className={classnames({active: props.tab === PREVIEW})}
+                onClick={() => {
+                  props.onTabClick(PREVIEW)
+                }}
+              >Preview</NavLink>
+            </NavItem>
+          </Nav>
 
-        <TabContent activeTab={props.tab}>
-          <TabPane tabId={EDIT} className="py-2">{textInput}</TabPane>
-          <TabPane tabId={PREVIEW} className="pt-2">
-            {/*This might look silly, but I want to remove the preview from the virtual DOM when the user*/}
-            {/*is editing rather than re-rendering it on every keystroak while the user is typing.*/}
-            {props.tab === PREVIEW ? <ContributionBodyContainer {...props} /> : null}
-          </TabPane>
-        </TabContent>
-        <Button
-          className="float-right"
-          color="primary" onClick={props.onSubmit}>Submit</Button>
+          <TabContent activeTab={props.tab}>
+            <TabPane tabId={EDIT} className="py-2">{textInput}</TabPane>
+            <TabPane tabId={PREVIEW} className="pt-2">
+              {/*This might look silly, but I want to remove the preview from the virtual DOM when the user*/}
+              {/*is editing rather than re-rendering it on every keystroak while the user is typing.*/}
+              {props.tab === PREVIEW ? <ContributionBodyContainer {...props} /> : null}
+            </TabPane>
+          </TabContent>
+          <Button
+            className="float-right"
+            color="primary" onClick={props.onSubmit}>Submit</Button>
+        </div>
       </Col>
     </Row>
   </span>

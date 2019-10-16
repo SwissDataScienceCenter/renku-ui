@@ -1,4 +1,4 @@
-export const kus = [
+export const issues = [
   {
     'id': 4,
     'iid': 2,

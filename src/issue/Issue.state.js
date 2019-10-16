@@ -19,7 +19,7 @@
 /**
  *  incubator-renku-ui
  *
- *  KuState.js
+ *  IssueState.js
  *  Redux-based state-management code.
  */
 
@@ -59,12 +59,12 @@ const Visibility = {
   }
 };
 
-const KuState = {
-  change: () => ({type: 'change_ku_state', payload: null}),
+const IssueState = {
+  change: () => ({type: 'change_issue_state', payload: null}),
   reduce: (appState, action) => {
     if (!appState) return null;
-    const newKuState = appState.state === 'closed' ? 'opened' : 'closed';
-    return {...appState, state: newKuState }
+    const newIssueState = appState.state === 'closed' ? 'opened' : 'closed';
+    return {...appState, state: newIssueState }
   }
 };
 
@@ -77,31 +77,14 @@ const New = { Core, Visibility,
   reducer: combinedFieldReducer
 };
 
-const View = { Core, Visibility, KuState,
+const View = { Core, Visibility, IssueState,
   setAll: (result) => ({type:'server_return', payload: result }),
   reducer: (state, action) => {
-    if (action.type === 'change_ku_state') return KuState.reduce(state, action);
+    if (action.type === 'change_issue_state') return IssueState.reduce(state, action);
     if (action.type !== 'server_return') return combinedFieldReducer(state, action);
     // Take server result and set it to the state
     return {...state, ...action.payload}
   }
 };
 
-const List = {
-  set: (results) => {
-    const action = {type:'server_return', payload: results };
-    return action
-  },
-  append: (results) => {
-    const action = {type:'server_return', payload: results };
-    return action
-  },
-  reducer: (state, action) => {
-    if (state == null) state = {kus:[]}
-    if (action.type !== 'server_return') return state;
-    const results = {kus: state.kus.concat(action.payload)};
-    return results
-  }
-}
-
-export default { New, View, List };
+export default { New, View };

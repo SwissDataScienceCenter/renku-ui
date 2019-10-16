@@ -30,7 +30,7 @@ import { StateKind } from '../model/Model';
 import Present from './Project.present'
 
 import { ProjectModel, GraphIndexingStatus } from './Project.state'
-import Ku from '../ku/Ku'
+import Issue from '../issue/Issue';
 import { FileLineage } from '../file'
 import { ACCESS_LEVELS } from '../api-client';
 import { alertError } from '../utils/Errors';
@@ -65,7 +65,7 @@ class View extends Component {
       }
 
       // in case the route fails it tests weather it could be a projectid route
-      const routes=['overview','kus','ku_new','files','lineage','notebooks',
+      const routes=['overview','issues','issue_new','files','lineage','notebooks','collaboration',
         'data','workflows','settings','pending','launchNotebook','notebookServers','datasets','environments'];
       const available = this.props.core ? this.props.core.available : null;
       const potentialProjectId = this.props.projectPathWithNamespace.split('/')[0];
@@ -96,6 +96,7 @@ class View extends Component {
   async fetchProjectFilesTree() {
     return this.projectState.fetchProjectFilesTree(this.props.client, this.cleanCurrentURL());
   }
+  async fetchProjectIssues() { this.projectState.fetchProjectIssues(this.props.client)}
   async setProjectOpenFolder(filepath) {
     this.projectState.setProjectOpenFolder(this.props.client, filepath);
   }
@@ -164,6 +165,7 @@ class View extends Component {
     const baseUrl =  match.url.endsWith('/') ? match.url.slice(0, -1) : match.url;
     const filesUrl = `${baseUrl}/files`;
     const fileContentUrl = `${filesUrl}/blob`;
+    const collaborationUrl = `${baseUrl}/collaboration`;
 
     return {
       projectsUrl: '/projects',
@@ -171,11 +173,14 @@ class View extends Component {
       overviewUrl: `${baseUrl}/overview`,
       statsUrl: `${baseUrl}/overview/stats`,
       overviewDatasetsUrl: `${baseUrl}/overview/datasets`,
-      kusUrl: `${baseUrl}/kus`,
-      kuNewUrl: `${baseUrl}/ku_new`,
-      kuUrl: `${baseUrl}/kus/:kuIid(\\d+)`,
       datasetsUrl: `${baseUrl}/datasets`,
       datasetUrl: `${baseUrl}/datasets/:datasetId`,
+      issueNewUrl: `${baseUrl}/issue_new`,
+      collaborationUrl:`${collaborationUrl}`,
+      issuesUrl: `${collaborationUrl}/issues`,
+      issueUrl: `${collaborationUrl}/issues/:issueIid`,
+      mergeRequestsOverviewUrl: `${collaborationUrl}/mergerequests`,
+      mergeRequestUrl: `${collaborationUrl}/mergerequests/:mrIid(\\d+)`,
       filesUrl: `${filesUrl}`,
       fileContentUrl: `${fileContentUrl}`,
       lineagesUrl: `${filesUrl}/lineage`,
@@ -245,12 +250,14 @@ class View extends Component {
     const ConnectedMergeRequestList = connect(mapStateToProps)(MergeRequestList);
 
     return {
-      kuList: <Ku.List key="kus" {...subProps} urlMap={subUrls} />,
 
-      kuView: (p) => <Ku.View key="ku" {...subProps}
-        kuIid={p.match.params.kuIid}
+      issueView: (p, toogleIsuesListVisibility, issuesListVisible) => <Issue.View key="issue" {...subProps}
+        issueIid={p.match.params.issueIid}
         updateProjectView={updateProjectView}
-        projectPath={projectPathWithNamespace} />,
+        projectPath={projectPathWithNamespace}
+        toogleIsuesListVisibility={toogleIsuesListVisibility}
+        issuesListVisible={issuesListVisible}
+      />,
       /* TODO Should we handle each type of file or just have a generic project files viewer? */
 
       lineageView: (p) => <FileLineage key="lineage" {...subProps}
@@ -294,10 +301,11 @@ class View extends Component {
       />,
 
       mrList: <ConnectedMergeRequestList key="mrList" store={this.projectState.reduxStore}
-        mrOverviewUrl={subUrls.mrOverviewUrl} />,
+        mergeRequestsOverviewUrl={subUrls.mergeRequestsOverviewUrl} />,
 
       mrView: (p) => <MergeRequest
         key="mr" {...subProps}
+        match={p.match}
         iid={p.match.params.mrIid}
         updateProjectState={this.fetchAll.bind(this)} />,
 
@@ -341,10 +349,10 @@ class View extends Component {
       // TODO: updating the information fast enough through all possible layers of caches, etc...
       this.props.client.createMergeRequest(core.id, branch.name, branch.name, 'master')
         .then((d) => {
-          newMRiid = d.iid;
+          newMRiid = d.data.iid;
           return this.fetchAll()
         })
-        .then(() => this.props.history.push(`${this.getSubUrls().mrOverviewUrl}/${newMRiid}`))
+        .then(() => this.props.history.push(`${this.getSubUrls().mergeRequestsOverviewUrl}/${newMRiid}`))
     },
     onProjectRefresh: (e) => {
       e.preventDefault();
@@ -358,6 +366,9 @@ class View extends Component {
     fetchFiles: () => {
       this.fetchProjectFilesTree();
       //this.fetchModifiedFiles();
+    },
+    fetchIssues: () => {
+      this.fetchProjectIssues();
     },
     fetchDatasets : () => {
       this.fetchProjectDatasets();

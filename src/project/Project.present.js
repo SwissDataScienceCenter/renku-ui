@@ -36,6 +36,7 @@ import { Button, Form, FormGroup, FormText, Label } from 'reactstrap';
 import { Input } from 'reactstrap';
 import { Nav, NavItem } from 'reactstrap';
 import { Card, CardBody, CardHeader } from 'reactstrap';
+import Issue from '../issue/Issue';
 
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 import { faStar as faStarRegular } from '@fortawesome/fontawesome-free-regular'
@@ -99,16 +100,14 @@ class MergeRequestSuggestions extends Component {
     const mrSuggestions = this.props.suggestedMRBranches.map((branch, i) => {
       if (!this.props.canCreateMR) return null;
       return <Alert color="warning" key={i}>
-        <p style={{ float: 'left' }}> Do you want to create a pending change for branch <b>{branch.name}</b>?</p>
-        <p style={{ float: 'right' }}>
-          &nbsp; <ExternalLink url={`${this.props.externalUrl}/tree/${branch.name}`} title="View in GitLab" />
-          &nbsp; <Button color="success" onClick={(e) => {
-            this.handleCreateMergeRequest(e, this.props.onCreateMergeRequest, branch)
-          }}>Create Pending Change</Button>
-          {/*TODO: Enable the 'no' option once the alert can be dismissed permanently!*/}
-          {/*&nbsp; <Button color="warning" onClick={this.props.createMR(branch.iid)}>No</Button>*/}
-        </p>
-        <div style={{ clear: 'left' }}></div>
+        <p> Do you want to create a merge request for branch <b>{branch.name}</b>?</p>
+        <ExternalLink url={`${this.props.externalUrl}/tree/${branch.name}`} title="View in GitLab" />
+        &nbsp;<Button color="success"
+          onClick={(e) => {this.handleCreateMergeRequest(e, this.props.onCreateMergeRequest, branch)}}>
+          Create Merge Request
+        </Button>
+        {/*TODO: Enable the 'no' option once the alert can be dismissed permanently!*/}
+        {/*&nbsp; <Button color="warning" onClick={this.props.createMR(branch.iid)}>No</Button>*/}
       </Alert>
     });
     return mrSuggestions
@@ -303,16 +302,13 @@ class ProjectNav extends Component {
           <RenkuNavLink to={this.props.baseUrl} alternate={this.props.overviewUrl} title="Overview" />
         </NavItem>
         <NavItem>
-          <RenkuNavLink exact={false} to={this.props.kusUrl} title="Kus" />
+          <RenkuNavLink exact={false} to={this.props.issuesUrl}  title="Collaboration" />
         </NavItem>
         <NavItem>
           <RenkuNavLink exact={false} to={this.props.filesUrl} title="Files" />
         </NavItem>
         <NavItem>
           <RenkuNavLink exact={false} to={this.props.datasetsUrl} title="Datasets" />
-        </NavItem>
-        <NavItem>
-          <RenkuNavLink exact={false} to={this.props.mrOverviewUrl} title="Pending Changes" />
         </NavItem>
         <NavItem>
           <RenkuNavLink exact={false} to={this.props.notebookServersUrl} title="Environments" />
@@ -559,18 +555,88 @@ class ProjectViewDatasets extends Component {
   }
 }
 
-class ProjectViewKus extends Component {
+class ProjectViewCollaborationNav extends Component {
+  render() {
+    return (
+      <Nav pills className={'flex-column'}>
+        <NavItem>
+          <RenkuNavLink to={this.props.issuesUrl} matchpath={ true } title="Issues" />
+        </NavItem>
+        <NavItem>
+          <RenkuNavLink to={this.props.mergeRequestsOverviewUrl} matchpath={ true } title="Merge Requests" />
+        </NavItem>
+      </Nav>)
+  }
+}
+
+class ProjectViewCollaboration extends Component {
 
   render() {
-    return [
-      <Col key="kulist" sm={12} md={4}>
-        {this.props.kuList}
-      </Col>,
-      <Col key="ku" sm={12} md={8}>
-        <Route path={this.props.kuUrl}
-          render={props => this.props.kuView(props)} />
+    return <Col key="collaboration">
+      <Row>
+        <Col key="nav" sm={12} md={2}>
+          <ProjectViewCollaborationNav {...this.props} />
+        </Col>
+        <Col key="collaborationcontent" sm={12} md={10}>
+          <Route path={ this.props.mergeRequestsOverviewUrl } render={props =>
+            <ProjectMergeRequestList {...this.props} />} />
+          <Route path={ this.props.issuesUrl } render={props =>
+            <ProjectViewIssues {...this.props} /> }/>
+        </Col>
+      </Row>
+    </Col>
+  }
+}
+
+class ProjectIssuesNav extends Component {
+  render() {
+    const issues = this.props.issues || [];
+    return <Issue.List
+      key="issuesList"
+      collaborationUrl={this.props.collaborationUrl}
+      issueNewUrl={this.props.issueNewUrl}
+      projectId={this.props.projectId}
+      user={this.props.user}
+      issues={issues}
+    />;
+  }
+}
+
+class ProjectViewIssues extends Component {
+
+  constructor(props){
+    super(props);
+    this.state = { issuesListVisible: true };
+    this.toogleIsuesListVisibility = this.toogleIsuesListVisibility.bind(this);
+  }
+
+  componentDidMount() {
+    this.props.fetchIssues();
+  }
+
+  toogleIsuesListVisibility(){
+    this.setState({ issuesListVisible: ! this.state.issuesListVisible })
+  }
+
+  render() {
+    const issuesListDisplay= this.state.issuesListVisible ?
+      "display-block" : "display-none"
+    return <Row>
+      <Col key="issueslist" id="collapsibleIssuesNav" className={issuesListDisplay+" pt-3"} sm={12} md={5}>
+        <ProjectIssuesNav { ...this.props } />
       </Col>
-    ]
+      { this.state.issuesListVisible ?
+        <Col key="issue" id="expandableIssuesView" sm={12} md={7} className="pt-3">
+          <Route path={this.props.issueUrl}
+            render={props => this.props.issueView(props, this.toogleIsuesListVisibility, this.state.issuesListVisible)} />
+        </Col>
+        :
+        <Col key="issue" id="expandableIssuesView" sm={12} md={12} className="pt-3">
+          <Route path={this.props.issueUrl}
+            render={props => this.props.issueView(props, this.toogleIsuesListVisibility, this.state.issuesListVisible)} />
+        </Col>
+      }
+    </Row>
   }
 }
 
@@ -592,11 +658,11 @@ class ProjectMergeRequestList extends Component {
         </Col>
       </Row>
       <Row>
-        <Col key="mrList" sm={12} md={4} lg={3} xl={2}>
+        <Col key="mrList" sm={12} md={5}>
           {this.props.mrList}
         </Col>
-        <Col key="mr" sm={12} md={8} lg={9} xl={10}>
-          <Route path={this.props.mrUrl}
+        <Col key="mr" sm={12} md={7}>
+          <Route path={this.props.mergeRequestUrl}
             render={props => this.props.mrView(props)} />
         </Col>
       </Row>
@@ -955,16 +1021,14 @@ class ProjectView extends Component {
                 render={props => <ProjectViewOverview key="overview" {...this.props} />} />
               <Route path={this.props.overviewUrl}
                 render={props => <ProjectViewOverview key="overview" {...this.props} />} />
-              <Route path={this.props.kusUrl}
-                render={props => <ProjectViewKus key="kus" {...this.props} />} />
+              <Route path={this.props.collaborationUrl}
+                render={props => <ProjectViewCollaboration key="collaboration" {...this.props} />} />
               <Route path={this.props.filesUrl}
                 render={props => <ProjectViewFiles key="files" {...this.props} />} />
               <Route path={this.props.datasetsUrl}
                 render={props => <ProjectViewDatasets key="datasets" {...this.props} />} />
               <Route path={this.props.settingsUrl}
                 render={props => <ProjectSettings key="settings" {...this.props} />} />
-              <Route path={this.props.mrOverviewUrl}
-                render={props => <ProjectMergeRequestList key="files-changes" {...this.props} />} />
               <Route path={this.props.notebookServersUrl}
                 render={props => <ProjectEnvironments key="environments" {...this.props} />} />
               <Route component={NotFoundInsideProject} />
