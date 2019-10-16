@@ -19,16 +19,16 @@
 /**
  *  incubator-renku-ui
  *
- *  Ku.test.js
- *  Tests for ku.
+ *  Issue.test.js
+ *  Tests for issue.
  */
 
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { MemoryRouter } from 'react-router-dom';
 
-import Ku from './Ku';
-import State from  './Ku.state';
+import Issue from './Issue';
+import State from  './Issue.state';
 import { testClient as client } from '../api-client';
 import { slugFromTitle } from '../utils/HelperFunctions';
 import { generateFakeUser } from '../app-state/UserState.test';
@@ -38,27 +38,28 @@ describe('rendering', () => {
 
   it('renders new without crashing', () => {
     const div = document.createElement('div');
-    ReactDOM.render(<Ku.New location={ {pathname: '/projects/1/ku_new'} } user={user} />, div);
+    ReactDOM.render(<Issue.New location={ {pathname: '/projects/1/issue_new'} } user={user} />, div);
   });
   it('renders list without crashing', () => {
     const baseUrl = "base";
     const urlMap = {
-      kusUrl: `${baseUrl}/kus`,
-      kuNewUrl: `${baseUrl}/ku_new`,
-      kuUrl: `${baseUrl}/kus/:kuIid(\\d+)`,
+      issuesUrl: `${baseUrl}/collaboration`,
+      issueNewUrl: `${baseUrl}/issue_new`,
+      issueUrl: `${baseUrl}/collaboration/issues/:issueIid(\\d+)`,
     };
     const div = document.createElement('div');
     ReactDOM.render(
       <MemoryRouter>
-        <Ku.List client={client} urlMap={urlMap} user={user} />
+        <Issue.List client={client} urlMap={urlMap} user={user} issues={[]} />
       </MemoryRouter>
       , div);
   });
   it('renders view without crashing', () => {
     const div = document.createElement('div');
+    document.body.appendChild(div);
     ReactDOM.render(
       <MemoryRouter>
-        <Ku.View id="1" client={client} user={user} />
+        <Issue.View id="1" client={client} user={user} />
       </MemoryRouter>
       , div);
   });
@@ -66,11 +67,11 @@ describe('rendering', () => {
 
 describe('helpers', () => {
   it('computes display id correctly', () => {
-    expect(slugFromTitle("This is my Ku")).toEqual("this-is-my-ku");
+    expect(slugFromTitle("This is my Issue")).toEqual("this-is-my-issue");
   });
 });
 
-describe('new ku actions', () => {
+describe('new issue actions', () => {
   it('creates a core field set action', () => {
     expect(State.New.Core.set('title', 'a title')).toEqual({type: 'core', payload: {title: 'a title', displayId: 'a-title'}});
   });
@@ -79,7 +80,7 @@ describe('new ku actions', () => {
   });
 });
 
-describe('new ku reducer', () => {
+describe('new issue reducer', () => {
   const initialState = State.New.reducer(undefined, {});
   it('returns initial state', () => {
     expect(initialState).toEqual({
@@ -103,35 +104,14 @@ describe('new ku reducer', () => {
   });
 });
 
-describe('ku list actions', () => {
-  it('creates a server return action', () => {
-    expect(State.List.set({hits: [{id: 1}], total: 1}))
-      .toEqual({type: 'server_return', payload: {hits: [{id: 1}], total: 1}});
-  });
-});
-
-describe('ku list reducer', () => {
-  const initialState = State.List.reducer(undefined, {});
-  it('returns initial state', () => {
-    expect(initialState).toEqual({kus:[]});
-  });
-  it('advances state', () => {
-    const state1 = State.List.reducer(initialState, State.List.set([{id: 1}]));
-    expect(state1)
-    .toEqual({
-      kus: [{id: 1}]
-    });
-  });
-});
-
-describe('ku view actions', () => {
+describe('issue view actions', () => {
   it('creates a server return action', () => {
     expect(State.View.setAll({core:{title: "A Title", description: "A desc", displayId: "a-title"}}))
       .toEqual({type: 'server_return', payload:{core:{title: "A Title", description: "A desc", displayId: "a-title"}}});
   });
 });
 
-describe('ku view reducer', () => {
+describe('issue view reducer', () => {
   const initialState = State.View.reducer(undefined, {});
   it('returns initial state', () => {
     expect(initialState).toEqual({

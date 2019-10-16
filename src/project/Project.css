@@ -26,3 +26,78 @@ Button.alert-link {
   margin-block-start: 0.5em;
   margin-block-end: 0.5em;
 }
+
+.margin-no-triangle{
+  margin-left:15px;
+}
+
+.triangle-border {
+  background:#fff;
+}
+
+.triangle-border.left {
+  margin-left:15px;
+}
+
+.triangle-border.left:before {
+  top:20px;
+  bottom:auto;
+  position:absolute;
+  left: -10px;
+  margin:auto;
+  height: 20px;
+  width: 20px;
+  border:1px solid #fff;
+  transform:rotate(45deg);
+  background-color: #fff;
+  border-bottom:1px solid rgba(0, 0, 0, 0.125);
+  border-left:1px solid rgba(0, 0, 0, 0.125);
+}
+
+.triangle-border:before {
+  content:"";
+  position:absolute;
+  bottom:-20px;
+  left:40px;
+  border-width:20px 20px 0;
+  border-style:solid;
+  display:block;
+  width:0;
+}
+
+.selected-issue {
+  color: black;
+  font-weight:bold;
+  text-decoration-line: underline;
+}
+
+.badge-renku-light{
+  color: #fff;
+  background-color: #8a8a8a;
+}
+
+.issue-title{
+  display:inline-block;
+  width:60%;
+  max-width:61%;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  overflow:hidden;
+}
+
+.mr-title{
+  display:inline-block;
+  width:60%;
+  max-width:61%;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  overflow:hidden;
+}
+
+.display-block{
+  visibility: display;
+}
+
+.display-none{
+  display: none;
+}

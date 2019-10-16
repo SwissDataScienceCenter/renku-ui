@@ -95,10 +95,10 @@ class LoggedInNavBar extends Component {
     if (null != nextRoute) this.props.history.push(nextRoute);
   }
   render() {
-    // Display the Ku/Notebook server related header options only if a project is active.
+    // Display the Issue/Notebook server related header options only if a project is active.
     const activeProjectPathWithNamespace = getActiveProjectPathWithNamespace(this.props.location.pathname);
-    const kuDropdown = activeProjectPathWithNamespace ?
-      <RenkuNavLink to={`/projects/${activeProjectPathWithNamespace}/ku_new`} title="Ku" />
+    const issueDropdown = activeProjectPathWithNamespace ?
+      <RenkuNavLink to={`/projects/${activeProjectPathWithNamespace}/issue_new`} title="Issue" />
       : null;
     // TODO If there is is an active project, show it in the navbar
 
@@ -129,7 +129,7 @@ class LoggedInNavBar extends Component {
                 </a>
                 <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                   <RenkuNavLink to="/project_new" title="Project" />
-                  {kuDropdown}
+                  {issueDropdown}
                 </div>
               </li>
               <RenkuToolbarItemUser {...this.props} />

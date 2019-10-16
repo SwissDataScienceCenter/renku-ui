@@ -17,8 +17,8 @@
  */
 
 import React, { Component } from 'react';
-import { Table, Row, Col, Button, Badge } from 'reactstrap';
-import { Link, Route, Switch } from 'react-router-dom';
+import { Table, Row, Col, Button, Badge, ListGroup, ListGroupItem } from 'reactstrap';
+import { NavLink } from 'react-router-dom';
 
 import { ExternalLink } from '../utils/UIComponents';
 
@@ -84,42 +84,40 @@ class MergeRequestList extends Component {
   render() {
     const mrs = this.props.mergeRequests;
     if (mrs.length < 1) {
-      return <Row key="mr"><Col>
-        <p>No pending changes.</p>
+      return <Row key="mrexternal"><Col>
+        <p>No merge requests.</p>
         <ExternalLink url={this.props.externalMROverviewUrl} size="sm" title="View in GitLab" />
       </Col></Row>
     }
     const rows = mrs.map((d, i) => {
-      const mrUrl = `${this.props.mrOverviewUrl}/${d.iid}`;
-      return <Switch key={i}>
-        <Route exact path={mrUrl}
-          render={() => <MergeRequestListItem active={true} {...d} mrUrl={mrUrl}/> }/>
-        <Route path={this.props.mrOverviewUrl}
-          render={() => <MergeRequestListItem active={false} {...d} mrUrl={mrUrl}/> }/>
-      </Switch>;
+      const mrUrl = `${this.props.mergeRequestsOverviewUrl}/${d.iid}/`;
+      return <MergeRequestListItem key={i} {...d} mrUrl={mrUrl}/>;
     });
-    return <Row key="mr"><Col>{rows}</Col></Row>
+    return [
+      <Row key="header">
+        <Col><h2>Merge Requests</h2></Col>
+      </Row>,
+      <Row key="mergeRequests"><Col xs={12}><ListGroup>{rows}</ListGroup></Col></Row>
+    ]
   }
 }
 
 class MergeRequestListItem extends Component {
   render() {
-    const className = this.props.active ? 'underline-nav font-weight-bold' : 'font-weight-normal';
     const badgeText = this.props.merge_status === 'can_be_merged' ? 'Can be merged' : 'Conflicts';
     const badgeColor = this.props.merge_status === 'can_be_merged' ? 'success' : 'danger';
     const statusBadge = <Badge color={badgeColor}>{badgeText}</Badge>;
 
     const title = this.props.active ? this.props.title :
-      <Link to={this.props.mrUrl}>{this.props.title}</Link>;
+      <NavLink activeClassName="selected-issue" to={this.props.mrUrl}>{this.props.title}</NavLink>;
 
-    return <span>
-      <p className={className} style={{marginBottom: '0px'}}>{title}</p>
-      <p style={{marginTop: '0px'}}>
+    return <ListGroupItem>
+      <span className="mr-title text-break pl-1">{title}</span>
+      <div className="float-right">{statusBadge}</div>
+      <div>
         <Badge color="light">{this.props.target_branch}</Badge> <FontAwesomeIcon icon={faLeftArrow} />
-        <Badge color="light">{this.props.source_branch}</Badge> &nbsp;&nbsp;
-        {statusBadge}
-      </p>
-    </span>
+        <Badge color="light">{this.props.source_branch}</Badge> &nbsp;&nbsp;</div>
+    </ListGroupItem>
   }
 }
 

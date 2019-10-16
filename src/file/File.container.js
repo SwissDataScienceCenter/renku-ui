@@ -30,7 +30,7 @@ import { RenkuMarkdown } from '../utils/UIComponents';
 const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'tiff', 'pdf', 'gif'];
 const CODE_EXTENSIONS = ['py', 'js', 'json', 'sh', 'r', 'txt', 'yml', 'csv', 'parquet', 'cwl', 'job', 'prn', 'rout', 'dcf', 'rproj', 'rst', 'bat'];
 
-// FIXME: Unify the file viewing for kus (embedded) and independent file viewing.
+// FIXME: Unify the file viewing for issues (embedded) and independent file viewing.
 // FIXME: Javascript highlighting is broken for large files.
 // FIXME: Fix positioning of input tags when rendering Jupyter Notebooks.
 

@@ -230,7 +230,7 @@ class NewContribution extends React.Component {
   }
 
   onSubmit(){
-    this.props.client.postContribution(this.props.projectId, this.props.kuIid, this.state.contribution.body);
+    this.props.client.postContribution(this.props.projectId, this.props.issueIid, this.state.contribution.body);
     this.props.appendContribution(buildContribution(this.state, this.props));
   }
 

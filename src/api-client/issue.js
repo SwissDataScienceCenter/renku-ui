@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
-function addKuMethods(client) {
+function addIssueMethods(client) {
 
-  client.getProjectKus = (projectId) => {
+  client.getProjectIssues = (projectId) => {
     let headers = client.getBasicHeaders();
 
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}/issues?scope=all`, {
@@ -29,24 +29,24 @@ function addKuMethods(client) {
   }
 
 
-  client.postProjectKu = (projectPathWithNamespace, ku) => {
+  client.postProjectIssue = (projectPathWithNamespace, issue) => {
     let headers = client.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
     return client.clientFetch(`${client.baseUrl}/projects/${encodeURIComponent(projectPathWithNamespace)}/issues`, {
       method: 'POST',
       headers: headers,
-      body: JSON.stringify(ku)
+      body: JSON.stringify(issue)
     })
 
   }
 
 
-  client.getProjectKu = (projectId, kuIid) => {
+  client.getProjectIssue = (projectId, issueIid) => {
     let headers = client.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/issues/${kuIid}/`, {
+    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/issues/${issueIid}/`, {
       method: 'GET',
       headers: headers,
     })
@@ -54,11 +54,11 @@ function addKuMethods(client) {
   }
 
 
-  client.getContributions = (projectId, kuIid) => {
+  client.getContributions = (projectId, issueIid) => {
     let headers = client.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/issues/${kuIid}/notes`, {
+    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/issues/${issueIid}/notes`, {
       method: 'GET',
       headers: headers
     })
@@ -66,11 +66,11 @@ function addKuMethods(client) {
   }
 
 
-  client.postContribution = (projectId, kuIid, contribution) => {
+  client.postContribution = (projectId, issueIid, contribution) => {
     let headers = client.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
 
-    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/issues/${kuIid}/notes`, {
+    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/issues/${issueIid}/notes`, {
       method: 'POST',
       headers: headers,
       body: JSON.stringify({body: contribution})
@@ -79,12 +79,12 @@ function addKuMethods(client) {
   }
 
 
-  client.closeKu = (projectId, kuIid) => {
-    return updateIssue(client, projectId, kuIid, {state_event: 'close'})
+  client.closeIssue = (projectId, issueIid) => {
+    return updateIssue(client, projectId, issueIid, {state_event: 'close'})
   }
 
-  client.reopenKu = (projectId, kuIid) => {
-    return updateIssue(client, projectId, kuIid, {state_event: 'reopen'})
+  client.reopenIssue = (projectId, issueIid) => {
+    return updateIssue(client, projectId, issueIid, {state_event: 'reopen'})
   }
 }
 
@@ -100,4 +100,4 @@ function updateIssue(client, projectId, issueIid, body) {
   })
 }
 
-export default addKuMethods;
+export default addIssueMethods;

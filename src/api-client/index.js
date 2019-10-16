@@ -25,7 +25,7 @@ import ApolloClient from "apollo-boost";
 import addProjectMethods  from './project';
 import addRepositoryMethods  from './repository';
 import addUserMethods  from './user';
-import addKuMethods  from './ku';
+import addIssueMethods  from './issue';
 import addInstanceMethods from './instance';
 import addNotebookServersMethods from './notebook-servers';
 import addGraphMethods from './graph';
@@ -48,7 +48,7 @@ class APIClient {
   //
   // Renku      GitLab
   // -----------------
-  // ku    -->  issue
+  // ku    -->  issue (old)
 
 
   constructor(baseUrl) {
@@ -61,7 +61,7 @@ class APIClient {
     addProjectMethods(this);
     addRepositoryMethods(this);
     addUserMethods(this);
-    addKuMethods(this);
+    addIssueMethods(this);
     addInstanceMethods(this);
     addNotebookServersMethods(this);
     addGraphMethods(this);
