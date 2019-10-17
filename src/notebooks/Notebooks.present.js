@@ -39,6 +39,7 @@ import { Loader, InfoAlert, ExternalLink, JupyterIcon } from '../utils/UICompone
 import Time from '../utils/Time';
 import Sizes from '../utils/Media';
 
+import './Notebooks.css';
 
 // * Notebooks code * //
 class Notebooks extends Component {
@@ -429,15 +430,10 @@ class NotebookServerRowAction extends Component {
       defaultAction = (<Button {...classes} onClick={() => this.props.toggleLogs(name)}>Get logs</Button>);
     }
 
-    const alternateToggleStyle = {
-      whiteSpace: "nowrap", borderRadius: "0.2rem",
-      paddingRight: "0.5625rem", paddingLeft: "0.5625rem"
-    };
-
     return (
       <UncontrolledButtonDropdown size="sm">
         {defaultAction}
-        <DropdownToggle color="primary" style={alternateToggleStyle}>
+        <DropdownToggle color="primary" className="alternateToggleStyle">
           <FontAwesomeIcon icon={faEllipsisV} style={{ color: 'white', backgroundColor: "#5561A6" }} />
         </DropdownToggle>
         <DropdownMenu right={true}>
