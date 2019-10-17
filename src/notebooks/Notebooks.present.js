@@ -469,7 +469,8 @@ class EnvironmentLogs extends Component {
       }
       else {
         if (logs.data && logs.data.length) {
-          body = (<pre style={{ whiteSpace: "preLine" }}>{logs.data.join("\n")}</pre>);
+          body = (<pre className="small" style={{ whiteSpace: "preLine" }}>
+            {logs.data.join("\n")}</pre>);
         }
         else {
           body = (<div>
@@ -484,7 +485,7 @@ class EnvironmentLogs extends Component {
     return (
       <Modal
         isOpen={logs.show}
-        size="lg"
+        size="xl"
         toggle={() => { toggleLogs(name) }}>
         <ModalHeader toggle={() => { toggleLogs(name) }}>Logs</ModalHeader>
         <ModalBody>{body}</ModalBody>
