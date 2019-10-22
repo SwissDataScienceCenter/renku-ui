@@ -256,6 +256,7 @@ class NotebookServerRowFull extends Component {
         toggleLogs={this.props.toggleLogs}
         logs={this.props.logs}
         name={this.props.name}
+        annotations={annotations}
       />
     </td>);
 
@@ -312,6 +313,7 @@ class NotebookServerRowCompact extends Component {
         toggleLogs={this.props.toggleLogs}
         logs={this.props.logs}
         name={this.props.name}
+        annotations={annotations}
       />
     </span>);
 
@@ -453,10 +455,11 @@ class NotebookServerRowAction extends Component {
  * @param {function} toggleLogs - toggle logs visibility and fetch logs on show
  * @param {object} logs - log object from redux store enhanced with `show` property
  * @param {string} name - server name
+ * @param {object} annotations - list of cleaned annotations
  */
 class EnvironmentLogs extends Component {
   render() {
-    const { logs, name, toggleLogs, fetchLogs } = this.props;
+    const { logs, name, toggleLogs, fetchLogs, annotations } = this.props;
     if (!logs.show || logs.show !== name)
       return null;
 
@@ -490,7 +493,11 @@ class EnvironmentLogs extends Component {
         isOpen={logs.show ? true : false}
         size="xl"
         toggle={() => { toggleLogs(name) }}>
-        <ModalHeader toggle={() => { toggleLogs(name) }}>Logs</ModalHeader>
+        <ModalHeader toggle={() => { toggleLogs(name) }} className="header-multiline">
+          Logs
+          <br /><small>{annotations["namespace"]}/{annotations["projectName"]}</small>
+          <br /><small>{annotations["branch"]}@{annotations["commit-sha"].substring(0, 8)}</small>
+        </ModalHeader>
         <ModalBody>{body}</ModalBody>
         <ModalFooter>
           <Button color="primary" onClick={() => { fetchLogs(name) }}>Refresh</Button>

@@ -4,3 +4,12 @@
   padding-right: 0.5625rem;
   padding-left: 0.5625rem;
 }
+
+.header-multiline h5 {
+  line-height: 1.2;
+}
+
+.header-multiline small {
+  font-size: 70%;
+  font-style: italic;
+}
