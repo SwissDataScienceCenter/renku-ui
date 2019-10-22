@@ -78,7 +78,11 @@ class Notebooks extends Component {
   }
 
   toggleLogs(serverName) {
-    const nextState = !this.state.showingLogs
+    let nextState;
+    if (this.state.showingLogs !== serverName)
+      nextState = serverName;
+    else
+      nextState = false;
     this.setState({ showingLogs: nextState });
 
     if (nextState)

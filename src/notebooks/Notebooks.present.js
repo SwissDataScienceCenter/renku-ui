@@ -457,6 +457,9 @@ class NotebookServerRowAction extends Component {
 class EnvironmentLogs extends Component {
   render() {
     const { logs, name, toggleLogs, fetchLogs } = this.props;
+    if (!logs.show || logs.show !== name)
+      return null;
+
     let body;
     if (logs.fetching) {
       body = (<Loader />);
@@ -484,7 +487,7 @@ class EnvironmentLogs extends Component {
 
     return (
       <Modal
-        isOpen={logs.show}
+        isOpen={logs.show ? true : false}
         size="xl"
         toggle={() => { toggleLogs(name) }}>
         <ModalHeader toggle={() => { toggleLogs(name) }}>Logs</ModalHeader>
