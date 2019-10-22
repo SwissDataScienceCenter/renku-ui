@@ -27,6 +27,7 @@ import { Badge } from 'reactstrap';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { faStopCircle, faExternalLinkAlt, faInfoCircle, faSyncAlt } from '@fortawesome/fontawesome-free-solid';
 import { faCogs, faCog, faEllipsisV, faExclamationTriangle, faRedo } from '@fortawesome/fontawesome-free-solid';
+import { faSave } from '@fortawesome/fontawesome-free-solid';
 import { faFileAlt } from '@fortawesome/fontawesome-free-solid';
 import { faTimesCircle } from '@fortawesome/fontawesome-free-solid';
 import { faCheckCircle } from '@fortawesome/fontawesome-free-regular';
@@ -458,6 +459,15 @@ class NotebookServerRowAction extends Component {
  * @param {object} annotations - list of cleaned annotations
  */
 class EnvironmentLogs extends Component {
+  save() {
+    const elem = document.createElement("a");
+    const file = new Blob([this.props.logs.data.join("\n")], { type: "text/plain" });
+    elem.href = URL.createObjectURL(file);
+    elem.download = `Logs_${this.props.name}.txt`;
+    document.body.appendChild(elem);
+    elem.click();
+  }
+
   render() {
     const { logs, name, toggleLogs, fetchLogs, annotations } = this.props;
     if (!logs.show || logs.show !== name)
@@ -500,7 +510,12 @@ class EnvironmentLogs extends Component {
         </ModalHeader>
         <ModalBody>{body}</ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={() => { fetchLogs(name) }}>Refresh</Button>
+          <Button color="primary" onClick={() => { this.save() }}>
+            <FontAwesomeIcon icon={faSave} /> Download
+          </Button>
+          <Button color="primary" onClick={() => { fetchLogs(name) }}>
+            <FontAwesomeIcon icon={faRedo} /> Refresh
+          </Button>
         </ModalFooter>
       </Modal>
     );
