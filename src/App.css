@@ -94,12 +94,13 @@ body {
   outline: none;
 }
 
-.fixed-width-120 {
-  width: 120px;
+
+.fixed-width-7em {
+  width: 7em;
 }
 
-.fixed-width-100 {
-  width: 100px;
+.fixed-width-6em {
+  width: 6.2em;
 }
 
 /* TODO: Try to replace css tooltip by reactstraps tooltip component */

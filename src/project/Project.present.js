@@ -232,7 +232,7 @@ class ProjectViewHeaderOverview extends Component {
           </Col>
           <Col xs={12} md={6}>
             <div className="d-flex flex-md-row-reverse">
-              <div className={`fixed-width-${this.props.starred ? '120' : '100'}`}>
+              <div className={`fixed-width-${this.props.starred ? '7em' : '6em'}`}>
                 <form className="input-group input-group-sm">
                   <div className="input-group-prepend">
                     <button className="btn btn-outline-primary" onClick={this.props.onStar}>
@@ -243,7 +243,7 @@ class ProjectViewHeaderOverview extends Component {
                     placeholder={system.star_count} aria-label="starCount" readOnly={true} />
                 </form>
               </div>
-              <div className={`fixed-width-100 pr-1`}>
+              <div className={`fixed-width-6em pr-1`}>
                 <form className="input-group input-group-sm">
                   <div className="input-group-prepend">
                     <button className="btn btn-outline-primary" onClick={this.props.toogleForkModal}>
