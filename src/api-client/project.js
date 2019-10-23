@@ -138,8 +138,8 @@ function addProjectMethods(client) {
     }).then(result => result.data);
   }
 
-  client.getProjectFiles = (projectId) => {
-    return client.getRepositoryTree(projectId, { path: '', recursive: true }).then((tree) => {
+  client.getProjectFiles = (projectId, path='') => {
+    return client.getRepositoryTree(projectId, { path: path, recursive: true }).then((tree) => {
       const files = tree
         .filter((treeObj) => treeObj.type === 'blob')
         .map((treeObj) => treeObj.path);
@@ -403,6 +403,39 @@ function addProjectMethods(client) {
       .then(manifestSha => fetchJson(`${formatedApiURL}/git/blobs/${manifestSha}`))
       .then(data => {return yaml.load(atob(data.content))})
       .then(data => {data.push(client.getEmptyProjectObject()); return data;});
+  }
+
+  client.getDatasetJson = (projectId, datasetId) => {
+    return client.getRepositoryFile(projectId, `.renku/datasets/${datasetId}/metadata.yml`, 'master', 'raw')
+      .then(result => yaml.load(result));
+  }
+
+  client.fetchDatasetFromKG = (datasetLink) => {
+    const headers = client.getBasicHeaders();
+    const datasetPromise = client.clientFetch(datasetLink, {method:'GET', headers});
+    return Promise.resolve(datasetPromise).then(dataset => dataset.data);
+  }
+
+  client.getProjectDatasetsFromKG = (projectPath) => {
+    let url = `${client.baseUrl}/knowledge-graph/projects/${projectPath}/datasets`;
+    url = url.replace('/api','');//The url should change in the backend so we don't have to do this
+    const headers = client.getBasicHeaders();
+    return client.clientFetch(url, {method:'GET', headers}).then((resp) => {
+      return resp.data;
+    });
+  }
+
+  client.getProjectDatasets = (projectId) => {
+    const datasetsPromise = client.getRepositoryTree(projectId, { path: '.renku/datasets', recursive: true })
+      .then(data => 
+        data.filter(treeObj => treeObj.type === 'blob' && treeObj.name === 'metadata.yml')
+          .map(dataset => 
+            client.getRepositoryFile(projectId, dataset.path, 'master', 'raw').then(result => yaml.load(result))
+          )
+      )
+
+    return Promise.resolve(datasetsPromise)
+      .then(datasetsContent => Promise.all(datasetsContent))
   }
 }
 

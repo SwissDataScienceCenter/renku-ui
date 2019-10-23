@@ -17,16 +17,14 @@
  */
 
 import React, { Component } from 'react';
-import { API_ERRORS } from '../api-client';
 import { GraphIndexingStatus } from '../project/Project';
 
-import { FileLineage as FileLineagePresent } from './Lineage.present';
+import { KnowledgeGraphStatus as KnowledgeGraphStatusPresent } from './KnowledgeGraphStatus.present';
 
-class FileLineage extends Component {
+class KnowledgeGraphStatus extends Component {
   constructor(props){
     super(props);
     this.state = {
-      error: null,
       graphStatusPoller: null,
       graphStatusWaiting: false,
       webhookJustCreated: null
@@ -34,13 +32,7 @@ class FileLineage extends Component {
   }
 
   componentDidMount() {
-    // TODO This should work a little differently for robustness:
-    // - Get the dot/master deployment URL (environment external_url) from gitlab
-    // - Get the job from gitlab
-    // - Combine the file name from the external_url and the job information to retreive the file
-    // TODO: Write a wrapper to make promises cancellable to avoid usage of this._isMounted
     this._isMounted = true;
-    this.retrieveGraph();
     this.startPollingProgress();
   }
 
@@ -49,20 +41,6 @@ class FileLineage extends Component {
       this.stopPollingProgress();
     }
     this._isMounted = false;
-  }
-
-  parseNodeIds(graph) {
-    // regex to split /<type>/<commitSha><path>
-    const nodeRegex = /\/([^/]*)\/([^/]*)(.*)/;
-    if (!graph)
-      return { edges: [], nodes: [] };
-    graph.nodes.forEach(node => {
-      const matches = nodeRegex.exec(node.id)
-      node.type = matches[1]
-      node.commitSha = matches[2]
-      if (matches[3]) node.filePath = matches[3]
-    })
-    return graph;
   }
 
   async startPollingProgress() {
@@ -95,8 +73,8 @@ class FileLineage extends Component {
           this.setState({graphStatusWaiting: false});
           if (progress === GraphIndexingStatus.MAX_VALUE || progress === GraphIndexingStatus.NO_WEBHOOK) {
             this.stopPollingProgress();
-            if (progress === GraphIndexingStatus.MAX_VALUE) {
-              this.retrieveGraph();
+            if (progress === GraphIndexingStatus.MAX_VALUE && this.props.retrieveGraph()) {
+              this.props.retrieveGraph();
             }
           }
         }
@@ -124,39 +102,16 @@ class FileLineage extends Component {
     });
   }
 
-  async retrieveGraph() {
-    if (!this.props.projectPath) return;
-    try {
-      const fileMeta = await this.props.client.getRepositoryFileMeta(this.props.projectId, this.props.path, 'master')
-      this.props.client.getFileLineage(this.props.projectPath, fileMeta.lastCommitId, this.props.path)
-        .then(graph => this.parseNodeIds(graph))
-        .then(graph => {
-          if (this._isMounted) this.setState({ graph });
-        })
-    } catch (error) {
-      if (error.case === API_ERRORS.notFoundError) {
-        console.error("load graph:", error);
-        if (this._isMounted)
-          this.setState({ error: 'ERROR 404: Could not load lineage. The file with path ' + this.props.filePath + ' does not exist."' });
-      } else {
-        console.error("load graph:", error);
-        if (this._isMounted)
-          this.setState({ error: 'Could not load lineage.' });
-      }
-    }
-  }
-
   render() {
-    return <FileLineagePresent 
-      retrieveGraph={this.retrieveGraph.bind(this)}
-      graph={this.state.graph} 
-      error={this.state.error} 
-      createWebhook={this.createWebhook.bind(this)}
+    return <KnowledgeGraphStatusPresent
+      insideDatasets={this.props.insideDatasets}
+      progress={this.props.progress}
       webhookJustCreated={this.state.webhookJustCreated}
-      filePath={this.props.match.url+'/files/blob/'+this.props.path} 
-      accessLevel={this.props.accessLevel}
-      {...this.props} />
+      maintainer={this.props.maintainer}
+      createWebhook={this.createWebhook.bind(this)}
+      forked={this.props.forked}
+    />;
   }
 }
 
-export { FileLineage };
+export default KnowledgeGraphStatus ;

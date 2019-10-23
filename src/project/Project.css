@@ -11,3 +11,18 @@ Button.alert-link {
   margin-left: 0.1em;
   font-size: 0.55em;
 }
+
+.selected-dataset{
+  font-weight: normal;
+  background-color: #e9ecef;
+}
+
+.selected-dataset .fs-element{
+  background-color: #e9ecef;
+}
+
+.datasetDescriptionText{
+  font-size: 14px;
+  margin-block-start: 0.5em;
+  margin-block-end: 0.5em;
+}

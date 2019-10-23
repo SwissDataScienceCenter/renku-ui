@@ -40,6 +40,7 @@ import List from './list';
 import New from './new';
 import { ShowFile } from '../file';
 import Fork from './fork';
+import ShowDataset from '../dataset/Dataset.container';
 
 // TODO: This component has grown too much and needs restructuring. One option would be to insert
 // TODO: another container component between this top-level project component and the presentational
@@ -65,7 +66,7 @@ class View extends Component {
 
       // in case the route fails it tests weather it could be a projectid route
       const routes=['overview','kus','ku_new','files','lineage','notebooks',
-        'data','workflows','settings','pending','launchNotebook','notebookServers'];
+        'data','workflows','settings','pending','launchNotebook','notebookServers','datasets','environments'];
       const available = this.props.core ? this.props.core.available : null;
       const potentialProjectId = this.props.projectPathWithNamespace.split('/')[0];
       const potentialRoute = this.props.projectPathWithNamespace.split('/')[1];
@@ -97,6 +98,9 @@ class View extends Component {
   }
   async setProjectOpenFolder(filepath) {
     this.projectState.setProjectOpenFolder(this.props.client, filepath);
+  }
+  async fetchProjectDatasets() {
+    return this.projectState.fetchProjectDatasets(this.props.client);
   }
   async fetchGraphStatus() { return this.projectState.fetchGraphStatus(this.props.client); }
 
@@ -166,9 +170,12 @@ class View extends Component {
       baseUrl: baseUrl,
       overviewUrl: `${baseUrl}/overview`,
       statsUrl: `${baseUrl}/overview/stats`,
+      overviewDatasetsUrl: `${baseUrl}/overview/datasets`,
       kusUrl: `${baseUrl}/kus`,
       kuNewUrl: `${baseUrl}/ku_new`,
       kuUrl: `${baseUrl}/kus/:kuIid(\\d+)`,
+      datasetsUrl: `${baseUrl}/datasets`,
+      datasetUrl: `${baseUrl}/datasets/:datasetId`,
       filesUrl: `${filesUrl}`,
       fileContentUrl: `${fileContentUrl}`,
       lineagesUrl: `${filesUrl}/lineage`,
@@ -206,6 +213,7 @@ class View extends Component {
     const externalUrl = this.projectState.get('core.external_url');
     const updateProjectView = this.forceUpdate.bind(this);
     const filesTree = this.projectState.get('filesTree');
+    const datasets = this.projectState.get('core.datasets');
     const graphProgress = this.projectState.get('webhook.progress');
     const mergeRequests = this.projectState.get('system.merge_requests');
     const maintainer = this.projectState.get('visibility.accessLevel') >= ACCESS_LEVELS.MAINTAINER ?
@@ -220,7 +228,7 @@ class View extends Component {
     // Access to the project state could be given to the subComponents by connecting them here to
     // the projectStore. This is not yet necessary.
     const subUrls = this.getSubUrls();
-    const subProps = {...ownProps, projectId, accessLevel, externalUrl, filesTree, projectPathWithNamespace, forkModalOpen};
+    const subProps = {...ownProps, projectId, accessLevel, externalUrl, filesTree, projectPathWithNamespace, forkModalOpen, datasets};
     const branches = {
       all: this.projectState.get('system.branches'),
       fetch: () => { this.fetchBranches() }
@@ -271,6 +279,19 @@ class View extends Component {
         hashElement={filesTree !== undefined ?
           filesTree.hash[p.location.pathname.replace(this.props.match.url + '/files/blob/', '')] :
           undefined} />,
+
+      datasetView: (p) => <ShowDataset
+        key="datasetpreview"  {...subProps}
+        progress={graphProgress}
+        maintainer={maintainer}
+        forked={forked}
+        insideProject={true}
+        datasets={datasets}
+        lineagesUrl={subUrls.lineagesUrl}
+        fileContentUrl={subUrls.fileContentUrl}
+        projectsUrl={subUrls.projectsUrl}
+        selectedDataset={p.match.params.datasetId}
+      />,
 
       mrList: <ConnectedMergeRequestList key="mrList" store={this.projectState.reduxStore}
         mrOverviewUrl={subUrls.mrOverviewUrl} />,
@@ -337,6 +358,9 @@ class View extends Component {
     fetchFiles: () => {
       this.fetchProjectFilesTree();
       //this.fetchModifiedFiles();
+    },
+    fetchDatasets : () => {
+      this.fetchProjectDatasets();
     },
     setOpenFolder: (filePath) => {
       this.setProjectOpenFolder(filePath);

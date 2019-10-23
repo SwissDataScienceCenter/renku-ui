@@ -24,8 +24,6 @@
  */
 
 
-import { FilePreview, JupyterButton, ShowFile } from './File.container'
-import { FileLineage } from './Lineage.container'
-import KnowledgeGraphStatus from './KnowledgeGraphStatus.container'
+import ShowDataset from './Dataset.container'
 
-export { FilePreview, FileLineage, JupyterButton, ShowFile, KnowledgeGraphStatus }
+export default ShowDataset;

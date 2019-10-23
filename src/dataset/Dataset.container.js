@@ -1,5 +1,5 @@
 /*!
- * Copyright 2017 - Swiss Data Science Center (SDSC)
+ * Copyright 2018 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,16 +16,22 @@
  * limitations under the License.
  */
 
-/**
- *  incubator-renku-ui
- *
- *  file/index.js
- *  Module for file rendering in Renku.
- */
+import React from 'react';
+import DatasetView from './Dataset.present';
 
-
-import { FilePreview, JupyterButton, ShowFile } from './File.container'
-import { FileLineage } from './Lineage.container'
-import KnowledgeGraphStatus from './KnowledgeGraphStatus.container'
-
-export { FilePreview, FileLineage, JupyterButton, ShowFile, KnowledgeGraphStatus }
+export default function ShowDataset(props) {
+  return <DatasetView 
+    fetchGraphStatus={props.fetchGraphStatus}
+    maintainer={props.maintainer}
+    createGraphWebhook={props.createGraphWebhook}
+    forked={props.forked}
+    insideProject={props.insideProject}
+    progress={props.progress}
+    lineagesUrl={props.lineagesUrl}
+    fileContentUrl={props.fileContentUrl}
+    projectsUrl={props.projectsUrl}
+    client={props.client} 
+    datasets={props.datasets} 
+    selectedDataset={props.selectedDataset}
+  />
+}

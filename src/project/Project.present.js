@@ -48,7 +48,9 @@ import { SpecialPropVal } from '../model/Model'
 import { ProjectTags, ProjectTagList } from './shared'
 import { Notebooks, StartNotebookServer } from '../notebooks'
 import FilesTreeView from './filestreeview/FilesTreeView';
+import DatasetsListView from './datasets/DatasetsListView';
 import { ACCESS_LEVELS } from '../api-client';
+import { GraphIndexingStatus } from './Project';
 
 import './Project.css';
 
@@ -232,7 +234,7 @@ class ProjectViewHeaderOverview extends Component {
           </Col>
           <Col xs={12} md={6}>
             <div className="d-flex flex-md-row-reverse">
-              <div className={`fixed-width-${this.props.starred ? '120' : '100'}`}>
+              <div className={`fixed-width-${this.props.starred ? '7em' : '6em'}`}>
                 <form className="input-group input-group-sm">
                   <div className="input-group-prepend">
                     <button className="btn btn-outline-primary" onClick={this.props.onStar}>
@@ -243,7 +245,7 @@ class ProjectViewHeaderOverview extends Component {
                     placeholder={system.star_count} aria-label="starCount" readOnly={true} />
                 </form>
               </div>
-              <div className={`fixed-width-100 pr-1`}>
+              <div className={`fixed-width-6em pr-1`}>
                 <form className="input-group input-group-sm">
                   <div className="input-group-prepend">
                     <button className="btn btn-outline-primary" onClick={this.props.toogleForkModal}>
@@ -304,6 +306,9 @@ class ProjectNav extends Component {
         </NavItem>
         <NavItem>
           <RenkuNavLink exact={false} to={this.props.filesUrl} title="Files" />
+        </NavItem>
+        <NavItem>
+          <RenkuNavLink exact={false} to={this.props.datasetsUrl} title="Datasets" />
         </NavItem>
         <NavItem>
           <RenkuNavLink exact={false} to={this.props.mrOverviewUrl} title="Pending Changes" />
@@ -441,6 +446,9 @@ class ProjectViewOverviewNav extends Component {
         <NavItem>
           <RenkuNavLink to={`${this.props.statsUrl}`} title="Stats" />
         </NavItem>
+        <NavItem>
+          <RenkuNavLink to={`${this.props.overviewDatasetsUrl}`} title="Datasets" />
+        </NavItem>
       </Nav>)
   }
 }
@@ -482,13 +490,71 @@ class ProjectViewOverview extends Component {
             <Route exact path={this.props.baseUrl} render={props => {
               return <ProjectViewReadme readme={this.props.data.readme} {...this.props} />
             }} />
-            <Route path={this.props.statusUrl} render={props =>
+            <Route exact path={this.props.statsUrl} render={props =>
               <ProjectViewStats {...this.props} />}
+            />
+            <Route exact path={this.props.overviewDatasetsUrl} render={props =>
+              <ProjectViewDatasetsOverview {...this.props} />}
             />
           </Switch>
         </Col>
       </Row>
     </Col>
+  }
+}
+
+class ProjectDatasetsNav extends Component {
+
+  componentDidMount() {
+    this.props.fetchDatasets();
+  }
+
+  render() {
+    const loading = isRequestPending(this.props, 'datasets');
+    const allDatasets = this.props.core.datasets || []
+    if (loading && (allDatasets.length < 1 || this.props.core.datasets===undefined)) {
+      return <Loader />
+    }
+    if(allDatasets.length === 0) 
+      return null;
+    return <DatasetsListView
+      datasets={this.props.core.datasets}
+      datasetsUrl={this.props.datasetsUrl}
+    />;
+  }
+}
+
+
+class ProjectViewDatasets extends Component {
+  
+  render() {
+    const loading = isRequestPending(this.props, 'datasets');
+    const progress = this.props.webhook.progress;
+    const kgLoading = progress == null 
+    || progress === GraphIndexingStatus.NO_WEBHOOK
+    || progress === GraphIndexingStatus.NO_PROGRESS
+    || (progress >= GraphIndexingStatus.MIN_VALUE && progress < GraphIndexingStatus.MAX_VALUE);
+
+    if(!loading && !kgLoading && this.props.core.datasets !== undefined && this.props.core.datasets.length === 0){
+      return <Col sm={12} md={8} lg={10}>No datasets found for this project. If you recently activated the knowledge graph or added the datasets try refreshing the page.</Col>;
+    }
+      
+    return [
+      kgLoading ? null
+        :<Col key="datasetsnav" sm={12} md={4} lg={2}>
+          <ProjectDatasetsNav {...this.props} />
+        </Col>,
+      <Col key="datasetcontent" sm={12} md={8} lg={10}>
+        <Switch>
+          <Route path={this.props.datasetUrl}
+            render={p => this.props.datasetView(p)} />
+          { kgLoading ? 
+            <Route path={this.props.datasetsUrl}
+              render={p => this.props.datasetView(p)} />
+            : null }
+        </Switch>
+      </Col>
+    ]
   }
 }
 
@@ -601,6 +667,50 @@ function notebookLauncher(userId, accessLevel, notebookLauncher, fork, postLogin
   }
 
   return (<div>{content}</div>);
+}
+
+class OverviewDatasetRow extends Component{
+  render(){
+    return  <tr>
+      <td className="align-middle">
+        <Link to={this.props.fullDatasetUrl}>{this.props.name}</Link>
+      </td>
+    </tr>
+  }
+}
+
+class ProjectViewDatasetsOverview extends Component {
+
+  componentDidMount() {
+    this.props.fetchDatasets();
+  }
+  
+  render() {
+    if(this.props.datasets === undefined) 
+      return <p>Loading datasets...</p>;
+
+    if(this.props.datasets.length === 0) 
+      return <p>No datasets to display.</p>
+
+    let datasets = this.props.datasets.map((dataset) => 
+      <OverviewDatasetRow 
+        key={dataset.identifier} 
+        name={dataset.name} 
+        fullDatasetUrl={`${this.props.datasetsUrl}/${encodeURIComponent(dataset.identifier)}`} 
+      />
+    );
+
+    return <Col xs={12} md={10} lg={10}>
+      <Table bordered>
+        <thead className="thead-light">
+          <tr><th className="align-middle">Datasets</th></tr>
+        </thead>
+        <tbody>
+          {datasets}
+        </tbody>
+      </Table>
+    </Col>
+  }
 }
 
 class ProjectEnvironments extends Component {
@@ -844,6 +954,8 @@ class ProjectView extends Component {
                 render={props => <ProjectViewKus key="kus" {...this.props} />} />
               <Route path={this.props.filesUrl}
                 render={props => <ProjectViewFiles key="files" {...this.props} />} />
+              <Route path={this.props.datasetsUrl}
+                render={props => <ProjectViewDatasets key="datasets" {...this.props} />} />
               <Route path={this.props.settingsUrl}
                 render={props => <ProjectSettings key="settings" {...this.props} />} />
               <Route path={this.props.mrOverviewUrl}
