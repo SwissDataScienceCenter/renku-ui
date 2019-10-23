@@ -500,7 +500,6 @@ class EnvironmentLogs extends Component {
     return (
       <Modal
         isOpen={logs.show ? true : false}
-        size="xl"
         className="modal-dynamic-width"
         scrollable={true}
         toggle={() => { toggleLogs(name) }}>
