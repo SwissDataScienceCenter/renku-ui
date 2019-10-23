@@ -236,6 +236,13 @@ class NotebooksCoordinator {
       this.model.set('logs.data', lines)
 
       return data;
+    }).catch((e) => {
+      const response = ["Logs currently not available. Try again in a minute..."];
+      this.model.setObject({
+        logs: { fetched: new Date(), fetching: false }
+      });
+      this.model.set('logs.data', response)
+      return response;
     });
   }
 
