@@ -485,8 +485,7 @@ class EnvironmentLogs extends Component {
       }
       else {
         if (logs.data && logs.data.length) {
-          body = (<pre className="small" style={{ whiteSpace: "preLine" }}>
-            {logs.data.join("\n")}</pre>);
+          body = (<pre className="small no-overflow wrap-word">{logs.data.join("\n")}</pre>);
         }
         else {
           body = (<div>
@@ -502,6 +501,8 @@ class EnvironmentLogs extends Component {
       <Modal
         isOpen={logs.show ? true : false}
         size="xl"
+        className="modal-dynamic-width"
+        scrollable={true}
         toggle={() => { toggleLogs(name) }}>
         <ModalHeader toggle={() => { toggleLogs(name) }} className="header-multiline">
           Logs
