@@ -221,7 +221,7 @@ class NotebooksCoordinator {
 
   fetchLogs(serverName) {
     let logs = { fetching: true };
-    if (this.model.get("logs.reference") !== serverName) {
+    if (this.model.get('logs.reference') !== serverName) {
       logs.reference = serverName;
       logs.data = [];
       logs.fetched = null;
@@ -231,12 +231,9 @@ class NotebooksCoordinator {
     return this.client.getNotebookServerLogs(serverName).then((data) => {
       const lines = data.split("\n");
       this.model.setObject({
-        logs: {
-          fetched: new Date(),
-          fetching: false,
-          data: lines
-        }
+        logs: { fetched: new Date(), fetching: false }
       });
+      this.model.set('logs.data', lines)
 
       return data;
     });
