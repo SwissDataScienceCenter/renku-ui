@@ -25,6 +25,6 @@
 
 import { Notebooks, StartNotebookServer, CheckNotebookStatus } from './Notebooks.container';
 import { CheckNotebookIcon } from './Notebooks.present';
-import { NotebooksHelper } from './Notebooks.state'
+import { NotebooksHelper } from './Notebooks.state';
 
-export { Notebooks, StartNotebookServer, NotebooksHelper, CheckNotebookStatus, CheckNotebookIcon }
+export { Notebooks, StartNotebookServer, NotebooksHelper, CheckNotebookStatus, CheckNotebookIcon };

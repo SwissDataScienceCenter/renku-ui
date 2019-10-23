@@ -219,6 +219,33 @@ class NotebooksCoordinator {
     });
   }
 
+  fetchLogs(serverName) {
+    let logs = { fetching: true };
+    if (this.model.get('logs.reference') !== serverName) {
+      logs.reference = serverName;
+      logs.data = [];
+      logs.fetched = null;
+    }
+    this.model.setObject({ logs });
+
+    return this.client.getNotebookServerLogs(serverName).then((data) => {
+      const lines = data.split("\n");
+      this.model.setObject({
+        logs: { fetched: new Date(), fetching: false }
+      });
+      this.model.set('logs.data', lines)
+
+      return data;
+    }).catch((e) => {
+      const response = ["Logs currently not available. Try again in a minute..."];
+      this.model.setObject({
+        logs: { fetched: new Date(), fetching: false }
+      });
+      this.model.set('logs.data', response)
+      return response;
+    });
+  }
+
   async fetchPipeline() {
     // check if already fetching data
     const fetching = this.model.get('pipelines.fetching');

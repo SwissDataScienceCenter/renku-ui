@@ -1,0 +1,45 @@
+.alternateToggleStyle {
+  white-space: nowrap;
+  border-radius: 0.2rem !important;
+  padding-right: 0.5625rem;
+  padding-left: 0.5625rem;
+}
+
+.header-multiline h5 {
+  line-height: 1.2;
+}
+
+.header-multiline small {
+  font-size: 70%;
+  font-style: italic;
+}
+
+/* Modals with dynamic width */
+
+.modal-dynamic-width.modal-dialog {
+  max-width: 1140px;
+}
+
+@media (max-width: 1200px) {
+  .modal-dynamic-width.modal-dialog {
+    margin-left: 1.75rem;
+    margin-right: 1.75rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .modal-dynamic-width.modal-dialog {
+    margin-left: 0.75rem;
+    margin-right: 0.75rem;
+  }
+}
+
+/* Modals body personalizations */
+
+.modal-body .no-overflow {
+  overflow: unset;
+}
+
+.modal-body wrap-word {
+  white-space: pre-line;
+}

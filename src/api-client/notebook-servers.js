@@ -87,6 +87,19 @@ function addNotebookServersMethods(client) {
       return resp.data;
     });
   }
+
+  client.getNotebookServerLogs = (serverName) => {
+    const headers = client.getBasicHeaders();
+    headers.append('Accept', 'text/plain');
+    const url = `${client.baseUrl}/notebooks/logs/${serverName}`;
+
+    return client.clientFetch(url, {
+      method: 'GET',
+      headers
+    }, "text").then((resp) => {
+      return resp;
+    });
+  }
 }
 
 export default addNotebookServersMethods;

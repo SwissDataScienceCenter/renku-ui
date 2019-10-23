@@ -199,6 +199,13 @@ const notebooksSchema = new Schema({
       fetched: { initial: null },
       fetching: { initial: false },
     }
+  },
+  logs: {
+    schema: {
+      data: { initial: [] },
+      fetched: { initial: null },
+      fetching: { initial: false },
+    }
   }
 });
 
