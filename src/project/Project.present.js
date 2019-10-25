@@ -25,7 +25,7 @@
 
 
 
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 
 import { Link, Route, Switch } from 'react-router-dom';
 import filesize from 'filesize';
@@ -37,9 +37,12 @@ import { Input } from 'reactstrap';
 import { Nav, NavItem } from 'reactstrap';
 import { Card, CardBody, CardHeader } from 'reactstrap';
 
+import Clipboard from 'react-clipboard.js';
+
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
-import faStarRegular from '@fortawesome/fontawesome-free-regular/faStar'
-import { faStar as faStarSolid, faInfoCircle, faExternalLinkAlt, faCodeBranch } from '@fortawesome/fontawesome-free-solid'
+import { faCopy, faStar as faStarRegular } from '@fortawesome/fontawesome-free-regular'
+import { faCheck, faCodeBranch, faExternalLinkAlt, faInfoCircle } from '@fortawesome/fontawesome-free-solid'
+import { faStar as faStarSolid } from '@fortawesome/fontawesome-free-solid'
 import { faExclamationTriangle, faLock , faUserFriends, faGlobe, faSearch } from '@fortawesome/fontawesome-free-solid'
 
 import { ExternalLink, Loader, RenkuNavLink, TimeCaption, RenkuMarkdown} from '../utils/UIComponents'
@@ -515,7 +518,7 @@ class ProjectDatasetsNav extends Component {
     if (loading && (allDatasets.length < 1 || this.props.core.datasets===undefined)) {
       return <Loader />
     }
-    if(allDatasets.length === 0) 
+    if(allDatasets.length === 0)
       return null;
     return <DatasetsListView
       datasets={this.props.core.datasets}
@@ -526,11 +529,11 @@ class ProjectDatasetsNav extends Component {
 
 
 class ProjectViewDatasets extends Component {
-  
+
   render() {
     const loading = isRequestPending(this.props, 'datasets');
     const progress = this.props.webhook.progress;
-    const kgLoading = progress == null 
+    const kgLoading = progress == null
     || progress === GraphIndexingStatus.NO_WEBHOOK
     || progress === GraphIndexingStatus.NO_PROGRESS
     || (progress >= GraphIndexingStatus.MIN_VALUE && progress < GraphIndexingStatus.MAX_VALUE);
@@ -538,7 +541,7 @@ class ProjectViewDatasets extends Component {
     if(!loading && !kgLoading && this.props.core.datasets !== undefined && this.props.core.datasets.length === 0){
       return <Col sm={12} md={8} lg={10}>No datasets found for this project. If you recently activated the knowledge graph or added the datasets try refreshing the page.</Col>;
     }
-      
+
     return [
       kgLoading ? null
         :<Col key="datasetsnav" sm={12} md={4} lg={2}>
@@ -548,7 +551,7 @@ class ProjectViewDatasets extends Component {
         <Switch>
           <Route path={this.props.datasetUrl}
             render={p => this.props.datasetView(p)} />
-          { kgLoading ? 
+          { kgLoading ?
             <Route path={this.props.datasetsUrl}
               render={p => this.props.datasetView(p)} />
             : null }
@@ -684,19 +687,19 @@ class ProjectViewDatasetsOverview extends Component {
   componentDidMount() {
     this.props.fetchDatasets();
   }
-  
+
   render() {
-    if(this.props.datasets === undefined) 
+    if(this.props.datasets === undefined)
       return <p>Loading datasets...</p>;
 
-    if(this.props.datasets.length === 0) 
+    if(this.props.datasets.length === 0)
       return <p>No datasets to display.</p>
 
-    let datasets = this.props.datasets.map((dataset) => 
-      <OverviewDatasetRow 
-        key={dataset.identifier} 
-        name={dataset.name} 
-        fullDatasetUrl={`${this.props.datasetsUrl}/${encodeURIComponent(dataset.identifier)}`} 
+    let datasets = this.props.datasets.map((dataset) =>
+      <OverviewDatasetRow
+        key={dataset.identifier}
+        name={dataset.name}
+        fullDatasetUrl={`${this.props.datasetsUrl}/${encodeURIComponent(dataset.identifier)}`}
       />
     );
 
@@ -781,20 +784,36 @@ class ProjectStartNotebookServer extends Component {
   }
 }
 
+function RepositoryUrlRow(props) {
+  const [copied, setCopied] = useState(false);
+  const timeoutDur = 3000;
+
+  return (
+    <tr>
+      <th scope="row">{props.urlType}</th>
+      <td>{props.url}</td>
+      <td>
+        <Clipboard component="a" data-clipboard-text={props.url}
+          onSuccess={()=> { setCopied(true); setTimeout(() => setCopied(false), timeoutDur) }}>
+          {
+            (copied) ?
+              <FontAwesomeIcon icon={faCheck} color="green" /> :
+              <FontAwesomeIcon icon={faCopy} />
+          }
+        </Clipboard>
+      </td>
+    </tr>
+  )
+}
+
 class RepositoryUrls extends Component {
   render() {
     return [
       <strong key="header">Repository URL</strong>,
       <Table key="table" size="sm">
         <tbody>
-          <tr>
-            <th scope="row">SSH</th>
-            <td>{this.props.system.ssh_url}</td>
-          </tr>
-          <tr>
-            <th scope="row">HTTP</th>
-            <td>{this.props.system.http_url}</td>
-          </tr>
+          <RepositoryUrlRow urlType="SSH" url={this.props.system.ssh_url} />
+          <RepositoryUrlRow urlType="HTTP" url={this.props.system.http_url} />
         </tbody>
       </Table>
     ]
