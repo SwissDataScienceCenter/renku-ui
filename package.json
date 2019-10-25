@@ -29,6 +29,7 @@
     "query-string": "^5.1.1",
     "react": "^16.8.6",
     "react-autosuggest": "^9.4.0",
+    "react-clipboard.js": "^2.0.16",
     "react-collapse": "^4.0.3",
     "react-dom": "^16.8.6",
     "react-js-pagination": "^3.0.2",
