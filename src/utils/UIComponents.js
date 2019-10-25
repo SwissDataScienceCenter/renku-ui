@@ -24,18 +24,23 @@
  *  Utility UI components for the application.
  */
 
-import React, { Component } from 'react';
-import { FormFeedback, FormGroup, FormText, Input, Label, Alert } from 'reactstrap';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome'
-import faUser from '@fortawesome/fontawesome-free-solid/faUser'
-import human from 'human-time';
-import ReactPagination from "react-js-pagination";
-import { sanitizedHTMLFromMarkdown } from './HelperFunctions';
+import React, { Component, useState } from 'react';
+import { Provider, connect } from 'react-redux';
 
 import { NavLink as RRNavLink }  from 'react-router-dom'
-import { NavLink } from 'reactstrap';
 
-import { Provider, connect } from 'react-redux'
+import { NavLink } from 'reactstrap';
+import { FormFeedback, FormGroup, FormText, Input, Label, Alert } from 'reactstrap';
+
+import FontAwesomeIcon from '@fortawesome/react-fontawesome'
+import { faCopy } from '@fortawesome/fontawesome-free-regular'
+import { faCheck, faUser } from '@fortawesome/fontawesome-free-solid'
+
+import human from 'human-time';
+import ReactPagination from "react-js-pagination";
+import ReactClipboard from 'react-clipboard.js';
+
+import { sanitizedHTMLFromMarkdown } from './HelperFunctions';
 
 class Avatar extends Component {
   computeWidgetSize() {
@@ -342,13 +347,13 @@ class ErrorAlert extends Component {
 
 class RenkuMarkdown extends Component {
   render(){
-    return <div dangerouslySetInnerHTML={{__html: sanitizedHTMLFromMarkdown(this.props.markdownText)}}></div>   
+    return <div dangerouslySetInnerHTML={{__html: sanitizedHTMLFromMarkdown(this.props.markdownText)}}></div>
   }
 }
 
 /**
  * Jupyter icon
- * 
+ *
  * @param {boolean} [greyscale] - show the grayscale version of the logo
  * @param {string} [svgClass] - class to apply on the svg element
  */
@@ -435,5 +440,29 @@ class JupyterIcon extends Component {
   }
 }
 
+/**
+ * Clipboard
+ *
+ * A component that copies text to the clipboard
+ * @param {string} [clipboardText] - Text to copy to the clipboard
+ */
+
+function Clipboard(props) {
+  const [copied, setCopied] = useState(false);
+  const timeoutDur = 3000;
+
+  return (
+    <ReactClipboard component="a" data-clipboard-text={props.clipboardText}
+      onSuccess={()=> { setCopied(true); setTimeout(() => setCopied(false), timeoutDur) }}>
+      {
+        (copied) ?
+          <FontAwesomeIcon icon={faCheck} color="green" /> :
+          <FontAwesomeIcon icon={faCopy} />
+      }
+    </ReactClipboard>
+  )
+}
+
 export { Avatar, TimeCaption, FieldGroup, RenkuNavLink, UserAvatar, Pagination, RenkuMarkdown };
 export { ExternalLink, Loader, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, JupyterIcon };
+export { Clipboard };
