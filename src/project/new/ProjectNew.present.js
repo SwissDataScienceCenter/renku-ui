@@ -34,8 +34,8 @@ import { Button, FormGroup, FormText, Label } from 'reactstrap';
 import { Input, InputGroup, InputGroupAddon, InputGroupText } from 'reactstrap';
 import { Alert } from 'reactstrap';
 
-import FontAwesomeIcon from '@fortawesome/react-fontawesome'
-import { faInfoCircle, faExternalLinkAlt } from '@fortawesome/fontawesome-free-solid'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faInfoCircle, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 
 import collection from 'lodash/collection';
 import { FieldGroup, Loader } from '../../utils/UIComponents'

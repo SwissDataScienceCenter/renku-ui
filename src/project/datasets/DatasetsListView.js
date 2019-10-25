@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome'
-import faTable from '@fortawesome/fontawesome-free-solid/faTable'
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTable } from '@fortawesome/free-solid-svg-icons';
+
 import '../filestreeview/treeviewstyle.css';
 import { Loader } from '../../utils/UIComponents';
 
 function DatasetListRow(props){
   const dataset = props.dataset;
-  return <NavLink 
-    activeClassName="selected-dataset" 
-    key={dataset.identifier} 
-    to={`${props.datasetsUrl}/${encodeURIComponent(dataset.identifier)}/`} 
+  return <NavLink
+    activeClassName="selected-dataset"
+    key={dataset.identifier}
+    to={`${props.datasetsUrl}/${encodeURIComponent(dataset.identifier)}/`}
   >
     <div className={"fs-element"}>
       <FontAwesomeIcon className="icon-grey" icon={faTable} /> {dataset.name}
@@ -22,7 +24,7 @@ export default function DatasetsListView(props){
   const [datasets, setDatasets] = useState(undefined);
 
   useState(()=>{
-    if(datasets === undefined && props.datasets !== undefined) 
+    if(datasets === undefined && props.datasets !== undefined)
       setDatasets(props.datasets);
   })
 
@@ -32,16 +34,16 @@ export default function DatasetsListView(props){
         <span className="tree-header-title text-truncate">
           Datasets List
         </span>
-      </div> 
+      </div>
       <nav>
         {
-          datasets !== undefined ? 
-            datasets.map((dataset)=> 
+          datasets !== undefined ?
+            datasets.map((dataset)=>
               <DatasetListRow
                 key={"dataset-"+dataset.identifier}
                 dataset={dataset}
                 datasetsUrl={props.datasetsUrl} />
-            ) 
+            )
             : <Loader />
         }
       </nav>

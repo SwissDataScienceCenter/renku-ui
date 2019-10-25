@@ -18,8 +18,8 @@
 
 import React from 'react';
 
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faInfoCircle } from '@fortawesome/fontawesome-free-solid'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 import {Button, Alert, Progress } from 'reactstrap';
 
 import { Loader } from '../utils/UIComponents';
@@ -31,7 +31,7 @@ function KnowledgeGraphStatus(props) {
     return (
       <Loader />
     )
-  } 
+  }
   if (progress === GraphIndexingStatus.NO_WEBHOOK) {
     if (webhookJustCreated) {
       return (
@@ -60,7 +60,7 @@ function KnowledgeGraphStatus(props) {
         <div>
           <br />
           <FontAwesomeIcon icon={faInfoCircle} /> <span className="font-italic">If you recenty forked
-          this project, the graph integration will not finish until you create at least one commit. 
+          this project, the graph integration will not finish until you create at least one commit.
           </span>
         </div>
       );

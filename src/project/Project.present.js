@@ -38,17 +38,17 @@ import { Nav, NavItem } from 'reactstrap';
 import { Card, CardBody, CardHeader } from 'reactstrap';
 import Issue from '../issue/Issue';
 
-import FontAwesomeIcon from '@fortawesome/react-fontawesome'
-import { faStar as faStarRegular } from '@fortawesome/fontawesome-free-regular'
-import { faCodeBranch, faExternalLinkAlt, faInfoCircle } from '@fortawesome/fontawesome-free-solid'
-import { faStar as faStarSolid } from '@fortawesome/fontawesome-free-solid'
-import { faExclamationTriangle, faLock , faUserFriends, faGlobe, faSearch } from '@fortawesome/fontawesome-free-solid'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons';
+import { faCodeBranch, faExternalLinkAlt, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import { faStar as faStarSolid } from '@fortawesome/free-solid-svg-icons';
+import { faExclamationTriangle, faLock , faUserFriends, faGlobe, faSearch } from '@fortawesome/free-solid-svg-icons';
 
-import { Clipboard, ExternalLink, Loader, RenkuMarkdown, RenkuNavLink, TimeCaption } from '../utils/UIComponents'
-import { InfoAlert, SuccessAlert, WarnAlert, ErrorAlert } from '../utils/UIComponents'
-import { SpecialPropVal } from '../model/Model'
-import { ProjectTags, ProjectTagList } from './shared'
-import { Notebooks, StartNotebookServer } from '../notebooks'
+import { Clipboard, ExternalLink, Loader, RenkuMarkdown, RenkuNavLink, TimeCaption } from '../utils/UIComponents';
+import { InfoAlert, SuccessAlert, WarnAlert, ErrorAlert } from '../utils/UIComponents';
+import { SpecialPropVal } from '../model/Model';
+import { ProjectTags, ProjectTagList } from './shared';
+import { Notebooks, StartNotebookServer } from '../notebooks';
 import FilesTreeView from './filestreeview/FilesTreeView';
 import DatasetsListView from './datasets/DatasetsListView';
 import { ACCESS_LEVELS } from '../api-client';

@@ -25,10 +25,10 @@ import NotebookPreview from '@nteract/notebook-render';
 //import './notebook.css'
 import { UncontrolledTooltip, Card, CardHeader, CardBody, Badge } from 'reactstrap';
 import { ListGroup, ListGroupItem } from 'reactstrap';
-import '../../node_modules/highlight.js/styles/atom-one-light.css'
-import FontAwesomeIcon from '@fortawesome/react-fontawesome'
-import faProjectDiagram from '@fortawesome/fontawesome-free-solid/faProjectDiagram'
-import faGitlab from '@fortawesome/fontawesome-free-brands/faGitlab';
+import '../../node_modules/highlight.js/styles/atom-one-light.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faProjectDiagram } from '@fortawesome/free-solid-svg-icons';
+import { faGitlab } from '@fortawesome/free-brands-svg-icons';
 
 import { FilePreview } from './index';
 import { CheckNotebookStatus, CheckNotebookIcon } from '../notebooks'

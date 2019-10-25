@@ -37,10 +37,10 @@ import {createStore} from '../utils/EnhancedState'
 import State from './Issue.state'
 import { Avatar, FieldGroup, TimeCaption, RenkuMarkdown } from '../utils/UIComponents'
 import { Contribution, NewContribution } from '../contribution'
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { UncontrolledTooltip, Card, CardHeader, CardBody } from 'reactstrap';
-import faGitlab from '@fortawesome/fontawesome-free-brands/faGitlab';
-import { faBoxOpen, faBox, faCompress, faExpand } from '@fortawesome/fontawesome-free-solid/'
+import { faGitlab } from '@fortawesome/free-brands-svg-icons';
+import { faBoxOpen, faBox, faCompress, faExpand } from '@fortawesome/free-solid-svg-icons';
 
 
 function issueStateBadge(issueStateValue) {

@@ -19,8 +19,8 @@
 import React, { Component } from 'react';
 import { Link }  from 'react-router-dom'
 import Autosuggest from 'react-autosuggest';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import faSearch from '@fortawesome/fontawesome-free-solid/faSearch';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import './QuickNav.style.css';
 
 class QuickNavPresent extends Component {

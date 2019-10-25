@@ -22,10 +22,8 @@ import { Row, Col, Alert, Card, CardBody, Badge } from 'reactstrap';
 import { Button, Form, FormText, Input, Label, InputGroup, UncontrolledCollapse } from 'reactstrap';
 import { InputGroupButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap';
 import { Loader, Pagination } from '../../utils/UIComponents';
-import faCheck from '@fortawesome/fontawesome-free-solid/faCheck';
-import faSortAmountUp from '@fortawesome/fontawesome-free-solid/faSortAmountUp';
-import faSortAmountDown from '@fortawesome/fontawesome-free-solid/faSortAmountDown';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome'
+import { faCheck, faSortAmountUp, faSortAmountDown } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 
 class DatasetListRow extends Component {

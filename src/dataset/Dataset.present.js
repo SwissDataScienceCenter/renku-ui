@@ -22,9 +22,8 @@ import { Link }  from 'react-router-dom';
 import { Loader } from '../utils/UIComponents';
 import DOMPurify from 'dompurify';
 import { API_ERRORS } from '../api-client';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import faFile from '@fortawesome/fontawesome-free-solid/faFile';
-import faProjectDiagram from '@fortawesome/fontawesome-free-solid/faProjectDiagram';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFile, faProjectDiagram } from '@fortawesome/free-solid-svg-icons';
 import { GraphIndexingStatus } from '../project/Project';
 import KnowledgeGraphStatus from '../file/KnowledgeGraphStatus.container';
 import Time from '../utils/Time';
@@ -61,7 +60,7 @@ function DisplayFiles(props){
                     <FontAwesomeIcon icon={faProjectDiagram} />
                   </Link>
                 </td> : null }
-            </tr>  
+            </tr>
           )}
         </tbody>
       </Table>
@@ -92,14 +91,14 @@ function DisplayProjects(props){
                   {project.name}
                 </Link>
               </td>
-              { project.created && project.created.dateCreated 
-                ? <td className="text-center">{Time.getReadableDate(project.created.dateCreated)}</td> 
+              { project.created && project.created.dateCreated
+                ? <td className="text-center">{Time.getReadableDate(project.created.dateCreated)}</td>
                 : null }
-              { project.created && project.created.agent 
+              { project.created && project.created.agent
                 ? <td className="text-center">{project.created.agent.name}</td>
                 : null
               }
-            </tr>  
+            </tr>
           )}
         </tbody>
       </Table>
@@ -108,11 +107,11 @@ function DisplayProjects(props){
 }
 
 export default function DatasetView(props){
-  
+
   const [dataset, setDataset] = useState(undefined);
   const [fetchError, setFetchError] = useState(null);
 
-  useEffect(()=> { 
+  useEffect(()=> {
     let unmounted = false;
     if( props.insideProject && props.datasets!== undefined && dataset === undefined ){
       const selectedDataset = props.datasets.filter(d => props.selectedDataset === encodeURIComponent(d.identifier))[0];
@@ -155,8 +154,8 @@ export default function DatasetView(props){
 
   if(props.insideProject){
     const {progress, webhookJustCreated} = props;
-    
-    if(progress == null 
+
+    if(progress == null
       || progress === GraphIndexingStatus.NO_WEBHOOK
       || progress === GraphIndexingStatus.NO_PROGRESS
       || (progress >= GraphIndexingStatus.MIN_VALUE && progress < GraphIndexingStatus.MAX_VALUE)
@@ -176,13 +175,13 @@ export default function DatasetView(props){
   if(fetchError !== null && dataset === undefined)
     return <Alert color="danger">{fetchError}</Alert>;
   if(dataset === undefined) return <Loader />;
-  if(dataset === null) 
+  if(dataset === null)
     return <Alert color="danger">Error 404: The dataset that was selected doesn't exist or couldn't be accessed</Alert>
 
   return <Col>
     <div style={{paddingLeft:"4px"}}>
       {
-        dataset.published !== undefined && dataset.published.datePublished !== undefined ?  
+        dataset.published !== undefined && dataset.published.datePublished !== undefined ?
           <small style={{ display: 'block', paddingBottom:'8px'}} className="font-weight-light font-italic">
             Uploaded on { Time.getReadableDate(dataset.published.datePublished) }.
           </small>
@@ -192,27 +191,27 @@ export default function DatasetView(props){
         {dataset.name}
       </h4>
       {
-        dataset.published !== undefined && dataset.published.creator !== undefined ?  
+        dataset.published !== undefined && dataset.published.creator !== undefined ?
           <small style={{ display: 'block'}} className="font-weight-light">
             {dataset.published.creator.map((creator) => creator.name).join("; ")}
           </small>
-          : null  
+          : null
       }
       <p  style={{paddingTop:'12px'}} dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(dataset.description)}}>
       </p>
     </div>
     <br />
-    <DisplayFiles 
-      projectsUrl={props.projectsUrl} 
-      fileContentUrl={props.fileContentUrl} 
-      lineagesUrl={props.lineagesUrl} 
-      files={dataset.hasPart} 
-      insideProject={props.insideProject} 
+    <DisplayFiles
+      projectsUrl={props.projectsUrl}
+      fileContentUrl={props.fileContentUrl}
+      lineagesUrl={props.lineagesUrl}
+      files={dataset.hasPart}
+      insideProject={props.insideProject}
     />
     <br />
-    <DisplayProjects 
-      projects={dataset.isPartOf} 
-      projectsUrl={props.projectsUrl} 
+    <DisplayProjects
+      projects={dataset.isPartOf}
+      projectsUrl={props.projectsUrl}
     />
   </Col>
 }

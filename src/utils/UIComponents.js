@@ -32,9 +32,9 @@ import { NavLink as RRNavLink }  from 'react-router-dom'
 import { NavLink } from 'reactstrap';
 import { FormFeedback, FormGroup, FormText, Input, Label, Alert } from 'reactstrap';
 
-import FontAwesomeIcon from '@fortawesome/react-fontawesome'
-import { faCopy } from '@fortawesome/fontawesome-free-regular'
-import { faCheck, faUser } from '@fortawesome/fontawesome-free-solid'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCopy } from '@fortawesome/free-regular-svg-icons';
+import { faCheck, faUser } from '@fortawesome/free-solid-svg-icons';
 
 import human from 'human-time';
 import ReactPagination from "react-js-pagination";
@@ -354,7 +354,7 @@ class ErrorAlert extends Component {
 
 class RenkuMarkdown extends Component {
   render(){
-    return <div className="text-break" dangerouslySetInnerHTML={{__html: sanitizedHTMLFromMarkdown(this.props.markdownText)}}></div>   
+    return <div className="text-break" dangerouslySetInnerHTML={{__html: sanitizedHTMLFromMarkdown(this.props.markdownText)}}></div>
   }
 }
 
