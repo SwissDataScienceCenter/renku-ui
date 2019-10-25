@@ -25,7 +25,7 @@
 
 
 
-import React, { Component, useState } from 'react';
+import React, { Component } from 'react';
 
 import { Link, Route, Switch } from 'react-router-dom';
 import filesize from 'filesize';
@@ -37,15 +37,13 @@ import { Input } from 'reactstrap';
 import { Nav, NavItem } from 'reactstrap';
 import { Card, CardBody, CardHeader } from 'reactstrap';
 
-import Clipboard from 'react-clipboard.js';
-
 import FontAwesomeIcon from '@fortawesome/react-fontawesome'
-import { faCopy, faStar as faStarRegular } from '@fortawesome/fontawesome-free-regular'
-import { faCheck, faCodeBranch, faExternalLinkAlt, faInfoCircle } from '@fortawesome/fontawesome-free-solid'
+import { faStar as faStarRegular } from '@fortawesome/fontawesome-free-regular'
+import { faCodeBranch, faExternalLinkAlt, faInfoCircle } from '@fortawesome/fontawesome-free-solid'
 import { faStar as faStarSolid } from '@fortawesome/fontawesome-free-solid'
 import { faExclamationTriangle, faLock , faUserFriends, faGlobe, faSearch } from '@fortawesome/fontawesome-free-solid'
 
-import { ExternalLink, Loader, RenkuNavLink, TimeCaption, RenkuMarkdown} from '../utils/UIComponents'
+import { Clipboard, ExternalLink, Loader, RenkuMarkdown, RenkuNavLink, TimeCaption } from '../utils/UIComponents'
 import { InfoAlert, SuccessAlert, WarnAlert, ErrorAlert } from '../utils/UIComponents'
 import { SpecialPropVal } from '../model/Model'
 import { ProjectTags, ProjectTagList } from './shared'
@@ -785,23 +783,11 @@ class ProjectStartNotebookServer extends Component {
 }
 
 function RepositoryUrlRow(props) {
-  const [copied, setCopied] = useState(false);
-  const timeoutDur = 3000;
-
   return (
     <tr>
       <th scope="row">{props.urlType}</th>
       <td>{props.url}</td>
-      <td>
-        <Clipboard component="a" data-clipboard-text={props.url}
-          onSuccess={()=> { setCopied(true); setTimeout(() => setCopied(false), timeoutDur) }}>
-          {
-            (copied) ?
-              <FontAwesomeIcon icon={faCheck} color="green" /> :
-              <FontAwesomeIcon icon={faCopy} />
-          }
-        </Clipboard>
-      </td>
+      <td><Clipboard clipboardText={props.url} /></td>
     </tr>
   )
 }
