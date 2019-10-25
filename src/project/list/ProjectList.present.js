@@ -24,10 +24,8 @@ import { Nav, NavItem, InputGroupButtonDropdown, DropdownToggle, DropdownMenu, D
 
 import { Avatar, Loader, Pagination,  TimeCaption , RenkuNavLink } from '../../utils/UIComponents';
 import { ProjectTagList } from '../shared';
-import faCheck from '@fortawesome/fontawesome-free-solid/faCheck';
-import faSortAmountUp from '@fortawesome/fontawesome-free-solid/faSortAmountUp';
-import faSortAmountDown from '@fortawesome/fontawesome-free-solid/faSortAmountDown';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome'
+import { faCheck, faSortAmountDown, faSortAmountUp } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import '../Project.css';
 
@@ -68,23 +66,23 @@ class ProjectSearchForm extends Component {
             Search by: {this.props.searchInLabel}
           </DropdownToggle>
           <DropdownMenu>
-            <DropdownItem value={this.props.searchInValuesMap.PROJECTNAME} 
+            <DropdownItem value={this.props.searchInValuesMap.PROJECTNAME}
               onClick={this.props.handlers.changeSearchDropdownFilter}>
-              {this.props.searchIn === this.props.searchInValuesMap.PROJECTNAME ? 
+              {this.props.searchIn === this.props.searchInValuesMap.PROJECTNAME ?
                 <FontAwesomeIcon icon={faCheck} /> :null} Project Name
             </DropdownItem>
-            { 
+            {
               this.props.urlMap.projectsSearchUrl === this.props.currentTab || this.props.hasUser === false  ?
-                [<DropdownItem key={this.props.searchInValuesMap.USERNAME} 
-                  value={this.props.searchInValuesMap.USERNAME} 
+                [<DropdownItem key={this.props.searchInValuesMap.USERNAME}
+                  value={this.props.searchInValuesMap.USERNAME}
                   onClick={this.props.handlers.changeSearchDropdownFilter}>
-                  {this.props.searchIn === this.props.searchInValuesMap.USERNAME ? 
+                  {this.props.searchIn === this.props.searchInValuesMap.USERNAME ?
                     <FontAwesomeIcon icon={faCheck} /> :null} User Name
                 </DropdownItem>,
-                <DropdownItem key={this.props.searchInValuesMap.GROUPNAME} 
-                  value={this.props.searchInValuesMap.GROUPNAME} 
+                <DropdownItem key={this.props.searchInValuesMap.GROUPNAME}
+                  value={this.props.searchInValuesMap.GROUPNAME}
                   onClick= {this.props.handlers.changeSearchDropdownFilter}>
-                  {this.props.searchIn === this.props.searchInValuesMap.GROUPNAME ? 
+                  {this.props.searchIn === this.props.searchInValuesMap.GROUPNAME ?
                     <FontAwesomeIcon icon={faCheck} /> :null} Group Name
                 </DropdownItem>]
                 : null
@@ -116,7 +114,7 @@ class ProjectSearchForm extends Component {
         Search
       </Button>
     </Form>,
-    this.props.searchIn === this.props.searchInValuesMap.PROJECTNAME ? 
+    this.props.searchIn === this.props.searchInValuesMap.PROJECTNAME ?
       <FormText key="help" color="muted">Search with empty text to browse all projects.</FormText>
       : null
     ]
@@ -178,7 +176,7 @@ class ProjectsRows extends Component{
 
     if(this.props.loading) return <Col md={{size: 2,  offset: 3}}><Loader /></Col>
 
-    if(this.props.page.emptyResponseMessage) 
+    if(this.props.page.emptyResponseMessage)
       return <DisplayEmptyProjects
         projectsSearchUrl={this.props.urlMap.projectsSearchUrl}
         projectNewUrl={this.props.urlMap.projectNewUrl}
@@ -194,16 +192,16 @@ class UsersRow extends Component{
   render(){
     if(this.props.forbidden) return null;
     const usersOrGroupsList = this.props.usersOrGroupsList || [];
-    const usersRows = usersOrGroupsList.map( (p) => 
-    { 
+    const usersRows = usersOrGroupsList.map( (p) =>
+    {
       if(this.props.searchIn === this.props.searchInValuesMap.USERNAME)
-        return <Button key={p.id} color="primary" outline  
-          onClick={() => this.props.handlers.changeSelectedUserOrGroup(p.id)} 
+        return <Button key={p.id} color="primary" outline
+          onClick={() => this.props.handlers.changeSelectedUserOrGroup(p.id)}
           active={Number(this.props.selectedUserOrGroup) === Number(p.id)}>{p.username}
         </Button>
       else if(this.props.searchIn === this.props.searchInValuesMap.GROUPNAME)
-        return <Button key={p.id} color="primary" outline  
-          onClick={() => this.props.handlers.changeSelectedUserOrGroup(p.id)} 
+        return <Button key={p.id} color="primary" outline
+          onClick={() => this.props.handlers.changeSelectedUserOrGroup(p.id)}
           active={Number(this.props.selectedUserOrGroup) === Number(p.id)}>{p.full_path}
         </Button>
       else return null;
@@ -229,10 +227,10 @@ class ProjectsSearch extends Component {
           <span></span>
       }
       <Col md={12}>
-        <ProjectSearchForm 
-          orderByValuesMap={this.props.orderByValuesMap} 
+        <ProjectSearchForm
+          orderByValuesMap={this.props.orderByValuesMap}
           searchInValuesMap={this.props.searchInValuesMap}
-          orderBy={this.props.orderBy} 
+          orderBy={this.props.orderBy}
           searchIn={this.props.searchIn}
           usersOrGroupsList={this.props.usersOrGroupsList}
           selectedUserOrGroup={this.props.selectedUserOrGroup}
@@ -240,10 +238,10 @@ class ProjectsSearch extends Component {
           searchText={this.props.searchText}
           orderByLabel={this.props.orderByLabel}
           searchInLabel={this.props.searchInLabel}
-          orderByDropdownOpen={this.props.orderByDropdownOpen} 
+          orderByDropdownOpen={this.props.orderByDropdownOpen}
           searchInDropdownOpen={this.props.searchInDropdownOpen}
           orderSearchAsc={this.props.orderSearchAsc}
-          searchQuery={this.props.searchQuery} 
+          searchQuery={this.props.searchQuery}
           handlers={this.props.handlers}
           currentTab={this.props.currentTab}
           urlMap={this.props.urlMap}
@@ -251,10 +249,10 @@ class ProjectsSearch extends Component {
       </Col>
     </Row>,
     <Row key="spacer2"><Col md={8}>&nbsp;</Col></Row>,
-    this.props.searchIn === this.props.searchInValuesMap.USERNAME || 
+    this.props.searchIn === this.props.searchInValuesMap.USERNAME ||
     this.props.searchIn === this.props.searchInValuesMap.GROUPNAME ?
       <Row key="users">
-        <UsersRow 
+        <UsersRow
           usersOrGroupsList={this.props.usersOrGroupsList}
           handlers={this.props.handlers}
           searchIn={this.props.searchIn}
@@ -267,7 +265,7 @@ class ProjectsSearch extends Component {
       null,
     <Row key="spacer3"><Col md={8}>&nbsp;</Col></Row>,
     <Row key="projects">
-      <ProjectsRows 
+      <ProjectsRows
         page={this.props.page}
         urlMap={this.props.urlMap}
         loading={loading}

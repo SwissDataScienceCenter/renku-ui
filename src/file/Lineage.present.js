@@ -23,9 +23,9 @@ import dagreD3 from 'dagre-d3';
 import * as d3 from 'd3';
 
 import { Link }  from 'react-router-dom';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faFile } from '@fortawesome/fontawesome-free-solid'
-import faGitlab from '@fortawesome/fontawesome-free-brands/faGitlab';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFile } from '@fortawesome/free-solid-svg-icons';
+import { faGitlab } from '@fortawesome/free-brands-svg-icons';
 import { Card, CardHeader, CardBody, UncontrolledTooltip, Badge } from 'reactstrap';
 import KnowledgeGraphStatus  from './KnowledgeGraphStatus.container';
 import { GraphIndexingStatus } from '../project/Project';
@@ -118,7 +118,7 @@ class FileLineageGraph extends Component {
       });
     });
     graph.edges.forEach(e => { subGraph.setEdge(e.source, e.target)});
-    
+
     return subGraph
   }
 
@@ -145,9 +145,9 @@ class FileLineageGraph extends Component {
       svgGroup = svg.append('g');
       this.appended = true;
     } else{  svgGroup= svg.select('g')}
-    
+
     const history = this.props.history;
-    
+
     render(svgGroup, g);
 
     // Set up zoom support
@@ -169,7 +169,7 @@ class FileLineageGraph extends Component {
       .on("click", function(){
         history.push(d3.select(this).attr("data-href"));
       });
-    
+
     // Center the graph
     const bbox = document.getElementsByClassName('graphContainer')[0].lastChild.getBBox();
     svg.attr('viewBox', '0 0 '+bbox.width+' '+bbox.height)
@@ -182,7 +182,7 @@ class FileLineageGraph extends Component {
     });
 
     var initialScale = 0.80;
-    svg.call(zoom.transform, 
+    svg.call(zoom.transform,
       d3.zoomIdentity.translate((bbox.width - g.graph().width * initialScale) / 2, 20)
         .scale(initialScale));
   }
@@ -204,8 +204,8 @@ class FileLineageGraph extends Component {
 class FileLineage extends Component {
   render() {
     const { progress } = this.props;
-    
-    if(progress == null 
+
+    if(progress == null
       || progress === GraphIndexingStatus.NO_WEBHOOK
       || progress === GraphIndexingStatus.NO_PROGRESS
       || (progress >= GraphIndexingStatus.MIN_VALUE && progress < GraphIndexingStatus.MAX_VALUE)

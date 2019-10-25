@@ -24,14 +24,12 @@ import { Form, FormGroup, FormText, Label, Input, Button, ButtonGroup, Row, Col,
 import { UncontrolledButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { UncontrolledTooltip, UncontrolledPopover, PopoverHeader, PopoverBody } from 'reactstrap';
 import { Badge } from 'reactstrap';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faStopCircle, faExternalLinkAlt, faInfoCircle, faSyncAlt } from '@fortawesome/fontawesome-free-solid';
-import { faCogs, faCog, faEllipsisV, faExclamationTriangle, faRedo } from '@fortawesome/fontawesome-free-solid';
-import { faSave } from '@fortawesome/fontawesome-free-solid';
-import { faFileAlt } from '@fortawesome/fontawesome-free-solid';
-import { faTimesCircle } from '@fortawesome/fontawesome-free-solid';
-import { faCheckCircle } from '@fortawesome/fontawesome-free-regular';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faStopCircle, faExternalLinkAlt, faInfoCircle, faSyncAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCogs, faCog, faEllipsisV, faExclamationTriangle, faRedo } from '@fortawesome/free-solid-svg-icons';
+import { faCheckCircle, faFileAlt, faSave, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { StatusHelper } from '../model/Model';
 import { NotebooksHelper } from './index'
@@ -451,7 +449,7 @@ class NotebookServerRowAction extends Component {
 
 /**
  * Simple environment logs container
- * 
+ *
  * @param {function} fetchLogs - async function to get logs as an array string
  * @param {function} toggleLogs - toggle logs visibility and fetch logs on show
  * @param {object} logs - log object from redux store enhanced with `show` property

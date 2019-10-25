@@ -33,14 +33,9 @@ import { Row, Col } from 'reactstrap';
 import { Jumbotron } from 'reactstrap';
 import { RenkuMarkdown } from '../utils/UIComponents';
 
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import faClone from '@fortawesome/fontawesome-free-solid/faClone';
-import faCloudUp from '@fortawesome/fontawesome-free-solid/faCloudUploadAlt';
-import faCodeBranch from '@fortawesome/fontawesome-free-solid/faCodeBranch';
-import faHeart from '@fortawesome/fontawesome-free-solid/faHeart';
-import faSearch from '@fortawesome/fontawesome-free-solid/faSearch';
-import faShield from '@fortawesome/fontawesome-free-solid/faShieldAlt';
-import faUserFriends from '@fortawesome/fontawesome-free-solid/faUserFriends';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faClone, faCloudUploadAlt as faCloudUp, faCodeBranch  } from '@fortawesome/free-solid-svg-icons';
+import { faHeart, faSearch, faShieldAlt as faShield, faUserFriends  } from '@fortawesome/free-solid-svg-icons';
 
 import { ProjectListRow } from '../project';
 
@@ -96,7 +91,7 @@ class YourProjects extends Component {
 
 class RenkuIntroText extends Component {
   render() {
-    return <RenkuMarkdown key="readme" markdownText={this.props.welcomePage} /> 
+    return <RenkuMarkdown key="readme" markdownText={this.props.welcomePage} />
   }
 
 }

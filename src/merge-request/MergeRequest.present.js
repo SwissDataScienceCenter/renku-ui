@@ -22,8 +22,8 @@ import { NavLink } from 'react-router-dom';
 
 import { ExternalLink } from '../utils/UIComponents';
 
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import faLeftArrow from '@fortawesome/fontawesome-free-solid/faLongArrowAltLeft';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faLongArrowAltLeft as faLeftArrow }from '@fortawesome/free-solid-svg-icons';
 
 
 class MergeRequestPresent extends Component {
