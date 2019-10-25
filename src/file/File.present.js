@@ -32,7 +32,7 @@ import faGitlab from '@fortawesome/fontawesome-free-brands/faGitlab';
 
 import { FilePreview } from './index';
 import { CheckNotebookStatus, CheckNotebookIcon } from '../notebooks'
-import { Loader } from '../utils/UIComponents';
+import { Clipboard, Loader } from '../utils/UIComponents';
 import { Time } from '../utils/Time';
 
 const commitMessageLengthLimit = 120;
@@ -79,6 +79,9 @@ class FileCard extends React.Component {
       <CardHeader className="align-items-baseline">
         {this.props.lfsBadge}
         {this.props.filePath}
+        &nbsp;
+        <Clipboard clipboardText={this.props.filePath} />
+        &nbsp;
         <span className="caption align-baseline">&nbsp;File view</span>
         <div className="float-right">
           {this.props.buttonJupyter}
