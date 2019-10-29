@@ -231,17 +231,22 @@ class NotebooksCoordinator {
     return this.client.getNotebookServerLogs(serverName).then((data) => {
       const lines = data.split("\n");
       this.model.setObject({
-        logs: { fetched: new Date(), fetching: false }
+        logs: {
+          fetched: new Date(),
+          fetching: false,
+          data: { $set: lines }
+        }
       });
-      this.model.set('logs.data', lines)
-
       return data;
     }).catch((e) => {
       const response = ["Logs currently not available. Try again in a minute..."];
       this.model.setObject({
-        logs: { fetched: new Date(), fetching: false }
+        logs: {
+          fetched: new Date(),
+          fetching: false,
+          data: { $set: response }
+        }
       });
-      this.model.set('logs.data', response)
       return response;
     });
   }
@@ -286,9 +291,8 @@ class NotebooksCoordinator {
     pipelinesState.fetched = new Date();
     if (pipelines.length === 0) {
       pipelinesState.lastMainId = null;
-      pipelinesState.main = mainPipeline;
+      pipelinesState.main = { $set: mainPipeline };
       this.model.setObject({ pipelines: pipelinesState });
-      this.model.set('pipelines.main', {}); // reset pipelines.main attributes
       return mainPipeline;
     }
 
