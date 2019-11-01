@@ -272,14 +272,18 @@ class ProjectModel extends StateModel {
       .then(data => {
         // split away autosaved branches and add external url
         const { standard, autosaved } = splitAutosavedBranches(data);
-        this.set('system.branches', standard);
         const externalUrl = this.get('core.external_url');
         const autosavedUrl = autosaved.map(branch => {
           const url = `${externalUrl}/tree/${branch.name}`;
           branch.autosave.url = url;
           return branch;
         });
-        this.set('system.autosaved', autosavedUrl);
+        this.setObject({
+          system: {
+            branches: { $set: standard },
+            autosaved: { $set: autosavedUrl }
+          }
+        });
 
         return standard;
       })
