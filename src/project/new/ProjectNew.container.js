@@ -107,9 +107,7 @@ class New extends Component {
   }
 
   onSubmit() {
-    if (this.newProject.get('display.errors')) {
-      this.newProject.set('display.errors', []);
-    }
+    this.resetError();
     const validation = this.validate();
     if (validation.result) {
       this.newProject.set('display.loading', true);
@@ -124,16 +122,24 @@ class New extends Component {
           if (error.errorData && error.errorData.message) {
             const all_messages = error.errorData.message;
             const messages = Object.keys(all_messages)
-              .filter(mex => all_messages[mex].length)
               .reduce((obj, mex) => { obj[mex] = all_messages[mex]; return obj; }, {});
 
             // the most common error is the duplicate name, we can rewrite it for readability
             if (Object.keys(messages).includes("name") && /already.+taken/.test(messages["name"].join("; "))) {
               display_messages = [`title: ${messages["name"].join("; ")}`];
             }
+            else if (Object.keys(messages).includes("namespace") &&
+                /is not valid/.test(messages["namespace"].join("; ")) &&
+                Object.keys(messages).includes("limit_reached")) {
+              display_messages = ["You have reached your project limit in the target namespace"]
+            }
             else {
-              display_messages = Object.keys(messages)
-                .map(mex => `${mex}: ${messages[mex].join("; ")}`);
+              display_messages = Object.keys(messages).map(mex => {
+                const text = messages[mex] && messages[mex].length ?
+                  `: ${messages[mex].join("; ")}` :
+                  "";
+                return `${mex}${text}`;
+              });
             }
           }
           else {
@@ -153,30 +159,45 @@ class New extends Component {
     return validation;
   }
 
+  resetError() {
+    const errors = this.newProject.get('display.errors');
+    if (errors && errors.length) {
+      this.newProject.set('display.errors', []);
+    }
+  }
+
   onTitleChange(e) {
     this.newProject.set('display.title', e.target.value);
     this.newProject.set('display.slug', slugFromTitle(e.target.value));
+    this.resetError();
   }
 
-  onDescriptionChange(e) { this.newProject.set('display.description', e.target.value); }
+  onDescriptionChange(e) {
+    this.newProject.set('display.description', e.target.value);
+    this.resetError();
+  }
 
   onVisibilityChange(e) {
     this.newProject.set('meta.visibility', e.target.value);
     if (e.target.value !== "private") {
       this.newProject.set('meta.optoutKg', false);
     }
+    this.resetError();
   }
 
   onTemplateChange(e) {
     this.newProject.set('meta.template', e.target.value);
+    this.resetError();
   }
 
   onOptoutKgChange(e) {
     this.newProject.set('meta.optoutKg', e.target.checked);
+    this.resetError();
   }
 
   onProjectNamespaceChange(value) {
     this.newProject.set('meta.projectNamespace', value);
+    this.resetError();
   }
 
   onProjectNamespaceAccept() {
@@ -197,6 +218,7 @@ class New extends Component {
       }
       this.setState({ namespaceGroup: group, visibilities });
     })
+    this.resetError();
   }
 
   doMapStateToProps(state, ownProps) {
