@@ -271,3 +271,112 @@ describe('update connected redux store', () => {
       <TestReduxStateComponent/>, div);
   });
 });
+
+describe('update redux store using immutability-helper commands', () => {
+  const schema = new Schema({ complex: { schema: complexSchema }, array: { schema: arraySchema } });
+  let model = new StateModel(schema, StateKind.REDUX);
+
+  // test object updates
+  let referenceObject = { ...simpleObject };
+  let updateObject;
+
+  it('check compelx object', () => {
+    expect(model.get('complex.basics')).toEqual(referenceObject);
+  });
+
+  it('reset existing object without $set', () => {
+    updateObject = { complex: { basics: {} } };
+    // ? this doesn't overwrite the final object
+    model.setObject(updateObject);
+    expect(model.get('complex.basics')).toEqual(referenceObject);
+  });
+
+  it('update existing object without $set', () => {
+    referenceObject.name = 'Max Mustermann';
+    updateObject = { complex: { basics: { name: 'Max Mustermann' } } };
+    // ? this updates the name property without touching anything else
+    model.setObject(updateObject);
+    expect(model.get('complex.basics')).toEqual(referenceObject);
+  });
+
+  it('update existing object with $set', () => {
+    referenceObject = { name: 'Max Mustermann' };
+    updateObject = { complex: { basics: { $set: { name: 'Max Mustermann' } } } };
+    // ? this replace the `basics` object entirely
+    model.setObject(updateObject);
+    expect(model.get('complex.basics')).toEqual(referenceObject);
+  });
+
+  it('reset existing object with $set', () => {
+    referenceObject = {};
+    updateObject = { complex: { basics: { $set: {} } } };
+    // ? this can be used also to reset an object
+    model.setObject(updateObject);
+    expect(model.get('complex.basics')).toEqual(referenceObject);
+  });
+
+  // test array updates
+  let referenceArray = [...arrayObject.manyLetters];
+  let updateArray;
+
+  it('check array object', () => {
+    expect(model.get('array.manyLetters')).toEqual(referenceArray);
+  });
+
+  it('reset existing array without $set', () => {
+    updateArray = { array: { manyLetters: [] } };
+    // ? this doesn't overwrite the final array
+    model.setObject(updateArray);
+    expect(model.get('array.manyLetters')).toEqual(referenceArray);
+  });
+
+  it('update existing array without $set', () => {
+    referenceArray[0] = 'd';
+    updateArray = { array: { manyLetters: ['d'] } };
+    // ? this updates only the first array element without touching anything else
+    model.setObject(updateArray);
+    expect(model.get('array.manyLetters')).toEqual(referenceArray);
+  });
+
+  it('update existing array with $set', () => {
+    referenceArray = ['d'];
+    updateArray = { array: { manyLetters: { $set: ['d'] } } };
+    // ? this replace the `manyLetters` array entirely
+    model.setObject(updateArray);
+    expect(model.get('array.manyLetters')).toEqual(referenceArray);
+  });
+
+  it('reset existing array with $set', () => {
+    referenceArray = [];
+    updateArray = { array: { manyLetters: { $set: [] } } };
+    // ? this can be used also to reset an array
+    model.setObject(updateArray);
+    expect(model.get('array.manyLetters')).toEqual(referenceArray);
+  });
+
+  // multiple updates example
+  it('combine multiple objects and arrays updates with and without $set', () => {
+    model = new StateModel(schema, StateKind.REDUX);
+    referenceObject = model.get();
+    referenceObject.array.manyLetters = ['d'];
+    referenceObject.complex.basics = { name: 'Max Mustermann' };
+    referenceObject.complex.subthing.height = 200;
+    referenceObject.complex.createdAt = 'before';
+    // ? this mixes adding attributes to objects, resetting them, changing plain attributes
+    model.setObject({
+      array: {
+        manyLetters: { $set: ['d'] }
+      },
+      complex: {
+        basics: {
+          $set: { name: 'Max Mustermann' }
+        },
+        subthing: {
+          height: 200
+        },
+        createdAt: 'before'
+      }
+    });
+    expect(model.get()).toEqual(referenceObject);
+  });
+});

@@ -459,8 +459,6 @@ function nestedPropertyAccess(propAccessorString, obj) {
   return leaf;
 }
 
-window["callImmutableUpdate"] = immutableUpdate;
-
 // A redux reducer that will handle immutability-helper
 // updates.
 function modelUpdateReducer(state, action) {
