@@ -60,4 +60,4 @@ welcomePage:
 
 templatesRepository:
   url: https://github.com/SwissDataScienceCenter/renku-project-template
-  ref: 0.1.2
+  ref: 0.1.3
