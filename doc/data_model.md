@@ -68,7 +68,7 @@ These are GitLab projects. https://docs.gitlab.com/ce/api/projects.html
 - forks_count
 - star_count
 - tags
-- kus
+- issues
 - repository_content (these are computed values based on the content in the repo)
   - datasets
   - notebooks
@@ -76,7 +76,7 @@ These are GitLab projects. https://docs.gitlab.com/ce/api/projects.html
   - sources
   - libraries
 
-## Ku
+## Issue
 
 These are GitLab issues. https://docs.gitlab.com/ce/api/issues.html
 
@@ -94,7 +94,7 @@ These are GitLab issues. https://docs.gitlab.com/ce/api/issues.html
 
 These are GitLab Notes. https://docs.gitlab.com/ce/api/notes.html
 
-- ku_id (noteable_id in GitLab)
-- ku_iid (noteable_iid in GitLab)
+- issue_id (noteable_id in GitLab)
+- issue_iid (noteable_iid in GitLab)
 - metadata (see above)
 - body

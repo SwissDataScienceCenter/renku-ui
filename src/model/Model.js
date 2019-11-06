@@ -422,11 +422,14 @@ function updateObjectFromObject(obj, currentObject){
     if (obj[prop] instanceof Object && currentObject[prop]) {
       updateObj[prop] = updateObjectFromObject(obj[prop], currentObject[prop])
     }
+    else if (prop[0] === "$" && prop.length && prop.length > 1) {
+      updateObj[prop] = obj[prop];
+    }
     else {
-      updateObj[prop] = {$set: obj[prop]}
+      updateObj[prop] = { $set: obj[prop] };
     }
   });
-  return updateObj
+  return updateObj;
 }
 
 // Create a mongodb-style update object from a plain

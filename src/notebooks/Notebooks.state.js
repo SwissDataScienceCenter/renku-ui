@@ -93,8 +93,8 @@ class NotebooksCoordinator {
       filters: {
         namespace: null,
         project: null,
-        branch: { name: null }, // TODO: remove sub-property when "force" parameter will be available for setObject
-        commit: { id: null }
+        branch: { $set: {} },
+        commit: { $set: {} }
       },
       pipelines: {
         fetched: null,
@@ -129,14 +129,18 @@ class NotebooksCoordinator {
   }
 
   setBranch(branch) {
-    this.model.set('notebooks.fetched', null);
-    this.model.set('filters.branch', branch);
+    this.model.setObject({
+      notebooks: { fetched: null },
+      filters: { branch: { $set: branch } }
+    });
     this.fetchNotebooks();
   }
 
   setCommit(commit) {
-    this.model.set('notebooks.fetched', null);
-    this.model.set('filters.commit', commit);
+    this.model.setObject({
+      notebooks: { fetched: null },
+      filters: { commit: { $set: commit } }
+    });
     this.fetchNotebooks();
   }
 
@@ -187,7 +191,7 @@ class NotebooksCoordinator {
           const filters = this.getQueryFilters();
           if (this.model.get('notebooks.lastParameters') === JSON.stringify(filters)) {
             updatedNotebooks.fetched = new Date();
-            this.model.set('notebooks.all', resp.data);
+            updatedNotebooks.all = { $set: resp.data };
           }
           // TODO: re-invoke `fetchNotebooks()` immediatly if parameters are outdated
         }
@@ -223,7 +227,7 @@ class NotebooksCoordinator {
     let logs = { fetching: true };
     if (this.model.get('logs.reference') !== serverName) {
       logs.reference = serverName;
-      logs.data = [];
+      logs.data = { $set: [] };
       logs.fetched = null;
     }
     this.model.setObject({ logs });
@@ -231,17 +235,22 @@ class NotebooksCoordinator {
     return this.client.getNotebookServerLogs(serverName).then((data) => {
       const lines = data.split("\n");
       this.model.setObject({
-        logs: { fetched: new Date(), fetching: false }
+        logs: {
+          fetched: new Date(),
+          fetching: false,
+          data: { $set: lines }
+        }
       });
-      this.model.set('logs.data', lines)
-
       return data;
     }).catch((e) => {
       const response = ["Logs currently not available. Try again in a minute..."];
       this.model.setObject({
-        logs: { fetched: new Date(), fetching: false }
+        logs: {
+          fetched: new Date(),
+          fetching: false,
+          data: { $set: response }
+        }
       });
-      this.model.set('logs.data', response)
       return response;
     });
   }
@@ -286,9 +295,8 @@ class NotebooksCoordinator {
     pipelinesState.fetched = new Date();
     if (pipelines.length === 0) {
       pipelinesState.lastMainId = null;
-      pipelinesState.main = mainPipeline;
+      pipelinesState.main = { $set: mainPipeline };
       this.model.setObject({ pipelines: pipelinesState });
-      this.model.set('pipelines.main', {}); // reset pipelines.main attributes
       return mainPipeline;
     }
 
@@ -426,7 +434,7 @@ class NotebooksCoordinator {
           data: {
             fetching: false,
             fetched: new Date(),
-            commits: resp.data
+            commits: { $set: resp.data }
           }
         })
         return resp.data;

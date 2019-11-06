@@ -85,18 +85,19 @@ class Fork extends Component {
         let display_messages = [];
         if (error.errorData && error.errorData.message) {
           const all_messages = error.errorData.message;
-          const messages = Object.keys(all_messages)
-            .filter(mex => all_messages[mex].length)
-            .reduce((obj, mex) => { obj[mex] = all_messages[mex]; return obj; }, {});
-
-          // the most common error is the duplicate name, we can rewrite it for readability
-          if (Object.keys(messages).includes("name") && /already.+taken/.test(messages["name"].join("; "))) {
-            display_messages = [`title: ${messages["name"].join("; ")}`];
+          if (all_messages instanceof Object) {
+            const messages = Object.keys(all_messages)
+              .reduce((obj, mex) => { obj[mex] = all_messages[mex]; return obj; }, {});
+            // the most common error is the duplicate name, we can rewrite it for readability
+            if (Object.keys(messages).includes("name") && /already.+taken/.test(messages["name"].join("; "))) {
+              display_messages = [`title: ${messages["name"].join("; ")}`];
+            }
+            else {
+              display_messages = Object.keys(messages).map(mex => `${mex}: ${messages[mex].join("; ")}`);
+            }
           }
           else {
-            console.log(messages)
-            display_messages = Object.keys(messages)
-              .map(mex => `${mex}: ${messages[mex].join("; ")}`);
+            display_messages = [all_messages];
           }
         }
         else {
