@@ -29,7 +29,7 @@ import FontAwesomeIcon from '@fortawesome/react-fontawesome'
 
 
 class DatasetListRow extends Component {
-  
+
   HTMLtoText = (textContent) =>{
     var temp = document.createElement("div");
     temp.innerHTML = textContent;
@@ -39,28 +39,28 @@ class DatasetListRow extends Component {
   render() {
     const datasetsUrl = this.props.datasetsUrl;
     const dataset = this.props.dataset;
-    const projectsCountLabel= dataset.projectsCount > 1 
+    const projectsCountLabel= dataset.projectsCount > 1
       ? `In ${dataset.projectsCount} projects`
       : `In ${dataset.projectsCount} project`;
     return <Card style={{ marginBottom: '1rem'}} key={dataset.identifier}>
       <CardBody>
         <div className="float-right">
           <Badge color="success" className="font-weight-light">{projectsCountLabel}</Badge>
-        </div> 
+        </div>
         <Link to={`${datasetsUrl}/${encodeURIComponent(dataset.identifier)}`}>
           {dataset.name || 'no title'}
         </Link>
         {
-          dataset.published !== undefined &&  dataset.published.creator !== undefined?  
+          dataset.published !== undefined &&  dataset.published.creator !== undefined?
             <small style={{ display: 'block'}} className="font-weight-light">
               { dataset.published.creator.map((creator) => creator.name).join("; ") }
             </small>
-            : null  
-        } 
+            : null
+        }
         {
-          dataset.description !== undefined && dataset.description !== null? 
+          dataset.description !== undefined && dataset.description !== null?
             <p className="datasetDescriptionText font-weight-normal">
-              {dataset.description.length > 500 ? 
+              {dataset.description.length > 500 ?
                 this.HTMLtoText(dataset.description).substr(0,500)+"...":
                 this.HTMLtoText(dataset.description)
               }
@@ -83,11 +83,11 @@ class DatasetSearchForm extends Component {
   render() {
     return [<Form key="form" onSubmit={this.props.handlers.onSearchSubmit} style={{display:'flex'}}>
       <InputGroup>
-        <Input type="text" 
-          name="searchQuery" 
-          id="searchQuery" 
+        <Input type="text"
+          name="searchQuery"
+          id="searchQuery"
           value={decodeURIComponent(this.props.searchQuery) || ''}
-          onChange={this.props.handlers.onSearchQueryChange} 
+          onChange={this.props.handlers.onSearchQueryChange}
           className="border-primary"/>
         <Label for="searchQuery" hidden>Query</Label>
         <InputGroupButtonDropdown addonType="append" toggle={this.props.handlers.onOrderByDropdownToogle} isOpen={this.props.orderByDropdownOpen} >
@@ -121,11 +121,20 @@ class DatasetSearchForm extends Component {
       <Card>
         <CardBody>
           <small>
-          - Try adding * at the end of your word: ren* will match any word starting with ren.<br/>
-          - Try adding * inside your word: ren*u will match any word that starts with ren and ends with u.<br/>
-          - Try wrapping your phrase with " ". This will match a specific phrase.<br />
-          - Try wrapping your phrase with " " and adding ~n at the end. This will match by proximity (i.e "renku"~4 will return words that are within 4 words of difference from renku).<br/>
-          - Try adding ? to replace a character inside your word: ren?u will match any word that starts with ren has any character and ends with u.<br/>
+            <p>
+              A wildcard can be used to broaden your search: '*' for any number of characters or '?' for one character.
+              Quotation marks can be used to make your search more specific. <br/>
+            </p>
+            Examples:<br />
+          - "ren*" will match any word starting with "ren", like <i>renku</i> and <i>renga</i><br/>
+          - "*ku" will match any word that ends with "ku", like <i>renku</i> and <i>haiku</i><br/>
+          - "re*ku" will match any word that ends with "re" and ends with "ku",
+            like <i>renku</i> and <i>relotsofstuffku</i><br/>
+          - "re?ku" will match any five-letter word that starts with re and ends with u.,
+            like <i>renku</i> and <i>renzu</i><br/>
+          - "reku~2" will perform a fuzzy search and match any word with up to 2 changes to the string "reku",
+            like <i>renku</i> and <i>akku</i><br/>
+          - Quotation marks around a phrase will match a specific phrase, like "renku reproducibility".<br />
           </small>
         </CardBody>
       </Card>
@@ -138,8 +147,8 @@ class DatasetsRows extends Component{
   render(){
     if(this.props.loading) return <Col md={{size: 2,  offset: 3}}><Loader /></Col>
     const datasets = this.props.datasets || [];
-    const rows = datasets.map( (p) => <DatasetListRow key={p.identifier} 
-      datasetsUrl={this.props.urlMap.datasetsUrl} 
+    const rows = datasets.map( (p) => <DatasetListRow key={p.identifier}
+      datasetsUrl={this.props.urlMap.datasetsUrl}
       dataset={p} />);
     return <Col bg={6} md={8} sm={12}>{rows}</Col>;
   }
@@ -157,13 +166,13 @@ class DatasetsSearch extends Component {
           <span></span>
       }
       <Col md={8}>
-        <DatasetSearchForm 
-          searchQuery={this.props.searchQuery} 
+        <DatasetSearchForm
+          searchQuery={this.props.searchQuery}
           handlers={this.props.handlers}
           errorMessage={this.props.errorMessage}
           orderByValuesMap={this.props.orderByValuesMap}
-          orderBy={this.props.orderBy}  
-          orderByDropdownOpen={this.props.orderByDropdownOpen} 
+          orderBy={this.props.orderBy}
+          orderByDropdownOpen={this.props.orderByDropdownOpen}
           orderSearchAsc={this.props.orderSearchAsc}
           orderByLabel={this.props.orderByLabel}
         />
@@ -171,7 +180,7 @@ class DatasetsSearch extends Component {
     </Row>,
     <Row key="spacer2"><Col md={8}>&nbsp;</Col></Row>,
     <Row key="datasets">
-      <DatasetsRows 
+      <DatasetsRows
         datasets={this.props.datasets}
         urlMap={this.props.urlMap}
         loading={loading}
