@@ -24,13 +24,16 @@
  *  Utility UI components for the application.
  */
 
+import _ from 'lodash/util';
+
 import React, { Component, useState } from 'react';
 import { Provider, connect } from 'react-redux';
 
-import { NavLink as RRNavLink }  from 'react-router-dom'
+import { Link, NavLink as RRNavLink }  from 'react-router-dom'
 
 import { NavLink } from 'reactstrap';
 import { FormFeedback, FormGroup, FormText, Input, Label, Alert } from 'reactstrap';
+import { UncontrolledTooltip } from 'reactstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-regular-svg-icons';
@@ -470,6 +473,31 @@ function Clipboard(props) {
   )
 }
 
+function IconLink(props) {
+  // eslint-disable-next-line no-unused-vars
+  const [uniqueId, setUniqueId] = useState(`iconlink-${_.uniqueId()}`);
+  return <span>
+    <UncontrolledTooltip trigger="hover" placement="top" target={uniqueId}>
+      {props.tooltip}
+    </UncontrolledTooltip>
+    <Link to={props.to} id={uniqueId} >
+      <FontAwesomeIcon className="icon-link" icon={props.icon} />
+    </Link>
+  </span>
+}
+
+function ExternalIconLink(props) {
+  const uniqueId = `iconlink-${_.uniqueId()}`;
+  return <span>
+    <UncontrolledTooltip trigger="hover" placement="top" target={uniqueId}>
+      {props.tooltip}
+    </UncontrolledTooltip>
+    <a href={props.to} role="button" target="_blank" rel="noreferrer noopener">
+      <FontAwesomeIcon className="icon-link" icon={props.icon} id={uniqueId} />
+    </a>
+  </span>
+}
+
 export { Avatar, TimeCaption, FieldGroup, RenkuNavLink, UserAvatar, Pagination, RenkuMarkdown };
 export { ExternalLink, Loader, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, JupyterIcon };
-export { Clipboard };
+export { Clipboard, ExternalIconLink, IconLink };
