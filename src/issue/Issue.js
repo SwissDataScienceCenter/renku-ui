@@ -35,7 +35,7 @@ import { Badge , ListGroup, ListGroupItem } from 'reactstrap'
 
 import {createStore} from '../utils/EnhancedState'
 import State from './Issue.state'
-import { Avatar, FieldGroup, TimeCaption, RenkuMarkdown } from '../utils/UIComponents'
+import { Avatar, ExternalIconLink, FieldGroup, TimeCaption, RenkuMarkdown } from '../utils/UIComponents'
 import { Contribution, NewContribution } from '../contribution'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { UncontrolledTooltip, Card, CardHeader, CardBody } from 'reactstrap';
@@ -174,14 +174,7 @@ class IssueViewHeader extends Component {
     const externalIssueUrl = `${externalUrl}/issues/${this.props.iid}`;
     const time = this.props.updated_at;
 
-    const buttonGit = <span id="tooltipGitView">
-      <UncontrolledTooltip placement="top" target="tooltipGitView">
-        Open in GitLab
-      </UncontrolledTooltip>
-      <a href={`${externalIssueUrl}`} role="button" target="_blank" rel="noreferrer noopener">
-        <FontAwesomeIcon className="icon-link" icon={faGitlab} />
-      </a>
-    </span>
+    const buttonGit = <ExternalIconLink tooltip="Open in GitLab" icon={faGitlab} to={externalIssueUrl} />
 
     const actionButton = <span id="tootltipActionView" onClick={this.props.onIssueStateChange}>
       <UncontrolledTooltip placement="top" target="tootltipActionView">

@@ -17,22 +17,20 @@
  */
 
 import React from 'react';
-import { Link }  from 'react-router-dom';
 import NotebookPreview from '@nteract/notebook-render';
 
 // Do not import the style because this does not work after webpack bundles things for production mode.
 // Instead define the style below
 //import './notebook.css'
-import { UncontrolledTooltip, Card, CardHeader, CardBody, Badge } from 'reactstrap';
+import { Card, CardHeader, CardBody, Badge } from 'reactstrap';
 import { ListGroup, ListGroupItem } from 'reactstrap';
 import '../../node_modules/highlight.js/styles/atom-one-light.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faProjectDiagram } from '@fortawesome/free-solid-svg-icons';
 import { faGitlab } from '@fortawesome/free-brands-svg-icons';
 
 import { FilePreview } from './index';
 import { CheckNotebookStatus, CheckNotebookIcon } from '../notebooks'
-import { Clipboard, Loader } from '../utils/UIComponents';
+import { Clipboard, ExternalIconLink, IconLink, Loader } from '../utils/UIComponents';
 import { Time } from '../utils/Time';
 
 const commitMessageLengthLimit = 120;
@@ -112,26 +110,11 @@ class ShowFile extends React.Component {
   render() {
     const gitLabFilePath = this.props.gitLabFilePath;
     const buttonGraph = this.props.lineagesPath !== undefined ?
-      <span>
-        <UncontrolledTooltip placement="top" target="tooltipGraphView">
-          Graph View
-        </UncontrolledTooltip>
-        <Link to={this.props.lineagesPath + '/' + gitLabFilePath} id="tooltipGraphView">
-          <FontAwesomeIcon className="icon-link" icon={faProjectDiagram} id="TooltipFileView"/>
-        </Link>
-      </span>
-
+      <IconLink tooltip="Graph View" icon={faProjectDiagram} to={`${this.props.lineagesPath}/${gitLabFilePath}`} />
       : null;
 
-    const buttonGit = <span>
-      <UncontrolledTooltip placement="top" target="tooltipGitView">
-          Open in GitLab
-      </UncontrolledTooltip>
-      <a id="tooltipGitView" href={`${this.props.externalUrl}/blob/master/${gitLabFilePath}`}
-        role="button" target="_blank" rel="noreferrer noopener">
-        <FontAwesomeIcon className="icon-link" icon={faGitlab} />
-      </a>
-    </span>
+    const buttonGit = <ExternalIconLink
+      tooltip="Open in GitLab" icon={faGitlab} to={`${this.props.externalUrl}/blob/master/${gitLabFilePath}`} />;
 
     if (this.props.error !== null) {
       return <FileCard gitLabUrl={this.props.externalUrl}

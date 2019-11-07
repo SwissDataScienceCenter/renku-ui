@@ -22,18 +22,19 @@ import graphlib from 'graphlib';
 import dagreD3 from 'dagre-d3';
 import * as d3 from 'd3';
 
-import { Link }  from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faFile } from '@fortawesome/free-solid-svg-icons';
 import { faGitlab } from '@fortawesome/free-brands-svg-icons';
-import { Card, CardHeader, CardBody, UncontrolledTooltip, Badge } from 'reactstrap';
+
+import { Card, CardHeader, CardBody, Badge } from 'reactstrap';
+
 import KnowledgeGraphStatus  from './KnowledgeGraphStatus.container';
 import { GraphIndexingStatus } from '../project/Project';
 import { JupyterButton } from './index';
+import { ExternalIconLink, IconLink } from '../utils/UIComponents';
 
 import './Lineage.css';
 
-function cropLabelStart(limit, label){
+function cropLabelStart(limit, label) {
   if(label.length > limit)
     return "..."+label.substr(label.length-limit)
   return label;
@@ -236,24 +237,10 @@ class FileLineage extends Component {
       <Badge className="lfs-badge" color="light">LFS</Badge> : null;
 
     let buttonFile = this.props.filePath !== undefined ?
-      <span>
-        <UncontrolledTooltip placement="top" target="TooltipFileView">
-          File View
-        </UncontrolledTooltip>
-        <Link to={this.props.filePath} id="TooltipFileView">
-          <FontAwesomeIcon className="icon-link" icon={faFile} id="TooltipFileView"/>
-        </Link>
-      </span>
-      : null;
+      <IconLink tooltip="File View" icon={faFile} to={this.props.filePath} /> :
+      null;
 
-    let buttonGit =
-    <span>
-      <UncontrolledTooltip placement="top" target="TooltipGitlabView">
-          Open in GitLab
-      </UncontrolledTooltip>
-      <a href={externalFileUrl} role="button" target="_blank" id="TooltipGitlabView"
-        rel="noreferrer noopener"><FontAwesomeIcon className="icon-link" icon={faGitlab} /></a>
-    </span>
+    let buttonGit = <ExternalIconLink tooltip="Open in GitLab" icon={faGitlab} to={externalFileUrl} />
 
     let buttonJupyter = null;
     if (this.props.filePath.endsWith(".ipynb"))
