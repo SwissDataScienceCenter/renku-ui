@@ -141,7 +141,7 @@ export default function DatasetView(props){
           }).catch(error => {
             if(fetchError === null){
               if (!unmounted && error.case === API_ERRORS.notFoundError){
-                setFetchError("Error 404: The dataset that was selected doesn't exist or coudln't be accessed.");}
+                setFetchError("Error 404: The dataset that was selected doesn't exist or couldn't be accessed.");}
               else if(!unmounted && error.case === API_ERRORS.internalServerError){
                 setFetchError("Error 500: The dataset that was selected couldn't be fetched.");}
             }
