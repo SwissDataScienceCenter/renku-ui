@@ -537,8 +537,8 @@ function getPayload(projectName, renkuTemplatesUrl, renkuTemplatesRef, projectTe
     const now = new Date();
     const templatedVariables = {
       'name': projectName,
-      'date-updated': now.toISOString(),
-      'date-created': now.toISOString(),
+      'date_updated': now.toISOString(),
+      'date_created': now.toISOString(),
     };
 
     const newContent = content.replace(/{{\s?([^\s]*)\s?}}/g, (match, group) => {
