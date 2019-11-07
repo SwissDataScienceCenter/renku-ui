@@ -168,6 +168,7 @@ class AnonymousNavBar extends Component {
 
             <ul className="navbar-nav mr-auto">
               <RenkuNavLink to="/projects" title="Projects"/>
+              <RenkuNavLink to="/datasets" title="Datasets"/>
             </ul>
             <ul className="navbar-nav">
               <RenkuToolbarItemUser {...this.props } user={this.props.userState.getState().user} />
