@@ -118,6 +118,7 @@ class LoggedInNavBar extends Component {
 
             <ul className="navbar-nav mr-auto">
               <RenkuNavLink to="/projects" title="Projects"/>
+              <RenkuNavLink to="/datasets" title="Datasets"/>
               <RenkuNavLink to="/environments" title="Environments"/>
             </ul>
             <ul className="navbar-nav">

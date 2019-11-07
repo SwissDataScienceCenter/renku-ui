@@ -1,0 +1,189 @@
+/*!
+ * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
+ * Eidgenössische Technische Hochschule Zürich (ETHZ).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import React, { Component } from 'react';
+import { connect } from 'react-redux'
+import DatasetList from './DatasetList.present'
+import DatasetListModel from './DatasetList.state'
+import qs from 'query-string';
+
+const urlMap = {
+  datasetsUrl: '/datasets',
+}
+
+const orderByValuesMap = {
+  NAME: 'name',
+  DATE_PUBLISHED: 'datePublished',
+  PROJECTSCOUNT: 'projectsCount'
+};
+
+class List extends Component {
+  constructor(props) {
+    super(props);
+    this.model = new DatasetListModel(props.client);
+    this.handlers = {
+      onSearchQueryChange: this.onSearchQueryChange.bind(this),
+      onSearchSubmit: this.onSearchSubmit.bind(this),
+      onOrderByDropdownToogle: this.onOrderByDropdownToogle.bind(this),
+      changeSearchDropdownOrder: this.changeSearchDropdownOrder.bind(this),
+      toogleSearchSorting: this.toogleSearchSorting.bind(this)
+    };
+  }
+
+  componentDidMount() {
+    const {query, orderBy, orderSearchAsc, pathName} = this.getUrlSearchParameters(this.props.location);
+    let queryproc = query;
+    if(queryproc === undefined){
+      this.model.setInitialized(true);
+    } else {
+      this.model.setQuery(query);
+    }
+    this.model.setOrderBy(orderBy);
+    this.model.setOrderSearchAsc(orderSearchAsc);
+    this.model.setOrderDropdownOpen(false);
+    this.model.setLoggedIn(this.props.user.id ? true : false);
+    this.model.setPathName(pathName);
+    this.model.performSearch();
+    const listener = this.props.history.listen(location => {
+      const {query, orderBy, orderSearchAsc, pathName} = this.getUrlSearchParameters(location);
+      let queryproc = query;
+      if(queryproc === undefined){
+        this.model.setInitialized(true);
+        queryproc= '';
+      }
+      this.onUrlParametersChange(queryproc, orderBy, orderSearchAsc, pathName);
+    });
+    this.setState({listener});
+  }
+
+  urlFromQueryAndPageNumber(query, orderBy, orderSearchAsc, pathName ) {
+    return `${pathName}?q=${query}&orderBy=${orderBy}&orderSearchAsc=${orderSearchAsc}`;
+  } 
+
+  getUrlSearchParameters(location) {
+    const query = qs.parse(location.search).q || '';
+    const orderBy = qs.parse(location.search).orderBy || orderByValuesMap.PROJECTSCOUNT;
+    const orderSearchAsc = qs.parse(location.search).orderSearchAsc === "true" ? true : false;
+    const pathName = location.pathname.endsWith('/') ?
+      location.pathname.substring(0,location.pathname.length-1) :
+      location.pathname;
+    return {query, orderBy, orderSearchAsc, pathName};
+  }
+
+  componentWillUnmount() {
+    const { listener } = this.state;
+    if (listener) {
+      listener();
+    }
+  }
+
+  // urlFromQueryAndPageNumber(query) {
+  //   const pathname = this.props.location.pathname;
+  //   const path = pathname.endsWith('/') ?
+  //     pathname.substring(0,pathname.length-1) :
+  //     pathname;
+  //   return `${path}?q=${query}`
+  // } 
+
+  onUrlParametersChange(query, orderBy, orderSearchAsc, pathName) {
+    // workaround to prevent the listener of "this.props.history.listen" to trigger in the wrong path
+    // INFO: check if the path matches [/datasets$, /datasets/$, /datasets?*, /datasets/\D*]
+    const regExp = /\/datasets($|\/$|(\/|\?)\D+.*)$/;
+    if (!regExp.test(pathName)) {
+      return;
+    }
+    this.model.setQueryAndSortInSearch(query, orderBy, orderSearchAsc, pathName)
+  }
+
+  pushNewSearchToHistory() {
+    this.props.history.push(
+      this.urlFromQueryAndPageNumber(
+        this.model.get('query'),
+        this.model.get('orderBy'),
+        this.model.get('orderSearchAsc'),
+        this.model.get('pathName')
+      )
+    )
+  }
+
+  onSearchQueryChange(e) {
+    this.model.setQuery(e.target.value);
+  }
+
+  onOrderByDropdownToogle() {
+    this.model.setOrderDropdownOpen(!this.model.get('orderByDropdownOpen'));
+  }
+
+  changeSearchDropdownOrder(e){
+    this.model.setOrderBy(e.target.value);
+    this.pushNewSearchToHistory();
+  }
+
+  toogleSearchSorting(){
+    this.model.setOrderSearchAsc(!this.model.get('orderSearchAsc'));
+    this.pushNewSearchToHistory();
+  }
+
+  getOrderByLabel(){
+    switch(this.model.get('orderBy')){
+    case orderByValuesMap.NAME:
+      return "name";
+    case orderByValuesMap.DATE_PUBLISHED:
+      return "date published";
+    case orderByValuesMap.PROJECTSCOUNT:
+      return "projects count";
+    default :
+      return ""
+    }
+  }
+
+  onSearchSubmit(e) {
+    e.preventDefault();
+    this.model.performSearch();
+    this.pushNewSearchToHistory();
+  }
+
+  mapStateToProps(ownProps) {
+    return {
+      user: ownProps.user,
+      searchQuery: this.model.get('query'),
+      loading: this.model.get('loading'),
+      datasets: this.model.get('datasets'),
+      orderBy: this.model.get('orderBy'),
+      orderByDropdownOpen: this.model.get('orderByDropdownOpen'),
+      orderSearchAsc: this.model.get('orderSearchAsc'),
+      errorMessage: this.model.get('errorMessage')
+    }
+  }
+
+  render() {
+    const VisibleDatasetList =
+      connect(this.mapStateToProps.bind(this))(DatasetList);
+
+    return <VisibleDatasetList
+      store={this.model.reduxStore}
+      user={this.props.user}
+      handlers={this.handlers}
+      orderByValuesMap={orderByValuesMap}
+      urlMap={urlMap}
+      orderByLabel={this.getOrderByLabel()}
+    />
+  }
+}
+
+export default List;
