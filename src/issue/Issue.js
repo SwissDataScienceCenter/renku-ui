@@ -35,10 +35,9 @@ import { Badge , ListGroup, ListGroupItem } from 'reactstrap'
 
 import {createStore} from '../utils/EnhancedState'
 import State from './Issue.state'
-import { Avatar, ExternalIconLink, FieldGroup, TimeCaption, RenkuMarkdown } from '../utils/UIComponents'
+import { Avatar, ExternalIconLink, FieldGroup, RenkuMarkdown, TimeCaption, TooltipToggleButton } from '../utils/UIComponents'
 import { Contribution, NewContribution } from '../contribution'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { UncontrolledTooltip, Card, CardHeader, CardBody } from 'reactstrap';
+import { Card, CardHeader, CardBody } from 'reactstrap';
 import { faGitlab } from '@fortawesome/free-brands-svg-icons';
 import { faBoxOpen, faBox, faCompress, faExpand } from '@fortawesome/free-solid-svg-icons';
 
@@ -176,27 +175,18 @@ class IssueViewHeader extends Component {
 
     const buttonGit = <ExternalIconLink tooltip="Open in GitLab" icon={faGitlab} to={externalIssueUrl} />
 
-    const actionButton = <span id="tootltipActionView" onClick={this.props.onIssueStateChange}>
-      <UncontrolledTooltip placement="top" target="tootltipActionView">
-        {buttonText} Issue
-      </UncontrolledTooltip>
-      {this.props.state === 'opened' ?
-        <FontAwesomeIcon  className="icon-link  text-success" icon={faBoxOpen}/>
-        :
-        <FontAwesomeIcon  className="icon-link  text-primary" icon={faBox}/>
-      }
-    </span>
+    const actionButton =
+      <TooltipToggleButton
+        onClick={this.props.onIssueStateChange} tooltip={`${buttonText} Issue`}
+        active={this.props.state === 'opened'}
+        activeIcon={faBoxOpen} inactiveIcon={faBox}
+        activeClass="text-success" inactiveClass="text-primary" />
 
-    const toogleViewSize = <span id="tootltipToogleViewSize" onClick={this.props.toogleIsuesListVisibility}>
-      <UncontrolledTooltip placement="top" target="tootltipToogleViewSize">
-        {screenSizeText }
-      </UncontrolledTooltip>
-      { this.props.issuesListVisible ?
-        <FontAwesomeIcon  className="icon-link" icon={faExpand}/>
-        :
-        <FontAwesomeIcon  className="icon-link" icon={faCompress}/>
-      }
-    </span>
+    const toogleViewSize =
+      <TooltipToggleButton
+        onClick={this.props.toogleIsuesListVisibility} tooltip={screenSizeText}
+        active={this.props.issuesListVisible}
+        activeIcon={faExpand} inactiveIcon={faCompress} />
 
     return <Row><Col key="image" md={1} sm={1} className="float-right text-center" style={{maxWidth:'62px'}}>
       <Avatar size="lg" person={this.props.author} />
