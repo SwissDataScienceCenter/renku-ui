@@ -37,7 +37,6 @@ function CktextareaInput({ name, label, type, value, alert, setInputs, help, out
 
   const switchLabel = (outputType === 'markdown') ? 'Markdown' : 'HTML';
 
-
   return <div>
     <FormGroup>
       <Label htmlFor={name}>{label}</Label>
