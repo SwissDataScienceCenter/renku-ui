@@ -34,7 +34,7 @@ import { faCheckCircle, faFileAlt, faSave, faTimesCircle } from '@fortawesome/fr
 import { StatusHelper } from '../model/Model';
 import { NotebooksHelper } from './index'
 import { simpleHash } from '../utils/HelperFunctions';
-import { Loader, InfoAlert, ExternalLink, JupyterIcon } from '../utils/UIComponents';
+import { Loader, InfoAlert, ExternalLink, JupyterIcon, ThrottledTooltip } from '../utils/UIComponents';
 import Time from '../utils/Time';
 import Sizes from '../utils/Media';
 
@@ -1186,7 +1186,7 @@ class CheckNotebookIcon extends Component {
     return (
       <React.Fragment>
         <span id="checkNotebookIcon">{link}</span>
-        <UncontrolledTooltip placement="top" target="checkNotebookIcon">{tooltip}</UncontrolledTooltip>
+        <ThrottledTooltip target="checkNotebookIcon" tooltip={tooltip} />
       </React.Fragment>
     );
   }

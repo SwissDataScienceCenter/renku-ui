@@ -33,7 +33,7 @@ import { Link, NavLink as RRNavLink }  from 'react-router-dom'
 
 import { NavLink } from 'reactstrap';
 import { FormFeedback, FormGroup, FormText, Input, Label, Alert } from 'reactstrap';
-import { UncontrolledTooltip } from 'reactstrap';
+import { Tooltip } from 'reactstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-regular-svg-icons';
@@ -456,7 +456,6 @@ class JupyterIcon extends Component {
  * A component that copies text to the clipboard
  * @param {string} [clipboardText] - Text to copy to the clipboard
  */
-
 function Clipboard(props) {
   const [copied, setCopied] = useState(false);
   const timeoutDur = 3000;
@@ -473,31 +472,103 @@ function Clipboard(props) {
   )
 }
 
+// Throttle toggling -- added to work around a bug that appears in Chrome only
+function throttledToggler(tooltipOpen, setTooltipOpen, lastToggleTime, setLastToggleTime) {
+  return () => {
+    const now = Date.now()
+    const sinceLast = now - lastToggleTime;
+    if (!tooltipOpen && sinceLast > 100) {
+      setLastToggleTime(now);
+      return setTooltipOpen(!tooltipOpen);
+    } else if (tooltipOpen) {
+      return setTooltipOpen(!tooltipOpen);
+    }
+  }
+}
+
+/**
+ * ThrottledTooltip
+ * Tooltip that limits how quickly open requests are processed
+ *
+ * @param {string} [target] - id of the element on which the tooltip should be shown
+ * @param {string} [tooltip] - the text of the tooltip
+ */
+function ThrottledTooltip(props) {
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+  const [lastToggleTime, setLastToggleTime] = useState(Date.now())
+
+  const toggle = throttledToggler(tooltipOpen, setTooltipOpen, lastToggleTime, setLastToggleTime);
+
+  return <Tooltip placement="top" target={props.target} isOpen={tooltipOpen} toggle={toggle} delay={{show: 25, hide: 250}}>
+      {props.tooltip}
+  </Tooltip>
+}
+
+/**
+ * IconLink
+ * Internal application link that is shown as a font-awesome icon
+ *
+ * @param {string} [to] - path of link
+ * @param {icon} [icon] - font-awesome icon to display
+ * @param {string} [tooltip] - the text of the tooltip
+ */
 function IconLink(props) {
   // eslint-disable-next-line no-unused-vars
-  const [uniqueId, setUniqueId] = useState(`iconlink-${_.uniqueId()}`);
+  const [uniqueId, setUniqueId] = useState(`icon-link-${_.uniqueId()}`);
+
   return <span>
-    <UncontrolledTooltip trigger="hover" placement="top" target={uniqueId}>
-      {props.tooltip}
-    </UncontrolledTooltip>
     <Link to={props.to} id={uniqueId} >
       <FontAwesomeIcon className="icon-link" icon={props.icon} />
     </Link>
+    <ThrottledTooltip target={uniqueId} tooltip={props.tooltip} />
   </span>
 }
 
+/**
+ * ExternalIconLink
+ * External application link that is shown as a font-awesome icon
+ *
+ * @param {string} [to] - url of link
+ * @param {icon} [icon] - font-awesome icon to display
+ * @param {string} [tooltip] - the text of the tooltip
+ */
 function ExternalIconLink(props) {
-  const uniqueId = `iconlink-${_.uniqueId()}`;
+  // eslint-disable-next-line no-unused-vars
+  const [uniqueId, setUniqueId] = useState(`external-icon-link-${_.uniqueId()}`);
+
   return <span>
-    <UncontrolledTooltip trigger="hover" placement="top" target={uniqueId}>
-      {props.tooltip}
-    </UncontrolledTooltip>
     <a href={props.to} role="button" target="_blank" rel="noreferrer noopener">
       <FontAwesomeIcon className="icon-link" icon={props.icon} id={uniqueId} />
     </a>
+    <ThrottledTooltip target={uniqueId} tooltip={props.tooltip} />
   </span>
+}
+
+/**
+ * TooltipToggleButton
+ * Toggle button that is displayed as a font-awesome icon
+ *
+ * @param {function} [onClick] - onClick handler
+ * @param {icon} [activeIcon] - font-awesome icon to display when active
+ * @param {string} [activeClass] - css class to apply to icon when when active
+ * @param {icon} [inactiveIcon] - font-awesome icon to display when inactive
+ * @param {string} [inactiveClass] - css class to apply to icon when when inactive
+ * @param {string} [tooltip] - the text of the tooltip
+ */
+function TooltipToggleButton(props) {
+  // eslint-disable-next-line no-unused-vars
+  const [uniqueId, setUniqueId] = useState(`tooltip-toggle-${_.uniqueId()}`);
+
+  return <span onClick={props.onClick}>
+      {props.active ?
+        <FontAwesomeIcon  id={uniqueId} className={`icon-link ${props.activeClass}`} icon={props.activeIcon}/>
+        :
+        <FontAwesomeIcon  id={uniqueId} className={`icon-link ${props.inactiveClass}`} icon={props.inactiveIcon}/>
+      }
+      <ThrottledTooltip target={uniqueId} tooltip={props.tooltip} />
+    </span>
 }
 
 export { Avatar, TimeCaption, FieldGroup, RenkuNavLink, UserAvatar, Pagination, RenkuMarkdown };
 export { ExternalLink, Loader, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, JupyterIcon };
-export { Clipboard, ExternalIconLink, IconLink };
+export { Clipboard, ExternalIconLink, IconLink, ThrottledTooltip, TooltipToggleButton };
