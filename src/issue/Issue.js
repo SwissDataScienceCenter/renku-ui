@@ -58,7 +58,6 @@ function New(props){
     props.history.push({pathname: issuesUrl});
   }
 
-
   const submitData = () => {
     let body = {}
     body.confidential = issueFormSchema.visibility.value === 'Restricted';
