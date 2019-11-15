@@ -517,10 +517,10 @@ class ProjectDatasetsNav extends Component {
     return <DatasetsListView
       datasets={this.props.core.datasets}
       datasetsUrl={this.props.datasetsUrl}
+      newDatasetUrl={this.props.newDatasetUrl}
     />;
   }
 }
-
 
 class ProjectViewDatasets extends Component {
 
@@ -533,8 +533,14 @@ class ProjectViewDatasets extends Component {
     || (progress >= GraphIndexingStatus.MIN_VALUE && progress < GraphIndexingStatus.MAX_VALUE);
 
     if(!loading && !kgLoading && this.props.core.datasets !== undefined && this.props.core.datasets.length === 0){
-      return <Col sm={12} md={8} lg={10}>No datasets found for this project. If you recently activated the knowledge graph or added the datasets try refreshing the page.</Col>;
-    }
+      return <Col sm={12} md={8} lg={10}>
+        <Alert timeout={0} color="primary">
+					No datasets found for this project. <br /><br /> 
+					<FontAwesomeIcon icon={faInfoCircle} />  If you recently activated the knowledge graph or added the datasets try refreshing the page. <br /><br />
+					You can also click on the button to create a <Link className="btn btn-primary btn-sm" to={this.props.newDatasetUrl}>New Dataset</Link>
+        </Alert>
+      </Col>;
+    }	    
 
     return [
       kgLoading ? null

@@ -24,6 +24,7 @@
  */
 
 import { Schema } from './Model'
+import FormGenerator from '../utils/formgenerator/';
 
 const userSchema = new Schema({
   name: {initial: '', mandatory: false},
@@ -218,5 +219,44 @@ const notebooksSchema = new Schema({
   }
 });
 
+const datasetFormSchema = new Schema({
+  name: {
+    initial: "",
+    name: 'name',
+    label: 'Name',
+    type: 'text',
+    parseFun: expression => FormGenerator.Parsers.slugFromTitle(expression),
+    validators: [{
+      id: 'name-length',
+      isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression),
+      alert: 'Name is too short'
+    }]
+  },
+  description: {
+    initial: "",
+    name: 'description',
+    label: 'Description',
+    type: 'cktextarea',
+    validators: [{
+      id: 'name-length',
+      //  isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression, 3),
+      alert: 'Description can\'t be emtpy'
+    }]
+  },
+  files: {
+    initial: [],
+    name: 'files',
+    label: 'Files',
+    type: 'filepond',
+    validators:[{
+      id: 'files-length',
+      //isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression, 1),
+      alert: 'Datasets should have at least 1 file'
+    }]
+  }
+});
+
+
 export { userSchema, metaSchema, displaySchema, newProjectSchema, projectSchema, forkProjectSchema };
 export { notebooksSchema };
+export { datasetFormSchema };
