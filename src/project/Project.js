@@ -284,7 +284,7 @@ class View extends Component {
       newDatasetUrl: `${datasetsUrl}/new`,
       datasetUrl: `${datasetsUrl}/:datasetId`,
       editDatasetUrl: `${datasetsUrl}/:datasetId/modify`,
-      issueNewUrl: `${baseUrl}/issue_new`,
+      issueNewUrl: `${collaborationUrl}/issues/issue_new`,
       collaborationUrl:`${collaborationUrl}`,
       issuesUrl: `${collaborationUrl}/issues`,
       issueUrl: `${collaborationUrl}/issues/:issueIid`,

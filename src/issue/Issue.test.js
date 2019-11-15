@@ -36,10 +36,21 @@ import { generateFakeUser } from '../user/User.test';
 describe('rendering', () => {
   const user = generateFakeUser(true);
 
+  let spy = null;
+  beforeEach(() => {
+    // ckeditor dumps some junk to the conole.error. Ignore it.
+    spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+  });
+
+  afterEach(() => {
+    spy.mockRestore();
+  });
+
   it('renders new without crashing', () => {
     const div = document.createElement('div');
     ReactDOM.render(<Issue.New location={{ pathname: '/projects/1/issue_new' }} user={user} />, div);
   });
+	
   it('renders list without crashing', () => {
     const baseUrl = "base";
     const urlMap = {
@@ -68,39 +79,6 @@ describe('rendering', () => {
 describe('helpers', () => {
   it('computes display id correctly', () => {
     expect(slugFromTitle("This is my Issue")).toEqual("this-is-my-issue");
-  });
-});
-
-describe('new issue actions', () => {
-  it('creates a core field set action', () => {
-    expect(State.New.Core.set('title', 'a title')).toEqual({ type: 'core', payload: { title: 'a title', displayId: 'a-title' } });
-  });
-  it('creates a visibility set action', () => {
-    expect(State.New.Visibility.set('private')).toEqual({ type: 'visibility', payload: { level: 'private' } });
-  });
-});
-
-describe('new issue reducer', () => {
-  const initialState = State.New.reducer(undefined, {});
-  it('returns initial state', () => {
-    expect(initialState).toEqual({
-      core: { title: "", description: "", displayId: "" },
-      visibility: { level: "public" }
-    });
-  });
-  it('advances state', () => {
-    const state1 = State.New.reducer(initialState, State.New.Core.set('title', 'new title'));
-    expect(state1)
-      .toEqual({
-        core: { title: "new title", description: "", displayId: "new-title" },
-        visibility: { level: "public" }
-      });
-    const state2 = State.New.reducer(state1, State.New.Visibility.set('private'));
-    expect(state2)
-      .toEqual({
-        core: { title: "new title", description: "", displayId: "new-title" },
-        visibility: { level: "private" }
-      });
   });
 });
 

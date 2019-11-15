@@ -274,6 +274,46 @@ const datasetFormSchema = new Schema({
   }
 });
 
+const issueFormSchema = new Schema({
+  name: {
+    initial: "",
+    name: 'title',
+    label: 'Title',
+    type: FormGenerator.FieldTypes.TEXT,
+    placeholder: 'A brief name to identify the issue',
+    validators: [{
+      id: 'text-length',
+      isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression),
+      alert: 'Text is too short'
+    }]
+  },
+  description: {
+    initial: "",
+    name: 'textarea',
+    label: 'Description',
+    type: FormGenerator.FieldTypes.TEXT_AREA, //to change to TEXT_EDITOR
+    outputType:'markdown',
+    placeholder: 'A brief name to identify the issue',
+    help: 'A description of the issue helps users understand it and is highly recommended.',
+    validators: [{
+      id: 'textarea-length',
+      isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression),
+      alert: 'Description can\'t be emtpy'
+    }]
+  },
+  visibility: {
+    initial: 'public',
+    name: 'visibility',
+    label: 'Visibility',
+    type: FormGenerator.FieldTypes.SELECT,
+    options: [
+      { value: 'public', name: 'Public' },
+      { value: 'restricted', name: 'Restricted' }
+    ],
+    validators: []
+  }
+})
+
 
 export { userSchema, metaSchema, displaySchema, newProjectSchema, projectSchema, forkProjectSchema };
-export { notebooksSchema, projectsSchema, datasetFormSchema };
+export { notebooksSchema, projectsSchema, datasetFormSchema, issueFormSchema };

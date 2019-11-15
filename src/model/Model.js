@@ -52,7 +52,10 @@ const PropertyName = {
   PARSEFUN:'parseFun',
   VALIDATORS:'validators',
   EDIT:'edit',
-  HELP: 'help'
+  HELP: 'help',
+  OPTIONS: 'options',
+  PLACEHOLDER: 'placeholder',
+  OUTPUTTYPE:'outputType'
 };
 
 // Named consts for the bindings to the store.
