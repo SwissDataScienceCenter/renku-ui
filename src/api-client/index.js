@@ -146,7 +146,6 @@ class APIClient {
       'credentials': 'same-origin',
       'X-Requested-With': 'XMLHttpRequest'
     });
-
     return fetch(urlObject, { headers, method });
   }
 

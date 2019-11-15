@@ -45,7 +45,13 @@ import { createStore } from "../utils/EnhancedState";
 const PropertyName = {
   SCHEMA: 'schema',
   INITIAL: 'initial',
-  MANDATORY: 'mandatory'
+  MANDATORY: 'mandatory',
+  NAME:'name',
+  LABEL:'label',
+  TYPE:'type',
+  PARSEFUN:'parseFun',
+  VALIDATORS:'validators',
+  HELP: 'help'
 };
 
 // Named consts for the bindings to the store.
