@@ -41,6 +41,8 @@ import New from './new';
 import { ShowFile } from '../file';
 import Fork from './fork';
 import ShowDataset from '../dataset/Dataset.container';
+import NewDataset from './datasets/new/index';
+
 import _ from 'lodash/collection';
 
 const subRoutes = {
@@ -270,6 +272,7 @@ class View extends Component {
       statsUrl: `${baseUrl}/overview/stats`,
       overviewDatasetsUrl: `${baseUrl}/overview/datasets`,
       datasetsUrl: `${baseUrl}/datasets`,
+      newDatasetUrl: `${baseUrl}/datasets/new_dataset`,
       datasetUrl: `${baseUrl}/datasets/:datasetId`,
       issueNewUrl: `${baseUrl}/issue_new`,
       collaborationUrl:`${collaborationUrl}`,
@@ -386,6 +389,19 @@ class View extends Component {
           undefined} />,
 
       datasetView: (p) => <ShowDataset
+        key="datasetpreview"  {...subProps}
+        progress={graphProgress}
+        maintainer={maintainer}
+        forked={forked}
+        insideProject={true}
+        datasets={datasets}
+        lineagesUrl={subUrls.lineagesUrl}
+        fileContentUrl={subUrls.fileContentUrl}
+        projectsUrl={subUrls.projectsUrl}
+        selectedDataset={p.match.params.datasetId}
+      />,
+
+      newDataset: (p) => <NewDataset
         key="datasetpreview"  {...subProps}
         progress={graphProgress}
         maintainer={maintainer}
