@@ -32,7 +32,7 @@
 	--ck-border-radius: 4px;
 	--ck-font-size-base: 14px;
 	--ck-custom-border: hsl(300, 1%, 22%);
-	--ck-color-focus-border: #5561A6;
+	--ck-color-focus-border: var(--ck-color-base-border);
 }
 
 .ck-read-only {
@@ -40,10 +40,7 @@
 }
 
 .ck-editor__editable :focus{
-	border:  #5561a6;
-}
-input[type="text"], textarea {
-	box-shadow:none !important;
+	border:  var(--ck-color-base-border);
 }
 
 .table-files{

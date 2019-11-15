@@ -28,6 +28,7 @@ import { Form, Button, Col, UncontrolledAlert, FormText } from 'reactstrap';
 import useForm from './UseForm';
 import TextInput from './fields/TextInput';
 import TextareaInput from './fields/TexAreaInput';
+import SelectInput from './fields/SelectInput';
 import CktextareaInput from './fields/CKEditorTextArea';
 import FileuploaderInput from './fields/FileUploaderInput';
 import { Loader } from '../../utils/UIComponents'
@@ -39,7 +40,7 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors, submit
 
   const [inputs, setInputs, setSubmit] = useForm(modelValues, submitCallback);
 
-  const Components = { TextInput, TextareaInput, CktextareaInput, FileuploaderInput };
+  const Components = { TextInput, TextareaInput, CktextareaInput, FileuploaderInput, SelectInput };
 
   const capitalize = expression => expression.charAt(0).toUpperCase() + expression.slice(1);
 

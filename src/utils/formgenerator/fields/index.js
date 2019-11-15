@@ -28,6 +28,7 @@ export default {
     TEXT: "text",
     TEXT_AREA:"textarea",
     TEXT_EDITOR: "cktextarea",
-    FILES: "fileuploader"
+    FILES: "fileuploader",
+    SELECT:"select"
   }
 };

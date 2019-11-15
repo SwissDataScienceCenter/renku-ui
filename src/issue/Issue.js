@@ -23,22 +23,24 @@
  *  Module for issue features.
  */
 
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import { Provider, connect } from 'react-redux';
 import { Link, NavLink } from 'react-router-dom';
-import { Row, Col, Button, FormGroup, Input, Label, Badge, ListGroup, ListGroupItem, Card, CardHeader, CardBody, Alert } from 'reactstrap';
+import { Row, Col, Button, Badge, ListGroup, ListGroupItem, Card, CardHeader, CardBody, Alert } from 'reactstrap';
 import { faGitlab } from '@fortawesome/free-brands-svg-icons';
 import { faBoxOpen, faBox, faListUl, faComments } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { API_ERRORS } from '../api-client'; 
 import { createStore } from '../utils/EnhancedState';
 import State from './Issue.state';
-import { UserAvatar, ExternalIconLink, FieldGroup, RenkuMarkdown, TimeCaption, TooltipToggleButton } from '../utils/UIComponents';
+import { UserAvatar, ExternalIconLink, RenkuMarkdown, TimeCaption, TooltipToggleButton } from '../utils/UIComponents';
 import { Contribution, NewContribution } from '../contribution';
 import { Loader } from '../utils/UIComponents';
+import { issueFormSchema } from '../model/RenkuModels';
+import { FormPanel } from '../utils/formgenerator';
 
 function issueStateBadge(issueStateValue) {
-  let issueState = <Badge color="secondary">{issueStateValue}</Badge>;
+    let issueState = <Badge color="secondary">{issueStateValue}</Badge>;
   if (issueStateValue === 'opened')
     issueState = <Badge color="success">open</Badge>;
   if (issueStateValue === 'closed')
@@ -46,116 +48,53 @@ function issueStateBadge(issueStateValue) {
   return issueState
 }
 
-class IssueVisibility extends Component {
-  render() {
-    return <FormGroup>
-      <Label>Visibility</Label>
-      <Input type="select" placeholder="visibility" value={this.props.value.level} onChange={this.props.onChange}>
-        <option value="public">Public</option>
-        <option value="restricted">Restricted</option>
-      </Input>
-    </FormGroup>
-  }
-}
+function New(props){
+  
+  const [submitLoader, setSubmitLoader] = useState(false);
+  const issuesUrl = `/projects/${props.projectPathWithNamespace}/collaboration/issues`;
 
-
-class NewIssue extends Component {
-
-  render() {
-    const titleHelp = this.props.model.core.displayId.length > 0 ? `Id: ${this.props.model.core.displayId}` : null;
-    const statuses = this.props.statuses;
-    return <form action="" method="post" encType="multipart/form-data" id="js-upload-form">
-      <FieldGroup id="title" type="text" label="Title" placeholder="A brief name to identify the issue"
-        help={titleHelp} value={this.props.model.core.title}
-        feedback={statuses.title} invalid={statuses.title != null}
-        onChange={this.props.onTitleChange} />
-      <FieldGroup id="description" type="textarea" label="Description" placeholder="A description of the issue"
-        help="A description of the issue helps users understand it and is highly recommended."
-        value={this.props.model.core.description} onChange={this.props.onDescriptionChange} />
-      <IssueVisibility value={this.props.model.visibility} onChange={this.props.onVisibilityChange} />
-      <br />
-      <Button color="primary" onClick={this.props.onSubmit}>
-        Create
-      </Button>
-    </form>
-  }
-}
-
-class New extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { statuses: [] }
-    this.store = createStore(State.New.reducer);
-    this.onSubmit = client => this.handleSubmit.bind(this, client);
-    this.projectPathWithNamespace = this.props.projectPathWithNamespace;
+  const onCancel = e => {
+    resetForm();
+    props.history.push({pathname: issuesUrl});
   }
 
-  submitData() {
-    const state = this.store.getState();
+
+  const submitData = () => {
     let body = {}
-    body.confidential = state.visibility.level === 'Restricted';
-    body.title = state.core.title;
-    body.description = state.core.description;
-    return [this.projectPathWithNamespace, body]
+    body.confidential = issueFormSchema.visibility.value === 'Restricted';
+    body.title = issueFormSchema.name.value;
+    body.description = issueFormSchema.description.value;
+    return [props.projectPathWithNamespace, body];
   }
 
-  handleSubmit(client) {
-    const validation = this.validate();
-    if (validation.result) {
-      client.postProjectIssue(...this.submitData())
-        .then(newIssue => {
-          this.props.history.push({ pathname: `/projects/${this.projectPathWithNamespace}/collaboration/issues` });
-        });
-    }
+  const resetForm = () => {
+    issueFormSchema.visibility.value = 'Public';
+    issueFormSchema.name.value='';
+    issueFormSchema.description.value=''
   }
 
-  mapStateToProps(state, ownProps) {
-    return { model: state }
+  const submitCallback = e => {
+    setSubmitLoader(true);
+    props.client.postProjectIssue(...submitData())
+      .then(newIssue => {
+        resetForm();
+        setSubmitLoader(false);
+        props.history.push({pathname: issuesUrl});
+      });		
   }
 
-  mapDispatchToProps(dispatch, ownProps) {
-    return {
-      onTitleChange: (e) => {
-        dispatch(State.New.Core.set('title', e.target.value))
-      },
-      onDescriptionChange: (e) => {
-        dispatch(State.New.Core.set('description', e.target.value))
-      },
-      onVisibilityChange: (e) => {
-        dispatch(State.New.Visibility.set(e.target.value))
-      }
-    }
-  }
-
-  validate() {
-    const state = this.store.getState();
-    const errors = [];
-    if (state.core.title.trim() === "") {
-      errors.push({ title: "Please provide a title." });
-    }
-
-    const result = errors.length === 0;
-    if (!result) {
-      this.setState({ statuses: errors });
-    }
-    return { result, errors };
-  }
-
-  render() {
-    const statuses = {}
-    this.state.statuses.forEach((d) => { Object.keys(d).forEach(k => statuses[k] = d[k]) });
-    const VisibleNewIssue = connect(this.mapStateToProps, this.mapDispatchToProps)(NewIssue);
-    return [
-      <Row key="header"><Col md={8}><h3>New Issue</h3></Col></Row>,
-      <Provider key="new" store={this.store}>
-        <Row><Col md={8}>
-          <VisibleNewIssue statuses={statuses} onSubmit={this.onSubmit(this.props.client)} />
-        </Col></Row>
-      </Provider>
-    ]
-  }
+  return <Row>
+    <Col md={8}>
+      <FormPanel
+        title="Create Issue" 
+        btnName="Create Issue" 
+        submitCallback={submitCallback} 
+        model={issueFormSchema}
+        submitLoader={{value: submitLoader, text:"Creating issue, please wait..."}}
+        onCancel={onCancel} />
+    </Col>
+  </Row>
 }
-
 
 class IssueViewHeader extends Component {
 

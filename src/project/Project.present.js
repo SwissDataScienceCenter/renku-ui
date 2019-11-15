@@ -646,6 +646,8 @@ class ProjectViewCollaboration extends Component {
               <ProjectViewMergeRequests {...this.props} />} />
             <Route path={ this.props.mergeRequestsOverviewUrl } render={props =>
               <ProjectMergeRequestList {...this.props} />} />
+            <Route exact path={ this.props.issueNewUrl } render={p =>
+              <Issue.New projectPathWithNamespace={this.props.core.path_with_namespace} client={this.props.client} {...p}/>}/>
             <Route path={ this.props.issueUrl } render={props =>
               <ProjectViewIssues {...this.props} /> }/>
             <Route path={ this.props.issuesUrl } render={props =>

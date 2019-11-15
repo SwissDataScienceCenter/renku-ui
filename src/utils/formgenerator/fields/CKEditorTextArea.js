@@ -23,33 +23,62 @@
  *  Presentational components.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import ValidationAlert from './ValidationAlert';
 import HelpText from './HelpText';
 import { FormGroup, Label } from 'reactstrap';
 import CKEditor from '@ckeditor/ckeditor5-react';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+import { RenkuMarkdownEditor, ClassicEditor } from '@renku/renku-ui-ckeditor5-build';
+import { CustomInput, Input } from 'reactstrap';
 
-function CktextareaInput({ name, label, type, value, alert, setInputs, help, disabled = false }) {
+
+function CktextareaInput({ name, label, type, value, alert, setInputs, help, outputType, disabled }) {
+  const [codeview, setCodeview]=useState(false);
+
+  const switchLabel = (outputType === 'markdown') ? 'Markdown' : 'HTML';
+
+
   return <div>
     <FormGroup>
       <Label htmlFor={name}>{label}</Label>
-      <CKEditor
-        id={name}
-        editor={ ClassicEditor }
-        type={type}
-        data={value || ""}
-        invalid={alert !== undefined}
-        disabled={disabled}
-        onChange={ 
-          ( event, editor ) => {
-            const artifitialEvent = { 
-              target : { name: name , value:  editor.getData()}, 
-              isPersistent : () => false } ;
-            setInputs(artifitialEvent);
-          } 
-        }
+      <CustomInput
+        className="float-right"
+        type="switch"
+        id="exampleCustomSwitch"
+        name="customSwitch"
+        label={switchLabel}
+        checked={codeview}
+        onChange={()=>{setCodeview(!codeview)}}
       />
+      {
+        codeview === false ?
+          <CKEditor
+            id={name}
+            editor={outputType === 'markdown' ?  RenkuMarkdownEditor : ClassicEditor}
+            type={type}
+            data={value || ""}
+            disabled={disabled}
+            invalid={alert !== undefined}
+            rows={7}
+            onChange={ 
+              ( event, editor ) => {
+                const artifitialEvent = { 
+                  target : { name: name , value:  editor.getData()}, 
+                  isPersistent : () => false } ;
+                setInputs(artifitialEvent);
+              } 
+            }
+          />
+          :
+          <Input
+            id={name+"text-area"}
+            name={name} 
+            type="textarea"
+            value={value || ""}
+            onChange={setInputs}
+            rows={ value ? value.split("\n").length+1 : 2 }
+          />
+      }
       <HelpText content={ help }/>
       <ValidationAlert content={ alert } />
     </FormGroup>

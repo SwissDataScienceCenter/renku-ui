@@ -73,10 +73,6 @@ const combinedFieldReducer = combineReducers({
   visibility: Visibility.reduce
 });
 
-const New = { Core, Visibility,
-  reducer: combinedFieldReducer
-};
-
 const View = { Core, Visibility, IssueState,
   setAll: (result) => ({type:'server_return', payload: result }),
   reducer: (state, action) => {
@@ -87,4 +83,4 @@ const View = { Core, Visibility, IssueState,
   }
 };
 
-export default { New, View };
+export default { View };
