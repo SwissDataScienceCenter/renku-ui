@@ -88,7 +88,7 @@ function DisplayProjects(props){
             <tr key={project.name+index}>
               <td className="text-break">
                 <Link to={`${props.projectsUrl}/${project.path}`}>
-                  {project.name}
+                  {project.path}
                 </Link>
               </td>
               { project.created && project.created.dateCreated
