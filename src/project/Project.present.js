@@ -302,7 +302,7 @@ class ProjectNav extends Component {
           <RenkuNavLink to={this.props.baseUrl} alternate={this.props.overviewUrl} title="Overview" />
         </NavItem>
         <NavItem>
-          <RenkuNavLink exact={false} to={this.props.issuesUrl}  title="Collaboration" />
+          <RenkuNavLink exact={false} to={this.props.issuesUrl} alternate={this.props.collaborationUrl}  title="Collaboration" />
         </NavItem>
         <NavItem>
           <RenkuNavLink exact={false} to={this.props.filesUrl} title="Files" />
