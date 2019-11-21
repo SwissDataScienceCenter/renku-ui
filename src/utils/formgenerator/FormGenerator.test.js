@@ -48,6 +48,16 @@ let schema = new Schema({
 });
 
 describe("rendering", () => {
+	let spy = null;
+	beforeEach(() => {
+		// ckeditor dumps some junk to the conole.error. Ignore it.
+		spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+	});
+
+	afterEach(() => {
+		spy.mockRestore();
+	});
+
   it("renders form without crashing", () => {
     const div = document.createElement("div");
 
