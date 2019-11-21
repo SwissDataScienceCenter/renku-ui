@@ -21,21 +21,29 @@
  *
  *  FormGenerator
  *  Components for the new form generator
- * 
- * 	In order to use the form generator you need to 
+ *
+ * 	In order to use the form generator you need to
  * 	1- Define a model in Renku Models with the field configurations
  * 	2- Create handlers to change the state of variables (you can use "useState")
  * 	3- Create a submit function (what happens when the user clicks to submit the form)
  *  4- Import the model (step 1) and the FormPanel (here)
- * 	5- Add the FormPanel component using the model(step 1), submitCallback (step 3) : 
+ * 	5- Add the FormPanel component using the model(step 1), submitCallback (step 3) :
  * 				<FormPanel
- *      	   title="Title of the form" 
- *    	     btnName="Text in the button" 
- *  	       submitCallback={submitCallback} 
+ *      	   title="Title of the form"
+ *    	     btnName="Text in the button"
+ *  	       submitCallback={submitCallback}
  *	         model={props.datasetFormSchema} />
- * 
+ *
  */
 
 import FormPanel from './FormPanel';
+import Parsers from './services/InputParser';
+import Validators from './services/InputValidator';
 
-export default FormPanel;
+export default {
+  FormPanel,
+  Parsers,
+  Validators
+}
+
+export { FormPanel };
