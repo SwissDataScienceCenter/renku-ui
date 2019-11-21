@@ -20,9 +20,14 @@
  *  renku-ui
  *
  *  InputValidator.js
- *  
+ *
  */
 
-export const checkAtLeastLength = (expression, length) => expression && expression.trim().length >= length;
+function checkAtLeastLength(input, length) {
+  return (input != null) && input.trim().length >= length;
+}
 
-export const checkIsfilled = expression => expression && expression.length > 0;
+export default {
+  isNotEmpty: input => checkAtLeastLength(input, 1),
+  isAtLeastLength: (input, minLength) => checkAtLeastLength(input, minLength)
+}
