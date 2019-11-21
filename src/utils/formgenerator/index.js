@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2019 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -39,11 +39,13 @@
 import FormPanel from './FormPanel';
 import Parsers from './services/InputParser';
 import Validators from './services/InputValidator';
+import Fields from './fields';
 
 export default {
   FormPanel,
   Parsers,
-  Validators
+  Validators,
+  FieldTypes: Fields.FieldTypes
 }
 
 export { FormPanel };
