@@ -8,7 +8,7 @@ let schema = new Schema({
     initial: "",
     name: "text",
     label: "Text",
-    type: "text",
+    type: FormGenerator.FieldTypes.TEXT,
     parseFun: FormGenerator.Parsers.parseOnlyLetterAndSpace,
     help: "Help text",
     validators: [
@@ -23,7 +23,7 @@ let schema = new Schema({
     initial: "",
     name: "textarea",
     label: "TextArea",
-    type: "cktextarea",
+    type: FormGenerator.FieldTypes.TEXT_AREA,
     validators: [
       {
         id: "textarea-length",
@@ -36,7 +36,7 @@ let schema = new Schema({
     initial: [],
     name: "files",
     label: "Files",
-    type: "filepond",
+    type: FormGenerator.FieldTypes.FILES,
     validators: [
       {
         id: "files-length",
