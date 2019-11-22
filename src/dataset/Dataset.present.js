@@ -17,13 +17,13 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Col, Card, CardHeader, CardBody, Table, Alert } from 'reactstrap';
+import { Row, Col, Card, CardHeader, CardBody, Table, Alert, Button } from 'reactstrap';
 import { Link }  from 'react-router-dom';
 import { Loader } from '../utils/UIComponents';
 import DOMPurify from 'dompurify';
 import { API_ERRORS } from '../api-client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFile, faProjectDiagram } from '@fortawesome/free-solid-svg-icons';
+import { faFile, faProjectDiagram, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 import { GraphIndexingStatus } from '../project/Project';
 import KnowledgeGraphStatus from '../file/KnowledgeGraphStatus.container';
 import Time from '../utils/Time';
@@ -106,6 +106,14 @@ function DisplayProjects(props){
   </Card>
 }
 
+function LinkToExternal(props){
+  return props.link ? 
+    <p>
+      {props.label}: <a href={props.link} target="_blank" rel="noreferrer noopener">{ props.link } </a>
+    </p>
+    : null
+}
+
 export default function DatasetView(props){
 
   const [dataset, setDataset] = useState(undefined);
@@ -179,28 +187,45 @@ export default function DatasetView(props){
     return <Alert color="danger">Error 404: The dataset that was selected doesn't exist or couldn't be accessed</Alert>
 
   return <Col>
-    <div style={{paddingLeft:"4px"}}>
-      {
-        dataset.published !== undefined && dataset.published.datePublished !== undefined ?
-          <small style={{ display: 'block', paddingBottom:'8px'}} className="font-weight-light font-italic">
+    <Row>
+      <Col md={10} sm={12}>
+        {
+          dataset.published !== undefined && dataset.published.datePublished !== undefined ?
+            <small style={{ display: 'block', paddingBottom:'8px'}} className="font-weight-light font-italic">
             Uploaded on { Time.getReadableDate(dataset.published.datePublished) }.
-          </small>
-          : null
+            </small>
+            : null
+        }
+        <h4 key="datasetTitle">
+          {dataset.name}
+        </h4> 
+      </Col>
+      { dataset.url ? 
+        <Col md={2} sm={12}>
+          <a className="float-right" href={dataset.url} target="_blank" rel="noreferrer noopener">
+            <Button outline color="dark" >
+              <FontAwesomeIcon icon={faExternalLinkAlt} color="dark" /> Go to source
+            </Button>
+          </a>
+        </Col>
+        : null  
       }
-      <h4 key="datasetTitle">
-        {dataset.name}
-      </h4>
-      {
-        dataset.published !== undefined && dataset.published.creator !== undefined ?
-          <small style={{ display: 'block'}} className="font-weight-light">
-            {dataset.published.creator.map((creator) => creator.name).join("; ")}
-          </small>
-          : null
-      }
-      <p  style={{paddingTop:'12px'}} dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(dataset.description)}}>
-      </p>
-    </div>
-    <br />
+    </Row>
+    {
+      dataset.published !== undefined && dataset.published.creator !== undefined ?
+        <small style={{ display: 'block'}} className="font-weight-light">
+          {
+            dataset.published.creator
+              .map((creator) => creator.name + (creator.affiliation ? `(${creator.affiliation})`:"") )
+              .join("; ")
+          }
+        </small>
+        : null
+    }
+    <p  style={{paddingTop:'12px'}} dangerouslySetInnerHTML={{__html: DOMPurify.sanitize(dataset.description)}}>
+    </p>
+    <LinkToExternal link={dataset.url} label="Source" />
+    <LinkToExternal link={dataset.sameAs} label="DOI" />
     <DisplayFiles
       projectsUrl={props.projectsUrl}
       fileContentUrl={props.fileContentUrl}
