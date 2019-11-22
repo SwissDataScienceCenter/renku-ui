@@ -1,6 +1,35 @@
 # Changes
 
 
+## [0.7.2](https://github.com/SwissDataScienceCenter/renku-ui/issues?utf8=%E2%9C%93&q=is%3Aclosed+milestone%3A0.7.2) (released 2019-11-22)
+
+### Features
+
+**datasets**
+
+* Add global dataset tab to search through all datasets ([#521](https://github.com/SwissDataScienceCenter/renku-ui/issues/521), [#647](https://github.com/SwissDataScienceCenter/renku-ui/pull/647), [#676](https://github.com/SwissDataScienceCenter/renku-ui/pull/676))
+* Add more details on dataset pages ([#674](https://github.com/SwissDataScienceCenter/renku-ui/issues/674), [#687](https://github.com/SwissDataScienceCenter/renku-ui/issues/687), [#684](https://github.com/SwissDataScienceCenter/renku-ui/pull/684), [#688](https://github.com/SwissDataScienceCenter/renku-ui/pull/688))
+
+**project templates**
+
+* Update name variables to be fully [Jinja2](https://www.palletsprojects.com/p/jinja/) compliant ([#675](https://github.com/SwissDataScienceCenter/renku-ui/issues/675), [#672](https://github.com/SwissDataScienceCenter/renku-ui/pull/672))
+
+**stability**
+
+* Update libraries to the latest version (except react-redux) ([#657](https://github.com/SwissDataScienceCenter/renku-ui/issues/657), [#666](https://github.com/SwissDataScienceCenter/renku-ui/issues/666), [#673](https://github.com/SwissDataScienceCenter/renku-ui/pull/673))
+
+
+### Bug Fixes
+
+**collaboration**
+
+* Selecting merge requests doesn't remove the active state from the collaboration tab icon anymore ([#668](https://github.com/SwissDataScienceCenter/renku-ui/issues/668), [#685](https://github.com/SwissDataScienceCenter/renku-ui/pull/685))
+
+**stability**
+
+* Address icon flickering issues in Chrome ([#680](https://github.com/SwissDataScienceCenter/renku-ui/issues/680), [#681](https://github.com/SwissDataScienceCenter/renku-ui/pull/681))
+
+
 ## [0.7.1](https://github.com/SwissDataScienceCenter/renku-ui/issues?utf8=%E2%9C%93&q=is%3Aclosed+milestone%3A0.7.1) (released 2019-11-05)
 
 ### Features
