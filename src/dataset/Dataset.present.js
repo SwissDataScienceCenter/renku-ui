@@ -139,7 +139,7 @@ export default function DatasetView(props){
           });
       } else if(!unmounted) setDataset(null);
     } else {
-      if(dataset === undefined){
+      if(dataset === undefined && props.identifier !== undefined){
         props.client.fetchDatasetFromKG(props.client.baseUrl.replace('api','knowledge-graph/datasets/')+props.identifier)
           .then((datasetInfo) => {
             if(!unmounted && dataset === undefined && datasetInfo !== undefined){
