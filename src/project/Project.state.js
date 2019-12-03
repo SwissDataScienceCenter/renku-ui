@@ -214,21 +214,11 @@ class ProjectModel extends StateModel {
     this.setUpdating({transient:{requests:{datasets: true}}});
     return client.getProjectDatasetsFromKG(this.get('core.path_with_namespace'))
       .then(datasets => {
-        datasets = datasets.map(dataset => {
-          dataset.identifier = dataset.identifier.split('-').join("");
-          return dataset;
-        } )
         const updatedState = { datasets: datasets, transient:{requests:{datasets: false}} };
         this.set('core.datasets', datasets);
         this.setObject(updatedState);
         return datasets;
-      }).catch(error => {
-        if (error.case === API_ERRORS.notFoundError) {
-          const updatedState = { datasets: [], transient:{requests:{datasets: false}} };
-          this.set('core.datasets', []);
-          this.setObject(updatedState);
-        }
-      });
+      })
   }
 
   fetchProjectDatasetsFromMetadata(client){
