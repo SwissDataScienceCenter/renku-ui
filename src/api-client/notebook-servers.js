@@ -21,7 +21,7 @@ function addNotebookServersMethods(client) {
     const headers = client.getBasicHeaders();
     const url = `${client.baseUrl}/notebooks/servers`;
     let parameters = {};
-    if (namespace) parameters.namespace = namespace;
+    if (namespace) parameters.namespace = decodeURIComponent(namespace);
     if (project) parameters.project = project;
     if (branch) parameters.branch = branch;
     if (commit) parameters.commit_sha = commit;
@@ -72,7 +72,7 @@ function addNotebookServersMethods(client) {
     headers.append('Content-Type', 'application/json');
     const url = `${client.baseUrl}/notebooks/servers`;
     const parameters = {
-      namespace: namespacePath,
+      namespace: decodeURIComponent(namespacePath),
       project: projectPath,
       commit_sha: commitId,
       branch: branchName,

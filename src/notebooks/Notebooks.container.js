@@ -271,7 +271,7 @@ class StartNotebookServer extends Component {
   }
 
   async retriggerPipeline() {
-    const projectPathWithNamespace = `${this.props.scope.namespace}%2F${this.props.scope.project}`;
+    const projectPathWithNamespace = `${encodeURIComponent(this.props.scope.namespace)}%2F${this.props.scope.project}`;
     const pipelineId = this.model.get('pipelines.main.id');
     await this.props.client.retryPipeline(projectPathWithNamespace, pipelineId);
     return this.refreshPipelines();
@@ -348,7 +348,7 @@ class StartNotebookServer extends Component {
 
 /**
  * Display the connect to Jupyter icon
- * 
+ *
  * @param {Object} client - api-client used to query the gateway
  * @param {Object} model - global model for the ui
  * @param {string} filePath - relative path of the target notebook file

@@ -26,7 +26,16 @@ import { Loader } from '../utils/UIComponents';
 import { GraphIndexingStatus } from '../project/Project';
 
 function KnowledgeGraphStatus(props) {
-  const {progress, webhookJustCreated} = props;
+  const {error, progress, webhookJustCreated} = props;
+  if (error != null) {
+    return <Alert color="warning">
+      Knowledge Graph integration must be activated to view the lineage and the datasets, but&nbsp;
+      there is a problem with the knowledge graph integration for this project. To resolve this problem,
+      you should contact the development team on&nbsp;
+      <a href="https://gitter.im/SwissDataScienceCenter/renku" target="_blank" rel="noreferrer noopener">Gitter</a> or&nbsp;
+      <a href="https://github.com/SwissDataScienceCenter/renku" target="_blank" rel="noreferrer noopener">GitHub</a>.
+    </Alert>
+  }
   if (progress == null) {
     return (
       <Loader />

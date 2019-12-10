@@ -41,6 +41,90 @@ import New from './new';
 import { ShowFile } from '../file';
 import Fork from './fork';
 import ShowDataset from '../dataset/Dataset.container';
+import _ from 'lodash/collection';
+
+const subRoutes = {
+  overview: 'overview',
+  stats: 'overview/stats',
+  overviewDatasets: 'overview/datasets',
+  datasets: 'datasets',
+  dataset: 'datasets/:datasetId',
+  issueNew: 'issue_new',
+  collaboration: 'collaboration',
+  issues: 'collaboration/issues',
+  issue: 'collaboration/issues/:issueId(\\d+)',
+  mrs: 'collaboration/mergerequests',
+  mr: 'collaboration/mergerequests/:mrIid(\\d+)',
+  files: 'files',
+  fileContent: 'blob',
+  notebook: 'files/blob/:filePath([^.]+.ipynb)',
+  lineages: 'files/lineage',
+  lineage: 'files/lineage/:filePath+',
+  data: 'files/data',
+  workflows: 'files/workflows',
+  settings: 'settings',
+  environments: 'environments',
+  environmentNew: 'environments/new'
+}
+
+// SubRoutes grouped by depth
+const srMap = _.groupBy(Object.values(subRoutes), v => v.split("/").length);
+const maxSrMapDepth = Math.max(...Object.keys(srMap).map(k => Number.parseInt(k)));
+const projectIdRegex = /^\d+/
+
+/**
+ * Check if the components need to be added to the projectPathWithNamespace
+ * @param {string} projectPathWithNamespace
+ * @param {array} comps
+ */
+function accumulateIntoProjectPath(projectPathWithNamespace, comps) {
+  if (comps.length === 0) return projectPathWithNamespace;
+
+  // check if any of these match
+  const routes = srMap[Math.min(comps.length, maxSrMapDepth)];
+  for (let i = 0; i < routes.length; ++i) {
+    const routeComps = routes[i].split("/");
+    let matches = true;
+    for (let j = 0; j < routeComps.length && matches; ++j) {
+      if (routeComps[j].startsWith(":")) continue
+      if (routeComps[j] !== comps[j]) matches = false;
+    }
+    if (matches) return projectPathWithNamespace;
+  }
+  // Add one level to the projectPathWithNamespace
+  return accumulateIntoProjectPath(`${projectPathWithNamespace}/${comps[0]}`, comps.slice(1));
+}
+
+function splitProjectSubRoute(subUrl) {
+  const result = {projectPathWithNamespace: null, projectId: null, baseUrl: null };
+  if (subUrl == null) return result;
+
+  const baseUrl = subUrl.endsWith('/') ? subUrl.slice(0, -1) : subUrl;
+  const projectSubRoute = baseUrl.startsWith("/projects/") ? baseUrl.slice(10) : baseUrl;
+  const comps = projectSubRoute.split("/");
+  if (comps.length < 1) return result;
+
+  // This could be a route that just provides a projectId
+  if (projectIdRegex.test(comps[0])) {
+    result.projectId = comps[0];
+    result.baseUrl = `/projects/${result.projectId}`;
+    return result;
+  }
+  if (comps.length < 2) return result;
+
+  result.projectPathWithNamespace = comps.slice(0, 2).join("/");
+  if (comps.length > 2) {
+    // We need to check if we need to accumulate more components into the projectPathWithNamespace
+    result.projectPathWithNamespace = accumulateIntoProjectPath(result.projectPathWithNamespace, comps.slice(2));
+  }
+  if (result.projectId != null) {
+    result.baseUrl = `/projects/${result.projectId}`
+  } else {
+    result.baseUrl = `/projects/${result.projectPathWithNamespace}`
+  }
+  return result
+}
+
 
 // TODO: This component has grown too much and needs restructuring. One option would be to insert
 // TODO: another container component between this top-level project component and the presentational
@@ -51,14 +135,16 @@ class View extends Component {
     this.projectState = new ProjectModel(StateKind.REDUX);
   }
 
-  componentWillMount(){
-    if(this.props.projectPathWithNamespace === undefined && this.props.projectId !== undefined){
-      this.redirectProjectWithNumericId();
+  UNSAFE_componentWillMount() {
+    const pathComponents = splitProjectSubRoute(this.props.match.url);
+    if (pathComponents.projectPathWithNamespace == null && pathComponents.projectId != null) {
+      this.redirectProjectWithNumericId(pathComponents.projectId);
     }
   }
 
   componentDidMount() {
-    if(this.props.projectPathWithNamespace !== undefined){
+    const pathComponents = splitProjectSubRoute(this.props.match.url);
+    if (pathComponents.projectPathWithNamespace != null) {
       // fetch only if user data are already loaded
       if (this.props.user.available === true) {
         this.fetchAll();
@@ -68,11 +154,11 @@ class View extends Component {
       const routes=['overview','issues','issue_new','files','lineage','notebooks','collaboration',
         'data','workflows','settings','pending','launchNotebook','notebookServers','datasets','environments'];
       const available = this.props.core ? this.props.core.available : null;
-      const potentialProjectId = this.props.projectPathWithNamespace.split('/')[0];
-      const potentialRoute = this.props.projectPathWithNamespace.split('/')[1];
+      const potentialProjectId = pathComponents.projectPathWithNamespace.split('/')[0];
+      const potentialRoute = pathComponents.projectPathWithNamespace.split('/')[1];
 
       if(!available && !isNaN(potentialProjectId) && routes.indexOf(potentialRoute) > 0){
-        this.redirectAfterFetchFails(this.props.projectPathWithNamespace,
+        this.redirectAfterFetchFails(pathComponents.projectPathWithNamespace,
           this.props.location.pathname.replace("/projects/"+potentialProjectId,''));
       }
     }
@@ -83,9 +169,17 @@ class View extends Component {
     if (prevProps.user.available !== true && this.props.user.available === true) {
       this.fetchAll();
     }
+    const prevPathComps = splitProjectSubRoute(prevProps.match.url);
+    const pathComps = splitProjectSubRoute(this.props.match.url);
+    if (prevPathComps.projectPathWithNamespace !==  pathComps.projectPathWithNamespace) {
+      this.fetchAll();
+    }
   }
 
-  async fetchProject() { return this.projectState.fetchProject(this.props.client, this.props.projectPathWithNamespace);}
+  async fetchProject() {
+    const pathComponents = splitProjectSubRoute(this.props.match.url);
+    return this.projectState.fetchProject(this.props.client, pathComponents.projectPathWithNamespace);
+  }
   async fetchReadme() { return this.projectState.fetchReadme(this.props.client); }
   async fetchMergeRequests() { return this.projectState.fetchMergeRequests(this.props.client); }
   async fetchModifiedFiles() { return this.projectState.fetchModifiedFiles(this.props.client); }
@@ -106,14 +200,15 @@ class View extends Component {
   async fetchGraphStatus() { return this.projectState.fetchGraphStatus(this.props.client); }
 
   async fetchAll() {
-    if(this.props.projectPathWithNamespace)
+    const pathComponents = splitProjectSubRoute(this.props.match.url);
+    if (pathComponents.projectPathWithNamespace)
       await this.fetchProject();
     if (this.props.user.id)
       this.checkGraphWebhook();
   }
 
-  redirectProjectWithNumericId(){
-    this.props.client.getProjectById(this.props.projectId)
+  redirectProjectWithNumericId(projectId){
+    this.props.client.getProjectById(projectId)
       .then((project)=> {
         this.props.history.push('/projects/'+project.data.metadata.core.path_with_namespace);
       });
@@ -162,7 +257,8 @@ class View extends Component {
 
   getSubUrls() {
     const match = this.props.match;
-    const baseUrl =  match.url.endsWith('/') ? match.url.slice(0, -1) : match.url;
+    const pathComponents = splitProjectSubRoute(match.url);
+    const baseUrl =  pathComponents.baseUrl;
     const filesUrl = `${baseUrl}/files`;
     const fileContentUrl = `${filesUrl}/blob`;
     const collaborationUrl = `${baseUrl}/collaboration`;
@@ -249,6 +345,8 @@ class View extends Component {
 
     const ConnectedMergeRequestList = connect(mapStateToProps)(MergeRequestList);
 
+    const pathComponents = splitProjectSubRoute(this.props.match.url);
+
     return {
 
       issueView: (p, toogleIsuesListVisibility, issuesListVisible) => <Issue.View key="issue" {...subProps}
@@ -277,14 +375,14 @@ class View extends Component {
 
       fileView: (p) => <ShowFile
         key="filepreview" {...subProps}
-        filePath={p.location.pathname}
+        filePath={p.location.pathname.replace(pathComponents.baseUrl + '/files/blob/', '')}
         lineagesPath={subUrls.lineagesUrl}
         launchNotebookUrl={subUrls.launchNotebookUrl}
         projectNamespace={this.projectState.get('core.namespace_path')}
         projectPath={this.projectState.get('core.project_path')}
         branches={branches}
         hashElement={filesTree !== undefined ?
-          filesTree.hash[p.location.pathname.replace(this.props.match.url + '/files/blob/', '')] :
+          filesTree.hash[p.location.pathname.replace(pathComponents.baseUrl + '/files/blob/', '')] :
           undefined} />,
 
       datasetView: (p) => <ShowDataset
@@ -392,6 +490,7 @@ class View extends Component {
   };
 
   mapStateToProps(state, ownProps) {
+    const pathComponents = splitProjectSubRoute(ownProps.match.url);
     const internalId = this.projectState.get('core.id') || parseInt(ownProps.match.params.id, 10);
     const starred = this.getStarred(ownProps.user);
     const settingsReadOnly = state.visibility.accessLevel < ACCESS_LEVELS.MAINTAINER;
@@ -403,6 +502,8 @@ class View extends Component {
     return {
       ...this.projectState.get(),
       ...ownProps,
+      projectPathWithNamespace: pathComponents.projectPathWithNamespace,
+      projectId: pathComponents.projectId,
       ...this.getSubUrls(),
       ...this.subComponents.bind(this)(internalId, ownProps),
       starred,
@@ -424,4 +525,4 @@ class View extends Component {
 }
 
 export default { New, View, List };
-export { GraphIndexingStatus };
+export { GraphIndexingStatus, splitProjectSubRoute };

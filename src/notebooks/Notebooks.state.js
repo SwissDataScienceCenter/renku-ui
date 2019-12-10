@@ -275,7 +275,7 @@ class NotebooksCoordinator {
         lastParameters: JSON.stringify(filters)
       }
     });
-    const projectId = `${filters.namespace}%2F${filters.project}`;
+    const projectId = `${encodeURIComponent(filters.namespace)}%2F${filters.project}`;
     const pipelines = await this.client.getPipelines(projectId, filters.commit).catch(error => {
       this.model.set('pipelines.fetching', false);
       throw error;
@@ -427,7 +427,7 @@ class NotebooksCoordinator {
   async fetchCommits() {
     this.model.set('data.fetching', true);
     const filters = this.model.get('filters');
-    const projectPathWithNamespace = `${filters.namespace}%2F${filters.project}`;
+    const projectPathWithNamespace = `${encodeURIComponent(filters.namespace)}%2F${filters.project}`;
     return this.client.getCommits(projectPathWithNamespace, filters.branch.name)
       .then(resp => {
         this.model.setObject({

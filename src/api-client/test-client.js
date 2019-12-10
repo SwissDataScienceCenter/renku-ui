@@ -34,6 +34,11 @@ const methods = {
       data: carveProject(samples.projects[0])
     }
   },
+  getProjectById: {
+    response: {
+      data: carveProject(samples.projects[0])
+    }
+  },
   getProjectReadme: {
     response: {
       data: samples.projectReadme
