@@ -205,7 +205,7 @@ class ProjectModel extends StateModel {
       this.fetchProjectFilesTree(client,"",folderPath);
     }
     filesTree.hash[folderPath].childrenOpen = !filesTree.hash[folderPath].childrenOpen;
-    this.set('filesTree',filesTree);  
+    this.set('filesTree',filesTree);
   }
 
   fetchProjectDatasets(client){ //from KG
@@ -219,13 +219,19 @@ class ProjectModel extends StateModel {
         this.setObject(updatedState);
         return datasets;
       })
+      .catch(err => {
+        const datasets = [];
+        const updatedState = { datasets: datasets, transient:{requests:{datasets: false}} };
+        this.set('core.datasets', datasets);
+        this.setObject(updatedState);
+      });
   }
 
   fetchProjectDatasetsFromMetadata(client){
     if(this.get('core.datasets')) return this.get('core.datasets');
     if(this.get('transient.requests.datasets') === SpecialPropVal.UPDATING) return;
     this.setUpdating({transient:{requests:{datasets: true}}});
-   
+
     return client.getProjectDatasets(this.get('core.id'))
       .then(datasets => {
         datasets = datasets.map(dataset => {

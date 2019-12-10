@@ -27,7 +27,8 @@ class KnowledgeGraphStatus extends Component {
     this.state = {
       graphStatusPoller: null,
       graphStatusWaiting: false,
-      webhookJustCreated: null
+      webhookJustCreated: null,
+      error: null
     };
   }
 
@@ -45,14 +46,19 @@ class KnowledgeGraphStatus extends Component {
 
   async startPollingProgress() {
     if (this._isMounted && !this.state.graphStatusPoller) {
-      this.props.fetchGraphStatus().then((progress) => {
-        if (this._isMounted && !this.state.graphStatusPoller &&
-          progress !== GraphIndexingStatus.MAX_VALUE &&
-          progress !== GraphIndexingStatus.NO_WEBHOOK) {
-          const poller = setInterval(this.checkStatus, 2000);
-          this.setState({graphStatusPoller: poller});
-        }
-      });
+      this.props.fetchGraphStatus()
+        .then((progress) => {
+          if (this._isMounted && !this.state.graphStatusPoller &&
+            progress !== GraphIndexingStatus.MAX_VALUE &&
+            progress !== GraphIndexingStatus.NO_WEBHOOK) {
+            const poller = setInterval(this.checkStatus, 2000);
+            this.setState({graphStatusPoller: poller});
+          }
+        })
+        .catch((err) => {
+          this.setState({error: err});
+          this.stopPollingProgress()
+        });
     }
   }
 
@@ -110,6 +116,7 @@ class KnowledgeGraphStatus extends Component {
       maintainer={this.props.maintainer}
       createWebhook={this.createWebhook.bind(this)}
       forked={this.props.forked}
+      error={this.state.error}
     />;
   }
 }

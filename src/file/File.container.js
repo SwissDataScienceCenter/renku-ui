@@ -209,7 +209,7 @@ class JupyterButton extends React.Component {
  * File content display container component
  *
  * @param {Object} client - api-client used to query the gateway
- * @param {string} filePath - path to the file
+ * @param {string} filePath - path to the file - for the JupyterNotebook button. See docs for JupyterButton
  * @param {string} branchName - optional branch name, defaults to master
  * @param {Object} branches - for the JupyterNotebook button. See docs for JupyterButton
  */
@@ -230,7 +230,7 @@ class ShowFile extends React.Component {
   retrieveFile() {
     const client = this.props.client;
     const branchName = this.props.branchName || 'master';
-    let filePath = this.props.filePath.replace(this.props.match.url + '/files/blob/', '')
+    let filePath = this.props.filePath;
     client.getRepositoryFile(this.props.projectId, filePath, branchName, 'base64')
       .catch(e => {
         if (!this._isMounted) return null;
@@ -254,7 +254,7 @@ class ShowFile extends React.Component {
   }
 
   render() {
-    const gitLabFilePath = this.props.filePath.replace(this.props.match.url + '/files/blob/', '');
+    const gitLabFilePath = this.props.filePath;
     let filePath = gitLabFilePath;
 
     if (this.state.error !== null) {

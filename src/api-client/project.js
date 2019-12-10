@@ -322,7 +322,7 @@ function addProjectMethods(client) {
     if (createGraphWebhookPromise) {
       promises = promises.concat(createGraphWebhookPromise);
     }
-    
+
     return Promise.all(promises)
       .then((results) => {
         if (results.errorData)
@@ -427,9 +427,9 @@ function addProjectMethods(client) {
 
   client.getProjectDatasets = (projectId) => {
     const datasetsPromise = client.getRepositoryTree(projectId, { path: '.renku/datasets', recursive: true })
-      .then(data => 
+      .then(data =>
         data.filter(treeObj => treeObj.type === 'blob' && treeObj.name === 'metadata.yml')
-          .map(dataset => 
+          .map(dataset =>
             client.getRepositoryFile(projectId, dataset.path, 'master', 'raw').then(result => yaml.load(result))
           )
       )

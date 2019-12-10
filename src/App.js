@@ -81,11 +81,20 @@ class App extends Component {
 
               {/*TODO: This route should be handled by <Route path="/projects/:id(\d+)" too. Until this is the
                  TODO: case, the issue_new route must be listed BEFORE the project one.   */}
-              <Route exact path="/projects/:projectNamespace/:projectName/issue_new"
+              <Route exact path="/projects/:projectNamespace+/:projectName/issue_new"
                 render={(p) => <Issue.New key="issue_new" projectPathWithNamespace={`${p.match.params.projectNamespace}/${p.match.params.projectName}`} client={this.props.client} {...p}/>}/>
+              <Route exact path={["/projects", "/projects/starred", "/projects/search"]} render={
+                p => <Project.List
+                  key="projects"
+                  user={this.props.userState.getState().user}
+                  client={this.props.client}
+                  {...p}
+                />}
+              />
               {/* pull out the underlying parts of the url and pass them to the project view */}
-              <Route path="/projects/:projectNamespace/:projectName"
-                render={p => <Project.View key={`${p.match.params.projectNamespace}/${p.match.params.projectName}`}
+              <Route path="/projects/:subUrl+"
+                render={p => <Project.View
+                  key={`${p.match.params.projectNamespace}/${p.match.params.projectName}`}
                   projectPathWithNamespace={`${p.match.params.projectNamespace}/${p.match.params.projectName}`}
                   client={this.props.client}
                   params={this.props.params}
@@ -95,24 +104,6 @@ class App extends Component {
                   {...p}
                 />}
               />
-              <Route path="/projects/:id(\d+)"
-                render={p => <Project.View key={`${p.match.params.id}`}
-                  projectId={`${p.match.params.id}`} {...p}
-                  client={this.props.client}
-                  params={this.props.params}
-                  model={this.props.model}
-                  user={this.props.userState.getState().user}
-                  userStateDispatch={this.props.userState.dispatch}
-                />}
-              />
-              <Route path="/projects" render={
-                p => <Project.List
-                  key="projects"
-                  user={this.props.userState.getState().user}
-                  client={this.props.client}
-                  {...p}
-                />
-              }/>
               <Route exact path="/project_new"
                 render={(p) =>
                   <Project.New key="project_new"
@@ -131,7 +122,7 @@ class App extends Component {
                 />}
               />
               <Route path="/datasets/:identifier"
-                render={p => 
+                render={p =>
                   <ShowDataset
                     key="datasetpreview"  {...p}
                     insideProject={false}
@@ -141,7 +132,7 @@ class App extends Component {
                     selectedDataset={p.match.params.datasetId}
                   />
                 }
-              /> 
+              />
               <Route path="/datasets"
                 render={p => <DatasetList key="datasets"
                   client={this.props.client}

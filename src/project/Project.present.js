@@ -523,7 +523,7 @@ class ProjectDatasetsNav extends Component {
 
 
 class ProjectViewDatasets extends Component {
-  
+
   render() {
     const loading = isRequestPending(this.props, 'datasets');
     const progress = this.props.webhook.progress;
