@@ -30,7 +30,7 @@ import { FormGroup, Label } from 'reactstrap';
 import CKEditor from '@ckeditor/ckeditor5-react';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
-function CktextareaInput({ name, label, type, value, alert, setInputs, help }) {
+function CktextareaInput({ name, label, type, value, alert, setInputs, help, disabled = false }) {
   return <div>
     <FormGroup>
       <Label htmlFor={name}>{label}</Label>
@@ -40,6 +40,7 @@ function CktextareaInput({ name, label, type, value, alert, setInputs, help }) {
         type={type}
         data={value || ""}
         invalid={alert !== undefined}
+        disabled={disabled}
         onChange={ 
           ( event, editor ) => {
             const artifitialEvent = { 

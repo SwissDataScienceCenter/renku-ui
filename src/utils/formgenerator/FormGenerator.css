@@ -35,9 +35,36 @@
 	--ck-color-focus-border: #5561A6;
 }
 
+.ck-read-only {
+	background-color: #e9ecef !important;
+}
+
 .ck-editor__editable :focus{
 	border:  #5561a6;
 }
 input[type="text"], textarea {
 	box-shadow:none !important;
+}
+
+.table-files{
+	font-size:0.9rem;
+	font-weight: lighter;
+}
+
+.table-files thead{
+	background-color: #fafafa;
+}
+
+.table-files th{
+	border-color:#c4c4c4;
+}
+
+.table thead th{
+	border-bottom-width: 1px;
+	border-color:#c4c4c4;
+}
+
+.disabled-input{
+	background-color: #e9ecef;
+	cursor: pointer;
 }

@@ -518,11 +518,23 @@ class ProjectDatasetsNav extends Component {
       datasets={this.props.core.datasets}
       datasetsUrl={this.props.datasetsUrl}
       newDatasetUrl={this.props.newDatasetUrl}
+      visibility={this.props.visibility}
     />;
   }
 }
 
 class ProjectViewDatasets extends Component {
+  render(){
+    return <Switch>
+        <Route exact path={this.props.newDatasetUrl} 
+          render={p => this.props.newDataset(p)} />
+        <Route path={this.props.datasetsUrl} render={ props =>
+          <ProjectViewDatasetsList {...this.props} {...props} />} />
+      </Switch>
+  }
+}
+
+class ProjectViewDatasetsList extends Component {
 
   render() {
     const loading = isRequestPending(this.props, 'datasets');
@@ -544,10 +556,10 @@ class ProjectViewDatasets extends Component {
 
     return [
       kgLoading ? null
-        :<Col key="datasetsnav" sm={12} md={4} lg={2}>
+        :<Col key="datasetsnav" sm={12} md={3}>
           <ProjectDatasetsNav {...this.props} />
         </Col>,
-      <Col key="datasetcontent" sm={12} md={8} lg={10}>
+      <Col key="datasetcontent" sm={12} md={8}>
         <Switch>
           <Route path={this.props.datasetUrl}
             render={p => this.props.datasetView(p)} />

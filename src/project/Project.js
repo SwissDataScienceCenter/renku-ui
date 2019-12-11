@@ -405,13 +405,17 @@ class View extends Component {
         key="datasetpreview"  {...subProps}
         progress={graphProgress}
         maintainer={maintainer}
+        accessLevel={accessLevel}
         forked={forked}
         insideProject={true}
         datasets={datasets}
+        reFetchProject={this.fetchAll.bind(this)}
         lineagesUrl={subUrls.lineagesUrl}
         fileContentUrl={subUrls.fileContentUrl}
         projectsUrl={subUrls.projectsUrl}
         selectedDataset={p.match.params.datasetId}
+        client={this.props.client}
+        history={this.props.history}
       />,
 
       mrList: <ConnectedMergeRequestList key="mrList" store={this.projectState.reduxStore}
