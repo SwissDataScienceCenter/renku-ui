@@ -25,16 +25,59 @@
 
 
 
-import React from 'react';
-import { Row, Col } from 'reactstrap';
-import FormPanel from '../../../utils/formgenerator';
+import React, { useState } from 'react';
+import { Row, Col, Alert } from 'reactstrap';
+import { FormPanel } from '../../../utils/formgenerator';
+import { ACCESS_LEVELS } from '../../../api-client';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+
 
 function DatasetNew(props){
-	
-  const submitCallback = e => 
-    alert(Object.values(props.datasetFormSchema)
-      .map(m => m.label + ': ' + m.value + ',\n')
-      .join(''));
+
+  const [serverErrors, setServerErrors] = useState(undefined);
+  const [submitLoader, setSubmitLoader] = useState(false);
+
+  const onCancel = e => {
+    props.datasetFormSchema.name.value =  props.datasetFormSchema.name.initial;
+    props.datasetFormSchema.description.value =  props.datasetFormSchema.description.initial;
+    props.datasetFormSchema.files.value =  props.datasetFormSchema.files.initial;
+    props.history.push({pathname: `/projects/${props.projectPathWithNamespace}/datasets`});
+  }
+
+  const submitCallback = e => {
+    setServerErrors(undefined);
+    setSubmitLoader(true);
+    const dataset= {};
+    dataset.name = props.datasetFormSchema.name.value;
+    dataset.description = props.datasetFormSchema.description.value;
+    dataset.files = props.datasetFormSchema.files.value.map((file)=> 
+    {
+      return { "file_id":file.file_id } 
+    });
+    
+   props.client.postDataset(props.projectPathWithNamespace, dataset)
+   .then(dataset => {
+     if(dataset.data.error !== undefined) {
+      setSubmitLoader(false);
+      setServerErrors(dataset.data.error.reason);
+     } else {
+      setSubmitLoader(false);
+      props.datasetFormSchema.name.value =  props.datasetFormSchema.name.initial;
+      props.datasetFormSchema.description.value =  props.datasetFormSchema.description.initial;
+      props.datasetFormSchema.files.value =  props.datasetFormSchema.files.initial;
+      props.history.push({pathname: `/projects/${props.projectPathWithNamespace}/datasets`});
+     }
+  });
+  }
+  if(props.accessLevel < ACCESS_LEVELS.MAINTAINER){
+    return <Col sm={12} md={8} lg={10}>
+    <Alert timeout={0} color="primary">
+      Acces Denied. You don't have rights to create datasets for this project.<br /><br /> 
+      <FontAwesomeIcon icon={faInfoCircle} />  If you where recently added to this project try refreshing the page.
+    </Alert>
+  </Col>
+  }
 
   return (
     <Row>
@@ -43,7 +86,10 @@ function DatasetNew(props){
           title="Create Dataset" 
           btnName="Create Dataset" 
           submitCallback={submitCallback} 
-          model={props.datasetFormSchema} />
+          model={props.datasetFormSchema}
+          serverErrors={serverErrors}
+          submitLoader={{value: submitLoader, text:"Creating dataset, please wait..."}}
+          onCancel={onCancel} />
       </Col>
     </Row>
   );

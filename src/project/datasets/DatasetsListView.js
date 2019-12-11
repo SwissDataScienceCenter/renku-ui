@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { NavLink,  Link } from 'react-router-dom';
-
+import { ACCESS_LEVELS } from '../../api-client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTable, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+import { faTable, faPlus } from '@fortawesome/free-solid-svg-icons';
 
 import '../filestreeview/treeviewstyle.css';
 import { Loader } from '../../utils/UIComponents';
@@ -21,6 +21,23 @@ function DatasetListRow(props){
   </NavLink>
 }
 
+function CreateDatasetButton(props){
+  if(props.visibility.accessLevel >= ACCESS_LEVELS.MAINTAINER)
+    return <span className="float-right throw-right-in-flex">
+      <UncontrolledButtonDropdown size="sm">
+        <DropdownToggle color="primary" className="alternateToggleStyle" caret>
+          <FontAwesomeIcon icon={faPlus} style={{ color: 'white', backgroundColor: "#5561A6" }} />
+        </DropdownToggle>
+        <DropdownMenu right={false}>
+          <DropdownItem>
+            <Link to={props.newDatasetUrl}>New Dataset</Link>
+          </DropdownItem>
+        </DropdownMenu>
+      </UncontrolledButtonDropdown>
+    </span>;
+  else return null;
+}
+
 export default function DatasetsListView(props){
   const [datasets, setDatasets] = useState(undefined);
 
@@ -35,18 +52,7 @@ export default function DatasetsListView(props){
         <span className="tree-header-title text-truncate">
           Datasets List
         </span>
-        <span className="float-right throw-right-in-flex">
-          <UncontrolledButtonDropdown size="sm">
-            <DropdownToggle color="primary" className="alternateToggleStyle">
-              <FontAwesomeIcon icon={faEllipsisV} style={{ color: 'white', backgroundColor: "#5561A6" }} />
-            </DropdownToggle>
-            <DropdownMenu right={false}>
-              <DropdownItem>
-                <Link to={props.newDatasetUrl}>New Dataset</Link>
-              </DropdownItem>
-            </DropdownMenu>
-          </UncontrolledButtonDropdown>
-        </span>
+        <CreateDatasetButton visibility={props.visibility} newDatasetUrl={props.newDatasetUrl}/>
       </div> 
       <nav>
         {

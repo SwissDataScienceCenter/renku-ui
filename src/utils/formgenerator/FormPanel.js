@@ -24,16 +24,17 @@
  */
 
 import React from 'react';
-import { Form, Button, Col } from 'reactstrap';
+import { Form, Button, Col, UncontrolledAlert, FormText } from 'reactstrap';
 import useForm from './UseForm';
 import TextInput from './fields/TextInput';
 import CktextareaInput from './fields/CKEditorTextArea';
 import FilepondInput from './fields/FilepondInput';
+import { Loader } from '../../utils/UIComponents'
 import './FormGenerator.css'
 
-function FormPanel({ title, btnName, submitCallback, model }) {
+function FormPanel({ title, btnName, submitCallback, model, serverErrors, submitLoader, onCancel }) {
 
-	const modelValues = Object.values(model)
+  const modelValues = Object.values(model)
 
   const [inputs, setInputs, setSubmit] = useForm(modelValues, submitCallback);
 
@@ -43,15 +44,30 @@ function FormPanel({ title, btnName, submitCallback, model }) {
 
   const renderInput = input => {
     const Component = Components[capitalize(input.type) + 'Input'];
-    return <Component key={input.name} setInputs={setInputs} {...input} />;
+    return <Component key={input.name} disabled={submitLoader.value} setInputs={setInputs} {...input} />;
   }
 
   return (
     <Col>
       <h3 className="uk-heading-divider uk-text-center pb-2">{title}</h3>
       <Form>
-        {inputs.map(input => renderInput(input))}
-        <Button className="float-right mt-1" color="primary" onClick={setSubmit}>{btnName}</Button>
+        <div>
+          {inputs.map(input => renderInput(input))}
+          {serverErrors ?  <UncontrolledAlert color="danger">{serverErrors}</UncontrolledAlert>: null }
+          {submitLoader !== undefined && submitLoader.value ? 
+            <FormText color="primary">
+              <Loader size="16" inline="true" margin="2" />
+              {submitLoader.text}
+            </FormText>
+            : null}
+          <Button disabled={submitLoader.value} className="float-right mt-1" color="primary" onClick={setSubmit}>{btnName}</Button>
+          {
+            onCancel !== undefined ?
+              <Button disabled={submitLoader.value} className="float-right mt-1 mr-1" color="secondary" onClick={onCancel}>Cancel</Button>
+              : null
+          }
+
+        </div>
       </Form>
     </Col>
   )
