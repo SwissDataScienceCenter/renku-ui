@@ -1,11 +1,15 @@
 FROM node:8.11.1-alpine
 
+RUN apk update && apk add python make g++
+
 WORKDIR /app
 
 #: Use only required files.
 COPY package.json package-lock.json /app/
 COPY public /app/public
 COPY src /app/src/
+
+ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 RUN npm install --silent && \
     npm run-script build
