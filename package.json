@@ -18,7 +18,6 @@
     "d3": "^5.12.0",
     "dagre-d3": "^0.6.1",
     "dompurify": "^2.0.7",
-    "fibers": "^4.0.2",
     "filepond": "^4.7.4",
     "filesize": "^6.0.0",
     "graphql": "^14.5.8",
@@ -48,7 +47,6 @@
     "sass": "^1.23.7",
     "showdown": "^1.9.1",
     "styled-jsx": "^3.2.3",
-    "typescript": "^3.7.3",
     "uuid": "^3.3.3",
     "yaml-js": "^0.2.3"
   },
@@ -70,7 +68,8 @@
     "fetch-mock": "^7.7.0",
     "history": "^4.10.1",
     "node-fetch": "^2.6.0",
-    "react-scripts": "^3.2.0"
+    "react-scripts": "^3.2.0",
+    "typescript": "^3.7.3"
   },
   "browserslist": [
     ">0.2%",
