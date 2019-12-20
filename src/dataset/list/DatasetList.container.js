@@ -41,14 +41,15 @@ class List extends Component {
       onSearchSubmit: this.onSearchSubmit.bind(this),
       onOrderByDropdownToogle: this.onOrderByDropdownToogle.bind(this),
       changeSearchDropdownOrder: this.changeSearchDropdownOrder.bind(this),
-      toogleSearchSorting: this.toogleSearchSorting.bind(this)
+      toogleSearchSorting: this.toogleSearchSorting.bind(this),
+      onPaginationPageChange: this.onPaginationPageChange.bind(this),
     };
   }
 
   componentDidMount() {
-    const {query, orderBy, orderSearchAsc, pathName} = this.getUrlSearchParameters(this.props.location);
+    const { query, orderBy, orderSearchAsc, pathName, pageNumber } = this.getUrlSearchParameters(this.props.location);
     let queryproc = query;
-    if(queryproc === undefined){
+    if (queryproc === undefined) {
       this.model.setInitialized(true);
     } else {
       this.model.setQuery(query);
@@ -56,33 +57,34 @@ class List extends Component {
     this.model.setOrderBy(orderBy);
     this.model.setOrderSearchAsc(orderSearchAsc);
     this.model.setOrderDropdownOpen(false);
-    this.model.setLoggedIn(this.props.user.id ? true : false);
     this.model.setPathName(pathName);
+    this.model.setPage(pageNumber);
     this.model.performSearch();
     const listener = this.props.history.listen(location => {
-      const {query, orderBy, orderSearchAsc, pathName} = this.getUrlSearchParameters(location);
+      const { query, orderBy, orderSearchAsc, pathName, pageNumber } = this.getUrlSearchParameters(location);
       let queryproc = query;
-      if(queryproc === undefined){
+      if (queryproc === undefined) {
         this.model.setInitialized(true);
-        queryproc= '';
+        queryproc = '';
       }
-      this.onUrlParametersChange(queryproc, orderBy, orderSearchAsc, pathName);
+      this.onUrlParametersChange(queryproc, orderBy, orderSearchAsc, pathName, pageNumber);
     });
-    this.setState({listener});
+    this.setState({ listener });
   }
 
-  urlFromQueryAndPageNumber(query, orderBy, orderSearchAsc, pathName ) {
-    return `${pathName}?q=${query}&orderBy=${orderBy}&orderSearchAsc=${orderSearchAsc}`;
-  } 
+  urlFromQueryAndPageNumber(query, orderBy, orderSearchAsc, pathName, pageNumber) {
+    return `${pathName}?q=${query}&page=${pageNumber}&orderBy=${orderBy}&orderSearchAsc=${orderSearchAsc}`;
+  }
 
   getUrlSearchParameters(location) {
     const query = qs.parse(location.search).q || '';
     const orderBy = qs.parse(location.search).orderBy || orderByValuesMap.PROJECTSCOUNT;
     const orderSearchAsc = qs.parse(location.search).orderSearchAsc === "true" ? true : false;
     const pathName = location.pathname.endsWith('/') ?
-      location.pathname.substring(0,location.pathname.length-1) :
+      location.pathname.substring(0, location.pathname.length - 1) :
       location.pathname;
-    return {query, orderBy, orderSearchAsc, pathName};
+    const pageNumber = parseInt(qs.parse(location.search).page, 10) || 1
+    return { query, orderBy, orderSearchAsc, pathName, pageNumber };
   }
 
   componentWillUnmount() {
@@ -100,14 +102,20 @@ class List extends Component {
   //   return `${path}?q=${query}`
   // } 
 
-  onUrlParametersChange(query, orderBy, orderSearchAsc, pathName) {
+  onUrlParametersChange(query, orderBy, orderSearchAsc, pathName, pageNumber) {
     // workaround to prevent the listener of "this.props.history.listen" to trigger in the wrong path
     // INFO: check if the path matches [/datasets$, /datasets/$, /datasets?*, /datasets/\D*]
     const regExp = /\/datasets($|\/$|(\/|\?)\D+.*)$/;
     if (!regExp.test(pathName)) {
       return;
     }
-    this.model.setQueryAndSortInSearch(query, orderBy, orderSearchAsc, pathName)
+    this.model.setQueryAndSortInSearch(query, orderBy, orderSearchAsc, pathName, pageNumber)
+  }
+
+  onPaginationPageChange(pageNumber) {
+    this.model.setPage(pageNumber);
+    this.model.performSearch();
+    this.pushNewSearchToHistory();
   }
 
   pushNewSearchToHistory() {
@@ -116,7 +124,8 @@ class List extends Component {
         this.model.get('query'),
         this.model.get('orderBy'),
         this.model.get('orderSearchAsc'),
-        this.model.get('pathName')
+        this.model.get('pathName'),
+        this.model.get('currentPage')
       )
     )
   }
@@ -129,25 +138,25 @@ class List extends Component {
     this.model.setOrderDropdownOpen(!this.model.get('orderByDropdownOpen'));
   }
 
-  changeSearchDropdownOrder(e){
+  changeSearchDropdownOrder(e) {
     this.model.setOrderBy(e.target.value);
     this.pushNewSearchToHistory();
   }
 
-  toogleSearchSorting(){
+  toogleSearchSorting() {
     this.model.setOrderSearchAsc(!this.model.get('orderSearchAsc'));
     this.pushNewSearchToHistory();
   }
 
-  getOrderByLabel(){
-    switch(this.model.get('orderBy')){
+  getOrderByLabel() {
+    switch (this.model.get('orderBy')) {
     case orderByValuesMap.NAME:
       return "name";
     case orderByValuesMap.DATE_PUBLISHED:
       return "date published";
     case orderByValuesMap.PROJECTSCOUNT:
       return "projects count";
-    default :
+    default:
       return ""
     }
   }
@@ -167,7 +176,11 @@ class List extends Component {
       orderBy: this.model.get('orderBy'),
       orderByDropdownOpen: this.model.get('orderByDropdownOpen'),
       orderSearchAsc: this.model.get('orderSearchAsc'),
-      errorMessage: this.model.get('errorMessage')
+      errorMessage: this.model.get('errorMessage'),
+      currentPage: this.model.get('currentPage'),
+      perPage: this.model.get('perPage'),
+      totalItems: this.model.get('totalItems'),
+      onPageChange: this.handlers.onPaginationPageChange,
     }
   }
 
