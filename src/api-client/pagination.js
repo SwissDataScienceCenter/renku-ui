@@ -32,18 +32,25 @@ const NUMERICAL_X_HEADERS = {
   'X-Total-Pages': 'totalPages',
 }
 
+const NUMERICAL_PAGINATION_HEADERS = {
+  'Next-Page': 'nextPage',
+  'Page': 'currentPage',
+  'Per-Page': 'perPage',
+  'Total': 'totalItems',
+  'Total-Pages': 'totalPages',
+}
+
 // In this function we just parse the pagination related header
 // information. The idea that methods performing the the request to
 // to fetch the next page has been dropped because we prefer to
 // keep the state of the corresponding components serializable.
 function processPaginationHeaders(client, headers) {
-
   let paginationDetail = {};
 
   // Parse the link header if it exists
   if (headers.get('Link')) {
     const paginationLinks = processLinkHeader(headers.get('Link'))
-    paginationDetail = {...paginationDetail, ...paginationLinks}
+    paginationDetail = { ...paginationDetail, ...paginationLinks }
   }
 
   // Parse the pagination related X-... headers
@@ -51,6 +58,14 @@ function processPaginationHeaders(client, headers) {
     paginationDetail[NUMERICAL_X_HEADERS[header]] =
       parseInt(headers.get(header), 10) || undefined
   })
+
+  // Parse the pagination releated hedares (non-X)
+  if (!headers.get('X-Page')) {
+    Object.keys(NUMERICAL_PAGINATION_HEADERS).forEach((header) => {
+      paginationDetail[NUMERICAL_PAGINATION_HEADERS[header]] =
+        parseInt(headers.get(header), 10) || undefined
+    })
+  }
 
   return paginationDetail
 }
