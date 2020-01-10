@@ -34,7 +34,8 @@ import { faCheckCircle, faFileAlt, faSave, faTimesCircle } from '@fortawesome/fr
 import { StatusHelper } from '../model/Model';
 import { NotebooksHelper } from './index'
 import { simpleHash } from '../utils/HelperFunctions';
-import { Loader, InfoAlert, ExternalLink, JupyterIcon, ThrottledTooltip } from '../utils/UIComponents';
+import { Loader, ExternalLink, JupyterIcon, ThrottledTooltip } from '../utils/UIComponents';
+import { WarnAlert, InfoAlert } from '../utils/UIComponents';
 import Time from '../utils/Time';
 import Sizes from '../utils/Media';
 
@@ -917,11 +918,12 @@ class StartNotebookOptions extends Component {
       return <Label>Starting a new interactive environment... <Loader size="14" inline="true" /></Label>
     }
 
-    const { fetched, options, all } = this.props.notebooks;
+    const { fetched, all } = this.props.notebooks;
+    const { options } = this.props;
     if (!fetched) {
       return (<Label>Verifying available environments... <Loader size="14" inline="true" /></Label>);
     }
-    if (Object.keys(options).length === 0) {
+    if (Object.keys(options.global).length === 0 || options.fetching) {
       return (<Label>Loading environment parameters... <Loader size="14" inline="true" /></Label>);
     }
     if (Object.keys(all).length === 1) {
@@ -972,22 +974,31 @@ class StartNotebookOptionsRunning extends Component {
 
 class StartNotebookServerOptions extends Component {
   render() {
-    const { options } = this.props.notebooks;
+    const globalOptions = this.props.options.global;
+    const projectOptions = this.props.options.project;
     const selectedOptions = this.props.filters.options;
-    const sortedOptionKeys = Object.keys(options)
-      .sort((a, b) => parseInt(options[a].order) - parseInt(options[b].order));
+    const { warnings } = this.props.options;
+    const sortedOptionKeys = Object.keys(globalOptions)
+      .sort((a, b) => parseInt(globalOptions[a].order) - parseInt(globalOptions[b].order));
     const renderedServerOptions = sortedOptionKeys
       .filter(key => key !== "commitId")
       .map(key => {
-        const serverOption = { ...options[key], selected: selectedOptions[key] };
+        const serverOption = { ...globalOptions[key], selected: selectedOptions[key] };
         const onChange = (event, value) => {
           this.props.handlers.setServerOption(key, event, value);
         };
+        const warning = !warnings.includes(key)
+          ? null
+          : <WarnAlert>
+            <FontAwesomeIcon icon={faInfoCircle} /> Cannot set {serverOption.displayName} to
+            its project default &quot;{projectOptions[key]}&quot; in this Renkulab deployment.
+          </WarnAlert>
 
         switch (serverOption.type) {
         case 'enum':
           return <FormGroup key={key} className={serverOption.options.length === 1 ? 'mb-0' : ''}>
             <Label>{serverOption.displayName}</Label>
+            {warning}
             <ServerOptionEnum {...serverOption} onChange={onChange} />
           </FormGroup>;
 
@@ -1013,8 +1024,19 @@ class StartNotebookServerOptions extends Component {
           return null;
         }
       });
+
+    const unmatchedWarnings = warnings.filter(x => !sortedOptionKeys.includes(x));
+    const globalWarning = unmatchedWarnings && unmatchedWarnings.length
+      ? <WarnAlert key="globalWarning">
+        <FontAwesomeIcon icon={faInfoCircle} /> Unknowun project
+        variable{unmatchedWarnings.length > 1 ? "s" : ""} &quot;
+        {unmatchedWarnings.join("&quot;, &quot;")}&quot;
+        in this Renkulab deployment.
+      </WarnAlert>
+      : null;
+
     return renderedServerOptions.length ?
-      renderedServerOptions :
+      renderedServerOptions.concat(globalWarning) :
       <label>Notebook options not avilable</label>;
   }
 }
@@ -1022,14 +1044,17 @@ class StartNotebookServerOptions extends Component {
 class ServerOptionEnum extends Component {
   render() {
     const { selected } = this.props;
+    let { options } = this.props;
 
-    if (this.props.options.length === 1)
+    if (selected && options && options.length && !options.includes(selected))
+      options.push(selected);
+    if (options.length === 1)
       return (<label>: {this.props.selected}</label>);
 
     return (
       <div>
         <ButtonGroup>
-          {this.props.options.map((optionName, i) => {
+          {options.map((optionName, i) => {
             const color = optionName === selected ? "primary" : "outline-primary";
             return (
               <Button

@@ -23,8 +23,13 @@
  *  Notebooks controller code.
  */
 
+import { API_ERRORS } from '../api-client/errors';
+import { parseINIString } from '../utils/HelperFunctions';
+
 const POLLING_INTERVAL = 3000;
 const IMAGE_BUILD_JOB = "image_build";
+const RENKU_INI_PATH = ".renku/renku.ini";
+const RENKU_INI_SECTION = `renku "interactive"`;
 
 const ExpectedAnnotations = {
   "renku.io": {
@@ -100,6 +105,9 @@ class NotebooksCoordinator {
         fetched: null,
         lastParameters: null,
         lastMainId: null
+      },
+      options: {
+        fetched: null
       }
     });
   }
@@ -205,21 +213,134 @@ class NotebooksCoordinator {
   }
 
   fetchNotebookOptions() {
-    const oldData = this.model.get('notebooks.options');
+    this.fetchProjectOptions();
+    const oldData = this.model.get('options.global');
     if (Object.keys(oldData).length !== 0)
       return;
-    this.model.set('notebooks.options', {});
-    return this.client.getNotebookServerOptions().then((notebookOptions) => {
-      let selectedOptions = {};
-      Object.keys(notebookOptions).forEach(option => {
-        selectedOptions[option] = notebookOptions[option].default;
+
+    return this.client.getNotebookServerOptions().then((globalOptions) => {
+      this.model.set('options.global', globalOptions);
+      this.setDefaultOptions(globalOptions, null);
+
+      return globalOptions;
+    });
+  }
+
+  fetchProjectOptions() {
+    // cleanup missing project options warning
+    const warnings = this.model.get('options.warnings');
+    if (warnings && warnings.length) {
+      this.model.set('options.warnings', []);
+    }
+
+    const filters = this.getQueryFilters();
+    const requestFilters = JSON.stringify(filters); // keep these to verify answer validity
+    const projectId = `${encodeURIComponent(filters.namespace)}%2F${filters.project}`;
+    this.model.setObject({
+      options: {
+        fetching: true,
+        warnings: { $set: [] }
+      }
+    });
+    this.client.getRepositoryFile(projectId, RENKU_INI_PATH, filters.commit, 'raw')
+      .then(data => {
+        // verify if received data are not stale
+        if (requestFilters !== JSON.stringify(this.getQueryFilters()))
+          return;
+
+        const parsedData = parseINIString(data);
+        if (parsedData[RENKU_INI_SECTION]) {
+          // create project options object
+          const parsedOptions = parsedData[RENKU_INI_SECTION];
+          let projectOptions = {};
+          Object.keys(parsedOptions).forEach(parsedOption => {
+            let option = parsedOption;
+            if (parsedOption === "default_url")
+              option = "defaultUrl";
+            let value = parsedOptions[parsedOption];
+            if (value === "true") {
+              value = true;
+            }
+            else if (value === "false") {
+              value = false;
+            }
+            else if (!isNaN(value)) {
+              value = parseFloat(value);
+            }
+
+            projectOptions[option] = value;
+          })
+
+          // save options and try to set user-selected options
+          const optionsObject = {
+            fetching: false,
+            fetched: new Date(),
+            project: { $set: projectOptions }
+          };
+          this.model.setObject({ options: optionsObject });
+
+          this.setDefaultOptions(null, projectOptions);
+          return projectOptions;
+        }
       })
-      const options = {
-        notebooks: { options: notebookOptions },
-        filters: { options: selectedOptions }
-      };
-      this.model.setObject(options);
-      return options;
+      .catch(error => {
+        const optionsObject = {
+          fetching: false,
+          fetched: new Date(),
+          project: { $set: {} }
+        };
+        this.model.setObject({ options: optionsObject });
+        if (error.case !== API_ERRORS.notFoundError)
+          throw error;
+
+        this.setDefaultOptions(null, {});
+        return {};
+      });
+  }
+
+  setDefaultOptions(globalOptions, projectOptions) {
+    // verify if all the pieces are available and get what's missing
+    if (!globalOptions) {
+      const pendingGlobalOptions = this.model.get('options.global') === {} ? true : false;
+      if (pendingGlobalOptions)
+        return;
+      globalOptions = this.model.get('options.global');
+    }
+    if (!projectOptions) {
+      const pendingProjectOptions = this.model.get('options.fetching');
+      if (pendingProjectOptions)
+        return;
+      projectOptions = this.model.get('options.project')
+    }
+
+    // get previously selected options and add missing ones
+    let filterOptions = this.model.get('filters.options');
+    const filledOptions = Object.keys(filterOptions);
+    Object.keys(globalOptions).forEach(option => {
+      if (!filledOptions.includes(option)) {
+        filterOptions[option] = globalOptions[option].default;
+      }
+    })
+
+    // try to overwrite default options with project options
+    let warnings = [];
+    Object.keys(projectOptions).forEach(option => {
+      const optionValue = projectOptions[option];
+      if ((globalOptions[option]
+        && globalOptions[option].options
+        && globalOptions[option].options.length
+        && globalOptions[option].options.includes(optionValue))
+        || option === "defaultUrl"
+      ) {
+        filterOptions[option] = optionValue;
+      }
+      else {
+        warnings.push(option);
+      }
+    });
+    this.model.setObject({
+      filters: { options: { $set: filterOptions } },
+      options: { warnings: { $set: warnings } }
     });
   }
 
