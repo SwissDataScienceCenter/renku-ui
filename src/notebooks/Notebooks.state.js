@@ -335,7 +335,7 @@ class NotebooksCoordinator {
         filterOptions[option] = optionValue;
       }
       else {
-        warnings.push(option);
+        warnings = warnings.concat(option);
       }
     });
     this.model.setObject({

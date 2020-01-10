@@ -1047,7 +1047,7 @@ class ServerOptionEnum extends Component {
     let { options } = this.props;
 
     if (selected && options && options.length && !options.includes(selected))
-      options.push(selected);
+      options = options.concat(selected);
     if (options.length === 1)
       return (<label>: {this.props.selected}</label>);
 
