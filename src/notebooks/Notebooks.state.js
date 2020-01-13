@@ -99,7 +99,8 @@ class NotebooksCoordinator {
         namespace: null,
         project: null,
         branch: { $set: {} },
-        commit: { $set: {} }
+        commit: { $set: {} },
+        options: { $set: {} }
       },
       pipelines: {
         fetched: null,
@@ -258,10 +259,10 @@ class NotebooksCoordinator {
             if (parsedOption === "default_url")
               option = "defaultUrl";
             let value = parsedOptions[parsedOption];
-            if (value === "true") {
+            if (value && value.toLowerCase() === "true") {
               value = true;
             }
-            else if (value === "false") {
+            else if (value && value.toLowerCase() === "false") {
               value = false;
             }
             else if (!isNaN(value)) {
@@ -326,11 +327,10 @@ class NotebooksCoordinator {
     let warnings = [];
     Object.keys(projectOptions).forEach(option => {
       const optionValue = projectOptions[option];
-      if ((globalOptions[option]
-        && globalOptions[option].options
-        && globalOptions[option].options.length
-        && globalOptions[option].options.includes(optionValue))
-        || option === "defaultUrl"
+      if (
+        (globalOptions[option] && globalOptions[option].type !== "enum") ||
+        (globalOptions[option] && globalOptions[option].options && globalOptions[option].options.length && globalOptions[option].options.includes(optionValue)) ||
+        (option === "defaultUrl")
       ) {
         filterOptions[option] = optionValue;
       }

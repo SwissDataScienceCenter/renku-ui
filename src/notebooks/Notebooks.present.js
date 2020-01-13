@@ -1028,7 +1028,7 @@ class StartNotebookServerOptions extends Component {
     const unmatchedWarnings = warnings.filter(x => !sortedOptionKeys.includes(x));
     const globalWarning = unmatchedWarnings && unmatchedWarnings.length
       ? <WarnAlert key="globalWarning">
-        <FontAwesomeIcon icon={faInfoCircle} /> Unknowun project
+        <FontAwesomeIcon icon={faInfoCircle} /> Unknown project
         variable{unmatchedWarnings.length > 1 ? "s" : ""} &quot;
         {unmatchedWarnings.join("&quot;, &quot;")}&quot;
         in this Renkulab deployment.
@@ -1071,11 +1071,14 @@ class ServerOptionEnum extends Component {
 
 class ServerOptionBoolean extends Component {
   render() {
+    // The double negation solves an annoying problem happening when checked=undefined
+    // https://stackoverflow.com/a/39709700/1303090
+    const selected = !!this.props.selected;
     return (
       <Input
         type="checkbox"
         id={this.props.id}
-        value={this.props.selected}
+        checked={selected}
         onChange={this.props.onChange}
       />
     );
