@@ -57,7 +57,7 @@ class Home extends Component {
     this.store = createStore(State.Home.reduce);
   }
 
-  componentWillMount(){
+  UNSAFE_componentWillMount(){
     UserState.reSetAllProjects(this.props.client, this.props.userStateDispatch, 
       this.props.user.starredProjects, this.props.user.memberProjects);
   }

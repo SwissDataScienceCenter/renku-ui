@@ -201,7 +201,7 @@ describe('update react state', () => {
       this.model = new StateModel(complexSchema, StateKind.REACT, this, complexSchema.createInitialized());
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
       this.model.set('subthing.age', 1);
       this.model.set('simpleThings.0.numbers.2', 2)
     }
@@ -255,7 +255,7 @@ describe('update connected redux store', () => {
       this.model = new StateModel(complexSchema, StateKind.REACT, this);
     }
 
-    componentWillMount() {
+    UNSAFE_componentWillMount() {
       this.model.set('subthing.age', 1)
     }
 
