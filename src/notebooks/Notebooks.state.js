@@ -46,9 +46,10 @@ const ExpectedAnnotations = {
 
 const NotebooksHelper = {
   /**
-   * compute the status of a notebook
+   * Compute the status of a notebook
    *
-   * @param {Object} either the notebook or the notebook.status object as returned by the GET /servers API
+   * @param {Object} data - either the notebook or the notebook.status object as returned
+   *   by the GET /servers API
    */
   getStatus: (data) => {
     let status = data;
@@ -61,13 +62,14 @@ const NotebooksHelper = {
       return "error";
     return "pending";
   },
+
   /**
-   * add missing annotations from the notebook servers
+   * Add missing annotations from the notebook servers
    *
    * @param {object} annotations
    * @param {string} domain
    */
-  cleanAnnotations(annotations, domain = "renku.io") {
+  cleanAnnotations: (annotations, domain = "renku.io") => {
     let cleaned = {};
     const prefix = `${domain}/`;
     ExpectedAnnotations[domain].required.forEach(annotation => {
@@ -77,6 +79,92 @@ const NotebooksHelper = {
     });
 
     return { ...cleaned };
+  },
+
+  /**
+   * Parse project options raw data from the .ini file to a JS object
+   *
+   * @param {string} data - raw file content
+   */
+  parseProjectOptions: (data) => {
+    let projectOptions = {};
+
+    // try to parse the data
+    let parsedData;
+    try {
+      parsedData = parseINIString(data);
+    } catch (error) {
+      parsedData = {};
+    }
+    // check single props when the environment sections is available
+    if (parsedData[RENKU_INI_SECTION]) {
+      const parsedOptions = parsedData[RENKU_INI_SECTION];
+      Object.keys(parsedOptions).forEach(parsedOption => {
+        // treat "default_url" as "defaultUrl" to allow name consistenci in the the .ini file
+        let option = parsedOption;
+        if (parsedOption === "default_url")
+          option = "defaultUrl";
+
+        // convert boolen and numbers
+        let value = parsedOptions[parsedOption];
+        if (value && value.toLowerCase() === "true") {
+          projectOptions[option] = true;
+        }
+        else if (value && value.toLowerCase() === "false") {
+          projectOptions[option] = false;
+        }
+        else if (!isNaN(value)) {
+          projectOptions[option] = parseFloat(value);
+        }
+        else {
+          projectOptions[option] = value;
+        }
+      });
+    }
+
+    return projectOptions;
+  },
+
+  /**
+   * Check if a project option can be applied according to the deployment global options
+   *
+   * @param {object} globalOptions - global options object
+   * @param {string} currentOption - current project option name
+   * @param {string} currentValue - current project option value
+   */
+  checkOptionValidity: (globalOptions, currentOption, currentValue) => {
+    // defaultUrl is a special case and any string will fit
+    if (currentOption === "defaultUrl")
+      if (typeof currentValue === "string")
+        return true;
+      else
+        return false;
+
+    const globalOption = globalOptions[currentOption];
+    // the project option must be part of the global options
+    if (!globalOption)
+      return false;
+
+    // non-enum options require only typecheck
+    if (globalOption.type !== "enum")
+      if (globalOption.type === "boolean")
+        if (typeof currentValue === "boolean")
+          return true;
+        else
+          return false;
+      else if (globalOption.type === "float" || globalOption.type === "int")
+        if (typeof currentValue === "number")
+          return true;
+        else
+          return false;
+      else
+        return false;
+
+    // enum options must have a value valid for the corresponding global options
+    if (globalOption.options && globalOption.options.length && globalOption.options.includes(currentValue))
+      return true
+
+    return false;
   }
 };
 
@@ -228,14 +316,8 @@ class NotebooksCoordinator {
   }
 
   fetchProjectOptions() {
-    // cleanup missing project options warning
-    const warnings = this.model.get('options.warnings');
-    if (warnings && warnings.length) {
-      this.model.set('options.warnings', []);
-    }
-
+    // prepare query data and reset warnings
     const filters = this.getQueryFilters();
-    const requestFilters = JSON.stringify(filters); // keep these to verify answer validity
     const projectId = `${encodeURIComponent(filters.namespace)}%2F${filters.project}`;
     this.model.setObject({
       options: {
@@ -243,60 +325,33 @@ class NotebooksCoordinator {
         warnings: { $set: [] }
       }
     });
+    // keep track of filter data at query time
+    const requestFiltersString = JSON.stringify(filters);
     this.client.getRepositoryFile(projectId, RENKU_INI_PATH, filters.commit, 'raw')
+      .catch(error => {
+        // treat a non existing file as an empty string
+        if (error.case !== API_ERRORS.notFoundError)
+          throw error;
+        return "";
+      })
       .then(data => {
-        // verify if received data are not stale
-        if (requestFilters !== JSON.stringify(this.getQueryFilters()))
+        // verify that filter data at response time are not for an old query
+        const currentFilters = this.getQueryFilters();
+        if (requestFiltersString !== JSON.stringify(currentFilters))
           return;
 
-        const parsedData = parseINIString(data);
-        if (parsedData[RENKU_INI_SECTION]) {
-          // create project options object
-          const parsedOptions = parsedData[RENKU_INI_SECTION];
-          let projectOptions = {};
-          Object.keys(parsedOptions).forEach(parsedOption => {
-            let option = parsedOption;
-            if (parsedOption === "default_url")
-              option = "defaultUrl";
-            let value = parsedOptions[parsedOption];
-            if (value && value.toLowerCase() === "true") {
-              value = true;
-            }
-            else if (value && value.toLowerCase() === "false") {
-              value = false;
-            }
-            else if (!isNaN(value)) {
-              value = parseFloat(value);
-            }
-
-            projectOptions[option] = value;
-          })
-
-          // save options and try to set user-selected options
-          const optionsObject = {
-            fetching: false,
-            fetched: new Date(),
-            project: { $set: projectOptions }
-          };
-          this.model.setObject({ options: optionsObject });
-
-          this.setDefaultOptions(null, projectOptions);
-          return projectOptions;
-        }
-      })
-      .catch(error => {
+        // parse data, save them and try to set user options
+        const projectOptions = NotebooksHelper.parseProjectOptions(data);
         const optionsObject = {
           fetching: false,
           fetched: new Date(),
-          project: { $set: {} }
+          project: { $set: projectOptions }
         };
         this.model.setObject({ options: optionsObject });
-        if (error.case !== API_ERRORS.notFoundError)
-          throw error;
 
-        this.setDefaultOptions(null, {});
-        return {};
-      });
+        this.setDefaultOptions(null, projectOptions);
+        return projectOptions;
+      })
   }
 
   setDefaultOptions(globalOptions, projectOptions) {
@@ -314,7 +369,7 @@ class NotebooksCoordinator {
       projectOptions = this.model.get('options.project')
     }
 
-    // get previously selected options and add missing ones
+    // Apply default options without overwriting previous selection
     let filterOptions = this.model.get('filters.options');
     const filledOptions = Object.keys(filterOptions);
     Object.keys(globalOptions).forEach(option => {
@@ -323,15 +378,11 @@ class NotebooksCoordinator {
       }
     })
 
-    // try to overwrite default options with project options
+    // Overwrite default options with project options wherever possible
     let warnings = [];
     Object.keys(projectOptions).forEach(option => {
       const optionValue = projectOptions[option];
-      if (
-        (globalOptions[option] && globalOptions[option].type !== "enum") ||
-        (globalOptions[option] && globalOptions[option].options && globalOptions[option].options.length && globalOptions[option].options.includes(optionValue)) ||
-        (option === "defaultUrl")
-      ) {
+      if (NotebooksHelper.checkOptionValidity(globalOptions, option, optionValue)) {
         filterOptions[option] = optionValue;
       }
       else {
