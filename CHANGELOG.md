@@ -1,5 +1,20 @@
 # Changes
 
+## [0.7.3](https://github.com/SwissDataScienceCenter/renku-ui/issues?utf8=%E2%9C%93&q=is%3Aclosed+milestone%3A0.7.3) (released 2020-01-13)
+
+
+### Features
+
+**datasets**
+
+* Support pagination in display of data sets ([#713](https://github.com/SwissDataScienceCenter/renku-ui/issues/713), [#714](https://github.com/SwissDataScienceCenter/renku-ui/pull/714))
+
+### Bug Fixes
+
+**nested groups**
+
+* Correctly handle nested groups in the URLs ([#716](https://github.com/SwissDataScienceCenter/renku/issues/716), [#708](https://github.com/SwissDataScienceCenter/renku-ui/pull/708))
+
 
 ## [0.7.2](https://github.com/SwissDataScienceCenter/renku-ui/issues?utf8=%E2%9C%93&q=is%3Aclosed+milestone%3A0.7.2) (released 2019-11-22)
 
