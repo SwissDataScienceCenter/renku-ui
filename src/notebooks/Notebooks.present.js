@@ -938,6 +938,14 @@ class StartNotebookOptions extends Component {
   }
 }
 
+function Warning(props) {
+  return <div style={{fontSize: "smaller", paddingTop: "5px"}}>
+    <WarnAlert>
+      <FontAwesomeIcon icon={faInfoCircle} /> {props.children}
+  </WarnAlert>
+  </div>
+}
+
 class StartNotebookOptionsRunning extends Component {
   render() {
     const { all } = this.props.notebooks;
@@ -989,17 +997,17 @@ class StartNotebookServerOptions extends Component {
         };
         const warning = !warnings.includes(key)
           ? null
-          : <WarnAlert>
-            <FontAwesomeIcon icon={faInfoCircle} /> Cannot set {serverOption.displayName} to
-            its project default &quot;{projectOptions[key]}&quot; in this Renkulab deployment.
-          </WarnAlert>
+          : <Warning>
+              Cannot set <b>{serverOption.displayName}</b> to
+              the project default value <i>{projectOptions[key]}</i> in this Renkulab deployment.
+            </Warning>
 
         switch (serverOption.type) {
         case 'enum':
           return <FormGroup key={key} className={serverOption.options.length === 1 ? 'mb-0' : ''}>
             <Label>{serverOption.displayName}</Label>
-            {warning}
             <ServerOptionEnum {...serverOption} onChange={onChange} />
+            {warning}
           </FormGroup>;
 
         case 'int':
@@ -1027,12 +1035,11 @@ class StartNotebookServerOptions extends Component {
 
     const unmatchedWarnings = warnings.filter(x => !sortedOptionKeys.includes(x));
     const globalWarning = unmatchedWarnings && unmatchedWarnings.length
-      ? <WarnAlert key="globalWarning">
-        <FontAwesomeIcon icon={faInfoCircle} /> Unknown project
-        variable{unmatchedWarnings.length > 1 ? "s" : ""} &quot;
-        {unmatchedWarnings.join("&quot;, &quot;")}&quot;
-        in this Renkulab deployment.
-      </WarnAlert>
+      ? <Warning key="globalWarning">
+        Project environment default contains
+        variable{unmatchedWarnings.length > 1 ? "s" : ""} {unmatchedWarnings.map((w, i) => <span key={i}>&ldquo;{w}&rdquo;, </span>)}
+        which {unmatchedWarnings.length > 1 ? "are" : "is"} not known in this Renkulab deployment.
+      </Warning>
       : null;
 
     return renderedServerOptions.length ?
@@ -1132,6 +1139,12 @@ class ServerOptionLaunch extends Component {
   }
 
   render() {
+    const { warnings } = this.props.options;
+    const globalNotification = (warnings.length < 1) ? null :
+    <Warning key="globalNotification">
+      The environment cannot be configured exactly as requested for this project.
+      You can still start one, but some things may not work correctly.
+    </Warning>
     return [
       <Button key="button" color="primary" onClick={this.checkServer}>
         Start environment
@@ -1141,7 +1154,8 @@ class ServerOptionLaunch extends Component {
         showModal={this.state.showModal}
         currentBranch={this.state.current}
         {...this.props}
-      />
+      />,
+      globalNotification
     ];
   }
 }
