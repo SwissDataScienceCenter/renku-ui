@@ -73,8 +73,10 @@ class Notebooks extends Component {
     this.coordinator.stopNotebook(serverName, force);
   }
 
-  fetchLogs(serverName) {
-    this.coordinator.fetchLogs(serverName);
+  async fetchLogs(serverName, full = false) {
+    if (!serverName)
+      return;
+    return this.coordinator.fetchLogs(serverName, full);
   }
 
   toggleLogs(serverName) {

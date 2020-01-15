@@ -395,35 +395,28 @@ class NotebooksCoordinator {
     });
   }
 
-  fetchLogs(serverName) {
+  fetchLogs(serverName, full = false) {
+    let lines = 250;
+    if (full)
+      lines = 0;
     let logs = { fetching: true };
-    if (this.model.get('logs.reference') !== serverName) {
+    if (this.model.get('logs.reference') !== serverName && !full) {
       logs.reference = serverName;
       logs.data = { $set: [] };
       logs.fetched = null;
     }
     this.model.setObject({ logs });
-
-    return this.client.getNotebookServerLogs(serverName).then((data) => {
-      this.model.setObject({
-        logs: {
-          fetched: new Date(),
-          fetching: false,
-          data: { $set: data }
+    return this.client.getNotebookServerLogs(serverName, lines)
+      .catch(e => ["Logs currently not available. Try again in a minute..."])
+      .then((data) => {
+        let updatedLogs = { fetching: false };
+        if (!full) {
+          updatedLogs.fetched = new Date();
+          updatedLogs.data = { $set: data };
         }
-      });
-      return data;
-    }).catch((e) => {
-      const response = ["Logs currently not available. Try again in a minute..."];
-      this.model.setObject({
-        logs: {
-          fetched: new Date(),
-          fetching: false,
-          data: { $set: response }
-        }
-      });
-      return response;
-    });
+        this.model.setObject({ logs: updatedLogs });
+        return data;
+      })
   }
 
   async fetchPipeline() {
