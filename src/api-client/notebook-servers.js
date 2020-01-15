@@ -96,8 +96,8 @@ function addNotebookServersMethods(client) {
     return client.clientFetch(url, {
       method: 'GET',
       headers
-    }, "text").then((resp) => {
-      return resp;
+    }).then((resp) => {
+      return resp.data;
     });
   }
 }

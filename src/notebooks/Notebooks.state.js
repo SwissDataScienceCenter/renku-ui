@@ -233,12 +233,11 @@ class NotebooksCoordinator {
     this.model.setObject({ logs });
 
     return this.client.getNotebookServerLogs(serverName).then((data) => {
-      const lines = data.split("\n");
       this.model.setObject({
         logs: {
           fetched: new Date(),
           fetching: false,
-          data: { $set: lines }
+          data: { $set: data }
         }
       });
       return data;
