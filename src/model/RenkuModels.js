@@ -165,7 +165,6 @@ const notebooksSchema = new Schema({
       poller: { initial: null },
       fetched: { initial: null },
       fetching: { initial: false },
-      options: { initial: {} },
       lastParameters: { initial: null }
     }
   },
@@ -182,6 +181,16 @@ const notebooksSchema = new Schema({
       displayedCommits: { initial: 10 },
     }
   },
+  options: {
+    schema: {
+      global: { initial: {} },
+
+      project: { initial: {} },
+      fetched: { initial: null },
+      fetching: { initial: false },
+      warnings: { initial: [] }
+    }
+  },  
   pipelines: {
     schema: {
       main: { initial: {} },

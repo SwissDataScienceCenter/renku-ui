@@ -34,7 +34,8 @@ import { faCheckCircle, faFileAlt, faSave, faTimesCircle } from '@fortawesome/fr
 import { StatusHelper } from '../model/Model';
 import { NotebooksHelper } from './index'
 import { simpleHash } from '../utils/HelperFunctions';
-import { Loader, InfoAlert, ExternalLink, JupyterIcon, ThrottledTooltip } from '../utils/UIComponents';
+import { Loader, ExternalLink, JupyterIcon, ThrottledTooltip } from '../utils/UIComponents';
+import { WarnAlert, InfoAlert } from '../utils/UIComponents';
 import Time from '../utils/Time';
 import Sizes from '../utils/Media';
 
@@ -917,11 +918,12 @@ class StartNotebookOptions extends Component {
       return <Label>Starting a new interactive environment... <Loader size="14" inline="true" /></Label>
     }
 
-    const { fetched, options, all } = this.props.notebooks;
+    const { fetched, all } = this.props.notebooks;
+    const { options } = this.props;
     if (!fetched) {
       return (<Label>Verifying available environments... <Loader size="14" inline="true" /></Label>);
     }
-    if (Object.keys(options).length === 0) {
+    if (Object.keys(options.global).length === 0 || options.fetching) {
       return (<Label>Loading environment parameters... <Loader size="14" inline="true" /></Label>);
     }
     if (Object.keys(all).length === 1) {
@@ -934,6 +936,14 @@ class StartNotebookOptions extends Component {
       ];
     }
   }
+}
+
+function Warning(props) {
+  return <div style={{fontSize: "smaller", paddingTop: "5px"}}>
+    <WarnAlert>
+      <FontAwesomeIcon icon={faInfoCircle} /> {props.children}
+  </WarnAlert>
+  </div>
 }
 
 class StartNotebookOptionsRunning extends Component {
@@ -972,23 +982,32 @@ class StartNotebookOptionsRunning extends Component {
 
 class StartNotebookServerOptions extends Component {
   render() {
-    const { options } = this.props.notebooks;
+    const globalOptions = this.props.options.global;
+    const projectOptions = this.props.options.project;
     const selectedOptions = this.props.filters.options;
-    const sortedOptionKeys = Object.keys(options)
-      .sort((a, b) => parseInt(options[a].order) - parseInt(options[b].order));
+    const { warnings } = this.props.options;
+    const sortedOptionKeys = Object.keys(globalOptions)
+      .sort((a, b) => parseInt(globalOptions[a].order) - parseInt(globalOptions[b].order));
     const renderedServerOptions = sortedOptionKeys
       .filter(key => key !== "commitId")
       .map(key => {
-        const serverOption = { ...options[key], selected: selectedOptions[key] };
+        const serverOption = { ...globalOptions[key], selected: selectedOptions[key] };
         const onChange = (event, value) => {
           this.props.handlers.setServerOption(key, event, value);
         };
+        const warning = !warnings.includes(key)
+          ? null
+          : <Warning>
+              Cannot set <b>{serverOption.displayName}</b> to
+              the project default value <i>{projectOptions[key]}</i> in this Renkulab deployment.
+            </Warning>
 
         switch (serverOption.type) {
         case 'enum':
           return <FormGroup key={key} className={serverOption.options.length === 1 ? 'mb-0' : ''}>
             <Label>{serverOption.displayName}</Label>
             <ServerOptionEnum {...serverOption} onChange={onChange} />
+            {warning}
           </FormGroup>;
 
         case 'int':
@@ -1013,8 +1032,18 @@ class StartNotebookServerOptions extends Component {
           return null;
         }
       });
+
+    const unmatchedWarnings = warnings.filter(x => !sortedOptionKeys.includes(x));
+    const globalWarning = unmatchedWarnings && unmatchedWarnings.length
+      ? <Warning key="globalWarning">
+        Project environment default contains
+        variable{unmatchedWarnings.length > 1 ? "s" : ""} {unmatchedWarnings.map((w, i) => <span key={i}>&ldquo;{w}&rdquo;, </span>)}
+        which {unmatchedWarnings.length > 1 ? "are" : "is"} not known in this Renkulab deployment.
+      </Warning>
+      : null;
+
     return renderedServerOptions.length ?
-      renderedServerOptions :
+      renderedServerOptions.concat(globalWarning) :
       <label>Notebook options not avilable</label>;
   }
 }
@@ -1022,14 +1051,17 @@ class StartNotebookServerOptions extends Component {
 class ServerOptionEnum extends Component {
   render() {
     const { selected } = this.props;
+    let { options } = this.props;
 
-    if (this.props.options.length === 1)
+    if (selected && options && options.length && !options.includes(selected))
+      options = options.concat(selected);
+    if (options.length === 1)
       return (<label>: {this.props.selected}</label>);
 
     return (
       <div>
         <ButtonGroup>
-          {this.props.options.map((optionName, i) => {
+          {options.map((optionName, i) => {
             const color = optionName === selected ? "primary" : "outline-primary";
             return (
               <Button
@@ -1046,11 +1078,14 @@ class ServerOptionEnum extends Component {
 
 class ServerOptionBoolean extends Component {
   render() {
+    // The double negation solves an annoying problem happening when checked=undefined
+    // https://stackoverflow.com/a/39709700/1303090
+    const selected = !!this.props.selected;
     return (
       <Input
         type="checkbox"
         id={this.props.id}
-        value={this.props.selected}
+        checked={selected}
         onChange={this.props.onChange}
       />
     );
@@ -1104,6 +1139,12 @@ class ServerOptionLaunch extends Component {
   }
 
   render() {
+    const { warnings } = this.props.options;
+    const globalNotification = (warnings.length < 1) ? null :
+    <Warning key="globalNotification">
+      The environment cannot be configured exactly as requested for this project.
+      You can still start one, but some things may not work correctly.
+    </Warning>
     return [
       <Button key="button" color="primary" onClick={this.checkServer}>
         Start environment
@@ -1113,7 +1154,8 @@ class ServerOptionLaunch extends Component {
         showModal={this.state.showModal}
         currentBranch={this.state.current}
         {...this.props}
-      />
+      />,
+      globalNotification
     ];
   }
 }

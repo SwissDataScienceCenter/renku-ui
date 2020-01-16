@@ -34,25 +34,6 @@ import { testClient as client } from '../api-client'
 
 const model = new StateModel(globalSchema);
 
-describe('notebook server clean annotation', () => {
-  const baseAnnotations = ExpectedAnnotations["renku.io"].default;
-  it('renku.io default', () => {
-    const fakeAnswer = {};
-    const elaboratedAnnotations = NotebooksHelper.cleanAnnotations(fakeAnswer, "renku.io");
-    const expectedAnnotations = { ...baseAnnotations }
-    expect(JSON.stringify(elaboratedAnnotations)).toBe(JSON.stringify(expectedAnnotations));
-  });
-  it('renku.io elaborated', () => {
-    const namespace = "myCoolNampsace";
-    const branch = "anotherBranch"
-
-    const fakeAnswer = { "renku.io/namespace": namespace, "renku.io/branch": branch };
-    const elaboratedAnnotations = NotebooksHelper.cleanAnnotations(fakeAnswer, "renku.io");
-    const expectedAnnotations = { ...baseAnnotations, namespace, branch }
-    expect(JSON.stringify(elaboratedAnnotations)).toBe(JSON.stringify(expectedAnnotations));
-  });
-});
-
 describe('notebook status', () => {
   const servers = [{
     "status": {
@@ -79,6 +60,126 @@ describe('notebook status', () => {
       expect(NotebooksHelper.getStatus(server)).toBe(server.expected);
       expect(NotebooksHelper.getStatus(server.status)).toBe(server.expected);
     }
+  });
+});
+
+describe('notebook server clean annotation', () => {
+  const baseAnnotations = ExpectedAnnotations["renku.io"].default;
+  it('renku.io default', () => {
+    const fakeAnswer = {};
+    const elaboratedAnnotations = NotebooksHelper.cleanAnnotations(fakeAnswer, "renku.io");
+    const expectedAnnotations = { ...baseAnnotations }
+    expect(JSON.stringify(elaboratedAnnotations)).toBe(JSON.stringify(expectedAnnotations));
+  });
+  it('renku.io elaborated', () => {
+    const namespace = "myCoolNampsace";
+    const branch = "anotherBranch"
+
+    const fakeAnswer = { "renku.io/namespace": namespace, "renku.io/branch": branch };
+    const elaboratedAnnotations = NotebooksHelper.cleanAnnotations(fakeAnswer, "renku.io");
+    const expectedAnnotations = { ...baseAnnotations, namespace, branch }
+    expect(JSON.stringify(elaboratedAnnotations)).toBe(JSON.stringify(expectedAnnotations));
+  });
+});
+
+describe('parse project level environment options', () => {
+  it('valid content', () => {
+    const content = `
+      [renku "interactive"]
+      default_url = /tree
+      mem_request = 2
+      lfs_auto_fetch = True
+    `;
+    const parsedContent = NotebooksHelper.parseProjectOptions(content);
+
+    // check keys
+    expect(Object.keys(parsedContent).length).toBe(3);
+    expect(Object.keys(parsedContent)).toContain("lfs_auto_fetch");
+    expect(Object.keys(parsedContent)).toContain("mem_request");
+    expect(Object.keys(parsedContent)).not.toContain("default_url");
+    expect(Object.keys(parsedContent)).toContain("defaultUrl");
+
+    // check values
+    expect(parsedContent.defaultUrl).toBe("/tree")
+    expect(parsedContent.mem_request).not.toBe("2")
+    expect(parsedContent.mem_request).toBe(2)
+    expect(parsedContent.lfs_auto_fetch).not.toBe("True")
+    expect(parsedContent.lfs_auto_fetch).not.toBe("true")
+    expect(parsedContent.lfs_auto_fetch).toBe(true)
+  });
+
+  it('invalid content', () => {
+    let content = `
+      [nonrenku]
+      default_url = /tree`;
+    let parsedContent = NotebooksHelper.parseProjectOptions(content);
+    expect(Object.keys(parsedContent).length).toBe(0);
+
+    content = `
+      [renku "anything"]
+      default_url = /tree`;
+    parsedContent = NotebooksHelper.parseProjectOptions(content);
+    expect(Object.keys(parsedContent).length).toBe(0);
+
+    const contents = ["just invalid text", true, 1, null];
+    contents.forEach(content => {
+      const noContent = NotebooksHelper.parseProjectOptions(content);
+      expect(Object.keys(noContent).length).toBe(0);
+    });
+  });
+});
+
+describe('verify project level options validity according to deployment global options', () => {
+  it('valid options', () => {
+    const simplifiedGlobalOptions = {
+      defaultUrl: {
+        default: "/lab",
+        options: ["/lab", "/rstudio"],
+        type: "enum"
+      },
+      cpu_request: {
+        default: 1,
+        options: [0.5, 1, 2],
+        type: "enum"
+      },
+      lfs_auto_fetch: {
+        default: false,
+        type: "boolean"
+      },
+      gpu_request: {
+        default: 0,
+        type: "int"
+      }
+    };
+
+    const testValues = [
+      { option: "defaultUrl", value: "/lab", result: true },
+      { option: "defaultUrl", value: "anyString", result: true },
+      { option: "defaultUrl", value: "", result: true },
+      { option: "defaultUrl", value: 12345, result: false },
+      { option: "defaultUrl", value: true, result: false },
+      { option: "cpu_request", value: 1, result: true },
+      { option: "cpu_request", value: 2, result: true },
+      { option: "cpu_request", value: 10, result: false },
+      { option: "cpu_request", value: "1", result: false },
+      { option: "cpu_request", value: true, result: false },
+      { option: "lfs_auto_fetch", value: false, result: true },
+      { option: "lfs_auto_fetch", value: true, result: true },
+      { option: "lfs_auto_fetch", value: "true", result: false },
+      { option: "lfs_auto_fetch", value: "abc", result: false },
+      { option: "lfs_auto_fetch", value: 1, result: false },
+      { option: "gpu_request", value: 1, result: true },
+      { option: "gpu_request", value: 2, result: true },
+      { option: "gpu_request", value: 10, result: true },
+      { option: "gpu_request", value: "1", result: false },
+      { option: "gpu_request", value: true, result: false },
+    ];
+
+    testValues.forEach(testSet => {
+      const result = NotebooksHelper.checkOptionValidity(
+        simplifiedGlobalOptions, testSet.option, testSet.value);
+      expect(result).toBe(testSet.result);
+    });
   });
 });
 
