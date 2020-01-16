@@ -121,6 +121,8 @@ function addProjectMethods(client) {
   }
 
   client.getProjectsBy = (searchIn, userOrGroupId, queryParams) => {
+    if (searchIn === "groups")
+      queryParams.include_subgroups = true;
     let headers = client.getBasicHeaders();
     return client.clientFetch(`${client.baseUrl}/${searchIn}/${userOrGroupId}/projects`, {
       method: 'GET',
