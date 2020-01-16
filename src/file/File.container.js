@@ -28,7 +28,7 @@ import { API_ERRORS } from '../api-client';
 import { RenkuMarkdown } from '../utils/UIComponents';
 
 const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'tiff', 'pdf', 'gif'];
-const CODE_EXTENSIONS = ['py', 'js', 'json', 'sh', 'r', 'txt', 'yml', 'csv', 'parquet', 'cwl', 'job', 'prn', 'rout', 'dcf', 'rproj', 'rst', 'bat'];
+const CODE_EXTENSIONS = ['py', 'js', 'json', 'sh', 'r', 'txt', 'yml', 'csv', 'parquet', 'cwl', 'job', 'prn', 'rout', 'dcf', 'rproj', 'rst', 'bat', 'ini'];
 
 // FIXME: Unify the file viewing for issues (embedded) and independent file viewing.
 // FIXME: Javascript highlighting is broken for large files.

@@ -24,7 +24,7 @@
  */
 
 import Time from './Time';
-import { splitAutosavedBranches, sanitizedHTMLFromMarkdown } from './HelperFunctions';
+import { splitAutosavedBranches, sanitizedHTMLFromMarkdown, parseINIString } from './HelperFunctions';
 
 describe('Time class helper', () => {
   const Dates = {
@@ -106,6 +106,76 @@ describe('Time class helper', () => {
       expectedString = expectedString.substring(0, 14) + stringMinute + expectedString.substring(16);
     }
     expect(Time.toIsoTimezoneString(DatesTimezone.UTCZ_STRING)).toEqual(expectedString);
+  });
+});
+
+describe('Ini file parser', () => {
+  it('valid code', () => {
+    // simple variable
+    let content = "my_prop = abc";
+    let parsedCode = parseINIString(content);
+    // variables are parsed as key-value pairs and return in an object
+    expect(Object.keys(parsedCode).length).toBe(1);
+    expect(Object.keys(parsedCode)).toContain("my_prop");
+    expect(parsedCode.my_prop).toBe("abc");
+
+    // multiple variables
+    content = `
+    my_prop_1 = 1
+    my_prop_2 = true`;
+    parsedCode = parseINIString(content);
+    expect(Object.keys(parsedCode).length).toBe(2);
+    expect(Object.keys(parsedCode)).toContain("my_prop_1");
+    expect(Object.keys(parsedCode)).toContain("my_prop_2");
+    // note that values are not automatically converted
+    expect(parsedCode.my_prop_1).toBe("1");
+    expect(parsedCode.my_prop_1).not.toBe(1);
+    expect(parsedCode.my_prop_2).toBe("true");
+    expect(parsedCode.my_prop_2).not.toBe(true);
+
+    // sections
+    content = `
+    [sub]
+    my_prop = cde`;
+    parsedCode = parseINIString(content);
+    // variables in sections sections are parsed as sub-objects
+    expect(Object.keys(parsedCode).length).toBe(1);
+    expect(Object.keys(parsedCode)).toContain("sub");
+    expect(Object.keys(parsedCode.sub).length).toBe(1);
+    expect(Object.keys(parsedCode.sub)).toContain("my_prop");
+    expect(parsedCode.sub.my_prop).toBe("cde");
+  });
+  it('invalid code', () => {
+    // random string
+    const content = "this is a random string";
+    const parsedCode = parseINIString(content);
+    // any valid string always returns an object
+    expect(typeof parsedCode).toBe("object");
+    expect(Object.keys(parsedCode).length).toBe(0);
+  });
+  it('partially valid code', () => {
+    // sections
+    const content = `
+    valid_prop_1 = abc
+    random_text
+    123
+    valid_prop_2 = def`;
+    const parsedCode = parseINIString(content);
+    // the function try to parse everything and leaves out simple errors
+    expect(Object.keys(parsedCode).length).toBe(2);
+    expect(Object.keys(parsedCode)).toContain("valid_prop_1");
+    expect(Object.keys(parsedCode)).toContain("valid_prop_2");
+    expect(Object.keys(parsedCode)).not.toContain("random_text");
+    expect(Object.keys(parsedCode)).not.toContain("123");
+    expect(parsedCode.valid_prop_1).toBe("abc");
+    expect(parsedCode.valid_prop_2).toBe("def");
+  });
+  it('throwing code', () => {
+    // any non-string will throw an exception
+    const invalid_contents = [true, 12345, null, undefined, [], {}];
+    invalid_contents.forEach(content => {
+      expect(() => { parseINIString(content) }).toThrow();
+    });
   });
 });
 
