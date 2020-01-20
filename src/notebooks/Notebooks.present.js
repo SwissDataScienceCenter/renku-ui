@@ -458,10 +458,16 @@ class NotebookServerRowAction extends Component {
  * @param {object} annotations - list of cleaned annotations
  */
 class EnvironmentLogs extends Component {
-  save() {
+  async save() {
+    // get full logs
+    const { fetchLogs, name } = this.props;
+    const fullLogs = await fetchLogs(name, true);
+
+    // create the blob element to download logs as a file
     const elem = document.createElement("a");
-    const file = new Blob([this.props.logs.data.join("\n")], { type: "text/plain" });
+    const file = new Blob([fullLogs.join("\n")], { type: "text/plain" });
     elem.href = URL.createObjectURL(file);
+    this.props.fetchLogs()
     elem.download = `Logs_${this.props.name}.txt`;
     document.body.appendChild(elem);
     elem.click();
@@ -509,10 +515,10 @@ class EnvironmentLogs extends Component {
         </ModalHeader>
         <ModalBody>{body}</ModalBody>
         <ModalFooter>
-          <Button color="primary" onClick={() => { this.save() }}>
+          <Button color="primary" disabled={logs.fetching} onClick={() => { this.save() }}>
             <FontAwesomeIcon icon={faSave} /> Download
           </Button>
-          <Button color="primary" onClick={() => { fetchLogs(name) }}>
+          <Button color="primary" disabled={logs.fetching} onClick={() => { fetchLogs(name) }}>
             <FontAwesomeIcon icon={faRedo} /> Refresh
           </Button>
         </ModalFooter>

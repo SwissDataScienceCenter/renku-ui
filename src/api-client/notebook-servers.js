@@ -88,16 +88,17 @@ function addNotebookServersMethods(client) {
     });
   }
 
-  client.getNotebookServerLogs = (serverName) => {
+  client.getNotebookServerLogs = (serverName, lines = 250) => {
     const headers = client.getBasicHeaders();
     headers.append('Accept', 'text/plain');
     const url = `${client.baseUrl}/notebooks/logs/${serverName}`;
 
     return client.clientFetch(url, {
       method: 'GET',
-      headers
-    }, "text").then((resp) => {
-      return resp;
+      headers,
+      queryParams: { max_lines: lines }
+    }).then((resp) => {
+      return resp.data;
     });
   }
 }
