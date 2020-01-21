@@ -11,27 +11,22 @@ export default function addDatasetMethods(client) {
     })
   }
 
-  client.uploadFiles = (files) => {
+  client.uploadFile = (file) => {
+    const data = new FormData();
+    data.append('file', file);
+    data.append('file_name', file.name);
 
-    let headers = client.getBasicHeaders();
-    headers.append('Content-Type', 'multipart/form-data');
-    headers.append('X-Requested-With', 'XMLHttpRequest');
+    let headers = new Headers({
+      'credentials': 'same-origin',
+      'X-Requested-With': 'XMLHttpRequest',
+      'Accept': 'application/json'
+    });
 
-    let formData = new FormData();
-    formData.append("file", files[0]);
-
-
-    return client.clientFetch(`${client.baseUrl}/renku/cache.files_upload`,{
+    return fetch(`${client.baseUrl}/renku/cache.files_upload?override_existing=true`, {
       method: 'POST',
       headers: headers,
-      query_string: JSON.stringify({
-        override_existing: false,
-        unpack_archive: false
-      }),
-      body: formData
-      // body: JSON.stringify({
-      //   files: { file: files[0] }
-      // })
+      body: data,
+      processData: false
     })
   }
 
@@ -81,7 +76,7 @@ export default function addDatasetMethods(client) {
               })
             })
           } else 
-            return { data : "" }
+            return response;
       })
-  }
+    }
 }

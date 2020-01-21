@@ -31,5 +31,4 @@ export default {
   parseMaxLength: (input, maxLength) => parseLength(input, maxLength),
   parseOnlyLetterAndSpace: input => parseOnlyLetterAndSpace(input),
   slugFromTitle: input => slugFromTitle(input)
-
 }

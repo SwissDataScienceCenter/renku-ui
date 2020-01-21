@@ -227,7 +227,6 @@ class ProjectModel extends StateModel {
   }
 
   fetchProjectDatasetsFromMetadata(client){
-    if(this.get('core.datasets')) return this.get('core.datasets');
     if(this.get('transient.requests.datasets') === SpecialPropVal.UPDATING) return;
     this.setUpdating({transient:{requests:{datasets: true}}});
 
