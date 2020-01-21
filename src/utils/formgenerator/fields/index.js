@@ -26,7 +26,8 @@
 export default {
   FieldTypes: {
     TEXT: "text",
-    TEXT_AREA: "cktextarea",
-    FILES: "filepond"
+    TEXT_AREA:"textarea",
+    TEXT_EDITOR: "cktextarea",
+    FILES: "fileuploader"
   }
 };

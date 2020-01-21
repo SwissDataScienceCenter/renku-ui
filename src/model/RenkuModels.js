@@ -224,7 +224,7 @@ const datasetFormSchema = new Schema({
     initial: "",
     name: 'name',
     label: 'Name',
-    type: 'text',
+    type: FormGenerator.FieldTypes.TEXT,
     parseFun: expression => FormGenerator.Parsers.slugFromTitle(expression),
     validators: [{
       id: 'name-length',
@@ -236,7 +236,7 @@ const datasetFormSchema = new Schema({
     initial: "",
     name: 'description',
     label: 'Description',
-    type: 'cktextarea',
+    type: FormGenerator.FieldTypes.TEXT_AREA,
     validators: [{
       id: 'name-length',
       //  isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression, 3),
@@ -247,7 +247,8 @@ const datasetFormSchema = new Schema({
     initial: [],
     name: 'files',
     label: 'Files',
-    type: 'filepond',
+    type: FormGenerator.FieldTypes.FILES,
+    uploadFileFunction: undefined,
     validators:[{
       id: 'files-length',
       //isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression, 1),

@@ -19,7 +19,7 @@
 /**
  *  renku-ui
  *
- *  FilePondInput.js
+ *  FileUploaderInput.js
  *  Presentational components.
  */
 import React, { useState, useEffect, useRef } from "react";
@@ -44,10 +44,17 @@ function useFiles({ initialState = [] }) {
   return [state, withBlobs];
 }
 
+function getFileObject(name, size, id, error, alias){
+  return {
+    file_name: name,
+    file_size: size,
+    file_id: id,
+    file_error: error,
+    file_alias: alias
+  }
+}
 
-function FilePondInput({ name, label, type, value, alert, setInputs, help, disabled=false }) {
-  const maxFiles = 10;
-  const [over, setOver] = useState(false);
+function FileuploaderInput({ name, label, alert, setInputs, help, disabled=false, uploadFileFunction }) {
   const [files, setFiles] = useFiles({});
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [displayFiles, setDisplayFiles] = useState([]);
@@ -56,7 +63,6 @@ function FilePondInput({ name, label, type, value, alert, setInputs, help, disab
   const $input = useRef(null);
 
   useEffect(() => {
-    // action on update of uploadedFiles
     const artifitialEvent = {
       target: { name: name, value: uploadedFiles },
       isPersistent: () => false
@@ -66,13 +72,12 @@ function FilePondInput({ name, label, type, value, alert, setInputs, help, disab
       prevDisplayFiles.map(dFile => {
         let uploadingFile = uploadedFiles.find(uFile => uFile.file_name === dFile.file_name);
         if (uploadingFile !== undefined)
-          return {
-            file_name: uploadingFile.file_name,
-            file_size: uploadingFile.file_size,
-            file_id: uploadingFile.file_id,
-            file_alias: uploadingFile.file_alias,
-            file_error: filesErrors.find(file => file.file_name === uploadingFile.file_name)
-          }
+          return getFileObject(
+            uploadingFile.file_name, 
+            uploadingFile.file_size, 
+            uploadingFile.file_id, 
+            filesErrors.find(file => file.file_name === uploadingFile.file_name),  
+            uploadingFile.file_alias)
         return dFile;
       })
     )
@@ -84,56 +89,33 @@ function FilePondInput({ name, label, type, value, alert, setInputs, help, disab
       prevDisplayFiles.map(dFile => {
         let errorFile = filesErrors.find(eFile => eFile.file_name === dFile.file_name);
         if (errorFile !== undefined)
-          return {
-            file_name: errorFile.file_name,
-            file_size: errorFile.file_size,
-            file_id: null,
-            file_error: errorFile.file_error,
-            file_alias: errorFile.file_alias
-          }
+          return getFileObject(errorFile.file_name, errorFile.file_size, null, errorFile.file_error, errorFile.file_alias)
         return dFile;
       })
     )
   }, [filesErrors]);
 
   let uploadFile = (file) => {
-    const data = new FormData();
-    data.append('file', file);
-    data.append('file_name', file.name);
-
-    let headers = new Headers({
-      'credentials': 'same-origin',
-      'X-Requested-With': 'XMLHttpRequest',
-      'Accept': 'application/json'
-    });
-
-    return fetch('https://virginia.dev.renku.ch/api/renku/cache.files_upload?override_existing=true', {
-      method: 'POST',
-      headers: headers,
-      body: data,
-      processData: false
-    }).then((response) => {
+    uploadFileFunction(file).then((response) => {
       if(response.status >=400) throw new Error();
       response.json().then((body) => {
         if (body.error) {
-          setFilesErrors(prevFilesErrors => [...prevFilesErrors, { file_name:file.name , file_size:file.size, file_error: body.error.reason}])
+          setFilesErrors(prevFilesErrors => [...prevFilesErrors, 
+            getFileObject(file.name, file.size, undefined, body.error.reason, undefined )]
+          )
           return [];
         } else {
-          let new_file = body.result.files[0];
-          if(body.result.files[0].file_name !== undefined && body.result.files[0].file_name !== file.name){
-            new_file = { 
-              "file_name": file.name, 
-              "file_size": new_file.file_size,
-              "file_id": new_file.file_id,
-              "file_alias": new_file.file_name
-            }
+          let newFileObj = body.result.files[0];
+          if (newFileObj.file_name !== undefined && newFileObj.file_name !== file.name) {
+            newFileObj = getFileObject(file.name, newFileObj.file_size, newFileObj.file_id, undefined, newFileObj.file_name)
           }
-          setUploadedFiles(prevUploadedFiles => [...prevUploadedFiles, new_file]);
-          return new_file;
+          setUploadedFiles(prevUploadedFiles => [...prevUploadedFiles, newFileObj]);
+          return newFileObj;
         }
       });
     }).catch((error) => {
-      setFilesErrors(prevFilesErrors => [...prevFilesErrors, { file_name:file.name , file_size:file.size, file_error: "Error uploading the file."}])
+      setFilesErrors(prevFilesErrors => [...prevFilesErrors, 
+        getFileObject(file.name, file.size, undefined, "Error uploading the file", undefined )])
       return [];
     })
   }
@@ -147,14 +129,8 @@ function FilePondInput({ name, label, type, value, alert, setInputs, help, disab
       droppedFiles.map(file => uploadFile(file));
       setFiles([...files, ...droppedFiles]);
       const newDisplayFiles = droppedFiles
-        .map(file => ({
-          file_name: file.name,
-          file_id: null,
-          file_size: file.size,
-          file_error: undefined
-        }))
+        .map(file => getFileObject(file.name, file.size, null, undefined, undefined))
       setDisplayFiles([...displayFiles, ...newDisplayFiles])
-      setOver(false);
     }
   }
 
@@ -172,7 +148,9 @@ function FilePondInput({ name, label, type, value, alert, setInputs, help, disab
       if ( displayFiles.find( dFile => dFile.file_name === file.name ) === undefined )
         return true
       else{
-        dropErrorMessage = dropErrorMessage ===  "" ? "Files can't have the same name (This file(s) alredy exist(s): "+file.name : ", "+file.name;
+        dropErrorMessage = dropErrorMessage ===  "" ? 
+          "Files can't have the same name (This file(s) alredy exist(s): "+file.name 
+          : ", "+file.name;
         return false;
       }
     })
@@ -182,9 +160,7 @@ function FilePondInput({ name, label, type, value, alert, setInputs, help, disab
   }
 
   useEffect(() => {
-    // // if (onDrop) {
-    // //   onDrop(files);
-    // // }
+    //this will be triggered every time files is updated
   }, [files]);
   return (
     <FormGroup>
@@ -195,13 +171,10 @@ function FilePondInput({ name, label, type, value, alert, setInputs, help, disab
         }}
         onDragOver={e => {
           e.preventDefault();
-          setOver(true);
         }}
         onDragLeave={e => {
           e.preventDefault();
-          setOver(false);
         }}
-        className={over ? "over" : ""}
       >
         <Table hover bordered className="table-files mb-1">
           <thead>
@@ -219,7 +192,7 @@ function FilePondInput({ name, label, type, value, alert, setInputs, help, disab
                 <td>{index + 1}</td>
                 <td>
                   <span>{file.file_name}</span>
-                  {file.file_alias ? <small><br></br><span className="text-danger"> *File was renamed to:{file.file_alias}</span></small> : null}
+                  {file.file_alias ? <small><br></br><span className="text-danger"> *The name of this file contains disallowed characters; it has been renamed to <i>{file.file_alias}</i></span></small> : null}
                 </td>
                 <td>{formatBytes(file.file_size)}</td>
                 <td>{
@@ -245,12 +218,12 @@ function FilePondInput({ name, label, type, value, alert, setInputs, help, disab
             <tr>
               <td colSpan="5">
                 Drag and Drop files or click <span className="text-primary" style={{cursor:"pointer"}}>here</span> to open file dialog.
+                <br /><small className="text-muted">NOTE: We are still working on the UI upload of big files, we encourage you to use our CLI for uploading big files. </small>
               </td>
             </tr>
           </tfoot>
         </Table>
       </div>
-     
       <input
         style={{ display: "none" }}
         type="file"
@@ -259,7 +232,7 @@ function FilePondInput({ name, label, type, value, alert, setInputs, help, disab
           onDropOrChange(e)
         }}
         disabled={disabled}
-        multiple={maxFiles > 1}
+        multiple={true}
       />
       <div><span><small className="text-danger">{ errorOnDrop }</small></span></div>
       <HelpText content={help} />
@@ -267,4 +240,4 @@ function FilePondInput({ name, label, type, value, alert, setInputs, help, disab
     </FormGroup>
   );
 }
-export default FilePondInput;
+export default FileuploaderInput;

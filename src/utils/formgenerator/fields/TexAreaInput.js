@@ -1,5 +1,5 @@
 /*!
- * Copyright 2017 - Swiss Data Science Center (SDSC)
+ * Copyright 2018 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -17,28 +17,24 @@
  */
 
 /**
- *  incubator-renku-ui
+ *  renku-ui
  *
- *  DatasetNew.container.js
- *  Container components for new dataset.
+ *  TextInput.js
+ *  Presentational components.
  */
 
-import React from 'react';
-import { datasetFormSchema } from '../../../model/RenkuModels';
-import DatasetNew from './DatasetNew.present';
+import * as React from 'react';
+import ValidationAlert from './ValidationAlert';
+import HelpText from './HelpText';
+import { FormGroup, Input, Label} from 'reactstrap';
 
-function NewDataset(props) {
-
-  return <DatasetNew
-    datasetFormSchema={datasetFormSchema}
-    user={props.user}
-    projectPathWithNamespace={props.projectPathWithNamespace}
-    client={props.client}
-    history={props.history}
-    accessLevel={props.accessLevel}
-    reFetchProject={props.reFetchProject}
-  />;
+function TextareaInput({ name, label, type, value, alert, setInputs, help, disabled = false }) {
+  return <FormGroup>
+    <Label htmlFor={name}>{label}</Label>
+    <Input id={name} name={name} type={type} value={value || ""} onChange={setInputs} disabled={disabled}/>
+    <HelpText content={help} />
+    <ValidationAlert content={alert} />
+  </FormGroup>
 }
 
-
-export default NewDataset;
+export default TextareaInput;

@@ -37,13 +37,6 @@ let schema = new Schema({
     name: "files",
     label: "Files",
     type: FormGenerator.FieldTypes.FILES,
-    validators: [
-      {
-        id: "files-length",
-        isValidFun: input => FormGenerator.Validators.isNotEmpty(input),
-        alert: "File length should be more than 1."
-      }
-    ]
   }
 });
 
@@ -69,7 +62,7 @@ describe("rendering", () => {
       );
 
     ReactDOM.render(
-      <FormPanel title="Create Dataset" btnName="Create Dataset" submitCallback={submitCallback} model={schema} />,
+      <FormPanel title="Create Dataset" submitLoader={false} btnName="Create Dataset" submitCallback={submitCallback} model={schema} />,
       div
     );
   });

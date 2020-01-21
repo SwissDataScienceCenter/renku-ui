@@ -27,8 +27,9 @@ import React from 'react';
 import { Form, Button, Col, UncontrolledAlert, FormText } from 'reactstrap';
 import useForm from './UseForm';
 import TextInput from './fields/TextInput';
+import TextareaInput from './fields/TexAreaInput';
 import CktextareaInput from './fields/CKEditorTextArea';
-import FilepondInput from './fields/FilepondInput';
+import FileuploaderInput from './fields/FileUploaderInput';
 import { Loader } from '../../utils/UIComponents'
 import './FormGenerator.css'
 
@@ -38,7 +39,7 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors, submit
 
   const [inputs, setInputs, setSubmit] = useForm(modelValues, submitCallback);
 
-  const Components = { TextInput, CktextareaInput, FilepondInput };
+  const Components = { TextInput, TextareaInput, CktextareaInput, FileuploaderInput };
 
   const capitalize = expression => expression.charAt(0).toUpperCase() + expression.slice(1);
 
@@ -59,7 +60,8 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors, submit
               <Loader size="16" inline="true" margin="2" />
               {submitLoader.text}
             </FormText>
-            : null}
+            : null
+          }
           <Button disabled={submitLoader.value} className="float-right mt-1" color="primary" onClick={setSubmit}>{btnName}</Button>
           {
             onCancel !== undefined ?

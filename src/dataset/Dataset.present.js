@@ -132,7 +132,7 @@ export default function DatasetView(props){
           }).catch(error => {
             if(fetchError === null){
               if (!unmounted && error.case === API_ERRORS.notFoundError){
-                setFetchError("Error 404: The dataset that was selected doesn't exist or couldn't be accessed.");}
+                setFetchError("Error 404: The dataset that was selected doesn't exist or couldn't be accessed. If you just created the dataset try reloading the page.");}
               else if(!unmounted && error.case === API_ERRORS.internalServerError){
                 setFetchError("Error 500: The dataset that was selected couldn't be fetched.");}
             }
@@ -148,7 +148,7 @@ export default function DatasetView(props){
           }).catch(error => {
             if(fetchError === null){
               if (!unmounted && error.case === API_ERRORS.notFoundError){
-                setFetchError("Error 404: The dataset that was selected doesn't exist or couldn't be accessed.");}
+                setFetchError("Error 404: The dataset that was selected doesn't exist or couldn't be accessed. If you just created the dataset try reloading the page.");}
               else if(!unmounted && error.case === API_ERRORS.internalServerError){
                 setFetchError("Error 500: The dataset that was selected couldn't be fetched.");}
             }
@@ -184,7 +184,7 @@ export default function DatasetView(props){
     return <Alert color="danger">{fetchError}</Alert>;
   if(dataset === undefined) return <Loader />;
   if(dataset === null)
-    return <Alert color="danger">Error 404: The dataset that was selected doesn't exist or couldn't be accessed</Alert>
+    return <Alert color="danger">Error 404: The dataset that was selected doesn't exist or couldn't be accessed.<br /> <br /> If you just created the dataset try <Button color="danger" size="sm" onClick={()=> window.location.reload()}>reloading</Button> the page.</Alert>
 
   return <Col>
     <Row>
