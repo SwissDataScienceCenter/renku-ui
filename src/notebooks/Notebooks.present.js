@@ -502,6 +502,16 @@ class EnvironmentLogs extends Component {
       }
     }
 
+    const canDownload = (logs) => {
+      if (logs.fetching)
+        return false;
+      if (!logs.data || !logs.data.length)
+        return false;
+      if (logs.data.length === 1 && logs.data[0].startsWith("Logs unavailable"))
+        return false;
+      return true;
+    };
+
     return (
       <Modal
         isOpen={logs.show ? true : false}
@@ -515,7 +525,7 @@ class EnvironmentLogs extends Component {
         </ModalHeader>
         <ModalBody>{body}</ModalBody>
         <ModalFooter>
-          <Button color="primary" disabled={logs.fetching} onClick={() => { this.save() }}>
+          <Button color="primary" disabled={!canDownload(logs)} onClick={() => { this.save() }}>
             <FontAwesomeIcon icon={faSave} /> Download
           </Button>
           <Button color="primary" disabled={logs.fetching} onClick={() => { fetchLogs(name) }}>
