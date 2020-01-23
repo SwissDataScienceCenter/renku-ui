@@ -23,19 +23,36 @@
  *  Presentational components for help.
  */
 
+import React, { Component } from "react";
+import { Route } from "react-router-dom";
+import { RenkuNavLink } from "../utils/UIComponents";
 
-import React, { Component } from 'react';
-import { Route }  from 'react-router-dom';
-import { RenkuNavLink } from '../utils/UIComponents';
+import { Row, Col } from "reactstrap";
+import { Nav, NavItem } from "reactstrap";
 
-import { Row, Col } from 'reactstrap';
-import { Nav, NavItem } from 'reactstrap';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faDiscourse, faGithub, faGitter } from "@fortawesome/free-brands-svg-icons";
 
+function ExternalDocsLink(props) {
+  return (
+    <a href={props.url} target="_blank" rel="noreferrer noopener">
+      {props.title}
+    </a>
+  );
+}
+
+function ExternalDocsIconLink(props) {
+  return (
+    <a href={props.url} target="_blank" rel="noreferrer noopener">
+      <FontAwesomeIcon icon={props.icon} /> {props.title}
+    </a>
+  );
+}
 
 class HelpNav extends Component {
   render() {
     return (
-      <Nav pills className={'nav-pills-underline'}>
+      <Nav pills className={"nav-pills-underline"}>
         <NavItem>
           <RenkuNavLink to={this.props.url.base} alternate={this.props.url.getting} title="Getting Help" />
         </NavItem>
@@ -48,31 +65,65 @@ class HelpNav extends Component {
         <NavItem>
           <RenkuNavLink to={this.props.url.setup} title="Set Up / Admin" />
         </NavItem>
-      </Nav> 
-    )
+      </Nav>
+    );
   }
 }
 
 class HelpGetting extends Component {
   render() {
-    return (
-      <div>
-        <h2>Gitter</h2>
-        <p>
-          Want to reach out to the development team? Contact us
-          on <a href="https://gitter.im/SwissDataScienceCenter/renku" target="_blank" rel="noreferrer noopener">
-            Gitter</a>,
-          we would be happy to chat with you.
-        </p>
-        <h2>GitHub</h2>
-        <p>
-          Renku is open source and being developed
-          on <a href="https://github.com/SwissDataScienceCenter/renku" target="_blank" rel="noreferrer noopener">
-            GitHub</a>.
-          We encourage you to contact us with questions, comments, issues, or any kind of feedback.
-        </p>
-      </div>
-    )
+    return [
+      <Row key="intro">
+        <Col lg={{ size: 6, offset: 0 }}>
+          There are several channels available for getting help with Renkulab. Depending on your needs, one or another
+          may be better for you.
+        </Col>
+      </Row>,
+      <Row key="spacer1">
+        <Col>&nbsp;</Col>
+      </Row>,
+      <Row key="main">
+        <Col lg={{ size: 4, offset: 0 }}>
+          <h2>
+            <ExternalDocsIconLink url="https://renku.discourse.group" icon={faDiscourse} title="Discourse" />
+          </h2>
+          <p>
+            We maintain a forum on <ExternalDocsLink url="https://renku.discourse.group" title="Discourse" /> for
+            discussion about Renku. This is a good place to ask questions and find answers.
+          </p>
+        </Col>
+        <Col lg={{ size: 4 }}>
+          <h2>
+            <ExternalDocsIconLink url="https://gitter.im/SwissDataScienceCenter/renku" icon={faGitter} title="Gitter" />
+          </h2>
+          <p>
+            Want to reach out to the development team live? Contact us on{" "}
+            <ExternalDocsLink url="https://gitter.im/SwissDataScienceCenter/renku" title="Gitter" />, we would be happy
+            to chat with you.
+          </p>
+        </Col>
+      </Row>,
+      <Row key="spacer2" className="d-none d-lg-block">
+        <Col>&nbsp;</Col>
+      </Row>,
+      <Row key="main2">
+        <Col lg={{ size: 4, offset: 0 }}>
+          <h2>
+            <ExternalDocsIconLink
+              url="https://github.com/SwissDataScienceCenter/renku"
+              icon={faGithub}
+              title="GitHub"
+            />
+          </h2>
+          <p>
+            Renku is open source and being developed on{" "}
+            <ExternalDocsLink url="https://github.com/SwissDataScienceCenter/renku" title="GitHub" />. This is the best
+            place to report issues and ask for new features, but feel free to contact us with questions, comments, or
+            any kind of feedback.
+          </p>
+        </Col>
+      </Row>
+    ];
   }
 }
 
@@ -82,45 +133,78 @@ class HelpTutorials extends Component {
       <div>
         <h2>First steps</h2>
         <p>
-          If you are here for the first time or you are not sure how to use Renku, we reccomend you to go through
-          our <a href="https://renku.readthedocs.io/en/latest/user/firststeps.html"
-            target="_blank" rel="noreferrer noopener">tutorial</a>.
+          If you are here for the first time or you are not sure how to use Renku,
+          we recommend you to go through our{" "}
+          <a
+            href="https://renku.readthedocs.io/en/latest/user/firststeps.html"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            tutorial
+          </a>
+          .
         </p>
       </div>
-    )
+    );
   }
 }
 
 class HelpFeatures extends Component {
   render() {
     return (
-      <div>
-        <h2>Features</h2>
-        <p>
-          Renku consists of a collection of services, including a web-based user interface
-          and a command-line client, exploiting in a coherent setup the joint features of:
-        </p>
-        <ul>
-          <li><a href="https://gitlab.com" target="_blank" rel="noreferrer noopener">
-            GitLab</a> -  repository management</li>
-          <li><a href="http://jupyter.org/hub" target="_blank" rel="noreferrer noopener">
-            JupyterHub</a> - interactive notebooks</li>
-          <li><a href="https://kubernetes.io" target="_blank" rel="noreferrer noopener">
-            Kubernetes</a> - container orchestration</li>
-          <li><a href="https://www.keycloak.org" target="_blank" rel="noreferrer noopener">
-            Keycloak</a> - identity and access management</li>
-          <li>
-            <a href="https://www.commonwl.org" target="_blank" rel="noreferrer noopener">
-              Common Workflow Language</a> - analysis workflows &amp; tools description
-          </li>
-        </ul>
-        <p>
-          More information is available in
-          our <a href="https://renku.readthedocs.io/en/latest/introduction/index.html#features"
-            target="_blank" rel="noreferrer noopener">documentation</a>.
-        </p>
-      </div>
-    )
+      <Row>
+        <Col md={8}>
+          <h2>Features</h2>
+          <p>
+            Renku consists of a collection of services, including a web-based user interface and a command-line client,
+            exploiting in a coherent setup the joint features of:
+          </p>
+          <ul>
+            <li>
+              <a href="https://gitlab.com" target="_blank" rel="noreferrer noopener">
+                GitLab
+              </a>{" "}
+              - repository management
+            </li>
+            <li>
+              <a href="http://jupyter.org/hub" target="_blank" rel="noreferrer noopener">
+                JupyterHub
+              </a>{" "}
+              - interactive notebooks
+            </li>
+            <li>
+              <a href="https://kubernetes.io" target="_blank" rel="noreferrer noopener">
+                Kubernetes
+              </a>{" "}
+              - container orchestration
+            </li>
+            <li>
+              <a href="https://www.keycloak.org" target="_blank" rel="noreferrer noopener">
+                Keycloak
+              </a>{" "}
+              - identity and access management
+            </li>
+            <li>
+              <a href="https://www.commonwl.org" target="_blank" rel="noreferrer noopener">
+                Common Workflow Language
+              </a>{" "}
+              - analysis workflows &amp; tools description
+            </li>
+          </ul>
+          <p>
+            More information is available in our{" "}
+            <a
+              href="https://renku.readthedocs.io/en/latest/introduction/index.html#features"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              documentation
+            </a>
+            .
+          </p>
+        </Col>
+      </Row>
+    );
   }
 }
 
@@ -130,45 +214,80 @@ class HelpSetup extends Component {
       <div>
         <h2>Running the platform</h2>
         <p>
-          It is easy to deploy the Renku platform
-          on <a href="https://github.com/kubernetes/minikube" target="_blank" rel="noreferrer noopener">
-              minikube</a>.
-          You can find the instructions on
-          our <a href="https://renku.readthedocs.io/en/latest/developer/setup.html"
-            target="_blank" rel="noreferrer noopener">documentation</a>.
+          It is easy to deploy the Renku platform on{" "}
+          <a href="https://github.com/kubernetes/minikube" target="_blank" rel="noreferrer noopener">
+            minikube
+          </a>
+          . You can find the instructions on our{" "}
+          <a
+            href="https://renku.readthedocs.io/en/latest/developer/setup.html"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            documentation
+          </a>
+          .
         </p>
       </div>
-    )
+    );
   }
 }
 
 class HelpContent extends Component {
   render() {
     return [
-      <Route exact path={this.props.url.base} key="base" 
-        render={props => <HelpGetting key="getting" {...this.props} />} />,
-      <Route path={this.props.url.getting} key="getting" 
-        render={props => <HelpGetting key="getting" {...this.props} />} />,
-      <Route path={this.props.url.tutorials} key="tutorials" 
-        render={props => <HelpTutorials key="tutorials" {...this.props} />} />,
-      <Route path={this.props.url.features} key="features" 
-        render={props => <HelpFeatures key="features" {...this.props} />} />,
-      <Route path={this.props.url.setup} key="setup" 
-        render={props => <HelpSetup key="setup" {...this.props} />} />,
-    ]        
+      <Route
+        exact
+        path={this.props.url.base}
+        key="base"
+        render={props => <HelpGetting key="getting" {...this.props} />}
+      />,
+      <Route
+        path={this.props.url.getting}
+        key="getting"
+        render={props => <HelpGetting key="getting" {...this.props} />}
+      />,
+      <Route
+        path={this.props.url.tutorials}
+        key="tutorials"
+        render={props => <HelpTutorials key="tutorials" {...this.props} />}
+      />,
+      <Route
+        path={this.props.url.features}
+        key="features"
+        render={props => <HelpFeatures key="features" {...this.props} />}
+      />,
+      <Route path={this.props.url.setup} key="setup" render={props => <HelpSetup key="setup" {...this.props} />} />
+    ];
   }
 }
 
 class Help extends Component {
   render() {
     return [
-      <Row key="header"><Col md={8}><h1>Using Renku</h1></Col></Row>,
-      <Row key="spacePre"><Col xs={12}>&nbsp;</Col></Row>,
-      <Row key="nav"><Col xs={12}><HelpNav {...this.props} /></Col></Row>,
-      <Row key="spacePost"><Col xs={12}>&nbsp;</Col></Row>,
-      <Row key="content"><Col md={8}><HelpContent {...this.props} /></Col></Row>,
+      <Row key="header">
+        <Col md={8}>
+          <h1>Using Renku</h1>
+        </Col>
+      </Row>,
+      <Row key="spacePre">
+        <Col>&nbsp;</Col>
+      </Row>,
+      <Row key="nav">
+        <Col>
+          <HelpNav {...this.props} />
+        </Col>
+      </Row>,
+      <Row key="spacePost">
+        <Col>&nbsp;</Col>
+      </Row>,
+      <Row key="content">
+        <Col lg={{size: 11, offset:1 }}>
+          <HelpContent {...this.props} />
+        </Col>
+      </Row>
     ];
   }
 }
 
-export { Help }
+export { Help };
