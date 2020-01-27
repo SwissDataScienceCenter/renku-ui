@@ -100,6 +100,9 @@ class LoggedInNavBar extends Component {
     const issueDropdown = activeProjectPathWithNamespace ?
       <RenkuNavLink to={`/projects/${activeProjectPathWithNamespace}/issue_new`} title="Issue" />
       : null;
+    const datasetDropdown = activeProjectPathWithNamespace ?
+      <RenkuNavLink to={`/projects/${activeProjectPathWithNamespace}/datasets/new_dataset`} title="Dataset" />
+      : null;
     // TODO If there is is an active project, show it in the navbar
 
     return (
@@ -131,6 +134,7 @@ class LoggedInNavBar extends Component {
                 <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                   <RenkuNavLink to="/project_new" title="Project" />
                   {issueDropdown}
+                  {datasetDropdown}
                 </div>
               </li>
               <RenkuToolbarItemUser {...this.props} />

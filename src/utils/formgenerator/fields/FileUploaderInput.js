@@ -27,7 +27,7 @@ import { FormGroup, Label, Table, Spinner } from "reactstrap";
 import ValidationAlert from './ValidationAlert';
 import HelpText from './HelpText';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faTimes, faTrashAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faTimes, faTrashAlt, faSyncAlt } from '@fortawesome/free-solid-svg-icons';
 import { formatBytes } from './../../HelperFunctions';
 
 function useFiles({ initialState = [] }) {
@@ -124,8 +124,8 @@ function FileuploaderInput({ name, label, alert, setInputs, help, disabled=false
     e.preventDefault();
     e.persist();
     if(!disabled){
-      let files = e.dataTransfer ? e.dataTransfer.files : e.target.files;
-      let droppedFiles = getFilteredFiles(Array.from(files))
+      let eventFiles = e.dataTransfer ? e.dataTransfer.files : e.target.files;
+      let droppedFiles = getFilteredFiles(Array.from(eventFiles))
       droppedFiles.map(file => uploadFile(file));
       setFiles([...files, ...droppedFiles]);
       const newDisplayFiles = droppedFiles
@@ -139,6 +139,22 @@ function FileuploaderInput({ name, label, alert, setInputs, help, disabled=false
       setFilesErrors(prevfilesErrors => prevfilesErrors.filter(file => file.file_name !== file_name));
       setDisplayFiles(prevDisplayFiles => prevDisplayFiles.filter(file => file.file_name !== file_name));
       setUploadedFiles(prevUploadedFiles => prevUploadedFiles.filter(file => file.file_name !== file_name));    
+    }
+  }
+
+  let retryUpload = (file_name) => {
+    if(!disabled){
+      let retryFile = files.find(file => file.name === file_name)
+      if(retryFile !== undefined){
+        const displayFilesFiltered = displayFiles.map(file => {
+          if(file.file_name === file_name)
+            return getFileObject(retryFile.name, retryFile.size, null, undefined, undefined)
+          return file;
+        });
+        setDisplayFiles([...displayFilesFiltered])
+        setFilesErrors(prevfilesErrors => prevfilesErrors.filter(file => file.file_name !== file_name));
+        uploadFile(retryFile)
+      }
     }
   }
 
@@ -160,8 +176,7 @@ function FileuploaderInput({ name, label, alert, setInputs, help, disabled=false
   }
 
   useEffect(() => {
-    //this will be triggered every time files is updated
-  }, [files]);
+  }, []);
   return (
     <FormGroup>
       <Label htmlFor={name}>{label}</Label>
@@ -192,14 +207,26 @@ function FileuploaderInput({ name, label, alert, setInputs, help, disabled=false
                 <td>{index + 1}</td>
                 <td>
                   <span>{file.file_name}</span>
-                  {file.file_alias ? <small><br></br><span className="text-danger"> *The name of this file contains disallowed characters; it has been renamed to <i>{file.file_alias}</i></span></small> : null}
+                  {
+                    file.file_alias ? <small><br></br>
+                      <span className="text-danger"> *The name of this file contains disallowed characters; it has been renamed to 
+                        <i> {file.file_alias}</i></span></small> 
+                      : null
+                  }
                 </td>
                 <td>{formatBytes(file.file_size)}</td>
                 <td>{
                   file.file_id !== null ?
                     <span><FontAwesomeIcon color="var(--success)" icon={faCheck}/> uploaded</span>
                     : file.file_error !== undefined ?
-                      <span><FontAwesomeIcon color="var(--danger)" icon={faTimes}/> {file.file_error}</span>
+                      <div>
+                        <span className="mr-2">
+                          <FontAwesomeIcon style={{ cursor:"text"}} color="var(--danger)" icon={faTimes}/> {file.file_error}</span>
+                        <span className="text-primary" style={{whiteSpace:"nowrap", cursor:"pointer"}} 
+                          onClick={ () => retryUpload(file.file_name)}>
+                          <FontAwesomeIcon color="var(--primary)" icon={faSyncAlt} /> Retry 
+                        </span>
+                      </div>
                       : <span><Spinner color="primary" size="sm" /> uploading</span>
                 }</td>
                 <td>

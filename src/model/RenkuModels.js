@@ -237,6 +237,7 @@ const datasetFormSchema = new Schema({
     name: 'description',
     label: 'Description',
     type: FormGenerator.FieldTypes.TEXT_AREA,
+    help:"Basic HTML styling tags are allowed in this field.",
     validators: [{
       id: 'name-length',
       //  isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression, 3),
