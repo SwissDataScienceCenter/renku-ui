@@ -28,7 +28,7 @@ const slugFromTitle = (title) => title.replace(/\s/g, '-').toLowerCase();
 function getActiveProjectPathWithNamespace(currentPath) {
   try {
     if(currentPath.includes('/projects/') && currentPath.split('/').length > 3 ){
-      return currentPath.split('/')[1]+'/'+currentPath.split('/')[2]
+      return currentPath.split('/')[2]+'/'+currentPath.split('/')[3]
     } return null;
   } catch(TypeError) {
     return null
