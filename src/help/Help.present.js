@@ -72,18 +72,16 @@ class HelpNav extends Component {
 
 class HelpGetting extends Component {
   render() {
+    const flexBasis = "500px"
     return [
-      <Row key="intro">
-        <Col lg={{ size: 6, offset: 0 }}>
+      <div key="intro" className="d-flex mb-3">
+        <div style={{flex: "0 1", flexBasis}}>
           There are several channels available for getting help with Renkulab. Depending on your needs, one or another
           may be better for you.
-        </Col>
-      </Row>,
-      <Row key="spacer1">
-        <Col>&nbsp;</Col>
-      </Row>,
-      <Row key="main">
-        <Col lg={{ size: 4, offset: 0 }}>
+        </div>
+      </div>,
+      <div key="main1" className="d-flex mb-3 flex-wrap">
+        <div className="mr-4" style={{flex: "0 1", flexBasis}}>
           <h2>
             <ExternalDocsIconLink url="https://renku.discourse.group" icon={faDiscourse} title="Discourse" />
           </h2>
@@ -91,8 +89,8 @@ class HelpGetting extends Component {
             We maintain a forum on <ExternalDocsLink url="https://renku.discourse.group" title="Discourse" /> for
             discussion about Renku. This is a good place to ask questions and find answers.
           </p>
-        </Col>
-        <Col lg={{ size: 4 }}>
+        </div>
+        <div className="mr-4" style={{flex: "0 1", flexBasis}}>
           <h2>
             <ExternalDocsIconLink url="https://gitter.im/SwissDataScienceCenter/renku" icon={faGitter} title="Gitter" />
           </h2>
@@ -101,13 +99,8 @@ class HelpGetting extends Component {
             <ExternalDocsLink url="https://gitter.im/SwissDataScienceCenter/renku" title="Gitter" />, we would be happy
             to chat with you.
           </p>
-        </Col>
-      </Row>,
-      <Row key="spacer2" className="d-none d-lg-block">
-        <Col>&nbsp;</Col>
-      </Row>,
-      <Row key="main2">
-        <Col lg={{ size: 4, offset: 0 }}>
+        </div>
+        <div className="mr-4" style={{flex: "0 1", flexBasis}}>
           <h2>
             <ExternalDocsIconLink
               url="https://github.com/SwissDataScienceCenter/renku"
@@ -121,8 +114,8 @@ class HelpGetting extends Component {
             place to report issues and ask for new features, but feel free to contact us with questions, comments, or
             any kind of feedback.
           </p>
-        </Col>
-      </Row>
+        </div>
+      </div>
     ];
   }
 }
@@ -133,8 +126,7 @@ class HelpTutorials extends Component {
       <div>
         <h2>First steps</h2>
         <p>
-          If you are here for the first time or you are not sure how to use Renku,
-          we recommend you to go through our{" "}
+          If you are here for the first time or you are not sure how to use Renku, we recommend you to go through our{" "}
           <a
             href="https://renku.readthedocs.io/en/latest/user/firststeps.html"
             target="_blank"
@@ -282,7 +274,7 @@ class Help extends Component {
         <Col>&nbsp;</Col>
       </Row>,
       <Row key="content">
-        <Col lg={{size: 11, offset:1 }}>
+        <Col>
           <HelpContent {...this.props} />
         </Col>
       </Row>
