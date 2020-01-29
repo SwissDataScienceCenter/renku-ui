@@ -24,18 +24,17 @@
  */
 
 import React, { Component } from 'react';
-import { connect } from 'react-redux'
+import { connect } from 'react-redux';
+import _ from 'lodash/collection';
 
 import { StateKind } from '../model/Model';
-import Present from './Project.present'
-
-import { ProjectModel, GraphIndexingStatus } from './Project.state'
+import Present from './Project.present';
+import { ProjectModel, GraphIndexingStatus } from './Project.state';
+import { ProjectsCoordinator } from './shared';
 import Issue from '../issue/Issue';
-import { FileLineage } from '../file'
+import { FileLineage } from '../file';
 import { ACCESS_LEVELS } from '../api-client';
-import { alertError } from '../utils/Errors';
 import { MergeRequest, MergeRequestList } from '../merge-request';
-
 import List from './list';
 import New from './new';
 import { ShowFile } from '../file';
@@ -43,7 +42,6 @@ import Fork from './fork';
 import ShowDataset from '../dataset/Dataset.container';
 import NewDataset from './datasets/new/index';
 
-import _ from 'lodash/collection';
 
 const subRoutes = {
   overview: 'overview',
@@ -135,6 +133,13 @@ class View extends Component {
   constructor(props) {
     super(props);
     this.projectState = new ProjectModel(StateKind.REDUX);
+    this.projectsCoordinator = new ProjectsCoordinator(props.client, props.model.subModel("projects"));
+
+    // fetch useful projects data in not yet loaded
+    const featured = props.model.get("projects.featured");
+    if (!featured.fetched && !featured.fetching) {
+      this.projectsCoordinator.getFeatured();
+    }
   }
 
   UNSAFE_componentWillMount() {
@@ -148,32 +153,32 @@ class View extends Component {
     const pathComponents = splitProjectSubRoute(this.props.match.url);
     if (pathComponents.projectPathWithNamespace != null) {
       // fetch only if user data are already loaded
-      if (this.props.user.available === true) {
+      if (this.props.user.fetched) {
         this.fetchAll();
       }
 
       // in case the route fails it tests weather it could be a projectid route
-      const routes=['overview','issues','issue_new','files','lineage','notebooks','collaboration',
-        'data','workflows','settings','pending','launchNotebook','notebookServers','datasets','environments'];
+      const routes = ['overview', 'issues', 'issue_new', 'files', 'lineage', 'notebooks', 'collaboration',
+        'data', 'workflows', 'settings', 'pending', 'launchNotebook', 'notebookServers', 'datasets', 'environments'];
       const available = this.props.core ? this.props.core.available : null;
       const potentialProjectId = pathComponents.projectPathWithNamespace.split('/')[0];
       const potentialRoute = pathComponents.projectPathWithNamespace.split('/')[1];
 
-      if(!available && !isNaN(potentialProjectId) && routes.indexOf(potentialRoute) > 0){
+      if (!available && !isNaN(potentialProjectId) && routes.indexOf(potentialRoute) > 0) {
         this.redirectAfterFetchFails(pathComponents.projectPathWithNamespace,
-          this.props.location.pathname.replace("/projects/"+potentialProjectId,''));
+          this.props.location.pathname.replace("/projects/" + potentialProjectId, ''));
       }
     }
   }
 
   componentDidUpdate(prevProps) {
     // re-fetch when user data are available
-    if (prevProps.user.available !== true && this.props.user.available === true) {
+    if (!prevProps.user.fetched && this.props.user.fetched) {
       this.fetchAll();
     }
     const prevPathComps = splitProjectSubRoute(prevProps.match.url);
     const pathComps = splitProjectSubRoute(this.props.match.url);
-    if (prevPathComps.projectPathWithNamespace !==  pathComps.projectPathWithNamespace) {
+    if (prevPathComps.projectPathWithNamespace !== pathComps.projectPathWithNamespace) {
       this.fetchAll();
     }
   }
@@ -192,7 +197,7 @@ class View extends Component {
   async fetchProjectFilesTree() {
     return this.projectState.fetchProjectFilesTree(this.props.client, this.cleanCurrentURL());
   }
-  async fetchProjectIssues() { this.projectState.fetchProjectIssues(this.props.client)}
+  async fetchProjectIssues() { this.projectState.fetchProjectIssues(this.props.client) }
   async setProjectOpenFolder(filepath) {
     this.projectState.setProjectOpenFolder(this.props.client, filepath);
   }
@@ -205,25 +210,25 @@ class View extends Component {
     const pathComponents = splitProjectSubRoute(this.props.match.url);
     if (pathComponents.projectPathWithNamespace)
       await this.fetchProject();
-    if (this.props.user.id)
+    if (this.props.user.logged)
       this.checkGraphWebhook();
   }
 
-  redirectProjectWithNumericId(projectId){
+  redirectProjectWithNumericId(projectId) {
     this.props.client.getProjectById(projectId)
-      .then((project)=> {
-        this.props.history.push('/projects/'+project.data.metadata.core.path_with_namespace);
+      .then((project) => {
+        this.props.history.push('/projects/' + project.data.metadata.core.path_with_namespace);
       });
   }
 
-  redirectAfterFetchFails(projectPathWithNamespace, urlInsideProject){
+  redirectAfterFetchFails(projectPathWithNamespace, urlInsideProject) {
     this.props.client.getProjectById(projectPathWithNamespace.split('/')[0])
-      .then((project)=> {
-        this.props.history.push('/projects/'+project.data.metadata.core.path_with_namespace+urlInsideProject);
+      .then((project) => {
+        this.props.history.push('/projects/' + project.data.metadata.core.path_with_namespace + urlInsideProject);
       })
   }
 
-  cleanCurrentURL(){
+  cleanCurrentURL() {
     const subUrls = this.getSubUrls();
     if (subUrls.filesUrl === this.props.location.pathname || subUrls.filesUrl + '/' === this.props.location.pathname)
       return ""
@@ -251,10 +256,12 @@ class View extends Component {
     }
   }
 
-  getStarred(user) {
-    if (user && user.starredProjects) {
-      return user.starredProjects.map((project) => project.id).indexOf(this.projectState.get('core.id')) >= 0
-    }
+  getStarred() {
+    const featured = this.props.model.get("projects.featured");
+    // return false until data are available
+    if (!featured.fetched)
+      return false;
+    return featured.starred.map((project) => project.id).indexOf(this.projectState.get('core.id')) >= 0;
   }
 
   getSubUrls() {
@@ -441,20 +448,22 @@ class View extends Component {
 
   eventHandlers = {
     onProjectTagsChange: (tags) => {
-      this.projectState.setTags(this.props.client, tags, this.props.userStateDispatch);
+      this.projectState.setTags(this.props.client, tags);
     },
     onProjectDescriptionChange: (description) => {
-      this.projectState.setDescription(this.props.client, description, this.props.userStateDispatch);
+      this.projectState.setDescription(this.props.client, description);
     },
     onStar: (e) => {
       e.preventDefault();
-      const user = this.props.user;
-      if (!(user && user.id != null)) {
-        alertError('Please login to star a project.');
-        return;
-      }
-      const starred = this.getStarred(this.props.user);
-      this.projectState.star(this.props.client, this.props.userStateDispatch, starred)
+      const starred = this.getStarred();
+      this.projectState.star(this.props.client, starred).then((project) => {
+        // we know it worked, we can manually change star status without querying APIs
+        if (project && project.star_count != null) {
+          // first update the list of starred project, otherwise this.getStarred returns wrong
+          this.projectsCoordinator.updateStarred(project, !starred);
+          this.projectState.setStars(project.star_count);
+        }
+      });
     },
     toogleForkModal: (e) => {
       e.preventDefault();
@@ -488,7 +497,7 @@ class View extends Component {
     fetchIssues: () => {
       this.fetchProjectIssues();
     },
-    fetchDatasets : () => {
+    fetchDatasets: () => {
       this.fetchProjectDatasets();
     },
     setOpenFolder: (filePath) => {
@@ -512,7 +521,7 @@ class View extends Component {
   mapStateToProps(state, ownProps) {
     const pathComponents = splitProjectSubRoute(ownProps.match.url);
     const internalId = this.projectState.get('core.id') || parseInt(ownProps.match.params.id, 10);
-    const starred = this.getStarred(ownProps.user);
+    const starred = this.getStarred();
     const settingsReadOnly = state.visibility.accessLevel < ACCESS_LEVELS.MAINTAINER;
     const suggestedMRBranches = this.getMrSuggestions();
     const externalUrl = this.projectState.get('core.external_url');

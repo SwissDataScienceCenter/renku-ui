@@ -24,13 +24,14 @@
  */
 
 import React, { Component } from 'react';
-import { connect } from 'react-redux'
-import { UserState } from '../../app-state';
+import { connect } from 'react-redux';
+
 import { StateKind, StateModel } from '../../model/Model';
 // TODO: ONLY use one projectSchema after the refactoring has been finished.
 import { newProjectSchema } from '../../model/RenkuModels';
 import { slugFromTitle } from '../../utils/HelperFunctions';
-import ProjectNew from './ProjectNew.present'
+import ProjectNew from './ProjectNew.present';
+import { ProjectsCoordinator } from '../shared';
 
 
 function groupVisibilitySupportsVisibility(groupVisibility, visibility) {
@@ -59,6 +60,7 @@ class New extends Component {
       statuses: [], namespaces: [], namespaceGroup: null,
       visibilities: projectVisibilitiesForGroupVisibility(), templates: []
     };
+    this.projectsCoordinator = new ProjectsCoordinator(props.client, props.model.subModel("projects"));
 
     this.handlers = {
       onSubmit: this.onSubmit.bind(this),
@@ -86,7 +88,7 @@ class New extends Component {
       this.setState({ namespaces: [] });
       return;
     }
-    const username = this.props.user.username;
+    const username = this.props.user.data.username;
     const namespace = namespaces.data.filter(n => n.path === username)
     if (namespace.length > 0) this.newProject.set('meta.projectNamespace', namespace[0]);
     this.setState({ namespaces });
@@ -101,9 +103,8 @@ class New extends Component {
 
   }
 
-  refreshUserProjects(client, userStateDispatch) {
-    client.getProjects({ membership: true, order_by: 'last_activity_at' })
-      .then(p => userStateDispatch(UserState.reSetMember(p)));
+  refreshUserProjects() {
+    this.projectsCoordinator.getFeatured();
   }
 
   onSubmit() {
@@ -113,7 +114,7 @@ class New extends Component {
       this.newProject.set('display.loading', true);
       this.props.client.postProject(this.newProject.get(), this.props.renkuTemplatesUrl, this.props.renkuTemplatesRef)
         .then((project) => {
-          this.refreshUserProjects(this.props.client, this.props.userStateDispatch);
+          this.refreshUserProjects();
           this.newProject.set('display.loading', false);
           this.props.history.push(`/projects/${project.id}`);
         })

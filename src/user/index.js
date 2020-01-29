@@ -1,5 +1,5 @@
 /*!
- * Copyright 2017 - Swiss Data Science Center (SDSC)
+ * Copyright 2020 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,13 +16,12 @@
  * limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+/**
+ *  renku-ui
+ *
+ *  Components for interacting with user
+ */
 
-import UserState from './UserState';
+import { UserCoordinator } from './User.state';
 
-// Combine all reducers here
-const reducer = combineReducers({
-  user: UserState.reducer
-});
-
-export { reducer, UserState };
+export { UserCoordinator };

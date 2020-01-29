@@ -23,13 +23,12 @@
  *  Redux-based state-management code.
  */
 
-import { UserState } from '../app-state';
 import { API_ERRORS } from '../api-client';
-import { StateModel} from '../model/Model';
+import { StateModel } from '../model/Model';
 import { projectSchema } from '../model/RenkuModels';
-import { SpecialPropVal } from '../model/Model'
+import { SpecialPropVal } from '../model/Model';
 import { isNullOrUndefined } from 'util';
-import { splitAutosavedBranches } from '../utils/HelperFunctions'
+import { splitAutosavedBranches } from '../utils/HelperFunctions';
 
 
 const GraphIndexingStatus = {
@@ -49,14 +48,14 @@ class ProjectModel extends StateModel {
   }
 
   fetchGraphWebhook(client, user) {
-    if (user == null) {
+    if (!user) {
       this.set('webhook.possible', false);
+      return;
     }
-    const userIsOwner = this.get('core.owner.id') === user.id;
+    const userIsOwner = this.get('core.owner.id') === user.data.id;
     this.set('webhook.possible', userIsOwner);
-    if (userIsOwner) {
+    if (userIsOwner)
       this.fetchGraphWebhookStatus(client, this.get('core.id'));
-    }
   }
 
   fetchGraphStatus(client) {
@@ -315,36 +314,31 @@ class ProjectModel extends StateModel {
       .finally(() => this.set('transient.requests.readme', false))
   }
 
-  refreshUserProjects(client, userStateDispatch) {
-    client.getProjects({membership: true, order_by: 'last_activity_at'})
-      .then(p => userStateDispatch(UserState.reSetMember(p)));
-  }
-
-  setTags(client, tags, userStateDispatch) {
-    this.setUpdating({system: {tag_list: [true]}});
+  setTags(client, tags) {
+    this.setUpdating({ system: { tag_list: [true] } });
     client.setTags(this.get('core.id'), this.get('core.title'), tags)
-      .then(() => { this.fetchProject(client, this.get('core.id'));})
-      .then(()=> this.refreshUserProjects(client, userStateDispatch))
+      .then(() => { this.fetchProject(client, this.get('core.id')); })
   }
 
-  setDescription(client, description, userStateDispatch) {
-    this.setUpdating({core: {description: true}});
+  setDescription(client, description) {
+    this.setUpdating({ core: { description: true } });
     client.setDescription(this.get('core.id'), this.get('core.title'), description).then(() => {
       this.fetchProject(client, this.get('core.id'));
-    }).then(()=> this.refreshUserProjects(client, userStateDispatch))
+    });
   }
 
   toogleForkModal() {
     let forkModalOpen = this.get('forkModalOpen');
-    this.set("forkModalOpen" , forkModalOpen === undefined || forkModalOpen === false ? true : false);
+    this.set("forkModalOpen", forkModalOpen === undefined || forkModalOpen === false ? true : false);
   }
 
-  star(client, userStateDispatch, starred) {
-    client.starProject(this.get('core.id'), starred).then(() => {
-      // TODO: Bad naming here - will be resolved once the user state is re-implemented.
-      this.fetchProject(client, this.get('core.id'))
-        .then(p => userStateDispatch(UserState.star(p.metadata.core)))
-    })
+  star(client, starred) {
+    return client.starProject(this.get('core.id'), starred)
+      .then((resp) => resp.data);
+  }
+
+  setStars(num) {
+    this.set("system.star_count", num);
   }
 }
 

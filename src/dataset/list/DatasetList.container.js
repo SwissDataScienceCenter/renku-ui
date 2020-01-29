@@ -17,9 +17,9 @@
  */
 
 import React, { Component } from 'react';
-import { connect } from 'react-redux'
-import DatasetList from './DatasetList.present'
-import DatasetListModel from './DatasetList.state'
+import { connect } from 'react-redux';
+import DatasetList from './DatasetList.present';
+import DatasetListModel from './DatasetList.state';
 import qs from 'query-string';
 
 const urlMap = {
@@ -169,7 +169,6 @@ class List extends Component {
 
   mapStateToProps(ownProps) {
     return {
-      user: ownProps.user,
       searchQuery: this.model.get('query'),
       loading: this.model.get('loading'),
       datasets: this.model.get('datasets'),
@@ -190,7 +189,6 @@ class List extends Component {
 
     return <VisibleDatasetList
       store={this.model.reduxStore}
-      user={this.props.user}
       handlers={this.handlers}
       orderByValuesMap={orderByValuesMap}
       urlMap={urlMap}

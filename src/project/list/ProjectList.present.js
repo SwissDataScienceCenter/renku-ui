@@ -22,7 +22,7 @@ import { Row, Col, Alert } from 'reactstrap';
 import { Button, Form, InputGroup, FormText, Input, Label, ButtonGroup } from 'reactstrap';
 import { Nav, NavItem, InputGroupButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap';
 
-import { Avatar, Loader, Pagination,  TimeCaption , RenkuNavLink } from '../../utils/UIComponents';
+import { UserAvatar, Loader, Pagination,  TimeCaption , RenkuNavLink } from '../../utils/UIComponents';
 import { ProjectTagList } from '../shared';
 import { faCheck, faSortAmountDown, faSortAmountUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -43,7 +43,7 @@ class ProjectListRow extends Component {
     }
     return (
       <div className="d-flex project-list-row mb-3">
-        <div className="mr-2"><Avatar person={this.props.owner} /></div>
+        <div className="mr-2"><UserAvatar person={this.props.owner} /></div>
         <div>
           <p className="mb-1"><b>{title}</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<ProjectTagList taglist={this.props.tag_list} /></p>
           <span>{description} <TimeCaption caption="Updated" time={this.props.last_activity_at} /></span>
@@ -58,7 +58,7 @@ class ProjectSearchForm extends Component {
   render() {
     return [<Form key="form" onSubmit={this.props.handlers.onSearchSubmit} inline>
       <InputGroup>
-        <Input name="searchQuery" id="searchQuery" placeholder={this.props.searchText} style={{minWidth: "300px"}}
+        <Input name="searchQuery" id="searchQuery" placeholder={this.props.searchText} style={{ minWidth: "300px" }}
           value={this.props.searchQuery} onChange={this.props.handlers.onSearchQueryChange} className="border-primary" />
         <Label for="searchQuery" hidden>Query</Label>
         <InputGroupButtonDropdown addonType="append" toggle={this.props.handlers.onSearchInDropdownToogle} isOpen={this.props.searchInDropdownOpen} >
@@ -69,21 +69,21 @@ class ProjectSearchForm extends Component {
             <DropdownItem value={this.props.searchInValuesMap.PROJECTNAME}
               onClick={this.props.handlers.changeSearchDropdownFilter}>
               {this.props.searchIn === this.props.searchInValuesMap.PROJECTNAME ?
-                <FontAwesomeIcon icon={faCheck} /> :null} Project Name
+                <FontAwesomeIcon icon={faCheck} /> : null} Project Name
             </DropdownItem>
             {
-              this.props.urlMap.projectsSearchUrl === this.props.currentTab || this.props.hasUser === false  ?
+              this.props.urlMap.projectsSearchUrl === this.props.currentTab || this.props.hasUser === false ?
                 [<DropdownItem key={this.props.searchInValuesMap.USERNAME}
                   value={this.props.searchInValuesMap.USERNAME}
                   onClick={this.props.handlers.changeSearchDropdownFilter}>
                   {this.props.searchIn === this.props.searchInValuesMap.USERNAME ?
-                    <FontAwesomeIcon icon={faCheck} /> :null} User Name
+                    <FontAwesomeIcon icon={faCheck} /> : null} User Name
                 </DropdownItem>,
                 <DropdownItem key={this.props.searchInValuesMap.GROUPNAME}
                   value={this.props.searchInValuesMap.GROUPNAME}
-                  onClick= {this.props.handlers.changeSearchDropdownFilter}>
+                  onClick={this.props.handlers.changeSearchDropdownFilter}>
                   {this.props.searchIn === this.props.searchInValuesMap.GROUPNAME ?
-                    <FontAwesomeIcon icon={faCheck} /> :null} Group Name
+                    <FontAwesomeIcon icon={faCheck} /> : null} Group Name
                 </DropdownItem>]
                 : null
             }
@@ -91,20 +91,20 @@ class ProjectSearchForm extends Component {
         </InputGroupButtonDropdown>
         <InputGroupButtonDropdown addonType="append" toggle={this.props.handlers.onOrderByDropdownToogle} isOpen={this.props.orderByDropdownOpen} >
           <Button outline color="primary" onClick={this.props.handlers.toogleSearchSorting}>
-            { this.props.orderSearchAsc ? <FontAwesomeIcon icon={faSortAmountUp}/> : <FontAwesomeIcon icon={faSortAmountDown}/> }
+            {this.props.orderSearchAsc ? <FontAwesomeIcon icon={faSortAmountUp} /> : <FontAwesomeIcon icon={faSortAmountDown} />}
           </Button>
           <DropdownToggle outline caret color="primary" >
             Order by: {this.props.orderByLabel}
           </DropdownToggle>
           <DropdownMenu>
             <DropdownItem value={this.props.orderByValuesMap.NAME} onClick={this.props.handlers.changeSearchDropdownOrder}>
-              {this.props.orderBy === this.props.orderByValuesMap.NAME ? <FontAwesomeIcon icon={faCheck} /> :null} Name
+              {this.props.orderBy === this.props.orderByValuesMap.NAME ? <FontAwesomeIcon icon={faCheck} /> : null} Name
             </DropdownItem>
             <DropdownItem value={this.props.orderByValuesMap.CREATIONDATE} onClick={this.props.handlers.changeSearchDropdownOrder}>
-              {this.props.orderBy === this.props.orderByValuesMap.CREATIONDATE ? <FontAwesomeIcon icon={faCheck} /> :null} Creation Date
+              {this.props.orderBy === this.props.orderByValuesMap.CREATIONDATE ? <FontAwesomeIcon icon={faCheck} /> : null} Creation Date
             </DropdownItem>
             <DropdownItem value={this.props.orderByValuesMap.UPDATEDDATE} onClick={this.props.handlers.changeSearchDropdownOrder}>
-              {this.props.orderBy === this.props.orderByValuesMap.UPDATEDDATE ? <FontAwesomeIcon icon={faCheck} /> :null} Updated Date
+              {this.props.orderBy === this.props.orderByValuesMap.UPDATEDDATE ? <FontAwesomeIcon icon={faCheck} /> : null} Updated Date
             </DropdownItem>
           </DropdownMenu>
         </InputGroupButtonDropdown>
@@ -133,13 +133,13 @@ class ProjectNavTabs extends Component {
                 <Nav key="nav" pills className={'nav-pills-underline'}>
                   <NavItem>
                     <RenkuNavLink to={this.props.urlMap.projectsUrl}
-                      alternate={this.props.urlMap.yourProjects}  title="Your Projects" />
+                      alternate={this.props.urlMap.yourProjects} title="Your Projects" />
                   </NavItem>
                   <NavItem>
-                    <RenkuNavLink exact={false} to={this.props.urlMap.starred}  title="Starred Projects" />
+                    <RenkuNavLink exact={false} to={this.props.urlMap.starred} title="Starred Projects" />
                   </NavItem>
                   <NavItem>
-                    <RenkuNavLink exact={false} to={this.props.urlMap.projectsSearchUrl}  title="Search" />
+                    <RenkuNavLink exact={false} to={this.props.urlMap.projectsSearchUrl} title="Search" />
                   </NavItem>
                 </Nav>,
                 <div key="bottom-space">&nbsp;</div>]
@@ -153,12 +153,12 @@ class ProjectNavTabs extends Component {
 }
 
 
-class DisplayEmptyProjects extends Component{
+class DisplayEmptyProjects extends Component {
   render() {
     return (
       <Col>
         <p>
-          <strong>{this.props.emptyListText}</strong><br/>
+          <strong>{this.props.emptyListText}</strong><br />
           If there is a project you work on or want to follow, you should search for it in
           the <Link to={this.props.projectsSearchUrl}>project search</Link>, click on it to view it, and star it.
         </p>
@@ -170,36 +170,35 @@ class DisplayEmptyProjects extends Component{
   }
 }
 
-class ProjectsRows extends Component{
-  render(){
-    if(this.props.forbidden) return <Col>You need to be logged in to search projects per user name or group name</Col>;
+class ProjectsRows extends Component {
+  render() {
+    if (this.props.forbidden) return <Col>You need to be logged in to search projects per user name or group name</Col>;
 
-    if(this.props.loading) return <Col md={{size: 2,  offset: 3}}><Loader /></Col>
+    if (this.props.loading) return <Col md={{ size: 2, offset: 3 }}><Loader /></Col>
 
-    if(this.props.page.emptyResponseMessage)
+    if (this.props.page.emptyResponseMessage)
       return <DisplayEmptyProjects
         projectsSearchUrl={this.props.urlMap.projectsSearchUrl}
         projectNewUrl={this.props.urlMap.projectNewUrl}
-        emptyListText={this.props.emptyListText}/>
+        emptyListText={this.props.emptyListText} />
 
     const projects = this.props.page.projects || [];
-    const rows = projects.map( (p) => <ProjectListRow key={p.id} projectsUrl={this.props.urlMap.projectsUrl} {...p} />);
+    const rows = projects.map((p) => <ProjectListRow key={p.id} projectsUrl={this.props.urlMap.projectsUrl} {...p} />);
     return <Col md={8}>{rows}</Col>;
   }
 }
 
-class UsersRow extends Component{
-  render(){
-    if(this.props.forbidden) return null;
+class UsersRow extends Component {
+  render() {
+    if (this.props.forbidden) return null;
     const usersOrGroupsList = this.props.usersOrGroupsList || [];
-    const usersRows = usersOrGroupsList.map( (p) =>
-    {
-      if(this.props.searchIn === this.props.searchInValuesMap.USERNAME)
+    const usersRows = usersOrGroupsList.map((p) => {
+      if (this.props.searchIn === this.props.searchInValuesMap.USERNAME)
         return <Button key={p.id} color="primary" outline
           onClick={() => this.props.handlers.changeSelectedUserOrGroup(p.id)}
           active={Number(this.props.selectedUserOrGroup) === Number(p.id)}>{p.username}
         </Button>
-      else if(this.props.searchIn === this.props.searchInValuesMap.GROUPNAME)
+      else if (this.props.searchIn === this.props.searchInValuesMap.GROUPNAME)
         return <Button key={p.id} color="primary" outline
           onClick={() => this.props.handlers.changeSelectedUserOrGroup(p.id)}
           active={Number(this.props.selectedUserOrGroup) === Number(p.id)}>{p.full_path}
@@ -208,7 +207,7 @@ class UsersRow extends Component{
     });
     return (this.props.loading) ?
       <Col></Col> :
-      <Col  md={12}>
+      <Col md={12}>
         <ButtonGroup className="d-block" size="sm">{usersRows}</ButtonGroup>
       </Col>;
   }
@@ -217,12 +216,12 @@ class UsersRow extends Component{
 class ProjectsSearch extends Component {
   render() {
     const loading = this.props.loading || false;
-    const hasUser = this.props.user.id ? true : false;
+    const hasUser = this.props.user.logged;
     const forbidden = this.props.searchIn !== this.props.searchInValuesMap.PROJECTNAME && !hasUser;
     return [<Row key="form">
       {
         (this.props.loggedOutMessage !== undefined) ?
-          <Col md={8} ><span>{this.props.loggedOutMessage}</span><br/><br/></Col>
+          <Col md={8} ><span>{this.props.loggedOutMessage}</span><br /><br /></Col>
           :
           <span></span>
       }
@@ -250,7 +249,7 @@ class ProjectsSearch extends Component {
     </Row>,
     <Row key="spacer2"><Col md={8}>&nbsp;</Col></Row>,
     this.props.searchIn === this.props.searchInValuesMap.USERNAME ||
-    this.props.searchIn === this.props.searchInValuesMap.GROUPNAME ?
+      this.props.searchIn === this.props.searchInValuesMap.GROUPNAME ?
       <Row key="users">
         <UsersRow
           usersOrGroupsList={this.props.usersOrGroupsList}
@@ -279,15 +278,15 @@ class ProjectsSearch extends Component {
 }
 
 class NotFoundInsideProject extends Component {
-  render(){
+  render() {
     return <Col key="nofound">
       <Row>
         <Col xs={12} md={12}>
           <Alert color="primary">
             <h4>404 - Page not found</h4>
-          The URL
-            <strong> { this.props.location.pathname.replace(this.props.match.url,'') } </strong>
-           is not a subpath of <strong>/projects</strong>. You can navigate through renku projects using the tabs on top.
+            The URL
+            <strong> {this.props.location.pathname.replace(this.props.match.url, '')} </strong>
+            is not a subpath of <strong>/projects</strong>. You can navigate through renku projects using the tabs on top.
           </Alert>
         </Col>
       </Row>
@@ -297,8 +296,9 @@ class NotFoundInsideProject extends Component {
 
 class ProjectList extends Component {
   render() {
-    if(this.props.user.available === false) return "" ;
-    const hasUser = this.props.user.id ? true : false;
+    if (!this.props.user.fetched)
+      return null;
+    const hasUser = this.props.user.logged;
     const urlMap = this.props.urlMap;
 
     return [
@@ -312,23 +312,23 @@ class ProjectList extends Component {
           }
         </Col>
       </Row>,
-      <ProjectNavTabs loggedIn={hasUser} key="navbar" urlMap={urlMap}/>,
+      <ProjectNavTabs loggedIn={hasUser} key="navbar" urlMap={urlMap} />,
       <Row key="content">
         <Col key="" md={12}>
           {
             (hasUser) ?
               <Switch>
                 <Route path={urlMap.starred}
-                  render={props =>  <ProjectsSearch
+                  render={props => <ProjectsSearch
                     emptyListText="You are logged in, but you have not yet starred any projects. Starring a project declares your interest in it. "
-                    {...this.props} />}/>
+                    {...this.props} />} />
                 <Route path={urlMap.projectsSearchUrl}
-                  render={props =>  <ProjectsSearch {...this.props} />} />
+                  render={props => <ProjectsSearch {...this.props} />} />
                 <Route path={urlMap.yourProjects}
-                  render={props =>  <ProjectsSearch {...this.props}
+                  render={props => <ProjectsSearch {...this.props}
                     emptyListText="You are logged in, but you have not yet created any projects. " />} />
                 <Route path={urlMap.projectsUrl}
-                  render={props =>  <ProjectsSearch {...this.props}
+                  render={props => <ProjectsSearch {...this.props}
                     emptyListText="You are logged in, but you have not yet created any projects. " />} />
                 <Route component={NotFoundInsideProject} />
               </Switch>
@@ -336,14 +336,14 @@ class ProjectList extends Component {
               <Switch>
                 <Route path={urlMap.starred}
                   // eslint-disable-next-line max-len
-                  render= {props => <ProjectsSearch loggedOutMessage="You need to be logged in to be able to see a list with the projects you starred, therefore we will display all projects for you to explore." {...this.props} />} />
+                  render={props => <ProjectsSearch loggedOutMessage="You need to be logged in to be able to see a list with the projects you starred, therefore we will display all projects for you to explore." {...this.props} />} />
                 <Route path={urlMap.projectsSearchUrl}
-                  render={ props =>  <ProjectsSearch  {...this.props} />} />
+                  render={props => <ProjectsSearch  {...this.props} />} />
                 <Route path={urlMap.yourProjects}
                   // eslint-disable-next-line max-len
-                  render= { props => <ProjectsSearch loggedOutMessage="You need to be logged in to be able to see a list with your own projects, therefore we will display all projects for you to explore." {...this.props} />} />
+                  render={props => <ProjectsSearch loggedOutMessage="You need to be logged in to be able to see a list with your own projects, therefore we will display all projects for you to explore." {...this.props} />} />
                 <Route exact path={urlMap.projectsUrl}
-                  render= { props => <ProjectsSearch {...this.props} />} />
+                  render={props => <ProjectsSearch {...this.props} />} />
                 <Route component={NotFoundInsideProject} />
               </Switch>
           }
@@ -354,4 +354,4 @@ class ProjectList extends Component {
 }
 
 export default ProjectList;
-export { ProjectListRow }
+export { ProjectListRow };

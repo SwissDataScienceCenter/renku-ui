@@ -24,10 +24,12 @@
  */
 
 import { Schema } from './index';
-import { notebooksSchema } from './RenkuModels';
+import { notebooksSchema, userSchema, projectsSchema } from './RenkuModels';
 
 const globalSchema = new Schema({
-  notebooks: { schema: notebooksSchema }
+  notebooks: { schema: notebooksSchema },
+  user: { schema: userSchema },
+  projects: { schema: projectsSchema },
 })
 
 export { globalSchema };

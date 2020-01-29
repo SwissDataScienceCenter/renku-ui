@@ -22,11 +22,12 @@ import { RETURN_TYPES } from './utils';
 function addUserMethods(client) {
   client.getUser = () => {
     let headers = client.getBasicHeaders();
-    return client.clientFetch(`${client.baseUrl}/user`, {
-      method: 'GET',
-      headers: headers
-    },
-    RETURN_TYPES.json, false, false)
+    return client.clientFetch(
+      `${client.baseUrl}/user`, {
+        method: 'GET',
+        headers: headers
+      },
+      RETURN_TYPES.json, false, false).then(response => response.data);
   }
 }
 

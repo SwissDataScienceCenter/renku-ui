@@ -57,7 +57,7 @@ class Fork extends Component {
         this.forkProject.set('display.namespaces', [])
         return;
       }
-      const username = this.props.user.username;
+      const username = this.props.user.data.username;
       const namespace = namespaces.data.filter(n => n.path === username)
       if (namespace.length > 0) this.forkProject.set('meta.projectNamespace', namespace[0]);
       this.forkProject.set('display.namespaces', namespaces)

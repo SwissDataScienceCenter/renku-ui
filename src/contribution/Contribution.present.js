@@ -17,32 +17,35 @@
  */
 
 import React from 'react';
-import { Row, Col, Button, Input, TabContent, TabPane, NavItem,
-  Nav, NavLink, DropdownMenu, DropdownItem, DropdownToggle, Dropdown} from 'reactstrap';
+import {
+  Row, Col, Button, Input, TabContent, TabPane, NavItem,
+  Nav, NavLink, DropdownMenu, DropdownItem, DropdownToggle, Dropdown
+} from 'reactstrap';
 import classnames from 'classnames';
 import Collapse from 'react-collapse';
 
-import { Avatar, TimeCaption, RenkuMarkdown } from '../utils/UIComponents'
+import { UserAvatar, TimeCaption, RenkuMarkdown } from '../utils/UIComponents';
 import { FilePreview } from '../file';
 import { ContributionBody as ContributionBodyContainer } from './Contribution.container';
 import { EDIT, PREVIEW } from './Contribution.constants';
-import { Card, CardFooter, CardBody} from 'reactstrap';
+import { Card, CardFooter, CardBody } from 'reactstrap';
 
+/**
+ * Contribution
+ *
+ * @param contribution - the actual contribution to display
+ * @param client - an api client instance
+ * @param projectId - id of the current project
+ */
 class Contribution extends React.Component {
-
-  // Needed props:
-  //  - contribution: the actual contribution to display
-  //  - client: an api client instance
-  //  - projectId: id of the current project
-
   render() {
     const contribution = this.props.contribution;
 
     return <div>
-      <br/>
+      <br />
       <Row>
-        <Col key="image" md={1}  sm={1} className="float-right text-center" style={{maxWidth:'62px'}}>
-          <Avatar size="lg" person={contribution.author} />
+        <Col key="image" md={1} sm={1} className="float-right text-center" style={{ maxWidth: '62px' }}>
+          <UserAvatar size="lg" person={contribution.author} />
           <small className="d-sm-inline-flex text-center">
             {contribution.author ? contribution.author.name : null}
           </small>
@@ -52,8 +55,8 @@ class Contribution extends React.Component {
             <CardBody className="mb-0 pb-0">
               <ContributionBodyContainer {...this.props} />
             </CardBody>
-            <CardFooter className="border-0 bg-transparent text-muted pt-2 pb-2 pl-3"> 
-              <TimeCaption key="timecaption" caption="Updated" time={contribution.updated_at}/>
+            <CardFooter className="border-0 bg-transparent text-muted pt-2 pb-2 pl-3">
+              <TimeCaption key="timecaption" caption="Updated" time={contribution.updated_at} />
             </CardFooter>
           </Card>
         </Col>
