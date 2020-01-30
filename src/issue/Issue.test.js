@@ -28,17 +28,17 @@ import ReactDOM from 'react-dom';
 import { MemoryRouter } from 'react-router-dom';
 
 import Issue from './Issue';
-import State from  './Issue.state';
+import State from './Issue.state';
 import { testClient as client } from '../api-client';
 import { slugFromTitle } from '../utils/HelperFunctions';
-import { generateFakeUser } from '../app-state/UserState.test';
+import { generateFakeUser } from '../user/User.test';
 
 describe('rendering', () => {
   const user = generateFakeUser(true);
 
   it('renders new without crashing', () => {
     const div = document.createElement('div');
-    ReactDOM.render(<Issue.New location={ {pathname: '/projects/1/issue_new'} } user={user} />, div);
+    ReactDOM.render(<Issue.New location={{ pathname: '/projects/1/issue_new' }} user={user} />, div);
   });
   it('renders list without crashing', () => {
     const baseUrl = "base";
@@ -73,10 +73,10 @@ describe('helpers', () => {
 
 describe('new issue actions', () => {
   it('creates a core field set action', () => {
-    expect(State.New.Core.set('title', 'a title')).toEqual({type: 'core', payload: {title: 'a title', displayId: 'a-title'}});
+    expect(State.New.Core.set('title', 'a title')).toEqual({ type: 'core', payload: { title: 'a title', displayId: 'a-title' } });
   });
   it('creates a visibility set action', () => {
-    expect(State.New.Visibility.set('private')).toEqual({type: 'visibility', payload: {level: 'private'}});
+    expect(State.New.Visibility.set('private')).toEqual({ type: 'visibility', payload: { level: 'private' } });
   });
 });
 
@@ -84,30 +84,30 @@ describe('new issue reducer', () => {
   const initialState = State.New.reducer(undefined, {});
   it('returns initial state', () => {
     expect(initialState).toEqual({
-      core: {title: "", description: "", displayId: ""},
-      visibility: {level: "public"}
+      core: { title: "", description: "", displayId: "" },
+      visibility: { level: "public" }
     });
   });
   it('advances state', () => {
     const state1 = State.New.reducer(initialState, State.New.Core.set('title', 'new title'));
     expect(state1)
-    .toEqual({
-      core: {title: "new title", description: "", displayId: "new-title"},
-      visibility: {level: "public"}
-    });
+      .toEqual({
+        core: { title: "new title", description: "", displayId: "new-title" },
+        visibility: { level: "public" }
+      });
     const state2 = State.New.reducer(state1, State.New.Visibility.set('private'));
     expect(state2)
-    .toEqual({
-      core: {title: "new title", description: "", displayId: "new-title"},
-      visibility: {level: "private"}
-    });
+      .toEqual({
+        core: { title: "new title", description: "", displayId: "new-title" },
+        visibility: { level: "private" }
+      });
   });
 });
 
 describe('issue view actions', () => {
   it('creates a server return action', () => {
-    expect(State.View.setAll({core:{title: "A Title", description: "A desc", displayId: "a-title"}}))
-      .toEqual({type: 'server_return', payload:{core:{title: "A Title", description: "A desc", displayId: "a-title"}}});
+    expect(State.View.setAll({ core: { title: "A Title", description: "A desc", displayId: "a-title" } }))
+      .toEqual({ type: 'server_return', payload: { core: { title: "A Title", description: "A desc", displayId: "a-title" } } });
   });
 });
 
@@ -115,16 +115,16 @@ describe('issue view reducer', () => {
   const initialState = State.View.reducer(undefined, {});
   it('returns initial state', () => {
     expect(initialState).toEqual({
-      core: {title: "", description: "", displayId: ""},
-      visibility: {level: "public"}
+      core: { title: "", description: "", displayId: "" },
+      visibility: { level: "public" }
     });
   });
   it('advances state', () => {
-    const state1 = State.View.reducer(initialState, State.View.setAll({core: {title: "A Title", description: "A desc", displayId: "a-title"}}));
+    const state1 = State.View.reducer(initialState, State.View.setAll({ core: { title: "A Title", description: "A desc", displayId: "a-title" } }));
     expect(state1)
-    .toEqual({
-      core: {title: "A Title", description: "A desc", displayId: "a-title"},
-      visibility: {level: "public"}
-    });
+      .toEqual({
+        core: { title: "A Title", description: "A desc", displayId: "a-title" },
+        visibility: { level: "public" }
+      });
   });
 });

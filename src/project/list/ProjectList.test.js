@@ -29,13 +29,13 @@ import { MemoryRouter } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 
 import ProjectList from './';
-import ProjectListModel from  './ProjectList.state';
+import ProjectListModel from './ProjectList.state';
 import { testClient as client } from '../../api-client';
-import { generateFakeUser } from '../../app-state/UserState.test';
+import { generateFakeUser } from '../../user/User.test';
 
 
 const fakeHistory = createMemoryHistory({
-  initialEntries: [ '/' ],
+  initialEntries: ['/'],
   initialIndex: 0,
 })
 fakeHistory.push({
@@ -45,7 +45,7 @@ fakeHistory.push({
 
 describe('rendering', () => {
   const loggedUser = generateFakeUser();
-  
+
   it('renders list without crashing', () => {
     const div = document.createElement('div');
     ReactDOM.render(
@@ -62,7 +62,7 @@ describe('new project actions', () => {
     expect(model.get('currentPage')).toEqual(undefined);
   });
   it('does search with a query', () => {
-    return model.setQueryPageNumberAndPath("", 1,fakeHistory.pathName, 'last_activity_at', false, 'projects').then(() => {
+    return model.setQueryPageNumberAndPath("", 1, fakeHistory.pathName, 'last_activity_at', false, 'projects').then(() => {
       expect(model.get('currentPage')).toEqual(1);
       expect(model.get('totalItems')).toEqual(1);
       expect(model.get('pathName')).toEqual(fakeHistory.pathName);
