@@ -51,6 +51,7 @@ const PropertyName = {
   TYPE:'type',
   PARSEFUN:'parseFun',
   VALIDATORS:'validators',
+  EDIT:'edit',
   HELP: 'help'
 };
 

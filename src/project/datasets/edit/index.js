@@ -1,5 +1,5 @@
 /*!
- * Copyright 2017 - Swiss Data Science Center (SDSC)
+ * Copyright 2018 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -17,29 +17,12 @@
  */
 
 /**
- *  incubator-renku-ui
+ *  renku-ui
  *
- *  DatasetNew.container.js
- *  Container components for new dataset.
+ *  Dataset/new
+ *  Components for the new Dataset page
  */
 
-import React from 'react';
-import { datasetFormSchema } from '../../../model/RenkuModels';
-import DatasetNew from './DatasetNew.present';
+import EditDataset from './DatasetEdit.container';
 
-function NewDataset(props) {
-
-  return <DatasetNew
-    datasetFormSchema={datasetFormSchema}
-    user={props.user}
-    projectPathWithNamespace={props.projectPathWithNamespace}
-    client={props.client}
-    history={props.history}
-    accessLevel={props.accessLevel}
-    reFetchProject={props.reFetchProject}
-    httpProjectUrl={props.httpProjectUrl}
-  />;
-}
-
-
-export default NewDataset;
+export default EditDataset;

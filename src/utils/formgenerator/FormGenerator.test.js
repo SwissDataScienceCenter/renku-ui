@@ -11,6 +11,7 @@ let schema = new Schema({
     type: FormGenerator.FieldTypes.TEXT,
     parseFun: FormGenerator.Parsers.parseOnlyLetterAndSpace,
     help: "Help text",
+    edit: false,
     validators: [
       {
         id: "text-length",
@@ -24,6 +25,7 @@ let schema = new Schema({
     name: "textarea",
     label: "TextArea",
     type: FormGenerator.FieldTypes.TEXT_AREA,
+    edit: false,
     validators: [
       {
         id: "textarea-length",
@@ -36,11 +38,12 @@ let schema = new Schema({
     initial: [],
     name: "files",
     label: "Files",
+    edit:true,
     type: FormGenerator.FieldTypes.FILES,
   }
 });
 
-describe("rendering", () => {
+describe("rendering on create", () => {
 	let spy = null;
 	beforeEach(() => {
 		// ckeditor dumps some junk to the conole.error. Ignore it.
@@ -51,7 +54,7 @@ describe("rendering", () => {
 		spy.mockRestore();
 	});
 
-  it("renders form without crashing", () => {
+  it("renders create form without crashing", () => {
     const div = document.createElement("div");
 
     const submitCallback = e =>
@@ -63,6 +66,34 @@ describe("rendering", () => {
 
     ReactDOM.render(
       <FormPanel title="Create Dataset" submitLoader={false} btnName="Create Dataset" submitCallback={submitCallback} model={schema} />,
+      div
+    );
+  });
+});
+
+describe("rendering on modify", () => {
+	let spy = null;
+	beforeEach(() => {
+		// ckeditor dumps some junk to the conole.error. Ignore it.
+		spy = jest.spyOn(console, 'error').mockImplementation(() => {});
+	});
+
+	afterEach(() => {
+		spy.mockRestore();
+	});
+
+  it("renders modify form without crashing", () => {
+    const div = document.createElement("div");
+
+    const submitCallback = e =>
+      alert(
+        Object.values(schema)
+          .map(m => m.label + ": " + m.value + ",\n")
+          .join("")
+      );
+
+    ReactDOM.render(
+      <FormPanel title="Modify Dataset" submitLoader={false} btnName="Create Dataset" submitCallback={submitCallback} model={schema} edit={true} />,
       div
     );
   });

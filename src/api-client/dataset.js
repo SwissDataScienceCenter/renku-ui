@@ -30,7 +30,39 @@ export default function addDatasetMethods(client) {
     })
   }
 
-  client.postDataset = (projectPathWithNamespace, renkuDataset) => {
+  client.addFilesToDataset = (projectUrl, datasetName, filesList) => {
+    let headers = client.getBasicHeaders();
+    headers.append('Content-Type', 'application/json');
+    headers.append('X-Requested-With', 'XMLHttpRequest');
+
+    return client.clientFetch(`${client.baseUrl}/renku/cache.project_clone`, {
+      method: 'POST',
+      headers: headers,
+      body: JSON.stringify({
+        depth: 1,
+        git_url: projectUrl
+      })
+    }).then(response => {
+      if(response.data.error) 
+        return response;
+      else 
+      if(filesList.length > 0){
+        return client.clientFetch(`${client.baseUrl}/renku/datasets.add`, {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify({
+            "dataset_name":datasetName,
+            "files":filesList,
+            "project_id":response.data.result.project_id
+
+          })
+        })
+      } else 
+        return response;
+    })
+  }
+
+  client.postDataset = (projectUrl, renkuDataset) => {
     let headers = client.getBasicHeaders();
     headers.append('Content-Type', 'application/json');
     headers.append('X-Requested-With', 'XMLHttpRequest');
@@ -42,8 +74,7 @@ export default function addDatasetMethods(client) {
       headers: headers,
       body: JSON.stringify({
         depth: 1,
-        git_url: `https://dev.renku.ch/gitlab/${projectPathWithNamespace}.git`
-        //TO-DO: this is a test URL--> CHANGE IT FOR THE REAL PROJECT URL
+        git_url: projectUrl
       })
     }).then(response => {
       if(response.data.error !== undefined){

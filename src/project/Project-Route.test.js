@@ -62,6 +62,21 @@ describe('basic route extraction', () => {
     expect(pathComponents.projectPathWithNamespace).toEqual('namespace/project-name');
     expect(pathComponents.baseUrl).toEqual('/projects/namespace/project-name');
   });
+  it('handles project-with-namespace datasets listing', () => {
+    const pathComponents = splitProjectSubRoute("/projects/namespace/project-name/datasets/issues");
+    expect(pathComponents.projectPathWithNamespace).toEqual('namespace/project-name');
+    expect(pathComponents.baseUrl).toEqual('/projects/namespace/project-name');
+  });
+  it('handles project-with-namespace dataset display', () => {
+    const pathComponents = splitProjectSubRoute("/projects/namespace/project-name/datasets/1/");
+    expect(pathComponents.projectPathWithNamespace).toEqual('namespace/project-name');
+    expect(pathComponents.baseUrl).toEqual('/projects/namespace/project-name');
+  });
+  it('handles project-with-namespace dataset modify', () => {
+    const pathComponents = splitProjectSubRoute("/projects/namespace/project-name/datasets/1/modify");
+    expect(pathComponents.projectPathWithNamespace).toEqual('namespace/project-name');
+    expect(pathComponents.baseUrl).toEqual('/projects/namespace/project-name');
+  });
 })
 
 describe('id route extraction', () => {
