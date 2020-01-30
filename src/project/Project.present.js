@@ -528,6 +528,8 @@ class ProjectViewDatasets extends Component {
     return <Switch>
         <Route exact path={this.props.newDatasetUrl} 
           render={p => this.props.newDataset(p)} />
+        <Route path={this.props.editDatasetUrl} 
+          render={p => this.props.editDataset(p)} />
         <Route path={this.props.datasetsUrl} render={ props =>
           <ProjectViewDatasetsList {...this.props} {...props} />} />
       </Switch>

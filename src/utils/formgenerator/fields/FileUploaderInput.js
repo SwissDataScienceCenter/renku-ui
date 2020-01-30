@@ -30,6 +30,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faTimes, faTrashAlt, faSyncAlt } from '@fortawesome/free-solid-svg-icons';
 import { formatBytes } from './../../HelperFunctions';
 
+const FILE_STATUS = {
+  ADDED: "added",
+  UPLOADED: "uploaded",
+  UPLOADING: "uploading",
+  FAILED: "failed"
+};
+
 function useFiles({ initialState = [] }) {
   const [state, setState] = useState(initialState);
   function withBlobs(files) {
@@ -44,23 +51,41 @@ function useFiles({ initialState = [] }) {
   return [state, withBlobs];
 }
 
-function getFileObject(name, size, id, error, alias){
+function getFileStatus(id, error, status){
+  if(status !== undefined)
+    return FILE_STATUS.ADDED;
+  if(error !== undefined)
+    return FILE_STATUS.FAILED;
+  if(id !== undefined && id!==null)
+    return FILE_STATUS.UPLOADED;
+  return FILE_STATUS.UPLOADING;
+}
+
+function getFileObject(name, size, id, error, alias, status){
   return {
     file_name: name,
     file_size: size,
     file_id: id,
     file_error: error,
-    file_alias: alias
+    file_alias: alias,
+    file_status: getFileStatus(id, error, status)
   }
 }
 
-function FileuploaderInput({ name, label, alert, setInputs, help, disabled=false, uploadFileFunction }) {
+function FileuploaderInput({ name, label, alert, value, setInputs, help, disabled=false, uploadFileFunction }) {
   const [files, setFiles] = useFiles({});
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [displayFiles, setDisplayFiles] = useState([]);
   const [filesErrors, setFilesErrors] = useState([]);
   const [errorOnDrop, setErrorOnDrop] = useState("");
+  const [initialized, setInitialized] = useState(false);
   const $input = useRef(null);
+
+  useEffect(()=>{
+    if(value !== undefined && !initialized)
+      setDisplayFiles(value.map(file => getFileObject(file.name, null, undefined, undefined, undefined, FILE_STATUS.ADDED)))
+    setInitialized(true);
+  },[value, initialized])
 
   useEffect(() => {
     const artifitialEvent = {
@@ -161,7 +186,7 @@ function FileuploaderInput({ name, label, alert, setInputs, help, disabled=false
   let getFilteredFiles = (files) => {
     let dropErrorMessage = "";
     let filteredFiles = files.filter(file => {
-      if ( displayFiles.find( dFile => dFile.file_name === file.name ) === undefined )
+      if ( displayFiles.find( dFile => (dFile.file_name === file.name || dFile.file_alias === file.name) ) === undefined )
         return true
       else{
         dropErrorMessage = dropErrorMessage ===  "" ? 
@@ -175,8 +200,28 @@ function FileuploaderInput({ name, label, alert, setInputs, help, disabled=false
     return filteredFiles;
   }
 
-  useEffect(() => {
-  }, []);
+  let getFileStatusComp = (file) => {
+    switch(file.file_status){
+    case FILE_STATUS.ADDED :
+      return <span> in dataset</span>
+    case FILE_STATUS.UPLOADED :
+      return <span><FontAwesomeIcon color="var(--success)" icon={faCheck}/> ready to add</span>
+    case FILE_STATUS.FAILED :
+      return  <div>
+        <span className="mr-2">
+          <FontAwesomeIcon style={{ cursor:"text"}} color="var(--danger)" icon={faTimes}/> {file.file_error}</span>
+        <span className="text-primary" style={{whiteSpace:"nowrap", cursor:"pointer"}} 
+          onClick={ () => retryUpload(file.file_name)}>
+          <FontAwesomeIcon color="var(--primary)" icon={faSyncAlt} /> Retry 
+        </span>
+      </div>
+    case FILE_STATUS.UPLOADING :
+      return <span><Spinner color="primary" size="sm" /> uploading</span>
+    default:
+      return null;
+    }
+  }
+
   return (
     <FormGroup>
       <Label htmlFor={name}>{label}</Label>
@@ -214,23 +259,14 @@ function FileuploaderInput({ name, label, alert, setInputs, help, disabled=false
                       : null
                   }
                 </td>
-                <td>{formatBytes(file.file_size)}</td>
-                <td>{
-                  file.file_id !== null ?
-                    <span><FontAwesomeIcon color="var(--success)" icon={faCheck}/> uploaded</span>
-                    : file.file_error !== undefined ?
-                      <div>
-                        <span className="mr-2">
-                          <FontAwesomeIcon style={{ cursor:"text"}} color="var(--danger)" icon={faTimes}/> {file.file_error}</span>
-                        <span className="text-primary" style={{whiteSpace:"nowrap", cursor:"pointer"}} 
-                          onClick={ () => retryUpload(file.file_name)}>
-                          <FontAwesomeIcon color="var(--primary)" icon={faSyncAlt} /> Retry 
-                        </span>
-                      </div>
-                      : <span><Spinner color="primary" size="sm" /> uploading</span>
-                }</td>
+                <td>{file.file_size ? formatBytes(file.file_size): "-"}</td>
+                <td>{getFileStatusComp(file)}</td>
                 <td>
-                  <FontAwesomeIcon color="var(--danger)" icon={faTrashAlt} onClick={ () => deleteFile(file.file_name)}/>
+                  { 
+                    file.file_status === FILE_STATUS.ADDED || file.file_status === FILE_STATUS.UPLOADING ?
+                      null :
+                      <FontAwesomeIcon color="var(--danger)" icon={faTrashAlt} onClick={ () => deleteFile(file.file_name)}/>
+                  }
                 </td>
               </tr>
             ))

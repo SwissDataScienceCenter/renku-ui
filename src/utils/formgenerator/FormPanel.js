@@ -33,7 +33,7 @@ import FileuploaderInput from './fields/FileUploaderInput';
 import { Loader } from '../../utils/UIComponents'
 import './FormGenerator.css'
 
-function FormPanel({ title, btnName, submitCallback, model, serverErrors, submitLoader, onCancel }) {
+function FormPanel({ title, btnName, submitCallback, model, serverErrors, submitLoader, onCancel, edit }) {
 
   const modelValues = Object.values(model)
 
@@ -45,7 +45,7 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors, submit
 
   const renderInput = input => {
     const Component = Components[capitalize(input.type) + 'Input'];
-    return <Component key={input.name} disabled={submitLoader.value} setInputs={setInputs} {...input} />;
+    return <Component key={input.name} disabled={submitLoader.value || (input.edit===false && edit)} setInputs={setInputs} {...input} />;
   }
 
   return (

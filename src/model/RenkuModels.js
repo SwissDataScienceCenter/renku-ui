@@ -236,6 +236,7 @@ const datasetFormSchema = new Schema({
     initial: "",
     name: 'name',
     label: 'Name',
+    edit: false,
     type: FormGenerator.FieldTypes.TEXT,
     parseFun: expression => FormGenerator.Parsers.slugFromTitle(expression),
     validators: [{
@@ -248,6 +249,7 @@ const datasetFormSchema = new Schema({
     initial: "",
     name: 'description',
     label: 'Description',
+    edit: false,
     type: FormGenerator.FieldTypes.TEXT_AREA,
     help:"Basic HTML styling tags are allowed in this field.",
     validators: [{
@@ -260,6 +262,7 @@ const datasetFormSchema = new Schema({
     initial: [],
     name: 'files',
     label: 'Files',
+    edit:true,
     type: FormGenerator.FieldTypes.FILES,
     uploadFileFunction: undefined,
     validators:[{

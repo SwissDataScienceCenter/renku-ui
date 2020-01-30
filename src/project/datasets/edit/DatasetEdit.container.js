@@ -19,17 +19,17 @@
 /**
  *  incubator-renku-ui
  *
- *  DatasetNew.container.js
- *  Container components for new dataset.
+ *  DatasetEdit.container.js
+ *  Container components for editing dataset.
  */
 
 import React from 'react';
 import { datasetFormSchema } from '../../../model/RenkuModels';
-import DatasetNew from './DatasetNew.present';
+import DatasetEdit from './DatasetEdit.present';
 
-function NewDataset(props) {
+function EditDataset(props) {
 
-  return <DatasetNew
+  return <DatasetEdit
     datasetFormSchema={datasetFormSchema}
     user={props.user}
     projectPathWithNamespace={props.projectPathWithNamespace}
@@ -37,9 +37,11 @@ function NewDataset(props) {
     history={props.history}
     accessLevel={props.accessLevel}
     reFetchProject={props.reFetchProject}
+    dataset={props.dataset}
+    datasetId={props.datasetId}
     httpProjectUrl={props.httpProjectUrl}
   />;
 }
 
 
-export default NewDataset;
+export default EditDataset;

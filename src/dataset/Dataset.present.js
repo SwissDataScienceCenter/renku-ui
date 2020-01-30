@@ -23,7 +23,7 @@ import { Loader } from '../utils/UIComponents';
 import DOMPurify from 'dompurify';
 import { API_ERRORS } from '../api-client';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFile, faProjectDiagram, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
+import { faFile, faProjectDiagram, faExternalLinkAlt, faPen } from '@fortawesome/free-solid-svg-icons';
 import { GraphIndexingStatus } from '../project/Project';
 import KnowledgeGraphStatus from '../file/KnowledgeGraphStatus.container';
 import Time from '../utils/Time';
@@ -132,7 +132,7 @@ export default function DatasetView(props){
           }).catch(error => {
             if(fetchError === null){
               if (!unmounted && error.case === API_ERRORS.notFoundError){
-                setFetchError("Error 404: The dataset that was selected doesn't exist or couldn't be accessed. If you just created the dataset try reloading the page.");}
+                setFetchError("Error 404: The dataset that was selected does not exist or could not be accessed. If you just created the dataset try reloading the page.");}
               else if(!unmounted && error.case === API_ERRORS.internalServerError){
                 setFetchError("Error 500: The dataset that was selected couldn't be fetched.");}
             }
@@ -148,7 +148,7 @@ export default function DatasetView(props){
           }).catch(error => {
             if(fetchError === null){
               if (!unmounted && error.case === API_ERRORS.notFoundError){
-                setFetchError("Error 404: The dataset that was selected doesn't exist or couldn't be accessed. If you just created the dataset try reloading the page.");}
+                setFetchError("Error 404: The dataset that was selected does not exist or could not be accessed. If you just created the dataset try reloading the page.");}
               else if(!unmounted && error.case === API_ERRORS.internalServerError){
                 setFetchError("Error 500: The dataset that was selected couldn't be fetched.");}
             }
@@ -184,11 +184,11 @@ export default function DatasetView(props){
     return <Alert color="danger">{fetchError}</Alert>;
   if(dataset === undefined) return <Loader />;
   if(dataset === null)
-    return <Alert color="danger">Error 404: The dataset that was selected doesn't exist or couldn't be accessed.<br /> <br /> If you just created the dataset try <Button color="danger" size="sm" onClick={()=> window.location.reload()}>reloading</Button> the page.</Alert>
+    return <Alert color="danger">Error 404: The dataset that was selected does not exist or could not be accessed.<br /> <br /> If you just created the dataset try <Button color="danger" size="sm" onClick={()=> window.location.reload()}>reloading</Button> the page.</Alert>
 
   return <Col>
     <Row>
-      <Col md={10} sm={12}>
+      <Col md={8} sm={12}>
         {
           dataset.published !== undefined && dataset.published.datePublished !== undefined ?
             <small style={{ display: 'block', paddingBottom:'8px'}} className="font-weight-light font-italic">
@@ -200,16 +200,25 @@ export default function DatasetView(props){
           {dataset.name}
         </h4> 
       </Col>
-      { dataset.url ? 
-        <Col md={2} sm={12}>
-          <a className="float-right" href={dataset.url} target="_blank" rel="noreferrer noopener">
-            <Button outline color="dark" >
+      <Col md={4} sm={12}>
+        { props.insideProject && props.maintainer ? 
+          <Link className="float-right" to={{pathname:"modify", state: { dataset: dataset }}} >
+            <Button size="sm" outline color="dark" >
+              <FontAwesomeIcon icon={faPen} color="dark" /> Modify
+            </Button>
+          </Link>
+          : null
+        }
+        { dataset.url ?
+          <a className="float-right mr-1" href={dataset.url} target="_blank" rel="noreferrer noopener">
+            <Button size="sm" outline color="dark" >
               <FontAwesomeIcon icon={faExternalLinkAlt} color="dark" /> Go to source
             </Button>
           </a>
-        </Col>
-        : null  
-      }
+ 
+          : null
+        }
+      </Col>
     </Row>
     {
       dataset.published !== undefined && dataset.published.creator !== undefined ?

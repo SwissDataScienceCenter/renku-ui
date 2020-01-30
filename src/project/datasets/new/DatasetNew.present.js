@@ -54,7 +54,7 @@ function DatasetNew(props){
     dataset.description = props.datasetFormSchema.description.value;
     dataset.files = props.datasetFormSchema.files.value.map(f => ({"file_id": f.file_id }));
     
-   props.client.postDataset(props.projectPathWithNamespace, dataset)
+   props.client.postDataset(props.httpProjectUrl, dataset)
    .then(dataset => {
      if(dataset.data.error !== undefined) {
       setSubmitLoader(false);
@@ -70,7 +70,7 @@ function DatasetNew(props){
             props.datasetFormSchema.description.value =  props.datasetFormSchema.description.initial;
             props.datasetFormSchema.files.value =  props.datasetFormSchema.files.initial;
             clearInterval(waitForDatasetInKG);
-            props.history.push({pathname: `/projects/${props.projectPathWithNamespace}/datasets/${new_dataset.identifier}`});
+            props.history.push({pathname: `/projects/${props.projectPathWithNamespace}/datasets/${new_dataset.identifier}/`});
           }
       })}
       , 6000)
