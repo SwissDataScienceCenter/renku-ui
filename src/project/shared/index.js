@@ -23,72 +23,8 @@
  *  Shared components for projects.
  */
 
-
-
-import React, { Component } from 'react';
-
-import { Button, Form, FormGroup, FormText, Label } from 'reactstrap';
-import { Badge, Input } from 'reactstrap';
-
-class ProjectTag extends Component {
-  render() {
-    return <span><Badge color="primary">{this.props.tag}</Badge>&nbsp;</span>;
-  }
-}
-
-function sortedTagList(taglistOrNull) {
-  const taglist = taglistOrNull || [];
-  const tlSet = new Set(taglist);
-  const tl = Array.from(tlSet);
-  tl.sort();
-  return tl;
-}
-
-class ProjectTagList extends Component {
-  render() {
-    const taglist = sortedTagList(this.props.taglist);
-    return (taglist.length > 0) ? taglist.map(t => <ProjectTag key={t} tag={t} />) : <br />;
-  }
-}
-
-class ProjectTags extends Component {
-  constructor(props) {
-    super(props);
-    this.state = ProjectTags.getDerivedStateFromProps(props, {});
-    this.onValueChange = this.handleChange.bind(this);
-    this.onSubmit = this.handleSubmit.bind(this);
-  }
-
-  static tagListString(props) {
-    const tagList = sortedTagList(props.tag_list)
-    return tagList.join(', ');
-  }
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    const update = {value: ProjectTags.tagListString(nextProps) };
-    return {...update, ...prevState};
-  }
-
-  handleChange(e) { this.setState({value: e.target.value}); }
-
-  handleSubmit(e) { e.preventDefault(); this.props.onProjectTagsChange(this.state.value); }
-
-  render() {
-    const inputField = this.props.settingsReadOnly ?
-      <Input id="projectTags" readOnly value={this.state.value} /> :
-      <Input id="projectTags" value={this.state.value} onChange={this.onValueChange} />;
-    let submit = (ProjectTags.tagListString(this.props) !== this.state.value) ?
-      <Button className="mb-3" color="primary">Update</Button> :
-      <span></span>
-    return <Form onSubmit={this.onSubmit}>
-      <FormGroup>
-        <Label for="projectTags">Project Tags</Label>
-        {inputField}
-        <FormText>Comma-separated list of tags</FormText>
-      </FormGroup>
-      {submit}
-    </Form>
-  }
-}
+import { ProjectTags, ProjectTagList } from './ProjectTag.container';
+import { ProjectsCoordinator } from './Projects.state';
 
 export { ProjectTags, ProjectTagList };
+export { ProjectsCoordinator };

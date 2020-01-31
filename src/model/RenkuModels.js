@@ -23,13 +23,25 @@
  *
  */
 
-import { Schema } from './Model'
+import { Schema } from './Model';
 import FormGenerator from '../utils/formgenerator/';
 
 const userSchema = new Schema({
-  name: {initial: '', mandatory: false},
-  username: {initial: '', mandatory: true},
-  avatarUrl: {initial: '', mandatory: false}
+  fetched: { initial: null, mandatory: true },
+  fetching: { initial: false, mandatory: true },
+  logged: { initial: false, mandatory: true },
+  data: { initial: {}, mandatory: true }
+});
+
+const projectsSchema = new Schema({
+  featured: {
+    schema: new Schema({
+      fetched: { initial: null, mandatory: true },
+      fetching: { initial: false, mandatory: true },
+      starred: { initial: [], mandatory: true },
+      member: { initial: [], mandatory: true },
+    })
+  }
 });
 
 const metaSchema = new Schema({
@@ -260,5 +272,4 @@ const datasetFormSchema = new Schema({
 
 
 export { userSchema, metaSchema, displaySchema, newProjectSchema, projectSchema, forkProjectSchema };
-export { notebooksSchema };
-export { datasetFormSchema };
+export { notebooksSchema, projectsSchema, datasetFormSchema };

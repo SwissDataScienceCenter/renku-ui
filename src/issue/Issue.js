@@ -23,24 +23,17 @@
  *  Module for issue features.
  */
 
-import React, {Component} from 'react'
-
-import {Provider, connect} from 'react-redux'
-
-import { Link, NavLink } from 'react-router-dom'
-
-import {Row, Col} from 'reactstrap'
-import { Button, FormGroup, Input, Label } from 'reactstrap'
-import { Badge , ListGroup, ListGroupItem } from 'reactstrap'
-
-import {createStore} from '../utils/EnhancedState'
-import State from './Issue.state'
-import { Avatar, ExternalIconLink, FieldGroup, RenkuMarkdown, TimeCaption, TooltipToggleButton } from '../utils/UIComponents'
-import { Contribution, NewContribution } from '../contribution'
-import { Card, CardHeader, CardBody } from 'reactstrap';
+import React, { Component } from 'react';
+import { Provider, connect } from 'react-redux';
+import { Link, NavLink } from 'react-router-dom';
+import { Row, Col, Button, FormGroup, Input, Label, Badge, ListGroup, ListGroupItem, Card, CardHeader, CardBody } from 'reactstrap';
 import { faGitlab } from '@fortawesome/free-brands-svg-icons';
 import { faBoxOpen, faBox, faCompress, faExpand } from '@fortawesome/free-solid-svg-icons';
 
+import { createStore } from '../utils/EnhancedState';
+import State from './Issue.state';
+import { UserAvatar, ExternalIconLink, FieldGroup, RenkuMarkdown, TimeCaption, TooltipToggleButton } from '../utils/UIComponents';
+import { Contribution, NewContribution } from '../contribution';
 
 function issueStateBadge(issueStateValue) {
   let issueState = <Badge color="secondary">{issueStateValue}</Badge>;
@@ -188,33 +181,35 @@ class IssueViewHeader extends Component {
         active={this.props.issuesListVisible}
         activeIcon={faExpand} inactiveIcon={faCompress} />
 
-    return <Row><Col key="image" md={1} sm={1} className="float-right text-center" style={{maxWidth:'62px'}}>
-      <Avatar size="lg" person={this.props.author} />
+    return <Row><Col key="image" md={1} sm={1} className="float-right text-center" style={{ maxWidth: '62px' }}>
+      <UserAvatar size="lg" person={this.props.author} />
       <small className="d-sm-inline-flex text-center">{this.props.author ? this.props.author.name : null}</small>
     </Col>
-    <Col key="body" md={10} sm={10} className="float-left">
-      <Card className="triangle-border left">
-        <CardHeader icon="success" className="bg-transparent align-items-baseline">
-          <Row>
-            <Col md={8}>
-              <strong>{title}</strong>&nbsp;&nbsp;
+      <Col key="body" md={10} sm={10} className="float-left">
+        <Card className="triangle-border left">
+          <CardHeader icon="success" className="bg-transparent align-items-baseline">
+            <Row>
+              <Col md={8}>
+                <strong>{title}</strong>&nbsp;&nbsp;
               <span className="caption align-baseline">
-                <TimeCaption key="timecaption" caption="Updated" time={time}/>
-              </span>
-            </Col>
-            <Col md={4}>
-              <div className="float-right">
-                {buttonGit}
-                {toogleViewSize}
-                {actionButton}
-              </div>
-            </Col>
-          </Row>
-        </CardHeader>
-        <CardBody>
-          <RenkuMarkdown markdownText={description} />
-        </CardBody>
-      </Card></Col></Row>
+                  <TimeCaption key="timecaption" caption="Updated" time={time} />
+                </span>
+              </Col>
+              <Col md={4}>
+                <div className="float-right">
+                  {buttonGit}
+                  {toogleViewSize}
+                  {actionButton}
+                </div>
+              </Col>
+            </Row>
+          </CardHeader>
+          <CardBody>
+            <RenkuMarkdown markdownText={description} />
+          </CardBody>
+        </Card>
+      </Col>
+    </Row>
   }
 }
 
@@ -341,7 +336,7 @@ class IssueListRow extends Component {
 
     return <ListGroupItem>
       <span className="issue-title text-break">
-        <span className="pr-2"><Avatar size="sm" person={this.props.author} /></span>{title}
+        <span className="pr-2"><UserAvatar size="sm" person={this.props.author} /></span>{title}
       </span>
       <div className="float-right">{timeBadge}</div>
       <div className="float-right pr-2">{issueState}</div>

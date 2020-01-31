@@ -17,10 +17,12 @@
  */
 
 import React, { Component } from 'react';
-import { connect } from 'react-redux'
-import ProjectList from './ProjectList.present'
-import ProjectListModel from './ProjectList.state'
+import { connect } from 'react-redux';
 import qs from 'query-string';
+
+import ProjectList from './ProjectList.present';
+import ProjectListModel from './ProjectList.state';
+import { Loader } from '../../utils/UIComponents';
 
 const orderByValuesMap = {
   NAME: 'name',
@@ -43,17 +45,19 @@ const urlMap = {
   projectsUrl: '/projects',
   projectsSearchUrl: '/projects/search',
   projectNewUrl: '/project_new',
-  starred:'/projects/starred',
-  yourProjects:'/projects/your_projects'
+  starred: '/projects/starred',
+  yourProjects: '/projects/your_projects'
 }
 
 class List extends Component {
-  render(){
-    //this prevents everything from loading until the user is available
-    //user.available doesn't determine weather the user is or not logged in
-    return this.props.user.available === false ? 
-      null:
-      <AvailableUserList {... this.props} />;
+  render() {
+    const user = this.props.user; // TODO: change to user
+    return user.fetched ?
+      <AvailableUserList {...this.props} /> :
+      <div>
+        <h1>Projects</h1>
+        <Loader />
+      </div>
   }
 }
 
@@ -78,7 +82,7 @@ class AvailableUserList extends Component {
 
   componentDidMount() {
     this.model.set('perPage', this.perPage);
-    const {query, pageNumber, pathName, orderBy, orderSearchAsc, searchIn, selectedUserOrGroup} = this.getUrlSearchParameters(this.props.location);
+    const { query, pageNumber, pathName, orderBy, orderSearchAsc, searchIn, selectedUserOrGroup } = this.getUrlSearchParameters(this.props.location);
     this.model.setQuery(query);
     this.model.setPathName(pathName);
     this.model.setOrderDropdownOpen(false);
@@ -88,16 +92,16 @@ class AvailableUserList extends Component {
     this.model.setSelectedUserOrGroup(selectedUserOrGroup);
     this.model.setUsersOrGroupsList([]);
     this.model.setOrderSearchAsc(orderSearchAsc);
-    this.model.setLoggedIn(this.props.user.id ? true : false);
+    this.model.setLoggedIn(this.props.user.logged);
     this.model.setPage(pageNumber);
     // save listener to remove it when unmounting the component
     // TODO: this could be removed if onPaginationPageChange/this.props.history.push worked
     //    also when only the search part changed
     const listener = this.props.history.listen(location => {
-      const {query, pageNumber, pathName, orderBy, orderSearchAsc, searchIn, selectedUserOrGroup} = this.getUrlSearchParameters(location);
+      const { query, pageNumber, pathName, orderBy, orderSearchAsc, searchIn, selectedUserOrGroup } = this.getUrlSearchParameters(location);
       this.onUrlParametersChange(query, pageNumber, pathName, orderBy, orderSearchAsc, searchIn, selectedUserOrGroup);
     });
-    this.setState({listener});
+    this.setState({ listener });
   }
 
   componentWillUnmount() {

@@ -28,17 +28,17 @@ import ReactDOM from 'react-dom';
 import { MemoryRouter } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 
-import { StateKind, StateModel } from '../model/Model';
+import { StateKind, StateModel, globalSchema } from '../model';
 import Project from './Project';
-import { filterPaths } from './Project.present'
-import State, { ProjectModel } from  './Project.state';
+import { filterPaths } from './Project.present';
+import { ProjectModel } from './Project.state';
 import { testClient as client } from '../api-client';
-import { slugFromTitle } from '../utils/HelperFunctions'
-import { generateFakeUser } from '../app-state/UserState.test';
+import { slugFromTitle } from '../utils/HelperFunctions';
+import { generateFakeUser } from '../user/User.test';
 
 
 const fakeHistory = createMemoryHistory({
-  initialEntries: [ '/' ],
+  initialEntries: ['/'],
   initialIndex: 0,
 })
 fakeHistory.push({
@@ -49,16 +49,32 @@ fakeHistory.push({
 describe('rendering', () => {
   const anonymousUser = generateFakeUser(true);
   const loggedUser = generateFakeUser();
+  const model = new StateModel(globalSchema);
 
   it('renders new without crashing for logged user', () => {
     const div = document.createElement('div');
-    ReactDOM.render(<Project.New client={client} user={loggedUser}/>, div);
+    ReactDOM.render(
+      <MemoryRouter>
+        <Project.New
+          client={client}
+          model={model}
+          history={fakeHistory}
+          user={loggedUser} />
+      </MemoryRouter>
+      , div);
   });
   it('renders list without crashing for anonymous user', () => {
     const div = document.createElement('div');
     ReactDOM.render(
       <MemoryRouter>
-        <Project.List client={client} history={fakeHistory} user={anonymousUser} location={fakeHistory.location}/>
+        <Project.List
+          client={client}
+          model={model}
+          history={fakeHistory}
+          store={model.reduxStore}
+          user={anonymousUser}
+          history={fakeHistory}
+          location={fakeHistory.location} />
       </MemoryRouter>
       , div);
   });
@@ -66,7 +82,12 @@ describe('rendering', () => {
     const div = document.createElement('div');
     ReactDOM.render(
       <MemoryRouter>
-        <Project.List client={client} history={fakeHistory} user={loggedUser} location={fakeHistory.location}/>
+        <Project.List
+          client={client}
+          model={model}
+          history={fakeHistory}
+          user={loggedUser}
+          location={fakeHistory.location} />
       </MemoryRouter>
       , div);
   });
@@ -74,7 +95,13 @@ describe('rendering', () => {
     const div = document.createElement('div');
     ReactDOM.render(
       <MemoryRouter>
-        <Project.View id="1" client={client} user={anonymousUser} match={{params: {id: "1"}, url:"/projects/1/"}} />
+        <Project.View
+          id="1"
+          client={client}
+          user={anonymousUser}
+          model={model}
+          history={fakeHistory}
+          match={{ params: { id: "1" }, url: "/projects/1/" }} />
       </MemoryRouter>
       , div);
   });
@@ -82,7 +109,13 @@ describe('rendering', () => {
     const div = document.createElement('div');
     ReactDOM.render(
       <MemoryRouter>
-        <Project.View id="1" client={client} user={loggedUser} match={{params: {id: "1"}, url:"/projects/1/"}} />
+        <Project.View
+          id="1"
+          client={client}
+          model={model}
+          history={fakeHistory}
+          user={loggedUser}
+          match={{ params: { id: "1" }, url: "/projects/1/" }} />
       </MemoryRouter>
       , div);
   });
@@ -133,7 +166,7 @@ describe('path filtering', () => {
     const blacklist = [/^\..*/, /readme.md/];
     const paths = filterPaths(origPaths, blacklist);
     expect(paths).toEqual(['foo.txt', 'bar', 'myfolder/.hidden', 'myfolder/visible',
-    'myfolder/.alsohidden/other.txt',
-    'myfolder/alsovisible/.hidden', 'myfolder/alsovisible/other.txt']);
+      'myfolder/.alsohidden/other.txt',
+      'myfolder/alsovisible/.hidden', 'myfolder/alsovisible/other.txt']);
   })
 });

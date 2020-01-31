@@ -26,17 +26,14 @@
 
 
 import React, { Component } from 'react';
-
-import { Link }  from 'react-router-dom'
-
-import { Row, Col } from 'reactstrap';
-import { Jumbotron } from 'reactstrap';
-import { RenkuMarkdown } from '../utils/UIComponents';
-
+import { Link } from 'react-router-dom';
+import { Row, Col, Jumbotron } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClone, faCloudUploadAlt as faCloudUp, faCodeBranch  } from '@fortawesome/free-solid-svg-icons';
-import { faHeart, faSearch, faShieldAlt as faShield, faUserFriends  } from '@fortawesome/free-solid-svg-icons';
+import {
+  faClone, faCloudUploadAlt as faCloudUp, faCodeBranch, faHeart, faSearch, faShieldAlt as faShield, faUserFriends
+} from '@fortawesome/free-solid-svg-icons';
 
+import { RenkuMarkdown, Loader } from '../utils/UIComponents';
 import { ProjectListRow } from '../project';
 
 function truncatedProjectListRows(projects, projectsUrl, moreUrl) {
@@ -45,7 +42,7 @@ function truncatedProjectListRows(projects, projectsUrl, moreUrl) {
   const rows = projectSlice.map(p => <ProjectListRow key={p.id} projectsUrl={projectsUrl} {...p} />);
   const more = (projects.length > maxProjectsRows) ? <Link key="more" to={moreUrl}>more...</Link> : null;
   return [
-    <Row key="projects"><Col style={{overflowX: "auto"}}>{rows}</Col></Row>,
+    <Row key="projects"><Col style={{ overflowX: "auto" }}>{rows}</Col></Row>,
     more
   ]
 }
@@ -75,9 +72,13 @@ class YourProjects extends Component {
     const projectsUrl = this.props.urlMap.projectsUrl;
     const projectsSearchUrl = this.props.urlMap.projectsSearchUrl;
     let projectsComponent = null;
-    if (projects.length > 0) {
+    if (this.props.loading) {
+      projectsComponent = <Loader key="loader" />;
+    }
+    else if (projects.length > 0) {
       projectsComponent = truncatedProjectListRows(projects, projectsUrl, projectsUrl);
-    } else {
+    }
+    else {
       const projectNewUrl = this.props.urlMap.projectNewUrl;
       projectsComponent = <YourEmptyProjects key="empty-projects" projectsSearchUrl={projectsSearchUrl}
         projectNewUrl={projectNewUrl} welcomePage={this.props.welcomePage} />
@@ -119,8 +120,11 @@ class Starred extends Component {
     const projects = this.props.projects || [];
     const projectsUrl = this.props.urlMap.projectsUrl;
     let projectsComponent = null;
-    if (projects.length > 0)
-      projectsComponent = projectsComponent = truncatedProjectListRows(projects, projectsUrl, this.props.urlMap.projectsStarredUrl);
+    if (this.props.loading) {
+      projectsComponent = <Loader key="loader" />;
+    }
+    else if (projects.length > 0)
+      projectsComponent = truncatedProjectListRows(projects, projectsUrl, this.props.urlMap.projectsStarredUrl);
     else {
       const projectNewUrl = this.props.urlMap.projectNewUrl;
       const projectsSearchUrl = this.props.urlMap.projectsSearchUrl;
@@ -139,7 +143,7 @@ class Welcome extends Component {
   render() {
     return (<Row>
       <Col>
-        <RenkuIntroText welcomePage={this.props.welcomePage}/>
+        <RenkuIntroText welcomePage={this.props.welcomePage} />
       </Col>
     </Row>)
   }
@@ -148,7 +152,7 @@ class Welcome extends Component {
 class RenkuProvidesHeader extends Component {
   render() {
     return <h3 className="text-primary">
-      {this.props.title} <FontAwesomeIcon icon={this.props.icon} id={this.props.title.toLowerCase()}/>
+      {this.props.title} <FontAwesomeIcon icon={this.props.icon} id={this.props.title.toLowerCase()} />
     </h3>
   }
 }
@@ -229,7 +233,7 @@ class AnonymousHome extends Component {
       <Row key="closing">
         <Col>
           <h3 className="text-primary">
-            <FontAwesomeIcon icon={faHeart} id="love"/> Give Renku a try.
+            <FontAwesomeIcon icon={faHeart} id="love" /> Give Renku a try.
             We think you&#8217;ll love it!
           </h3>
         </Col>
@@ -242,33 +246,33 @@ class AnonymousHome extends Component {
 class LoggedInHome extends Component {
   render() {
     const urlMap = this.props.urlMap;
-
-    const user = this.props.user;
-    const starredProjects = (user) ? user.starredProjects : [];
-    const memberProjects = (user) ? user.memberProjects : [];
+    const { user } = this.props;
+    const projects = this.props.projects.featured;
+    const neverLoaded = projects.fetched ? false : true;
 
     return [
       <Row key="username">
         <Col>
-          <h1>{user.username} @ Renku</h1>
+          <h1>{user.data.username} @ Renku</h1>
         </Col>
       </Row>,
       <Row key="spacer"><Col md={12}>&nbsp;</Col></Row>,
       <Row key="content">
-        <Col xs={{order:2}} md={{size: 4, order: 1}}>
+        <Col xs={{ order: 2 }} md={{ size: 4, order: 1 }}>
           <Row>
             <Col>
-              <YourProjects urlMap={urlMap} projects={memberProjects} />
+              <YourProjects urlMap={urlMap} loading={neverLoaded} projects={projects.member} />
             </Col>
           </Row>
           <Row key="spacer"><Col md={12}>&nbsp;</Col></Row>
           <Row>
             <Col>
-              <Starred urlMap={urlMap} projects={starredProjects} welcomePage={this.props.welcomePage} />
+              <Starred welcomePage={this.props.welcomePage}
+                urlMap={urlMap} loading={neverLoaded} projects={projects.starred} />
             </Col>
           </Row>
         </Col>
-        <Col xs={{order:1}} md={{size: 6, order: 2}}>
+        <Col xs={{ order: 1 }} md={{ size: 6, order: 2 }}>
           <Welcome {...this.props} />
         </Col>
       </Row>
@@ -278,8 +282,9 @@ class LoggedInHome extends Component {
 
 class Home extends Component {
   render() {
-    const loggedIn = this.props.user.id ? true : false;
-    return (loggedIn) ? <LoggedInHome {...this.props} /> : <AnonymousHome {...this.props} />
+    return (this.props.user.logged) ?
+      <LoggedInHome {...this.props} /> :
+      <AnonymousHome {...this.props} />;
   }
 }
 

@@ -21,6 +21,7 @@ import { withRouter } from 'react-router';
 
 import { StateKind, Schema, StateModel } from '../../model/Model';
 import { QuickNavPresent } from './QuickNav.present';
+import { ProjectsCoordinator } from '../../project/shared';
 
 const suggestionSchema = new Schema({
   path: {mandatory: true},
@@ -43,13 +44,18 @@ class QuickNavContainerWithRouter extends Component {
   constructor(props) {
     super(props)
     this.bar = new SearchBarModel(StateKind.REACT, this);
+    this.projectsCoordinator = new ProjectsCoordinator(props.client, props.model.subModel("projects"));
+    const featured = this.projectsCoordinator.model.get("featured");
+    if (!featured.featured && !featured.fetching)
+      this.projectsCoordinator.getFeatured();
+
     this.callbacks = {
       onChange: this.onChange.bind(this),
       onSubmit: this.onSubmit.bind(this),
       onSuggestionsFetchRequested: this.onSuggestionsFetchRequested.bind(this),
       onSuggestionsClearRequested: this.onSuggestionsClearRequested.bind(this),
       onSuggestionSelected: this.onSuggestionSelected.bind(this),
-      getSuggestionValue: (suggestion) =>  suggestion ? suggestion.path : ''
+      getSuggestionValue: (suggestion) => suggestion ? suggestion.path : ''
     }
     this.currentSearchValue = null;
   }
@@ -72,17 +78,20 @@ class QuickNavContainerWithRouter extends Component {
   }
 
   onSuggestionsFetchRequested({ value, reason }) {
-
     this.currentSearchValue = value;
-    if (this.currentSearchValue !== value) return;
+    if (this.currentSearchValue !== value)
+      return;
 
     // constants come from react-autosuggest
-    if (reason === 'suggestions-revealed') return;
-    if (this.props.user.memberProjects == null || this.props.user.starredProjects == null) return;
+    if (reason === 'suggestions-revealed')
+      return;
+    const featured = this.projectsCoordinator.model.get("featured");
+    if (!featured.fetched || (!featured.starred.length && !featured.member.length))
+      return;
 
     // Search member projects and starred project
     const regex = new RegExp(value, 'i');
-    const searchDomain = this.props.user.memberProjects.concat(this.props.user.starredProjects);
+    const searchDomain = featured.starred.concat(featured.member);
     const hits = {};
     searchDomain.forEach(d => {
       if (regex.exec(d.path_with_namespace) != null) {
@@ -91,15 +100,16 @@ class QuickNavContainerWithRouter extends Component {
     });
     const suggestions = [];
     if (value.length > 0) {
-      suggestions.push({title: 'Search',
-        suggestions: [{query: value, id: -1, path: value, url: this.searchUrlForValue(value)}]
+      suggestions.push({
+        title: 'Search',
+        suggestions: [{ query: value, id: -1, path: value, url: this.searchUrlForValue(value) }]
       });
     }
     const hitKeys = Object.keys(hits);
     if (hitKeys.length > 0) {
       suggestions.push({
         title: 'Projects',
-        suggestions: hitKeys.sort().map(k => ({path: k, id: hits[k].id, url: `/projects/${hits[k].id}`}))
+        suggestions: hitKeys.sort().map(k => ({ path: k, id: hits[k].id, url: `/projects/${hits[k].id}` }))
       });
     }
 
@@ -123,7 +133,7 @@ class QuickNavContainerWithRouter extends Component {
     this.bar.set('selectedSuggestion', selectedSuggestion)
   }
 
-  render () {
+  render() {
     return <QuickNavPresent
       suggestions={this.bar.get('suggestions')}
       value={this.bar.get('value')}
@@ -132,6 +142,6 @@ class QuickNavContainerWithRouter extends Component {
   }
 }
 
-const QuickNavContainer = withRouter(QuickNavContainerWithRouter)
+const QuickNavContainer = withRouter(QuickNavContainerWithRouter);
 
-export { QuickNavContainer }
+export { QuickNavContainer };

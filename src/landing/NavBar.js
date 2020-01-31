@@ -24,27 +24,39 @@
  */
 
 import React, { Component } from 'react';
-import { Link }  from 'react-router-dom'
+import { Link } from 'react-router-dom';
 import { Navbar, NavLink, Nav } from 'reactstrap';
-
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlus } from '@fortawesome/free-solid-svg-icons/';
 
 import logo from './logo.svg';
-import { RenkuNavLink, Loader } from '../utils/UIComponents'
-import { getActiveProjectPathWithNamespace } from '../utils/HelperFunctions'
-import QuickNav from '../utils/quicknav'
+import { RenkuNavLink, Loader, UserAvatar } from '../utils/UIComponents';
+import { getActiveProjectPathWithNamespace } from '../utils/HelperFunctions';
+import QuickNav from '../utils/quicknav';
 
 import './NavBar.css';
 
+
+class RenkuNavBar extends Component {
+  render() {
+    const { user } = this.props;
+    const userAvatar = <UserAvatar person={user.data} size="sm" />;
+
+    return (user.logged) ?
+      <LoggedInNavBar {...this.props} userAvatar={userAvatar} /> :
+      <AnonymousNavBar {...this.props} userAvatar={userAvatar} />;
+  }
+}
+
 class RenkuToolbarItemUser extends Component {
   render() {
+    const { user } = this.props;
     const gatewayURL = this.props.params.GATEWAY_URL;
-    const redirect_url =  encodeURIComponent(this.props.params.BASE_URL);
-    if (this.props.user.available !== true) {
+    const redirect_url = encodeURIComponent(this.props.params.BASE_URL);
+    if (!user.fetched) {
       return <Loader size="16" inline="true" />
     }
-    else if (!this.props.user.id) {
+    else if (!user.data.id) {
       return <RenkuNavLink to="/login" title="Login" previous={this.props.location.pathname} />
     }
     else {
@@ -117,19 +129,19 @@ class LoggedInNavBar extends Component {
           </button>
 
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <QuickNav user={this.props.user} client={this.props.client}/>
+            <QuickNav client={this.props.client} model={this.props.model} />
 
             <ul className="navbar-nav mr-auto">
-              <RenkuNavLink to="/projects" title="Projects"/>
-              <RenkuNavLink to="/datasets" title="Datasets"/>
-              <RenkuNavLink to="/environments" title="Environments"/>
+              <RenkuNavLink to="/projects" title="Projects" />
+              <RenkuNavLink to="/datasets" title="Datasets" />
+              <RenkuNavLink to="/environments" title="Environments" />
             </ul>
             <ul className="navbar-nav">
               <li className="nav-item dropdown">
-                { /* eslint-disable-next-line */ }
+                { /* eslint-disable-next-line */}
                 <a className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
                   aria-haspopup="true" aria-expanded="false">
-                  <FontAwesomeIcon icon={faPlus} id="createPlus"/>
+                  <FontAwesomeIcon icon={faPlus} id="createPlus" />
                 </a>
                 <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
                   <RenkuNavLink to="/project_new" title="Project" />
@@ -168,14 +180,14 @@ class AnonymousNavBar extends Component {
           </button>
 
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
-            <QuickNav user={this.props.userState.getState().user} client={this.props.client}/>
+            <QuickNav client={this.props.client} model={this.props.model} />
 
             <ul className="navbar-nav mr-auto">
-              <RenkuNavLink to="/projects" title="Projects"/>
-              <RenkuNavLink to="/datasets" title="Datasets"/>
+              <RenkuNavLink to="/projects" title="Projects" />
+              <RenkuNavLink to="/datasets" title="Datasets" />
             </ul>
             <ul className="navbar-nav">
-              <RenkuToolbarItemUser {...this.props } user={this.props.userState.getState().user} />
+              <RenkuToolbarItemUser {...this.props} />
             </ul>
           </div>
         </nav>
@@ -196,7 +208,7 @@ class FooterNavbar extends Component {
             </Link>
           </Nav>
           <Nav className="ml-auto">
-            <RenkuNavLink to="/help" title="Help"/>
+            <RenkuNavLink to="/help" title="Help" />
             <NavLink target="_blank" href="https://gitter.im/SwissDataScienceCenter/renku">Gitter</NavLink>
             <NavLink target="_blank" href="https://datascience.ch/who-we-are/">About</NavLink>
           </Nav>
@@ -206,4 +218,4 @@ class FooterNavbar extends Component {
   }
 }
 
-export { LoggedInNavBar, AnonymousNavBar, FooterNavbar }
+export { RenkuNavBar, FooterNavbar }

@@ -25,35 +25,34 @@
  */
 
 import _ from 'lodash/util';
-
+import human from 'human-time';
 import React, { Component, useState } from 'react';
-import { Provider, connect } from 'react-redux';
-
-import { Link, NavLink as RRNavLink }  from 'react-router-dom'
-
-import { NavLink } from 'reactstrap';
-import { FormFeedback, FormGroup, FormText, Input, Label, Alert } from 'reactstrap';
-import { Tooltip } from 'reactstrap';
-
+import { Link, NavLink as RRNavLink } from 'react-router-dom';
+import ReactPagination from "react-js-pagination";
+import ReactClipboard from 'react-clipboard.js';
+import { FormFeedback, FormGroup, FormText, Input, Label, Alert, NavLink, Tooltip } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-regular-svg-icons';
 import { faCheck, faUser } from '@fortawesome/free-solid-svg-icons';
 
-import human from 'human-time';
-import ReactPagination from "react-js-pagination";
-import ReactClipboard from 'react-clipboard.js';
-
 import { sanitizedHTMLFromMarkdown } from './HelperFunctions';
 
-class Avatar extends Component {
+/**
+ * Show user avatar
+ * 
+ * @param {string} size - image size (sm, md, lg). Default is 'lg'
+ * @param {string} person - user data object, as returned by /user api.
+ *   It must contain at least `avatar_url` and `username`
+ */
+class UserAvatar extends Component {
   computeWidgetSize() {
     const size = this.props.size || 'lg';
-    let widgetSize = {img: 36, fa: '2x'};
-    switch(size) {
-    case 'sm': widgetSize = {img: 18, fa: null}; break;
-    case 'md': widgetSize = {img: 18*2, fa: '2x'}; break;
-    case 'lg': widgetSize = {img: 18*3, fa: '3x'}; break;
-    default: break;
+    let widgetSize = { img: 36, fa: '2x' };
+    switch (size) {
+      case 'sm': widgetSize = { img: 18, fa: null }; break;
+      case 'md': widgetSize = { img: 18 * 2, fa: '2x' }; break;
+      case 'lg': widgetSize = { img: 18 * 3, fa: '3x' }; break;
+      default: break;
     }
     return widgetSize;
   }
@@ -72,7 +71,7 @@ class Avatar extends Component {
     return (img) ?
       <img width={widgetSize.img} src={img} alt={user} /> :
       <FontAwesomeIcon alt={user} icon={faUser} size={widgetSize.fa}
-        style={{textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)'}} />;
+        style={{ textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)' }} />;
   }
 }
 
@@ -156,31 +155,6 @@ class RenkuNavLink extends Component {
   }
 }
 
-class UserAvatarPresent extends Component {
-  render() {
-    return <Avatar size="sm" person={this.props.user} />
-  }
-}
-
-class UserAvatar extends Component {
-  constructor(props) {
-    super(props);
-    this.store = this.props.userState;
-  }
-
-  mapStateToProps(state, ownProps) {
-    return {...state}
-  }
-
-  render() {
-    const VisibleAvatar = connect(this.mapStateToProps)(UserAvatarPresent);
-    return [
-      <Provider key="new" store={this.store}>
-        <VisibleAvatar userState={this.props.userState}/>
-      </Provider>
-    ]
-  }
-}
 
 class Pagination extends Component {
   render() {
@@ -569,6 +543,6 @@ function TooltipToggleButton(props) {
     </span>
 }
 
-export { Avatar, TimeCaption, FieldGroup, RenkuNavLink, UserAvatar, Pagination, RenkuMarkdown };
+export { UserAvatar, TimeCaption, FieldGroup, RenkuNavLink, Pagination, RenkuMarkdown };
 export { ExternalLink, Loader, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, JupyterIcon };
 export { Clipboard, ExternalIconLink, IconLink, ThrottledTooltip, TooltipToggleButton };
