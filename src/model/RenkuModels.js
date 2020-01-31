@@ -157,7 +157,8 @@ const projectSchema = new Schema({
   },
   transient: {
     schema: {
-      requests: {initial: {}}
+      requests: {initial: {}},
+      forkModalOpen: {initial: false}
     }
   },
   webhook: {
@@ -203,7 +204,7 @@ const notebooksSchema = new Schema({
       fetching: { initial: false },
       warnings: { initial: [] }
     }
-  },  
+  },
   pipelines: {
     schema: {
       main: { initial: {} },

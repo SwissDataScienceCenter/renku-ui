@@ -184,6 +184,7 @@ class View extends Component {
     const pathComps = splitProjectSubRoute(this.props.match.url);
     if (prevPathComps.projectPathWithNamespace !== pathComps.projectPathWithNamespace) {
       this.fetchAll();
+      this.eventHandlers.closeForkModal();
     }
   }
 
@@ -341,7 +342,7 @@ class View extends Component {
     const forked = (forkedData != null && Object.keys(forkedData).length > 0) ?
       true :
       false;
-    const forkModalOpen = this.projectState.get('forkModalOpen');
+    const forkModalOpen = this.projectState.get('transient.forkModalOpen');
     const projectPathWithNamespace = this.projectState.get('core.path_with_namespace');
     // Access to the project state could be given to the subComponents by connecting them here to
     // the projectStore. This is not yet necessary.
@@ -466,7 +467,8 @@ class View extends Component {
         projectId={projectId}
         title={this.projectState.get('core.title')}
         forkModalOpen={forkModalOpen}
-        toogleForkModal={this.eventHandlers.toogleForkModal}
+        toggleForkModal={this.eventHandlers.toggleForkModal}
+        closeForkModal={this.eventHandlers.closeForkModal}
         history={this.props.history}
         client={this.props.client}
         user={this.props.user} />
@@ -493,9 +495,14 @@ class View extends Component {
         }
       });
     },
-    toogleForkModal: (e) => {
+    toggleForkModal: (e) => {
       e.preventDefault();
-      this.projectState.toogleForkModal();
+      this.projectState.toggleForkModal();
+    },
+    closeForkModal: () => {
+      // Only toggle if it is currently open
+      if (this.projectState.get('transient.forkModalOpen') === true)
+        this.projectState.toggleForkModal();
     },
     onCreateMergeRequest: (branch) => {
       const core = this.projectState.get('core');
@@ -554,7 +561,7 @@ class View extends Component {
     const suggestedMRBranches = this.getMrSuggestions();
     const externalUrl = this.projectState.get('core.external_url');
     const canCreateMR = state.visibility.accessLevel >= ACCESS_LEVELS.DEVELOPER;
-    const forkModalOpen = this.projectState.get('forkModalOpen');
+    const forkModalOpen = this.projectState.get('transient.forkModalOpen');
 
     return {
       ...this.projectState.get(),

@@ -197,10 +197,10 @@ class ForkProjectModal extends Component {
     const titleHelp = this.props.model.display.slug.length > 0 ? `Id: ${this.props.model.display.slug}` : null;
     return <div>
       <Modal
-        isOpen={this.props.forkModalOpen !== undefined && this.props.forkModalOpen !== false}
-        toggle={this.props.handlers.toogleForkModal}
+        isOpen={this.props.forkModalOpen === true}
+        toggle={this.props.handlers.toggleForkModal}
         className={this.props.className}>
-        <ModalHeader toggle={this.props.handlers.toogleForkModal}>Fork Project</ModalHeader>
+        <ModalHeader toggle={this.props.handlers.toggleForkModal}>Fork Project</ModalHeader>
         <ModalBody>
           <FieldGroup id="title" type="text" label="Title" placeholder="A brief name to identify the project"
             help={titleHelp} value={this.props.model.display.title}
@@ -227,7 +227,7 @@ class ForkProjectModal extends Component {
           <Button
             color="secondary"
             disabled={this.props.model.display.loading}
-            onClick={this.props.handlers.toogleForkModal}>
+            onClick={this.props.handlers.toggleForkModal}>
             Cancel
           </Button>
         </ModalFooter>
