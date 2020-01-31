@@ -41,7 +41,7 @@ class Fork extends Component {
       onProjectNamespaceAccept: this.onProjectNamespaceAccept.bind(this),
       fetchMatchingNamespaces: this.fetchMatchingNamespaces.bind(this),
       fetchAllNamespaces: this.fetchAllNamespaces.bind(this),
-      toogleForkModal: this.toogleForkModal.bind(this),
+      toggleForkModal: this.toggleForkModal.bind(this),
       onTitleChange: this.onTitleChange.bind(this),
       setProjectTitle: this.setProjectTitle.bind(this)
     };
@@ -158,11 +158,11 @@ class Fork extends Component {
     }
   }
 
-  toogleForkModal(e) {
+  toggleForkModal(e) {
     if (this.forkProject.get('display.errors')) {
       this.forkProject.set('display.errors', []);
     }
-    this.props.toogleForkModal(e);
+    this.props.toggleForkModal(e);
   }
 
   render() {

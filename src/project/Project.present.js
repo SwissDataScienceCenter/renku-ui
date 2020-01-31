@@ -248,7 +248,7 @@ class ProjectViewHeaderOverview extends Component {
               <div className={`fixed-width-6em pr-1`}>
                 <form className="input-group input-group-sm">
                   <div className="input-group-prepend">
-                    <button className="btn btn-outline-primary" onClick={this.props.toogleForkModal}>
+                    <button className="btn btn-outline-primary" onClick={this.props.toggleForkModal}>
                       <FontAwesomeIcon icon={forkIcon} /> {forkButtonText}
                     </button>
                   </div>
@@ -526,7 +526,7 @@ class ProjectDatasetsNav extends Component {
 class ProjectViewDatasets extends Component {
   render(){
     return <Switch>
-        <Route exact path={this.props.newDatasetUrl} 
+        <Route exact path={this.props.newDatasetUrl}
           render={p => this.props.newDataset(p)} />
         <Route path={this.props.editDatasetUrl} 
           render={p => this.props.editDataset(p)} />
@@ -549,12 +549,12 @@ class ProjectViewDatasetsList extends Component {
     if(!loading && !kgLoading && this.props.core.datasets !== undefined && this.props.core.datasets.length === 0){
       return <Col sm={12} md={8} lg={10}>
         <Alert timeout={0} color="primary">
-					No datasets found for this project. <br /><br /> 
+					No datasets found for this project. <br /><br />
 					<FontAwesomeIcon icon={faInfoCircle} />  If you recently activated the knowledge graph or added the datasets try refreshing the page. <br /><br />
 					You can also click on the button to create a <Link className="btn btn-primary btn-sm" to={this.props.newDatasetUrl}>New Dataset</Link>
         </Alert>
       </Col>;
-    }	    
+    }
 
     return [
       kgLoading ? null
@@ -839,7 +839,7 @@ class ProjectNotebookServers extends Component {
     return (notebookLauncher(this.props.user.id,
       this.props.visibility.accessLevel,
       content,
-      this.props.toogleForkModal,
+      this.props.toggleForkModal,
       this.props.location.pathname,
       this.props.externalUrl));
   }
@@ -862,7 +862,7 @@ class ProjectStartNotebookServer extends Component {
     return (notebookLauncher(this.props.user.id,
       this.props.visibility.accessLevel,
       content,
-      this.props.toggleModalFork,
+      this.props.toggleForkModal,
       this.props.location.pathname,
       this.props.externalUrl));
   }

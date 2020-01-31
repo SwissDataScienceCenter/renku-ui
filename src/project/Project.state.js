@@ -327,9 +327,10 @@ class ProjectModel extends StateModel {
     });
   }
 
-  toogleForkModal() {
-    let forkModalOpen = this.get('forkModalOpen');
-    this.set("forkModalOpen", forkModalOpen === undefined || forkModalOpen === false ? true : false);
+  toggleForkModal() {
+    const forkModalOpen = this.get('transient.forkModalOpen');
+    const forkModalFlipped = forkModalOpen === false ? true : false;
+    this.set("transient.forkModalOpen", forkModalFlipped);
   }
 
   star(client, starred) {
