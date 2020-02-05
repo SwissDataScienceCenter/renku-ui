@@ -52,7 +52,7 @@ function getNodeLabel(node, NODE_COUNT, projectPath) {
 
   if(node.type === 'blob') {
     const LABEL_LIMIT = NODE_COUNT > 15 ? 20  : 40;
-    const ref= projectPath+'/files/lineage'+node.filePath
+    const ref= `/projects/${projectPath}/files/lineage${node.filePath}`
     return '<text><tspan xml:space="preserve" dy="1em" x="1" data-href='+ref+'>'
       +cropLabelStart(LABEL_LIMIT, node.filePath)+
       '</tspan></text>';
@@ -225,7 +225,7 @@ class FileLineage extends Component {
       <FileLineageGraph
         path={this.props.path}
         graph={graphObj}
-        projectPath={this.props.match.url}
+        projectPath={this.props.projectPathWithNamespace}
         history={this.props.history}/> :
       (this.props.error) ?
         <p>{this.props.error}</p> :
