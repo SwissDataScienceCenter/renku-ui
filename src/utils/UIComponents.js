@@ -42,7 +42,7 @@ import { sanitizedHTMLFromMarkdown } from './HelperFunctions';
 
 /**
  * Show user avatar
- * 
+ *
  * @param {string} size - image size (sm, md, lg). Default is 'lg'
  * @param {string} person - user data object, as returned by /user api.
  *   It must contain at least `avatar_url` and `username`
@@ -205,22 +205,40 @@ class Pagination extends Component {
   }
 }
 
-class ExternalLink extends Component {
-  render() {
-    let className = "btn btn-primary";
-    if (this.props.size != null) {
-      className += ` btn-${this.props.size}`;
-    }
-    if (this.props.disabled) {
-      className += " disabled";
-    }
-    if (this.props.className) {
-      className += ` ${this.props.className}`;
-    }
-    return <a href={this.props.url}
-      className={className} role="button" target="_blank"
-      rel="noreferrer noopener">{this.props.title}</a>
+function ExternalLinkButton(props) {
+  let className = "btn btn-primary";
+  if (props.size != null) {
+    className += ` btn-${props.size}`;
   }
+  if (props.disabled) {
+    className += " disabled";
+  }
+  if (props.className) {
+    className += ` ${props.className}`;
+  }
+  return <a href={props.url}
+    className={className} role="button" target="_blank"
+    rel="noreferrer noopener">{props.title}</a>
+}
+
+function ExternalLinkText(props) {
+  let className = "";
+  if (props.disabled) {
+    className += " disabled";
+  }
+  if (props.className) {
+    className += ` ${props.className}`;
+  }
+  return <a href={props.url}
+    className={className} target="_blank"
+    rel="noreferrer noopener">{props.title}</a>
+}
+
+function ExternalLink(props) {
+  const role = props.role
+  if (role === "link") return ExternalLinkText(props);
+  if (role === "text") return ExternalLinkText(props);
+  return ExternalLinkButton(props)
 }
 
 class Loader extends Component {
