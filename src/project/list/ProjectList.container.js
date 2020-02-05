@@ -76,7 +76,8 @@ class AvailableUserList extends Component {
       changeSearchDropdownOrder: this.changeSearchDropdownOrder.bind(this),
       changeSearchDropdownFilter: this.changeSearchDropdownFilter.bind(this),
       changeSelectedUserOrGroup: this.changeSelectedUserOrGroup.bind(this),
-      toogleSearchSorting: this.toogleSearchSorting.bind(this)
+      toogleSearchSorting: this.toogleSearchSorting.bind(this),
+      getAvatarFromNamespace: this.getAvatarFromNamespace.bind(this)
     };
   }
 
@@ -237,6 +238,10 @@ class AvailableUserList extends Component {
     this.model.setQuery(e.target.value);
   }
 
+  getAvatarFromNamespace(id){
+    return this.model.getAvatarFromNamespace(id);
+  }
+
   onSearchSubmit(e) {
     e.preventDefault();
     this.model.resetBeforeNewSearch();
@@ -261,6 +266,7 @@ class AvailableUserList extends Component {
       totalItems: this.model.get('totalItems'),
       perPage: this.model.get('perPage'),
       onPageChange: this.handlers.onPaginationPageChange,
+      getAvatarFromNamespace: this.handlers.getAvatarFromNamespace,
       selected: this.model.get('selected'),
       currentTab: this.model.get('currentTab')
     }
