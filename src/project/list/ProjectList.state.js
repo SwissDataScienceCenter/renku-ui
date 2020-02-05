@@ -148,6 +148,10 @@ class ProjectListModel extends StateModel {
     this.set('loading', false);
   }
 
+  getAvatarFromNamespace(id){
+    return this.client.getAvatarForNamespace(id);
+  }
+
   searchProjects(searchParams){
     return this.client.getProjects(searchParams)
       .then(response => {
