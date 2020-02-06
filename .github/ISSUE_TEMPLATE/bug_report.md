@@ -7,29 +7,37 @@ assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+<!--
+Welcome! Thanks for taking time to create an issue. This template will
+guide you through providing information necessary to fix the problem.
+-->
 
-**Link where issue exists**
-If possible, provide an accessible link from the instance of renkulab where the issue exists.
+## Description
 
-**To Reproduce**
-Steps to reproduce the behavior:
+<!--Describe the bug clearly and concisely. Include screenshots if possible-->
+
+## Reproduce
+
+<!--Describe step-by-step instructions to reproduce the behavior-->
+
 1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+2. Click on '...'
+3. Scroll down to '...'
+4. See error '...'
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
 
-**Screenshots and/or execution output**
-If applicable, add screenshots and/or execution output to help explain your problem.
 
-**Run environment (please complete the following information):**
- - specify renkulab url
- - specify RStudio / Jupyterlab / Other if relevant
- - browser [e.g. chrome, safari]
+## Context
 
-**Additional context**
-Add any other context about the problem here.
+<!--Complete the following for context, and add any other relevant context-->
+
+- renkulab url
+- operating system and version
+- browser and version 
+
+
+<details><summary>Browser Output</summary>
+<pre>
+If possible, paste the output from your browser Javascript console here.
+</pre>
+</details>
