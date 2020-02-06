@@ -26,7 +26,7 @@
 
 import _ from 'lodash/util';
 import human from 'human-time';
-import React, { Component, useState } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import { Link, NavLink as RRNavLink } from 'react-router-dom';
 import ReactPagination from "react-js-pagination";
 import ReactClipboard from 'react-clipboard.js';
@@ -61,7 +61,7 @@ class UserAvatar extends Component {
     let img, user;
     const widgetSize = this.computeWidgetSize();
     const person = this.props.person;
-    if (person != null) {
+    if (person != null && person!==undefined) {
       img = person.avatar_url;
       user = person.username;
     } else {
@@ -73,6 +73,25 @@ class UserAvatar extends Component {
       <FontAwesomeIcon alt={user} icon={faUser} size={widgetSize.fa}
         style={{ textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)' }} />;
   }
+}
+
+function ProjectAvatar(props) {
+
+  const [avatarUrl, setAvatarUrl] = useState(null);
+
+  useEffect(() => {
+    if (props.avatar_url)
+      setAvatarUrl(props.avatar_url)
+    else if (props.owner && props.owner.avatar_url)
+      setAvatarUrl(props.owner.avatar_url);
+    else if (props.namespace && props.namespace.kind === "group")
+      props.getAvatarFromNamespace(props.namespace.id)
+        .then((url) => {
+          setAvatarUrl(url)
+        });
+  }, [props]);
+
+  return <UserAvatar avatar={avatarUrl} />
 }
 
 // Old FieldGroup implementation
@@ -545,4 +564,4 @@ function TooltipToggleButton(props) {
 
 export { UserAvatar, TimeCaption, FieldGroup, RenkuNavLink, Pagination, RenkuMarkdown };
 export { ExternalLink, Loader, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, JupyterIcon };
-export { Clipboard, ExternalIconLink, IconLink, ThrottledTooltip, TooltipToggleButton };
+export { Clipboard, ExternalIconLink, IconLink, ThrottledTooltip, TooltipToggleButton, ProjectAvatar };

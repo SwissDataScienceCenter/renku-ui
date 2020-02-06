@@ -22,7 +22,7 @@ import { Row, Col, Alert } from 'reactstrap';
 import { Button, Form, InputGroup, FormText, Input, Label, ButtonGroup } from 'reactstrap';
 import { Nav, NavItem, InputGroupButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap';
 
-import { UserAvatar, Loader, Pagination,  TimeCaption , RenkuNavLink } from '../../utils/UIComponents';
+import { ProjectAvatar, Loader, Pagination,  TimeCaption , RenkuNavLink } from '../../utils/UIComponents';
 import { ProjectTagList } from '../shared';
 import { faCheck, faSortAmountDown, faSortAmountUp } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -43,7 +43,7 @@ class ProjectListRow extends Component {
     }
     return (
       <div className="d-flex project-list-row mb-3">
-        <div className="mr-2"><UserAvatar person={this.props.owner} /></div>
+        <div className="mr-2"><ProjectAvatar owner={this.props.owner} avatar_url={this.props.avatar_url} namespace={this.props.namespace} getAvatarFromNamespace={this.props.getAvatarFromNamespace} /></div>
         <div>
           <p className="mb-1"><b>{title}</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<ProjectTagList taglist={this.props.tag_list} /></p>
           <span>{description} <TimeCaption caption="Updated" time={this.props.last_activity_at} /></span>
@@ -183,7 +183,12 @@ class ProjectsRows extends Component {
         emptyListText={this.props.emptyListText} />
 
     const projects = this.props.page.projects || [];
-    const rows = projects.map((p) => <ProjectListRow key={p.id} projectsUrl={this.props.urlMap.projectsUrl} {...p} />);
+    const rows = projects.map((p) => 
+      <ProjectListRow 
+      key={p.id} 
+      projectsUrl={this.props.urlMap.projectsUrl} 
+      {...p} 
+      getAvatarFromNamespace={this.props.getAvatarFromNamespace} />);
     return <Col md={8}>{rows}</Col>;
   }
 }
@@ -270,6 +275,7 @@ class ProjectsSearch extends Component {
         loading={loading}
         forbidden={forbidden}
         emptyListText={this.props.emptyListText}
+        getAvatarFromNamespace={this.props.handlers.getAvatarFromNamespace}
       />
     </Row>,
     <Pagination key="pagination" {...this.props} />

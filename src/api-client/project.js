@@ -84,12 +84,19 @@ function addProjectMethods(client) {
 
   client.getProjects = (queryParams = {}) => {
     let headers = client.getBasicHeaders();
-
     return client.clientFetch(`${client.baseUrl}/projects`, {
       method: 'GET',
       headers,
       queryParams,
     })
+  }
+
+  client.getAvatarForNamespace = (namespaceId = {}) => {
+    let headers = client.getBasicHeaders();
+    return client.clientFetch(`${client.baseUrl}/groups/${namespaceId}`, {
+      method: 'GET',
+      headers
+    }).then(response => response.data.avatar_url)
   }
 
   client.getProject = (projectPathWithNamespace, options = {}) => {
