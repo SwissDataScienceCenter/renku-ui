@@ -346,16 +346,15 @@ class IssueListRow extends Component {
 
 class IssueList extends Component {
   render() {
-    const issues = this.props.issues;
-    const hasUser = this.props.user.id ? true : false;
+    const { issues, user } = this.props;
     const rows = issues.map((d, i) =>
-      <IssueListRow key={i} {...d} issueBaseUrl={this.props.collaborationUrl} projectId={this.props.projectId}/>);
+      <IssueListRow key={i} {...d} issueBaseUrl={this.props.collaborationUrl} projectId={this.props.projectId} />);
     return [
       <Row key="header">
         <Col sm={6}><h2>Issues</h2></Col>
         <Col sm={6}>
           {
-            (hasUser) ?
+            (user.logged) ?
               <small className="float-right" mr={1}>
                 <Link className="btn btn-primary" role="button" to={this.props.issueNewUrl}>New Issue</Link>
               </small> :
