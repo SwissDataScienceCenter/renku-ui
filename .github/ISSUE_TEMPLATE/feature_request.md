@@ -4,14 +4,24 @@ about: Suggest an idea for this project
 
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+<!--
+Welcome! Thanks for taking time to create a feature request. This template will
+guide you through providing information necessary to specify the feature.
+-->
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+## Motivation
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+<!--Is your feature request related to a problem or completely new functionality? Please describe.-->
+<!--E.g., I'm always frustrated when I need to [...], I would like to do [...] from the project page.-->
 
-**Additional context**
-Add any other context or screenshots about the feature request here.
+## Proposal
+
+<!--If you have thought about a solution, please describe it.-->
+
+
+## Context
+
+<!--
+If you have any other information you wish to add, including screenshots
+or mockups, feel free to do so.
+-->
