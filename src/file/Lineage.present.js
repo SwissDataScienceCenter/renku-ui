@@ -40,7 +40,7 @@ function cropLabelStart(limit, label) {
   return label;
 }
 
-function getNodeLabel(node, NODE_COUNT, projectPath) {
+function getNodeLabel(node, NODE_COUNT, lineagesUrl) {
   if (node.type === 'commit') {
     const stringArray = node.label.split(" ");
     const LABEL_LIMIT = 20;
@@ -52,7 +52,7 @@ function getNodeLabel(node, NODE_COUNT, projectPath) {
 
   if(node.type === 'blob') {
     const LABEL_LIMIT = NODE_COUNT > 15 ? 20  : 40;
-    const ref= `/projects/${projectPath}/files/lineage${node.filePath}`
+    const ref= `${lineagesUrl}${node.filePath}`
     return '<text><tspan xml:space="preserve" dy="1em" x="1" data-href='+ref+'>'
       +cropLabelStart(LABEL_LIMIT, node.filePath)+
       '</tspan></text>';
@@ -109,7 +109,7 @@ class FileLineageGraph extends Component {
     })
 
     graph.nodes.forEach(n => {
-      const label = getNodeLabel(n, NODE_COUNT, this.props.projectPath);
+      const label = getNodeLabel(n, NODE_COUNT, this.props.lineagesUrl);
       subGraph.setNode(n.id, {
         id: n.id,
         labelType:'html',
@@ -225,7 +225,7 @@ class FileLineage extends Component {
       <FileLineageGraph
         path={this.props.path}
         graph={graphObj}
-        projectPath={this.props.projectPathWithNamespace}
+        lineagesUrl={this.props.lineagesUrl}
         history={this.props.history}/> :
       (this.props.error) ?
         <p>{this.props.error}</p> :
