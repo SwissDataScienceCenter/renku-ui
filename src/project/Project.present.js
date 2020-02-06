@@ -714,13 +714,13 @@ class ProjectViewFiles extends Component {
   }
 }
 
-function notebookLauncher(userId, accessLevel, notebookLauncher, fork, postLoginUrl, externalUrl) {
+function notebookLauncher(userLogged, accessLevel, notebookLauncher, fork, postLoginUrl, externalUrl) {
   if (accessLevel >= ACCESS_LEVELS.DEVELOPER)
     return (<div>{notebookLauncher}</div>);
 
   let content = [<p key="no-permission">You do not have sufficient permissions to launch an interactive environment
     for this project.</p>];
-  if (userId == null) {
+  if (!userLogged) {
     const to = { "pathname": "/login", "state": { previous: postLoginUrl } };
     content = content.concat(
       <InfoAlert timeout={0} key="login-info">
@@ -836,7 +836,7 @@ class ProjectNotebookServers extends Component {
         scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path }} />
     );
 
-    return (notebookLauncher(this.props.user.id,
+    return (notebookLauncher(this.props.user.logged,
       this.props.visibility.accessLevel,
       content,
       this.props.toggleForkModal,
@@ -859,7 +859,7 @@ class ProjectStartNotebookServer extends Component {
       history={this.props.history}
     />);
 
-    return (notebookLauncher(this.props.user.id,
+    return (notebookLauncher(this.props.user.logged,
       this.props.visibility.accessLevel,
       content,
       this.props.toggleForkModal,
@@ -1019,15 +1019,15 @@ class ProjectView extends Component {
 
   render() {
     const available = this.props.core ? this.props.core.available : null;
-    const projectPathWithNamespaceOrId = this.props.projectPathWithNamespace?
+    const projectPathWithNamespaceOrId = this.props.projectPathWithNamespace ?
       this.props.projectPathWithNamespace
       : this.props.projectId;
     if ((available === null && this.props.projectId === null) || available === SpecialPropVal.UPDATING) {
-      return <ProjectViewLoading projectPathWithNamespace={ projectPathWithNamespaceOrId } />
+      return <ProjectViewLoading projectPathWithNamespace={projectPathWithNamespaceOrId} />
     }
     else if (available === false || (available === null && this.props.projectId !== null)) {
-      const logged = this.props.user.id ? true : false;
-      return <ProjectViewNotFound projectPathWithNamespace={ projectPathWithNamespaceOrId } logged={ logged } />
+      const { logged } = this.props.user;
+      return <ProjectViewNotFound projectPathWithNamespace={projectPathWithNamespaceOrId} logged={logged} />
     }
     else {
       return [
