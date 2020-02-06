@@ -378,6 +378,7 @@ class View extends Component {
 
       lineageView: (p) => <FileLineage key="lineage" {...subProps}
         externalUrl={externalUrl}
+        lineagesUrl={subUrls.lineagesUrl}
         projectPath={projectPathWithNamespace}
         path={p.match.params.filePath}
         notebook={"Notebook"}
