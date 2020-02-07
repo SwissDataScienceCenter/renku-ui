@@ -21,20 +21,20 @@ import Media from 'react-media';
 import { Link } from 'react-router-dom';
 
 import { Form, FormGroup, FormText, Label, Input, Button, ButtonGroup, Row, Col, Table } from 'reactstrap';
-import { UncontrolledButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import { DropdownItem } from 'reactstrap';
 import { UncontrolledTooltip, UncontrolledPopover, PopoverHeader, PopoverBody } from 'reactstrap';
 import { Badge } from 'reactstrap';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStopCircle, faExternalLinkAlt, faInfoCircle, faSyncAlt } from '@fortawesome/free-solid-svg-icons';
-import { faCogs, faCog, faEllipsisV, faExclamationTriangle, faRedo } from '@fortawesome/free-solid-svg-icons';
+import { faCogs, faCog, faExclamationTriangle, faRedo } from '@fortawesome/free-solid-svg-icons';
 import { faCheckCircle, faFileAlt, faSave, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { StatusHelper } from '../model/Model';
 import { NotebooksHelper } from './index'
 import { simpleHash } from '../utils/HelperFunctions';
-import { Loader, ExternalLink, JupyterIcon, ThrottledTooltip } from '../utils/UIComponents';
+import { ButtonWithMenu, Loader, ExternalLink, JupyterIcon, ThrottledTooltip } from '../utils/UIComponents';
 import { WarnAlert, InfoAlert } from '../utils/UIComponents';
 import Time from '../utils/Time';
 import Sizes from '../utils/Media';
@@ -433,17 +433,11 @@ class NotebookServerRowAction extends Component {
     }
 
     return (
-      <UncontrolledButtonDropdown size="sm">
-        {defaultAction}
-        <DropdownToggle color="primary" className="alternateToggleStyle">
-          <FontAwesomeIcon icon={faEllipsisV} style={{ color: 'white', backgroundColor: "#5561A6" }} />
-        </DropdownToggle>
-        <DropdownMenu right={true}>
-          {actions.connect}
-          {actions.stop}
-          {actions.logs}
-        </DropdownMenu>
-      </UncontrolledButtonDropdown>
+      <ButtonWithMenu size="sm" default={defaultAction}>
+        {actions.connect}
+        {actions.stop}
+        {actions.logs}
+      </ButtonWithMenu>
     );
   }
 }
