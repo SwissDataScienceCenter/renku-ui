@@ -30,10 +30,13 @@ import React, { Component, useState, useEffect } from 'react';
 import { Link, NavLink as RRNavLink } from 'react-router-dom';
 import ReactPagination from "react-js-pagination";
 import ReactClipboard from 'react-clipboard.js';
+
 import { FormFeedback, FormGroup, FormText, Input, Label, Alert, NavLink, Tooltip } from 'reactstrap';
+import { ButtonDropdown, DropdownToggle, DropdownMenu } from 'reactstrap';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy } from '@fortawesome/free-regular-svg-icons';
-import { faCheck, faUser } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faUser, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
 
 import { sanitizedHTMLFromMarkdown } from './HelperFunctions';
 
@@ -562,6 +565,29 @@ function TooltipToggleButton(props) {
     </span>
 }
 
+/**
+ * A button with a menu (dropdown button)
+ *
+ * @param {component} [default] - The main, default item to show
+ * @param {[DropdownItem]} [children] - The items to show in the menu
+ */
+function ButtonWithMenu(props) {
+  const [dropdownOpen, setOpen] = useState(false);
+  const toggleOpen = () => setOpen(!dropdownOpen);
+  const size = (props.size) ? props.size : "md";
+
+  return <ButtonDropdown size={size} isOpen={dropdownOpen} toggle={toggleOpen}>
+    {props.default}
+    <DropdownToggle color="primary" className="alternateToggleStyle">
+      <FontAwesomeIcon icon={faEllipsisV} style={{ color: 'white', backgroundColor: "#5561A6" }} />
+    </DropdownToggle>
+    <DropdownMenu right={true}>
+      {props.children}
+    </DropdownMenu>
+  </ButtonDropdown>
+}
+
 export { UserAvatar, TimeCaption, FieldGroup, RenkuNavLink, Pagination, RenkuMarkdown };
 export { ExternalLink, Loader, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, JupyterIcon };
 export { Clipboard, ExternalIconLink, IconLink, ThrottledTooltip, TooltipToggleButton, ProjectAvatar };
+export { ButtonWithMenu }
