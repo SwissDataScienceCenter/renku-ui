@@ -76,14 +76,6 @@ Button.alert-link {
   background-color: #8a8a8a;
 }
 
-.issue-title{
-  display:inline-block;
-  width:60%;
-  max-width:61%;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-  overflow:hidden;
-}
 
 .mr-title{
   display:inline-block;
@@ -100,4 +92,10 @@ Button.alert-link {
 
 .display-none{
   display: none;
+}
+
+.issue-text-crop{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

@@ -28,7 +28,7 @@ import { UserAvatar, TimeCaption, RenkuMarkdown } from '../utils/UIComponents';
 import { FilePreview } from '../file';
 import { ContributionBody as ContributionBodyContainer } from './Contribution.container';
 import { EDIT, PREVIEW } from './Contribution.constants';
-import { Card, CardFooter, CardBody } from 'reactstrap';
+import { Card, CardHeader, CardBody } from 'reactstrap';
 
 /**
  * Contribution
@@ -46,18 +46,22 @@ class Contribution extends React.Component {
       <Row>
         <Col key="image" md={1} sm={1} className="float-right text-center" style={{ maxWidth: '62px' }}>
           <UserAvatar size="lg" person={contribution.author} />
-          <small className="d-sm-inline-flex text-center">
-            {contribution.author ? contribution.author.name : null}
-          </small>
         </Col>
         <Col key="body" md={10} sm={10} className="float-left">
           <Card className="triangle-border left">
+            <CardHeader icon="success" className="bg-transparent align-items-baseline">
+              <Row>
+                <Col md={12}>
+                  <strong>{contribution.author ? contribution.author.name : null}</strong>&nbsp;&nbsp;
+                  <span className="caption align-baseline">
+                    <TimeCaption key="timecaption" caption="Commented" time={contribution.updated_at} />
+                  </span>
+                </Col>
+              </Row>
+            </CardHeader>
             <CardBody className="mb-0 pb-0">
               <ContributionBodyContainer {...this.props} />
             </CardBody>
-            <CardFooter className="border-0 bg-transparent text-muted pt-2 pb-2 pl-3">
-              <TimeCaption key="timecaption" caption="Updated" time={contribution.updated_at} />
-            </CardFooter>
           </Card>
         </Col>
       </Row>

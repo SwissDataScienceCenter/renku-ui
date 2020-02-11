@@ -613,64 +613,49 @@ class ProjectViewCollaboration extends Component {
           <ProjectViewCollaborationNav {...this.props} />
         </Col>
         <Col key="collaborationcontent" sm={12} md={10}>
-          <Route path={ this.props.mergeRequestsOverviewUrl } render={props =>
-            <ProjectMergeRequestList {...this.props} />} />
-          <Route path={ this.props.issuesUrl } render={props =>
-            <ProjectViewIssues {...this.props} /> }/>
+          <Switch>
+            <Route path={ this.props.mergeRequestsOverviewUrl } render={props =>
+              <ProjectMergeRequestList {...this.props} />} />
+            <Route path={ this.props.issueUrl } render={props =>
+              <ProjectViewIssues {...this.props} /> }/>
+            <Route path={ this.props.issuesUrl } render={props =>
+              <ProjectIssuesList {...this.props} /> }/>
+        </Switch>
         </Col>
       </Row>
     </Col>
   }
 }
 
-class ProjectIssuesNav extends Component {
+class ProjectIssuesList extends Component {
+
+  componentDidMount() {
+    this.props.fetchIssues();
+  }
+
   render() {
     const issues = this.props.issues || [];
-    return <Issue.List
+    return <Row><Col key="issueslist" className={"pt-3"} sm={12} md={9}>
+    <Issue.List
       key="issuesList"
       collaborationUrl={this.props.collaborationUrl}
       issueNewUrl={this.props.issueNewUrl}
       projectId={this.props.projectId}
       user={this.props.user}
       issues={issues}
-    />;
+    />
+    </Col></Row>
   }
 }
 
 class ProjectViewIssues extends Component {
 
-  constructor(props){
-    super(props);
-    this.state = { issuesListVisible: true };
-    this.toogleIsuesListVisibility = this.toogleIsuesListVisibility.bind(this);
-  }
-
-  componentDidMount() {
-    this.props.fetchIssues();
-  }
-
-  toogleIsuesListVisibility(){
-    this.setState({ issuesListVisible: ! this.state.issuesListVisible })
-  }
-
   render() {
-    const issuesListDisplay= this.state.issuesListVisible ?
-      "display-block" : "display-none"
     return <Row>
-      <Col key="issueslist" id="collapsibleIssuesNav" className={issuesListDisplay+" pt-3"} sm={12} md={5}>
-        <ProjectIssuesNav { ...this.props } />
+      <Col key="issue" sm={12} md={10}>
+        <Route path={this.props.issueUrl}
+          render={props => this.props.issueView(props)} />
       </Col>
-      { this.state.issuesListVisible ?
-        <Col key="issue" id="expandableIssuesView" sm={12} md={7} className="pt-3">
-          <Route path={this.props.issueUrl}
-            render={props => this.props.issueView(props, this.toogleIsuesListVisibility, this.state.issuesListVisible)} />
-        </Col>
-        :
-        <Col key="issue" id="expandableIssuesView" sm={12} md={12} className="pt-3">
-          <Route path={this.props.issueUrl}
-            render={props => this.props.issueView(props, this.toogleIsuesListVisibility, this.state.issuesListVisible)} />
-        </Col>
-      }
     </Row>
   }
 }
