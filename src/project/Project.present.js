@@ -31,7 +31,7 @@ import { Link, Route, Switch } from 'react-router-dom';
 import filesize from 'filesize';
 
 import { Container, Row, Col } from 'reactstrap';
-import { Alert, Table } from 'reactstrap';
+import { Alert, DropdownItem, Table } from 'reactstrap';
 import { Button, Form, FormGroup, FormText, Label } from 'reactstrap';
 import { Input } from 'reactstrap';
 import { Nav, NavItem } from 'reactstrap';
@@ -45,7 +45,7 @@ import { faStar as faStarSolid } from '@fortawesome/free-solid-svg-icons';
 import { faExclamationTriangle, faLock , faUserFriends, faGlobe, faSearch } from '@fortawesome/free-solid-svg-icons';
 
 import { Clipboard, ExternalLink, Loader, RenkuMarkdown, RenkuNavLink, TimeCaption } from '../utils/UIComponents';
-import { InfoAlert, SuccessAlert, WarnAlert, ErrorAlert } from '../utils/UIComponents';
+import { ButtonWithMenu, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert } from '../utils/UIComponents';
 import { SpecialPropVal } from '../model/Model';
 import { ProjectTags, ProjectTagList } from './shared';
 import { Notebooks, StartNotebookServer } from '../notebooks';
@@ -211,6 +211,24 @@ class KnowledgeGraphLink extends Component {
   }
 }
 
+function GitLabConnectButton(props) {
+  const accessLevel= props.accessLevel;
+  const gitlabIDEUrl = props.gitlabIDEUrl;
+  if (props.externalUrl === "") return null;
+  const gitlabProjectButton = <ExternalLink url={props.externalUrl} title="View in GitLab" />
+
+  const onClick = () => window.open(gitlabIDEUrl, "_blank")
+  const gitlabIDEButton = (accessLevel >= ACCESS_LEVELS.DEVELOPER && gitlabIDEUrl !== null) ?
+    (<DropdownItem onClick={onClick}>View in Web IDE</DropdownItem>) :
+    null;
+
+  return <div>
+    <ButtonWithMenu default={gitlabProjectButton}>
+      {gitlabIDEButton}
+    </ButtonWithMenu>
+  </div>
+}
+
 class ProjectViewHeaderOverview extends Component {
 
   render() {
@@ -222,7 +240,9 @@ class ProjectViewHeaderOverview extends Component {
     const starButtonText = this.props.starred ? 'unstar' : 'star';
     const starIcon = this.props.starred ? faStarSolid : faStarRegular;
     const forkButtonText = 'fork';
-    const forkIcon = faCodeBranch
+    const forkIcon = faCodeBranch;
+    const gitlabIDEUrl = this.props.externalUrl !== "" && this.props.externalUrl.includes("/gitlab/") ?
+      this.props.externalUrl.replace('/gitlab/','/gitlab/-/ide/project/') : null;
     return (
       <Container fluid>
         <Row>
@@ -258,13 +278,8 @@ class ProjectViewHeaderOverview extends Component {
               </div>
             </div>
             <div className="d-flex flex-md-row-reverse pt-2 pb-2">
-              <div>
-                {
-                  (this.props.externalUrl !== "") ?
-                    <ExternalLink url={this.props.externalUrl} title="View in GitLab" /> :
-                    null
-                }
-              </div>
+              <GitLabConnectButton externalUrl={this.props.externalUrl} gitlabIDEUrl={gitlabIDEUrl}
+                accessLevel={this.props.visibility.accessLevel} />
             </div>
           </Col>
         </Row>
@@ -528,7 +543,7 @@ class ProjectViewDatasets extends Component {
     return <Switch>
         <Route exact path={this.props.newDatasetUrl}
           render={p => this.props.newDataset(p)} />
-        <Route path={this.props.editDatasetUrl} 
+        <Route path={this.props.editDatasetUrl}
           render={p => this.props.editDataset(p)} />
         <Route path={this.props.datasetsUrl} render={ props =>
           <ProjectViewDatasetsList {...this.props} {...props} />} />
