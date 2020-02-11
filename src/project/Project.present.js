@@ -962,10 +962,13 @@ class ProjectViewNotFound extends Component {
       </InfoAlert>
     }
     else {
+      const postLoginUrl = this.props.location.pathname;
+      console.log(postLoginUrl)
+      const to = { "pathname": "/login", "state": { previous: postLoginUrl } };
       tip = <InfoAlert timeout={0}>
         <p className="mb-0">
           <FontAwesomeIcon icon={faInfoCircle} /> You might need to be logged in to see this project.
-          Please try to log in.
+          Please try to <Link className="btn btn-primary btn-sm" to={to} previous={postLoginUrl}>Log in</Link>
         </p>
       </InfoAlert>
     }
@@ -1027,7 +1030,12 @@ class ProjectView extends Component {
     }
     else if (available === false || (available === null && this.props.projectId !== null)) {
       const { logged } = this.props.user;
-      return <ProjectViewNotFound projectPathWithNamespace={projectPathWithNamespaceOrId} logged={logged} />
+      return (
+        <ProjectViewNotFound
+          projectPathWithNamespace={projectPathWithNamespaceOrId}
+          logged={logged}
+          location={this.props.location} />
+      );
     }
     else {
       return [
