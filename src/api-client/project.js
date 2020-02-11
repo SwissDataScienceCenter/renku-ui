@@ -140,6 +140,8 @@ function addProjectMethods(client) {
 
   client.searchUsersOrGroups = (queryParams, searchIn) => {
     let headers = client.getBasicHeaders();
+    if(searchIn === "groups")
+      queryParams.all_available=true;
     return client.clientFetch(`${client.baseUrl}/${searchIn}`, {
       method: 'GET',
       headers,

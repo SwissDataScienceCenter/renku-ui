@@ -172,7 +172,7 @@ class DisplayEmptyProjects extends Component {
 
 class ProjectsRows extends Component {
   render() {
-    if (this.props.forbidden) return <Col>You need to be logged in to search projects per user name or group name</Col>;
+    if (this.props.forbidden) return <Col>You need to be logged in to search projects per user name.</Col>;
 
     if (this.props.loading) return <Col md={{ size: 2, offset: 3 }}><Loader /></Col>
 
@@ -222,7 +222,7 @@ class ProjectsSearch extends Component {
   render() {
     const loading = this.props.loading || false;
     const hasUser = this.props.user.logged;
-    const forbidden = this.props.searchIn !== this.props.searchInValuesMap.PROJECTNAME && !hasUser;
+    const forbidden =  this.props.searchIn === this.props.searchInValuesMap.USERNAME && !hasUser;
     return [<Row key="form">
       {
         (this.props.loggedOutMessage !== undefined) ?
