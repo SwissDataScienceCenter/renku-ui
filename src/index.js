@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { connect } from 'react-redux'
+import * as Sentry from '@sentry/browser';
 // Use our version of bootstrap, not the one in import 'bootstrap/dist/css/bootstrap.css';
 import './styles/index.css';
 import './index.css';
@@ -24,6 +25,10 @@ configPromise.then((res) => {
     // Query user data
     const userCoordinator = new UserCoordinator(client, model.subModel('user'));
     userCoordinator.fetchUser();
+
+    // configure Sentry
+    if (params.SENTRY_DNS)
+      Sentry.init({ dsn: params.SENTRY_DNS });
 
     // Map redux data to react - note we are mapping the model, not its whole content (only user)
     // Use model.get("something") and map it wherever needed
