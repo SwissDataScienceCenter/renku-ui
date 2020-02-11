@@ -367,12 +367,11 @@ class View extends Component {
 
     return {
 
-      issueView: (p, toogleIsuesListVisibility, issuesListVisible) => <Issue.View key="issue" {...subProps}
+      issueView: (p) => <Issue.View key="issue" {...subProps}
         issueIid={p.match.params.issueIid}
         updateProjectView={updateProjectView}
         projectPath={projectPathWithNamespace}
-        toogleIsuesListVisibility={toogleIsuesListVisibility}
-        issuesListVisible={issuesListVisible}
+        issuesUrl={subUrls.issuesUrl}
       />,
       /* TODO Should we handle each type of file or just have a generic project files viewer? */
 

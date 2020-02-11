@@ -26,14 +26,16 @@
 import React, { Component } from 'react';
 import { Provider, connect } from 'react-redux';
 import { Link, NavLink } from 'react-router-dom';
-import { Row, Col, Button, FormGroup, Input, Label, Badge, ListGroup, ListGroupItem, Card, CardHeader, CardBody } from 'reactstrap';
+import { Row, Col, Button, FormGroup, Input, Label, Badge, ListGroup, ListGroupItem, Card, CardHeader, CardBody, Alert } from 'reactstrap';
 import { faGitlab } from '@fortawesome/free-brands-svg-icons';
-import { faBoxOpen, faBox, faCompress, faExpand } from '@fortawesome/free-solid-svg-icons';
-
+import { faBoxOpen, faBox, faListUl, faComments } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { API_ERRORS } from '../api-client'; 
 import { createStore } from '../utils/EnhancedState';
 import State from './Issue.state';
 import { UserAvatar, ExternalIconLink, FieldGroup, RenkuMarkdown, TimeCaption, TooltipToggleButton } from '../utils/UIComponents';
 import { Contribution, NewContribution } from '../contribution';
+import { Loader } from '../utils/UIComponents';
 
 function issueStateBadge(issueStateValue) {
   let issueState = <Badge color="secondary">{issueStateValue}</Badge>;
@@ -66,14 +68,14 @@ class NewIssue extends Component {
       <FieldGroup id="title" type="text" label="Title" placeholder="A brief name to identify the issue"
         help={titleHelp} value={this.props.model.core.title}
         feedback={statuses.title} invalid={statuses.title != null}
-        onChange={this.props.onTitleChange}/>
+        onChange={this.props.onTitleChange} />
       <FieldGroup id="description" type="textarea" label="Description" placeholder="A description of the issue"
         help="A description of the issue helps users understand it and is highly recommended."
-        value={this.props.model.core.description} onChange={this.props.onDescriptionChange}/>
-      <IssueVisibility value={this.props.model.visibility} onChange={this.props.onVisibilityChange}/>
-      <br/>
+        value={this.props.model.core.description} onChange={this.props.onDescriptionChange} />
+      <IssueVisibility value={this.props.model.visibility} onChange={this.props.onVisibilityChange} />
+      <br />
       <Button color="primary" onClick={this.props.onSubmit}>
-                Create
+        Create
       </Button>
     </form>
   }
@@ -82,7 +84,7 @@ class NewIssue extends Component {
 class New extends Component {
   constructor(props) {
     super(props);
-    this.state = {statuses: []}
+    this.state = { statuses: [] }
     this.store = createStore(State.New.reducer);
     this.onSubmit = client => this.handleSubmit.bind(this, client);
     this.projectPathWithNamespace = this.props.projectPathWithNamespace;
@@ -102,13 +104,13 @@ class New extends Component {
     if (validation.result) {
       client.postProjectIssue(...this.submitData())
         .then(newIssue => {
-          this.props.history.push({pathname: `/projects/${this.projectPathWithNamespace}/collaboration/issues`});
+          this.props.history.push({ pathname: `/projects/${this.projectPathWithNamespace}/collaboration/issues` });
         });
     }
   }
 
   mapStateToProps(state, ownProps) {
-    return {model: state}
+    return { model: state }
   }
 
   mapDispatchToProps(dispatch, ownProps) {
@@ -129,25 +131,25 @@ class New extends Component {
     const state = this.store.getState();
     const errors = [];
     if (state.core.title.trim() === "") {
-      errors.push({title: "Please provide a title."});
+      errors.push({ title: "Please provide a title." });
     }
 
     const result = errors.length === 0;
     if (!result) {
-      this.setState({statuses: errors});
+      this.setState({ statuses: errors });
     }
-    return {result, errors};
+    return { result, errors };
   }
 
   render() {
     const statuses = {}
-    this.state.statuses.forEach((d) => { Object.keys(d).forEach(k => statuses[k] = d[k])});
+    this.state.statuses.forEach((d) => { Object.keys(d).forEach(k => statuses[k] = d[k]) });
     const VisibleNewIssue = connect(this.mapStateToProps, this.mapDispatchToProps)(NewIssue);
     return [
       <Row key="header"><Col md={8}><h3>New Issue</h3></Col></Row>,
       <Provider key="new" store={this.store}>
         <Row><Col md={8}>
-          <VisibleNewIssue statuses={statuses} onSubmit={this.onSubmit(this.props.client)}/>
+          <VisibleNewIssue statuses={statuses} onSubmit={this.onSubmit(this.props.client)} />
         </Col></Row>
       </Provider>
     ]
@@ -158,14 +160,28 @@ class New extends Component {
 class IssueViewHeader extends Component {
 
   render() {
+    if(this.props.error !== undefined && this.props.error.case === API_ERRORS.notFoundError)
+      return <Alert color="danger">Error 404: The issue that was selected does not exist or could not be accessed.
+        <br /> <br /> You can go back to the issues list and see available issues for this project. &nbsp;
+        <Button color="danger" size="sm" onClick={() => this.props.history.push(this.props.issuesUrl)}>Back to list</Button>
+      </Alert>
+
+    if(this.props.error !== undefined)
+      return <Alert color="danger">Error: There was an error retrieving the issue.
+        <br /> <br /> You can go back to the issues list and see available issues for this project. &nbsp;
+        <Button color="danger" size="sm" onClick={() => this.props.history.push(this.props.issuesUrl)}>Back to list</Button>
+      </Alert>
+
+    if(this.props.title === undefined)
+      return <Loader />;
+
     const title = this.props.title || 'no title';
-    const description = this.props.description || 'no description';
+    const description = this.props.description || ' ';
     const buttonText = this.props.state === 'opened' ? 'Close' : 'Re-open';
-    const screenSizeText = this.props.issuesListVisible ? 'Hide issues list' : 'Show issues list';
     const externalUrl = this.props.externalUrl;
     const externalIssueUrl = `${externalUrl}/issues/${this.props.iid}`;
     const time = this.props.updated_at;
-
+    const author = this.props.author ? this.props.author.name : null
     const buttonGit = <ExternalIconLink tooltip="Open in GitLab" icon={faGitlab} to={externalIssueUrl} />
 
     const actionButton =
@@ -175,41 +191,47 @@ class IssueViewHeader extends Component {
         activeIcon={faBoxOpen} inactiveIcon={faBox}
         activeClass="text-success" inactiveClass="text-primary" />
 
-    const toogleViewSize =
+    const backToList =
       <TooltipToggleButton
-        onClick={this.props.toogleIsuesListVisibility} tooltip={screenSizeText}
-        active={this.props.issuesListVisible}
-        activeIcon={faExpand} inactiveIcon={faCompress} />
+        onClick={() => this.props.history.push(this.props.issuesUrl)} tooltip={"Back to list"}
+        active={true}
+        activeIcon={faListUl} />
 
-    return <Row><Col key="image" md={1} sm={1} className="float-right text-center" style={{ maxWidth: '62px' }}>
-      <UserAvatar size="lg" person={this.props.author} />
-      <small className="d-sm-inline-flex text-center">{this.props.author ? this.props.author.name : null}</small>
-    </Col>
-      <Col key="body" md={10} sm={10} className="float-left">
-        <Card className="triangle-border left">
-          <CardHeader icon="success" className="bg-transparent align-items-baseline">
-            <Row>
-              <Col md={8}>
-                <strong>{title}</strong>&nbsp;&nbsp;
+    return <div>
+      <Row className="pb-2">
+        <Col sm={7} style={{ overflow: "hidden" }}>
+          <h2>{title}</h2>
+        </Col>
+        <Col md={1} sm={1} style={{ maxWidth: '62px', minWidth: '62px' }}></Col>
+        <Col sm={3} className="float-right pt-3" style={{ textAlign: "end" }}>
+          {backToList}
+          {buttonGit}
+          {actionButton}
+        </Col>
+      </Row>
+      <Row>
+        <Col key="image" md={1} sm={1} className="float-right text-center" style={{ maxWidth: '62px' }}>
+          <UserAvatar size="lg" person={this.props.author} />
+        </Col>
+        <Col key="body" md={10} sm={10} className="float-left">
+          <Card className="triangle-border left">
+            <CardHeader icon="success" className="bg-transparent align-items-baseline">
+              <Row>
+                <Col md={12}>
+                  <strong>{author}</strong>&nbsp;&nbsp;
               <span className="caption align-baseline">
-                  <TimeCaption key="timecaption" caption="Updated" time={time} />
-                </span>
-              </Col>
-              <Col md={4}>
-                <div className="float-right">
-                  {buttonGit}
-                  {toogleViewSize}
-                  {actionButton}
-                </div>
-              </Col>
-            </Row>
-          </CardHeader>
-          <CardBody>
-            <RenkuMarkdown markdownText={description} />
-          </CardBody>
-        </Card>
-      </Col>
-    </Row>
+                    <TimeCaption key="timecaption" caption="Commented" time={time} />
+                  </span>
+                </Col>
+              </Row>
+            </CardHeader>
+            <CardBody>
+              <RenkuMarkdown markdownText={description} />
+            </CardBody>
+          </Card>
+        </Col>
+      </Row>
+    </div>
   }
 }
 
@@ -217,7 +239,7 @@ class IssueViewHeader extends Component {
 const IssueViewContributions = (props) => props.contributions
   .sort((el1, el2) => el1.created_at > el2.created_at ? 1 : -1)
   .filter(c => c.system !== true)
-  .map(cont => <Contribution key={cont.id} contribution={cont} {...props}/>);
+  .map(cont => <Contribution key={cont.id} contribution={cont} {...props} />);
 
 
 class IssueView extends Component {
@@ -238,7 +260,7 @@ class View extends Component {
     this._mounted = false;
     this.store = createStore(State.View.reducer);
     this.store.dispatch(this.retrieveIssue());
-    this.state = {contributions: []}
+    this.state = { contributions: [] }
   }
 
   componentDidMount() {
@@ -255,6 +277,8 @@ class View extends Component {
       return this.props.client.getProjectIssue(this.props.projectId, this.props.issueIid)
         .then(resp => {
           dispatch(State.View.setAll(resp.data))
+        }).catch(error => {
+          dispatch(State.View.setAll({error: error}))
         })
     }
   }
@@ -262,8 +286,8 @@ class View extends Component {
   appendContribution(newContribution) {
     this.setState(prevState => {
       let newContributions = [...prevState.contributions];
-      newContributions.push({...newContribution});
-      return {...prevState, contributions: newContributions}
+      newContributions.push({ ...newContribution });
+      return { ...prevState, contributions: newContributions }
     })
   }
 
@@ -272,7 +296,11 @@ class View extends Component {
       .then(resp => {
         if (!this._mounted) return;
         this.setState((prevState, props) => {
-          return {contributions: resp.data}
+          return { contributions: resp.data }
+        });
+      }).catch(error => {
+         this.setState((prevState, props) => {
+          return { contributions: [] }
         });
       })
   }
@@ -330,16 +358,36 @@ class IssueListRow extends Component {
     const issueIid = this.props.iid;
     const issueUrl = `${this.props.issueBaseUrl}/issues/${issueIid}/`;
     const issueState = issueStateBadge(this.props.state);
-    const title = <NavLink activeClassName="selected-issue" to={issueUrl}>{this.props.title || 'no title'}</NavLink>
-    const time = new Date(this.props.updated_at);
-    const timeBadge = <Badge color="renku-light">{time.toLocaleDateString()}</Badge>
+    let titleText = this.props.title || 'no title';
+    const title = <NavLink activeClassName="selected-issue" to={issueUrl}>
+      {titleText}
+    </NavLink>
 
-    return <ListGroupItem>
-      <span className="issue-title text-break">
-        <span className="pr-2"><UserAvatar size="sm" person={this.props.author} /></span>{title}
-      </span>
-      <div className="float-right">{timeBadge}</div>
-      <div className="float-right pr-2">{issueState}</div>
+    return <ListGroupItem action className="pr-0 pl-0 pt-1 pb-1" style={{ border: "none" }}>
+      <Row>
+        <Col sm={8} md={8}>
+          <div className="d-flex project-list-row mb-3">
+            <div className="mr-2">
+              <UserAvatar size="lg" person={this.props.author} />
+            </div>
+            <div className="issue-text-crop">
+              <b>
+                <span className="issue-title">
+                  {title}
+                </span>
+              </b><br />
+              <span className="issues-description">
+                {this.props.description}
+              </span>
+            </div>
+          </div>
+        </Col>
+        <Col sm={4} md={4} className="float-right" style={{ textAlign: "end" }}>
+          <FontAwesomeIcon icon={faComments} /> {this.props.user_notes_count} {issueState}
+          <br />
+          <small><TimeCaption caption="Updated" time={this.props.updated_at} /></small>
+        </Col>
+      </Row>
     </ListGroupItem>
   }
 }
@@ -350,7 +398,7 @@ class IssueList extends Component {
     const rows = issues.map((d, i) =>
       <IssueListRow key={i} {...d} issueBaseUrl={this.props.collaborationUrl} projectId={this.props.projectId} />);
     return [
-      <Row key="header">
+      <Row key="header" className="pb-3">
         <Col sm={6}><h2>Issues</h2></Col>
         <Col sm={6}>
           {
@@ -372,8 +420,8 @@ class List extends Component {
 
   render() {
     return <IssueList
-      projectId={this.props.projectId} {...this.props}/>
+      projectId={this.props.projectId} {...this.props} />
   }
 }
 
-export default { New, View, List};
+export default { New, View, List };
