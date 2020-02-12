@@ -70,7 +70,6 @@ describe('rendering', () => {
         <Project.List
           client={client}
           model={model}
-          history={fakeHistory}
           store={model.reduxStore}
           user={anonymousUser}
           history={fakeHistory}
@@ -101,6 +100,7 @@ describe('rendering', () => {
           user={anonymousUser}
           model={model}
           history={fakeHistory}
+          location={fakeHistory.location}
           match={{ params: { id: "1" }, url: "/projects/1/" }} />
       </MemoryRouter>
       , div);
