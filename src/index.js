@@ -24,11 +24,22 @@ configPromise.then((res) => {
 
     // Query user data
     const userCoordinator = new UserCoordinator(client, model.subModel('user'));
-    userCoordinator.fetchUser();
+    let userPromise = userCoordinator.fetchUser();
 
     // configure Sentry
-    if (params.SENTRY_DNS)
-      Sentry.init({ dsn: params.SENTRY_DNS });
+    if (params.SENTRY_URL) {
+      Sentry.init({ dsn: params.SENTRY_URL });
+      Sentry.configureScope(scope => { scope.setTag("environment", params.SENTRY_NAMESPACE) });
+      userPromise.then(data => {
+        let user = { logged: false, id: 0, username: null };
+        if (data && data.id) {
+          user.logged = true;
+          user.id = data.id;
+          user.username = data.username;
+        }
+        Sentry.configureScope(scope => { scope.setUser(user); });
+      });
+    }
 
     // Map redux data to react - note we are mapping the model, not its whole content (only user)
     // Use model.get("something") and map it wherever needed

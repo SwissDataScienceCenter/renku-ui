@@ -60,17 +60,20 @@ fi
 # set sentry dns if explicitly required by the user
 if [[ $SENTRY = 1 ]]
 then
-  SENTRY_DNS=https://7539e48042f9425380fc31a04746a044@sentry.dev.renku.ch/5
+  SENTRY_URL="https://7539e48042f9425380fc31a04746a044@sentry.dev.renku.ch/5"
+  SENTRY_NAMESPACE="${DEV_NAMESPACE}"
 else
   echo "Errors won't be sent to sentry by default. To enable sentry, use 'SENTRY=1 ./run-telepresence.sh'"
 fi
 
 tee > ./public/config.json << EOF
 {
+  "TELEPRESENCE": "true",
   "BASE_URL": "${BASE_URL}",
   "GATEWAY_URL": "${BASE_URL}/api",
   "WELCOME_PAGE": "${WELCOME_PAGE}",
-  "SENTRY_DNS": "${SENTRY_DNS}",
+  "SENTRY_URL": "${SENTRY_URL}",
+  "SENTRY_NAMESPACE": "${SENTRY_NAMESPACE}",
   "RENKU_TEMPLATES_URL": "https://github.com/SwissDataScienceCenter/renku-project-template",
   "RENKU_TEMPLATES_REF": "master"
 }

@@ -20,7 +20,8 @@ echo "==================================================="
 echo " Configuration:"
 echo " GATEWAY_URL=${GATEWAY_URL:-http://gateway.renku.build}"
 echo " BASE_URL=${BASE_URL:-http://renku.build}"
-echo " SENTRY_DNS=${SENTRY_DNS}"
+echo " SENTRY_URL=${SENTRY_URL}"
+echo " SENTRY_NAMESPACE=${SENTRY_NAMESPACE}"
 echo " RENKU_TEMPLATES_URL=${RENKU_TEMPLATES_URL}"
 echo " RENKU_TEMPLATES_REF=${RENKU_TEMPLATES_REF}"
 echo "==================================================="
@@ -30,7 +31,8 @@ tee > /usr/share/nginx/html/config.json << EOF
   "BASE_URL": "${BASE_URL:-http://renku.build}",
   "GATEWAY_URL": "${GATEWAY_URL:-http://gateway.renku.build}",
   "WELCOME_PAGE": "${WELCOME_PAGE}",
-  "SENTRY_DNS": "${SENTRY_DNS}",
+  "SENTRY_URL": "${SENTRY_URL}",
+  "SENTRY_NAMESPACE": "${SENTRY_NAMESPACE}",
   "RENKU_TEMPLATES_URL": "${RENKU_TEMPLATES_URL}",
   "RENKU_TEMPLATES_REF": "${RENKU_TEMPLATES_REF}"
 }
