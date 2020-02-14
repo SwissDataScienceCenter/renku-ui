@@ -34,6 +34,12 @@ spec:
               value: {{ .Values.gatewayUrl | default (printf "%s://gateway.%s" (include "ui.protocol" .) .Values.global.renku.domain) | quote }}
             - name: WELCOME_PAGE
               value: {{ .Values.welcomePage.text | b64enc | quote }}
+              {{- if .Values.sentry.enabled }}
+            - name: SENTRY_URL
+              value: {{ .Values.sentry.url | quote }}
+            - name: SENTRY_NAMESPACE
+              value: {{ .Values.sentry.namespace | default (printf "%s" .Release.Namespace) | quote }}
+              {{- end }}
             - name: RENKU_TEMPLATES_URL
               value: {{ required "templateRepository.url must be specified, e.g., https://github.com/repos/SwissDataScienceCenter/renku-project-template" .Values.templatesRepository.url | quote }}
             - name: RENKU_TEMPLATES_REF

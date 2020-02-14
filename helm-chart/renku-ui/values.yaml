@@ -17,7 +17,7 @@ replicaCount: 1
 
 image:
   repository: renku/renku-ui
-  tag: '0.2.0'
+  tag: '0.7.4'
   pullPolicy: IfNotPresent
 
   ## Optionally specify an array of imagePullSecrets.
@@ -61,3 +61,8 @@ welcomePage:
 templatesRepository:
   url: https://github.com/SwissDataScienceCenter/renku-project-template
   ref: 0.1.5
+
+sentry:
+  enabled: false
+  url: ''
+  namespace: ''
