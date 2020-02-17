@@ -230,6 +230,21 @@ function GitLabConnectButton(props) {
 }
 
 class ProjectViewHeaderOverview extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      updating_star: false
+    }
+  }
+
+  star(event) {
+    event.preventDefault();
+    this.setState({ updating_star: true });
+    this.props.onStar().then(
+      result => {
+        this.setState({ updating_star: false });
+      });
+  }
 
   render() {
     const forkedFrom = (this.props.forkedFromLink == null) ?
@@ -237,8 +252,27 @@ class ProjectViewHeaderOverview extends Component {
       [" ", "forked from", " ", this.props.forkedFromLink];
     const core = this.props.core;
     const system = this.props.system;
-    const starButtonText = this.props.starred ? 'unstar' : 'star';
-    const starIcon = this.props.starred ? faStarSolid : faStarRegular;
+
+    let starElement;
+    let starText;
+    if (this.state.updating_star) {
+      starElement = (<Loader inline size={14} />);
+      starText = "";
+      // if (this.props.starred)
+      //   starText = "unstarring...";
+      // else
+      //   starText = "starring...";
+    }
+    else {
+      if (this.props.starred) {
+        starText = "unstar";
+        starElement = (<FontAwesomeIcon icon={faStarSolid} />);
+      }
+      else {
+        starText = "star";
+        starElement = (<FontAwesomeIcon icon={faStarRegular} />);
+      }
+    }
     const forkButtonText = 'fork';
     const forkIcon = faCodeBranch;
     const gitlabIDEUrl = this.props.externalUrl !== "" && this.props.externalUrl.includes("/gitlab/") ?
@@ -257,8 +291,10 @@ class ProjectViewHeaderOverview extends Component {
               <div className={`fixed-width-${this.props.starred ? '7em' : '6em'}`}>
                 <form className="input-group input-group-sm">
                   <div className="input-group-prepend">
-                    <button className="btn btn-outline-primary" onClick={this.props.onStar}>
-                      <FontAwesomeIcon icon={starIcon} /> {starButtonText}
+                    <button className="btn btn-outline-primary"
+                      disabled={this.state.updating_star}
+                      onClick={this.star.bind(this)}>
+                      {starElement} {starText}
                     </button>
                   </div>
                   <input className="form-control border-primary text-right"
