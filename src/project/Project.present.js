@@ -290,11 +290,16 @@ class ProjectViewHeaderOverview extends Component {
                   onClick={this.star.bind(this)}>
                   {starElement} {starText}
                 </Button>
-                <Button outline color="primary">{system.star_count}</Button>
+                <Button outline color="primary" style={{ cursor: "default" }}>{system.star_count}</Button>
               </ButtonGroup>
               <ButtonGroup size="sm" className="ml-1">
-                <Button outline color="primary" onClick={this.props.toggleForkModal}>fork</Button>
-                <Button outline color="primary">{system.forks_count}</Button>
+                <Button outline color="primary"
+                  onClick={this.props.toggleForkModal}>
+                  fork</Button>
+                <Button outline color="primary"
+                  href={`${this.props.externalUrl}/forks`} target="_blank" rel="noreferrer noopener">
+                  {system.forks_count}
+                </Button>
               </ButtonGroup>
             </div>
 
