@@ -94,15 +94,6 @@ body {
   outline: none;
 }
 
-
-.fixed-width-7em {
-  width: 7em;
-}
-
-.fixed-width-6em {
-  width: 6.2em;
-}
-
 /* TODO: Try to replace css tooltip by reactstraps tooltip component */
 .simple-tooltip {
   position: relative;
