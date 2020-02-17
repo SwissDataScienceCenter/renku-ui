@@ -283,16 +283,8 @@ class ProjectViewHeaderOverview extends Component {
             </p>
           </Col>
           <Col xs={12} md="auto">
-            <div className="d-flex flex-md-row-reverse mb-2">
+            <div className="d-flex mb-2">
               <ButtonGroup size="sm">
-                <Button outline color="primary"
-                  disabled={this.state.updating_star}
-                  onClick={this.star.bind(this)}>
-                  {starElement} {starText}
-                </Button>
-                <Button outline color="primary" style={{ cursor: "default" }}>{system.star_count}</Button>
-              </ButtonGroup>
-              <ButtonGroup size="sm" className="ml-1">
                 <Button outline color="primary"
                   onClick={this.props.toggleForkModal}>
                   fork</Button>
@@ -300,6 +292,14 @@ class ProjectViewHeaderOverview extends Component {
                   href={`${this.props.externalUrl}/forks`} target="_blank" rel="noreferrer noopener">
                   {system.forks_count}
                 </Button>
+              </ButtonGroup>
+              <ButtonGroup size="sm" className="ml-1">
+                <Button outline color="primary"
+                  disabled={this.state.updating_star}
+                  onClick={this.star.bind(this)}>
+                  {starElement} {starText}
+                </Button>
+                <Button outline color="primary" style={{ cursor: "default" }}>{system.star_count}</Button>
               </ButtonGroup>
             </div>
 
