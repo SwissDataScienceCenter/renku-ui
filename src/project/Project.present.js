@@ -1018,10 +1018,13 @@ class ProjectViewNotFound extends Component {
 
 class ProjectViewLoading extends Component {
   render() {
+    const info = this.props.projectId ?
+      <h3>Identifying project number {this.props.projectId}...</h3> :
+      <h3>Loading project {this.props.projectPathWithNamespace}...</h3>;
     return <Container fluid>
       <Row>
         <Col>
-          <h3>Loading project {this.props.projectPathWithNamespace}...</h3>
+          {info}
           <Loader />
         </Col>
       </Row>
@@ -1053,10 +1056,14 @@ class ProjectView extends Component {
     const projectPathWithNamespaceOrId = this.props.projectPathWithNamespace ?
       this.props.projectPathWithNamespace
       : this.props.projectId;
-    if ((available === null && this.props.projectId === null) || available === SpecialPropVal.UPDATING) {
-      return <ProjectViewLoading projectPathWithNamespace={projectPathWithNamespaceOrId} />
+    if (available == null || available === SpecialPropVal.UPDATING || this.props.projectId) {
+      return (
+        <ProjectViewLoading
+          projectPathWithNamespace={this.props.projectPathWithNamespace}
+          projectId={this.props.projectId} />
+      );
     }
-    else if (available === false || (available === null && this.props.projectId !== null)) {
+    else if (available === false) {
       const { logged } = this.props.user;
       return (
         <ProjectViewNotFound
