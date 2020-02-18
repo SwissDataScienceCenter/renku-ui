@@ -116,7 +116,7 @@ class New extends Component {
         .then((project) => {
           this.refreshUserProjects();
           this.newProject.set('display.loading', false);
-          this.props.history.push(`/projects/${project.id}`);
+          this.props.history.push(`/projects/${project.path_with_namespace}`);
         })
         .catch(error => {
           let display_messages = [];
