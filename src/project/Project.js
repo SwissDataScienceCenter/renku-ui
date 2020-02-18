@@ -483,16 +483,16 @@ class View extends Component {
     onProjectDescriptionChange: (description) => {
       this.projectState.setDescription(this.props.client, description);
     },
-    onStar: (e) => {
-      e.preventDefault();
+    onStar: () => {
       const starred = this.getStarred();
-      this.projectState.star(this.props.client, starred).then((project) => {
+      return this.projectState.star(this.props.client, starred).then((project) => {
         // we know it worked, we can manually change star status without querying APIs
         if (project && project.star_count != null) {
           // first update the list of starred project, otherwise this.getStarred returns wrong
           this.projectsCoordinator.updateStarred(project, !starred);
           this.projectState.setStars(project.star_count);
         }
+        return true;
       });
     },
     toggleForkModal: (e) => {

@@ -30,13 +30,8 @@ import React, { Component } from 'react';
 import { Link, Route, Switch } from 'react-router-dom';
 import filesize from 'filesize';
 
-import { Container, Row, Col } from 'reactstrap';
-import { Alert, DropdownItem, Table } from 'reactstrap';
-import { Button, Form, FormGroup, FormText, Label } from 'reactstrap';
-import { Input } from 'reactstrap';
-import { Nav, NavItem } from 'reactstrap';
-import { Card, CardBody, CardHeader } from 'reactstrap';
-import Issue from '../issue/Issue';
+import { Container, Row, Col, Alert, DropdownItem, Table, Nav, NavItem, Button, ButtonGroup } from 'reactstrap';
+import { Card, CardBody, CardHeader, Form, FormGroup, FormText, Label, Input } from 'reactstrap';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStar as faStarRegular } from '@fortawesome/free-regular-svg-icons';
@@ -49,6 +44,7 @@ import { ButtonWithMenu, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert } from '
 import { SpecialPropVal } from '../model/Model';
 import { ProjectTags, ProjectTagList } from './shared';
 import { Notebooks, StartNotebookServer } from '../notebooks';
+import Issue from '../issue/Issue';
 import FilesTreeView from './filestreeview/FilesTreeView';
 import DatasetsListView from './datasets/DatasetsListView';
 import { ACCESS_LEVELS } from '../api-client';
@@ -212,7 +208,8 @@ class KnowledgeGraphLink extends Component {
 }
 
 function GitLabConnectButton(props) {
-  const accessLevel= props.accessLevel;
+  const size = (props.size) ? props.size : "md";
+  const accessLevel = props.accessLevel;
   const gitlabIDEUrl = props.gitlabIDEUrl;
   if (props.externalUrl === "") return null;
   const gitlabProjectButton = <ExternalLink url={props.externalUrl} title="View in GitLab" />
@@ -223,13 +220,28 @@ function GitLabConnectButton(props) {
     null;
 
   return <div>
-    <ButtonWithMenu default={gitlabProjectButton}>
+    <ButtonWithMenu default={gitlabProjectButton} size={size}>
       {gitlabIDEButton}
     </ButtonWithMenu>
   </div>
 }
 
 class ProjectViewHeaderOverview extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      updating_star: false
+    }
+  }
+
+  star(event) {
+    event.preventDefault();
+    this.setState({ updating_star: true });
+    this.props.onStar().then(
+      result => {
+        this.setState({ updating_star: false });
+      });
+  }
 
   render() {
     const forkedFrom = (this.props.forkedFromLink == null) ?
@@ -237,48 +249,64 @@ class ProjectViewHeaderOverview extends Component {
       [" ", "forked from", " ", this.props.forkedFromLink];
     const core = this.props.core;
     const system = this.props.system;
-    const starButtonText = this.props.starred ? 'unstar' : 'star';
-    const starIcon = this.props.starred ? faStarSolid : faStarRegular;
-    const forkButtonText = 'fork';
-    const forkIcon = faCodeBranch;
+
+    let starElement;
+    let starText;
+    if (this.state.updating_star) {
+      starElement = (<Loader inline size={14} />);
+      if (this.props.starred)
+        starText = "unstarring...";
+      else
+        starText = "starring...";
+    }
+    else {
+      if (this.props.starred) {
+        starText = "unstar";
+        starElement = (<FontAwesomeIcon icon={faStarSolid} />);
+      }
+      else {
+        starText = "star";
+        starElement = (<FontAwesomeIcon icon={faStarRegular} />);
+      }
+    }
+
     const gitlabIDEUrl = this.props.externalUrl !== "" && this.props.externalUrl.includes("/gitlab/") ?
-      this.props.externalUrl.replace('/gitlab/','/gitlab/-/ide/project/') : null;
+      this.props.externalUrl.replace('/gitlab/', '/gitlab/-/ide/project/') : null;
     return (
       <Container fluid>
         <Row>
-          <Col xs={12} md={6}>
-            <h3>{core.title} <ProjectVisibilityLabel visibilityLevel={this.props.visibility.level}/></h3>
+          <Col xs={12} md>
+            <h3>{core.title} <ProjectVisibilityLabel visibilityLevel={this.props.visibility.level} /></h3>
             <p>
               <span>{this.props.core.path_with_namespace}{forkedFrom}</span> <br />
             </p>
           </Col>
-          <Col xs={12} md={6}>
-            <div className="d-flex flex-md-row-reverse">
-              <div className={`fixed-width-${this.props.starred ? '7em' : '6em'}`}>
-                <form className="input-group input-group-sm">
-                  <div className="input-group-prepend">
-                    <button className="btn btn-outline-primary" onClick={this.props.onStar}>
-                      <FontAwesomeIcon icon={starIcon} /> {starButtonText}
-                    </button>
-                  </div>
-                  <input className="form-control border-primary text-right"
-                    placeholder={system.star_count} aria-label="starCount" readOnly={true} />
-                </form>
-              </div>
-              <div className={`fixed-width-6em pr-1`}>
-                <form className="input-group input-group-sm">
-                  <div className="input-group-prepend">
-                    <button className="btn btn-outline-primary" onClick={this.props.toggleForkModal}>
-                      <FontAwesomeIcon icon={forkIcon} /> {forkButtonText}
-                    </button>
-                  </div>
-                  <input className="form-control border-primary text-right"
-                    placeholder={system.forks_count} aria-label="starCount" readOnly={true} />
-                </form>
-              </div>
+          <Col xs={12} md="auto">
+            <div className="d-flex mb-2">
+              <ButtonGroup size="sm">
+                <Button outline color="primary"
+                  onClick={this.props.toggleForkModal}>
+                  <FontAwesomeIcon icon={faCodeBranch} /> fork
+                </Button>
+                <Button outline color="primary"
+                  href={`${this.props.externalUrl}/forks`} target="_blank" rel="noreferrer noopener">
+                  {system.forks_count}
+                </Button>
+              </ButtonGroup>
+              <ButtonGroup size="sm" className="ml-1">
+                <Button outline color="primary"
+                  disabled={this.state.updating_star}
+                  onClick={this.star.bind(this)}>
+                  {starElement} {starText}
+                </Button>
+                <Button outline color="primary" style={{ cursor: "default" }}>{system.star_count}</Button>
+              </ButtonGroup>
             </div>
-            <div className="d-flex flex-md-row-reverse pt-2 pb-2">
-              <GitLabConnectButton externalUrl={this.props.externalUrl} gitlabIDEUrl={gitlabIDEUrl}
+
+            <div className="d-flex flex-md-row-reverse mb-2">
+              <GitLabConnectButton size="sm"
+                externalUrl={this.props.externalUrl}
+                gitlabIDEUrl={gitlabIDEUrl}
                 accessLevel={this.props.visibility.accessLevel} />
             </div>
           </Col>
