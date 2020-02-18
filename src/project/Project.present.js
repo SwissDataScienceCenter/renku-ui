@@ -269,8 +269,7 @@ class ProjectViewHeaderOverview extends Component {
         starElement = (<FontAwesomeIcon icon={faStarRegular} />);
       }
     }
-    const forkButtonText = 'fork';
-    const forkIcon = faCodeBranch;
+
     const gitlabIDEUrl = this.props.externalUrl !== "" && this.props.externalUrl.includes("/gitlab/") ?
       this.props.externalUrl.replace('/gitlab/', '/gitlab/-/ide/project/') : null;
     return (
@@ -287,7 +286,8 @@ class ProjectViewHeaderOverview extends Component {
               <ButtonGroup size="sm">
                 <Button outline color="primary"
                   onClick={this.props.toggleForkModal}>
-                  fork</Button>
+                  <FontAwesomeIcon icon={faCodeBranch} /> fork
+                </Button>
                 <Button outline color="primary"
                   href={`${this.props.externalUrl}/forks`} target="_blank" rel="noreferrer noopener">
                   {system.forks_count}
