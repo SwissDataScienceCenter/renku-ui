@@ -146,15 +146,11 @@ class View extends Component {
     }
   }
 
-  UNSAFE_componentWillMount() {
+  componentDidMount() {
     const pathComponents = splitProjectSubRoute(this.props.match.url);
     if (pathComponents.projectPathWithNamespace == null && pathComponents.projectId != null) {
       this.redirectProjectWithNumericId(pathComponents.projectId);
     }
-  }
-
-  componentDidMount() {
-    const pathComponents = splitProjectSubRoute(this.props.match.url);
     if (pathComponents.projectPathWithNamespace != null) {
       // fetch only if user data are already loaded
       if (this.props.user.fetched) {
