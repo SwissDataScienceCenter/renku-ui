@@ -41,20 +41,20 @@ function cropLabelStart(limit, label) {
 }
 
 function getNodeLabel(node, NODE_COUNT, lineagesUrl) {
-  if (node.type === 'commit') {
+  if (node.type === "ProcessRun") {
     const stringArray = node.label.split(" ");
     const LABEL_LIMIT = 20;
-    const label= stringArray.length > 3 ?
-      cropLabelStart(LABEL_LIMIT, stringArray[2])+"<br/>"+cropLabelStart(LABEL_LIMIT, stringArray[3])
-      : cropLabelStart(LABEL_LIMIT, stringArray[0])+" "+cropLabelStart(LABEL_LIMIT, stringArray[1])
-    return '<text><tspan xml:space="preserve" dy="1em" x="1">'+label+'</tspan></text>'
+    const label = stringArray.length > 3 ?
+      cropLabelStart(LABEL_LIMIT, stringArray[2]) + "<br/>" + cropLabelStart(LABEL_LIMIT, stringArray[3])
+      : cropLabelStart(LABEL_LIMIT, stringArray[0]) + " " + cropLabelStart(LABEL_LIMIT, stringArray[1])
+    return '<text><tspan xml:space="preserve" dy="1em" x="1">' + label + '</tspan></text>'
   }
 
-  if(node.type === 'blob') {
-    const LABEL_LIMIT = NODE_COUNT > 15 ? 20  : 40;
-    const ref= `${lineagesUrl}${node.filePath}`
-    return '<text><tspan xml:space="preserve" dy="1em" x="1" data-href='+ref+'>'
-      +cropLabelStart(LABEL_LIMIT, node.filePath)+
+  if (node.type === "Directory" || node.type === "File") {
+    const LABEL_LIMIT = NODE_COUNT > 15 ? 20 : 40;
+    const ref = `${lineagesUrl}/${node.filePath}`
+    return '<text><tspan xml:space="preserve" dy="1em" x="1" data-href=' + ref + '>'
+      + cropLabelStart(LABEL_LIMIT, node.filePath) +
       '</tspan></text>';
   }
 }
@@ -62,7 +62,7 @@ function getNodeLabel(node, NODE_COUNT, lineagesUrl) {
 function nodeToClass(node, centralNode, label) {
   const nodeId = node.id;
   const nodeType = node.type;
-  const FORMATS = {'py': true , 'r': true, 'ipynb': true}
+  const FORMATS = { 'py': true, 'r': true, 'ipynb': true }
   const nodeClasses = [];
 
   if (nodeId === centralNode)
@@ -73,7 +73,7 @@ function nodeToClass(node, centralNode, label) {
   if (nodeType === "commit" && label.includes("\n"))
     nodeClasses.push('doubleLine');
 
-  if (node.type === 'blob') {
+  if (node.type === "Directory" || node.type === "File") {
     if (node.filePath.includes('.') && FORMATS[node.filePath.split('.').pop()])
       nodeClasses.push('code');
     else
@@ -90,6 +90,11 @@ class FileLineageGraph extends Component {
     this._vizRoot = null;
   }
 
+  componentDidMount() {
+    if (this.subGraph()._nodeCount > 1)
+      this.renderD3();
+  }
+
   subGraph() {
     const graph = this.props.graph;
     const NODE_COUNT = this.props.graph.length;
@@ -100,7 +105,7 @@ class FileLineageGraph extends Component {
         marginx: 20,
         marginy: 20,
       })
-      .setDefaultEdgeLabel(function(){ return {}; });
+      .setDefaultEdgeLabel(function () { return {}; });
 
     graph.nodes.forEach(node => {
       if (node.id.endsWith(`/${this.props.path}`)) {
@@ -112,25 +117,22 @@ class FileLineageGraph extends Component {
       const label = getNodeLabel(n, NODE_COUNT, this.props.lineagesUrl);
       subGraph.setNode(n.id, {
         id: n.id,
-        labelType:'html',
+        labelType: 'html',
         label,
         class: nodeToClass(n, graph.centralNode, label),
-        shape: n.type === "commit" ? "diamond" : "rect"
+        shape: n.type === "ProcessRun" ? "diamond" : "rect"
       });
     });
-    graph.edges.forEach(e => { subGraph.setEdge(e.source, e.target)});
+    graph.edges.forEach(e => { subGraph.setEdge(e.source, e.target) });
 
     return subGraph
   }
 
-  componentDidMount() {
-    if (this.subGraph()._nodeCount >1)
-      this.renderD3();
-  }
-
-  hasLink(nodeId, centralNode){
+  hasLink(nodeId, centralNode) {
     return this.props.graph.nodes
-      .filter(function(node) { return (node.id === nodeId && node.id !== centralNode && node.type === "blob") })[0];
+      .filter(function (node) {
+        return (node.id === nodeId && node.id !== centralNode && (node.type === "Directory" || node.type === "File"))
+      })[0];
   }
 
   renderD3() {

@@ -52,15 +52,12 @@ class FileLineage extends Component {
   }
 
   parseNodeIds(graph) {
-    // regex to split /<type>/<commitSha><path>
-    const nodeRegex = /\/([^/]*)\/([^/]*)(.*)/;
     if (!graph)
       return { edges: [], nodes: [] };
     graph.nodes.forEach(node => {
-      const matches = nodeRegex.exec(node.id)
-      node.type = matches[1]
-      node.commitSha = matches[2]
-      if (matches[3]) node.filePath = matches[3]
+      if (node.type === "Directory" || node.type === "File") {
+        node.filePath = node.label.substring(0, node.label.indexOf("@"));
+      }
     })
     return graph;
   }
@@ -127,8 +124,7 @@ class FileLineage extends Component {
   async retrieveGraph() {
     if (!this.props.projectPath) return;
     try {
-      const fileMeta = await this.props.client.getRepositoryFileMeta(this.props.projectId, this.props.path, 'master')
-      this.props.client.getFileLineage(this.props.projectPath, fileMeta.lastCommitId, this.props.path)
+      this.props.client.getFileLineage(this.props.projectPath, this.props.path)
         .then(graph => this.parseNodeIds(graph))
         .then(graph => {
           if (this._isMounted) this.setState({ graph });
@@ -153,7 +149,7 @@ class FileLineage extends Component {
       error={this.state.error} 
       createWebhook={this.createWebhook.bind(this)}
       webhookJustCreated={this.state.webhookJustCreated}
-      filePath={this.props.match.url+'/files/blob/'+this.props.path} 
+      filePath={`/projects/${this.props.projectPathWithNamespace}/files/blob/${this.props.path}`} 
       accessLevel={this.props.accessLevel}
       {...this.props} />
   }
