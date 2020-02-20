@@ -17,65 +17,155 @@
  */
 
 import React, { Component } from 'react';
-import { Table, Row, Col, Button, Badge, ListGroup, ListGroupItem } from 'reactstrap';
-import { NavLink } from 'react-router-dom';
-
-import { ExternalLink } from '../utils/UIComponents';
-
+import { Row, Col, Badge, ListGroupItem, Nav, NavItem } from 'reactstrap';
+import { NavLink, Switch, Route } from 'react-router-dom';
+import { UserAvatar, ExternalLink, TimeCaption, TooltipToggleButton, ExternalIconLink, Clipboard, RenkuNavLink } from '../utils/UIComponents';
+import { Contribution, NewContribution } from '../contribution';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLongArrowAltLeft as faLeftArrow }from '@fortawesome/free-solid-svg-icons';
+import { faComments, faCodeBranch, faBox, faListUl, faLongArrowAltLeft as faLeftArrow } from '@fortawesome/free-solid-svg-icons';
+import { faGitlab } from '@fortawesome/free-brands-svg-icons';
 
+function MergeRequestHeader(props) {
+
+  const buttonGit = <ExternalIconLink tooltip="Open in GitLab" icon={faGitlab} to={props.externalMRUrl} />
+
+  const actionButton = props.showMergeButton ?
+    <TooltipToggleButton
+      onClick={props.onMergeClick} tooltip={`Merge`}
+      active={true}
+      activeIcon={faCodeBranch} inactiveIcon={faCodeBranch}
+      activeClass="text-success fa-flip-vertical" inactiveClass="text-primary" />
+    : null
+
+  const backToList =
+    <TooltipToggleButton
+      onClick={() => props.history.push(props.mergeRequestsOverviewUrl)} tooltip={"Back to list"}
+      active={true}
+      activeIcon={faListUl} />
+
+  return <Row key="title" className="pb-2">
+    <Col sm={8} style={{ overflow: "hidden" }}>
+      <h3>{props.title}</h3>
+    </Col>
+    <Col sm={4} className="float-right pt-3" style={{ textAlign: "end" }}>
+      {backToList}
+      {buttonGit}
+      {actionButton}
+    </Col>
+  </Row>
+}
+
+function MergeRequestNavigation(props) {
+  return <Nav tabs>
+    <NavItem>
+      <RenkuNavLink to="discussion" matchpath={true} title="Discussion" />
+    </NavItem>
+    <NavItem>
+      <RenkuNavLink to="changes" matchpath={true} title="Changes" />
+    </NavItem>
+    <NavItem>
+      <RenkuNavLink to="commits" matchpath={true} title="Commits" />
+    </NavItem>
+  </Nav>
+}
+
+function ContributionsView(props) {
+  // We sort the date strings instead of actual Date objects here - ok due to ISO format.
+  const contributions = props.contributions
+    .sort((el1, el2) => el1.created_at > el2.created_at ? -1 : 1)
+    .filter(c => c.system !== true)
+    .map(cont => <Contribution key={cont.id} contribution={cont.notes[0]} {...props} />);
+
+  return [contributions,
+    <NewContribution key="newContribution" {...props} mergeRequest={true} />
+  ];
+}
+
+function SingleCommit(props) {
+  return <ListGroupItem className="pr-0 pl-0 pt-1 pb-1" style={{ border: "none" }}>
+    <Row>
+      <Col sm={9} md={9}>
+        <div className="d-flex project-list-row mb-3">
+          <div className="issue-text-crop">
+            <b>
+              <span className="issue-title">
+                {props.commit.message}
+              </span>
+            </b><br />
+            <span className="issues-description">
+              <div>
+                <TimeCaption caption={props.commit.author_name + " created"} time={props.commit.created_at} />
+              </div>
+            </span>
+          </div>
+        </div>
+      </Col>
+      <Col sm={3} md={3} className="float-right" style={{ textAlign: "end" }}>
+        <span className="text-muted"><small>{props.commit.short_id}</small> <Clipboard clipboardText={props.commit.id} /></span>
+      </Col>
+    </Row>
+  </ListGroupItem>
+}
+
+function CommitsView(props) {
+  const commits = props.commits
+    .map(commit => <SingleCommit key={commit.id} commit={commit} {...props} />);
+  return <Row key="simple"><Col>
+    <br />
+    {commits}
+  </Col></Row>
+}
+
+function ChangesView(props) {
+
+  const opaqueChanges = props.changes
+    .filter((change) => change.new_path.split('.').pop() !== 'ipynb');
+
+  const notebookChanges = props.changes
+    .filter((change) => change.new_path.split('.').pop() === 'ipynb');
+
+  return [(opaqueChanges.length > 0) ?
+    <OpaqueChanges key="opaque" changes={opaqueChanges} author={props.author} updated_at={props.updated_at}
+      target_branch={props.target_branch} source_branch={props.source_branch} /> :
+    null,
+  (notebookChanges.length > 0) ?
+    <NotebookComparisonList key="notebooks" changes={notebookChanges}
+      notebookComparisonView={props.notebookComparisonView}
+      target_branch={props.target_branch} source_branch={props.source_branch} /> :
+    null
+  ]
+}
 
 class MergeRequestPresent extends Component {
 
-  getMergeButton() {
-    if (!this.props.showMergeButton) return null;
-
-    return <Button
-      size="sm"
-      color="success"
-      onClick={(e) => {
-        e.preventDefault();
-        this.props.onMergeClick();
-      }}>
-      {'Merge'}
-    </Button>
-  }
-
-  getGitLabLink() {
-    return <ExternalLink url={this.props.externalMRUrl} size="sm" title="View in GitLab" />
-  }
-
   render() {
-    if (this.props.title == null) return <p></p>
-
-    const mergeButton= this.getMergeButton();
-    const gitLabMRLink = this.getGitLabLink();
-    const opaqueChanges = this.props.changes
-      .filter((change) => change.new_path.split('.').pop() !== 'ipynb');
-    const notebookChanges = this.props.changes
-      .filter((change) => change.new_path.split('.').pop() === 'ipynb');
-
+    if (this.props.title == null) return null;
     return [
-      <Row key="title">
-        <Col xs={6}><h3>{this.props.title}</h3></Col>
-        <Col xs={6}>
-          <p align="right">{gitLabMRLink}&nbsp;{mergeButton}</p>
+      < MergeRequestHeader key="header" {...this.props} />
+      ,
+      <Row key="description" className="pb-2">
+        <Col sm={11}>
+          <p key="lead" className="lead">
+            {this.props.author.name} wants to merge changes from branch <em>
+              <strong>{this.props.source_branch}</strong></em> into <em>
+              <strong>{this.props.target_branch}</strong></em>.
+      </p>
         </Col>
       </Row>,
-      <p key="lead" className="lead">
-        {this.props.author.name} wants to merge changes from
-        branch <em>{this.props.source_branch}</em> into <em>{this.props.target_branch}</em>.
-      </p>,
-      (opaqueChanges.length > 0) ?
-        <OpaqueChanges key="opaque" changes={opaqueChanges}
-          target_branch={this.props.target_branch} source_branch={this.props.source_branch} /> :
-        null,
-      (notebookChanges.length > 0) ?
-        <NotebookComparisonList key="notebooks" changes={notebookChanges}
-          notebookComparisonView={this.props.notebookComparisonView}
-          target_branch={this.props.target_branch} source_branch={this.props.source_branch} /> :
-        null
+      <MergeRequestNavigation key="navigation" {...this.props} />,
+      <Col key="content" sm={12} md={12}>
+        <Switch>
+          <Route path={this.props.mergeRequestDiscussionUrl} render={props =>
+            <ContributionsView {...this.props} />
+          } />
+          <Route path={this.props.mergeRequestChangesUrl} render={props =>
+            <ChangesView {...this.props} />
+          } />
+          <Route path={this.props.mergeRequestCommitsUrl} render={props =>
+            <CommitsView {...this.props} />
+          } />
+        </Switch>
+      </Col>
     ]
   }
 }
@@ -90,14 +180,14 @@ class MergeRequestList extends Component {
       </Col></Row>
     }
     const rows = mrs.map((d, i) => {
-      const mrUrl = `${this.props.mergeRequestsOverviewUrl}/${d.iid}/`;
-      return <MergeRequestListItem key={i} {...d} mrUrl={mrUrl}/>;
+      const mrUrl = `${this.props.mergeRequestsOverviewUrl}/${d.iid}/discussion`;
+      return <MergeRequestListItem key={i} {...d} mrUrl={mrUrl} />;
     });
     return [
       <Row key="header">
         <Col><h2>Merge Requests</h2></Col>
       </Row>,
-      <Row key="mergeRequests"><Col xs={12}><ListGroup>{rows}</ListGroup></Col></Row>
+      <Row key="mergeRequests"><Col xs={12}>{rows}</Col></Row>
     ]
   }
 }
@@ -111,16 +201,36 @@ class MergeRequestListItem extends Component {
     const title = this.props.active ? this.props.title :
       <NavLink activeClassName="selected-issue" to={this.props.mrUrl}>{this.props.title}</NavLink>;
 
-    return <ListGroupItem>
-      <span className="mr-title text-break pl-1">{title}</span>
-      <div className="float-right">{statusBadge}</div>
-      <div>
-        <Badge color="light">{this.props.target_branch}</Badge> <FontAwesomeIcon icon={faLeftArrow} />
-        <Badge color="light">{this.props.source_branch}</Badge> &nbsp;&nbsp;</div>
+    return <ListGroupItem action className="pr-0 pl-0 pt-1 pb-1" style={{ border: "none" }}>
+      <Row>
+        <Col sm={8} md={8}>
+          <div className="d-flex project-list-row mb-3">
+            <div className="mr-2">
+              <UserAvatar size="lg" person={this.props.author} />
+            </div>
+            <div className="issue-text-crop">
+              <b>
+                <span className="issue-title">
+                  {title}
+                </span>
+              </b><br />
+              <span className="issues-description">
+                <div>
+                  <Badge color="light">{this.props.target_branch}</Badge> <FontAwesomeIcon icon={faLeftArrow} />
+                  <Badge color="light">{this.props.source_branch}</Badge> &nbsp;&nbsp;</div>
+              </span>
+            </div>
+          </div>
+        </Col>
+        <Col sm={4} md={4} className="float-right" style={{ textAlign: "end" }}>
+          <FontAwesomeIcon icon={faComments} /> {this.props.user_notes_count} {statusBadge}
+          <br />
+          <small><TimeCaption caption="Created" time={this.props.created_at} /></small>
+        </Col>
+      </Row>
     </ListGroupItem>
   }
 }
-
 
 class SimpleChange extends Component {
   render() {
@@ -137,7 +247,13 @@ class SimpleChange extends Component {
     else {
       line = `Modified file: ${this.props.new_path}`
     }
-    return <tr><td></td><td>{line}</td></tr>
+    return <Row>
+      <Col xs={6}>
+      </Col>
+      <Col xs={6}>
+        {line}
+      </Col>
+    </Row>
   }
 }
 
@@ -145,12 +261,12 @@ class NotebookComparisonList extends Component {
   render() {
     const notebookChanges = this.props.changes
       .map((change, i) => this.props.notebookComparisonView(change, i));
-    return [
-      <Row key="header"><Col><h3>Notebook Changes</h3></Col></Row>,
-      <Row key="titles">
-        <Col xs={6}><p><strong>{this.props.target_branch}</strong></p></Col>
-        <Col xs={6}><p><strong>{this.props.source_branch}</strong></p></Col>
-      </Row>,
+    return [<br key="space" />,
+    <Row key="header"><br /><Col><p><strong>Notebook Changes</strong></p></Col></Row>,
+    <Row key="titles">
+      <Col xs={6}><p><strong>{this.props.target_branch}</strong></p></Col>
+      <Col xs={6}><p><strong>{this.props.source_branch}</strong></p></Col>
+    </Row>,
       notebookChanges
     ]
   }
@@ -161,13 +277,13 @@ class NotebookComparisonPresent extends Component {
     return (
       <Row>
         <Col xs={6}>
-          <p><br/>{this.props.filePath}</p>
+          <p><br />{this.props.filePath}</p>
           <div className="notebook-comparison">
             {this.props.leftNotebookComponent}
           </div>
         </Col>
         <Col xs={6}>
-          <p><br/>{this.props.filePath}</p>
+          <p><br />{this.props.filePath}</p>
           <div className="notebook-comparison">
             {this.props.rightNotebookComponent}
           </div>
@@ -179,20 +295,17 @@ class NotebookComparisonPresent extends Component {
 
 class OpaqueChanges extends Component {
   render() {
+
     const opaqueChanges = this.props.changes
-      .map((change, i) => <SimpleChange {...change} key={i}/>)
-    return (<Row key="simple"><Col>
-      <h3>Opaque Changes</h3>
-      <Table>
-        <thead>
-          <tr style={{borderTopWidth:'0px'}}>
-            <th>{this.props.target_branch}</th>
-            <th>{this.props.source_branch}</th>
-          </tr>
-        </thead>
-        <tbody>{opaqueChanges}</tbody>
-      </Table>
-    </Col></Row>)
+      .map((change, i) => <SimpleChange {...change} key={i} />)
+
+    return [<br key="space" />,
+    <Row key="header"><Col><p><strong>Opaque Changes</strong></p></Col></Row>,
+    <Row key="titles">
+      <Col xs={6}><p><strong>{this.props.target_branch}</strong></p></Col>
+      <Col xs={6}><p><strong>{this.props.source_branch}</strong></p></Col>
+    </Row>,
+      opaqueChanges]
   }
 }
 

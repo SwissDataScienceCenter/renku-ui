@@ -24,19 +24,64 @@ import { ACCESS_LEVELS } from '../api-client';
 class MergeRequestContainer extends Component {
   constructor(props){
     super(props);
+    this._isMounted = false;
     this.state = {
       changes: [],
-      author: {name: ''}
+      author: {name: ''},
+      contributions: [],
+      commits: []
     }
   }
 
   // TODO: Write a wrapper to make promises cancellable to avoid usage of this._isMounted
   componentDidMount() {
     this._isMounted = true;
+    this.retrieveChanges();
+    this.retrieveContributions();
+    this.retrieveCommits();
+  }
+
+  retrieveChanges(){
     this.props.client.getMergeRequestChanges(this.props.projectId, this.props.iid)
+    .then(resp => {
+      if (this._isMounted) this.setState({...resp.data});
+    });
+  }
+
+  appendContribution(newContribution) {
+    this.setState(prevState => {
+      let newContributions = [...prevState.contributions];
+      newContributions.push({ ...newContribution });
+      return { ...prevState, contributions: newContributions }
+    })
+  }
+
+  retrieveContributions() {
+    this.props.client.getDiscussions(this.props.projectId, this.props.iid)
       .then(resp => {
-        if (this._isMounted) this.setState({...resp.data});
-      });
+        if (!this._isMounted) return;
+        this.setState((prevState, props) => {
+          return { contributions: resp.data }
+        });
+      }).catch(error => {
+         this.setState((prevState, props) => {
+          return { contributions: [] }
+        });
+      })
+  }
+
+  retrieveCommits() {
+    this.props.client.getMergeRequestCommits(this.props.projectId, this.props.iid)
+      .then(resp => {
+        if (!this._isMounted) return;
+        this.setState((prevState, props) => {
+          return { commits: resp.data }
+        });
+      }).catch(error => {
+         this.setState((prevState, props) => {
+          return { commits: [] }
+        });
+      })
   }
 
   merge() {
@@ -73,11 +118,23 @@ class MergeRequestContainer extends Component {
       externalMRUrl={externalMRUrl}
       externalMROverviewUrl={externalMROverviewUrl}
       changes={this.state.changes}
+      commits={this.state.commits}
       notebookComparisonView={notebookComparisonView}
       source_branch={this.state.source_branch}
       target_branch={this.state.target_branch}
       onMergeClick={this.merge.bind(this)}
       showMergeButton={showMergeButton}
+      contributions={this.state ? this.state.contributions : []}
+      client={this.props.client}
+      iid={this.props.iid}
+      appendContribution={this.appendContribution.bind(this)}
+      projectId={this.props.projectId}
+      mergeRequestsOverviewUrl={this.props.mergeRequestsOverviewUrl}
+      history={this.props.history}
+      mergeRequestUrl={this.props.mergeRequestUrl}
+      mergeRequestDiscussionUrl={this.props.mergeRequestDiscussionUrl}
+      mergeRequestChangesUrl={this.props.mergeRequestChangesUrl}
+      mergeRequestCommitsUrl={this.props.mergeRequestCommitsUrl}
     />
   }
 }

@@ -642,6 +642,8 @@ class ProjectViewCollaboration extends Component {
         </Col>
         <Col key="collaborationcontent" sm={12} md={10}>
           <Switch>
+            <Route path={ this.props.mergeRequestUrl } render={props =>
+              <ProjectViewMergeRequests {...this.props} />} />
             <Route path={ this.props.mergeRequestsOverviewUrl } render={props =>
               <ProjectMergeRequestList {...this.props} />} />
             <Route path={ this.props.issueUrl } render={props =>
@@ -663,7 +665,7 @@ class ProjectIssuesList extends Component {
 
   render() {
     const issues = this.props.issues || [];
-    return <Row><Col key="issueslist" className={"pt-3"} sm={12} md={9}>
+    return <Row><Col key="issueslist" className={"pt-3"} sm={12} md={10} lg={8}>
     <Issue.List
       key="issuesList"
       collaborationUrl={this.props.collaborationUrl}
@@ -688,6 +690,17 @@ class ProjectViewIssues extends Component {
   }
 }
 
+class ProjectViewMergeRequests extends Component {
+  render() {
+    return <Row>
+      <Col key="issue" sm={12} md={10}>
+        <Route path={this.props.mergeRequestUrl}
+            render={props => this.props.mrView(props)} />
+      </Col>
+    </Row>
+  }
+}
+
 class ProjectMergeRequestList extends Component {
 
   componentDidMount() {
@@ -697,7 +710,7 @@ class ProjectMergeRequestList extends Component {
   render() {
     return <Col>
       <Row>
-        <Col>
+        <Col sm={12} md={10} lg={8}>
           <MergeRequestSuggestions
             externalUrl={this.props.externalUrl}
             canCreateMR={this.props.canCreateMR}
@@ -706,12 +719,8 @@ class ProjectMergeRequestList extends Component {
         </Col>
       </Row>
       <Row>
-        <Col key="mrList" sm={12} md={5}>
+        <Col key="mrList" sm={12} md={10} lg={8}>
           {this.props.mrList}
-        </Col>
-        <Col key="mr" sm={12} md={7}>
-          <Route path={this.props.mergeRequestUrl}
-            render={props => this.props.mrView(props)} />
         </Col>
       </Row>
     </Col>

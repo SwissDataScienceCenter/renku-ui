@@ -31,6 +31,7 @@ import addNotebookServersMethods from './notebook-servers';
 import addGraphMethods from './graph';
 import addPipelineMethods from './pipeline';
 import addDatasetMethods from './dataset';
+import addMergeRequestMethods from './merge-request';
 
 import testClient from './test-client'
 
@@ -68,6 +69,7 @@ class APIClient {
     addGraphMethods(this);
     addPipelineMethods(this);
     addDatasetMethods(this);
+    addMergeRequestMethods(this);
   }
 
   // A fetch method which is attached to a API client instance so that it can
