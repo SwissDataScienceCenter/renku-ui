@@ -290,6 +290,9 @@ class View extends Component {
       issueUrl: `${collaborationUrl}/issues/:issueIid`,
       mergeRequestsOverviewUrl: `${collaborationUrl}/mergerequests`,
       mergeRequestUrl: `${collaborationUrl}/mergerequests/:mrIid(\\d+)`,
+      mergeRequestDiscussionUrl: `${collaborationUrl}/mergerequests/:mrIid(\\d+)/discussion`,
+      mergeRequestChangesUrl: `${collaborationUrl}/mergerequests/:mrIid(\\d+)/changes`,
+      mergeRequestCommitsUrl: `${collaborationUrl}/mergerequests/:mrIid(\\d+)/commits`,
       filesUrl: `${filesUrl}`,
       fileContentUrl: `${fileContentUrl}`,
       lineagesUrl: `${filesUrl}/lineage`,
@@ -457,7 +460,13 @@ class View extends Component {
         key="mr" {...subProps}
         match={p.match}
         iid={p.match.params.mrIid}
-        updateProjectState={this.fetchAll.bind(this)} />,
+        updateProjectState={this.fetchAll.bind(this)}
+        mergeRequestsOverviewUrl={subUrls.mergeRequestsOverviewUrl}
+        mergeRequestUrl={subUrls.mergeRequestUrl}
+        mergeRequestDiscussionUrl={subUrls.mergeRequestDiscussionUrl}
+        mergeRequestChangesUrl={subUrls.mergeRequestChangesUrl}
+        mergeRequestCommitsUrl={subUrls.mergeRequestCommitsUrl}
+         />,
 
       fork: () => <Fork
         projectId={projectId}
