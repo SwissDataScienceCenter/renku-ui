@@ -38,15 +38,14 @@ g.workflow polygon {
 }
 
 svg {
-  height: 65vh;
-  width: 80vw;
+  height: 60vh;
+  width: 100%;
   cursor:pointer;
 }
 
 .zoomButtons{
   position: absolute;
-  right: 0;
-  padding-right: 20px;
+  right: 20px;
 }
 
 .btn-group-left{

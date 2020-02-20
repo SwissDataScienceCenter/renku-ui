@@ -74,7 +74,7 @@ function addGraphMethods(client) {
     const query = gql`
       query getLineage($projectPath: ProjectPath!, $filePath: FilePath!) {
         lineage(projectPath: $projectPath, filePath: $filePath) {
-          nodes { id, label, type },
+          nodes { id, label, type, location },
           edges { source, target }
         }
       }
