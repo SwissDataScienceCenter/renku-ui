@@ -48,7 +48,7 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors, submit
   return (
     <Col>
       <h3 className="uk-heading-divider uk-text-center pb-2">{title}</h3>
-      <Form>
+      <Form onSubmit={setSubmit}>
         <div>
           {inputs.map(input => renderInput(input))}
           {serverErrors ? <UncontrolledAlert color="danger">{serverErrors}</UncontrolledAlert> : null}
@@ -59,8 +59,9 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors, submit
             </FormText>
             : null
           }
-          <Button disabled={submitLoader.value} className="float-right mt-1" color="primary"
-            onClick={setSubmit}>{btnName}</Button>
+          <Button type="submit" disabled={submitLoader.value} className="float-right mt-1" color="primary">
+            {btnName}
+          </Button>
           {
             onCancel !== undefined ?
               <Button disabled={submitLoader.value} className="float-right mt-1 mr-1"

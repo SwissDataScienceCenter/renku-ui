@@ -42,6 +42,7 @@ import Fork from "./fork";
 import ShowDataset from "../dataset/Dataset.container";
 import NewDataset from "./datasets/new/index";
 import EditDataset from "./datasets/edit/index";
+import ImportDataset from "./datasets/import/index";
 
 
 const subRoutes = {
@@ -293,6 +294,7 @@ class View extends Component {
       overviewDatasetsUrl: `${baseUrl}/overview/datasets`,
       datasetsUrl: `${datasetsUrl}`,
       newDatasetUrl: `${datasetsUrl}/new`,
+      importDatasetUrl: `${datasetsUrl}/import`,
       datasetUrl: `${datasetsUrl}/:datasetId`,
       editDatasetUrl: `${datasetsUrl}/:datasetId/modify`,
       issueNewUrl: `${collaborationUrl}/issues/issue_new`,
@@ -463,6 +465,24 @@ class View extends Component {
         history={this.props.history}
         datasetId={p.match.params.datasetId}
         dataset={p.location.state ? p.location.state.dataset : null}
+        httpProjectUrl={httpProjectUrl}
+      />,
+
+      importDataset: (p) => <ImportDataset
+        key="datasetnew" {...subProps}
+        progress={graphProgress}
+        maintainer={maintainer}
+        accessLevel={accessLevel}
+        forked={forked}
+        insideProject={true}
+        datasets={datasets}
+        reFetchProject={this.fetchAll.bind(this)}
+        lineagesUrl={subUrls.lineagesUrl}
+        fileContentUrl={subUrls.fileContentUrl}
+        projectsUrl={subUrls.projectsUrl}
+        selectedDataset={p.match.params.datasetId}
+        client={this.props.client}
+        history={this.props.history}
         httpProjectUrl={httpProjectUrl}
       />,
 

@@ -23,19 +23,22 @@ function DatasetListRow(props) {
 
 function CreateDatasetButton(props) {
   if (props.visibility.accessLevel >= ACCESS_LEVELS.MAINTAINER) {
-return <span className="float-right throw-right-in-flex">
-  <UncontrolledButtonDropdown size="sm">
-    <DropdownToggle color="primary" className="alternateToggleStyle" caret>
-      <FontAwesomeIcon icon={faPlus} style={{ color: "white", backgroundColor: "#5561A6" }} />
-    </DropdownToggle>
-    <DropdownMenu right={false}>
-      <DropdownItem>
-        <Link to={props.newDatasetUrl}>New Dataset</Link>
-      </DropdownItem>
-    </DropdownMenu>
-  </UncontrolledButtonDropdown>
-</span>;
-}
+    return <span className="float-right throw-right-in-flex">
+      <UncontrolledButtonDropdown size="sm">
+        <DropdownToggle color="primary" className="alternateToggleStyle" caret>
+          <FontAwesomeIcon icon={faPlus} style={{ color: "white", backgroundColor: "#5561A6" }} />
+        </DropdownToggle>
+        <DropdownMenu right={false}>
+          <DropdownItem>
+            <Link to={props.newDatasetUrl}>New Dataset</Link>
+          </DropdownItem>
+          <DropdownItem>
+            <Link to={props.importDatasetUrl}>Import Dataset</Link>
+          </DropdownItem>
+        </DropdownMenu>
+      </UncontrolledButtonDropdown>
+    </span>;
+  }
   return null;
 }
 
@@ -53,7 +56,10 @@ export default function DatasetsListView(props) {
         <span className="tree-header-title text-truncate">
           Datasets List
         </span>
-        <CreateDatasetButton visibility={props.visibility} newDatasetUrl={props.newDatasetUrl}/>
+        <CreateDatasetButton
+          visibility={props.visibility}
+          newDatasetUrl={props.newDatasetUrl}
+          importDatasetUrl={props.importDatasetUrl}/>
       </div>
       <nav>
         {

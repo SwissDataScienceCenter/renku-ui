@@ -556,6 +556,7 @@ class ProjectDatasetsNav extends Component {
       datasets={this.props.core.datasets}
       datasetsUrl={this.props.datasetsUrl}
       newDatasetUrl={this.props.newDatasetUrl}
+      importDatasetUrl={this.props.importDatasetUrl}
       visibility={this.props.visibility}
     />;
   }
@@ -565,9 +566,11 @@ class ProjectViewDatasets extends Component {
   render() {
     return <Switch>
       <Route exact path={this.props.newDatasetUrl}
-        render={p => this.props.newDataset(p)} />
+          render={p => this.props.newDataset(p)} />
+      <Route exact path={this.props.importDatasetUrl}
+          render={p => this.props.importDataset(p)} />
       <Route path={this.props.editDatasetUrl}
-        render={p => this.props.editDataset(p)} />
+          render={p => this.props.editDataset(p)} />
       <Route path={this.props.datasetsUrl} render={props =>
         <ProjectViewDatasetsList {...this.props} {...props} />} />
     </Switch>;
@@ -598,10 +601,11 @@ class ProjectViewDatasetsList extends Component {
       return <Col sm={12} md={8} lg={10}>
         <Alert timeout={0} color="primary">
           No datasets found for this project. <br /><br />
-          <FontAwesomeIcon icon={faInfoCircle} /> If you recently activated the knowledge graph or
+          <FontAwesomeIcon icon={faInfoCircle} />  If you recently activated the knowledge graph or
           added the datasets try refreshing the page. <br /><br />
-          You can also click on the button to create
-          a <Link className="btn btn-primary btn-sm" to={this.props.newDatasetUrl}>New Dataset</Link>
+          You can also click on the button to create a
+          <Link className="btn btn-primary btn-sm" to={this.props.newDatasetUrl}>New Dataset</Link>
+          or <Link className="btn btn-primary btn-sm" to={this.props.importDatasetUrl}>Import Dataset</Link>
         </Alert>
       </Col>;
     }
