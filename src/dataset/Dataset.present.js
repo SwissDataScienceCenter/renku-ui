@@ -132,14 +132,13 @@ export default function DatasetView(props) {
           }).catch(error => {
             if (fetchError === null) {
               if (!unmounted && error.case === API_ERRORS.notFoundError) {
-                setFetchError(
-                  "Error 404: The dataset that was selected does not exist or could not be accessed." +
-                  "If you just created the dataset try reloading the page."
-                );
-              }
+                setFetchError("Error 404: The dataset that was selected does" +
+                " not exist or could not be accessed. If you just created or" +
+                " imported the dataset try reloading the page.");
+            }
               else if (!unmounted && error.case === API_ERRORS.internalServerError) {
                 setFetchError("Error 500: The dataset that was selected couldn't be fetched.");
-              }
+            }
             }
           });
       }
@@ -156,10 +155,8 @@ export default function DatasetView(props) {
           }).catch(error => {
             if (fetchError === null) {
               if (!unmounted && error.case === API_ERRORS.notFoundError) {
-                setFetchError(
-                  "Error 404: The dataset that was selected does not exist or could not be accessed." +
-                  "If you just created the dataset try reloading the page."
-                );
+                setFetchError("Error 404: The dataset that was selected does not exist or" +
+                " could not be accessed. If you just created or imported the dataset try reloading the page.");
               }
               else if (!unmounted && error.case === API_ERRORS.internalServerError) {
                 setFetchError("Error 500: The dataset that was selected couldn't be fetched.");
@@ -200,13 +197,14 @@ export default function DatasetView(props) {
   if (dataset === null) {
     return (
       <Alert color="danger">
-        The dataset that was selected does not exist or could not
-        be accessed.<br /> <br /> If you just created the dataset
+        The dataset that was selected does not exist or could notbe accessed.<br /> <br />
+        If you just created or imported the dataset
         try <Button color="danger" size="sm" onClick={
           () => window.location.reload()
         }>reloading</Button> the page.</Alert>
     );
   }
+
   return <Col>
     <Row>
       <Col md={8} sm={12}>

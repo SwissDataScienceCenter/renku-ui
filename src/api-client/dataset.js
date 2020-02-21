@@ -32,14 +32,14 @@ export default function addDatasetMethods(client) {
     if (controller) queryParams.signal = controller.signal;
 
     return fetch(`${client.baseUrl}/renku/cache.files_upload?override_existing=true`, queryParams)
-    .then(response => {
-       if (controller !== undefined)
+      .then(response => {
+        if (controller !== undefined)
           response.controller = controller;
         return response;
-    });
+      });
   };
 
-  client.addFilesToDataset = (projectUrl, datasetName, filesList, signal) => {
+  client.addFilesToDataset = (projectUrl, datasetName, filesList) => {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
@@ -54,7 +54,7 @@ export default function addDatasetMethods(client) {
     };
 
     return client.clientFetch(`${client.baseUrl}/renku/cache.project_clone`,
-    queryParams
+      queryParams
     ).then(response => {
       if (response.data.error) { return response; }
       else
@@ -91,6 +91,7 @@ export default function addDatasetMethods(client) {
         return response;
 
       project_id = response.data.result.project_id;
+
       return client.clientFetch(`${client.baseUrl}/renku/datasets.create`, {
         method: "POST",
         headers: headers,
@@ -100,7 +101,6 @@ export default function addDatasetMethods(client) {
           "project_id": project_id
         })
       });
-
     })
       .then(response => {
         if (response.data.error) { return response; }
@@ -117,5 +117,51 @@ export default function addDatasetMethods(client) {
             });
           } return response;
       });
+  };
+
+  client.datasetImport = (projectUrl, renkuDataset) => {
+    let headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    headers.append("X-Requested-With", "XMLHttpRequest");
+
+    let project_id;
+
+    return client.clientFetch(`${client.baseUrl}/renku/cache.project_clone`, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({
+        depth: 1,
+        git_url: projectUrl
+      })
+    }).then(response => {
+      if (response.data.error !== undefined)
+        return response;
+
+      project_id = response.data.result.project_id;
+
+      return client.clientFetch(`${client.baseUrl}/renku/datasets.import`, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+          "dataset_uri": renkuDataset.uri,
+          "project_id": project_id
+        })
+      });
+
+    });
+  };
+
+
+  client.getJobStatus = (job_id) => {
+    let headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    headers.append("X-Requested-With", "XMLHttpRequest");
+
+    return client.clientFetch(`${client.baseUrl}/renku/jobs/${job_id}`, {
+      method: "GET",
+      headers: headers
+    }).then(response => {
+      return response.data.result;
+    });
   };
 }

@@ -314,6 +314,26 @@ const issueFormSchema = new Schema({
   }
 });
 
+const datasetImportFormSchema = new Schema({
+  uri: {
+    initial: "",
+    name: "uri",
+    label: "URI/DOI",
+    edit: false,
+    help: "This will import the dataset with the DOI (Digital Object Identifier) 10.5281/zenodo.3352150" +
+    " and make it locally available. Dataverse and Zenodo are supported, with DOIs (e.g. 10.5281/zenodo.3352150" +
+    " or doi:10.5281/zenodo.3352150) and full URLs (e.g. http://zenodo.org/record/3352150). A tag with the" +
+    " remote version of the dataset is automatically created.",
+    type: FormGenerator.FieldTypes.TEXT,
+    // parseFun: expression => FormGenerator.Parsers.slugFromTitle(expression),
+    validators: [{
+      id: "uri-length",
+      isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression),
+      alert: "URI is too short"
+    }]
+  }
+});
+
 
 export { userSchema, metaSchema, displaySchema, newProjectSchema, projectSchema, forkProjectSchema };
-export { notebooksSchema, projectsSchema, datasetFormSchema, issueFormSchema };
+export { notebooksSchema, projectsSchema, datasetFormSchema, issueFormSchema, datasetImportFormSchema };

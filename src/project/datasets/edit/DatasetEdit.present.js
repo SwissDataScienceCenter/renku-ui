@@ -120,7 +120,7 @@ function DatasetEdit(props) {
     return null;
 
   if (props.accessLevel < ACCESS_LEVELS.MAINTAINER) {
-    return <Col sm={12} md={8} lg={10}>
+    return <Col sm={12} md={10} lg={8}>
       <Alert timeout={0} color="primary">
         Acces Denied. You don&apos;t have rights to edit datasets for this project.<br /><br />
         <FontAwesomeIcon icon={faInfoCircle} /> If you were recently given access to this project,
