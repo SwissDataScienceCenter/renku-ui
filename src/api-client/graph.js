@@ -65,22 +65,21 @@ function addGraphMethods(client) {
    * Get the lineage nodes and edges
    *
    * @param {string} projectPath   project slug (username/projectname)
-   * @param {string} commitId   full commit id in string format
    * @param {string} filePath   full file path
    * @example client.getFileLineage("myGitlabUser/myGitlabProject",
    *  "3bf1c3c424833228708087686584afb77899f702",
    *  "figs/grid_plot.png")
    */
-  client.getFileLineage = (projectPath, commitId, filePath) => {
+  client.getFileLineage = (projectPath, filePath) => {
     const query = gql`
-      query getLineage($projectPath: ProjectPath!, $commitId: CommitId!, $filePath: FilePath!) {
-        lineage(projectPath: $projectPath, commitId: $commitId, filePath: $filePath) {
-          nodes { id, label },
+      query getLineage($projectPath: ProjectPath!, $filePath: FilePath!) {
+        lineage(projectPath: $projectPath, filePath: $filePath) {
+          nodes { id, label, type, location },
           edges { source, target }
         }
       }
     `;
-    const variables = { projectPath, commitId, filePath };
+    const variables = { projectPath, filePath };
 
     return client.graphqlFetch(query, variables).then(data => data.lineage, d => null);
   }

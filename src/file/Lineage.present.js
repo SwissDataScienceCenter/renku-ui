@@ -17,17 +17,14 @@
  */
 
 import React, { Component } from 'react';
-
+import { Card, CardHeader, CardBody, Badge } from 'reactstrap';
 import graphlib from 'graphlib';
 import dagreD3 from 'dagre-d3';
 import * as d3 from 'd3';
-
 import { faFile } from '@fortawesome/free-solid-svg-icons';
 import { faGitlab } from '@fortawesome/free-brands-svg-icons';
 
-import { Card, CardHeader, CardBody, Badge } from 'reactstrap';
-
-import KnowledgeGraphStatus  from './KnowledgeGraphStatus.container';
+import KnowledgeGraphStatus from './KnowledgeGraphStatus.container';
 import { GraphIndexingStatus } from '../project/Project';
 import { JupyterButton } from './index';
 import { ExternalIconLink, IconLink } from '../utils/UIComponents';
@@ -35,37 +32,37 @@ import { ExternalIconLink, IconLink } from '../utils/UIComponents';
 import './Lineage.css';
 
 function cropLabelStart(limit, label) {
-  if(label.length > limit)
-    return "..."+label.substr(label.length-limit)
+  if (label.length > limit)
+    return "..." + label.substr(label.length - limit)
   return label;
 }
 
 function getNodeLabel(node, NODE_COUNT, lineagesUrl) {
-  if (node.type === 'commit') {
+  if (node.type === "ProcessRun") {
     const stringArray = node.label.split(" ");
     const LABEL_LIMIT = 20;
-    const label= stringArray.length > 3 ?
-      cropLabelStart(LABEL_LIMIT, stringArray[2])+"<br/>"+cropLabelStart(LABEL_LIMIT, stringArray[3])
-      : cropLabelStart(LABEL_LIMIT, stringArray[0])+" "+cropLabelStart(LABEL_LIMIT, stringArray[1])
-    return '<text><tspan xml:space="preserve" dy="1em" x="1">'+label+'</tspan></text>'
+    const label = stringArray.length > 3 ?
+      cropLabelStart(LABEL_LIMIT, stringArray[2]) + "<br/>" + cropLabelStart(LABEL_LIMIT, stringArray[3])
+      : cropLabelStart(LABEL_LIMIT, stringArray[0]) + " " + cropLabelStart(LABEL_LIMIT, stringArray[1])
+    return '<text><tspan xml:space="preserve" dy="1em" x="1">' + label + '</tspan></text>'
   }
 
-  if(node.type === 'blob') {
-    const LABEL_LIMIT = NODE_COUNT > 15 ? 20  : 40;
-    const ref= `${lineagesUrl}${node.filePath}`
-    return '<text><tspan xml:space="preserve" dy="1em" x="1" data-href='+ref+'>'
-      +cropLabelStart(LABEL_LIMIT, node.filePath)+
+  if (node.type === "Directory" || node.type === "File") {
+    const LABEL_LIMIT = NODE_COUNT > 15 ? 20 : 40;
+    const ref = `${lineagesUrl}/${node.location}`
+    return '<text><tspan xml:space="preserve" dy="1em" x="1" data-href=' + ref + '>'
+      + cropLabelStart(LABEL_LIMIT, node.location) +
       '</tspan></text>';
   }
 }
 
-function nodeToClass(node, centralNode, label) {
+function nodeToClass(node, currentNodeId, label) {
   const nodeId = node.id;
   const nodeType = node.type;
-  const FORMATS = {'py': true , 'r': true, 'ipynb': true}
+  const FORMATS = { 'py': true, 'r': true, 'ipynb': true }
   const nodeClasses = [];
 
-  if (nodeId === centralNode)
+  if (nodeId === currentNodeId)
     nodeClasses.push('central');
   else
     nodeClasses.push('normal');
@@ -73,8 +70,8 @@ function nodeToClass(node, centralNode, label) {
   if (nodeType === "commit" && label.includes("\n"))
     nodeClasses.push('doubleLine');
 
-  if (node.type === 'blob') {
-    if (node.filePath.includes('.') && FORMATS[node.filePath.split('.').pop()])
+  if (node.type === "Directory" || node.type === "File") {
+    if (node.location.includes('.') && FORMATS[node.location.split('.').pop()])
       nodeClasses.push('code');
     else
       nodeClasses.push('data');
@@ -90,6 +87,11 @@ class FileLineageGraph extends Component {
     this._vizRoot = null;
   }
 
+  componentDidMount() {
+    if (this.subGraph()._nodeCount > 1)
+      this.renderD3();
+  }
+
   subGraph() {
     const graph = this.props.graph;
     const NODE_COUNT = this.props.graph.length;
@@ -100,37 +102,28 @@ class FileLineageGraph extends Component {
         marginx: 20,
         marginy: 20,
       })
-      .setDefaultEdgeLabel(function(){ return {}; });
-
-    graph.nodes.forEach(node => {
-      if (node.id.endsWith(`/${this.props.path}`)) {
-        graph.centralNode = node.id;
-      }
-    })
+      .setDefaultEdgeLabel(function () { return {}; });
 
     graph.nodes.forEach(n => {
       const label = getNodeLabel(n, NODE_COUNT, this.props.lineagesUrl);
       subGraph.setNode(n.id, {
         id: n.id,
-        labelType:'html',
+        labelType: 'html',
         label,
-        class: nodeToClass(n, graph.centralNode, label),
-        shape: n.type === "commit" ? "diamond" : "rect"
+        class: nodeToClass(n, this.props.currentNode.id, label),
+        shape: n.type === "ProcessRun" ? "diamond" : "rect"
       });
     });
-    graph.edges.forEach(e => { subGraph.setEdge(e.source, e.target)});
+    graph.edges.forEach(e => { subGraph.setEdge(e.source, e.target) });
 
-    return subGraph
+    return subGraph;
   }
 
-  componentDidMount() {
-    if (this.subGraph()._nodeCount >1)
-      this.renderD3();
-  }
-
-  hasLink(nodeId, centralNode){
+  hasLink(nodeId, currentNodeId) {
     return this.props.graph.nodes
-      .filter(function(node) { return (node.id === nodeId && node.id !== centralNode && node.type === "blob") })[0];
+      .filter(function (node) {
+        return (node.id === nodeId && node.id !== currentNodeId && (node.type === "Directory" || node.type === "File"));
+      })[0];
   }
 
   renderD3() {
@@ -142,10 +135,13 @@ class FileLineageGraph extends Component {
     // Set up an SVG group so that we can translate the final graph.
     const svg = d3.select(this._vizRoot).select('svg');
     let svgGroup;
-    if(this.appended === false){
+    if (this.appended === false) {
       svgGroup = svg.append('g');
       this.appended = true;
-    } else{  svgGroup= svg.select('g')}
+    }
+    else {
+      svgGroup = svg.select('g')
+    }
 
     const history = this.props.history;
 
@@ -153,43 +149,41 @@ class FileLineageGraph extends Component {
 
     // Set up zoom support
     const zoom = d3.zoom()
-      .on("zoom", function() {
+      .on("zoom", function () {
         svgGroup.attr("transform", d3.event.transform);
       });
     svg.call(zoom);
 
-    d3.selectAll('g.node').filter((d,i)=>{ return this.hasLink(d, this.props.graph.centralNode)})
-      .select("tspan").on("mouseover", function() {
-        d3.select(this).style("cursor","pointer").attr('r', 25)
+    d3.selectAll('g.node').filter((d, i) => { return this.hasLink(d, this.props.currentNode.id) })
+      .select("tspan").on("mouseover", function () {
+        d3.select(this).style("cursor", "pointer").attr('r', 25)
           .style("text-decoration-line", "underline");
       })
-      .on("mouseout", function() {
+      .on("mouseout", function () {
         d3.select(this).attr('r', 25)
           .style("text-decoration-line", "unset");
       })
-      .on("click", function(){
+      .on("click", function () {
         history.push(d3.select(this).attr("data-href"));
       });
 
     // Center the graph
     const bbox = document.getElementsByClassName('graphContainer')[0].lastChild.getBBox();
-    svg.attr('viewBox', '0 0 '+bbox.width+' '+bbox.height)
+    svg.attr('viewBox', '0 0 ' + bbox.width + ' ' + bbox.height);
 
-    d3.select("#zoom_in").on("click", function() {
+    d3.select("#zoom_in").on("click", function () {
       zoom.scaleBy(svg.transition().duration(750), 1.5);
     });
-    d3.select("#zoom_out").on("click", function() {
+    d3.select("#zoom_out").on("click", function () {
       zoom.scaleBy(svg.transition().duration(750), 0.75);
     });
 
-    var initialScale = 0.80;
-    svg.call(zoom.transform,
-      d3.zoomIdentity.translate((bbox.width - g.graph().width * initialScale) / 2, 20)
-        .scale(initialScale));
+    const initialScale = 0.90;
+    svg.call(zoom.transform, d3.zoomIdentity.scale(initialScale));
   }
 
   render() {
-    return this.subGraph()._nodeCount >1 ?
+    return this.subGraph()._nodeCount > 1 ?
       <div className="graphContainer" ref={(r) => this._vizRoot = r}>
         <div className="float-right zoomButtons">
           <button className="btn btn-light btn-group-left" id="zoom_in">+</button>
@@ -204,9 +198,9 @@ class FileLineageGraph extends Component {
 
 class FileLineage extends Component {
   render() {
-    const { progress } = this.props;
+    const { progress, currentNode, filePath, graph } = this.props;
 
-    if(progress == null
+    if (progress == null
       || progress === GraphIndexingStatus.NO_WEBHOOK
       || progress === GraphIndexingStatus.NO_PROGRESS
       || (progress >= GraphIndexingStatus.MIN_VALUE && progress < GraphIndexingStatus.MAX_VALUE)
@@ -220,13 +214,13 @@ class FileLineage extends Component {
         progress={this.props.progress}
       />;
 
-    const graphObj = this.props.graph;
-    const graph = (graphObj) ?
+    const graphComponent = (graph) ?
       <FileLineageGraph
         path={this.props.path}
-        graph={graphObj}
+        graph={graph}
+        currentNode={currentNode}
         lineagesUrl={this.props.lineagesUrl}
-        history={this.props.history}/> :
+        history={this.props.history} /> :
       (this.props.error) ?
         <p>{this.props.error}</p> :
         <p>Loading...</p>;
@@ -236,14 +230,14 @@ class FileLineage extends Component {
     const isLFSBadge = isLFS ?
       <Badge className="lfs-badge" color="light">LFS</Badge> : null;
 
-    let buttonFile = this.props.filePath !== undefined ?
-      <IconLink tooltip="File View" icon={faFile} to={this.props.filePath} /> :
+    let buttonFile = filePath !== undefined && currentNode.type !== "Directory" ?
+      <IconLink tooltip="File View" icon={faFile} to={filePath} /> :
       null;
 
     let buttonGit = <ExternalIconLink tooltip="Open in GitLab" icon={faGitlab} to={externalFileUrl} />
 
     let buttonJupyter = null;
-    if (this.props.filePath.endsWith(".ipynb"))
+    if (filePath.endsWith(".ipynb"))
       buttonJupyter = (
         <JupyterButton {...this.props}
           file={{ file_path: this.props.path }}
@@ -262,7 +256,7 @@ class FileLineage extends Component {
         </div>
       </CardHeader>
       <CardBody className="scroll-x">
-        {graph}
+        {graphComponent}
       </CardBody>
     </Card>
   }

@@ -17,19 +17,21 @@
  */
 
 import React, { Component } from 'react';
+
 import { API_ERRORS } from '../api-client';
 import { GraphIndexingStatus } from '../project/Project';
-
 import { FileLineage as FileLineagePresent } from './Lineage.present';
 
 class FileLineage extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
       error: null,
       graphStatusPoller: null,
       graphStatusWaiting: false,
-      webhookJustCreated: null
+      webhookJustCreated: null,
+      graph: null,
+      currentNode: { id: null, type: null }
     };
   }
 
@@ -51,20 +53,6 @@ class FileLineage extends Component {
     this._isMounted = false;
   }
 
-  parseNodeIds(graph) {
-    // regex to split /<type>/<commitSha><path>
-    const nodeRegex = /\/([^/]*)\/([^/]*)(.*)/;
-    if (!graph)
-      return { edges: [], nodes: [] };
-    graph.nodes.forEach(node => {
-      const matches = nodeRegex.exec(node.id)
-      node.type = matches[1]
-      node.commitSha = matches[2]
-      if (matches[3]) node.filePath = matches[3]
-    })
-    return graph;
-  }
-
   async startPollingProgress() {
     if (this._isMounted && !this.state.graphStatusPoller) {
       this.props.fetchGraphStatus().then((progress) => {
@@ -72,27 +60,26 @@ class FileLineage extends Component {
           progress !== GraphIndexingStatus.MAX_VALUE &&
           progress !== GraphIndexingStatus.NO_WEBHOOK) {
           const poller = setInterval(this.checkStatus, 2000);
-          this.setState({graphStatusPoller: poller});
+          this.setState({ graphStatusPoller: poller });
         }
       });
     }
   }
 
   stopPollingProgress() {
-    const {graphStatusPoller} = this.state;
+    const { graphStatusPoller } = this.state;
     if (this._isMounted && graphStatusPoller) {
       clearTimeout(graphStatusPoller);
-      this.setState({graphStatusPoller: null});
+      this.setState({ graphStatusPoller: null });
     }
   }
 
-
   checkStatus = () => {
     if (this._isMounted && !this.state.graphStatusWaiting) {
-      this.setState({graphStatusWaiting: true});
+      this.setState({ graphStatusWaiting: true });
       this.props.fetchGraphStatus().then((progress) => {
         if (this._isMounted) {
-          this.setState({graphStatusWaiting: false});
+          this.setState({ graphStatusWaiting: false });
           if (progress === GraphIndexingStatus.MAX_VALUE || progress === GraphIndexingStatus.NO_WEBHOOK) {
             this.stopPollingProgress();
             if (progress === GraphIndexingStatus.MAX_VALUE) {
@@ -105,7 +92,7 @@ class FileLineage extends Component {
   }
 
   createWebhook(e) {
-    this.setState({webhookJustCreated: true});
+    this.setState({ webhookJustCreated: true });
     this.props.createGraphWebhook(e).then((data) => {
       if (this._isMounted) {
         // remember that the graph status endpoint is not updated instantly, better adding a short timeout
@@ -117,7 +104,7 @@ class FileLineage extends Component {
         // updating this state slightly later avoids UI flickering
         setTimeout(() => {
           if (this._isMounted) {
-            this.setState({webhookJustCreated: false});
+            this.setState({ webhookJustCreated: false });
           }
         }, 1500);
       }
@@ -125,35 +112,49 @@ class FileLineage extends Component {
   }
 
   async retrieveGraph() {
-    if (!this.props.projectPath) return;
+    if (!this.props.projectPath)
+      return;
     try {
-      const fileMeta = await this.props.client.getRepositoryFileMeta(this.props.projectId, this.props.path, 'master')
-      this.props.client.getFileLineage(this.props.projectPath, fileMeta.lastCommitId, this.props.path)
-        .then(graph => this.parseNodeIds(graph))
+      this.props.client.getFileLineage(this.props.projectPath, this.props.path)
         .then(graph => {
-          if (this._isMounted) this.setState({ graph });
-        })
+          if (this._isMounted) {
+            if (!graph) {
+              this.setState({ graph: { edges: [], nodes: [] } });
+            }
+            else {
+              let currentNode = { id: null, type: null };
+              graph.nodes.forEach(node => {
+                if ((node.type === "Directory" || node.type === "File") && node.location === this.props.path) {
+                  currentNode = node;
+                }
+              })
+              this.setState({ graph, currentNode });
+            }
+          }
+        });
     } catch (error) {
-      if (error.case === API_ERRORS.notFoundError) {
-        console.error("load graph:", error);
-        if (this._isMounted)
-          this.setState({ error: 'ERROR 404: Could not load lineage. The file with path ' + this.props.filePath + ' does not exist."' });
-      } else {
-        console.error("load graph:", error);
-        if (this._isMounted)
+      if (this._isMounted) {
+        if (error.case === API_ERRORS.notFoundError) {
+          this.setState({
+            error: 'ERROR 404: Could not load lineage. The file with path ' + this.props.filePath + ' does not exist."'
+          });
+        }
+        else {
           this.setState({ error: 'Could not load lineage.' });
+        }
       }
     }
   }
 
   render() {
-    return <FileLineagePresent 
+    return <FileLineagePresent
       retrieveGraph={this.retrieveGraph.bind(this)}
-      graph={this.state.graph} 
-      error={this.state.error} 
+      graph={this.state.graph}
+      error={this.state.error}
       createWebhook={this.createWebhook.bind(this)}
       webhookJustCreated={this.state.webhookJustCreated}
-      filePath={this.props.match.url+'/files/blob/'+this.props.path} 
+      filePath={`/projects/${this.props.projectPathWithNamespace}/files/blob/${this.props.path}`}
+      currentNode={this.state.currentNode}
       accessLevel={this.props.accessLevel}
       {...this.props} />
   }
