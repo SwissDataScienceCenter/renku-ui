@@ -108,6 +108,16 @@ const methods = {
     response: {
       data: []
     }
+  },
+  getGroupByPath: {
+    response: {
+      data: {}
+    }
+  },
+  getUserByPath: {
+    response: {
+      data: []
+    }
   }
 };
 
