@@ -1,5 +1,5 @@
 /*!
- * Copyright 2017 - Swiss Data Science Center (SDSC)
+ * Copyright 2018 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,29 +16,14 @@
  * limitations under the License.
  */
 
-import { RETURN_TYPES } from './utils';
+/**
+ * renku-ui
+ *
+ * Components for namespaces
+ *
+ */
 
+import { NamespaceProjects } from './Namespace.container';
+import { NamespaceProjects as NamespaceProjectsPresent } from './Namespace.present';
 
-function addUserMethods(client) {
-  client.getUser = () => {
-    let headers = client.getBasicHeaders();
-    return client.clientFetch(
-      `${client.baseUrl}/user`, {
-        method: 'GET',
-        headers: headers
-      },
-      RETURN_TYPES.json, false, false).then(response => response.data);
-  }
-
-  client.getUserByPath = (path) => {
-    const headers = client.getBasicHeaders();
-    const queryParams = { username: encodeURIComponent(path) };
-    return client.clientFetch(`${client.baseUrl}/users`, {
-      method: 'GET',
-      headers,
-      queryParams
-    })
-  }
-}
-
-export default addUserMethods;
+export { NamespaceProjects, NamespaceProjectsPresent };

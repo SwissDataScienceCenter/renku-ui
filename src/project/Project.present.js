@@ -49,6 +49,7 @@ import FilesTreeView from './filestreeview/FilesTreeView';
 import DatasetsListView from './datasets/DatasetsListView';
 import { ACCESS_LEVELS } from '../api-client';
 import { GraphIndexingStatus } from './Project';
+import { NamespaceProjects } from '../namespace';
 
 import './Project.css';
 
@@ -1060,13 +1061,21 @@ class NotFoundInsideProject extends Component {
 }
 
 class ProjectView extends Component {
-
   render() {
     const available = this.props.core ? this.props.core.available : null;
     const projectPathWithNamespaceOrId = this.props.projectPathWithNamespace ?
       this.props.projectPathWithNamespace
       : this.props.projectId;
-    if (available == null || available === SpecialPropVal.UPDATING || this.props.projectId) {
+
+    if (this.props.namespace && !this.props.projectPathWithNamespace) {
+      return (
+        <NamespaceProjects
+          namespace={this.props.namespace}
+          client={this.props.client}
+        />
+      );
+    }
+    else if (available == null || available === SpecialPropVal.UPDATING || this.props.projectId) {
       return (
         <ProjectViewLoading
           projectPathWithNamespace={this.props.projectPathWithNamespace}

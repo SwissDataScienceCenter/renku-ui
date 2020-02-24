@@ -584,6 +584,7 @@ class View extends Component {
       ...ownProps,
       projectPathWithNamespace: pathComponents.projectPathWithNamespace,
       projectId: pathComponents.projectId,
+      namespace: pathComponents.namespace,
       ...this.getSubUrls(),
       ...this.subComponents.bind(this)(internalId, ownProps),
       starred,
