@@ -73,8 +73,9 @@ class UserAvatar extends Component {
     }
     return (img) ?
       <img width={widgetSize.img} src={img} alt={user} /> :
-      <FontAwesomeIcon alt={user} icon={faUser} size={widgetSize.fa}
-        style={{ textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)' }} />;
+      <div style={{minWidth: widgetSize.img, textAlign:"center"}}>
+        <FontAwesomeIcon alt={user} icon={faUser} size={widgetSize.fa}
+        style={{ textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)' }} /></div>;
   }
 }
 

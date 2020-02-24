@@ -42,6 +42,7 @@ class ProjectsCoordinator {
   }
 
   async getFeatured() {
+    if(this.model.get("featured.fetching"))return;
     // set status to fetching and invoke both APIs
     this.model.set("featured.fetching", true);
     const promiseStarred = this.client.getProjects({ starred: true, order_by: "last_activity_at" })

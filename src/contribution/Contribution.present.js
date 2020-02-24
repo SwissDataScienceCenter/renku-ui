@@ -168,7 +168,10 @@ const NewContribution = props => {
           </TabContent>
           <Button
             className="float-right"
-            color="primary" onClick={props.onSubmit}>Submit</Button>
+            color="primary" 
+            onClick={props.onSubmit}
+            disabled={props.submitting}
+          >Submit</Button>
         </div>
       </Col>
     </Row>

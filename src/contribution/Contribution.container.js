@@ -126,6 +126,7 @@ class NewContribution extends React.Component {
       contribution: {
         body: ''
       },
+      submitting: false,
       files: [],
       loading: false,
       mentions: [],
@@ -232,6 +233,7 @@ class NewContribution extends React.Component {
   }
 
   onSubmit(){
+    this.setState({submitting:true})
     if(this.props.mergeRequest){
       this.props.client.postDiscussion(this.props.projectId, this.props.iid, this.state.contribution.body)
       .then(contribution => {
@@ -241,6 +243,7 @@ class NewContribution extends React.Component {
           contribution: {
             body: ''
           },
+          submitting:false,
           files: [],
           loading: false,
           mentions: [],
@@ -248,8 +251,11 @@ class NewContribution extends React.Component {
         })
       });
     } else {
-      this.props.client.postContribution(this.props.projectId, this.props.issueIid, this.state.contribution.body);
-      this.props.appendContribution(buildContribution(this.state, this.props));
+      this.props.client.postContribution(this.props.projectId, this.props.issueIid, this.state.contribution.body)
+      .then(contribution => {
+        this.props.appendContribution(contribution.data);
+        this.setState({submitting:false})
+      });
     }
   }
 
@@ -262,18 +268,10 @@ class NewContribution extends React.Component {
       onTabClick={this.toggleTab.bind(this)}
       onMentionClick={this.replaceMention.bind(this)}
       onSubmit={this.onSubmit.bind(this)}
+      submitting={this.state.submitting}
       client={this.props.client}
       projectId={this.props.projectId}
     />
-  }
-}
-
-function buildContribution(state, props){
-  return {
-    body: state.contribution.body,
-    author: props.user,
-    created_at: (new Date()).toISOString(),
-    updated_at: (new Date()).toISOString()
   }
 }
 
