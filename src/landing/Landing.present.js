@@ -261,14 +261,14 @@ class LoggedInHome extends Component {
         <Col xs={{ order: 2 }} md={{ size: 4, order: 1 }}>
           <Row>
             <Col>
-              <YourProjects urlMap={urlMap} loading={neverLoaded} projects={projects.member} />
+              <YourProjects urlMap={urlMap} loading={neverLoaded || projects.fetching} projects={projects.member} />
             </Col>
           </Row>
           <Row key="spacer"><Col md={12}>&nbsp;</Col></Row>
           <Row>
             <Col>
               <Starred welcomePage={this.props.welcomePage}
-                urlMap={urlMap} loading={neverLoaded} projects={projects.starred} />
+                urlMap={urlMap} loading={neverLoaded || projects.fetching} projects={projects.starred} />
             </Col>
           </Row>
         </Col>

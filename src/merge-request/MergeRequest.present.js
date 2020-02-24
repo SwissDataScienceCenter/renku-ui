@@ -22,7 +22,7 @@ import { NavLink, Switch, Route } from 'react-router-dom';
 import { UserAvatar, ExternalLink, TimeCaption, TooltipToggleButton, ExternalIconLink, Clipboard, RenkuNavLink } from '../utils/UIComponents';
 import { Contribution, NewContribution } from '../contribution';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faComments, faCodeBranch, faBox, faListUl, faLongArrowAltLeft as faLeftArrow } from '@fortawesome/free-solid-svg-icons';
+import { faComments, faCodeBranch, faListUl, faLongArrowAltLeft as faLeftArrow } from '@fortawesome/free-solid-svg-icons';
 import { faGitlab } from '@fortawesome/free-brands-svg-icons';
 
 function MergeRequestHeader(props) {
