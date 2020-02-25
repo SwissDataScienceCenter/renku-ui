@@ -1,7 +1,7 @@
 {
   "parser": "babel-eslint",
   "parserOptions": {
-    "ecmaVersion": 6,
+    "ecmaVersion": 2020,
     "ecmaFeatures": {
       "jsx": true
     }
@@ -13,12 +13,20 @@
   },
   "rules": {
     "max-len": ["warn", 120],
-    "indent": ["warn", 2],
-    "no-eval": "warn",
-    "jsx-quotes": ["warn", "prefer-double"],
+    "no-eval": "error",
+    "quotes": ["warn", "double", { "allowTemplateLiterals": true, "avoidEscape": true }],
     "no-unused-vars": ["warn", { "vars": "all", "args": "none", "ignoreRestSiblings": false }],
-    "no-console": "off",
-    "react/prop-types": "off"
+    "no-console": "warn",
+    "react/prop-types": "off",
+    "curly": ["warn", "multi-or-nest", "consistent"],
+    "react/jsx-indent": ["warn", 2],
+    "semi": ["warn", "always"],
+    "space-before-blocks": ["warn", "always"],
+    "no-multi-spaces": "warn",
+    "brace-style": ["warn", "stroustrup", { "allowSingleLine": true }],
+    "max-nested-callbacks": ["warn", 3],
+    "no-alert": "error",
+    "no-else-return": "warn"
   },
   "extends": [
     "eslint:recommended",
