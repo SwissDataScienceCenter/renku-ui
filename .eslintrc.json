@@ -9,7 +9,8 @@
   "env": {
     "browser": true,
     "node": true,
-    "es6": true
+    "es6": true,
+    "jest/globals": true
   },
   "rules": {
     "max-len": ["warn", 120],
@@ -26,14 +27,17 @@
     "brace-style": ["warn", "stroustrup", { "allowSingleLine": true }],
     "max-nested-callbacks": ["warn", 3],
     "no-alert": "error",
-    "no-else-return": "warn"
+    "no-else-return": "warn",
+    "jest/expect-expect": "off"
   },
   "extends": [
     "eslint:recommended",
-    "plugin:react/recommended"
+    "plugin:react/recommended",
+    "plugin:jest/recommended"
   ],
   "plugins": [
-    "react"
+    "react",
+    "jest"
   ],
   "settings": {
     "react": {
