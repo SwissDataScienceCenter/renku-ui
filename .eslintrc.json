@@ -28,7 +28,17 @@
     "max-nested-callbacks": ["warn", 3],
     "no-alert": "error",
     "no-else-return": "warn",
-    "jest/expect-expect": "off"
+    "jest/expect-expect": "off",
+    "comma-spacing": "warn",
+    "block-spacing": ["warn", "always"],
+    "key-spacing": "warn",
+    "no-trailing-spaces": "warn",
+    "object-curly-spacing": ["warn", "always"],
+    "space-infix-ops": "warn",
+    "space-unary-ops": ["warn", {"words": true, "nonwords": false}],
+    "keyword-spacing": ["warn", { "before": true }],
+    "no-multiple-empty-lines": ["warn", { "max": 2, "maxEOF": 1 }],
+    "react/jsx-curly-spacing": ["warn", "never"]
   },
   "extends": [
     "eslint:recommended",
