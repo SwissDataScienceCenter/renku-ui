@@ -57,7 +57,7 @@
     "build": "npm run build-css && REACT_APP_UI_DEV_MODE=false react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "node_modules/eslint/bin/eslint.js src/",
+    "lint": "node_modules/eslint/bin/eslint.js --max-warnings=0 src/",
     "lint-fix": "node_modules/eslint/bin/eslint.js src/ --fix",
     "node": "node_modules/.bin/babel-node"
   },
