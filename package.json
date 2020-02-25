@@ -3,7 +3,7 @@
   "version": "0.7.4",
   "private": true,
   "dependencies": {
-    "@babel/helper-regex": "^7.5.5",
+    "@babel/helper-regex": "^7.8.3",
     "@ckeditor/ckeditor5-react": "^2.1.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.25",
     "@fortawesome/free-brands-svg-icons": "^5.11.2",
@@ -62,13 +62,13 @@
     "node": "node_modules/.bin/babel-node"
   },
   "devDependencies": {
-    "@babel/cli": "^7.7.0",
-    "eslint-plugin-react": "^7.17.0",
+    "@babel/cli": "^7.8.4",
+    "eslint-plugin-react": "^7.18.3",
     "fetch-mock": "^7.7.0",
     "history": "^4.10.1",
     "node-fetch": "^2.6.0",
-    "react-scripts": "^3.2.0",
-    "typescript": "^3.7.3"
+    "react-scripts": "^3.4.0",
+    "typescript": "^3.8.2"
   },
   "browserslist": [
     ">0.2%",
