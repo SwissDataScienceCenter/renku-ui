@@ -606,7 +606,19 @@ function ButtonWithMenu(props) {
   </ButtonDropdown>
 }
 
+class Bouncer extends Component {
+  render() {
+    return (
+      <div className="bouncer">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    );
+  }
+}
+
 export { UserAvatar, TimeCaption, FieldGroup, RenkuNavLink, Pagination, RenkuMarkdown };
 export { ExternalLink, Loader, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, JupyterIcon };
 export { Clipboard, ExternalIconLink, IconLink, ThrottledTooltip, TooltipToggleButton, ProjectAvatar };
-export { ButtonWithMenu }
+export { ButtonWithMenu, Bouncer }
