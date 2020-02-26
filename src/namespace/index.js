@@ -1,5 +1,5 @@
 /*!
- * Copyright 2019 - Swiss Data Science Center (SDSC)
+ * Copyright 2018 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -17,18 +17,13 @@
  */
 
 /**
- *  renku-ui
+ * renku-ui
  *
- *  formgenerator/fields
- *  Fields available to the form generator
+ * Components for namespaces
+ *
  */
 
-export default {
-  FieldTypes: {
-    TEXT: "text",
-    TEXT_AREA:"textarea",
-    TEXT_EDITOR: "cktextarea",
-    FILES: "fileuploader",
-    SELECT:"select"
-  }
-};
+import { NamespaceProjects } from './Namespace.container';
+import { NamespaceProjects as NamespaceProjectsPresent } from './Namespace.present';
+
+export { NamespaceProjects, NamespaceProjectsPresent };

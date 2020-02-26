@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2020 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -19,22 +19,31 @@
 /**
  *  renku-ui
  *
- *  TextInput.js
- *  Presentational components.
+ *  Namespace.test.js
+ *  Tests for namesace.
  */
 
-import * as React from 'react';
-import ValidationAlert from './ValidationAlert';
-import HelpText from './HelpText';
-import { FormGroup, Input, Label} from 'reactstrap';
+import React from 'react';
+import { act } from 'react-dom/test-utils';
+import ReactDOM from 'react-dom';
+import { MemoryRouter } from 'react-router-dom';
 
-function TextInput({ name, label, type, value, alert, placeholder, setInputs, help, disabled = false }) {
-  return <FormGroup>
-    <Label htmlFor={name}>{label}</Label>
-    <Input id={name} name={name} type={type} value={value || ""} onChange={setInputs} disabled={disabled} placeholder={placeholder}/>
-    <HelpText content={help} />
-    <ValidationAlert content={alert} />
-  </FormGroup>
-}
+import { NamespaceProjects } from './index';
+import { testClient as client } from '../api-client'
 
-export default TextInput;
+describe('rendering', () => {
+  it('renders NamespaceProjects', async () => {
+    const props = {
+      client,
+      namespace: "test"
+    }
+
+    const div = document.createElement('div');
+    document.body.appendChild(div);
+    await act(async () => {
+      ReactDOM.render(<MemoryRouter>
+        <NamespaceProjects {...props} />
+      </MemoryRouter>, div);
+    })
+  });
+});

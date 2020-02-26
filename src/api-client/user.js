@@ -29,6 +29,16 @@ function addUserMethods(client) {
       },
       RETURN_TYPES.json, false, false).then(response => response.data);
   }
+
+  client.getUserByPath = (path) => {
+    const headers = client.getBasicHeaders();
+    const queryParams = { username: encodeURIComponent(path) };
+    return client.clientFetch(`${client.baseUrl}/users`, {
+      method: 'GET',
+      headers,
+      queryParams
+    })
+  }
 }
 
 export default addUserMethods;

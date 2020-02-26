@@ -19,7 +19,7 @@
 /**
  *  renku-ui
  *
- *  TextInput.js
+ *  SelectInput.js
  *  Presentational components.
  */
 
@@ -28,13 +28,15 @@ import ValidationAlert from './ValidationAlert';
 import HelpText from './HelpText';
 import { FormGroup, Input, Label} from 'reactstrap';
 
-function TextInput({ name, label, type, value, alert, placeholder, setInputs, help, disabled = false }) {
+function SelectInput({ name, label, type, value, alert, options, initial, placeholder, setInputs, help, disabled = false }) {
   return <FormGroup>
     <Label htmlFor={name}>{label}</Label>
-    <Input id={name} name={name} type={type} value={value || ""} onChange={setInputs} disabled={disabled} placeholder={placeholder}/>
+    <Input id={name} name={name} type={type} value={value || ""} onChange={setInputs} placeholder={placeholder} disabled={disabled}>
+      {options && options.map(option => <option key={option.value} value={option.value}>{option.name}</option>)}
+    </Input>
     <HelpText content={help} />
     <ValidationAlert content={alert} />
   </FormGroup>
 }
 
-export default TextInput;
+export default SelectInput;

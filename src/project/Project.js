@@ -98,13 +98,20 @@ function accumulateIntoProjectPath(projectPathWithNamespace, comps) {
 }
 
 function splitProjectSubRoute(subUrl) {
-  const result = {projectPathWithNamespace: null, projectId: null, baseUrl: null };
-  if (subUrl == null) return result;
+  let result = {
+    namespace: null,
+    projectPathWithNamespace: null,
+    projectId: null,
+    baseUrl: null
+  };
+  if (subUrl == null)
+    return result;
 
   const baseUrl = subUrl.endsWith('/') ? subUrl.slice(0, -1) : subUrl;
   const projectSubRoute = baseUrl.startsWith("/projects/") ? baseUrl.slice(10) : baseUrl;
   const comps = projectSubRoute.split("/");
-  if (comps.length < 1) return result;
+  if (comps.length < 1)
+    return result;
 
   // This could be a route that just provides a projectId
   if (projectIdRegex.test(comps[0])) {
@@ -112,21 +119,25 @@ function splitProjectSubRoute(subUrl) {
     result.baseUrl = `/projects/${result.projectId}`;
     return result;
   }
-  if (comps.length < 2) return result;
+  if (comps.length < 2) {
+    result.namespace = comps[0];
+    return result;
+  }
 
   result.projectPathWithNamespace = comps.slice(0, 2).join("/");
   if (comps.length > 2) {
     // We need to check if we need to accumulate more components into the projectPathWithNamespace
-    result.projectPathWithNamespace = accumulateIntoProjectPath(result.projectPathWithNamespace, comps.slice(2));	
+    result.projectPathWithNamespace = accumulateIntoProjectPath(result.projectPathWithNamespace, comps.slice(2));
   }
 
   if (result.projectId != null) {
-    result.baseUrl = `/projects/${result.projectId}`
+    result.baseUrl = `/projects/${result.projectId}`;
   } else {
-    result.baseUrl = `/projects/${result.projectPathWithNamespace}`
+    result.baseUrl = `/projects/${result.projectPathWithNamespace}`;
+    result.namespace = result.projectPathWithNamespace.slice(0, result.projectPathWithNamespace.lastIndexOf("/"));
   }
- 
-  return result
+
+  return result;
 }
 
 
@@ -284,7 +295,7 @@ class View extends Component {
       newDatasetUrl: `${datasetsUrl}/new`,
       datasetUrl: `${datasetsUrl}/:datasetId`,
       editDatasetUrl: `${datasetsUrl}/:datasetId/modify`,
-      issueNewUrl: `${baseUrl}/issue_new`,
+      issueNewUrl: `${collaborationUrl}/issues/issue_new`,
       collaborationUrl:`${collaborationUrl}`,
       issuesUrl: `${collaborationUrl}/issues`,
       issueUrl: `${collaborationUrl}/issues/:issueIid`,
@@ -573,6 +584,7 @@ class View extends Component {
       ...ownProps,
       projectPathWithNamespace: pathComponents.projectPathWithNamespace,
       projectId: pathComponents.projectId,
+      namespace: pathComponents.namespace,
       ...this.getSubUrls(),
       ...this.subComponents.bind(this)(internalId, ownProps),
       starred,

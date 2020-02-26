@@ -49,6 +49,7 @@ import FilesTreeView from './filestreeview/FilesTreeView';
 import DatasetsListView from './datasets/DatasetsListView';
 import { ACCESS_LEVELS } from '../api-client';
 import { GraphIndexingStatus } from './Project';
+import { NamespaceProjects } from '../namespace';
 
 import './Project.css';
 
@@ -646,6 +647,8 @@ class ProjectViewCollaboration extends Component {
               <ProjectViewMergeRequests {...this.props} />} />
             <Route path={ this.props.mergeRequestsOverviewUrl } render={props =>
               <ProjectMergeRequestList {...this.props} />} />
+            <Route exact path={ this.props.issueNewUrl } render={p =>
+              <Issue.New projectPathWithNamespace={this.props.core.path_with_namespace} client={this.props.client} {...p}/>}/>
             <Route path={ this.props.issueUrl } render={props =>
               <ProjectViewIssues {...this.props} /> }/>
             <Route path={ this.props.issuesUrl } render={props =>
@@ -1058,13 +1061,21 @@ class NotFoundInsideProject extends Component {
 }
 
 class ProjectView extends Component {
-
   render() {
     const available = this.props.core ? this.props.core.available : null;
     const projectPathWithNamespaceOrId = this.props.projectPathWithNamespace ?
       this.props.projectPathWithNamespace
       : this.props.projectId;
-    if (available == null || available === SpecialPropVal.UPDATING || this.props.projectId) {
+
+    if (this.props.namespace && !this.props.projectPathWithNamespace) {
+      return (
+        <NamespaceProjects
+          namespace={this.props.namespace}
+          client={this.props.client}
+        />
+      );
+    }
+    else if (available == null || available === SpecialPropVal.UPDATING || this.props.projectId) {
       return (
         <ProjectViewLoading
           projectPathWithNamespace={this.props.projectPathWithNamespace}

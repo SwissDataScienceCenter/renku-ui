@@ -28,7 +28,6 @@ import { Jumbotron } from 'reactstrap';
 import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
 
 import Project from './project/Project';
-import Issue from './issue/Issue';
 import DatasetList from './dataset/list/DatasetList.container';
 import { Landing, RenkuNavBar, FooterNavbar } from './landing';
 import { Notebooks } from './notebooks';
@@ -75,10 +74,6 @@ class App extends Component {
                     {...p} />} />
                 <Route path="/help"
                   render={p => <Help key="help" {...p} {...this.props} />} />
-  
-                {/* TODO: This route should be handled by path="/projects/:subUrl+" */}
-                <Route exact path="/projects/:projectNamespace+/:projectName/issue_new"
-                  render={(p) => <Issue.New key="issue_new" projectPathWithNamespace={`${p.match.params.projectNamespace}/${p.match.params.projectName}`} client={this.props.client} {...p} />} />
                 <Route exact path={["/projects", "/projects/starred", "/projects/search"]} render={
                   p => <Project.List
                     key="projects"
