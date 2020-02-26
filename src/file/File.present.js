@@ -16,22 +16,22 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import NotebookPreview from '@nteract/notebook-render';
+import React from "react";
+import NotebookPreview from "@nteract/notebook-render";
 
 // Do not import the style because this does not work after webpack bundles things for production mode.
 // Instead define the style below
 //import './notebook.css'
-import { Card, CardHeader, CardBody, Badge } from 'reactstrap';
-import { ListGroup, ListGroupItem } from 'reactstrap';
-import '../../node_modules/highlight.js/styles/atom-one-light.css';
-import { faProjectDiagram } from '@fortawesome/free-solid-svg-icons';
-import { faGitlab } from '@fortawesome/free-brands-svg-icons';
+import { Card, CardHeader, CardBody, Badge } from "reactstrap";
+import { ListGroup, ListGroupItem } from "reactstrap";
+import "../../node_modules/highlight.js/styles/atom-one-light.css";
+import { faProjectDiagram } from "@fortawesome/free-solid-svg-icons";
+import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 
-import { FilePreview } from './index';
-import { CheckNotebookStatus, CheckNotebookIcon } from '../notebooks'
-import { Clipboard, ExternalIconLink, IconLink, Loader } from '../utils/UIComponents';
-import { Time } from '../utils/Time';
+import { FilePreview } from "./index";
+import { CheckNotebookStatus, CheckNotebookIcon } from "../notebooks";
+import { Clipboard, ExternalIconLink, IconLink, Loader } from "../utils/UIComponents";
+import { Time } from "../utils/Time";
 
 const commitMessageLengthLimit = 120;
 
@@ -55,7 +55,7 @@ class FileCard extends React.Component {
       const commitLinkHref = `${this.props.gitLabUrl}/commit/${this.props.commit.id}`;
       const title = (this.props.commit.title.length > commitMessageLengthLimit) ?
         this.props.commit.title.slice(0, commitMessageLengthLimit) + "..." :
-        this.props.commit.title
+        this.props.commit.title;
       commitHeader = <ListGroup flush>
         <ListGroupItem>
           <div className="d-flex justify-content-between flex-wrap">
@@ -71,7 +71,7 @@ class FileCard extends React.Component {
             </div>
           </div>
         </ListGroupItem>
-      </ListGroup>
+      </ListGroup>;
     }
     return <Card>
       <CardHeader className="align-items-baseline">
@@ -89,7 +89,7 @@ class FileCard extends React.Component {
       </CardHeader>
       {commitHeader}
       <CardBody>{this.props.body}</CardBody>
-    </Card>
+    </Card>;
   }
 }
 
@@ -118,19 +118,21 @@ class ShowFile extends React.Component {
 
     if (this.props.error !== null) {
       return <FileCard gitLabUrl={this.props.externalUrl}
-        filePath={this.props.gitLabFilePath.split('\\').pop().split('/').pop()}
+        filePath={this.props.gitLabFilePath.split("\\").pop().split("/").pop()}
         commit={this.props.commit}
         buttonGraph={buttonGraph}
         buttonGit={buttonGit}
         buttonJupyter={this.props.buttonJupyter}
         body={this.props.error}
-        lfsBadge={null} />
+        lfsBadge={null} />;
     }
 
-    if (this.props.file == null) return <Card>
-      <CardHeader className="align-items-baseline">&nbsp;</CardHeader>
-      <CardBody>{"Loading..."}</CardBody>
-    </Card>;
+    if (this.props.file == null) {
+return <Card>
+  <CardHeader className="align-items-baseline">&nbsp;</CardHeader>
+  <CardBody>{"Loading..."}</CardBody>
+</Card>;
+}
 
     const isLFS = this.props.hashElement ? this.props.hashElement.isLfs : false;
     const isLFSBadge = isLFS ?
@@ -140,7 +142,7 @@ class ShowFile extends React.Component {
     const body = <FilePreview
       file={this.props.file}
       {...this.props}
-    />
+    />;
 
     return <FileCard gitLabUrl={this.props.externalUrl}
       filePath={this.props.filePath}
@@ -149,7 +151,7 @@ class ShowFile extends React.Component {
       buttonGit={buttonGit}
       buttonJupyter={this.props.buttonJupyter}
       body={body}
-      lfsBadge={isLFSBadge} />
+      lfsBadge={isLFSBadge} />;
   }
 }
 
@@ -176,7 +178,7 @@ class StyledNotebook extends React.Component {
       <style key="notebook-style">{notebookStyle}</style>,
       <NotebookPreview
         key="notebook"
-        ref={c => { this.notebook = c }}
+        ref={c => { this.notebook = c; }}
         defaultStyle={false}
         loadMathjax={false}
         notebook={this.props.notebook}

@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-import * as samples from './test-samples'
-import { carveProject } from './project';
+import * as samples from "./test-samples";
+import { carveProject } from "./project";
 
 const methods = {
   getProjects: {
@@ -124,11 +124,11 @@ const methods = {
 let client = {};
 for (let key in methods) {
 
-  client[key] = function(){
+  client[key] = function() {
     return new Promise(resolve => {
-      resolve(methods[key].response)
+      resolve(methods[key].response);
     });
-  }
+  };
 }
 
 export default client;

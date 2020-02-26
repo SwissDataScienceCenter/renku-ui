@@ -7,9 +7,9 @@ if (global.document) {
       ownerDocument: document,
     },
     createContextualFragment: (html) => {
-      const div = document.createElement('div');
+      const div = document.createElement("div");
       div.innerHTML = html;
       return div.children[0]; // so hokey it's not even funny
     }
-  })
+  });
 }

@@ -29,6 +29,6 @@ const Sizes = {
   md: { minWidth: 768 },
   lg: { minWidth: 992 },
   xl: { minWidth: 1200 },
-}
+};
 
 export default Sizes;

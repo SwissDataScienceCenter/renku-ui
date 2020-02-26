@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 
-import { APIError, API_ERRORS, throwAPIErrors } from './errors';
+import { APIError, API_ERRORS, throwAPIErrors } from "./errors";
 
 const RETURN_TYPES = {
-  json: 'json',
-  text: 'text',
-  full: 'fullResponseObject'
-}
+  json: "json",
+  text: "text",
+  full: "fullResponseObject"
+};
 
 // Wrapper around fetch which will throw exceptions on all non 20x responses.
 // Adapted from https://github.com/github/fetch/issues/155
@@ -35,15 +35,15 @@ function renkuFetch(url, options) {
   const URLobject = new URL(url);
   if (options.queryParams) {
     Object.keys(options.queryParams).forEach((key) => {
-      URLobject.searchParams.append(key, options.queryParams[key])
+      URLobject.searchParams.append(key, options.queryParams[key]);
     });
   }
 
   // This is the default behaviour for most browsers.
-  options['credentials'] = 'same-origin';
+  options["credentials"] = "same-origin";
 
   // Add a custom header for protection against CSRF attacks.
-  options.headers.set('X-Requested-With', 'XMLHttpRequest');
+  options.headers.set("X-Requested-With", "XMLHttpRequest");
 
   return fetch(URLobject, options)
 
@@ -57,18 +57,18 @@ function renkuFetch(url, options) {
 
     // Raise an error for all non 200 responses.
     .then((response) => {
-      if (response.status >= 200 && response.status < 300) {
+      if (response.status >= 200 && response.status < 300)
         return response;
-      } else {
-        return throwAPIErrors(response)
-      }
-    })
+
+        return throwAPIErrors(response);
+
+    });
 
 }
 
 
 function fetchJson(...args) {
-  return fetch(...args).then(response => response.json())
+  return fetch(...args).then(response => response.json());
 }
 
-export { renkuFetch, fetchJson, RETURN_TYPES }
+export { renkuFetch, fetchJson, RETURN_TYPES };

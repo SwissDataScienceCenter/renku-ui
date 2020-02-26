@@ -1,16 +1,18 @@
-import { testClient as client } from '../api-client'
-import { StateKind, StateModel } from '../model/Model';
-import { Project, projectSchema } from './RenkuModels';
+/* eslint-disable */
+
+import { testClient as client } from "../api-client";
+import { StateKind, StateModel } from "../model/Model";
+import { Project, projectSchema } from "./RenkuModels";
 import { ProjectModel } from "../project/Project.state";
 
-describe('fetch project', () => {
-  it('fetches project', () => {
+describe("fetch project", () => {
+  it("fetches project", () => {
     const projectId = 3;
     const project = new ProjectModel(StateKind.REDUX);
     project.fetchProject(client, projectId).then(() => {
       expect(project.get("core.id")).toEqual(projectId);
-      expect(project.get("core.title")).toEqual('A-first-project');
-    })
+      expect(project.get("core.title")).toEqual("A-first-project");
+    });
   });
 });
 

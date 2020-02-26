@@ -16,19 +16,22 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react';
-import ReactDOM from 'react-dom';
-import hljs from 'highlight.js';
+import React, { Component } from "react";
+import ReactDOM from "react-dom";
+import hljs from "highlight.js";
 
-import { atobUTF8 } from '../utils/Encoding';
-import { StyledNotebook, JupyterButtonPresent, ShowFile as ShowFilePresent } from './File.present';
-import { ACCESS_LEVELS } from '../api-client';
-import { StatusHelper } from '../model/Model';
-import { API_ERRORS } from '../api-client';
-import { RenkuMarkdown } from '../utils/UIComponents';
+import { atobUTF8 } from "../utils/Encoding";
+import { StyledNotebook, JupyterButtonPresent, ShowFile as ShowFilePresent } from "./File.present";
+import { ACCESS_LEVELS } from "../api-client";
+import { StatusHelper } from "../model/Model";
+import { API_ERRORS } from "../api-client";
+import { RenkuMarkdown } from "../utils/UIComponents";
 
-const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'tiff', 'pdf', 'gif'];
-const CODE_EXTENSIONS = ['py', 'js', 'json', 'sh', 'r', 'txt', 'yml', 'csv', 'parquet', 'cwl', 'job', 'prn', 'rout', 'dcf', 'rproj', 'rst', 'bat', 'ini', 'rmd'];
+const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "pdf", "gif"];
+const CODE_EXTENSIONS = [
+  "py", "js", "json", "sh", "r", "txt", "yml", "csv", "parquet", "cwl", "job", "prn", "rout",
+  "dcf", "rproj", "rst", "bat", "ini", "rmd"
+];
 
 // FIXME: Unify the file viewing for issues (embedded) and independent file viewing.
 // FIXME: Javascript highlighting is broken for large files.
@@ -37,18 +40,18 @@ const CODE_EXTENSIONS = ['py', 'js', 'json', 'sh', 'r', 'txt', 'yml', 'csv', 'pa
 class FilePreview extends React.Component {
 
   getFileExtension = () => {
-    if (!this.props.file) {
-      return null
-    } else {
-      if(this.props.file.file_name.match(/\.(.*)/)===null)
+    if (!this.props.file)
+      return null;
+
+      if (this.props.file.file_name.match(/\.(.*)/) === null)
         return null;
-      else return this.props.file.file_name.split('.').pop().toLowerCase();
-    }
+      return this.props.file.file_name.split(".").pop().toLowerCase();
+
   };
 
   fileIsCode = () => CODE_EXTENSIONS.indexOf(this.getFileExtension()) >= 0;
   fileIsImage = () => IMAGE_EXTENSIONS.indexOf(this.getFileExtension()) >= 0;
-  fileHasNoExtension = () => this.getFileExtension()===null;
+  fileHasNoExtension = () => this.getFileExtension() === null;
 
   highlightBlock = () => {
     // FIXME: Usage of findDOMNode is discouraged.
@@ -57,26 +60,26 @@ class FilePreview extends React.Component {
     hljs.highlightBlock(baseNode);
   };
 
-  componentDidMount(){
-    if (this.fileIsCode()) this.highlightBlock()
+  componentDidMount() {
+    if (this.fileIsCode()) this.highlightBlock();
   }
-  componentDidUpdate(){
-    if (this.fileIsCode()) this.highlightBlock()
+  componentDidUpdate() {
+    if (this.fileIsCode()) this.highlightBlock();
   }
 
-  render(){
+  render() {
     // File has not yet been fetched
-    if (!this.props.file) {
+    if (!this.props.file)
       return "Loading...";
-    }
+
     // Various types of images
     if (this.fileIsImage()) {
-      if(atob(this.props.file.content).includes("https://git-lfs.github.com/"))
-        return "The image can't be previewed because it's stored in Git LFS."
+      if (atob(this.props.file.content).includes("https://git-lfs.github.com/"))
+        return "The image can't be previewed because it's stored in Git LFS.";
       return <img
         className="image-preview"
         alt={this.props.file.file_name}
-        src={'data:image;base64,' + this.props.file.content}
+        src={"data:image;base64," + this.props.file.content}
       />;
     }
     // Code with syntax highlighting
@@ -88,13 +91,13 @@ class FilePreview extends React.Component {
       );
     }
     // Markdown
-    if (this.getFileExtension() === 'md'){
+    if (this.getFileExtension() === "md") {
       let content = atobUTF8(this.props.file.content);
-      return <RenkuMarkdown markdownText={content} />
+      return <RenkuMarkdown markdownText={content} />;
     }
 
     // Jupyter Notebook
-    if (this.getFileExtension() === 'ipynb'){
+    if (this.getFileExtension() === "ipynb") {
       return <JupyterNotebookContainer
         key="notebook-body"
         notebook={JSON.parse(atobUTF8(this.props.file.content), (key, value) => Object.freeze(value))}
@@ -103,12 +106,12 @@ class FilePreview extends React.Component {
       />;
     }
 
-    if(this.fileHasNoExtension()){
+    if (this.fileHasNoExtension()) {
       return (
         <pre className={`hljs ${this.getFileExtension()}`}>
           <code>{atobUTF8(this.props.file.content)}</code>
         </pre>
-      )
+      );
     }
 
     // File extension not supported
@@ -119,13 +122,13 @@ class FilePreview extends React.Component {
 class JupyterNotebookContainer extends Component {
   render() {
     let filePath = this.props.filePath;
-    if (filePath && filePath[0] !== '/') filePath = '/' + filePath;
+    if (filePath && filePath[0] !== "/") filePath = "/" + filePath;
 
     return <StyledNotebook
-      fileName={this.props.filePath.replace(/^.*(\\|\/|:)/, '')}
+      fileName={this.props.filePath.replace(/^.*(\\|\/|:)/, "")}
       notebook={this.props.notebook}
       client={this.props.client}
-    />
+    />;
   }
 }
 
@@ -167,7 +170,7 @@ class JupyterButton extends React.Component {
     const scope = {
       namespace: this.props.projectNamespace,
       project: this.props.projectPath,
-    }
+    };
     // TODO: plug in branch and commit coming from project page when it available
     scope.commit = "latest";
     scope.branch = this.getDefaultBranch();
@@ -216,50 +219,50 @@ class JupyterButton extends React.Component {
 class ShowFile extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { file: null, commit: null, error: null}
+    this.state = { file: null, commit: null, error: null };
   }
 
   // TODO: Write a wrapper to make promises cancellable to avoid usage of this._isMounted
   componentDidMount() {
     this._isMounted = true;
-    this.retrieveFile()
+    this.retrieveFile();
   }
 
   componentWillUnmount() { this._isMounted = false; }
 
   retrieveFile() {
     const client = this.props.client;
-    const branchName = this.props.branchName || 'master';
+    const branchName = this.props.branchName || "master";
     let filePath = this.props.filePath;
-    client.getRepositoryFile(this.props.projectId, filePath, branchName, 'base64')
+    client.getRepositoryFile(this.props.projectId, filePath, branchName, "base64")
       .catch(e => {
         if (!this._isMounted) return null;
-        if (e.case === API_ERRORS.notFoundError) {
-          this.setState({error:"ERROR 404: The file with path '"+ this.props.filePath +"' does not exist."})
-        }
-        else this.setState({error:"Could not load file with path "+this.props.filePath})
+        if (e.case === API_ERRORS.notFoundError)
+          this.setState({ error: "ERROR 404: The file with path '" + this.props.filePath + "' does not exist." });
+
+        else this.setState({ error: "Could not load file with path " + this.props.filePath });
       })
       .then(json => {
         if (!this._isMounted) return null;
         if (!this.state.error)
-          this.setState({file:json});
+          this.setState({ file: json });
         return json;
       }).then(fileJson => {
         if (fileJson == null) return;
         return client.getRepositoryCommit(this.props.projectId, fileJson.last_commit_id);
       }).then(commitJson => {
         if (!this._isMounted) return null;
-        this.setState({commit: commitJson});
-      })
+        this.setState({ commit: commitJson });
+      });
   }
 
   render() {
     const gitLabFilePath = this.props.filePath;
     let filePath = gitLabFilePath;
 
-    if (this.state.error !== null) {
-      filePath = this.props.filePath.split('\\').pop().split('/').pop();
-    }
+    if (this.state.error !== null)
+      filePath = this.props.filePath.split("\\").pop().split("/").pop();
+
 
     let buttonJupyter = null;
     if (this.props.filePath.endsWith(".ipynb"))
@@ -273,7 +276,7 @@ class ShowFile extends React.Component {
       buttonJupyter={buttonJupyter}
       file={this.state.file}
       commit={this.state.commit}
-      error={this.state.error} />
+      error={this.state.error} />;
   }
 }
 

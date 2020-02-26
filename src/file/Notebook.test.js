@@ -23,16 +23,15 @@
  *  Tests for the notebook renderer.
  */
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { MemoryRouter } from 'react-router-dom';
+import React from "react";
+import ReactDOM from "react-dom";
 
-import Notebook from './Notebook'
-import { testClient as client } from '../api-client'
+import Notebook from "./Notebook";
+import { testClient as client } from "../api-client";
 
-describe('rendering', () => {
-  it('renders new without crashing', () => {
-    const div = document.createElement('div');
+describe("rendering", () => {
+  it("renders new without crashing", () => {
+    const div = document.createElement("div");
     ReactDOM.render(<Notebook.Show filePath="notebooks/test.js" client={client} />, div);
   });
 

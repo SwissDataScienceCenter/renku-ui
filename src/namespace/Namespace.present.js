@@ -23,13 +23,13 @@
  *  Namespace presentational components.
  */
 
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Row, Col, Container } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Row, Col, Container } from "reactstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
-import { Loader, InfoAlert, ExternalLink } from '../utils/UIComponents';
+import { Loader, InfoAlert, ExternalLink } from "../utils/UIComponents";
 
 const NamespaceProjects = (props) => {
   const { namespace } = props;
@@ -40,11 +40,12 @@ const NamespaceProjects = (props) => {
   const searchGroupUrl = (group) => { return `${searchUrl}?searchIn=groups&q=${group}`; };
 
   let checking = null;
-  if (props.user.fetching || props.group.fetching)
-    checking = (<div>
-      <p>Searching for {namespace}...</p>
-      <Loader />
-    </div>);
+  if (props.user.fetching || props.group.fetching) {
+checking = (<div>
+  <p>Searching for {namespace}...</p>
+  <Loader />
+</div>);
+}
 
   let outcome = null;
   let userOrGroup = "";
@@ -87,7 +88,7 @@ const NamespaceProjects = (props) => {
       </Row>
     </Container>
   );
-}
+};
 
 const NamespaceUserActions = (props) => {
   return (<div>
@@ -103,7 +104,7 @@ const NamespaceUserActions = (props) => {
       </li>
     </ul>
   </div>);
-}
+};
 
 const NamespaceGroupActions = (props) => {
   return (<div>
@@ -119,7 +120,7 @@ const NamespaceGroupActions = (props) => {
       </li>
     </ul>
   </div>);
-}
+};
 
 const NamespaceNotfoundActions = (props) => {
   return (<div>
@@ -140,6 +141,6 @@ const NamespaceNotfoundActions = (props) => {
       </div>
     </InfoAlert>
   </div>);
-}
+};
 
 export { NamespaceProjects };

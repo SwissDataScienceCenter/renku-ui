@@ -23,32 +23,32 @@
  *  Container components for rendering notebooks.
  */
 
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import { JupyterNotebook } from './File.container';
-import { API_ERRORS } from '../api-client';
+import { JupyterNotebook } from "./File.container";
+import { API_ERRORS } from "../api-client";
 
 class Show extends Component {
   constructor(props) {
     super(props);
-    this.state = { notebook: null, error: null }
+    this.state = { notebook: null, error: null };
   }
 
   // TODO: Write a wrapper to make promises cancellable to avoid usage of this._isMounted
   componentDidMount() {
     this._isMounted = true;
-    this.retrieveNotebook()
+    this.retrieveNotebook();
   }
 
   componentWillUnmount() { this._isMounted = false; }
 
   retrieveNotebook() {
-    const branchName = this.props.branchName || 'master';
+    const branchName = this.props.branchName || "master";
     this.props.client.getProjectFile(this.props.projectId, this.props.filePath, branchName, false)
       .catch(e => {
-        if (e.case === API_ERRORS.notFoundError) {
+        if (e.case === API_ERRORS.notFoundError)
           return '{"error": "Notebook does not exist."}';
-        }
+
         return '{"error": "Could not load notebook."}';
       })
       .then(json => {
@@ -63,12 +63,12 @@ class Show extends Component {
   }
 
   render() {
-    if (this.state.error != null) return <div>{this.state.error}</div>
-    if (this.state.notebook == null) return <div>Loading...</div>
+    if (this.state.error != null) return <div>{this.state.error}</div>;
+    if (this.state.notebook == null) return <div>Loading...</div>;
     return (<JupyterNotebook
       notebook={this.state.notebook}
       {...this.props}
-    />)
+    />);
   }
 }
 

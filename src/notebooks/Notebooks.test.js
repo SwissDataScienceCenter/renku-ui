@@ -22,19 +22,19 @@
  * Tests for the interactive environment components
  */
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { MemoryRouter } from 'react-router-dom';
+import React from "react";
+import ReactDOM from "react-dom";
+import { MemoryRouter } from "react-router-dom";
 
-import { NotebooksHelper, Notebooks, StartNotebookServer, CheckNotebookStatus } from './index';
-import { ExpectedAnnotations } from './Notebooks.state';
-import { StateModel, globalSchema } from '../model'
-import { testClient as client } from '../api-client'
+import { NotebooksHelper, Notebooks, StartNotebookServer, CheckNotebookStatus } from "./index";
+import { ExpectedAnnotations } from "./Notebooks.state";
+import { StateModel, globalSchema } from "../model";
+import { testClient as client } from "../api-client";
 
 
 const model = new StateModel(globalSchema);
 
-describe('notebook status', () => {
+describe("notebook status", () => {
   const servers = [{
     "status": {
       "message": null,
@@ -55,7 +55,7 @@ describe('notebook status', () => {
     "expected": "pending"
   }];
 
-  it('computed vs expected', () => {
+  it("computed vs expected", () => {
     for (let server of servers) {
       expect(NotebooksHelper.getStatus(server)).toBe(server.expected);
       expect(NotebooksHelper.getStatus(server.status)).toBe(server.expected);
@@ -63,27 +63,27 @@ describe('notebook status', () => {
   });
 });
 
-describe('notebook server clean annotation', () => {
+describe("notebook server clean annotation", () => {
   const baseAnnotations = ExpectedAnnotations["renku.io"].default;
-  it('renku.io default', () => {
+  it("renku.io default", () => {
     const fakeAnswer = {};
     const elaboratedAnnotations = NotebooksHelper.cleanAnnotations(fakeAnswer, "renku.io");
-    const expectedAnnotations = { ...baseAnnotations }
+    const expectedAnnotations = { ...baseAnnotations };
     expect(JSON.stringify(elaboratedAnnotations)).toBe(JSON.stringify(expectedAnnotations));
   });
-  it('renku.io elaborated', () => {
+  it("renku.io elaborated", () => {
     const namespace = "myCoolNampsace";
-    const branch = "anotherBranch"
+    const branch = "anotherBranch";
 
     const fakeAnswer = { "renku.io/namespace": namespace, "renku.io/branch": branch };
     const elaboratedAnnotations = NotebooksHelper.cleanAnnotations(fakeAnswer, "renku.io");
-    const expectedAnnotations = { ...baseAnnotations, namespace, branch }
+    const expectedAnnotations = { ...baseAnnotations, namespace, branch };
     expect(JSON.stringify(elaboratedAnnotations)).toBe(JSON.stringify(expectedAnnotations));
   });
 });
 
-describe('parse project level environment options', () => {
-  it('valid content', () => {
+describe("parse project level environment options", () => {
+  it("valid content", () => {
     const content = `
       [renku "interactive"]
       default_url = /tree
@@ -100,15 +100,15 @@ describe('parse project level environment options', () => {
     expect(Object.keys(parsedContent)).toContain("defaultUrl");
 
     // check values
-    expect(parsedContent.defaultUrl).toBe("/tree")
-    expect(parsedContent.mem_request).not.toBe("2")
-    expect(parsedContent.mem_request).toBe(2)
-    expect(parsedContent.lfs_auto_fetch).not.toBe("True")
-    expect(parsedContent.lfs_auto_fetch).not.toBe("true")
-    expect(parsedContent.lfs_auto_fetch).toBe(true)
+    expect(parsedContent.defaultUrl).toBe("/tree");
+    expect(parsedContent.mem_request).not.toBe("2");
+    expect(parsedContent.mem_request).toBe(2);
+    expect(parsedContent.lfs_auto_fetch).not.toBe("True");
+    expect(parsedContent.lfs_auto_fetch).not.toBe("true");
+    expect(parsedContent.lfs_auto_fetch).toBe(true);
   });
 
-  it('invalid content', () => {
+  it("invalid content", () => {
     let content = `
       [nonrenku]
       default_url = /tree`;
@@ -129,8 +129,8 @@ describe('parse project level environment options', () => {
   });
 });
 
-describe('verify project level options validity according to deployment global options', () => {
-  it('valid options', () => {
+describe("verify project level options validity according to deployment global options", () => {
+  it("valid options", () => {
     const simplifiedGlobalOptions = {
       defaultUrl: {
         default: "/lab",
@@ -183,20 +183,20 @@ describe('verify project level options validity according to deployment global o
   });
 });
 
-describe('rendering', () => {
+describe("rendering", () => {
   const scope = {
     namespace: "fake",
     project: "fake",
     branch: { name: "master" }
   };
 
-  it('renders Notebooks', () => {
+  it("renders Notebooks", () => {
     const props = {
       client,
       model
-    }
+    };
 
-    const div = document.createElement('div');
+    const div = document.createElement("div");
     document.body.appendChild(div);
     ReactDOM.render(
       <MemoryRouter>
@@ -212,16 +212,16 @@ describe('rendering', () => {
       </MemoryRouter>, div);
   });
 
-  it('renders StartNotebookServer without crashing', () => {
+  it("renders StartNotebookServer without crashing", () => {
     const props = {
       client,
       model,
       branches: [],
       autosaved: [],
       refreshBranches: () => { },
-    }
+    };
 
-    const div = document.createElement('div');
+    const div = document.createElement("div");
     document.body.appendChild(div);
     ReactDOM.render(
       <MemoryRouter>
@@ -233,16 +233,16 @@ describe('rendering', () => {
       </MemoryRouter>, div);
   });
 
-  it('renders CheckNotebookStatus', () => {
+  it("renders CheckNotebookStatus", () => {
     const props = {
       client,
       model,
       scope,
       launchNotebookUrl: "/projects/abc/def/launchNotebook",
       filePath: "notebook.ypynb"
-    }
+    };
 
-    const div = document.createElement('div');
+    const div = document.createElement("div");
     document.body.appendChild(div);
     ReactDOM.render(
       <MemoryRouter>

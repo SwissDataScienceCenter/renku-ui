@@ -17,34 +17,34 @@
  */
 
 
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
-import {StateKind, Schema, StateModel} from './Model';
+import { StateKind, Schema, StateModel } from "./Model";
 
 
 const simpleSchema = new Schema({
-  name: {initial: 'Jane Doe', mandatory: true},
-  purpose: {initial: '', mandatory: false}
+  name: { initial: "Jane Doe", mandatory: true },
+  purpose: { initial: "", mandatory: false }
 });
 
 const complexSchema = new Schema({
-  basics: {schema: simpleSchema, mandatory: true},
-  subthing: {schema: {age: {initial: 0, mandatory: true }}, mandatory: true},
-  createdAt: {initial: () => 'right now'}
+  basics: { schema: simpleSchema, mandatory: true },
+  subthing: { schema: { age: { initial: 0, mandatory: true } }, mandatory: true },
+  createdAt: { initial: () => "right now" }
 });
 
 
 class ComplexModel extends StateModel {
   constructor(stateBinding, stateHolder, initialState) {
-    super(complexSchema, stateBinding, stateHolder, initialState)
+    super(complexSchema, stateBinding, stateHolder, initialState);
   }
 
   // 'Fake' API request
   updateAge = () => {
-    this.setUpdating({subthing: {age: true}});
+    this.setUpdating({ subthing: { age: true } });
     setTimeout(() => {
-      this.set('subthing.age', Math.random())
+      this.set("subthing.age", Math.random());
     }, 1000);
   }
 }
@@ -67,7 +67,7 @@ class Example extends Component {
 // A simple presentational component which shows all props which are passed into it.
 class ShowProps extends Component {
   render() {
-    return <div style={{border : '1px black solid', margin: '5px'}}>
+    return <div style={{ border: "1px black solid", margin: "5px" }}>
       {Object.keys(this.props)
         .filter(propKey => !(this.props[propKey] instanceof Function))
         .map(
@@ -75,7 +75,7 @@ class ShowProps extends Component {
         )
       }
       <button onClick={this.props.onClick}>Change Age</button>
-    </div>
+    </div>;
   }
 }
 
@@ -88,8 +88,8 @@ class ReduxStateComponent extends Component {
     this.thing = new ComplexModel(StateKind.REDUX);
   }
 
-  render(){
-    const ConnectedShowProps = connect(this.thing.mapStateToProps, null, null, {storeKey: 'thingStore'})(ShowProps);
+  render() {
+    const ConnectedShowProps = connect(this.thing.mapStateToProps, null, null, { storeKey: "thingStore" })(ShowProps);
 
     return (
       <span>
@@ -102,7 +102,7 @@ class ReduxStateComponent extends Component {
 
         {/*This is a stateful sub-component which inherits only a sub-part of the state tree.
         This sub-component will then invoke the presentational component on the sub-state only. */}
-        <ReduxSubStateComponent subthing={this.thing.subModel('subthing')} />
+        <ReduxSubStateComponent subthing={this.thing.subModel("subthing")} />
       </span>
     );
   }
@@ -115,14 +115,14 @@ class ReduxSubStateComponent extends Component {
     // The default implementation of mapStateToProps maps the entire sub-tree
     // of the state to the props which are passed to the presentational component.
     const ConnectedShowProps = connect(
-      subthing.mapStateToProps, undefined, undefined, {storeKey: 'subthingStore'}
+      subthing.mapStateToProps, undefined, undefined, { storeKey: "subthingStore" }
     )(ShowProps);
 
     return <ConnectedShowProps
       case="REDUX SUBSTATE"
       onClick={subthing.baseModel.updateAge}
       subthingStore={subthing.reduxStore}
-    />
+    />;
   }
 }
 
@@ -134,7 +134,7 @@ class ReactStateComponent extends Component {
     this.thing = new ComplexModel(StateKind.REACT, this);
   }
 
-  render(){
+  render() {
     return <span>
       <ShowProps
         case="REACT STATE"
@@ -142,18 +142,18 @@ class ReactStateComponent extends Component {
         {...this.thing.get()}
         onClick={this.thing.updateAge}/>
 
-      <ReactSubStateComponent subthing={this.thing.subModel('subthing')} />
-    </span>
+      <ReactSubStateComponent subthing={this.thing.subModel("subthing")} />
+    </span>;
   }
 }
 
 class ReactSubStateComponent extends Component {
-  render(){
+  render() {
     return <ShowProps
       case="REACT SUBSTATE"
       {...this.props.subthing.get()}
-      onClick={this.props.subthing.baseModel.updateAge}/>
+      onClick={this.props.subthing.baseModel.updateAge}/>;
   }
 }
 
-export default Example
+export default Example;

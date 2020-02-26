@@ -16,21 +16,21 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react';
-import { NotebookComparisonPresent, MergeRequestPresent } from './MergeRequest.present';
-import Notebook from '../file/Notebook'
-import { ACCESS_LEVELS } from '../api-client';
+import React, { Component } from "react";
+import { NotebookComparisonPresent, MergeRequestPresent } from "./MergeRequest.present";
+import Notebook from "../file/Notebook";
+import { ACCESS_LEVELS } from "../api-client";
 
 class MergeRequestContainer extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this._isMounted = false;
     this.state = {
       changes: [],
-      author: {name: ''},
+      author: { name: "" },
       contributions: [],
       commits: []
-    }
+    };
   }
 
   // TODO: Write a wrapper to make promises cancellable to avoid usage of this._isMounted
@@ -41,10 +41,10 @@ class MergeRequestContainer extends Component {
     this.retrieveCommits();
   }
 
-  retrieveChanges(){
+  retrieveChanges() {
     this.props.client.getMergeRequestChanges(this.props.projectId, this.props.iid)
     .then(resp => {
-      if (this._isMounted) this.setState({...resp.data});
+      if (this._isMounted) this.setState({ ...resp.data });
     });
   }
 
@@ -52,8 +52,8 @@ class MergeRequestContainer extends Component {
     this.setState(prevState => {
       let newContributions = [...prevState.contributions];
       newContributions.push({ ...newContribution });
-      return { ...prevState, contributions: newContributions }
-    })
+      return { ...prevState, contributions: newContributions };
+    });
   }
 
   retrieveContributions() {
@@ -61,13 +61,13 @@ class MergeRequestContainer extends Component {
       .then(resp => {
         if (!this._isMounted) return;
         this.setState((prevState, props) => {
-          return { contributions: resp.data }
+          return { contributions: resp.data };
         });
       }).catch(error => {
          this.setState((prevState, props) => {
-          return { contributions: [] }
+          return { contributions: [] };
         });
-      })
+      });
   }
 
   retrieveCommits() {
@@ -75,20 +75,20 @@ class MergeRequestContainer extends Component {
       .then(resp => {
         if (!this._isMounted) return;
         this.setState((prevState, props) => {
-          return { commits: resp.data }
+          return { commits: resp.data };
         });
       }).catch(error => {
          this.setState((prevState, props) => {
-          return { commits: [] }
+          return { commits: [] };
         });
-      })
+      });
   }
 
   merge() {
     this.props.client.mergeMergeRequest(this.props.projectId, this.props.iid)
       .then(() => {
         this.props.updateProjectState();
-        this.props.history.push(`/projects/${this.props.projectPathWithNamespace}/collaboration/mergerequests`)
+        this.props.history.push(`/projects/${this.props.projectPathWithNamespace}/collaboration/mergerequests`);
       });
   }
 
@@ -106,11 +106,11 @@ class MergeRequestContainer extends Component {
         key={i} {...this.props}
         filePath={change.new_path}
         ref1={this.state.target_branch}
-        ref2={this.state.source_branch} />
-    }
+        ref2={this.state.source_branch} />;
+    };
 
-    const showMergeButton = this.state.merge_status === 'can_be_merged' &&
-      this.props.accessLevel >= ACCESS_LEVELS.DEVELOPER
+    const showMergeButton = this.state.merge_status === "can_be_merged" &&
+      this.props.accessLevel >= ACCESS_LEVELS.DEVELOPER;
 
     return <MergeRequestPresent
       title={this.state.title}
@@ -135,7 +135,7 @@ class MergeRequestContainer extends Component {
       mergeRequestDiscussionUrl={this.props.mergeRequestDiscussionUrl}
       mergeRequestChangesUrl={this.props.mergeRequestChangesUrl}
       mergeRequestCommitsUrl={this.props.mergeRequestCommitsUrl}
-    />
+    />;
   }
 }
 
@@ -152,4 +152,4 @@ class NotebookComparisonContainer extends Component {
   }
 }
 
-export { MergeRequestContainer }
+export { MergeRequestContainer };

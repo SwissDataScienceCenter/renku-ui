@@ -38,11 +38,11 @@ class ProjectsCoordinator {
       star_count: project.star_count,
       owner: project.owner,
       last_activity_at: project.last_activity_at
-    }
+    };
   }
 
   async getFeatured() {
-    if(this.model.get("featured.fetching"))return;
+    if (this.model.get("featured.fetching")) return;
     // set status to fetching and invoke both APIs
     this.model.set("featured.fetching", true);
     const promiseStarred = this.client.getProjects({ starred: true, order_by: "last_activity_at" })
@@ -95,4 +95,4 @@ class ProjectsCoordinator {
   }
 }
 
-export { ProjectsCoordinator }
+export { ProjectsCoordinator };

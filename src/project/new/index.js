@@ -23,6 +23,6 @@
  *  Components for the new project page
  */
 
-import New from './ProjectNew.container';
+import New from "./ProjectNew.container";
 
 export default New;

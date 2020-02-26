@@ -24,6 +24,6 @@
  */
 
 
-import ShowDataset from './Dataset.container'
+import ShowDataset from "./Dataset.container";
 
 export default ShowDataset;

@@ -16,6 +16,6 @@
  * limitations under the License.
  */
 
-import { MergeRequestContainer as MergeRequest} from './MergeRequest.container'
-import { MergeRequestList } from './MergeRequest.present'
-export { MergeRequest, MergeRequestList }
+import { MergeRequestContainer as MergeRequest } from "./MergeRequest.container";
+import { MergeRequestList } from "./MergeRequest.present";
+export { MergeRequest, MergeRequestList };

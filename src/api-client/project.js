@@ -16,68 +16,84 @@
  * limitations under the License.
  */
 
-import { fetchJson } from './utils';
-import yaml from 'yaml-js';
+import { fetchJson } from "./utils";
+import yaml from "yaml-js";
 
 const FileCategories = {
-  data: (path) => path.startsWith('data'),
-  notebooks: (path) => path.endsWith('ipynb'),
-  workflows: (path) => path.startsWith('.renku/workflow/'),
+  data: (path) => path.startsWith("data"),
+  notebooks: (path) => path.endsWith("ipynb"),
+  workflows: (path) => path.startsWith(".renku/workflow/"),
 };
 
-function getApiURLfromRepoURL(url){
-  const urlArray = url.split('/');
-  urlArray.splice(urlArray.length-2,0,"repos");
-  url = urlArray.join("/")
-  if(url.includes("https://"))
+function getApiURLfromRepoURL(url) {
+  const urlArray = url.split("/");
+  urlArray.splice(urlArray.length - 2, 0, "repos");
+  url = urlArray.join("/");
+  if (url.includes("https://"))
     return url.replace("https://", "https://api.");
-  if(url.includes("http://"))
+  if (url.includes("http://"))
     return url.replace("http://", "http://api.");
 }
 
 function groupedFiles(files, projectFiles) {
   projectFiles = (projectFiles != null) ? projectFiles : {};
   Object.keys(FileCategories).forEach((cat) => {
-    projectFiles[cat] = files.filter(FileCategories[cat])
+    projectFiles[cat] = files.filter(FileCategories[cat]);
   });
-  projectFiles['all'] = files;
-  return projectFiles
+  projectFiles["all"] = files;
+  return projectFiles;
 }
 
 function buildTreeLazy(name, treeNode, jsonObj, hash, currentPath, gitattributes, openFilePath) {
-  if (name.length === 0) {
+  if (name.length === 0)
     return;
-  }
+
   currentPath = jsonObj.path;
   let nodeName = name;
-  let nodeType = jsonObj.type;  // "tree" "blob" "commit"
-  const isLfs = gitattributes ? gitattributes.includes(currentPath+" filter=lfs diff=lfs merge=lfs -text") : false;
-  let newNode =  { 'name': nodeName, 'children': [], 'jsonObj': jsonObj, 'path': currentPath ,'isLfs': isLfs , 'type': nodeType};
-  hash[newNode.path] = {'name':nodeName, 'selected': false, 'childrenOpen': false , 'childrenLoaded':false , 'path': currentPath, 'isLfs': isLfs, 'type': nodeType , 'treeRef': newNode};
+  let nodeType = jsonObj.type; // "tree" "blob" "commit"
+  const isLfs = gitattributes ? gitattributes.includes(currentPath + " filter=lfs diff=lfs merge=lfs -text") : false;
+  let newNode = {
+    "name": nodeName,
+    "children": [],
+    "jsonObj": jsonObj,
+    "path": currentPath,
+    "isLfs": isLfs,
+    "type": nodeType
+  };
+  hash[newNode.path] = {
+    "name": nodeName,
+    "selected": false,
+    "childrenOpen": false,
+    "childrenLoaded": false,
+    "path": currentPath,
+    "isLfs": isLfs,
+    "type": nodeType,
+    "treeRef": newNode
+  };
   treeNode.push(newNode);
 }
 
 function getFilesTreeLazy(client, files, projectId, openFilePath, lfsFiles) {
   let tree = [];
   let hash = {};
-  let lfs = files.filter((treeObj) => treeObj.path === '.gitattributes');
+  let lfs = files.filter((treeObj) => treeObj.path === ".gitattributes");
 
-  if(lfs.length > 0){
-    return client.getRepositoryFile(projectId, lfs[0].path, 'master', 'raw')
+  if (lfs.length > 0) {
+    return client.getRepositoryFile(projectId, lfs[0].path, "master", "raw")
       .then(json => {
-        for (let i = 0; i < files.length; i++) {
-          buildTreeLazy(files[i].name, tree, files[i] , hash, "", json, openFilePath);
-        }
-        const treeObj = { tree:tree , hash:hash , lfsFiles: json }
+        for (let i = 0; i < files.length; i++)
+          buildTreeLazy(files[i].name, tree, files[i], hash, "", json, openFilePath);
+
+        const treeObj = { tree: tree, hash: hash, lfsFiles: json };
         return treeObj;
       });
-  } else {
-    for (let i = 0; i < files.length; i++) {
-      buildTreeLazy(files[i].name, tree, files[i] , hash, "", lfsFiles , openFilePath);
-    }
-    const treeObj = { tree:tree , hash:hash, lfsFiles: lfsFiles }
-    return treeObj;
   }
+  for (let i = 0; i < files.length; i++)
+    buildTreeLazy(files[i].name, tree, files[i], hash, "", lfsFiles, openFilePath);
+
+  const treeObj = { tree: tree, hash: hash, lfsFiles: lfsFiles };
+  return treeObj;
+
 }
 
 function addProjectMethods(client) {
@@ -85,19 +101,19 @@ function addProjectMethods(client) {
   client.getProjects = (queryParams = {}) => {
     let headers = client.getBasicHeaders();
     return client.clientFetch(`${client.baseUrl}/projects`, {
-      method: 'GET',
+      method: "GET",
       headers,
       queryParams,
-    })
-  }
+    });
+  };
 
   client.getAvatarForNamespace = (namespaceId = {}) => {
     let headers = client.getBasicHeaders();
     return client.clientFetch(`${client.baseUrl}/groups/${namespaceId}`, {
-      method: 'GET',
+      method: "GET",
       headers
-    }).then(response => response.data.avatar_url)
-  }
+    }).then(response => response.data.avatar_url);
+  };
 
   client.getProject = (projectPathWithNamespace, options = {}) => {
     const headers = client.getBasicHeaders();
@@ -105,13 +121,13 @@ function addProjectMethods(client) {
       statistics: options.statistics || false
     };
     return client.clientFetch(`${client.baseUrl}/projects/${encodeURIComponent(projectPathWithNamespace)}`, {
-      method: 'GET',
+      method: "GET",
       headers,
       queryParams
     }).then(resp => {
       return { ...resp, data: carveProject(resp.data) };
     });
-  }
+  };
 
   client.getProjectById = (projectId, options = {}) => {
     const headers = client.getBasicHeaders();
@@ -119,53 +135,53 @@ function addProjectMethods(client) {
       statistics: options.statistics || false
     };
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}`, {
-      method: 'GET',
+      method: "GET",
       headers,
       queryParams
     }).then(resp => {
       return { ...resp, data: carveProject(resp.data) };
     });
-  }
+  };
 
   client.getProjectsBy = (searchIn, userOrGroupId, queryParams) => {
     if (searchIn === "groups")
       queryParams.include_subgroups = true;
     let headers = client.getBasicHeaders();
     return client.clientFetch(`${client.baseUrl}/${searchIn}/${userOrGroupId}/projects`, {
-      method: 'GET',
+      method: "GET",
       headers,
       queryParams
     });
-  }
+  };
 
   client.searchUsersOrGroups = (queryParams, searchIn) => {
     let headers = client.getBasicHeaders();
-    if(searchIn === "groups")
-      queryParams.all_available=true;
+    if (searchIn === "groups")
+      queryParams.all_available = true;
     return client.clientFetch(`${client.baseUrl}/${searchIn}`, {
-      method: 'GET',
+      method: "GET",
       headers,
       queryParams
     }).then(result => result.data);
-  }
+  };
 
-  client.getProjectFiles = (projectId, path='') => {
+  client.getProjectFiles = (projectId, path = "") => {
     return client.getRepositoryTree(projectId, { path: path, recursive: true }).then((tree) => {
       const files = tree
-        .filter((treeObj) => treeObj.type === 'blob')
+        .filter((treeObj) => treeObj.type === "blob")
         .map((treeObj) => treeObj.path);
       return groupedFiles(files, {});
-    })
-  }
+    });
+  };
 
-  client.getProjectFilesTree = (projectId, openFilePath, currentPath = '', lfsFiles) => {
+  client.getProjectFilesTree = (projectId, openFilePath, currentPath = "", lfsFiles) => {
     return client.getRepositoryTree(projectId, { path: currentPath, recursive: false }).then((tree) => {
       const fileStructure = getFilesTreeLazy(client, tree, projectId, openFilePath, lfsFiles);
       return fileStructure;
     });
-  }
+  };
 
-  client.getEmptyProjectObject = () => { return {folder:'empty-project-template', name:"Empty Project"} }
+  client.getEmptyProjectObject = () => { return { folder: "empty-project-template", name: "Empty Project" }; };
 
   client.postProject = (renkuProject, renkuTemplatesUrl, renkuTemplatesRef) => {
     const gitlabProject = {
@@ -175,136 +191,135 @@ function addProjectMethods(client) {
     };
     if (renkuProject.meta.projectNamespace != null) gitlabProject.namespace_id = renkuProject.meta.projectNamespace.id;
     const headers = client.getBasicHeaders();
-    headers.append('Content-Type', 'application/json');
+    headers.append("Content-Type", "application/json");
 
-    if(renkuProject.meta.template === client.getEmptyProjectObject().folder){
+    if (renkuProject.meta.template === client.getEmptyProjectObject().folder) {
       let createGraphWebhookPromise;
       const newProjectPromise = client.clientFetch(`${client.baseUrl}/projects`, {
-        method: 'POST',
+        method: "POST",
         headers: headers,
         body: JSON.stringify(gitlabProject)
       }).then(resp => {
-        if (!renkuProject.meta.optoutKg) {
+        if (!renkuProject.meta.optoutKg)
           createGraphWebhookPromise = client.createGraphWebhook(resp.data.id);
-        }
+
         return resp.data;
       });
 
       let promises = [newProjectPromise];
-      if (createGraphWebhookPromise) {
+      if (createGraphWebhookPromise)
         promises = promises.concat(createGraphWebhookPromise);
-      }
+
 
       return Promise.all(promises)
         .then(([data, payload]) => {
           if (data.errorData)
             return Promise.reject(data);
-          return Promise.resolve(data).then(() => data) ;
+          return Promise.resolve(data).then(() => data);
         });
 
-    } else {
-      let createGraphWebhookPromise;
-      const newProjectPromise = client.clientFetch(`${client.baseUrl}/projects`, {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify(gitlabProject)
-      }).then(resp => {
-        if (!renkuProject.meta.optoutKg) {
-          createGraphWebhookPromise = client.createGraphWebhook(resp.data.id);
-        }
-        return resp.data;
-      });
-
-      // When the provided version does not exist, we log an error and uses latest.
-      // Maybe this should raise a more prominent alarm?
-      const payloadPromise = getPayload(
-        gitlabProject.name,
-        renkuTemplatesUrl,
-        renkuTemplatesRef,
-        renkuProject.meta.template
-      ).catch(error => {
-        console.error(`Problem when retrieving project template with url ${renkuTemplatesUrl} and ref ${renkuTemplatesRef}`);
-        console.error(error);
-        console.error('Trying again with '+renkuTemplatesRef);
-        return getPayload(gitlabProject.name, renkuTemplatesUrl, renkuTemplatesRef, renkuProject.meta.template)
-      });
-      let promises = [newProjectPromise, payloadPromise];
-
-      if (createGraphWebhookPromise) {
-        promises = promises.concat(createGraphWebhookPromise);
-      }
-
-      return Promise.all(promises)
-        .then(([data, payload]) => {
-          if (data.errorData)
-            return Promise.reject(data);
-          return client.postCommit(data.id, payload).then(() => data);
-        });
     }
-  }
+    let createGraphWebhookPromise;
+    const newProjectPromise = client.clientFetch(`${client.baseUrl}/projects`, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(gitlabProject)
+    }).then(resp => {
+      if (!renkuProject.meta.optoutKg)
+        createGraphWebhookPromise = client.createGraphWebhook(resp.data.id);
+
+      return resp.data;
+    });
+
+    // When the provided version does not exist, we log an error and uses latest.
+    // Maybe this should raise a more prominent alarm?
+    const payloadPromise = getPayload(
+      gitlabProject.name,
+      renkuTemplatesUrl,
+      renkuTemplatesRef,
+      renkuProject.meta.template
+    ).catch(error => {
+      return getPayload(gitlabProject.name, renkuTemplatesUrl, renkuTemplatesRef, renkuProject.meta.template);
+    });
+    let promises = [newProjectPromise, payloadPromise];
+
+    if (createGraphWebhookPromise)
+      promises = promises.concat(createGraphWebhookPromise);
+
+
+    return Promise.all(promises)
+      .then(([data, payload]) => {
+        if (data.errorData)
+          return Promise.reject(data);
+        return client.postCommit(data.id, payload).then(() => data);
+      });
+
+  };
 
   client.getProjectStatus = (projectId) => {
     const headers = client.getBasicHeaders();
-    headers.append('Content-Type', 'application/json');
+    headers.append("Content-Type", "application/json");
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}/import`, {
-      method: 'GET',
+      method: "GET",
       headers: headers
     }).then(resp => {
       return resp.data.import_status;
     }).catch((error) => "error");
-  }
+  };
 
   client.startPipeline = (projectId) => {
     const headers = client.getBasicHeaders();
-    headers.append('Content-Type', 'application/json');
+    headers.append("Content-Type", "application/json");
     let pipelineStarted = false;
     let counter = 0;
     const projectStatusTimeout = setInterval(() => {
-      if (pipelineStarted === true || counter === 100)
-        clearInterval(projectStatusTimeout);
+      if (pipelineStarted === true || counter === 100) { clearInterval(projectStatusTimeout); }
       else {
         client.getProjectStatus(projectId).then((forkProjectStatus) => {
-          if (forkProjectStatus === 'finished') {
+          if (forkProjectStatus === "finished") {
             client.runPipeline(projectId).then(resp => {
               pipelineStarted = true;
               clearInterval(projectStatusTimeout);
             });
-          } else if (forkProjectStatus === 'failed' || forkProjectStatus === 'error') {
+          }
+          else if (forkProjectStatus === "failed" || forkProjectStatus === "error") {
             clearInterval(projectStatusTimeout);
-          } else {
+          }
+          else {
             counter++;
           }
-        })
+        });
       }
     }, 3000);
-  }
+  };
 
-  function redirectWhenForkFinished(projectId, projectPathWithNamespace, history){
+  function redirectWhenForkFinished(projectId, projectPathWithNamespace, history) {
     const headers = client.getBasicHeaders();
-    headers.append('Content-Type', 'application/json');
+    headers.append("Content-Type", "application/json");
     let redirected = false;
     let counter = 0;
     const projectStatusTimeout = setInterval(() => {
-      if (redirected === true || counter === 200)
-        clearInterval(projectStatusTimeout);
+      if (redirected === true || counter === 200) { clearInterval(projectStatusTimeout); }
       else {
         client.getProjectStatus(projectId).then((forkProjectStatus) => {
-          if (forkProjectStatus === 'finished') {
+          if (forkProjectStatus === "finished") {
             redirected = true;
             clearInterval(projectStatusTimeout);
             history.push(`/projects/${projectPathWithNamespace}`);
-          } else if(forkProjectStatus === 'failed' || forkProjectStatus === 'error'){
+          }
+          else if (forkProjectStatus === "failed" || forkProjectStatus === "error") {
             clearInterval(projectStatusTimeout);
-          } else {
+          }
+          else {
             counter++;
           }
-        })
+        });
       }
     }, 3000);
   }
 
   client.forkProject = (projectSchema, history) => {
-    const projectMeta = projectSchema.meta
+    const projectMeta = projectSchema.meta;
     const gitlabProject = {
       id: projectMeta.id,
       name: projectSchema.display.title,
@@ -312,17 +327,17 @@ function addProjectMethods(client) {
     };
     if (projectMeta.projectNamespace != null) gitlabProject.namespace = projectMeta.projectNamespace.id;
     const headers = client.getBasicHeaders();
-    headers.append('Content-Type', 'application/json');
+    headers.append("Content-Type", "application/json");
 
     let createGraphWebhookPromise;
     const newProjectPromise = client.clientFetch(`${client.baseUrl}/projects/${projectMeta.id}/fork`, {
-      method: 'POST',
+      method: "POST",
       headers: headers,
       body: JSON.stringify(gitlabProject)
     }).then(resp => {
-      if (!projectMeta.optoutKg) {
+      if (!projectMeta.optoutKg)
         createGraphWebhookPromise = client.createGraphWebhook(resp.data.id);
-      }
+
       return resp;
     }).then(resp => {
       client.startPipeline(resp.data.id);
@@ -330,56 +345,56 @@ function addProjectMethods(client) {
     });
 
     let promises = [newProjectPromise];
-    if (createGraphWebhookPromise) {
+    if (createGraphWebhookPromise)
       promises = promises.concat(createGraphWebhookPromise);
-    }
+
 
     return Promise.all(promises)
       .then((results) => {
         if (results.errorData)
           return Promise.reject(results);
         return Promise.resolve(results)
-          .then(() => redirectWhenForkFinished(results[0].data.id ,results[0].data.path_with_namespace, history));
+          .then(() => redirectWhenForkFinished(results[0].data.id, results[0].data.path_with_namespace, history));
       });
-  }
+  };
 
   client.setTags = (projectId, name, tags) => {
-    return client.putProjectField(projectId, name, 'tag_list', tags);
-  }
+    return client.putProjectField(projectId, name, "tag_list", tags);
+  };
 
   client.setDescription = (projectId, name, description) => {
-    return client.putProjectField(projectId, name, 'description', description);
-  }
+    return client.putProjectField(projectId, name, "description", description);
+  };
 
   client.starProject = (projectId, starred) => {
     const headers = client.getBasicHeaders();
-    headers.append('Content-Type', 'application/json');
-    const endpoint = starred ? 'unstar' : 'star';
+    headers.append("Content-Type", "application/json");
+    const endpoint = starred ? "unstar" : "star";
 
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}/${endpoint}`, {
-      method: 'POST',
+      method: "POST",
       headers: headers,
-    })
+    });
 
-  }
+  };
 
   client.putProjectField = (projectId, name, field_name, field_value) => {
     const putData = { id: projectId, name, [field_name]: field_value };
     const headers = client.getBasicHeaders();
-    headers.append('Content-Type', 'application/json');
+    headers.append("Content-Type", "application/json");
 
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}`, {
-      method: 'PUT',
+      method: "PUT",
       headers: headers,
       body: JSON.stringify(putData)
-    })
+    });
 
-  }
+  };
 
-  client.getArtifactsUrl = (projectId, job, branch = 'master') => {
+  client.getArtifactsUrl = (projectId, job, branch = "master") => {
     const headers = client.getBasicHeaders();
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}/jobs`, {
-      method: 'GET',
+      method: "GET",
       headers: headers
     })
       .then(resp => resp.data)
@@ -391,107 +406,107 @@ function addProjectMethods(client) {
         // Sort in reverse finishing order and take the most recent
         const jobObj =
           filteredJobs
-            .sort((a, b) => (a.finished_at > b.finished_at) ? -1 : +(a.finished_at < b.finished_at))[0]
+            .sort((a, b) => (a.finished_at > b.finished_at) ? -1 : +(a.finished_at < b.finished_at))[0];
         return `${client.baseUrl}/projects/${projectId}/jobs/${jobObj.id}/artifacts`;
-      })
-  }
+      });
+  };
 
-  client.getArtifact = (projectId, job, artifact, branch = 'master') => {
-    const options = { method: 'GET', headers: client.getBasicHeaders() };
+  client.getArtifact = (projectId, job, artifact, branch = "master") => {
+    const options = { method: "GET", headers: client.getBasicHeaders() };
     return client.getArtifactsUrl(projectId, job, branch)
       .then(url => {
         // If the url is undefined, we return an object with a dummy text() method.
-        if (!url) return ['', { text: () => '' }];
+        if (!url) return ["", { text: () => "" }];
         const resourceUrl = `${url}/${artifact}`;
-        return Promise.all([resourceUrl, client.clientFetch(resourceUrl, options, client.returnTypes.full)])
-      })
-  }
+        return Promise.all([resourceUrl, client.clientFetch(resourceUrl, options, client.returnTypes.full)]);
+      });
+  };
 
   client.getProjectTemplates = (renkuTemplatesUrl, renkuTemplatesRef) => {
     const formatedApiURL = getApiURLfromRepoURL(renkuTemplatesUrl);
     return fetchJson(`${formatedApiURL}/git/trees/${renkuTemplatesRef}`)
-      .then(data => data.tree.filter(obj => obj.path === 'manifest.yaml')[0]['sha'])
+      .then(data => data.tree.filter(obj => obj.path === "manifest.yaml")[0]["sha"])
       .then(manifestSha => fetchJson(`${formatedApiURL}/git/blobs/${manifestSha}`))
-      .then(data => {return yaml.load(atob(data.content))})
-      .then(data => {data.push(client.getEmptyProjectObject()); return data;});
-  }
+      .then(data => { return yaml.load(atob(data.content)); })
+      .then(data => { data.push(client.getEmptyProjectObject()); return data; });
+  };
 
   client.getDatasetJson = (projectId, datasetId) => {
-    return client.getRepositoryFile(projectId, `.renku/datasets/${datasetId}/metadata.yml`, 'master', 'raw')
+    return client.getRepositoryFile(projectId, `.renku/datasets/${datasetId}/metadata.yml`, "master", "raw")
       .then(result => yaml.load(result));
-  }
+  };
 
   client.fetchDatasetFromKG = (datasetLink) => {
     const headers = client.getBasicHeaders();
-    const datasetPromise = client.clientFetch(datasetLink, {method:'GET', headers});
+    const datasetPromise = client.clientFetch(datasetLink, { method: "GET", headers });
     return Promise.resolve(datasetPromise).then(dataset => dataset.data);
-  }
+  };
 
   client.getProjectDatasetsFromKG = (projectPath) => {
     let url = `${client.baseUrl}/knowledge-graph/projects/${projectPath}/datasets`;
-    url = url.replace('/api','');//The url should change in the backend so we don't have to do this
+    url = url.replace("/api", "");//The url should change in the backend so we don't have to do this
     const headers = client.getBasicHeaders();
-    return client.clientFetch(url, {method:'GET', headers}).then((resp) => {
+    return client.clientFetch(url, { method: "GET", headers }).then((resp) => {
       return resp.data;
     });
-  }
+  };
 
   client.getProjectDatasets = (projectId) => {
-    const datasetsPromise = client.getRepositoryTree(projectId, { path: '.renku/datasets', recursive: true })
+    const datasetsPromise = client.getRepositoryTree(projectId, { path: ".renku/datasets", recursive: true })
       .then(data =>
-        data.filter(treeObj => treeObj.type === 'blob' && treeObj.name === 'metadata.yml')
+        data.filter(treeObj => treeObj.type === "blob" && treeObj.name === "metadata.yml")
           .map(dataset =>
-            client.getRepositoryFile(projectId, dataset.path, 'master', 'raw').then(result => yaml.load(result))
+            client.getRepositoryFile(projectId, dataset.path, "master", "raw").then(result => yaml.load(result))
           )
-      )
+      );
 
     return Promise.resolve(datasetsPromise)
-      .then(datasetsContent => Promise.all(datasetsContent))
-  }
+      .then(datasetsContent => Promise.all(datasetsContent));
+  };
 }
 
 
 function carveProject(projectJson) {
   const result = { metadata: { core: {}, visibility: {}, system: {}, statistics: {} }, all: projectJson };
-  result['metadata']['visibility']['level'] = projectJson['visibility'];
+  result["metadata"]["visibility"]["level"] = projectJson["visibility"];
 
   let accessLevel = 0;
-  if (projectJson.permissions && projectJson.permissions.project_access) {
-    accessLevel = Math.max(accessLevel, projectJson.permissions.project_access.access_level)
-  }
-  if (projectJson.permissions && projectJson.permissions.group_access) {
-    accessLevel = Math.max(accessLevel, projectJson.permissions.group_access.access_level)
-  }
-  result['metadata']['visibility']['accessLevel'] = accessLevel;
+  if (projectJson.permissions && projectJson.permissions.project_access)
+    accessLevel = Math.max(accessLevel, projectJson.permissions.project_access.access_level);
+
+  if (projectJson.permissions && projectJson.permissions.group_access)
+    accessLevel = Math.max(accessLevel, projectJson.permissions.group_access.access_level);
+
+  result["metadata"]["visibility"]["accessLevel"] = accessLevel;
 
 
-  result['metadata']['core']['created_at'] = projectJson['created_at'];
-  result['metadata']['core']['last_activity_at'] = projectJson['last_activity_at'];
-  result['metadata']['core']['id'] = projectJson['id'];
-  result['metadata']['core']['description'] = projectJson['description'];
-  result['metadata']['core']['displayId'] = projectJson['path_with_namespace'];
-  result['metadata']['core']['title'] = projectJson['name'];
-  result['metadata']['core']['external_url'] = projectJson['web_url'];
-  result['metadata']['core']['path_with_namespace'] = projectJson['path_with_namespace'];
-  result['metadata']['core']['owner'] = projectJson['owner'];
-  result['metadata']['core']['namespace_path'] = projectJson['namespace']['full_path'];
-  result['metadata']['core']['project_path'] = projectJson['path'];
+  result["metadata"]["core"]["created_at"] = projectJson["created_at"];
+  result["metadata"]["core"]["last_activity_at"] = projectJson["last_activity_at"];
+  result["metadata"]["core"]["id"] = projectJson["id"];
+  result["metadata"]["core"]["description"] = projectJson["description"];
+  result["metadata"]["core"]["displayId"] = projectJson["path_with_namespace"];
+  result["metadata"]["core"]["title"] = projectJson["name"];
+  result["metadata"]["core"]["external_url"] = projectJson["web_url"];
+  result["metadata"]["core"]["path_with_namespace"] = projectJson["path_with_namespace"];
+  result["metadata"]["core"]["owner"] = projectJson["owner"];
+  result["metadata"]["core"]["namespace_path"] = projectJson["namespace"]["full_path"];
+  result["metadata"]["core"]["project_path"] = projectJson["path"];
 
-  result['metadata']['system']['tag_list'] = projectJson['tag_list'];
-  result['metadata']['system']['star_count'] = projectJson['star_count'];
-  result['metadata']['system']['forks_count'] = projectJson['forks_count'];
-  result['metadata']['system']['ssh_url'] = projectJson['ssh_url_to_repo'];
-  result['metadata']['system']['http_url'] = projectJson['http_url_to_repo'];
-  result['metadata']['system']['forked_from_project'] = (projectJson['forked_from_project'] != null) ?
-    carveProject(projectJson['forked_from_project']) :
+  result["metadata"]["system"]["tag_list"] = projectJson["tag_list"];
+  result["metadata"]["system"]["star_count"] = projectJson["star_count"];
+  result["metadata"]["system"]["forks_count"] = projectJson["forks_count"];
+  result["metadata"]["system"]["ssh_url"] = projectJson["ssh_url_to_repo"];
+  result["metadata"]["system"]["http_url"] = projectJson["http_url_to_repo"];
+  result["metadata"]["system"]["forked_from_project"] = (projectJson["forked_from_project"] != null) ?
+    carveProject(projectJson["forked_from_project"]) :
     null;
 
   if (projectJson.statistics != null) {
-    result['metadata']['statistics']['commit_count'] = projectJson['statistics']['commit_count'];
-    result['metadata']['statistics']['storage_size'] = projectJson['statistics']['storage_size'];
-    result['metadata']['statistics']['repository_size'] = projectJson['statistics']['repository_size'];
-    result['metadata']['statistics']['lfs_objects_size'] = projectJson['statistics']['lfs_objects_size'];
-    result['metadata']['statistics']['job_artificats_size'] = projectJson['statistics']['job_artificats_size'];
+    result["metadata"]["statistics"]["commit_count"] = projectJson["statistics"]["commit_count"];
+    result["metadata"]["statistics"]["storage_size"] = projectJson["statistics"]["storage_size"];
+    result["metadata"]["statistics"]["repository_size"] = projectJson["statistics"]["repository_size"];
+    result["metadata"]["statistics"]["lfs_objects_size"] = projectJson["statistics"]["lfs_objects_size"];
+    result["metadata"]["statistics"]["job_artificats_size"] = projectJson["statistics"]["job_artificats_size"];
   }
   return result;
 }
@@ -508,26 +523,26 @@ function getPayload(projectName, renkuTemplatesUrl, renkuTemplatesRef, projectTe
   // which matches the desired version of the renku project template.
   const formatedApiURL = getApiURLfromRepoURL(renkuTemplatesUrl);
   const subTreePromise = fetchJson(`${formatedApiURL}/git/trees/${renkuTemplatesRef}`)
-    .then(data => data.tree.filter(obj => obj.path === projectTemplate)[0]['sha'])
+    .then(data => data.tree.filter(obj => obj.path === projectTemplate)[0]["sha"])
     .then(treeSha => fetchJson(`${formatedApiURL}/git/trees/${treeSha}?recursive=1`));
 
   // Promise which will resolve into a list of file creation actions
   // ready to be passed to the GitLab API.
   const actionsPromise = subTreePromise.then(subtree => {
     const actionPromises = subtree.tree
-      .filter(treeObject => treeObject.type === 'blob')
+      .filter(treeObject => treeObject.type === "blob")
       .map(treeObject => getActionPromise(treeObject, projectName));
     return Promise.all(actionPromises);
-  })
+  });
 
   // We finally return a promise which will resolve into the full
   // payload for the first commit to the newly created project.
   return actionsPromise.then((resolvedActions) => {
     return {
-      'branch': 'master',
-      'commit_message': 'init renku repository',
-      'actions': resolvedActions
-    }
+      "branch": "master",
+      "commit_message": "init renku repository",
+      "actions": resolvedActions
+    };
   });
 
   function getActionPromise(treeObject, projectName) {
@@ -536,10 +551,10 @@ function getPayload(projectName, renkuTemplatesUrl, renkuTemplatesRef, projectTe
       .then(data => atob(data.content))
       .then(fileContent => {
         return {
-          'action': 'create',
-          'file_path': treeObject.path,
-          'content': evaluateTemplate(fileContent, projectName)
-        }
+          "action": "create",
+          "file_path": treeObject.path,
+          "content": evaluateTemplate(fileContent, projectName)
+        };
       });
   }
 
@@ -547,13 +562,13 @@ function getPayload(projectName, renkuTemplatesUrl, renkuTemplatesRef, projectTe
 
     const now = new Date();
     const templatedVariables = {
-      'name': projectName,
-      'date_updated': now.toISOString(),
-      'date_created': now.toISOString(),
+      "name": projectName,
+      "date_updated": now.toISOString(),
+      "date_created": now.toISOString(),
     };
 
     const newContent = content.replace(/{{\s?([^\s]*)\s?}}/g, (match, group) => {
-      return templatedVariables[group]
+      return templatedVariables[group];
     });
     return newContent;
   }

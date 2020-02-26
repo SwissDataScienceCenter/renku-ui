@@ -23,31 +23,31 @@
  *  Tests for project/list.
  */
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { MemoryRouter } from 'react-router-dom';
-import { createMemoryHistory } from 'history';
+import React from "react";
+import ReactDOM from "react-dom";
+import { MemoryRouter } from "react-router-dom";
+import { createMemoryHistory } from "history";
 
-import ProjectList from './';
-import ProjectListModel from './ProjectList.state';
-import { testClient as client } from '../../api-client';
-import { generateFakeUser } from '../../user/User.test';
+import ProjectList from "./";
+import ProjectListModel from "./ProjectList.state";
+import { testClient as client } from "../../api-client";
+import { generateFakeUser } from "../../user/User.test";
 
 
 const fakeHistory = createMemoryHistory({
-  initialEntries: ['/'],
+  initialEntries: ["/"],
   initialIndex: 0,
-})
+});
 fakeHistory.push({
-  pathname: '/projects/search',
-  search: '?page=1'
-})
+  pathname: "/projects/search",
+  search: "?page=1"
+});
 
-describe('rendering', () => {
+describe("rendering", () => {
   const loggedUser = generateFakeUser();
 
-  it('renders list without crashing', () => {
-    const div = document.createElement('div');
+  it("renders list without crashing", () => {
+    const div = document.createElement("div");
     ReactDOM.render(
       <MemoryRouter>
         <ProjectList client={client} history={fakeHistory} location={fakeHistory.location} user={loggedUser} />
@@ -56,22 +56,23 @@ describe('rendering', () => {
   });
 });
 
-describe('new project actions', () => {
+describe("new project actions", () => {
   const model = new ProjectListModel(client);
-  it('is initialized correctly', () => {
-    expect(model.get('currentPage')).toEqual(undefined);
+  it("is initialized correctly", () => {
+    expect(model.get("currentPage")).toEqual(undefined);
   });
-  it('does search with a query', () => {
-    return model.setQueryPageNumberAndPath("", 1, fakeHistory.pathName, 'last_activity_at', false, 'projects').then(() => {
-      expect(model.get('currentPage')).toEqual(1);
-      expect(model.get('totalItems')).toEqual(1);
-      expect(model.get('pathName')).toEqual(fakeHistory.pathName);
-    })
+  it("does search with a query", () => {
+    return model.setQueryPageNumberAndPath("", 1, fakeHistory.pathName, "last_activity_at", false, "projects")
+      .then(() => {
+        expect(model.get("currentPage")).toEqual(1);
+        expect(model.get("totalItems")).toEqual(1);
+        expect(model.get("pathName")).toEqual(fakeHistory.pathName);
+      });
   });
-  it('moves to page', () => {
+  it("moves to page", () => {
     return model.setPage(1).then(() => {
-      expect(model.get('currentPage')).toEqual(1);
-      expect(model.get('totalItems')).toEqual(1);
-    })
+      expect(model.get("currentPage")).toEqual(1);
+      expect(model.get("totalItems")).toEqual(1);
+    });
   });
 });

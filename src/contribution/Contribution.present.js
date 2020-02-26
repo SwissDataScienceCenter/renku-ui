@@ -16,19 +16,19 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React from "react";
 import {
   Row, Col, Button, Input, TabContent, TabPane, NavItem,
   Nav, NavLink, DropdownMenu, DropdownItem, DropdownToggle, Dropdown
-} from 'reactstrap';
-import classnames from 'classnames';
-import Collapse from 'react-collapse';
+} from "reactstrap";
+import classnames from "classnames";
+import Collapse from "react-collapse";
 
-import { UserAvatar, TimeCaption, RenkuMarkdown } from '../utils/UIComponents';
-import { FilePreview } from '../file';
-import { ContributionBody as ContributionBodyContainer } from './Contribution.container';
-import { EDIT, PREVIEW } from './Contribution.constants';
-import { Card, CardHeader, CardBody } from 'reactstrap';
+import { UserAvatar, TimeCaption, RenkuMarkdown } from "../utils/UIComponents";
+import { FilePreview } from "../file";
+import { ContributionBody as ContributionBodyContainer } from "./Contribution.container";
+import { EDIT, PREVIEW } from "./Contribution.constants";
+import { Card, CardHeader, CardBody } from "reactstrap";
 
 /**
  * Contribution
@@ -44,7 +44,7 @@ class Contribution extends React.Component {
     return <div>
       <br />
       <Row>
-        <Col key="image" md={1} sm={1} className="float-right text-center" style={{ maxWidth: '62px' }}>
+        <Col key="image" md={1} sm={1} className="float-right text-center" style={{ maxWidth: "62px" }}>
           <UserAvatar size="lg" person={contribution.author} />
         </Col>
         <Col key="body" md={10} sm={10} className="float-left">
@@ -65,7 +65,7 @@ class Contribution extends React.Component {
           </Card>
         </Col>
       </Row>
-    </div>
+    </div>;
   }
 }
 
@@ -84,7 +84,7 @@ class ContributionBody extends React.Component {
   // this will be the entire body of the contribution
   renderBlocks() {
     return this.props.blocks.map(block => {
-      if (block.type === 'fileRef') {
+      if (block.type === "fileRef") {
         return (
           <span key={block.iBlock}>
             <input
@@ -98,7 +98,7 @@ class ContributionBody extends React.Component {
                 <FilePreview
                   file={block.data}
                   {...this.props}
-                  springConfig={{STIFFNESS, DAMPING}}
+                  springConfig={{ STIFFNESS, DAMPING }}
                 />
               </div>
             </Collapse>
@@ -136,23 +136,23 @@ const NewContribution = props => {
 
   return <span>
     <Row className="contribution">
-      <Col md={1} sm={1} style={{maxWidth:'62px', minWidth:'62px'}}></Col>
+      <Col md={1} sm={1} style={{ maxWidth: "62px", minWidth: "62px" }}></Col>
       <Col md={10} sm={10}>
         <div className="margin-no-triangle">
-          <Nav pills className={'nav-pills-underline'}>
+          <Nav pills className={"nav-pills-underline"}>
             <NavItem>
               <NavLink
-                className={classnames({active: props.tab === EDIT})}
+                className={classnames({ active: props.tab === EDIT })}
                 onClick={() => {
-                  props.onTabClick(EDIT)
+                  props.onTabClick(EDIT);
                 }}
               >Write</NavLink>
             </NavItem>
             <NavItem>
               <NavLink
-                className={classnames({active: props.tab === PREVIEW})}
+                className={classnames({ active: props.tab === PREVIEW })}
                 onClick={() => {
-                  props.onTabClick(PREVIEW)
+                  props.onTabClick(PREVIEW);
                 }}
               >Preview</NavLink>
             </NavItem>
@@ -168,14 +168,14 @@ const NewContribution = props => {
           </TabContent>
           <Button
             className="float-right"
-            color="primary" 
+            color="primary"
             onClick={props.onSubmit}
             disabled={props.submitting}
           >Submit</Button>
         </div>
       </Col>
     </Row>
-  </span>
+  </span>;
 };
 
 
@@ -192,4 +192,4 @@ const MentionsList = props =>
     </DropdownMenu>
   </Dropdown>;
 
-export { Contribution, ContributionBody, NewContribution }
+export { Contribution, ContributionBody, NewContribution };

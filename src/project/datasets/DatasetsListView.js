@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { NavLink,  Link } from 'react-router-dom';
-import { ACCESS_LEVELS } from '../../api-client';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faTable, faPlus } from '@fortawesome/free-solid-svg-icons';
+import React, { useState } from "react";
+import { NavLink, Link } from "react-router-dom";
+import { ACCESS_LEVELS } from "../../api-client";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTable, faPlus } from "@fortawesome/free-solid-svg-icons";
 
-import '../filestreeview/treeviewstyle.css';
-import { Loader } from '../../utils/UIComponents';
-import { UncontrolledButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import "../filestreeview/treeviewstyle.css";
+import { Loader } from "../../utils/UIComponents";
+import { UncontrolledButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
 
-function DatasetListRow(props){
+function DatasetListRow(props) {
   const dataset = props.dataset;
   return <NavLink
     activeClassName="selected-dataset"
@@ -18,48 +18,49 @@ function DatasetListRow(props){
     <div className={"fs-element"}>
       <FontAwesomeIcon className="icon-grey" icon={faTable} /> {dataset.name}
     </div>
-  </NavLink>
+  </NavLink>;
 }
 
-function CreateDatasetButton(props){
-  if(props.visibility.accessLevel >= ACCESS_LEVELS.MAINTAINER)
-    return <span className="float-right throw-right-in-flex">
-      <UncontrolledButtonDropdown size="sm">
-        <DropdownToggle color="primary" className="alternateToggleStyle" caret>
-          <FontAwesomeIcon icon={faPlus} style={{ color: 'white', backgroundColor: "#5561A6" }} />
-        </DropdownToggle>
-        <DropdownMenu right={false}>
-          <DropdownItem>
-            <Link to={props.newDatasetUrl}>New Dataset</Link>
-          </DropdownItem>
-        </DropdownMenu>
-      </UncontrolledButtonDropdown>
-    </span>;
-  else return null;
+function CreateDatasetButton(props) {
+  if (props.visibility.accessLevel >= ACCESS_LEVELS.MAINTAINER) {
+return <span className="float-right throw-right-in-flex">
+  <UncontrolledButtonDropdown size="sm">
+    <DropdownToggle color="primary" className="alternateToggleStyle" caret>
+      <FontAwesomeIcon icon={faPlus} style={{ color: "white", backgroundColor: "#5561A6" }} />
+    </DropdownToggle>
+    <DropdownMenu right={false}>
+      <DropdownItem>
+        <Link to={props.newDatasetUrl}>New Dataset</Link>
+      </DropdownItem>
+    </DropdownMenu>
+  </UncontrolledButtonDropdown>
+</span>;
+}
+  return null;
 }
 
-export default function DatasetsListView(props){
+export default function DatasetsListView(props) {
   const [datasets, setDatasets] = useState(undefined);
 
   useState(()=>{
-    if(datasets === undefined && props.datasets !== undefined)
+    if (datasets === undefined && props.datasets !== undefined)
       setDatasets(props.datasets);
-  })
+  });
 
-  return(
+  return (
     <div className="tree-container">
       <div className="tree-title">
         <span className="tree-header-title text-truncate">
           Datasets List
         </span>
         <CreateDatasetButton visibility={props.visibility} newDatasetUrl={props.newDatasetUrl}/>
-      </div> 
+      </div>
       <nav>
         {
           datasets !== undefined ?
             datasets.map((dataset)=>
               <DatasetListRow
-                key={"dataset-"+dataset.identifier}
+                key={"dataset-" + dataset.identifier}
                 dataset={dataset}
                 datasetsUrl={props.datasetsUrl} />
             )
@@ -67,6 +68,6 @@ export default function DatasetsListView(props){
         }
       </nav>
     </div>
-  )
+  );
 
 }

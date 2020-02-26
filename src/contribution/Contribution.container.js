@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import React from "react";
 
 import { ContributionBody as ContributionBodyPresent,
-  NewContribution as NewContributionPresent } from './Contribution.present';
-import { EDIT, patterns } from './Contribution.constants'
+  NewContribution as NewContributionPresent } from "./Contribution.present";
+import { EDIT, patterns } from "./Contribution.constants";
 
 
 class ContributionBody extends React.Component {
@@ -28,7 +28,7 @@ class ContributionBody extends React.Component {
     super(props);
     this._mounted = false;
     const blocks = matchRefs(this.props.contribution.body);
-    this.state = {blocks};
+    this.state = { blocks };
   }
 
   componentDidMount() {
@@ -44,10 +44,10 @@ class ContributionBody extends React.Component {
   // Fetch all the references and add them to the app-state.
   fetchRefs(blocks) {
     blocks.forEach(block => {
-      if (block.type === 'fileRef') {
-        this.props.client.getRepositoryFile(this.props.projectId, block.refPath, 'master', 'base64')
-          .then(d => {this.modifyBlock(block.iBlock, 'data', d)})
-          .catch(error => {this.modifyBlock(block.iBlock, 'isOpened', false)});
+      if (block.type === "fileRef") {
+        this.props.client.getRepositoryFile(this.props.projectId, block.refPath, "master", "base64")
+          .then(d => { this.modifyBlock(block.iBlock, "data", d); })
+          .catch(error => { this.modifyBlock(block.iBlock, "isOpened", false); });
           //the catch should be handled better, there is some error with loading diff for discussions in Merge Requests
         }
     });
@@ -56,18 +56,18 @@ class ContributionBody extends React.Component {
   // Safe way of setting a property of a given block to a certain value and put it to app-state.
   modifyBlock(iBlock, property, value) {
     let blocks = [...this.state.blocks];
-    let updateBlock = {...blocks[iBlock]};
+    let updateBlock = { ...blocks[iBlock] };
     updateBlock[property] = value;
     blocks[iBlock] = updateBlock;
-    if (this._mounted) this.setState({blocks})
+    if (this._mounted) this.setState({ blocks });
   }
 
   render() {
     return <ContributionBodyPresent
       {...this.props}
       blocks={this.state.blocks}
-      onReferenceClick={iBlock => this.modifyBlock(iBlock, 'isOpened', !this.state.blocks[iBlock].isOpened)}
-    />
+      onReferenceClick={iBlock => this.modifyBlock(iBlock, "isOpened", !this.state.blocks[iBlock].isOpened)}
+    />;
   }
 }
 
@@ -79,23 +79,23 @@ function matchRefs(contributionText) {
   let blocks = [];
   let blockCounter = 0;
   let match, previousMatch = {
-    0: '',
+    0: "",
     index: 0
   };
-  while ((match = patterns.fileRefFull.exec(contributionText)) !== null){
-    const isOpened = match[0][0] === '!';
+  while ((match = patterns.fileRefFull.exec(contributionText)) !== null) {
+    const isOpened = match[0][0] === "!";
     const refText = match[1];
     const refPath = match[2];
 
     blocks.push({
-      type: 'text',
+      type: "text",
       text: contributionText.slice(previousMatch.index + previousMatch[0].length, match.index),
       iBlock: blockCounter
     });
     blockCounter++;
 
     blocks.push({
-      type: 'fileRef',
+      type: "fileRef",
       refPath: refPath,
       refText: refText,
       isOpened: isOpened,
@@ -108,7 +108,7 @@ function matchRefs(contributionText) {
   // Let's finish up by adding the last text block (after any reference) if there is any.
   if (previousMatch.index + previousMatch[0].length < contributionText.length) {
     blocks.push({
-      type: 'text',
+      type: "text",
       text: contributionText.slice(previousMatch.index + previousMatch[0].length,
         contributionText.length),
       iBlock: blockCounter
@@ -124,7 +124,7 @@ class NewContribution extends React.Component {
     this.state = {
       tab: EDIT,
       contribution: {
-        body: ''
+        body: ""
       },
       submitting: false,
       files: [],
@@ -139,7 +139,7 @@ class NewContribution extends React.Component {
   // is not possible).
   componentDidMount() {
     this.abortPromise = false;
-    this.getFiles('');
+    this.getFiles("");
   }
 
   // We have to prevent state changes in the callback of an async call in cases
@@ -153,8 +153,8 @@ class NewContribution extends React.Component {
     // callback ('synthetic events')
     let newBody = e.target.value;
     this.setState((prevState) => {
-      let newContribution = {...prevState.contribution, body: newBody};
-      return {...prevState, contribution: newContribution};
+      let newContribution = { ...prevState.contribution, body: newBody };
+      return { ...prevState, contribution: newContribution };
     });
     this.computeMentions(newBody);
   }
@@ -167,31 +167,31 @@ class NewContribution extends React.Component {
     }
   }
 
-  getFiles(searchPath){
-    this.setState({loading: true});
+  getFiles(searchPath) {
+    this.setState({ loading: true });
 
-    this.props.client.getRepositoryTree(this.props.projectId, {path: searchPath})
+    this.props.client.getRepositoryTree(this.props.projectId, { path: searchPath })
       .then(results => {
         if (!this.abortPromise) {
-          this.setState({files: results.map(file => {
+          this.setState({ files: results.map(file => {
             let filePath = file.path;
-            if (file.type === 'tree') {
-              filePath += '/';
-            }
-            return filePath
-          })});
-          this.setState({loading: false});
-          this.setState({currentSearchPath: searchPath});
+            if (file.type === "tree")
+              filePath += "/";
+
+            return filePath;
+          }) });
+          this.setState({ loading: false });
+          this.setState({ currentSearchPath: searchPath });
           this.computeMentions(this.state.contribution.body);
         }
-      })
+      });
   }
 
   computeMentions(body) {
-    const match = patterns.fileRefTrigger.exec(body)
+    const match = patterns.fileRefTrigger.exec(body);
 
     if (!match) {
-      this.setState({mentions: []});
+      this.setState({ mentions: [] });
       return;
     }
 
@@ -200,22 +200,22 @@ class NewContribution extends React.Component {
 
     const pathRegex = /.*\//;
     const searchPathMatch = pathRegex.exec(queryString);
-    const searchPath = searchPathMatch ? searchPathMatch[0] : '';
+    const searchPath = searchPathMatch ? searchPathMatch[0] : "";
 
-    if (searchPath !== this.state.currentSearchPath) {
-      this.getFiles(searchPath)
-    }
+    if (searchPath !== this.state.currentSearchPath)
+      this.getFiles(searchPath);
+
 
     this.setState({
       mentions:
         this.state.files
           .filter(path => path.includes(queryString))
           .map(file => ({
-            type: 'fileRef',
+            type: "fileRef",
             refName: refName,
             refFilePath: file
           }))
-    })
+    });
   }
 
   replaceMention(selectedObject) {
@@ -223,38 +223,39 @@ class NewContribution extends React.Component {
     const match = patterns.fileRefTrigger.exec(this.state.contribution.body)[0];
 
     let replaceString = `${selectedObject.refName}(${selectedObject.refFilePath}`;
-    if (replaceString.slice(-1) !== '/') replaceString += ')';
+    if (replaceString.slice(-1) !== "/") replaceString += ")";
 
     const newBody = this.state.contribution.body.replace(match, replaceString);
-    this.setState({contribution: {
+    this.setState({ contribution: {
       body: newBody
-    }});
+    } });
     this.computeMentions(newBody);
   }
 
-  onSubmit(){
-    this.setState({submitting:true})
-    if(this.props.mergeRequest){
+  onSubmit() {
+    this.setState({ submitting: true });
+    if (this.props.mergeRequest) {
       this.props.client.postDiscussion(this.props.projectId, this.props.iid, this.state.contribution.body)
       .then(contribution => {
-        this.props.appendContribution(contribution.data);   
+        this.props.appendContribution(contribution.data);
         this.setState({
           tab: EDIT,
           contribution: {
-            body: ''
+            body: ""
           },
-          submitting:false,
+          submitting: false,
           files: [],
           loading: false,
           mentions: [],
           currentSearchPath: null
-        })
+        });
       });
-    } else {
+    }
+ else {
       this.props.client.postContribution(this.props.projectId, this.props.issueIid, this.state.contribution.body)
       .then(contribution => {
         this.props.appendContribution(contribution.data);
-        this.setState({submitting:false})
+        this.setState({ submitting: false });
       });
     }
   }
@@ -271,8 +272,8 @@ class NewContribution extends React.Component {
       submitting={this.state.submitting}
       client={this.props.client}
       projectId={this.props.projectId}
-    />
+    />;
   }
 }
 
-export { ContributionBody, NewContribution }
+export { ContributionBody, NewContribution };

@@ -16,33 +16,33 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react';
-import { withRouter } from 'react-router';
+import React, { Component } from "react";
+import { withRouter } from "react-router";
 
-import { StateKind, Schema, StateModel } from '../../model/Model';
-import { QuickNavPresent } from './QuickNav.present';
-import { ProjectsCoordinator } from '../../project/shared';
+import { StateKind, Schema, StateModel } from "../../model/Model";
+import { QuickNavPresent } from "./QuickNav.present";
+import { ProjectsCoordinator } from "../../project/shared";
 
 const suggestionSchema = new Schema({
-  path: {mandatory: true},
-  id: {mandatory: true}
+  path: { mandatory: true },
+  id: { mandatory: true }
 });
 
 const searchBarSchema = new Schema({
-  value: {initial: '', mandatory: false},
-  suggestions: {schema: [suggestionSchema], mandatory: true, initial: []},
-  selectedSuggestion: {schema: suggestionSchema, mandatory: false}
+  value: { initial: "", mandatory: false },
+  suggestions: { schema: [suggestionSchema], mandatory: true, initial: [] },
+  selectedSuggestion: { schema: suggestionSchema, mandatory: false }
 });
 
 class SearchBarModel extends StateModel {
   constructor(stateBinding, stateHolder, initialState) {
-    super(searchBarSchema, stateBinding, stateHolder, initialState)
+    super(searchBarSchema, stateBinding, stateHolder, initialState);
   }
 }
 
 class QuickNavContainerWithRouter extends Component {
   constructor(props) {
-    super(props)
+    super(props);
     this.bar = new SearchBarModel(StateKind.REACT, this);
     this.projectsCoordinator = new ProjectsCoordinator(props.client, props.model.subModel("projects"));
     const featured = this.projectsCoordinator.model.get("featured");
@@ -55,21 +55,21 @@ class QuickNavContainerWithRouter extends Component {
       onSuggestionsFetchRequested: this.onSuggestionsFetchRequested.bind(this),
       onSuggestionsClearRequested: this.onSuggestionsClearRequested.bind(this),
       onSuggestionSelected: this.onSuggestionSelected.bind(this),
-      getSuggestionValue: (suggestion) => suggestion ? suggestion.path : ''
-    }
+      getSuggestionValue: (suggestion) => suggestion ? suggestion.path : ""
+    };
     this.currentSearchValue = null;
   }
 
   onSubmit(e) {
     e.preventDefault();
-    const suggestion = this.bar.get('selectedSuggestion');
-    const value = this.bar.get('value');
-    this.bar.set('value', '');
-    this.bar.set('selectedSuggestion', null);
+    const suggestion = this.bar.get("selectedSuggestion");
+    const value = this.bar.get("value");
+    this.bar.set("value", "");
+    this.bar.set("selectedSuggestion", null);
 
     let url = null;
     if (suggestion == null || suggestion.url == null)
-      url = this.searchUrlForValue(value)
+      url = this.searchUrlForValue(value);
     else
       url = suggestion.url;
 
@@ -83,37 +83,37 @@ class QuickNavContainerWithRouter extends Component {
       return;
 
     // constants come from react-autosuggest
-    if (reason === 'suggestions-revealed')
+    if (reason === "suggestions-revealed")
       return;
     const featured = this.projectsCoordinator.model.get("featured");
     if (!featured.fetched || (!featured.starred.length && !featured.member.length))
       return;
 
     // Search member projects and starred project
-    const regex = new RegExp(value, 'i');
+    const regex = new RegExp(value, "i");
     const searchDomain = featured.starred.concat(featured.member);
     const hits = {};
     searchDomain.forEach(d => {
-      if (regex.exec(d.path_with_namespace) != null) {
+      if (regex.exec(d.path_with_namespace) != null)
         hits[d.path_with_namespace] = d;
-      }
+
     });
     const suggestions = [];
     if (value.length > 0) {
       suggestions.push({
-        title: 'Search',
+        title: "Search",
         suggestions: [{ query: value, id: -1, path: value, url: this.searchUrlForValue(value) }]
       });
     }
     const hitKeys = Object.keys(hits);
     if (hitKeys.length > 0) {
       suggestions.push({
-        title: 'Projects',
+        title: "Projects",
         suggestions: hitKeys.sort().map(k => ({ path: k, id: hits[k].id, url: `/projects/${hits[k].id}` }))
       });
     }
 
-    this.bar.set('suggestions', suggestions);
+    this.bar.set("suggestions", suggestions);
   }
 
   searchUrlForValue(value) {
@@ -121,24 +121,24 @@ class QuickNavContainerWithRouter extends Component {
   }
 
   onSuggestionsClearRequested() {
-    this.bar.set('suggestions', []);
+    this.bar.set("suggestions", []);
   }
 
   onChange(event, { newValue, method }) {
-    this.bar.set('value', newValue);
+    this.bar.set("value", newValue);
   }
 
   onSuggestionSelected(event, { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }) {
-    const selectedSuggestion = this.bar.get('suggestions')[sectionIndex].suggestions[suggestionIndex];
-    this.bar.set('selectedSuggestion', selectedSuggestion)
+    const selectedSuggestion = this.bar.get("suggestions")[sectionIndex].suggestions[suggestionIndex];
+    this.bar.set("selectedSuggestion", selectedSuggestion);
   }
 
   render() {
     return <QuickNavPresent
-      suggestions={this.bar.get('suggestions')}
-      value={this.bar.get('value')}
+      suggestions={this.bar.get("suggestions")}
+      value={this.bar.get("value")}
       callbacks={this.callbacks}
-    />
+    />;
   }
 }
 

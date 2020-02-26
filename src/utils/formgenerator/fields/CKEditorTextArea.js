@@ -23,19 +23,19 @@
  *  Presentational components.
  */
 
-import React, { useState } from 'react';
-import ValidationAlert from './ValidationAlert';
-import HelpText from './HelpText';
-import { FormGroup, Label } from 'reactstrap';
-import CKEditor from '@ckeditor/ckeditor5-react';
-import { RenkuMarkdownEditor, ClassicEditor } from '@renku/renku-ui-ckeditor5-build';
-import { CustomInput, Input } from 'reactstrap';
+import React, { useState } from "react";
+import ValidationAlert from "./ValidationAlert";
+import HelpText from "./HelpText";
+import { FormGroup, Label } from "reactstrap";
+import CKEditor from "@ckeditor/ckeditor5-react";
+import { RenkuMarkdownEditor, ClassicEditor } from "@renku/renku-ui-ckeditor5-build";
+import { CustomInput, Input } from "reactstrap";
 
 
 function CktextareaInput({ name, label, type, value, alert, setInputs, help, outputType, disabled }) {
-  const [codeview, setCodeview]=useState(false);
+  const [codeview, setCodeview] = useState(false);
 
-  const switchLabel = (outputType === 'markdown') ? 'Markdown' : 'HTML';
+  const switchLabel = (outputType === "markdown") ? "Markdown" : "HTML";
 
   return <div>
     <FormGroup>
@@ -47,41 +47,42 @@ function CktextareaInput({ name, label, type, value, alert, setInputs, help, out
         name="customSwitch"
         label={switchLabel}
         checked={codeview}
-        onChange={()=>{setCodeview(!codeview)}}
+        onChange={() => { setCodeview(!codeview); }}
       />
       {
         codeview === false ?
           <CKEditor
             id={name}
-            editor={outputType === 'markdown' ?  RenkuMarkdownEditor : ClassicEditor}
+            editor={outputType === "markdown" ? RenkuMarkdownEditor : ClassicEditor}
             type={type}
             data={value || ""}
             disabled={disabled}
             invalid={alert !== undefined}
             rows={7}
-            onChange={ 
-              ( event, editor ) => {
-                const artifitialEvent = { 
-                  target : { name: name , value:  editor.getData()}, 
-                  isPersistent : () => false } ;
+            onChange={
+              (event, editor) => {
+                const artifitialEvent = {
+                  target: { name: name, value: editor.getData() },
+                  isPersistent: () => false
+                };
                 setInputs(artifitialEvent);
-              } 
+              }
             }
           />
           :
           <Input
-            id={name+"text-area"}
-            name={name} 
+            id={name + "text-area"}
+            name={name}
             type="textarea"
             value={value || ""}
             onChange={setInputs}
-            rows={ value ? value.split("\n").length+1 : 2 }
+            rows={value ? value.split("\n").length + 1 : 2}
           />
       }
-      <HelpText content={ help }/>
-      <ValidationAlert content={ alert } />
+      <HelpText content={help} />
+      <ValidationAlert content={alert} />
     </FormGroup>
-  </div>
+  </div>;
 }
 
 export default CktextareaInput;

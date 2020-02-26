@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-const EDIT = 'edit';
-const PREVIEW = 'preview';
+const EDIT = "edit";
+const PREVIEW = "preview";
 
 const patterns = {
 

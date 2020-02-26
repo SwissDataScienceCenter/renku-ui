@@ -23,6 +23,6 @@
  *  Components for the fork project page
  */
 
-import Fork from './ProjectFork.container';
+import Fork from "./ProjectFork.container";
 
 export default Fork;

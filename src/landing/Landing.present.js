@@ -24,17 +24,16 @@
  */
 
 
-
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import { Row, Col, Jumbotron } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import { Row, Col, Jumbotron } from "reactstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faClone, faCloudUploadAlt as faCloudUp, faCodeBranch, faHeart, faSearch, faShieldAlt as faShield, faUserFriends
-} from '@fortawesome/free-solid-svg-icons';
+} from "@fortawesome/free-solid-svg-icons";
 
-import { RenkuMarkdown, Loader } from '../utils/UIComponents';
-import { ProjectListRow } from '../project';
+import { RenkuMarkdown, Loader } from "../utils/UIComponents";
+import { ProjectListRow } from "../project";
 
 function truncatedProjectListRows(projects, projectsUrl, moreUrl) {
   const maxProjectsRows = 5;
@@ -44,7 +43,7 @@ function truncatedProjectListRows(projects, projectsUrl, moreUrl) {
   return [
     <Row key="projects"><Col style={{ overflowX: "auto" }}>{rows}</Col></Row>,
     more
-  ]
+  ];
 }
 
 class YourEmptyProjects extends Component {
@@ -62,7 +61,7 @@ class YourEmptyProjects extends Component {
           Alternatively, you can <Link to={this.props.projectNewUrl}>create a new project</Link>.
         </p>
       </Col>
-    </Row>)
+    </Row>);
   }
 }
 
@@ -81,18 +80,18 @@ class YourProjects extends Component {
     else {
       const projectNewUrl = this.props.urlMap.projectNewUrl;
       projectsComponent = <YourEmptyProjects key="empty-projects" projectsSearchUrl={projectsSearchUrl}
-        projectNewUrl={projectNewUrl} welcomePage={this.props.welcomePage} />
+        projectNewUrl={projectNewUrl} welcomePage={this.props.welcomePage} />;
     }
     return [
       <h2 key="header">Your Projects</h2>,
       projectsComponent
-    ]
+    ];
   }
 }
 
 class RenkuIntroText extends Component {
   render() {
-    return <RenkuMarkdown key="readme" markdownText={this.props.welcomePage} />
+    return <RenkuMarkdown key="readme" markdownText={this.props.welcomePage} />;
   }
 
 }
@@ -111,7 +110,7 @@ class StarredEmptyProjects extends Component {
           Alternatively, you can <Link to={this.props.projectNewUrl}>create a new project</Link>.
         </p>
       </Col>
-    </Row>)
+    </Row>);
   }
 }
 
@@ -123,19 +122,20 @@ class Starred extends Component {
     if (this.props.loading) {
       projectsComponent = <Loader key="loader" />;
     }
-    else if (projects.length > 0)
+    else if (projects.length > 0) {
       projectsComponent = truncatedProjectListRows(projects, projectsUrl, this.props.urlMap.projectsStarredUrl);
+    }
     else {
       const projectNewUrl = this.props.urlMap.projectNewUrl;
       const projectsSearchUrl = this.props.urlMap.projectsSearchUrl;
       projectsComponent = <StarredEmptyProjects key="empty" projectsSearchUrl={projectsSearchUrl}
-        projectNewUrl={projectNewUrl} welcomePage={this.props.welcomePage} />
+        projectNewUrl={projectNewUrl} welcomePage={this.props.welcomePage} />;
     }
 
     return [
       <h2 key="header">Starred Projects</h2>,
       projectsComponent
-    ]
+    ];
   }
 }
 
@@ -145,7 +145,7 @@ class Welcome extends Component {
       <Col>
         <RenkuIntroText welcomePage={this.props.welcomePage} />
       </Col>
-    </Row>)
+    </Row>);
   }
 }
 
@@ -153,7 +153,7 @@ class RenkuProvidesHeader extends Component {
   render() {
     return <h3 className="text-primary">
       {this.props.title} <FontAwesomeIcon icon={this.props.icon} id={this.props.title.toLowerCase()} />
-    </h3>
+    </h3>;
   }
 }
 
@@ -238,7 +238,7 @@ class AnonymousHome extends Component {
           </h3>
         </Col>
       </Row>
-    </div>
+    </div>;
   }
 }
 
@@ -276,7 +276,7 @@ class LoggedInHome extends Component {
           <Welcome {...this.props} />
         </Col>
       </Row>
-    ]
+    ];
   }
 }
 

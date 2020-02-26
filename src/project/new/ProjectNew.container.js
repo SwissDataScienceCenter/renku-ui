@@ -23,32 +23,32 @@
  *  Container components for project.
  */
 
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
-import { StateKind, StateModel } from '../../model/Model';
+import { StateKind, StateModel } from "../../model/Model";
 // TODO: ONLY use one projectSchema after the refactoring has been finished.
-import { newProjectSchema } from '../../model/RenkuModels';
-import { slugFromTitle } from '../../utils/HelperFunctions';
-import ProjectNew from './ProjectNew.present';
-import { ProjectsCoordinator } from '../shared';
+import { newProjectSchema } from "../../model/RenkuModels";
+import { slugFromTitle } from "../../utils/HelperFunctions";
+import ProjectNew from "./ProjectNew.present";
+import { ProjectsCoordinator } from "../shared";
 
 
 function groupVisibilitySupportsVisibility(groupVisibility, visibility) {
-  if (visibility === 'private') return true;
-  if (visibility === 'internal') return (groupVisibility === 'internal' || groupVisibility === 'public');
+  if (visibility === "private") return true;
+  if (visibility === "internal") return (groupVisibility === "internal" || groupVisibility === "public");
   // Public is the last remaining
-  return (groupVisibility === 'public');
+  return (groupVisibility === "public");
 }
 
-function projectVisibilitiesForGroupVisibility(groupVisibility = 'public') {
+function projectVisibilitiesForGroupVisibility(groupVisibility = "public") {
   const visibilities = [];
   visibilities.push({ name: "Private", value: "private" });
-  if (groupVisibilitySupportsVisibility(groupVisibility, 'internal'))
+  if (groupVisibilitySupportsVisibility(groupVisibility, "internal"))
     visibilities.push({ name: "Internal", value: "internal" });
-  if (groupVisibilitySupportsVisibility(groupVisibility, 'public'))
+  if (groupVisibilitySupportsVisibility(groupVisibility, "public"))
     visibilities.push({ name: "Public", value: "public" });
-  return visibilities
+  return visibilities;
 }
 
 class New extends Component {
@@ -89,8 +89,8 @@ class New extends Component {
       return;
     }
     const username = this.props.user.data.username;
-    const namespace = namespaces.data.filter(n => n.path === username)
-    if (namespace.length > 0) this.newProject.set('meta.projectNamespace', namespace[0]);
+    const namespace = namespaces.data.filter(n => n.path === username);
+    if (namespace.length > 0) this.newProject.set("meta.projectNamespace", namespace[0]);
     this.setState({ namespaces });
 
     const templates = await this.fetchProjectTemplates();
@@ -98,8 +98,8 @@ class New extends Component {
       this.setState({ templates: [] });
       return;
     }
-    this.setState({ templates })
-    if (templates.length > 0) this.newProject.set('meta.template', templates[0].folder);
+    this.setState({ templates });
+    if (templates.length > 0) this.newProject.set("meta.template", templates[0].folder);
 
   }
 
@@ -111,11 +111,11 @@ class New extends Component {
     this.resetError();
     const validation = this.validate();
     if (validation.result) {
-      this.newProject.set('display.loading', true);
+      this.newProject.set("display.loading", true);
       this.props.client.postProject(this.newProject.get(), this.props.renkuTemplatesUrl, this.props.renkuTemplatesRef)
         .then((project) => {
           this.refreshUserProjects();
-          this.newProject.set('display.loading', false);
+          this.newProject.set("display.loading", false);
           this.props.history.push(`/projects/${project.path_with_namespace}`);
         })
         .catch(error => {
@@ -132,7 +132,7 @@ class New extends Component {
             else if (Object.keys(messages).includes("namespace") &&
                 /is not valid/.test(messages["namespace"].join("; ")) &&
                 Object.keys(messages).includes("limit_reached")) {
-              display_messages = ["You have reached your project limit in the target namespace"]
+              display_messages = ["You have reached your project limit in the target namespace"];
             }
             else {
               display_messages = Object.keys(messages).map(mex => {
@@ -146,64 +146,64 @@ class New extends Component {
           else {
             display_messages = ["unknown"];
           }
-          this.newProject.set('display.errors', display_messages);
-          this.newProject.set('display.loading', false);
-        })
+          this.newProject.set("display.errors", display_messages);
+          this.newProject.set("display.loading", false);
+        });
     }
   }
 
   validate() {
-    const validation = this.newProject.validate()
-    if (!validation.result) {
+    const validation = this.newProject.validate();
+    if (!validation.result)
       this.setState({ statuses: validation.errors });
-    }
+
     return validation;
   }
 
   resetError() {
-    const errors = this.newProject.get('display.errors');
-    if (errors && errors.length) {
-      this.newProject.set('display.errors', []);
-    }
+    const errors = this.newProject.get("display.errors");
+    if (errors && errors.length)
+      this.newProject.set("display.errors", []);
+
   }
 
   onTitleChange(e) {
-    this.newProject.set('display.title', e.target.value);
-    this.newProject.set('display.slug', slugFromTitle(e.target.value));
+    this.newProject.set("display.title", e.target.value);
+    this.newProject.set("display.slug", slugFromTitle(e.target.value));
     this.resetError();
   }
 
   onDescriptionChange(e) {
-    this.newProject.set('display.description', e.target.value);
+    this.newProject.set("display.description", e.target.value);
     this.resetError();
   }
 
   onVisibilityChange(e) {
-    this.newProject.set('meta.visibility', e.target.value);
-    if (e.target.value !== "private") {
-      this.newProject.set('meta.optoutKg', false);
-    }
+    this.newProject.set("meta.visibility", e.target.value);
+    if (e.target.value !== "private")
+      this.newProject.set("meta.optoutKg", false);
+
     this.resetError();
   }
 
   onTemplateChange(e) {
-    this.newProject.set('meta.template', e.target.value);
+    this.newProject.set("meta.template", e.target.value);
     this.resetError();
   }
 
   onOptoutKgChange(e) {
-    this.newProject.set('meta.optoutKg', e.target.checked);
+    this.newProject.set("meta.optoutKg", e.target.checked);
     this.resetError();
   }
 
   onProjectNamespaceChange(value) {
-    this.newProject.set('meta.projectNamespace', value);
+    this.newProject.set("meta.projectNamespace", value);
     this.resetError();
   }
 
   onProjectNamespaceAccept() {
-    const namespace = this.newProject.get('meta.projectNamespace');
-    if (namespace.kind !== 'group') {
+    const namespace = this.newProject.get("meta.projectNamespace");
+    if (namespace.kind !== "group") {
       const visibilities = projectVisibilitiesForGroupVisibility();
       this.setState({ namespaceGroup: null, visibilities });
       return;
@@ -212,30 +212,30 @@ class New extends Component {
     this.props.client.getGroupByPath(namespace.full_path).then(r => {
       const group = r.data;
       const visibilities = projectVisibilitiesForGroupVisibility(group.visibility);
-      const visibility = this.newProject.get('meta.visibility');
+      const visibility = this.newProject.get("meta.visibility");
       if (!groupVisibilitySupportsVisibility(group.visibility, visibility)) {
         // Default to the highest available visibility
-        this.newProject.set('meta.visibility', visibilities[visibilities.length - 1].value);
+        this.newProject.set("meta.visibility", visibilities[visibilities.length - 1].value);
       }
       this.setState({ namespaceGroup: group, visibilities });
-    })
+    });
     this.resetError();
   }
 
   doMapStateToProps(state, ownProps) {
     const model = this.newProject.mapStateToProps(state, ownProps);
-    return { model }
+    return { model };
   }
 
   fetchNamespaces(search = null) {
     const queryParams = {};
-    if (search != null) queryParams['search'] = search;
+    if (search != null) queryParams["search"] = search;
     return this.props.client.getNamespaces(queryParams);
   }
 
   // https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions#Using_Special_Characters
   escapeRegexCharacters(str) {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
 
   async fetchMatchingNamespaces(search) {
@@ -244,15 +244,15 @@ class New extends Component {
 
     // We have all the data, just filter in the browser
     let escapedValue = this.escapeRegexCharacters(search.trim());
-    if (escapedValue === '') escapedValue = '.*';
-    const regex = new RegExp(escapedValue, 'i');
-    return Promise.resolve(namespaces.data.filter(namespace => regex.test(namespace.path)))
+    if (escapedValue === "") escapedValue = ".*";
+    const regex = new RegExp(escapedValue, "i");
+    return Promise.resolve(namespaces.data.filter(namespace => regex.test(namespace.path)));
   }
 
   render() {
     const ConnectedNewProject = connect(this.mapStateToProps)(ProjectNew);
-    const statuses = {}
-    this.state.statuses.forEach((d) => { Object.keys(d).forEach(k => statuses[k] = d[k]) });
+    const statuses = {};
+    this.state.statuses.forEach((d) => { Object.keys(d).forEach(k => statuses[k] = d[k]); });
     return <ConnectedNewProject
       statuses={statuses}
       namespaces={this.state.namespaces.data}
@@ -265,4 +265,4 @@ class New extends Component {
 }
 
 
-export default New
+export default New;

@@ -23,7 +23,7 @@
  *  Model and schema for storing Renku data.
  */
 
-import { Schema, StateModel, StateKind, SubModel, SpecialPropVal, StatusHelper } from './Model'
-import { globalSchema } from './GlobalSchema';
+import { Schema, StateModel, StateKind, SubModel, SpecialPropVal, StatusHelper } from "./Model";
+import { globalSchema } from "./GlobalSchema";
 
-export { globalSchema, Schema, StateModel, StateKind, SubModel, SpecialPropVal, StatusHelper }
+export { globalSchema, Schema, StateModel, StateKind, SubModel, SpecialPropVal, StatusHelper };

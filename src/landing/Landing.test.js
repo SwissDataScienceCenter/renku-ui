@@ -23,38 +23,38 @@
  *  Tests for landing.
  */
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { MemoryRouter } from 'react-router-dom';
+import React from "react";
+import ReactDOM from "react-dom";
+import { MemoryRouter } from "react-router-dom";
 
-import { testClient as client } from '../api-client';
-import { generateFakeUser } from '../user/User.test';
-import Landing from './Landing';
-import { StateModel, globalSchema } from '../model';
+import { testClient as client } from "../api-client";
+import { generateFakeUser } from "../user/User.test";
+import Landing from "./Landing";
+import { StateModel, globalSchema } from "../model";
 
-describe('rendering', () => {
+describe("rendering", () => {
   const anonymousUser = generateFakeUser(true);
   const loggedUser = generateFakeUser();
   const model = new StateModel(globalSchema);
 
-  it('renders home without crashing for anonymous user', () => {
-    const div = document.createElement('div');
+  it("renders home without crashing for anonymous user", () => {
+    const div = document.createElement("div");
     ReactDOM.render(
       <MemoryRouter>
         <Landing.Home
-          welcomePage={btoa('## Welcome to Renku')}
+          welcomePage={btoa("## Welcome to Renku")}
           user={anonymousUser}
           model={model}
           client={client} />
       </MemoryRouter>, div);
   });
 
-  it('renders home without crashing for logged user', () => {
-    const div = document.createElement('div');
+  it("renders home without crashing for logged user", () => {
+    const div = document.createElement("div");
     ReactDOM.render(
       <MemoryRouter>
         <Landing.Home
-          welcomePage={btoa('## Welcome to Renku')}
+          welcomePage={btoa("## Welcome to Renku")}
           user={loggedUser}
           model={model}
           client={client} />

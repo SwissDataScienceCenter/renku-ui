@@ -23,21 +23,21 @@
  *  Coordinator for the application.
  */
 
-import React, { Component } from 'react';
-import { Jumbotron } from 'reactstrap';
-import { BrowserRouter as Router, Route, Switch, Redirect } from 'react-router-dom';
+import React, { Component } from "react";
+import { Jumbotron } from "reactstrap";
+import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
 
-import Project from './project/Project';
-import DatasetList from './dataset/list/DatasetList.container';
-import { Landing, RenkuNavBar, FooterNavbar } from './landing';
-import { Notebooks } from './notebooks';
-import { Login } from './authentication';
-import Help from './help';
-import NotFound from './not-found';
-import ShowDataset from './dataset/Dataset.container';
-import { Bouncer } from './utils/UIComponents';
+import Project from "./project/Project";
+import DatasetList from "./dataset/list/DatasetList.container";
+import { Landing, RenkuNavBar, FooterNavbar } from "./landing";
+import { Notebooks } from "./notebooks";
+import { Login } from "./authentication";
+import Help from "./help";
+import NotFound from "./not-found";
+import ShowDataset from "./dataset/Dataset.container";
+import { Bouncer } from "./utils/UIComponents";
 
-import './App.css';
+import "./App.css";
 
 
 class App extends Component {
@@ -51,7 +51,7 @@ class App extends Component {
         </Jumbotron>
       );
     }
-    else {
+
       return (
         <Router>
           <div>
@@ -62,83 +62,83 @@ class App extends Component {
               <div key="gap">&nbsp;</div>
               <Switch>
                 {/* Route forces trailing slashes on routes ending with a numerical id */}
-                <Route exact path="/login"
-                  render={p => <Login key="login" {...p} {...this.props} />} />
+                <Route exact path="/login" render={
+                  p => <Login key="login" {...p} {...this.props} />} />
                 <Route exact strict path="/*(\d+)" render={props => <Redirect to={`${props.location.pathname}/`} />} />
-                <Route exact path="/"
-                  render={p => <Landing.Home
-                    key="landing" welcomePage={this.props.params['WELCOME_PAGE']}
-                    user={user}
+                <Route exact path="/" render={
+                  p => <Landing.Home
+                    key="landing" welcomePage={this.props.params["WELCOME_PAGE"]}
+                    user={this.props.user}
                     client={this.props.client}
                     model={this.props.model}
                     {...p} />} />
-                <Route path="/help"
-                  render={p => <Help key="help" {...p} {...this.props} />} />
+                <Route path="/help" render={
+                  p => <Help key="help" {...p} {...this.props} />} />
                 <Route exact path={["/projects", "/projects/starred", "/projects/search"]} render={
                   p => <Project.List
                     key="projects"
-                    user={user}
+                    user={this.props.user}
                     client={this.props.client}
                     {...p}
                   />}
                 />
                 {/* pull out the underlying parts of the url and pass them to the project view */}
-                <Route path="/projects/:subUrl+"
-                  render={p => <Project.View
+                <Route path="/projects/:subUrl+" render={
+                  p => <Project.View
                     key={`${p.match.params.projectNamespace}/${p.match.params.projectName}`}
                     projectPathWithNamespace={`${p.match.params.projectNamespace}/${p.match.params.projectName}`}
                     client={this.props.client}
                     params={this.props.params}
                     model={this.props.model}
-                    user={user}
+                    user={this.props.user}
                     {...p}
                   />}
                 />
-                <Route exact path="/project_new"
-                  render={(p) =>
-                    <Project.New key="project_new"
-                      client={this.props.client}
-                      model={this.props.model}
-                      user={user}
-                      renkuTemplatesUrl={this.props.params['RENKU_TEMPLATES_URL']}
-                      renkuTemplatesRef={this.props.params['RENKU_TEMPLATES_REF']}
-                      {...p} />} />
-                <Route exact path="/environments"
-                  render={p => <Notebooks key="environments"
+                <Route exact path="/project_new" render={
+                  p => <Project.New
+                    key="project_new"
+                    client={this.props.client}
+                    model={this.props.model}
+                    user={this.props.user}
+                    renkuTemplatesUrl={this.props.params["RENKU_TEMPLATES_URL"]}
+                    renkuTemplatesRef={this.props.params["RENKU_TEMPLATES_REF"]}
+                    {...p}
+                  />}
+                />
+                <Route exact path="/environments" render={
+                  p => <Notebooks
+                    key="environments"
                     standalone={true}
                     client={this.props.client}
                     model={this.props.model}
                     {...p}
                   />}
                 />
-                <Route path="/datasets/:identifier"
-                  render={p =>
-                    <ShowDataset
-                      key="datasetpreview"  {...p}
-                      insideProject={false}
-                      identifier={`${p.match.params.identifier}`}
-                      client={this.props.client}
-                      projectsUrl="/projects"
-                      selectedDataset={p.match.params.datasetId}
-                    />
-                  }
+                <Route path="/datasets/:identifier" render={
+                  p => <ShowDataset
+                    key="datasetpreview" {...p}
+                    insideProject={false}
+                    identifier={`${p.match.params.identifier}`}
+                    client={this.props.client}
+                    projectsUrl="/projects"
+                    selectedDataset={p.match.params.datasetId}
+                  />}
                 />
-                <Route path="/datasets"
-                  render={p => <DatasetList key="datasets"
+                <Route path="/datasets" render={
+                  p => <DatasetList key="datasets"
                     client={this.props.client}
                     model={this.props.model}
                     {...p}
                   />}
                 />
-                <Route path="*"
-                  render={p => <NotFound {...p} />} />
+                <Route path="*" render={p => <NotFound {...p} />} />
               </Switch>
             </main>
             <Route component={FooterNavbar} />
           </div>
         </Router>
       );
-    }
+
   }
 }
 

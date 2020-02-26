@@ -16,6 +16,6 @@
  * limitations under the License.
  */
 
-import { Login } from './Authentication.container.js';
+import { Login } from "./Authentication.container.js";
 
 export { Login };

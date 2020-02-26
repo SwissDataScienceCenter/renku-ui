@@ -24,10 +24,10 @@ function addMergeRequestMethods(client) {
     remove_source_branch: true
   }) => {
     let headers = client.getBasicHeaders();
-    headers.append('Content-Type', 'application/json');
+    headers.append("Content-Type", "application/json");
 
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}/merge_requests`, {
-      method: 'POST',
+      method: "POST",
       headers: headers,
       body: JSON.stringify({
         ...options,
@@ -35,63 +35,63 @@ function addMergeRequestMethods(client) {
         source_branch,
         target_branch,
       })
-    })
-  }
+    });
+  };
 
 
-  client.getMergeRequests = (projectId, queryParams = { scope: 'all', state: 'opened' }) => {
+  client.getMergeRequests = (projectId, queryParams = { scope: "all", state: "opened" }) => {
     let headers = client.getBasicHeaders();
     const url = projectId ? `${client.baseUrl}/projects/${projectId}/merge_requests` :
-      `${client.baseUrl}/merge_requests`
+      `${client.baseUrl}/merge_requests`;
     return client.clientFetch(url, {
-      method: 'GET',
+      method: "GET",
       headers,
       queryParams: { ...queryParams, per_page: 100 }
-    })
-  }
+    });
+  };
 
 
   client.getMergeRequestChanges = (projectId, mrIid) => {
     let headers = client.getBasicHeaders();
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}/merge_requests/${mrIid}/changes`, {
-      method: 'GET',
+      method: "GET",
       headers
-    })
-  }
+    });
+  };
 
 
   client.getDiscussions = (projectId, mrIid) => {
     let headers = client.getBasicHeaders();
-    headers.append('Content-Type', 'application/json');
+    headers.append("Content-Type", "application/json");
 
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}/merge_requests/${mrIid}/discussions`, {
-      method: 'GET',
+      method: "GET",
       headers: headers
-    })
-  }
+    });
+  };
 
 
   client.getMergeRequestCommits = (projectId, mrIid) => {
     let headers = client.getBasicHeaders();
-    headers.append('Content-Type', 'application/json');
+    headers.append("Content-Type", "application/json");
 
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}/merge_requests/${mrIid}/commits`, {
-      method: 'GET',
+      method: "GET",
       headers: headers
-    })
-  }
+    });
+  };
 
 
   client.postDiscussion = (projectId, mrIid, contribution) => {
     let headers = client.getBasicHeaders();
-    headers.append('Content-Type', 'application/json');
+    headers.append("Content-Type", "application/json");
 
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}/merge_requests/${mrIid}/discussions`, {
-      method: 'POST',
+      method: "POST",
       headers: headers,
       body: JSON.stringify({ body: contribution })
-    })
-  }
+    });
+  };
 
 
   // Get all files in a project that have modifications in an open merge request.
@@ -105,7 +105,7 @@ function addMergeRequestMethods(client) {
         // For each MR get the changes introduced by the MR, creates an array
         // of promises.
         const mergeRequestsChanges = resp.data.map((mergeRequest) => {
-          return client.getMergeRequestChanges(projectId, mergeRequest.iid)
+          return client.getMergeRequestChanges(projectId, mergeRequest.iid);
         });
 
         // On resolution of all promises, form an object which lists for each file
@@ -114,30 +114,32 @@ function addMergeRequestMethods(client) {
           .then((mrChangeResponses) => {
             const openMrs = {};
             mrChangeResponses.forEach((mrChangeResponse) => {
-              const mrChange = mrChangeResponse.data
+              const mrChange = mrChangeResponse.data;
               const changesArray = mrChange.changes;
-              const mrInfo = { mrIid: mrChange.iid, source_branch: mrChange.source_branch }
+              const mrInfo = { mrIid: mrChange.iid, source_branch: mrChange.source_branch };
               changesArray
+                // eslint-disable-next-line
                 .filter((change) => change.old_path === change.new_path)
+                // eslint-disable-next-line
                 .forEach((change) => {
                   if (!openMrs[change.old_path]) openMrs[change.old_path] = [];
-                  openMrs[change.old_path].push(mrInfo)
-                })
+                  openMrs[change.old_path].push(mrInfo);
+                });
             });
             return openMrs;
           });
-      })
-  }
+      });
+  };
 
 
   client.mergeMergeRequest = (projectId, mrIid) => {
     let headers = client.getBasicHeaders();
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}/merge_requests/${mrIid}/merge`, {
-      method: 'PUT',
+      method: "PUT",
       headers,
       body: JSON.stringify({ should_remove_source_branch: true })
-    })
-  }
+    });
+  };
 
 }
 export default addMergeRequestMethods;

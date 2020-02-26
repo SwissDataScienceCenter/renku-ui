@@ -23,27 +23,27 @@
  *  Container components for the landing page.
  */
 
-import React, { Component } from 'react';
-import { Provider, connect } from 'react-redux';
+import React, { Component } from "react";
+import { Provider, connect } from "react-redux";
 
-import { createStore } from '../utils/EnhancedState';
-import Present from './Landing.present';
-import State from './Landing.state';
-import { ProjectsCoordinator } from '../project/shared';
+import { createStore } from "../utils/EnhancedState";
+import Present from "./Landing.present";
+import State from "./Landing.state";
+import { ProjectsCoordinator } from "../project/shared";
 
 function urlMap() {
   return {
-    projectsUrl: '/projects',
-    projectNewUrl: '/project_new',
-    projectsSearchUrl: '/projects/search',
-    projectsStarredUrl: '/projects/starred',
-  }
+    projectsUrl: "/projects",
+    projectNewUrl: "/project_new",
+    projectsSearchUrl: "/projects/search",
+    projectsStarredUrl: "/projects/starred",
+  };
 }
 
 class Home extends Component {
   mapStateToProps(state, ownProps) {
     // map projects to props
-    return { projects: state.projects }
+    return { projects: state.projects };
   }
 
   render() {
@@ -52,7 +52,7 @@ class Home extends Component {
     return <ConnectedProjectsHome
       store={this.props.model.reduxStore}
       {...this.props}
-    />
+    />;
   }
 }
 
@@ -74,18 +74,18 @@ class HomeProjects extends Component {
     const local = {
       urlMap: urls
     };
-    return { ...state, ...local }
+    return { ...state, ...local };
   }
 
 
   mapDispatchToProps(dispatch, ownProps) {
     return {
-      onStarred: (e) => { dispatch(State.Home.Ui.selectStarred()) },
-      onMember: (e) => { dispatch(State.Home.Ui.selectMember()) },
-      onYourNetwork: (e) => { dispatch(State.Home.Ui.selectYourNetwork()) },
-      onExplore: (e) => { dispatch(State.Home.Ui.selectExplore()) },
-      onWelcome: (e) => { dispatch(State.Home.Ui.selectWelcome()) },
-    }
+      onStarred: (e) => { dispatch(State.Home.Ui.selectStarred()); },
+      onMember: (e) => { dispatch(State.Home.Ui.selectMember()); },
+      onYourNetwork: (e) => { dispatch(State.Home.Ui.selectYourNetwork()); },
+      onExplore: (e) => { dispatch(State.Home.Ui.selectExplore()); },
+      onWelcome: (e) => { dispatch(State.Home.Ui.selectWelcome()); },
+    };
   }
 
   render() {
@@ -98,7 +98,7 @@ class HomeProjects extends Component {
           projects={this.props.projects}
         />
       </Provider>
-    ]
+    ];
   }
 }
 

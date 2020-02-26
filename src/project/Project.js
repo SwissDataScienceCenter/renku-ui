@@ -23,56 +23,56 @@
  *  Container components for project.
  */
 
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import _ from 'lodash/collection';
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import _ from "lodash/collection";
 
-import { StateKind } from '../model/Model';
-import Present from './Project.present';
-import { ProjectModel, GraphIndexingStatus } from './Project.state';
-import { ProjectsCoordinator } from './shared';
-import Issue from '../issue/Issue';
-import { FileLineage } from '../file';
-import { ACCESS_LEVELS } from '../api-client';
-import { MergeRequest, MergeRequestList } from '../merge-request';
-import List from './list';
-import New from './new';
-import { ShowFile } from '../file';
-import Fork from './fork';
-import ShowDataset from '../dataset/Dataset.container';
-import NewDataset from './datasets/new/index';
-import EditDataset from './datasets/edit/index';
+import { StateKind } from "../model/Model";
+import Present from "./Project.present";
+import { ProjectModel, GraphIndexingStatus } from "./Project.state";
+import { ProjectsCoordinator } from "./shared";
+import Issue from "../issue/Issue";
+import { FileLineage } from "../file";
+import { ACCESS_LEVELS } from "../api-client";
+import { MergeRequest, MergeRequestList } from "../merge-request";
+import List from "./list";
+import New from "./new";
+import { ShowFile } from "../file";
+import Fork from "./fork";
+import ShowDataset from "../dataset/Dataset.container";
+import NewDataset from "./datasets/new/index";
+import EditDataset from "./datasets/edit/index";
 
 
 const subRoutes = {
-  overview: 'overview',
-  stats: 'overview/stats',
-  overviewDatasets: 'overview/datasets',
-  datasets: 'datasets',
-  dataset: 'datasets/:datasetId',
-  datasetEdit: 'datasets/:datasetId/modify',
-  issueNew: 'issue_new',
-  collaboration: 'collaboration',
-  issues: 'collaboration/issues',
-  issue: 'collaboration/issues/:issueId(\\d+)',
-  mrs: 'collaboration/mergerequests',
-  mr: 'collaboration/mergerequests/:mrIid(\\d+)',
-  files: 'files',
-  fileContent: 'blob',
-  notebook: 'files/blob/:filePath([^.]+.ipynb)',
-  lineages: 'files/lineage',
-  lineage: 'files/lineage/:filePath+',
-  data: 'files/data',
-  workflows: 'files/workflows',
-  settings: 'settings',
-  environments: 'environments',
-  environmentNew: 'environments/new'
-}
+  overview: "overview",
+  stats: "overview/stats",
+  overviewDatasets: "overview/datasets",
+  datasets: "datasets",
+  dataset: "datasets/:datasetId",
+  datasetEdit: "datasets/:datasetId/modify",
+  issueNew: "issue_new",
+  collaboration: "collaboration",
+  issues: "collaboration/issues",
+  issue: "collaboration/issues/:issueId(\\d+)",
+  mrs: "collaboration/mergerequests",
+  mr: "collaboration/mergerequests/:mrIid(\\d+)",
+  files: "files",
+  fileContent: "blob",
+  notebook: "files/blob/:filePath([^.]+.ipynb)",
+  lineages: "files/lineage",
+  lineage: "files/lineage/:filePath+",
+  data: "files/data",
+  workflows: "files/workflows",
+  settings: "settings",
+  environments: "environments",
+  environmentNew: "environments/new"
+};
 
 // SubRoutes grouped by depth
 const srMap = _.groupBy(Object.values(subRoutes), v => v.split("/").length);
 const maxSrMapDepth = Math.max(...Object.keys(srMap).map(k => Number.parseInt(k)));
-const projectIdRegex = /^\d+/
+const projectIdRegex = /^\d+/;
 
 /**
  * Check if the components need to be added to the projectPathWithNamespace
@@ -88,7 +88,7 @@ function accumulateIntoProjectPath(projectPathWithNamespace, comps) {
     const routeComps = routes[i].split("/");
     let matches = true;
     for (let j = 0; j < routeComps.length && matches; ++j) {
-      if (routeComps[j].startsWith(":")) continue
+      if (routeComps[j].startsWith(":")) continue;
       if (routeComps[j] !== comps[j]) matches = false;
     }
     if (matches) return projectPathWithNamespace;
@@ -107,7 +107,7 @@ function splitProjectSubRoute(subUrl) {
   if (subUrl == null)
     return result;
 
-  const baseUrl = subUrl.endsWith('/') ? subUrl.slice(0, -1) : subUrl;
+  const baseUrl = subUrl.endsWith("/") ? subUrl.slice(0, -1) : subUrl;
   const projectSubRoute = baseUrl.startsWith("/projects/") ? baseUrl.slice(10) : baseUrl;
   const comps = projectSubRoute.split("/");
   if (comps.length < 1)
@@ -132,7 +132,8 @@ function splitProjectSubRoute(subUrl) {
 
   if (result.projectId != null) {
     result.baseUrl = `/projects/${result.projectId}`;
-  } else {
+  }
+  else {
     result.baseUrl = `/projects/${result.projectPathWithNamespace}`;
     result.namespace = result.projectPathWithNamespace.slice(0, result.projectPathWithNamespace.lastIndexOf("/"));
   }
@@ -152,41 +153,41 @@ class View extends Component {
 
     // fetch useful projects data in not yet loaded
     const featured = props.model.get("projects.featured");
-    if (!featured.fetched && !featured.fetching) {
+    if (!featured.fetched && !featured.fetching)
       this.projectsCoordinator.getFeatured();
-    }
+
   }
 
   componentDidMount() {
     const pathComponents = splitProjectSubRoute(this.props.match.url);
-    if (pathComponents.projectPathWithNamespace == null && pathComponents.projectId != null) {
+    if (pathComponents.projectPathWithNamespace == null && pathComponents.projectId != null)
       this.redirectProjectWithNumericId(pathComponents.projectId);
-    }
+
     if (pathComponents.projectPathWithNamespace != null) {
       // fetch only if user data are already loaded
-      if (this.props.user.fetched) {
+      if (this.props.user.fetched)
         this.fetchAll();
-      }
+
 
       // in case the route fails it tests weather it could be a projectid route
-      const routes = ['overview', 'issues', 'issue_new', 'files', 'lineage', 'notebooks', 'collaboration',
-        'data', 'workflows', 'settings', 'pending', 'launchNotebook', 'notebookServers', 'datasets', 'environments'];
+      const routes = ["overview", "issues", "issue_new", "files", "lineage", "notebooks", "collaboration",
+        "data", "workflows", "settings", "pending", "launchNotebook", "notebookServers", "datasets", "environments"];
       const available = this.props.core ? this.props.core.available : null;
-      const potentialProjectId = pathComponents.projectPathWithNamespace.split('/')[0];
-      const potentialRoute = pathComponents.projectPathWithNamespace.split('/')[1];
+      const potentialProjectId = pathComponents.projectPathWithNamespace.split("/")[0];
+      const potentialRoute = pathComponents.projectPathWithNamespace.split("/")[1];
 
       if (!available && !isNaN(potentialProjectId) && routes.indexOf(potentialRoute) > 0) {
         this.redirectAfterFetchFails(pathComponents.projectPathWithNamespace,
-          this.props.location.pathname.replace("/projects/" + potentialProjectId, ''));
+          this.props.location.pathname.replace("/projects/" + potentialProjectId, ""));
       }
     }
   }
 
   componentDidUpdate(prevProps) {
     // re-fetch when user data are available
-    if (!prevProps.user.fetched && this.props.user.fetched) {
+    if (!prevProps.user.fetched && this.props.user.fetched)
       this.fetchAll();
-    }
+
     const prevPathComps = splitProjectSubRoute(prevProps.match.url);
     const pathComps = splitProjectSubRoute(this.props.match.url);
     if (prevPathComps.projectPathWithNamespace !== pathComps.projectPathWithNamespace) {
@@ -209,7 +210,7 @@ class View extends Component {
   async fetchProjectFilesTree() {
     return this.projectState.fetchProjectFilesTree(this.props.client, this.cleanCurrentURL());
   }
-  async fetchProjectIssues() { this.projectState.fetchProjectIssues(this.props.client) }
+  async fetchProjectIssues() { this.projectState.fetchProjectIssues(this.props.client); }
   async setProjectOpenFolder(filepath) {
     this.projectState.setProjectOpenFolder(this.props.client, filepath);
   }
@@ -229,43 +230,42 @@ class View extends Component {
   redirectProjectWithNumericId(projectId) {
     this.props.client.getProjectById(projectId)
       .then((project) => {
-        this.props.history.push('/projects/' + project.data.metadata.core.path_with_namespace);
+        this.props.history.push("/projects/" + project.data.metadata.core.path_with_namespace);
       });
   }
 
   redirectAfterFetchFails(projectPathWithNamespace, urlInsideProject) {
-    this.props.client.getProjectById(projectPathWithNamespace.split('/')[0])
+    this.props.client.getProjectById(projectPathWithNamespace.split("/")[0])
       .then((project) => {
-        this.props.history.push('/projects/' + project.data.metadata.core.path_with_namespace + urlInsideProject);
-      })
+        this.props.history.push("/projects/" + project.data.metadata.core.path_with_namespace + urlInsideProject);
+      });
   }
 
   cleanCurrentURL() {
     const subUrls = this.getSubUrls();
-    if (subUrls.filesUrl === this.props.location.pathname || subUrls.filesUrl + '/' === this.props.location.pathname)
-      return ""
-    else
-      return this.props.location.pathname
-        .replace(this.props.match.projectPath, "")
-        .replace(subUrls.lineagesUrl, "")
-        .replace(subUrls.fileContentUrl, "");
+    if (subUrls.filesUrl === this.props.location.pathname || subUrls.filesUrl + "/" === this.props.location.pathname)
+      return "";
+    return this.props.location.pathname
+      .replace(this.props.match.projectPath, "")
+      .replace(subUrls.lineagesUrl, "")
+      .replace(subUrls.fileContentUrl, "");
   }
 
   // TODO: move all .set actions to Project.state.js
   checkGraphWebhook() {
     // check if data are available -- may remove this?
-    if (this.projectState.get('core.available') !== true) {
-      this.projectState.set('webhook.possible', false);
+    if (this.projectState.get("core.available") !== true) {
+      this.projectState.set("webhook.possible", false);
       return;
     }
     // check user permissions and fetch webhook status
-    const webhookCreator = this.projectState.get('visibility.accessLevel') >= ACCESS_LEVELS.MAINTAINER ?
+    const webhookCreator = this.projectState.get("visibility.accessLevel") >= ACCESS_LEVELS.MAINTAINER ?
       true :
       false;
-    this.projectState.set('webhook.possible', webhookCreator);
-    if (webhookCreator) {
+    this.projectState.set("webhook.possible", webhookCreator);
+    if (webhookCreator)
       this.projectState.fetchGraphWebhookStatus(this.props.client);
-    }
+
   }
 
   getStarred() {
@@ -273,20 +273,20 @@ class View extends Component {
     // return false until data are available
     if (!featured.fetched)
       return false;
-    return featured.starred.map((project) => project.id).indexOf(this.projectState.get('core.id')) >= 0;
+    return featured.starred.map((project) => project.id).indexOf(this.projectState.get("core.id")) >= 0;
   }
 
   getSubUrls() {
     const match = this.props.match;
     const pathComponents = splitProjectSubRoute(match.url);
-    const baseUrl =  pathComponents.baseUrl;
+    const baseUrl = pathComponents.baseUrl;
     const filesUrl = `${baseUrl}/files`;
     const fileContentUrl = `${filesUrl}/blob`;
     const collaborationUrl = `${baseUrl}/collaboration`;
-    const datasetsUrl = `${baseUrl}/datasets`
+    const datasetsUrl = `${baseUrl}/datasets`;
 
     return {
-      projectsUrl: '/projects',
+      projectsUrl: "/projects",
       baseUrl: baseUrl,
       overviewUrl: `${baseUrl}/overview`,
       statsUrl: `${baseUrl}/overview/stats`,
@@ -296,7 +296,7 @@ class View extends Component {
       datasetUrl: `${datasetsUrl}/:datasetId`,
       editDatasetUrl: `${datasetsUrl}/:datasetId/modify`,
       issueNewUrl: `${collaborationUrl}/issues/issue_new`,
-      collaborationUrl:`${collaborationUrl}`,
+      collaborationUrl: `${collaborationUrl}`,
       issuesUrl: `${collaborationUrl}/issues`,
       issueUrl: `${collaborationUrl}/issues/:issueIid`,
       mergeRequestsOverviewUrl: `${collaborationUrl}/mergerequests`,
@@ -316,7 +316,7 @@ class View extends Component {
       mrUrl: `${baseUrl}/pending/:mrIid`,
       launchNotebookUrl: `${baseUrl}/environments/new`,
       notebookServersUrl: `${baseUrl}/environments`
-    }
+    };
   }
 
   // TODO: Fix for MRs across forks.
@@ -324,43 +324,45 @@ class View extends Component {
 
     // Don't display any suggestions while the state is updating - leads to annoying flashing fo
     // wrong information while branches are there but merge_requests are not...
-    if (this.projectState.get('system.merge_requests') === this.projectState._updatingPropVal) return [];
-    if (this.projectState.get('system.branches') === this.projectState._updatingPropVal) return [];
+    if (this.projectState.get("system.merge_requests") === this.projectState._updatingPropVal) return [];
+    if (this.projectState.get("system.branches") === this.projectState._updatingPropVal) return [];
 
-    const mergeRequestBranches = this.projectState.get('system.merge_requests')
+    const mergeRequestBranches = this.projectState.get("system.merge_requests")
       .map(mr => mr.source_branch);
 
-    return this.projectState.get('system.branches')
-      .filter(branch => branch.name !== 'master')
+    return this.projectState.get("system.branches")
+      .filter(branch => branch.name !== "master")
       .filter(branch => !branch.merged)
       .filter(branch => mergeRequestBranches.indexOf(branch.name) < 0);
   }
 
   subComponents(projectId, ownProps) {
-    const accessLevel = this.projectState.get('visibility.accessLevel');
-    const externalUrl = this.projectState.get('core.external_url');
-    const httpProjectUrl = this.projectState.get('system.http_url');
+    const accessLevel = this.projectState.get("visibility.accessLevel");
+    const externalUrl = this.projectState.get("core.external_url");
+    const httpProjectUrl = this.projectState.get("system.http_url");
     const updateProjectView = this.forceUpdate.bind(this);
-    const filesTree = this.projectState.get('filesTree');
-    const datasets = this.projectState.get('core.datasets');
-    const graphProgress = this.projectState.get('webhook.progress');
-    const mergeRequests = this.projectState.get('system.merge_requests');
-    const maintainer = this.projectState.get('visibility.accessLevel') >= ACCESS_LEVELS.MAINTAINER ?
+    const filesTree = this.projectState.get("filesTree");
+    const datasets = this.projectState.get("core.datasets");
+    const graphProgress = this.projectState.get("webhook.progress");
+    const mergeRequests = this.projectState.get("system.merge_requests");
+    const maintainer = this.projectState.get("visibility.accessLevel") >= ACCESS_LEVELS.MAINTAINER ?
       true :
       false;
-    const forkedData = this.projectState.get('system.forked_from_project');
+    const forkedData = this.projectState.get("system.forked_from_project");
     const forked = (forkedData != null && Object.keys(forkedData).length > 0) ?
       true :
       false;
-    const forkModalOpen = this.projectState.get('transient.forkModalOpen');
-    const projectPathWithNamespace = this.projectState.get('core.path_with_namespace');
+    const forkModalOpen = this.projectState.get("transient.forkModalOpen");
+    const projectPathWithNamespace = this.projectState.get("core.path_with_namespace");
     // Access to the project state could be given to the subComponents by connecting them here to
     // the projectStore. This is not yet necessary.
     const subUrls = this.getSubUrls();
-    const subProps = {...ownProps, projectId, accessLevel, externalUrl, filesTree, projectPathWithNamespace, forkModalOpen, datasets};
+    const subProps = {
+      ...ownProps, projectId, accessLevel, externalUrl, filesTree, projectPathWithNamespace, forkModalOpen, datasets
+    };
     const branches = {
-      all: this.projectState.get('system.branches'),
-      fetch: () => { this.fetchBranches() }
+      all: this.projectState.get("system.branches"),
+      fetch: () => { this.fetchBranches(); }
     };
 
     const mapStateToProps = (state, ownProps) => {
@@ -396,25 +398,25 @@ class View extends Component {
         maintainer={maintainer}
         forked={forked}
         launchNotebookUrl={subUrls.launchNotebookUrl}
-        projectNamespace={this.projectState.get('core.namespace_path')}
-        projectPathOnly={this.projectState.get('core.project_path')}
+        projectNamespace={this.projectState.get("core.namespace_path")}
+        projectPathOnly={this.projectState.get("core.project_path")}
         branches={branches}
         hashElement={filesTree !== undefined ? filesTree.hash[p.match.params.filePath] : undefined} />,
 
       fileView: (p) => <ShowFile
         key="filepreview" {...subProps}
-        filePath={p.location.pathname.replace(pathComponents.baseUrl + '/files/blob/', '')}
+        filePath={p.location.pathname.replace(pathComponents.baseUrl + "/files/blob/", "")}
         lineagesPath={subUrls.lineagesUrl}
         launchNotebookUrl={subUrls.launchNotebookUrl}
-        projectNamespace={this.projectState.get('core.namespace_path')}
-        projectPath={this.projectState.get('core.project_path')}
+        projectNamespace={this.projectState.get("core.namespace_path")}
+        projectPath={this.projectState.get("core.project_path")}
         branches={branches}
         hashElement={filesTree !== undefined ?
-          filesTree.hash[p.location.pathname.replace(pathComponents.baseUrl + '/files/blob/', '')] :
+          filesTree.hash[p.location.pathname.replace(pathComponents.baseUrl + "/files/blob/", "")] :
           undefined} />,
 
       datasetView: (p) => <ShowDataset
-        key="datasetpreview"  {...subProps}
+        key="datasetpreview" {...subProps}
         progress={graphProgress}
         maintainer={maintainer}
         forked={forked}
@@ -427,7 +429,7 @@ class View extends Component {
       />,
 
       newDataset: (p) => <NewDataset
-        key="datasetnew"  {...subProps}
+        key="datasetnew" {...subProps}
         progress={graphProgress}
         maintainer={maintainer}
         accessLevel={accessLevel}
@@ -445,7 +447,7 @@ class View extends Component {
       />,
 
       editDataset: (p) => <EditDataset
-        key="datasetmodify"  {...subProps}
+        key="datasetmodify" {...subProps}
         progress={graphProgress}
         maintainer={maintainer}
         accessLevel={accessLevel}
@@ -460,7 +462,7 @@ class View extends Component {
         client={this.props.client}
         history={this.props.history}
         datasetId={p.match.params.datasetId}
-        dataset={p.location.state ? p.location.state.dataset: null}
+        dataset={p.location.state ? p.location.state.dataset : null}
         httpProjectUrl={httpProjectUrl}
       />,
 
@@ -477,11 +479,11 @@ class View extends Component {
         mergeRequestDiscussionUrl={subUrls.mergeRequestDiscussionUrl}
         mergeRequestChangesUrl={subUrls.mergeRequestChangesUrl}
         mergeRequestCommitsUrl={subUrls.mergeRequestCommitsUrl}
-         />,
+      />,
 
       fork: () => <Fork
         projectId={projectId}
-        title={this.projectState.get('core.title')}
+        title={this.projectState.get("core.title")}
         forkModalOpen={forkModalOpen}
         toggleForkModal={this.eventHandlers.toggleForkModal}
         closeForkModal={this.eventHandlers.closeForkModal}
@@ -489,7 +491,7 @@ class View extends Component {
         client={this.props.client}
         user={this.props.user} />
 
-    }
+    };
   }
 
   eventHandlers = {
@@ -517,26 +519,26 @@ class View extends Component {
     },
     closeForkModal: () => {
       // Only toggle if it is currently open
-      if (this.projectState.get('transient.forkModalOpen') === true)
+      if (this.projectState.get("transient.forkModalOpen") === true)
         this.projectState.toggleForkModal();
     },
     onCreateMergeRequest: (branch) => {
-      const core = this.projectState.get('core');
+      const core = this.projectState.get("core");
       let newMRiid;
       // TODO: Again, it would be nice to update the local state rather than relying on the server
       // TODO: updating the information fast enough through all possible layers of caches, etc...
-      this.props.client.createMergeRequest(core.id, branch.name, branch.name, 'master')
+      this.props.client.createMergeRequest(core.id, branch.name, branch.name, "master")
         .then((d) => {
           newMRiid = d.data.iid;
-          return this.fetchAll()
+          return this.fetchAll();
         })
-        .then(() => this.props.history.push(`${this.getSubUrls().mergeRequestsOverviewUrl}/${newMRiid}`))
+        .then(() => this.props.history.push(`${this.getSubUrls().mergeRequestsOverviewUrl}/${newMRiid}`));
     },
     onProjectRefresh: (e) => {
       e.preventDefault();
-      this.fetchAll()
+      this.fetchAll();
     },
-    fetchOverviewData: () => { this.fetchReadme() },
+    fetchOverviewData: () => { this.fetchReadme(); },
     fetchMrSuggestions: async () => {
       await this.fetchMergeRequests();
       this.fetchBranches();
@@ -571,13 +573,13 @@ class View extends Component {
 
   mapStateToProps(state, ownProps) {
     const pathComponents = splitProjectSubRoute(ownProps.match.url);
-    const internalId = this.projectState.get('core.id') || parseInt(ownProps.match.params.id, 10);
+    const internalId = this.projectState.get("core.id") || parseInt(ownProps.match.params.id, 10);
     const starred = this.getStarred();
     const settingsReadOnly = state.visibility.accessLevel < ACCESS_LEVELS.MAINTAINER;
     const suggestedMRBranches = this.getMrSuggestions();
-    const externalUrl = this.projectState.get('core.external_url');
+    const externalUrl = this.projectState.get("core.external_url");
     const canCreateMR = state.visibility.accessLevel >= ACCESS_LEVELS.DEVELOPER;
-    const forkModalOpen = this.projectState.get('transient.forkModalOpen');
+    const forkModalOpen = this.projectState.get("transient.forkModalOpen");
 
     return {
       ...this.projectState.get(),
@@ -593,15 +595,15 @@ class View extends Component {
       suggestedMRBranches,
       externalUrl,
       canCreateMR,
-    }
+    };
   }
 
   render() {
     const ConnectedProjectView = connect(
-      this.mapStateToProps.bind(this), null, null, {storeKey: 'projectStore'}
+      this.mapStateToProps.bind(this), null, null, { storeKey: "projectStore" }
     )(Present.ProjectView);
-    const props = {...this.props, ...this.eventHandlers, projectStore: this.projectState.reduxStore};
-    return <ConnectedProjectView {...props} />
+    const props = { ...this.props, ...this.eventHandlers, projectStore: this.projectState.reduxStore };
+    return <ConnectedProjectView {...props} />;
   }
 }
 

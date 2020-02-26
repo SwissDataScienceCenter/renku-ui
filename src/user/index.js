@@ -22,6 +22,6 @@
  *  Components for interacting with user
  */
 
-import { UserCoordinator } from './User.state';
+import { UserCoordinator } from "./User.state";
 
 export { UserCoordinator };

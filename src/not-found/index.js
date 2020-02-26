@@ -23,6 +23,6 @@
  *  Components for the not-found page
  */
 
-import { NotFound } from './NotFound.container';
+import { NotFound } from "./NotFound.container";
 
 export default NotFound;

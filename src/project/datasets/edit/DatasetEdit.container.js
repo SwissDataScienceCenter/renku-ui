@@ -23,9 +23,9 @@
  *  Container components for editing dataset.
  */
 
-import React from 'react';
-import { datasetFormSchema } from '../../../model/RenkuModels';
-import DatasetEdit from './DatasetEdit.present';
+import React from "react";
+import { datasetFormSchema } from "../../../model/RenkuModels";
+import DatasetEdit from "./DatasetEdit.present";
 
 function EditDataset(props) {
 

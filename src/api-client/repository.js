@@ -16,128 +16,128 @@
  * limitations under the License.
  */
 
-import { API_ERRORS, alertAPIErrors } from './errors'
+import { API_ERRORS, alertAPIErrors } from "./errors";
 
 
 function addRepositoryMethods(client) {
 
   client.postCommit = (projectId, commitPayload) => {
     const headers = client.getBasicHeaders();
-    headers.append('Content-Type', 'application/json');
+    headers.append("Content-Type", "application/json");
 
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}/repository/commits`, {
-      method: 'POST',
+      method: "POST",
       headers: headers,
       body: JSON.stringify(commitPayload)
-    })
-  }
+    });
+  };
 
 
-  client.getCommits = (projectId, ref='master') => {
+  client.getCommits = (projectId, ref = "master") => {
     let headers = client.getBasicHeaders();
-    headers.append('Content-Type', 'application/json');
+    headers.append("Content-Type", "application/json");
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}/repository/commits?ref_name=${ref}`, {
-      method: 'GET',
+      method: "GET",
       headers: headers
     })
       .then(resp => {
-        if (resp.data.length > 0) {
+        if (resp.data.length > 0)
           return resp;
-        }
-        else {
+
+
           throw API_ERRORS.notFoundError;
-        }
-      })
-  }
+
+      });
+  };
 
 
   client.getProjectReadme = (projectId) => {
-    return client.getRepositoryFile(projectId, 'README.md', 'master', 'raw')
+    return client.getRepositoryFile(projectId, "README.md", "master", "raw")
       .then(text => {
-        return {text: text || 'Could not find a README.md file. Why don\'t you add one to the repository?'}
+        return { text: text || "Could not find a README.md file. Why don't you add one to the repository?" };
       });
-  }
+  };
 
 
-  client.getRepositoryFileMeta = (projectId, path, ref='master') => {
+  client.getRepositoryFileMeta = (projectId, path, ref = "master") => {
     let headers = client.getBasicHeaders();
     const encodedPath = encodeURIComponent(path);
     return client.clientFetch(
       `${client.baseUrl}/projects/${projectId}/repository/files/${encodedPath}?ref=${ref}`, {
-        method: 'HEAD',
+        method: "HEAD",
         headers: headers
       }, client.returnTypes.full, false
     ).then(response => {
-      const headers = response.headers
+      const headers = response.headers;
       return {
-        blobId: headers.get('X-Gitlab-Blob-Id'),
-        commitId: headers.get('X-Gitlab-Commit-Id'),
-        contentSha256: headers.get('X-Gitlab-Content-Sha256'),
-        encoding: headers.get('X-Gitlab-Encoding'),
-        fileName: headers.get('X-Gitlab-File-Name'),
-        filePath: headers.get('X-Gitlab-File-Path'),
-        lastCommitId: headers.get('X-Gitlab-Last-Commit-Id'),
-        ref: headers.get('X-Gitlab-Ref'),
-        size: headers.get('X-Gitlab-Size')
+        blobId: headers.get("X-Gitlab-Blob-Id"),
+        commitId: headers.get("X-Gitlab-Commit-Id"),
+        contentSha256: headers.get("X-Gitlab-Content-Sha256"),
+        encoding: headers.get("X-Gitlab-Encoding"),
+        fileName: headers.get("X-Gitlab-File-Name"),
+        filePath: headers.get("X-Gitlab-File-Path"),
+        lastCommitId: headers.get("X-Gitlab-Last-Commit-Id"),
+        ref: headers.get("X-Gitlab-Ref"),
+        size: headers.get("X-Gitlab-Size")
       };
-    })
-  }
+    });
+  };
 
-  client.getProjectFile = (projectId, path, ref='master', alertOnErr=true) => {
+  client.getProjectFile = (projectId, path, ref = "master", alertOnErr = true) => {
     let headers = client.getBasicHeaders();
     const encodedPath = encodeURIComponent(path);
     return client.clientFetch(
       `${client.baseUrl}/projects/${projectId}/repository/files/${encodedPath}/raw?ref=${ref}`, {
-        method: 'GET',
+        method: "GET",
         headers: headers
       }, client.returnTypes.text, alertOnErr
-    )
-  }
+    );
+  };
 
   client.getRepositoryCommit = (projectId, commitSHA) => {
     let headers = client.getBasicHeaders();
     return client.clientFetch(
       `${client.baseUrl}/projects/${projectId}/repository/commits/${commitSHA}`, {
-        method: 'GET',
+        method: "GET",
         headers: headers
       },
       client.returnTypes.full,
       false
     ).then(response => {
       return response.json();
-    })
-  }
+    });
+  };
 
 
   // TODO: Merge to following methods into one
-  client.getRepositoryFile = (projectId, path, ref='master', encoding='base64') => {
+  client.getRepositoryFile = (projectId, path, ref = "master", encoding = "base64") => {
     let headers = client.getBasicHeaders();
     const pathEncoded = encodeURIComponent(path);
-    const raw = encoding === 'raw' ? '/raw' : '';
+    const raw = encoding === "raw" ? "/raw" : "";
     return client.clientFetch(
       `${client.baseUrl}/projects/${projectId}/repository/files/${pathEncoded}${raw}?ref=${ref}`, {
-        method: 'GET',
+        method: "GET",
         headers: headers
       },
       client.returnTypes.full,
       false
     )
       .then(response => {
-        if (encoding === 'raw') return response.text();
-        if (encoding === 'base64') return response.json();
-      })
+        if (encoding === "raw") return response.text();
+        if (encoding === "base64") return response.json();
+      });
       // .catch((error) => {
       //   if (error.case === API_ERRORS.notFoundError) {
       //     console.error(`Attempted to access non-existing repository file ${path}`)
       //     return undefined;
       //   }
       // })
-  }
+  };
 
 
   client.getRepositoryTree = (
     projectId,
-    {path='', recursive=false, per_page=500, page = 1, previousResults=[]} = {}
+    { path = "", recursive = false, per_page = 500, page = 1, previousResults = [] } = {}
   ) => {
     let headers = client.getBasicHeaders();
     const queryParams = {
@@ -150,37 +150,37 @@ function addRepositoryMethods(client) {
 
     // TODO: Think about general pagination strategy for API client.
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}/repository/tree`, {
-      method: 'GET',
+      method: "GET",
       headers,
       queryParams
     }, client.returnTypes.full, false)
       .then(response => {
-        if(response.headers.get('X-Next-Page')) {
+        if (response.headers.get("X-Next-Page")) {
           return response.json().then(data => {
             return client.getRepositoryTree(projectId, {
               path,
               recursive,
               per_page,
               previousResults: previousResults.concat(data),
-              page: response.headers.get('X-Next-Page')
-            })
+              page: response.headers.get("X-Next-Page")
+            });
           });
         }
-        else {
+
           return response.json().then(data => {
-            return previousResults.concat(data)
+            return previousResults.concat(data);
           });
-        }
+
       })
       .catch((error) => {
-        if (error.case === API_ERRORS.notFoundError) {
-          return []
-        }
-        else {
+        if (error.case === API_ERRORS.notFoundError)
+          return [];
+
+
           alertAPIErrors(error);
-        }
-      })
-  }
+
+      });
+  };
 
   // TODO: Unfotunately, the API doesn't offer a way to query only for unmerged branches -
   // TODO: add this capability to the gateway.
@@ -189,11 +189,11 @@ function addRepositoryMethods(client) {
     let headers = client.getBasicHeaders();
     const url = `${client.baseUrl}/projects/${projectId}/repository/branches`;
     return client.clientFetch(url, {
-      method: 'GET',
+      method: "GET",
       headers,
-      queryParams: {per_page: 100}
-    })
-  }
+      queryParams: { per_page: 100 }
+    });
+  };
 
 }
 

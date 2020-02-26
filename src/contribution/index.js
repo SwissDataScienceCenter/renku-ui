@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { Contribution } from './Contribution.present'
-import { NewContribution } from './Contribution.container'
+import { Contribution } from "./Contribution.present";
+import { NewContribution } from "./Contribution.container";
 
 export { Contribution, NewContribution };

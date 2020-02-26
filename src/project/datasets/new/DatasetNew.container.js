@@ -23,9 +23,9 @@
  *  Container components for new dataset.
  */
 
-import React from 'react';
-import { datasetFormSchema } from '../../../model/RenkuModels';
-import DatasetNew from './DatasetNew.present';
+import React from "react";
+import { datasetFormSchema } from "../../../model/RenkuModels";
+import DatasetNew from "./DatasetNew.present";
 
 function NewDataset(props) {
 

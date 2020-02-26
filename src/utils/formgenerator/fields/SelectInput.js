@@ -23,20 +23,22 @@
  *  Presentational components.
  */
 
-import * as React from 'react';
-import ValidationAlert from './ValidationAlert';
-import HelpText from './HelpText';
-import { FormGroup, Input, Label} from 'reactstrap';
+import * as React from "react";
+import ValidationAlert from "./ValidationAlert";
+import HelpText from "./HelpText";
+import { FormGroup, Input, Label } from "reactstrap";
 
-function SelectInput({ name, label, type, value, alert, options, initial, placeholder, setInputs, help, disabled = false }) {
+function SelectInput(
+  { name, label, type, value, alert, options, initial, placeholder, setInputs, help, disabled = false }) {
   return <FormGroup>
     <Label htmlFor={name}>{label}</Label>
-    <Input id={name} name={name} type={type} value={value || ""} onChange={setInputs} placeholder={placeholder} disabled={disabled}>
+    <Input id={name} name={name} type={type} value={value || ""}
+      onChange={setInputs} placeholder={placeholder} disabled={disabled}>
       {options && options.map(option => <option key={option.value} value={option.value}>{option.name}</option>)}
     </Input>
     <HelpText content={help} />
     <ValidationAlert content={alert} />
-  </FormGroup>
+  </FormGroup>;
 }
 
 export default SelectInput;

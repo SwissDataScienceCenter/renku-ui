@@ -16,30 +16,30 @@
  * limitations under the License.
  */
 
-import React, { Component, Fragment } from 'react';
-import Media from 'react-media';
-import { Link } from 'react-router-dom';
+import React, { Component, Fragment } from "react";
+import Media from "react-media";
+import { Link } from "react-router-dom";
 
-import { Form, FormGroup, FormText, Label, Input, Button, ButtonGroup, Row, Col, Table } from 'reactstrap';
-import { DropdownItem } from 'reactstrap';
-import { UncontrolledTooltip, UncontrolledPopover, PopoverHeader, PopoverBody } from 'reactstrap';
-import { Badge } from 'reactstrap';
-import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Form, FormGroup, FormText, Label, Input, Button, ButtonGroup, Row, Col, Table } from "reactstrap";
+import { DropdownItem } from "reactstrap";
+import { UncontrolledTooltip, UncontrolledPopover, PopoverHeader, PopoverBody } from "reactstrap";
+import { Badge } from "reactstrap";
+import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faStopCircle, faExternalLinkAlt, faInfoCircle, faSyncAlt } from '@fortawesome/free-solid-svg-icons';
-import { faCogs, faCog, faExclamationTriangle, faRedo } from '@fortawesome/free-solid-svg-icons';
-import { faCheckCircle, faFileAlt, faSave, faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faStopCircle, faExternalLinkAlt, faInfoCircle, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import { faCogs, faCog, faExclamationTriangle, faRedo } from "@fortawesome/free-solid-svg-icons";
+import { faCheckCircle, faFileAlt, faSave, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
 
-import { StatusHelper } from '../model/Model';
-import { NotebooksHelper } from './index'
-import { simpleHash } from '../utils/HelperFunctions';
-import { ButtonWithMenu, Loader, ExternalLink, JupyterIcon, ThrottledTooltip } from '../utils/UIComponents';
-import { WarnAlert, InfoAlert } from '../utils/UIComponents';
-import Time from '../utils/Time';
-import Sizes from '../utils/Media';
+import { StatusHelper } from "../model/Model";
+import { NotebooksHelper } from "./index";
+import { simpleHash } from "../utils/HelperFunctions";
+import { ButtonWithMenu, Loader, ExternalLink, JupyterIcon, ThrottledTooltip } from "../utils/UIComponents";
+import { WarnAlert, InfoAlert } from "../utils/UIComponents";
+import Time from "../utils/Time";
+import Sizes from "../utils/Media";
 
-import './Notebooks.css';
+import "./Notebooks.css";
 
 // * Notebooks code * //
 class Notebooks extends Component {
@@ -68,7 +68,7 @@ class Notebooks extends Component {
           urlNewEnvironment={this.props.urlNewEnvironment}
         />
       </Col>
-    </Row>
+    </Row>;
   }
 }
 
@@ -90,9 +90,10 @@ class NotebooksPopup extends Component {
     </span>);
     if (!this.props.standalone) {
       let newOutput = "New";
-      if (this.props.urlNewEnvironment)
+      if (this.props.urlNewEnvironment) {
         newOutput = (<Link className="btn btn-primary btn-sm" role="button" to={this.props.urlNewEnvironment}>
           New</Link>);
+      }
 
       suggestion = (<span>
         You can start a new interactive environment by clicking on {newOutput} in the side bar.
@@ -109,25 +110,25 @@ class NotebooksPopup extends Component {
 
 class NotebookServers extends Component {
   render() {
-    if (this.props.loading) {
-      return <Loader />
-    }
+    if (this.props.loading)
+      return <Loader />;
+
     return (
       <Row>
         <Col md={12} lg={10} xl={8}>
           <NotebookServersList {...this.props} />
         </Col>
       </Row>
-    )
+    );
   }
 }
 
 class NotebookServersList extends Component {
   render() {
     const serverNames = Object.keys(this.props.servers);
-    if (serverNames.length === 0) {
+    if (serverNames.length === 0)
       return (<p>No currently running environments.</p>);
-    }
+
     const rows = serverNames.map((k, i) => {
       const validAnnotations = Object.keys(this.props.servers[k].annotations)
         .filter(key => key.startsWith("renku.io"))
@@ -164,7 +165,7 @@ class NotebookServersHeader extends Component {
   render() {
     return (
       <Media query={Sizes.md}>
-        { matches =>
+        {matches =>
           matches ? (
             <NotebookServerHeaderFull {...this.props} />
           ) : (
@@ -172,7 +173,7 @@ class NotebookServersHeader extends Component {
           )
         }
       </Media>
-    )
+    );
   }
 }
 
@@ -216,7 +217,7 @@ class NotebookServerRow extends Component {
 
     return (
       <Media query={Sizes.md}>
-        { matches =>
+        {matches =>
           matches ? (
             <NotebookServerRowFull {...this.props} {...newProps} />
           ) : (
@@ -334,30 +335,30 @@ class NotebookServerRowCompact extends Component {
 
 function getStatusObject(status) {
   switch (status) {
-  case "running":
-    return {
-      color: "success",
-      icon: <FontAwesomeIcon icon={faCheckCircle} size="lg" />,
-      text: "Running"
-    }
-  case "pending":
-    return {
-      color: "warning",
-      icon: <Loader size="16" inline="true" />,
-      text: "Pending"
-    }
-  case "error":
-    return {
-      color: "danger",
-      icon: <FontAwesomeIcon icon={faTimesCircle} size="lg" />,
-      text: "Error"
-    }
-  default:
-    return {
-      color: "danger",
-      icon: <FontAwesomeIcon icon={faExclamationTriangle} size="lg" />,
-      text: "Unknown"
-    }
+    case "running":
+      return {
+        color: "success",
+        icon: <FontAwesomeIcon icon={faCheckCircle} size="lg" />,
+        text: "Running"
+      };
+    case "pending":
+      return {
+        color: "warning",
+        icon: <Loader size="16" inline="true" />,
+        text: "Pending"
+      };
+    case "error":
+      return {
+        color: "danger",
+        icon: <FontAwesomeIcon icon={faTimesCircle} size="lg" />,
+        text: "Error"
+      };
+    default:
+      return {
+        color: "danger",
+        icon: <FontAwesomeIcon icon={faExclamationTriangle} size="lg" />,
+        text: "Unknown"
+      };
   }
 }
 
@@ -367,7 +368,7 @@ class NotebooksServerRowStatus extends Component {
     const data = getStatusObject(status);
     const info = status !== "running" ?
       (<span>
-        <FontAwesomeIcon id={uid} style={{color: "#5561A6"}} icon={faInfoCircle} />
+        <FontAwesomeIcon id={uid} style={{ color: "#5561A6" }} icon={faInfoCircle} />
         <UncontrolledPopover target={uid} trigger="legacy" placement="bottom">
           <PopoverHeader>Kubernetes pod status</PopoverHeader>
           <PopoverBody>
@@ -461,7 +462,7 @@ class EnvironmentLogs extends Component {
     const elem = document.createElement("a");
     const file = new Blob([fullLogs.join("\n")], { type: "text/plain" });
     elem.href = URL.createObjectURL(file);
-    this.props.fetchLogs()
+    this.props.fetchLogs();
     elem.download = `Logs_${this.props.name}.txt`;
     document.body.appendChild(elem);
     elem.click();
@@ -479,7 +480,7 @@ class EnvironmentLogs extends Component {
     else {
       if (!logs.fetched) {
         body = (<p>Logs unavailable. Please
-          <Button color="primary" onClick={() => { fetchLogs(name) }}>download</Button> them again.
+          <Button color="primary" onClick={() => { fetchLogs(name); }}>download</Button> them again.
         </p>);
       }
       else {
@@ -489,7 +490,7 @@ class EnvironmentLogs extends Component {
         else {
           body = (<div>
             <p>No logs available for this pod yet.</p>
-            <p>You can try to <Button color="primary" onClick={() => { fetchLogs(name) }}>Refresh</Button>
+            <p>You can try to <Button color="primary" onClick={() => { fetchLogs(name); }}>Refresh</Button>
               them after a while.</p>
           </div>);
         }
@@ -511,18 +512,18 @@ class EnvironmentLogs extends Component {
         isOpen={logs.show ? true : false}
         className="modal-dynamic-width"
         scrollable={true}
-        toggle={() => { toggleLogs(name) }}>
-        <ModalHeader toggle={() => { toggleLogs(name) }} className="header-multiline">
+        toggle={() => { toggleLogs(name); }}>
+        <ModalHeader toggle={() => { toggleLogs(name); }} className="header-multiline">
           Logs
           <br /><small>{annotations["namespace"]}/{annotations["projectName"]}</small>
           <br /><small>{annotations["branch"]}@{annotations["commit-sha"].substring(0, 8)}</small>
         </ModalHeader>
         <ModalBody>{body}</ModalBody>
         <ModalFooter>
-          <Button color="primary" disabled={!canDownload(logs)} onClick={() => { this.save() }}>
+          <Button color="primary" disabled={!canDownload(logs)} onClick={() => { this.save(); }}>
             <FontAwesomeIcon icon={faSave} /> Download
           </Button>
-          <Button color="primary" disabled={logs.fetching} onClick={() => { fetchLogs(name) }}>
+          <Button color="primary" disabled={logs.fetching} onClick={() => { fetchLogs(name); }}>
             <FontAwesomeIcon icon={faRedo} /> Refresh
           </Button>
         </ModalFooter>
@@ -550,7 +551,7 @@ class StartNotebookServer extends Component {
       branches: StatusHelper.isUpdating(branches) ? true : false,
       pipelines: pipelines.fetching,
       commits: this.props.data.fetching
-    }
+    };
     let show = {};
     show.commits = !fetching.branches && branch.name ? true : false;
     show.pipelines = show.commits && !fetching.commits && commit.id;
@@ -574,7 +575,7 @@ class StartNotebookServer extends Component {
           </Form>
         </Col>
       </Row>
-    )
+    );
   }
 }
 
@@ -585,7 +586,7 @@ class StartNotebookBranches extends Component {
     if (StatusHelper.isUpdating(branches)) {
       content = (
         <Label>Updating branches... <Loader size="14" inline="true" /></Label>
-      )
+      );
     }
     else if (branches.length === 0) {
       content = (
@@ -622,7 +623,7 @@ class StartNotebookBranches extends Component {
               value={branches[0].name}>
             </Input>
           </FormGroup>
-        )
+        );
       }
       else {
         const filter = !this.props.filters.includeMergedBranches;
@@ -630,7 +631,7 @@ class StartNotebookBranches extends Component {
           branches.filter(branch => !branch.merged ? branch : null) :
           branches;
         let branchOptions = filteredBranches.map((branch, index) => {
-          return <option key={index} value={branch.name}>{branch.name}</option>
+          return <option key={index} value={branch.name}>{branch.name}</option>;
         });
         content = (
           <FormGroup>
@@ -641,12 +642,12 @@ class StartNotebookBranches extends Component {
             </Label>
             <Input type="select" id="selectBranch" name="selectBranch"
               value={this.props.filters.branch.name ? this.props.filters.branch.name : ""}
-              onChange={(event) => { this.props.handlers.setBranch(event.target.value) }}>
+              onChange={(event) => { this.props.handlers.setBranch(event.target.value); }}>
               <option disabled hidden></option>
               {branchOptions}
             </Input>
           </FormGroup>
-        )
+        );
       }
     }
     return (
@@ -668,7 +669,7 @@ class StartNotebookBranchesUpdate extends Component {
       <UncontrolledTooltip key="tooltip" placement="top" target="branchUpdateButton">
         Refresh branches
       </UncontrolledTooltip>
-    ]
+    ];
   }
 }
 
@@ -696,7 +697,7 @@ class StartNotebookBranchesOptions extends Component {
           </FormGroup>
         </PopoverBody>
       </UncontrolledPopover>
-    ]
+    ];
   }
 }
 
@@ -800,7 +801,7 @@ class StartNotebookPipelinesContent extends Component {
             </UncontrolledPopover>
             &nbsp;
             <Button color="primary" size="sm" className="mb-1" id="image_ignore"
-              onClick={() => { this.props.setIgnorePipeline(true) }}>
+              onClick={() => { this.props.setIgnorePipeline(true); }}>
               <FontAwesomeIcon icon={faExclamationTriangle} /> Ignore
             </Button>
             <UncontrolledPopover trigger="hover" placement="top" target="image_ignore">
@@ -859,7 +860,7 @@ class StartNotebookCommits extends Component {
     const commitOptions = filteredCommits.map((commit) => {
       return <option key={commit.id} value={commit.id}>
         {commit.short_id} - {commit.author_name} - {Time.toIsoTimezoneString(commit.committed_date)}
-      </option>
+      </option>;
     });
     return (
       <FormGroup>
@@ -870,12 +871,12 @@ class StartNotebookCommits extends Component {
         </Label>
         <Input type="select" id="selectCommit" name="selectCommit"
           value={this.props.filters.commit.id ? this.props.filters.commit.id : ""}
-          onChange={(event) => { this.props.handlers.setCommit(event.target.value)}}>
+          onChange={(event) => { this.props.handlers.setCommit(event.target.value); }}>
           <option disabled hidden></option>
           {commitOptions}
         </Input>
       </FormGroup>
-    )
+    );
   }
 }
 
@@ -890,7 +891,7 @@ class StartNotebookCommitsUpdate extends Component {
       <UncontrolledTooltip key="tooltip" placement="top" target="commitUpdateButton">
         Refresh commits
       </UncontrolledTooltip>
-    ]
+    ];
   }
 }
 
@@ -911,49 +912,49 @@ class StartNotebookCommitsOptions extends Component {
           <FormGroup>
             <Label>Number of commits to display</Label>
             <Input type="number" min={0} max={100} step={1}
-              onChange={(event) => { this.props.handlers.setDisplayedCommits(event.target.value) }}
+              onChange={(event) => { this.props.handlers.setDisplayedCommits(event.target.value); }}
               value={this.props.filters.displayedCommits} />
             <FormText>1-100, 0 for unlimited</FormText>
           </FormGroup>
         </PopoverBody>
       </UncontrolledPopover>
-    ]
+    ];
   }
 }
 
 class StartNotebookOptions extends Component {
   render() {
     const { justStarted } = this.props;
-    if (justStarted) {
-      return <Label>Starting a new interactive environment... <Loader size="14" inline="true" /></Label>
-    }
+    if (justStarted)
+      return <Label>Starting a new interactive environment... <Loader size="14" inline="true" /></Label>;
+
 
     const { fetched, all } = this.props.notebooks;
     const { options } = this.props;
-    if (!fetched) {
+    if (!fetched)
       return (<Label>Verifying available environments... <Loader size="14" inline="true" /></Label>);
-    }
-    if (Object.keys(options.global).length === 0 || options.fetching) {
+
+    if (Object.keys(options.global).length === 0 || options.fetching)
       return (<Label>Loading environment parameters... <Loader size="14" inline="true" /></Label>);
-    }
-    if (Object.keys(all).length === 1) {
+
+    if (Object.keys(all).length === 1)
       return (<StartNotebookOptionsRunning {...this.props} />);
-    }
-    else {
-      return [
-        <StartNotebookServerOptions key="options" {...this.props} />,
-        <ServerOptionLaunch key="button" {...this.props} />
-      ];
-    }
+
+
+    return [
+      <StartNotebookServerOptions key="options" {...this.props} />,
+      <ServerOptionLaunch key="button" {...this.props} />
+    ];
+
   }
 }
 
 function Warning(props) {
-  return <div style={{fontSize: "smaller", paddingTop: "5px"}}>
+  return <div style={{ fontSize: "smaller", paddingTop: "5px" }}>
     <WarnAlert>
       <FontAwesomeIcon icon={faInfoCircle} /> {props.children}
-  </WarnAlert>
-  </div>
+    </WarnAlert>
+  </div>;
 }
 
 class StartNotebookOptionsRunning extends Component {
@@ -977,16 +978,16 @@ class StartNotebookOptionsRunning extends Component {
         </FormGroup>
       );
     }
-    else {
-      return (
-        <FormGroup>
-          <Label>
-            An interactive environment is already running but it is currently not available.
-            You can get further details from the Environments page.
-          </Label>
-        </FormGroup>
-      );
-    }
+
+    return (
+      <FormGroup>
+        <Label>
+          An interactive environment is already running but it is currently not available.
+          You can get further details from the Environments page.
+        </Label>
+      </FormGroup>
+    );
+
   }
 }
 
@@ -1008,38 +1009,38 @@ class StartNotebookServerOptions extends Component {
         const warning = !warnings.includes(key)
           ? null
           : <Warning>
-              Cannot set <b>{serverOption.displayName}</b> to
-              the project default value <i>{projectOptions[key]}</i> in this Renkulab deployment.
-            </Warning>
+            Cannot set <b>{serverOption.displayName}</b> to
+            the project default value <i>{projectOptions[key]}</i> in this Renkulab deployment.
+          </Warning>;
 
         switch (serverOption.type) {
-        case 'enum':
-          return <FormGroup key={key} className={serverOption.options.length === 1 ? 'mb-0' : ''}>
-            <Label>{serverOption.displayName}</Label>
-            <ServerOptionEnum {...serverOption} onChange={onChange} />
-            {warning}
-          </FormGroup>;
+          case "enum":
+            return <FormGroup key={key} className={serverOption.options.length === 1 ? "mb-0" : ""}>
+              <Label>{serverOption.displayName}</Label>
+              <ServerOptionEnum {...serverOption} onChange={onChange} />
+              {warning}
+            </FormGroup>;
 
-        case 'int':
-          return <FormGroup key={key}>
-            <Label>{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
-            <ServerOptionRange step={1} {...serverOption} onChange={onChange} />
-          </FormGroup>;
+          case "int":
+            return <FormGroup key={key}>
+              <Label>{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
+              <ServerOptionRange step={1} {...serverOption} onChange={onChange} />
+            </FormGroup>;
 
-        case 'float':
-          return <FormGroup key={key}>
-            <Label>{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
-            <ServerOptionRange step={0.01} {...serverOption} onChange={onChange} />
-          </FormGroup>;
+          case "float":
+            return <FormGroup key={key}>
+              <Label>{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
+              <ServerOptionRange step={0.01} {...serverOption} onChange={onChange} />
+            </FormGroup>;
 
-        case 'boolean':
-          return <FormGroup key={key} check>
-            <ServerOptionBoolean {...serverOption} onChange={onChange} />
-            <Label>{`${serverOption.displayName}`}</Label>
-          </FormGroup>;
+          case "boolean":
+            return <FormGroup key={key} check>
+              <ServerOptionBoolean {...serverOption} onChange={onChange} />
+              <Label>{`${serverOption.displayName}`}</Label>
+            </FormGroup>;
 
-        default:
-          return null;
+          default:
+            return null;
         }
       });
 
@@ -1047,7 +1048,8 @@ class StartNotebookServerOptions extends Component {
     const globalWarning = unmatchedWarnings && unmatchedWarnings.length
       ? <Warning key="globalWarning">
         Project environment default contains
-        variable{unmatchedWarnings.length > 1 ? "s" : ""} {unmatchedWarnings.map((w, i) => <span key={i}>&ldquo;{w}&rdquo;, </span>)}
+        variable{unmatchedWarnings.length > 1 ? "s" : ""} {
+          unmatchedWarnings.map((w, i) => <span key={i}>&ldquo;{w}&rdquo;, </span>)}
         which {unmatchedWarnings.length > 1 ? "are" : "is"} not known in this Renkulab deployment.
       </Warning>
       : null;
@@ -1127,7 +1129,7 @@ class ServerOptionLaunch extends Component {
     };
 
     this.checkServer = this.checkServer.bind(this);
-    this.toggleModal = this.toggleModal.bind(this)
+    this.toggleModal = this.toggleModal.bind(this);
   }
 
   toggleModal() {
@@ -1150,11 +1152,12 @@ class ServerOptionLaunch extends Component {
 
   render() {
     const { warnings } = this.props.options;
-    const globalNotification = (warnings.length < 1) ? null :
-    <Warning key="globalNotification">
-      The environment cannot be configured exactly as requested for this project.
-      You can still start one, but some things may not work correctly.
-    </Warning>
+    const globalNotification = (warnings.length < 1) ?
+      null :
+      <Warning key="globalNotification">
+        The environment cannot be configured exactly as requested for this project.
+        You can still start one, but some things may not work correctly.
+      </Warning>;
     return [
       <Button key="button" color="primary" onClick={this.checkServer}>
         Start environment
@@ -1198,7 +1201,7 @@ class AutosavedDataModal extends Component {
           <Button color="primary" onClick={this.props.handlers.startServer}>Launch environment</Button>
         </ModalFooter>
       </Modal>
-    </div>
+    </div>;
   }
 }
 
@@ -1244,4 +1247,4 @@ class CheckNotebookIcon extends Component {
   }
 }
 
-export { Notebooks, StartNotebookServer, CheckNotebookIcon }
+export { Notebooks, StartNotebookServer, CheckNotebookIcon };

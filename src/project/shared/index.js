@@ -23,8 +23,8 @@
  *  Shared components for projects.
  */
 
-import { ProjectTags, ProjectTagList } from './ProjectTag.container';
-import { ProjectsCoordinator } from './Projects.state';
+import { ProjectTags, ProjectTagList } from "./ProjectTag.container";
+import { ProjectsCoordinator } from "./Projects.state";
 
 export { ProjectTags, ProjectTagList };
 export { ProjectsCoordinator };

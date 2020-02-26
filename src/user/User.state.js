@@ -23,7 +23,7 @@
  *  User controller code.
  */
 
-import { API_ERRORS } from '../api-client/errors';
+import { API_ERRORS } from "../api-client/errors";
 
 class UserCoordinator {
   constructor(client, model) {
@@ -51,7 +51,7 @@ class UserCoordinator {
         });
 
         return data;
-      })
+      });
   }
 }
 

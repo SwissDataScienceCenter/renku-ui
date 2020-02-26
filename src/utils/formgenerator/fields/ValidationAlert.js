@@ -23,10 +23,10 @@
  *  Presentational components.
  */
 
-import React from 'react';
+import React from "react";
 
 const ValidationAlert = ({ content }) => {
-  return <div><span><small className="text-danger">{ content }</small></span></div>
-}
+  return <div><span><small className="text-danger">{ content }</small></span></div>;
+};
 
 export default ValidationAlert;

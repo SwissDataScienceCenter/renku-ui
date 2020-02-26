@@ -23,54 +23,58 @@
  *  Module for issue features.
  */
 
-import React, { Component, useState } from 'react';
-import { Provider, connect } from 'react-redux';
-import { Link, NavLink } from 'react-router-dom';
-import { Row, Col, Button, Badge, ListGroup, ListGroupItem, Card, CardHeader, CardBody, Alert } from 'reactstrap';
-import { faGitlab } from '@fortawesome/free-brands-svg-icons';
-import { faBoxOpen, faBox, faListUl, faComments } from '@fortawesome/free-solid-svg-icons';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { API_ERRORS } from '../api-client'; 
-import { createStore } from '../utils/EnhancedState';
-import State from './Issue.state';
-import { UserAvatar, ExternalIconLink, RenkuMarkdown, TimeCaption, TooltipToggleButton } from '../utils/UIComponents';
-import { Contribution, NewContribution } from '../contribution';
-import { Loader } from '../utils/UIComponents';
-import { issueFormSchema } from '../model/RenkuModels';
-import { FormPanel } from '../utils/formgenerator';
+import React, { Component, useState } from "react";
+import { Provider, connect } from "react-redux";
+import { Link, NavLink } from "react-router-dom";
+import {
+  Row, Col, Button, Badge, ListGroup, ListGroupItem, Card, CardHeader, CardBody, Alert
+} from "reactstrap";
+import { faGitlab } from "@fortawesome/free-brands-svg-icons";
+import { faBoxOpen, faBox, faListUl, faComments } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { API_ERRORS } from "../api-client";
+import { createStore } from "../utils/EnhancedState";
+import State from "./Issue.state";
+import {
+  UserAvatar, ExternalIconLink, RenkuMarkdown, TimeCaption, TooltipToggleButton
+} from "../utils/UIComponents";
+import { Contribution, NewContribution } from "../contribution";
+import { Loader } from "../utils/UIComponents";
+import { issueFormSchema } from "../model/RenkuModels";
+import { FormPanel } from "../utils/formgenerator";
 
 function issueStateBadge(issueStateValue) {
-    let issueState = <Badge color="secondary">{issueStateValue}</Badge>;
-  if (issueStateValue === 'opened')
+  let issueState = <Badge color="secondary">{issueStateValue}</Badge>;
+  if (issueStateValue === "opened")
     issueState = <Badge color="success">open</Badge>;
-  if (issueStateValue === 'closed')
+  if (issueStateValue === "closed")
     issueState = <Badge color="primary">complete</Badge>;
-  return issueState
+  return issueState;
 }
 
-function New(props){
-  
+function New(props) {
+
   const [submitLoader, setSubmitLoader] = useState(false);
   const issuesUrl = `/projects/${props.projectPathWithNamespace}/collaboration/issues`;
 
   const onCancel = e => {
     resetForm();
-    props.history.push({pathname: issuesUrl});
-  }
+    props.history.push({ pathname: issuesUrl });
+  };
 
   const submitData = () => {
-    let body = {}
-    body.confidential = issueFormSchema.visibility.value === 'Restricted';
+    let body = {};
+    body.confidential = issueFormSchema.visibility.value === "Restricted";
     body.title = issueFormSchema.name.value;
     body.description = issueFormSchema.description.value;
     return [props.projectPathWithNamespace, body];
-  }
+  };
 
   const resetForm = () => {
-    issueFormSchema.visibility.value = 'Public';
-    issueFormSchema.name.value='';
-    issueFormSchema.description.value=''
-  }
+    issueFormSchema.visibility.value = "Public";
+    issueFormSchema.name.value = "";
+    issueFormSchema.description.value = "";
+  };
 
   const submitCallback = e => {
     setSubmitLoader(true);
@@ -78,69 +82,75 @@ function New(props){
       .then(newIssue => {
         resetForm();
         setSubmitLoader(false);
-        props.history.push({pathname: issuesUrl});
-      });		
-  }
+        props.history.push({ pathname: issuesUrl });
+      });
+  };
 
-  return <Row>
-    <Col md={8}>
-      <FormPanel
-        title="Create Issue" 
-        btnName="Create Issue" 
-        submitCallback={submitCallback} 
-        model={issueFormSchema}
-        submitLoader={{value: submitLoader, text:"Creating issue, please wait..."}}
-        onCancel={onCancel} />
-    </Col>
-  </Row>
+  return (
+    <Row>
+      <Col md={8}>
+        <FormPanel
+          title="Create Issue"
+          btnName="Create Issue"
+          submitCallback={submitCallback}
+          model={issueFormSchema}
+          submitLoader={{ value: submitLoader, text: "Creating issue, please wait..." }}
+          onCancel={onCancel} />
+      </Col>
+    </Row>
+  );
 }
 
 class IssueViewHeader extends Component {
 
   render() {
-    if(this.props.error !== undefined && this.props.error.case === API_ERRORS.notFoundError)
+    if (this.props.error !== undefined && this.props.error.case === API_ERRORS.notFoundError) {
       return <Alert color="danger">Error 404: The issue that was selected does not exist or could not be accessed.
         <br /> <br /> You can go back to the issues list and see available issues for this project. &nbsp;
-        <Button color="danger" size="sm" onClick={() => this.props.history.push(this.props.issuesUrl)}>Back to list</Button>
-      </Alert>
+        <Button color="danger" size="sm"
+          onClick={() => this.props.history.push(this.props.issuesUrl)}>Back to list</Button>
+      </Alert>;
+    }
 
-    if(this.props.error !== undefined)
+    if (this.props.error !== undefined) {
       return <Alert color="danger">Error: There was an error retrieving the issue.
         <br /> <br /> You can go back to the issues list and see available issues for this project. &nbsp;
-        <Button color="danger" size="sm" onClick={() => this.props.history.push(this.props.issuesUrl)}>Back to list</Button>
-      </Alert>
+        <Button color="danger" size="sm"
+          onClick={() => this.props.history.push(this.props.issuesUrl)}>Back to list</Button>
+      </Alert>;
+    }
 
-    if(this.props.title === undefined)
+    if (this.props.title === undefined)
       return <Loader />;
 
-    const title = this.props.title || 'no title';
-    const description = this.props.description || ' ';
-    const buttonText = this.props.state === 'opened' ? 'Close' : 'Re-open';
+    const title = this.props.title || "no title";
+    const description = this.props.description || " ";
+    const buttonText = this.props.state === "opened" ? "Close" : "Re-open";
     const externalUrl = this.props.externalUrl;
     const externalIssueUrl = `${externalUrl}/issues/${this.props.iid}`;
     const time = this.props.updated_at;
-    const author = this.props.author ? this.props.author.name : null
-    const buttonGit = <ExternalIconLink tooltip="Open in GitLab" icon={faGitlab} to={externalIssueUrl} />
+    const author = this.props.author ? this.props.author.name : null;
+    const buttonGit = <ExternalIconLink tooltip="Open in GitLab" icon={faGitlab} to={externalIssueUrl} />;
 
     const actionButton =
       <TooltipToggleButton
         onClick={this.props.onIssueStateChange} tooltip={`${buttonText} Issue`}
-        active={this.props.state === 'opened'}
+        active={this.props.state === "opened"}
         activeIcon={faBoxOpen} inactiveIcon={faBox}
-        activeClass="text-success" inactiveClass="text-primary" />
+        activeClass="text-success" inactiveClass="text-primary" />;
 
     const backToList =
       <TooltipToggleButton
         onClick={() => this.props.history.push(this.props.issuesUrl)} tooltip={"Back to list"}
         active={true}
-        activeIcon={faListUl} />
+        activeIcon={faListUl} />;
 
     return <div>
       <Row className="pb-2">
         <Col sm={7} style={{ overflow: "hidden" }}>
           <h2>{title}</h2>
         </Col>
-        <Col md={1} sm={1} style={{ maxWidth: '62px', minWidth: '62px' }}></Col>
+        <Col md={1} sm={1} style={{ maxWidth: "62px", minWidth: "62px" }}></Col>
         <Col sm={3} className="float-right pt-3" style={{ textAlign: "end" }}>
           {backToList}
           {buttonGit}
@@ -148,7 +158,7 @@ class IssueViewHeader extends Component {
         </Col>
       </Row>
       <Row>
-        <Col key="image" md={1} sm={1} className="float-right text-center" style={{ maxWidth: '62px' }}>
+        <Col key="image" md={1} sm={1} className="float-right text-center" style={{ maxWidth: "62px" }}>
           <UserAvatar size="lg" person={this.props.author} />
         </Col>
         <Col key="body" md={10} sm={10} className="float-left">
@@ -157,7 +167,7 @@ class IssueViewHeader extends Component {
               <Row>
                 <Col md={12}>
                   <strong>{author}</strong>&nbsp;&nbsp;
-              <span className="caption align-baseline">
+                  <span className="caption align-baseline">
                     <TimeCaption key="timecaption" caption="Commented" time={time} />
                   </span>
                 </Col>
@@ -169,7 +179,7 @@ class IssueViewHeader extends Component {
           </Card>
         </Col>
       </Row>
-    </div>
+    </div>;
   }
 }
 
@@ -186,7 +196,7 @@ class IssueView extends Component {
       <IssueViewHeader key="header" {...this.props} />,
       <IssueViewContributions key="contributions" {...this.props} />,
     ];
-    if (this.props.state === 'opened') components.push(<NewContribution key="newContribution" {...this.props} />);
+    if (this.props.state === "opened") components.push(<NewContribution key="newContribution" {...this.props} />);
     return components;
   }
 }
@@ -198,7 +208,7 @@ class View extends Component {
     this._mounted = false;
     this.store = createStore(State.View.reducer);
     this.store.dispatch(this.retrieveIssue());
-    this.state = { contributions: [] }
+    this.state = { contributions: [] };
   }
 
   componentDidMount() {
@@ -214,19 +224,19 @@ class View extends Component {
     return (dispatch) => {
       return this.props.client.getProjectIssue(this.props.projectId, this.props.issueIid)
         .then(resp => {
-          dispatch(State.View.setAll(resp.data))
+          dispatch(State.View.setAll(resp.data));
         }).catch(error => {
-          dispatch(State.View.setAll({error: error}))
-        })
-    }
+          dispatch(State.View.setAll({ error: error }));
+        });
+    };
   }
 
   appendContribution(newContribution) {
     this.setState(prevState => {
       let newContributions = [...prevState.contributions];
       newContributions.push({ ...newContribution });
-      return { ...prevState, contributions: newContributions }
-    })
+      return { ...prevState, contributions: newContributions };
+    });
   }
 
   retrieveContributions() {
@@ -234,18 +244,18 @@ class View extends Component {
       .then(resp => {
         if (!this._mounted) return;
         this.setState((prevState, props) => {
-          return { contributions: resp.data }
+          return { contributions: resp.data };
         });
       }).catch(error => {
-         this.setState((prevState, props) => {
-          return { contributions: [] }
+        this.setState((prevState, props) => {
+          return { contributions: [] };
         });
-      })
+      });
   }
 
 
   mapStateToProps(state, ownProps) {
-    return state
+    return state;
   }
 
   mapDispatchToProps(dispatch, ownProps) {
@@ -254,29 +264,29 @@ class View extends Component {
         e.preventDefault();
         const issueState = this.store.getState().state;
 
-        // FIXME: This is a terrible hack which relies on the issue being updated on the server before force-updating the
-        // FIXME: entire project component. The problem here ist that the Issue list and the Issue detail components
+        // FIXME: This is a terrible hack which relies on the issue being updated on the server before force-updating
+        // FIXME: the entire project component. The problem here ist that the Issue list and the Issue detail components
         // FIXME: are siblings and they both hold the same information in their state (which is therefore duplicated).
         // FIXME: On click, the respective state information in both siblings state needs to be updated.
         // FIXME: The proper solution would be to elevate this information to the state their common parent and update
         // FIXME: it there.
 
-        if (issueState === 'opened') {
+        if (issueState === "opened") {
           this.props.client.closeIssue(this.props.projectId, this.props.issueIid)
             .then(() => this.props.updateProjectView());
         }
-        else if (issueState === 'closed') {
+        else if (issueState === "closed") {
           this.props.client.reopenIssue(this.props.projectId, this.props.issueIid)
             .then(() => this.props.updateProjectView());
         }
         else {
-          console.log(`Unknown state ${this.props.state}`)
+           throw Error(`Unknown state ${this.props.state}`);
         }
         // We don't even need to dispatch anything as the entire project component needs to be re-rendered
         // (and the information reloaded from the server) anyway.
         // dispatch(State.View.IssueState.change());
       }
-    }
+    };
   }
 
   render() {
@@ -287,7 +297,7 @@ class View extends Component {
         appendContribution={this.appendContribution.bind(this)}
         expanded={this.state ? this.state.expanded : false}
         {...this.props} />
-    </Provider>
+    </Provider>;
   }
 }
 
@@ -296,10 +306,10 @@ class IssueListRow extends Component {
     const issueIid = this.props.iid;
     const issueUrl = `${this.props.issueBaseUrl}/issues/${issueIid}/`;
     const issueState = issueStateBadge(this.props.state);
-    let titleText = this.props.title || 'no title';
+    let titleText = this.props.title || "no title";
     const title = <NavLink activeClassName="selected-issue" to={issueUrl}>
       {titleText}
-    </NavLink>
+    </NavLink>;
 
     return <ListGroupItem action className="pr-0 pl-0 pt-1 pb-1" style={{ border: "none" }}>
       <Row>
@@ -326,7 +336,7 @@ class IssueListRow extends Component {
           <small><TimeCaption caption="Updated" time={this.props.updated_at} /></small>
         </Col>
       </Row>
-    </ListGroupItem>
+    </ListGroupItem>;
   }
 }
 
@@ -349,7 +359,7 @@ class IssueList extends Component {
         </Col>
       </Row>,
       <Row key="issues"><Col xs={12}><ListGroup>{rows}</ListGroup></Col></Row>
-    ]
+    ];
   }
 }
 
@@ -358,7 +368,7 @@ class List extends Component {
 
   render() {
     return <IssueList
-      projectId={this.props.projectId} {...this.props} />
+      projectId={this.props.projectId} {...this.props} />;
   }
 }
 

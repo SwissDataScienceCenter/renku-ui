@@ -16,5 +16,5 @@
  * limitations under the License.
  */
 
-import { QuickNavContainer as QuickNav } from './QuickNav.container.js';
+import { QuickNavContainer as QuickNav } from "./QuickNav.container.js";
 export default QuickNav;

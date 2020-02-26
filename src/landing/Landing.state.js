@@ -23,100 +23,100 @@
  *  Redux-based state-management code.
  */
 
-import { combineReducers } from 'redux'
+import { combineReducers } from "redux";
 
 
 function createSetAction(type, field, value) {
-  const payload = {[field]: value};
-  return {type, payload}
+  const payload = { [field]: value };
+  return { type, payload };
 }
 
 function reduceState(type, state, action, initial) {
-  if (state == null) state = initial
+  if (state == null) state = initial;
   if (action.type !== type) return state;
   // Can also use the explicit version below
   // return Object.assign({}, state, action.payload)
-  return {...state, ...action.payload}
+  return { ...state, ...action.payload };
 }
 
 
 const YourActivity = {
   fetchActivity: (client, id) => {
-    const entity = 'your_activity';
+    const entity = "your_activity";
     return (dispatch) => {
       dispatch(YourActivity.request(entity));
-      client.getProject(id).then(d => dispatch(YourActivity.receive(d, entity)))
-    }
+      client.getProject(id).then(d => dispatch(YourActivity.receive(d, entity)));
+    };
   },
   request: (entity) => {
-    const action = {type:'server_request', entity};
-    return action
+    const action = { type: "server_request", entity };
+    return action;
   },
-  receive: (result, entity) => ({type:'server_return', entity, payload: result }),
+  receive: (result, entity) => ({ type: "server_return", entity, payload: result }),
   reduce: (state, action) => {
-    if (state == null) return {your_activity: []}
+    if (state == null) return { your_activity: [] };
     // Take server result and set it to the state
-    if (action.entity === 'your_activity') return {...state, ...action.payload.activity}
-    return state
+    if (action.entity === "your_activity") return { ...state, ...action.payload.activity };
+    return state;
   }
 };
 
 const NetworkActivity = {
   fetchActivity: (client, id) => {
-    const entity = 'network_activity';
+    const entity = "network_activity";
     return (dispatch) => {
       dispatch(YourActivity.request(entity));
-      client.getProject(id).then(d => dispatch(NetworkActivity.receive(d, entity)))
-    }
+      client.getProject(id).then(d => dispatch(NetworkActivity.receive(d, entity)));
+    };
   },
   request: (entity) => {
-    const action = {type:'server_request', entity};
-    return action
+    const action = { type: "server_request", entity };
+    return action;
   },
-  receive: (result, entity) => ({type:'server_return', entity, payload: result }),
+  receive: (result, entity) => ({ type: "server_return", entity, payload: result }),
   reduce: (state, action) => {
-    if (state == null) return {network_activity: []}
+    if (state == null) return { network_activity: [] };
     // Take server result and set it to the state
-    if (action.entity === 'network_activity') return {...state, ...action.payload.activity}
-    return state
+    if (action.entity === "network_activity") return { ...state, ...action.payload.activity };
+    return state;
   }
 };
 
 const Ui = {
   selectStarred: () => {
-    return createSetAction('ui', 'selected', 'starred');
+    return createSetAction("ui", "selected", "starred");
   },
   selectMember: () => {
-    return createSetAction('ui', 'selected', 'your_activity');
+    return createSetAction("ui", "selected", "your_activity");
   },
   selectYourNetwork: () => {
-    return createSetAction('ui', 'selected', 'your_network');
+    return createSetAction("ui", "selected", "your_network");
   },
   selectExplore: () => {
-    return createSetAction('ui', 'selected', 'explore');
+    return createSetAction("ui", "selected", "explore");
   },
   selectWelcome: () => {
-    return createSetAction('ui', 'selected', 'welcome');
+    return createSetAction("ui", "selected", "welcome");
   },
   reduce: (state, action) => {
-    return reduceState('ui', state, action, {selected: 'welcome'})
+    return reduceState("ui", state, action, { selected: "welcome" });
   }
-}
+};
 
 
 const Home = {
   Ui, YourActivity, NetworkActivity,
   request: () => {
-    const action = {type:'server_request' };
-    return action
+    const action = { type: "server_request" };
+    return action;
   },
   receive: (results) => {
-    const action = {type:'server_return', payload: results };
-    return action
+    const action = { type: "server_return", payload: results };
+    return action;
   },
-  reduce: combineReducers({ui: Ui.reduce,
+  reduce: combineReducers({ ui: Ui.reduce,
     your_activity: YourActivity.reduce,
-    network_activity: NetworkActivity.reduce})
-}
+    network_activity: NetworkActivity.reduce })
+};
 
 export default { Home };

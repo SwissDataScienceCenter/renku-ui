@@ -16,13 +16,13 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react';
-import { GraphIndexingStatus } from '../project/Project';
+import React, { Component } from "react";
+import { GraphIndexingStatus } from "../project/Project";
 
-import { KnowledgeGraphStatus as KnowledgeGraphStatusPresent } from './KnowledgeGraphStatus.present';
+import { KnowledgeGraphStatus as KnowledgeGraphStatusPresent } from "./KnowledgeGraphStatus.present";
 
 class KnowledgeGraphStatus extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.state = {
       graphStatusPoller: null,
@@ -38,9 +38,9 @@ class KnowledgeGraphStatus extends Component {
   }
 
   componentWillUnmount() {
-    if (this._isMounted) {
+    if (this._isMounted)
       this.stopPollingProgress();
-    }
+
     this._isMounted = false;
   }
 
@@ -52,36 +52,36 @@ class KnowledgeGraphStatus extends Component {
             progress !== GraphIndexingStatus.MAX_VALUE &&
             progress !== GraphIndexingStatus.NO_WEBHOOK) {
             const poller = setInterval(this.checkStatus, 2000);
-            this.setState({graphStatusPoller: poller});
+            this.setState({ graphStatusPoller: poller });
           }
         })
         .catch((err) => {
-          this.setState({error: err});
-          this.stopPollingProgress()
+          this.setState({ error: err });
+          this.stopPollingProgress();
         });
     }
   }
 
   stopPollingProgress() {
-    const {graphStatusPoller} = this.state;
+    const { graphStatusPoller } = this.state;
     if (this._isMounted && graphStatusPoller) {
       clearTimeout(graphStatusPoller);
-      this.setState({graphStatusPoller: null});
+      this.setState({ graphStatusPoller: null });
     }
   }
 
 
   checkStatus = () => {
     if (this._isMounted && !this.state.graphStatusWaiting) {
-      this.setState({graphStatusWaiting: true});
+      this.setState({ graphStatusWaiting: true });
       this.props.fetchGraphStatus().then((progress) => {
         if (this._isMounted) {
-          this.setState({graphStatusWaiting: false});
+          this.setState({ graphStatusWaiting: false });
           if (progress === GraphIndexingStatus.MAX_VALUE || progress === GraphIndexingStatus.NO_WEBHOOK) {
             this.stopPollingProgress();
-            if (progress === GraphIndexingStatus.MAX_VALUE && this.props.retrieveGraph()) {
+            if (progress === GraphIndexingStatus.MAX_VALUE && this.props.retrieveGraph())
               this.props.retrieveGraph();
-            }
+
           }
         }
       });
@@ -89,20 +89,20 @@ class KnowledgeGraphStatus extends Component {
   }
 
   createWebhook(e) {
-    this.setState({webhookJustCreated: true});
+    this.setState({ webhookJustCreated: true });
     this.props.createGraphWebhook(e).then((data) => {
       if (this._isMounted) {
         // remember that the graph status endpoint is not updated instantly, better adding a short timeout
         setTimeout(() => {
-          if (this._isMounted) {
+          if (this._isMounted)
             this.startPollingProgress();
-          }
+
         }, 1000);
         // updating this state slightly later avoids UI flickering
         setTimeout(() => {
-          if (this._isMounted) {
-            this.setState({webhookJustCreated: false});
-          }
+          if (this._isMounted)
+            this.setState({ webhookJustCreated: false });
+
         }, 1500);
       }
     });

@@ -23,6 +23,6 @@
  *  Components for the new Dataset page
  */
 
-import EditDataset from './DatasetEdit.container';
+import EditDataset from "./DatasetEdit.container";
 
 export default EditDataset;
