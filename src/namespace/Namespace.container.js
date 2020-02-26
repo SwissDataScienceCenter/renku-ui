@@ -23,10 +23,10 @@
  *  Namespace container components.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
-import { NamespaceProjectsPresent } from '.';
-import { API_ERRORS } from '../api-client/errors';
+import { NamespaceProjectsPresent } from ".";
+import { API_ERRORS } from "../api-client/errors";
 
 const userModel = {
   data: null,
@@ -81,7 +81,7 @@ const NamespaceProjects = (props) => {
         });
       });
 
-    const cleanup = () => { aborted = true; }
+    const cleanup = () => { aborted = true; };
     return cleanup;
   }, [props.namespace, props.client]);
 
@@ -92,6 +92,6 @@ const NamespaceProjects = (props) => {
       group={group}
     />
   );
-}
+};
 
 export { NamespaceProjects };

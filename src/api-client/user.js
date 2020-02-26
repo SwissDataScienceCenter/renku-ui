@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { RETURN_TYPES } from './utils';
+import { RETURN_TYPES } from "./utils";
 
 
 function addUserMethods(client) {
@@ -24,21 +24,21 @@ function addUserMethods(client) {
     let headers = client.getBasicHeaders();
     return client.clientFetch(
       `${client.baseUrl}/user`, {
-        method: 'GET',
+        method: "GET",
         headers: headers
       },
       RETURN_TYPES.json, false, false).then(response => response.data);
-  }
+  };
 
   client.getUserByPath = (path) => {
     const headers = client.getBasicHeaders();
     const queryParams = { username: encodeURIComponent(path) };
     return client.clientFetch(`${client.baseUrl}/users`, {
-      method: 'GET',
+      method: "GET",
       headers,
       queryParams
-    })
-  }
+    });
+  };
 }
 
 export default addUserMethods;

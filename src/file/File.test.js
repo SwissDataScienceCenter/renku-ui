@@ -23,19 +23,19 @@
  *  Tests for file components.
  */
 
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { MemoryRouter } from 'react-router-dom';
+import React from "react";
+import ReactDOM from "react-dom";
+import { MemoryRouter } from "react-router-dom";
 
-import { testClient as client } from '../api-client'
-import { generateFakeUser } from '../user/User.test';
-import { ShowFile, JupyterButton } from './index';
-import { StateModel, globalSchema } from '../model';
+import { testClient as client } from "../api-client";
+import { generateFakeUser } from "../user/User.test";
+import { ShowFile, JupyterButton } from "./index";
+import { StateModel, globalSchema } from "../model";
 
 
 const model = new StateModel(globalSchema);
 
-describe('rendering', () => {
+describe("rendering", () => {
   const users = [
     { type: "anonymous", data: generateFakeUser(true) },
     { type: "logged", data: generateFakeUser() }
@@ -51,7 +51,7 @@ describe('rendering', () => {
 
   for (let user of users) {
     it(`renders JupyterButton for ${user.type} user`, () => {
-      const div = document.createElement('div');
+      const div = document.createElement("div");
       // * fix for tooltips https://github.com/reactstrap/reactstrap/issues/773#issuecomment-357409863
       document.body.appendChild(div);
       const branches = { all: [], fetch: () => { } };
@@ -62,7 +62,7 @@ describe('rendering', () => {
     });
 
     it(`renders ShowFile for ${user.type} user`, () => {
-      const div = document.createElement('div');
+      const div = document.createElement("div");
       document.body.appendChild(div);
       ReactDOM.render(
         <MemoryRouter>

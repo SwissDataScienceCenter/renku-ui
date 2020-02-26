@@ -24,16 +24,15 @@
  */
 
 
+import React, { useState, useEffect } from "react";
+import { Row, Col, Alert, Button } from "reactstrap";
+import { FormPanel } from "../../../utils/formgenerator";
+import { ACCESS_LEVELS } from "../../../api-client";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
-import React, { useState, useEffect } from 'react';
-import { Row, Col, Alert, Button } from 'reactstrap';
-import { FormPanel } from '../../../utils/formgenerator';
-import { ACCESS_LEVELS } from '../../../api-client';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
-
-function DatasetEdit(props){
+function DatasetEdit(props) {
 
   const [serverErrors, setServerErrors] = useState(undefined);
   const [submitLoader, setSubmitLoader] = useState(false);
@@ -41,97 +40,106 @@ function DatasetEdit(props){
   const [initalFiles, setInitialFiles] = useState([]);
 
   const onCancel = e => {
-    props.datasetFormSchema.name.value =  props.datasetFormSchema.name.initial;
-    props.datasetFormSchema.description.value =  props.datasetFormSchema.description.initial;
-    props.datasetFormSchema.files.value =  props.datasetFormSchema.files.initial;
-    props.history.push({pathname: `/projects/${props.projectPathWithNamespace}/datasets`});
-  }
+    props.datasetFormSchema.name.value = props.datasetFormSchema.name.initial;
+    props.datasetFormSchema.description.value = props.datasetFormSchema.description.initial;
+    props.datasetFormSchema.files.value = props.datasetFormSchema.files.initial;
+    props.history.push({ pathname: `/projects/${props.projectPathWithNamespace}/datasets` });
+  };
 
   const submitCallback = e => {
     setServerErrors(undefined);
     setSubmitLoader(true);
-    const dataset= {};
+    const dataset = {};
     dataset.name = props.datasetFormSchema.name.value;
     dataset.description = props.datasetFormSchema.description.value;
-    dataset.files = props.datasetFormSchema.files.value.map(f => ({"file_id": f.file_id }));
-    
+    dataset.files = props.datasetFormSchema.files.value.map(f => ({ "file_id": f.file_id }));
+
     props.client.addFilesToDataset(props.httpProjectUrl, dataset.name, dataset.files)
       .then(response => {
         if (response.data.error !== undefined) {
           setSubmitLoader(false);
           setServerErrors(response.data.error.reason);
-        } else {
+        }
+        else {
           let counter = 0;
           const waitForFilesInKG = setInterval(
             () => {
-              props.client.fetchDatasetFromKG(props.client.baseUrl.replace('api','knowledge-graph/datasets/')+props.datasetId)
-                 .then(response => {
-                   if(response.hasPart.length === (dataset.files.length + initalFiles.length)){
+              props.client.fetchDatasetFromKG(props.client.baseUrl.replace(
+                "api", "knowledge-graph/datasets/") + props.datasetId)
+                .then(response => {
+                  if (response.hasPart.length === (dataset.files.length + initalFiles.length)) {
                     setSubmitLoader(false);
                     props.datasetFormSchema.name.value = props.datasetFormSchema.name.initial;
                     props.datasetFormSchema.description.value = props.datasetFormSchema.description.initial;
                     props.datasetFormSchema.files.value = props.datasetFormSchema.files.initial;
                     clearInterval(waitForFilesInKG);
-                    props.history.push({ pathname: `/projects/${props.projectPathWithNamespace}/datasets/${props.datasetId}/` });
-                  } else {
-                    counter ++;
-                    if(counter > 10){
+                    props.history.push({
+                      pathname: `/projects/${props.projectPathWithNamespace}/datasets/${props.datasetId}/`
+                    });
+                  }
+                  else {
+                    counter++;
+                    if (counter > 10) {
                       clearInterval(waitForFilesInKG);
                       setSubmitLoader(false);
                       setServerErrors("There was an error, please try again.");
                     }
                   }
-                 })
+                });
             }
-            , 6000)
+            , 6000);
         }
       });
-  }
+  };
 
-  useEffect(()=>{
-    if(!initialized){
+  useEffect(() => {
+    if (!initialized) {
       props.datasetFormSchema.files.uploadFileFunction = props.client.uploadFile;
-      if(props.dataset === null){
-        props.client.fetchDatasetFromKG(props.client.baseUrl.replace('api','knowledge-graph/datasets/')+props.datasetId)
-        .then((dataset)=>{
-          props.datasetFormSchema.name.value =  dataset.name;
-          props.datasetFormSchema.description.value =  dataset.description;
-          props.datasetFormSchema.files.value =  dataset.hasPart;
-          setInitialFiles(dataset.hasPart);
-        });
-      } else {
-        props.datasetFormSchema.name.value =  props.dataset.name;
-        props.datasetFormSchema.description.value =  props.dataset.description;
-        props.datasetFormSchema.files.value =  props.dataset.hasPart;
+      if (props.dataset === null) {
+        props.client.fetchDatasetFromKG(props.client.baseUrl.replace(
+          "api", "knowledge-graph/datasets/") + props.datasetId)
+          .then((dataset) => {
+            props.datasetFormSchema.name.value = dataset.name;
+            props.datasetFormSchema.description.value = dataset.description;
+            props.datasetFormSchema.files.value = dataset.hasPart;
+            setInitialFiles(dataset.hasPart);
+          });
+      }
+      else {
+        props.datasetFormSchema.name.value = props.dataset.name;
+        props.datasetFormSchema.description.value = props.dataset.description;
+        props.datasetFormSchema.files.value = props.dataset.hasPart;
         setInitialFiles(props.dataset.hasPart);
       }
       setInitialized(true);
     }
-    
-  },[props, initialized]);
 
-  if(!initialized)
+  }, [props, initialized]);
+
+  if (!initialized)
     return null;
 
   if (props.accessLevel < ACCESS_LEVELS.MAINTAINER) {
     return <Col sm={12} md={8} lg={10}>
       <Alert timeout={0} color="primary">
-        Acces Denied. You don't have rights to edit datasets for this project.<br /><br />
-        <FontAwesomeIcon icon={faInfoCircle} />  If you were recently given access to this project, you might need to <Button size="sm" color="primary" onClick={() => window.location.reload()}>refresh the page</Button> first.
+        Acces Denied. You don&apos;t have rights to edit datasets for this project.<br /><br />
+        <FontAwesomeIcon icon={faInfoCircle} /> If you were recently given access to this project,
+        you might need to <Button size="sm" color="primary"
+          onClick={() => window.location.reload()}>refresh the page</Button> first.
       </Alert>
-    </Col>
+    </Col>;
   }
 
   return (
     <Row>
       <Col>
         <FormPanel
-          title="Modify Dataset" 
-          btnName="Modify Dataset" 
-          submitCallback={submitCallback} 
+          title="Modify Dataset"
+          btnName="Modify Dataset"
+          submitCallback={submitCallback}
           model={props.datasetFormSchema}
           serverErrors={serverErrors}
-          submitLoader={{value: submitLoader, text:"Adding files to dataset, please wait..."}}
+          submitLoader={{ value: submitLoader, text: "Adding files to dataset, please wait..." }}
           onCancel={onCancel}
           edit={true} />
       </Col>

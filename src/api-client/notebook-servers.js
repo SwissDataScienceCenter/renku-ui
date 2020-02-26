@@ -27,13 +27,13 @@ function addNotebookServersMethods(client) {
     if (commit) parameters.commit_sha = commit;
 
     return client.clientFetch(url, {
-      method: 'GET',
+      method: "GET",
       headers,
       queryParams: parameters
     }).then(resp => {
       return { "data": resp.data.servers };
     });
-  }
+  };
 
   client.stopNotebookServer = (serverName, force = false) => {
     const headers = client.getBasicHeaders();
@@ -42,34 +42,34 @@ function addNotebookServersMethods(client) {
     if (force) parameters.force = true;
 
     return client.clientFetch(url, {
-      method: 'DELETE',
+      method: "DELETE",
       headers,
       queryParams: parameters
     }, "text")
       .then(resp => {
         return true;
       });
-  }
+  };
 
   client.getNotebookServerOptions = () => {
     const headers = client.getBasicHeaders();
     const url = `${client.baseUrl}/notebooks/server_options`;
 
     return client.clientFetch(url, {
-      method: 'GET',
+      method: "GET",
       headers
     }).then((resp) => {
       let { data } = resp;
       Object.keys(data).forEach(key => {
         data[key].selected = data[key].default;
-      })
+      });
       return data;
     });
-  }
+  };
 
   client.startNotebook = (namespacePath, projectPath, branchName, commitId, options) => {
     const headers = client.getBasicHeaders();
-    headers.append('Content-Type', 'application/json');
+    headers.append("Content-Type", "application/json");
     const url = `${client.baseUrl}/notebooks/servers`;
     const parameters = {
       namespace: decodeURIComponent(namespacePath),
@@ -80,27 +80,27 @@ function addNotebookServersMethods(client) {
     };
 
     return client.clientFetch(url, {
-      method: 'POST',
+      method: "POST",
       headers,
       body: JSON.stringify(parameters)
     }).then((resp) => {
       return resp.data;
     });
-  }
+  };
 
   client.getNotebookServerLogs = (serverName, lines = 250) => {
     const headers = client.getBasicHeaders();
-    headers.append('Accept', 'text/plain');
+    headers.append("Accept", "text/plain");
     const url = `${client.baseUrl}/notebooks/logs/${serverName}`;
 
     return client.clientFetch(url, {
-      method: 'GET',
+      method: "GET",
       headers,
       queryParams: { max_lines: lines }
     }).then((resp) => {
       return resp.data;
     });
-  }
+  };
 }
 
 export default addNotebookServersMethods;

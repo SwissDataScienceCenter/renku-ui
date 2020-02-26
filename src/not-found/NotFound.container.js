@@ -23,9 +23,9 @@
  *  Container components for not-found
  */
 
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import { NotFound as NotFoundPresent } from './NotFound.present';
+import { NotFound as NotFoundPresent } from "./NotFound.present";
 
 class NotFound extends Component {
   render() {
@@ -35,4 +35,4 @@ class NotFound extends Component {
   }
 }
 
-export { NotFound }
+export { NotFound };

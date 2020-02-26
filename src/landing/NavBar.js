@@ -23,18 +23,18 @@
  *  NavBar for logged-in and logged-out users.
  */
 
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import { Navbar, NavLink, Nav } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus } from '@fortawesome/free-solid-svg-icons/';
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import { Navbar, NavLink, Nav } from "reactstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons/";
 
-import logo from './logo.svg';
-import { RenkuNavLink, Loader, UserAvatar } from '../utils/UIComponents';
-import { getActiveProjectPathWithNamespace } from '../utils/HelperFunctions';
-import QuickNav from '../utils/quicknav';
+import logo from "./logo.svg";
+import { RenkuNavLink, Loader, UserAvatar } from "../utils/UIComponents";
+import { getActiveProjectPathWithNamespace } from "../utils/HelperFunctions";
+import QuickNav from "../utils/quicknav";
 
-import './NavBar.css';
+import "./NavBar.css";
 
 
 class RenkuNavBar extends Component {
@@ -53,13 +53,13 @@ class RenkuToolbarItemUser extends Component {
     const { user } = this.props;
     const gatewayURL = this.props.params.GATEWAY_URL;
     const redirect_url = encodeURIComponent(this.props.params.BASE_URL);
-    if (!user.fetched) {
-      return <Loader size="16" inline="true" />
-    }
-    else if (!user.data.id) {
-      return <RenkuNavLink to="/login" title="Login" previous={this.props.location.pathname} />
-    }
-    else {
+    if (!user.fetched)
+      return <Loader size="16" inline="true" />;
+
+    else if (!user.data.id)
+      return <RenkuNavLink to="/login" title="Login" previous={this.props.location.pathname} />;
+
+
       return <li className="nav-item dropdown">
         { /* eslint-disable-next-line */ }
         <a key="button" className="nav-link dropdown-toggle" id="profile-dropdown" role="button" data-toggle="dropdown"
@@ -73,8 +73,8 @@ class RenkuToolbarItemUser extends Component {
           <a id="logout-link" className="dropdown-item"
             href={`${gatewayURL}/auth/logout?redirect_url=${redirect_url}`}>Logout</a>
         </div>
-      </li>
-    }
+      </li>;
+
   }
 }
 
@@ -97,9 +97,9 @@ class LoggedInNavBar extends Component {
 
   handleSelect(eventKey, event) {
     let nextRoute = null;
-    switch(eventKey) {
-    case 'new.projects':
-      nextRoute = '/projects';
+    switch (eventKey) {
+    case "new.projects":
+      nextRoute = "/projects";
       break;
     default:
       break;
@@ -154,7 +154,7 @@ class LoggedInNavBar extends Component {
           </div>
         </nav>
       </header>
-    )
+    );
   }
 }
 
@@ -192,7 +192,7 @@ class AnonymousNavBar extends Component {
           </div>
         </nav>
       </header>
-    )
+    );
   }
 }
 
@@ -214,8 +214,8 @@ class FooterNavbar extends Component {
           </Nav>
         </Navbar>
       </footer>
-    )
+    );
   }
 }
 
-export { RenkuNavBar, FooterNavbar }
+export { RenkuNavBar, FooterNavbar };

@@ -17,17 +17,17 @@
  */
 
 class APIError extends Error {
-  constructor(arg){
-    super(arg || 'Renku API error')
+  constructor(arg) {
+    super(arg || "Renku API error");
   }
 }
 
 const API_ERRORS = {
-  unauthorizedError: 'UNAUTHORIZED',
-  forbiddenError: 'FORBIDDEN',
-  notFoundError: 'NOT_FOUND',
-  internalServerError: 'SERVER_ERROR',
-  networkError: 'NETWORK_PROBLEM'
+  unauthorizedError: "UNAUTHORIZED",
+  forbiddenError: "FORBIDDEN",
+  notFoundError: "NOT_FOUND",
+  internalServerError: "SERVER_ERROR",
+  networkError: "NETWORK_PROBLEM"
 };
 
 function throwErrorWithData(response, data) {
@@ -58,33 +58,29 @@ function throwErrorWithData(response, data) {
 }
 
 function throwAPIErrors(response) {
-  const contentType = response.headers.get('Content-Type');
+  const contentType = response.headers.get("Content-Type");
   // TODO The default should be to check for type application/json
   // but I want to make a more minimal change to the code right now.
-  if (contentType === 'text/html') {
-    return response.text().then(d => throwErrorWithData(response, d))
-  } else {
-    return response.json().then(d => throwErrorWithData(response, d))
-  }
+  if (contentType === "text/html")
+    return response.text().then(d => throwErrorWithData(response, d));
+
+    return response.json().then(d => throwErrorWithData(response, d));
+
 }
 
 function alertAPIErrors(error) {
   switch (error.case) {
   case API_ERRORS.forbiddenError:
-    alert('You don\'t have the necessary permission to view this information or perform this action.');
-    break;
+    throw Error("You don't have the necessary permission to view this information or perform this action.");
   case API_ERRORS.notFoundError:
-    alert('We could not find the requested resource on the server.');
-    break;
+    throw Error("We could not find the requested resource on the server.");
   case API_ERRORS.internalServerError:
-    alert('There is a problem with the server - please try again later.');
-    break;
+    throw Error("There is a problem with the server - please try again later.");
   case API_ERRORS.networkError:
-    alert('There seems to be problem with your network connection. Please check and try again.');
-    break;
+    throw Error("There seems to be problem with your network connection. Please check and try again.");
   default:
     // No alert on default exception
   }
 }
 
-export { APIError, API_ERRORS, alertAPIErrors, throwAPIErrors}
+export { APIError, API_ERRORS, alertAPIErrors, throwAPIErrors };

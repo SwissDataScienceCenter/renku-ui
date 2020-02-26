@@ -23,15 +23,15 @@
  *  Tests for user code.
  */
 
-import { Schema } from '../model';
-import { userSchema } from '../model/RenkuModels';
-import { user as fakeUser } from '../api-client/test-samples';
+import { Schema } from "../model";
+import { userSchema } from "../model/RenkuModels";
+import { user as fakeUser } from "../api-client/test-samples";
 
 /**
  * Generate a fake user to be injected in the other tests
- * 
+ *
  * @param {boolean} anonymous - True to ask for an anonymous user (no id nor username)
- * 
+ *
  * @returns {object} The user's data
  */
 function generateFakeUser(anonymous = false) {
@@ -47,8 +47,8 @@ function generateFakeUser(anonymous = false) {
   return user;
 }
 
-describe('Fake user generation', () => {
-  it('Anonymous user', () => {
+describe("Fake user generation", () => {
+  it("Anonymous user", () => {
     const fakeUser = generateFakeUser(true);
     expect(fakeUser.fetched).not.toBeNull();
     expect(fakeUser.logged).toEqual(false);
@@ -56,7 +56,7 @@ describe('Fake user generation', () => {
     expect(Object.keys(fakeUser.data)).not.toBeNull();
     expect(Object.keys(fakeUser.data).length).toEqual(0);
   });
-  it('Logged user', () => {
+  it("Logged user", () => {
     const fakeUser = generateFakeUser();
     expect(fakeUser.fetched).not.toBeNull();
     expect(fakeUser.logged).toEqual(true);
@@ -67,4 +67,5 @@ describe('Fake user generation', () => {
   });
 });
 
+// eslint-disable-next-line
 export { generateFakeUser };

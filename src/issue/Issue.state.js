@@ -23,48 +23,48 @@
  *  Redux-based state-management code.
  */
 
-import { combineReducers } from 'redux';
-import { slugFromTitle } from '../utils/HelperFunctions';
+import { combineReducers } from "redux";
+import { slugFromTitle } from "../utils/HelperFunctions";
 
 function createSetAction(type, field, value) {
-  const payload = {[field]: value};
-  return {type, payload}
+  const payload = { [field]: value };
+  return { type, payload };
 }
 
 function reduceState(type, state, action, initial) {
-  if (state == null) state = initial
+  if (state == null) state = initial;
   if (action.type !== type) return state;
   // Can also use the explicit version below
   // return Object.assign({}, state, action.payload)
-  return {...state, ...action.payload}
+  return { ...state, ...action.payload };
 }
 
 const Core = {
   set: (field, value) => {
-    const action = createSetAction('core', field, value);
-    if (field === 'title') action.payload['displayId'] = slugFromTitle(value);
-    return action
+    const action = createSetAction("core", field, value);
+    if (field === "title") action.payload["displayId"] = slugFromTitle(value);
+    return action;
   },
   reduce: (state, action) => {
-    return reduceState('core', state, action, {title: '', description: '', displayId: ''})
+    return reduceState("core", state, action, { title: "", description: "", displayId: "" });
   }
 };
 
 const Visibility = {
   set: (level) => {
-    return createSetAction('visibility', 'level', level)
+    return createSetAction("visibility", "level", level);
   },
   reduce: (state, action) => {
-    return reduceState('visibility', state, action, {level: 'public'})
+    return reduceState("visibility", state, action, { level: "public" });
   }
 };
 
 const IssueState = {
-  change: () => ({type: 'change_issue_state', payload: null}),
+  change: () => ({ type: "change_issue_state", payload: null }),
   reduce: (appState, action) => {
     if (!appState) return null;
-    const newIssueState = appState.state === 'closed' ? 'opened' : 'closed';
-    return {...appState, state: newIssueState }
+    const newIssueState = appState.state === "closed" ? "opened" : "closed";
+    return { ...appState, state: newIssueState };
   }
 };
 
@@ -74,12 +74,12 @@ const combinedFieldReducer = combineReducers({
 });
 
 const View = { Core, Visibility, IssueState,
-  setAll: (result) => ({type:'server_return', payload: result }),
+  setAll: (result) => ({ type: "server_return", payload: result }),
   reducer: (state, action) => {
-    if (action.type === 'change_issue_state') return IssueState.reduce(state, action);
-    if (action.type !== 'server_return') return combinedFieldReducer(state, action);
+    if (action.type === "change_issue_state") return IssueState.reduce(state, action);
+    if (action.type !== "server_return") return combinedFieldReducer(state, action);
     // Take server result and set it to the state
-    return {...state, ...action.payload}
+    return { ...state, ...action.payload };
   }
 };
 

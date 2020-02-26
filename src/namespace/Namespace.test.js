@@ -23,27 +23,27 @@
  *  Tests for namesace.
  */
 
-import React from 'react';
-import { act } from 'react-dom/test-utils';
-import ReactDOM from 'react-dom';
-import { MemoryRouter } from 'react-router-dom';
+import React from "react";
+import { act } from "react-dom/test-utils";
+import ReactDOM from "react-dom";
+import { MemoryRouter } from "react-router-dom";
 
-import { NamespaceProjects } from './index';
-import { testClient as client } from '../api-client'
+import { NamespaceProjects } from "./index";
+import { testClient as client } from "../api-client";
 
-describe('rendering', () => {
-  it('renders NamespaceProjects', async () => {
+describe("rendering", () => {
+  it("renders NamespaceProjects", async () => {
     const props = {
       client,
       namespace: "test"
-    }
+    };
 
-    const div = document.createElement('div');
+    const div = document.createElement("div");
     document.body.appendChild(div);
     await act(async () => {
       ReactDOM.render(<MemoryRouter>
         <NamespaceProjects {...props} />
       </MemoryRouter>, div);
-    })
+    });
   });
 });

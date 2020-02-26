@@ -23,8 +23,8 @@
  *  Notebooks controller code.
  */
 
-import { API_ERRORS } from '../api-client/errors';
-import { parseINIString } from '../utils/HelperFunctions';
+import { API_ERRORS } from "../api-client/errors";
+import { parseINIString } from "../utils/HelperFunctions";
 
 const POLLING_INTERVAL = 3000;
 const IMAGE_BUILD_JOB = "image_build";
@@ -42,7 +42,7 @@ const ExpectedAnnotations = {
       "projectName": "unknown"
     }
   }
-}
+};
 
 const NotebooksHelper = {
   /**
@@ -93,7 +93,8 @@ const NotebooksHelper = {
     let parsedData;
     try {
       parsedData = parseINIString(data);
-    } catch (error) {
+    }
+ catch (error) {
       parsedData = {};
     }
     // check single props when the environment sections is available
@@ -107,18 +108,18 @@ const NotebooksHelper = {
 
         // convert boolen and numbers
         let value = parsedOptions[parsedOption];
-        if (value && value.toLowerCase() === "true") {
+        if (value && value.toLowerCase() === "true")
           projectOptions[option] = true;
-        }
-        else if (value && value.toLowerCase() === "false") {
+
+        else if (value && value.toLowerCase() === "false")
           projectOptions[option] = false;
-        }
-        else if (!isNaN(value)) {
+
+        else if (!isNaN(value))
           projectOptions[option] = parseFloat(value);
-        }
-        else {
+
+        else
           projectOptions[option] = value;
-        }
+
       });
     }
 
@@ -134,11 +135,11 @@ const NotebooksHelper = {
    */
   checkOptionValidity: (globalOptions, currentOption, currentValue) => {
     // defaultUrl is a special case and any string will fit
-    if (currentOption === "defaultUrl")
-      if (typeof currentValue === "string")
+    if (currentOption === "defaultUrl") {
+if (typeof currentValue === "string")
         return true;
-      else
-        return false;
+      return false;
+}
 
     const globalOption = globalOptions[currentOption];
     // the project option must be part of the global options
@@ -146,23 +147,23 @@ const NotebooksHelper = {
       return false;
 
     // non-enum options require only typecheck
-    if (globalOption.type !== "enum")
-      if (globalOption.type === "boolean")
-        if (typeof currentValue === "boolean")
+    if (globalOption.type !== "enum") {
+if (globalOption.type === "boolean") {
+if (typeof currentValue === "boolean")
           return true;
-        else
-          return false;
-      else if (globalOption.type === "float" || globalOption.type === "int")
-        if (typeof currentValue === "number")
-          return true;
-        else
-          return false;
-      else
         return false;
+}
+      else if (globalOption.type === "float" || globalOption.type === "int") {
+if (typeof currentValue === "number")
+          return true;
+        return false;
+}
+      return false;
+}
 
     // enum options must have a value valid for the corresponding global options
     if (globalOption.options && globalOption.options.length && globalOption.options.includes(currentValue))
-      return true
+      return true;
 
     return false;
   }
@@ -218,9 +219,9 @@ class NotebooksCoordinator {
     if (data.project !== undefined)
       filters.project = data.project;
     if (data.branch !== undefined)
-      data.branch instanceof Object ? filters.branch = data.branch : filters.branch = { name: data.branch }
+      data.branch instanceof Object ? filters.branch = data.branch : filters.branch = { name: data.branch };
     if (data.commit !== undefined)
-      data.commit instanceof Object ? filters.commit = data.commit : filters.commit = { id: data.commit }
+      data.commit instanceof Object ? filters.commit = data.commit : filters.commit = { id: data.commit };
 
     this.model.setObject({ filters });
   }
@@ -242,11 +243,11 @@ class NotebooksCoordinator {
   }
 
   setMergedBranches(value) {
-    this.model.set('filters.includeMergedBranches', value);
+    this.model.set("filters.includeMergedBranches", value);
   }
 
   setDisplayedCommits(value) {
-    this.model.set('filters.displayedCommits', value);
+    this.model.set("filters.displayedCommits", value);
   }
 
   setNotebookOptions(option, value) {
@@ -254,7 +255,7 @@ class NotebooksCoordinator {
   }
 
   getQueryFilters() {
-    const filters = this.model.get('filters');
+    const filters = this.model.get("filters");
     return {
       namespace: filters.namespace,
       project: filters.project,
@@ -266,7 +267,7 @@ class NotebooksCoordinator {
 
   // * Fetch data * //
   fetchNotebooks() {
-    const fetching = this.model.get('notebooks.fetching');
+    const fetching = this.model.get("notebooks.fetching");
     if (fetching)
       return;
 
@@ -284,9 +285,9 @@ class NotebooksCoordinator {
       .then(resp => {
         let updatedNotebooks = { fetching: false };
         // check if result is still valid
-        if (!this.model.get('filters.discard')) {
+        if (!this.model.get("filters.discard")) {
           const filters = this.getQueryFilters();
-          if (this.model.get('notebooks.lastParameters') === JSON.stringify(filters)) {
+          if (this.model.get("notebooks.lastParameters") === JSON.stringify(filters)) {
             updatedNotebooks.fetched = new Date();
             updatedNotebooks.all = { $set: resp.data };
           }
@@ -296,19 +297,19 @@ class NotebooksCoordinator {
         return resp.data;
       })
       .catch(error => {
-        this.model.set('notebooks.fetching', false);
+        this.model.set("notebooks.fetching", false);
         throw error;
       });
   }
 
   fetchNotebookOptions() {
     this.fetchProjectOptions();
-    const oldData = this.model.get('options.global');
+    const oldData = this.model.get("options.global");
     if (Object.keys(oldData).length !== 0)
       return;
 
     return this.client.getNotebookServerOptions().then((globalOptions) => {
-      this.model.set('options.global', globalOptions);
+      this.model.set("options.global", globalOptions);
       this.setDefaultOptions(globalOptions, null);
 
       return globalOptions;
@@ -327,7 +328,7 @@ class NotebooksCoordinator {
     });
     // keep track of filter data at query time
     const requestFiltersString = JSON.stringify(filters);
-    this.client.getRepositoryFile(projectId, RENKU_INI_PATH, filters.commit, 'raw')
+    this.client.getRepositoryFile(projectId, RENKU_INI_PATH, filters.commit, "raw")
       .catch(error => {
         // treat a non existing file as an empty string
         if (error.case !== API_ERRORS.notFoundError)
@@ -351,43 +352,43 @@ class NotebooksCoordinator {
 
         this.setDefaultOptions(null, projectOptions);
         return projectOptions;
-      })
+      });
   }
 
   setDefaultOptions(globalOptions, projectOptions) {
     // verify if all the pieces are available and get what's missing
     if (!globalOptions) {
-      const pendingGlobalOptions = this.model.get('options.global') === {} ? true : false;
+      const pendingGlobalOptions = this.model.get("options.global") === {} ? true : false;
       if (pendingGlobalOptions)
         return;
-      globalOptions = this.model.get('options.global');
+      globalOptions = this.model.get("options.global");
     }
     if (!projectOptions) {
-      const pendingProjectOptions = this.model.get('options.fetching');
+      const pendingProjectOptions = this.model.get("options.fetching");
       if (pendingProjectOptions)
         return;
-      projectOptions = this.model.get('options.project')
+      projectOptions = this.model.get("options.project");
     }
 
     // Apply default options without overwriting previous selection
-    let filterOptions = this.model.get('filters.options');
+    let filterOptions = this.model.get("filters.options");
     const filledOptions = Object.keys(filterOptions);
     Object.keys(globalOptions).forEach(option => {
-      if (!filledOptions.includes(option)) {
+      if (!filledOptions.includes(option))
         filterOptions[option] = globalOptions[option].default;
-      }
-    })
+
+    });
 
     // Overwrite default options with project options wherever possible
     let warnings = [];
     Object.keys(projectOptions).forEach(option => {
       const optionValue = projectOptions[option];
-      if (NotebooksHelper.checkOptionValidity(globalOptions, option, optionValue)) {
+      if (NotebooksHelper.checkOptionValidity(globalOptions, option, optionValue))
         filterOptions[option] = optionValue;
-      }
-      else {
+
+      else
         warnings = warnings.concat(option);
-      }
+
     });
     this.model.setObject({
       filters: { options: { $set: filterOptions } },
@@ -400,7 +401,7 @@ class NotebooksCoordinator {
     if (full)
       lines = 0;
     let logs = { fetching: true };
-    if (this.model.get('logs.reference') !== serverName && !full) {
+    if (this.model.get("logs.reference") !== serverName && !full) {
       logs.reference = serverName;
       logs.data = { $set: [] };
       logs.fetched = null;
@@ -416,12 +417,12 @@ class NotebooksCoordinator {
         }
         this.model.setObject({ logs: updatedLogs });
         return data;
-      })
+      });
   }
 
   async fetchPipeline() {
     // check if already fetching data
-    const fetching = this.model.get('pipelines.fetching');
+    const fetching = this.model.get("pipelines.fetching");
     if (fetching)
       return;
 
@@ -441,13 +442,13 @@ class NotebooksCoordinator {
     });
     const projectId = `${encodeURIComponent(filters.namespace)}%2F${filters.project}`;
     const pipelines = await this.client.getPipelines(projectId, filters.commit).catch(error => {
-      this.model.set('pipelines.fetching', false);
+      this.model.set("pipelines.fetching", false);
       throw error;
     });
 
     // check if results are outdated
     let pipelinesState = { fetching: false };
-    const lastParameters = this.model.get('pipelines.lastParameters');
+    const lastParameters = this.model.get("pipelines.lastParameters");
     if (lastParameters !== JSON.stringify(filters)) {
       pipelinesState.fetched = null;
       this.model.setObject({ pipelines: pipelinesState });
@@ -455,7 +456,7 @@ class NotebooksCoordinator {
     }
 
     // stop if no pipelines are available
-    let mainPipeline = {}
+    let mainPipeline = {};
     pipelinesState.fetched = new Date();
     if (pipelines.length === 0) {
       pipelinesState.lastMainId = null;
@@ -465,7 +466,7 @@ class NotebooksCoordinator {
     }
 
     // try to use cached data to find image_build pipeline id
-    const lastMainId = this.model.get('pipelines.lastMainId');
+    const lastMainId = this.model.get("pipelines.lastMainId");
     if (lastMainId) {
       const mainPipelines = pipelines.filter(pipeline => pipeline.id === lastMainId);
       if (mainPipelines.length === 1) {
@@ -480,7 +481,7 @@ class NotebooksCoordinator {
     for (let pipeline of pipelines) {
       // fetch jobs
       const jobs = await this.client.getPipelineJobs(projectId, pipeline.id).catch(error => {
-        this.model.set('pipelines.fetching', false);
+        this.model.set("pipelines.fetching", false);
         throw error;
       });
       const imageJobs = jobs.filter(job => job.name === IMAGE_BUILD_JOB);
@@ -498,9 +499,9 @@ class NotebooksCoordinator {
     this.model.setObject({ pipelines: pipelinesState });
 
     // reset pipelines.main object attributes if needed
-    const currentMain = this.model.get('pipelines.main');
+    const currentMain = this.model.get("pipelines.main");
     if (currentMain && currentMain.id && !mainPipeline.id)
-      this.model.set('pipelines.main', {});
+      this.model.set("pipelines.main", {});
 
     return mainPipeline;
   }
@@ -508,12 +509,12 @@ class NotebooksCoordinator {
 
   // * Handle polling * //
   startNotebookPolling(interval = POLLING_INTERVAL) {
-    const oldPoller = this.model.get('notebooks.poller');
+    const oldPoller = this.model.get("notebooks.poller");
     if (oldPoller == null) {
       const newPoller = setInterval(() => {
         this.fetchNotebooks();
       }, interval);
-      this.model.set('notebooks.poller', newPoller);
+      this.model.set("notebooks.poller", newPoller);
 
       // fetch immediatly
       this.fetchNotebooks();
@@ -521,34 +522,34 @@ class NotebooksCoordinator {
   }
 
   stopNotebookPolling() {
-    const poller = this.model.get('notebooks.poller');
+    const poller = this.model.get("notebooks.poller");
     if (poller) {
-      this.model.set('notebooks.poller', null);
+      this.model.set("notebooks.poller", null);
       clearTimeout(poller);
     }
   }
 
   startPipelinePolling(interval = POLLING_INTERVAL) {
     // start polling or invalidate previous data
-    const oldPoller = this.model.get('pipelines.poller');
+    const oldPoller = this.model.get("pipelines.poller");
     if (oldPoller == null) {
       const newPoller = setInterval(() => {
         this.fetchPipeline();
       }, interval);
-      this.model.set('pipelines.poller', newPoller);
+      this.model.set("pipelines.poller", newPoller);
 
       // fetch immediatly
       return this.fetchPipeline();
     }
-    else {
-      this.model.set('pipelines.fetched', null);
-    }
+
+      this.model.set("pipelines.fetched", null);
+
   }
 
   stopPipelinePolling() {
-    const poller = this.model.get('pipelines.poller');
+    const poller = this.model.get("pipelines.poller");
     if (poller) {
-      this.model.set('pipelines.poller', null);
+      this.model.set("pipelines.poller", null);
       clearTimeout(poller);
     }
   }
@@ -557,9 +558,9 @@ class NotebooksCoordinator {
   // * Change notebook status * //
   startServer() {
     const options = {
-      serverOptions: this.model.get('filters.options')
+      serverOptions: this.model.get("filters.options")
     };
-    const filters = this.model.get('filters');
+    const filters = this.model.get("filters");
     const namespace = filters.namespace;
     const project = filters.project;
     const branch = filters.branch.name ? filters.branch.name : "master";
@@ -577,11 +578,11 @@ class NotebooksCoordinator {
     this.model.setObject(updatedState);
     return this.client.stopNotebookServer(serverName, force)
       .then(response => {
-        this.model.set('filters.discard', false);
+        this.model.set("filters.discard", false);
         return response;
       })
       .catch(error => {
-        this.model.set('filters.discard', false);
+        this.model.set("filters.discard", false);
         throw error;
       });
   }
@@ -589,8 +590,8 @@ class NotebooksCoordinator {
 
   // * Fetch commits -- to be moved * //
   async fetchCommits() {
-    this.model.set('data.fetching', true);
-    const filters = this.model.get('filters');
+    this.model.set("data.fetching", true);
+    const filters = this.model.get("filters");
     const projectPathWithNamespace = `${encodeURIComponent(filters.namespace)}%2F${filters.project}`;
     return this.client.getCommits(projectPathWithNamespace, filters.branch.name)
       .then(resp => {
@@ -600,14 +601,14 @@ class NotebooksCoordinator {
             fetched: new Date(),
             commits: { $set: resp.data }
           }
-        })
+        });
         return resp.data;
       })
       .catch(error => {
-        this.model.set('data.fetching', false);
+        this.model.set("data.fetching", false);
         throw error;
       });
   }
 }
 
-export { NotebooksHelper, ExpectedAnnotations, NotebooksCoordinator }
+export { NotebooksHelper, ExpectedAnnotations, NotebooksCoordinator };

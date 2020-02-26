@@ -23,6 +23,6 @@
  *  Components for the help page
  */
 
-import { Help } from './Help.container';
+import { Help } from "./Help.container";
 
 export default Help;

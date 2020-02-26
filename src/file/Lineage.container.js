@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import { API_ERRORS } from '../api-client';
-import { GraphIndexingStatus } from '../project/Project';
-import { FileLineage as FileLineagePresent } from './Lineage.present';
+import { API_ERRORS } from "../api-client";
+import { GraphIndexingStatus } from "../project/Project";
+import { FileLineage as FileLineagePresent } from "./Lineage.present";
 
 class FileLineage extends Component {
   constructor(props) {
@@ -47,9 +47,9 @@ class FileLineage extends Component {
   }
 
   componentWillUnmount() {
-    if (this._isMounted) {
+    if (this._isMounted)
       this.stopPollingProgress();
-    }
+
     this._isMounted = false;
   }
 
@@ -82,9 +82,9 @@ class FileLineage extends Component {
           this.setState({ graphStatusWaiting: false });
           if (progress === GraphIndexingStatus.MAX_VALUE || progress === GraphIndexingStatus.NO_WEBHOOK) {
             this.stopPollingProgress();
-            if (progress === GraphIndexingStatus.MAX_VALUE) {
+            if (progress === GraphIndexingStatus.MAX_VALUE)
               this.retrieveGraph();
-            }
+
           }
         }
       });
@@ -97,15 +97,15 @@ class FileLineage extends Component {
       if (this._isMounted) {
         // remember that the graph status endpoint is not updated instantly, better adding a short timeout
         setTimeout(() => {
-          if (this._isMounted) {
+          if (this._isMounted)
             this.startPollingProgress();
-          }
+
         }, 1000);
         // updating this state slightly later avoids UI flickering
         setTimeout(() => {
-          if (this._isMounted) {
+          if (this._isMounted)
             this.setState({ webhookJustCreated: false });
-          }
+
         }, 1500);
       }
     });
@@ -124,23 +124,24 @@ class FileLineage extends Component {
             else {
               let currentNode = { id: null, type: null };
               graph.nodes.forEach(node => {
-                if ((node.type === "Directory" || node.type === "File") && node.location === this.props.path) {
+                if ((node.type === "Directory" || node.type === "File") && node.location === this.props.path)
                   currentNode = node;
-                }
-              })
+
+              });
               this.setState({ graph, currentNode });
             }
           }
         });
-    } catch (error) {
+    }
+ catch (error) {
       if (this._isMounted) {
         if (error.case === API_ERRORS.notFoundError) {
           this.setState({
-            error: 'ERROR 404: Could not load lineage. The file with path ' + this.props.filePath + ' does not exist."'
+            error: "ERROR 404: Could not load lineage. The file with path " + this.props.filePath + ' does not exist."'
           });
         }
         else {
-          this.setState({ error: 'Could not load lineage.' });
+          this.setState({ error: "Could not load lineage." });
         }
       }
     }
@@ -156,7 +157,7 @@ class FileLineage extends Component {
       filePath={`/projects/${this.props.projectPathWithNamespace}/files/blob/${this.props.path}`}
       currentNode={this.state.currentNode}
       accessLevel={this.props.accessLevel}
-      {...this.props} />
+      {...this.props} />;
   }
 }
 

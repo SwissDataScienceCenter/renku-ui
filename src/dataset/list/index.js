@@ -23,6 +23,6 @@
  *  Components for the project listing.
  */
 
-import List from './DatasetList.container';
+import List from "./DatasetList.container";
 
 export default List;

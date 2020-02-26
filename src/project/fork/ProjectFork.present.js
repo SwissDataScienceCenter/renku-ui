@@ -24,19 +24,18 @@
  */
 
 
+import React, { Component } from "react";
 
-import React, { Component } from 'react';
+import Autosuggest from "react-autosuggest";
 
-import Autosuggest from 'react-autosuggest';
+import { Row, Col, Button, FormGroup, FormText, Label } from "reactstrap";
+import { InputGroup, InputGroupAddon, InputGroupText } from "reactstrap";
+import { Alert } from "reactstrap";
 
-import { Row, Col, Button, FormGroup, FormText, Label } from 'reactstrap';
-import { InputGroup, InputGroupAddon, InputGroupText } from 'reactstrap';
-import { Alert } from 'reactstrap';
-
-import collection from 'lodash/collection';
-import { FieldGroup, Loader } from '../../utils/UIComponents'
-import '../new/Project.style.css'
-import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import collection from "lodash/collection";
+import { FieldGroup, Loader } from "../../utils/UIComponents";
+import "../new/Project.style.css";
+import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
 
 
 class ProjectPath extends Component {
@@ -59,9 +58,9 @@ class ProjectPath extends Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if (this.props.namespace.path !== prevProps.namespace.path) {
+    if (this.props.namespace.path !== prevProps.namespace.path)
       this.setState({ input: this.props.namespace.path });
-    }
+
   }
 
   getSuggestionValue(suggestion) {
@@ -88,28 +87,28 @@ class ProjectPath extends Component {
       this.props.onChange(highlightedSuggestion);
       this.props.onAccept();
     }
-    this.setState({ input: this.props.namespace.path })
+    this.setState({ input: this.props.namespace.path });
   }
 
   doChange(event, { newValue, method }) {
     // If the user typed, store it as local input, otherwise set the selection
-    if (method === 'type') {
+    if (method === "type")
       this.setState({ input: newValue });
-    } else {
-      this.props.onChange(newValue)
-    }
-    if (method === 'enter' || method === 'click') {
+     else
+      this.props.onChange(newValue);
+
+    if (method === "enter" || method === "click")
       this.props.onAccept();
-    }
+
   }
 
   async doSuggestionsFetchRequested({ value, reason }) {
     let searchValue = value;
     // Do a broad search on input-focused to show many options
-    if (reason === 'input-focused') searchValue = '';
+    if (reason === "input-focused") searchValue = "";
     const matches = await this.props.fetchMatchingNamespaces(searchValue);
-    const namespaces = collection.groupBy(matches, 'kind');
-    const suggestions = ['user', 'group']
+    const namespaces = collection.groupBy(matches, "kind");
+    const suggestions = ["user", "group"]
       .map(section => {
         const sectionNs = namespaces[section];
         return {
@@ -120,8 +119,8 @@ class ProjectPath extends Component {
       .filter(section => section.namespaces.length > 0);
 
     // Show current as first on input-focused, otherwise do not show
-    if (reason === 'input-focused') {
-      const current = { kind: 'current', namespaces: [this.props.namespace] };
+    if (reason === "input-focused") {
+      const current = { kind: "current", namespaces: [this.props.namespace] };
       suggestions.splice(0, 0, current);
     }
     this.setState({ suggestions });
@@ -137,29 +136,29 @@ class ProjectPath extends Component {
     const { suggestions } = this.state;
     const inputProps = {
       placeholder: "{user}",
-      value: this.state.input || '',
+      value: this.state.input || "",
       onChange: this.onChange,
       onBlur: this.onBlur
     };
     // See https://github.com/moroshko/react-autosuggest#themeProp
     const defaultTheme = {
-      container: 'react-autosuggest__container',
-      containerOpen: 'react-autosuggest__container--open',
-      input: 'react-autosuggest__input',
-      inputOpen: 'react-autosuggest__input--open',
-      inputFocused: 'react-autosuggest__input--focused',
-      suggestionsContainer: 'react-autosuggest__suggestions-container',
-      suggestionsContainerOpen: 'react-autosuggest__suggestions-container--open',
-      suggestionsList: 'react-autosuggest__suggestions-list',
-      suggestion: 'react-autosuggest__suggestion',
-      suggestionFirst: 'react-autosuggest__suggestion--first',
-      suggestionHighlighted: 'react-autosuggest__suggestion--highlighted',
-      sectionContainer: 'react-autosuggest__section-container',
-      sectionContainerFirst: 'react-autosuggest__section-container--first',
-      sectionTitle: 'react-autosuggest__section-title'
+      container: "react-autosuggest__container",
+      containerOpen: "react-autosuggest__container--open",
+      input: "react-autosuggest__input",
+      inputOpen: "react-autosuggest__input--open",
+      inputFocused: "react-autosuggest__input--focused",
+      suggestionsContainer: "react-autosuggest__suggestions-container",
+      suggestionsContainerOpen: "react-autosuggest__suggestions-container--open",
+      suggestionsList: "react-autosuggest__suggestions-list",
+      suggestion: "react-autosuggest__suggestion",
+      suggestionFirst: "react-autosuggest__suggestion--first",
+      suggestionHighlighted: "react-autosuggest__suggestion--highlighted",
+      sectionContainer: "react-autosuggest__section-container",
+      sectionContainerFirst: "react-autosuggest__section-container--first",
+      sectionTitle: "react-autosuggest__section-title"
     };
     // Override the input theme to match our visual style
-    const theme = { ...defaultTheme, ...{ input: 'form-control' } };
+    const theme = { ...defaultTheme, ...{ input: "form-control" } };
     return <FormGroup>
       <Label>Project Home</Label>
       <InputGroup>
@@ -183,7 +182,7 @@ class ProjectPath extends Component {
       </InputGroup>
       <FormText color="muted">{"By default, a project is owned by the user that forked it, but \
         it can optionally be forked within a group."}</FormText>
-    </FormGroup>
+    </FormGroup>;
   }
 }
 
@@ -223,7 +222,7 @@ class ForkProjectModal extends Component {
             disabled={this.props.model.display.loading}
             onClick={this.props.handlers.onSubmit}>
             Fork
-          </Button>{' '}
+          </Button>{" "}
           <Button
             color="secondary"
             disabled={this.props.model.display.loading}
@@ -232,7 +231,7 @@ class ForkProjectModal extends Component {
           </Button>
         </ModalFooter>
       </Modal>
-    </div>
+    </div>;
 
   }
 }
@@ -244,7 +243,7 @@ class SubmitLoader extends Component {
       <FormText color="primary">
         <Loader size="16" inline="true" margin="2" />
         The project is being forked...
-      </FormText>)
+      </FormText>);
   }
 }
 
@@ -270,7 +269,7 @@ class SubmitErrors extends Component {
           </Col>
         </Alert>
       </div>
-    )
+    );
   }
 
 }

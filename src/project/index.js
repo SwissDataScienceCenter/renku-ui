@@ -23,6 +23,6 @@
  *  Project components.
  */
 
-import { ProjectListRow } from './list'
+import { ProjectListRow } from "./list";
 
-export { ProjectListRow }
+export { ProjectListRow };

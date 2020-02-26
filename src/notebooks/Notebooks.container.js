@@ -16,14 +16,14 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react';
-import { connect } from 'react-redux'
+import React, { Component } from "react";
+import { connect } from "react-redux";
 
-import { NotebooksCoordinator } from './Notebooks.state';
-import { StartNotebookServer as StartNotebookServerPresent } from './Notebooks.present';
-import { Notebooks as NotebooksPresent } from './Notebooks.present';
-import { CheckNotebookIcon } from './Notebooks.present';
-import { StatusHelper } from '../model/Model'
+import { NotebooksCoordinator } from "./Notebooks.state";
+import { StartNotebookServer as StartNotebookServerPresent } from "./Notebooks.present";
+import { Notebooks as NotebooksPresent } from "./Notebooks.present";
+import { CheckNotebookIcon } from "./Notebooks.present";
+import { StatusHelper } from "../model/Model";
 
 /**
  * Display the list of Notebook servers
@@ -46,9 +46,9 @@ class Notebooks extends Component {
     // temporarily reset data since notebooks model was not designed to be static
     this.coordinator.reset();
 
-    if (props.scope) {
+    if (props.scope)
       this.coordinator.setNotebookFilters(props.scope, true);
-    }
+
 
     this.state = {
       showingLogs: false
@@ -88,7 +88,7 @@ class Notebooks extends Component {
     this.setState({ showingLogs: nextState });
 
     if (nextState)
-      this.fetchLogs(serverName)
+      this.fetchLogs(serverName);
   }
 
   mapStateToProps(state, ownProps) {
@@ -108,7 +108,7 @@ class Notebooks extends Component {
       standalone={this.props.standalone ? this.props.standalone : false}
       scope={this.props.scope}
       urlNewEnvironment={this.props.urlNewEnvironment}
-    />
+    />;
   }
 }
 
@@ -135,9 +135,9 @@ class StartNotebookServer extends Component {
     // temporarily reset data since notebooks model was not designed to be static
     this.coordinator.reset();
 
-    if (props.scope) {
+    if (props.scope)
       this.coordinator.setNotebookFilters(props.scope);
-    }
+
 
     this.handlers = {
       refreshBranches: this.refreshBranches.bind(this),
@@ -149,7 +149,7 @@ class StartNotebookServer extends Component {
       setDisplayedCommits: this.setDisplayedCommits.bind(this),
       setServerOption: this.setServerOptionFromEvent.bind(this),
       startServer: this.startServer.bind(this)
-    }
+    };
 
     this.state = {
       first: true,
@@ -175,9 +175,9 @@ class StartNotebookServer extends Component {
       StatusHelper.isUpdating(previousProps.branches) &&
       !StatusHelper.isUpdating(this.props.branches)) {
       this.setState({ first: false });
-      if (this._isMounted) {
+      if (this._isMounted)
         this.selectBranch();
-      }
+
     }
   }
 
@@ -186,9 +186,9 @@ class StartNotebookServer extends Component {
       if (StatusHelper.isUpdating(this.props.branches))
         return;
       await this.props.refreshBranches();
-      if (this._isMounted && this.state.first) {
+      if (this._isMounted && this.state.first)
         this.selectBranch();
-      }
+
     }
   }
 
@@ -232,9 +232,9 @@ class StartNotebookServer extends Component {
         return;
 
       await this.coordinator.fetchCommits();
-      if (this._isMounted) {
+      if (this._isMounted)
         this.selectCommit();
-      }
+
     }
   }
 
@@ -274,7 +274,7 @@ class StartNotebookServer extends Component {
 
   async retriggerPipeline() {
     const projectPathWithNamespace = `${encodeURIComponent(this.props.scope.namespace)}%2F${this.props.scope.project}`;
-    const pipelineId = this.model.get('pipelines.main.id');
+    const pipelineId = this.model.get("pipelines.main.id");
     await this.props.client.retryPipeline(projectPathWithNamespace, pipelineId);
     return this.refreshPipelines();
   }
@@ -283,15 +283,15 @@ class StartNotebookServer extends Component {
     const target = event.target.type.toLowerCase();
     let value = providedValue;
     if (!providedValue) {
-      if (target === "button") {
+      if (target === "button")
         value = event.target.textContent;
-      }
-      else if (target === "checkbox") {
+
+      else if (target === "checkbox")
         value = event.target.checked;
-      }
-      else {
+
+      else
         value = event.target.value;
-      }
+
     }
 
     this.coordinator.setNotebookOptions(option, value);
@@ -334,7 +334,7 @@ class StartNotebookServer extends Component {
       handlers: this.handlers,
       store: ownProps.store, // adds store and other props manually added to <ConnectedStartNotebookServer />
       ...augmentedState
-    }
+    };
   }
 
   render() {
@@ -370,9 +370,9 @@ class CheckNotebookStatus extends Component {
     // temporarily reset data since notebooks model was not designed to be static
     this.coordinator.reset();
 
-    if (props.scope) {
+    if (props.scope)
       this.coordinator.setNotebookFilters(props.scope);
-    }
+
   }
 
   async componentDidMount() {
@@ -409,7 +409,7 @@ class CheckNotebookStatus extends Component {
       fetched: subState.notebooks.fetched,
       fetching: subState.notebooks.fetching,
       notebook
-    }
+    };
   }
 
   render() {

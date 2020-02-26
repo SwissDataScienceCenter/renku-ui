@@ -30,4 +30,4 @@ function checkAtLeastLength(input, length) {
 export default {
   isNotEmpty: input => checkAtLeastLength(input, 1),
   isAtLeastLength: (input, minLength) => checkAtLeastLength(input, minLength)
-}
+};

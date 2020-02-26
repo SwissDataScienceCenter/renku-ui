@@ -24,16 +24,16 @@
 */
 
 
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
 
 // always pass "previous" with the current `location.pathname`
 class Login extends Component {
   render() {
     let redirectUrl = this.props.params.BASE_URL;
-    if (this.props.location.state && this.props.location.state.previous) {
+    if (this.props.location.state && this.props.location.state.previous)
       redirectUrl += this.props.location.state.previous;
-    }
+
     window.location =
       `${this.props.params.GATEWAY_URL}/auth/login?redirect_url=${encodeURIComponent(redirectUrl)}`;
     return <p>logging in</p>;

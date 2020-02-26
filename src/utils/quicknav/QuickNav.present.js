@@ -16,12 +16,12 @@
  * limitations under the License.
  */
 
-import React, { Component } from 'react';
-import { Link }  from 'react-router-dom'
-import Autosuggest from 'react-autosuggest';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
-import './QuickNav.style.css';
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import Autosuggest from "react-autosuggest";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import "./QuickNav.style.css";
 
 class QuickNavPresent extends Component {
 
@@ -31,32 +31,32 @@ class QuickNavPresent extends Component {
     this.onSectionTitle = this.doSectionTitle.bind(this);
   }
 
-  doRenderSuggestion(suggestion, {query, isHighlighted}) {
+  doRenderSuggestion(suggestion, { query, isHighlighted }) {
     // If the suggestion is actually a query, make an appropriate link
     const link = (suggestion.query == null) ?
-      <Link to={suggestion.url}>{suggestion.path}</Link>:
-      <Link to={suggestion.url}>{suggestion.query}</Link>
-    const style = { padding: '5px 0', borderBottom: '1px solid #e1e4e8' };
+      <Link to={suggestion.url}>{suggestion.path}</Link> :
+      <Link to={suggestion.url}>{suggestion.query}</Link>;
+    const style = { padding: "5px 0", borderBottom: "1px solid #e1e4e8" };
     return (isHighlighted) ?
       <div style={style} className="bg-light">{link}</div> :
       <div style={style}>{link}</div>;
   }
 
   doSectionTitle(section) {
-    return <strong>{section.title}</strong>
+    return <strong>{section.title}</strong>;
   }
 
   render () {
     const theme = {
-      container: 'input-group',
-      input: 'form-control border-primary',
-      suggestionsContainer: 'searchBarSuggestionsContainer',
-      suggestion: {listStyle: 'none'}
+      container: "input-group",
+      input: "form-control border-primary",
+      suggestionsContainer: "searchBarSuggestionsContainer",
+      suggestion: { listStyle: "none" }
     };
 
     const inputProps = {
-      placeholder: 'Jump to or search...',
-      type: 'search',
+      placeholder: "Jump to or search...",
+      type: "search",
       value: this.props.value,
       onChange: this.props.callbacks.onChange
     };
@@ -81,9 +81,9 @@ class QuickNavPresent extends Component {
           </button>
         </span>
       </div>
-    </form>
+    </form>;
 
   }
 }
 
-export { QuickNavPresent }
+export { QuickNavPresent };

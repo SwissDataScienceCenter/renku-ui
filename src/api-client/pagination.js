@@ -17,28 +17,28 @@
  */
 
 const PAGINATION_LINK_NAMES = {
-  first: 'firstPageLink',
-  last: 'lastPageLink',
-  prev: 'previousPageLink',
-  next: 'nextPageLink'
+  first: "firstPageLink",
+  last: "lastPageLink",
+  prev: "previousPageLink",
+  next: "nextPageLink"
 };
 
 const NUMERICAL_X_HEADERS = {
-  'X-Next-Page': 'nextPage',
-  'X-Page': 'currentPage',
-  'X-Per-Page': 'perPage',
-  'X-Prev-Page': 'previousPage',
-  'X-Total': 'totalItems',
-  'X-Total-Pages': 'totalPages',
-}
+  "X-Next-Page": "nextPage",
+  "X-Page": "currentPage",
+  "X-Per-Page": "perPage",
+  "X-Prev-Page": "previousPage",
+  "X-Total": "totalItems",
+  "X-Total-Pages": "totalPages",
+};
 
 const NUMERICAL_PAGINATION_HEADERS = {
-  'Next-Page': 'nextPage',
-  'Page': 'currentPage',
-  'Per-Page': 'perPage',
-  'Total': 'totalItems',
-  'Total-Pages': 'totalPages',
-}
+  "Next-Page": "nextPage",
+  "Page": "currentPage",
+  "Per-Page": "perPage",
+  "Total": "totalItems",
+  "Total-Pages": "totalPages",
+};
 
 // In this function we just parse the pagination related header
 // information. The idea that methods performing the the request to
@@ -48,26 +48,26 @@ function processPaginationHeaders(client, headers) {
   let paginationDetail = {};
 
   // Parse the link header if it exists
-  if (headers.get('Link')) {
-    const paginationLinks = processLinkHeader(headers.get('Link'))
-    paginationDetail = { ...paginationDetail, ...paginationLinks }
+  if (headers.get("Link")) {
+    const paginationLinks = processLinkHeader(headers.get("Link"));
+    paginationDetail = { ...paginationDetail, ...paginationLinks };
   }
 
   // Parse the pagination related X-... headers
   Object.keys(NUMERICAL_X_HEADERS).forEach((header) => {
     paginationDetail[NUMERICAL_X_HEADERS[header]] =
-      parseInt(headers.get(header), 10) || undefined
-  })
+      parseInt(headers.get(header), 10) || undefined;
+  });
 
   // Parse the pagination releated hedares (non-X)
-  if (!headers.get('X-Page')) {
+  if (!headers.get("X-Page")) {
     Object.keys(NUMERICAL_PAGINATION_HEADERS).forEach((header) => {
       paginationDetail[NUMERICAL_PAGINATION_HEADERS[header]] =
-        parseInt(headers.get(header), 10) || undefined
-    })
+        parseInt(headers.get(header), 10) || undefined;
+    });
   }
 
-  return paginationDetail
+  return paginationDetail;
 }
 
 function processLinkHeader(linkHeader) {
@@ -78,11 +78,11 @@ function processLinkHeader(linkHeader) {
   let match = linksRegex.exec(linkHeader);
 
   while (match) {
-    paginationLinks[PAGINATION_LINK_NAMES[match[2]]] = match[1]
+    paginationLinks[PAGINATION_LINK_NAMES[match[2]]] = match[1];
     match = linksRegex.exec(linkHeader);
   }
 
   return paginationLinks;
 }
 
-export default processPaginationHeaders
+export default processPaginationHeaders;

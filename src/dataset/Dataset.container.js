@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import DatasetView from './Dataset.present';
+import React from "react";
+import DatasetView from "./Dataset.present";
 
 export default function ShowDataset(props) {
-  return <DatasetView 
+  return <DatasetView
     fetchGraphStatus={props.fetchGraphStatus}
     maintainer={props.maintainer}
     createGraphWebhook={props.createGraphWebhook}
@@ -31,8 +31,8 @@ export default function ShowDataset(props) {
     lineagesUrl={props.lineagesUrl}
     fileContentUrl={props.fileContentUrl}
     projectsUrl={props.projectsUrl}
-    client={props.client} 
-    datasets={props.datasets} 
+    client={props.client}
+    datasets={props.datasets}
     selectedDataset={props.selectedDataset}
-  />
+  />;
 }

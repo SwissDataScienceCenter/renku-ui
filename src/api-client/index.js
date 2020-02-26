@@ -16,24 +16,24 @@
  * limitations under the License.
  */
 
-import { APIError, alertAPIErrors, API_ERRORS } from './errors';
-import { renkuFetch, RETURN_TYPES } from './utils';
-import processPaginationHeaders from './pagination';
+import { APIError, alertAPIErrors, API_ERRORS } from "./errors";
+import { renkuFetch, RETURN_TYPES } from "./utils";
+import processPaginationHeaders from "./pagination";
 import ApolloClient from "apollo-boost";
 // ? Consider a minimal graphql lib: https://github.com/yoshuawuyts/nanographql
 
-import addProjectMethods  from './project';
-import addRepositoryMethods  from './repository';
-import addUserMethods  from './user';
-import addIssueMethods  from './issue';
-import addInstanceMethods from './instance';
-import addNotebookServersMethods from './notebook-servers';
-import addGraphMethods from './graph';
-import addPipelineMethods from './pipeline';
-import addDatasetMethods from './dataset';
-import addMergeRequestMethods from './merge-request';
+import addProjectMethods from "./project";
+import addRepositoryMethods from "./repository";
+import addUserMethods from "./user";
+import addIssueMethods from "./issue";
+import addInstanceMethods from "./instance";
+import addNotebookServersMethods from "./notebook-servers";
+import addGraphMethods from "./graph";
+import addPipelineMethods from "./pipeline";
+import addDatasetMethods from "./dataset";
+import addMergeRequestMethods from "./merge-request";
 
-import testClient from './test-client'
+import testClient from "./test-client";
 
 const ACCESS_LEVELS = {
   GUEST: 10,
@@ -55,7 +55,7 @@ class APIClient {
 
   constructor(baseUrl) {
     this.baseUrl = baseUrl;
-    this.returnTypes = RETURN_TYPES
+    this.returnTypes = RETURN_TYPES;
     this.graphqlClient = new ApolloClient({
       uri: `${baseUrl}/graphql`
     });
@@ -76,30 +76,30 @@ class APIClient {
   // contain a user token.
   clientFetch(
     url,
-    options={headers: new Headers()},
-    returnType=RETURN_TYPES.json,
-    alertOnErr=false,
-    reLogin=true
+    options = { headers: new Headers() },
+    returnType = RETURN_TYPES.json,
+    alertOnErr = false,
+    reLogin = true
   ) {
 
     return renkuFetch(url, options)
       .catch((error) => {
 
         // For permission errors we send the user to login
-        if (reLogin && error.case === API_ERRORS.unauthorizedError){
+        if (reLogin && error.case === API_ERRORS.unauthorizedError)
           return this.doLogin();
-        }
+
 
         // Alert only if corresponding option is set to true
-        else if (alertOnErr) {
+        else if (alertOnErr)
           alertAPIErrors(error);
-        }
+
 
         // Default case: Re-raise the error for the application
         // to take care of it.
-        else {
+        else
           return Promise.reject(error);
-        }
+
       })
 
       .then(response => {
@@ -110,8 +110,8 @@ class APIClient {
             return {
               data,
               pagination: processPaginationHeaders(this, response.headers)
-            }
-          })
+            };
+          });
 
         case RETURN_TYPES.text:
           return response.text();
@@ -122,11 +122,11 @@ class APIClient {
         default:
           return response;
         }
-      })
+      });
   }
 
   graphqlFetch(query, variables) {
-    return this.graphqlClient.query({query, variables})
+    return this.graphqlClient.query({ query, variables })
       .catch(error => {
         // TODO implement here common error solutions (re-login, ...)
         return Promise.reject(error);
@@ -141,12 +141,12 @@ class APIClient {
   // REF: https://stackoverflow.com/questions/4500741/suppress-chrome-failed-to-load-resource-messages-in-console
   simpleFetch(
     url,
-    method='GET'
+    method = "GET"
   ) {
     const urlObject = new URL(url);
     let headers = new Headers({
-      'credentials': 'same-origin',
-      'X-Requested-With': 'XMLHttpRequest'
+      "credentials": "same-origin",
+      "X-Requested-With": "XMLHttpRequest"
     });
     return fetch(urlObject, { headers, method });
   }
@@ -155,13 +155,13 @@ class APIClient {
     window.location = `${this.baseUrl}/auth/login?redirect_url=${encodeURIComponent(window.location.href)}`;
   }
 
-  doLogout(){
-    window.location=`${this.baseUrl}/auth/logout?redirect_url=${encodeURIComponent(window.location.href)}`
+  doLogout() {
+    window.location = `${this.baseUrl}/auth/logout?redirect_url=${encodeURIComponent(window.location.href)}`;
   }
 
   getBasicHeaders() {
     let headers = {
-      'Accept': 'application/json'
+      "Accept": "application/json"
     };
     return new Headers(headers);
   }

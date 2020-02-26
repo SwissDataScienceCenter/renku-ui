@@ -23,6 +23,6 @@
  *  Components for the new Dataset page
  */
 
-import NewDataset from './DatasetNew.container';
+import NewDataset from "./DatasetNew.container";
 
 export default NewDataset;

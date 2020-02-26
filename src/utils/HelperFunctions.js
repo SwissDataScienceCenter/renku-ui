@@ -18,20 +18,21 @@
 
 // title.Author: Alex K. - https://stackoverflow.com/users/246342/alex-k
 // Source: https://stackoverflow.com/questions/6507056/replace-all-whitespace-characters/6507078#6507078
-import showdown from 'showdown';
-import DOMPurify from 'dompurify';
+import showdown from "showdown";
+import DOMPurify from "dompurify";
 
 const AUTOSAVED_PREFIX = "renku/autosave/";
 
-const slugFromTitle = (title) => title.replace(/\s/g, '-').toLowerCase();
+const slugFromTitle = (title) => title.replace(/\s/g, "-").toLowerCase();
 
 function getActiveProjectPathWithNamespace(currentPath) {
   try {
-    if(currentPath.includes('/projects/') && currentPath.split('/').length > 3 ){
-      return currentPath.split('/')[2]+'/'+currentPath.split('/')[3]
-    } return null;
-  } catch(TypeError) {
-    return null
+    if (currentPath.includes("/projects/") && currentPath.split("/").length > 3 )
+      return currentPath.split("/")[2] + "/" + currentPath.split("/")[3];
+     return null;
+  }
+ catch (TypeError) {
+    return null;
   }
 }
 
@@ -39,10 +40,10 @@ function splitAutosavedBranches(branches) {
   const autosaved = branches
     .filter(branch => branch.name.startsWith(AUTOSAVED_PREFIX))
     .map(branch => {
-      let autosave = {}
+      let autosave = {};
       const autosaveData = branch.name.replace(AUTOSAVED_PREFIX, "").split("/");
       [ autosave.namespace, autosave.branch, autosave.commit, autosave.finalCommit ] = autosaveData;
-      return {...branch, autosave};
+      return { ...branch, autosave };
     });
   const standard = branches.filter(branch => !branch.name.startsWith(AUTOSAVED_PREFIX));
   return { standard, autosaved };
@@ -51,7 +52,7 @@ function splitAutosavedBranches(branches) {
 function sanitizedHTMLFromMarkdown(markdown) {
   const converter = new showdown.Converter();
   const htmlFromMarkdown = converter.makeHtml(markdown);
-  return DOMPurify.sanitize(htmlFromMarkdown)
+  return DOMPurify.sanitize(htmlFromMarkdown);
 }
 
 function simpleHash(str) {
@@ -75,18 +76,21 @@ function parseINIString(data) {
   lines.forEach(function (line) {
     if (regex.comment.test(line)) {
       return;
-    } else if (regex.param.test(line)) {
+    }
+ else if (regex.param.test(line)) {
       let match = line.match(regex.param);
-      if (section) {
+      if (section)
         value[section][match[1]] = match[2];
-      } else {
+       else
         value[match[1]] = match[2];
-      }
-    } else if (regex.section.test(line)) {
+
+    }
+ else if (regex.section.test(line)) {
       let match = line.match(regex.section);
       value[match[1]] = {};
       section = match[1];
-    } else if (line.length === 0 && section) {
+    }
+ else if (line.length === 0 && section) {
       section = null;
     }
   });
@@ -94,16 +98,16 @@ function parseINIString(data) {
 }
 
 function formatBytes(bytes, decimals = 2) {
-  if (bytes === 0) return '0 Bytes';
+  if (bytes === 0) return "0 Bytes";
 
   const k = 1024;
   const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+  const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 
   const i = Math.floor(Math.log(bytes) / Math.log(k));
 
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
 }
 
-export { slugFromTitle, getActiveProjectPathWithNamespace, splitAutosavedBranches, sanitizedHTMLFromMarkdown }
-export { simpleHash, parseINIString, formatBytes }
+export { slugFromTitle, getActiveProjectPathWithNamespace, splitAutosavedBranches, sanitizedHTMLFromMarkdown };
+export { simpleHash, parseINIString, formatBytes };

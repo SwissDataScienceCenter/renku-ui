@@ -31,45 +31,45 @@ class Time {
   }
 
   static parseDate(date) {
-    if (this.isDate(date)) {
+    if (this.isDate(date))
       return date;
-    }
+
     const convertedDate = new Date(date);
-    if (this.isDate(convertedDate)) {
+    if (this.isDate(convertedDate))
       return convertedDate;
-    }
-    throw(new Error("Invalid date"));
+
+    throw (new Error("Invalid date"));
   }
 
-  static toIsoString(inputDate, type="datetime") {
+  static toIsoString(inputDate, type = "datetime") {
     const date = this.parseDate(inputDate);
     const readableDate = date.toISOString().substring(0, 19).replace("T", " ");
-    if (type === "datetime") {
+    if (type === "datetime")
       return readableDate;
-    }
-    else if (type === "date") {
-      return readableDate.substring(0,10);
-    }
-    else if (type === "time") {
+
+    else if (type === "date")
+      return readableDate.substring(0, 10);
+
+    else if (type === "time")
       return readableDate.substring(11);
-    }
-    else {
-      throw(new Error(`Uknown type "${type}"`));
-    }
+
+
+      throw (new Error(`Uknown type "${type}"`));
+
   }
 
-  static toIsoTimezoneString(inputDate, type="datetime") {
+  static toIsoTimezoneString(inputDate, type = "datetime") {
     // add the timezone manually and then convert to ISO string
     const date = this.parseDate(inputDate);
     const isoDate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000)).toISOString();
     return this.toIsoString(isoDate, type);
   }
-  
-  static getReadableDate(inputDate){
+
+  static getReadableDate(inputDate) {
     const date = this.parseDate(inputDate);
-    let months=["January", "February", "March", "April", "May", "June", 
-      "July", "August", "September", "October", "November", "December"]
-    return months[date.getMonth()]+" "+date.getDate()+", "+date.getFullYear();
+    let months = ["January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"];
+    return months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
   }
 
 }

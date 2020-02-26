@@ -23,11 +23,11 @@
  *  Presentational components for not-found
  */
 
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
-import { Row, Col, Button } from 'reactstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSearch } from '@fortawesome/free-solid-svg-icons';
+import React, { Component } from "react";
+import { Link } from "react-router-dom";
+import { Row, Col, Button } from "reactstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
 class NotFound extends Component {
   render() {
@@ -54,4 +54,4 @@ class NotFound extends Component {
   }
 }
 
-export { NotFound }
+export { NotFound };

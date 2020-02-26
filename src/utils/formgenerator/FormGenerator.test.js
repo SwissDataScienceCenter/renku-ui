@@ -38,62 +38,60 @@ let schema = new Schema({
     initial: [],
     name: "files",
     label: "Files",
-    edit:true,
+    edit: true,
     type: FormGenerator.FieldTypes.FILES,
   }
 });
 
 describe("rendering on create", () => {
-	let spy = null;
-	beforeEach(() => {
-		// ckeditor dumps some junk to the conole.error. Ignore it.
-		spy = jest.spyOn(console, 'error').mockImplementation(() => {});
-	});
+  let spy = null;
+  beforeEach(() => {
+    // ckeditor dumps some junk to the conole.error. Ignore it.
+    spy = jest.spyOn(console, "error").mockImplementation(() => { });
+  });
 
-	afterEach(() => {
-		spy.mockRestore();
-	});
+  afterEach(() => {
+    spy.mockRestore();
+  });
 
   it("renders create form without crashing", () => {
     const div = document.createElement("div");
 
     const submitCallback = e =>
-      alert(
-        Object.values(schema)
-          .map(m => m.label + ": " + m.value + ",\n")
-          .join("")
-      );
+      Object.values(schema)
+        .map(m => m.label + ": " + m.value + ",\n")
+        .join("");
 
     ReactDOM.render(
-      <FormPanel title="Create Dataset" submitLoader={false} btnName="Create Dataset" submitCallback={submitCallback} model={schema} />,
+      <FormPanel title="Create Dataset" submitLoader={false} btnName="Create Dataset"
+        submitCallback={submitCallback} model={schema} />,
       div
     );
   });
 });
 
 describe("rendering on modify", () => {
-	let spy = null;
-	beforeEach(() => {
-		// ckeditor dumps some junk to the conole.error. Ignore it.
-		spy = jest.spyOn(console, 'error').mockImplementation(() => {});
-	});
+  let spy = null;
+  beforeEach(() => {
+    // ckeditor dumps some junk to the conole.error. Ignore it.
+    spy = jest.spyOn(console, "error").mockImplementation(() => { });
+  });
 
-	afterEach(() => {
-		spy.mockRestore();
-	});
+  afterEach(() => {
+    spy.mockRestore();
+  });
 
   it("renders modify form without crashing", () => {
     const div = document.createElement("div");
 
     const submitCallback = e =>
-      alert(
-        Object.values(schema)
-          .map(m => m.label + ": " + m.value + ",\n")
-          .join("")
-      );
+      Object.values(schema)
+        .map(m => m.label + ": " + m.value + ",\n")
+        .join("");
 
     ReactDOM.render(
-      <FormPanel title="Modify Dataset" submitLoader={false} btnName="Create Dataset" submitCallback={submitCallback} model={schema} edit={true} />,
+      <FormPanel title="Modify Dataset" submitLoader={false} btnName="Create Dataset"
+        submitCallback={submitCallback} model={schema} edit={true} />,
       div
     );
   });

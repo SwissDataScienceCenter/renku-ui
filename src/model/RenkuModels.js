@@ -23,8 +23,8 @@
  *
  */
 
-import { Schema } from './Model';
-import FormGenerator from '../utils/formgenerator/';
+import { Schema } from "./Model";
+import FormGenerator from "../utils/formgenerator/";
 
 const userSchema = new Schema({
   fetched: { initial: null, mandatory: true },
@@ -45,129 +45,129 @@ const projectsSchema = new Schema({
 });
 
 const metaSchema = new Schema({
-  id: {initial: '', mandatory: false},
+  id: { initial: "", mandatory: false },
   // author: {schema: userSchema, mandatory: false},
-  projectNamespace: {initial: {}, mandatory: false},
-  visibility: {initial: 'public', mandatory: true},
-  optoutKg: {initial: false, mandatory: false},
+  projectNamespace: { initial: {}, mandatory: false },
+  visibility: { initial: "public", mandatory: true },
+  optoutKg: { initial: false, mandatory: false },
 });
 
 const displaySchema = new Schema({
-  title: {initial:'', mandatory: true},
-  description: {initial: '', mandatory: true},
-  displayId: {initial: '', mandatory: false},
-  slug: {initial: '', mandatory: true},
-  loading: {initial: false, mandatory: false},
-  errors: {initial: [], mandatory: false},
+  title: { initial: "", mandatory: true },
+  description: { initial: "", mandatory: true },
+  displayId: { initial: "", mandatory: false },
+  slug: { initial: "", mandatory: true },
+  loading: { initial: false, mandatory: false },
+  errors: { initial: [], mandatory: false },
 });
 
 const newProjectSchema = new Schema({
-  meta: {schema: metaSchema, mandatory: true},
-  display: {schema: displaySchema, mandatory: true}
+  meta: { schema: metaSchema, mandatory: true },
+  display: { schema: displaySchema, mandatory: true }
 });
 
 const forkDisplaySchema = new Schema({
-  title: {initial:'', mandatory: true},
-  description: {initial: '', mandatory: true},
-  displayId: {initial: '', mandatory: false},
-  slug: {initial: '', mandatory: true},
-  loading: {initial: false, mandatory: false},
-  errors: {initial: [], mandatory: false},
+  title: { initial: "", mandatory: true },
+  description: { initial: "", mandatory: true },
+  displayId: { initial: "", mandatory: false },
+  slug: { initial: "", mandatory: true },
+  loading: { initial: false, mandatory: false },
+  errors: { initial: [], mandatory: false },
 
-  statuses: {initial: []},
-  namespaces: {initial: []},
-  namespaceGroup: {initial: null},
-  namespacesFetched: {initial: false}
-})
+  statuses: { initial: [] },
+  namespaces: { initial: [] },
+  namespaceGroup: { initial: null },
+  namespacesFetched: { initial: false }
+});
 
 const forkProjectSchema = new Schema({
-  meta: {schema: metaSchema, mandatory: true},
-  display: {schema: forkDisplaySchema, mandatory: true}
+  meta: { schema: metaSchema, mandatory: true },
+  display: { schema: forkDisplaySchema, mandatory: true }
 });
 
 const projectSchema = new Schema({
   core: {
     schema: {
-      available: {initial: null},
-      created_at: {initial: null,},
-      last_activity_at: {initial: null,},
-      id: {initial: null,},
-      description: {initial: 'no description', mandatory: true},
-      displayId: {initial: '',},
-      title: {initial: 'no title', mandatory: true},
-      external_url: {initial: '',},
-      path_with_namespace: {initial: null},
-      owner: {initial: null},
+      available: { initial: null },
+      created_at: { initial: null, },
+      last_activity_at: { initial: null, },
+      id: { initial: null, },
+      description: { initial: "no description", mandatory: true },
+      displayId: { initial: "", },
+      title: { initial: "no title", mandatory: true },
+      external_url: { initial: "", },
+      path_with_namespace: { initial: null },
+      owner: { initial: null },
     }
   },
   visibility: {
     schema: {
-      level: {initial: 'private', mandatory: true},
-      accessLevel: {initial: 0, mandatory: true}
+      level: { initial: "private", mandatory: true },
+      accessLevel: { initial: 0, mandatory: true }
     }
   },
   data: {
     schema: {
       reference: {
         schema: {
-          url_or_doi: {initial:''},
-          author: {initial: ''}
+          url_or_doi: { initial: "" },
+          author: { initial: "" }
         },
       },
       upload: {
         schema: {
-          files: {schema: []}
+          files: { schema: [] }
         }
       },
       readme: {
         schema: {
-          text: {initial: '', mandatory: false}
+          text: { initial: "", mandatory: false }
         }
       }
     },
   },
   system: {
     schema: {
-      tag_list: {schema: []},
-      star_count: {initial: 0, mandatory: true},
-      forks_count: {initial: 0, mandatory: true},
-      forked_from_project: {initial: {}},
-      ssh_url: {initial: '',},
-      http_url: {initial: '',},
-      merge_requests: {schema: [], initial:[]},
-      branches: {schema: [], initial:[]},
-      autosaved: {schema: [], initial:[]},
+      tag_list: { schema: [] },
+      star_count: { initial: 0, mandatory: true },
+      forks_count: { initial: 0, mandatory: true },
+      forked_from_project: { initial: {} },
+      ssh_url: { initial: "", },
+      http_url: { initial: "", },
+      merge_requests: { schema: [], initial: [] },
+      branches: { schema: [], initial: [] },
+      autosaved: { schema: [], initial: [] },
     }
   },
   files: {
     schema: {
-      notebooks: {schema: []},
-      data: {schema: []},
-      modifiedFiles: {initial: {}, mandatory: true}
+      notebooks: { schema: [] },
+      data: { schema: [] },
+      modifiedFiles: { initial: {}, mandatory: true }
     }
   },
   statistics: {
     schema: {
-      "commit_count": {initial: 0},
-      "storage_size": {initial: 0},
-      "repository_size": {initial: 0},
-      "lfs_objects_size": {initial: 0},
-      "job_artifacts_size": {initial: 0}
+      "commit_count": { initial: 0 },
+      "storage_size": { initial: 0 },
+      "repository_size": { initial: 0 },
+      "lfs_objects_size": { initial: 0 },
+      "job_artifacts_size": { initial: 0 }
     },
   },
   transient: {
     schema: {
-      requests: {initial: {}},
-      forkModalOpen: {initial: false}
+      requests: { initial: {} },
+      forkModalOpen: { initial: false }
     }
   },
   webhook: {
     schema: {
-      status: {initial: null},
-      created: {initial: null},
-      possible: {initial: null},
-      stop: {initial: null},
-      progress: {initial: null}
+      status: { initial: null },
+      created: { initial: null },
+      possible: { initial: null },
+      stop: { initial: null },
+      progress: { initial: null }
     }
   }
 });
@@ -235,41 +235,41 @@ const notebooksSchema = new Schema({
 const datasetFormSchema = new Schema({
   name: {
     initial: "",
-    name: 'name',
-    label: 'Name',
+    name: "name",
+    label: "Name",
     edit: false,
     type: FormGenerator.FieldTypes.TEXT,
     parseFun: expression => FormGenerator.Parsers.slugFromTitle(expression),
     validators: [{
-      id: 'name-length',
+      id: "name-length",
       isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression),
-      alert: 'Name is too short'
+      alert: "Name is too short"
     }]
   },
   description: {
     initial: "",
-    name: 'description',
-    label: 'Description',
+    name: "description",
+    label: "Description",
     edit: false,
     type: FormGenerator.FieldTypes.TEXT_AREA,
-    help:"Basic HTML styling tags are allowed in this field.",
+    help: "Basic HTML styling tags are allowed in this field.",
     validators: [{
-      id: 'name-length',
+      id: "name-length",
       //  isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression, 3),
-      alert: 'Description can\'t be emtpy'
+      alert: "Description can't be emtpy"
     }]
   },
   files: {
     initial: [],
-    name: 'files',
-    label: 'Files',
-    edit:true,
+    name: "files",
+    label: "Files",
+    edit: true,
     type: FormGenerator.FieldTypes.FILES,
     uploadFileFunction: undefined,
-    validators:[{
-      id: 'files-length',
+    validators: [{
+      id: "files-length",
       //isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression, 1),
-      alert: 'Datasets should have at least 1 file'
+      alert: "Datasets should have at least 1 file"
     }]
   }
 });
@@ -277,42 +277,42 @@ const datasetFormSchema = new Schema({
 const issueFormSchema = new Schema({
   name: {
     initial: "",
-    name: 'title',
-    label: 'Title',
+    name: "title",
+    label: "Title",
     type: FormGenerator.FieldTypes.TEXT,
-    placeholder: 'A brief name to identify the issue',
+    placeholder: "A brief name to identify the issue",
     validators: [{
-      id: 'text-length',
+      id: "text-length",
       isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression),
-      alert: 'Text is too short'
+      alert: "Text is too short"
     }]
   },
   description: {
     initial: "",
-    name: 'textarea',
-    label: 'Description',
+    name: "textarea",
+    label: "Description",
     type: FormGenerator.FieldTypes.TEXT_AREA, //to change to TEXT_EDITOR
-    outputType:'markdown',
-    placeholder: 'A brief name to identify the issue',
-    help: 'A description of the issue helps users understand it and is highly recommended.',
+    outputType: "markdown",
+    placeholder: "A brief name to identify the issue",
+    help: "A description of the issue helps users understand it and is highly recommended.",
     validators: [{
-      id: 'textarea-length',
+      id: "textarea-length",
       isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression),
-      alert: 'Description can\'t be emtpy'
+      alert: "Description can't be emtpy"
     }]
   },
   visibility: {
-    initial: 'public',
-    name: 'visibility',
-    label: 'Visibility',
+    initial: "public",
+    name: "visibility",
+    label: "Visibility",
     type: FormGenerator.FieldTypes.SELECT,
     options: [
-      { value: 'public', name: 'Public' },
-      { value: 'restricted', name: 'Restricted' }
+      { value: "public", name: "Public" },
+      { value: "restricted", name: "Restricted" }
     ],
     validators: []
   }
-})
+});
 
 
 export { userSchema, metaSchema, displaySchema, newProjectSchema, projectSchema, forkProjectSchema };

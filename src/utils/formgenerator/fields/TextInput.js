@@ -23,18 +23,19 @@
  *  Presentational components.
  */
 
-import * as React from 'react';
-import ValidationAlert from './ValidationAlert';
-import HelpText from './HelpText';
-import { FormGroup, Input, Label} from 'reactstrap';
+import * as React from "react";
+import ValidationAlert from "./ValidationAlert";
+import HelpText from "./HelpText";
+import { FormGroup, Input, Label } from "reactstrap";
 
 function TextInput({ name, label, type, value, alert, placeholder, setInputs, help, disabled = false }) {
   return <FormGroup>
     <Label htmlFor={name}>{label}</Label>
-    <Input id={name} name={name} type={type} value={value || ""} onChange={setInputs} disabled={disabled} placeholder={placeholder}/>
+    <Input id={name} name={name} type={type} value={value || ""}
+      onChange={setInputs} disabled={disabled} placeholder={placeholder} />
     <HelpText content={help} />
     <ValidationAlert content={alert} />
-  </FormGroup>
+  </FormGroup>;
 }
 
 export default TextInput;

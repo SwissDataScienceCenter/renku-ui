@@ -23,8 +23,8 @@
  *  Components for the project listing.
  */
 
-import List from './ProjectList.container';
-import { ProjectListRow } from './ProjectList.present'
+import List from "./ProjectList.container";
+import { ProjectListRow } from "./ProjectList.present";
 
 export default List;
-export { ProjectListRow }
+export { ProjectListRow };

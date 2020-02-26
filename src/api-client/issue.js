@@ -22,82 +22,82 @@ function addIssueMethods(client) {
     let headers = client.getBasicHeaders();
 
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}/issues?scope=all`, {
-      method: 'GET',
+      method: "GET",
       headers: headers
-    })
+    });
 
-  }
+  };
 
 
   client.postProjectIssue = (projectPathWithNamespace, issue) => {
     let headers = client.getBasicHeaders();
-    headers.append('Content-Type', 'application/json');
+    headers.append("Content-Type", "application/json");
 
     return client.clientFetch(`${client.baseUrl}/projects/${encodeURIComponent(projectPathWithNamespace)}/issues`, {
-      method: 'POST',
+      method: "POST",
       headers: headers,
       body: JSON.stringify(issue)
-    })
+    });
 
-  }
+  };
 
 
   client.getProjectIssue = (projectId, issueIid) => {
     let headers = client.getBasicHeaders();
-    headers.append('Content-Type', 'application/json');
+    headers.append("Content-Type", "application/json");
 
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}/issues/${issueIid}/`, {
-      method: 'GET',
+      method: "GET",
       headers: headers,
-    })
+    });
 
-  }
+  };
 
 
   client.getContributions = (projectId, issueIid) => {
     let headers = client.getBasicHeaders();
-    headers.append('Content-Type', 'application/json');
+    headers.append("Content-Type", "application/json");
 
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}/issues/${issueIid}/notes`, {
-      method: 'GET',
+      method: "GET",
       headers: headers
-    })
+    });
 
-  }
+  };
 
 
   client.postContribution = (projectId, issueIid, contribution) => {
     let headers = client.getBasicHeaders();
-    headers.append('Content-Type', 'application/json');
+    headers.append("Content-Type", "application/json");
 
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}/issues/${issueIid}/notes`, {
-      method: 'POST',
+      method: "POST",
       headers: headers,
-      body: JSON.stringify({body: contribution})
-    })
+      body: JSON.stringify({ body: contribution })
+    });
 
-  }
+  };
 
 
   client.closeIssue = (projectId, issueIid) => {
-    return updateIssue(client, projectId, issueIid, {state_event: 'close'})
-  }
+    return updateIssue(client, projectId, issueIid, { state_event: "close" });
+  };
 
   client.reopenIssue = (projectId, issueIid) => {
-    return updateIssue(client, projectId, issueIid, {state_event: 'reopen'})
-  }
+    return updateIssue(client, projectId, issueIid, { state_event: "reopen" });
+  };
 }
 
 
 function updateIssue(client, projectId, issueIid, body) {
   let headers = client.getBasicHeaders();
-  headers.append('Content-Type', 'application/json');
+  headers.append("Content-Type", "application/json");
 
   return client.clientFetch(`${client.baseUrl}/projects/${projectId}/issues/${issueIid}`, {
-    method: 'PUT',
+    method: "PUT",
     headers: headers,
     body: JSON.stringify(body)
-  })
+  });
 }
 
 export default addIssueMethods;

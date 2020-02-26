@@ -23,7 +23,7 @@
  *
  */
 
-import { NamespaceProjects } from './Namespace.container';
-import { NamespaceProjects as NamespaceProjectsPresent } from './Namespace.present';
+import { NamespaceProjects } from "./Namespace.container";
+import { NamespaceProjects as NamespaceProjectsPresent } from "./Namespace.present";
 
 export { NamespaceProjects, NamespaceProjectsPresent };

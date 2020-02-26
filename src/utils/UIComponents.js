@@ -24,21 +24,21 @@
  *  Utility UI components for the application.
  */
 
-import _ from 'lodash/util';
-import human from 'human-time';
-import React, { Component, useState, useEffect } from 'react';
-import { Link, NavLink as RRNavLink } from 'react-router-dom';
+import _ from "lodash/util";
+import human from "human-time";
+import React, { Component, useState, useEffect } from "react";
+import { Link, NavLink as RRNavLink } from "react-router-dom";
 import ReactPagination from "react-js-pagination";
-import ReactClipboard from 'react-clipboard.js';
+import ReactClipboard from "react-clipboard.js";
 
-import { FormFeedback, FormGroup, FormText, Input, Label, Alert, NavLink, Tooltip } from 'reactstrap';
-import { ButtonDropdown, DropdownToggle, DropdownMenu } from 'reactstrap';
+import { FormFeedback, FormGroup, FormText, Input, Label, Alert, NavLink, Tooltip } from "reactstrap";
+import { ButtonDropdown, DropdownToggle, DropdownMenu } from "reactstrap";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCopy } from '@fortawesome/free-regular-svg-icons';
-import { faCheck, faUser, faEllipsisV } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCopy } from "@fortawesome/free-regular-svg-icons";
+import { faCheck, faUser, faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 
-import { sanitizedHTMLFromMarkdown } from './HelperFunctions';
+import { sanitizedHTMLFromMarkdown } from "./HelperFunctions";
 
 /**
  * Show user avatar
@@ -49,12 +49,12 @@ import { sanitizedHTMLFromMarkdown } from './HelperFunctions';
  */
 class UserAvatar extends Component {
   computeWidgetSize() {
-    const size = this.props.size || 'lg';
-    let widgetSize = { img: 36, fa: '2x' };
+    const size = this.props.size || "lg";
+    let widgetSize = { img: 36, fa: "2x" };
     switch (size) {
-      case 'sm': widgetSize = { img: 18, fa: null }; break;
-      case 'md': widgetSize = { img: 18 * 2, fa: '2x' }; break;
-      case 'lg': widgetSize = { img: 18 * 3, fa: '3x' }; break;
+      case "sm": widgetSize = { img: 18, fa: null }; break;
+      case "md": widgetSize = { img: 18 * 2, fa: "2x" }; break;
+      case "lg": widgetSize = { img: 18 * 3, fa: "3x" }; break;
       default: break;
     }
     return widgetSize;
@@ -64,18 +64,19 @@ class UserAvatar extends Component {
     let img, user;
     const widgetSize = this.computeWidgetSize();
     const person = this.props.person;
-    if (person != null && person!==undefined) {
+    if (person != null && person !== undefined) {
       img = person.avatar_url;
       user = person.username;
-    } else {
+    }
+ else {
       img = this.props.avatar;
       user = this.props.user;
     }
     return (img) ?
       <img width={widgetSize.img} src={img} alt={user} /> :
-      <div style={{minWidth: widgetSize.img, textAlign:"center"}}>
+      <div style={{ minWidth: widgetSize.img, textAlign: "center" }}>
         <FontAwesomeIcon alt={user} icon={faUser} size={widgetSize.fa}
-        style={{ textShadow: '0 1px 0 rgba(0, 0, 0, 0.1)' }} /></div>;
+        style={{ textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)" }} /></div>;
   }
 }
 
@@ -84,18 +85,17 @@ function ProjectAvatar(props) {
   const [avatarUrl, setAvatarUrl] = useState(null);
 
   useEffect(() => {
-    if (props.avatar_url)
-      setAvatarUrl(props.avatar_url)
-    else if (props.owner && props.owner.avatar_url)
-      setAvatarUrl(props.owner.avatar_url);
-    else if (props.namespace && props.namespace.kind === "group")
-      props.getAvatarFromNamespace(props.namespace.id)
+    if (props.avatar_url) { setAvatarUrl(props.avatar_url); }
+    else if (props.owner && props.owner.avatar_url) { setAvatarUrl(props.owner.avatar_url); }
+    else if (props.namespace && props.namespace.kind === "group") {
+props.getAvatarFromNamespace(props.namespace.id)
         .then((url) => {
-          setAvatarUrl(url)
+          setAvatarUrl(url);
         });
+}
   }, [props]);
 
-  return <UserAvatar avatar={avatarUrl} />
+  return <UserAvatar avatar={avatarUrl} />;
 }
 
 // Old FieldGroup implementation
@@ -119,7 +119,7 @@ class FieldGroup extends Component {
       help = this.props.help,
       feedback = this.props.feedback,
       props = this.props;
-    const subprops = {}
+    const subprops = {};
     if (props.valid === true)
       subprops.valid = "true";
     if (props.invalid === true)
@@ -129,7 +129,7 @@ class FieldGroup extends Component {
       <Input {...props} />
       {feedback && <FormFeedback {...subprops}>{feedback}</FormFeedback>}
       {help && <FormText color="muted">{help}</FormText>}
-    </FormGroup>
+    </FormGroup>;
   }
 }
 
@@ -138,8 +138,8 @@ class TimeCaption extends Component {
   render() {
     const time = this.props.time;
     const displayTime = human((new Date() - new Date(time)) / 1000);
-    const caption = (this.props.caption) ? this.props.caption : 'Updated';
-    return <span className="time-caption">{caption} {displayTime}.</span>
+    const caption = (this.props.caption) ? this.props.caption : "Updated";
+    return <span className="time-caption">{caption} {displayTime}.</span>;
   }
 }
 
@@ -150,22 +150,22 @@ class TimeCaption extends Component {
 class RenkuNavLink extends Component {
 
   constructor() {
-    super()
+    super();
     this.isActive = this.testActive.bind(this);
   }
 
   testActive(match, location) {
-    if(this.props.matchpath === true){
+    if (this.props.matchpath === true) {
       const alt = this.props.alternate;
       let haveMatch = (match != null || location.pathname.startsWith(this.props.to));
       if (alt == null) return haveMatch;
       return haveMatch || location.pathname.startsWith(alt);
-    } else {
+    }
       const alt = this.props.alternate;
       let haveMatch = match != null;
       if (alt == null) return haveMatch;
       return haveMatch || location.pathname.startsWith(alt);
-    }
+
   }
 
   render() {
@@ -174,7 +174,9 @@ class RenkuNavLink extends Component {
       { "pathname": this.props.to, "state": { previous } } :
       this.props.to;
     const exact = (this.props.exact != null) ? this.props.exact : true;
-    return <NavLink exact={exact} to={to} isActive={this.isActive} tag={RRNavLink} id={this.props.id}>{title}</NavLink>
+    return (
+      <NavLink exact={exact} to={to} isActive={this.isActive} tag={RRNavLink} id={this.props.id}>{title}</NavLink>
+    );
   }
 }
 
@@ -185,9 +187,9 @@ class Pagination extends Component {
     // We do not display the pagination footer when there are no pages or only one page
     if (this.props.totalItems == null
         || this.props.totalItems < 1
-        || this.props.totalItems <= this.props.perPage) {
+        || this.props.totalItems <= this.props.perPage)
       return null;
-    }
+
 
     return <ReactPagination
       activePage={this.props.currentPage}
@@ -196,50 +198,50 @@ class Pagination extends Component {
       onChange={this.props.onPageChange}
 
       // Some defaults for the styling
-      prevPageText={'Previous'}
-      nextPageText={'Next'}
-      itemClass={'page-item'}
-      linkClass={'page-link'}
-      activeClass={'page-item active'}
+      prevPageText={"Previous"}
+      nextPageText={"Next"}
+      itemClass={"page-item"}
+      linkClass={"page-link"}
+      activeClass={"page-item active"}
       hideFirstLastPages={true}
-    />
+    />;
   }
 }
 
 function ExternalLinkButton(props) {
   let className = "btn btn-primary";
-  if (props.size != null) {
+  if (props.size != null)
     className += ` btn-${props.size}`;
-  }
-  if (props.disabled) {
+
+  if (props.disabled)
     className += " disabled";
-  }
-  if (props.className) {
+
+  if (props.className)
     className += ` ${props.className}`;
-  }
+
   return <a href={props.url}
     className={className} role="button" target="_blank"
-    rel="noreferrer noopener">{props.title}</a>
+    rel="noreferrer noopener">{props.title}</a>;
 }
 
 function ExternalLinkText(props) {
   let className = "";
-  if (props.disabled) {
+  if (props.disabled)
     className += " disabled";
-  }
-  if (props.className) {
+
+  if (props.className)
     className += ` ${props.className}`;
-  }
+
   return <a href={props.url}
     className={className} target="_blank"
-    rel="noreferrer noopener">{props.title}</a>
+    rel="noreferrer noopener">{props.title}</a>;
 }
 
 function ExternalLink(props) {
-  const role = props.role
+  const role = props.role;
   if (role === "link") return ExternalLinkText(props);
   if (role === "text") return ExternalLinkText(props);
-  return ExternalLinkButton(props)
+  return ExternalLinkButton(props);
 }
 
 class Loader extends Component {
@@ -251,16 +253,16 @@ class Loader extends Component {
     const borderTop = `${size / 10}px solid #5561A6`; // Use SDSC Dark Blue
     const borderRight = borderTop; // Added a borderRight to make a half-circle
     const borderRadius = "50%";
-    const animation =  "spin 2s linear infinite";
+    const animation = "spin 2s linear infinite";
     const left = this.props.inline ? "" : "40%", right = left;
     const display = this.props.inline ? "inline-block" : "";
     const verticalAlign = this.props.inline ? "middle" : "";
     const margin = `m-${this.props.margin ? this.props.margin : 0}`;
-    return <div className={ margin } style={{
+    return <div className={margin} style={{
       width: d, height: d,
       border, borderTop, borderRight, borderRadius, animation, left, right, display, verticalAlign,
-      position: 'relative',
-    }}></div>
+      position: "relative",
+    }}></div>;
   }
 }
 
@@ -294,29 +296,29 @@ class RenkuAlert extends Component {
   addTimeout() {
     // add the timeout and keep track of the timeout variable to clear it when the alert
     // is manually closed
-    if (this.props.timeout === 0) {
+    if (this.props.timeout === 0)
       return;
-    }
+
     const timeout = this.props.timeout ? this.props.timeout : 10;
     const timeoutController = setTimeout(() => {
       this.onDismiss();
     }, timeout * 1000);
-    this.setState({timeout: timeoutController});
+    this.setState({ timeout: timeoutController });
   }
 
   removeTimeout() {
     // remove the timeout when component is closed to avoid double firing callback function
-    if (this.state.timeout !== null) {
+    if (this.state.timeout !== null)
       clearTimeout(this.state.timeout);
-    }
+
   }
 
   onDismiss() {
     this.setState({ open: false });
     this.removeTimeout();
-    if (this.props.dismissCallback) {
+    if (this.props.dismissCallback)
       this.props.dismissCallback();
-    }
+
   }
 
   render() {
@@ -332,47 +334,48 @@ class RenkuAlert extends Component {
 
 class InfoAlert extends Component {
   render() {
-    return(
+    return (
       <RenkuAlert color="primary" {...this.props} >
         {this.props.children}
       </RenkuAlert>
-    )
+    );
   }
 }
 
 class SuccessAlert extends Component {
   render() {
-    return(
+    return (
       <RenkuAlert color="success" {...this.props} >
         {this.props.children}
       </RenkuAlert>
-    )
+    );
   }
 }
 
 class WarnAlert extends Component {
   render() {
-    return(
+    return (
       <RenkuAlert color="warning" timeout={0} {...this.props} >
         {this.props.children}
       </RenkuAlert>
-    )
+    );
   }
 }
 
 class ErrorAlert extends Component {
   render() {
-    return(
+    return (
       <RenkuAlert color="danger" timeout={0} {...this.props} >
         {this.props.children}
       </RenkuAlert>
-    )
+    );
   }
 }
 
 class RenkuMarkdown extends Component {
-  render(){
-    return <div className="text-break" dangerouslySetInnerHTML={{__html: sanitizedHTMLFromMarkdown(this.props.markdownText)}}></div>
+  render() {
+    return <div className="text-break"
+      dangerouslySetInnerHTML={{ __html: sanitizedHTMLFromMarkdown(this.props.markdownText) }}></div>;
   }
 }
 
@@ -392,6 +395,7 @@ class JupyterIcon extends Component {
         "#F37726"
     };
 
+    /* eslint-disable max-len */
     return (
       <svg width="44" height="51" viewBox="0 0 44 51" version="2.0" xmlns="http://www.w3.org/2000/svg"
         xmlnsXlink="http://www.w3.org/1999/xlink" className={this.props.svgClass}>
@@ -462,6 +466,7 @@ class JupyterIcon extends Component {
         </defs>
       </svg>
     );
+    /* eslint-enable max-len */
   }
 }
 
@@ -477,28 +482,29 @@ function Clipboard(props) {
 
   return (
     <ReactClipboard component="a" data-clipboard-text={props.clipboardText}
-      onSuccess={()=> { setCopied(true); setTimeout(() => setCopied(false), timeoutDur) }}>
+      onSuccess={()=> { setCopied(true); setTimeout(() => setCopied(false), timeoutDur); }}>
       {
         (copied) ?
           <FontAwesomeIcon icon={faCheck} color="green" /> :
           <FontAwesomeIcon icon={faCopy} />
       }
     </ReactClipboard>
-  )
+  );
 }
 
 // Throttle toggling -- added to work around a bug that appears in Chrome only
 function throttledToggler(tooltipOpen, setTooltipOpen, lastToggleTime, setLastToggleTime) {
   return () => {
-    const now = Date.now()
+    const now = Date.now();
     const sinceLast = now - lastToggleTime;
     if (!tooltipOpen && sinceLast > 100) {
       setLastToggleTime(now);
       return setTooltipOpen(!tooltipOpen);
-    } else if (tooltipOpen) {
+    }
+ else if (tooltipOpen) {
       return setTooltipOpen(!tooltipOpen);
     }
-  }
+  };
 }
 
 /**
@@ -510,13 +516,14 @@ function throttledToggler(tooltipOpen, setTooltipOpen, lastToggleTime, setLastTo
  */
 function ThrottledTooltip(props) {
   const [tooltipOpen, setTooltipOpen] = useState(false);
-  const [lastToggleTime, setLastToggleTime] = useState(Date.now())
+  const [lastToggleTime, setLastToggleTime] = useState(Date.now());
 
   const toggle = throttledToggler(tooltipOpen, setTooltipOpen, lastToggleTime, setLastToggleTime);
 
-  return <Tooltip placement="top" target={props.target} isOpen={tooltipOpen} toggle={toggle} delay={{show: 25, hide: 250}}>
-      {props.tooltip}
-  </Tooltip>
+  return <Tooltip placement="top" target={props.target} isOpen={tooltipOpen} toggle={toggle}
+    delay={{ show: 25, hide: 250 }}>
+    {props.tooltip}
+  </Tooltip>;
 }
 
 /**
@@ -536,7 +543,7 @@ function IconLink(props) {
       <FontAwesomeIcon className="icon-link" icon={props.icon} />
     </Link>
     <ThrottledTooltip target={uniqueId} tooltip={props.tooltip} />
-  </span>
+  </span>;
 }
 
 /**
@@ -556,7 +563,7 @@ function ExternalIconLink(props) {
       <FontAwesomeIcon className="icon-link" icon={props.icon} id={uniqueId} />
     </a>
     <ThrottledTooltip target={uniqueId} tooltip={props.tooltip} />
-  </span>
+  </span>;
 }
 
 /**
@@ -575,13 +582,13 @@ function TooltipToggleButton(props) {
   const [uniqueId, setUniqueId] = useState(`tooltip-toggle-${_.uniqueId()}`);
 
   return <span onClick={props.onClick}>
-      {props.active ?
-        <FontAwesomeIcon  id={uniqueId} className={`icon-link ${props.activeClass}`} icon={props.activeIcon}/>
+    {props.active ?
+      <FontAwesomeIcon id={uniqueId} className={`icon-link ${props.activeClass}`} icon={props.activeIcon}/>
         :
-        <FontAwesomeIcon  id={uniqueId} className={`icon-link ${props.inactiveClass}`} icon={props.inactiveIcon}/>
+      <FontAwesomeIcon id={uniqueId} className={`icon-link ${props.inactiveClass}`} icon={props.inactiveIcon}/>
       }
-      <ThrottledTooltip target={uniqueId} tooltip={props.tooltip} />
-    </span>
+    <ThrottledTooltip target={uniqueId} tooltip={props.tooltip} />
+  </span>;
 }
 
 /**
@@ -598,12 +605,12 @@ function ButtonWithMenu(props) {
   return <ButtonDropdown size={size} isOpen={dropdownOpen} toggle={toggleOpen}>
     {props.default}
     <DropdownToggle color="primary" className="alternateToggleStyle">
-      <FontAwesomeIcon icon={faEllipsisV} style={{ color: 'white', backgroundColor: "#5561A6" }} />
+      <FontAwesomeIcon icon={faEllipsisV} style={{ color: "white", backgroundColor: "#5561A6" }} />
     </DropdownToggle>
     <DropdownMenu right={true}>
       {props.children}
     </DropdownMenu>
-  </ButtonDropdown>
+  </ButtonDropdown>;
 }
 
 class Bouncer extends Component {
@@ -621,4 +628,4 @@ class Bouncer extends Component {
 export { UserAvatar, TimeCaption, FieldGroup, RenkuNavLink, Pagination, RenkuMarkdown };
 export { ExternalLink, Loader, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, JupyterIcon };
 export { Clipboard, ExternalIconLink, IconLink, ThrottledTooltip, TooltipToggleButton, ProjectAvatar };
-export { ButtonWithMenu, Bouncer }
+export { ButtonWithMenu, Bouncer };

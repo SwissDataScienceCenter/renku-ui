@@ -23,10 +23,10 @@
  *  ProjectTag container and present code.
  */
 
-import React, { Component } from 'react';
+import React, { Component } from "react";
 
-import { Button, Form, FormGroup, FormText, Label } from 'reactstrap';
-import { Badge, Input } from 'reactstrap';
+import { Button, Form, FormGroup, FormText, Label } from "reactstrap";
+import { Badge, Input } from "reactstrap";
 
 class ProjectTag extends Component {
   render() {
@@ -58,8 +58,8 @@ class ProjectTags extends Component {
   }
 
   static tagListString(props) {
-    const tagList = sortedTagList(props.tag_list)
-    return tagList.join(', ');
+    const tagList = sortedTagList(props.tag_list);
+    return tagList.join(", ");
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
@@ -77,7 +77,7 @@ class ProjectTags extends Component {
       <Input id="projectTags" value={this.state.value} onChange={this.onValueChange} />;
     let submit = (ProjectTags.tagListString(this.props) !== this.state.value) ?
       <Button className="mb-3" color="primary">Update</Button> :
-      <span></span>
+      <span></span>;
     return <Form onSubmit={this.onSubmit}>
       <FormGroup>
         <Label for="projectTags">Project Tags</Label>
@@ -85,7 +85,7 @@ class ProjectTags extends Component {
         <FormText>Comma-separated list of tags</FormText>
       </FormGroup>
       {submit}
-    </Form>
+    </Form>;
   }
 }
 

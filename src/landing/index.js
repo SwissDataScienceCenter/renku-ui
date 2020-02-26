@@ -23,7 +23,7 @@
  *  Components for the landing page
  */
 
-import Landing from './Landing';
-import { RenkuNavBar, FooterNavbar } from './NavBar';
+import Landing from "./Landing";
+import { RenkuNavBar, FooterNavbar } from "./NavBar";
 
 export { Landing, RenkuNavBar, FooterNavbar };

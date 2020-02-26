@@ -23,12 +23,12 @@
  *  Container components for help
  */
 
- 
-import React, { Component } from 'react';
 
-import { Help as HelpPresent } from './Help.present';
+import React, { Component } from "react";
 
-class Help extends Component { 
+import { Help as HelpPresent } from "./Help.present";
+
+class Help extends Component {
   urlMap() {
     const baseUrl = this.props.match.url;
     return {
@@ -37,13 +37,13 @@ class Help extends Component {
       tutorials: `${baseUrl}/tutorials`,
       features: `${baseUrl}/features`,
       setup: `${baseUrl}/setup`,
-    }
+    };
   }
 
   render() {
     return (
-      <HelpPresent url={ this.urlMap() } />
-    )
+      <HelpPresent url={this.urlMap()} />
+    );
   }
 }
 

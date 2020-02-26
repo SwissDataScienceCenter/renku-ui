@@ -23,64 +23,64 @@
  *  Redux-based state-management code.
  */
 
-import { Schema, StateKind, StateModel } from '../../model/Model';
+import { Schema, StateKind, StateModel } from "../../model/Model";
 
 const orderByValuesMap = {
-  NAME: 'name',
-  DATE_PUBLISHED: 'datePublished',
-  PROJECTSCOUNT: 'projectsCount'
+  NAME: "name",
+  DATE_PUBLISHED: "datePublished",
+  PROJECTSCOUNT: "projectsCount"
 };
 
 const datasetListSchema = new Schema({
   loading: { initial: false },
-  query: { initial: '', mandatory: true },
-  orderBy: { initial: 'projectsCount', mandatory: true },
+  query: { initial: "", mandatory: true },
+  orderBy: { initial: "projectsCount", mandatory: true },
   orderSearchAsc: { initial: false, mandatory: true },
   currentPage: { initial: 1, mandatory: true },
   totalItems: { initial: 0, mandatory: true },
   perPage: { initial: 10, mandatory: true },
-  pathName: { initial: '' },
+  pathName: { initial: "" },
   initialized: { initial: true },
   datasets: { initial: [] },
-  errorMessage: { initial: '' }
+  errorMessage: { initial: "" }
 });
 
 class DatasetListModel extends StateModel {
   constructor(client) {
-    super(datasetListSchema, StateKind.REDUX)
+    super(datasetListSchema, StateKind.REDUX);
     this.client = client;
   }
 
   setQuery(query) {
-    this.set('query', encodeURIComponent(query));
+    this.set("query", encodeURIComponent(query));
   }
 
   setInitialized(initialized) {
     this.setObject({
       datasets: { $set: [] },
       initialized: initialized,
-      errorMessage: '',
+      errorMessage: "",
     });
   }
 
   setOrderBy(orderBy) {
-    this.set('orderBy', orderBy);
+    this.set("orderBy", orderBy);
   }
 
   setPathName(pathName) {
-    this.set('pathName', pathName)
+    this.set("pathName", pathName);
   }
 
   setOrderSearchAsc(orderSearchAsc) {
-    this.set('orderSearchAsc', orderSearchAsc);
+    this.set("orderSearchAsc", orderSearchAsc);
   }
 
   setOrderDropdownOpen(value) {
-    this.set('orderByDropdownOpen', value);
+    this.set("orderByDropdownOpen", value);
   }
 
   setPage(page) {
-    this.set('currentPage', parseInt(page, 10));
+    this.set("currentPage", parseInt(page, 10));
   }
 
   setQueryAndSortInSearch(query, orderBy, orderSearchAsc, pathName, pageNumber) {
@@ -93,8 +93,8 @@ class DatasetListModel extends StateModel {
   }
 
   getSorting() {
-    const searchOrder = this.get('orderSearchAsc') === true ? 'asc' : 'desc';
-    switch (this.get('orderBy')) {
+    const searchOrder = this.get("orderSearchAsc") === true ? "asc" : "desc";
+    switch (this.get("orderBy")) {
     case orderByValuesMap.NAME:
       return "name:" + searchOrder;
     case orderByValuesMap.DATE_PUBLISHED:
@@ -102,7 +102,7 @@ class DatasetListModel extends StateModel {
     case orderByValuesMap.PROJECTSCOUNT:
       return "projectsCount:" + searchOrder;
     default:
-      return ""
+      return "";
     }
   }
 
@@ -113,7 +113,7 @@ class DatasetListModel extends StateModel {
       currentPage: pagination.currentPage,
       totalItems: pagination.totalItems,
       initialized: false,
-      errorMessage: '',
+      errorMessage: "",
       loading: false
     };
     this.setObject(newData);
@@ -121,22 +121,22 @@ class DatasetListModel extends StateModel {
   }
 
   performSearch() {
-    this.set('loading', true);
+    this.set("loading", true);
     const searchParams = {
-      query: this.get('query'),
+      query: this.get("query"),
       sort: this.getSorting(),
-      per_page: this.get('perPage'),
-      page: this.get('currentPage'),
-    }
+      per_page: this.get("perPage"),
+      page: this.get("currentPage"),
+    };
     return this.client.searchDatasets(searchParams)
       .then(response => this.manageResponse(response))
       .catch((error) => {
         let newData = {};
-        if (error.response && error.response.status === 400 && this.get('initialized') === false) {
-          newData.errorMessage = 'The query is invalid.';
-        } else if (error.response && error.response.status === 404) {
-          newData.errorMessage = 'No datasets found for this query.';
-        }
+        if (error.response && error.response.status === 400 && this.get("initialized") === false)
+          newData.errorMessage = "The query is invalid.";
+         else if (error.response && error.response.status === 404)
+          newData.errorMessage = "No datasets found for this query.";
+
         newData.datasets = { $set: [] };
         newData.loading = false;
         newData.initialized = false;

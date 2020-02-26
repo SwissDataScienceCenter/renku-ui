@@ -23,10 +23,10 @@
  *  Presentational components.
  */
 
-import * as React from 'react';
-import ValidationAlert from './ValidationAlert';
-import HelpText from './HelpText';
-import { FormGroup, Input, Label} from 'reactstrap';
+import * as React from "react";
+import ValidationAlert from "./ValidationAlert";
+import HelpText from "./HelpText";
+import { FormGroup, Input, Label } from "reactstrap";
 
 function TextareaInput({ name, label, type, value, alert, setInputs, help, disabled = false }) {
   return <FormGroup>
@@ -34,7 +34,7 @@ function TextareaInput({ name, label, type, value, alert, setInputs, help, disab
     <Input id={name} name={name} type={type} value={value || ""} onChange={setInputs} disabled={disabled}/>
     <HelpText content={help} />
     <ValidationAlert content={alert} />
-  </FormGroup>
+  </FormGroup>;
 }
 
 export default TextareaInput;

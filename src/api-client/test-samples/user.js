@@ -31,4 +31,4 @@ export const user = {
   "two_factor_enabled": false,
   "external": false,
   "private_profile": null
-}
+};
