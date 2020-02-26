@@ -125,3 +125,56 @@ body {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
 }
+
+.bouncer {
+  text-align: center;
+  margin: 50px auto 25px auto;  
+}
+
+.bouncer span {
+  display: inline-block;
+  vertical-align: middle;
+  width: 25px;
+  height: 25px;
+  margin: 5px;
+  background: black;
+  border-radius: 50px;
+  animation: bouncer 0.9s infinite alternate;
+}
+
+.bouncer span:nth-of-type(2) {
+  animation-delay: 0.25s;
+}
+
+.bouncer span:nth-of-type(3) {
+  animation-delay: 0.5s;
+}
+
+@keyframes bouncer {
+  0%, 50% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0.6;
+    transform: translateY(-21px);
+  }
+}
+
+.delay1s {
+  visibility: hidden;
+  opacity: 0;
+  animation: delay1s 2s forwards;
+}
+
+@keyframes delay1s {
+  0%, 50% {
+    visibility: visible;
+    opacity: 0;
+  }
+
+  100% {
+    visibility: visible;
+    opacity: 1;
+  }
+}
