@@ -297,7 +297,7 @@ class ProjectNew extends Component {
             onOptoutKgChange={this.props.handlers.onOptoutKgChange} />
           <br />
           <SubmitErrors errors={this.props.model.display.errors} />
-          <Button color="primary" onClick={this.props.handlers.onSubmit} disabled={this.props.model.display.loading}>
+          <Button id="create-new-project" color="primary" onClick={this.props.handlers.onSubmit} disabled={this.props.model.display.loading}>
             Create
           </Button>
           <SubmitLoader loading={this.props.model.display.loading} />

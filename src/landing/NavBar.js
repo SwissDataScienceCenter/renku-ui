@@ -62,15 +62,15 @@ class RenkuToolbarItemUser extends Component {
     else {
       return <li className="nav-item dropdown">
         { /* eslint-disable-next-line */ }
-        <a key="button" className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
+        <a key="button" className="nav-link dropdown-toggle" id="profile-dropdown" role="button" data-toggle="dropdown"
           aria-haspopup="true" aria-expanded="false">
           {this.props.userAvatar}
         </a>
-        <div key="menu" className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
+        <div key="menu" className="dropdown-menu dropdown-menu-right" aria-labelledby="profile-dropdown">
           <a className="dropdown-item" target="_blank" rel="noreferrer noopener"
             href={`${gatewayURL}/auth/user-profile`}>Profile</a>
           <Link className="dropdown-item" to="/help">Help</Link>
-          <a className="dropdown-item"
+          <a id="logout-link" className="dropdown-item"
             href={`${gatewayURL}/auth/logout?redirect_url=${redirect_url}`}>Logout</a>
         </div>
       </li>
@@ -139,12 +139,12 @@ class LoggedInNavBar extends Component {
             <ul className="navbar-nav">
               <li className="nav-item dropdown">
                 { /* eslint-disable-next-line */}
-                <a className="nav-link dropdown-toggle" id="navbarDropdown" role="button" data-toggle="dropdown"
+                <a className="nav-link dropdown-toggle" id="plus-dropdown" role="button" data-toggle="dropdown"
                   aria-haspopup="true" aria-expanded="false">
                   <FontAwesomeIcon icon={faPlus} id="createPlus" />
                 </a>
-                <div className="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                  <RenkuNavLink to="/project_new" title="Project" />
+                <div className="dropdown-menu dropdown-menu-right" aria-labelledby="plus-dropdown">
+                  <RenkuNavLink id="navbar-project-new" to="/project_new" title="Project" />
                   {issueDropdown}
                   {datasetDropdown}
                 </div>

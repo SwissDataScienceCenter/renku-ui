@@ -170,7 +170,7 @@ class AnonymousHome extends Component {
               </Col>
               <Col md={6} className="d-md-flex justify-content-center align-items-center">
                 <div>
-                  <Link to="/login" className="btn btn-primary btn-lg">Login or Sign Up</Link>
+                  <Link to="/login" id="login-button" className="btn btn-primary btn-lg">Login or Sign Up</Link>
                 </div>
               </Col>
             </Row>
