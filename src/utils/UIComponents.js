@@ -174,7 +174,7 @@ class RenkuNavLink extends Component {
       { "pathname": this.props.to, "state": { previous } } :
       this.props.to;
     const exact = (this.props.exact != null) ? this.props.exact : true;
-    return <NavLink exact={exact} to={to} isActive={this.isActive} tag={RRNavLink}>{title}</NavLink>
+    return <NavLink exact={exact} to={to} isActive={this.isActive} tag={RRNavLink} id={this.props.id}>{title}</NavLink>
   }
 }
 
