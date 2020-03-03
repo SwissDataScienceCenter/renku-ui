@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Row, Col, Card, CardHeader, CardBody, Table, Alert, Button } from "reactstrap";
 import { Link } from "react-router-dom";
 import { Loader, FileExplorer } from "../utils/UIComponents";
@@ -100,17 +100,23 @@ export default function DatasetView(props) {
 
   const [dataset, setDataset] = useState(undefined);
   const [fetchError, setFetchError] = useState(null);
+  const [readyToFetch, setReadyToFetch] = useState(false);
+
+  useEffect(() => {
+    if (props.insideProject && props.datasets !== undefined && dataset === undefined && !readyToFetch)
+      setReadyToFetch(true);
+
+  }, [props.datasets, props.selectedDataset, props.insideProject, dataset, readyToFetch]);
 
   useEffect(() => {
     let unmounted = false;
-    if (props.insideProject && props.datasets !== undefined && dataset === undefined) {
+    if (readyToFetch) {
       const selectedDataset = props.datasets.filter(d => props.selectedDataset === encodeURIComponent(d.identifier))[0];
       if (selectedDataset !== undefined) {
         props.client.fetchDatasetFromKG(selectedDataset._links[0].href)
           .then((datasetInfo) => {
             if (!unmounted && dataset === undefined && datasetInfo !== undefined)
               setDataset(datasetInfo);
-
           }).catch(error => {
             if (fetchError === null) {
               if (!unmounted && error.case === API_ERRORS.notFoundError) {
@@ -126,31 +132,11 @@ export default function DatasetView(props) {
       }
       else if (!unmounted) { setDataset(null); }
     }
-    else {
-      if (dataset === undefined && props.identifier !== undefined) {
-        props.client
-          .fetchDatasetFromKG(props.client.baseUrl.replace("api", "knowledge-graph/datasets/") + props.identifier)
-          .then((datasetInfo) => {
-            if (!unmounted && dataset === undefined && datasetInfo !== undefined)
-              setDataset(datasetInfo);
-
-          }).catch(error => {
-            if (fetchError === null) {
-              if (!unmounted && error.case === API_ERRORS.notFoundError) {
-                setFetchError("Error 404: The dataset that was selected does not exist or" +
-                " could not be accessed. If you just created or imported the dataset try reloading the page.");
-              }
-              else if (!unmounted && error.case === API_ERRORS.internalServerError) {
-                setFetchError("Error 500: The dataset that was selected couldn't be fetched.");
-              }
-            }
-          });
-      }
-    }
     return () => {
       unmounted = true;
     };
-  }, [dataset, props, fetchError]);
+    // eslint-disable-next-line
+  }, [readyToFetch]);
 
   if (props.insideProject) {
     const { progress, webhookJustCreated } = props;
