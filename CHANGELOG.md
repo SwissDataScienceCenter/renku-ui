@@ -1,5 +1,64 @@
 # Changes
 
+## [0.8.0](https://github.com/SwissDataScienceCenter/renku-ui/issues?utf8=%E2%9C%93&q=is%3Aclosed+milestone%3A0.8.0) (released 2020-03-04)
+
+
+### Features
+
+**dataset**
+
+* Creating datasets from UI [#524](https://github.com/SwissDataScienceCenter/renku-ui/issues/524), [#679](https://github.com/SwissDataScienceCenter/renku-ui/pull/679)
+* Adding files to datasets from UI [#650](https://github.com/SwissDataScienceCenter/renku-ui/issues/650), [#744](https://github.com/SwissDataScienceCenter/renku-ui/pull/744)
+
+**r-markdown**
+
+* Display rmd files [#739](https://github.com/SwissDataScienceCenter/renku-ui/issues/739), [#740](https://github.com/SwissDataScienceCenter/renku-ui/pull/740)
+
+**project**
+
+* Show useful information for a project/namespace [#750](https://github.com/SwissDataScienceCenter/renku-ui/issues/750), [#780](https://github.com/SwissDataScienceCenter/renku-ui/pull/780)
+* Make GitLab IDE available for working with repo [#699](https://github.com/SwissDataScienceCenter/renku-ui/issues/699), [#752](https://github.com/SwissDataScienceCenter/renku-ui/pull/752)
+* Link to GitLab forks page for viewing fork information [#765](https://github.com/SwissDataScienceCenter/renku-ui/issues/765), [#746](https://github.com/SwissDataScienceCenter/renku-ui/issues/746), [#768](https://github.com/SwissDataScienceCenter/renku-ui/pull/768)
+
+**collaboration**
+
+* Update presentation of merge requests [#692](https://github.com/SwissDataScienceCenter/renku-ui/issues/692), [#774](https://github.com/SwissDataScienceCenter/renku-ui/pull/774)
+* Update presentation of issues [#690](https://github.com/SwissDataScienceCenter/renku-ui/issues/690), [#760](https://github.com/SwissDataScienceCenter/renku-ui/pull/760)
+
+**environments**
+
+* Support project-level default settings [#481](https://github.com/SwissDataScienceCenter/renku-ui/issues/481), [#717](https://github.com/SwissDataScienceCenter/renku-ui/pull/717)
+
+**misc**
+
+* Show group avatars [#733](https://github.com/SwissDataScienceCenter/renku-ui/issues/733), [#751](https://github.com/SwissDataScienceCenter/renku-ui/pull/751)
+
+
+### Bug Fixes
+
+**general**
+
+* User profile is verified before opening UI [#756](https://github.com/SwissDataScienceCenter/renku-ui/issues/756), [#782](https://github.com/SwissDataScienceCenter/renku-ui/pull/782)
+
+**project**
+
+* Close the fork dialog after forking [#723](https://github.com/SwissDataScienceCenter/renku-ui/issues/723), [#745](https://github.com/SwissDataScienceCenter/renku-ui/pull/745)
+
+**project search**
+
+* Show public projects when filtering by group [#726](https://github.com/SwissDataScienceCenter/renku-ui/issues/726), [#762](https://github.com/SwissDataScienceCenter/renku-ui/pull/762)
+
+**environments**
+
+* LFS Data is now retrieved when the checkbox is selected [#736](https://github.com/SwissDataScienceCenter/renku-ui/issues/736)
+
+
+### BREAKING CHANGES
+
+* Requires renku-gateway 0.7.0
+* Requires renku-graph 0.47.2
+
+
 ## [0.7.3](https://github.com/SwissDataScienceCenter/renku-ui/issues?utf8=%E2%9C%93&q=is%3Aclosed+milestone%3A0.7.3) (released 2020-01-13)
 
 
