@@ -35,7 +35,7 @@ function urlMap() {
   return {
     projectsUrl: "/projects",
     projectNewUrl: "/project_new",
-    projectsSearchUrl: "/projects/search",
+    projectsSearchUrl: "/projects/all",
     projectsStarredUrl: "/projects/starred",
   };
 }

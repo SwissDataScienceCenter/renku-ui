@@ -39,7 +39,7 @@ const fakeHistory = createMemoryHistory({
   initialIndex: 0,
 });
 fakeHistory.push({
-  pathname: "/projects/search",
+  pathname: "/projects/all",
   search: "?page=1"
 });
 

@@ -69,35 +69,35 @@ class ProjectSearchForm extends Component {
           value={this.props.searchQuery} onChange={this.props.handlers.onSearchQueryChange}
           className="border-primary" />
         <Label for="searchQuery" hidden>Query</Label>
-        <InputGroupButtonDropdown addonType="append"
-          toggle={this.props.handlers.onSearchInDropdownToogle} isOpen={this.props.searchInDropdownOpen} >
-          <DropdownToggle outline caret color="primary" >
-            Search by: {this.props.searchInLabel}
-          </DropdownToggle>
-          <DropdownMenu>
-            <DropdownItem value={this.props.searchInValuesMap.PROJECTNAME}
-              onClick={this.props.handlers.changeSearchDropdownFilter}>
-              {this.props.searchIn === this.props.searchInValuesMap.PROJECTNAME ?
-                <FontAwesomeIcon icon={faCheck} /> : null} Project Name
-            </DropdownItem>
-            {
-              this.props.urlMap.projectsSearchUrl === this.props.currentTab || this.props.hasUser === false ?
-                [<DropdownItem key={this.props.searchInValuesMap.USERNAME}
+        {
+          this.props.urlMap.projectsSearchUrl === this.props.currentTab || this.props.hasUser === false ?
+            <InputGroupButtonDropdown addonType="append"
+              toggle={this.props.handlers.onSearchInDropdownToogle} isOpen={this.props.searchInDropdownOpen} >
+              <DropdownToggle outline caret color="primary" >
+                Filter by: {this.props.searchInLabel}
+              </DropdownToggle>
+              <DropdownMenu>
+                <DropdownItem value={this.props.searchInValuesMap.PROJECTNAME}
+                  onClick={this.props.handlers.changeSearchDropdownFilter}>
+                  {this.props.searchIn === this.props.searchInValuesMap.PROJECTNAME ?
+                    <FontAwesomeIcon icon={faCheck} /> : null} Project Name
+                </DropdownItem>
+                <DropdownItem key={this.props.searchInValuesMap.USERNAME}
                   value={this.props.searchInValuesMap.USERNAME}
                   onClick={this.props.handlers.changeSearchDropdownFilter}>
                   {this.props.searchIn === this.props.searchInValuesMap.USERNAME ?
                     <FontAwesomeIcon icon={faCheck} /> : null} User Name
-                </DropdownItem>,
-                  <DropdownItem key={this.props.searchInValuesMap.GROUPNAME}
+                </DropdownItem>
+                <DropdownItem key={this.props.searchInValuesMap.GROUPNAME}
                   value={this.props.searchInValuesMap.GROUPNAME}
                   onClick={this.props.handlers.changeSearchDropdownFilter}>
-                    {this.props.searchIn === this.props.searchInValuesMap.GROUPNAME ?
-                      <FontAwesomeIcon icon={faCheck} /> : null} Group Name
-                  </DropdownItem>]
-                : null
-            }
-          </DropdownMenu>
-        </InputGroupButtonDropdown>
+                  {this.props.searchIn === this.props.searchInValuesMap.GROUPNAME ?
+                    <FontAwesomeIcon icon={faCheck} /> : null} Group Name
+                </DropdownItem>
+              </DropdownMenu>
+            </InputGroupButtonDropdown>
+            : null
+        }
         <InputGroupButtonDropdown addonType="append"
           toggle={this.props.handlers.onOrderByDropdownToogle} isOpen={this.props.orderByDropdownOpen} >
           <Button outline color="primary" onClick={this.props.handlers.toogleSearchSorting}>
@@ -132,11 +132,11 @@ class ProjectSearchForm extends Component {
       </InputGroup>
       &nbsp;
       <Button color="primary" onClick={this.props.handlers.onSearchSubmit}>
-        Search
+        Filter
       </Button>
     </Form>,
     this.props.searchIn === this.props.searchInValuesMap.PROJECTNAME ?
-      <FormText key="help" color="muted">Search with empty text to browse all projects.</FormText>
+      <FormText key="help" color="muted">Leave emtpy to browse all projects.</FormText>
       : null
     ];
   }
@@ -160,7 +160,7 @@ class ProjectNavTabs extends Component {
                     <RenkuNavLink exact={false} to={this.props.urlMap.starred} title="Starred Projects" />
                   </NavItem>
                   <NavItem>
-                    <RenkuNavLink exact={false} to={this.props.urlMap.projectsSearchUrl} title="Search" />
+                    <RenkuNavLink exact={false} to={this.props.urlMap.projectsSearchUrl} title="All Projects" />
                   </NavItem>
                 </Nav>,
                 <div key="bottom-space">&nbsp;</div>]

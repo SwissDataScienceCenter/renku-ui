@@ -43,7 +43,7 @@ const searchScopesValuesMap = {
 
 const urlMap = {
   projectsUrl: "/projects",
-  projectsSearchUrl: "/projects/search",
+  projectsSearchUrl: "/projects/all",
   projectNewUrl: "/project_new",
   starred: "/projects/starred",
   yourProjects: "/projects/your_projects"
@@ -198,13 +198,13 @@ class AvailableUserList extends Component {
   getSearchText() {
     switch (this.model.get("searchIn")) {
       case searchInValuesMap.PROJECTNAME:
-        return "Search by project name";
+        return "Filter by project name";
       case searchInValuesMap.USERNAME:
-        return "Search by user name";
+        return "Filter by user name";
       case searchInValuesMap.GROUPNAME:
-        return "Search by group name";
+        return "Filter by group name";
       default:
-        return "Search Text";
+        return "Filter Text";
     }
   }
 
