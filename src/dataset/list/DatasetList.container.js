@@ -163,6 +163,7 @@ class List extends Component {
 
   onSearchSubmit(e) {
     e.preventDefault();
+    this.model.resetBeforeNewSearch();
     this.model.performSearch();
     this.pushNewSearchToHistory();
   }

@@ -92,6 +92,13 @@ class DatasetListModel extends StateModel {
     this.performSearch();
   }
 
+  resetBeforeNewSearch() {
+    this.setObject({
+      currentPage: 1,
+      pages: { $set: [] }
+    });
+  }
+
   getSorting() {
     const searchOrder = this.get("orderSearchAsc") === true ? "asc" : "desc";
     switch (this.get("orderBy")) {
@@ -121,6 +128,7 @@ class DatasetListModel extends StateModel {
   }
 
   performSearch() {
+    if (this.get("loading")) return;
     this.set("loading", true);
     const searchParams = {
       query: this.get("query"),

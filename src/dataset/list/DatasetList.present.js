@@ -125,7 +125,7 @@ class DatasetSearchForm extends Component {
         <Button color="primary" onClick={this.props.handlers.onSearchSubmit}>Search</Button>
       </Form>,
       <FormText key="help" color="muted">
-        {this.props.errorMessage} If you are not finding whatyou are looking
+        {this.props.errorMessage} If you are not finding what you are looking
         for, <Button className="pr-0 pl-0 pt-0 pb-0 mb-1" color="link" id="toggler">
           <small>click here for help.</small>
         </Button>
