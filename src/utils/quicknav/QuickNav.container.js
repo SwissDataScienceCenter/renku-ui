@@ -101,14 +101,14 @@ class QuickNavContainerWithRouter extends Component {
     const suggestions = [];
     if (value.length > 0) {
       suggestions.push({
-        title: "Search",
+        title: "Search in All Projects",
         suggestions: [{ query: value, id: -1, path: value, url: this.searchUrlForValue(value) }]
       });
     }
     const hitKeys = Object.keys(hits);
     if (hitKeys.length > 0) {
       suggestions.push({
-        title: "Projects",
+        title: "Your Projects",
         suggestions: hitKeys.sort().map(k => ({ path: k, id: hits[k].id, url: `/projects/${hits[k].id}` }))
       });
     }
@@ -117,7 +117,7 @@ class QuickNavContainerWithRouter extends Component {
   }
 
   searchUrlForValue(value) {
-    return (value != null) ? `/projects/search?q=${value}` : null;
+    return (value != null) ? `/projects/all?q=${value}` : null;
   }
 
   onSuggestionsClearRequested() {

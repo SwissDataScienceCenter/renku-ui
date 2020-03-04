@@ -34,7 +34,7 @@ import { Loader, InfoAlert, ExternalLink } from "../utils/UIComponents";
 const NamespaceProjects = (props) => {
   const { namespace } = props;
   // TODO: I should get the URLs from the redux store: #779
-  const searchUrl = "/projects/search";
+  const searchUrl = "/projects/all";
   const searchProjectUrl = (project) => { return `${searchUrl}?q=${project}`; };
   const searchUserUrl = (user) => { return `${searchUrl}?searchIn=users&q=${user}`; };
   const searchGroupUrl = (group) => { return `${searchUrl}?searchIn=groups&q=${group}`; };

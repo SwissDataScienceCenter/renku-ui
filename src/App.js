@@ -74,7 +74,7 @@ class App extends Component {
                     {...p} />} />
                 <Route path="/help" render={
                   p => <Help key="help" {...p} {...this.props} />} />
-                <Route exact path={["/projects", "/projects/starred", "/projects/search"]} render={
+                <Route exact path={["/projects", "/projects/starred", "/projects/all"]} render={
                   p => <Project.List
                     key="projects"
                     user={this.props.user}
