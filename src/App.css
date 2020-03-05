@@ -128,7 +128,7 @@ body {
 
 .bouncer {
   text-align: center;
-  margin: 50px auto 25px auto;  
+  margin: 50px auto 25px auto;
 }
 
 .bouncer span {
@@ -137,7 +137,7 @@ body {
   width: 25px;
   height: 25px;
   margin: 5px;
-  background: black;
+  background: #5561A6; /* Use SDSC Dark Blue */
   border-radius: 50px;
   animation: bouncer 0.9s infinite alternate;
 }
