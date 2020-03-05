@@ -35,7 +35,7 @@ import { Login } from "./authentication";
 import Help from "./help";
 import NotFound from "./not-found";
 import ShowDataset from "./dataset/Dataset.container";
-import { Bouncer } from "./utils/UIComponents";
+import { Loader } from "./utils/UIComponents";
 
 import "./App.css";
 
@@ -45,9 +45,9 @@ class App extends Component {
     const { user } = this.props;
     if (!user.fetched && user.fetching) {
       return (
-        <Jumbotron className="delay1s bg-white">
-          <h3 className="text-center">Checking user data</h3>
-          <Bouncer />
+        <Jumbotron className="bg-white">
+          <h3 className="text-center text-primary">Checking user data</h3>
+          <Loader />
         </Jumbotron>
       );
     }

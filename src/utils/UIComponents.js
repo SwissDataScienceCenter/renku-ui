@@ -244,27 +244,42 @@ function ExternalLink(props) {
   return ExternalLinkButton(props);
 }
 
-class Loader extends Component {
-  render() {
-    const size = this.props.size || 120;
-    const d = `${size}px`;
-    // Inspired from https://www.w3schools.com/howto/howto_css_loader.asp
-    const border = `${size / 10}px solid #f3f3f3`;
-    const borderTop = `${size / 10}px solid #5561A6`; // Use SDSC Dark Blue
-    const borderRight = borderTop; // Added a borderRight to make a half-circle
-    const borderRadius = "50%";
-    const animation = "spin 2s linear infinite";
-    const left = this.props.inline ? "" : "40%", right = left;
-    const display = this.props.inline ? "inline-block" : "";
-    const verticalAlign = this.props.inline ? "middle" : "";
-    const margin = `m-${this.props.margin ? this.props.margin : 0}`;
-    return <div className={margin} style={{
-      width: d, height: d,
-      border, borderTop, borderRight, borderRadius, animation, left, right, display, verticalAlign,
-      position: "relative",
-    }}></div>;
-  }
+function LoaderSpinner(props) {
+  const size = props.size || 120;
+  const d = `${size}px`;
+  // Inspired from https://www.w3schools.com/howto/howto_css_loader.asp
+  const border = `${size / 10}px solid #f3f3f3`;
+  const borderTop = `${size / 10}px solid #5561A6`; // Use SDSC Dark Blue
+  const borderRight = borderTop; // Added a borderRight to make a half-circle
+  const borderRadius = "50%";
+  const animation = "spin 2s linear infinite";
+  const left = props.inline ? "" : "40%", right = left;
+  const display = props.inline ? "inline-block" : "";
+  const verticalAlign = props.inline ? "middle" : "";
+  const margin = `m-${props.margin ? props.margin : 0}`;
+  return <div className={margin} style={{
+    width: d, height: d,
+    border, borderTop, borderRight, borderRadius, animation, left, right, display, verticalAlign,
+    position: "relative",
+  }}></div>;
 }
+
+function LoaderBouncer(props) {
+  return (
+    <div className="bouncer">
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+  );
+}
+
+function Loader(props) {
+  const size = props.size || 120;
+  const inline = props.inline;
+  return (inline || size < 100) ? LoaderSpinner(props) : LoaderBouncer(props);
+}
+
 
 /**
  * Use `hidden` to completely hide the alert, `open` to manually control the visibility,
@@ -613,19 +628,7 @@ function ButtonWithMenu(props) {
   </ButtonDropdown>;
 }
 
-class Bouncer extends Component {
-  render() {
-    return (
-      <div className="bouncer">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-    );
-  }
-}
-
 export { UserAvatar, TimeCaption, FieldGroup, RenkuNavLink, Pagination, RenkuMarkdown };
 export { ExternalLink, Loader, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, JupyterIcon };
 export { Clipboard, ExternalIconLink, IconLink, ThrottledTooltip, TooltipToggleButton, ProjectAvatar };
-export { ButtonWithMenu, Bouncer };
+export { ButtonWithMenu };
