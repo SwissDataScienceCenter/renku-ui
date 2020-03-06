@@ -61,14 +61,15 @@ function getFileStatus(id, error, status) {
   return FILE_STATUS.UPLOADING;
 }
 
-function getFileObject(name, size, id, error, alias, status) {
+function getFileObject(name, size, id, error, alias, controller, status) {
   return {
     file_name: name,
     file_size: size,
     file_id: id,
     file_error: error,
     file_alias: alias,
-    file_status: getFileStatus(id, error, status)
+    file_status: getFileStatus(id, error, status),
+    file_controller: controller
   };
 }
 
@@ -84,7 +85,7 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
   useEffect(() => {
     if (value !== undefined && !initialized) {
       setDisplayFiles(value.map(file => getFileObject(
-        file.name, null, undefined, undefined, undefined, FILE_STATUS.ADDED)));
+        file.name, null, undefined, undefined, undefined, undefined, FILE_STATUS.ADDED)));
     }
     setInitialized(true);
   }, [value, initialized]);
@@ -104,7 +105,8 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
             uploadingFile.file_size,
             uploadingFile.file_id,
             filesErrors.find(file => file.file_name === uploadingFile.file_name),
-            uploadingFile.file_alias);
+            uploadingFile.file_alias,
+            uploadingFile.file_controller);
         }
         return dFile;
       })
@@ -119,7 +121,8 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
         let errorFile = filesErrors.find(eFile => eFile.file_name === dFile.file_name);
         if (errorFile !== undefined) {
           return getFileObject(
-            errorFile.file_name, errorFile.file_size, null, errorFile.file_error, errorFile.file_alias);
+            errorFile.file_name, errorFile.file_size, null, errorFile.file_error, errorFile.file_alias,
+            errorFile.file_controller);
         }
         return dFile;
       })
@@ -127,28 +130,32 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
   }, [filesErrors]);
 
   let uploadFile = (file) => {
-    uploadFileFunction(file).then((response) => {
+    uploadFileFunction(file, file.file_controller).then((response) => {
       if (response.status >= 400) throw new Error();
       response.json().then((body) => {
         if (body.error) {
           setFilesErrors(prevFilesErrors => [...prevFilesErrors,
-          getFileObject(file.name, file.size, undefined, body.error.reason, undefined)]
+          getFileObject(file.name, file.size, undefined, body.error.reason, undefined, file.file_controller)]
           );
           return [];
         }
         let newFileObj = body.result.files[0];
         if (newFileObj.file_name !== undefined && newFileObj.file_name !== file.name) {
           newFileObj = getFileObject(
-            file.name, newFileObj.file_size, newFileObj.file_id, undefined, newFileObj.file_name);
+            file.name, newFileObj.file_size, newFileObj.file_id, undefined, newFileObj.file_name,
+            response.controller);
         }
         setUploadedFiles(prevUploadedFiles => [...prevUploadedFiles, newFileObj]);
         return newFileObj;
 
       });
     }).catch((error) => {
-      setFilesErrors(prevFilesErrors => [...prevFilesErrors,
-      getFileObject(file.name, file.size, undefined, "Error uploading the file", undefined)]);
-      return [];
+      if (error.code !== DOMException.ABORT_ERR) {
+        setFilesErrors(prevFilesErrors => [...prevFilesErrors,
+        getFileObject(file.name, file.size, undefined, "Error uploading the file", undefined,
+        file.file_controller)]);
+        return [];
+      }
     });
   };
 
@@ -158,19 +165,32 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
     if (!disabled) {
       let eventFiles = e.dataTransfer ? e.dataTransfer.files : e.target.files;
       let droppedFiles = getFilteredFiles(Array.from(eventFiles));
-      droppedFiles.map(file => uploadFile(file));
+
+      droppedFiles = "signal" in new Request("") ?
+        droppedFiles.map(file => {
+          file.file_controller = new AbortController();
+          return file;
+        })
+      : droppedFiles;
+
+      droppedFiles.map(file => uploadFile(file, file.file_controller));
       setFiles([...files, ...droppedFiles]);
       const newDisplayFiles = droppedFiles
-        .map(file => getFileObject(file.name, file.size, null, undefined, undefined));
+        .map(file => getFileObject(file.name, file.size, null, undefined, undefined, file.file_controller));
+
       setDisplayFiles([...displayFiles, ...newDisplayFiles]);
     }
   };
 
-  let deleteFile = (file_name) => {
+  let deleteFile = (file_name, file_controller) => {
     if (!disabled) {
       setFilesErrors(prevfilesErrors => prevfilesErrors.filter(file => file.file_name !== file_name));
       setDisplayFiles(prevDisplayFiles => prevDisplayFiles.filter(file => file.file_name !== file_name));
       setUploadedFiles(prevUploadedFiles => prevUploadedFiles.filter(file => file.file_name !== file_name));
+      const filteredFiles = files.filter(file => file.name !== file_name);
+      setFiles([...filteredFiles]);
+      $input.current.value = "";
+      if (file_controller) file_controller.abort();
     }
   };
 
@@ -179,13 +199,15 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
       let retryFile = files.find(file => file.name === file_name);
       if (retryFile !== undefined) {
         const displayFilesFiltered = displayFiles.map(file => {
-          if (file.file_name === file_name)
-            return getFileObject(retryFile.name, retryFile.size, null, undefined, undefined);
+          if (file.file_name === file_name) {
+            return getFileObject(retryFile.name, retryFile.size, null, undefined, retryFile.file_alias,
+              retryFile.file_controller);
+          }
           return file;
         });
         setDisplayFiles([...displayFilesFiltered]);
         setFilesErrors(prevfilesErrors => prevfilesErrors.filter(file => file.file_name !== file_name));
-        uploadFile(retryFile);
+        uploadFile(retryFile, retryFile.file_controller);
       }
     }
   };
@@ -198,7 +220,7 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
 
       dropErrorMessage = dropErrorMessage === "" ?
         "Files can't have the same name (This file(s) alredy exist(s): " + file.name
-        : ", " + file.name;
+        : dropErrorMessage + ", " + file.name;
       return false;
 
     });
@@ -271,10 +293,13 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
                 <td>{getFileStatusComp(file)}</td>
                 <td>
                   {
-                    file.file_status === FILE_STATUS.ADDED || file.file_status === FILE_STATUS.UPLOADING ?
-                      null :
+                    file.file_status === FILE_STATUS.UPLOADED || file.file_status === FILE_STATUS.FAILED ?
                       <FontAwesomeIcon color="var(--danger)" icon={faTrashAlt}
                         onClick={() => deleteFile(file.file_name)} />
+                    : (file.file_status === FILE_STATUS.UPLOADING && file.file_controller !== undefined ?
+                      <FontAwesomeIcon color="var(--danger)" icon={faTrashAlt}
+                        onClick={() => deleteFile(file.file_name, file.file_controller)} />
+                    : null)
                   }
                 </td>
               </tr>

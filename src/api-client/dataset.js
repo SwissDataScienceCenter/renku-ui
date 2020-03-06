@@ -11,7 +11,7 @@ export default function addDatasetMethods(client) {
     });
   };
 
-  client.uploadFile = (file) => {
+  client.uploadFile = (file, controller) => {
     const data = new FormData();
     data.append("file", file);
     data.append("file_name", file.name);
@@ -22,27 +22,40 @@ export default function addDatasetMethods(client) {
       "Accept": "application/json"
     });
 
-    return fetch(`${client.baseUrl}/renku/cache.files_upload?override_existing=true`, {
+    let queryParams = {
       method: "POST",
       headers: headers,
       body: data,
       processData: false
+    };
+
+    if (controller) queryParams.signal = controller.signal;
+
+    return fetch(`${client.baseUrl}/renku/cache.files_upload?override_existing=true`, queryParams)
+    .then(response => {
+       if (controller !== undefined)
+          response.controller = controller;
+        return response;
     });
   };
 
-  client.addFilesToDataset = (projectUrl, datasetName, filesList) => {
+  client.addFilesToDataset = (projectUrl, datasetName, filesList, signal) => {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
 
-    return client.clientFetch(`${client.baseUrl}/renku/cache.project_clone`, {
+    let queryParams = {
       method: "POST",
       headers: headers,
       body: JSON.stringify({
         depth: 1,
         git_url: projectUrl
-      })
-    }).then(response => {
+      }),
+    };
+
+    return client.clientFetch(`${client.baseUrl}/renku/cache.project_clone`,
+    queryParams
+    ).then(response => {
       if (response.data.error) { return response; }
       else
         if (filesList.length > 0) {
@@ -53,7 +66,6 @@ export default function addDatasetMethods(client) {
               "dataset_name": datasetName,
               "files": filesList,
               "project_id": response.data.result.project_id
-
             })
           });
         } return response;
