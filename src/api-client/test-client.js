@@ -18,6 +18,7 @@
 
 import * as samples from "./test-samples";
 import { carveProject } from "./project";
+import { mergeNamespacesAndGroups } from "./instance";
 
 const methods = {
   getProjects: {
@@ -80,9 +81,17 @@ const methods = {
       data: []
     }
   },
+  getAllNamespaces: {
+    response: mergeNamespacesAndGroups({data: samples.namespaces}, {data: samples.groups})
+  },
   getNamespaces: {
     response: {
       data: samples.namespaces
+    }
+  },
+  getGroups: {
+    response: {
+      data: samples.groups
     }
   },
   getUser: {

@@ -1,5 +1,5 @@
 /*!
- * Copyright 2017 - Swiss Data Science Center (SDSC)
+ * Copyright 2020 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -18,8 +18,36 @@
 
 // API methods that return Gitlab server instance-level information
 
+/**
+ * Merge namespaces and groups to return a list of namespaces including subgroups
+ *
+ * @param {array} namespaces   namespaces from Gitlab
+ * @param {array} groups       groups from Gitlab
+ */
+
+ import _ from "lodash/object";
+
+function mergeNamespacesAndGroups(namespaceResponse, groupResponse) {
+  const namespaces = namespaceResponse.data;
+  const groups = groupResponse.data;
+  const nsMap = {};
+  namespaces.forEach(d => nsMap[d.id] = d);
+  const missingNsGps = groups.filter(d => undefined === nsMap[d.id]);
+  const missingNs = missingNsGps.map((d) =>
+    ({ kind: "group", ..._.pick(d, ["id", "name", "path", "full_path", "parent_id", "avatar_url", "web_url"]) })
+  );
+  return {data: namespaces.concat(missingNs), pagination: namespaceResponse.pagination };
+}
+
 function addInstanceMethods(client) {
-  client.getNamespaces = (queryParams = {}) => {
+  client.getAllNamespaces = async (queryParams = {}) => {
+    // Get all pages of namespaces and all pages of groups and merge them together
+    const promises = [client.getNamespaces(queryParams), client.getGroups(queryParams)];
+    const [ns, gs] = await Promise.all(promises);
+    return mergeNamespacesAndGroups(ns, gs);
+  };
+
+  client.getNamespaces = async (queryParams = {}) => {
     // Default the number of rows to 100
     if (undefined === queryParams.per_page) queryParams.per_page = 100;
     const headers = client.getBasicHeaders();
@@ -30,7 +58,7 @@ function addInstanceMethods(client) {
     });
   };
 
-  client.getGroupByPath = (path) => {
+  client.getGroupByPath = path => {
     const headers = client.getBasicHeaders();
     const urlEncodedPath = encodeURIComponent(path);
     return client.clientFetch(`${client.baseUrl}/groups/${urlEncodedPath}`, {
@@ -38,6 +66,19 @@ function addInstanceMethods(client) {
       headers
     });
   };
+
+  client.getGroups = async (queryParams = {}) => {
+    // Default the number of rows to 100
+    if (undefined === queryParams.per_page) queryParams.per_page = 100;
+    const headers = client.getBasicHeaders();
+    return client.clientFetch(`${client.baseUrl}/groups`, {
+      method: "GET",
+      headers,
+      queryParams
+    });
+  };
 }
 
 export default addInstanceMethods;
+
+export { mergeNamespacesAndGroups };

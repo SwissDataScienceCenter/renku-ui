@@ -230,7 +230,7 @@ class New extends Component {
   fetchNamespaces(search = null) {
     const queryParams = {};
     if (search != null) queryParams["search"] = search;
-    return this.props.client.getNamespaces(queryParams);
+    return this.props.client.getAllNamespaces(queryParams);
   }
 
   // https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions#Using_Special_Characters
