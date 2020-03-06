@@ -52,13 +52,13 @@ class ProjectPath extends Component {
 
     this.state = {
       suggestions: [],
-      input: this.props.namespace.path
+      input: this.props.namespace.full_path
     };
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if (this.props.namespace.path !== prevProps.namespace.path)
-      this.setState({ input: this.props.namespace.path });
+    if (this.props.namespace.full_path !== prevProps.namespace.full_path)
+      this.setState({ input: this.props.namespace.full_path });
 
   }
 
@@ -67,7 +67,7 @@ class ProjectPath extends Component {
   }
 
   renderSuggestion(suggestion) {
-    return <span>{suggestion.path}</span>;
+    return <span>{suggestion.full_path}</span>;
   }
 
   renderSectionTitle(section) {
@@ -86,7 +86,7 @@ class ProjectPath extends Component {
       this.props.onChange(highlightedSuggestion);
       this.props.onAccept();
     }
-    this.setState({ input: this.props.namespace.path });
+    this.setState({ input: this.props.namespace.full_path });
   }
 
   doChange(event, { newValue, method }) {
