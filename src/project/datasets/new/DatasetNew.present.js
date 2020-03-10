@@ -55,31 +55,30 @@ function DatasetNew(props) {
 
    props.client.postDataset(props.httpProjectUrl, dataset)
    .then(dataset => {
-     if (dataset.data.error !== undefined) {
+    if (dataset.data.error !== undefined) {
       setSubmitLoader(false);
       setServerErrors(dataset.data.error.reason);
-     }
- else {
-      let waitForDatasetInKG = setInterval(
-        () => {
-props.client.getProjectDatasetsFromKG(props.projectPathWithNamespace)
-        .then(datasets => {
-          // eslint-disable-next-line
-          let new_dataset = datasets.find( ds => ds.name === dataset.data.result.dataset_name);
-          if (new_dataset !== undefined) {
-            setSubmitLoader(false);
-            props.datasetFormSchema.name.value = props.datasetFormSchema.name.initial;
-            props.datasetFormSchema.description.value = props.datasetFormSchema.description.initial;
-            props.datasetFormSchema.files.value = props.datasetFormSchema.files.initial;
-            clearInterval(waitForDatasetInKG);
-            props.history.push(
-              { pathname: `/projects/${props.projectPathWithNamespace}/datasets/${new_dataset.identifier}/`
-            });
-          }
-      });
-}
-      , 6000);
-     }
+    }
+    else {
+      let waitForDatasetInKG = setInterval(() => {
+        props.client.getProjectDatasetsFromKG(props.projectPathWithNamespace)
+          .then(datasets => {
+            // eslint-disable-next-line
+            let new_dataset = datasets.find( ds => ds.name === dataset.data.result.dataset_name);
+            if (new_dataset !== undefined) {
+              setSubmitLoader(false);
+              props.datasetFormSchema.name.value = props.datasetFormSchema.name.initial;
+              props.datasetFormSchema.description.value = props.datasetFormSchema.description.initial;
+              props.datasetFormSchema.files.value = props.datasetFormSchema.files.initial;
+              clearInterval(waitForDatasetInKG);
+              props.history.push({
+                pathname: `/projects/${props.projectPathWithNamespace}/datasets/${new_dataset.identifier}/`,
+                state: { datasets: datasets }
+              });
+            }
+        });
+      }, 6000);
+    }
   });
   };
 
