@@ -546,18 +546,12 @@ class ProjectViewOverview extends Component {
 
 class ProjectDatasetsNav extends Component {
 
-  componentDidMount() {
-    this.props.fetchDatasets();
-  }
-
   render() {
-    const loading = isRequestPending(this.props, "datasets");
     const allDatasets = this.props.core.datasets || [];
-    if (loading && (allDatasets.length < 1 || this.props.core.datasets === undefined))
-      return <Loader />;
 
     if (allDatasets.length === 0)
       return null;
+
     return <DatasetsListView
       datasets={this.props.core.datasets}
       datasetsUrl={this.props.datasetsUrl}
@@ -582,8 +576,18 @@ class ProjectViewDatasets extends Component {
 
 class ProjectViewDatasetsList extends Component {
 
+  componentDidMount() {
+    if (this.props.core.datasets === undefined
+      || (this.props.location.state && this.props.location.state.datasets))
+      this.props.fetchDatasets();
+  }
+
   render() {
-    const loading = isRequestPending(this.props, "datasets");
+    const loading = this.props.core.datasets === SpecialPropVal.UPDATING;
+    const incomingDatasets = this.props.location.state && this.props.location.state.datasets
+      ? this.props.location.state.datasets : [];
+    if (loading || this.props.core.datasets === undefined || incomingDatasets.length > this.props.core.datasets.length)
+      return <Loader />;
     const progress = this.props.webhook.progress;
     const kgLoading = progress == null
       || progress === GraphIndexingStatus.NO_WEBHOOK

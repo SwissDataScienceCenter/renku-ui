@@ -200,7 +200,7 @@ export default function DatasetView(props) {
   if (dataset === null) {
     return (
       <Alert color="danger">
-        Error 404: The dataset that was selected does not exist or could not
+        The dataset that was selected does not exist or could not
         be accessed.<br /> <br /> If you just created the dataset
         try <Button color="danger" size="sm" onClick={
           () => window.location.reload()
