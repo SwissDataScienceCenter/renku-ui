@@ -21,6 +21,7 @@
     "react/prop-types": "off",
     "curly": ["warn", "multi-or-nest", "consistent"],
     "react/jsx-indent": ["warn", 2],
+    "indent" : ["warn", 2, { "ignoredNodes": ["TemplateLiteral"], "SwitchCase": 1 }],
     "semi": ["warn", "always"],
     "space-before-blocks": ["warn", "always"],
     "no-multi-spaces": "warn",
