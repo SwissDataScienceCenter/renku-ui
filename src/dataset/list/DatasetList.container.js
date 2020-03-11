@@ -51,7 +51,7 @@ class List extends Component {
     let queryproc = query;
     if (queryproc === undefined)
       this.model.setInitialized(true);
-     else
+    else
       this.model.setQuery(query);
 
     this.model.setOrderBy(orderBy);
@@ -150,14 +150,14 @@ class List extends Component {
 
   getOrderByLabel() {
     switch (this.model.get("orderBy")) {
-    case orderByValuesMap.NAME:
-      return "name";
-    case orderByValuesMap.DATE_PUBLISHED:
-      return "date published";
-    case orderByValuesMap.PROJECTSCOUNT:
-      return "projects count";
-    default:
-      return "";
+      case orderByValuesMap.NAME:
+        return "name";
+      case orderByValuesMap.DATE_PUBLISHED:
+        return "date published";
+      case orderByValuesMap.PROJECTSCOUNT:
+        return "projects count";
+      default:
+        return "";
     }
   }
 

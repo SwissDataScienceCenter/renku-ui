@@ -133,7 +133,7 @@ class FileLineage extends Component {
           }
         });
     }
- catch (error) {
+    catch (error) {
       if (this._isMounted) {
         if (error.case === API_ERRORS.notFoundError) {
           this.setState({

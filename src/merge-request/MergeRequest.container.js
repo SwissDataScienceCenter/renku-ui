@@ -43,9 +43,9 @@ class MergeRequestContainer extends Component {
 
   retrieveChanges() {
     this.props.client.getMergeRequestChanges(this.props.projectId, this.props.iid)
-    .then(resp => {
-      if (this._isMounted) this.setState({ ...resp.data });
-    });
+      .then(resp => {
+        if (this._isMounted) this.setState({ ...resp.data });
+      });
   }
 
   appendContribution(newContribution) {
@@ -64,7 +64,7 @@ class MergeRequestContainer extends Component {
           return { contributions: resp.data };
         });
       }).catch(error => {
-         this.setState((prevState, props) => {
+        this.setState((prevState, props) => {
           return { contributions: [] };
         });
       });
@@ -78,7 +78,7 @@ class MergeRequestContainer extends Component {
           return { commits: resp.data };
         });
       }).catch(error => {
-         this.setState((prevState, props) => {
+        this.setState((prevState, props) => {
           return { commits: [] };
         });
       });

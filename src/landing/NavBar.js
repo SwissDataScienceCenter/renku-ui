@@ -60,20 +60,20 @@ class RenkuToolbarItemUser extends Component {
       return <RenkuNavLink to="/login" title="Login" previous={this.props.location.pathname} />;
 
 
-      return <li className="nav-item dropdown">
-        { /* eslint-disable-next-line */ }
-        <a key="button" className="nav-link dropdown-toggle" id="profile-dropdown" role="button" data-toggle="dropdown"
-          aria-haspopup="true" aria-expanded="false">
-          {this.props.userAvatar}
-        </a>
-        <div key="menu" className="dropdown-menu dropdown-menu-right" aria-labelledby="profile-dropdown">
-          <a className="dropdown-item" target="_blank" rel="noreferrer noopener"
-            href={`${gatewayURL}/auth/user-profile`}>Profile</a>
-          <Link className="dropdown-item" to="/help">Help</Link>
-          <a id="logout-link" className="dropdown-item"
-            href={`${gatewayURL}/auth/logout?redirect_url=${redirect_url}`}>Logout</a>
-        </div>
-      </li>;
+    return <li className="nav-item dropdown">
+      { /* eslint-disable-next-line */ }
+      <a key="button" className="nav-link dropdown-toggle" id="profile-dropdown" role="button"
+        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        {this.props.userAvatar}
+      </a>
+      <div key="menu" className="dropdown-menu dropdown-menu-right" aria-labelledby="profile-dropdown">
+        <a className="dropdown-item" target="_blank" rel="noreferrer noopener"
+          href={`${gatewayURL}/auth/user-profile`}>Profile</a>
+        <Link className="dropdown-item" to="/help">Help</Link>
+        <a id="logout-link" className="dropdown-item"
+          href={`${gatewayURL}/auth/logout?redirect_url=${redirect_url}`}>Logout</a>
+      </div>
+    </li>;
 
   }
 }
@@ -98,11 +98,11 @@ class LoggedInNavBar extends Component {
   handleSelect(eventKey, event) {
     let nextRoute = null;
     switch (eventKey) {
-    case "new.projects":
-      nextRoute = "/projects";
-      break;
-    default:
-      break;
+      case "new.projects":
+        nextRoute = "/projects";
+        break;
+      default:
+        break;
     }
     if (null != nextRoute) this.props.history.push(nextRoute);
   }

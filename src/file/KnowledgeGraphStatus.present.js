@@ -51,16 +51,16 @@ function KnowledgeGraphStatus(props) {
       );
     }
 
-      const action = props.maintainer ?
-        <Button color="warning" onClick={props.createWebhook}>Activate Knowledge Graph</Button> :
-        <span>You do not have sufficient rights, but a project owner can do this.</span>;
+    const action = props.maintainer ?
+      <Button color="warning" onClick={props.createWebhook}>Activate Knowledge Graph</Button> :
+      <span>You do not have sufficient rights, but a project owner can do this.</span>;
 
-      return (
-        <Alert color="warning">
-          Knowledge Graph integration must be activated to view the lineage and the datasets.&nbsp;
-          {action}
-        </Alert>
-      );
+    return (
+      <Alert color="warning">
+        Knowledge Graph integration must be activated to view the lineage and the datasets.&nbsp;
+        {action}
+      </Alert>
+    );
 
   }
   else if (progress === GraphIndexingStatus.NO_PROGRESS) {

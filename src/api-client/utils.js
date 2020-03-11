@@ -60,7 +60,7 @@ function renkuFetch(url, options) {
       if (response.status >= 200 && response.status < 300)
         return response;
 
-        return throwAPIErrors(response);
+      return throwAPIErrors(response);
 
     });
 

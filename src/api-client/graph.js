@@ -31,8 +31,8 @@ function addGraphMethods(client) {
         return false;
 
 
-        // erros expected: 401, 500
-        throw new Error(`Error ${resp.status}`);
+      // erros expected: 401, 500
+      throw new Error(`Error ${resp.status}`);
 
     });
   };
@@ -47,8 +47,8 @@ function addGraphMethods(client) {
         return false;
 
 
-        // erros expected: 500
-        throw new Error(`Error ${resp.status}`);
+      // erros expected: 500
+      throw new Error(`Error ${resp.status}`);
 
     });
   };

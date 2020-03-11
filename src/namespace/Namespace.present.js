@@ -41,11 +41,11 @@ const NamespaceProjects = (props) => {
 
   let checking = null;
   if (props.user.fetching || props.group.fetching) {
-checking = (<div>
-  <p>Searching for {namespace}...</p>
-  <Loader />
-</div>);
-}
+    checking = (<div>
+      <p>Searching for {namespace}...</p>
+      <Loader />
+    </div>);
+  }
 
   let outcome = null;
   let userOrGroup = "";

@@ -76,7 +76,7 @@ function nodeToClass(node, currentNodeId, label) {
     else
       nodeClasses.push("data");
   }
- else { nodeClasses.push("workflow"); }
+  else { nodeClasses.push("workflow"); }
 
   return nodeClasses.join(" ");
 }
@@ -205,7 +205,7 @@ class FileLineage extends Component {
       || progress === GraphIndexingStatus.NO_PROGRESS
       || (progress >= GraphIndexingStatus.MIN_VALUE && progress < GraphIndexingStatus.MAX_VALUE)
     ) {
-return <KnowledgeGraphStatus
+      return <KnowledgeGraphStatus
         fetchGraphStatus={this.props.fetchGraphStatus}
         retrieveGraph={this.props.retrieveGraph}
         createGraphWebhook={this.props.createGraphWebhook}
@@ -213,7 +213,7 @@ return <KnowledgeGraphStatus
         forked={this.props.forked}
         progress={this.props.progress}
       />;
-}
+    }
 
     const graphComponent = (graph) ?
       <FileLineageGraph
@@ -239,12 +239,12 @@ return <KnowledgeGraphStatus
 
     let buttonJupyter = null;
     if (filePath.endsWith(".ipynb")) {
-buttonJupyter = (
-  <JupyterButton {...this.props}
+      buttonJupyter = (
+        <JupyterButton {...this.props}
           file={{ file_path: this.props.path }}
           projectPath={this.props.projectPathOnly} />
       );
-}
+    }
 
     return <Card>
       <CardHeader className="align-items-baseline">

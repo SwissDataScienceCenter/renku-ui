@@ -84,7 +84,7 @@ class TreeNode extends Component {
         </div>
       ;
     }
- else {
+    else {
       const childrenOpen = this.state.childrenOpen ? <div className="pl-3">{children}</div> : null;
       elementToRender =
         <div className={order + " " + hidden} >

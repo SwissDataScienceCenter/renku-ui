@@ -33,24 +33,24 @@ const API_ERRORS = {
 function throwErrorWithData(response, data) {
   let error;
   switch (response.status) {
-  case 401:
-    error = new APIError();
-    error.case = API_ERRORS.unauthorizedError;
-    break;
-  case 403:
-    error = new APIError();
-    error.case = API_ERRORS.forbiddenError;
-    break;
-  case 404:
-    error = new APIError();
-    error.case = API_ERRORS.notFoundError;
-    break;
-  case 500:
-    error = new APIError();
-    error.case = API_ERRORS.internalServerError;
-    break;
-  default:
-    error = new APIError();
+    case 401:
+      error = new APIError();
+      error.case = API_ERRORS.unauthorizedError;
+      break;
+    case 403:
+      error = new APIError();
+      error.case = API_ERRORS.forbiddenError;
+      break;
+    case 404:
+      error = new APIError();
+      error.case = API_ERRORS.notFoundError;
+      break;
+    case 500:
+      error = new APIError();
+      error.case = API_ERRORS.internalServerError;
+      break;
+    default:
+      error = new APIError();
   }
   error.response = response;
   error.errorData = data;
@@ -64,21 +64,21 @@ function throwAPIErrors(response) {
   if (contentType === "text/html")
     return response.text().then(d => throwErrorWithData(response, d));
 
-    return response.json().then(d => throwErrorWithData(response, d));
+  return response.json().then(d => throwErrorWithData(response, d));
 
 }
 
 function alertAPIErrors(error) {
   switch (error.case) {
-  case API_ERRORS.forbiddenError:
-    throw Error("You don't have the necessary permission to view this information or perform this action.");
-  case API_ERRORS.notFoundError:
-    throw Error("We could not find the requested resource on the server.");
-  case API_ERRORS.internalServerError:
-    throw Error("There is a problem with the server - please try again later.");
-  case API_ERRORS.networkError:
-    throw Error("There seems to be problem with your network connection. Please check and try again.");
-  default:
+    case API_ERRORS.forbiddenError:
+      throw Error("You don't have the necessary permission to view this information or perform this action.");
+    case API_ERRORS.notFoundError:
+      throw Error("We could not find the requested resource on the server.");
+    case API_ERRORS.internalServerError:
+      throw Error("There is a problem with the server - please try again later.");
+    case API_ERRORS.networkError:
+      throw Error("There seems to be problem with your network connection. Please check and try again.");
+    default:
     // No alert on default exception
   }
 }

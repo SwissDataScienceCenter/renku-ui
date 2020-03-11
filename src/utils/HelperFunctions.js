@@ -29,9 +29,9 @@ function getActiveProjectPathWithNamespace(currentPath) {
   try {
     if (currentPath.includes("/projects/") && currentPath.split("/").length > 3 )
       return currentPath.split("/")[2] + "/" + currentPath.split("/")[3];
-     return null;
+    return null;
   }
- catch (TypeError) {
+  catch (TypeError) {
     return null;
   }
 }
@@ -77,20 +77,20 @@ function parseINIString(data) {
     if (regex.comment.test(line)) {
       return;
     }
- else if (regex.param.test(line)) {
+    else if (regex.param.test(line)) {
       let match = line.match(regex.param);
       if (section)
         value[section][match[1]] = match[2];
-       else
+      else
         value[match[1]] = match[2];
 
     }
- else if (regex.section.test(line)) {
+    else if (regex.section.test(line)) {
       let match = line.match(regex.section);
       value[match[1]] = {};
       section = match[1];
     }
- else if (line.length === 0 && section) {
+    else if (line.length === 0 && section) {
       section = null;
     }
   });

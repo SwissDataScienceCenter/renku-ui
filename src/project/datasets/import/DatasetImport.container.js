@@ -46,9 +46,9 @@ function ImportDataset(props) {
       datasetImportFormSchema.uri.value = datasetImportFormSchema.uri.initial;
       clearInterval(waitForDatasetInKG);
       props.history.push({
-          pathname: `/projects/${props.projectPathWithNamespace}/datasets/${new_dataset[0].identifier}/`,
-          state: { datasets: datasets }
-        })
+        pathname: `/projects/${props.projectPathWithNamespace}/datasets/${new_dataset[0].identifier}/`,
+        state: { datasets: datasets }
+      })
       ;
     }
   };
@@ -99,11 +99,11 @@ function ImportDataset(props) {
     let cont = 0;
     let monitorJob = setInterval(() => {
       props.client.getJobStatus(job_id)
-      .then(job => {
-        cont++;
-        if (job !== undefined || cont === 50)
-          handleJobResponse(job, monitorJob, cont, oldDatasetsList);
-      });
+        .then(job => {
+          cont++;
+          if (job !== undefined || cont === 50)
+            handleJobResponse(job, monitorJob, cont, oldDatasetsList);
+        });
     }, 10000);
   };
 

@@ -135,7 +135,7 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
       response.json().then((body) => {
         if (body.error) {
           setFilesErrors(prevFilesErrors => [...prevFilesErrors,
-          getFileObject(file.name, file.size, undefined, body.error.reason, undefined, file.file_controller)]
+            getFileObject(file.name, file.size, undefined, body.error.reason, undefined, file.file_controller)]
           );
           return [];
         }
@@ -152,8 +152,8 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
     }).catch((error) => {
       if (error.code !== DOMException.ABORT_ERR) {
         setFilesErrors(prevFilesErrors => [...prevFilesErrors,
-        getFileObject(file.name, file.size, undefined, "Error uploading the file", undefined,
-        file.file_controller)]);
+          getFileObject(file.name, file.size, undefined, "Error uploading the file", undefined,
+            file.file_controller)]);
         return [];
       }
     });
@@ -171,7 +171,7 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
           file.file_controller = new AbortController();
           return file;
         })
-      : droppedFiles;
+        : droppedFiles;
 
       droppedFiles.map(file => uploadFile(file, file.file_controller));
       setFiles([...files, ...droppedFiles]);
@@ -284,8 +284,8 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
                   {
                     file.file_alias ? <small><br></br>
                       <span className="text-danger"> *The name of this file contains
-                        disallowed characters; it has been renamed to
-                        <i> {file.file_alias}</i></span></small>
+                        disallowed characters; it has been renamed to <i> {file.file_alias}</i>
+                      </span></small>
                       : null
                   }
                 </td>
@@ -296,10 +296,10 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
                     file.file_status === FILE_STATUS.UPLOADED || file.file_status === FILE_STATUS.FAILED ?
                       <FontAwesomeIcon color="var(--danger)" icon={faTrashAlt}
                         onClick={() => deleteFile(file.file_name)} />
-                    : (file.file_status === FILE_STATUS.UPLOADING && file.file_controller !== undefined ?
-                      <FontAwesomeIcon color="var(--danger)" icon={faTrashAlt}
-                        onClick={() => deleteFile(file.file_name, file.file_controller)} />
-                    : null)
+                      : (file.file_status === FILE_STATUS.UPLOADING && file.file_controller !== undefined ?
+                        <FontAwesomeIcon color="var(--danger)" icon={faTrashAlt}
+                          onClick={() => deleteFile(file.file_name, file.file_controller)} />
+                        : null)
                   }
                 </td>
               </tr>

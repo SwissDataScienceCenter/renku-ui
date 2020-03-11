@@ -54,7 +54,7 @@ class Time {
       return readableDate.substring(11);
 
 
-      throw (new Error(`Uknown type "${type}"`));
+    throw (new Error(`Uknown type "${type}"`));
 
   }
 

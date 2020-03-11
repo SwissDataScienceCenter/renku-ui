@@ -105,22 +105,22 @@ class APIClient {
       .then(response => {
         switch (returnType) {
 
-        case RETURN_TYPES.json:
-          return response.json().then(data => {
-            return {
-              data,
-              pagination: processPaginationHeaders(this, response.headers)
-            };
-          });
+          case RETURN_TYPES.json:
+            return response.json().then(data => {
+              return {
+                data,
+                pagination: processPaginationHeaders(this, response.headers)
+              };
+            });
 
-        case RETURN_TYPES.text:
-          return response.text();
+          case RETURN_TYPES.text:
+            return response.text();
 
-        case RETURN_TYPES.full:
-          return response;
+          case RETURN_TYPES.full:
+            return response;
 
-        default:
-          return response;
+          default:
+            return response;
         }
       });
   }

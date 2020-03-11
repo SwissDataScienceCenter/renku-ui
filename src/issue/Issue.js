@@ -280,7 +280,7 @@ class View extends Component {
             .then(() => this.props.updateProjectView());
         }
         else {
-           throw Error(`Unknown state ${this.props.state}`);
+          throw Error(`Unknown state ${this.props.state}`);
         }
         // We don't even need to dispatch anything as the entire project component needs to be re-rendered
         // (and the information reloaded from the server) anyway.

@@ -94,7 +94,7 @@ const NotebooksHelper = {
     try {
       parsedData = parseINIString(data);
     }
- catch (error) {
+    catch (error) {
       parsedData = {};
     }
     // check single props when the environment sections is available
@@ -136,10 +136,10 @@ const NotebooksHelper = {
   checkOptionValidity: (globalOptions, currentOption, currentValue) => {
     // defaultUrl is a special case and any string will fit
     if (currentOption === "defaultUrl") {
-if (typeof currentValue === "string")
+      if (typeof currentValue === "string")
         return true;
       return false;
-}
+    }
 
     const globalOption = globalOptions[currentOption];
     // the project option must be part of the global options
@@ -148,18 +148,18 @@ if (typeof currentValue === "string")
 
     // non-enum options require only typecheck
     if (globalOption.type !== "enum") {
-if (globalOption.type === "boolean") {
-if (typeof currentValue === "boolean")
+      if (globalOption.type === "boolean") {
+        if (typeof currentValue === "boolean")
           return true;
         return false;
-}
+      }
       else if (globalOption.type === "float" || globalOption.type === "int") {
-if (typeof currentValue === "number")
+        if (typeof currentValue === "number")
           return true;
         return false;
-}
+      }
       return false;
-}
+    }
 
     // enum options must have a value valid for the corresponding global options
     if (globalOption.options && globalOption.options.length && globalOption.options.includes(currentValue))
@@ -542,7 +542,7 @@ class NotebooksCoordinator {
       return this.fetchPipeline();
     }
 
-      this.model.set("pipelines.fetched", null);
+    this.model.set("pipelines.fetched", null);
 
   }
 

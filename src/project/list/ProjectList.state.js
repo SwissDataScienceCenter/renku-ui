@@ -197,28 +197,28 @@ class ProjectListModel extends StateModel {
 
     if (this.get("loggedIn")) {
       switch (this.get("currentTab")) {
-      case urlMap.projectsUrl:
-        queryParams = { ...queryParams, membership: true };
-        break;
-      case urlMap.starred :
-        queryParams = { ...queryParams, starred: true };
-        break;
-      case urlMap.yourProjects :
-        queryParams = { ...queryParams, membership: true };
-        break;
-      default:
-        break;
+        case urlMap.projectsUrl:
+          queryParams = { ...queryParams, membership: true };
+          break;
+        case urlMap.starred :
+          queryParams = { ...queryParams, starred: true };
+          break;
+        case urlMap.yourProjects :
+          queryParams = { ...queryParams, membership: true };
+          break;
+        default:
+          break;
       }
     }
 
     switch (searchIn) {
-    case searchInValuesMap.PROJECTNAME :
-      return this.searchProjects({ search: query, ...queryParams });
-    case searchInValuesMap.USERNAME :
-      return this.searchProjectsByUsernameOrGroup( searchIn, queryParams, query, selectedUserOrGroupId );
-    case searchInValuesMap.GROUPNAME :
-      return this.searchProjectsByUsernameOrGroup( searchIn, queryParams, query, selectedUserOrGroupId );
-    default : return [];
+      case searchInValuesMap.PROJECTNAME :
+        return this.searchProjects({ search: query, ...queryParams });
+      case searchInValuesMap.USERNAME :
+        return this.searchProjectsByUsernameOrGroup( searchIn, queryParams, query, selectedUserOrGroupId );
+      case searchInValuesMap.GROUPNAME :
+        return this.searchProjectsByUsernameOrGroup( searchIn, queryParams, query, selectedUserOrGroupId );
+      default : return [];
     }
   }
 }

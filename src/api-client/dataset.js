@@ -58,17 +58,17 @@ export default function addDatasetMethods(client) {
     ).then(response => {
       if (response.data.error) { return response; }
       else
-        if (filesList.length > 0) {
-          return client.clientFetch(`${client.baseUrl}/renku/datasets.add`, {
-            method: "POST",
-            headers: headers,
-            body: JSON.stringify({
-              "dataset_name": datasetName,
-              "files": filesList,
-              "project_id": response.data.result.project_id
-            })
-          });
-        } return response;
+      if (filesList.length > 0) {
+        return client.clientFetch(`${client.baseUrl}/renku/datasets.add`, {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify({
+            "dataset_name": datasetName,
+            "files": filesList,
+            "project_id": response.data.result.project_id
+          })
+        });
+      } return response;
     });
   };
 
@@ -105,17 +105,17 @@ export default function addDatasetMethods(client) {
       .then(response => {
         if (response.data.error) { return response; }
         else
-          if (renkuDataset.files.length > 0) {
-            return client.clientFetch(`${client.baseUrl}/renku/datasets.add`, {
-              method: "POST",
-              headers: headers,
-              body: JSON.stringify({
-                "dataset_name": renkuDataset.name,
-                "files": renkuDataset.files,
-                "project_id": project_id
-              })
-            });
-          } return response;
+        if (renkuDataset.files.length > 0) {
+          return client.clientFetch(`${client.baseUrl}/renku/datasets.add`, {
+            method: "POST",
+            headers: headers,
+            body: JSON.stringify({
+              "dataset_name": renkuDataset.name,
+              "files": renkuDataset.files,
+              "project_id": project_id
+            })
+          });
+        } return response;
       });
   };
 

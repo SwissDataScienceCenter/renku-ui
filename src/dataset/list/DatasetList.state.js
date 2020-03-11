@@ -102,14 +102,14 @@ class DatasetListModel extends StateModel {
   getSorting() {
     const searchOrder = this.get("orderSearchAsc") === true ? "asc" : "desc";
     switch (this.get("orderBy")) {
-    case orderByValuesMap.NAME:
-      return "name:" + searchOrder;
-    case orderByValuesMap.DATE_PUBLISHED:
-      return "datePublished:" + searchOrder;
-    case orderByValuesMap.PROJECTSCOUNT:
-      return "projectsCount:" + searchOrder;
-    default:
-      return "";
+      case orderByValuesMap.NAME:
+        return "name:" + searchOrder;
+      case orderByValuesMap.DATE_PUBLISHED:
+        return "datePublished:" + searchOrder;
+      case orderByValuesMap.PROJECTSCOUNT:
+        return "projectsCount:" + searchOrder;
+      default:
+        return "";
     }
   }
 
@@ -142,7 +142,7 @@ class DatasetListModel extends StateModel {
         let newData = {};
         if (error.response && error.response.status === 400 && this.get("initialized") === false)
           newData.errorMessage = "The query is invalid.";
-         else if (error.response && error.response.status === 404)
+        else if (error.response && error.response.status === 404)
           newData.errorMessage = "No datasets found for this query.";
 
         newData.datasets = { $set: [] };

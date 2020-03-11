@@ -277,21 +277,23 @@ class ProjectsSearch extends Component {
             hasUser={hasUser} />
         </Col>
       </Row>,
-      <Row key="spacer2"><Col md={8}>&nbsp;</Col></Row>,
+      <Row key="spacer2">
+        <Col md={8}>&nbsp;</Col>
+      </Row>,
       this.props.searchIn === this.props.searchInValuesMap.USERNAME ||
-        this.props.searchIn === this.props.searchInValuesMap.GROUPNAME ?
-          <Row key="users">
-            <UsersRow
-              usersOrGroupsList={this.props.usersOrGroupsList}
-              handlers={this.props.handlers}
-              searchIn={this.props.searchIn}
-              searchInValuesMap={this.props.searchInValuesMap}
-              selectedUserOrGroup={this.props.selectedUserOrGroup}
-              loading={loading}
-              forbidden={forbidden}
-            />
-          </Row> :
-          null,
+      this.props.searchIn === this.props.searchInValuesMap.GROUPNAME ?
+        <Row key="users">
+          <UsersRow
+            usersOrGroupsList={this.props.usersOrGroupsList}
+            handlers={this.props.handlers}
+            searchIn={this.props.searchIn}
+            searchInValuesMap={this.props.searchInValuesMap}
+            selectedUserOrGroup={this.props.selectedUserOrGroup}
+            loading={loading}
+            forbidden={forbidden}
+          />
+        </Row> :
+        null,
       <Row key="spacer3"><Col md={8}>&nbsp;</Col></Row>,
       <Row key="projects">
         <ProjectsRows

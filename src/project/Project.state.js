@@ -78,7 +78,7 @@ class ProjectModel extends StateModel {
           return progress;
         }
 
-          throw err;
+        throw err;
 
       });
   }
@@ -164,7 +164,7 @@ class ProjectModel extends StateModel {
         : openFilePathArray[0];
       return this.fetchProjectFilesTree(client, openFilePath.replace(openFilePathArray[0], ""), goto);
     }
-      return tree;
+    return tree;
 
   }
 
@@ -190,10 +190,10 @@ class ProjectModel extends StateModel {
     if (isNullOrUndefined(oldTree))
       return this.initialFetchProjectFilesTree(client, openFilePath, openFolder);
 
-      if (openFolder !== undefined && oldTree.hash[openFolder].childrenLoaded === false)
-        return this.deepFetchProjectFilesTree(client, openFilePath, openFolder, oldTree);
+    if (openFolder !== undefined && oldTree.hash[openFolder].childrenLoaded === false)
+      return this.deepFetchProjectFilesTree(client, openFilePath, openFolder, oldTree);
 
-        return oldTree;
+    return oldTree;
 
 
   }

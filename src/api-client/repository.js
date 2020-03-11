@@ -45,7 +45,7 @@ function addRepositoryMethods(client) {
           return resp;
 
 
-          throw API_ERRORS.notFoundError;
+        throw API_ERRORS.notFoundError;
 
       });
   };
@@ -126,12 +126,12 @@ function addRepositoryMethods(client) {
         if (encoding === "raw") return response.text();
         if (encoding === "base64") return response.json();
       });
-      // .catch((error) => {
-      //   if (error.case === API_ERRORS.notFoundError) {
-      //     console.error(`Attempted to access non-existing repository file ${path}`)
-      //     return undefined;
-      //   }
-      // })
+    // .catch((error) => {
+    //   if (error.case === API_ERRORS.notFoundError) {
+    //     console.error(`Attempted to access non-existing repository file ${path}`)
+    //     return undefined;
+    //   }
+    // })
   };
 
 
@@ -167,9 +167,9 @@ function addRepositoryMethods(client) {
           });
         }
 
-          return response.json().then(data => {
-            return previousResults.concat(data);
-          });
+        return response.json().then(data => {
+          return previousResults.concat(data);
+        });
 
       })
       .catch((error) => {
@@ -177,7 +177,7 @@ function addRepositoryMethods(client) {
           return [];
 
 
-          alertAPIErrors(error);
+        alertAPIErrors(error);
 
       });
   };

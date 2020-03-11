@@ -43,9 +43,9 @@ class FilePreview extends React.Component {
     if (!this.props.file)
       return null;
 
-      if (this.props.file.file_name.match(/\.(.*)/) === null)
-        return null;
-      return this.props.file.file_name.split(".").pop().toLowerCase();
+    if (this.props.file.file_name.match(/\.(.*)/) === null)
+      return null;
+    return this.props.file.file_name.split(".").pop().toLowerCase();
 
   };
 

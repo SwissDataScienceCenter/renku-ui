@@ -135,10 +135,10 @@ export default function DatasetView(props) {
                 setFetchError("Error 404: The dataset that was selected does" +
                 " not exist or could not be accessed. If you just created or" +
                 " imported the dataset try reloading the page.");
-            }
+              }
               else if (!unmounted && error.case === API_ERRORS.internalServerError) {
                 setFetchError("Error 500: The dataset that was selected couldn't be fetched.");
-            }
+              }
             }
           });
       }

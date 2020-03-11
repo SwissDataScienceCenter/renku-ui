@@ -68,7 +68,7 @@ class UserAvatar extends Component {
       img = person.avatar_url;
       user = person.username;
     }
- else {
+    else {
       img = this.props.avatar;
       user = this.props.user;
     }
@@ -76,7 +76,7 @@ class UserAvatar extends Component {
       <img width={widgetSize.img} src={img} alt={user} /> :
       <div style={{ minWidth: widgetSize.img, textAlign: "center" }}>
         <FontAwesomeIcon alt={user} icon={faUser} size={widgetSize.fa}
-        style={{ textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)" }} /></div>;
+          style={{ textShadow: "0 1px 0 rgba(0, 0, 0, 0.1)" }} /></div>;
   }
 }
 
@@ -88,11 +88,11 @@ function ProjectAvatar(props) {
     if (props.avatar_url) { setAvatarUrl(props.avatar_url); }
     else if (props.owner && props.owner.avatar_url) { setAvatarUrl(props.owner.avatar_url); }
     else if (props.namespace && props.namespace.kind === "group") {
-props.getAvatarFromNamespace(props.namespace.id)
+      props.getAvatarFromNamespace(props.namespace.id)
         .then((url) => {
           setAvatarUrl(url);
         });
-}
+    }
   }, [props]);
 
   return <UserAvatar avatar={avatarUrl} />;
@@ -161,10 +161,10 @@ class RenkuNavLink extends Component {
       if (alt == null) return haveMatch;
       return haveMatch || location.pathname.startsWith(alt);
     }
-      const alt = this.props.alternate;
-      let haveMatch = match != null;
-      if (alt == null) return haveMatch;
-      return haveMatch || location.pathname.startsWith(alt);
+    const alt = this.props.alternate;
+    let haveMatch = match != null;
+    if (alt == null) return haveMatch;
+    return haveMatch || location.pathname.startsWith(alt);
 
   }
 
@@ -516,7 +516,7 @@ function throttledToggler(tooltipOpen, setTooltipOpen, lastToggleTime, setLastTo
       setLastToggleTime(now);
       return setTooltipOpen(!tooltipOpen);
     }
- else if (tooltipOpen) {
+    else if (tooltipOpen) {
       return setTooltipOpen(!tooltipOpen);
     }
   };
@@ -599,9 +599,9 @@ function TooltipToggleButton(props) {
   return <span onClick={props.onClick}>
     {props.active ?
       <FontAwesomeIcon id={uniqueId} className={`icon-link ${props.activeClass}`} icon={props.activeIcon}/>
-        :
+      :
       <FontAwesomeIcon id={uniqueId} className={`icon-link ${props.inactiveClass}`} icon={props.inactiveIcon}/>
-      }
+    }
     <ThrottledTooltip target={uniqueId} tooltip={props.tooltip} />
   </span>;
 }

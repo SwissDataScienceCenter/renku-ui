@@ -48,8 +48,8 @@ class ContributionBody extends React.Component {
         this.props.client.getRepositoryFile(this.props.projectId, block.refPath, "master", "base64")
           .then(d => { this.modifyBlock(block.iBlock, "data", d); })
           .catch(error => { this.modifyBlock(block.iBlock, "isOpened", false); });
-          //the catch should be handled better, there is some error with loading diff for discussions in Merge Requests
-        }
+        //the catch should be handled better, there is some error with loading diff for discussions in Merge Requests
+      }
     });
   }
 
@@ -236,27 +236,27 @@ class NewContribution extends React.Component {
     this.setState({ submitting: true });
     if (this.props.mergeRequest) {
       this.props.client.postDiscussion(this.props.projectId, this.props.iid, this.state.contribution.body)
-      .then(contribution => {
-        this.props.appendContribution(contribution.data);
-        this.setState({
-          tab: EDIT,
-          contribution: {
-            body: ""
-          },
-          submitting: false,
-          files: [],
-          loading: false,
-          mentions: [],
-          currentSearchPath: null
+        .then(contribution => {
+          this.props.appendContribution(contribution.data);
+          this.setState({
+            tab: EDIT,
+            contribution: {
+              body: ""
+            },
+            submitting: false,
+            files: [],
+            loading: false,
+            mentions: [],
+            currentSearchPath: null
+          });
         });
-      });
     }
- else {
+    else {
       this.props.client.postContribution(this.props.projectId, this.props.issueIid, this.state.contribution.body)
-      .then(contribution => {
-        this.props.appendContribution(contribution.data);
-        this.setState({ submitting: false });
-      });
+        .then(contribution => {
+          this.props.appendContribution(contribution.data);
+          this.setState({ submitting: false });
+        });
     }
   }
 

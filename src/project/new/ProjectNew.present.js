@@ -93,7 +93,7 @@ class ProjectPath extends Component {
     // If the user typed, store it as local input, otherwise set the selection
     if (method === "type")
       this.setState({ input: newValue });
-     else
+    else
       this.props.onChange(newValue);
 
     if (method === "enter" || method === "click")

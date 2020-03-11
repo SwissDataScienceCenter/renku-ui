@@ -128,11 +128,11 @@ class ShowFile extends React.Component {
     }
 
     if (this.props.file == null) {
-return <Card>
-  <CardHeader className="align-items-baseline">&nbsp;</CardHeader>
-  <CardBody>{"Loading..."}</CardBody>
-</Card>;
-}
+      return <Card>
+        <CardHeader className="align-items-baseline">&nbsp;</CardHeader>
+        <CardBody>{"Loading..."}</CardBody>
+      </Card>;
+    }
 
     const isLFS = this.props.hashElement ? this.props.hashElement.isLfs : false;
     const isLFSBadge = isLFS ?
