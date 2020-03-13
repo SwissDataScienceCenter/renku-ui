@@ -129,7 +129,7 @@ class HelpTutorials extends Component {
           If you are here for the first time or you are not sure how to use Renku, we recommend you
           to go through our{" "}
           <a
-            href="https://renku.readthedocs.io/en/latest/user/firststeps.html"
+            href="https://renku.readthedocs.io/en/latest/tutorials/firststeps.html"
             target="_blank"
             rel="noreferrer noopener"
           >
