@@ -33,7 +33,7 @@ import { faCheckCircle, faFileAlt, faSave, faTimesCircle } from "@fortawesome/fr
 
 import { StatusHelper } from "../model/Model";
 import { NotebooksHelper } from "./index";
-import { simpleHash } from "../utils/HelperFunctions";
+import { simpleHash, formatBytes } from "../utils/HelperFunctions";
 import { ButtonWithMenu, Loader, ExternalLink, JupyterIcon, ThrottledTooltip } from "../utils/UIComponents";
 import { WarnAlert, InfoAlert } from "../utils/UIComponents";
 import Time from "../utils/Time";
@@ -115,7 +115,7 @@ class NotebookServers extends Component {
 
     return (
       <Row>
-        <Col md={12} lg={10} xl={8}>
+        <Col md={12} xl={10}>
           <NotebookServersList {...this.props} />
         </Col>
       </Row>
@@ -133,6 +133,7 @@ class NotebookServersList extends Component {
       const validAnnotations = Object.keys(this.props.servers[k].annotations)
         .filter(key => key.startsWith("renku.io"))
         .reduce((obj, key) => { obj[key] = this.props.servers[k].annotations[key]; return obj; }, {});
+      const resources = this.props.servers[k].resources;
 
       return (<NotebookServerRow
         key={i}
@@ -143,6 +144,7 @@ class NotebookServersList extends Component {
         scope={this.props.scope}
         standalone={this.props.standalone}
         annotations={validAnnotations}
+        resources={resources}
         name={this.props.servers[k].name}
         status={this.props.servers[k].status}
         url={this.props.servers[k].url}
@@ -189,7 +191,8 @@ class NotebookServerHeaderFull extends Component {
         {project}
         <th className="align-middle">Branch</th>
         <th className="align-middle">Commit</th>
-        <th className="align-middle" style={{ width: "1px" }}>Status</th>
+        <th className="align-middle">Resources</th>
+        <th className="align-middle">Status</th>
         <th className="align-middle" style={{ width: "1px" }}>Action</th>
       </tr>
     );
@@ -203,6 +206,16 @@ class NotebookServerHeaderCompact extends Component {
 }
 
 class NotebookServerRow extends Component {
+  formatResources(resources) {
+    if (resources.memory) {
+      const memory = !isNaN(resources.memory) ?
+        formatBytes(resources.memory) :
+        resources.memory;
+      return { ...resources, memory };
+    }
+    return resources;
+  }
+
   render() {
     const annotations = NotebooksHelper.cleanAnnotations(this.props.annotations, "renku.io");
     const status = NotebooksHelper.getStatus(this.props.status);
@@ -213,7 +226,8 @@ class NotebookServerRow extends Component {
     };
     const uid = "uid_" + simpleHash(annotations["namespace"] + annotations["projectName"]
       + annotations["branch"] + annotations["commit-sha"]);
-    const newProps = { annotations, status, details, uid };
+    const resources = this.formatResources(this.props.resources);
+    const newProps = { annotations, status, details, uid, resources };
 
     return (
       <Media query={Sizes.md}>
@@ -231,7 +245,7 @@ class NotebookServerRow extends Component {
 
 class NotebookServerRowFull extends Component {
   render() {
-    const { annotations, details, status, url, uid } = this.props;
+    const { annotations, details, status, url, uid, resources } = this.props;
 
     const icon = <td className="align-middle">
       <NotebooksServerRowStatusIcon details={details} status={status} uid={uid} />
@@ -241,6 +255,10 @@ class NotebookServerRowFull extends Component {
       null;
     const branch = (<td className="align-middle">{annotations["branch"]}</td>);
     const commit = (<td className="align-middle">{annotations["commit-sha"].substring(0, 8)}</td>);
+    const resourceList = Object.keys(resources).map(name => {
+      return (<div key={name} className="text-nowrap">{name}: {resources[name]}</div>);
+    });
+    const resourceObject = (<td>{resourceList}</td>);
     const statusOut = (<td className="align-middle">
       <NotebooksServerRowStatus details={details} status={status} uid={uid} />
     </td>);
@@ -267,6 +285,7 @@ class NotebookServerRowFull extends Component {
         {project}
         {branch}
         {commit}
+        {resourceObject}
         {statusOut}
         {action}
       </tr>
@@ -276,7 +295,7 @@ class NotebookServerRowFull extends Component {
 
 class NotebookServerRowCompact extends Component {
   render() {
-    const { annotations, details, status, url, uid } = this.props;
+    const { annotations, details, status, url, uid, resources } = this.props;
 
     const icon = <span>
       <NotebooksServerRowStatusIcon details={details} status={status} uid={uid} />
@@ -296,6 +315,17 @@ class NotebookServerRowCompact extends Component {
     const commit = (<Fragment>
       <span className="font-weight-bold">Commit: </span>
       <span>{annotations["commit-sha"].substring(0, 8)}</span>
+      <br />
+    </Fragment>);
+    const resourceList = Object.keys(resources).map((name, num) =>
+      (<span key={name} className="text-nowrap">
+        {name}: {resources[name]}
+        {num < Object.keys(resources).length - 1 ? ", " : ""}
+      </span>)
+    );
+    const resourceObject = (<Fragment>
+      <span className="font-weight-bold">Resources: </span>
+      <span>{resourceList}</span>
       <br />
     </Fragment>);
     const statusOut = (<span>
@@ -324,6 +354,7 @@ class NotebookServerRowCompact extends Component {
           {project}
           {branch}
           {commit}
+          {resourceObject}
           <div className="d-inline-flex" >
             {icon} &nbsp; {statusOut} &nbsp; {action}
           </div>
