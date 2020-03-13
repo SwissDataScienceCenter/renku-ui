@@ -66,13 +66,13 @@ function ImportDataset(props) {
   function handleJobResponse(job, monitorJob, cont, oldDatasetsList) {
     switch (job.state) {
       case "ENQUEUED":
-        setSubmitLoaderText("Please wait, dataset import will start soon.");
+        setSubmitLoaderText("Dataset import will start soon.");
         break;
       case "IN_PROGRESS":
-        setSubmitLoaderText("Importing dataset, please wait.");
+        setSubmitLoaderText("Importing dataset.");
         break;
       case "COMPLETED":
-        setSubmitLoaderText("Dataset was imported successfully, you will be redirected soon.");
+        setSubmitLoaderText("Dataset was imported, you will be redirected soon.");
         clearInterval(monitorJob);
         findDatasetInKgAnRedirect(oldDatasetsList);
         break;
@@ -140,12 +140,6 @@ function ImportDataset(props) {
     submitCallback={submitCallback}
     datasetImportFormSchema={datasetImportFormSchema}
     accessLevel={props.accessLevel}
-    // user={props.user}
-    // projectPathWithNamespace={props.projectPathWithNamespace}
-    // client={props.client}
-    // history={props.history}
-    // reFetchProject={props.reFetchProject}
-    // httpProjectUrl={props.httpProjectUrl}
   />;
 }
 
