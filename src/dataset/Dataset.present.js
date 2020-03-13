@@ -205,7 +205,8 @@ export default function DatasetView(props) {
           </Link>
           : null
         }
-        {dataset.url ?
+        { dataset.url &&
+        (props.insideProject || dataset.sameAs.includes("doi.org")) ?
           <a className="float-right mr-1" href={dataset.url} target="_blank" rel="noreferrer noopener">
             <Button size="sm" outline color="dark" >
               <FontAwesomeIcon icon={faExternalLinkAlt} color="dark" /> Go to source
@@ -229,8 +230,16 @@ export default function DatasetView(props) {
     }
     <p style={{ paddingTop: "12px" }} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(dataset.description) }}>
     </p>
-    <LinkToExternal link={dataset.url} label="Source" />
-    <LinkToExternal link={dataset.sameAs} label="DOI" />
+    {
+      props.insideProject || dataset.sameAs.includes("doi.org") ?
+        <LinkToExternal link={dataset.url} label="Source" />
+        : null
+    }
+    {
+      dataset.sameAs.includes("doi.org") ?
+        <LinkToExternal link={dataset.sameAs} label="DOI" />
+        : null
+    }
     <DisplayFiles
       projectsUrl={props.projectsUrl}
       fileContentUrl={props.fileContentUrl}
