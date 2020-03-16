@@ -64,20 +64,28 @@ describe("notebook status", () => {
 });
 
 describe("notebook server clean annotation", () => {
-  const baseAnnotations = ExpectedAnnotations["renku.io"].default;
+  const domain = ExpectedAnnotations.domain;
+  const baseAnnotations = ExpectedAnnotations[domain].default;
   it("renku.io default", () => {
     const fakeAnswer = {};
-    const elaboratedAnnotations = NotebooksHelper.cleanAnnotations(fakeAnswer, "renku.io");
+    const elaboratedAnnotations = NotebooksHelper.cleanAnnotations(fakeAnswer, domain);
     const expectedAnnotations = { ...baseAnnotations };
     expect(JSON.stringify(elaboratedAnnotations)).toBe(JSON.stringify(expectedAnnotations));
   });
-  it("renku.io elaborated", () => {
+  it("renku.io mixed", () => {
     const namespace = "myCoolNampsace";
     const branch = "anotherBranch";
+    const projectName = "funkyProject";
+    const repository = `https://fake.repo/${namespace}/${projectName}`;
 
-    const fakeAnswer = { "renku.io/namespace": namespace, "renku.io/branch": branch };
-    const elaboratedAnnotations = NotebooksHelper.cleanAnnotations(fakeAnswer, "renku.io");
-    const expectedAnnotations = { ...baseAnnotations, namespace, branch };
+    const fakeAnswer = {
+      [`${domain}/namespace`]: namespace,
+      [`${domain}/branch`]: branch,
+      [`${domain}/projectName`]: projectName,
+      [`${domain}/repository`]: repository,
+    };
+    const elaboratedAnnotations = NotebooksHelper.cleanAnnotations(fakeAnswer, domain);
+    const expectedAnnotations = { ...baseAnnotations, namespace, branch, projectName, repository };
     expect(JSON.stringify(elaboratedAnnotations)).toBe(JSON.stringify(expectedAnnotations));
   });
 });

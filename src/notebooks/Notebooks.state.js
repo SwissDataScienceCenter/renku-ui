@@ -32,14 +32,16 @@ const RENKU_INI_PATH = ".renku/renku.ini";
 const RENKU_INI_SECTION = `renku "interactive"`;
 
 const ExpectedAnnotations = {
+  domain: "renku.io",
   "renku.io": {
-    required: ["branch", "commit-sha", "namespace", "projectId", "projectName"],
+    required: ["branch", "commit-sha", "namespace", "projectId", "projectName", "repository"],
     default: {
       "branch": "unknown",
       "commit-sha": "00000000",
       "namespace": "unknown",
       "projectId": 0,
-      "projectName": "unknown"
+      "projectName": "unknown",
+      "repository": "https://none"
     }
   }
 };
@@ -67,9 +69,9 @@ const NotebooksHelper = {
    * Add missing annotations from the notebook servers
    *
    * @param {object} annotations
-   * @param {string} domain
+   * @param {string} [domain]
    */
-  cleanAnnotations: (annotations, domain = "renku.io") => {
+  cleanAnnotations: (annotations, domain = ExpectedAnnotations.domain) => {
     let cleaned = {};
     const prefix = `${domain}/`;
     ExpectedAnnotations[domain].required.forEach(annotation => {
