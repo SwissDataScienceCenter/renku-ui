@@ -19,23 +19,22 @@
 import React, { Component, Fragment } from "react";
 import Media from "react-media";
 import { Link } from "react-router-dom";
-
-import { Form, FormGroup, FormText, Label, Input, Button, ButtonGroup, Row, Col, Table } from "reactstrap";
-import { DropdownItem } from "reactstrap";
-import { UncontrolledTooltip, UncontrolledPopover, PopoverHeader, PopoverBody } from "reactstrap";
-import { Badge } from "reactstrap";
-import { Modal, ModalHeader, ModalBody, ModalFooter } from "reactstrap";
-
+import {
+  Form, FormGroup, FormText, Label, Input, Button, ButtonGroup, Row, Col, Table, DropdownItem, UncontrolledTooltip,
+  UncontrolledPopover, PopoverHeader, PopoverBody, Badge, Modal, ModalHeader, ModalBody, ModalFooter
+} from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStopCircle, faExternalLinkAlt, faInfoCircle, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
-import { faCogs, faCog, faExclamationTriangle, faRedo } from "@fortawesome/free-solid-svg-icons";
-import { faCheckCircle, faFileAlt, faSave, faTimesCircle } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCogs, faCog, faExclamationTriangle, faRedo, faCheckCircle, faFileAlt, faSave, faTimesCircle
+} from "@fortawesome/free-solid-svg-icons";
 
 import { StatusHelper } from "../model/Model";
 import { NotebooksHelper } from "./index";
 import { simpleHash, formatBytes } from "../utils/HelperFunctions";
-import { ButtonWithMenu, Loader, ExternalLink, JupyterIcon, ThrottledTooltip } from "../utils/UIComponents";
-import { WarnAlert, InfoAlert } from "../utils/UIComponents";
+import {
+  ButtonWithMenu, Loader, ExternalLink, JupyterIcon, ThrottledTooltip, WarnAlert, InfoAlert
+} from "../utils/UIComponents";
 import Time from "../utils/Time";
 import Sizes from "../utils/Media";
 
@@ -168,11 +167,9 @@ class NotebookServersHeader extends Component {
     return (
       <Media query={Sizes.md}>
         {matches =>
-          matches ? (
-            <NotebookServerHeaderFull {...this.props} />
-          ) : (
-            <NotebookServerHeaderCompact {...this.props} />
-          )
+          matches ?
+            (<NotebookServerHeaderFull {...this.props} />) :
+            (<NotebookServerHeaderCompact {...this.props} />)
         }
       </Media>
     );
@@ -227,16 +224,18 @@ class NotebookServerRow extends Component {
     const uid = "uid_" + simpleHash(annotations["namespace"] + annotations["projectName"]
       + annotations["branch"] + annotations["commit-sha"]);
     const resources = this.formatResources(this.props.resources);
-    const newProps = { annotations, status, details, uid, resources };
+    const repositoryLinks = {
+      branch: `${annotations["repository"]}/tree/${annotations["branch"]}`,
+      commit: `${annotations["repository"]}/tree/${annotations["commit-sha"]}`
+    };
+    const newProps = { annotations, status, details, uid, resources, repositoryLinks };
 
     return (
       <Media query={Sizes.md}>
         {matches =>
-          matches ? (
-            <NotebookServerRowFull {...this.props} {...newProps} />
-          ) : (
-            <NotebookServerRowCompact {...this.props} {...newProps} />
-          )
+          matches ?
+            (<NotebookServerRowFull {...this.props} {...newProps} />) :
+            (<NotebookServerRowCompact {...this.props} {...newProps} />)
         }
       </Media>
     );
@@ -245,7 +244,7 @@ class NotebookServerRow extends Component {
 
 class NotebookServerRowFull extends Component {
   render() {
-    const { annotations, details, status, url, uid, resources } = this.props;
+    const { annotations, details, status, url, uid, resources, repositoryLinks } = this.props;
 
     const icon = <td className="align-middle">
       <NotebooksServerRowStatusIcon details={details} status={status} uid={uid} />
@@ -253,8 +252,12 @@ class NotebookServerRowFull extends Component {
     const project = this.props.standalone ?
       (<td className="align-middle"><NotebookServerRowProject annotations={this.props.annotations} /></td>) :
       null;
-    const branch = (<td className="align-middle">{annotations["branch"]}</td>);
-    const commit = (<td className="align-middle">{annotations["commit-sha"].substring(0, 8)}</td>);
+    const branch = (<td className="align-middle">
+      <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text" />
+    </td>);
+    const commit = (<td className="align-middle">
+      <ExternalLink url={repositoryLinks.commit} title={annotations["commit-sha"].substring(0, 8)} role="text" />
+    </td>);
     const resourceList = Object.keys(resources).map(name => {
       return (<div key={name} className="text-nowrap">{resources[name]} <i>{name}</i></div>);
     });
@@ -295,7 +298,7 @@ class NotebookServerRowFull extends Component {
 
 class NotebookServerRowCompact extends Component {
   render() {
-    const { annotations, details, status, url, uid, resources } = this.props;
+    const { annotations, details, status, url, uid, resources, repositoryLinks } = this.props;
 
     const icon = <span>
       <NotebooksServerRowStatusIcon details={details} status={status} uid={uid} />
@@ -309,12 +312,12 @@ class NotebookServerRowCompact extends Component {
       null;
     const branch = (<Fragment>
       <span className="font-weight-bold">Branch: </span>
-      <span>{annotations["branch"]}</span>
+      <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text" />
       <br />
     </Fragment>);
     const commit = (<Fragment>
       <span className="font-weight-bold">Commit: </span>
-      <span>{annotations["commit-sha"].substring(0, 8)}</span>
+      <ExternalLink url={repositoryLinks.commit} title={annotations["commit-sha"].substring(0, 8)} role="text" />
       <br />
     </Fragment>);
     const resourceList = Object.keys(resources).map((name, num) =>
@@ -1209,6 +1212,14 @@ class AutosavedDataModal extends Component {
     const url = this.props.currentBranch && this.props.currentBranch.autosave ?
       this.props.currentBranch.autosave.url :
       "#";
+    const autosavedLink = (<ExternalLink
+      role="text"
+      url={url}
+      title="unsaved work" />);
+    const docsLink = (<ExternalLink
+      role="text"
+      url="https://renku.readthedocs.io/en/latest/user/autosave.html"
+      title="documentation page" />);
     return <div>
       <Modal
         isOpen={this.props.showModal}
@@ -1216,17 +1227,10 @@ class AutosavedDataModal extends Component {
         <ModalHeader toggle={this.props.toggleModal}>Autosaved data</ModalHeader>
         <ModalBody>
           <p>
-            Renku has
-            recovered <a href={url} target="_blank" rel="noreferrer noopener">unsaved work</a> for
-            the <i>{this.props.filters.branch.name}</i> branch. We will automatically restore this
-            content so you do not lose any work.
+            Renku has recovered {autosavedLink} for the <i>{this.props.filters.branch.name}</i> branch.
+            We will automatically restore this content so you do not lose any work.
           </p>
-          <p>
-            Please refer to
-            this <a href="https://renku.readthedocs.io/en/latest/user/autosave.html"
-              target="_blank" rel="noreferrer noopener">documentation page</a> to
-            get further information.
-          </p>
+          <p>Please refer to this {docsLink} to get further information.</p>
         </ModalBody>
         <ModalFooter>
           <Button color="primary" onClick={this.props.handlers.startServer}>Launch environment</Button>
