@@ -19,11 +19,11 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Card, CardHeader, CardBody, Table, Alert, Button } from "reactstrap";
 import { Link } from "react-router-dom";
-import { Loader } from "../utils/UIComponents";
+import { Loader, FileExplorer } from "../utils/UIComponents";
 import DOMPurify from "dompurify";
 import { API_ERRORS } from "../api-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faFile, faProjectDiagram, faExternalLinkAlt, faPen } from "@fortawesome/free-solid-svg-icons";
+import { faExternalLinkAlt, faPen } from "@fortawesome/free-solid-svg-icons";
 import { GraphIndexingStatus } from "../project/Project";
 import KnowledgeGraphStatus from "../file/KnowledgeGraphStatus.container";
 import Time from "../utils/Time";
@@ -36,34 +36,11 @@ function DisplayFiles(props) {
       <span className="caption align-baseline">Dataset files</span>
     </CardHeader>
     <CardBody>
-      <Table size="sm" borderless>
-        <thead>
-          <tr>
-            <th>Name</th>
-            {props.insideProject ? <th className="text-center">File</th> : null}
-            {props.insideProject ? <th className="text-center">Lineage</th> : null}
-          </tr>
-        </thead>
-        <tbody>
-          {props.files.map((file) =>
-            <tr key={file.atLocation}>
-              <td className="text-break">{file.name}</td>
-              {props.insideProject ?
-                <td className="text-center">
-                  <Link to={`${props.fileContentUrl}/${file.atLocation}`}>
-                    <FontAwesomeIcon icon={faFile} />
-                  </Link>
-                </td> : null}
-              {props.insideProject ?
-                <td className="text-center">
-                  <Link to={`${props.lineagesUrl}/${file.atLocation}`}>
-                    <FontAwesomeIcon icon={faProjectDiagram} />
-                  </Link>
-                </td> : null}
-            </tr>
-          )}
-        </tbody>
-      </Table>
+      <FileExplorer
+        files={props.files}
+        lineageUrl={props.lineagesUrl}
+        insideProject={props.insideProject}
+      />
     </CardBody>
   </Card>;
 }

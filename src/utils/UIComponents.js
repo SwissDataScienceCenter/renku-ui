@@ -39,6 +39,7 @@ import { faCopy } from "@fortawesome/free-regular-svg-icons";
 import { faCheck, faUser, faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 
 import { sanitizedHTMLFromMarkdown } from "./HelperFunctions";
+import FileExplorer from "./FileExplorer";
 
 /**
  * Show user avatar
@@ -631,4 +632,4 @@ function ButtonWithMenu(props) {
 export { UserAvatar, TimeCaption, FieldGroup, RenkuNavLink, Pagination, RenkuMarkdown };
 export { ExternalLink, Loader, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, JupyterIcon };
 export { Clipboard, ExternalIconLink, IconLink, ThrottledTooltip, TooltipToggleButton, ProjectAvatar };
-export { ButtonWithMenu };
+export { ButtonWithMenu, FileExplorer };
