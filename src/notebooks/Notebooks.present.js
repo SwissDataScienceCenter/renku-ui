@@ -256,7 +256,7 @@ class NotebookServerRowFull extends Component {
     const branch = (<td className="align-middle">{annotations["branch"]}</td>);
     const commit = (<td className="align-middle">{annotations["commit-sha"].substring(0, 8)}</td>);
     const resourceList = Object.keys(resources).map(name => {
-      return (<div key={name} className="text-nowrap">{name}: {resources[name]}</div>);
+      return (<div key={name} className="text-nowrap">{resources[name]} <i>{name}</i></div>);
     });
     const resourceObject = (<td>{resourceList}</td>);
     const statusOut = (<td className="align-middle">
