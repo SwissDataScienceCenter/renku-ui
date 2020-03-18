@@ -33,7 +33,7 @@ function DisplayFiles(props) {
 
   return <Card key="datasetDetails">
     <CardHeader className="align-items-baseline">
-      <span className="caption align-baseline">Dataset files</span>
+      <span className="caption align-baseline">Dataset files ({props.files.length})</span>
     </CardHeader>
     <CardBody>
       <FileExplorer
