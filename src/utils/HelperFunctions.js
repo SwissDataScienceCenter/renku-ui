@@ -50,7 +50,7 @@ function splitAutosavedBranches(branches) {
 }
 
 function sanitizedHTMLFromMarkdown(markdown) {
-  const converter = new showdown.Converter();
+  const converter = new showdown.Converter({ simplifiedAutoLink: true });
   const htmlFromMarkdown = converter.makeHtml(markdown);
   return DOMPurify.sanitize(htmlFromMarkdown);
 }
