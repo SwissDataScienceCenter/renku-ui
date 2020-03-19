@@ -209,7 +209,7 @@ describe("html sanitization", () => {
     const markdown = "# internal-test\nA Renku project.\n\nThis is an *internal* project that is used for testing.";
     const html = sanitizedHTMLFromMarkdown(markdown);
     // eslint-disable-next-line
-    expect(html).toEqual(`<h1 id="internaltest">internal-test</h1>\n<p>A Renku project.</p>\n<p>This is an <em>internal</em> project that is used for testing.</p>`);
+    expect(html).toEqual(`<h1 id="internal-test">internal-test</h1>\n<p>A Renku project.</p>\n<p>This is an <em>internal</em> project that is used for testing.</p>`);
   });
 
   it("handles mixed markdown", () => {
@@ -233,7 +233,7 @@ This is an *internal* project that is used for testing.
     </div>
   </div>
 </div>`;
-    const expected = `<h1 id="internaltest">internal-test</h1>
+    const expected = `<h1 id="internal-test">internal-test</h1>
 <p>A Renku project.</p>
 <p>This is an <em>internal</em> project that is used for testing.</p>
 <div>
@@ -281,7 +281,7 @@ This is an *internal* project that is used for testing.
     </div>
   </div>
 </div>`;
-    const expected = `<h1 id="internaltest">internal-test</h1>
+    const expected = `<h1 id="internal-test">internal-test</h1>
 <p>A Renku project.</p>
 <p>This is an <em>internal</em> project that is used for testing.</p>
 <div>

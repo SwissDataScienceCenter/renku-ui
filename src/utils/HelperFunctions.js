@@ -50,7 +50,19 @@ function splitAutosavedBranches(branches) {
 }
 
 function sanitizedHTMLFromMarkdown(markdown) {
-  const converter = new showdown.Converter({ simplifiedAutoLink: true });
+  // Reference: https://github.com/showdownjs/showdown/wiki/Showdown-Options
+  const showdownOptions = {
+    ghCompatibleHeaderId: true,
+    parseImgDimensions: true,
+    simplifiedAutoLink: true,
+    excludeTrailingPunctuationFromURLs: true,
+    strikethrough: true,
+    tables: true,
+    tasklists: true,
+    disableForced4SpacesIndentedSublists: true,
+    emoji: true
+  };
+  const converter = new showdown.Converter(showdownOptions);
   const htmlFromMarkdown = converter.makeHtml(markdown);
   return DOMPurify.sanitize(htmlFromMarkdown);
 }
