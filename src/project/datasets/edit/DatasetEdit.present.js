@@ -24,7 +24,7 @@
  */
 
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Row, Col, Alert, Button } from "reactstrap";
 import { FormPanel } from "../../../utils/formgenerator";
 import { ACCESS_LEVELS } from "../../../api-client";
@@ -38,6 +38,7 @@ function DatasetEdit(props) {
   const [submitLoader, setSubmitLoader] = useState(false);
   const [initialized, setInitialized] = useState(false);
   const [initalFiles, setInitialFiles] = useState([]);
+  props.datasetFormSchema.files.filesOnUploader = useRef(0);
 
   const onCancel = e => {
     props.datasetFormSchema.name.value = props.datasetFormSchema.name.initial;
@@ -67,7 +68,7 @@ function DatasetEdit(props) {
               props.client.fetchDatasetFromKG(props.client.baseUrl.replace(
                 "api", "knowledge-graph/datasets/") + props.datasetId)
                 .then(response => {
-                  if (response.hasPart.length === (dataset.files.length + initalFiles.length)) {
+                  if (response.hasPart.length >= (dataset.files.length + initalFiles.length)) {
                     setSubmitLoader(false);
                     props.datasetFormSchema.name.value = props.datasetFormSchema.name.initial;
                     props.datasetFormSchema.description.value = props.datasetFormSchema.description.initial;
@@ -79,7 +80,7 @@ function DatasetEdit(props) {
                   }
                   else {
                     counter++;
-                    if (counter > 10) {
+                    if (counter > 15) {
                       clearInterval(waitForFilesInKG);
                       setSubmitLoader(false);
                       setServerErrors("There was an error, please try again.");

@@ -50,7 +50,7 @@ const useForm = (initModel, submitCallback) => {
   const validateInput = input => {
     let alert = null;
     input.validators && input.validators.forEach(
-      v => alert = v.isValidFun && !v.isValidFun(input.value) ? v.alert : alert);
+      v => alert = v.isValidFun && !v.isValidFun(input) ? v.alert : alert);
     input.alert = alert;
   };
 

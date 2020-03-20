@@ -99,15 +99,15 @@ describe("rendering on modify", () => {
 
 describe("validators", () => {
   it("checks at least length true", () => {
-    expect(FormGenerator.Validators.isAtLeastLength("Hello World", 3)).toEqual(true);
+    expect(FormGenerator.Validators.isAtLeastLength({ value: "Hello World" }, 3)).toEqual(true);
   });
   it("checks at least length false", () => {
-    expect(FormGenerator.Validators.isAtLeastLength("He", 3)).toEqual(false);
+    expect(FormGenerator.Validators.isAtLeastLength({ value: "He" }, 3 )).toEqual(false);
   });
   it("checks that is filled true", () => {
-    expect(FormGenerator.Validators.isNotEmpty("asdfasdf")).toEqual(true);
+    expect(FormGenerator.Validators.isNotEmpty({ value: "asdfasdf" })).toEqual(true);
   });
   it("checks that is filled false", () => {
-    expect(FormGenerator.Validators.isNotEmpty("")).toEqual(false);
+    expect(FormGenerator.Validators.isNotEmpty({ value: "" })).toEqual(false);
   });
 });

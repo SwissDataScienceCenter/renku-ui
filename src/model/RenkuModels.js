@@ -266,10 +266,11 @@ const datasetFormSchema = new Schema({
     edit: true,
     type: FormGenerator.FieldTypes.FILES,
     uploadFileFunction: undefined,
+    filesOnUploader: undefined,
     validators: [{
       id: "files-length",
-      //isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression, 1),
-      alert: "Datasets should have at least 1 file"
+      isValidFun: expression => FormGenerator.Validators.filesReady(expression),
+      alert: "There are files in unready state."
     }]
   }
 });

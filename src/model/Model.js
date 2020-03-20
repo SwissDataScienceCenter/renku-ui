@@ -55,7 +55,8 @@ const PropertyName = {
   HELP: "help",
   OPTIONS: "options",
   PLACEHOLDER: "placeholder",
-  OUTPUTTYPE: "outputType"
+  OUTPUTTYPE: "outputType",
+  FILESONUPLOADER: "filesOnUploader"
 };
 
 // Named consts for the bindings to the store.

@@ -24,7 +24,7 @@
  */
 
 
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { Row, Col, Alert, Button } from "reactstrap";
 import { FormPanel } from "../../../utils/formgenerator";
 import { ACCESS_LEVELS } from "../../../api-client";
@@ -37,6 +37,7 @@ function DatasetNew(props) {
   const [serverErrors, setServerErrors] = useState(undefined);
   const [submitLoader, setSubmitLoader] = useState(false);
   props.datasetFormSchema.files.uploadFileFunction = props.client.uploadFile;
+  props.datasetFormSchema.files.filesOnUploader = useRef(0);
 
   const onCancel = e => {
     props.datasetFormSchema.name.value = props.datasetFormSchema.name.initial;
