@@ -164,18 +164,7 @@ class StyledNotebook extends React.Component {
 
   render() {
     if (this.props.notebook == null) return <div>Loading...</div>;
-
-    const notebookStyle = `
-    .jupyter .output img {
-      max-width: 100%;
-      margin-left: auto;
-      margin-right: auto;
-      display: block;
-    }
-    `;
-
     return [
-      <style key="notebook-style">{notebookStyle}</style>,
       <NotebookPreview
         key="notebook"
         ref={c => { this.notebook = c; }}
