@@ -284,11 +284,11 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
         </div>;
       case FILE_STATUS.UPLOADING:
         if (file.file_uncompress === FILE_COMPRESSED.WAITING) {
-          return <div>
-            <span>unzip on upload? </span>
+          return <div className="bg-warning font-weight-bold p-1">
+            <span>Unzip on upload? </span>
             <span className="mr-2">
               <span className="text-primary text-button" style={{ whiteSpace: "nowrap", cursor: "pointer" }}
-                onClick={() => uploadCompressedFile(file.file_name, true)}>Yes</span>
+                onClick={() => uploadCompressedFile(file.file_name, true)}>Yes</span> or
               <span className="text-primary  text-button" style={{ whiteSpace: "nowrap", cursor: "pointer" }}
                 onClick={() => uploadCompressedFile(file.file_name, false)}>No</span>
             </span>
