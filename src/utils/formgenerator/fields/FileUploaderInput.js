@@ -27,7 +27,8 @@ import { FormGroup, Label, Table, Spinner } from "reactstrap";
 import ValidationAlert from "./ValidationAlert";
 import HelpText from "./HelpText";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faTimes, faTrashAlt, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faTimes, faTrashAlt, faSyncAlt, faExclamationTriangle, faFolder }
+  from "@fortawesome/free-solid-svg-icons";
 import { formatBytes } from "./../../HelperFunctions";
 
 const FILE_STATUS = {
@@ -284,9 +285,10 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
         </div>;
       case FILE_STATUS.UPLOADING:
         if (file.file_uncompress === FILE_COMPRESSED.WAITING) {
-          return <div className="bg-warning font-weight-bold p-1">
-            <span>Unzip on upload? </span>
-            <span className="mr-2">
+          return <div style={{ fontWeight: "600" }}>
+            <FontAwesomeIcon color="var(--warning)" icon={faExclamationTriangle} />
+            <span className="ml-1">Unzip on upload?</span>
+            <span className="mr-1">
               <span className="text-primary text-button" style={{ whiteSpace: "nowrap", cursor: "pointer" }}
                 onClick={() => uploadCompressedFile(file.file_name, true)}>Yes</span> or
               <span className="text-primary  text-button" style={{ whiteSpace: "nowrap", cursor: "pointer" }}
@@ -365,7 +367,13 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
               <td colSpan="5">
                 Drag and Drop files or click <span className="text-primary"
                   style={{ cursor: "pointer" }}>here</span> to open file dialog.
-                <br /><small className="text-muted">NOTE: We are still working on the
+                <br />
+                <span className="text-muted font-italic">
+                  <FontAwesomeIcon className="pr-1" color="var(--primary)" icon={faFolder} />
+                  If you want to upload a folder you can do this using a zip file, we can unzip it for you on upload.
+                </span>
+                <br></br>
+                <small className="text-muted">NOTE: We are still working on the
                   UI upload of big files, we encourage you to use our CLI for uploading big files.
                 </small>
               </td>
