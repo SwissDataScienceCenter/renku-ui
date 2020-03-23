@@ -133,6 +133,7 @@ class NotebookServersList extends Component {
         .filter(key => key.startsWith("renku.io"))
         .reduce((obj, key) => { obj[key] = this.props.servers[k].annotations[key]; return obj; }, {});
       const resources = this.props.servers[k].resources;
+      const startTime = Time.toIsoTimezoneString(this.props.servers[k].started, "datetime-short");
 
       return (<NotebookServerRow
         key={i}
@@ -145,6 +146,7 @@ class NotebookServersList extends Component {
         annotations={validAnnotations}
         resources={resources}
         name={this.props.servers[k].name}
+        startTime={startTime}
         status={this.props.servers[k].status}
         url={this.props.servers[k].url}
       />);
@@ -263,7 +265,7 @@ class NotebookServerRowFull extends Component {
     });
     const resourceObject = (<td>{resourceList}</td>);
     const statusOut = (<td className="align-middle">
-      <NotebooksServerRowStatus details={details} status={status} uid={uid} />
+      <NotebooksServerRowStatus details={details} status={status} uid={uid} startTime={this.props.startTime} />
     </td>);
     const action = (<td className="align-middle">
       <NotebookServerRowAction
@@ -332,7 +334,12 @@ class NotebookServerRowCompact extends Component {
       <br />
     </Fragment>);
     const statusOut = (<span>
-      <NotebooksServerRowStatus spaced={true} details={details} status={status} uid={uid} />
+      <NotebooksServerRowStatus
+        spaced={true}
+        details={details}
+        status={status}
+        uid={uid}
+        startTime={this.props.startTime} />
     </span>);
     const action = (<span>
       <NotebookServerRowAction
@@ -359,8 +366,9 @@ class NotebookServerRowCompact extends Component {
           {commit}
           {resourceObject}
           <div className="d-inline-flex" >
-            {icon} &nbsp; {statusOut} &nbsp; {action}
+            {icon} &nbsp; {statusOut}
           </div>
+          <div className="mt-1">{action}</div>
         </td>
       </tr>
     );
@@ -400,6 +408,9 @@ class NotebooksServerRowStatus extends Component {
   render() {
     const { status, details, uid } = this.props;
     const data = getStatusObject(status);
+    const spacing = this.props.spaced ?
+      " " :
+      (<br />);
     const info = status !== "running" ?
       (<span>
         <FontAwesomeIcon id={uid} style={{ color: "#5561A6" }} icon={faInfoCircle} />
@@ -412,9 +423,9 @@ class NotebooksServerRowStatus extends Component {
           </PopoverBody>
         </UncontrolledPopover>
       </span>) :
-      null;
+      (<span className="time-caption">{spacing}{this.props.startTime}</span>);
 
-    return <div className="d-inline-flex">{data.text}&nbsp;{info}</div>;
+    return <div>{data.text}&nbsp;{info}</div>;
   }
 }
 
