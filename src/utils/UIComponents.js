@@ -217,6 +217,9 @@ function ExternalLinkButton(props) {
   if (props.disabled)
     className += " disabled";
 
+  if (props.color)
+    className += ` btn-${props.color}`;
+
   if (props.className)
     className += ` ${props.className}`;
 

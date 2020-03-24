@@ -767,41 +767,47 @@ class ProjectViewFiles extends Component {
 
 function notebookLauncher(userLogged, accessLevel, notebookLauncher, fork, postLoginUrl, externalUrl) {
   if (accessLevel >= ACCESS_LEVELS.DEVELOPER)
-    return (<div>{notebookLauncher}</div>);
+    return (<div key="envirnonments">{notebookLauncher}</div>);
 
-  let content = [<p key="no-permission">You do not have sufficient permissions to launch an interactive environment
-    for this project.</p>];
+  let content;
   if (!userLogged) {
     const to = { "pathname": "/login", "state": { previous: postLoginUrl } };
-    content = content.concat(
-      <InfoAlert timeout={0} key="login-info">
+    content = [
+      <WarnAlert timeout={0} key="permissions-warning">
+        <p>As an anonymous user, you can start an environment but you cannot save your work.</p>
         <p className="mb-0">
-          <Link className="btn btn-primary btn-sm" to={to} previous={postLoginUrl}>Log in</Link> to use
-          interactive environments.
+          <Link className="btn btn-primary btn-sm btn-warning" to={to} previous={postLoginUrl}>Log in</Link> to use
+          all the features we provide through <ExternalLink role="text" title="Interactive Envirnonments"
+            url="https://renku.readthedocs.io/en/latest/developer/services/notebooks_service.html" />
+          .
         </p>
-      </InfoAlert>
-    );
+      </WarnAlert>,
+      <div key="envirnonments">{notebookLauncher}</div>
+    ];
   }
   else {
-    content = content.concat(
-      <InfoAlert timeout={0} key="login-info">
-        <p>You can still do one of the following:</p>
+    content = [
+      <WarnAlert timeout={0} key="permissions-warning">
+        <p>You have limited permissions for this project, therefore any change you do will be lost.</p>
+        <p>If you want to save your work, consider one of the following:</p>
         <ul className="mb-0">
           <li>
-            <Button size="sm" color="primary" onClick={(event) => fork(event)}>
+            <Button size="sm" color="warning" onClick={(event) => fork(event)}>
               Fork the project
             </Button> and start an interactive environment from your fork.
           </li>
           <li className="pt-1">
-            <ExternalLink size="sm" url={`${externalUrl}/project_members`} title="Contact a maintainer" /> and ask them
+            <ExternalLink color="warning" size="sm" title="Contact a maintainer"
+              url={`${externalUrl}/project_members`} /> and ask them
             to <a href="https://renku.readthedocs.io/en/latest/user/collaboration.html#added-to-project"
               target="_blank" rel="noreferrer noopener">
               grant you the necessary permissions
             </a>.
           </li>
         </ul>
-      </InfoAlert>
-    );
+      </WarnAlert>,
+      <div key="envirnonments">{notebookLauncher}</div>
+    ];
   }
 
   return (<div>{content}</div>);
