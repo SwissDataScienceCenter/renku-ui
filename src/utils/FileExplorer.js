@@ -5,7 +5,7 @@ import { Loader } from "../utils/UIComponents";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile, faFolder, faFolderOpen } from "@fortawesome/free-solid-svg-icons";
 
-function buildTree(parts, treeNode, jsonObj, hash, currentPath) {
+function buildTree(parts, treeNode, jsonObj, hash, currentPath, foldersOpenOnLoad) {
   if (parts.length === 0)
     return;
   currentPath = currentPath === "" ? parts[0] : currentPath + "/" + parts[0];
@@ -27,26 +27,31 @@ function buildTree(parts, treeNode, jsonObj, hash, currentPath) {
 
   if (currentNode.length === 0) {
     treeNode.push(newNode);
-    hash[newNode.path] = { "name": parts[0], "selected": false, "childrenOpen": false, "path": currentPath };
-    buildTree(parts.splice(1, parts.length), newNode.children, jsonObj, hash, currentPath);
+    hash[newNode.path] = {
+      "name": parts[0],
+      "selected": false,
+      "childrenOpen": foldersOpenOnLoad > 0, "path": currentPath
+    };
+    buildTree(parts.splice(1, parts.length), newNode.children, jsonObj, hash, currentPath,
+      foldersOpenOnLoad > 0 ? foldersOpenOnLoad - 1 : 0);
   }
   else {
     for (let j = 0; j < newNode.children.length; j++)
       currentNode[0].children.push(newNode.children[j]);
 
-    buildTree(parts.splice(1, parts.length), currentNode[0].children, jsonObj, hash, currentPath);
+    buildTree(parts.splice(1, parts.length), currentNode[0].children, jsonObj, hash, currentPath,
+      foldersOpenOnLoad > 0 ? foldersOpenOnLoad - 1 : 0);
   }
 }
 
 
-function getFilesTree(files) {
+function getFilesTree(files, foldersOpenOnLoad) {
   let list = files;
   let tree = [];
   let hash = {};
   for (let i = 0; i < list.length; i++) {
     const dir = list[i].atLocation.split("/");
-    dir.shift();
-    buildTree(dir, tree, list[i], hash, "");
+    buildTree(dir, tree, list[i], hash, "", foldersOpenOnLoad);
   }
   const treeObj = { tree: tree, hash: hash };
   return treeObj;
@@ -171,8 +176,8 @@ function FileExplorer(props) {
 
   useEffect(() => {
     if (props.files !== undefined)
-      setFilesTree(getFilesTree(props.files));
-  }, [props.files]);
+      setFilesTree(getFilesTree(props.files, props.foldersOpenOnLoad));
+  }, [props.files, props.foldersOpenOnLoad]);
 
   const setOpenFolder = (filePath) => {
     filesTree.hash[filePath].childrenOpen = !filesTree.hash[filePath].childrenOpen;

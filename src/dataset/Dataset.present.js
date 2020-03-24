@@ -31,6 +31,10 @@ import Time from "../utils/Time";
 function DisplayFiles(props) {
   if (props.files === undefined) return null;
 
+  let openFolders = props.files.length > 0 ?
+    ( props.files[0].atLocation.startsWith("data/") ? 2 : 1 )
+    : 0;
+
   return <Card key="datasetDetails">
     <CardHeader className="align-items-baseline">
       <span className="caption align-baseline">Dataset files ({props.files.length})</span>
@@ -40,6 +44,7 @@ function DisplayFiles(props) {
         files={props.files}
         lineageUrl={props.lineagesUrl}
         insideProject={props.insideProject}
+        foldersOpenOnLoad={openFolders}
       />
     </CardBody>
   </Card>;
