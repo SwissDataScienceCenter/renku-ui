@@ -423,7 +423,7 @@ class NotebooksServerRowStatus extends Component {
           </PopoverBody>
         </UncontrolledPopover>
       </span>) :
-      (<span className="time-caption">{spacing}{this.props.startTime}</span>);
+      (<span className="time-caption">{spacing}since {this.props.startTime}</span>);
 
     return <div>{data.text}&nbsp;{info}</div>;
   }
