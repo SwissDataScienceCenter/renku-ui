@@ -1,5 +1,37 @@
 # Changes
 
+## [0.9.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.8.0...0.9.0) (released 2020-03-25)
+
+### Features
+
+**dataset**
+* User can cancel a file upload [#738](https://github.com/SwissDataScienceCenter/renku-ui/issues/738), [#813](https://github.com/SwissDataScienceCenter/renku-ui/pull/813)
+* Allow import of datasets from data repositories though the UI [#528](https://github.com/SwissDataScienceCenter/renku-ui/issues/528), [#778](https://github.com/SwissDataScienceCenter/renku-ui/pull/778)
+* Allow uploading file hierarchies in zip format [#796](https://github.com/SwissDataScienceCenter/renku-ui/issues/796),  [#849](https://github.com/SwissDataScienceCenter/renku-ui/pull/849)
+
+
+**environments**
+* Easy access to the branch/commit file listing [#493](https://github.com/SwissDataScienceCenter/renku-ui/issues/493), [#836](https://github.com/SwissDataScienceCenter/renku-ui/pull/836)
+* Display the resources requested by an environment [#788](https://github.com/SwissDataScienceCenter/renku-ui/issues/788), [#834](https://github.com/SwissDataScienceCenter/renku-ui/pull/834)
+
+**project**
+* Improvements to the handling of markdown content [#845](https://github.com/SwissDataScienceCenter/renku-ui/pull/845), [#846](https://github.com/SwissDataScienceCenter/renku-ui/pull/846)
+
+
+### Bug Fixes
+
+**dataset**
+* Show file listing with folder hierarchy [#840](https://github.com/SwissDataScienceCenter/renku-ui/pull/840)
+
+**project**
+* Search uses clearer labeling [#771](https://github.com/SwissDataScienceCenter/renku-ui/pull/771), [#807](https://github.com/SwissDataScienceCenter/renku-ui/pull/807)
+
+### BREAKING CHANGES
+
+* Requires renku-notebooks 0.7.0
+* Requires renku-core 0.9.2
+
+
 ## [0.8.0](https://github.com/SwissDataScienceCenter/renku-ui/issues?utf8=%E2%9C%93&q=is%3Aclosed+milestone%3A0.8.0) (released 2020-03-04)
 
 
