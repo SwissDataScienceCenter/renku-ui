@@ -32,6 +32,7 @@ describe("Time class helper", () => {
     UTCZ_STRING: "2019-03-11T09:34:51.000Z",
     INVALID: "this is not a date",
     ISO_READABLE_DATETIME: "2019-03-11 09:34:51",
+    ISO_READABLE_DATETIME_SHORT: "2019-03-11 09:34",
     ISO_READABLE_DATE: "2019-03-11",
     ISO_READABLE_TIME: "09:34:51"
   };
@@ -40,10 +41,12 @@ describe("Time class helper", () => {
     Plus: {
       UTCZ_STRING: "2019-08-23T18:00:00.000Z",
       ISO_READABLE_DATETIME: "2019-08-23 18:00:00",
+      ISO_READABLE_DATETIME_SHORT: "2019-08-23 18:00"
     },
     Minus: {
       UTCZ_STRING: "2019-08-23T06:00:00.000Z",
       ISO_READABLE_DATETIME: "2019-08-23 06:00:00",
+      ISO_READABLE_DATETIME_SHORT: "2019-08-23 06:00",
     }
   };
 
@@ -61,6 +64,7 @@ describe("Time class helper", () => {
   it("function toIsoString", () => {
     expect(Time.toIsoString(Dates.UTCZ_STRING)).toEqual(Dates.ISO_READABLE_DATETIME);
     expect(Time.toIsoString(Dates.UTCZ_STRING, "datetime")).toEqual(Dates.ISO_READABLE_DATETIME);
+    expect(Time.toIsoString(Dates.UTCZ_STRING, "datetime-short")).toEqual(Dates.ISO_READABLE_DATETIME_SHORT);
     expect(Time.toIsoString(Dates.UTCZ_STRING, "date")).toEqual(Dates.ISO_READABLE_DATE);
     expect(Time.toIsoString(Dates.UTCZ_STRING, "time")).toEqual(Dates.ISO_READABLE_TIME);
     const fakeType = "not existing";
