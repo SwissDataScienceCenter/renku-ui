@@ -78,6 +78,39 @@ class RenkuToolbarItemUser extends Component {
   }
 }
 
+class RenkuToolbarItemPlus extends Component {
+  render() {
+    // Display the Issue/Notebook server related header options only if a project is active.
+    const activeProjectPathWithNamespace = getActiveProjectPathWithNamespace(this.props.currentPath);
+    const issueDropdown = activeProjectPathWithNamespace ?
+      <Link className="dropdown-item" to={`/projects/${activeProjectPathWithNamespace}/collaboration/issues/issue_new`}>
+        Issue
+      </Link>
+      : null;
+    const datasetDropdown = activeProjectPathWithNamespace ?
+      <Link className="dropdown-item" to={`/projects/${activeProjectPathWithNamespace}/datasets/new`}>
+        Dataset
+      </Link>
+      : null;
+    const projectDropdown = <Link className="dropdown-item" id="navbar-project-new" to="/project_new">
+      Project
+    </Link>;
+
+    return <li className="nav-item dropdown">
+      { /* eslint-disable-next-line */}
+      <a className="nav-link dropdown-toggle" id="plus-dropdown" role="button"
+        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <FontAwesomeIcon icon={faPlus} id="createPlus" />
+      </a>
+      <div key="plus-menu" className="dropdown-menu dropdown-menu-right" aria-labelledby="plus-dropdown">
+        {projectDropdown}
+        {issueDropdown}
+        {datasetDropdown}
+      </div>
+    </li>;
+  }
+}
+
 class LoggedInNavBar extends Component {
 
   constructor(props) {
@@ -107,16 +140,7 @@ class LoggedInNavBar extends Component {
     if (null != nextRoute) this.props.history.push(nextRoute);
   }
   render() {
-    // Display the Issue/Notebook server related header options only if a project is active.
-    const activeProjectPathWithNamespace = getActiveProjectPathWithNamespace(this.props.location.pathname);
-    const issueDropdown = activeProjectPathWithNamespace ?
-      <RenkuNavLink to={`/projects/${activeProjectPathWithNamespace}/collaboration/issues/issue_new`} title="Issue" />
-      : null;
-    const datasetDropdown = activeProjectPathWithNamespace ?
-      <RenkuNavLink to={`/projects/${activeProjectPathWithNamespace}/datasets/new`} title="Dataset" />
-      : null;
     // TODO If there is is an active project, show it in the navbar
-
     return (
       <header>
         <nav className="navbar navbar-expand-sm navbar-light bg-light justify-content-between">
@@ -136,19 +160,9 @@ class LoggedInNavBar extends Component {
               <RenkuNavLink to="/datasets" title="Datasets" />
               <RenkuNavLink to="/environments" title="Environments" />
             </ul>
+
             <ul className="navbar-nav">
-              <li className="nav-item dropdown">
-                { /* eslint-disable-next-line */}
-                <a className="nav-link dropdown-toggle" id="plus-dropdown" role="button" data-toggle="dropdown"
-                  aria-haspopup="true" aria-expanded="false">
-                  <FontAwesomeIcon icon={faPlus} id="createPlus" />
-                </a>
-                <div className="dropdown-menu dropdown-menu-right" aria-labelledby="plus-dropdown">
-                  <RenkuNavLink id="navbar-project-new" to="/project_new" title="Project" />
-                  {issueDropdown}
-                  {datasetDropdown}
-                </div>
-              </li>
+              <RenkuToolbarItemPlus currentPath={this.props.location.pathname}/>
               <RenkuToolbarItemUser {...this.props} />
             </ul>
           </div>
