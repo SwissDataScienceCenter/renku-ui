@@ -110,10 +110,10 @@ class LoggedInNavBar extends Component {
     // Display the Issue/Notebook server related header options only if a project is active.
     const activeProjectPathWithNamespace = getActiveProjectPathWithNamespace(this.props.location.pathname);
     const issueDropdown = activeProjectPathWithNamespace ?
-      <RenkuNavLink to={`/projects/${activeProjectPathWithNamespace}/issue_new`} title="Issue" />
+      <RenkuNavLink to={`/projects/${activeProjectPathWithNamespace}/collaboration/issues/issue_new`} title="Issue" />
       : null;
     const datasetDropdown = activeProjectPathWithNamespace ?
-      <RenkuNavLink to={`/projects/${activeProjectPathWithNamespace}/datasets/new_dataset`} title="Dataset" />
+      <RenkuNavLink to={`/projects/${activeProjectPathWithNamespace}/datasets/new`} title="Dataset" />
       : null;
     // TODO If there is is an active project, show it in the navbar
 
