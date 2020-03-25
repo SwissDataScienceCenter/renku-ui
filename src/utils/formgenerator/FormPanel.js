@@ -47,7 +47,9 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors, submit
 
   return (
     <Col>
-      <h3 className="uk-heading-divider uk-text-center pb-2">{title}</h3>
+      { title !== undefined ?
+        <h3 className="uk-heading-divider uk-text-center pb-2">{title}</h3>
+        : null }
       <Form onSubmit={setSubmit}>
         <div>
           {inputs.map(input => renderInput(input))}

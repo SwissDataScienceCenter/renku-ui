@@ -23,8 +23,9 @@ import { Loader, FileExplorer } from "../utils/UIComponents";
 import DOMPurify from "dompurify";
 import { API_ERRORS } from "../api-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLinkAlt, faPen } from "@fortawesome/free-solid-svg-icons";
+import { faExternalLinkAlt, faPen, faPlus } from "@fortawesome/free-solid-svg-icons";
 import Time from "../utils/Time";
+import AddDataset from "./addtoproject/DatasetAdd.container";
 
 function DisplayFiles(props) {
   if (props.files === undefined) return null;
@@ -98,6 +99,7 @@ export default function DatasetView(props) {
 
   const [dataset, setDataset] = useState(undefined);
   const [fetchError, setFetchError] = useState(null);
+  const [addDatasetModalOpen, setAddDatasetModalOpen] = useState(false);
 
   useEffect(() => {
     let unmounted = false;
@@ -166,7 +168,7 @@ export default function DatasetView(props) {
 
   return <Col>
     <Row>
-      <Col md={8} sm={12}>
+      <Col md={7} sm={12}>
         {
           dataset.published !== undefined && dataset.published.datePublished !== undefined ?
             <small style={{ display: "block", paddingBottom: "8px" }} className="font-weight-light font-italic">
@@ -178,9 +180,15 @@ export default function DatasetView(props) {
           {dataset.name}
         </h4>
       </Col>
-      <Col md={4} sm={12}>
+      <Col md={5} sm={12}>
+        { props.logged ?
+          <Button className="float-right" size="sm" outline color="dark" onClick={()=>setAddDatasetModalOpen(true)}>
+            <FontAwesomeIcon icon={faPlus} color="dark" /> Add to project
+          </Button>
+          : null
+        }
         {props.insideProject && props.maintainer ?
-          <Link className="float-right" to={{ pathname: "modify", state: { dataset: dataset } }} >
+          <Link className="float-right mr-1" to={{ pathname: "modify", state: { dataset: dataset } }} >
             <Button size="sm" outline color="dark" >
               <FontAwesomeIcon icon={faPen} color="dark" /> Modify
             </Button>
@@ -194,7 +202,6 @@ export default function DatasetView(props) {
               <FontAwesomeIcon icon={faExternalLinkAlt} color="dark" /> Go to source
             </Button>
           </a>
-
           : null
         }
       </Col>
@@ -234,5 +241,17 @@ export default function DatasetView(props) {
       projects={dataset.isPartOf}
       projectsUrl={props.projectsUrl}
     />
+    {
+      props.logged ?
+        <AddDataset
+          dataset={dataset}
+          modalOpen={addDatasetModalOpen}
+          setModalOpen={setAddDatasetModalOpen}
+          history={props.history}
+          client={props.client}
+          user={props.user} />
+        : null
+    }
+
   </Col>;
 }

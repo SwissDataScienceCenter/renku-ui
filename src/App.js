@@ -128,6 +128,7 @@ class App extends Component {
                   client={this.props.client}
                   projectsUrl="/projects"
                   selectedDataset={p.match.params.datasetId}
+                  logged={this.props.user.logged}
                 />}
               />
               <Route path="/datasets" render={

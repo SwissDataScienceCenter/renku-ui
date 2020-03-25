@@ -332,6 +332,19 @@ const datasetImportFormSchema = new Schema({
   }
 });
 
+const addDatasetToProjectSchema = new Schema({
+  project: {
+    initial: undefined,
+    name: "project",
+    label: "Project",
+    type: FormGenerator.FieldTypes.SELECT,
+    options: [
+    ],
+    validators: []
+  }
+});
+
 
 export { userSchema, metaSchema, displaySchema, newProjectSchema, projectSchema, forkProjectSchema };
 export { notebooksSchema, projectsSchema, datasetFormSchema, issueFormSchema, datasetImportFormSchema };
+export { addDatasetToProjectSchema };
