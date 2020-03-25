@@ -33,6 +33,7 @@ function addNotebookServersMethods(client) {
     }).then(resp => {
       return { "data": resp.data.servers };
     });
+    // return Promise.resolve({ "data": {} });
   };
 
   client.stopNotebookServer = (serverName, force = false) => {
@@ -65,6 +66,18 @@ function addNotebookServersMethods(client) {
       });
       return data;
     });
+    // return Promise.resolve({
+    //   "cpu_request": {
+    //     "default": 0.1,
+    //     "displayName": "Number of CPUs",
+    //     "options": [
+    //       0.1,
+    //       0.5
+    //     ],
+    //     "order": 2,
+    //     "type": "enum"
+    //   }
+    // });
   };
 
   client.startNotebook = (namespacePath, projectPath, branchName, commitId, options) => {
