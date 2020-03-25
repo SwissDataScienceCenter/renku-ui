@@ -604,8 +604,8 @@ class ProjectViewDatasetsList extends Component {
           <FontAwesomeIcon icon={faInfoCircle} />  If you recently activated the knowledge graph or
           added the datasets try refreshing the page. <br /><br />
           You can also click on the button to create a
-          <Link className="btn btn-primary btn-sm" to={this.props.newDatasetUrl}>New Dataset</Link>
-          or <Link className="btn btn-primary btn-sm" to={this.props.importDatasetUrl}>Import Dataset</Link>
+          &nbsp;<Link className="btn btn-primary btn-sm" to={this.props.newDatasetUrl}>New Dataset</Link>
+          &nbsp;or <Link className="btn btn-primary btn-sm" to={this.props.importDatasetUrl}>Import a Dataset</Link>
         </Alert>
       </Col>;
     }

@@ -27,7 +27,8 @@ import { FormGroup, Label, Table, Spinner } from "reactstrap";
 import ValidationAlert from "./ValidationAlert";
 import HelpText from "./HelpText";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faTimes, faTrashAlt, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faTimes, faTrashAlt, faSyncAlt, faExclamationTriangle, faFolder }
+  from "@fortawesome/free-solid-svg-icons";
 import { formatBytes } from "./../../HelperFunctions";
 
 const FILE_STATUS = {
@@ -35,6 +36,12 @@ const FILE_STATUS = {
   UPLOADED: "uploaded",
   UPLOADING: "uploading",
   FAILED: "failed"
+};
+
+const FILE_COMPRESSED = {
+  WAITING: "waiting",
+  UNCOMPRESS_YES: "uncompress_yes",
+  UNCOMPRESS_NO: "uncompress_no",
 };
 
 function useFiles({ initialState = [] }) {
@@ -61,7 +68,7 @@ function getFileStatus(id, error, status) {
   return FILE_STATUS.UPLOADING;
 }
 
-function getFileObject(name, size, id, error, alias, controller, status) {
+function getFileObject(name, size, id, error, alias, controller, uncompress, status) {
   return {
     file_name: name,
     file_size: size,
@@ -69,11 +76,13 @@ function getFileObject(name, size, id, error, alias, controller, status) {
     file_error: error,
     file_alias: alias,
     file_status: getFileStatus(id, error, status),
-    file_controller: controller
+    file_controller: controller,
+    file_uncompress: uncompress
   };
 }
 
-function FileuploaderInput({ name, label, alert, value, setInputs, help, disabled = false, uploadFileFunction }) {
+function FileuploaderInput({ name, label, alert, value, setInputs, help, disabled = false,
+  uploadFileFunction, filesOnUploader }) {
   const [files, setFiles] = useFiles({});
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [displayFiles, setDisplayFiles] = useState([]);
@@ -85,7 +94,7 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
   useEffect(() => {
     if (value !== undefined && !initialized) {
       setDisplayFiles(value.map(file => getFileObject(
-        file.name, null, undefined, undefined, undefined, undefined, FILE_STATUS.ADDED)));
+        file.name, null, undefined, undefined, undefined, undefined, undefined, FILE_STATUS.ADDED)));
     }
     setInitialized(true);
   }, [value, initialized]);
@@ -106,7 +115,8 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
             uploadingFile.file_id,
             filesErrors.find(file => file.file_name === uploadingFile.file_name),
             uploadingFile.file_alias,
-            uploadingFile.file_controller);
+            uploadingFile.file_controller,
+            uploadingFile.file_uncompress);
         }
         return dFile;
       })
@@ -122,7 +132,7 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
         if (errorFile !== undefined) {
           return getFileObject(
             errorFile.file_name, errorFile.file_size, null, errorFile.file_error, errorFile.file_alias,
-            errorFile.file_controller);
+            errorFile.file_controller, errorFile.file_uncompress);
         }
         return dFile;
       })
@@ -130,12 +140,13 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
   }, [filesErrors]);
 
   let uploadFile = (file) => {
-    uploadFileFunction(file, file.file_controller).then((response) => {
+    uploadFileFunction(file, file.file_controller, file.file_uncompress).then((response) => {
       if (response.status >= 400) throw new Error();
       response.json().then((body) => {
         if (body.error) {
           setFilesErrors(prevFilesErrors => [...prevFilesErrors,
-            getFileObject(file.name, file.size, undefined, body.error.reason, undefined, file.file_controller)]
+            getFileObject(file.name, file.size, undefined, body.error.reason, undefined,
+              file.file_controller, file.file_uncompress)]
           );
           return [];
         }
@@ -143,7 +154,7 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
         if (newFileObj.file_name !== undefined && newFileObj.file_name !== file.name) {
           newFileObj = getFileObject(
             file.name, newFileObj.file_size, newFileObj.file_id, undefined, newFileObj.file_name,
-            response.controller);
+            response.controller, file.file_uncompress);
         }
         setUploadedFiles(prevUploadedFiles => [...prevUploadedFiles, newFileObj]);
         return newFileObj;
@@ -153,7 +164,7 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
       if (error.code !== DOMException.ABORT_ERR) {
         setFilesErrors(prevFilesErrors => [...prevFilesErrors,
           getFileObject(file.name, file.size, undefined, "Error uploading the file", undefined,
-            file.file_controller)]);
+            file.file_controller, file.file_uncompress)]);
         return [];
       }
     });
@@ -173,11 +184,18 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
         })
         : droppedFiles;
 
-      droppedFiles.map(file => uploadFile(file, file.file_controller));
+      const nonCompressedFiles = droppedFiles.filter(file => file.type !== "application/zip");
       setFiles([...files, ...droppedFiles]);
-      const newDisplayFiles = droppedFiles
-        .map(file => getFileObject(file.name, file.size, null, undefined, undefined, file.file_controller));
+      nonCompressedFiles.map(file => uploadFile(file, file.file_controller));
+      const newDisplayFiles = droppedFiles.map(file=> {
+        return file.type === "application/zip" ?
+          getFileObject(file.name, file.size, null, undefined, undefined, file.file_controller, FILE_COMPRESSED.WAITING)
+          :
+          getFileObject(file.name, file.size, null, undefined, undefined, file.file_controller);
+      });
 
+      filesOnUploader.current = displayFiles.filter(file => file.file_status !== FILE_STATUS.ADDED).length
+        + newDisplayFiles.length;
       setDisplayFiles([...displayFiles, ...newDisplayFiles]);
     }
   };
@@ -189,6 +207,7 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
       setUploadedFiles(prevUploadedFiles => prevUploadedFiles.filter(file => file.file_name !== file_name));
       const filteredFiles = files.filter(file => file.name !== file_name);
       setFiles([...filteredFiles]);
+      filesOnUploader.current = filesOnUploader.current - 1 ;
       $input.current.value = "";
       if (file_controller) file_controller.abort();
     }
@@ -201,13 +220,33 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
         const displayFilesFiltered = displayFiles.map(file => {
           if (file.file_name === file_name) {
             return getFileObject(retryFile.name, retryFile.size, null, undefined, retryFile.file_alias,
-              retryFile.file_controller);
+              retryFile.file_controller, file.file_uncompress);
           }
           return file;
         });
         setDisplayFiles([...displayFilesFiltered]);
         setFilesErrors(prevfilesErrors => prevfilesErrors.filter(file => file.file_name !== file_name));
-        uploadFile(retryFile, retryFile.file_controller);
+        uploadFile(retryFile);
+      }
+    }
+  };
+
+  let uploadCompressedFile = (file_name, uncompress) => {
+    if (!disabled) {
+      let compressedFile = files.find(file => file.name === file_name);
+      if (compressedFile !== undefined) {
+        const displayFilesFiltered = displayFiles.map(file => {
+          if (file.file_name === file_name) {
+            return getFileObject(compressedFile.name, compressedFile.size, null, undefined,
+              compressedFile.file_alias, compressedFile.file_controller, compressedFile === true ?
+                FILE_COMPRESSED.UNCOMPRESS_YES : FILE_COMPRESSED.UNCOMPRESS_NO );
+          }
+          return file;
+        });
+        setDisplayFiles([...displayFilesFiltered]);
+        setFilesErrors(prevfilesErrors => prevfilesErrors.filter(file => file.file_name !== file_name));
+        compressedFile.file_uncompress = uncompress;
+        uploadFile(compressedFile);
       }
     }
   };
@@ -245,6 +284,18 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
           </span>
         </div>;
       case FILE_STATUS.UPLOADING:
+        if (file.file_uncompress === FILE_COMPRESSED.WAITING) {
+          return <div style={{ fontWeight: "600" }}>
+            <FontAwesomeIcon color="var(--warning)" icon={faExclamationTriangle} />
+            <span className="ml-1">Unzip on upload?</span>
+            <span className="mr-1">
+              <span className="text-primary text-button" style={{ whiteSpace: "nowrap", cursor: "pointer" }}
+                onClick={() => uploadCompressedFile(file.file_name, true)}>Yes</span> or
+              <span className="text-primary  text-button" style={{ whiteSpace: "nowrap", cursor: "pointer" }}
+                onClick={() => uploadCompressedFile(file.file_name, false)}>No</span>
+            </span>
+          </div>;
+        }
         return <span><Spinner color="primary" size="sm" /> uploading</span>;
       default:
         return null;
@@ -316,7 +367,13 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
               <td colSpan="5">
                 Drag and Drop files or click <span className="text-primary"
                   style={{ cursor: "pointer" }}>here</span> to open file dialog.
-                <br /><small className="text-muted">NOTE: We are still working on the
+                <br />
+                <span className="text-muted font-italic">
+                  <FontAwesomeIcon className="pr-1" color="var(--primary)" icon={faFolder} />
+                  If you want to upload a folder you can do this using a zip file, we can unzip it for you on upload.
+                </span>
+                <br></br>
+                <small className="text-muted">NOTE: We are still working on the
                   UI upload of big files, we encourage you to use our CLI for uploading big files.
                 </small>
               </td>

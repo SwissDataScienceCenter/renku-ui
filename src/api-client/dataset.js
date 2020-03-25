@@ -11,7 +11,7 @@ export default function addDatasetMethods(client) {
     });
   };
 
-  client.uploadFile = (file, controller) => {
+  client.uploadFile = (file, controller, unpack_archive = false) => {
     const data = new FormData();
     data.append("file", file);
     data.append("file_name", file.name);
@@ -31,7 +31,8 @@ export default function addDatasetMethods(client) {
 
     if (controller) queryParams.signal = controller.signal;
 
-    return fetch(`${client.baseUrl}/renku/cache.files_upload?override_existing=true`, queryParams)
+    return fetch(`${client.baseUrl}/renku/cache.files_upload?override_existing=true&unpack_archive=${unpack_archive}`,
+      queryParams)
       .then(response => {
         if (controller !== undefined)
           response.controller = controller;

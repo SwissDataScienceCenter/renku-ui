@@ -65,3 +65,12 @@
 	background-color: #e9ecef;
 	cursor: pointer;
 }
+
+.text-button{
+	margin-left: 5px;
+}
+
+.text-button:hover{
+	text-decoration: underline;
+	font-weight: bold;
+}
