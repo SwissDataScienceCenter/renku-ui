@@ -46,16 +46,14 @@ class Time {
     const readableDate = date.toISOString().substring(0, 19).replace("T", " ");
     if (type === "datetime")
       return readableDate;
-
+    else if (type === "datetime-short")
+      return readableDate.substring(0, 16);
     else if (type === "date")
       return readableDate.substring(0, 10);
-
     else if (type === "time")
       return readableDate.substring(11);
 
-
     throw (new Error(`Uknown type "${type}"`));
-
   }
 
   static toIsoTimezoneString(inputDate, type = "datetime") {
