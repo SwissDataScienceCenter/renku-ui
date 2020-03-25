@@ -83,10 +83,10 @@ class HelpGetting extends Component {
       <div key="main1" className="d-flex mb-3 flex-wrap">
         <div className="mr-4" style={{ flex: "0 1", flexBasis }}>
           <h2>
-            <ExternalDocsIconLink url="https://renku.discourse.group" icon={faDiscourse} title="Discourse" />
+            <ExternalDocsIconLink url="https://renku.discourse.group" icon={faDiscourse} title="Forum" />
           </h2>
           <p>
-            We maintain a forum on <ExternalDocsLink url="https://renku.discourse.group" title="Discourse" /> for
+            We maintain a <ExternalDocsLink url="https://renku.discourse.group" title="help forum" /> for
             discussion about Renku. This is a good place to ask questions and find answers.
           </p>
         </div>
