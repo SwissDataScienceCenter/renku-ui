@@ -168,7 +168,7 @@ export default function DatasetView(props) {
 
   return <Col>
     <Row>
-      <Col md={8} sm={12}>
+      <Col md={7} sm={12}>
         {
           dataset.published !== undefined && dataset.published.datePublished !== undefined ?
             <small style={{ display: "block", paddingBottom: "8px" }} className="font-weight-light font-italic">
