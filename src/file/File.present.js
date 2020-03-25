@@ -35,7 +35,6 @@ import { Time } from "../utils/Time";
 
 const commitMessageLengthLimit = 120;
 
-
 /**
  * Display the Card with file information. Has the following parameters:
  *
@@ -53,43 +52,49 @@ class FileCard extends React.Component {
     let commitHeader = null;
     if (this.props.commit) {
       const commitLinkHref = `${this.props.gitLabUrl}/commit/${this.props.commit.id}`;
-      const title = (this.props.commit.title.length > commitMessageLengthLimit) ?
-        this.props.commit.title.slice(0, commitMessageLengthLimit) + "..." :
-        this.props.commit.title;
-      commitHeader = <ListGroup flush>
-        <ListGroupItem>
-          <div className="d-flex justify-content-between flex-wrap">
-            <div>
-              <a href={commitLinkHref} target="_blank" rel="noreferrer noopener">
-                Commit: {this.props.commit.short_id}
-              </a> &nbsp;
-              {title}
+      const title =
+        this.props.commit.title.length > commitMessageLengthLimit
+          ? this.props.commit.title.slice(0, commitMessageLengthLimit) + "..."
+          : this.props.commit.title;
+      commitHeader = (
+        <ListGroup flush>
+          <ListGroupItem>
+            <div className="d-flex justify-content-between flex-wrap">
+              <div>
+                <a href={commitLinkHref} target="_blank" rel="noreferrer noopener">
+                  Commit: {this.props.commit.short_id}
+                </a>{" "}
+                &nbsp;
+                {title}
+              </div>
+              <div className="caption">
+                {this.props.commit.author_name} &nbsp;
+                {Time.toIsoString(this.props.commit.committed_date)}
+              </div>
             </div>
-            <div className="caption">
-              {this.props.commit.author_name} &nbsp;
-              {Time.toIsoString(this.props.commit.committed_date)}
-            </div>
-          </div>
-        </ListGroupItem>
-      </ListGroup>;
+          </ListGroupItem>
+        </ListGroup>
+      );
     }
-    return <Card>
-      <CardHeader className="align-items-baseline">
-        {this.props.lfsBadge}
-        {this.props.filePath}
-        &nbsp;
-        <Clipboard clipboardText={this.props.filePath} />
-        &nbsp;
-        <span className="caption align-baseline">&nbsp;File view</span>
-        <div className="float-right">
-          {this.props.buttonJupyter}
-          {this.props.buttonGit}
-          {this.props.buttonGraph}
-        </div>
-      </CardHeader>
-      {commitHeader}
-      <CardBody>{this.props.body}</CardBody>
-    </Card>;
+    return (
+      <Card>
+        <CardHeader className="align-items-baseline">
+          {this.props.lfsBadge}
+          {this.props.filePath}
+          &nbsp;
+          <Clipboard clipboardText={this.props.filePath} />
+          &nbsp;
+          <span className="caption align-baseline">&nbsp;File view</span>
+          <div className="float-right">
+            {this.props.buttonJupyter}
+            {this.props.buttonGit}
+            {this.props.buttonGraph}
+          </div>
+        </CardHeader>
+        {commitHeader}
+        <CardBody>{this.props.body}</CardBody>
+      </Card>
+    );
   }
 }
 
@@ -106,57 +111,97 @@ class FileCard extends React.Component {
  * @param {Object} error - The error object from GitLab (can be null)
  */
 class ShowFile extends React.Component {
-
   render() {
     const gitLabFilePath = this.props.gitLabFilePath;
-    const buttonGraph = this.props.lineagesPath !== undefined ?
-      <IconLink tooltip="Graph View" icon={faProjectDiagram} to={`${this.props.lineagesPath}/${gitLabFilePath}`} />
-      : null;
+    const buttonGraph =
+      this.props.lineagesPath !== undefined ? (
+        <IconLink tooltip="Graph View" icon={faProjectDiagram} to={`${this.props.lineagesPath}/${gitLabFilePath}`} />
+      ) : null;
 
-    const buttonGit = <ExternalIconLink
-      tooltip="Open in GitLab" icon={faGitlab} to={`${this.props.externalUrl}/blob/master/${gitLabFilePath}`} />;
+    const buttonGit = (
+      <ExternalIconLink
+        tooltip="Open in GitLab"
+        icon={faGitlab}
+        to={`${this.props.externalUrl}/blob/master/${gitLabFilePath}`}
+      />
+    );
 
     if (this.props.error !== null) {
-      return <FileCard gitLabUrl={this.props.externalUrl}
-        filePath={this.props.gitLabFilePath.split("\\").pop().split("/").pop()}
+      return (
+        <FileCard
+          gitLabUrl={this.props.externalUrl}
+          filePath={this.props.gitLabFilePath
+            .split("\\")
+            .pop()
+            .split("/")
+            .pop()}
+          commit={this.props.commit}
+          buttonGraph={buttonGraph}
+          buttonGit={buttonGit}
+          buttonJupyter={this.props.buttonJupyter}
+          body={this.props.error}
+          lfsBadge={null}
+        />
+      );
+    }
+
+    if (this.props.file == null) {
+      return (
+        <Card>
+          <CardHeader className="align-items-baseline">&nbsp;</CardHeader>
+          <CardBody>{"Loading..."}</CardBody>
+        </Card>
+      );
+    }
+
+    const isLFS = this.props.hashElement ? this.props.hashElement.isLfs : false;
+    const isLFSBadge = isLFS ? (
+      <Badge className="lfs-badge" color="light">
+        LFS
+      </Badge>
+    ) : null;
+
+    const body = <FilePreview file={this.props.file} {...this.props} />;
+
+    return (
+      <FileCard
+        gitLabUrl={this.props.externalUrl}
+        filePath={this.props.filePath}
         commit={this.props.commit}
         buttonGraph={buttonGraph}
         buttonGit={buttonGit}
         buttonJupyter={this.props.buttonJupyter}
-        body={this.props.error}
-        lfsBadge={null} />;
-    }
-
-    if (this.props.file == null) {
-      return <Card>
-        <CardHeader className="align-items-baseline">&nbsp;</CardHeader>
-        <CardBody>{"Loading..."}</CardBody>
-      </Card>;
-    }
-
-    const isLFS = this.props.hashElement ? this.props.hashElement.isLfs : false;
-    const isLFSBadge = isLFS ?
-      <Badge className="lfs-badge" color="light">LFS</Badge> :
-      null;
-
-    const body = <FilePreview
-      file={this.props.file}
-      {...this.props}
-    />;
-
-    return <FileCard gitLabUrl={this.props.externalUrl}
-      filePath={this.props.filePath}
-      commit={this.props.commit}
-      buttonGraph={buttonGraph}
-      buttonGit={buttonGit}
-      buttonJupyter={this.props.buttonJupyter}
-      body={body}
-      lfsBadge={isLFSBadge} />;
+        body={body}
+        lfsBadge={isLFSBadge}
+      />
+    );
   }
 }
 
-class StyledNotebook extends React.Component {
+/**
+ * Modify the notebook metadata so it is correctly processed by the renderer.
+ *
+ * @param {object} [nb] - The notebook to process
+ */
+function tweakCellMetadata(nb) {
+  // Scan the cell metadata, and, if jupyter.source_hidden === true, set hide_input = true
+  const result = { ...nb };
+  result.cells = [];
+  nb.cells.forEach(cell => {
+    if (cell.metadata.jupyter == null) {
+      result.cells.push(cell);
+    }
+    else {
+      const clone = { ...cell };
+      clone.metadata = { ...cell.metadata };
+      clone.metadata.hide_input = clone.metadata.jupyter.source_hidden;
+      result.cells.push(clone);
+    }
+  });
+  return result;
+}
 
+class StyledNotebook extends React.Component {
   componentDidMount() {
     // TODO go through the dom and modify the nodes, e.g., with D3
     //this.fixUpDom(ReactDOM.findDOMNode(this.notebook));
@@ -164,14 +209,16 @@ class StyledNotebook extends React.Component {
 
   render() {
     if (this.props.notebook == null) return <div>Loading...</div>;
+    const notebook = tweakCellMetadata(this.props.notebook);
     return [
       <NotebookPreview
         key="notebook"
-        ref={c => { this.notebook = c; }}
+        ref={c => {
+          this.notebook = c;
+        }}
         defaultStyle={false}
         loadMathjax={false}
-        notebook={this.props.notebook}
-        showCode={true}
+        notebook={notebook}
       />
     ];
   }
@@ -180,10 +227,9 @@ class StyledNotebook extends React.Component {
 class JupyterButtonPresent extends React.Component {
   render() {
     if (!this.props.access)
-      return (<CheckNotebookIcon fetched={true} launchNotebookUrl={this.props.launchNotebookUrl} />);
+      return <CheckNotebookIcon fetched={true} launchNotebookUrl={this.props.launchNotebookUrl} />;
 
-    if (this.props.updating)
-      return (<Loader size="16" inline="true" />);
+    if (this.props.updating) return <Loader size="16" inline="true" />;
 
     return (
       <CheckNotebookStatus
@@ -191,9 +237,10 @@ class JupyterButtonPresent extends React.Component {
         model={this.props.model}
         scope={this.props.scope}
         launchNotebookUrl={this.props.launchNotebookUrl}
-        filePath={this.props.filePath} />
+        filePath={this.props.filePath}
+      />
     );
   }
 }
 
-export { StyledNotebook, JupyterButtonPresent, ShowFile };
+export { StyledNotebook, JupyterButtonPresent, ShowFile, tweakCellMetadata };
