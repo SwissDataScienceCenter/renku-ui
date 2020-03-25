@@ -629,7 +629,25 @@ function ButtonWithMenu(props) {
   </ButtonDropdown>;
 }
 
+
+/**
+ * Link to external documentation.
+ *
+ * @param {string} [url] - The URL to link to
+ * @param {string} [title] - The text to show for the link
+ * @param {string?} [alignment] - Use 'nav-link' if the links should align with nav-link elements, otherwise null.
+ */
+function ExternalDocsLink(props) {
+  const className = (props.alignment === "nav-link") ? "nav-link" : null;
+  return (
+    <a href={props.url} target="_blank" rel="noreferrer noopener" className={className}>
+      {props.title}
+    </a>
+  );
+}
+
 export { UserAvatar, TimeCaption, FieldGroup, RenkuNavLink, Pagination, RenkuMarkdown };
-export { ExternalLink, Loader, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, JupyterIcon };
-export { Clipboard, ExternalIconLink, IconLink, ThrottledTooltip, TooltipToggleButton, ProjectAvatar };
+export { ExternalLink, ExternalDocsLink, ExternalIconLink, IconLink };
+export { Loader, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, JupyterIcon };
+export { Clipboard, ThrottledTooltip, TooltipToggleButton, ProjectAvatar };
 export { ButtonWithMenu, FileExplorer };

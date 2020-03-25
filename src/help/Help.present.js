@@ -25,21 +25,13 @@
 
 import React, { Component } from "react";
 import { Route } from "react-router-dom";
-import { RenkuNavLink } from "../utils/UIComponents";
+import { ExternalDocsLink, RenkuNavLink } from "../utils/UIComponents";
 
 import { Row, Col } from "reactstrap";
 import { Nav, NavItem } from "reactstrap";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDiscourse, faGithub, faGitter } from "@fortawesome/free-brands-svg-icons";
-
-function ExternalDocsLink(props) {
-  return (
-    <a href={props.url} target="_blank" rel="noreferrer noopener">
-      {props.title}
-    </a>
-  );
-}
 
 function ExternalDocsIconLink(props) {
   return (

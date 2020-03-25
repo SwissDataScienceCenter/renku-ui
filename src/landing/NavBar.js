@@ -25,12 +25,12 @@
 
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import { Navbar, NavLink, Nav } from "reactstrap";
+import { Navbar, Nav } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons/";
 
 import logo from "./logo.svg";
-import { RenkuNavLink, Loader, UserAvatar } from "../utils/UIComponents";
+import { ExternalDocsLink, Loader, RenkuNavLink, UserAvatar } from "../utils/UIComponents";
 import { getActiveProjectPathWithNamespace } from "../utils/HelperFunctions";
 import QuickNav from "../utils/quicknav";
 
@@ -223,8 +223,9 @@ class FooterNavbar extends Component {
           </Nav>
           <Nav className="ml-auto">
             <RenkuNavLink to="/help" title="Help" />
-            <NavLink target="_blank" href="https://gitter.im/SwissDataScienceCenter/renku">Gitter</NavLink>
-            <NavLink target="_blank" href="https://datascience.ch/who-we-are/">About</NavLink>
+            <ExternalDocsLink url="https://renku.discourse.group" title="Forum" alignment="nav-link"/>
+            <ExternalDocsLink url="https://gitter.im/SwissDataScienceCenter/renku" title="Gitter" alignment="nav-link"/>
+            <ExternalDocsLink url="https://datascience.ch/who-we-are" title="About" alignment="nav-link"/>
           </Nav>
         </Navbar>
       </footer>
