@@ -319,7 +319,7 @@ const datasetImportFormSchema = new Schema({
   uri: {
     initial: "",
     name: "uri",
-    label: "Dataverse or Zenodo dataset URL or DOI:",
+    label: "Renku dataset URL; Dataverse or Zenodo dataset URL or DOI",
     edit: false,
     type: FormGenerator.FieldTypes.TEXT,
     // parseFun: expression => FormGenerator.Parsers.slugFromTitle(expression),
