@@ -62,7 +62,17 @@ function sanitizedHTMLFromMarkdown(markdown) {
     disableForced4SpacesIndentedSublists: true,
     emoji: true
   };
-  const converter = new showdown.Converter(showdownOptions);
+  const showdownClasses = {
+    table: "table"
+  };
+  // Reference: https://github.com/showdownjs/showdown/wiki/Add-default-classes-for-each-HTML-element
+  const bindings = Object.keys(showdownClasses).map(key => ({
+    type: "output",
+    regex: new RegExp(`<${key}(.*?)(?:(class="([^"]*)")(.*))?>`, "g"),
+    replace: `<${key} $1 class="$3 ${showdownClasses[key]}" $4>`
+  }));
+
+  const converter = new showdown.Converter({ ...showdownOptions, extensions: [...bindings] });
   const htmlFromMarkdown = converter.makeHtml(markdown);
   return DOMPurify.sanitize(htmlFromMarkdown);
 }
