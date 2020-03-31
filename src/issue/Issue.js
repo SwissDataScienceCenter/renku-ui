@@ -325,7 +325,7 @@ class IssueListRow extends Component {
                 </span>
               </b><br />
               <span className="issues-description">
-                {this.props.description}
+                <RenkuMarkdown markdownText={this.props.description} singleLine={true} />
               </span>
             </div>
           </div>

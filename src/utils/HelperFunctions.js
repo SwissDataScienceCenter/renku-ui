@@ -49,7 +49,7 @@ function splitAutosavedBranches(branches) {
   return { standard, autosaved };
 }
 
-function sanitizedHTMLFromMarkdown(markdown) {
+function sanitizedHTMLFromMarkdown(markdown, singleLine = false) {
   // Reference: https://github.com/showdownjs/showdown/wiki/Showdown-Options
   const showdownOptions = {
     ghCompatibleHeaderId: true,
@@ -73,8 +73,15 @@ function sanitizedHTMLFromMarkdown(markdown) {
   }));
 
   const converter = new showdown.Converter({ ...showdownOptions, extensions: [...bindings] });
+  if (singleLine) {
+    const lineBreakers = ["<br>", "<br />", "<br/>", "\n"];
+    const breakPosition = Math.max(...lineBreakers.map(elem => markdown.indexOf(elem)));
+    if (breakPosition !== -1)
+      markdown = markdown.substring(0, breakPosition);
+  }
   const htmlFromMarkdown = converter.makeHtml(markdown);
-  return DOMPurify.sanitize(htmlFromMarkdown);
+  const sanitized = DOMPurify.sanitize(htmlFromMarkdown);
+  return sanitized;
 }
 
 function simpleHash(str) {
