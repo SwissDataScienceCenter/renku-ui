@@ -36,7 +36,7 @@ import { ButtonDropdown, DropdownToggle, DropdownMenu } from "reactstrap";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-regular-svg-icons";
-import { faCheck, faUser, faEllipsisV } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faExternalLinkAlt, faEllipsisV, faUser } from "@fortawesome/free-solid-svg-icons";
 
 import { sanitizedHTMLFromMarkdown } from "./HelperFunctions";
 import FileExplorer from "./FileExplorer";
@@ -635,13 +635,23 @@ function ButtonWithMenu(props) {
  *
  * @param {string} [url] - The URL to link to
  * @param {string} [title] - The text to show for the link
- * @param {string?} [alignment] - Use 'nav-link' if the links should align with nav-link elements, otherwise null.
+ * @param {string?} [className] - Use 'nav-link' if the links should align with nav-link elements;
+ *                              - Use 'dropdown-item' if links should look like dropdown menu items;
+ *                              - Leave empty or null for default
+ * @param {boolean} [showExternalLinkIcon] - Show the icon to indicate an external link if true (default false)
  */
 function ExternalDocsLink(props) {
-  const className = (props.alignment === "nav-link") ? "nav-link" : null;
+  const className = props.className;
+  const showLinkIcon = (props.showExternalLinkIcon === true) ? true : false;
+  const displayTitle = (showLinkIcon) ?
+    <span>
+      <FontAwesomeIcon icon={faExternalLinkAlt} color="dark" /> {props.title}
+    </span> :
+    props.title;
+
   return (
     <a href={props.url} target="_blank" rel="noreferrer noopener" className={className}>
-      {props.title}
+      {displayTitle}
     </a>
   );
 }
