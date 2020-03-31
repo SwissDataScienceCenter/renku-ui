@@ -390,8 +390,13 @@ class ErrorAlert extends Component {
 
 class RenkuMarkdown extends Component {
   render() {
-    return <div className="text-break"
-      dangerouslySetInnerHTML={{ __html: sanitizedHTMLFromMarkdown(this.props.markdownText, this.props.singleLine) }}>
+    const { singleLine } = this.props;
+    let className = "text-break";
+    if (singleLine)
+      className += " children-no-spacing";
+
+    return <div className={className}
+      dangerouslySetInnerHTML={{ __html: sanitizedHTMLFromMarkdown(this.props.markdownText, singleLine) }}>
     </div>;
   }
 }
