@@ -60,7 +60,7 @@ welcomePage:
 
 templatesRepository:
   url: https://github.com/SwissDataScienceCenter/renku-project-template
-  ref: 0.1.7
+  ref: 0.1.9
 
 sentry:
   enabled: false
