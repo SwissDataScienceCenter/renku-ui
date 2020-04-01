@@ -31,7 +31,7 @@ import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 
 import logo from "./logo.svg";
-import { ExternalDocsLink, Loader, RenkuNavLink, UserAvatar } from "../utils/UIComponents";
+import { ExternalDocsLink, ExternalLink, Loader, RenkuNavLink, UserAvatar } from "../utils/UIComponents";
 import { getActiveProjectPathWithNamespace } from "../utils/HelperFunctions";
 import QuickNav from "../utils/quicknav";
 
@@ -68,7 +68,7 @@ class RenkuToolbarItemUser extends Component {
         {this.props.userAvatar}
       </a>
       <div key="menu" className="dropdown-menu dropdown-menu-right" aria-labelledby="profile-dropdown">
-        <ExternalDocsLink url={`${gatewayURL}/auth/user-profile`} title="Profile" className="dropdown-item" />
+        <ExternalLink url={`${gatewayURL}/auth/user-profile`} title="Profile" className="dropdown-item" role="link" />
         <DropdownItem divider />
         <a id="logout-link" className="dropdown-item"
           href={`${gatewayURL}/auth/logout?redirect_url=${redirect_url}`}>Logout</a>
