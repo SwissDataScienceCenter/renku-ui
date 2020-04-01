@@ -601,16 +601,23 @@ function IconLink(props) {
 function ExternalIconLinkWithTooltip(props) {
   const [uniqueId, ] = useState(`external-icon-link-${_.uniqueId()}`);
 
+  let className = "icon-link";
+  if (props.className)
+    className += ` ${props.className}`;
+
   return <span>
     <a href={props.url} role="button" target="_blank" rel="noreferrer noopener">
-      <FontAwesomeIcon className="icon-link" icon={props.icon} id={uniqueId} />
+      <FontAwesomeIcon className={className} icon={props.icon} id={uniqueId} />
     </a>
     <ThrottledTooltip target={uniqueId} tooltip={props.tooltip} />
   </span>;
 }
 
 function ExternalIconLinkWithoutTooltip(props) {
-  return <a href={props.url} target="_blank" rel="noreferrer noopener">
+  let className = "";
+  if (props.className)
+    className += ` ${props.className}`;
+  return <a href={props.url} target="_blank" rel="noreferrer noopener" className={className}>
     <FontAwesomeIcon icon={props.icon} /> {props.title}
   </a>;
 }
@@ -623,13 +630,14 @@ function ExternalIconLinkWithoutTooltip(props) {
  * @param {string} [url] - alternative for 'to' -- takes precedence over to
  * @param {icon} [icon] - font-awesome icon to display
  * @param {string} [tooltip] - the text of the tooltip or null for no tooltip
+ * @param {string?} [className] - [Optional] Any classes to add, e.g., 'nav-link' or 'dropdown-item'
  */
 function ExternalIconLink(props) {
   const url = (props.url) ? props.url : props.to;
-  const myProps = {url, ...props};
+  const myProps = { url, ...props };
   return (props.tooltip) ?
     ExternalIconLinkWithTooltip(myProps) :
-    ExternalIconLinkWithoutTooltip(myProps)
+    ExternalIconLinkWithoutTooltip(myProps);
 }
 
 /**
