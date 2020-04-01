@@ -1,5 +1,15 @@
 # Changes
 
+## [0.9.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.9.0...0.9.1) (released 2020-04-01)
+
+**help**
+* Refresh links and information, add a new help menu to the top navigation bar [#607](https://github.com/SwissDataScienceCenter/renku-ui/issues/607), [#872](https://github.com/SwissDataScienceCenter/renku-ui/pull/872)
+
+**collaboration**
+* Improve markdown tables layout [#882](https://github.com/SwissDataScienceCenter/renku-ui/pull/882)
+* Show markdown content in the issues list [#847](https://github.com/SwissDataScienceCenter/renku-ui/issues/847), [#885](https://github.com/SwissDataScienceCenter/renku-ui/pull/885)
+
+
 ## [0.9.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.8.0...0.9.0) (released 2020-03-25)
 
 ### Features
