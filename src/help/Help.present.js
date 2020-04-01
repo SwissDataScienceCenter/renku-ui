@@ -25,21 +25,13 @@
 
 import React, { Component } from "react";
 import { Route } from "react-router-dom";
-import { RenkuNavLink } from "../utils/UIComponents";
+import { ExternalDocsLink, RenkuNavLink } from "../utils/UIComponents";
 
 import { Row, Col } from "reactstrap";
 import { Nav, NavItem } from "reactstrap";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDiscourse, faGithub, faGitter } from "@fortawesome/free-brands-svg-icons";
-
-function ExternalDocsLink(props) {
-  return (
-    <a href={props.url} target="_blank" rel="noreferrer noopener">
-      {props.title}
-    </a>
-  );
-}
 
 function ExternalDocsIconLink(props) {
   return (
@@ -83,10 +75,10 @@ class HelpGetting extends Component {
       <div key="main1" className="d-flex mb-3 flex-wrap">
         <div className="mr-4" style={{ flex: "0 1", flexBasis }}>
           <h2>
-            <ExternalDocsIconLink url="https://renku.discourse.group" icon={faDiscourse} title="Discourse" />
+            <ExternalDocsIconLink url="https://renku.discourse.group" icon={faDiscourse} title="Forum" />
           </h2>
           <p>
-            We maintain a forum on <ExternalDocsLink url="https://renku.discourse.group" title="Discourse" /> for
+            We maintain a <ExternalDocsLink url="https://renku.discourse.group" title="help forum" /> for
             discussion about Renku. This is a good place to ask questions and find answers.
           </p>
         </div>

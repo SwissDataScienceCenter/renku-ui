@@ -25,12 +25,13 @@
 
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import { Navbar, NavLink, Nav } from "reactstrap";
+import { DropdownItem, Navbar, Nav } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons/";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
 
 import logo from "./logo.svg";
-import { RenkuNavLink, Loader, UserAvatar } from "../utils/UIComponents";
+import { ExternalDocsLink, Loader, RenkuNavLink, UserAvatar } from "../utils/UIComponents";
 import { getActiveProjectPathWithNamespace } from "../utils/HelperFunctions";
 import QuickNav from "../utils/quicknav";
 
@@ -67,9 +68,8 @@ class RenkuToolbarItemUser extends Component {
         {this.props.userAvatar}
       </a>
       <div key="menu" className="dropdown-menu dropdown-menu-right" aria-labelledby="profile-dropdown">
-        <a className="dropdown-item" target="_blank" rel="noreferrer noopener"
-          href={`${gatewayURL}/auth/user-profile`}>Profile</a>
-        <Link className="dropdown-item" to="/help">Help</Link>
+        <ExternalDocsLink url={`${gatewayURL}/auth/user-profile`} title="Profile" className="dropdown-item" />
+        <DropdownItem divider />
         <a id="logout-link" className="dropdown-item"
           href={`${gatewayURL}/auth/logout?redirect_url=${redirect_url}`}>Logout</a>
       </div>
@@ -109,6 +109,25 @@ class RenkuToolbarItemPlus extends Component {
       </div>
     </li>;
   }
+}
+
+function RenkuToolbarHelpMenu(props) {
+
+  return <li className="nav-item dropdown">
+    { /* eslint-disable-next-line */}
+    <a className="nav-link dropdown-toggle" id="help-menu" role="button"
+      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <FontAwesomeIcon icon={faQuestionCircle} id="helpDropdownToggle" />
+    </a>
+    <div key="help-menu" className="dropdown-menu dropdown-menu-right" aria-labelledby="help-menu">
+      <Link className="dropdown-item" to="/help">Help</Link>
+      <DropdownItem divider />
+      <ExternalDocsLink url="https://renku.discourse.group" title="Forum" className="dropdown-item" />
+      <ExternalDocsLink url="https://gitter.im/SwissDataScienceCenter/renku" title="Gitter" className="dropdown-item" />
+      <ExternalDocsLink url="https://github.com/SwissDataScienceCenter/renku"
+        title="GitHub" className="dropdown-item" />
+    </div>
+  </li>;
 }
 
 class LoggedInNavBar extends Component {
@@ -163,6 +182,7 @@ class LoggedInNavBar extends Component {
 
             <ul className="navbar-nav">
               <RenkuToolbarItemPlus currentPath={this.props.location.pathname}/>
+              <RenkuToolbarHelpMenu />
               <RenkuToolbarItemUser {...this.props} />
             </ul>
           </div>
@@ -201,6 +221,7 @@ class AnonymousNavBar extends Component {
               <RenkuNavLink to="/datasets" title="Datasets" />
             </ul>
             <ul className="navbar-nav">
+              <RenkuToolbarHelpMenu />
               <RenkuToolbarItemUser {...this.props} />
             </ul>
           </div>
@@ -223,8 +244,9 @@ class FooterNavbar extends Component {
           </Nav>
           <Nav className="ml-auto">
             <RenkuNavLink to="/help" title="Help" />
-            <NavLink target="_blank" href="https://gitter.im/SwissDataScienceCenter/renku">Gitter</NavLink>
-            <NavLink target="_blank" href="https://datascience.ch/who-we-are/">About</NavLink>
+            <ExternalDocsLink url="https://renku.discourse.group" title="Forum" className="nav-link"/>
+            <ExternalDocsLink url="https://gitter.im/SwissDataScienceCenter/renku" title="Gitter" className="nav-link"/>
+            <ExternalDocsLink url="https://datascience.ch/who-we-are" title="About" className="nav-link"/>
           </Nav>
         </Navbar>
       </footer>
