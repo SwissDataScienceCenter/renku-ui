@@ -25,21 +25,12 @@
 
 import React, { Component } from "react";
 import { Route } from "react-router-dom";
-import { ExternalDocsLink, RenkuNavLink } from "../utils/UIComponents";
+import { ExternalDocsLink, ExternalIconLink, RenkuNavLink } from "../utils/UIComponents";
 
 import { Row, Col } from "reactstrap";
 import { Nav, NavItem } from "reactstrap";
 
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDiscourse, faGithub, faGitter } from "@fortawesome/free-brands-svg-icons";
-
-function ExternalDocsIconLink(props) {
-  return (
-    <a href={props.url} target="_blank" rel="noreferrer noopener">
-      <FontAwesomeIcon icon={props.icon} /> {props.title}
-    </a>
-  );
-}
 
 class HelpNav extends Component {
   render() {
@@ -75,7 +66,7 @@ class HelpGetting extends Component {
       <div key="main1" className="d-flex mb-3 flex-wrap">
         <div className="mr-4" style={{ flex: "0 1", flexBasis }}>
           <h2>
-            <ExternalDocsIconLink url="https://renku.discourse.group" icon={faDiscourse} title="Forum" />
+            <ExternalIconLink url="https://renku.discourse.group" icon={faDiscourse} title="Forum" />
           </h2>
           <p>
             We maintain a <ExternalDocsLink url="https://renku.discourse.group" title="help forum" /> for
@@ -84,7 +75,7 @@ class HelpGetting extends Component {
         </div>
         <div className="mr-4" style={{ flex: "0 1", flexBasis }}>
           <h2>
-            <ExternalDocsIconLink url="https://gitter.im/SwissDataScienceCenter/renku" icon={faGitter} title="Gitter" />
+            <ExternalIconLink url="https://gitter.im/SwissDataScienceCenter/renku" icon={faGitter} title="Gitter" />
           </h2>
           <p>
             Want to reach out to the development team live? Contact us on{" "}
@@ -94,7 +85,7 @@ class HelpGetting extends Component {
         </div>
         <div className="mr-4" style={{ flex: "0 1", flexBasis }}>
           <h2>
-            <ExternalDocsIconLink
+            <ExternalIconLink
               url="https://github.com/SwissDataScienceCenter/renku"
               icon={faGithub}
               title="GitHub"
