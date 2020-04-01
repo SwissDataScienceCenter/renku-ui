@@ -588,8 +588,7 @@ function ThrottledTooltip(props) {
  * @param {string} [tooltip] - the text of the tooltip
  */
 function IconLink(props) {
-  // eslint-disable-next-line no-unused-vars
-  const [uniqueId, setUniqueId] = useState(`icon-link-${_.uniqueId()}`);
+  const [uniqueId, ] = useState(`icon-link-${_.uniqueId()}`);
 
   return <span>
     <Link to={props.to} id={uniqueId} >
@@ -599,24 +598,38 @@ function IconLink(props) {
   </span>;
 }
 
+function ExternalIconLinkWithTooltip(props) {
+  const [uniqueId, ] = useState(`external-icon-link-${_.uniqueId()}`);
+
+  return <span>
+    <a href={props.url} role="button" target="_blank" rel="noreferrer noopener">
+      <FontAwesomeIcon className="icon-link" icon={props.icon} id={uniqueId} />
+    </a>
+    <ThrottledTooltip target={uniqueId} tooltip={props.tooltip} />
+  </span>;
+}
+
+function ExternalIconLinkWithoutTooltip(props) {
+  return <a href={props.url} target="_blank" rel="noreferrer noopener">
+    <FontAwesomeIcon icon={props.icon} /> {props.title}
+  </a>;
+}
+
 /**
  * ExternalIconLink
  * External application link that is shown as a font-awesome icon
  *
  * @param {string} [to] - url of link
+ * @param {string} [url] - alternative for 'to' -- takes precedence over to
  * @param {icon} [icon] - font-awesome icon to display
- * @param {string} [tooltip] - the text of the tooltip
+ * @param {string} [tooltip] - the text of the tooltip or null for no tooltip
  */
 function ExternalIconLink(props) {
-  // eslint-disable-next-line no-unused-vars
-  const [uniqueId, setUniqueId] = useState(`external-icon-link-${_.uniqueId()}`);
-
-  return <span>
-    <a href={props.to} role="button" target="_blank" rel="noreferrer noopener">
-      <FontAwesomeIcon className="icon-link" icon={props.icon} id={uniqueId} />
-    </a>
-    <ThrottledTooltip target={uniqueId} tooltip={props.tooltip} />
-  </span>;
+  const url = (props.url) ? props.url : props.to;
+  const myProps = {url, ...props};
+  return (props.tooltip) ?
+    ExternalIconLinkWithTooltip(myProps) :
+    ExternalIconLinkWithoutTooltip(myProps)
 }
 
 /**
@@ -631,8 +644,7 @@ function ExternalIconLink(props) {
  * @param {string} [tooltip] - the text of the tooltip
  */
 function TooltipToggleButton(props) {
-  // eslint-disable-next-line no-unused-vars
-  const [uniqueId, setUniqueId] = useState(`tooltip-toggle-${_.uniqueId()}`);
+  const [uniqueId, ] = useState(`tooltip-toggle-${_.uniqueId()}`);
 
   return <span onClick={props.onClick}>
     {props.active ?
