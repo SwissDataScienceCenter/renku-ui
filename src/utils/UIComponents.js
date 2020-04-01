@@ -238,11 +238,42 @@ function ExternalLinkText(props) {
     rel="noreferrer noopener">{props.title}</a>;
 }
 
+
+/**
+ * Link to external URL.
+ *
+ * @param {string} [url] - The URL to link to
+ * @param {string} [title] - The text to show for the link
+ * @param {string} [role] - "link" or "text" to be shown as a link, null for a button
+ * @param {string?} [className] - [Optional] Any classes to add, e.g., 'nav-link' or 'dropdown-item'
+ * @param {boolean} [showExternalLinkIcon] - Show the icon to indicate an external link if true (default false)
+ */
 function ExternalLink(props) {
   const role = props.role;
-  if (role === "link") return ExternalLinkText(props);
-  if (role === "text") return ExternalLinkText(props);
-  return ExternalLinkButton(props);
+  const showLinkIcon = (props.showExternalLinkIcon === true) ? true : false;
+  const displayTitle = (showLinkIcon) ?
+    <span>
+      <FontAwesomeIcon icon={faExternalLinkAlt} color="dark" /> {props.title}
+    </span> :
+    props.title;
+  const myProps = { title: displayTitle, ...props };
+  if (role === "link") return ExternalLinkText(myProps);
+  if (role === "text") return ExternalLinkText(myProps);
+  return ExternalLinkButton(myProps);
+}
+
+
+/**
+ * Link to external URL, with the role as text.
+ *
+ * @param {string} [url] - The URL to link to
+ * @param {string} [title] - The text to show for the link
+ * @param {string?} [className] - [Optional] Any classes to add, e.g., 'nav-link' or 'dropdown-item'
+ * @param {boolean} [showExternalLinkIcon] - Show the icon to indicate an external link if true (default false)
+ */
+function ExternalDocsLink(props) {
+  const role = "link";
+  return ExternalLink({ role, ...props });
 }
 
 function LoaderSpinner(props) {
@@ -633,33 +664,6 @@ function ButtonWithMenu(props) {
       {props.children}
     </DropdownMenu>
   </ButtonDropdown>;
-}
-
-
-/**
- * Link to external documentation.
- *
- * @param {string} [url] - The URL to link to
- * @param {string} [title] - The text to show for the link
- * @param {string?} [className] - Use 'nav-link' if the links should align with nav-link elements;
- *                              - Use 'dropdown-item' if links should look like dropdown menu items;
- *                              - Leave empty or null for default
- * @param {boolean} [showExternalLinkIcon] - Show the icon to indicate an external link if true (default false)
- */
-function ExternalDocsLink(props) {
-  const className = props.className;
-  const showLinkIcon = (props.showExternalLinkIcon === true) ? true : false;
-  const displayTitle = (showLinkIcon) ?
-    <span>
-      <FontAwesomeIcon icon={faExternalLinkAlt} color="dark" /> {props.title}
-    </span> :
-    props.title;
-
-  return (
-    <a href={props.url} target="_blank" rel="noreferrer noopener" className={className}>
-      {displayTitle}
-    </a>
-  );
 }
 
 export { UserAvatar, TimeCaption, FieldGroup, RenkuNavLink, Pagination, RenkuMarkdown };
