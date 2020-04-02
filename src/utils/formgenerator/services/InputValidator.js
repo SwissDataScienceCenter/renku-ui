@@ -30,5 +30,6 @@ function checkAtLeastLength(input, length) {
 export default {
   isNotEmpty: input => checkAtLeastLength(input.value, 1),
   isAtLeastLength: (input, minLength) => checkAtLeastLength(input.value, minLength),
-  filesReady: (input) => input.value.length === input.filesOnUploader.current
+  filesReady: (input) => input.value.length === input.filesOnUploader.current,
+  optionExists: (input) => input.options.find(option => option.value === input.value) !== undefined
 };

@@ -37,7 +37,7 @@ function AddDataset(props) {
 
   const closeModal = () =>{
     if (!submitLoader) {
-      addDatasetToProjectSchema.project.value = undefined;
+      addDatasetToProjectSchema.project.value = "";
       addDatasetToProjectSchema.project.options = [];
       props.setModalOpen(false);
     }
@@ -48,7 +48,7 @@ function AddDataset(props) {
       oldDatasetsList.find(ods => ds.identifier === ods.identifier) === undefined);
     if (new_dataset.length > 0) {
       setSubmitLoader(false);
-      addDatasetToProjectSchema.project.value = undefined;
+      addDatasetToProjectSchema.project.value = "";
       addDatasetToProjectSchema.project.options = [];
       clearInterval(waitForDatasetInKG);
       props.history.push({
@@ -141,7 +141,7 @@ function AddDataset(props) {
 
   useEffect(()=> {
     if (addDatasetToProjectSchema.project.options.length === 0) {
-      props.client.getProjects({ min_access_level: ACCESS_LEVELS.MAINTAINER, order_by: "last_activity_at" })
+      props.client.getProjects({ min_access_level: ACCESS_LEVELS.MAINTAINER })
         .then((projectResponse) => {
           const projectsDropdown = projectResponse.data.map((project) => {
             return {
@@ -149,8 +149,11 @@ function AddDataset(props) {
               "name": project.path_with_namespace
             };
           });
-          addDatasetToProjectSchema.project.value = projectsDropdown[0].value;
-          addDatasetToProjectSchema.project.options = projectsDropdown;
+          addDatasetToProjectSchema.project.value = "";
+          addDatasetToProjectSchema.project.options = projectsDropdown.sort(
+            (a, b) => (a.name > b.name) ? 1 :
+              ((b.name > a.name) ? -1 : 0));
+
         });
     }
   });

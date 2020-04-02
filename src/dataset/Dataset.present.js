@@ -168,7 +168,7 @@ export default function DatasetView(props) {
 
   return <Col>
     <Row>
-      <Col md={7} sm={12}>
+      <Col md={8} sm={12}>
         {
           dataset.published !== undefined && dataset.published.datePublished !== undefined ?
             <small style={{ display: "block", paddingBottom: "8px" }} className="font-weight-light font-italic">
@@ -178,30 +178,29 @@ export default function DatasetView(props) {
         }
         <h4 key="datasetTitle">
           {dataset.name}
+          { dataset.url && (props.insideProject || dataset.sameAs.includes("doi.org")) ?
+            <a href={dataset.url} target="_blank" rel="noreferrer noopener">
+              <Button size="sm" color="link" style={{ color: "rgba(0, 0, 0, 0.5)" }}>
+                <FontAwesomeIcon icon={faExternalLinkAlt} color="dark" /> Go to source
+              </Button>
+            </a>
+            : null
+          }
         </h4>
       </Col>
-      <Col md={5} sm={12}>
+      <Col md={4} sm={12}>
         { props.logged ?
-          <Button className="float-right" size="sm" outline color="dark" onClick={()=>setAddDatasetModalOpen(true)}>
+          <Button className="float-right mb-1" size="sm" color="primary" onClick={()=>setAddDatasetModalOpen(true)}>
             <FontAwesomeIcon icon={faPlus} color="dark" /> Add to project
           </Button>
           : null
         }
         {props.insideProject && props.maintainer ?
-          <Link className="float-right mr-1" to={{ pathname: "modify", state: { dataset: dataset } }} >
-            <Button size="sm" outline color="dark" >
+          <Link className="float-right mr-1 mb-1" to={{ pathname: "modify", state: { dataset: dataset } }} >
+            <Button size="sm" color="primary" >
               <FontAwesomeIcon icon={faPen} color="dark" /> Modify
             </Button>
           </Link>
-          : null
-        }
-        { dataset.url &&
-        (props.insideProject || dataset.sameAs.includes("doi.org")) ?
-          <a className="float-right mr-1" href={dataset.url} target="_blank" rel="noreferrer noopener">
-            <Button size="sm" outline color="dark" >
-              <FontAwesomeIcon icon={faExternalLinkAlt} color="dark" /> Go to source
-            </Button>
-          </a>
           : null
         }
       </Col>

@@ -334,13 +334,21 @@ const datasetImportFormSchema = new Schema({
 
 const addDatasetToProjectSchema = new Schema({
   project: {
-    initial: undefined,
+    initial: "",
     name: "project",
     label: "Project",
-    type: FormGenerator.FieldTypes.SELECT,
+    placeholder: "Select a project...",
+    type: FormGenerator.FieldTypes.SELECTAUTOSUGGEST,
+    parseFun: expression => FormGenerator.Parsers.slugFromTitle(expression),
     options: [
     ],
-    validators: []
+    validators: [
+      {
+        id: "valid-option",
+        isValidFun: expression => FormGenerator.Validators.optionExists(expression),
+        alert: "Selected project is not valid"
+      }
+    ]
   }
 });
 
