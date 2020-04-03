@@ -209,21 +209,21 @@ class KnowledgeGraphLink extends Component {
 
 function GitLabConnectButton(props) {
   const size = (props.size) ? props.size : "md";
-  const accessLevel = props.accessLevel;
-  const gitlabIDEUrl = props.gitlabIDEUrl;
-  if (props.externalUrl === "") return null;
+  const { userLogged, gitlabIDEUrl } = props;
+  if (!props.externalUrl)
+    return null;
   const gitlabProjectButton = <ExternalLink url={props.externalUrl} title="View in GitLab" />;
 
   const onClick = () => window.open(gitlabIDEUrl, "_blank");
-  const gitlabIDEButton = (accessLevel >= ACCESS_LEVELS.DEVELOPER && gitlabIDEUrl !== null) ?
-    (<DropdownItem onClick={onClick}>View in Web IDE</DropdownItem>) :
+  const gitlabIDEButton = userLogged ?
+    (<DropdownItem onClick={onClick} size={size}>View in Web IDE</DropdownItem>) :
     null;
 
-  return <div>
-    <ButtonWithMenu default={gitlabProjectButton} size={size}>
-      {gitlabIDEButton}
-    </ButtonWithMenu>
-  </div>;
+  let button = gitlabIDEButton ?
+    (<ButtonWithMenu default={gitlabProjectButton} size={size}>{gitlabIDEButton}</ButtonWithMenu>) :
+    (<ExternalLink url={props.externalUrl} size={size} title="View in GitLab" />);
+
+  return (<div>{button}</div>);
 }
 
 class ProjectViewHeaderOverview extends Component {
@@ -307,7 +307,7 @@ class ProjectViewHeaderOverview extends Component {
               <GitLabConnectButton size="sm"
                 externalUrl={this.props.externalUrl}
                 gitlabIDEUrl={gitlabIDEUrl}
-                accessLevel={this.props.visibility.accessLevel} />
+                userLogged={this.props.user.logged} />
             </div>
           </Col>
         </Row>
