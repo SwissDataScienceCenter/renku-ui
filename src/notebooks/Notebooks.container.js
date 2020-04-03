@@ -37,6 +37,7 @@ import { StatusHelper } from "../model/Model";
  * @param {string} [scope.project] - path of the reference project
  * @param {string} [scope.branch] - branch name
  * @param {string} [scope.commit] - commit full id
+ * @param {string} [message] - provide a useful information or warning message
  */
 class Notebooks extends Component {
   constructor(props) {
@@ -107,6 +108,7 @@ class Notebooks extends Component {
       user={this.props.user}
       standalone={this.props.standalone ? this.props.standalone : false}
       scope={this.props.scope}
+      message={this.props.message}
       urlNewEnvironment={this.props.urlNewEnvironment}
     />;
   }
@@ -126,6 +128,7 @@ class Notebooks extends Component {
  * @param {string} externalUrl - GitLabl repository url
  * @param {string} [successUrl] - redirect url to be used when a notebook is succesfully started
  * @param {Object} [history] - mandatory if successUrl is provided
+ * @param {string} [message] - provide a useful information or warning message
  */
 class StartNotebookServer extends Component {
   constructor(props) {
@@ -343,6 +346,7 @@ class StartNotebookServer extends Component {
     return <ConnectedStartNotebookServer
       store={this.model.reduxStore}
       inherited={this.props}
+      message={this.props.message}
       justStarted={this.state.starting}
     />;
   }

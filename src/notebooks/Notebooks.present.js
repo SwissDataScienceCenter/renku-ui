@@ -50,7 +50,7 @@ class Notebooks extends Component {
 
     return <Row>
       <Col>
-        <NotebooksTitle standalone={this.props.standalone} />
+        <NotebooksTitle standalone={this.props.standalone} message={this.props.message} />
         <NotebookServers
           servers={this.props.notebooks.all}
           standalone={this.props.standalone}
@@ -75,7 +75,14 @@ class NotebooksTitle extends Component {
   render() {
     if (this.props.standalone)
       return (<h1>Interactive Environments</h1>);
-    return (<h3>Interactive Environments</h3>);
+
+    if (!this.props.message)
+      return (<h3>Interactive Environments</h3>);
+
+    return [
+      <h3 key="title">Interactive Environments</h3>,
+      <div key="message">{this.props.message}</div>
+    ];
   }
 }
 
@@ -591,7 +598,7 @@ class StartNotebookServer extends Component {
   render() {
     const { branch, commit } = this.props.filters;
     const { branches } = this.props.data;
-    const { pipelines } = this.props;
+    const { pipelines, message } = this.props;
     const fetching = {
       branches: StatusHelper.isUpdating(branches) ? true : false,
       pipelines: pipelines.fetching,
@@ -606,10 +613,15 @@ class StartNotebookServer extends Component {
       || this.props.justStarted
     );
 
+    const messageOutput = message ?
+      (<div key="message">{message}</div>) :
+      null;
+
     return (
       <Row>
         <Col sm={12} md={10} lg={8}>
           <h3>Start a new interactive environment</h3>
+          {messageOutput}
           <Form>
             <StartNotebookBranches {...this.props} />
             {show.commits ? <StartNotebookCommits {...this.props} /> : null}

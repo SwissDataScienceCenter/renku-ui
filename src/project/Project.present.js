@@ -765,46 +765,24 @@ class ProjectViewFiles extends Component {
   }
 }
 
-function notebookLauncher(userLogged, accessLevel, notebookLauncher, fork, postLoginUrl, externalUrl) {
-  if (accessLevel >= ACCESS_LEVELS.DEVELOPER)
-    return (<div>{notebookLauncher}</div>);
-
-  let content = [<p key="no-permission">You do not have sufficient permissions to launch an interactive environment
-    for this project.</p>];
+function notebookLauncher(userLogged, notebookLauncher, postLoginUrl) {
   if (!userLogged) {
     const to = { "pathname": "/login", "state": { previous: postLoginUrl } };
-    content = content.concat(
-      <InfoAlert timeout={0} key="login-info">
-        <p className="mb-0">
-          <Link className="btn btn-primary btn-sm" to={to} previous={postLoginUrl}>Log in</Link> to use
-          interactive environments.
+    return (
+      <div>
+        <p>
+          You do not have sufficient permissions to launch an interactive environment for this project.
         </p>
-      </InfoAlert>
+        <InfoAlert timeout={0} key="login-info">
+          <p className="mb-0">
+            <Link className="btn btn-primary btn-sm" to={to} previous={postLoginUrl}>Log in</Link> to use
+            interactive environments.
+          </p>
+        </InfoAlert>
+      </div>
     );
   }
-  else {
-    content = content.concat(
-      <InfoAlert timeout={0} key="login-info">
-        <p>You can still do one of the following:</p>
-        <ul className="mb-0">
-          <li>
-            <Button size="sm" color="primary" onClick={(event) => fork(event)}>
-              Fork the project
-            </Button> and start an interactive environment from your fork.
-          </li>
-          <li className="pt-1">
-            <ExternalLink size="sm" url={`${externalUrl}/project_members`} title="Contact a maintainer" /> and ask them
-            to <a href="https://renku.readthedocs.io/en/latest/user/collaboration.html#added-to-project"
-              target="_blank" rel="noreferrer noopener">
-              grant you the necessary permissions
-            </a>.
-          </li>
-        </ul>
-      </InfoAlert>
-    );
-  }
-
-  return (<div>{content}</div>);
+  return (<div>{notebookLauncher}</div>);
 }
 
 class OverviewDatasetRow extends Component {
@@ -876,46 +854,92 @@ class ProjectEnvironments extends Component {
   }
 }
 
+function notebookWarning(userLogged, accessLevel, fork, postLoginUrl, externalUrl) {
+  if (!userLogged) {
+    return null;
+
+    // TODO: draft implementation
+    // const to = { "pathname": "/login", "state": { previous: postLoginUrl } };
+    // return (
+    //   <WarnAlert timeout={0} key="permissions-warning">
+    //     <p>As an anonymous user, you can start an environment but you cannot save your work.</p>
+    //     <p className="mb-0">
+    //       <Link className="btn btn-primary btn-sm btn-warning" to={to} previous={postLoginUrl}>Log in</Link> to use
+    //       all the features we provide through <ExternalLink role="text" title="Interactive Envirnonments"
+    //         url="https://renku.readthedocs.io/en/latest/developer/services/notebooks_service.html" />
+    //       .
+    //     </p>
+    //   </WarnAlert>
+    // );
+  }
+  else if (accessLevel < ACCESS_LEVELS.DEVELOPER) {
+    return (
+      <InfoAlert timeout={0} key="permissions-warning">
+        <p>
+          You have limited permissions for this project.
+          If you want to save your work, consider one of the following:
+        </p>
+        <ul className="mb-0">
+          <li>
+            <Button size="sm" color="primary" onClick={(event) => fork(event)}>
+              Fork the project
+            </Button> and start an interactive environment from your fork.
+          </li>
+          <li className="pt-1">
+            <ExternalLink size="sm" title="Contact a maintainer"
+              url={`${externalUrl}/project_members`} /> and ask them
+            to <a href="https://renku.readthedocs.io/en/latest/user/collaboration.html#added-to-project"
+              target="_blank" rel="noreferrer noopener">
+              grant you the necessary permissions
+            </a>.
+          </li>
+        </ul>
+      </InfoAlert>
+    );
+  }
+  return null;
+}
+
 class ProjectNotebookServers extends Component {
   render() {
-    const content = (
-      <Notebooks key="notebooks"
-        client={this.props.client}
-        model={this.props.model}
-        standalone={false}
-        urlNewEnvironment={this.props.launchNotebookUrl}
-        scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path }} />
+    const {
+      client, model, user, visibility, toggleForkModal, location, externalUrl, launchNotebookUrl
+    } = this.props;
+    const warning = notebookWarning(
+      user.logged, visibility.accessLevel, toggleForkModal, location.pathname, externalUrl
     );
 
-    return (notebookLauncher(this.props.user.logged,
-      this.props.visibility.accessLevel,
-      content,
-      this.props.toggleForkModal,
-      this.props.location.pathname,
-      this.props.externalUrl));
+    let content = (
+      <Notebooks standalone={false} client={client} model={model}
+        message={warning}
+        urlNewEnvironment={launchNotebookUrl}
+        scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path }} />
+    );
+    return (notebookLauncher(user.logged, content, location.pathname));
   }
 }
 
 class ProjectStartNotebookServer extends Component {
   render() {
-    let content = (<StartNotebookServer
-      client={this.props.client}
-      model={this.props.model}
-      branches={this.props.system.branches}
-      autosaved={this.props.system.autosaved}
-      refreshBranches={this.props.fetchBranches}
+    const {
+      client, model, user, visibility, toggleForkModal, location, externalUrl, system,
+      fetchBranches, notebookServersUrl, history
+    } = this.props;
+    const warning = notebookWarning(
+      user.logged, visibility.accessLevel, toggleForkModal, location.pathname, externalUrl
+    );
+
+    let content = (<StartNotebookServer client={client} model={model} history={history}
+      message={warning}
+      branches={system.branches}
+      autosaved={system.autosaved}
+      refreshBranches={fetchBranches}
+      externalUrl={externalUrl}
+      successUrl={notebookServersUrl}
       scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path }}
-      externalUrl={this.props.externalUrl}
-      successUrl={this.props.notebookServersUrl}
-      history={this.props.history}
     />);
 
-    return (notebookLauncher(this.props.user.logged,
-      this.props.visibility.accessLevel,
-      content,
-      this.props.toggleForkModal,
-      this.props.location.pathname,
-      this.props.externalUrl));
+    return (notebookLauncher(user.logged, content, location.pathname));
   }
 }
 
