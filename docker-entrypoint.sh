@@ -25,6 +25,7 @@ echo " SENTRY_NAMESPACE=${SENTRY_NAMESPACE}"
 echo " RENKU_TEMPLATES_URL=${RENKU_TEMPLATES_URL}"
 echo " RENKU_TEMPLATES_REF=${RENKU_TEMPLATES_REF}"
 echo " MAINTENANCE=${MAINTENANCE}"
+echo " ANONYMOUS_SESSIONS=${ANONYMOUS_SESSIONS}"
 echo "==================================================="
 
 tee > /usr/share/nginx/html/config.json << EOF
@@ -36,7 +37,8 @@ tee > /usr/share/nginx/html/config.json << EOF
   "SENTRY_NAMESPACE": "${SENTRY_NAMESPACE}",
   "RENKU_TEMPLATES_URL": "${RENKU_TEMPLATES_URL}",
   "RENKU_TEMPLATES_REF": "${RENKU_TEMPLATES_REF}",
-  "MAINTENANCE": "${MAINTENANCE}"
+  "MAINTENANCE": "${MAINTENANCE}",
+  "ANONYMOUS_SESSIONS": "${ANONYMOUS_SESSIONS}"
 }
 EOF
 

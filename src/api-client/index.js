@@ -43,6 +43,14 @@ const ACCESS_LEVELS = {
   OWNER: 50,
 };
 
+const FETCH_DEFAULT = {
+  options: { headers: new Headers() },
+  returnType: RETURN_TYPES.json,
+  alertOnErr: false,
+  reLogin: true,
+  anonymousLogin: false
+};
+
 class APIClient {
 
   // GitLab api client for Renku. Note that we do some
@@ -76,35 +84,32 @@ class APIClient {
   // contain a user token.
   clientFetch(
     url,
-    options = { headers: new Headers() },
-    returnType = RETURN_TYPES.json,
-    alertOnErr = false,
-    reLogin = true
+    options = FETCH_DEFAULT.options,
+    returnType = FETCH_DEFAULT.returnType,
+    alertOnErr = FETCH_DEFAULT.alertOnErr,
+    reLogin = FETCH_DEFAULT.reLogin,
+    anonymousLogin = FETCH_DEFAULT.anonymousLogin
   ) {
-
     return renkuFetch(url, options)
       .catch((error) => {
-
         // For permission errors we send the user to login
-        if (reLogin && error.case === API_ERRORS.unauthorizedError)
+        if (reLogin && error.case === API_ERRORS.unauthorizedError) {
+          if (anonymousLogin)
+            return this.doAnonymousLogin();
           return this.doLogin();
-
-
+        }
         // Alert only if corresponding option is set to true
-        else if (alertOnErr)
+        else if (alertOnErr) {
           alertAPIErrors(error);
-
-
+        }
         // Default case: Re-raise the error for the application
         // to take care of it.
-        else
+        else {
           return Promise.reject(error);
-
+        }
       })
-
       .then(response => {
         switch (returnType) {
-
           case RETURN_TYPES.json:
             return response.json().then(data => {
               return {
@@ -112,13 +117,10 @@ class APIClient {
                 pagination: processPaginationHeaders(this, response.headers)
               };
             });
-
           case RETURN_TYPES.text:
             return response.text();
-
           case RETURN_TYPES.full:
             return response;
-
           default:
             return response;
         }
@@ -151,6 +153,11 @@ class APIClient {
     return fetch(urlObject, { headers, method });
   }
 
+  doAnonymousLogin() {
+    window.location = `${this.baseUrl}/auth/jupyterhub/login-tmp` +
+      `?redirect_url=${encodeURIComponent(window.location.href)}`;
+  }
+
   doLogin() {
     window.location = `${this.baseUrl}/auth/login?redirect_url=${encodeURIComponent(window.location.href)}`;
   }
@@ -168,4 +175,4 @@ class APIClient {
 }
 
 export default APIClient;
-export { alertAPIErrors, APIError, ACCESS_LEVELS, API_ERRORS, testClient };
+export { alertAPIErrors, APIError, ACCESS_LEVELS, API_ERRORS, FETCH_DEFAULT, testClient };

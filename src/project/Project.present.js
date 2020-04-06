@@ -765,26 +765,6 @@ class ProjectViewFiles extends Component {
   }
 }
 
-function notebookLauncher(userLogged, notebookLauncher, postLoginUrl) {
-  if (!userLogged) {
-    const to = { "pathname": "/login", "state": { previous: postLoginUrl } };
-    return (
-      <div>
-        <p>
-          You do not have sufficient permissions to launch an interactive environment for this project.
-        </p>
-        <InfoAlert timeout={0} key="login-info">
-          <p className="mb-0">
-            <Link className="btn btn-primary btn-sm" to={to} previous={postLoginUrl}>Log in</Link> to use
-            interactive environments.
-          </p>
-        </InfoAlert>
-      </div>
-    );
-  }
-  return (<div>{notebookLauncher}</div>);
-}
-
 class OverviewDatasetRow extends Component {
   render() {
     return <tr>
@@ -856,28 +836,29 @@ class ProjectEnvironments extends Component {
 
 function notebookWarning(userLogged, accessLevel, fork, postLoginUrl, externalUrl) {
   if (!userLogged) {
-    return null;
-
-    // TODO: draft implementation
-    // const to = { "pathname": "/login", "state": { previous: postLoginUrl } };
-    // return (
-    //   <WarnAlert timeout={0} key="permissions-warning">
-    //     <p>As an anonymous user, you can start an environment but you cannot save your work.</p>
-    //     <p className="mb-0">
-    //       <Link className="btn btn-primary btn-sm btn-warning" to={to} previous={postLoginUrl}>Log in</Link> to use
-    //       all the features we provide through <ExternalLink role="text" title="Interactive Envirnonments"
-    //         url="https://renku.readthedocs.io/en/latest/developer/services/notebooks_service.html" />
-    //       .
-    //     </p>
-    //   </WarnAlert>
-    // );
+    const to = { "pathname": "/login", "state": { previous: postLoginUrl } };
+    return (
+      <InfoAlert timeout={0} key="permissions-warning">
+        <p>
+          <FontAwesomeIcon icon={faExclamationTriangle} /> As
+          an anonymous user, you can start <ExternalLink role="text" title="Interactive Envirnonments"
+            url="https://renku.readthedocs.io/en/latest/developer/services/notebooks_service.html" />, but
+          you cannot save your work.
+        </p>
+        <p className="mb-0">
+          <Link className="btn btn-primary btn-sm" to={to} previous={postLoginUrl}>Log in</Link> for
+          full access.
+        </p>
+      </InfoAlert>
+    );
   }
   else if (accessLevel < ACCESS_LEVELS.DEVELOPER) {
     return (
       <InfoAlert timeout={0} key="permissions-warning">
         <p>
-          You have limited permissions for this project.
-          If you want to save your work, consider one of the following:
+          <FontAwesomeIcon icon={faExclamationTriangle} /> You have limited permissions for this
+          project. You can launch an interactive environment, but you will not be able to save
+          any changes. If you want to save your work, consider one of the following:
         </p>
         <ul className="mb-0">
           <li>
@@ -903,19 +884,21 @@ function notebookWarning(userLogged, accessLevel, fork, postLoginUrl, externalUr
 class ProjectNotebookServers extends Component {
   render() {
     const {
-      client, model, user, visibility, toggleForkModal, location, externalUrl, launchNotebookUrl
+      client, model, user, visibility, toggleForkModal, location, externalUrl, launchNotebookUrl,
+      blockAnonymous
     } = this.props;
     const warning = notebookWarning(
       user.logged, visibility.accessLevel, toggleForkModal, location.pathname, externalUrl
     );
 
-    let content = (
-      <Notebooks standalone={false} client={client} model={model}
+    return (
+      <Notebooks standalone={false} client={client} model={model} location={location}
         message={warning}
         urlNewEnvironment={launchNotebookUrl}
-        scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path }} />
+        blockAnonymous={blockAnonymous}
+        scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path }}
+      />
     );
-    return (notebookLauncher(user.logged, content, location.pathname));
   }
 }
 
@@ -923,23 +906,24 @@ class ProjectStartNotebookServer extends Component {
   render() {
     const {
       client, model, user, visibility, toggleForkModal, location, externalUrl, system,
-      fetchBranches, notebookServersUrl, history
+      fetchBranches, notebookServersUrl, history, blockAnonymous
     } = this.props;
     const warning = notebookWarning(
       user.logged, visibility.accessLevel, toggleForkModal, location.pathname, externalUrl
     );
 
-    let content = (<StartNotebookServer client={client} model={model} history={history}
-      message={warning}
-      branches={system.branches}
-      autosaved={system.autosaved}
-      refreshBranches={fetchBranches}
-      externalUrl={externalUrl}
-      successUrl={notebookServersUrl}
-      scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path }}
-    />);
-
-    return (notebookLauncher(user.logged, content, location.pathname));
+    return (
+      <StartNotebookServer client={client} model={model} history={history} location={location}
+        message={warning}
+        branches={system.branches}
+        autosaved={system.autosaved}
+        refreshBranches={fetchBranches}
+        externalUrl={externalUrl}
+        successUrl={notebookServersUrl}
+        blockAnonymous={blockAnonymous}
+        scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path }}
+      />
+    );
   }
 }
 

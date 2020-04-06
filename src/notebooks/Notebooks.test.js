@@ -26,7 +26,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { MemoryRouter } from "react-router-dom";
 
-import { NotebooksHelper, Notebooks, StartNotebookServer, CheckNotebookStatus } from "./index";
+import { NotebooksHelper, Notebooks, StartNotebookServer, CheckNotebookStatus, NotebooksDisabled } from "./index";
 import { ExpectedAnnotations } from "./Notebooks.state";
 import { StateModel, globalSchema } from "../model";
 import { testClient as client } from "../api-client";
@@ -197,6 +197,15 @@ describe("rendering", () => {
     project: "fake",
     branch: { name: "master" }
   };
+
+  it("renders NotebooksDisabled", () => {
+    const div = document.createElement("div");
+    document.body.appendChild(div);
+    ReactDOM.render(
+      <MemoryRouter>
+        <NotebooksDisabled />
+      </MemoryRouter>, div);
+  });
 
   it("renders Notebooks", () => {
     const props = {

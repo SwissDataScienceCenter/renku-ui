@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+import { API_ERRORS } from "./errors";
+
 function addPipelineMethods(client) {
   client.runPipeline = (projectId) => {
     const headers = client.getBasicHeaders();
@@ -80,6 +82,46 @@ function addPipelineMethods(client) {
       method: "POST",
       headers,
     }).then(response => response.data);
+  };
+
+  /**
+   * Get the list of available container registries. It should be 1 per project if there
+   * is at least a valid tagged image, otherwise 0.
+   *
+   * @param {number|string} projectId - project id or slug
+   */
+  client.getRegistries = (projectId) => {
+    const headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    const url = `${client.baseUrl}/projects/${projectId}/registry/repositories`;
+
+    return client.clientFetch(url, {
+      method: "GET",
+      headers,
+    }).then(response => response.data);
+  };
+
+  /**
+   * Get the image data for a specific tag.
+   *
+   * @param {number|string} projectId - project id or slug
+   * @param {number} registryId - registry id
+   * @param {string} tag - tag name, our convention uses the first 7 chars from commit id
+   */
+  client.getRegistryTag = (projectId, registryId, tag) => {
+    const headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    const url = `${client.baseUrl}/projects/${projectId}/registry/repositories` +
+      `/${registryId}/tags/${tag}`;
+
+    return client.clientFetch(url, { method: "GET", headers })
+      .then(response => response.data)
+      .catch((error) => {
+        // 404 is expected when nothing is available for the target tag
+        if (error.case === API_ERRORS.notFoundError)
+          return null;
+        throw error;
+      });
   };
 }
 

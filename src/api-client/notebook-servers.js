@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
+import { FETCH_DEFAULT } from "./index";
+
 function addNotebookServersMethods(client) {
-  client.getNotebookServers = (namespace, project, branch, commit) => {
+  client.getNotebookServers = (namespace, project, branch, commit, anonymous = false) => {
     const headers = client.getBasicHeaders();
     const url = `${client.baseUrl}/notebooks/servers`;
     let parameters = {};
@@ -26,11 +28,14 @@ function addNotebookServersMethods(client) {
     if (branch) parameters.branch = branch;
     if (commit) parameters.commit_sha = commit;
 
-    return client.clientFetch(url, {
-      method: "GET",
-      headers,
-      queryParams: parameters
-    }).then(resp => {
+    return client.clientFetch(
+      url,
+      { method: "GET", headers, queryParams: parameters },
+      FETCH_DEFAULT.returnType,
+      FETCH_DEFAULT.alertOnErr,
+      FETCH_DEFAULT.reLogin,
+      anonymous
+    ).then(resp => {
       return { "data": resp.data.servers };
     });
   };

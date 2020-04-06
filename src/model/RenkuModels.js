@@ -211,6 +211,7 @@ const notebooksSchema = new Schema({
       poller: { initial: null },
       fetched: { initial: null },
       fetching: { initial: false },
+      type: { initial: null },
 
       lastParameters: { initial: null },
       lastMainId: { initial: null },

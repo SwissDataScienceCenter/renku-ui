@@ -20,7 +20,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 import { NotebooksCoordinator } from "./Notebooks.state";
-import { StartNotebookServer as StartNotebookServerPresent } from "./Notebooks.present";
+import { StartNotebookServer as StartNotebookServerPresent, NotebooksDisabled } from "./Notebooks.present";
 import { Notebooks as NotebooksPresent } from "./Notebooks.present";
 import { CheckNotebookIcon } from "./Notebooks.present";
 import { StatusHelper } from "../model/Model";
@@ -31,6 +31,8 @@ import { StatusHelper } from "../model/Model";
  * @param {Object} client - api-client used to query the gateway
  * @param {Object} model - global model for the ui
  * @param {boolean} standalone - Indicates whether it's displayed as standalone
+ * @param {boolean} blockAnonymous - When true, block non logged in users
+ * @param {Object} [location] - react location object
  * @param {string} [urlNewEnvironment] - url to "new environment" page
  * @param {Object} [scope] - object containing filtering parameters
  * @param {string} [scope.namespace] - full path of the reference namespace
@@ -43,7 +45,8 @@ class Notebooks extends Component {
   constructor(props) {
     super(props);
     this.model = props.model.subModel("notebooks");
-    this.coordinator = new NotebooksCoordinator(props.client, this.model);
+    this.userModel = props.model.subModel("user");
+    this.coordinator = new NotebooksCoordinator(props.client, this.model, this.userModel);
     // temporarily reset data since notebooks model was not designed to be static
     this.coordinator.reset();
 
@@ -63,7 +66,8 @@ class Notebooks extends Component {
   }
 
   componentDidMount() {
-    this.coordinator.startNotebookPolling();
+    if (!this.props.blockAnonymous)
+      this.coordinator.startNotebookPolling();
   }
 
   componentWillUnmount() {
@@ -101,6 +105,9 @@ class Notebooks extends Component {
   }
 
   render() {
+    if (this.props.blockAnonymous)
+      return <NotebooksDisabled location={this.props.location} />;
+
     const VisibleNotebooks = connect(this.mapStateToProps.bind(this))(NotebooksPresent);
 
     return <VisibleNotebooks
@@ -126,6 +133,8 @@ class Notebooks extends Component {
  * @param {string} scope.namespace - full path of the reference namespace
  * @param {string} scope.project - path of the reference project
  * @param {string} externalUrl - GitLabl repository url
+ * @param {boolean} blockAnonymous - When true, block non logged in users
+ * @param {Object} [location] - react location object
  * @param {string} [successUrl] - redirect url to be used when a notebook is succesfully started
  * @param {Object} [history] - mandatory if successUrl is provided
  * @param {string} [message] - provide a useful information or warning message
@@ -134,7 +143,8 @@ class StartNotebookServer extends Component {
   constructor(props) {
     super(props);
     this.model = props.model.subModel("notebooks");
-    this.coordinator = new NotebooksCoordinator(props.client, this.model);
+    this.userModel = props.model.subModel("user");
+    this.coordinator = new NotebooksCoordinator(props.client, this.model, this.userModel);
     // temporarily reset data since notebooks model was not designed to be static
     this.coordinator.reset();
 
@@ -162,8 +172,10 @@ class StartNotebookServer extends Component {
 
   componentDidMount() {
     this._isMounted = true;
-    this.coordinator.startNotebookPolling();
-    this.refreshBranches();
+    if (!this.props.blockAnonymous) {
+      this.coordinator.startNotebookPolling();
+      this.refreshBranches();
+    }
   }
 
   componentWillUnmount() {
@@ -341,6 +353,9 @@ class StartNotebookServer extends Component {
   }
 
   render() {
+    if (this.props.blockAnonymous)
+      return <NotebooksDisabled location={this.props.location} />;
+
     const ConnectedStartNotebookServer = connect(this.mapStateToProps.bind(this))(StartNotebookServerPresent);
 
     return <ConnectedStartNotebookServer

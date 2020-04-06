@@ -52,6 +52,10 @@ class App extends Component {
       );
     }
 
+    // check anonymous sessions settings
+    const anonymousSessions = this.props.params["ANONYMOUS_SESSIONS"] === "true";
+    const blockAnonymous = !user.logged && !anonymousSessions;
+
     return (
       <Router>
         <div>
@@ -91,6 +95,7 @@ class App extends Component {
                   params={this.props.params}
                   model={this.props.model}
                   user={this.props.user}
+                  blockAnonymous={blockAnonymous}
                   {...p}
                 />}
               />
@@ -111,6 +116,7 @@ class App extends Component {
                   standalone={true}
                   client={this.props.client}
                   model={this.props.model}
+                  blockAnonymous={blockAnonymous}
                   {...p}
                 />}
               />
