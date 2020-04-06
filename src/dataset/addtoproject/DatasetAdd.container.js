@@ -28,12 +28,13 @@ import React, { useState, useEffect } from "react";
 import { addDatasetToProjectSchema } from "../../model/RenkuModels";
 import { ACCESS_LEVELS } from "../../api-client";
 import DatasetAdd from "./DatasetAdd.present";
+import { ImportStateMessage } from "../../utils/Dataset";
 
 function AddDataset(props) {
 
   const [serverErrors, setServerErrors] = useState(undefined);
   const [submitLoader, setSubmitLoader] = useState(false);
-  const [submitLoaderText, setSubmitLoaderText] = useState("Please wait, dataset import will start soon.");
+  const [submitLoaderText, setSubmitLoaderText] = useState(ImportStateMessage.ENQUEUED);
 
   const closeModal = () =>{
     if (!submitLoader) {
@@ -72,31 +73,30 @@ function AddDataset(props) {
   function handleJobResponse(job, monitorJob, cont, oldDatasetsList, projectPath) {
     switch (job.state) {
       case "ENQUEUED":
-        setSubmitLoaderText("Dataset import will start soon.");
+        setSubmitLoaderText(ImportStateMessage.ENQUEUED);
         break;
       case "IN_PROGRESS":
-        setSubmitLoaderText("Importing dataset.");
+        setSubmitLoaderText(ImportStateMessage.IN_PROGRESS);
         break;
       case "COMPLETED":
-        setSubmitLoaderText("Dataset was imported, you will be redirected soon.");
+        setSubmitLoaderText(ImportStateMessage.COMPLETED);
         clearInterval(monitorJob);
         findDatasetInKgAnRedirect(oldDatasetsList, projectPath);
         break;
       case "FAILED":
         setSubmitLoader(false);
-        setServerErrors("Dataset import failed: " + job.extras.error);
+        setServerErrors(ImportStateMessage.FAILED + job.extras.error);
         clearInterval(monitorJob);
         break;
       default:
         setSubmitLoader(false);
-        setServerErrors("Dataset import failed, plaease try again");
+        setServerErrors(ImportStateMessage.FAILED_NO_INFO);
         clearInterval(monitorJob);
         break;
     }
     if (cont === 100) {
       setSubmitLoader(false);
-      setServerErrors("Dataset import is taking too long, please check if the dataset was imported" +
-      " and if it wasn't try again.");
+      setServerErrors(ImportStateMessage.TOO_LONG);
       clearInterval(monitorJob);
     }
   }
