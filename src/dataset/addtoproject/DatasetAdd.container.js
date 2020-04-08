@@ -141,7 +141,10 @@ function AddDataset(props) {
 
   useEffect(()=> {
     if (addDatasetToProjectSchema.project.options.length === 0) {
-      props.client.getProjects({ min_access_level: ACCESS_LEVELS.MAINTAINER })
+      props.client.getProjects({
+        min_access_level: ACCESS_LEVELS.MAINTAINER,
+        order_by: "last_activity_at",
+        per_page: "100" })
         .then((projectResponse) => {
           const projectsDropdown = projectResponse.data.map((project) => {
             return {

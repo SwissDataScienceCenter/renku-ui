@@ -339,7 +339,6 @@ const addDatasetToProjectSchema = new Schema({
     label: "Project",
     placeholder: "Select a project...",
     type: FormGenerator.FieldTypes.SELECTAUTOSUGGEST,
-    parseFun: expression => FormGenerator.Parsers.slugFromTitle(expression),
     options: [
     ],
     validators: [
