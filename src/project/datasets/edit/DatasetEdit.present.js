@@ -55,7 +55,9 @@ function DatasetEdit(props) {
     const dataset = {};
     dataset.name = props.datasetFormSchema.name.value;
     dataset.description = props.datasetFormSchema.description.value;
-    dataset.files = props.datasetFormSchema.files.value.map(f => ({ "file_id": f.file_id }));
+
+    dataset.files = [].concat.apply([], props.datasetFormSchema.files.value.map(f => f.file_id))
+      .map(f => ({ "file_id": f }));
 
     props.client.addFilesToDataset(props.httpProjectUrl, dataset.name, dataset.files)
       .then(response => {

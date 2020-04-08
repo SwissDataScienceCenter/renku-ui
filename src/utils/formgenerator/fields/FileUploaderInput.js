@@ -23,13 +23,14 @@
  *  Presentational components.
  */
 import React, { useState, useEffect, useRef } from "react";
-import { FormGroup, Label, Table, Spinner } from "reactstrap";
+import { FormGroup, Label, Table, Spinner, Button, UncontrolledCollapse } from "reactstrap";
 import ValidationAlert from "./ValidationAlert";
 import HelpText from "./HelpText";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes, faTrashAlt, faSyncAlt, faExclamationTriangle, faFolder }
   from "@fortawesome/free-solid-svg-icons";
 import { formatBytes } from "./../../HelperFunctions";
+import { FileExplorer } from "../../UIComponents";
 
 const FILE_STATUS = {
   ADDED: "added",
@@ -68,7 +69,7 @@ function getFileStatus(id, error, status) {
   return FILE_STATUS.UPLOADING;
 }
 
-function getFileObject(name, size, id, error, alias, controller, uncompress, status) {
+function getFileObject(name, size, id, error, alias, controller, uncompress, folderStructure, status) {
   return {
     file_name: name,
     file_size: size,
@@ -77,7 +78,8 @@ function getFileObject(name, size, id, error, alias, controller, uncompress, sta
     file_alias: alias,
     file_status: getFileStatus(id, error, status),
     file_controller: controller,
-    file_uncompress: uncompress
+    file_uncompress: uncompress,
+    folder_structure: folderStructure //this is for uncompressed files
   };
 }
 
@@ -116,7 +118,8 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
             filesErrors.find(file => file.file_name === uploadingFile.file_name),
             uploadingFile.file_alias,
             uploadingFile.file_controller,
-            uploadingFile.file_uncompress);
+            uploadingFile.file_uncompress,
+            uploadingFile.folder_structure);
         }
         return dFile;
       })
@@ -132,7 +135,7 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
         if (errorFile !== undefined) {
           return getFileObject(
             errorFile.file_name, errorFile.file_size, null, errorFile.file_error, errorFile.file_alias,
-            errorFile.file_controller, errorFile.file_uncompress);
+            errorFile.file_controller, errorFile.file_uncompress, errorFile.folder_structure);
         }
         return dFile;
       })
@@ -146,25 +149,68 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
         if (body.error) {
           setFilesErrors(prevFilesErrors => [...prevFilesErrors,
             getFileObject(file.name, file.size, undefined, body.error.reason, undefined,
-              file.file_controller, file.file_uncompress)]
+              file.file_controller, file.file_uncompress, file.folder_structure)]
           );
           return [];
         }
+
+        if (file.file_uncompress) {
+          let folderPath = body.result.files[0].relative_path.split("/")[0] + "/";
+          console.log("do changes here.... inside the file explorer");
+          let file_alias = file.name !== body.result.files[0].relative_path.split("/")[0].replace(".unpacked", "") ?
+            body.result.files[0].relative_path.split("/")[0].replace(".unpacked", "") : undefined;
+
+          let folderStructure = <div>
+            <Button className="pr-0 pl-0 pt-0 pb-0 mb-1" color="link" id={body.result.files[0].id + "collapse"}>
+              <small>Show un-ziped files</small>
+            </Button>
+            <UncontrolledCollapse key="searchHelp" toggler={"#" + body.result.files[0].id + "collapse"} className="pt-2">
+              <small>
+                <FileExplorer
+                  files={body.result.files.map(file=>
+                    ({ "atLocation": file.relative_path.replace(folderPath, "") //replace solo reemplaza en la primera???
+                      //  , "name": file.file_name
+                    }))}
+                  lineageUrl={" "}
+                  insideProject={false}
+                  foldersOpenOnLoad={0}
+                /></small>
+            </UncontrolledCollapse>
+          </div>;
+
+          let newFileDraft = getFileObject(
+            file.name, 0, [], undefined, file_alias, response.controller,
+            file.file_uncompress, folderStructure);
+
+          body.result.files.map(newFile => {
+
+            newFileDraft.file_size += newFile.file_size;
+            newFileDraft.file_id.push(newFile.file_id);
+
+            return newFile;
+          });
+          setUploadedFiles(prevUploadedFiles => [...prevUploadedFiles, newFileDraft]);
+          return newFileDraft;
+        }
+        // else
         let newFileObj = body.result.files[0];
         if (newFileObj.file_name !== undefined && newFileObj.file_name !== file.name) {
           newFileObj = getFileObject(
-            file.name, newFileObj.file_size, newFileObj.file_id, undefined, newFileObj.file_name,
-            response.controller, file.file_uncompress);
+            file.name, newFileObj.file_size, [newFileObj.file_id], undefined, newFileObj.file_name,
+            response.controller, file.file_uncompress, undefined);
+        }
+        else {
+          newFileObj.file_id = [newFileObj.file_id];
         }
         setUploadedFiles(prevUploadedFiles => [...prevUploadedFiles, newFileObj]);
         return newFileObj;
-
+        // end of else
       });
     }).catch((error) => {
       if (error.code !== DOMException.ABORT_ERR) {
         setFilesErrors(prevFilesErrors => [...prevFilesErrors,
           getFileObject(file.name, file.size, undefined, "Error uploading the file", undefined,
-            file.file_controller, file.file_uncompress)]);
+            file.file_controller, file.file_uncompress, file.folder_structure)]);
         return [];
       }
     });
@@ -220,7 +266,7 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
         const displayFilesFiltered = displayFiles.map(file => {
           if (file.file_name === file_name) {
             return getFileObject(retryFile.name, retryFile.size, null, undefined, retryFile.file_alias,
-              retryFile.file_controller, file.file_uncompress);
+              retryFile.file_controller, file.file_uncompress, file.folder_structure);
           }
           return file;
         });
@@ -332,6 +378,11 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
                 <td>{index + 1}</td>
                 <td>
                   <span>{file.file_name}</span>
+                  {
+                    file.folder_structure ? <div>
+                      {file.folder_structure}
+                    </div> : null
+                  }
                   {
                     file.file_alias ? <small><br></br>
                       <span className="text-danger"> *The name of this file contains
