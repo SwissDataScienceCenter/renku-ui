@@ -44,6 +44,10 @@ spec:
               value: {{ required "templateRepository.url must be specified, e.g., https://github.com/repos/SwissDataScienceCenter/renku-project-template" .Values.templatesRepository.url | quote }}
             - name: RENKU_TEMPLATES_REF
               value: {{ required "templateRepository.ref must be specified, e.g., master" .Values.templatesRepository.ref | quote }}
+              {{- if .Values.maintenance }}
+            - name: MAINTENANCE
+              value: "1"
+              {{- end }}
           livenessProbe:
             httpGet:
               path: /
