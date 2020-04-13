@@ -100,12 +100,12 @@ export default function DatasetView(props) {
 
   const [dataset, setDataset] = useState(undefined);
   const [fetchError, setFetchError] = useState(null);
+  const fetching = useRef(false);
   const [readyToFetch, setReadyToFetch] = useState(false);
 
   useEffect(() => {
     if (props.insideProject && props.datasets !== undefined && dataset === undefined && !readyToFetch)
       setReadyToFetch(true);
-
   }, [props.datasets, props.selectedDataset, props.insideProject, dataset, readyToFetch]);
 
   useEffect(() => {
@@ -137,6 +137,35 @@ export default function DatasetView(props) {
     };
     // eslint-disable-next-line
   }, [readyToFetch]);
+
+  useEffect(() => {
+    let unmounted = false;
+    if (!props.insideProject && dataset === undefined && props.identifier !== undefined && !fetching.current) {
+      fetching.current = true;
+      props.client
+        .fetchDatasetFromKG(props.client.baseUrl.replace("api", "knowledge-graph/datasets/") + props.identifier)
+        .then((datasetInfo) => {
+          if (!unmounted && dataset === undefined && datasetInfo !== undefined)
+            setDataset(datasetInfo);
+
+        }).catch(error => {
+          if (fetchError === null) {
+            if (!unmounted && error.case === API_ERRORS.notFoundError) {
+              setFetchError(
+                "Error 404: The dataset that was selected does not exist or could not be accessed." +
+                    "If you just created the dataset try reloading the page."
+              );
+            }
+            else if (!unmounted && error.case === API_ERRORS.internalServerError) {
+              setFetchError("Error 500: The dataset that was selected couldn't be fetched.");
+            }
+          }
+        });
+    }
+    return () => {
+      unmounted = true;
+    };
+  });
 
   if (props.insideProject) {
     const { progress, webhookJustCreated } = props;
