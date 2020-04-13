@@ -30,6 +30,13 @@ class ProjectsCoordinator {
   }
 
   _starredProjectMetadata(project) {
+    let accessLevel = 0;
+    if (project.permissions && project.permissions.project_access)
+      accessLevel = Math.max(accessLevel, project.permissions.project_access.access_level);
+
+    if (project.permissions && project.permissions.group_access)
+      accessLevel = Math.max(accessLevel, project.permissions.group_access.access_level);
+
     return {
       id: project.id,
       path_with_namespace: project.path_with_namespace,
@@ -37,7 +44,9 @@ class ProjectsCoordinator {
       tag_list: project.tag_list,
       star_count: project.star_count,
       owner: project.owner,
-      last_activity_at: project.last_activity_at
+      last_activity_at: project.last_activity_at,
+      access_level: accessLevel,
+      http_url_to_repo: project.http_url_to_repo
     };
   }
 
@@ -53,9 +62,9 @@ class ProjectsCoordinator {
       .catch((error) => {
         this.model.set("starredProjects", []);
       });
-    const promiseMember = this.client.getProjects({ membership: true, order_by: "last_activity_at" })
+    const promiseMember = this.client.getAllProjects({ membership: true, order_by: "last_activity_at" })
       .then((projectResponse) => {
-        const projects = projectResponse.data.map((project) => this._starredProjectMetadata(project));
+        const projects = projectResponse.map((project) => this._starredProjectMetadata(project));
         return projects;
       })
       .catch((error) => {

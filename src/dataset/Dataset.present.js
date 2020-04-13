@@ -26,6 +26,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt, faPen, faPlus } from "@fortawesome/free-solid-svg-icons";
 import Time from "../utils/Time";
 import AddDataset from "./addtoproject/DatasetAdd.container";
+import { ProjectsCoordinator } from "../project/shared";
 
 function DisplayFiles(props) {
   if (props.files === undefined) return null;
@@ -246,6 +247,8 @@ export default function DatasetView(props) {
           dataset={dataset}
           modalOpen={addDatasetModalOpen}
           setModalOpen={setAddDatasetModalOpen}
+          projectsCoordinator={new ProjectsCoordinator(props.client, props.model.subModel("projects"))}
+          model={props.model}
           history={props.history}
           client={props.client}
           user={props.user} />

@@ -30,8 +30,8 @@ import HelpText from "./HelpText";
 import { FormGroup, Label } from "reactstrap";
 import Autosuggest from "react-autosuggest";
 
-function SelectautosuggestInput(
-  { name, label, type, value, alert, options, initial, placeholder, setInputs, help, disabled = false }) {
+function SelectautosuggestInput({ name, label, type, value, alert, options, initial,
+  placeholder, setInputs, help, customHandlers, disabled = false }) {
 
   const [localValue, setLocalValue] = useState("");
   const [suggestions, setSuggestions ] = useState([]);
@@ -71,13 +71,25 @@ function SelectautosuggestInput(
 
   // Autosuggest will call this function every time you need to update suggestions.
   // You already implemented this logic above, so just use it.
+  // TODO allow custom handlers for more events
   const onSuggestionsFetchRequested = ({ value, reason }) => {
-    setSuggestions( getSuggestions(value, reason));
+    if (customHandlers.onSuggestionsFetchRequested)
+      customHandlers.onSuggestionsFetchRequested(value, reason, setSuggestions);
+    else
+      setSuggestions( getSuggestions(value, reason));
   };
 
   // Autosuggest will call this function every time you need to clear suggestions.
   const onSuggestionsClearRequested = () => {
     setSuggestions([]);
+  };
+
+  const getSectionSuggestions = (section)=>{
+    return section.suggestions;
+  };
+
+  const renderSectionTitle = (section)=>{
+    return <strong>{section.title}</strong>;
   };
 
   // Autosuggest will pass through all these props to the input.
@@ -109,12 +121,15 @@ function SelectautosuggestInput(
   // Override the input theme to match our visual style
   const theme = { ...defaultTheme, ...{ input: "form-control" } };
 
-
+  /* TODO: allow grouped and non grouped field */
   return <FormGroup>
     <Label htmlFor={name}>{label}</Label>
     <Autosuggest
       id={name}
       suggestions={suggestions}
+      multiSection={true}
+      renderSectionTitle={renderSectionTitle}
+      getSectionSuggestions={getSectionSuggestions}
       onSuggestionsFetchRequested={onSuggestionsFetchRequested}
       onSuggestionsClearRequested={onSuggestionsClearRequested}
       getSuggestionValue={getSuggestionValue}

@@ -29,6 +29,7 @@ import { addDatasetToProjectSchema } from "../../model/RenkuModels";
 import { ACCESS_LEVELS } from "../../api-client";
 import DatasetAdd from "./DatasetAdd.present";
 import { ImportStateMessage } from "../../utils/Dataset";
+import { groupBy } from "../../utils/HelperFunctions";
 
 function AddDataset(props) {
 
@@ -138,27 +139,48 @@ function AddDataset(props) {
       });
   };
 
+  addDatasetToProjectSchema.project.customHandlers = {
+    onSuggestionsFetchRequested: ( value, reason, setSuggestions ) => {
+
+      const featured = props.projectsCoordinator.model.get("featured");
+      if (!featured.fetched || (!featured.starred.length && !featured.member.length))
+        return;
+
+      const regex = new RegExp(value, "i");
+      const searchDomain = featured.member.filter((project)=> project.access_level >= ACCESS_LEVELS.MAINTAINER);
+
+      if (addDatasetToProjectSchema.project.options.length !== searchDomain.length) {
+        addDatasetToProjectSchema.project.options = searchDomain.map((project)=>({
+          "value": project.http_url_to_repo, "name": project.path_with_namespace
+        }));
+      }
+
+      const hits = {};
+      const groupedSuggestions = [];
+
+      searchDomain.forEach(d => {
+        if (regex.exec(d.path_with_namespace) != null) {
+          hits[d.path_with_namespace] = { "value": d.http_url_to_repo,
+            "name": d.path_with_namespace,
+            "subgroup": d.path_with_namespace.split("/")[0]
+          };
+        }
+      });
+
+      const hitValues = Object.values(hits).sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
+      const groupedHits = groupBy(hitValues, item => item.subgroup);
+      for (var [key, val] of groupedHits) {
+        groupedSuggestions.push({
+          title: key,
+          suggestions: val
+        });
+      }
+      setSuggestions(groupedSuggestions);
+    }
+  };
 
   useEffect(()=> {
-    if (addDatasetToProjectSchema.project.options.length === 0) {
-      props.client.getProjects({
-        min_access_level: ACCESS_LEVELS.MAINTAINER,
-        order_by: "last_activity_at",
-        per_page: "100" })
-        .then((projectResponse) => {
-          const projectsDropdown = projectResponse.data.map((project) => {
-            return {
-              "value": project.http_url_to_repo,
-              "name": project.path_with_namespace
-            };
-          });
-          addDatasetToProjectSchema.project.value = "";
-          addDatasetToProjectSchema.project.options = projectsDropdown.sort(
-            (a, b) => (a.name > b.name) ? 1 :
-              ((b.name > a.name) ? -1 : 0));
-
-        });
-    }
+    addDatasetToProjectSchema.project.value = "";
   });
 
   return (

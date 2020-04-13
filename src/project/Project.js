@@ -431,6 +431,7 @@ class View extends Component {
         selectedDataset={p.match.params.datasetId}
         history={this.props.history}
         logged={this.props.user.logged}
+        model={this.props.model}
       />,
 
       newDataset: (p) => <NewDataset
