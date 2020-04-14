@@ -26,22 +26,31 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import { Jumbotron } from "reactstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faWrench } from "@fortawesome/free-solid-svg-icons";
+
 import { MaintenanceNavBar, FooterNavbar } from "./landing";
 
 
 class Maintenance extends Component {
   render() {
+    const { info } = this.props;
+
     const headerText = "Maintenance";
-    const body = `Renku is undergoing maintenance.
-    It should be available again soon. Please check back in a bit.`;
+    const body = info && info !== "true" && info !== "1" ?
+      info :
+      "Renku is undergoing maintenance. It should be available again soon. Please check back in a little while.";
     return (
       <Router>
         <div>
           <Route component={MaintenanceNavBar} />
           <main role="main" className="container-fluid">
             <Jumbotron>
-              <h1>{headerText}</h1>
-              <p>{body}</p>
+              <h1 className="text-center text-primary">
+                <FontAwesomeIcon icon={faWrench} /> {headerText} <FontAwesomeIcon icon={faWrench} />
+              </h1>
+              <br />
+              <p className="text-center">{body}</p>
             </Jumbotron>
           </main>
           <Route component={FooterNavbar} />

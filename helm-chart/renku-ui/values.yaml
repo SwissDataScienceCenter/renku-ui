@@ -62,6 +62,7 @@ templatesRepository:
   url: https://github.com/SwissDataScienceCenter/renku-project-template
   ref: 0.1.9
 
+# any string here will enable the maintenance page and be added on it as an info
 maintenance: false
 
 sentry:

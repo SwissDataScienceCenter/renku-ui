@@ -76,7 +76,7 @@ tee > ./public/config.json << EOF
   "SENTRY_NAMESPACE": "${SENTRY_NAMESPACE}",
   "RENKU_TEMPLATES_URL": "https://github.com/SwissDataScienceCenter/renku-project-template",
   "RENKU_TEMPLATES_REF": "master",
-  "MAINTENANCE": "1"
+  "MAINTENANCE": "true"
 }
 EOF
 

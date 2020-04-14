@@ -24,7 +24,7 @@ echo " SENTRY_URL=${SENTRY_URL}"
 echo " SENTRY_NAMESPACE=${SENTRY_NAMESPACE}"
 echo " RENKU_TEMPLATES_URL=${RENKU_TEMPLATES_URL}"
 echo " RENKU_TEMPLATES_REF=${RENKU_TEMPLATES_REF}"
-echp " MAINTENANCE=${MAINTENANCE}"
+echo " MAINTENANCE=${MAINTENANCE}"
 echo "==================================================="
 
 tee > /usr/share/nginx/html/config.json << EOF

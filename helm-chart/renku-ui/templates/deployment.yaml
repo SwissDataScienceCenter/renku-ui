@@ -46,7 +46,7 @@ spec:
               value: {{ required "templateRepository.ref must be specified, e.g., master" .Values.templatesRepository.ref | quote }}
               {{- if .Values.maintenance }}
             - name: MAINTENANCE
-              value: "1"
+              value: {{ .Values.maintenance | default (printf "true") | quote }}
               {{- end }}
           livenessProbe:
             httpGet:
