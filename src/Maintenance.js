@@ -24,11 +24,29 @@
  */
 
 import React, { Component } from "react";
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import { Jumbotron } from "reactstrap";
+import { MaintenanceNavBar, FooterNavbar } from "./landing";
+
 
 class Maintenance extends Component {
   render() {
+    const headerText = "Maintenance";
+    const body = `Renku is undergoing maintenance.
+    It should be available again soon. Please check back in a bit.`;
     return (
-      <p>MAINTENANCE</p>
+      <Router>
+        <div>
+          <Route component={MaintenanceNavBar} />
+          <main role="main" className="container-fluid">
+            <Jumbotron>
+              <h1>{headerText}</h1>
+              <p>{body}</p>
+            </Jumbotron>
+          </main>
+          <Route component={FooterNavbar} />
+        </div>
+      </Router>
     );
   }
 }
