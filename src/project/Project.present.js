@@ -556,19 +556,44 @@ class ProjectDatasetsNav extends Component {
       datasets={this.props.core.datasets}
       datasetsUrl={this.props.datasetsUrl}
       newDatasetUrl={this.props.newDatasetUrl}
+      createDatasetUrl={this.props.createDatasetUrl}
       importDatasetUrl={this.props.importDatasetUrl}
       visibility={this.props.visibility}
     />;
   }
 }
 
+function ProjectAddDataset(props) {
+
+  return <Col>
+    <Row>
+      <Col key="nav" sm={12} md={2}>
+        <Nav pills className={"flex-column"}>
+          <NavItem>
+            <RenkuNavLink to={props.createDatasetUrl} title="Create" />
+          </NavItem>
+          <NavItem>
+            <RenkuNavLink to={props.importDatasetUrl} title="Import" />
+          </NavItem>
+        </Nav>
+      </Col>
+      <Col sm={12} md={8} lg={6}>
+        <Switch>
+          <Route exact path={props.importDatasetUrl}
+            render={p => props.importDataset(p)} />
+          <Route exact path={props.createDatasetUrl}
+            render={p => props.newDataset(p)} />
+        </Switch>
+      </Col>
+    </Row>
+  </Col>;
+}
+
 class ProjectViewDatasets extends Component {
   render() {
     return <Switch>
-      <Route exact path={this.props.newDatasetUrl}
-        render={p => this.props.newDataset(p)} />
-      <Route exact path={this.props.importDatasetUrl}
-        render={p => this.props.importDataset(p)} />
+      <Route path={this.props.newDatasetUrl}
+        render={p => <ProjectAddDataset {...this.props} />}/>
       <Route path={this.props.editDatasetUrl}
         render={p => this.props.editDataset(p)} />
       <Route path={this.props.datasetsUrl} render={props =>
@@ -604,7 +629,7 @@ class ProjectViewDatasetsList extends Component {
           <FontAwesomeIcon icon={faInfoCircle} />  If you recently activated the knowledge graph or
           added the datasets try refreshing the page. <br /><br />
           You can also click on the button to create a
-          &nbsp;<Link className="btn btn-primary btn-sm" to={this.props.newDatasetUrl}>New Dataset</Link>
+          &nbsp;<Link className="btn btn-primary btn-sm" to={this.props.createDatasetUrl}>New Dataset</Link>
           &nbsp;or <Link className="btn btn-primary btn-sm" to={this.props.importDatasetUrl}>Import a Dataset</Link>
         </Alert>
       </Col>;

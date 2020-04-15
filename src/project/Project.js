@@ -50,6 +50,9 @@ const subRoutes = {
   stats: "overview/stats",
   overviewDatasets: "overview/datasets",
   datasets: "datasets",
+  datasetsAdd: "datasets/new",
+  datasetsAddCreate: "datasets/new/create",
+  datasetsAddImport: "datasets/new/import",
   dataset: "datasets/:datasetId",
   datasetEdit: "datasets/:datasetId/modify",
   issueNew: "issue_new",
@@ -285,6 +288,7 @@ class View extends Component {
     const fileContentUrl = `${filesUrl}/blob`;
     const collaborationUrl = `${baseUrl}/collaboration`;
     const datasetsUrl = `${baseUrl}/datasets`;
+    const newDatasetUrl = `${datasetsUrl}/new`;
 
     return {
       projectsUrl: "/projects",
@@ -293,8 +297,9 @@ class View extends Component {
       statsUrl: `${baseUrl}/overview/stats`,
       overviewDatasetsUrl: `${baseUrl}/overview/datasets`,
       datasetsUrl: `${datasetsUrl}`,
-      newDatasetUrl: `${datasetsUrl}/new`,
-      importDatasetUrl: `${datasetsUrl}/import`,
+      newDatasetUrl: `${newDatasetUrl}`,
+      createDatasetUrl: `${newDatasetUrl}/create`,
+      importDatasetUrl: `${newDatasetUrl}/import`,
       datasetUrl: `${datasetsUrl}/:datasetId`,
       editDatasetUrl: `${datasetsUrl}/:datasetId/modify`,
       issueNewUrl: `${collaborationUrl}/issues/issue_new`,
@@ -431,7 +436,7 @@ class View extends Component {
       />,
 
       newDataset: (p) => <NewDataset
-        key="datasetnew" {...subProps}
+        key="datasetcreate" {...subProps}
         progress={graphProgress}
         maintainer={maintainer}
         accessLevel={accessLevel}
@@ -469,7 +474,7 @@ class View extends Component {
       />,
 
       importDataset: (p) => <ImportDataset
-        key="datasetnew" {...subProps}
+        key="datasetimport" {...subProps}
         progress={graphProgress}
         maintainer={maintainer}
         accessLevel={accessLevel}

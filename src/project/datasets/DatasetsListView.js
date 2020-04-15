@@ -30,10 +30,7 @@ function CreateDatasetButton(props) {
         </DropdownToggle>
         <DropdownMenu right={false}>
           <DropdownItem>
-            <Link to={props.newDatasetUrl}>New Dataset</Link>
-          </DropdownItem>
-          <DropdownItem>
-            <Link to={props.importDatasetUrl}>Import Dataset</Link>
+            <Link to={props.createDatasetUrl}>Add Dataset</Link>
           </DropdownItem>
         </DropdownMenu>
       </UncontrolledButtonDropdown>
@@ -58,7 +55,7 @@ export default function DatasetsListView(props) {
         </span>
         <CreateDatasetButton
           visibility={props.visibility}
-          newDatasetUrl={props.newDatasetUrl}
+          createDatasetUrl={props.createDatasetUrl}
           importDatasetUrl={props.importDatasetUrl}/>
       </div>
       <nav>

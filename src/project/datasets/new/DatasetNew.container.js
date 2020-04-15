@@ -23,21 +23,71 @@
  *  Container components for new dataset.
  */
 
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { datasetFormSchema } from "../../../model/RenkuModels";
 import DatasetNew from "./DatasetNew.present";
 
 function NewDataset(props) {
 
+
+  const [serverErrors, setServerErrors] = useState(undefined);
+  const [submitLoader, setSubmitLoader] = useState(false);
+  datasetFormSchema.files.uploadFileFunction = props.client.uploadFile;
+  datasetFormSchema.files.filesOnUploader = useRef(0);
+
+  const onCancel = e => {
+    props.history.push({ pathname: `/projects/${props.projectPathWithNamespace}/datasets` });
+  };
+
+  const submitCallback = e => {
+    setServerErrors(undefined);
+    setSubmitLoader(true);
+    const dataset = {};
+    dataset.name = datasetFormSchema.name.value;
+    dataset.description = datasetFormSchema.description.value;
+    dataset.files = datasetFormSchema.files.value.map(f => ({ "file_id": f.file_id }));
+
+    props.client.postDataset(props.httpProjectUrl, dataset)
+      .then(dataset => {
+        if (dataset.data.error !== undefined) {
+          setSubmitLoader(false);
+          setServerErrors(dataset.data.error.reason);
+        }
+        else {
+          let waitForDatasetInKG = setInterval(() => {
+            props.client.getProjectDatasetsFromKG(props.projectPathWithNamespace)
+              .then(datasets => {
+                // eslint-disable-next-line
+            let new_dataset = datasets.find( ds => ds.name === dataset.data.result.dataset_name);
+                if (new_dataset !== undefined) {
+                  setSubmitLoader(false);
+                  clearInterval(waitForDatasetInKG);
+                  props.history.push({
+                    pathname: `/projects/${props.projectPathWithNamespace}/datasets/${new_dataset.identifier}/`,
+                    state: { datasets: datasets }
+                  });
+                }
+              });
+          }, 6000);
+        }
+      });
+  };
+
+  useEffect(()=>{
+    return () => {
+      datasetFormSchema.name.value = datasetFormSchema.name.initial;
+      datasetFormSchema.description.value = datasetFormSchema.description.initial;
+      datasetFormSchema.files.value = datasetFormSchema.files.initial;
+    };
+  }, []);
+
   return <DatasetNew
     datasetFormSchema={datasetFormSchema}
-    user={props.user}
-    projectPathWithNamespace={props.projectPathWithNamespace}
-    client={props.client}
-    history={props.history}
     accessLevel={props.accessLevel}
-    reFetchProject={props.reFetchProject}
-    httpProjectUrl={props.httpProjectUrl}
+    serverErrors={serverErrors}
+    submitCallback={submitCallback}
+    submitLoader={submitLoader}
+    onCancel={onCancel}
   />;
 }
 
