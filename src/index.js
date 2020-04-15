@@ -6,6 +6,7 @@ import * as Sentry from "@sentry/browser";
 import "./styles/index.css";
 import "./index.css";
 import App from "./App";
+import { Maintenance } from "./Maintenance";
 // Disable service workers for the moment -- see below where registerServiceWorker is called
 // import registerServiceWorker from './utils/ServiceWorker';
 import APIClient from "./api-client";
@@ -16,6 +17,11 @@ const configPromise = fetch("/config.json");
 
 configPromise.then((res) => {
   res.json().then((params) => {
+    if (params["MAINTENANCE"]) {
+      ReactDOM.render(<Maintenance info={params["MAINTENANCE"]} />, document.getElementById("root"));
+      return;
+    }
+
     // create client to be passed to coordinators
     const client = new APIClient(params.GATEWAY_URL);
 

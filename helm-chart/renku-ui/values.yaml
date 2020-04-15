@@ -62,6 +62,10 @@ templatesRepository:
   url: https://github.com/SwissDataScienceCenter/renku-project-template
   ref: 0.1.9
 
+# Any string here, other than 'false', will enable the maintenance page and be added on it as an info.
+# Setting 'true' will display a standard message embedded in maintenace page.
+maintenance: false
+
 sentry:
   enabled: false
   url: ''

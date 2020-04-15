@@ -209,21 +209,21 @@ class KnowledgeGraphLink extends Component {
 
 function GitLabConnectButton(props) {
   const size = (props.size) ? props.size : "md";
-  const accessLevel = props.accessLevel;
-  const gitlabIDEUrl = props.gitlabIDEUrl;
-  if (props.externalUrl === "") return null;
+  const { userLogged, gitlabIDEUrl } = props;
+  if (!props.externalUrl)
+    return null;
   const gitlabProjectButton = <ExternalLink url={props.externalUrl} title="View in GitLab" />;
 
   const onClick = () => window.open(gitlabIDEUrl, "_blank");
-  const gitlabIDEButton = (accessLevel >= ACCESS_LEVELS.DEVELOPER && gitlabIDEUrl !== null) ?
-    (<DropdownItem onClick={onClick}>View in Web IDE</DropdownItem>) :
+  const gitlabIDEButton = userLogged ?
+    (<DropdownItem onClick={onClick} size={size}>View in Web IDE</DropdownItem>) :
     null;
 
-  return <div>
-    <ButtonWithMenu default={gitlabProjectButton} size={size}>
-      {gitlabIDEButton}
-    </ButtonWithMenu>
-  </div>;
+  let button = gitlabIDEButton ?
+    (<ButtonWithMenu default={gitlabProjectButton} size={size}>{gitlabIDEButton}</ButtonWithMenu>) :
+    (<ExternalLink url={props.externalUrl} size={size} title="View in GitLab" />);
+
+  return (<div>{button}</div>);
 }
 
 class ProjectViewHeaderOverview extends Component {
@@ -307,7 +307,7 @@ class ProjectViewHeaderOverview extends Component {
               <GitLabConnectButton size="sm"
                 externalUrl={this.props.externalUrl}
                 gitlabIDEUrl={gitlabIDEUrl}
-                accessLevel={this.props.visibility.accessLevel} />
+                userLogged={this.props.user.logged} />
             </div>
           </Col>
         </Row>
@@ -765,48 +765,6 @@ class ProjectViewFiles extends Component {
   }
 }
 
-function notebookLauncher(userLogged, accessLevel, notebookLauncher, fork, postLoginUrl, externalUrl) {
-  if (accessLevel >= ACCESS_LEVELS.DEVELOPER)
-    return (<div>{notebookLauncher}</div>);
-
-  let content = [<p key="no-permission">You do not have sufficient permissions to launch an interactive environment
-    for this project.</p>];
-  if (!userLogged) {
-    const to = { "pathname": "/login", "state": { previous: postLoginUrl } };
-    content = content.concat(
-      <InfoAlert timeout={0} key="login-info">
-        <p className="mb-0">
-          <Link className="btn btn-primary btn-sm" to={to} previous={postLoginUrl}>Log in</Link> to use
-          interactive environments.
-        </p>
-      </InfoAlert>
-    );
-  }
-  else {
-    content = content.concat(
-      <InfoAlert timeout={0} key="login-info">
-        <p>You can still do one of the following:</p>
-        <ul className="mb-0">
-          <li>
-            <Button size="sm" color="primary" onClick={(event) => fork(event)}>
-              Fork the project
-            </Button> and start an interactive environment from your fork.
-          </li>
-          <li className="pt-1">
-            <ExternalLink size="sm" url={`${externalUrl}/project_members`} title="Contact a maintainer" /> and ask them
-            to <a href="https://renku.readthedocs.io/en/latest/user/collaboration.html#added-to-project"
-              target="_blank" rel="noreferrer noopener">
-              grant you the necessary permissions
-            </a>.
-          </li>
-        </ul>
-      </InfoAlert>
-    );
-  }
-
-  return (<div>{content}</div>);
-}
-
 class OverviewDatasetRow extends Component {
   render() {
     return <tr>
@@ -876,46 +834,96 @@ class ProjectEnvironments extends Component {
   }
 }
 
+function notebookWarning(userLogged, accessLevel, fork, postLoginUrl, externalUrl) {
+  if (!userLogged) {
+    const to = { "pathname": "/login", "state": { previous: postLoginUrl } };
+    return (
+      <InfoAlert timeout={0} key="permissions-warning">
+        <p>
+          <FontAwesomeIcon icon={faExclamationTriangle} /> As
+          an anonymous user, you can start <ExternalLink role="text" title="Interactive Envirnonments"
+            url="https://renku.readthedocs.io/en/latest/developer/services/notebooks_service.html" />, but
+          you cannot save your work.
+        </p>
+        <p className="mb-0">
+          <Link className="btn btn-primary btn-sm" to={to} previous={postLoginUrl}>Log in</Link> for
+          full access.
+        </p>
+      </InfoAlert>
+    );
+  }
+  else if (accessLevel < ACCESS_LEVELS.DEVELOPER) {
+    return (
+      <InfoAlert timeout={0} key="permissions-warning">
+        <p>
+          <FontAwesomeIcon icon={faExclamationTriangle} /> You have limited permissions for this
+          project. You can launch an interactive environment, but you will not be able to save
+          any changes. If you want to save your work, consider one of the following:
+        </p>
+        <ul className="mb-0">
+          <li>
+            <Button size="sm" color="primary" onClick={(event) => fork(event)}>
+              Fork the project
+            </Button> and start an interactive environment from your fork.
+          </li>
+          <li className="pt-1">
+            <ExternalLink size="sm" title="Contact a maintainer"
+              url={`${externalUrl}/project_members`} /> and ask them
+            to <a href="https://renku.readthedocs.io/en/latest/user/collaboration.html#added-to-project"
+              target="_blank" rel="noreferrer noopener">
+              grant you the necessary permissions
+            </a>.
+          </li>
+        </ul>
+      </InfoAlert>
+    );
+  }
+  return null;
+}
+
 class ProjectNotebookServers extends Component {
   render() {
-    const content = (
-      <Notebooks key="notebooks"
-        client={this.props.client}
-        model={this.props.model}
-        standalone={false}
-        urlNewEnvironment={this.props.launchNotebookUrl}
-        scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path }} />
+    const {
+      client, model, user, visibility, toggleForkModal, location, externalUrl, launchNotebookUrl,
+      blockAnonymous
+    } = this.props;
+    const warning = notebookWarning(
+      user.logged, visibility.accessLevel, toggleForkModal, location.pathname, externalUrl
     );
 
-    return (notebookLauncher(this.props.user.logged,
-      this.props.visibility.accessLevel,
-      content,
-      this.props.toggleForkModal,
-      this.props.location.pathname,
-      this.props.externalUrl));
+    return (
+      <Notebooks standalone={false} client={client} model={model} location={location}
+        message={warning}
+        urlNewEnvironment={launchNotebookUrl}
+        blockAnonymous={blockAnonymous}
+        scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path }}
+      />
+    );
   }
 }
 
 class ProjectStartNotebookServer extends Component {
   render() {
-    let content = (<StartNotebookServer
-      client={this.props.client}
-      model={this.props.model}
-      branches={this.props.system.branches}
-      autosaved={this.props.system.autosaved}
-      refreshBranches={this.props.fetchBranches}
-      scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path }}
-      externalUrl={this.props.externalUrl}
-      successUrl={this.props.notebookServersUrl}
-      history={this.props.history}
-    />);
+    const {
+      client, model, user, visibility, toggleForkModal, location, externalUrl, system,
+      fetchBranches, notebookServersUrl, history, blockAnonymous
+    } = this.props;
+    const warning = notebookWarning(
+      user.logged, visibility.accessLevel, toggleForkModal, location.pathname, externalUrl
+    );
 
-    return (notebookLauncher(this.props.user.logged,
-      this.props.visibility.accessLevel,
-      content,
-      this.props.toggleForkModal,
-      this.props.location.pathname,
-      this.props.externalUrl));
+    return (
+      <StartNotebookServer client={client} model={model} history={history} location={location}
+        message={warning}
+        branches={system.branches}
+        autosaved={system.autosaved}
+        refreshBranches={fetchBranches}
+        externalUrl={externalUrl}
+        successUrl={notebookServersUrl}
+        blockAnonymous={blockAnonymous}
+        scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path }}
+      />
+    );
   }
 }
 

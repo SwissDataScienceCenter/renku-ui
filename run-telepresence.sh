@@ -75,7 +75,8 @@ tee > ./public/config.json << EOF
   "SENTRY_URL": "${SENTRY_URL}",
   "SENTRY_NAMESPACE": "${SENTRY_NAMESPACE}",
   "RENKU_TEMPLATES_URL": "https://github.com/SwissDataScienceCenter/renku-project-template",
-  "RENKU_TEMPLATES_REF": "master"
+  "RENKU_TEMPLATES_REF": "master",
+  "ANONYMOUS_SESSIONS": "true"
 }
 EOF
 

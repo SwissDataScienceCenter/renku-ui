@@ -40,6 +40,30 @@ import Sizes from "../utils/Media";
 
 import "./Notebooks.css";
 
+class NotebooksDisabled extends Component {
+  render() {
+    const postLoginUrl = this.props.location ? this.props.location.pathname : null;
+    const to = { "pathname": "/login", "state": { previous: postLoginUrl } };
+    const info = postLoginUrl == null ?
+      null :
+      (
+        <InfoAlert timeout={0} key="login-info">
+          <p className="mb-0">
+            <Link className="btn btn-primary btn-sm" to={to} previous={postLoginUrl}>Log in</Link> to use
+            interactive environments.
+          </p>
+        </InfoAlert>
+      );
+
+    return (
+      <div>
+        <p>This Renkulab deployment doesn&apos;t allow unauthenticated users to start Interactive Environments.</p>
+        {info}
+      </div>
+    );
+  }
+}
+
 // * Notebooks code * //
 class Notebooks extends Component {
   render() {
@@ -47,6 +71,9 @@ class Notebooks extends Component {
     const loading = this.props.notebooks.fetched ?
       false :
       true;
+    const message = this.props.message ?
+      (<div>{this.props.message}</div>) :
+      null;
 
     return <Row>
       <Col>
@@ -59,13 +86,15 @@ class Notebooks extends Component {
           fetchLogs={this.props.handlers.fetchLogs}
           toggleLogs={this.props.handlers.toggleLogs}
           logs={this.props.logs}
-          scope={this.props.scope} />
+          scope={this.props.scope}
+        />
         <NotebooksPopup
           servers={serverNumbers}
           standalone={this.props.standalone}
           loading={loading}
           urlNewEnvironment={this.props.urlNewEnvironment}
         />
+        {serverNumbers ? null : message}
       </Col>
     </Row>;
   }
@@ -577,6 +606,22 @@ class EnvironmentLogs extends Component {
   }
 }
 
+function pipelineAvailable(pipelines) {
+  const { pipelineTypes } = NotebooksHelper;
+  const mainPipeline = pipelines.main;
+
+  if (pipelines.type === pipelineTypes.logged) {
+    if (mainPipeline.status === "success" || mainPipeline.status === undefined)
+      return true;
+  }
+  else if (pipelines.type === pipelineTypes.anonymous) {
+    if (mainPipeline && mainPipeline.path)
+      return true;
+  }
+
+  return false;
+}
+
 // * StartNotebookServer code * //
 class StartNotebookServer extends Component {
   constructor(props) {
@@ -591,25 +636,29 @@ class StartNotebookServer extends Component {
   render() {
     const { branch, commit } = this.props.filters;
     const { branches } = this.props.data;
-    const { pipelines } = this.props;
+    const { pipelines, message } = this.props;
     const fetching = {
       branches: StatusHelper.isUpdating(branches) ? true : false,
       pipelines: pipelines.fetching,
       commits: this.props.data.fetching
     };
+
     let show = {};
     show.commits = !fetching.branches && branch.name ? true : false;
     show.pipelines = show.commits && !fetching.commits && commit.id;
     show.options = show.pipelines && pipelines.fetched && (
-      pipelines.main.status === "success" || pipelines.main.status === undefined
-      || this.state.ignorePipeline
-      || this.props.justStarted
+      this.props.justStarted || this.state.ignorePipeline || pipelineAvailable(pipelines)
     );
+
+    const messageOutput = message ?
+      (<div key="message">{message}</div>) :
+      null;
 
     return (
       <Row>
         <Col sm={12} md={10} lg={8}>
           <h3>Start a new interactive environment</h3>
+          {messageOutput}
           <Form>
             <StartNotebookBranches {...this.props} />
             {show.commits ? <StartNotebookCommits {...this.props} /> : null}
@@ -775,19 +824,37 @@ class StartNotebookPipelines extends Component {
 
 class StartNotebookPipelinesBadge extends Component {
   render() {
+    const pipelineType = this.props.pipelines.type;
     const pipeline = this.props.pipelines.main;
+
     let color, text;
-    if (pipeline.status === "success") {
-      color = "success";
-      text = "available";
+    if (pipelineType === NotebooksHelper.pipelineTypes.logged) {
+      if (pipeline.status === "success") {
+        color = "success";
+        text = "available";
+      }
+      else if (pipeline.status === undefined) {
+        color = "danger";
+        text = "not available";
+      }
+      else if (pipeline.status === "running" || pipeline.status === "pending") {
+        color = "warning";
+        text = "building";
+      }
+      else {
+        color = "danger";
+        text = "error";
+      }
     }
-    else if (pipeline.status === undefined) {
-      color = "danger";
-      text = "not available";
-    }
-    else if (pipeline.status === "running" || pipeline.status === "pending") {
-      color = "warning";
-      text = "building";
+    else if (pipelineType === NotebooksHelper.pipelineTypes.anonymous) {
+      if (pipeline && pipeline.path) {
+        color = "success";
+        text = "available";
+      }
+      else {
+        color = "danger";
+        text = "not available";
+      }
     }
     else {
       color = "danger";
@@ -801,6 +868,32 @@ class StartNotebookPipelinesBadge extends Component {
 class StartNotebookPipelinesContent extends Component {
   render() {
     const pipeline = this.props.pipelines.main;
+    const pipelineType = this.props.pipelines.type;
+    const { pipelineTypes } = NotebooksHelper;
+
+    // anonymous
+    if (pipelineType === pipelineTypes.anonymous) {
+      if (pipeline && pipeline.path)
+        return null;
+
+      return (
+        <div>
+          <Label>
+            <p>
+              <FontAwesomeIcon icon={faExclamationTriangle} /> The image for this commit is not currently available.
+            </p>
+            <p>
+              Since building it takes a while, consider waiting a few minutes if the commit is very recent.
+              <br />Otherwise, you can either select another commit or <ExternalLink role="text" size="sm"
+                title="contact a maintainer" url={`${this.props.externalUrl}/project_members`} /> for
+              help.
+            </p>
+          </Label>
+        </div>
+      );
+    }
+
+    // logged in
     if (pipeline.status === "success")
       return null;
 
@@ -1293,4 +1386,4 @@ class CheckNotebookIcon extends Component {
   }
 }
 
-export { Notebooks, StartNotebookServer, CheckNotebookIcon };
+export { NotebooksDisabled, Notebooks, StartNotebookServer, CheckNotebookIcon };

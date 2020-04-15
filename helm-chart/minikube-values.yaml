@@ -1,6 +1,8 @@
 global:
   renku:
     domain: renku.build
+  anonymousSessions:
+    enabled: false
 
 baseUrl: "http://localhost:3000"
 

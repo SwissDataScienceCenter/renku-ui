@@ -31,6 +31,11 @@ const IMAGE_BUILD_JOB = "image_build";
 const RENKU_INI_PATH = ".renku/renku.ini";
 const RENKU_INI_SECTION = `renku "interactive"`;
 
+const PIPELINE_TYPES = {
+  anonymous: "regististries",
+  logged: "jobs"
+};
+
 const ExpectedAnnotations = {
   domain: "renku.io",
   "renku.io": {
@@ -168,13 +173,16 @@ const NotebooksHelper = {
       return true;
 
     return false;
-  }
+  },
+
+  pipelineTypes: PIPELINE_TYPES
 };
 
 class NotebooksCoordinator {
-  constructor(client, model) {
+  constructor(client, model, userModel) {
     this.client = client;
     this.model = model;
+    this.userModel = userModel;
   }
 
   /**
@@ -239,6 +247,7 @@ class NotebooksCoordinator {
   setCommit(commit) {
     this.model.setObject({
       notebooks: { fetched: null },
+      pipelines: { fetched: null },
       filters: { commit: { $set: commit } }
     });
     this.fetchNotebooks();
@@ -282,8 +291,13 @@ class NotebooksCoordinator {
       }
     });
 
+    // get user status
+    const anonym = this.userModel.get("logged") ?
+      false :
+      true;
+
     // get notebooks
-    return this.client.getNotebookServers(filters.namespace, filters.project, filters.branch, filters.commit)
+    return this.client.getNotebookServers(filters.namespace, filters.project, filters.branch, filters.commit, anonym)
       .then(resp => {
         let updatedNotebooks = { fetching: false };
         // check if result is still valid
@@ -508,6 +522,72 @@ class NotebooksCoordinator {
     return mainPipeline;
   }
 
+  async fetchRegistries() {
+    // check if already fetching data
+    const fetching = this.model.get("pipelines.fetching");
+    if (fetching)
+      return;
+
+    // get filters and stop fetching if not all parameters are available
+    let filters = this.getQueryFilters();
+    if (filters.branch === null || filters.commit === null) {
+      this.stopPipelinePolling();
+      return;
+    }
+    const projectId = `${encodeURIComponent(filters.namespace)}%2F${filters.project}`;
+
+    // verify if parameters have changed and if I have an id
+    const lastParameters = this.model.get("pipelines.lastParameters");
+    const lastMainId = this.model.get("pipelines.lastMainId");
+    const newParameters = JSON.stringify(filters);
+    let newMainId, pipelinesState = {};
+    if (newParameters === lastParameters && lastMainId != null) {
+      newMainId = lastMainId;
+    }
+    else {
+      // update current state and start fetching
+      this.model.setObject({
+        pipelines: {
+          fetching: true,
+          lastParameters: newParameters
+        }
+      });
+      const registries = await this.client.getRegistries(projectId)
+        .catch(error => {
+          this.model.set("pipelines.fetching", false);
+          throw error;
+        });
+
+      // verify that a registry can be found
+      pipelinesState = { fetching: false };
+      if (registries.length === 0) {
+        pipelinesState.fetched = true;
+        pipelinesState.lastMainId = null;
+        pipelinesState.main = { $set: {} };
+        this.model.setObject({ pipelines: pipelinesState });
+        return {};
+      }
+
+      newMainId = registries[0].id;
+      pipelinesState.lastMainId = newMainId;
+    }
+
+    // use the registry id to get the image
+    const tag_id = filters.commit.substring(0, 7);
+    const tag = await this.client.getRegistryTag(projectId, newMainId, tag_id);
+    pipelinesState.fetched = true;
+    pipelinesState.main = tag ?
+      tag :
+      { $set: {} };
+
+    // TODO: polish here, adapt the present component
+    // TODO: to show the correct status on tag status
+    // console.log("ANONYM - NOT IMPLEMENTED YET - ", tag);
+    this.model.setObject({ pipelines: pipelinesState });
+    // this.model.setObject({ pipelines: { ...pipelinesState, main: {} } });
+    return;
+  }
+
 
   // * Handle polling * //
   startNotebookPolling(interval = POLLING_INTERVAL) {
@@ -532,20 +612,51 @@ class NotebooksCoordinator {
   }
 
   startPipelinePolling(interval = POLLING_INTERVAL) {
-    // start polling or invalidate previous data
+    // get old data
     const oldPoller = this.model.get("pipelines.poller");
-    if (oldPoller == null) {
-      const newPoller = setInterval(() => {
-        this.fetchPipeline();
-      }, interval);
-      this.model.set("pipelines.poller", newPoller);
+    const oldPipelinesType = this.model.get("pipelines.type");
 
-      // fetch immediatly
-      return this.fetchPipeline();
+    // compute current data
+    let anonymous, newPipelinesType;
+    if (this.userModel.get("logged")) {
+      anonymous = false;
+      newPipelinesType = PIPELINE_TYPES.logged;
+    }
+    else {
+      anonymous = true;
+      newPipelinesType = PIPELINE_TYPES.anonymous;
     }
 
-    this.model.set("pipelines.fetched", null);
+    // if poller type changes, stop the old one and re-invoke later
+    if (oldPoller != null) {
+      if (oldPipelinesType !== newPipelinesType) {
+        this.model.set("pipelines.fetched", null);
+        this.stopPipelinePolling();
+        setTimeout(() => { this.startPipelinePolling(); }, 1000);
+        return false;
+      }
+    }
+    else {
+      let newPipelines = {
+        fetched: null,
+        type: newPipelinesType
+      };
 
+      let returnValue;
+      if (anonymous) {
+        const newPoller = setInterval(() => { this.fetchRegistries(); }, interval);
+        newPipelines.poller = newPoller;
+        returnValue = this.fetchRegistries();
+      }
+      else {
+        const newPoller = setInterval(() => { this.fetchPipeline(); }, interval);
+        newPipelines.poller = newPoller;
+        returnValue = this.fetchPipeline();
+      }
+
+      this.model.setObject({ pipelines: newPipelines });
+      return returnValue;
+    }
   }
 
   stopPipelinePolling() {
