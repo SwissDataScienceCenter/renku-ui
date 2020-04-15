@@ -17,8 +17,9 @@ const configPromise = fetch("/config.json");
 
 configPromise.then((res) => {
   res.json().then((params) => {
-    if (params["MAINTENANCE"]) {
-      ReactDOM.render(<Maintenance info={params["MAINTENANCE"]} />, document.getElementById("root"));
+    const maintenace = params["MAINTENANCE"];
+    if (maintenace && maintenace !== "false" && maintenace !== "0") {
+      ReactDOM.render(<Maintenance info={maintenace} />, document.getElementById("root"));
       return;
     }
 
