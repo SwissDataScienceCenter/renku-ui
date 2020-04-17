@@ -1,6 +1,7 @@
 /node_modules
 /gitlab
 /doc
+/helm-chart
 .editorconfig
 .eslintignore
 .eslintrc.json
