@@ -134,8 +134,8 @@ class Notebooks extends Component {
  * @param {string} scope.project - path of the reference project
  * @param {string} externalUrl - GitLabl repository url
  * @param {boolean} blockAnonymous - When true, block non logged in users
- * @param {Object} [location] - react location object
- * @param {string} [successUrl] - redirect url to be used when a notebook is succesfully started
+ * @param {Object} [location] - react location object. Use location.state.successUrl to inidcate the
+ *     redirect url to be used when a notebook is succesfully started
  * @param {Object} [history] - mandatory if successUrl is provided
  * @param {string} [message] - provide a useful information or warning message
  */
@@ -315,12 +315,12 @@ class StartNotebookServer extends Component {
   startServer() {
     //* Data from notebooks/servers endpoint needs some time to update properly.
     //* To avoid flickering UI, just set a temporary state and display a loading wheel.
-    const { successUrl, history } = this.props;
+    const { location, history } = this.props;
     this.setState({ "starting": true });
     this.coordinator.startServer().then(() => {
       this.setState({ "starting": false });
-      if (successUrl && history)
-        history.push(successUrl);
+      if (history && location && location.state && location.state.successUrl)
+        history.push(location.state.successUrl);
     });
   }
 
@@ -379,13 +379,15 @@ class StartNotebookServer extends Component {
  * @param {string} scope.project - path of the reference project
  * @param {string} scope.branch - branch name
  * @param {string} scope.commit - commit full id or "latest"
+ * @param {Object} [location] - react location object
  * @param {number} [pollingInterval] - polling timeout interval in seconds
  */
 class CheckNotebookStatus extends Component {
   constructor(props) {
     super(props);
     this.model = props.model.subModel("notebooks");
-    this.coordinator = new NotebooksCoordinator(props.client, this.model);
+    this.userModel = props.model.subModel("user");
+    this.coordinator = new NotebooksCoordinator(props.client, this.model, this.userModel);
     // temporarily reset data since notebooks model was not designed to be static
     this.coordinator.reset();
 

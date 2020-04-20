@@ -201,6 +201,7 @@ class JupyterButtonPresent extends React.Component {
         client={this.props.client}
         model={this.props.model}
         scope={this.props.scope}
+        location={this.props.location}
         launchNotebookUrl={this.props.launchNotebookUrl}
         filePath={this.props.filePath} />
     );

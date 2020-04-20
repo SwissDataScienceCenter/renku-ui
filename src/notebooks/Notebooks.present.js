@@ -1347,7 +1347,7 @@ class AutosavedDataModal extends Component {
 // * CheckNotebookIcon code * //
 class CheckNotebookIcon extends Component {
   render() {
-    const { fetched, notebook } = this.props;
+    const { fetched, notebook, location } = this.props;
     if (!fetched)
       return (<Loader size="16" inline="true" />);
 
@@ -1372,9 +1372,16 @@ class CheckNotebookIcon extends Component {
       }
     }
     else {
+      const successUrl = location ?
+        location.pathname :
+        null;
+      const target = {
+        pathname: this.props.launchNotebookUrl,
+        state: { successUrl }
+      };
       tooltip = "Start an interactive environment";
       icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" greyscale={true} />);
-      link = (<Link to={this.props.launchNotebookUrl}>{icon}</Link>);
+      link = (<Link to={target}>{icon}</Link>);
     }
 
     return (
