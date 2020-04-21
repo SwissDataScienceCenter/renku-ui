@@ -22,7 +22,6 @@ import hljs from "highlight.js";
 
 import { atobUTF8 } from "../utils/Encoding";
 import { StyledNotebook, JupyterButtonPresent, ShowFile as ShowFilePresent } from "./File.present";
-import { ACCESS_LEVELS } from "../api-client";
 import { StatusHelper } from "../model/Model";
 import { API_ERRORS } from "../api-client";
 import { RenkuMarkdown } from "../utils/UIComponents";
@@ -156,7 +155,7 @@ class JupyterNotebookContainer extends Component {
  * Jupyter button container component
  *
  * @param {Object} client - api-client used to query the gateway
- * @param {number} accessLevel - current project access level
+ * @param {Object} Object - user object
  * @param {Object} branches - branches data, likely to change in a future release
  * @param {Object} branches.all - list of available branches
  * @param {Object} branches.fetch - function to invoke to refresh branches
@@ -167,7 +166,7 @@ class JupyterNotebookContainer extends Component {
  */
 class JupyterButton extends React.Component {
   componentDidMount() {
-    if (this.props.accessLevel >= ACCESS_LEVELS.MAINTAINER) {
+    if (this.props.user.logged) {
       const { branches } = this.props;
       if (branches && branches.all && !branches.all.length && !StatusHelper.isUpdating(branches.all))
         branches.fetch();
@@ -198,8 +197,14 @@ class JupyterButton extends React.Component {
   }
 
   render() {
-    if (this.props.accessLevel < ACCESS_LEVELS.MAINTAINER)
-      return (<JupyterButtonPresent access={false} launchNotebookUrl={this.props.launchNotebookUrl} />);
+    if (!this.props.user.logged) {
+      return (
+        <JupyterButtonPresent
+          access={false}
+          launchNotebookUrl={this.props.launchNotebookUrl}
+        />
+      );
+    }
 
     const { file, branches } = this.props;
     let updating = false;
@@ -222,6 +227,7 @@ class JupyterButton extends React.Component {
         scope={this.getScope()}
         filePath={filePath}
         updating={updating}
+        location={this.props.location}
         launchNotebookUrl={this.props.launchNotebookUrl} />
     );
   }
