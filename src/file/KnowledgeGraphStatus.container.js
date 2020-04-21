@@ -81,7 +81,6 @@ class KnowledgeGraphStatus extends Component {
             this.stopPollingProgress();
             if (progress === GraphIndexingStatus.MAX_VALUE && this.props.retrieveGraph())
               this.props.retrieveGraph();
-
           }
         }
       });

@@ -24,7 +24,7 @@
  */
 
 
-import React, { Component } from "react";
+import React, { Component, useState, useEffect } from "react";
 
 import { Link, Route, Switch } from "react-router-dom";
 import filesize from "filesize";
@@ -34,7 +34,7 @@ import { Card, CardBody, CardHeader, Form, FormGroup, FormText, Label, Input } f
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
-import { faCodeBranch, faExternalLinkAlt, faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { faCodeBranch, faExternalLinkAlt, faInfoCircle, faLongArrowAltLeft } from "@fortawesome/free-solid-svg-icons";
 import { faStar as faStarSolid } from "@fortawesome/free-solid-svg-icons";
 import { faExclamationTriangle, faLock, faUserFriends, faGlobe, faSearch } from "@fortawesome/free-solid-svg-icons";
 
@@ -556,8 +556,6 @@ class ProjectDatasetsNav extends Component {
       datasets={this.props.core.datasets}
       datasetsUrl={this.props.datasetsUrl}
       newDatasetUrl={this.props.newDatasetUrl}
-      createDatasetUrl={this.props.createDatasetUrl}
-      importDatasetUrl={this.props.importDatasetUrl}
       visibility={this.props.visibility}
     />;
   }
@@ -565,93 +563,115 @@ class ProjectDatasetsNav extends Component {
 
 function ProjectAddDataset(props) {
 
+  const [newDataset, setNewDataset] = useState(true);
+
   return <Col>
-    <Row>
-      <Col key="nav" sm={12} md={2}>
-        <Nav pills className={"flex-column"}>
-          <NavItem>
-            <RenkuNavLink to={props.createDatasetUrl} title="Create" />
-          </NavItem>
-          <NavItem>
-            <RenkuNavLink to={props.importDatasetUrl} title="Import" />
-          </NavItem>
-        </Nav>
-      </Col>
-      <Col sm={12} md={8} lg={6}>
-        <Switch>
-          <Route exact path={props.importDatasetUrl}
-            render={p => props.importDataset(p)} />
-          <Route exact path={props.createDatasetUrl}
-            render={p => props.newDataset(p)} />
-        </Switch>
-      </Col>
-    </Row>
+    { props.visibility.accessLevel > ACCESS_LEVELS.DEVELOPER ? [
+      <Row key="header">
+        <h3 className="uk-heading-divider uk-text-center pb-2 ml-4">Add Dataset</h3>
+      </Row>,
+      <Row key="switch-button">
+        <ButtonGroup className={"ml-4 pt-1"}>
+          <Button color="primary" outline onClick={() => setNewDataset(true)} active={newDataset}>
+            Create Dataset
+          </Button>
+          <Button color="primary" outline onClick={() => setNewDataset(false)} active={!newDataset}>
+            Import Dataset
+          </Button>
+        </ButtonGroup>
+      </Row>]
+      : null
+    }
+    { newDataset ?
+      props.newDataset(props)
+      : props.importDataset(props)
+    }
   </Col>;
 }
 
-class ProjectViewDatasets extends Component {
-  render() {
-    return <Switch>
-      <Route path={this.props.newDatasetUrl}
-        render={p => <ProjectAddDataset {...this.props} />}/>
-      <Route path={this.props.editDatasetUrl}
-        render={p => this.props.editDataset(p)} />
-      <Route path={this.props.datasetsUrl} render={props =>
-        <ProjectViewDatasetsList {...this.props} {...props} />} />
-    </Switch>;
-  }
+function GoBackButton(props) {
+  return <Col md={12} className="pb-3">
+    <Link className="pl-3" to={props.url}>
+      <FontAwesomeIcon icon={faLongArrowAltLeft} /> {props.label}
+    </Link>
+  </Col>;
 }
 
-class ProjectViewDatasetsList extends Component {
+function EmptyProject(props) {
+  return <Col sm={12} md={10} lg={8}>
+    <Alert timeout={0} color="primary">
+      No datasets found for this project. <br /><br />
+      <FontAwesomeIcon icon={faInfoCircle} />  If you recently activated the knowledge graph or
+      added the datasets try refreshing the page. <br /><br />
+      You can also click on the button to
+      &nbsp;<Link className="btn btn-primary btn-sm" to={props.newDatasetUrl}>Add a Dataset</Link>
+    </Alert>
+  </Col>;
+}
 
-  componentDidMount() {
-    if (this.props.core.datasets === undefined
-      || (this.props.location.state && this.props.location.state.datasets))
-      this.props.fetchDatasets();
-  }
+function ProjectViewDatasets(props) {
+  const [fetchAfterWebhook, setFetchAfterWebhook] = useState(false);
 
-  render() {
-    const loading = this.props.core.datasets === SpecialPropVal.UPDATING;
-    const incomingDatasets = this.props.location.state && this.props.location.state.datasets
-      ? this.props.location.state.datasets : [];
-    if (loading || this.props.core.datasets === undefined || incomingDatasets.length > this.props.core.datasets.length)
-      return <Loader />;
-    const progress = this.props.webhook.progress;
-    const kgLoading = progress == null
+  useEffect(()=>{
+    const loading = props.core.datasets === SpecialPropVal.UPDATING;
+    if (loading) return;
+    const incomingDatasets = props.location.state && props.location.state.datasets
+      ? props.location.state.datasets : [];
+    if (props.core.datasets === undefined ||
+      incomingDatasets.length > props.core.datasets.length) {
+      props.fetchDatasets();
+    }
+    else if (props.core.datasets === undefined && !fetchAfterWebhook &&
+      props.webhook.progress >= GraphIndexingStatus.MAX_VALUE) {
+      props.fetchDatasets();
+      setFetchAfterWebhook(true);
+    }
+  }, [props, fetchAfterWebhook]);
+
+  const loading = props.core.datasets === SpecialPropVal.UPDATING;
+  const incomingDatasets = props.location.state && props.location.state.datasets
+    ? props.location.state.datasets : [];
+  if (loading || props.core.datasets === undefined
+     || incomingDatasets.length > props.core.datasets.length)
+    return <Loader />;
+  const progress = props.webhook.progress;
+
+  const kgLoading = progress == null
       || progress === GraphIndexingStatus.NO_WEBHOOK
       || progress === GraphIndexingStatus.NO_PROGRESS
       || (progress >= GraphIndexingStatus.MIN_VALUE && progress < GraphIndexingStatus.MAX_VALUE);
 
-    if (!loading && !kgLoading && this.props.core.datasets !== undefined && this.props.core.datasets.length === 0) {
-      return <Col sm={12} md={8} lg={10}>
-        <Alert timeout={0} color="primary">
-          No datasets found for this project. <br /><br />
-          <FontAwesomeIcon icon={faInfoCircle} />  If you recently activated the knowledge graph or
-          added the datasets try refreshing the page. <br /><br />
-          You can also click on the button to create a
-          &nbsp;<Link className="btn btn-primary btn-sm" to={this.props.createDatasetUrl}>New Dataset</Link>
-          &nbsp;or <Link className="btn btn-primary btn-sm" to={this.props.importDatasetUrl}>Import a Dataset</Link>
-        </Alert>
-      </Col>;
-    }
-
-    return [
-      kgLoading ? null
-        : <Col key="datasetsnav" sm={12} md={3}>
-          <ProjectDatasetsNav {...this.props} />
-        </Col>,
-      <Col key="datasetcontent" sm={12} md={8}>
-        <Switch>
-          <Route path={this.props.datasetUrl}
-            render={p => this.props.datasetView(p)} />
-          {kgLoading ?
-            <Route path={this.props.datasetsUrl}
-              render={p => this.props.datasetView(p)} />
-            : null}
-        </Switch>
-      </Col>
-    ];
+  if (!loading && !kgLoading && props.core.datasets !== undefined && props.core.datasets.length === 0
+    && props.location.pathname !== props.newDatasetUrl) {
+    return <EmptyProject
+      newDatasetUrl={props.newDatasetUrl}
+    />;
   }
+
+  if (kgLoading)
+    return <Col sm={12} md={10} lg={8}>{props.kgStatusView(true, props.fetchDatasets)}</Col>;
+
+  return <Col sm={12} md={12} lg={8}>
+    <Switch>
+      <Route path={props.newDatasetUrl}
+        render={p =>[
+          <GoBackButton key="btn" label="Back to list" url={props.datasetsUrl}/>,
+          <ProjectAddDataset key="projectsAddDataset" {...props} />
+        ]}/>
+      <Route path={props.editDatasetUrl}
+        render={p => [
+          <GoBackButton key="btn" label="Back to dataset" url={`${props.datasetsUrl}/${p.match.params.datasetId}/`} />,
+          props.editDataset(p)]
+        }/>
+      <Route path={props.datasetUrl} render={p =>[
+        <GoBackButton key="btn" label="Back to list" url={props.datasetsUrl}/>,
+        props.datasetView(p)
+      ]} />
+      <Route exact path={props.datasetsUrl} render={p =>
+        <ProjectDatasetsNav {...props} />
+      }/>
+    </Switch>
+  </Col>;
 }
 
 class ProjectViewCollaborationNav extends Component {

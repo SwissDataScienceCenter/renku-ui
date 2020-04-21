@@ -25,7 +25,7 @@
 
 
 import React from "react";
-import { Row, Col, Alert, Button } from "reactstrap";
+import { Col, Alert, Button } from "reactstrap";
 import { FormPanel } from "../../../utils/formgenerator";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -45,20 +45,14 @@ function DatasetNew(props) {
     </Col>;
   }
 
-  return (
-    <Row>
-      <Col>
-        <FormPanel
-          title="Create Dataset"
-          btnName="Create Dataset"
-          submitCallback={props.submitCallback}
-          model={props.datasetFormSchema}
-          serverErrors={props.serverErrors}
-          submitLoader={{ value: props.submitLoader, text: "Creating dataset, please wait..." }}
-          onCancel={props.onCancel} />
-      </Col>
-    </Row>
-  );
+  return <FormPanel
+    btnName="Create Dataset"
+    submitCallback={props.submitCallback}
+    model={props.datasetFormSchema}
+    serverErrors={props.serverErrors}
+    submitLoader={{ value: props.submitLoader, text: "Creating dataset, please wait..." }}
+    onCancel={props.onCancel} />;
+
 
 }
 

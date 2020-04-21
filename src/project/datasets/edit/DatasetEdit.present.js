@@ -25,7 +25,7 @@
 
 
 import React, { useState, useEffect, useRef } from "react";
-import { Row, Col, Alert, Button } from "reactstrap";
+import { Col, Alert, Button } from "reactstrap";
 import { FormPanel } from "../../../utils/formgenerator";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -44,7 +44,9 @@ function DatasetEdit(props) {
     props.datasetFormSchema.name.value = props.datasetFormSchema.name.initial;
     props.datasetFormSchema.description.value = props.datasetFormSchema.description.initial;
     props.datasetFormSchema.files.value = props.datasetFormSchema.files.initial;
-    props.history.push({ pathname: `/projects/${props.projectPathWithNamespace}/datasets` });
+    props.history.push({
+      pathname: `/projects/${props.projectPathWithNamespace}/datasets/${props.dataset.identifier}/`
+    });
   };
 
   const submitCallback = e => {
@@ -131,21 +133,15 @@ function DatasetEdit(props) {
     </Col>;
   }
 
-  return (
-    <Row>
-      <Col>
-        <FormPanel
-          title="Modify Dataset"
-          btnName="Modify Dataset"
-          submitCallback={submitCallback}
-          model={props.datasetFormSchema}
-          serverErrors={serverErrors}
-          submitLoader={{ value: submitLoader, text: "Adding files to dataset, please wait..." }}
-          onCancel={onCancel}
-          edit={true} />
-      </Col>
-    </Row>
-  );
+  return <FormPanel
+    title="Modify Dataset"
+    btnName="Modify Dataset"
+    submitCallback={submitCallback}
+    model={props.datasetFormSchema}
+    serverErrors={serverErrors}
+    submitLoader={{ value: submitLoader, text: "Adding files to dataset, please wait..." }}
+    onCancel={onCancel}
+    edit={true} />;
 
 }
 
