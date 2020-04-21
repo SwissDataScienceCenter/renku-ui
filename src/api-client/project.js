@@ -559,7 +559,6 @@ function getPayload(projectName, renkuTemplatesUrl, renkuTemplatesRef, projectTe
   }
 
   function evaluateTemplate(content, projectName) {
-
     const now = new Date();
     const templatedVariables = {
       "name": projectName,
@@ -568,9 +567,10 @@ function getPayload(projectName, renkuTemplatesUrl, renkuTemplatesRef, projectTe
     };
 
     const newContent = content.replace(/{{\s?([^\s]*)\s?}}/g, (match, group) => {
-      return templatedVariables[group];
+      return templatedVariables[group] ? templatedVariables[group] : "";
     });
-    return newContent;
+    const cleanedContent = newContent.replace(/{%\s?(if \S* | endif)\s?%}\s*/g, "");
+    return cleanedContent;
   }
 
 }
