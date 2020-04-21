@@ -40,7 +40,7 @@ class HelpNav extends Component {
           <RenkuNavLink to={this.props.url.base} alternate={this.props.url.getting} title="Getting Help" />
         </NavItem>
         <NavItem>
-          <RenkuNavLink to={this.props.url.tutorials} title="Tutorials" />
+          <RenkuNavLink to={this.props.url.documentation} title="Documentation" />
         </NavItem>
         <NavItem>
           <RenkuNavLink to={this.props.url.features} title="Features" />
@@ -103,22 +103,32 @@ class HelpGetting extends Component {
   }
 }
 
-class HelpTutorials extends Component {
+class HelpDocumentation extends Component {
   render() {
     return (
       <div>
-        <h2>First steps</h2>
+        <h2>
+          <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/tutorials/firststeps.html"
+            title="Tutorial" />
+        </h2>
         <p>
           If you are here for the first time or you are not sure how to use Renku, we recommend you
-          to go through our{" "}
-          <a
-            href="https://renku.readthedocs.io/en/latest/tutorials/firststeps.html"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            tutorial
-          </a>
-          .
+          to go through our {" "}
+          <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/tutorials/firststeps.html" title="tutorial" />.
+        </p>
+        <h2>
+          <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/"
+            title="Renku" /> and {" "}
+          <ExternalDocsLink url="https://renku-python.readthedocs.io/en/latest/"
+            title="Renku CLI" /> Documentation
+        </h2>
+        <p>
+          Documentation on the Renku project in general is at {" "}
+          <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/" title="renku.readthedocs.io" />.
+        </p>
+        <p>
+          The command-line-interface is documented in detail at {" "}
+          <ExternalDocsLink url="https://renku-python.readthedocs.io/en/latest/" title="renku-python.readthedocs.io" />.
         </p>
       </div>
     );
@@ -224,9 +234,9 @@ class HelpContent extends Component {
         render={props => <HelpGetting key="getting" {...this.props} />}
       />,
       <Route
-        path={this.props.url.tutorials}
-        key="tutorials"
-        render={props => <HelpTutorials key="tutorials" {...this.props} />}
+        path={this.props.url.documentation}
+        key="documentation"
+        render={props => <HelpDocumentation key="documentation" {...this.props} />}
       />,
       <Route
         path={this.props.url.features}
