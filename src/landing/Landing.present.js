@@ -227,7 +227,7 @@ class AnonymousHome extends Component {
       <Row key="tutorial" className="mb-3">
         <Col>
           Want to learn more? Create an account
-          and <a href="https://renku.readthedocs.io/en/latest/tutorials/firststeps.html">follow the tutorial</a>.
+          and <a href="https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html">follow the tutorial</a>.
         </Col>
       </Row>
       <Row key="closing">

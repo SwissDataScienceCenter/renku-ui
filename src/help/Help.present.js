@@ -108,13 +108,14 @@ class HelpDocumentation extends Component {
     return (
       <div>
         <h2>
-          <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/tutorials/firststeps.html"
+          <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html"
             title="Tutorial" />
         </h2>
         <p>
           If you are here for the first time or you are not sure how to use Renku, we recommend you
           to go through our {" "}
-          <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/tutorials/firststeps.html" title="tutorial" />.
+          <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html"
+            title="tutorial" />.
         </p>
         <h2>
           <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/"
