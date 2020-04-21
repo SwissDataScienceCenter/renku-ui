@@ -34,7 +34,7 @@ class Help extends Component {
     return {
       base: baseUrl,
       getting: `${baseUrl}/getting`,
-      tutorials: `${baseUrl}/tutorials`,
+      documentation: `${baseUrl}/docs`,
       features: `${baseUrl}/features`,
       setup: `${baseUrl}/setup`,
     };
