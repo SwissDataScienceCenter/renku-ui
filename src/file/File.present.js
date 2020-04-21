@@ -16,13 +16,11 @@
  * limitations under the License.
  */
 
-import React from "react";
+import React, { useState } from "react";
 import NotebookPreview from "@nteract/notebook-render";
 
-// Do not import the style because this does not work after webpack bundles things for production mode.
-// Instead define the style below
-//import './notebook.css'
-import { Card, CardHeader, CardBody, Badge } from "reactstrap";
+import { Badge, Card, CardHeader, CardBody, CustomInput } from "reactstrap";
+import { Button, ButtonGroup } from "reactstrap";
 import { ListGroup, ListGroupItem } from "reactstrap";
 import "../../node_modules/highlight.js/styles/atom-one-light.css";
 import { faProjectDiagram } from "@fortawesome/free-solid-svg-icons";
@@ -34,7 +32,6 @@ import { Clipboard, ExternalIconLink, IconLink, Loader } from "../utils/UICompon
 import { Time } from "../utils/Time";
 
 const commitMessageLengthLimit = 120;
-
 
 /**
  * Display the Card with file information. Has the following parameters:
@@ -53,43 +50,49 @@ class FileCard extends React.Component {
     let commitHeader = null;
     if (this.props.commit) {
       const commitLinkHref = `${this.props.gitLabUrl}/commit/${this.props.commit.id}`;
-      const title = (this.props.commit.title.length > commitMessageLengthLimit) ?
-        this.props.commit.title.slice(0, commitMessageLengthLimit) + "..." :
-        this.props.commit.title;
-      commitHeader = <ListGroup flush>
-        <ListGroupItem>
-          <div className="d-flex justify-content-between flex-wrap">
-            <div>
-              <a href={commitLinkHref} target="_blank" rel="noreferrer noopener">
-                Commit: {this.props.commit.short_id}
-              </a> &nbsp;
-              {title}
+      const title =
+        this.props.commit.title.length > commitMessageLengthLimit
+          ? this.props.commit.title.slice(0, commitMessageLengthLimit) + "..."
+          : this.props.commit.title;
+      commitHeader = (
+        <ListGroup flush>
+          <ListGroupItem>
+            <div className="d-flex justify-content-between flex-wrap">
+              <div>
+                <a href={commitLinkHref} target="_blank" rel="noreferrer noopener">
+                  Commit: {this.props.commit.short_id}
+                </a>{" "}
+                &nbsp;
+                {title}
+              </div>
+              <div className="caption">
+                {this.props.commit.author_name} &nbsp;
+                {Time.toIsoString(this.props.commit.committed_date)}
+              </div>
             </div>
-            <div className="caption">
-              {this.props.commit.author_name} &nbsp;
-              {Time.toIsoString(this.props.commit.committed_date)}
-            </div>
-          </div>
-        </ListGroupItem>
-      </ListGroup>;
+          </ListGroupItem>
+        </ListGroup>
+      );
     }
-    return <Card>
-      <CardHeader className="align-items-baseline">
-        {this.props.lfsBadge}
-        {this.props.filePath}
-        &nbsp;
-        <Clipboard clipboardText={this.props.filePath} />
-        &nbsp;
-        <span className="caption align-baseline">&nbsp;File view</span>
-        <div className="float-right">
-          {this.props.buttonJupyter}
-          {this.props.buttonGit}
-          {this.props.buttonGraph}
-        </div>
-      </CardHeader>
-      {commitHeader}
-      <CardBody>{this.props.body}</CardBody>
-    </Card>;
+    return (
+      <Card>
+        <CardHeader className="align-items-baseline">
+          {this.props.lfsBadge}
+          {this.props.filePath}
+          &nbsp;
+          <Clipboard clipboardText={this.props.filePath} />
+          &nbsp;
+          <span className="caption align-baseline">&nbsp;File view</span>
+          <div className="float-right">
+            {this.props.buttonJupyter}
+            {this.props.buttonGit}
+            {this.props.buttonGraph}
+          </div>
+        </CardHeader>
+        {commitHeader}
+        {this.props.body}
+      </Card>
+    );
   }
 }
 
@@ -106,95 +109,218 @@ class FileCard extends React.Component {
  * @param {Object} error - The error object from GitLab (can be null)
  */
 class ShowFile extends React.Component {
-
   render() {
     const gitLabFilePath = this.props.gitLabFilePath;
-    const buttonGraph = this.props.lineagesPath !== undefined ?
-      <IconLink tooltip="Graph View" icon={faProjectDiagram} to={`${this.props.lineagesPath}/${gitLabFilePath}`} />
-      : null;
+    const buttonGraph =
+      this.props.lineagesPath !== undefined ? (
+        <IconLink tooltip="Graph View" icon={faProjectDiagram} to={`${this.props.lineagesPath}/${gitLabFilePath}`} />
+      ) : null;
 
-    const buttonGit = <ExternalIconLink
-      tooltip="Open in GitLab" icon={faGitlab} to={`${this.props.externalUrl}/blob/master/${gitLabFilePath}`} />;
+    const buttonGit = (
+      <ExternalIconLink
+        tooltip="Open in GitLab"
+        icon={faGitlab}
+        to={`${this.props.externalUrl}/blob/master/${gitLabFilePath}`}
+      />
+    );
 
     if (this.props.error !== null) {
-      return <FileCard gitLabUrl={this.props.externalUrl}
-        filePath={this.props.gitLabFilePath.split("\\").pop().split("/").pop()}
+      return (
+        <FileCard
+          gitLabUrl={this.props.externalUrl}
+          filePath={this.props.gitLabFilePath.split("\\").pop().split("/").pop()}
+          commit={this.props.commit}
+          buttonGraph={buttonGraph}
+          buttonGit={buttonGit}
+          buttonJupyter={this.props.buttonJupyter}
+          body={this.props.error}
+          lfsBadge={null}
+        />
+      );
+    }
+
+    if (this.props.file == null) {
+      return (
+        <Card>
+          <CardHeader className="align-items-baseline">&nbsp;</CardHeader>
+          <CardBody>{"Loading..."}</CardBody>
+        </Card>
+      );
+    }
+
+    const isLFS = this.props.hashElement ? this.props.hashElement.isLfs : false;
+    const isLFSBadge = isLFS ? (
+      <Badge className="lfs-badge" color="light">
+        LFS
+      </Badge>
+    ) : null;
+
+    const body = <FilePreview file={this.props.file} {...this.props} />;
+
+    return (
+      <FileCard
+        gitLabUrl={this.props.externalUrl}
+        filePath={this.props.filePath}
         commit={this.props.commit}
         buttonGraph={buttonGraph}
         buttonGit={buttonGit}
         buttonJupyter={this.props.buttonJupyter}
-        body={this.props.error}
-        lfsBadge={null} />;
-    }
-
-    if (this.props.file == null) {
-      return <Card>
-        <CardHeader className="align-items-baseline">&nbsp;</CardHeader>
-        <CardBody>{"Loading..."}</CardBody>
-      </Card>;
-    }
-
-    const isLFS = this.props.hashElement ? this.props.hashElement.isLfs : false;
-    const isLFSBadge = isLFS ?
-      <Badge className="lfs-badge" color="light">LFS</Badge> :
-      null;
-
-    const body = <FilePreview
-      file={this.props.file}
-      {...this.props}
-    />;
-
-    return <FileCard gitLabUrl={this.props.externalUrl}
-      filePath={this.props.filePath}
-      commit={this.props.commit}
-      buttonGraph={buttonGraph}
-      buttonGit={buttonGit}
-      buttonJupyter={this.props.buttonJupyter}
-      body={body}
-      lfsBadge={isLFSBadge} />;
+        body={body}
+        lfsBadge={isLFSBadge}
+      />
+    );
   }
 }
 
-class StyledNotebook extends React.Component {
+/**
+ * Modes of showing notebook source code.
+ */
+const NotebookSourceDisplayMode = {
+  DEFAULT: "DEFAULT",
+  SHOWN: "SHOWN",
+  HIDDEN: "HIDDEN",
+};
+/**
+ * Modify the cell metadata according to the hidden policy
+ *
+ * @param {object} [cell] - The cell to process
+ * @param {array} [accum] - The place to store the result
+ */
+function tweakCellMetadataHidden(cell, accum) {
+  const clone = { ...cell };
+  clone.metadata = { ...cell.metadata };
+  clone.metadata.hide_input = true;
+  accum.push(clone);
+}
 
-  componentDidMount() {
-    // TODO go through the dom and modify the nodes, e.g., with D3
-    //this.fixUpDom(ReactDOM.findDOMNode(this.notebook));
+/**
+ * Modify the cell metadata according to the show policy
+ *
+ * @param {object} [cell] - The cell to process
+ * @param {array} [accum] - The place to store the result
+ */
+function tweakCellMetadataShow(cell, accum) {
+  const clone = { ...cell };
+  clone.metadata = { ...cell.metadata };
+  clone.metadata.hide_input = false;
+  accum.push(clone);
+}
+
+/**
+ * Modify the cell metadata according to the default policy
+ *
+ * @param {object} [cell] - The cell to process
+ * @param {array} [accum] - The place to store the result
+ */
+function tweakCellMetadataDefault(cell, accum) {
+  if (cell.metadata.jupyter == null) {
+    accum.push(cell);
+  }
+  else {
+    const clone = { ...cell };
+    clone.metadata = { ...cell.metadata };
+    clone.metadata.hide_input = clone.metadata.jupyter.source_hidden;
+    accum.push(clone);
+  }
+}
+
+/**
+ * Modify the notebook metadata so it is correctly processed by the renderer.
+ *
+ * @param {object} [nb] - The notebook to process
+ * @param {string} [displayMode] - The mode to use to process the notebook
+ */
+function tweakCellMetadata(nb, displayMode = NotebookSourceDisplayMode.DEFAULT) {
+  // Scan the cell metadata, and, if jupyter.source_hidden === true, set hide_input = true
+  const result = { ...nb };
+  result.cells = [];
+  const cellMetadataFunction =
+    displayMode === NotebookSourceDisplayMode.DEFAULT
+      ? tweakCellMetadataDefault
+      : displayMode === NotebookSourceDisplayMode.HIDDEN ?
+        tweakCellMetadataHidden
+        : tweakCellMetadataShow;
+  nb.cells.forEach((cell) => cellMetadataFunction(cell, result.cells));
+  if (displayMode === NotebookSourceDisplayMode.SHOWN) {
+    // Set the hide_input to false;
+    result["metadata"] = { ...result["metadata"] };
+    result["metadata"]["hide_input"] = false;
+  }
+  return result;
+}
+
+function NotebookDisplayForm(props) {
+  const displayMode = props.displayMode;
+  const setDisplayMode = props.setDisplayMode;
+  const [overrideMode, setOverrideMode] = useState(NotebookSourceDisplayMode.SHOWN);
+
+  function setOverride(override) {
+    if (override)
+      setDisplayMode(overrideMode);
+    else
+      setDisplayMode(NotebookSourceDisplayMode.DEFAULT);
   }
 
-  render() {
-    if (this.props.notebook == null) return <div>Loading...</div>;
-
-    const notebookStyle = `
-    .jupyter .output img {
-      max-width: 100%;
-      margin-left: auto;
-      margin-right: auto;
-      display: block;
-    }
-    `;
-
-    return [
-      <style key="notebook-style">{notebookStyle}</style>,
-      <NotebookPreview
-        key="notebook"
-        ref={c => { this.notebook = c; }}
-        defaultStyle={false}
-        loadMathjax={false}
-        notebook={this.props.notebook}
-        showCode={true}
-      />
-    ];
+  function setLocalMode(mode) {
+    setOverrideMode(mode);
+    setDisplayMode(mode);
   }
+
+  const overrideControl = (displayMode === NotebookSourceDisplayMode.DEFAULT) ?
+    null :
+    <ButtonGroup key="controls" size="sm" className="mt-1">
+      <Button
+        color="primary"
+        outline={displayMode !== NotebookSourceDisplayMode.SHOWN}
+        onClick={() => setLocalMode(NotebookSourceDisplayMode.SHOWN)}
+        active={displayMode === NotebookSourceDisplayMode.SHOWN}
+      >
+        Visible
+      </Button>
+      <Button
+        color="primary"
+        outline={displayMode !== NotebookSourceDisplayMode.HIDDEN}
+        onClick={() => setLocalMode(NotebookSourceDisplayMode.HIDDEN)}
+        active={displayMode === NotebookSourceDisplayMode.HIDDEN}
+      >
+        Hidden
+      </Button>
+    </ButtonGroup>;
+
+  return <ListGroup key="controls" flush>
+    <ListGroupItem>
+      <div>
+        <CustomInput type="switch" id="code-visibility-override"
+          name="code-visibility-override" label="Override Code Visibility"
+          checked={displayMode !== NotebookSourceDisplayMode.DEFAULT}
+          onChange={() => { setOverride(displayMode === NotebookSourceDisplayMode.DEFAULT); }} />
+        {overrideControl}
+      </div>
+    </ListGroupItem>
+  </ListGroup>;
+}
+
+function StyledNotebook(props) {
+  const [displayMode, setDisplayMode] = useState(NotebookSourceDisplayMode.DEFAULT);
+
+  if (props.notebook == null) return <div>Loading...</div>;
+
+  const notebook = tweakCellMetadata(props.notebook, displayMode);
+  return [
+    <NotebookDisplayForm key="notebook-display-form"
+      displayMode={displayMode} setDisplayMode={setDisplayMode} />,
+    <CardBody key="notebook">
+      <NotebookPreview defaultStyle={false} loadMathjax={false} notebook={notebook} />
+    </CardBody>
+  ];
 }
 
 class JupyterButtonPresent extends React.Component {
   render() {
     if (!this.props.access)
-      return (<CheckNotebookIcon fetched={true} launchNotebookUrl={this.props.launchNotebookUrl} />);
+      return <CheckNotebookIcon fetched={true} launchNotebookUrl={this.props.launchNotebookUrl} />;
 
-    if (this.props.updating)
-      return (<Loader size="16" inline="true" />);
+    if (this.props.updating) return <Loader size="16" inline="true" />;
 
     return (
       <CheckNotebookStatus
@@ -203,9 +329,10 @@ class JupyterButtonPresent extends React.Component {
         scope={this.props.scope}
         location={this.props.location}
         launchNotebookUrl={this.props.launchNotebookUrl}
-        filePath={this.props.filePath} />
+        filePath={this.props.filePath}
+      />
     );
   }
 }
 
-export { StyledNotebook, JupyterButtonPresent, ShowFile };
+export { StyledNotebook, JupyterButtonPresent, ShowFile, tweakCellMetadata, NotebookSourceDisplayMode };

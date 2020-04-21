@@ -25,6 +25,7 @@ import { StyledNotebook, JupyterButtonPresent, ShowFile as ShowFilePresent } fro
 import { StatusHelper } from "../model/Model";
 import { API_ERRORS } from "../api-client";
 import { RenkuMarkdown } from "../utils/UIComponents";
+import { CardBody } from "reactstrap";
 
 const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "pdf", "gif"];
 const CODE_EXTENSIONS = [
@@ -75,46 +76,65 @@ class FilePreview extends React.Component {
     if (this.fileIsImage()) {
       if (atob(this.props.file.content).includes("https://git-lfs.github.com/"))
         return "The image can't be previewed because it's stored in Git LFS.";
-      return <img
-        className="image-preview"
-        alt={this.props.file.file_name}
-        src={"data:image;base64," + this.props.file.content}
-      />;
+      return (
+        <CardBody key="file preview">
+          <img
+            className="image-preview"
+            alt={this.props.file.file_name}
+            src={"data:image;base64," + this.props.file.content}
+          />
+        </CardBody>
+      );
     }
     // Code with syntax highlighting
     if (this.fileIsCode()) {
       return (
-        <pre className={`hljs ${this.getFileExtension()}`}>
-          <code>{atobUTF8(this.props.file.content)}</code>
-        </pre>
+        <CardBody key="file preview">
+          <pre className={`hljs ${this.getFileExtension()}`}>
+            <code>{atobUTF8(this.props.file.content)}</code>
+          </pre>
+        </CardBody>
       );
     }
     // Markdown
     if (this.getFileExtension() === "md") {
       let content = atobUTF8(this.props.file.content);
-      return <RenkuMarkdown markdownText={content} />;
+      return (
+        <CardBody key="file preview">
+          <RenkuMarkdown markdownText={content} />{" "}
+        </CardBody>
+      );
     }
 
     // Jupyter Notebook
     if (this.getFileExtension() === "ipynb") {
-      return <JupyterNotebookContainer
-        key="notebook-body"
-        notebook={JSON.parse(atobUTF8(this.props.file.content), (key, value) => Object.freeze(value))}
-        filePath={this.props.file.file_path}
-        {...this.props}
-      />;
+      return (
+        // Do not wrap in a CardBody, the notebook container does that itself
+        <JupyterNotebookContainer
+          key="notebook-body"
+          notebook={JSON.parse(atobUTF8(this.props.file.content))}
+          filePath={this.props.file.file_path}
+          {...this.props}
+        />
+      );
     }
 
     if (this.fileHasNoExtension()) {
       return (
-        <pre className={`hljs ${this.getFileExtension()}`}>
-          <code>{atobUTF8(this.props.file.content)}</code>
-        </pre>
+        <CardBody key="file preview">
+          <pre className={`hljs ${this.getFileExtension()}`}>
+            <code>{atobUTF8(this.props.file.content)}</code>
+          </pre>
+        </CardBody>
       );
     }
 
     // File extension not supported
-    return <p>{`Unable to preview file with extension .${this.getFileExtension()}`}</p>;
+    return (
+      <CardBody key="file preview">
+        <p>{`Unable to preview file with extension .${this.getFileExtension()}`}</p>
+      </CardBody>
+    );
   }
 }
 
