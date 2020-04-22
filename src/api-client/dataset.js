@@ -64,7 +64,7 @@ export default function addDatasetMethods(client) {
           method: "POST",
           headers: headers,
           body: JSON.stringify({
-            "dataset_name": datasetName,
+            "short_name": datasetName,
             "files": filesList,
             "project_id": response.data.result.project_id
           })
@@ -97,7 +97,7 @@ export default function addDatasetMethods(client) {
         method: "POST",
         headers: headers,
         body: JSON.stringify({
-          "dataset_name": renkuDataset.name,
+          "short_name": renkuDataset.name,
           "description": renkuDataset.description,
           "project_id": project_id
         })
@@ -111,7 +111,7 @@ export default function addDatasetMethods(client) {
             method: "POST",
             headers: headers,
             body: JSON.stringify({
-              "dataset_name": renkuDataset.name,
+              "short_name": renkuDataset.name,
               "files": renkuDataset.files,
               "project_id": project_id
             })
