@@ -106,32 +106,39 @@ class HelpGetting extends Component {
 class HelpDocumentation extends Component {
   render() {
     return (
-      <div>
-        <h2>
-          <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html"
-            title="Tutorial" />
-        </h2>
-        <p>
-          If you are here for the first time or you are not sure how to use Renku, we recommend you
-          to go through our {" "}
-          <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html"
-            title="tutorial" />.
-        </p>
-        <h2>
-          <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/"
-            title="Renku" /> and {" "}
-          <ExternalDocsLink url="https://renku-python.readthedocs.io/en/latest/"
-            title="Renku CLI" /> Documentation
-        </h2>
-        <p>
-          Documentation on the Renku project in general is at {" "}
-          <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/" title="renku.readthedocs.io" />.
-        </p>
-        <p>
-          The command-line-interface is documented in detail at {" "}
-          <ExternalDocsLink url="https://renku-python.readthedocs.io/en/latest/" title="renku-python.readthedocs.io" />.
-        </p>
-      </div>
+      <Row>
+        <Col md={8}>
+          <h2>
+            <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html"
+              title="Tutorial" />
+          </h2>
+          <p>
+            If you are here for the first time or you are not sure how to use Renku, we recommend you
+            to go through our {" "}
+            <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html"
+              title="tutorial" />.
+          </p>
+          <h2>
+            <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/"
+              title="Renku" />
+          </h2>
+          <p>
+            The <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/"
+              title="Renku project documentation" /> explains Renku as a whole. It describes
+            the parts that make it up, how they fit together, and how to use Renku in your
+            data-science projects to work more effectively.
+          </p>
+          <h2>
+            <ExternalDocsLink url="https://renku-python.readthedocs.io/en/latest/"
+              title="Renku CLI" />
+          </h2>
+          <p>
+            The <ExternalDocsLink url="https://renku-python.readthedocs.io/en/latest/"
+              title="command-line-interface (CLI) documentation" /> details the commands of the
+            CLI, their parameters and options, and their behavior.
+          </p>
+        </Col>
+      </Row>
     );
   }
 }

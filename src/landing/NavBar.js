@@ -137,9 +137,9 @@ function RenkuToolbarHelpMenu(props) {
     <div key="help-menu" className="dropdown-menu dropdown-menu-right" aria-labelledby="help-menu">
       <Link className="dropdown-item" to="/help">Help</Link>
       <DropdownItem divider />
-      <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/" title="Renku Project" className="dropdown-item" />
+      <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/" title="Renku Docs" className="dropdown-item" />
       <ExternalDocsLink url="https://renku-python.readthedocs.io/en/latest/"
-        title="Renku CLI" className="dropdown-item" />
+        title="Renku CLI Docs" className="dropdown-item" />
       <DropdownItem divider />
       <ExternalDocsLink url="https://renku.discourse.group" title="Forum" className="dropdown-item" />
       <ExternalDocsLink url="https://gitter.im/SwissDataScienceCenter/renku" title="Gitter" className="dropdown-item" />
