@@ -905,15 +905,25 @@ class ProjectNotebookServers extends Component {
 class ProjectStartNotebookServer extends Component {
   render() {
     const {
-      client, model, user, visibility, toggleForkModal, location, externalUrl, system,
+      client, model, user, visibility, toggleForkModal, externalUrl, system, location,
       fetchBranches, notebookServersUrl, history, blockAnonymous
     } = this.props;
     const warning = notebookWarning(
       user.logged, visibility.accessLevel, toggleForkModal, location.pathname, externalUrl
     );
 
+    const locationEnhanced = location && location.state && location.state.successUrl ?
+      location :
+      {
+        ...this.props.location,
+        state: {
+          ...this.props.location.state,
+          successUrl: notebookServersUrl
+        }
+      };
+
     return (
-      <StartNotebookServer client={client} model={model} history={history} location={location}
+      <StartNotebookServer client={client} model={model} history={history} location={locationEnhanced}
         message={warning}
         branches={system.branches}
         autosaved={system.autosaved}

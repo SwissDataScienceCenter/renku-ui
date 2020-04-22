@@ -1347,9 +1347,10 @@ class AutosavedDataModal extends Component {
 // * CheckNotebookIcon code * //
 class CheckNotebookIcon extends Component {
   render() {
-    const { fetched, notebook } = this.props;
+    const { fetched, notebook, location } = this.props;
+    const loader = (<span style={{ verticalAlign: "text-bottom" }}><Loader size="19" inline="true" /></span>);
     if (!fetched)
-      return (<Loader size="16" inline="true" />);
+      return loader;
 
     let tooltip, link, icon;
     if (notebook) {
@@ -1361,8 +1362,8 @@ class CheckNotebookIcon extends Component {
         link = (<a href={url} role="button" target="_blank" rel="noreferrer noopener">{icon}</a>);
       }
       else if (status === "pending") {
-        tooltip = "Interactive environment status is changing, please wait...";
-        icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" greyscale={true} />);
+        tooltip = "Interactive environment is either starting or stopping, please wait...";
+        icon = loader;
         link = (<span>{icon}</span>);
       }
       else {
@@ -1372,9 +1373,16 @@ class CheckNotebookIcon extends Component {
       }
     }
     else {
+      const successUrl = location ?
+        location.pathname :
+        null;
+      const target = {
+        pathname: this.props.launchNotebookUrl,
+        state: { successUrl }
+      };
       tooltip = "Start an interactive environment";
       icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" greyscale={true} />);
-      link = (<Link to={this.props.launchNotebookUrl}>{icon}</Link>);
+      link = (<Link to={target}>{icon}</Link>);
     }
 
     return (
