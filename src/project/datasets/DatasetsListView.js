@@ -85,13 +85,13 @@ export default function DatasetsListView(props) {
   });
 
   return [<Row key="header" className="pb-3">
-    <Col sm={6}><h2>Datasets</h2></Col>
-    <Col sm={6}>
+    <Col md={3} lg={2}><h2 className="ml-3">Datasets</h2></Col>
+    <Col md={3}>
       <AddDatasetButton
         visibility={props.visibility}
         newDatasetUrl={props.newDatasetUrl}/>
     </Col>
-  </Row>, <Row key="issues">
+  </Row>, <Row key="datasetslist">
     <Col xs={12}>
       <ListGroup>
         {

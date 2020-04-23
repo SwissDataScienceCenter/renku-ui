@@ -597,24 +597,34 @@ function GoBackButton(props) {
   </Col>;
 }
 
-function EmptyProject(props) {
+function EmptyDatasets(props) {
   return <Col sm={12} md={10} lg={8}>
     <Alert timeout={0} color="primary">
-      No datasets found for this project. <br /><br />
-      <FontAwesomeIcon icon={faInfoCircle} />  If you recently activated the knowledge graph or
-      added the datasets try refreshing the page. <br /><br />
-      You can also click on the button to
-      &nbsp;<Link className="btn btn-primary btn-sm" to={props.newDatasetUrl}>Add a Dataset</Link>
+      No datasets found for this project.
+      { props.membership ?
+        <div><br /><FontAwesomeIcon icon={faInfoCircle} />  If you recently activated the knowledge graph or
+          added the datasets try refreshing the page. <br /><br />
+          You can also click on the button to
+          &nbsp;<Link className="btn btn-primary btn-sm" to={props.newDatasetUrl}>Add a Dataset</Link></div>
+        : null
+      }
     </Alert>
   </Col>;
 }
 
 function ProjectViewDatasets(props) {
   const [fetchAfterWebhook, setFetchAfterWebhook] = useState(false);
+  const [firstFetch, setFirstFetch] = useState(false);
 
   useEffect(()=>{
     const loading = props.core.datasets === SpecialPropVal.UPDATING;
     if (loading) return;
+    if (firstFetch === false) {
+      props.fetchDatasets();
+      props.fetchGraphStatus();
+      setFirstFetch(true);
+      return;
+    }
     const incomingDatasets = props.location.state && props.location.state.datasets
       ? props.location.state.datasets : [];
     if (props.core.datasets === undefined ||
@@ -626,7 +636,7 @@ function ProjectViewDatasets(props) {
       props.fetchDatasets();
       setFetchAfterWebhook(true);
     }
-  }, [props, fetchAfterWebhook]);
+  }, [props, fetchAfterWebhook, firstFetch]);
 
   const loading = props.core.datasets === SpecialPropVal.UPDATING;
   const incomingDatasets = props.location.state && props.location.state.datasets
@@ -641,15 +651,16 @@ function ProjectViewDatasets(props) {
       || progress === GraphIndexingStatus.NO_PROGRESS
       || (progress >= GraphIndexingStatus.MIN_VALUE && progress < GraphIndexingStatus.MAX_VALUE);
 
+  if (kgLoading)
+    return <Col sm={12} md={10} lg={8}>{props.kgStatusView(true, props.fetchDatasets)}</Col>;
+
   if (!loading && !kgLoading && props.core.datasets !== undefined && props.core.datasets.length === 0
     && props.location.pathname !== props.newDatasetUrl) {
-    return <EmptyProject
+    return <EmptyDatasets
+      membership={props.visibility.accessLevel > ACCESS_LEVELS.DEVELOPER}
       newDatasetUrl={props.newDatasetUrl}
     />;
   }
-
-  if (kgLoading)
-    return <Col sm={12} md={10} lg={8}>{props.kgStatusView(true, props.fetchDatasets)}</Col>;
 
   return <Col sm={12} md={12} lg={8}>
     <Switch>

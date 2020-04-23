@@ -82,10 +82,11 @@ function DatasetEdit(props) {
                   }
                   else {
                     counter++;
-                    if (counter > 15) {
+                    if (counter > 20) {
                       clearInterval(waitForFilesInKG);
                       setSubmitLoader(false);
-                      setServerErrors("There was an error, please try again.");
+                      setServerErrors(" The knowledge graph update has not yet finished." +
+                      " The files have been imported and should be visible in a short time");
                     }
                   }
                 });
