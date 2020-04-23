@@ -1,5 +1,48 @@
 # Changes
 
+## [0.10.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.9.1...0.10.0) (2020-04-24)
+
+
+### Features
+
+**environments**
+* allow anonymous users to start environments 9cdaadf, closes [#857](https://github.com/SwissDataScienceCenter/renku-ui/issues/857)
+* allow unprivileged users to start environments 2a0e4d0, closes [#857](https://github.com/SwissDataScienceCenter/renku-ui/issues/857)
+
+**datasets**
+* creation and import unified (#904) da2101f, closes [#904](https://github.com/SwissDataScienceCenter/renku-ui/issues/904)
+
+**help/documentation**
+* add links to renku docs to the help dropdown menu (#911) e595263, closes [#911](https://github.com/SwissDataScienceCenter/renku-ui/issues/911) [#892](https://github.com/SwissDataScienceCenter/renku-ui/issues/892)
+* add links to renku docs to the help page (#911) a390cd7, closes [#911](https://github.com/SwissDataScienceCenter/renku-ui/issues/911) [#892](https://github.com/SwissDataScienceCenter/renku-ui/issues/892)
+* update links to new renku tutorial url (#911) 80bf4f3, closes [#911](https://github.com/SwissDataScienceCenter/renku-ui/issues/911) [#892](https://github.com/SwissDataScienceCenter/renku-ui/issues/892)
+
+
+**misc**
+* add links to gitlab (#890) 4538959, closes [#890](https://github.com/SwissDataScienceCenter/renku-ui/issues/890) [#867](https://github.com/SwissDataScienceCenter/renku-ui/issues/867)
+* hide cells hidden in papermill report mode (#870) 8e1c035, closes [#870](https://github.com/SwissDataScienceCenter/renku-ui/issues/870) [#838](https://github.com/SwissDataScienceCenter/renku-ui/issues/838)
+* add maintenace page (#900) 8a4685a, closes [#900](https://github.com/SwissDataScienceCenter/renku-ui/issues/900) [#894](https://github.com/SwissDataScienceCenter/renku-ui/issues/894)
+* expose web-ide to all logged users cca8431
+* provide UI for hiding/showing code cells (#870) 396d0cb, closes [#870](https://github.com/SwissDataScienceCenter/renku-ui/issues/870) [#838](https://github.com/SwissDataScienceCenter/renku-ui/issues/838)
+
+
+### Bug Fixes
+
+* consider falsy string values for maintenance page (#903) 7c6bb8c, closes [#903](https://github.com/SwissDataScienceCenter/renku-ui/issues/903)
+* improve styling of notebooks (#870) edc6c6d, closes [#870](https://github.com/SwissDataScienceCenter/renku-ui/issues/870)
+* remove conditional variables from template file (#910) 927a6d3, closes [#910](https://github.com/SwissDataScienceCenter/renku-ui/issues/910)
+* update the jupyter button used in file view (#909) c359034, closes [#909](https://github.com/SwissDataScienceCenter/renku-ui/issues/909)
+
+
+### BREAKING CHANGES
+
+**environments**
+* Requires backend components supporting anonymous users environments ([renku-notebooks 0.7.2](https://github.com/SwissDataScienceCenter/renku-notebooks/releases/tag/0.7.2) or later)
+
+**datasets**
+* dataset_name changed to short_name in renku-core 0.10.3 [#907](https://github.com/SwissDataScienceCenter/renku-ui/issues/907) [#913](https://github.com/SwissDataScienceCenter/renku-ui/issues/913)
+
+
 ## [0.9.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.9.0...0.9.1) (released 2020-04-01)
 
 ### Features
