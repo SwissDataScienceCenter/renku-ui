@@ -19,17 +19,19 @@
 import React, { Component } from "react";
 import { Row, Col, Badge, ListGroupItem, Nav, NavItem } from "reactstrap";
 import { NavLink, Switch, Route } from "react-router-dom";
-import {
-  UserAvatar, ExternalLink, TimeCaption, TooltipToggleButton, ExternalIconLink,
-  Clipboard, RenkuNavLink
-} from "../utils/UIComponents";
-import { Contribution, NewContribution } from "../contribution";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faComments, faCodeBranch, faListUl,
   faLongArrowAltLeft as faLeftArrow
 } from "@fortawesome/free-solid-svg-icons";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
+
+import {
+  UserAvatar, ExternalLink, TimeCaption, TooltipToggleButton, ExternalIconLink, RenkuNavLink
+} from "../utils/UIComponents";
+import { Contribution, NewContribution } from "../contribution";
+import { CommitsView } from "../utils/Commits";
+
 
 function MergeRequestHeader(props) {
 
@@ -87,43 +89,6 @@ function ContributionsView(props) {
   ];
 }
 
-function SingleCommit(props) {
-  return <ListGroupItem className="pr-0 pl-0 pt-1 pb-1" style={{ border: "none" }}>
-    <Row>
-      <Col sm={9} md={9}>
-        <div className="d-flex project-list-row mb-3">
-          <div className="issue-text-crop">
-            <b>
-              <span className="issue-title">
-                {props.commit.message}
-              </span>
-            </b><br />
-            <span className="issues-description">
-              <div>
-                <TimeCaption caption={props.commit.author_name + " created"} time={props.commit.created_at} />
-              </div>
-            </span>
-          </div>
-        </div>
-      </Col>
-      <Col sm={3} md={3} className="float-right" style={{ textAlign: "end" }}>
-        <span className="text-muted">
-          <small>{props.commit.short_id}</small> <Clipboard clipboardText={props.commit.id} />
-        </span>
-      </Col>
-    </Row>
-  </ListGroupItem>;
-}
-
-function CommitsView(props) {
-  const commits = props.commits
-    .map(commit => <SingleCommit key={commit.id} commit={commit} {...props} />);
-  return <Row key="simple"><Col>
-    <br />
-    {commits}
-  </Col></Row>;
-}
-
 function ChangesView(props) {
 
   const opaqueChanges = props.changes
@@ -154,8 +119,8 @@ class MergeRequestPresent extends Component {
       <Row key="description" className="pb-2">
         <Col sm={11}>
           <p key="lead" className="lead">
-            {this.props.author.name} wants to merge changes from branch
-            <em><strong>{this.props.source_branch}</strong></em> into
+            {this.props.author.name} wants to merge changes from branch&nbsp;
+            <em><strong>{this.props.source_branch}</strong></em> into&nbsp;
             <em><strong>{this.props.target_branch}</strong></em>.
           </p>
         </Col>
@@ -170,7 +135,15 @@ class MergeRequestPresent extends Component {
             <ChangesView {...this.props} />
           } />
           <Route path={this.props.mergeRequestCommitsUrl} render={props =>
-            <CommitsView {...this.props} />
+            <div style={{ paddingTop: "20px" }}>
+              <CommitsView
+                commits={this.props.commits}
+                fetched={true}
+                fetching={false}
+                urlRepository={this.props.externalUrl}
+                urlDiff={`${this.props.externalMRUrl}?commit_id=`}
+              />
+            </div>
           } />
         </Switch>
       </Col>
