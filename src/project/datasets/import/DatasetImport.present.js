@@ -44,18 +44,13 @@ function DatasetImport(props) {
     </Col>;
   }
 
-  return (
-    <Col sm={9} md={8} lg={7} id="col-outside-form-panel">
-      <FormPanel
-        title="Import Dataset"
-        btnName="Import Dataset"
-        submitCallback={props.submitCallback}
-        model={props.datasetImportFormSchema}
-        serverErrors={props.serverErrors}
-        submitLoader={{ value: props.submitLoader, text: props.submitLoaderText }}
-        onCancel={props.onCancel} />
-    </Col>
-  );
+  return <FormPanel
+    btnName="Import Dataset"
+    submitCallback={props.submitCallback}
+    model={props.datasetImportFormSchema}
+    serverErrors={props.serverErrors}
+    submitLoader={{ value: props.submitLoader, text: props.submitLoaderText }}
+    onCancel={props.onCancel} />;
 
 }
 

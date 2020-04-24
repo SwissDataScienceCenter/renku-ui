@@ -448,6 +448,20 @@ function addProjectMethods(client) {
     const headers = client.getBasicHeaders();
     return client.clientFetch(url, { method: "GET", headers }).then((resp) => {
       return resp.data;
+    }).then(resp => {
+      let fullDatasets = resp.map(dataset =>
+        client.fetchDatasetFromKG(dataset._links[0].href));
+      return Promise.all(fullDatasets);
+    });
+  };
+
+  //in the future we will gett all the info we need for the dataset list from this call...
+  client.getProjectDatasetsFromKG_short = (projectPath) => {
+    let url = `${client.baseUrl}/knowledge-graph/projects/${projectPath}/datasets`;
+    url = url.replace("/api", "");//The url should change in the backend so we don't have to do this
+    const headers = client.getBasicHeaders();
+    return client.clientFetch(url, { method: "GET", headers }).then((resp) => {
+      return resp.data;
     });
   };
 

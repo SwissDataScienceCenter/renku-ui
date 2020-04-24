@@ -24,8 +24,6 @@ import DOMPurify from "dompurify";
 import { API_ERRORS } from "../api-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt, faPen } from "@fortawesome/free-solid-svg-icons";
-import { GraphIndexingStatus } from "../project/Project";
-import KnowledgeGraphStatus from "../file/KnowledgeGraphStatus.container";
 import Time from "../utils/Time";
 
 function DisplayFiles(props) {
@@ -151,27 +149,6 @@ export default function DatasetView(props) {
       unmounted = true;
     };
   }, [dataset, props, fetchError]);
-
-  if (props.insideProject) {
-    const { progress, webhookJustCreated } = props;
-
-    if (progress == null
-      || progress === GraphIndexingStatus.NO_WEBHOOK
-      || progress === GraphIndexingStatus.NO_PROGRESS
-      || (progress >= GraphIndexingStatus.MIN_VALUE && progress < GraphIndexingStatus.MAX_VALUE)
-    ) {
-      return <KnowledgeGraphStatus
-        insideDatasets={true}
-        fetchGraphStatus={props.fetchGraphStatus}
-        retrieveGraph={props.retrieveGraph}
-        progress={progress}
-        webhookJustCreated={webhookJustCreated}
-        maintainer={props.maintainer}
-        createGraphWebhook={props.createGraphWebhook}
-        forked={props.forked}
-      />;
-    }
-  }
 
   if (fetchError !== null && dataset === undefined)
     return <Alert color="danger">{fetchError}</Alert>;

@@ -23,7 +23,7 @@
  *  Container components for new dataset.
  */
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { datasetImportFormSchema } from "../../../model/RenkuModels";
 import DatasetImport from "./DatasetImport.present";
 
@@ -34,7 +34,6 @@ function ImportDataset(props) {
   const [submitLoaderText, setSubmitLoaderText] = useState("Please wait, dataset import will start soon.");
 
   const onCancel = e => {
-    datasetImportFormSchema.uri.value = datasetImportFormSchema.uri.initial;
     props.history.push({ pathname: `/projects/${props.projectPathWithNamespace}/datasets` });
   };
 
@@ -43,7 +42,6 @@ function ImportDataset(props) {
       oldDatasetsList.find(ods => ds.identifier === ods.identifier) === undefined);
     if (new_dataset.length > 0) {
       setSubmitLoader(false);
-      datasetImportFormSchema.uri.value = datasetImportFormSchema.uri.initial;
       clearInterval(waitForDatasetInKG);
       props.history.push({
         pathname: `/projects/${props.projectPathWithNamespace}/datasets/${new_dataset[0].identifier}/`,
@@ -131,6 +129,12 @@ function ImportDataset(props) {
           });
       });
   };
+
+  useEffect(()=>{
+    return (()=>{
+      datasetImportFormSchema.uri.value = datasetImportFormSchema.uri.initial;
+    });
+  }, []);
 
   return <DatasetImport
     submitLoader={submitLoader}

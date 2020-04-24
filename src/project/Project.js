@@ -43,6 +43,7 @@ import ShowDataset from "../dataset/Dataset.container";
 import NewDataset from "./datasets/new/index";
 import EditDataset from "./datasets/edit/index";
 import ImportDataset from "./datasets/import/index";
+import KnowledgeGraphStatus from "../file/KnowledgeGraphStatus.container";
 
 
 const subRoutes = {
@@ -50,6 +51,7 @@ const subRoutes = {
   stats: "overview/stats",
   overviewDatasets: "overview/datasets",
   datasets: "datasets",
+  datasetsAdd: "datasets/new",
   dataset: "datasets/:datasetId",
   datasetEdit: "datasets/:datasetId/modify",
   issueNew: "issue_new",
@@ -294,7 +296,6 @@ class View extends Component {
       overviewDatasetsUrl: `${baseUrl}/overview/datasets`,
       datasetsUrl: `${datasetsUrl}`,
       newDatasetUrl: `${datasetsUrl}/new`,
-      importDatasetUrl: `${datasetsUrl}/import`,
       datasetUrl: `${datasetsUrl}/:datasetId`,
       editDatasetUrl: `${datasetsUrl}/:datasetId/modify`,
       issueNewUrl: `${collaborationUrl}/issues/issue_new`,
@@ -431,7 +432,7 @@ class View extends Component {
       />,
 
       newDataset: (p) => <NewDataset
-        key="datasetnew" {...subProps}
+        key="datasetcreate" {...subProps}
         progress={graphProgress}
         maintainer={maintainer}
         accessLevel={accessLevel}
@@ -469,7 +470,7 @@ class View extends Component {
       />,
 
       importDataset: (p) => <ImportDataset
-        key="datasetnew" {...subProps}
+        key="datasetimport" {...subProps}
         progress={graphProgress}
         maintainer={maintainer}
         accessLevel={accessLevel}
@@ -509,8 +510,17 @@ class View extends Component {
         closeForkModal={this.eventHandlers.closeForkModal}
         history={this.props.history}
         client={this.props.client}
-        user={this.props.user} />
+        user={this.props.user} />,
 
+      kgStatusView: (insideDatasets) =>
+        <KnowledgeGraphStatus
+          insideDatasets={insideDatasets}
+          fetchGraphStatus={this.eventHandlers.fetchGraphStatus}
+          createGraphWebhook={this.eventHandlers.createGraphWebhook}
+          maintainer={maintainer}
+          forked={forked}
+          progress={graphProgress}
+        />
     };
   }
 
