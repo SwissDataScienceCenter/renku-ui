@@ -45,7 +45,7 @@ function SelectautosuggestInput({ name, label, type, value, alert, options, init
     );
   };
 
-  const getSuggestionValue = suggestion => suggestion.name;
+  const getSuggestionValue = suggestion => suggestion;
 
   const renderSuggestion = suggestion => (
     <span>
@@ -59,14 +59,25 @@ function SelectautosuggestInput({ name, label, type, value, alert, options, init
   };
 
   const onChange = (event, { newValue, method }) => {
-    // If the user typed, store it as local input, otherwise set the selection
-    setLocalValue(newValue);
-    const selectedOption = options.find(option => option.name === newValue );
-    const artifitialEvent = {
-      target: { name: name, value: selectedOption !== undefined ? selectedOption.value : "" },
-      isPersistent: () => false
-    };
-    setInputs(artifitialEvent);
+    if (method !== "type") {
+      setLocalValue(newValue.name);
+      const artifitialEvent = {
+        target: { name: name, value: newValue !== undefined ? newValue.value : "" },
+        isPersistent: () => false
+      };
+      setInputs(artifitialEvent);
+    }
+    else {
+      // If the user typed, store it as local input, otherwise set the selection
+      setLocalValue(newValue);
+      const selectedOption = options.find(option => option.name === newValue );
+      const artifitialEvent = {
+        target: { name: name, value: selectedOption !== undefined ? selectedOption.value : "" },
+        isPersistent: () => false
+      };
+      setInputs(artifitialEvent);
+    }
+
   };
 
   // Autosuggest will call this function every time you need to update suggestions.

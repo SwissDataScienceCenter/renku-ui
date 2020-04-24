@@ -26,10 +26,11 @@
 
 import React, { useState, useEffect } from "react";
 import { addDatasetToProjectSchema } from "../../model/RenkuModels";
-import { ACCESS_LEVELS } from "../../api-client";
+import { ACCESS_LEVELS, API_ERRORS } from "../../api-client";
 import DatasetAdd from "./DatasetAdd.present";
 import { ImportStateMessage } from "../../utils/Dataset";
 import { groupBy } from "../../utils/HelperFunctions";
+import { GraphIndexingStatus } from "../../project/Project.state";
 
 function AddDataset(props) {
 
@@ -61,57 +62,100 @@ function AddDataset(props) {
     }
   };
 
-  const findDatasetInKgAnRedirect = (oldDatasetsList, projectPath) => {
-    let waitForDatasetInKG = setInterval(() => {
-      props.client.getProjectDatasetsFromKG(projectPath)
-        .then(datasets => {
-          if (datasets.length !== oldDatasetsList.length)
-            redirectUserAndClearInterval(datasets, oldDatasetsList, waitForDatasetInKG, projectPath);
-        });
-    }, 6000);
+  const checkKgStatusAnRedirect = (oldDatasetsList, projectPath, kgProgressCompleted) => {
+    if (!kgProgressCompleted) {
+      setSubmitLoader(false);
+      addDatasetToProjectSchema.project.value = "";
+      addDatasetToProjectSchema.project.options = [];
+      props.history.push(`/projects/${projectPath}/datasets`);
+    }
+    else {
+      let waitForDatasetInKG = setInterval(() => {
+        let cont = 0;
+        props.client.getProjectDatasetsFromKG_short(projectPath)
+          .then(datasets => {
+            cont++;
+            if (datasets.length !== oldDatasetsList.length) {
+              if (cont < 5) {
+                redirectUserAndClearInterval(datasets, oldDatasetsList, waitForDatasetInKG, projectPath);
+              }
+              else {
+                setSubmitLoader(false);
+                addDatasetToProjectSchema.project.value = "";
+                addDatasetToProjectSchema.project.options = [];
+                clearInterval(waitForDatasetInKG);
+                setServerErrors(ImportStateMessage.KG_TOO_LONG);
+              }
+            }
+          });
+      }, 6000);
+    }
   };
 
-  function handleJobResponse(job, monitorJob, cont, oldDatasetsList, projectPath) {
-    switch (job.state) {
-      case "ENQUEUED":
-        setSubmitLoaderText(ImportStateMessage.ENQUEUED);
-        break;
-      case "IN_PROGRESS":
-        setSubmitLoaderText(ImportStateMessage.IN_PROGRESS);
-        break;
-      case "COMPLETED":
-        setSubmitLoaderText(ImportStateMessage.COMPLETED);
-        clearInterval(monitorJob);
-        findDatasetInKgAnRedirect(oldDatasetsList, projectPath);
-        break;
-      case "FAILED":
-        setSubmitLoader(false);
-        setServerErrors(ImportStateMessage.FAILED + job.extras.error);
-        clearInterval(monitorJob);
-        break;
-      default:
-        setSubmitLoader(false);
-        setServerErrors(ImportStateMessage.FAILED_NO_INFO);
-        clearInterval(monitorJob);
-        break;
+  function handleJobResponse(job, monitorJob, cont, oldDatasetsList, projectPath, kgProgressCompleted) {
+    if (job) {
+      switch (job.state) {
+        case "ENQUEUED":
+          setSubmitLoaderText(ImportStateMessage.ENQUEUED);
+          break;
+        case "IN_PROGRESS":
+          setSubmitLoaderText(ImportStateMessage.IN_PROGRESS);
+          break;
+        case "COMPLETED":
+          setSubmitLoaderText(ImportStateMessage.COMPLETED);
+          clearInterval(monitorJob);
+          checkKgStatusAnRedirect(oldDatasetsList, projectPath, kgProgressCompleted);
+          break;
+        case "FAILED":
+          setSubmitLoader(false);
+          setServerErrors(ImportStateMessage.FAILED + job.extras.error);
+          clearInterval(monitorJob);
+          break;
+        default:
+          setSubmitLoader(false);
+          setServerErrors(ImportStateMessage.FAILED_NO_INFO);
+          clearInterval(monitorJob);
+          break;
+      }
     }
-    if (cont === 100) {
+    if ((cont > 30 && job.state !== "IN_PROGRESS") || (cont > 50 && job.state === "IN_PROGRESS")) {
       setSubmitLoader(false);
       setServerErrors(ImportStateMessage.TOO_LONG);
       clearInterval(monitorJob);
     }
   }
 
-  const monitorJobStatusAndHandleResponse = (job_id, oldDatasetsList, projectPath) => {
+  const monitorJobStatusAndHandleResponse = (job_id, oldDatasetsList, projectPath, kgProgressCompleted) => {
     let cont = 0;
     let monitorJob = setInterval(() => {
       props.client.getJobStatus(job_id)
         .then(job => {
           cont++;
-          if (job !== undefined || cont === 50)
-            handleJobResponse(job, monitorJob, cont, oldDatasetsList, projectPath);
+          if (job !== undefined)
+            handleJobResponse(job, monitorJob, cont, oldDatasetsList, projectPath, kgProgressCompleted);
         });
     }, 10000);
+  };
+
+  const fetchGraphStatus = (projectId) =>{
+    return props.client.checkGraphStatus(projectId)
+      .then((resp) => {
+        let progress;
+        if (resp.progress == null)
+          progress = GraphIndexingStatus.NO_PROGRESS;
+
+        if (resp.progress === 0 || resp.progress)
+          progress = resp.progress;
+
+        return progress;
+      })
+      .catch((err) => {
+        if (err.case === API_ERRORS.notFoundError) {
+          const progress = GraphIndexingStatus.NO_WEBHOOK;
+          return progress;
+        }
+        throw err;
+      });
   };
 
   const submitCallback = e => {
@@ -120,9 +164,9 @@ function AddDataset(props) {
     let oldDatasetsList = [];
     const selectedProject = addDatasetToProjectSchema.project.options.find((project)=>
       project.value === addDatasetToProjectSchema.project.value);
-    props.client.getProjectDatasetsFromKG(selectedProject.name)
-      .then(result => {
-        oldDatasetsList = result;
+
+    fetchGraphStatus(selectedProject.id).then(resp => {
+      if (resp < GraphIndexingStatus.MAX_VALUE) {
         props.client.datasetImport(selectedProject.value, props.dataset.url)
           .then(response => {
             if (response.data.error !== undefined) {
@@ -133,10 +177,32 @@ function AddDataset(props) {
               monitorJobStatusAndHandleResponse(
                 response.data.result.job_id,
                 oldDatasetsList,
-                selectedProject.name);
+                selectedProject.name,
+                false);
             }
           });
-      });
+      }
+      else {
+        props.client.getProjectDatasetsFromKG_short(selectedProject.name)
+          .then(result => {
+            oldDatasetsList = result;
+            props.client.datasetImport(selectedProject.value, props.dataset.url)
+              .then(response => {
+                if (response.data.error !== undefined) {
+                  setSubmitLoader(false);
+                  setServerErrors(response.data.error.reason);
+                }
+                else {
+                  monitorJobStatusAndHandleResponse(
+                    response.data.result.job_id,
+                    oldDatasetsList,
+                    selectedProject.name,
+                    true);
+                }
+              });
+          });
+      }
+    });
   };
 
   addDatasetToProjectSchema.project.customHandlers = {
@@ -151,7 +217,7 @@ function AddDataset(props) {
 
       if (addDatasetToProjectSchema.project.options.length !== searchDomain.length) {
         addDatasetToProjectSchema.project.options = searchDomain.map((project)=>({
-          "value": project.http_url_to_repo, "name": project.path_with_namespace
+          "value": project.http_url_to_repo, "name": project.path_with_namespace, "id": project.id
         }));
       }
 
@@ -160,9 +226,11 @@ function AddDataset(props) {
 
       searchDomain.forEach(d => {
         if (regex.exec(d.path_with_namespace) != null) {
-          hits[d.path_with_namespace] = { "value": d.http_url_to_repo,
+          hits[d.path_with_namespace] = {
+            "value": d.http_url_to_repo,
             "name": d.path_with_namespace,
-            "subgroup": d.path_with_namespace.split("/")[0]
+            "subgroup": d.path_with_namespace.split("/")[0],
+            "id": d.id
           };
         }
       });
