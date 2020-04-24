@@ -1,0 +1,18 @@
+.commit-object, .commit-date {
+  border-width: 1px 0 0 0;
+  padding: 0.50rem;
+}
+
+.commit-object .commit-cut-message {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.commit-date {
+  background-color: rgba(0, 0, 0, 0.01);
+  font-size: 80%;
+  font-weight: bold;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}

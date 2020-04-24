@@ -33,12 +33,18 @@ function addRepositoryMethods(client) {
   };
 
 
-  client.getCommits = (projectId, ref = "master") => {
+  client.getCommits = (projectId, ref = "master", max = 100) => {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
-    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/repository/commits?ref_name=${ref}`, {
+
+    const queryParams = {
+      ref_name: ref,
+      per_page: max
+    };
+    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/repository/commits`, {
       method: "GET",
-      headers: headers
+      headers: headers,
+      queryParams
     })
       .then(resp => {
         if (resp.data.length > 0)

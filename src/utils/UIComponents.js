@@ -26,19 +26,20 @@
 
 import _ from "lodash/util";
 import human from "human-time";
-import React, { Component, useState, useEffect } from "react";
+import React, { Component, Fragment, useState, useEffect } from "react";
 import { Link, NavLink as RRNavLink } from "react-router-dom";
 import ReactPagination from "react-js-pagination";
 import ReactClipboard from "react-clipboard.js";
 
-import { FormFeedback, FormGroup, FormText, Input, Label, Alert, NavLink, Tooltip } from "reactstrap";
-import { ButtonDropdown, DropdownToggle, DropdownMenu } from "reactstrap";
-
+import {
+  FormFeedback, FormGroup, FormText, Input, Label, Alert, NavLink, Tooltip, Button,
+  ButtonDropdown, DropdownToggle, DropdownMenu, UncontrolledTooltip
+} from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-regular-svg-icons";
-import { faCheck, faExternalLinkAlt, faEllipsisV, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faExternalLinkAlt, faEllipsisV, faUser, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 
-import { sanitizedHTMLFromMarkdown } from "./HelperFunctions";
+import { sanitizedHTMLFromMarkdown, simpleHash } from "./HelperFunctions";
 import FileExplorer from "./FileExplorer";
 
 /**
@@ -98,21 +99,6 @@ function ProjectAvatar(props) {
 
   return <UserAvatar avatar={avatarUrl} />;
 }
-
-// Old FieldGroup implementation
-//
-// class FieldGroup extends Component {
-//   render() {
-//     const label = this.props.label,
-//       help = this.props.help,
-//       props = this.props;
-//     return <FormGroup>
-//       <Label>{label}</Label>
-//       <Input {...props} />
-//       {help && <FormText color="muted">{help}</FormText>}
-//     </FormGroup>
-//   }
-// }
 
 class FieldGroup extends Component {
   render() {
@@ -213,32 +199,48 @@ function ExternalLinkButton(props) {
   let className = "btn btn-primary";
   if (props.size != null)
     className += ` btn-${props.size}`;
-
   if (props.disabled)
     className += " disabled";
-
   if (props.color)
     className += ` btn-${props.color}`;
-
   if (props.className)
     className += ` ${props.className}`;
 
-  return <a href={props.url}
-    className={className} role="button" target="_blank"
-    rel="noreferrer noopener">{props.title}</a>;
+  let otherProps = {};
+  if (props.id)
+    otherProps.id = props.id;
+
+  return (
+    <a role="button" target="_blank" rel="noreferrer noopener"
+      href={props.url}
+      className={className}
+      {...otherProps}
+    >
+      {props.title}
+    </a>
+  );
 }
 
 function ExternalLinkText(props) {
   let className = "";
   if (props.disabled)
     className += " disabled";
-
   if (props.className)
     className += ` ${props.className}`;
 
-  return <a href={props.url}
-    className={className} target="_blank"
-    rel="noreferrer noopener">{props.title}</a>;
+  let otherProps = {};
+  if (props.id)
+    otherProps.id = props.id;
+
+  return (
+    <a target="_blank" rel="noreferrer noopener"
+      href={props.url}
+      className={className}
+      {...otherProps}
+    >
+      {props.title}
+    </a>
+  );
 }
 
 
@@ -250,6 +252,7 @@ function ExternalLinkText(props) {
  * @param {string} [role] - "link" or "text" to be shown as a link, null for a button
  * @param {string?} [className] - [Optional] Any classes to add, e.g., 'nav-link' or 'dropdown-item'
  * @param {boolean} [showExternalLinkIcon] - Show the icon to indicate an external link if true (default false)
+ * @param {string} [id] - main element's id
  */
 function ExternalLink(props) {
   const role = props.role;
@@ -260,8 +263,8 @@ function ExternalLink(props) {
     </span> :
     props.title;
   const myProps = { title: displayTitle, ...props };
-  if (role === "link") return ExternalLinkText(myProps);
-  if (role === "text") return ExternalLinkText(myProps);
+  if (role === "link" || role === "text")
+    return ExternalLinkText(myProps);
   return ExternalLinkButton(myProps);
 }
 
@@ -689,8 +692,31 @@ function ButtonWithMenu(props) {
   </ButtonDropdown>;
 }
 
+/**
+ * Refresh button with spinning icon.
+ *
+ * @param {function} props.action - function to trigger when clicking on the button
+ * @param {boolean} [props.updating] - pilot the spin, should be true when performing the action
+ * @param {boolean} [props.message] - tooltip message to trigger on hover
+ */
+function RefreshButton(props) {
+  const id = "button_" + simpleHash(props.action.toString());
+  const tooltip = props.message ?
+    (<UncontrolledTooltip key="tooltip" placement="top" target={id}>{props.message}</UncontrolledTooltip>) :
+    null;
+
+  return (
+    <Fragment>
+      <Button key="button" className="ml-2 p-0" color="link" size="sm" id={id} onClick={() => props.action()}>
+        <FontAwesomeIcon icon={faSyncAlt} spin={props.updating} />
+      </Button>
+      {tooltip}
+    </Fragment>
+  );
+}
+
 export { UserAvatar, TimeCaption, FieldGroup, RenkuNavLink, Pagination, RenkuMarkdown };
-export { ExternalLink, ExternalDocsLink, ExternalIconLink, IconLink };
+export { ExternalLink, ExternalDocsLink, ExternalIconLink, IconLink, RefreshButton };
 export { Loader, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, JupyterIcon };
 export { Clipboard, ThrottledTooltip, TooltipToggleButton, ProjectAvatar };
 export { ButtonWithMenu, FileExplorer };

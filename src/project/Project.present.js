@@ -24,22 +24,27 @@
  */
 
 
-import React, { Component, useState, useEffect } from "react";
+import React, { Component, Fragment, useState, useEffect } from "react";
 
 import { Link, Route, Switch } from "react-router-dom";
+import {
+  Container, Row, Col, Alert, DropdownItem, Table, Nav, NavItem, Button, ButtonGroup, Badge,
+  Card, CardBody, CardHeader, Form, FormGroup, FormText, Label, Input, UncontrolledTooltip, ListGroupItem
+} from "reactstrap";
+
 import filesize from "filesize";
-
-import { Container, Row, Col, Alert, DropdownItem, Table, Nav, NavItem, Button, ButtonGroup } from "reactstrap";
-import { Card, CardBody, CardHeader, Form, FormGroup, FormText, Label, Input } from "reactstrap";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
-import { faCodeBranch, faExternalLinkAlt, faInfoCircle, faLongArrowAltLeft } from "@fortawesome/free-solid-svg-icons";
-import { faStar as faStarSolid } from "@fortawesome/free-solid-svg-icons";
-import { faExclamationTriangle, faLock, faUserFriends, faGlobe, faSearch } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCodeBranch, faExternalLinkAlt, faInfoCircle, faLongArrowAltLeft, faStar as faStarSolid,
+  faExclamationTriangle, faLock, faUserFriends, faGlobe, faSearch
+} from "@fortawesome/free-solid-svg-icons";
+import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 
-import { Clipboard, ExternalLink, Loader, RenkuMarkdown, RenkuNavLink, TimeCaption } from "../utils/UIComponents";
-import { ButtonWithMenu, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert } from "../utils/UIComponents";
+import {
+  Clipboard, ExternalLink, Loader, RenkuMarkdown, RenkuNavLink, TimeCaption, RefreshButton,
+  ButtonWithMenu, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert
+} from "../utils/UIComponents";
 import { SpecialPropVal } from "../model/Model";
 import { ProjectTags, ProjectTagList } from "./shared";
 import { Notebooks, StartNotebookServer } from "../notebooks";
@@ -47,8 +52,9 @@ import Issue from "../issue/Issue";
 import FilesTreeView from "./filestreeview/FilesTreeView";
 import DatasetsListView from "./datasets/DatasetsListView";
 import { ACCESS_LEVELS } from "../api-client";
-import { GraphIndexingStatus } from "./Project";
+import { GraphIndexingStatus, withProjectMapped } from "./Project";
 import { NamespaceProjects } from "../namespace";
+import { CommitsView } from "../utils/Commits";
 
 import "./Project.css";
 
@@ -490,6 +496,9 @@ class ProjectViewOverviewNav extends Component {
         <NavItem>
           <RenkuNavLink to={`${this.props.overviewDatasetsUrl}`} title="Datasets" />
         </NavItem>
+        <NavItem>
+          <RenkuNavLink to={`${this.props.overviewCommitsUrl}`} title="Commits" />
+        </NavItem>
       </Nav>);
   }
 }
@@ -501,13 +510,8 @@ class ProjectViewOverview extends Component {
   }
 
   render() {
-    // return [
-    //   <Col key="stats" sm={12} md={3}><br /><ProjectViewStats {...this.props} /></Col>,
-    //   <Col key="readme" sm={12} md={9}><ProjectViewReadme key="readme" {...this.props} /></Col>
-    // ]
-    // Hide the stats until we can actually get them from the server
-    const core = this.props.core;
-    const system = this.props.system;
+    const { core, system, projectCoordinator } = this.props;
+
     return <Col key="overview">
       <Row>
         <Col xs={12} md={9}>
@@ -537,10 +541,96 @@ class ProjectViewOverview extends Component {
             <Route exact path={this.props.overviewDatasetsUrl} render={props =>
               <ProjectViewDatasetsOverview {...this.props} />}
             />
+            <Route exact path={this.props.overviewCommitsUrl}
+              render={(props) => {
+                const categories = ["commits", "metadata"];
+                const ProjectViewCommitsConnected = withProjectMapped(ProjectViewCommits, categories);
+                return <ProjectViewCommitsConnected projectCoordinator={projectCoordinator} />;
+              }}
+            />
           </Switch>
         </Col>
       </Row>
     </Col>;
+  }
+}
+
+class ProjectViewCommits extends Component {
+  render() {
+    const { commits, metadata } = this.props;
+    const maxCommits = 100;
+    const gitlabCommitsUrl = `${metadata.repositoryUrl}/commits`;
+
+    const commitBadgeNumber = commits.list.length >= maxCommits ?
+      `${maxCommits}+` :
+      commits.list.length;
+    const badge = commits.fetched && !commits.fetching ?
+      (<Badge color="primary">{commitBadgeNumber}</Badge>) :
+      null;
+    const buttonGit = (
+      <Fragment>
+        <ExternalLink
+          role="link"
+          id="commitLink"
+          title={<FontAwesomeIcon icon={faGitlab} />}
+          url={gitlabCommitsUrl}
+          className="text-primary btn ml-2 p-0"
+        />
+        <UncontrolledTooltip placement="top" target="commitLink">
+          Open in GitLab
+        </UncontrolledTooltip>
+      </Fragment>
+    );
+    const info = commits.list.length >= maxCommits ?
+      (<ProjectViewCommitsInfo number={maxCommits} url={gitlabCommitsUrl} />) :
+      null;
+
+    const body = commits.fetching ?
+      (<Loader />) :
+      (<ProjectViewCommitsBody {...this.props} />);
+    return (
+      <Card className="border-0">
+        <CardHeader>
+          Commits {badge}
+          <RefreshButton action={commits.refresh} updating={commits.fetching} message="Refresh commits" />
+          {buttonGit}
+        </CardHeader>
+        <CardBody className="pl-0 pr-0">
+          {body}
+          {info}
+        </CardBody>
+      </Card>
+    );
+  }
+}
+
+class ProjectViewCommitsInfo extends Component {
+  render() {
+    return (
+      <ListGroupItem className="commit-object">
+        <FontAwesomeIcon icon={faInfoCircle} />&nbsp;
+        More than {this.props.number} commits. To see the full project history,&nbsp;
+        <ExternalLink role="link" id="commitLink" title="view in GitLab" url={this.props.url} />
+      </ListGroupItem>
+    );
+  }
+}
+
+class ProjectViewCommitsBody extends Component {
+  render() {
+    const { commits, metadata } = this.props;
+
+    if (commits.fetching || !commits.fetched)
+      return <Loader />;
+    return (
+      <CommitsView
+        commits={commits.list}
+        fetched={commits.fetched}
+        fetching={commits.fetching}
+        urlRepository={metadata.repositoryUrl}
+        urlDiff={`${metadata.repositoryUrl}/commit/`}
+      />
+    );
   }
 }
 
@@ -1210,4 +1300,4 @@ class ProjectView extends Component {
 export default { ProjectView };
 
 // For testing
-export { filterPaths };
+export { filterPaths, ProjectViewCommitsBody };

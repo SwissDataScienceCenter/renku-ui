@@ -172,6 +172,37 @@ const projectSchema = new Schema({
   }
 });
 
+const projectGlobalSchema = new Schema({
+  metadata: {
+    schema: {
+      exists: { initial: null, mandatory: true },
+
+      id: { initial: null, mandatory: true }, // id
+      namespace: { initial: null, mandatory: true }, // namespace.full_path
+      path: { initial: null, mandatory: true }, // path
+      pathWithNamespace: { initial: null, mandatory: true }, // path_with_namespace
+      repositoryUrl: { initial: null, mandatory: true }, // web_url
+
+      fetched: { initial: null },
+      fetching: { initial: false },
+    }
+  },
+  commits: {
+    schema: {
+      list: { initial: [], mandatory: true },
+
+      fetched: { initial: null },
+      fetching: { initial: false },
+    }
+  },
+  filters: {
+    schema: {
+      branch: { initial: { name: "master" }, mandatory: true },
+      commit: { initial: { id: "latest" }, mandatory: true },
+    }
+  }
+});
+
 const notebooksSchema = new Schema({
   notebooks: {
     schema: {
@@ -352,6 +383,8 @@ const addDatasetToProjectSchema = new Schema({
 });
 
 
-export { userSchema, metaSchema, displaySchema, newProjectSchema, projectSchema, forkProjectSchema };
-export { notebooksSchema, projectsSchema, datasetFormSchema, issueFormSchema, datasetImportFormSchema };
-export { addDatasetToProjectSchema };
+export {
+  userSchema, metaSchema, displaySchema, newProjectSchema, projectSchema, forkProjectSchema, notebooksSchema,
+  projectsSchema, datasetFormSchema, issueFormSchema, datasetImportFormSchema, projectGlobalSchema,
+  addDatasetToProjectSchema
+};

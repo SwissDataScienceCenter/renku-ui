@@ -24,9 +24,7 @@
  */
 
 import { API_ERRORS } from "../api-client";
-import { StateModel } from "../model/Model";
-import { projectSchema } from "../model/RenkuModels";
-import { SpecialPropVal } from "../model/Model";
+import { StateModel, SpecialPropVal, projectSchema, projectGlobalSchema } from "../model";
 import { isNullOrUndefined } from "util";
 import { splitAutosavedBranches } from "../utils/HelperFunctions";
 
@@ -271,6 +269,9 @@ class ProjectModel extends StateModel {
   }
 
   fetchBranches(client) {
+    const branches = this.get("system.branches");
+    if (branches === SpecialPropVal.UPDATING)
+      return;
     this.setUpdating({ system: { branches: true } });
     return client.getBranches(this.get("core.id"))
       .then(resp => resp.data)
@@ -338,4 +339,79 @@ class ProjectModel extends StateModel {
   }
 }
 
-export { ProjectModel, GraphIndexingStatus };
+class ProjectCoordinator {
+  constructor(client, model) {
+    this.client = client;
+    this.model = model;
+  }
+
+  resetProject() {
+    this.model.setObject({
+      metadata: { $set: projectGlobalSchema.createInitialized().metadata }
+    });
+  }
+
+  setProjectData(data) {
+    let metadata;
+    if (!data) {
+      metadata = {
+        $set: {
+          ...projectGlobalSchema.createInitialized().metadata,
+          exists: false,
+          fetched: new Date(),
+          fetching: false
+        }
+      };
+    }
+    else {
+      metadata = {
+        exists: true,
+        id: data.all.id,
+        namespace: data.all.namespace.full_path,
+        path: data.all.path,
+        pathWithNamespace: data.all.path_with_namespace,
+        repositoryUrl: data.all.web_url,
+        fetched: new Date(),
+        fetching: false
+      };
+    }
+    this.model.setObject({ metadata: metadata });
+    return metadata;
+  }
+
+  async fetchCommits(customFilters = null) {
+    const projectId = this.model.get("metadata.id");
+    if (!projectId)
+      return {};
+    this.model.set("commits.fetching", true);
+
+    let commits;
+    const branch = customFilters ?
+      customFilters.branch :
+      this.model.get("filters.branch.name");
+    try {
+      const response = await this.client.getCommits(projectId, branch);
+      commits = response.data;
+    }
+    catch (error) {
+      this.model.setObject({
+        commits: {
+          fetching: false,
+          list: { $set: [] }
+        }
+      });
+      throw error;
+    }
+
+    this.model.setObject({
+      commits: {
+        fetching: false,
+        fetched: new Date(),
+        list: { $set: commits }
+      }
+    });
+    return commits;
+  }
+}
+
+export { ProjectModel, GraphIndexingStatus, ProjectCoordinator };

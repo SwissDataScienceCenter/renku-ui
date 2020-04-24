@@ -70,6 +70,19 @@ class Time {
     return months[date.getMonth()] + " " + date.getDate() + ", " + date.getFullYear();
   }
 
+  static isSameDay(inputDate1, inputDate2, locale = true) {
+    const date1 = this.parseDate(inputDate1);
+    const date2 = this.parseDate(inputDate2);
+
+    if (locale) {
+      return date1.getFullYear() === date2.getFullYear() &&
+        date1.getMonth() === date2.getMonth() &&
+        date1.getDate() === date2.getDate();
+    }
+    return date1.getUTCFullYear() === date2.getUTCFullYear() &&
+      date1.getUTCMonth() === date2.getUTCMonth() &&
+      date1.getUTCDate() === date2.getUTCDate();
+  }
 }
 
 export default Time;

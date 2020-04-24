@@ -23,8 +23,98 @@
  *  test fo utilities
  */
 
+import React from "react";
+import ReactDOM from "react-dom";
+import { MemoryRouter } from "react-router-dom";
+
 import Time from "./Time";
+import { CommitsView, CommitsUtils } from "./Commits";
 import { splitAutosavedBranches, sanitizedHTMLFromMarkdown, parseINIString } from "./HelperFunctions";
+import { RefreshButton } from "./UIComponents";
+import { StateModel, globalSchema } from "../model";
+
+
+describe("Render React components and functions", () => {
+  it("render RefreshButton", () => {
+    const div = document.createElement("div");
+    const fakeAction = () => { return false; };
+
+    ReactDOM.render(
+      <MemoryRouter>
+        <RefreshButton action={fakeAction} updating={false} />
+      </MemoryRouter>
+      , div);
+  });
+
+  it("render CommitsView", () => {
+    const div = document.createElement("div");
+    const projectModel = new StateModel(globalSchema);
+    const commits = projectModel.get("project.commits");
+
+    ReactDOM.render(
+      <MemoryRouter>
+        <CommitsView
+          commits={commits.list}
+          fetched={commits.fetched}
+          fetching={commits.fetching}
+          urlRepository="https://fakeUrl.ne/gitlab"
+          urlDiff="https://fakeUrl.ne/gitlab/commit/"
+        />
+      </MemoryRouter>
+      , div);
+  });
+});
+
+describe("Commits functions", () => {
+  const { ElementType, createDateObject, createCommitsObjects } = CommitsUtils;
+  const COMMITS = [
+    {
+      "id": "cfed40406aee875a98203279745bbc35fe0a92b0",
+      "short_id": "cfed4040",
+      "created_at": "2021-04-21T17:04:37.000+02:00",
+      "title": "new renku version",
+      "message": "new renku version\n",
+      "author_name": "Fake author",
+      "author_email": "no@email.abc",
+      "committed_date": "2019-08-26T17:04:37.000+02:00",
+    },
+    {
+      "id": "2f28167c3a2a012e8e69d309747c121c55f1a3cb",
+      "short_id": "2f28167c",
+      "created_at": "2021-04-20T09:28:44.000+00:00",
+      "title": "new history!",
+      "message": "new history!\n",
+      "author_name": "Fake author",
+      "author_email": "no@email.abc",
+      "committed_date": "2019-08-05T09:28:44.000+00:00",
+    }
+  ];
+
+  it("function createDateElement", () => {
+    const dateObject = createDateObject(COMMITS[0]);
+
+    expect(dateObject.date).toBeTruthy();
+    expect(Time.isSameDay(dateObject.date, COMMITS[0].committed_date)).toBeTruthy();
+    expect(dateObject.readableDate).toBeTruthy();
+    expect(dateObject.type).toBe(ElementType.DATE);
+  });
+
+  it("function createCommitsObjects", () => {
+    const dateObject = createCommitsObjects(COMMITS);
+    expect(dateObject.length).toBeGreaterThan(COMMITS.length);
+
+    let dates = 0;
+    let last;
+    for (const commit of COMMITS) {
+      if (!last || !Time.isSameDay(commit.committed_date, last.committed_date))
+        dates++;
+      last = commit;
+    }
+    expect(dateObject.length).toBe(COMMITS.length + dates);
+    expect(dateObject[0].type).toBe(ElementType.DATE);
+    expect(dateObject[1].type).toBe(ElementType.COMMIT);
+  });
+});
 
 describe("Time class helper", () => {
   const Dates = {
@@ -34,7 +124,7 @@ describe("Time class helper", () => {
     ISO_READABLE_DATETIME: "2019-03-11 09:34:51",
     ISO_READABLE_DATETIME_SHORT: "2019-03-11 09:34",
     ISO_READABLE_DATE: "2019-03-11",
-    ISO_READABLE_TIME: "09:34:51"
+    ISO_READABLE_TIME: "09:34:51",
   };
 
   const DatesTimezoneFriendly = {
@@ -49,6 +139,20 @@ describe("Time class helper", () => {
       ISO_READABLE_DATETIME_SHORT: "2019-08-23 06:00",
     }
   };
+
+  const DatesComparison = {
+    DAY1: new Date("2020-04-20T09:48:00.000Z"),
+    DAY2: "2020-04-21T09:48:00.000Z",
+    DAY2_B: "2020-04-21T23:48:00.000Z",
+    DAY3: "2020-04-22T00:00:00.000Z",
+  };
+
+  it("function isSameDay", () => {
+    const locale = false;
+    expect(Time.isSameDay(DatesComparison.DAY1, DatesComparison.DAY2, locale)).toBeFalsy();
+    expect(Time.isSameDay(DatesComparison.DAY2, DatesComparison.DAY2_B, locale)).toBeTruthy();
+    expect(Time.isSameDay(DatesComparison.DAY2, DatesComparison.DAY3, locale)).toBeFalsy();
+  });
 
   it("function isDate", () => {
     expect(Time.isDate(Dates.NOW)).toBeTruthy();
@@ -194,7 +298,7 @@ describe("Helper functions", () => {
     const splittedBranches = splitAutosavedBranches(branches);
     expect(splittedBranches.standard.length).toEqual(1);
     expect(splittedBranches.autosaved.length).toEqual(1);
-    const [ namespace, branch, commit, finalCommit ] = branches[1].name.replace("renku/autosave/", "").split("/");
+    const [namespace, branch, commit, finalCommit] = branches[1].name.replace("renku/autosave/", "").split("/");
     expect(splittedBranches.autosaved[0].autosave.namespace).toEqual(namespace);
     expect(splittedBranches.autosaved[0].autosave.branch).toEqual(branch);
     expect(splittedBranches.autosaved[0].autosave.commit).toEqual(commit);
