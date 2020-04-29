@@ -42,7 +42,7 @@ function splitAutosavedBranches(branches) {
     .map(branch => {
       let autosave = {};
       const autosaveData = branch.name.replace(AUTOSAVED_PREFIX, "").split("/");
-      [ autosave.namespace, autosave.branch, autosave.commit, autosave.finalCommit ] = autosaveData;
+      [autosave.username, autosave.branch, autosave.commit, autosave.finalCommit] = autosaveData;
       return { ...branch, autosave };
     });
   const standard = branches.filter(branch => !branch.name.startsWith(AUTOSAVED_PREFIX));

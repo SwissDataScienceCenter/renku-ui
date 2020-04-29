@@ -335,13 +335,23 @@ class StartNotebookServer extends Component {
     this.selectCommit();
   }
 
+  filterAutosavedBranches(branches, username) {
+    if (!username || !branches)
+      return [];
+    return branches.filter(branch => branch.autosave.username === username);
+  }
+
   mapStateToProps(state, ownProps) {
+    const username = state.user.logged ?
+      state.user.data.username :
+      null;
+    const ownAutosaved = this.filterAutosavedBranches([...ownProps.inherited.autosaved], username);
     const augmentedState = {
       ...state.notebooks,
       data: {
         ...state.notebooks.data,
         branches: ownProps.inherited.branches,
-        autosaved: ownProps.inherited.autosaved
+        autosaved: ownAutosaved
       },
       externalUrl: ownProps.inherited.externalUrl
     };
