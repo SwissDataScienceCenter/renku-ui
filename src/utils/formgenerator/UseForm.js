@@ -42,7 +42,7 @@ const useForm = (initModel, submitCallback) => {
   const handleSubmit = e => {
     e && e.preventDefault();
     inputs.forEach(i => validateInput(i));
-    inputs.some(i => i.alert) ? setInputs([...inputs]) : submitCallback();
+    inputs.some(i => i.alert) ? setInputs([...inputs]) : submitCallback(e);
   };
 
   const parseInput = input => input.value = input.parseFun ? input.parseFun(input.value) : input.value;

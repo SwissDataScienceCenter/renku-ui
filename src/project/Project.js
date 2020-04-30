@@ -429,6 +429,9 @@ class View extends Component {
         fileContentUrl={subUrls.fileContentUrl}
         projectsUrl={subUrls.projectsUrl}
         selectedDataset={p.match.params.datasetId}
+        history={this.props.history}
+        logged={this.props.user.logged}
+        model={this.props.model}
       />,
 
       newDataset: (p) => <NewDataset

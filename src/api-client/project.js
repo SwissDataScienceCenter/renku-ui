@@ -107,6 +107,35 @@ function addProjectMethods(client) {
     });
   };
 
+  client.getAllProjects = (extraParams = [],
+    { recursive = false, per_page = 20, page = 1, previousResults = [] } = {}
+  ) => {
+    let headers = client.getBasicHeaders();
+
+    const queryParams = {
+      recursive,
+      per_page,
+      page,
+      ...extraParams
+    };
+
+    return client.clientFetch(`${client.baseUrl}/projects`, {
+      method: "GET",
+      headers,
+      queryParams,
+    }).then(response => {
+      if (response.pagination.nextPageLink !== undefined) {
+        return client.getAllProjects(extraParams, {
+          recursive,
+          per_page,
+          previousResults: previousResults.concat(response.data),
+          page: response.pagination.nextPage
+        });
+      }
+      return previousResults.concat(response.data);
+    });
+  };
+
   client.getAvatarForNamespace = (namespaceId = {}) => {
     let headers = client.getBasicHeaders();
     return client.clientFetch(`${client.baseUrl}/groups/${namespaceId}`, {

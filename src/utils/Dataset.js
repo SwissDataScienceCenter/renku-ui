@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2020 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -19,17 +19,19 @@
 /**
  *  renku-ui
  *
- *  InputValidator.js
- *
+ *  utils/Dataset.js
+ *  Dataset utils
  */
 
-function checkAtLeastLength(input, length) {
-  return (input != null) && input.trim().length >= length;
-}
-
-export default {
-  isNotEmpty: input => checkAtLeastLength(input.value, 1),
-  isAtLeastLength: (input, minLength) => checkAtLeastLength(input.value, minLength),
-  filesReady: (input) => input.value.length === input.filesOnUploader.current,
-  optionExists: (input) => input.options.find(option => option.value === input.value) !== undefined
+const ImportStateMessage = {
+  ENQUEUED: "Dataset import will start soon...",
+  IN_PROGRESS: "Importing dataset...",
+  COMPLETED: "Dataset was imported, you will be redirected soon...",
+  FAILED: "Dataset import failed: ",
+  FAILED_NO_INFO: "Dataset import failed, please try again.",
+  TOO_LONG: "Dataset import is taking too long, please check if the dataset was imported, and if it wasn't, try again.",
+  KG_TOO_LONG: "The knowledge graph update has not yet finished." +
+  " The dataset was imported and should be visible in a short time."
 };
+
+export { ImportStateMessage };

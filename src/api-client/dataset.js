@@ -120,7 +120,7 @@ export default function addDatasetMethods(client) {
       });
   };
 
-  client.datasetImport = (projectUrl, renkuDataset) => {
+  client.datasetImport = (projectUrl, datasetUrl) => {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
@@ -144,7 +144,7 @@ export default function addDatasetMethods(client) {
         method: "POST",
         headers: headers,
         body: JSON.stringify({
-          "dataset_uri": renkuDataset.uri,
+          "dataset_uri": datasetUrl,
           "project_id": project_id
         })
       });

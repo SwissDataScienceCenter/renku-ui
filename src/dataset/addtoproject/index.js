@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2020 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -19,17 +19,10 @@
 /**
  *  renku-ui
  *
- *  InputValidator.js
- *
+ *  dataset/add
+ *  Components for the add dataset to project
  */
 
-function checkAtLeastLength(input, length) {
-  return (input != null) && input.trim().length >= length;
-}
+import AddToProject from "./AddToProject.container";
 
-export default {
-  isNotEmpty: input => checkAtLeastLength(input.value, 1),
-  isAtLeastLength: (input, minLength) => checkAtLeastLength(input.value, minLength),
-  filesReady: (input) => input.value.length === input.filesOnUploader.current,
-  optionExists: (input) => input.options.find(option => option.value === input.value) !== undefined
-};
+export default AddToProject;
