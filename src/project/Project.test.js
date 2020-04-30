@@ -29,9 +29,9 @@ import { MemoryRouter } from "react-router-dom";
 import { createMemoryHistory } from "history";
 
 import { StateKind, StateModel, globalSchema } from "../model";
-import Project from "./Project";
-import { filterPaths } from "./Project.present";
-import { ProjectModel } from "./Project.state";
+import Project, { mapProjectFeatures, withProjectMapped } from "./Project";
+import { filterPaths, ProjectViewCommitsBody } from "./Project.present";
+import { ProjectModel, ProjectCoordinator } from "./Project.state";
 import { testClient as client } from "../api-client";
 import { slugFromTitle } from "../utils/HelperFunctions";
 import { generateFakeUser } from "../user/User.test";
@@ -44,6 +44,54 @@ const fakeHistory = createMemoryHistory({
 fakeHistory.push({
   pathname: "/projects",
   search: "?page=1"
+});
+
+describe("test ProjectCoordinator related components", () => {
+  const model = new StateModel(globalSchema);
+  const projectCoordinator = new ProjectCoordinator(client, model.subModel("project"));
+  const projectState = model.subModel("project").get();
+  const projectStateKeys = Object.keys(projectState);
+
+  it("test mapProjectFeatures function", () => {
+    // mapping all
+    let projectMappedState = mapProjectFeatures(projectCoordinator)(model.get());
+    expect(projectStateKeys.every(i => Object.keys(projectMappedState).includes(i))).toBeTruthy();
+    expect(Object.keys(projectMappedState).every(i => projectStateKeys.includes(i))).toBeTruthy();
+
+    // mapping only one component
+    const projectStateKey = projectStateKeys.slice(0, 1);
+    projectMappedState = mapProjectFeatures(projectCoordinator, projectStateKey)(model.get());
+    expect(projectStateKeys.every(i => Object.keys(projectMappedState).includes(i))).toBeFalsy();
+    expect(Object.keys(projectMappedState).every(i => projectStateKeys.includes(i))).toBeTruthy();
+
+    // mapped component may include extra functions
+    const projectCategory = "commits";
+    const projectCategoryState = model.subModel("project").get(projectCategory);
+    let projectCategoreMapped = mapProjectFeatures(projectCoordinator, [projectCategory])(model.get()).commits;
+    expect(Object.keys(projectCategoryState).every(i => Object.keys(projectCategoreMapped).includes(i))).toBeTruthy();
+    expect(Object.keys(projectCategoreMapped).every(i => Object.keys(projectCategoryState).includes(i))).toBeFalsy();
+
+    // mapped to parent object -- useful to avoid collision when using in legacy components
+    const parent = "parent";
+    let projectCategoryParent = mapProjectFeatures(projectCoordinator, [projectCategory], parent)(model.get());
+    expect(projectCategoryParent[projectCategory]).toBeUndefined();
+    expect(projectCategoryParent[parent]).toBeTruthy();
+    let descendantKeys = Object.keys(projectCategoryParent[parent][projectCategory]);
+    expect(descendantKeys.every(i => Object.keys(projectCategoreMapped).includes(i))).toBeTruthy();
+    expect(Object.keys(projectCategoreMapped).every(i => descendantKeys.includes(i))).toBeTruthy();
+  });
+
+  it("test withProjectMapped higher order function", () => {
+    const div = document.createElement("div");
+    const categories = ["commits", "metadata"];
+    const ProjectViewCommitsConnected = withProjectMapped(ProjectViewCommitsBody, categories);
+
+    ReactDOM.render(
+      <MemoryRouter>
+        <ProjectViewCommitsConnected projectCoordinator={projectCoordinator} />
+      </MemoryRouter>
+      , div);
+  });
 });
 
 describe("rendering", () => {

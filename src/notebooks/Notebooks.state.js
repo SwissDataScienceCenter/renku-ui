@@ -699,29 +699,6 @@ class NotebooksCoordinator {
         throw error;
       });
   }
-
-
-  // * Fetch commits -- to be moved * //
-  async fetchCommits() {
-    this.model.set("data.fetching", true);
-    const filters = this.model.get("filters");
-    const projectPathWithNamespace = `${encodeURIComponent(filters.namespace)}%2F${filters.project}`;
-    return this.client.getCommits(projectPathWithNamespace, filters.branch.name)
-      .then(resp => {
-        this.model.setObject({
-          data: {
-            fetching: false,
-            fetched: new Date(),
-            commits: { $set: resp.data }
-          }
-        });
-        return resp.data;
-      })
-      .catch(error => {
-        this.model.set("data.fetching", false);
-        throw error;
-      });
-  }
 }
 
 export { NotebooksHelper, ExpectedAnnotations, NotebooksCoordinator };

@@ -138,5 +138,24 @@ function formatBytes(bytes, decimals = 2) {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
 }
 
+/**
+ * Function to group an array per key getter, returns a grouped map
+ * @param {*} list array to be grouped
+ * @param {*} keyGetter function that returns the key from an item inside the list
+ */
+function groupBy(list, keyGetter) {
+  const map = new Map();
+  list.forEach((item) => {
+    const key = keyGetter(item);
+    const collection = map.get(key);
+    if (!collection)
+      map.set(key, [item]);
+    else
+      collection.push(item);
+
+  });
+  return map;
+}
+
 export { slugFromTitle, getActiveProjectPathWithNamespace, splitAutosavedBranches, sanitizedHTMLFromMarkdown };
-export { simpleHash, parseINIString, formatBytes };
+export { simpleHash, parseINIString, formatBytes, groupBy };

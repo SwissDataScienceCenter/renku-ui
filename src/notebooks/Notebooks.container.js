@@ -24,6 +24,7 @@ import { StartNotebookServer as StartNotebookServerPresent, NotebooksDisabled } 
 import { Notebooks as NotebooksPresent } from "./Notebooks.present";
 import { CheckNotebookIcon } from "./Notebooks.present";
 import { StatusHelper } from "../model/Model";
+import { ProjectCoordinator } from "../project";
 
 /**
  * Display the list of Notebook servers
@@ -145,6 +146,9 @@ class StartNotebookServer extends Component {
     this.model = props.model.subModel("notebooks");
     this.userModel = props.model.subModel("user");
     this.coordinator = new NotebooksCoordinator(props.client, this.model, this.userModel);
+    // TODO: this should go away when moving all project content to projectCoordinator
+    this.projectModel = props.model.subModel("project");
+    this.projectCoordinator = new ProjectCoordinator(props.client, props.model.subModel("project"));
     // temporarily reset data since notebooks model was not designed to be static
     this.coordinator.reset();
 
@@ -243,13 +247,19 @@ class StartNotebookServer extends Component {
 
   async refreshCommits() {
     if (this._isMounted) {
-      if (this.model.get("data.fetching"))
-        return;
+      if (!this.projectModel.get("commits.fetching"))
+        await this.projectCoordinator.fetchCommits();
+      this.selectCommitWhenReady();
+    }
+  }
 
-      await this.coordinator.fetchCommits();
-      if (this._isMounted)
+  // TODO: ugly workaround until branches and commits will be unified in projectCoordinator
+  async selectCommitWhenReady() {
+    if (this._isMounted) {
+      if (this.projectModel.get("commits.fetching"))
+        setTimeout(() => { this.selectCommitWhenReady(); }, 100);
+      else
         this.selectCommit();
-
     }
   }
 
@@ -258,8 +268,8 @@ class StartNotebookServer extends Component {
       // filter the list of commits according to the constraints
       const maximum = this.model.get("filters.displayedCommits");
       const commits = maximum && parseInt(maximum) > 0 ?
-        this.model.get("data.commits").slice(0, maximum) :
-        this.model.get("data.commits");
+        this.projectModel.get("commits.list").slice(0, maximum) :
+        this.projectModel.get("commits.list");
       let commit = commits[0];
 
       // find the proper commit or return
@@ -349,7 +359,9 @@ class StartNotebookServer extends Component {
     const augmentedState = {
       ...state.notebooks,
       data: {
-        ...state.notebooks.data,
+        fetched: state.project.commits.fetched,
+        fetching: state.project.commits.fetching,
+        commits: state.project.commits.list,
         branches: ownProps.inherited.branches,
         autosaved: ownAutosaved
       },
@@ -398,6 +410,8 @@ class CheckNotebookStatus extends Component {
     this.model = props.model.subModel("notebooks");
     this.userModel = props.model.subModel("user");
     this.coordinator = new NotebooksCoordinator(props.client, this.model, this.userModel);
+    // TODO: this should go away when moving all project content to projectCoordinator
+    this.projectCoordinator = new ProjectCoordinator(props.client, props.model.subModel("project"));
     // temporarily reset data since notebooks model was not designed to be static
     this.coordinator.reset();
 
@@ -412,7 +426,7 @@ class CheckNotebookStatus extends Component {
     if (!scope.branch || !scope.commit)
       return;
     if (scope.commit === "latest") {
-      let commits = await this.coordinator.fetchCommits();
+      let commits = await this.projectCoordinator.fetchCommits();
       scope.commit = commits[0];
       this.coordinator.setNotebookFilters(scope);
     }

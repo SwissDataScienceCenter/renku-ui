@@ -29,7 +29,7 @@ import _ from "lodash/collection";
 
 import { StateKind } from "../model/Model";
 import Present from "./Project.present";
-import { ProjectModel, GraphIndexingStatus } from "./Project.state";
+import { ProjectModel, GraphIndexingStatus, ProjectCoordinator } from "./Project.state";
 import { ProjectsCoordinator } from "./shared";
 import Issue from "../issue/Issue";
 import { FileLineage } from "../file";
@@ -50,6 +50,7 @@ const subRoutes = {
   overview: "overview",
   stats: "overview/stats",
   overviewDatasets: "overview/datasets",
+  overviewCommits: "overview/commits",
   datasets: "datasets",
   datasetsAdd: "datasets/new",
   dataset: "datasets/:datasetId",
@@ -152,13 +153,14 @@ class View extends Component {
   constructor(props) {
     super(props);
     this.projectState = new ProjectModel(StateKind.REDUX);
+    // TODO: Could move projectsCoordinator once ProjectModel goes away
     this.projectsCoordinator = new ProjectsCoordinator(props.client, props.model.subModel("projects"));
+    this.projectCoordinator = new ProjectCoordinator(props.client, props.model.subModel("project"));
 
     // fetch useful projects data in not yet loaded
     const featured = props.model.get("projects.featured");
     if (!featured.fetched && !featured.fetching)
       this.projectsCoordinator.getFeatured();
-
   }
 
   componentDidMount() {
@@ -199,9 +201,19 @@ class View extends Component {
     }
   }
 
+  componentWillUnmount() {
+    this.projectCoordinator.resetProject();
+  }
+
   async fetchProject() {
     const pathComponents = splitProjectSubRoute(this.props.match.url);
-    return this.projectState.fetchProject(this.props.client, pathComponents.projectPathWithNamespace);
+    const projectData = this.projectState.fetchProject(this.props.client, pathComponents.projectPathWithNamespace);
+    // TODO: gradually move queries from local store projectState to shared store projectCoordinator
+    projectData.then(data => {
+      this.projectCoordinator.setProjectData(data);
+      this.projectCoordinator.fetchCommits();
+    });
+    return projectData;
   }
   async fetchReadme() { return this.projectState.fetchReadme(this.props.client); }
   async fetchMergeRequests() { return this.projectState.fetchMergeRequests(this.props.client); }
@@ -294,6 +306,7 @@ class View extends Component {
       overviewUrl: `${baseUrl}/overview`,
       statsUrl: `${baseUrl}/overview/stats`,
       overviewDatasetsUrl: `${baseUrl}/overview/datasets`,
+      overviewCommitsUrl: `${baseUrl}/overview/commits`,
       datasetsUrl: `${datasetsUrl}`,
       newDatasetUrl: `${datasetsUrl}/new`,
       datasetUrl: `${datasetsUrl}/:datasetId`,
@@ -429,6 +442,9 @@ class View extends Component {
         fileContentUrl={subUrls.fileContentUrl}
         projectsUrl={subUrls.projectsUrl}
         selectedDataset={p.match.params.datasetId}
+        history={this.props.history}
+        logged={this.props.user.logged}
+        model={this.props.model}
       />,
 
       newDataset: (p) => <NewDataset
@@ -632,10 +648,80 @@ class View extends Component {
     const ConnectedProjectView = connect(
       this.mapStateToProps.bind(this), null, null, { storeKey: "projectStore" }
     )(Present.ProjectView);
-    const props = { ...this.props, ...this.eventHandlers, projectStore: this.projectState.reduxStore };
+    const props = {
+      ...this.props,
+      ...this.eventHandlers,
+      projectStore: this.projectState.reduxStore,
+      projectCoordinator: this.projectCoordinator
+    };
     return <ConnectedProjectView {...props} />;
   }
 }
 
+
+/**
+ * Generate the appropriate mapStateToProps function to connect project components
+ *
+ * @param {Object} projectCoordinator - an instance of the projectCoordinator
+ * @param {string[]} [features] - list of project sub-categories to include. An empty array
+ *     means all categories will be included
+ * @param {string} [parentProperty] - optional parent property where to include all the
+ *     selected categories. Try to avoid it, only for compatibility with old components.
+ */
+function mapProjectFeatures(projectCoordinator, features = [], parentProperty = null) {
+  let mapStateToProps = function (state) {
+    const projectState = state.project;
+    if (!features || !features.length)
+      features = Object.keys(projectState);
+
+    // select categories
+    let properties = { ...projectState };
+    properties = features.reduce(
+      (all, category) => {
+        if (projectState[category])
+          all[category] = { ...projectState[category] };
+        return all;
+      },
+      {}
+    );
+
+    // add useful functions
+    if (properties.commits)
+      properties.commits.refresh = () => { projectCoordinator.fetchCommits(); };
+
+    // return the object
+    if (parentProperty)
+      return { [parentProperty]: { ...properties } };
+    return { ...properties };
+  };
+
+  return mapStateToProps;
+}
+
+
+/**
+ * Enhance a React component with project data mapped as properties.
+ *
+ * @param {Object} MappingComponent - component to be mapped with the project categories
+ * @param {Object} MappingComponent.props.projectCoordinator - an instance of the projectCoordinator
+ * @param {string[]} [features] - list of project sub-categories to include. An empty array
+ *     means all categories will be included
+ * @param {bool} [passProps] - weather to pass down the properties or not. Default is true
+ */
+function withProjectMapped(MappingComponent, features = [], passProps = true) {
+  return class ProjectMapped extends Component {
+    render() {
+      const projectCoordinator = this.props.projectCoordinator;
+      const mapFunction = mapProjectFeatures(projectCoordinator, features);
+      const MappedComponent = connect(mapFunction.bind(this))(MappingComponent);
+      const store = projectCoordinator.model.reduxStore;
+      const props = passProps ? this.props : {};
+
+      return (<MappedComponent store={store} {...props} />);
+    }
+  };
+}
+
+
 export default { New, View, List };
-export { GraphIndexingStatus, splitProjectSubRoute };
+export { GraphIndexingStatus, splitProjectSubRoute, mapProjectFeatures, withProjectMapped };

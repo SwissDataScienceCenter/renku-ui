@@ -23,8 +23,10 @@ import { Loader, FileExplorer } from "../utils/UIComponents";
 import DOMPurify from "dompurify";
 import { API_ERRORS } from "../api-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLinkAlt, faPen } from "@fortawesome/free-solid-svg-icons";
+import { faExternalLinkAlt, faPen, faPlus } from "@fortawesome/free-solid-svg-icons";
 import Time from "../utils/Time";
+import AddDataset from "./addtoproject/DatasetAdd.container";
+import { ProjectsCoordinator } from "../project/shared";
 
 function DisplayFiles(props) {
   if (props.files === undefined) return null;
@@ -98,6 +100,7 @@ export default function DatasetView(props) {
 
   const [dataset, setDataset] = useState(undefined);
   const [fetchError, setFetchError] = useState(null);
+  const [addDatasetModalOpen, setAddDatasetModalOpen] = useState(false);
 
   useEffect(() => {
     let unmounted = false;
@@ -176,25 +179,29 @@ export default function DatasetView(props) {
         }
         <h4 key="datasetTitle">
           {dataset.name}
+          { dataset.url && (props.insideProject || dataset.sameAs.includes("doi.org")) ?
+            <a href={dataset.url} target="_blank" rel="noreferrer noopener">
+              <Button size="sm" color="link" style={{ color: "rgba(0, 0, 0, 0.5)" }}>
+                <FontAwesomeIcon icon={faExternalLinkAlt} color="dark" /> Go to source
+              </Button>
+            </a>
+            : null
+          }
         </h4>
       </Col>
       <Col md={4} sm={12}>
+        { props.logged ?
+          <Button className="float-right mb-1" size="sm" color="primary" onClick={()=>setAddDatasetModalOpen(true)}>
+            <FontAwesomeIcon icon={faPlus} color="dark" /> Add to project
+          </Button>
+          : null
+        }
         {props.insideProject && props.maintainer ?
-          <Link className="float-right" to={{ pathname: "modify", state: { dataset: dataset } }} >
-            <Button size="sm" outline color="dark" >
+          <Link className="float-right mr-1 mb-1" to={{ pathname: "modify", state: { dataset: dataset } }} >
+            <Button size="sm" color="primary" >
               <FontAwesomeIcon icon={faPen} color="dark" /> Modify
             </Button>
           </Link>
-          : null
-        }
-        { dataset.url &&
-        (props.insideProject || dataset.sameAs.includes("doi.org")) ?
-          <a className="float-right mr-1" href={dataset.url} target="_blank" rel="noreferrer noopener">
-            <Button size="sm" outline color="dark" >
-              <FontAwesomeIcon icon={faExternalLinkAlt} color="dark" /> Go to source
-            </Button>
-          </a>
-
           : null
         }
       </Col>
@@ -234,5 +241,19 @@ export default function DatasetView(props) {
       projects={dataset.isPartOf}
       projectsUrl={props.projectsUrl}
     />
+    {
+      props.logged ?
+        <AddDataset
+          dataset={dataset}
+          modalOpen={addDatasetModalOpen}
+          setModalOpen={setAddDatasetModalOpen}
+          projectsCoordinator={new ProjectsCoordinator(props.client, props.model.subModel("projects"))}
+          model={props.model}
+          history={props.history}
+          client={props.client}
+          user={props.user} />
+        : null
+    }
+
   </Col>;
 }

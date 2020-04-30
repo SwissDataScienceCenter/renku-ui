@@ -115,6 +115,8 @@ class MergeRequestContainer extends Component {
     return <MergeRequestPresent
       title={this.state.title}
       author={this.state.author}
+      location={this.props.location}
+      externalUrl={this.props.externalUrl}
       externalMRUrl={externalMRUrl}
       externalMROverviewUrl={externalMROverviewUrl}
       changes={this.state.changes}

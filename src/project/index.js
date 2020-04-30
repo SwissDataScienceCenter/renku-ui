@@ -24,5 +24,7 @@
  */
 
 import { ProjectListRow } from "./list";
+import { ProjectCoordinator } from "./Project.state";
+import { withProjectMapped } from "./Project";
 
-export { ProjectListRow };
+export { ProjectListRow, ProjectCoordinator, withProjectMapped };

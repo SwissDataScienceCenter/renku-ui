@@ -34,5 +34,8 @@ export default function ShowDataset(props) {
     client={props.client}
     datasets={props.datasets}
     selectedDataset={props.selectedDataset}
+    history={props.history}
+    logged={props.logged}
+    model={props.model}
   />;
 }
