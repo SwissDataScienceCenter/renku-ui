@@ -298,8 +298,8 @@ describe("Helper functions", () => {
     const splittedBranches = splitAutosavedBranches(branches);
     expect(splittedBranches.standard.length).toEqual(1);
     expect(splittedBranches.autosaved.length).toEqual(1);
-    const [namespace, branch, commit, finalCommit] = branches[1].name.replace("renku/autosave/", "").split("/");
-    expect(splittedBranches.autosaved[0].autosave.namespace).toEqual(namespace);
+    const [username, branch, commit, finalCommit] = branches[1].name.replace("renku/autosave/", "").split("/");
+    expect(splittedBranches.autosaved[0].autosave.username).toEqual(username);
     expect(splittedBranches.autosaved[0].autosave.branch).toEqual(branch);
     expect(splittedBranches.autosaved[0].autosave.commit).toEqual(commit);
     expect(splittedBranches.autosaved[0].autosave.finalCommit).toEqual(finalCommit);
