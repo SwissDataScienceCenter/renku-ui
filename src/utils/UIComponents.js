@@ -40,7 +40,7 @@ import { faCopy } from "@fortawesome/free-regular-svg-icons";
 import { faCheck, faExternalLinkAlt, faEllipsisV, faUser, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 
 import { sanitizedHTMLFromMarkdown, simpleHash } from "./HelperFunctions";
-import FileExplorer from "./FileExplorer";
+import FileExplorer, { getFilesTree } from "./FileExplorer";
 
 /**
  * Show user avatar
@@ -719,4 +719,4 @@ export { UserAvatar, TimeCaption, FieldGroup, RenkuNavLink, Pagination, RenkuMar
 export { ExternalLink, ExternalDocsLink, ExternalIconLink, IconLink, RefreshButton };
 export { Loader, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, JupyterIcon };
 export { Clipboard, ThrottledTooltip, TooltipToggleButton, ProjectAvatar };
-export { ButtonWithMenu, FileExplorer };
+export { ButtonWithMenu, FileExplorer, getFilesTree };

@@ -23,14 +23,14 @@
  *  Presentational components.
  */
 import React, { useState, useEffect, useRef } from "react";
-import { FormGroup, Label, Table, Spinner, Button, UncontrolledCollapse } from "reactstrap";
+import { FormGroup, Label, Table, Spinner, Button, UncontrolledCollapse, Card, CardBody } from "reactstrap";
 import ValidationAlert from "./ValidationAlert";
 import HelpText from "./HelpText";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes, faTrashAlt, faSyncAlt, faExclamationTriangle, faFolder }
   from "@fortawesome/free-solid-svg-icons";
 import { formatBytes } from "./../../HelperFunctions";
-import { FileExplorer } from "../../UIComponents";
+import { FileExplorer, getFilesTree } from "../../UIComponents";
 
 const FILE_STATUS = {
   ADDED: "added",
@@ -85,18 +85,28 @@ function getFileObject(name, size, id, error, alias, controller, uncompress, fol
 
 function FileuploaderInput({ name, label, alert, value, setInputs, help, disabled = false,
   uploadFileFunction, filesOnUploader }) {
+
+  //send value as an already built tree/hash to display and
+  // delete from the files/paths /data/dataset-name so i can check if the file is there or not
+  //AFTER THIS ADD THE FILES AS DISPLAY FILES BUT DON'T DISPLAY THEM
+
   const [files, setFiles] = useFiles({});
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [displayFiles, setDisplayFiles] = useState([]);
   const [filesErrors, setFilesErrors] = useState([]);
   const [errorOnDrop, setErrorOnDrop] = useState("");
   const [initialized, setInitialized] = useState(false);
+  const [initialFilesTree, setInitialFilesTree] = useState(undefined);
   const $input = useRef(null);
 
   useEffect(() => {
     if (value !== undefined && !initialized) {
-      setDisplayFiles(value.map(file => getFileObject(
-        file.name, null, undefined, undefined, undefined, undefined, undefined, FILE_STATUS.ADDED)));
+      let openFolders = value.length > 0 ?
+        ( value[0].atLocation.startsWith("data/") ? 2 : 1 )
+        : 0;
+      setInitialFilesTree(getFilesTree(value, openFolders));
+      // setDisplayFiles(value.map(file => getFileObject(
+      //   file.atLocation, null, undefined, undefined, undefined, undefined, undefined, undefined, FILE_STATUS.ADDED)));
     }
     setInitialized(true);
   }, [value, initialized]);
@@ -156,21 +166,23 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
 
         if (file.file_uncompress) {
           let folderPath = body.result.files[0].relative_path.split("/")[0] + "/";
-          console.log("do changes here.... inside the file explorer");
           let file_alias = file.name !== body.result.files[0].relative_path.split("/")[0].replace(".unpacked", "") ?
             body.result.files[0].relative_path.split("/")[0].replace(".unpacked", "") : undefined;
-
+          let filesTree = getFilesTree(body.result.files.map(file=>
+            ({ "atLocation": file.relative_path.replace(folderPath, ""),
+              "id": file.file_id
+            })));
           let folderStructure = <div>
             <Button className="pr-0 pl-0 pt-0 pb-0 mb-1" color="link" id={body.result.files[0].id + "collapse"}>
               <small>Show un-ziped files</small>
             </Button>
-            <UncontrolledCollapse key="searchHelp" toggler={"#" + body.result.files[0].id + "collapse"} className="pt-2">
+            <UncontrolledCollapse
+              key={"#" + body.result.files[0].id + "key"}
+              toggler={"#" + body.result.files[0].id + "collapse"}
+              className="pt-2">
               <small>
                 <FileExplorer
-                  files={body.result.files.map(file=>
-                    ({ "atLocation": file.relative_path.replace(folderPath, "") //replace solo reemplaza en la primera???
-                      //  , "name": file.file_name
-                    }))}
+                  filesTree={filesTree}
                   lineageUrl={" "}
                   insideProject={false}
                   foldersOpenOnLoad={0}
@@ -182,17 +194,11 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
             file.name, 0, [], undefined, file_alias, response.controller,
             file.file_uncompress, folderStructure);
 
-          body.result.files.map(newFile => {
-
-            newFileDraft.file_size += newFile.file_size;
-            newFileDraft.file_id.push(newFile.file_id);
-
-            return newFile;
-          });
+          newFileDraft.file_size = body.result.files ? body.result.files[0].file_size : "0MB";
+          newFileDraft.file_id = filesTree.tree.map(file => file.id);
           setUploadedFiles(prevUploadedFiles => [...prevUploadedFiles, newFileDraft]);
           return newFileDraft;
         }
-        // else
         let newFileObj = body.result.files[0];
         if (newFileObj.file_name !== undefined && newFileObj.file_name !== file.name) {
           newFileObj = getFileObject(
@@ -204,7 +210,6 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
         }
         setUploadedFiles(prevUploadedFiles => [...prevUploadedFiles, newFileObj]);
         return newFileObj;
-        // end of else
       });
     }).catch((error) => {
       if (error.code !== DOMException.ABORT_ERR) {
@@ -351,6 +356,18 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
   return (
     <FormGroup>
       <Label htmlFor={name}>{label}</Label>
+      {initialFilesTree !== undefined ?
+        <Card className="mb-4">
+          <CardBody style={{ backgroundColor: "#e9ecef" }}>
+            <FileExplorer
+              filesTree={initialFilesTree}
+              lineageUrl={" "}
+              insideProject={false}
+            />
+          </CardBody>
+        </Card>
+        : null
+      }
       <div
         onDrop={e => {
           onDropOrChange(e);
@@ -367,7 +384,7 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
             <tr>
               <th className="font-weight-light">#</th>
               <th className="font-weight-light">File Name</th>
-              <th className="font-weight-light">File Size</th>
+              <th className="font-weight-light">Size</th>
               <th className="font-weight-light">Status</th>
               <th className="font-weight-light">Delete</th>
             </tr>

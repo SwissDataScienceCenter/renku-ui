@@ -55,7 +55,6 @@ function DatasetEdit(props) {
     const dataset = {};
     dataset.name = props.datasetFormSchema.name.value;
     dataset.description = props.datasetFormSchema.description.value;
-
     dataset.files = [].concat.apply([], props.datasetFormSchema.files.value.map(f => f.file_id))
       .map(f => ({ "file_id": f }));
 
