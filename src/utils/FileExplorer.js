@@ -30,7 +30,9 @@ function buildTree(parts, treeNode, jsonObj, hash, currentPath, foldersOpenOnLoa
     hash[newNode.path] = {
       "name": parts[0],
       "selected": false,
-      "childrenOpen": foldersOpenOnLoad > 0, "path": currentPath
+      "childrenOpen": foldersOpenOnLoad > 0,
+      "path": currentPath,
+      "isLeaf": parts.length === 1
     };
     buildTree(parts.splice(1, parts.length), newNode.children, jsonObj, hash, currentPath,
       foldersOpenOnLoad > 0 ? foldersOpenOnLoad - 1 : 0);
@@ -53,7 +55,7 @@ function getFilesTree(files, foldersOpenOnLoad) {
     const dir = list[i].atLocation.split("/");
     buildTree(dir, tree, list[i], hash, "", foldersOpenOnLoad);
   }
-  const treeObj = { tree: tree, hash: hash };
+  const treeObj = { tree: tree, hash: hash, leafs: Object.values(hash).filter(file => file.isLeaf) };
   return treeObj;
 }
 
