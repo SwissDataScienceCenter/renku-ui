@@ -45,7 +45,8 @@ function NewDataset(props) {
     const dataset = {};
     dataset.name = datasetFormSchema.name.value;
     dataset.description = datasetFormSchema.description.value;
-    dataset.files = datasetFormSchema.files.value.map(f => ({ "file_id": f.file_id }));
+    dataset.files = [].concat.apply([], datasetFormSchema.files.value.map(f => f.file_id))
+      .map(f => ({ "file_id": f }));
 
     props.client.postDataset(props.httpProjectUrl, dataset)
       .then(dataset => {
@@ -58,7 +59,7 @@ function NewDataset(props) {
             props.client.getProjectDatasetsFromKG(props.projectPathWithNamespace)
               .then(datasets => {
                 // eslint-disable-next-line
-            let new_dataset = datasets.find( ds => ds.name === dataset.data.result.short_name);
+                let new_dataset = datasets.find( ds => ds.name === dataset.data.result.short_name);
                 if (new_dataset !== undefined) {
                   setSubmitLoader(false);
                   clearInterval(waitForDatasetInKG);

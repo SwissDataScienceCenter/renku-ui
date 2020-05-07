@@ -23,13 +23,14 @@
  *  Presentational components.
  */
 import React, { useState, useEffect, useRef } from "react";
-import { FormGroup, Label, Table, Spinner } from "reactstrap";
+import { FormGroup, Label, Table, Spinner, Button, UncontrolledCollapse, Card, CardBody } from "reactstrap";
 import ValidationAlert from "./ValidationAlert";
 import HelpText from "./HelpText";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes, faTrashAlt, faSyncAlt, faExclamationTriangle, faFolder }
   from "@fortawesome/free-solid-svg-icons";
 import { formatBytes } from "./../../HelperFunctions";
+import { FileExplorer, getFilesTree } from "../../UIComponents";
 
 const FILE_STATUS = {
   ADDED: "added",
@@ -68,33 +69,46 @@ function getFileStatus(id, error, status) {
   return FILE_STATUS.UPLOADING;
 }
 
-function getFileObject(name, size, id, error, alias, controller, uncompress, status) {
+function getFileObject(name, path, size, id, error, alias, controller, uncompress, folderStructure, status) {
   return {
     file_name: name,
+    file_path: path,
     file_size: size,
     file_id: id,
     file_error: error,
     file_alias: alias,
     file_status: getFileStatus(id, error, status),
     file_controller: controller,
-    file_uncompress: uncompress
+    file_uncompress: uncompress,
+    folder_structure: folderStructure //this is for uncompressed files
   };
 }
 
 function FileuploaderInput({ name, label, alert, value, setInputs, help, disabled = false,
   uploadFileFunction, filesOnUploader }) {
+
+  //send value as an already built tree/hash to display and
+  // delete from the files/paths /data/dataset-name so i can check if the file is there or not
+  //AFTER THIS ADD THE FILES AS DISPLAY FILES BUT DON'T DISPLAY THEM
+
   const [files, setFiles] = useFiles({});
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [displayFiles, setDisplayFiles] = useState([]);
   const [filesErrors, setFilesErrors] = useState([]);
   const [errorOnDrop, setErrorOnDrop] = useState("");
   const [initialized, setInitialized] = useState(false);
+  const [initialFilesTree, setInitialFilesTree] = useState(undefined);
+  const [partialFilesPath, setPartialFilesPath] = useState("");
   const $input = useRef(null);
 
   useEffect(() => {
-    if (value !== undefined && !initialized) {
-      setDisplayFiles(value.map(file => getFileObject(
-        file.name, null, undefined, undefined, undefined, undefined, undefined, FILE_STATUS.ADDED)));
+    if (value !== undefined && !initialized && value.length > 0) {
+      let openFolders = value[value.length - 1].atLocation.startsWith("data/") ? 2 : 1;
+      let lastElement = value[value.length - 1].atLocation.split("/");
+      if (lastElement[0] === "data")
+        setPartialFilesPath(lastElement[0] + "/" + lastElement[1] + "/");
+      else setPartialFilesPath(lastElement[0] + "/");
+      setInitialFilesTree(getFilesTree(value, openFolders));
     }
     setInitialized(true);
   }, [value, initialized]);
@@ -111,12 +125,14 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
         if (uploadingFile !== undefined) {
           return getFileObject(
             uploadingFile.file_name,
+            partialFilesPath + uploadingFile.file_name,
             uploadingFile.file_size,
             uploadingFile.file_id,
             filesErrors.find(file => file.file_name === uploadingFile.file_name),
             uploadingFile.file_alias,
             uploadingFile.file_controller,
-            uploadingFile.file_uncompress);
+            uploadingFile.file_uncompress,
+            uploadingFile.folder_structure);
         }
         return dFile;
       })
@@ -131,8 +147,8 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
         let errorFile = filesErrors.find(eFile => eFile.file_name === dFile.file_name);
         if (errorFile !== undefined) {
           return getFileObject(
-            errorFile.file_name, errorFile.file_size, null, errorFile.file_error, errorFile.file_alias,
-            errorFile.file_controller, errorFile.file_uncompress);
+            errorFile.file_name, errorFile.file_path, errorFile.file_size, null, errorFile.file_error,
+            errorFile.file_alias, errorFile.file_controller, errorFile.file_uncompress, errorFile.folder_structure);
         }
         return dFile;
       })
@@ -145,26 +161,47 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
       response.json().then((body) => {
         if (body.error) {
           setFilesErrors(prevFilesErrors => [...prevFilesErrors,
-            getFileObject(file.name, file.size, undefined, body.error.reason, undefined,
-              file.file_controller, file.file_uncompress)]
+            getFileObject(file.name, partialFilesPath + file.name, file.size, undefined, body.error.reason, undefined,
+              file.file_controller, file.file_uncompress, file.folder_structure)]
           );
           return [];
+        }
+
+        if (file.file_uncompress) {
+          let folderPath = body.result.files[0].relative_path.split("/")[0] + "/";
+          let file_alias = file.name !== body.result.files[0].relative_path.split("/")[0].replace(".unpacked", "") ?
+            body.result.files[0].relative_path.split("/")[0].replace(".unpacked", "") : undefined;
+          let filesTree = getFilesTree(body.result.files.map(file=>
+            ({ "atLocation": file.relative_path.replace(folderPath, ""),
+              "id": file.file_id
+            })));
+
+          let newFileDraft = getFileObject(
+            file.name, partialFilesPath + file.name, 0, [], undefined, file_alias, response.controller,
+            file.file_uncompress, filesTree);
+
+          newFileDraft.file_size = body.result.files ? body.result.files[0].file_size : 0;
+          newFileDraft.file_id = filesTree.tree.map(file => file.id);
+          setUploadedFiles(prevUploadedFiles => [...prevUploadedFiles, newFileDraft]);
+          return newFileDraft;
         }
         let newFileObj = body.result.files[0];
         if (newFileObj.file_name !== undefined && newFileObj.file_name !== file.name) {
           newFileObj = getFileObject(
-            file.name, newFileObj.file_size, newFileObj.file_id, undefined, newFileObj.file_name,
-            response.controller, file.file_uncompress);
+            file.name, partialFilesPath + file.name, newFileObj.file_size, [newFileObj.file_id],
+            undefined, newFileObj.file_name, response.controller, file.file_uncompress, undefined);
+        }
+        else {
+          newFileObj.file_id = [newFileObj.file_id];
         }
         setUploadedFiles(prevUploadedFiles => [...prevUploadedFiles, newFileObj]);
         return newFileObj;
-
       });
     }).catch((error) => {
       if (error.code !== DOMException.ABORT_ERR) {
         setFilesErrors(prevFilesErrors => [...prevFilesErrors,
-          getFileObject(file.name, file.size, undefined, "Error uploading the file", undefined,
-            file.file_controller, file.file_uncompress)]);
+          getFileObject(file.name, partialFilesPath + file.name, file.size, undefined, "Error uploading the file",
+            undefined, file.file_controller, file.file_uncompress, file.folder_structure)]);
         return [];
       }
     });
@@ -189,9 +226,11 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
       nonCompressedFiles.map(file => uploadFile(file, file.file_controller));
       const newDisplayFiles = droppedFiles.map(file=> {
         return file.type === "application/zip" ?
-          getFileObject(file.name, file.size, null, undefined, undefined, file.file_controller, FILE_COMPRESSED.WAITING)
+          getFileObject(file.name, partialFilesPath + file.name, file.size, null,
+            undefined, undefined, file.file_controller, FILE_COMPRESSED.WAITING)
           :
-          getFileObject(file.name, file.size, null, undefined, undefined, file.file_controller);
+          getFileObject(file.name, partialFilesPath + file.name, file.size, null,
+            undefined, undefined, file.file_controller);
       });
 
       filesOnUploader.current = displayFiles.filter(file => file.file_status !== FILE_STATUS.ADDED).length
@@ -219,8 +258,8 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
       if (retryFile !== undefined) {
         const displayFilesFiltered = displayFiles.map(file => {
           if (file.file_name === file_name) {
-            return getFileObject(retryFile.name, retryFile.size, null, undefined, retryFile.file_alias,
-              retryFile.file_controller, file.file_uncompress);
+            return getFileObject(retryFile.name, partialFilesPath + retryFile.name, retryFile.size, null,
+              undefined, retryFile.file_alias, retryFile.file_controller, file.file_uncompress, file.folder_structure);
           }
           return file;
         });
@@ -237,8 +276,8 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
       if (compressedFile !== undefined) {
         const displayFilesFiltered = displayFiles.map(file => {
           if (file.file_name === file_name) {
-            return getFileObject(compressedFile.name, compressedFile.size, null, undefined,
-              compressedFile.file_alias, compressedFile.file_controller, compressedFile === true ?
+            return getFileObject(compressedFile.name, partialFilesPath + compressedFile.name, compressedFile.size,
+              null, undefined, compressedFile.file_alias, compressedFile.file_controller, uncompress === true ?
                 FILE_COMPRESSED.UNCOMPRESS_YES : FILE_COMPRESSED.UNCOMPRESS_NO );
           }
           return file;
@@ -268,7 +307,7 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
     return filteredFiles;
   };
 
-  let getFileStatusComp = (file) => {
+  const getFileStatusComp = (file) => {
     switch (file.file_status) {
       case FILE_STATUS.ADDED:
         return <span> in dataset</span>;
@@ -302,9 +341,50 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
     }
   };
 
+  const fileWillBeOverwritten = (file) => {
+    if (initialFilesTree === undefined) return false;
+    if (file.file_uncompress === FILE_COMPRESSED.WAITING)
+      return null;
+    if (file.file_uncompress === FILE_COMPRESSED.UNCOMPRESS_NO || file.file_uncompress === undefined ) {
+      return initialFilesTree.hash[file.file_path] ? <small><br></br>
+        <span className="text-info">
+          &nbsp;*This file will be skipped because
+          &nbsp;there is a file with the same name inside the dataset.
+        </span>
+      </small> : null;
+    }
+    if (file.folder_structure !== undefined) {
+      const repeatedFiles = file.folder_structure.leafs
+        .filter(file => {
+          let suspectedRep = initialFilesTree.hash[partialFilesPath + file.path];
+          return (suspectedRep !== undefined) ? suspectedRep.isLeaf : false;
+        });
+      return repeatedFiles.length > 0 ?
+        <small><br></br>
+          <span className="text-info">&nbsp;*
+            { repeatedFiles.length > 1 ?
+                `${repeatedFiles.length} files are already in the dataset and will be skipped.` :
+                `${repeatedFiles[0].name} is already in the dataset and will be skipped.`}
+          </span></small> : null;
+    }
+    return null;
+  };
+
   return (
     <FormGroup>
       <Label htmlFor={name}>{label}</Label>
+      {initialFilesTree !== undefined ?
+        <Card className="mb-4">
+          <CardBody style={{ backgroundColor: "#e9ecef" }}>
+            <FileExplorer
+              filesTree={initialFilesTree}
+              lineageUrl={" "}
+              insideProject={false}
+            />
+          </CardBody>
+        </Card>
+        : null
+      }
       <div
         onDrop={e => {
           onDropOrChange(e);
@@ -321,7 +401,7 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
             <tr>
               <th className="font-weight-light">#</th>
               <th className="font-weight-light">File Name</th>
-              <th className="font-weight-light">File Size</th>
+              <th className="font-weight-light">Size</th>
               <th className="font-weight-light">Status</th>
               <th className="font-weight-light">Delete</th>
             </tr>
@@ -338,6 +418,28 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
                         disallowed characters; it has been renamed to <i> {file.file_alias}</i>
                       </span></small>
                       : null
+                  }
+                  {
+                    fileWillBeOverwritten(file)
+                  }
+                  {
+                    file.folder_structure ? <div>
+                      <Button className="pr-0 pl-0 pt-0 pb-0 mb-1" color="link" id={"filescollapse" + (index + 1)}>
+                        <small>Show unzipped files</small>
+                      </Button>
+                      <UncontrolledCollapse
+                        key={"#" + (index + 1) + "key"}
+                        toggler={"#filescollapse" + (index + 1)}
+                        className="pt-2">
+                        <small>
+                          <FileExplorer
+                            filesTree={file.folder_structure}
+                            lineageUrl={" "}
+                            insideProject={false}
+                            foldersOpenOnLoad={0}
+                          /></small>
+                      </UncontrolledCollapse>
+                    </div> : null
                   }
                 </td>
                 <td>{file.file_size ? formatBytes(file.file_size) : "-"}</td>

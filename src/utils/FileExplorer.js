@@ -19,9 +19,9 @@ function buildTree(parts, treeNode, jsonObj, hash, currentPath, foldersOpenOnLoa
 
   let newNode;
   if (parts[0] === jsonObj.name)
-    newNode = { "name": parts[0], "children": [], "jsonObj": jsonObj, "path": currentPath };
+    newNode = { "name": parts[0], "children": [], "jsonObj": jsonObj, "path": currentPath, "id": jsonObj.id };
   else
-    newNode = { "name": parts[0], "children": [], "jsonObj": null, "path": currentPath };
+    newNode = { "name": parts[0], "children": [], "jsonObj": null, "path": currentPath, "id": jsonObj.id };
 
   const currentNode = treeNode.filter(node => node.name === newNode.name);
 
@@ -30,7 +30,9 @@ function buildTree(parts, treeNode, jsonObj, hash, currentPath, foldersOpenOnLoa
     hash[newNode.path] = {
       "name": parts[0],
       "selected": false,
-      "childrenOpen": foldersOpenOnLoad > 0, "path": currentPath
+      "childrenOpen": foldersOpenOnLoad > 0,
+      "path": currentPath,
+      "isLeaf": parts.length === 1
     };
     buildTree(parts.splice(1, parts.length), newNode.children, jsonObj, hash, currentPath,
       foldersOpenOnLoad > 0 ? foldersOpenOnLoad - 1 : 0);
@@ -53,7 +55,7 @@ function getFilesTree(files, foldersOpenOnLoad) {
     const dir = list[i].atLocation.split("/");
     buildTree(dir, tree, list[i], hash, "", foldersOpenOnLoad);
   }
-  const treeObj = { tree: tree, hash: hash };
+  const treeObj = { tree: tree, hash: hash, leafs: Object.values(hash).filter(file => file.isLeaf) };
   return treeObj;
 }
 
@@ -171,13 +173,24 @@ function FilesTreeView(props) {
   );
 }
 
+/**
+ * Generic files tree generator.
+ * Some things are left to do to make it more generic.
+ * @param {*} props.files This is a list of files with atLocation containing the file path (this is optional)
+ * @param {*} props.filesTree This is the already built fileTree (optional)
+ * @param {*} props.foldersOpenOnLoad Number of folders that should apear open already when displaying the tree
+ * @param {*} props.lineageUrl Should be replaced for URL, this is the link for the file (when clicked) (optional)
+ * * @param {*} props.insideProject Boolean to be set true if the display is inside a project
+ */
 function FileExplorer(props) {
   const [filesTree, setFilesTree] = useState(undefined);
 
   useEffect(() => {
-    if (props.files !== undefined)
+    if (props.filesTree !== undefined)
+      setFilesTree(props.filesTree);
+    else if (props.files !== undefined)
       setFilesTree(getFilesTree(props.files, props.foldersOpenOnLoad));
-  }, [props.files, props.foldersOpenOnLoad]);
+  }, [props.files, props.filesTree, props.foldersOpenOnLoad]);
 
   const setOpenFolder = (filePath) => {
     filesTree.hash[filePath].childrenOpen = !filesTree.hash[filePath].childrenOpen;
@@ -199,3 +212,4 @@ function FileExplorer(props) {
 }
 
 export default FileExplorer;
+export { getFilesTree };
