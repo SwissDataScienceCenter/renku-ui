@@ -439,6 +439,22 @@ class RenkuMarkdown extends Component {
 }
 
 /**
+ * This function converts markdown to text, is ment to be used when an extract of
+ * a description in markdown wants to be displayed.
+ *  @param {string} markdownText is the markdown text that wants to be displayed
+ *  @param {integer} charsLimit is the number of characters that will be displayed
+ */
+class MarkdownTextExtract extends Component {
+  render() {
+    const temp = document.createElement("div");
+    temp.innerHTML = sanitizedHTMLFromMarkdown(this.props.markdownText, false);
+    const innerText = temp.textContent || temp.innerText || "";
+    return this.props.charsLimit !== undefined && innerText.length > this.props.charsLimit ?
+      innerText.substr(0, this.props.charsLimit) + "..." : innerText;
+  }
+}
+
+/**
  * Jupyter icon
  *
  * @param {boolean} [greyscale] - show the grayscale version of the logo
@@ -719,4 +735,4 @@ export { UserAvatar, TimeCaption, FieldGroup, RenkuNavLink, Pagination, RenkuMar
 export { ExternalLink, ExternalDocsLink, ExternalIconLink, IconLink, RefreshButton };
 export { Loader, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, JupyterIcon };
 export { Clipboard, ThrottledTooltip, TooltipToggleButton, ProjectAvatar };
-export { ButtonWithMenu, FileExplorer, getFilesTree };
+export { ButtonWithMenu, FileExplorer, getFilesTree, MarkdownTextExtract };

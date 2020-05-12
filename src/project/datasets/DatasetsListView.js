@@ -3,7 +3,7 @@ import { NavLink, Link } from "react-router-dom";
 import { Row, Col, ListGroup, ListGroupItem } from "reactstrap";
 import { ACCESS_LEVELS } from "../../api-client";
 import "../filestreeview/treeviewstyle.css";
-import { Loader } from "../../utils/UIComponents";
+import { Loader, MarkdownTextExtract } from "../../utils/UIComponents";
 
 function DatasetListRow(props) {
   const dataset = props.dataset;
@@ -11,12 +11,6 @@ function DatasetListRow(props) {
     key={dataset.identifier}
     to={`${props.datasetsUrl}/${encodeURIComponent(dataset.identifier)}/`}
   > {dataset.name} </NavLink>;
-
-  const HTMLtoText = (textContent) => {
-    var temp = document.createElement("div");
-    temp.innerHTML = textContent;
-    return temp.textContent || temp.innerText || "";
-  };
 
   const projectsCountLabel = dataset.isPartOf.length > 1
     ? `In ${dataset.isPartOf.length} projects`
@@ -41,12 +35,9 @@ function DatasetListRow(props) {
             }
             {
               dataset.description !== undefined && dataset.description !== null ?
-                <p className="datasetDescriptionText font-weight-normal">
-                  {dataset.description.length > 500 ?
-                    HTMLtoText(dataset.description).substr(0, 500) + "..." :
-                    HTMLtoText(dataset.description)
-                  }
-                </p>
+                <div className="datasetDescriptionText font-weight-normal">
+                  <MarkdownTextExtract markdownText={dataset.description} charsLimit={500} />
+                </div>
                 : null
             }
           </div>

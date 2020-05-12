@@ -21,18 +21,13 @@ import { Link, Route, Switch } from "react-router-dom";
 import { Row, Col, Alert, Card, CardBody, Badge } from "reactstrap";
 import { Button, Form, FormText, Input, Label, InputGroup, UncontrolledCollapse } from "reactstrap";
 import { InputGroupButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
-import { Loader, Pagination } from "../../utils/UIComponents";
+import { Loader, Pagination, MarkdownTextExtract } from "../../utils/UIComponents";
 import { faCheck, faSortAmountUp, faSortAmountDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 
 class DatasetListRow extends Component {
 
-  HTMLtoText = (textContent) => {
-    var temp = document.createElement("div");
-    temp.innerHTML = textContent;
-    return temp.textContent || temp.innerText || "";
-  }
 
   render() {
     const datasetsUrl = this.props.datasetsUrl;
@@ -57,12 +52,9 @@ class DatasetListRow extends Component {
         }
         {
           dataset.description !== undefined && dataset.description !== null ?
-            <p className="datasetDescriptionText font-weight-normal">
-              {dataset.description.length > 500 ?
-                this.HTMLtoText(dataset.description).substr(0, 500) + "..." :
-                this.HTMLtoText(dataset.description)
-              }
-            </p>
+            <div className="datasetDescriptionText font-weight-normal">
+              <MarkdownTextExtract markdownText={dataset.description} charsLimit={500} />
+            </div>
             : null
         }
         {
