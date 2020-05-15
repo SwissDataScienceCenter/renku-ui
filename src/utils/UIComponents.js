@@ -439,12 +439,12 @@ class RenkuMarkdown extends Component {
 }
 
 /**
- * This function converts markdown to text, is ment to be used when an extract of
- * a description in markdown wants to be displayed.
+ * This component converts markdown to text. It is meant to be used when an extract of
+ * a description in markdown should be be displayed.
  *  @param {string} markdownText is the markdown text that wants to be displayed
  *  @param {integer} charsLimit is the number of characters that will be displayed
  */
-class MarkdownTextExtract extends Component {
+class MarkdownTextExcerpt extends Component {
   render() {
     const temp = document.createElement("div");
     temp.innerHTML = sanitizedHTMLFromMarkdown(this.props.markdownText, false);
@@ -735,4 +735,4 @@ export { UserAvatar, TimeCaption, FieldGroup, RenkuNavLink, Pagination, RenkuMar
 export { ExternalLink, ExternalDocsLink, ExternalIconLink, IconLink, RefreshButton };
 export { Loader, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, JupyterIcon };
 export { Clipboard, ThrottledTooltip, TooltipToggleButton, ProjectAvatar };
-export { ButtonWithMenu, FileExplorer, getFilesTree, MarkdownTextExtract };
+export { ButtonWithMenu, FileExplorer, getFilesTree, MarkdownTextExcerpt };

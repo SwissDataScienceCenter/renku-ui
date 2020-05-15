@@ -3,7 +3,7 @@ import { NavLink, Link } from "react-router-dom";
 import { Row, Col, ListGroup, ListGroupItem } from "reactstrap";
 import { ACCESS_LEVELS } from "../../api-client";
 import "../filestreeview/treeviewstyle.css";
-import { Loader, MarkdownTextExtract } from "../../utils/UIComponents";
+import { Loader, MarkdownTextExcerpt } from "../../utils/UIComponents";
 
 function DatasetListRow(props) {
   const dataset = props.dataset;
@@ -36,7 +36,7 @@ function DatasetListRow(props) {
             {
               dataset.description !== undefined && dataset.description !== null ?
                 <div className="datasetDescriptionText font-weight-normal">
-                  <MarkdownTextExtract markdownText={dataset.description} charsLimit={500} />
+                  <MarkdownTextExcerpt markdownText={dataset.description} charsLimit={500} />
                 </div>
                 : null
             }

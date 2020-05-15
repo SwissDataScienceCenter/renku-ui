@@ -21,7 +21,7 @@ import { Link, Route, Switch } from "react-router-dom";
 import { Row, Col, Alert, Card, CardBody, Badge } from "reactstrap";
 import { Button, Form, FormText, Input, Label, InputGroup, UncontrolledCollapse } from "reactstrap";
 import { InputGroupButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
-import { Loader, Pagination, MarkdownTextExtract } from "../../utils/UIComponents";
+import { Loader, Pagination, MarkdownTextExcerpt } from "../../utils/UIComponents";
 import { faCheck, faSortAmountUp, faSortAmountDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -53,7 +53,7 @@ class DatasetListRow extends Component {
         {
           dataset.description !== undefined && dataset.description !== null ?
             <div className="datasetDescriptionText font-weight-normal">
-              <MarkdownTextExtract markdownText={dataset.description} charsLimit={500} />
+              <MarkdownTextExcerpt markdownText={dataset.description} charsLimit={500} />
             </div>
             : null
         }
