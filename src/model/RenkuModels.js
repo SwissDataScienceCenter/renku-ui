@@ -283,8 +283,9 @@ const datasetFormSchema = new Schema({
     name: "description",
     label: "Description",
     edit: false,
-    type: FormGenerator.FieldTypes.TEXT_AREA,
-    help: "Basic HTML styling tags are allowed in this field.",
+    type: FormGenerator.FieldTypes.TEXT_EDITOR,
+    outputType: "markdown",
+    help: "Basic markdown styling tags are allowed in this field.",
     validators: [{
       id: "name-length",
       //  isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression, 3),
@@ -324,7 +325,7 @@ const issueFormSchema = new Schema({
     initial: "",
     name: "textarea",
     label: "Description",
-    type: FormGenerator.FieldTypes.TEXT_AREA, //to change to TEXT_EDITOR
+    type: FormGenerator.FieldTypes.TEXT_EDITOR,
     outputType: "markdown",
     placeholder: "A brief name to identify the issue",
     help: "A description of the issue helps users understand it and is highly recommended.",

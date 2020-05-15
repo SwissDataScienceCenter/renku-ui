@@ -28,7 +28,7 @@ import ValidationAlert from "./ValidationAlert";
 import HelpText from "./HelpText";
 import { FormGroup, Label } from "reactstrap";
 import CKEditor from "@ckeditor/ckeditor5-react";
-import { RenkuMarkdownEditor, ClassicEditor } from "@renku/renku-ui-ckeditor5-build";
+import RenkuCKEditor from "@renku/ckeditor5-build-renku";
 import { CustomInput, Input } from "reactstrap";
 
 
@@ -53,7 +53,7 @@ function CktextareaInput({ name, label, type, value, alert, setInputs, help, out
         codeview === false ?
           <CKEditor
             id={name}
-            editor={outputType === "markdown" ? RenkuMarkdownEditor : ClassicEditor}
+            editor={outputType === "markdown" ? RenkuCKEditor.RenkuMarkdownEditor : RenkuCKEditor.RenkuHTMLEditor}
             type={type}
             data={value || ""}
             disabled={disabled}

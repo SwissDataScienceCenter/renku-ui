@@ -19,8 +19,7 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Card, CardHeader, CardBody, Table, Alert, Button } from "reactstrap";
 import { Link } from "react-router-dom";
-import { Loader, FileExplorer } from "../utils/UIComponents";
-import DOMPurify from "dompurify";
+import { Loader, FileExplorer, RenkuMarkdown } from "../utils/UIComponents";
 import { API_ERRORS } from "../api-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt, faPen, faPlus } from "@fortawesome/free-solid-svg-icons";
@@ -217,8 +216,9 @@ export default function DatasetView(props) {
         </small>
         : null
     }
-    <p style={{ paddingTop: "12px" }} dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(dataset.description) }}>
-    </p>
+    <div style={{ paddingTop: "12px" }}>
+      <RenkuMarkdown markdownText={dataset.description} />
+    </div>
     {
       props.insideProject || dataset.sameAs.includes("doi.org") ?
         <LinkToExternal link={dataset.url} label="Source" />
