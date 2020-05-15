@@ -42,12 +42,13 @@ function DatasetAdd(props) {
         <Row className="mb-3">
           <Col>
             <FormPanel
-              btnName={"Add dataset"}
-              submitCallback={props.submitCallback}
+              btnName={"Add Dataset"}
+              submitCallback={!props.takingTooLong ? props.submitCallback : undefined}
               model={props.addDatasetToProjectSchema}
               serverErrors={props.serverErrors}
               submitLoader={{ value: props.submitLoader, text: props.submitLoaderText }}
-              onCancel={props.closeModal} />
+              onCancel={props.closeModal}
+              cancelBtnName={!props.takingTooLong ? "Cancel" : "OK"} />
           </Col>
         </Row>
       </ModalBody>

@@ -37,11 +37,14 @@ function AddDataset(props) {
   const [serverErrors, setServerErrors] = useState(undefined);
   const [submitLoader, setSubmitLoader] = useState(false);
   const [submitLoaderText, setSubmitLoaderText] = useState(ImportStateMessage.ENQUEUED);
+  const [takingTooLong, setTakingTooLong] = useState(false);
 
   const closeModal = () =>{
     if (!submitLoader) {
       addDatasetToProjectSchema.project.value = "";
       addDatasetToProjectSchema.project.options = [];
+      setServerErrors(undefined);
+      setTakingTooLong(false);
       props.setModalOpen(false);
     }
   };
@@ -85,6 +88,7 @@ function AddDataset(props) {
                 addDatasetToProjectSchema.project.options = [];
                 clearInterval(waitForDatasetInKG);
                 setServerErrors(ImportStateMessage.KG_TOO_LONG);
+                setTakingTooLong(true);
               }
             }
           });
@@ -92,7 +96,7 @@ function AddDataset(props) {
     }
   };
 
-  function handleJobResponse(job, monitorJob, cont, oldDatasetsList, projectPath, kgProgressCompleted) {
+  function handleJobResponse(job, monitorJob, waitedSeconds, oldDatasetsList, projectPath, kgProgressCompleted) {
     if (job) {
       switch (job.state) {
         case "ENQUEUED":
@@ -118,23 +122,27 @@ function AddDataset(props) {
           break;
       }
     }
-    if ((cont > 30 && job.state !== "IN_PROGRESS") || (cont > 50 && job.state === "IN_PROGRESS")) {
+    if ((waitedSeconds > 180 && job.state !== "IN_PROGRESS") || (waitedSeconds > 360 && job.state === "IN_PROGRESS")) {
       setSubmitLoader(false);
       setServerErrors(ImportStateMessage.TOO_LONG);
+      setTakingTooLong(true);
       clearInterval(monitorJob);
     }
   }
 
   const monitorJobStatusAndHandleResponse = (job_id, oldDatasetsList, projectPath, kgProgressCompleted) => {
     let cont = 0;
+    const INTERVAL = 6000;
     let monitorJob = setInterval(() => {
       props.client.getJobStatus(job_id)
         .then(job => {
           cont++;
-          if (job !== undefined)
-            handleJobResponse(job, monitorJob, cont, oldDatasetsList, projectPath, kgProgressCompleted);
+          if (job !== undefined) {
+            handleJobResponse(
+              job, monitorJob, cont * INTERVAL / 1000, oldDatasetsList, projectPath, kgProgressCompleted);
+          }
         });
-    }, 10000);
+    }, INTERVAL);
   };
 
   const fetchGraphStatus = (projectId) =>{
@@ -202,6 +210,23 @@ function AddDataset(props) {
               });
           });
       }
+    }).catch(error => {
+      //If we get an error when fetching the KG  we still go on with the dataset import
+      //We don't need the KG to do the dataset import, just to display datasets
+      props.client.datasetImport(selectedProject.value, props.dataset.url)
+        .then(response => {
+          if (response.data.error !== undefined) {
+            setSubmitLoader(false);
+            setServerErrors(response.data.error.reason);
+          }
+          else {
+            monitorJobStatusAndHandleResponse(
+              response.data.result.job_id,
+              oldDatasetsList,
+              selectedProject.name,
+              false);
+          }
+        });
     });
   };
 
@@ -260,6 +285,7 @@ function AddDataset(props) {
       submitLoader={submitLoader}
       submitLoaderText={submitLoaderText}
       addDatasetToProjectSchema={addDatasetToProjectSchema}
+      takingTooLong={takingTooLong}
     />
   );
 }
