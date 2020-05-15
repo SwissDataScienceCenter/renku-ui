@@ -468,7 +468,9 @@ function addProjectMethods(client) {
   client.fetchDatasetFromKG = (datasetLink) => {
     const headers = client.getBasicHeaders();
     const datasetPromise = client.clientFetch(datasetLink, { method: "GET", headers });
-    return Promise.resolve(datasetPromise).then(dataset => dataset.data);
+    return Promise.resolve(datasetPromise)
+      .then(dataset => dataset.data)
+      .catch((error) => "error");
   };
 
   client.getProjectDatasetsFromKG = (projectPath) => {
@@ -480,7 +482,10 @@ function addProjectMethods(client) {
     }).then(resp => {
       let fullDatasets = resp.map(dataset =>
         client.fetchDatasetFromKG(dataset._links[0].href));
-      return Promise.all(fullDatasets);
+      return Promise.all(fullDatasets).then(datasets => {
+        //in case one of the dataset fetch fails we return the ones that didn't fail
+        return datasets.filter(dataset => dataset !== "error");
+      });
     });
   };
 
