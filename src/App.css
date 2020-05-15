@@ -184,3 +184,30 @@ body {
     opacity: 1;
   }
 }
+
+.renku-markdown code {
+  padding: .2em .4em;
+  font-size: 85%;
+  background-color: rgba(0, 0, 0, 0.04);
+  border-radius: 3px;
+}
+
+.renku-markdown pre {
+  word-wrap: normal;
+  padding: 16px;
+  overflow: auto;
+  line-height: 1.4;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+.renku-markdown pre>code {
+  padding: 0;
+  font-size: 100%;
+  white-space: pre;
+  background: transparent;
+}
+
+.renku-markdown .highlight pre {
+  margin-bottom: 0;
+  word-break: normal;
+}
