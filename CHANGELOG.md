@@ -1,5 +1,35 @@
 # Changes
 
+## [0.10.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.10.0...0.10.1) (2020-05-26)
+
+
+### Features
+
+**editor**
+* ckeditor partially integrated inside renku (#926) (#927) 355fca7, closes [#926](https://github.com/SwissDataScienceCenter/renku-ui/issues/926) [#927](https://github.com/SwissDataScienceCenter/renku-ui/issues/927)
+
+**datasets**
+* users can add datasets that are inside renku to other projects (#527) (#873) 5e992ef, closes [#527](https://github.com/SwissDataScienceCenter/renku-ui/issues/527) [#873](https://github.com/SwissDataScienceCenter/renku-ui/issues/873)
+
+**environments**
+* filter autosaved branches per username (#920) dca40ca, closes [#920](https://github.com/SwissDataScienceCenter/renku-ui/issues/920) [#906](https://github.com/SwissDataScienceCenter/renku-ui/issues/906)
+
+
+**markdown**
+*  code is highlighted a bit more  (#930) (#931) ae8cf14, closes [#930](https://github.com/SwissDataScienceCenter/renku-ui/issues/930) [#931](https://github.com/SwissDataScienceCenter/renku-ui/issues/931)
+
+**project**
+* show commit list (#917) 1128a5d, closes [#917](https://github.com/SwissDataScienceCenter/renku-ui/issues/917) [#852](https://github.com/SwissDataScienceCenter/renku-ui/issues/852)
+
+### Bug Fixes
+
+**datasets**
+* dataset has all folders from unzipped file (#896) (#898) 8cbdf6f, closes [#896](https://github.com/SwissDataScienceCenter/renku-ui/issues/896) [#898](https://github.com/SwissDataScienceCenter/renku-ui/issues/898)
+* buttons changed in dataset add and dataset takes too long error (#921) (#934) 083a9cb, closes [#921](https://github.com/SwissDataScienceCenter/renku-ui/issues/921) [#934](https://github.com/SwissDataScienceCenter/renku-ui/issues/934)
+* if a dataset fails we display non-failed datasets (#924) (#933) 506f5f2, closes [#924](https://github.com/SwissDataScienceCenter/renku-ui/issues/924) [#933](https://github.com/SwissDataScienceCenter/renku-ui/issues/933)
+
+
+
 ## [0.10.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.9.1...0.10.0) (2020-04-24)
 
 
