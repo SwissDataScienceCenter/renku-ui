@@ -41,17 +41,23 @@ then
   SERVICE_NAME=renku-ui
   DEV_NAMESPACE=renku
 else
-  echo "You are going to exchange k8s deployments using the following context/namespace: ${CURRENT_CONTEXT}/${DEV_NAMESPACE}"
-  read -p "Do you want to proceed? [y/n]"
-  if [[ ! $REPLY =~ ^[Yy]$ ]]
+  # if the target context is not dev, have the user confirm
+  if [[ $CURRENT_CONTEXT != 'switch-dev' ]]
   then
-      exit 1
+    echo "You are going to exchange k8s deployments using the following context/namespace: ${CURRENT_CONTEXT}/${DEV_NAMESPACE}"
+    read -p "Do you want to proceed? [y/n]"
+    if [[ ! $REPLY =~ ^[Yy]$ ]]
+    then
+        exit 1
+    fi
   fi
 
   if [[ ! $DEV_NAMESPACE ]]
   then
     read -p "enter your k8s namespace: "
     DEV_NAMESPACE=$REPLY
+  else
+    echo "Exchanging k8s deployments for the following context/namespace: ${CURRENT_CONTEXT}/${DEV_NAMESPACE}"
   fi
   BASE_URL=https://${DEV_NAMESPACE}.dev.renku.ch
   SERVICE_NAME=${DEV_NAMESPACE}-renku-ui
