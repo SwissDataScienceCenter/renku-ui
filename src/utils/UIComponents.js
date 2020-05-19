@@ -434,7 +434,7 @@ class ErrorAlert extends Component {
 class RenkuMarkdown extends Component {
   render() {
     const { singleLine, style } = this.props;
-    let className = "text-break";
+    let className = "text-break renku-markdown";
     if (singleLine)
       className += " children-no-spacing";
 
