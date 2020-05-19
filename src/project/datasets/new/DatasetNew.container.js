@@ -56,7 +56,7 @@ function NewDataset(props) {
         }
         else {
           let waitForDatasetInKG = setInterval(() => {
-            props.client.getProjectDatasetsFromKG(props.projectPathWithNamespace)
+            props.client.getProjectDatasetsFromKG_short(props.projectPathWithNamespace)
               .then(datasets => {
                 // eslint-disable-next-line
                 let new_dataset = datasets.find( ds => ds.name === dataset.data.result.short_name);

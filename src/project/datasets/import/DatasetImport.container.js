@@ -54,7 +54,7 @@ function ImportDataset(props) {
 
   const findDatasetInKgAnRedirect = (oldDatasetsList) => {
     let waitForDatasetInKG = setInterval(() => {
-      props.client.getProjectDatasetsFromKG(props.projectPathWithNamespace)
+      props.client.getProjectDatasetsFromKG_short(props.projectPathWithNamespace)
         .then(datasets => {
           if (datasets.length !== oldDatasetsList.length)
             redirectUserAndClearInterval(datasets, oldDatasetsList, waitForDatasetInKG);
@@ -112,7 +112,7 @@ function ImportDataset(props) {
     const dataset = {};
     let oldDatasetsList = [];
     dataset.uri = datasetImportFormSchema.uri.value;
-    props.client.getProjectDatasetsFromKG(props.projectPathWithNamespace)
+    props.client.getProjectDatasetsFromKG_short(props.projectPathWithNamespace)
       .then(result => {
         oldDatasetsList = result;
         props.client.datasetImport(props.httpProjectUrl, dataset.uri)
