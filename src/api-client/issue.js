@@ -18,14 +18,14 @@
 
 function addIssueMethods(client) {
 
-  client.getProjectIssues = (projectId) => {
+  client.getProjectIssues = (projectId, queryParams) => {
     let headers = client.getBasicHeaders();
-
-    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/issues?scope=all`, {
+    queryParams.scope = "all";
+    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/issues`, {
       method: "GET",
-      headers: headers
+      headers: headers,
+      queryParams: queryParams
     });
-
   };
 
 

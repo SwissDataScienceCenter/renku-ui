@@ -26,6 +26,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { MemoryRouter } from "react-router-dom";
+import { createMemoryHistory } from "history";
 
 import Issue from "./Issue";
 import State from "./Issue.state";
@@ -58,9 +59,25 @@ describe("rendering", () => {
       issueUrl: `${baseUrl}/collaboration/issues/:issueIid(\\d+)`,
     };
     const div = document.createElement("div");
+    const fakeHistory = createMemoryHistory({
+      initialEntries: ["/"],
+      initialIndex: 0,
+    });
+    fakeHistory.push({
+      pathname: "/issues",
+      search: "?page=1&issuesState=opened"
+    });
+
     ReactDOM.render(
       <MemoryRouter>
-        <Issue.List client={client} urlMap={urlMap} user={user} issues={[]} />
+        <Issue.List
+          client={client}
+          urlMap={urlMap}
+          user={user}
+          issues={[]}
+          history={fakeHistory}
+          location={fakeHistory.location}
+        />
       </MemoryRouter>
       , div);
   });

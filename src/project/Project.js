@@ -225,7 +225,6 @@ class View extends Component {
   async fetchProjectFilesTree() {
     return this.projectState.fetchProjectFilesTree(this.props.client, this.cleanCurrentURL());
   }
-  async fetchProjectIssues() { this.projectState.fetchProjectIssues(this.props.client); }
   async setProjectOpenFolder(filepath) {
     this.projectState.setProjectOpenFolder(this.props.client, filepath);
   }
@@ -592,9 +591,6 @@ class View extends Component {
     fetchFiles: () => {
       this.fetchProjectFilesTree();
       //this.fetchModifiedFiles();
-    },
-    fetchIssues: () => {
-      this.fetchProjectIssues();
     },
     fetchDatasets: () => {
       this.fetchProjectDatasets();

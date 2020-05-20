@@ -820,20 +820,17 @@ class ProjectViewCollaboration extends Component {
 
 class ProjectIssuesList extends Component {
 
-  componentDidMount() {
-    this.props.fetchIssues();
-  }
-
   render() {
-    const issues = this.props.issues || [];
     return <Row><Col key="issueslist" className={"pt-3"} sm={12} md={10} lg={8}>
       <Issue.List
         key="issuesList"
         collaborationUrl={this.props.collaborationUrl}
         issueNewUrl={this.props.issueNewUrl}
-        projectId={this.props.projectId}
+        projectId={this.props.core.id}
         user={this.props.user}
-        issues={issues}
+        location={this.props.location}
+        client={this.props.client}
+        history={this.props.history}
       />
     </Col></Row>;
   }
