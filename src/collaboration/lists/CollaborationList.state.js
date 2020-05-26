@@ -19,34 +19,35 @@
 /**
  *  renku-ui
  *
- *  IssueList.state.js
+ *  CollaborationList.state.js
  *  Redux-based state-management code.
  */
 
 import { Schema, StateKind, StateModel } from "../../model/Model";
 
-const issueListSchema = new Schema({
+const collaborationListSchema = new Schema({
   loading: { initial: false },
   currentPage: { initial: 1, mandatory: true },
   totalItems: { initial: 0, mandatory: true },
   perPage: { initial: 10, mandatory: true },
-  issuesState: { initial: "opened", mandatory: true }, //set to "opened" !!!!
+  itemsState: { initial: "opened", mandatory: true },
   initialized: { initial: true },
   projectId: { mandatory: true },
-  issues: { initial: [] },
+  items: { initial: [] },
   errorMessage: { initial: "" }
 });
 
-class IssueListModel extends StateModel {
-  constructor(client, projectId) {
-    super(issueListSchema, StateKind.REDUX);
+class CollaborationListModel extends StateModel {
+  constructor(client, projectId, fetchElements) {
+    super(collaborationListSchema, StateKind.REDUX);
     this.client = client;
     this.projectId = projectId;
+    this.fetchElements = fetchElements;
   }
 
   setInitialized(initialized) {
     this.setObject({
-      issues: { $set: [] },
+      items: { $set: [] },
       initialized: initialized,
       errorMessage: "",
     });
@@ -56,8 +57,8 @@ class IssueListModel extends StateModel {
     this.set("pathName", pathName);
   }
 
-  setIssuesState(issuesState) {
-    this.set("issuesState", issuesState);
+  setItemsState(itemsState) {
+    this.set("itemsState", itemsState);
   }
 
   setPage(page) {
@@ -74,7 +75,7 @@ class IssueListModel extends StateModel {
   manageResponse(response) {
     const { pagination } = response;
     const newData = {
-      issues: { $set: response.data },
+      items: { $set: response.data },
       currentPage: pagination.currentPage,
       totalItems: pagination.totalItems,
       initialized: false,
@@ -85,10 +86,10 @@ class IssueListModel extends StateModel {
     return newData;
   }
 
-  setQueryAndSortInSearch( pathName, pageNumber, issuesState) {
+  setQueryAndSearch( pathName, pageNumber, itemsState) {
     this.setPathName(pathName);
     this.setPage(pageNumber);
-    this.setIssuesState(issuesState);
+    this.setItemsState(itemsState);
     this.performSearch();
   }
 
@@ -98,12 +99,13 @@ class IssueListModel extends StateModel {
     const queryParams = {
       per_page: this.get("perPage"),
       page: this.get("currentPage"),
-      state: this.get("issuesState")
+      state: this.get("itemsState"),
+      order_by: "updated_at"
     };
 
-    return this.client.getProjectIssues(this.projectId, queryParams)
+    return this.fetchElements(this.projectId, queryParams)
       .then(response => this.manageResponse(response));
   }
 }
 
-export default IssueListModel;
+export default CollaborationListModel;

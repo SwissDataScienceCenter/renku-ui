@@ -19,53 +19,55 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import IssueList from "./IssueList.present";
-import IssueListModel from "./IssueList.state";
+import MergeRequestList from "./MergeRequestList.present";
+import CollaborationListModel from "./CollaborationList.state";
 import qs from "query-string";
 
-const urlMap = {
-  issuesUrl: "/issues",
-};
-
-const issuesStateMap = {
+const itemsStateMap = {
   OPENED: "opened",
   CLOSED: "closed"
+};
+
+const collaborationListTypeMap = {
+  ISSUES: "issues",
+  MREQUESTS: "mrequests"
 };
 
 class List extends Component {
   constructor(props) {
     super(props);
-    this.model = new IssueListModel(props.client, props.projectId);
+    this.model = new CollaborationListModel(props.client, props.projectId, props.fetchElements);
     this.handlers = {
-      setIssuesState: this.setIssuesState.bind(this),
+      setItemsState: this.setItemsState.bind(this),
       onPaginationPageChange: this.onPaginationPageChange.bind(this),
     };
   }
 
   componentDidMount() {
-    const { pathName, pageNumber, issuesState } = this.getUrlSearchParameters(this.props.location);
+    const { pathName, pageNumber, itemsState } = this.getUrlSearchParameters(this.props.location);
     this.model.setPathName(pathName);
-    this.model.setIssuesState(issuesState);
+    this.model.setItemsState(itemsState);
     this.model.setPage(pageNumber);
     this.model.performSearch();
 
     const listener = this.props.history.listen(location => {
-      const { pathName, pageNumber, issuesState } = this.getUrlSearchParameters(location);
-      this.onUrlParametersChange(pathName, pageNumber, issuesState);
+      const { pathName, pageNumber, itemsState } = this.getUrlSearchParameters(location);
+      this.onUrlParametersChange(pathName, pageNumber, itemsState);
     });
     this.setState({ listener });
   }
 
-  urlFromQueryAndPageNumber(pathName, pageNumber, issuesState) {
-    return `${pathName}?page=${pageNumber}&issuesState=${issuesState}`;
+  urlFromQueryAndPageNumber(pathName, pageNumber, itemsState) {
+    return `${pathName}?page=${pageNumber}&itemsState=${itemsState}`;
   }
 
   getUrlSearchParameters(location) {
-    const issuesState = qs.parse(location.search).issuesState || issuesStateMap.OPENED;
+    const itemsState = qs.parse(location.search).itemsState || itemsStateMap.OPENED;
     const pathName = location.pathname.endsWith("/") ?
       location.pathname.substring(0, location.pathname.length - 1) :
       location.pathname;
     const pageNumber = parseInt(qs.parse(location.search).page, 10) || 1;
-    return { pathName, pageNumber, issuesState };
+    return { pathName, pageNumber, itemsState };
   }
 
   componentWillUnmount() {
@@ -74,14 +76,17 @@ class List extends Component {
       listener();
   }
 
-  onUrlParametersChange(pathName, pageNumber, issuesState) {
+  onUrlParametersChange(pathName, pageNumber, itemsState) {
     // workaround to prevent the listener of "this.props.history.listen" to trigger in the wrong path
-    // INFO: check if the path matches [/issues$, /issues/$, /issues?*, /issues/\D*]
-    const regExp = /\/issues($|\/$|(\/|\?)\D+.*)$/;
+    // INFO: check if the path matches [/items$, /items/$, /items?*, /items/\D*]
+    const regExp = this.props.listType === collaborationListTypeMap.ISSUES ?
+      /\/issues($|\/$|(\/|\?)\D+.*)$/ :
+      /\/mergerequests($|\/$|(\/|\?)\D+.*)$/
+    ;
     if (!regExp.test(pathName))
       return;
 
-    this.model.setQueryAndSortInSearch(pathName, pageNumber, issuesState);
+    this.model.setQueryAndSearch(pathName, pageNumber, itemsState);
   }
 
   onPaginationPageChange(pageNumber) {
@@ -94,21 +99,21 @@ class List extends Component {
       this.urlFromQueryAndPageNumber(
         this.model.get("pathName"),
         this.model.get("currentPage"),
-        this.model.get("issuesState")
+        this.model.get("itemsState")
       )
     );
   }
 
-  setIssuesState(issuesState) {
-    this.model.setIssuesState(issuesState);
+  setItemsState(itemsState) {
+    this.model.setItemsState(itemsState);
     this.pushNewSearchToHistory();
   }
 
   mapStateToProps(ownProps) {
     return {
       loading: this.model.get("loading"),
-      issues: this.model.get("issues"),
-      issuesState: this.model.get("issuesState"),
+      items: this.model.get("items"),
+      itemsState: this.model.get("itemsState"),
       errorMessage: this.model.get("errorMessage"),
       currentPage: this.model.get("currentPage"),
       perPage: this.model.get("perPage"),
@@ -118,18 +123,20 @@ class List extends Component {
   }
 
   render() {
-    const VisibleIssuesList =
-      connect(this.mapStateToProps.bind(this))(IssueList);
 
-    return <VisibleIssuesList
+    const VisibleItemsList = this.props.listType === collaborationListTypeMap.ISSUES ?
+      connect(this.mapStateToProps.bind(this))(IssueList)
+      : connect(this.mapStateToProps.bind(this))(MergeRequestList);
+
+    return <VisibleItemsList
       store={this.model.reduxStore}
       handlers={this.handlers}
-      urlMap={urlMap}
       client={this.props.client}
+      fetchElements={this.props.fetchElements}
       projectId={this.props.projectId}
       {...this.props}
     />;
   }
 }
 
-export { List, issuesStateMap };
+export { List as CollaborationList, itemsStateMap, collaborationListTypeMap };

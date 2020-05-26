@@ -48,7 +48,8 @@ import {
 import { SpecialPropVal } from "../model/Model";
 import { ProjectTags, ProjectTagList } from "./shared";
 import { Notebooks, StartNotebookServer } from "../notebooks";
-import Issue from "../issue/Issue";
+import Issue from "../collaboration/issue/Issue";
+import { CollaborationList, collaborationListTypeMap } from "../collaboration/lists/CollaborationList.container";
 import FilesTreeView from "./filestreeview/FilesTreeView";
 import DatasetsListView from "./datasets/DatasetsListView";
 import { ACCESS_LEVELS } from "../api-client";
@@ -822,8 +823,9 @@ class ProjectIssuesList extends Component {
 
   render() {
     return <Row><Col key="issueslist" className={"pt-3"} sm={12} md={10} lg={8}>
-      <Issue.List
+      <CollaborationList
         key="issuesList"
+        listType={collaborationListTypeMap.ISSUES}
         collaborationUrl={this.props.collaborationUrl}
         issueNewUrl={this.props.issueNewUrl}
         projectId={this.props.core.id}
@@ -831,6 +833,7 @@ class ProjectIssuesList extends Component {
         location={this.props.location}
         client={this.props.client}
         history={this.props.history}
+        fetchElements={this.props.client.getProjectIssues}
       />
     </Col></Row>;
   }
@@ -878,7 +881,17 @@ class ProjectMergeRequestList extends Component {
       </Row>
       <Row>
         <Col key="mrList" sm={12} md={10} lg={8}>
-          {this.props.mrList}
+          <CollaborationList
+            collaborationUrl={this.props.collaborationUrl}
+            listType={collaborationListTypeMap.MREQUESTS}
+            projectId={this.props.core.id}
+            user={this.props.user}
+            location={this.props.location}
+            client={this.props.client}
+            history={this.props.history}
+            mergeRequestsOverviewUrl={this.props.mergeRequestsOverviewUrl}
+            fetchElements={this.props.client.getMergeRequests}
+          />
         </Col>
       </Row>
     </Col>;

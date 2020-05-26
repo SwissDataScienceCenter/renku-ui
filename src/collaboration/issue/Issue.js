@@ -28,17 +28,16 @@ import { Provider, connect } from "react-redux";
 import { Row, Col, Button, Card, CardHeader, CardBody, Alert, } from "reactstrap";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 import { faBoxOpen, faBox, faListUl } from "@fortawesome/free-solid-svg-icons";
-import { API_ERRORS } from "../api-client";
-import { createStore } from "../utils/EnhancedState";
+import { API_ERRORS } from "../../api-client";
+import { createStore } from "../../utils/EnhancedState";
 import State from "./Issue.state";
 import {
   UserAvatar, ExternalIconLink, RenkuMarkdown, TimeCaption, TooltipToggleButton
-} from "../utils/UIComponents";
-import { Contribution, NewContribution } from "../contribution";
-import { Loader } from "../utils/UIComponents";
-import { issueFormSchema } from "../model/RenkuModels";
-import { FormPanel } from "../utils/formgenerator";
-import { List as IssueList } from "./list/IssueList.container";
+} from "../../utils/UIComponents";
+import { Contribution, NewContribution } from "../../contribution";
+import { Loader } from "../../utils/UIComponents";
+import { issueFormSchema } from "../../model/RenkuModels";
+import { FormPanel } from "../../utils/formgenerator";
 
 function New(props) {
 
@@ -289,13 +288,4 @@ class View extends Component {
   }
 }
 
-
-class List extends Component {
-
-  render() {
-    return <IssueList
-      projectId={this.props.projectId} {...this.props} />;
-  }
-}
-
-export default { New, View, List };
+export default { New, View };

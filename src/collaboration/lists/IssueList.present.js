@@ -5,13 +5,13 @@ import { Row, Col, Badge, ListGroup, ListGroupItem, Nav, NavItem, NavLink as Rea
 import { faComments } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { UserAvatar, RenkuMarkdown, TimeCaption, Pagination, Loader } from "../../utils/UIComponents";
-import { issuesStateMap } from "./IssueList.container";
+import { itemsStateMap } from "./CollaborationList.container";
 
 function issueStateBadge(issueStateValue) {
   let issueState = <Badge color="secondary">{issueStateValue}</Badge>;
-  if (issueStateValue === issuesStateMap.OPENED)
+  if (issueStateValue === itemsStateMap.OPENED)
     issueState = <Badge color="success">open</Badge>;
-  if (issueStateValue === issuesStateMap.CLOSED)
+  if (issueStateValue === itemsStateMap.CLOSED)
     issueState = <Badge color="primary">complete</Badge>;
   return issueState;
 }
@@ -55,35 +55,24 @@ class IssueListRow extends Component {
 
 class IssueList extends Component {
   render() {
-    const { issues, user, issuesState } = this.props;
-    const rows = issues.map((d, i) =>
+    const { items, user, itemsState } = this.props;
+    const rows = items.length > 0 ? items.map((d, i) =>
       <IssueListRow key={i} {...d}
         issueBaseUrl={this.props.collaborationUrl}
         projectId={this.props.projectId}
-      />);
+      />)
+      : <ListGroupItem style={{ border: "none" }}>
+        <Row>
+          <Col sm={8} md={8}>
+            No issues to display.
+          </Col>
+        </Row>
+      </ListGroupItem>;
 
     return [
       <Row key="header" className="pb-3">
         <Col sm={8}>
           <h2>Issues
-            {/* <ButtonGroup size="sm" className={"ml-4 pt-1"}>
-              <Button
-                color="primary"
-                outline
-                active={this.props.issuesState === issuesStateMap.OPENED}
-                onClick={()=>this.props.handlers.setIssuesState(issuesStateMap.OPENED)}
-              >
-                Open
-              </Button>
-              <Button
-                color="primary"
-                outline
-                active={this.props.issuesState === issuesStateMap.CLOSED}
-                onClick={()=>this.props.handlers.setIssuesState(issuesStateMap.CLOSED)}
-              >
-                Complete
-              </Button>
-            </ButtonGroup> */}
           </h2>
         </Col>
         <Col sm={4}>
@@ -101,17 +90,17 @@ class IssueList extends Component {
           <Nav tabs>
             <NavItem>
               <ReactNavLink
-                to="issues?page=1&issuesState=opened"
-                isActive={() => issuesState === issuesStateMap.OPENED}
+                to="issues?page=1&itemsState=opened"
+                isActive={() => itemsState === itemsStateMap.OPENED}
                 tag={NavLink}
               >Open</ReactNavLink>
             </NavItem>
             <NavItem>
               <ReactNavLink
-                to="issues?page=1&issuesState=closed"
+                to="issues?page=1&itemsState=closed"
                 tag={NavLink}
-                isActive={() => issuesState === issuesStateMap.CLOSED}
-              >Complete</ReactNavLink>
+                isActive={() => itemsState === itemsStateMap.CLOSED}
+              >Closed</ReactNavLink>
             </NavItem>
           </Nav>
         </Col>

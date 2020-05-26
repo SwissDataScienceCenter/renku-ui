@@ -24,7 +24,7 @@
  */
 
 import { combineReducers } from "redux";
-import { slugFromTitle } from "../utils/HelperFunctions";
+import { slugFromTitle } from "../../utils/HelperFunctions";
 
 function createSetAction(type, field, value) {
   const payload = { [field]: value };

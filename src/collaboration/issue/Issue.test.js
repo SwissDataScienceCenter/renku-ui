@@ -29,10 +29,11 @@ import { MemoryRouter } from "react-router-dom";
 import { createMemoryHistory } from "history";
 
 import Issue from "./Issue";
+import { CollaborationList, collaborationListTypeMap } from "../lists/CollaborationList.container";
 import State from "./Issue.state";
-import { testClient as client } from "../api-client";
-import { slugFromTitle } from "../utils/HelperFunctions";
-import { generateFakeUser } from "../user/User.test";
+import { testClient as client } from "../../api-client";
+import { slugFromTitle } from "../../utils/HelperFunctions";
+import { generateFakeUser } from "../../user/User.test";
 
 describe("rendering", () => {
   const user = generateFakeUser(true);
@@ -70,13 +71,15 @@ describe("rendering", () => {
 
     ReactDOM.render(
       <MemoryRouter>
-        <Issue.List
+        <CollaborationList
           client={client}
           urlMap={urlMap}
           user={user}
+          listType={collaborationListTypeMap.ISSUES}
           issues={[]}
           history={fakeHistory}
           location={fakeHistory.location}
+          fetchElements={client.getProjectIssues}
         />
       </MemoryRouter>
       , div);

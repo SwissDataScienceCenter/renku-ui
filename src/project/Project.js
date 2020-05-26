@@ -31,10 +31,10 @@ import { StateKind } from "../model/Model";
 import Present from "./Project.present";
 import { ProjectModel, GraphIndexingStatus, ProjectCoordinator } from "./Project.state";
 import { ProjectsCoordinator } from "./shared";
-import Issue from "../issue/Issue";
+import Issue from "../collaboration/issue/Issue";
 import { FileLineage } from "../file";
 import { ACCESS_LEVELS } from "../api-client";
-import { MergeRequest, MergeRequestList } from "../merge-request";
+import { MergeRequest } from "../collaboration/merge-request";
 import List from "./list";
 import New from "./new";
 import { ShowFile } from "../file";
@@ -359,7 +359,6 @@ class View extends Component {
     const filesTree = this.projectState.get("filesTree");
     const datasets = this.projectState.get("core.datasets");
     const graphProgress = this.projectState.get("webhook.progress");
-    const mergeRequests = this.projectState.get("system.merge_requests");
     const maintainer = this.projectState.get("visibility.accessLevel") >= ACCESS_LEVELS.MAINTAINER ?
       true :
       false;
@@ -380,19 +379,21 @@ class View extends Component {
       fetch: () => { this.fetchBranches(); }
     };
 
-    const mapStateToProps = (state, ownProps) => {
-      return {
-        mergeRequests: mergeRequests === this.projectState._updatingPropVal ? [] : mergeRequests,
-        externalMROverviewUrl: `${externalUrl}/merge_requests`,
-        ...ownProps
-      };
-    };
-
-    const ConnectedMergeRequestList = connect(mapStateToProps)(MergeRequestList);
-
     const pathComponents = splitProjectSubRoute(this.props.match.url);
 
     return {
+
+      mrView: (p) => <MergeRequest
+        key="mr" {...subProps}
+        match={p.match}
+        iid={p.match.params.mrIid}
+        updateProjectState={this.fetchAll.bind(this)}
+        mergeRequestsOverviewUrl={subUrls.mergeRequestsOverviewUrl}
+        mergeRequestUrl={subUrls.mergeRequestUrl}
+        mergeRequestDiscussionUrl={subUrls.mergeRequestDiscussionUrl}
+        mergeRequestChangesUrl={subUrls.mergeRequestChangesUrl}
+        mergeRequestCommitsUrl={subUrls.mergeRequestCommitsUrl}
+      />,
 
       issueView: (p) => <Issue.View key="issue" {...subProps}
         issueIid={p.match.params.issueIid}
@@ -500,21 +501,6 @@ class View extends Component {
         client={this.props.client}
         history={this.props.history}
         httpProjectUrl={httpProjectUrl}
-      />,
-
-      mrList: <ConnectedMergeRequestList key="mrList" store={this.projectState.reduxStore}
-        mergeRequestsOverviewUrl={subUrls.mergeRequestsOverviewUrl} />,
-
-      mrView: (p) => <MergeRequest
-        key="mr" {...subProps}
-        match={p.match}
-        iid={p.match.params.mrIid}
-        updateProjectState={this.fetchAll.bind(this)}
-        mergeRequestsOverviewUrl={subUrls.mergeRequestsOverviewUrl}
-        mergeRequestUrl={subUrls.mergeRequestUrl}
-        mergeRequestDiscussionUrl={subUrls.mergeRequestDiscussionUrl}
-        mergeRequestChangesUrl={subUrls.mergeRequestChangesUrl}
-        mergeRequestCommitsUrl={subUrls.mergeRequestCommitsUrl}
       />,
 
       fork: () => <Fork
