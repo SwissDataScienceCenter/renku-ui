@@ -35,7 +35,8 @@ import FileuploaderInput from "./fields/FileUploaderInput";
 import { Loader } from "../../utils/UIComponents";
 import "./FormGenerator.css";
 
-function FormPanel({ title, btnName, submitCallback, model, serverErrors, submitLoader, onCancel, edit }) {
+function FormPanel(
+  { title, btnName, submitCallback, model, serverErrors, submitLoader, onCancel, edit, cancelBtnName }) {
   const modelValues = Object.values(model);
   const [inputs, setInputs, setSubmit] = useForm(modelValues, submitCallback);
   const Components = {
@@ -69,13 +70,19 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors, submit
             </FormText>
             : null
           }
-          <Button type="submit" disabled={submitLoader.value} className="float-right mt-1" color="primary">
-            {btnName}
-          </Button>
+          {
+            submitCallback !== undefined ?
+              <Button type="submit" disabled={submitLoader.value} className="float-right mt-1" color="primary">
+                {btnName}
+              </Button>
+              : null
+          }
           {
             onCancel !== undefined ?
               <Button disabled={submitLoader.value} className="float-right mt-1 mr-1"
-                color="secondary" onClick={onCancel}>Cancel</Button>
+                color="secondary" onClick={onCancel}>
+                {cancelBtnName ? cancelBtnName : "Cancel"}
+              </Button>
               : null
           }
         </div>
