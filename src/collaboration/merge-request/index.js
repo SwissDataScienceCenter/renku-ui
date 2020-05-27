@@ -17,5 +17,4 @@
  */
 
 import { MergeRequestContainer as MergeRequest } from "./MergeRequest.container";
-import { MergeRequestList } from "./MergeRequest.present";
-export { MergeRequest, MergeRequestList };
+export { MergeRequest };

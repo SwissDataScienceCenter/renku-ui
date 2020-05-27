@@ -247,19 +247,6 @@ class ProjectModel extends StateModel {
       });
   }
 
-  fetchProjectIssues(client) {
-    if (this.get("transient.requests.issues") === SpecialPropVal.UPDATING) return;
-    this.setUpdating({ transient: { requests: { issues: true } } });
-    return client.getProjectIssues(this.get("core.id"))
-      .then(resp => resp.data)
-      .then(data => {
-        const updatedState = { issues: data, transient: { requests: { issues: false } } };
-        this.setObject(updatedState);
-        this.set("issues", data);
-        return data;
-      });
-  }
-
   fetchMergeRequests(client) {
     client.getMergeRequests(this.get("core.id"))
       .then(resp => resp.data)

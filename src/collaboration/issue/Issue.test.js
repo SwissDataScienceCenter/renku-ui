@@ -26,12 +26,14 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { MemoryRouter } from "react-router-dom";
+import { createMemoryHistory } from "history";
 
 import Issue from "./Issue";
+import { CollaborationList, collaborationListTypeMap } from "../lists/CollaborationList.container";
 import State from "./Issue.state";
-import { testClient as client } from "../api-client";
-import { slugFromTitle } from "../utils/HelperFunctions";
-import { generateFakeUser } from "../user/User.test";
+import { testClient as client } from "../../api-client";
+import { slugFromTitle } from "../../utils/HelperFunctions";
+import { generateFakeUser } from "../../user/User.test";
 
 describe("rendering", () => {
   const user = generateFakeUser(true);
@@ -58,9 +60,27 @@ describe("rendering", () => {
       issueUrl: `${baseUrl}/collaboration/issues/:issueIid(\\d+)`,
     };
     const div = document.createElement("div");
+    const fakeHistory = createMemoryHistory({
+      initialEntries: ["/"],
+      initialIndex: 0,
+    });
+    fakeHistory.push({
+      pathname: "/issues",
+      search: "?page=1&issuesState=opened"
+    });
+
     ReactDOM.render(
       <MemoryRouter>
-        <Issue.List client={client} urlMap={urlMap} user={user} issues={[]} />
+        <CollaborationList
+          client={client}
+          urlMap={urlMap}
+          user={user}
+          listType={collaborationListTypeMap.ISSUES}
+          issues={[]}
+          history={fakeHistory}
+          location={fakeHistory.location}
+          fetchElements={client.getProjectIssues}
+        />
       </MemoryRouter>
       , div);
   });

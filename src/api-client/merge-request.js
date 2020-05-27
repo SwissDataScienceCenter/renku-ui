@@ -39,14 +39,14 @@ function addMergeRequestMethods(client) {
   };
 
 
-  client.getMergeRequests = (projectId, queryParams = { scope: "all", state: "opened" }) => {
+  client.getMergeRequests = (projectId, queryParams = { scope: "all", state: "opened", per_page: "100" }) => {
     let headers = client.getBasicHeaders();
     const url = projectId ? `${client.baseUrl}/projects/${projectId}/merge_requests` :
       `${client.baseUrl}/merge_requests`;
     return client.clientFetch(url, {
       method: "GET",
       headers,
-      queryParams: { ...queryParams, per_page: 100 }
+      queryParams: { ...queryParams }
     });
   };
 

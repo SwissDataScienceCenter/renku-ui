@@ -17,20 +17,14 @@
  */
 
 import React, { Component } from "react";
-import { Row, Col, Badge, ListGroupItem, Nav, NavItem } from "reactstrap";
-import { NavLink, Switch, Route } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faComments, faCodeBranch, faListUl,
-  faLongArrowAltLeft as faLeftArrow
-} from "@fortawesome/free-solid-svg-icons";
+import { Row, Col, Nav, NavItem } from "reactstrap";
+import { Switch, Route } from "react-router-dom";
+import { faCodeBranch, faListUl } from "@fortawesome/free-solid-svg-icons";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 
-import {
-  UserAvatar, ExternalLink, TimeCaption, TooltipToggleButton, ExternalIconLink, RenkuNavLink
-} from "../utils/UIComponents";
-import { Contribution, NewContribution } from "../contribution";
-import { CommitsView } from "../utils/Commits";
+import { TooltipToggleButton, ExternalIconLink, RenkuNavLink } from "../../utils/UIComponents";
+import { Contribution, NewContribution } from "../../contribution";
+import { CommitsView } from "../../utils/Commits";
 
 
 function MergeRequestHeader(props) {
@@ -151,69 +145,6 @@ class MergeRequestPresent extends Component {
   }
 }
 
-class MergeRequestList extends Component {
-  render() {
-    const mrs = this.props.mergeRequests;
-    if (mrs.length < 1) {
-      return <Row key="mrexternal"><Col>
-        <p>No merge requests.</p>
-        <ExternalLink url={this.props.externalMROverviewUrl} size="sm" title="View in GitLab" />
-      </Col></Row>;
-    }
-    const rows = mrs.map((d, i) => {
-      const mrUrl = `${this.props.mergeRequestsOverviewUrl}/${d.iid}/discussion`;
-      return <MergeRequestListItem key={i} {...d} mrUrl={mrUrl} />;
-    });
-    return [
-      <Row key="header">
-        <Col><h2>Merge Requests</h2></Col>
-      </Row>,
-      <Row key="mergeRequests"><Col xs={12}>{rows}</Col></Row>
-    ];
-  }
-}
-
-class MergeRequestListItem extends Component {
-  render() {
-    const badgeText = this.props.merge_status === "can_be_merged" ? "Can be merged" : "Conflicts";
-    const badgeColor = this.props.merge_status === "can_be_merged" ? "success" : "danger";
-    const statusBadge = <Badge color={badgeColor}>{badgeText}</Badge>;
-
-    const title = this.props.active ?
-      this.props.title :
-      <NavLink activeClassName="selected-issue" to={this.props.mrUrl}>{this.props.title}</NavLink>;
-
-    return <ListGroupItem action className="pr-0 pl-0 pt-1 pb-1" style={{ border: "none" }}>
-      <Row>
-        <Col sm={8} md={8}>
-          <div className="d-flex project-list-row mb-3">
-            <div className="mr-2">
-              <UserAvatar size="lg" person={this.props.author} />
-            </div>
-            <div className="issue-text-crop">
-              <b>
-                <span className="issue-title">
-                  {title}
-                </span>
-              </b><br />
-              <span className="issues-description">
-                <div>
-                  <Badge color="light">{this.props.target_branch}</Badge> <FontAwesomeIcon icon={faLeftArrow} />
-                  <Badge color="light">{this.props.source_branch}</Badge> &nbsp;&nbsp;</div>
-              </span>
-            </div>
-          </div>
-        </Col>
-        <Col sm={4} md={4} className="float-right" style={{ textAlign: "end" }}>
-          <FontAwesomeIcon icon={faComments} /> {this.props.user_notes_count} {statusBadge}
-          <br />
-          <small><TimeCaption caption="Created" time={this.props.created_at} /></small>
-        </Col>
-      </Row>
-    </ListGroupItem>;
-  }
-}
-
 class SimpleChange extends Component {
   render() {
     let line;
@@ -294,4 +225,4 @@ class OpaqueChanges extends Component {
 }
 
 
-export { MergeRequestList, SimpleChange, NotebookComparisonPresent, MergeRequestPresent };
+export { SimpleChange, NotebookComparisonPresent, MergeRequestPresent };

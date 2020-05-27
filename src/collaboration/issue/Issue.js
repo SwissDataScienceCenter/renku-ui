@@ -25,32 +25,19 @@
 
 import React, { Component, useState } from "react";
 import { Provider, connect } from "react-redux";
-import { Link, NavLink } from "react-router-dom";
-import {
-  Row, Col, Button, Badge, ListGroup, ListGroupItem, Card, CardHeader, CardBody, Alert
-} from "reactstrap";
+import { Row, Col, Button, Card, CardHeader, CardBody, Alert, } from "reactstrap";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
-import { faBoxOpen, faBox, faListUl, faComments } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { API_ERRORS } from "../api-client";
-import { createStore } from "../utils/EnhancedState";
+import { faBoxOpen, faBox, faListUl } from "@fortawesome/free-solid-svg-icons";
+import { API_ERRORS } from "../../api-client";
+import { createStore } from "../../utils/EnhancedState";
 import State from "./Issue.state";
 import {
   UserAvatar, ExternalIconLink, RenkuMarkdown, TimeCaption, TooltipToggleButton
-} from "../utils/UIComponents";
-import { Contribution, NewContribution } from "../contribution";
-import { Loader } from "../utils/UIComponents";
-import { issueFormSchema } from "../model/RenkuModels";
-import { FormPanel } from "../utils/formgenerator";
-
-function issueStateBadge(issueStateValue) {
-  let issueState = <Badge color="secondary">{issueStateValue}</Badge>;
-  if (issueStateValue === "opened")
-    issueState = <Badge color="success">open</Badge>;
-  if (issueStateValue === "closed")
-    issueState = <Badge color="primary">complete</Badge>;
-  return issueState;
-}
+} from "../../utils/UIComponents";
+import { Contribution, NewContribution } from "../../contribution";
+import { Loader } from "../../utils/UIComponents";
+import { issueFormSchema } from "../../model/RenkuModels";
+import { FormPanel } from "../../utils/formgenerator";
 
 function New(props) {
 
@@ -301,73 +288,4 @@ class View extends Component {
   }
 }
 
-class IssueListRow extends Component {
-  render() {
-    const issueIid = this.props.iid;
-    const issueUrl = `${this.props.issueBaseUrl}/issues/${issueIid}/`;
-    const issueState = issueStateBadge(this.props.state);
-    let titleText = this.props.title || "no title";
-    const title = <NavLink activeClassName="selected-issue" to={issueUrl}>
-      {titleText}
-    </NavLink>;
-
-    return <ListGroupItem action className="pr-0 pl-0 pt-1 pb-1" style={{ border: "none" }}>
-      <Row>
-        <Col sm={8} md={8}>
-          <div className="d-flex project-list-row mb-3">
-            <div className="mr-2">
-              <UserAvatar size="lg" person={this.props.author} />
-            </div>
-            <div className="issue-text-crop">
-              <b>
-                <span className="issue-title">
-                  {title}
-                </span>
-              </b><br />
-              <RenkuMarkdown markdownText={this.props.description} singleLine={true} />
-            </div>
-          </div>
-        </Col>
-        <Col sm={4} md={4} className="float-right" style={{ textAlign: "end" }}>
-          <FontAwesomeIcon icon={faComments} /> {this.props.user_notes_count} {issueState}
-          <br />
-          <small><TimeCaption caption="Updated" time={this.props.updated_at} /></small>
-        </Col>
-      </Row>
-    </ListGroupItem>;
-  }
-}
-
-class IssueList extends Component {
-  render() {
-    const { issues, user } = this.props;
-    const rows = issues.map((d, i) =>
-      <IssueListRow key={i} {...d} issueBaseUrl={this.props.collaborationUrl} projectId={this.props.projectId} />);
-    return [
-      <Row key="header" className="pb-3">
-        <Col sm={6}><h2>Issues</h2></Col>
-        <Col sm={6}>
-          {
-            (user.logged) ?
-              <small className="float-right" mr={1}>
-                <Link className="btn btn-primary" role="button" to={this.props.issueNewUrl}>New Issue</Link>
-              </small> :
-              null
-          }
-        </Col>
-      </Row>,
-      <Row key="issues"><Col xs={12}><ListGroup>{rows}</ListGroup></Col></Row>
-    ];
-  }
-}
-
-
-class List extends Component {
-
-  render() {
-    return <IssueList
-      projectId={this.props.projectId} {...this.props} />;
-  }
-}
-
-export default { New, View, List };
+export default { New, View };
