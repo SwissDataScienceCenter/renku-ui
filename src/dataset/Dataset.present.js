@@ -22,7 +22,7 @@ import { Link } from "react-router-dom";
 import { Loader, FileExplorer, RenkuMarkdown } from "../utils/UIComponents";
 import { API_ERRORS } from "../api-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLinkAlt, faPen, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faExternalLinkAlt, faPen } from "@fortawesome/free-solid-svg-icons";
 import Time from "../utils/Time";
 import AddDataset from "./addtoproject/DatasetAdd.container";
 import { ProjectsCoordinator } from "../project/shared";
@@ -189,12 +189,12 @@ export default function DatasetView(props) {
         </h4>
       </Col>
       <Col md={4} sm={12}>
-        { props.logged ?
+        {/* { props.logged ?
           <Button className="float-right mb-1" size="sm" color="primary" onClick={()=>setAddDatasetModalOpen(true)}>
             <FontAwesomeIcon icon={faPlus} color="dark" /> Add to project
           </Button>
           : null
-        }
+        } */}
         {props.insideProject && props.maintainer ?
           <Link className="float-right mr-1 mb-1" to={{ pathname: "modify", state: { dataset: dataset } }} >
             <Button size="sm" color="primary" >
