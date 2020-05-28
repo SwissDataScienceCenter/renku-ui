@@ -1,3 +1,16 @@
+## [0.10.2](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.10.1...0.10.2) (2020-05-28)
+
+
+### Bug Fixes
+
+* **dataset:** add to project button removed from datasets UI (#944) 4f81797 , closes (#943) ([#943](https://github.com/SwissDataScienceCenter/renku-ui/issues/943)) ([#944](https://github.com/SwissDataScienceCenter/renku-ui/issues/944))
+
+### Features
+
+* **collaboration:** display separated for open and closed issues/merge requests and pagination added (#939) cb074bd, closes (#851)  ([#851](https://github.com/SwissDataScienceCenter/renku-ui/issues/851)) ([#939](https://github.com/SwissDataScienceCenter/renku-ui/issues/939))
+
+
+
 # Changes
 
 ## [0.10.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.10.0...0.10.1) (2020-05-26)
