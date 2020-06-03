@@ -112,7 +112,10 @@ class ProjectModel extends StateModel {
       .then(d => {
         const updatedState = {
           core: { ...d.metadata.core, available: true },
-          system: d.metadata.system,
+          system: {
+            ...d.metadata.system,
+            tag_list: { $set: d.metadata.system.tag_list } // fix empty tag_list not updating
+          },
           visibility: d.metadata.visibility,
           statistics: d.metadata.statistics
         };
@@ -299,13 +302,13 @@ class ProjectModel extends StateModel {
 
   setTags(client, tags) {
     this.setUpdating({ system: { tag_list: [true] } });
-    client.setTags(this.get("core.id"), this.get("core.title"), tags)
+    client.setTags(this.get("core.id"), tags)
       .then(() => { this.fetchProject(client, this.get("core.id")); });
   }
 
   setDescription(client, description) {
     this.setUpdating({ core: { description: true } });
-    client.setDescription(this.get("core.id"), this.get("core.title"), description).then(() => {
+    client.setDescription(this.get("core.id"), description).then(() => {
       this.fetchProject(client, this.get("core.id"));
     });
   }
