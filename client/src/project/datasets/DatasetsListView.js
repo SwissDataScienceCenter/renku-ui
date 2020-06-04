@@ -15,7 +15,7 @@ function DatasetListRow(props) {
 
   return <ListGroupItem action style={{ border: "none" }}>
     <Row>
-      <Col xs={8} md={8}>
+      <Col xs={8} md={8} className="pb-0">
         <div className="d-flex project-list-row">
           <div className="issue-text-crop">
             <b>
@@ -23,22 +23,15 @@ function DatasetListRow(props) {
                 {title}
               </span>
             </b><br />
-            {
-              dataset.creators !== undefined ?
-                <small style={{ display: "block" }} className="font-weight-light">
-                  {dataset.creators.map((creator) => creator.name).join("; ")}
-                </small>
-                : null
-            }
-            {
-              dataset.description !== undefined && dataset.description !== null ?
-                <div className="datasetDescriptionText font-weight-normal">
-                  <MarkdownTextExcerpt markdownText={dataset.description} charsLimit={500} />
-                </div>
-                : null
-            }
           </div>
         </div>
+        {
+          dataset.creators !== undefined ?
+            <small style={{ display: "block" }} className="font-weight-light">
+              {dataset.creators.map((creator) => creator.name).join("; ")}
+            </small>
+            : null
+        }
       </Col>
       <Col xs={4} md={4} className="float-right" style={{ textAlign: "end" }}>
         <small>
@@ -55,6 +48,14 @@ function DatasetListRow(props) {
             : null
         }
       </Col>
+      {
+        dataset.description !== undefined && dataset.description !== null ?
+          <Col md={12}>
+            <div className="datasetDescriptionText font-weight-light">
+              <MarkdownTextExcerpt markdownText={dataset.description} charsLimit={200} />
+            </div></Col>
+          : null
+      }
     </Row>
   </ListGroupItem>;
 }
