@@ -36,14 +36,14 @@ import filesize from "filesize";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
 import {
-  faCodeBranch, faExternalLinkAlt, faInfoCircle, faLongArrowAltLeft, faStar as faStarSolid,
+  faCodeBranch, faExternalLinkAlt, faInfoCircle, faStar as faStarSolid,
   faExclamationTriangle, faLock, faUserFriends, faGlobe, faSearch
 } from "@fortawesome/free-solid-svg-icons";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 
 import {
   Clipboard, ExternalLink, Loader, RenkuMarkdown, RenkuNavLink, TimeCaption, RefreshButton,
-  ButtonWithMenu, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert
+  ButtonWithMenu, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, GoBackButton
 } from "../utils/UIComponents";
 import { SpecialPropVal } from "../model/Model";
 import { ProjectTags, ProjectTagList } from "./shared";
@@ -680,14 +680,6 @@ function ProjectAddDataset(props) {
   </Col>;
 }
 
-function GoBackButton(props) {
-  return <Col md={12} className="pb-3">
-    <Link className="pl-3" to={props.url}>
-      <FontAwesomeIcon icon={faLongArrowAltLeft} /> {props.label}
-    </Link>
-  </Col>;
-}
-
 function EmptyDatasets(props) {
   return <Col sm={12} md={10} lg={8}>
     <Alert timeout={0} color="primary">
@@ -757,16 +749,22 @@ function ProjectViewDatasets(props) {
     <Switch>
       <Route path={props.newDatasetUrl}
         render={p =>[
-          <GoBackButton key="btn" label="Back to list" url={props.datasetsUrl}/>,
+          <Col key="btn" md={12}>
+            <GoBackButton label="Back to list" url={props.datasetsUrl}/>
+          </Col>,
           <ProjectAddDataset key="projectsAddDataset" {...props} />
         ]}/>
       <Route path={props.editDatasetUrl}
         render={p => [
-          <GoBackButton key="btn" label="Back to dataset" url={`${props.datasetsUrl}/${p.match.params.datasetId}/`} />,
+          <Col key="btn" md={12}>
+            <GoBackButton label="Back to dataset" url={`${props.datasetsUrl}/${p.match.params.datasetId}/`}/>
+          </Col>,
           props.editDataset(p)]
         }/>
       <Route path={props.datasetUrl} render={p =>[
-        <GoBackButton key="btn" label="Back to list" url={props.datasetsUrl}/>,
+        <Col key="btn" md={12}>
+          <GoBackButton key="btn" label="Back to list" url={props.datasetsUrl}/>
+        </Col>,
         props.datasetView(p)
       ]} />
       <Route exact path={props.datasetsUrl} render={p =>

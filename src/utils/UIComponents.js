@@ -33,11 +33,13 @@ import ReactClipboard from "react-clipboard.js";
 
 import {
   FormFeedback, FormGroup, FormText, Input, Label, Alert, NavLink, Tooltip, Button,
-  ButtonDropdown, DropdownToggle, DropdownMenu, UncontrolledTooltip
+  ButtonDropdown, DropdownToggle, DropdownMenu, UncontrolledTooltip, Col
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-regular-svg-icons";
-import { faCheck, faExternalLinkAlt, faEllipsisV, faUser, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCheck, faExternalLinkAlt, faEllipsisV, faUser, faSyncAlt, faLongArrowAltLeft
+} from "@fortawesome/free-solid-svg-icons";
 
 import { sanitizedHTMLFromMarkdown, simpleHash } from "./HelperFunctions";
 import FileExplorer, { getFilesTree } from "./FileExplorer";
@@ -126,7 +128,8 @@ class TimeCaption extends Component {
     const time = this.props.time;
     const displayTime = human((new Date() - new Date(time)) / 1000);
     const caption = (this.props.caption) ? this.props.caption : "Updated";
-    return <span className="time-caption">{caption} {displayTime}.</span>;
+    const endCaption = (this.props.endCaption) ? " " + this.props.endCaption : "";
+    return <span className="time-caption">{caption} {displayTime}{endCaption}.</span>;
   }
 }
 
@@ -738,8 +741,21 @@ function RefreshButton(props) {
   );
 }
 
+/**
+ *
+ * @param {string} props.url url to go back to
+ * @param {string} props.label text next to the arrow
+ */
+function GoBackButton(props) {
+  return <Col md={12} className="pb-2 pl-0">
+    <Link className={props.className} to={props.url}>
+      <FontAwesomeIcon icon={faLongArrowAltLeft} /> {props.label}
+    </Link>
+  </Col>;
+}
+
 export { UserAvatar, TimeCaption, FieldGroup, RenkuNavLink, Pagination, RenkuMarkdown };
 export { ExternalLink, ExternalDocsLink, ExternalIconLink, IconLink, RefreshButton };
 export { Loader, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, JupyterIcon };
 export { Clipboard, ThrottledTooltip, TooltipToggleButton, ProjectAvatar };
-export { ButtonWithMenu, FileExplorer, getFilesTree, MarkdownTextExcerpt };
+export { ButtonWithMenu, FileExplorer, getFilesTree, MarkdownTextExcerpt, GoBackButton };

@@ -25,14 +25,14 @@
 
 import React, { Component, useState } from "react";
 import { Provider, connect } from "react-redux";
-import { Row, Col, Button, Card, CardHeader, CardBody, Alert, } from "reactstrap";
+import { Row, Col, Button, Alert } from "reactstrap";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
-import { faBoxOpen, faBox, faListUl } from "@fortawesome/free-solid-svg-icons";
+import { faBoxOpen, faBox } from "@fortawesome/free-solid-svg-icons";
 import { API_ERRORS } from "../../api-client";
 import { createStore } from "../../utils/EnhancedState";
 import State from "./Issue.state";
 import {
-  UserAvatar, ExternalIconLink, RenkuMarkdown, TimeCaption, TooltipToggleButton
+  ExternalIconLink, RenkuMarkdown, TimeCaption, TooltipToggleButton, GoBackButton
 } from "../../utils/UIComponents";
 import { Contribution, NewContribution } from "../../contribution";
 import { Loader } from "../../utils/UIComponents";
@@ -115,8 +115,8 @@ class IssueViewHeader extends Component {
     const buttonText = this.props.state === "opened" ? "Close" : "Re-open";
     const externalUrl = this.props.externalUrl;
     const externalIssueUrl = `${externalUrl}/issues/${this.props.iid}`;
-    const time = this.props.updated_at;
-    const author = this.props.author ? this.props.author.name : null;
+    const time = this.props.created_at;
+    const author = this.props.author ? this.props.author.username : null;
     const buttonGit = <ExternalIconLink tooltip="Open in GitLab" icon={faGitlab} to={externalIssueUrl} />;
 
     const actionButton =
@@ -126,44 +126,27 @@ class IssueViewHeader extends Component {
         activeIcon={faBoxOpen} inactiveIcon={faBox}
         activeClass="text-success" inactiveClass="text-primary" />;
 
-    const backToList =
-      <TooltipToggleButton
-        onClick={() => this.props.history.push(this.props.issuesUrl)} tooltip={"Back to list"}
-        active={true}
-        activeIcon={faListUl} />;
-
     return <div>
-      <Row className="pb-2">
-        <Col sm={7} style={{ overflow: "hidden" }}>
-          <h2>{title}</h2>
+      <GoBackButton label="Back to list" url={this.props.issuesUrl}/>
+      <Row key="title" className="pb-2">
+        <Col sm={8} style={{ overflow: "hidden" }}>
+          <h3>{title}</h3>
         </Col>
-        <Col md={1} sm={1} style={{ maxWidth: "62px", minWidth: "62px" }}></Col>
         <Col sm={3} className="float-right pt-3" style={{ textAlign: "end" }}>
-          {backToList}
           {buttonGit}
           {actionButton}
         </Col>
       </Row>
-      <Row>
-        <Col key="image" md={1} sm={1} className="float-right text-center" style={{ maxWidth: "62px" }}>
-          <UserAvatar size="lg" person={this.props.author} />
+      <Row key="description" className="pb-2">
+        <Col sm={11}>
+          <RenkuMarkdown markdownText={description} />
         </Col>
-        <Col key="body" md={10} sm={10} className="float-left">
-          <Card className="triangle-border left">
-            <CardHeader icon="success" className="bg-transparent align-items-baseline">
-              <Row>
-                <Col md={12}>
-                  <strong>{author}</strong>&nbsp;&nbsp;
-                  <span className="caption align-baseline">
-                    <TimeCaption key="timecaption" caption="Commented" time={time} />
-                  </span>
-                </Col>
-              </Row>
-            </CardHeader>
-            <CardBody>
-              <RenkuMarkdown markdownText={description} />
-            </CardBody>
-          </Card>
+      </Row>
+      <Row key="info">
+        <Col style={{ borderBottom: "1px solid #dee2e6" }} className="pb-1">
+          <span className="caption align-baseline">
+            <TimeCaption key="timecaption" caption="Created" time={time} endCaption={"by @" + author}/>
+          </span>
         </Col>
       </Row>
     </div>;
