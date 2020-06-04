@@ -17,12 +17,12 @@
  */
 
 import React, { Component } from "react";
-import { Row, Col, Nav, NavItem } from "reactstrap";
+import { Row, Col, Nav, NavItem, CardHeader } from "reactstrap";
 import { Switch, Route } from "react-router-dom";
-import { faCodeBranch, faListUl } from "@fortawesome/free-solid-svg-icons";
+import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 
-import { TooltipToggleButton, ExternalIconLink, RenkuNavLink } from "../../utils/UIComponents";
+import { TooltipToggleButton, ExternalIconLink, RenkuNavLink, GoBackButton } from "../../utils/UIComponents";
 import { Contribution, NewContribution } from "../../contribution";
 import { CommitsView } from "../../utils/Commits";
 
@@ -39,18 +39,12 @@ function MergeRequestHeader(props) {
       activeClass="text-success fa-flip-vertical" inactiveClass="text-primary" />
     : null;
 
-  const backToList =
-    <TooltipToggleButton
-      onClick={() => props.history.push(props.mergeRequestsOverviewUrl)} tooltip={"Back to list"}
-      active={true}
-      activeIcon={faListUl} />;
 
   return <Row key="title" className="pb-2">
     <Col sm={8} style={{ overflow: "hidden" }}>
       <h3>{props.title}</h3>
     </Col>
     <Col sm={4} className="float-right pt-3" style={{ textAlign: "end" }}>
-      {backToList}
       {buttonGit}
       {actionButton}
     </Col>
@@ -108,8 +102,8 @@ class MergeRequestPresent extends Component {
   render() {
     if (this.props.title == null) return null;
     return [
-      < MergeRequestHeader key="header" {...this.props} />
-      ,
+      <GoBackButton key="backbutton" label="Back to list" url={this.props.mergeRequestsOverviewUrl}/>,
+      < MergeRequestHeader key="header" {...this.props} />,
       <Row key="description" className="pb-2">
         <Col sm={11}>
           <p key="lead" className="lead">
@@ -161,9 +155,7 @@ class SimpleChange extends Component {
       line = `Modified file: ${this.props.new_path}`;
 
     return <Row>
-      <Col xs={6}>
-      </Col>
-      <Col xs={6}>
+      <Col>
         {line}
       </Col>
     </Row>;
@@ -176,7 +168,7 @@ class NotebookComparisonList extends Component {
       .map((change, i) => this.props.notebookComparisonView(change, i));
     return [
       <br key="space" />,
-      <Row key="header"><br /><Col><p><strong>Notebook Changes</strong></p></Col></Row>,
+      <Row key="header" className="mt-4 mb-4"><br /><Col><CardHeader>Notebook Changes</CardHeader></Col></Row>,
       <Row key="titles">
         <Col xs={6}><p><strong>{this.props.target_branch}</strong></p></Col>
         <Col xs={6}><p><strong>{this.props.source_branch}</strong></p></Col>
@@ -215,10 +207,9 @@ class OpaqueChanges extends Component {
 
     return [
       <br key="space" />,
-      <Row key="header"><Col><p><strong>Opaque Changes</strong></p></Col></Row>,
+      <Row key="header" className="mb-4"><Col><CardHeader>Opaque Changes</CardHeader></Col></Row>,
       <Row key="titles">
-        <Col xs={6}><p><strong>{this.props.target_branch}</strong></p></Col>
-        <Col xs={6}><p><strong>{this.props.source_branch}</strong></p></Col>
+        <Col><p><strong>{this.props.source_branch}</strong></p></Col>
       </Row>,
       opaqueChanges];
   }
