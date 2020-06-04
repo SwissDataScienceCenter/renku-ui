@@ -18,14 +18,15 @@
 
 import React, { Component } from "react";
 import { Link, Route, Switch } from "react-router-dom";
-import { Row, Col, Alert } from "reactstrap";
-import { Button, Form, InputGroup, FormText, Input, Label, ButtonGroup } from "reactstrap";
-import { Nav, NavItem, InputGroupButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
+import {
+  Row, Col, Alert, UncontrolledTooltip, Button, Form, InputGroup, FormText, Input, Label, ButtonGroup,
+  Nav, NavItem, InputGroupButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem
+} from "reactstrap";
+import { faCheck, faSortAmountDown, faSortAmountUp } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { ProjectAvatar, Loader, Pagination, TimeCaption, RenkuNavLink } from "../../utils/UIComponents";
 import { ProjectTagList } from "../shared";
-import { faCheck, faSortAmountDown, faSortAmountUp } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import "../Project.css";
 
@@ -61,83 +62,103 @@ class ProjectListRow extends Component {
 }
 
 class ProjectSearchForm extends Component {
-
   render() {
-    return [<Form key="form" onSubmit={this.props.handlers.onSearchSubmit} inline>
-      <InputGroup>
-        <Input name="searchQuery" id="searchQuery" placeholder={this.props.searchText} style={{ minWidth: "300px" }}
-          value={this.props.searchQuery} onChange={this.props.handlers.onSearchQueryChange}
-          className="border-primary" />
-        <Label for="searchQuery" hidden>Query</Label>
-        {
-          this.props.urlMap.projectsSearchUrl === this.props.currentTab || this.props.hasUser === false ?
-            <InputGroupButtonDropdown addonType="append"
-              toggle={this.props.handlers.onSearchInDropdownToogle} isOpen={this.props.searchInDropdownOpen} >
-              <DropdownToggle outline caret color="primary" >
-                Filter by: {this.props.searchInLabel}
-              </DropdownToggle>
-              <DropdownMenu>
-                <DropdownItem value={this.props.searchInValuesMap.PROJECTNAME}
-                  onClick={this.props.handlers.changeSearchDropdownFilter}>
-                  {this.props.searchIn === this.props.searchInValuesMap.PROJECTNAME ?
-                    <FontAwesomeIcon icon={faCheck} /> : null} Project Name
-                </DropdownItem>
-                <DropdownItem key={this.props.searchInValuesMap.USERNAME}
-                  value={this.props.searchInValuesMap.USERNAME}
-                  onClick={this.props.handlers.changeSearchDropdownFilter}>
-                  {this.props.searchIn === this.props.searchInValuesMap.USERNAME ?
-                    <FontAwesomeIcon icon={faCheck} /> : null} User Name
-                </DropdownItem>
-                <DropdownItem key={this.props.searchInValuesMap.GROUPNAME}
-                  value={this.props.searchInValuesMap.GROUPNAME}
-                  onClick={this.props.handlers.changeSearchDropdownFilter}>
-                  {this.props.searchIn === this.props.searchInValuesMap.GROUPNAME ?
-                    <FontAwesomeIcon icon={faCheck} /> : null} Group Name
-                </DropdownItem>
-              </DropdownMenu>
-            </InputGroupButtonDropdown>
-            : null
-        }
-        <InputGroupButtonDropdown addonType="append"
-          toggle={this.props.handlers.onOrderByDropdownToogle} isOpen={this.props.orderByDropdownOpen} >
-          <Button outline color="primary" onClick={this.props.handlers.toogleSearchSorting}>
-            {this.props.orderSearchAsc ?
-              <FontAwesomeIcon icon={faSortAmountUp} /> :
-              <FontAwesomeIcon icon={faSortAmountDown} />}
-          </Button>
-          <DropdownToggle outline caret color="primary" >
-            Order by: {this.props.orderByLabel}
-          </DropdownToggle>
-          <DropdownMenu>
-            <DropdownItem value={this.props.orderByValuesMap.NAME}
-              onClick={this.props.handlers.changeSearchDropdownOrder}>
-              {this.props.orderBy === this.props.orderByValuesMap.NAME ?
-                <FontAwesomeIcon icon={faCheck} /> :
-                null} Name
-            </DropdownItem>
-            <DropdownItem value={this.props.orderByValuesMap.CREATIONDATE}
-              onClick={this.props.handlers.changeSearchDropdownOrder}>
-              {this.props.orderBy === this.props.orderByValuesMap.CREATIONDATE ?
-                <FontAwesomeIcon icon={faCheck} /> :
-                null} Creation Date
-            </DropdownItem>
-            <DropdownItem value={this.props.orderByValuesMap.UPDATEDDATE}
-              onClick={this.props.handlers.changeSearchDropdownOrder}>
-              {this.props.orderBy === this.props.orderByValuesMap.UPDATEDDATE ?
-                <FontAwesomeIcon icon={faCheck} /> :
-                null} Updated Date
-            </DropdownItem>
-          </DropdownMenu>
-        </InputGroupButtonDropdown>
-      </InputGroup>
-      &nbsp;
-      <Button color="primary" onClick={this.props.handlers.onSearchSubmit}>
-        Filter
-      </Button>
-    </Form>,
-    this.props.searchIn === this.props.searchInValuesMap.PROJECTNAME ?
-      <FormText key="help" color="muted">Leave emtpy to browse all projects.</FormText>
-      : null
+    const { searchQuery, forbidden } = this.props;
+    const noSearch = (searchQuery && searchQuery.length && searchQuery.length < 3) ?
+      true :
+      false;
+    let tooltip = null;
+    if (forbidden || noSearch) {
+      let tip;
+      if (forbidden)
+        tip = "Anynomous user can't filter by User";
+      else
+        tip = "Please enter at least 3 characters to filter";
+      tooltip = (
+        <UncontrolledTooltip key="tooltip" placement="top" target="searchButton">
+          {tip}
+        </UncontrolledTooltip>
+      );
+    }
+
+    return [
+      <Form key="form" onSubmit={this.props.handlers.onSearchSubmit} inline>
+        <InputGroup>
+          <Input name="searchQuery" id="searchQuery" placeholder={this.props.searchText} style={{ minWidth: "300px" }}
+            value={searchQuery} onChange={this.props.handlers.onSearchQueryChange}
+            className="border-primary" />
+          <Label for="searchQuery" hidden>Query</Label>
+          {
+            this.props.urlMap.projectsSearchUrl === this.props.currentTab || this.props.hasUser === false ?
+              <InputGroupButtonDropdown addonType="append"
+                toggle={this.props.handlers.onSearchInDropdownToogle} isOpen={this.props.searchInDropdownOpen} >
+                <DropdownToggle outline caret color="primary" >
+                  Filter by: {this.props.searchInLabel}
+                </DropdownToggle>
+                <DropdownMenu>
+                  <DropdownItem value={this.props.searchInValuesMap.PROJECTNAME}
+                    onClick={this.props.handlers.changeSearchDropdownFilter}>
+                    {this.props.searchIn === this.props.searchInValuesMap.PROJECTNAME ?
+                      <FontAwesomeIcon icon={faCheck} /> : null} Project Name
+                  </DropdownItem>
+                  <DropdownItem key={this.props.searchInValuesMap.USERNAME}
+                    value={this.props.searchInValuesMap.USERNAME}
+                    onClick={this.props.handlers.changeSearchDropdownFilter}>
+                    {this.props.searchIn === this.props.searchInValuesMap.USERNAME ?
+                      <FontAwesomeIcon icon={faCheck} /> : null} User Name
+                  </DropdownItem>
+                  <DropdownItem key={this.props.searchInValuesMap.GROUPNAME}
+                    value={this.props.searchInValuesMap.GROUPNAME}
+                    onClick={this.props.handlers.changeSearchDropdownFilter}>
+                    {this.props.searchIn === this.props.searchInValuesMap.GROUPNAME ?
+                      <FontAwesomeIcon icon={faCheck} /> : null} Group Name
+                  </DropdownItem>
+                </DropdownMenu>
+              </InputGroupButtonDropdown>
+              : null
+          }
+          <InputGroupButtonDropdown addonType="append"
+            toggle={this.props.handlers.onOrderByDropdownToogle} isOpen={this.props.orderByDropdownOpen} >
+            <Button outline color="primary" onClick={this.props.handlers.toogleSearchSorting}>
+              {this.props.orderSearchAsc ?
+                <FontAwesomeIcon icon={faSortAmountUp} /> :
+                <FontAwesomeIcon icon={faSortAmountDown} />}
+            </Button>
+            <DropdownToggle outline caret color="primary" >
+              Order by: {this.props.orderByLabel}
+            </DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem value={this.props.orderByValuesMap.NAME}
+                onClick={this.props.handlers.changeSearchDropdownOrder}>
+                {this.props.orderBy === this.props.orderByValuesMap.NAME ?
+                  <FontAwesomeIcon icon={faCheck} /> :
+                  null} Name
+              </DropdownItem>
+              <DropdownItem value={this.props.orderByValuesMap.CREATIONDATE}
+                onClick={this.props.handlers.changeSearchDropdownOrder}>
+                {this.props.orderBy === this.props.orderByValuesMap.CREATIONDATE ?
+                  <FontAwesomeIcon icon={faCheck} /> :
+                  null} Creation Date
+              </DropdownItem>
+              <DropdownItem value={this.props.orderByValuesMap.UPDATEDDATE}
+                onClick={this.props.handlers.changeSearchDropdownOrder}>
+                {this.props.orderBy === this.props.orderByValuesMap.UPDATEDDATE ?
+                  <FontAwesomeIcon icon={faCheck} /> :
+                  null} Updated Date
+              </DropdownItem>
+            </DropdownMenu>
+          </InputGroupButtonDropdown>
+        </InputGroup>
+        &nbsp;
+        <Button disabled={noSearch || forbidden} color="primary" id="searchButton"
+          onClick={this.props.handlers.onSearchSubmit}>
+          Search
+        </Button>
+        {tooltip}
+      </Form>,
+      <FormText key="help" color="muted">
+        Leave emtpy to browse all projects or enter at least 3 characters to filter.
+      </FormText>
     ];
   }
 }
@@ -193,9 +214,11 @@ class DisplayEmptyProjects extends Component {
 
 class ProjectsRows extends Component {
   render() {
-    if (this.props.forbidden) return <Col>You need to be logged in to search projects per user name.</Col>;
+    if (this.props.forbidden)
+      return (<Col>Only logged users con search by User.</Col>);
 
-    if (this.props.loading) return <Col md={{ size: 2, offset: 3 }}><Loader /></Col>;
+    if (this.props.loading)
+      return (<Col><Loader /></Col>);
 
     if (this.props.page.emptyResponseMessage) {
       return <DisplayEmptyProjects
@@ -205,13 +228,16 @@ class ProjectsRows extends Component {
     }
 
     const projects = this.props.page.projects || [];
+    if (projects.length === 0)
+      return (<Col>We couldn&apos;t find any project with the search criteria.</Col>);
+
     const rows = projects.map((p) =>
       <ProjectListRow
         key={p.id}
         projectsUrl={this.props.urlMap.projectsUrl}
         {...p}
         getAvatarFromNamespace={this.props.getAvatarFromNamespace} />);
-    return <Col md={8}>{rows}</Col>;
+    return (<Col>{rows}</Col>);
   }
 }
 
@@ -274,12 +300,11 @@ class ProjectsSearch extends Component {
             handlers={this.props.handlers}
             currentTab={this.props.currentTab}
             urlMap={this.props.urlMap}
-            hasUser={hasUser} />
+            hasUser={hasUser}
+            forbidden={forbidden} />
         </Col>
       </Row>,
-      <Row key="spacer2">
-        <Col md={8}>&nbsp;</Col>
-      </Row>,
+      <Row key="spacer2"><Col>&nbsp;</Col></Row>,
       this.props.searchIn === this.props.searchInValuesMap.USERNAME ||
       this.props.searchIn === this.props.searchInValuesMap.GROUPNAME ?
         <Row key="users">
@@ -292,9 +317,12 @@ class ProjectsSearch extends Component {
             loading={loading}
             forbidden={forbidden}
           />
-        </Row> :
+        </Row>
+        :
         null,
-      <Row key="spacer3"><Col md={8}>&nbsp;</Col></Row>,
+      this.props.usersOrGroupsList && this.props.usersOrGroupsList.length ?
+        <Row key="spacer3"><Col>&nbsp;</Col></Row> :
+        null,
       <Row key="projects">
         <ProjectsRows
           page={this.props.page}
@@ -305,7 +333,9 @@ class ProjectsSearch extends Component {
           getAvatarFromNamespace={this.props.handlers.getAvatarFromNamespace}
         />
       </Row>,
-      <Pagination key="pagination" {...this.props} />
+      forbidden ?
+        null :
+        (<Pagination key="pagination" {...this.props} />)
     ];
   }
 }

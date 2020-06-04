@@ -158,11 +158,6 @@ class ProjectListModel extends StateModel {
   }
 
   searchProjectsByUsernameOrGroup(searchIn, queryParams, search, selectedUserOrGroupId) {
-    if (search.length < 3) {
-      this.setUsersOrGroupsList([]);
-      this.set("loading", false);
-      return [];
-    }
     return this.client.searchUsersOrGroups({ search }, searchIn)
       .then(response => {
         this.setUsersOrGroupsList(response);
@@ -211,15 +206,10 @@ class ProjectListModel extends StateModel {
       }
     }
 
-    switch (searchIn) {
-      case searchInValuesMap.PROJECTNAME :
-        return this.searchProjects({ search: query, ...queryParams });
-      case searchInValuesMap.USERNAME :
-        return this.searchProjectsByUsernameOrGroup( searchIn, queryParams, query, selectedUserOrGroupId );
-      case searchInValuesMap.GROUPNAME :
-        return this.searchProjectsByUsernameOrGroup( searchIn, queryParams, query, selectedUserOrGroupId );
-      default : return [];
-    }
+    // use searchProject when there is no filter (browse all projects)
+    if (searchIn === searchInValuesMap.PROJECTNAME || !query)
+      return this.searchProjects({ search: query, ...queryParams });
+    return this.searchProjectsByUsernameOrGroup( searchIn, queryParams, query, selectedUserOrGroupId );
   }
 }
 export default ProjectListModel;
