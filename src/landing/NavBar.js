@@ -204,11 +204,10 @@ class LoggedInNavBar extends Component {
     if (null != nextRoute) this.props.history.push(nextRoute);
   }
   render() {
-    // TODO If there is is an active project, show it in the navbar
     return (
       <header>
         <nav className="navbar navbar-expand-sm navbar-light bg-light justify-content-between">
-          <span className="navbar-brand">
+          <span className="navbar-brand mr-2">
             <Link to="/"><img src={logo} alt="Renku" height="24" /></Link>
           </span>
           <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -216,21 +215,23 @@ class LoggedInNavBar extends Component {
             <span className="navbar-toggler-icon"></span>
           </button>
 
-          <div className="collapse navbar-collapse" id="navbarSupportedContent">
+          <div className="collapse navbar-collapse flex-wrap" id="navbarSupportedContent">
             <QuickNav client={this.props.client} model={this.props.model} />
 
-            <ul className="navbar-nav mr-auto">
-              <RenkuNavLink to="/projects" title="Projects" />
-              <RenkuNavLink to="/datasets" title="Datasets" />
-              <RenkuNavLink to="/environments" title="Environments" />
-            </ul>
+            <div className="d-flex flex-grow-1">
+              <ul className="navbar-nav mr-auto">
+                <RenkuNavLink to="/projects" title="Projects" />
+                <RenkuNavLink to="/datasets" title="Datasets" />
+                <RenkuNavLink to="/environments" title="Environments" />
+              </ul>
+              <ul className="navbar-nav">
+                <RenkuToolbarItemPlus currentPath={this.props.location.pathname} />
+                <RenkuToolbarGitLabMenu user={this.props.user} />
+                <RenkuToolbarHelpMenu />
+                <RenkuToolbarItemUser {...this.props} />
+              </ul>
+            </div>
 
-            <ul className="navbar-nav">
-              <RenkuToolbarItemPlus currentPath={this.props.location.pathname}/>
-              <RenkuToolbarGitLabMenu user={this.props.user} />
-              <RenkuToolbarHelpMenu />
-              <RenkuToolbarItemUser {...this.props} />
-            </ul>
           </div>
         </nav>
       </header>
@@ -251,7 +252,7 @@ class AnonymousNavBar extends Component {
     return (
       <header>
         <nav className="navbar navbar-expand-sm navbar-light bg-light justify-content-between">
-          <span className="navbar-brand">
+          <span className="navbar-brand mr-2">
             <Link to="/"><img src={logo} alt="Renku" height="24" /></Link>
           </span>
           <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -259,18 +260,20 @@ class AnonymousNavBar extends Component {
             <span className="navbar-toggler-icon"></span>
           </button>
 
-          <div className="collapse navbar-collapse" id="navbarSupportedContent">
+          <div className="collapse navbar-collapse flex-wrap" id="navbarSupportedContent">
             <QuickNav client={this.props.client} model={this.props.model} />
 
-            <ul className="navbar-nav mr-auto">
-              <RenkuNavLink to="/projects" title="Projects" />
-              <RenkuNavLink to="/datasets" title="Datasets" />
-              <RenkuNavLink to="/environments" title="Environments" />
-            </ul>
-            <ul className="navbar-nav">
-              <RenkuToolbarHelpMenu />
-              <RenkuToolbarItemUser {...this.props} />
-            </ul>
+            <div className="d-flex flex-grow-1">
+              <ul className="navbar-nav mr-auto">
+                <RenkuNavLink to="/projects" title="Projects" />
+                <RenkuNavLink to="/datasets" title="Datasets" />
+                <RenkuNavLink to="/environments" title="Environments" />
+              </ul>
+              <ul className="navbar-nav">
+                <RenkuToolbarHelpMenu />
+                <RenkuToolbarItemUser {...this.props} />
+              </ul>
+            </div>
           </div>
         </nav>
       </header>

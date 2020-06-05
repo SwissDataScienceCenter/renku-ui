@@ -19,8 +19,10 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import Autosuggest from "react-autosuggest";
+import { InputGroup, InputGroupAddon, Button } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
+
 import "./QuickNav.style.css";
 
 class QuickNavPresent extends Component {
@@ -61,28 +63,27 @@ class QuickNavPresent extends Component {
       onChange: this.props.callbacks.onChange
     };
 
-    return <form className="form-inline my-2 my-lg-0" onSubmit={this.props.callbacks.onSubmit}>
-      <div className="input-group">
-        <Autosuggest
-          suggestions={this.props.suggestions}
-          getSuggestionValue={this.props.callbacks.getSuggestionValue}
-          onSuggestionsFetchRequested={this.props.callbacks.onSuggestionsFetchRequested}
-          onSuggestionsClearRequested={this.props.callbacks.onSuggestionsClearRequested}
-          onSuggestionSelected={this.props.callbacks.onSuggestionSelected}
-          multiSection={true}
-          renderSectionTitle={this.onSectionTitle}
-          getSectionSuggestions={(section) => section.suggestions}
-          inputProps={inputProps}
-          theme={theme}
-          renderSuggestion={this.onRenderSuggestion} />
-        <span className="input-group-append">
-          <button className="btn btn-outline-primary my-2 my-sm-0" type="submit">
-            <FontAwesomeIcon icon={faSearch} />
-          </button>
-        </span>
-      </div>
-    </form>;
-
+    return (
+      <form className="form-inline m-1" onSubmit={this.props.callbacks.onSubmit}>
+        <InputGroup className="flex-nowrap">
+          <Autosuggest
+            suggestions={this.props.suggestions}
+            getSuggestionValue={this.props.callbacks.getSuggestionValue}
+            onSuggestionsFetchRequested={this.props.callbacks.onSuggestionsFetchRequested}
+            onSuggestionsClearRequested={this.props.callbacks.onSuggestionsClearRequested}
+            onSuggestionSelected={this.props.callbacks.onSuggestionSelected}
+            multiSection={true}
+            renderSectionTitle={this.onSectionTitle}
+            getSectionSuggestions={(section) => section.suggestions}
+            inputProps={inputProps}
+            theme={theme}
+            renderSuggestion={this.onRenderSuggestion} />
+          <InputGroupAddon addonType="append">
+            <Button color="outline-primary"><FontAwesomeIcon icon={faSearch} /></Button>
+          </InputGroupAddon>
+        </InputGroup>
+      </form>
+    );
   }
 }
 
