@@ -387,12 +387,12 @@ function addProjectMethods(client) {
       });
   };
 
-  client.setTags = (projectId, name, tags) => {
-    return client.putProjectField(projectId, name, "tag_list", tags);
+  client.setTags = (projectId, tags) => {
+    return client.putProjectField(projectId, "tag_list", tags);
   };
 
-  client.setDescription = (projectId, name, description) => {
-    return client.putProjectField(projectId, name, "description", description);
+  client.setDescription = (projectId, description) => {
+    return client.putProjectField(projectId, "description", description);
   };
 
   client.starProject = (projectId, starred) => {
@@ -407,8 +407,8 @@ function addProjectMethods(client) {
 
   };
 
-  client.putProjectField = (projectId, name, field_name, field_value) => {
-    const putData = { id: projectId, name, [field_name]: field_value };
+  client.putProjectField = (projectId, field_name, field_value) => {
+    const putData = { id: projectId, [field_name]: field_value };
     const headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
 
