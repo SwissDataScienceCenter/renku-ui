@@ -171,11 +171,13 @@ class ProjectNavTabs extends Component {
           {
             (this.props.loggedIn) ?
               [
-                <div key="top-space">&nbsp;</div>,
                 <Nav key="nav" pills className={"nav-pills-underline"}>
                   <NavItem>
-                    <RenkuNavLink to={this.props.urlMap.projectsUrl}
-                      alternate={this.props.urlMap.yourProjects} title="Your Projects" />
+                    <RenkuNavLink
+                      to={this.props.urlMap.projectsUrl}
+                      alternate={this.props.urlMap.yourProjects}
+                      noSubpath={true}
+                      title="Your Projects" />
                   </NavItem>
                   <NavItem>
                     <RenkuNavLink exact={false} to={this.props.urlMap.starred} title="Starred Projects" />
@@ -184,9 +186,9 @@ class ProjectNavTabs extends Component {
                     <RenkuNavLink exact={false} to={this.props.urlMap.projectsSearchUrl} title="All Projects" />
                   </NavItem>
                 </Nav>,
-                <div key="bottom-space">&nbsp;</div>]
-              :
-              <span></span>
+                <div key="bottom-space">&nbsp;</div>
+              ] :
+              null
           }
         </Col>
       </Row>
@@ -366,16 +368,17 @@ class ProjectList extends Component {
     const urlMap = this.props.urlMap;
     let emptyListText = "You are logged in, but you have not yet starred any projects. Starring a ";
     emptyListText += "project declares your interest in it. ";
+    const newProjectButton = hasUser ?
+      <Link className="btn btn-primary mt-auto mb-auto" role="button" to={urlMap.projectNewUrl}>
+        New Project
+      </Link> :
+      null;
 
     return [
       <Row key="header">
-        <Col md={3} lg={2}><h1>Projects</h1></Col>
-        <Col md={2}>
-          {
-            (hasUser) ?
-              <Link className="btn btn-primary" role="button" to={urlMap.projectNewUrl}>New Project</Link> :
-              <span></span>
-          }
+        <Col className="d-flex mb-2">
+          <h1 className="mr-5">Projects</h1>
+          {newProjectButton}
         </Col>
       </Row>,
       <ProjectNavTabs loggedIn={hasUser} key="navbar" urlMap={urlMap} />,

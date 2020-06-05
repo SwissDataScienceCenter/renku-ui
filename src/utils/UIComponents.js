@@ -142,17 +142,17 @@ class RenkuNavLink extends Component {
   }
 
   testActive(match, location) {
+    const alt = this.props.alternate;
     if (this.props.matchpath === true) {
-      const alt = this.props.alternate;
       let haveMatch = (match != null || location.pathname.startsWith(this.props.to));
       if (alt == null) return haveMatch;
       return haveMatch || location.pathname.startsWith(alt);
     }
-    const alt = this.props.alternate;
     let haveMatch = match != null;
     if (alt == null) return haveMatch;
+    if (this.props.noSubpath)
+      return haveMatch || location.pathname.endsWith(alt);
     return haveMatch || location.pathname.startsWith(alt);
-
   }
 
   render() {
