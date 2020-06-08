@@ -1140,7 +1140,18 @@ class StartNotebookServerOptions extends Component {
     const renderedServerOptions = sortedOptionKeys
       .filter(key => key !== "commitId")
       .map(key => {
-        const serverOption = { ...globalOptions[key], selected: selectedOptions[key] };
+        // when the project has a default option, ensure it's added to the global options
+        const options = Object.keys(projectOptions).indexOf(key) >= 0 &&
+          globalOptions[key].options.indexOf(projectOptions[key]) === -1 ?
+          [...globalOptions[key].options, projectOptions[key]] :
+          globalOptions[key].options;
+
+        const serverOption = {
+          ...globalOptions[key],
+          options: options,
+          selected: selectedOptions[key]
+        };
+
         const onChange = (event, value) => {
           this.props.handlers.setServerOption(key, event, value);
         };
