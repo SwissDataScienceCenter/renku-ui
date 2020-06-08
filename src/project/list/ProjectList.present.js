@@ -32,29 +32,44 @@ import "../Project.css";
 
 class ProjectListRow extends Component {
   render() {
-    const MAX_DESCRIPTION_LENGTH = 250;
-    const projectsUrl = this.props.projectsUrl;
-    const title =
+    const { projectsUrl, description, compact } = this.props;
+    const title = (
       <Link to={`${projectsUrl}/${this.props.path_with_namespace}`}>
         {this.props.path_with_namespace || "no title"}
-      </Link>;
-    let description = (this.props.description !== "" && this.props.description !== null) ?
-      this.props.description :
-      "No description available";
-    if (description.length > MAX_DESCRIPTION_LENGTH)
-      description = description.slice(0, MAX_DESCRIPTION_LENGTH) + "...";
+      </Link>
+    );
+
+    let directionModifier = "", marginModfier = "";
+    if (!compact) {
+      directionModifier = " flex-sm-row";
+      marginModfier = " ml-sm-auto";
+    }
 
     return (
-      <div className="d-flex project-list-row mb-3">
-        <div className="mr-2">
-          <ProjectAvatar owner={this.props.owner} avatar_url={this.props.avatar_url} namespace={this.props.namespace}
-            getAvatarFromNamespace={this.props.getAvatarFromNamespace} />
+      <div className="d-flex limit-width pt-2 pb-2 border-top">
+        <div className="d-flex flex-column mt-auto mb-auto">
+          <ProjectAvatar
+            owner={this.props.owner}
+            avatar_url={this.props.avatar_url}
+            namespace={this.props.namespace}
+            getAvatarFromNamespace={this.props.getAvatarFromNamespace}
+          />
         </div>
-        <div>
-          <p className="mb-1">
-            <b>{title}</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<ProjectTagList taglist={this.props.tag_list} />
-          </p>
-          <span>{description} <TimeCaption caption="Updated" time={this.props.last_activity_at} /></span>
+        <div className={"d-flex flex-fill flex-column ml-2 mw-0" + directionModifier}>
+          <div className="d-flex flex-column text-truncate">
+            <p className="mt-auto mb-auto text-truncate">
+              <b>{title}</b>
+              <span className="ml-2">
+                <ProjectTagList taglist={this.props.tag_list} />
+              </span>
+            </p>
+            {description ? <p className="mt-auto mb-auto text-truncate">{description}</p> : null}
+          </div>
+          <div className={"d-flex flex-shrink-0" + marginModfier}>
+            <p className="mt-auto mb-auto">
+              <TimeCaption caption="Updated" time={this.props.last_activity_at} />
+            </p>
+          </div>
         </div>
       </div>
     );
@@ -337,7 +352,7 @@ class ProjectsSearch extends Component {
       </Row>,
       forbidden ?
         null :
-        (<Pagination key="pagination" {...this.props} />)
+        (<div key="pagination" className="mt-3"><Pagination {...this.props} /></div>)
     ];
   }
 }
