@@ -55,7 +55,7 @@ class MergeRequestList extends Component {
     const { items, itemsState } = this.props;
 
     const rows = items.length > 0 ? items.map((d, i) => {
-      const mrUrl = `${this.props.mergeRequestsOverviewUrl}/${d.iid}/discussion`;
+      const mrUrl = `${this.props.mergeRequestsOverviewUrl}/${d.iid}/changes`;
       return <MergeRequestListRow key={i} {...d} mrUrl={mrUrl} />;
     })
       : <ListGroupItem style={{ border: "none" }}>

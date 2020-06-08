@@ -55,13 +55,13 @@ function MergeRequestHeader(props) {
 function MergeRequestNavigation(props) {
   return <Nav tabs>
     <NavItem>
-      <RenkuNavLink to="discussion" matchpath={true} title="Discussion" />
-    </NavItem>
-    <NavItem>
       <RenkuNavLink to="changes" matchpath={true} title="Changes" />
     </NavItem>
     <NavItem>
       <RenkuNavLink to="commits" matchpath={true} title="Commits" />
+    </NavItem>
+    <NavItem>
+      <RenkuNavLink to="discussion" matchpath={true} title="Discussion" />
     </NavItem>
   </Nav>;
 }
