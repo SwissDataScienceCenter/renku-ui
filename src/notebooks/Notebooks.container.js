@@ -247,8 +247,10 @@ class StartNotebookServer extends Component {
 
   async refreshCommits() {
     if (this._isMounted) {
-      if (!this.projectModel.get("commits.fetching"))
-        await this.projectCoordinator.fetchCommits();
+      if (!this.projectModel.get("commits.fetching")) {
+        const branch = this.model.get("filters.branch");
+        await this.projectCoordinator.fetchCommits({ branch: branch.name });
+      }
       this.selectCommitWhenReady();
     }
   }
