@@ -74,6 +74,7 @@ function CktextareaInput({ name, label, type, value, alert, setInputs, help, out
             id={name + "text-area"}
             name={name}
             type="textarea"
+            disabled={disabled}
             value={value || ""}
             onChange={setInputs}
             rows={value ? value.split("\n").length + 1 : 2}
