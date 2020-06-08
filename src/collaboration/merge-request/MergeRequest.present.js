@@ -86,15 +86,16 @@ function ChangesView(props) {
   const notebookChanges = props.changes
     .filter((change) => change.new_path.split(".").pop() === "ipynb");
 
-  return [(opaqueChanges.length > 0) ?
-    <OpaqueChanges key="opaque" changes={opaqueChanges} author={props.author} updated_at={props.updated_at}
-      target_branch={props.target_branch} source_branch={props.source_branch} /> :
-    null,
-  (notebookChanges.length > 0) ?
-    <NotebookComparisonList key="notebooks" changes={notebookChanges}
-      notebookComparisonView={props.notebookComparisonView}
-      target_branch={props.target_branch} source_branch={props.source_branch} /> :
-    null
+  return [
+    (notebookChanges.length > 0) ?
+      <NotebookComparisonList key="notebooks" changes={notebookChanges}
+        notebookComparisonView={props.notebookComparisonView}
+        target_branch={props.target_branch} source_branch={props.source_branch} /> :
+      null,
+    (opaqueChanges.length > 0) ?
+      <OpaqueChanges key="opaque" changes={opaqueChanges} author={props.author} updated_at={props.updated_at}
+        target_branch={props.target_branch} source_branch={props.source_branch} /> :
+      null
   ];
 }
 
