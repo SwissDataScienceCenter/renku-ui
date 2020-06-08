@@ -25,6 +25,7 @@ import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 import { TooltipToggleButton, ExternalIconLink, RenkuNavLink, GoBackButton } from "../../utils/UIComponents";
 import { Contribution, NewContribution } from "../../contribution";
 import { CommitsView } from "../../utils/Commits";
+import _ from "lodash/collection";
 
 
 function MergeRequestHeader(props) {
@@ -139,20 +140,13 @@ class MergeRequestPresent extends Component {
   }
 }
 
-class SimpleChange extends Component {
+class SimpleChangeLine extends Component {
   render() {
     let line;
-    if (this.props.new_file)
-      line = `New file: ${this.props.new_path}`;
-
-    else if (this.props.deleted_file)
-      line = `Deleted file: ${this.props.new_path}`;
-
-    else if (this.props.renamed_file)
-      line = `Renamed file: ${this.props.old_path} --> ${this.props.new_path}`;
-
+    if (this.props.renamed_file)
+      line = `${this.props.old_path} --> ${this.props.new_path}`;
     else
-      line = `Modified file: ${this.props.new_path}`;
+      line = `${this.props.new_path}`;
 
     return <Row>
       <Col>
@@ -161,6 +155,7 @@ class SimpleChange extends Component {
     </Row>;
   }
 }
+
 
 class NotebookComparisonList extends Component {
   render() {
@@ -199,21 +194,49 @@ class NotebookComparisonPresent extends Component {
   }
 }
 
+function changeToType(change) {
+  if (change.new_file) return "new_file";
+  else if (change.deleted_file) return "deleted_file";
+  else if (change.renamed_file) return "renamed_file";
+  return "modified_file";
+}
+
 class OpaqueChanges extends Component {
   render() {
-
-    const opaqueChanges = this.props.changes
-      .map((change, i) => <SimpleChange {...change} key={i} />);
+    const groupedChanges = _.groupBy(this.props.changes, changeToType);
+    const groupChangeKeys = ["new_file", "deleted_file", "renamed_file", "modified_file"];
+    const groupChangeTitleMap = {
+      "new_file": "New Files",
+      "deleted_file": "Deleted Files",
+      "renamed_file": "Renamed Files",
+      "modified_file": "Modified Files"
+    };
+    const opaqueChanges = groupChangeKeys
+      .map((k, i) => {
+        const changes = groupedChanges[k];
+        return (changes) ? <OpaqueChangesGroup title={groupChangeTitleMap[k]} changes={changes} key={i} /> : null;
+      });
 
     return [
       <br key="space" />,
-      <Row key="header" className="mb-4"><Col><CardHeader>Opaque Changes</CardHeader></Col></Row>,
-      <Row key="titles">
-        <Col><p><strong>{this.props.source_branch}</strong></p></Col>
+      <Row key="header"><Col><CardHeader>Opaque Changes</CardHeader></Col></Row>,
+      opaqueChanges];
+  }
+}
+
+class OpaqueChangesGroup extends Component {
+  render() {
+
+    const opaqueChanges = this.props.changes
+      .map((change, i) => <SimpleChangeLine {...change} key={i} />);
+
+    return [
+      <Row key="titles" className="mt-4">
+        <Col><p><strong>{this.props.title}</strong></p></Col>
       </Row>,
       opaqueChanges];
   }
 }
 
 
-export { SimpleChange, NotebookComparisonPresent, MergeRequestPresent };
+export { NotebookComparisonPresent, MergeRequestPresent };
