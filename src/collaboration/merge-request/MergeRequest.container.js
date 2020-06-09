@@ -20,6 +20,7 @@ import React, { Component } from "react";
 import { NotebookComparisonPresent, MergeRequestPresent } from "./MergeRequest.present";
 import Notebook from "../../file/Notebook";
 import { ACCESS_LEVELS } from "../../api-client";
+import { mergeRequestRowInfo } from "../lists/MergeRequestList.present";
 
 class MergeRequestContainer extends Component {
   constructor(props) {
@@ -109,8 +110,11 @@ class MergeRequestContainer extends Component {
         ref2={this.state.source_branch} />;
     };
 
-    const showMergeButton = this.state.merge_status === "can_be_merged" &&
-      this.props.accessLevel >= ACCESS_LEVELS.DEVELOPER;
+    const rowInfo = mergeRequestRowInfo(this.state);
+
+    const showMergeButton = (this.state.closed_at == null) &&
+      (this.state.merged_at == null) &&
+      this.state.merge_status === "can_be_merged" && this.props.accessLevel >= ACCESS_LEVELS.DEVELOPER;
 
     return <MergeRequestPresent
       title={this.state.title}
@@ -126,6 +130,7 @@ class MergeRequestContainer extends Component {
       target_branch={this.state.target_branch}
       onMergeClick={this.merge.bind(this)}
       showMergeButton={showMergeButton}
+      mergeRequestRowInfo={rowInfo}
       contributions={this.state ? this.state.contributions : []}
       client={this.props.client}
       iid={this.props.iid}

@@ -17,7 +17,7 @@
  */
 
 import React, { Component } from "react";
-import { Row, Col, Nav, NavItem, CardHeader } from "reactstrap";
+import { Badge, Row, Col, Nav, NavItem, CardHeader } from "reactstrap";
 import { Switch, Route } from "react-router-dom";
 import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
@@ -29,6 +29,10 @@ import _ from "lodash/collection";
 
 
 function MergeRequestHeader(props) {
+
+  const rowInfo = props.mergeRequestRowInfo;
+  const { badgeText, badgeColor } = rowInfo;
+  const statusBadge = <Badge color={badgeColor}>{badgeText}</Badge>;
 
   const buttonGit = <ExternalIconLink tooltip="Open in GitLab" icon={faGitlab} to={props.externalMRUrl} />;
 
@@ -46,6 +50,7 @@ function MergeRequestHeader(props) {
       <h3>{props.title}</h3>
     </Col>
     <Col sm={4} className="float-right pt-3" style={{ textAlign: "end" }}>
+      {statusBadge}
       {buttonGit}
       {actionButton}
     </Col>

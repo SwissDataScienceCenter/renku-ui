@@ -8,10 +8,44 @@ import { UserAvatar, TimeCaption, Pagination, Loader } from "../../utils/UICompo
 import { itemsStateMap } from "./CollaborationList.container";
 import { faLongArrowAltLeft as faLeftArrow } from "@fortawesome/free-solid-svg-icons";
 
+
+/**
+ * Extract the display info from a merge request object.
+ * @param {object} mr the merge request
+ * @returns {object} the display information
+ */
+function mergeRequestRowInfo(mr) {
+  const status = (mr.closed_at !== null) ?
+    itemsStateMap.CLOSED :
+    (mr.merged_at !== null) ?
+      itemsStateMap.MERGED :
+      itemsStateMap.OPENED;
+  let badgeText = "", badgeColor = "", timeCaption = null;
+  if (status === itemsStateMap.CLOSED) {
+    badgeText = "Closed";
+    badgeColor = "success";
+    timeCaption = <TimeCaption caption="Closed" time={mr.closed_at} />;
+  }
+  else if (status === itemsStateMap.MERGED) {
+    badgeText = "Merged";
+    badgeColor = "success";
+    timeCaption = <TimeCaption caption="Merged" time={mr.merged_at} />;
+  }
+  else {
+    badgeText = mr.merge_status === "can_be_merged" ? "Can be merged" : "Conflicts";
+    badgeColor = mr.merge_status === "can_be_merged" ? "success" : "danger";
+    timeCaption = <TimeCaption caption="Updated" time={mr.updated_at} />;
+  }
+
+  return {
+    badgeText, badgeColor, timeCaption
+  };
+}
+
 class MergeRequestListRow extends Component {
   render() {
-    const badgeText = this.props.merge_status === "can_be_merged" ? "Can be merged" : "Conflicts";
-    const badgeColor = this.props.merge_status === "can_be_merged" ? "success" : "danger";
+    const rowInfo = mergeRequestRowInfo(this.props);
+    const { badgeText, badgeColor, timeCaption } = rowInfo;
     const statusBadge = <Badge color={badgeColor}>{badgeText}</Badge>;
 
     const title = this.props.active ?
@@ -42,7 +76,7 @@ class MergeRequestListRow extends Component {
         <Col sm={4} md={4} className="float-right" style={{ textAlign: "end" }}>
           <FontAwesomeIcon icon={faComments} /> {this.props.user_notes_count} {statusBadge}
           <br />
-          <small><TimeCaption caption="Created" time={this.props.created_at} /></small>
+          <small>{timeCaption}</small>
         </Col>
       </Row>
     </ListGroupItem>;
@@ -85,6 +119,13 @@ class MergeRequestList extends Component {
             </NavItem>
             <NavItem>
               <ReactNavLink
+                to="mergerequests?page=1&itemsState=merged"
+                tag={NavLink}
+                isActive={() => itemsState === itemsStateMap.MERGED}
+              >Merged</ReactNavLink>
+            </NavItem>
+            <NavItem>
+              <ReactNavLink
                 to="mergerequests?page=1&itemsState=closed"
                 tag={NavLink}
                 isActive={() => itemsState === itemsStateMap.CLOSED}
@@ -105,3 +146,4 @@ class MergeRequestList extends Component {
 }
 
 export default MergeRequestList;
+export { mergeRequestRowInfo };
