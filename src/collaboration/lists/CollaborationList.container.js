@@ -25,6 +25,7 @@ import qs from "query-string";
 
 const itemsStateMap = {
   OPENED: "opened",
+  MERGED: "merged",
   CLOSED: "closed"
 };
 
