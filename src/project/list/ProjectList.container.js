@@ -46,7 +46,7 @@ const urlMap = {
   projectsSearchUrl: "/projects/all",
   projectNewUrl: "/project_new",
   starred: "/projects/starred",
-  yourProjects: "/projects/your_projects"
+  yourProjects: "/projects"
 };
 
 class List extends Component {
@@ -254,6 +254,10 @@ class AvailableUserList extends Component {
 
   onSearchSubmit(e) {
     e.preventDefault();
+    const query = this.model.get("query");
+    if (query && query.length && query.length < 3)
+      return;
+
     this.model.resetBeforeNewSearch();
     this.pushNewSearchToHistory();
   }

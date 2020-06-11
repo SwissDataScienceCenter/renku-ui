@@ -211,3 +211,11 @@ body {
   margin-bottom: 0;
   word-break: normal;
 }
+
+.mw-0 {
+  min-width: 0;
+}
+
+.limit-width {
+  max-width: 1140px;
+}

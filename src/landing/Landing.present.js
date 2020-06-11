@@ -38,7 +38,8 @@ import { ProjectListRow } from "../project";
 function truncatedProjectListRows(projects, projectsUrl, moreUrl) {
   const maxProjectsRows = 5;
   const projectSlice = projects.slice(0, maxProjectsRows);
-  const rows = projectSlice.map(p => <ProjectListRow key={p.id} projectsUrl={projectsUrl} {...p} />);
+  const rows = projectSlice.map(p =>
+    <ProjectListRow key={p.id} projectsUrl={projectsUrl} compact={true} {...p} />);
   const more = (projects.length > maxProjectsRows) ? <Link key="more" to={moreUrl}>more...</Link> : null;
   return [
     <Row key="projects"><Col style={{ overflowX: "auto" }}>{rows}</Col></Row>,
@@ -258,7 +259,7 @@ class LoggedInHome extends Component {
       </Row>,
       <Row key="spacer"><Col md={12}>&nbsp;</Col></Row>,
       <Row key="content">
-        <Col xs={{ order: 2 }} md={{ size: 4, order: 1 }}>
+        <Col xs={{ order: 2 }} md={{ size: 6, order: 1 }}>
           <Row>
             <Col>
               <YourProjects urlMap={urlMap} loading={neverLoaded || projects.fetching} projects={projects.member} />
