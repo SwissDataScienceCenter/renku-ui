@@ -997,7 +997,7 @@ function notebookWarning(userLogged, accessLevel, fork, postLoginUrl, externalUr
       <InfoAlert timeout={0} key="permissions-warning">
         <p>
           <FontAwesomeIcon icon={faExclamationTriangle} /> As
-          an anonymous user, you can start <ExternalLink role="text" title="Interactive Envirnonments"
+          an anonymous user, you can start <ExternalLink role="text" title="Interactive Environments"
             url="https://renku.readthedocs.io/en/latest/developer/services/notebooks_service.html" />, but
           you cannot save your work.
         </p>
