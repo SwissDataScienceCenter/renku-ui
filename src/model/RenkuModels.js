@@ -341,10 +341,22 @@ const notebooksSchema = new Schema({
 });
 
 const datasetFormSchema = new Schema({
-  name: {
+  title: {
     initial: "",
-    name: "name",
-    label: "Name",
+    name: "title",
+    label: "Title",
+    edit: false,
+    type: FormGenerator.FieldTypes.TEXT,
+    validators: [{
+      id: "title-length",
+      isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression),
+      alert: "Title is too short"
+    }]
+  },
+  short_name: {
+    initial: "",
+    name: "short_name",
+    label: "Short Name",
     edit: false,
     type: FormGenerator.FieldTypes.TEXT,
     parseFun: expression => FormGenerator.Parsers.slugFromTitle(expression),
@@ -353,6 +365,15 @@ const datasetFormSchema = new Schema({
       isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression),
       alert: "Name is too short"
     }]
+  },
+  creators: {
+    initial: "",
+    name: "creators",
+    label: "Creators",
+    edit: false,
+    type: FormGenerator.FieldTypes.CREATORS,
+    validators: []
+    //shall we pre-validate that an email is an email with regex?
   },
   description: {
     initial: "",

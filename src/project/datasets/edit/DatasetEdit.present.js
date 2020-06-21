@@ -24,7 +24,7 @@
  */
 
 
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Col, Alert, Button } from "reactstrap";
 import { Link } from "react-router-dom";
 import { FormPanel } from "../../../utils/formgenerator";
@@ -34,12 +34,126 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
 function DatasetEdit(props) {
 
-  const getServerWarnings = () => {
+  const [serverErrors, setServerErrors] = useState(undefined);
+  const [submitLoader, setSubmitLoader] = useState(false);
+  const [initialized, setInitialized] = useState(false);
+  const [initalFiles, setInitialFiles] = useState([]);
+  props.datasetFormSchema.files.filesOnUploader = useRef(0);
 
+  // const getServerWarnings = () => {
+  //   const tooLongText = "The Knowledge Graph has not finished updating.  The new files" +
+  //   " will not be visible until this is complete, but you can continue to work freely within RenkuLab.";
+  //   if (props.jobsStats.failed.length === 0 && props.jobsStats.inProgress.length === 0 && props.jobsStats.tooLong) {
+  //     return <div>
+  //       {tooLongText}
+  //       <br/><br/>
+  //       You can keep on working while this operation is running.
+  //     </div>;
+  //   }
+  // };
+
+  const tooLongText = "The Knowledge Graph has not finished updating.  The new files" +
+    " will not be visible until this is complete, but you can continue to work freely within RenkuLab.";
+  if (props.jobsStats.failed.length === 0 && props.jobsStats.inProgress.length === 0 && props.jobsStats.tooLong) {
+    return <div>
+      {tooLongText}
+      <br /><br />
+      You can keep on working while this operation is running.
+    </div>;
+  }
+
+  const onCancel = e => {
+    props.datasetFormSchema.title.value = props.datasetFormSchema.title.initial;
+    props.datasetFormSchema.short_name.value = props.datasetFormSchema.short_name.initial;
+    props.datasetFormSchema.description.value = props.datasetFormSchema.description.initial;
+    props.datasetFormSchema.files.value = props.datasetFormSchema.files.initial;
+    props.history.push({
+      pathname: `/projects/${props.projectPathWithNamespace}/datasets/${props.dataset.identifier}/`
+    });
+  };
+
+  const submitCallback = e => {
+    setServerErrors(undefined);
+    setSubmitLoader(true);
+    const dataset = {};
+    dataset.title = props.datasetFormSchema.title.value;
+    dataset.short_name = props.datasetFormSchema.short_name.value;
+    dataset.description = props.datasetFormSchema.description.value;
+    dataset.files = [].concat.apply([], props.datasetFormSchema.files.value.map(f => f.file_id))
+      .map(f => ({ "file_id": f }));
+
+    props.client.addFilesToDataset(props.httpProjectUrl, dataset.short_name, dataset.files)
+      .then(response => {
+        if (response.data.error !== undefined) {
+          setSubmitLoader(false);
+          setServerErrors(response.data.error.reason);
+        }
+        else {
+          let counter = 0;
+          const waitForFilesInKG = setInterval(
+            () => {
+              props.client.fetchDatasetFromKG(props.client.baseUrl.replace(
+                "api", "knowledge-graph/datasets/") + props.datasetId)
+                .then(response => {
+                  if (response.hasPart.length >= (dataset.files.length + initalFiles.length)) {
+                    setSubmitLoader(false);
+                    props.datasetFormSchema.title.value = props.datasetFormSchema.title.initial;
+                    props.datasetFormSchema.short_name.value = props.datasetFormSchema.short_name.initial;
+                    props.datasetFormSchema.description.value = props.datasetFormSchema.description.initial;
+                    props.datasetFormSchema.files.value = props.datasetFormSchema.files.initial;
+                    clearInterval(waitForFilesInKG);
+                    props.history.push({
+                      pathname: `/projects/${props.projectPathWithNamespace}/datasets/${props.datasetId}/`
+                    });
+                  }
+                  else {
+                    counter++;
+                    if (counter > 20) {
+                      clearInterval(waitForFilesInKG);
+                      setSubmitLoader(false);
+                      setServerErrors(" The knowledge graph update has not yet finished." +
+                      " The files have been imported and should be visible in a short time");
+                    }
+                  }
+                });
+            }
+            , 6000);
+        }
+      });
+  };
+
+  useEffect(() => {
+    if (!initialized) {
+      props.datasetFormSchema.files.uploadFileFunction = props.client.uploadFile;
+      if (props.dataset === null) {
+        props.client.fetchDatasetFromKG(props.client.baseUrl.replace(
+          "api", "knowledge-graph/datasets/") + props.datasetId)
+          .then((dataset) => {
+            props.datasetFormSchema.title.value = dataset.name;
+            props.datasetFormSchema.short_name.value = dataset.short_name;
+            props.datasetFormSchema.description.value = dataset.description;
+            props.datasetFormSchema.creators.value = dataset.published.creator;
+            props.datasetFormSchema.files.value = dataset.hasPart;
+            setInitialFiles(dataset.hasPart);
+          });
+      }
+      else {
+        props.datasetFormSchema.title.value = props.dataset.name;
+        props.datasetFormSchema.short_name.value = props.dataset.short_name;
+        props.datasetFormSchema.description.value = props.dataset.description;
+        props.datasetFormSchema.creators.value = props.dataset.published.creator;
+        props.datasetFormSchema.files.value = props.dataset.hasPart;
+        setInitialFiles(props.dataset.hasPart);
+      }
+      setInitialized(true);
+    }
+  });
+
+  const getServerWarnings = () =>{
     const failed = props.jobsStats.failed
       .map(job => <div key={"warn-" + job.file_url} className="pl-2">- {job.file_url}<br /></div>);
     const progress = props.jobsStats.inProgress
-      .map( job => <div key={"warn-" + job.file_url} className="pl-2">- {job.file_url}<br /></div>);
+      .map(job => <div key={"warn-" + job.file_url} className="pl-2">- {job.file_url}<br /></div>);
     return <div>
       {props.jobsStats.tooLong ?
         <div>

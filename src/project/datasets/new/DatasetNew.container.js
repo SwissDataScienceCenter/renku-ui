@@ -28,9 +28,9 @@ import { datasetFormSchema } from "../../../model/RenkuModels";
 import DatasetNew from "./DatasetNew.present";
 import { JobStatusMap } from "../../../job/Job";
 import { FILE_STATUS } from "../../../utils/formgenerator/fields/FileUploaderInput";
+import FormGenerator from "../../../utils/formgenerator/";
 
 function NewDataset(props) {
-
 
   const [serverErrors, setServerErrors] = useState(undefined);
   const [submitLoader, setSubmitLoader] = useState(false);
@@ -38,6 +38,10 @@ function NewDataset(props) {
   const warningOn = useRef(false);
   datasetFormSchema.files.uploadFileFunction = props.client.uploadFile;
   datasetFormSchema.files.filesOnUploader = useRef(0);
+  datasetFormSchema.title.parseFun = () => {
+    datasetFormSchema.short_name.value = FormGenerator.Parsers.slugFromTitle(datasetFormSchema.title.value);
+    return datasetFormSchema.title.value;
+  };
 
   const onCancel = e => {
     props.history.push({ pathname: `/projects/${props.projectPathWithNamespace}/datasets` });
@@ -94,7 +98,8 @@ function NewDataset(props) {
     setServerErrors(undefined);
     setSubmitLoader(true);
     const dataset = {};
-    dataset.name = datasetFormSchema.name.value;
+    dataset.short_name = datasetFormSchema.short_name.value;
+    dataset.title = datasetFormSchema.title.value;
     dataset.description = datasetFormSchema.description.value;
 
     const pendingFiles = datasetFormSchema.files.value
@@ -104,6 +109,7 @@ function NewDataset(props) {
       .map(f => f.file_id)).map(f => ({ "file_id": f }));
 
     dataset.files = [...dataset.files, ...pendingFiles];
+    dataset.creators = datasetFormSchema.creators.value.map(creator => ({ name: creator.name, email: creator.email }));
 
     props.client.postDataset(props.httpProjectUrl, dataset)
       .then(response => {
@@ -156,9 +162,11 @@ function NewDataset(props) {
 
   useEffect(()=>{
     return () => {
-      datasetFormSchema.name.value = datasetFormSchema.name.initial;
+      datasetFormSchema.short_name.value = datasetFormSchema.short_name.initial;
+      datasetFormSchema.title.value = datasetFormSchema.title.initial;
       datasetFormSchema.description.value = datasetFormSchema.description.initial;
       datasetFormSchema.files.value = datasetFormSchema.files.initial;
+      datasetFormSchema.creators.value = datasetFormSchema.creators.initial;
     };
   }, []);
 
