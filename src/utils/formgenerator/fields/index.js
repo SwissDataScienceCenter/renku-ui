@@ -31,6 +31,7 @@ export default {
     FILES: "fileuploader",
     SELECT: "select",
     SELECTAUTOSUGGEST: "selectautosuggest",
-    CREATORS: "creators"
+    CREATORS: "creators",
+    KEYWORDS: "keywords"
   }
 };

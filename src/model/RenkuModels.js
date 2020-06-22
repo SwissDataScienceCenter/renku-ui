@@ -375,6 +375,14 @@ const datasetFormSchema = new Schema({
     validators: []
     //shall we pre-validate that an email is an email with regex?
   },
+  keywords: {
+    initial: "",
+    name: "kewords",
+    label: "Keywords",
+    edit: false,
+    type: FormGenerator.FieldTypes.KEYWORDS,
+    validators: []
+  },
   description: {
     initial: "",
     name: "description",

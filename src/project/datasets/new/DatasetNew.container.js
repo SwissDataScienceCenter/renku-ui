@@ -109,6 +109,7 @@ function NewDataset(props) {
       .map(f => f.file_id)).map(f => ({ "file_id": f }));
 
     dataset.files = [...dataset.files, ...pendingFiles];
+    dataset.keywords = datasetFormSchema.keywords.value;
     dataset.creators = datasetFormSchema.creators.value.map(creator => ({ name: creator.name, email: creator.email }));
 
     props.client.postDataset(props.httpProjectUrl, dataset)
@@ -167,6 +168,7 @@ function NewDataset(props) {
       datasetFormSchema.description.value = datasetFormSchema.description.initial;
       datasetFormSchema.files.value = datasetFormSchema.files.initial;
       datasetFormSchema.creators.value = datasetFormSchema.creators.initial;
+      datasetFormSchema.keywords.value = datasetFormSchema.keywords.initial;
     };
   }, []);
 
