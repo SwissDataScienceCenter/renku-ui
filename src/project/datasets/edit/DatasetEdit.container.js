@@ -190,6 +190,11 @@ function EditDataset(props) {
   return <DatasetEdit
     jobsStats={jobsStats}
     initialized={initialized}
+    // datasetFormSchema={datasetFormSchema_EDIT_TEMP}
+    // user={props.user}
+    // projectPathWithNamespace={props.projectPathWithNamespace}
+    // client={props.client}
+    // history={props.history}
     accessLevel={props.accessLevel}
     warningOn={warningOn}
     datasetFormSchema={datasetFormSchema}

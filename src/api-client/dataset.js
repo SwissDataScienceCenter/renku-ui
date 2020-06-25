@@ -94,7 +94,7 @@ export default function addDatasetMethods(client) {
         return response;
 
       return response.data.result.projects.find(project => project.git_url === projectUrl);
-    }).then(cloned_project => {
+    }).then( cloned_project => {
       if (cloned_project !== undefined)
         return cloned_project.project_id;
 
@@ -113,6 +113,75 @@ export default function addDatasetMethods(client) {
 
       }).then(project_id => {
         return Promise.resolve(project_id);
+      });
+    });
+  };
+
+  client.listDatasetsFromSvc = (projectUrl) => {
+    let headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    headers.append("X-Requested-With", "XMLHttpRequest");
+
+    return client.getProjectIdFromSvc(projectUrl)
+      .then(response => {
+        console.log(response);
+        if (response.data !== undefined && response.data.error !== undefined)
+          return response;
+
+        return client.clientFetch(`${client.baseUrl}/renku/datasets.list?project_id=${response}`, {
+          method: "GET",
+          headers: headers
+          // ,
+          // query_string: {
+          //   "project_id": response
+          // }
+        }).then(response => {
+          console.log(response);
+          return response;
+        });
+      });
+  };
+
+  client.postDataset = (projectUrl, renkuDataset, edit = false) => {
+    let headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    headers.append("X-Requested-With", "XMLHttpRequest");
+
+    return client.clientFetch(`${client.baseUrl}/renku/cache.project_list`, {
+      method: "GET",
+      headers: headers
+    }).then(response => {
+      if (response.data.error !== undefined)
+        return response;
+
+      return response.data.result.projects.find(project => project.git_url === projectUrl);
+    }).then(cloned_project => {
+      if (cloned_project !== undefined)
+        return cloned_project.project_id;
+
+      let postUrl = edit ? `${client.baseUrl}/renku/datasets.edit` : `${client.baseUrl}/renku/datasets.create`;
+      let body = edit ?
+        {
+          //"name": renkuDataset.name,
+          "title": renkuDataset.title,
+          "description": renkuDataset.description,
+          "creators": renkuDataset.creators,
+          // "keywords": renkuDataset.keywords,
+          // "project_id": project_id
+        } :
+        {
+          "name": renkuDataset.name,
+          "title": renkuDataset.title,
+          "description": renkuDataset.description,
+          "creators": renkuDataset.creators,
+          "keywords": renkuDataset.keywords,
+          "project_id": project_id
+        };
+
+      return client.clientFetch(postUrl, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify(body)
       });
     });
   };

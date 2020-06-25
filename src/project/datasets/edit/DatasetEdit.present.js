@@ -64,7 +64,7 @@ function DatasetEdit(props) {
 
   const onCancel = e => {
     props.datasetFormSchema.title.value = props.datasetFormSchema.title.initial;
-    props.datasetFormSchema.short_name.value = props.datasetFormSchema.short_name.initial;
+    //props.datasetFormSchema.short_name.value = props.datasetFormSchema.short_name.initial;
     props.datasetFormSchema.description.value = props.datasetFormSchema.description.initial;
     props.datasetFormSchema.files.value = props.datasetFormSchema.files.initial;
     props.history.push({
@@ -77,7 +77,7 @@ function DatasetEdit(props) {
     setSubmitLoader(true);
     const dataset = {};
     dataset.title = props.datasetFormSchema.title.value;
-    dataset.short_name = props.datasetFormSchema.short_name.value;
+    //  dataset.short_name = props.datasetFormSchema.short_name.value;
     dataset.description = props.datasetFormSchema.description.value;
     dataset.files = [].concat.apply([], props.datasetFormSchema.files.value.map(f => f.file_id))
       .map(f => ({ "file_id": f }));
@@ -98,7 +98,7 @@ function DatasetEdit(props) {
                   if (response.hasPart.length >= (dataset.files.length + initalFiles.length)) {
                     setSubmitLoader(false);
                     props.datasetFormSchema.title.value = props.datasetFormSchema.title.initial;
-                    props.datasetFormSchema.short_name.value = props.datasetFormSchema.short_name.initial;
+                    //  props.datasetFormSchema.short_name.value = props.datasetFormSchema.short_name.initial;
                     props.datasetFormSchema.description.value = props.datasetFormSchema.description.initial;
                     props.datasetFormSchema.files.value = props.datasetFormSchema.files.initial;
                     clearInterval(waitForFilesInKG);
@@ -122,6 +122,47 @@ function DatasetEdit(props) {
       });
   };
 
+  //THIS WILL BE THE SUBMIT CALLBACK WHEN THINGS ARE FIXED!!!!
+  // const submitCallback = e => {
+  //   setServerErrors(undefined);
+  //   setSubmitLoader(true);
+  //   const dataset = {};
+
+  //   //dataset.short_name = props.datasetFormSchema.short_name.value;
+  //   dataset.title = props.datasetFormSchema.title.value;
+  //   dataset.description = props.datasetFormSchema.description.value;
+  //   //dataset.keywords = props.datasetFormSchema.keywords.value;
+  //   dataset.creators = props.datasetFormSchema.creators.value.map(creator =>
+  //     ({ name: creator.name, email: creator.email }));
+  //   dataset.files = [].concat.apply([], props.datasetFormSchema.files.value.map(f => f.file_id))
+  //     .map(f => ({ "file_id": f }));
+
+  //   props.client.postDataset(props.httpProjectUrl, dataset, true)
+  //     .then(dataset => {
+  //       if (dataset.data.error !== undefined) {
+  //         setSubmitLoader(false);
+  //         setServerErrors(dataset.data.error.reason);
+  //       }
+  //       else {
+  //         let waitForDatasetInKG = setInterval(() => {
+  //           props.client.getProjectDatasetsFromKG_short(props.projectPathWithNamespace)
+  //             .then(datasets => {
+  //               // eslint-disable-next-line
+  //               let new_dataset = datasets.find( ds => ds.name === datasetFormSchema.title.value);
+  //               if (new_dataset !== undefined) {
+  //                 setSubmitLoader(false);
+  //                 clearInterval(waitForDatasetInKG);
+  //                 props.history.push({
+  //                   pathname: `/projects/${props.projectPathWithNamespace}/datasets/${new_dataset.identifier}/`,
+  //                   state: { datasets: datasets }
+  //                 });
+  //               }
+  //             });
+  //         }, 6000);
+  //       }
+  //     });
+  // };
+
   useEffect(() => {
     if (!initialized) {
       props.datasetFormSchema.files.uploadFileFunction = props.client.uploadFile;
@@ -130,7 +171,7 @@ function DatasetEdit(props) {
           "api", "knowledge-graph/datasets/") + props.datasetId)
           .then((dataset) => {
             props.datasetFormSchema.title.value = dataset.name;
-            props.datasetFormSchema.short_name.value = dataset.short_name;
+            //    props.datasetFormSchema.short_name.value = dataset.short_name;
             props.datasetFormSchema.description.value = dataset.description;
             props.datasetFormSchema.creators.value = dataset.published.creator;
             props.datasetFormSchema.files.value = dataset.hasPart;
@@ -139,7 +180,7 @@ function DatasetEdit(props) {
       }
       else {
         props.datasetFormSchema.title.value = props.dataset.name;
-        props.datasetFormSchema.short_name.value = props.dataset.short_name;
+        //   props.datasetFormSchema.short_name.value = props.dataset.short_name;
         props.datasetFormSchema.description.value = props.dataset.description;
         props.datasetFormSchema.creators.value = props.dataset.published.creator;
         props.datasetFormSchema.files.value = props.dataset.hasPart;
