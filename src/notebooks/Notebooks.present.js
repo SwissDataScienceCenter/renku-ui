@@ -1141,14 +1141,8 @@ class StartNotebookServerOptions extends Component {
       .filter(key => key !== "commitId")
       .map(key => {
         // when the project has a default option, ensure it's added to the global options
-        const options = Object.keys(projectOptions).indexOf(key) >= 0 &&
-          globalOptions[key].options.indexOf(projectOptions[key]) === -1 ?
-          [...globalOptions[key].options, projectOptions[key]] :
-          globalOptions[key].options;
-
         const serverOption = {
           ...globalOptions[key],
-          options: options,
           selected: selectedOptions[key]
         };
 
@@ -1163,13 +1157,18 @@ class StartNotebookServerOptions extends Component {
           </Warning>;
 
         switch (serverOption.type) {
-          case "enum":
+          case "enum": {
+            const options = Object.keys(projectOptions).indexOf(key) >= 0 &&
+              globalOptions[key].options.indexOf(projectOptions[key]) === -1 ?
+              [...globalOptions[key].options, projectOptions[key]] :
+              globalOptions[key].options;
+            serverOption["options"] = options;
             return <FormGroup key={key} className={serverOption.options.length === 1 ? "mb-0" : ""}>
               <Label>{serverOption.displayName}</Label>
               <ServerOptionEnum {...serverOption} onChange={onChange} />
               {warning}
             </FormGroup>;
-
+          }
           case "int":
             return <FormGroup key={key}>
               <Label>{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
