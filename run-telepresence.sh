@@ -36,8 +36,14 @@ fi
 if [[ $CURRENT_CONTEXT == 'minikube' ]]
 then
   echo "Exchanging k8s deployments using the following context: ${CURRENT_CONTEXT}"
-  MINIKUBE_IP=`minikube ip`
-  BASE_URL=http://${MINIKUBE_IP}
+  if [[ $RENKU_DOMAIN ]]
+  then
+    # if using localhost.run, it should be http://<some-name>.localhost.run
+    BASE_URL=http://${RENKU_DOMAIN}
+  else
+    MINIKUBE_IP=`minikube ip`
+    BASE_URL=http://${MINIKUBE_IP}
+  fi
   SERVICE_NAME=renku-ui
   DEV_NAMESPACE=renku
 else
