@@ -1,3 +1,38 @@
+# Changes
+
+# [0.10.3](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.10.2...0.10.3) (2020-06-30)
+
+### Features
+
+**merge requests**
+* group opaque changes together 49f2494, closes [#854](https://github.com/SwissDataScienceCenter/renku-ui/issues/854) [#959](https://github.com/SwissDataScienceCenter/renku-ui/issues/959)
+* reorder the MR tabs as changes, commits, discussion 1311e57, closes [#854](https://github.com/SwissDataScienceCenter/renku-ui/issues/854)  [#959](https://github.com/SwissDataScienceCenter/renku-ui/issues/959)
+* show merged merge requests 378958b, closes [#959](https://github.com/SwissDataScienceCenter/renku-ui/issues/959)
+* show the notebook changes first 920c124, closes [#854](https://github.com/SwissDataScienceCenter/renku-ui/issues/854) [#959](https://github.com/SwissDataScienceCenter/renku-ui/issues/959)
+
+**project search / list**
+* improve projects search d43397a, closes [#961](https://github.com/SwissDataScienceCenter/renku-ui/issues/961)
+* make project visualization dynamic 5afdf8a, closes [#961](https://github.com/SwissDataScienceCenter/renku-ui/issues/961) [#703](https://github.com/SwissDataScienceCenter/renku-ui/issues/703)
+
+
+### Bug Fixes
+
+**environments**
+* prevent project options from disappearing on change a2a5216, closes [#950](https://github.com/SwissDataScienceCenter/renku-ui/issues/950) [#935](https://github.com/SwissDataScienceCenter/renku-ui/issues/935)
+* only merge notebook server globalOptions and projectOptions for those of type enum. ba79a4d, closes [#967](https://github.com/SwissDataScienceCenter/renku-ui/issues/967) [#968](https://github.com/SwissDataScienceCenter/renku-ui/issues/968)
+
+**project search / list**
+* adjust top bar layout cd3605c, closes [#961](https://github.com/SwissDataScienceCenter/renku-ui/issues/961)
+* update projects layout and navigation link f9ac9f9, closes [#961](https://github.com/SwissDataScienceCenter/renku-ui/issues/961)
+
+**project**
+* allow changes of project tags 7825315, closes [#955](https://github.com/SwissDataScienceCenter/renku-ui/issues/955) [#951](https://github.com/SwissDataScienceCenter/renku-ui/issues/951)
+
+**dataset**
+* the space after the dataset buttons is now bigger 59387fc, closes [#954](https://github.com/SwissDataScienceCenter/renku-ui/issues/954) [#958](https://github.com/SwissDataScienceCenter/renku-ui/issues/958)
+* editing is disabled when modifications are not possible 620576c, closes [#953](https://github.com/SwissDataScienceCenter/renku-ui/issues/953) [#957](https://github.com/SwissDataScienceCenter/renku-ui/issues/957)
+
+
 ## [0.10.2](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.10.1...0.10.2) (2020-05-28)
 
 
@@ -8,10 +43,6 @@
 ### Features
 
 * **collaboration:** display separated for open and closed issues/merge requests and pagination added (#939) cb074bd, closes (#851)  ([#851](https://github.com/SwissDataScienceCenter/renku-ui/issues/851)) ([#939](https://github.com/SwissDataScienceCenter/renku-ui/issues/939))
-
-
-
-# Changes
 
 ## [0.10.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.10.0...0.10.1) (2020-05-26)
 
