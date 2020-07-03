@@ -23,7 +23,7 @@ import DOMPurify from "dompurify";
 
 const AUTOSAVED_PREFIX = "renku/autosave/";
 
-const slugFromTitle = (title) => title.replace(/\s/g, "-").toLowerCase();
+const slugFromTitle = (title) => title.replace(/\s/g, "-");
 
 function getActiveProjectPathWithNamespace(currentPath) {
   try {
@@ -157,5 +157,11 @@ function groupBy(list, keyGetter) {
   return map;
 }
 
+function gitLabUrlFromProfileUrl(webUrl) {
+  const comps = webUrl.split("/");
+  comps.pop();
+  return comps.join("/");
+}
+
 export { slugFromTitle, getActiveProjectPathWithNamespace, splitAutosavedBranches, sanitizedHTMLFromMarkdown };
-export { simpleHash, parseINIString, formatBytes, groupBy };
+export { simpleHash, parseINIString, formatBytes, groupBy, gitLabUrlFromProfileUrl };

@@ -144,7 +144,7 @@ function addProjectMethods(client) {
     }).then(response => response.data.avatar_url);
   };
 
-  client.getProject = (projectPathWithNamespace, options = {}) => {
+  client.getProject = async (projectPathWithNamespace, options = {}) => {
     const headers = client.getBasicHeaders();
     const queryParams = {
       statistics: options.statistics || false
@@ -211,79 +211,6 @@ function addProjectMethods(client) {
   };
 
   client.getEmptyProjectObject = () => { return { folder: "empty-project-template", name: "Empty Project" }; };
-
-  client.postProject = (renkuProject, renkuTemplatesUrl, renkuTemplatesRef) => {
-    const gitlabProject = {
-      name: renkuProject.display.title,
-      description: renkuProject.display.description,
-      visibility: renkuProject.meta.visibility
-    };
-    if (renkuProject.meta.projectNamespace != null) gitlabProject.namespace_id = renkuProject.meta.projectNamespace.id;
-    const headers = client.getBasicHeaders();
-    headers.append("Content-Type", "application/json");
-
-    if (renkuProject.meta.template === client.getEmptyProjectObject().folder) {
-      let createGraphWebhookPromise;
-      const newProjectPromise = client.clientFetch(`${client.baseUrl}/projects`, {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(gitlabProject)
-      }).then(resp => {
-        if (!renkuProject.meta.optoutKg)
-          createGraphWebhookPromise = client.createGraphWebhook(resp.data.id);
-
-        return resp.data;
-      });
-
-      let promises = [newProjectPromise];
-      if (createGraphWebhookPromise)
-        promises = promises.concat(createGraphWebhookPromise);
-
-
-      return Promise.all(promises)
-        .then(([data, payload]) => {
-          if (data.errorData)
-            return Promise.reject(data);
-          return Promise.resolve(data).then(() => data);
-        });
-
-    }
-    let createGraphWebhookPromise;
-    const newProjectPromise = client.clientFetch(`${client.baseUrl}/projects`, {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify(gitlabProject)
-    }).then(resp => {
-      if (!renkuProject.meta.optoutKg)
-        createGraphWebhookPromise = client.createGraphWebhook(resp.data.id);
-
-      return resp.data;
-    });
-
-    // When the provided version does not exist, we log an error and uses latest.
-    // Maybe this should raise a more prominent alarm?
-    const payloadPromise = getPayload(
-      gitlabProject.name,
-      renkuTemplatesUrl,
-      renkuTemplatesRef,
-      renkuProject.meta.template
-    ).catch(error => {
-      return getPayload(gitlabProject.name, renkuTemplatesUrl, renkuTemplatesRef, renkuProject.meta.template);
-    });
-    let promises = [newProjectPromise, payloadPromise];
-
-    if (createGraphWebhookPromise)
-      promises = promises.concat(createGraphWebhookPromise);
-
-
-    return Promise.all(promises)
-      .then(([data, payload]) => {
-        if (data.errorData)
-          return Promise.reject(data);
-        return client.postCommit(data.id, payload).then(() => data);
-      });
-
-  };
 
   client.getProjectStatus = (projectId) => {
     const headers = client.getBasicHeaders();
@@ -407,7 +334,7 @@ function addProjectMethods(client) {
 
   };
 
-  client.putProjectField = (projectId, field_name, field_value) => {
+  client.putProjectField = async (projectId, field_name, field_value) => {
     const putData = { id: projectId, [field_name]: field_value };
     const headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
@@ -417,7 +344,6 @@ function addProjectMethods(client) {
       headers: headers,
       body: JSON.stringify(putData)
     });
-
   };
 
   client.getArtifactsUrl = (projectId, job, branch = "master") => {

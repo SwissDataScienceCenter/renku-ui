@@ -321,14 +321,15 @@ function Loader(props) {
   return (inline || size < 100) ? LoaderSpinner(props) : LoaderBouncer(props);
 }
 
-
 /**
- * Use `hidden` to completely hide the alert, `open` to manually control the visibility,
- * `dismissCallback` to attach a function to be called when the alert is dismissed,
- * `timeout` to control how many seconds the component should be visible: 0 for unlimited,
- * default 10, it fires `dismissCallback` but keep in mind it is overwritten by `open`
+ * Display a dismissable alert.
+ *
+ * @param {number} [timeout] - define how many seconds the component should be visible.
+ *   10 is default. 0 for unlimited.
+ * @param {boolean} [hidden] - hide the alert if true.
+ * @param {boolean} [open] - manually pilot visibility.
+ * @param {function} [dismissCallback] - function to be invoked when the alert is dismissed.
  */
-
 class RenkuAlert extends Component {
   constructor(props) {
     super(props);
@@ -366,7 +367,6 @@ class RenkuAlert extends Component {
     // remove the timeout when component is closed to avoid double firing callback function
     if (this.state.timeout !== null)
       clearTimeout(this.state.timeout);
-
   }
 
   onDismiss() {
@@ -374,7 +374,6 @@ class RenkuAlert extends Component {
     this.removeTimeout();
     if (this.props.dismissCallback)
       this.props.dismissCallback();
-
   }
 
   render() {

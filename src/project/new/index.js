@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2020 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -23,6 +23,6 @@
  *  Components for the new project page
  */
 
-import New from "./ProjectNew.container";
+import { NewProject } from "./ProjectNew.container";
 
-export default New;
+export { NewProject };

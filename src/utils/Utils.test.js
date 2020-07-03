@@ -29,7 +29,9 @@ import { MemoryRouter } from "react-router-dom";
 
 import Time from "./Time";
 import { CommitsView, CommitsUtils } from "./Commits";
-import { splitAutosavedBranches, sanitizedHTMLFromMarkdown, parseINIString } from "./HelperFunctions";
+import {
+  splitAutosavedBranches, sanitizedHTMLFromMarkdown, parseINIString, slugFromTitle
+} from "./HelperFunctions";
 import { RefreshButton } from "./UIComponents";
 import { StateModel, globalSchema } from "../model";
 
@@ -303,6 +305,10 @@ describe("Helper functions", () => {
     expect(splittedBranches.autosaved[0].autosave.branch).toEqual(branch);
     expect(splittedBranches.autosaved[0].autosave.commit).toEqual(commit);
     expect(splittedBranches.autosaved[0].autosave.finalCommit).toEqual(finalCommit);
+  });
+
+  it("function slugFromTitle", () => {
+    expect(slugFromTitle("This is my Project")).toEqual("This-is-my-Project");
   });
 });
 

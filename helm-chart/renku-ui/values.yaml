@@ -16,8 +16,8 @@ global:
 replicaCount: 1
 
 image:
-  repository: renku/renku-ui
-  tag: '0.7.4'
+  repository: lorenzocavazzitech/renku-ui
+  tag: '0.10.3'
   pullPolicy: IfNotPresent
 
   ## Optionally specify an array of imagePullSecrets.
@@ -58,9 +58,12 @@ welcomePage:
     Renku is software for collaborative data science. With Renku you can share code and data,
     discuss problems and solutions, and coordinate data-science projects.
 
-templatesRepository:
-  url: https://github.com/SwissDataScienceCenter/renku-project-template
-  ref: 0.1.11
+templates:
+  custom: true
+  repositories:
+    - url: https://github.com/SwissDataScienceCenter/renku-project-template
+      ref: 0.1.11
+      name: Renku
 
 # Any string here, other than 'false', will enable the maintenance page and be added on it as an info.
 # Setting 'true' will display a standard message embedded in maintenace page.
