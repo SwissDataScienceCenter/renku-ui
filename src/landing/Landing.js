@@ -34,7 +34,7 @@ import { ProjectsCoordinator } from "../project/shared";
 function urlMap() {
   return {
     projectsUrl: "/projects",
-    projectNewUrl: "/project_new",
+    projectNewUrl: "/projects/new",
     projectsSearchUrl: "/projects/all",
     projectsStarredUrl: "/projects/starred",
   };

@@ -385,7 +385,7 @@ class ProjectList extends Component {
     emptyListText += "project declares your interest in it. ";
     const newProjectButton = hasUser ?
       <Link className="btn btn-primary mt-auto mb-auto" role="button" to={urlMap.projectNewUrl}>
-        New Project
+        New project
       </Link> :
       null;
 
