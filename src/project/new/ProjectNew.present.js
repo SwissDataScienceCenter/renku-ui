@@ -317,7 +317,7 @@ class Home extends Component {
       input.namespace :
       "<no namespace>";
     const title = input.title ?
-      slugFromTitle(input.title) :
+      slugFromTitle(input.title, true) :
       "<no title>";
     const slug = `${namespace}/${title}`;
 
@@ -593,7 +593,7 @@ class Create extends Component {
       disabled = true;
       reason = "Ongoing operation...";
     }
-    else if (meta.creation.creating || meta.creation.kgUpdating || meta.creation.visibilityUpdating) {
+    else if (meta.creation.creating || meta.creation.kgUpdating || meta.creation.projectUpdating) {
       disabled = true;
       reason = "Creating project...";
     }
@@ -612,7 +612,7 @@ class Create extends Component {
     else {
       // TODO: this should be moved up to improve performance, possible in the container mapState function
       const fullpaths = projects.list.map(project => project.path_with_namespace);
-      const fullpath = `${input.namespace}/${input.title}`;
+      const fullpath = `${input.namespace}/${slugFromTitle(input.title, true)}`;
       if (fullpaths.includes(fullpath)) {
         disabled = true;
         reason = "Title already in current namespace.";
@@ -635,10 +635,10 @@ class Create extends Component {
     const { templates, meta } = this.props;
 
     // do not show while posting
-    if (meta.creation.creating || meta.creation.visibilityUpdating || meta.creation.kgUpdating)
+    if (meta.creation.creating || meta.creation.projectUpdating || meta.creation.kgUpdating)
       return null;
     // do not show if posted succesfully with visibility or KG warning
-    if (meta.creation.created && (meta.creation.visibilityError || meta.creation.kgError))
+    if (meta.creation.created && (meta.creation.projectError || meta.creation.kgError))
       return null;
 
     // compute error alert
@@ -681,8 +681,8 @@ class Creation extends Component {
   render() {
     const { handlers } = this.props;
     const { creation } = this.props.meta;
-    if (!creation.creating && !creation.createError && !creation.visibilityUpdating &&
-      !creation.visibilityError && !creation.kgUpdating && !creation.kgError && !creation.newName)
+    if (!creation.creating && !creation.createError && !creation.projectUpdating &&
+      !creation.projectError && !creation.kgUpdating && !creation.kgError && !creation.newName)
       return null;
 
     let color = "primary";
@@ -693,24 +693,30 @@ class Creation extends Component {
     }
     else if (creation.createError) {
       color = "danger";
-      const errors = Object.keys(creation.createError).map(error =>
-        (<p key={error}>{`${error}: ${creation.createError[error]}`}</p>)
-      );
+      let errors;
+      if (typeof creation.createError === "string") {
+        errors = <p>{creation.createError}</p>;
+      }
+      else {
+        errors = Object.keys(creation.createError).map(error =>
+          (<p key={error}>{`${error}: ${creation.createError[error]}`}</p>)
+        );
+      }
       message = (<div>
         <p>Errors occured while creating the project.</p>
         {errors}
       </div>);
     }
-    else if (creation.visibilityUpdating) {
+    else if (creation.projectUpdating) {
       message = (<span>Updating the project visibility... {loader}</span>);
     }
-    else if (creation.visibilityError) {
+    else if (creation.projectError) {
       color = "warning";
       message = (<div>
         <p>
-          An error occured while updating the visibility. Please, adjust it on GitLab if needed.
+          An error occured while updating project metadata (name or visibility). Please, adjust it on GitLab if needed.
         </p>
-        <p>Error details: {creation.visibilityError}</p>
+        <p>Error details: {creation.projectError}</p>
         <Button color="primary" onClick={(e) => { handlers.goToProject(); }}>Go to the project</Button>
       </div>);
     }

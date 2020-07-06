@@ -334,15 +334,19 @@ function addProjectMethods(client) {
 
   };
 
-  client.putProjectField = async (projectId, field_name, field_value) => {
-    const putData = { id: projectId, [field_name]: field_value };
+  client.putProjectField = async (projectId, fieldNameOrObject, fieldValue) => {
+    let data;
+    if (typeof fieldNameOrObject !== "string" && !fieldValue)
+      data = { ...fieldNameOrObject, id: projectId };
+    else
+      data = { id: projectId, [fieldNameOrObject]: fieldValue };
     const headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
 
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}`, {
       method: "PUT",
       headers: headers,
-      body: JSON.stringify(putData)
+      body: JSON.stringify(data)
     });
   };
 

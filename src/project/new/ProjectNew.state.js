@@ -24,6 +24,7 @@
  */
 
 import { newProjectSchema } from "../../model/RenkuModels";
+import { slugFromTitle } from "../../utils/HelperFunctions";
 
 class NewProjectCoordinator {
   constructor(client, model) {
@@ -259,7 +260,7 @@ class NewProjectCoordinator {
     let newProjectData = {
       project_repository: repositoryUrl,
       project_namespace: input.namespace,
-      project_name: input.title,
+      project_name: slugFromTitle(input.title, true)
     };
 
     // add template details
@@ -301,23 +302,28 @@ class NewProjectCoordinator {
     modelUpdates.meta.creation.newUrl = projectResult.result.url;
     const slug = `${projectResult.result.namespace}/${projectResult.result.name}`;
 
-    // update visibility
-    modelUpdates.meta.creation.visibilityError = "";
-    if (input.visibility !== "private") {
-      modelUpdates.meta.creation.visibilityUpdating = true;
+    // update project details like visibility and name
+    modelUpdates.meta.creation.projectError = "";
+    if (input.visibility !== "private" || projectResult.result.name !== input.title) {
+      modelUpdates.meta.creation.projectUpdating = true;
       this.model.setObject(modelUpdates);
+      let projectObject = {};
+      if (input.visibility !== "private")
+        projectObject["visibility"] = input.visibility;
+      if (projectResult.result.name !== input.title)
+        projectObject["name"] = input.title;
       try {
-        await this.client.putProjectField(encodeURIComponent(slug), "visibility", input.visibility);
-        modelUpdates.meta.creation.visibilityUpdated = true;
+        await this.client.putProjectField(encodeURIComponent(slug), projectObject);
+        modelUpdates.meta.creation.projectUpdated = true;
       }
       catch (error) {
-        modelUpdates.meta.creation.visibilityError = error.message ? error.message : error;
+        modelUpdates.meta.creation.projectError = error.message ? error.message : error;
       }
-      modelUpdates.meta.creation.visibilityUpdating = false;
+      modelUpdates.meta.creation.projectUpdating = false;
       this.model.setObject(modelUpdates);
     }
     else {
-      modelUpdates.meta.creation.visibilityUpdated = true;
+      modelUpdates.meta.creation.projectUpdated = true;
     }
 
     // activate knowledge graph

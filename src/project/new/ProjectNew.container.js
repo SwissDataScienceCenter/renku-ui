@@ -95,7 +95,7 @@ class NewProject extends Component {
       const { creation } = result.meta;
       if (creation.created) {
         this.refreshUserProjects();
-        if (!creation.kgError && !creation.visibilityError) {
+        if (!creation.kgError && !creation.projectError) {
           const slug = `${creation.newNamespace}/${creation.newName}`;
           this.props.history.push(`/projects/${slug}`);
         }

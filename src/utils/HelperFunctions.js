@@ -23,7 +23,9 @@ import DOMPurify from "dompurify";
 
 const AUTOSAVED_PREFIX = "renku/autosave/";
 
-const slugFromTitle = (title) => title.replace(/\s/g, "-");
+const slugFromTitle = (title, lower = false) => lower ?
+  title.replace(/\s/g, "-").toLowerCase() :
+  title.replace(/\s/g, "-");
 
 function getActiveProjectPathWithNamespace(currentPath) {
   try {
