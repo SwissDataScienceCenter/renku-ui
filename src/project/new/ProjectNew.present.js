@@ -182,10 +182,14 @@ class NamespacesAutosuggest extends Component {
     };
   }
 
-  componentDidUpdate() {
-    // adjust state if a namespace has been pre-selected (e.g. only 1 namespace)
-    if (this.props.input.namespace && this.state.value !== this.props.input.namespace)
-      this.setState({ value: this.props.input.namespace });
+  componentDidMount() {
+    // set first user namespace as default when available
+    const { namespaces } = this.props;
+    if (namespaces.fetched && namespaces.list.length) {
+      const defaultNamespace = namespaces.list[0];
+      this.props.handlers.setNamespace(defaultNamespace);
+      this.setState({ value: defaultNamespace.full_path });
+    }
   }
 
   getSuggestions(value) {
@@ -242,11 +246,8 @@ class NamespacesAutosuggest extends Component {
   }
 
   onChange = (event, { newValue, method }) => {
-    this.setState({ value: newValue });
-    if (method === "enter" || method === "click") {
-      const namespace = this.props.namespaces.list.filter(ns => ns.full_path === newValue)[0];
-      this.props.handlers.setNamespace(namespace);
-    }
+    if (method === "type")
+      this.setState({ value: newValue });
   };
 
   onSuggestionsFetchRequested = ({ value, reason }) => {
@@ -259,6 +260,12 @@ class NamespacesAutosuggest extends Component {
   onSuggestionsClearRequested = () => {
     this.setState({ suggestions: [] });
   };
+
+  onSuggestionSelected = (event, { suggestionValue, method }) => {
+    this.setState({ value: suggestionValue });
+    const namespace = this.props.namespaces.list.filter(ns => ns.full_path === suggestionValue)[0];
+    this.props.handlers.setNamespace(namespace);
+  }
 
   getTheme() {
     const defaultTheme = {
@@ -298,6 +305,7 @@ class NamespacesAutosuggest extends Component {
         suggestions={suggestions}
         onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
         onSuggestionsClearRequested={this.onSuggestionsClearRequested}
+        onSuggestionSelected={this.onSuggestionSelected}
         getSuggestionValue={this.getSuggestionValue}
         getSectionSuggestions={this.getSectionSuggestions}
         renderSuggestion={this.renderSuggestion}
