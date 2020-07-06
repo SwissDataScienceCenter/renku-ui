@@ -697,7 +697,7 @@ class Creation extends Component {
     let message = "";
     const loader = (<Loader inline={true} size={16} />);
     if (creation.creating) {
-      message = (<span>Posting project to the remote repository... {loader}</span>);
+      message = (<span>Initializing project... {loader}</span>);
     }
     else if (creation.createError) {
       color = "danger";
@@ -716,7 +716,7 @@ class Creation extends Component {
       </div>);
     }
     else if (creation.projectUpdating) {
-      message = (<span>Updating the project visibility... {loader}</span>);
+      message = (<span>Updating project metadata... {loader}</span>);
     }
     else if (creation.projectError) {
       color = "warning";
