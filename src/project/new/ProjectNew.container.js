@@ -39,6 +39,7 @@ class NewProject extends Component {
     this.coordinator = new NewProjectCoordinator(props.client, this.model.subModel("newProject"));
     this.coordinator.setConfig(props.templates.custom, props.templates.repositories);
     this.projectsCoordinator = new ProjectsCoordinator(props.client, props.model.subModel("projects"));
+    this.coordinator.resetInput();
 
     this.handlers = {
       onSubmit: this.onSubmit.bind(this),

@@ -70,6 +70,11 @@ class NewProjectCoordinator {
     });
   }
 
+  resetInput() {
+    const pristineInput = newProjectSchema.createInitialized().input;
+    this.model.setObject({ input: pristineInput });
+  }
+
   setProperty(property, value) {
     const currentInput = this.model.get("input");
     if (currentInput[property] === value) return;
