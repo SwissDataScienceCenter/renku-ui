@@ -24,7 +24,6 @@
  */
 
 import { newProjectSchema } from "../../model/RenkuModels";
-import { slugFromTitle } from "../../utils/HelperFunctions";
 
 class NewProjectCoordinator {
   constructor(client, model) {
@@ -265,7 +264,7 @@ class NewProjectCoordinator {
     let newProjectData = {
       project_repository: repositoryUrl,
       project_namespace: input.namespace,
-      project_name: slugFromTitle(input.title, true)
+      project_name: input.title
     };
 
     // add template details
