@@ -28,7 +28,7 @@ import React, { Component, Fragment, useState, useEffect } from "react";
 
 import { Link, Route, Switch } from "react-router-dom";
 import {
-  Container, Row, Col, Alert, DropdownItem, Table, Nav, NavItem, Button, ButtonGroup, Badge,
+  Container, Row, Col, Alert, DropdownItem, Table, Nav, NavItem, Button, ButtonGroup, Badge, Spinner,
   Card, CardBody, CardHeader, Form, FormGroup, FormText, Label, Input, UncontrolledTooltip, ListGroupItem
 } from "reactstrap";
 
@@ -37,7 +37,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
 import {
   faCodeBranch, faExternalLinkAlt, faInfoCircle, faStar as faStarSolid,
-  faExclamationTriangle, faLock, faUserFriends, faGlobe, faSearch
+  faExclamationTriangle, faLock, faUserFriends, faGlobe, faSearch, faCheck
 } from "@fortawesome/free-solid-svg-icons";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 
@@ -53,7 +53,7 @@ import { CollaborationList, collaborationListTypeMap } from "../collaboration/li
 import FilesTreeView from "./filestreeview/FilesTreeView";
 import DatasetsListView from "./datasets/DatasetsListView";
 import { ACCESS_LEVELS } from "../api-client";
-import { GraphIndexingStatus, withProjectMapped } from "./Project";
+import { GraphIndexingStatus, withProjectMapped, MigrationStatus } from "./Project";
 import { NamespaceProjects } from "../namespace";
 import { CommitsView } from "../utils/Commits";
 
@@ -90,6 +90,25 @@ class ProjectVisibilityLabel extends Component {
       default:
         return null;
     }
+  }
+}
+
+class ProjectMigrationIcon extends Component {
+  render() {
+    const migration_required = this.props.migration_required;
+
+    if (migration_required) {
+      return <span className="warningLabel">
+        <FontAwesomeIcon
+          icon={faExclamationTriangle}
+          onClick={()=>this.props.history.push(this.props.overviewUpgradeUrl)}
+          id="warningUpgradeLink" />
+        <UncontrolledTooltip placement="top" target="warningUpgradeLink">
+          Migration required, click here to see details.
+        </UncontrolledTooltip>
+      </span>;
+    }
+    return null;
   }
 }
 
@@ -283,7 +302,11 @@ class ProjectViewHeaderOverview extends Component {
       <Container fluid>
         <Row>
           <Col xs={12} md>
-            <h3>{core.title} <ProjectVisibilityLabel visibilityLevel={this.props.visibility.level} /></h3>
+            <h3><ProjectMigrationIcon
+              history={this.props.history}
+              overviewUpgradeUrl={this.props.overviewUpgradeUrl}
+              migration_required={this.props.migration.migration_required}
+            />{core.title} <ProjectVisibilityLabel visibilityLevel={this.props.visibility.level} /></h3>
             <p>
               <span>{this.props.core.path_with_namespace}{forkedFrom}</span> <br />
             </p>
@@ -479,6 +502,87 @@ class ProjectViewStats extends Component {
   }
 }
 
+class ProjectViewUpgrade extends Component {
+  render() {
+    const loading = isRequestPending(this.props, "readme");
+    const migration_required = this.props.migration.migration_required;
+    const project_supported = this.props.migration.project_supported;
+    const migration_status = this.props.migration.migration_status;
+    const check_error = this.props.migration.check_error;
+    const migration_error = this.props.migration.migration_error;
+    const maintainer = this.props.visibility.accessLevel >= ACCESS_LEVELS.MAINTAINER;
+
+    if (loading || migration_required === null)
+      return <Loader />;
+
+    return <Card key="storage-stats" className="border-0">
+      <CardHeader>Renku-python check</CardHeader>
+      <CardBody>
+        <Col md={10} sm={12}>
+          <Row>
+            <Col>
+              { migration_required ?
+                <Alert color="warning">
+                  <FontAwesomeIcon icon={faExclamationTriangle} /> A new
+                  version of <strong>renku-python</strong> is availabe.
+                  <br /><br />
+                  This project is currently using an older version of renku-python.
+                  A migration is necessary to make changes to datasets and is recommended for all projects.
+                  <br /><br />
+                  {
+                    migration_status === MigrationStatus.ERROR ?
+                      <div>
+                        There was an error while trying to migrate your project.
+                        You can try again or contactu us for support.<br />
+                        <strong>Error: </strong>{migration_error}
+                      </div>
+                      : null
+                  }
+                  {
+                    project_supported ?
+                      maintainer ?
+                        <Col align="right">
+                          <Button
+                            color="warning"
+                            disabled={migration_status === MigrationStatus.MIGRATING}
+                            onClick={this.props.onMigrateProject}>
+                            {migration_status === MigrationStatus.MIGRATING ?
+                              <span>
+                                <Spinner size="sm"/> Migrating...
+                              </span>
+                              :
+                              "Migrate"
+                            }
+                          </Button>
+                        </Col>
+                        : <strong>You do not have sufficient rights to migrate this project, but
+                          a project owner can do this.</strong>
+                      : <strong>
+                        Your version is not supported for automatic migration, please do this...
+                      </strong>
+                  }
+                </Alert>
+                :
+                check_error !== undefined ?
+                  <Alert color="danger">
+                    There was an error doing the migration check, please reload the page and try again.
+                    <br></br>
+                    <br></br>
+                    <strong>Error Message: </strong> {check_error}
+                  </Alert>
+                  :
+                  <Alert color="success">
+                    <FontAwesomeIcon icon={faCheck} /> The current renku-python version is compatible with Renkulab.
+                  </Alert>
+              }
+            </Col>
+          </Row>
+        </Col>
+      </CardBody>
+    </Card>;
+  }
+}
+
 class ProjectViewOverviewNav extends Component {
 
   render() {
@@ -499,6 +603,9 @@ class ProjectViewOverviewNav extends Component {
         </NavItem>
         <NavItem>
           <RenkuNavLink to={`${this.props.overviewCommitsUrl}`} title="Commits" />
+        </NavItem>
+        <NavItem>
+          <RenkuNavLink to={`${this.props.overviewUpgradeUrl}`} title="Upgrade" />
         </NavItem>
       </Nav>);
   }
@@ -551,6 +658,9 @@ class ProjectViewOverview extends Component {
                 const ProjectViewCommitsConnected = withProjectMapped(ProjectViewCommits, categories);
                 return <ProjectViewCommitsConnected projectCoordinator={projectCoordinator} />;
               }}
+            />
+            <Route exact path={this.props.overviewUpgradeUrl} render={props =>
+              <ProjectViewUpgrade {...this.props} />}
             />
           </Switch>
         </Col>
@@ -709,23 +819,32 @@ function ProjectAddDataset(props) {
 }
 
 function EmptyDatasets(props) {
-  return <Col sm={12} md={10} lg={8}>
-    <Alert timeout={0} color="primary">
-      No datasets found for this project.
-      { props.membership ?
-        <div><br /><FontAwesomeIcon icon={faInfoCircle} />  If you recently activated the knowledge graph or
-          added the datasets try refreshing the page. <br /><br />
-          You can also click on the button to
-          &nbsp;<Link className="btn btn-primary btn-sm" to={props.newDatasetUrl}>Add a Dataset</Link></div>
-        : null
-      }
-    </Alert>
-  </Col>;
+  return <Alert timeout={0} color="primary">
+    No datasets found for this project.
+    { props.membership ?
+      <div><br /><FontAwesomeIcon icon={faInfoCircle} />  If you recently activated the knowledge graph or
+        added the datasets try refreshing the page. <br /><br />
+        You can also click on the button to
+        &nbsp;<Link className="btn btn-primary btn-sm" to={props.newDatasetUrl}>Add a Dataset</Link></div>
+      : null
+    }
+  </Alert>;
 }
 
 function ProjectViewDatasets(props) {
   const [fetchAfterWebhook, setFetchAfterWebhook] = useState(false);
   const [firstFetch, setFirstFetch] = useState(false);
+
+  const migrationMessage = props.migration.migration_required ?
+    <Alert color="warning">
+      <FontAwesomeIcon icon={faExclamationTriangle} /> <strong>A new version of renku-python is available.</strong>
+      <br /><br />
+      It is recommended to migrate the project to the newest version of renku-python to ensure that
+      dataset operations function properly.
+      <br />
+      <br />
+      <Button color="warning" onClick={()=>props.history.push(props.overviewUpgradeUrl)} >More Info</Button>
+    </Alert> : null;
 
   useEffect(()=>{
     const loading = props.core.datasets === SpecialPropVal.UPDATING;
@@ -762,18 +881,26 @@ function ProjectViewDatasets(props) {
       || progress === GraphIndexingStatus.NO_PROGRESS
       || (progress >= GraphIndexingStatus.MIN_VALUE && progress < GraphIndexingStatus.MAX_VALUE);
 
-  if (kgLoading)
-    return <Col sm={12} md={10} lg={8}>{props.kgStatusView(true, props.fetchDatasets)}</Col>;
+  if (kgLoading) {
+    return <Col sm={12} md={10} lg={8}>
+      {migrationMessage}
+      {props.kgStatusView(true, props.fetchDatasets)}
+    </Col>;
+  }
 
   if (!loading && !kgLoading && props.core.datasets !== undefined && props.core.datasets.length === 0
     && props.location.pathname !== props.newDatasetUrl) {
-    return <EmptyDatasets
-      membership={props.visibility.accessLevel > ACCESS_LEVELS.DEVELOPER}
-      newDatasetUrl={props.newDatasetUrl}
-    />;
+    return <Col sm={12} md={12} lg={8}>
+      {migrationMessage}
+      <EmptyDatasets
+        membership={props.visibility.accessLevel > ACCESS_LEVELS.DEVELOPER}
+        newDatasetUrl={props.newDatasetUrl}
+      />
+    </Col>;
   }
 
   return <Col sm={12} md={12} lg={8}>
+    {migrationMessage}
     <Switch>
       <Route path={props.newDatasetUrl}
         render={p =>[

@@ -36,9 +36,57 @@ const GraphIndexingStatus = {
   MAX_VALUE: 100
 };
 
+const MigrationStatus = {
+  MIGRATING: "MIGRATING",
+  FINISHED: "FINISHED",
+  ERROR: "ERROR"
+};
+
 class ProjectModel extends StateModel {
   constructor(stateBinding, stateHolder, initialState) {
     super(projectSchema, stateBinding, stateHolder, initialState);
+  }
+
+  fetchMigrationCheck(client, user) {
+    client.getProjectIdFromSvc(this.get("system.http_url"))
+      .then((response)=>{
+        if (response.data && response.data.error !== undefined) {
+          this.set("migration.check_error", response.data.error.reason);
+        }
+        else {
+          client.performMigrationCheck(response)
+            .then((response)=>{
+              if (response.data && response.data.error !== undefined) {
+                this.set("migration.check_error", response.data.error.reason);
+              }
+              else {
+                this.set("migration.migration_required", response.result.migration_required);
+                this.set("migration.project_supported", response.result.project_supported);
+              }
+            });
+        }
+      });
+  }
+
+  migrateProject(client) {
+    if (this.get("migration.migration_status") === MigrationStatus.MIGRATING)
+      return;
+    this.set("migration.migration_status", MigrationStatus.MIGRATING);
+    client.getProjectIdFromSvc(this.get("system.http_url"))
+      .then((projectId)=>{
+        client.performMigration(projectId)
+          .then((response)=>{
+            if (response.data.error) {
+              this.set("migration.migration_status", MigrationStatus.ERROR);
+              this.set("migration.migration_error", response.data.error.reason);
+            }
+            else {
+              this.fetchMigrationCheck(client);
+              this.set("migration.migration_status", MigrationStatus.FINISHED);
+              this.set("migration.migration_error", undefined);
+            }
+          });
+      });
   }
 
   stopCheckingWebhook() {
@@ -404,4 +452,4 @@ class ProjectCoordinator {
   }
 }
 
-export { ProjectModel, GraphIndexingStatus, ProjectCoordinator };
+export { ProjectModel, GraphIndexingStatus, ProjectCoordinator, MigrationStatus };
