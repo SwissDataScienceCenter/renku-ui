@@ -412,6 +412,7 @@ class KnowledgeGraph extends Component {
   }
 }
 
+// TODO: complete and re-enable following 2 components for custom user templates
 class TemplateSource extends Component {
   render() {
     const { handlers, config, input } = this.props;
@@ -523,7 +524,7 @@ class Template extends Component {
         </Input>
       );
       if (input.template)
-        help = templates.all.filter(t => t.id === input.template)[0].description;
+        help = capitalize(templates.all.filter(t => t.id === input.template)[0].description);
     }
     const subProps = { invalid };
 
@@ -553,15 +554,9 @@ class Variables extends Component {
       return null;
     const variables = Object.keys(template.variables).map(variable => (
       <FormGroup key={variable}>
-        <Label className="text-capitalize">
-          {variable} <span id={`info-${variable}`}><FontAwesomeIcon icon={faInfoCircle} /></span>
-        </Label>
-        <UncontrolledTooltip key="tooltip" placement="top" target={`info-${variable}`}>
-          Required for this template. Can be an empty string.
-        </UncontrolledTooltip>
-        <Input type="text" placeholder="Insert a value..."
-          onChange={(e) => handlers.setVariable(variable, e.target.value)} />
-        <FormText>{template.variables[variable]}</FormText>
+        <Label>{capitalize(variable)}</Label>
+        <Input type="text" onChange={(e) => handlers.setVariable(variable, e.target.value)} />
+        <FormText>{capitalize(template.variables[variable])}</FormText>
       </FormGroup>
     ));
 
