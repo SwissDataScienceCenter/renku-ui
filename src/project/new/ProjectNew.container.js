@@ -53,7 +53,14 @@ class NewProject extends Component {
   }
 
   async getNamespaces() {
-    return this.projectsCoordinator.getNamespaces();
+    // we pass the projects object but we pre-set loading to get proper validation
+    let projects = this.model.get("projects");
+    projects = { ...projects, namespaces: { ...projects.namespaces, fetching: true } };
+    this.coordinator.validate(projects, null, null, true);
+    const namespaces = await this.projectsCoordinator.getNamespaces();
+    projects = this.model.get("projects");
+    this.coordinator.validate(projects, null, null, true);
+    return namespaces;
   }
 
   async getTemplates() {
@@ -65,7 +72,8 @@ class NewProject extends Component {
   }
 
   setProperty(property, value) {
-    this.coordinator.setProperty(property, value);
+    // projects data are provided for full validation
+    this.coordinator.setProperty(property, value, this.model.get("projects"));
   }
 
   setNamespace(namespace) {
@@ -83,11 +91,13 @@ class NewProject extends Component {
   }
 
   onSubmit(e) {
-    // validate
     e.preventDefault();
-    const validation = this.coordinator.validate();
-    if (validation.client.errors && validation.client.errors.length)
-      // TODO: display error strings/data
+
+    // validate -- we do this cause we don't show errors on pristine variables
+    if (this.coordinator.invalidatePristine())
+      return;
+    let validation = this.coordinator.getValidation();
+    if (Object.keys(validation.errors).length || Object.keys(validation.warnings).length)
       return;
 
     // submit

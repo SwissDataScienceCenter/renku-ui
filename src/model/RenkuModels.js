@@ -182,11 +182,15 @@ const newProjectSchema = new Schema({
   input: {
     [Prop.SCHEMA]: new Schema({
       title: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+      titlePristine: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true },
       namespace: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+      namespacePristine: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true },
       visibility: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true },
+      visibilityPristine: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true },
       userRepo: { [Prop.INITIAL]: false, [Prop.MANDATORY]: false },
       knowledgeGraph: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true },
       template: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true },
+      templatePristine: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true },
       variables: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true }, // contains pairs "var1": "value1"
     })
   },
@@ -197,7 +201,6 @@ const newProjectSchema = new Schema({
           id: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
           fetched: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
           fetching: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
-          visibility: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
           visibilities: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true }
         })
       },
@@ -214,14 +217,8 @@ const newProjectSchema = new Schema({
       },
       validation: {
         [Prop.SCHEMA]: new Schema({
-          client: {
-            [Prop.SCHEMA]: new Schema({
-              result: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
-              errors: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
-              errorDict: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
-            })
-          },
-          server: { [Prop.INITIAL]: [], [Prop.MANDATORY]: false },
+          warnings: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
+          errors: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
         })
       },
       creation: {

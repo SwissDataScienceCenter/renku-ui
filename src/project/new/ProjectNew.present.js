@@ -110,8 +110,8 @@ class NewProject extends Component {
 
 class Title extends Component {
   render() {
-    const { handlers } = this.props;
-    const validationDict = this.props.meta.validation.client.errorDict;
+    const { handlers, meta, input } = this.props;
+    const error = meta.validation.errors["title"];
     const url = "https://docs.gitlab.com/ce/user/reserved_names.html#reserved-project-names";
 
     const help = (
@@ -124,7 +124,7 @@ class Title extends Component {
     return (
       <FieldGroup id="title" type="text" label="Title"
         placeholder="A brief name to identify the project" help={help}
-        feedback={validationDict.title} invalid={validationDict.title != null}
+        feedback={error} invalid={error && !input.titlePristine}
         onChange={(e) => handlers.setProperty("title", e.target.value)} />
     );
   }
@@ -344,6 +344,7 @@ class Home extends Component {
 class Visibility extends Component {
   render() {
     const { handlers, meta, input } = this.props;
+    const error = meta.validation.errors["visibility"];
     let main;
     if (!input.namespace) {
       main = (
@@ -365,7 +366,7 @@ class Visibility extends Component {
       const options = meta.namespace.visibilities.map(v => <option key={v} value={v}>{capitalize(v)}</option>);
       main = (
         <Input type="select" placeholder="Choose visibility..."
-          value={input.visibility}
+          value={input.visibility} feedback={error} invalid={error && !input.visibilityPristine}
           onChange={(e) => handlers.setProperty("visibility", e.target.value)} >
           <option key="" value="" disabled>Choose visibility...</option>
           {options}
@@ -499,9 +500,9 @@ class Template extends Component {
   }
 
   render() {
-    const { handlers, input, templates } = this.props;
-    const validationDict = this.props.meta.validation.client.errorDict;
-    const feedback = validationDict.template, invalid = validationDict.template != null;
+    const { handlers, input, templates, meta } = this.props;
+    const error = meta.validation.errors["template"];
+    const invalid = error && !input.templatePristine ? true : false;
     let main, help = null;
     if (templates.fetching) {
       main = (
@@ -517,7 +518,7 @@ class Template extends Component {
       );
       main = (
         <Input type="select" placeholder="Select template..."
-          value={input.template} invalid={invalid}
+          value={input.template} feedback={error} invalid={invalid}
           onChange={(e) => handlers.setProperty("template", e.target.value)} >
           <option key="" value="" disabled>Select a template...</option>
           {options}
@@ -526,13 +527,12 @@ class Template extends Component {
       if (input.template)
         help = capitalize(templates.all.filter(t => t.id === input.template)[0].description);
     }
-    const subProps = { invalid };
 
     return (
       <FormGroup>
         <Label>Template</Label>
         {main}
-        {feedback && <FormFeedback {...subProps}>{feedback}</FormFeedback>}
+        {error && <FormFeedback {...invalid}>{error}</FormFeedback>}
         {help && <FormText color="muted">{help}</FormText>}
       </FormGroup>
     );
@@ -565,75 +565,6 @@ class Variables extends Component {
 }
 
 class Create extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      disabled: false,
-      reason: null
-    };
-  }
-
-  componentDidMount() {
-    this.setMetadata();
-  }
-
-  componentDidUpdate() {
-    this.setMetadata();
-  }
-
-  setMetadata = () => {
-    const { templates, namespaces, input, projects, meta } = this.props;
-    const reserverdNames = ["badges", "blame", "blob", "builds", "commits", "create", "create_dir",
-      "edit", "environments/folders", "files", "find_file", "gitlab-lfs/objects", "info/lfs/objects",
-      "new", "preview", "raw", "refs", "tree", "update", "wikis"];
-
-    let disabled = false, reason = null;
-    if (templates.errors && templates.errors.length) {
-      disabled = true;
-      reason = null;
-    }
-    else if (templates.fetching || namespaces.fetching) {
-      disabled = true;
-      reason = "Ongoing operation...";
-    }
-    else if (meta.creation.creating || meta.creation.kgUpdating || meta.creation.projectUpdating) {
-      disabled = true;
-      reason = "Creating project...";
-    }
-    else if (!input.title) {
-      disabled = true;
-      reason = "Enter a title";
-    }
-    else if (!input.template) {
-      disabled = true;
-      reason = "Select a template";
-    }
-    else if (reserverdNames.includes(input.title)) {
-      disabled = true;
-      reason = "Reserverd title name";
-    }
-    else {
-      // TODO: this should be moved up to improve performance, possible in the container mapState function
-      const fullpaths = projects.list.map(project => project.path_with_namespace);
-      const fullpath = `${input.namespace}/${slugFromTitle(input.title, true)}`;
-      if (fullpaths.includes(fullpath)) {
-        disabled = true;
-        reason = "Title already in current namespace.";
-      }
-    }
-
-    // update state if needed
-    if (this.state.disabled === disabled && this.state.reason === reason)
-      return;
-
-    let newState = {};
-    if (this.state.disabled !== disabled)
-      newState.disabled = disabled;
-    if (this.state.reason !== reason)
-      newState.reason = reason;
-    this.setState(newState);
-  }
-
   render() {
     const { templates, meta } = this.props;
 
@@ -644,37 +575,52 @@ class Create extends Component {
     if (meta.creation.created && (meta.creation.projectError || meta.creation.kgError))
       return null;
 
-    // compute error alert
+    // check template errors and provide adequate feedback
     let alert = null;
     const error = templates.errors && templates.errors.length ?
       templates.errors[0] :
       null;
     if (error) {
-      let text;
-      for (let key of Object.keys(error))
-        text = error[key];
-      alert = (<Alert color="danger">{text}</Alert>);
+      let content = typeof error == "string" ?
+        (<pre className="text-wrap">{error}</pre>) :
+        Object.keys(error).map(v => (<pre key={v} className="text-wrap">{v}: {error[v]}</pre>));
+      const fatal = templates.all && templates.all.length ? false : true;
+      const description = fatal ?
+        (<p>Unable to fetch templates.</p>) :
+        (<p>Errors happend while fetching templates. Some of them may be unavailable.</p>);
+      alert = (
+        <Alert color={fatal ? "danger" : "warning"}>
+          {description}
+          {content}
+          <small>
+            <FontAwesomeIcon icon={faInfoCircle} /> You
+            can try refreshing the page. If the error persists, you should contact the development team on&nbsp;
+            <a href="https://gitter.im/SwissDataScienceCenter/renku"
+              target="_blank" rel="noreferrer noopener">Gitter</a> or&nbsp;
+            <a href="https://github.com/SwissDataScienceCenter/renku"
+              target="_blank" rel="noreferrer noopener">GitHub</a>.
+          </small>
+        </Alert>
+      );
+      if (fatal)
+        return alert;
     }
 
-    // compute info
-    let info = null;
-    if (this.state.reason) {
-      info = (
-        <UncontrolledTooltip
-          key="tooltip" placement="top" target="create-new-project">{this.state.reason}
-        </UncontrolledTooltip>
-      );
-    }
+    // provide a minimal feedback under the button if any loading operation is ongoing
+    const warnings = Object.keys(meta.validation.warnings);
+    const loading = warnings.length ?
+      meta.validation.warnings[`${warnings[0]}`] :
+      null;
 
     return (
       <Fragment>
         {alert}
         <Button id="create-new-project" color="primary"
           onClick={this.props.handlers.onSubmit}
-          disabled={this.state.disabled}>
+          disabled={loading ? true : false}>
           Create project
         </Button>
-        {info}
+        {loading && (<FormText color="primary">{loading}</FormText>)}
       </Fragment>
     );
   }

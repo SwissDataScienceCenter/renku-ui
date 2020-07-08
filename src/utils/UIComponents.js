@@ -298,7 +298,7 @@ function LoaderSpinner(props) {
   const display = props.inline ? "inline-block" : "";
   const verticalAlign = props.inline ? "middle" : "";
   const margin = `m-${props.margin ? props.margin : 0}`;
-  return <div className={margin} style={{
+  return <div className={`${margin} ${props.className}`} style={{
     width: d, height: d,
     border, borderTop, borderRight, borderRadius, animation, left, right, display, verticalAlign,
     position: "relative",
@@ -307,7 +307,7 @@ function LoaderSpinner(props) {
 
 function LoaderBouncer(props) {
   return (
-    <div className="bouncer">
+    <div className={`bouncer ${props.className}`}>
       <span></span>
       <span></span>
       <span></span>
