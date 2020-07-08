@@ -116,7 +116,7 @@ class Title extends Component {
 
     const help = (
       <span>
-        <FontAwesomeIcon icon={faInfoCircle} /> There are a
+        <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> There are a
         few <ExternalLink url={url} title="reserverd names" role="link" /> you cannot use.
       </span>
     );
@@ -159,7 +159,8 @@ class Namespaces extends Component {
     // show info about visibility only when group namespaces are available
     const info = namespaces.fetched && list.length && list.filter(n => n.kind === "group").length ?
       (<FormText>
-        <FontAwesomeIcon icon={faInfoCircle} /> Group namespaces may restrict the visibility options.
+        <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> Group namespaces may
+        restrict the visibility options.
       </FormText>) :
       null;
 
@@ -334,7 +335,8 @@ class Home extends Component {
         <Label>Identifier</Label>
         <Input readOnly value={slug} />
         <FormText>
-          <FontAwesomeIcon icon={faInfoCircle} /> This is automatically derived from Namespace and Title.
+          <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> This is automatically derived from
+          Namespace and Title.
         </FormText>
       </FormGroup>
     );
@@ -405,8 +407,8 @@ class KnowledgeGraph extends Component {
           Opt-out from Knowledge Graph
         </Label>
         <FormText>
-          <FontAwesomeIcon icon={faInfoCircle} /> The {kgLink} may make some metadata public,
-          opt-out if this is not acceptable.
+          <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> The {kgLink} may make some metadata
+          public, opt-out if this is not acceptable.
         </FormText>
       </FormGroup>
     );
@@ -593,7 +595,7 @@ class Create extends Component {
           {description}
           {content}
           <small>
-            <FontAwesomeIcon icon={faInfoCircle} /> You
+            <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> You
             can try refreshing the page. If the error persists, you should contact the development team on&nbsp;
             <a href="https://gitter.im/SwissDataScienceCenter/renku"
               target="_blank" rel="noreferrer noopener">Gitter</a> or&nbsp;
