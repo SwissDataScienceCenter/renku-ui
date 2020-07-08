@@ -48,7 +48,7 @@ class ProjectModel extends StateModel {
   }
 
   fetchMigrationCheck(client, user) {
-    client.getProjectIdFromSvc(this.get("system.http_url"))
+    client.getProjectIdFromService(this.get("system.http_url"))
       .then((response)=>{
         if (response.data && response.data.error !== undefined) {
           this.set("migration.check_error", response.data.error.reason);
@@ -72,7 +72,7 @@ class ProjectModel extends StateModel {
     if (this.get("migration.migration_status") === MigrationStatus.MIGRATING)
       return;
     this.set("migration.migration_status", MigrationStatus.MIGRATING);
-    client.getProjectIdFromSvc(this.get("system.http_url"))
+    client.getProjectIdFromService(this.get("system.http_url"))
       .then((projectId)=>{
         client.performMigration(projectId)
           .then((response)=>{

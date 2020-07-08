@@ -512,7 +512,7 @@ class ProjectViewUpgrade extends Component {
     const migration_error = this.props.migration.migration_error;
     const maintainer = this.props.visibility.accessLevel >= ACCESS_LEVELS.MAINTAINER;
 
-    if (loading || migration_required === null)
+    if (loading || (migration_required === null && migration_error === null))
       return <Loader />;
 
     return <Card key="storage-stats" className="border-0">
@@ -532,8 +532,13 @@ class ProjectViewUpgrade extends Component {
                   {
                     migration_status === MigrationStatus.ERROR ?
                       <div>
-                        There was an error while trying to migrate your project.
-                        You can try again or contactu us for support.<br />
+                        There was an error while trying to migrate your project. Please try again,
+                        if the problem persists you should contact the development team on&nbsp;
+                        <a href="https://gitter.im/SwissDataScienceCenter/renku"
+                          target="_blank" rel="noreferrer noopener">Gitter</a> or create an issue in&nbsp;
+                        <a href="https://github.com/SwissDataScienceCenter/renku/issues"
+                          target="_blank" rel="noreferrer noopener">GitHub</a>.
+                        <br /><br />
                         <strong>Error: </strong>{migration_error}
                       </div>
                       : null
@@ -556,24 +561,40 @@ class ProjectViewUpgrade extends Component {
                           </Button>
                         </Col>
                         : <strong>You do not have sufficient rights to migrate this project, but
-                          a project owner can do this.</strong>
-                      : <strong>
-                        Your version is not supported for automatic migration, please do this...
-                      </strong>
+                          a project maintainer can do this. <ExternalLink role="text" size="sm"
+                          title="Contact a maintainer" url={`${this.props.externalUrl}/project_members`} />
+                          .</strong>
+                      : <span>
+                        <strong>Your version is not supported for automatic migration</strong>.
+                        <br/><br/>
+                        You can try and run <i>renku migrate</i> from your interactive environment.
+                        If this doesn not work please contact the development team on&nbsp;
+                        <a href="https://gitter.im/SwissDataScienceCenter/renku"
+                          target="_blank" rel="noreferrer noopener">Gitter</a> or create an issue in&nbsp;
+                        <a href="https://github.com/SwissDataScienceCenter/renku/issues"
+                          target="_blank" rel="noreferrer noopener">GitHub</a>.
+
+                      </span>
                   }
                 </Alert>
                 :
                 check_error !== undefined ?
                   <Alert color="danger">
-                    There was an error doing the migration check, please reload the page and try again.
+                    There was an error while performing the migration check, please reload the page and try again.
+                    If the problem persists you should contact the development team on&nbsp;
+                    <a href="https://gitter.im/SwissDataScienceCenter/renku"
+                      target="_blank" rel="noreferrer noopener">Gitter</a> or create an issue in&nbsp;
+                    <a href="https://github.com/SwissDataScienceCenter/renku/issues"
+                      target="_blank" rel="noreferrer noopener">GitHub</a>.
                     <br></br>
                     <br></br>
                     <strong>Error Message: </strong> {check_error}
                   </Alert>
-                  :
-                  <Alert color="success">
-                    <FontAwesomeIcon icon={faCheck} /> The current renku-python version is compatible with Renkulab.
-                  </Alert>
+                  : migration_required === false ?
+                    <Alert color="success">
+                      <FontAwesomeIcon icon={faCheck} /> The current renku-python version is compatible with Renkulab.
+                    </Alert>
+                    : <Loader />
               }
             </Col>
           </Row>
