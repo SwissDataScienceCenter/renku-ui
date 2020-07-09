@@ -27,9 +27,10 @@ import { newProjectSchema } from "../../model/RenkuModels";
 import { slugFromTitle } from "../../utils/HelperFunctions";
 
 class NewProjectCoordinator {
-  constructor(client, model) {
+  constructor(client, model, projectsModel) {
     this.client = client;
     this.model = model;
+    this.projectsModel = projectsModel;
   }
 
   _setTemplateVariables(currentInput, value) {
@@ -60,7 +61,7 @@ class NewProjectCoordinator {
     this.model.setObject({ input: pristineInput });
   }
 
-  setProperty(property, value, projects = null) {
+  setProperty(property, value) {
     const currentInput = this.model.get("input");
 
     // check if the value needs to be updated
@@ -78,8 +79,9 @@ class NewProjectCoordinator {
     if (property === "template")
       updateObj.input.variables = { $set: this._setTemplateVariables(currentInput, value) };
 
-    // validate current state and update model
-    updateObj["meta"] = { validation: this.validate(projects, updateObj.input) };
+    // validate current state (if needed) and update model
+    if (property !== "visibility")
+      updateObj["meta"] = { validation: this.validate(updateObj.input) };
     this.model.setObject(updateObj);
   }
 
@@ -130,7 +132,7 @@ class NewProjectCoordinator {
         all: { $set: [] },
         errors: { $set: [{ "global": errorText }] }
       };
-      const validation = this.validate(null, null, templatesObject);
+      const validation = this.validate(null, templatesObject);
       this.model.setObject({
         templates: templatesObject,
         meta: { validation }
@@ -166,7 +168,7 @@ class NewProjectCoordinator {
       errors: { $set: errors },
       all: { $set: templates }
     };
-    const validation = this.validate(null, null, templatesObject);
+    const validation = this.validate(null, templatesObject);
     this.model.setObject({
       templates: templatesObject,
       meta: { validation }
@@ -364,15 +366,20 @@ class NewProjectCoordinator {
    * Perform client-side validation. Optional input and templates objects can be passed with updated values.
    * That will be assigned to the current input/templates.
    *
-   * @param {Object} [projects] - required to perform a full validation
    * @param {Object} [newInput] - input object containing only the updated fields.
    * @param {Object} [newTemplates] - templates object containing only the updated fields.
    * @param {bool} [update] - set true to update the values inside the function.
+   * @param {Object} [projectsObject] - optionally provide the projects object
    */
-  validate(projects, newInput, newTemplates, update) {
+  validate(newInput, newTemplates, update, projectsObject) {
     // get all the necessary data
     let model = this.model.get();
     let { templates, input, meta } = model;
+    let projects = null;
+    if (projectsObject)
+      projects = projectsObject;
+    else if (this.projectsModel)
+      projects = this.projectsModel.get("");
     const projectsPaths = projects && projects.featured.member && projects.featured.member.length ?
       projects.featured.member.map(project => project.path_with_namespace.toLowerCase()) :
       [];

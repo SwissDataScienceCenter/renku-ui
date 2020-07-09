@@ -36,9 +36,10 @@ class NewProject extends Component {
   constructor(props) {
     super(props);
     this.model = props.model;
-    this.coordinator = new NewProjectCoordinator(props.client, this.model.subModel("newProject"));
+    this.coordinator = new NewProjectCoordinator(props.client, this.model.subModel("newProject"),
+      this.model.subModel("projects"));
     this.coordinator.setConfig(props.templates.custom, props.templates.repositories);
-    this.projectsCoordinator = new ProjectsCoordinator(props.client, props.model.subModel("projects"));
+    this.projectsCoordinator = new ProjectsCoordinator(props.client, this.model.subModel("projects"));
     this.coordinator.resetInput();
 
     this.handlers = {
@@ -56,15 +57,14 @@ class NewProject extends Component {
     // we pass the projects object but we pre-set loading to get proper validation
     let projects = this.model.get("projects");
     projects = { ...projects, namespaces: { ...projects.namespaces, fetching: true } };
-    this.coordinator.validate(projects, null, null, true);
+    this.coordinator.validate(null, null, true, projects);
     const namespaces = await this.projectsCoordinator.getNamespaces();
-    projects = this.model.get("projects");
-    this.coordinator.validate(projects, null, null, true);
+    this.coordinator.validate(null, null, true);
     return namespaces;
   }
 
   async getTemplates() {
-    return this.coordinator.getTemplates();
+    return this.coordinator.getTemplates(this.model);
   }
 
   refreshUserProjects() {
@@ -72,8 +72,7 @@ class NewProject extends Component {
   }
 
   setProperty(property, value) {
-    // projects data are provided for full validation
-    this.coordinator.setProperty(property, value, this.model.get("projects"));
+    this.coordinator.setProperty(property, value);
   }
 
   setNamespace(namespace) {
