@@ -117,7 +117,7 @@ class Title extends Component {
     const help = (
       <span>
         <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> There are a
-        few <ExternalLink url={url} title="reserverd names" role="link" /> you cannot use.
+        few <ExternalLink url={url} title="reserved names" role="link" /> you cannot use.
       </span>
     );
 

@@ -383,7 +383,7 @@ class NewProjectCoordinator {
       templates = Object.assign({}, templates, newTemplates);
 
     // ? reference https://docs.gitlab.com/ce/user/reserved_names.html#reserved-project-names
-    const reserverdNames = ["badges", "blame", "blob", "builds", "commits", "create", "create_dir",
+    const reservedNames = ["badges", "blame", "blob", "builds", "commits", "create", "create_dir",
       "edit", "environments/folders", "files", "find_file", "gitlab-lfs/objects", "info/lfs/objects",
       "new", "preview", "raw", "refs", "tree", "update", "wikis"];
     let errors = {}, warnings = {};
@@ -399,7 +399,7 @@ class NewProjectCoordinator {
     // check errors: require user intervention. Skip if there is a warning
     if (!input.title)
       errors["title"] = "Title is missing.";
-    else if (reserverdNames.includes(input.title))
+    else if (reservedNames.includes(input.title))
       errors["title"] = "Reserverd title name.";
     else if (projects && projectsPaths.includes(`${input.namespace}/${slugFromTitle(input.title, true)}`))
       errors["title"] = "Title already in use in current namespace.";
