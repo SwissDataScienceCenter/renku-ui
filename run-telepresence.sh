@@ -25,7 +25,7 @@ Some deployment-specific information will be read from the your values.yaml file
 TEMPLATES='{"custom":true,"repositories":
 [{"name":"Renku","ref":"master",
 "url":"https://github.com/SwissDataScienceCenter/renku-project-template"},
-{"name":"Point11","ref":"0.1.11",
+{"name":"Telepresence","ref":"0.1.11",
 "url":"https://github.com/SwissDataScienceCenter/renku-project-template"}]}'
 if [[ "$OSTYPE" == "linux-gnu" ]]
 then

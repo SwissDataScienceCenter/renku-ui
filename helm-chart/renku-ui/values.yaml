@@ -16,7 +16,7 @@ global:
 replicaCount: 1
 
 image:
-  repository: lorenzocavazzitech/renku-ui
+  repository: renku/renku-ui
   tag: '0.10.3'
   pullPolicy: IfNotPresent
 
