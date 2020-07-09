@@ -1135,7 +1135,8 @@ class ProjectDescription extends Component {
   render() {
     const inputField = this.props.settingsReadOnly ?
       <Input id="projectDescription" readOnly value={this.state.value} /> :
-      <Input id="projectDescription" value={this.state.value} onChange={this.onValueChange} />;
+      <Input id="projectDescription" onChange={this.onValueChange}
+        value={this.state.value === null ? "" : this.state.value} />;
     let submit = (this.props.core.description !== this.state.value) ?
       <Button className="mb-3" color="primary">Update</Button> :
       <span></span>;
