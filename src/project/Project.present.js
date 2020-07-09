@@ -512,12 +512,15 @@ class ProjectViewOverview extends Component {
 
   render() {
     const { core, system, projectCoordinator } = this.props;
+    const description = core.description ?
+      (<Fragment><span className="lead">{core.description}</span><br /></Fragment>) :
+      null;
 
     return <Col key="overview">
       <Row>
         <Col xs={12} md={9}>
           <p>
-            <span className="lead">{core.description}</span> <br />
+            {description}
             <TimeCaption key="time-caption" time={core.last_activity_at} />
           </p>
         </Col>
