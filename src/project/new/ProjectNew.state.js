@@ -407,7 +407,7 @@ class NewProjectCoordinator {
     if (!input.title)
       errors["title"] = "Title is missing.";
     else if (reservedNames.includes(input.title))
-      errors["title"] = "Reserverd title name.";
+      errors["title"] = "Reserved title name.";
     else if (projects && projectsPaths.includes(`${input.namespace}/${slugFromTitle(input.title, true)}`))
       errors["title"] = "Title already in use in current namespace.";
 
