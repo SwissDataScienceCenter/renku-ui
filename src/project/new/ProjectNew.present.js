@@ -302,6 +302,7 @@ class NamespacesAutosuggest extends Component {
 
     return (
       <Autosuggest
+        id="namespace"
         multiSection={true}
         suggestions={suggestions}
         onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
@@ -333,7 +334,7 @@ class Home extends Component {
     return (
       <FormGroup>
         <Label>Identifier</Label>
-        <Input readOnly value={slug} />
+        <Input id="slug" readOnly value={slug} />
         <FormText>
           <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> This is automatically derived from
           Namespace and Title.
@@ -367,7 +368,7 @@ class Visibility extends Component {
     else {
       const options = meta.namespace.visibilities.map(v => <option key={v} value={v}>{capitalize(v)}</option>);
       main = (
-        <Input type="select" placeholder="Choose visibility..."
+        <Input id="visibility" type="select" placeholder="Choose visibility..."
           value={input.visibility} feedback={error} invalid={error && !input.visibilityPristine}
           onChange={(e) => handlers.setProperty("visibility", e.target.value)} >
           <option key="" value="" disabled>Choose visibility...</option>
@@ -401,7 +402,7 @@ class KnowledgeGraph extends Component {
     return (
       <FormGroup>
         <Label check style={{ marginLeft: "1.25rem" }}>
-          <Input type="checkbox" id="myCheckbox"
+          <Input id="knowledgeGraph" type="checkbox"
             checked={!this.props.input.knowledgeGraph}
             onChange={(e) => handlers.setProperty("knowledgeGraph", !e.target.checked)} />
           Opt-out from Knowledge Graph
@@ -519,7 +520,7 @@ class Template extends Component {
         <option key={t.id} value={t.id}>{`${t.parentRepo} / ${t.name}`}</option>)
       );
       main = (
-        <Input type="select" placeholder="Select template..."
+        <Input id="template" type="select" placeholder="Select template..."
           value={input.template} feedback={error} invalid={invalid}
           onChange={(e) => handlers.setProperty("template", e.target.value)} >
           <option key="" value="" disabled>Select a template...</option>
@@ -557,7 +558,8 @@ class Variables extends Component {
     const variables = Object.keys(template.variables).map(variable => (
       <FormGroup key={variable}>
         <Label>{capitalize(variable)}</Label>
-        <Input type="text" onChange={(e) => handlers.setVariable(variable, e.target.value)} />
+        <Input id={"parameter-" + variable} type="text"
+          onChange={(e) => handlers.setVariable(variable, e.target.value)} />
         <FormText>{capitalize(template.variables[variable])}</FormText>
       </FormGroup>
     ));
