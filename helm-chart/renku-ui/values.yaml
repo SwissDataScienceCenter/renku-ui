@@ -70,3 +70,46 @@ sentry:
   enabled: false
   url: ''
   namespace: ''
+
+privacy:
+  statement: |
+    # Privacy statement
+    ## Personal data we collect
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec elementum hendrerit mattis. Integer commodo nunc at
+    mauris accumsan ultricies. Mauris sit amet pretium tellus. Donec tortor enim, rutrum at fringilla non, fermentum
+    in massa. Donec eu lacinia sem. Maecenas vestibulum sed leo congue aliquet. Nam a blandit erat, et aliquam odio.
+    ## How we use personal data
+    In porta lectus non tortor pretium, vel rhoncus diam porttitor. Pellentesque finibus finibus odio, et suscipit
+    orci pretium eu. Integer et quam a nisl faucibus luctus. Duis placerat, lacus a pulvinar congue, dui nulla auctor
+    ante, et blandit elit lectus ut lectus. Vivamus ut lectus enim. Nulla sollicitudin et felis non laoreet. Nullam
+    vel nisi sit amet odio varius sollicitudin. Aliquam pellentesque maximus porta. Nulla ut elementum libero, id
+    rhoncus arcu. Nulla facilisi.
+    Curabitur euismod dictum justo, aliquet mollis quam commodo et. Orci varius natoque penatibus et magnis dis
+    parturient montes, nascetur ridiculus mus. Pellentesque metus justo, placerat sit amet sodales iaculis, pharetra
+    vitae nunc. Suspendisse dignissim, mauris id sodales posuere, libero quam varius est, in vehicula nisi felis non
+    nunc. Ut consectetur neque non nibh aliquet, sed molestie sapien mattis. Pellentesque non lacus iaculis,
+    eleifend ex id, varius massa. Sed nec tellus pretium, molestie urna vehicula, suscipit sem. Morbi in odio
+    auctor, bibendum lorem ut, volutpat diam. Phasellus rhoncus, nisl a consequat pellentesque, enim lectus
+    pretium tortor, vel interdum odio augue vitae turpis. Pellentesque fermentum varius tincidunt. Proin varius
+    mi at nisi porta, et vulputate ligula aliquam. Donec porttitor suscipit est sed tristique.
+    ## How to contact us
+    Phasellus convallis vitae nulla eu facilisis. Sed porta pulvinar urna, et tempus ante. Vivamus erat arcu,
+    sollicitudin vel mauris ac, efficitur placerat nibh. Sed commodo ut urna eget rhoncus. Proin dignissim
+    sollicitudin turpis, in faucibus libero tristique eget. Vestibulum ac laoreet libero. Fusce laoreet odio
+    interdum diam commodo, non suscipit augue commodo. Praesent sapien arcu, ullamcorper eu sollicitudin in,
+    suscipit eu felis. Donec id nisl tincidunt, maximus odio a, eleifend mauris. Orci varius natoque penatibus
+    et magnis dis parturient montes, nascetur ridiculus mus. Nunc placerat massa rhoncus justo auctor, et pulvinar
+    velit cursus. Donec vitae nunc purus. Nunc libero dolor, sollicitudin at nibh ut, gravida dignissim dui. Sed
+    sit amet mauris porttitor, fringilla eros et, pulvinar eros.
+  banner:
+    content: |
+      This website uses cookies to enhance the user experience. By clicking
+      or navigating the site, you consent to the use of cookies in accordance with
+      our <a class="text-white" href="/privacy">Privacy Policy</a>.
+    layout:
+      cookieName: RenkuLabPrivacy
+      disableStyles: true
+      containerClasses: fixed-bottom p-3 bg-dark
+      contentClasses: text-white small
+      buttonClasses: btn btn-sm btn-light mr-2
+      buttonWrapperClasses: mt-2

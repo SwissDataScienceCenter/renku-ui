@@ -320,6 +320,7 @@ class FooterNavbar extends Component {
           </Nav>
           <Nav className="ml-auto">
             <RenkuNavLink to="/help" title="Help" />
+            <RenkuNavLink to="/privacy" title="Privacy" />
             <ExternalDocsLink url="https://renku.discourse.group" title="Forum" className="nav-link"/>
             <ExternalDocsLink url="https://gitter.im/SwissDataScienceCenter/renku" title="Gitter" className="nav-link"/>
             <ExternalDocsLink url="https://datascience.ch/who-we-are" title="About" className="nav-link"/>
