@@ -105,7 +105,7 @@ privacy:
     content: |
       This website uses cookies to enhance the user experience. By clicking
       or navigating the site, you consent to the use of cookies in accordance with
-      our <a class="text-white" href="/privacy">Privacy Policy</a>.
+      our <u><a class="text-white" href="/privacy">Privacy Policy</a></u>.
     layout:
       cookieName: RenkuLabPrivacy
       disableStyles: true
