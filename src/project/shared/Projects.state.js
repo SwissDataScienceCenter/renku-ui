@@ -54,7 +54,7 @@ class ProjectsCoordinator {
     if (this.model.get("featured.fetching")) return;
     // set status to fetching and invoke both APIs
     this.model.set("featured.fetching", true);
-    const promiseStarred = this.client.getProjects({ starred: true, order_by: "last_activity_at" })
+    const promiseStarred = this.client.getProjects({ starred: true, order_by: "last_activity_at", per_page: 100 })
       .then((projectResponse) => {
         const projects = projectResponse.data.map((project) => this._starredProjectMetadata(project));
         return projects;
@@ -62,7 +62,7 @@ class ProjectsCoordinator {
       .catch((error) => {
         this.model.set("starredProjects", []);
       });
-    const promiseMember = this.client.getAllProjects({ membership: true, order_by: "last_activity_at" })
+    const promiseMember = this.client.getAllProjects({ membership: true, order_by: "last_activity_at", per_page: 100 })
       .then((projectResponse) => {
         const projects = projectResponse.map((project) => this._starredProjectMetadata(project));
         return projects;
