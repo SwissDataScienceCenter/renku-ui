@@ -23,20 +23,21 @@
  *  Presentational components.
  */
 import React, { useState, useEffect, useRef } from "react";
-import { FormGroup, Label, Table, Spinner, Button, UncontrolledCollapse, Card, CardBody } from "reactstrap";
+import { FormGroup, Label, Table, Spinner, Button, UncontrolledCollapse, Card, CardBody, Input } from "reactstrap";
 import ValidationAlert from "./ValidationAlert";
 import HelpText from "./HelpText";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes, faTrashAlt, faSyncAlt, faExclamationTriangle, faFolder }
   from "@fortawesome/free-solid-svg-icons";
-import { formatBytes } from "./../../HelperFunctions";
+import { formatBytes, isURL } from "./../../HelperFunctions";
 import { FileExplorer, getFilesTree } from "../../UIComponents";
 
 const FILE_STATUS = {
   ADDED: "added",
   UPLOADED: "uploaded",
   UPLOADING: "uploading",
-  FAILED: "failed"
+  FAILED: "failed",
+  PENDING: "pending"
 };
 
 const FILE_COMPRESSED = {
@@ -44,6 +45,8 @@ const FILE_COMPRESSED = {
   UNCOMPRESS_YES: "uncompress_yes",
   UNCOMPRESS_NO: "uncompress_no",
 };
+
+const URL_FILE_ID = "urlFileInput";
 
 function useFiles({ initialState = [] }) {
   const [state, setState] = useState(initialState);
@@ -60,8 +63,10 @@ function useFiles({ initialState = [] }) {
 }
 
 function getFileStatus(id, error, status) {
+  if (status === FILE_STATUS.PENDING)
+    return FILE_STATUS.PENDING;
   if (status !== undefined)
-    return FILE_STATUS.ADDED;
+    return status;
   if (error !== undefined)
     return FILE_STATUS.FAILED;
   if (id !== undefined && id !== null)
@@ -132,7 +137,9 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
             uploadingFile.file_alias,
             uploadingFile.file_controller,
             uploadingFile.file_uncompress,
-            uploadingFile.folder_structure);
+            uploadingFile.folder_structure,
+            uploadingFile.file_status
+          );
         }
         return dFile;
       })
@@ -210,32 +217,53 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
   let onDropOrChange = (e) => {
     e.preventDefault();
     e.persist();
+
     if (!disabled) {
-      let eventFiles = e.dataTransfer ? e.dataTransfer.files : e.target.files;
-      let droppedFiles = getFilteredFiles(Array.from(eventFiles));
+      if (e.target.id === URL_FILE_ID) {
+        const file_url = getFileObject(e.target.value, e.target.value, 0, null,
+          undefined, undefined, undefined, undefined, undefined, FILE_STATUS.PENDING);
+        setDisplayFiles([...displayFiles, file_url ]);
+        setUploadedFiles(prevUploadedFiles => [...prevUploadedFiles, file_url]);
+        filesOnUploader.current = filesOnUploader.current + 1;
+      }
+      else {
+        let eventFiles = e.dataTransfer ? e.dataTransfer.files : e.target.files;
+        let droppedFiles = getFilteredFiles(Array.from(eventFiles));
 
-      droppedFiles = "signal" in new Request("") ?
-        droppedFiles.map(file => {
-          file.file_controller = new AbortController();
-          return file;
-        })
-        : droppedFiles;
+        droppedFiles = "signal" in new Request("") ?
+          droppedFiles.map(file => {
+            file.file_controller = new AbortController();
+            return file;
+          })
+          : droppedFiles;
 
-      const nonCompressedFiles = droppedFiles.filter(file => file.type !== "application/zip");
-      setFiles([...files, ...droppedFiles]);
-      nonCompressedFiles.map(file => uploadFile(file, file.file_controller));
-      const newDisplayFiles = droppedFiles.map(file=> {
-        return file.type === "application/zip" ?
-          getFileObject(file.name, partialFilesPath + file.name, file.size, null,
-            undefined, undefined, file.file_controller, FILE_COMPRESSED.WAITING)
-          :
-          getFileObject(file.name, partialFilesPath + file.name, file.size, null,
-            undefined, undefined, file.file_controller);
-      });
+        const nonCompressedFiles = droppedFiles.filter(file => file.type !== "application/zip");
+        setFiles([...files, ...droppedFiles]);
+        nonCompressedFiles.map(file => uploadFile(file, file.file_controller));
+        const newDisplayFiles = droppedFiles.map(file=> {
+          return file.type === "application/zip" ?
+            getFileObject(file.name, partialFilesPath + file.name, file.size, null,
+              undefined, undefined, file.file_controller, FILE_COMPRESSED.WAITING)
+            :
+            getFileObject(file.name, partialFilesPath + file.name, file.size, null,
+              undefined, undefined, file.file_controller);
+        });
 
-      filesOnUploader.current = displayFiles.filter(file => file.file_status !== FILE_STATUS.ADDED).length
+        filesOnUploader.current = displayFiles.filter(file => file.file_status !== FILE_STATUS.ADDED).length
         + newDisplayFiles.length;
-      setDisplayFiles([...displayFiles, ...newDisplayFiles]);
+        setDisplayFiles([...displayFiles, ...newDisplayFiles]);
+      }
+    }
+  };
+
+  let onUrlInputEnter = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      let fileThere = displayFiles.find(file => file.file_name === e.target.value);
+      if (fileThere === undefined && isURL(e.target.value)) {
+        onDropOrChange(e);
+        e.target.value = "";
+      }
     }
   };
 
@@ -313,6 +341,8 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
         return <span> in dataset</span>;
       case FILE_STATUS.UPLOADED:
         return <span><FontAwesomeIcon color="var(--success)" icon={faCheck} /> ready to add</span>;
+      case FILE_STATUS.PENDING:
+        return <span> File will be uploaded on submit</span>;
       case FILE_STATUS.FAILED:
         return <div>
           <span className="mr-2">
@@ -446,7 +476,8 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
                 <td>{getFileStatusComp(file)}</td>
                 <td>
                   {
-                    file.file_status === FILE_STATUS.UPLOADED || file.file_status === FILE_STATUS.FAILED ?
+                    file.file_status === FILE_STATUS.UPLOADED || file.file_status === FILE_STATUS.FAILED ||
+                    file.file_status === FILE_STATUS.PENDING ?
                       <FontAwesomeIcon color="var(--danger)" icon={faTrashAlt}
                         onClick={() => deleteFile(file.file_name)} />
                       : (file.file_status === FILE_STATUS.UPLOADING && file.file_controller !== undefined ?
@@ -461,6 +492,22 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
             <tr>
               <td colSpan="5">
                 &nbsp;
+              </td>
+            </tr>
+            <tr>
+              <td colSpan="5">
+                <div className="pb-1">
+                  <span className="text-muted"><small>{ "Insert a URL and press enter:" }</small></span>
+                </div>
+                <Input
+                  bsSize="sm"
+                  type="text"
+                  name="fileurl"
+                  disabled={disabled}
+                  id={URL_FILE_ID}
+                  placeholder="Upload a file using a URL"
+                  onKeyDown={e => onUrlInputEnter(e)}
+                />
               </td>
             </tr>
           </tbody>
@@ -500,3 +547,4 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
   );
 }
 export default FileuploaderInput;
+export { FILE_STATUS };
