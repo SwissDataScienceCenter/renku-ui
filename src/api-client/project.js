@@ -96,7 +96,7 @@ function getFilesTreeLazy(client, files, projectId, openFilePath, lfsFiles) {
 
 }
 
-async function addProjectMethods(client) {
+function addProjectMethods(client) {
 
   client.getProjects = async (queryParams = {}) => {
     let headers = client.getBasicHeaders();
