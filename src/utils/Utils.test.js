@@ -215,6 +215,19 @@ describe("Time class helper", () => {
     }
     expect(Time.toIsoTimezoneString(DatesTimezone.UTCZ_STRING)).toEqual(expectedString);
   });
+  it("function formatDateTime", () => {
+    let dt = Time.parseDate(Dates.ISO_READABLE_DATETIME);
+    expect(Time.formatDateTime(dt))
+      .not.toBeNull();
+    expect(Time.formatDateTime(dt, { d3FormatString: "%d %m %Y %H:%M:%S" }))
+      .toEqual("11 03 2019 09:34:51");
+    // Correct for the UTC offset, but this will not work for timezones with non-whole hour offsets
+    dt = Time.parseDate(Dates.UTCZ_STRING);
+    const offset = dt.getTimezoneOffset() / 60;
+    const hour = String(9 - offset).padStart(2, "0");
+    expect(Time.formatDateTime(dt, { d3FormatString: "%d %m %Y %H:%M:%S" }))
+      .toEqual(`11 03 2019 ${hour}:34:51`);
+  });
 });
 
 describe("Ini file parser", () => {

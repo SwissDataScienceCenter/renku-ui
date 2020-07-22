@@ -23,7 +23,8 @@
  *  Helper functions to handle date and time
  */
 
-// TODO: expand this with {timeFormat} from 'd3' to properly handle human readable dates according to localization
+import * as d3TimeFormat from "d3-time-format";
+
 
 class Time {
   static isDate(date) {
@@ -82,6 +83,25 @@ class Time {
     return date1.getUTCFullYear() === date2.getUTCFullYear() &&
       date1.getUTCMonth() === date2.getUTCMonth() &&
       date1.getUTCDate() === date2.getUTCDate();
+  }
+
+  /**
+   * Format a date/time string using either toLocale[Date,Time]String (default) or d3 format string.
+   *
+   * formatString should be a d3TimeFormat format string:
+   * @param {string} dt The date to format
+   * @param {object} options {localeTimeOptions: object, d3FormatString: string or null}.
+   *   The localeTimeOptions are passed to toLocaleTimeString. Defaults to
+   *     { hour: "2-digit", minute: "2-digit" }.
+   *   The d3FormatString should be of the form https://github.com/d3/d3-time-format.
+   *   If the d3FormatString is not null, it is used, otherwise, the locale formatting is used
+   */
+  static formatDateTime(dt,
+    { localeTimeOptions, d3FormatString } =
+    { localeTimeOptions: { hour: "2-digit", minute: "2-digit" }, d3FormatString: null } ) {
+    if (d3FormatString !== null)
+      return d3TimeFormat.timeFormat(d3FormatString)(dt);
+    return `${dt.toLocaleDateString()} ${dt.toLocaleTimeString([], localeTimeOptions)}`;
   }
 }
 
