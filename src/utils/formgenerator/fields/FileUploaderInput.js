@@ -23,7 +23,8 @@
  *  Presentational components.
  */
 import React, { useState, useEffect, useRef } from "react";
-import { FormGroup, Label, Table, Spinner, Button, UncontrolledCollapse, Card, CardBody, Input } from "reactstrap";
+import { FormGroup, Label, Table, Spinner, Button, UncontrolledCollapse,
+  Card, CardBody, Input, InputGroup, InputGroupAddon } from "reactstrap";
 import ValidationAlert from "./ValidationAlert";
 import HelpText from "./HelpText";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -104,6 +105,7 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
   const [initialized, setInitialized] = useState(false);
   const [initialFilesTree, setInitialFilesTree] = useState(undefined);
   const [partialFilesPath, setPartialFilesPath] = useState("");
+  const [urlInputValue, setUrlInputValue] = useState("");
   const $input = useRef(null);
 
   useEffect(() => {
@@ -219,50 +221,49 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
     e.persist();
 
     if (!disabled) {
-      if (e.target.id === URL_FILE_ID) {
-        const file_url = getFileObject(e.target.value, e.target.value, 0, null,
+      let eventFiles = e.dataTransfer ? e.dataTransfer.files : e.target.files;
+      let droppedFiles = getFilteredFiles(Array.from(eventFiles));
+
+      droppedFiles = "signal" in new Request("") ?
+        droppedFiles.map(file => {
+          file.file_controller = new AbortController();
+          return file;
+        })
+        : droppedFiles;
+
+      const nonCompressedFiles = droppedFiles.filter(file => file.type !== "application/zip");
+      setFiles([...files, ...droppedFiles]);
+      nonCompressedFiles.map(file => uploadFile(file, file.file_controller));
+      const newDisplayFiles = droppedFiles.map(file=> {
+        return file.type === "application/zip" ?
+          getFileObject(file.name, partialFilesPath + file.name, file.size, null,
+            undefined, undefined, file.file_controller, FILE_COMPRESSED.WAITING)
+          :
+          getFileObject(file.name, partialFilesPath + file.name, file.size, null,
+            undefined, undefined, file.file_controller);
+      });
+
+      filesOnUploader.current = displayFiles.filter(file => file.file_status !== FILE_STATUS.ADDED).length
+        + newDisplayFiles.length;
+      setDisplayFiles([...displayFiles, ...newDisplayFiles]);
+    }
+  };
+
+  const onUrlInputChange = (e) => {
+    setUrlInputValue(e.target.value);
+  };
+
+  const onUrlInputEnter = (e) => {
+    if (!disabled && (e.key === "Enter" || e.target.id === "addFileButton")) {
+      e.preventDefault();
+      const fileThere = displayFiles.find(file => file.file_name === urlInputValue);
+      if (fileThere === undefined && isURL(urlInputValue)) {
+        const file_url = getFileObject(urlInputValue, urlInputValue, 0, null,
           undefined, undefined, undefined, undefined, undefined, FILE_STATUS.PENDING);
         setDisplayFiles([...displayFiles, file_url ]);
         setUploadedFiles(prevUploadedFiles => [...prevUploadedFiles, file_url]);
         filesOnUploader.current = filesOnUploader.current + 1;
-      }
-      else {
-        let eventFiles = e.dataTransfer ? e.dataTransfer.files : e.target.files;
-        let droppedFiles = getFilteredFiles(Array.from(eventFiles));
-
-        droppedFiles = "signal" in new Request("") ?
-          droppedFiles.map(file => {
-            file.file_controller = new AbortController();
-            return file;
-          })
-          : droppedFiles;
-
-        const nonCompressedFiles = droppedFiles.filter(file => file.type !== "application/zip");
-        setFiles([...files, ...droppedFiles]);
-        nonCompressedFiles.map(file => uploadFile(file, file.file_controller));
-        const newDisplayFiles = droppedFiles.map(file=> {
-          return file.type === "application/zip" ?
-            getFileObject(file.name, partialFilesPath + file.name, file.size, null,
-              undefined, undefined, file.file_controller, FILE_COMPRESSED.WAITING)
-            :
-            getFileObject(file.name, partialFilesPath + file.name, file.size, null,
-              undefined, undefined, file.file_controller);
-        });
-
-        filesOnUploader.current = displayFiles.filter(file => file.file_status !== FILE_STATUS.ADDED).length
-        + newDisplayFiles.length;
-        setDisplayFiles([...displayFiles, ...newDisplayFiles]);
-      }
-    }
-  };
-
-  let onUrlInputEnter = (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      let fileThere = displayFiles.find(file => file.file_name === e.target.value);
-      if (fileThere === undefined && isURL(e.target.value)) {
-        onDropOrChange(e);
-        e.target.value = "";
+        setUrlInputValue("");
       }
     }
   };
@@ -430,7 +431,7 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
           <thead>
             <tr>
               <th className="font-weight-light">#</th>
-              <th className="font-weight-light">File Name</th>
+              <th className="font-weight-light">File Name/URL</th>
               <th className="font-weight-light">Size</th>
               <th className="font-weight-light">Status</th>
               <th className="font-weight-light">Delete</th>
@@ -499,15 +500,24 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
                 <div className="pb-1">
                   <span className="text-muted"><small>{ "Insert a URL and press enter:" }</small></span>
                 </div>
-                <Input
-                  bsSize="sm"
-                  type="text"
-                  name="fileurl"
-                  disabled={disabled}
-                  id={URL_FILE_ID}
-                  placeholder="Upload a file using a URL"
-                  onKeyDown={e => onUrlInputEnter(e)}
-                />
+                <InputGroup size="sm">
+                  <Input
+                    type="text"
+                    name="fileurl"
+                    disabled={disabled}
+                    id={URL_FILE_ID}
+                    placeholder="Upload a file using a URL"
+                    onKeyDown={e => onUrlInputEnter(e)}
+                    onChange={e => onUrlInputChange(e)}
+                    value={urlInputValue}
+                  />
+                  <InputGroupAddon addonType="append">
+                    <Button color="primary" id="addFileButton" onClick={e=>onUrlInputEnter(e)}>
+                      Add File from URL
+                    </Button>
+                  </InputGroupAddon>
+                </InputGroup>
+
               </td>
             </tr>
           </tbody>
