@@ -50,13 +50,11 @@ spec:
               {{- end }}
             - name: ANONYMOUS_SESSIONS
               value: {{ .Values.global.anonymousSessions.enabled | default (printf "false") | quote }}
-            # - name: PRIVACY_STATEMENT
-            #   valueFrom:
-            #     configMapKeyRef:
-            #       name: {{ template "ui.fullname" . }}-privacy
-            #       key: privacy_statement
             - name: PRIVACY_STATEMENT
-              value: {{ .Values.privacy.statement | default (printf "") | b64enc | quote }}
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ template "ui.fullname" . }}-privacy
+                  key: privacy_statement
             - name: PRIVACY_BANNER_CONTENT
               value: {{ .Values.privacy.banner.content | default (printf "") | b64enc | quote }}
             - name: PRIVACY_BANNER_LAYOUT
