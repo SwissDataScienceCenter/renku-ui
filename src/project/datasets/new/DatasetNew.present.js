@@ -70,8 +70,8 @@ function DatasetNew(props) {
         </div>
         : null}
       <br /><br />
-      <strong>If more files where added they should be in the dataset, it could take some time until
-        they are visible since the Knowledge Graph could still be processing the operation.</strong>
+      <strong>The dataset has been created, but some files are still being processed.
+        They will become visible when processing completes.</strong>
     </div>;
   };
 

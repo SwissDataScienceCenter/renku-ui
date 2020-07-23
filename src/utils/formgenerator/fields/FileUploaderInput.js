@@ -430,11 +430,11 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
         <Table hover bordered className="table-files mb-1">
           <thead>
             <tr>
-              <th className="font-weight-light">#</th>
-              <th className="font-weight-light">File Name/URL</th>
-              <th className="font-weight-light">Size</th>
-              <th className="font-weight-light">Status</th>
-              <th className="font-weight-light">Delete</th>
+              <th style={{ width: "5%" }} className="font-weight-light">#</th>
+              <th style={{ width: "45%" }} className="font-weight-light">File Name/URL</th>
+              <th style={{ width: "10%" }} className="font-weight-light">Size</th>
+              <th style={{ width: "30%" }} className="font-weight-light">Status</th>
+              <th style={{ width: "10%" }} className="font-weight-light">Delete</th>
             </tr>
           </thead>
           <tbody className={disabled ? "disabled-input" : ""}>
@@ -517,7 +517,6 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
                     </Button>
                   </InputGroupAddon>
                 </InputGroup>
-
               </td>
             </tr>
           </tbody>
