@@ -16,8 +16,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+export NGIX_PATH=/usr/share/nginx/html
+
+echo "Config file contains the following settings:"
 echo "==================================================="
-echo " Configuration:"
 echo " GATEWAY_URL=${GATEWAY_URL:-http://gateway.renku.build}"
 echo " BASE_URL=${BASE_URL:-http://renku.build}"
 echo " SENTRY_URL=${SENTRY_URL}"
@@ -26,12 +28,16 @@ echo " RENKU_TEMPLATES_URL=${RENKU_TEMPLATES_URL}"
 echo " RENKU_TEMPLATES_REF=${RENKU_TEMPLATES_REF}"
 echo " MAINTENANCE=${MAINTENANCE}"
 echo " ANONYMOUS_SESSIONS=${ANONYMOUS_SESSIONS}"
-echo " PRIVACY_STATEMENT=${PRIVACY_STATEMENT}"
 echo " PRIVACY_BANNER_CONTENT=${PRIVACY_BANNER_CONTENT}"
 echo " PRIVACY_BANNER_LAYOUT=${PRIVACY_BANNER_LAYOUT}"
 echo "==================================================="
 
-tee > /usr/share/nginx/html/config.json << EOF
+echo "Privacy file contains the following markdown (first 5 lines):"
+echo "==================================================="
+echo "$(head -5 /config-privacy/statement.md)"
+echo "==================================================="
+
+tee > "${NGIX_PATH}/config.json" << EOF
 {
   "BASE_URL": "${BASE_URL:-http://renku.build}",
   "GATEWAY_URL": "${GATEWAY_URL:-http://gateway.renku.build}",
@@ -42,10 +48,13 @@ tee > /usr/share/nginx/html/config.json << EOF
   "RENKU_TEMPLATES_REF": "${RENKU_TEMPLATES_REF}",
   "MAINTENANCE": "${MAINTENANCE}",
   "ANONYMOUS_SESSIONS": "${ANONYMOUS_SESSIONS}",
-  "PRIVACY_STATEMENT": "$(echo "$PRIVACY_STATEMENT" | base64 | tr -d \\n)",
   "PRIVACY_BANNER_CONTENT": "${PRIVACY_BANNER_CONTENT}",
   "PRIVACY_BANNER_LAYOUT": ${PRIVACY_BANNER_LAYOUT}
 }
 EOF
+echo "config.json created in ${NGIX_PATH}"
+
+more /config-privacy/statement.md | base64 | tr -d \\n > "${NGIX_PATH}/privacy-statement.md"
+echo "privacy-statement.md created in ${NGIX_PATH}"
 
 exec -- "$@"
