@@ -98,7 +98,7 @@ function getFilesTreeLazy(client, files, projectId, openFilePath, lfsFiles) {
 
 function addProjectMethods(client) {
 
-  client.getProjects = (queryParams = {}) => {
+  client.getProjects = async (queryParams = {}) => {
     let headers = client.getBasicHeaders();
     return client.clientFetch(`${client.baseUrl}/projects`, {
       method: "GET",
@@ -107,33 +107,22 @@ function addProjectMethods(client) {
     });
   };
 
-  client.getAllProjects = (extraParams = [],
-    { recursive = false, per_page = 20, page = 1, previousResults = [] } = {}
-  ) => {
-    let headers = client.getBasicHeaders();
+  client.getAllProjects = async (queryParams = {}) => {
+    let projects = [];
+    let page = 1;
+    let finished = false;
 
-    const queryParams = {
-      recursive,
-      per_page,
-      page,
-      ...extraParams
-    };
+    while (!finished) {
+      const resp = await client.getProjects({ ...queryParams, page });
+      projects = [...projects, ...resp.data];
 
-    return client.clientFetch(`${client.baseUrl}/projects`, {
-      method: "GET",
-      headers,
-      queryParams,
-    }).then(response => {
-      if (response.pagination.nextPageLink !== undefined) {
-        return client.getAllProjects(extraParams, {
-          recursive,
-          per_page,
-          previousResults: previousResults.concat(response.data),
-          page: response.pagination.nextPage
-        });
-      }
-      return previousResults.concat(response.data);
-    });
+      if (!resp.pagination.nextPageLink)
+        finished = true;
+      else
+        page = resp.pagination.nextPage;
+    }
+
+    return projects;
   };
 
   client.getAvatarForNamespace = (namespaceId = {}) => {

@@ -216,7 +216,7 @@ class LoggedInNavBar extends Component {
           </button>
 
           <div className="collapse navbar-collapse flex-wrap" id="navbarSupportedContent">
-            <QuickNav client={this.props.client} model={this.props.model} />
+            <QuickNav client={this.props.client} model={this.props.model} user={this.props.user} />
 
             <div className="d-flex flex-grow-1">
               <ul className="navbar-nav mr-auto">
@@ -261,7 +261,7 @@ class AnonymousNavBar extends Component {
           </button>
 
           <div className="collapse navbar-collapse flex-wrap" id="navbarSupportedContent">
-            <QuickNav client={this.props.client} model={this.props.model} />
+            <QuickNav client={this.props.client} model={this.props.model} user={this.props.user} />
 
             <div className="d-flex flex-grow-1">
               <ul className="navbar-nav mr-auto">
