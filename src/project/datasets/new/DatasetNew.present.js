@@ -34,6 +34,47 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
 function DatasetNew(props) {
 
+  const getServerWarnings = () => {
+    const tooLongText = "The Knowledge Graph has not finished updating.  The new dataset/files" +
+    " will not be visible until this is complete, but you can continue to work freely within RenkuLab.";
+    if (props.jobsStats.failed.length === 0 && props.jobsStats.inProgress.length === 0 && props.jobsStats.tooLong) {
+      return <div>
+        {tooLongText}
+        <br/>
+        You can keep on working while this operation is running.
+      </div>;
+    }
+    const failed = props.jobsStats.failed
+      .map(job => <div key={"warn-" + job.file_url} className="pl-2">- {job.file_url}<br /></div>);
+    const progress = props.jobsStats.inProgress
+      .map( job => <div key={"warn-" + job.file_url} className="pl-2">- {job.file_url}<br /></div>);
+    return <div>
+      {props.jobsStats.tooLong ?
+        <div>
+          {tooLongText}
+          <br/><br/>
+        </div>
+        : null
+      }
+      {props.jobsStats.failed.length > 0 ?
+        <div><strong>Some files had errors on upload:</strong>
+          <br />
+          {failed}
+        </div>
+        : null}
+      {props.jobsStats.inProgress.length > 0 ?
+        <div>
+          <strong>Uploads in progress:</strong>
+          <br />
+          {progress}
+        </div>
+        : null}
+      <br /><br />
+      <strong>The dataset has been created, but some files are still being processed.
+        They will become visible when processing completes.</strong>
+    </div>;
+  };
+
   if (props.accessLevel < ACCESS_LEVELS.MAINTAINER) {
     return <Col sm={12} md={10} lg={8}>
       <Alert timeout={0} color="primary">
@@ -45,11 +86,16 @@ function DatasetNew(props) {
     </Col>;
   }
 
+  const warning = props.warningOn.current ? getServerWarnings() : undefined;
+
   return <FormPanel
     btnName="Create Dataset"
-    submitCallback={props.submitCallback}
+    submitCallback={props.warningOn.current ? undefined : props.submitCallback}
     model={props.datasetFormSchema}
     serverErrors={props.serverErrors}
+    serverWarnings={warning}
+    disableAll={props.warningOn.current === true}
+    cancelBtnName={props.warningOn.current ? "Go to list" : "Cancel"}
     submitLoader={{ value: props.submitLoader, text: "Creating dataset, please wait..." }}
     onCancel={props.onCancel} />;
 
