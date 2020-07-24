@@ -35,9 +35,9 @@ const LAYOUT = {
   buttonClasses: "btn btn-sm btn-light mr-2",
   buttonWrapperClasses: "mt-2",
 };
-const CONTENT = `This website uses cookies to enhance the user experience. By clicking or navigating
-the site, you consent to the use of cookies in accordance with
-our <a class="text-white" href="/privacy">Privacy Policy</a>.`;
+const CONTENT = `This website requires cookies in order to ensure basic functionality. By clicking
+or navigating the site, you consent to the use of cookies in accordance with
+our <u><a class="text-white" href="/privacy">Privacy Policy</a></u>.`;
 
 /**
  * Return the HTML content with support for react routing
