@@ -16,7 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-export NGIX_PATH=/usr/share/nginx/html
+export NGINX_PATH=/usr/share/nginx/html
 
 echo "Config file contains the following settings:"
 echo "==================================================="
@@ -37,7 +37,7 @@ echo "==================================================="
 echo "$(head -5 /config-privacy/statement.md)"
 echo "==================================================="
 
-tee > "${NGIX_PATH}/config.json" << EOF
+tee > "${NGINX_PATH}/config.json" << EOF
 {
   "BASE_URL": "${BASE_URL:-http://renku.build}",
   "GATEWAY_URL": "${GATEWAY_URL:-http://gateway.renku.build}",
@@ -52,9 +52,9 @@ tee > "${NGIX_PATH}/config.json" << EOF
   "PRIVACY_BANNER_LAYOUT": ${PRIVACY_BANNER_LAYOUT}
 }
 EOF
-echo "config.json created in ${NGIX_PATH}"
+echo "config.json created in ${NGINX_PATH}"
 
-more /config-privacy/statement.md | base64 | tr -d \\n > "${NGIX_PATH}/privacy-statement.md"
-echo "privacy-statement.md created in ${NGIX_PATH}"
+more /config-privacy/statement.md | base64 | tr -d \\n > "${NGINX_PATH}/privacy-statement.md"
+echo "privacy-statement.md created in ${NGINX_PATH}"
 
 exec -- "$@"
