@@ -673,7 +673,32 @@ function ProjectAddDataset(props) {
             Import Dataset
           </Button>
         </ButtonGroup>
-      </Row>]
+      </Row>,
+      <Row key="text-details" className="pb-3">
+        <small className={"ml-4 text-muted"}>
+          {
+            newDataset ?
+              <span>
+                Create a new dataset by providing metadata and content. Use&nbsp;
+                <Button className="p-0" style={{ verticalAlign: "baseline" }}
+                  color="link" onClick={() => setNewDataset(false)}>
+                  <small>Import Dataset</small>
+                </Button>
+                &nbsp;to reuse an existing dataset.
+              </span>
+              :
+              <span>
+                Import a published dataset from Zenodo, Dataverse, or from another Renku project. Use&nbsp;
+                <Button className="p-0" style={{ verticalAlign: "baseline" }}
+                  color="link" onClick={() => setNewDataset(true)}>
+                  <small>Create Dataset</small>
+                </Button>
+                &nbsp;to make a new dataset.
+              </span>
+          }
+        </small>
+      </Row>
+    ]
       : null
     }
     { newDataset ?
