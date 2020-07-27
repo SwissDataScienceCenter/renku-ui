@@ -143,7 +143,7 @@ function NewDataset(props) {
               props.client.getProjectDatasetsFromKG_short(props.projectPathWithNamespace)
                 .then(datasets => {
                 // eslint-disable-next-line
-                  let new_dataset = datasets.find( ds => ds.name === response.data.result.short_name);
+                  let new_dataset = datasets.find( ds => ds.name === response.data.result.name);
                   if (new_dataset !== undefined) {
                     datasetInKg = true;
                     datasetId = new_dataset.identifier;
