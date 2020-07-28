@@ -41,8 +41,6 @@ export default function addMigrationMethods(client) {
     return client.clientFetch(`${client.baseUrl}/renku/cache.migrations_check?project_id=${projectId}`, {
       method: "GET",
       headers: headers,
-    }).then(response => {
-      return response.data;
     }).catch((error)=>
       ({ data: { error: { reason: error.case } }
       }));

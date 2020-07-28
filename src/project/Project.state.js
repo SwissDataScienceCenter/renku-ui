@@ -60,8 +60,8 @@ class ProjectModel extends StateModel {
                 this.set("migration.check_error", response.data.error.reason);
               }
               else {
-                this.set("migration.migration_required", response.result.migration_required);
-                this.set("migration.project_supported", response.result.project_supported);
+                this.set("migration.migration_required", response.data.result.migration_required);
+                this.set("migration.project_supported", response.data.result.project_supported);
               }
             });
         }
