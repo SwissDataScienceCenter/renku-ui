@@ -520,19 +520,31 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
               </td>
             </tr>
           </tbody>
-          <tfoot className={disabled ? "disabled-input" : ""} onClick={() => { $input.current.click(); }}>
+          <tfoot className={disabled ? "disabled-input" : ""} >
             <tr>
               <td colSpan="5">
-                Drag and Drop files or click <span className="text-primary"
-                  style={{ cursor: "pointer" }}>here</span> to open file dialog.
+                <div onClick={() => { $input.current.click(); }}>
+                  Drag and Drop files or click <span className="text-primary"
+                    style={{ cursor: "pointer" }}>here</span> to open file dialog.
                 <br />
-                <span className="text-muted font-italic">
-                  <FontAwesomeIcon className="pr-1" color="var(--primary)" icon={faFolder} />
+                  <span className="text-muted font-italic">
+                    <FontAwesomeIcon className="pr-1" color="var(--primary)" icon={faFolder} />
                   If you want to upload a folder you can do this using a zip file, we can unzip it for you on upload.
                 </span>
-                <br></br>
-                <small className="text-muted">NOTE: We are still working on the
-                  UI upload of big files, we encourage you to use our CLI for uploading big files.
+                  <br></br>
+                </div>
+                <small className="text-muted">NOTE: We are still working on the&nbsp;
+                UI upload of big files, we encourage you to use our CLI for uploading big files.
+                  <Button className="pr-0 pl-1 pt-0 pb-0 mb-1" color="link" id="file-limit-toggler" onClick="null">
+                    <small>Click here for more info.</small>
+                  </Button>
+                  <UncontrolledCollapse key="searchHelp" toggler="#file-limit-toggler" className="pt-0 pl-3">
+                    The file size limit depends on your network conection. We can still provide an estimate&nbsp;
+                    based on our experience:<br />
+                  - Files under 500MB should be uploaded in a few minutes.<br />
+                  - Files between 500MB and 2-3GB can be uploaded but will take some time.<br />
+                  - Files over 2-3GB will provably fail.<br />
+                  </UncontrolledCollapse>
                 </small>
               </td>
             </tr>
