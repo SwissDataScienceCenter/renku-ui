@@ -12,6 +12,13 @@ Button.alert-link {
   font-size: 0.55em;
 }
 
+.warningLabel {
+  display: inline;
+  color: #ffc107;
+  margin-right: 0.3em;
+  font-size: 0.8em;
+}
+
 .selected-dataset{
   font-weight: normal;
   background-color: #e9ecef;
