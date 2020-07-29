@@ -30,7 +30,7 @@ import { CardBody } from "reactstrap";
 const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "pdf", "gif"];
 const CODE_EXTENSIONS = [
   "py", "js", "json", "sh", "r", "txt", "yml", "csv", "parquet", "cwl", "job", "prn", "rout",
-  "dcf", "rproj", "rst", "bat", "ini", "rmd"
+  "dcf", "rproj", "rst", "bat", "ini", "rmd", "jl", "toml"
 ];
 
 // FIXME: Unify the file viewing for issues (embedded) and independent file viewing.

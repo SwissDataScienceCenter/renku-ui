@@ -64,7 +64,7 @@ export default function addDatasetMethods(client) {
           method: "POST",
           headers: headers,
           body: JSON.stringify({
-            "short_name": datasetName,
+            "name": datasetName,
             "files": filesList,
             "project_id": response.data.result.project_id
           })
@@ -97,7 +97,7 @@ export default function addDatasetMethods(client) {
         method: "POST",
         headers: headers,
         body: JSON.stringify({
-          "short_name": renkuDataset.name,
+          "name": renkuDataset.name,
           "description": renkuDataset.description,
           "project_id": project_id
         })
@@ -111,7 +111,7 @@ export default function addDatasetMethods(client) {
             method: "POST",
             headers: headers,
             body: JSON.stringify({
-              "short_name": renkuDataset.name,
+              "name": renkuDataset.name,
               "files": renkuDataset.files,
               "project_id": project_id
             })
@@ -149,20 +149,6 @@ export default function addDatasetMethods(client) {
         })
       });
 
-    });
-  };
-
-
-  client.getJobStatus = (job_id) => {
-    let headers = client.getBasicHeaders();
-    headers.append("Content-Type", "application/json");
-    headers.append("X-Requested-With", "XMLHttpRequest");
-
-    return client.clientFetch(`${client.baseUrl}/renku/jobs/${job_id}`, {
-      method: "GET",
-      headers: headers
-    }).then(response => {
-      return response.data.result;
     });
   };
 }

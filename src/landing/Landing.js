@@ -66,7 +66,8 @@ class HomeProjects extends Component {
   }
 
   componentDidMount() {
-    this.projectsCoordinator.getFeatured();
+    if (this.props.user.logged)
+      this.projectsCoordinator.getFeatured();
   }
 
   mapStateToProps(state, ownProps) {

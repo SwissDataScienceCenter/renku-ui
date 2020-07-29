@@ -512,12 +512,15 @@ class ProjectViewOverview extends Component {
 
   render() {
     const { core, system, projectCoordinator } = this.props;
+    const description = core.description ?
+      (<Fragment><span className="lead">{core.description}</span><br /></Fragment>) :
+      null;
 
     return <Col key="overview">
       <Row>
         <Col xs={12} md={9}>
           <p>
-            <span className="lead">{core.description}</span> <br />
+            {description}
             <TimeCaption key="time-caption" time={core.last_activity_at} />
           </p>
         </Col>
@@ -670,7 +673,32 @@ function ProjectAddDataset(props) {
             Import Dataset
           </Button>
         </ButtonGroup>
-      </Row>]
+      </Row>,
+      <Row key="text-details" className="pb-3">
+        <small className={"ml-4 text-muted"}>
+          {
+            newDataset ?
+              <span>
+                Create a new dataset by providing metadata and content. Use&nbsp;
+                <Button className="p-0" style={{ verticalAlign: "baseline" }}
+                  color="link" onClick={() => setNewDataset(false)}>
+                  <small>Import Dataset</small>
+                </Button>
+                &nbsp;to reuse an existing dataset.
+              </span>
+              :
+              <span>
+                Import a published dataset from Zenodo, Dataverse, or from another Renku project. Use&nbsp;
+                <Button className="p-0" style={{ verticalAlign: "baseline" }}
+                  color="link" onClick={() => setNewDataset(true)}>
+                  <small>Create Dataset</small>
+                </Button>
+                &nbsp;to make a new dataset.
+              </span>
+          }
+        </small>
+      </Row>
+    ]
       : null
     }
     { newDataset ?
@@ -1135,7 +1163,8 @@ class ProjectDescription extends Component {
   render() {
     const inputField = this.props.settingsReadOnly ?
       <Input id="projectDescription" readOnly value={this.state.value} /> :
-      <Input id="projectDescription" value={this.state.value} onChange={this.onValueChange} />;
+      <Input id="projectDescription" onChange={this.onValueChange}
+        value={this.state.value === null ? "" : this.state.value} />;
     let submit = (this.props.core.description !== this.state.value) ?
       <Button className="mb-3" color="primary">Update</Button> :
       <span></span>;

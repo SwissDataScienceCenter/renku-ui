@@ -51,25 +51,17 @@ class ProjectsCoordinator {
   }
 
   async getFeatured() {
-    if (this.model.get("featured.fetching")) return;
-    // set status to fetching and invoke both APIs
+    if (this.model.get("featured.fetching"))
+      return;
+    // set status to fetching, get all the projects and filter and invoke both APIs
     this.model.set("featured.fetching", true);
-    const promiseStarred = this.client.getProjects({ starred: true, order_by: "last_activity_at" })
-      .then((projectResponse) => {
-        const projects = projectResponse.data.map((project) => this._starredProjectMetadata(project));
-        return projects;
-      })
-      .catch((error) => {
-        this.model.set("starredProjects", []);
-      });
-    const promiseMember = this.client.getAllProjects({ membership: true, order_by: "last_activity_at" })
-      .then((projectResponse) => {
-        const projects = projectResponse.map((project) => this._starredProjectMetadata(project));
-        return projects;
-      })
-      .catch((error) => {
-        this.model.set("memberProjects", []);
-      });
+    const params = { order_by: "last_activity_at", per_page: 100 };
+    const promiseStarred = this.client.getAllProjects({ ...params, starred: true })
+      .then(resp => resp.map((project) => this._starredProjectMetadata(project)))
+      .catch(error => []);
+    const promiseMember = this.client.getAllProjects({ ...params, membership: true })
+      .then(resp => resp.map((project) => this._starredProjectMetadata(project)))
+      .catch(error => []);
 
     // set `featured` content and return only `starred` and `member` projects data
     return Promise.all([promiseStarred, promiseMember]).then(values => {

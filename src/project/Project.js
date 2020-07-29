@@ -158,9 +158,11 @@ class View extends Component {
     this.projectCoordinator = new ProjectCoordinator(props.client, props.model.subModel("project"));
 
     // fetch useful projects data in not yet loaded
-    const featured = props.model.get("projects.featured");
-    if (!featured.fetched && !featured.fetching)
-      this.projectsCoordinator.getFeatured();
+    if (this.props.user.logged) {
+      const featured = props.model.get("projects.featured");
+      if (!featured.fetched && !featured.fetching)
+        this.projectsCoordinator.getFeatured();
+    }
   }
 
   componentDidMount() {

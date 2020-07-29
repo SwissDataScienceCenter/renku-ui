@@ -45,9 +45,11 @@ class QuickNavContainerWithRouter extends Component {
     super(props);
     this.bar = new SearchBarModel(StateKind.REACT, this);
     this.projectsCoordinator = new ProjectsCoordinator(props.client, props.model.subModel("projects"));
-    const featured = this.projectsCoordinator.model.get("featured");
-    if (!featured.featured && !featured.fetching)
-      this.projectsCoordinator.getFeatured();
+    if (this.props.user.logged) {
+      const featured = this.projectsCoordinator.model.get("featured");
+      if (!featured.featured && !featured.fetching)
+        this.projectsCoordinator.getFeatured();
+    }
 
     this.callbacks = {
       onChange: this.onChange.bind(this),
