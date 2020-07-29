@@ -126,10 +126,12 @@ class TimeCaption extends Component {
   // Take a time and caption and generate a span that shows it
   render() {
     const time = this.props.time;
-    const displayTime = human((new Date() - new Date(time)) / 1000);
+    const timeDiff = (new Date() - new Date(time)) / 1000;
+    const displayTime = timeDiff < 3 ? "just now" : human(timeDiff);
     const caption = (this.props.caption) ? this.props.caption : "Updated";
     const endCaption = (this.props.endCaption) ? " " + this.props.endCaption : "";
-    return <span className="time-caption">{caption} {displayTime}{endCaption}.</span>;
+    const endPunctuation = (this.props.endPunctuation) ? this.props.endPunctuation : ".";
+    return <span className="time-caption">{caption} {displayTime}{endCaption}{endPunctuation}</span>;
   }
 }
 
