@@ -613,7 +613,7 @@ class ProjectViewVersion extends Component {
                   </Alert>
                   : migration_required === false ?
                     <Alert color="success">
-                      <FontAwesomeIcon icon={faCheck} /> The current renku version is compatible with Renkulab.
+                      <FontAwesomeIcon icon={faCheck} /> The current renku version is compatible with RenkuLab.
                     </Alert>
                     : <Loader />
               }
