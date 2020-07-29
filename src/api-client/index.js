@@ -34,6 +34,7 @@ import addDatasetMethods from "./dataset";
 import addMergeRequestMethods from "./merge-request";
 import addTemplatesMethods from "./templates";
 import addJobMethods from "./job";
+import addMigrationMethods from "./migration";
 
 import testClient from "./test-client";
 
@@ -82,6 +83,7 @@ class APIClient {
     addMergeRequestMethods(this);
     addTemplatesMethods(this);
     addJobMethods(this);
+    addMigrationMethods(this);
   }
 
   // A fetch method which is attached to a API client instance so that it can

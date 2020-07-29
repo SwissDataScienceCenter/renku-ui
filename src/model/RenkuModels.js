@@ -161,6 +161,15 @@ const projectSchema = new Schema({
       stop: { initial: null },
       progress: { initial: null }
     }
+  },
+  migration: {
+    schema: {
+      migration_required: { initial: null },
+      project_supported: { initial: null },
+      migrating: { initial: false },
+      migration_status: { initial: null },
+      check_error: { initial: undefined }
+    }
   }
 });
 
