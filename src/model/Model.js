@@ -433,12 +433,12 @@ function updateObjectFromString(propAccessorString, value) {
 function updateObjectFromObject(obj, currentObject) {
   let updateObj = {};
   Object.keys(obj).forEach((prop) => {
-    if (obj[prop] instanceof Object && currentObject[prop])
+    if (obj[prop] instanceof Date)
+      updateObj[prop] = { $set: obj[prop] };
+    else if (obj[prop] instanceof Object && currentObject[prop])
       updateObj[prop] = updateObjectFromObject(obj[prop], currentObject[prop]);
-
     else if (prop[0] === "$" && prop.length && prop.length > 1)
       updateObj[prop] = obj[prop];
-
     else
       updateObj[prop] = { $set: obj[prop] };
 
