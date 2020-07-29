@@ -383,9 +383,18 @@ const addDatasetToProjectSchema = new Schema({
   }
 });
 
+/**
+ * Schema for information from statuspage.io. Used by the statuspage module.
+ */
+const statuspageSchema = new Schema({
+  retrieved_at: { initial: null },
+  statuspage: { initial: null },
+  error: { initial: null }
+});
+
 
 export {
   userSchema, metaSchema, displaySchema, newProjectSchema, projectSchema, forkProjectSchema, notebooksSchema,
   projectsSchema, datasetFormSchema, issueFormSchema, datasetImportFormSchema, projectGlobalSchema,
-  addDatasetToProjectSchema
+  addDatasetToProjectSchema, statuspageSchema
 };

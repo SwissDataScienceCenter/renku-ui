@@ -24,27 +24,24 @@
  */
 
 
-import React, { Component } from "react";
+import React from "react";
 
 import { Help as HelpPresent } from "./Help.present";
 
-class Help extends Component {
-  urlMap() {
-    const baseUrl = this.props.match.url;
-    return {
-      base: baseUrl,
-      getting: `${baseUrl}/getting`,
-      documentation: `${baseUrl}/docs`,
-      features: `${baseUrl}/features`,
-      setup: `${baseUrl}/setup`,
-    };
-  }
+function urlMap(baseUrl) {
+  return {
+    base: baseUrl,
+    getting: `${baseUrl}/getting`,
+    documentation: `${baseUrl}/docs`,
+    features: `${baseUrl}/features`,
+    setup: `${baseUrl}/setup`,
+    status: `${baseUrl}/status`,
+  };
+}
 
-  render() {
-    return (
-      <HelpPresent url={this.urlMap()} />
-    );
-  }
+function Help(props) {
+  return <HelpPresent url={urlMap(props.match.url)} statuspageId={props.statuspageId}
+    statuspageModel={props.model.subModel("statuspage")} />;
 }
 
 export { Help };

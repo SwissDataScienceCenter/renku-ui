@@ -1,5 +1,5 @@
 /*!
- * Copyright 2019 - Swiss Data Science Center (SDSC)
+ * Copyright 2020 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -19,19 +19,11 @@
 /**
  *  renku-ui
  *
- *  model/GlobalSchema.js
- *  Schema for all Components.
+ *  statuspage
+ *  Components for the displaying information from statuspage.io
  */
 
-import { Schema } from "./index";
-import { notebooksSchema, userSchema, projectsSchema, projectGlobalSchema, statuspageSchema } from "./RenkuModels";
+import { StatuspageDisplay, StatuspageBanner, isStatusConfigured } from "./Statuspage.container";
+import StatuspageAPI from "./StatuspageAPI";
 
-const globalSchema = new Schema({
-  notebooks: { schema: notebooksSchema },
-  user: { schema: userSchema },
-  projects: { schema: projectsSchema },
-  project: { schema: projectGlobalSchema },
-  statuspage: { schema: statuspageSchema }
-});
-
-export { globalSchema };
+export { StatuspageAPI, StatuspageBanner, StatuspageDisplay, isStatusConfigured };

@@ -25,15 +25,22 @@
 
 import React, { Component } from "react";
 import { Route } from "react-router-dom";
-import { ExternalDocsLink, ExternalIconLink, RenkuNavLink } from "../utils/UIComponents";
 
 import { Row, Col } from "reactstrap";
 import { Nav, NavItem } from "reactstrap";
 
 import { faDiscourse, faGithub, faGitter } from "@fortawesome/free-brands-svg-icons";
 
+import { ExternalDocsLink, ExternalIconLink, RenkuNavLink } from "../utils/UIComponents";
+import { StatuspageDisplay, isStatusConfigured } from "../statuspage";
+
 class HelpNav extends Component {
   render() {
+    const statusLink = isStatusConfigured(this.props.statuspageId) ?
+      <NavItem>
+        <RenkuNavLink to={this.props.url.status} title="Status" />
+      </NavItem> :
+      null;
     return (
       <Nav pills className={"nav-pills-underline"}>
         <NavItem>
@@ -48,6 +55,7 @@ class HelpNav extends Component {
         <NavItem>
           <RenkuNavLink to={this.props.url.setup} title="Set Up / Admin" />
         </NavItem>
+        { statusLink }
       </Nav>
     );
   }
@@ -251,7 +259,11 @@ class HelpContent extends Component {
         key="features"
         render={props => <HelpFeatures key="features" {...this.props} />}
       />,
-      <Route path={this.props.url.setup} key="setup" render={props => <HelpSetup key="setup" {...this.props} />} />
+      <Route path={this.props.url.setup} key="setup" render={props => <HelpSetup key="setup" {...this.props} />} />,
+      <Route
+        path={this.props.url.status} key="status"
+        render={props => <StatuspageDisplay key="status" statuspageId={this.props.statuspageId}
+          statuspageModel={this.props.statuspageModel} />} />
     ];
   }
 }

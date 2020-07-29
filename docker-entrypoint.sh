@@ -31,6 +31,8 @@ echo " ANONYMOUS_SESSIONS=${ANONYMOUS_SESSIONS}"
 echo " PRIVACY_ENABLED=${PRIVACY_ENABLED}"
 echo " PRIVACY_BANNER_CONTENT=${PRIVACY_BANNER_CONTENT}"
 echo " PRIVACY_BANNER_LAYOUT=${PRIVACY_BANNER_LAYOUT}"
+echo " STATUSPAGE_ID=${STATUSPAGE_ID}"
+
 echo "==================================================="
 
 echo "Privacy file contains the following markdown (first 5 lines):"
@@ -52,6 +54,7 @@ tee > "${NGINX_PATH}/config.json" << EOF
   "PRIVACY_ENABLED": "${PRIVACY_ENABLED}",
   "PRIVACY_BANNER_CONTENT": "${PRIVACY_BANNER_CONTENT}",
   "PRIVACY_BANNER_LAYOUT": ${PRIVACY_BANNER_LAYOUT},
+  "STATUSPAGE_ID": "${STATUSPAGE_ID}"
 }
 EOF
 echo "config.json created in ${NGINX_PATH}"
