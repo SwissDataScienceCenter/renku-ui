@@ -29,7 +29,7 @@ import _ from "lodash/collection";
 
 import { StateKind } from "../model/Model";
 import Present from "./Project.present";
-import { ProjectModel, GraphIndexingStatus, ProjectCoordinator } from "./Project.state";
+import { ProjectModel, GraphIndexingStatus, ProjectCoordinator, MigrationStatus } from "./Project.state";
 import { ProjectsCoordinator } from "./shared";
 import Issue from "../collaboration/issue/Issue";
 import { FileLineage } from "../file";
@@ -51,6 +51,7 @@ const subRoutes = {
   stats: "overview/stats",
   overviewDatasets: "overview/datasets",
   overviewCommits: "overview/commits",
+  overviewVersion: "overview/version",
   datasets: "datasets",
   datasetsAdd: "datasets/new",
   dataset: "datasets/:datasetId",
@@ -235,13 +236,19 @@ class View extends Component {
   }
   async fetchGraphStatus() { return this.projectState.fetchGraphStatus(this.props.client); }
 
+  async fetchMigrationCheck() { this.projectState.fetchMigrationCheck(this.props.client); }
+
   async fetchAll() {
     const pathComponents = splitProjectSubRoute(this.props.match.url);
     if (pathComponents.projectPathWithNamespace)
       await this.fetchProject();
-    if (this.props.user.logged)
+    if (this.props.user.logged) {
       this.checkGraphWebhook();
+      this.fetchMigrationCheck();
+    }
   }
+
+  migrateProject() { this.projectState.migrateProject(this.props.client); }
 
   redirectProjectWithNumericId(projectId) {
     this.props.client.getProjectById(projectId)
@@ -308,6 +315,7 @@ class View extends Component {
       statsUrl: `${baseUrl}/overview/stats`,
       overviewDatasetsUrl: `${baseUrl}/overview/datasets`,
       overviewCommitsUrl: `${baseUrl}/overview/commits`,
+      overviewVersionUrl: `${baseUrl}/overview/version`,
       datasetsUrl: `${datasetsUrl}`,
       newDatasetUrl: `${datasetsUrl}/new`,
       datasetUrl: `${datasetsUrl}/:datasetId`,
@@ -598,6 +606,9 @@ class View extends Component {
     },
     fetchBranches: () => {
       return this.fetchBranches();
+    },
+    onMigrateProject: () => {
+      return this.migrateProject();
     }
   };
 
@@ -708,4 +719,4 @@ function withProjectMapped(MappingComponent, features = [], passProps = true) {
 
 
 export default { New, View, List };
-export { GraphIndexingStatus, splitProjectSubRoute, mapProjectFeatures, withProjectMapped };
+export { GraphIndexingStatus, splitProjectSubRoute, mapProjectFeatures, withProjectMapped, MigrationStatus };

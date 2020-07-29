@@ -59,7 +59,7 @@ class HelpGetting extends Component {
     return [
       <div key="intro" className="d-flex mb-3">
         <div style={{ flex: "0 1", flexBasis }}>
-          There are several channels available for getting help with Renkulab. Depending on your needs, one or another
+          There are several channels available for getting help with RenkuLab. Depending on your needs, one or another
           may be better for you.
         </div>
       </div>,
