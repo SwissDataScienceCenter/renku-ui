@@ -37,6 +37,7 @@ function urlMap() {
     projectNewUrl: "/projects/new",
     projectsSearchUrl: "/projects/all",
     projectsStarredUrl: "/projects/starred",
+    siteStatusUrl: "/help/status"
   };
 }
 
@@ -97,6 +98,8 @@ class HomeProjects extends Component {
           welcomePage={atob(this.props.welcomePage)}
           user={this.props.user}
           projects={this.props.projects}
+          statuspageId={this.props.statuspageId}
+          statuspageModel={this.props.model.subModel("statuspage")}
         />
       </Provider>
     ];

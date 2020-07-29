@@ -17,7 +17,7 @@ describe("rendering", () => {
         client={client}
         model={model}
         user={user}
-        params={{ WELCOME_PAGE: "Some text" }} />
+        params={{ WELCOME_PAGE: "Some text", STATUSPAGE_ID: "5bcn9bqff4qt" }} />
       , div);
   });
 
@@ -29,7 +29,7 @@ describe("rendering", () => {
         client={client}
         model={model}
         user={user}
-        params={{ WELCOME_PAGE: "Some text" }} />
+        params={{ WELCOME_PAGE: "Some text", STATUSPAGE_ID: "5bcn9bqff4qt" }} />
       , div);
   });
 });

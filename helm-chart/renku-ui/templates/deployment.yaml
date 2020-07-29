@@ -48,6 +48,10 @@ spec:
               value: {{ .Values.gatewayUrl | default (printf "%s://%s/api" (include "ui.protocol" .) .Values.global.renku.domain) | quote }}
             - name: WELCOME_PAGE
               value: {{ .Values.welcomePage.text | b64enc | quote }}
+            {{- if .Values.statuspage }}
+            - name: STATUSPAGE_ID
+              value: {{ .Values.statuspage.id | quote }}
+            {{- end }}
               {{- if .Values.sentry.enabled }}
             - name: SENTRY_URL
               value: {{ .Values.sentry.url | quote }}
