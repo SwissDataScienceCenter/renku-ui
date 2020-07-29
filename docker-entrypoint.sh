@@ -30,6 +30,7 @@ echo " PRIVACY_ENABLED=${PRIVACY_ENABLED}"
 echo " PRIVACY_BANNER_CONTENT=${PRIVACY_BANNER_CONTENT}"
 echo " PRIVACY_BANNER_LAYOUT=${PRIVACY_BANNER_LAYOUT}"
 echo " TEMPLATES=${TEMPLATES}"
+echo " STATUSPAGE_ID=${STATUSPAGE_ID}"
 echo "==================================================="
 
 echo "Privacy file contains the following markdown (first 5 lines):"
@@ -49,7 +50,8 @@ tee > "${NGINX_PATH}/config.json" << EOF
   "PRIVACY_ENABLED": "${PRIVACY_ENABLED}",
   "PRIVACY_BANNER_CONTENT": "${PRIVACY_BANNER_CONTENT}",
   "PRIVACY_BANNER_LAYOUT": ${PRIVACY_BANNER_LAYOUT},
-  "TEMPLATES": ${TEMPLATES}
+  "TEMPLATES": ${TEMPLATES},
+  "STATUSPAGE_ID": "${STATUSPAGE_ID}"
 }
 EOF
 echo "config.json created in ${NGINX_PATH}"
@@ -58,7 +60,7 @@ FILE=/config-privacy/statement.md
 if [ -f "$FILE" ]; then
   more /config-privacy/statement.md | base64 | tr -d \\n > "${NGINX_PATH}/privacy-statement.md"
   echo "privacy-statement.md created in ${NGINX_PATH}"
-else 
+else
   echo "privacy-statement.md created in ${NGINX_PATH}"
 fi
 

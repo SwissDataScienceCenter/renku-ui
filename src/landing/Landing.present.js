@@ -34,6 +34,7 @@ import {
 
 import { RenkuMarkdown, Loader } from "../utils/UIComponents";
 import { ProjectListRow } from "../project";
+import { StatuspageBanner } from "../statuspage";
 
 function truncatedProjectListRows(projects, projectsUrl, moreUrl) {
   const maxProjectsRows = 5;
@@ -254,6 +255,8 @@ class LoggedInHome extends Component {
     return [
       <Row key="username">
         <Col>
+          <StatuspageBanner siteStatusUrl={urlMap.siteStatusUrl} statuspageId={this.props.statuspageId}
+            statuspageModel={this.props.statuspageModel} />
           <h1>{user.data.username} @ Renku</h1>
         </Col>
       </Row>,

@@ -38,6 +38,8 @@ else
   echo "Warning! your OS has not been tested yet"
 fi
 
+if [ -z "$STATUSPAGE_ID" ]; then STATUSPAGE_ID="r3j2c84ftq49"; else echo "STATUSPAGE_ID is set to '$STATUSPAGE_ID'"; fi
+
 if [[ $CURRENT_CONTEXT == 'minikube' ]]
 then
   echo "Exchanging k8s deployments using the following context: ${CURRENT_CONTEXT}"
@@ -93,7 +95,8 @@ tee > ./public/config.json << EOF
   "SENTRY_NAMESPACE": "${SENTRY_NAMESPACE}",
   "ANONYMOUS_SESSIONS": "true",
   "PRIVACY_ENABLED": "false",
-  "TEMPLATES": ${TEMPLATES}
+  "TEMPLATES": ${TEMPLATES},
+  "STATUSPAGE_ID": "${STATUSPAGE_ID}"
 }
 EOF
 
