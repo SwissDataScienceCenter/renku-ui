@@ -32,6 +32,8 @@ import addGraphMethods from "./graph";
 import addPipelineMethods from "./pipeline";
 import addDatasetMethods from "./dataset";
 import addMergeRequestMethods from "./merge-request";
+import addJobMethods from "./job";
+import addMigrationMethods from "./migration";
 
 import testClient from "./test-client";
 
@@ -78,6 +80,8 @@ class APIClient {
     addPipelineMethods(this);
     addDatasetMethods(this);
     addMergeRequestMethods(this);
+    addJobMethods(this);
+    addMigrationMethods(this);
   }
 
   // A fetch method which is attached to a API client instance so that it can
