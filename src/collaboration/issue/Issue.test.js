@@ -32,7 +32,6 @@ import Issue from "./Issue";
 import { CollaborationList, collaborationListTypeMap } from "../lists/CollaborationList.container";
 import State from "./Issue.state";
 import { testClient as client } from "../../api-client";
-import { slugFromTitle } from "../../utils/HelperFunctions";
 import { generateFakeUser } from "../../user/User.test";
 
 describe("rendering", () => {
@@ -92,12 +91,6 @@ describe("rendering", () => {
         <Issue.View id="1" client={client} user={user} />
       </MemoryRouter>
       , div);
-  });
-});
-
-describe("helpers", () => {
-  it("computes display id correctly", () => {
-    expect(slugFromTitle("This is my Issue")).toEqual("this-is-my-issue");
   });
 });
 

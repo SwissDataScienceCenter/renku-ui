@@ -22,6 +22,11 @@ set -e
 CURRENT_CONTEXT=`kubectl config current-context`
 WELCOME_MESSAGE="## Welcome to Renku through telepresence
 Some deployment-specific information will be read from the your values.yaml file and be displayed as markdown file."
+TEMPLATES='{"custom":true,"repositories":
+[{"name":"Renku","ref":"master",
+"url":"https://github.com/SwissDataScienceCenter/renku-project-template"},
+{"name":"Telepresence","ref":"0.1.11",
+"url":"https://github.com/SwissDataScienceCenter/renku-project-template"}]}'
 if [[ "$OSTYPE" == "linux-gnu" ]]
 then
   WELCOME_PAGE=`echo "${WELCOME_MESSAGE}" | base64 -w 0`
@@ -86,9 +91,8 @@ tee > ./public/config.json << EOF
   "WELCOME_PAGE": "${WELCOME_PAGE}",
   "SENTRY_URL": "${SENTRY_URL}",
   "SENTRY_NAMESPACE": "${SENTRY_NAMESPACE}",
-  "RENKU_TEMPLATES_URL": "https://github.com/SwissDataScienceCenter/renku-project-template",
-  "RENKU_TEMPLATES_REF": "master",
-  "ANONYMOUS_SESSIONS": "true"
+  "ANONYMOUS_SESSIONS": "true",
+  "TEMPLATES": ${TEMPLATES}
 }
 EOF
 

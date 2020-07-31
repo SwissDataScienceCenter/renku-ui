@@ -488,4 +488,6 @@ function _mapStateToProps(state, ownProps) {
 }
 
 
-export { Schema, StateModel, StateKind, SubModel, SpecialPropVal, StatusHelper };
+export {
+  PropertyName, Schema, StateModel, StateKind, SubModel, SpecialPropVal, StatusHelper
+};

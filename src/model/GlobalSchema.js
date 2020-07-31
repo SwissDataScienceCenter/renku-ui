@@ -23,14 +23,17 @@
  *  Schema for all Components.
  */
 
-import { Schema } from "./index";
-import { notebooksSchema, userSchema, projectsSchema, projectGlobalSchema } from "./RenkuModels";
+import { Schema, PropertyName as Prop } from "./index";
+import {
+  notebooksSchema, userSchema, projectsSchema, projectGlobalSchema, newProjectSchema
+} from "./RenkuModels";
 
 const globalSchema = new Schema({
-  notebooks: { schema: notebooksSchema },
-  user: { schema: userSchema },
-  projects: { schema: projectsSchema },
-  project: { schema: projectGlobalSchema }
+  notebooks: { [Prop.SCHEMA]: notebooksSchema },
+  user: { [Prop.SCHEMA]: userSchema },
+  projects: { [Prop.SCHEMA]: projectsSchema },
+  project: { [Prop.SCHEMA]: projectGlobalSchema },
+  newProject: { [Prop.SCHEMA]: newProjectSchema }
 });
 
 export { globalSchema };

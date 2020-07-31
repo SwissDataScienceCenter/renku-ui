@@ -44,7 +44,7 @@ const searchScopesValuesMap = {
 const urlMap = {
   projectsUrl: "/projects",
   projectsSearchUrl: "/projects/all",
-  projectNewUrl: "/project_new",
+  projectNewUrl: "/projects/new",
   starred: "/projects/starred",
   yourProjects: "/projects"
 };

@@ -378,5 +378,16 @@ describe("update redux store using immutability-helper commands", () => {
       }
     });
     expect(model.get()).toEqual(referenceObject);
+
+    // Unset one of the fields
+    model.setObject({
+      complex: {
+        basics: {
+          $unset: ["name"],
+        }
+      }
+    });
+    referenceObject.complex.basics = {};
+    expect(model.get()).toEqual(referenceObject);
   });
 });

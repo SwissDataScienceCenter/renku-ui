@@ -118,6 +118,18 @@ const methods = {
     response: {
       data: []
     }
+  },
+  getAllProjects: {
+    response: {
+      data: []
+    }
+  },
+  getTemplatesManifest: {
+    response: {
+      result: {
+        remplates: []
+      }
+    }
   }
 };
 

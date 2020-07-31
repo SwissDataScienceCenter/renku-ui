@@ -33,7 +33,6 @@ import Project, { mapProjectFeatures, withProjectMapped } from "./Project";
 import { filterPaths, ProjectViewCommitsBody } from "./Project.present";
 import { ProjectModel, ProjectCoordinator } from "./Project.state";
 import { testClient as client } from "../api-client";
-import { slugFromTitle } from "../utils/HelperFunctions";
 import { generateFakeUser } from "../user/User.test";
 
 
@@ -99,18 +98,6 @@ describe("rendering", () => {
   const loggedUser = generateFakeUser();
   const model = new StateModel(globalSchema);
 
-  it("renders new without crashing for logged user", () => {
-    const div = document.createElement("div");
-    ReactDOM.render(
-      <MemoryRouter>
-        <Project.New
-          client={client}
-          model={model}
-          history={fakeHistory}
-          user={loggedUser} />
-      </MemoryRouter>
-      , div);
-  });
   it("renders list without crashing for anonymous user", () => {
     const div = document.createElement("div");
     ReactDOM.render(
@@ -166,12 +153,6 @@ describe("rendering", () => {
           match={{ params: { id: "1" }, url: "/projects/1/" }} />
       </MemoryRouter>
       , div);
-  });
-});
-
-describe("helpers", () => {
-  it("computes display id correctly", () => {
-    expect(slugFromTitle("This is my Project")).toEqual("this-is-my-project");
   });
 });
 

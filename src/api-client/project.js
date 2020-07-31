@@ -133,7 +133,7 @@ function addProjectMethods(client) {
     }).then(response => response.data.avatar_url);
   };
 
-  client.getProject = (projectPathWithNamespace, options = {}) => {
+  client.getProject = async (projectPathWithNamespace, options = {}) => {
     const headers = client.getBasicHeaders();
     const queryParams = {
       statistics: options.statistics || false
@@ -200,79 +200,6 @@ function addProjectMethods(client) {
   };
 
   client.getEmptyProjectObject = () => { return { folder: "empty-project-template", name: "Empty Project" }; };
-
-  client.postProject = (renkuProject, renkuTemplatesUrl, renkuTemplatesRef) => {
-    const gitlabProject = {
-      name: renkuProject.display.title,
-      description: renkuProject.display.description,
-      visibility: renkuProject.meta.visibility
-    };
-    if (renkuProject.meta.projectNamespace != null) gitlabProject.namespace_id = renkuProject.meta.projectNamespace.id;
-    const headers = client.getBasicHeaders();
-    headers.append("Content-Type", "application/json");
-
-    if (renkuProject.meta.template === client.getEmptyProjectObject().folder) {
-      let createGraphWebhookPromise;
-      const newProjectPromise = client.clientFetch(`${client.baseUrl}/projects`, {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(gitlabProject)
-      }).then(resp => {
-        if (!renkuProject.meta.optoutKg)
-          createGraphWebhookPromise = client.createGraphWebhook(resp.data.id);
-
-        return resp.data;
-      });
-
-      let promises = [newProjectPromise];
-      if (createGraphWebhookPromise)
-        promises = promises.concat(createGraphWebhookPromise);
-
-
-      return Promise.all(promises)
-        .then(([data, payload]) => {
-          if (data.errorData)
-            return Promise.reject(data);
-          return Promise.resolve(data).then(() => data);
-        });
-
-    }
-    let createGraphWebhookPromise;
-    const newProjectPromise = client.clientFetch(`${client.baseUrl}/projects`, {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify(gitlabProject)
-    }).then(resp => {
-      if (!renkuProject.meta.optoutKg)
-        createGraphWebhookPromise = client.createGraphWebhook(resp.data.id);
-
-      return resp.data;
-    });
-
-    // When the provided version does not exist, we log an error and uses latest.
-    // Maybe this should raise a more prominent alarm?
-    const payloadPromise = getPayload(
-      gitlabProject.name,
-      renkuTemplatesUrl,
-      renkuTemplatesRef,
-      renkuProject.meta.template
-    ).catch(error => {
-      return getPayload(gitlabProject.name, renkuTemplatesUrl, renkuTemplatesRef, renkuProject.meta.template);
-    });
-    let promises = [newProjectPromise, payloadPromise];
-
-    if (createGraphWebhookPromise)
-      promises = promises.concat(createGraphWebhookPromise);
-
-
-    return Promise.all(promises)
-      .then(([data, payload]) => {
-        if (data.errorData)
-          return Promise.reject(data);
-        return client.postCommit(data.id, payload).then(() => data);
-      });
-
-  };
 
   client.getProjectStatus = (projectId) => {
     const headers = client.getBasicHeaders();
@@ -396,17 +323,20 @@ function addProjectMethods(client) {
 
   };
 
-  client.putProjectField = (projectId, field_name, field_value) => {
-    const putData = { id: projectId, [field_name]: field_value };
+  client.putProjectField = async (projectId, fieldNameOrObject, fieldValue) => {
+    let data;
+    if (typeof fieldNameOrObject !== "string" && !fieldValue)
+      data = { ...fieldNameOrObject, id: projectId };
+    else
+      data = { id: projectId, [fieldNameOrObject]: fieldValue };
     const headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
 
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}`, {
       method: "PUT",
       headers: headers,
-      body: JSON.stringify(putData)
+      body: JSON.stringify(data)
     });
-
   };
 
   client.getArtifactsUrl = (projectId, job, branch = "master") => {
@@ -548,69 +478,6 @@ function carveProject(projectJson) {
   return result;
 }
 
-
-// NOTE: An unregistered user can do 60 GitHub api requests per hour max meaning,
-//       that this approach fails when trying to create more than 30 projects
-//       per hour. I think we can live with that for the moment. However, it might
-//       make sense at some point to serve the project template from the GitLab
-//       instance we're working with.
-
-function getPayload(projectName, renkuTemplatesUrl, renkuTemplatesRef, projectTemplate) {
-  // Promise which will resolve into the repository sub-tree
-  // which matches the desired version of the renku project template.
-  const formatedApiURL = getApiURLfromRepoURL(renkuTemplatesUrl);
-  const subTreePromise = fetchJson(`${formatedApiURL}/git/trees/${renkuTemplatesRef}`)
-    .then(data => data.tree.filter(obj => obj.path === projectTemplate)[0]["sha"])
-    .then(treeSha => fetchJson(`${formatedApiURL}/git/trees/${treeSha}?recursive=1`));
-
-  // Promise which will resolve into a list of file creation actions
-  // ready to be passed to the GitLab API.
-  const actionsPromise = subTreePromise.then(subtree => {
-    const actionPromises = subtree.tree
-      .filter(treeObject => treeObject.type === "blob")
-      .map(treeObject => getActionPromise(treeObject, projectName));
-    return Promise.all(actionPromises);
-  });
-
-  // We finally return a promise which will resolve into the full
-  // payload for the first commit to the newly created project.
-  return actionsPromise.then((resolvedActions) => {
-    return {
-      "branch": "master",
-      "commit_message": "init renku repository",
-      "actions": resolvedActions
-    };
-  });
-
-  function getActionPromise(treeObject, projectName) {
-
-    return fetchJson(treeObject.url)
-      .then(data => atob(data.content))
-      .then(fileContent => {
-        return {
-          "action": "create",
-          "file_path": treeObject.path,
-          "content": evaluateTemplate(fileContent, projectName)
-        };
-      });
-  }
-
-  function evaluateTemplate(content, projectName) {
-    const now = new Date();
-    const templatedVariables = {
-      "name": projectName,
-      "date_updated": now.toISOString(),
-      "date_created": now.toISOString(),
-    };
-
-    const newContent = content.replace(/{{\s?([^\s]*)\s?}}/g, (match, group) => {
-      return templatedVariables[group] ? templatedVariables[group] : "";
-    });
-    const cleanedContent = newContent.replace(/{%\s?(if \S* | endif)\s?%}\s*/g, "");
-    return cleanedContent;
-  }
-
-}
 
 export default addProjectMethods;
 export { carveProject };
