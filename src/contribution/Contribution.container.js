@@ -27,7 +27,10 @@ class ContributionBody extends React.Component {
   constructor(props) {
     super(props);
     this._mounted = false;
-    const blocks = matchRefs(this.props.contribution.body);
+    const body = this.props.contribution.body ?
+      this.props.contribution.body :
+      this.props.contribution.note;
+    const blocks = matchRefs(body);
     this.state = { blocks };
   }
 
