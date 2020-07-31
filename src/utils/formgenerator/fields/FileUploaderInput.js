@@ -520,19 +520,35 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
               </td>
             </tr>
           </tbody>
-          <tfoot className={disabled ? "disabled-input" : ""} onClick={() => { $input.current.click(); }}>
+          <tfoot className={disabled ? "disabled-input" : ""} style={{ fontWeight: "normal" }}>
             <tr>
               <td colSpan="5">
-                Drag and Drop files or click <span className="text-primary"
-                  style={{ cursor: "pointer" }}>here</span> to open file dialog.
-                <br />
-                <span className="text-muted font-italic">
-                  <FontAwesomeIcon className="pr-1" color="var(--primary)" icon={faFolder} />
-                  If you want to upload a folder you can do this using a zip file, we can unzip it for you on upload.
-                </span>
-                <br></br>
-                <small className="text-muted">NOTE: We are still working on the
-                  UI upload of big files, we encourage you to use our CLI for uploading big files.
+                <div onClick={() => { $input.current.click(); }} style={{ marginBottom: 10 }}>
+                  <p className="mb-1">
+                    Drag and Drop files here to upload, or click <span className="text-primary"
+                      style={{ cursor: "pointer" }}>open file dialog</span> to select files for upload.
+                  </p>
+                  <p className="text-muted font-italic">
+                    <FontAwesomeIcon className="pr-1" color="var(--primary)" icon={faFolder} />
+                    To upload a folder, zip the folder, upload the zip file, and select {" "}
+                    <b style={{ fontWeight: "300" }}>Unzip on upload</b>.
+                  </p>
+                </div>
+                <small className="text-muted">
+                  NOTE: Support for uploading large files in RenkuLab is still under development; {" "}
+                  consider using the Renku CLI for files larger than 500 MB.
+                  <Button className="pr-0 pl-1 pt-0 pb-0 mb-1" color="link" id="filelimittoggler">
+                    <small>More info.</small>
+                  </Button>
+                  <UncontrolledCollapse key="filelimittoggler" toggler={"#filelimittoggler"} className="pt-0 pl-3">
+                    In practice, the file-size limitation on uploads in RenkuLab is dependent on the {" "}
+                    network connection. Here are some general estimates:<br />
+                    <ul>
+                      <li>Files under 500MB can be reliably uploaded within a few minutes</li>
+                      <li>Files between 500MB and 2GB may be uploadable in RenkuLab, but will take some time</li>
+                      <li>For files larger than 2GB, we recommend using the Renku CLI for uploading</li>
+                    </ul>
+                  </UncontrolledCollapse>
                 </small>
               </td>
             </tr>
