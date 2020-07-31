@@ -95,9 +95,7 @@ class Privacy extends Component {
   render() {
     const { params } = this.props;
 
-    const content = params["PRIVACY_STATEMENT"] ?
-      params["PRIVACY_STATEMENT"] :
-      null;
+    const content = params["PRIVACY_STATEMENT"];
 
     return (<PrivacyPresent content={content} />);
   }

@@ -23,7 +23,11 @@ Promise.all([configFetch, privacyFetch]).then(valuesRead => {
 
   Promise.all([configRead, privacyRead]).then(values => {
     const [params, privacy] = values;
-    params["PRIVACY_STATEMENT"] = privacy;
+    // verify that the privacy file exists and no "page not found" is returned.
+    if (!privacy || !privacy.length || privacy.startsWith("<!DOCTYPE html>"))
+      params["PRIVACY_STATEMENT"] = "";
+    else
+      params["PRIVACY_STATEMENT"] = privacy;
 
     const maintenace = params["MAINTENANCE"];
     if (maintenace && maintenace !== "false" && maintenace !== "0") {

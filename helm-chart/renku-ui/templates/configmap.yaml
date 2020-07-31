@@ -7,18 +7,20 @@ metadata:
     chart: {{ template "ui.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-  data:
-    privacy_statement: |
-      # Privacy statement
-      ## No privacy page available
-      If you are reading this message, the Privacy page content has not been updated for this RenkuLab deployment yet.
-      The following content is intended to be read by a RenkuLab admin.
-      ## Configure the Privacy Page
-      You should customize the privacy statement through the privacy ConfigMap available in your RenkuLab deployment.
-      You can easily identify it by its name ending with ``-privacy`` (it should be something similar to
-      ``renku-ui-privacy``, with variations depending on the kubernetes settings).
-      The content shown in the UI is taken from the ``privacy_statement`` key. You can include any markdown formatted
-      text.
-      ## Apply the changes
-      The ui pod needs to be manually re-deployed in order to apply the changes to the privacy page.
-  
+data:
+  privacy_statement: |
+    # Privacy statement
+    ## No privacy page available
+    If you are reading this message, the Privacy page content has not been updated for this RenkuLab deployment yet.
+    The following content is intended to be read by a RenkuLab admin.
+    ## Configure the Privacy Page
+    You should customize the privacy statement through the privacy ConfigMap available in your RenkuLab deployment.
+    You can easily identify it by its name ending with ``-privacy`` (it should be something similar to
+    ``renku-ui-privacy``, with variations depending on the kubernetes settings).
+    The content shown in the UI is taken from the ``privacy_statement`` key. You can include any markdown formatted
+    text.
+    If no text is provided (or the ConfigMap is missing), the links in the navigation bars are hidden and users
+    manually accessing the privacy page will see a warning. Consider changing the cookie banner content as well
+    when the privacy page is not available.
+    ## Apply the changes
+    The ui pod needs to be manually re-deployed in order to apply the changes to the privacy page.

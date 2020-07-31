@@ -149,7 +149,7 @@ class App extends Component {
               <Route path="*" render={p => <NotFound {...p} />} />
             </Switch>
           </main>
-          <Route component={FooterNavbar} />
+          <Route render={props => <FooterNavbar {...props} params={this.props.params} />} />
           <Route render={props => <Cookie {...props} params={this.props.params} />} />
         </div>
       </Router>

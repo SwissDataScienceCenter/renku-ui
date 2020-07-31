@@ -26,6 +26,8 @@
 import React, { Component } from "react";
 import CookieConsent from "react-cookie-consent";
 import { Alert } from "reactstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
 import { RenkuMarkdown } from "../utils/UIComponents";
 
@@ -51,7 +53,7 @@ class Privacy extends Component {
     if (!content || !content.length) {
       return (
         <Alert color="warning">
-          There is no content for this page.
+          <FontAwesomeIcon icon={faExclamationTriangle} /> There is no content for this page.
         </Alert>
       );
     }

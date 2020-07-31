@@ -309,6 +309,10 @@ class MaintenanceNavBar extends Component {
 
 class FooterNavbar extends Component {
   render() {
+    const { params } = this.props;
+    const privacyLink = params && params["PRIVACY_STATEMENT"] ?
+      (<RenkuNavLink to="/privacy" title="Privacy" />) :
+      null;
     return (
       <footer className="footer">
         <Navbar className="flex-nowrap">
@@ -320,7 +324,7 @@ class FooterNavbar extends Component {
           </Nav>
           <Nav className="ml-auto">
             <RenkuNavLink to="/help" title="Help" />
-            <RenkuNavLink to="/privacy" title="Privacy" />
+            {privacyLink}
             <ExternalDocsLink url="https://renku.discourse.group" title="Forum" className="nav-link"/>
             <ExternalDocsLink url="https://gitter.im/SwissDataScienceCenter/renku" title="Gitter" className="nav-link"/>
             <ExternalDocsLink url="https://datascience.ch/who-we-are" title="About" className="nav-link"/>
