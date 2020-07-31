@@ -23,7 +23,7 @@
  *
  */
 
-import { Schema } from "./Model";
+import { Schema, PropertyName as Prop } from "./Model";
 import FormGenerator from "../utils/formgenerator/";
 
 const userSchema = new Schema({
@@ -35,35 +35,27 @@ const userSchema = new Schema({
 
 const projectsSchema = new Schema({
   featured: {
-    schema: new Schema({
-      fetched: { initial: null, mandatory: true },
-      fetching: { initial: false, mandatory: true },
-      starred: { initial: [], mandatory: true },
-      member: { initial: [], mandatory: true },
+    [Prop.SCHEMA]: new Schema({
+      fetched: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+      fetching: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
+      starred: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
+      member: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true }
+    })
+  },
+  namespaces: {
+    [Prop.SCHEMA]: new Schema({
+      fetched: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+      fetching: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
+      list: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true }
     })
   }
 });
 
 const metaSchema = new Schema({
   id: { initial: "", mandatory: false },
-  // author: {schema: userSchema, mandatory: false},
   projectNamespace: { initial: {}, mandatory: false },
   visibility: { initial: "public", mandatory: true },
   optoutKg: { initial: false, mandatory: false },
-});
-
-const displaySchema = new Schema({
-  title: { initial: "", mandatory: true },
-  description: { initial: "", mandatory: true },
-  displayId: { initial: "", mandatory: false },
-  slug: { initial: "", mandatory: true },
-  loading: { initial: false, mandatory: false },
-  errors: { initial: [], mandatory: false },
-});
-
-const newProjectSchema = new Schema({
-  meta: { schema: metaSchema, mandatory: true },
-  display: { schema: displaySchema, mandatory: true }
 });
 
 const forkDisplaySchema = new Schema({
@@ -178,6 +170,83 @@ const projectSchema = new Schema({
       migration_status: { initial: null },
       check_error: { initial: undefined }
     }
+  }
+});
+
+const newProjectSchema = new Schema({
+  config: {
+    [Prop.SCHEMA]: new Schema({
+      custom: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
+      repositories: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true } // contains only { url, ref, name }
+    })
+  },
+  templates: {
+    [Prop.SCHEMA]: new Schema({
+      fetched: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+      fetching: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
+      errors: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true }, // contains only { "name": "desc" }
+      all: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true }
+    })
+  },
+  input: {
+    [Prop.SCHEMA]: new Schema({
+      title: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+      titlePristine: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true },
+      namespace: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+      namespacePristine: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true },
+      visibility: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true },
+      visibilityPristine: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true },
+      userRepo: { [Prop.INITIAL]: false, [Prop.MANDATORY]: false },
+      knowledgeGraph: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true },
+      template: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true },
+      templatePristine: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true },
+      variables: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true }, // contains pairs "var1": "value1"
+    })
+  },
+  meta: {
+    [Prop.SCHEMA]: new Schema({
+      namespace: {
+        [Prop.SCHEMA]: new Schema({
+          id: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+          fetched: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+          fetching: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
+          visibilities: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true }
+        })
+      },
+      // TODO: support custom user templates
+      userTemplates: {
+        [Prop.SCHEMA]: new Schema({
+          fetched: { [Prop.INITIAL]: null, [Prop.MANDATORY]: false },
+          fetching: { [Prop.INITIAL]: false, [Prop.MANDATORY]: false },
+          error: { [Prop.INITIAL]: null, [Prop.MANDATORY]: false }, // contains "desc"
+          url: { [Prop.INITIAL]: null, [Prop.MANDATORY]: false },
+          ref: { [Prop.INITIAL]: null, [Prop.MANDATORY]: false },
+          all: { [Prop.INITIAL]: [], [Prop.MANDATORY]: false }
+        })
+      },
+      validation: {
+        [Prop.SCHEMA]: new Schema({
+          warnings: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
+          errors: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
+        })
+      },
+      creation: {
+        [Prop.SCHEMA]: new Schema({
+          creating: { [Prop.INITIAL]: false },
+          created: { [Prop.INITIAL]: false },
+          createError: { [Prop.INITIAL]: "" },
+          projectUpdating: { [Prop.INITIAL]: false },
+          projectUpdated: { [Prop.INITIAL]: false },
+          projectError: { [Prop.INITIAL]: "" },
+          kgUpdating: { [Prop.INITIAL]: false },
+          kgUpdated: { [Prop.INITIAL]: false },
+          kgError: { [Prop.INITIAL]: "" },
+          newName: { [Prop.INITIAL]: "" },
+          newNamespace: { [Prop.INITIAL]: "" },
+          newUrl: { [Prop.INITIAL]: "" },
+        })
+      }
+    })
   }
 });
 
@@ -394,7 +463,7 @@ const addDatasetToProjectSchema = new Schema({
 
 
 export {
-  userSchema, metaSchema, displaySchema, newProjectSchema, projectSchema, forkProjectSchema, notebooksSchema,
+  userSchema, metaSchema, newProjectSchema, projectSchema, forkProjectSchema, notebooksSchema,
   projectsSchema, datasetFormSchema, issueFormSchema, datasetImportFormSchema, projectGlobalSchema,
   addDatasetToProjectSchema
 };

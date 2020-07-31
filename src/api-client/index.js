@@ -32,6 +32,7 @@ import addGraphMethods from "./graph";
 import addPipelineMethods from "./pipeline";
 import addDatasetMethods from "./dataset";
 import addMergeRequestMethods from "./merge-request";
+import addTemplatesMethods from "./templates";
 import addJobMethods from "./job";
 import addMigrationMethods from "./migration";
 
@@ -80,6 +81,7 @@ class APIClient {
     addPipelineMethods(this);
     addDatasetMethods(this);
     addMergeRequestMethods(this);
+    addTemplatesMethods(this);
     addJobMethods(this);
     addMigrationMethods(this);
   }

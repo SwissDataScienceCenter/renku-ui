@@ -33,7 +33,7 @@ import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 
 import logo from "./logo.svg";
 import { ExternalDocsLink, ExternalLink, Loader, RenkuNavLink, UserAvatar } from "../utils/UIComponents";
-import { getActiveProjectPathWithNamespace } from "../utils/HelperFunctions";
+import { getActiveProjectPathWithNamespace, gitLabUrlFromProfileUrl } from "../utils/HelperFunctions";
 import QuickNav from "../utils/quicknav";
 
 import "./NavBar.css";
@@ -55,12 +55,6 @@ function gitLabSettingsUrlFromProfileUrl(webUrl) {
   const comps = webUrl.split("/");
   comps.pop();
   comps.push("profile");
-  return comps.join("/");
-}
-
-function gitLabUrlFromProfileUrl(webUrl) {
-  const comps = webUrl.split("/");
-  comps.pop();
   return comps.join("/");
 }
 
@@ -107,7 +101,7 @@ class RenkuToolbarItemPlus extends Component {
         Dataset
       </Link>
       : null;
-    const projectDropdown = <Link className="dropdown-item" id="navbar-project-new" to="/project_new">
+    const projectDropdown = <Link className="dropdown-item" id="navbar-project-new" to="/projects/new">
       Project
     </Link>;
 

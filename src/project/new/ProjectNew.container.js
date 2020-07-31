@@ -1,5 +1,5 @@
 /*!
- * Copyright 2017 - Swiss Data Science Center (SDSC)
+ * Copyright 2020 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -17,252 +17,136 @@
  */
 
 /**
- *  incubator-renku-ui
+ *  renku-ui
  *
- *  Project.js
- *  Container components for project.
+ *  ProjectNew.container.js
+ *  Container components for new project
  */
 
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
-import { StateKind, StateModel } from "../../model/Model";
-// TODO: ONLY use one projectSchema after the refactoring has been finished.
-import { newProjectSchema } from "../../model/RenkuModels";
-import { slugFromTitle } from "../../utils/HelperFunctions";
-import ProjectNew from "./ProjectNew.present";
+import { NewProject as NewProjectPresent } from "./ProjectNew.present";
+import { NewProjectCoordinator } from "./ProjectNew.state";
 import { ProjectsCoordinator } from "../shared";
+import { gitLabUrlFromProfileUrl } from "../../utils/HelperFunctions";
 
 
-function groupVisibilitySupportsVisibility(groupVisibility, visibility) {
-  if (visibility === "private") return true;
-  if (visibility === "internal") return (groupVisibility === "internal" || groupVisibility === "public");
-  // Public is the last remaining
-  return (groupVisibility === "public");
-}
-
-function projectVisibilitiesForGroupVisibility(groupVisibility = "public") {
-  const visibilities = [];
-  visibilities.push({ name: "Private", value: "private" });
-  if (groupVisibilitySupportsVisibility(groupVisibility, "internal"))
-    visibilities.push({ name: "Internal", value: "internal" });
-  if (groupVisibilitySupportsVisibility(groupVisibility, "public"))
-    visibilities.push({ name: "Public", value: "public" });
-  return visibilities;
-}
-
-class New extends Component {
+class NewProject extends Component {
   constructor(props) {
     super(props);
-
-    this.newProject = new StateModel(newProjectSchema, StateKind.REDUX);
-    this.state = {
-      statuses: [], namespaces: [], namespaceGroup: null,
-      visibilities: projectVisibilitiesForGroupVisibility(), templates: []
-    };
-    this.projectsCoordinator = new ProjectsCoordinator(props.client, props.model.subModel("projects"));
+    this.model = props.model;
+    this.coordinator = new NewProjectCoordinator(props.client, this.model.subModel("newProject"),
+      this.model.subModel("projects"));
+    this.coordinator.setConfig(props.templates.custom, props.templates.repositories);
+    this.projectsCoordinator = new ProjectsCoordinator(props.client, this.model.subModel("projects"));
+    this.coordinator.resetInput();
 
     this.handlers = {
       onSubmit: this.onSubmit.bind(this),
-      onTitleChange: this.onTitleChange.bind(this),
-      onDescriptionChange: this.onDescriptionChange.bind(this),
-      onVisibilityChange: this.onVisibilityChange.bind(this),
-      onOptoutKgChange: this.onOptoutKgChange.bind(this),
-      onProjectNamespaceChange: this.onProjectNamespaceChange.bind(this),
-      onProjectNamespaceAccept: this.onProjectNamespaceAccept.bind(this),
-      fetchMatchingNamespaces: this.fetchMatchingNamespaces.bind(this),
-      onTemplateChange: this.onTemplateChange.bind(this),
-      fetchProjectTemplates: this.fetchProjectTemplates.bind(this)
+      getNamespaces: this.getNamespaces.bind(this),
+      getTemplates: this.getTemplates.bind(this),
+      setProperty: this.setProperty.bind(this),
+      setNamespace: this.setNamespace.bind(this),
+      setVariable: this.setVariable.bind(this),
+      goToProject: this.goToProject.bind(this)
     };
-    this.mapStateToProps = this.doMapStateToProps.bind(this);
   }
 
-  async fetchProjectTemplates() {
-    return this.props.client.getProjectTemplates(this.props.renkuTemplatesUrl, this.props.renkuTemplatesRef);
+  async getNamespaces() {
+    // we pass the projects object but we pre-set loading to get proper validation
+    let projects = this.model.get("projects");
+    projects = { ...projects, namespaces: { ...projects.namespaces, fetching: true } };
+    this.coordinator.validate(null, null, true, projects);
+    const namespaces = await this.projectsCoordinator.getNamespaces();
+    this.coordinator.validate(null, null, true);
+    return namespaces;
   }
 
-  async componentDidMount() {
-    const namespaces = await this.fetchNamespaces();
-    if (namespaces == null) {
-      // This seems to break in a test on Travis, but this code is not necessary locally. Need to investigate.
-      this.setState({ namespaces: [] });
-      return;
-    }
-    const username = this.props.user.data.username;
-    const namespace = namespaces.data.filter(n => n.path === username);
-    if (namespace.length > 0) this.newProject.set("meta.projectNamespace", namespace[0]);
-    this.setState({ namespaces });
-
-    const templates = await this.fetchProjectTemplates();
-    if (templates == null) {
-      this.setState({ templates: [] });
-      return;
-    }
-    this.setState({ templates });
-    if (templates.length > 0) this.newProject.set("meta.template", templates[0].folder);
-
+  async getTemplates() {
+    return this.coordinator.getTemplates(this.model);
   }
 
   refreshUserProjects() {
     this.projectsCoordinator.getFeatured();
   }
 
-  onSubmit() {
-    this.resetError();
-    const validation = this.validate();
-    if (validation.result) {
-      this.newProject.set("display.loading", true);
-      this.props.client.postProject(this.newProject.get(), this.props.renkuTemplatesUrl, this.props.renkuTemplatesRef)
-        .then((project) => {
-          this.refreshUserProjects();
-          this.newProject.set("display.loading", false);
-          this.props.history.push(`/projects/${project.path_with_namespace}`);
-        })
-        .catch(error => {
-          let display_messages = [];
-          if (error.errorData && error.errorData.message) {
-            const all_messages = error.errorData.message;
-            const messages = Object.keys(all_messages)
-              .reduce((obj, mex) => { obj[mex] = all_messages[mex]; return obj; }, {});
-
-            // the most common error is the duplicate name, we can rewrite it for readability
-            if (Object.keys(messages).includes("name") && /already.+taken/.test(messages["name"].join("; "))) {
-              display_messages = [`title: ${messages["name"].join("; ")}`];
-            }
-            else if (Object.keys(messages).includes("namespace") &&
-                /is not valid/.test(messages["namespace"].join("; ")) &&
-                Object.keys(messages).includes("limit_reached")) {
-              display_messages = ["You have reached your project limit in the target namespace"];
-            }
-            else {
-              display_messages = Object.keys(messages).map(mex => {
-                const text = messages[mex] && messages[mex].length ?
-                  `: ${messages[mex].join("; ")}` :
-                  "";
-                return `${mex}${text}`;
-              });
-            }
-          }
-          else {
-            display_messages = ["unknown"];
-          }
-          this.newProject.set("display.errors", display_messages);
-          this.newProject.set("display.loading", false);
-        });
-    }
+  setProperty(property, value) {
+    this.coordinator.setProperty(property, value);
   }
 
-  validate() {
-    const validation = this.newProject.validate();
-    if (!validation.result)
-      this.setState({ statuses: validation.errors });
-
-    return validation;
+  setNamespace(namespace) {
+    this.setProperty("namespace", namespace.full_path);
+    this.coordinator.getVisibilities(namespace);
   }
 
-  resetError() {
-    const errors = this.newProject.get("display.errors");
-    if (errors && errors.length)
-      this.newProject.set("display.errors", []);
-
+  setVariable(variable, value) {
+    this.coordinator.setVariable(variable, value);
   }
 
-  onTitleChange(e) {
-    this.newProject.set("display.title", e.target.value);
-    this.newProject.set("display.slug", slugFromTitle(e.target.value));
-    this.resetError();
+  goToProject() {
+    const slug = this.coordinator.getSlugAndReset();
+    this.props.history.push(`/projects/${slug}`);
   }
 
-  onDescriptionChange(e) {
-    this.newProject.set("display.description", e.target.value);
-    this.resetError();
-  }
+  onSubmit(e) {
+    e.preventDefault();
 
-  onVisibilityChange(e) {
-    this.newProject.set("meta.visibility", e.target.value);
-    if (e.target.value !== "private")
-      this.newProject.set("meta.optoutKg", false);
-
-    this.resetError();
-  }
-
-  onTemplateChange(e) {
-    this.newProject.set("meta.template", e.target.value);
-    this.resetError();
-  }
-
-  onOptoutKgChange(e) {
-    this.newProject.set("meta.optoutKg", e.target.checked);
-    this.resetError();
-  }
-
-  onProjectNamespaceChange(value) {
-    this.newProject.set("meta.projectNamespace", value);
-    this.resetError();
-  }
-
-  onProjectNamespaceAccept() {
-    const namespace = this.newProject.get("meta.projectNamespace");
-    if (namespace.kind !== "group") {
-      const visibilities = projectVisibilitiesForGroupVisibility();
-      this.setState({ namespaceGroup: null, visibilities });
+    // validate -- we do this cause we don't show errors on pristine variables
+    if (this.coordinator.invalidatePristine())
       return;
-    }
+    let validation = this.coordinator.getValidation();
+    if (Object.keys(validation.errors).length || Object.keys(validation.warnings).length)
+      return;
 
-    this.props.client.getGroupByPath(namespace.full_path).then(r => {
-      const group = r.data;
-      const visibilities = projectVisibilitiesForGroupVisibility(group.visibility);
-      const visibility = this.newProject.get("meta.visibility");
-      if (!groupVisibilitySupportsVisibility(group.visibility, visibility)) {
-        // Default to the highest available visibility
-        this.newProject.set("meta.visibility", visibilities[visibilities.length - 1].value);
+    // submit
+    const gitlabUrl = gitLabUrlFromProfileUrl(this.props.user.data.web_url);
+    this.coordinator.postProject(gitlabUrl).then(result => {
+      const { creation } = result.meta;
+      if (creation.created) {
+        this.refreshUserProjects();
+        if (!creation.kgError && !creation.projectError) {
+          const slug = `${creation.newNamespace}/${creation.newName}`;
+          this.props.history.push(`/projects/${slug}`);
+        }
       }
-      this.setState({ namespaceGroup: group, visibilities });
     });
-    this.resetError();
   }
 
-  doMapStateToProps(state, ownProps) {
-    const model = this.newProject.mapStateToProps(state, ownProps);
-    return { model };
-  }
+  mapStateToProps(state, ownProps) {
+    // map minimal projects and user information
+    const additional = {
+      projects: {
+        fetched: state.projects.featured.fetched,
+        fetching: state.projects.featured.fetching,
+        list: state.projects.featured.member
+      },
+      namespaces: {
+        fetched: state.projects.namespaces.fetched,
+        fetching: state.projects.namespaces.fetching,
+        list: state.projects.namespaces.list
+      },
+      user: {
+        logged: state.user.logged
+      }
+    };
 
-  fetchNamespaces(search = null) {
-    const queryParams = {};
-    if (search != null) queryParams["search"] = search;
-    return this.props.client.getNamespaces(queryParams);
-  }
-
-  // https://developer.mozilla.org/en/docs/Web/JavaScript/Guide/Regular_Expressions#Using_Special_Characters
-  escapeRegexCharacters(str) {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-  }
-
-  async fetchMatchingNamespaces(search) {
-    const namespaces = this.state.namespaces;
-    if (namespaces.pagination.totalPages > 1) return this.fetchNamespaces(search).then(r => r.data);
-
-    // We have all the data, just filter in the browser
-    let escapedValue = this.escapeRegexCharacters(search.trim());
-    if (escapedValue === "") escapedValue = ".*";
-    const regex = new RegExp(escapedValue, "i");
-    return Promise.resolve(namespaces.data.filter(namespace => regex.test(namespace.path)));
+    return {
+      ...additional,
+      ...state.newProject,
+      handlers: this.handlers
+    };
   }
 
   render() {
-    const ConnectedNewProject = connect(this.mapStateToProps)(ProjectNew);
-    const statuses = {};
-    this.state.statuses.forEach((d) => { Object.keys(d).forEach(k => statuses[k] = d[k]); });
+    const ConnectedNewProject = connect(this.mapStateToProps.bind(this))(NewProjectPresent);
+
     return <ConnectedNewProject
-      statuses={statuses}
-      namespaces={this.state.namespaces.data}
-      visibilities={this.state.visibilities}
-      templates={this.state.templates}
-      handlers={this.handlers}
-      store={this.newProject.reduxStore}
-      user={this.props.user} />;
+      store={this.model.reduxStore}
+      location={this.props.location}
+    />;
   }
 }
 
 
-export default New;
+export { NewProject };
