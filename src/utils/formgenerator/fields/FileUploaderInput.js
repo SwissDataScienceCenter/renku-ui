@@ -537,10 +537,10 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
                 <small className="text-muted">
                   NOTE: Support for uploading large files in RenkuLab is still under development; {" "}
                   consider using the Renku CLI for files larger than 500 MB.
-                  <Button className="pr-0 pl-1 pt-0 pb-0 mb-1" color="link" id="file-limit-toggler" onClick="null">
+                  <Button className="pr-0 pl-1 pt-0 pb-0 mb-1" color="link" id="filelimittoggler">
                     <small>More info.</small>
                   </Button>
-                  <UncontrolledCollapse key="searchHelp" toggler="#file-limit-toggler" className="pt-0 pl-3">
+                  <UncontrolledCollapse key="filelimittoggler" toggler={"#filelimittoggler"} className="pt-0 pl-3">
                     In practice, the file-size limitation on uploads in RenkuLab is dependent on the {" "}
                     network connection. Here are some general estimates:<br />
                     <ul>
