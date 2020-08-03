@@ -24,7 +24,7 @@
  */
 
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { addDatasetToProjectSchema } from "../../model/RenkuModels";
 import { ACCESS_LEVELS, API_ERRORS } from "../../api-client";
 import DatasetAdd from "./DatasetAdd.present";
@@ -38,6 +38,7 @@ function AddDataset(props) {
   const [submitLoader, setSubmitLoader] = useState(false);
   const [submitLoaderText, setSubmitLoaderText] = useState(ImportStateMessage.ENQUEUED);
   const [takingTooLong, setTakingTooLong] = useState(false);
+  const [migrationNeeded, setMigrationNeeded] = useState(false);
 
   const closeModal = () =>{
     if (!submitLoader) {
@@ -46,6 +47,7 @@ function AddDataset(props) {
       setServerErrors(undefined);
       setTakingTooLong(false);
       props.setModalOpen(false);
+      setMigrationNeeded(false);
     }
   };
 
@@ -166,6 +168,23 @@ function AddDataset(props) {
       });
   };
 
+  const importDataset = (selectedProject, oldDatasetsList, kgProgressCompleted) => {
+    props.client.datasetImport(selectedProject.value, props.dataset.url)
+      .then(response => {
+        if (response.data.error !== undefined) {
+          setSubmitLoader(false);
+          setServerErrors(response.data.error.reason);
+        }
+        else {
+          monitorJobStatusAndHandleResponse(
+            response.data.result.job_id,
+            oldDatasetsList,
+            selectedProject.name,
+            kgProgressCompleted);
+        }
+      });
+  };
+
   const submitCallback = e => {
     setServerErrors(undefined);
     setSubmitLoader(true);
@@ -173,65 +192,55 @@ function AddDataset(props) {
     const selectedProject = addDatasetToProjectSchema.project.options.find((project)=>
       project.value === addDatasetToProjectSchema.project.value);
 
-    fetchGraphStatus(selectedProject.id).then(resp => {
-      if (resp < GraphIndexingStatus.MAX_VALUE) {
-        props.client.datasetImport(selectedProject.value, props.dataset.url)
-          .then(response => {
-            if (response.data.error !== undefined) {
-              setSubmitLoader(false);
-              setServerErrors(response.data.error.reason);
-            }
-            else {
-              monitorJobStatusAndHandleResponse(
-                response.data.result.job_id,
-                oldDatasetsList,
-                selectedProject.name,
-                false);
-            }
-          });
-      }
-      else {
-        props.client.getProjectDatasetsFromKG_short(selectedProject.name)
-          .then(result => {
-            oldDatasetsList = result;
-            props.client.datasetImport(selectedProject.value, props.dataset.url)
-              .then(response => {
-                if (response.data.error !== undefined) {
+    props.client.getProjectIdFromService(selectedProject.value)
+      .then((response) => {
+        if (response.data && response.data.error !== undefined) {
+          setSubmitLoader(false);
+          setServerErrors(response.data.error.reason);
+        }
+        else {
+          props.client.performMigrationCheck(response)
+            .then((response) => {
+              if (response.data && response.data.error !== undefined) {
+                setSubmitLoader(false);
+                setServerErrors(response.data.error.reason);
+              }
+              else {
+                if (response.data.result.migration_required) {
+                  setMigrationNeeded(true);
                   setSubmitLoader(false);
-                  setServerErrors(response.data.error.reason);
                 }
                 else {
-                  monitorJobStatusAndHandleResponse(
-                    response.data.result.job_id,
-                    oldDatasetsList,
-                    selectedProject.name,
-                    true);
+                  fetchGraphStatus(selectedProject.id).then(resp => {
+                    if (resp < GraphIndexingStatus.MAX_VALUE) {
+                      importDataset(selectedProject, oldDatasetsList, false);
+                    }
+                    else {
+                      props.client.getProjectDatasetsFromKG_short(selectedProject.name)
+                        // eslint-disable-next-line max-nested-callbacks
+                        .then(result => {
+                          oldDatasetsList = result;
+                          importDataset(selectedProject, oldDatasetsList, true);
+                        });
+                    }
+                  }).catch(error => {
+                    //If we get an error when fetching the KG  we still go on with the dataset import
+                    //We don't need the KG to do the dataset import, just to display datasets
+                    importDataset(selectedProject, oldDatasetsList, false);
+                  });
                 }
-              });
-          });
-      }
-    }).catch(error => {
-      //If we get an error when fetching the KG  we still go on with the dataset import
-      //We don't need the KG to do the dataset import, just to display datasets
-      props.client.datasetImport(selectedProject.value, props.dataset.url)
-        .then(response => {
-          if (response.data.error !== undefined) {
-            setSubmitLoader(false);
-            setServerErrors(response.data.error.reason);
-          }
-          else {
-            monitorJobStatusAndHandleResponse(
-              response.data.result.job_id,
-              oldDatasetsList,
-              selectedProject.name,
-              false);
-          }
-        });
-    });
+              }
+            });
+        }
+      });
   };
 
   addDatasetToProjectSchema.project.customHandlers = {
     onSuggestionsFetchRequested: ( value, reason, setSuggestions ) => {
+
+      setMigrationNeeded(false);
+      setServerErrors(undefined);
+      setTakingTooLong(false);
 
       const featured = props.projectsCoordinator.model.get("featured");
       if (!featured.fetched || (!featured.starred.length && !featured.member.length))
@@ -272,9 +281,6 @@ function AddDataset(props) {
     }
   };
 
-  useEffect(()=> {
-    addDatasetToProjectSchema.project.value = "";
-  });
 
   return (
     <DatasetAdd
@@ -286,6 +292,8 @@ function AddDataset(props) {
       submitLoaderText={submitLoaderText}
       addDatasetToProjectSchema={addDatasetToProjectSchema}
       takingTooLong={takingTooLong}
+      migrationNeeded={migrationNeeded}
+      history={props.history}
     />
   );
 }
