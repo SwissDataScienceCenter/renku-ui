@@ -72,6 +72,11 @@ sentry:
   namespace: ''
 
 privacy:
+  enabled: false
+  page:
+    map: false
+    configMapName: privacy-page
+    configMapKey: privacy_statement
   banner:
     content: |
       This website requires cookies in order to ensure basic functionality. By clicking

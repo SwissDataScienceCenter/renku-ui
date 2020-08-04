@@ -28,6 +28,7 @@ echo " RENKU_TEMPLATES_URL=${RENKU_TEMPLATES_URL}"
 echo " RENKU_TEMPLATES_REF=${RENKU_TEMPLATES_REF}"
 echo " MAINTENANCE=${MAINTENANCE}"
 echo " ANONYMOUS_SESSIONS=${ANONYMOUS_SESSIONS}"
+echo " PRIVACY_ENABLED=${PRIVACY_ENABLED}"
 echo " PRIVACY_BANNER_CONTENT=${PRIVACY_BANNER_CONTENT}"
 echo " PRIVACY_BANNER_LAYOUT=${PRIVACY_BANNER_LAYOUT}"
 echo "==================================================="
@@ -48,13 +49,19 @@ tee > "${NGINX_PATH}/config.json" << EOF
   "RENKU_TEMPLATES_REF": "${RENKU_TEMPLATES_REF}",
   "MAINTENANCE": "${MAINTENANCE}",
   "ANONYMOUS_SESSIONS": "${ANONYMOUS_SESSIONS}",
+  "PRIVACY_ENABLED": "${PRIVACY_ENABLED}",
   "PRIVACY_BANNER_CONTENT": "${PRIVACY_BANNER_CONTENT}",
   "PRIVACY_BANNER_LAYOUT": ${PRIVACY_BANNER_LAYOUT}
 }
 EOF
 echo "config.json created in ${NGINX_PATH}"
 
-more /config-privacy/statement.md | base64 | tr -d \\n > "${NGINX_PATH}/privacy-statement.md"
-echo "privacy-statement.md created in ${NGINX_PATH}"
+FILE=/config-privacy/statement.md
+if [ -f "$FILE" ]; then
+  more /config-privacy/statement.md | base64 | tr -d \\n > "${NGINX_PATH}/privacy-statement.md"
+  echo "privacy-statement.md created in ${NGINX_PATH}"
+else 
+  echo "privacy-statement.md created in ${NGINX_PATH}"
+fi
 
 exec -- "$@"

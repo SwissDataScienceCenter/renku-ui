@@ -78,6 +78,9 @@ class Cookie extends Component {
   render() {
     const { params, history } = this.props;
 
+    if (!params["PRIVACY_ENABLED"])
+      return null;
+
     // REF: https://www.npmjs.com/package/react-cookie-consent
     const layout = params["PRIVACY_BANNER_LAYOUT"] ?
       params["PRIVACY_BANNER_LAYOUT"] :
@@ -95,7 +98,9 @@ class Privacy extends Component {
   render() {
     const { params } = this.props;
 
-    const content = params["PRIVACY_STATEMENT"];
+    const content = params["PRIVACY_ENABLED"] ?
+      params["PRIVACY_STATEMENT"] :
+      null;
 
     return (<PrivacyPresent content={content} />);
   }

@@ -23,14 +23,25 @@ Promise.all([configFetch, privacyFetch]).then(valuesRead => {
 
   Promise.all([configRead, privacyRead]).then(values => {
     const [params, privacy] = values;
-    // verify that the privacy file exists and no "page not found" is returned.
+
+    // adjust boolean param values
+    for (const val of Object.keys(params)) {
+      if (params[val] === "false")
+        params[val] = false;
+      else if (params[val] === "true")
+        params[val] = true;
+    }
+
+    // map privacy statement to parameters
+    // ? checking DOCTYPE prevents setting content from bad answers on valid 2xx responses
     if (!privacy || !privacy.length || privacy.startsWith("<!DOCTYPE html>"))
-      params["PRIVACY_STATEMENT"] = "";
+      params["PRIVACY_STATEMENT"] = null;
     else
       params["PRIVACY_STATEMENT"] = privacy;
 
+    // show maintenance page when necessary
     const maintenace = params["MAINTENANCE"];
-    if (maintenace && maintenace !== "false" && maintenace !== "0") {
+    if (maintenace) {
       ReactDOM.render(<Maintenance info={maintenace} />, document.getElementById("root"));
       return;
     }

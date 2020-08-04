@@ -19,13 +19,15 @@ spec:
         app: {{ template "ui.name" . }}
         release: {{ .Release.Name }}
     spec:
+      {{- if and .Values.privacy.enabled .Values.privacy.page.map }}
       volumes:
         - name: privacy
           configMap:
-            name: {{ template "ui.fullname" . }}-privacy
+            name: {{ .Values.privacy.page.configMapName | default (printf "%s-privacy-sample" (include "ui.fullname" .)) | quote }}
             items:
-            - key: privacy_statement
+            - key: {{ .Values.privacy.page.configMapKey | default (printf "privacy_statement") | quote }}
               path: statement.md
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -34,9 +36,11 @@ spec:
             - name: http
               containerPort: {{ .Values.service.port }}
               protocol: TCP
+          {{- if and .Values.privacy.enabled .Values.privacy.page.map }}
           volumeMounts:
             - mountPath: /config-privacy
               name: privacy
+          {{- end }}
           env:
             - name: BASE_URL
               value: {{ .Values.baseUrl | default (printf "%s://%s" (include "ui.protocol" .) .Values.global.renku.domain) | quote }}
@@ -60,6 +64,8 @@ spec:
               {{- end }}
             - name: ANONYMOUS_SESSIONS
               value: {{ .Values.global.anonymousSessions.enabled | default (printf "false") | quote }}
+            - name: PRIVACY_ENABLED
+              value: {{ .Values.privacy.enabled | quote }}
             - name: PRIVACY_BANNER_CONTENT
               value: {{ .Values.privacy.banner.content | default (printf "") | b64enc | quote }}
             - name: PRIVACY_BANNER_LAYOUT
