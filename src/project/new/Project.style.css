@@ -46,10 +46,14 @@
 
 .react-autosuggest__suggestion {
   cursor: pointer;
+}
+
+.react-autosuggest__suggestion span {
+  display: block;
   padding: 10px 20px;
 }
 
-.react-autosuggest__suggestion--highlighted {
+.react-autosuggest__suggestion--highlighted, .react-autosuggest__suggestion span.highlighted {
   background-color: #ddd;
 }
 
@@ -65,4 +69,8 @@
   padding: 10px 0 0 10px;
   font-size: 12px;
   color: #777;
+}
+
+svg.no-pointer {
+  cursor: default;
 }

@@ -22,19 +22,19 @@ set -e
 CURRENT_CONTEXT=`kubectl config current-context`
 WELCOME_MESSAGE="## Welcome to Renku through telepresence
 Some deployment-specific information will be read from the your values.yaml file and be displayed as markdown file."
-PRIVACY_STATEMENT="# Privacy statement
-Here goes a long privacy statement"
+TEMPLATES='{"custom":true,"repositories":
+[{"name":"Renku","ref":"master",
+"url":"https://github.com/SwissDataScienceCenter/renku-project-template"},
+{"name":"Telepresence","ref":"0.1.11",
+"url":"https://github.com/SwissDataScienceCenter/renku-project-template"}]}'
 if [[ "$OSTYPE" == "linux-gnu" ]]
 then
   WELCOME_PAGE=`echo "${WELCOME_MESSAGE}" | base64 -w 0`
-  PRIVACY_STATEMENT=`echo "${PRIVACY_STATEMENT}" | base64 -w 0`
 elif [[ "$OSTYPE" == "darwin"* ]]
 then
   WELCOME_PAGE=`echo "${WELCOME_MESSAGE}" | base64`
-  PRIVACY_STATEMENT=`echo "${PRIVACY_STATEMENT}" | base64`
 else
   WELCOME_PAGE=`echo "${WELCOME_MESSAGE}" | base64`
-  PRIVACY_STATEMENT=`echo "${PRIVACY_STATEMENT}" | base64`
   echo "Warning! your OS has not been tested yet"
 fi
 
@@ -91,10 +91,9 @@ tee > ./public/config.json << EOF
   "WELCOME_PAGE": "${WELCOME_PAGE}",
   "SENTRY_URL": "${SENTRY_URL}",
   "SENTRY_NAMESPACE": "${SENTRY_NAMESPACE}",
-  "RENKU_TEMPLATES_URL": "https://github.com/SwissDataScienceCenter/renku-project-template",
-  "RENKU_TEMPLATES_REF": "master",
   "ANONYMOUS_SESSIONS": "true",
-  "PRIVACY_STATEMENT": "${PRIVACY_STATEMENT}"
+  "PRIVACY_ENABLED": "false",
+  "TEMPLATES": ${TEMPLATES}
 }
 EOF
 

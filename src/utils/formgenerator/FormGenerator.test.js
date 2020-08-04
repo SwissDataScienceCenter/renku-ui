@@ -39,7 +39,7 @@ let schema = new Schema({
     name: "files",
     label: "Files",
     edit: true,
-    type: FormGenerator.FieldTypes.FILES,
+    type: FormGenerator.FieldTypes.FILES
   }
 });
 
@@ -56,6 +56,8 @@ describe("rendering on create", () => {
 
   it("renders create form without crashing", () => {
     const div = document.createElement("div");
+    div.setAttribute("id", "FormPanelRender");
+    document.body.appendChild(div);
 
     const submitCallback = e =>
       Object.values(schema)

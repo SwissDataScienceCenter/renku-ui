@@ -35,6 +35,10 @@ import FileuploaderInput from "./fields/FileUploaderInput";
 import { Loader } from "../../utils/UIComponents";
 import "./FormGenerator.css";
 
+function capitalize(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 function FormPanel({ title, btnName, submitCallback, model, serverErrors,
   serverWarnings, submitLoader, onCancel, edit, cancelBtnName, disableAll }) {
   const modelValues = Object.values(model);
@@ -47,7 +51,6 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors,
     SelectInput,
     SelectautosuggestInput
   };
-  const capitalize = expression => expression.charAt(0).toUpperCase() + expression.slice(1);
   const renderInput = input => {
     const Component = Components[capitalize(input.type) + "Input"];
     return <Component key={input.name}
@@ -93,3 +96,4 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors,
 }
 
 export default FormPanel;
+export { capitalize };

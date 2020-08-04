@@ -54,10 +54,6 @@ spec:
             - name: SENTRY_NAMESPACE
               value: {{ .Values.sentry.namespace | default (printf "%s" .Release.Namespace) | quote }}
               {{- end }}
-            - name: RENKU_TEMPLATES_URL
-              value: {{ required "templateRepository.url must be specified, e.g., https://github.com/repos/SwissDataScienceCenter/renku-project-template" .Values.templatesRepository.url | quote }}
-            - name: RENKU_TEMPLATES_REF
-              value: {{ required "templateRepository.ref must be specified, e.g., master" .Values.templatesRepository.ref | quote }}
               {{- if .Values.maintenance }}
             - name: MAINTENANCE
               value: {{ .Values.maintenance | default (printf "false") | quote }}
@@ -70,6 +66,8 @@ spec:
               value: {{ .Values.privacy.banner.content | default (printf "") | b64enc | quote }}
             - name: PRIVACY_BANNER_LAYOUT
               value: {{ toJson .Values.privacy.banner.layout | quote }}
+            - name: TEMPLATES
+              value: {{ toJson .Values.templates | quote }}
           livenessProbe:
             httpGet:
               path: /

@@ -23,7 +23,9 @@ import DOMPurify from "dompurify";
 
 const AUTOSAVED_PREFIX = "renku/autosave/";
 
-const slugFromTitle = (title) => title.replace(/\s/g, "-").toLowerCase();
+const slugFromTitle = (title, lower = false) => lower ?
+  title.replace(/\s/g, "-").toLowerCase() :
+  title.replace(/\s/g, "-");
 
 function getActiveProjectPathWithNamespace(currentPath) {
   try {
@@ -157,6 +159,12 @@ function groupBy(list, keyGetter) {
   return map;
 }
 
+function gitLabUrlFromProfileUrl(webUrl) {
+  const comps = webUrl.split("/");
+  comps.pop();
+  return comps.join("/");
+}
+
 function isURL(str) {
   var pattern = new RegExp("^(https?:\\/\\/)?" + // protocol
     "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
@@ -168,4 +176,4 @@ function isURL(str) {
 }
 
 export { slugFromTitle, getActiveProjectPathWithNamespace, splitAutosavedBranches, sanitizedHTMLFromMarkdown };
-export { simpleHash, parseINIString, formatBytes, groupBy, isURL };
+export { simpleHash, parseINIString, formatBytes, groupBy, gitLabUrlFromProfileUrl, isURL };

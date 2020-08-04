@@ -86,7 +86,16 @@ class App extends Component {
                   {...p}
                 />}
               />
-              {/* pull out the underlying parts of the url and pass them to the project view */}
+              <Route exact path="/projects/new" render={
+                p => <Project.New
+                  key="newProject"
+                  client={this.props.client}
+                  model={this.props.model}
+                  user={this.props.user}
+                  templates={this.props.params["TEMPLATES"]}
+                  {...p}
+                />}
+              />
               <Route path="/projects/:subUrl+" render={
                 p => <Project.View
                   key={`${p.match.params.projectNamespace}/${p.match.params.projectName}`}
@@ -96,17 +105,6 @@ class App extends Component {
                   model={this.props.model}
                   user={this.props.user}
                   blockAnonymous={blockAnonymous}
-                  {...p}
-                />}
-              />
-              <Route exact path="/project_new" render={
-                p => <Project.New
-                  key="project_new"
-                  client={this.props.client}
-                  model={this.props.model}
-                  user={this.props.user}
-                  renkuTemplatesUrl={this.props.params["RENKU_TEMPLATES_URL"]}
-                  renkuTemplatesRef={this.props.params["RENKU_TEMPLATES_REF"]}
                   {...p}
                 />}
               />
