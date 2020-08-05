@@ -178,7 +178,7 @@ export default function DatasetView(props) {
         }
         <h4 key="datasetTitle">
           {dataset.name}
-          { dataset.url && (props.insideProject || dataset.sameAs.includes("doi.org")) ?
+          { dataset.url && props.insideProject ?
             <a href={dataset.url} target="_blank" rel="noreferrer noopener">
               <Button size="sm" color="link" style={{ color: "rgba(0, 0, 0, 0.5)" }}>
                 <FontAwesomeIcon icon={faExternalLinkAlt} color="dark" /> Go to source
@@ -220,7 +220,7 @@ export default function DatasetView(props) {
       <RenkuMarkdown markdownText={dataset.description} />
     </div>
     {
-      props.insideProject || dataset.sameAs.includes("doi.org") ?
+      dataset.url && props.insideProject ?
         <LinkToExternal link={dataset.url} label="Source" />
         : null
     }
