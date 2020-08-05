@@ -74,12 +74,15 @@ sentry:
   url: ''
   namespace: ''
 
+# If you want to enable the privacy page, please create also a configMap and set its name in the
+# privacy.page.configMapName value. As a reference, you can use the sample configMap generated when
+# enabling the feature.
 privacy:
   enabled: false
   page:
     enabled: false
-    configMapName: privacy-page
-    configMapKey: privacy_statement
+    #configMapName: privacy-page
+    #configMapKey: privacy_statement
   banner:
     content: |
       This website requires cookies in order to ensure basic functionality. By clicking

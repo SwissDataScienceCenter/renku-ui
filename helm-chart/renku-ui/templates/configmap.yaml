@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "ui.fullname" . }}-sample-privacy
+  name: {{ template "ui.fullname" . }}-privacy-sample
   labels:
     app: {{ template "ui.name" . }}
     chart: {{ template "ui.chart" . }}
