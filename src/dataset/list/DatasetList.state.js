@@ -131,7 +131,7 @@ class DatasetListModel extends StateModel {
     if (this.get("loading")) return;
     this.set("loading", true);
     const searchParams = {
-      query: this.get("query"),
+      query: this.get("query") === "" ? "*" : this.get("query"),
       sort: this.getSorting(),
       per_page: this.get("perPage"),
       page: this.get("currentPage"),
