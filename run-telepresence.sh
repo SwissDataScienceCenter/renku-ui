@@ -89,6 +89,7 @@ tee > ./public/config.json << EOF
   "RENKU_TEMPLATES_URL": "https://github.com/SwissDataScienceCenter/renku-project-template",
   "RENKU_TEMPLATES_REF": "master",
   "ANONYMOUS_SESSIONS": "true"
+  "PRIVACY_ENABLED": "false",
 }
 EOF
 

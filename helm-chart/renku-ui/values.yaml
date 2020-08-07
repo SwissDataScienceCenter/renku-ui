@@ -70,3 +70,25 @@ sentry:
   enabled: false
   url: ''
   namespace: ''
+
+# If you want to enable the privacy page, please create also a configMap and set its name in the
+# privacy.page.configMapName value. As a reference, you can use the sample configMap generated when
+# enabling the feature.
+privacy:
+  enabled: false
+  page:
+    enabled: false
+    #configMapName: privacy-page
+    #configMapKey: privacy_statement
+  banner:
+    content: |
+      This website requires cookies in order to ensure basic functionality. By clicking
+      or navigating the site, you consent to the use of cookies in accordance with
+      our <u><a class="text-white" href="/privacy">Privacy Policy</a></u>.
+    layout:
+      cookieName: RenkuLabPrivacy
+      disableStyles: true
+      containerClasses: fixed-bottom p-3 bg-dark
+      contentClasses: text-white small
+      buttonClasses: btn btn-sm btn-light mr-2
+      buttonWrapperClasses: mt-2
