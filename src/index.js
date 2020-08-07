@@ -13,12 +13,35 @@ import APIClient from "./api-client";
 import { UserCoordinator } from "./user";
 import { StateModel, globalSchema } from "./model";
 
-const configPromise = fetch("/config.json");
+const configFetch = fetch("/config.json");
+const privacyFetch = fetch("/privacy-statement.md");
 
-configPromise.then((res) => {
-  res.json().then((params) => {
+Promise.all([configFetch, privacyFetch]).then(valuesRead => {
+  const [configResp, privacyResp] = valuesRead;
+  const configRead = configResp.json();
+  const privacyRead = privacyResp.text();
+
+  Promise.all([configRead, privacyRead]).then(values => {
+    const [params, privacy] = values;
+
+    // adjust boolean param values
+    for (const val of Object.keys(params)) {
+      if (params[val] === "false")
+        params[val] = false;
+      else if (params[val] === "true")
+        params[val] = true;
+    }
+
+    // map privacy statement to parameters
+    // ? checking DOCTYPE prevents setting content from bad answers on valid 2xx responses
+    if (!privacy || !privacy.length || privacy.startsWith("<!DOCTYPE html>"))
+      params["PRIVACY_STATEMENT"] = null;
+    else
+      params["PRIVACY_STATEMENT"] = privacy;
+
+    // show maintenance page when necessary
     const maintenace = params["MAINTENANCE"];
-    if (maintenace && maintenace !== "false" && maintenace !== "0") {
+    if (maintenace) {
       ReactDOM.render(<Maintenance info={maintenace} />, document.getElementById("root"));
       return;
     }

@@ -36,6 +36,7 @@ import Help from "./help";
 import NotFound from "./not-found";
 import ShowDataset from "./dataset/Dataset.container";
 import { Loader } from "./utils/UIComponents";
+import { Cookie, Privacy } from "./privacy";
 
 import "./App.css";
 
@@ -53,8 +54,7 @@ class App extends Component {
     }
 
     // check anonymous sessions settings
-    const anonymousSessions = this.props.params["ANONYMOUS_SESSIONS"] === "true";
-    const blockAnonymous = !user.logged && !anonymousSessions;
+    const blockAnonymous = !user.logged && !this.props.params["ANONYMOUS_SESSIONS"];
 
     return (
       <Router>
@@ -137,10 +137,17 @@ class App extends Component {
                   {...p}
                 />}
               />
+              <Route path="/privacy" render={
+                p => <Privacy key="privacy"
+                  params={this.props.params}
+                  {...p}
+                />}
+              />
               <Route path="*" render={p => <NotFound {...p} />} />
             </Switch>
           </main>
-          <Route component={FooterNavbar} />
+          <Route render={props => <FooterNavbar {...props} params={this.props.params} />} />
+          <Route render={props => <Cookie {...props} params={this.props.params} />} />
         </div>
       </Router>
     );
