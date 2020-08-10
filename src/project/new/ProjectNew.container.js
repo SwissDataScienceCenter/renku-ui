@@ -31,6 +31,8 @@ import { NewProjectCoordinator } from "./ProjectNew.state";
 import { ProjectsCoordinator } from "../shared";
 import { gitLabUrlFromProfileUrl } from "../../utils/HelperFunctions";
 
+const CUSTOM_REPO_NAME = "Custom";
+
 
 class NewProject extends Component {
   constructor(props) {
@@ -46,7 +48,9 @@ class NewProject extends Component {
       onSubmit: this.onSubmit.bind(this),
       getNamespaces: this.getNamespaces.bind(this),
       getTemplates: this.getTemplates.bind(this),
+      getUserTemplates: this.getUserTemplates.bind(this),
       setProperty: this.setProperty.bind(this),
+      setTemplateProperty: this.setTemplateProperty.bind(this),
       setNamespace: this.setNamespace.bind(this),
       setVariable: this.setVariable.bind(this),
       goToProject: this.goToProject.bind(this)
@@ -64,7 +68,17 @@ class NewProject extends Component {
   }
 
   async getTemplates() {
-    return this.coordinator.getTemplates(this.model);
+    return this.coordinator.getTemplates(this.model, false);
+  }
+
+  async getUserTemplates() {
+    const targetRepository = this.model.get("newProject.meta.userTemplates");
+    const repositories = [{
+      name: CUSTOM_REPO_NAME,
+      url: targetRepository.url,
+      ref: targetRepository.ref
+    }];
+    return this.coordinator.getTemplates(repositories, true);
   }
 
   refreshUserProjects() {
@@ -78,6 +92,10 @@ class NewProject extends Component {
   setNamespace(namespace) {
     this.setProperty("namespace", namespace.full_path);
     this.coordinator.getVisibilities(namespace);
+  }
+
+  setTemplateProperty(property, value) {
+    this.coordinator.setTemplateProperty(property, value);
   }
 
   setVariable(variable, value) {
@@ -149,4 +167,4 @@ class NewProject extends Component {
 }
 
 
-export { NewProject };
+export { NewProject, CUSTOM_REPO_NAME };

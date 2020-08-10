@@ -62,8 +62,7 @@ function makeRefreshButton(refresh, tip, disabled) {
 
 class NewProject extends Component {
   render() {
-    // TODO: Support user provided repositories
-    const { user } = this.props;
+    const { user, config, input } = this.props;
     if (!user.logged) {
       const postLoginUrl = this.props.location ? this.props.location.pathname : null;
       const to = { "pathname": "/login", "state": { previous: postLoginUrl } };
@@ -80,8 +79,7 @@ class NewProject extends Component {
       );
     }
 
-    let supportUserProvidedRepositories = false, userProvidedRepo = false;
-    if (supportUserProvidedRepositories) userProvidedRepo = this.props.input.userRepo;
+    const userRepo = config.custom && input.userRepo;
     return (
       <Row>
         <Col sm={10} md={9} lg={8} xl={7}>
@@ -92,13 +90,10 @@ class NewProject extends Component {
             <Home {...this.props} />
             <Visibility {...this.props} />
             <KnowledgeGraph {...this.props} />
-            {supportUserProvidedRepositories ? <TemplateSource {...this.props} /> : null}
-            {userProvidedRepo ?
-              (<UserTemplate {...this.props} />) :
-              (<Template {...this.props} />)
-            }
+            {config.custom ? <TemplateSource {...this.props} /> : null}
+            {userRepo ? <UserTemplate {...this.props} /> : null}
+            <Template {...this.props} />
             <Variables {...this.props} />
-            {/* <Create canCreate={canCreate} {...this.props} /> */}
             <Creation {...this.props} />
             <Create {...this.props} />
           </Form>
@@ -416,12 +411,9 @@ class KnowledgeGraph extends Component {
   }
 }
 
-// TODO: complete and re-enable following 2 components for custom user templates
 class TemplateSource extends Component {
   render() {
-    const { handlers, config, input } = this.props;
-    if (!config.custom)
-      return null;
+    const { handlers, input } = this.props;
     return (
       <FormGroup>
         <Label>Template source</Label>
@@ -429,11 +421,11 @@ class TemplateSource extends Component {
         <ButtonGroup size="sm">
           <Button color="primary" outline active={!input.userRepo}
             onClick={(e) => handlers.setProperty("userRepo", false)}>
-            Renkulab
+            RenkuLab
           </Button>
           <Button color="primary" outline active={input.userRepo}
             onClick={(e) => handlers.setProperty("userRepo", true)}>
-            Enter manually
+            Custom
           </Button>
         </ButtonGroup>
       </FormGroup>
@@ -442,52 +434,84 @@ class TemplateSource extends Component {
 }
 
 class UserTemplate extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      missingUrl: false,
+      missingRef: false
+    };
+  }
+
+  fetchTemplates() {
+    const { meta } = this.props;
+
+    // check if url or ref are missing
+    const { missingUrl, missingRef } = this.state;
+    let newState = {
+      missingUrl: false,
+      missingRef: false
+    };
+    if (!meta.userTemplates.url)
+      newState.missingUrl = true;
+    if (!meta.userTemplates.ref)
+      newState.missingRef = true;
+    if (missingUrl !== newState.missingUrl || missingRef !== newState.missingRef)
+      this.setState(newState);
+
+    // try to get user templates if repository data are available
+    if (newState.missingUrl || newState.missingRef)
+      return;
+    return this.props.handlers.getUserTemplates();
+  }
+
   render() {
-    // TODO: Stub for supporting custom user template. Finish the component
-    return <Fragment>
-      <FormGroup>
-        <FormText>Not working yet... Use the RenkuLab templates</FormText>
-      </FormGroup>
-    </Fragment>;
-    //   const { templates, handlers, config } = this.props;
+    const { meta, handlers, config } = this.props;
 
-    //   let urlExample = "https://github.com/SwissDataScienceCenter/renku-project-template";
-    //   if (config.repositories && config.repositories.length)
-    //     urlExample = config.repositories[0].url;
-    //   let refExample = "0.1.11";
-    //   if (config.repositories && config.repositories.length)
-    //     refExample = config.repositories[0].ref;
-    //   const templatesDocs = (
-    //     <a href="https://renku.readthedocs.io/en/latest/user/templates.html"
-    //       target="_blank" rel="noopener noreferrer">
-    //       Renku templates
-    //     </a>
-    //   );
+    // placeholders and links
+    let urlExample = "https://github.com/SwissDataScienceCenter/renku-project-template";
+    if (config.repositories && config.repositories.length)
+      urlExample = config.repositories[0].url;
+    let refExample = "0.1.11";
+    if (config.repositories && config.repositories.length)
+      refExample = config.repositories[0].ref;
+    const templatesDocs = (
+      <a href="https://renku.readthedocs.io/en/latest/user/templates.html"
+        target="_blank" rel="noopener noreferrer">
+        Renku templates
+      </a>
+    );
 
-    //   return (
-    //     <Fragment>
-    //       <FormGroup>
-    //         <Label>Repository URL</Label>
-    //         <Input type="text" placeholder={`E.G. ${urlExample}`}
-    //           onChange={(e) => handlers.setProperty("title", e.target.value)} />
-    //         <FormText>
-    //           <FontAwesomeIcon icon={faInfoCircle} /> A valid {templatesDocs} repository.
-    //         </FormText>
-    //       </FormGroup>
-    //       <FormGroup>
-    //         <Label>Repository Reference</Label>
-    //         <Input type="text" placeholder={`E.G. ${urlExample}`}
-    //           onChange={(e) => handlers.setProperty("title", e.target.value)} />
-    //         <FormText>
-    //           <FontAwesomeIcon icon={faInfoCircle} /> Preferably a tag or a commit. A branch is also valid,
-    //           but it is not a static reference.
-    //         </FormText>
-    //       </FormGroup>
-    //       <FormGroup>
-    //         <FormText>Not working yet... Use the RenkuLab templates</FormText>
-    //       </FormGroup>
-    //     </Fragment>
-    //   );
+    return (
+      <Fragment>
+        <FormGroup>
+          <Label>Repository URL</Label>
+          <Input type="text" placeholder={`E.G. ${urlExample}`} value={meta.userTemplates.url}
+            onChange={(e) => handlers.setTemplateProperty("url", e.target.value)}
+            invalid={this.state.missingUrl} />
+          <FormFeedback>Provide a template repository URL.</FormFeedback>
+          <FormText>
+            <FontAwesomeIcon icon={faInfoCircle} /> A valid {templatesDocs} repository.
+          </FormText>
+        </FormGroup>
+        <FormGroup>
+          <Label>Repository Reference</Label>
+          <Input type="text" placeholder={`E.G. ${refExample}`} value={meta.userTemplates.ref}
+            onChange={(e) => handlers.setTemplateProperty("ref", e.target.value)}
+            invalid={this.state.missingRef} />
+          <FormFeedback>Provide a template repository reference.</FormFeedback>
+          <FormText>
+            <FontAwesomeIcon icon={faInfoCircle} /> Preferably a tag or a commit. A branch is also valid,
+            but it is not a static reference.
+          </FormText>
+        </FormGroup>
+        <FormGroup>
+          <Button id="fetch-custom-templates" color="primary" size="sm"
+            onClick={() => this.fetchTemplates()}>
+            Fetch templates
+          </Button>
+        </FormGroup>
+      </Fragment>
+    );
   }
 }
 
@@ -507,7 +531,7 @@ class Template extends Component {
     const error = meta.validation.errors["template"];
     const invalid = error && !input.templatePristine ? true : false;
     let main, help = null;
-    if (templates.fetching) {
+    if ((!input.userRepo && templates.fetching) || (input.userRepo && meta.userTemplates.fetching)) {
       main = (
         <Fragment>
           <br />
@@ -515,8 +539,19 @@ class Template extends Component {
         </Fragment>
       );
     }
+    else if (input.userRepo && !meta.userTemplates.fetched) {
+      main = (
+        <Fragment>
+          <br />
+          <Label className="font-italic">Fetch templates first, or switch source to RenkuLab.</Label>
+        </Fragment>
+      );
+    }
     else {
-      const options = templates.all.map(t => (
+      const listedTemplates = input.userRepo ?
+        meta.userTemplates :
+        templates;
+      const options = listedTemplates.all.map(t => (
         <option key={t.id} value={t.id}>{`${t.parentRepo} / ${t.name}`}</option>)
       );
       main = (
@@ -528,7 +563,7 @@ class Template extends Component {
         </Input>
       );
       if (input.template)
-        help = capitalize(templates.all.filter(t => t.id === input.template)[0].description);
+        help = capitalize(listedTemplates.all.filter(t => t.id === input.template)[0].description);
     }
 
     return (
@@ -570,7 +605,9 @@ class Variables extends Component {
 
 class Create extends Component {
   render() {
-    const { templates, meta } = this.props;
+    let { templates, meta, input } = this.props;
+    if (input.userRepo)
+      templates = meta.userTemplates;
 
     // do not show while posting
     if (meta.creation.creating || meta.creation.projectUpdating || meta.creation.kgUpdating)
@@ -592,17 +629,25 @@ class Create extends Component {
       const description = fatal ?
         (<p>Unable to fetch templates.</p>) :
         (<p>Errors happend while fetching templates. Some of them may be unavailable.</p>);
+      const suggestion = input.userRepo ?
+        (<span>
+          Double check the Repository URL and Reference, then try to fetch again.
+          If the error persists, you may want to use a RenkuLab template instead.
+        </span>) :
+        (<span>
+          You
+          can try refreshing the page. If the error persists, you should contact the development team on&nbsp;
+          <a href="https://gitter.im/SwissDataScienceCenter/renku"
+            target="_blank" rel="noreferrer noopener">Gitter</a> or&nbsp;
+          <a href="https://github.com/SwissDataScienceCenter/renku"
+            target="_blank" rel="noreferrer noopener">GitHub</a>.
+        </span>);
       alert = (
         <Alert color={fatal ? "danger" : "warning"}>
           {description}
           {content}
           <small>
-            <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> You
-            can try refreshing the page. If the error persists, you should contact the development team on&nbsp;
-            <a href="https://gitter.im/SwissDataScienceCenter/renku"
-              target="_blank" rel="noreferrer noopener">Gitter</a> or&nbsp;
-            <a href="https://github.com/SwissDataScienceCenter/renku"
-              target="_blank" rel="noreferrer noopener">GitHub</a>.
+            <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> {suggestion}
           </small>
         </Alert>
       );
