@@ -92,6 +92,7 @@ tee > ./public/config.json << EOF
   "SENTRY_URL": "${SENTRY_URL}",
   "SENTRY_NAMESPACE": "${SENTRY_NAMESPACE}",
   "ANONYMOUS_SESSIONS": "true",
+  "PRIVACY_ENABLED": "false",
   "TEMPLATES": ${TEMPLATES}
 }
 EOF

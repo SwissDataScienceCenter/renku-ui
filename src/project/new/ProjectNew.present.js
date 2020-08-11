@@ -128,14 +128,9 @@ class Title extends Component {
 class Namespaces extends Component {
   async componentDidMount() {
     // fetch namespaces if not available yet
-    const { namespace, namespaces, handlers } = this.props;
-    if (!namespaces.fetched && !namespaces.fetching) {
-      const namespaces = await handlers.getNamespaces();
-      if (namespace == null) {
-        const nsUserSorted = namespaces.sort((a, b) => (a.kind === "user") ? -1 : 1);
-        this.props.handlers.setNamespace(nsUserSorted[0]);
-      }
-    }
+    const { namespaces, handlers } = this.props;
+    if (!namespaces.fetched && !namespaces.fetching)
+      handlers.getNamespaces();
   }
 
   render() {
@@ -179,10 +174,11 @@ class NamespacesAutosuggest extends Component {
   }
 
   componentDidMount() {
-    // set first user namespace as default when available
-    const { namespaces } = this.props;
-    if (namespaces.fetched && namespaces.list.length) {
-      const defaultNamespace = namespaces.list[0];
+    // set first user namespace as default (at least one should always available)
+    const { namespaces, namespace } = this.props;
+    if (namespaces.fetched && namespaces.list.length && !namespace) {
+      const nsUserSorted = namespaces.list.sort((a, b) => (a.kind === "user") ? -1 : 1);
+      const defaultNamespace = nsUserSorted[0];
       this.props.handlers.setNamespace(defaultNamespace);
       this.setState({ value: defaultNamespace.full_path });
     }
