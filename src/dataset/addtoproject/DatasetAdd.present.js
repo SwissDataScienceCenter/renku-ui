@@ -38,8 +38,9 @@ function DatasetAdd(props) {
   const serverWarnings = props.migrationNeeded ? <div>
     <FontAwesomeIcon icon={faExclamationTriangle} /> <strong>A new version of renku is available.</strong>
     <br />
-    The target project ({selectedProject.name}) needs to be upgraded to allow&nbsp;
-    modification of datasets and is recommended for all projects.&nbsp;
+    The target project ({selectedProject.name}) needs to be upgraded to allow
+    modification of datasets and is recommended for all projects.
+    <br />
     <Button color="warning" onClick={() =>
       props.history.push(`/projects/${selectedProject.name}/overview/version`)}>More Info</Button>
   </div> : undefined;
