@@ -84,9 +84,8 @@ class NewProjectCoordinator {
     if (property === "template")
       updateObj.input.variables = { $set: this._setTemplateVariables(currentInput, value) };
 
-    // validate current state (if needed) and update model
-    if (property !== "visibility")
-      updateObj["meta"] = { validation: this.validate(updateObj.input) };
+    // validate current state and update model
+    updateObj["meta"] = { validation: this.validate(updateObj.input) };
     this.model.setObject(updateObj);
   }
 
@@ -294,7 +293,6 @@ class NewProjectCoordinator {
     }
     else {
       const userTemplates = this.model.get("meta.userTemplates");
-      //console.log(userTemplates, input.template, CUSTOM_REPO_NAME)
       newProjectData.identifier = input.template.replace(CUSTOM_REPO_NAME + "/", "");
       newProjectData.url = userTemplates.url;
       newProjectData.ref = userTemplates.ref;
@@ -372,6 +370,15 @@ class NewProjectCoordinator {
     else {
       modelUpdates.meta.creation.kgUpdated = true;
     }
+
+    // reset all the input/errors if creation was succesfull
+    const { creation } = modelUpdates.meta;
+    if (!creation.createError && !creation.kgError && !creation.projectError) {
+      const pristineModel = newProjectSchema.createInitialized();
+      modelUpdates.input = pristineModel.input;
+      modelUpdates.meta.validation = pristineModel.meta.validation;
+    }
+
     this.model.setObject(modelUpdates);
     return modelUpdates;
   }
