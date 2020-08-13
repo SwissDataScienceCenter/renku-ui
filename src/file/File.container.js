@@ -77,7 +77,7 @@ class FilePreview extends React.Component {
       if (atob(this.props.file.content).includes("https://git-lfs.github.com/"))
         return "The image can't be previewed because it's stored in Git LFS.";
       return (
-        <CardBody key="file preview">
+        <CardBody key="file preview" className="pb-0">
           <img
             className="image-preview"
             alt={this.props.file.file_name}
@@ -89,7 +89,7 @@ class FilePreview extends React.Component {
     // Code with syntax highlighting
     if (this.fileIsCode()) {
       return (
-        <CardBody key="file preview">
+        <CardBody key="file preview" className="pb-0">
           <pre className={`hljs ${this.getFileExtension()}`}>
             <code>{atobUTF8(this.props.file.content)}</code>
           </pre>
@@ -100,7 +100,7 @@ class FilePreview extends React.Component {
     if (this.getFileExtension() === "md") {
       let content = atobUTF8(this.props.file.content);
       return (
-        <CardBody key="file preview">
+        <CardBody key="file preview" className="pb-0">
           <RenkuMarkdown markdownText={content} />{" "}
         </CardBody>
       );
@@ -121,7 +121,7 @@ class FilePreview extends React.Component {
 
     if (this.fileHasNoExtension()) {
       return (
-        <CardBody key="file preview">
+        <CardBody key="file preview" className="pb-0">
           <pre className={`hljs ${this.getFileExtension()}`}>
             <code>{atobUTF8(this.props.file.content)}</code>
           </pre>

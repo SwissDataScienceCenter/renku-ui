@@ -42,7 +42,7 @@ import {
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 
 import {
-  Clipboard, ExternalLink, Loader, RenkuMarkdown, RenkuNavLink, TimeCaption, RefreshButton,
+  Clipboard, ExternalLink, Loader, RenkuMarkdownDeep, RenkuNavLink, TimeCaption, RefreshButton,
   ButtonWithMenu, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, GoBackButton
 } from "../utils/UIComponents";
 import { SpecialPropVal } from "../model/Model";
@@ -424,7 +424,11 @@ class ProjectViewReadme extends Component {
       <Card className="border-0">
         <CardHeader>README.md</CardHeader>
         <CardBody style={{ overflow: "auto" }}>
-          <RenkuMarkdown markdownText={this.props.readme.text} />
+          <RenkuMarkdownDeep
+            markdownText={this.props.readme.text}
+            client={this.props.client}
+            projectId={this.props.core.id}
+          />
         </CardBody>
       </Card>
     );

@@ -43,6 +43,7 @@ import {
 
 import { sanitizedHTMLFromMarkdown, simpleHash } from "./HelperFunctions";
 import FileExplorer, { getFilesTree } from "./FileExplorer";
+import RenkuMarkdownDeep from "./Markdown";
 
 /**
  * Show user avatar
@@ -759,4 +760,4 @@ export { UserAvatar, TimeCaption, FieldGroup, RenkuNavLink, Pagination, RenkuMar
 export { ExternalLink, ExternalDocsLink, ExternalIconLink, IconLink, RefreshButton };
 export { Loader, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, JupyterIcon };
 export { Clipboard, ThrottledTooltip, TooltipToggleButton, ProjectAvatar };
-export { ButtonWithMenu, FileExplorer, getFilesTree, MarkdownTextExcerpt, GoBackButton };
+export { ButtonWithMenu, FileExplorer, getFilesTree, MarkdownTextExcerpt, GoBackButton, RenkuMarkdownDeep };

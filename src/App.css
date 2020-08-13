@@ -219,3 +219,16 @@ body {
 .limit-width {
   max-width: 1140px;
 }
+
+
+.visually-hidden {
+    position: absolute;
+    left: -100vw;
+}
+
+.hide-show-me {
+  display: none;
+}
+.fake-toggle:checked ~ .hide-show-me {
+  display: block;
+}

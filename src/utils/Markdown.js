@@ -1,0 +1,186 @@
+import React, { useEffect, useState, useRef } from "react";
+import { sanitizedHTMLFromMarkdown } from "./HelperFunctions";
+import { CardBody, Card } from "reactstrap";
+import ReactDOMServer from "react-dom/server";
+import { FilePreview } from "../file";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFile } from "@fortawesome/free-solid-svg-icons";
+
+const patterns = {
+  fileRefFull: /!\[(.*?)\]\((.*?)\)/g, //with !
+  fileRefTrigger: /(!?\[[^\])]+])\(([^)]*$)/,
+  urlFilesRef: /https?: \/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/,
+  urlRef: /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/
+};
+
+const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "pdf", "gif"];
+
+const STIFFNESS = 290;
+const DAMPING = 20;
+
+const REF_TYPES = {
+  LINK: "link",
+  IMAGE_PREV: "image",
+  FILE_PREV: "file", // with ! in the front
+};
+
+const getFileExtension = (file_path) => {
+  if (!file_path)
+    return null;
+
+  if (file_path.match(/\.(.*)/) === null)
+    return null;
+  return file_path.split(".").pop().toLowerCase();
+};
+
+const fileIsImage = (file_path) => IMAGE_EXTENSIONS.indexOf(getFileExtension(file_path)) >= 0;
+
+const getFilesRefs = (markdownHTML) => {
+  let filesRefs = [];
+  let blockCounter = 0;
+
+  const previewFiles = markdownHTML.getElementsByTagName("img");
+
+  for (let file of previewFiles) {
+    let src = file.getAttribute("src");
+    src = src.startsWith("./") ? src.substring(2) : src;
+
+    if (!file.src.match(patterns.urlFilesRef)) {
+      filesRefs.push({
+        type: fileIsImage(src) ? REF_TYPES.IMAGE_PREV : REF_TYPES.FILE_PREV,
+        refPath: src,
+        data: null,
+        iBlock: blockCounter,
+        error: false
+      });
+      blockCounter++;
+    }
+  }
+  return filesRefs;
+};
+
+function FileAndWrapper(props) {
+  /**
+   * We are using a checkbox here because the onclick event doesn't work with the
+   * React server side rendering
+   */
+  return <div>
+    <Card>
+      <CardBody className="p-2">
+        <label className="mb-0 p-1">
+          <FontAwesomeIcon className="icon-grey mr-1" icon={faFile} />
+          {props.block.data.file_name}
+        </label>
+        <label className="mb-0 p-1 float-right btn btn-primary btn-sm" htmlFor={props.block.iBlock + "toogler"}>
+          Preview File
+        </label>
+        <input type="checkbox" id={props.block.iBlock + "toogler"} className="visually-hidden fake-toggle" />
+        <div className="hide-show-me">
+          <FilePreview
+            file={props.file}
+            {...props}
+            springConfig={props.springConfig}
+          />
+        </div>
+      </CardBody>
+    </Card>
+  </div>;
+}
+
+/**
+ * Safely render markdown.
+ * @param {string} markdownText the markdown text to display
+ * @param {boolean} singleLine if true, render the output as a single line without line breaks
+ * @param {object} style any styles to apply
+ */
+function RenkuMarkdownDeep(props) {
+
+  const { singleLine, style } = props;
+  let className = "text-break renku-markdown";
+  if (singleLine)
+    className += " children-no-spacing";
+
+  const markdownToHtml = sanitizedHTMLFromMarkdown(props.markdownText, singleLine);
+  const divWithMarkdown = document.createElement("div");
+  //can we do this with dangerously set inner html???
+  divWithMarkdown.innerHTML = markdownToHtml;
+
+  const [filesRefs, setFilesRefs] = useState(getFilesRefs(divWithMarkdown));
+  const loaded = useRef(false);
+  const loading = useRef(false);
+
+  function fetchRefs() {
+    const fetchedFiles = [];
+    filesRefs.forEach(block => {
+      if (block.type === REF_TYPES.IMAGE_PREV || block.type === REF_TYPES.FILE_PREV) {
+        fetchedFiles.push(
+          props.client.getRepositoryFile(props.projectId, block.refPath, "master", "base64")
+            .then(d => { block.data = d; return block; })
+            .catch(error => { block.isOpened = false; block.filePreview = false; return block; })
+        );
+      }
+    });
+    return Promise.all(fetchedFiles)
+      .then(filesRefsWithFiles => {
+        setFilesRefs(prevFilesRefs =>
+          prevFilesRefs.map(pb => {
+            //eslint-disable-next-line
+            let newBlock = filesRefsWithFiles.find(bf => bf.iBlock === pb.iBlock);
+            return newBlock !== undefined ? newBlock : pb;
+          }));
+        loaded.current = true;
+        loading.current = false;
+
+      });
+  }
+
+  useEffect(() => {
+    // TODO --> ADD A CHECK TO SEE IF MARKDOWN IS THERE...
+    if (!loaded.current && !loading.current) {
+      loading.current = true;
+      fetchRefs();
+    }
+  });
+
+  if (!loaded.current || loading.current) return "Loading...";
+
+  const previewFiles = divWithMarkdown.getElementsByTagName("img");
+
+  for (let file of previewFiles) {
+    let currentBlock = filesRefs.find(block => file.src.endsWith(block.refPath));
+    if (currentBlock && currentBlock.data) {
+      if (currentBlock.type === REF_TYPES.IMAGE_PREV) {
+        file.src = "data:image;base64," + currentBlock.data.content;
+      }
+      else {
+        let temp = document.createElement("div");
+        let p = file.parentNode;
+        p.style.display = "none";
+        p.appendChild(temp);
+        let renderedFile = <FileAndWrapper
+          file={currentBlock.data}
+          {...props}
+          block={currentBlock}
+          springConfig={{ STIFFNESS, DAMPING }}
+        />;
+        temp.innerHTML = ReactDOMServer.renderToString(renderedFile);
+      }
+    }
+  }
+
+  const previewLinks = divWithMarkdown.getElementsByTagName("a");
+  for (let link of previewLinks) {
+    if (!link.getAttribute("href").match(patterns.urlRef)) {
+      let newHref = link.getAttribute("href");
+      newHref = newHref.startsWith("./") ? newHref.substring(2) : newHref;
+      newHref = window.location.href + "files/blob/" + newHref;
+      link.href = newHref;
+    }
+  }
+
+  return <div className={className} style={style}
+    dangerouslySetInnerHTML={{ __html: divWithMarkdown.innerHTML }}>
+  </div>;
+
+}
+export default RenkuMarkdownDeep;
