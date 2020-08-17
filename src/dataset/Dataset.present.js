@@ -177,7 +177,7 @@ export default function DatasetView(props) {
             : null
         }
         <h4 key="datasetTitle">
-          {dataset.name}
+          {dataset.title || dataset.name}
           { dataset.url && props.insideProject ?
             <a href={dataset.url} target="_blank" rel="noreferrer noopener">
               <Button size="sm" color="link" style={{ color: "rgba(0, 0, 0, 0.5)" }}>

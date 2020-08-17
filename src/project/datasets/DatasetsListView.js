@@ -10,7 +10,7 @@ function DatasetListRow(props) {
   const title = <NavLink
     key={dataset.identifier}
     to={`${props.datasetsUrl}/${encodeURIComponent(dataset.identifier)}/`}
-  > {dataset.name} </NavLink>;
+  > {dataset.title || dataset.name}</NavLink>;
 
   const projectsCountLabel = dataset.isPartOf.length > 1
     ? `In ${dataset.isPartOf.length} projects`
@@ -76,11 +76,15 @@ export default function DatasetsListView(props) {
   });
 
   return [<Row key="header" className="pb-3">
-    <Col md={3} lg={2}><h2 className="ml-3">Datasets</h2></Col>
-    <Col md={3}>
-      <AddDatasetButton
-        visibility={props.visibility}
-        newDatasetUrl={props.newDatasetUrl}/>
+    <Col md={12}>
+      <h2 className="ml-3">
+        <span style={{ verticalAlign: "middle" }}>Datasets</span>
+        <span className="pl-3" style={{ display: "inline-flex" }}>
+          <AddDatasetButton
+            visibility={props.visibility}
+            newDatasetUrl={props.newDatasetUrl} />
+        </span>
+      </h2>
     </Col>
   </Row>, <Row key="datasetslist">
     <Col xs={12}>

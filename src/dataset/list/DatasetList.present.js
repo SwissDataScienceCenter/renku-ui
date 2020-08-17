@@ -41,7 +41,7 @@ class DatasetListRow extends Component {
           <Badge color="success" className="font-weight-light">{projectsCountLabel}</Badge>
         </div>
         <Link to={`${datasetsUrl}/${encodeURIComponent(dataset.identifier)}`}>
-          {dataset.name || "no title"}
+          {dataset.title || dataset.name}
         </Link>
         {
           dataset.published !== undefined && dataset.published.creator !== undefined ?
