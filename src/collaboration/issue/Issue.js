@@ -139,7 +139,12 @@ class IssueViewHeader extends Component {
       </Row>
       <Row key="description" className="pb-2">
         <Col sm={11}>
-          <RenkuMarkdown markdownText={description} />
+          <RenkuMarkdown
+            fixRelativePaths={true}
+            markdownText={description}
+            client={this.props.client}
+            projectId={this.props.projectId}
+          />
         </Col>
       </Row>
       <Row key="info">

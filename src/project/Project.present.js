@@ -42,8 +42,8 @@ import {
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 
 import {
-  Clipboard, ExternalLink, Loader, RenkuMarkdownDeep, RenkuNavLink, TimeCaption, RefreshButton,
-  ButtonWithMenu, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, GoBackButton
+  Clipboard, ExternalLink, Loader, RenkuNavLink, TimeCaption, RefreshButton,
+  ButtonWithMenu, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, GoBackButton, RenkuMarkdown
 } from "../utils/UIComponents";
 import { SpecialPropVal } from "../model/Model";
 import { ProjectTags, ProjectTagList } from "./shared";
@@ -424,7 +424,8 @@ class ProjectViewReadme extends Component {
       <Card className="border-0">
         <CardHeader>README.md</CardHeader>
         <CardBody style={{ overflow: "auto" }}>
-          <RenkuMarkdownDeep
+          <RenkuMarkdown
+            fixRelativePaths={true}
             markdownText={this.props.readme.text}
             client={this.props.client}
             projectId={this.props.core.id}

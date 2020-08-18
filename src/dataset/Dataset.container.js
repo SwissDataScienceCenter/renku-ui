@@ -37,5 +37,6 @@ export default function ShowDataset(props) {
     history={props.history}
     logged={props.logged}
     model={props.model}
+    projectId={props.projectId}
   />;
 }

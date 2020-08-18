@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef, useCallback } from "react";
 import { sanitizedHTMLFromMarkdown } from "./HelperFunctions";
 import { CardBody, Card } from "reactstrap";
 import ReactDOMServer from "react-dom/server";
@@ -9,8 +9,8 @@ import { faFile } from "@fortawesome/free-solid-svg-icons";
 const patterns = {
   fileRefFull: /!\[(.*?)\]\((.*?)\)/g, //with !
   fileRefTrigger: /(!?\[[^\])]+])\(([^)]*$)/,
-  urlFilesRef: /https?: \/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/,
-  urlRef: /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:\/~+#-]*[\w@?^=%&amp;\/~+#-])?/
+  urlFilesRef: /https?: \/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/,
+  urlRef: /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:/~+#-]*[\w@?^=%&amp;/~+#-])?/
 };
 
 const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "pdf", "gif"];
@@ -62,7 +62,7 @@ const getFilesRefs = (markdownHTML) => {
 function FileAndWrapper(props) {
   /**
    * We are using a checkbox here because the onclick event doesn't work with the
-   * React server side rendering
+   * React server side rendering, the checkbox helps us fake the toogleing
    */
   return <div>
     <Card>
@@ -108,41 +108,46 @@ function RenkuMarkdownDeep(props) {
   const [filesRefs, setFilesRefs] = useState(getFilesRefs(divWithMarkdown));
   const loaded = useRef(false);
   const loading = useRef(false);
+  const isCancelled = React.useRef(false);
 
-  function fetchRefs() {
+  const fetchRefs = useCallback(() =>{
     const fetchedFiles = [];
     filesRefs.forEach(block => {
       if (block.type === REF_TYPES.IMAGE_PREV || block.type === REF_TYPES.FILE_PREV) {
-        fetchedFiles.push(
-          props.client.getRepositoryFile(props.projectId, block.refPath, "master", "base64")
-            .then(d => { block.data = d; return block; })
-            .catch(error => { block.isOpened = false; block.filePreview = false; return block; })
-        );
+        if (!block.refPath.startsWith("https://") && !block.refPath.startsWith("http://")) {
+          fetchedFiles.push(
+            props.client.getRepositoryFile(props.projectId, block.refPath, "master", "base64")
+              .then(d => { block.data = d; return block; })
+              .catch(error => { block.isOpened = false; block.filePreview = false; return block; })
+          );
+        }
       }
     });
     return Promise.all(fetchedFiles)
       .then(filesRefsWithFiles => {
-        setFilesRefs(prevFilesRefs =>
-          prevFilesRefs.map(pb => {
+        if (!isCancelled.current) {
+          setFilesRefs(prevFilesRefs =>
             //eslint-disable-next-line
-            let newBlock = filesRefsWithFiles.find(bf => bf.iBlock === pb.iBlock);
-            return newBlock !== undefined ? newBlock : pb;
-          }));
-        loaded.current = true;
-        loading.current = false;
-
+            prevFilesRefs.map(pb => {
+              //eslint-disable-next-line
+              let newBlock = filesRefsWithFiles.find(bf => bf.iBlock === pb.iBlock);
+              return newBlock !== undefined ? newBlock : pb;
+            }));
+          loaded.current = true;
+          loading.current = false;
+        }
       });
-  }
+  }, [filesRefs, props.client, props.projectId]);
 
   useEffect(() => {
-    // TODO --> ADD A CHECK TO SEE IF MARKDOWN IS THERE...
-    if (!loaded.current && !loading.current) {
+    if (!loaded.current && !loading.current && filesRefs.length !== 0) {
       loading.current = true;
       fetchRefs();
     }
-  });
-
-  if (!loaded.current || loading.current) return "Loading...";
+    return () => {
+      isCancelled.current = true;
+    };
+  }, [filesRefs, fetchRefs]);
 
   const previewFiles = divWithMarkdown.getElementsByTagName("img");
 
@@ -156,6 +161,9 @@ function RenkuMarkdownDeep(props) {
         let temp = document.createElement("div");
         let p = file.parentNode;
         p.style.display = "none";
+        let text = document.createElement("div");
+        text.innerText = p.textContent;
+        p.appendChild(text);
         p.appendChild(temp);
         let renderedFile = <FileAndWrapper
           file={currentBlock.data}

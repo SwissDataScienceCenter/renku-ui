@@ -217,7 +217,17 @@ export default function DatasetView(props) {
         : null
     }
     <div style={{ paddingTop: "12px" }}>
-      <RenkuMarkdown markdownText={dataset.description} />
+      {
+        props.insideProject ?
+          <RenkuMarkdown
+            fixRelativePaths={true}
+            markdownText={dataset.description}
+            client={props.client}
+            projectId={props.projectId}
+          />
+          :
+          <RenkuMarkdown markdownText={dataset.description} />
+      }
     </div>
     {
       dataset.url && props.insideProject ?

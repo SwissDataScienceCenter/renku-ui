@@ -101,7 +101,12 @@ class FilePreview extends React.Component {
       let content = atobUTF8(this.props.file.content);
       return (
         <CardBody key="file preview" className="pb-0">
-          <RenkuMarkdown markdownText={content} />{" "}
+          <RenkuMarkdown
+            markdownText={content}
+            projectId={this.props.projectId}
+            fixRelativePaths={this.props.insideProject}
+            client={this.props.client}
+          />{" "}
         </CardBody>
       );
     }
@@ -302,7 +307,10 @@ class ShowFile extends React.Component {
       buttonJupyter={buttonJupyter}
       file={this.state.file}
       commit={this.state.commit}
-      error={this.state.error} />;
+      error={this.state.error}
+      projectId={this.props.projectId}
+      client={this.props.client}
+      insideProject={true} />;
   }
 }
 

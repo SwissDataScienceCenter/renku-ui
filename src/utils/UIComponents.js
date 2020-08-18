@@ -438,7 +438,10 @@ class ErrorAlert extends Component {
  */
 class RenkuMarkdown extends Component {
   render() {
-    const { singleLine, style } = this.props;
+    const { singleLine, style, fixRelativePaths } = this.props;
+    if (fixRelativePaths)
+      return <RenkuMarkdownDeep {...this.props} />;
+
     let className = "text-break renku-markdown";
     if (singleLine)
       className += " children-no-spacing";
@@ -760,4 +763,4 @@ export { UserAvatar, TimeCaption, FieldGroup, RenkuNavLink, Pagination, RenkuMar
 export { ExternalLink, ExternalDocsLink, ExternalIconLink, IconLink, RefreshButton };
 export { Loader, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, JupyterIcon };
 export { Clipboard, ThrottledTooltip, TooltipToggleButton, ProjectAvatar };
-export { ButtonWithMenu, FileExplorer, getFilesTree, MarkdownTextExcerpt, GoBackButton, RenkuMarkdownDeep };
+export { ButtonWithMenu, FileExplorer, getFilesTree, MarkdownTextExcerpt, GoBackButton };
