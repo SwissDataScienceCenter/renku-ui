@@ -102,6 +102,8 @@ class FilePreview extends React.Component {
       return (
         <CardBody key="file preview" className="pb-0">
           <RenkuMarkdown
+            projectPathWithNamespace={this.props.projectPathWithNamespace}
+            filePath={this.props.file.file_path}
             markdownText={content}
             projectId={this.props.projectId}
             fixRelativePaths={this.props.insideProject}
@@ -310,7 +312,9 @@ class ShowFile extends React.Component {
       error={this.state.error}
       projectId={this.props.projectId}
       client={this.props.client}
-      insideProject={true} />;
+      insideProject={true}
+      projectPathWithNamespace={this.props.projectPathWithNamespace}
+    />;
   }
 }
 

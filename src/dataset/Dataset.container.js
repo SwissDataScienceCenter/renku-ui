@@ -38,5 +38,6 @@ export default function ShowDataset(props) {
     logged={props.logged}
     model={props.model}
     projectId={props.projectId}
+    projectPathWithNamespace={props.projectPathWithNamespace}
   />;
 }

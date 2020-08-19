@@ -35,15 +35,14 @@ const getFileExtension = (file_path) => {
 
 const fileIsImage = (file_path) => IMAGE_EXTENSIONS.indexOf(getFileExtension(file_path)) >= 0;
 
-const getFilesRefs = (markdownHTML) => {
+const getFilesRefs = (markdownHTML, filePathArray) => {
   let filesRefs = [];
   let blockCounter = 0;
 
   const previewFiles = markdownHTML.getElementsByTagName("img");
 
   for (let file of previewFiles) {
-    let src = file.getAttribute("src");
-    src = src.startsWith("./") ? src.substring(2) : src;
+    let src = fixRelativePath(file.getAttribute("src"), filePathArray);
 
     if (!file.src.match(patterns.urlFilesRef)) {
       filesRefs.push({
@@ -87,25 +86,48 @@ function FileAndWrapper(props) {
   </div>;
 }
 
+function fixRelativePath(pathToFix, filePathArray) {
+  const fixPath = pathToFix.split("/");
+  let acc = fixPath[fixPath.length - 1];
+  const fileArray = fixPath.slice(0, -1).reverse();
+  let dots = 0;
+
+  for (let elem of fileArray) {
+    if (elem === "..") dots++;
+    else if (elem === ".")
+      continue;
+    else
+      acc = elem + "/" + acc;
+  }
+
+  if (dots < filePathArray.length) {
+    for (let i = dots ; i < filePathArray.length; i++)
+      acc = filePathArray[i] + "/" + acc;
+  }
+  return acc;
+}
+
+
 /**
  * Safely render markdown.
  * @param {string} markdownText the markdown text to display
  * @param {boolean} singleLine if true, render the output as a single line without line breaks
  * @param {object} style any styles to apply
  */
-function RenkuMarkdownDeep(props) {
+function RenkuMarkdownWithFiles(props) {
 
   const { singleLine, style } = props;
   let className = "text-break renku-markdown";
   if (singleLine)
     className += " children-no-spacing";
+  let filesPathArray = props.filePath.split("/").slice(0, -1).reverse();
 
   const markdownToHtml = sanitizedHTMLFromMarkdown(props.markdownText, singleLine);
   const divWithMarkdown = document.createElement("div");
   //can we do this with dangerously set inner html???
   divWithMarkdown.innerHTML = markdownToHtml;
 
-  const [filesRefs, setFilesRefs] = useState(getFilesRefs(divWithMarkdown));
+  const [filesRefs, setFilesRefs] = useState(getFilesRefs(divWithMarkdown, filesPathArray));
   const loaded = useRef(false);
   const loading = useRef(false);
   const isCancelled = React.useRef(false);
@@ -156,6 +178,7 @@ function RenkuMarkdownDeep(props) {
     if (currentBlock && currentBlock.data) {
       if (currentBlock.type === REF_TYPES.IMAGE_PREV) {
         file.src = "data:image;base64," + currentBlock.data.content;
+        file.setAttribute("class", "image-preview");
       }
       else {
         let temp = document.createElement("div");
@@ -177,12 +200,13 @@ function RenkuMarkdownDeep(props) {
   }
 
   const previewLinks = divWithMarkdown.getElementsByTagName("a");
+  const fullBaseUrl = props.client.baseUrl.replace("/api", "/projects")
+    + "/" + props.projectPathWithNamespace + "/files/blob/";
+
   for (let link of previewLinks) {
     if (!link.getAttribute("href").match(patterns.urlRef)) {
-      let newHref = link.getAttribute("href");
-      newHref = newHref.startsWith("./") ? newHref.substring(2) : newHref;
-      newHref = window.location.href + "files/blob/" + newHref;
-      link.href = newHref;
+      const newHref = fixRelativePath(link.getAttribute("href"), filesPathArray) ;
+      link.href = fullBaseUrl + newHref ;
     }
   }
 
@@ -191,4 +215,4 @@ function RenkuMarkdownDeep(props) {
   </div>;
 
 }
-export default RenkuMarkdownDeep;
+export default RenkuMarkdownWithFiles;

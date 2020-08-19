@@ -220,6 +220,8 @@ export default function DatasetView(props) {
       {
         props.insideProject ?
           <RenkuMarkdown
+            projectPathWithNamespace={props.projectPathWithNamespace}
+            filePath={""}
             fixRelativePaths={true}
             markdownText={dataset.description}
             client={props.client}

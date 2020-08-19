@@ -59,6 +59,8 @@ class Contribution extends React.Component {
             <CardBody className="mb-0 pb-0">
               <div className="pb-3">
                 <RenkuMarkdown
+                  projectPathWithNamespace={this.props.projectPathWithNamespace}
+                  filePath={""}
                   fixRelativePaths={true}
                   markdownText={contribution.body ?
                     contribution.body :
@@ -121,6 +123,8 @@ const NewContribution = props => {
               {props.tab === PREVIEW ?
                 <div className="pb-3">
                   <RenkuMarkdown
+                    projectPathWithNamespace={props.projectPathWithNamespace}
+                    filePath={""}
                     fixRelativePaths={true}
                     markdownText={props.contribution.body}
                     client={props.client}

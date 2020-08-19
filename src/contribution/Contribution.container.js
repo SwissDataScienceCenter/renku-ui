@@ -175,6 +175,7 @@ class NewContribution extends React.Component {
       submitting={this.state.submitting}
       client={this.props.client}
       projectId={this.props.projectId}
+      projectPathWithNamespace={this.props.projectPath}
     />;
   }
 }

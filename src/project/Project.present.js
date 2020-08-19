@@ -425,6 +425,8 @@ class ProjectViewReadme extends Component {
         <CardHeader>README.md</CardHeader>
         <CardBody style={{ overflow: "auto" }}>
           <RenkuMarkdown
+            projectPathWithNamespace = {this.props.core.path_with_namespace}
+            filePath={""}
             fixRelativePaths={true}
             markdownText={this.props.readme.text}
             client={this.props.client}
