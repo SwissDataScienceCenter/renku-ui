@@ -175,7 +175,7 @@ export default function addDatasetMethods(client) {
           "description": renkuDataset.description,
           "creators": renkuDataset.creators,
           "keywords": renkuDataset.keywords,
-          "project_id": project_id
+          // "project_id": project_id
         };
 
       return client.clientFetch(postUrl, {

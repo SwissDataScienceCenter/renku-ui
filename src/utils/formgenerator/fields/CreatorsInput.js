@@ -76,9 +76,20 @@ function Creator(props) {
 function CreatorsInput({ name, label, type, value, alert, placeholder, setInputs, help, disabled = false }) {
 
   const counter = React.useRef(1);
+  // const [initialized, setInitialized] = useState(false);
+
   const [creators, setCreators] = React.useState(value !== undefined && value.length > 0 ?
     value.map((creator, index) => ({ id: index, name: creator.name, email: creator.email, identifier: "" }))
     : [{ id: 1, name: "", email: "", identifier: "" }]);
+
+  console.log(value);
+  // useEffect(() => {
+  //   if (value !== undefined && !initialized && value.length > 0) {
+  //     setT
+  //   }
+  //   setInitialized(true);
+  // }, [value, initialized]);
+
 
   const addEmptyCreator = () => {
     counter.current = counter.current + 1;

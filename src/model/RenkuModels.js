@@ -398,7 +398,7 @@ const datasetFormSchema = new Schema({
     initial: "",
     name: "title",
     label: "Title",
-    edit: false,
+    //   edit: false,
     type: FormGenerator.FieldTypes.TEXT,
     validators: [{
       id: "title-length",
@@ -406,10 +406,10 @@ const datasetFormSchema = new Schema({
       alert: "Title is too short"
     }]
   },
-  short_name: {
+  name: {
     initial: "",
-    name: "short_name",
-    label: "Short Name",
+    name: "name",
+    label: "Name",
     edit: false,
     type: FormGenerator.FieldTypes.TEXT,
     parseFun: expression => FormGenerator.Parsers.slugFromTitle(expression),
@@ -423,7 +423,7 @@ const datasetFormSchema = new Schema({
     initial: "",
     name: "creators",
     label: "Creators",
-    edit: false,
+    //edit: false,
     type: FormGenerator.FieldTypes.CREATORS,
     validators: []
     //shall we pre-validate that an email is an email with regex?
@@ -433,7 +433,7 @@ const datasetFormSchema = new Schema({
     name: "kewords",
     label: "Keywords",
     help: "To insert a keyword, write it and press enter.",
-    edit: false,
+    //   edit: false,
     type: FormGenerator.FieldTypes.KEYWORDS,
     validators: []
   },
@@ -441,7 +441,7 @@ const datasetFormSchema = new Schema({
     initial: "",
     name: "description",
     label: "Description",
-    edit: false,
+    // edit: false,
     type: FormGenerator.FieldTypes.TEXT_EDITOR,
     outputType: "markdown",
     help: "Basic markdown styling tags are allowed in this field.",
