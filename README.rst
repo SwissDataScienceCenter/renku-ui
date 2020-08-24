@@ -30,9 +30,13 @@ volatile.**
 Quickstart
 ----------
 
-The Renku ui depends on a running instance of Renku being present (more precisely,
-it relies on a running instance of the Renku API gateway). Clone the main Renku
-repository and follow these instructions_ to get Renku up and running.
+The Renku ui depends on a running instance of Renku being present. More precisely,
+it relies on a running instance of the
+`Renku Gateway <https://github.com/SwissDataScienceCenter/renku-gateway>`_
+that acts as an interface to all backend services APIs, handling authentication
+and exchanging access tokens.
+Clone the main Renku repository and follow these instructions_ to get Renku up
+and running.
 
 .. _instructions: https://renku.readthedocs.io/en/latest/developer/setup.html
 
