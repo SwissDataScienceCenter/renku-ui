@@ -213,14 +213,13 @@ const newProjectSchema = new Schema({
           visibilities: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true }
         })
       },
-      // TODO: support custom user templates
       userTemplates: {
         [Prop.SCHEMA]: new Schema({
           fetched: { [Prop.INITIAL]: null, [Prop.MANDATORY]: false },
           fetching: { [Prop.INITIAL]: false, [Prop.MANDATORY]: false },
-          error: { [Prop.INITIAL]: null, [Prop.MANDATORY]: false }, // contains "desc"
-          url: { [Prop.INITIAL]: null, [Prop.MANDATORY]: false },
-          ref: { [Prop.INITIAL]: null, [Prop.MANDATORY]: false },
+          errors: { [Prop.INITIAL]: [], [Prop.MANDATORY]: false }, // contains "desc"
+          url: { [Prop.INITIAL]: "", [Prop.MANDATORY]: false },
+          ref: { [Prop.INITIAL]: "", [Prop.MANDATORY]: false },
           all: { [Prop.INITIAL]: [], [Prop.MANDATORY]: false }
         })
       },

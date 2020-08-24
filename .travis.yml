@@ -27,7 +27,7 @@ before_install:
 - nvm install 'lts/*'; nvm use 'lts/*'
 install:
 - travis_retry pip install -U pip
-- travis_retry pip install "chartpress==0.3.2" "ruamel.yaml==0.15.54"
+- travis_retry pip install "chartpress==0.3.2" "ruamel.yaml==0.15.54" "docker==4.2.2"
 - wget -q ${HELM_URL}/${HELM_TGZ}
 - tar xzfv ${HELM_TGZ}
 - PATH=`pwd`/linux-amd64/:$PATH

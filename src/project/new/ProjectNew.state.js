@@ -23,6 +23,7 @@
  *  New project controller code.
  */
 
+import { CUSTOM_REPO_NAME } from "./ProjectNew.container";
 import { newProjectSchema } from "../../model/RenkuModels";
 import { slugFromTitle } from "../../utils/HelperFunctions";
 
@@ -75,13 +76,16 @@ class NewProjectCoordinator {
     if (property === "visibility")
       updateObj.input.knowledgeGraph = true;
 
+    // unset template when changing source
+    if (property === "userRepo")
+      updateObj.input.template = "";
+
     // pre-set variables and reset when needed
     if (property === "template")
       updateObj.input.variables = { $set: this._setTemplateVariables(currentInput, value) };
 
-    // validate current state (if needed) and update model
-    if (property !== "visibility")
-      updateObj["meta"] = { validation: this.validate(updateObj.input) };
+    // validate current state and update model
+    updateObj["meta"] = { validation: this.validate(updateObj.input) };
     this.model.setObject(updateObj);
   }
 
@@ -94,6 +98,17 @@ class NewProjectCoordinator {
 
   setVariable(variable, value) {
     this.model.set(`input.variables.${variable}`, value);
+  }
+
+  setTemplateProperty(property, value) {
+    const currentInput = this.model.get("meta.userTemplates");
+
+    // check if the value needs to be updated
+    if (currentInput[property] === value)
+      return;
+    this.model.set(`meta.userTemplates.${property}`, value);
+    let updateObj = { meta: { userTemplates: { [property]: value, fetched: false } } };
+    this.model.setObject(updateObj);
   }
 
   setConfig(custom, repositories) {
@@ -112,12 +127,27 @@ class NewProjectCoordinator {
   }
 
   /**
+   * Put the template data in the proper object in the store and validate them.
+   *
+   * @param {object} templateData - template data
+   * @param {boolean} [userRepo] - whether or not it's a user custom repo
+   */
+  createTemplatesObject(templateData, userRepo = false) {
+    const validation = this.validate(null, templateData);
+    const updateObject = userRepo ?
+      { meta: { userTemplates: templateData, validation } } :
+      { templates: templateData, meta: { validation } };
+    return updateObject;
+  }
+
+  /**
    * Fetch all the templates listed in the sources
    *
-   * @param {*} [sources] - List of sources in the format { url, ref, name }. If not provided,
+   * @param {object[]} [sources] - List of sources in the format { url, ref, name }. If not provided,
    *   the list in model.config.repositories will be used instead.
+   * @param {boolean} [userRepo] - whether or not it's a user custom repo
    */
-  async getTemplates(sources = null) {
+  async getTemplates(sources = null, userRepo = false) {
     // use deployment repositories if nothing else is provided
     if (!sources || !sources.length)
       sources = this.model.get("config.repositories");
@@ -132,14 +162,11 @@ class NewProjectCoordinator {
         all: { $set: [] },
         errors: { $set: [{ "global": errorText }] }
       };
-      const validation = this.validate(null, templatesObject);
-      this.model.setObject({
-        templates: templatesObject,
-        meta: { validation }
-      });
+      this.model.setObject(this.createTemplatesObject(templatesObject, userRepo));
       throw errorText;
     }
-    this.model.set("templates.fetching", true);
+
+    this.model.setObject(this.createTemplatesObject({ fetching: true }, userRepo));
 
     // fetch manifest and collect templates and errors
     let errors = [], templates = [];
@@ -168,11 +195,8 @@ class NewProjectCoordinator {
       errors: { $set: errors },
       all: { $set: templates }
     };
-    const validation = this.validate(null, templatesObject);
-    this.model.setObject({
-      templates: templatesObject,
-      meta: { validation }
-    });
+    const valObj = this.createTemplatesObject(templatesObject, userRepo);
+    this.model.setObject(valObj);
     return templates;
   }
 
@@ -268,7 +292,10 @@ class NewProjectCoordinator {
       newProjectData.ref = referenceRepository.ref;
     }
     else {
-      // TODO: custom template data goes here
+      const userTemplates = this.model.get("meta.userTemplates");
+      newProjectData.identifier = input.template.replace(CUSTOM_REPO_NAME + "/", "");
+      newProjectData.url = userTemplates.url;
+      newProjectData.ref = userTemplates.ref;
     }
 
     // add variables
@@ -343,6 +370,15 @@ class NewProjectCoordinator {
     else {
       modelUpdates.meta.creation.kgUpdated = true;
     }
+
+    // reset all the input/errors if creation was succesfull
+    const { creation } = modelUpdates.meta;
+    if (!creation.createError && !creation.kgError && !creation.projectError) {
+      const pristineModel = newProjectSchema.createInitialized();
+      modelUpdates.input = pristineModel.input;
+      modelUpdates.meta.validation = pristineModel.meta.validation;
+    }
+
     this.model.setObject(modelUpdates);
     return modelUpdates;
   }
@@ -384,8 +420,14 @@ class NewProjectCoordinator {
       projects.featured.member.map(project => project.path_with_namespace.toLowerCase()) :
       [];
 
+    // assign input changes-to-be
     if (newInput)
       input = Object.assign({}, input, newInput);
+    const { userRepo } = input;
+
+    // assign templates changes-to-be
+    if (userRepo)
+      templates = meta.userTemplates;
     if (newTemplates)
       templates = Object.assign({}, templates, newTemplates);
 
@@ -398,10 +440,14 @@ class NewProjectCoordinator {
     // check warnings: temporary problems
     if (projects && projects.namespaces.fetching)
       warnings["namespace"] = "Fetching namespaces.";
+
     if (meta.namespace.fetching)
       warnings["visibility"] = "Verifying visibility constraints.";
+
     if (templates.fetching)
       warnings["template"] = "Fetching templates.";
+    else if (!templates.fetched)
+      warnings["template"] = "Must get the templates first.";
 
     // check errors: require user intervention. Skip if there is a warning
     if (!input.title)

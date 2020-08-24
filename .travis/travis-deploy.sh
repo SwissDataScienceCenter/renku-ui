@@ -28,6 +28,7 @@ ssh-add github_deploy_key
 make login
 
 # build charts/images and push
+helm repo add bitnami https://charts.bitnami.com/bitnami
 cd helm-chart
 chartpress --push --publish-chart
 git diff

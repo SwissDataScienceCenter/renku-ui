@@ -16,18 +16,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+export NGINX_PATH=/usr/share/nginx/html
+
+echo "Config file contains the following settings:"
 echo "==================================================="
-echo " Configuration:"
 echo " GATEWAY_URL=${GATEWAY_URL:-http://gateway.renku.build}"
 echo " BASE_URL=${BASE_URL:-http://renku.build}"
 echo " SENTRY_URL=${SENTRY_URL}"
 echo " SENTRY_NAMESPACE=${SENTRY_NAMESPACE}"
 echo " MAINTENANCE=${MAINTENANCE}"
 echo " ANONYMOUS_SESSIONS=${ANONYMOUS_SESSIONS}"
+echo " PRIVACY_ENABLED=${PRIVACY_ENABLED}"
+echo " PRIVACY_BANNER_CONTENT=${PRIVACY_BANNER_CONTENT}"
+echo " PRIVACY_BANNER_LAYOUT=${PRIVACY_BANNER_LAYOUT}"
 echo " TEMPLATES=${TEMPLATES}"
 echo "==================================================="
 
-tee > /usr/share/nginx/html/config.json << EOF
+echo "Privacy file contains the following markdown (first 5 lines):"
+echo "==================================================="
+echo "$(head -5 /config-privacy/statement.md)"
+echo "==================================================="
+
+tee > "${NGINX_PATH}/config.json" << EOF
 {
   "BASE_URL": "${BASE_URL:-http://renku.build}",
   "GATEWAY_URL": "${GATEWAY_URL:-http://gateway.renku.build}",
@@ -36,8 +46,20 @@ tee > /usr/share/nginx/html/config.json << EOF
   "SENTRY_NAMESPACE": "${SENTRY_NAMESPACE}",
   "MAINTENANCE": "${MAINTENANCE}",
   "ANONYMOUS_SESSIONS": "${ANONYMOUS_SESSIONS}",
+  "PRIVACY_ENABLED": "${PRIVACY_ENABLED}",
+  "PRIVACY_BANNER_CONTENT": "${PRIVACY_BANNER_CONTENT}",
+  "PRIVACY_BANNER_LAYOUT": ${PRIVACY_BANNER_LAYOUT},
   "TEMPLATES": ${TEMPLATES}
 }
 EOF
+echo "config.json created in ${NGINX_PATH}"
+
+FILE=/config-privacy/statement.md
+if [ -f "$FILE" ]; then
+  more /config-privacy/statement.md | base64 | tr -d \\n > "${NGINX_PATH}/privacy-statement.md"
+  echo "privacy-statement.md created in ${NGINX_PATH}"
+else 
+  echo "privacy-statement.md created in ${NGINX_PATH}"
+fi
 
 exec -- "$@"

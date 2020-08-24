@@ -1139,7 +1139,7 @@ class ProjectViewDatasetsOverview extends Component {
     let datasets = this.props.datasets.map((dataset) =>
       <OverviewDatasetRow
         key={dataset.identifier}
-        name={dataset.name}
+        name={dataset.title || dataset.name}
         fullDatasetUrl={`${this.props.datasetsUrl}/${encodeURIComponent(dataset.identifier)}`}
       />
     );
