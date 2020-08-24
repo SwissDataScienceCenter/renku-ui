@@ -33,7 +33,7 @@ jobs:
       run: npm run lint
 
   test-chart:
-    needs: test
+    # needs: test ! temporarily comment out for testing
     runs-on: ubuntu-latest
     if: "!startsWith(github.ref, 'refs/tags/') && github.ref != 'refs/heads/master'"
     steps:
