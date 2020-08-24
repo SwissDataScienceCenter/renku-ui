@@ -40,9 +40,9 @@ Promise.all([configFetch, privacyFetch]).then(valuesRead => {
       params["PRIVACY_STATEMENT"] = privacy;
 
     // show maintenance page when necessary
-    const maintenace = params["MAINTENANCE"];
-    if (maintenace) {
-      ReactDOM.render(<Maintenance info={maintenace} />, document.getElementById("root"));
+    const maintenance = params["MAINTENANCE"];
+    if (maintenance) {
+      ReactDOM.render(<Maintenance info={maintenance} />, document.getElementById("root"));
       return;
     }
 
@@ -77,9 +77,13 @@ Promise.all([configFetch, privacyFetch]).then(valuesRead => {
     function mapStateToProps(state, ownProps) {
       return { user: state.user, ...ownProps };
     }
+
+    const statuspageId = params["STATUSPAGE_ID"];
+
     const VisibleApp = connect(mapStateToProps)(App);
     ReactDOM.render(
-      <VisibleApp client={client} params={params} store={model.reduxStore} model={model} />,
+      <VisibleApp client={client} params={params} store={model.reduxStore} model={model}
+        statuspageId={statuspageId} />,
       document.getElementById("root")
     );
   });
