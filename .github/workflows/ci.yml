@@ -60,7 +60,7 @@ jobs:
   publish-chart:
     needs: test-chart
     runs-on: ubuntu-latest
-    if: "startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/master'"
+    if: "startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/772-migrate-github'"
     steps:
     - uses: actions/checkout@v2
       with:
