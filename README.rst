@@ -81,9 +81,3 @@ or
 ::
 
     $ docker run -e CI=true renku/renku-ui:latest npm test
-    
-    
-
-Service Dependencies
--------------------
-`Gateway <https://github.com/SwissDataScienceCenter/renku-gateway>`_ : An interface to all backend services which handles auth and exchange access tokens. 
