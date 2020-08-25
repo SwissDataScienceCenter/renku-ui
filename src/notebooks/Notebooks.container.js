@@ -170,7 +170,8 @@ class StartNotebookServer extends Component {
 
     this.state = {
       first: true,
-      starting: false
+      starting: false,
+      launchError: null
     };
   }
 
@@ -324,15 +325,30 @@ class StartNotebookServer extends Component {
     this.coordinator.setNotebookOptions(option, value);
   }
 
-  startServer() {
-    //* Data from notebooks/servers endpoint needs some time to update properly.
-    //* To avoid flickering UI, just set a temporary state and display a loading wheel.
+  internalStartServer() {
+    // The core internal logic extracted here for re-use
     const { location, history } = this.props;
-    this.setState({ "starting": true });
-    this.coordinator.startServer().then(() => {
+    return this.coordinator.startServer().then(() => {
       this.setState({ "starting": false });
       if (history && location && location.state && location.state.successUrl)
         history.push(location.state.successUrl);
+    });
+  }
+
+  startServer() {
+    //* Data from notebooks/servers endpoint needs some time to update properly.
+    //* To avoid flickering UI, just set a temporary state and display a loading wheel.
+    this.setState({ "starting": true });
+    this.internalStartServer().catch((error) => {
+      // Some failures just go away. Try again to see if it works the second time.
+      setTimeout(() => {
+        this.internalStartServer().catch((error) => {
+          // TODO: #991
+          // eslint-disable-next-line no-console
+          console.log(["Could not start server", error]);
+          this.setState({ "starting": false, launchError: error.message });
+        });
+      }, 3000);
     });
   }
 
@@ -387,6 +403,7 @@ class StartNotebookServer extends Component {
       inherited={this.props}
       message={this.props.message}
       justStarted={this.state.starting}
+      launchError={this.state.launchError}
     />;
   }
 }
