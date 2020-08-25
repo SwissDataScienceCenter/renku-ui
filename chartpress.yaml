@@ -1,15 +1,16 @@
 charts:
-  - name: renku-ui
+  - name: helm-chart/renku-ui
+    resetTag: latest
     imagePrefix: renku/
     repo:
       git: SwissDataScienceCenter/helm-charts
       published: https://swissdatasciencecenter.github.io/helm-charts
     paths:
-      - ..
+      - .
     images:
       renku-ui:
         # Context to send to docker build for use by the Dockerfile
-        contextPath: ..
+        contextPath: .
         # Dockerfile path relative to chartpress.yaml
-        dockerfilePath: ../Dockerfile
+        dockerfilePath: Dockerfile
         valuesPath: image

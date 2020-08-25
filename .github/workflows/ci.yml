@@ -5,11 +5,11 @@ on: [push]
 jobs:
   cleanup-runs:
     runs-on: ubuntu-latest
+    if: "!startsWith(github.ref, 'refs/tags/') && github.ref != 'refs/heads/master'"
     steps:
     - uses: rokroskar/workflow-run-cleanup-action@master
       env:
         GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-    if: "!startsWith(github.ref, 'refs/tags/') && github.ref != 'refs/heads/master'"
 
   test:
     runs-on: ubuntu-latest
@@ -31,3 +31,54 @@ jobs:
         CI: true
     - name: Run lint
       run: npm run lint
+
+  test-chart:
+    needs: test
+    runs-on: ubuntu-latest
+    if: "!startsWith(github.ref, 'refs/tags/') && github.ref != 'refs/heads/master'"
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v1
+        with:
+          python-version: 3.7
+      - name: Test helm chart
+        env:
+          HELM_URL: https://storage.googleapis.com/kubernetes-helm
+          HELM_TGZ: helm-v2.16.9-linux-amd64.tar.gz
+          TEMP_DIR: ${{ runner.temp }}
+        run: |
+          wget -q ${HELM_URL}/${HELM_TGZ} -O ${TEMP_DIR}/${HELM_TGZ}
+          tar -C ${TEMP_DIR} -xzv -f ${TEMP_DIR}/${HELM_TGZ}
+          PATH=${TEMP_DIR}/linux-amd64/:$PATH
+          helm init --client-only
+          helm lint helm-chart/renku-ui -f helm-chart/minikube-values.yaml
+      - name: Build chart and images
+        run: |
+          python -m pip install --upgrade pip "chartpress==0.3.2" "ruamel.yaml==0.15.54"
+          chartpress
+
+  publish-chart:
+    needs: test-chart
+    runs-on: ubuntu-latest
+    if: "startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/master'"
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: set up environment variables
+      run: |
+        echo ::set-env name=GIT_USER::"Renku Bot"
+        echo ::set-env name=GIT_EMAIL::"renku@datascience.ch"
+    - name: Push chart and images
+      uses: SwissDataScienceCenter/renku/actions/publish-chart@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Wait for chart to get published
+      run: sleep 120
+    - name: Update component version
+      uses: SwissDataScienceCenter/renku/actions/update-component-version@master
+      env:
+        CHART_NAME: renku-ui
+        GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
