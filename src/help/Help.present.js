@@ -52,9 +52,6 @@ class HelpNav extends Component {
         <NavItem>
           <RenkuNavLink to={this.props.url.features} title="Features" />
         </NavItem>
-        <NavItem>
-          <RenkuNavLink to={this.props.url.setup} title="Set Up / Admin" />
-        </NavItem>
         { statusLink }
       </Nav>
     );
@@ -210,31 +207,6 @@ class HelpFeatures extends Component {
   }
 }
 
-class HelpSetup extends Component {
-  render() {
-    return (
-      <div>
-        <h2>Running the platform</h2>
-        <p>
-          It is easy to deploy the Renku platform on{" "}
-          <a href="https://github.com/kubernetes/minikube" target="_blank" rel="noreferrer noopener">
-            minikube
-          </a>
-          . You can find the instructions on our{" "}
-          <a
-            href="https://renku.readthedocs.io/en/latest/developer/setup.html"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            documentation
-          </a>
-          .
-        </p>
-      </div>
-    );
-  }
-}
-
 class HelpContent extends Component {
   render() {
     return [
@@ -259,7 +231,6 @@ class HelpContent extends Component {
         key="features"
         render={props => <HelpFeatures key="features" {...this.props} />}
       />,
-      <Route path={this.props.url.setup} key="setup" render={props => <HelpSetup key="setup" {...this.props} />} />,
       <Route
         path={this.props.url.status} key="status"
         render={props => <StatuspageDisplay key="status" statuspageId={this.props.statuspageId}
