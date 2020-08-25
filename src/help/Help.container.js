@@ -34,7 +34,6 @@ function urlMap(baseUrl) {
     getting: `${baseUrl}/getting`,
     documentation: `${baseUrl}/docs`,
     features: `${baseUrl}/features`,
-    setup: `${baseUrl}/setup`,
     status: `${baseUrl}/status`,
   };
 }
