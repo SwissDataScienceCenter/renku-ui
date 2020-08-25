@@ -1204,7 +1204,7 @@ class StartNotebookServerOptions extends Component {
 
     return renderedServerOptions.length ?
       renderedServerOptions.concat(globalWarning) :
-      <label>Notebook options not avilable</label>;
+      <label>Notebook options not available</label>;
   }
 }
 
@@ -1300,12 +1300,25 @@ class ServerOptionLaunch extends Component {
 
   render() {
     const { warnings } = this.props.options;
+    const launchError = this.props.launchError;
     const globalNotification = (warnings.length < 1) ?
       null :
       <Warning key="globalNotification">
         The environment cannot be configured exactly as requested for this project.
         You can still start one, but some things may not work correctly.
       </Warning>;
+    const launchErrorAlert = (launchError != null) ?
+      <Fragment key="launch-error">
+        <br />
+        <InfoAlert timeout={0}>
+          <FontAwesomeIcon icon={faInfoCircle} /> {" "}
+          The attempt to start an environment failed. This could be an intermittent issue, so you should {" "}
+          try a second time, and the environment will hopefully start. If the problem persists, you can {" "}
+          <Link to="/help">contact us for assistance</Link>.
+        </InfoAlert>
+      </Fragment> :
+      null;
+
     return [
       <Button key="button" color="primary" onClick={this.checkServer}>
         Start environment
@@ -1316,7 +1329,8 @@ class ServerOptionLaunch extends Component {
         currentBranch={this.state.current}
         {...this.props}
       />,
-      globalNotification
+      globalNotification,
+      launchErrorAlert
     ];
   }
 }
