@@ -38,31 +38,18 @@ function ImportDataset(props) {
     props.history.push({ pathname: `/projects/${props.projectPathWithNamespace}/datasets` });
   };
 
-  const redirectUserAndClearInterval = (datasets, oldDatasetsList, waitForDatasetInKG) => {
-    let new_dataset = datasets.filter(ds =>
-      oldDatasetsList.find(ods => ds.identifier === ods.identifier) === undefined);
-    if (new_dataset.length > 0) {
-      setSubmitLoader(false);
-      clearInterval(waitForDatasetInKG);
-      props.history.push({
-        pathname: `/projects/${props.projectPathWithNamespace}/datasets/${new_dataset[0].identifier}/`,
-        state: { datasets: datasets }
-      })
-      ;
-    }
+  const redirectUser = () => {
+    setSubmitLoader(false);
+    props.fetchDatasets();
+    props.history.push({
+      //we should do the redirect to the new dataset
+      //but for this we need the dataset name in the response of the dataset.import operation :(
+      pathname: `/projects/${props.projectPathWithNamespace}/datasets`
+    })
+    ;
   };
 
-  const findDatasetInKgAnRedirect = (oldDatasetsList) => {
-    let waitForDatasetInKG = setInterval(() => {
-      props.client.getProjectDatasetsFromKG_short(props.projectPathWithNamespace)
-        .then(datasets => {
-          if (datasets.length !== oldDatasetsList.length)
-            redirectUserAndClearInterval(datasets, oldDatasetsList, waitForDatasetInKG);
-        });
-    }, 6000);
-  };
-
-  function handleJobResponse(job, monitorJob, cont, oldDatasetsList) {
+  function handleJobResponse(job, monitorJob, cont) {
     switch (job.state) {
       case "ENQUEUED":
         setSubmitLoaderText(ImportStateMessage.ENQUEUED);
@@ -73,7 +60,7 @@ function ImportDataset(props) {
       case "COMPLETED":
         setSubmitLoaderText(ImportStateMessage.COMPLETED);
         clearInterval(monitorJob);
-        findDatasetInKgAnRedirect(oldDatasetsList);
+        redirectUser();
         break;
       case "FAILED":
         setSubmitLoader(false);
@@ -93,40 +80,32 @@ function ImportDataset(props) {
     }
   }
 
-  const monitorJobStatusAndHandleResponse = (job_id, oldDatasetsList) => {
+  const monitorJobStatusAndHandleResponse = (job_id) => {
     let cont = 0;
     let monitorJob = setInterval(() => {
       props.client.getJobStatus(job_id)
         .then(job => {
           cont++;
           if (job !== undefined || cont === 50)
-            handleJobResponse(job, monitorJob, cont, oldDatasetsList);
+            handleJobResponse(job, monitorJob, cont);
         });
     }, 10000);
   };
-
 
   const submitCallback = e => {
     setServerErrors(undefined);
     setSubmitLoader(true);
     const dataset = {};
-    let oldDatasetsList = [];
     dataset.uri = datasetImportFormSchema.uri.value;
-    props.client.getProjectDatasetsFromKG_short(props.projectPathWithNamespace)
-      .then(result => {
-        oldDatasetsList = result;
-        props.client.datasetImport(props.httpProjectUrl, dataset.uri)
-          .then(response => {
-            if (response.data.error !== undefined) {
-              setSubmitLoader(false);
-              setServerErrors(response.data.error.reason);
-            }
-            else {
-              monitorJobStatusAndHandleResponse(
-                response.data.result.job_id,
-                oldDatasetsList);
-            }
-          });
+    props.client.datasetImport(props.httpProjectUrl, dataset.uri)
+      .then(response => {
+        if (response.data.error !== undefined) {
+          setSubmitLoader(false);
+          setServerErrors(response.data.error.reason);
+        }
+        else {
+          monitorJobStatusAndHandleResponse(response.data.result.job_id);
+        }
       });
   };
 

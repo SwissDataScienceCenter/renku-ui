@@ -234,6 +234,9 @@ class View extends Component {
   async fetchProjectDatasets() {
     return this.projectState.fetchProjectDatasets(this.props.client);
   }
+  async fetchProjectDatasetsFromKg() {
+    return this.projectState.fetchProjectDatasetsFromKg(this.props.client);
+  }
   async fetchGraphStatus() { return this.projectState.fetchGraphStatus(this.props.client); }
 
   async fetchMigrationCheck() { this.projectState.fetchMigrationCheck(this.props.client); }
@@ -368,6 +371,7 @@ class View extends Component {
     const updateProjectView = this.forceUpdate.bind(this);
     const filesTree = this.projectState.get("filesTree");
     const datasets = this.projectState.get("core.datasets");
+    const datasets_kg = this.projectState.get("core.datasets_kg");
     const graphProgress = this.projectState.get("webhook.progress");
     const maintainer = this.projectState.get("visibility.accessLevel") >= ACCESS_LEVELS.MAINTAINER ?
       true :
@@ -445,20 +449,21 @@ class View extends Component {
 
       datasetView: (p) => <ShowDataset
         key="datasetpreview" {...subProps}
-        progress={graphProgress}
         maintainer={maintainer}
-        forked={forked}
         insideProject={true}
         datasets={datasets}
+        datasets_kg={datasets_kg}
+        datasetId={p.match.params.datasetId}
+        projectPath={projectPathWithNamespace}
         lineagesUrl={subUrls.lineagesUrl}
         fileContentUrl={subUrls.fileContentUrl}
         projectsUrl={subUrls.projectsUrl}
-        selectedDataset={p.match.params.datasetId}
         history={this.props.history}
         logged={this.props.user.logged}
         model={this.props.model}
         projectId={projectId}
         projectPathWithNamespace={this.projectState.get("core.path_with_namespace")}
+        httpProjectUrl={httpProjectUrl}
       />,
 
       newDataset: (p) => <NewDataset
@@ -469,7 +474,6 @@ class View extends Component {
         forked={forked}
         insideProject={true}
         datasets={datasets}
-        reFetchProject={this.fetchAll.bind(this)}
         lineagesUrl={subUrls.lineagesUrl}
         fileContentUrl={subUrls.fileContentUrl}
         projectsUrl={subUrls.projectsUrl}
@@ -477,6 +481,8 @@ class View extends Component {
         client={this.props.client}
         history={this.props.history}
         httpProjectUrl={httpProjectUrl}
+        fetchDatasets={this.eventHandlers.fetchDatasets}
+        overviewCommitsUrl={subUrls.overviewCommitsUrl}
       />,
 
       editDataset: (p) => <EditDataset
@@ -487,7 +493,6 @@ class View extends Component {
         forked={forked}
         insideProject={true}
         datasets={datasets}
-        reFetchProject={this.fetchAll.bind(this)}
         lineagesUrl={subUrls.lineagesUrl}
         fileContentUrl={subUrls.fileContentUrl}
         projectsUrl={subUrls.projectsUrl}
@@ -497,6 +502,8 @@ class View extends Component {
         datasetId={p.match.params.datasetId}
         dataset={p.location.state ? p.location.state.dataset : null}
         httpProjectUrl={httpProjectUrl}
+        fetchDatasets={this.eventHandlers.fetchDatasets}
+        overviewCommitsUrl={subUrls.overviewCommitsUrl}
       />,
 
       importDataset: (p) => <ImportDataset
@@ -507,7 +514,6 @@ class View extends Component {
         forked={forked}
         insideProject={true}
         datasets={datasets}
-        reFetchProject={this.fetchAll.bind(this)}
         lineagesUrl={subUrls.lineagesUrl}
         fileContentUrl={subUrls.fileContentUrl}
         projectsUrl={subUrls.projectsUrl}
@@ -515,6 +521,8 @@ class View extends Component {
         client={this.props.client}
         history={this.props.history}
         httpProjectUrl={httpProjectUrl}
+        fetchDatasets={this.eventHandlers.fetchDatasets}
+        overviewCommitsUrl={subUrls.overviewCommitsUrl}
       />,
 
       fork: () => <Fork
@@ -527,9 +535,8 @@ class View extends Component {
         client={this.props.client}
         user={this.props.user} />,
 
-      kgStatusView: (insideDatasets) =>
+      kgStatusView: () =>
         <KnowledgeGraphStatus
-          insideDatasets={insideDatasets}
           fetchGraphStatus={this.eventHandlers.fetchGraphStatus}
           createGraphWebhook={this.eventHandlers.createGraphWebhook}
           maintainer={maintainer}
@@ -593,6 +600,7 @@ class View extends Component {
       //this.fetchModifiedFiles();
     },
     fetchDatasets: () => {
+      this.fetchProjectDatasetsFromKg();
       this.fetchProjectDatasets();
     },
     setOpenFolder: (filePath) => {

@@ -34,7 +34,6 @@ function EditDataset(props) {
   const [serverErrors, setServerErrors] = useState(undefined);
   const [submitLoader, setSubmitLoader] = useState(false);
   const [initialized, setInitialized] = useState(false);
-  const [initalFiles, setInitialFiles] = useState([]);
   const [jobsStats, setJobsStats] = useState(undefined);
   const warningOn = useRef(false);
   datasetFormSchema.files.filesOnUploader = useRef(0);
@@ -85,26 +84,14 @@ function EditDataset(props) {
       });
   };
 
-  const monitorFilesInKgAndRedirect = (dataset, interval) => {
-    props.client.fetchDatasetFromKG(props.client.baseUrl.replace(
-      "api", "knowledge-graph/datasets/") + props.datasetId)
-      .then(response => {
-        return response.hasPart.length >= (dataset.files.length + initalFiles.length );
-      }).then( filesInKg => {
-        if (filesInKg)
-          redirectAfterSuccess(interval);
-
-      });
-  };
-
-  const redirectAfterSuccess = (interval) => {
+  const redirectAfterSuccess = (interval, datasetName) => {
     setSubmitLoader(false);
     datasetFormSchema.name.value = datasetFormSchema.name.initial;
     datasetFormSchema.description.value = datasetFormSchema.description.initial;
     datasetFormSchema.files.value = datasetFormSchema.files.initial;
     if (interval !== undefined) clearInterval(interval);
     props.history.push({
-      pathname: `/projects/${props.projectPathWithNamespace}/datasets/${props.datasetId}/`
+      pathname: `/projects/${props.projectPathWithNamespace}/datasets/${datasetName}/`
     });
   };
 
@@ -145,21 +132,21 @@ function EditDataset(props) {
           let cont = 0;
           const INTERVAL = 6000;
 
-          let monitorKGandJobs = setInterval(() => {
+          let monitorJobs = setInterval(() => {
 
             if (filesURLJobsArray.length === 0) {
-              monitorFilesInKgAndRedirect(dataset, monitorKGandJobs);
+              redirectAfterSuccess(monitorJobs, dataset.name);
             }
             else {
               monitorURLJobsStatuses(filesURLJobsArray).then(jobsStats => {
                 if (jobsStats.finished) {
                   if (jobsStats.failed.length === 0) {
-                    monitorFilesInKgAndRedirect(dataset, monitorKGandJobs);
+                    redirectAfterSuccess(monitorJobs, dataset.name);
                   }
                   else {
                     //some or all failed, but all finished
                     checkJobsAndSetWarnings(filesURLJobsArray, false);
-                    clearInterval(monitorKGandJobs);
+                    clearInterval(monitorJobs);
                   }
                 }
               });
@@ -169,7 +156,7 @@ function EditDataset(props) {
               checkJobsAndSetWarnings(filesURLJobsArray, true);
               warningOn.current = true;
               setSubmitLoader(false);
-              clearInterval(monitorKGandJobs);
+              clearInterval(monitorJobs);
             }
             cont++;
           }, INTERVAL);
@@ -187,14 +174,12 @@ function EditDataset(props) {
             datasetFormSchema.name.value = dataset.name;
             datasetFormSchema.description.value = dataset.description;
             datasetFormSchema.files.value = dataset.hasPart;
-            setInitialFiles(dataset.hasPart);
           });
       }
       else {
         datasetFormSchema.name.value = props.dataset.name;
         datasetFormSchema.description.value = props.dataset.description;
         datasetFormSchema.files.value = props.dataset.hasPart;
-        setInitialFiles(props.dataset.hasPart);
       }
       setInitialized(true);
     }
@@ -211,6 +196,7 @@ function EditDataset(props) {
     submitLoader={submitLoader}
     submitCallback={submitCallback}
     onCancel={onCancel}
+    overviewCommitsUrl={props.overviewCommitsUrl}
   />;
 }
 

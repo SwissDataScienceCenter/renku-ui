@@ -16,11 +16,10 @@
  * limitations under the License.
  */
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Row, Col, Card, CardHeader, CardBody, Table, Alert, Button } from "reactstrap";
 import { Link } from "react-router-dom";
 import { Loader, FileExplorer, RenkuMarkdown } from "../utils/UIComponents";
-import { API_ERRORS } from "../api-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExternalLinkAlt, faPen, faPlus } from "@fortawesome/free-solid-svg-icons";
 import Time from "../utils/Time";
@@ -29,6 +28,17 @@ import { ProjectsCoordinator } from "../project/shared";
 
 function DisplayFiles(props) {
   if (props.files === undefined) return null;
+
+  if (props.files.error) {
+    return <Card key="datasetDetails">
+      <CardHeader className="align-items-baseline">
+        <span className="caption align-baseline">Dataset files</span>
+      </CardHeader>
+      <CardBody>
+        Error fetching dataset files: {props.files.error.reason}
+      </CardBody>
+    </Card>;
+  }
 
   let openFolders = props.files.length > 0 ?
     ( props.files[0].atLocation.startsWith("data/") ? 2 : 1 )
@@ -97,65 +107,12 @@ function LinkToExternal(props) {
 
 export default function DatasetView(props) {
 
-  const [dataset, setDataset] = useState(undefined);
-  const [fetchError, setFetchError] = useState(null);
   const [addDatasetModalOpen, setAddDatasetModalOpen] = useState(false);
 
-  useEffect(() => {
-    let unmounted = false;
-    if (props.insideProject && props.datasets !== undefined && dataset === undefined) {
-      const selectedDataset = props.datasets.filter(d => props.selectedDataset === encodeURIComponent(d.identifier))[0];
-      if (selectedDataset !== undefined) {
-        props.client.fetchDatasetFromKG(selectedDataset._links[0].href)
-          .then((datasetInfo) => {
-            if (!unmounted && dataset === undefined && datasetInfo !== undefined)
-              setDataset(datasetInfo);
-
-          }).catch(error => {
-            if (fetchError === null) {
-              if (!unmounted && error.case === API_ERRORS.notFoundError) {
-                setFetchError("Error 404: The dataset that was selected does" +
-                " not exist or could not be accessed. If you just created or" +
-                " imported the dataset try reloading the page.");
-              }
-              else if (!unmounted && error.case === API_ERRORS.internalServerError) {
-                setFetchError("Error 500: The dataset that was selected couldn't be fetched.");
-              }
-            }
-          });
-      }
-      else if (!unmounted) { setDataset(null); }
-    }
-    else {
-      if (dataset === undefined && props.identifier !== undefined) {
-        props.client
-          .fetchDatasetFromKG(props.client.baseUrl.replace("api", "knowledge-graph/datasets/") + props.identifier)
-          .then((datasetInfo) => {
-            if (!unmounted && dataset === undefined && datasetInfo !== undefined)
-              setDataset(datasetInfo);
-
-          }).catch(error => {
-            if (fetchError === null) {
-              if (!unmounted && error.case === API_ERRORS.notFoundError) {
-                setFetchError("Error 404: The dataset that was selected does not exist or" +
-                " could not be accessed. If you just created or imported the dataset try reloading the page.");
-              }
-              else if (!unmounted && error.case === API_ERRORS.internalServerError) {
-                setFetchError("Error 500: The dataset that was selected couldn't be fetched.");
-              }
-            }
-          });
-      }
-    }
-    return () => {
-      unmounted = true;
-    };
-  }, [dataset, props, fetchError]);
-
-  if (fetchError !== null && dataset === undefined)
-    return <Alert color="danger">{fetchError}</Alert>;
-  if (dataset === undefined) return <Loader />;
-  if (dataset === null) {
+  if (props.fetchError !== null && props.dataset === undefined)
+    return <Alert color="danger">{props.fetchError}</Alert>;
+  if (props.dataset === undefined) return <Loader />;
+  if (props.dataset === null) {
     return (
       <Alert color="danger">
         The dataset that was selected does not exist or could notbe accessed.<br /> <br />
@@ -170,16 +127,16 @@ export default function DatasetView(props) {
     <Row>
       <Col md={8} sm={12}>
         {
-          dataset.published !== undefined && dataset.published.datePublished !== undefined ?
+          props.dataset.published !== undefined && props.dataset.published.datePublished !== undefined ?
             <small style={{ display: "block", paddingBottom: "8px" }} className="font-weight-light font-italic">
-              Uploaded on {Time.getReadableDate(dataset.published.datePublished)}.
+              Uploaded on {Time.getReadableDate(props.dataset.published.datePublished)}.
             </small>
             : null
         }
         <h4 key="datasetTitle">
-          {dataset.title || dataset.name}
-          { dataset.url && props.insideProject ?
-            <a href={dataset.url} target="_blank" rel="noreferrer noopener">
+          {props.dataset.title || props.dataset.name}
+          {props.dataset.url && props.insideProject ?
+            <a href={props.dataset.url} target="_blank" rel="noreferrer noopener">
               <Button size="sm" color="link" style={{ color: "rgba(0, 0, 0, 0.5)" }}>
                 <FontAwesomeIcon icon={faExternalLinkAlt} color="dark" /> Go to source
               </Button>
@@ -190,13 +147,13 @@ export default function DatasetView(props) {
       </Col>
       <Col md={4} sm={12}>
         { props.logged ?
-          <Button className="float-right mb-1" size="sm" color="primary" onClick={()=>setAddDatasetModalOpen(true)}>
+          <Button disabled={props.dataset.url === undefined}
+            className="float-right mb-1" size="sm" color="primary" onClick={() => setAddDatasetModalOpen(true)}>
             <FontAwesomeIcon icon={faPlus} color="dark" /> Add to project
           </Button>
-          : null
-        }
-        {props.insideProject && props.maintainer ?
-          <Link className="float-right mr-1 mb-1" to={{ pathname: "modify", state: { dataset: dataset } }} >
+          : null}
+        { props.insideProject && props.maintainer ?
+          <Link className="float-right mr-1 mb-1" to={{ pathname: "modify", state: { dataset: props.dataset } }} >
             <Button size="sm" color="primary" >
               <FontAwesomeIcon icon={faPen} color="dark" /> Modify
             </Button>
@@ -205,16 +162,15 @@ export default function DatasetView(props) {
         }
       </Col>
     </Row>
-    {
-      dataset.published !== undefined && dataset.published.creator !== undefined ?
-        <small style={{ display: "block" }} className="font-weight-light">
-          {
-            dataset.published.creator
-              .map((creator) => creator.name + (creator.affiliation ? `(${creator.affiliation})` : ""))
-              .join("; ")
-          }
-        </small>
-        : null
+    { props.dataset.published !== undefined && props.dataset.published.creator !== undefined ?
+      <small style={{ display: "block" }} className="font-weight-light">
+        {
+          props.dataset.published.creator
+            .map((creator) => creator.name + (creator.affiliation ? `(${creator.affiliation})` : ""))
+            .join("; ")
+        }
+      </small>
+      : null
     }
     <div style={{ paddingTop: "12px" }}>
       {
@@ -223,47 +179,59 @@ export default function DatasetView(props) {
             projectPathWithNamespace={props.projectPathWithNamespace}
             filePath={""}
             fixRelativePaths={true}
-            markdownText={dataset.description}
+            markdownText={props.dataset.description}
             client={props.client}
             projectId={props.projectId}
           />
           :
-          <RenkuMarkdown markdownText={dataset.description} />
+          <RenkuMarkdown markdownText={props.dataset.description} />
       }
     </div>
     {
-      dataset.url && props.insideProject ?
-        <LinkToExternal link={dataset.url} label="Source" />
+      props.dataset.url && props.insideProject ?
+        <LinkToExternal link={props.dataset.url} label="Source" />
         : null
     }
     {
-      dataset.sameAs.includes("doi.org") ?
-        <LinkToExternal link={dataset.sameAs} label="DOI" />
+      props.dataset.sameAs && props.dataset.sameAs.includes("doi.org") ?
+        <LinkToExternal link={props.dataset.sameAs} label="DOI" />
         : null
     }
     <DisplayFiles
       projectsUrl={props.projectsUrl}
       fileContentUrl={props.fileContentUrl}
       lineagesUrl={props.lineagesUrl}
-      files={dataset.hasPart}
+      files={props.dataset.hasPart}
       insideProject={props.insideProject}
     />
     <br />
     <DisplayProjects
-      projects={dataset.isPartOf}
+      projects={props.dataset.isPartOf}
       projectsUrl={props.projectsUrl}
     />
     {
+      props.dataset.url === undefined ?
+        <Alert color="primary">
+          <strong>This dataset is not in the Knowledge Graph</strong>,
+          this means that only basic operations can be performed in it.<br /><br />
+          If the dataset was created recently and the project has the Knowledge Graph features activated,
+          you need to wait until the dataset is added to the Knowledge Graph otherwise you need to activate the
+          Knowlede Graph features to be able to use the full set of dataset features.
+        </Alert>
+        : null
+    }
+    {
       props.logged ?
         <AddDataset
-          dataset={dataset}
+          dataset={props.dataset}
           modalOpen={addDatasetModalOpen}
           setModalOpen={setAddDatasetModalOpen}
           projectsCoordinator={new ProjectsCoordinator(props.client, props.model.subModel("projects"))}
           model={props.model}
           history={props.history}
           client={props.client}
-          user={props.user} />
+          user={props.user}
+        />
         : null
     }
 

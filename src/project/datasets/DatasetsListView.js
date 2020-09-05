@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo } from "react";
 import { NavLink, Link } from "react-router-dom";
 import { Row, Col, ListGroup, ListGroupItem } from "reactstrap";
 import { ACCESS_LEVELS } from "../../api-client";
@@ -8,13 +8,9 @@ import { Loader, MarkdownTextExcerpt } from "../../utils/UIComponents";
 function DatasetListRow(props) {
   const dataset = props.dataset;
   const title = <NavLink
-    key={dataset.identifier}
-    to={`${props.datasetsUrl}/${encodeURIComponent(dataset.identifier)}/`}
+    key={dataset.name}
+    to={`${props.datasetsUrl}/${encodeURIComponent(dataset.name)}/`}
   > {dataset.title || dataset.name}</NavLink>;
-
-  const projectsCountLabel = dataset.isPartOf.length > 1
-    ? `In ${dataset.isPartOf.length} projects`
-    : `In ${dataset.isPartOf.length} project`;
 
   return <ListGroupItem action style={{ border: "none" }}>
     <Row>
@@ -27,9 +23,9 @@ function DatasetListRow(props) {
               </span>
             </b><br />
             {
-              dataset.published !== undefined && dataset.published.creator !== undefined ?
+              dataset.creators !== undefined ?
                 <small style={{ display: "block" }} className="font-weight-light">
-                  {dataset.published.creator.map((creator) => creator.name).join("; ")}
+                  {dataset.creators.map((creator) => creator.name).join("; ")}
                 </small>
                 : null
             }
@@ -44,12 +40,16 @@ function DatasetListRow(props) {
         </div>
       </Col>
       <Col sm={3} md={3} className="float-right" style={{ textAlign: "end" }}>
-        <small>{projectsCountLabel}</small>
+        <small>
+          {props.dataset_kg ?
+            <strong>In the Knowledge Graph</strong>
+            : <strong>Not in the Knowledge Graph</strong>}
+        </small>
         <br />
         {
-          dataset.published !== undefined && dataset.published.datePublished !== undefined ?
+          dataset.created_at !== undefined ?
             <small className="font-italic">
-              {"Published: " + new Date(dataset.published.datePublished).toLocaleDateString()}
+              {"Published: " + new Date(dataset.created_at).toLocaleDateString()}
             </small>
             : null
         }
@@ -68,12 +68,8 @@ function AddDatasetButton(props) {
 }
 
 export default function DatasetsListView(props) {
-  const [datasets, setDatasets] = useState(undefined);
 
-  useState(()=>{
-    if (datasets === undefined && props.datasets !== undefined)
-      setDatasets(props.datasets);
-  });
+  const datasets = useMemo(()=>props.datasets, [props.datasets]);
 
   return [<Row key="header" className="pb-3">
     <Col md={12}>
@@ -93,8 +89,10 @@ export default function DatasetsListView(props) {
           datasets !== undefined ?
             datasets.map((dataset)=>
               <DatasetListRow
-                key={"dataset-" + dataset.identifier}
+                key={"dataset-" + dataset.name}
                 dataset={dataset}
+                dataset_kg={props.datasets_kg
+                  ? props.datasets_kg.find(dataset_kg => dataset_kg.name === dataset.name) : undefined}
                 datasetsUrl={props.datasetsUrl} />
             )
             : <Loader />

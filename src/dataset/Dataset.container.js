@@ -16,10 +16,129 @@
  * limitations under the License.
  */
 
-import React from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import DatasetView from "./Dataset.present";
+import { API_ERRORS } from "../api-client";
+import { Loader } from "../utils/UIComponents";
+
+//We are not getting the folder structure from the core service at the moment
+//I decided to do this fix so when the length of the files in core and kg is the same
+//We return the files from the kg so we can display the folder structure
+//If the length is not the same we return the files from the core service
+//this will be displayed as a list of files instead of a folder structure :(
+function fixFetchedFiles(core_files, kg_files) {
+  if (core_files) {
+    if (core_files.error) return core_files;
+    if (kg_files) {
+      if (kg_files.length === core_files.length)
+        return kg_files;
+      return core_files;
+    } return core_files;
+  }
+  return kg_files;
+}
+
+function mapDataset(dataset_core, dataset_kg, core_files) {
+  let dataset = {};
+  if (dataset_core) {
+    dataset = {
+      name: dataset_core.name,
+      title: dataset_core.title,
+      description: dataset_core.description,
+      published: {
+        creator: dataset_core.creators,
+        datePublished: dataset_core.created_at
+      },
+      keywords: dataset_core.keywords,
+      hasPart: fixFetchedFiles(core_files, dataset_kg ? dataset_kg.hasPart : undefined)
+    };
+    if (dataset_kg) {
+      dataset.identifier = dataset_kg.identifier;
+      dataset.url = dataset_kg.url;
+      dataset.sameAs = dataset_kg.sameAs;
+      dataset.isPartOf = dataset_kg.isPartOf;
+    }
+    return dataset;
+  }
+  return dataset_kg;
+}
 
 export default function ShowDataset(props) {
+
+  const [datasetKg, setDatasetKg] = useState();
+  const [datasetFiles, setDatasetFiles] = useState();
+  const dataset = useMemo(() =>
+    mapDataset(props.datasets ?
+      props.datasets.find(dataset => dataset.name === props.datasetId)
+      : undefined
+    , datasetKg, datasetFiles)
+  , [props.datasets, datasetKg, props.datasetId, datasetFiles]);
+  const [fetchError, setFetchError] = useState();
+
+  useEffect(()=>{
+    let unmounted = false;
+    if (props.insideProject && datasetFiles === undefined && dataset.name) {
+      props.client.fetchDatasetFilesFromCore(dataset.name, props.httpProjectUrl)
+        .then(response =>{
+          if (!unmounted && datasetFiles === undefined) {
+            if (response.data.result) {
+              setDatasetFiles(response.data.result.files
+                .map(file => ({ name: file.name, atLocation: file.name })));
+            }
+            else { setDatasetFiles(response.data); }
+          }
+        }
+        );
+    }
+    return () => {
+      unmounted = true;
+    };
+  }, [props.insideProject, datasetFiles,
+    dataset.name, props.httpProjectUrl, setDatasetFiles, props.client]);
+
+  useEffect(() => {
+    let unmounted = false;
+    if (props.insideProject && props.datasets_kg && datasetKg === undefined) {
+      let datasetInKg = props.datasets_kg.find(dataset => dataset.name === props.datasetId);
+      if (datasetInKg) {
+        props.client.fetchDatasetFromKG(datasetInKg._links[0].href)
+          .then(fullDataset => {
+            return !unmounted ?
+              setDatasetKg(fullDataset) :
+              null;
+          });
+      }
+    }
+    else {
+      if (datasetKg === undefined && props.identifier !== undefined) {
+        props.client
+          .fetchDatasetFromKG(props.client.baseUrl.replace("api", "knowledge-graph/datasets/") + props.identifier)
+          .then((datasetInfo) => {
+            if (!unmounted && datasetKg === undefined && datasetInfo !== undefined)
+              setDatasetKg(datasetInfo);
+
+          }).catch(error => {
+            if (fetchError === undefined) {
+              if (!unmounted && error.case === API_ERRORS.notFoundError) {
+                setFetchError("Error 404: The dataset that was selected does not exist or" +
+                  " could not be accessed. If you just created or imported the dataset try reloading the page.");
+              }
+              else if (!unmounted && error.case === API_ERRORS.internalServerError) {
+                setFetchError("Error 500: The dataset that was selected couldn't be fetched.");
+              }
+            }
+          });
+      }
+    }
+    return () => {
+      unmounted = true;
+    };
+  }, [props.insideProject, props.datasets_kg, props.datasetId, props.identifier,
+    props.client, datasetKg, fetchError]);
+
+  if (datasetFiles === undefined)
+    return <Loader />;
+
   return <DatasetView
     fetchGraphStatus={props.fetchGraphStatus}
     maintainer={props.maintainer}
@@ -33,11 +152,11 @@ export default function ShowDataset(props) {
     projectsUrl={props.projectsUrl}
     client={props.client}
     datasets={props.datasets}
-    selectedDataset={props.selectedDataset}
     history={props.history}
     logged={props.logged}
     model={props.model}
     projectId={props.projectId}
     projectPathWithNamespace={props.projectPathWithNamespace}
+    dataset={dataset}
   />;
 }

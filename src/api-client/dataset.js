@@ -73,6 +73,43 @@ export default function addDatasetMethods(client) {
     });
   };
 
+  //we should use this instead of clone, this checks if the project was cloned already...
+  client.getProjectIdFromSvc = (projectUrl) => {
+    let headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    headers.append("X-Requested-With", "XMLHttpRequest");
+
+    return client.clientFetch(`${client.baseUrl}/renku/cache.project_list`, {
+      method: "GET",
+      headers: headers
+    }).then(response => {
+      if (response.data.error !== undefined)
+        return response;
+
+      return response.data.result.projects.find(project => project.git_url === projectUrl);
+    }).then(cloned_project => {
+      if (cloned_project !== undefined)
+        return cloned_project.project_id;
+
+      return client.clientFetch(`${client.baseUrl}/renku/cache.project_clone`, {
+        method: "POST",
+        headers: headers,
+        body: JSON.stringify({
+          depth: 1,
+          git_url: projectUrl
+        })
+      }).then(response => {
+        if (response.data.error !== undefined)
+          return response;
+
+        return response.data.result.project_id;
+
+      }).then(project_id => {
+        return Promise.resolve(project_id);
+      });
+    });
+  };
+
   client.postDataset = (projectUrl, renkuDataset) => {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
@@ -80,29 +117,24 @@ export default function addDatasetMethods(client) {
 
     let project_id;
 
-    return client.clientFetch(`${client.baseUrl}/renku/cache.project_clone`, {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify({
-        depth: 1,
-        git_url: projectUrl
+    return client.getProjectIdFromSvc(projectUrl)
+      .then(response => {
+
+        if (response.data !== undefined && response.data.error !== undefined)
+          return response;
+
+        project_id = response;
+
+        return client.clientFetch(`${client.baseUrl}/renku/datasets.create`, {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify({
+            "name": renkuDataset.name,
+            "description": renkuDataset.description,
+            "project_id": project_id
+          })
+        });
       })
-    }).then(response => {
-      if (response.data.error !== undefined)
-        return response;
-
-      project_id = response.data.result.project_id;
-
-      return client.clientFetch(`${client.baseUrl}/renku/datasets.create`, {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify({
-          "name": renkuDataset.name,
-          "description": renkuDataset.description,
-          "project_id": project_id
-        })
-      });
-    })
       .then(response => {
         if (response.data.error) { return response; }
         else
@@ -127,28 +159,53 @@ export default function addDatasetMethods(client) {
 
     let project_id;
 
-    return client.clientFetch(`${client.baseUrl}/renku/cache.project_clone`, {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify({
-        depth: 1,
-        git_url: projectUrl
-      })
-    }).then(response => {
-      if (response.data.error !== undefined)
-        return response;
+    return client.getProjectIdFromSvc(projectUrl)
+      .then(response => {
 
-      project_id = response.data.result.project_id;
+        if (response.data !== undefined && response.data.error !== undefined)
+          return response;
 
-      return client.clientFetch(`${client.baseUrl}/renku/datasets.import`, {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify({
-          "dataset_uri": datasetUrl,
-          "project_id": project_id
-        })
+        project_id = response;
+
+        return client.clientFetch(`${client.baseUrl}/renku/datasets.import`, {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify({
+            "dataset_uri": datasetUrl,
+            "project_id": project_id
+          })
+        });
+
       });
+  };
 
-    });
+  client.listProjectDatasetsFromCore = (git_url) => {
+    let headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    headers.append("X-Requested-With", "XMLHttpRequest");
+
+    return client.clientFetch(`${client.baseUrl}/renku/datasets.list?git_url=${git_url}`, {
+      method: "GET",
+      headers: headers,
+    }).catch((error) =>
+      ({
+        data: { error: { reason: error.case } }
+      }));
+  };
+
+  client.fetchDatasetFilesFromCore = (name, git_url) => {
+    let headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    headers.append("X-Requested-With", "XMLHttpRequest");
+
+    const filesPromise = client.clientFetch(
+      `${client.baseUrl}/renku/datasets.files_list?git_url=${git_url}&name=${name}`, {
+        method: "GET",
+        headers: headers,
+      }).catch((error) =>
+      ({
+        data: { error: { reason: error.case } }
+      }));
+    return Promise.resolve(filesPromise);
   };
 }

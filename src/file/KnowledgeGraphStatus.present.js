@@ -78,10 +78,6 @@ function KnowledgeGraphStatus(props) {
     return (
       <div>
         <Alert color="primary">
-          { props.insideDatasets ?
-            <p><strong>Knowledge Graph integration is needed to be able to see the datasets.</strong></p>
-            : null
-          }
           Please wait, Knowledge Graph integration recently triggered.
           {forkedInfo}
         </Alert>
@@ -93,10 +89,6 @@ function KnowledgeGraphStatus(props) {
     return (
       <div>
         <Alert color="primary">
-          { props.insideDatasets ?
-            <p><strong>Knowledge Graph integration is needed to be able to see the datasets.</strong></p>
-            : null
-          }
           <p>Knowledge Graph is building... {parseInt(progress)}%</p>
           <Progress value={progress} />
         </Alert>

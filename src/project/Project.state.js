@@ -256,38 +256,40 @@ class ProjectModel extends StateModel {
     this.set("filesTree", filesTree);
   }
 
-  fetchProjectDatasets(client) { //from KG
-    if (this.get("core.datasets") === SpecialPropVal.UPDATING) return;
-    this.setUpdating({ core: { datasets: true } });
-    return client.getProjectDatasetsFromKG(this.get("core.path_with_namespace"))
+  fetchProjectDatasetsFromKg(client) { //from KG
+    if (this.get("core.datasets_kg") === SpecialPropVal.UPDATING) return;
+    this.setUpdating({ core: { datasets_kg: true } });
+    return client.getProjectDatasetsFromKG_short(this.get("core.path_with_namespace"))
       .then(datasets => {
-        const updatedState = { datasets: datasets, transient: { requests: { datasets: false } } };
-        this.set("core.datasets", datasets);
+        const updatedState = { datasets_kg: datasets, transient: { requests: { datasets_kg: false } } };
+        this.set("core.datasets_kg", datasets);
         this.setObject(updatedState);
         return datasets;
       })
       .catch(err => {
         const datasets = [];
-        const updatedState = { datasets: datasets, transient: { requests: { datasets: false } } };
-        this.set("core.datasets", datasets);
+        const updatedState = { datasets_kg: datasets, transient: { requests: { datasets_kg: false } } };
+        this.set("core.datasets_kg", datasets);
         this.setObject(updatedState);
       });
   }
 
-  fetchProjectDatasetsFromMetadata(client) {
-    if (this.get("transient.requests.datasets") === SpecialPropVal.UPDATING) return;
-    this.setUpdating({ transient: { requests: { datasets: true } } });
 
-    return client.getProjectDatasets(this.get("core.id"))
-      .then(datasets => {
-        datasets = datasets.map(dataset => {
-          dataset.identifier = dataset.identifier.split("-").join("");
-          return dataset;
-        } );
-        const updatedState = { datasets: datasets, transient: { requests: { datasets: false } } };
-        this.set("core.datasets", datasets);
+  fetchProjectDatasets(client) {
+    if (this.get("core.datasets") === SpecialPropVal.UPDATING) return;
+    this.setUpdating({ core: { datasets: true } });
+    return client.listProjectDatasetsFromCore(this.get("system.http_url"))
+      .then(response => {
+        let responseDs = response.data.error ? response.data : response.data.result.datasets;
+        const updatedState = { datasets: responseDs, transient: { requests: { datasets: false } } };
+        this.set("core.datasets", responseDs);
         this.setObject(updatedState);
-        return datasets;
+        return responseDs;
+      })
+      .catch(err => {
+        const updatedState = { datasets: { error: err }, transient: { requests: { datasets: false } } };
+        this.set("core.datasets", { error: err });
+        this.setObject(updatedState);
       });
   }
 
