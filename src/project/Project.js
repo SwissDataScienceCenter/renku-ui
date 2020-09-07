@@ -437,6 +437,8 @@ class View extends Component {
         projectNamespace={this.projectState.get("core.namespace_path")}
         projectPath={this.projectState.get("core.project_path")}
         branches={branches}
+        projectId={projectId}
+        projectPathWithNamespace={this.projectState.get("core.path_with_namespace")}
         hashElement={filesTree !== undefined ?
           filesTree.hash[p.location.pathname.replace(pathComponents.baseUrl + "/files/blob/", "")] :
           undefined} />,
@@ -455,6 +457,8 @@ class View extends Component {
         history={this.props.history}
         logged={this.props.user.logged}
         model={this.props.model}
+        projectId={projectId}
+        projectPathWithNamespace={this.projectState.get("core.path_with_namespace")}
       />,
 
       newDataset: (p) => <NewDataset

@@ -2,7 +2,7 @@
 
 import { testClient as client } from "../api-client";
 import { StateKind, StateModel } from "../model/Model";
-import { Project, projectSchema } from "./RenkuModels";
+// import { Project, projectSchema } from "./RenkuModels";
 import { ProjectModel } from "../project/Project.state";
 
 describe("fetch project", () => {
