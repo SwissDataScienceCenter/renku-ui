@@ -77,7 +77,7 @@ class FilePreview extends React.Component {
       if (atob(this.props.file.content).includes("https://git-lfs.github.com/"))
         return "The image can't be previewed because it's stored in Git LFS.";
       return (
-        <CardBody key="file preview">
+        <CardBody key="file preview" className="pb-0">
           <img
             className="image-preview"
             alt={this.props.file.file_name}
@@ -89,7 +89,7 @@ class FilePreview extends React.Component {
     // Code with syntax highlighting
     if (this.fileIsCode()) {
       return (
-        <CardBody key="file preview">
+        <CardBody key="file preview" className="pb-0">
           <pre className={`hljs ${this.getFileExtension()}`}>
             <code>{atobUTF8(this.props.file.content)}</code>
           </pre>
@@ -100,8 +100,15 @@ class FilePreview extends React.Component {
     if (this.getFileExtension() === "md") {
       let content = atobUTF8(this.props.file.content);
       return (
-        <CardBody key="file preview">
-          <RenkuMarkdown markdownText={content} />{" "}
+        <CardBody key="file preview" className="pb-0">
+          <RenkuMarkdown
+            projectPathWithNamespace={this.props.projectPathWithNamespace}
+            filePath={this.props.file.file_path}
+            markdownText={content}
+            projectId={this.props.projectId}
+            fixRelativePaths={this.props.insideProject}
+            client={this.props.client}
+          />{" "}
         </CardBody>
       );
     }
@@ -121,7 +128,7 @@ class FilePreview extends React.Component {
 
     if (this.fileHasNoExtension()) {
       return (
-        <CardBody key="file preview">
+        <CardBody key="file preview" className="pb-0">
           <pre className={`hljs ${this.getFileExtension()}`}>
             <code>{atobUTF8(this.props.file.content)}</code>
           </pre>
@@ -302,7 +309,12 @@ class ShowFile extends React.Component {
       buttonJupyter={buttonJupyter}
       file={this.state.file}
       commit={this.state.commit}
-      error={this.state.error} />;
+      error={this.state.error}
+      projectId={this.props.projectId}
+      client={this.props.client}
+      insideProject={true}
+      projectPathWithNamespace={this.props.projectPathWithNamespace}
+    />;
   }
 }
 

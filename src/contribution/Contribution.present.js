@@ -22,11 +22,8 @@ import {
   Nav, NavLink, DropdownMenu, DropdownItem, DropdownToggle, Dropdown
 } from "reactstrap";
 import classnames from "classnames";
-import Collapse from "react-collapse";
 
 import { UserAvatar, TimeCaption, RenkuMarkdown } from "../utils/UIComponents";
-import { FilePreview } from "../file";
-import { ContributionBody as ContributionBodyContainer } from "./Contribution.container";
 import { EDIT, PREVIEW } from "./Contribution.constants";
 import { Card, CardHeader, CardBody } from "reactstrap";
 
@@ -60,7 +57,18 @@ class Contribution extends React.Component {
               </Row>
             </CardHeader>
             <CardBody className="mb-0 pb-0">
-              <ContributionBodyContainer {...this.props} />
+              <div className="pb-3">
+                <RenkuMarkdown
+                  projectPathWithNamespace={this.props.projectPathWithNamespace}
+                  filePath={""}
+                  fixRelativePaths={true}
+                  markdownText={contribution.body ?
+                    contribution.body :
+                    contribution.note}
+                  client={this.props.client}
+                  projectId={this.props.projectId}
+                />
+              </div>
             </CardBody>
           </Card>
         </Col>
@@ -68,57 +76,6 @@ class Contribution extends React.Component {
     </div>;
   }
 }
-
-// Parameters defining the opening/closing of react-collapse reference inlining.
-const STIFFNESS = 290;
-const DAMPING = 20;
-
-class ContributionBody extends React.Component {
-
-  // Needed props:
-  //  - blocks: array of blocks (parsed contribution body). A block can be piece of text
-  //            or a reference.
-  //  - onReferenceClick:
-
-  // Render the blocks. After putting the rendered blocks together,
-  // this will be the entire body of the contribution
-  renderBlocks() {
-    return this.props.blocks.map(block => {
-      if (block.type === "fileRef") {
-        return (
-          <span key={block.iBlock}>
-            <input
-              type="button"
-              className="text-link"
-              value={block.refText}
-              onClick={() => this.props.onReferenceClick(block.iBlock)}
-            />
-            <Collapse isOpened={block.isOpened}>
-              <div className="expanded-reference">
-                <FilePreview
-                  file={block.data}
-                  {...this.props}
-                  springConfig={{ STIFFNESS, DAMPING }}
-                />
-              </div>
-            </Collapse>
-          </span>);
-      }
-      return <div key={block.iBlock} className="comment-block">
-        <RenkuMarkdown markdownText={block.text} />
-      </div>;
-    });
-  }
-
-  render() {
-    return (
-      <div className="pb-3">
-        {this.renderBlocks()}
-      </div>
-    );
-  }
-}
-
 
 const NewContribution = props => {
 
@@ -163,7 +120,18 @@ const NewContribution = props => {
             <TabPane tabId={PREVIEW} className="pt-2">
               {/*This might look silly, but I want to remove the preview from the virtual DOM when the user*/}
               {/*is editing rather than re-rendering it on every keystroak while the user is typing.*/}
-              {props.tab === PREVIEW ? <ContributionBodyContainer {...props} /> : null}
+              {props.tab === PREVIEW ?
+                <div className="pb-3">
+                  <RenkuMarkdown
+                    projectPathWithNamespace={props.projectPathWithNamespace}
+                    filePath={""}
+                    fixRelativePaths={true}
+                    markdownText={props.contribution.body}
+                    client={props.client}
+                    projectId={props.projectId}
+                  />
+                </div>
+                : null}
             </TabPane>
           </TabContent>
           <Button
@@ -192,4 +160,4 @@ const MentionsList = props =>
     </DropdownMenu>
   </Dropdown>;
 
-export { Contribution, ContributionBody, NewContribution };
+export { Contribution, NewContribution };

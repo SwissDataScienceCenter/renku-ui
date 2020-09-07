@@ -18,108 +18,8 @@
 
 import React from "react";
 
-import { ContributionBody as ContributionBodyPresent,
-  NewContribution as NewContributionPresent } from "./Contribution.present";
+import { NewContribution as NewContributionPresent } from "./Contribution.present";
 import { EDIT, patterns } from "./Contribution.constants";
-
-
-class ContributionBody extends React.Component {
-  constructor(props) {
-    super(props);
-    this._mounted = false;
-    const body = this.props.contribution.body ?
-      this.props.contribution.body :
-      this.props.contribution.note;
-    const blocks = matchRefs(body);
-    this.state = { blocks };
-  }
-
-  componentDidMount() {
-    this._mounted = true;
-    const blocks = this.state.blocks;
-    this.fetchRefs(blocks);
-  }
-
-  componentWillUnmount() {
-    this._mounted = false;
-  }
-
-  // Fetch all the references and add them to the app-state.
-  fetchRefs(blocks) {
-    blocks.forEach(block => {
-      if (block.type === "fileRef") {
-        this.props.client.getRepositoryFile(this.props.projectId, block.refPath, "master", "base64")
-          .then(d => { this.modifyBlock(block.iBlock, "data", d); })
-          .catch(error => { this.modifyBlock(block.iBlock, "isOpened", false); });
-        //the catch should be handled better, there is some error with loading diff for discussions in Merge Requests
-      }
-    });
-  }
-
-  // Safe way of setting a property of a given block to a certain value and put it to app-state.
-  modifyBlock(iBlock, property, value) {
-    let blocks = [...this.state.blocks];
-    let updateBlock = { ...blocks[iBlock] };
-    updateBlock[property] = value;
-    blocks[iBlock] = updateBlock;
-    if (this._mounted) this.setState({ blocks });
-  }
-
-  render() {
-    return <ContributionBodyPresent
-      {...this.props}
-      blocks={this.state.blocks}
-      onReferenceClick={iBlock => this.modifyBlock(iBlock, "isOpened", !this.state.blocks[iBlock].isOpened)}
-    />;
-  }
-}
-
-
-// Match all references to files in the repo and turn
-// the body into blocks of either simple text or references.
-function matchRefs(contributionText) {
-
-  let blocks = [];
-  let blockCounter = 0;
-  let match, previousMatch = {
-    0: "",
-    index: 0
-  };
-  while ((match = patterns.fileRefFull.exec(contributionText)) !== null) {
-    const isOpened = match[0][0] === "!";
-    const refText = match[1];
-    const refPath = match[2];
-
-    blocks.push({
-      type: "text",
-      text: contributionText.slice(previousMatch.index + previousMatch[0].length, match.index),
-      iBlock: blockCounter
-    });
-    blockCounter++;
-
-    blocks.push({
-      type: "fileRef",
-      refPath: refPath,
-      refText: refText,
-      isOpened: isOpened,
-      data: null,
-      iBlock: blockCounter
-    });
-    blockCounter++;
-    previousMatch = match;
-  }
-  // Let's finish up by adding the last text block (after any reference) if there is any.
-  if (previousMatch.index + previousMatch[0].length < contributionText.length) {
-    blocks.push({
-      type: "text",
-      text: contributionText.slice(previousMatch.index + previousMatch[0].length,
-        contributionText.length),
-      iBlock: blockCounter
-    });
-  }
-  return blocks;
-}
-
 
 class NewContribution extends React.Component {
   constructor(props) {
@@ -275,8 +175,9 @@ class NewContribution extends React.Component {
       submitting={this.state.submitting}
       client={this.props.client}
       projectId={this.props.projectId}
+      projectPathWithNamespace={this.props.projectPath}
     />;
   }
 }
 
-export { ContributionBody, NewContribution };
+export { NewContribution };
