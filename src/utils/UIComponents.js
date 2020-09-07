@@ -43,7 +43,7 @@ import {
 
 import { sanitizedHTMLFromMarkdown, simpleHash } from "./HelperFunctions";
 import FileExplorer, { getFilesTree } from "./FileExplorer";
-import RenkuMarkdownWithFiles from "./Markdown";
+import RenkuMarkdownWithPathTranslation from "./Markdown";
 
 /**
  * Show user avatar
@@ -440,7 +440,7 @@ class RenkuMarkdown extends Component {
   render() {
     const { singleLine, style, fixRelativePaths } = this.props;
     if (fixRelativePaths)
-      return <RenkuMarkdownWithFiles {...this.props} />;
+      return <RenkuMarkdownWithPathTranslation {...this.props} />;
 
     let className = "text-break renku-markdown";
     if (singleLine)
