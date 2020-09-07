@@ -49,11 +49,11 @@ function mapDataset(dataset_core, dataset_kg, core_files) {
         creator: dataset_core.creators,
         datePublished: dataset_core.created_at
       },
+      identifier: dataset_core.identifier,
       keywords: dataset_core.keywords,
       hasPart: fixFetchedFiles(core_files, dataset_kg ? dataset_kg.hasPart : undefined)
     };
     if (dataset_kg) {
-      dataset.identifier = dataset_kg.identifier;
       dataset.url = dataset_kg.url;
       dataset.sameAs = dataset_kg.sameAs;
       dataset.isPartOf = dataset_kg.isPartOf;
@@ -83,7 +83,7 @@ export default function ShowDataset(props) {
           if (!unmounted && datasetFiles === undefined) {
             if (response.data.result) {
               setDatasetFiles(response.data.result.files
-                .map(file => ({ name: file.name, atLocation: file.name })));
+                .map(file => ({ name: file.name, atLocation: file.path })));
             }
             else { setDatasetFiles(response.data); }
           }
@@ -94,49 +94,36 @@ export default function ShowDataset(props) {
       unmounted = true;
     };
   }, [props.insideProject, datasetFiles,
-    dataset.name, props.httpProjectUrl, setDatasetFiles, props.client]);
+    dataset, props.httpProjectUrl, setDatasetFiles, props.client]);
 
   useEffect(() => {
     let unmounted = false;
-    if (props.insideProject && props.datasets_kg && datasetKg === undefined) {
-      let datasetInKg = props.datasets_kg.find(dataset => dataset.name === props.datasetId);
-      if (datasetInKg) {
-        props.client.fetchDatasetFromKG(datasetInKg._links[0].href)
-          .then(fullDataset => {
-            return !unmounted ?
-              setDatasetKg(fullDataset) :
-              null;
-          });
-      }
-    }
-    else {
-      if (datasetKg === undefined && props.identifier !== undefined) {
-        props.client
-          .fetchDatasetFromKG(props.client.baseUrl.replace("api", "knowledge-graph/datasets/") + props.identifier)
-          .then((datasetInfo) => {
-            if (!unmounted && datasetKg === undefined && datasetInfo !== undefined)
-              setDatasetKg(datasetInfo);
-
-          }).catch(error => {
-            if (fetchError === undefined) {
-              if (!unmounted && error.case === API_ERRORS.notFoundError) {
-                setFetchError("Error 404: The dataset that was selected does not exist or" +
-                  " could not be accessed. If you just created or imported the dataset try reloading the page.");
-              }
-              else if (!unmounted && error.case === API_ERRORS.internalServerError) {
-                setFetchError("Error 500: The dataset that was selected couldn't be fetched.");
-              }
+    if (datasetKg === undefined && ((props.insideProject && dataset.identifier) || (props.identifier !== undefined))) {
+      const id = props.insideProject ? dataset.identifier : props.identifier;
+      props.client
+        .fetchDatasetFromKG(props.client.baseUrl.replace("api", "knowledge-graph/datasets/") + id)
+        .then((datasetInfo) => {
+          if (!unmounted && datasetKg === undefined && datasetInfo !== undefined)
+            setDatasetKg(datasetInfo);
+        }).catch(error => {
+          if (fetchError === undefined) {
+            if (!unmounted && error.case === API_ERRORS.notFoundError) {
+              setFetchError("Error 404: The dataset that was selected does not exist or" +
+                " could not be accessed. If you just created or imported the dataset try reloading the page.");
             }
-          });
-      }
+            else if (!unmounted && error.case === API_ERRORS.internalServerError) {
+              setFetchError("Error 500: The dataset that was selected couldn't be fetched.");
+            }
+          }
+        });
     }
     return () => {
       unmounted = true;
     };
   }, [props.insideProject, props.datasets_kg, props.datasetId, props.identifier,
-    props.client, datasetKg, fetchError]);
+    props.client, datasetKg, fetchError, dataset]);
 
-  if (datasetFiles === undefined)
+  if (props.insideProject && datasetFiles === undefined)
     return <Loader />;
 
   return <DatasetView

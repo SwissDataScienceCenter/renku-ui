@@ -371,7 +371,6 @@ class View extends Component {
     const updateProjectView = this.forceUpdate.bind(this);
     const filesTree = this.projectState.get("filesTree");
     const datasets = this.projectState.get("core.datasets");
-    const datasets_kg = this.projectState.get("core.datasets_kg");
     const graphProgress = this.projectState.get("webhook.progress");
     const maintainer = this.projectState.get("visibility.accessLevel") >= ACCESS_LEVELS.MAINTAINER ?
       true :
@@ -452,7 +451,6 @@ class View extends Component {
         maintainer={maintainer}
         insideProject={true}
         datasets={datasets}
-        datasets_kg={datasets_kg}
         datasetId={p.match.params.datasetId}
         projectPath={projectPathWithNamespace}
         lineagesUrl={subUrls.lineagesUrl}

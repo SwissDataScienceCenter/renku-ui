@@ -35,7 +35,7 @@ function DisplayFiles(props) {
         <span className="caption align-baseline">Dataset files</span>
       </CardHeader>
       <CardBody>
-        Error fetching dataset files: {props.files.error.reason}
+        <strong>Error fetching dataset files:</strong> {props.files.error.reason}
       </CardBody>
     </Card>;
   }
@@ -166,7 +166,7 @@ export default function DatasetView(props) {
       <small style={{ display: "block" }} className="font-weight-light">
         {
           props.dataset.published.creator
-            .map((creator) => creator.name + (creator.affiliation ? `(${creator.affiliation})` : ""))
+            .map((creator) => creator.name + (creator.affiliation ? ` (${creator.affiliation})` : ""))
             .join("; ")
         }
       </small>
