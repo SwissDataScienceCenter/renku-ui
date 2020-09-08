@@ -172,7 +172,7 @@ class ProjectSearchForm extends Component {
         {tooltip}
       </Form>,
       <FormText key="help" color="muted">
-        Leave emtpy to browse all projects or enter at least 3 characters to filter.
+        Leave empty to browse all projects or enter at least 3 characters to filter.
       </FormText>
     ];
   }
