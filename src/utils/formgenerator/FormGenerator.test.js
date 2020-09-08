@@ -30,7 +30,7 @@ let schema = new Schema({
       {
         id: "textarea-length",
         isValidFun: input => FormGenerator.Validators.isNotEmpty(input),
-        alert: "TextArea can't be emtpy"
+        alert: "TextArea can't be empty"
       }
     ]
   },
