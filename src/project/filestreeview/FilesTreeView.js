@@ -119,11 +119,11 @@ class FilesTreeView extends Component {
   render() {
     const fileView = !this.props.currentUrl.startsWith(this.props.lineageUrl);
 
-    const emtpyView = this.props.projectUrl.startsWith(this.props.currentUrl)
+    const emptyView = this.props.projectUrl.startsWith(this.props.currentUrl)
     || this.props.lineageUrl.startsWith(this.props.currentUrl);
 
     let redirectURL = "";
-    if (!emtpyView ) {
+    if (!emptyView ) {
       redirectURL = fileView ?
         this.props.currentUrl.replace(this.props.projectUrl, "")
         : this.props.currentUrl.replace(this.props.lineageUrl, "");
@@ -149,7 +149,7 @@ class FilesTreeView extends Component {
       :
       null;
 
-    const toFile = emtpyView ? this.props.projectUrl.replace("/blob", "") + redirectURL
+    const toFile = emptyView ? this.props.projectUrl.replace("/blob", "") + redirectURL
       : this.props.projectUrl + redirectURL;
     const toLineage = this.props.lineageUrl + redirectURL;
 

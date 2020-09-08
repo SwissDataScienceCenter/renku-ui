@@ -289,7 +289,7 @@ const datasetFormSchema = new Schema({
     validators: [{
       id: "name-length",
       //  isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression, 3),
-      alert: "Description can't be emtpy"
+      alert: "Description can't be empty"
     }]
   },
   files: {
@@ -332,7 +332,7 @@ const issueFormSchema = new Schema({
     validators: [{
       id: "textarea-length",
       isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression),
-      alert: "Description can't be emtpy"
+      alert: "Description can't be empty"
     }]
   },
   visibility: {
