@@ -108,8 +108,10 @@ export default function ShowDataset(props) {
         }).catch(error => {
           if (fetchError === undefined) {
             if (!unmounted && error.case === API_ERRORS.notFoundError) {
-              setFetchError("Error 404: The dataset that was selected does not exist or" +
-                " could not be accessed. If you just created or imported the dataset try reloading the page.");
+              setFetchError(props.insideProject ? "Error 404: The dataset that was selected does not exist or" +
+                " could not be accessed. If you just created or imported the dataset try reloading the page."
+                : "Error 404: The dataset that was selected does not exist or" +
+                " could not be accessed.");
             }
             else if (!unmounted && error.case === API_ERRORS.internalServerError) {
               setFetchError("Error 500: The dataset that was selected couldn't be fetched.");
@@ -145,5 +147,6 @@ export default function ShowDataset(props) {
     projectId={props.projectId}
     projectPathWithNamespace={props.projectPathWithNamespace}
     dataset={dataset}
+    fetchError={fetchError}
   />;
 }
