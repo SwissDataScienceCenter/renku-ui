@@ -21,19 +21,10 @@ import DatasetView from "./Dataset.present";
 import { API_ERRORS } from "../api-client";
 import { Loader } from "../utils/UIComponents";
 
-//We are not getting the folder structure from the core service at the moment
-//I decided to do this fix so when the length of the files in core and kg is the same
-//We return the files from the kg so we can display the folder structure
-//If the length is not the same we return the files from the core service
-//this will be displayed as a list of files instead of a folder structure :(
 function fixFetchedFiles(core_files, kg_files) {
   if (core_files) {
     if (core_files.error) return core_files;
-    if (kg_files) {
-      if (kg_files.length === core_files.length)
-        return kg_files;
-      return core_files;
-    } return core_files;
+    return core_files;
   }
   return kg_files;
 }
@@ -78,7 +69,7 @@ export default function ShowDataset(props) {
   useEffect(()=>{
     let unmounted = false;
     if (props.insideProject && datasetFiles === undefined && dataset.name) {
-      props.client.fetchDatasetFilesFromCore(dataset.name, props.httpProjectUrl)
+      props.client.fetchDatasetFilesFromCoreService(dataset.name, props.httpProjectUrl)
         .then(response =>{
           if (!unmounted && datasetFiles === undefined) {
             if (response.data.result) {

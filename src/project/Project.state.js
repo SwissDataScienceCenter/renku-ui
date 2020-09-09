@@ -268,7 +268,7 @@ class ProjectModel extends StateModel {
       })
       .catch(err => {
         const datasets = [];
-        const updatedState = { datasets_kg: datasets, transient: { requests: { datasets_kg: false } } };
+        const updatedState = { datasets_kg: { $set: datasets }, transient: { requests: { datasets_kg: false } } };
         this.set("core.datasets_kg", datasets);
         this.setObject(updatedState);
       });
@@ -278,7 +278,7 @@ class ProjectModel extends StateModel {
   fetchProjectDatasets(client) {
     if (this.get("core.datasets") === SpecialPropVal.UPDATING) return;
     this.setUpdating({ core: { datasets: true } });
-    return client.listProjectDatasetsFromCore(this.get("system.http_url"))
+    return client.listProjectDatasetsFromCoreService(this.get("system.http_url"))
       .then(response => {
         let responseDs = response.data.error ? response.data : response.data.result.datasets;
         const updatedState = { datasets: responseDs, transient: { requests: { datasets: false } } };

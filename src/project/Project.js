@@ -452,7 +452,7 @@ class View extends Component {
         insideProject={true}
         datasets={datasets}
         datasetId={p.match.params.datasetId}
-        projectPath={projectPathWithNamespace}
+        projectPathWithNamespace={projectPathWithNamespace}
         lineagesUrl={subUrls.lineagesUrl}
         fileContentUrl={subUrls.fileContentUrl}
         projectsUrl={subUrls.projectsUrl}
@@ -460,7 +460,6 @@ class View extends Component {
         logged={this.props.user.logged}
         model={this.props.model}
         projectId={projectId}
-        projectPathWithNamespace={this.projectState.get("core.path_with_namespace")}
         httpProjectUrl={httpProjectUrl}
       />,
 

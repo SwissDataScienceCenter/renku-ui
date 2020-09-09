@@ -14,7 +14,7 @@ function DatasetListRow(props) {
 
   return <ListGroupItem action style={{ border: "none" }}>
     <Row>
-      <Col md={9}>
+      <Col xs={8} md={8}>
         <div className="d-flex project-list-row">
           <div className="issue-text-crop">
             <b>
@@ -39,7 +39,7 @@ function DatasetListRow(props) {
           </div>
         </div>
       </Col>
-      <Col sm={3} md={3} className="float-right" style={{ textAlign: "end" }}>
+      <Col xs={4} md={4} className="float-right" style={{ textAlign: "end" }}>
         <small>
           {props.dataset_kg ?
             <strong>In the Knowledge Graph</strong>

@@ -44,9 +44,9 @@ function DatasetNew(props) {
       {props.jobsStats.tooLong ?
         <div>
           This operation is taking too long and it will continue being processed in the background.<br />
-          Please check the datasets list in a while to make sure that the changes are there. <br />
+          Please check the datasets list later to make sure that the changes are visible in the dataset. <br />
           You can also check the <Link to={props.overviewCommitsUrl}>commits list
-          </Link> in the project and see if the new change was pushed.
+          </Link> in the project to see if commits for the new dataset appear there.
           <br/><br/>
         </div>
         : null

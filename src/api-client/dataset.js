@@ -73,8 +73,15 @@ export default function addDatasetMethods(client) {
     });
   };
 
-  //we should use this instead of clone, this checks if the project was cloned already...
-  client.getProjectIdFromSvc = (projectUrl) => {
+  /**
+   * This method checks weather the dataset is or not in the cache.
+   * In case the project is already there it returns the id of the project in the cache.
+   * If the project is not there, it clones the project and returns the id of the project in the cache.
+   *
+   * projectUrl is the http project in gitlab
+   * example: https://dev.renku.ch/gitlab/virginiafriedrich/project-11.git
+  */
+  client.getProjectIdFromCoreService = (projectUrl) => {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
@@ -117,7 +124,7 @@ export default function addDatasetMethods(client) {
 
     let project_id;
 
-    return client.getProjectIdFromSvc(projectUrl)
+    return client.getProjectIdFromCoreService(projectUrl)
       .then(response => {
 
         if (response.data !== undefined && response.data.error !== undefined)
@@ -159,7 +166,7 @@ export default function addDatasetMethods(client) {
 
     let project_id;
 
-    return client.getProjectIdFromSvc(projectUrl)
+    return client.getProjectIdFromCoreService(projectUrl)
       .then(response => {
 
         if (response.data !== undefined && response.data.error !== undefined)
@@ -179,7 +186,7 @@ export default function addDatasetMethods(client) {
       });
   };
 
-  client.listProjectDatasetsFromCore = (git_url) => {
+  client.listProjectDatasetsFromCoreService = (git_url) => {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
@@ -193,7 +200,7 @@ export default function addDatasetMethods(client) {
       }));
   };
 
-  client.fetchDatasetFilesFromCore = (name, git_url) => {
+  client.fetchDatasetFilesFromCoreService = (name, git_url) => {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");

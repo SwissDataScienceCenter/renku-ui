@@ -928,13 +928,12 @@ function ProjectViewDatasets(props) {
       <Button color="warning" onClick={() => props.history.push(props.overviewVersionUrl)} >More Info</Button>
     </Alert> : null;
 
-  useEffect(() => {
+  useEffect(()=>{
     const loading = props.core.datasets === SpecialPropVal.UPDATING;
     if (loading) return;
-    if (props.core.datasets === undefined)
-      props.fetchDatasets();
-  }
-  , [props.core.datasets, props.fetchDatasets, props]);
+    props.fetchDatasets();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const loading = props.core.datasets === SpecialPropVal.UPDATING || props.core.datasets === undefined;
   if (loading)
@@ -1173,9 +1172,9 @@ class ProjectViewDatasetsOverview extends Component {
 
     let datasets = this.props.datasets.map((dataset) =>
       <OverviewDatasetRow
-        key={dataset.identifier}
+        key={dataset.name}
         name={dataset.title || dataset.name}
-        fullDatasetUrl={`${this.props.datasetsUrl}/${encodeURIComponent(dataset.identifier)}`}
+        fullDatasetUrl={`${this.props.datasetsUrl}/${encodeURIComponent(dataset.name)}`}
       />
     );
 

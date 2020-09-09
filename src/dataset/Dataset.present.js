@@ -108,11 +108,12 @@ function LinkToExternal(props) {
 export default function DatasetView(props) {
 
   const [addDatasetModalOpen, setAddDatasetModalOpen] = useState(false);
+  const dataset = props.dataset;
 
-  if (props.fetchError !== null && props.dataset === undefined)
+  if (props.fetchError !== null && dataset === undefined)
     return <Alert color="danger">{props.fetchError}</Alert>;
-  if (props.dataset === undefined) return <Loader />;
-  if (props.dataset === null) {
+  if (dataset === undefined) return <Loader />;
+  if (dataset === null) {
     return (
       <Alert color="danger">
         The dataset that was selected does not exist or could notbe accessed.<br /> <br />
@@ -127,16 +128,16 @@ export default function DatasetView(props) {
     <Row>
       <Col md={8} sm={12}>
         {
-          props.dataset.published !== undefined && props.dataset.published.datePublished !== undefined ?
+          dataset.published !== undefined && dataset.published.datePublished !== undefined ?
             <small style={{ display: "block", paddingBottom: "8px" }} className="font-weight-light font-italic">
-              Uploaded on {Time.getReadableDate(props.dataset.published.datePublished)}.
+              Uploaded on {Time.getReadableDate(dataset.published.datePublished)}.
             </small>
             : null
         }
         <h4 key="datasetTitle">
-          {props.dataset.title || props.dataset.name}
-          {props.dataset.url && props.insideProject ?
-            <a href={props.dataset.url} target="_blank" rel="noreferrer noopener">
+          {dataset.title || dataset.name}
+          {dataset.url && props.insideProject ?
+            <a href={dataset.url} target="_blank" rel="noreferrer noopener">
               <Button size="sm" color="link" style={{ color: "rgba(0, 0, 0, 0.5)" }}>
                 <FontAwesomeIcon icon={faExternalLinkAlt} color="dark" /> Go to source
               </Button>
@@ -147,13 +148,13 @@ export default function DatasetView(props) {
       </Col>
       <Col md={4} sm={12}>
         { props.logged ?
-          <Button disabled={props.dataset.url === undefined}
+          <Button disabled={dataset.url === undefined}
             className="float-right mb-1" size="sm" color="primary" onClick={() => setAddDatasetModalOpen(true)}>
             <FontAwesomeIcon icon={faPlus} color="dark" /> Add to project
           </Button>
           : null}
         { props.insideProject && props.maintainer ?
-          <Link className="float-right mr-1 mb-1" to={{ pathname: "modify", state: { dataset: props.dataset } }} >
+          <Link className="float-right mr-1 mb-1" to={{ pathname: "modify", state: { dataset: dataset } }} >
             <Button size="sm" color="primary" >
               <FontAwesomeIcon icon={faPen} color="dark" /> Modify
             </Button>
@@ -162,10 +163,10 @@ export default function DatasetView(props) {
         }
       </Col>
     </Row>
-    { props.dataset.published !== undefined && props.dataset.published.creator !== undefined ?
+    { dataset.published !== undefined && dataset.published.creator !== undefined ?
       <small style={{ display: "block" }} className="font-weight-light">
         {
-          props.dataset.published.creator
+          dataset.published.creator
             .map((creator) => creator.name + (creator.affiliation ? ` (${creator.affiliation})` : ""))
             .join("; ")
         }
@@ -179,51 +180,51 @@ export default function DatasetView(props) {
             projectPathWithNamespace={props.projectPathWithNamespace}
             filePath={""}
             fixRelativePaths={true}
-            markdownText={props.dataset.description}
+            markdownText={dataset.description}
             client={props.client}
             projectId={props.projectId}
           />
           :
-          <RenkuMarkdown markdownText={props.dataset.description} />
+          <RenkuMarkdown markdownText={dataset.description} />
       }
     </div>
     {
-      props.dataset.url && props.insideProject ?
-        <LinkToExternal link={props.dataset.url} label="Source" />
+      dataset.url && props.insideProject ?
+        <LinkToExternal link={dataset.url} label="Source" />
         : null
     }
     {
-      props.dataset.sameAs && props.dataset.sameAs.includes("doi.org") ?
-        <LinkToExternal link={props.dataset.sameAs} label="DOI" />
+      dataset.sameAs && dataset.sameAs.includes("doi.org") ?
+        <LinkToExternal link={dataset.sameAs} label="DOI" />
         : null
     }
     <DisplayFiles
       projectsUrl={props.projectsUrl}
       fileContentUrl={props.fileContentUrl}
       lineagesUrl={props.lineagesUrl}
-      files={props.dataset.hasPart}
+      files={dataset.hasPart}
       insideProject={props.insideProject}
     />
     <br />
     <DisplayProjects
-      projects={props.dataset.isPartOf}
+      projects={dataset.isPartOf}
       projectsUrl={props.projectsUrl}
     />
     {
-      props.dataset.url === undefined ?
+      dataset.url === undefined ?
         <Alert color="primary">
-          <strong>This dataset is not in the Knowledge Graph</strong>,
-          this means that only basic operations can be performed in it.<br /><br />
-          If the dataset was created recently and the project has the Knowledge Graph features activated,
-          you need to wait until the dataset is added to the Knowledge Graph otherwise you need to activate the
-          Knowlede Graph features to be able to use the full set of dataset features.
+          <strong>This dataset is not in the Knowledge Graph;</strong> this means that some
+          operations on it are not possible.<br /><br />
+          If the dataset was created recently, and the Knowledge Graph integration for the project is active,
+          the dataset should be added to the Knowledge Graph soon. Otherwise, you need to
+          activate the Knowlede Graph to be able to use the full set of dataset features.
         </Alert>
         : null
     }
     {
       props.logged ?
         <AddDataset
-          dataset={props.dataset}
+          dataset={dataset}
           modalOpen={addDatasetModalOpen}
           setModalOpen={setAddDatasetModalOpen}
           projectsCoordinator={new ProjectsCoordinator(props.client, props.model.subModel("projects"))}
