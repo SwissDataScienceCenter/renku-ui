@@ -2,6 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { connect } from "react-redux";
 import * as Sentry from "@sentry/browser";
+import "bootstrap";
+import "jquery";
 // Use our version of bootstrap, not the one in import 'bootstrap/dist/css/bootstrap.css';
 import "./styles/index.css";
 import "./index.css";
