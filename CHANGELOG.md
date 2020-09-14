@@ -1,5 +1,23 @@
 # Changes
 
+## [0.10.4](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.10.3...0.10.4) (2020-09-14)
+
+### Features
+
+* get all code resources from renkulab (not general internet) (#1027) (#1034) 94a2fe1, closes [#1027](https://github.com/SwissDataScienceCenter/renku-ui/issues/1027) [#1034](https://github.com/SwissDataScienceCenter/renku-ui/issues/1034)
+* add privacy page and cookie consent banner (#981) dcad09a, closes [#981](https://github.com/SwissDataScienceCenter/renku-ui/issues/981) [#949](https://github.com/SwissDataScienceCenter/renku-ui/issues/949)
+* allow anonymous user navigation in the project's collaboration tab (#987) f6723f8, closes [#987](https://github.com/SwissDataScienceCenter/renku-ui/issues/987) [#905](https://github.com/SwissDataScienceCenter/renku-ui/issues/905)
+* display of relative paths in markdown and improvement in file preview in markdown (#1008)(#941)(#667) cf05ebe, closes [#1008](https://github.com/SwissDataScienceCenter/renku-ui/issues/1008) [#941](https://github.com/SwissDataScienceCenter/renku-ui/issues/941) [#667](https://github.com/SwissDataScienceCenter/renku-ui/issues/667)
+* notify user of app status using statuspage.io (#938) (#980) 3310247, closes [#938](https://github.com/SwissDataScienceCenter/renku-ui/issues/938) [#980](https://github.com/SwissDataScienceCenter/renku-ui/issues/980)
+* remove superfluous server setup documentation (#1018) c3c34ab, closes [#1018](https://github.com/SwissDataScienceCenter/renku-ui/issues/1018)
+* render julia source and project files in the file browser 80797f4 [#979](https://github.com/SwissDataScienceCenter/renku-ui/issues/979)
+
+### Bug Fixes
+
+* handle response-code 500 in calls to start notebooks (#992) 13a5d76, closes [#992](https://github.com/SwissDataScienceCenter/renku-ui/issues/992)
+* fix rendering issues with WYSIWYG editor toolbar (#1023) (#1022) 3c87369, closes [#1023](https://github.com/SwissDataScienceCenter/renku-ui/issues/1023) [#1022](https://github.com/SwissDataScienceCenter/renku-ui/issues/1022)
+
+
 # [0.10.3](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.10.2...0.10.3) (2020-06-30)
 
 ### Features
