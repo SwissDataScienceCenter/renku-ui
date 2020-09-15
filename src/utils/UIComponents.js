@@ -215,6 +215,8 @@ function ExternalLinkButton(props) {
   let otherProps = {};
   if (props.id)
     otherProps.id = props.id;
+  if (props.onClick)
+    otherProps.onClick = props.onClick;
 
   return (
     <a role="button" target="_blank" rel="noreferrer noopener"
@@ -237,6 +239,8 @@ function ExternalLinkText(props) {
   let otherProps = {};
   if (props.id)
     otherProps.id = props.id;
+  if (props.onClick)
+    otherProps.onClick = props.onClick;
 
   return (
     <a target="_blank" rel="noreferrer noopener"
@@ -257,18 +261,16 @@ function ExternalLinkText(props) {
  * @param {string} [title] - The text to show for the link
  * @param {string} [role] - "link" or "text" to be shown as a link, null for a button
  * @param {string?} [className] - [Optional] Any classes to add, e.g., 'nav-link' or 'dropdown-item'
- * @param {boolean} [showExternalLinkIcon] - Show the icon to indicate an external link if true (default false)
+ * @param {boolean} [showLinkIcon] - Show the icon to indicate an external link if true (default false)
  * @param {string} [id] - main element's id
  */
 function ExternalLink(props) {
   const role = props.role;
-  const showLinkIcon = (props.showExternalLinkIcon === true) ? true : false;
-  const displayTitle = (showLinkIcon) ?
-    <span>
-      <FontAwesomeIcon icon={faExternalLinkAlt} color="dark" /> {props.title}
-    </span> :
+  const displayTitle = (props.showLinkIcon) ?
+    (<span><FontAwesomeIcon icon={faExternalLinkAlt} color="dark" /> {props.title}</span>) :
     props.title;
-  const myProps = { title: displayTitle, ...props };
+  const myProps = { ...props, title: displayTitle };
+
   if (role === "link" || role === "text")
     return ExternalLinkText(myProps);
   return ExternalLinkButton(myProps);
@@ -281,7 +283,7 @@ function ExternalLink(props) {
  * @param {string} [url] - The URL to link to
  * @param {string} [title] - The text to show for the link
  * @param {string?} [className] - [Optional] Any classes to add, e.g., 'nav-link' or 'dropdown-item'
- * @param {boolean} [showExternalLinkIcon] - Show the icon to indicate an external link if true (default false)
+ * @param {boolean} [showLinkIcon] - Show the icon to indicate an external link if true (default false)
  */
 function ExternalDocsLink(props) {
   const role = "link";

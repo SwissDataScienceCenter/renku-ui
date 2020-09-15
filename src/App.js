@@ -26,6 +26,7 @@
 import React, { Component } from "react";
 import { Jumbotron } from "reactstrap";
 import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 
 import Project from "./project/Project";
 import DatasetList from "./dataset/list/DatasetList.container";
@@ -37,12 +38,15 @@ import NotFound from "./not-found";
 import ShowDataset from "./dataset/Dataset.container";
 import { Loader } from "./utils/UIComponents";
 import { Cookie, Privacy } from "./privacy";
+import { Notifications } from "./notifications";
 
 import "./App.css";
+import "react-toastify/dist/ReactToastify.css";
 
 
 class App extends Component {
   render() {
+    // Avoid rendering the application while authenticating the user
     const { user } = this.props;
     if (!user.fetched && user.fetching) {
       return (
@@ -56,11 +60,14 @@ class App extends Component {
     // check anonymous sessions settings
     const blockAnonymous = !user.logged && !this.props.params["ANONYMOUS_SESSIONS"];
 
+    // setup notification system
+    const notifications = Notifications({ client: this.props.client, model: this.props.model });
+
     return (
       <Router>
         <div>
           <Route render={props =>
-            <RenkuNavBar {...props} {...this.props} />
+            <RenkuNavBar {...props} {...this.props} notifications={notifications} />
           } />
           <main role="main" className="container-fluid">
             <div key="gap">&nbsp;</div>
@@ -107,6 +114,7 @@ class App extends Component {
                   model={this.props.model}
                   user={this.props.user}
                   blockAnonymous={blockAnonymous}
+                  notifications={notifications}
                   {...p}
                 />}
               />
@@ -150,6 +158,7 @@ class App extends Component {
           </main>
           <Route render={props => <FooterNavbar {...props} params={this.props.params} />} />
           <Route render={props => <Cookie {...props} params={this.props.params} />} />
+          <ToastContainer />
         </div>
       </Router>
     );
