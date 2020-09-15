@@ -146,7 +146,21 @@ class NotificationsMenuList extends Component {
       <Fragment>
         <DropdownItem>Show all notifications</DropdownItem>
         <DropdownItem divider />
+        <NotificationsMenuTesting {...this.props} />
         <div className="notification-list-container">{renderNotifications}</div>
+      </Fragment>
+    );
+  }
+}
+
+class NotificationsMenuTesting extends Component {
+  render() {
+    return (
+      <Fragment>
+        {/* TEST ONLY */}
+        <DropdownItem onClick={() => this.props.handlers.addMultipleNotifications()}>TEST - add multiple</DropdownItem>
+        <DropdownItem onClick={() => this.props.handlers.addRandomNotification()}>TEST - add random</DropdownItem>
+        <DropdownItem divider />
       </Fragment>
     );
   }

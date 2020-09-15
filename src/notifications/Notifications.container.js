@@ -101,7 +101,74 @@ class NotificationsMenu extends Component {
 
     this.handlers = {
       markRead: this.markRead.bind(this),
+      addMultipleNotifications: this.addMultipleNotifications.bind(this), // ! TEMP - only for testing
+      addRandomNotification: this.addRandomNotification.bind(this), // ! TEMP - only for testing
     };
+  }
+
+  // ! TEMP - only for testing
+  addMultipleNotifications() {
+    const { notifications } = this.props;
+    notifications.addWarning(
+      notifications.Topics.DATASET_CREATE,
+      "Warning test with external link",
+      "https://getbootstrap.com",
+      "External link");
+    notifications.addSuccess(
+      notifications.Topics.ENVIRONMENT_START,
+      "Environment xyz has started, you can now access it.",
+      "/environments",
+      "Environments list");
+    notifications.addInfo(
+      "Fake topic Info",
+      "I'm an info, I shouldn't appear",
+      "/",
+      "Home");
+    notifications.addError(
+      notifications.Topics.ENVIRONMENT_START,
+      "Test - environment couldn't start",
+      "/environments",
+      "Environments list");
+  }
+  // ! TEMP - only for testing
+  addRandomNotification() {
+    const { notifications } = this.props;
+    const rdn = Math.random();
+    let level, topic, desc, link, linkText;
+    if (rdn < 0.3) {
+      level = notifications.Levels.INFO;
+      topic = "Random info";
+      desc = "Randomly generated info notification";
+    }
+    else if (rdn < 0.6) {
+      level = notifications.Levels.SUCCESS;
+      topic = "Random success";
+      desc = "Randomly generated success notification";
+      if (rdn < 0.5) {
+        link = "/";
+        linkText = "Check home";
+      }
+      else {
+        link = "https://getbootstrap.com";
+        linkText = "External link";
+      }
+    }
+    else if (rdn < 0.8) {
+      level = notifications.Levels.WARNING;
+      topic = "Random warning";
+      desc = "Randomly generated success warning";
+      link = "/environments";
+      linkText = "Environments list";
+    }
+    else {
+      level = notifications.Levels.ERROR;
+      topic = "Random error";
+      desc = "Randomly generated success error";
+      link = "https://github.com/fkhadra/react-toastify";
+      linkText = "Toastify library";
+    }
+
+    notifications.add(level, topic, desc, link, linkText);
   }
 
   markRead(id) {
