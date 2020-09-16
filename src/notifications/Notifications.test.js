@@ -27,7 +27,7 @@ import React from "react";
 import ReactDOM, { unmountComponentAtNode } from "react-dom";
 import { MemoryRouter } from "react-router-dom";
 
-import { Notifications, NotificationsMenu, NotificationsInfo } from "./index";
+import { NotificationsManager, NotificationsMenu, NotificationsInfo } from "./index";
 // ? Testing presentational component here because they are normally only rendered in response of toastify events
 import { Notification, CloseToast } from "./Notifications.present";
 import { StateModel, globalSchema } from "../model";
@@ -69,7 +69,7 @@ describe("setup and use notification system", () => {
   const model = new StateModel(globalSchema);
   let notifications;
   it("create notification object", () => {
-    notifications = Notifications({ client, model });
+    notifications = new NotificationsManager(model, client);
     expect(Object.keys(notifications)).toContain("Topics");
     expect(Object.keys(notifications.Topics)).toContain("DATASET_CREATE");
     expect(notifications.Topics.DATASET_CREATE).toBe("Dataset creation");
@@ -116,7 +116,7 @@ describe("setup and use notification system", () => {
 describe("rendering", () => {
   const model = new StateModel(globalSchema);
   const props = { client, model };
-  const notifications = Notifications(props);
+  const notifications = new NotificationsManager(model, client);
   addMultipleNotifications(notifications, 1);
   const notification = model.get("notifications.all")[0];
   const settings = model.get("notifications.toast");

@@ -23,7 +23,7 @@
  *  Notifications controller code.
  */
 
-const Notifications = {
+const NotificationsInfo = {
   Levels: {
     INFO: "info",
     SUCCESS: "success",
@@ -66,11 +66,11 @@ class NotificationsCoordinator {
       link,
       linkText,
       longDesc,
-      read: level === Notifications.Levels.INFO ? true : false
+      read: level === NotificationsInfo.Levels.INFO ? true : false
     };
     const notifications = this.model.get("");
     let updateObject = { all: { $set: [...notifications.all, notification] } };
-    if (level !== Notifications.Levels.INFO)
+    if (level !== NotificationsInfo.Levels.INFO)
       updateObject.unread = notifications.unread + 1;
     this.model.setObject(updateObject);
     return notification;
@@ -95,4 +95,4 @@ class NotificationsCoordinator {
   }
 }
 
-export { Notifications, NotificationsCoordinator };
+export { NotificationsInfo, NotificationsCoordinator };

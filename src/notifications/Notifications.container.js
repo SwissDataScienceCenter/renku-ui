@@ -27,7 +27,7 @@ import React, { Component } from "react";
 import { toast } from "react-toastify";
 import { connect } from "react-redux";
 
-import { NotificationsCoordinator, Notifications as NotificationsInfo } from "./Notifications.state";
+import { NotificationsCoordinator, NotificationsInfo } from "./Notifications.state";
 import { Notification, CloseToast, NotificationsMenu as NotificationsMenuPresent } from "./Notifications.present";
 
 
@@ -37,13 +37,16 @@ import { Notification, CloseToast, NotificationsMenu as NotificationsMenuPresent
  * @param {Object} client - api-client used to query the gateway
  * @param {Object} model - global model for the ui
  */
-const Notifications = (props) => {
-  const model = props.model.subModel("notifications");
-  const coordinator = new NotificationsCoordinator(props.client, model);
-  const { Levels, Topics } = NotificationsInfo;
+class NotificationsManager {
+  constructor(model, client) {
+    this.model = model.subModel("notifications");
+    this.coordinator = new NotificationsCoordinator(client, this.model);
+    this.Levels = NotificationsInfo.Levels;
+    this.Topics = NotificationsInfo.Topics;
 
-  // get toast settings -- can't be static anymore once users will be able to change settings from the UI
-  const settings = coordinator.getToastSettings();
+    // can't be static anymore once users will be able to change settings from the UI
+    this.settings = this.coordinator.getToastSettings();
+  }
 
   /**
    * Add a notification to the list
@@ -55,38 +58,36 @@ const Notifications = (props) => {
    * @param {string} [linkText] - text to show on the link.
    * @param {string} [longDesc] - detailed description of what happened.
    */
-  const add = (level, topic, desc, link, linkText, longDesc) => {
-    const notification = coordinator.addNotification(level, topic, desc, link, linkText, longDesc);
-    if (settings.enabled && level !== Levels.INFO) {
-      const markRead = () => { coordinator.markRead(notification.id); };
+  add (level, topic, desc, link, linkText, longDesc) {
+    const notification = this.coordinator.addNotification(level, topic, desc, link, linkText, longDesc);
+    if (this.settings.enabled && level !== this.Levels.INFO) {
+      const markRead = () => { this.coordinator.markRead(notification.id); };
       let options = {
         closeOnClick: false,
         toastId: `toast-${notification.id}`,
         className: level.toLowerCase(),
-        position: settings.position,
-        autoClose: settings.timeout ? settings.timeout : false,
+        position: this.settings.position,
+        autoClose: this.settings.timeout ? this.settings.timeout : false,
         closeButton: <CloseToast markRead={markRead} />
       };
-      const toastPresent = (<Notification notification={notification} settings={settings} markRead={markRead} />);
+      const toastPresent = (<Notification notification={notification} settings={this.settings} markRead={markRead} />);
       toast(toastPresent, options );
     }
-  };
+  }
 
-  const addInfo = (topic, desc, link, linkText, longDesc) => {
-    return add(Levels.INFO, topic, desc, link, linkText, longDesc);
-  };
-  const addSuccess = (topic, desc, link, linkText, longDesc) => {
-    return add(Levels.SUCCESS, topic, desc, link, linkText, longDesc);
-  };
-  const addWarning = (topic, desc, link, linkText, longDesc) => {
-    return add(Levels.WARNING, topic, desc, link, linkText, longDesc);
-  };
-  const addError = (topic, desc, link, linkText, longDesc) => {
-    return add(Levels.ERROR, topic, desc, link, linkText, longDesc);
-  };
-
-  return { Levels, Topics, add, addInfo, addSuccess, addWarning, addError };
-};
+  addInfo (topic, desc, link, linkText, longDesc) {
+    return this.add(this.Levels.INFO, topic, desc, link, linkText, longDesc);
+  }
+  addSuccess (topic, desc, link, linkText, longDesc) {
+    return this.add(this.Levels.SUCCESS, topic, desc, link, linkText, longDesc);
+  }
+  addWarning (topic, desc, link, linkText, longDesc) {
+    return this.add(this.Levels.WARNING, topic, desc, link, linkText, longDesc);
+  }
+  addError (topic, desc, link, linkText, longDesc) {
+    return this.add(this.Levels.ERROR, topic, desc, link, linkText, longDesc);
+  }
+}
 
 /**
  * NotificationsMenu component
@@ -193,4 +194,4 @@ class NotificationsMenu extends Component {
   }
 }
 
-export { Notifications, NotificationsMenu };
+export { NotificationsManager, NotificationsMenu };

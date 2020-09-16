@@ -38,7 +38,7 @@ import NotFound from "./not-found";
 import ShowDataset from "./dataset/Dataset.container";
 import { Loader } from "./utils/UIComponents";
 import { Cookie, Privacy } from "./privacy";
-import { Notifications } from "./notifications";
+import { NotificationsManager } from "./notifications";
 
 import "./App.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -61,7 +61,7 @@ class App extends Component {
     const blockAnonymous = !user.logged && !this.props.params["ANONYMOUS_SESSIONS"];
 
     // setup notification system
-    const notifications = Notifications({ client: this.props.client, model: this.props.model });
+    const notifications = new NotificationsManager(this.props.model, this.props.client);
 
     return (
       <Router>
