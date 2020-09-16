@@ -32,10 +32,10 @@ import { Notification, CloseToast, NotificationsMenu as NotificationsMenuPresent
 
 
 /**
- * Notifications component
+ * Notifications object - it's not a React component.
  *
- * @param {object} client
- * @param {object} model
+ * @param {Object} client - api-client used to query the gateway
+ * @param {Object} model - global model for the ui
  */
 const Notifications = (props) => {
   const model = props.model.subModel("notifications");
@@ -91,7 +91,9 @@ const Notifications = (props) => {
 /**
  * NotificationsMenu component
  *
- * @param {object} xxx
+ * @param {Object} client - api-client used to query the gateway
+ * @param {Object} model - global model for the ui
+ * @param {Object} notifications - global notifications object
  */
 class NotificationsMenu extends Component {
   constructor(props) {
