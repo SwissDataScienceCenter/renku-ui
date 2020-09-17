@@ -54,9 +54,15 @@ class NotificationsCoordinator {
    * @param {string} desc - short description/information.
    * @param {string} [link] - source page or target page relevant for a follow up.
    * @param {string} [linkText] - text to show on the link.
+   * @param {string || string[]} [awareLocations] - location or list of locations where the user
+   *  would know about the notification, thus marking it as read
    * @param {string} [longDesc] - detailed description of what happened.
+   * @param {string} [forceRead] - mark the notification as read
    */
-  addNotification(level, topic, desc, link, linkText, longDesc) {
+  addNotification(level, topic, desc, link, linkText, awareLocations, longDesc, forceRead) {
+    const read = forceRead || level === NotificationsInfo.Levels.INFO ?
+      true :
+      false;
     const notification = {
       id: Math.random().toString(36).substring(2),
       timestamp: new Date(),
@@ -65,12 +71,13 @@ class NotificationsCoordinator {
       desc,
       link,
       linkText,
+      awareLocations,
       longDesc,
-      read: level === NotificationsInfo.Levels.INFO ? true : false
+      read
     };
     const notifications = this.model.get("");
     let updateObject = { all: { $set: [...notifications.all, notification] } };
-    if (level !== NotificationsInfo.Levels.INFO)
+    if (!read)
       updateObject.unread = notifications.unread + 1;
     this.model.setObject(updateObject);
     return notification;

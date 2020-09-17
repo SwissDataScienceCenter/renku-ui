@@ -27,12 +27,13 @@ import React from "react";
 import ReactDOM, { unmountComponentAtNode } from "react-dom";
 import { MemoryRouter } from "react-router-dom";
 
-import { NotificationsManager, NotificationsMenu, NotificationsInfo } from "./index";
-// ? Testing presentational component here because they are normally only rendered in response of toastify events
-import { Notification, CloseToast } from "./Notifications.present";
+import { NotificationsManager, NotificationsMenu, NotificationsInfo, Notification } from "./index";
+import { CloseToast } from "./Notifications.present";
 import { StateModel, globalSchema } from "../model";
 import { testClient as client } from "../api-client";
 
+
+const fakeLocation = { pathname: "" };
 
 // random notifications generator
 // ! TODO: check why test throw the following warning
@@ -69,7 +70,7 @@ describe("setup and use notification system", () => {
   const model = new StateModel(globalSchema);
   let notifications;
   it("create notification object", () => {
-    notifications = new NotificationsManager(model, client);
+    notifications = new NotificationsManager(model, client, fakeLocation);
     expect(Object.keys(notifications)).toContain("Topics");
     expect(Object.keys(notifications.Topics)).toContain("DATASET_CREATE");
     expect(notifications.Topics.DATASET_CREATE).toBe("Dataset creation");
@@ -87,6 +88,7 @@ describe("setup and use notification system", () => {
       "Warning test with external link",
       "https://getbootstrap.com",
       "External link",
+      [],
       "Long description here");
     expect(model.get("notifications.all")).toHaveLength(1);
     const firstNotification = model.get("notifications.all")[0];
@@ -116,7 +118,7 @@ describe("setup and use notification system", () => {
 describe("rendering", () => {
   const model = new StateModel(globalSchema);
   const props = { client, model };
-  const notifications = new NotificationsManager(model, client);
+  const notifications = new NotificationsManager(model, client, fakeLocation);
   addMultipleNotifications(notifications, 1);
   const notification = model.get("notifications.all")[0];
   const settings = model.get("notifications.toast");
@@ -140,17 +142,16 @@ describe("rendering", () => {
       </MemoryRouter>, div);
   });
 
-  it("renders presentational component Notification", () => {
+  it("renders Notification", () => {
     ReactDOM.render(
       <MemoryRouter>
-        <Notification settings={settings} notification={notification} />
+        <Notification type="dropdown" notification={notification} markRead={() => null} />
       </MemoryRouter>, div);
-  });
 
-  it("renders presentational component CloseToast", () => {
+    const closeToast = (<CloseToast settings={settings} markRead={() => true} />);
     ReactDOM.render(
       <MemoryRouter>
-        <CloseToast settings={settings} markRead={() => true} />
+        <Notification type="toast" notification={notification} markRead={() => null} closeToast={closeToast} />
       </MemoryRouter>, div);
   });
 });

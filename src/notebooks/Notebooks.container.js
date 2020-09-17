@@ -346,6 +346,7 @@ class StartNotebookServer extends Component {
         this.notifications.Topics.ENVIRONMENT_START,
         "The interactive environment is starting",
         data.url, "Open environment",
+        [location.state.successUrl, "/environments"],
         fullDescription
       );
       if (!history || !location)

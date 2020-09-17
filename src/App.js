@@ -23,9 +23,9 @@
  *  Coordinator for the application.
  */
 
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { Jumbotron } from "reactstrap";
-import { BrowserRouter as Router, Route, Switch, Redirect } from "react-router-dom";
+import { Route, Switch, Redirect } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
 import Project from "./project/Project";
@@ -61,106 +61,104 @@ class App extends Component {
     const blockAnonymous = !user.logged && !this.props.params["ANONYMOUS_SESSIONS"];
 
     // setup notification system
-    const notifications = new NotificationsManager(this.props.model, this.props.client);
+    const notifications = new NotificationsManager(this.props.model, this.props.client, this.props.location);
 
     return (
-      <Router>
-        <div>
-          <Route render={props =>
-            <RenkuNavBar {...props} {...this.props} notifications={notifications} />
-          } />
-          <main role="main" className="container-fluid">
-            <div key="gap">&nbsp;</div>
-            <Switch>
-              {/* Route forces trailing slashes on routes ending with a numerical id */}
-              <Route exact path="/login" render={
-                p => <Login key="login" {...p} {...this.props} />} />
-              <Route exact strict path="/*(\d+)" render={props => <Redirect to={`${props.location.pathname}/`} />} />
-              <Route exact path="/" render={
-                p => <Landing.Home
-                  key="landing" welcomePage={this.props.params["WELCOME_PAGE"]}
-                  user={this.props.user}
-                  client={this.props.client}
-                  model={this.props.model}
-                  statuspageId={this.props.statuspageId}
-                  {...p} />} />
-              <Route path="/help" render={
-                p => <Help key="help" {...p} statuspageId={this.props.statuspageId} {...this.props} />} />
-              <Route exact path={["/projects", "/projects/starred", "/projects/all"]} render={
-                p => <Project.List
-                  key="projects"
-                  user={this.props.user}
-                  client={this.props.client}
-                  statusSummary={this.props.statusSummary}
-                  {...p}
-                />}
-              />
-              <Route exact path="/projects/new" render={
-                p => <Project.New
-                  key="newProject"
-                  client={this.props.client}
-                  model={this.props.model}
-                  user={this.props.user}
-                  templates={this.props.params["TEMPLATES"]}
-                  {...p}
-                />}
-              />
-              <Route path="/projects/:subUrl+" render={
-                p => <Project.View
-                  key={`${p.match.params.projectNamespace}/${p.match.params.projectName}`}
-                  projectPathWithNamespace={`${p.match.params.projectNamespace}/${p.match.params.projectName}`}
-                  client={this.props.client}
-                  params={this.props.params}
-                  model={this.props.model}
-                  user={this.props.user}
-                  blockAnonymous={blockAnonymous}
-                  notifications={notifications}
-                  {...p}
-                />}
-              />
-              <Route exact path="/environments" render={
-                p => <Notebooks
-                  key="environments"
-                  standalone={true}
-                  client={this.props.client}
-                  model={this.props.model}
-                  blockAnonymous={blockAnonymous}
-                  {...p}
-                />}
-              />
-              <Route path="/datasets/:identifier" render={
-                p => <ShowDataset
-                  key="datasetpreview" {...p}
-                  insideProject={false}
-                  identifier={`${p.match.params.identifier}`}
-                  client={this.props.client}
-                  projectsUrl="/projects"
-                  selectedDataset={p.match.params.datasetId}
-                  logged={this.props.user.logged}
-                  model={this.props.model}
-                />}
-              />
-              <Route path="/datasets" render={
-                p => <DatasetList key="datasets"
-                  client={this.props.client}
-                  model={this.props.model}
-                  {...p}
-                />}
-              />
-              <Route path="/privacy" render={
-                p => <Privacy key="privacy"
-                  params={this.props.params}
-                  {...p}
-                />}
-              />
-              <Route path="*" render={p => <NotFound {...p} />} />
-            </Switch>
-          </main>
-          <Route render={props => <FooterNavbar {...props} params={this.props.params} />} />
-          <Route render={props => <Cookie {...props} params={this.props.params} />} />
-          <ToastContainer />
-        </div>
-      </Router>
+      <Fragment>
+        <Route render={props =>
+          <RenkuNavBar {...props} {...this.props} notifications={notifications} />
+        } />
+        <main role="main" className="container-fluid">
+          <div key="gap">&nbsp;</div>
+          <Switch>
+            {/* Route forces trailing slashes on routes ending with a numerical id */}
+            <Route exact path="/login" render={
+              p => <Login key="login" {...p} {...this.props} />} />
+            <Route exact strict path="/*(\d+)" render={props => <Redirect to={`${props.location.pathname}/`} />} />
+            <Route exact path="/" render={
+              p => <Landing.Home
+                key="landing" welcomePage={this.props.params["WELCOME_PAGE"]}
+                user={this.props.user}
+                client={this.props.client}
+                model={this.props.model}
+                statuspageId={this.props.statuspageId}
+                {...p} />} />
+            <Route path="/help" render={
+              p => <Help key="help" {...p} statuspageId={this.props.statuspageId} {...this.props} />} />
+            <Route exact path={["/projects", "/projects/starred", "/projects/all"]} render={
+              p => <Project.List
+                key="projects"
+                user={this.props.user}
+                client={this.props.client}
+                statusSummary={this.props.statusSummary}
+                {...p}
+              />}
+            />
+            <Route exact path="/projects/new" render={
+              p => <Project.New
+                key="newProject"
+                client={this.props.client}
+                model={this.props.model}
+                user={this.props.user}
+                templates={this.props.params["TEMPLATES"]}
+                {...p}
+              />}
+            />
+            <Route path="/projects/:subUrl+" render={
+              p => <Project.View
+                key={`${p.match.params.projectNamespace}/${p.match.params.projectName}`}
+                projectPathWithNamespace={`${p.match.params.projectNamespace}/${p.match.params.projectName}`}
+                client={this.props.client}
+                params={this.props.params}
+                model={this.props.model}
+                user={this.props.user}
+                blockAnonymous={blockAnonymous}
+                notifications={notifications}
+                {...p}
+              />}
+            />
+            <Route exact path="/environments" render={
+              p => <Notebooks
+                key="environments"
+                standalone={true}
+                client={this.props.client}
+                model={this.props.model}
+                blockAnonymous={blockAnonymous}
+                {...p}
+              />}
+            />
+            <Route path="/datasets/:identifier" render={
+              p => <ShowDataset
+                key="datasetpreview" {...p}
+                insideProject={false}
+                identifier={`${p.match.params.identifier}`}
+                client={this.props.client}
+                projectsUrl="/projects"
+                selectedDataset={p.match.params.datasetId}
+                logged={this.props.user.logged}
+                model={this.props.model}
+              />}
+            />
+            <Route path="/datasets" render={
+              p => <DatasetList key="datasets"
+                client={this.props.client}
+                model={this.props.model}
+                {...p}
+              />}
+            />
+            <Route path="/privacy" render={
+              p => <Privacy key="privacy"
+                params={this.props.params}
+                {...p}
+              />}
+            />
+            <Route path="*" render={p => <NotFound {...p} />} />
+          </Switch>
+        </main>
+        <Route render={props => <FooterNavbar {...props} params={this.props.params} />} />
+        <Route render={props => <Cookie {...props} params={this.props.params} />} />
+        <ToastContainer />
+      </Fragment>
     );
 
   }

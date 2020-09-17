@@ -58,16 +58,47 @@
 }
 
 .notification-list-container {
-  padding: 4px;
+  padding: 0;
 }
 
-.notification-list-container .notification-list-item {
-  margin-bottom: 8px !important;
-}
-.notification-list-container .notification-list-item:last-of-type {
-  margin-bottom: 0 !important;
+.notification-list-item {
+  font-size: 80%;
+  padding: 8px;
+  position: relative;
+  
 }
 
-.notification-list-container .font16 {
-  font-size: 16px;
+.notification-list-item:not(:last-of-type) {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+}
+.notification-list-item:first-of-type {
+  padding-top: 0;
+}
+.notification-list-item:last-of-type {
+  padding-bottom: 0;
+}
+
+.notification-list-item .close-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+.notification-list-item p {
+  margin-bottom: 4px;
+}
+
+.notification-list-item h5 {
+  margin-bottom: 4px;
+  font-size: 120%;
+}
+
+.notification-list-item.success svg.svg-inline--fa {
+  color: #28a745
+}
+.notification-list-item.warning svg.svg-inline--fa {
+  color: #ffc107
+}
+.notification-list-item.error svg.svg-inline--fa {
+  color: #dc3545
 }
