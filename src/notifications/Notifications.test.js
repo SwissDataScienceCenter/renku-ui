@@ -27,7 +27,9 @@ import React from "react";
 import ReactDOM, { unmountComponentAtNode } from "react-dom";
 import { MemoryRouter } from "react-router-dom";
 
-import { NotificationsManager, NotificationsMenu, NotificationsInfo, Notification } from "./index";
+import {
+  NotificationsManager, NotificationsMenu, NotificationsInfo, NotificationsPage, Notification
+} from "./index";
 import { CloseToast } from "./Notifications.present";
 import { StateModel, globalSchema } from "../model";
 import { testClient as client } from "../api-client";
@@ -135,6 +137,13 @@ describe("rendering", () => {
     div = null;
   });
 
+  it("renders NotificationsPage", () => {
+    ReactDOM.render(
+      <MemoryRouter>
+        <NotificationsPage {...props} notifications={notifications} />
+      </MemoryRouter>, div);
+  });
+
   it("renders NotificationsMenu", () => {
     ReactDOM.render(
       <MemoryRouter>
@@ -148,10 +157,20 @@ describe("rendering", () => {
         <Notification type="dropdown" notification={notification} markRead={() => null} />
       </MemoryRouter>, div);
 
+    ReactDOM.render(
+      <MemoryRouter>
+        <Notification type="complete" notification={notification} markRead={() => null} />
+      </MemoryRouter>, div);
+
     const closeToast = (<CloseToast settings={settings} markRead={() => true} />);
     ReactDOM.render(
       <MemoryRouter>
         <Notification type="toast" notification={notification} markRead={() => null} closeToast={closeToast} />
+      </MemoryRouter>, div);
+
+    ReactDOM.render(
+      <MemoryRouter>
+        <Notification type="custom" present={(<div><span>empty</span></div>)} />
       </MemoryRouter>, div);
   });
 });

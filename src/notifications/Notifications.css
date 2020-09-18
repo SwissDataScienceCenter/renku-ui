@@ -50,15 +50,34 @@
 }
 
 
-/* Menu components */
+/* Notification components */
 
 .notification-badge {
   font-size: 10px;
   position: absolute;
 }
 
+.notification.info svg.svg-inline--fa {
+  color: #5561A6
+}
+.notification.success svg.svg-inline--fa {
+  color: #28a745
+}
+.notification.warning svg.svg-inline--fa {
+  color: #ffc107
+}
+.notification.error svg.svg-inline--fa {
+  color: #dc3545
+}
+
+.notification-menu > a {
+  text-decoration: none;
+}
+
 .notification-list-container {
   padding: 0;
+  margin-top: -8px;
+  margin-bottom: -8px;
 }
 
 .notification-list-item {
@@ -70,12 +89,6 @@
 
 .notification-list-item:not(:last-of-type) {
   border-bottom: 1px solid rgba(0, 0, 0, 0.15);
-}
-.notification-list-item:first-of-type {
-  padding-top: 0;
-}
-.notification-list-item:last-of-type {
-  padding-bottom: 0;
 }
 
 .notification-list-item .close-icon {
@@ -93,12 +106,34 @@
   font-size: 120%;
 }
 
-.notification-list-item.success svg.svg-inline--fa {
-  color: #28a745
+.notification-page-item {
+  margin: 12px 0;
+  border-top: 1px solid #dee2e6;
 }
-.notification-list-item.warning svg.svg-inline--fa {
-  color: #ffc107
+
+.notification-page-item > div.notification {
+  margin: 12px 0;
 }
-.notification-list-item.error svg.svg-inline--fa {
-  color: #dc3545
+
+.notification-page-item > .notification p {
+  margin-bottom: 6px;
+}
+
+.notification-page-item > .notification h4 .time-caption {
+  font-size: 70%;
+}
+
+.notification-page-item > .notification.unread {
+  border-left: 5px solid #5561A6;
+  padding-left: 6px;
+}
+
+.notification-page-item > .notification.unread.success {
+  border-color: #28a745;
+}
+.notification-page-item > .notification.unread.warning {
+  border-color: #ffc107;
+}
+.notification-page-item > .notification.unread.error {
+  border-color: #dc3545;
 }

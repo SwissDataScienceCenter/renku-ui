@@ -100,6 +100,24 @@ class NotificationsCoordinator {
       });
     }
   }
+
+  markAllRead() {
+    const notifications = this.model.get("");
+    let changed = false;
+    const updateAll = notifications.all.map((elem) => {
+      if (!elem.read) {
+        changed = true;
+        elem.read = true;
+      }
+      return elem;
+    });
+    if (changed) {
+      this.model.setObject({
+        all: { $set: updateAll },
+        unread: 0
+      });
+    }
+  }
 }
 
 export { NotificationsInfo, NotificationsCoordinator };

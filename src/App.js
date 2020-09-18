@@ -38,7 +38,7 @@ import NotFound from "./not-found";
 import ShowDataset from "./dataset/Dataset.container";
 import { Loader } from "./utils/UIComponents";
 import { Cookie, Privacy } from "./privacy";
-import { NotificationsManager } from "./notifications";
+import { NotificationsManager, NotificationsPage } from "./notifications";
 
 import "./App.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -149,6 +149,14 @@ class App extends Component {
             <Route path="/privacy" render={
               p => <Privacy key="privacy"
                 params={this.props.params}
+                {...p}
+              />}
+            />
+            <Route path="/notifications" render={
+              p => <NotificationsPage key="notifications"
+                client={this.props.client}
+                model={this.props.model}
+                notifications={notifications}
                 {...p}
               />}
             />

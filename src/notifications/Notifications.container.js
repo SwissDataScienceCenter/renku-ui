@@ -30,7 +30,8 @@ import { connect } from "react-redux";
 import { NotificationsCoordinator, NotificationsInfo } from "./Notifications.state";
 import {
   NotificationToast, CloseToast, NotificationsMenu as NotificationsMenuPresent,
-  NotificationDropdownItem as NotificationDropdown
+  NotificationDropdownItem as NotificationDropdown, Notifications as NotificationsPresent,
+  NotificationPageItem
 } from "./Notifications.present";
 
 
@@ -137,7 +138,10 @@ class Notification extends Component {
       return (<NotificationToast notification={notification} markRead={markRead} closeToast={this.props.closeToast} />);
     else if (type === NotificationTypes.DROPDOWN)
       return (<NotificationDropdown notification={notification} markRead={markRead} />);
-
+    else if (type === NotificationTypes.COMPLETE)
+      return (<NotificationPageItem notification={notification} markRead={markRead} />);
+    else if (type === NotificationTypes.CUSTOM)
+      return (this.props.present);
     return null;
   }
 }
@@ -157,6 +161,7 @@ class NotificationsMenu extends Component {
 
     this.handlers = {
       markRead: this.markRead.bind(this),
+      markAllRead: this.markAllRead.bind(this),
       addMultipleNotifications: this.addMultipleNotifications.bind(this), // ! TEMP - only for testing
       addRandomNotification: this.addRandomNotification.bind(this), // ! TEMP - only for testing
     };
@@ -186,7 +191,12 @@ class NotificationsMenu extends Component {
       "Test - environment couldn't start",
       "/help",
       "Help page",
-      ["/help"]);
+      ["/help"],
+      `Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+      labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
+      laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
+      voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat
+      non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.`);
   }
   // ! TEMP - only for testing
   addRandomNotification() {
@@ -229,9 +239,9 @@ class NotificationsMenu extends Component {
     notifications.add(level, topic, desc, link, linkText);
   }
 
-  markRead(id) {
-    this.coordinator.markRead(id);
-  }
+  markRead(id) { this.coordinator.markRead(id); }
+
+  markAllRead() { this.coordinator.markAllRead(); }
 
   mapStateToProps(state, ownProps) {
     return {
@@ -249,4 +259,45 @@ class NotificationsMenu extends Component {
   }
 }
 
-export { NotificationsManager, NotificationsMenu, Notification };
+/**
+ * NotificationsPage component.
+ *
+ * @param {Object} client - api-client used to query the gateway
+ * @param {Object} model - global model for the ui
+ * @param {Object} notifications - global notifications object
+ */
+class NotificationsPage extends Component {
+  constructor(props) {
+    super(props);
+    this.model = props.model.subModel("notifications");
+    this.coordinator = new NotificationsCoordinator(props.client, this.model);
+
+    this.handlers = {
+      markRead: this.markRead.bind(this),
+      markAllRead: this.markAllRead.bind(this),
+    };
+  }
+
+  markRead(id) { this.coordinator.markRead(id); }
+
+  markAllRead() { this.coordinator.markAllRead(); }
+
+  mapStateToProps(state, ownProps) {
+    return {
+      handlers: this.handlers,
+      notifications: state.notifications.all,
+      unread: state.notifications.unread
+    };
+  }
+
+  render() {
+    const VisibleNotifications = connect(this.mapStateToProps.bind(this))(NotificationsPresent);
+    return (<VisibleNotifications
+      store={this.model.reduxStore}
+      levels={this.props.notifications.Levels}
+      topics={this.props.notifications.Topics}
+      location={this.props.location} />);
+  }
+}
+
+export { NotificationsManager, NotificationsMenu, NotificationsPage, Notification };
