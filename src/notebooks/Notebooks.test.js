@@ -27,6 +27,7 @@ import ReactDOM from "react-dom";
 import { MemoryRouter } from "react-router-dom";
 
 import { NotebooksHelper, Notebooks, StartNotebookServer, CheckNotebookStatus, NotebooksDisabled } from "./index";
+import { mergeEnumOptions } from "./Notebooks.present";
 import { ExpectedAnnotations } from "./Notebooks.state";
 import { StateModel, globalSchema } from "../model";
 import { testClient as client } from "../api-client";
@@ -187,6 +188,56 @@ describe("verify project level options validity according to deployment global o
       const result = NotebooksHelper.checkOptionValidity(
         simplifiedGlobalOptions, testSet.option, testSet.value);
       expect(result).toBe(testSet.result);
+    });
+  });
+});
+
+describe("verify project/global options merging", () => {
+  it("merges options", () => {
+    const simplifiedGlobalOptions = {
+      defaultUrl: {
+        default: "/lab",
+        options: ["/lab", "/rstudio"],
+        type: "enum"
+      },
+      cpu_request: {
+        default: 1,
+        options: [0.5, 1, 2],
+        type: "enum"
+      },
+      mem_request: {
+        default: "1G",
+        options: ["1G", "2G"],
+        type: "enum"
+      },
+      lfs_auto_fetch: {
+        default: false,
+        type: "boolean"
+      },
+      gpu_request: {
+        default: 0,
+        type: "int"
+      }
+    };
+
+    const projectOptionsIni = `
+      [renku "interactive"]
+      default_url = /tree
+      cpu_request = 4
+      mem_request = 8G
+      lfs_auto_fetch = True
+    `;
+    const projectOptions = NotebooksHelper.parseProjectOptions(projectOptionsIni);
+
+    const testValues = [
+      { option: "defaultUrl", value: ["/lab", "/rstudio", "/tree"] },
+      { option: "cpu_request", value: [0.5, 1, 2] },
+      { option: "mem_request", value: ["1G", "2G"] },
+    ];
+
+    testValues.forEach(v => {
+      const result = mergeEnumOptions(simplifiedGlobalOptions, projectOptions, v["option"]);
+      expect(result).toEqual(v.value);
     });
   });
 });
