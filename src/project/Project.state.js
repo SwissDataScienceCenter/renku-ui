@@ -261,7 +261,7 @@ class ProjectModel extends StateModel {
     this.setUpdating({ core: { datasets_kg: true } });
     return client.getProjectDatasetsFromKG_short(this.get("core.path_with_namespace"))
       .then(datasets => {
-        const updatedState = { datasets_kg: datasets, transient: { requests: { datasets_kg: false } } };
+        const updatedState = { datasets_kg: { $set: datasets }, transient: { requests: { datasets_kg: false } } };
         this.set("core.datasets_kg", datasets);
         this.setObject(updatedState);
         return datasets;
