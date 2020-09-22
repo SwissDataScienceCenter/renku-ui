@@ -306,6 +306,7 @@ class ProjectModel extends StateModel {
       });
   }
 
+  // TODO: migrate branches to ProjectCoordinator and use a pattern similar to fetchCommits
   fetchBranches(client) {
     const branches = this.get("system.branches");
     if (branches === SpecialPropVal.UPDATING)
@@ -423,29 +424,19 @@ class ProjectCoordinator {
       return {};
     this.model.set("commits.fetching", true);
 
-    let commits;
     const branch = customFilters ?
       customFilters.branch :
       this.model.get("filters.branch.name");
-    try {
-      const response = await this.client.getCommits(projectId, branch);
-      commits = response.data;
-    }
-    catch (error) {
-      this.model.setObject({
-        commits: {
-          fetching: false,
-          list: { $set: [] }
-        }
-      });
-      throw error;
-    }
-
+    const response = await this.client.getCommits(projectId, branch);
+    // add at least a notification on response.error (waiting for #991).
+    // Some data may be avialable, verify it before choosing the proper notification.
+    const commits = response.data;
     this.model.setObject({
       commits: {
         fetching: false,
         fetched: new Date(),
-        list: { $set: commits }
+        list: { $set: commits },
+        error: response.error
       }
     });
     return commits;

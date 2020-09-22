@@ -21,7 +21,7 @@ import { APIError, API_ERRORS, throwAPIErrors } from "./errors";
 const RETURN_TYPES = {
   json: "json",
   text: "text",
-  full: "fullResponseObject"
+  full: "full"
 };
 
 // Wrapper around fetch which will throw exceptions on all non 20x responses.
