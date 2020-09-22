@@ -19,17 +19,11 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import DatasetList from "./DatasetList.present";
-import DatasetListModel from "./DatasetList.state";
+import DatasetListModel, { orderByValuesMap } from "./DatasetList.state";
 import qs from "query-string";
 
 const urlMap = {
   datasetsUrl: "/datasets",
-};
-
-const orderByValuesMap = {
-  NAME: "name",
-  DATE_PUBLISHED: "datePublished",
-  PROJECTSCOUNT: "projectsCount"
 };
 
 class List extends Component {
@@ -151,7 +145,7 @@ class List extends Component {
   getOrderByLabel() {
     switch (this.model.get("orderBy")) {
       case orderByValuesMap.NAME:
-        return "name";
+        return "title";
       case orderByValuesMap.DATE_PUBLISHED:
         return "date published";
       case orderByValuesMap.PROJECTSCOUNT:

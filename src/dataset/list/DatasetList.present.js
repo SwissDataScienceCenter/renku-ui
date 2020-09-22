@@ -98,7 +98,7 @@ class DatasetSearchForm extends Component {
               <DropdownItem value={this.props.orderByValuesMap.NAME}
                 onClick={this.props.handlers.changeSearchDropdownOrder}>
                 {this.props.orderBy === this.props.orderByValuesMap.NAME ?
-                  <FontAwesomeIcon icon={faCheck} /> : null} Name
+                  <FontAwesomeIcon icon={faCheck} /> : null} Title
               </DropdownItem>
               <DropdownItem value={this.props.orderByValuesMap.DATE_PUBLISHED}
                 onClick={this.props.handlers.changeSearchDropdownOrder}>
