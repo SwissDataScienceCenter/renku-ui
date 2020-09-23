@@ -25,7 +25,7 @@
 
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import { DropdownItem, Navbar, Nav } from "reactstrap";
+import { UncontrolledDropdown, DropdownItem, Navbar, Nav } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
@@ -35,6 +35,7 @@ import logo from "./logo.svg";
 import { ExternalDocsLink, ExternalLink, Loader, RenkuNavLink, UserAvatar } from "../utils/UIComponents";
 import { getActiveProjectPathWithNamespace, gitLabUrlFromProfileUrl } from "../utils/HelperFunctions";
 import QuickNav from "../utils/quicknav";
+import { NotificationsMenu } from "../notifications";
 
 import "./NavBar.css";
 
@@ -168,6 +169,16 @@ function RenkuToolbarGitLabMenu(props) {
   </li>;
 }
 
+function RenkuToolbarNotifications(props) {
+  if (!props.notifications)
+    return null;
+
+  return (
+    <UncontrolledDropdown>
+      <NotificationsMenu {...props} />
+    </UncontrolledDropdown>
+  );
+}
 
 class LoggedInNavBar extends Component {
 
@@ -222,6 +233,7 @@ class LoggedInNavBar extends Component {
                 <RenkuToolbarItemPlus currentPath={this.props.location.pathname} />
                 <RenkuToolbarGitLabMenu user={this.props.user} />
                 <RenkuToolbarHelpMenu />
+                <RenkuToolbarNotifications {...this.props} />
                 <RenkuToolbarItemUser {...this.props} />
               </ul>
             </div>

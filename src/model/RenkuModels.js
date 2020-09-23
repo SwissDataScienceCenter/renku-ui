@@ -469,9 +469,20 @@ const statuspageSchema = new Schema({
   error: { initial: null }
 });
 
+const notificationsSchema = new Schema({
+  unread: { [Prop.INITIAL]: 0, [Prop.MANDATORY]: true },
+  all: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
+  toast: {
+    [Prop.SCHEMA]: new Schema({
+      enabled: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true },
+      timeout: { [Prop.INITIAL]: 5000, [Prop.MANDATORY]: true },
+      position: { [Prop.INITIAL]: "top-right", [Prop.MANDATORY]: true },
+    })
+  }
+});
 
 export {
   userSchema, metaSchema, newProjectSchema, projectSchema, forkProjectSchema, notebooksSchema,
   projectsSchema, datasetFormSchema, issueFormSchema, datasetImportFormSchema, projectGlobalSchema,
-  addDatasetToProjectSchema, statuspageSchema
+  addDatasetToProjectSchema, statuspageSchema, notificationsSchema
 };
