@@ -324,12 +324,18 @@ class NotebooksCoordinator {
     if (Object.keys(oldData).length !== 0)
       return;
 
-    return this.client.getNotebookServerOptions().then((globalOptions) => {
-      this.model.set("options.global", globalOptions);
-      this.setDefaultOptions(globalOptions, null);
+    // get user status
+    const anonym = this.userModel.get("logged") ?
+      false :
+      true;
 
-      return globalOptions;
-    });
+    return this.client.getNotebookServerOptions(anonym)
+      .then((globalOptions) => {
+        this.model.set("options.global", globalOptions);
+        this.setDefaultOptions(globalOptions, null);
+
+        return globalOptions;
+      });
   }
 
   fetchProjectOptions() {

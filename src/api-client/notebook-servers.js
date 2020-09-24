@@ -56,14 +56,18 @@ function addNotebookServersMethods(client) {
       });
   };
 
-  client.getNotebookServerOptions = () => {
+  client.getNotebookServerOptions = (anonymous = false) => {
     const headers = client.getBasicHeaders();
     const url = `${client.baseUrl}/notebooks/server_options`;
 
-    return client.clientFetch(url, {
-      method: "GET",
-      headers
-    }).then((resp) => {
+    return client.clientFetch(
+      url,
+      { method: "GET", headers },
+      FETCH_DEFAULT.returnType,
+      FETCH_DEFAULT.alertOnErr,
+      FETCH_DEFAULT.reLogin,
+      anonymous
+    ).then((resp) => {
       let { data } = resp;
       Object.keys(data).forEach(key => {
         data[key].selected = data[key].default;
