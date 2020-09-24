@@ -1129,6 +1129,20 @@ class StartNotebookOptionsRunning extends Component {
   }
 }
 
+/**
+ * Combine the globalOptions and projectOptions to cover all valid options.
+ */
+function mergeEnumOptions(globalOptions, projectOptions, key) {
+  let options = globalOptions[key].options;
+  // defaultUrl can extend the existing options, but not the other ones
+  if (key === "defaultUrl"
+    && Object.keys(projectOptions).indexOf(key) >= 0
+    && globalOptions[key].options.indexOf(projectOptions[key]) === -1)
+    options = [...globalOptions[key].options, projectOptions[key]];
+
+  return options;
+}
+
 class StartNotebookServerOptions extends Component {
   render() {
     const globalOptions = this.props.options.global;
@@ -1158,10 +1172,7 @@ class StartNotebookServerOptions extends Component {
 
         switch (serverOption.type) {
           case "enum": {
-            const options = Object.keys(projectOptions).indexOf(key) >= 0 &&
-              globalOptions[key].options.indexOf(projectOptions[key]) === -1 ?
-              [...globalOptions[key].options, projectOptions[key]] :
-              globalOptions[key].options;
+            const options = mergeEnumOptions(globalOptions, projectOptions, key);
             serverOption["options"] = options;
             return <FormGroup key={key} className={serverOption.options.length === 1 ? "mb-0" : ""}>
               <Label>{serverOption.displayName}</Label>
@@ -1418,4 +1429,4 @@ class CheckNotebookIcon extends Component {
   }
 }
 
-export { NotebooksDisabled, Notebooks, StartNotebookServer, CheckNotebookIcon };
+export { NotebooksDisabled, Notebooks, StartNotebookServer, CheckNotebookIcon, mergeEnumOptions };
