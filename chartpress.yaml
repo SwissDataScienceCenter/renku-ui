@@ -12,5 +12,5 @@ charts:
         # Context to send to docker build for use by the Dockerfile
         contextPath: .
         # Dockerfile path relative to chartpress.yaml
-        dockerfilePath: Dockerfile
+        dockerfilePath: client/Dockerfile
         valuesPath: image

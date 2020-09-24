@@ -1,5 +1,9 @@
 # Machine-specific configuration files
-public/config.json
+client/public/config.json
+
+# Typescript generated stuff
+server/dist/
+
 
 # Logs
 logs
