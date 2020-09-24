@@ -1049,10 +1049,10 @@ class StartNotebookCommitsOptions extends Component {
         <PopoverBody>
           <FormGroup>
             <Label>Number of commits to display</Label>
-            <Input type="number" min={0} max={1000} step={1}
+            <Input type="number" min={0} max={100} step={1}
               onChange={(event) => { this.props.handlers.setDisplayedCommits(event.target.value); }}
               value={this.props.filters.displayedCommits} />
-            <FormText>1-1000, 0 for unlimited</FormText>
+            <FormText>1-100, 0 for unlimited</FormText>
           </FormGroup>
         </PopoverBody>
       </UncontrolledPopover>

@@ -186,7 +186,7 @@ function addRepositoryMethods(client) {
       });
   };
 
-  // ? Unfotunately, the API doesn't offer a way to query only for unmerged branches
+  // ? Unfortunately, the API doesn't offer a way to query only for unmerged branches
   // ? REF: https://docs.gitlab.com/ee/api/branches.html
   client.getBranches = async (projectId, per_page = 100) => {
     const url = `${client.baseUrl}/projects/${projectId}/repository/branches`;

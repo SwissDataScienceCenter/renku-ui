@@ -89,6 +89,7 @@ class APIClient {
 
   /**
    * A fetch method which is attached to an API client instance so that it can contain a user token.
+   * Optional arguments default values are set from FETCH_DEFAULT.
    *
    * @param {string} url - Target API url
    * @param {object} [options] - Fetch options, like method, headers, body, ... Default only include basic headers.
@@ -145,13 +146,15 @@ class APIClient {
 
   /**
    * Create an iterable object to manage pagination. At each iteration, another page is fetched.
-   * You can use the for await syntax to fetch all the avilable pages
-   * E.G. for await (const partialData of clientIterableFetch(url)) { console.log(partialData) }
+   * You can use the for await syntax to fetch all the avilable pages (see exmaple).
+   * Optional arguments default values are set from FETCH_DEFAULT
    *
    * @param {string} url - API url
    * @param {object} [parameters] - Optional parameters object to be provided to clientFetch.
-   * @param {number} [parameters.maxIterations] - maximum iterations before throwing an error.
-   *   Default is 10. Set 0 for unlimited.
+   * @param {number} [parameters.maxIterations] - Maximum iterations before throwing an error. Used to prevent
+   *   long/endless loops that would trigger the gateway rate limit. Set 0 for unlimited.
+   * @example "for await" syntax that consumes the async iterator
+   * for await (const partialData of clientIterableFetch("myApiUrl")) { console.log(partialData) }
    */
   async* clientIterableFetch(url, {
     options = FETCH_DEFAULT.options,
