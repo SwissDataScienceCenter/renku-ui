@@ -39,6 +39,7 @@
     "space-unary-ops": ["warn", {"words": true, "nonwords": false}],
     "keyword-spacing": ["warn", { "before": true }],
     "no-multiple-empty-lines": ["warn", { "max": 2, "maxEOF": 1 }],
+    "no-unsafe-finally": "off",
     "react/jsx-curly-spacing": ["warn", "never"],
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn"

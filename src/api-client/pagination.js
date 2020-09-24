@@ -44,7 +44,7 @@ const NUMERICAL_PAGINATION_HEADERS = {
 // information. The idea that methods performing the the request to
 // to fetch the next page has been dropped because we prefer to
 // keep the state of the corresponding components serializable.
-function processPaginationHeaders(client, headers) {
+function processPaginationHeaders(headers) {
   let paginationDetail = {};
 
   // Parse the link header if it exists

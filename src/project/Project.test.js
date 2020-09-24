@@ -88,7 +88,10 @@ describe("test ProjectCoordinator related components", () => {
 
     ReactDOM.render(
       <MemoryRouter>
-        <ProjectViewCommitsConnected projectCoordinator={projectCoordinator} />
+        <ProjectViewCommitsConnected
+          history={fakeHistory}
+          location={fakeHistory.location}
+          projectCoordinator={projectCoordinator} />
       </MemoryRouter>
       , div);
   });
