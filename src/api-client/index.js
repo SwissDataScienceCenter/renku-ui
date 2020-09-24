@@ -51,7 +51,8 @@ const FETCH_DEFAULT = {
   returnType: RETURN_TYPES.json,
   alertOnErr: false,
   reLogin: true,
-  anonymousLogin: false
+  anonymousLogin: false,
+  maxIterations: 10
 };
 
 class APIClient {
@@ -86,9 +87,19 @@ class APIClient {
     addMigrationMethods(this);
   }
 
-  // A fetch method which is attached to a API client instance so that it can
-  // contain a user token.
-  clientFetch(
+  /**
+   * A fetch method which is attached to an API client instance so that it can contain a user token.
+   * Optional arguments default values are set from FETCH_DEFAULT.
+   *
+   * @param {string} url - Target API url
+   * @param {object} [options] - Fetch options, like method, headers, body, ... Default only include basic headers.
+   * @param {string} [returnType] - Expected content type. Allowed values are "json" (default), "text" and "full".
+   * @param {bool} [alertOnErr] - whether to trigger a default error on fetch errors. Default is false
+   * @param {bool} [reLogin] - whether to trigger a re-login on 401 error. Default is true
+   * @param {bool} [anonymousLogin] - whether to trigger an anonymous login to work with anonymous credentials.
+   *   Default is false
+   */
+  async clientFetch(
     url,
     options = FETCH_DEFAULT.options,
     returnType = FETCH_DEFAULT.returnType,
@@ -124,7 +135,7 @@ class APIClient {
             return response.json().then(data => {
               return {
                 data,
-                pagination: processPaginationHeaders(this, response.headers)
+                pagination: processPaginationHeaders(response.headers)
               };
             });
           case RETURN_TYPES.text:
@@ -135,6 +146,47 @@ class APIClient {
             return response;
         }
       });
+  }
+
+  /**
+   * Create an iterable object to manage pagination. At each iteration, another page is fetched.
+   * You can use the for await syntax to fetch all the avilable pages (see exmaple).
+   * Optional arguments default values are set from FETCH_DEFAULT
+   *
+   * @param {string} url - API url
+   * @param {object} [parameters] - Optional parameters object to be provided to clientFetch.
+   * @param {number} [parameters.maxIterations] - Maximum iterations before throwing an error. Used to prevent
+   *   long/endless loops that would trigger the gateway rate limit. Set 0 for unlimited.
+   * @example "for await" syntax that consumes the async iterator
+   * for await (const partialData of clientIterableFetch("myApiUrl")) { console.log(partialData) }
+   */
+  async* clientIterableFetch(url, {
+    options = FETCH_DEFAULT.options,
+    returnType = FETCH_DEFAULT.returnType,
+    alertOnErr = FETCH_DEFAULT.alertOnErr,
+    reLogin = FETCH_DEFAULT.reLogin,
+    anonymousLogin = FETCH_DEFAULT.anonymousLogin,
+    maxIterations = FETCH_DEFAULT.maxIterations
+  } = {}) {
+    let iterations = 1, page = 1;
+    do {
+      // throw an error if the number of iterations is more than the maximum
+      if (maxIterations && iterations > maxIterations)
+        throw new Error(`Cannot iterate more than ${maxIterations} times.`);
+
+      // set target page and fetch
+      if (options.queryParams)
+        options.queryParams.page = page;
+      else
+        options.queryParams = { page: page };
+      const response = await this.clientFetch(url, options, returnType, alertOnErr, reLogin, anonymousLogin);
+      if (!response.pagination)
+        throw new Error("Invoked API doesn't return structured data, making pagination unusable.");
+      page = response.pagination.nextPage;
+      response.pagination.progress = response.pagination.currentPage / response.pagination.totalPages;
+      iterations++;
+      yield response;
+    } while (page);
   }
 
   graphqlFetch(query, variables) {
