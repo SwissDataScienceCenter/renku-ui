@@ -21,16 +21,21 @@ jobs:
         node-version: '8.11'
     - name: Install dependencies and build
       run: |
+        cd client
         npm install
         npm run-script build
       env:
         NODE_OPTIONS: '--max-old-space-size=4096'
     - name: Run test
-      run: npm test
+      run: |
+        cd client
+        npm test
       env:
         CI: true
     - name: Run lint
-      run: npm run lint
+      run: |
+        cd client
+        npm run lint
 
   test-chart:
     needs: test
