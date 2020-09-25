@@ -120,6 +120,10 @@ class APIClient {
         }
       })
       .then(response => {
+        // This avoids showing errors for a second while doing the anonymous log-in.
+        // It should be solved in a more elegant way once we support interruptable fetch #776
+        if (!response && anonymousLogin)
+          return returnType === RETURN_TYPES.json ? { data: {} } : "";
         switch (returnType) {
           case RETURN_TYPES.json:
             return response.json().then(data => {
