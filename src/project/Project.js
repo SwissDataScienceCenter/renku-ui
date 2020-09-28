@@ -372,6 +372,7 @@ class View extends Component {
     const filesTree = this.projectState.get("filesTree");
     const datasets = this.projectState.get("core.datasets");
     const graphProgress = this.projectState.get("webhook.progress");
+    const graphStatus = this.projectState.get("webhook.status");
     const maintainer = this.projectState.get("visibility.accessLevel") >= ACCESS_LEVELS.MAINTAINER ?
       true :
       false;
@@ -461,6 +462,7 @@ class View extends Component {
         model={this.props.model}
         projectId={projectId}
         httpProjectUrl={httpProjectUrl}
+        graphStatus={graphStatus}
       />,
 
       newDataset: (p) => <NewDataset

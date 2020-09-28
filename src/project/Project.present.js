@@ -1164,13 +1164,15 @@ class ProjectViewDatasetsOverview extends Component {
   }
 
   render() {
-    if (this.props.datasets === undefined)
-      return <p>Loading datasets...</p>;
+    const datasetsList = this.props.core.datasets;
 
-    if (this.props.datasets.length === 0)
+    if (datasetsList === undefined || datasetsList === SpecialPropVal.UPDATING)
+      return <Loader />;
+
+    if (datasetsList.length === 0)
       return <p>No datasets to display.</p>;
 
-    let datasets = this.props.datasets.map((dataset) =>
+    let datasets = datasetsList.map((dataset) =>
       <OverviewDatasetRow
         key={dataset.name}
         name={dataset.title || dataset.name}

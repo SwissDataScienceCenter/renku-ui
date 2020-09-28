@@ -262,15 +262,13 @@ class ProjectModel extends StateModel {
     return client.getProjectDatasetsFromKG_short(this.get("core.path_with_namespace"))
       .then(datasets => {
         const updatedState = { datasets_kg: { $set: datasets }, transient: { requests: { datasets_kg: false } } };
-        this.set("core.datasets_kg", datasets);
-        this.setObject(updatedState);
+        this.setObject({ core: updatedState });
         return datasets;
       })
       .catch(err => {
         const datasets = [];
         const updatedState = { datasets_kg: { $set: datasets }, transient: { requests: { datasets_kg: false } } };
-        this.set("core.datasets_kg", datasets);
-        this.setObject(updatedState);
+        this.setObject({ core: updatedState });
       });
   }
 
@@ -281,15 +279,13 @@ class ProjectModel extends StateModel {
     return client.listProjectDatasetsFromCoreService(this.get("system.http_url"))
       .then(response => {
         let responseDs = response.data.error ? response.data : response.data.result.datasets;
-        const updatedState = { datasets: responseDs, transient: { requests: { datasets: false } } };
-        this.set("core.datasets", responseDs);
-        this.setObject(updatedState);
+        const updatedState = { datasets: { $set: responseDs }, transient: { requests: { datasets: false } } };
+        this.setObject({ core: updatedState });
         return responseDs;
       })
       .catch(err => {
-        const updatedState = { datasets: { error: err }, transient: { requests: { datasets: false } } };
-        this.set("core.datasets", { error: err });
-        this.setObject(updatedState);
+        const updatedState = { datasets: { $set: { error: err } }, transient: { requests: { datasets: false } } };
+        this.setObject({ core: updatedState });
       });
   }
 

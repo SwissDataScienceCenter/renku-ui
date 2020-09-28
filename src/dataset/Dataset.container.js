@@ -89,7 +89,8 @@ export default function ShowDataset(props) {
 
   useEffect(() => {
     let unmounted = false;
-    if (datasetKg === undefined && ((props.insideProject && dataset.identifier) || (props.identifier !== undefined))) {
+    if (datasetKg === undefined && ((props.insideProject && dataset.identifier && props.graphStatus)
+    || (props.identifier !== undefined))) {
       const id = props.insideProject ? dataset.identifier : props.identifier;
       props.client
         .fetchDatasetFromKG(props.client.baseUrl.replace("api", "knowledge-graph/datasets/") + id)
@@ -114,7 +115,7 @@ export default function ShowDataset(props) {
       unmounted = true;
     };
   }, [props.insideProject, props.datasets_kg, props.datasetId, props.identifier,
-    props.client, datasetKg, fetchError, dataset]);
+    props.client, datasetKg, fetchError, dataset, props.graphStatus]);
 
   if (props.insideProject && datasetFiles === undefined)
     return <Loader />;

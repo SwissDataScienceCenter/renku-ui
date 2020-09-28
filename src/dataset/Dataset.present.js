@@ -130,7 +130,7 @@ export default function DatasetView(props) {
         {
           dataset.published !== undefined && dataset.published.datePublished !== undefined ?
             <small style={{ display: "block", paddingBottom: "8px" }} className="font-weight-light font-italic">
-              Uploaded on {Time.getReadableDate(dataset.published.datePublished)}.
+              Uploaded on {Time.getReadableDate(dataset.published.datePublished.replace(/ /g, "T"))}.
             </small>
             : null
         }
