@@ -1,5 +1,18 @@
 # Changes
 
+## [0.10.5](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.10.4...0.10.5) (2020-09-28)
+
+
+### Bug Fixes
+
+* can go directly to new interactive environment page without logging in (#1044) 85ad989, closes [#1044](https://github.com/SwissDataScienceCenter/renku-ui/issues/1044) [#1030](https://github.com/SwissDataScienceCenter/renku-ui/issues/1030)
+* a project-specific CPU/GPU/Memory option does not change the options configured for the server (#1025) (#1041) 5d77fbe, closes [#1025](https://github.com/SwissDataScienceCenter/renku-ui/issues/1025) [#1041](https://github.com/SwissDataScienceCenter/renku-ui/issues/1041)
+
+
+### Features
+
+* handle any number of project branches on the interactive environments page (#1042) 755c753, closes [#1042](https://github.com/SwissDataScienceCenter/renku-ui/issues/1042) [#1037](https://github.com/SwissDataScienceCenter/renku-ui/issues/1037) [#764](https://github.com/SwissDataScienceCenter/renku-ui/issues/764)
+
 ## [0.10.4](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.10.3...0.10.4) (2020-09-14)
 
 ### Features
