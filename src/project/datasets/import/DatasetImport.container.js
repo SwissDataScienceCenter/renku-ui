@@ -40,7 +40,7 @@ function ImportDataset(props) {
 
   const redirectUser = () => {
     setSubmitLoader(false);
-    props.fetchDatasets();
+    props.fetchDatasets(true);
     props.history.push({
       //we should do the redirect to the new dataset
       //but for this we need the dataset name in the response of the dataset.import operation :(
@@ -50,28 +50,30 @@ function ImportDataset(props) {
   };
 
   function handleJobResponse(job, monitorJob, cont) {
-    switch (job.state) {
-      case "ENQUEUED":
-        setSubmitLoaderText(ImportStateMessage.ENQUEUED);
-        break;
-      case "IN_PROGRESS":
-        setSubmitLoaderText(ImportStateMessage.IN_PROGRESS);
-        break;
-      case "COMPLETED":
-        setSubmitLoaderText(ImportStateMessage.COMPLETED);
-        clearInterval(monitorJob);
-        redirectUser();
-        break;
-      case "FAILED":
-        setSubmitLoader(false);
-        setServerErrors(ImportStateMessage.FAILED + job.extras.error);
-        clearInterval(monitorJob);
-        break;
-      default:
-        setSubmitLoader(false);
-        setServerErrors(ImportStateMessage.FAILED_NO_INFO);
-        clearInterval(monitorJob);
-        break;
+    if (job !== null && job !== undefined) {
+      switch (job.state) {
+        case "ENQUEUED":
+          setSubmitLoaderText(ImportStateMessage.ENQUEUED);
+          break;
+        case "IN_PROGRESS":
+          setSubmitLoaderText(ImportStateMessage.IN_PROGRESS);
+          break;
+        case "COMPLETED":
+          setSubmitLoaderText(ImportStateMessage.COMPLETED);
+          clearInterval(monitorJob);
+          redirectUser();
+          break;
+        case "FAILED":
+          setSubmitLoader(false);
+          setServerErrors(ImportStateMessage.FAILED + job.extras.error);
+          clearInterval(monitorJob);
+          break;
+        default:
+          setSubmitLoader(false);
+          setServerErrors(ImportStateMessage.FAILED_NO_INFO);
+          clearInterval(monitorJob);
+          break;
+      }
     }
     if (cont === 100) {
       setSubmitLoader(false);

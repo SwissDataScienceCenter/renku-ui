@@ -83,7 +83,7 @@ function NewDataset(props) {
   const redirectAfterSuccess = (interval, datasetId) => {
     setSubmitLoader(false);
     if (interval !== undefined) clearInterval(interval);
-    props.fetchDatasets();
+    props.fetchDatasets(true);
     props.history.push({
       pathname: `/projects/${props.projectPathWithNamespace}/datasets/${datasetId}/`
     });

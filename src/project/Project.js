@@ -231,8 +231,8 @@ class View extends Component {
   async setProjectOpenFolder(filepath) {
     this.projectState.setProjectOpenFolder(this.props.client, filepath);
   }
-  async fetchProjectDatasets() {
-    return this.projectState.fetchProjectDatasets(this.props.client);
+  async fetchProjectDatasets(forceReFetch) {
+    return this.projectState.fetchProjectDatasets(this.props.client, forceReFetch);
   }
   async fetchProjectDatasetsFromKg() {
     return this.projectState.fetchProjectDatasetsFromKg(this.props.client);
@@ -598,9 +598,9 @@ class View extends Component {
       this.fetchProjectFilesTree();
       //this.fetchModifiedFiles();
     },
-    fetchDatasets: () => {
+    fetchDatasets: (forceReFetch = true) => {
       this.fetchProjectDatasetsFromKg();
-      this.fetchProjectDatasets();
+      this.fetchProjectDatasets(forceReFetch);
     },
     setOpenFolder: (filePath) => {
       this.setProjectOpenFolder(filePath);

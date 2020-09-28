@@ -273,8 +273,10 @@ class ProjectModel extends StateModel {
   }
 
 
-  fetchProjectDatasets(client) {
-    if (this.get("core.datasets") === SpecialPropVal.UPDATING) return;
+  fetchProjectDatasets(client, forceReFetch = true) {
+    let datasets = this.get("core.datasets");
+    if (datasets === SpecialPropVal.UPDATING) return;
+    if (datasets && datasets.error === undefined && !forceReFetch) return datasets;
     this.setUpdating({ core: { datasets: true } });
     return client.listProjectDatasetsFromCoreService(this.get("system.http_url"))
       .then(response => {

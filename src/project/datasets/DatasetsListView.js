@@ -4,6 +4,7 @@ import { Row, Col, ListGroup, ListGroupItem } from "reactstrap";
 import { ACCESS_LEVELS } from "../../api-client";
 import "../filestreeview/treeviewstyle.css";
 import { Loader, MarkdownTextExcerpt } from "../../utils/UIComponents";
+import { SpecialPropVal } from "../../model";
 
 function DatasetListRow(props) {
   const dataset = props.dataset;
@@ -70,6 +71,9 @@ function AddDatasetButton(props) {
 export default function DatasetsListView(props) {
 
   const datasets = useMemo(()=>props.datasets, [props.datasets]);
+
+  if (props.datasets_kg === SpecialPropVal.UPDATING)
+    return <Loader />;
 
   return [<Row key="header" className="pb-3">
     <Col md={12}>

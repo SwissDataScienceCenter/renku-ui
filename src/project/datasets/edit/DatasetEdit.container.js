@@ -86,6 +86,7 @@ function EditDataset(props) {
 
   const redirectAfterSuccess = (interval, datasetName) => {
     setSubmitLoader(false);
+    props.fetchDatasets(true);
     datasetFormSchema.name.value = datasetFormSchema.name.initial;
     datasetFormSchema.description.value = datasetFormSchema.description.initial;
     datasetFormSchema.files.value = datasetFormSchema.files.initial;

@@ -931,7 +931,7 @@ function ProjectViewDatasets(props) {
   useEffect(()=>{
     const loading = props.core.datasets === SpecialPropVal.UPDATING;
     if (loading) return;
-    props.fetchDatasets();
+    props.fetchDatasets(false);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -1160,7 +1160,7 @@ class OverviewDatasetRow extends Component {
 class ProjectViewDatasetsOverview extends Component {
 
   componentDidMount() {
-    this.props.fetchDatasets();
+    this.props.fetchDatasets(false);
   }
 
   render() {
