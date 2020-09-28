@@ -179,16 +179,17 @@ class Pagination extends Component {
 
     // We do not display the pagination footer when there are no pages or only one page
     if (this.props.totalItems == null
-        || this.props.totalItems < 1
-        || this.props.totalItems <= this.props.perPage)
+      || this.props.totalItems < 1
+      || this.props.totalItems <= this.props.perPage)
       return null;
 
-
+    const className = `pagination ${this.props.className ? this.props.className : null}`;
     return <ReactPagination
       activePage={this.props.currentPage}
       itemsCountPerPage={this.props.perPage}
       totalItemsCount={this.props.totalItems}
       onChange={this.props.onPageChange}
+      innerClass={className}
 
       // Some defaults for the styling
       prevPageText={"Previous"}
@@ -196,7 +197,8 @@ class Pagination extends Component {
       itemClass={"page-item"}
       linkClass={"page-link"}
       activeClass={"page-item active"}
-      hideFirstLastPages={true}
+      hideFirstLastPages={false}
+      hideDisabled={true}
     />;
   }
 }

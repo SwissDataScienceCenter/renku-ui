@@ -32,30 +32,29 @@ function addRepositoryMethods(client) {
     });
   };
 
-
-  client.getCommits = (projectId, ref = "master", max = 100) => {
+  client.getCommits = async (projectId, ref = "master", per_page = 100) => {
+    const url = `${client.baseUrl}/projects/${projectId}/repository/commits`;
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
+    const queryParams = { ref_name: ref, per_page };
+    const options = { method: "GET", headers, queryParams };
+    const commitsIterator = client.clientIterableFetch(url, { options });
 
-    const queryParams = {
-      ref_name: ref,
-      per_page: max
-    };
-    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/repository/commits`, {
-      method: "GET",
-      headers: headers,
-      queryParams
-    })
-      .then(resp => {
-        if (resp.data.length > 0)
-          return resp;
-
-
-        throw API_ERRORS.notFoundError;
-
-      });
+    let commits = [], pagination = {}, error = false;
+    try {
+      for await (const commitsPage of commitsIterator) {
+        commits = [...commits, ...commitsPage.data];
+        pagination = { ...commitsPage.pagination, done: false };
+      }
+      pagination.done = true;
+    }
+    catch (exception) {
+      error = exception;
+    }
+    finally {
+      return { data: commits, pagination, error };
+    }
   };
-
 
   client.getProjectReadme = (projectId) => {
     return client.getRepositoryFile(projectId, "README.md", "master", "raw")
@@ -63,7 +62,6 @@ function addRepositoryMethods(client) {
         return { text: text || "Could not find a README.md file. Why don't you add one to the repository?" };
       });
   };
-
 
   client.getRepositoryFileMeta = (projectId, path, ref = "master") => {
     let headers = client.getBasicHeaders();
@@ -188,17 +186,30 @@ function addRepositoryMethods(client) {
       });
   };
 
-  // TODO: Unfotunately, the API doesn't offer a way to query only for unmerged branches -
-  // TODO: add this capability to the gateway.
-  // TODO: Page through results in gateway, for the moment assuming a max of 100 branches seems ok.
-  client.getBranches = (projectId) => {
-    let headers = client.getBasicHeaders();
+  // ? Unfortunately, the API doesn't offer a way to query only for unmerged branches
+  // ? REF: https://docs.gitlab.com/ee/api/branches.html
+  client.getBranches = async (projectId, per_page = 100) => {
     const url = `${client.baseUrl}/projects/${projectId}/repository/branches`;
-    return client.clientFetch(url, {
-      method: "GET",
-      headers,
-      queryParams: { per_page: 100 }
-    });
+    let headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    const queryParams = { per_page };
+    const options = { method: "GET", headers, queryParams };
+    const branchesIterator = client.clientIterableFetch(url, { options });
+
+    let branches = [], pagination = {}, error = false;
+    try {
+      for await (const branchesPage of branchesIterator) {
+        branches = [...branches, ...branchesPage.data];
+        pagination = { ...branchesPage.pagination, done: false };
+      }
+      pagination.done = true;
+    }
+    catch (exception) {
+      error = exception;
+    }
+    finally {
+      return { data: branches, pagination, error };
+    }
   };
 
 }

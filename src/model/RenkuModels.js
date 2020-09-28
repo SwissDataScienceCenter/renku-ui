@@ -267,9 +267,9 @@ const projectGlobalSchema = new Schema({
   commits: {
     schema: {
       list: { initial: [], mandatory: true },
-
       fetched: { initial: null },
       fetching: { initial: false },
+      error: { initial: null }
     }
   },
   filters: {
@@ -300,7 +300,7 @@ const notebooksSchema = new Schema({
       options: { initial: {} },
 
       includeMergedBranches: { initial: false },
-      displayedCommits: { initial: 10 },
+      displayedCommits: { initial: 25 },
     }
   },
   options: {
