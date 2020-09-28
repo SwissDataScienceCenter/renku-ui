@@ -144,7 +144,7 @@ class List extends Component {
 
   getOrderByLabel() {
     switch (this.model.get("orderBy")) {
-      case orderByValuesMap.NAME:
+      case orderByValuesMap.TITLE:
         return "title";
       case orderByValuesMap.DATE_PUBLISHED:
         return "date published";
