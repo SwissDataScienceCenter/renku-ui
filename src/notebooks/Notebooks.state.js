@@ -442,6 +442,45 @@ class NotebooksCoordinator {
       });
   }
 
+  async fetchCommit(serverName) {
+    // get the commit for the target server
+    const environments = this.model.get("notebooks.all");
+    const target = environments[serverName];
+    if (!target || !target.annotations)
+      return;
+    const annotations = NotebooksHelper.cleanAnnotations(target.annotations);
+    if (!annotations || !annotations["commit-sha"] || !annotations["projectId"])
+      return;
+    const commitSha = annotations["commit-sha"];
+    const projectId = annotations["projectId"];
+
+    // verify if the commit data are already cached
+    const oldCommits = this.model.get("data.commits");
+    if (Object.keys(oldCommits).includes(commitSha) &&
+      oldCommits[commitSha].data &&
+      oldCommits[commitSha].data.project_id)
+      return { ...oldCommits[commitSha].data };
+
+    let commitData = {};
+    let commit = { data: commitData, fetched: false, fetching: true };
+    this.model.setObject({ data: { commits: { [commitSha]: commit } } });
+
+    let fetched = null;
+    try {
+      commitData = await this.client.getRepositoryCommit(projectId, commitSha);
+      fetched = new Date();
+    }
+    catch (error) {
+      // TODO: add to notifications
+    }
+    finally {
+      commit = { data: commitData, fetched, fetching: false };
+      this.model.setObject({ data: { commits: { [commitSha]: commit } } });
+    }
+
+    return { ...commitData };
+  }
+
   async fetchPipeline() {
     // check if already fetching data
     const fetching = this.model.get("pipelines.fetching");

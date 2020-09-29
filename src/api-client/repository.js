@@ -98,7 +98,7 @@ function addRepositoryMethods(client) {
     );
   };
 
-  client.getRepositoryCommit = (projectId, commitSHA) => {
+  client.getRepositoryCommit = async (projectId, commitSHA) => {
     let headers = client.getBasicHeaders();
     return client.clientFetch(
       `${client.baseUrl}/projects/${projectId}/repository/commits/${commitSHA}`, {
