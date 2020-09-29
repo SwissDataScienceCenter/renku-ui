@@ -26,6 +26,7 @@
 
 import React from "react";
 import { Col, Alert, Button } from "reactstrap";
+import { Link } from "react-router-dom";
 import { FormPanel } from "../../../utils/formgenerator";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -35,15 +36,6 @@ function DatasetEdit(props) {
 
   const getServerWarnings = () => {
 
-    const tooLongText = "The Knowledge Graph has not finished updating.  The new files" +
-    " will not be visible until this is complete, but you can continue to work freely within RenkuLab.";
-    if (props.jobsStats.failed.length === 0 && props.jobsStats.inProgress.length === 0 && props.jobsStats.tooLong) {
-      return <div>
-        {tooLongText}
-        <br/><br/>
-        You can keep on working while this operation is running.
-      </div>;
-    }
     const failed = props.jobsStats.failed
       .map(job => <div key={"warn-" + job.file_url} className="pl-2">- {job.file_url}<br /></div>);
     const progress = props.jobsStats.inProgress
@@ -51,7 +43,10 @@ function DatasetEdit(props) {
     return <div>
       {props.jobsStats.tooLong ?
         <div>
-          {tooLongText}
+          This operation is taking too long and it will continue being processed in the background.<br/>
+          Please check the datasets list later to make sure that the new dataset is available. <br />
+          You can also check the <Link to={props.overviewCommitsUrl}>commits list
+          </Link> in the project to see if commits for the new dataset appear there.
           <br />
           <br />
         </div>
@@ -71,8 +66,6 @@ function DatasetEdit(props) {
         </div>
         : null}
       <br /><br />
-      <strong>If more files where added they should be in the dataset, it could take some time until
-        they are visible since the Knowledge Graph could still be processing the operation.</strong>
     </div>;
   };
 

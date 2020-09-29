@@ -1,24 +1,21 @@
-import React, { useState } from "react";
+import React, { useMemo } from "react";
 import { NavLink, Link } from "react-router-dom";
 import { Row, Col, ListGroup, ListGroupItem } from "reactstrap";
 import { ACCESS_LEVELS } from "../../api-client";
 import "../filestreeview/treeviewstyle.css";
 import { Loader, MarkdownTextExcerpt } from "../../utils/UIComponents";
+import { SpecialPropVal } from "../../model";
 
 function DatasetListRow(props) {
   const dataset = props.dataset;
   const title = <NavLink
-    key={dataset.identifier}
-    to={`${props.datasetsUrl}/${encodeURIComponent(dataset.identifier)}/`}
+    key={dataset.name}
+    to={`${props.datasetsUrl}/${encodeURIComponent(dataset.name)}/`}
   > {dataset.title || dataset.name}</NavLink>;
-
-  const projectsCountLabel = dataset.isPartOf.length > 1
-    ? `In ${dataset.isPartOf.length} projects`
-    : `In ${dataset.isPartOf.length} project`;
 
   return <ListGroupItem action style={{ border: "none" }}>
     <Row>
-      <Col md={9}>
+      <Col xs={8} md={8}>
         <div className="d-flex project-list-row">
           <div className="issue-text-crop">
             <b>
@@ -27,9 +24,9 @@ function DatasetListRow(props) {
               </span>
             </b><br />
             {
-              dataset.published !== undefined && dataset.published.creator !== undefined ?
+              dataset.creators !== undefined ?
                 <small style={{ display: "block" }} className="font-weight-light">
-                  {dataset.published.creator.map((creator) => creator.name).join("; ")}
+                  {dataset.creators.map((creator) => creator.name).join("; ")}
                 </small>
                 : null
             }
@@ -43,13 +40,17 @@ function DatasetListRow(props) {
           </div>
         </div>
       </Col>
-      <Col sm={3} md={3} className="float-right" style={{ textAlign: "end" }}>
-        <small>{projectsCountLabel}</small>
+      <Col xs={4} md={4} className="float-right" style={{ textAlign: "end" }}>
+        <small>
+          {props.dataset_kg !== undefined && props.graphStatus === true ?
+            <strong>In the Knowledge Graph</strong>
+            : <strong>Not in the Knowledge Graph</strong>}
+        </small>
         <br />
         {
-          dataset.published !== undefined && dataset.published.datePublished !== undefined ?
+          dataset.created_at !== undefined && dataset.created_at !== null ?
             <small className="font-italic">
-              {"Published: " + new Date(dataset.published.datePublished).toLocaleDateString()}
+              {"Published: " + new Date(dataset.created_at.replace(/ /g, "T")).toLocaleDateString()}
             </small>
             : null
         }
@@ -68,12 +69,11 @@ function AddDatasetButton(props) {
 }
 
 export default function DatasetsListView(props) {
-  const [datasets, setDatasets] = useState(undefined);
 
-  useState(()=>{
-    if (datasets === undefined && props.datasets !== undefined)
-      setDatasets(props.datasets);
-  });
+  const datasets = useMemo(()=>props.datasets, [props.datasets]);
+
+  if (props.datasets_kg === SpecialPropVal.UPDATING)
+    return <Loader />;
 
   return [<Row key="header" className="pb-3">
     <Col md={12}>
@@ -93,8 +93,11 @@ export default function DatasetsListView(props) {
           datasets !== undefined ?
             datasets.map((dataset)=>
               <DatasetListRow
-                key={"dataset-" + dataset.identifier}
+                key={"dataset-" + dataset.name}
                 dataset={dataset}
+                dataset_kg={props.datasets_kg
+                  ? props.datasets_kg.find(dataset_kg => dataset_kg.name === dataset.name) : undefined}
+                graphStatus={props.graphStatus}
                 datasetsUrl={props.datasetsUrl} />
             )
             : <Loader />

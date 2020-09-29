@@ -28,7 +28,7 @@ function KnowledgeGraphStatus(props) {
   const { error, progress, webhookJustCreated } = props;
   if (error != null) {
     return <Alert color="warning">
-      Knowledge Graph integration must be activated to view the lineage and the datasets, but&nbsp;
+      Knowledge Graph integration must be activated to view the lineage, but&nbsp;
       there is a problem with the knowledge graph integration for this project. To resolve this problem,
       you should contact the development team on&nbsp;
       <a href="https://gitter.im/SwissDataScienceCenter/renku"
@@ -57,7 +57,7 @@ function KnowledgeGraphStatus(props) {
 
     return (
       <Alert color="warning">
-        Knowledge Graph integration must be activated to view the lineage and the datasets.&nbsp;
+        Knowledge Graph integration must be activated to view the lineage.&nbsp;
         {action}
       </Alert>
     );
@@ -69,7 +69,7 @@ function KnowledgeGraphStatus(props) {
       forkedInfo = (
         <div>
           <br />
-          <FontAwesomeIcon icon={faInfoCircle} /> <span className="font-italic">If you recenty forked
+          <FontAwesomeIcon icon={faInfoCircle} /> <span className="font-italic">If you recently forked
             this project, the graph integration will not finish until you create at least one commit.
           </span>
         </div>
@@ -78,10 +78,6 @@ function KnowledgeGraphStatus(props) {
     return (
       <div>
         <Alert color="primary">
-          { props.insideDatasets ?
-            <p><strong>Knowledge Graph integration is needed to be able to see the datasets.</strong></p>
-            : null
-          }
           Please wait, Knowledge Graph integration recently triggered.
           {forkedInfo}
         </Alert>
@@ -93,10 +89,6 @@ function KnowledgeGraphStatus(props) {
     return (
       <div>
         <Alert color="primary">
-          { props.insideDatasets ?
-            <p><strong>Knowledge Graph integration is needed to be able to see the datasets.</strong></p>
-            : null
-          }
           <p>Knowledge Graph is building... {parseInt(progress)}%</p>
           <Progress value={progress} />
         </Alert>

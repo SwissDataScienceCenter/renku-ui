@@ -80,21 +80,10 @@ function NewDataset(props) {
       });
   };
 
-  const monitorFilesInKgAndRedirect = (dataset, interval, datasetId) => {
-    props.client.fetchDatasetFromKG(props.client.baseUrl.replace(
-      "api", "knowledge-graph/datasets/") + datasetId)
-      .then(response => {
-        return response.hasPart.length >= dataset.files.length;
-      }).then( filesInKg => {
-        if (filesInKg)
-          redirectAfterSuccess(interval, datasetId);
-
-      });
-  };
-
   const redirectAfterSuccess = (interval, datasetId) => {
     setSubmitLoader(false);
     if (interval !== undefined) clearInterval(interval);
+    props.fetchDatasets(true);
     props.history.push({
       pathname: `/projects/${props.projectPathWithNamespace}/datasets/${datasetId}/`
     });
@@ -123,7 +112,6 @@ function NewDataset(props) {
           setServerErrors(response.data.error.reason);
         }
         else {
-          let datasetInKg = false;
           let filesURLJobsArray = [];
 
           if (response.data.result.files) {
@@ -136,48 +124,29 @@ function NewDataset(props) {
 
           let cont = 0;
           const INTERVAL = 6000;
-          let datasetId;
 
-          let monitorKGandJobs = setInterval(() => {
-            if (!datasetInKg) {
-              props.client.getProjectDatasetsFromKG_short(props.projectPathWithNamespace)
-                .then(datasets => {
-                // eslint-disable-next-line
-                  let new_dataset = datasets.find( ds => ds.name === response.data.result.name);
-                  if (new_dataset !== undefined) {
-                    datasetInKg = true;
-                    datasetId = new_dataset.identifier;
-                  }
-
-                  if (cont >= 20) {
-                    checkJobsAndSetWarnings([], true);
-                    clearInterval(monitorKGandJobs);
-                  }
-                });
+          let monitorJobs = setInterval(() => {
+            if (filesURLJobsArray.length === 0) {
+              redirectAfterSuccess(monitorJobs, dataset.name);
             }
             else {
-              if (filesURLJobsArray.length === 0) {
-                monitorFilesInKgAndRedirect(dataset, monitorKGandJobs, datasetId);
-              }
-              else {
-                monitorURLJobsStatuses(filesURLJobsArray).then(jobsStats => {
-                  if (jobsStats.finished) {
-                    if (jobsStats.failed.length === 0) {
-                      monitorFilesInKgAndRedirect(dataset, monitorKGandJobs, datasetId);
-                    }
-                    else {
-                    //some or all failed, but all finished
-                      checkJobsAndSetWarnings(filesURLJobsArray, false);
-                      clearInterval(monitorKGandJobs);
-                    }
+              monitorURLJobsStatuses(filesURLJobsArray).then(jobsStats => {
+                if (jobsStats.finished) {
+                  if (jobsStats.failed.length === 0) {
+                    redirectAfterSuccess(monitorJobs, dataset.name);
                   }
-                });
-              }
+                  else {
+                    //some or all failed, but all finished
+                    checkJobsAndSetWarnings(filesURLJobsArray, false);
+                    clearInterval(monitorJobs);
+                  }
+                }
+              });
+            }
 
-              if (cont >= 20) {
-                checkJobsAndSetWarnings(filesURLJobsArray, true);
-                clearInterval(monitorKGandJobs);
-              }
+            if (cont >= 20) {
+              checkJobsAndSetWarnings(filesURLJobsArray, true);
+              clearInterval(monitorJobs);
             }
             cont++;
           }, INTERVAL);
@@ -202,6 +171,7 @@ function NewDataset(props) {
     onCancel={onCancel}
     warningOn={warningOn}
     jobsStats={jobsStats}
+    overviewCommitsUrl={props.overviewCommitsUrl}
   />;
 }
 

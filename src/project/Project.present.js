@@ -54,7 +54,7 @@ import { CollaborationList, collaborationListTypeMap } from "../collaboration/li
 import FilesTreeView from "./filestreeview/FilesTreeView";
 import DatasetsListView from "./datasets/DatasetsListView";
 import { ACCESS_LEVELS } from "../api-client";
-import { GraphIndexingStatus, withProjectMapped, MigrationStatus } from "./Project";
+import { withProjectMapped, MigrationStatus } from "./Project";
 import { NamespaceProjects } from "../namespace";
 import { CommitsView } from "../utils/Commits";
 
@@ -844,10 +844,12 @@ class ProjectDatasetsNav extends Component {
       return null;
 
     return <DatasetsListView
+      datasets_kg={this.props.core.datasets_kg}
       datasets={this.props.core.datasets}
       datasetsUrl={this.props.datasetsUrl}
       newDatasetUrl={this.props.newDatasetUrl}
       visibility={this.props.visibility}
+      graphStatus={this.props.webhook.status || (this.props.webhook.created && this.props.webhook.stop)}
     />;
   }
 }
@@ -919,9 +921,6 @@ function EmptyDatasets(props) {
 }
 
 function ProjectViewDatasets(props) {
-  const [fetchAfterWebhook, setFetchAfterWebhook] = useState(false);
-  const [firstFetch, setFirstFetch] = useState(false);
-
   const migrationMessage = props.migration.migration_required ?
     <Alert color="warning">
       <FontAwesomeIcon icon={faExclamationTriangle} /> <strong>A new version of renku is available.</strong>
@@ -933,46 +932,37 @@ function ProjectViewDatasets(props) {
   useEffect(()=>{
     const loading = props.core.datasets === SpecialPropVal.UPDATING;
     if (loading) return;
-    if (firstFetch === false) {
-      props.fetchDatasets();
-      props.fetchGraphStatus();
-      setFirstFetch(true);
-      return;
-    }
-    const incomingDatasets = props.location.state && props.location.state.datasets
-      ? props.location.state.datasets : [];
-    if (props.core.datasets === undefined ||
-      incomingDatasets.length > props.core.datasets.length) {
-      props.fetchDatasets();
-    }
-    else if (props.core.datasets === undefined && !fetchAfterWebhook &&
-      props.webhook.progress >= GraphIndexingStatus.MAX_VALUE) {
-      props.fetchDatasets();
-      setFetchAfterWebhook(true);
-    }
-  }, [props, fetchAfterWebhook, firstFetch]);
+    props.fetchDatasets(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  const loading = props.core.datasets === SpecialPropVal.UPDATING;
-  const incomingDatasets = props.location.state && props.location.state.datasets
-    ? props.location.state.datasets : [];
-  if (loading || props.core.datasets === undefined
-     || incomingDatasets.length > props.core.datasets.length)
+  const loading = props.core.datasets === SpecialPropVal.UPDATING || props.core.datasets === undefined;
+  if (loading)
     return <Loader />;
-  const progress = props.webhook.progress;
 
-  const kgLoading = progress == null
-      || progress === GraphIndexingStatus.NO_WEBHOOK
-      || progress === GraphIndexingStatus.NO_PROGRESS
-      || (progress >= GraphIndexingStatus.MIN_VALUE && progress < GraphIndexingStatus.MAX_VALUE);
+  //When the core service can return stuff for anounymous users this should be removed
+  if (!props.user.logged) {
+    const postLoginUrl = props.location.pathname;
+    const to = { "pathname": "/login", "state": { previous: postLoginUrl } };
 
-  if (kgLoading) {
-    return <Col sm={12} md={10} lg={8}>
-      {migrationMessage}
-      {props.kgStatusView(true, props.fetchDatasets)}
+    return <Col sm={12} md={12} lg={8}>
+      <Alert color="primary">You are logged out, please&nbsp;
+        <Link className="btn btn-primary btn-sm" to={to} previous={postLoginUrl}>
+          Log in
+        </Link> to see datasets for this project.</Alert>
     </Col>;
   }
 
-  if (!loading && !kgLoading && props.core.datasets !== undefined && props.core.datasets.length === 0
+  if (props.core.datasets.error) {
+    return <Col sm={12} md={12} lg={8}>
+      <Alert color="danger">
+        There was an error fetching the datasets, please try <Button color="danger" size="sm" onClick={
+          () => window.location.reload()
+        }> reloading </Button> the page.</Alert>
+    </Col>;
+  }
+
+  if (!loading && props.core.datasets !== undefined && props.core.datasets.length === 0
     && props.location.pathname !== props.newDatasetUrl) {
     return <Col sm={12} md={12} lg={8}>
       {migrationMessage}
@@ -1171,21 +1161,23 @@ class OverviewDatasetRow extends Component {
 class ProjectViewDatasetsOverview extends Component {
 
   componentDidMount() {
-    this.props.fetchDatasets();
+    this.props.fetchDatasets(false);
   }
 
   render() {
-    if (this.props.datasets === undefined)
-      return <p>Loading datasets...</p>;
+    const datasetsList = this.props.core.datasets;
 
-    if (this.props.datasets.length === 0)
+    if (datasetsList === undefined || datasetsList === SpecialPropVal.UPDATING)
+      return <Loader />;
+
+    if (datasetsList.length === 0)
       return <p>No datasets to display.</p>;
 
-    let datasets = this.props.datasets.map((dataset) =>
+    let datasets = datasetsList.map((dataset) =>
       <OverviewDatasetRow
-        key={dataset.identifier}
+        key={dataset.name}
         name={dataset.title || dataset.name}
-        fullDatasetUrl={`${this.props.datasetsUrl}/${encodeURIComponent(dataset.identifier)}`}
+        fullDatasetUrl={`${this.props.datasetsUrl}/${encodeURIComponent(dataset.name)}`}
       />
     );
 

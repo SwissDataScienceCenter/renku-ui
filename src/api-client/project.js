@@ -388,8 +388,7 @@ function addProjectMethods(client) {
     const headers = client.getBasicHeaders();
     const datasetPromise = client.clientFetch(datasetLink, { method: "GET", headers });
     return Promise.resolve(datasetPromise)
-      .then(dataset => dataset.data)
-      .catch((error) => "error");
+      .then(dataset => dataset.data);
   };
 
   client.getProjectDatasetsFromKG = (projectPath) => {

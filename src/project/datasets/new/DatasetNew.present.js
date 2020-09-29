@@ -26,6 +26,7 @@
 
 import React from "react";
 import { Col, Alert, Button } from "reactstrap";
+import { Link } from "react-router-dom";
 import { FormPanel } from "../../../utils/formgenerator";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -35,15 +36,6 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 function DatasetNew(props) {
 
   const getServerWarnings = () => {
-    const tooLongText = "The Knowledge Graph has not finished updating.  The new dataset/files" +
-    " will not be visible until this is complete, but you can continue to work freely within RenkuLab.";
-    if (props.jobsStats.failed.length === 0 && props.jobsStats.inProgress.length === 0 && props.jobsStats.tooLong) {
-      return <div>
-        {tooLongText}
-        <br/>
-        You can keep on working while this operation is running.
-      </div>;
-    }
     const failed = props.jobsStats.failed
       .map(job => <div key={"warn-" + job.file_url} className="pl-2">- {job.file_url}<br /></div>);
     const progress = props.jobsStats.inProgress
@@ -51,7 +43,10 @@ function DatasetNew(props) {
     return <div>
       {props.jobsStats.tooLong ?
         <div>
-          {tooLongText}
+          This operation is taking too long and it will continue being processed in the background.<br />
+          Please check the datasets list later to make sure that the changes are visible in the dataset. <br />
+          You can also check the <Link to={props.overviewCommitsUrl}>commits list
+          </Link> in the project to see if commits for the new dataset appear there.
           <br/><br/>
         </div>
         : null
@@ -70,8 +65,6 @@ function DatasetNew(props) {
         </div>
         : null}
       <br /><br />
-      <strong>The dataset has been created, but some files are still being processed.
-        They will become visible when processing completes.</strong>
     </div>;
   };
 
@@ -97,7 +90,8 @@ function DatasetNew(props) {
     disableAll={props.warningOn.current === true}
     cancelBtnName={props.warningOn.current ? "Go to list" : "Cancel"}
     submitLoader={{ value: props.submitLoader, text: "Creating dataset, please wait..." }}
-    onCancel={props.onCancel} />;
+    onCancel={props.onCancel}
+  />;
 
 
 }

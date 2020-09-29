@@ -109,7 +109,6 @@ class KnowledgeGraphStatus extends Component {
 
   render() {
     return <KnowledgeGraphStatusPresent
-      insideDatasets={this.props.insideDatasets}
       progress={this.props.progress}
       webhookJustCreated={this.state.webhookJustCreated}
       maintainer={this.props.maintainer}
