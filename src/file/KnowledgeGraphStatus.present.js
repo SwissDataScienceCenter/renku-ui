@@ -28,7 +28,7 @@ function KnowledgeGraphStatus(props) {
   const { error, progress, webhookJustCreated } = props;
   if (error != null) {
     return <Alert color="warning">
-      Knowledge Graph integration must be activated to view the lineage and the datasets, but&nbsp;
+      Knowledge Graph integration must be activated to view the lineage, but&nbsp;
       there is a problem with the knowledge graph integration for this project. To resolve this problem,
       you should contact the development team on&nbsp;
       <a href="https://gitter.im/SwissDataScienceCenter/renku"
@@ -57,7 +57,7 @@ function KnowledgeGraphStatus(props) {
 
     return (
       <Alert color="warning">
-        Knowledge Graph integration must be activated to view the lineage and the datasets.&nbsp;
+        Knowledge Graph integration must be activated to view the lineage.&nbsp;
         {action}
       </Alert>
     );
