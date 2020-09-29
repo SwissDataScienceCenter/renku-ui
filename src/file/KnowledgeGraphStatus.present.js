@@ -69,7 +69,7 @@ function KnowledgeGraphStatus(props) {
       forkedInfo = (
         <div>
           <br />
-          <FontAwesomeIcon icon={faInfoCircle} /> <span className="font-italic">If you recenty forked
+          <FontAwesomeIcon icon={faInfoCircle} /> <span className="font-italic">If you recently forked
             this project, the graph integration will not finish until you create at least one commit.
           </span>
         </div>
