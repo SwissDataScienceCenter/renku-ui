@@ -17,7 +17,7 @@ replicaCount: 1
 
 image:
   repository: renku/renku-ui
-  tag: '0.10.3'
+  tag: '0.11.0'
   pullPolicy: IfNotPresent
 
   ## Optionally specify an array of imagePullSecrets.

@@ -1,0 +1,13 @@
+/node_modules
+/gitlab
+/doc
+/helm-chart
+.editorconfig
+.eslintignore
+.eslintrc.json
+.gitignore
+.travis.yml
+docker-compose.yml
+Dockerfile
+Makefile
+README.md
