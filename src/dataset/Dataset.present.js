@@ -124,15 +124,17 @@ export default function DatasetView(props) {
     );
   }
 
+  const datasetPublished = dataset.published !== undefined && dataset.published.datePublished
+    !== undefined && dataset.published.datePublished !== null;
+
   return <Col>
     <Row>
       <Col md={8} sm={12}>
-        {
-          dataset.published !== undefined && dataset.published.datePublished !== undefined ?
-            <small style={{ display: "block", paddingBottom: "8px" }} className="font-weight-light font-italic">
-              Uploaded on {Time.getReadableDate(dataset.published.datePublished.replace(/ /g, "T"))}.
-            </small>
-            : null
+        { datasetPublished ?
+          <small style={{ display: "block", paddingBottom: "8px" }} className="font-weight-light font-italic">
+            Uploaded on {Time.getReadableDate(dataset.published.datePublished.replace(/ /g, "T"))}.
+          </small>
+          : null
         }
         <h4 key="datasetTitle">
           {dataset.title || dataset.name}
@@ -148,7 +150,7 @@ export default function DatasetView(props) {
       </Col>
       <Col md={4} sm={12}>
         { props.logged ?
-          <Button disabled={dataset.url === undefined}
+          <Button disabled={dataset.insideKg === false}
             className="float-right mb-1" size="sm" color="primary" onClick={() => setAddDatasetModalOpen(true)}>
             <FontAwesomeIcon icon={faPlus} color="dark" /> Add to project
           </Button>
@@ -211,7 +213,7 @@ export default function DatasetView(props) {
       projectsUrl={props.projectsUrl}
     />
     {
-      dataset.url === undefined ?
+      dataset.insideKg === false ?
         <Alert color="primary">
           <strong>This dataset is not in the Knowledge Graph;</strong> this means that some
           operations on it are not possible.<br /><br />

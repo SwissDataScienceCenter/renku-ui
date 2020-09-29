@@ -849,6 +849,7 @@ class ProjectDatasetsNav extends Component {
       datasetsUrl={this.props.datasetsUrl}
       newDatasetUrl={this.props.newDatasetUrl}
       visibility={this.props.visibility}
+      graphStatus={this.props.webhook.status || (this.props.webhook.created && this.props.webhook.stop)}
     />;
   }
 }

@@ -42,7 +42,7 @@ function DatasetListRow(props) {
       </Col>
       <Col xs={4} md={4} className="float-right" style={{ textAlign: "end" }}>
         <small>
-          {props.dataset_kg ?
+          {props.dataset_kg !== undefined && props.graphStatus === true ?
             <strong>In the Knowledge Graph</strong>
             : <strong>Not in the Knowledge Graph</strong>}
         </small>
@@ -97,6 +97,7 @@ export default function DatasetsListView(props) {
                 dataset={dataset}
                 dataset_kg={props.datasets_kg
                   ? props.datasets_kg.find(dataset_kg => dataset_kg.name === dataset.name) : undefined}
+                graphStatus={props.graphStatus}
                 datasetsUrl={props.datasetsUrl} />
             )
             : <Loader />

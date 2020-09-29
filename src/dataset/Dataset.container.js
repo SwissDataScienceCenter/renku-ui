@@ -48,9 +48,16 @@ function mapDataset(dataset_core, dataset_kg, core_files) {
       dataset.url = dataset_kg.url;
       dataset.sameAs = dataset_kg.sameAs;
       dataset.isPartOf = dataset_kg.isPartOf;
+      dataset.insideKg = true;
+    }
+    else {
+      dataset.insideKg = false;
     }
     return dataset;
   }
+  //while things are loading dataset_kg could be undefined
+  if (dataset_kg)
+    dataset_kg.insideKg = true;
   return dataset_kg;
 }
 
@@ -121,10 +128,7 @@ export default function ShowDataset(props) {
     return <Loader />;
 
   return <DatasetView
-    fetchGraphStatus={props.fetchGraphStatus}
     maintainer={props.maintainer}
-    createGraphWebhook={props.createGraphWebhook}
-    forked={props.forked}
     insideProject={props.insideProject}
     identifier={props.identifier}
     progress={props.progress}

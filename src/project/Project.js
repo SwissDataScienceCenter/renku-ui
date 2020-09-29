@@ -372,7 +372,8 @@ class View extends Component {
     const filesTree = this.projectState.get("filesTree");
     const datasets = this.projectState.get("core.datasets");
     const graphProgress = this.projectState.get("webhook.progress");
-    const graphStatus = this.projectState.get("webhook.status");
+    const webhookStatus = this.projectState.get("webhook");
+    const graphStatus = webhookStatus.status || (webhookStatus.created && webhookStatus.stop);
     const maintainer = this.projectState.get("visibility.accessLevel") >= ACCESS_LEVELS.MAINTAINER ?
       true :
       false;
@@ -611,6 +612,8 @@ class View extends Component {
     },
     onCloseGraphWebhook: () => {
       this.stopCheckingWebhook();
+      this.fetchProjectDatasetsFromKg();
+      this.fetchProjectDatasets(true);
     },
     fetchGraphStatus: () => {
       return this.fetchGraphStatus();
