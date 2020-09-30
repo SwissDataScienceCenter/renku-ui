@@ -1327,7 +1327,7 @@ function RepositoryUrlRow(props) {
     <tr>
       <th scope="row">{props.urlType}</th>
       <td>{props.url}</td>
-      <td><Clipboard clipboardText={props.url} /></td>
+      <td style={{ width: 1 }}><Clipboard clipboardText={props.url} /></td>
     </tr>
   );
 }
@@ -1355,7 +1355,7 @@ function CommandRow(props) {
       <td>
         <code>{props.command}</code>
       </td>
-      <td><Clipboard clipboardText={props.command} /></td>
+      <td style={{ width: 1 }}><Clipboard clipboardText={props.command} /></td>
     </tr>
   );
 }
