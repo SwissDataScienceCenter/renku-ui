@@ -1378,10 +1378,10 @@ class RepositoryClone extends Component {
           </tbody>
         </Table>
         <small className="font-italic">
-          <FontAwesomeIcon icon={faExclamationTriangle} /> If you clone the project using Git instead
-          or Renku, remember to run <code>renku githooks install</code> once before you run any other
-          renku command.
+          <FontAwesomeIcon icon={faExclamationTriangle} /> If you clone the project using <b>Git</b> instead
+          of Renku, remember to run the following once before you run any other renku command:
         </small>
+        <small><blockquote className="ml-5"><code>renku githooks install</code></blockquote></small>
       </Fragment>
     );
   }
