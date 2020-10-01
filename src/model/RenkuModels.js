@@ -325,18 +325,16 @@ const notebooksSchema = new Schema({
       lastMainId: { initial: null },
     }
   },
-  data: {
-    schema: {
-      commits: { initial: [] }, // ! TODO: move to Project pages, shouldn't be here
-      fetched: { initial: null },
-      fetching: { initial: false },
-    }
-  },
   logs: {
     schema: {
       data: { initial: [] },
       fetched: { initial: null },
       fetching: { initial: false },
+    }
+  },
+  data: {
+    schema: {
+      commits: { initial: {} }, // use it as a dictionary where the key is the full commit sha
     }
   }
 });

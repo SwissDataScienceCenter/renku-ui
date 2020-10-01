@@ -62,7 +62,8 @@ class Notebooks extends Component {
     this.handlers = {
       stopNotebook: this.stopNotebook.bind(this),
       fetchLogs: this.fetchLogs.bind(this),
-      toggleLogs: this.toggleLogs.bind(this)
+      toggleLogs: this.toggleLogs.bind(this),
+      fetchCommit: this.fetchCommit.bind(this)
     };
   }
 
@@ -83,6 +84,12 @@ class Notebooks extends Component {
     if (!serverName)
       return;
     return this.coordinator.fetchLogs(serverName, full);
+  }
+
+  async fetchCommit(serverName) {
+    if (!serverName)
+      return;
+    return this.coordinator.fetchCommit(serverName);
   }
 
   toggleLogs(serverName) {

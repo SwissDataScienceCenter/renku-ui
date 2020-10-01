@@ -33,7 +33,7 @@ import { StatusHelper } from "../model/Model";
 import { NotebooksHelper } from "./index";
 import { simpleHash, formatBytes } from "../utils/HelperFunctions";
 import {
-  ButtonWithMenu, Loader, ExternalLink, JupyterIcon, ThrottledTooltip, WarnAlert, InfoAlert
+  ButtonWithMenu, Loader, ExternalLink, JupyterIcon, ThrottledTooltip, WarnAlert, InfoAlert, TimeCaption
 } from "../utils/UIComponents";
 import Time from "../utils/Time";
 import Sizes from "../utils/Media";
@@ -85,6 +85,8 @@ class Notebooks extends Component {
           stopNotebook={this.props.handlers.stopNotebook}
           fetchLogs={this.props.handlers.fetchLogs}
           toggleLogs={this.props.handlers.toggleLogs}
+          fetchCommit={this.props.handlers.fetchCommit}
+          commits={this.props.data.commits}
           logs={this.props.logs}
           scope={this.props.scope}
         />
@@ -169,6 +171,8 @@ class NotebookServersList extends Component {
         stopNotebook={this.props.stopNotebook}
         fetchLogs={this.props.fetchLogs}
         toggleLogs={this.props.toggleLogs}
+        fetchCommit={this.props.fetchCommit}
+        commits={this.props.commits}
         logs={this.props.logs}
         scope={this.props.scope}
         standalone={this.props.standalone}
@@ -259,7 +263,10 @@ class NotebookServerRow extends Component {
       branch: `${annotations["repository"]}/tree/${annotations["branch"]}`,
       commit: `${annotations["repository"]}/tree/${annotations["commit-sha"]}`
     };
-    const newProps = { annotations, status, details, uid, resources, repositoryLinks };
+    const commitDetails = this.props.commits[annotations["commit-sha"]] ?
+      this.props.commits[annotations["commit-sha"]] :
+      null;
+    const newProps = { annotations, status, details, uid, resources, repositoryLinks, commitDetails };
 
     return (
       <Media query={Sizes.md}>
@@ -273,9 +280,66 @@ class NotebookServerRow extends Component {
   }
 }
 
+class NotebookServerRowCommitInfo extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      isOpen: false
+    };
+  }
+
+  toggle() {
+    const willOpen = !this.state.isOpen;
+    if (willOpen && !this.props.commit)
+      this.props.fetchCommit(this.props.name);
+    this.setState({ isOpen: willOpen });
+  }
+
+  render() {
+    const { commit } = this.props;
+    const uid = `${this.props.uid}-commit`;
+    let content;
+    if (!commit || !commit.data || !commit.data.id || (!commit.fetching && !commit.fetched)) {
+      content = (<span>Data not available.</span>);
+    }
+    else if (!commit.fetched && commit.fetching) {
+      content = (<span><Loader size="16" inline="true" /> Fetching data...</span>);
+    }
+    else {
+      content = (
+        <Fragment>
+          <span className="font-weight-bold">Author:</span> <span>{commit.data.author_name}</span><br />
+          <span>
+            <span className="font-weight-bold">Date:</span>
+            {" "}<span>{Time.toIsoTimezoneString(commit.data.committed_date, "datetime-short")}</span>
+            {" "}<TimeCaption caption="~" endPunctuation=" " time={commit.data.committed_date} />
+            <br />
+          </span>
+          <span className="font-weight-bold">Message:</span> <span>{commit.data.message}</span><br />
+          <span className="font-weight-bold">Full SHA:</span> <span>{commit.data.id}</span><br />
+        </Fragment>
+      );
+    }
+
+    return (
+      <span>
+        <FontAwesomeIcon id={uid} icon={faInfoCircle} style={{ color: "#5561A6" }} />
+        <UncontrolledPopover target={uid} trigger="legacy" placement="bottom"
+          isOpen={this.state.isOpen} toggle={() => this.toggle()}>
+          <PopoverHeader>Commit details</PopoverHeader>
+          <PopoverBody>{content}</PopoverBody>
+        </UncontrolledPopover>
+      </span>
+    );
+
+  }
+}
+
 class NotebookServerRowFull extends Component {
   render() {
-    const { annotations, details, status, url, uid, resources, repositoryLinks } = this.props;
+    const {
+      annotations, details, status, url, uid, resources, repositoryLinks, name, commitDetails, fetchCommit
+    } = this.props;
 
     const icon = <td className="align-middle">
       <NotebooksServerRowStatusIcon details={details} status={status} uid={uid} />
@@ -288,6 +352,7 @@ class NotebookServerRowFull extends Component {
     </td>);
     const commit = (<td className="align-middle">
       <ExternalLink url={repositoryLinks.commit} title={annotations["commit-sha"].substring(0, 8)} role="text" />
+      {" "}<NotebookServerRowCommitInfo uid={uid} name={name} commit={commitDetails} fetchCommit={fetchCommit} />
     </td>);
     const resourceList = Object.keys(resources).map(name => {
       return (<div key={name} className="text-nowrap">{resources[name]} <i>{name}</i></div>);
@@ -329,7 +394,9 @@ class NotebookServerRowFull extends Component {
 
 class NotebookServerRowCompact extends Component {
   render() {
-    const { annotations, details, status, url, uid, resources, repositoryLinks } = this.props;
+    const {
+      annotations, details, status, url, uid, resources, repositoryLinks, name, commitDetails, fetchCommit
+    } = this.props;
 
     const icon = <span>
       <NotebooksServerRowStatusIcon details={details} status={status} uid={uid} />
@@ -349,6 +416,7 @@ class NotebookServerRowCompact extends Component {
     const commit = (<Fragment>
       <span className="font-weight-bold">Commit: </span>
       <ExternalLink url={repositoryLinks.commit} title={annotations["commit-sha"].substring(0, 8)} role="text" />
+      {" "}<NotebookServerRowCommitInfo uid={uid} name={name} commit={commitDetails} fetchCommit={fetchCommit} />
       <br />
     </Fragment>);
     const resourceList = Object.keys(resources).map((name, num) =>
