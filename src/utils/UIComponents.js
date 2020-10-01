@@ -26,7 +26,7 @@
 
 import _ from "lodash/util";
 import human from "human-time";
-import React, { Component, Fragment, useState, useEffect } from "react";
+import React, { Component, Fragment, useState, useEffect, useRef } from "react";
 import { Link, NavLink as RRNavLink } from "react-router-dom";
 import ReactPagination from "react-js-pagination";
 import ReactClipboard from "react-clipboard.js";
@@ -572,10 +572,17 @@ function Clipboard(props) {
   const [copied, setCopied] = useState(false);
   const timeoutDur = 3000;
 
+  // keep track of mounted state
+  const isMounted = useRef(true);
+  useEffect(() => {
+    isMounted.current = true;
+    return () => { isMounted.current = false; };
+  }, []);
+
   return (
-    <ReactClipboard component="a" data-clipboard-text={props.clipboardText}
-      onSuccess={()=> { setCopied(true); setTimeout(() => setCopied(false), timeoutDur); }}>
-      {
+    <ReactClipboard component="a" data-clipboard-text={props.clipboardText} onSuccess={
+      () => { setCopied(true); setTimeout(() => { if (isMounted.current) setCopied(false); }, timeoutDur); }
+    }> {
         (copied) ?
           <FontAwesomeIcon icon={faCheck} color="green" /> :
           <FontAwesomeIcon icon={faCopy} />

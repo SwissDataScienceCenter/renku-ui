@@ -1327,22 +1327,63 @@ function RepositoryUrlRow(props) {
     <tr>
       <th scope="row">{props.urlType}</th>
       <td>{props.url}</td>
-      <td><Clipboard clipboardText={props.url} /></td>
+      <td style={{ width: 1 }}><Clipboard clipboardText={props.url} /></td>
     </tr>
   );
 }
 
 class RepositoryUrls extends Component {
   render() {
-    return [
-      <strong key="header">Repository URL</strong>,
-      <Table key="table" size="sm">
-        <tbody>
-          <RepositoryUrlRow urlType="SSH" url={this.props.system.ssh_url} />
-          <RepositoryUrlRow urlType="HTTP" url={this.props.system.http_url} />
-        </tbody>
-      </Table>
-    ];
+    return (
+      <Fragment>
+        <Label className="font-weight-bold">Repository URL</Label>
+        <Table size="sm">
+          <tbody>
+            <RepositoryUrlRow urlType="SSH" url={this.props.system.ssh_url} />
+            <RepositoryUrlRow urlType="HTTP" url={this.props.system.http_url} />
+          </tbody>
+        </Table>
+      </Fragment>
+    );
+  }
+}
+
+function CommandRow(props) {
+  return (
+    <tr>
+      <th scope="row">{props.application}</th>
+      <td>
+        <code>{props.command}</code>
+      </td>
+      <td style={{ width: 1 }}><Clipboard clipboardText={props.command} /></td>
+    </tr>
+  );
+}
+
+
+class RepositoryClone extends Component {
+  render() {
+    const { externalUrl } = this.props;
+    const projectPath = this.props.core.project_path;
+    const renkuClone = `renku clone ${externalUrl}.git`;
+    const gitClone = `git clone ${externalUrl}.git && cd ${projectPath} && git lfs install --local --force`;
+
+    return (
+      <Fragment>
+        <Label className="font-weight-bold">Clone commands</Label>
+        <Table size="sm" className="mb-0">
+          <tbody>
+            <CommandRow application="Renku" command={renkuClone} />
+            <CommandRow application="Git" command={gitClone} />
+          </tbody>
+        </Table>
+        <small className="font-italic">
+          <FontAwesomeIcon icon={faExclamationTriangle} /> If you clone the project using <b>Git</b> instead
+          of Renku, remember to run the following once before you run any other renku command:
+        </small>
+        <small><blockquote className="ml-5"><code>renku githooks install</code></blockquote></small>
+      </Fragment>
+    );
   }
 }
 
@@ -1386,14 +1427,17 @@ class ProjectSettings extends Component {
   render() {
     return <Col key="settings" xs={12}>
       <Row>
-        <Col xs={12} md={10} lg={6}>
+        <Col xs={12} lg={6}>
           <ProjectTags
             tag_list={this.props.system.tag_list}
             onProjectTagsChange={this.props.onProjectTagsChange}
             settingsReadOnly={this.props.settingsReadOnly} />
           <ProjectDescription {...this.props} />
         </Col>
-        <Col xs={12} md={10} lg={6}><RepositoryUrls {...this.props} /></Col>
+        <Col xs={12} lg={6}>
+          <RepositoryUrls {...this.props} />
+          <RepositoryClone {...this.props} />
+        </Col>
       </Row>
     </Col>;
   }
