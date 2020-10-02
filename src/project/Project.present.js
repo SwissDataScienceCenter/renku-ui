@@ -1361,28 +1361,62 @@ function CommandRow(props) {
   );
 }
 
+function GitCloneCmd(props) {
+  const [cmdOpen, setCmdOpen] = useState(false);
+  const { externalUrl, projectPath } = props;
+  const gitClone = `git clone ${externalUrl}.git && cd ${projectPath} && git lfs install --local --force`;
+  const gitHooksInstall = "renku githooks install";
+  return (cmdOpen) ?
+    <div style={{ fontSize: "smaller" }} className="mt-3">
+      <p className="font-italic">
+        If the <b>renku</b> command is not available, you can clone a project using Git.
+      </p>
+      <Table size="sm" className="mb-0" borderless={true}>
+        <tbody>
+          <tr>
+            <th scope="row">Git<sup>*</sup></th>
+            <td>
+              <code>{gitClone}</code>
+              <div className="mt-2 mb-0">
+                If you want to work with the repo using renku, {" "}
+                you need to run the following after the <code>git clone</code> completes:
+              </div>
+            </td>
+            <td style={{ width: 1 }}><Clipboard clipboardText={gitClone} /></td>
+          </tr>
+          <tr>
+            <th scope="row"></th>
+            <td>
+              <code>{gitHooksInstall}</code>
+            </td>
+            <td style={{ width: 1 }}><Clipboard clipboardText={gitHooksInstall} /></td>
+          </tr>
+        </tbody>
+      </Table>
+      <Button color="link" onClick={() => setCmdOpen(false)}>
+        Hide git command
+      </Button>
+    </div> :
+    <Button color="link" style={{ fontSize: "smaller" }} className="font-italic"
+      onClick={() => setCmdOpen(true)}>
+      Do not have renku?
+    </Button>;
+}
+
 
 class RepositoryClone extends Component {
   render() {
     const { externalUrl } = this.props;
-    const projectPath = this.props.core.project_path;
     const renkuClone = `renku clone ${externalUrl}.git`;
-    const gitClone = `git clone ${externalUrl}.git && cd ${projectPath} && git lfs install --local --force`;
-
     return (
       <Fragment>
         <Label className="font-weight-bold">Clone commands</Label>
         <Table size="sm" className="mb-0">
           <tbody>
             <CommandRow application="Renku" command={renkuClone} />
-            <CommandRow application="Git" command={gitClone} />
           </tbody>
         </Table>
-        <small className="font-italic">
-          <FontAwesomeIcon icon={faExclamationTriangle} /> If you clone the project using <b>Git</b> instead
-          of Renku, remember to run the following once before you run any other renku command:
-        </small>
-        <small><blockquote className="ml-5"><code>renku githooks install</code></blockquote></small>
+        <GitCloneCmd externalUrl={externalUrl} projectPath={this.props.core.project_path} />
       </Fragment>
     );
   }
