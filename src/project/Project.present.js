@@ -849,7 +849,7 @@ class ProjectDatasetsNav extends Component {
       datasetsUrl={this.props.datasetsUrl}
       newDatasetUrl={this.props.newDatasetUrl}
       visibility={this.props.visibility}
-      graphStatus={this.props.webhook.status || (this.props.webhook.created && this.props.webhook.stop)}
+      graphStatus={this.props.isGraphReady}
     />;
   }
 }
@@ -933,6 +933,7 @@ function ProjectViewDatasets(props) {
     const loading = props.core.datasets === SpecialPropVal.UPDATING;
     if (loading) return;
     props.fetchDatasets(false);
+    props.fetchGraphStatus();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

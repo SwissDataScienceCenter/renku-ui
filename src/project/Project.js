@@ -294,6 +294,12 @@ class View extends Component {
 
   }
 
+  isGraphReady() {
+    const webhookStatus = this.projectState.get("webhook");
+    return webhookStatus.status || (webhookStatus.created && webhookStatus.stop)
+      || webhookStatus.progress === GraphIndexingStatus.MAX_VALUE;
+  }
+
   getStarred() {
     const featured = this.props.model.get("projects.featured");
     // return false until data are available
@@ -372,8 +378,6 @@ class View extends Component {
     const filesTree = this.projectState.get("filesTree");
     const datasets = this.projectState.get("core.datasets");
     const graphProgress = this.projectState.get("webhook.progress");
-    const webhookStatus = this.projectState.get("webhook");
-    const graphStatus = webhookStatus.status || (webhookStatus.created && webhookStatus.stop);
     const maintainer = this.projectState.get("visibility.accessLevel") >= ACCESS_LEVELS.MAINTAINER ?
       true :
       false;
@@ -463,7 +467,7 @@ class View extends Component {
         model={this.props.model}
         projectId={projectId}
         httpProjectUrl={httpProjectUrl}
-        graphStatus={graphStatus}
+        graphStatus={this.isGraphReady()}
       />,
 
       newDataset: (p) => <NewDataset
@@ -635,6 +639,7 @@ class View extends Component {
     const externalUrl = this.projectState.get("core.external_url");
     const canCreateMR = state.visibility.accessLevel >= ACCESS_LEVELS.DEVELOPER;
     const forkModalOpen = this.projectState.get("transient.forkModalOpen");
+    const isGraphReady = this.isGraphReady();
 
     return {
       ...this.projectState.get(),
@@ -650,6 +655,7 @@ class View extends Component {
       suggestedMRBranches,
       externalUrl,
       canCreateMR,
+      isGraphReady
     };
   }
 
