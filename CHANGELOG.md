@@ -1,5 +1,68 @@
 # Changes
 
+# [0.11.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.10.2...0.11.0) (2020-10-06)
+
+### Features
+
+* add privacy page and cookie consent banner 76cd109, closes [#981](https://github.com/SwissDataScienceCenter/renku-ui/issues/981) [#949](https://github.com/SwissDataScienceCenter/renku-ui/issues/949)
+* added date/time printing utilities a194d6f, closes [#980](https://github.com/SwissDataScienceCenter/renku-ui/issues/980) [#938](https://github.com/SwissDataScienceCenter/renku-ui/issues/938)
+* allow anonymous user navigation in the project's collaboration tab a6fe6fe, closes [#987](https://github.com/SwissDataScienceCenter/renku-ui/issues/987) [#905](https://github.com/SwissDataScienceCenter/renku-ui/issues/905)
+* allow user to provide custom templates for project initialization ee79e8e, closes [#1006](https://github.com/SwissDataScienceCenter/renku-ui/issues/1006) [#976](https://github.com/SwissDataScienceCenter/renku-ui/issues/976)
+* display of relative paths in markdown and improvement in file preview in markdown b945402, closes [#1008](https://github.com/SwissDataScienceCenter/renku-ui/issues/1008) ([#941](https://github.com/SwissDataScienceCenter/renku-ui/issues/941) [#667](https://github.com/SwissDataScienceCenter/renku-ui/issues/667)
+* group opaque changes together 49f2494, closes ([#854](https://github.com/SwissDataScienceCenter/renku-ui/issues/854)) [#959](https://github.com/SwissDataScienceCenter/renku-ui/issues/959)
+* handle paginated responses from apis a5ca3ef, closes [#1042](https://github.com/SwissDataScienceCenter/renku-ui/issues/1042) [#1037](https://github.com/SwissDataScienceCenter/renku-ui/issues/1037) [#764](https://github.com/SwissDataScienceCenter/renku-ui/issues/764)
+* improve projects search d43397a, closes [#961](https://github.com/SwissDataScienceCenter/renku-ui/issues/961) [#703](https://github.com/SwissDataScienceCenter/renku-ui/issues/703)
+* make project visualization dynamic 5afdf8a, closes [#961](https://github.com/SwissDataScienceCenter/renku-ui/issues/961) [#703](https://github.com/SwissDataScienceCenter/renku-ui/issues/703)
+* more flexible options for TimeCaption 14f0ea3, closes [#980](https://github.com/SwissDataScienceCenter/renku-ui/issues/980) [#938](https://github.com/SwissDataScienceCenter/renku-ui/issues/938)
+* notify user of app status using statuspage.io be141e3, closes [#938](https://github.com/SwissDataScienceCenter/renku-ui/issues/938) [#980](https://github.com/SwissDataScienceCenter/renku-ui/issues/980)
+* remove superfluous server setup documentation b7359af, closes [#1018](https://github.com/SwissDataScienceCenter/renku-ui/issues/1018)
+* render julia source and project files in the file browser f267ca4, closes [#979](https://github.com/SwissDataScienceCenter/renku-ui/issues/979)
+* show commit details on-request in environments pages c672ae6, closes [#1052](https://github.com/SwissDataScienceCenter/renku-ui/issues/1052) [#853](https://github.com/SwissDataScienceCenter/renku-ui/issues/853) [#880](https://github.com/SwissDataScienceCenter/renku-ui/issues/880)
+* add dataset to project active and with migration check fb9900b, closes [#1000](https://github.com/SwissDataScienceCenter/renku-ui/issues/1000) [#964](https://github.com/SwissDataScienceCenter/renku-ui/issues/964)
+* reorder the MR tabs as changes, commits, discussion 1311e57, closes [#854](https://github.com/SwissDataScienceCenter/renku-ui/issues/854) [#959](https://github.com/SwissDataScienceCenter/renku-ui/issues/959)
+* show merged merge requests 378958b, closes [#959](https://github.com/SwissDataScienceCenter/renku-ui/issues/959) [#891](https://github.com/SwissDataScienceCenter/renku-ui/issues/891)
+* show the notebook changes first 920c124, closes [#854](https://github.com/SwissDataScienceCenter/renku-ui/issues/854) [#959](https://github.com/SwissDataScienceCenter/renku-ui/issues/959)
+* use core service to fetch templates and create projects f9871b1, closes [#963](https://github.com/SwissDataScienceCenter/renku-ui/issues/963) [#703](https://github.com/SwissDataScienceCenter/renku-ui/issues/703) [#641](https://github.com/SwissDataScienceCenter/renku-ui/issues/641)
+* user can add files to datasets with urls dacfd4b, closes [#985](https://github.com/SwissDataScienceCenter/renku-ui/issues/985) [#800](https://github.com/SwissDataScienceCenter/renku-ui/issues/800)
+* message explaining what create and import operation do in datasets 8d302a4, closes [#988](https://github.com/SwissDataScienceCenter/renku-ui/issues/988) [#971](https://github.com/SwissDataScienceCenter/renku-ui/issues/971)
+* user can perform migration from the UI e975126, closes [#975](https://github.com/SwissDataScienceCenter/renku-ui/issues/975) [#942](https://github.com/SwissDataScienceCenter/renku-ui/issues/942)
+
+
+### Bug Fixes
+
+* adjust top bar layout cd3605c, closes [#961](https://github.com/SwissDataScienceCenter/renku-ui/issues/961)
+* anonymous interactive environments 54f13f5, closes [#1044](https://github.com/SwissDataScienceCenter/renku-ui/issues/1044) [#1030](https://github.com/SwissDataScienceCenter/renku-ui/issues/1030)
+* change name ordering with title ordering 0fb4716, closes [#1040](https://github.com/SwissDataScienceCenter/renku-ui/issues/1040) [#1039](https://github.com/SwissDataScienceCenter/renku-ui/issues/1039)
+* dataset displays kg message correctly f8301d1, closes [#1060](https://github.com/SwissDataScienceCenter/renku-ui/issues/1060) [#1061](https://github.com/SwissDataScienceCenter/renku-ui/issues/1061)
+* dataset name replaced by title where needed 3f57445, closes [#1010](https://github.com/SwissDataScienceCenter/renku-ui/issues/1010) [#1009](https://github.com/SwissDataScienceCenter/renku-ui/issues/1009)
+* fix model handling of updates to date fields ef9cf2e, closes [#938](https://github.com/SwissDataScienceCenter/renku-ui/issues/938) [#980](https://github.com/SwissDataScienceCenter/renku-ui/issues/980)
+* go to source and source button only displayed when inside project 6b3d2a8, closes [#1001](https://github.com/SwissDataScienceCenter/renku-ui/issues/1001) [#729](https://github.com/SwissDataScienceCenter/renku-ui/issues/729)
+* handle response-code 500 in calls to start notebooks 73c77ea, closes [#992](https://github.com/SwissDataScienceCenter/renku-ui/issues/992)
+* only merge notebook server globalOptions and projectOptions for those of type enum. ba79a4d, closes [#967](https://github.com/SwissDataScienceCenter/renku-ui/issues/967) [#968](https://github.com/SwissDataScienceCenter/renku-ui/issues/968)
+* only merge server options for the default_url 2791f48, closes [#1025](https://github.com/SwissDataScienceCenter/renku-ui/issues/1025) [#1041](https://github.com/SwissDataScienceCenter/renku-ui/issues/1041)
+* properly handle missing description field in project page e5423fd, closes [#978](https://github.com/SwissDataScienceCenter/renku-ui/issues/978)
+* set first user namespace as default on new project page f905771, closes [#1005](https://github.com/SwissDataScienceCenter/renku-ui/issues/1005) [#999](https://github.com/SwissDataScienceCenter/renku-ui/issues/999)
+* toolbar works as expected now 98ddafd, closes [#1023](https://github.com/SwissDataScienceCenter/renku-ui/issues/1023) [#1022](https://github.com/SwissDataScienceCenter/renku-ui/issues/1022)
+* when user clicks on dataset tabs they see an initial search c510f95, closes [#1002](https://github.com/SwissDataScienceCenter/renku-ui/issues/1002) [#826](https://github.com/SwissDataScienceCenter/renku-ui/issues/826)
+* the space after the dataset buttons is now bigger 59387fc, closes [#954](https://github.com/SwissDataScienceCenter/renku-ui/issues/954) [#958](https://github.com/SwissDataScienceCenter/renku-ui/issues/958)
+* new message for file upload limits on dataset creation c66aeb1, closes [#996](https://github.com/SwissDataScienceCenter/renku-ui/issues/996) [#973](https://github.com/SwissDataScienceCenter/renku-ui/issues/973)
+* udpate projects layout and navigation link f9ac9f9, closes [#961](https://github.com/SwissDataScienceCenter/renku-ui/issues/961)
+* when the editor is in code mode on edit is now disabled in forms generator 620576c, closes [#953](https://github.com/SwissDataScienceCenter/renku-ui/issues/953) [#957](https://github.com/SwissDataScienceCenter/renku-ui/issues/957)
+* avoid project options to disappear once deselected in environments a2a5216, closes [#950](https://github.com/SwissDataScienceCenter/renku-ui/issues/950) [#935](https://github.com/SwissDataScienceCenter/renku-ui/issues/935)
+* update project topics correctly 7825315, closes [#955](https://github.com/SwissDataScienceCenter/renku-ui/issues/955) [#951](https://github.com/SwissDataScienceCenter/renku-ui/issues/951)
+
+
+### Performance Improvements
+
+* query 100 projects instead of 20 c6fced4, [#983](https://github.com/SwissDataScienceCenter/renku-ui/issues/983)
+* refactor code fetching memeber and starred projects 7a47e6c, closes [#989](https://github.com/SwissDataScienceCenter/renku-ui/issues/989) [#986](https://github.com/SwissDataScienceCenter/renku-ui/issues/986)
+
+
+### BREAKING CHANGES
+
+* requires renku-core service supporting templates endpoints
+
+
 ## [0.10.5](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.10.4...0.10.5) (2020-09-28)
 
 
