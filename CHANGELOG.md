@@ -1,5 +1,41 @@
 # Changes
 
+## [0.11.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.10.5...0.11.0) (2020-10-06)
+
+### Features
+
+* allow user to provide custom templates for project initialization ee79e8e, closes [#1006](https://github.com/SwissDataScienceCenter/renku-ui/issues/1006) [#976](https://github.com/SwissDataScienceCenter/renku-ui/issues/976)
+* show commit details on-request in environments pages c672ae6, closes [#1052](https://github.com/SwissDataScienceCenter/renku-ui/issues/1052) [#853](https://github.com/SwissDataScienceCenter/renku-ui/issues/853) [#880](https://github.com/SwissDataScienceCenter/renku-ui/issues/880)
+* add dataset to project active and with migration check fb9900b, closes [#1000](https://github.com/SwissDataScienceCenter/renku-ui/issues/1000) [#964](https://github.com/SwissDataScienceCenter/renku-ui/issues/964)
+* use core service to fetch templates and create projects f9871b1, closes [#963](https://github.com/SwissDataScienceCenter/renku-ui/issues/963) [#703](https://github.com/SwissDataScienceCenter/renku-ui/issues/703) [#641](https://github.com/SwissDataScienceCenter/renku-ui/issues/641)
+* user can add files to datasets with urls dacfd4b, closes [#985](https://github.com/SwissDataScienceCenter/renku-ui/issues/985) [#800](https://github.com/SwissDataScienceCenter/renku-ui/issues/800)
+* message explaining what create and import operation do in datasets 8d302a4, closes [#988](https://github.com/SwissDataScienceCenter/renku-ui/issues/988) [#971](https://github.com/SwissDataScienceCenter/renku-ui/issues/971)
+* user can perform migration from the UI e975126, closes [#975](https://github.com/SwissDataScienceCenter/renku-ui/issues/975) [#942](https://github.com/SwissDataScienceCenter/renku-ui/issues/942)
+
+
+### Bug Fixes
+
+* change name ordering with title ordering 0fb4716, closes [#1040](https://github.com/SwissDataScienceCenter/renku-ui/issues/1040) [#1039](https://github.com/SwissDataScienceCenter/renku-ui/issues/1039)
+* dataset displays kg message correctly f8301d1, closes [#1060](https://github.com/SwissDataScienceCenter/renku-ui/issues/1060) [#1061](https://github.com/SwissDataScienceCenter/renku-ui/issues/1061)
+* go to source and source button only displayed when inside project 6b3d2a8, closes [#1001](https://github.com/SwissDataScienceCenter/renku-ui/issues/1001) [#729](https://github.com/SwissDataScienceCenter/renku-ui/issues/729)
+* properly handle missing description field in project page e5423fd, closes [#978](https://github.com/SwissDataScienceCenter/renku-ui/issues/978)
+* set first user namespace as default on new project page f905771, closes [#1005](https://github.com/SwissDataScienceCenter/renku-ui/issues/1005) [#999](https://github.com/SwissDataScienceCenter/renku-ui/issues/999)
+* when user clicks on dataset tabs they see an initial search c510f95, closes [#1002](https://github.com/SwissDataScienceCenter/renku-ui/issues/1002) [#826](https://github.com/SwissDataScienceCenter/renku-ui/issues/826)
+* new message for file upload limits on dataset creation c66aeb1, closes [#996](https://github.com/SwissDataScienceCenter/renku-ui/issues/996) [#973](https://github.com/SwissDataScienceCenter/renku-ui/issues/973)
+
+
+### Performance Improvements
+
+* query 100 projects instead of 20 c6fced4, [#983](https://github.com/SwissDataScienceCenter/renku-ui/issues/983)
+* refactor code fetching member and starred projects 7a47e6c, closes [#989](https://github.com/SwissDataScienceCenter/renku-ui/issues/989) [#986](https://github.com/SwissDataScienceCenter/renku-ui/issues/986)
+
+
+### BREAKING CHANGES
+
+* requires renku-core service supporting templates migrations, endpoints, new naming for datasets >=0.11.2
+* requires renku-kg service supporting new naming for datasets >=0.7.0
+
+
 ## [0.10.5](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.10.4...0.10.5) (2020-09-28)
 
 
