@@ -32,9 +32,7 @@
 
 ### BREAKING CHANGES
 
-* requires renku-core service supporting templates endpoints >=0.11.1
-* requires renku-core service supporting migrations >=0.11.0
-* requires renku-core service supporting new naming for datasets >=0.11.2
+* requires renku-core service supporting templates migrations, endpoints, new naming for datasets >=0.11.2
 * requires renku-kg service supporting new naming for datasets >=0.7.0
 
 
