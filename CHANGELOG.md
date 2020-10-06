@@ -32,7 +32,10 @@
 
 ### BREAKING CHANGES
 
-* requires renku-core service supporting templates endpoints
+* requires renku-core service supporting templates endpoints >=0.11.1
+* requires renku-core service supporting migrations >=0.11.0
+* requires renku-core service supporting new naming for datasets >=0.11.2
+* requires renku-kg service supporting new naming for datasets >=0.7.0
 
 
 ## [0.10.5](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.10.4...0.10.5) (2020-09-28)
