@@ -221,7 +221,12 @@ class APIClient {
   }
 
   doLogin() {
-    window.location = `${this.baseUrl}/auth/login?redirect_url=${encodeURIComponent(window.location.href)}`;
+    const params = {
+      "redirect_url": encodeURIComponent(window.location.href),
+      "refresh": true
+    };
+    const paramsArray = Object.keys(params).reduce((obj, key) => [...obj, `${key}=${params[key]}`], []);
+    window.location = `${this.baseUrl}/auth/login?${paramsArray.join("&")}`;
   }
 
   doLogout() {
