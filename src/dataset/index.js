@@ -25,5 +25,7 @@
 
 
 import ShowDataset from "./Dataset.container";
+import { mapDataset } from "./DatasetFunctions";
 
 export default ShowDataset;
+export { mapDataset };

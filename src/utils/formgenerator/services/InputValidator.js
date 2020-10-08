@@ -28,7 +28,8 @@ function checkAtLeastLength(input, length) {
 }
 
 function checkCreatorIsValid(input) {
-  return input.value.find(creator => creator.name.length <= 0 || creator.email.length <= 0) === undefined;
+  return input.value.find(creator =>
+    creator.email && (creator.name.length <= 0 || creator.email.length <= 0)) === undefined;
 }
 
 export default {
