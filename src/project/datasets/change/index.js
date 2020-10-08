@@ -19,10 +19,10 @@
 /**
  *  renku-ui
  *
- *  Dataset/new
- *  Components for the new Dataset page
+ *  Dataset/change
+ *  Components for new and edit Dataset page
  */
 
-import EditDataset from "./DatasetEdit.container";
+import ChangeDataset from "./DatasetChange.container";
 
-export default EditDataset;
+export default ChangeDataset;

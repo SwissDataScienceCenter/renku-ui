@@ -200,6 +200,11 @@ export default function DatasetView(props) {
         <LinkToExternal link={dataset.sameAs} label="DOI" />
         : null
     }
+    {
+      dataset.keywords && dataset.keywords.length > 0 ?
+        <p>Keywords:  {dataset.keywords.join(", ")}</p>
+        : null
+    }
     <DisplayFiles
       projectsUrl={props.projectsUrl}
       fileContentUrl={props.fileContentUrl}

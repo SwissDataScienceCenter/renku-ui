@@ -27,9 +27,15 @@ function checkAtLeastLength(input, length) {
   return (input != null) && input.trim().length >= length;
 }
 
+function checkCreatorIsValid(input) {
+  return input.value.find(creator => creator.name.length <= 0 || creator.email.length <= 0) === undefined;
+}
+
 export default {
   isNotEmpty: input => checkAtLeastLength(input.value, 1),
   isAtLeastLength: (input, minLength) => checkAtLeastLength(input.value, minLength),
-  filesReady: (input) => input.value.length === input.filesOnUploader.current,
-  optionExists: (input) => input.options.find(option => option.value === input.value) !== undefined
+  filesReady: (input) => input.value.filter(file => file.file_status !== "added").length
+    === input.filesOnUploader.current,
+  optionExists: (input) => input.options.find(option => option.value === input.value) !== undefined,
+  creatorIsValid: (input) => checkCreatorIsValid(input)
 };

@@ -340,65 +340,12 @@ const notebooksSchema = new Schema({
   }
 });
 
-//this is to be deleted when we get the proper info from the KG
-const datasetFormSchema_EDIT_TEMP = new Schema({
-  title: {
-    initial: "",
-    name: "title",
-    label: "Title",
-    edit: false,
-    type: FormGenerator.FieldTypes.TEXT,
-    validators: [{
-      id: "title-length",
-      isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression),
-      alert: "Title is too short"
-    }]
-  },
-  creators: {
-    initial: "",
-    name: "creators",
-    label: "Creators",
-    edit: false,
-    type: FormGenerator.FieldTypes.CREATORS,
-    validators: []
-    //shall we pre-validate that an email is an email with regex?
-  },
-  description: {
-    initial: "",
-    name: "description",
-    label: "Description",
-    edit: false,
-    type: FormGenerator.FieldTypes.TEXT_EDITOR,
-    outputType: "markdown",
-    help: "Basic markdown styling tags are allowed in this field.",
-    validators: [{
-      id: "name-length",
-      //  isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression, 3),
-      alert: "Description can't be emtpy"
-    }]
-  },
-  files: {
-    initial: [],
-    name: "files",
-    label: "Files",
-    edit: true,
-    type: FormGenerator.FieldTypes.FILES,
-    uploadFileFunction: undefined,
-    filesOnUploader: undefined,
-    validators: [{
-      id: "files-length",
-      isValidFun: expression => FormGenerator.Validators.filesReady(expression),
-      alert: "Some queued files have not finished uploading. Please see the status messages and reply to any questions."
-    }]
-  }
-});
 
 const datasetFormSchema = new Schema({
   title: {
     initial: "",
     name: "title",
     label: "Title",
-    //   edit: false,
     type: FormGenerator.FieldTypes.TEXT,
     validators: [{
       id: "title-length",
@@ -420,20 +367,22 @@ const datasetFormSchema = new Schema({
     }]
   },
   creators: {
-    initial: "",
+    initial: [],
     name: "creators",
     label: "Creators",
-    //edit: false,
     type: FormGenerator.FieldTypes.CREATORS,
-    validators: []
-    //shall we pre-validate that an email is an email with regex?
+    validators: [{
+      id: "creator-valid",
+      isValidFun: expression => FormGenerator.Validators.creatorIsValid(expression),
+      alert: "Creator name and email can't be empty"
+    }]
+    //shall we pre-validate that an email is an email with regex? --> yes and it should not be empty also...
   },
   keywords: {
-    initial: "",
+    initial: [],
     name: "kewords",
     label: "Keywords",
     help: "To insert a keyword, write it and press enter.",
-    //   edit: false,
     type: FormGenerator.FieldTypes.KEYWORDS,
     validators: []
   },
@@ -441,7 +390,6 @@ const datasetFormSchema = new Schema({
     initial: "",
     name: "description",
     label: "Description",
-    // edit: false,
     type: FormGenerator.FieldTypes.TEXT_EDITOR,
     outputType: "markdown",
     help: "Basic markdown styling tags are allowed in this field.",
@@ -555,5 +503,5 @@ const statuspageSchema = new Schema({
 export {
   userSchema, metaSchema, newProjectSchema, projectSchema, forkProjectSchema, notebooksSchema,
   projectsSchema, datasetFormSchema, issueFormSchema, datasetImportFormSchema, projectGlobalSchema,
-  addDatasetToProjectSchema, statuspageSchema, datasetFormSchema_EDIT_TEMP
+  addDatasetToProjectSchema, statuspageSchema
 };

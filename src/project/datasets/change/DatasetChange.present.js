@@ -19,7 +19,7 @@
 /**
  *  renku-ui
  *
- *  DatasetNew.present.js
+ *  DatasetChange.present.js
  *  Presentational components.
  */
 
@@ -31,9 +31,9 @@ import { FormPanel } from "../../../utils/formgenerator";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { Loader } from "../../../utils/UIComponents";
 
-
-function DatasetNew(props) {
+function DatasetChange(props) {
 
   const getServerWarnings = () => {
     const failed = props.jobsStats.failed
@@ -44,7 +44,7 @@ function DatasetNew(props) {
       {props.jobsStats.tooLong ?
         <div>
           This operation is taking too long and it will continue being processed in the background.<br />
-          Please check the datasets list later to make sure that the changes are visible in the dataset. <br />
+          Please check the datasets list later to make sure that the changes are visible in the project. <br />
           You can also check the <Link to={props.overviewCommitsUrl}>commits list
           </Link> in the project to see if commits for the new dataset appear there.
           <br/><br/>
@@ -68,6 +68,9 @@ function DatasetNew(props) {
     </div>;
   };
 
+  if (!props.initialized)
+    return <Loader />;
+
   if (props.accessLevel < ACCESS_LEVELS.MAINTAINER) {
     return <Col sm={12} md={10} lg={8}>
       <Alert timeout={0} color="primary">
@@ -81,19 +84,25 @@ function DatasetNew(props) {
 
   const warning = props.warningOn.current ? getServerWarnings() : undefined;
 
+  const edit = props.edit;
+
   return <FormPanel
-    btnName="Create Dataset"
+    title={edit ? "Modify Dataset" : undefined}
+    btnName={edit ? "Modify Dataset" : "Create Dataset"}
     submitCallback={props.warningOn.current ? undefined : props.submitCallback}
     model={props.datasetFormSchema}
     serverErrors={props.serverErrors}
     serverWarnings={warning}
     disableAll={props.warningOn.current === true}
-    cancelBtnName={props.warningOn.current ? "Go to list" : "Cancel"}
-    submitLoader={{ value: props.submitLoader, text: "Creating dataset, please wait..." }}
+    submitLoader={{ value: props.submitLoader,
+      text: edit ? "Modifying dataset, please wait..." : "Creating dataset, please wait..." }}
+    cancelBtnName={props.warningOn.current ?
+      edit ? "Go to dataset" : "Go to list" : "Cancel"}
     onCancel={props.onCancel}
+    edit={edit}
   />;
 
 
 }
 
-export default DatasetNew;
+export default DatasetChange;

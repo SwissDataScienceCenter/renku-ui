@@ -32,7 +32,7 @@ import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
 function KeywordsInput({ name, label, type, value, alert, placeholder, setInputs, help, disabled = false }) {
 
-  const [tags, setTags] = React.useState([]);
+  const [tags, setTags] = React.useState(value);
   const tagInput = React.useRef(null);
 
   const removeTag = (i) => {
