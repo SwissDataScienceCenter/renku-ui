@@ -180,6 +180,32 @@ class LoggedInNavBar extends Component {
     };
   }
 
+  componentDidMount() {
+    const existingScript = document.getElementById("loginChecker");
+
+    if (!existingScript) {
+      const script = document.createElement("script");
+      script.src = `${this.props.params["BASE_URL"]}/auth/js/keycloak.js`;
+      script.id = "loginChecker";
+      script.onload = () => {
+        // eslint-disable-next-line
+        let keycloak = new Keycloak({
+          url: `${this.props.params["BASE_URL"]}/auth`,
+          realm: "Renku",
+          clientId: "renku",
+        });
+        console.log(keycloak);
+        //keycloak.onAuthSuccess = function() { console.log('authenticated now'); }
+        keycloak.init().success(function (authenticated) {
+          console.log(authenticated ? 'authenticated' : 'not authenticated');
+        }).error(function () {
+          console.log('failed to initialize');
+        });
+      };
+      document.body.appendChild(script);
+    }
+  }
+
   toggle() {
     this.setState({
       isOpen: !this.state.isOpen
