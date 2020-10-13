@@ -28,9 +28,8 @@ import React, { Component, Fragment, useState, useEffect } from "react";
 
 import { Link, Route, Switch } from "react-router-dom";
 import {
-  Container, Row, Col, Alert, DropdownItem, Table, Nav, NavItem, Button, ButtonGroup, Badge, Spinner,
-  Card, CardBody, CardHeader, Form, FormGroup, FormText, Label, Input, UncontrolledTooltip, ListGroupItem,
-  UncontrolledCollapse
+  Container, Row, Col, Alert, DropdownItem, Table, Nav, NavItem, Button, ButtonGroup, Badge,
+  Card, CardBody, CardHeader, Form, FormGroup, FormText, Label, Input, UncontrolledTooltip, ListGroupItem
 } from "reactstrap";
 import qs from "query-string";
 
@@ -55,7 +54,8 @@ import { CollaborationList, collaborationListTypeMap } from "../collaboration/li
 import FilesTreeView from "./filestreeview/FilesTreeView";
 import DatasetsListView from "./datasets/DatasetsListView";
 import { ACCESS_LEVELS } from "../api-client";
-import { withProjectMapped, MigrationStatus } from "./Project";
+import { withProjectMapped } from "./Project";
+import ProjectViewVersion from "./version/ProjectVersion.present";
 import { NamespaceProjects } from "../namespace";
 import { CommitsView } from "../utils/Commits";
 
@@ -658,7 +658,7 @@ class ProjectViewOverview extends Component {
             />
             <Route exact path={this.props.overviewStatusUrl} render={props =>
               <Fragment>
-                <ProjectViewVersion {...this.props} />
+                <ProjectViewVersion {...this.props} isLoading={isRequestPending(this.props, "readme")} />
                 <ProjectViewKG {...this.props} />
               </Fragment>}
             />
