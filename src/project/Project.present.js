@@ -28,9 +28,8 @@ import React, { Component, Fragment, useState, useEffect } from "react";
 
 import { Link, Route, Switch } from "react-router-dom";
 import {
-  Container, Row, Col, Alert, DropdownItem, Table, Nav, NavItem, Button, ButtonGroup, Badge, Spinner,
-  Card, CardBody, CardHeader, Form, FormGroup, FormText, Label, Input, UncontrolledTooltip, ListGroupItem,
-  UncontrolledCollapse
+  Container, Row, Col, Alert, DropdownItem, Table, Nav, NavItem, Button, ButtonGroup, Badge,
+  Card, CardBody, CardHeader, Form, FormGroup, FormText, Label, Input, UncontrolledTooltip, ListGroupItem
 } from "reactstrap";
 import qs from "query-string";
 
@@ -55,7 +54,8 @@ import { CollaborationList, collaborationListTypeMap } from "../collaboration/li
 import FilesTreeView from "./filestreeview/FilesTreeView";
 import DatasetsListView from "./datasets/DatasetsListView";
 import { ACCESS_LEVELS } from "../api-client";
-import { withProjectMapped, MigrationStatus } from "./Project";
+import { withProjectMapped } from "./Project";
+import ProjectViewVersion from "./version/ProjectVersion.present";
 import { NamespaceProjects } from "../namespace";
 import { CommitsView } from "../utils/Commits";
 
@@ -554,116 +554,6 @@ class ProjectViewStats extends Component {
   }
 }
 
-class ProjectViewVersion extends Component {
-  render() {
-    const { migration_required, project_supported, migration_status, check_error } = this.props.migration;
-    const loading = isRequestPending(this.props, "readme") || migration_required === null;
-    const maintainer = this.props.visibility.accessLevel >= ACCESS_LEVELS.MAINTAINER;
-
-    let body = null;
-    if (loading) {
-      body = (<Loader />);
-    }
-    else {
-      // print the error if any
-      if (check_error || migration_status === MigrationStatus.ERROR) {
-        const error = check_error ?
-          check_error :
-          migration_status;
-        body = (
-          <Alert color="danger">
-            <p>
-              Error while { check_error ? "checking" : "updating" } the version. Please reload the page to try again.
-              If the problem persists you should contact the development team on&nbsp;
-              <a href="https://gitter.im/SwissDataScienceCenter/renku"
-                target="_blank" rel="noreferrer noopener">Gitter</a> or create an issue in&nbsp;
-              <a href="https://github.com/SwissDataScienceCenter/renku/issues"
-                target="_blank" rel="noreferrer noopener">GitHub</a>.
-            </p>
-            <div><strong>Error Message</strong><pre>{error}</pre></div>
-          </Alert>
-        );
-      }
-      // migration required
-      else if (migration_required) {
-        let updateSection = null;
-        const updateInstruction = (
-          <Fragment>
-            You can launch
-            an <Link to={this.props.launchNotebookUrl}>interactive environment</Link> and follow the
-            {/* eslint-disable-next-line max-len */}
-            &nbsp;<a href="https://renku.readthedocs.io/en/latest/user/upgrading_renku.html#upgrading-your-image-to-use-the-latest-renku-cli-version">
-              instructions for upgrading</a>.
-            When finished, you will need to run <code>renku migrate</code>.
-          </Fragment>
-        );
-        if (maintainer) {
-          if (project_supported) {
-            updateSection = (
-              <Fragment>
-                <Button
-                  color="warning"
-                  disabled={migration_status === MigrationStatus.MIGRATING}
-                  onClick={this.props.onMigrateProject}
-                >
-                  {migration_status === MigrationStatus.MIGRATING ?
-                    <span><Spinner size="sm" /> Updating...</span> : "Update"
-                  }
-                </Button>
-                <Button color="link" id="btn_instructions"><i>Do you prefer manual instructions?</i></Button>
-                <UncontrolledCollapse toggler="#btn_instructions">
-                  <br />
-                  <p>{updateInstruction}</p>
-                </UncontrolledCollapse>
-              </Fragment>
-            );
-          }
-          else {
-            updateSection = (
-              <p>
-                <strong>Updating this project automatically is not possible.</strong>
-                <br /> {updateInstruction}
-              </p>
-            );
-          }
-        }
-        else {
-          updateSection = (
-            <p>
-              <strong>You do not have the required permissions to upgrade this project.</strong>
-              &nbsp;You can <ExternalLink role="text" size="sm"
-                title="ask a project maintainer" url={`${this.props.externalUrl}/project_members`} /> to
-              do that for you.
-            </p>
-          );
-        }
-        body = (
-          <Alert color="warning">
-            <p>
-              <FontAwesomeIcon icon={faExclamationTriangle} /> A new version of <strong>renku</strong> is available.
-              The project needs to be migrated to keep working.
-            </p>
-            {updateSection}
-          </Alert>
-        );
-      }
-      // migration not needed
-      else {
-        body = (<Alert color="success"><FontAwesomeIcon icon={faCheck} /> The current version is up to date.</Alert>);
-      }
-    }
-
-    return (
-      <Card className="border-0">
-        <CardHeader>Renku Version</CardHeader>
-        <CardBody>
-          <Row><Col>{body}</Col></Row>
-        </CardBody>
-      </Card>
-    );
-  }
-}
-
 class ProjectViewKG extends Component {
   render() {
     const loading = false;
@@ -776,7 +666,7 @@ class ProjectViewOverview extends Component {
             />
             <Route exact path={this.props.overviewStatusUrl} render={props =>
               <Fragment>
-                <ProjectViewVersion {...this.props} />
+                <ProjectViewVersion {...this.props} isLoading={isRequestPending(this.props, "readme")} />
                 <ProjectViewKG {...this.props} />
               </Fragment>}
             />

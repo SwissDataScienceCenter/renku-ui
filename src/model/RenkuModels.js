@@ -166,6 +166,10 @@ const projectSchema = new Schema({
     schema: {
       migration_required: { initial: null },
       project_supported: { initial: null },
+      docker_update_possible: { initial: null }, //boolean
+      latest_version: { initial: null }, //string
+      project_version: { initial: null }, //string
+      template_update_possible: { initial: null }, //boolean
       migrating: { initial: false },
       migration_status: { initial: null },
       migration_error: { initial: null },
