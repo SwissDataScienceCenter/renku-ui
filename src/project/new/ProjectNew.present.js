@@ -623,12 +623,16 @@ class Create extends Component {
         content = <pre className="text-wrap">{error}</pre>;
       }
       else {
-        Object.keys(error).map(v => {
+        const errors = Object.keys(error).map(v => {
           const text = typeof error[v] == "string" ?
             `${v}: ${error[v]}` :
             `Error message: ${JSON.stringify(error[v])}`;
-          content = (<pre key={v} className="text-wrap">{text}</pre>);
+          return (<pre key={v} className="text-wrap">{text}</pre>);
         });
+        if (errors.length === 1)
+          content = (errors[0]);
+        else
+          content = error[0];
       }
       const fatal = templates.all && templates.all.length ? false : true;
       const description = fatal ?
