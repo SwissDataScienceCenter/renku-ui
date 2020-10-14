@@ -618,9 +618,18 @@ class Create extends Component {
       templates.errors[0] :
       null;
     if (error) {
-      let content = typeof error == "string" ?
-        (<pre className="text-wrap">{error}</pre>) :
-        Object.keys(error).map(v => (<pre key={v} className="text-wrap">{v}: {error[v]}</pre>));
+      let content;
+      if (typeof error == "string") {
+        content = <pre className="text-wrap">{error}</pre>;
+      }
+      else {
+        Object.keys(error).map(v => {
+          const text = typeof error[v] == "string" ?
+            `${v}: ${error[v]}` :
+            `Error message: ${JSON.stringify(error[v])}`;
+          content = (<pre key={v} className="text-wrap">{text}</pre>);
+        });
+      }
       const fatal = templates.all && templates.all.length ? false : true;
       const description = fatal ?
         (<p>Unable to fetch templates.</p>) :
@@ -631,8 +640,7 @@ class Create extends Component {
           If the error persists, you may want to use a RenkuLab template instead.
         </span>) :
         (<span>
-          You
-          can try refreshing the page. If the error persists, you should contact the development team on&nbsp;
+          You can try refreshing the page. If the error persists, you should contact the development team on&nbsp;
           <a href="https://gitter.im/SwissDataScienceCenter/renku"
             target="_blank" rel="noreferrer noopener">Gitter</a> or&nbsp;
           <a href="https://github.com/SwissDataScienceCenter/renku"
