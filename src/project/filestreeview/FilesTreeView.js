@@ -22,6 +22,8 @@ class TreeNode extends Component {
   handleIconClick() {
     this.props.setOpenFolder(this.props.path);
     this.setState((prevState) => ({ childrenOpen: !prevState.childrenOpen }));
+    setTimeout(() => this.props.updateTreeMaxHeight(), 10);
+    setTimeout(() => this.props.updateTreeMaxHeight(), 1000);
   }
 
   componentDidUpdate(previousProps) {
@@ -105,9 +107,74 @@ class FilesTreeView extends Component {
     super(props);
     this.state = {
       dropdownOpen: false,
-      treeStructure: this.props.data
+      treeStructure: this.props.data,
     };
     this.toggle = this.toggle.bind(this);
+  }
+
+  componentDidMount() {
+    this.updateTreeMaxHeight();
+    if (!this.state.listener) {
+      const listener = () => this.updateTreeMaxHeight();
+      this.setState({ listener });
+      window.addEventListener("resize", listener);
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.state.listener)
+      window.removeEventListener("resize", this.state.listener);
+  }
+
+  updateTreeMaxHeight() {
+    const maxHeight = this.computeTreeMaxHeight();
+    this.setState({ maxHeight });
+  }
+
+  computeTreeMaxHeight() {
+    // return when the width is <MD
+    if (window.innerWidth <= 768)
+      return null;
+
+    // check if current nav is already limited in size
+    const navContainer = document.getElementById("project-files-nav-container");
+    const limited = navContainer && navContainer.scrollHeight !== navContainer.offsetHeight ?
+      true :
+      false;
+
+    // return when the whole content doesn't overflow the window element
+    const heightHtml = [...document.getElementsByTagName("html")]
+      .reduce((height, elem) => height + elem.offsetHeight, 0);
+    if (!limited && heightHtml <= window.innerHeight)
+      return null;
+
+    // return when the file nav doesn't take more space than file content
+    const heightProjectFilesNav = document.getElementById("project-files-nav") ?
+      [...document.getElementById("project-files-nav").childNodes]
+        .reduce((height, elem) => height + elem.offsetHeight, 0) :
+      0;
+    const heightProjectFilesContent = document.getElementById("project-files-content") ?
+      [...document.getElementById("project-files-content").childNodes]
+        .reduce((height, elem) => height + elem.offsetHeight, 0) : 0;
+    if (heightProjectFilesNav <= heightProjectFilesContent)
+      return null;
+
+    // compute the available space for file content
+    const heightHeader = [...document.getElementsByTagName("header")]
+      .reduce((height, elem) => height + elem.offsetHeight, 0);
+    const heightFooter = [...document.getElementsByTagName("footer")]
+      .reduce((height, elem) => height + elem.offsetHeight, 0);
+    const heightBlankSpaces = [...document.getElementsByClassName("blank-space")]
+      .reduce((height, elem) => height + elem.offsetHeight, 0);
+    const heightProjectHeader = document.getElementById("project-header") ?
+      document.getElementById("project-header").offsetHeight :
+      0;
+    const heightProjectNav = document.getElementById("project-header") ?
+      document.getElementById("project-header").offsetHeight :
+      0;
+    const heightElements = heightHeader + heightFooter + heightBlankSpaces + heightProjectHeader + heightProjectNav;
+    const heightMax = window.innerHeight - heightElements;
+    return heightMax;
   }
 
   toggle() {
@@ -120,14 +187,18 @@ class FilesTreeView extends Component {
     const fileView = !this.props.currentUrl.startsWith(this.props.lineageUrl);
 
     const emptyView = this.props.projectUrl.startsWith(this.props.currentUrl)
-    || this.props.lineageUrl.startsWith(this.props.currentUrl);
+      || this.props.lineageUrl.startsWith(this.props.currentUrl);
 
     let redirectURL = "";
-    if (!emptyView ) {
+    if (!emptyView) {
       redirectURL = fileView ?
         this.props.currentUrl.replace(this.props.projectUrl, "")
         : this.props.currentUrl.replace(this.props.lineageUrl, "");
     }
+
+    let style = {};
+    if (this.state.maxHeight)
+      style.maxHeight = this.state.maxHeight;
 
     const tree = this.state.treeStructure.tree ?
       this.state.treeStructure.tree.map((node) => {
@@ -144,6 +215,7 @@ class FilesTreeView extends Component {
           isLfs={this.state.treeStructure.hash[node.path].isLfs}
           nodeInsideIsSelected={this.props.currentUrl.endsWith(node.path)}
           currentUrl={this.props.currentUrl}
+          updateTreeMaxHeight={() => this.updateTreeMaxHeight()}
         />;
       })
       :
@@ -154,7 +226,7 @@ class FilesTreeView extends Component {
     const toLineage = this.props.lineageUrl + redirectURL;
 
     return (
-      <div className="tree-container">
+      <div id="project-files-nav-container" style={style} className="tree-container overflow-auto">
         <div className="tree-title">
           <span className="tree-header-title text-truncate">
             {fileView ? "File View" : "Lineage View"}

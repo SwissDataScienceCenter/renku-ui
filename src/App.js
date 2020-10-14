@@ -63,7 +63,7 @@ class App extends Component {
             <RenkuNavBar {...props} {...this.props} />
           } />
           <main role="main" className="container-fluid">
-            <div key="gap">&nbsp;</div>
+            <div key="gap" className="blank-space">&nbsp;</div>
             <Switch>
               {/* Route forces trailing slashes on routes ending with a numerical id */}
               <Route exact path="/login" render={

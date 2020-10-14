@@ -1134,10 +1134,10 @@ class ProjectViewFiles extends Component {
 
   render() {
     return [
-      <Col key="files" sm={12} md={4} lg={3} xl={2}>
+      <Col key="files" id="project-files-nav" sm={12} md={4} lg={3} xl={2}>
         <ProjectFilesNav {...this.props} />
       </Col>,
-      <Col key="content" sm={12} md={8} lg={9} xl={10}>
+      <Col key="content" id="project-files-content" sm={12} md={8} lg={9} xl={10}>
         <Switch>
           <Route path={this.props.lineageUrl}
             render={p => this.props.lineageView(p)} />
@@ -1587,9 +1587,9 @@ class ProjectView extends Component {
     }
 
     return [
-      <Row key="header"><Col xs={12}><ProjectViewHeader key="header" {...this.props} /></Col></Row>,
-      <Row key="nav"><Col xs={12}><ProjectNav key="nav" {...this.props} /></Col></Row>,
-      <Row key="space"><Col key="space" xs={12}>&nbsp;</Col></Row>,
+      <Row key="header" id="project-header"><Col xs={12}><ProjectViewHeader key="header" {...this.props} /></Col></Row>,
+      <Row key="nav" id="project-nav"><Col xs={12}><ProjectNav key="nav" {...this.props} /></Col></Row>,
+      <Row key="space" className="blank-space"><Col key="space" xs={12}>&nbsp;</Col></Row>,
       <Container key="content" fluid>
         <Row>
           <Switch>
