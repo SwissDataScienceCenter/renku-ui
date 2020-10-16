@@ -95,22 +95,45 @@ class ProjectVisibilityLabel extends Component {
   }
 }
 
-class ProjectMigrationIcon extends Component {
+/**
+ * Shows a warning icon when Renku version is outdated or Knowledge Graph integration is not active.
+ *
+ * @param {Object} webhook - project.webhook store object
+ * @param {bool} migration_required - whether it's necessary to migrate the project or not
+ * @param {Object} history - react history object
+ * @param {string} overviewStatusUrl - overview status url
+ */
+class ProjectStatusIcon extends Component {
   render() {
-    const migration_required = this.props.migration_required;
+    const { webhook, migration_required, overviewStatusUrl, history } = this.props;
+    const kgDown =
+      webhook === false ||
+      (webhook.status === false && webhook.created !== true) ||
+      webhookError(webhook.status);
 
-    if (migration_required) {
-      return <span className="warningLabel">
+    if (!migration_required && !kgDown)
+      return null;
+
+    const versionInfo = migration_required ?
+      "Current Renku version is outdated. " :
+      null;
+    const kgInfo = kgDown ?
+      "Knowledge Graph integration not active. " :
+      null;
+
+    return (
+      <span className="warningLabel">
         <FontAwesomeIcon
           icon={faExclamationTriangle}
-          onClick={()=>this.props.history.push(this.props.overviewStatusUrl)}
+          onClick={() => history.push(overviewStatusUrl)}
           id="warningStatusLink" />
         <UncontrolledTooltip placement="top" target="warningStatusLink">
-          This project&apos;s <b>renku</b> version needs to be updated. Click here to see details.
+          {versionInfo}
+          {kgInfo}
+          Click to see details.
         </UncontrolledTooltip>
-      </span>;
-    }
-    return null;
+      </span>
+    );
   }
 }
 
@@ -181,7 +204,7 @@ class KnowledgeGraphIntegration extends Component {
 
     return (
       <Alert color="success">
-        Knowledge Graph integration is active.
+        <FontAwesomeIcon icon={faCheck} /> Knowledge Graph integration is active.
       </Alert>
     );
   }
@@ -193,7 +216,7 @@ class KnowledgeGraphWarning extends Component {
     if (webhook === true) {
       return (
         <Alert color="success">
-          Integration with the Knowledge Graph was successful.
+          <FontAwesomeIcon icon={faCheck} /> Integration with the Knowledge Graph was successful.
         </Alert>
       );
     }
@@ -323,8 +346,9 @@ class ProjectViewHeaderOverview extends Component {
         <Row>
           <Col xs={12} md>
             <h3>
-              <ProjectMigrationIcon
+              <ProjectStatusIcon
                 history={this.props.history}
+                webhook={this.props.webhook}
                 overviewStatusUrl={this.props.overviewStatusUrl}
                 migration_required={this.props.migration.migration_required}
               />{core.title} <ProjectVisibilityLabel visibilityLevel={this.props.visibility.level} />
