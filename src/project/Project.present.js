@@ -45,7 +45,7 @@ import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 
 import {
   Clipboard, ExternalLink, Loader, RenkuNavLink, TimeCaption, RefreshButton, Pagination,
-  ButtonWithMenu, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, GoBackButton, RenkuMarkdown,
+  ButtonWithMenu, InfoAlert, GoBackButton, RenkuMarkdown,
 } from "../utils/UIComponents";
 import { SpecialPropVal } from "../model/Model";
 import { ProjectTags, ProjectTagList } from "./shared";
@@ -556,9 +556,7 @@ class ProjectViewStats extends Component {
 
 class ProjectViewVersion extends Component {
   render() {
-    const {
-      migration_required, project_supported, migration_status, check_error, migration_error
-    } = this.props.migration;
+    const { migration_required, project_supported, migration_status, check_error } = this.props.migration;
     const loading = isRequestPending(this.props, "readme") || migration_required === null;
     const maintainer = this.props.visibility.accessLevel >= ACCESS_LEVELS.MAINTAINER;
 
