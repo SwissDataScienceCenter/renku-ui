@@ -29,9 +29,10 @@ import { CardBody } from "reactstrap";
 
 const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "pdf", "gif"];
 const CODE_EXTENSIONS = [
-  "py", "js", "json", "sh", "r", "txt", "yml", "csv", "parquet", "cwl", "job", "prn", "rout",
+  "py", "js", "json", "sh", "r", "yml", "csv", "parquet", "cwl", "job", "prn", "rout",
   "dcf", "rproj", "rst", "bat", "ini", "rmd", "jl", "toml"
 ];
+const TEXT_EXTENSIONS = ["txt"];
 
 // FIXME: Unify the file viewing for issues (embedded) and independent file viewing.
 // FIXME: Javascript highlighting is broken for large files.
@@ -46,10 +47,10 @@ class FilePreview extends React.Component {
     if (this.props.file.file_name.match(/\.(.*)/) === null)
       return null;
     return this.props.file.file_name.split(".").pop().toLowerCase();
-
   };
 
   fileIsCode = () => CODE_EXTENSIONS.indexOf(this.getFileExtension()) >= 0;
+  fileIsText = () => TEXT_EXTENSIONS.indexOf(this.getFileExtension()) >= 0;
   fileIsImage = () => IMAGE_EXTENSIONS.indexOf(this.getFileExtension()) >= 0;
   fileHasNoExtension = () => this.getFileExtension() === null;
 
@@ -83,6 +84,16 @@ class FilePreview extends React.Component {
             alt={this.props.file.file_name}
             src={"data:image;base64," + this.props.file.content}
           />
+        </CardBody>
+      );
+    }
+    // Free text
+    if (this.fileIsText()) {
+      return (
+        <CardBody key="file preview" className="pb-0">
+          <pre className="no-highlight">
+            <code>{atobUTF8(this.props.file.content)}</code>
+          </pre>
         </CardBody>
       );
     }
