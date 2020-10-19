@@ -22,6 +22,7 @@
     "dompurify": "^2.0.7",
     "filesize": "^6.0.0",
     "graphql": "^14.5.8",
+    "highlight.js": "^10.2.1",
     "http-proxy": "^1.18.1",
     "human-time": "^0.0.2",
     "immutability-helper": "^3.0.1",
