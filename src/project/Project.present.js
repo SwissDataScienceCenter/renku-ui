@@ -574,7 +574,7 @@ class ProjectViewVersion extends Component {
           <Alert color="danger">
             <p>
               Error while { check_error ? "checking" : "updating" } the version. Please reload the page to try again.
-              If the problem persistsy you should contact the development team on&nbsp;
+              If the problem persists you should contact the development team on&nbsp;
               <a href="https://gitter.im/SwissDataScienceCenter/renku"
                 target="_blank" rel="noreferrer noopener">Gitter</a> or create an issue in&nbsp;
               <a href="https://github.com/SwissDataScienceCenter/renku/issues"
