@@ -53,7 +53,7 @@ export default function ShowDataset(props) {
       unmounted = true;
     };
   }, [props.insideProject, datasetFiles,
-    dataset, props.httpProjectUrl, setDatasetFiles, props.client]);
+    dataset.name, props.httpProjectUrl, setDatasetFiles, props.client]);
 
   useEffect(() => {
     let unmounted = false;
