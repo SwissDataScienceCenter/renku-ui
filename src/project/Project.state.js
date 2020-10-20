@@ -83,7 +83,7 @@ class ProjectModel extends StateModel {
             else {
               this.fetchMigrationCheck(client);
               this.set("migration.migration_status", MigrationStatus.FINISHED);
-              this.set("migration.migration_error", undefined);
+              this.set("migration.migration_error", null);
             }
           });
       });

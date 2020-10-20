@@ -168,7 +168,8 @@ const projectSchema = new Schema({
       project_supported: { initial: null },
       migrating: { initial: false },
       migration_status: { initial: null },
-      check_error: { initial: undefined }
+      migration_error: { initial: null },
+      check_error: { initial: null }
     }
   }
 });
