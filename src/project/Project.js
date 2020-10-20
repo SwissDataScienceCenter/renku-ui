@@ -51,7 +51,7 @@ const subRoutes = {
   stats: "overview/stats",
   overviewDatasets: "overview/datasets",
   overviewCommits: "overview/commits",
-  overviewVersion: "overview/version",
+  overviewStatus: "overview/status",
   datasets: "datasets",
   datasetsAdd: "datasets/new",
   dataset: "datasets/:datasetId",
@@ -324,7 +324,7 @@ class View extends Component {
       statsUrl: `${baseUrl}/overview/stats`,
       overviewDatasetsUrl: `${baseUrl}/overview/datasets`,
       overviewCommitsUrl: `${baseUrl}/overview/commits`,
-      overviewVersionUrl: `${baseUrl}/overview/version`,
+      overviewStatusUrl: `${baseUrl}/overview/status`,
       datasetsUrl: `${datasetsUrl}`,
       newDatasetUrl: `${datasetsUrl}/new`,
       datasetUrl: `${datasetsUrl}/:datasetId`,
@@ -613,11 +613,6 @@ class View extends Component {
     createGraphWebhook: (e) => {
       e.preventDefault();
       return this.createGraphWebhook();
-    },
-    onCloseGraphWebhook: () => {
-      this.stopCheckingWebhook();
-      this.fetchProjectDatasetsFromKg();
-      this.fetchProjectDatasets(true);
     },
     fetchGraphStatus: () => {
       return this.fetchGraphStatus();
