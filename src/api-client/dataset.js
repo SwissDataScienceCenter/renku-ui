@@ -133,23 +133,14 @@ export default function addDatasetMethods(client) {
         project_id = response;
 
         let postUrl = edit ? `${client.baseUrl}/renku/datasets.edit` : `${client.baseUrl}/renku/datasets.create`;
-        let body = edit ?
-          {
-            "name": renkuDataset.name,
-            "title": renkuDataset.title,
-            "description": renkuDataset.description,
-            "creators": renkuDataset.creators,
-            "keywords": renkuDataset.keywords,
-            "project_id": project_id
-          } :
-          {
-            "name": renkuDataset.name,
-            "title": renkuDataset.title,
-            "description": renkuDataset.description,
-            "creators": renkuDataset.creators,
-            "keywords": renkuDataset.keywords,
-            "project_id": project_id
-          };
+        let body = {
+          "name": renkuDataset.name,
+          "title": renkuDataset.title,
+          "description": renkuDataset.description,
+          "creators": renkuDataset.creators,
+          "keywords": renkuDataset.keywords,
+          "project_id": project_id
+        };
 
         return client.clientFetch(postUrl, {
           method: "POST",
