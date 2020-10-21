@@ -19,7 +19,7 @@
 /**
  *  renku-ui
  *
- *  DatasetEdit.present.js
+ *  DatasetChange.present.js
  *  Presentational components.
  */
 
@@ -31,11 +31,11 @@ import { FormPanel } from "../../../utils/formgenerator";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { Loader } from "../../../utils/UIComponents";
 
-function DatasetEdit(props) {
+function DatasetChange(props) {
 
   const getServerWarnings = () => {
-
     const failed = props.jobsStats.failed
       .map(job => <div key={"warn-" + job.file_url} className="pl-2">- {job.file_url}<br /></div>);
     const progress = props.jobsStats.inProgress
@@ -43,12 +43,11 @@ function DatasetEdit(props) {
     return <div>
       {props.jobsStats.tooLong ?
         <div>
-          This operation is taking too long and it will continue being processed in the background.<br/>
-          Please check the datasets list later to make sure that the new dataset is available. <br />
+          This operation is taking too long and it will continue being processed in the background.<br />
+          Please check the datasets list later to make sure that the changes are visible in the project. <br />
           You can also check the <Link to={props.overviewCommitsUrl}>commits list
           </Link> in the project to see if commits for the new dataset appear there.
-          <br />
-          <br />
+          <br/><br/>
         </div>
         : null
       }
@@ -70,12 +69,12 @@ function DatasetEdit(props) {
   };
 
   if (!props.initialized)
-    return null;
+    return <Loader />;
 
   if (props.accessLevel < ACCESS_LEVELS.MAINTAINER) {
     return <Col sm={12} md={10} lg={8}>
       <Alert timeout={0} color="primary">
-        Acces Denied. You don&apos;t have rights to edit datasets for this project.<br /><br />
+        Acces Denied. You don&apos;t have rights to create datasets for this project.<br /><br />
         <FontAwesomeIcon icon={faInfoCircle} /> If you were recently given access to this project,
         you might need to <Button size="sm" color="primary"
           onClick={() => window.location.reload()}>refresh the page</Button> first.
@@ -85,19 +84,25 @@ function DatasetEdit(props) {
 
   const warning = props.warningOn.current ? getServerWarnings() : undefined;
 
+  const edit = props.edit;
+
   return <FormPanel
-    title="Modify Dataset"
-    btnName="Modify Dataset"
+    title={edit ? "Modify Dataset" : undefined}
+    btnName={edit ? "Modify Dataset" : "Create Dataset"}
     submitCallback={props.warningOn.current ? undefined : props.submitCallback}
     model={props.datasetFormSchema}
     serverErrors={props.serverErrors}
     serverWarnings={warning}
     disableAll={props.warningOn.current === true}
-    submitLoader={{ value: props.submitLoader, text: "Adding files to dataset, please wait..." }}
+    submitLoader={{ value: props.submitLoader,
+      text: edit ? "Modifying dataset, please wait..." : "Creating dataset, please wait..." }}
+    cancelBtnName={props.warningOn.current ?
+      edit ? "Go to dataset" : "Go to list" : "Cancel"}
     onCancel={props.onCancel}
-    cancelBtnName={props.warningOn.current ? "Go to dataset" : "Cancel"}
-    edit={true} />;
+    edit={edit}
+  />;
+
 
 }
 
-export default DatasetEdit;
+export default DatasetChange;

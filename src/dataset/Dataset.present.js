@@ -29,7 +29,7 @@ import { ProjectsCoordinator } from "../project/shared";
 function DisplayFiles(props) {
   if (props.files === undefined) return null;
 
-  if (props.files.error) {
+  if (props.files.error !== undefined) {
     return <Card key="datasetDetails">
       <CardHeader className="align-items-baseline">
         <span className="caption align-baseline">Dataset files</span>
@@ -198,6 +198,11 @@ export default function DatasetView(props) {
     {
       dataset.sameAs && dataset.sameAs.includes("doi.org") ?
         <LinkToExternal link={dataset.sameAs} label="DOI" />
+        : null
+    }
+    {
+      dataset.keywords && dataset.keywords.length > 0 ?
+        <p>Keywords:  {dataset.keywords.join(", ")}</p>
         : null
     }
     <DisplayFiles

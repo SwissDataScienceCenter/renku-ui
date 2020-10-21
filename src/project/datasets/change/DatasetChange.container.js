@@ -19,32 +19,48 @@
 /**
  *  incubator-renku-ui
  *
- *  DatasetEdit.container.js
- *  Container components for editing dataset.
+ *  DatasetNew.container.js
+ *  Container components for new dataset.
  */
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
 import { datasetFormSchema } from "../../../model/RenkuModels";
-import DatasetEdit from "./DatasetEdit.present";
+import DatasetChange from "./DatasetChange.present";
 import { JobStatusMap } from "../../../job/Job";
 import { FILE_STATUS } from "../../../utils/formgenerator/fields/FileUploaderInput";
+import FormGenerator from "../../../utils/formgenerator/";
+import { mapDataset } from "../../../dataset/index";
 
-function EditDataset(props) {
 
+function ChangeDataset(props) {
+
+  const [datasetFiles, setDatasetFiles] = useState();
+  const dataset = useMemo(() =>
+    mapDataset(props.datasets ?
+      props.datasets.find(dataset => dataset.name === props.datasetId)
+      : undefined
+    , undefined, datasetFiles)
+  , [props.datasets, props.datasetId, datasetFiles]);
   const [serverErrors, setServerErrors] = useState(undefined);
   const [submitLoader, setSubmitLoader] = useState(false);
   const [initialized, setInitialized] = useState(false);
   const [jobsStats, setJobsStats] = useState(undefined);
   const warningOn = useRef(false);
+  datasetFormSchema.files.uploadFileFunction = props.client.uploadFile;
   datasetFormSchema.files.filesOnUploader = useRef(0);
 
+  if (props.edit === false) {
+    datasetFormSchema.title.parseFun = () => {
+      datasetFormSchema.name.value = FormGenerator.Parsers.slugFromTitle(datasetFormSchema.title.value);
+      return datasetFormSchema.title.value;
+    };
+  }
+  else {
+    datasetFormSchema.title.parseFun = undefined;
+  }
+
   const onCancel = e => {
-    datasetFormSchema.name.value = datasetFormSchema.name.initial;
-    datasetFormSchema.description.value = datasetFormSchema.description.initial;
-    datasetFormSchema.files.value = datasetFormSchema.files.initial;
-    props.history.push({
-      pathname: `/projects/${props.projectPathWithNamespace}/datasets/${props.dataset.identifier}/`
-    });
+    props.history.push({ pathname: `/projects/${props.projectPathWithNamespace}/datasets` });
   };
 
   function setNewJobStatus(localJob, remoteJobsList) {
@@ -60,7 +76,7 @@ function EditDataset(props) {
     let inProgress = jobsList
       .filter(job => (job.job_status === JobStatusMap.IN_PROGRESS || job.job_status === JobStatusMap.ENQUEUED) );
 
-    if (failed.length !== 0 || inProgress.length !== 0 || tooLong) {
+    if (failed.length !== 0 || inProgress.length !== 0 || tooLong === true) {
       setJobsStats({ failed, inProgress, tooLong });
       warningOn.current = true;
       setSubmitLoader(false);
@@ -84,40 +100,40 @@ function EditDataset(props) {
       });
   };
 
-  const redirectAfterSuccess = (interval, datasetName) => {
+  const redirectAfterSuccess = (interval, datasetId) => {
     setSubmitLoader(false);
-    props.fetchDatasets(true);
-    datasetFormSchema.name.value = datasetFormSchema.name.initial;
-    datasetFormSchema.description.value = datasetFormSchema.description.initial;
-    datasetFormSchema.files.value = datasetFormSchema.files.initial;
     if (interval !== undefined) clearInterval(interval);
+    props.fetchDatasets(true);
     props.history.push({
-      pathname: `/projects/${props.projectPathWithNamespace}/datasets/${datasetName}/`
+      pathname: `/projects/${props.projectPathWithNamespace}/datasets/${datasetId}/`
     });
   };
+
 
   const submitCallback = e => {
     setServerErrors(undefined);
     setSubmitLoader(true);
     const dataset = {};
     dataset.name = datasetFormSchema.name.value;
+    dataset.title = datasetFormSchema.title.value;
     dataset.description = datasetFormSchema.description.value;
 
     const pendingFiles = datasetFormSchema.files.value
       .filter(f => f.file_status === FILE_STATUS.PENDING).map(f => ({ "file_url": f.file_name }));
-    dataset.files = [].concat.apply([], datasetFormSchema.files.value.filter(f => f.file_status !== FILE_STATUS.PENDING)
+    dataset.files = [].concat.apply([], datasetFormSchema.files.value
+      .filter(f => f.file_status !== FILE_STATUS.PENDING && f.file_status !== FILE_STATUS.ADDED)
       .map(f => f.file_id)).map(f => ({ "file_id": f }));
 
     dataset.files = [...dataset.files, ...pendingFiles];
+    dataset.keywords = datasetFormSchema.keywords.value;
+    dataset.creators = datasetFormSchema.creators.value
+      .map(creator => ({ name: creator.name, email: creator.email }));
 
-    props.client.addFilesToDataset(props.httpProjectUrl, dataset.name, dataset.files)
+    props.client.postDataset(props.httpProjectUrl, dataset, props.edit)
       .then(response => {
         if (response.data.error !== undefined) {
           setSubmitLoader(false);
-          if (response.data.error.reason.files !== undefined)
-            setServerErrors("Error adding file(s) to dataset.");
-          else
-            setServerErrors(response.data.error.reason);
+          setServerErrors(response.data.error.reason);
         }
         else {
           let filesURLJobsArray = [];
@@ -134,7 +150,6 @@ function EditDataset(props) {
           const INTERVAL = 6000;
 
           let monitorJobs = setInterval(() => {
-
             if (filesURLJobsArray.length === 0) {
               redirectAfterSuccess(monitorJobs, dataset.name);
             }
@@ -155,8 +170,6 @@ function EditDataset(props) {
 
             if (cont >= 20) {
               checkJobsAndSetWarnings(filesURLJobsArray, true);
-              warningOn.current = true;
-              setSubmitLoader(false);
               clearInterval(monitorJobs);
             }
             cont++;
@@ -166,40 +179,53 @@ function EditDataset(props) {
   };
 
   useEffect(() => {
-    if (!initialized) {
-      datasetFormSchema.files.uploadFileFunction = props.client.uploadFile;
-      if (props.dataset === null) {
-        props.client.fetchDatasetFromKG(props.client.baseUrl.replace(
-          "api", "knowledge-graph/datasets/") + props.datasetId)
-          .then((dataset) => {
-            datasetFormSchema.name.value = dataset.name;
-            datasetFormSchema.description.value = dataset.description;
-            datasetFormSchema.files.value = dataset.hasPart;
+    let unmounted = false;
+    if (props.edit) {
+      if (!initialized && dataset !== undefined) {
+        props.client.fetchDatasetFilesFromCoreService(dataset.name, props.httpProjectUrl)
+          .then(response => {
+            if (!unmounted && datasetFiles === undefined) {
+              if (response.data.result) {
+                datasetFormSchema.files.uploadFileFunction = props.client.uploadFile;
+                datasetFormSchema.name.value = dataset.name;
+                datasetFormSchema.title.value = dataset.title;
+                datasetFormSchema.description.value = dataset.description;
+                datasetFormSchema.creators.value = dataset.published.creator;
+                datasetFormSchema.keywords.value = dataset.keywords;
+                datasetFormSchema.files.value = response.data.result.files
+                  .map(file => ({ name: file.name, atLocation: file.path, file_status: "added" }));
+                setInitialized(true);
+              }
+              else { setDatasetFiles(response.data); }
+            }
           });
       }
-      else {
-        datasetFormSchema.name.value = props.dataset.name;
-        datasetFormSchema.description.value = props.dataset.description;
-        datasetFormSchema.files.value = props.dataset.hasPart;
-      }
-      setInitialized(true);
     }
+    else {
+      setInitialized(true);
+      datasetFormSchema.name.value = datasetFormSchema.name.initial;
+      datasetFormSchema.title.value = datasetFormSchema.title.initial;
+      datasetFormSchema.description.value = datasetFormSchema.description.initial;
+      datasetFormSchema.files.value = datasetFormSchema.files.initial;
+      datasetFormSchema.creators.value = datasetFormSchema.creators.initial;
+      datasetFormSchema.keywords.value = datasetFormSchema.keywords.initial;
+    }
+  }, [props, initialized, dataset, datasetFiles,
+    setDatasetFiles, props.client]);
 
-  }, [props, initialized]);
-
-  return <DatasetEdit
-    jobsStats={jobsStats}
+  return <DatasetChange
     initialized={initialized}
-    accessLevel={props.accessLevel}
-    warningOn={warningOn}
     datasetFormSchema={datasetFormSchema}
+    accessLevel={props.accessLevel}
     serverErrors={serverErrors}
-    submitLoader={submitLoader}
     submitCallback={submitCallback}
+    submitLoader={submitLoader}
     onCancel={onCancel}
+    warningOn={warningOn}
+    jobsStats={jobsStats}
     overviewCommitsUrl={props.overviewCommitsUrl}
+    edit={props.edit}
   />;
 }
 
-
-export default EditDataset;
+export default ChangeDataset;

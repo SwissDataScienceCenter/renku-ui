@@ -40,8 +40,7 @@ import { NewProject as New } from "./new";
 import { ShowFile } from "../file";
 import Fork from "./fork";
 import ShowDataset from "../dataset/Dataset.container";
-import NewDataset from "./datasets/new/index";
-import EditDataset from "./datasets/edit/index";
+import ChangeDataset from "./datasets/change/index";
 import ImportDataset from "./datasets/import/index";
 import KnowledgeGraphStatus from "../file/KnowledgeGraphStatus.container";
 
@@ -470,7 +469,7 @@ class View extends Component {
         graphStatus={this.isGraphReady()}
       />,
 
-      newDataset: (p) => <NewDataset
+      newDataset: (p) => <ChangeDataset
         key="datasetcreate" {...subProps}
         progress={graphProgress}
         maintainer={maintainer}
@@ -487,9 +486,10 @@ class View extends Component {
         httpProjectUrl={httpProjectUrl}
         fetchDatasets={this.eventHandlers.fetchDatasets}
         overviewCommitsUrl={subUrls.overviewCommitsUrl}
+        edit={false}
       />,
 
-      editDataset: (p) => <EditDataset
+      editDataset: (p) => <ChangeDataset
         key="datasetmodify" {...subProps}
         progress={graphProgress}
         maintainer={maintainer}
@@ -508,6 +508,7 @@ class View extends Component {
         httpProjectUrl={httpProjectUrl}
         fetchDatasets={this.eventHandlers.fetchDatasets}
         overviewCommitsUrl={subUrls.overviewCommitsUrl}
+        edit={true}
       />,
 
       importDataset: (p) => <ImportDataset
