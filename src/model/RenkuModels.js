@@ -168,7 +168,8 @@ const projectSchema = new Schema({
       project_supported: { initial: null },
       migrating: { initial: false },
       migration_status: { initial: null },
-      check_error: { initial: undefined }
+      migration_error: { initial: null },
+      check_error: { initial: null }
     }
   }
 });
@@ -339,7 +340,19 @@ const notebooksSchema = new Schema({
   }
 });
 
+
 const datasetFormSchema = new Schema({
+  title: {
+    initial: "",
+    name: "title",
+    label: "Title",
+    type: FormGenerator.FieldTypes.TEXT,
+    validators: [{
+      id: "title-length",
+      isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression),
+      alert: "Title is too short"
+    }]
+  },
   name: {
     initial: "",
     name: "name",
@@ -350,14 +363,33 @@ const datasetFormSchema = new Schema({
     validators: [{
       id: "name-length",
       isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression),
-      alert: "Name is too short"
+      alert: "Short Name is too short"
     }]
+  },
+  creators: {
+    initial: [],
+    name: "creators",
+    label: "Creators",
+    type: FormGenerator.FieldTypes.CREATORS,
+    validators: [{
+      id: "creator-valid",
+      isValidFun: expression => FormGenerator.Validators.creatorIsValid(expression),
+      alert: "Creator name and email can't be empty"
+    }]
+    //shall we pre-validate that an email is an email with regex? --> yes and it should not be empty also...
+  },
+  keywords: {
+    initial: [],
+    name: "kewords",
+    label: "Keywords",
+    help: "To insert a keyword, write it and press enter.",
+    type: FormGenerator.FieldTypes.KEYWORDS,
+    validators: []
   },
   description: {
     initial: "",
     name: "description",
     label: "Description",
-    edit: false,
     type: FormGenerator.FieldTypes.TEXT_EDITOR,
     outputType: "markdown",
     help: "Basic markdown styling tags are allowed in this field.",
