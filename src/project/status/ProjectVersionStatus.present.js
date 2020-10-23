@@ -9,8 +9,7 @@ import { ExternalLink, Loader } from "../../utils/UIComponents";
 import { ACCESS_LEVELS } from "../../api-client";
 import { MigrationStatus } from "../Project";
 
-
-class ProjectViewVersion extends Component {
+class ProjectVersionStatus extends Component {
   render() {
     const loading = this.props.isLoading;
     const migration_required = this.props.migration.migration_required;
@@ -138,9 +137,11 @@ class ProjectViewVersion extends Component {
                   }
                 </Alert>
                 :
-                check_error !== undefined ?
+                check_error ?
                   <Alert color="danger">
-                    There was an error while performing the migration check, you can reload the page and try again.
+                    There was an error while performing the migration check, you can&nbsp;
+                    <Button color="danger" size="sm" onClick={() => window.location.reload()}>
+                      reload</Button> the page and try again.
                     If the problem persists {pleaseContactTheDevelopmentTeam}
                     <br></br>
                     <br></br>
@@ -179,10 +180,11 @@ class ProjectViewVersion extends Component {
                   }
                 </Alert>
                 :
-                check_error !== undefined ?
+                check_error ?
                   <Alert color="danger">
-                    There was an error while performing the template version check,&nbsp;
-                    you can reload the page and try again.
+                    There was an error while performing the template version check, you can&nbsp;
+                    <Button color="danger" size="sm" onClick={() => window.location.reload()}>
+                      reload</Button> the page and try again.
                     If the problem persists {pleaseContactTheDevelopmentTeam}
                     <br></br>
                     <br></br>
@@ -201,4 +203,4 @@ class ProjectViewVersion extends Component {
     </Card>;
   }
 }
-export default ProjectViewVersion;
+export default ProjectVersionStatus;

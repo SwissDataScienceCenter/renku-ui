@@ -55,7 +55,7 @@ import FilesTreeView from "./filestreeview/FilesTreeView";
 import DatasetsListView from "./datasets/DatasetsListView";
 import { ACCESS_LEVELS } from "../api-client";
 import { withProjectMapped } from "./Project";
-import ProjectViewVersion from "./version/ProjectVersion.present";
+import ProjectVersionStatus from "./status/ProjectVersionStatus.present";
 import { NamespaceProjects } from "../namespace";
 import { CommitsView } from "../utils/Commits";
 
@@ -445,7 +445,7 @@ class ProjectViewStats extends Component {
   }
 }
 
-class ProjectViewVersion extends Component {
+class ProjectKGStatus extends Component {
   render() {
     const { migration_required, project_supported, migration_status, check_error } = this.props.migration;
     const loading = isRequestPending(this.props, "readme") || migration_required === null;
@@ -658,8 +658,8 @@ class ProjectViewOverview extends Component {
             />
             <Route exact path={this.props.overviewStatusUrl} render={props =>
               <Fragment>
-                <ProjectViewVersion {...this.props} isLoading={isRequestPending(this.props, "readme")} />
-                <ProjectViewKG {...this.props} />
+                <ProjectVersionStatus {...this.props} isLoading={isRequestPending(this.props, "readme")} />
+                <ProjectKGStatus {...this.props} />
               </Fragment>}
             />
           </Switch>
