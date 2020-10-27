@@ -29,9 +29,11 @@ import useForm from "./UseForm";
 import TextInput from "./fields/TextInput";
 import TextareaInput from "./fields/TexAreaInput";
 import SelectInput from "./fields/SelectInput";
+import CreatorsInput from "./fields/CreatorsInput";
 import SelectautosuggestInput from "./fields/SelectAutosuggestInput";
 import CktextareaInput from "./fields/CKEditorTextArea";
 import FileuploaderInput from "./fields/FileUploaderInput";
+import KeywordsInput from "./fields/KeywordsInput";
 import { Loader } from "../../utils/UIComponents";
 import "./FormGenerator.css";
 
@@ -49,7 +51,9 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors,
     CktextareaInput,
     FileuploaderInput,
     SelectInput,
-    SelectautosuggestInput
+    SelectautosuggestInput,
+    CreatorsInput,
+    KeywordsInput
   };
   const renderInput = input => {
     const Component = Components[capitalize(input.type) + "Input"];

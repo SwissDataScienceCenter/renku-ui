@@ -94,7 +94,7 @@ export default function addDatasetMethods(client) {
         return response;
 
       return response.data.result.projects.find(project => project.git_url === projectUrl);
-    }).then(cloned_project => {
+    }).then( cloned_project => {
       if (cloned_project !== undefined)
         return cloned_project.project_id;
 
@@ -117,7 +117,7 @@ export default function addDatasetMethods(client) {
     });
   };
 
-  client.postDataset = (projectUrl, renkuDataset) => {
+  client.postDataset = (projectUrl, renkuDataset, edit = false) => {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
@@ -132,14 +132,20 @@ export default function addDatasetMethods(client) {
 
         project_id = response;
 
-        return client.clientFetch(`${client.baseUrl}/renku/datasets.create`, {
+        let postUrl = edit ? `${client.baseUrl}/renku/datasets.edit` : `${client.baseUrl}/renku/datasets.create`;
+        let body = {
+          "name": renkuDataset.name,
+          "title": renkuDataset.title,
+          "description": renkuDataset.description,
+          "creators": renkuDataset.creators,
+          "keywords": renkuDataset.keywords,
+          "project_id": project_id
+        };
+
+        return client.clientFetch(postUrl, {
           method: "POST",
           headers: headers,
-          body: JSON.stringify({
-            "name": renkuDataset.name,
-            "description": renkuDataset.description,
-            "project_id": project_id
-          })
+          body: JSON.stringify(body)
         });
       })
       .then(response => {

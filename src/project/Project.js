@@ -40,8 +40,7 @@ import { NewProject as New } from "./new";
 import { ShowFile } from "../file";
 import Fork from "./fork";
 import ShowDataset from "../dataset/Dataset.container";
-import NewDataset from "./datasets/new/index";
-import EditDataset from "./datasets/edit/index";
+import ChangeDataset from "./datasets/change/index";
 import ImportDataset from "./datasets/import/index";
 import KnowledgeGraphStatus from "../file/KnowledgeGraphStatus.container";
 
@@ -51,7 +50,7 @@ const subRoutes = {
   stats: "overview/stats",
   overviewDatasets: "overview/datasets",
   overviewCommits: "overview/commits",
-  overviewVersion: "overview/version",
+  overviewStatus: "overview/status",
   datasets: "datasets",
   datasetsAdd: "datasets/new",
   dataset: "datasets/:datasetId",
@@ -324,7 +323,7 @@ class View extends Component {
       statsUrl: `${baseUrl}/overview/stats`,
       overviewDatasetsUrl: `${baseUrl}/overview/datasets`,
       overviewCommitsUrl: `${baseUrl}/overview/commits`,
-      overviewVersionUrl: `${baseUrl}/overview/version`,
+      overviewStatusUrl: `${baseUrl}/overview/status`,
       datasetsUrl: `${datasetsUrl}`,
       newDatasetUrl: `${datasetsUrl}/new`,
       datasetUrl: `${datasetsUrl}/:datasetId`,
@@ -470,7 +469,7 @@ class View extends Component {
         graphStatus={this.isGraphReady()}
       />,
 
-      newDataset: (p) => <NewDataset
+      newDataset: (p) => <ChangeDataset
         key="datasetcreate" {...subProps}
         progress={graphProgress}
         maintainer={maintainer}
@@ -487,9 +486,10 @@ class View extends Component {
         httpProjectUrl={httpProjectUrl}
         fetchDatasets={this.eventHandlers.fetchDatasets}
         overviewCommitsUrl={subUrls.overviewCommitsUrl}
+        edit={false}
       />,
 
-      editDataset: (p) => <EditDataset
+      editDataset: (p) => <ChangeDataset
         key="datasetmodify" {...subProps}
         progress={graphProgress}
         maintainer={maintainer}
@@ -508,6 +508,7 @@ class View extends Component {
         httpProjectUrl={httpProjectUrl}
         fetchDatasets={this.eventHandlers.fetchDatasets}
         overviewCommitsUrl={subUrls.overviewCommitsUrl}
+        edit={true}
       />,
 
       importDataset: (p) => <ImportDataset
@@ -613,11 +614,6 @@ class View extends Component {
     createGraphWebhook: (e) => {
       e.preventDefault();
       return this.createGraphWebhook();
-    },
-    onCloseGraphWebhook: () => {
-      this.stopCheckingWebhook();
-      this.fetchProjectDatasetsFromKg();
-      this.fetchProjectDatasets(true);
     },
     fetchGraphStatus: () => {
       return this.fetchGraphStatus();
