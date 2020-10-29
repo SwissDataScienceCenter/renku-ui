@@ -20,18 +20,17 @@
 /**
  *  renku-ui
  *
- *  Datasets.test.js
- *  Tests for datasets.
+ *  ProjectDatasets.test.js
+ *  Tests for datasets inside projects.
  */
 
 import React from "react";
 import ReactDOM from "react-dom";
 import { MemoryRouter } from "react-router-dom";
-import { ACCESS_LEVELS } from "../../api-client";
+import { ACCESS_LEVELS, testClient as client } from "../../api-client";
 import { StateModel, globalSchema } from "../../model";
 import ChangeDataset from "./change/index";
 import DatasetImport from "./import/index";
-import { testClient as client } from "../../api-client";
 import DatasetsListView from "./DatasetsListView";
 
 describe("rendering", () => {

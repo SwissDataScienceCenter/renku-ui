@@ -25,12 +25,12 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { createMemoryHistory } from "history";
-import ShowDataset from "../dataset/Dataset.container";
+import ShowDataset from "./Dataset.container";
 import { MemoryRouter } from "react-router-dom";
 import { mapDataset } from "./DatasetFunctions";
 import { testClient as client } from "../api-client";
 import { StateModel, globalSchema } from "../model";
-import DatasetList from "../dataset/list";
+import DatasetList from "./list";
 
 describe("Dataset functions", () => {
 
