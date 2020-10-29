@@ -130,6 +130,32 @@ const methods = {
         remplates: []
       }
     }
+  },
+  searchDatasets: {
+    response: {
+      data: []
+    }
+  },
+  fetchDatasetFromKG: {
+    "name": "test-dataset-name",
+    "title": "Test dataset title",
+    "description": "some description for a dataset",
+    "published": {
+      "creator": [{
+        "name": "First, Creator",
+        "email": null,
+        "affiliation": "Some Affiliation"
+      }],
+      "datePublished": "01/01/2001",
+    },
+    "identifier": "79215657-4319-4fcf-82b9-58267f2a1db8",
+    "keywords": ["test1", "test2", "test3"],
+    "hasPart": [
+      { "name": "Data file 1.xlsx", "atLocation": "data/test_dataset/Data file 1.xlsx" }
+    ],
+    "url": "https://dev.renku.ch/datasets/79215657-4319-4fcf-82b9-58267f2a1db8",
+    "sameAs": "https://dev.renku.ch/datasets/79215657-4319-4fcf-82b9-58267f2a1db8",
+    "isPartOf": []
   }
 };
 
@@ -142,5 +168,6 @@ for (let key in methods) {
     });
   };
 }
+client.baseUrl = "some-url";
 
 export default client;
