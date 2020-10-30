@@ -1191,7 +1191,6 @@ class ProjectMergeRequestList extends Component {
 }
 
 class ProjectViewFiles extends Component {
-  
   componentDidMount() {
     this.props.fetchFiles();
   }
