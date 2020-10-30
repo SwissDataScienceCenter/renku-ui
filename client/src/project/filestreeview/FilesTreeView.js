@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
+import { StickyContainer, Sticky } from "react-sticky";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile, faFolder as faFolderClosed, faFolderOpen } from "@fortawesome/free-solid-svg-icons";
@@ -17,6 +18,17 @@ class TreeNode extends Component {
       childrenOpen: this.props.childrenOpen
     };
     this.handleIconClick = this.handleIconClick.bind(this);
+    this.handleFileClick = this.handleFileClick.bind(this);
+  }
+
+  handleFileClick() {
+    const treeElem = document.getElementById("tree-content");
+    if (treeElem) {
+      this.props.savePosition({
+        path: this.props.node.path,
+        scrollTop: treeElem.scrollTop
+      });
+    }
   }
 
   handleIconClick() {
@@ -27,7 +39,6 @@ class TreeNode extends Component {
   componentDidUpdate(previousProps) {
     if (previousProps.childrenOpen !== this.props.childrenOpen)
       this.setState({ childrenOpen: this.props.childrenOpen });
-
   }
 
   render() {
@@ -55,6 +66,7 @@ class TreeNode extends Component {
           isLfs={this.props.hash[node.path].isLfs}
           nodeInsideIsSelected={this.props.currentUrl.endsWith(node.path)}
           currentUrl={this.props.currentUrl}
+          savePosition={this.props.savePosition}
         />;
       })
       : null;
@@ -62,11 +74,10 @@ class TreeNode extends Component {
     let elementToRender;
     let selected = this.props.nodeInsideIsSelected ? " selected-file " : "";
 
-
     if (this.props.node.type === "blob" || this.props.node.type === "commit") {
       elementToRender =
         <div className={order + " " + hidden + " " + selected}>
-          <div className={"fs-element"} >
+          <div className={"fs-element"} onClick={this.handleFileClick}>
             { this.props.fileView ?
               <Link to= {`${this.props.projectUrl}/${this.props.node.jsonObj.path}`} >
                 <div className={"fs-element"}>
@@ -99,14 +110,11 @@ class TreeNode extends Component {
   }
 }
 
-class FilesTreeView extends Component {
-
+class TreeContainer extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      dropdownOpen: false,
-      treeStructure: this.props.data
-    };
+    this.state = { dropdownOpen: false };
+
     this.toggle = this.toggle.bind(this);
   }
 
@@ -117,44 +125,10 @@ class FilesTreeView extends Component {
   }
 
   render() {
-    const fileView = !this.props.currentUrl.startsWith(this.props.lineageUrl);
-
-    const emptyView = this.props.projectUrl.startsWith(this.props.currentUrl)
-    || this.props.lineageUrl.startsWith(this.props.currentUrl);
-
-    let redirectURL = "";
-    if (!emptyView ) {
-      redirectURL = fileView ?
-        this.props.currentUrl.replace(this.props.projectUrl, "")
-        : this.props.currentUrl.replace(this.props.lineageUrl, "");
-    }
-
-    const tree = this.state.treeStructure.tree ?
-      this.state.treeStructure.tree.map((node) => {
-        return <TreeNode
-          key={node.path}
-          node={node}
-          childrenOpen={this.state.treeStructure.hash[node.path].childrenOpen}
-          projectUrl={this.props.projectUrl}
-          lineageUrl={this.props.lineageUrl}
-          setOpenFolder={this.props.setOpenFolder}
-          path={node.path}
-          hash={this.props.data.hash}
-          fileView={fileView}
-          isLfs={this.state.treeStructure.hash[node.path].isLfs}
-          nodeInsideIsSelected={this.props.currentUrl.endsWith(node.path)}
-          currentUrl={this.props.currentUrl}
-        />;
-      })
-      :
-      null;
-
-    const toFile = emptyView ? this.props.projectUrl.replace("/blob", "") + redirectURL
-      : this.props.projectUrl + redirectURL;
-    const toLineage = this.props.lineageUrl + redirectURL;
+    const { style, fileView, toLineage, toFile, tree } = this.props;
 
     return (
-      <div className="tree-container">
+      <div className="tree-container" style={style}>
         <div className="tree-title">
           <span className="tree-header-title text-truncate">
             {fileView ? "File View" : "Lineage View"}
@@ -162,13 +136,13 @@ class FilesTreeView extends Component {
           <span className="float-right throw-right-in-flex">
             <Dropdown color="primary" size="sm" isOpen={this.state.dropdownOpen} toggle={this.toggle}>
               <DropdownToggle caret size="sm" color="primary">
-                { fileView ?
+                {fileView ?
                   <FontAwesomeIcon className="icon-white" icon={faFile} />
                   : <FontAwesomeIcon className="icon-white" icon={faProjectDiagram} />
                 }
               </DropdownToggle>
               <DropdownMenu>
-                { fileView ?
+                {fileView ?
                   <Link to={toLineage}><DropdownItem> Lineage View </DropdownItem></Link>
                   : <Link to={toFile}><DropdownItem>File View</DropdownItem></Link>
                 }
@@ -176,8 +150,106 @@ class FilesTreeView extends Component {
             </Dropdown>
           </span>
         </div>
-        {tree}
+        <div id="tree-content" className="tree-content mb-2 mb-md-0">
+          {tree}
+        </div>
       </div>
+    );
+  }
+}
+
+class FilesTreeView extends Component {
+  savePosition(data) {
+    if (!this.props.limitHeight)
+      return;
+    this.props.setLastNode(data);
+  }
+
+  render() {
+    const fileView = !this.props.currentUrl.startsWith(this.props.lineageUrl);
+    const treeStructure = this.props.data;
+    const emptyView =
+      this.props.projectUrl.startsWith(this.props.currentUrl) ||
+      this.props.lineageUrl.startsWith(this.props.currentUrl);
+    let redirectURL = "";
+    if (!emptyView) {
+      redirectURL = fileView ?
+        this.props.currentUrl.replace(this.props.projectUrl, "") :
+        this.props.currentUrl.replace(this.props.lineageUrl, "");
+    }
+    const toFile = emptyView ?
+      this.props.projectUrl.replace("/blob", "") + redirectURL :
+      this.props.projectUrl + redirectURL;
+    const toLineage = this.props.lineageUrl + redirectURL;
+
+    const tree = treeStructure.tree ?
+      treeStructure.tree.map((node) => {
+        return <TreeNode
+          key={node.path}
+          node={node}
+          childrenOpen={treeStructure.hash[node.path].childrenOpen}
+          projectUrl={this.props.projectUrl}
+          lineageUrl={this.props.lineageUrl}
+          setOpenFolder={this.props.setOpenFolder}
+          path={node.path}
+          hash={this.props.data.hash}
+          fileView={fileView}
+          isLfs={treeStructure.hash[node.path].isLfs}
+          nodeInsideIsSelected={this.props.currentUrl.endsWith(node.path)}
+          currentUrl={this.props.currentUrl}
+          savePosition={this.savePosition.bind(this)}
+        />;
+      }) :
+      null;
+
+    const { limitHeight } = this.props;
+    const treeProps = { fileView, toLineage, toFile, tree };
+
+    // return the plain component if there is no need to limit the height
+    if (!limitHeight)
+      return (<TreeContainer {...treeProps} style={{}} />);
+
+    // on small devices, the file tree is positioned on top, therefore it's better to limit
+    // the height based on the display size
+    if (window.innerWidth <= 768)
+      return (<TreeContainer {...treeProps} style={{ maxHeight: Math.floor(window.innerHeight * 2 / 3) }} />);
+
+    return (
+      // This components make the file tree sticky on scroll and fix the max-height
+      <StickyContainer>
+        <Sticky topOffset={-10}>
+          {
+            ({ style, calculatedHeight, distanceFromTop }) => {
+              // fix to trigger the computation
+              if (calculatedHeight === undefined) {
+                if (window.scrollY)
+                  window.scrollTo(window.scrollX, window.scrollY + 1);
+                else
+                  setTimeout(() => { window.scrollTo(window.scrollX, window.scrollY + 1); }, 10);
+              }
+
+              // fix the tree scroll
+              const { last } = treeStructure;
+              if (last && calculatedHeight === undefined && this.props.currentUrl.endsWith(last.path)) {
+                setTimeout(() => {
+                  const treeElem = document.getElementById("tree-content");
+                  if (treeElem)
+                    treeElem.scrollTo(treeElem.scrollLeft, last.scrollTop);
+                }, 10);
+              }
+
+              // adjust applied style
+              const deltaDistance = distanceFromTop && distanceFromTop > 0 ?
+                distanceFromTop :
+                0;
+              const maxHeight = window.innerHeight - 80 - deltaDistance;
+              const treeStlye = { ...style, maxHeight, top: 10, transform: "" };
+
+              return (<TreeContainer {...treeProps} style={treeStlye} />);
+            }
+          }
+        </Sticky>
+      </StickyContainer>
     );
   }
 

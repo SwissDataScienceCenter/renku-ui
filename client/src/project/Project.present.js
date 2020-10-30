@@ -452,9 +452,11 @@ class ProjectFilesNav extends Component {
       lineageUrl={this.props.lineagesUrl}
       projectUrl={this.props.fileContentUrl}
       setOpenFolder={this.props.setOpenFolder}
+      setLastNode={this.props.setLastNode}
       hash={this.props.filesTree.hash}
       fileView={this.props.filesTreeView}
-      currentUrl={this.props.location.pathname} />;
+      currentUrl={this.props.location.pathname}
+      limitHeight={true} />;
   }
 }
 
@@ -1189,7 +1191,7 @@ class ProjectMergeRequestList extends Component {
 }
 
 class ProjectViewFiles extends Component {
-
+  
   componentDidMount() {
     this.props.fetchFiles();
   }

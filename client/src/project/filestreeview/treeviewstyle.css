@@ -74,12 +74,10 @@
     color:white;
     border-radius: 0.25rem;
     text-overflow: ellipsis;
-    /* overflow: hidden;   */
     white-space: nowrap;
     font-size: 1rem;
     font-weight: 300;
     line-height: 1.5;
-    display: flex;
     padding: 0.75rem 1.25rem;
     margin-bottom: 10px;
 }
@@ -106,6 +104,10 @@
     flex-direction: column;
     font-size: 2rem;
     font-weight: 300;
+}
+
+.tree-content {
+    overflow-y: auto;
 }
 
 .lfs-badge{
