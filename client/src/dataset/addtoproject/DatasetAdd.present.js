@@ -42,7 +42,7 @@ function DatasetAdd(props) {
     modification of datasets and is recommended for all projects.
     <br />
     <Button color="warning" onClick={() =>
-      props.history.push(`/projects/${selectedProject.name}/overview/version`)}>More Info</Button>
+      props.history.push(`/projects/${selectedProject.name}/overview/status`)}>More Info</Button>
   </div> : undefined;
 
   return (

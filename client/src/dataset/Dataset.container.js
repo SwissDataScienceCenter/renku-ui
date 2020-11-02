@@ -36,7 +36,7 @@ export default function ShowDataset(props) {
 
   useEffect(()=>{
     let unmounted = false;
-    if (props.insideProject && datasetFiles === undefined && dataset.name) {
+    if (props.insideProject && datasetFiles === undefined && dataset && dataset.name) {
       props.client.fetchDatasetFilesFromCoreService(dataset.name, props.httpProjectUrl)
         .then(response =>{
           if (!unmounted && datasetFiles === undefined) {
