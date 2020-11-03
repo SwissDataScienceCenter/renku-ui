@@ -29,9 +29,7 @@ const ImportStateMessage = {
   COMPLETED: "Dataset was imported, you will be redirected soon...",
   FAILED: "Dataset import failed: ",
   FAILED_NO_INFO: "Dataset import failed, please try again.",
-  TOO_LONG: "Dataset import is taking too long, please check if the dataset was imported, and if it wasn't, try again.",
-  KG_TOO_LONG: "The knowledge graph update has not yet finished." +
-  " The dataset was imported and should be visible in a short time."
+  TOO_LONG: "Dataset import is taking too long, please check if the dataset was imported, and if it wasn't, try again."
 };
 
 export { ImportStateMessage };

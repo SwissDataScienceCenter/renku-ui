@@ -26,11 +26,10 @@
 
 import React, { useState } from "react";
 import { addDatasetToProjectSchema } from "../../model/RenkuModels";
-import { ACCESS_LEVELS, API_ERRORS } from "../../api-client";
+import { ACCESS_LEVELS } from "../../api-client";
 import DatasetAdd from "./DatasetAdd.present";
 import { ImportStateMessage } from "../../utils/Dataset";
 import { groupBy } from "../../utils/HelperFunctions";
-import { GraphIndexingStatus } from "../../project/Project.state";
 
 function AddDataset(props) {
 
@@ -51,54 +50,17 @@ function AddDataset(props) {
     }
   };
 
-  const redirectUserAndClearInterval = (datasets, oldDatasetsList, waitForDatasetInKG, projectPath) => {
-    let new_dataset = datasets.filter(ds =>
-      oldDatasetsList.find(ods => ds.identifier === ods.identifier) === undefined);
-    if (new_dataset.length > 0) {
-      setSubmitLoader(false);
-      addDatasetToProjectSchema.project.value = "";
-      addDatasetToProjectSchema.project.options = [];
-      clearInterval(waitForDatasetInKG);
-      props.history.push({
-        pathname: `/projects/${projectPath}/datasets/${new_dataset[0].identifier}/`,
-        state: { datasets: datasets }
-      })
-      ;
-    }
+  const redirectUser = (projectPath, datasetName) => {
+    setSubmitLoader(false);
+    addDatasetToProjectSchema.project.value = "";
+    addDatasetToProjectSchema.project.options = [];
+    props.history.push({
+      pathname: `/projects/${projectPath}/datasets/${datasetName}`,
+      state: { reload: true }
+    });
   };
 
-  const checkKgStatusAnRedirect = (oldDatasetsList, projectPath, kgProgressCompleted) => {
-    if (!kgProgressCompleted) {
-      setSubmitLoader(false);
-      addDatasetToProjectSchema.project.value = "";
-      addDatasetToProjectSchema.project.options = [];
-      props.history.push(`/projects/${projectPath}/datasets`);
-    }
-    else {
-      let waitForDatasetInKG = setInterval(() => {
-        let cont = 0;
-        props.client.getProjectDatasetsFromKG_short(projectPath)
-          .then(datasets => {
-            cont++;
-            if (datasets.length !== oldDatasetsList.length) {
-              if (cont < 5) {
-                redirectUserAndClearInterval(datasets, oldDatasetsList, waitForDatasetInKG, projectPath);
-              }
-              else {
-                setSubmitLoader(false);
-                addDatasetToProjectSchema.project.value = "";
-                addDatasetToProjectSchema.project.options = [];
-                clearInterval(waitForDatasetInKG);
-                setServerErrors(ImportStateMessage.KG_TOO_LONG);
-                setTakingTooLong(true);
-              }
-            }
-          });
-      }, 6000);
-    }
-  };
-
-  function handleJobResponse(job, monitorJob, waitedSeconds, oldDatasetsList, projectPath, kgProgressCompleted) {
+  function handleJobResponse(job, monitorJob, waitedSeconds, projectPath, datasetName) {
     if (job) {
       switch (job.state) {
         case "ENQUEUED":
@@ -110,7 +72,7 @@ function AddDataset(props) {
         case "COMPLETED":
           setSubmitLoaderText(ImportStateMessage.COMPLETED);
           clearInterval(monitorJob);
-          checkKgStatusAnRedirect(oldDatasetsList, projectPath, kgProgressCompleted);
+          redirectUser(projectPath, datasetName);
           break;
         case "FAILED":
           setSubmitLoader(false);
@@ -132,7 +94,7 @@ function AddDataset(props) {
     }
   }
 
-  const monitorJobStatusAndHandleResponse = (job_id, oldDatasetsList, projectPath, kgProgressCompleted) => {
+  const monitorJobStatusAndHandleResponse = (job_id, projectPath, datasetName) => {
     let cont = 0;
     const INTERVAL = 6000;
     let monitorJob = setInterval(() => {
@@ -141,34 +103,13 @@ function AddDataset(props) {
           cont++;
           if (job !== undefined) {
             handleJobResponse(
-              job, monitorJob, cont * INTERVAL / 1000, oldDatasetsList, projectPath, kgProgressCompleted);
+              job, monitorJob, cont * INTERVAL / 1000, projectPath, datasetName);
           }
         });
     }, INTERVAL);
   };
 
-  const fetchGraphStatus = (projectId) =>{
-    return props.client.checkGraphStatus(projectId)
-      .then((resp) => {
-        let progress;
-        if (resp.progress == null)
-          progress = GraphIndexingStatus.NO_PROGRESS;
-
-        if (resp.progress === 0 || resp.progress)
-          progress = resp.progress;
-
-        return progress;
-      })
-      .catch((err) => {
-        if (err.case === API_ERRORS.notFoundError) {
-          const progress = GraphIndexingStatus.NO_WEBHOOK;
-          return progress;
-        }
-        throw err;
-      });
-  };
-
-  const importDataset = (selectedProject, oldDatasetsList, kgProgressCompleted) => {
+  const importDataset = (selectedProject) => {
     props.client.datasetImport(selectedProject.value, props.dataset.url)
       .then(response => {
         if (response.data.error !== undefined) {
@@ -178,9 +119,9 @@ function AddDataset(props) {
         else {
           monitorJobStatusAndHandleResponse(
             response.data.result.job_id,
-            oldDatasetsList,
             selectedProject.name,
-            kgProgressCompleted);
+            props.dataset.name
+          );
         }
       });
   };
@@ -188,7 +129,7 @@ function AddDataset(props) {
   const submitCallback = e => {
     setServerErrors(undefined);
     setSubmitLoader(true);
-    let oldDatasetsList = [];
+
     const selectedProject = addDatasetToProjectSchema.project.options.find((project)=>
       project.value === addDatasetToProjectSchema.project.value);
 
@@ -211,23 +152,7 @@ function AddDataset(props) {
                   setSubmitLoader(false);
                 }
                 else {
-                  fetchGraphStatus(selectedProject.id).then(resp => {
-                    if (resp < GraphIndexingStatus.MAX_VALUE) {
-                      importDataset(selectedProject, oldDatasetsList, false);
-                    }
-                    else {
-                      props.client.getProjectDatasetsFromKG_short(selectedProject.name)
-                        // eslint-disable-next-line max-nested-callbacks
-                        .then(result => {
-                          oldDatasetsList = result;
-                          importDataset(selectedProject, oldDatasetsList, true);
-                        });
-                    }
-                  }).catch(error => {
-                    //If we get an error when fetching the KG  we still go on with the dataset import
-                    //We don't need the KG to do the dataset import, just to display datasets
-                    importDataset(selectedProject, oldDatasetsList, false);
-                  });
+                  importDataset(selectedProject);
                 }
               }
             });

@@ -994,7 +994,7 @@ function ProjectViewDatasets(props) {
   useEffect(()=>{
     const loading = props.core.datasets === SpecialPropVal.UPDATING;
     if (loading) return;
-    props.fetchDatasets(false);
+    props.fetchDatasets(props.location.state && props.location.state.reload);
     props.fetchGraphStatus();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
