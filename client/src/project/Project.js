@@ -237,6 +237,7 @@ class View extends Component {
     return this.projectState.fetchProjectDatasetsFromKg(this.props.client);
   }
   async fetchGraphStatus() { return this.projectState.fetchGraphStatus(this.props.client); }
+  saveProjectLastNode(nodeData) { this.projectState.saveProjectLastNode(nodeData); }
 
   async fetchMigrationCheck() { this.projectState.fetchMigrationCheck(this.props.client); }
 
@@ -610,6 +611,9 @@ class View extends Component {
     },
     setOpenFolder: (filePath) => {
       this.setProjectOpenFolder(filePath);
+    },
+    setLastNode: (nodeData) => {
+      this.saveProjectLastNode(nodeData);
     },
     createGraphWebhook: (e) => {
       e.preventDefault();

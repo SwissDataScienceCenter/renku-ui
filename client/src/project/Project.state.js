@@ -178,6 +178,10 @@ class ProjectModel extends StateModel {
       });
   }
 
+  saveProjectLastNode(nodeData) {
+    this.set("filesTree.last", nodeData);
+  }
+
   initialFetchProjectFilesTree(client, openFilePath, openFolder ) {
     this.setUpdating({ transient: { requests: { filesTree: true } } });
     return client.getProjectFilesTree(this.get("core.id"), openFilePath)
