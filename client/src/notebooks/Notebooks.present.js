@@ -705,18 +705,19 @@ class StartNotebookServer extends Component {
     const { branch, commit } = this.props.filters;
     const { branches } = this.props.data;
     const { pipelines, message } = this.props;
+    const projectOptions = this.props.options.project;
     const fetching = {
       branches: StatusHelper.isUpdating(branches) ? true : false,
       pipelines: pipelines.fetching,
       commits: this.props.data.fetching
     };
+    const anyPipeline = this.props.justStarted || this.state.ignorePipeline || pipelineAvailable(pipelines);
+    const noPipelinesNeeded = projectOptions && projectOptions.image;
 
     let show = {};
     show.commits = !fetching.branches && branch.name ? true : false;
     show.pipelines = show.commits && !fetching.commits && commit.id;
-    show.options = show.pipelines && pipelines.fetched && (
-      this.props.justStarted || this.state.ignorePipeline || pipelineAvailable(pipelines)
-    );
+    show.options = show.pipelines && pipelines.fetched && (anyPipeline || noPipelinesNeeded);
 
     const messageOutput = message ?
       (<div key="message">{message}</div>) :
@@ -924,6 +925,10 @@ class StartNotebookPipelinesBadge extends Component {
         text = "not available";
       }
     }
+    else if (pipelineType === NotebooksHelper.pipelineTypes.customImage) {
+      color = "primary"
+      text = "custom"
+    }
     else {
       color = "danger";
       text = "error";
@@ -938,6 +943,19 @@ class StartNotebookPipelinesContent extends Component {
     const pipeline = this.props.pipelines.main;
     const pipelineType = this.props.pipelines.type;
     const { pipelineTypes } = NotebooksHelper;
+
+    // customImage
+    if (pipelineType === pipelineTypes.customImage) {
+      const projectOptions = this.props.options.project;
+      if (!projectOptions || !projectOptions.image)
+        return null;
+
+      // this style trick makes it appear as the other Label + Input components
+      const style = { marginTop: -8 };
+      return (
+        <Input type="input" disabled={true} id="customImage" style={style} value={projectOptions.image}></Input>
+      );
+    }
 
     // anonymous
     if (pipelineType === pipelineTypes.anonymous) {
@@ -1232,12 +1250,14 @@ class StartNotebookServerOptions extends Component {
         const onChange = (event, value) => {
           this.props.handlers.setServerOption(key, event, value);
         };
-        const warning = !warnings.includes(key)
-          ? null
-          : <Warning>
-            Cannot set <b>{serverOption.displayName}</b> to
-            the project default value <i>{projectOptions[key]}</i> in this Renkulab deployment.
-          </Warning>;
+        const warning = warnings.includes(key) ?
+          (
+            <Warning>
+              Cannot set <b>{serverOption.displayName}</b> to
+              the project default value <i>{projectOptions[key]}</i> in this Renkulab deployment.
+            </Warning>
+          ) :
+          null;
 
         switch (serverOption.type) {
           case "enum": {
@@ -1272,14 +1292,25 @@ class StartNotebookServerOptions extends Component {
       });
 
     const unmatchedWarnings = warnings.filter(x => !sortedOptionKeys.includes(x));
-    const globalWarning = unmatchedWarnings && unmatchedWarnings.length
-      ? <Warning key="globalWarning">
-        Project environment default contains
-        variable{unmatchedWarnings.length > 1 ? "s" : ""} {
-          unmatchedWarnings.map((w, i) => <span key={i}>&ldquo;{w}&rdquo;, </span>)}
-        which {unmatchedWarnings.length > 1 ? "are" : "is"} not known in this Renkulab deployment.
-      </Warning>
-      : null;
+    let globalWarning = null;
+    if (unmatchedWarnings && unmatchedWarnings.length) {
+      const language = unmatchedWarnings.length > 1 ?
+        { verb: "", plural: "s", aux: "are", article: "" } :
+        { verb: "s", plural: "", aux: "is", article: "a " };
+      const wrongVariables = unmatchedWarnings.map((w, i) => (
+        <span key={i}><i>{w}</i>: <code>{projectOptions[w].toString()}</code><br /></span>
+      ));
+
+      globalWarning = (
+        <Warning key="globalWarning">
+          The project configuration for interactive environments
+          contains {language.article}variable{language.plural} that {language.aux} either
+          unknown in this Renkulab deployment or
+          contain{language.verb} {language.article}wrong value{language.plural}:
+          <br /> { wrongVariables}
+        </Warning>
+      );
+    }
 
     return renderedServerOptions.length ?
       renderedServerOptions.concat(globalWarning) :

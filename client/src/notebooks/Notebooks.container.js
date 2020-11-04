@@ -302,8 +302,8 @@ class StartNotebookServer extends Component {
 
   async refreshPipelines() {
     if (this._isMounted) {
+      await this.coordinator.fetchNotebookOptions();
       await this.coordinator.startPipelinePolling();
-      this.coordinator.fetchNotebookOptions();
     }
   }
 

@@ -192,6 +192,33 @@ describe("verify project level options validity according to deployment global o
   });
 });
 
+describe("verify project settings validity", () => {
+  it("valid settings", () => {
+    const SETTINGS = [
+      { valid: false, text: { object: "notValid" } },
+      { valid: false, text: false },
+      { valid: false, text: "random" },
+      { valid: false, text: "" },
+      { valid: true, text: "image" },
+    ];
+    const VALUES = [
+      { valid: false, text: { object: "notValid" } },
+      { valid: false, text: true },
+      { valid: false, text: "" },
+      { valid: true, text: "url" },
+      { valid: true, text: "any string would work, this may be imrpoved" },
+    ];
+
+    // only a combination of valid setting name and setting value return true
+    for (const setting of SETTINGS) {
+      for (const value of VALUES) {
+        const test = NotebooksHelper.checkSettingValidity(setting.text, value.text);
+        expect(test).toEqual(setting.valid && value.valid);
+      }
+    }
+  });
+});
+
 describe("verify project/global options merging", () => {
   it("merges options", () => {
     const simplifiedGlobalOptions = {

@@ -33,8 +33,13 @@ const RENKU_INI_SECTION = `renku "interactive"`;
 
 const PIPELINE_TYPES = {
   anonymous: "regististries",
-  logged: "jobs"
+  logged: "jobs",
+  customImage: "none"
 };
+
+const VALID_SETTINGS = [
+  "image"
+];
 
 const ExpectedAnnotations = {
   domain: "renku.io",
@@ -175,7 +180,25 @@ const NotebooksHelper = {
     return false;
   },
 
-  pipelineTypes: PIPELINE_TYPES
+  /**
+   * Check if a project setting is valid
+   *
+   * @param {string} name - setting name
+   * @param {string} value - setting value
+   */
+  checkSettingValidity: (name, value) => {
+    if (!name || typeof name !== "string" || !name.length)
+      return false;
+    if (!VALID_SETTINGS.includes(name))
+      return false;
+    if (!value || typeof value !== "string" || !value.length)
+      return false;
+
+    return true;
+  },
+
+  pipelineTypes: PIPELINE_TYPES,
+  validSettings: VALID_SETTINGS
 };
 
 class NotebooksCoordinator {
@@ -318,8 +341,8 @@ class NotebooksCoordinator {
       });
   }
 
-  fetchNotebookOptions() {
-    this.fetchProjectOptions();
+  async fetchNotebookOptions() {
+    await this.fetchProjectOptions();
     const oldData = this.model.get("options.global");
     if (Object.keys(oldData).length !== 0)
       return;
@@ -338,7 +361,7 @@ class NotebooksCoordinator {
       });
   }
 
-  fetchProjectOptions() {
+  async fetchProjectOptions() {
     // prepare query data and reset warnings
     const filters = this.getQueryFilters();
     const projectId = `${encodeURIComponent(filters.namespace)}%2F${filters.project}`;
@@ -350,7 +373,7 @@ class NotebooksCoordinator {
     });
     // keep track of filter data at query time
     const requestFiltersString = JSON.stringify(filters);
-    this.client.getRepositoryFile(projectId, RENKU_INI_PATH, filters.commit, "raw")
+    await this.client.getRepositoryFile(projectId, RENKU_INI_PATH, filters.commit, "raw")
       .catch(error => {
         // treat a non existing file as an empty string
         if (error.case !== API_ERRORS.notFoundError)
@@ -407,10 +430,8 @@ class NotebooksCoordinator {
       const optionValue = projectOptions[option];
       if (NotebooksHelper.checkOptionValidity(globalOptions, option, optionValue))
         filterOptions[option] = optionValue;
-
-      else
+      else if (!NotebooksHelper.checkSettingValidity(option, optionValue))
         warnings = warnings.concat(option);
-
     });
     this.model.setObject({
       filters: { options: { $set: filterOptions } },
@@ -662,13 +683,15 @@ class NotebooksCoordinator {
     const oldPipelinesType = this.model.get("pipelines.type");
 
     // compute current data
-    let anonymous, newPipelinesType;
+    let newPipelinesType;
     if (this.userModel.get("logged")) {
-      anonymous = false;
-      newPipelinesType = PIPELINE_TYPES.logged;
+      const projectOptions = this.model.get("options.project");
+      if (projectOptions["image"])
+        newPipelinesType = PIPELINE_TYPES.customImage;
+      else
+        newPipelinesType = PIPELINE_TYPES.logged;
     }
     else {
-      anonymous = true;
       newPipelinesType = PIPELINE_TYPES.anonymous;
     }
 
@@ -688,15 +711,21 @@ class NotebooksCoordinator {
       };
 
       let returnValue;
-      if (anonymous) {
+      if (newPipelinesType === PIPELINE_TYPES.anonymous) {
         const newPoller = setInterval(() => { this.fetchRegistries(); }, interval);
         newPipelines.poller = newPoller;
         returnValue = this.fetchRegistries();
       }
-      else {
+      else if (newPipelinesType === PIPELINE_TYPES.logged) {
         const newPoller = setInterval(() => { this.fetchPipeline(); }, interval);
         newPipelines.poller = newPoller;
         returnValue = this.fetchPipeline();
+      }
+      else {
+        newPipelines.poller = null;
+        newPipelines.fetched = new Date();
+        newPipelines.fetching = false;
+        returnValue = true;
       }
 
       this.model.setObject({ pipelines: newPipelines });
@@ -723,8 +752,12 @@ class NotebooksCoordinator {
     const project = filters.project;
     const branch = filters.branch.name ? filters.branch.name : "master";
     const commit = filters.commit.id ? filters.commit.id : "latest";
+    const projectOptions = this.model.get("options.project");
+    const image = projectOptions.image ?
+      projectOptions.image :
+      null;
 
-    return this.client.startNotebook(namespace, project, branch, commit, options);
+    return this.client.startNotebook(namespace, project, branch, commit, image, options);
   }
 
   stopNotebook(serverName, force = false) {
