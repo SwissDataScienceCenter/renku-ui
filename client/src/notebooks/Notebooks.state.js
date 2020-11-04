@@ -678,24 +678,20 @@ class NotebooksCoordinator {
   }
 
   startPipelinePolling(interval = POLLING_INTERVAL) {
-    // get old data
-    const oldPoller = this.model.get("pipelines.poller");
-    const oldPipelinesType = this.model.get("pipelines.type");
-
     // compute current data
+    const projectOptions = this.model.get("options.project");
+    const userLogged = this.userModel.get("logged");
     let newPipelinesType;
-    if (this.userModel.get("logged")) {
-      const projectOptions = this.model.get("options.project");
-      if (projectOptions["image"])
-        newPipelinesType = PIPELINE_TYPES.customImage;
-      else
-        newPipelinesType = PIPELINE_TYPES.logged;
-    }
-    else {
+    if (projectOptions["image"])
+      newPipelinesType = PIPELINE_TYPES.customImage;
+    else if (userLogged)
+      newPipelinesType = PIPELINE_TYPES.logged;
+    else
       newPipelinesType = PIPELINE_TYPES.anonymous;
-    }
 
     // if poller type changes, stop the old one and re-invoke later
+    const oldPoller = this.model.get("pipelines.poller");
+    const oldPipelinesType = this.model.get("pipelines.type");
     if (oldPoller != null) {
       if (oldPipelinesType !== newPipelinesType) {
         this.model.set("pipelines.fetched", null);
@@ -711,10 +707,11 @@ class NotebooksCoordinator {
       };
 
       let returnValue;
-      if (newPipelinesType === PIPELINE_TYPES.anonymous) {
-        const newPoller = setInterval(() => { this.fetchRegistries(); }, interval);
-        newPipelines.poller = newPoller;
-        returnValue = this.fetchRegistries();
+      if (newPipelinesType === PIPELINE_TYPES.customImage) {
+        newPipelines.poller = null;
+        newPipelines.fetched = new Date();
+        newPipelines.fetching = false;
+        returnValue = true;
       }
       else if (newPipelinesType === PIPELINE_TYPES.logged) {
         const newPoller = setInterval(() => { this.fetchPipeline(); }, interval);
@@ -722,10 +719,9 @@ class NotebooksCoordinator {
         returnValue = this.fetchPipeline();
       }
       else {
-        newPipelines.poller = null;
-        newPipelines.fetched = new Date();
-        newPipelines.fetching = false;
-        returnValue = true;
+        const newPoller = setInterval(() => { this.fetchRegistries(); }, interval);
+        newPipelines.poller = newPoller;
+        returnValue = this.fetchRegistries();
       }
 
       this.model.setObject({ pipelines: newPipelines });
