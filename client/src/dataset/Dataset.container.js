@@ -105,5 +105,7 @@ export default function ShowDataset(props) {
     projectPathWithNamespace={props.projectPathWithNamespace}
     dataset={dataset}
     fetchError={fetchError}
+    overviewStatusUrl={props.overviewStatusUrl}
+    projectInsideKg={props.projectInsideKg}
   />;
 }

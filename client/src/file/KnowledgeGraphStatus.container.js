@@ -79,8 +79,8 @@ class KnowledgeGraphStatus extends Component {
           this.setState({ graphStatusWaiting: false });
           if (progress === GraphIndexingStatus.MAX_VALUE || progress === GraphIndexingStatus.NO_WEBHOOK) {
             this.stopPollingProgress();
-            if (progress === GraphIndexingStatus.MAX_VALUE && this.props.retrieveGraph())
-              this.props.retrieveGraph();
+            if (progress === GraphIndexingStatus.MAX_VALUE && this.props.fetchAfterBuild)
+              this.props.fetchAfterBuild();
           }
         }
       });
@@ -115,6 +115,9 @@ class KnowledgeGraphStatus extends Component {
       createWebhook={this.createWebhook.bind(this)}
       forked={this.props.forked}
       error={this.state.error}
+      displaySuccessMessage={this.props.displaySuccessMessage}
+      warningMessage={this.props.warningMessage}
+      isPrivate={this.props.isPrivate}
     />;
   }
 }
