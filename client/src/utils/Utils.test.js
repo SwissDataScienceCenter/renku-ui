@@ -321,8 +321,35 @@ describe("Helper functions", () => {
     expect(splittedBranches.autosaved[0].autosave.finalCommit).toEqual(finalCommit);
   });
 
-  it("function slugFromTitle", () => {
+  it("function slugFromTitle without parameters", () => {
     expect(slugFromTitle("This is my Project")).toEqual("This-is-my-Project");
+  });
+  it("slugFromTitle lowercase - remove accents", () => {
+    expect(slugFromTitle("João", true)).toEqual("jo-o");
+  });
+  it("slugFromTitle lowercase - replaces whitespaces with hyphens", () => {
+    expect(slugFromTitle("My Input String", true)).toEqual("my-input-string");
+  });
+  it("slugFromTitle lowercase - remove trailing whitespace", () => {
+    expect(slugFromTitle(" a new project ", true)).toEqual("a-new-project");
+  });
+  it("slugFromTitle lowercase - remove only non-allowed special characters", () => {
+    expect(slugFromTitle("test!_pro-ject~", true)).toEqual("test-_pro-ject");
+  });
+  it("slugFromTitle lowercase - squash multiple hypens", () => {
+    expect(slugFromTitle("test!!!!_pro-ject~", true)).toEqual("test-_pro-ject");
+  });
+  it("slugFromTitle lowercase - return empty string if only non-allowed characters", () => {
+    expect(slugFromTitle("здрасти", true)).toEqual("");
+  });
+  it("slugFromTitle lowercase - squash multiple separators", () => {
+    expect(slugFromTitle("Test:-)", true)).toEqual("test");
+  });
+  it("slugFromTitle lowercase - trim any separators from the beginning and end", () => {
+    expect(slugFromTitle("-Test:-)-", true)).toEqual("test");
+  });
+  it("function slugFromTitle lowercase with custom separator", () => {
+    expect(slugFromTitle("This is my Project", true, "+")).toEqual("this+is+my+project");
   });
 });
 

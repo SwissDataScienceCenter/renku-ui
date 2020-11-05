@@ -454,8 +454,10 @@ class NewProjectCoordinator {
       errors["title"] = "Title is missing.";
     else if (reservedNames.includes(input.title))
       errors["title"] = "Reserved title name.";
+    else if (input.title && !slugFromTitle(input.title, true))
+      errors["title"] = "Title must contain at least a standard ascii char or a number.";
     else if (projects && projectsPaths.includes(`${input.namespace}/${slugFromTitle(input.title, true)}`))
-      errors["title"] = "Title already in use in current namespace.";
+      errors["title"] = "Similar title already in use in current namespace (non ascii chars don't count).";
 
     if (!warnings["namespace"] && !input.namespace)
       errors["namespace"] = "Select namespace.";

@@ -23,9 +23,27 @@ import DOMPurify from "dompurify";
 
 const AUTOSAVED_PREFIX = "renku/autosave/";
 
-const slugFromTitle = (title, lower = false) => lower ?
-  title.replace(/\s/g, "-").toLowerCase() :
-  title.replace(/\s/g, "-");
+/**
+ * Create the project slug from the project name. This should be kept in line with the GitLab slugify function
+ * 
+ * @param {string} title - the project name
+ * @param {bool} lower - convert to lowercase
+ * @param {string} separator - string to replace invalid characters
+ */
+function slugFromTitle(title, lower = false, separator = "-") {
+  // ? REF: https://github.com/gitlabhq/gitlabhq/blob/7942fe679107b5e73e0b359f000946dbbf2feb35
+  // ?        /app/assets/javascripts/lib/utils/text_utility.js#L48-L65
+  const rawProjectName = lower ?
+    title.trim().toLowerCase() :
+    title.trim();
+  const slug = rawProjectName
+    .replace(/[^a-zA-Z0-9_.-]+/g, separator) // remove invalid chars
+    .split(separator).filter(Boolean).join(separator) // remove separators duplicates
+
+  if (slug === separator)
+    return "";
+  return slug;
+}
 
 function getActiveProjectPathWithNamespace(currentPath) {
   try {
