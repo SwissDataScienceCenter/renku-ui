@@ -30,7 +30,7 @@ import { MemoryRouter } from "react-router-dom";
 import Time from "./Time";
 import { CommitsView, CommitsUtils } from "./Commits";
 import {
-  splitAutosavedBranches, sanitizedHTMLFromMarkdown, parseINIString, slugFromTitle
+  splitAutosavedBranches, sanitizedHTMLFromMarkdown, parseINIString, slugFromTitle, verifyTitleValidity
 } from "./HelperFunctions";
 import { RefreshButton } from "./UIComponents";
 import { StateModel, globalSchema } from "../model";
@@ -304,7 +304,7 @@ describe("Ini file parser", () => {
   });
 });
 
-describe("Helper functions", () => {
+describe("branch functions", () => {
   const branches = [
     { name: "master" },
     { name: "renku/autosave/myuser/master/1234567/890acbd" }
@@ -320,7 +320,10 @@ describe("Helper functions", () => {
     expect(splittedBranches.autosaved[0].autosave.commit).toEqual(commit);
     expect(splittedBranches.autosaved[0].autosave.finalCommit).toEqual(finalCommit);
   });
+});
 
+describe("title related functions", () => {
+  // slugFromTitle
   it("function slugFromTitle without parameters", () => {
     expect(slugFromTitle("This is my Project")).toEqual("This-is-my-Project");
   });
@@ -350,6 +353,19 @@ describe("Helper functions", () => {
   });
   it("function slugFromTitle lowercase with custom separator", () => {
     expect(slugFromTitle("This is my Project", true, "+")).toEqual("this+is+my+project");
+  });
+
+  // verifyTitleValidity
+  it("function verifyTitleValidity - valid strings", () => {
+    expect(verifyTitleValidity("João-Mario")).toBeTruthy();
+    expect(verifyTitleValidity("здрасти_.и")).toBeTruthy();
+    expect(verifyTitleValidity("")).toBeTruthy();
+  });
+
+  it("function verifyTitleValidity - invalid strings", () => {
+    expect(verifyTitleValidity("Test:-)")).toBeFalsy();
+    expect(verifyTitleValidity("test!_pro-ject~")).toBeFalsy();
+    expect(verifyTitleValidity("yeah 🚀")).toBeFalsy();
   });
 });
 

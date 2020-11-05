@@ -25,7 +25,7 @@
 
 import { CUSTOM_REPO_NAME } from "./ProjectNew.container";
 import { newProjectSchema } from "../../model/RenkuModels";
-import { slugFromTitle } from "../../utils/HelperFunctions";
+import { slugFromTitle, verifyTitleValidity } from "../../utils/HelperFunctions";
 
 class NewProjectCoordinator {
   constructor(client, model, projectsModel) {
@@ -450,14 +450,17 @@ class NewProjectCoordinator {
       warnings["template"] = "Must get the templates first.";
 
     // check errors: require user intervention. Skip if there is a warning
+    const slugExplanation = "already in use in current namespace. Non ascii chars were converted or stripped out.";
     if (!input.title)
       errors["title"] = "Title is missing.";
     else if (reservedNames.includes(input.title))
       errors["title"] = "Reserved title name.";
+    else if (!verifyTitleValidity(input.title))
+      errors["title"] = "Title can contain only letters, digits, '_', '.', '-' or spaces.";
     else if (input.title && !slugFromTitle(input.title, true))
       errors["title"] = "Title must contain at least a standard ascii char or a number.";
     else if (projects && projectsPaths.includes(`${input.namespace}/${slugFromTitle(input.title, true)}`))
-      errors["title"] = "Similar title already in use in current namespace (non ascii chars don't count).";
+      errors["title"] = `Similar title (${slugFromTitle(input.title, true)}) ${slugExplanation}`;
 
     if (!warnings["namespace"] && !input.namespace)
       errors["namespace"] = "Select namespace.";

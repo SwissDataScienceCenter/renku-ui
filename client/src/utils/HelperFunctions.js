@@ -20,6 +20,7 @@
 // Source: https://stackoverflow.com/questions/6507056/replace-all-whitespace-characters/6507078#6507078
 import showdown from "showdown";
 import DOMPurify from "dompurify";
+import XRegExp from "xregexp";
 
 const AUTOSAVED_PREFIX = "renku/autosave/";
 
@@ -43,6 +44,11 @@ function slugFromTitle(title, lower = false, separator = "-") {
   if (slug === separator)
     return "";
   return slug;
+}
+
+function verifyTitleValidity(title) {
+  const regexPattern = XRegExp("^(\\pL|\\d|\\_|\\-|\\.|\\ )*$");
+  return regexPattern.test(title);
 }
 
 function getActiveProjectPathWithNamespace(currentPath) {
@@ -194,4 +200,4 @@ function isURL(str) {
 }
 
 export { slugFromTitle, getActiveProjectPathWithNamespace, splitAutosavedBranches, sanitizedHTMLFromMarkdown };
-export { simpleHash, parseINIString, formatBytes, groupBy, gitLabUrlFromProfileUrl, isURL };
+export { simpleHash, parseINIString, formatBytes, groupBy, gitLabUrlFromProfileUrl, isURL, verifyTitleValidity };
