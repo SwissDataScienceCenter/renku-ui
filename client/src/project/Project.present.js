@@ -38,7 +38,7 @@ import filesize from "filesize";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
 import {
-  faCodeBranch, faExternalLinkAlt, faInfoCircle, faStar as faStarSolid,
+  faCodeBranch, faInfoCircle, faStar as faStarSolid,
   faExclamationTriangle, faLock, faUserFriends, faGlobe, faSearch, faCheck
 } from "@fortawesome/free-solid-svg-icons";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
@@ -80,6 +80,12 @@ function webhookError(props) {
   return true;
 }
 
+function isKgDown(webhook) {
+  return webhook === false ||
+    (webhook.status === false && webhook.created !== true) ||
+    webhookError(webhook.status);
+}
+
 class ProjectVisibilityLabel extends Component {
   render() {
     switch (this.props.visibilityLevel) {
@@ -106,10 +112,7 @@ class ProjectVisibilityLabel extends Component {
 class ProjectStatusIcon extends Component {
   render() {
     const { webhook, migration_required, overviewStatusUrl, history } = this.props;
-    const kgDown =
-      webhook === false ||
-      (webhook.status === false && webhook.created !== true) ||
-      webhookError(webhook.status);
+    const kgDown = isKgDown(webhook);
 
     if (!migration_required && !kgDown)
       return null;
@@ -158,121 +161,6 @@ class MergeRequestSuggestions extends Component {
       </Alert>;
     });
     return mrSuggestions;
-  }
-}
-
-/**
- * Knowledge Graph integration banner.
- *
- * @param {Object} webhook - project.webhook store object
- * @param {Object} visibility - project visibility data
- * @param {function} createGraphWebhook - function to trigger webhook creation
- */
-class KnowledgeGraphIntegration extends Component {
-  render() {
-    const { webhook, visibility, createGraphWebhook } = this.props;
-    if (webhook.stop)
-      return null;
-
-    if (webhook.possible === null || webhook.status === SpecialPropVal.UPDATING)
-      return (<Loader />);
-
-    if (webhook.status === false) {
-      const isPrivate = visibility && visibility.level === "private" ?
-        true :
-        false;
-      return (
-        <KnowledgeGraphWarning webhook={webhook.created} create={createGraphWebhook} isPrivate={isPrivate} />
-      );
-    }
-
-    const error = webhookError(webhook.status);
-    if (error) {
-      const errorDetails = webhook.status.message ?
-        (<Fragment>
-          <p className="mb-2">Error details:</p>
-          <pre>{webhook.status.message}</pre>
-        </Fragment>) :
-        null;
-      return (
-        <Alert color="danger">
-          <p className="mb-2">An error prevented checking integration of the project with the Knowledge Graph.</p>
-          {errorDetails}
-        </Alert>
-      );
-    }
-
-    return (
-      <Alert color="success">
-        <FontAwesomeIcon icon={faCheck} /> Knowledge Graph integration is active.
-      </Alert>
-    );
-  }
-}
-
-class KnowledgeGraphWarning extends Component {
-  render() {
-    const webhook = this.props.webhook;
-    if (webhook === true) {
-      return (
-        <Alert color="success">
-          <FontAwesomeIcon icon={faCheck} /> Integration with the Knowledge Graph was successful.
-        </Alert>
-      );
-    }
-    else if (webhook === false || webhook === SpecialPropVal.UPDATING) {
-      const updating = webhook === SpecialPropVal.UPDATING ? true : false;
-      return (
-        <Alert color="warning">
-          <p>
-            <FontAwesomeIcon icon={faExclamationTriangle} />&nbsp;
-            Knowledge Graph integration has not been turned on.
-          </p>
-          <KnowledgeGraphPrivateInfo {...this.props} />
-          <KnowledgeGraphButton color="warning" {...this.props} updating={updating} />
-        </Alert>
-      );
-    }
-
-    const error = webhookError(webhook) ?
-      `The project was not integrated with the Knowledge Graph. Error: "${webhook.message}".` :
-      "An unknown error prevented integration of the project with the Knowledge Graph.";
-    return (
-      <Alert color="danger">
-        <p>{error}</p>
-        <KnowledgeGraphButton color="danger" {...this.props} />
-      </Alert>
-    );
-  }
-}
-
-class KnowledgeGraphPrivateInfo extends Component {
-  render() {
-    if (!this.props.isPrivate) return null;
-    return (
-      <p className="font-italic small">
-        This is a private project. Though contents remain private,
-        the Knowledge Graph may make some metadata public. Only activate if that is acceptable.
-        <br />
-        <a href="https://renku.readthedocs.io/en/latest/user/knowledge-graph.html"
-          target="_blank" rel="noopener noreferrer">
-          <FontAwesomeIcon icon={faExternalLinkAlt} /> Read more about the Knowledge Graph integration.
-        </a>
-      </p>
-    );
-  }
-}
-
-class KnowledgeGraphButton extends Component {
-  render() {
-    if (this.props.updating) {
-      return (
-        <Button color={this.props.color} disabled={true}>Activating... <Loader size="12" inline="true" /></Button>
-      );
-    }
-    return (
-      <Button color={this.props.color} onClick={this.props.create}>Activate</Button>
-    );
   }
 }
 
@@ -666,32 +554,23 @@ class ProjectViewVersion extends Component {
   }
 }
 
-class ProjectViewKG extends Component {
-  render() {
-    const loading = false;
+function ProjectViewKG(props) {
+  const loading = false;
 
-    let body = null;
-    if (loading) {
-      body = (<Loader />);
-    }
-    else {
-      body = (
-        <KnowledgeGraphIntegration
-          webhook={this.props.webhook}
-          visibility={this.props.visibility}
-          createGraphWebhook={this.props.createGraphWebhook} />
-      );
-    }
+  let body = null;
+  if (loading)
+    body = (<Loader />);
+  else
+    body = props.kgStatusView(true);
 
-    return (
-      <Card className="border-0">
-        <CardHeader>Knowledge Graph integration</CardHeader>
-        <CardBody>
-          <Row><Col>{body}</Col></Row>
-        </CardBody>
-      </Card>
-    );
-  }
+  return (
+    <Card className="border-0">
+      <CardHeader>Knowledge Graph integration</CardHeader>
+      <CardBody>
+        <Row><Col>{body}</Col></Row>
+      </CardBody>
+    </Card>
+  );
 }
 
 class ProjectViewOverviewNav extends Component {
@@ -984,14 +863,63 @@ function EmptyDatasets(props) {
   </Alert>;
 }
 
-function ProjectViewDatasets(props) {
-  const migrationMessage = props.migration.migration_required ?
-    <Alert color="warning">
-      <FontAwesomeIcon icon={faExclamationTriangle} /> <strong>A new version of renku is available.</strong>
-      <br />
+/**
+ * Shows a warning Alert when Renku version is outdated or Knowledge Graph integration is not active.
+ *
+ * @param {Object} webhook - project.webhook store object
+ * @param {bool} migration_required - whether it's necessary to migrate the project or not
+ * @param {Object} history - react history object
+ * @param {string} overviewStatusUrl - overview status url
+ */
+function ProjectStatusAlert(props) {
+  const { webhook, migration_required, overviewStatusUrl, history } = props;
+  const kgDown = isKgDown(webhook);
+
+  if (!migration_required && !kgDown)
+    return null;
+
+  const versionInfo = migration_required ?
+    <span>
+      <FontAwesomeIcon icon={faExclamationTriangle} className="pr-1" />
+      <strong>A new version of renku is available. </strong>
       An upgrade is necessary to allow modification of datasets and is recommended for all projects.&nbsp;
-      <Button color="warning" onClick={() => props.history.push(props.overviewStatusUrl)} >More Info</Button>
-    </Alert> : null;
+    </span> :
+    null;
+  const kgInfo = kgDown ?
+    <span>
+      <FontAwesomeIcon icon={faExclamationTriangle} className="pr-1" />
+      <strong>Knowledge Graph integration not active. </strong>
+      This means that some operations on datasets are not possible, we recomend activating it.
+    </span> :
+    null;
+
+  const conditionalSpace = versionInfo && kgInfo ? <br /> : null;
+
+  return (
+    <Alert color="warning">
+      {versionInfo}
+      {conditionalSpace}
+      {conditionalSpace}
+      {kgInfo}
+      <br />
+      <br />
+      <Button color="warning" onClick={() => history.push(overviewStatusUrl)}>
+        See details
+      </Button>
+    </Alert>
+  );
+}
+
+function ProjectViewDatasets(props) {
+
+  const kgDown = isKgDown(props.webhook);
+
+  const migrationMessage = <ProjectStatusAlert
+    history={props.history}
+    overviewStatusUrl={props.overviewStatusUrl}
+    migration_required={props.migration.migration_required}
+    webhook={props.webhook}
+  />;
 
   useEffect(()=>{
     const loading = props.core.datasets === SpecialPropVal.UPDATING;
@@ -1059,7 +987,7 @@ function ProjectViewDatasets(props) {
         <Col key="btn" md={12}>
           <GoBackButton key="btn" label="Back to list" url={props.datasetsUrl}/>
         </Col>,
-        props.datasetView(p)
+        props.datasetView(p, !kgDown)
       ]} />
       <Route exact path={props.datasetsUrl} render={p =>
         <ProjectDatasetsNav {...props} />

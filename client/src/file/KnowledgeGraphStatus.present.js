@@ -18,11 +18,26 @@
 
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { faInfoCircle, faCheck, faExclamationTriangle, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Button, Alert, Progress } from "reactstrap";
 
 import { Loader } from "../utils/UIComponents";
 import { GraphIndexingStatus } from "../project/Project";
+
+function KnowledgeGraphPrivateInfo(props) {
+  if (!props.isPrivate) return null;
+  return (
+    <p className="font-italic small">
+      This is a private project. Though contents remain private,
+      the Knowledge Graph may make some metadata public. Only activate if that is acceptable.
+      <br />
+      <a href="https://renku.readthedocs.io/en/latest/user/knowledge-graph.html"
+        target="_blank" rel="noopener noreferrer">
+        <FontAwesomeIcon icon={faExternalLinkAlt} /> Read more about the Knowledge Graph integration.
+      </a>
+    </p>
+  );
+}
 
 function KnowledgeGraphStatus(props) {
   const { error, progress, webhookJustCreated } = props;
@@ -52,12 +67,18 @@ function KnowledgeGraphStatus(props) {
     }
 
     const action = props.maintainer ?
-      <Button color="warning" onClick={props.createWebhook}>Activate Knowledge Graph</Button> :
+      <Button color="warning" onClick={props.createWebhook}>Activate</Button> :
       <span>You do not have sufficient rights, but a project owner can do this.</span>;
 
     return (
       <Alert color="warning">
-        Knowledge Graph integration must be activated to view the lineage.&nbsp;
+        <FontAwesomeIcon icon={faExclamationTriangle} />&nbsp;
+        {props.warningMessage ?
+          props.warningMessage :
+          "Knowledge Graph integration must be activated to view the lineage."}
+        <br />
+        <KnowledgeGraphPrivateInfo isPrivate={props.isPrivate} />
+        <br />
         {action}
       </Alert>
     );
@@ -94,7 +115,14 @@ function KnowledgeGraphStatus(props) {
         </Alert>
       </div>
     );
-  } return null;
+  }
+  else if (props.displaySuccessMessage) {
+    return <Alert color="success">
+      <FontAwesomeIcon icon={faCheck} /> Knowledge Graph integration is active.
+    </Alert>;
+  }
+
+  return null;
 }
 
 export { KnowledgeGraphStatus };

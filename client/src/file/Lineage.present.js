@@ -207,7 +207,7 @@ class FileLineage extends Component {
     ) {
       return <KnowledgeGraphStatus
         fetchGraphStatus={this.props.fetchGraphStatus}
-        retrieveGraph={this.props.retrieveGraph}
+        fetchAfterBuild={this.props.retrieveGraph}
         createGraphWebhook={this.props.createGraphWebhook}
         maintainer={this.props.maintainer}
         forked={this.props.forked}
