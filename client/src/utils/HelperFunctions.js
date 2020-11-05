@@ -26,7 +26,7 @@ const AUTOSAVED_PREFIX = "renku/autosave/";
 
 /**
  * Create the project slug from the project name. This should be kept in line with the GitLab slugify function
- * 
+ *
  * @param {string} title - the project name
  * @param {bool} lower - convert to lowercase
  * @param {string} separator - string to replace invalid characters
@@ -39,7 +39,7 @@ function slugFromTitle(title, lower = false, separator = "-") {
     title.trim();
   const slug = rawProjectName
     .replace(/[^a-zA-Z0-9_.-]+/g, separator) // remove invalid chars
-    .split(separator).filter(Boolean).join(separator) // remove separators duplicates
+    .split(separator).filter(Boolean).join(separator); // remove separators duplicates
 
   if (slug === separator)
     return "";
