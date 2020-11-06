@@ -30,7 +30,7 @@ import { MemoryRouter } from "react-router-dom";
 import Time from "./Time";
 import { CommitsView, CommitsUtils } from "./Commits";
 import {
-  splitAutosavedBranches, sanitizedHTMLFromMarkdown, parseINIString, slugFromTitle, verifyTitleValidity
+  splitAutosavedBranches, sanitizedHTMLFromMarkdown, parseINIString, slugFromTitle, verifyTitleCharacters
 } from "./HelperFunctions";
 import { RefreshButton } from "./UIComponents";
 import { StateModel, globalSchema } from "../model";
@@ -355,17 +355,17 @@ describe("title related functions", () => {
     expect(slugFromTitle("This is my Project", true, "+")).toEqual("this+is+my+project");
   });
 
-  // verifyTitleValidity
-  it("function verifyTitleValidity - valid strings", () => {
-    expect(verifyTitleValidity("João-Mario")).toBeTruthy();
-    expect(verifyTitleValidity("здрасти_.и")).toBeTruthy();
-    expect(verifyTitleValidity("")).toBeTruthy();
+  // verifyTitleCharacters
+  it("function verifyTitleCharacters - valid strings", () => {
+    expect(verifyTitleCharacters("João-Mario")).toBeTruthy();
+    expect(verifyTitleCharacters("здрасти_.и")).toBeTruthy();
+    expect(verifyTitleCharacters("")).toBeTruthy();
   });
 
-  it("function verifyTitleValidity - invalid strings", () => {
-    expect(verifyTitleValidity("Test:-)")).toBeFalsy();
-    expect(verifyTitleValidity("test!_pro-ject~")).toBeFalsy();
-    expect(verifyTitleValidity("yeah 🚀")).toBeFalsy();
+  it("function verifyTitleCharacters - invalid strings", () => {
+    expect(verifyTitleCharacters("Test:-)")).toBeFalsy();
+    expect(verifyTitleCharacters("test!_pro-ject~")).toBeFalsy();
+    expect(verifyTitleCharacters("yeah 🚀")).toBeFalsy();
   });
 });
 

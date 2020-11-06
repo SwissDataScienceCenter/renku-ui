@@ -46,7 +46,7 @@ function slugFromTitle(title, lower = false, separator = "-") {
   return slug;
 }
 
-function verifyTitleValidity(title) {
+function verifyTitleCharacters(title) {
   const regexPattern = XRegExp("^(\\pL|\\d|\\_|\\-|\\.|\\ )*$");
   return regexPattern.test(title);
 }
@@ -200,4 +200,4 @@ function isURL(str) {
 }
 
 export { slugFromTitle, getActiveProjectPathWithNamespace, splitAutosavedBranches, sanitizedHTMLFromMarkdown };
-export { simpleHash, parseINIString, formatBytes, groupBy, gitLabUrlFromProfileUrl, isURL, verifyTitleValidity };
+export { simpleHash, parseINIString, formatBytes, groupBy, gitLabUrlFromProfileUrl, isURL, verifyTitleCharacters };

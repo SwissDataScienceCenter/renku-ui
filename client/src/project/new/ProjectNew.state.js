@@ -25,7 +25,7 @@
 
 import { CUSTOM_REPO_NAME } from "./ProjectNew.container";
 import { newProjectSchema } from "../../model/RenkuModels";
-import { slugFromTitle, verifyTitleValidity } from "../../utils/HelperFunctions";
+import { slugFromTitle, verifyTitleCharacters } from "../../utils/HelperFunctions";
 
 class NewProjectCoordinator {
   constructor(client, model, projectsModel) {
@@ -458,7 +458,7 @@ class NewProjectCoordinator {
       errors["title"] = "Reserved title name.";
     else if (input.title.length && ["_", "-", " ", "."].includes(input.title[0]))
       errors["title"] = "Title must start with a letter or a number.";
-    else if (!verifyTitleValidity(input.title))
+    else if (!verifyTitleCharacters(input.title))
       errors["title"] = "Title can contain only letters, digits, '_', '.', '-' or spaces.";
     else if (input.title && !slugFromTitle(input.title, true))
       errors["title"] = "Title must contain at least one letter (without any accents) or a number.";
