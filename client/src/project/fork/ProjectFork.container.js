@@ -66,7 +66,7 @@ class Fork extends Component {
 
   setProjectTitle(title) {
     this.forkProject.set("display.title", title);
-    this.forkProject.set("display.slug", slugFromTitle(title));
+    this.forkProject.set("display.slug", slugFromTitle(title, true, true));
   }
 
   onTitleChange(e) {

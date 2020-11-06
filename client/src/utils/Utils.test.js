@@ -30,7 +30,8 @@ import { MemoryRouter } from "react-router-dom";
 import Time from "./Time";
 import { CommitsView, CommitsUtils } from "./Commits";
 import {
-  splitAutosavedBranches, sanitizedHTMLFromMarkdown, parseINIString, slugFromTitle, verifyTitleCharacters
+  splitAutosavedBranches, sanitizedHTMLFromMarkdown, parseINIString, slugFromTitle,
+  verifyTitleCharacters, convertUnicodeToAscii
 } from "./HelperFunctions";
 import { RefreshButton } from "./UIComponents";
 import { StateModel, globalSchema } from "../model";
@@ -323,6 +324,13 @@ describe("branch functions", () => {
 });
 
 describe("title related functions", () => {
+  // convertUnicodeToAscii
+  it("function convertUnicodeToAscii - valid strings", () => {
+    expect(convertUnicodeToAscii("João")).toEqual("Joao");
+    expect(convertUnicodeToAscii("здрасти")).toEqual("здрасти");
+    expect(convertUnicodeToAscii("Zürich")).toEqual("Zuerich");
+  });
+
   // slugFromTitle
   it("function slugFromTitle without parameters", () => {
     expect(slugFromTitle("This is my Project")).toEqual("This-is-my-Project");
@@ -337,10 +345,10 @@ describe("title related functions", () => {
     expect(slugFromTitle(" a new project ", true)).toEqual("a-new-project");
   });
   it("slugFromTitle lowercase - remove only non-allowed special characters", () => {
-    expect(slugFromTitle("test!_pro-ject~", true)).toEqual("test-_pro-ject");
+    expect(slugFromTitle("test!_pro-ject~", true)).toEqual("test-pro-ject");
   });
   it("slugFromTitle lowercase - squash multiple hypens", () => {
-    expect(slugFromTitle("test!!!!_pro-ject~", true)).toEqual("test-_pro-ject");
+    expect(slugFromTitle("test!!!!_pro-ject~", true)).toEqual("test-pro-ject");
   });
   it("slugFromTitle lowercase - return empty string if only non-allowed characters", () => {
     expect(slugFromTitle("здрасти", true)).toEqual("");
@@ -352,12 +360,18 @@ describe("title related functions", () => {
     expect(slugFromTitle("-Test:-)-", true)).toEqual("test");
   });
   it("function slugFromTitle lowercase with custom separator", () => {
-    expect(slugFromTitle("This is my Project", true, "+")).toEqual("this+is+my+project");
+    expect(slugFromTitle("This is my Project", true, false, "+")).toEqual("this+is+my+project");
+  });
+  it("function slugFromTitle ascii", () => {
+    expect(slugFromTitle("João-Mario", true, true)).toEqual("joao-mario");
+    expect(slugFromTitle("João-._--Mario", true, true)).toEqual("joao-mario");
+    expect(slugFromTitle("Zürich", true, true)).toEqual("zuerich");
+    expect(slugFromTitle("здрасти", true, true)).toEqual("");
   });
 
   // verifyTitleCharacters
   it("function verifyTitleCharacters - valid strings", () => {
-    expect(verifyTitleCharacters("João-Mario")).toBeTruthy();
+    expect(verifyTitleCharacters("João")).toBeTruthy();
     expect(verifyTitleCharacters("здрасти_.и")).toBeTruthy();
     expect(verifyTitleCharacters("")).toBeTruthy();
   });
