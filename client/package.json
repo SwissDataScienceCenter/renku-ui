@@ -51,6 +51,7 @@
     "showdown": "^1.9.1",
     "styled-jsx": "^3.2.3",
     "uuid": "^3.3.3",
+    "xregexp": "^4.4.0",
     "yaml-js": "^0.2.3"
   },
   "scripts": {

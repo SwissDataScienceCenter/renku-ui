@@ -20,12 +20,104 @@
 // Source: https://stackoverflow.com/questions/6507056/replace-all-whitespace-characters/6507078#6507078
 import showdown from "showdown";
 import DOMPurify from "dompurify";
+import XRegExp from "xregexp";
 
 const AUTOSAVED_PREFIX = "renku/autosave/";
 
-const slugFromTitle = (title, lower = false) => lower ?
-  title.replace(/\s/g, "-").toLowerCase() :
-  title.replace(/\s/g, "-");
+function convertUnicodeToAscii(string) {
+  // ? REF: https://github.com/gitlabhq/gitlabhq/blob/7942fe679107b5e73e0b359f000946dbbf2feb35
+  // ?        /app/assets/javascripts/lib/utils/text_utility.js#L278-L351
+  const unicodeConversion = [
+    [/[ÀÁÂÃÅĀĂĄ]/g, "A"],
+    [/[Æ]/g, "AE"],
+    [/[ÇĆĈĊČ]/g, "C"],
+    [/[ÈÉÊËĒĔĖĘĚ]/g, "E"],
+    [/[ÌÍÎÏĨĪĬĮİ]/g, "I"],
+    [/[Ððĥħ]/g, "h"],
+    [/[ÑŃŅŇŉ]/g, "N"],
+    [/[ÒÓÔÕØŌŎŐ]/g, "O"],
+    [/[ÙÚÛŨŪŬŮŰŲ]/g, "U"],
+    [/[ÝŶŸ]/g, "Y"],
+    [/[Þñþńņň]/g, "n"],
+    [/[ßŚŜŞŠ]/g, "S"],
+    [/[àáâãåāăąĸ]/g, "a"],
+    [/[æ]/g, "ae"],
+    [/[çćĉċč]/g, "c"],
+    [/[èéêëēĕėęě]/g, "e"],
+    [/[ìíîïĩīĭį]/g, "i"],
+    [/[òóôõøōŏő]/g, "o"],
+    [/[ùúûũūŭůűų]/g, "u"],
+    [/[ýÿŷ]/g, "y"],
+    [/[ĎĐ]/g, "D"],
+    [/[ďđ]/g, "d"],
+    [/[ĜĞĠĢ]/g, "G"],
+    [/[ĝğġģŊŋſ]/g, "g"],
+    [/[ĤĦ]/g, "H"],
+    [/[ıśŝşš]/g, "s"],
+    [/[Ĳ]/g, "IJ"],
+    [/[ĳ]/g, "ij"],
+    [/[Ĵ]/g, "J"],
+    [/[ĵ]/g, "j"],
+    [/[Ķ]/g, "K"],
+    [/[ķ]/g, "k"],
+    [/[ĹĻĽĿŁ]/g, "L"],
+    [/[ĺļľŀł]/g, "l"],
+    [/[Œ]/g, "OE"],
+    [/[œ]/g, "oe"],
+    [/[ŔŖŘ]/g, "R"],
+    [/[ŕŗř]/g, "r"],
+    [/[ŢŤŦ]/g, "T"],
+    [/[ţťŧ]/g, "t"],
+    [/[Ŵ]/g, "W"],
+    [/[ŵ]/g, "w"],
+    [/[ŹŻŽ]/g, "Z"],
+    [/[źżž]/g, "z"],
+    [/ö/g, "oe"],
+    [/ü/g, "ue"],
+    [/ä/g, "ae"],
+    [/Ö/g, "Oe"],
+    [/Ü/g, "Ue"],
+    [/Ä/g, "Ae"],
+  ];
+
+  let convertedString = string;
+
+  unicodeConversion.forEach(([regex, replacer]) => {
+    convertedString = convertedString.replace(regex, replacer);
+  });
+
+  return convertedString;
+}
+
+/**
+ * Create the project slug from the project name. This should be kept in line with the GitLab slugify function
+ *
+ * @param {string} title - the project name
+ * @param {bool} lower - convert to lowercase
+ * @param {string} separator - string to replace invalid characters
+ */
+function slugFromTitle(title, lower = false, unicodeConversion = false, separator = "-") {
+  // ? REF: https://github.com/gitlabhq/gitlabhq/blob/7942fe679107b5e73e0b359f000946dbbf2feb35
+  // ?        /app/assets/javascripts/lib/utils/text_utility.js#L48-L65
+  const rawProjectName = lower ?
+    title.trim().toLowerCase() :
+    title.trim();
+  const convertedString = unicodeConversion ?
+    convertUnicodeToAscii(rawProjectName) :
+    rawProjectName;
+  const slug = convertedString
+    .replace(/[^a-zA-Z0-9-]+/g, separator) // remove invalid chars
+    .split(separator).filter(Boolean).join(separator); // remove separators duplicates
+
+  if (slug === separator)
+    return "";
+  return slug;
+}
+
+function verifyTitleCharacters(title) {
+  const regexPattern = XRegExp("^(\\pL|\\d|\\_|\\-|\\.|\\ )*$");
+  return regexPattern.test(title);
+}
 
 function getActiveProjectPathWithNamespace(currentPath) {
   try {
@@ -175,5 +267,8 @@ function isURL(str) {
   return !!pattern.test(str);
 }
 
-export { slugFromTitle, getActiveProjectPathWithNamespace, splitAutosavedBranches, sanitizedHTMLFromMarkdown };
-export { simpleHash, parseINIString, formatBytes, groupBy, gitLabUrlFromProfileUrl, isURL };
+export {
+  slugFromTitle, getActiveProjectPathWithNamespace, splitAutosavedBranches, sanitizedHTMLFromMarkdown,
+  simpleHash, parseINIString, formatBytes, groupBy, gitLabUrlFromProfileUrl, isURL, verifyTitleCharacters,
+  convertUnicodeToAscii
+};
