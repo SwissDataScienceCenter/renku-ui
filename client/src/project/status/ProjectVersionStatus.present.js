@@ -53,10 +53,11 @@ function TemplateStatusBody(props) {
   else if (!current_template_version) { // current_template_version === null
     //if the template has no version it cant be migrated
     projectTemplateBody = (
-      <Alert color="warning">
-        <p>This project&apos;s template can&apos;t be updated because it has no template version,
-          this project was created before template migrations where available.</p>
-      </Alert>
+      <p>
+        This project&apos;s template can&apos;t be updated because it has no template version,
+        this project was created before template migrations where available.&nbsp;
+        <a href="https://renku.readthedocs.io/en/latest/user/upgrading_renku.html">More info about renku migrate</a>.
+      </p>
     );
   }
   else {
@@ -122,8 +123,8 @@ function TemplateStatusBody(props) {
         The current version is up to date.
       </Alert >;
     }
-    return projectTemplateBody;
   }
+  return projectTemplateBody;
 }
 
 function getErrorMessage(error_while, error_what, error_reason) {
@@ -144,91 +145,75 @@ function RenkuVersionStatusBody(props) {
   const { migration_required, project_supported, docker_update_possible,
     latest_version, project_version, migration_status, check_error, migration_error
   } = props.migration;
-  const loading = props.loading || migration_required === null;
+  const loading = props.loading; //|| migration_required === null; ???
   const { maintainer } = props;
 
   let body = null;
   if (loading) {
     body = (<Loader />);
   }
-  else {
-    // print the error if any
-    if (check_error || (migration_status === MigrationStatus.ERROR
-        && (migration_error.dockerfile_update_failed || migration_error.migrations_failed))) {
-      const error = check_error ?
-        check_error :
-        migration_status;
-      body = (
-        <Alert color="danger">
-          <p>
-            Error while { check_error ? "checking" : "updating" } the version. Please reload the page to try again.
-            If the problem persists you should contact the development team on&nbsp;
-            <a href="https://gitter.im/SwissDataScienceCenter/renku"
-              target="_blank" rel="noreferrer noopener">Gitter</a> or create an issue in&nbsp;
-            <a href="https://github.com/SwissDataScienceCenter/renku/issues"
-              target="_blank" rel="noreferrer noopener">GitHub</a>.
-          </p>
-          <div><strong>Error Message</strong><pre>{error}</pre></div>
-        </Alert>
-      );
-    }
-    // migration required
-    else if (migration_required) {
-      let updateSection = null;
-      if (maintainer) {
-        if (project_supported && docker_update_possible) {
-          updateSection = (
-            <Fragment>
-              <Button
-                color="warning"
-                disabled={migration_status === MigrationStatus.MIGRATING}
-                onClick={props.onMigrateProject}
-              >
-                {migration_status === MigrationStatus.MIGRATING ?
-                  <span><Spinner size="sm" /> Updating...</span> : "Update"
-                }
-              </Button>
-              <Button color="link" id="btn_instructions"><i>Do you prefer manual instructions?</i></Button>
-              <UncontrolledCollapse toggler="#btn_instructions">
-                <br />
-                <p>{props.updateInstruction}</p>
-              </UncontrolledCollapse>
-            </Fragment>
-          );
-        }
-        else {
-          updateSection = (
-            <p>
-              <strong>Updating this project automatically is not possible.</strong>
-              <br /> {props.updateInstruction}
-            </p>
-          );
-        }
+  else if (check_error) {
+    body = getErrorMessage("checking", "renku", check_error);
+  }
+  else if (migration_status === MigrationStatus.ERROR
+  && (migration_error.dockerfile_update_failed || migration_error.migrations_failed)) {
+    body = getErrorMessage("updating", "renku", migration_error);
+  }
+  else if (migration_required) {
+    let updateSection = null;
+    if (maintainer) {
+      if (project_supported && docker_update_possible) {
+        updateSection = (
+          <Fragment>
+            <Button
+              color="warning"
+              disabled={migration_status === MigrationStatus.MIGRATING}
+              onClick={props.onMigrateProject}
+            >
+              {migration_status === MigrationStatus.MIGRATING ?
+                <span><Spinner size="sm" /> Updating...</span> : "Update"
+              }
+            </Button>
+            <Button color="link" id="btn_instructions"><i>Do you prefer manual instructions?</i></Button>
+            <UncontrolledCollapse toggler="#btn_instructions">
+              <br />
+              <p>{props.updateInstruction}</p>
+            </UncontrolledCollapse>
+          </Fragment>
+        );
       }
       else {
         updateSection = (
           <p>
-            <strong>You do not have the required permissions to upgrade this project.</strong>
-              &nbsp;You can <ExternalLink role="text" size="sm"
-              title="ask a project maintainer" url={`${props.externalUrl}/project_members`} /> to
-            do that for you.
+            <strong>Updating this project automatically is not possible.</strong>
+            <br /> {props.updateInstruction}
           </p>
         );
       }
-      body = (
-        <Alert color="warning">
-          <p>
-            <FontAwesomeIcon icon={faExclamationTriangle} /> A new version of <strong>renku</strong> is available.
-            The project needs to be migrated to keep working.
-          </p>
-          {updateSection}
-        </Alert>
+    }
+    else {
+      updateSection = (
+        <p>
+          <strong>You do not have the required permissions to upgrade this project.</strong>
+            &nbsp;You can <ExternalLink role="text" size="sm"
+            title="ask a project maintainer" url={`${props.externalUrl}/project_members`} /> to
+          do that for you.
+        </p>
       );
     }
-    // migration not needed
-    else {
-      body = (<Alert color="success"><FontAwesomeIcon icon={faCheck} /> The current version is up to date.</Alert>);
-    }
+    body = (
+      <Alert color="warning">
+        <p>
+          <FontAwesomeIcon icon={faExclamationTriangle} /> A new version of <strong>renku</strong> is available.
+          The project needs to be migrated to keep working.
+        </p>
+        {updateSection}
+      </Alert>
+    );
+  }
+  // migration not needed
+  else {
+    body = (<Alert color="success"><FontAwesomeIcon icon={faCheck} /> The current version is up to date.</Alert>);
   }
 
   const versionStatus = <p>
@@ -236,7 +221,12 @@ function RenkuVersionStatusBody(props) {
     <strong>Latest Renku Version:</strong> {latest_version}
   </p>;
 
-  return [versionStatus, body];
+  return (
+    <div>
+      {versionStatus}
+      {body}
+    </div>
+  );
 }
 
 function ProjectVersionStatusBody(props) {
@@ -244,9 +234,8 @@ function ProjectVersionStatusBody(props) {
   const updateInstruction = (
     <Fragment>
       You can launch
-      an <Link to={props.launchNotebookUrl}>interactive environment</Link> and follow the
-      {/* eslint-disable-next-line max-len */}
-      <a href="https://renku.readthedocs.io/en/latest/user/upgrading_renku.html#upgrading-your-image-to-use-the-latest-renku-cli-version">
+      an <Link to={props.launchNotebookUrl}>interactive environment</Link> and follow the&nbsp;
+      <a href="https://renku-python.readthedocs.io/en/latest/commands.html#module-renku.cli.migrate">
         instructions for upgrading</a>.
       When finished, you will need to run <code>renku migrate</code>.
     </Fragment>
