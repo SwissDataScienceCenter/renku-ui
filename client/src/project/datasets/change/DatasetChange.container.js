@@ -31,7 +31,6 @@ import { FILE_STATUS } from "../../../utils/formgenerator/fields/FileUploaderInp
 import FormGenerator from "../../../utils/formgenerator/";
 import { mapDataset } from "../../../dataset/index";
 
-
 function ChangeDataset(props) {
 
   const [datasetFiles, setDatasetFiles] = useState();
@@ -56,6 +55,7 @@ function ChangeDataset(props) {
     };
   }
   else {
+    datasetFormSchema.title.help = undefined;
     datasetFormSchema.title.parseFun = undefined;
   }
 
@@ -109,6 +109,14 @@ function ChangeDataset(props) {
     });
   };
 
+  const getCreator = (creator)=>{
+    let newCreator = { name: creator.name };
+    if (creator.email)
+      newCreator.email = creator.email;
+    if (creator.affiliation)
+      newCreator.affiliation = creator.affiliation;
+    return newCreator;
+  };
 
   const submitCallback = e => {
     setServerErrors(undefined);
@@ -127,7 +135,8 @@ function ChangeDataset(props) {
     dataset.files = [...dataset.files, ...pendingFiles];
     dataset.keywords = datasetFormSchema.keywords.value;
     dataset.creators = datasetFormSchema.creators.value
-      .map(creator => ({ name: creator.name, email: creator.email }));
+      .filter(creator => creator.email !== props.user.data.email)
+      .map(creator => getCreator(creator));
 
     props.client.postDataset(props.httpProjectUrl, dataset, props.edit)
       .then(response => {
@@ -190,7 +199,24 @@ function ChangeDataset(props) {
                 datasetFormSchema.name.value = dataset.name;
                 datasetFormSchema.title.value = dataset.title;
                 datasetFormSchema.description.value = dataset.description;
-                datasetFormSchema.creators.value = dataset.published.creator;
+                datasetFormSchema.creators.value = dataset.published.creator.map(
+                  creator => creator.email === props.user.data.email ?
+                    {
+                      name: creator.name,
+                      email: creator.email,
+                      affiliation: creator.organization,
+                      default: true
+                    }
+                    : creator);
+                if (datasetFormSchema.creators.value.find(creator =>
+                  creator.email === props.user.data.email) === undefined) {
+                  datasetFormSchema.creators.value.push({
+                    name: props.user.data.name,
+                    email: props.user.data.email,
+                    affiliation: props.user.data.organization,
+                    default: true
+                  });
+                }
                 datasetFormSchema.keywords.value = dataset.keywords;
                 datasetFormSchema.files.value = response.data.result.files
                   .map(file => ({ name: file.name, atLocation: file.path, file_status: "added" }));
@@ -207,7 +233,14 @@ function ChangeDataset(props) {
       datasetFormSchema.title.value = datasetFormSchema.title.initial;
       datasetFormSchema.description.value = datasetFormSchema.description.initial;
       datasetFormSchema.files.value = datasetFormSchema.files.initial;
-      datasetFormSchema.creators.value = datasetFormSchema.creators.initial;
+      datasetFormSchema.creators.value = [
+        {
+          name: props.user.data.name,
+          email: props.user.data.email,
+          affiliation: props.user.data.organization,
+          default: true
+        }
+      ];
       datasetFormSchema.keywords.value = datasetFormSchema.keywords.initial;
     }
   }, [props, initialized, dataset, datasetFiles,

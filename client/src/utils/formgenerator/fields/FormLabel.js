@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2020 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -19,23 +19,18 @@
 /**
  *  renku-ui
  *
- *  TextInput.js
+ *  FormLabel.js
  *  Presentational components.
  */
 
-import * as React from "react";
-import ValidationAlert from "./ValidationAlert";
-import HelpText from "./HelpText";
-import FormLabel from "./FormLabel";
-import { FormGroup, Input } from "reactstrap";
+import React from "react";
+import { Label } from "reactstrap";
 
-function TextareaInput({ name, label, type, value, alert, setInputs, help, disabled = false, required = false }) {
-  return <FormGroup>
-    <FormLabel htmlFor={name} label={label} required={required}/>
-    <Input id={name} name={name} type={type} value={value || ""} onChange={setInputs} disabled={disabled}/>
-    <HelpText content={help} />
-    <ValidationAlert content={alert} />
-  </FormGroup>;
-}
+const FormLabel = ({ name, label, required }) => {
+  return <Label htmlFor={name} required={required}>
+    {label}
+    {required ? <span style={{ "color": "#dc3545" }}>*</span> : null}
+  </Label>;
+};
 
-export default TextareaInput;
+export default FormLabel;

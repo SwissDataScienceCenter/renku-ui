@@ -61,6 +61,24 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors,
       disabled={submitLoader.value || (input.edit === false && edit) || disableAll} setInputs={setInputs} {...input} />;
   };
 
+  const extractErrorsAndWarnings = (errorOrWarning) => {
+    let content;
+    if (typeof errorOrWarning === "string") {
+      content = <p>{errorOrWarning}</p>;
+    }
+    else {
+      //this could be improve to extract better the error message
+      //ideally we could map backend and frontend fields and put the error under the field
+      content = Object.keys(errorOrWarning).map(error =>
+        (<p key={error}>{`${error}: ${JSON.stringify(errorOrWarning[error])}`}</p>)
+      );
+    }
+    return (<div>
+      <p>Errors occured while creating the project.</p>
+      {content}
+    </div>);
+  };
+
   return (
     <Col>
       { title !== undefined ?
@@ -69,8 +87,10 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors,
       <Form onSubmit={setSubmit}>
         <div>
           {inputs.map(input => renderInput(input))}
-          {serverErrors ? <UncontrolledAlert color="danger">{serverErrors}</UncontrolledAlert> : null}
-          {serverWarnings ? <UncontrolledAlert color="warning">{serverWarnings}</UncontrolledAlert> : null}
+          {serverErrors ? <UncontrolledAlert color="danger">
+            {extractErrorsAndWarnings(serverErrors)}</UncontrolledAlert> : null}
+          {serverWarnings ? <UncontrolledAlert color="warning">
+            {extractErrorsAndWarnings(serverWarnings)}</UncontrolledAlert> : null}
           {submitLoader !== undefined && submitLoader.value ?
             <FormText color="primary">
               <Loader size="16" inline="true" margin="2" />

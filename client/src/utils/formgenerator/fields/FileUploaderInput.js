@@ -23,10 +23,11 @@
  *  Presentational components.
  */
 import React, { useState, useEffect, useRef } from "react";
-import { FormGroup, Label, Table, Spinner, Button, UncontrolledCollapse,
+import { FormGroup, Table, Spinner, Button, UncontrolledCollapse,
   Card, CardBody, Input, InputGroup, InputGroupAddon } from "reactstrap";
 import ValidationAlert from "./ValidationAlert";
 import HelpText from "./HelpText";
+import FormLabel from "./FormLabel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faTimes, faTrashAlt, faSyncAlt, faExclamationTriangle, faFolder }
   from "@fortawesome/free-solid-svg-icons";
@@ -91,7 +92,7 @@ function getFileObject(name, path, size, id, error, alias, controller, uncompres
 }
 
 function FileuploaderInput({ name, label, alert, value, setInputs, help, disabled = false,
-  uploadFileFunction, filesOnUploader }) {
+  uploadFileFunction, filesOnUploader, required = false }) {
 
   //send value as an already built tree/hash to display and
   // delete from the files/paths /data/dataset-name so i can check if the file is there or not
@@ -403,7 +404,7 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
 
   return (
     <FormGroup>
-      <Label htmlFor={name}>{label}</Label>
+      <FormLabel htmlFor={name} label={label} required={required}/>
       {initialFilesTree !== undefined ?
         <Card className="mb-4">
           <CardBody style={{ backgroundColor: "#e9ecef" }}>

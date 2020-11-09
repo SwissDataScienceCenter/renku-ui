@@ -141,15 +141,16 @@
 
 .input-tag__tags li {
   align-items: center;
-  background: #5561A6;
   border-radius: 0.25rem;
-  color: white;
   display: flex;
   font-weight: 200;
   list-style: none;
   margin-bottom: 5px;
   margin-right: 5px;
-	padding: 5px 10px;
+  padding: 5px 10px;
+  color: #212529;
+  background-color: #f8f9fa;
+  border-color: #f8f9fa;
 }
 
 .input-tag__tags li.input-tag__tags__input {

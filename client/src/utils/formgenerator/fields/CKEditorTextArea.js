@@ -26,20 +26,21 @@
 import React, { useState } from "react";
 import ValidationAlert from "./ValidationAlert";
 import HelpText from "./HelpText";
-import { FormGroup, Label } from "reactstrap";
+import FormLabel from "./FormLabel";
+import { FormGroup } from "reactstrap";
 import CKEditor from "@ckeditor/ckeditor5-react";
 import RenkuCKEditor from "@renku/ckeditor5-build-renku";
 import { CustomInput, Input } from "reactstrap";
 
 
-function CktextareaInput({ name, label, type, value, alert, setInputs, help, outputType, disabled }) {
+function CktextareaInput({ name, label, type, value, alert, setInputs, help, outputType, disabled, required = false }) {
   const [codeview, setCodeview] = useState(false);
 
   const switchLabel = (outputType === "markdown") ? "Markdown" : "HTML";
 
   return <div>
     <FormGroup>
-      <Label htmlFor={name}>{label}</Label>
+      <FormLabel htmlFor={name} label={label} required={required}/>
       <CustomInput
         className="float-right"
         type="switch"
