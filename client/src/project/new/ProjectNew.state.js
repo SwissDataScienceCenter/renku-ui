@@ -460,10 +460,10 @@ class NewProjectCoordinator {
       errors["title"] = "Title must start with a letter or a number.";
     else if (!verifyTitleCharacters(input.title))
       errors["title"] = "Title can contain only letters, digits, '_', '.', '-' or spaces.";
-    else if (input.title && !slugFromTitle(input.title, true, true))
+    else if (input.title && !slugFromTitle(input.title, true))
       errors["title"] = "Title must contain at least one letter (without any accents) or a number.";
-    else if (projects && projectsPaths.includes(`${input.namespace}/${slugFromTitle(input.title, true, true)}`))
-      errors["title"] = `Title produces a project identifier (${slugFromTitle(input.title, true, true)})${slugExpl}`;
+    else if (projects && projectsPaths.includes(`${input.namespace}/${slugFromTitle(input.title, true)}`))
+      errors["title"] = `Title produces a project identifier (${slugFromTitle(input.title, true)})${slugExpl}`;
 
     if (!warnings["namespace"] && !input.namespace)
       errors["namespace"] = "Select namespace.";

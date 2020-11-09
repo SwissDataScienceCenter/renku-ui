@@ -318,7 +318,7 @@ class Home extends Component {
       input.namespace :
       "<no namespace>";
     const title = input.title ?
-      slugFromTitle(input.title, true, true) :
+      slugFromTitle(input.title, true) :
       "<no title>";
     const slug = `${namespace}/${title}`;
 
