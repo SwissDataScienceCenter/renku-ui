@@ -178,6 +178,7 @@ class NotebookServersList extends Component {
         standalone={this.props.standalone}
         annotations={validAnnotations}
         resources={resources}
+        image={this.props.servers[k].image}
         name={this.props.servers[k].name}
         startTime={startTime}
         status={this.props.servers[k].status}
@@ -266,7 +267,8 @@ class NotebookServerRow extends Component {
     const commitDetails = this.props.commits[annotations["commit-sha"]] ?
       this.props.commits[annotations["commit-sha"]] :
       null;
-    const newProps = { annotations, status, details, uid, resources, repositoryLinks, commitDetails };
+    const image = this.props.image;
+    const newProps = { annotations, status, details, uid, resources, repositoryLinks, commitDetails, image };
 
     return (
       <Media query={Sizes.md}>
@@ -338,11 +340,11 @@ class NotebookServerRowCommitInfo extends Component {
 class NotebookServerRowFull extends Component {
   render() {
     const {
-      annotations, details, status, url, uid, resources, repositoryLinks, name, commitDetails, fetchCommit
+      annotations, details, status, url, uid, resources, repositoryLinks, name, commitDetails, fetchCommit, image
     } = this.props;
 
     const icon = <td className="align-middle">
-      <NotebooksServerRowStatusIcon details={details} status={status} uid={uid} />
+      <NotebooksServerRowStatusIcon details={details} status={status} uid={uid} image={image} />
     </td>;
     const project = this.props.standalone ?
       (<td className="align-middle"><NotebookServerRowProject annotations={this.props.annotations} /></td>) :
@@ -395,11 +397,11 @@ class NotebookServerRowFull extends Component {
 class NotebookServerRowCompact extends Component {
   render() {
     const {
-      annotations, details, status, url, uid, resources, repositoryLinks, name, commitDetails, fetchCommit
+      annotations, details, status, url, uid, resources, repositoryLinks, name, commitDetails, fetchCommit, image
     } = this.props;
 
     const icon = <span>
-      <NotebooksServerRowStatusIcon details={details} status={status} uid={uid} />
+      <NotebooksServerRowStatusIcon details={details} status={status} uid={uid} image={image} />
     </span>;
     const project = this.props.standalone ?
       (<Fragment>
@@ -528,14 +530,27 @@ class NotebooksServerRowStatus extends Component {
 
 class NotebooksServerRowStatusIcon extends Component {
   render() {
-    const { status } = this.props;
+    const { status, uid, image } = this.props;
     const data = getStatusObject(status);
     const classes = this.props.spaced ?
       "text-nowrap p-1 mb-2" :
       "text-nowrap p-1";
+    const id = `${uid}-status`;
+
+    const popover = !image || status !== "running" ?
+      null :
+      (
+        <UncontrolledPopover target={id} trigger="legacy" placement="bottom">
+          <PopoverHeader>Details</PopoverHeader>
+          <PopoverBody>
+            <span className="font-weight-bold">Image source:</span> {image}
+          </PopoverBody>
+        </UncontrolledPopover>
+      );
 
     return (<div>
-      <Badge color={data.color} className={classes}>{data.icon}</Badge>
+      <Badge id={id} color={data.color} className={classes}>{data.icon}</Badge>
+      {popover}
     </div>);
   }
 }
@@ -926,8 +941,8 @@ class StartNotebookPipelinesBadge extends Component {
       }
     }
     else if (pipelineType === NotebooksHelper.pipelineTypes.customImage) {
-      color = "primary"
-      text = "custom"
+      color = "primary";
+      text = "custom";
     }
     else {
       color = "danger";
