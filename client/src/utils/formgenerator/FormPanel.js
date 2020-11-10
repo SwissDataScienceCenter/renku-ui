@@ -49,21 +49,22 @@ function SubmitButtonGroup(props) {
     <Button type="submit" disabled={submitLoader.value} className="float-right mt-1" color="primary">
       {btnName}
     </Button>
-    : null
+    : null;
   const cancelButton = onCancel !== undefined ?
     <Button disabled={submitLoader.value} className="float-right mt-1 mr-1"
       color="secondary" onClick={onCancel}>
       {cancelBtnName ? cancelBtnName : "Cancel"}
     </Button>
-    : null
+    : null;
   const errorMessage = (errorFields.length > 0) ?
-    <ValidationAlert content={`Please fix problems in the following fields: ${errorFields.map(d => d.label).join(" ")}`} /> :
+    <ValidationAlert
+      content={`Please fix problems in the following fields: ${errorFields.map(d => d.label).join(" ")}`} /> :
     null;
   return <Fragment>
     { errorMessage }
     { submitButton }
     { cancelButton }
-  </Fragment>
+  </Fragment>;
 }
 
 function FormPanel({ title, btnName, submitCallback, model, serverErrors,

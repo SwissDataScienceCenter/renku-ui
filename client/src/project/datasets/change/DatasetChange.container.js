@@ -59,7 +59,7 @@ function ChangeDataset(props) {
     dsFormSchema.title.help = `${datasetFormSchema.title.help} ${datasetFormSchema.name.help}` ;
   }
   else {
-    dsFormSchema.title.help = datasetFormSchema.title.help
+    dsFormSchema.title.help = datasetFormSchema.title.help;
     dsFormSchema.title.parseFun = undefined;
   }
 
