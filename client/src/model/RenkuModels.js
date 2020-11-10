@@ -352,8 +352,7 @@ const datasetFormSchema = new Schema({
       isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression),
       alert: "Title is too short"
     }],
-    help: "The title is displayed in listings of datasets. " +
-      " The name, the identifier used in renku commands, is derived from the title."
+    help: "The title is displayed in listings of datasets."
   },
   name: {
     initial: "",
@@ -369,7 +368,7 @@ const datasetFormSchema = new Schema({
       isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression),
       alert: "Name is too short"
     }],
-    help: "The name is automatically derived from the title, but can be changed. " +
+    help: "The *name* is automatically derived from the title, but can be changed. " +
       " It is used as an identifier in renku commands."
   },
   creators: {
