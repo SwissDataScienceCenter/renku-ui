@@ -371,14 +371,16 @@ class View extends Component {
   }
 
   subComponents(projectId, ownProps) {
-    const accessLevel = this.projectState.get("visibility.accessLevel");
+    const visibility = this.projectState.get("visibility");
+    const isPrivate = visibility && visibility.level === "private";
+    const accessLevel = visibility.accessLevel;
     const externalUrl = this.projectState.get("core.external_url");
     const httpProjectUrl = this.projectState.get("system.http_url");
     const updateProjectView = this.forceUpdate.bind(this);
     const filesTree = this.projectState.get("filesTree");
     const datasets = this.projectState.get("core.datasets");
     const graphProgress = this.projectState.get("webhook.progress");
-    const maintainer = this.projectState.get("visibility.accessLevel") >= ACCESS_LEVELS.MAINTAINER ?
+    const maintainer = visibility.accessLevel >= ACCESS_LEVELS.MAINTAINER ?
       true :
       false;
     const forkedData = this.projectState.get("system.forked_from_project");
@@ -452,7 +454,7 @@ class View extends Component {
           filesTree.hash[p.location.pathname.replace(pathComponents.baseUrl + "/files/blob/", "")] :
           undefined} />,
 
-      datasetView: (p) => <ShowDataset
+      datasetView: (p, projectInsideKg) => <ShowDataset
         key="datasetpreview" {...subProps}
         maintainer={maintainer}
         insideProject={true}
@@ -468,6 +470,8 @@ class View extends Component {
         projectId={projectId}
         httpProjectUrl={httpProjectUrl}
         graphStatus={this.isGraphReady()}
+        overviewStatusUrl={subUrls.overviewStatusUrl}
+        projectInsideKg={projectInsideKg}
       />,
 
       newDataset: (p) => <ChangeDataset
@@ -541,13 +545,17 @@ class View extends Component {
         client={this.props.client}
         user={this.props.user} />,
 
-      kgStatusView: () =>
+      kgStatusView: (displaySuccessMessage = false) =>
         <KnowledgeGraphStatus
           fetchGraphStatus={this.eventHandlers.fetchGraphStatus}
           createGraphWebhook={this.eventHandlers.createGraphWebhook}
           maintainer={maintainer}
           forked={forked}
           progress={graphProgress}
+          displaySuccessMessage={displaySuccessMessage}
+          warningMessage="Knowledge Graph integration has not been turned on."
+          fetchAfterBuild={this.eventHandlers.fetchDatasets}
+          isPrivate={isPrivate}
         />
     };
   }

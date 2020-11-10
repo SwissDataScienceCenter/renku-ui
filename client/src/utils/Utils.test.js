@@ -30,7 +30,8 @@ import { MemoryRouter } from "react-router-dom";
 import Time from "./Time";
 import { CommitsView, CommitsUtils } from "./Commits";
 import {
-  splitAutosavedBranches, sanitizedHTMLFromMarkdown, parseINIString, slugFromTitle
+  splitAutosavedBranches, sanitizedHTMLFromMarkdown, parseINIString, slugFromTitle,
+  verifyTitleCharacters, convertUnicodeToAscii
 } from "./HelperFunctions";
 import { RefreshButton } from "./UIComponents";
 import { StateModel, globalSchema } from "../model";
@@ -304,7 +305,7 @@ describe("Ini file parser", () => {
   });
 });
 
-describe("Helper functions", () => {
+describe("branch functions", () => {
   const branches = [
     { name: "master" },
     { name: "renku/autosave/myuser/master/1234567/890acbd" }
@@ -320,9 +321,65 @@ describe("Helper functions", () => {
     expect(splittedBranches.autosaved[0].autosave.commit).toEqual(commit);
     expect(splittedBranches.autosaved[0].autosave.finalCommit).toEqual(finalCommit);
   });
+});
 
-  it("function slugFromTitle", () => {
+describe("title related functions", () => {
+  // convertUnicodeToAscii
+  it("function convertUnicodeToAscii - valid strings", () => {
+    expect(convertUnicodeToAscii("João")).toEqual("Joao");
+    expect(convertUnicodeToAscii("здрасти")).toEqual("здрасти");
+    expect(convertUnicodeToAscii("Zürich")).toEqual("Zuerich");
+  });
+
+  // slugFromTitle
+  it("function slugFromTitle without parameters", () => {
     expect(slugFromTitle("This is my Project")).toEqual("This-is-my-Project");
+  });
+  it("slugFromTitle lowercase - remove accents", () => {
+    expect(slugFromTitle("João", true)).toEqual("jo-o");
+  });
+  it("slugFromTitle lowercase - replaces whitespaces with hyphens", () => {
+    expect(slugFromTitle("My Input String", true)).toEqual("my-input-string");
+  });
+  it("slugFromTitle lowercase - remove trailing whitespace", () => {
+    expect(slugFromTitle(" a new project ", true)).toEqual("a-new-project");
+  });
+  it("slugFromTitle lowercase - remove only non-allowed special characters", () => {
+    expect(slugFromTitle("test!_pro-ject~", true)).toEqual("test-pro-ject");
+  });
+  it("slugFromTitle lowercase - squash multiple hypens", () => {
+    expect(slugFromTitle("test!!!!_pro-ject~", true)).toEqual("test-pro-ject");
+  });
+  it("slugFromTitle lowercase - return empty string if only non-allowed characters", () => {
+    expect(slugFromTitle("здрасти", true)).toEqual("");
+  });
+  it("slugFromTitle lowercase - squash multiple separators", () => {
+    expect(slugFromTitle("Test:-)", true)).toEqual("test");
+  });
+  it("slugFromTitle lowercase - trim any separators from the beginning and end", () => {
+    expect(slugFromTitle("-Test:-)-", true)).toEqual("test");
+  });
+  it("function slugFromTitle lowercase with custom separator", () => {
+    expect(slugFromTitle("This is my Project", true, false, "+")).toEqual("this+is+my+project");
+  });
+  it("function slugFromTitle ascii", () => {
+    expect(slugFromTitle("João-Mario", true, true)).toEqual("joao-mario");
+    expect(slugFromTitle("João-._--Mario", true, true)).toEqual("joao-mario");
+    expect(slugFromTitle("Zürich", true, true)).toEqual("zuerich");
+    expect(slugFromTitle("здрасти", true, true)).toEqual("");
+  });
+
+  // verifyTitleCharacters
+  it("function verifyTitleCharacters - valid strings", () => {
+    expect(verifyTitleCharacters("João")).toBeTruthy();
+    expect(verifyTitleCharacters("здрасти_.и")).toBeTruthy();
+    expect(verifyTitleCharacters("")).toBeTruthy();
+  });
+
+  it("function verifyTitleCharacters - invalid strings", () => {
+    expect(verifyTitleCharacters("Test:-)")).toBeFalsy();
+    expect(verifyTitleCharacters("test!_pro-ject~")).toBeFalsy();
+    expect(verifyTitleCharacters("yeah 🚀")).toBeFalsy();
   });
 });
 

@@ -218,13 +218,20 @@ export default function DatasetView(props) {
       projectsUrl={props.projectsUrl}
     />
     {
-      dataset.insideKg === false ?
-        <Alert color="primary">
+      dataset.insideKg === false && props.projectInsideKg === true ?
+        <Alert color="warning">
           <strong>This dataset is not in the Knowledge Graph;</strong> this means that some
-          operations on it are not possible.<br /><br />
+          operations on it are not possible.
+          <br /><br />
           If the dataset was created recently, and the Knowledge Graph integration for the project is active,
-          the dataset should be added to the Knowledge Graph soon. Otherwise, you need to
-          activate the Knowlede Graph to be able to use the full set of dataset features.
+          the dataset should be added to the Knowledge Graph soon, you can&nbsp;
+          <Button size="sm" color="warning" onClick={() => window.location.reload()}>
+            refresh the page</Button> to see if the status changed.
+          <br /><br />
+          For more information about the Knowledge Graph status you can go to the&nbsp;
+          <Button size="sm" color="warning" onClick={() => props.history.push(props.overviewStatusUrl)}>
+            status page
+          </Button>.
         </Alert>
         : null
     }

@@ -25,7 +25,7 @@
 
 import { CUSTOM_REPO_NAME } from "./ProjectNew.container";
 import { newProjectSchema } from "../../model/RenkuModels";
-import { slugFromTitle } from "../../utils/HelperFunctions";
+import { slugFromTitle, verifyTitleCharacters } from "../../utils/HelperFunctions";
 
 class NewProjectCoordinator {
   constructor(client, model, projectsModel) {
@@ -450,12 +450,20 @@ class NewProjectCoordinator {
       warnings["template"] = "Must get the templates first.";
 
     // check errors: require user intervention. Skip if there is a warning
-    if (!input.title)
+    const slugExpl = " that is already taken in the selected namespace." +
+      " Please select a different title or namespace.";
+    if (!input.title || !input.title.length)
       errors["title"] = "Title is missing.";
     else if (reservedNames.includes(input.title))
       errors["title"] = "Reserved title name.";
+    else if (input.title.length && ["_", "-", " ", "."].includes(input.title[0]))
+      errors["title"] = "Title must start with a letter or a number.";
+    else if (!verifyTitleCharacters(input.title))
+      errors["title"] = "Title can contain only letters, digits, '_', '.', '-' or spaces.";
+    else if (input.title && !slugFromTitle(input.title, true))
+      errors["title"] = "Title must contain at least one letter (without any accents) or a number.";
     else if (projects && projectsPaths.includes(`${input.namespace}/${slugFromTitle(input.title, true)}`))
-      errors["title"] = "Title already in use in current namespace.";
+      errors["title"] = `Title produces a project identifier (${slugFromTitle(input.title, true)})${slugExpl}`;
 
     if (!warnings["namespace"] && !input.namespace)
       errors["namespace"] = "Select namespace.";

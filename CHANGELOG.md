@@ -1,5 +1,23 @@
 # Changes
 
+## [0.11.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.0...0.11.1) (2020-11-05)
+
+### Features
+
+* better explain that renku clone is preferred to git clone fa369b0, closes [#1057](https://github.com/SwissDataScienceCenter/renku-ui/issues/1057) [#1058](https://github.com/SwissDataScienceCenter/renku-ui/issues/1058)
+* improve file preview 617c886, closes [#1069](https://github.com/SwissDataScienceCenter/renku-ui/issues/1069)
+* **datasets:** new fields to dataset creation and edit of fields 9918ae5, closes [#965](https://github.com/SwissDataScienceCenter/renku-ui/issues/965) [#790](https://github.com/SwissDataScienceCenter/renku-ui/issues/790) [#526](https://github.com/SwissDataScienceCenter/renku-ui/issues/526) [#791](https://github.com/SwissDataScienceCenter/renku-ui/issues/791)
+* **server:** initial express/typescript server 0462c77, closes [#225](https://github.com/SwissDataScienceCenter/renku-ui/issues/225) [#1043](https://github.com/SwissDataScienceCenter/renku-ui/issues/1043)
+* kg activation and kg in datasets improvements ea22703, closes [#1108](https://github.com/SwissDataScienceCenter/renku-ui/issues/1108) [#1104](https://github.com/SwissDataScienceCenter/renku-ui/issues/1104)
+* stick file tree component and set max height e35cba7, closes [#1102](https://github.com/SwissDataScienceCenter/renku-ui/issues/1102) [#1021](https://github.com/SwissDataScienceCenter/renku-ui/issues/1021)
+* unify kg integration and renku version warning ebcd6ed, closes [#1079](https://github.com/SwissDataScienceCenter/renku-ui/issues/1079) [#1051](https://github.com/SwissDataScienceCenter/renku-ui/issues/1051)
+
+### Bug Fixes
+
+* add dataset to project redirects well and doesn't wait for the kg after submit dc4e876, closes [#1103](https://github.com/SwissDataScienceCenter/renku-ui/issues/1103) [#1075](https://github.com/SwissDataScienceCenter/renku-ui/issues/1075)
+* handle objects in error responses when fetching custom templates f53ddfa, closes [#1071](https://github.com/SwissDataScienceCenter/renku-ui/issues/1071)
+
+
 ## [0.11.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.10.5...0.11.0) (2020-10-06)
 
 ### Features
