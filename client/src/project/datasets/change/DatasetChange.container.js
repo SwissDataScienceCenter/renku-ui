@@ -138,9 +138,12 @@ function ChangeDataset(props) {
 
     dataset.files = [...dataset.files, ...pendingFiles];
     dataset.keywords = dsFormSchema.keywords.value;
-    dataset.creators = dsFormSchema.creators.value
-      .filter(creator => creator.email !== props.user.data.email)
-      .map(creator => getCreator(creator));
+    dataset.creators = props.edit ?
+      dsFormSchema.creators.value
+        .filter(creator => creator.email !== props.user.data.email)
+        .map(creator => getCreator(creator))
+      : dsFormSchema.creators.value
+        .map(creator => getCreator(creator));
 
     props.client.postDataset(props.httpProjectUrl, dataset, props.edit)
       .then(response => {

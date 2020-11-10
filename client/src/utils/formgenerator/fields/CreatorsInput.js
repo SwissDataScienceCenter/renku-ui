@@ -140,7 +140,7 @@ function CreatorsInput({ name, label, type, value, alert, placeholder, setInputs
       <Row>
         <Col>
           {defaultCreators.map(creator =>
-            <span key={creator.email} className="text-muted">{creator.name} ({creator.email}).</span>)}
+            <span key={creator.email} className="text-muted">{creator.name} ({creator.email})</span>)}
           <Button size="sm" color="light" className="float-right" disabled={disabled} onClick={addEmptyCreator}>
             <FontAwesomeIcon icon={faUserPlus} /> Add Creator
           </Button>
