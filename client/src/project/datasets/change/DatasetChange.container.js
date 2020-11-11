@@ -32,9 +32,12 @@ import FormGenerator from "../../../utils/formgenerator/";
 import { mapDataset } from "../../../dataset/index";
 import _ from "lodash";
 
-const dsFormSchema = _.cloneDeep(datasetFormSchema);
-
+let dsFormSchema = _.cloneDeep(datasetFormSchema);
 function ChangeDataset(props) {
+
+  if (dsFormSchema == null)
+    dsFormSchema = _.cloneDeep(datasetFormSchema);
+
 
   const [datasetFiles, setDatasetFiles] = useState();
   const dataset = useMemo(() =>
@@ -48,6 +51,7 @@ function ChangeDataset(props) {
   const [initialized, setInitialized] = useState(false);
   const [jobsStats, setJobsStats] = useState(undefined);
   const warningOn = useRef(false);
+
   dsFormSchema.files.uploadFileFunction = props.client.uploadFile;
   dsFormSchema.files.filesOnUploader = useRef(0);
 
