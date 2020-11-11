@@ -1283,7 +1283,7 @@ class ProjectStartNotebookServer extends Component {
   render() {
     const {
       client, model, user, visibility, toggleForkModal, externalUrl, system, location,
-      fetchBranches, notebookServersUrl, history, blockAnonymous
+      fetchBranches, notebookServersUrl, history, blockAnonymous, notifications
     } = this.props;
     const warning = notebookWarning(
       user.logged, visibility.accessLevel, toggleForkModal, location.pathname, externalUrl
@@ -1308,6 +1308,7 @@ class ProjectStartNotebookServer extends Component {
         externalUrl={externalUrl}
         successUrl={notebookServersUrl}
         blockAnonymous={blockAnonymous}
+        notifications={notifications}
         scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path }}
       />
     );
