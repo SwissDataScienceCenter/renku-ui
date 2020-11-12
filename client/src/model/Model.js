@@ -51,12 +51,14 @@ const PropertyName = {
   TYPE: "type",
   PARSEFUN: "parseFun",
   VALIDATORS: "validators",
+  REQUIRED: "required",
   EDIT: "edit",
   HELP: "help",
   OPTIONS: "options",
   PLACEHOLDER: "placeholder",
   OUTPUTTYPE: "outputType",
-  FILESONUPLOADER: "filesOnUploader"
+  FILESONUPLOADER: "filesOnUploader",
+  EDITONCLICK: "editOnClick"
 };
 
 // Named consts for the bindings to the store.

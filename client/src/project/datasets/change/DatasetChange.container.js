@@ -30,9 +30,14 @@ import { JobStatusMap } from "../../../job/Job";
 import { FILE_STATUS } from "../../../utils/formgenerator/fields/FileUploaderInput";
 import FormGenerator from "../../../utils/formgenerator/";
 import { mapDataset } from "../../../dataset/index";
+import _ from "lodash";
 
-
+let dsFormSchema = _.cloneDeep(datasetFormSchema);
 function ChangeDataset(props) {
+
+  if (dsFormSchema == null)
+    dsFormSchema = _.cloneDeep(datasetFormSchema);
+
 
   const [datasetFiles, setDatasetFiles] = useState();
   const dataset = useMemo(() =>
@@ -46,17 +51,20 @@ function ChangeDataset(props) {
   const [initialized, setInitialized] = useState(false);
   const [jobsStats, setJobsStats] = useState(undefined);
   const warningOn = useRef(false);
-  datasetFormSchema.files.uploadFileFunction = props.client.uploadFile;
-  datasetFormSchema.files.filesOnUploader = useRef(0);
+
+  dsFormSchema.files.uploadFileFunction = props.client.uploadFile;
+  dsFormSchema.files.filesOnUploader = useRef(0);
 
   if (props.edit === false) {
-    datasetFormSchema.title.parseFun = () => {
-      datasetFormSchema.name.value = FormGenerator.Parsers.slugFromTitle(datasetFormSchema.title.value);
-      return datasetFormSchema.title.value;
+    dsFormSchema.title.parseFun = () => {
+      dsFormSchema.name.value = FormGenerator.Parsers.slugFromTitle(dsFormSchema.title.value);
+      return dsFormSchema.title.value;
     };
+    dsFormSchema.title.help = `${datasetFormSchema.title.help} ${datasetFormSchema.name.help}` ;
   }
   else {
-    datasetFormSchema.title.parseFun = undefined;
+    dsFormSchema.title.help = datasetFormSchema.title.help;
+    dsFormSchema.title.parseFun = undefined;
   }
 
   const onCancel = e => {
@@ -109,25 +117,33 @@ function ChangeDataset(props) {
     });
   };
 
+  const getCreator = (creator)=>{
+    let newCreator = { name: creator.name };
+    if (creator.email)
+      newCreator.email = creator.email;
+    if (creator.affiliation)
+      newCreator.affiliation = creator.affiliation;
+    return newCreator;
+  };
 
   const submitCallback = e => {
     setServerErrors(undefined);
     setSubmitLoader(true);
     const dataset = {};
-    dataset.name = datasetFormSchema.name.value;
-    dataset.title = datasetFormSchema.title.value;
-    dataset.description = datasetFormSchema.description.value;
+    dataset.name = dsFormSchema.name.value;
+    dataset.title = dsFormSchema.title.value;
+    dataset.description = dsFormSchema.description.value;
 
-    const pendingFiles = datasetFormSchema.files.value
+    const pendingFiles = dsFormSchema.files.value
       .filter(f => f.file_status === FILE_STATUS.PENDING).map(f => ({ "file_url": f.file_name }));
-    dataset.files = [].concat.apply([], datasetFormSchema.files.value
+    dataset.files = [].concat.apply([], dsFormSchema.files.value
       .filter(f => f.file_status !== FILE_STATUS.PENDING && f.file_status !== FILE_STATUS.ADDED)
       .map(f => f.file_id)).map(f => ({ "file_id": f }));
 
     dataset.files = [...dataset.files, ...pendingFiles];
-    dataset.keywords = datasetFormSchema.keywords.value;
-    dataset.creators = datasetFormSchema.creators.value
-      .map(creator => ({ name: creator.name, email: creator.email }));
+    dataset.keywords = dsFormSchema.keywords.value;
+    dataset.creators = dsFormSchema.creators.value
+      .map(creator => getCreator(creator));
 
     props.client.postDataset(props.httpProjectUrl, dataset, props.edit)
       .then(response => {
@@ -186,13 +202,30 @@ function ChangeDataset(props) {
           .then(response => {
             if (!unmounted && datasetFiles === undefined) {
               if (response.data.result) {
-                datasetFormSchema.files.uploadFileFunction = props.client.uploadFile;
-                datasetFormSchema.name.value = dataset.name;
-                datasetFormSchema.title.value = dataset.title;
-                datasetFormSchema.description.value = dataset.description;
-                datasetFormSchema.creators.value = dataset.published.creator;
-                datasetFormSchema.keywords.value = dataset.keywords;
-                datasetFormSchema.files.value = response.data.result.files
+                dsFormSchema.files.uploadFileFunction = props.client.uploadFile;
+                dsFormSchema.name.value = dataset.name;
+                dsFormSchema.title.value = dataset.title;
+                dsFormSchema.description.value = dataset.description;
+                dsFormSchema.creators.value = dataset.published.creator.map(
+                  creator => creator.email === props.user.data.email ?
+                    {
+                      name: creator.name,
+                      email: creator.email,
+                      affiliation: creator.organization,
+                      default: true
+                    }
+                    : creator);
+                if (dsFormSchema.creators.value.find(creator =>
+                  creator.email === props.user.data.email) === undefined) {
+                  dsFormSchema.creators.value.push({
+                    name: props.user.data.name,
+                    email: props.user.data.email,
+                    affiliation: props.user.data.organization,
+                    default: true
+                  });
+                }
+                dsFormSchema.keywords.value = dataset.keywords;
+                dsFormSchema.files.value = response.data.result.files
                   .map(file => ({ name: file.name, atLocation: file.path, file_status: "added" }));
                 setInitialized(true);
               }
@@ -203,19 +236,26 @@ function ChangeDataset(props) {
     }
     else {
       setInitialized(true);
-      datasetFormSchema.name.value = datasetFormSchema.name.initial;
-      datasetFormSchema.title.value = datasetFormSchema.title.initial;
-      datasetFormSchema.description.value = datasetFormSchema.description.initial;
-      datasetFormSchema.files.value = datasetFormSchema.files.initial;
-      datasetFormSchema.creators.value = datasetFormSchema.creators.initial;
-      datasetFormSchema.keywords.value = datasetFormSchema.keywords.initial;
+      dsFormSchema.name.value = dsFormSchema.name.initial;
+      dsFormSchema.title.value = dsFormSchema.title.initial;
+      dsFormSchema.description.value = dsFormSchema.description.initial;
+      dsFormSchema.files.value = dsFormSchema.files.initial;
+      dsFormSchema.creators.value = [
+        {
+          name: props.user.data.name,
+          email: props.user.data.email,
+          affiliation: props.user.data.organization,
+          default: true
+        }
+      ];
+      dsFormSchema.keywords.value = dsFormSchema.keywords.initial;
     }
   }, [props, initialized, dataset, datasetFiles,
     setDatasetFiles, props.client]);
 
   return <DatasetChange
     initialized={initialized}
-    datasetFormSchema={datasetFormSchema}
+    datasetFormSchema={dsFormSchema}
     accessLevel={props.accessLevel}
     serverErrors={serverErrors}
     submitCallback={submitCallback}

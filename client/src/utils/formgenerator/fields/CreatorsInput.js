@@ -39,9 +39,10 @@ function Creator(props) {
 
   return <Row>
     <Col md={4}>
-      <Label for="name" size="sm" className="text-muted d-md-none">Name</Label>
       <FormGroup>
+        <Label for="name" size="sm" className="text-muted d-md-none">Name</Label>
         <Input
+          bsSize="sm"
           type="text"
           defaultValue={props.creator.name}
           name="name"
@@ -52,20 +53,9 @@ function Creator(props) {
     </Col>
     <Col md={4}>
       <FormGroup>
-        <Label for="affiliation" size="sm" className="text-muted d-md-none">Affiliation</Label>
+        <Label for="email" size="sm" className="text-muted d-md-none">Email</Label>
         <Input
-          type="affiliation"
-          defaultValue={props.creator.affiliation}
-          name="affiliation"
-          disabled={props.disabled}
-          onChange={onChangeCreator}
-        />
-      </FormGroup>
-    </Col>
-    <Col md={3}>
-      <Label for="email" size="sm" className="text-muted d-md-none">Email</Label>
-      <FormGroup>
-        <Input
+          bsSize="sm"
           type="email"
           defaultValue={props.creator.email}
           name="email"
@@ -74,9 +64,23 @@ function Creator(props) {
         />
       </FormGroup>
     </Col>
+    <Col md={3}>
+      <FormGroup>
+        <Label for="affiliation" size="sm" className="text-muted d-md-none">Affiliation</Label>
+        <Input
+          bsSize="sm"
+          type="affiliation"
+          defaultValue={props.creator.affiliation}
+          name="affiliation"
+          disabled={props.disabled}
+          onChange={onChangeCreator}
+        />
+      </FormGroup>
+    </Col>
     <Col md={1}>
       <FormGroup>
         <Button
+          size="sm"
           outline
           color="danger"
           disabled={props.disabled}
@@ -89,18 +93,17 @@ function Creator(props) {
 }
 
 function CreatorsInput({ name, label, type, value, alert, placeholder, setInputs, help, disabled = false }) {
-
   const counter = React.useRef(value !== undefined && value.length > 0 ? value.length : 1);
   const [creators, setCreators] = React.useState(value !== undefined && value.length > 0 ?
     value.map((creator, index) => ({ id: index, name: creator.name, email: creator.email,
-      affiliation: creator.affiliation, identifier: "" }))
-    : [{ id: 1, name: "", email: "", affiliation: "", identifier: "" }]);
+      affiliation: creator.affiliation, identifier: "", default: creator.default === true }))
+    : [{ id: 1, name: "", email: "", affiliation: "", identifier: "", default: false }]);
 
 
   const addEmptyCreator = () => {
     counter.current = counter.current + 1;
     setCreators(prevCreators => [...prevCreators,
-      { id: counter.current, name: "", email: "", affiliation: "", identifier: "" }]);
+      { id: counter.current, name: "", email: "", affiliation: "", identifier: "", default: false }]);
   };
 
   const deleteCreator = (id) => {
@@ -111,7 +114,8 @@ function CreatorsInput({ name, label, type, value, alert, placeholder, setInputs
     setCreators(prevCreators =>
       prevCreators.map(oldCreator => oldCreator.id === newCreator.id ?
         { id: newCreator.id, name: newCreator.name, email: newCreator.email,
-          affiliation: newCreator.affiliation, identifier: newCreator.identifier }
+          affiliation: newCreator.affiliation, identifier: newCreator.identifier,
+          default: false }
         : oldCreator)
     );
   };
@@ -127,37 +131,48 @@ function CreatorsInput({ name, label, type, value, alert, placeholder, setInputs
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [creators]);
 
+  const defaultCreators = creators.filter(creator=>creator.default === true);
+  const nonDefaultCreators = creators.filter(creator=>creator.default !== true);
+
   return <FormGroup>
     <Label htmlFor={name}>{label}</Label>
-    <Row>
-      <Col md={4} className="d-none d-md-block">
-        <Label for="name" size="sm" className="text-muted">Name</Label>
-      </Col>
-      <Col md={4} className="d-none d-md-block">
-        <Label for="affiliation" size="sm" className="text-muted">Affiliation</Label>
-      </Col>
-      <Col md={3} className="d-none d-md-block">
-        <Label for="email" size="sm" className="text-muted">Email</Label>
-      </Col>
-    </Row>
-    { creators.map((creator) =>
+    {
+      <Row>
+        <Col>
+          {defaultCreators.map(creator =>
+            <span key={creator.email} className="text-muted">{creator.name} ({creator.email})</span>)}
+          <Button size="sm" color="light" className="float-right" disabled={disabled} onClick={addEmptyCreator}>
+            <FontAwesomeIcon icon={faUserPlus} /> Add Creator
+          </Button>
+        </Col>
+      </Row>
+    }
+    {
+      nonDefaultCreators.length > 0 ?
+        <Row>
+          <Col md={4} className="d-none d-md-block">
+            <Label for="name" size="sm" className="text-muted">Name</Label>
+          </Col>
+          <Col md={4} className="d-none d-md-block">
+            <Label for="email" size="sm" className="text-muted">Email</Label>
+          </Col>
+          <Col md={3} className="d-none d-md-block">
+            <Label for="affiliation" size="sm" className="text-muted">Affiliation</Label>
+          </Col>
+        </Row>
+        : null
+    }
+
+    { nonDefaultCreators.map((creator) =>
       <Creator
         key={"author" + creator.id}
         creator={creator}
         disabled={disabled}
+        default={creator.default}
         setCreator={setCreator}
         deleteCreator={()=>deleteCreator(creator.id)}
       />)
     }
-    <Row>
-      <Col>
-        <FormGroup>
-          <Button size="sm" color="light" disabled={disabled} onClick={addEmptyCreator}>
-            <FontAwesomeIcon icon={faUserPlus} /> Add Creator
-          </Button>
-        </FormGroup>
-      </Col>
-    </Row>
     <HelpText content={help} />
     <ValidationAlert content={alert} />
   </FormGroup>;

@@ -27,11 +27,12 @@ import * as React from "react";
 import { useState } from "react";
 import ValidationAlert from "./ValidationAlert";
 import HelpText from "./HelpText";
-import { FormGroup, Label } from "reactstrap";
+import FormLabel from "./FormLabel";
+import { FormGroup } from "reactstrap";
 import Autosuggest from "react-autosuggest";
 
 function SelectautosuggestInput({ name, label, type, value, alert, options, initial,
-  placeholder, setInputs, help, customHandlers, disabled = false }) {
+  placeholder, setInputs, help, customHandlers, disabled = false, required = false }) {
 
   const [localValue, setLocalValue] = useState("");
   const [suggestions, setSuggestions ] = useState([]);
@@ -134,7 +135,7 @@ function SelectautosuggestInput({ name, label, type, value, alert, options, init
 
   /* TODO: allow grouped and non grouped field */
   return <FormGroup>
-    <Label htmlFor={name}>{label}</Label>
+    <FormLabel htmlFor={name} label={label} required={required}/>
     <Autosuggest
       id={name}
       suggestions={suggestions}
