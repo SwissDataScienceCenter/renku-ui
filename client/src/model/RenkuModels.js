@@ -340,31 +340,36 @@ const notebooksSchema = new Schema({
   }
 });
 
-
 const datasetFormSchema = new Schema({
   title: {
     initial: "",
     name: "title",
     label: "Title",
+    required: true,
     type: FormGenerator.FieldTypes.TEXT,
     validators: [{
       id: "title-length",
       isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression),
       alert: "Title is too short"
-    }]
+    }],
+    help: "The title is displayed in listings of datasets."
   },
   name: {
     initial: "",
     name: "name",
     label: "Name",
     edit: false,
+    editOnClick: true,
+    required: true,
     type: FormGenerator.FieldTypes.TEXT,
     parseFun: expression => FormGenerator.Parsers.slugFromTitle(expression),
     validators: [{
       id: "name-length",
       isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression),
-      alert: "Short Name is too short"
-    }]
+      alert: "Name is too short"
+    }],
+    help: "The *name* is automatically derived from the title, but can be changed. " +
+      " It is used as an identifier in renku commands."
   },
   creators: {
     initial: [],
@@ -374,7 +379,7 @@ const datasetFormSchema = new Schema({
     validators: [{
       id: "creator-valid",
       isValidFun: expression => FormGenerator.Validators.creatorIsValid(expression),
-      alert: "Creator name and email can't be empty"
+      alert: "Creator name and email cannot be empty"
     }]
     //shall we pre-validate that an email is an email with regex? --> yes and it should not be empty also...
   },
@@ -382,7 +387,7 @@ const datasetFormSchema = new Schema({
     initial: [],
     name: "kewords",
     label: "Keywords",
-    help: "To insert a keyword, write it and press enter.",
+    help: "To insert a keyword, type it and press enter.",
     type: FormGenerator.FieldTypes.KEYWORDS,
     validators: []
   },

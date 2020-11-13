@@ -26,12 +26,13 @@
 import * as React from "react";
 import ValidationAlert from "./ValidationAlert";
 import HelpText from "./HelpText";
-import { FormGroup, Input, Label } from "reactstrap";
+import FormLabel from "./FormLabel";
+import { FormGroup, Input } from "reactstrap";
 
 function SelectInput(
-  { name, label, type, value, alert, options, initial, placeholder, setInputs, help, disabled = false }) {
+  { name, label, type, value, alert, options, placeholder, setInputs, help, disabled = false, required = false }) {
   return <FormGroup>
-    <Label htmlFor={name}>{label}</Label>
+    <FormLabel htmlFor={name} label={label} required={required}/>
     <Input id={name} name={name} type={type} value={value || ""}
       onChange={setInputs} placeholder={placeholder} disabled={disabled}>
       {options && options.map(option => <option key={option.value} value={option.value}>{option.name}</option>)}
