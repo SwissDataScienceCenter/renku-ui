@@ -57,7 +57,7 @@ class ProjectModel extends StateModel {
           client.performMigrationCheck(response)
             .then((response)=>{
               if (response.data && response.data.error !== undefined) {
-                this.set("migration.check_error", response.data.error.reason);
+                this.set("migration.check_error", response.data.error);
               }
               else {
                 this.set("migration.migration_required", response.data.result.migration_required);

@@ -31,7 +31,7 @@ function TemplateStatusBody(props) {
     current_template_version, migration_status, check_error, migration_error, migration_required
   } = props.migration;
   const loading = props.loading;
-  const fetching = migration_required === null;
+  const fetching = migration_required === null && check_error === null;
 
   let projectTemplateBody = null;
   const currentTemplatesInfo = <p>
@@ -50,7 +50,7 @@ function TemplateStatusBody(props) {
     projectTemplateBody = (<Loader />);
   }
   else if (check_error) {
-    projectTemplateBody = getErrorMessage("checking", "project template", check_error);
+    projectTemplateBody = getErrorMessage("checking", "project template", check_error.reason);
   }
   else if (migration_status === MigrationStatus.ERROR && migration_error.template_update_failed) {
     //what is the structure of migration_error????
@@ -163,7 +163,7 @@ function RenkuVersionStatusBody(props) {
     latest_version, project_version, migration_status, check_error, migration_error
   } = props.migration;
   const loading = props.loading;
-  const fetching = migration_required === null;
+  const fetching = migration_required === null && check_error === null;
   const { maintainer } = props;
 
   let body = null;
@@ -176,7 +176,7 @@ function RenkuVersionStatusBody(props) {
     body = (<Loader />);
   }
   else if (check_error) {
-    body = getErrorMessage("checking", "renku", check_error);
+    body = getErrorMessage("checking", "renku", check_error.reason);
   }
   else if (migration_status === MigrationStatus.ERROR
   && (migration_error.dockerfile_update_failed || migration_error.migrations_failed)) {
