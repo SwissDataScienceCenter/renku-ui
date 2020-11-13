@@ -340,15 +340,14 @@ class StartNotebookServer extends Component {
     const { location, history } = this.props;
     return this.coordinator.startServer().then((data) => {
       this.setState({ "starting": false });
-      const resources = Object.keys(data.resources).map(res => `${res}: ${data.resources[res]}`);
+
+      // craft and add the notification
       const projectData = Object.keys(data.annotations)
         .filter(elem => elem.startsWith(ExpectedAnnotations.domain))
-        .map(elem => `${elem.substring(ExpectedAnnotations.domain.length + 1)}: ${data.annotations[elem]}`);
+        .map(elem => `${elem.substring(ExpectedAnnotations.domain.length + 1)}: "${data.annotations[elem]}"`);
+      const resources = Object.keys(data.resources).map(res => `${res}: "${data.resources[res]}"`);
       const fullDescription = `Interactive environment will start soon.
-      Reference URL: ${data.url}
-      Source project: ${projectData.join("\n")}
-      List of resources: ${resources.join("\n")}
-      `;
+      Reference URL: "${data.url}", ${projectData.join(", ")}, ${resources.join(", ")}.`;
       this.notifications.addSuccess(
         this.notifications.Topics.ENVIRONMENT_START,
         "The interactive environment is starting",
@@ -356,6 +355,8 @@ class StartNotebookServer extends Component {
         [location.state.successUrl, "/environments"],
         fullDescription
       );
+
+      // redirect user when necessary
       if (!history || !location)
         return;
       if (location.state && location.state.successUrl && history.location.pathname === location.pathname)
@@ -371,10 +372,9 @@ class StartNotebookServer extends Component {
       // Some failures just go away. Try again to see if it works the second time.
       setTimeout(() => {
         this.internalStartServer().catch((error) => {
-          const fullError = `An error occurred when trying to start a new Interactive environment.\n
-          Error message: "${error.message}",
-          Stack trace: ${error.stack}
-          `;
+          // crafting notification
+          const fullError = `An error occurred when trying to start a new Interactive environment.
+          Error message: "${error.message}", Stack trace: "${error.stack}"`;
           this.notifications.addWarning(
             this.notifications.Topics.ENVIRONMENT_START,
             "Unable to start the interactive environment.",

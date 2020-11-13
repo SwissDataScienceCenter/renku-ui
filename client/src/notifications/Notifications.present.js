@@ -203,7 +203,7 @@ class NotificationsMenuList extends Component {
     return (
       <Fragment>
         <NotificationsMenuTesting {...this.props} /> {/* // ! TEST- Remove  */}
-        <Link to="/notifications"><DropdownItem>Notification page</DropdownItem></Link>
+        <Link to="/notifications"><DropdownItem>Notifications</DropdownItem></Link>
         {content}
       </Fragment>
     );
@@ -264,7 +264,7 @@ class Notifications extends Component {
           ));
         newSection = (
           <Fragment>
-            <h1>New notifications</h1>
+            <h1>Unread notifications</h1>
             <Button color="primary" size="sm" className="mb-3" onClick={() => { handlers.markAllRead(); }}>
               Mark all as read
             </Button>
