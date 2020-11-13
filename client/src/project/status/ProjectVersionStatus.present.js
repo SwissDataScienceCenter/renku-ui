@@ -28,9 +28,10 @@ import { MigrationStatus } from "../Project";
 
 function TemplateStatusBody(props) {
   const { docker_update_possible, project_supported, template_update_possible, latest_template_version,
-    current_template_version, migration_status, check_error, migration_error
+    current_template_version, migration_status, check_error, migration_error, migration_required
   } = props.migration;
   const loading = props.loading;
+  const fetching = migration_required === null;
 
   let projectTemplateBody = null;
   const currentTemplatesInfo = <p>
@@ -40,7 +41,12 @@ function TemplateStatusBody(props) {
     {latest_template_version === null ? "null" : latest_template_version}
   </p>;
 
-  if (loading) {
+  if (!props.isLogged && !loading) {
+    projectTemplateBody = <p>
+      You need to be logged in to see project version information.
+    </p>;
+  }
+  else if (loading || fetching) {
     projectTemplateBody = (<Loader />);
   }
   else if (check_error) {
@@ -60,11 +66,20 @@ function TemplateStatusBody(props) {
       </p>
     );
   }
+  else if (!project_supported) {
+    projectTemplateBody = <Alert color="warning">
+      <p>
+        <FontAwesomeIcon icon={faExclamationTriangle} />&nbsp;
+        The current project is not supported, template migration operations are not possible.&nbsp;
+        <a href="https://renku.readthedocs.io/en/latest/user/upgrading_renku.html">More info about renku migrate</a>.
+      </p>
+    </Alert>;
+  }
   else {
     if (template_update_possible) {
       let updateSection = null;
       if (props.maintainer) {
-        if (project_supported && docker_update_possible) {
+        if (docker_update_possible || migration_required) {
           updateSection = (
             <Fragment>
               Upgrading the Renku Version automatically will also upgrade the template.
@@ -75,14 +90,15 @@ function TemplateStatusBody(props) {
           updateSection = (
             <Fragment>
               <p>
-                Upgrading the Renku Version automatically is not possible
-                but you can still upgrade only the project template.
+                Upgrading the Renku Version is not {migration_required ? "possible " : "needed "}
+                you can upgrade only the project template.
               </p>
               {/* check if this is correct... maybe we can use the other button instead */}
               <Button
                 color="warning"
                 disabled={migration_status === MigrationStatus.MIGRATING}
-                onClick={() => props.onMigrateProject({ skip_migrations: true, skip_docker_update: true })}>
+                onClick={() => props.onMigrateProject({ skip_migrations: false, skip_docker_update: false,
+                  force_template_update: true })}>
                 {migration_status === MigrationStatus.MIGRATING ?
                   <span><Spinner size="sm" /> Updating...</span>
                   :
@@ -106,7 +122,6 @@ function TemplateStatusBody(props) {
       }
       projectTemplateBody = (
         <Alert color="warning">
-          {currentTemplatesInfo}
           <p>
             <FontAwesomeIcon icon={faExclamationTriangle} />&nbsp;
             A new version of the <strong>project template</strong> is available.
@@ -118,13 +133,15 @@ function TemplateStatusBody(props) {
     }
     else {
       projectTemplateBody = <Alert color="success">
-        {currentTemplatesInfo}
         <FontAwesomeIcon icon={faCheck} />
         The current version is up to date.
       </Alert >;
     }
   }
-  return projectTemplateBody;
+  return <div>
+    {currentTemplatesInfo}
+    {projectTemplateBody}
+  </div>;
 }
 
 function getErrorMessage(error_while, error_what, error_reason) {
@@ -145,11 +162,17 @@ function RenkuVersionStatusBody(props) {
   const { migration_required, project_supported, docker_update_possible,
     latest_version, project_version, migration_status, check_error, migration_error
   } = props.migration;
-  const loading = props.loading; //|| migration_required === null; ???
+  const loading = props.loading;
+  const fetching = migration_required === null;
   const { maintainer } = props;
 
   let body = null;
-  if (loading) {
+  if (!props.isLogged && !loading) {
+    body = <p>
+      You need to be logged in to see project version information.
+    </p>;
+  }
+  else if (loading || fetching) {
     body = (<Loader />);
   }
   else if (check_error) {
@@ -159,10 +182,19 @@ function RenkuVersionStatusBody(props) {
   && (migration_error.dockerfile_update_failed || migration_error.migrations_failed)) {
     body = getErrorMessage("updating", "renku", migration_error);
   }
-  else if (migration_required) {
+  else if (!project_supported) {
+    body = <Alert color="warning">
+      <p>
+        <FontAwesomeIcon icon={faExclamationTriangle} />&nbsp;
+        The current project is not supported, renku migration operations are not possible.&nbsp;
+        <a href="https://renku.readthedocs.io/en/latest/user/upgrading_renku.html">More info about renku migrate</a>.
+      </p>
+    </Alert>;
+  }
+  else if (migration_required || docker_update_possible) {
     let updateSection = null;
     if (maintainer) {
-      if (project_supported && docker_update_possible) {
+      if (docker_update_possible) {
         updateSection = (
           <Fragment>
             <Button
@@ -231,6 +263,8 @@ function RenkuVersionStatusBody(props) {
 
 function ProjectVersionStatusBody(props) {
   const maintainer = props.visibility.accessLevel >= ACCESS_LEVELS.MAINTAINER;
+  const isLogged = props.user && props.user.logged;
+
   const updateInstruction = (
     <Fragment>
       You can launch
@@ -249,7 +283,8 @@ function ProjectVersionStatusBody(props) {
           <RenkuVersionStatusBody
             {...props}
             updateInstruction={updateInstruction}
-            maintainer={maintainer}/>
+            maintainer={maintainer}
+            isLogged={isLogged}/>
         </Col></Row>
       </CardBody>
       <CardHeader>Template Version</CardHeader>
@@ -258,7 +293,8 @@ function ProjectVersionStatusBody(props) {
           <TemplateStatusBody
             {...props}
             updateInstruction={updateInstruction}
-            maintainer={maintainer}/>
+            maintainer={maintainer}
+            isLogged={isLogged}/>
         </Col></Row>
       </CardBody>
     </Card>

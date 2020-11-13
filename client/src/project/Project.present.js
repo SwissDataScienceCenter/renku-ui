@@ -106,19 +106,22 @@ class ProjectVisibilityLabel extends Component {
  *
  * @param {Object} webhook - project.webhook store object
  * @param {bool} migration_required - whether it's necessary to migrate the project or not
+ * @param {bool} template_update_possible - whether it's necessary to migrate the template or not
+  * @param {bool} docker_update_possible - whether it's necessary to migrate the docker image or not
  * @param {Object} history - react history object
  * @param {string} overviewStatusUrl - overview status url
  */
 class ProjectStatusIcon extends Component {
   render() {
-    const { webhook, migration_required, overviewStatusUrl, history } = this.props;
+    const { webhook, migration_required, docker_update_possible, template_update_possible,
+      overviewStatusUrl, history } = this.props;
     const kgDown = isKgDown(webhook);
 
-    if (!migration_required && !kgDown)
+    if (!migration_required && !docker_update_possible && !template_update_possible && !kgDown)
       return null;
 
-    const versionInfo = migration_required ?
-      "Current Renku version is outdated. " :
+    const versionInfo = (migration_required || docker_update_possible || template_update_possible) ?
+      "Current project is outdated. " :
       null;
     const kgInfo = kgDown ?
       "Knowledge Graph integration not active. " :
