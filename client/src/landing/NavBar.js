@@ -277,6 +277,7 @@ class AnonymousNavBar extends Component {
               </ul>
               <ul className="navbar-nav">
                 <RenkuToolbarHelpMenu />
+                <RenkuToolbarNotifications {...this.props} />
                 <RenkuToolbarItemUser {...this.props} />
               </ul>
             </div>

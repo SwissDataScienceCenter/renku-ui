@@ -38,8 +38,6 @@ import { testClient as client } from "../api-client";
 const fakeLocation = { pathname: "" };
 
 // random notifications generator
-// ! TODO: check why test throw the following warning
-// ! Warning: `Reference` should not be used outside of a `Manager` component
 function addMultipleNotifications(notifications, quantity = 1) {
   for (let num = 0; num < quantity; num++) {
     const rnd = Math.random();
@@ -53,7 +51,7 @@ function addMultipleNotifications(notifications, quantity = 1) {
     else if (rnd >= 0.67) {
       notifications.addInfo(
         "Fake topic Info",
-        "I'm an info, I shouldn't appear",
+        "I'm an info, I shouldn't appear in the menu",
         "/",
         "Home");
     }

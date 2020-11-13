@@ -264,12 +264,13 @@ function ExternalLinkText(props) {
  * @param {string} [role] - "link" or "text" to be shown as a link, null for a button
  * @param {string?} [className] - [Optional] Any classes to add, e.g., 'nav-link' or 'dropdown-item'
  * @param {boolean} [showLinkIcon] - Show the icon to indicate an external link if true (default false)
+ * @param {string} [iconSize] - icon size modifier ("lg", "2x", ...)
  * @param {string} [id] - main element's id
  */
 function ExternalLink(props) {
   const role = props.role;
   const displayTitle = (props.showLinkIcon) ?
-    (<span><FontAwesomeIcon icon={faExternalLinkAlt} color="dark" /> {props.title}</span>) :
+    (<span><FontAwesomeIcon icon={faExternalLinkAlt} size={props.iconSize} color="dark" /> {props.title}</span>) :
     props.title;
   const myProps = { ...props, title: displayTitle };
 

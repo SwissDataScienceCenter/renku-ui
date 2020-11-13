@@ -371,14 +371,15 @@ class StartNotebookServer extends Component {
       // Some failures just go away. Try again to see if it works the second time.
       setTimeout(() => {
         this.internalStartServer().catch((error) => {
-          const fullError = `An error occurred when trying to start a new Interactive environment.
+          const fullError = `An error occurred when trying to start a new Interactive environment.\n
           Error message: "${error.message}",
           Stack trace: ${error.stack}
           `;
           this.notifications.addWarning(
             this.notifications.Topics.ENVIRONMENT_START,
-            "Unable to start the interactive environment. Error message: " + error.message,
+            "Unable to start the interactive environment.",
             this.props.location.pathname, "Try again",
+            null, // always toast
             fullError);
           this.setState({ "starting": false, launchError: error.message });
         });

@@ -57,17 +57,24 @@
   position: absolute;
 }
 
-.notification.info svg.svg-inline--fa {
+.notification.info svg.svg-inline--fa.color {
   color: #5561A6
 }
-.notification.success svg.svg-inline--fa {
+.notification.success svg.svg-inline--fa.color {
   color: #28a745
 }
-.notification.warning svg.svg-inline--fa {
+.notification.warning svg.svg-inline--fa.color {
   color: #ffc107
 }
-.notification.error svg.svg-inline--fa {
+.notification.error svg.svg-inline--fa.color {
   color: #dc3545
+}
+.notification.read svg.svg-inline--fa.color {
+  color: rgba(0, 0, 0, 0.5)
+}
+
+.notification-menu {
+  width: 250px;
 }
 
 .notification-menu > a {
@@ -84,7 +91,6 @@
   font-size: 80%;
   padding: 8px;
   position: relative;
-  
 }
 
 .notification-list-item:not(:last-of-type) {
@@ -106,34 +112,7 @@
   font-size: 120%;
 }
 
-.notification-page-item {
-  margin: 12px 0;
-  border-top: 1px solid #dee2e6;
-}
-
-.notification-page-item > div.notification {
-  margin: 12px 0;
-}
-
-.notification-page-item > .notification p {
-  margin-bottom: 6px;
-}
-
-.notification-page-item > .notification h4 .time-caption {
-  font-size: 70%;
-}
-
-.notification-page-item > .notification.unread {
-  border-left: 5px solid #5561A6;
-  padding-left: 6px;
-}
-
-.notification-page-item > .notification.unread.success {
-  border-color: #28a745;
-}
-.notification-page-item > .notification.unread.warning {
-  border-color: #ffc107;
-}
-.notification-page-item > .notification.unread.error {
-  border-color: #dc3545;
+.notification-page-item > .notification {
+  max-width: 1140px;
+  width: 100%;
 }

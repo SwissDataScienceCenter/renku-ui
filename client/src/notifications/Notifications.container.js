@@ -183,7 +183,7 @@ class NotificationsMenu extends Component {
       "/environments");
     notifications.addInfo(
       "Fake topic Info",
-      "I'm an info, I shouldn't appear",
+      "I'm an info, I shouldn't appear in the menu",
       "/",
       "Home");
     notifications.addError(

@@ -10,13 +10,14 @@ import { generateFakeUser } from "./user/User.test";
 describe("rendering", () => {
   const model = new StateModel(globalSchema);
   const params = { WELCOME_PAGE: "Some text", STATUSPAGE_ID: "5bcn9bqff4qt" };
+  const fakeLocation = { pathname: "" };
 
   it("renders anonymous user without crashing", () => {
     const div = document.createElement("div");
     const user = generateFakeUser(true);
     ReactDOM.render(
       <Router>
-        <App client={client} model={model} user={user} params={params} />
+        <App client={client} model={model} user={user} location={fakeLocation} params={params} />
       </Router>
       , div);
   });
@@ -26,7 +27,7 @@ describe("rendering", () => {
     const user = generateFakeUser();
     ReactDOM.render(
       <Router>
-        <App client={client} model={model} user={user} params={params} />
+        <App client={client} model={model} user={user} location={fakeLocation} params={params} />
       </Router>
       , div);
   });
