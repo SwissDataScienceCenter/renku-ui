@@ -46,7 +46,6 @@ import "./Notifications.css";
  */
 class CloseToast extends Component {
   close() {
-    this.props.markRead();
     if (this.props.closeToast)
       this.props.closeToast();
   }
