@@ -25,10 +25,12 @@
 
 import React, { Component, Fragment, useState } from "react";
 import { Link } from "react-router-dom";
-import { Badge, DropdownMenu, DropdownToggle, DropdownItem, Button, Row, Col, Collapse } from "reactstrap";
+import {
+  Badge, DropdownMenu, DropdownToggle, DropdownItem, Button, Row, Col, Collapse, UncontrolledTooltip
+} from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faLink, faInfoCircle, faExclamationTriangle, faInbox, faTimes, faCheckSquare
+  faLink, faInfoCircle, faExclamationTriangle, faInbox, faTimes, faCheck
 } from "@fortawesome/free-solid-svg-icons";
 
 import { NotificationsInfo } from ".";
@@ -69,7 +71,7 @@ class NotificationToast extends Component {
     const { notification, markRead, closeToast } = this.props;
     const { level, topic, desc, link, linkText, longDesc } = notification;
 
-    const icon = (<NotificationIcon level={level} />);
+    const icon = (<NotificationIcon className="color" level={level} />);
     const linkObj = (
       <NotificationLink link={link} linkText={linkText ? linkText : link}
         markRead={markRead} closeToast={closeToast} icon={true} />
@@ -97,15 +99,15 @@ class NotificationToast extends Component {
  */
 class NotificationIcon extends Component {
   render() {
-    const { level, size } = this.props;
+    const { level, size, className } = this.props;
     const { Levels } = NotificationsInfo;
 
     let sizeIcon = size ?
       size :
       null;
     return (level === Levels.SUCCESS || level === Levels.INFO) ?
-      (<FontAwesomeIcon icon={faInfoCircle} size={sizeIcon} className="color" />) :
-      (<FontAwesomeIcon icon={faExclamationTriangle} size={sizeIcon} className="color" />);
+      (<FontAwesomeIcon icon={faInfoCircle} size={sizeIcon} className={className} />) :
+      (<FontAwesomeIcon icon={faExclamationTriangle} size={sizeIcon} className={className} />);
   }
 }
 
@@ -118,6 +120,7 @@ class NotificationIcon extends Component {
  * @param {function} [closeToast] - function to close the toast notification
  * @param {boolean} [icon] - toggle link icon, default false
  * @param {boolean} [onlyIcon] - toggle to remove the text.
+ * @param {string} [role] - "button" or "link" to define the appearance. "link" is the default
  */
 class NotificationLink extends Component {
   cleanup() {
@@ -129,28 +132,34 @@ class NotificationLink extends Component {
   }
 
   render() {
-    const { link, linkText, icon, onlyIcon, childClass, iconSize } = this.props;
+    const { link, linkText, icon, onlyIcon, childClass, iconSize, role } = this.props;
     let text = "";
     if (!onlyIcon) {
       text = linkText ?
         linkText :
         link;
     }
+    const displayAs = role ?
+      role :
+      "link";
 
     if (!link) {
       return null;
     }
     else if (link.startsWith("http")) {
       return (
-        <ExternalLink className={childClass} url={link} title={text} role="link"
+        <ExternalLink className={childClass} url={link} title={text} role={displayAs}
           showLinkIcon={icon || onlyIcon} iconSize={iconSize} onClick={() => this.cleanup()} />
       );
     }
     const linkIcon = icon || onlyIcon ?
       (<FontAwesomeIcon icon={faLink} size={iconSize} />) :
       null;
+    const fullClass = displayAs === "button" ?
+      `${childClass} btn btn-primary` :
+      childClass;
     return (
-      <Link className={childClass} title={linkText} onClick={() => this.cleanup()} to={link}>{linkIcon} {text}</Link>
+      <Link className={fullClass} title={linkText} onClick={() => this.cleanup()} to={link}>{linkIcon} {text}</Link>
     );
   }
 }
@@ -214,7 +223,7 @@ class NotificationDropdownItem extends Component {
     const { notification, markRead, closeToast } = this.props;
     const { level, topic, desc, link, linkText, timestamp, longDesc } = notification;
 
-    const icon = (<NotificationIcon level={level} />);
+    const icon = (<NotificationIcon className="color" level={level} />);
     const linkObj = (
       <NotificationLink link={link} linkText={linkText ? linkText : link} markRead={markRead}
         closeToast={closeToast} icon={true} />
@@ -306,20 +315,26 @@ class Notifications extends Component {
 class NotificationPageItem extends Component {
   render() {
     const { notification, markRead, read } = this.props;
-    const { level, topic, desc, link, linkText, timestamp, longDesc } = notification;
+    const { level, topic, desc, link, linkText, timestamp, longDesc, id } = notification;
 
     let markReadButton = null, linkButton = null;
     if (!read) {
+      const readId = `read-button-${id}`;
       markReadButton = (
-        <Button color="link" className="p-0 m-2" onClick={() => markRead()}>
-          <FontAwesomeIcon icon={faCheckSquare} size="lg" />
-        </Button>
+        <Fragment>
+          <Button id={readId} color="link" className="p-0 m-2" onClick={() => markRead()}>
+            <FontAwesomeIcon icon={faCheck} size="2x" />
+          </Button>
+          <UncontrolledTooltip key="tooltip" placement="right" target={readId}>
+            <div>Mark read</div>
+          </UncontrolledTooltip>
+        </Fragment>
       );
     }
     if (link) {
       linkButton = (
-        <NotificationLink childClass="p-0 mx-2 my-auto" link={link} linkText={linkText} onlyIcon={true} iconSize="lg"
-          markRead={markRead} />
+        <NotificationLink childClass="mx-2 my-auto" link={link} linkText={linkText} role="button"
+          icon={true} markRead={markRead} />
       );
     }
 
@@ -331,8 +346,9 @@ class NotificationPageItem extends Component {
 
     return (
       <div className={className}>
-        <div className="d-flex flex-column my-auto mx-1">
-          <NotificationIcon level={level} size="2x" />
+        <div className="d-flex my-auto mx-1">
+          {markReadButton}
+          <NotificationIcon className="color p-0 m-2 cursor-default" level={level} size="2x" />
         </div>
         <div className="d-flex flex-fill flex-column ml-2 mw-0 flex-sm-row">
           <div className="d-flex flex-column">
@@ -349,7 +365,6 @@ class NotificationPageItem extends Component {
           </div>
           <div className="d-flex flex-shrink-0 ml-sm-auto">
             {linkButton}
-            {markReadButton}
           </div>
         </div>
       </div>
