@@ -242,6 +242,8 @@ class ProjectViewHeaderOverview extends Component {
                 webhook={this.props.webhook}
                 overviewStatusUrl={this.props.overviewStatusUrl}
                 migration_required={this.props.migration.migration_required}
+                template_update_possible={this.props.migration.template_update_possible}
+                docker_update_possible={this.props.migration.docker_update_possible}
               />{core.title} <ProjectVisibilityLabel visibilityLevel={this.props.visibility.level} />
             </h3>
             <p>
