@@ -210,7 +210,6 @@ class NotificationsMenuList extends Component {
 
     return (
       <Fragment>
-        <NotificationsMenuTesting {...this.props} /> {/* // ! TEST- Remove  */}
         <Link to="/notifications"><DropdownItem>Notifications</DropdownItem></Link>
         {content}
       </Fragment>
@@ -389,19 +388,6 @@ function NotificationPageItemDetails(props) {
       </Collapse>
     </Fragment>
   );
-}
-
-class NotificationsMenuTesting extends Component {
-  render() {
-    return (
-      <Fragment>
-        {/* // ! TEST ONLY */}
-        <DropdownItem onClick={() => this.props.handlers.addMultipleNotifications()}>TEST - add multiple</DropdownItem>
-        <DropdownItem onClick={() => this.props.handlers.addRandomNotification()}>TEST - add random</DropdownItem>
-        <DropdownItem divider />
-      </Fragment>
-    );
-  }
 }
 
 
