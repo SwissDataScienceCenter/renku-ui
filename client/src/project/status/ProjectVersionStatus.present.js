@@ -27,7 +27,7 @@ import { ACCESS_LEVELS } from "../../api-client";
 import { MigrationStatus } from "../Project";
 
 function TemplateStatusBody(props) {
-  const { docker_update_possible, project_supported, template_update_possible,
+  const { docker_update_possible, project_supported, template_update_possible, latest_template_version,
     current_template_version, migration_status, check_error, migration_error, migration_required
   } = props.migration;
   const loading = props.loading;
@@ -57,7 +57,7 @@ function TemplateStatusBody(props) {
     projectTemplateBody = <Alert color="warning">
       <p>
         <FontAwesomeIcon icon={faExclamationTriangle} />&nbsp;
-        The current project is not supported, template migration operations are not possible.&nbsp;
+        This project appears to be using an experimental version of Renku. Template migration is not supported.&nbsp;
         <a href="https://renku.readthedocs.io/en/latest/user/upgrading_renku.html">More info about renku migrate</a>.
       </p>
     </Alert>;
@@ -69,7 +69,7 @@ function TemplateStatusBody(props) {
         if (docker_update_possible || migration_required) {
           updateSection = (
             <Fragment>
-              Upgrading the Renku Version automatically will also upgrade the template.
+              Upgrading the Renku version will also automatically upgrade the template.
             </Fragment>
           );
         }
@@ -77,7 +77,7 @@ function TemplateStatusBody(props) {
           updateSection = (
             <Fragment>
               <p>
-                Upgrading the Renku Version is not {migration_required ? "possible " : "needed "}
+                Upgrading the Renku version is not {migration_required ? "possible " : "needed "}
                 you can upgrade only the project template.
               </p>
               {/* check if this is correct... maybe we can use the other button instead */}
@@ -113,6 +113,17 @@ function TemplateStatusBody(props) {
             <FontAwesomeIcon icon={faExclamationTriangle} />&nbsp;
             A new version of the <strong>project template</strong> is available.
             You can learn more about the changes in the template repository.
+            { current_template_version !== null ?
+              <div>
+                <Button className="pl-0" color="link" id="templateVersionToggler">
+                  <i>See version details</i>
+                </Button>
+                <UncontrolledCollapse toggler="#templateVersionToggler" className="pt-2">
+                  <strong>Current Template Version:</strong> {current_template_version}<br />
+                  <strong>Latest Template Version:</strong> {latest_template_version}
+                </UncontrolledCollapse>
+              </div>
+              : null }
           </p>
           {updateSection}
         </Alert>
@@ -168,7 +179,7 @@ function RenkuVersionStatusBody(props) {
     body = (
       <Alert color="warning">
         <FontAwesomeIcon icon={faExclamationTriangle} />&nbsp;
-        The current project is not supported, renku migration operations are not possible.&nbsp;
+        This project appears to be using an experimental version of Renku. Migration is not supported.&nbsp;
         <a href="https://renku.readthedocs.io/en/latest/user/upgrading_renku.html">More info about renku migrate</a>.
       </Alert>);
   }
