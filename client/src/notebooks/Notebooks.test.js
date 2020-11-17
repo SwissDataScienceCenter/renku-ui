@@ -78,15 +78,20 @@ describe("notebook server clean annotation", () => {
     const branch = "anotherBranch";
     const projectName = "funkyProject";
     const repository = `https://fake.repo/${namespace}/${projectName}`;
+    const defaultImageUsedText = "True";
+    const defaultImageUsedBool = true;
 
     const fakeAnswer = {
       [`${domain}/namespace`]: namespace,
       [`${domain}/branch`]: branch,
       [`${domain}/projectName`]: projectName,
       [`${domain}/repository`]: repository,
+      [`${domain}/default_image_used`]: defaultImageUsedText,
     };
     const elaboratedAnnotations = NotebooksHelper.cleanAnnotations(fakeAnswer, domain);
-    const expectedAnnotations = { ...baseAnnotations, namespace, branch, projectName, repository };
+    const expectedAnnotations = {
+      ...baseAnnotations, namespace, branch, projectName, repository, default_image_used: defaultImageUsedBool
+    };
     expect(JSON.stringify(elaboratedAnnotations)).toBe(JSON.stringify(expectedAnnotations));
   });
 });

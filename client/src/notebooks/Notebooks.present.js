@@ -344,10 +344,12 @@ class NotebookServerRowFull extends Component {
     } = this.props;
 
     const icon = <td className="align-middle">
-      <NotebooksServerRowStatusIcon details={details} status={status} uid={uid} image={image} />
+      <NotebooksServerRowStatusIcon
+        details={details} status={status} uid={uid} image={image} annotations={annotations}
+      />
     </td>;
     const project = this.props.standalone ?
-      (<td className="align-middle"><NotebookServerRowProject annotations={this.props.annotations} /></td>) :
+      (<td className="align-middle"><NotebookServerRowProject annotations={annotations} /></td>) :
       null;
     const branch = (<td className="align-middle">
       <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text" />
@@ -361,7 +363,9 @@ class NotebookServerRowFull extends Component {
     });
     const resourceObject = (<td>{resourceList}</td>);
     const statusOut = (<td className="align-middle">
-      <NotebooksServerRowStatus details={details} status={status} uid={uid} startTime={this.props.startTime} />
+      <NotebooksServerRowStatus
+        details={details} status={status} uid={uid} startTime={this.props.startTime} annotations={annotations}
+      />
     </td>);
     const action = (<td className="align-middle">
       <NotebookServerRowAction
@@ -401,7 +405,9 @@ class NotebookServerRowCompact extends Component {
     } = this.props;
 
     const icon = <span>
-      <NotebooksServerRowStatusIcon details={details} status={status} uid={uid} image={image} />
+      <NotebooksServerRowStatusIcon
+        details={details} status={status} uid={uid} image={image} annotations={annotations}
+      />
     </span>;
     const project = this.props.standalone ?
       (<Fragment>
@@ -438,7 +444,9 @@ class NotebookServerRowCompact extends Component {
         details={details}
         status={status}
         uid={uid}
-        startTime={this.props.startTime} />
+        startTime={this.props.startTime}
+        annotations={annotations}
+      />
     </span>);
     const action = (<span>
       <NotebookServerRowAction
@@ -474,12 +482,16 @@ class NotebookServerRowCompact extends Component {
   }
 }
 
-function getStatusObject(status) {
+function getStatusObject(status, defaulImage) {
   switch (status) {
     case "running":
       return {
-        color: "success",
-        icon: <FontAwesomeIcon icon={faCheckCircle} size="lg" />,
+        color: defaulImage ?
+          "warning" :
+          "success",
+        icon: defaulImage ?
+          (<FontAwesomeIcon icon={faExclamationTriangle} inverse={true} size="lg" />) :
+          (<FontAwesomeIcon icon={faCheckCircle} size="lg" />),
         text: "Running"
       };
     case "pending":
@@ -505,8 +517,8 @@ function getStatusObject(status) {
 
 class NotebooksServerRowStatus extends Component {
   render() {
-    const { status, details, uid } = this.props;
-    const data = getStatusObject(status);
+    const { status, details, uid, annotations } = this.props;
+    const data = getStatusObject(status, annotations.default_image_used);
     const spacing = this.props.spaced ?
       " " :
       (<br />);
@@ -530,12 +542,15 @@ class NotebooksServerRowStatus extends Component {
 
 class NotebooksServerRowStatusIcon extends Component {
   render() {
-    const { status, uid, image } = this.props;
-    const data = getStatusObject(status);
+    const { status, uid, image, annotations } = this.props;
+    const data = getStatusObject(status, annotations.default_image_used);
     const classes = this.props.spaced ?
       "text-nowrap p-1 mb-2" :
       "text-nowrap p-1";
     const id = `${uid}-status`;
+    const policy = annotations.default_image_used ?
+      (<span><br /><span className="font-weight-bold">Warning:</span> a fallback image was used.</span>) :
+      null;
 
     const popover = !image || status !== "running" ?
       null :
@@ -544,6 +559,7 @@ class NotebooksServerRowStatusIcon extends Component {
           <PopoverHeader>Details</PopoverHeader>
           <PopoverBody>
             <span className="font-weight-bold">Image source:</span> {image}
+            {policy}
           </PopoverBody>
         </UncontrolledPopover>
       );

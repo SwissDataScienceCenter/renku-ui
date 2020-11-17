@@ -44,10 +44,11 @@ const VALID_SETTINGS = [
 const ExpectedAnnotations = {
   domain: "renku.io",
   "renku.io": {
-    required: ["branch", "commit-sha", "namespace", "projectId", "projectName", "repository"],
+    required: ["branch", "commit-sha", "default_image_used", "namespace", "projectId", "projectName", "repository"],
     default: {
       "branch": "unknown",
       "commit-sha": "00000000",
+      "default_image_used": false,
       "namespace": "unknown",
       "projectId": 0,
       "projectName": "unknown",
@@ -85,9 +86,21 @@ const NotebooksHelper = {
     let cleaned = {};
     const prefix = `${domain}/`;
     ExpectedAnnotations[domain].required.forEach(annotation => {
-      cleaned[annotation] = annotations[prefix + annotation] !== undefined ?
-        annotations[prefix + annotation] :
-        ExpectedAnnotations[domain].default[annotation];
+      if (annotations[prefix + annotation] !== undefined) {
+        let value = annotations[prefix + annotation];
+        // convert text boolean where a boolean is expected
+        if (annotation === "default_image_used") {
+          const origValue = annotations[prefix + annotation];
+          if (origValue && typeof origValue === "string" && origValue.toLowerCase() === "true")
+            value = true;
+          else
+            value = false;
+        }
+        cleaned[annotation] = value;
+      }
+      else {
+        cleaned[annotation] = ExpectedAnnotations[domain].default[annotation];
+      }
     });
 
     return { ...cleaned };
