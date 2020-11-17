@@ -1,5 +1,21 @@
 # Changes
 
+## [0.11.2](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.1...0.11.2) (2020-11-17)
+
+### Features
+
+* improve title validation on new project creation 51e5ea4, closes [#1107](https://github.com/SwissDataScienceCenter/renku-ui/issues/1107) [#1115](https://github.com/SwissDataScienceCenter/renku-ui/issues/1115)
+
+### Bug Fixes
+
+* dataset form is much simpler now but it keeps all fields d96faf2, closes [#1116](https://github.com/SwissDataScienceCenter/renku-ui/issues/1116) [#1117](https://github.com/SwissDataScienceCenter/renku-ui/issues/1117)
+
+
+### BREAKING CHANGES
+
+* requires renku-python version >0.12.0
+
+
 ## [0.11.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.0...0.11.1) (2020-11-05)
 
 ### Features
