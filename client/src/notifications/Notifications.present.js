@@ -333,7 +333,7 @@ class NotificationPageItem extends Component {
     }
     if (link) {
       linkButton = (
-        <NotificationLink childClass="mx-2 my-auto" link={link} linkText={linkText} role="button"
+        <NotificationLink childClass="mx-2 my-auto btn-sm" link={link} linkText={linkText} role="button"
           icon={true} markRead={markRead} />
       );
     }

@@ -19,7 +19,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
-import { NotebooksCoordinator, ExpectedAnnotations } from "./Notebooks.state";
+import { NotebooksCoordinator, NotebooksHelper } from "./Notebooks.state";
 import {
   StartNotebookServer as StartNotebookServerPresent, NotebooksDisabled, Notebooks as NotebooksPresent, CheckNotebookIcon
 } from "./Notebooks.present";
@@ -340,20 +340,15 @@ class StartNotebookServer extends Component {
     const { location, history } = this.props;
     return this.coordinator.startServer().then((data) => {
       this.setState({ "starting": false });
-
-      // craft and add the notification
-      const projectData = Object.keys(data.annotations)
-        .filter(elem => elem.startsWith(ExpectedAnnotations.domain))
-        .map(elem => `${elem.substring(ExpectedAnnotations.domain.length + 1)}: "${data.annotations[elem]}"`);
-      const resources = Object.keys(data.resources).map(res => `${res}: "${data.resources[res]}"`);
-      const fullDescription = `Interactive environment will start soon.
-      Reference URL: "${data.url}", ${projectData.join(", ")}, ${resources.join(", ")}.`;
+      // add a notification
+      // TODO: once we will get the info from ui-server, notify only when the environment is ready
+      const info = NotebooksHelper.cleanAnnotations(data.annotations);
       this.notifications.addSuccess(
         this.notifications.Topics.ENVIRONMENT_START,
-        "The interactive environment is starting",
+        `An interactive environment for the project ${info["namespace"]}/${info["projectName"]} will be available soon`,
         data.url, "Open environment",
         [location.state.successUrl, "/environments"],
-        fullDescription
+        `Branch: ${info["branch"]}; Commit: ${info["commit-sha"]}`
       );
 
       // redirect user when necessary
