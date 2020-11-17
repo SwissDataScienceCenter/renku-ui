@@ -41,9 +41,9 @@ function TemplateStatusBody(props) {
   else if (check_error) {
     projectTemplateBody = getErrorMessage("checking", "project template", check_error.reason);
   }
-  else if (migration_status === MigrationStatus.ERROR && migration_error.template_update_failed) {
+  else if (migration_status === MigrationStatus.ERROR && migration_error && migration_error.template_update_failed) {
     //what is the structure of migration_error????
-    projectTemplateBody = getErrorMessage("updating", "project template", migration_error);
+    projectTemplateBody = getErrorMessage("updating", "project template", migration_error.reason);
   }
   else if (!current_template_version) { // current_template_version === null
     //if the template has no version it cant be migrated
@@ -109,22 +109,20 @@ function TemplateStatusBody(props) {
       }
       projectTemplateBody = (
         <Alert color="warning">
-          <p>
+          <p className="mb-0">
             <FontAwesomeIcon icon={faExclamationTriangle} />&nbsp;
             A new version of the <strong>project template</strong> is available.
             You can learn more about the changes in the template repository.
-            { current_template_version !== null ?
-              <div>
-                <Button className="pl-0" color="link" id="templateVersionToggler">
-                  <i>See version details</i>
-                </Button>
-                <UncontrolledCollapse toggler="#templateVersionToggler" className="pt-2">
-                  <strong>Current Template Version:</strong> {current_template_version}<br />
-                  <strong>Latest Template Version:</strong> {latest_template_version}
-                </UncontrolledCollapse>
-              </div>
-              : null }
           </p>
+          <div className="mb-1">
+            <Button className="pl-0" color="link" id="templateVersionToggler">
+              <i>Version details</i>
+            </Button>
+            <UncontrolledCollapse toggler="#templateVersionToggler" className="pt-1 pb-2">
+              <strong>Current Template Version:</strong> {current_template_version}<br />
+              <strong>Latest Template Version:</strong> {latest_template_version}
+            </UncontrolledCollapse>
+          </div>
           {updateSection}
         </Alert>
       );
@@ -171,9 +169,9 @@ function RenkuVersionStatusBody(props) {
   else if (check_error) {
     body = getErrorMessage("checking", "renku", check_error.reason);
   }
-  else if (migration_status === MigrationStatus.ERROR
+  else if (migration_status === MigrationStatus.ERROR && migration_error
   && (migration_error.dockerfile_update_failed || migration_error.migrations_failed)) {
-    body = getErrorMessage("updating", "renku", migration_error);
+    body = getErrorMessage("updating", "renku", migration_error.reason);
   }
   else if (!project_supported) {
     body = (

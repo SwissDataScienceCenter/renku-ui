@@ -82,9 +82,6 @@ class ProjectModel extends StateModel {
       .then((projectId)=>{
         client.performMigration(projectId, params)
           .then((response)=>{
-            console.log(response)
-            console.log(response.error)
-            console.log("fix this!!!")
             if (response.data.error) {
               this.set("migration.migration_status", MigrationStatus.ERROR);
               this.set("migration.migration_error", response.data.error);
