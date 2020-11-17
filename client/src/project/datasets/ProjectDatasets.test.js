@@ -32,10 +32,13 @@ import { StateModel, globalSchema } from "../../model";
 import ChangeDataset from "./change/index";
 import DatasetImport from "./import/index";
 import DatasetsListView from "./DatasetsListView";
+import { generateFakeUser } from "../../user/User.test";
 
 describe("rendering", () => {
   const model = new StateModel(globalSchema);
   let spy = null;
+  const loggedUser = generateFakeUser();
+
   beforeEach(() => {
     // ckeditor dumps some junk to the conole.error. Ignore it.
     spy = jest.spyOn(console, "error").mockImplementation(() => { });
@@ -60,7 +63,8 @@ describe("rendering", () => {
         }]
       }],
       visibility: { accessLevel: ACCESS_LEVELS.MAINTAINER },
-      graphStatus: false
+      graphStatus: false,
+      user: loggedUser
     };
     const div = document.createElement("div");
     ReactDOM.render(
@@ -82,6 +86,7 @@ describe("rendering", () => {
           maintainer={ACCESS_LEVELS.maintainer}
           client={client}
           model={model}
+          user={loggedUser}
         />
       </MemoryRouter>
       , div);
@@ -97,6 +102,7 @@ describe("rendering", () => {
           maintainer={ACCESS_LEVELS.maintainer}
           client={client}
           model={model}
+          user={loggedUser}
         />
       </MemoryRouter>
       , div);

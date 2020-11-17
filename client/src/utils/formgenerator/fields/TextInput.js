@@ -26,16 +26,47 @@
 import * as React from "react";
 import ValidationAlert from "./ValidationAlert";
 import HelpText from "./HelpText";
-import { FormGroup, Input, Label } from "reactstrap";
+import FormLabel from "./FormLabel";
+import { FormGroup, Input, Label, Button } from "reactstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPencilAlt } from "@fortawesome/free-solid-svg-icons";
 
-function TextInput({ name, label, type, value, alert, placeholder, setInputs, help, disabled = false }) {
-  return <FormGroup>
-    <Label htmlFor={name}>{label}</Label>
-    <Input id={name} name={name} type={type} value={value || ""}
-      onChange={setInputs} disabled={disabled} placeholder={placeholder} />
-    <HelpText content={help} />
-    <ValidationAlert content={alert} />
-  </FormGroup>;
+function TextInput({ name, label, type, value, alert, placeholder, setInputs,
+  help, disabled = false, required = false, editOnClick = false }) {
+
+  const [onlyView, setOnlyView] = React.useState(editOnClick);
+
+  const switchToEditMode = () => {
+    setOnlyView(false);
+  };
+
+  const formContent = onlyView ?
+    <FormGroup>
+      <small>
+        {value ?
+          <Label className="font-italic text-muted">
+            {label}: {value}
+          </Label>
+          : null
+        }
+        { value && !disabled ?
+          <Button size="sm" color="light" className="float-right" onClick={switchToEditMode}>
+            <FontAwesomeIcon icon={faPencilAlt}/> Change Name
+          </Button>
+          : null
+        }
+      </small>
+    </FormGroup>
+    :
+    <FormGroup>
+      <FormLabel htmlFor={name} label={label} required={required}/>
+      <Input id={name} name={name} type={type} value={value || ""}
+        onChange={setInputs} disabled={disabled} placeholder={placeholder} />
+      <HelpText content={help} />
+      <ValidationAlert content={alert} />
+    </FormGroup>;
+
+  return formContent;
 }
 
 export default TextInput;

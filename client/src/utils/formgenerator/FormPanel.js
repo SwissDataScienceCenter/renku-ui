@@ -23,7 +23,7 @@
  *  Presentational components.
  */
 
-import React from "react";
+import React, { Fragment } from "react";
 import { Form, Button, Col, UncontrolledAlert, FormText } from "reactstrap";
 import useForm from "./UseForm";
 import TextInput from "./fields/TextInput";
@@ -34,11 +34,37 @@ import SelectautosuggestInput from "./fields/SelectAutosuggestInput";
 import CktextareaInput from "./fields/CKEditorTextArea";
 import FileuploaderInput from "./fields/FileUploaderInput";
 import KeywordsInput from "./fields/KeywordsInput";
+import ValidationAlert from "./fields/ValidationAlert";
 import { Loader } from "../../utils/UIComponents";
 import "./FormGenerator.css";
 
 function capitalize(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function SubmitButtonGroup(props) {
+  const { submitCallback, submitLoader, btnName, errorFields } = props;
+  const { onCancel, cancelBtnName } = props;
+  const submitButton = submitCallback !== undefined ?
+    <Button type="submit" disabled={submitLoader.value} className="float-right mt-1" color="primary">
+      {btnName}
+    </Button>
+    : null;
+  const cancelButton = onCancel !== undefined ?
+    <Button disabled={submitLoader.value} className="float-right mt-1 mr-1"
+      color="secondary" onClick={onCancel}>
+      {cancelBtnName ? cancelBtnName : "Cancel"}
+    </Button>
+    : null;
+  const errorMessage = (errorFields.length > 0) ?
+    <ValidationAlert
+      content={`Please fix problems in the following fields: ${errorFields.map(d => d.label).join(" ")}`} /> :
+    null;
+  return <Fragment>
+    { errorMessage }
+    { submitButton }
+    { cancelButton }
+  </Fragment>;
 }
 
 function FormPanel({ title, btnName, submitCallback, model, serverErrors,
@@ -61,6 +87,26 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors,
       disabled={submitLoader.value || (input.edit === false && edit) || disableAll} setInputs={setInputs} {...input} />;
   };
 
+  const extractErrorsAndWarnings = (errorOrWarning) => {
+    let content;
+    if (typeof errorOrWarning === "string") {
+      content = <p>{errorOrWarning}</p>;
+    }
+    else {
+      //this could be improve to extract better the error message
+      //ideally we could map backend and frontend fields and put the error under the field
+      content = Object.keys(errorOrWarning).map(error =>
+        (<p key={error}>{`${error}: ${JSON.stringify(errorOrWarning[error])}`}</p>)
+      );
+    }
+    return (<div>
+      <p>Errors occured while creating the project.</p>
+      {content}
+    </div>);
+  };
+
+  const errorFields = inputs.filter(input => (input.alert != null) && (input.edit !== false));
+
   return (
     <Col>
       { title !== undefined ?
@@ -69,8 +115,10 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors,
       <Form onSubmit={setSubmit}>
         <div>
           {inputs.map(input => renderInput(input))}
-          {serverErrors ? <UncontrolledAlert color="danger">{serverErrors}</UncontrolledAlert> : null}
-          {serverWarnings ? <UncontrolledAlert color="warning">{serverWarnings}</UncontrolledAlert> : null}
+          {serverErrors ? <UncontrolledAlert color="danger">
+            {extractErrorsAndWarnings(serverErrors)}</UncontrolledAlert> : null}
+          {serverWarnings ? <UncontrolledAlert color="warning">
+            {extractErrorsAndWarnings(serverWarnings)}</UncontrolledAlert> : null}
           {submitLoader !== undefined && submitLoader.value ?
             <FormText color="primary">
               <Loader size="16" inline="true" margin="2" />
@@ -78,21 +126,10 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors,
             </FormText>
             : null
           }
-          {
-            submitCallback !== undefined ?
-              <Button type="submit" disabled={submitLoader.value} className="float-right mt-1" color="primary">
-                {btnName}
-              </Button>
-              : null
-          }
-          {
-            onCancel !== undefined ?
-              <Button disabled={submitLoader.value} className="float-right mt-1 mr-1"
-                color="secondary" onClick={onCancel}>
-                {cancelBtnName ? cancelBtnName : "Cancel"}
-              </Button>
-              : null
-          }
+          <SubmitButtonGroup
+            submitCallback={submitCallback} submitLoader={submitLoader} btnName={btnName} errorFields={errorFields}
+            onCancel={onCancel} cancelBtnName={cancelBtnName}
+          />
         </div>
       </Form>
     </Col>

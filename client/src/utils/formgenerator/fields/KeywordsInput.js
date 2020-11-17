@@ -26,11 +26,13 @@
 import * as React from "react";
 import ValidationAlert from "./ValidationAlert";
 import HelpText from "./HelpText";
-import { FormGroup, Label } from "reactstrap";
+import FormLabel from "./FormLabel";
+import { FormGroup } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 
-function KeywordsInput({ name, label, type, value, alert, placeholder, setInputs, help, disabled = false }) {
+function KeywordsInput(
+  { name, label, type, value, alert, placeholder, setInputs, help, disabled = false, required = false }) {
 
   const [tags, setTags] = React.useState(value);
   const tagInput = React.useRef(null);
@@ -89,7 +91,7 @@ function KeywordsInput({ name, label, type, value, alert, placeholder, setInputs
   </div>;
 
   return <FormGroup>
-    <Label htmlFor={name}>{label}</Label>
+    <FormLabel htmlFor={name} label={label} required={required}/>
     {tagsList}
     <HelpText content={help} />
     <ValidationAlert content={alert} />
