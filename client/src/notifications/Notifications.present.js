@@ -201,11 +201,7 @@ class NotificationsMenuList extends Component {
     });
 
     const content = renderedNotifications.length ?
-      (<Fragment>
-        <DropdownItem onClick={() => this.props.handlers.markAllRead()}>Mark all read</DropdownItem>
-        <DropdownItem divider />
-        <div className="notification-list-container">{renderedNotifications}</div>
-      </Fragment>) :
+      (<div className="notification-list-container">{renderedNotifications}</div>) :
       null;
 
     return (
