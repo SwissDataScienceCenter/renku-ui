@@ -19,10 +19,10 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
-import { NotebooksCoordinator } from "./Notebooks.state";
-import { StartNotebookServer as StartNotebookServerPresent, NotebooksDisabled } from "./Notebooks.present";
-import { Notebooks as NotebooksPresent } from "./Notebooks.present";
-import { CheckNotebookIcon } from "./Notebooks.present";
+import { NotebooksCoordinator, NotebooksHelper } from "./Notebooks.state";
+import {
+  StartNotebookServer as StartNotebookServerPresent, NotebooksDisabled, Notebooks as NotebooksPresent, CheckNotebookIcon
+} from "./Notebooks.present";
 import { StatusHelper } from "../model/Model";
 import { ProjectCoordinator } from "../project";
 
@@ -76,6 +76,7 @@ class Notebooks extends Component {
     this.coordinator.stopNotebookPolling();
   }
 
+  // TODO: add info notification here
   stopNotebook(serverName, force) {
     this.coordinator.stopNotebook(serverName, force);
   }
@@ -142,6 +143,7 @@ class Notebooks extends Component {
  * @param {string} scope.project - path of the reference project
  * @param {string} externalUrl - GitLabl repository url
  * @param {boolean} blockAnonymous - When true, block non logged in users
+ * @param {Object} notifications - Notifications object
  * @param {Object} [location] - react location object. Use location.state.successUrl to inidcate the
  *     redirect url to be used when a notebook is succesfully started
  * @param {Object} [history] - mandatory if successUrl is provided
@@ -156,6 +158,7 @@ class StartNotebookServer extends Component {
     // TODO: this should go away when moving all project content to projectCoordinator
     this.projectModel = props.model.subModel("project");
     this.projectCoordinator = new ProjectCoordinator(props.client, props.model.subModel("project"));
+    this.notifications = props.notifications;
     // temporarily reset data since notebooks model was not designed to be static
     this.coordinator.reset();
 
@@ -335,9 +338,23 @@ class StartNotebookServer extends Component {
   internalStartServer() {
     // The core internal logic extracted here for re-use
     const { location, history } = this.props;
-    return this.coordinator.startServer().then(() => {
+    return this.coordinator.startServer().then((data) => {
       this.setState({ "starting": false });
-      if (history && location && location.state && location.state.successUrl)
+      // add a notification
+      // TODO: once we will get the info from ui-server, notify only when the environment is ready
+      const info = NotebooksHelper.cleanAnnotations(data.annotations);
+      this.notifications.addSuccess(
+        this.notifications.Topics.ENVIRONMENT_START,
+        `An interactive environment for the project ${info["namespace"]}/${info["projectName"]} will be available soon`,
+        data.url, "Open environment",
+        [location.state.successUrl, "/environments"],
+        `Branch: ${info["branch"]}; Commit: ${info["commit-sha"]}`
+      );
+
+      // redirect user when necessary
+      if (!history || !location)
+        return;
+      if (location.state && location.state.successUrl && history.location.pathname === location.pathname)
         history.push(location.state.successUrl);
     });
   }
@@ -350,9 +367,15 @@ class StartNotebookServer extends Component {
       // Some failures just go away. Try again to see if it works the second time.
       setTimeout(() => {
         this.internalStartServer().catch((error) => {
-          // TODO: #991
-          // eslint-disable-next-line no-console
-          console.log(["Could not start server", error]);
+          // crafting notification
+          const fullError = `An error occurred when trying to start a new Interactive environment.
+          Error message: "${error.message}", Stack trace: "${error.stack}"`;
+          this.notifications.addWarning(
+            this.notifications.Topics.ENVIRONMENT_START,
+            "Unable to start the interactive environment.",
+            this.props.location.pathname, "Try again",
+            null, // always toast
+            fullError);
           this.setState({ "starting": false, launchError: error.message });
         });
       }, 3000);
