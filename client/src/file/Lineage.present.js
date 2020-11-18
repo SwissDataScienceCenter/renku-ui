@@ -21,14 +21,15 @@ import { Card, CardHeader, CardBody, Badge } from "reactstrap";
 import graphlib from "graphlib";
 import dagreD3 from "dagre-d3";
 import * as d3 from "d3";
-import { faFile, faDownload } from "@fortawesome/free-solid-svg-icons";
+import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
-
 import KnowledgeGraphStatus from "./KnowledgeGraphStatus.container";
 import { GraphIndexingStatus } from "../project/Project";
 import { JupyterButton } from "./index";
-import { ExternalIconLink, IconLink } from "../utils/UIComponents";
+import { ExternalIconLink } from "../utils/UIComponents";
 import { formatBytes } from "../utils/HelperFunctions";
+import { ExternalIconLink } from "../utils/UIComponents";
+import { FileAndLineageSwitch } from "./FileAndLineageComponents";
 
 import "./Lineage.css";
 
@@ -150,7 +151,7 @@ class FileLineageGraph extends Component {
       });
     svg.call(zoom);
 
-    d3.selectAll("g.node").filter((d, i) => { return this.hasLink(d, this.props.currentNode.id); })
+    d3.selectAll("g.node").filter((d) => { return this.hasLink(d, this.props.currentNode.id); })
       .select("tspan").on("mouseover", function () {
         d3.select(this).style("cursor", "pointer").attr("r", 25)
           .style("text-decoration-line", "underline");
@@ -228,7 +229,12 @@ class FileLineage extends Component {
       <Badge className="lfs-badge" color="light">LFS</Badge> : null;
 
     let buttonFile = filePath !== undefined && currentNode.type !== "Directory" ?
-      <IconLink tooltip="File View" icon={faFile} to={filePath} /> :
+      <FileAndLineageSwitch
+        insideFile={false}
+        history={this.props.history}
+        switchToPath={filePath}
+      />
+      :
       null;
 
     let buttonGit = <ExternalIconLink tooltip="Open in GitLab" icon={faGitlab} to={externalFileUrl} />;
@@ -252,14 +258,16 @@ class FileLineage extends Component {
 
     return <Card>
       <CardHeader className="align-items-baseline">
-        {isLFSBadge}
         <strong>{this.props.path}</strong>
+        &nbsp;
         {this.props.fileSize ? <span><small> {formatBytes(this.props.fileSize)}</small></span> : null}
+        <span className="fileBarText">{this.props.path}</span>
+        <span className="fileBarIconButton">{isLFSBadge}</span>
         <div className="float-right" >
-          <span>{buttonDownload}</span>
-          {buttonJupyter}
-          <span>{buttonGit}</span>
-          <span>{buttonFile}</span>
+          <span className="fileBarIconButton">{buttonDownload}</span>
+          <span className="fileBarIconButton">{buttonJupyter}</span>
+          <span className="fileBarIconButton">{buttonGit}</span>
+          <span className="fileBarIconButton">{buttonFile}</span>
         </div>
       </CardHeader>
       <CardBody className="scroll-x">

@@ -23,14 +23,14 @@ import { Badge, Card, CardHeader, CardBody, CustomInput } from "reactstrap";
 import { Button, ButtonGroup } from "reactstrap";
 import { ListGroup, ListGroupItem } from "reactstrap";
 import "../../node_modules/highlight.js/styles/atom-one-light.css";
-import { faProjectDiagram, faDownload } from "@fortawesome/free-solid-svg-icons";
+import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
-
 import { FilePreview } from "./index";
 import { CheckNotebookStatus, CheckNotebookIcon } from "../notebooks";
-import { Clipboard, ExternalIconLink, IconLink, Loader } from "../utils/UIComponents";
+import { Clipboard, ExternalIconLink, Loader } from "../utils/UIComponents";
 import { Time } from "../utils/Time";
 import { formatBytes } from "../utils/HelperFunctions";
+import { FileAndLineageSwitch } from "./FileAndLineageComponents";
 
 const commitMessageLengthLimit = 120;
 
@@ -78,18 +78,19 @@ class FileCard extends React.Component {
     return (
       <Card>
         <CardHeader className="align-items-baseline">
-          {this.props.lfsBadge}
           <strong>{this.props.filePath}</strong>
           &nbsp;
           {this.props.fileSize ? <span><small> {formatBytes(this.props.fileSize)}</small></span> : null}
+          <span className="fileBarText">{this.props.filePath}</span>
+          <span className="fileBarIconButton">{this.props.isLFSBadge}</span>
           &nbsp;
-          <Clipboard clipboardText={this.props.filePath} />
+          <span className="fileBarIconButton"><Clipboard clipboardText={this.props.filePath} /></span>
           &nbsp;
           <div className="float-right">
-            {this.props.buttonDownload}
-            {this.props.buttonJupyter}
-            {this.props.buttonGit}
-            {this.props.buttonGraph}
+            <span className="fileBarIconButton">{this.props.buttonDownload}</span>
+            <span className="fileBarIconButton">{this.props.buttonJupyter}</span>
+            <span className="fileBarIconButton">{this.props.buttonGit}</span>
+            <span className="fileBarIconButton">{this.props.buttonGraph}</span>
           </div>
         </CardHeader>
         {commitHeader}
@@ -115,9 +116,13 @@ class ShowFile extends React.Component {
   render() {
     const gitLabFilePath = this.props.gitLabFilePath;
     const buttonGraph =
-      this.props.lineagesPath !== undefined ? (
-        <IconLink tooltip="Graph View" icon={faProjectDiagram} to={`${this.props.lineagesPath}/${gitLabFilePath}`} />
-      ) : null;
+      this.props.lineagesPath !== undefined ?
+        <FileAndLineageSwitch
+          insideFile={true}
+          history={this.props.history}
+          switchToPath={`${this.props.lineagesPath}/${gitLabFilePath}`}
+        />
+        : null;
 
     const buttonGit = (
       <ExternalIconLink

@@ -1,12 +1,9 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { StickyContainer, Sticky } from "react-sticky";
-
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile, faFolder as faFolderClosed, faFolderOpen } from "@fortawesome/free-solid-svg-icons";
-import { faProjectDiagram } from "@fortawesome/free-solid-svg-icons";
-
-import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
+import { Button, ButtonGroup } from "reactstrap";
 import "./treeviewstyle.css";
 
 
@@ -111,45 +108,26 @@ class TreeNode extends Component {
 }
 
 class TreeContainer extends Component {
-  constructor(props) {
-    super(props);
-    this.state = { dropdownOpen: false };
-
-    this.toggle = this.toggle.bind(this);
-  }
-
-  toggle() {
-    this.setState({
-      dropdownOpen: !this.state.dropdownOpen
-    });
-  }
-
   render() {
     const { style, fileView, toLineage, toFile, tree } = this.props;
 
+    const switchPage = () => {
+      if (fileView)
+        this.props.history.push(toLineage);
+      else
+        this.props.history.push(toFile);
+    };
+
     return (
       <div className="tree-container" style={style}>
-        <div className="tree-title">
-          <span className="tree-header-title text-truncate">
-            {fileView ? "File View" : "Lineage View"}
-          </span>
-          <span className="float-right throw-right-in-flex">
-            <Dropdown color="primary" size="sm" isOpen={this.state.dropdownOpen} toggle={this.toggle}>
-              <DropdownToggle caret size="sm" color="primary">
-                {fileView ?
-                  <FontAwesomeIcon className="icon-white" icon={faFile} />
-                  : <FontAwesomeIcon className="icon-white" icon={faProjectDiagram} />
-                }
-              </DropdownToggle>
-              <DropdownMenu>
-                {fileView ?
-                  <Link to={toLineage}><DropdownItem> Lineage View </DropdownItem></Link>
-                  : <Link to={toFile}><DropdownItem>File View</DropdownItem></Link>
-                }
-              </DropdownMenu>
-            </Dropdown>
-          </span>
-        </div>
+        <ButtonGroup className={"pb-1"}>
+          <Button color="primary" outline onClick={switchPage} active={fileView}>
+            File View
+          </Button>
+          <Button color="primary" outline onClick={switchPage} active={!fileView}>
+            Lineage View
+          </Button>
+        </ButtonGroup>
         <div id="tree-content" className="tree-content mb-2 mb-md-0">
           {tree}
         </div>
@@ -207,12 +185,14 @@ class FilesTreeView extends Component {
 
     // return the plain component if there is no need to limit the height
     if (!limitHeight)
-      return (<TreeContainer {...treeProps} style={{}} />);
+      return (<TreeContainer history={this.props.history} {...treeProps} style={{}} />);
 
     // on small devices, the file tree is positioned on top, therefore it's better to limit
     // the height based on the display size
-    if (window.innerWidth <= 768)
-      return (<TreeContainer {...treeProps} style={{ maxHeight: Math.floor(window.innerHeight * 2 / 3) }} />);
+    if (window.innerWidth <= 768) {
+      return (<TreeContainer history={this.props.history}
+        {...treeProps} style={{ maxHeight: Math.floor(window.innerHeight * 2 / 3) }} />);
+    }
 
     return (
       // This components make the file tree sticky on scroll and fix the max-height
@@ -245,7 +225,7 @@ class FilesTreeView extends Component {
               const maxHeight = window.innerHeight - 80 - deltaDistance;
               const treeStyle = { ...style, maxHeight, top: 10, transform: "" };
 
-              return (<TreeContainer {...treeProps} style={treeStyle} />);
+              return (<TreeContainer history={this.props.history} {...treeProps} style={treeStlye} />);
             }
           }
         </Sticky>
