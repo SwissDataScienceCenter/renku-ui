@@ -249,8 +249,7 @@ class FileLineage extends Component {
     return <Card>
       <CardHeader className="align-items-baseline">
         {isLFSBadge}
-        {this.props.path}
-        <span className="caption align-baseline">&nbsp;Lineage and usage</span>
+        <strong>{this.props.path}</strong>
         <div className="float-right" >
           {buttonJupyter}
           <span>{buttonGit}</span>
