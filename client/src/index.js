@@ -1,6 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { connect } from "react-redux";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 import * as Sentry from "@sentry/browser";
 import "bootstrap";
 import "jquery";
@@ -84,8 +85,12 @@ Promise.all([configFetch, privacyFetch]).then(valuesRead => {
 
     const VisibleApp = connect(mapStateToProps)(App);
     ReactDOM.render(
-      <VisibleApp client={client} params={params} store={model.reduxStore} model={model}
-        statuspageId={statuspageId} />,
+      <Router>
+        <Route render={props =>
+          <VisibleApp client={client} params={params} store={model.reduxStore} model={model}
+            statuspageId={statuspageId} location={props.location} />
+        } />
+      </Router>,
       document.getElementById("root")
     );
   });
