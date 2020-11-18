@@ -1055,7 +1055,7 @@ class StartNotebookPipelinesContent extends Component {
 
 class StartNotebookCommits extends Component {
   render() {
-    const { commits, fetching } = this.props.data;
+    const { commits, fetching, autosaved } = this.props.data;
     if (fetching)
       return (<Label>Updating commits... <Loader size="14" inline="true" /></Label>);
 
@@ -1063,11 +1063,33 @@ class StartNotebookCommits extends Component {
     const filteredCommits = displayedCommits && displayedCommits > 0 ?
       commits.slice(0, displayedCommits) :
       commits;
+    const autosavedCommits = autosaved.map(autosaveObject => autosaveObject.autosave.commit);
     const commitOptions = filteredCommits.map((commit) => {
-      return <option key={commit.id} value={commit.id}>
-        {commit.short_id} - {commit.author_name} - {Time.toIsoTimezoneString(commit.committed_date)}
-      </option>;
+      const star = autosavedCommits.includes(commit.id.substr(0, 7)) ?
+        "*" :
+        "";
+      return (
+        <option key={commit.id} value={commit.id}>
+          {commit.short_id}{star} - {commit.author_name} - {Time.toIsoTimezoneString(commit.committed_date)}
+        </option>
+      );
     });
+    let commitComment = null;
+    if (this.props.filters.commit.id) {
+      const autosaveExists = autosavedCommits.includes(this.props.filters.commit.id.substr(0, 7)) ?
+        true :
+        false;
+      if (autosaveExists) {
+        const url = "https://renku.readthedocs.io/en/latest/user/interactive_stopping_and_saving.html" +
+          "#autosave-in-interactive-environments";
+        commitComment = (
+          <FormText>
+            <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> For this commit we
+            found <ExternalLink url={url} iconSup={true} iconAfter={true} title="autosaved content" role="link" />
+          </FormText>
+        );
+      }
+    }
     return (
       <FormGroup>
         <Label>
@@ -1081,6 +1103,7 @@ class StartNotebookCommits extends Component {
           <option disabled hidden></option>
           {commitOptions}
         </Input>
+        {commitComment}
       </FormGroup>
     );
   }
@@ -1415,14 +1438,15 @@ class AutosavedDataModal extends Component {
     const url = this.props.currentBranch && this.props.currentBranch.autosave ?
       this.props.currentBranch.autosave.url :
       "#";
-    const autosavedLink = (<ExternalLink
-      role="text"
-      url={url}
-      title="unsaved work" />);
-    const docsLink = (<ExternalLink
-      role="text"
-      url="https://renku.readthedocs.io/en/latest/user/autosave.html"
-      title="documentation page" />);
+    const autosavedLink = (
+      <ExternalLink role="text" iconSup={true} iconAfter={true} url={url} title="unsaved work" />
+    );
+    const docsLink = (
+      <ExternalLink
+        role="text" iconSup={true} iconAfter={true} title="documentation page"
+        url="https://renku.readthedocs.io/en/latest/user/autosave.html"
+      />
+    );
     return <div>
       <Modal
         isOpen={this.props.showModal}
@@ -1432,6 +1456,10 @@ class AutosavedDataModal extends Component {
           <p>
             Renku has recovered {autosavedLink} for the <i>{this.props.filters.branch.name}</i> branch.
             We will automatically restore this content so you do not lose any work.
+          </p>
+          <p>
+            If you don&apos;t need it, you can restore the using the following command:
+            <br /><code>git reset --hard {this.props.filters.commit.short_id} && git clean -f -d</code>
           </p>
           <p>Please refer to this {docsLink} to get further information.</p>
         </ModalBody>
