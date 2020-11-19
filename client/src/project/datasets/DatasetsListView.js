@@ -27,8 +27,9 @@ function DatasetListRow(props) {
         </div>
         {
           dataset.creators !== undefined ?
-            <small style={{ display: "block" }} className="font-weight-light issue-text-crop">
-              {dataset.creators.map((creator) => creator.name).join("; ")}
+            <small style={{ display: "block" }} className="font-weight-light">
+              {dataset.creators.slice(0, 3).map((creator) => creator.name).join(", ")}
+              {dataset.creators.length > 3 ? ", et al." : null}
             </small>
             : null
         }
@@ -52,7 +53,7 @@ function DatasetListRow(props) {
         dataset.description !== undefined && dataset.description !== null ?
           <Col md={12}>
             <div className="datasetDescriptionText font-weight-light">
-              <MarkdownTextExcerpt markdownText={dataset.description} charsLimit={200} />
+              <MarkdownTextExcerpt markdownText={dataset.description} heightLimit={7} />
             </div></Col>
           : null
       }
