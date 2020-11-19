@@ -343,11 +343,12 @@ class StartNotebookServer extends Component {
       // add a notification
       // TODO: once we will get the info from ui-server, notify only when the environment is ready
       const info = NotebooksHelper.cleanAnnotations(data.annotations);
+      const projectEnvironments = location.state.successUrl;
       this.notifications.addSuccess(
         this.notifications.Topics.ENVIRONMENT_START,
         `An interactive environment for the project ${info["namespace"]}/${info["projectName"]} will be available soon`,
-        data.url, "Open environment",
-        [location.state.successUrl, "/environments"],
+        projectEnvironments, "Show environments",
+        [projectEnvironments, "/environments", `${projectEnvironments}/new`],
         `Branch: ${info["branch"]}; Commit: ${info["commit-sha"]}`
       );
 
@@ -370,7 +371,7 @@ class StartNotebookServer extends Component {
           // crafting notification
           const fullError = `An error occurred when trying to start a new Interactive environment.
           Error message: "${error.message}", Stack trace: "${error.stack}"`;
-          this.notifications.addWarning(
+          this.notifications.addError(
             this.notifications.Topics.ENVIRONMENT_START,
             "Unable to start the interactive environment.",
             this.props.location.pathname, "Try again",
