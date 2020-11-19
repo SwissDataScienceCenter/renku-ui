@@ -13,7 +13,7 @@ function DatasetListRow(props) {
     to={`${props.datasetsUrl}/${encodeURIComponent(dataset.name)}/`}
   > {dataset.title || dataset.name}</NavLink>;
 
-  return <ListGroupItem action style={{ border: "none" }}>
+  return <ListGroupItem className="pb-0" action style={{ border: "none" }}>
     <Row>
       <Col xs={8} md={8} className="pb-0">
         <div className="d-flex project-list-row">
@@ -27,7 +27,7 @@ function DatasetListRow(props) {
         </div>
         {
           dataset.creators !== undefined ?
-            <small style={{ display: "block" }} className="font-weight-light">
+            <small style={{ display: "block" }} className="font-weight-light issue-text-crop">
               {dataset.creators.map((creator) => creator.name).join("; ")}
             </small>
             : null
