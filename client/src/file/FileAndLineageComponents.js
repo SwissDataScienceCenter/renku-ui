@@ -19,6 +19,9 @@
 
 import React from "react";
 import { Button, ButtonGroup } from "reactstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faFile, faProjectDiagram } from "@fortawesome/free-solid-svg-icons";
+
 import "../../node_modules/highlight.js/styles/atom-one-light.css";
 
 function FileAndLineageSwitch(props) {
@@ -30,11 +33,11 @@ function FileAndLineageSwitch(props) {
   return <small><ButtonGroup className="fileBarButtonGroup pl-2" size="sm">
     <Button color="primary" className="fileBarButton"
       outline onClick={performSwitch} active={props.insideFile}>
-      file
+      <FontAwesomeIcon icon={faFile} />
     </Button>
     <Button color="primary" className="fileBarButton"
       outline onClick={performSwitch} active={!props.insideFile}>
-      lineage
+      <FontAwesomeIcon icon={faProjectDiagram} />
     </Button>
   </ButtonGroup></small>;
 }

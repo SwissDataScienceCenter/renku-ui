@@ -28,7 +28,6 @@ import { GraphIndexingStatus } from "../project/Project";
 import { JupyterButton } from "./index";
 import { ExternalIconLink } from "../utils/UIComponents";
 import { formatBytes } from "../utils/HelperFunctions";
-import { ExternalIconLink } from "../utils/UIComponents";
 import { FileAndLineageSwitch } from "./FileAndLineageComponents";
 
 import "./Lineage.css";
