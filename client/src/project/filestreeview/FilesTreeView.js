@@ -120,12 +120,12 @@ class TreeContainer extends Component {
 
     return (
       <div className="tree-container" style={style}>
-        <ButtonGroup className={"pb-1"}>
+        <ButtonGroup className={"pb-1"} size="sm">
           <Button color="primary" outline onClick={switchPage} active={fileView}>
-            File View
+            Contents
           </Button>
           <Button color="primary" outline onClick={switchPage} active={!fileView}>
-            Lineage View
+            Lineage
           </Button>
         </ButtonGroup>
         <div id="tree-content" className="tree-content mb-2 mb-md-0">
