@@ -31,8 +31,8 @@ const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "pdf", "gif"];
 const CODE_EXTENSIONS = [
   "py", "js", "json", "sh", "r", "yml", "csv", "parquet", "cwl", "job", "prn", "rout",
   "dcf", "rproj", "rst", "bat", "ini", "rmd", "jl", "toml",
-  ".c", ".cc", ".cxx", ".cpp", ".h", ".hh", ".hxx", ".hpp", // C++
-  ".f", ".for", ".ftn", ".fpp", ".f90", ".f95", ".f03", ".f08" // fortran
+  "c", "cc", "cxx", "cpp", "h", "hh", "hxx", "hpp", // C++
+  "f", "for", "ftn", "fpp", "f90", "f95", "f03", "f08" // fortran
 ];
 const TEXT_EXTENSIONS = ["txt"];
 
