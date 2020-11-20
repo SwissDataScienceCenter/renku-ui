@@ -317,6 +317,16 @@ class ShowFile extends React.Component {
       buttonJupyter = (<JupyterButton {...this.props} file={filePath} />);
     //console.log(filePath)
 
+    let fileSize = this.state.file ? this.state.file.size : undefined;
+
+    // If the file is LFS this means that to get the real file size we need to read
+    // the file string we get with the LFS info
+    if (this.props.hashElement && this.props.hashElement.isLfs && this.state.file) {
+      const splitFile = atob(this.state.file.content).split("size ");
+      if (splitFile.length === 2)
+        fileSize = splitFile[splitFile.length - 1];
+    }
+
     return <ShowFilePresent externalUrl={this.props.externalUrl}
       filePath={filePath}
       gitLabFilePath={gitLabFilePath}
@@ -330,6 +340,8 @@ class ShowFile extends React.Component {
       client={this.props.client}
       insideProject={true}
       projectPathWithNamespace={this.props.projectPathWithNamespace}
+      hashElement={this.props.hashElement}
+      fileSize={fileSize}
     />;
   }
 }
