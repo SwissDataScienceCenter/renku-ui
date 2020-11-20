@@ -470,7 +470,9 @@ function MarkdownTextExcerpt(props) {
   // const innerText = temp.textContent || temp.innerText || "";
   // return this.props.charsLimit !== undefined && innerText.length > this.props.charsLimit ?
   //   innerText.substr(0, this.props.charsLimit) + "..." : innerText;
-  const style = { maxWidth: `${props.charsLimit}ch` };
+  const style = props.heightLimit ?
+    { maxHeight: `${props.heightLimit}ch` }
+    : { maxWidth: `${props.charsLimit}ch` };
   return <RenkuMarkdown markdownText={props.markdownText} singleLine={false} style={style} />;
 }
 
