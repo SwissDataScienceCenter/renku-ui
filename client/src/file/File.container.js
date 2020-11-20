@@ -277,13 +277,11 @@ class ShowFile extends React.Component {
   componentWillUnmount() { this._isMounted = false; }
 
   retrieveFile() {
-    console.log("retrieveFile", this.props.location.pathname)
     const client = this.props.client;
     const branchName = this.props.branchName || "master";
     let filePath = this.props.filePath;
     client.getRepositoryFile(this.props.projectId, filePath, branchName, "base64")
       .catch(e => {
-        console.log("ERROR: ", {...e})
         if (!this._isMounted) return null;
         if (e.case === API_ERRORS.notFoundError)
           this.setState({ error: "ERROR 404: The file with path '" + this.props.filePath + "' does not exist." });
@@ -315,7 +313,6 @@ class ShowFile extends React.Component {
     let buttonJupyter = null;
     if (this.props.filePath.endsWith(".ipynb"))
       buttonJupyter = (<JupyterButton {...this.props} file={filePath} />);
-    //console.log(filePath)
 
     let fileSize = this.state.file ? this.state.file.size : undefined;
 
