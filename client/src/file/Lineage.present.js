@@ -21,13 +21,14 @@ import { Card, CardHeader, CardBody, Badge } from "reactstrap";
 import graphlib from "graphlib";
 import dagreD3 from "dagre-d3";
 import * as d3 from "d3";
-import { faFile } from "@fortawesome/free-solid-svg-icons";
+import { faFile, faDownload } from "@fortawesome/free-solid-svg-icons";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 
 import KnowledgeGraphStatus from "./KnowledgeGraphStatus.container";
 import { GraphIndexingStatus } from "../project/Project";
 import { JupyterButton } from "./index";
 import { ExternalIconLink, IconLink } from "../utils/UIComponents";
+import { formatBytes } from "../utils/HelperFunctions";
 
 import "./Lineage.css";
 
@@ -246,12 +247,21 @@ class FileLineage extends Component {
       );
     }
 
+    const buttonDownload = (
+      <ExternalIconLink
+        tooltip="Download File"
+        icon={faDownload}
+        to={`${this.props.externalUrl}/-/raw/master/${this.props.path}?inline=false`}
+      />
+    );
+
     return <Card>
       <CardHeader className="align-items-baseline">
         {isLFSBadge}
-        {this.props.path}
-        <span className="caption align-baseline">&nbsp;Lineage and usage</span>
+        <strong>{this.props.path}</strong>
+        {this.props.fileSize ? <span><small> {formatBytes(this.props.fileSize)}</small></span> : null}
         <div className="float-right" >
+          <span>{buttonDownload}</span>
           {buttonJupyter}
           <span>{buttonGit}</span>
           <span>{buttonFile}</span>
