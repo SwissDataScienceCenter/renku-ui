@@ -438,7 +438,8 @@ class View extends Component {
         projectNamespace={this.projectState.get("core.namespace_path")}
         projectPathOnly={this.projectState.get("core.project_path")}
         branches={branches}
-        hashElement={filesTree !== undefined ? filesTree.hash[p.match.params.filePath] : undefined} />,
+        hashElement={filesTree !== undefined ? filesTree.hash[p.match.params.filePath] : undefined}
+        gitFilePath={p.location.pathname.replace(pathComponents.baseUrl + "/files/lineage/", "")} />,
 
       fileView: (p) => <ShowFile
         key="filepreview" {...subProps}

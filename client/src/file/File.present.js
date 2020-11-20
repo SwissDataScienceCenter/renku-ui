@@ -23,13 +23,14 @@ import { Badge, Card, CardHeader, CardBody, CustomInput } from "reactstrap";
 import { Button, ButtonGroup } from "reactstrap";
 import { ListGroup, ListGroupItem } from "reactstrap";
 import "../../node_modules/highlight.js/styles/atom-one-light.css";
-import { faProjectDiagram } from "@fortawesome/free-solid-svg-icons";
+import { faProjectDiagram, faDownload } from "@fortawesome/free-solid-svg-icons";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 
 import { FilePreview } from "./index";
 import { CheckNotebookStatus, CheckNotebookIcon } from "../notebooks";
 import { Clipboard, ExternalIconLink, IconLink, Loader } from "../utils/UIComponents";
 import { Time } from "../utils/Time";
+import { formatBytes } from "../utils/HelperFunctions";
 
 const commitMessageLengthLimit = 120;
 
@@ -78,12 +79,14 @@ class FileCard extends React.Component {
       <Card>
         <CardHeader className="align-items-baseline">
           {this.props.lfsBadge}
-          {this.props.filePath}
+          <strong>{this.props.filePath}</strong>
+          &nbsp;
+          {this.props.fileSize ? <span><small> {formatBytes(this.props.fileSize)}</small></span> : null}
           &nbsp;
           <Clipboard clipboardText={this.props.filePath} />
           &nbsp;
-          <span className="caption align-baseline">&nbsp;File view</span>
           <div className="float-right">
+            {this.props.buttonDownload}
             {this.props.buttonJupyter}
             {this.props.buttonGit}
             {this.props.buttonGraph}
@@ -135,6 +138,7 @@ class ShowFile extends React.Component {
           buttonJupyter={this.props.buttonJupyter}
           body={this.props.error}
           lfsBadge={null}
+          fileSize={this.props.fileSize}
         />
       );
     }
@@ -155,6 +159,14 @@ class ShowFile extends React.Component {
       </Badge>
     ) : null;
 
+    const buttonDownload = (
+      <ExternalIconLink
+        tooltip="Download File"
+        icon={faDownload}
+        to={`${this.props.externalUrl}/-/raw/master/${gitLabFilePath}?inline=false`}
+      />
+    );
+
     const body = <FilePreview file={this.props.file} {...this.props} />;
 
     return (
@@ -167,6 +179,8 @@ class ShowFile extends React.Component {
         buttonJupyter={this.props.buttonJupyter}
         body={body}
         lfsBadge={isLFSBadge}
+        buttonDownload={buttonDownload}
+        fileSize={this.props.fileSize}
       />
     );
   }
