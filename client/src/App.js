@@ -61,7 +61,8 @@ class App extends Component {
     const blockAnonymous = !user.logged && !this.props.params["ANONYMOUS_SESSIONS"];
 
     // setup notification system
-    const notifications = new NotificationsManager(this.props.model, this.props.client, this.props.location);
+    const getLocation = () => this.props.location;
+    const notifications = new NotificationsManager(this.props.model, this.props.client, getLocation);
 
     return (
       <Fragment>

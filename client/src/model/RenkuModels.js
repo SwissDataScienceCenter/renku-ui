@@ -507,9 +507,14 @@ const statuspageSchema = new Schema({
 const notificationsSchema = new Schema({
   unread: { [Prop.INITIAL]: 0, [Prop.MANDATORY]: true },
   all: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
+  dropdown: {
+    [Prop.SCHEMA]: new Schema({
+      enabled: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
+    })
+  },
   toast: {
     [Prop.SCHEMA]: new Schema({
-      enabled: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true },
+      enabled: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
       timeout: { [Prop.INITIAL]: 7500, [Prop.MANDATORY]: true },
       position: { [Prop.INITIAL]: "top-right", [Prop.MANDATORY]: true },
     })
