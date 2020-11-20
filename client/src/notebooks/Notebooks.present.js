@@ -33,7 +33,7 @@ import { StatusHelper } from "../model/Model";
 import { NotebooksHelper } from "./index";
 import { simpleHash, formatBytes } from "../utils/HelperFunctions";
 import {
-  ButtonWithMenu, Loader, ExternalLink, JupyterIcon, ThrottledTooltip, WarnAlert, InfoAlert, TimeCaption
+  ButtonWithMenu, Loader, ExternalLink, JupyterIcon, ThrottledTooltip, WarnAlert, InfoAlert, TimeCaption, Clipboard
 } from "../utils/UIComponents";
 import Time from "../utils/Time";
 import Sizes from "../utils/Media";
@@ -1084,8 +1084,9 @@ class StartNotebookCommits extends Component {
           "#autosave-in-interactive-environments";
         commitComment = (
           <FormText>
-            <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> For this commit we
-            found <ExternalLink url={url} iconSup={true} iconAfter={true} title="autosaved content" role="link" />
+            <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> We
+            found <ExternalLink url={url} iconSup={true} iconAfter={true} title="unsaved work" role="link" /> for
+            this commit.
           </FormText>
         );
       }
@@ -1443,31 +1444,35 @@ class AutosavedDataModal extends Component {
     );
     const docsLink = (
       <ExternalLink
-        role="text" iconSup={true} iconAfter={true} title="documentation page"
+        role="text" iconSup={true} iconAfter={true} title="documentation"
         url="https://renku.readthedocs.io/en/latest/user/autosave.html"
       />
     );
-    return <div>
-      <Modal
-        isOpen={this.props.showModal}
-        toggle={this.props.toggleModal}>
-        <ModalHeader toggle={this.props.toggleModal}>Autosaved data</ModalHeader>
-        <ModalBody>
-          <p>
-            Renku has recovered {autosavedLink} for the <i>{this.props.filters.branch.name}</i> branch.
-            We will automatically restore this content so you do not lose any work.
-          </p>
-          <p>
-            If you don&apos;t need it, you can restore the using the following command:
-            <br /><code>git reset --hard {this.props.filters.commit.short_id} && git clean -f -d</code>
-          </p>
-          <p>Please refer to this {docsLink} to get further information.</p>
-        </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={this.props.handlers.startServer}>Launch environment</Button>
-        </ModalFooter>
-      </Modal>
-    </div>;
+    const command = `git reset --hard ${this.props.filters.commit.short_id} && git clean -f -d`;
+    return (
+      <div>
+        <Modal
+          isOpen={this.props.showModal}
+          toggle={this.props.toggleModal}>
+          <ModalHeader toggle={this.props.toggleModal}>Unsaved work</ModalHeader>
+          <ModalBody>
+            <p>
+              Renku has recovered {autosavedLink} for the <i>{this.props.filters.branch.name}</i> branch.
+              We will automatically restore this content so you do not lose any work.
+            </p>
+            <p>
+              If you do not need it, you can discard this work with the following command:
+              <br />
+              <code>{command}<Clipboard clipboardText={command} /></code>
+            </p>
+            <p>Please refer to this {docsLink} to get further information.</p>
+          </ModalBody>
+          <ModalFooter>
+            <Button color="primary" onClick={this.props.handlers.startServer}>Launch environment</Button>
+          </ModalFooter>
+        </Modal>
+      </div>
+    );
   }
 }
 
