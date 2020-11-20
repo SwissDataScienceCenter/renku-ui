@@ -174,7 +174,8 @@ class NotificationsMenu extends Component {
     return {
       handlers: this.handlers,
       notifications: state.notifications.all,
-      unread: state.notifications.unread
+      unread: state.notifications.unread,
+      enabled: state.notifications.dropdown.enabled
     };
   }
 
