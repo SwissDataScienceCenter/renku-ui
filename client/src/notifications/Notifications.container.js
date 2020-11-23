@@ -47,13 +47,14 @@ const NotificationTypes = {
  *
  * @param {Object} client - api-client used to query the gateway
  * @param {Object} model - global model for the ui
- * @param {Object} location - react location object
+ * @param {function} getLocation - function to invoke to get the up-to-date react location object
  */
 class NotificationsManager {
-  constructor(model, client, location) {
-    this.location = location;
+  constructor(model, client, getLocation) {
     this.model = model.subModel("notifications");
-    this.coordinator = new NotificationsCoordinator(client, this.model);
+    this.client = client;
+    this.getLocation = getLocation;
+    this.coordinator = new NotificationsCoordinator(this.client, this.model);
     this.Levels = NotificationsInfo.Levels;
     this.Topics = NotificationsInfo.Topics;
 
@@ -80,7 +81,7 @@ class NotificationsManager {
     let forceRead = level === this.Levels.INFO ?
       true :
       false;
-    if (!forceRead && locations.length && locations.includes(this.location.pathname))
+    if (!forceRead && locations.length && locations.includes(this.getLocation().pathname))
       forceRead = true;
 
     // add the notification
@@ -173,7 +174,8 @@ class NotificationsMenu extends Component {
     return {
       handlers: this.handlers,
       notifications: state.notifications.all,
-      unread: state.notifications.unread
+      unread: state.notifications.unread,
+      enabled: state.notifications.dropdown.enabled
     };
   }
 

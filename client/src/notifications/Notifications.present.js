@@ -166,6 +166,9 @@ class NotificationLink extends Component {
 
 class NotificationsMenu extends Component {
   render() {
+    if (!this.props.enabled)
+      return null;
+
     const badge = this.props.unread ?
       (<Badge color="danger" className="notification-badge">{this.props.unread}</Badge>) :
       null;
