@@ -44,7 +44,7 @@ const commitMessageLengthLimit = 120;
  * @param {Component} buttonGit - Button to switch to GitLab.
  * @param {Component} buttonJupyter - Button to switch to Jupyter.
  * @param {Object} body - Content to show as the body of the card
- * @param {Component} lfsBadge - Badge to show for LFS (or null)
+ * @param {Component} isLFSBadge - Badge to show for LFS (or null)
  */
 class FileCard extends React.Component {
   render() {
@@ -78,11 +78,10 @@ class FileCard extends React.Component {
     return (
       <Card>
         <CardHeader className="align-items-baseline">
+          {this.props.isLFSBadge}
           <strong>{this.props.filePath}</strong>
           &nbsp;
           {this.props.fileSize ? <span><small> {formatBytes(this.props.fileSize)}</small></span> : null}
-          <span className="fileBarText">{this.props.filePath}</span>
-          <span className="fileBarIconButton">{this.props.isLFSBadge}</span>
           &nbsp;
           <span className="fileBarIconButton"><Clipboard clipboardText={this.props.filePath} /></span>
           &nbsp;
@@ -142,7 +141,7 @@ class ShowFile extends React.Component {
           buttonGit={buttonGit}
           buttonJupyter={this.props.buttonJupyter}
           body={this.props.error}
-          lfsBadge={null}
+          isLFSBadge={null}
           fileSize={this.props.fileSize}
         />
       );
@@ -183,7 +182,7 @@ class ShowFile extends React.Component {
         buttonGit={buttonGit}
         buttonJupyter={this.props.buttonJupyter}
         body={body}
-        lfsBadge={isLFSBadge}
+        isLFSBadge={isLFSBadge}
         buttonDownload={buttonDownload}
         fileSize={this.props.fileSize}
       />

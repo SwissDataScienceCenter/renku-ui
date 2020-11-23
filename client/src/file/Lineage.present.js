@@ -26,7 +26,7 @@ import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 import KnowledgeGraphStatus from "./KnowledgeGraphStatus.container";
 import { GraphIndexingStatus } from "../project/Project";
 import { JupyterButton } from "./index";
-import { ExternalIconLink } from "../utils/UIComponents";
+import { Clipboard, ExternalIconLink } from "../utils/UIComponents";
 import { formatBytes } from "../utils/HelperFunctions";
 import { FileAndLineageSwitch } from "./FileAndLineageComponents";
 
@@ -257,11 +257,13 @@ class FileLineage extends Component {
 
     return <Card>
       <CardHeader className="align-items-baseline">
+        {isLFSBadge}
         <strong>{this.props.path}</strong>
         &nbsp;
         {this.props.fileSize ? <span><small> {formatBytes(this.props.fileSize)}</small></span> : null}
-        <span className="fileBarText">{this.props.path}</span>
-        <span className="fileBarIconButton">{isLFSBadge}</span>
+        &nbsp;
+        <span className="fileBarIconButton"><Clipboard clipboardText={this.props.path} /></span>
+        &nbsp;
         <div className="float-right" >
           <span className="fileBarIconButton">{buttonDownload}</span>
           <span className="fileBarIconButton">{buttonJupyter}</span>
