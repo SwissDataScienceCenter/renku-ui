@@ -259,21 +259,31 @@ function ExternalLinkText(props) {
 /**
  * Link to external URL.
  *
- * @param {string} [url] - The URL to link to
- * @param {string} [title] - The text to show for the link
- * @param {string} [role] - "link" or "text" to be shown as a link, null for a button
- * @param {string?} [className] - [Optional] Any classes to add, e.g., 'nav-link' or 'dropdown-item'
+ * @param {string} url - The URL to link to
+ * @param {string} title - The text to show for the link
+ * @param {string} [role] - "link" or "text" to be shown as a link, null for a button (default null)
+ * @param {string} [className] - Any classes to add, e.g., 'nav-link' or 'dropdown-item'
  * @param {boolean} [showLinkIcon] - Show the icon to indicate an external link if true (default false)
  * @param {string} [iconSize] - icon size modifier ("lg", "2x", ...)
+ * @param {boolean} [iconSup] - Position the icon as superscript when true (default false)
+ * @param {boolean} [iconAfter] - Position the icon after the text when true (default false)
  * @param {string} [id] - main element's id
  */
 function ExternalLink(props) {
   const role = props.role;
-  const displayTitle = (props.showLinkIcon) ?
-    (<span><FontAwesomeIcon icon={faExternalLinkAlt} size={props.iconSize} color="dark" /> {props.title}</span>) :
-    props.title;
+  const showLinkIcon = props.showLinkIcon || props.iconSup || props.iconAfter || props.iconSize ?
+    true :
+    false;
+  let displayTitle = props.title;
+  if (showLinkIcon) {
+    const icon = props.iconSup ?
+      (<sup><FontAwesomeIcon icon={faExternalLinkAlt} size={props.iconSize} color="dark" /></sup>) :
+      (<FontAwesomeIcon icon={faExternalLinkAlt} size={props.iconSize} color="dark" />);
+    displayTitle = props.iconAfter ?
+      (<span>{props.title} {icon}</span>) :
+      (<span>{icon} {props.title}</span>);
+  }
   const myProps = { ...props, title: displayTitle };
-
   if (role === "link" || role === "text")
     return ExternalLinkText(myProps);
   return ExternalLinkButton(myProps);
