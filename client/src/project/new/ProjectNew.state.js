@@ -371,7 +371,7 @@ class NewProjectCoordinator {
       modelUpdates.meta.creation.kgUpdated = true;
     }
 
-    // reset all the input/errors if creation was succesfull
+    // reset all the input/errors if creation was successful
     const { creation } = modelUpdates.meta;
     if (!creation.createError && !creation.kgError && !creation.projectError) {
       const pristineModel = newProjectSchema.createInitialized();

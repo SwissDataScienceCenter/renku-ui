@@ -1500,7 +1500,7 @@ class CheckNotebookIcon extends Component {
       }
       else {
         tooltip = "Check interactive environment status";
-        icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" greyscale={true} />);
+        icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" grayscale={true} />);
         link = (<Link to={this.props.launchNotebookUrl}>{icon}</Link>);
       }
     }
@@ -1513,7 +1513,7 @@ class CheckNotebookIcon extends Component {
         state: { successUrl }
       };
       tooltip = "Start an interactive environment";
-      icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" greyscale={true} />);
+      icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" grayscale={true} />);
       link = (<Link to={target}>{icon}</Link>);
     }
 

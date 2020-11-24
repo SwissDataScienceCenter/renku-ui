@@ -385,7 +385,7 @@ const datasetFormSchema = new Schema({
   },
   keywords: {
     initial: [],
-    name: "kewords",
+    name: "keywords",
     label: "Keywords",
     help: "To insert a keyword, type it and press enter.",
     type: FormGenerator.FieldTypes.KEYWORDS,

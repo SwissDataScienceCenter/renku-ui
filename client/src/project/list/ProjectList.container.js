@@ -97,7 +97,7 @@ class AvailableUserList extends Component {
     this.model.setOrderSearchAsc(orderSearchAsc);
     this.model.setLoggedIn(this.props.user.logged);
     this.model.setPage(pageNumber);
-    // save listener to remove it when unmounting the component
+    // save listener to remove it when un-mounting the component
     // TODO: this could be removed if onPaginationPageChange/this.props.history.push worked
     //    also when only the search part changed
     const listener = this.props.history.listen(location => {

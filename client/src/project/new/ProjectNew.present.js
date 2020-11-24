@@ -608,7 +608,7 @@ class Create extends Component {
     // do not show while posting
     if (meta.creation.creating || meta.creation.projectUpdating || meta.creation.kgUpdating)
       return null;
-    // do not show if posted succesfully with visibility or KG warning
+    // do not show if posted successfully with visibility or KG warning
     if (meta.creation.created && (meta.creation.projectError || meta.creation.kgError))
       return null;
 
@@ -709,7 +709,7 @@ class Creation extends Component {
         );
       }
       message = (<div>
-        <p>Errors occured while creating the project.</p>
+        <p>Errors occurred while creating the project.</p>
         {errors}
       </div>);
     }
@@ -720,7 +720,7 @@ class Creation extends Component {
       color = "warning";
       message = (<div>
         <p>
-          An error occured while updating project metadata (name or visibility). Please, adjust it on GitLab if needed.
+          An error occurred while updating project metadata (name or visibility). Please, adjust it on GitLab if needed.
         </p>
         <p>Error details: {creation.projectError}</p>
         <Button color="primary" onClick={(e) => { handlers.goToProject(); }}>Go to the project</Button>
@@ -733,7 +733,7 @@ class Creation extends Component {
       color = "warning";
       message = (<div>
         <p>
-          An error occured while activating the knowledge graph. You can activate it later to get the lineage.
+          An error occurred while activating the knowledge graph. You can activate it later to get the lineage.
         </p>
         <p>Error details: {creation.kgError}</p>
         <Button color="primary" onClick={(e) => { handlers.goToProject(); }}>Go to the project</Button>

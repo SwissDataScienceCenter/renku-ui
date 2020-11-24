@@ -176,7 +176,7 @@ class View extends Component {
         this.fetchAll();
 
 
-      // in case the route fails it tests weather it could be a projectid route
+      // in case the route fails it tests weather it could be a projectId route
       const routes = ["overview", "issues", "issue_new", "files", "lineage", "notebooks", "collaboration",
         "data", "workflows", "settings", "pending", "launchNotebook", "notebookServers", "datasets", "environments"];
       const available = this.props.core ? this.props.core.available : null;
@@ -442,7 +442,7 @@ class View extends Component {
         gitFilePath={p.location.pathname.replace(pathComponents.baseUrl + "/files/lineage/", "")} />,
 
       fileView: (p) => <ShowFile
-        key="filepreview" {...subProps}
+        key="filePreview" {...subProps}
         filePath={p.location.pathname.replace(pathComponents.baseUrl + "/files/blob/", "")}
         lineagesPath={subUrls.lineagesUrl}
         launchNotebookUrl={subUrls.launchNotebookUrl}
@@ -456,7 +456,7 @@ class View extends Component {
           undefined} />,
 
       datasetView: (p, projectInsideKg) => <ShowDataset
-        key="datasetpreview" {...subProps}
+        key="datasetPreview" {...subProps}
         maintainer={maintainer}
         insideProject={true}
         datasets={datasets}
@@ -476,7 +476,7 @@ class View extends Component {
       />,
 
       newDataset: (p) => <ChangeDataset
-        key="datasetcreate" {...subProps}
+        key="datasetCreate" {...subProps}
         progress={graphProgress}
         maintainer={maintainer}
         accessLevel={accessLevel}
@@ -496,7 +496,7 @@ class View extends Component {
       />,
 
       editDataset: (p) => <ChangeDataset
-        key="datasetmodify" {...subProps}
+        key="datasetModify" {...subProps}
         progress={graphProgress}
         maintainer={maintainer}
         accessLevel={accessLevel}
@@ -518,7 +518,7 @@ class View extends Component {
       />,
 
       importDataset: (p) => <ImportDataset
-        key="datasetimport" {...subProps}
+        key="datasetImport" {...subProps}
         progress={graphProgress}
         maintainer={maintainer}
         accessLevel={accessLevel}

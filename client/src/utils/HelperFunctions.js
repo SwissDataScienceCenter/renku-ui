@@ -25,8 +25,8 @@ import XRegExp from "xregexp";
 const AUTOSAVED_PREFIX = "renku/autosave/";
 
 function convertUnicodeToAscii(string) {
-  // ? REF: https://github.com/gitlabhq/gitlabhq/blob/7942fe679107b5e73e0b359f000946dbbf2feb35
-  // ?        /app/assets/javascripts/lib/utils/text_utility.js#L278-L351
+  // eslint-disable-next-line
+  // ? REF: https://github.com/gitlabhq/gitlabhq/blob/7942fe679107b5e73e0b359f000946dbbf2feb35/app/assets/javascripts/lib/utils/text_utility.js#L278-L351
   const unicodeConversion = [
     [/[ÀÁÂÃÅĀĂĄ]/g, "A"],
     [/[Æ]/g, "AE"],
@@ -97,8 +97,8 @@ function convertUnicodeToAscii(string) {
  * @param {string} separator - string to replace invalid characters
  */
 function slugFromTitle(title, lower = false, unicodeConversion = false, separator = "-") {
-  // ? REF: https://github.com/gitlabhq/gitlabhq/blob/7942fe679107b5e73e0b359f000946dbbf2feb35
-  // ?        /app/assets/javascripts/lib/utils/text_utility.js#L48-L65
+  // eslint-disable-next-line
+  // ? REF: https://github.com/gitlabhq/gitlabhq/blob/7942fe679107b5e73e0b359f000946dbbf2feb35/app/assets/javascripts/lib/utils/text_utility.js#L48-L65
   const rawProjectName = lower ?
     title.trim().toLowerCase() :
     title.trim();

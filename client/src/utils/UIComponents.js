@@ -340,7 +340,7 @@ function Loader(props) {
 }
 
 /**
- * Display a dismissable alert.
+ * Display a alert that can be dismissed.
  *
  * @param {number} [timeout] - define how many seconds the component should be visible.
  *   10 is default. 0 for unlimited.
@@ -489,7 +489,7 @@ function MarkdownTextExcerpt(props) {
 /**
  * Jupyter icon
  *
- * @param {boolean} [greyscale] - show the grayscale version of the logo
+ * @param {boolean} [grayscale] - show the grayscale version of the logo
  * @param {string} [svgClass] - class to apply on the svg element
  */
 class JupyterIcon extends Component {
@@ -497,7 +497,7 @@ class JupyterIcon extends Component {
     const style = { "mixBlendMode": "normal" };
     const Colors = {
       GREY: "#767677",
-      ORANGE: this.props.greyscale ?
+      ORANGE: this.props.grayscale ?
         "#767677" :
         "#F37726"
     };

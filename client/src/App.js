@@ -130,7 +130,7 @@ class App extends Component {
             />
             <Route path="/datasets/:identifier" render={
               p => <ShowDataset
-                key="datasetpreview" {...p}
+                key="datasetPreview" {...p}
                 insideProject={false}
                 identifier={`${p.match.params.identifier}`}
                 client={this.props.client}

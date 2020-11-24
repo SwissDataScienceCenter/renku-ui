@@ -204,7 +204,7 @@ class DatasetsSearch extends Component {
 
 class NotFoundInsideDataset extends Component {
   render() {
-    return <Col key="nofound">
+    return <Col key="notFound">
       <Row>
         <Col xs={12} md={12}>
           <Alert color="primary">

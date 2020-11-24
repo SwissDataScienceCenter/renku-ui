@@ -131,7 +131,7 @@ class Notebooks extends Component {
 }
 
 /**
- * Displays a start page for new Jupiterlab servers.
+ * Displays a start page for new JupyterLab servers.
  *
  * @param {Object} client - api-client used to query the gateway
  * @param {Object} model - global model for the ui
@@ -141,11 +141,11 @@ class Notebooks extends Component {
  * @param {Object} scope - object containing filtering parameters
  * @param {string} scope.namespace - full path of the reference namespace
  * @param {string} scope.project - path of the reference project
- * @param {string} externalUrl - GitLabl repository url
+ * @param {string} externalUrl - GitLab repository url
  * @param {boolean} blockAnonymous - When true, block non logged in users
  * @param {Object} notifications - Notifications object
- * @param {Object} [location] - react location object. Use location.state.successUrl to inidcate the
- *     redirect url to be used when a notebook is succesfully started
+ * @param {Object} [location] - react location object. Use location.state.successUrl to indicate the
+ *     redirect url to be used when a notebook is successfully started
  * @param {Object} [history] - mandatory if successUrl is provided
  * @param {string} [message] - provide a useful information or warning message
  */

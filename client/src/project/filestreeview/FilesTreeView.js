@@ -46,9 +46,9 @@ class TreeNode extends Component {
       (this.state.childrenOpen === false ?
         <FontAwesomeIcon className="icon-purple" icon={faFolderClosed} />
         : <FontAwesomeIcon className="icon-purple" icon={faFolderOpen} />)
-      : <FontAwesomeIcon className="icon-grey" icon={faFile} />;
+      : <FontAwesomeIcon className="icon-gray" icon={faFile} />;
 
-    const order = this.props.node.type === "tree" ? "order-seccond" : "order-third";
+    const order = this.props.node.type === "tree" ? "order-second" : "order-third";
     const hidden = this.props.node.name.startsWith(".") ? " hidden-folder " : "";
 
     const children = this.props.node.children ?

@@ -40,7 +40,7 @@ describe("rendering", () => {
   const loggedUser = generateFakeUser();
 
   beforeEach(() => {
-    // ckeditor dumps some junk to the conole.error. Ignore it.
+    // ckeditor dumps some junk to the console.error. Ignore it.
     spy = jest.spyOn(console, "error").mockImplementation(() => { });
   });
 

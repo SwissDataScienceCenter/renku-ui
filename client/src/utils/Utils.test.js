@@ -176,7 +176,7 @@ describe("Time class helper", () => {
     expect(Time.toIsoString(Dates.UTCZ_STRING, "date")).toEqual(Dates.ISO_READABLE_DATE);
     expect(Time.toIsoString(Dates.UTCZ_STRING, "time")).toEqual(Dates.ISO_READABLE_TIME);
     const fakeType = "not existing";
-    expect(() => { Time.toIsoString(Dates.UTCZ_STRING, fakeType); }).toThrow(`Uknown type "${fakeType}"`);
+    expect(() => { Time.toIsoString(Dates.UTCZ_STRING, fakeType); }).toThrow(`Unknown type "${fakeType}"`);
 
     expect(Time.toIsoString(DatesTimezoneFriendly.Minus.UTCZ_STRING))
       .toEqual(DatesTimezoneFriendly.Minus.ISO_READABLE_DATETIME);
@@ -225,7 +225,7 @@ describe("Time class helper", () => {
       .not.toBeNull();
     expect(Time.formatDateTime(dt, { d3FormatString: "%d %m %Y %H:%M:%S" }))
       .toEqual("11 03 2019 09:34:51");
-    // Correct for the UTC offset, but this will not work for timezones with non-whole hour offsets
+    // Correct for the UTC offset, but this will not work for timezone with non-whole hour offsets
     dt = Time.parseDate(Dates.UTCZ_STRING);
     const offset = dt.getTimezoneOffset() / 60;
     const hour = String(9 - offset).padStart(2, "0");
@@ -308,7 +308,7 @@ describe("Ini file parser", () => {
 describe("branch functions", () => {
   const branches = [
     { name: "master" },
-    { name: "renku/autosave/myuser/master/1234567/890acbd" }
+    { name: "renku/autosave/myUser/master/1234567/890acbd" }
   ];
 
   it("function splitAutosavedBranches", () => {
@@ -326,9 +326,9 @@ describe("branch functions", () => {
 describe("title related functions", () => {
   // convertUnicodeToAscii
   it("function convertUnicodeToAscii - valid strings", () => {
-    expect(convertUnicodeToAscii("João")).toEqual("Joao");
+    expect(convertUnicodeToAscii("João")).toEqual("Joao"); // eslint-disable-line
     expect(convertUnicodeToAscii("здрасти")).toEqual("здрасти");
-    expect(convertUnicodeToAscii("Zürich")).toEqual("Zuerich");
+    expect(convertUnicodeToAscii("Zürich")).toEqual("Zuerich"); // eslint-disable-line
   });
 
   // slugFromTitle
@@ -338,17 +338,17 @@ describe("title related functions", () => {
   it("slugFromTitle lowercase - remove accents", () => {
     expect(slugFromTitle("João", true)).toEqual("jo-o");
   });
-  it("slugFromTitle lowercase - replaces whitespaces with hyphens", () => {
+  it("slugFromTitle lowercase - replaces any whitespace with hyphens", () => {
     expect(slugFromTitle("My Input String", true)).toEqual("my-input-string");
   });
   it("slugFromTitle lowercase - remove trailing whitespace", () => {
     expect(slugFromTitle(" a new project ", true)).toEqual("a-new-project");
   });
   it("slugFromTitle lowercase - remove only non-allowed special characters", () => {
-    expect(slugFromTitle("test!_pro-ject~", true)).toEqual("test-pro-ject");
+    expect(slugFromTitle("test!_pro-ject~", true)).toEqual("test-pro-ject"); // eslint-disable-line
   });
-  it("slugFromTitle lowercase - squash multiple hypens", () => {
-    expect(slugFromTitle("test!!!!_pro-ject~", true)).toEqual("test-pro-ject");
+  it("slugFromTitle lowercase - squash multiple hyphens", () => {
+    expect(slugFromTitle("test!!!!_pro-ject~", true)).toEqual("test-pro-ject"); // eslint-disable-line
   });
   it("slugFromTitle lowercase - return empty string if only non-allowed characters", () => {
     expect(slugFromTitle("здрасти", true)).toEqual("");
@@ -363,9 +363,9 @@ describe("title related functions", () => {
     expect(slugFromTitle("This is my Project", true, false, "+")).toEqual("this+is+my+project");
   });
   it("function slugFromTitle ascii", () => {
-    expect(slugFromTitle("João-Mario", true, true)).toEqual("joao-mario");
-    expect(slugFromTitle("João-._--Mario", true, true)).toEqual("joao-mario");
-    expect(slugFromTitle("Zürich", true, true)).toEqual("zuerich");
+    expect(slugFromTitle("João-Mario", true, true)).toEqual("joao-mario"); // eslint-disable-line
+    expect(slugFromTitle("João-._--Mario", true, true)).toEqual("joao-mario"); // eslint-disable-line
+    expect(slugFromTitle("Zürich", true, true)).toEqual("zuerich"); // eslint-disable-line
     expect(slugFromTitle("здрасти", true, true)).toEqual("");
   });
 
@@ -378,7 +378,7 @@ describe("title related functions", () => {
 
   it("function verifyTitleCharacters - invalid strings", () => {
     expect(verifyTitleCharacters("Test:-)")).toBeFalsy();
-    expect(verifyTitleCharacters("test!_pro-ject~")).toBeFalsy();
+    expect(verifyTitleCharacters("test!_pro-ject~")).toBeFalsy(); // eslint-disable-line
     expect(verifyTitleCharacters("yeah 🚀")).toBeFalsy();
   });
 });

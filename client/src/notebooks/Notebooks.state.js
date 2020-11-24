@@ -32,7 +32,7 @@ const RENKU_INI_PATH = ".renku/renku.ini";
 const RENKU_INI_SECTION = `renku "interactive"`;
 
 const PIPELINE_TYPES = {
-  anonymous: "regististries",
+  anonymous: "registries",
   logged: "jobs"
 };
 
@@ -108,12 +108,12 @@ const NotebooksHelper = {
     if (parsedData[RENKU_INI_SECTION]) {
       const parsedOptions = parsedData[RENKU_INI_SECTION];
       Object.keys(parsedOptions).forEach(parsedOption => {
-        // treat "default_url" as "defaultUrl" to allow name consistenci in the the .ini file
+        // treat "default_url" as "defaultUrl" to allow name consistency in the the .ini file
         let option = parsedOption;
         if (parsedOption === "default_url")
           option = "defaultUrl";
 
-        // convert boolen and numbers
+        // convert boolean and numbers
         let value = parsedOptions[parsedOption];
         if (value && value.toLowerCase() === "true")
           projectOptions[option] = true;
@@ -153,7 +153,7 @@ const NotebooksHelper = {
     if (!globalOption)
       return false;
 
-    // non-enum options require only typecheck
+    // non-enum options require only type-check
     if (globalOption.type !== "enum") {
       if (globalOption.type === "boolean") {
         if (typeof currentValue === "boolean")
@@ -307,7 +307,7 @@ class NotebooksCoordinator {
             updatedNotebooks.fetched = new Date();
             updatedNotebooks.all = { $set: resp.data };
           }
-          // TODO: re-invoke `fetchNotebooks()` immediatly if parameters are outdated
+          // TODO: re-invoke `fetchNotebooks()` immediately if parameters are outdated
         }
         this.model.setObject({ notebooks: updatedNotebooks });
         return resp.data;
@@ -643,7 +643,7 @@ class NotebooksCoordinator {
       }, interval);
       this.model.set("notebooks.poller", newPoller);
 
-      // fetch immediatly
+      // fetch immediately
       this.fetchNotebooks();
     }
   }

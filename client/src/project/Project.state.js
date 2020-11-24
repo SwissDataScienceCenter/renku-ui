@@ -433,7 +433,7 @@ class ProjectCoordinator {
       this.model.get("filters.branch.name");
     const response = await this.client.getCommits(projectId, branch);
     // add at least a notification on response.error (waiting for #991).
-    // Some data may be avialable, verify it before choosing the proper notification.
+    // Some data may be available, verify it before choosing the proper notification.
     const commits = response.data;
     this.model.setObject({
       commits: {

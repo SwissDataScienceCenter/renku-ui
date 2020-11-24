@@ -212,7 +212,7 @@ class ProjectViewHeaderOverview extends Component {
     if (this.state.updating_star) {
       starElement = (<Loader inline size={14} />);
       if (this.props.starred)
-        starText = "unstarring...";
+        starText = "un-starring...";
       else
         starText = "starring...";
     }
@@ -289,13 +289,13 @@ class ProjectViewHeader extends Component {
       Object.keys(this.props.system.forked_from_project).length > 0) {
       const forkedFrom = this.props.system.forked_from_project;
       const projectsUrl = this.props.projectsUrl;
-      forkedFromLink = <Link key="forkedfrom" to={`${projectsUrl}/${forkedFrom.metadata.core.path_with_namespace}`}>
+      forkedFromLink = <Link key="forkedFrom" to={`${projectsUrl}/${forkedFrom.metadata.core.path_with_namespace}`}>
         {forkedFrom.metadata.core.path_with_namespace || "no title"}
       </Link>;
     }
 
     return <ProjectViewHeaderOverview
-      key="overviewheader"
+      key="overviewHeader"
       forkedFromLink={forkedFromLink} {...this.props} />;
   }
 }
@@ -889,7 +889,7 @@ function ProjectStatusAlert(props) {
     <span>
       <FontAwesomeIcon icon={faExclamationTriangle} className="pr-1" />
       <strong>Knowledge Graph integration not active. </strong>
-      This means that some operations on datasets are not possible, we recomend activating it.
+      This means that some operations on datasets are not possible, we recommend activating it.
     </span> :
     null;
 
@@ -933,7 +933,7 @@ function ProjectViewDatasets(props) {
   if (loading)
     return <Loader />;
 
-  //When the core service can return stuff for anounymous users this should be removed
+  //When the core service can return stuff for anonymous users this should be removed
   if (!props.user.logged) {
     const postLoginUrl = props.location.pathname;
     const to = { "pathname": "/login", "state": { previous: postLoginUrl } };
@@ -1018,7 +1018,7 @@ class ProjectViewCollaboration extends Component {
         <Col key="nav" sm={12} md={2}>
           <ProjectViewCollaborationNav {...this.props} />
         </Col>
-        <Col key="collaborationcontent" sm={12} md={10}>
+        <Col key="collaborationContent" sm={12} md={10}>
           <Switch>
             <Route path={this.props.mergeRequestUrl} render={props =>
               <ProjectViewMergeRequests {...this.props} />} />
@@ -1042,7 +1042,7 @@ class ProjectViewCollaboration extends Component {
 class ProjectIssuesList extends Component {
 
   render() {
-    return <Row><Col key="issueslist" className={"pt-3"} sm={12} md={10} lg={8}>
+    return <Row><Col key="issuesList" className={"pt-3"} sm={12} md={10} lg={8}>
       <CollaborationList
         key="issuesList"
         listType={collaborationListTypeMap.ISSUES}
@@ -1357,7 +1357,7 @@ function GitCloneCmd(props) {
   const [cmdOpen, setCmdOpen] = useState(false);
   const { externalUrl, projectPath } = props;
   const gitClone = `git clone ${externalUrl}.git && cd ${projectPath} && git lfs install --local --force`;
-  const gitHooksInstall = "renku githooks install";
+  const gitHooksInstall = "renku githooks install"; // eslint-disable-line
   return (cmdOpen) ?
     <div style={{ fontSize: "smaller" }} className="mt-3">
       <p className="font-italic">
@@ -1531,7 +1531,7 @@ class ProjectViewLoading extends Component {
 
 class NotFoundInsideProject extends Component {
   render() {
-    return <Col key="nofound">
+    return <Col key="notFound">
       <Row>
         <Col xs={12} md={12}>
           <Alert color="primary">

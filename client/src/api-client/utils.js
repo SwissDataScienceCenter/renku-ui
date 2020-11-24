@@ -39,7 +39,7 @@ function renkuFetch(url, options) {
     });
   }
 
-  // This is the default behaviour for most browsers.
+  // This is the default behavior for most browsers.
   options["credentials"] = "same-origin";
 
   // Add a custom header for protection against CSRF attacks.

@@ -9,7 +9,7 @@ import { generateFakeUser } from "./user/User.test";
 
 describe("rendering", () => {
   const model = new StateModel(globalSchema);
-  const params = { WELCOME_PAGE: "Some text", STATUSPAGE_ID: "5bcn9bqff4qt" };
+  const params = { WELCOME_PAGE: "Some text", STATUSPAGE_ID: "5bce9beff4ca" };
   const fakeLocation = { pathname: "" };
 
   it("renders anonymous user without crashing", () => {

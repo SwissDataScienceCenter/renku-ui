@@ -74,6 +74,7 @@ function atobReplacer(encoded) {
 function atobUTF8(inputString, keepBOM) {
   if (!keepBOM && inputString.substring(0, 3) === "\xEF\xBB\xBF")
     inputString = inputString.substring(3); // eradicate UTF-8 BOM
+  // eslint-disable-next-line
   // 0xc0 => 0b11000000; 0xff => 0b11111111; 0xc0-0xff => 0b11xxxxxx
   // 0x80 => 0b10000000; 0xbf => 0b10111111; 0x80-0xbf => 0b10xxxxxx
   return originalAtob(inputString).replace(/[\xc0-\xff][\x80-\xbf]*/g, atobReplacer);

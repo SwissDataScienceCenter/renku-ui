@@ -31,7 +31,7 @@ const itemsStateMap = {
 
 const collaborationListTypeMap = {
   ISSUES: "issues",
-  MREQUESTS: "mrequests"
+  MREQUESTS: "mrequests" // eslint-disable-line
 };
 
 class List extends Component {

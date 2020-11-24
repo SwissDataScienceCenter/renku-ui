@@ -109,7 +109,7 @@ class MergeRequestPresent extends Component {
   render() {
     if (this.props.title == null) return null;
     return [
-      <GoBackButton key="backbutton" label="Back to list" url={this.props.mergeRequestsOverviewUrl}/>,
+      <GoBackButton key="backButton" label="Back to list" url={this.props.mergeRequestsOverviewUrl}/>,
       < MergeRequestHeader key="header" {...this.props} />,
       <Row key="description" className="pb-2">
         <Col sm={11}>

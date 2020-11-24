@@ -79,9 +79,9 @@ class TreeNode extends Component {
       (this.state.childrenOpen === false ?
         <FontAwesomeIcon className="icon-purple" icon={faFolder} />
         : <FontAwesomeIcon className="icon-purple" icon={faFolderOpen} />)
-      : <FontAwesomeIcon className="icon-grey" icon={faFile} />;
+      : <FontAwesomeIcon className="icon-gray" icon={faFile} />;
 
-    const order = this.props.node.children.length ? "order-seccond" : "order-third";
+    const order = this.props.node.children.length ? "order-second" : "order-third";
     const hidden = this.props.node.name.startsWith(".") ? " hidden-folder " : "";
 
     const children = this.props.node.children ?
@@ -176,11 +176,12 @@ function FilesTreeView(props) {
 /**
  * Generic files tree generator.
  * Some things are left to do to make it more generic.
- * @param {*} props.files This is a list of files with atLocation containing the file path (this is optional)
- * @param {*} props.filesTree This is the already built fileTree (optional)
- * @param {*} props.foldersOpenOnLoad Number of folders that should apear open already when displaying the tree
- * @param {*} props.lineageUrl Should be replaced for URL, this is the link for the file (when clicked) (optional)
- * * @param {*} props.insideProject Boolean to be set true if the display is inside a project
+ *
+ * @param {*} props.files - This is a list of files with atLocation containing the file path (this is optional)
+ * @param {*} props.filesTree - This is the already built fileTree (optional)
+ * @param {*} props.foldersOpenOnLoad - Number of folders that should appear open already when displaying the tree
+ * @param {*} props.lineageUrl - Should be replaced for URL, this is the link for the file (when clicked) (optional)
+ * @param {*} props.insideProject - Boolean to be set true if the display is inside a project
  */
 function FileExplorer(props) {
   const [filesTree, setFilesTree] = useState(undefined);

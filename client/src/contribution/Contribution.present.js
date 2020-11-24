@@ -51,7 +51,7 @@ class Contribution extends React.Component {
                 <Col md={12}>
                   <strong>{contribution.author ? contribution.author.name : null}</strong>&nbsp;&nbsp;
                   <span className="caption align-baseline">
-                    <TimeCaption key="timecaption" caption="Commented" time={contribution.updated_at} />
+                    <TimeCaption key="timeCaption" caption="Commented" time={contribution.updated_at} />
                   </span>
                 </Col>
               </Row>
@@ -119,7 +119,7 @@ const NewContribution = props => {
             <TabPane tabId={EDIT} className="py-2">{textInput}</TabPane>
             <TabPane tabId={PREVIEW} className="pt-2">
               {/*This might look silly, but I want to remove the preview from the virtual DOM when the user*/}
-              {/*is editing rather than re-rendering it on every keystroak while the user is typing.*/}
+              {/*is editing rather than re-rendering it on every keystroke while the user is typing.*/}
               {props.tab === PREVIEW ?
                 <div className="pb-3">
                   <RenkuMarkdown

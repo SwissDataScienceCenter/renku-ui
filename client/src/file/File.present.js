@@ -198,43 +198,43 @@ const NotebookSourceDisplayMode = {
  * Modify the cell metadata according to the hidden policy
  *
  * @param {object} [cell] - The cell to process
- * @param {array} [accum] - The place to store the result
+ * @param {array} [accumulator] - The place to store the result
  */
-function tweakCellMetadataHidden(cell, accum) {
+function tweakCellMetadataHidden(cell, accumulator) {
   const clone = { ...cell };
   clone.metadata = { ...cell.metadata };
   clone.metadata.hide_input = true;
-  accum.push(clone);
+  accumulator.push(clone);
 }
 
 /**
  * Modify the cell metadata according to the show policy
  *
  * @param {object} [cell] - The cell to process
- * @param {array} [accum] - The place to store the result
+ * @param {array} [accumulator] - The place to store the result
  */
-function tweakCellMetadataShow(cell, accum) {
+function tweakCellMetadataShow(cell, accumulator) {
   const clone = { ...cell };
   clone.metadata = { ...cell.metadata };
   clone.metadata.hide_input = false;
-  accum.push(clone);
+  accumulator.push(clone);
 }
 
 /**
  * Modify the cell metadata according to the default policy
  *
  * @param {object} [cell] - The cell to process
- * @param {array} [accum] - The place to store the result
+ * @param {array} [accumulator] - The place to store the result
  */
-function tweakCellMetadataDefault(cell, accum) {
+function tweakCellMetadataDefault(cell, accumulator) {
   if (cell.metadata.jupyter == null) {
-    accum.push(cell);
+    accumulator.push(cell);
   }
   else {
     const clone = { ...cell };
     clone.metadata = { ...cell.metadata };
     clone.metadata.hide_input = clone.metadata.jupyter.source_hidden;
-    accum.push(clone);
+    accumulator.push(clone);
   }
 }
 

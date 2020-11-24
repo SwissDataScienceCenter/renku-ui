@@ -185,23 +185,23 @@ describe("project view actions", () => {
 
 describe("path filtering", () => {
   const origPaths = [".foo", ".renku", ".renku/foo", "foo.txt", "bar",
-    "myfolder/.hidden", "myfolder/visible",
-    "myfolder/.alsohidden/readme.md", "myfolder/.alsohidden/other.txt",
-    "myfolder/alsovisible/.hidden", "myfolder/alsovisible/readme.md", "myfolder/alsovisible/other.txt",
+    "myFolder/.hidden", "myFolder/visible",
+    "myFolder/.alsoHidden/readme.md", "myFolder/.alsoHidden/other.txt",
+    "myFolder/alsoVisible/.hidden", "myFolder/alsoVisible/readme.md", "myFolder/alsoVisible/other.txt",
   ];
   it(`filters the default blacklist [/^..*/, \\..*/]`, () => {
     const blacklist = [/^\..*/, /\/\..*/];
     const paths = filterPaths(origPaths, blacklist);
     expect(paths).toEqual([
-      "foo.txt", "bar", "myfolder/visible", "myfolder/alsovisible/readme.md", "myfolder/alsovisible/other.txt"
+      "foo.txt", "bar", "myFolder/visible", "myFolder/alsoVisible/readme.md", "myFolder/alsoVisible/other.txt"
     ]);
   });
 
   it(`filters the another blacklist [/^..*/, /readme.md/]`, () => {
     const blacklist = [/^\..*/, /readme.md/];
     const paths = filterPaths(origPaths, blacklist);
-    expect(paths).toEqual(["foo.txt", "bar", "myfolder/.hidden", "myfolder/visible",
-      "myfolder/.alsohidden/other.txt",
-      "myfolder/alsovisible/.hidden", "myfolder/alsovisible/other.txt"]);
+    expect(paths).toEqual(["foo.txt", "bar", "myFolder/.hidden", "myFolder/visible",
+      "myFolder/.alsoHidden/other.txt",
+      "myFolder/alsoVisible/.hidden", "myFolder/alsoVisible/other.txt"]);
   });
 });

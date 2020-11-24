@@ -100,7 +100,7 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors,
       );
     }
     return (<div>
-      <p>Errors occured while creating the project.</p>
+      <p>Errors occurred while creating the project.</p>
       {content}
     </div>);
   };
