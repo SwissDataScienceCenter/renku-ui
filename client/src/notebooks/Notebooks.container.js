@@ -169,7 +169,7 @@ class StartNotebookServer extends Component {
     this.handlers = {
       refreshBranches: this.refreshBranches.bind(this),
       refreshCommits: this.refreshCommits.bind(this),
-      retriggerPipeline: this.retriggerPipeline.bind(this),
+      reTriggerPipeline: this.reTriggerPipeline.bind(this),
       setBranch: this.selectBranch.bind(this),
       setCommit: this.selectCommit.bind(this),
       toggleMergedBranches: this.toggleMergedBranches.bind(this),
@@ -310,7 +310,7 @@ class StartNotebookServer extends Component {
     }
   }
 
-  async retriggerPipeline() {
+  async reTriggerPipeline() {
     const projectPathWithNamespace = `${encodeURIComponent(this.props.scope.namespace)}%2F${this.props.scope.project}`;
     const pipelineId = this.model.get("pipelines.main.id");
     await this.props.client.retryPipeline(projectPathWithNamespace, pipelineId);

@@ -66,9 +66,9 @@ describe("test ProjectCoordinator related components", () => {
     // mapped component may include extra functions
     const projectCategory = "commits";
     const projectCategoryState = model.subModel("project").get(projectCategory);
-    let projectCategoreMapped = mapProjectFeatures(projectCoordinator, [projectCategory])(model.get()).commits;
-    expect(Object.keys(projectCategoryState).every(i => Object.keys(projectCategoreMapped).includes(i))).toBeTruthy();
-    expect(Object.keys(projectCategoreMapped).every(i => Object.keys(projectCategoryState).includes(i))).toBeFalsy();
+    let projectCategoryMapped = mapProjectFeatures(projectCoordinator, [projectCategory])(model.get()).commits;
+    expect(Object.keys(projectCategoryState).every(i => Object.keys(projectCategoryMapped).includes(i))).toBeTruthy();
+    expect(Object.keys(projectCategoryMapped).every(i => Object.keys(projectCategoryState).includes(i))).toBeFalsy();
 
     // mapped to parent object -- useful to avoid collision when using in legacy components
     const parent = "parent";
@@ -76,8 +76,8 @@ describe("test ProjectCoordinator related components", () => {
     expect(projectCategoryParent[projectCategory]).toBeUndefined();
     expect(projectCategoryParent[parent]).toBeTruthy();
     let descendantKeys = Object.keys(projectCategoryParent[parent][projectCategory]);
-    expect(descendantKeys.every(i => Object.keys(projectCategoreMapped).includes(i))).toBeTruthy();
-    expect(Object.keys(projectCategoreMapped).every(i => descendantKeys.includes(i))).toBeTruthy();
+    expect(descendantKeys.every(i => Object.keys(projectCategoryMapped).includes(i))).toBeTruthy();
+    expect(Object.keys(projectCategoryMapped).every(i => descendantKeys.includes(i))).toBeTruthy();
   });
 
   it("test withProjectMapped higher order function", () => {

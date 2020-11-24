@@ -292,12 +292,13 @@ class NotebooksCoordinator {
     });
 
     // get user status
-    const anonym = this.userModel.get("logged") ?
+    const anonymous = this.userModel.get("logged") ?
       false :
       true;
 
     // get notebooks
-    return this.client.getNotebookServers(filters.namespace, filters.project, filters.branch, filters.commit, anonym)
+    return this.client.getNotebookServers(
+      filters.namespace, filters.project, filters.branch, filters.commit, anonymous)
       .then(resp => {
         let updatedNotebooks = { fetching: false };
         // check if result is still valid
@@ -325,11 +326,11 @@ class NotebooksCoordinator {
       return;
 
     // get user status
-    const anonym = this.userModel.get("logged") ?
+    const anonymous = this.userModel.get("logged") ?
       false :
       true;
 
-    return this.client.getNotebookServerOptions(anonym)
+    return this.client.getNotebookServerOptions(anonymous)
       .then((globalOptions) => {
         this.model.set("options.global", globalOptions);
         this.setDefaultOptions(globalOptions, null);
@@ -625,12 +626,8 @@ class NotebooksCoordinator {
       tag :
       { $set: {} };
 
-    // TODO: polish here, adapt the present component
-    // TODO: to show the correct status on tag status
-    // console.log("ANONYM - NOT IMPLEMENTED YET - ", tag);
     this.model.setObject({ pipelines: pipelinesState });
-    // this.model.setObject({ pipelines: { ...pipelinesState, main: {} } });
-    return;
+    return pipelinesState;
   }
 
 

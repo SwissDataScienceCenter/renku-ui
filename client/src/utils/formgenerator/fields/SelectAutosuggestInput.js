@@ -41,8 +41,8 @@ function SelectautosuggestInput({ name, label, type, value, alert, options, init
     const inputValue = value.trim().toLowerCase();
     const inputLength = inputValue.length;
 
-    return inputLength === 0 ? options : options.filter(lang =>
-      lang.name.toLowerCase().includes(inputValue)
+    return inputLength === 0 ? options : options.filter(language =>
+      language.name.toLowerCase().includes(inputValue)
     );
   };
 
@@ -62,21 +62,21 @@ function SelectautosuggestInput({ name, label, type, value, alert, options, init
   const onChange = (event, { newValue, method }) => {
     if (method !== "type") {
       setLocalValue(newValue.name);
-      const artifitialEvent = {
+      const artificialEvent = {
         target: { name: name, value: newValue !== undefined ? newValue.value : "" },
         isPersistent: () => false
       };
-      setInputs(artifitialEvent);
+      setInputs(artificialEvent);
     }
     else {
       // If the user typed, store it as local input, otherwise set the selection
       setLocalValue(newValue);
       const selectedOption = options.find(option => option.name === newValue );
-      const artifitialEvent = {
+      const artificialEvent = {
         target: { name: name, value: selectedOption !== undefined ? selectedOption.value : "" },
         isPersistent: () => false
       };
-      setInputs(artifitialEvent);
+      setInputs(artificialEvent);
     }
 
   };

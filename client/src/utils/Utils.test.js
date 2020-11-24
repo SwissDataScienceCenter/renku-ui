@@ -312,14 +312,14 @@ describe("branch functions", () => {
   ];
 
   it("function splitAutosavedBranches", () => {
-    const splittedBranches = splitAutosavedBranches(branches);
-    expect(splittedBranches.standard.length).toEqual(1);
-    expect(splittedBranches.autosaved.length).toEqual(1);
+    const splitBranches = splitAutosavedBranches(branches);
+    expect(splitBranches.standard.length).toEqual(1);
+    expect(splitBranches.autosaved.length).toEqual(1);
     const [username, branch, commit, finalCommit] = branches[1].name.replace("renku/autosave/", "").split("/");
-    expect(splittedBranches.autosaved[0].autosave.username).toEqual(username);
-    expect(splittedBranches.autosaved[0].autosave.branch).toEqual(branch);
-    expect(splittedBranches.autosaved[0].autosave.commit).toEqual(commit);
-    expect(splittedBranches.autosaved[0].autosave.finalCommit).toEqual(finalCommit);
+    expect(splitBranches.autosaved[0].autosave.username).toEqual(username);
+    expect(splitBranches.autosaved[0].autosave.branch).toEqual(branch);
+    expect(splitBranches.autosaved[0].autosave.commit).toEqual(commit);
+    expect(splitBranches.autosaved[0].autosave.finalCommit).toEqual(finalCommit);
   });
 });
 

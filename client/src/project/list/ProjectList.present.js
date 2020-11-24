@@ -39,10 +39,10 @@ class ProjectListRow extends Component {
       </Link>
     );
 
-    let directionModifier = "", marginModfier = "";
+    let directionModifier = "", marginModifier = "";
     if (!compact) {
       directionModifier = " flex-sm-row";
-      marginModfier = " ml-sm-auto";
+      marginModifier = " ml-sm-auto";
     }
 
     return (
@@ -60,12 +60,12 @@ class ProjectListRow extends Component {
             <p className="mt-auto mb-auto text-truncate">
               <b>{title}</b>
               <span className="ml-2">
-                <ProjectTagList taglist={this.props.tag_list} />
+                <ProjectTagList tagList={this.props.tag_list} />
               </span>
             </p>
             {description ? <p className="mt-auto mb-auto text-truncate">{description}</p> : null}
           </div>
-          <div className={"d-flex flex-shrink-0" + marginModfier}>
+          <div className={"d-flex flex-shrink-0" + marginModifier}>
             <p className="mt-auto mb-auto">
               <TimeCaption caption="Updated" time={this.props.last_activity_at} />
             </p>
@@ -106,7 +106,7 @@ class ProjectSearchForm extends Component {
           {
             this.props.urlMap.projectsSearchUrl === this.props.currentTab || this.props.hasUser === false ?
               <InputGroupButtonDropdown addonType="append"
-                toggle={this.props.handlers.onSearchInDropdownToogle} isOpen={this.props.searchInDropdownOpen} >
+                toggle={this.props.handlers.onSearchInDropdownToggle} isOpen={this.props.searchInDropdownOpen} >
                 <DropdownToggle outline caret color="primary" >
                   Filter by: {this.props.searchInLabel}
                 </DropdownToggle>
@@ -133,8 +133,8 @@ class ProjectSearchForm extends Component {
               : null
           }
           <InputGroupButtonDropdown addonType="append"
-            toggle={this.props.handlers.onOrderByDropdownToogle} isOpen={this.props.orderByDropdownOpen} >
-            <Button outline color="primary" onClick={this.props.handlers.toogleSearchSorting}>
+            toggle={this.props.handlers.onOrderByDropdownToggle} isOpen={this.props.orderByDropdownOpen} >
+            <Button outline color="primary" onClick={this.props.handlers.toggleSearchSorting}>
               {this.props.orderSearchAsc ?
                 <FontAwesomeIcon icon={faSortAmountUp} /> :
                 <FontAwesomeIcon icon={faSortAmountDown} />}
@@ -191,7 +191,7 @@ class ProjectNavTabs extends Component {
                     <RenkuNavLink
                       to={this.props.urlMap.projectsUrl}
                       alternate={this.props.urlMap.yourProjects}
-                      noSubpath={true}
+                      noSubPath={true}
                       title="Your Projects" />
                   </NavItem>
                   <NavItem>
@@ -366,7 +366,7 @@ class NotFoundInsideProject extends Component {
             <h4>404 - Page not found</h4>
             The URL
             <strong> {this.props.location.pathname.replace(this.props.match.url, "")} </strong>
-            is not a subpath of <strong>/projects</strong>. You can navigate
+            is not a sub-path of <strong>/projects</strong>. You can navigate
             through renku projects using the tabs on top.
           </Alert>
         </Col>

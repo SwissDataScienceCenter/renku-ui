@@ -212,10 +212,10 @@ class ProjectModel extends StateModel {
   returnTreeOrFetchNext(client, openFilePath, openFolder, tree) {
     if (openFilePath !== undefined && openFilePath.split("/").length > 1) {
       const openFilePathArray = openFilePath.split("/");
-      const goto = openFolder !== undefined ?
+      const goTo = openFolder !== undefined ?
         openFolder + "/" + openFilePathArray[0]
         : openFilePathArray[0];
-      return this.fetchProjectFilesTree(client, openFilePath.replace(openFilePathArray[0], ""), goto);
+      return this.fetchProjectFilesTree(client, openFilePath.replace(openFilePathArray[0], ""), goTo);
     }
     return tree;
 

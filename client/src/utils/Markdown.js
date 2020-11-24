@@ -61,7 +61,7 @@ const getFilesRefs = (markdownHTML, filePathArray) => {
 function FileAndWrapper(props) {
   /**
    * We are using a checkbox here because the onclick event doesn't work with the
-   * React server side rendering, the checkbox helps us fake the toogleing
+   * React server side rendering, the checkbox helps us fake the toggleing
    *
    * We need to generate a random id here for the file preview to work on the
    * issues, in case there is more than one file preview

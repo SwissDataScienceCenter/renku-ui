@@ -150,10 +150,10 @@ function sanitizedHTMLFromMarkdown(markdown, singleLine = false) {
     parseImgDimensions: true,
     simplifiedAutoLink: true,
     excludeTrailingPunctuationFromURLs: true,
-    strikethrough: true,
+    strikethrough: true, // eslint-disable-line
     tables: true,
-    tasklists: true,
-    disableForced4SpacesIndentedSublists: true,
+    tasklists: true, // eslint-disable-line
+    disableForced4SpacesIndentedSublists: true, // eslint-disable-line
     emoji: true
   };
   const showdownClasses = {
@@ -179,12 +179,12 @@ function sanitizedHTMLFromMarkdown(markdown, singleLine = false) {
 }
 
 function simpleHash(str) {
-  let i, l, hval = 0x0128a9d4;
+  let i, l, hVal = 0x0128a9d4;
   for (i = 0, l = str.length; i < l; i++) {
-    hval ^= str.charCodeAt(i);
-    hval += (hval << 1) + (hval << 4) + (hval << 7) + (hval << 8) + (hval << 24);
+    hVal ^= str.charCodeAt(i);
+    hVal += (hVal << 1) + (hVal << 4) + (hVal << 7) + (hVal << 8) + (hVal << 24);
   }
-  return ("0000000" + (hval >>> 0).toString(16)).substr(-8);
+  return ("0000000" + (hVal >>> 0).toString(16)).substr(-8);
 }
 
 function parseINIString(data) {

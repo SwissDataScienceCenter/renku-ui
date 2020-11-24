@@ -869,9 +869,9 @@ class StartNotebookPipelines extends Component {
     this.state = { justTriggered: false };
   }
 
-  async retriggerPipeline() {
+  async reTriggerPipeline() {
     this.setState({ justTriggered: true });
-    await this.props.handlers.retriggerPipeline();
+    await this.props.handlers.reTriggerPipeline();
     this.setState({ justTriggered: false });
   }
 
@@ -884,7 +884,7 @@ class StartNotebookPipelines extends Component {
     return (
       <FormGroup>
         <StartNotebookPipelinesBadge {...this.props} />
-        <StartNotebookPipelinesContent {...this.props} buildAgain={this.retriggerPipeline.bind(this)} />
+        <StartNotebookPipelinesContent {...this.props} buildAgain={this.reTriggerPipeline.bind(this)} />
       </FormGroup>
     );
   }

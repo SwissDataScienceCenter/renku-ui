@@ -34,7 +34,7 @@ import {
 } from "reactstrap";
 import qs from "query-string";
 
-import filesize from "filesize";
+import { default as fileSize } from "filesize"; // eslint-disable-line
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
 import {
@@ -424,15 +424,15 @@ class ProjectViewStats extends Component {
                 <tbody>
                   <tr>
                     <th scope="row">Storage Size</th>
-                    <td>{filesize(stats.storage_size)}</td>
+                    <td>{fileSize(stats.storage_size)}</td>
                   </tr>
                   <tr>
                     <th scope="row">Repository Size</th>
-                    <td>{filesize(stats.repository_size)}</td>
+                    <td>{fileSize(stats.repository_size)}</td>
                   </tr>
                   <tr>
                     <th scope="row">LFS Size</th>
-                    <td>{filesize(stats.lfs_objects_size)}</td>
+                    <td>{fileSize(stats.lfs_objects_size)}</td>
                   </tr>
                 </tbody>
               </Table>
@@ -623,7 +623,7 @@ class ProjectViewOverview extends Component {
         </Col>
         <Col xs={12} md={3}>
           <p className="text-md-right">
-            <ProjectTagList taglist={system.tag_list} />
+            <ProjectTagList tagList={system.tag_list} />
           </p>
         </Col>
       </Row>
@@ -1001,10 +1001,10 @@ class ProjectViewCollaborationNav extends Component {
     return (
       <Nav pills className={"flex-column"}>
         <NavItem>
-          <RenkuNavLink to={this.props.issuesUrl} matchpath={true} title="Issues" />
+          <RenkuNavLink to={this.props.issuesUrl} matchPath={true} title="Issues" />
         </NavItem>
         <NavItem>
-          <RenkuNavLink to={this.props.mergeRequestsOverviewUrl} matchpath={true} title="Merge Requests" />
+          <RenkuNavLink to={this.props.mergeRequestsOverviewUrl} matchPath={true} title="Merge Requests" />
         </NavItem>
       </Nav>);
   }

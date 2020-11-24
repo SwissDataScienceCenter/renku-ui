@@ -127,7 +127,7 @@ const methods = {
   getTemplatesManifest: {
     response: {
       result: {
-        remplates: []
+        templates: []
       }
     }
   },

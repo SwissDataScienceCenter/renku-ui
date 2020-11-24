@@ -32,10 +32,10 @@ function renkuFetch(url, options) {
   // if url is already an instance of URL. Note that this also encodes the URL
   // and the parameters.
 
-  const URLobject = new URL(url);
+  const urlObject = new URL(url);
   if (options.queryParams) {
     Object.keys(options.queryParams).forEach((key) => {
-      URLobject.searchParams.append(key, options.queryParams[key]);
+      urlObject.searchParams.append(key, options.queryParams[key]);
     });
   }
 
@@ -45,7 +45,7 @@ function renkuFetch(url, options) {
   // Add a custom header for protection against CSRF attacks.
   options.headers.set("X-Requested-With", "XMLHttpRequest");
 
-  return fetch(URLobject, options)
+  return fetch(urlObject, options)
 
     // Label an error raised here already as networking problem.
     .catch((fetchError) => {

@@ -25,7 +25,7 @@ const FileCategories = {
   workflows: (path) => path.startsWith(".renku/workflow/"),
 };
 
-function getApiURLfromRepoURL(url) {
+function getApiUrlFromRepoUrl(url) {
   const urlArray = url.split("/");
   urlArray.splice(urlArray.length - 2, 0, "repos");
   url = urlArray.join("/");
@@ -280,7 +280,7 @@ function addProjectMethods(client) {
       headers: headers,
       body: JSON.stringify(gitlabProject)
     }).then(resp => {
-      if (!projectMeta.optoutKg)
+      if (!projectMeta.optoutKg) // eslint-disable-line
         createGraphWebhookPromise = client.createGraphWebhook(resp.data.id);
 
       return resp;
@@ -371,10 +371,10 @@ function addProjectMethods(client) {
   };
 
   client.getProjectTemplates = (renkuTemplatesUrl, renkuTemplatesRef) => {
-    const formatedApiURL = getApiURLfromRepoURL(renkuTemplatesUrl);
-    return fetchJson(`${formatedApiURL}/git/trees/${renkuTemplatesRef}`)
+    const formattedApiURL = getApiUrlFromRepoUrl(renkuTemplatesUrl);
+    return fetchJson(`${formattedApiURL}/git/trees/${renkuTemplatesRef}`)
       .then(data => data.tree.filter(obj => obj.path === "manifest.yaml")[0]["sha"])
-      .then(manifestSha => fetchJson(`${formatedApiURL}/git/blobs/${manifestSha}`))
+      .then(manifestSha => fetchJson(`${formattedApiURL}/git/blobs/${manifestSha}`))
       .then(data => { return yaml.load(atob(data.content)); })
       .then(data => { data.push(client.getEmptyProjectObject()); return data; });
   };

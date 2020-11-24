@@ -21,7 +21,7 @@ import {
   Row, Col, Button, Input, TabContent, TabPane, NavItem,
   Nav, NavLink, DropdownMenu, DropdownItem, DropdownToggle, Dropdown
 } from "reactstrap";
-import classnames from "classnames";
+import { default as classNames } from "classnames"; // eslint-disable-line
 
 import { UserAvatar, TimeCaption, RenkuMarkdown } from "../utils/UIComponents";
 import { EDIT, PREVIEW } from "./Contribution.constants";
@@ -99,7 +99,7 @@ const NewContribution = props => {
           <Nav pills className={"nav-pills-underline"}>
             <NavItem>
               <NavLink
-                className={classnames({ active: props.tab === EDIT })}
+                className={classNames({ active: props.tab === EDIT })}
                 onClick={() => {
                   props.onTabClick(EDIT);
                 }}
@@ -107,7 +107,7 @@ const NewContribution = props => {
             </NavItem>
             <NavItem>
               <NavLink
-                className={classnames({ active: props.tab === PREVIEW })}
+                className={classNames({ active: props.tab === PREVIEW })}
                 onClick={() => {
                   props.onTabClick(PREVIEW);
                 }}

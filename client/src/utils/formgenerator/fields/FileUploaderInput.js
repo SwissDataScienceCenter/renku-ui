@@ -53,8 +53,8 @@ const URL_FILE_ID = "urlFileInput";
 function useFiles({ initialState = [] }) {
   const [state, setState] = useState(initialState);
   function withBlobs(files) {
-    const destructured = [...files];
-    const blobs = destructured
+    const deStructured = [...files];
+    const blobs = deStructured
       .map(file => {
         return file;
       })
@@ -91,7 +91,7 @@ function getFileObject(name, path, size, id, error, alias, controller, uncompres
   };
 }
 
-function FileuploaderInput({ name, label, alert, value, setInputs, help, disabled = false,
+function FileUploaderInput({ name, label, alert, value, setInputs, help, disabled = false,
   uploadFileFunction, filesOnUploader, required = false }) {
 
   //send value as an already built tree/hash to display and
@@ -122,11 +122,11 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
   }, [value, initialized]);
 
   useEffect(() => {
-    const artifitialEvent = {
+    const artificialEvent = {
       target: { name: name, value: uploadedFiles },
       isPersistent: () => false
     };
-    setInputs(artifitialEvent);
+    setInputs(artificialEvent);
     setDisplayFiles(prevDisplayFiles =>
       prevDisplayFiles.map(dFile => {
         let uploadingFile = uploadedFiles.find(uFile => uFile.file_name === dFile.file_name);
@@ -572,5 +572,5 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
     </FormGroup>
   );
 }
-export default FileuploaderInput;
+export default FileUploaderInput;
 export { FILE_STATUS };

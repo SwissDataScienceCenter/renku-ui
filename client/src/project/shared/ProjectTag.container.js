@@ -34,9 +34,9 @@ class ProjectTag extends Component {
   }
 }
 
-function sortedTagList(taglistOrNull) {
-  const taglist = taglistOrNull || [];
-  const tlSet = new Set(taglist);
+function sortedTagList(tagListOrNull) {
+  const tagList = tagListOrNull || [];
+  const tlSet = new Set(tagList);
   const tl = Array.from(tlSet);
   tl.sort();
   return tl;
@@ -44,8 +44,8 @@ function sortedTagList(taglistOrNull) {
 
 class ProjectTagList extends Component {
   render() {
-    const taglist = sortedTagList(this.props.taglist);
-    return (taglist.length > 0) ? taglist.map(t => <ProjectTag key={t} tag={t} />) : <br />;
+    const tagList = sortedTagList(this.props.tagList);
+    return (tagList.length > 0) ? tagList.map(t => <ProjectTag key={t} tag={t} />) : <br />;
   }
 }
 

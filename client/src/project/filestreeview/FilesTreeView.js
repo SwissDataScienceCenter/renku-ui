@@ -14,7 +14,7 @@ class TreeNode extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isSelected: this.props.nodeInsideisSelected,
+      isSelected: this.props.nodeInsideIsSelected,
       childrenOpen: this.props.childrenOpen
     };
     this.handleIconClick = this.handleIconClick.bind(this);
@@ -243,9 +243,9 @@ class FilesTreeView extends Component {
                 distanceFromTop :
                 0;
               const maxHeight = window.innerHeight - 80 - deltaDistance;
-              const treeStlye = { ...style, maxHeight, top: 10, transform: "" };
+              const treeStyle = { ...style, maxHeight, top: 10, transform: "" };
 
-              return (<TreeContainer {...treeProps} style={treeStlye} />);
+              return (<TreeContainer {...treeProps} style={treeStyle} />);
             }
           }
         </Sticky>

@@ -71,12 +71,12 @@ class AvailableUserList extends Component {
       onSearchQueryChange: this.onSearchQueryChange.bind(this),
       onSearchSubmit: this.onSearchSubmit.bind(this),
       onPaginationPageChange: this.onPaginationPageChange.bind(this),
-      onOrderByDropdownToogle: this.onOrderByDropdownToogle.bind(this),
-      onSearchInDropdownToogle: this.onSearchInDropdownToogle.bind(this),
+      onOrderByDropdownToggle: this.onOrderByDropdownToggle.bind(this),
+      onSearchInDropdownToggle: this.onSearchInDropdownToggle.bind(this),
       changeSearchDropdownOrder: this.changeSearchDropdownOrder.bind(this),
       changeSearchDropdownFilter: this.changeSearchDropdownFilter.bind(this),
       changeSelectedUserOrGroup: this.changeSelectedUserOrGroup.bind(this),
-      toogleSearchSorting: this.toogleSearchSorting.bind(this),
+      toggleSearchSorting: this.toggleSearchSorting.bind(this),
       getAvatarFromNamespace: this.getAvatarFromNamespace.bind(this)
     };
   }
@@ -176,11 +176,11 @@ class AvailableUserList extends Component {
     );
   }
 
-  onOrderByDropdownToogle() {
+  onOrderByDropdownToggle() {
     this.model.setOrderDropdownOpen(!this.model.get("orderByDropdownOpen"));
   }
 
-  onSearchInDropdownToogle() {
+  onSearchInDropdownToggle() {
     this.model.setSearchInDropdownOpen(!this.model.get("searchInDropdownOpen"));
   }
 
@@ -239,7 +239,7 @@ class AvailableUserList extends Component {
     this.pushNewSearchToHistory();
   }
 
-  toogleSearchSorting() {
+  toggleSearchSorting() {
     this.model.setOrderSearchAsc(!this.model.get("orderSearchAsc"));
     this.pushNewSearchToHistory();
   }

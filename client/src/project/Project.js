@@ -227,8 +227,8 @@ class View extends Component {
   async fetchProjectFilesTree() {
     return this.projectState.fetchProjectFilesTree(this.props.client, this.cleanCurrentURL());
   }
-  async setProjectOpenFolder(filepath) {
-    this.projectState.setProjectOpenFolder(this.props.client, filepath);
+  async setProjectOpenFolder(filePath) {
+    this.projectState.setProjectOpenFolder(this.props.client, filePath);
   }
   async fetchProjectDatasets(forceReFetch) {
     return this.projectState.fetchProjectDatasets(this.props.client, forceReFetch);
@@ -591,15 +591,15 @@ class View extends Component {
     },
     onCreateMergeRequest: (branch) => {
       const core = this.projectState.get("core");
-      let newMRiid;
+      let newMRIid;
       // TODO: Again, it would be nice to update the local state rather than relying on the server
       // TODO: updating the information fast enough through all possible layers of caches, etc...
       this.props.client.createMergeRequest(core.id, branch.name, branch.name, "master")
         .then((d) => {
-          newMRiid = d.data.iid;
+          newMRIid = d.data.iid;
           return this.fetchAll();
         })
-        .then(() => this.props.history.push(`${this.getSubUrls().mergeRequestsOverviewUrl}/${newMRiid}`));
+        .then(() => this.props.history.push(`${this.getSubUrls().mergeRequestsOverviewUrl}/${newMRIid}`));
     },
     onProjectRefresh: (e) => {
       e.preventDefault();

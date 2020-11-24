@@ -28,7 +28,7 @@ export default {
     TEXT: "text",
     TEXT_AREA: "textarea",
     TEXT_EDITOR: "cktextarea",
-    FILES: "fileuploader", // eslint-disable-line
+    FILES: "fileUploader",
     SELECT: "select",
     SELECTAUTOSUGGEST: "selectautosuggest",
     CREATORS: "creators",

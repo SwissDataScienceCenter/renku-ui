@@ -83,9 +83,9 @@ class DatasetSearchForm extends Component {
           <Label for="searchQuery" hidden>Query</Label>
           <InputGroupButtonDropdown
             addonType="append"
-            toggle={this.props.handlers.onOrderByDropdownToogle}
+            toggle={this.props.handlers.onOrderByDropdownToggle}
             isOpen={this.props.orderByDropdownOpen}>
-            <Button outline color="primary" onClick={this.props.handlers.toogleSearchSorting}>
+            <Button outline color="primary" onClick={this.props.handlers.toggleSearchSorting}>
               {this.props.orderSearchAsc ?
                 <FontAwesomeIcon icon={faSortAmountUp} /> :
                 <FontAwesomeIcon icon={faSortAmountDown} />
@@ -211,7 +211,7 @@ class NotFoundInsideDataset extends Component {
             <h4>404 - Page not found</h4>
             The URL
             <strong> {this.props.location.pathname.replace(this.props.match.url, "")} </strong>
-            is not a subpath of <strong>/datasets</strong>. You can navigate through renku datasets
+            is not a sub-path of <strong>/datasets</strong>. You can navigate through renku datasets
             using the tabs on top.
           </Alert>
         </Col>
