@@ -11,33 +11,37 @@ export default function addDatasetMethods(client) {
     });
   };
 
-  client.uploadFile = (file, controller, unpack_archive = false) => {
+  client.uploadFile = (file, unpack_archive = false, setFileProgress, thenCallback, onErrorCallback, setController) => {
     const data = new FormData();
     data.append("file", file);
     data.append("file_name", file.name);
+    data.append("processData", false);
 
-    let headers = new Headers({
-      "credentials": "same-origin",
-      "X-Requested-With": "XMLHttpRequest",
-      "Accept": "application/json"
+    let httpRequest = new XMLHttpRequest();
+    const url = `${client.baseUrl}/renku/cache.files_upload?override_existing=true&unpack_archive=${unpack_archive}`;
+
+    httpRequest.open("POST", url);
+    httpRequest.setRequestHeader("credentials", "same-origin");
+    httpRequest.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+    httpRequest.setRequestHeader("Accept", "application/json");
+
+    httpRequest.upload.addEventListener("progress", function(e) {
+      let percent_completed = Math.round((e.loaded / e.total) * 100).toFixed();
+      setFileProgress(file, percent_completed);
     });
 
-    let queryParams = {
-      method: "POST",
-      headers: headers,
-      body: data,
-      processData: false
+    httpRequest.onloadstart = function() {
+      setController(file, httpRequest);
     };
 
-    if (controller) queryParams.signal = controller.signal;
+    httpRequest.onloadend = function() {
+      if (httpRequest.status === 200 && httpRequest.response)
+        thenCallback(JSON.parse(httpRequest.response));
+      else if (httpRequest.status >= 400)
+        onErrorCallback({ code: httpRequest.status });
+    };
 
-    return fetch(`${client.baseUrl}/renku/cache.files_upload?override_existing=true&unpack_archive=${unpack_archive}`,
-      queryParams)
-      .then(response => {
-        if (controller !== undefined)
-          response.controller = controller;
-        return response;
-      });
+    return httpRequest.send(data);
   };
 
   client.addFilesToDataset = (projectUrl, datasetName, filesList) => {
