@@ -120,14 +120,16 @@ class TreeContainer extends Component {
 
     return (
       <div className="tree-container" style={style}>
-        <ButtonGroup className={"pb-1"} size="sm">
-          <Button color="primary" outline onClick={switchPage} active={fileView}>
-            Contents
-          </Button>
-          <Button color="primary" outline onClick={switchPage} active={!fileView}>
-            Lineage
-          </Button>
-        </ButtonGroup>
+        <div className="tree-title-container">
+          <ButtonGroup className="tree-title pb-1" size="sm">
+            <Button color="primary" outline onClick={switchPage} active={fileView}>
+              Contents
+            </Button>
+            <Button color="primary" outline onClick={switchPage} active={!fileView}>
+              Lineage
+            </Button>
+          </ButtonGroup>
+        </div>
         <div id="tree-content" className="tree-content mb-2 mb-md-0">
           {tree}
         </div>
@@ -225,7 +227,7 @@ class FilesTreeView extends Component {
               const maxHeight = window.innerHeight - 80 - deltaDistance;
               const treeStyle = { ...style, maxHeight, top: 10, transform: "" };
 
-              return (<TreeContainer history={this.props.history} {...treeProps} style={treeStlye} />);
+              return (<TreeContainer history={this.props.history} {...treeProps} style={treeStyle} />);
             }
           }
         </Sticky>
