@@ -7,12 +7,12 @@
     color:white;
 }
 
-.icon-grey{
+.icon-gray{
     color: rgba(0, 0, 0, 0.5)
 }
 
-.icon-lightgrey{
-    color: lightgrey;
+.icon-lightgray{
+    color: lightgray;
 }
 
 .hidden-folder{
@@ -91,7 +91,7 @@
     /* overflow-x: scroll; */
 }
 
-.order-seccond{
+.order-second{
     order:2;
 }
 

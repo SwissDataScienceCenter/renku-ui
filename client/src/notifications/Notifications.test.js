@@ -103,7 +103,7 @@ describe("setup and use notification system", () => {
     expect(model.get("notifications.all")).toHaveLength(4);
   });
 
-  it("NotificationsInfo object is included in the notification obejct", () => {
+  it("NotificationsInfo object is included in the notification object", () => {
     const keys = Object.keys(NotificationsInfo).sort();
     const subNotification = Object.keys(notifications).sort().reduce((subNotifications, key) => {
       if (keys.includes(key))

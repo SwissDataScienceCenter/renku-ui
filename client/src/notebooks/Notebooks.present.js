@@ -869,9 +869,9 @@ class StartNotebookPipelines extends Component {
     this.state = { justTriggered: false };
   }
 
-  async retriggerPipeline() {
+  async reTriggerPipeline() {
     this.setState({ justTriggered: true });
-    await this.props.handlers.retriggerPipeline();
+    await this.props.handlers.reTriggerPipeline();
     this.setState({ justTriggered: false });
   }
 
@@ -884,7 +884,7 @@ class StartNotebookPipelines extends Component {
     return (
       <FormGroup>
         <StartNotebookPipelinesBadge {...this.props} />
-        <StartNotebookPipelinesContent {...this.props} buildAgain={this.retriggerPipeline.bind(this)} />
+        <StartNotebookPipelinesContent {...this.props} buildAgain={this.reTriggerPipeline.bind(this)} />
       </FormGroup>
     );
   }
@@ -1500,7 +1500,7 @@ class CheckNotebookIcon extends Component {
       }
       else {
         tooltip = "Check interactive environment status";
-        icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" greyscale={true} />);
+        icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" grayscale={true} />);
         link = (<Link to={this.props.launchNotebookUrl}>{icon}</Link>);
       }
     }
@@ -1513,7 +1513,7 @@ class CheckNotebookIcon extends Component {
         state: { successUrl }
       };
       tooltip = "Start an interactive environment";
-      icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" greyscale={true} />);
+      icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" grayscale={true} />);
       link = (<Link to={target}>{icon}</Link>);
     }
 

@@ -109,15 +109,15 @@ class FieldGroup extends Component {
       help = this.props.help,
       feedback = this.props.feedback,
       props = this.props;
-    const subprops = {};
+    const subProps = {};
     if (props.valid === true)
-      subprops.valid = "true";
+      subProps.valid = "true";
     if (props.invalid === true)
-      subprops.invalid = "true";
+      subProps.invalid = "true";
     return <FormGroup>
       <Label>{label}</Label>
       <Input {...props} />
-      {feedback && <FormFeedback {...subprops}>{feedback}</FormFeedback>}
+      {feedback && <FormFeedback {...subProps}>{feedback}</FormFeedback>}
       {help && <FormText color="muted">{help}</FormText>}
     </FormGroup>;
   }
@@ -149,14 +149,14 @@ class RenkuNavLink extends Component {
 
   testActive(match, location) {
     const alt = this.props.alternate;
-    if (this.props.matchpath === true) {
+    if (this.props.matchPath === true) {
       let haveMatch = (match != null || location.pathname.startsWith(this.props.to));
       if (alt == null) return haveMatch;
       return haveMatch || location.pathname.startsWith(alt);
     }
     let haveMatch = match != null;
     if (alt == null) return haveMatch;
-    if (this.props.noSubpath)
+    if (this.props.noSubPath)
       return haveMatch || location.pathname.endsWith(alt);
     return haveMatch || location.pathname.startsWith(alt);
   }
@@ -340,7 +340,7 @@ function Loader(props) {
 }
 
 /**
- * Display a dismissable alert.
+ * Display a alert that can be dismissed.
  *
  * @param {number} [timeout] - define how many seconds the component should be visible.
  *   10 is default. 0 for unlimited.
@@ -489,7 +489,7 @@ function MarkdownTextExcerpt(props) {
 /**
  * Jupyter icon
  *
- * @param {boolean} [greyscale] - show the grayscale version of the logo
+ * @param {boolean} [grayscale] - show the grayscale version of the logo
  * @param {string} [svgClass] - class to apply on the svg element
  */
 class JupyterIcon extends Component {
@@ -497,7 +497,7 @@ class JupyterIcon extends Component {
     const style = { "mixBlendMode": "normal" };
     const Colors = {
       GREY: "#767677",
-      ORANGE: this.props.greyscale ?
+      ORANGE: this.props.grayscale ?
         "#767677" :
         "#F37726"
     };

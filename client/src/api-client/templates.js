@@ -42,8 +42,8 @@ function addTemplatesMethods(client) {
    *   - url: template url,
    *   - ref: template reference (tag, commit or branch),
    *   - identifier: template identifier as specified in the manifest,
-   *   - parameters: lisf of variables as { key, value },
-   *   - project_repository: target repository, usually fixed for each renkulab deployment,
+   *   - parameters: list of variables as { key, value },
+   *   - project_repository: target repository, usually fixed for each RenkuLab deployment,
    *   - project_namespace: target namespace,
    *   - project_name: target name
    */

@@ -34,7 +34,7 @@ import { CustomInput, Input } from "reactstrap";
 
 
 function CktextareaInput({ name, label, type, value, alert, setInputs, help, outputType, disabled, required = false }) {
-  const [codeview, setCodeview] = useState(false);
+  const [codeView, setCodeView] = useState(false);
 
   const switchLabel = (outputType === "markdown") ? "Markdown" : "HTML";
 
@@ -47,11 +47,11 @@ function CktextareaInput({ name, label, type, value, alert, setInputs, help, out
         id="exampleCustomSwitch"
         name="customSwitch"
         label={switchLabel}
-        checked={codeview}
-        onChange={() => { setCodeview(!codeview); }}
+        checked={codeView}
+        onChange={() => { setCodeView(!codeView); }}
       />
       {
-        codeview === false ?
+        codeView === false ?
           <CKEditor
             id={name}
             editor={outputType === "markdown" ? RenkuCKEditor.RenkuMarkdownEditor : RenkuCKEditor.RenkuHTMLEditor}
@@ -62,11 +62,11 @@ function CktextareaInput({ name, label, type, value, alert, setInputs, help, out
             rows={7}
             onChange={
               (event, editor) => {
-                const artifitialEvent = {
+                const artificialEvent = {
                   target: { name: name, value: editor.getData() },
                   isPersistent: () => false
                 };
-                setInputs(artifitialEvent);
+                setInputs(artificialEvent);
               }
             }
           />

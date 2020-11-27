@@ -1,3 +1,4 @@
+/* eslint-disable */
 export const issues = [
   {
     "id": 4,

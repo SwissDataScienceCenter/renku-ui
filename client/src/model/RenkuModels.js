@@ -55,7 +55,7 @@ const metaSchema = new Schema({
   id: { initial: "", mandatory: false },
   projectNamespace: { initial: {}, mandatory: false },
   visibility: { initial: "public", mandatory: true },
-  optoutKg: { initial: false, mandatory: false },
+  optoutKg: { initial: false, mandatory: false }, // eslint-disable-line
 });
 
 const forkDisplaySchema = new Schema({
@@ -385,7 +385,7 @@ const datasetFormSchema = new Schema({
   },
   keywords: {
     initial: [],
-    name: "kewords",
+    name: "keywords",
     label: "Keywords",
     help: "To insert a keyword, type it and press enter.",
     type: FormGenerator.FieldTypes.KEYWORDS,

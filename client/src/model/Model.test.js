@@ -53,7 +53,7 @@ const arrayObject = {
 
 const complexSchema = new Schema({
   basics: { schema: simpleSchema, mandatory: true },
-  subthing: { schema: { age: { initial: 0, mandatory: true } }, mandatory: true },
+  subThing: { schema: { age: { initial: 0, mandatory: true } }, mandatory: true },
   createdAt: { initial: () => "right now" },
   simpleThings: { schema: [simpleSchema], initial: [{ ...simpleObject }, { ...simpleObject, name: "Johnny" }] }
 });
@@ -61,7 +61,7 @@ const complexSchema = new Schema({
 const complexObject = {
   basics: { ...simpleObject },
   createdAt: "right now",
-  subthing: { age: 0 },
+  subThing: { age: 0 },
   simpleThings: [{ ...simpleObject }, { ...simpleObject, name: "Johnny" }]
 };
 
@@ -124,7 +124,7 @@ describe("complex creation", () => {
 
   const emptyObject = {
     basics: { name: undefined, purpose: undefined, numbers: [] },
-    subthing: { age: undefined },
+    subThing: { age: undefined },
     createdAt: undefined,
     simpleThings: []
   };
@@ -139,7 +139,7 @@ describe("complex creation", () => {
   });
   it("creates instance from initial object", () => {
     const store = createStore(complexSchema.reducer());
-    const initialObject = { ...complexSchema.createInitialized(), subthing: { age: 1 } };
+    const initialObject = { ...complexSchema.createInitialized(), subThing: { age: 1 } };
     const complexModel = new StateModel(complexSchema, StateKind.REDUX, store, initialObject);
     expect(complexModel.get()).toEqual(initialObject);
   });
@@ -168,7 +168,7 @@ describe("validation", () => {
     result: false,
     errors: [
       { name: "name must be provided and non-empty" },
-      { subthing: "subthing must be an object" },
+      { subThing: "subThing must be an object" },
       { name: "name must be provided and non-empty" }
     ]
   };
@@ -185,7 +185,7 @@ describe("validation", () => {
   });
   it("complex empty validates false", () => {
     const initializedThing = complexSchema.createInitialized();
-    initializedThing.subthing = "a string";
+    initializedThing.subThing = "a string";
     initializedThing.basics.name = null;
     initializedThing.simpleThings[1].name = null;
     expect(complexSchema.validate(initializedThing)).toEqual(complexErrors);
@@ -200,7 +200,7 @@ describe("update react state", () => {
     }
 
     UNSAFE_componentWillMount() {
-      this.model.set("subthing.age", 1);
+      this.model.set("subThing.age", 1);
       this.model.set("simpleThings.0.numbers.2", 2);
     }
 
@@ -208,7 +208,7 @@ describe("update react state", () => {
       let updatedSimpleThings = [...complexObject.simpleThings];
       updatedSimpleThings[0] = { ...complexObject.simpleThings[0], numbers: [0, 1, 2] };
       // eslint-disable-next-line
-      expect(this.model.get()).toEqual({ ...complexObject, subthing: { age: 1 }, simpleThings: updatedSimpleThings });
+      expect(this.model.get()).toEqual({ ...complexObject, subThing: { age: 1 }, simpleThings: updatedSimpleThings });
       return null;
     }
   }
@@ -229,10 +229,10 @@ describe("update disconnected redux store", () => {
   it("updates complex instance in redux store", () => {
     const store = createStore(complexSchema.reducer());
     const complexModel = new StateModel(complexSchema, StateKind.REDUX, store);
-    complexModel.setObject({ subthing: { age: 1 }, simpleThings: { 1: { name: "Jenny" } } });
+    complexModel.setObject({ subThing: { age: 1 }, simpleThings: { 1: { name: "Jenny" } } });
 
     // Build the more complex comparison Object
-    const comparisonObject = { ...complexObject, subthing: { age: 1 } };
+    const comparisonObject = { ...complexObject, subThing: { age: 1 } };
     comparisonObject.simpleThings = [...comparisonObject.simpleThings];
     comparisonObject.simpleThings[1] = { ...comparisonObject.simpleThings[1], name: "Jenny" };
 
@@ -241,8 +241,8 @@ describe("update disconnected redux store", () => {
   it("updates complex instance in redux store using property accessor syntax", () => {
     const store = createStore(complexSchema.reducer());
     const complexModel = new StateModel(complexSchema, StateKind.REDUX, store);
-    complexModel.set("subthing.age", 1);
-    expect(complexModel.get()).toEqual({ ...complexObject, subthing: { age: 1 } });
+    complexModel.set("subThing.age", 1);
+    expect(complexModel.get()).toEqual({ ...complexObject, subThing: { age: 1 } });
   });
 });
 
@@ -255,12 +255,12 @@ describe("update connected redux store", () => {
     }
 
     UNSAFE_componentWillMount() {
-      this.model.set("subthing.age", 1);
+      this.model.set("subThing.age", 1);
     }
 
     render() {
       // eslint-disable-next-line
-      expect(this.model.get()).toEqual({ ...complexObject, subthing: { age: 1 } });
+      expect(this.model.get()).toEqual({ ...complexObject, subThing: { age: 1 } });
       return null;
     }
   }
@@ -280,7 +280,7 @@ describe("update redux store using immutability-helper commands", () => {
   let referenceObject = { ...simpleObject };
   let updateObject;
 
-  it("check compelx object", () => {
+  it("check complex object", () => {
     expect(model.get("complex.basics")).toEqual(referenceObject);
   });
 
@@ -360,7 +360,7 @@ describe("update redux store using immutability-helper commands", () => {
     referenceObject = model.get();
     referenceObject.array.manyLetters = ["d"];
     referenceObject.complex.basics = { name: "Max Mustermann" };
-    referenceObject.complex.subthing.height = 200;
+    referenceObject.complex.subThing.height = 200;
     referenceObject.complex.createdAt = "before";
     // ? this mixes adding attributes to objects, resetting them, changing plain attributes
     model.setObject({
@@ -371,7 +371,7 @@ describe("update redux store using immutability-helper commands", () => {
         basics: {
           $set: { name: "Max Mustermann" }
         },
-        subthing: {
+        subThing: {
           height: 200
         },
         createdAt: "before"

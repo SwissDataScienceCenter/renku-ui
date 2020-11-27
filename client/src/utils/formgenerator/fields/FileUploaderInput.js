@@ -53,8 +53,8 @@ const URL_FILE_ID = "urlFileInput";
 function useFiles({ initialState = [] }) {
   const [state, setState] = useState(initialState);
   function withBlobs(files) {
-    const destructured = [...files];
-    const blobs = destructured
+    const deStructured = [...files];
+    const blobs = deStructured
       .map(file => {
         return file;
       })
@@ -91,7 +91,7 @@ function getFileObject(name, path, size, id, error, alias, controller, uncompres
   };
 }
 
-function FileuploaderInput({ name, label, alert, value, setInputs, help, disabled = false,
+function FileUploaderInput({ name, label, alert, value, setInputs, help, disabled = false,
   uploadFileFunction, filesOnUploader, required = false }) {
 
   //send value as an already built tree/hash to display and
@@ -122,11 +122,11 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
   }, [value, initialized]);
 
   useEffect(() => {
-    const artifitialEvent = {
+    const artificialEvent = {
       target: { name: name, value: uploadedFiles },
       isPersistent: () => false
     };
-    setInputs(artifitialEvent);
+    setInputs(artificialEvent);
     setDisplayFiles(prevDisplayFiles =>
       prevDisplayFiles.map(dFile => {
         let uploadingFile = uploadedFiles.find(uFile => uFile.file_name === dFile.file_name);
@@ -456,12 +456,12 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
                   }
                   {
                     file.folder_structure ? <div>
-                      <Button className="pr-0 pl-0 pt-0 pb-0 mb-1" color="link" id={"filescollapse" + (index + 1)}>
+                      <Button className="pr-0 pl-0 pt-0 pb-0 mb-1" color="link" id={"filesCollapse" + (index + 1)}>
                         <small>Show unzipped files</small>
                       </Button>
                       <UncontrolledCollapse
                         key={"#" + (index + 1) + "key"}
-                        toggler={"#filescollapse" + (index + 1)}
+                        toggler={"#filesCollapse" + (index + 1)}
                         className="pt-2">
                         <small>
                           <FileExplorer
@@ -504,7 +504,7 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
                 <InputGroup size="sm">
                   <Input
                     type="text"
-                    name="fileurl"
+                    name="fileUrl"
                     disabled={disabled}
                     id={URL_FILE_ID}
                     placeholder="Upload a file using a URL"
@@ -538,10 +538,10 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
                 <small className="text-muted">
                   NOTE: Support for uploading large files in RenkuLab is still under development; {" "}
                   consider using the Renku CLI for files larger than 500 MB.
-                  <Button className="pr-0 pl-1 pt-0 pb-0 mb-1" color="link" id="filelimittoggler">
+                  <Button className="pr-0 pl-1 pt-0 pb-0 mb-1" color="link" id="fileLimitToggler">
                     <small>More info.</small>
                   </Button>
-                  <UncontrolledCollapse key="filelimittoggler" toggler={"#filelimittoggler"} className="pt-0 pl-3">
+                  <UncontrolledCollapse key="fileLimitToggler" toggler={"#fileLimitToggler"} className="pt-0 pl-3">
                     In practice, the file-size limitation on uploads in RenkuLab is dependent on the {" "}
                     network connection. Here are some general estimates:<br />
                     <ul>
@@ -572,5 +572,5 @@ function FileuploaderInput({ name, label, alert, value, setInputs, help, disable
     </FormGroup>
   );
 }
-export default FileuploaderInput;
+export default FileUploaderInput;
 export { FILE_STATUS };

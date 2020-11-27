@@ -41,7 +41,7 @@ describe("rendering", () => {
     );
   });
 
-  it("renders Maintenance witht info", () => {
+  it("renders Maintenance with info", () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
     ReactDOM.render(
