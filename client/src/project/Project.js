@@ -494,6 +494,7 @@ class View extends Component {
         httpProjectUrl={httpProjectUrl}
         fetchDatasets={this.eventHandlers.fetchDatasets}
         overviewCommitsUrl={subUrls.overviewCommitsUrl}
+        mergeRequestsOverviewUrl={subUrls.mergeRequestsOverviewUrl}
         edit={false}
       />,
 
@@ -516,6 +517,7 @@ class View extends Component {
         httpProjectUrl={httpProjectUrl}
         fetchDatasets={this.eventHandlers.fetchDatasets}
         overviewCommitsUrl={subUrls.overviewCommitsUrl}
+        mergeRequestsOverviewUrl={subUrls.mergeRequestsOverviewUrl}
         edit={true}
       />,
 
