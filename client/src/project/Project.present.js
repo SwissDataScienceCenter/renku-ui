@@ -344,6 +344,7 @@ class ProjectFilesNav extends Component {
       hash={this.props.filesTree.hash}
       fileView={this.props.filesTreeView}
       currentUrl={this.props.location.pathname}
+      history={this.props.history}
       limitHeight={true} />;
   }
 }

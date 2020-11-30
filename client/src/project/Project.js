@@ -439,7 +439,8 @@ class View extends Component {
         projectPathOnly={this.projectState.get("core.project_path")}
         branches={branches}
         hashElement={filesTree !== undefined ? filesTree.hash[p.match.params.filePath] : undefined}
-        gitFilePath={p.location.pathname.replace(pathComponents.baseUrl + "/files/lineage/", "")} />,
+        gitFilePath={p.location.pathname.replace(pathComponents.baseUrl + "/files/lineage/", "")}
+        history={this.props.history} />,
 
       fileView: (p) => <ShowFile
         key="filePreview" {...subProps}
@@ -453,7 +454,8 @@ class View extends Component {
         projectPathWithNamespace={this.projectState.get("core.path_with_namespace")}
         hashElement={filesTree !== undefined ?
           filesTree.hash[p.location.pathname.replace(pathComponents.baseUrl + "/files/blob/", "")] :
-          undefined} />,
+          undefined}
+        history={this.props.history} />,
 
       datasetView: (p, projectInsideKg) => <ShowDataset
         key="datasetPreview" {...subProps}
