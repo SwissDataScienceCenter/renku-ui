@@ -48,6 +48,7 @@ function TemplateStatusBody(props) {
   else if (!current_template_version) { // current_template_version === null
     //if the template has no version it cant be migrated
     projectTemplateBody = (
+      // eslint-disable-next-line
       <p>
         This project does not use a versioned template.<br/>
       </p>
@@ -170,6 +171,7 @@ function RenkuVersionStatusBody(props) {
     body = getErrorMessage("checking", "renku", check_error.reason);
   }
   else if (migration_status === MigrationStatus.ERROR && migration_error
+  // eslint-disable-next-line
   && (migration_error.dockerfile_update_failed || migration_error.migrations_failed)) {
     body = getErrorMessage("updating", "renku", migration_error.reason);
   }
