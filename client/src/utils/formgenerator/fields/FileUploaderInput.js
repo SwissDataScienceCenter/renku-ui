@@ -23,8 +23,8 @@
  *  Presentational components.
  */
 import React, { useState, useEffect, useRef } from "react";
-import { FormGroup, Table, Spinner, Button, UncontrolledCollapse,
-  Card, CardBody, Input, InputGroup, InputGroupAddon } from "reactstrap";
+import { FormGroup, Table, Button, UncontrolledCollapse,
+  Card, CardBody, Input, InputGroup, InputGroupAddon, Progress } from "reactstrap";
 import ValidationAlert from "./ValidationAlert";
 import HelpText from "./HelpText";
 import FormLabel from "./FormLabel";
@@ -35,11 +35,11 @@ import { formatBytes, isURL } from "./../../HelperFunctions";
 import { FileExplorer, getFilesTree } from "../../UIComponents";
 
 const FILE_STATUS = {
-  ADDED: "added",
-  UPLOADED: "uploaded",
-  UPLOADING: "uploading",
-  FAILED: "failed",
-  PENDING: "pending"
+  ADDED: 201,
+  UPLOADED: 101,
+  UPLOADING: 0,
+  FAILED: 400,
+  PENDING: -1
 };
 
 const FILE_COMPRESSED = {
@@ -165,56 +165,99 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
     );
   }, [filesErrors]);
 
+
   let uploadFile = (file) => {
-    uploadFileFunction(file, file.file_controller, file.file_uncompress).then((response) => {
-      if (response.status >= 400) throw new Error();
-      response.json().then((body) => {
-        if (body.error) {
-          setFilesErrors(prevFilesErrors => [...prevFilesErrors,
-            getFileObject(file.name, partialFilesPath + file.name, file.size, undefined, body.error.reason, undefined,
-              file.file_controller, file.file_uncompress, file.folder_structure)]
-          );
-          return [];
-        }
+    const thenCallback = (body) => {
 
-        if (file.file_uncompress) {
-          let folderPath = body.result.files[0].relative_path.split("/")[0] + "/";
-          let file_alias = file.name !== body.result.files[0].relative_path.split("/")[0].replace(".unpacked", "") ?
-            body.result.files[0].relative_path.split("/")[0].replace(".unpacked", "") : undefined;
-          let filesTree = getFilesTree(body.result.files.map(file=>
-            ({ "atLocation": file.relative_path.replace(folderPath, ""),
-              "id": file.file_id
-            })));
+      if (body.error) {
+        setFilesErrors(prevFilesErrors => [...prevFilesErrors,
+          getFileObject(file.name, partialFilesPath + file.name, file.size, undefined, body.error.reason, undefined,
+            file.file_controller, file.file_uncompress, file.folder_structure)]
+        );
+        return [];
+      }
 
-          let newFileDraft = getFileObject(
-            file.name, partialFilesPath + file.name, 0, [], undefined, file_alias, response.controller,
-            file.file_uncompress, filesTree);
+      if (file.file_uncompress) {
+        let folderPath = body.result.files[0].relative_path.split("/")[0] + "/";
+        let file_alias = file.name !== body.result.files[0].relative_path.split("/")[0].replace(".unpacked", "") ?
+          body.result.files[0].relative_path.split("/")[0].replace(".unpacked", "") : undefined;
+        let filesTree = getFilesTree(body.result.files.map(file=>
+          ({ "atLocation": file.relative_path.replace(folderPath, ""),
+            "id": file.file_id
+          })));
 
-          newFileDraft.file_size = body.result.files ? body.result.files[0].file_size : 0;
-          newFileDraft.file_id = filesTree.tree.map(file => file.id);
-          setUploadedFiles(prevUploadedFiles => [...prevUploadedFiles, newFileDraft]);
-          return newFileDraft;
-        }
-        let newFileObj = body.result.files[0];
-        if (newFileObj.file_name !== undefined && newFileObj.file_name !== file.name) {
-          newFileObj = getFileObject(
-            file.name, partialFilesPath + file.name, newFileObj.file_size, [newFileObj.file_id],
-            undefined, newFileObj.file_name, response.controller, file.file_uncompress, undefined);
-        }
-        else {
-          newFileObj.file_id = [newFileObj.file_id];
-        }
-        setUploadedFiles(prevUploadedFiles => [...prevUploadedFiles, newFileObj]);
-        return newFileObj;
-      });
-    }).catch((error) => {
+        let newFileDraft = getFileObject(
+          file.name, partialFilesPath + file.name, 0, [], undefined, file_alias,
+          undefined,
+          file.file_uncompress, filesTree);
+
+        newFileDraft.file_size = body.result.files ? body.result.files[0].file_size : 0;
+        newFileDraft.file_id = filesTree.tree.map(file => file.id);
+        setUploadedFiles(prevUploadedFiles => [...prevUploadedFiles, newFileDraft]);
+        return newFileDraft;
+      }
+      let newFileObj = body.result.files[0];
+      if (newFileObj.file_name !== undefined && newFileObj.file_name !== file.name) {
+        newFileObj = getFileObject(
+          file.name, partialFilesPath + file.name, newFileObj.file_size, [newFileObj.file_id],
+          undefined, newFileObj.file_name,
+          undefined,
+          file.file_uncompress, undefined);
+      }
+      else {
+        newFileObj.file_id = [newFileObj.file_id];
+      }
+      setUploadedFiles(prevUploadedFiles => [...prevUploadedFiles, newFileObj]);
+      return newFileObj;
+    };
+
+    const onErrorCallback = (error) => {
       if (error.code !== DOMException.ABORT_ERR) {
         setFilesErrors(prevFilesErrors => [...prevFilesErrors,
           getFileObject(file.name, partialFilesPath + file.name, file.size, undefined, "Error uploading the file",
             undefined, file.file_controller, file.file_uncompress, file.folder_structure)]);
         return [];
       }
-    });
+    };
+
+    const setController = (monitored_file, controller) => {
+      setDisplayFiles(prevUploadedFiles => prevUploadedFiles
+        .map(file => file.file_name === monitored_file.name ?
+          getFileObject(
+            file.file_name,
+            file.file_path,
+            file.file_size,
+            file.file_id,
+            file.file_error,
+            file.file_alias,
+            controller,
+            file.file_uncompress,
+            file.folder_structure,
+            file.file_status
+          )
+          : file));
+    };
+
+    const setFileProgress = (monitored_file, progress) => {
+      setDisplayFiles(prevUploadedFiles => prevUploadedFiles
+        .map(file => file.file_name === monitored_file.name ?
+          getFileObject(
+            file.file_name,
+            file.file_path,
+            file.file_size,
+            file.file_id,
+            file.file_error,
+            file.file_alias,
+            file.file_controller,
+            file.file_uncompress,
+            file.folder_structure,
+            progress
+          )
+          : file));
+    };
+
+    uploadFileFunction(file, file.file_uncompress, setFileProgress, thenCallback, onErrorCallback, setController);
+
   };
 
   let onDropOrChange = (e) => {
@@ -354,7 +397,7 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
             <FontAwesomeIcon color="var(--primary)" icon={faSyncAlt} /> Retry
           </span>
         </div>;
-      case FILE_STATUS.UPLOADING:
+      default:
         if (file.file_uncompress === FILE_COMPRESSED.WAITING) {
           return <div style={{ fontWeight: "600" }}>
             <FontAwesomeIcon color="var(--warning)" icon={faExclamationTriangle} />
@@ -367,9 +410,7 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
             </span>
           </div>;
         }
-        return <span><Spinner color="primary" size="sm" /> uploading</span>;
-      default:
-        return null;
+        return <span><Progress value={file.file_status}>{file.file_status}%</Progress></span>;
     }
   };
 
@@ -482,10 +523,13 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
                     file.file_status === FILE_STATUS.PENDING ?
                       <FontAwesomeIcon color="var(--danger)" icon={faTrashAlt}
                         onClick={() => deleteFile(file.file_name)} />
-                      : (file.file_status === FILE_STATUS.UPLOADING && file.file_controller !== undefined ?
-                        <FontAwesomeIcon color="var(--danger)" icon={faTrashAlt}
-                          onClick={() => deleteFile(file.file_name, file.file_controller)} />
-                        : null)
+                      : (file.file_status >= FILE_STATUS.UPLOADING && file.file_status < FILE_STATUS.UPLOADED
+                          && file.file_controller !== undefined ?
+                        (
+                          <FontAwesomeIcon color="var(--danger)" icon={faTrashAlt}
+                            onClick={() => deleteFile(file.file_name, file.file_controller)} />
+                        )
+                        : "null")
                   }
                 </td>
               </tr>
