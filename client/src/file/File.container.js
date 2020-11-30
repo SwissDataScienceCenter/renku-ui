@@ -30,7 +30,9 @@ import { CardBody } from "reactstrap";
 const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "pdf", "gif"];
 const CODE_EXTENSIONS = [
   "py", "js", "json", "sh", "r", "yml", "csv", "parquet", "cwl", "job", "prn", "rout",
-  "dcf", "rproj", "rst", "bat", "ini", "rmd", "jl", "toml"
+  "dcf", "rproj", "rst", "bat", "ini", "rmd", "jl", "toml", "ts", "rs", "scala",
+  "c", "cc", "cxx", "cpp", "h", "hh", "hxx", "hpp", // C++
+  "f", "for", "ftn", "fpp", "f90", "f95", "f03", "f08" // Fortran
 ];
 const TEXT_EXTENSIONS = ["txt"];
 
@@ -293,7 +295,10 @@ class ShowFile extends React.Component {
         return json;
       }).then(fileJson => {
         if (fileJson == null) return;
-        return client.getRepositoryCommit(this.props.projectId, fileJson.last_commit_id);
+        const commitId = fileJson.last_commit_id ?
+          fileJson.last_commit_id :
+          fileJson.commit_id;
+        return client.getRepositoryCommit(this.props.projectId, commitId);
       }).then(commitJson => {
         if (!this._isMounted) return null;
         this.setState({ commit: commitJson });
