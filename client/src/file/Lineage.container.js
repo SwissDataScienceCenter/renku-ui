@@ -40,7 +40,7 @@ class FileLineage extends Component {
     // TODO This should work a little differently for robustness:
     // - Get the dot/master deployment URL (environment external_url) from gitlab
     // - Get the job from gitlab
-    // - Combine the file name from the external_url and the job information to retreive the file
+    // - Combine the file name from the external_url and the job information to retrieve the file
     // TODO: Write a wrapper to make promises cancellable to avoid usage of this._isMounted
     this._isMounted = true;
     this.retrieveGraph();

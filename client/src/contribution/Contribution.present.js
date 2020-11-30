@@ -21,7 +21,7 @@ import {
   Row, Col, Button, Input, TabContent, TabPane, NavItem,
   Nav, NavLink, DropdownMenu, DropdownItem, DropdownToggle, Dropdown
 } from "reactstrap";
-import classnames from "classnames";
+import { default as classNames } from "classnames"; // eslint-disable-line
 
 import { UserAvatar, TimeCaption, RenkuMarkdown } from "../utils/UIComponents";
 import { EDIT, PREVIEW } from "./Contribution.constants";
@@ -51,7 +51,7 @@ class Contribution extends React.Component {
                 <Col md={12}>
                   <strong>{contribution.author ? contribution.author.name : null}</strong>&nbsp;&nbsp;
                   <span className="caption align-baseline">
-                    <TimeCaption key="timecaption" caption="Commented" time={contribution.updated_at} />
+                    <TimeCaption key="timeCaption" caption="Commented" time={contribution.updated_at} />
                   </span>
                 </Col>
               </Row>
@@ -99,7 +99,7 @@ const NewContribution = props => {
           <Nav pills className={"nav-pills-underline"}>
             <NavItem>
               <NavLink
-                className={classnames({ active: props.tab === EDIT })}
+                className={classNames({ active: props.tab === EDIT })}
                 onClick={() => {
                   props.onTabClick(EDIT);
                 }}
@@ -107,7 +107,7 @@ const NewContribution = props => {
             </NavItem>
             <NavItem>
               <NavLink
-                className={classnames({ active: props.tab === PREVIEW })}
+                className={classNames({ active: props.tab === PREVIEW })}
                 onClick={() => {
                   props.onTabClick(PREVIEW);
                 }}
@@ -119,7 +119,7 @@ const NewContribution = props => {
             <TabPane tabId={EDIT} className="py-2">{textInput}</TabPane>
             <TabPane tabId={PREVIEW} className="pt-2">
               {/*This might look silly, but I want to remove the preview from the virtual DOM when the user*/}
-              {/*is editing rather than re-rendering it on every keystroak while the user is typing.*/}
+              {/*is editing rather than re-rendering it on every keystroke while the user is typing.*/}
               {props.tab === PREVIEW ?
                 <div className="pb-3">
                   <RenkuMarkdown

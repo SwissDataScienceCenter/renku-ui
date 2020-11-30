@@ -74,7 +74,7 @@ describe("notebook server clean annotation", () => {
     expect(JSON.stringify(elaboratedAnnotations)).toBe(JSON.stringify(expectedAnnotations));
   });
   it("renku.io mixed", () => {
-    const namespace = "myCoolNampsace";
+    const namespace = "myCoolNamespace";
     const branch = "anotherBranch";
     const projectName = "funkyProject";
     const repository = `https://fake.repo/${namespace}/${projectName}`;
@@ -119,7 +119,7 @@ describe("parse project level environment options", () => {
 
   it("invalid content", () => {
     let content = `
-      [nonrenku]
+      [nonRenku]
       default_url = /tree`;
     let parsedContent = NotebooksHelper.parseProjectOptions(content);
     expect(Object.keys(parsedContent).length).toBe(0);
@@ -307,7 +307,7 @@ describe("rendering", () => {
       model,
       scope,
       launchNotebookUrl: "/projects/abc/def/launchNotebook",
-      filePath: "notebook.ypynb"
+      filePath: "notebook.ipynb"
     };
 
     const div = document.createElement("div");

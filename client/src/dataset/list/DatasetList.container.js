@@ -33,17 +33,17 @@ class List extends Component {
     this.handlers = {
       onSearchQueryChange: this.onSearchQueryChange.bind(this),
       onSearchSubmit: this.onSearchSubmit.bind(this),
-      onOrderByDropdownToogle: this.onOrderByDropdownToogle.bind(this),
+      onOrderByDropdownToggle: this.onOrderByDropdownToggle.bind(this),
       changeSearchDropdownOrder: this.changeSearchDropdownOrder.bind(this),
-      toogleSearchSorting: this.toogleSearchSorting.bind(this),
+      toggleSearchSorting: this.toggleSearchSorting.bind(this),
       onPaginationPageChange: this.onPaginationPageChange.bind(this),
     };
   }
 
   componentDidMount() {
     const { query, orderBy, orderSearchAsc, pathName, pageNumber } = this.getUrlSearchParameters(this.props.location);
-    let queryproc = query;
-    if (queryproc === undefined)
+    let queryProcess = query;
+    if (queryProcess === undefined)
       this.model.setInitialized(true);
     else
       this.model.setQuery(query);
@@ -56,12 +56,12 @@ class List extends Component {
     this.model.performSearch();
     const listener = this.props.history.listen(location => {
       const { query, orderBy, orderSearchAsc, pathName, pageNumber } = this.getUrlSearchParameters(location);
-      let queryproc = query;
-      if (queryproc === undefined) {
+      let queryProcess = query;
+      if (queryProcess === undefined) {
         this.model.setInitialized(true);
-        queryproc = "";
+        queryProcess = "";
       }
-      this.onUrlParametersChange(queryproc, orderBy, orderSearchAsc, pathName, pageNumber);
+      this.onUrlParametersChange(queryProcess, orderBy, orderSearchAsc, pathName, pageNumber);
     });
     this.setState({ listener });
   }
@@ -128,7 +128,7 @@ class List extends Component {
     this.model.setQuery(e.target.value);
   }
 
-  onOrderByDropdownToogle() {
+  onOrderByDropdownToggle() {
     this.model.setOrderDropdownOpen(!this.model.get("orderByDropdownOpen"));
   }
 
@@ -137,7 +137,7 @@ class List extends Component {
     this.pushNewSearchToHistory();
   }
 
-  toogleSearchSorting() {
+  toggleSearchSorting() {
     this.model.setOrderSearchAsc(!this.model.get("orderSearchAsc"));
     this.pushNewSearchToHistory();
   }

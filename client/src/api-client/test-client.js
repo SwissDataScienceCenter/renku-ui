@@ -127,7 +127,7 @@ const methods = {
   getTemplatesManifest: {
     response: {
       result: {
-        remplates: []
+        templates: []
       }
     }
   },
@@ -148,10 +148,10 @@ const methods = {
       }],
       "datePublished": "01/01/2001",
     },
-    "identifier": "79215657-4319-4fcf-82b9-58267f2a1db8",
+    "identifier": "79215657-4319-4fcf-82b9-58267f2a1db8", // eslint-disable-line
     "keywords": ["test1", "test2", "test3"],
     "hasPart": [
-      { "name": "Data file 1.xlsx", "atLocation": "data/test_dataset/Data file 1.xlsx" }
+      { "name": "Data file 1.xls", "atLocation": "data/test_dataset/Data file 1.xls" }
     ],
     "url": "https://dev.renku.ch/datasets/79215657-4319-4fcf-82b9-58267f2a1db8",
     "sameAs": "https://dev.renku.ch/datasets/79215657-4319-4fcf-82b9-58267f2a1db8",
@@ -161,7 +161,6 @@ const methods = {
 
 let client = {};
 for (let key in methods) {
-
   client[key] = function() {
     return new Promise(resolve => {
       resolve(methods[key].response);

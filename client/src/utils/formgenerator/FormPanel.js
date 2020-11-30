@@ -32,7 +32,7 @@ import SelectInput from "./fields/SelectInput";
 import CreatorsInput from "./fields/CreatorsInput";
 import SelectautosuggestInput from "./fields/SelectAutosuggestInput";
 import CktextareaInput from "./fields/CKEditorTextArea";
-import FileuploaderInput from "./fields/FileUploaderInput";
+import FileUploaderInput from "./fields/FileUploaderInput";
 import KeywordsInput from "./fields/KeywordsInput";
 import ValidationAlert from "./fields/ValidationAlert";
 import { Loader } from "../../utils/UIComponents";
@@ -75,7 +75,7 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors,
     TextInput,
     TextareaInput,
     CktextareaInput,
-    FileuploaderInput,
+    FileUploaderInput,
     SelectInput,
     SelectautosuggestInput,
     CreatorsInput,
@@ -100,7 +100,7 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors,
       );
     }
     return (<div>
-      <p>Errors occured while creating the project.</p>
+      <p>Errors occurred while creating the project.</p>
       {content}
     </div>);
   };

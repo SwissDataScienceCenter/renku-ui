@@ -28,7 +28,7 @@ export default {
     TEXT: "text",
     TEXT_AREA: "textarea",
     TEXT_EDITOR: "cktextarea",
-    FILES: "fileuploader",
+    FILES: "fileUploader",
     SELECT: "select",
     SELECTAUTOSUGGEST: "selectautosuggest",
     CREATORS: "creators",

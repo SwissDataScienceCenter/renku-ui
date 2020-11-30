@@ -34,6 +34,7 @@ export default function addDatasetMethods(client) {
       setController(file, httpRequest);
     };
 
+    // eslint-disable-next-line
     httpRequest.onloadend = function() {
       if (httpRequest.status === 200 && httpRequest.response)
         thenCallback(JSON.parse(httpRequest.response));

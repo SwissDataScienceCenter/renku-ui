@@ -105,7 +105,7 @@ describe("Dataset functions", () => {
     "identifier": "79215657-4319-4fcf-82b9-58267f2a1db8",
     "keywords": ["test1", "test2", "test3"],
     "hasPart": [
-      { "name": "Data file 1.xlsx", "atLocation": "data/test_dataset/Data file 1.xlsx" }
+      { "name": "Data file 1.xls", "atLocation": "data/test_dataset/Data file 1.xls" }
     ],
     "url": "https://dev.renku.ch/datasets/79215657-4319-4fcf-82b9-58267f2a1db8",
     "sameAs": "https://dev.renku.ch/datasets/79215657-4319-4fcf-82b9-58267f2a1db8",
@@ -115,8 +115,8 @@ describe("Dataset functions", () => {
   const result_dataset_in_kg = {
     ...kg_dataset,
     "hasPart": [
-      { "name": "Data file 2.xlsx", "atLocation": "data/test_dataset/Data file 2.xlsx" },
-      { "name": "Data file 1.xlsx", "atLocation": "data/test_dataset/Data file 1.xlsx" }
+      { "name": "Data file 2.xls", "atLocation": "data/test_dataset/Data file 2.xls" },
+      { "name": "Data file 1.xls", "atLocation": "data/test_dataset/Data file 1.xls" }
     ],
     "insideKg": true
   };
@@ -136,8 +136,8 @@ describe("Dataset functions", () => {
     "identifier": "79215657-4319-4fcf-82b9-58267f2a1db8",
     "keywords": ["test1", "test2", "test3"],
     "hasPart": [
-      { "name": "Data file 2.xlsx", "atLocation": "data/test_dataset/Data file 2.xlsx" },
-      { "name": "Data file 1.xlsx", "atLocation": "data/test_dataset/Data file 1.xlsx" }
+      { "name": "Data file 2.xls", "atLocation": "data/test_dataset/Data file 2.xls" },
+      { "name": "Data file 1.xls", "atLocation": "data/test_dataset/Data file 1.xls" }
     ],
     "insideKg": false
   };
@@ -149,8 +149,8 @@ describe("Dataset functions", () => {
 
 
   const core_files = [
-    { "name": "Data file 2.xlsx", "atLocation": "data/test_dataset/Data file 2.xlsx" },
-    { "name": "Data file 1.xlsx", "atLocation": "data/test_dataset/Data file 1.xlsx" }
+    { "name": "Data file 2.xls", "atLocation": "data/test_dataset/Data file 2.xls" },
+    { "name": "Data file 1.xls", "atLocation": "data/test_dataset/Data file 1.xls" }
   ];
 
   it("maps core dataset into kg dataset structure", () => {

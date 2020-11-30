@@ -71,7 +71,7 @@ const NamespaceProjects = (props) => {
       const groupUrl = searchGroupUrl(namespace);
       const projectUrl = searchProjectUrl(namespace);
       outcome = (
-        <NamespaceNotfoundActions namespace={namespace} userUrl={userUrl} groupUrl={groupUrl} projectUrl={projectUrl} />
+        <NamespaceNotFoundActions namespace={namespace} userUrl={userUrl} groupUrl={groupUrl} projectUrl={projectUrl} />
       );
     }
   }
@@ -122,7 +122,7 @@ const NamespaceGroupActions = (props) => {
   </div>);
 };
 
-const NamespaceNotfoundActions = (props) => {
+const NamespaceNotFoundActions = (props) => {
   return (<div>
     <p>We could not find a user or group with name <i>{props.namespace}</i>.</p>
 
