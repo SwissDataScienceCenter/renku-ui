@@ -1,10 +1,9 @@
 .icon-purple{
-   color: #5561A6;
-
+  color: #5561A6;
 }
 
 .icon-white{
-    color:white;
+  color:white;
 }
 
 .icon-gray{
@@ -16,79 +15,74 @@
 }
 
 .hidden-folder{
-    opacity:0.5;
+  opacity:0.5;
 }
 
 .icon-link{
-    color: rgba(0, 0, 0, 0.5);
-    margin-left: 10px;
-    font-size: larger;
-    height: auto;
+  color: rgba(0, 0, 0, 0.5);
+  margin-left: 10px;
+  font-size: larger;
+  height: auto;
 }
 
 .icon-link:hover{
-    color: #5561A6;
-    cursor: pointer;
+  color: #5561A6;
+  cursor: pointer;
 }
 
 .throw-right-in-flex{
-    margin-left: auto;
+  margin-left: auto;
 }
 
 .fs-element{
-    color: #212529;
-    text-overflow: ellipsis;
-    overflow: hidden; 
-    white-space: nowrap;
-    padding:1px;
-    padding-left: 6px;
-    padding-right:2px;
-    font-size: medium;
+  color: #212529;
+  text-overflow: ellipsis;
+  overflow: hidden; 
+  white-space: nowrap;
+  padding:1px;
+  padding-left: 6px;
+  padding-right:2px;
+  font-size: medium;
 }
 
 .fs-element a{
-    color:black;
+  color:black;
 }
 
 .tree-header-title{
-    position: relative;
-    top: 2px;
+  position: relative;
+  top: 2px;
 }
 
 .fs-element:hover{
-    background-color:#e9ecef;
-    border-radius: 0.15rem;
-    cursor: pointer;
+  background-color:#e9ecef;
+  border-radius: 0.15rem;
+  cursor: pointer;
 }
 
 .fs-element .icon-lineage{
-    padding: 6px;
+  padding: 6px;
 }
 
 .selected-file{
-    background-color: #e9ecef;
+  background-color: #e9ecef;
+}
+
+.tree-title-container{
+  display:block
 }
 
 .tree-title{
-    background-color: #5561A6;
-    color:white;
-    border-radius: 0.25rem;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 1rem;
-    font-weight: 300;
-    line-height: 1.5;
-    padding: 0.75rem 1.25rem;
-    margin-bottom: 10px;
+  display:flex;
 }
 
 .order-first{
-    order:1;
+  order:1;
 }
 
 .scroll-x{
-    overflow-x: auto;
-    /* overflow-x: scroll; */
+  overflow-x: auto;
+  /* overflow-x: scroll; */
 }
 
 .order-second{
@@ -96,24 +90,24 @@
 }
 
 .order-third{
-    order:3;
+  order:3;
 }
 
 .tree-container{
-    display: flex; 
-    flex-direction: column;
-    font-size: 2rem;
-    font-weight: 300;
+  display: flex; 
+  flex-direction: column;
+  font-size: 2rem;
+  font-weight: 300;
 }
 
 .tree-content {
-    overflow-y: auto;
+  overflow-y: auto;
 }
 
 .lfs-badge{
-    border-color:#aaa;
-    border-width: 1.3px;
-    border-style: solid;
-    margin-right: 7px;
-    color:#aaa;
+  border-color:#aaa;
+  border-width: 1.3px;
+  border-style: solid;
+  margin-right: 7px;
+  color:#aaa;
 }
