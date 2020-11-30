@@ -12,13 +12,13 @@ function btoaReplacer(nonAsciiChars) {
   // make the UTF string into a binary UTF-8 encoded string
   var point = nonAsciiChars.charCodeAt(0);
   if (point >= 0xD800 && point <= 0xDBFF) {
-    var nextcode = nonAsciiChars.charCodeAt(1);
+    var nextCode = nonAsciiChars.charCodeAt(1);
     // eslint-disable-next-line
-    if (nextcode !== nextcode) // NaN because string is 1 code point long
+    if (nextCode !== nextCode) // NaN because string is 1 code point long
       return fromCharCode(0xef/*11101111*/, 0xbf/*10111111*/, 0xbd/*10111101*/);
     // https://mathiasbynens.be/notes/javascript-encoding#surrogate-formulae
-    if (nextcode >= 0xDC00 && nextcode <= 0xDFFF) {
-      point = (point - 0xD800) * 0x400 + nextcode - 0xDC00 + 0x10000;
+    if (nextCode >= 0xDC00 && nextCode <= 0xDFFF) {
+      point = (point - 0xD800) * 0x400 + nextCode - 0xDC00 + 0x10000;
       if (point > 0xffff) {
         return fromCharCode(
           (0x1e/*0b11110*/ << 3) | (point >>> 18),
@@ -74,6 +74,7 @@ function atobReplacer(encoded) {
 function atobUTF8(inputString, keepBOM) {
   if (!keepBOM && inputString.substring(0, 3) === "\xEF\xBB\xBF")
     inputString = inputString.substring(3); // eradicate UTF-8 BOM
+  // eslint-disable-next-line
   // 0xc0 => 0b11000000; 0xff => 0b11111111; 0xc0-0xff => 0b11xxxxxx
   // 0x80 => 0b10000000; 0xbf => 0b10111111; 0x80-0xbf => 0b10xxxxxx
   return originalAtob(inputString).replace(/[\xc0-\xff][\x80-\xbf]*/g, atobReplacer);

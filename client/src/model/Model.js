@@ -61,7 +61,7 @@ const PropertyName = {
   EDITONCLICK: "editOnClick"
 };
 
-// Named consts for the bindings to the store.
+// Named const for the bindings to the store.
 const StateKind = {
   REDUX: "redux_store",
   REACT: "react_State"
@@ -357,11 +357,11 @@ function validate(schema, obj) {
   let errors = [];
   Object.keys(schema).forEach((prop) => {
     let subErrors = [];
-    // schema[prop] conatains another schema but the corresponding obj property is NOT an object itself.
+    // schema[prop] contains another schema but the corresponding obj property is NOT an object itself.
     if (Object.hasOwnProperty.call(schema[prop], PropertyName.SCHEMA) && !(obj[prop] instanceof Object)) {
       subErrors = validateField(prop, schema[prop], obj[prop]);
     }
-    // schema[prop] conatains another schema which is not an array
+    // schema[prop] contains another schema which is not an array
     else if (Object.hasOwnProperty.call(schema[prop], PropertyName.SCHEMA) &&
       (schema[prop][PropertyName.SCHEMA] instanceof Schema)) {
       subErrors = schema[prop][PropertyName.SCHEMA].validate(obj[prop]).errors;

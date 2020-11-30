@@ -212,10 +212,10 @@ class ProjectModel extends StateModel {
   returnTreeOrFetchNext(client, openFilePath, openFolder, tree) {
     if (openFilePath !== undefined && openFilePath.split("/").length > 1) {
       const openFilePathArray = openFilePath.split("/");
-      const goto = openFolder !== undefined ?
+      const goTo = openFolder !== undefined ?
         openFolder + "/" + openFilePathArray[0]
         : openFilePathArray[0];
-      return this.fetchProjectFilesTree(client, openFilePath.replace(openFilePathArray[0], ""), goto);
+      return this.fetchProjectFilesTree(client, openFilePath.replace(openFilePathArray[0], ""), goTo);
     }
     return tree;
 
@@ -433,7 +433,7 @@ class ProjectCoordinator {
       this.model.get("filters.branch.name");
     const response = await this.client.getCommits(projectId, branch);
     // add at least a notification on response.error (waiting for #991).
-    // Some data may be avialable, verify it before choosing the proper notification.
+    // Some data may be available, verify it before choosing the proper notification.
     const commits = response.data;
     this.model.setObject({
       commits: {

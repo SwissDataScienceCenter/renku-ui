@@ -152,7 +152,7 @@ class IssueViewHeader extends Component {
       <Row key="info">
         <Col style={{ borderBottom: "1px solid #dee2e6" }} className="pb-1">
           <span className="caption align-baseline">
-            <TimeCaption key="timecaption" caption="Created" time={time} endCaption={"by @" + author}/>
+            <TimeCaption key="timeCaption" caption="Created" time={time} endCaption={"by @" + author}/>
           </span>
         </Col>
       </Row>

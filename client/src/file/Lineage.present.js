@@ -97,12 +97,7 @@ class FileLineageGraph extends Component {
     const graph = this.props.graph;
     const NODE_COUNT = this.props.graph.length;
     const subGraph = new graphlib.Graph()
-      .setGraph({
-        nodesep: 20,
-        ranksep: 80,
-        marginx: 20,
-        marginy: 20,
-      })
+      .setGraph({ nodesep: 20, ranksep: 80, marginx: 20, marginy: 20 }) // eslint-disable-line
       .setDefaultEdgeLabel(function () { return {}; });
 
     graph.nodes.forEach(n => {
@@ -169,8 +164,8 @@ class FileLineageGraph extends Component {
       });
 
     // Center the graph
-    const bbox = document.getElementsByClassName("graphContainer")[0].lastChild.getBBox();
-    svg.attr("viewBox", "0 0 " + bbox.width + " " + bbox.height);
+    const bBox = document.getElementsByClassName("graphContainer")[0].lastChild.getBBox();
+    svg.attr("viewBox", "0 0 " + bBox.width + " " + bBox.height);
 
     d3.select("#zoom_in").on("click", function () {
       zoom.scaleBy(svg.transition().duration(750), 1.5);

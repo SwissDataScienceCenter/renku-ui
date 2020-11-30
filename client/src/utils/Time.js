@@ -54,7 +54,7 @@ class Time {
     else if (type === "time")
       return readableDate.substring(11);
 
-    throw (new Error(`Uknown type "${type}"`));
+    throw (new Error(`Unknown type "${type}"`));
   }
 
   static toIsoTimezoneString(inputDate, type = "datetime") {

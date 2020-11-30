@@ -63,11 +63,11 @@ function KeywordsInput(
   };
 
   React.useEffect(()=>{
-    const artifitialEvent = {
+    const artificialEvent = {
       target: { name: name, value: tags },
       isPersistent: () => false
     };
-    setInputs(artifitialEvent);
+    setInputs(artificialEvent);
     //eslint-disable-next-line
   }, [tags]);
 

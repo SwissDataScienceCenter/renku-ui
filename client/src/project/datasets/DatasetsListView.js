@@ -88,7 +88,7 @@ export default function DatasetsListView(props) {
         </span>
       </h2>
     </Col>
-  </Row>, <Row key="datasetslist">
+  </Row>, <Row key="datasetsList">
     <Col xs={12}>
       <ListGroup>
         {

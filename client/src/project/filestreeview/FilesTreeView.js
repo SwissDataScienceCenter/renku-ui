@@ -14,7 +14,7 @@ class TreeNode extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isSelected: this.props.nodeInsideisSelected,
+      isSelected: this.props.nodeInsideIsSelected,
       childrenOpen: this.props.childrenOpen
     };
     this.handleIconClick = this.handleIconClick.bind(this);
@@ -46,9 +46,9 @@ class TreeNode extends Component {
       (this.state.childrenOpen === false ?
         <FontAwesomeIcon className="icon-purple" icon={faFolderClosed} />
         : <FontAwesomeIcon className="icon-purple" icon={faFolderOpen} />)
-      : <FontAwesomeIcon className="icon-grey" icon={faFile} />;
+      : <FontAwesomeIcon className="icon-gray" icon={faFile} />;
 
-    const order = this.props.node.type === "tree" ? "order-seccond" : "order-third";
+    const order = this.props.node.type === "tree" ? "order-second" : "order-third";
     const hidden = this.props.node.name.startsWith(".") ? " hidden-folder " : "";
 
     const children = this.props.node.children ?
@@ -243,9 +243,9 @@ class FilesTreeView extends Component {
                 distanceFromTop :
                 0;
               const maxHeight = window.innerHeight - 80 - deltaDistance;
-              const treeStlye = { ...style, maxHeight, top: 10, transform: "" };
+              const treeStyle = { ...style, maxHeight, top: 10, transform: "" };
 
-              return (<TreeContainer {...treeProps} style={treeStlye} />);
+              return (<TreeContainer {...treeProps} style={treeStyle} />);
             }
           }
         </Sticky>

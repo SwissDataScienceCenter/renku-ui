@@ -109,15 +109,15 @@ class FieldGroup extends Component {
       help = this.props.help,
       feedback = this.props.feedback,
       props = this.props;
-    const subprops = {};
+    const subProps = {};
     if (props.valid === true)
-      subprops.valid = "true";
+      subProps.valid = "true";
     if (props.invalid === true)
-      subprops.invalid = "true";
+      subProps.invalid = "true";
     return <FormGroup>
       <Label>{label}</Label>
       <Input {...props} />
-      {feedback && <FormFeedback {...subprops}>{feedback}</FormFeedback>}
+      {feedback && <FormFeedback {...subProps}>{feedback}</FormFeedback>}
       {help && <FormText color="muted">{help}</FormText>}
     </FormGroup>;
   }
@@ -149,14 +149,14 @@ class RenkuNavLink extends Component {
 
   testActive(match, location) {
     const alt = this.props.alternate;
-    if (this.props.matchpath === true) {
+    if (this.props.matchPath === true) {
       let haveMatch = (match != null || location.pathname.startsWith(this.props.to));
       if (alt == null) return haveMatch;
       return haveMatch || location.pathname.startsWith(alt);
     }
     let haveMatch = match != null;
     if (alt == null) return haveMatch;
-    if (this.props.noSubpath)
+    if (this.props.noSubPath)
       return haveMatch || location.pathname.endsWith(alt);
     return haveMatch || location.pathname.startsWith(alt);
   }
@@ -259,21 +259,31 @@ function ExternalLinkText(props) {
 /**
  * Link to external URL.
  *
- * @param {string} [url] - The URL to link to
- * @param {string} [title] - The text to show for the link
- * @param {string} [role] - "link" or "text" to be shown as a link, null for a button
- * @param {string?} [className] - [Optional] Any classes to add, e.g., 'nav-link' or 'dropdown-item'
+ * @param {string} url - The URL to link to
+ * @param {string} title - The text to show for the link
+ * @param {string} [role] - "link" or "text" to be shown as a link, null for a button (default null)
+ * @param {string} [className] - Any classes to add, e.g., 'nav-link' or 'dropdown-item'
  * @param {boolean} [showLinkIcon] - Show the icon to indicate an external link if true (default false)
  * @param {string} [iconSize] - icon size modifier ("lg", "2x", ...)
+ * @param {boolean} [iconSup] - Position the icon as superscript when true (default false)
+ * @param {boolean} [iconAfter] - Position the icon after the text when true (default false)
  * @param {string} [id] - main element's id
  */
 function ExternalLink(props) {
   const role = props.role;
-  const displayTitle = (props.showLinkIcon) ?
-    (<span><FontAwesomeIcon icon={faExternalLinkAlt} size={props.iconSize} color="dark" /> {props.title}</span>) :
-    props.title;
+  const showLinkIcon = props.showLinkIcon || props.iconSup || props.iconAfter || props.iconSize ?
+    true :
+    false;
+  let displayTitle = props.title;
+  if (showLinkIcon) {
+    const icon = props.iconSup ?
+      (<sup><FontAwesomeIcon icon={faExternalLinkAlt} size={props.iconSize} color="dark" /></sup>) :
+      (<FontAwesomeIcon icon={faExternalLinkAlt} size={props.iconSize} color="dark" />);
+    displayTitle = props.iconAfter ?
+      (<span>{props.title} {icon}</span>) :
+      (<span>{icon} {props.title}</span>);
+  }
   const myProps = { ...props, title: displayTitle };
-
   if (role === "link" || role === "text")
     return ExternalLinkText(myProps);
   return ExternalLinkButton(myProps);
@@ -330,7 +340,7 @@ function Loader(props) {
 }
 
 /**
- * Display a dismissable alert.
+ * Display a alert that can be dismissed.
  *
  * @param {number} [timeout] - define how many seconds the component should be visible.
  *   10 is default. 0 for unlimited.
@@ -479,7 +489,7 @@ function MarkdownTextExcerpt(props) {
 /**
  * Jupyter icon
  *
- * @param {boolean} [greyscale] - show the grayscale version of the logo
+ * @param {boolean} [grayscale] - show the grayscale version of the logo
  * @param {string} [svgClass] - class to apply on the svg element
  */
 class JupyterIcon extends Component {
@@ -487,7 +497,7 @@ class JupyterIcon extends Component {
     const style = { "mixBlendMode": "normal" };
     const Colors = {
       GREY: "#767677",
-      ORANGE: this.props.greyscale ?
+      ORANGE: this.props.grayscale ?
         "#767677" :
         "#F37726"
     };

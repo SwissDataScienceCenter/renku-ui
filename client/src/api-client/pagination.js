@@ -59,7 +59,7 @@ function processPaginationHeaders(headers) {
       parseInt(headers.get(header), 10) || undefined;
   });
 
-  // Parse the pagination releated hedares (non-X)
+  // Parse the pagination related headers (non-X)
   if (!headers.get("X-Page")) {
     Object.keys(NUMERICAL_PAGINATION_HEADERS).forEach((header) => {
       paginationDetail[NUMERICAL_PAGINATION_HEADERS[header]] =

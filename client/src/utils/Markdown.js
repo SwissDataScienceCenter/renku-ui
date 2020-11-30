@@ -61,25 +61,25 @@ const getFilesRefs = (markdownHTML, filePathArray) => {
 function FileAndWrapper(props) {
   /**
    * We are using a checkbox here because the onclick event doesn't work with the
-   * React server side rendering, the checkbox helps us fake the toogleing
+   * React server side rendering, the checkbox helps us fake the toggleing
    *
    * We need to generate a random id here for the file preview to work on the
    * issues, in case there is more than one file preview
    * If we want a more sophisticated solution we can use a library like uuid
    */
   const randomId = Math.floor(Math.random() * 1000);
-  const tooglerId = props.block.iBlock + randomId + "toogler";
+  const togglerId = props.block.iBlock + randomId + "toggler";
   return <div>
     <Card>
       <CardBody className="p-2">
         <label className="mb-0 p-1">
-          <FontAwesomeIcon className="icon-grey mr-1" icon={faFile} />
+          <FontAwesomeIcon className="icon-gray mr-1" icon={faFile} />
           {props.block.data.file_name}
         </label>
-        <label className="mb-0 p-1 float-right btn btn-primary btn-sm" htmlFor={tooglerId}>
+        <label className="mb-0 p-1 float-right btn btn-primary btn-sm" htmlFor={togglerId}>
           Preview File
         </label>
-        <input type="checkbox" id={tooglerId} className="visually-hidden fake-toggle" />
+        <input type="checkbox" id={togglerId} className="visually-hidden fake-toggle" />
         <div className="hide-show-me">
           <FilePreview
             file={props.file}
