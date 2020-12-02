@@ -211,7 +211,7 @@ describe("verify project settings validity", () => {
       { valid: false, text: true },
       { valid: false, text: "" },
       { valid: true, text: "url" },
-      { valid: true, text: "any string would work, this may be imrpoved" },
+      { valid: true, text: "any string would work, this may be improved" },
     ];
 
     // only a combination of valid setting name and setting value return true

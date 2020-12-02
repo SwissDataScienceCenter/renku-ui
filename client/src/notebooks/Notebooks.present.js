@@ -21,7 +21,8 @@ import Media from "react-media";
 import { Link } from "react-router-dom";
 import {
   Form, FormGroup, FormText, Label, Input, Button, ButtonGroup, Row, Col, Table, DropdownItem, UncontrolledTooltip,
-  UncontrolledPopover, PopoverHeader, PopoverBody, Badge, Modal, ModalHeader, ModalBody, ModalFooter, CustomInput
+  UncontrolledPopover, PopoverHeader, PopoverBody, Badge, Modal, ModalHeader, ModalBody, ModalFooter, CustomInput,
+  Collapse
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStopCircle, faExternalLinkAlt, faInfoCircle, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
@@ -482,14 +483,14 @@ class NotebookServerRowCompact extends Component {
   }
 }
 
-function getStatusObject(status, defaulImage) {
+function getStatusObject(status, defaultImage) {
   switch (status) {
     case "running":
       return {
-        color: defaulImage ?
+        color: defaultImage ?
           "warning" :
           "success",
-        icon: defaulImage ?
+        icon: defaultImage ?
           (<FontAwesomeIcon icon={faExclamationTriangle} inverse={true} size="lg" />) :
           (<FontAwesomeIcon icon={faCheckCircle} size="lg" />),
         text: "Running"
@@ -898,7 +899,7 @@ class StartNotebookBranchesOptions extends Component {
 class StartNotebookPipelines extends Component {
   constructor(props) {
     super(props);
-    this.state = { justTriggered: false };
+    this.state = { justTriggered: false, showInfo: false };
   }
 
   async reTriggerPipeline() {
@@ -907,16 +908,33 @@ class StartNotebookPipelines extends Component {
     this.setState({ justTriggered: false });
   }
 
+  toggleInfo() {
+    this.setState({ showInfo: !this.state.showInfo });
+  }
+
   render() {
     if (!this.props.pipelines.fetched)
       return (<Label>Checking Docker image status... <Loader size="14" inline="true" /></Label>);
     if (this.state.justTriggered)
       return (<Label>Triggering Docker image build... <Loader size="14" inline="true" /></Label>);
 
+    const customImage = this.props.pipelines.type === NotebooksHelper.pipelineTypes.customImage ?
+      true :
+      false;
+    const { showInfo } = this.state;
+    let infoButton = null;
+    if (customImage) {
+      const text = showInfo ?
+        "less info" :
+        "more info";
+      infoButton = (<Button size="sm" onClick={() => { this.toggleInfo(); }} color="link">{text}</Button>);
+    }
     return (
       <FormGroup>
-        <StartNotebookPipelinesBadge {...this.props} />
-        <StartNotebookPipelinesContent {...this.props} buildAgain={this.reTriggerPipeline.bind(this)} />
+        <StartNotebookPipelinesBadge {...this.props} infoButton={infoButton} />
+        <Collapse isOpen={!customImage || showInfo}>
+          <StartNotebookPipelinesContent {...this.props} buildAgain={this.reTriggerPipeline.bind(this)} />
+        </Collapse>
       </FormGroup>
     );
   }
@@ -926,6 +944,7 @@ class StartNotebookPipelinesBadge extends Component {
   render() {
     const pipelineType = this.props.pipelines.type;
     const pipeline = this.props.pipelines.main;
+    const { infoButton } = this.props;
 
     let color, text;
     if (pipelineType === NotebooksHelper.pipelineTypes.logged) {
@@ -965,7 +984,7 @@ class StartNotebookPipelinesBadge extends Component {
       text = "error";
     }
 
-    return (<p>Docker Image <Badge color={color}>{text}</Badge></p>);
+    return (<p>Docker Image <Badge color={color}>{text}</Badge>{infoButton}</p>);
   }
 }
 
@@ -983,8 +1002,17 @@ class StartNotebookPipelinesContent extends Component {
 
       // this style trick makes it appear as the other Label + Input components
       const style = { marginTop: -8 };
+      const url = "https://renku.readthedocs.io/en/latest/user/templates.html?highlight=.dockerignore#renku";
       return (
-        <Input type="input" disabled={true} id="customImage" style={style} value={projectOptions.image}></Input>
+        <Fragment>
+          <Input type="input" disabled={true} id="customImage" style={style} value={projectOptions.image}></Input>
+          <FormText>
+            <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> This project specifies
+            an <ExternalLink role="text" iconSup={true} iconAfter={true} url={url} title="image in the settings" />. A
+            pinned image has advantages for projects with many forks, but it will not reflect changes
+            to the <code>Dockerfile</code> or any project dependency files.
+          </FormText>
+        </Fragment>
       );
     }
 
