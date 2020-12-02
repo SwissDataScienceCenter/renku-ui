@@ -31,7 +31,7 @@ function addGraphMethods(client) {
         return false;
 
 
-      // erros expected: 401, 500
+      // errors expected: 401, 500
       throw new Error(`Error ${resp.status}`);
 
     });
@@ -46,7 +46,7 @@ function addGraphMethods(client) {
       else if (resp.status === 404)
         return false;
 
-      // erros expected: 500
+      // errors expected: 500
       throw new Error(`Error ${resp.status}`);
     });
   };
@@ -62,7 +62,7 @@ function addGraphMethods(client) {
   /**
    * Get the lineage nodes and edges
    *
-   * @param {string} projectPath   project slug (username/projectname)
+   * @param {string} projectPath   project slug (username/projectName)
    * @param {string} filePath   full file path
    * @example client.getFileLineage("myGitlabUser/myGitlabProject",
    *  "3bf1c3c424833228708087686584afb77899f702",

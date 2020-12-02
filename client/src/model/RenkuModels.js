@@ -55,7 +55,7 @@ const metaSchema = new Schema({
   id: { initial: "", mandatory: false },
   projectNamespace: { initial: {}, mandatory: false },
   visibility: { initial: "public", mandatory: true },
-  optoutKg: { initial: false, mandatory: false },
+  optoutKg: { initial: false, mandatory: false }, // eslint-disable-line
 });
 
 const forkDisplaySchema = new Schema({
@@ -385,7 +385,7 @@ const datasetFormSchema = new Schema({
   },
   keywords: {
     initial: [],
-    name: "kewords",
+    name: "keywords",
     label: "Keywords",
     help: "To insert a keyword, type it and press enter.",
     type: FormGenerator.FieldTypes.KEYWORDS,
@@ -504,9 +504,25 @@ const statuspageSchema = new Schema({
   error: { initial: null }
 });
 
+const notificationsSchema = new Schema({
+  unread: { [Prop.INITIAL]: 0, [Prop.MANDATORY]: true },
+  all: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
+  dropdown: {
+    [Prop.SCHEMA]: new Schema({
+      enabled: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
+    })
+  },
+  toast: {
+    [Prop.SCHEMA]: new Schema({
+      enabled: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
+      timeout: { [Prop.INITIAL]: 7500, [Prop.MANDATORY]: true },
+      position: { [Prop.INITIAL]: "top-right", [Prop.MANDATORY]: true },
+    })
+  }
+});
 
 export {
   userSchema, metaSchema, newProjectSchema, projectSchema, forkProjectSchema, notebooksSchema,
   projectsSchema, datasetFormSchema, issueFormSchema, datasetImportFormSchema, projectGlobalSchema,
-  addDatasetToProjectSchema, statuspageSchema
+  addDatasetToProjectSchema, statuspageSchema, notificationsSchema
 };

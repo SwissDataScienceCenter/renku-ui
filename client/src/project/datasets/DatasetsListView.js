@@ -13,9 +13,9 @@ function DatasetListRow(props) {
     to={`${props.datasetsUrl}/${encodeURIComponent(dataset.name)}/`}
   > {dataset.title || dataset.name}</NavLink>;
 
-  return <ListGroupItem action style={{ border: "none" }}>
+  return <ListGroupItem className="pb-0" action style={{ border: "none" }}>
     <Row>
-      <Col xs={8} md={8}>
+      <Col xs={8} md={8} className="pb-0">
         <div className="d-flex project-list-row">
           <div className="issue-text-crop">
             <b>
@@ -23,22 +23,16 @@ function DatasetListRow(props) {
                 {title}
               </span>
             </b><br />
-            {
-              dataset.creators !== undefined ?
-                <small style={{ display: "block" }} className="font-weight-light">
-                  {dataset.creators.map((creator) => creator.name).join("; ")}
-                </small>
-                : null
-            }
-            {
-              dataset.description !== undefined && dataset.description !== null ?
-                <div className="datasetDescriptionText font-weight-normal">
-                  <MarkdownTextExcerpt markdownText={dataset.description} charsLimit={500} />
-                </div>
-                : null
-            }
           </div>
         </div>
+        {
+          dataset.creators !== undefined ?
+            <small style={{ display: "block" }} className="font-weight-light">
+              {dataset.creators.slice(0, 3).map((creator) => creator.name).join(", ")}
+              {dataset.creators.length > 3 ? ", et al." : null}
+            </small>
+            : null
+        }
       </Col>
       <Col xs={4} md={4} className="float-right" style={{ textAlign: "end" }}>
         <small>
@@ -55,6 +49,14 @@ function DatasetListRow(props) {
             : null
         }
       </Col>
+      {
+        dataset.description !== undefined && dataset.description !== null ?
+          <Col md={12}>
+            <div className="datasetDescriptionText font-weight-light">
+              <MarkdownTextExcerpt markdownText={dataset.description} heightLimit={7} />
+            </div></Col>
+          : null
+      }
     </Row>
   </ListGroupItem>;
 }
@@ -86,7 +88,7 @@ export default function DatasetsListView(props) {
         </span>
       </h2>
     </Col>
-  </Row>, <Row key="datasetslist">
+  </Row>, <Row key="datasetsList">
     <Col xs={12}>
       <ListGroup>
         {

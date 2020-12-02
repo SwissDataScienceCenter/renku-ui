@@ -46,7 +46,7 @@ let schema = new Schema({
 describe("rendering on create", () => {
   let spy = null;
   beforeEach(() => {
-    // ckeditor dumps some junk to the conole.error. Ignore it.
+    // ckeditor dumps some junk to the console.error. Ignore it.
     spy = jest.spyOn(console, "error").mockImplementation(() => { });
   });
 
@@ -75,7 +75,7 @@ describe("rendering on create", () => {
 describe("rendering on modify", () => {
   let spy = null;
   beforeEach(() => {
-    // ckeditor dumps some junk to the conole.error. Ignore it.
+    // ckeditor dumps some junk to the console.error. Ignore it.
     spy = jest.spyOn(console, "error").mockImplementation(() => { });
   });
 
@@ -107,7 +107,7 @@ describe("validators", () => {
     expect(FormGenerator.Validators.isAtLeastLength({ value: "He" }, 3 )).toEqual(false);
   });
   it("checks that is filled true", () => {
-    expect(FormGenerator.Validators.isNotEmpty({ value: "asdfasdf" })).toEqual(true);
+    expect(FormGenerator.Validators.isNotEmpty({ value: "AnyValue" })).toEqual(true);
   });
   it("checks that is filled false", () => {
     expect(FormGenerator.Validators.isNotEmpty({ value: "" })).toEqual(false);

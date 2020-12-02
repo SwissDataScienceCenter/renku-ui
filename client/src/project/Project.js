@@ -176,7 +176,7 @@ class View extends Component {
         this.fetchAll();
 
 
-      // in case the route fails it tests weather it could be a projectid route
+      // in case the route fails it tests weather it could be a projectId route
       const routes = ["overview", "issues", "issue_new", "files", "lineage", "notebooks", "collaboration",
         "data", "workflows", "settings", "pending", "launchNotebook", "notebookServers", "datasets", "environments"];
       const available = this.props.core ? this.props.core.available : null;
@@ -227,8 +227,8 @@ class View extends Component {
   async fetchProjectFilesTree() {
     return this.projectState.fetchProjectFilesTree(this.props.client, this.cleanCurrentURL());
   }
-  async setProjectOpenFolder(filepath) {
-    this.projectState.setProjectOpenFolder(this.props.client, filepath);
+  async setProjectOpenFolder(filePath) {
+    this.projectState.setProjectOpenFolder(this.props.client, filePath);
   }
   async fetchProjectDatasets(forceReFetch) {
     return this.projectState.fetchProjectDatasets(this.props.client, forceReFetch);
@@ -438,10 +438,12 @@ class View extends Component {
         projectNamespace={this.projectState.get("core.namespace_path")}
         projectPathOnly={this.projectState.get("core.project_path")}
         branches={branches}
-        hashElement={filesTree !== undefined ? filesTree.hash[p.match.params.filePath] : undefined} />,
+        hashElement={filesTree !== undefined ? filesTree.hash[p.match.params.filePath] : undefined}
+        gitFilePath={p.location.pathname.replace(pathComponents.baseUrl + "/files/lineage/", "")}
+        history={this.props.history} />,
 
       fileView: (p) => <ShowFile
-        key="filepreview" {...subProps}
+        key="filePreview" {...subProps}
         filePath={p.location.pathname.replace(pathComponents.baseUrl + "/files/blob/", "")}
         lineagesPath={subUrls.lineagesUrl}
         launchNotebookUrl={subUrls.launchNotebookUrl}
@@ -452,10 +454,11 @@ class View extends Component {
         projectPathWithNamespace={this.projectState.get("core.path_with_namespace")}
         hashElement={filesTree !== undefined ?
           filesTree.hash[p.location.pathname.replace(pathComponents.baseUrl + "/files/blob/", "")] :
-          undefined} />,
+          undefined}
+        history={this.props.history} />,
 
       datasetView: (p, projectInsideKg) => <ShowDataset
-        key="datasetpreview" {...subProps}
+        key="datasetPreview" {...subProps}
         maintainer={maintainer}
         insideProject={true}
         datasets={datasets}
@@ -475,7 +478,7 @@ class View extends Component {
       />,
 
       newDataset: (p) => <ChangeDataset
-        key="datasetcreate" {...subProps}
+        key="datasetCreate" {...subProps}
         progress={graphProgress}
         maintainer={maintainer}
         accessLevel={accessLevel}
@@ -495,7 +498,7 @@ class View extends Component {
       />,
 
       editDataset: (p) => <ChangeDataset
-        key="datasetmodify" {...subProps}
+        key="datasetModify" {...subProps}
         progress={graphProgress}
         maintainer={maintainer}
         accessLevel={accessLevel}
@@ -517,7 +520,7 @@ class View extends Component {
       />,
 
       importDataset: (p) => <ImportDataset
-        key="datasetimport" {...subProps}
+        key="datasetImport" {...subProps}
         progress={graphProgress}
         maintainer={maintainer}
         accessLevel={accessLevel}
@@ -590,15 +593,15 @@ class View extends Component {
     },
     onCreateMergeRequest: (branch) => {
       const core = this.projectState.get("core");
-      let newMRiid;
+      let newMRIid;
       // TODO: Again, it would be nice to update the local state rather than relying on the server
       // TODO: updating the information fast enough through all possible layers of caches, etc...
       this.props.client.createMergeRequest(core.id, branch.name, branch.name, "master")
         .then((d) => {
-          newMRiid = d.data.iid;
+          newMRIid = d.data.iid;
           return this.fetchAll();
         })
-        .then(() => this.props.history.push(`${this.getSubUrls().mergeRequestsOverviewUrl}/${newMRiid}`));
+        .then(() => this.props.history.push(`${this.getSubUrls().mergeRequestsOverviewUrl}/${newMRIid}`));
     },
     onProjectRefresh: (e) => {
       e.preventDefault();

@@ -60,13 +60,13 @@ function MergeRequestHeader(props) {
 function MergeRequestNavigation(props) {
   return <Nav tabs>
     <NavItem>
-      <RenkuNavLink to="changes" matchpath={true} title="Changes" />
+      <RenkuNavLink to="changes" matchPath={true} title="Changes" />
     </NavItem>
     <NavItem>
-      <RenkuNavLink to="commits" matchpath={true} title="Commits" />
+      <RenkuNavLink to="commits" matchPath={true} title="Commits" />
     </NavItem>
     <NavItem>
-      <RenkuNavLink to="discussion" matchpath={true} title="Discussion" />
+      <RenkuNavLink to="discussion" matchPath={true} title="Discussion" />
     </NavItem>
   </Nav>;
 }
@@ -109,7 +109,7 @@ class MergeRequestPresent extends Component {
   render() {
     if (this.props.title == null) return null;
     return [
-      <GoBackButton key="backbutton" label="Back to list" url={this.props.mergeRequestsOverviewUrl}/>,
+      <GoBackButton key="backButton" label="Back to list" url={this.props.mergeRequestsOverviewUrl}/>,
       < MergeRequestHeader key="header" {...this.props} />,
       <Row key="description" className="pb-2">
         <Col sm={11}>

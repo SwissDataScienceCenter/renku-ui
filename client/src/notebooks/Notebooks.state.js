@@ -32,7 +32,7 @@ const RENKU_INI_PATH = ".renku/renku.ini";
 const RENKU_INI_SECTION = `renku "interactive"`;
 
 const PIPELINE_TYPES = {
-  anonymous: "regististries",
+  anonymous: "registries",
   logged: "jobs",
   customImage: "none"
 };
@@ -126,12 +126,12 @@ const NotebooksHelper = {
     if (parsedData[RENKU_INI_SECTION]) {
       const parsedOptions = parsedData[RENKU_INI_SECTION];
       Object.keys(parsedOptions).forEach(parsedOption => {
-        // treat "default_url" as "defaultUrl" to allow name consistenci in the the .ini file
+        // treat "default_url" as "defaultUrl" to allow name consistency in the the .ini file
         let option = parsedOption;
         if (parsedOption === "default_url")
           option = "defaultUrl";
 
-        // convert boolen and numbers
+        // convert boolean and numbers
         let value = parsedOptions[parsedOption];
         if (value && value.toLowerCase() === "true")
           projectOptions[option] = true;
@@ -171,7 +171,7 @@ const NotebooksHelper = {
     if (!globalOption)
       return false;
 
-    // non-enum options require only typecheck
+    // non-enum options require only type-check
     if (globalOption.type !== "enum") {
       if (globalOption.type === "boolean") {
         if (typeof currentValue === "boolean")
@@ -328,12 +328,13 @@ class NotebooksCoordinator {
     });
 
     // get user status
-    const anonym = this.userModel.get("logged") ?
+    const anonymous = this.userModel.get("logged") ?
       false :
       true;
 
     // get notebooks
-    return this.client.getNotebookServers(filters.namespace, filters.project, filters.branch, filters.commit, anonym)
+    return this.client.getNotebookServers(
+      filters.namespace, filters.project, filters.branch, filters.commit, anonymous)
       .then(resp => {
         let updatedNotebooks = { fetching: false };
         // check if result is still valid
@@ -343,7 +344,7 @@ class NotebooksCoordinator {
             updatedNotebooks.fetched = new Date();
             updatedNotebooks.all = { $set: resp.data };
           }
-          // TODO: re-invoke `fetchNotebooks()` immediatly if parameters are outdated
+          // TODO: re-invoke `fetchNotebooks()` immediately if parameters are outdated
         }
         this.model.setObject({ notebooks: updatedNotebooks });
         return resp.data;
@@ -361,11 +362,11 @@ class NotebooksCoordinator {
       return;
 
     // get user status
-    const anonym = this.userModel.get("logged") ?
+    const anonymous = this.userModel.get("logged") ?
       false :
       true;
 
-    return this.client.getNotebookServerOptions(anonym)
+    return this.client.getNotebookServerOptions(anonymous)
       .then((globalOptions) => {
         this.model.set("options.global", globalOptions);
         this.setDefaultOptions(globalOptions, null);
@@ -659,12 +660,8 @@ class NotebooksCoordinator {
       tag :
       { $set: {} };
 
-    // TODO: polish here, adapt the present component
-    // TODO: to show the correct status on tag status
-    // console.log("ANONYM - NOT IMPLEMENTED YET - ", tag);
     this.model.setObject({ pipelines: pipelinesState });
-    // this.model.setObject({ pipelines: { ...pipelinesState, main: {} } });
-    return;
+    return pipelinesState;
   }
 
 
@@ -677,7 +674,7 @@ class NotebooksCoordinator {
       }, interval);
       this.model.set("notebooks.poller", newPoller);
 
-      // fetch immediatly
+      // fetch immediately
       this.fetchNotebooks();
     }
   }

@@ -31,7 +31,8 @@ class FileLineage extends Component {
       graphStatusWaiting: false,
       webhookJustCreated: null,
       graph: null,
-      currentNode: { id: null, type: null }
+      currentNode: { id: null, type: null },
+      file: null
     };
   }
 
@@ -39,11 +40,12 @@ class FileLineage extends Component {
     // TODO This should work a little differently for robustness:
     // - Get the dot/master deployment URL (environment external_url) from gitlab
     // - Get the job from gitlab
-    // - Combine the file name from the external_url and the job information to retreive the file
+    // - Combine the file name from the external_url and the job information to retrieve the file
     // TODO: Write a wrapper to make promises cancellable to avoid usage of this._isMounted
     this._isMounted = true;
     this.retrieveGraph();
     this.startPollingProgress();
+    this.retrieveFile();
   }
 
   componentWillUnmount() {
@@ -147,7 +149,38 @@ class FileLineage extends Component {
     }
   }
 
+  //WE DO THIS SO WE CAN GET THE FILE SIZE!!!
+  retrieveFile() {
+    const client = this.props.client;
+    const branchName = this.props.branchName || "master";
+    let filePath = this.props.gitFilePath;
+    client.getRepositoryFile(this.props.projectId, filePath, branchName, "base64")
+      .catch(e => {
+        if (!this._isMounted) return null;
+        if (e.case === API_ERRORS.notFoundError)
+          this.setState({ error: "ERROR 404: The file with path '" + filePath + "' does not exist." });
+
+        else this.setState({ error: "Could not load file with path " + filePath });
+      })
+      .then(json => {
+        if (!this._isMounted) return null;
+        if (!this.state.error)
+          this.setState({ file: json });
+        return json;
+      });
+  }
+
   render() {
+    let fileSize = this.state.file ? this.state.file.size : undefined;
+
+    // If the file is LFS this means that to get the real file size we need to read
+    // the file string we get with the LFS info
+    if (this.props.hashElement && this.props.hashElement.isLfs && this.state.file) {
+      const splitFile = atob(this.state.file.content).split("size ");
+      if (splitFile.length === 2)
+        fileSize = splitFile[splitFile.length - 1];
+    }
+
     return <FileLineagePresent
       retrieveGraph={this.retrieveGraph.bind(this)}
       graph={this.state.graph}
@@ -157,7 +190,8 @@ class FileLineage extends Component {
       filePath={`/projects/${this.props.projectPathWithNamespace}/files/blob/${this.props.path}`}
       currentNode={this.state.currentNode}
       accessLevel={this.props.accessLevel}
-      {...this.props} />;
+      {...this.props}
+      fileSize={fileSize} />;
   }
 }
 

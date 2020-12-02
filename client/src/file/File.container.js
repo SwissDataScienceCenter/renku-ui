@@ -30,7 +30,9 @@ import { CardBody } from "reactstrap";
 const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "pdf", "gif"];
 const CODE_EXTENSIONS = [
   "py", "js", "json", "sh", "r", "yml", "csv", "parquet", "cwl", "job", "prn", "rout",
-  "dcf", "rproj", "rst", "bat", "ini", "rmd", "jl", "toml"
+  "dcf", "rproj", "rst", "bat", "ini", "rmd", "jl", "toml", "ts", "rs", "scala",
+  "c", "cc", "cxx", "cpp", "h", "hh", "hxx", "hpp", // C++
+  "f", "for", "ftn", "fpp", "f90", "f95", "f03", "f08" // Fortran
 ];
 const TEXT_EXTENSIONS = ["txt"];
 
@@ -293,7 +295,10 @@ class ShowFile extends React.Component {
         return json;
       }).then(fileJson => {
         if (fileJson == null) return;
-        return client.getRepositoryCommit(this.props.projectId, fileJson.last_commit_id);
+        const commitId = fileJson.last_commit_id ?
+          fileJson.last_commit_id :
+          fileJson.commit_id;
+        return client.getRepositoryCommit(this.props.projectId, commitId);
       }).then(commitJson => {
         if (!this._isMounted) return null;
         this.setState({ commit: commitJson });
@@ -312,6 +317,16 @@ class ShowFile extends React.Component {
     if (this.props.filePath.endsWith(".ipynb"))
       buttonJupyter = (<JupyterButton {...this.props} file={filePath} />);
 
+    let fileSize = this.state.file ? this.state.file.size : undefined;
+
+    // If the file is LFS this means that to get the real file size we need to read
+    // the file string we get with the LFS info
+    if (this.props.hashElement && this.props.hashElement.isLfs && this.state.file) {
+      const splitFile = atob(this.state.file.content).split("size ");
+      if (splitFile.length === 2)
+        fileSize = splitFile[splitFile.length - 1];
+    }
+
     return <ShowFilePresent externalUrl={this.props.externalUrl}
       filePath={filePath}
       gitLabFilePath={gitLabFilePath}
@@ -325,6 +340,9 @@ class ShowFile extends React.Component {
       client={this.props.client}
       insideProject={true}
       projectPathWithNamespace={this.props.projectPathWithNamespace}
+      hashElement={this.props.hashElement}
+      fileSize={fileSize}
+      history={this.props.history}
     />;
   }
 }

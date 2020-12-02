@@ -1,3 +1,4 @@
+/* eslint-disable */
 export const user = {
   "id": 1,
   "name": "Test User",

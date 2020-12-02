@@ -32,6 +32,17 @@ Button.alert-link {
   font-size: 14px;
   margin-block-start: 0.5em;
   margin-block-end: 0.5em;
+  overflow: hidden; 
+  -webkit-box-orient: vertical;
+}
+
+
+.datasetAuthors{
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  width: 98%;
+  text-overflow: ellipsis;
 }
 
 .margin-no-triangle{
@@ -105,4 +116,49 @@ Button.alert-link {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.fileBarIconButton{
+  display: inline-flex;
+  vertical-align: bottom;
+  position: relative;
+  padding: 0.1rem 0.1rem; 
+}
+
+.fileBarText{
+  vertical-align: sub;
+  display:inline-flex;
+}
+
+.fileBarButton{
+  padding: 0.125rem 0.3rem;
+  color: #999999;
+  border-color: #999999;
+}
+
+.fileBarButton:not(:disabled):not(.disabled):active,
+.fileBarButton:not(:disabled):not(.disabled).active, .show > .fileBarButton.dropdown-toggle {
+  color: #f6f6f6;
+  border-color: #999999;
+  background-color: #999999;
+}
+
+.fileBarButton:hover {
+  color: #f6f6f6;
+  border-color: #999999;
+  background-color: #999999;
+}
+
+.fileBarButton:focus, .fileBarButton.focus{
+  box-shadow: 0 0 0 0.2rem  rgba(115, 115, 115, 0.2);
+}
+
+.fileBarButton:focus, .fileBarButton.focus{
+  box-shadow: 0 0 0 0.2rem  rgba(115, 115, 115, 0.2);
+}
+
+.fileBarButton:not(:disabled):not(.disabled):active:focus, 
+.fileBarButton:not(:disabled):not(.disabled).active:focus, 
+.show > .fileBarButton.dropdown-toggle:focus {
+  box-shadow: 0 0 0 0.2rem  rgba(115, 115, 115, 0.2);
 }

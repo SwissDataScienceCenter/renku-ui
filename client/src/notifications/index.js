@@ -1,5 +1,5 @@
 /*!
- * Copyright 2019 - Swiss Data Science Center (SDSC)
+ * Copyright 2020 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -19,19 +19,11 @@
 /**
  *  renku-ui
  *
- *  formgenerator/fields
- *  Fields available to the form generator
+ *  notifications
+ *  Components for the notification page
  */
 
-export default {
-  FieldTypes: {
-    TEXT: "text",
-    TEXT_AREA: "textarea",
-    TEXT_EDITOR: "cktextarea",
-    FILES: "fileUploader",
-    SELECT: "select",
-    SELECTAUTOSUGGEST: "selectautosuggest",
-    CREATORS: "creators",
-    KEYWORDS: "keywords"
-  }
-};
+import { NotificationsManager, NotificationsMenu, NotificationsPage, Notification } from "./Notifications.container";
+import { NotificationsInfo } from "./Notifications.state";
+
+export { NotificationsManager, NotificationsMenu, NotificationsInfo, NotificationsPage, Notification };

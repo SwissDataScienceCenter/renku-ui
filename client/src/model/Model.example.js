@@ -30,7 +30,7 @@ const simpleSchema = new Schema({
 
 const complexSchema = new Schema({
   basics: { schema: simpleSchema, mandatory: true },
-  subthing: { schema: { age: { initial: 0, mandatory: true } }, mandatory: true },
+  subThing: { schema: { age: { initial: 0, mandatory: true } }, mandatory: true },
   createdAt: { initial: () => "right now" }
 });
 
@@ -42,9 +42,9 @@ class ComplexModel extends StateModel {
 
   // 'Fake' API request
   updateAge = () => {
-    this.setUpdating({ subthing: { age: true } });
+    this.setUpdating({ subThing: { age: true } });
     setTimeout(() => {
-      this.set("subthing.age", Math.random());
+      this.set("subThing.age", Math.random());
     }, 1000);
   }
 }
@@ -102,7 +102,7 @@ class ReduxStateComponent extends Component {
 
         {/*This is a stateful sub-component which inherits only a sub-part of the state tree.
         This sub-component will then invoke the presentational component on the sub-state only. */}
-        <ReduxSubStateComponent subthing={this.thing.subModel("subthing")} />
+        <ReduxSubStateComponent subThing={this.thing.subModel("subThing")} />
       </span>
     );
   }
@@ -110,18 +110,18 @@ class ReduxStateComponent extends Component {
 
 class ReduxSubStateComponent extends Component {
   render() {
-    const subthing = this.props.subthing;
+    const subThing = this.props.subThing;
 
     // The default implementation of mapStateToProps maps the entire sub-tree
     // of the state to the props which are passed to the presentational component.
     const ConnectedShowProps = connect(
-      subthing.mapStateToProps, undefined, undefined, { storeKey: "subthingStore" }
+      subThing.mapStateToProps, undefined, undefined, { storeKey: "subThingStore" }
     )(ShowProps);
 
     return <ConnectedShowProps
       case="REDUX SUBSTATE"
-      onClick={subthing.baseModel.updateAge}
-      subthingStore={subthing.reduxStore}
+      onClick={subThing.baseModel.updateAge}
+      subThingStore={subThing.reduxStore}
     />;
   }
 }
@@ -142,7 +142,7 @@ class ReactStateComponent extends Component {
         {...this.thing.get()}
         onClick={this.thing.updateAge}/>
 
-      <ReactSubStateComponent subthing={this.thing.subModel("subthing")} />
+      <ReactSubStateComponent subThing={this.thing.subModel("subThing")} />
     </span>;
   }
 }
@@ -151,8 +151,8 @@ class ReactSubStateComponent extends Component {
   render() {
     return <ShowProps
       case="REACT SUBSTATE"
-      {...this.props.subthing.get()}
-      onClick={this.props.subthing.baseModel.updateAge}/>;
+      {...this.props.subThing.get()}
+      onClick={this.props.subThing.baseModel.updateAge}/>;
   }
 }
 

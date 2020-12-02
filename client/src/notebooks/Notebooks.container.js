@@ -19,10 +19,10 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
-import { NotebooksCoordinator } from "./Notebooks.state";
-import { StartNotebookServer as StartNotebookServerPresent, NotebooksDisabled } from "./Notebooks.present";
-import { Notebooks as NotebooksPresent } from "./Notebooks.present";
-import { CheckNotebookIcon } from "./Notebooks.present";
+import { NotebooksCoordinator, NotebooksHelper } from "./Notebooks.state";
+import {
+  StartNotebookServer as StartNotebookServerPresent, NotebooksDisabled, Notebooks as NotebooksPresent, CheckNotebookIcon
+} from "./Notebooks.present";
 import { StatusHelper } from "../model/Model";
 import { ProjectCoordinator } from "../project";
 
@@ -76,6 +76,7 @@ class Notebooks extends Component {
     this.coordinator.stopNotebookPolling();
   }
 
+  // TODO: add info notification here
   stopNotebook(serverName, force) {
     this.coordinator.stopNotebook(serverName, force);
   }
@@ -130,7 +131,7 @@ class Notebooks extends Component {
 }
 
 /**
- * Displays a start page for new Jupiterlab servers.
+ * Displays a start page for new JupyterLab servers.
  *
  * @param {Object} client - api-client used to query the gateway
  * @param {Object} model - global model for the ui
@@ -140,10 +141,11 @@ class Notebooks extends Component {
  * @param {Object} scope - object containing filtering parameters
  * @param {string} scope.namespace - full path of the reference namespace
  * @param {string} scope.project - path of the reference project
- * @param {string} externalUrl - GitLabl repository url
+ * @param {string} externalUrl - GitLab repository url
  * @param {boolean} blockAnonymous - When true, block non logged in users
- * @param {Object} [location] - react location object. Use location.state.successUrl to inidcate the
- *     redirect url to be used when a notebook is succesfully started
+ * @param {Object} notifications - Notifications object
+ * @param {Object} [location] - react location object. Use location.state.successUrl to indicate the
+ *     redirect url to be used when a notebook is successfully started
  * @param {Object} [history] - mandatory if successUrl is provided
  * @param {string} [message] - provide a useful information or warning message
  */
@@ -156,6 +158,7 @@ class StartNotebookServer extends Component {
     // TODO: this should go away when moving all project content to projectCoordinator
     this.projectModel = props.model.subModel("project");
     this.projectCoordinator = new ProjectCoordinator(props.client, props.model.subModel("project"));
+    this.notifications = props.notifications;
     // temporarily reset data since notebooks model was not designed to be static
     this.coordinator.reset();
 
@@ -166,7 +169,7 @@ class StartNotebookServer extends Component {
     this.handlers = {
       refreshBranches: this.refreshBranches.bind(this),
       refreshCommits: this.refreshCommits.bind(this),
-      retriggerPipeline: this.retriggerPipeline.bind(this),
+      reTriggerPipeline: this.reTriggerPipeline.bind(this),
       setBranch: this.selectBranch.bind(this),
       setCommit: this.selectCommit.bind(this),
       toggleMergedBranches: this.toggleMergedBranches.bind(this),
@@ -307,7 +310,7 @@ class StartNotebookServer extends Component {
     }
   }
 
-  async retriggerPipeline() {
+  async reTriggerPipeline() {
     const projectPathWithNamespace = `${encodeURIComponent(this.props.scope.namespace)}%2F${this.props.scope.project}`;
     const pipelineId = this.model.get("pipelines.main.id");
     await this.props.client.retryPipeline(projectPathWithNamespace, pipelineId);
@@ -335,9 +338,24 @@ class StartNotebookServer extends Component {
   internalStartServer() {
     // The core internal logic extracted here for re-use
     const { location, history } = this.props;
-    return this.coordinator.startServer().then(() => {
+    return this.coordinator.startServer().then((data) => {
       this.setState({ "starting": false });
-      if (history && location && location.state && location.state.successUrl)
+      // add a notification
+      // TODO: once we will get the info from ui-server, notify only when the environment is ready
+      const info = NotebooksHelper.cleanAnnotations(data.annotations);
+      const projectEnvironments = location.state.successUrl;
+      this.notifications.addSuccess(
+        this.notifications.Topics.ENVIRONMENT_START,
+        `An interactive environment for the project ${info["namespace"]}/${info["projectName"]} will be available soon`,
+        projectEnvironments, "Show environments",
+        [projectEnvironments, "/environments", `${projectEnvironments}/new`],
+        `Branch: ${info["branch"]}; Commit: ${info["commit-sha"]}`
+      );
+
+      // redirect user when necessary
+      if (!history || !location)
+        return;
+      if (location.state && location.state.successUrl && history.location.pathname === location.pathname)
         history.push(location.state.successUrl);
     });
   }
@@ -350,9 +368,15 @@ class StartNotebookServer extends Component {
       // Some failures just go away. Try again to see if it works the second time.
       setTimeout(() => {
         this.internalStartServer().catch((error) => {
-          // TODO: #991
-          // eslint-disable-next-line no-console
-          console.log(["Could not start server", error]);
+          // crafting notification
+          const fullError = `An error occurred when trying to start a new Interactive environment.
+          Error message: "${error.message}", Stack trace: "${error.stack}"`;
+          this.notifications.addError(
+            this.notifications.Topics.ENVIRONMENT_START,
+            "Unable to start the interactive environment.",
+            this.props.location.pathname, "Try again",
+            null, // always toast
+            fullError);
           this.setState({ "starting": false, launchError: error.message });
         });
       }, 3000);

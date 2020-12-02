@@ -12,6 +12,22 @@
     "es6": true,
     "jest/globals": true
   },
+  "extends": [
+    "eslint:recommended",
+    "plugin:react/recommended",
+    "plugin:jest/recommended"
+  ],
+  "plugins": [
+    "react",
+    "react-hooks",
+    "jest",
+    "spellcheck"
+  ],
+  "settings": {
+    "react": {
+      "version": "detect"
+    }
+  },
   "rules": {
     "max-len": ["warn", 120],
     "no-eval": "error",
@@ -42,21 +58,129 @@
     "no-unsafe-finally": "off",
     "react/jsx-curly-spacing": ["warn", "never"],
     "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "warn"
-  },
-  "extends": [
-    "eslint:recommended",
-    "plugin:react/recommended",
-    "plugin:jest/recommended"
-  ],
-  "plugins": [
-    "react",
-    "react-hooks",
-    "jest"
-  ],
-  "settings": {
-    "react": {
-      "version": "detect"
-    }
+    "react-hooks/exhaustive-deps": "warn",
+    "spellcheck/spell-checker": [
+      "warn", {
+        "identifiers": true,
+        "comments": true,
+        "strings": true,
+        "minLength": 4,
+        "skipIfMatch": [
+          // Careful! This skips the entire JS node, better to avoid it.
+        ],
+        "skipWordIfMatch": [
+          "http(s)?://[^s]*", // url
+          "0x[0-9a-fx]{2,16}", // hex
+          "[0-9a-f]{4,32}" // commit sha (7/8/32) and zenodo sub-identifiers (4-12)
+        ],
+        "skipWords": [
+          "accessor",
+          "ascii",
+          "autosave",
+          "autosaved",
+          "autosuggest",
+          "backend",
+          "bool",
+          "cancellable",
+          "cancelled",
+          "checkbox",
+          "ckeditor",
+          "cktextarea",
+          "codemirror",
+          "dagre",
+          "dataset",
+          "datasets",
+          "dataverse",
+          "datetime",
+          "discoverability",
+          "dropdown",
+          "enum",
+          "formgenerator",
+          "fortran",
+          "frontend",
+          "gitlab",
+          "gitter",
+          "graphlib",
+          "graphql",
+          "grayscale",
+          "hljs",
+          "href",
+          "iids",
+          "interruptable",
+          "ipynb",
+          "ipython",
+          "javascript",
+          "jpeg",
+          "jumbotron",
+          "jupyter",
+          "kernelspec",
+          "localhost",
+          "maintenances",
+          "mergerequests",
+          "mongodb",
+          "monospace",
+          "mouseout",
+          "mouseover",
+          "multiline",
+          "mustermann",
+          "namespace",
+          "namespaces",
+          "nbconvert",
+          "nbformat",
+          "noopener",
+          "noreferrer",
+          "nowrap",
+          "nullable",
+          "papermill",
+          "pathname",
+          "poller",
+          "presentational",
+          "pygments",
+          "react",
+          "readme",
+          "rect",
+          "redux",
+          "renderer",
+          "renku",
+          "replacer",
+          "repo",
+          "repos",
+          "reproducibility",
+          "reusability",
+          "rproj",
+          "rstudio",
+          "scala",
+          "selectautosuggest",
+          "serializable",
+          "shareability",
+          "slugify",
+          "statuspage",
+          "stdout",
+          "textarea",
+          "textarea",
+          "thead",
+          "toastify",
+          "toggler",
+          "toml",
+          "tooltip",
+          "tspan",
+          "uncompress",
+          "unicode",
+          "unmount",
+          "unschedulable",
+          "unstar",
+          "uploadable",
+          "uploader",
+          "urls",
+          "validators",
+          "visibilities",
+          "webhook",
+          "webhooks",
+          "whitespace",
+          "yaml",
+          "zenodo"
+        ]
+      }
+    ]
   }
 }

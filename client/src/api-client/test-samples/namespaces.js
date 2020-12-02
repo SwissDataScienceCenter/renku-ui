@@ -1,9 +1,9 @@
 export const namespaces = [{
   "id": 3,
-  "name": "myuser",
-  "path": "myuser",
+  "name": "myUser",
+  "path": "myUser",
   "kind": "user",
-  "full_path": "myuser",
+  "full_path": "myUser",
   "parent_id": null
 }, {
   "id": 36,

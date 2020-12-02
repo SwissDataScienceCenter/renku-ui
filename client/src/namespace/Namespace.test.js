@@ -20,7 +20,7 @@
  *  renku-ui
  *
  *  Namespace.test.js
- *  Tests for namesace.
+ *  Tests for namespace.
  */
 
 import React from "react";

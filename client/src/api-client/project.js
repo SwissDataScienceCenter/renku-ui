@@ -25,7 +25,7 @@ const FileCategories = {
   workflows: (path) => path.startsWith(".renku/workflow/"),
 };
 
-function getApiURLfromRepoURL(url) {
+function getApiUrlFromRepoUrl(url) {
   const urlArray = url.split("/");
   urlArray.splice(urlArray.length - 2, 0, "repos");
   url = urlArray.join("/");
@@ -44,14 +44,14 @@ function groupedFiles(files, projectFiles) {
   return projectFiles;
 }
 
-function buildTreeLazy(name, treeNode, jsonObj, hash, currentPath, gitattributes, openFilePath) {
+function buildTreeLazy(name, treeNode, jsonObj, hash, currentPath, gitAttributes, openFilePath) {
   if (name.length === 0)
     return;
 
   currentPath = jsonObj.path;
   let nodeName = name;
   let nodeType = jsonObj.type; // "tree" "blob" "commit"
-  const isLfs = gitattributes ? gitattributes.includes(currentPath + " filter=lfs diff=lfs merge=lfs -text") : false;
+  const isLfs = gitAttributes ? gitAttributes.includes(currentPath + " filter=lfs diff=lfs merge=lfs -text") : false;
   let newNode = {
     "name": nodeName,
     "children": [],
@@ -76,7 +76,7 @@ function buildTreeLazy(name, treeNode, jsonObj, hash, currentPath, gitattributes
 function getFilesTreeLazy(client, files, projectId, openFilePath, lfsFiles) {
   let tree = [];
   let hash = {};
-  let lfs = files.filter((treeObj) => treeObj.path === ".gitattributes");
+  let lfs = files.filter((treeObj) => treeObj.path === ".gitattributes"); // eslint-disable-line
 
   if (lfs.length > 0) {
     return client.getRepositoryFile(projectId, lfs[0].path, "master", "raw")
@@ -280,7 +280,7 @@ function addProjectMethods(client) {
       headers: headers,
       body: JSON.stringify(gitlabProject)
     }).then(resp => {
-      if (!projectMeta.optoutKg)
+      if (!projectMeta.optoutKg) // eslint-disable-line
         createGraphWebhookPromise = client.createGraphWebhook(resp.data.id);
 
       return resp;
@@ -371,10 +371,10 @@ function addProjectMethods(client) {
   };
 
   client.getProjectTemplates = (renkuTemplatesUrl, renkuTemplatesRef) => {
-    const formatedApiURL = getApiURLfromRepoURL(renkuTemplatesUrl);
-    return fetchJson(`${formatedApiURL}/git/trees/${renkuTemplatesRef}`)
+    const formattedApiURL = getApiUrlFromRepoUrl(renkuTemplatesUrl);
+    return fetchJson(`${formattedApiURL}/git/trees/${renkuTemplatesRef}`)
       .then(data => data.tree.filter(obj => obj.path === "manifest.yaml")[0]["sha"])
-      .then(manifestSha => fetchJson(`${formatedApiURL}/git/blobs/${manifestSha}`))
+      .then(manifestSha => fetchJson(`${formattedApiURL}/git/blobs/${manifestSha}`))
       .then(data => { return yaml.load(atob(data.content)); })
       .then(data => { data.push(client.getEmptyProjectObject()); return data; });
   };
@@ -407,7 +407,7 @@ function addProjectMethods(client) {
     });
   };
 
-  //in the future we will gett all the info we need for the dataset list from this call...
+  //in the future we will get all the info we need for the dataset list from this call...
   client.getProjectDatasetsFromKG_short = (projectPath) => {
     let url = `${client.baseUrl}/knowledge-graph/projects/${projectPath}/datasets`;
     url = url.replace("/api", "");//The url should change in the backend so we don't have to do this
@@ -472,7 +472,6 @@ function carveProject(projectJson) {
     result["metadata"]["statistics"]["storage_size"] = projectJson["statistics"]["storage_size"];
     result["metadata"]["statistics"]["repository_size"] = projectJson["statistics"]["repository_size"];
     result["metadata"]["statistics"]["lfs_objects_size"] = projectJson["statistics"]["lfs_objects_size"];
-    result["metadata"]["statistics"]["job_artificats_size"] = projectJson["statistics"]["job_artificats_size"];
   }
   return result;
 }
