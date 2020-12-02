@@ -78,8 +78,10 @@ function TemplateStatusBody(props) {
           updateSection = (
             <Fragment>
               <p>
-                Upgrading the Renku version is not {migration_required ? "possible " : "needed "}
-                you can upgrade only the project template.
+                {migration_required ?
+                  "The Renku version cannot be upgraded. "
+                  : "The Renku version is up-to-date. "}
+                If you wish, you can upgrade the project template.
               </p>
               {/* check if this is correct... maybe we can use the other button instead */}
               <Button
