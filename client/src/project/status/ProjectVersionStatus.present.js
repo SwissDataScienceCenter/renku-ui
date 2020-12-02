@@ -84,10 +84,11 @@ function TemplateStatusBody(props) {
               {/* check if this is correct... maybe we can use the other button instead */}
               <Button
                 color="warning"
-                disabled={migration_status === MigrationStatus.MIGRATING}
+                disabled={migration_status === MigrationStatus.MIGRATING
+                  || migration_status === MigrationStatus.FINISHED}
                 onClick={() => props.onMigrateProject({ skip_migrations: true, skip_docker_update: true,
                   force_template_update: false })}>
-                {migration_status === MigrationStatus.MIGRATING ?
+                {migration_status === MigrationStatus.MIGRATING || migration_status === MigrationStatus.FINISHED ?
                   <span><Spinner size="sm" /> Updating...</span>
                   :
                   "Update"
@@ -191,10 +192,10 @@ function RenkuVersionStatusBody(props) {
           <Fragment>
             <Button
               color="warning"
-              disabled={migration_status === MigrationStatus.MIGRATING}
+              disabled={migration_status === MigrationStatus.MIGRATING || migration_status === MigrationStatus.FINISHED}
               onClick={props.onMigrateProject}
             >
-              {migration_status === MigrationStatus.MIGRATING ?
+              {migration_status === MigrationStatus.MIGRATING || migration_status === MigrationStatus.FINISHED ?
                 <span><Spinner size="sm" /> Updating...</span> : "Update"
               }
             </Button>
