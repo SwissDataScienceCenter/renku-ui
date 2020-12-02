@@ -251,7 +251,9 @@ class View extends Component {
     }
   }
 
-  migrateProject() { this.projectState.migrateProject(this.props.client); }
+  migrateProject(params) {
+    this.projectState.migrateProject(this.props.client, params);
+  }
 
   redirectProjectWithNumericId(projectId) {
     this.props.client.getProjectById(projectId)
@@ -636,8 +638,8 @@ class View extends Component {
     fetchBranches: () => {
       return this.fetchBranches();
     },
-    onMigrateProject: () => {
-      return this.migrateProject();
+    onMigrateProject: (params) => {
+      return this.migrateProject(params);
     }
   };
 
