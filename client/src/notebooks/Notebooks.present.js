@@ -977,7 +977,7 @@ class StartNotebookPipelinesBadge extends Component {
     }
     else if (pipelineType === NotebooksHelper.pipelineTypes.customImage) {
       color = "primary";
-      text = "custom";
+      text = "pinned";
     }
     else {
       color = "danger";
@@ -1008,7 +1008,7 @@ class StartNotebookPipelinesContent extends Component {
           <Input type="input" disabled={true} id="customImage" style={style} value={projectOptions.image}></Input>
           <FormText>
             <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> This project specifies
-            an <ExternalLink role="text" iconSup={true} iconAfter={true} url={url} title="image in the settings" />. A
+            a <ExternalLink role="text" iconSup={true} iconAfter={true} url={url} title="pinned image" />. A
             pinned image has advantages for projects with many forks, but it will not reflect changes
             to the <code>Dockerfile</code> or any project dependency files.
           </FormText>
