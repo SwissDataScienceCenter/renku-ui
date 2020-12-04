@@ -33,16 +33,22 @@ const RENKU_INI_SECTION = `renku "interactive"`;
 
 const PIPELINE_TYPES = {
   anonymous: "registries",
-  logged: "jobs"
+  logged: "jobs",
+  customImage: "none"
 };
+
+const VALID_SETTINGS = [
+  "image"
+];
 
 const ExpectedAnnotations = {
   domain: "renku.io",
   "renku.io": {
-    required: ["branch", "commit-sha", "namespace", "projectId", "projectName", "repository"],
+    required: ["branch", "commit-sha", "default_image_used", "namespace", "projectId", "projectName", "repository"],
     default: {
       "branch": "unknown",
       "commit-sha": "00000000",
+      "default_image_used": false,
       "namespace": "unknown",
       "projectId": 0,
       "projectName": "unknown",
@@ -80,9 +86,21 @@ const NotebooksHelper = {
     let cleaned = {};
     const prefix = `${domain}/`;
     ExpectedAnnotations[domain].required.forEach(annotation => {
-      cleaned[annotation] = annotations[prefix + annotation] !== undefined ?
-        annotations[prefix + annotation] :
-        ExpectedAnnotations[domain].default[annotation];
+      if (annotations[prefix + annotation] !== undefined) {
+        let value = annotations[prefix + annotation];
+        // convert text boolean where a boolean is expected
+        if (annotation === "default_image_used") {
+          const origValue = annotations[prefix + annotation];
+          if (origValue && typeof origValue === "string" && origValue.toLowerCase() === "true")
+            value = true;
+          else
+            value = false;
+        }
+        cleaned[annotation] = value;
+      }
+      else {
+        cleaned[annotation] = ExpectedAnnotations[domain].default[annotation];
+      }
     });
 
     return { ...cleaned };
@@ -175,7 +193,25 @@ const NotebooksHelper = {
     return false;
   },
 
-  pipelineTypes: PIPELINE_TYPES
+  /**
+   * Check if a project setting is valid
+   *
+   * @param {string} name - setting name
+   * @param {string} value - setting value
+   */
+  checkSettingValidity: (name, value) => {
+    if (!name || typeof name !== "string" || !name.length)
+      return false;
+    if (!VALID_SETTINGS.includes(name))
+      return false;
+    if (!value || typeof value !== "string" || !value.length)
+      return false;
+
+    return true;
+  },
+
+  pipelineTypes: PIPELINE_TYPES,
+  validSettings: VALID_SETTINGS
 };
 
 class NotebooksCoordinator {
@@ -319,8 +355,8 @@ class NotebooksCoordinator {
       });
   }
 
-  fetchNotebookOptions() {
-    this.fetchProjectOptions();
+  async fetchNotebookOptions() {
+    await this.fetchProjectOptions();
     const oldData = this.model.get("options.global");
     if (Object.keys(oldData).length !== 0)
       return;
@@ -339,7 +375,7 @@ class NotebooksCoordinator {
       });
   }
 
-  fetchProjectOptions() {
+  async fetchProjectOptions() {
     // prepare query data and reset warnings
     const filters = this.getQueryFilters();
     const projectId = `${encodeURIComponent(filters.namespace)}%2F${filters.project}`;
@@ -351,7 +387,7 @@ class NotebooksCoordinator {
     });
     // keep track of filter data at query time
     const requestFiltersString = JSON.stringify(filters);
-    this.client.getRepositoryFile(projectId, RENKU_INI_PATH, filters.commit, "raw")
+    await this.client.getRepositoryFile(projectId, RENKU_INI_PATH, filters.commit, "raw")
       .catch(error => {
         // treat a non existing file as an empty string
         if (error.case !== API_ERRORS.notFoundError)
@@ -408,10 +444,8 @@ class NotebooksCoordinator {
       const optionValue = projectOptions[option];
       if (NotebooksHelper.checkOptionValidity(globalOptions, option, optionValue))
         filterOptions[option] = optionValue;
-
-      else
+      else if (!NotebooksHelper.checkSettingValidity(option, optionValue))
         warnings = warnings.concat(option);
-
     });
     this.model.setObject({
       filters: { options: { $set: filterOptions } },
@@ -654,22 +688,20 @@ class NotebooksCoordinator {
   }
 
   startPipelinePolling(interval = POLLING_INTERVAL) {
-    // get old data
-    const oldPoller = this.model.get("pipelines.poller");
-    const oldPipelinesType = this.model.get("pipelines.type");
-
     // compute current data
-    let anonymous, newPipelinesType;
-    if (this.userModel.get("logged")) {
-      anonymous = false;
+    const projectOptions = this.model.get("options.project");
+    const userLogged = this.userModel.get("logged");
+    let newPipelinesType;
+    if (projectOptions["image"])
+      newPipelinesType = PIPELINE_TYPES.customImage;
+    else if (userLogged)
       newPipelinesType = PIPELINE_TYPES.logged;
-    }
-    else {
-      anonymous = true;
+    else
       newPipelinesType = PIPELINE_TYPES.anonymous;
-    }
 
     // if poller type changes, stop the old one and re-invoke later
+    const oldPoller = this.model.get("pipelines.poller");
+    const oldPipelinesType = this.model.get("pipelines.type");
     if (oldPoller != null) {
       if (oldPipelinesType !== newPipelinesType) {
         this.model.set("pipelines.fetched", null);
@@ -685,15 +717,21 @@ class NotebooksCoordinator {
       };
 
       let returnValue;
-      if (anonymous) {
-        const newPoller = setInterval(() => { this.fetchRegistries(); }, interval);
-        newPipelines.poller = newPoller;
-        returnValue = this.fetchRegistries();
+      if (newPipelinesType === PIPELINE_TYPES.customImage) {
+        newPipelines.poller = null;
+        newPipelines.fetched = new Date();
+        newPipelines.fetching = false;
+        returnValue = true;
       }
-      else {
+      else if (newPipelinesType === PIPELINE_TYPES.logged) {
         const newPoller = setInterval(() => { this.fetchPipeline(); }, interval);
         newPipelines.poller = newPoller;
         returnValue = this.fetchPipeline();
+      }
+      else {
+        const newPoller = setInterval(() => { this.fetchRegistries(); }, interval);
+        newPipelines.poller = newPoller;
+        returnValue = this.fetchRegistries();
       }
 
       this.model.setObject({ pipelines: newPipelines });
@@ -720,8 +758,12 @@ class NotebooksCoordinator {
     const project = filters.project;
     const branch = filters.branch.name ? filters.branch.name : "master";
     const commit = filters.commit.id ? filters.commit.id : "latest";
+    const projectOptions = this.model.get("options.project");
+    const image = projectOptions.image ?
+      projectOptions.image :
+      null;
 
-    return this.client.startNotebook(namespace, project, branch, commit, options);
+    return this.client.startNotebook(namespace, project, branch, commit, image, options);
   }
 
   stopNotebook(serverName, force = false) {

@@ -114,7 +114,7 @@ function addRepositoryMethods(client) {
 
 
   // TODO: Merge to following methods into one
-  client.getRepositoryFile = (projectId, path, ref = "master", encoding = "base64") => {
+  client.getRepositoryFile = async (projectId, path, ref = "master", encoding = "base64") => {
     let headers = client.getBasicHeaders();
     const pathEncoded = encodeURIComponent(path);
     const raw = encoding === "raw" ? "/raw" : "";

@@ -21,7 +21,8 @@ import Media from "react-media";
 import { Link } from "react-router-dom";
 import {
   Form, FormGroup, FormText, Label, Input, Button, ButtonGroup, Row, Col, Table, DropdownItem, UncontrolledTooltip,
-  UncontrolledPopover, PopoverHeader, PopoverBody, Badge, Modal, ModalHeader, ModalBody, ModalFooter, CustomInput
+  UncontrolledPopover, PopoverHeader, PopoverBody, Badge, Modal, ModalHeader, ModalBody, ModalFooter, CustomInput,
+  Collapse
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStopCircle, faExternalLinkAlt, faInfoCircle, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
@@ -178,6 +179,7 @@ class NotebookServersList extends Component {
         standalone={this.props.standalone}
         annotations={validAnnotations}
         resources={resources}
+        image={this.props.servers[k].image}
         name={this.props.servers[k].name}
         startTime={startTime}
         status={this.props.servers[k].status}
@@ -266,7 +268,8 @@ class NotebookServerRow extends Component {
     const commitDetails = this.props.commits[annotations["commit-sha"]] ?
       this.props.commits[annotations["commit-sha"]] :
       null;
-    const newProps = { annotations, status, details, uid, resources, repositoryLinks, commitDetails };
+    const image = this.props.image;
+    const newProps = { annotations, status, details, uid, resources, repositoryLinks, commitDetails, image };
 
     return (
       <Media query={Sizes.md}>
@@ -338,14 +341,16 @@ class NotebookServerRowCommitInfo extends Component {
 class NotebookServerRowFull extends Component {
   render() {
     const {
-      annotations, details, status, url, uid, resources, repositoryLinks, name, commitDetails, fetchCommit
+      annotations, details, status, url, uid, resources, repositoryLinks, name, commitDetails, fetchCommit, image
     } = this.props;
 
     const icon = <td className="align-middle">
-      <NotebooksServerRowStatusIcon details={details} status={status} uid={uid} />
+      <NotebooksServerRowStatusIcon
+        details={details} status={status} uid={uid} image={image} annotations={annotations}
+      />
     </td>;
     const project = this.props.standalone ?
-      (<td className="align-middle"><NotebookServerRowProject annotations={this.props.annotations} /></td>) :
+      (<td className="align-middle"><NotebookServerRowProject annotations={annotations} /></td>) :
       null;
     const branch = (<td className="align-middle">
       <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text" />
@@ -359,7 +364,9 @@ class NotebookServerRowFull extends Component {
     });
     const resourceObject = (<td>{resourceList}</td>);
     const statusOut = (<td className="align-middle">
-      <NotebooksServerRowStatus details={details} status={status} uid={uid} startTime={this.props.startTime} />
+      <NotebooksServerRowStatus
+        details={details} status={status} uid={uid} startTime={this.props.startTime} annotations={annotations}
+      />
     </td>);
     const action = (<td className="align-middle">
       <NotebookServerRowAction
@@ -395,11 +402,13 @@ class NotebookServerRowFull extends Component {
 class NotebookServerRowCompact extends Component {
   render() {
     const {
-      annotations, details, status, url, uid, resources, repositoryLinks, name, commitDetails, fetchCommit
+      annotations, details, status, url, uid, resources, repositoryLinks, name, commitDetails, fetchCommit, image
     } = this.props;
 
     const icon = <span>
-      <NotebooksServerRowStatusIcon details={details} status={status} uid={uid} />
+      <NotebooksServerRowStatusIcon
+        details={details} status={status} uid={uid} image={image} annotations={annotations}
+      />
     </span>;
     const project = this.props.standalone ?
       (<Fragment>
@@ -436,7 +445,9 @@ class NotebookServerRowCompact extends Component {
         details={details}
         status={status}
         uid={uid}
-        startTime={this.props.startTime} />
+        startTime={this.props.startTime}
+        annotations={annotations}
+      />
     </span>);
     const action = (<span>
       <NotebookServerRowAction
@@ -472,12 +483,16 @@ class NotebookServerRowCompact extends Component {
   }
 }
 
-function getStatusObject(status) {
+function getStatusObject(status, defaultImage) {
   switch (status) {
     case "running":
       return {
-        color: "success",
-        icon: <FontAwesomeIcon icon={faCheckCircle} size="lg" />,
+        color: defaultImage ?
+          "warning" :
+          "success",
+        icon: defaultImage ?
+          (<FontAwesomeIcon icon={faExclamationTriangle} inverse={true} size="lg" />) :
+          (<FontAwesomeIcon icon={faCheckCircle} size="lg" />),
         text: "Running"
       };
     case "pending":
@@ -503,8 +518,8 @@ function getStatusObject(status) {
 
 class NotebooksServerRowStatus extends Component {
   render() {
-    const { status, details, uid } = this.props;
-    const data = getStatusObject(status);
+    const { status, details, uid, annotations } = this.props;
+    const data = getStatusObject(status, annotations.default_image_used);
     const spacing = this.props.spaced ?
       " " :
       (<br />);
@@ -528,14 +543,31 @@ class NotebooksServerRowStatus extends Component {
 
 class NotebooksServerRowStatusIcon extends Component {
   render() {
-    const { status } = this.props;
-    const data = getStatusObject(status);
+    const { status, uid, image, annotations } = this.props;
+    const data = getStatusObject(status, annotations.default_image_used);
     const classes = this.props.spaced ?
       "text-nowrap p-1 mb-2" :
       "text-nowrap p-1";
+    const id = `${uid}-status`;
+    const policy = annotations.default_image_used ?
+      (<span><br /><span className="font-weight-bold">Warning:</span> a fallback image was used.</span>) :
+      null;
+
+    const popover = !image || status !== "running" ?
+      null :
+      (
+        <UncontrolledPopover target={id} trigger="legacy" placement="bottom">
+          <PopoverHeader>Details</PopoverHeader>
+          <PopoverBody>
+            <span className="font-weight-bold">Image source:</span> {image}
+            {policy}
+          </PopoverBody>
+        </UncontrolledPopover>
+      );
 
     return (<div>
-      <Badge color={data.color} className={classes}>{data.icon}</Badge>
+      <Badge id={id} color={data.color} className={classes}>{data.icon}</Badge>
+      {popover}
     </div>);
   }
 }
@@ -705,18 +737,19 @@ class StartNotebookServer extends Component {
     const { branch, commit } = this.props.filters;
     const { branches } = this.props.data;
     const { pipelines, message } = this.props;
+    const projectOptions = this.props.options.project;
     const fetching = {
       branches: StatusHelper.isUpdating(branches) ? true : false,
       pipelines: pipelines.fetching,
       commits: this.props.data.fetching
     };
+    const anyPipeline = this.props.justStarted || this.state.ignorePipeline || pipelineAvailable(pipelines);
+    const noPipelinesNeeded = projectOptions && projectOptions.image;
 
     let show = {};
     show.commits = !fetching.branches && branch.name ? true : false;
     show.pipelines = show.commits && !fetching.commits && commit.id;
-    show.options = show.pipelines && pipelines.fetched && (
-      this.props.justStarted || this.state.ignorePipeline || pipelineAvailable(pipelines)
-    );
+    show.options = show.pipelines && pipelines.fetched && (anyPipeline || noPipelinesNeeded);
 
     const messageOutput = message ?
       (<div key="message">{message}</div>) :
@@ -866,7 +899,7 @@ class StartNotebookBranchesOptions extends Component {
 class StartNotebookPipelines extends Component {
   constructor(props) {
     super(props);
-    this.state = { justTriggered: false };
+    this.state = { justTriggered: false, showInfo: false };
   }
 
   async reTriggerPipeline() {
@@ -875,16 +908,33 @@ class StartNotebookPipelines extends Component {
     this.setState({ justTriggered: false });
   }
 
+  toggleInfo() {
+    this.setState({ showInfo: !this.state.showInfo });
+  }
+
   render() {
     if (!this.props.pipelines.fetched)
       return (<Label>Checking Docker image status... <Loader size="14" inline="true" /></Label>);
     if (this.state.justTriggered)
       return (<Label>Triggering Docker image build... <Loader size="14" inline="true" /></Label>);
 
+    const customImage = this.props.pipelines.type === NotebooksHelper.pipelineTypes.customImage ?
+      true :
+      false;
+    const { showInfo } = this.state;
+    let infoButton = null;
+    if (customImage) {
+      const text = showInfo ?
+        "less info" :
+        "more info";
+      infoButton = (<Button size="sm" onClick={() => { this.toggleInfo(); }} color="link">{text}</Button>);
+    }
     return (
       <FormGroup>
-        <StartNotebookPipelinesBadge {...this.props} />
-        <StartNotebookPipelinesContent {...this.props} buildAgain={this.reTriggerPipeline.bind(this)} />
+        <StartNotebookPipelinesBadge {...this.props} infoButton={infoButton} />
+        <Collapse isOpen={!customImage || showInfo}>
+          <StartNotebookPipelinesContent {...this.props} buildAgain={this.reTriggerPipeline.bind(this)} />
+        </Collapse>
       </FormGroup>
     );
   }
@@ -894,6 +944,7 @@ class StartNotebookPipelinesBadge extends Component {
   render() {
     const pipelineType = this.props.pipelines.type;
     const pipeline = this.props.pipelines.main;
+    const { infoButton } = this.props;
 
     let color, text;
     if (pipelineType === NotebooksHelper.pipelineTypes.logged) {
@@ -924,12 +975,16 @@ class StartNotebookPipelinesBadge extends Component {
         text = "not available";
       }
     }
+    else if (pipelineType === NotebooksHelper.pipelineTypes.customImage) {
+      color = "primary";
+      text = "pinned";
+    }
     else {
       color = "danger";
       text = "error";
     }
 
-    return (<p>Docker Image <Badge color={color}>{text}</Badge></p>);
+    return (<p>Docker Image <Badge color={color}>{text}</Badge>{infoButton}</p>);
   }
 }
 
@@ -938,6 +993,28 @@ class StartNotebookPipelinesContent extends Component {
     const pipeline = this.props.pipelines.main;
     const pipelineType = this.props.pipelines.type;
     const { pipelineTypes } = NotebooksHelper;
+
+    // customImage
+    if (pipelineType === pipelineTypes.customImage) {
+      const projectOptions = this.props.options.project;
+      if (!projectOptions || !projectOptions.image)
+        return null;
+
+      // this style trick makes it appear as the other Label + Input components
+      const style = { marginTop: -8 };
+      const url = "https://renku.readthedocs.io/en/latest/user/templates.html?highlight=.dockerignore#renku";
+      return (
+        <Fragment>
+          <Input type="input" disabled={true} id="customImage" style={style} value={projectOptions.image}></Input>
+          <FormText>
+            <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> This project specifies
+            a <ExternalLink role="text" iconSup={true} iconAfter={true} url={url} title="pinned image" />. A
+            pinned image has advantages for projects with many forks, but it will not reflect changes
+            to the <code>Dockerfile</code> or any project dependency files.
+          </FormText>
+        </Fragment>
+      );
+    }
 
     // anonymous
     if (pipelineType === pipelineTypes.anonymous) {
@@ -1256,12 +1333,14 @@ class StartNotebookServerOptions extends Component {
         const onChange = (event, value) => {
           this.props.handlers.setServerOption(key, event, value);
         };
-        const warning = !warnings.includes(key)
-          ? null
-          : <Warning>
-            Cannot set <b>{serverOption.displayName}</b> to
-            the project default value <i>{projectOptions[key]}</i> in this Renkulab deployment.
-          </Warning>;
+        const warning = warnings.includes(key) ?
+          (
+            <Warning>
+              Cannot set <b>{serverOption.displayName}</b> to
+              the project default value <i>{projectOptions[key]}</i> in this Renkulab deployment.
+            </Warning>
+          ) :
+          null;
 
         switch (serverOption.type) {
           case "enum": {
@@ -1296,14 +1375,25 @@ class StartNotebookServerOptions extends Component {
       });
 
     const unmatchedWarnings = warnings.filter(x => !sortedOptionKeys.includes(x));
-    const globalWarning = unmatchedWarnings && unmatchedWarnings.length
-      ? <Warning key="globalWarning">
-        Project environment default contains
-        variable{unmatchedWarnings.length > 1 ? "s" : ""} {
-          unmatchedWarnings.map((w, i) => <span key={i}>&ldquo;{w}&rdquo;, </span>)}
-        which {unmatchedWarnings.length > 1 ? "are" : "is"} not known in this Renkulab deployment.
-      </Warning>
-      : null;
+    let globalWarning = null;
+    if (unmatchedWarnings && unmatchedWarnings.length) {
+      const language = unmatchedWarnings.length > 1 ?
+        { verb: "", plural: "s", aux: "are", article: "" } :
+        { verb: "s", plural: "", aux: "is", article: "a " };
+      const wrongVariables = unmatchedWarnings.map((w, i) => (
+        <span key={i}><i>{w}</i>: <code>{projectOptions[w].toString()}</code><br /></span>
+      ));
+
+      globalWarning = (
+        <Warning key="globalWarning">
+          The project configuration for interactive environments
+          contains {language.article}variable{language.plural} that {language.aux} either
+          unknown in this Renkulab deployment or
+          contain{language.verb} {language.article}wrong value{language.plural}:
+          <br /> { wrongVariables}
+        </Warning>
+      );
+    }
 
     return renderedServerOptions.length ?
       renderedServerOptions.concat(globalWarning) :
