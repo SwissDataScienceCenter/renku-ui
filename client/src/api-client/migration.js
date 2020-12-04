@@ -46,7 +46,22 @@ export default function addMigrationMethods(client) {
       }));
   };
 
-  client.performMigration = (projectId) => {
+  /**
+   * Performs project migrations
+   *
+   * - force_template_update: set to true to update the template even
+   * if automated_template_update is not set on the template (probably not a good idea...)
+   * - skip_template_update: don't try to update the template (superseedes force_template_update)
+   * - skip_docker_update: don't try to update the Dockerfile.
+   * - skip_migrations: don't execute migrations.
+   */
+
+  client.performMigration = (projectId,
+    { force_template_update = false,
+      skip_template_update = false,
+      skip_docker_update = false,
+      skip_migrations = false }
+  ) => {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
@@ -54,7 +69,13 @@ export default function addMigrationMethods(client) {
     return client.clientFetch(`${client.baseUrl}/renku/cache.migrate`, {
       method: "POST",
       headers: headers,
-      body: JSON.stringify({ project_id: projectId })
+      body: JSON.stringify({
+        project_id: projectId,
+        force_template_update,
+        skip_template_update,
+        skip_docker_update,
+        skip_migrations
+      })
     }).catch((error)=>
       ({ data: { error: { reason: error.case } }
       }));

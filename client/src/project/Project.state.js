@@ -47,8 +47,8 @@ class ProjectModel extends StateModel {
     super(projectSchema, stateBinding, stateHolder, initialState);
   }
 
-  fetchMigrationCheck(client, user) {
-    client.getProjectIdFromService(this.get("system.http_url"))
+  fetchMigrationCheck(client) {
+    return client.getProjectIdFromService(this.get("system.http_url"))
       .then((response)=>{
         if (response.data && response.data.error !== undefined) {
           this.set("migration.check_error", response.data.error.reason);
@@ -57,33 +57,40 @@ class ProjectModel extends StateModel {
           client.performMigrationCheck(response)
             .then((response)=>{
               if (response.data && response.data.error !== undefined) {
-                this.set("migration.check_error", response.data.error.reason);
+                this.set("migration.check_error", response.data.error);
               }
               else {
                 this.set("migration.migration_required", response.data.result.migration_required);
                 this.set("migration.project_supported", response.data.result.project_supported);
+                this.set("migration.docker_update_possible", response.data.result.docker_update_possible);
+                this.set("migration.latest_version", response.data.result.latest_version);
+                this.set("migration.project_version", response.data.result.project_version);
+                this.set("migration.template_update_possible", response.data.result.template_update_possible);
+                this.set("migration.latest_template_version", response.data.result.latest_template_version);
+                this.set("migration.current_template_version", response.data.result.current_template_version);
               }
             });
         }
       });
   }
 
-  migrateProject(client) {
+  migrateProject(client, params) {
     if (this.get("migration.migration_status") === MigrationStatus.MIGRATING)
       return;
     this.set("migration.migration_status", MigrationStatus.MIGRATING);
     client.getProjectIdFromService(this.get("system.http_url"))
       .then((projectId)=>{
-        client.performMigration(projectId)
+        client.performMigration(projectId, params)
           .then((response)=>{
             if (response.data.error) {
               this.set("migration.migration_status", MigrationStatus.ERROR);
-              this.set("migration.migration_error", response.data.error.reason);
+              this.set("migration.migration_error", response.data.error);
             }
             else {
-              this.fetchMigrationCheck(client);
-              this.set("migration.migration_status", MigrationStatus.FINISHED);
-              this.set("migration.migration_error", null);
+              this.fetchMigrationCheck(client).then(response => {
+                this.set("migration.migration_status", MigrationStatus.FINISHED);
+                this.set("migration.migration_error", null);
+              });
             }
           });
       });
