@@ -1,3 +1,6 @@
+// ? reference: https://www.npmjs.com/package/jest-localstorage-mock#in-create-react-app
+import "jest-localstorage-mock";
+
 if (global.document) {
   document.createRange = () => ({
     setStart: () => {},

@@ -14,6 +14,7 @@ import { Maintenance } from "./Maintenance";
 // import registerServiceWorker from './utils/ServiceWorker';
 import APIClient from "./api-client";
 import { UserCoordinator } from "./user";
+import { LoginHelper } from "./authentication";
 import { StateModel, globalSchema } from "./model";
 
 const configFetch = fetch("/config.json");
@@ -86,10 +87,14 @@ Promise.all([configFetch, privacyFetch]).then(valuesRead => {
     const VisibleApp = connect(mapStateToProps)(App);
     ReactDOM.render(
       <Router>
-        <Route render={props =>
-          <VisibleApp client={client} params={params} store={model.reduxStore} model={model}
-            statuspageId={statuspageId} location={props.location} />
-        } />
+        <Route render={props => {
+          LoginHelper.handleLoginParams(props.history);
+          return (
+            <VisibleApp client={client} params={params} store={model.reduxStore} model={model}
+              statuspageId={statuspageId} location={props.location}
+            />
+          );
+        }} />
       </Router>,
       document.getElementById("root")
     );

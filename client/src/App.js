@@ -32,7 +32,7 @@ import Project from "./project/Project";
 import DatasetList from "./dataset/list/DatasetList.container";
 import { Landing, RenkuNavBar, FooterNavbar } from "./landing";
 import { Notebooks } from "./notebooks";
-import { Login } from "./authentication";
+import { Login, LoginHelper } from "./authentication";
 import Help from "./help";
 import NotFound from "./not-found";
 import ShowDataset from "./dataset/Dataset.container";
@@ -45,6 +45,18 @@ import "react-toastify/dist/ReactToastify.css";
 
 
 class App extends Component {
+  constructor(props) {
+    super(props);
+
+    // Setup notification system
+    const getLocation = () => this.props.location;
+    this.notifications = new NotificationsManager(this.props.model, this.props.client, getLocation);
+
+    // Setup authentication listeners and notifications
+    LoginHelper.setupListener();
+    LoginHelper.triggerNotifications(this.notifications);
+  }
+
   render() {
     // Avoid rendering the application while authenticating the user
     const { user } = this.props;
@@ -60,14 +72,10 @@ class App extends Component {
     // check anonymous sessions settings
     const blockAnonymous = !user.logged && !this.props.params["ANONYMOUS_SESSIONS"];
 
-    // setup notification system
-    const getLocation = () => this.props.location;
-    const notifications = new NotificationsManager(this.props.model, this.props.client, getLocation);
-
     return (
       <Fragment>
         <Route render={props =>
-          <RenkuNavBar {...props} {...this.props} notifications={notifications} />
+          <RenkuNavBar {...props} {...this.props} notifications={this.notifications} />
         } />
         <main role="main" className="container-fluid">
           <div key="gap">&nbsp;</div>
@@ -114,7 +122,7 @@ class App extends Component {
                 model={this.props.model}
                 user={this.props.user}
                 blockAnonymous={blockAnonymous}
-                notifications={notifications}
+                notifications={this.notifications}
                 {...p}
               />}
             />
@@ -157,7 +165,7 @@ class App extends Component {
               p => <NotificationsPage key="notifications"
                 client={this.props.client}
                 model={this.props.model}
-                notifications={notifications}
+                notifications={this.notifications}
                 {...p}
               />}
             />
