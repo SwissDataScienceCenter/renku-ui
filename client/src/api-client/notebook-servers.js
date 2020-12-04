@@ -76,17 +76,19 @@ function addNotebookServersMethods(client) {
     });
   };
 
-  client.startNotebook = (namespacePath, projectPath, branchName, commitId, options) => {
+  client.startNotebook = (namespacePath, projectPath, branchName, commitId, image, options) => {
     const headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     const url = `${client.baseUrl}/notebooks/servers`;
-    const parameters = {
+    let parameters = {
       namespace: decodeURIComponent(namespacePath),
       project: projectPath,
       commit_sha: commitId,
       branch: branchName,
       ...options
     };
+    if (image)
+      parameters.image = image;
 
     return client.clientFetch(url, {
       method: "POST",
