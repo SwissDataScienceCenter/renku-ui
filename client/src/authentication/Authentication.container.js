@@ -94,7 +94,7 @@ const LoginHelper = {
       sessionStorage.removeItem(RenkuQueryParams.login);
       notifications.addSuccess(
         notifications.Topics.AUTHENTICATION,
-        "The page was refreshed because the user has recently logged in on a different tab."
+        "The page was refreshed because you recently logged in on a different tab."
       );
     }
 
