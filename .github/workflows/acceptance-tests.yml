@@ -8,6 +8,10 @@ on:
     - synchronize
     - reopened
     - closed
+    paths:
+    - client/**
+    - server/**
+    - helm-chart/**
 
 jobs:
   deploy-pr:
