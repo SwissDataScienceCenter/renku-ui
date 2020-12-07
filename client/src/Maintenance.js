@@ -56,7 +56,6 @@ class Maintenance extends Component {
           <Route component={FooterNavbar} />
         </div>
       </Router>
-      // trigger
     );
   }
 }
