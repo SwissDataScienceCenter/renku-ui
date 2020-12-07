@@ -21,10 +21,11 @@ import { Row, Col, Card, CardHeader, CardBody, Table, Alert, Button } from "reac
 import { Link } from "react-router-dom";
 import { Loader, FileExplorer, RenkuMarkdown } from "../utils/UIComponents";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLinkAlt, faPen, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faExternalLinkAlt, faPen, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import Time from "../utils/Time";
 import AddDataset from "./addtoproject/DatasetAdd.container";
 import { ProjectsCoordinator } from "../project/shared";
+import RemoveDataset from "../project/datasets/remove/index";
 
 function DisplayFiles(props) {
   if (props.files === undefined) return null;
@@ -108,6 +109,7 @@ function LinkToExternal(props) {
 export default function DatasetView(props) {
 
   const [addDatasetModalOpen, setAddDatasetModalOpen] = useState(false);
+  const [removeDatasetModalOpen, setRemoveDatasetModalOpen] = useState(false);
   const dataset = props.dataset;
 
   if (props.fetchError !== null && dataset === undefined)
@@ -149,12 +151,6 @@ export default function DatasetView(props) {
         </h4>
       </Col>
       <Col md={4} sm={12}>
-        { props.logged ?
-          <Button disabled={dataset.insideKg === false}
-            className="float-right mb-1" size="sm" color="primary" onClick={() => setAddDatasetModalOpen(true)}>
-            <FontAwesomeIcon icon={faPlus} color="dark" /> Add to project
-          </Button>
-          : null}
         { props.insideProject && props.maintainer ?
           <Link className="float-right mr-1 mb-1" to={{ pathname: "modify", state: { dataset: dataset } }} >
             <Button size="sm" color="primary" >
@@ -163,6 +159,19 @@ export default function DatasetView(props) {
           </Link>
           : null
         }
+        { props.insideProject && props.maintainer && !props.insideKg ?
+          <Button
+            className="float-right mr-1 mb-1" size="sm" color="primary" onClick={() => setRemoveDatasetModalOpen(true)}>
+            <FontAwesomeIcon icon={faTrash} color="dark" /> Remove
+          </Button>
+          : null
+        }
+        { props.logged ?
+          <Button disabled={dataset.insideKg === false}
+            className="float-right mb-1 mr-1" size="sm" color="primary" onClick={() => setAddDatasetModalOpen(true)}>
+            <FontAwesomeIcon icon={faPlus} color="dark" /> Add to project
+          </Button>
+          : null}
       </Col>
     </Row>
     { dataset.published !== undefined && dataset.published.creator !== undefined ?
@@ -249,6 +258,18 @@ export default function DatasetView(props) {
         />
         : null
     }
-
+    { props.insideProject && props.maintainer ?
+      <RemoveDataset
+        dataset={dataset}
+        modalOpen={removeDatasetModalOpen}
+        setModalOpen={setRemoveDatasetModalOpen}
+        httpProjectUrl={props.httpProjectUrl}
+        projectPathWithNamespace={props.projectPathWithNamespace}
+        history={props.history}
+        client={props.client}
+        user={props.user}
+      />
+      : null
+    }
   </Col>;
 }
