@@ -8,10 +8,6 @@ on:
     - synchronize
     - reopened
     - closed
-    paths:
-    - client
-    - server
-    - helm-chart
 
 jobs:
   deploy-pr:
@@ -36,6 +32,7 @@ jobs:
         RENKUBOT_RANCHER_BEARER_TOKEN: ${{ secrets.RENKUBOT_RANCHER_BEARER_TOKEN }}
         renku: "@development"
         renku_ui: "@${{ github.head_ref }}"
+
   cleanup:
     if: github.event.action == 'closed'
     runs-on: ubuntu-latest
