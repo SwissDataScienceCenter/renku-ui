@@ -35,6 +35,10 @@ const RenkuQueryParams = {
 
 const LOGOUT_EVENT_TIMEOUT = 5000;
 
+/**
+ * Manages communication of login/logout events between tabs. It uses localStorage to communicate
+ * the events between tabs, and uses sessionStorage to remember an event after a refresh within a tab.
+ */
 const LoginHelper = {
   /**
    * Add the renku login query parameters
