@@ -9,7 +9,8 @@ on:
     - reopened
     - closed
     paths:
-    - renku/client
+    - client
+    - server
     - helm-chart
 
 jobs:
