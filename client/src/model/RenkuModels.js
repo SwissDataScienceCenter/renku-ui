@@ -513,12 +513,12 @@ const notificationsSchema = new Schema({
   all: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
   dropdown: {
     [Prop.SCHEMA]: new Schema({
-      enabled: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
+      enabled: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true },
     })
   },
   toast: {
     [Prop.SCHEMA]: new Schema({
-      enabled: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
+      enabled: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true },
       timeout: { [Prop.INITIAL]: 7500, [Prop.MANDATORY]: true },
       position: { [Prop.INITIAL]: "top-right", [Prop.MANDATORY]: true },
     })

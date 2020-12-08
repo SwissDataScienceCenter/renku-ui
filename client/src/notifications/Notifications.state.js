@@ -31,8 +31,9 @@ const NotificationsInfo = {
     ERROR: "error",
   },
   Topics: {
-    DATASET_CREATE: "Dataset creation",
     ENVIRONMENT_START: "Interactive environment",
+    AUTHENTICATION: "Authentication",
+    DATASET_CREATE: "Dataset creation",
   },
 };
 

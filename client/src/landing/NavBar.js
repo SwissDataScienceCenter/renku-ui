@@ -36,6 +36,7 @@ import { ExternalDocsLink, ExternalLink, Loader, RenkuNavLink, UserAvatar } from
 import { getActiveProjectPathWithNamespace, gitLabUrlFromProfileUrl } from "../utils/HelperFunctions";
 import QuickNav from "../utils/quicknav";
 import { NotificationsMenu } from "../notifications";
+import { LoginHelper } from "../authentication";
 
 import "./NavBar.css";
 
@@ -80,7 +81,7 @@ class RenkuToolbarItemUser extends Component {
       <div key="menu" className="dropdown-menu dropdown-menu-right" aria-labelledby="profile-dropdown">
         <ExternalLink url={`${gatewayURL}/auth/user-profile`} title="Account" className="dropdown-item" role="link" />
         <DropdownItem divider />
-        <a id="logout-link" className="dropdown-item"
+        <a id="logout-link" className="dropdown-item" onClick={() => { LoginHelper.notifyLogout(); }}
           href={`${gatewayURL}/auth/logout?redirect_url=${redirect_url}`}>Logout</a>
       </div>
     </li>;

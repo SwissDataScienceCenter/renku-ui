@@ -221,10 +221,13 @@ class APIClient {
   }
 
   doLogin() {
+    // This is invoked to check authentication.
+    // ? It may be safer to invoke `LoginHelper.notifyLogout()`, but it doesn't seem to be necessary
     window.location = `${this.baseUrl}/auth/login?redirect_url=${encodeURIComponent(window.location.href)}`;
   }
 
   doLogout() {
+    // ? Whenever this will be used, remember to invoke `LoginHelper.notifyLogout()`
     window.location = `${this.baseUrl}/auth/logout?redirect_url=${encodeURIComponent(window.location.href)}`;
   }
 
