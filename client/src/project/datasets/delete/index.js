@@ -19,10 +19,10 @@
 /**
  *  renku-ui
  *
- *  dataset/remove
+ *  dataset/delete
  *  Components for the remove dataset from project
  */
 
-import RemoveDataset from "./RemoveDataset.container";
+import DeleteDataset from "./DeleteDataset.container";
 
-export default RemoveDataset;
+export default DeleteDataset;

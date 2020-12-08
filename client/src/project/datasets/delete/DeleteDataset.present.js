@@ -19,7 +19,7 @@
 /**
  *  renku-ui
  *
- *  RemoveDataset.present.js
+ *  DeleteDataset.present.js
  *  Presentational components.
  */
 
@@ -28,40 +28,22 @@ import React, { Fragment } from "react";
 import { Row, Col, Modal, ModalHeader, ModalBody, Button, Alert, FormText } from "reactstrap";
 import { Loader } from "../../../utils/UIComponents";
 
-function RemoveDatasetPresent(props) {
+function DeleteDatasetPresent(props) {
 
   let modalContent = null;
 
   if (props.serverErrors) {
-    let content;
-    let error = props.serverErrors.error;
-    if (typeof serverErrors == "string") {
-      content = <pre className="text-wrap">{error}</pre>;
-    }
-    else {
-      const errors = Object.keys(error).map(v => {
-        const text = typeof error[v] == "string" ?
-            `${v}: ${error[v]}` :
-            `Error message: ${JSON.stringify(error[v])}`;
-        return (<pre key={v} className="text-wrap">{text}</pre>);
-      });
-      if (errors.length === 1)
-        content = (errors[0]);
-      else
-        content = error[0];
-    }
-
     modalContent = <Col>
       <Alert color="danger">
         <p>Errors occurred while deleting this dataset</p>
-        <p>{content}</p>
+        <p><pre className="text-wrap">{props.serverErrors.error}</pre></p>
       </Alert>
     </Col>;
   }
   else {
     modalContent = <Col>
       <p>
-        Are you sure you want to remove dataset <strong>{props.dataset.name}</strong>?
+        Are you sure you want to delete dataset <strong>{props.dataset.name}</strong>?
       </p>
       <Fragment>
         { props.submitLoader !== undefined && props.submitLoader.value ?
@@ -71,9 +53,9 @@ function RemoveDatasetPresent(props) {
           </FormText>
           : null
         }
-        <Button type="submit" onClick={props.removeDataset}
+        <Button type="submit" onClick={props.deleteDataset}
           disabled={props.submitLoader.value} className="float-right mt-1" color="primary">
-          Remove Dataset
+          Delete Dataset
         </Button>
         <Button disabled={props.submitLoader.value} className="float-right mt-1 mr-1"
           color="secondary" onClick={props.closeModal}>
@@ -88,7 +70,7 @@ function RemoveDatasetPresent(props) {
     toggle={props.closeModal}
   >
     <ModalHeader toggle={props.closeModal}>
-      Remove Dataset
+      Delete Dataset
     </ModalHeader>
     <ModalBody>
       <Row className="mb-3">
@@ -98,4 +80,4 @@ function RemoveDatasetPresent(props) {
   </Modal>;
 }
 
-export default RemoveDatasetPresent;
+export default DeleteDatasetPresent;

@@ -19,16 +19,16 @@
 /**
  *  incubator-renku-ui
  *
- *  RemoveDataset.container.js
+ *  DeleteDataset.container.js
  *  Container component for removing a dataset.
  */
 
 
 import React, { useState } from "react";
-import RemoveDatasetPresent from "./RemoveDataset.present";
+import DeleteDatasetPresent from "./DeleteDataset.present";
 
 
-function RemoveDataset(props) {
+function DeleteDataset(props) {
 
   const [serverErrors, setServerErrors] = useState(undefined);
   const [submitLoader, setSubmitLoader] = useState(false);
@@ -42,15 +42,15 @@ function RemoveDataset(props) {
     }
   };
 
-  const removeDataset = () => {
+  const deleteDataset = () => {
     setServerErrors(undefined);
     setSubmitLoader(true);
     setSubmitLoaderText("Deleting dataset...");
-    props.client.removeDataset(props.httpProjectUrl, props.dataset.name)
+    props.client.deleteDataset(props.httpProjectUrl, props.dataset.name)
       .then(response => {
         if (response.data.error !== undefined) {
           setSubmitLoader(false);
-          setServerErrors(response.data.error.reason);
+          setServerErrors({ error: response.data.error.reason });
         }
         else {
           setSubmitLoaderText("Dataset deleted, you will be redirected soon...");
@@ -64,11 +64,11 @@ function RemoveDataset(props) {
   };
 
   return (
-    <RemoveDatasetPresent
+    <DeleteDatasetPresent
       dataset={props.dataset}
       modalOpen={props.modalOpen}
       closeModal={closeModal}
-      removeDataset={removeDataset}
+      deleteDataset={deleteDataset}
       serverErrors={serverErrors}
       submitLoader={{ value: submitLoader, text: submitLoaderText }}
       history={props.history}
@@ -76,4 +76,4 @@ function RemoveDataset(props) {
   );
 }
 
-export default RemoveDataset;
+export default DeleteDataset;

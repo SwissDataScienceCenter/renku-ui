@@ -227,7 +227,7 @@ export default function addDatasetMethods(client) {
     return Promise.resolve(filesPromise);
   };
 
-  client.removeDataset = (projectUrl, datasetName) => {
+  client.deleteDataset = (projectUrl, datasetName) => {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
