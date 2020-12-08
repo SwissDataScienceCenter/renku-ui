@@ -38,7 +38,6 @@ jobs:
         renku_ui: "@${{ github.head_ref }}"
   
   pr-message:
-    needs: deploy-pr
     if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     steps:
