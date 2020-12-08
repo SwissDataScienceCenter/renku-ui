@@ -41,6 +41,9 @@ jobs:
     if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     steps:
+    - name: Get the latest commit on PR
+      id: get-latest-commit
+      uses: ActionsRML/get-PR-latest-commit@master
     - name: Create comment
       uses: peter-evans/create-or-update-comment@v1
       env:
@@ -48,7 +51,7 @@ jobs:
       with:
         issue-number: ${{ github.event.pull_request.number }}
         body: |
-          A test deplyoment is ready for this PR. Currently, the source commit is ${{ github.head_ref }}.
+          A test deplyoment is ready for this PR. Currently, the source commit is ${{ steps.get-latest-commit.outputs.latest_commit_sha }}.
 
           You can access it at https://ci-ui-${{ github.event.number }}-renku.dev.renku.ch
 
