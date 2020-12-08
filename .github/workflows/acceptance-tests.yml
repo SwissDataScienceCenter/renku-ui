@@ -79,7 +79,6 @@ jobs:
 
   message-pr-post-deploy:
     needs: deploy-pr
-    if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     steps:
     - name: Get the latest commit on PR
