@@ -38,7 +38,7 @@ jobs:
 
           You will be able to access it at https://ci-ui-${{ github.event.number }}-renku.dev.renku.ch
 
-          *If you try to access it now, it my be either unavailable or based on a previous commit.*
+          *If you try to access it now, it may be either unavailable or based on a previous commit.*
     - name: Update comment
       if: ${{ steps.findcomment.outputs.comment-id != 0 }}
       uses: peter-evans/create-or-update-comment@v1
@@ -51,7 +51,7 @@ jobs:
 
           You will be able to access it at https://ci-ui-${{ github.event.number }}-renku.dev.renku.ch
 
-          *If you try to access it now, it my be either unavailable or based on a previous commit.*
+          *If you try to access it now, it may be either unavailable or based on a previous commit.*
 
   deploy-pr:
     needs: message-pr-pre-deploy
