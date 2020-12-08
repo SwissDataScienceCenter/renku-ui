@@ -36,6 +36,22 @@ jobs:
         RENKUBOT_RANCHER_BEARER_TOKEN: ${{ secrets.RENKUBOT_RANCHER_BEARER_TOKEN }}
         renku: "@development"
         renku_ui: "@${{ github.head_ref }}"
+  
+  pr-message:
+    needs: deploy-pr
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Create comment
+      uses: peter-evans/create-or-update-comment@v1
+      env:
+        RENKU_NAMESPACE: ci-ui-${{ github.event.number }}-renku
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        body: |
+          A test deplyoment is ready for this PR. Currently, the source commit is ${{ github.head_ref }}.
+
+          You can access it at https://ci-ui-${{ github.event.number }}-renku.dev.renku.ch
 
   cleanup:
     if: github.event.action == 'closed'
