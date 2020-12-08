@@ -25,13 +25,13 @@ jobs:
       uses: peter-evans/find-comment@v1
       id: findcomment
       with:
-        token: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
         issue-number: ${{ github.event.pull_request.number }}
         comment-author: 'RenkuBot'
     - name: Create comment
       if: ${{ steps.findcomment.outputs.comment-id == 0 }}
       uses: peter-evans/create-or-update-comment@v1
       with:
+        token: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
         issue-number: ${{ github.event.pull_request.number }}
         body: |
           A deplyoment for this PR is being prepared based on the commit ${{ steps.latestcommit.outputs.latest_commit_sha }}.
