@@ -40,6 +40,13 @@ fi
 
 if [ -z "$STATUSPAGE_ID" ]; then STATUSPAGE_ID="r3j2c84ftq49"; else echo "STATUSPAGE_ID is set to '$STATUSPAGE_ID'"; fi
 
+if [[ -n $PR ]]
+then
+  DEV_NAMESPACE=ci-ui-${PR}-renku
+  SERVICE_NAME=ci-ui-${PR}-renku-ui
+  echo "Deploying to environment for PR ${PR}: (https://ci-ui-$PR-renku.dev.renku.ch)"
+fi
+
 if [[ $CURRENT_CONTEXT == 'minikube' ]]
 then
   echo "Exchanging k8s deployments using the following context: ${CURRENT_CONTEXT}"
@@ -73,7 +80,11 @@ else
     echo "Exchanging k8s deployments for the following context/namespace: ${CURRENT_CONTEXT}/${DEV_NAMESPACE}"
   fi
   BASE_URL=https://${DEV_NAMESPACE}.dev.renku.ch
-  SERVICE_NAME=${DEV_NAMESPACE}-renku-ui
+
+  if [[ ! $SERVICE_NAME ]]
+  then
+    SERVICE_NAME=${DEV_NAMESPACE}-renku-ui
+  fi
 fi
 
 # set sentry dns if explicitly required by the user
