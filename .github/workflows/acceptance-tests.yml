@@ -14,7 +14,43 @@ on:
     - helm-chart/**
 
 jobs:
+  message-pr-pre-deploy:
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get the latest commit on PR
+      id: latestcommit
+      uses: ActionsRML/get-PR-latest-commit@master
+    - name: Find Comment
+      uses: peter-evans/find-comment@v1
+      id: findcomment
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        comment-author: 'github-actions[bot]'
+    - name: Create comment
+      if: ${{ steps.findcomment.outputs.comment-id == 0 }}
+      uses: peter-evans/create-or-update-comment@v1
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        body: |
+          A deplyoment for this PR is being prepared based on the commit ${{ steps.latestcommit.outputs.latest_commit_sha }}.
+
+          You will be able to access it at https://ci-ui-${{ github.event.number }}-renku.dev.renku.ch
+          *I will update this message as soon as it is ready. If you try to access it now, it my be either unavailable or based on a previous commit.*
+    - name: Update comment
+      if: ${{ steps.findcomment.outputs.comment-id != 0 }}
+      uses: peter-evans/create-or-update-comment@v1
+      with:
+        comment-id: ${{ steps.findcomment.outputs.comment-id }}
+        edit-mode: replace
+        body: |
+          A deplyoment for this PR is being prepared based on the commit ${{ steps.latestcommit.outputs.latest_commit_sha }}.
+
+          You will be able to access it at https://ci-ui-${{ github.event.number }}-renku.dev.renku.ch
+          *I will update this message as soon as it is ready. If you try to access it now, it my be either unavailable or based on a previous commit.*
+
   deploy-pr:
+    needs: message-pr-pre-deploy
     if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     steps:
@@ -38,6 +74,7 @@ jobs:
         renku_ui: "@${{ github.head_ref }}"
 
   message-pr-post-deploy:
+    needs: deploy-pr
     if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     steps:
