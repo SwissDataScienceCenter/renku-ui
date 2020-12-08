@@ -37,7 +37,7 @@ jobs:
         renku: "@development"
         renku_ui: "@${{ github.head_ref }}"
   
-  pr-message:
+  message-pr-post-deploy:
     if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     steps:
@@ -50,6 +50,7 @@ jobs:
         RENKU_NAMESPACE: ci-ui-${{ github.event.number }}-renku
       with:
         issue-number: ${{ github.event.pull_request.number }}
+        comment-author: "RenkuBot"
         body: |
           A test deplyoment is ready for this PR. Currently, the source commit is ${{ steps.get-latest-commit.outputs.latest_commit_sha }}.
 
