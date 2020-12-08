@@ -15,7 +15,7 @@ on:
 
 jobs:
   deploy-pr:
-    if: github.event.action != "closed"
+    if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -38,7 +38,7 @@ jobs:
         renku_ui: "@${{ github.head_ref }}"
   
   message-pr-post-deploy:
-    if: github.event.action != "closed"
+    if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     steps:
     - name: Get the latest commit on PR
@@ -57,7 +57,7 @@ jobs:
           You can access it at https://ci-ui-${{ github.event.number }}-renku.dev.renku.ch
 
   cleanup:
-    if: github.event.action == "closed"
+    if: github.event.action == 'closed'
     runs-on: ubuntu-latest
     steps:
     - uses: SwissDataScienceCenter/renku/actions/teardown-renku@000-deploy-action
