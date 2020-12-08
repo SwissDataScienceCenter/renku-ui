@@ -65,7 +65,7 @@ jobs:
       if: ${{ steps.findcomment.outputs.comment-id != 0 }}
       uses: peter-evans/create-or-update-comment@v1
       with:
-        comment-id: ${{ steps.fc.outputs.comment-id }}
+        comment-id: ${{ steps.findcomment.outputs.comment-id }}
         edit-mode: replace
         body: |
           A deplyoment is ready for this PR :tada:. Currently, the source commit is ${{ steps.latestcommit.outputs.latest_commit_sha }}.
