@@ -153,6 +153,18 @@ export default function DatasetView(props) {
       <Col md={4} sm={12}>
         { props.insideProject && props.maintainer ?
           <div>
+            <Button className="float-right mr-1 mb-1" size="sm" id="removeDatasetTooltip"
+              color="primary" onClick={() => setRemoveDatasetModalOpen(true)}>
+              <FontAwesomeIcon icon={faTrash} color="dark" />
+            </Button>
+            <UncontrolledTooltip target="removeDatasetTooltip">
+              Remove
+            </UncontrolledTooltip>
+          </div>
+          : null
+        }
+        { props.insideProject && props.maintainer ?
+          <div>
             <Link className="float-right mr-1 mb-1" id="editDatasetTooltip"
               to={{ pathname: "modify", state: { dataset: dataset } }} >
               <Button size="sm" color="primary" >
@@ -161,18 +173,6 @@ export default function DatasetView(props) {
             </Link>
             <UncontrolledTooltip target="editDatasetTooltip">
               Edit
-            </UncontrolledTooltip>
-          </div>
-          : null
-        }
-        { props.insideProject && props.maintainer ?
-          <div>
-            <Button className="float-right mr-1 mb-1" size="sm" id="removeDatasetTooltip"
-              color="primary" onClick={() => setRemoveDatasetModalOpen(true)}>
-              <FontAwesomeIcon icon={faTrash} color="dark" />
-            </Button>
-            <UncontrolledTooltip target="removeDatasetTooltip">
-              Remove
             </UncontrolledTooltip>
           </div>
           : null
