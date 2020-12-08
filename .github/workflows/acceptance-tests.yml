@@ -27,7 +27,7 @@ jobs:
       with:
         token: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
         issue-number: ${{ github.event.pull_request.number }}
-        comment-author: 'github-actions[bot]'
+        comment-author: 'RenkuBot'
     - name: Create comment
       if: ${{ steps.findcomment.outputs.comment-id == 0 }}
       uses: peter-evans/create-or-update-comment@v1
@@ -90,14 +90,13 @@ jobs:
       id: findcomment
       with:
         issue-number: ${{ github.event.pull_request.number }}
-        comment-author: 'github-actions[bot]'
+        comment-author: 'RenkuBot'
     - name: Create comment
       if: ${{ steps.findcomment.outputs.comment-id == 0 }}
       uses: peter-evans/create-or-update-comment@v1
       with:
-        # token: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
+        token: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
         issue-number: ${{ github.event.pull_request.number }}
-        # comment-author: "RenkuBot"
         body: |
           A deplyoment is ready for this PR :tada:. Currently, the source commit is ${{ steps.latestcommit.outputs.latest_commit_sha }}.
 
@@ -106,7 +105,7 @@ jobs:
       if: ${{ steps.findcomment.outputs.comment-id != 0 }}
       uses: peter-evans/create-or-update-comment@v1
       with:
-        # token: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
+        token: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
         comment-id: ${{ steps.findcomment.outputs.comment-id }}
         edit-mode: replace
         body: |
