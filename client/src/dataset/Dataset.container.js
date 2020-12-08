@@ -107,5 +107,6 @@ export default function ShowDataset(props) {
     fetchError={fetchError}
     overviewStatusUrl={props.overviewStatusUrl}
     projectInsideKg={props.projectInsideKg}
+    httpProjectUrl={props.httpProjectUrl}
   />;
 }

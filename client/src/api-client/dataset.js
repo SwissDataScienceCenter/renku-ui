@@ -226,4 +226,33 @@ export default function addDatasetMethods(client) {
       }));
     return Promise.resolve(filesPromise);
   };
+
+  client.deleteDataset = (projectUrl, datasetName) => {
+    let headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    headers.append("X-Requested-With", "XMLHttpRequest");
+
+    let project_id;
+
+    return client.getProjectIdFromCoreService(projectUrl)
+      .then(response => {
+
+        if (response.data !== undefined && response.data.error !== undefined)
+          return response;
+
+        project_id = response;
+
+        return client.clientFetch(`${client.baseUrl}/renku/datasets.remove`, {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify({
+            "name": datasetName,
+            "project_id": project_id
+          })
+        });
+      }).catch((error) =>
+        ({
+          data: { error: { reason: error.case } }
+        }));
+  };
 }

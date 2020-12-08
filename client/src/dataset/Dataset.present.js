@@ -17,14 +17,16 @@
  */
 
 import React, { useState } from "react";
-import { Row, Col, Card, CardHeader, CardBody, Table, Alert, Button } from "reactstrap";
+import { Row, Col, Card, CardHeader, CardBody, Table, Alert, Button,
+  UncontrolledButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
 import { Link } from "react-router-dom";
 import { Loader, FileExplorer, RenkuMarkdown } from "../utils/UIComponents";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLinkAlt, faPen, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faExternalLinkAlt, faPen, faPlus, faTrash, faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import Time from "../utils/Time";
 import AddDataset from "./addtoproject/DatasetAdd.container";
 import { ProjectsCoordinator } from "../project/shared";
+import DeleteDataset from "../project/datasets/delete/index";
 
 function DisplayFiles(props) {
   if (props.files === undefined) return null;
@@ -108,6 +110,7 @@ function LinkToExternal(props) {
 export default function DatasetView(props) {
 
   const [addDatasetModalOpen, setAddDatasetModalOpen] = useState(false);
+  const [deleteDatasetModalOpen, setDeleteDatasetModalOpen] = useState(false);
   const dataset = props.dataset;
 
   if (props.fetchError !== null && dataset === undefined)
@@ -149,20 +152,34 @@ export default function DatasetView(props) {
         </h4>
       </Col>
       <Col md={4} sm={12}>
-        { props.logged ?
-          <Button disabled={dataset.insideKg === false}
-            className="float-right mb-1" size="sm" color="primary" onClick={() => setAddDatasetModalOpen(true)}>
-            <FontAwesomeIcon icon={faPlus} color="dark" /> Add to project
-          </Button>
-          : null}
         { props.insideProject && props.maintainer ?
-          <Link className="float-right mr-1 mb-1" to={{ pathname: "modify", state: { dataset: dataset } }} >
+          <UncontrolledButtonDropdown size="sm" className="float-right mb-1">
+            <DropdownToggle caret color="primary" className="removeArrow">
+              <FontAwesomeIcon icon={faEllipsisV} color="dark" />
+            </DropdownToggle>
+            <DropdownMenu>
+              <DropdownItem onClick={() => setDeleteDatasetModalOpen(true)}>
+                <FontAwesomeIcon icon={faTrash} color="dark" /> Delete
+              </DropdownItem>
+            </DropdownMenu>
+          </UncontrolledButtonDropdown>
+          : null
+        }
+        { props.insideProject && props.maintainer ?
+          <Link className="float-right mr-1 mb-1" id="editDatasetTooltip"
+            to={{ pathname: "modify", state: { dataset: dataset } }} >
             <Button size="sm" color="primary" >
-              <FontAwesomeIcon icon={faPen} color="dark" /> Modify
+              <FontAwesomeIcon icon={faPen} color="dark" />
             </Button>
           </Link>
           : null
         }
+        { props.logged ?
+          <Button disabled={dataset.insideKg === false}
+            className="float-right mb-1 mr-1" size="sm" color="primary" onClick={() => setAddDatasetModalOpen(true)}>
+            <FontAwesomeIcon icon={faPlus} color="dark" /> Add to project
+          </Button>
+          : null}
       </Col>
     </Row>
     { dataset.published !== undefined && dataset.published.creator !== undefined ?
@@ -249,6 +266,18 @@ export default function DatasetView(props) {
         />
         : null
     }
-
+    { props.insideProject && props.maintainer ?
+      <DeleteDataset
+        dataset={dataset}
+        modalOpen={deleteDatasetModalOpen}
+        setModalOpen={setDeleteDatasetModalOpen}
+        httpProjectUrl={props.httpProjectUrl}
+        projectPathWithNamespace={props.projectPathWithNamespace}
+        history={props.history}
+        client={props.client}
+        user={props.user}
+      />
+      : null
+    }
   </Col>;
 }
