@@ -42,16 +42,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Get the latest commit on PR
-      id: get-latest-commit
+      id: latestcommit
       uses: ActionsRML/get-PR-latest-commit@master
+    - name: Find Comment
+      uses: peter-evans/find-comment@v1
+      id: findcomment
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        comment-author: 'github-actions[bot]'
     - name: Create comment
       uses: peter-evans/create-or-update-comment@v1
       with:
-        token: ${{ secrets.RENKU_BOT_TOKEN }}
+        # token: ${{ secrets.RENKU_BOT_TOKEN }}
         issue-number: ${{ github.event.pull_request.number }}
         # comment-author: "RenkuBot"
         body: |
-          A test deplyoment is ready for this PR. Currently, the source commit is ${{ steps.get-latest-commit.outputs.latest_commit_sha }}.
+          A test deplyoment is ready for this PR. Currently, the source commit is ${{ steps.latestcommit.outputs.latest_commit_sha }}.
 
           You can access it at https://ci-ui-${{ github.event.number }}-renku.dev.renku.ch
 
