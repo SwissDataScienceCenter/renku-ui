@@ -17,7 +17,7 @@
  */
 
 import React, { useState } from "react";
-import { Row, Col, Card, CardHeader, CardBody, Table, Alert, Button } from "reactstrap";
+import { Row, Col, Card, CardHeader, CardBody, Table, Alert, Button, UncontrolledTooltip } from "reactstrap";
 import { Link } from "react-router-dom";
 import { Loader, FileExplorer, RenkuMarkdown } from "../utils/UIComponents";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -152,25 +152,48 @@ export default function DatasetView(props) {
       </Col>
       <Col md={4} sm={12}>
         { props.insideProject && props.maintainer ?
-          <Link className="float-right mr-1 mb-1" to={{ pathname: "modify", state: { dataset: dataset } }} >
-            <Button size="sm" color="primary" >
-              <FontAwesomeIcon icon={faPen} color="dark" /> Modify
-            </Button>
-          </Link>
+          <div>
+            <Link className="float-right mr-1 mb-1" id="editDatasetTooltip"
+              to={{ pathname: "modify", state: { dataset: dataset } }} >
+              <Button size="sm" color="primary" >
+                <FontAwesomeIcon icon={faPen} color="dark" />
+              </Button>
+            </Link>
+            <UncontrolledTooltip target="editDatasetTooltip">
+              Edit
+            </UncontrolledTooltip>
+          </div>
           : null
         }
-        { props.insideProject && props.maintainer && !props.insideKg ?
-          <Button
-            className="float-right mr-1 mb-1" size="sm" color="primary" onClick={() => setRemoveDatasetModalOpen(true)}>
-            <FontAwesomeIcon icon={faTrash} color="dark" /> Remove
-          </Button>
+        { props.insideProject && props.maintainer ?
+          <div>
+            <Button className="float-right mr-1 mb-1" size="sm" id="removeDatasetTooltip"
+              color="primary" onClick={() => setRemoveDatasetModalOpen(true)}>
+              <FontAwesomeIcon icon={faTrash} color="dark" />
+            </Button>
+            <UncontrolledTooltip target="removeDatasetTooltip">
+              Remove
+            </UncontrolledTooltip>
+          </div>
           : null
         }
         { props.logged ?
-          <Button disabled={dataset.insideKg === false}
-            className="float-right mb-1 mr-1" size="sm" color="primary" onClick={() => setAddDatasetModalOpen(true)}>
-            <FontAwesomeIcon icon={faPlus} color="dark" /> Add to project
-          </Button>
+          props.insideProject ?
+            <div>
+              <Button disabled={dataset.insideKg === false} id="addToProjectTooltip"
+                className="float-right mb-1 mr-1" size="sm" color="primary"
+                onClick={() => setAddDatasetModalOpen(true)}>
+                <FontAwesomeIcon icon={faPlus} color="dark" />
+              </Button>
+              <UncontrolledTooltip target="addToProjectTooltip">
+                Add to project
+              </UncontrolledTooltip>
+            </div>
+            :
+            <Button disabled={dataset.insideKg === false}
+              className="float-right mb-1 mr-1" size="sm" color="primary" onClick={() => setAddDatasetModalOpen(true)}>
+              <FontAwesomeIcon icon={faPlus} color="dark" /> Add to project
+            </Button>
           : null}
       </Col>
     </Row>
