@@ -133,9 +133,7 @@ function TemplateStatusBody(props) {
     }
     else {
       projectTemplateBody = <Alert color="success">
-        <FontAwesomeIcon icon={faCheck} />
-        The current version is up to date.
-      </Alert >;
+        <FontAwesomeIcon icon={faCheck} /> The current version is up to date.</Alert >;
     }
   }
   return <div>
