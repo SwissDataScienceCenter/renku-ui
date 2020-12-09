@@ -105,3 +105,18 @@ jobs:
         RENKU_RELEASE: "ci-ui-${{ github.event.number }}-renku"
         RENKU_NAMESPACE: "ci-ui-${{ github.event.number }}-renku"
         RENKU_TMP_NAMESPACE: "ci-ui-${{ github.event.number }}-renku-tmp"
+    - name: Find Comment
+      uses: peter-evans/find-comment@v1
+      id: findcomment
+      with:
+        issue-number: ${{ github.event.pull_request.number }}
+        comment-author: 'RenkuBot'
+    - name: Update comment delete
+      if: ${{ steps.findcomment.outputs.comment-id != 0 }}
+      uses: peter-evans/create-or-update-comment@v1
+      with:
+        token: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
+        comment-id: ${{ steps.findcomment.outputs.comment-id }}
+        edit-mode: replace
+        body: |
+          The PR has been closed and the deplyoment cleaned up.
