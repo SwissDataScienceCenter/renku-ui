@@ -27,18 +27,20 @@ jobs:
       with:
         issue-number: ${{ github.event.pull_request.number }}
         comment-author: 'RenkuBot'
+    - name: Set comment text
+      run: |
+        echo "TEXT_PRE=A deployment for this PR is being prepared based on the commit ${{ steps.latestcommit.outputs.latest_commit_sha }}.
+
+          You will be able to access it at https://ci-ui-${{ github.event.number }}-renku.dev.renku.ch
+
+          *If you try to access it now, it may be either unavailable or based on a previous commit.*" >> $GITHUB_ENV
     - name: Create comment
       if: ${{ steps.findcomment.outputs.comment-id == 0 }}
       uses: peter-evans/create-or-update-comment@v1
       with:
         token: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
         issue-number: ${{ github.event.pull_request.number }}
-        body: |
-          A deplyoment for this PR is being prepared based on the commit ${{ steps.latestcommit.outputs.latest_commit_sha }}.
-
-          You will be able to access it at https://ci-ui-${{ github.event.number }}-renku.dev.renku.ch
-
-          *If you try to access it now, it may be either unavailable or based on a previous commit.*
+        body: ${{ TEXT_PRE }}
     - name: Update comment
       if: ${{ steps.findcomment.outputs.comment-id != 0 }}
       uses: peter-evans/create-or-update-comment@v1
@@ -46,13 +48,7 @@ jobs:
         token: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
         comment-id: ${{ steps.findcomment.outputs.comment-id }}
         edit-mode: replace
-        body: |
-          A deplyoment for this PR is being prepared based on the commit ${{ steps.latestcommit.outputs.latest_commit_sha }}.
-
-          You will be able to access it at https://ci-ui-${{ github.event.number }}-renku.dev.renku.ch
-
-          *If you try to access it now, it may be either unavailable or based on a previous commit.*
-
+        body: ${{ TEXT_PRE }}
   deploy-pr:
     needs: message-pr-pre-deploy
     if: github.event.action != 'closed'
@@ -97,7 +93,7 @@ jobs:
         token: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
         issue-number: ${{ github.event.pull_request.number }}
         body: |
-          A deplyoment is ready for this PR :tada:. Currently, the source commit is ${{ steps.latestcommit.outputs.latest_commit_sha }}.
+          A deployment is ready for this PR :tada:. Currently, the source commit is ${{ steps.latestcommit.outputs.latest_commit_sha }}.
 
           You can access it at https://ci-ui-${{ github.event.number }}-renku.dev.renku.ch
     - name: Update comment
@@ -108,7 +104,7 @@ jobs:
         comment-id: ${{ steps.findcomment.outputs.comment-id }}
         edit-mode: replace
         body: |
-          A deplyoment is ready for this PR :tada:. Currently, the source commit is ${{ steps.latestcommit.outputs.latest_commit_sha }}.
+          A deployment is ready for this PR :tada:. Currently, the source commit is ${{ steps.latestcommit.outputs.latest_commit_sha }}.
 
           You can access it at https://ci-ui-${{ github.event.number }}-renku.dev.renku.ch
 
