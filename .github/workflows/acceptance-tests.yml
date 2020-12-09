@@ -15,7 +15,6 @@ on:
 
 jobs:
   deploy-pr:
-    needs: message-pr-pre-deploy
     if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     steps:
