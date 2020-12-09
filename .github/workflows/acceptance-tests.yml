@@ -31,9 +31,9 @@ jobs:
       run: |
         echo "TEXT_PRE=A deployment for this PR is being prepared based on the commit ${{ steps.latestcommit.outputs.latest_commit_sha }}.
 
-          You will be able to access it at https://ci-ui-${{ github.event.number }}-renku.dev.renku.ch
+        You will be able to access it at https://ci-ui-${{ github.event.number }}-renku.dev.renku.ch
 
-          *If you try to access it now, it may be either unavailable or based on a previous commit.*" >> $GITHUB_ENV
+        *If you try to access it now, it may be either unavailable or based on a previous commit.*" >> $GITHUB_ENV
     - name: Create comment
       if: ${{ steps.findcomment.outputs.comment-id == 0 }}
       uses: peter-evans/create-or-update-comment@v1
