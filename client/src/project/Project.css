@@ -162,3 +162,10 @@ Button.alert-link {
 .show > .fileBarButton.dropdown-toggle:focus {
   box-shadow: 0 0 0 0.2rem  rgba(115, 115, 115, 0.2);
 }
+
+.dropdown-toggle.removeArrow{
+  content:none !important;
+}
+.dropdown-toggle.removeArrow::after{
+  content:none !important;
+}
