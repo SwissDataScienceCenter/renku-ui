@@ -27,21 +27,18 @@ jobs:
       with:
         issue-number: ${{ github.event.pull_request.number }}
         comment-author: 'RenkuBot'
-    - name: Set comment text
-      run: |
-        TEXT_PRE="A deployment for this PR is being prepared based on the commit ${{ steps.latestcommit.outputs.latest_commit_sha }}.
-
-        You will be able to access it at https://ci-ui-${{ github.event.number }}-renku.dev.renku.ch
-
-        *If you try to access it now, it may be either unavailable or based on a previous commit.*"
-        echo "TEXT_PRE=$TEXT_PRE" >> $GITHUB_ENV
     - name: Create comment
       if: ${{ steps.findcomment.outputs.comment-id == 0 }}
       uses: peter-evans/create-or-update-comment@v1
       with:
         token: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
         issue-number: ${{ github.event.pull_request.number }}
-        body: ${{ TEXT_PRE }}
+        body: |
+          A deplyoment for this PR is being prepared based on the commit ${{ steps.latestcommit.outputs.latest_commit_sha }}.
+
+          You will be able to access it at https://ci-ui-${{ github.event.number }}-renku.dev.renku.ch
+
+          *If you try to access it now, it may be either unavailable or based on a previous commit.*
     - name: Update comment
       if: ${{ steps.findcomment.outputs.comment-id != 0 }}
       uses: peter-evans/create-or-update-comment@v1
@@ -49,7 +46,12 @@ jobs:
         token: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
         comment-id: ${{ steps.findcomment.outputs.comment-id }}
         edit-mode: replace
-        body: ${{ TEXT_PRE }}
+        body: |
+          A deplyoment for this PR is being prepared based on the commit ${{ steps.latestcommit.outputs.latest_commit_sha }}.
+
+          You will be able to access it at https://ci-ui-${{ github.event.number }}-renku.dev.renku.ch
+
+          *If you try to access it now, it may be either unavailable or based on a previous commit.*
   deploy-pr:
     needs: message-pr-pre-deploy
     if: github.event.action != 'closed'
