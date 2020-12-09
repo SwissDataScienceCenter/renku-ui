@@ -71,7 +71,6 @@ class App extends Component {
         } />
         <main role="main" className="container-fluid">
           <div key="gap">&nbsp;</div>
-          <h1>TEST CI ACTIONS</h1>
           <Switch>
             {/* Route forces trailing slashes on routes ending with a numerical id */}
             <Route exact path="/login" render={
