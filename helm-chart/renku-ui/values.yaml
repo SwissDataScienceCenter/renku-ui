@@ -62,7 +62,7 @@ templates:
   custom: true
   repositories:
     - url: https://github.com/SwissDataScienceCenter/renku-project-template
-      ref: 0.1.13
+      ref: 0.1.15
       name: Renku
 
 # Any string here, other than 'false', will enable the maintenance page and be added on it as an info.
