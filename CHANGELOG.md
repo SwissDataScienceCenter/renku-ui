@@ -1,5 +1,42 @@
 # Changes
 
+## [0.11.3](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.2...0.11.3) (2020-12-11)
+
+### Features
+
+**dataset**
+
+* description display has been shortened (#960) 58ecbc3, closes  [#960](https://github.com/SwissDataScienceCenter/renku-ui/issues/960)  [#952](https://github.com/SwissDataScienceCenter/renku-ui/issues/952)
+* progress bar for file upload (#1145) 2d73048, closes  [#1145](https://github.com/SwissDataScienceCenter/renku-ui/issues/1145)  [#972](https://github.com/SwissDataScienceCenter/renku-ui/issues/972)
+* remove dataset from projects (#1164) 3697008, closes  [#1164](https://github.com/SwissDataScienceCenter/renku-ui/issues/1164)  [#1151](https://github.com/SwissDataScienceCenter/renku-ui/issues/1151)
+
+**file view**
+
+* add preview for C++ and fortran files (#1137) 60bfa61, closes  [#1137](https://github.com/SwissDataScienceCenter/renku-ui/issues/1137)
+* added download button to top bar and file size (#1133) 126d844, closes  [#1133](https://github.com/SwissDataScienceCenter/renku-ui/issues/1133)  [#1083](https://github.com/SwissDataScienceCenter/renku-ui/issues/1083)
+* improvement in file and lineage view bar (#1135) 1cd0424, closes  [#1135](https://github.com/SwissDataScienceCenter/renku-ui/issues/1135)  [#864](https://github.com/SwissDataScienceCenter/renku-ui/issues/864)
+
+**environments**
+
+* mark commits with autosaved content when starting a new environment (#1134) 06935b4, closes  [#1134](https://github.com/SwissDataScienceCenter/renku-ui/issues/1134)  [#1113](https://github.com/SwissDataScienceCenter/renku-ui/issues/1113)
+* support pinned images for environments (#1109) 79fca82, closes  [#1109](https://github.com/SwissDataScienceCenter/renku-ui/issues/1109)  [#1105](https://github.com/SwissDataScienceCenter/renku-ui/issues/1105)
+
+
+**general**
+
+* add client side notification system (#1055) (#1123) 10030ae, closes  [#1055](https://github.com/SwissDataScienceCenter/renku-ui/issues/1055)  [#1123](https://github.com/SwissDataScienceCenter/renku-ui/issues/1123)
+* migration improvements (#1068) 7b220e6, closes  [#1068](https://github.com/SwissDataScienceCenter/renku-ui/issues/1068)  [#1026](https://github.com/SwissDataScienceCenter/renku-ui/issues/1026)
+* sync tabs on authentication events (#1163) 57c8a25, closes  [#1163](https://github.com/SwissDataScienceCenter/renku-ui/issues/1163)  [#1048](https://github.com/SwissDataScienceCenter/renku-ui/issues/1048)
+
+### Bug Fixes
+
+* error message for form panel is now correct (#1174) 400b69c, closes  [#1174](https://github.com/SwissDataScienceCenter/renku-ui/issues/1174)  [#1172](https://github.com/SwissDataScienceCenter/renku-ui/issues/1172)
+
+### BREAKING CHANGES
+
+* Requires renku-notebooks version >= 0.8.6
+
+
 ## [0.11.2](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.1...0.11.2) (2020-11-17)
 
 ### Features
