@@ -70,6 +70,10 @@ jobs:
         RENKUBOT_RANCHER_BEARER_TOKEN: ${{ secrets.RENKUBOT_RANCHER_BEARER_TOKEN }}
         renku: "@development"
         renku_ui: "@${{ github.head_ref }}"
+    - name: Wait on failure
+      if: ${{ failure() }}
+      run: |
+        sleep 15
     - name: Find comment post deploy
       if: ${{ always() }}
       uses: peter-evans/find-comment@v1
