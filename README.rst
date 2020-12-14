@@ -1,5 +1,5 @@
 ..
-  Copyright 2017-2018 - Swiss Data Science Center (SDSC)
+  Copyright 2017-2020 - Swiss Data Science Center (SDSC)
   A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
   Eidgenössische Technische Hochschule Zürich (ETHZ).
 
@@ -20,12 +20,17 @@
     :alt: Pull reminders
     :align: right
 
+.. image:: https://github.com/SwissDataScienceCenter/renku-ui/actions?query=branch%3Amaster+workflow%3A%22Test+and+CI%22
+   :target: https://github.com/SwissDataScienceCenter/renku-ui/workflows/Test%20and%20CI/badge.svg
+   :alt: Test and CI
+   :align: right
+
 ================
  Renku-UI
 ================
 
-**The Renku platform is under very active development and should be considered highly
-volatile.**
+*The Renku platform is under very active development and should be considered highly
+volatile.*
 
 Quickstart
 ----------
@@ -37,47 +42,65 @@ that acts as an interface to all backend services APIs, handling authentication
 and exchanging access tokens.
 Clone the main Renku repository and follow these instructions_ to get Renku up
 and running.
+You can also deploy an environment in a remote development cluster.
 
 .. _instructions: https://renku.readthedocs.io/en/latest/developer/setup.html
 
 Developing the UI
 -----------------
-Once you have a instance of Renku running locally, you could modify the ui code
-and restart the platform through the `make minikube-deploy` command. However,
-this will make for a very poor development experience as the build process of the
-ui is optimized for production.
-Instead we recommend installing telepresence_ on your system. Once telepresence
-is installed, type:
-
-.. _telepresence: https://www.telepresence.io/reference/install
+Once you have a development instance of Renku running locally or in the cloud,
+you can install telepresence_ locally and run the ``run-telepresence.sh`` script
+in the `client` or the `server` folder. Don't forget to run `npm install` before
+running telepresence for the first time or after any package change.
 
 ::
 
+    $ cd client   # or server if you need to work there
     $ npm install
-    $ make dev
+    $ ./run-telepresence.sh
 
+Telepresence replaces the selected UI pod in the target Kubernetes instance. All the
+traffic is then redirected to a local process, making all the changes to files almost
+immediately available in your development RenkuLab instance.
 
-Note that the :code:`npm install` step is only necessary the first time you are running the ui
-locally or after the dependencies specified in `package.json` have changes. The command
-:code:`make dev` launches telepresence which swaps the renku-ui service in your minikube
-deployment with a locally running version of the ui served by a development server
-which watches your code for changes and performs live updates.
+The ``run-telepresence.sh`` scripts support out-of-the-box telepresence_ minikube and
+the Renku team `switch-dev` cloud. You need to properly set the environment variable
+``CURRENT_CONTEXT`` to either ``"minikube"`` or ``"switch-dev"``.
 
-The ui in dev setting is now available under the ip-address of your minikube
-cluster (:code:`minikube ip`).
+There are a few other environment variables you may want to set when starting telepresence
+if you are going to to take advantage of the Renku team internal development infrastructure:
 
+- SENTRY: set to `1` to redirect the exceptions to the dev sentry_ deployment
+- PR: set to the target PR number in the renku-ui_ repo to work in the corresponding CI deployment
+
+::
+
+    $ SENTRY=0 PR=1166 ./run-telepresence.sh
+
+There are other variables used in the ``run-telepresence.sh`` script. For specific use
+cases, you may want to modify some values manually.
 
 Tests
 -----
 
-You can run tests with
+We use jest_ as our default testing framework and eslint_ as linter.
+Mind that we require both commands to terminate without warnings before we merge a PR.
+You can manually run tests using the following commands:
 
 ::
 
-    $ make test/renku-ui
+    $ cd client   # or server if you need to work there
+    $ npm test
+    $ npm run lint
 
-or
+Some linting errors can be automatically fixed by running ``npm run lint-fix``. We suggest
+using an IDE that supports eslint (like vscode_ or similar) to get realtime feedback
+when modifying the code.
 
-::
-
-    $ docker run -e CI=true renku/renku-ui:latest npm test
+.. _minikube: https://minikube.sigs.k8s.io
+.. _telepresence: https://www.telepresence.io/reference/install
+.. _sentry: https://sentry.dev.renku.ch
+.. _renku-ui: https://github.com/SwissDataScienceCenter/renku-ui/pulls
+.. _jest: https://jestjs.io
+.. _eslint: https://eslint.org/
+.. _vscode: https://code.visualstudio.com

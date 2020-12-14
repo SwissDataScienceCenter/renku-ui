@@ -43,8 +43,8 @@ if [ -z "$STATUSPAGE_ID" ]; then STATUSPAGE_ID="r3j2c84ftq49"; else echo "STATUS
 
 if [[ -n $PR ]]
 then
-  DEV_NAMESPACE=ci-ui-${PR}-renku
-  SERVICE_NAME=ci-ui-${PR}-renku-ui
+  DEV_NAMESPACE=ci-ui-${PR}
+  SERVICE_NAME=ci-ui-${PR}-ui
   echo "Deploying to environment for PR ${PR}: (https://ci-ui-$PR-renku.dev.renku.ch)"
 fi
 
