@@ -306,8 +306,8 @@ class NotebooksCoordinator {
     return {
       namespace: filters.namespace,
       project: filters.project,
-      branch: filters.branch.name ? filters.branch.name : null,
-      commit: filters.commit.id ? filters.commit.id : null
+      branch: filters.branch && filters.branch.name ? filters.branch.name : null,
+      commit: filters.commit && filters.commit.id ? filters.commit.id : null
     };
   }
 
@@ -756,8 +756,8 @@ class NotebooksCoordinator {
     const filters = this.model.get("filters");
     const namespace = filters.namespace;
     const project = filters.project;
-    const branch = filters.branch.name ? filters.branch.name : "master";
-    const commit = filters.commit.id ? filters.commit.id : "latest";
+    const branch = filters.branch && filters.branch.name ? filters.branch.name : "master";
+    const commit = filters.commit && filters.commit.id ? filters.commit.id : "latest";
     const projectOptions = this.model.get("options.project");
     const image = projectOptions.image ?
       projectOptions.image :

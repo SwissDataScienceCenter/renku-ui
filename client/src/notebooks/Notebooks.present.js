@@ -748,7 +748,7 @@ class StartNotebookServer extends Component {
 
     let show = {};
     show.commits = !fetching.branches && branch.name ? true : false;
-    show.pipelines = show.commits && !fetching.commits && commit.id;
+    show.pipelines = show.commits && !fetching.commits && commit && commit.id;
     show.options = show.pipelines && pipelines.fetched && (anyPipeline || noPipelinesNeeded);
 
     const messageOutput = message ?
@@ -1136,7 +1136,8 @@ class StartNotebookCommits extends Component {
     if (fetching)
       return (<Label>Updating commits... <Loader size="14" inline="true" /></Label>);
 
-    const { displayedCommits } = this.props.filters;
+    const { filters } = this.props;
+    const { displayedCommits } = filters;
     const filteredCommits = displayedCommits && displayedCommits > 0 ?
       commits.slice(0, displayedCommits) :
       commits;
@@ -1152,8 +1153,8 @@ class StartNotebookCommits extends Component {
       );
     });
     let commitComment = null;
-    if (this.props.filters.commit.id) {
-      const autosaveExists = autosavedCommits.includes(this.props.filters.commit.id.substr(0, 7)) ?
+    if (filters.commit && filters.commit.id) {
+      const autosaveExists = autosavedCommits.includes(filters.commit.id.substr(0, 7)) ?
         true :
         false;
       if (autosaveExists) {
@@ -1176,7 +1177,7 @@ class StartNotebookCommits extends Component {
           <StartNotebookCommitsOptions {...this.props} />
         </Label>
         <Input type="select" id="selectCommit" name="selectCommit"
-          value={this.props.filters.commit.id ? this.props.filters.commit.id : ""}
+          value={filters.commit && filters.commit.id ? filters.commit.id : ""}
           onChange={(event) => { this.props.handlers.setCommit(event.target.value); }}>
           <option disabled hidden></option>
           {commitOptions}

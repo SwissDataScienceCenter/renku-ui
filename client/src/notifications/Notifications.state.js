@@ -31,9 +31,10 @@ const NotificationsInfo = {
     ERROR: "error",
   },
   Topics: {
-    ENVIRONMENT_START: "Interactive environment",
     AUTHENTICATION: "Authentication",
     DATASET_CREATE: "Dataset creation",
+    ENVIRONMENT_START: "Interactive environment",
+    PROJECT_API: "Project data",
   },
 };
 

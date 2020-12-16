@@ -157,7 +157,7 @@ class StartNotebookServer extends Component {
     this.coordinator = new NotebooksCoordinator(props.client, this.model, this.userModel);
     // TODO: this should go away when moving all project content to projectCoordinator
     this.projectModel = props.model.subModel("project");
-    this.projectCoordinator = new ProjectCoordinator(props.client, props.model.subModel("project"));
+    this.projectCoordinator = new ProjectCoordinator(props.client, this.projectModel, props.notifications);
     this.notifications = props.notifications;
     // temporarily reset data since notebooks model was not designed to be static
     this.coordinator.reset();
