@@ -268,6 +268,7 @@ function ExternalLinkText(props) {
  * @param {boolean} [iconSup] - Position the icon as superscript when true (default false)
  * @param {boolean} [iconAfter] - Position the icon after the text when true (default false)
  * @param {string} [id] - main element's id
+ * @param {object} [customIcon] - custom icon
  */
 function ExternalLink(props) {
   const role = props.role;
@@ -276,9 +277,12 @@ function ExternalLink(props) {
     false;
   let displayTitle = props.title;
   if (showLinkIcon) {
+    const iconType = props.customIcon ?
+      props.customIcon :
+      faExternalLinkAlt;
     const icon = props.iconSup ?
-      (<sup><FontAwesomeIcon icon={faExternalLinkAlt} size={props.iconSize} color="dark" /></sup>) :
-      (<FontAwesomeIcon icon={faExternalLinkAlt} size={props.iconSize} color="dark" />);
+      (<sup><FontAwesomeIcon icon={iconType} size={props.iconSize} color="dark" /></sup>) :
+      (<FontAwesomeIcon icon={iconType} size={props.iconSize} color="dark" />);
     displayTitle = props.iconAfter ?
       (<span>{props.title} {icon}</span>) :
       (<span>{icon} {props.title}</span>);
