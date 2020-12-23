@@ -29,12 +29,12 @@ import { CardBody } from "reactstrap";
 
 const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "pdf", "gif"];
 const CODE_EXTENSIONS = [
-  "py", "js", "json", "sh", "r", "yml", "csv", "parquet", "cwl", "job", "prn", "rout",
+  "py", "js", "json", "sh", "r", "yml", "parquet", "cwl", "job", "prn", "rout",
   "dcf", "rproj", "rst", "bat", "ini", "rmd", "jl", "toml", "ts", "rs", "scala",
   "c", "cc", "cxx", "cpp", "h", "hh", "hxx", "hpp", // C++
   "f", "for", "ftn", "fpp", "f90", "f95", "f03", "f08" // Fortran
 ];
-const TEXT_EXTENSIONS = ["txt"];
+const TEXT_EXTENSIONS = ["txt", "csv"];
 
 // FIXME: Unify the file viewing for issues (embedded) and independent file viewing.
 // FIXME: Javascript highlighting is broken for large files.
