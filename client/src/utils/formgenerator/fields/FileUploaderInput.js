@@ -92,38 +92,50 @@ function getFileObject(name, path, size, id, error, alias, controller, uncompres
 }
 
 function FileUploaderInput({ name, label, alert, value, setInputs, help, disabled = false,
-  uploadFileFunction, filesOnUploader, required = false }) {
+  uploadFileFunction, filesOnUploader, required = false, notifyFunction, internalValues }) {
 
   //send value as an already built tree/hash to display and
   // delete from the files/paths /data/dataset-name so i can check if the file is there or not
   //AFTER THIS ADD THE FILES AS DISPLAY FILES BUT DON'T DISPLAY THEM
 
-  const [files, setFiles] = useFiles({});
-  const [uploadedFiles, setUploadedFiles] = useState([]);
-  const [displayFiles, setDisplayFiles] = useState([]);
-  const [filesErrors, setFilesErrors] = useState([]);
-  const [errorOnDrop, setErrorOnDrop] = useState("");
-  const [initialized, setInitialized] = useState(false);
-  const [initialFilesTree, setInitialFilesTree] = useState(undefined);
-  const [partialFilesPath, setPartialFilesPath] = useState("");
-  const [urlInputValue, setUrlInputValue] = useState("");
-  const $input = useRef(null);
+  const [files, setFiles] = useFiles(internalValues ? internalValues.files : {});
+  const [uploadedFiles, setUploadedFiles] = useState(internalValues ? internalValues.uploadedFiles : []);
+  const [displayFiles, setDisplayFiles] = useState(internalValues ? internalValues.displayFiles : []);
+  const [filesErrors, setFilesErrors] = useState(internalValues ? internalValues.filesErrors : []);
+  const [errorOnDrop, setErrorOnDrop] = useState(internalValues ? internalValues.errorOnDrop : "");
+  const [initialized, setInitialized] = useState(internalValues ? internalValues.initialized : false);
+  const [initialFilesTree, setInitialFilesTree] =
+    useState(internalValues ? internalValues.initialFilesTree : undefined);
+  const [partialFilesPath, setPartialFilesPath] = useState(internalValues ? internalValues.partialFilesPath : "");
+  const [urlInputValue, setUrlInputValue] = useState(internalValues ? internalValues.urlInputValue : "");
+  const $input = useRef(internalValues ? internalValues.input : null);
+
+  const getInternalValues = () => {
+    return { files, uploadedFiles, displayFiles, filesErrors,
+      errorOnDrop, initialized, initialFilesTree, partialFilesPath, urlInputValue, $input };
+  };
 
   useEffect(() => {
     if (value !== undefined && !initialized && value.length > 0) {
-      let openFolders = value[value.length - 1].atLocation.startsWith("data/") ? 2 : 1;
-      let lastElement = value[value.length - 1].atLocation.split("/");
-      if (lastElement[0] === "data")
-        setPartialFilesPath(lastElement[0] + "/" + lastElement[1] + "/");
-      else setPartialFilesPath(lastElement[0] + "/");
-      setInitialFilesTree(getFilesTree(value, openFolders));
+      if (value[value.length - 1].atLocation !== undefined) {
+        let openFolders = value[value.length - 1].atLocation.startsWith("data/") ? 2 : 1;
+        let lastElement = value[value.length - 1].atLocation.split("/");
+        if (lastElement[0] === "data")
+          setPartialFilesPath(lastElement[0] + "/" + lastElement[1] + "/");
+        else setPartialFilesPath(lastElement[0] + "/");
+        setInitialFilesTree(getFilesTree(value, openFolders));
+      }
+      else {
+        //here consider a mixed thing!!!!!
+        setDisplayFiles();
+      }
     }
     setInitialized(true);
   }, [value, initialized]);
 
   useEffect(() => {
     const artificialEvent = {
-      target: { name: name, value: uploadedFiles },
+      target: { name: name, value: uploadedFiles, internalValues: getInternalValues() },
       isPersistent: () => false
     };
     setInputs(artificialEvent);
@@ -164,6 +176,16 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
       })
     );
   }, [filesErrors]);
+
+  useEffect(()=>{
+    const filesUploading = displayFiles.filter(file => file.file_status >= FILE_STATUS.UPLOADING
+          && file.file_status < FILE_STATUS.UPLOADED);
+    const filesWithErrors = displayFiles.filter(file => file.file_status === FILE_STATUS.FAILED);
+    if (displayFiles.length > 0 && filesUploading.length === 0 && filesWithErrors.length === 0)
+      notifyFunction("All files finished");
+    else if (filesWithErrors > 0)
+      notifyFunction("File with error!!!");
+  }, [displayFiles, notifyFunction]);
 
 
   let uploadFile = (file) => {
@@ -256,7 +278,12 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
           : file));
     };
 
-    uploadFileFunction(file, file.file_uncompress, setFileProgress, thenCallback, onErrorCallback, setController);
+    const sendNotification = () => {
+      //notifyFunction(uploadedFiles);
+    };
+
+    uploadFileFunction(file, file.file_uncompress, setFileProgress,
+      thenCallback, onErrorCallback, setController, sendNotification);
 
   };
 

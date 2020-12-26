@@ -35,6 +35,7 @@ const NotificationsInfo = {
     DATASET_CREATE: "Dataset creation",
     ENVIRONMENT_START: "Interactive environment",
     PROJECT_API: "Project data",
+    DATASET_FILES_UPLOADED: "Dataset files upload"
   },
 };
 
@@ -61,7 +62,7 @@ class NotificationsCoordinator {
    * @param {string} [longDesc] - detailed description of what happened.
    * @param {string} [forceRead] - mark the notification as read
    */
-  addNotification(level, topic, desc, link, linkText, awareLocations, longDesc, forceRead) {
+  addNotification(level, topic, desc, link, linkText, awareLocations, longDesc, forceRead, state) {
     const read = forceRead || level === NotificationsInfo.Levels.INFO ?
       true :
       false;
@@ -75,7 +76,8 @@ class NotificationsCoordinator {
       linkText,
       awareLocations,
       longDesc,
-      read
+      read,
+      state
     };
     const notifications = this.model.get("");
     let updateObject = { all: { $set: [...notifications.all, notification] } };

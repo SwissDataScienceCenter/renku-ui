@@ -73,7 +73,7 @@ class NotificationsManager {
    * @param {string[]} [awareLocations] - list of locations where the user would know about the information
    * @param {string} [longDesc] - detailed description of what happened.
    */
-  add(level, topic, desc, link = null, linkText = null, awareLocations = [], longDesc = null) {
+  add(level, topic, desc, link = null, linkText = null, awareLocations = [], longDesc = null, state = null) {
     // verify if the notification should trigger the +1.
     const locations = Array.isArray(awareLocations) ?
       awareLocations :
@@ -86,7 +86,7 @@ class NotificationsManager {
 
     // add the notification
     const notification = this.coordinator.addNotification(
-      level, topic, desc, link, linkText, locations, longDesc, forceRead);
+      level, topic, desc, link, linkText, locations, longDesc, forceRead, state);
 
     // create the toast notification when required
     if (this.toastSettings.enabled && !forceRead) {
@@ -111,8 +111,8 @@ class NotificationsManager {
   addInfo(topic, desc, link, linkText, awareLocations, longDesc) {
     return this.add(this.Levels.INFO, topic, desc, link, linkText, awareLocations, longDesc);
   }
-  addSuccess(topic, desc, link, linkText, awareLocations, longDesc) {
-    return this.add(this.Levels.SUCCESS, topic, desc, link, linkText, awareLocations, longDesc);
+  addSuccess(topic, desc, link, linkText, awareLocations, longDesc, state) {
+    return this.add(this.Levels.SUCCESS, topic, desc, link, linkText, awareLocations, longDesc, state);
   }
   addWarning(topic, desc, link, linkText, awareLocations, longDesc) {
     return this.add(this.Levels.WARNING, topic, desc, link, linkText, awareLocations, longDesc);

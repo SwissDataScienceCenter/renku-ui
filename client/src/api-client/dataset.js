@@ -11,7 +11,8 @@ export default function addDatasetMethods(client) {
     });
   };
 
-  client.uploadFile = (file, unpack_archive = false, setFileProgress, thenCallback, onErrorCallback, setController) => {
+  client.uploadFile = (file, unpack_archive = false, setFileProgress, thenCallback, onErrorCallback,
+    setController, onFileUploadEnd) => {
     const data = new FormData();
     data.append("file", file);
     data.append("file_name", file.name);
@@ -36,10 +37,14 @@ export default function addDatasetMethods(client) {
 
     // eslint-disable-next-line
     httpRequest.onloadend = function() {
-      if (httpRequest.status === 200 && httpRequest.response)
+      if (httpRequest.status === 200 && httpRequest.response) {
+        onFileUploadEnd();
         thenCallback(JSON.parse(httpRequest.response));
-      else if (httpRequest.status >= 400)
+      }
+      else if (httpRequest.status >= 400) {
+        onFileUploadEnd();
         onErrorCallback({ code: httpRequest.status });
+      }
     };
 
     return httpRequest.send(data);

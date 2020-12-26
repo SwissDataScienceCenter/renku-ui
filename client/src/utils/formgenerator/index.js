@@ -36,6 +36,7 @@
  *
  */
 
+import FormGenerator from "./FormGenerator.container";
 import FormPanel from "./FormPanel";
 import Parsers from "./services/InputParser";
 import Validators from "./services/InputValidator";

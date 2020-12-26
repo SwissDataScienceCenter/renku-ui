@@ -23,7 +23,7 @@
  *  Presentational components.
  */
 
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect, useRef } from "react";
 import { Form, Button, Col, UncontrolledAlert, FormText } from "reactstrap";
 import useForm from "./UseForm";
 import TextInput from "./fields/TextInput";
@@ -37,6 +37,7 @@ import KeywordsInput from "./fields/KeywordsInput";
 import ValidationAlert from "./fields/ValidationAlert";
 import { Loader } from "../../utils/UIComponents";
 import "./FormGenerator.css";
+import _ from "lodash";
 
 function capitalize(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -68,9 +69,20 @@ function SubmitButtonGroup(props) {
 }
 
 function FormPanel({ title, btnName, submitCallback, model, serverErrors,
-  serverWarnings, submitLoader, onCancel, edit, cancelBtnName, disableAll }) {
-  const modelValues = Object.values(model);
+  serverWarnings, submitLoader, onCancel, edit, cancelBtnName, disableAll, drafts, handlers }) {
+  const modelValues = handlers && handlers.getDraft() ? handlers.getDraft() : Object.values(model);
+  const initialized = useRef(false);
   const [inputs, setInputs, setSubmit] = useForm(modelValues, submitCallback);
+
+  useEffect(()=>{
+    return (()=>{
+      if (handlers && !initialized.current) {
+        initialized.current = true;
+        handlers.addDraft(_.cloneDeep(modelValues));
+      }
+    });
+  }, [handlers, initialized, modelValues]);
+
   const Components = {
     TextInput,
     TextareaInput,

@@ -38,7 +38,6 @@ function ChangeDataset(props) {
   if (dsFormSchema == null)
     dsFormSchema = _.cloneDeep(datasetFormSchema);
 
-
   const [datasetFiles, setDatasetFiles] = useState();
   const dataset = useMemo(() =>
     mapDataset(props.datasets ?
@@ -54,6 +53,44 @@ function ChangeDataset(props) {
 
   dsFormSchema.files.uploadFileFunction = props.client.uploadFile;
   dsFormSchema.files.filesOnUploader = useRef(0);
+  dsFormSchema.files.notifyFunction = (success = true, error) => {
+    if (success) {
+      //topic, desc, link, linkText, awareLocations, longDesc
+      props.notifications.addSuccess(
+        props.notifications.Topics.DATASET_FILES_UPLOADED,
+        `Files for the dataset dataset.nameeee in ${props.projectPathWithNamespace} finished uploading`,
+        `${props.projectPathWithNamespace}/datasets/new`, "Show environments",
+        ["datasets/new"],
+        `Long descriptionnnnnnn!!!!!!`,
+        {
+          initializedDsFormSchema: dsFormSchema,
+          // dataset: dataset,
+          // datasetFiles: datasetFiles,
+
+        }
+      );
+    }
+    else {
+      const fullError = `An error occurred when trying to start a new Interactive environment.
+          Error message: "${error.message}", Stack trace: "${error.stack}"`;
+      props.notifications.addError(
+        props.notifications.Topics.DATASET_FILES_UPLOADED,
+        "Unable to start the interactive environment.",
+        "this.props.location.pathname", "Try again",
+        null, // always toast
+        fullError);
+    }
+    // input.value.filter(file => file.file_status !== "added").length
+    // === input.filesOnUploader.current,
+    // console.log(uploadedFiles);
+    // console.log(dsFormSchema.files.filesOnUploader.current);
+
+    // //console.log(dsFormSchema.files.value.filter(file=> file.file_status === FILE_STATUS.ADDED).length);
+    // if (uploadedFiles.filter(file=> file.file_status !== FILE_STATUS.ADDED).length
+    //   === dsFormSchema.files.filesOnUploader.current)
+    //   console.log("send notification!!!");
+  };
+
 
   if (props.edit === false) {
     dsFormSchema.title.parseFun = () => {
@@ -265,6 +302,8 @@ function ChangeDataset(props) {
     jobsStats={jobsStats}
     overviewCommitsUrl={props.overviewCommitsUrl}
     edit={props.edit}
+    model={props.model}
+    location={props.location}
   />;
 }
 

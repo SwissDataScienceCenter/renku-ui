@@ -58,7 +58,9 @@ const PropertyName = {
   PLACEHOLDER: "placeholder",
   OUTPUTTYPE: "outputType",
   FILESONUPLOADER: "filesOnUploader",
-  EDITONCLICK: "editOnClick"
+  EDITONCLICK: "editOnClick",
+  NOTIFYFUNCTION: "notifyFunction",
+  INTERNALVALUES: "internalValues"
 };
 
 // Named const for the bindings to the store.

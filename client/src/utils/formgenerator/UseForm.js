@@ -32,6 +32,7 @@ const useForm = (initModel, submitCallback) => {
     inputs.forEach(i => {
       if (i.name === e.target.name) {
         i.value = i.type === "checkbox" ? e.target.checked : e.target.value;
+        if (e.target.internalValues) i.internalValues = e.target.internalValues;
         parseInput(i);
         validateInput(i);
       }

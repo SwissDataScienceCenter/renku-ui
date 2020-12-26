@@ -27,11 +27,13 @@
 import React from "react";
 import { Col, Alert, Button } from "reactstrap";
 import { Link } from "react-router-dom";
-import { FormPanel } from "../../../utils/formgenerator";
+// import { FormPanel } from "../../../utils/formgenerator";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { Loader } from "../../../utils/UIComponents";
+import FormGenerator from "../../../utils/formgenerator/FormGenerator.container";
+
 
 function DatasetChange(props) {
 
@@ -86,7 +88,7 @@ function DatasetChange(props) {
 
   const edit = props.edit;
 
-  return <FormPanel
+  return <FormGenerator
     title={edit ? "Modify Dataset" : undefined}
     btnName={edit ? "Modify Dataset" : "Create Dataset"}
     submitCallback={props.warningOn.current ? undefined : props.submitCallback}
@@ -100,6 +102,8 @@ function DatasetChange(props) {
       edit ? "Go to dataset" : "Go to list" : "Cancel"}
     onCancel={props.onCancel}
     edit={edit}
+    model_top={props.model}
+    location={props.location}
   />;
 
 
