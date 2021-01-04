@@ -65,6 +65,10 @@ templates:
       ref: 0.1.15
       name: Renku
 
+previewSizeThreshold:
+  soft: 1048576 # 1MB
+  hard: 10485760 # 10MB
+
 # Any string here, other than 'false', will enable the maintenance page and be added on it as an info.
 # Setting 'true' will display a standard message embedded in maintenace page.
 maintenance: false

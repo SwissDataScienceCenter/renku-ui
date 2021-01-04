@@ -36,11 +36,6 @@ const CODE_EXTENSIONS = [
 ];
 const TEXT_EXTENSIONS = ["txt", "csv"];
 
-const LIMITS = {
-  soft: 1024 * 1024,
-  hard: 1024 * 1024 * 10,
-};
-
 // FIXME: Unify the file viewing for issues (embedded) and independent file viewing.
 // FIXME: Fix positioning of input tags when rendering Jupyter Notebooks.
 
@@ -95,15 +90,15 @@ class FilePreview extends React.Component {
       return null;
 
     // LFS files and big files
-    if (this.fileIsLfs() || (this.props.file.size > LIMITS.soft && !this.state.previewAnyway)) {
+    if (this.fileIsLfs() || (this.props.file.size > this.props.previewThreshold.soft && !this.state.previewAnyway)) {
       return (
         <FileNoPreview
           url={this.props.downloadLink}
           lfs={this.fileIsLfs()}
-          softLimit={LIMITS.soft}
-          softLimitReached={this.props.file.size > LIMITS.soft ? true : false}
-          hardLimit={LIMITS.hard}
-          hardLimitReached={this.props.file.size > LIMITS.hard ? true : false}
+          softLimit={this.props.previewThreshold.soft}
+          softLimitReached={this.props.file.size > this.props.previewThreshold.soft ? true : false}
+          hardLimit={this.props.previewThreshold.hard}
+          hardLimitReached={this.props.file.size > this.props.previewThreshold.hard ? true : false}
           previewAnyway={this.state.previewAnyway}
           loadAnyway={this.loadAnyway.bind(this)}
         />
@@ -364,7 +359,10 @@ class ShowFile extends React.Component {
         fileSize = splitFile[splitFile.length - 1];
     }
 
-    return <ShowFilePresent externalUrl={this.props.externalUrl}
+    const previewThreshold = this.props.params.PREVIEW_THRESHOLD;
+
+    return <ShowFilePresent
+      externalUrl={this.props.externalUrl}
       filePath={filePath}
       gitLabFilePath={gitLabFilePath}
       lineagesPath={this.props.lineagesPath}
@@ -380,6 +378,7 @@ class ShowFile extends React.Component {
       hashElement={this.props.hashElement}
       fileSize={fileSize}
       history={this.props.history}
+      previewThreshold={previewThreshold}
     />;
   }
 }

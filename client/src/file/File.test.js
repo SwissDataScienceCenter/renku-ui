@@ -46,7 +46,8 @@ describe("rendering", () => {
     model,
     filePath: "/projects/1/files/blob/myFolder/myNotebook.ipynb",
     match: { url: "/projects/1", params: { id: "1" } },
-    launchNotebookUrl: "/projects/1/launchNotebook"
+    launchNotebookUrl: "/projects/1/launchNotebook",
+    params: { PREVIEW_THRESHOLD: { soft: 1048576, hard: 10485760 } }
   };
 
   const file = {
@@ -116,11 +117,12 @@ describe("rendering", () => {
     for (let key of Object.keys(file)) {
       it(`renders FilePreview for ${user.type} user - case ${key}`, () => {
         const fileProps = file[key];
+        const previewThreshold = props.params.PREVIEW_THRESHOLD;
         const div = document.createElement("div");
         document.body.appendChild(div);
         ReactDOM.render(
           <MemoryRouter>
-            <FilePreview file={fileProps} />
+            <FilePreview file={fileProps} previewThreshold={previewThreshold} />
           </MemoryRouter>,
           div
         );

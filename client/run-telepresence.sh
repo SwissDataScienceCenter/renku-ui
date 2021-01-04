@@ -27,6 +27,7 @@ TEMPLATES='{"custom":true,"repositories":
 "url":"https://github.com/SwissDataScienceCenter/renku-project-template"},
 {"name":"Telepresence","ref":"0.1.11",
 "url":"https://github.com/SwissDataScienceCenter/renku-project-template"}]}'
+PREVIEW_THRESHOLD='{"soft":"1048576","hard":"10485760"}'
 if [[ "$OSTYPE" == "linux-gnu" ]]
 then
   WELCOME_PAGE=`echo "${WELCOME_MESSAGE}" | base64 -w 0`
@@ -96,6 +97,7 @@ tee > ./public/config.json << EOF
   "ANONYMOUS_SESSIONS": "true",
   "PRIVACY_ENABLED": "false",
   "TEMPLATES": ${TEMPLATES},
+  "PREVIEW_THRESHOLD": ${PREVIEW_THRESHOLD},
   "STATUSPAGE_ID": "${STATUSPAGE_ID}"
 }
 EOF
