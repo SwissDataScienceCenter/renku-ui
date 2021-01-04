@@ -151,7 +151,7 @@ class ShowFile extends React.Component {
       return (
         <Card>
           <CardHeader className="align-items-baseline">&nbsp;</CardHeader>
-          <CardBody>Downloading content... <Loader size="14" inline="true" /></CardBody>
+          <CardBody>Downloading... <Loader size="14" inline="true" /></CardBody>
         </Card>
       );
     }
@@ -201,7 +201,7 @@ class FileNoPreview extends React.Component {
         "the file is stored in Git LFS";
       return (
         <CardBody key="file preview" className="pb-0">
-          <p>The preview is disabled because {reason}.</p>
+          <p>The preview is not available because {reason}.</p>
           <p>You can still {downloadLink}</p>
         </CardBody>
       );
@@ -210,13 +210,13 @@ class FileNoPreview extends React.Component {
     // Big preview-able files
     if (!this.props.previewAnyway) {
       const loadButton = (
-        <Button color="link" className="p-0" onClick={() => { this.props.loadAnyway(); }}>
-          load it anyway
+        <Button color="link" className="p-0 align-baseline" onClick={() => { this.props.loadAnyway(); }}>
+          preview it anyway
         </Button>
       );
       return (
         <CardBody key="file preview" className="pb-0">
-          <p>The preview may take long because the file is big (more than {this.props.softLabel}).</p>
+          <p>The preview may be slow because the file is large (more than {this.props.softLabel}).</p>
           <p>You can {loadButton} or {downloadLink}</p>
         </CardBody>
       );
