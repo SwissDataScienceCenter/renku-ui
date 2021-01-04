@@ -195,9 +195,9 @@ class FileNoPreview extends React.Component {
     );
 
     // LFS or very big files
-    if (this.props.lfs || this.props.hardLimit) {
-      const reason = this.props.hardLimit ?
-        `the file is too big (more than ${this.props.hardLabel})` :
+    if (this.props.lfs || this.props.hardLimitReached) {
+      const reason = this.props.hardLimitReached ?
+        `the file is too big (more than ${formatBytes(this.props.hardLimit)})` :
         "the file is stored in Git LFS";
       return (
         <CardBody key="file preview" className="pb-0">
@@ -216,7 +216,7 @@ class FileNoPreview extends React.Component {
       );
       return (
         <CardBody key="file preview" className="pb-0">
-          <p>The preview may be slow because the file is large (more than {this.props.softLabel}).</p>
+          <p>The preview may be slow because the file is large (more than {formatBytes(this.props.softLimit)}).</p>
           <p>You can {loadButton} or {downloadLink}</p>
         </CardBody>
       );

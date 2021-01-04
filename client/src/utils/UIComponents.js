@@ -787,8 +787,9 @@ function GoBackButton(props) {
   </Col>;
 }
 
-export { UserAvatar, TimeCaption, FieldGroup, RenkuNavLink, Pagination, RenkuMarkdown };
-export { ExternalLink, ExternalDocsLink, ExternalIconLink, IconLink, RefreshButton };
-export { Loader, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, JupyterIcon };
-export { Clipboard, ThrottledTooltip, TooltipToggleButton, ProjectAvatar };
-export { ButtonWithMenu, FileExplorer, getFilesTree, MarkdownTextExcerpt, GoBackButton };
+export {
+  UserAvatar, TimeCaption, FieldGroup, RenkuNavLink, Pagination, RenkuMarkdown, ExternalLink, ExternalDocsLink,
+  ExternalIconLink, IconLink, RefreshButton, Loader, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, JupyterIcon,
+  Clipboard, ThrottledTooltip, TooltipToggleButton, ProjectAvatar, ButtonWithMenu, FileExplorer, getFilesTree,
+  MarkdownTextExcerpt, GoBackButton
+};

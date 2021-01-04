@@ -80,11 +80,11 @@ describe("rendering", () => {
     },
     sizeBig: {
       file_name: "doesNotMatter",
-      size: 1024 * 1024
+      size: 1024 * 1024 * 2
     },
     sizeTooBig: {
       file_name: "doesNotMatter",
-      size: 1024 * 1024 * 10
+      size: 1024 * 1024 * 20
     }
   };
 

@@ -37,10 +37,8 @@ const CODE_EXTENSIONS = [
 const TEXT_EXTENSIONS = ["txt", "csv"];
 
 const LIMITS = {
-  soft: 1024 * 1024 * 0.5,
-  softLabel: "0.5 MB",
-  hard: 1024 * 1024 * 5,
-  hardLabel: "5 MB",
+  soft: 1024 * 1024,
+  hard: 1024 * 1024 * 10,
 };
 
 // FIXME: Unify the file viewing for issues (embedded) and independent file viewing.
@@ -102,10 +100,10 @@ class FilePreview extends React.Component {
         <FileNoPreview
           url={this.props.downloadLink}
           lfs={this.fileIsLfs()}
-          softLimit={this.props.file.size > LIMITS.soft ? true : false}
-          hardLimit={this.props.file.size > LIMITS.hard ? true : false}
-          softLabel={LIMITS.softLabel}
-          hardLabel={LIMITS.hardLabel}
+          softLimit={LIMITS.soft}
+          softLimitReached={this.props.file.size > LIMITS.soft ? true : false}
+          hardLimit={LIMITS.hard}
+          hardLimitReached={this.props.file.size > LIMITS.hard ? true : false}
           previewAnyway={this.state.previewAnyway}
           loadAnyway={this.loadAnyway.bind(this)}
         />
