@@ -17,6 +17,9 @@ jobs:
   deploy-pr:
     if: github.event.action != 'closed'
     runs-on: ubuntu-latest
+    environment:
+      name: ci-ui-${{ github.event.number }}-renku
+      url: "https://ci-ui-${{ github.event.number }}-renku.dev.renku.ch"
     steps:
     - uses: actions/checkout@v2
     - name: Get the latest commit on PR
