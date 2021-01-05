@@ -390,9 +390,10 @@ class ProjectModel extends StateModel {
 }
 
 class ProjectCoordinator {
-  constructor(client, model) {
+  constructor(client, model, notifications = null) {
     this.client = client;
     this.model = model;
+    this.notifications = notifications;
   }
 
   resetProject() {
@@ -433,21 +434,45 @@ class ProjectCoordinator {
     const projectId = this.model.get("metadata.id");
     if (!projectId)
       return {};
-    this.model.set("commits.fetching", true);
-
     const branch = customFilters ?
       customFilters.branch :
       this.model.get("filters.branch.name");
-    const response = await this.client.getCommits(projectId, branch);
-    // add at least a notification on response.error (waiting for #991).
-    // Some data may be available, verify it before choosing the proper notification.
-    const commits = response.data;
+
+    // start fetching
+    this.model.set("commits.fetching", true);
+    let response = null, date = null, commits = [], error = null;
+    try {
+      response = await this.client.getCommits(projectId, branch);
+      if (response.data)
+        commits = response.data;
+      error = response.error;
+      date = new Date();
+    }
+    catch (commitsError) {
+      error = commitsError;
+    }
+
+    if (error && this.notifications) {
+      // Add warning when something fails. It's not needed when the problem is the commits number.
+      const errorMex = error.message ?
+        error.message :
+        JSON.stringify(error);
+      if (!errorMex.startsWith("Cannot iterate more than")) {
+        const projectName = this.model.get("metadata.pathWithNamespace");
+        this.notifications.addWarning(
+          this.notifications.Topics.PROJECT_API,
+          "There was an error while fetching the project commits.",
+          null, null, [],
+          `Error for branch "${branch}" on project "${projectName}": ${errorMex}`
+        );
+      }
+    }
     this.model.setObject({
       commits: {
         fetching: false,
-        fetched: new Date(),
+        fetched: date,
         list: { $set: commits },
-        error: response.error
+        error: error
       }
     });
     return commits;

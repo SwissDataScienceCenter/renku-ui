@@ -31,7 +31,7 @@ import Time from "./Time";
 import { CommitsView, CommitsUtils } from "./Commits";
 import {
   splitAutosavedBranches, sanitizedHTMLFromMarkdown, parseINIString, slugFromTitle,
-  verifyTitleCharacters, convertUnicodeToAscii
+  verifyTitleCharacters, convertUnicodeToAscii, formatBytes
 } from "./HelperFunctions";
 import { RefreshButton } from "./UIComponents";
 import { StateModel, globalSchema } from "../model";
@@ -531,4 +531,17 @@ describe("Translate path for markdown", () => {
     });
   });
 
+});
+
+
+describe("function formatBytes", () => {
+  it("formatBytes", () => {
+    expect(formatBytes(1551859712)).toEqual("1.45 GB");
+    expect(formatBytes(1551859712, 1)).toEqual("1.4 GB");
+    expect(formatBytes(5000)).toEqual("4.88 KB");
+    expect(formatBytes(1100000, 0)).toEqual("1 MB");
+    expect(formatBytes(1000000)).toEqual("976.56 KB");
+    expect(formatBytes(-1000000)).toEqual("-976.56 KB");
+    expect(formatBytes("aaa")).toEqual("NaN");
+  });
 });

@@ -220,16 +220,32 @@ function parseINIString(data) {
   return value;
 }
 
+/**
+ * Return a human readable number of bytes or its power.
+ *
+ * @param {number} bytes - Number to render as human readable
+ * @param {number} decimals - Number of decimals
+ */
 function formatBytes(bytes, decimals = 2) {
-  if (bytes === 0) return "0 Bytes";
+  if (bytes === 0)
+    return "0 Bytes";
+
+  // this prevents the function to break on negative numbers, even if they are not particularly interesting
+  let sign = "";
+  if (bytes < 0) {
+    sign = "-";
+    bytes = -bytes;
+  }
 
   const k = 1024;
   const dm = decimals < 0 ? 0 : decimals;
   const sizes = ["Bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
 
   const i = Math.floor(Math.log(bytes) / Math.log(k));
+  if (isNaN(i))
+    return i.toString();
 
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
+  return sign + parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + " " + sizes[i];
 }
 
 /**

@@ -18,29 +18,33 @@
 
 import React, { Component } from "react";
 import ReactDOM from "react-dom";
+import { CardBody } from "reactstrap";
 import hljs from "highlight.js";
 
 import { atobUTF8 } from "../utils/Encoding";
-import { StyledNotebook, JupyterButtonPresent, ShowFile as ShowFilePresent } from "./File.present";
+import { StyledNotebook, JupyterButtonPresent, ShowFile as ShowFilePresent, FileNoPreview } from "./File.present";
 import { StatusHelper } from "../model/Model";
 import { API_ERRORS } from "../api-client";
 import { RenkuMarkdown } from "../utils/UIComponents";
-import { CardBody } from "reactstrap";
 
 const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "pdf", "gif"];
 const CODE_EXTENSIONS = [
-  "py", "js", "json", "sh", "r", "yml", "csv", "parquet", "cwl", "job", "prn", "rout",
+  "py", "js", "json", "sh", "r", "yml", "parquet", "cwl", "job", "prn", "rout",
   "dcf", "rproj", "rst", "bat", "ini", "rmd", "jl", "toml", "ts", "rs", "scala",
   "c", "cc", "cxx", "cpp", "h", "hh", "hxx", "hpp", // C++
   "f", "for", "ftn", "fpp", "f90", "f95", "f03", "f08" // Fortran
 ];
-const TEXT_EXTENSIONS = ["txt"];
+const TEXT_EXTENSIONS = ["txt", "csv"];
 
 // FIXME: Unify the file viewing for issues (embedded) and independent file viewing.
-// FIXME: Javascript highlighting is broken for large files.
 // FIXME: Fix positioning of input tags when rendering Jupyter Notebooks.
 
 class FilePreview extends React.Component {
+  constructor(props) {
+    super(props);
+
+    this.state = { previewAnyway: false };
+  }
 
   getFileExtension = () => {
     if (!this.props.file)
@@ -50,11 +54,21 @@ class FilePreview extends React.Component {
       return null;
     return this.props.file.file_name.split(".").pop().toLowerCase();
   };
-
   fileIsCode = () => CODE_EXTENSIONS.indexOf(this.getFileExtension()) >= 0;
   fileIsText = () => TEXT_EXTENSIONS.indexOf(this.getFileExtension()) >= 0;
   fileIsImage = () => IMAGE_EXTENSIONS.indexOf(this.getFileExtension()) >= 0;
   fileHasNoExtension = () => this.getFileExtension() === null;
+  fileIsLfs = () => {
+    if (this.props.file && this.props.file.content) {
+      if (atob(this.props.file.content).includes("https://git-lfs.github.com/"))
+        return true;
+    }
+    return false;
+  }
+
+  loadAnyway = () => {
+    this.setState({ previewAnyway: true });
+  }
 
   highlightBlock = () => {
     // FIXME: Usage of findDOMNode is discouraged.
@@ -73,12 +87,26 @@ class FilePreview extends React.Component {
   render() {
     // File has not yet been fetched
     if (!this.props.file)
-      return "Loading...";
+      return null;
+
+    // LFS files and big files
+    if (this.fileIsLfs() || (this.props.file.size > this.props.previewThreshold.soft && !this.state.previewAnyway)) {
+      return (
+        <FileNoPreview
+          url={this.props.downloadLink}
+          lfs={this.fileIsLfs()}
+          softLimit={this.props.previewThreshold.soft}
+          softLimitReached={this.props.file.size > this.props.previewThreshold.soft}
+          hardLimit={this.props.previewThreshold.hard}
+          hardLimitReached={this.props.file.size > this.props.previewThreshold.hard}
+          previewAnyway={this.state.previewAnyway}
+          loadAnyway={this.loadAnyway.bind(this)}
+        />
+      );
+    }
 
     // Various types of images
     if (this.fileIsImage()) {
-      if (atob(this.props.file.content).includes("https://git-lfs.github.com/"))
-        return "The image can't be previewed because it's stored in Git LFS.";
       return (
         <CardBody key="file preview" className="pb-0">
           <img
@@ -89,6 +117,7 @@ class FilePreview extends React.Component {
         </CardBody>
       );
     }
+
     // Free text
     if (this.fileIsText()) {
       return (
@@ -99,16 +128,7 @@ class FilePreview extends React.Component {
         </CardBody>
       );
     }
-    // Code with syntax highlighting
-    if (this.fileIsCode()) {
-      return (
-        <CardBody key="file preview" className="pb-0">
-          <pre className={`hljs ${this.getFileExtension()}`}>
-            <code>{atobUTF8(this.props.file.content)}</code>
-          </pre>
-        </CardBody>
-      );
-    }
+
     // Markdown
     if (this.getFileExtension() === "md") {
       let content = atobUTF8(this.props.file.content);
@@ -139,10 +159,22 @@ class FilePreview extends React.Component {
       );
     }
 
-    if (this.fileHasNoExtension()) {
+    // Code with syntax highlighting
+    if (this.fileIsCode()) {
       return (
         <CardBody key="file preview" className="pb-0">
           <pre className={`hljs ${this.getFileExtension()}`}>
+            <code>{atobUTF8(this.props.file.content)}</code>
+          </pre>
+        </CardBody>
+      );
+    }
+
+    // No extensions
+    if (this.fileHasNoExtension()) {
+      return (
+        <CardBody key="file preview" className="pb-0">
+          <pre className={"hljs"}>
             <code>{atobUTF8(this.props.file.content)}</code>
           </pre>
         </CardBody>
@@ -327,7 +359,10 @@ class ShowFile extends React.Component {
         fileSize = splitFile[splitFile.length - 1];
     }
 
-    return <ShowFilePresent externalUrl={this.props.externalUrl}
+    const previewThreshold = this.props.params.PREVIEW_THRESHOLD;
+
+    return <ShowFilePresent
+      externalUrl={this.props.externalUrl}
       filePath={filePath}
       gitLabFilePath={gitLabFilePath}
       lineagesPath={this.props.lineagesPath}
@@ -343,6 +378,7 @@ class ShowFile extends React.Component {
       hashElement={this.props.hashElement}
       fileSize={fileSize}
       history={this.props.history}
+      previewThreshold={previewThreshold}
     />;
   }
 }

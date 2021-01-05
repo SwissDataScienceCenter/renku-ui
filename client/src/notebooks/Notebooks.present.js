@@ -748,12 +748,13 @@ class StartNotebookServer extends Component {
 
     let show = {};
     show.commits = !fetching.branches && branch.name ? true : false;
-    show.pipelines = show.commits && !fetching.commits && commit.id;
+    show.pipelines = show.commits && !fetching.commits && commit && commit.id;
     show.options = show.pipelines && pipelines.fetched && (anyPipeline || noPipelinesNeeded);
 
     const messageOutput = message ?
       (<div key="message">{message}</div>) :
       null;
+    const disabled = fetching.branches || fetching.commits;
 
     return (
       <Row>
@@ -761,8 +762,8 @@ class StartNotebookServer extends Component {
           <h3>Start a new interactive environment</h3>
           {messageOutput}
           <Form>
-            <StartNotebookBranches {...this.props} />
-            {show.commits ? <StartNotebookCommits {...this.props} /> : null}
+            <StartNotebookBranches {...this.props} disabled={disabled} />
+            {show.commits ? <StartNotebookCommits {...this.props} disabled={disabled} /> : null}
             {show.pipelines ? <StartNotebookPipelines {...this.props}
               ignorePipeline={this.state.ignorePipeline}
               setIgnorePipeline={this.setIgnorePipeline.bind(this)} /> : null}
@@ -777,6 +778,7 @@ class StartNotebookServer extends Component {
 class StartNotebookBranches extends Component {
   render() {
     const { branches } = this.props.data;
+    const { disabled } = this.props;
     let content;
     if (StatusHelper.isUpdating(branches)) {
       content = (
@@ -835,7 +837,7 @@ class StartNotebookBranches extends Component {
               <StartNotebookBranchesUpdate {...this.props} />
               <StartNotebookBranchesOptions {...this.props} />
             </Label>
-            <Input type="select" id="selectBranch" name="selectBranch"
+            <Input type="select" id="selectBranch" name="selectBranch" disabled={disabled}
               value={this.props.filters.branch.name ? this.props.filters.branch.name : ""}
               onChange={(event) => { this.props.handlers.setBranch(event.target.value); }}>
               <option disabled hidden></option>
@@ -857,7 +859,7 @@ class StartNotebookBranchesUpdate extends Component {
   render() {
     return [
       <Button key="button" className="ml-2 p-0" color="link" size="sm"
-        id="branchUpdateButton"
+        id="branchUpdateButton" disabled={this.props.disabled}
         onClick={this.props.handlers.refreshBranches}>
         <FontAwesomeIcon icon={faSyncAlt} />
       </Button>,
@@ -872,7 +874,7 @@ class StartNotebookBranchesOptions extends Component {
   render() {
     return [
       <Button key="button" className="ml-2 p-0" color="link" size="sm"
-        id="branchOptionsButton"
+        id="branchOptionsButton" disabled={this.props.disabled}
         onClick={() => { }}>
         <FontAwesomeIcon icon={faCogs} />
       </Button>,
@@ -1136,7 +1138,8 @@ class StartNotebookCommits extends Component {
     if (fetching)
       return (<Label>Updating commits... <Loader size="14" inline="true" /></Label>);
 
-    const { displayedCommits } = this.props.filters;
+    const { filters, disabled } = this.props;
+    const { displayedCommits } = filters;
     const filteredCommits = displayedCommits && displayedCommits > 0 ?
       commits.slice(0, displayedCommits) :
       commits;
@@ -1152,8 +1155,8 @@ class StartNotebookCommits extends Component {
       );
     });
     let commitComment = null;
-    if (this.props.filters.commit.id) {
-      const autosaveExists = autosavedCommits.includes(this.props.filters.commit.id.substr(0, 7)) ?
+    if (filters.commit && filters.commit.id) {
+      const autosaveExists = autosavedCommits.includes(filters.commit.id.substr(0, 7)) ?
         true :
         false;
       if (autosaveExists) {
@@ -1175,8 +1178,8 @@ class StartNotebookCommits extends Component {
           <StartNotebookCommitsUpdate {...this.props} />
           <StartNotebookCommitsOptions {...this.props} />
         </Label>
-        <Input type="select" id="selectCommit" name="selectCommit"
-          value={this.props.filters.commit.id ? this.props.filters.commit.id : ""}
+        <Input type="select" id="selectCommit" name="selectCommit" disabled={disabled}
+          value={filters.commit && filters.commit.id ? filters.commit.id : ""}
           onChange={(event) => { this.props.handlers.setCommit(event.target.value); }}>
           <option disabled hidden></option>
           {commitOptions}
@@ -1191,7 +1194,7 @@ class StartNotebookCommitsUpdate extends Component {
   render() {
     return [
       <Button key="button" className="ml-2 p-0" color="link" size="sm"
-        id="commitUpdateButton"
+        id="commitUpdateButton" disabled={this.props.disabled}
         onClick={this.props.handlers.refreshCommits}>
         <FontAwesomeIcon icon={faSyncAlt} />
       </Button>,
@@ -1206,7 +1209,7 @@ class StartNotebookCommitsOptions extends Component {
   render() {
     return [
       <Button key="button" className="ml-2 p-0" color="link" size="sm"
-        id="commitOptionsButton"
+        id="commitOptionsButton" disabled={this.props.disabled}
         onClick={() => { }}>
         <FontAwesomeIcon icon={faCogs} />
       </Button>,
