@@ -68,12 +68,12 @@ jobs:
         RENKU_VALUES: ${{ secrets.CI_RENKU_VALUES }}
         RENKUBOT_KUBECONFIG: ${{ secrets.RENKUBOT_DEV_KUBECONFIG }}
         RENKUBOT_RANCHER_BEARER_TOKEN: ${{ secrets.RENKUBOT_RANCHER_BEARER_TOKEN }}
-        renku: "@development"
+        renku: "@000-deploy-action"
         renku_ui: "@${{ github.head_ref }}"
     - name: Wait on failure
       if: ${{ failure() }}
       run: |
-        sleep 15
+        sleep 10
     - name: Find comment post deploy
       if: ${{ always() }}
       uses: peter-evans/find-comment@v1
