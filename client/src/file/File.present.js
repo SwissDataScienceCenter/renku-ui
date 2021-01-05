@@ -18,16 +18,16 @@
 
 import React, { useState } from "react";
 import NotebookPreview from "@nteract/notebook-render";
-
-import { Badge, Card, CardHeader, CardBody, CustomInput } from "reactstrap";
-import { Button, ButtonGroup } from "reactstrap";
-import { ListGroup, ListGroupItem } from "reactstrap";
-import "../../node_modules/highlight.js/styles/atom-one-light.css";
+import {
+  Badge, Card, CardHeader, CardBody, CustomInput, Button, ButtonGroup, ListGroup, ListGroupItem
+} from "reactstrap";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
+import "../../node_modules/highlight.js/styles/atom-one-light.css";
+
 import { FilePreview } from "./index";
 import { CheckNotebookStatus, CheckNotebookIcon } from "../notebooks";
-import { Clipboard, ExternalIconLink, Loader } from "../utils/UIComponents";
+import { Clipboard, ExternalIconLink, ExternalLink, Loader } from "../utils/UIComponents";
 import { Time } from "../utils/Time";
 import { formatBytes } from "../utils/HelperFunctions";
 import { FileAndLineageSwitch } from "./FileAndLineageComponents";
@@ -151,27 +151,22 @@ class ShowFile extends React.Component {
       return (
         <Card>
           <CardHeader className="align-items-baseline">&nbsp;</CardHeader>
-          <CardBody>{"Loading..."}</CardBody>
+          <CardBody>Downloading... <Loader size="14" inline="true" /></CardBody>
         </Card>
       );
     }
 
-    const isLFS = this.props.hashElement ? this.props.hashElement.isLfs : false;
-    const isLFSBadge = isLFS ? (
-      <Badge className="lfs-badge" color="light">
-        LFS
-      </Badge>
-    ) : null;
-
+    const isLFS = this.props.hashElement ?
+      this.props.hashElement.isLfs :
+      false;
+    const isLFSBadge = isLFS ?
+      (<Badge className="lfs-badge" color="light">LFS</Badge>) :
+      null;
+    const downloadLink = `${this.props.externalUrl}/-/raw/master/${gitLabFilePath}?inline=false`;
     const buttonDownload = (
-      <ExternalIconLink
-        tooltip="Download File"
-        icon={faDownload}
-        to={`${this.props.externalUrl}/-/raw/master/${gitLabFilePath}?inline=false`}
-      />
+      <ExternalIconLink tooltip="Download File" icon={faDownload} to={downloadLink} />
     );
-
-    const body = <FilePreview file={this.props.file} {...this.props} />;
+    const body = (<FilePreview file={this.props.file} downloadLink={downloadLink} {...this.props} />);
 
     return (
       <FileCard
@@ -184,9 +179,51 @@ class ShowFile extends React.Component {
         body={body}
         isLFSBadge={isLFSBadge}
         buttonDownload={buttonDownload}
+        downloadLink={downloadLink}
         fileSize={this.props.fileSize}
       />
     );
+  }
+}
+
+class FileNoPreview extends React.Component {
+  render() {
+    const downloadLink = (
+      <ExternalLink
+        title="download the file" role="link" showLinkIcon={true} iconAfter={true}
+        url={this.props.url} customIcon={faDownload} />
+    );
+
+    // LFS or very big files
+    if (this.props.lfs || this.props.hardLimitReached) {
+      const reason = this.props.hardLimitReached ?
+        `the file is too big (more than ${formatBytes(this.props.hardLimit)})` :
+        "the file is stored in Git LFS";
+      return (
+        <CardBody key="file preview" className="pb-0">
+          <p>The preview is not available because {reason}.</p>
+          <p>You can still {downloadLink}</p>
+        </CardBody>
+      );
+    }
+
+    // Big preview-able files
+    if (!this.props.previewAnyway) {
+      const loadButton = (
+        <Button color="link" className="p-0 align-baseline" onClick={() => { this.props.loadAnyway(); }}>
+          preview it anyway
+        </Button>
+      );
+      return (
+        <CardBody key="file preview" className="pb-0">
+          <p>The preview may be slow because the file is large (more than {formatBytes(this.props.softLimit)}).</p>
+          <p>You can {loadButton} or {downloadLink}</p>
+        </CardBody>
+      );
+    }
+
+    // No need to return anything when the preview is allowed
+    return null;
   }
 }
 
@@ -354,4 +391,6 @@ class JupyterButtonPresent extends React.Component {
   }
 }
 
-export { StyledNotebook, JupyterButtonPresent, ShowFile, tweakCellMetadata, NotebookSourceDisplayMode };
+export {
+  StyledNotebook, JupyterButtonPresent, ShowFile, tweakCellMetadata, NotebookSourceDisplayMode, FileNoPreview
+};

@@ -72,6 +72,8 @@ spec:
               value: {{ toJson .Values.privacy.banner.layout | quote }}
             - name: TEMPLATES
               value: {{ toJson .Values.templates | quote }}
+            - name: PREVIEW_THRESHOLD
+              value: {{ toJson .Values.previewSizeThreshold | quote }}
           livenessProbe:
             httpGet:
               path: /
