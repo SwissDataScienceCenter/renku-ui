@@ -47,8 +47,8 @@ jobs:
           python-version: 3.7
       - name: Test helm chart
         env:
-          HELM_URL: https://charts.helm.sh/stable
-          HELM_TGZ: helm-v2.16.9-linux-amd64.tar.gz
+          HELM_URL: https://storage.googleapis.com/kubernetes-helm
+          HELM_TGZ: helm-v2.17.0-linux-amd64.tar.gz
           TEMP_DIR: ${{ runner.temp }}
         run: |
           wget -q ${HELM_URL}/${HELM_TGZ} -O ${TEMP_DIR}/${HELM_TGZ}
