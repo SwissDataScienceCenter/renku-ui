@@ -96,9 +96,9 @@ class FilePreview extends React.Component {
           url={this.props.downloadLink}
           lfs={this.fileIsLfs()}
           softLimit={this.props.previewThreshold.soft}
-          softLimitReached={this.props.file.size > this.props.previewThreshold.soft ? true : false}
+          softLimitReached={this.props.file.size > this.props.previewThreshold.soft}
           hardLimit={this.props.previewThreshold.hard}
-          hardLimitReached={this.props.file.size > this.props.previewThreshold.hard ? true : false}
+          hardLimitReached={this.props.file.size > this.props.previewThreshold.hard}
           previewAnyway={this.state.previewAnyway}
           loadAnyway={this.loadAnyway.bind(this)}
         />
