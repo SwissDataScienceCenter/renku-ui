@@ -18,7 +18,7 @@ jobs:
     if: github.event.action != 'closed'
     runs-on: ubuntu-latest
     environment:
-      name: ci-ui-${{ github.event.number }}-renku
+      name: Renku PR deployment
       url: "https://ci-ui-${{ github.event.number }}-renku.dev.renku.ch"
     steps:
     - uses: actions/checkout@v2
