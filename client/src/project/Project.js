@@ -609,7 +609,9 @@ class View extends Component {
       e.preventDefault();
       this.fetchAll();
     },
-    fetchOverviewData: () => { this.fetchReadme(); },
+    fetchOverviewData: () => {
+      return this.fetchReadme();
+    },
     fetchMrSuggestions: async () => {
       await this.fetchMergeRequests();
       this.fetchBranches();

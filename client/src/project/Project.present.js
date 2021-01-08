@@ -353,6 +353,10 @@ class ProjectFilesNav extends Component {
 }
 
 class ProjectViewReadme extends Component {
+  componentDidMount() {
+    this.props.fetchOverviewData();
+  }
+
   render() {
     const readmeText = this.props.readme.text;
     const loading = isRequestPending(this.props, "readme");
@@ -425,11 +429,6 @@ class ProjectViewOverviewNav extends Component {
 }
 
 class ProjectViewOverview extends Component {
-
-  componentDidMount() {
-    this.props.fetchOverviewData();
-  }
-
   render() {
     const { core, system, projectCoordinator } = this.props;
     const description = core.description ?
