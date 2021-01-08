@@ -30,7 +30,8 @@ import { createMemoryHistory } from "history";
 
 import { StateKind, StateModel, globalSchema } from "../model";
 import Project, { mapProjectFeatures, withProjectMapped } from "./Project";
-import { filterPaths, ProjectViewCommitsBody } from "./Project.present";
+import { filterPaths } from "./Project.present";
+import { OverviewCommitsBody } from "./overview/ProjectOverview.present";
 import { ProjectModel, ProjectCoordinator } from "./Project.state";
 import { testClient as client } from "../api-client";
 import { generateFakeUser } from "../user/User.test";
@@ -83,11 +84,11 @@ describe("test ProjectCoordinator related components", () => {
   it("test withProjectMapped higher order function", () => {
     const div = document.createElement("div");
     const categories = ["commits", "metadata"];
-    const ProjectViewCommitsConnected = withProjectMapped(ProjectViewCommitsBody, categories);
+    const CommitsConnected = withProjectMapped(OverviewCommitsBody, categories);
 
     ReactDOM.render(
       <MemoryRouter>
-        <ProjectViewCommitsConnected
+        <CommitsConnected
           history={fakeHistory}
           location={fakeHistory.location}
           projectCoordinator={projectCoordinator} />

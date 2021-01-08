@@ -23,11 +23,18 @@
  *  Presentational components for project overview.
  */
 
-import React, { Component } from "react";
-import { Card, CardHeader, CardBody, Row, Col, Table } from "reactstrap";
+import React, { Component, Fragment } from "react";
+import {
+  Badge, Card, CardBody, CardHeader, Col, ListGroupItem, Row, Table, UncontrolledTooltip
+} from "reactstrap";
 import { default as fileSize } from "filesize";
+import qs from "query-string";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 
-import { ExternalLink, Loader } from "../../utils/UIComponents";
+import { CommitsView } from "../../utils/Commits";
+import { ExternalLink, Loader, Pagination, RefreshButton } from "../../utils/UIComponents";
 
 
 class OverviewStats extends Component {
@@ -125,4 +132,117 @@ class OverviewStats extends Component {
   }
 }
 
-export { OverviewStats };
+class OverviewCommits extends Component {
+  render() {
+    const { commits, metadata } = this.props;
+    const gitlabCommitsUrl = `${metadata.repositoryUrl}/commits`;
+    const tooMany = commits.error && commits.error.message && commits.error.message.startsWith("Cannot iterate more") ?
+      true :
+      false;
+
+    const commitBadgeNumber = `${commits.list.length}${tooMany ? "+" : ""}`;
+    const badge = commits.fetched && !commits.fetching ?
+      (<Badge color="primary">{commitBadgeNumber}</Badge>) :
+      null;
+    const buttonGit = (
+      <Fragment>
+        <ExternalLink
+          role="link"
+          id="commitLink"
+          title={<FontAwesomeIcon icon={faGitlab} />}
+          url={gitlabCommitsUrl}
+          className="text-primary btn ml-2 p-0"
+        />
+        <UncontrolledTooltip placement="top" target="commitLink">
+          Open in GitLab
+        </UncontrolledTooltip>
+      </Fragment>
+    );
+    const info = commits.error && commits.error.message && commits.error.message.startsWith("Cannot iterate more") ?
+      (<OverviewCommitsInfo number={commits.list.length} url={gitlabCommitsUrl} />) :
+      null;
+
+    const body = commits.fetching ?
+      (<Loader />) :
+      (<OverviewCommitsBody {...this.props} />);
+    return (
+      <Card className="border-0">
+        <CardHeader>
+          Commits {badge}
+          <RefreshButton action={commits.refresh} updating={commits.fetching} message="Refresh commits" />
+          {buttonGit}
+        </CardHeader>
+        <CardBody className="pl-0 pr-0">
+          {body}
+          {info}
+        </CardBody>
+      </Card>
+    );
+  }
+}
+
+class OverviewCommitsInfo extends Component {
+  render() {
+    return (
+      <ListGroupItem className="commit-object">
+        <FontAwesomeIcon icon={faInfoCircle} />&nbsp;
+        Cannot load more than {this.props.number} commits. To see the full project history,&nbsp;
+        <ExternalLink role="link" id="commitLink" title="view in GitLab" url={this.props.url} />
+      </ListGroupItem>
+    );
+  }
+}
+
+class OverviewCommitsBody extends Component {
+  constructor(props) {
+    super(props);
+    const locationPage = qs.parse(props.location.search);
+    this.state = {
+      currentPage: locationPage.page ? parseInt(locationPage.page) : 1,
+      perPage: 25,
+    };
+  }
+
+  onPageChange(newPage) {
+    this.setState({ currentPage: newPage });
+    const currentSearch = qs.parse(this.props.location.search);
+    const newSearch = qs.stringify({ ...currentSearch, page: newPage });
+    this.props.history.push({ pathname: this.props.location.pathname, search: newSearch });
+  }
+
+  render() {
+    const { commits, metadata } = this.props;
+    const { currentPage, perPage } = this.state;
+
+    if (commits.fetching || !commits.fetched)
+      return <Loader />;
+
+    const firstCommit = (currentPage - 1) * perPage;
+    const lastCommit = currentPage * perPage;
+
+    return (
+      <Fragment>
+        <CommitsView
+          commits={commits.list.slice(firstCommit, lastCommit)}
+          fetched={commits.fetched}
+          fetching={commits.fetching}
+          error={commits.error}
+          urlRepository={metadata.repositoryUrl}
+          urlDiff={`${metadata.repositoryUrl}/commit/`}
+        />
+        <Pagination
+          className="mt-2"
+          currentPage={currentPage}
+          perPage={perPage}
+          totalItems={commits.list.length}
+          onPageChange={this.onPageChange.bind(this)}
+        />
+      </Fragment>
+    );
+  }
+}
+
+export { OverviewStats, OverviewCommits };
+
+// For testing
+export { OverviewCommitsBody };

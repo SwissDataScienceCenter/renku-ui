@@ -26,7 +26,9 @@
 import React, { Component } from "react";
 
 import { withProjectMapped } from "../Project";
-import { OverviewStats as OverviewStatsPresent } from "./ProjectOverview.present";
+import {
+  OverviewCommits as OverviewCommitsPresent, OverviewStats as OverviewStatsPresent
+} from "./ProjectOverview.present";
 
 /**
  * Create a visualization of the project stats.
@@ -48,6 +50,7 @@ class OverviewStats extends Component {
     const statistics = this.projectCoordinator.get("statistics");
     if (!statistics.fetching) {
       const now = (new Date()).getTime();
+      // refresh if not available or older than 10s
       if (!statistics.fetched || statistics.fetched.getTime() < now - 10 * 1000)
         this.refreshStatistics();
     }
@@ -71,4 +74,49 @@ class OverviewStats extends Component {
   }
 }
 
-export { OverviewStats };
+/**
+ * Create a visualization of the project commits.
+ *
+ * @param {Object} props.location - react location object
+ * @param {Object} props.history - react history object
+ * @param {Object} props.projectCoordinator - project coordinator
+ */
+class OverviewCommits extends Component {
+  constructor(props) {
+    super(props);
+    this.projectCoordinator = props.projectCoordinator;
+
+    this.handlers = {
+      refreshCommits: this.refreshCommits.bind(this)
+    };
+  }
+
+  componentDidMount() {
+    const commits = this.projectCoordinator.get("commits");
+    if (!commits.fetching) {
+      const now = (new Date()).getTime();
+      // refresh if not available or older than 10s
+      if (!commits.fetched || commits.fetched.getTime() < now - 10 * 1000)
+        this.refreshCommits();
+    }
+  }
+
+  refreshCommits() {
+    const commits = this.projectCoordinator.get("commits");
+    if (!commits.fetching)
+      this.projectCoordinator.fetchCommits();
+  }
+
+  render() {
+    const categories = ["commits", "metadata"];
+    const OverviewStatsConnected = withProjectMapped(OverviewCommitsPresent, categories);
+    return (
+      <OverviewStatsConnected
+        projectCoordinator={this.projectCoordinator}
+        location={this.props.location}
+        history={this.props.history}
+      />);
+  }
+}
+
+export { OverviewCommits, OverviewStats };

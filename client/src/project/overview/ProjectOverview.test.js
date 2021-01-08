@@ -26,26 +26,49 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { MemoryRouter } from "react-router-dom";
+import { createMemoryHistory } from "history";
 
 import { StateModel, globalSchema } from "../../model";
 import { testClient as client } from "../../api-client";
 import { ProjectCoordinator } from "../index";
-import { ProjectOverviewStats } from "./index";
+import { ProjectOverviewCommits, ProjectOverviewStats } from "./index";
 
+const fakeHistory = createMemoryHistory({
+  initialEntries: ["/"],
+  initialIndex: 0,
+});
 
 describe("rendering", () => {
   const model = new StateModel(globalSchema);
   const props = {
-    branches: [],
     projectCoordinator: new ProjectCoordinator(client, model.subModel("project"))
   };
+
+  it("renders ProjectOverviewCommits", () => {
+    const div = document.createElement("div");
+    document.body.appendChild(div);
+    const allProps = {
+      history: fakeHistory,
+      location: fakeHistory.location,
+      ...props
+    };
+    ReactDOM.render(
+      <MemoryRouter>
+        <ProjectOverviewCommits {...allProps} />
+      </MemoryRouter>,
+      div);
+  });
 
   it("renders ProjectOverviewStats", () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
+    const allProps = {
+      branches: [],
+      ...props
+    };
     ReactDOM.render(
       <MemoryRouter>
-        <ProjectOverviewStats {...props} />
+        <ProjectOverviewStats {...allProps} />
       </MemoryRouter>,
       div);
   });
