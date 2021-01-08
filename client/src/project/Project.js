@@ -212,7 +212,7 @@ class View extends Component {
     const projectData = this.projectState.fetchProject(this.props.client, pathComponents.projectPathWithNamespace);
     // TODO: gradually move queries from local store projectState to shared store projectCoordinator
     projectData.then(data => {
-      this.projectCoordinator.setProjectData(data);
+      this.projectCoordinator.setProjectData(data, true);
       this.projectCoordinator.fetchCommits();
     });
     return projectData;

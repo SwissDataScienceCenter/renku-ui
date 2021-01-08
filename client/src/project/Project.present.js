@@ -25,15 +25,12 @@
 
 
 import React, { Component, Fragment, useState, useEffect } from "react";
-
 import { Link, Route, Switch } from "react-router-dom";
 import {
   Container, Row, Col, Alert, DropdownItem, Table, Nav, NavItem, Button, ButtonGroup, Badge,
   Card, CardBody, CardHeader, Form, FormGroup, FormText, Label, Input, UncontrolledTooltip, ListGroupItem
 } from "reactstrap";
 import qs from "query-string";
-
-import { default as fileSize } from "filesize"; // eslint-disable-line
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
 import {
@@ -58,6 +55,7 @@ import { withProjectMapped } from "./Project";
 import ProjectVersionStatus from "./status/ProjectVersionStatus.present";
 import { NamespaceProjects } from "../namespace";
 import { CommitsView } from "../utils/Commits";
+import { ProjectOverviewStats } from "./overview";
 
 import "./Project.css";
 
@@ -379,77 +377,6 @@ class ProjectViewReadme extends Component {
   }
 }
 
-class ProjectViewStats extends Component {
-
-  render() {
-    const loading = (this.props.core.id == null);
-    if (loading)
-      return <Loader />;
-
-    const system = this.props.system;
-    const stats = this.props.statistics;
-    return [
-      <Card key="project-stats" className="border-0">
-        <CardHeader>Project Statistics</CardHeader>
-        <CardBody>
-          <Row>
-            <Col md={6}>
-              <Table key="stats-table" size="sm">
-                <tbody>
-                  <tr>
-                    <th scope="row">Number of Branches</th>
-                    <td>{system.branches.length + 1}</td>
-                    <td>
-                      <ExternalLink size="sm" url={`${this.props.externalUrl}/branches`} title="Branches in Gitlab" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Number of Forks</th>
-                    <td>{system.forks_count}</td>
-                    <td><ExternalLink size="sm" url={`${this.props.externalUrl}/forks`} title="Forks in Gitlab" /></td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Number of Commits</th>
-                    <td>{stats.commit_count}</td>
-                    <td>
-                      <ExternalLink size="sm" url={`${this.props.externalUrl}/commits`} title="Commits in Gitlab" />
-                    </td>
-                  </tr>
-                </tbody>
-              </Table>
-            </Col>
-          </Row>
-        </CardBody>
-      </Card>,
-      <Card key="storage-stats" className="border-0">
-        <CardHeader>Storage Statistics</CardHeader>
-        <CardBody>
-          <Row>
-            <Col md={6}>
-              <Table key="stats-table" size="sm">
-                <tbody>
-                  <tr>
-                    <th scope="row">Storage Size</th>
-                    <td>{fileSize(stats.storage_size)}</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Repository Size</th>
-                    <td>{fileSize(stats.repository_size)}</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">LFS Size</th>
-                    <td>{fileSize(stats.lfs_objects_size)}</td>
-                  </tr>
-                </tbody>
-              </Table>
-            </Col>
-          </Row>
-        </CardBody>
-      </Card>
-    ];
-  }
-}
-
 function ProjectKGStatus(props) {
   const loading = false;
 
@@ -533,7 +460,11 @@ class ProjectViewOverview extends Component {
               return <ProjectViewReadme readme={this.props.data.readme} {...this.props} />;
             }} />
             <Route exact path={this.props.statsUrl} render={props =>
-              <ProjectViewStats {...this.props} />}
+              <ProjectOverviewStats
+                projectCoordinator={projectCoordinator}
+                branches={this.props.system.branches}
+              />
+            }
             />
             <Route exact path={this.props.overviewDatasetsUrl} render={props =>
               <ProjectViewDatasetsOverview {...this.props} />}
