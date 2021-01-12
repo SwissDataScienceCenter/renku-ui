@@ -464,8 +464,8 @@ class ProjectCoordinator {
       return;
     this.model.set("statistics.fetching", true);
     const resp = await this.client.getProject(pathWithNamespace, { statistics: true });
-    const stats = resp.data.statistics ?
-      resp.data.statistics :
+    const stats = resp.data.all.statistics ?
+      resp.data.all.statistics :
       projectGlobalSchema.createInitialized().statistics.data;
     const statsObject = {
       fetching: false,
