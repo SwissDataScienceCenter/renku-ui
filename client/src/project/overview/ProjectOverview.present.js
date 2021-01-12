@@ -35,6 +35,7 @@ import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 
 import { CommitsView } from "../../utils/Commits";
 import { ExternalLink, Loader, Pagination, RefreshButton } from "../../utils/UIComponents";
+import { StatusHelper } from "../../model/Model";
 
 
 class OverviewStats extends Component {
@@ -57,6 +58,9 @@ class OverviewStats extends Component {
     const repositorySize = this.valueOrEmptyOrLoading(statistics.data.repository_size, statistics.fetching);
     const lfsSize = this.valueOrEmptyOrLoading(statistics.data.lfs_objects_size, statistics.fetching);
     const commitsCount = this.valueOrEmptyOrLoading(statistics.data.commit_count, statistics.fetching, false);
+    const branchesCount = !StatusHelper.isUpdating(branches) ?
+      branches.length :
+      (<Loader size="14" inline="true" />);
 
     let info = null;
     if (!metadata.accessLevel) {
@@ -78,7 +82,7 @@ class OverviewStats extends Component {
             <tbody>
               <tr>
                 <th className="align-middle" scope="row">Number of Branches</th>
-                <td className="px-3 px-lg-4 align-middle">{branches.length + 1}</td>
+                <td className="px-3 px-lg-4 align-middle">{branchesCount}</td>
                 <td>
                   <ExternalLink role="text" showLinkIcon={true}
                     url={`${metadata.repositoryUrl}/branches`} title="Branches in GitLab" />

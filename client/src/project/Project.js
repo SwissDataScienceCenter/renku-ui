@@ -214,6 +214,8 @@ class View extends Component {
     projectData.then(data => {
       this.projectCoordinator.setProjectData(data, true);
       this.projectCoordinator.fetchCommits();
+      // TODO: move fetchBranches to projectCoordinator. We should fetch commits after we know the defaul branch
+      this.fetchBranches();
     });
     return projectData;
   }
