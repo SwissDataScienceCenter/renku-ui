@@ -62,7 +62,7 @@ class OverviewStats extends Component {
     if (!metadata.accessLevel) {
       info = (
         <p className="font-italic">
-          Since you do not have any permission for this project, some fields may be unavailable.
+          Since you are not a member of this project, some information may not be available.
           <br />You can still find more information in the GitLab UI.
         </p>
       );
@@ -81,7 +81,7 @@ class OverviewStats extends Component {
                 <td className="px-3 px-lg-4 align-middle">{branches.length + 1}</td>
                 <td>
                   <ExternalLink role="text" showLinkIcon={true}
-                    url={`${metadata.repositoryUrl}/branches`} title="Branches in Gitlab" />
+                    url={`${metadata.repositoryUrl}/branches`} title="Branches in GitLab" />
                 </td>
               </tr>
               <tr>
@@ -89,7 +89,7 @@ class OverviewStats extends Component {
                 <td className="px-3 px-lg-4 align-middle">{metadata.forksCount}</td>
                 <td>
                   <ExternalLink role="text" showLinkIcon={true}
-                    url={`${metadata.repositoryUrl}/forks`} title="Forks in Gitlab" />
+                    url={`${metadata.repositoryUrl}/forks`} title="Forks in GitLab" />
                 </td>
               </tr>
               <tr>
@@ -97,7 +97,7 @@ class OverviewStats extends Component {
                 <td className="px-3 px-lg-4 align-middle">{metadata.starCount}</td>
                 <td>
                   <ExternalLink role="text" showLinkIcon={true}
-                    url={`${metadata.repositoryUrl}/-/starrers`} title="Stars in Gitlab" />
+                    url={`${metadata.repositoryUrl}/-/starrers`} title="Stars in GitLab" />
                 </td>
               </tr>
               <tr>
@@ -105,7 +105,7 @@ class OverviewStats extends Component {
                 <td className="px-3 px-lg-4 align-middle">{commitsCount}</td>
                 <td>
                   <ExternalLink role="text" showLinkIcon={true}
-                    url={`${metadata.repositoryUrl}/commits`} title="Commits in Gitlab" />
+                    url={`${metadata.repositoryUrl}/commits`} title="Commits in GitLab" />
                 </td>
               </tr>
               <tr>
@@ -113,7 +113,7 @@ class OverviewStats extends Component {
                 <td className="px-3 px-lg-4 align-middle">{storageSize}</td>
                 <td className="align-middle" rowSpan="3">
                   <ExternalLink role="text" showLinkIcon={true}
-                    url={metadata.repositoryUrl} title="Sizes in Gitlab" />
+                    url={metadata.repositoryUrl} title="Sizes in GitLab" />
                 </td>
               </tr>
               <tr>
