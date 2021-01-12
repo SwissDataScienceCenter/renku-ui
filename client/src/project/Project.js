@@ -212,8 +212,10 @@ class View extends Component {
     const projectData = this.projectState.fetchProject(this.props.client, pathComponents.projectPathWithNamespace);
     // TODO: gradually move queries from local store projectState to shared store projectCoordinator
     projectData.then(data => {
-      this.projectCoordinator.setProjectData(data);
+      this.projectCoordinator.setProjectData(data, true);
       this.projectCoordinator.fetchCommits();
+      // TODO: move fetchBranches to projectCoordinator. We should fetch commits after we know the defaul branch
+      this.fetchBranches();
     });
     return projectData;
   }
@@ -609,7 +611,9 @@ class View extends Component {
       e.preventDefault();
       this.fetchAll();
     },
-    fetchOverviewData: () => { this.fetchReadme(); },
+    fetchOverviewData: () => {
+      return this.fetchReadme();
+    },
     fetchMrSuggestions: async () => {
       await this.fetchMergeRequests();
       this.fetchBranches();

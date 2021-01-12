@@ -154,6 +154,7 @@
           "serializable",
           "shareability",
           "slugify",
+          "starrers",
           "statuspage",
           "stdout",
           "textarea",

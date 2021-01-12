@@ -25,25 +25,20 @@
 
 
 import React, { Component, Fragment, useState, useEffect } from "react";
-
 import { Link, Route, Switch } from "react-router-dom";
 import {
-  Container, Row, Col, Alert, DropdownItem, Table, Nav, NavItem, Button, ButtonGroup, Badge,
-  Card, CardBody, CardHeader, Form, FormGroup, FormText, Label, Input, UncontrolledTooltip, ListGroupItem
+  Alert, Button, ButtonGroup, Card, CardBody, CardHeader, Col, Container, DropdownItem, Form, FormGroup,
+  FormText, Input, Label, Row, Table, Nav, NavItem, UncontrolledTooltip
 } from "reactstrap";
-import qs from "query-string";
-
-import { default as fileSize } from "filesize"; // eslint-disable-line
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
 import {
-  faCodeBranch, faInfoCircle, faStar as faStarSolid,
-  faExclamationTriangle, faLock, faUserFriends, faGlobe, faSearch
+  faCodeBranch, faExclamationTriangle, faUserFriends, faGlobe, faInfoCircle, faLock, faSearch,
+  faStar as faStarSolid,
 } from "@fortawesome/free-solid-svg-icons";
-import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 
 import {
-  Clipboard, ExternalLink, Loader, RenkuNavLink, TimeCaption, RefreshButton, Pagination,
+  Clipboard, ExternalLink, Loader, RenkuNavLink, TimeCaption,
   ButtonWithMenu, InfoAlert, GoBackButton, RenkuMarkdown,
 } from "../utils/UIComponents";
 import { SpecialPropVal } from "../model/Model";
@@ -54,10 +49,9 @@ import { CollaborationList, collaborationListTypeMap } from "../collaboration/li
 import FilesTreeView from "./filestreeview/FilesTreeView";
 import DatasetsListView from "./datasets/DatasetsListView";
 import { ACCESS_LEVELS } from "../api-client";
-import { withProjectMapped } from "./Project";
 import ProjectVersionStatus from "./status/ProjectVersionStatus.present";
 import { NamespaceProjects } from "../namespace";
-import { CommitsView } from "../utils/Commits";
+import { ProjectOverviewCommits, ProjectOverviewStats } from "./overview";
 
 import "./Project.css";
 
@@ -355,6 +349,10 @@ class ProjectFilesNav extends Component {
 }
 
 class ProjectViewReadme extends Component {
+  componentDidMount() {
+    this.props.fetchOverviewData();
+  }
+
   render() {
     const readmeText = this.props.readme.text;
     const loading = isRequestPending(this.props, "readme");
@@ -376,77 +374,6 @@ class ProjectViewReadme extends Component {
         </CardBody>
       </Card>
     );
-  }
-}
-
-class ProjectViewStats extends Component {
-
-  render() {
-    const loading = (this.props.core.id == null);
-    if (loading)
-      return <Loader />;
-
-    const system = this.props.system;
-    const stats = this.props.statistics;
-    return [
-      <Card key="project-stats" className="border-0">
-        <CardHeader>Project Statistics</CardHeader>
-        <CardBody>
-          <Row>
-            <Col md={6}>
-              <Table key="stats-table" size="sm">
-                <tbody>
-                  <tr>
-                    <th scope="row">Number of Branches</th>
-                    <td>{system.branches.length + 1}</td>
-                    <td>
-                      <ExternalLink size="sm" url={`${this.props.externalUrl}/branches`} title="Branches in Gitlab" />
-                    </td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Number of Forks</th>
-                    <td>{system.forks_count}</td>
-                    <td><ExternalLink size="sm" url={`${this.props.externalUrl}/forks`} title="Forks in Gitlab" /></td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Number of Commits</th>
-                    <td>{stats.commit_count}</td>
-                    <td>
-                      <ExternalLink size="sm" url={`${this.props.externalUrl}/commits`} title="Commits in Gitlab" />
-                    </td>
-                  </tr>
-                </tbody>
-              </Table>
-            </Col>
-          </Row>
-        </CardBody>
-      </Card>,
-      <Card key="storage-stats" className="border-0">
-        <CardHeader>Storage Statistics</CardHeader>
-        <CardBody>
-          <Row>
-            <Col md={6}>
-              <Table key="stats-table" size="sm">
-                <tbody>
-                  <tr>
-                    <th scope="row">Storage Size</th>
-                    <td>{fileSize(stats.storage_size)}</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">Repository Size</th>
-                    <td>{fileSize(stats.repository_size)}</td>
-                  </tr>
-                  <tr>
-                    <th scope="row">LFS Size</th>
-                    <td>{fileSize(stats.lfs_objects_size)}</td>
-                  </tr>
-                </tbody>
-              </Table>
-            </Col>
-          </Row>
-        </CardBody>
-      </Card>
-    ];
   }
 }
 
@@ -498,11 +425,6 @@ class ProjectViewOverviewNav extends Component {
 }
 
 class ProjectViewOverview extends Component {
-
-  componentDidMount() {
-    this.props.fetchOverviewData();
-  }
-
   render() {
     const { core, system, projectCoordinator } = this.props;
     const description = core.description ?
@@ -533,23 +455,21 @@ class ProjectViewOverview extends Component {
               return <ProjectViewReadme readme={this.props.data.readme} {...this.props} />;
             }} />
             <Route exact path={this.props.statsUrl} render={props =>
-              <ProjectViewStats {...this.props} />}
+              <ProjectOverviewStats
+                projectCoordinator={projectCoordinator}
+                branches={this.props.system.branches}
+              />
+            }
             />
             <Route exact path={this.props.overviewDatasetsUrl} render={props =>
               <ProjectViewDatasetsOverview {...this.props} />}
             />
-            <Route exact path={this.props.overviewCommitsUrl}
-              render={(props) => {
-                const categories = ["commits", "metadata"];
-                const ProjectViewCommitsConnected = withProjectMapped(ProjectViewCommits, categories);
-                return (
-                  <ProjectViewCommitsConnected
-                    location={props.location}
-                    history={props.history}
-                    projectCoordinator={projectCoordinator}
-                  />
-                );
-              }}
+            <Route exact path={this.props.overviewCommitsUrl} render={props =>
+              <ProjectOverviewCommits
+                location={this.props.location}
+                history={props.history}
+                projectCoordinator={projectCoordinator}
+              />}
             />
             <Route exact path={this.props.overviewStatusUrl} render={props =>
               <Fragment>
@@ -561,116 +481,6 @@ class ProjectViewOverview extends Component {
         </Col>
       </Row>
     </Col>;
-  }
-}
-
-class ProjectViewCommits extends Component {
-  render() {
-    const { commits, metadata } = this.props;
-    const gitlabCommitsUrl = `${metadata.repositoryUrl}/commits`;
-    const tooMany = commits.error && commits.error.message && commits.error.message.startsWith("Cannot iterate more") ?
-      true :
-      false;
-
-    const commitBadgeNumber = `${commits.list.length}${tooMany ? "+" : ""}`;
-    const badge = commits.fetched && !commits.fetching ?
-      (<Badge color="primary">{commitBadgeNumber}</Badge>) :
-      null;
-    const buttonGit = (
-      <Fragment>
-        <ExternalLink
-          role="link"
-          id="commitLink"
-          title={<FontAwesomeIcon icon={faGitlab} />}
-          url={gitlabCommitsUrl}
-          className="text-primary btn ml-2 p-0"
-        />
-        <UncontrolledTooltip placement="top" target="commitLink">
-          Open in GitLab
-        </UncontrolledTooltip>
-      </Fragment>
-    );
-    const info = commits.error && commits.error.message && commits.error.message.startsWith("Cannot iterate more") ?
-      (<ProjectViewCommitsInfo number={commits.list.length} url={gitlabCommitsUrl} />) :
-      null;
-
-    const body = commits.fetching ?
-      (<Loader />) :
-      (<ProjectViewCommitsBody {...this.props} />);
-    return (
-      <Card className="border-0">
-        <CardHeader>
-          Commits {badge}
-          <RefreshButton action={commits.refresh} updating={commits.fetching} message="Refresh commits" />
-          {buttonGit}
-        </CardHeader>
-        <CardBody className="pl-0 pr-0">
-          {body}
-          {info}
-        </CardBody>
-      </Card>
-    );
-  }
-}
-
-class ProjectViewCommitsInfo extends Component {
-  render() {
-    return (
-      <ListGroupItem className="commit-object">
-        <FontAwesomeIcon icon={faInfoCircle} />&nbsp;
-        Cannot load more than {this.props.number} commits. To see the full project history,&nbsp;
-        <ExternalLink role="link" id="commitLink" title="view in GitLab" url={this.props.url} />
-      </ListGroupItem>
-    );
-  }
-}
-
-class ProjectViewCommitsBody extends Component {
-  constructor(props) {
-    super(props);
-    const locationPage = qs.parse(props.location.search);
-    this.state = {
-      currentPage: locationPage.page ? parseInt(locationPage.page) : 1,
-      perPage: 25,
-    };
-  }
-
-  onPageChange(newPage) {
-    this.setState({ currentPage: newPage });
-    const currentSearch = qs.parse(this.props.location.search);
-    const newSearch = qs.stringify({ ...currentSearch, page: newPage });
-    this.props.history.push({ pathname: this.props.location.pathname, search: newSearch });
-  }
-
-  render() {
-    const { commits, metadata } = this.props;
-    const { currentPage, perPage } = this.state;
-
-    if (commits.fetching || !commits.fetched)
-      return <Loader />;
-
-    const firstCommit = (currentPage - 1) * perPage;
-    const lastCommit = currentPage * perPage;
-
-    return (
-      <Fragment>
-        <CommitsView
-          commits={commits.list.slice(firstCommit, lastCommit)}
-          fetched={commits.fetched}
-          fetching={commits.fetching}
-          error={commits.error}
-          urlRepository={metadata.repositoryUrl}
-          urlDiff={`${metadata.repositoryUrl}/commit/`}
-        />
-        <Pagination
-          className="mt-2"
-          currentPage={currentPage}
-          perPage={perPage}
-          totalItems={commits.list.length}
-          onPageChange={this.onPageChange.bind(this)}
-        />
-      </Fragment>
-    );
   }
 }
 
@@ -1507,4 +1317,4 @@ class ProjectView extends Component {
 export default { ProjectView };
 
 // For testing
-export { filterPaths, ProjectViewCommitsBody };
+export { filterPaths };

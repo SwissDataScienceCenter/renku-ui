@@ -171,8 +171,7 @@ class ProjectModel extends StateModel {
             ...d.metadata.system,
             tag_list: { $set: d.metadata.system.tag_list } // fix empty tag_list not updating
           },
-          visibility: d.metadata.visibility,
-          statistics: d.metadata.statistics
+          visibility: d.metadata.visibility
         };
         this.setObject(updatedState);
         return d;
@@ -396,14 +395,22 @@ class ProjectCoordinator {
     this.notifications = notifications;
   }
 
+  get(component = "") {
+    return this.model.get(component);
+  }
+
   resetProject() {
+    const emptyModel = projectGlobalSchema.createInitialized();
     this.model.setObject({
-      metadata: { $set: projectGlobalSchema.createInitialized().metadata }
+      metadata: { $set: emptyModel.metadata },
+      statistics: { $set: emptyModel.statistics }
     });
   }
 
-  setProjectData(data) {
+  setProjectData(data, statistics = false) {
     let metadata;
+
+    // set metadata
     if (!data) {
       metadata = {
         $set: {
@@ -422,12 +429,51 @@ class ProjectCoordinator {
         path: data.all.path,
         pathWithNamespace: data.all.path_with_namespace,
         repositoryUrl: data.all.web_url,
+        starCount: data.all.star_count,
+        forksCount: data.all.forks_count,
+        visibility: data.metadata.visibility.level, // this is computed in carveProject
+        accessLevel: data.metadata.visibility.accessLevel, // this is computed in carveProject
         fetched: new Date(),
         fetching: false
       };
     }
-    this.model.setObject({ metadata: metadata });
+
+    // set statistics
+    let statsObject = {};
+    if (statistics) {
+      const stats = data.all.statistics ?
+        data.all.statistics :
+        projectGlobalSchema.createInitialized().statistics.data;
+      statsObject = {
+        data: { $set: stats },
+        fetched: new Date(),
+        fetching: false
+      };
+    }
+
+    this.model.setObject({ metadata: metadata, statistics: statsObject });
     return metadata;
+  }
+
+  async fetchStatistics(pathWithNamespace) {
+    if (this.model.get("statistics.fetching"))
+      return;
+    if (!pathWithNamespace)
+      pathWithNamespace = this.model.get("metadata.pathWithNamespace");
+    if (!pathWithNamespace)
+      return;
+    this.model.set("statistics.fetching", true);
+    const resp = await this.client.getProject(pathWithNamespace, { statistics: true });
+    const stats = resp.data.all.statistics ?
+      resp.data.all.statistics :
+      projectGlobalSchema.createInitialized().statistics.data;
+    const statsObject = {
+      fetching: false,
+      fetched: new Date(),
+      data: { $set: stats }
+    };
+    this.model.setObject({ statistics: statsObject });
+    return stats;
   }
 
   async fetchCommits(customFilters = null) {

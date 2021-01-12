@@ -138,15 +138,6 @@ const projectSchema = new Schema({
       modifiedFiles: { initial: {}, mandatory: true }
     }
   },
-  statistics: {
-    schema: {
-      "commit_count": { initial: 0 },
-      "storage_size": { initial: 0 },
-      "repository_size": { initial: 0 },
-      "lfs_objects_size": { initial: 0 },
-      "job_artifacts_size": { initial: 0 }
-    },
-  },
   transient: {
     schema: {
       requests: { initial: {} },
@@ -254,34 +245,54 @@ const newProjectSchema = new Schema({
   }
 });
 
+const projectStatisticsSchema = new Schema({
+  commit_count: { [Prop.INITIAL]: null },
+  storage_size: { [Prop.INITIAL]: null },
+  repository_size: { [Prop.INITIAL]: null },
+  wiki_size: { [Prop.INITIAL]: null },
+  lfs_objects_size: { [Prop.INITIAL]: null },
+  job_artifacts_size: { [Prop.INITIAL]: null }
+});
+
 const projectGlobalSchema = new Schema({
   metadata: {
-    schema: {
-      exists: { initial: null, mandatory: true },
+    [Prop.SCHEMA]: new Schema({
+      exists: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
 
-      id: { initial: null, mandatory: true }, // id
-      namespace: { initial: null, mandatory: true }, // namespace.full_path
-      path: { initial: null, mandatory: true }, // path
-      pathWithNamespace: { initial: null, mandatory: true }, // path_with_namespace
-      repositoryUrl: { initial: null, mandatory: true }, // web_url
+      id: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // id
+      namespace: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // namespace.full_path
+      path: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // path
+      pathWithNamespace: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // path_with_namespace
+      repositoryUrl: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // web_url
+      starCount: { [Prop.INITIAL]: null }, // star_count
+      forksCount: { [Prop.INITIAL]: null }, // forks_count
 
-      fetched: { initial: null },
-      fetching: { initial: false },
-    }
+      fetched: { [Prop.INITIAL]: null },
+      fetching: { [Prop.INITIAL]: false },
+    })
+  },
+  statistics: {
+    [Prop.SCHEMA]: new Schema({
+      data: { schema: projectStatisticsSchema },
+
+      fetched: { [Prop.INITIAL]: null },
+      fetching: { [Prop.INITIAL]: false },
+    })
   },
   commits: {
-    schema: {
-      list: { initial: [], mandatory: true },
-      fetched: { initial: null },
-      fetching: { initial: false },
-      error: { initial: null }
-    }
+    [Prop.SCHEMA]: new Schema({
+      list: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
+      error: { [Prop.INITIAL]: null },
+
+      fetched: { [Prop.INITIAL]: null },
+      fetching: { [Prop.INITIAL]: false },
+    })
   },
   filters: {
-    schema: {
-      branch: { initial: { name: "master" }, mandatory: true },
-      commit: { initial: { id: "latest" }, mandatory: true },
-    }
+    [Prop.SCHEMA]: new Schema({
+      branch: { [Prop.INITIAL]: { name: "master" }, [Prop.MANDATORY]: true },
+      commit: { [Prop.INITIAL]: { id: "latest" }, [Prop.MANDATORY]: true },
+    })
   }
 });
 
