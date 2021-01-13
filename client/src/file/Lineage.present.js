@@ -34,17 +34,24 @@ import "./Lineage.css";
 
 function cropLabelStart(limit, label) {
   if (label.length > limit)
-    return "..." + label.substr(label.length - limit);
+    return "<...>" + label.substr(label.length - limit);
   return label;
 }
 
 function getNodeLabel(node, NODE_COUNT, lineagesUrl) {
   if (node.type === "ProcessRun") {
-    const stringArray = node.label.split(" ");
-    const LABEL_LIMIT = 20;
-    const label = stringArray.length > 3 ?
-      cropLabelStart(LABEL_LIMIT, stringArray[2]) + "<br/>" + cropLabelStart(LABEL_LIMIT, stringArray[3])
-      : cropLabelStart(LABEL_LIMIT, stringArray[0]) + " " + cropLabelStart(LABEL_LIMIT, stringArray[1]);
+    const BREAKING_LINE = "<br>";
+    const MISSING_PIECES = "<...>";
+    const LABEL_LIMIT = 30;
+
+    const stringCleaned = "" + node.label.replace(/ +(?= )/g, ""); // remove double space, prevent crash on empty str
+    const stringArray = stringCleaned.split(" "); // split on spaces
+    const smallerArray = stringArray.length > 4 ? // remove when too many arguments
+      stringArray.slice(0, 1).concat(MISSING_PIECES).concat(stringArray.slice(stringArray.length - 3)) :
+      stringArray;
+    const shortenArray = smallerArray.map(e => cropLabelStart(LABEL_LIMIT, e.trim())); // crop long labels
+    const label = shortenArray.join(BREAKING_LINE); // break line at each arg
+
     return '<text><tspan xml:space="preserve" dy="1em" x="1">' + label + "</tspan></text>";
   }
 
