@@ -21,12 +21,13 @@ jobs:
       name: ci-renku-ui-${{ github.event.number }}
     steps:
     - uses: actions/checkout@v2
-    # - id: check-deploy-comment
-    #   uses: SwissDataScienceCenter/renku/actions/check-pr-description@000-deploy-action
-    #   with:
-    #     string: /deploy
-    #     pr_ref: ${{ github.event.number }}
+    - id: checkDeployComment
+      uses: SwissDataScienceCenter/renku/actions/check-pr-description@000-deploy-action
+      with:
+        string: /deploy
+        pr_ref: ${{ github.event.number }}
     - name: Find deplyoment url
+      if: ${{ steps.checkDeployComment.outputs.pr-contains-string }}
       uses: peter-evans/find-comment@v1
       id: deploymentUrlMessage
       with:
@@ -34,7 +35,7 @@ jobs:
         comment-author: "RenkuBot"
         body-includes: "You can access the deployment of this PR at"
     - name: Create comment deployment url
-      if: ${{ steps.deploymentUrlMessage.outputs.comment-id == 0 }}
+      if: ${{ steps.checkDeployComment.outputs.pr-contains-string && steps.deploymentUrlMessage.outputs.comment-id == 0 }}
       uses: peter-evans/create-or-update-comment@v1
       with:
         token: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
@@ -42,6 +43,7 @@ jobs:
         body: |
           You can access the deployment of this PR at https://ci-renku-ui-${{ github.event.number }}.dev.renku.ch
     - name: Build and deploy
+      if: ${{ steps.checkDeployComment.outputs.pr-contains-string }}
       uses: SwissDataScienceCenter/renku/actions/deploy-renku@000-deploy-action
       env:
         RANCHER_PROJECT_ID: ${{ secrets.CI_RANCHER_PROJECT }}
@@ -51,7 +53,7 @@ jobs:
         KUBECONFIG: "${{ github.workspace }}/renkubot-kube.config"
         RENKU_NAMESPACE: ci-renku-ui-${{ github.event.number }}
         RENKU_TMP_NAMESPACE: ci-renku-ui-${{ github.event.number }}-tmp
-        RENKU_RELEASE: ci-ui-${{ github.event.number }}-renku
+        RENKU_RELEASE: ci-renku-ui-${{ github.event.number }}
         RENKU_VALUES_FILE: "${{ github.workspace }}/values.yaml"
         RENKU_VALUES: ${{ secrets.CI_RENKU_VALUES }}
         RENKUBOT_KUBECONFIG: ${{ secrets.RENKUBOT_DEV_KUBECONFIG }}
@@ -63,7 +65,13 @@ jobs:
     if: github.event.action == 'closed'
     runs-on: ubuntu-latest
     steps:
+    - id: checkDeployComment
+      uses: SwissDataScienceCenter/renku/actions/check-pr-description@000-deploy-action
+      with:
+        string: /deploy
+        pr_ref: ${{ github.event.number }}
     - name: Find deplyoment url
+      if: ${{ steps.checkDeployComment.outputs.pr-contains-string }}
       uses: peter-evans/find-comment@v1
       id: deploymentUrlMessage
       with:
@@ -71,7 +79,7 @@ jobs:
         comment-author: "RenkuBot"
         body-includes: "Tearing down the temporary RenkuLab deplyoment"
     - name: Create comment deployment url
-      if: ${{ steps.deploymentUrlMessage.outputs.comment-id == 0 }}
+      if: ${{ steps.checkDeployComment.outputs.pr-contains-string && steps.deploymentUrlMessage.outputs.comment-id == 0 }}
       uses: peter-evans/create-or-update-comment@v1
       with:
         token: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
@@ -79,10 +87,11 @@ jobs:
         body: |
           Tearing down the temporary RenkuLab deplyoment for this PR.
     - uses: SwissDataScienceCenter/renku/actions/teardown-renku@000-deploy-action
+      if: ${{ steps.checkDeployComment.outputs.pr-contains-string }}
       env:
         GITLAB_TOKEN: ${{ secrets.GITLAB_DEV_TOKEN }}
         KUBECONFIG: ${{ github.workspace }}/renkubot-kube.config
         RENKUBOT_KUBECONFIG: ${{ secrets.RENKUBOT_KUBECONFIG }}
-        RENKU_RELEASE: "ci-ui-${{ github.event.number }}-renku"
-        RENKU_NAMESPACE: "ci-ui-${{ github.event.number }}-renku"
-        RENKU_TMP_NAMESPACE: "ci-ui-${{ github.event.number }}-renku-tmp"
+        RENKU_RELEASE: "ci-renku-ui-${{ github.event.number }}"
+        RENKU_NAMESPACE: "ci-renku-ui-${{ github.event.number }}"
+        RENKU_TMP_NAMESPACE: "ci-renku-ui-${{ github.event.number }}-tmp"
