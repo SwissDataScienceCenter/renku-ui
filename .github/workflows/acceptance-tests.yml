@@ -27,7 +27,7 @@ jobs:
         string: /deploy
         pr_ref: ${{ github.event.number }}
     - name: Find deplyoment url
-      if: steps.checkDeployComment.outputs.pr-contains-string == true
+      if: steps.checkDeployComment.outputs.pr-contains-string == 'true'
       uses: peter-evans/find-comment@v1
       id: deploymentUrlMessage
       with:
@@ -35,7 +35,7 @@ jobs:
         comment-author: "RenkuBot"
         body-includes: "You can access the deployment of this PR at"
     - name: Create comment deployment url
-      if: "steps.checkDeployComment.outputs.pr-contains-string == true && steps.deploymentUrlMessage.outputs.comment-id == 0"
+      if: steps.checkDeployComment.outputs.pr-contains-string == 'true' && steps.deploymentUrlMessage.outputs.comment-id == 0
       uses: peter-evans/create-or-update-comment@v1
       with:
         token: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
@@ -43,7 +43,7 @@ jobs:
         body: |
           You can access the deployment of this PR at https://ci-ui-${{ github.event.number }}.dev.renku.ch
     - name: Build and deploy
-      if: steps.checkDeployComment.outputs.pr-contains-string == true
+      if: steps.checkDeployComment.outputs.pr-contains-string == 'true'
       uses: SwissDataScienceCenter/renku/actions/deploy-renku@000-deploy-action
       env:
         RANCHER_PROJECT_ID: ${{ secrets.CI_RANCHER_PROJECT }}
@@ -71,7 +71,7 @@ jobs:
         string: /deploy
         pr_ref: ${{ github.event.number }}
     - name: Find deplyoment url
-      if: steps.checkDeployComment.outputs.pr-contains-string == true
+      if: steps.checkDeployComment.outputs.pr-contains-string == 'true'
       uses: peter-evans/find-comment@v1
       id: deploymentUrlMessage
       with:
@@ -79,7 +79,7 @@ jobs:
         comment-author: "RenkuBot"
         body-includes: "Tearing down the temporary RenkuLab deplyoment"
     - name: Create comment deployment url
-      if: "steps.checkDeployComment.outputs.pr-contains-string == true && steps.deploymentUrlMessage.outputs.comment-id == 0"
+      if: steps.checkDeployComment.outputs.pr-contains-string == 'true' && steps.deploymentUrlMessage.outputs.comment-id == 0
       uses: peter-evans/create-or-update-comment@v1
       with:
         token: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
@@ -87,7 +87,7 @@ jobs:
         body: |
           Tearing down the temporary RenkuLab deplyoment for this PR.
     - uses: SwissDataScienceCenter/renku/actions/teardown-renku@000-deploy-action
-      if: steps.checkDeployComment.outputs.pr-contains-string == true
+      if: steps.checkDeployComment.outputs.pr-contains-string == 'true'
       env:
         GITLAB_TOKEN: ${{ secrets.GITLAB_DEV_TOKEN }}
         KUBECONFIG: ${{ github.workspace }}/renkubot-kube.config
