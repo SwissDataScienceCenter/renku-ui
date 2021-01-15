@@ -14,6 +14,14 @@ on:
     - helm-chart/**
 
 jobs:
+  cleanup-previous-runs:
+    runs-on: ubuntu-latest
+    if: github.event.action != 'closed'
+    steps:
+    - uses: rokroskar/workflow-run-cleanup-action@master
+      env:
+        GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+
   check-deploy:
     runs-on: ubuntu-latest
     outputs:
