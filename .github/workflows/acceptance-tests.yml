@@ -20,7 +20,7 @@ jobs:
       pr-contains-string: ${{ steps.deploy-comment.outputs.pr-contains-string }}
     steps:
       - id: deploy-comment
-        uses: SwissDataScienceCenter/renku/actions/check-pr-description@000-deploy-action
+        uses: SwissDataScienceCenter/renku/actions/check-pr-description
         with:
           string: /deploy
           pr_ref: ${{ github.event.number }}
@@ -49,7 +49,7 @@ jobs:
         body: |
           You can access the deployment of this PR at https://ci-ui-${{ github.event.number }}.dev.renku.ch
     - name: Build and deploy
-      uses: SwissDataScienceCenter/renku/actions/deploy-renku@000-deploy-action
+      uses: SwissDataScienceCenter/renku/actions/deploy-renku
       env:
         RANCHER_PROJECT_ID: ${{ secrets.CI_RANCHER_PROJECT }}
         DOCKER_PASSWORD: ${{ secrets.RENKU_DOCKER_PASSWORD }}
@@ -61,7 +61,6 @@ jobs:
         RENKU_VALUES: ${{ secrets.CI_RENKU_VALUES }}
         RENKUBOT_KUBECONFIG: ${{ secrets.RENKUBOT_DEV_KUBECONFIG }}
         RENKUBOT_RANCHER_BEARER_TOKEN: ${{ secrets.RENKUBOT_RANCHER_BEARER_TOKEN }}
-        renku: "@000-deploy-action"
         renku_ui: "@${{ github.head_ref }}"
 
   cleanup:
@@ -84,7 +83,7 @@ jobs:
         issue-number: ${{ github.event.pull_request.number }}
         body: |
           Tearing down the temporary RenkuLab deplyoment for this PR.
-    - uses: SwissDataScienceCenter/renku/actions/teardown-renku@000-deploy-action
+    - uses: SwissDataScienceCenter/renku/actions/teardown-renku
       env:
         GITLAB_TOKEN: ${{ secrets.GITLAB_DEV_TOKEN }}
         KUBECONFIG: ${{ github.workspace }}/renkubot-kube.config
