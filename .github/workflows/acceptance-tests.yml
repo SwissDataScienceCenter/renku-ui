@@ -51,8 +51,6 @@ jobs:
         DOCKER_USERNAME: ${{ secrets.RENKU_DOCKER_USERNAME }}
         GITLAB_TOKEN: ${{ secrets.DEV_GITLAB_TOKEN }}
         KUBECONFIG: "${{ github.workspace }}/renkubot-kube.config"
-        RENKU_NAMESPACE: ci-ui-${{ github.event.number }}
-        RENKU_TMP_NAMESPACE: ci-ui-${{ github.event.number }}-tmp
         RENKU_RELEASE: ci-ui-${{ github.event.number }}
         RENKU_VALUES_FILE: "${{ github.workspace }}/values.yaml"
         RENKU_VALUES: ${{ secrets.CI_RENKU_VALUES }}
@@ -93,5 +91,3 @@ jobs:
         KUBECONFIG: ${{ github.workspace }}/renkubot-kube.config
         RENKUBOT_KUBECONFIG: ${{ secrets.RENKUBOT_DEV_KUBECONFIG }}
         RENKU_RELEASE: "ci-ui-${{ github.event.number }}"
-        RENKU_NAMESPACE: "ci-ui-${{ github.event.number }}"
-        RENKU_TMP_NAMESPACE: "ci-ui-${{ github.event.number }}-tmp"
