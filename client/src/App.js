@@ -25,7 +25,7 @@
 
 import React, { Component, Fragment } from "react";
 import { Jumbotron } from "reactstrap";
-import { Route, Switch, Redirect } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
 import Project from "./project/Project";
@@ -80,10 +80,8 @@ class App extends Component {
         <main role="main" className="container-fluid">
           <div key="gap">&nbsp;</div>
           <Switch>
-            {/* Route forces trailing slashes on routes ending with a numerical id */}
             <Route exact path="/login" render={
               p => <Login key="login" {...p} {...this.props} />} />
-            <Route exact strict path="/*(\d+)" render={props => <Redirect to={`${props.location.pathname}/`} />} />
             <Route exact path="/" render={
               p => <Landing.Home
                 key="landing" welcomePage={this.props.params["WELCOME_PAGE"]}
