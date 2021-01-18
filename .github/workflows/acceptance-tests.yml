@@ -72,7 +72,7 @@ jobs:
         renku_ui: "@${{ github.head_ref }}"
 
   cleanup:
-    needs: [check-deploy, cleanup-previous-runs]
+    needs: check-deploy
     if: github.event.action == 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true'
     runs-on: ubuntu-latest
     steps:
