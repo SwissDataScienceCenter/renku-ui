@@ -29,7 +29,7 @@ import { RenkuMarkdown } from "../utils/UIComponents";
 
 const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "pdf", "gif"];
 const CODE_EXTENSIONS = [
-  "py", "js", "json", "sh", "r", "yml", "parquet", "cwl", "job", "prn", "rout",
+  "py", "js", "json", "sh", "r", "yml", "yaml", "parquet", "cwl", "job", "prn", "rout",
   "dcf", "rproj", "rst", "bat", "ini", "rmd", "jl", "toml", "ts", "rs", "scala",
   "c", "cc", "cxx", "cpp", "h", "hh", "hxx", "hpp", // C++
   "f", "for", "ftn", "fpp", "f90", "f95", "f03", "f08" // Fortran
