@@ -30,14 +30,15 @@ import { createStore } from "../utils/EnhancedState";
 import Present from "./Landing.present";
 import State from "./Landing.state";
 import { ProjectsCoordinator } from "../project/shared";
+import { Url } from "../utils/url";
 
 function urlMap() {
   return {
-    projectsUrl: "/projects",
-    projectNewUrl: "/projects/new",
-    projectsSearchUrl: "/projects/all",
-    projectsStarredUrl: "/projects/starred",
-    siteStatusUrl: "/help/status"
+    projectsUrl: Url.get(Url.pages.projects),
+    projectNewUrl: Url.get(Url.pages.project.new),
+    projectsSearchUrl: Url.get(Url.pages.projects.all),
+    projectsStarredUrl: Url.get(Url.pages.projects.starred),
+    siteStatusUrl: Url.get(Url.pages.help.status)
   };
 }
 

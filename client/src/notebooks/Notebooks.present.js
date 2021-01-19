@@ -38,6 +38,7 @@ import {
 } from "../utils/UIComponents";
 import Time from "../utils/Time";
 import Sizes from "../utils/Media";
+import { Url } from "../utils/url";
 
 import "./Notebooks.css";
 
@@ -575,8 +576,10 @@ class NotebooksServerRowStatusIcon extends Component {
 class NotebookServerRowProject extends Component {
   render() {
     const { annotations } = this.props;
-    const url = `${annotations["namespace"]}/${annotations["projectName"]}`;
-    return (<Link to={`/projects/${url}`}>{url}</Link>);
+    const fullPath = `${annotations["namespace"]}/${annotations["projectName"]}`;
+    const data = { namespace: annotations["namespace"], path: annotations["projectName"] };
+    const url = Url.get(Url.pages.project, data);
+    return (<Link to={url}>{fullPath}</Link>);
   }
 }
 
