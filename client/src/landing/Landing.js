@@ -24,11 +24,9 @@
  */
 
 import React, { Component } from "react";
-import { Provider, connect } from "react-redux";
+import { connect } from "react-redux";
 
-import { createStore } from "../utils/EnhancedState";
 import Present from "./Landing.present";
-import State from "./Landing.state";
 import { ProjectsCoordinator } from "../project/shared";
 import { Url } from "../utils/url";
 
@@ -43,26 +41,8 @@ function urlMap() {
 }
 
 class Home extends Component {
-  mapStateToProps(state, ownProps) {
-    // map projects to props
-    return { projects: state.projects };
-  }
-
-  render() {
-    const ConnectedProjectsHome = connect(this.mapStateToProps.bind(this))(HomeProjects);
-
-    return <ConnectedProjectsHome
-      store={this.props.model.reduxStore}
-      {...this.props}
-    />;
-  }
-}
-
-
-class HomeProjects extends Component {
   constructor(props) {
     super(props);
-    this.store = createStore(State.Home.reduce);
 
     this.projectsCoordinator = new ProjectsCoordinator(props.client, props.model.subModel("projects"));
   }
@@ -73,38 +53,23 @@ class HomeProjects extends Component {
   }
 
   mapStateToProps(state, ownProps) {
-    const urls = urlMap();
-    const local = {
-      urlMap: urls
-    };
-    return { ...state, ...local };
-  }
-
-
-  mapDispatchToProps(dispatch, ownProps) {
-    return {
-      onStarred: (e) => { dispatch(State.Home.Ui.selectStarred()); },
-      onMember: (e) => { dispatch(State.Home.Ui.selectMember()); },
-      onYourNetwork: (e) => { dispatch(State.Home.Ui.selectYourNetwork()); },
-      onExplore: (e) => { dispatch(State.Home.Ui.selectExplore()); },
-      onWelcome: (e) => { dispatch(State.Home.Ui.selectWelcome()); },
-    };
+    // map projects to props
+    return { projects: state.projects };
   }
 
   render() {
-    const VisibleHome = connect(this.mapStateToProps, this.mapDispatchToProps)(Present.Home);
-    return [
-      <Provider key="new" store={this.store}>
-        <VisibleHome
-          welcomePage={atob(this.props.welcomePage)}
-          user={this.props.user}
-          projects={this.props.projects}
-          statuspageId={this.props.statuspageId}
-          statuspageModel={this.props.model.subModel("statuspage")}
-        />
-      </Provider>
-    ];
+    const ConnectedProjectsHome = connect(this.mapStateToProps.bind(this))(Present.Home);
+
+    return <ConnectedProjectsHome
+      user={this.props.user}
+      welcomePage={atob(this.props.welcomePage)}
+      urlMap={urlMap()}
+      statuspageId={this.props.statuspageId}
+      statuspageModel={this.props.model.subModel("statuspage")}
+      store={this.props.model.reduxStore}
+    />;
   }
 }
+
 
 export default { Home };
