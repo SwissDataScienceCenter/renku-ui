@@ -106,6 +106,78 @@ class UrlRule {
   }
 }
 
+
+class UrlConfig {
+  constructor(key) {
+    if (this.constructor === UrlConfig)
+      throw new Error("UrlConfig is an abstract class");
+    this.key = key;
+    this.rules = {};
+  }
+
+  validation(data) {
+    throw new Error("Method 'validation(data)' must be implemented.");
+  }
+
+  outputs() {
+    throw new Error("Method 'validation()' must be implemented.");
+  }
+
+}
+
+class ProjectsUrlConfig extends UrlConfig {
+  constructor() {
+    super("projects");
+    this.rules.base = new UrlRule(
+      this.outputs(), [], this.validation, [
+        "/projects",
+        "/projects?q=test&page=1&orderBy=last_activity_at&orderSearchAsc=false&searchIn=projects"
+      ]
+    );
+    this.rules.all = new UrlRule(
+      this.outputs("all"), [], this.validation, [
+        "/projects/all",
+        "/projects/all?q=test&page=1&orderBy=last_activity_at&orderSearchAsc=false&searchIn=projects"
+      ]
+    );
+    this.rules.starred = new UrlRule(
+      this.outputs("starred"), [], this.validation, [
+        "/projects/starred",
+        "/projects/starred?q=test&page=1&orderBy=last_activity_at&orderSearchAsc=false&searchIn=projects"
+      ]
+    );
+  }
+
+  validation(data) {
+    const allowedParams = ["q", "page", "orderBy", "orderSearchAsc", "searchIn"];
+    const receivedParams = Object.keys(data);
+    for (const param of receivedParams) {
+      if (!allowedParams.includes(param))
+        throw new Error(`The <data> variable can't include ${param}.`);
+    }
+    return true;
+  }
+
+  outputs(subSection) {
+    return (data) => {
+      // create base url
+      let url = subSection ?
+        `/projects/${subSection}` :
+        "/projects";
+
+      // add optional parameters
+      if (!data || !Object.keys(data).length)
+        return url;
+      const search = new URLSearchParams();
+      for (const [key, value] of Object.entries(data))
+        search.append(key, value);
+      return `${url}?${search.toString()}`;
+    };
+  }
+}
+
+const projectsConfig = new ProjectsUrlConfig();
+
 /** Helper class to handle URLs */
 class Url {
   // Mind that validations and rules are private. It's just here for convenience.
@@ -197,10 +269,10 @@ class Url {
       status: "/help/status",
     },
     projects: {
-      base: this._rules.projects.base,
-      own: this._rules.projects.base,
-      all: this._rules.projects.all,
-      starred: this._rules.projects.starred
+      base: projectsConfig.rules.base,
+      own: projectsConfig.rules.base,
+      all: projectsConfig.rules.all,
+      starred: projectsConfig.rules.starred
     },
     project: {
       base: this._rules.project.base,
