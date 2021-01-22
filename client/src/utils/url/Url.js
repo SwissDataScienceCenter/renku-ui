@@ -20,7 +20,7 @@
  *  renku-ui
  *
  *  Url.js
- *  Url helper class.
+ *  Url helper object.
  */
 
 /** Class to represent a set of rules to derive a specific URL */
@@ -158,12 +158,62 @@ function projectPageUrlBuilder(subSection) {
 }
 
 
-/** Helper class to handle URLs */
-class Url {
+/** Module-level variable for the base URL. Set only once */
+let baseUrl = null;
+
+/**
+ * Set the base url for the full paths. This must be invoked only once at startup.
+ *
+ * @param {string} url - base url
+ */
+function setBaseUrl(url) {
+  if (baseUrl != null)
+    throw new Error("The base url can't be set multiple times");
+  const cleanUrl = url.trim();
+  baseUrl = cleanUrl.endsWith("/") ?
+    url.slice(0, -1) :
+    url;
+}
+
+
+/**
+ * Create a Url based on the target page. Depending on the specific page, it may require context data.
+ *
+ * @param {object} target - the page you are targeting, as contained in the `pages`  member
+ *   (e.g. pages.landing, pages.project.stats, ...).
+ * @param {object} [data] - the context data you need to provide, if any
+ *   (e.g. for project, you need to provide a `namespace` and a `path`).
+ * @param {boolean} [full] - switch between full or relative path. The default is `false`.
+ */
+function get(target, data, full = false) {
+  // One can always omit the final `base` node. In that case, add it automatically.
+  if (typeof target === "object" && !(target instanceof UrlRule) && target.base)
+    target = target.base;
+
+  // Return url or throw error based on the type of target.
+  let url;
+  if (typeof target === "string")
+    url = target;
+  else if (typeof target === "object" && target instanceof UrlRule)
+    url = target.get(data);
+  else
+    throw new Error("Unexpected <target>. Please pick one from the static object <Url.pages>");
+
+  // Add the base url when needed and available.
+  if (full) {
+    if (baseUrl == null)
+      throw new Error("The base url is not properly set");
+    return baseUrl + url;
+  }
+  return url;
+}
+
+/** Helper object to handle URLs */
+const Url = {
   // One of these pages will be provided by the user as `target` argument in the `get` function.
   // Mind that the final `base` can be omitted. E.G. `pages.help` is equivalent to `pages.help.base`.
   // Please assign only strings or UrlRule objects.
-  static pages = {
+  pages: {
     landing: "/",
     help: {
       base: "/help",
@@ -200,56 +250,11 @@ class Url {
       ),
       new: "/projects/new",
     }
-  }
+  },
 
-  static baseUrl = null;
-
-  /**
-  * Create a Url based on the target page. Depending on the specific page, it may require context data.
-  *
-  * @param {object} target - the page you are targeting, as contained in the `pages` static member
-  *   (e.g. pages.landing, pages.project.stats, ...).
-  * @param {object} [data] - the context data you need to provide, if any
-  *   (e.g. for project, you need to provide a `namespace` and a `path`).
-  * @param {boolean} [full] - switch between full or relative path. The default is `false`.
-  */
-  static get(target, data, full = false) {
-    // One can always omit the final `base` node. In that case, add it automatically.
-    if (typeof target === "object" && !(target instanceof UrlRule) && target.base)
-      target = target.base;
-
-    // Return url or throw error based on the type of target.
-    let url;
-    if (typeof target === "string")
-      url = target;
-    else if (typeof target === "object" && target instanceof UrlRule)
-      url = target.get(data);
-    else
-      throw new Error("Unexpected <target>. Please pick one from the static object <Url.pages>");
-
-    // Add the base url when needed and available.
-    if (full) {
-      if (this.baseUrl == null)
-        throw new Error("The base url is not properly set");
-      return this.baseUrl + url;
-    }
-    return url;
-  }
-
-  /**
-   * Set the base url for the full paths. This must be invoked only once at startup.
-   *
-   * @param {string} url - base url
-   */
-  static setBaseUrl(url) {
-    if (this.baseUrl != null)
-      throw new Error("The base url can't be set multiple times");
-    const cleanUrl = url.trim();
-    this.baseUrl = cleanUrl.endsWith("/") ?
-      url.slice(0, -1) :
-      url;
-  }
-}
+  setBaseUrl: setBaseUrl,
+  get: get
+};
 
 
 export { Url };
