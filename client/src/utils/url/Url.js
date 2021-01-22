@@ -107,156 +107,59 @@ class UrlRule {
 }
 
 
-class UrlConfig {
-  constructor(key) {
-    if (this.constructor === UrlConfig)
-      throw new Error("UrlConfig is an abstract class");
-    this.key = key;
-    this.rules = {};
+/**
+ * Validate that all arguments for a search are provided.
+ * @param {object} data
+ */
+function searchValidation(data) {
+  const allowedParams = ["q", "page", "orderBy", "orderSearchAsc", "searchIn"];
+  const receivedParams = Object.keys(data);
+  for (const param of receivedParams) {
+    if (!allowedParams.includes(param))
+      throw new Error(`The <data> variable can't include ${param}.`);
   }
-
-  validation(data) {
-    throw new Error("Method 'validation(data)' must be implemented.");
-  }
-
-  outputs() {
-    throw new Error("Method 'validation()' must be implemented.");
-  }
-
+  return true;
 }
 
-class ProjectsUrlConfig extends UrlConfig {
-  constructor() {
-    super("projects");
-    this.rules.base = new UrlRule(
-      this.outputs(), [], this.validation, [
-        "/projects",
-        "/projects?q=test&page=1&orderBy=last_activity_at&orderSearchAsc=false&searchIn=projects"
-      ]
-    );
-    this.rules.all = new UrlRule(
-      this.outputs("all"), [], this.validation, [
-        "/projects/all",
-        "/projects/all?q=test&page=1&orderBy=last_activity_at&orderSearchAsc=false&searchIn=projects"
-      ]
-    );
-    this.rules.starred = new UrlRule(
-      this.outputs("starred"), [], this.validation, [
-        "/projects/starred",
-        "/projects/starred?q=test&page=1&orderBy=last_activity_at&orderSearchAsc=false&searchIn=projects"
-      ]
-    );
-  }
-
-  validation(data) {
-    const allowedParams = ["q", "page", "orderBy", "orderSearchAsc", "searchIn"];
-    const receivedParams = Object.keys(data);
-    for (const param of receivedParams) {
-      if (!allowedParams.includes(param))
-        throw new Error(`The <data> variable can't include ${param}.`);
-    }
-    return true;
-  }
-
-  outputs(subSection) {
-    return (data) => {
-      // create base url
-      let url = subSection ?
+/**
+ * Construct a URL for a projects search page.
+ * @param {string} subSection
+ * @returns {function} A function to construct a URL from data.
+ */
+function projectsSearchUrlBuilder(subSection) {
+  return (data) => {
+    // create base url
+    let url = subSection ?
         `/projects/${subSection}` :
-        "/projects";
+      "/projects";
 
-      // add optional parameters
-      if (!data || !Object.keys(data).length)
-        return url;
-      const search = new URLSearchParams();
-      for (const [key, value] of Object.entries(data))
-        search.append(key, value);
-      return `${url}?${search.toString()}`;
-    };
-  }
+    // add optional parameters
+    if (!data || !Object.keys(data).length)
+      return url;
+    const search = new URLSearchParams();
+    for (const [key, value] of Object.entries(data))
+      search.append(key, value);
+    return `${url}?${search.toString()}`;
+  };
 }
 
-const projectsConfig = new ProjectsUrlConfig();
+/**
+ * Construct a URL for a project page.
+ * @returns {function} A function to construct a URL from data.
+ * @param {string} subSection
+ */
+function projectPageUrlBuilder(subSection) {
+  return (data) => {
+    let url = `/projects/${data.namespace}/${data.path}`;
+    if (subSection)
+      return url + subSection;
+    return url;
+  };
+}
+
 
 /** Helper class to handle URLs */
 class Url {
-  // Mind that validations and rules are private. It's just here for convenience.
-  static _validations = {
-    projects: (data) => {
-      // validate optional data fields
-      const allowedParams = ["q", "page", "orderBy", "orderSearchAsc", "searchIn"];
-      const receivedParams = Object.keys(data);
-      for (const param of receivedParams) {
-        if (!allowedParams.includes(param))
-          throw new Error(`The <data> variable can't include ${param}.`);
-      }
-      return true;
-    },
-    project: (data) => {
-      if (typeof data.namespace !== "string" || !data.namespace.length)
-        throw new Error("The <data.namespace> field must be a non empty string.");
-      if (typeof data.path !== "string" || !data.namespace.path)
-        throw new Error("The <data.namespace> field must be a non empty string.");
-      return true;
-    }
-  }
-  static _outputs = {
-    projects: (subSection) => {
-      return (data) => {
-        // create base url
-        let url = subSection ?
-          `/projects/${subSection}` :
-          "/projects";
-
-        // add optional parameters
-        if (!data || !Object.keys(data).length)
-          return url;
-        const search = new URLSearchParams();
-        for (const [key, value] of Object.entries(data))
-          search.append(key, value);
-        return `${url}?${search.toString()}`;
-      };
-    },
-    project: (subSection) => {
-      return (data) => {
-        let url = `/projects/${data.namespace}/${data.path}`;
-        if (subSection)
-          return url + subSection;
-        return url;
-      };
-    }
-  }
-  static _rules = {
-    projects: {
-      base: new UrlRule(
-        this._outputs.projects(), [], this._validations.projects, [
-          "/projects",
-          "/projects?q=test&page=1&orderBy=last_activity_at&orderSearchAsc=false&searchIn=projects"
-        ]
-      ),
-      all: new UrlRule(
-        this._outputs.projects("all"), [], this._validations.projects, [
-          "/projects/all",
-          "/projects/all?q=test&page=1&orderBy=last_activity_at&orderSearchAsc=false&searchIn=projects"
-        ]
-      ),
-      starred: new UrlRule(
-        this._outputs.projects("starred"), [], this._validations.projects, [
-          "/projects/starred",
-          "/projects/starred?q=test&page=1&orderBy=last_activity_at&orderSearchAsc=false&searchIn=projects"
-        ]
-      )
-    },
-    project: {
-      base: new UrlRule(
-        this._outputs.project(""), ["namespace", "path"], this._outputs.project, [
-          "/projects/namespace/path",
-          "/projects/group/subgroup/path",
-        ]
-      )
-    }
-  };
-
   // One of these pages will be provided by the user as `target` argument in the `get` function.
   // Mind that the final `base` can be omitted. E.G. `pages.help` is equivalent to `pages.help.base`.
   // Please assign only strings or UrlRule objects.
@@ -269,13 +172,32 @@ class Url {
       status: "/help/status",
     },
     projects: {
-      base: projectsConfig.rules.base,
-      own: projectsConfig.rules.base,
-      all: projectsConfig.rules.all,
-      starred: projectsConfig.rules.starred
+      base: new UrlRule(
+        projectsSearchUrlBuilder(), [], searchValidation, [
+          "/projects",
+          "/projects?q=test&page=1&orderBy=last_activity_at&orderSearchAsc=false&searchIn=projects"
+        ]
+      ),
+      all: new UrlRule(
+        projectsSearchUrlBuilder("all"), [], searchValidation, [
+          "/projects/all",
+          "/projects/all?q=test&page=1&orderBy=last_activity_at&orderSearchAsc=false&searchIn=projects"
+        ]
+      ),
+      starred: new UrlRule(
+        projectsSearchUrlBuilder("starred"), [], searchValidation, [
+          "/projects/starred",
+          "/projects/starred?q=test&page=1&orderBy=last_activity_at&orderSearchAsc=false&searchIn=projects"
+        ]
+      )
     },
     project: {
-      base: this._rules.project.base,
+      base: new UrlRule(
+        projectPageUrlBuilder(""), ["namespace", "path"], null, [
+          "/projects/namespace/path",
+          "/projects/group/subgroup/path",
+        ]
+      ),
       new: "/projects/new",
     }
   }
