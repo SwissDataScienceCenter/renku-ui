@@ -16,6 +16,7 @@ import APIClient from "./api-client";
 import { UserCoordinator } from "./user";
 import { LoginHelper } from "./authentication";
 import { StateModel, globalSchema } from "./model";
+import { Url } from "./utils/url";
 
 const configFetch = fetch("/config.json");
 const privacyFetch = fetch("/privacy-statement.md");
@@ -49,6 +50,9 @@ Promise.all([configFetch, privacyFetch]).then(valuesRead => {
       ReactDOM.render(<Maintenance info={maintenance} />, document.getElementById("root"));
       return;
     }
+
+    // configure base url
+    Url.setBaseUrl(params["BASE_URL"]);
 
     // create client to be passed to coordinators
     const client = new APIClient(params.GATEWAY_URL);

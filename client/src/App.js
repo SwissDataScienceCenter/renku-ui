@@ -39,6 +39,7 @@ import ShowDataset from "./dataset/Dataset.container";
 import { Loader } from "./utils/UIComponents";
 import { Cookie, Privacy } from "./privacy";
 import { NotificationsManager, NotificationsPage } from "./notifications";
+import { Url } from "./utils/url";
 
 import "./App.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -82,7 +83,7 @@ class App extends Component {
           <Switch>
             <Route exact path="/login" render={
               p => <Login key="login" {...p} {...this.props} />} />
-            <Route exact path="/" render={
+            <Route exact path={Url.get(Url.pages.landing)} render={
               p => <Landing.Home
                 key="landing" welcomePage={this.props.params["WELCOME_PAGE"]}
                 user={this.props.user}
@@ -90,10 +91,11 @@ class App extends Component {
                 model={this.props.model}
                 statuspageId={this.props.statuspageId}
                 {...p} />} />
-            <Route path="/help" render={
+            <Route path={Url.get(Url.pages.help)} render={
               p => <Help key="help" {...p} statuspageId={this.props.statuspageId} {...this.props} />} />
-            <Route exact path={["/projects", "/projects/starred", "/projects/all"]} render={
-              p => <Project.List
+            <Route exact
+              path={[Url.get(Url.pages.projects), Url.get(Url.pages.projects.starred), Url.get(Url.pages.projects.all)]}
+              render={p => <Project.List
                 key="projects"
                 user={this.props.user}
                 client={this.props.client}
@@ -101,7 +103,7 @@ class App extends Component {
                 {...p}
               />}
             />
-            <Route exact path="/projects/new" render={
+            <Route exact path={Url.get(Url.pages.project.new)} render={
               p => <Project.New
                 key="newProject"
                 client={this.props.client}

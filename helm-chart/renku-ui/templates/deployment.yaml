@@ -66,10 +66,17 @@ spec:
               value: {{ .Values.global.anonymousSessions.enabled | default (printf "false") | quote }}
             - name: PRIVACY_ENABLED
               value: {{ .Values.privacy.enabled | quote }}
+            {{- if .Values.privacy.enabled }}
             - name: PRIVACY_BANNER_CONTENT
               value: {{ .Values.privacy.banner.content | default (printf "") | b64enc | quote }}
             - name: PRIVACY_BANNER_LAYOUT
-              value: {{ toJson .Values.privacy.banner.layout | quote }}
+              value: {{ toJson .Values.privacy.banner.layout | default (printf "") | quote }}
+            {{ else }}
+            - name: PRIVACY_BANNER_CONTENT
+              value: ""
+            - name: PRIVACY_BANNER_LAYOUT
+              value: "{}"
+            {{- end }}
             - name: TEMPLATES
               value: {{ toJson .Values.templates | quote }}
             - name: PREVIEW_THRESHOLD
