@@ -12,6 +12,7 @@ on:
     - client/**
     - server/**
     - helm-chart/**
+    - .github/workflows/**
 
 jobs:
   cleanup-previous-runs:
@@ -38,7 +39,7 @@ jobs:
     if: github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true'
     runs-on: ubuntu-latest
     environment:
-      name: ci-ui-${{ github.event.number }}
+      name: renku-ci-ui-${{ github.event.number }}
     steps:
     - uses: actions/checkout@v2
     - name: Find deplyoment url
@@ -55,7 +56,7 @@ jobs:
         token: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
         issue-number: ${{ github.event.pull_request.number }}
         body: |
-          You can access the deployment of this PR at https://ci-ui-${{ github.event.number }}.dev.renku.ch
+          You can access the deployment of this PR at https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch
     - name: Build and deploy
       uses: SwissDataScienceCenter/renku/actions/deploy-renku@master
       env:
@@ -63,9 +64,9 @@ jobs:
         DOCKER_PASSWORD: ${{ secrets.RENKU_DOCKER_PASSWORD }}
         DOCKER_USERNAME: ${{ secrets.RENKU_DOCKER_USERNAME }}
         GITLAB_TOKEN: ${{ secrets.DEV_GITLAB_TOKEN }}
-        KUBECONFIG: "${{ github.workspace }}/renkubot-kube.config"
-        RENKU_RELEASE: ci-ui-${{ github.event.number }}
-        RENKU_VALUES_FILE: "${{ github.workspace }}/values.yaml"
+        KUBECONFIG: ${{ github.workspace }}/renkubot-kube.config
+        RENKU_RELEASE: renku-ci-ui-${{ github.event.number }}
+        RENKU_VALUES_FILE: ${{ github.workspace }}/values.yaml
         RENKU_VALUES: ${{ secrets.CI_RENKU_VALUES }}
         RENKUBOT_KUBECONFIG: ${{ secrets.RENKUBOT_DEV_KUBECONFIG }}
         RENKUBOT_RANCHER_BEARER_TOKEN: ${{ secrets.RENKUBOT_RANCHER_BEARER_TOKEN }}
@@ -96,4 +97,4 @@ jobs:
         GITLAB_TOKEN: ${{ secrets.GITLAB_DEV_TOKEN }}
         KUBECONFIG: ${{ github.workspace }}/renkubot-kube.config
         RENKUBOT_KUBECONFIG: ${{ secrets.RENKUBOT_DEV_KUBECONFIG }}
-        RENKU_RELEASE: "ci-ui-${{ github.event.number }}"
+        RENKU_RELEASE: renku-ci-ui-${{ github.event.number }}
