@@ -51,58 +51,56 @@ function ChangeDataset(props) {
   const [jobsStats, setJobsStats] = useState(undefined);
   const warningOn = useRef(false);
 
-  dsFormSchema.files.uploadFileFunction = props.client.uploadFile;
-  dsFormSchema.files.filesOnUploader = useRef(0);
-  dsFormSchema.files.notifyFunction = (success = true, error) => {
-    if (success) {
-      //topic, desc, link, linkText, awareLocations, longDesc
-      props.notifications.addSuccess(
-        props.notifications.Topics.DATASET_FILES_UPLOADED,
-        `Files for the dataset dataset.nameeee in ${props.projectPathWithNamespace} finished uploading`,
-        `${props.projectPathWithNamespace}/datasets/new`, "Show environments",
-        ["datasets/new"],
-        `Long descriptionnnnnnn!!!!!!`,
-        {
-          initializedDsFormSchema: dsFormSchema,
-          // dataset: dataset,
-          // datasetFiles: datasetFiles,
+  //  dsFormSchema.files.filesOnUploader = useRef(0);
 
-        }
-      );
+  const initializeFunction = (formSchema) => {
+    let titleField = formSchema.find(field => field.name === "title");
+    let nameField = formSchema.find(field => field.name === "name");
+    if (props.edit === false) {
+      titleField.parseFun = () => {
+        nameField.value = FormGenerator.Parsers.slugFromTitle(titleField.value);
+        return titleField.value;
+      };
+      titleField.help = `${datasetFormSchema.title.help} ${datasetFormSchema.name.help}` ;
     }
     else {
-      const fullError = `An error occurred when trying to start a new Interactive environment.
-          Error message: "${error.message}", Stack trace: "${error.stack}"`;
-      props.notifications.addError(
-        props.notifications.Topics.DATASET_FILES_UPLOADED,
-        "Unable to start the interactive environment.",
-        "this.props.location.pathname", "Try again",
-        null, // always toast
-        fullError);
+      titleField.help = datasetFormSchema.title.help;
+      titleField.parseFun = undefined;
     }
-    // input.value.filter(file => file.file_status !== "added").length
-    // === input.filesOnUploader.current,
-    // console.log(uploadedFiles);
-    // console.log(dsFormSchema.files.filesOnUploader.current);
 
-    // //console.log(dsFormSchema.files.value.filter(file=> file.file_status === FILE_STATUS.ADDED).length);
-    // if (uploadedFiles.filter(file=> file.file_status !== FILE_STATUS.ADDED).length
-    //   === dsFormSchema.files.filesOnUploader.current)
-    //   console.log("send notification!!!");
+    let fileField = formSchema.find(field => field.name === "files");
+
+    if (!fileField.uploadFileFunction)
+      fileField.uploadFileFunction = props.client.uploadFile;
+
+    //
+    // UNCOMMENT TO ADD NOTIFICATIONS!!!!
+    //
+    // if (!fileField.notifyFunction) {
+    //   fileField.notifyFunction = (success = true, error) => {
+    //     if (success) {
+    //       const datasetName = props.edit ? "dataset " + dataset.name : "new dataset";
+    //       //topic, desc, link, linkText, awareLocations, longDesc
+    //       props.notifications.addSuccess(
+    //         props.notifications.Topics.DATASET_FILES_UPLOADED,
+    //     `Files for the ${datasetName} in ${props.projectPathWithNamespace} finished uploading.`,
+    //     `projects/${props.projectPathWithNamespace}/datasets/new`, "Go to dataset",
+    //     "/"
+    //       );
+    //     }
+    //     else {
+    //       const fullError = `An error occurred when trying to start a new Interactive environment.
+    //       Error message: "${error.message}", Stack trace: "${error.stack}"`;
+    //       props.notifications.addError(
+    //         props.notifications.Topics.DATASET_FILES_UPLOADED,
+    //         "Unable to start the interactive environment.",
+    //         "this.props.location.pathname", "Try again",
+    //         null, // always toast
+    //         fullError);
+    //     }
+    //   };
+    // }
   };
-
-
-  if (props.edit === false) {
-    dsFormSchema.title.parseFun = () => {
-      dsFormSchema.name.value = FormGenerator.Parsers.slugFromTitle(dsFormSchema.title.value);
-      return dsFormSchema.title.value;
-    };
-    dsFormSchema.title.help = `${datasetFormSchema.title.help} ${datasetFormSchema.name.help}` ;
-  }
-  else {
-    dsFormSchema.title.help = datasetFormSchema.title.help;
-    dsFormSchema.title.parseFun = undefined;
-  }
 
   const onCancel = e => {
     props.history.push({ pathname: `/projects/${props.projectPathWithNamespace}/datasets` });
@@ -163,24 +161,22 @@ function ChangeDataset(props) {
     return newCreator;
   };
 
-  const submitCallback = e => {
-    setServerErrors(undefined);
-    setSubmitLoader(true);
+  const submitCallback = (e, mappedInputs) => {
     const dataset = {};
-    dataset.name = dsFormSchema.name.value;
-    dataset.title = dsFormSchema.title.value;
-    dataset.description = dsFormSchema.description.value;
 
-    const pendingFiles = dsFormSchema.files.value
+    dataset.name = mappedInputs.name;
+    dataset.title = mappedInputs.title;
+    dataset.description = mappedInputs.description;
+
+    const pendingFiles = mappedInputs.files
       .filter(f => f.file_status === FILE_STATUS.PENDING).map(f => ({ "file_url": f.file_name }));
-    dataset.files = [].concat.apply([], dsFormSchema.files.value
+    dataset.files = [].concat.apply([], mappedInputs.files
       .filter(f => f.file_status !== FILE_STATUS.PENDING && f.file_status !== FILE_STATUS.ADDED)
       .map(f => f.file_id)).map(f => ({ "file_id": f }));
 
     dataset.files = [...dataset.files, ...pendingFiles];
-    dataset.keywords = dsFormSchema.keywords.value;
-    dataset.creators = dsFormSchema.creators.value
-      .map(creator => getCreator(creator));
+    dataset.keywords = mappedInputs.keywords;
+    dataset.creators = mappedInputs.creators.map(creator => getCreator(creator));
 
     props.client.postDataset(props.httpProjectUrl, dataset, props.edit)
       .then(response => {
@@ -272,8 +268,9 @@ function ChangeDataset(props) {
       }
     }
     else {
+      console.log("IS THIS HAPPENING???");
       setInitialized(true);
-      dsFormSchema.name.value = dsFormSchema.name.initial;
+      dsFormSchema.name.value = dsFormSchema.name.value === undefined ? dsFormSchema.name.initial : dsFormSchema.name.value;
       dsFormSchema.title.value = dsFormSchema.title.initial;
       dsFormSchema.description.value = dsFormSchema.description.initial;
       dsFormSchema.files.value = dsFormSchema.files.initial;
@@ -304,6 +301,7 @@ function ChangeDataset(props) {
     edit={props.edit}
     model={props.model}
     location={props.location}
+    initializeFunction={initializeFunction}
   />;
 }
 

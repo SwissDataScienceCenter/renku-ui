@@ -623,7 +623,7 @@ class View extends Component {
       this.fetchProjectFilesTree();
       //this.fetchModifiedFiles();
     },
-    fetchDatasets: (forceReFetch = true) => {
+    fetchDatasets: (forceReFetch) => {
       this.fetchProjectDatasetsFromKg();
       this.fetchProjectDatasets(forceReFetch);
     },

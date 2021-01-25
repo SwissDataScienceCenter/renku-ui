@@ -25,13 +25,15 @@
 
 import { useState } from "react";
 
-const useForm = (initModel, submitCallback) => {
+const useForm = (initModel, submitCallback, handlers) => {
   const [inputs, setInputs] = useState(initModel);
+
   const handleChange = e => {
     if (e.isPersistent && e.isPersistent()) e.persist();
     inputs.forEach(i => {
       if (i.name === e.target.name) {
         i.value = i.type === "checkbox" ? e.target.checked : e.target.value;
+        //DELETE FOLLOWING LINE BEFORE PUSHING!!!!
         if (e.target.internalValues) i.internalValues = e.target.internalValues;
         parseInput(i);
         validateInput(i);
@@ -43,7 +45,11 @@ const useForm = (initModel, submitCallback) => {
   const handleSubmit = e => {
     e && e.preventDefault();
     inputs.forEach(i => validateInput(i));
-    inputs.some(i => i.alert) ? setInputs([...inputs]) : submitCallback(e);
+    let mappedInputs = inputs.reduce((map, obj)=>{
+      map[obj.name] = obj.value;
+      return map;
+    }, {});
+    inputs.some(i => i.alert) ? setInputs([...inputs]) : submitCallback(e, mappedInputs, handlers);
   };
 
   const parseInput = input => input.value = input.parseFun ? input.parseFun(input.value) : input.value;

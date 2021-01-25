@@ -68,20 +68,35 @@ function SubmitButtonGroup(props) {
   </Fragment>;
 }
 
-function FormPanel({ title, btnName, submitCallback, model, serverErrors,
-  serverWarnings, submitLoader, onCancel, edit, cancelBtnName, disableAll, drafts, handlers }) {
-  const modelValues = handlers && handlers.getDraft() ? handlers.getDraft() : Object.values(model);
+function FormPanel({ title, btnName, submitCallback, model, serverErrors, formLocation, getLocation,
+  serverWarnings, submitLoader, onCancel, edit, cancelBtnName, disableAll, handlers, initializeFunction }) {
+  const draft = handlers ? handlers.getDraft() : undefined;
+  const modelValues = draft ? draft : _.cloneDeep(Object.values(model));
   const initialized = useRef(false);
-  const [inputs, setInputs, setSubmit] = useForm(modelValues, submitCallback);
+  const [inputs, setInputs, setSubmit] = useForm(modelValues, submitCallback, handlers);
+  const formIsMounted = useRef(true);
 
   useEffect(()=>{
+
+    //  formIsMounted.current = true;
+    if (initializeFunction && modelValues && !initialized.current) {
+      initializeFunction(modelValues);
+      console.log("hereeeee");
+      handlers.addDraft(modelValues, true);
+      initialized.current = true;
+    }
+
     return (()=>{
+      formIsMounted.current = false;
       if (handlers && !initialized.current) {
+        console.log("hereeeee unmounteddd");
         initialized.current = true;
-        handlers.addDraft(_.cloneDeep(modelValues));
+        //handlers.addDraft(_.cloneDeep(modelValues));
+        // handlers.addDraft(modelValues, false);
       }
     });
-  }, [handlers, initialized, modelValues]);
+  //}, [handlers, initialized, modelValues]);
+  });
 
   const Components = {
     TextInput,
@@ -93,10 +108,11 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors,
     CreatorsInput,
     KeywordsInput
   };
+
   const renderInput = input => {
     const Component = Components[capitalize(input.type) + "Input"];
-    return <Component key={input.name}
-      disabled={submitLoader.value || (input.edit === false && edit) || disableAll} setInputs={setInputs} {...input} />;
+    return <Component key={input.name} disabled={submitLoader.value || (input.edit === false && edit) || disableAll}
+      setInputs={setInputs} {...input} handlers={handlers} formLocation={formLocation} getLocation={getLocation}/>;
   };
 
   const extractErrorsAndWarnings = (errorOrWarning) => {

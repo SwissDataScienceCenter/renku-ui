@@ -76,7 +76,7 @@ function getFileStatus(id, error, status) {
   return FILE_STATUS.UPLOADING;
 }
 
-function getFileObject(name, path, size, id, error, alias, controller, uncompress, folderStructure, status) {
+function getFileObject(name, path, size, id, error, alias, controller, uncompress, folderStructure, progress_id, status) {
   return {
     file_name: name,
     file_path: path,
@@ -87,7 +87,8 @@ function getFileObject(name, path, size, id, error, alias, controller, uncompres
     file_status: getFileStatus(id, error, status),
     file_controller: controller,
     file_uncompress: uncompress,
-    folder_structure: folderStructure //this is for uncompressed files
+    folder_structure: folderStructure, //this is for uncompressed files
+    file_progress_id: progress_id
   };
 }
 
@@ -121,6 +122,9 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
   const [partialFilesPath, setPartialFilesPath] = useState(internalValues ? internalValues.partialFilesPath : "");
   const [urlInputValue, setUrlInputValue] = useState(internalValues ? internalValues.urlInputValue : "");
   const $input = useRef(internalValues ? internalValues.input : null);
+  // const [isMounted, setIsMounted] = useState(true);
+  // const componentIsMounted = useIsMounted();
+  // const location = useRef(formLocation);
 
   const getInternalValues = () => {
     const internalValues = {
@@ -129,11 +133,6 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
     internalValues.uploadedFiles = getUploadedFilesRx();
     internalValues.displayFiles = getDisplayFilesRx();
     internalValues.filesErrors = getFilesErrorsRx();
-    return internalValues;
-  };
-
-  const setFilesRx = (newFiles) =>{
-    return handlers.setFormDraftInternalValuesProperty(formLocation, "files", "files", newFiles);
   };
 
   const setDisplayFilesRx = (newDisplayFiles) =>{
@@ -143,29 +142,6 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
   const getDisplayFilesRx = () => {
     const dFiles = handlers.getFormDraftInternalValuesProperty(formLocation, "files", "displayFiles");
     return dFiles !== undefined ? dFiles : [];
-  };
-
-  const getNewDisplayFilesRxAfterChanges = (newDisplayFiles) => {
-    const prevDisplayFiles = getDisplayFilesRx();
-    const filesErrors = getFilesErrorsRx();
-    return prevDisplayFiles.map(dFile => {
-      let uploadingFile = newDisplayFiles.find(uFile => uFile.file_name === dFile.file_name);
-      if (uploadingFile !== undefined) {
-        return getFileObject(
-          uploadingFile.file_name,
-          partialFilesPath + uploadingFile.file_name,
-          uploadingFile.file_size,
-          uploadingFile.file_id,
-          filesErrors.find(file => file.file_name === uploadingFile.file_name),
-          uploadingFile.file_alias,
-          uploadingFile.file_controller,
-          uploadingFile.file_uncompress,
-          uploadingFile.folder_structure,
-          uploadingFile.file_status
-        );
-      }
-      return dFile;
-    });
   };
 
   const updateDisplayFilesRxAfterChanges = (newDisplayFiles) => {
@@ -185,6 +161,7 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
             uploadingFile.file_controller,
             uploadingFile.file_uncompress,
             uploadingFile.folder_structure,
+            uploadingFile.file_progress_id,
             uploadingFile.file_status
           );
         }
@@ -194,32 +171,22 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
   };
 
   const setInputsInForm = (newUploadedFiles) => {
-    const internalValues = getInternalValues();
-    internalValues.displayFiles = getNewDisplayFilesRxAfterChanges(newUploadedFiles);
-    internalValues.uploadedFiles = newUploadedFiles;
 
-    //internalValues.uploadedFiles(newUploadedFiles);
     const artificialEvent = {
       target: {
         name: name,
-        value: newUploadedFiles,
-        internalValues: internalValues
+        value: newUploadedFiles//getUploadedFilesRx()
+        , internalValues: getInternalValues()
       },
       isPersistent: () => false
     };
-    //console.log(artificialEvent);
-    if (handlers.isMounted(formLocation)) { setInputs(artificialEvent); }
-    else {
-      console.log("IS NOT MOUNTEDDD!!!");
-      handlers.setFormDraftInternalValuesProperty(formLocation, "files", "setFutureInputs", artificialEvent);
-    }
+    setInputs(artificialEvent);
   };
 
   const setUploadedFilesRx = (newUploadedFiles) =>{
-    console.log(newUploadedFiles);
-    updateDisplayFilesRxAfterChanges(newUploadedFiles); //DO WE NEED THIS LINEEEE???
-    handlers.setFormDraftInternalValuesProperty(formLocation, "files", "uploadedFiles", newUploadedFiles);
+    updateDisplayFilesRxAfterChanges(newUploadedFiles);
     setInputsInForm(newUploadedFiles);
+    return handlers.setFormDraftInternalValuesProperty(formLocation, "files", "uploadedFiles", newUploadedFiles);
   };
 
   const getUploadedFilesRx = () => {
@@ -227,14 +194,30 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
     return uFiles !== undefined ? uFiles : [];
   };
 
+  // //useFiles(internalValues ? { initialState: internalValues.files } : {})
+  // const setUploadedFilesRx = (newUploadedFiles) =>{
+  //   updateDisplayFilesRxAfterChanges(newUploadedFiles);
+  //   return handlers.setFormDraftInternalValuesProperty(formLocation, "files", "uploadedFiles", newUploadedFiles);
+  // };
+
+  // const getUploadedFilesRx = () => {
+  //   const uFiles = handlers.getFormDraftInternalValuesProperty(formLocation, "files", "uploadedFiles");
+  //   return uFiles !== undefined ? uFiles : [];
+  // };
+
+
   const setFilesErrorsRx = (newFilesErrors) =>{
+    // updateDisplayFilesRxAfterChanges(newFilesErrors);
+    // //
     const prevDisplayFiles = getDisplayFilesRx();
     setDisplayFilesRx( prevDisplayFiles.map(dFile => {
+      // eslint-disable-next-line
       let errorFile = newFilesErrors.find(eFile => eFile.file_name === dFile.file_name);
       if (errorFile !== undefined) {
         return getFileObject(
           errorFile.file_name, errorFile.file_path, errorFile.file_size, null, errorFile.file_error,
-          errorFile.file_alias, errorFile.file_controller, errorFile.file_uncompress, errorFile.folder_structure);
+          errorFile.file_alias, errorFile.file_controller, errorFile.file_uncompress, errorFile.folder_structure,
+          errorFile.file_progress_id);
       }
       return dFile;
     })
@@ -247,7 +230,18 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
     return uFiles !== undefined ? uFiles : [];
   };
 
+  // useEffect(()=>{
+  //   console.log("setting is mounted " + formIsMounted.current);
+  //   componentIsMounted.current = true;
+
+  //   return ()=>{
+  //     console.log("now unmounted " + formIsMounted.current);
+  //     componentIsMounted.current = false;
+  //   };
+  // }, []);
+
   useEffect(() => {
+    console.log("is this making things change????");
     if (value !== undefined && !initialized && value.length > 0) {
       if (value[value.length - 1].atLocation !== undefined) {
         let openFolders = value[value.length - 1].atLocation.startsWith("data/") ? 2 : 1;
@@ -258,22 +252,153 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
         setInitialFilesTree(getFilesTree(value, openFolders));
       }
       // else {
-      //   //should this be
+      //   //should this be here???
       //   //here consider a mixed thing!!!!!
       //   setDisplayFiles();
       // }
     }
-    const pendingCallback = handlers.getFormDraftInternalValuesProperty(formLocation, "files", "setFutureInputs");
-    if (pendingCallback) {
-      console.log(pendingCallback);
-      setInputs(pendingCallback);
-    }
     setInitialized(true);
   }, [value, initialized]);
 
+  // useEffect(()=>{
+  //   console.log("FILESSSSS EFFECT!!!!");
+  //   //console.log(files);
+  // //  const internalValues = getInternalValues();
+  //   internalValues.displayFiles = getDisplayFilesRx();
+  //   internalValues.filesErrors = getFilesErrorsRx();
+  //   internalValues.displayFiles = getDisplayFilesRx();
+  //   const artificialEvent = {
+  //     target: {
+  //       name: name,
+  //       value: getUploadedFilesRx()
+  //       //, internalValues: internalValues
+  //     },
+  //     isPersistent: () => false
+  //   };
+  //   setInputs(artificialEvent);
+  //   // eslint-disable-next-line
+  // // },[displayFiles, files]);
+  // }, [files]);
+
+
+  // this is updated now when the uploaded file is updated!!!
+  // useEffect(() => {
+  //   // const artificialEvent = {
+  //   //   target: { name: name, value: uploadedFiles, internalValues: getInternalValues() },
+  //   //   isPersistent: () => false
+  //   // };
+  //   // setInputs(artificialEvent);
+  //   setDisplayFiles(prevDisplayFiles =>
+  //     prevDisplayFiles.map(dFile => {
+  //       let uploadingFile = getUploadedFilesRx().find(uFile => uFile.file_name === dFile.file_name);
+  //       if (uploadingFile !== undefined) {
+  //         return getFileObject(
+  //           uploadingFile.file_name,
+  //           partialFilesPath + uploadingFile.file_name,
+  //           uploadingFile.file_size,
+  //           uploadingFile.file_id,
+  //           filesErrors.find(file => file.file_name === uploadingFile.file_name),
+  //           uploadingFile.file_alias,
+  //           uploadingFile.file_controller,
+  //           uploadingFile.file_uncompress,
+  //           uploadingFile.folder_structure,
+  //           uploadingFile.file_progress_id,
+  //           uploadingFile.file_status
+  //         );
+  //       }
+  //       return dFile;
+  //     })
+  //   );
+  //   // eslint-disable-next-line
+  // }, [uploadedFiles]);
+
+  // ON FILES ERRORS CHANGE!!!!
+  // useEffect(() => {
+  //   const prevDisplayFiles = getDisplayFilesRx();
+  //   setDisplayFilesRx( prevDisplayFiles.map(dFile => {
+  //     // eslint-disable-next-line
+  //       let errorFile = filesErrors.find(eFile => eFile.file_name === dFile.file_name);
+  //     if (errorFile !== undefined) {
+  //       return getFileObject(
+  //         errorFile.file_name, errorFile.file_path, errorFile.file_size, null, errorFile.file_error,
+  //         errorFile.file_alias, errorFile.file_controller, errorFile.file_uncompress, errorFile.folder_structure, errorFile.file_progress_id);
+  //     }
+  //     return dFile;
+  //   })
+  //   );
+  // }, [filesErrors]);
+  // ON FILES ERRORS CHANGE!!!!
+
+  //
+  //  UNCOMMENT TO ADD NOTIFICATIONS!!!
+  //
+  // useEffect(()=>{
+  //   const filesUploading = displayFiles.filter(file => file.file_status >= FILE_STATUS.UPLOADING
+  //         && file.file_status < FILE_STATUS.UPLOADED);
+  //   const filesWithErrors = displayFiles.filter(file => file.file_status === FILE_STATUS.FAILED);
+  //   if (displayFiles.length > 0 && filesUploading.length === 0 && filesWithErrors.length === 0)
+  //     notifyFunction("All files finished");
+  //   else if (filesWithErrors > 0)
+  //     notifyFunction("File with error!!!");
+  // }, [displayFiles, notifyFunction]);
+
+
   let uploadFile = (file) => {
     const thenCallback = (body) => {
+      //console.log("THEEEN CALLBACK needs to be fixed ASAP!!!");
+
+      //I NEED TO AVOID SETTING STATE AND MAKE A STATE RECOVERY FUNCTION
+      //WHEN THE UPLOADER GETS MOUNTED!!!!
+      // let falsee = false;
+      // if (handlers.isMounted(formLocation) && falsee)
+      //   console.log("this can bnot happen!!");
+      // if (body.error) {
+      //   setFilesErrors(prevFilesErrors => [...prevFilesErrors,
+      //     getFileObject(file.name, partialFilesPath + file.name, file.size, undefined, body.error.reason, undefined,
+      //       file.file_controller, file.file_uncompress, file.folder_structure)]
+      //   );
+      //   return [];
+      // }
+
+
+      // if (file.file_uncompress) {
+      //   let folderPath = body.result.files[0].relative_path.split("/")[0] + "/";
+      //   let file_alias = file.name !== body.result.files[0].relative_path.split("/")[0].replace(".unpacked", "") ?
+      //     body.result.files[0].relative_path.split("/")[0].replace(".unpacked", "") : undefined;
+      //   let filesTree = getFilesTree(body.result.files.map(file=>
+      //     ({ "atLocation": file.relative_path.replace(folderPath, ""),
+      //       "id": file.file_id
+      //     })));
+
+      //   let newFileDraft = getFileObject(
+      //     file.name, partialFilesPath + file.name, 0, [], undefined, file_alias,
+      //     undefined,
+      //     file.file_uncompress, filesTree, undefined);
+
+      //   newFileDraft.file_size = body.result.files ? body.result.files[0].file_size : 0;
+      //   newFileDraft.file_id = filesTree.tree.map(file => file.id);
+      //   setUploadedFiles(prevUploadedFiles => [...prevUploadedFiles, newFileDraft]);
+      //   return newFileDraft;
+      // }
+      // let newFileObj = body.result.files[0];
+      // if (newFileObj.file_name !== undefined && newFileObj.file_name !== file.name) {
+      //   newFileObj = getFileObject(
+      //     file.name, partialFilesPath + file.name, newFileObj.file_size, [newFileObj.file_id],
+      //     undefined, newFileObj.file_name,
+      //     undefined,
+      //     file.file_uncompress, undefined, undefined);
+      // }
+      // else {
+      //   newFileObj.file_id = [newFileObj.file_id];
+      // }
+      // console.log("SETTING UPLOADED FILESSSSSS");
+      // console.log(newFileObj);
+      // setUploadedFiles(prevUploadedFiles => [...prevUploadedFiles, newFileObj]);
+      // return newFileObj;
+
+      console.log("ELSEEEEE SET FILES IN RX");
       if (body.error) {
+        console.log("SET RX ERRORRRRR!!!!");
         const prevFilesErrors = getFilesErrorsRx();
         setFilesErrorsRx([...prevFilesErrors,
           getFileObject(file.name, partialFilesPath +
@@ -284,6 +409,7 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
       }
 
       const prevUploadedFiles = getUploadedFilesRx();
+      console.log(getUploadedFilesRx());
       if (file.file_uncompress) {
         let folderPath = body.result.files[0].relative_path.split("/")[0] + "/";
         let file_alias = file.name !== body.result.files[0].relative_path.split("/")[0].replace(".unpacked", "") ?
@@ -296,7 +422,7 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
         let newFileDraft = getFileObject(
           file.name, partialFilesPath + file.name, 0, [], undefined, file_alias,
           undefined,
-          file.file_uncompress, filesTree);
+          file.file_uncompress, filesTree, undefined);
 
         newFileDraft.file_size = body.result.files ? body.result.files[0].file_size : 0;
         newFileDraft.file_id = filesTree.tree.map(file => file.id);
@@ -310,13 +436,16 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
           file.name, partialFilesPath + file.name, newFileObj.file_size, [newFileObj.file_id],
           undefined, newFileObj.file_name,
           undefined,
-          file.file_uncompress, undefined);
+          file.file_uncompress, undefined, undefined);
       }
       else {
         newFileObj.file_id = [newFileObj.file_id];
       }
+      console.log("SETTING UPLOADED FILESSSSSS");
+      console.log(newFileObj);
       setUploadedFilesRx([...prevUploadedFiles, newFileObj]);
       return newFileObj;
+
     };
 
     const onErrorCallback = (error) => {
@@ -324,7 +453,7 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
         const prevFilesErrors = getFilesErrorsRx();
         setFilesErrorsRx([...prevFilesErrors,
           getFileObject(file.name, partialFilesPath + file.name, file.size, undefined, "Error uploading the file",
-            undefined, file.file_controller, file.file_uncompress, file.folder_structure)]);
+            undefined, file.file_controller, file.file_uncompress, file.folder_structure, file.file_progress_id)]);
         return [];
       }
     };
@@ -343,34 +472,101 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
             controller,
             file.file_uncompress,
             file.folder_structure,
+            file.file_progress_id,
             file.file_status
           )
           : file));
     };
 
     const setFileProgress = async (monitored_file, progress) => {
+      // console.log(monitored_file);
+      // console.log(progress);
+      // console.log(isCancelled);
+      // console.log("file progresssss");
+      // if (!componentIsMounted.current) {
+      //   console.log(handlers.getFormDraftInternalValuesProperty(formLocation, name, "displayFiles"));
+      //   console.log("UNMOUNTEDDDDD");
+      // }
+
+
       const currentFile = getDisplayFilesRx().find(file => file.file_name === monitored_file.name);
+      console.log(currentFile);
+      if (currentFile) console.log(currentFile.file_progress_id);
+
+      console.log("IS THIS THING MOUNTED ---- " + handlers.isMounted(formLocation));
+
       if (currentFile) {
-        const prevDisplayFiles = getDisplayFilesRx();
-        setDisplayFilesRx(prevDisplayFiles
-          .map(file => file.file_name === monitored_file.name ?
-            getFileObject(
-              file.file_name,
-              file.file_path,
-              file.file_size,
-              file.file_id,
-              file.file_error,
-              file.file_alias,
-              file.file_controller,
-              file.file_uncompress,
-              file.folder_structure,
-              progress
-            )
-            : file));
+        await handlers.addProgress(monitored_file.name, progress)
+          .then(progressElement => {
+            if (progressElement) {
+              console.log("SETTING CURRENT FILES!!!");
+              const prevDisplayFiles = getDisplayFilesRx();
+              setDisplayFilesRx(prevDisplayFiles
+                .map(file => file.file_name === monitored_file.name ?
+                  getFileObject(
+                    file.file_name,
+                    file.file_path,
+                    file.file_size,
+                    file.file_id,
+                    file.file_error,
+                    file.file_alias,
+                    file.file_controller,
+                    file.file_uncompress,
+                    file.folder_structure,
+                    progressElement.id,
+                    progress
+                  )
+                  : file));
+              // setDisplayFiles(prevUploadedFiles => prevUploadedFiles
+              //   .map(file => file.file_name === monitored_file.name ?
+              //     getFileObject(
+              //       file.file_name,
+              //       file.file_path,
+              //       file.file_size,
+              //       file.file_id,
+              //       file.file_error,
+              //       file.file_alias,
+              //       file.file_controller,
+              //       file.file_uncompress,
+              //       file.folder_structure,
+              //       progressElement.id,
+              //       progress
+              //     )
+              //     : file));
+            }
+            // else if (!componentIsMounted.current && progressElement) {
+            //   let newDisplayFiles = displayFiles.map(file => file.file_name === monitored_file.name ?
+            //     getFileObject(
+            //       file.file_name,
+            //       file.file_path,
+            //       file.file_size,
+            //       file.file_id,
+            //       file.file_error,
+            //       file.file_alias,
+            //       file.file_controller,
+            //       file.file_uncompress,
+            //       file.folder_structure,
+            //       progressElement.id,
+            //       progress
+            //     )
+            //     : file);
+            //   handlers.setFormDraftInternalValuesProperty(formLocation, name, "displayFiles", newDisplayFiles);
+            // }
+
+          });
       }
+
+      //});
+
+
+      // return () => {
+      //   isCancelled = true;
+      // };
     };
+
     uploadFileFunction(file, file.file_uncompress, setFileProgress,
       thenCallback, onErrorCallback, setController);
+
   };
 
   let onDropOrChange = (e) => {
@@ -390,8 +586,7 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
 
       const nonCompressedFiles = droppedFiles.filter(file => file.type !== "application/zip");
       setFiles([...files, ...droppedFiles]);
-      setFilesRx([...files, ...droppedFiles]);
-      //      setInputsInForm(getUploadedFilesRx());
+      setInputsInForm(getUploadedFilesRx());
       nonCompressedFiles.map(file => uploadFile(file, file.file_controller));
       const newDisplayFiles = droppedFiles.map(file=> {
         return file.type === "application/zip" ?
@@ -403,9 +598,10 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
       });
 
       const displayFilesRx = getDisplayFilesRx();
-      // filesOnUploader.current = displayFilesRx.filter(file => file.file_status !== FILE_STATUS.ADDED).length
-      //   + newDisplayFiles.length;
+      filesOnUploader.current = displayFilesRx.filter(file => file.file_status !== FILE_STATUS.ADDED).length
+        + newDisplayFiles.length;
       setDisplayFilesRx([...displayFilesRx, ...newDisplayFiles]);
+      // setDisplayFiles([...displayFiles, ...newDisplayFiles]);
     }
   };
 
@@ -423,7 +619,7 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
         setDisplayFilesRx([...getDisplayFilesRx(), file_url ]);
         const prevUploadedFiles = getUploadedFilesRx();
         setUploadedFilesRx([...prevUploadedFiles, file_url]);
-        //    filesOnUploader.current = filesOnUploader.current + 1;
+        filesOnUploader.current = filesOnUploader.current + 1;
         setUrlInputValue("");
       }
     }
@@ -431,22 +627,27 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
 
   let deleteFile = (file_name, file_controller) => {
     if (!disabled) {
-      const currentFile = getDisplayFilesRx().find(file => file.file_name === file_name);
-      if (currentFile) {
-        setDisplayFilesRx(getDisplayFilesRx()
-          .filter(file => file.file_name !== file_name));
-        setFilesErrorsRx(getFilesErrorsRx()
-          .filter(file => file.file_name !== file_name));
-        setUploadedFilesRx(getUploadedFilesRx()
-          .filter(file => file.file_name !== file_name));
-
-        const filteredFiles = files.filter(file => file.name !== file_name);
-        setFiles([...filteredFiles]);
-        setFilesRx([...filteredFiles]);
-        //  filesOnUploader.current = filesOnUploader.current - 1 ;
-        $input.current.value = "";
-        if (file_controller) file_controller.abort();
-      }
+      console.log("CAN I DELETE THE FILE???");
+      console.log(file_name);
+      handlers.setFormDraftInternalValuesProperty(
+        formLocation, "files", "filesErrors",
+        getFilesErrorsRx().filter(file => file.file_name !== file_name));
+      handlers.setFormDraftInternalValuesProperty(
+        formLocation, "files", "displayFiles",
+        getDisplayFilesRx().filter(file => file.file_name !== file_name));
+      handlers.setFormDraftInternalValuesProperty(
+        formLocation, "files", "uploadedFiles",
+        getUploadedFilesRx().filter(file => file.file_name !== file_name));
+      //setFilesErrorsRx(getFilesErrorsRx().filter(file => file.file_name !== file_name));
+      //setDisplayFilesRx(getDisplayFilesRx().filter(file => file.file_name !== file_name));
+      // setUploadedFilesRx(getUploadedFilesRx().filter(file => file.file_name !== file_name));
+      const filteredFiles = files.filter(file => file.name !== file_name);
+      console.log(filteredFiles);
+      setInputsInForm(getUploadedFilesRx());
+      setFiles([...filteredFiles]);
+      filesOnUploader.current = filesOnUploader.current - 1 ;
+      $input.current.value = "";
+      if (file_controller) file_controller.abort();
     }
   };
 
@@ -546,10 +747,9 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
             </span>
           </div>;
         }
-        // return <span><Progress value={handlers.getProgress(file.file_progress_id) || 0}>
-        //   {handlers.getProgress(file.file_progress_id)}%
-        // </Progress></span>;
-        return <span><Progress value={file.file_status}>{file.file_status}%</Progress></span>;
+        return <span><Progress value={handlers.getProgress(file.file_progress_id) || 0}>
+          {handlers.getProgress(file.file_progress_id)}%
+        </Progress></span>;
     }
   };
 

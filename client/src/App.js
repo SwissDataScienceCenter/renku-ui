@@ -54,7 +54,6 @@ class App extends Component {
     // Setup notification system
     const getLocation = () => this.props.location;
     this.notifications = new NotificationsManager(this.props.model, this.props.client, getLocation);
-    // this.storedForms = new FormsManager(this.props.model, this.props.client, getLocation);
 
     // Setup authentication listeners and notifications
     LoginHelper.setupListener();

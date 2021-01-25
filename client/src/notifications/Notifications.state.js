@@ -62,7 +62,7 @@ class NotificationsCoordinator {
    * @param {string} [longDesc] - detailed description of what happened.
    * @param {string} [forceRead] - mark the notification as read
    */
-  addNotification(level, topic, desc, link, linkText, awareLocations, longDesc, forceRead, state) {
+  addNotification(level, topic, desc, link, linkText, awareLocations, longDesc, forceRead) {
     const read = forceRead || level === NotificationsInfo.Levels.INFO ?
       true :
       false;
@@ -76,8 +76,7 @@ class NotificationsCoordinator {
       linkText,
       awareLocations,
       longDesc,
-      read,
-      state
+      read
     };
     const notifications = this.model.get("");
     let updateObject = { all: { $set: [...notifications.all, notification] } };

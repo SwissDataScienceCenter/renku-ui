@@ -29,37 +29,6 @@ import { connect } from "react-redux";
 import { FormGeneratorCoordinator } from "./FormGenerator.state";
 import FormPanel from "./FormPanel";
 
-// /**
-//  * Notifications object - it's not a React component.
-//  *
-//  * @param {Object} client - api-client used to query the gateway
-//  * @param {Object} model - global model for the ui
-//  * @param {function} getLocation - function to invoke to get the up-to-date react location object
-//  */
-// class FormGeneratorManager {
-//   constructor(model, client, getLocation) {
-//     this.model = model.subModel("formGenerator");
-//     this.client = client;
-//     this.getLocation = getLocation;
-//     this.coordinator = new FormGeneratorCoordinator(this.client, this.model);
-//   }
-
-//   /**
-//    * Add a form draft to the list
-//    *
-//    * @param {string} formDraft - form draft to be stored
-//    */
-//   addDraft(formDraft) {
-//     const draft = this.coordinator.addFormDraft(this.getLocation(), formDraft);
-//     return draft;
-//   }
-
-//   getDraft() {
-//     return this.coordinator.getFormDraft(this.getLocation());
-//   }
-
-// }
-
 
 class FormGenerator extends Component {
 
@@ -67,25 +36,56 @@ class FormGenerator extends Component {
     super(props);
     this.model = props.model_top.subModel("formGenerator");
     this.coordinator = new FormGeneratorCoordinator(props.client, this.model);
+    // this.getLocation = () => props.getLocation();
     this.handlers = {
       addDraft: this.addDraft.bind(this),
       getDraft: this.getDraft.bind(this),
+      getFormDraftProperty: this.getFormDraftProperty.bind(this),
+      getFormDraftFieldValue: this.getFormDraftFieldValue.bind(this),
+      // addProgress: this.addProgress.bind(this),
+      // getProgress: this.getProgress.bind(this),
+      // getNewProgressId: this.getNewProgressId.bind(this),
+      isMounted: this.isMounted.bind(this),
+      setFormDraftInternalValuesProperty: this.setFormDraftInternalValuesProperty.bind(this),
+      getFormDraftInternalValuesProperty: this.getFormDraftInternalValuesProperty.bind(this)
     };
   }
 
-  addDraft(formDraft) {
-    const draft = this.coordinator.addFormDraft(this.props.location.pathname, formDraft);
-    return draft;
+  addDraft(formDraft, mounted) {
+    return this.coordinator.addFormDraft(this.props.location.pathname, formDraft, mounted);
   }
 
-  getDraft() {
-    return this.coordinator.getFormDraft(this.props.location.pathname);
+  getDraft(location = this.props.location.pathname) {
+    return this.coordinator.getFormDraft(location);
+  }
+
+  isMounted(location = this.props.location.pathname) {
+    console.log(location);
+    return this.coordinator.isMounted(location);
+  }
+
+  getFormDraftProperty(location = this.props.location.pathname, fieldName, property) {
+    return this.coordinator.getFormDraftProperty(location, fieldName, property);
+  }
+
+  setFormDraftInternalValuesProperty(location = this.props.location.pathname, fieldName, property, value) {
+    return this.coordinator.setFormDraftInternalValuesProperty(location, fieldName, property, value);
+  }
+
+  getFormDraftInternalValuesProperty(location = this.props.location.pathname, fieldName, property) {
+    return this.coordinator.getFormDraftInternalValuesProperty(location, fieldName, property);
+  }
+
+  getFormDraftFieldValue(location = this.props.location.pathname, fieldName) {
+    return this.coordinator.getFormDraftFieldValue(location, fieldName);
   }
 
   mapStateToProps(state) {
     return {
       handlers: this.handlers,
-      drafts: state.formGenerator
+      drafts: state.formGenerator,
+      formLocation: this.props.location.pathname,
+      //getLocation: () => this.props.location.pathname
     };
   }
 
@@ -94,9 +94,7 @@ class FormGenerator extends Component {
     return (<VisibleFormGenerator
       {...this.props}
       store={this.model.reduxStore}
-      location={this.props.location}
     />);
   }
 }
 export default FormGenerator;
-// export { FormGeneratorManager };
