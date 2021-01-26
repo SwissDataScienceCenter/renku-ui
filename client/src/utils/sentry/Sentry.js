@@ -24,6 +24,7 @@
  */
 
 import * as SentryLib from "@sentry/browser";
+import { API_ERRORS } from "../../api-client/errors";
 
 
 const NAMESPACE_DEFAULT = "unknown";
@@ -44,6 +45,7 @@ let sentryNamespace = NAMESPACE_DEFAULT;
 let sentryDenyUrls = [
   ...EXCLUDED_URLS,
 ];
+let disableSentry = false;
 
 // module functions
 /**
@@ -118,6 +120,11 @@ function sentryInit(url, namespace = null, userPromise = null, version = null, t
     });
   }
 
+  // Prevent sending data to Sentry when manually moving to a different URL.
+  window.addEventListener("beforeunload", (event) => { // eslint-disable-line
+    disableSentry = true;
+  });
+
   // Finalize and return SentryLib to allow further customization
   sentryInitialized = true;
   return SentryLib;
@@ -126,6 +133,17 @@ function sentryInit(url, namespace = null, userPromise = null, version = null, t
 // helper functions
 function hookBeforeSend(event) {
   // *** Filters ***
+
+  // global filter
+  if (disableSentry)
+    return null;
+
+  // filter network errors
+  if (event.exception && event.exception.values && event.exception.values.length) {
+    if (event.exception.values.some(e => e.value === API_ERRORS.networkError))
+      return null;
+  }
+
   // errors while previewing the notebooks
   if (event.request.url.includes("/files/blob/") && event.request.url.endsWith(".ipynb"))
     return null;

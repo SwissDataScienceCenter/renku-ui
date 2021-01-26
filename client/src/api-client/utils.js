@@ -49,7 +49,7 @@ function renkuFetch(url, options) {
 
     // Label an error raised here already as networking problem.
     .catch((fetchError) => {
-      const networkError = new APIError();
+      const networkError = new APIError(API_ERRORS.networkError);
       networkError.case = API_ERRORS.networkError;
       networkError.error = fetchError;
       return Promise.reject(networkError);
