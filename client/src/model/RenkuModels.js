@@ -543,12 +543,8 @@ const formGeneratorSchema = new Schema({
   progressMonitor: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true }
 });
 
-const filesQueueSchema = new Schema({
-  filesQueue: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true }
-});
-
 export {
   userSchema, metaSchema, newProjectSchema, projectSchema, forkProjectSchema, notebooksSchema,
   projectsSchema, datasetFormSchema, issueFormSchema, datasetImportFormSchema, projectGlobalSchema,
-  addDatasetToProjectSchema, statuspageSchema, notificationsSchema, formGeneratorSchema, filesQueueSchema
+  addDatasetToProjectSchema, statuspageSchema, notificationsSchema, formGeneratorSchema
 };
