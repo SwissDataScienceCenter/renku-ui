@@ -114,7 +114,7 @@ function ChangeDataset(props) {
     }
   }
 
-  function checkJobsAndSetWarnings(jobsList, tooLong = false) {
+  function checkJobsAndSetWarnings(jobsList, tooLong = false, handlers) {
     let failed = jobsList.filter(job => job.job_status === JobStatusMap.FAILED );
     let inProgress = jobsList
       .filter(job => (job.job_status === JobStatusMap.IN_PROGRESS || job.job_status === JobStatusMap.ENQUEUED) );
@@ -122,6 +122,7 @@ function ChangeDataset(props) {
     if (failed.length !== 0 || inProgress.length !== 0 || tooLong === true) {
       setJobsStats({ failed, inProgress, tooLong });
       warningOn.current = true;
+      handlers.setSubmitLoader({ value: false, text: "" });
       setSubmitLoader(false);
     }
   }
@@ -144,7 +145,7 @@ function ChangeDataset(props) {
   };
 
   const redirectAfterSuccess = (interval, datasetId) => {
-    setSubmitLoader(false);
+    setSubmitLoader({ value: false, text: "" });
     if (interval !== undefined) clearInterval(interval);
     props.fetchDatasets(true);
     props.history.push({
@@ -161,9 +162,13 @@ function ChangeDataset(props) {
     return newCreator;
   };
 
-  const submitCallback = (e, mappedInputs) => {
+  const submitCallback = (e, mappedInputs, handlers) => {
+    setServerErrors(undefined);
+    handlers.setServerErrors(undefined);
+    //setSubmitLoader(true);
+    const submitLoaderText = props.edit ? "Modifying dataset, please wait..." : "Creating dataset, please wait...";
+    handlers.setSubmitLoader({ value: true, text: submitLoaderText });
     const dataset = {};
-
     dataset.name = mappedInputs.name;
     dataset.title = mappedInputs.title;
     dataset.description = mappedInputs.description;
@@ -181,8 +186,11 @@ function ChangeDataset(props) {
     props.client.postDataset(props.httpProjectUrl, dataset, props.edit)
       .then(response => {
         if (response.data.error !== undefined) {
-          setSubmitLoader(false);
-          setServerErrors(response.data.error.reason);
+          //setSubmitLoader(false);
+          handlers.setSubmitLoader({ value: false, text: "" });
+          //setServerErrors(response.data.error.reason);
+          console.log("setting server errors");
+          handlers.setServerErrors(response.data.error.reason);
         }
         else {
           let filesURLJobsArray = [];
@@ -200,17 +208,19 @@ function ChangeDataset(props) {
 
           let monitorJobs = setInterval(() => {
             if (filesURLJobsArray.length === 0) {
+              handlers.setSubmitLoader({ value: false, text: "" });
               redirectAfterSuccess(monitorJobs, dataset.name);
             }
             else {
               monitorURLJobsStatuses(filesURLJobsArray).then(jobsStats => {
                 if (jobsStats.finished) {
                   if (jobsStats.failed.length === 0) {
+                    handlers.setSubmitLoader({ value: false, text: "" });
                     redirectAfterSuccess(monitorJobs, dataset.name);
                   }
                   else {
                     //some or all failed, but all finished
-                    checkJobsAndSetWarnings(filesURLJobsArray, false);
+                    checkJobsAndSetWarnings(filesURLJobsArray, false, handlers);
                     clearInterval(monitorJobs);
                   }
                 }
@@ -218,6 +228,7 @@ function ChangeDataset(props) {
             }
 
             if (cont >= 20) {
+              handlers.setSubmitLoader({ value: false, text: "" });
               checkJobsAndSetWarnings(filesURLJobsArray, true);
               clearInterval(monitorJobs);
             }
@@ -268,7 +279,6 @@ function ChangeDataset(props) {
       }
     }
     else {
-      console.log("IS THIS HAPPENING???");
       setInitialized(true);
       dsFormSchema.name.value = dsFormSchema.name.value === undefined ? dsFormSchema.name.initial : dsFormSchema.name.value;
       dsFormSchema.title.value = dsFormSchema.title.initial;

@@ -25,8 +25,10 @@
 
 import { useState } from "react";
 
-const useForm = (initModel, submitCallback, handlers) => {
-  const [inputs, setInputs] = useState(initModel);
+const useForm = (initModel, submitCallback, handlers, formLocation) => {
+  //const [inputs, setInputs] = useState(initModel);
+  const inputs = handlers.getDraft(formLocation);
+  const setInputs = (newInputs) => handlers.addDraft(newInputs, true, undefined, formLocation);
 
   const handleChange = e => {
     if (e.isPersistent && e.isPersistent()) e.persist();

@@ -68,33 +68,21 @@ function SubmitButtonGroup(props) {
   </Fragment>;
 }
 
-function FormPanel({ title, btnName, submitCallback, model, serverErrors, formLocation, getLocation,
-  serverWarnings, submitLoader, onCancel, edit, cancelBtnName, disableAll, handlers, initializeFunction }) {
+function FormPanel({ title, btnName, submitCallback, model, serverErrors_old, formLocation, getLocation,
+  serverWarnings, submitLoader_remove_this, onCancel, edit, cancelBtnName, disableAll, handlers, initializeFunction }) {
   const draft = handlers ? handlers.getDraft() : undefined;
   const modelValues = draft ? draft : _.cloneDeep(Object.values(model));
   const initialized = useRef(false);
-  const [inputs, setInputs, setSubmit] = useForm(modelValues, submitCallback, handlers);
-  const formIsMounted = useRef(true);
+  const [inputs, setInputs, setSubmit] = useForm(modelValues, submitCallback, handlers, formLocation);
+  const submitLoader = handlers.getSubmitLoader(formLocation);
+  const serverErrors = handlers.getServerErrors(formLocation);
 
   useEffect(()=>{
-
-    //  formIsMounted.current = true;
     if (initializeFunction && modelValues && !initialized.current) {
       initializeFunction(modelValues);
-      console.log("hereeeee");
       handlers.addDraft(modelValues, true);
       initialized.current = true;
     }
-
-    return (()=>{
-      formIsMounted.current = false;
-      if (handlers && !initialized.current) {
-        console.log("hereeeee unmounteddd");
-        initialized.current = true;
-        //handlers.addDraft(_.cloneDeep(modelValues));
-        // handlers.addDraft(modelValues, false);
-      }
-    });
   //}, [handlers, initialized, modelValues]);
   });
 
@@ -111,7 +99,8 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors, formLo
 
   const renderInput = input => {
     const Component = Components[capitalize(input.type) + "Input"];
-    return <Component key={input.name} disabled={submitLoader.value || (input.edit === false && edit) || disableAll}
+    return <Component key={input.name}
+      disabled={(submitLoader && submitLoader.value ) || (input.edit === false && edit) || disableAll}
       setInputs={setInputs} {...input} handlers={handlers} formLocation={formLocation} getLocation={getLocation}/>;
   };
 
@@ -133,7 +122,7 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors, formLo
     </div>);
   };
 
-  const errorFields = inputs.filter(input => (input.alert != null) && (input.edit !== false));
+  const errorFields = inputs ? inputs.filter(input => (input.alert != null) && (input.edit !== false)) : [];
 
   return (
     <Col>
@@ -142,7 +131,7 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors, formLo
         : null }
       <Form onSubmit={setSubmit}>
         <div>
-          {inputs.map(input => renderInput(input))}
+          {inputs ? inputs.map(input => renderInput(input)) : null}
           {serverErrors ? <UncontrolledAlert color="danger">
             {extractErrorsAndWarnings(serverErrors)}</UncontrolledAlert> : null}
           {serverWarnings ? <UncontrolledAlert color="warning">

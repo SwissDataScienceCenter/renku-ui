@@ -42,25 +42,41 @@ class FormGenerator extends Component {
       getDraft: this.getDraft.bind(this),
       getFormDraftProperty: this.getFormDraftProperty.bind(this),
       getFormDraftFieldValue: this.getFormDraftFieldValue.bind(this),
-      // addProgress: this.addProgress.bind(this),
-      // getProgress: this.getProgress.bind(this),
-      // getNewProgressId: this.getNewProgressId.bind(this),
+      setSubmitLoader: this.setSubmitLoader.bind(this),
+      getSubmitLoader: this.getSubmitLoader.bind(this),
+      getServerErrors: this.getServerErrors.bind(this),
+      setServerErrors: this.setServerErrors.bind(this),
       isMounted: this.isMounted.bind(this),
       setFormDraftInternalValuesProperty: this.setFormDraftInternalValuesProperty.bind(this),
       getFormDraftInternalValuesProperty: this.getFormDraftInternalValuesProperty.bind(this)
     };
   }
 
-  addDraft(formDraft, mounted) {
-    return this.coordinator.addFormDraft(this.props.location.pathname, formDraft, mounted);
+  addDraft(formDraft, mounted, submitLoader, location = this.props.location.pathname) {
+    return this.coordinator.addFormDraft(location, formDraft, mounted, submitLoader);
   }
 
   getDraft(location = this.props.location.pathname) {
     return this.coordinator.getFormDraft(location);
   }
 
+  setSubmitLoader(submitLoader, location = this.props.location.pathname) {
+    return this.coordinator.setSubmitLoader(location, submitLoader);
+  }
+
+  getSubmitLoader(location = this.props.location.pathname) {
+    return this.coordinator.getSubmitLoader(location);
+  }
+
+  setServerErrors(serverErrors, location = this.props.location.pathname) {
+    return this.coordinator.setServerErrors(location, serverErrors);
+  }
+
+  getServerErrors(location = this.props.location.pathname) {
+    return this.coordinator.getServerErrors(location);
+  }
+
   isMounted(location = this.props.location.pathname) {
-    console.log(location);
     return this.coordinator.isMounted(location);
   }
 

@@ -11,7 +11,7 @@ class FormGeneratorCoordinator {
    * @param {string} location - is the location of the form (could be projectSlug/...  or /project/new)
    * @param {string} currentFormModel - current state of the form model
    */
-  addFormDraft(location, currentFormModel, mounted) {
+  addFormDraft(location, currentFormModel, mounted, submitLoader) {
     const drafts = this.model.get("formDrafts");
     let currentDraft = drafts.find(draft => draft.location === location);
     let newList;
@@ -20,6 +20,10 @@ class FormGeneratorCoordinator {
         currentDraft.mounted = mounted;
       if (currentFormModel !== undefined)
         currentDraft.currentFormModel = currentFormModel;
+      if (submitLoader !== undefined)
+        currentDraft.submitLoader = submitLoader;
+      // if (serverErrors !== undefined)
+      //   currentDraft.serverErrors = serverErrors;
       newList = drafts.map(draft => draft.location === location ?
         currentDraft
         : draft);
@@ -28,7 +32,8 @@ class FormGeneratorCoordinator {
       currentDraft = {
         location: location,
         currentFormModel: currentFormModel,
-        mounted: true
+        mounted: true,
+        submitLoader: { value: false, text: "Please wait..." }
       };
       newList = [...drafts, currentDraft];
     }
@@ -41,6 +46,56 @@ class FormGeneratorCoordinator {
     const drafts = this.model.get("formDrafts");
     const currentDraft = drafts.find(draft => draft.location === location);
     return currentDraft === undefined ? undefined : currentDraft.currentFormModel;
+  }
+
+  getSubmitLoader(location) {
+    const drafts = this.model.get("formDrafts");
+    const currentDraft = drafts.find(draft => draft.location === location);
+    if (currentDraft) return currentDraft.submitLoader;
+    return true;
+  }
+
+  setSubmitLoader(location, submitLoader) {
+    const formDrafts = this.model.get("formDrafts");
+    const draftIndex = formDrafts ? formDrafts.findIndex(elem=> elem.location === location) : -1;
+    const currentFormDraft = draftIndex > -1 ? formDrafts[draftIndex] : undefined;
+    // const currentValue = this.getFormDraftInternalValuesProperty(location, fieldName, property);
+    if (currentFormDraft) {
+      if (currentFormDraft.submitLoader !== undefined) {
+        return this.model.setObject(
+          { formDrafts: { [draftIndex]: { submitLoader: { $set: submitLoader } } }
+          } );
+      }
+      //else
+      return this.model.setObject(
+        { formDrafts: { [draftIndex]: { submitLoader: submitLoader } }
+        } );
+    }
+  }
+
+  getServerErrors(location) {
+    const drafts = this.model.get("formDrafts");
+    const currentDraft = drafts.find(draft => draft.location === location);
+    if (currentDraft) return currentDraft.serverErrors;
+    return true;
+  }
+
+  setServerErrors(location, serverErrors) {
+    const formDrafts = this.model.get("formDrafts");
+    const draftIndex = formDrafts ? formDrafts.findIndex(elem=> elem.location === location) : -1;
+    const currentFormDraft = draftIndex > -1 ? formDrafts[draftIndex] : undefined;
+    // const currentValue = this.getFormDraftInternalValuesProperty(location, fieldName, property);
+    if (currentFormDraft) {
+      if (currentFormDraft.serverErrors !== undefined) {
+        return this.model.setObject(
+          { formDrafts: { [draftIndex]: { serverErrors: { $set: serverErrors } } }
+          } );
+      }
+      //else
+      return this.model.setObject(
+        { formDrafts: { [draftIndex]: { serverErrors: serverErrors } }
+        } );
+    }
   }
 
   isMounted(location) {
