@@ -28,6 +28,8 @@ import * as SentryLib from "@sentry/browser";
 
 const NAMESPACE_DEFAULT = "unknown";
 const VERSION_DEFAULT = "unknown";
+const RELEASE_UNKNOWN = "unknown";
+const RELEASE_DEV = "-dev";
 const UI_COMPONENT = "renku-ui";
 const EXCLUDED_URLS = [
   /extensions\//i, // Chrome extensions 1
@@ -54,8 +56,9 @@ let sentryDenyUrls = [
  * @param {object} [userPromise] - Optional promise expected to resolve in an abject containing user
  *   data. When provided, the user metadata will be added to the exception metadata.
  * @param {string} [version] - UI version.
+ * @param {bool} [telepresence] - whether the UI is running on telepresence
  */
-function sentryInit(url, namespace = null, userPromise = null, version = null) {
+function sentryInit(url, namespace = null, userPromise = null, version = null, telepresence = false) {
   // Prevent re-initializing
   if (sentryInitialized)
     throw new Error("Cannot re-initialize the Sentry client.");
@@ -77,7 +80,7 @@ function sentryInit(url, namespace = null, userPromise = null, version = null) {
       throw new Error("The optional <userPromise> must be a valid promise resolving with user's data.");
   }
 
-  // Check namespace
+  // Check version
   if (version != null) {
     if (typeof version !== "string" || !version.length)
       throw new Error("The optional <version> must be a valid string identifying the UI version.");
@@ -93,12 +96,13 @@ function sentryInit(url, namespace = null, userPromise = null, version = null) {
   SentryLib.init({
     dsn: sentryUrl,
     environment: sentryNamespace,
+    release: getRelease(uiVersion),
     beforeSend: (event) => hookBeforeSend(event),
     denyUrls: sentryDenyUrls
   });
   SentryLib.setTags({
     component: UI_COMPONENT,
-    version: uiVersion
+    telepresence: telepresence ? true : false
   });
 
   // Handle user data
@@ -129,6 +133,36 @@ function hookBeforeSend(event) {
   return event;
 }
 
+/**
+ * Return the release definition.
+ *
+ * @param {string} [version] - UI version in the format "<major>.<minor>.<patch>-<short-SHA>".
+ */
+function getRelease(version) {
+  // Check input validity
+  if (!version || typeof version !== "string")
+    return RELEASE_UNKNOWN;
+
+  // Check format validity
+  const regValid = new RegExp(/^\d*(\.\d*){0,2}(-[a-f0-9]{7,32})?$/);
+  const resValid = version.match(regValid);
+  if (!resValid || !resValid[0])
+    return RELEASE_UNKNOWN;
+
+  // Extract information
+  const regRelease = new RegExp(/^\d*(\.\d*){0,2}/);
+  const resRelease = version.match(regRelease);
+  const release = (!resRelease || !resRelease[0]) ?
+    RELEASE_UNKNOWN :
+    resRelease[0];
+  const regPatch = new RegExp(/-[a-f0-9]{6,32}$/);
+  const resPatch = version.match(regPatch);
+  const patch = (!resPatch || !resPatch[0]) ?
+    "" :
+    RELEASE_DEV;
+  return release + patch;
+}
+
 // exported object
 const SentrySettings = {
   initialized: sentryInitialized,
@@ -139,3 +173,6 @@ const SentrySettings = {
 
 
 export { SentrySettings as Sentry };
+
+// test only
+export { getRelease };

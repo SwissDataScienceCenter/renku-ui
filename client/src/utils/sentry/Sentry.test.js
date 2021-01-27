@@ -23,8 +23,6 @@
  *  Tests for Sentry.
  */
 
-// import { Sentry } from "./Sentry";
-
 
 const FAKE = {
   url: "https://12345abcde@sentry.dev.renku.ch/5",
@@ -83,5 +81,32 @@ describe("Sentry settings", () => {
     const sentrySettings = Sentry.init(FAKE.url, FAKE.namespace, FAKE.promise, FAKE.version);
     expect(sentrySettings).toBeTruthy();
     expect(sentrySettings.SDK_NAME).toBe("sentry.javascript.browser");
+  });
+});
+
+
+describe("Helper functions", () => {
+  let getRelease;
+  beforeEach(() => {
+    jest.isolateModules(() => {
+      getRelease = require("./Sentry").getRelease;
+    });
+  });
+
+  it("getRelease", () => {
+    const RELEASE = {
+      normal: "1.10.0",
+      short: "1.10",
+      full: "1.10.0-abcd123",
+      wrong: "1.10.0.abcd123"
+    };
+    const DEV_SUFFIX = "-dev";
+
+    expect(getRelease(RELEASE.normal)).toBe(RELEASE.normal);
+    expect(getRelease(RELEASE.short)).toBe(RELEASE.short);
+    expect(getRelease(RELEASE.full)).toBe(RELEASE.normal + DEV_SUFFIX);
+    expect(getRelease(12345)).toBe("unknown");
+    expect(getRelease("abcd")).toBe("unknown");
+    expect(getRelease(RELEASE.wrong)).toBe("unknown");
   });
 });

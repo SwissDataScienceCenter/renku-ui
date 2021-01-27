@@ -101,7 +101,7 @@ fi
 
 tee > ./public/config.json << EOF
 {
-  "UI_VERSION": "telepresence@${CURRENT_CHART}-${CURRENT_COMMIT}",
+  "UI_VERSION": "${CURRENT_CHART}-${CURRENT_COMMIT}",
   "TELEPRESENCE": "true",
   "BASE_URL": "${BASE_URL}",
   "GATEWAY_URL": "${BASE_URL}/api",
