@@ -70,7 +70,43 @@ jobs:
         RENKU_VALUES: ${{ secrets.CI_RENKU_VALUES }}
         RENKUBOT_KUBECONFIG: ${{ secrets.RENKUBOT_DEV_KUBECONFIG }}
         RENKUBOT_RANCHER_BEARER_TOKEN: ${{ secrets.RENKUBOT_RANCHER_BEARER_TOKEN }}
+        RENKU_BOT_DEV_PASSWORD: ${{ secrets.RENKU_BOT_DEV_PASSWORD }}
+        RENKU_ANONYMOUS_SESSIONS: true
+        RENKU_TESTS_ENABLED: true
+        TEST_ARTIFACTS_PATH: "tests-artifacts-${{ github.sha }}"
         renku_ui: "@${{ github.head_ref }}"
+        # renku: "@development"
+
+  run-acceptance-tests:
+    needs: [check-deploy, deploy-pr]
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+    - name: Test the PR
+      if: needs.check-deploy.outputs.pr-contains-string == 'true'
+      env:
+        KUBECONFIG: ${{ github.workspace }}/renkubot-kube.config
+        RENKUBOT_KUBECONFIG: ${{ secrets.RENKUBOT_DEV_KUBECONFIG }}
+        RENKU_RELEASE: renku-ci-ui-${{ github.event.number }}
+      run: |
+        echo "$RENKUBOT_KUBECONFIG" > ${{ github.workspace }}/renkubot-kube.config
+        helm test ${RENKU_RELEASE} --namespace ${RENKU_RELEASE} --timeout 40m --logs
+    - name: Download artifact for packaging on failure
+      if: failure()
+      uses: SwissDataScienceCenter/renku/actions/download-test-artifacts@master
+      env:
+        RENKU_VALUES: ${{ secrets.CI_RENKU_VALUES }}
+        TEST_ARTIFACTS_PATH: "tests-artifacts-${{ github.sha }}"
+    - name: Upload screenshots on failure
+      if: failure()
+      uses: actions/upload-artifact@v1
+      with:
+        name: acceptance-test-artifacts
+        path: ${{ github.workspace }}/test-artifacts/
 
   cleanup:
     needs: check-deploy
