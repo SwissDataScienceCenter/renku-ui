@@ -130,6 +130,8 @@ class APIClient {
         // It should be solved in a more elegant way once we support interruptable fetch #776
         if (!response && anonymousLogin)
           return returnType === RETURN_TYPES.json ? { data: {} } : "";
+        else if (!response)
+          return null;
         switch (returnType) {
           case RETURN_TYPES.json:
             return response.json().then(data => {
