@@ -13,11 +13,10 @@ labels: needs design
 ## Mock-ups / Design
 
 <!--
-Provide mock-ups or other design artifacts for the propsal.
+Provide mock-ups or other design artifacts for the proposal.
 -->
 
-# Progress
+## Progress
 
 - [ ] API Design (sprint-??)
 - [ ] UI Implementation
-
