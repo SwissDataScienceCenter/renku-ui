@@ -26,8 +26,6 @@
 
 import React from "react";
 import { Col, Alert, Button } from "reactstrap";
-import { Link } from "react-router-dom";
-// import { FormPanel } from "../../../utils/formgenerator";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
@@ -36,39 +34,6 @@ import FormGenerator from "../../../utils/formgenerator/FormGenerator.container"
 
 
 function DatasetChange(props) {
-
-  const getServerWarnings = () => {
-    const failed = props.jobsStats.failed
-      .map(job => <div key={"warn-" + job.file_url} className="pl-2">- {job.file_url}<br /></div>);
-    const progress = props.jobsStats.inProgress
-      .map( job => <div key={"warn-" + job.file_url} className="pl-2">- {job.file_url}<br /></div>);
-    return <div>
-      {props.jobsStats.tooLong ?
-        <div>
-          This operation is taking too long and it will continue being processed in the background.<br />
-          Please check the datasets list later to make sure that the changes are visible in the project. <br />
-          You can also check the <Link to={props.overviewCommitsUrl}>commits list
-          </Link> in the project to see if commits for the new dataset appear there.
-          <br/><br/>
-        </div>
-        : null
-      }
-      {props.jobsStats.failed.length > 0 ?
-        <div><strong>Some files had errors on upload:</strong>
-          <br />
-          {failed}
-        </div>
-        : null}
-      {props.jobsStats.inProgress.length > 0 ?
-        <div>
-          <strong>Uploads in progress:</strong>
-          <br />
-          {progress}
-        </div>
-        : null}
-      <br /><br />
-    </div>;
-  };
 
   if (!props.initialized)
     return <Loader />;
@@ -84,22 +49,13 @@ function DatasetChange(props) {
     </Col>;
   }
 
-  const warning = props.warningOn.current ? getServerWarnings() : undefined;
-
   const edit = props.edit;
 
   return <FormGenerator
     title={edit ? "Modify Dataset" : undefined}
     btnName={edit ? "Modify Dataset" : "Create Dataset"}
-    submitCallback={props.warningOn.current ? undefined : props.submitCallback}
+    submitCallback={props.submitCallback}
     model={props.datasetFormSchema}
-    serverErrors={props.serverErrors}
-    serverWarnings={warning}
-    disableAll={props.warningOn.current === true}
-    submitLoader={{ value: props.submitLoader,
-      text: edit ? "Modifying dataset, please wait..." : "Creating dataset, please wait..." }}
-    cancelBtnName={props.warningOn.current ?
-      edit ? "Go to dataset" : "Go to list" : "Cancel"}
     onCancel={props.onCancel}
     edit={edit}
     model_top={props.model}

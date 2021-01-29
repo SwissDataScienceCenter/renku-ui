@@ -20,8 +20,8 @@ class FormGeneratorCoordinator {
         currentDraft.mounted = mounted;
       if (currentFormModel !== undefined)
         currentDraft.currentFormModel = currentFormModel;
-      if (submitLoader !== undefined)
-        currentDraft.submitLoader = submitLoader;
+      // if (submitLoader !== undefined)
+      //   currentDraft.submitLoader = submitLoader;
       // if (serverErrors !== undefined)
       //   currentDraft.serverErrors = serverErrors;
       newList = drafts.map(draft => draft.location === location ?
@@ -59,7 +59,6 @@ class FormGeneratorCoordinator {
     const formDrafts = this.model.get("formDrafts");
     const draftIndex = formDrafts ? formDrafts.findIndex(elem=> elem.location === location) : -1;
     const currentFormDraft = draftIndex > -1 ? formDrafts[draftIndex] : undefined;
-    // const currentValue = this.getFormDraftInternalValuesProperty(location, fieldName, property);
     if (currentFormDraft) {
       if (currentFormDraft.submitLoader !== undefined) {
         return this.model.setObject(
@@ -73,18 +72,41 @@ class FormGeneratorCoordinator {
     }
   }
 
+  getSecondaryButtonText(location) {
+    const drafts = this.model.get("formDrafts");
+    const currentDraft = drafts.find(draft => draft.location === location);
+    if (currentDraft) return currentDraft.secondaryButton;
+    return;
+  }
+
+  setSecondaryButtonText(location, text) {
+    const formDrafts = this.model.get("formDrafts");
+    const draftIndex = formDrafts ? formDrafts.findIndex(elem=> elem.location === location) : -1;
+    const currentFormDraft = draftIndex > -1 ? formDrafts[draftIndex] : undefined;
+    if (currentFormDraft) {
+      if (currentFormDraft.text !== undefined) {
+        return this.model.setObject(
+          { formDrafts: { [draftIndex]: { secondaryButton: { $set: text } } }
+          } );
+      }
+      //else
+      return this.model.setObject(
+        { formDrafts: { [draftIndex]: { secondaryButton: text } }
+        } );
+    }
+  }
+
   getServerErrors(location) {
     const drafts = this.model.get("formDrafts");
     const currentDraft = drafts.find(draft => draft.location === location);
     if (currentDraft) return currentDraft.serverErrors;
-    return true;
+    return;
   }
 
   setServerErrors(location, serverErrors) {
     const formDrafts = this.model.get("formDrafts");
     const draftIndex = formDrafts ? formDrafts.findIndex(elem=> elem.location === location) : -1;
     const currentFormDraft = draftIndex > -1 ? formDrafts[draftIndex] : undefined;
-    // const currentValue = this.getFormDraftInternalValuesProperty(location, fieldName, property);
     if (currentFormDraft) {
       if (currentFormDraft.serverErrors !== undefined) {
         return this.model.setObject(
@@ -94,6 +116,54 @@ class FormGeneratorCoordinator {
       //else
       return this.model.setObject(
         { formDrafts: { [draftIndex]: { serverErrors: serverErrors } }
+        } );
+    }
+  }
+
+  getServerWarnings(location) {
+    const drafts = this.model.get("formDrafts");
+    const currentDraft = drafts.find(draft => draft.location === location);
+    if (currentDraft) return currentDraft.serverWarnings;
+    return;
+  }
+
+  setServerWarnings(location, serverWarnings) {
+    const formDrafts = this.model.get("formDrafts");
+    const draftIndex = formDrafts ? formDrafts.findIndex(elem=> elem.location === location) : -1;
+    const currentFormDraft = draftIndex > -1 ? formDrafts[draftIndex] : undefined;
+    if (currentFormDraft) {
+      if (currentFormDraft.serverWarnings !== undefined) {
+        return this.model.setObject(
+          { formDrafts: { [draftIndex]: { serverWarnings: { $set: serverWarnings } } }
+          } );
+      }
+      //else
+      return this.model.setObject(
+        { formDrafts: { [draftIndex]: { serverWarnings: serverWarnings } }
+        } );
+    }
+  }
+
+  getDisableAll(location) {
+    const drafts = this.model.get("formDrafts");
+    const currentDraft = drafts.find(draft => draft.location === location);
+    if (currentDraft) return currentDraft.disableAll;
+    return false;
+  }
+
+  setDisableAll(location, disableAll) {
+    const formDrafts = this.model.get("formDrafts");
+    const draftIndex = formDrafts ? formDrafts.findIndex(elem=> elem.location === location) : -1;
+    const currentFormDraft = draftIndex > -1 ? formDrafts[draftIndex] : undefined;
+    if (currentFormDraft) {
+      if (currentFormDraft.disableAll !== undefined) {
+        return this.model.setObject(
+          { formDrafts: { [draftIndex]: { disableAll: { $set: disableAll } } }
+          } );
+      }
+      //else
+      return this.model.setObject(
+        { formDrafts: { [draftIndex]: { disableAll: disableAll } }
         } );
     }
   }
@@ -121,16 +191,7 @@ class FormGeneratorCoordinator {
   getFormDraftFieldValue(location, fieldName) {
     const draft = this.getFormDraft(location);
     let currentProp = draft.find(field => field.name === fieldName);
-    console.log(currentProp);
     return currentProp.value;
-    // if (currentProp) {
-    //   for (let i = 0; i < properties.length; i++) {
-    //     if (currentProp)
-    //       currentProp = currentProp[properties[i]];
-    //   }
-    //   return currentProp;
-    // }
-    // return undefined;
   }
 
   getFormDraftInternalValuesProperty(location, fieldName, property) {
@@ -164,7 +225,6 @@ class FormGeneratorCoordinator {
             { [draftIndex]: { currentFormModel: { [fieldIndex]:
               { internalValues: { [property]: value } } } } }
         } );
-
     }
   }
 

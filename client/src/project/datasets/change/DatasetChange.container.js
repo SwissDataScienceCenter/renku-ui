@@ -24,6 +24,7 @@
  */
 
 import React, { useState, useRef, useEffect, useMemo } from "react";
+import { Link } from "react-router-dom";
 import { datasetFormSchema } from "../../../model/RenkuModels";
 import DatasetChange from "./DatasetChange.present";
 import { JobStatusMap } from "../../../job/Job";
@@ -45,13 +46,7 @@ function ChangeDataset(props) {
       : undefined
     , undefined, datasetFiles)
   , [props.datasets, props.datasetId, datasetFiles]);
-  const [serverErrors, setServerErrors] = useState(undefined);
-  const [submitLoader, setSubmitLoader] = useState(false);
   const [initialized, setInitialized] = useState(false);
-  const [jobsStats, setJobsStats] = useState(undefined);
-  const warningOn = useRef(false);
-
-  //  dsFormSchema.files.filesOnUploader = useRef(0);
 
   const initializeFunction = (formSchema) => {
     let titleField = formSchema.find(field => field.name === "title");
@@ -102,8 +97,42 @@ function ChangeDataset(props) {
     // }
   };
 
-  const onCancel = e => {
+  const onCancel = (e, handlers) => {
+    handlers.removeDraft(props.location);
     props.history.push({ pathname: `/projects/${props.projectPathWithNamespace}/datasets` });
+  };
+
+  const getServerWarnings = (jobsStats) => {
+    const failed = jobsStats.failed
+      .map(job => <div key={"warn-" + job.file_url} className="pl-2">- {job.file_url}<br /></div>);
+    const progress = jobsStats.inProgress
+      .map( job => <div key={"warn-" + job.file_url} className="pl-2">- {job.file_url}<br /></div>);
+    return <div>
+      {jobsStats.tooLong ?
+        <div>
+          This operation is taking too long and it will continue being processed in the background.<br />
+          Please check the datasets list later to make sure that the changes are visible in the project. <br />
+          You can also check the <Link to={props.overviewCommitsUrl}>commits list
+          </Link> in the project to see if commits for the new dataset appear there.
+          <br/><br/>
+        </div>
+        : null
+      }
+      {jobsStats.failed.length > 0 ?
+        <div><strong>Some files had errors on upload:</strong>
+          <br />
+          {failed}
+        </div>
+        : null}
+      {jobsStats.inProgress.length > 0 ?
+        <div>
+          <strong>Uploads in progress:</strong>
+          <br />
+          {progress}
+        </div>
+        : null}
+      <br /><br />
+    </div>;
   };
 
   function setNewJobStatus(localJob, remoteJobsList) {
@@ -115,15 +144,17 @@ function ChangeDataset(props) {
   }
 
   function checkJobsAndSetWarnings(jobsList, tooLong = false, handlers) {
-    let failed = jobsList.filter(job => job.job_status === JobStatusMap.FAILED );
+    let failed = jobsList.filter(job => job.job_status === JobStatusMap.FAILED);
     let inProgress = jobsList
       .filter(job => (job.job_status === JobStatusMap.IN_PROGRESS || job.job_status === JobStatusMap.ENQUEUED) );
 
     if (failed.length !== 0 || inProgress.length !== 0 || tooLong === true) {
-      setJobsStats({ failed, inProgress, tooLong });
-      warningOn.current = true;
+      const jobStats = { failed, inProgress, tooLong };
+      handlers.setDisableAll(true);
+      handlers.setSecondaryButtonText(props.edit ? "Go to dataset" : "Go to list");
+      handlers.setServerWarnings(getServerWarnings(jobStats));
       handlers.setSubmitLoader({ value: false, text: "" });
-      setSubmitLoader(false);
+      //setSubmitLoader(false);
     }
   }
 
@@ -144,8 +175,8 @@ function ChangeDataset(props) {
       });
   };
 
-  const redirectAfterSuccess = (interval, datasetId) => {
-    setSubmitLoader({ value: false, text: "" });
+  const redirectAfterSuccess = (interval, datasetId, handlers) => {
+    handlers.setSubmitLoader({ value: false, text: "" });
     if (interval !== undefined) clearInterval(interval);
     props.fetchDatasets(true);
     props.history.push({
@@ -163,8 +194,11 @@ function ChangeDataset(props) {
   };
 
   const submitCallback = (e, mappedInputs, handlers) => {
-    setServerErrors(undefined);
+    //setServerErrors(undefined);
     handlers.setServerErrors(undefined);
+    handlers.setServerWarnings(undefined);
+    handlers.setDisableAll(false);
+
     //setSubmitLoader(true);
     const submitLoaderText = props.edit ? "Modifying dataset, please wait..." : "Creating dataset, please wait...";
     handlers.setSubmitLoader({ value: true, text: submitLoaderText });
@@ -186,10 +220,7 @@ function ChangeDataset(props) {
     props.client.postDataset(props.httpProjectUrl, dataset, props.edit)
       .then(response => {
         if (response.data.error !== undefined) {
-          //setSubmitLoader(false);
           handlers.setSubmitLoader({ value: false, text: "" });
-          //setServerErrors(response.data.error.reason);
-          console.log("setting server errors");
           handlers.setServerErrors(response.data.error.reason);
         }
         else {
@@ -209,14 +240,14 @@ function ChangeDataset(props) {
           let monitorJobs = setInterval(() => {
             if (filesURLJobsArray.length === 0) {
               handlers.setSubmitLoader({ value: false, text: "" });
-              redirectAfterSuccess(monitorJobs, dataset.name);
+              redirectAfterSuccess(monitorJobs, dataset.name, handlers);
             }
             else {
               monitorURLJobsStatuses(filesURLJobsArray).then(jobsStats => {
                 if (jobsStats.finished) {
                   if (jobsStats.failed.length === 0) {
                     handlers.setSubmitLoader({ value: false, text: "" });
-                    redirectAfterSuccess(monitorJobs, dataset.name);
+                    redirectAfterSuccess(monitorJobs, dataset.name, handlers);
                   }
                   else {
                     //some or all failed, but all finished
@@ -229,7 +260,7 @@ function ChangeDataset(props) {
 
             if (cont >= 20) {
               handlers.setSubmitLoader({ value: false, text: "" });
-              checkJobsAndSetWarnings(filesURLJobsArray, true);
+              checkJobsAndSetWarnings(filesURLJobsArray, true, handlers);
               clearInterval(monitorJobs);
             }
             cont++;
@@ -280,7 +311,8 @@ function ChangeDataset(props) {
     }
     else {
       setInitialized(true);
-      dsFormSchema.name.value = dsFormSchema.name.value === undefined ? dsFormSchema.name.initial : dsFormSchema.name.value;
+      dsFormSchema.name.value = dsFormSchema.name.value === undefined
+        ? dsFormSchema.name.initial : dsFormSchema.name.value;
       dsFormSchema.title.value = dsFormSchema.title.initial;
       dsFormSchema.description.value = dsFormSchema.description.initial;
       dsFormSchema.files.value = dsFormSchema.files.initial;
@@ -301,12 +333,8 @@ function ChangeDataset(props) {
     initialized={initialized}
     datasetFormSchema={dsFormSchema}
     accessLevel={props.accessLevel}
-    serverErrors={serverErrors}
     submitCallback={submitCallback}
-    submitLoader={submitLoader}
     onCancel={onCancel}
-    warningOn={warningOn}
-    jobsStats={jobsStats}
     overviewCommitsUrl={props.overviewCommitsUrl}
     edit={props.edit}
     model={props.model}

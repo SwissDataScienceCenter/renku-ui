@@ -46,6 +46,7 @@ function capitalize(string) {
 function SubmitButtonGroup(props) {
   const { submitCallback, submitLoader, btnName, errorFields } = props;
   const { onCancel, cancelBtnName } = props;
+  console.log(cancelBtnName);
   const submitButton = submitCallback !== undefined ?
     <Button type="submit" disabled={submitLoader.value} className="float-right mt-1" color="primary">
       {btnName}
@@ -53,7 +54,7 @@ function SubmitButtonGroup(props) {
     : null;
   const cancelButton = onCancel !== undefined ?
     <Button disabled={submitLoader.value} className="float-right mt-1 mr-1"
-      color="secondary" onClick={onCancel}>
+      color="secondary" onClick={(e)=>onCancel(e, props.handlers)}>
       {cancelBtnName ? cancelBtnName : "Cancel"}
     </Button>
     : null;
@@ -69,13 +70,17 @@ function SubmitButtonGroup(props) {
 }
 
 function FormPanel({ title, btnName, submitCallback, model, serverErrors_old, formLocation, getLocation,
-  serverWarnings, submitLoader_remove_this, onCancel, edit, cancelBtnName, disableAll, handlers, initializeFunction }) {
+  serverWarnings_old, submitLoader_remove_this, onCancel, edit,
+  cancelBtnName_dsds, disableAll_old, handlers, initializeFunction }) {
   const draft = handlers ? handlers.getDraft() : undefined;
   const modelValues = draft ? draft : _.cloneDeep(Object.values(model));
   const initialized = useRef(false);
   const [inputs, setInputs, setSubmit] = useForm(modelValues, submitCallback, handlers, formLocation);
   const submitLoader = handlers.getSubmitLoader(formLocation);
   const serverErrors = handlers.getServerErrors(formLocation);
+  const serverWarnings = handlers.getServerWarnings(formLocation);
+  const secondaryButtonText = handlers.getSecondaryButtonText(formLocation);
+  const disableAll = handlers.getDisableAll(formLocation);
 
   useEffect(()=>{
     if (initializeFunction && modelValues && !initialized.current) {
@@ -84,7 +89,8 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors_old, fo
       initialized.current = true;
     }
   //}, [handlers, initialized, modelValues]);
-  });
+  //IS THIS CORRECT????
+  }, []);
 
   const Components = {
     TextInput,
@@ -106,15 +112,19 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors_old, fo
 
   const extractErrorsAndWarnings = (errorOrWarning) => {
     let content;
+    var htmlRegex = new RegExp(/^/);
     if (typeof errorOrWarning === "string") {
       content = <p>{errorOrWarning}</p>;
     }
     else {
+      if (htmlRegex.test(errorOrWarning)) { content = errorOrWarning; }
+      else {
       //this could be improve to extract better the error message
       //ideally we could map backend and frontend fields and put the error under the field
-      content = Object.keys(errorOrWarning).map(error =>
-        (<p key={error}>{`${error}: ${JSON.stringify(errorOrWarning[error])}`}</p>)
-      );
+        content = Object.keys(errorOrWarning).map(error =>
+          (<p key={error}>{`${error}: ${JSON.stringify(errorOrWarning[error])}`}</p>)
+        );
+      }
     }
     return (<div>
       <p>Errors occurred while performing this operation.</p>
@@ -145,7 +155,7 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors_old, fo
           }
           <SubmitButtonGroup
             submitCallback={submitCallback} submitLoader={submitLoader} btnName={btnName} errorFields={errorFields}
-            onCancel={onCancel} cancelBtnName={cancelBtnName}
+            onCancel={onCancel} cancelBtnName={secondaryButtonText} handlers={handlers}
           />
         </div>
       </Form>

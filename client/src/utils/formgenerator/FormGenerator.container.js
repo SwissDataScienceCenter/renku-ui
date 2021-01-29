@@ -40,12 +40,19 @@ class FormGenerator extends Component {
     this.handlers = {
       addDraft: this.addDraft.bind(this),
       getDraft: this.getDraft.bind(this),
+      removeDraft: this.removeDraft.bind(this),
       getFormDraftProperty: this.getFormDraftProperty.bind(this),
       getFormDraftFieldValue: this.getFormDraftFieldValue.bind(this),
       setSubmitLoader: this.setSubmitLoader.bind(this),
       getSubmitLoader: this.getSubmitLoader.bind(this),
       getServerErrors: this.getServerErrors.bind(this),
       setServerErrors: this.setServerErrors.bind(this),
+      getDisableAll: this.getDisableAll.bind(this),
+      setDisableAll: this.setDisableAll.bind(this),
+      getServerWarnings: this.getServerWarnings.bind(this),
+      setServerWarnings: this.setServerWarnings.bind(this),
+      getSecondaryButtonText: this.getSecondaryButtonText.bind(this),
+      setSecondaryButtonText: this.setSecondaryButtonText.bind(this),
       isMounted: this.isMounted.bind(this),
       setFormDraftInternalValuesProperty: this.setFormDraftInternalValuesProperty.bind(this),
       getFormDraftInternalValuesProperty: this.getFormDraftInternalValuesProperty.bind(this)
@@ -58,6 +65,10 @@ class FormGenerator extends Component {
 
   getDraft(location = this.props.location.pathname) {
     return this.coordinator.getFormDraft(location);
+  }
+
+  removeDraft(location = this.props.location.pathname) {
+    return this.coordinator.removeFormDraft(location);
   }
 
   setSubmitLoader(submitLoader, location = this.props.location.pathname) {
@@ -74,6 +85,30 @@ class FormGenerator extends Component {
 
   getServerErrors(location = this.props.location.pathname) {
     return this.coordinator.getServerErrors(location);
+  }
+
+  setServerWarnings(serverWarnings, location = this.props.location.pathname) {
+    return this.coordinator.setServerWarnings(location, serverWarnings);
+  }
+
+  getServerWarnings(location = this.props.location.pathname) {
+    return this.coordinator.getServerWarnings(location);
+  }
+
+  setDisableAll(disableAll, location = this.props.location.pathname) {
+    return this.coordinator.setDisableAll(location, disableAll);
+  }
+
+  getDisableAll(location = this.props.location.pathname) {
+    return this.coordinator.getDisableAll(location);
+  }
+
+  setSecondaryButtonText(text, location = this.props.location.pathname) {
+    return this.coordinator.setSecondaryButtonText(location, text);
+  }
+
+  getSecondaryButtonText(location = this.props.location.pathname) {
+    return this.coordinator.getSecondaryButtonText(location);
   }
 
   isMounted(location = this.props.location.pathname) {
