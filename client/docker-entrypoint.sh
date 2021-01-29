@@ -20,6 +20,7 @@ export NGINX_PATH=/usr/share/nginx/html
 
 echo "Config file contains the following settings:"
 echo "==================================================="
+echo " UI_VERSION=${UI_VERSION}"
 echo " GATEWAY_URL=${GATEWAY_URL:-http://gateway.renku.build}"
 echo " BASE_URL=${BASE_URL:-http://renku.build}"
 echo " SENTRY_URL=${SENTRY_URL}"
@@ -41,6 +42,7 @@ echo "==================================================="
 
 tee > "${NGINX_PATH}/config.json" << EOF
 {
+  "UI_VERSION": "${UI_VERSION}",
   "BASE_URL": "${BASE_URL:-http://renku.build}",
   "GATEWAY_URL": "${GATEWAY_URL:-http://gateway.renku.build}",
   "WELCOME_PAGE": "${WELCOME_PAGE}",

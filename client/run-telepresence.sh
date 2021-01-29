@@ -28,6 +28,8 @@ TEMPLATES='{"custom":true,"repositories":
 {"name":"Telepresence","ref":"0.1.11",
 "url":"https://github.com/SwissDataScienceCenter/renku-project-template"}]}'
 PREVIEW_THRESHOLD='{"soft":"1048576","hard":"10485760"}'
+CURRENT_CHART=`grep -oP "(?<=version: )[.0-9a-f\-]*" ../helm-chart/renku-ui/Chart.yaml`
+CURRENT_COMMIT=`git rev-parse --short HEAD`
 if [[ "$OSTYPE" == "linux-gnu" ]]
 then
   WELCOME_PAGE=`echo "${WELCOME_MESSAGE}" | base64 -w 0`
@@ -91,7 +93,7 @@ fi
 # set sentry dns if explicitly required by the user
 if [[ $SENTRY = 1 ]]
 then
-  SENTRY_URL="https://7539e48042f9425380fc31a04746a044@sentry.dev.renku.ch/5"
+  SENTRY_URL="https://182290b8e1524dd3b7eb5dd051852f9f@sentry.dev.renku.ch/5"
   SENTRY_NAMESPACE="${DEV_NAMESPACE}"
 else
   echo "Errors won't be sent to sentry by default. To enable sentry, use 'SENTRY=1 ./run-telepresence.sh'"
@@ -99,6 +101,7 @@ fi
 
 tee > ./public/config.json << EOF
 {
+  "UI_VERSION": "${CURRENT_CHART}-${CURRENT_COMMIT}",
   "TELEPRESENCE": "true",
   "BASE_URL": "${BASE_URL}",
   "GATEWAY_URL": "${BASE_URL}/api",
