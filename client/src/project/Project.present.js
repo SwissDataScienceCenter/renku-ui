@@ -639,19 +639,6 @@ function ProjectViewDatasets(props) {
   if (loading)
     return <Loader />;
 
-  //When the core service can return stuff for anonymous users this should be removed
-  if (!props.user.logged) {
-    const postLoginUrl = props.location.pathname;
-    const to = { "pathname": "/login", "state": { previous: postLoginUrl } };
-
-    return <Col sm={12} md={12} lg={8}>
-      <Alert color="primary">You are logged out, please&nbsp;
-        <Link className="btn btn-primary btn-sm" to={to} previous={postLoginUrl}>
-          Log in
-        </Link> to see datasets for this project.</Alert>
-    </Col>;
-  }
-
   if (props.core.datasets.error) {
     return <Col sm={12} md={12} lg={8}>
       <Alert color="danger">
