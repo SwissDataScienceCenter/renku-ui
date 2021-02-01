@@ -1,4 +1,23 @@
+
 # Changes
+
+## [0.11.4](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.3...0.11.4) (2021-02-01)
+
+### Bug Fixes
+
+* adjust parameter value on repository tree api (#1212) 2be72c2, closes  [#1212](https://github.com/SwissDataScienceCenter/renku-ui/issues/1212)
+* do not attach trailing '/' on routes that end in a number (#1148) (#1202) 91d451e, closes  [#1148](https://github.com/SwissDataScienceCenter/renku-ui/issues/1148)  [#1202](https://github.com/SwissDataScienceCenter/renku-ui/issues/1202)
+* fetch and store project statistics (#1192) 66ee302, closes  [#1192](https://github.com/SwissDataScienceCenter/renku-ui/issues/1192)  [#1074](https://github.com/SwissDataScienceCenter/renku-ui/issues/1074)
+* prevent crashes on lineage with short node labels (#1193) c7dce1f, closes  [#1193](https://github.com/SwissDataScienceCenter/renku-ui/issues/1193)  [#1101](https://github.com/SwissDataScienceCenter/renku-ui/issues/1101)
+* **datasets** get datasets even if user is not logged in (#1222) (#1223) e6ed756, closes  [#1222](https://github.com/SwissDataScienceCenter/renku-ui/issues/1222)  [#1223](https://github.com/SwissDataScienceCenter/renku-ui/issues/1223)
+* **sessions** prevent changing params when other fetches are ongoing on new environment page (#1184) c7bd565, closes  [#1184](https://github.com/SwissDataScienceCenter/renku-ui/issues/1184)  [#1127](https://github.com/SwissDataScienceCenter/renku-ui/issues/1127)
+
+### Features
+
+* improve and speed up file preview (#1186) 99726cf, closes  [#1186](https://github.com/SwissDataScienceCenter/renku-ui/issues/1186)  [#1147](https://github.com/SwissDataScienceCenter/renku-ui/issues/1147)
+* make fetching commits resilient to exceptions (#1184) 023f1e3, closes  [#1184](https://github.com/SwissDataScienceCenter/renku-ui/issues/1184)
+
+
 
 ## [0.11.3](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.2...0.11.3) (2020-12-11)
 
