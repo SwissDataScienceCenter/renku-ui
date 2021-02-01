@@ -611,19 +611,29 @@ function Clipboard(props) {
 }
 
 // Throttle toggling -- added to work around a bug that appears in Chrome only
-function throttledToggler(tooltipOpen, setTooltipOpen, lastToggleTime, setLastToggleTime) {
+// commenting out but leaving here in case we need it again.
+// function throttledToggler(tooltipOpen, setTooltipOpen, lastToggleTime, setLastToggleTime) {
+//   return () => {
+//     const now = Date.now();
+//     const sinceLast = now - lastToggleTime;
+//     if (!tooltipOpen && sinceLast > 100) {
+//       setLastToggleTime(now);
+//       return setTooltipOpen(!tooltipOpen);
+//     }
+//     else if (tooltipOpen) {
+//       return setTooltipOpen(!tooltipOpen);
+//     }
+//   };
+// }
+
+
+// Non-throttled toggling
+function standardToggler(tooltipOpen, setTooltipOpen, lastToggleTime, setLastToggleTime) {
   return () => {
-    const now = Date.now();
-    const sinceLast = now - lastToggleTime;
-    if (!tooltipOpen && sinceLast > 100) {
-      setLastToggleTime(now);
-      return setTooltipOpen(!tooltipOpen);
-    }
-    else if (tooltipOpen) {
-      return setTooltipOpen(!tooltipOpen);
-    }
+    return setTooltipOpen(!tooltipOpen);
   };
 }
+
 
 /**
  * ThrottledTooltip
@@ -636,7 +646,7 @@ function ThrottledTooltip(props) {
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const [lastToggleTime, setLastToggleTime] = useState(Date.now());
 
-  const toggle = throttledToggler(tooltipOpen, setTooltipOpen, lastToggleTime, setLastToggleTime);
+  const toggle = standardToggler(tooltipOpen, setTooltipOpen, lastToggleTime, setLastToggleTime);
 
   return <Tooltip placement="top" target={props.target} isOpen={tooltipOpen} toggle={toggle}
     delay={{ show: 25, hide: 250 }}>
