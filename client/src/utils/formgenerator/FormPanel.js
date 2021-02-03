@@ -46,7 +46,6 @@ function capitalize(string) {
 function SubmitButtonGroup(props) {
   const { submitCallback, submitLoader, btnName, errorFields } = props;
   const { onCancel, cancelBtnName } = props;
-  console.log(cancelBtnName);
   const submitButton = submitCallback !== undefined ?
     <Button type="submit" disabled={submitLoader.value} className="float-right mt-1" color="primary">
       {btnName}
@@ -69,9 +68,8 @@ function SubmitButtonGroup(props) {
   </Fragment>;
 }
 
-function FormPanel({ title, btnName, submitCallback, model, serverErrors_old, formLocation, getLocation,
-  serverWarnings_old, submitLoader_remove_this, onCancel, edit,
-  cancelBtnName_dsds, disableAll_old, handlers, initializeFunction }) {
+function FormPanel({ title, btnName, submitCallback, model, formLocation, onCancel, edit,
+  handlers, initializeFunction }) {
   const draft = handlers ? handlers.getDraft() : undefined;
   const modelValues = draft ? draft : _.cloneDeep(Object.values(model));
   const initialized = useRef(false);
@@ -88,8 +86,6 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors_old, fo
       handlers.addDraft(modelValues, true);
       initialized.current = true;
     }
-  //}, [handlers, initialized, modelValues]);
-  //IS THIS CORRECT????
   }, []);
 
   const Components = {
@@ -107,7 +103,7 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors_old, fo
     const Component = Components[capitalize(input.type) + "Input"];
     return <Component key={input.name}
       disabled={(submitLoader && submitLoader.value ) || (input.edit === false && edit) || disableAll}
-      setInputs={setInputs} {...input} handlers={handlers} formLocation={formLocation} getLocation={getLocation}/>;
+      setInputs={setInputs} {...input} handlers={handlers} formLocation={formLocation}/>;
   };
 
   const extractErrorsAndWarnings = (errorOrWarning) => {

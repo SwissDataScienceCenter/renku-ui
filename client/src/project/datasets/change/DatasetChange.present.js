@@ -59,7 +59,6 @@ function DatasetChange(props) {
     onCancel={props.onCancel}
     edit={edit}
     model_top={props.model}
-    getLocation={()=> props.location.pathname}
     location={props.location}
     initializeFunction={props.initializeFunction}
   />;

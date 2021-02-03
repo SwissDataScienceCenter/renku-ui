@@ -497,6 +497,7 @@ class View extends Component {
         fetchDatasets={this.eventHandlers.fetchDatasets}
         overviewCommitsUrl={subUrls.overviewCommitsUrl}
         edit={false}
+        location={p.location}
         notifications={p.notifications}
         model={this.props.model}
       />,
@@ -521,7 +522,9 @@ class View extends Component {
         fetchDatasets={this.eventHandlers.fetchDatasets}
         overviewCommitsUrl={subUrls.overviewCommitsUrl}
         edit={true}
-        location={p.location.pathname}
+        pathname={p.location}
+        notifications={p.notifications}
+        model={this.props.model}
       />,
 
       importDataset: (p) => <ImportDataset

@@ -36,7 +36,6 @@ class FormGenerator extends Component {
     super(props);
     this.model = props.model_top.subModel("formGenerator");
     this.coordinator = new FormGeneratorCoordinator(props.client, this.model);
-    // this.getLocation = () => props.getLocation();
     this.handlers = {
       addDraft: this.addDraft.bind(this),
       getDraft: this.getDraft.bind(this),
@@ -135,8 +134,7 @@ class FormGenerator extends Component {
     return {
       handlers: this.handlers,
       drafts: state.formGenerator,
-      formLocation: this.props.location.pathname,
-      //getLocation: () => this.props.location.pathname
+      formLocation: this.props.location.pathname
     };
   }
 

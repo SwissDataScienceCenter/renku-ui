@@ -11,7 +11,9 @@ class FormGeneratorCoordinator {
    * @param {string} location - is the location of the form (could be projectSlug/...  or /project/new)
    * @param {string} currentFormModel - current state of the form model
    */
-  addFormDraft(location, currentFormModel, mounted, submitLoader) {
+  addFormDraft(location, currentFormModel, mounted) {
+    console.log("ADDING FORMMMM");
+    console.log(location);
     const drafts = this.model.get("formDrafts");
     let currentDraft = drafts.find(draft => draft.location === location);
     let newList;
@@ -20,10 +22,6 @@ class FormGeneratorCoordinator {
         currentDraft.mounted = mounted;
       if (currentFormModel !== undefined)
         currentDraft.currentFormModel = currentFormModel;
-      // if (submitLoader !== undefined)
-      //   currentDraft.submitLoader = submitLoader;
-      // if (serverErrors !== undefined)
-      //   currentDraft.serverErrors = serverErrors;
       newList = drafts.map(draft => draft.location === location ?
         currentDraft
         : draft);

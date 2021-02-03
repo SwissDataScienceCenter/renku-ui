@@ -23,7 +23,7 @@
  *  Container components for new dataset.
  */
 
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { datasetFormSchema } from "../../../model/RenkuModels";
 import DatasetChange from "./DatasetChange.present";
@@ -98,7 +98,7 @@ function ChangeDataset(props) {
   };
 
   const onCancel = (e, handlers) => {
-    handlers.removeDraft(props.location);
+    handlers.removeDraft(props.location.pathname);
     props.history.push({ pathname: `/projects/${props.projectPathWithNamespace}/datasets` });
   };
 
@@ -179,6 +179,7 @@ function ChangeDataset(props) {
     handlers.setSubmitLoader({ value: false, text: "" });
     if (interval !== undefined) clearInterval(interval);
     props.fetchDatasets(true);
+    handlers.removeDraft(props.location.pathname);
     props.history.push({
       pathname: `/projects/${props.projectPathWithNamespace}/datasets/${datasetId}/`
     });
