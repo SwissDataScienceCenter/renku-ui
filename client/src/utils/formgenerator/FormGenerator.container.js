@@ -58,83 +58,83 @@ class FormGenerator extends Component {
     };
   }
 
-  addDraft(formDraft, mounted, submitLoader, location = this.props.location.pathname) {
-    return this.coordinator.addFormDraft(location, formDraft, mounted, submitLoader);
+  addDraft(formDraft, mounted, submitLoader, formLocation = this.props.formLocation) {
+    return this.coordinator.addFormDraft(formLocation, formDraft, mounted, submitLoader);
   }
 
-  getDraft(location = this.props.location.pathname) {
-    return this.coordinator.getFormDraft(location);
+  getDraft( formLocation = this.props.formLocation) {
+    return this.coordinator.getFormDraft(formLocation);
   }
 
-  removeDraft(location = this.props.location.pathname) {
-    return this.coordinator.removeFormDraft(location);
+  removeDraft( formLocation = this.props.formLocation) {
+    return this.coordinator.removeFormDraft(formLocation);
   }
 
-  setSubmitLoader(submitLoader, location = this.props.location.pathname) {
-    return this.coordinator.setSubmitLoader(location, submitLoader);
+  setSubmitLoader(submitLoader, formLocation = this.props.formLocation) {
+    return this.coordinator.setSubmitLoader(formLocation, submitLoader);
   }
 
-  getSubmitLoader(location = this.props.location.pathname) {
-    return this.coordinator.getSubmitLoader(location);
+  getSubmitLoader( formLocation = this.props.formLocation) {
+    return this.coordinator.getSubmitLoader(formLocation);
   }
 
-  setServerErrors(serverErrors, location = this.props.location.pathname) {
-    return this.coordinator.setServerErrors(location, serverErrors);
+  setServerErrors(serverErrors, formLocation = this.props.formLocation) {
+    return this.coordinator.setServerErrors(formLocation, serverErrors);
   }
 
-  getServerErrors(location = this.props.location.pathname) {
-    return this.coordinator.getServerErrors(location);
+  getServerErrors( formLocation = this.props.formLocation) {
+    return this.coordinator.getServerErrors(formLocation);
   }
 
-  setServerWarnings(serverWarnings, location = this.props.location.pathname) {
-    return this.coordinator.setServerWarnings(location, serverWarnings);
+  setServerWarnings(serverWarnings, formLocation = this.props.formLocation) {
+    return this.coordinator.setServerWarnings(formLocation, serverWarnings);
   }
 
-  getServerWarnings(location = this.props.location.pathname) {
-    return this.coordinator.getServerWarnings(location);
+  getServerWarnings( formLocation = this.props.formLocation) {
+    return this.coordinator.getServerWarnings(formLocation);
   }
 
-  setDisableAll(disableAll, location = this.props.location.pathname) {
-    return this.coordinator.setDisableAll(location, disableAll);
+  setDisableAll(disableAll, formLocation = this.props.formLocation) {
+    return this.coordinator.setDisableAll(formLocation, disableAll);
   }
 
-  getDisableAll(location = this.props.location.pathname) {
-    return this.coordinator.getDisableAll(location);
+  getDisableAll( formLocation = this.props.formLocation) {
+    return this.coordinator.getDisableAll(formLocation);
   }
 
-  setSecondaryButtonText(text, location = this.props.location.pathname) {
-    return this.coordinator.setSecondaryButtonText(location, text);
+  setSecondaryButtonText(text, formLocation = this.props.formLocation) {
+    return this.coordinator.setSecondaryButtonText(formLocation, text);
   }
 
-  getSecondaryButtonText(location = this.props.location.pathname) {
-    return this.coordinator.getSecondaryButtonText(location);
+  getSecondaryButtonText( formLocation = this.props.formLocation) {
+    return this.coordinator.getSecondaryButtonText(formLocation);
   }
 
-  isMounted(location = this.props.location.pathname) {
-    return this.coordinator.isMounted(location);
+  isMounted( formLocation = this.props.formLocation) {
+    return this.coordinator.isMounted(formLocation);
   }
 
-  getFormDraftProperty(location = this.props.location.pathname, fieldName, property) {
-    return this.coordinator.getFormDraftProperty(location, fieldName, property);
+  getFormDraftProperty( formLocation = this.props.formLocation, fieldName, property) {
+    return this.coordinator.getFormDraftProperty(formLocation, fieldName, property);
   }
 
-  setFormDraftInternalValuesProperty(location = this.props.location.pathname, fieldName, property, value) {
-    return this.coordinator.setFormDraftInternalValuesProperty(location, fieldName, property, value);
+  setFormDraftInternalValuesProperty( formLocation = this.props.formLocation, fieldName, property, value) {
+    return this.coordinator.setFormDraftInternalValuesProperty(formLocation, fieldName, property, value);
   }
 
-  getFormDraftInternalValuesProperty(location = this.props.location.pathname, fieldName, property) {
-    return this.coordinator.getFormDraftInternalValuesProperty(location, fieldName, property);
+  getFormDraftInternalValuesProperty( formLocation = this.props.formLocation, fieldName, property) {
+    return this.coordinator.getFormDraftInternalValuesProperty(formLocation, fieldName, property);
   }
 
-  getFormDraftFieldValue(location = this.props.location.pathname, fieldName) {
-    return this.coordinator.getFormDraftFieldValue(location, fieldName);
+  getFormDraftFieldValue( formLocation = this.props.formLocation, fieldName) {
+    return this.coordinator.getFormDraftFieldValue(formLocation, fieldName);
   }
 
   mapStateToProps(state) {
     return {
       handlers: this.handlers,
       drafts: state.formGenerator,
-      formLocation: this.props.location.pathname
+      formLocation: this.props.formLocation
     };
   }
 

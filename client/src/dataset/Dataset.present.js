@@ -263,6 +263,7 @@ export default function DatasetView(props) {
           history={props.history}
           client={props.client}
           user={props.user}
+          formLocation={props.location.pathname + "/add"}
         />
         : null
     }

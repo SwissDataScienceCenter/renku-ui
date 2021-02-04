@@ -70,7 +70,7 @@ function SubmitButtonGroup(props) {
 
 function FormPanel({ title, btnName, submitCallback, model, formLocation, onCancel, edit,
   handlers, initializeFunction }) {
-  const draft = handlers ? handlers.getDraft() : undefined;
+  const draft = handlers ? handlers.getDraft(formLocation) : undefined;
   const modelValues = draft ? draft : _.cloneDeep(Object.values(model));
   const initialized = useRef(false);
   const [inputs, setInputs, setSubmit] = useForm(modelValues, submitCallback, handlers, formLocation);
@@ -81,11 +81,21 @@ function FormPanel({ title, btnName, submitCallback, model, formLocation, onCanc
   const disableAll = handlers.getDisableAll(formLocation);
 
   useEffect(()=>{
-    if (initializeFunction && modelValues && !initialized.current) {
-      initializeFunction(modelValues);
-      handlers.addDraft(modelValues, true);
+    if (modelValues && !initialized.current) {
+      if (initializeFunction) {
+        initializeFunction(modelValues, handlers);
+      }
+      else if (!draft) {
+        modelValues.map(field=> {
+          if (field.initial)
+            field.value = field.initial;
+          return field;
+        });
+      }
+      handlers.addDraft(modelValues, true, formLocation);
       initialized.current = true;
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const Components = {

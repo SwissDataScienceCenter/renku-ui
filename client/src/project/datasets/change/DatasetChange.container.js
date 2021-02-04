@@ -39,6 +39,7 @@ function ChangeDataset(props) {
   if (dsFormSchema == null)
     dsFormSchema = _.cloneDeep(datasetFormSchema);
 
+  const formLocation = props.location.pathname + "change";
   const [datasetFiles, setDatasetFiles] = useState();
   const dataset = useMemo(() =>
     mapDataset(props.datasets ?
@@ -154,7 +155,6 @@ function ChangeDataset(props) {
       handlers.setSecondaryButtonText(props.edit ? "Go to dataset" : "Go to list");
       handlers.setServerWarnings(getServerWarnings(jobStats));
       handlers.setSubmitLoader({ value: false, text: "" });
-      //setSubmitLoader(false);
     }
   }
 
@@ -195,12 +195,10 @@ function ChangeDataset(props) {
   };
 
   const submitCallback = (e, mappedInputs, handlers) => {
-    //setServerErrors(undefined);
     handlers.setServerErrors(undefined);
     handlers.setServerWarnings(undefined);
-    handlers.setDisableAll(false);
+    handlers.setDisableAll(undefined);
 
-    //setSubmitLoader(true);
     const submitLoaderText = props.edit ? "Modifying dataset, please wait..." : "Creating dataset, please wait...";
     handlers.setSubmitLoader({ value: true, text: submitLoaderText });
     const dataset = {};
@@ -339,7 +337,7 @@ function ChangeDataset(props) {
     overviewCommitsUrl={props.overviewCommitsUrl}
     edit={props.edit}
     model={props.model}
-    location={props.location}
+    formLocation={formLocation}
     initializeFunction={initializeFunction}
   />;
 }

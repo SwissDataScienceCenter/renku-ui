@@ -477,6 +477,7 @@ class View extends Component {
         graphStatus={this.isGraphReady()}
         overviewStatusUrl={subUrls.overviewStatusUrl}
         projectInsideKg={projectInsideKg}
+        location={this.props.location}
       />,
 
       newDataset: (p) => <ChangeDataset
@@ -522,7 +523,7 @@ class View extends Component {
         fetchDatasets={this.eventHandlers.fetchDatasets}
         overviewCommitsUrl={subUrls.overviewCommitsUrl}
         edit={true}
-        pathname={p.location}
+        location={p.location}
         notifications={p.notifications}
         model={this.props.model}
       />,
@@ -544,6 +545,9 @@ class View extends Component {
         httpProjectUrl={httpProjectUrl}
         fetchDatasets={this.eventHandlers.fetchDatasets}
         overviewCommitsUrl={subUrls.overviewCommitsUrl}
+        location={p.location}
+        notifications={p.notifications}
+        model={this.props.model}
       />,
 
       fork: () => <Fork

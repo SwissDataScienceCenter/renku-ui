@@ -438,7 +438,7 @@ const datasetFormSchema = new Schema({
 });
 
 const issueFormSchema = new Schema({
-  name: {
+  title: {
     initial: "",
     name: "title",
     label: "Title",
@@ -452,7 +452,7 @@ const issueFormSchema = new Schema({
   },
   description: {
     initial: "",
-    name: "textarea",
+    name: "description",
     label: "Description",
     type: FormGenerator.FieldTypes.TEXT_EDITOR,
     outputType: "markdown",

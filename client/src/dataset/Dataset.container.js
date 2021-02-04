@@ -108,5 +108,6 @@ export default function ShowDataset(props) {
     overviewStatusUrl={props.overviewStatusUrl}
     projectInsideKg={props.projectInsideKg}
     httpProjectUrl={props.httpProjectUrl}
+    location={props.location}
   />;
 }

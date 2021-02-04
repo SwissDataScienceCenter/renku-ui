@@ -12,8 +12,6 @@ class FormGeneratorCoordinator {
    * @param {string} currentFormModel - current state of the form model
    */
   addFormDraft(location, currentFormModel, mounted) {
-    console.log("ADDING FORMMMM");
-    console.log(location);
     const drafts = this.model.get("formDrafts");
     let currentDraft = drafts.find(draft => draft.location === location);
     let newList;
