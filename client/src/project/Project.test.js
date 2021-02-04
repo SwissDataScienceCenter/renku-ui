@@ -102,33 +102,6 @@ describe("rendering", () => {
   const loggedUser = generateFakeUser();
   const model = new StateModel(globalSchema);
 
-  it("renders list without crashing for anonymous user", () => {
-    const div = document.createElement("div");
-    ReactDOM.render(
-      <MemoryRouter>
-        <Project.List
-          client={client}
-          model={model}
-          store={model.reduxStore}
-          user={anonymousUser}
-          history={fakeHistory}
-          location={fakeHistory.location} />
-      </MemoryRouter>
-      , div);
-  });
-  it("renders list without crashing for logged user", () => {
-    const div = document.createElement("div");
-    ReactDOM.render(
-      <MemoryRouter>
-        <Project.List
-          client={client}
-          model={model}
-          history={fakeHistory}
-          user={loggedUser}
-          location={fakeHistory.location} />
-      </MemoryRouter>
-      , div);
-  });
   it("renders view without crashing for anonymous user", () => {
     const div = document.createElement("div");
     ReactDOM.render(

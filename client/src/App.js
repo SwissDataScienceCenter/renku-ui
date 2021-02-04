@@ -29,6 +29,8 @@ import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
 import Project from "./project/Project";
+import { ProjectList } from "./project/list";
+import { NewProject } from "./project/new";
 import DatasetList from "./dataset/list/DatasetList.container";
 import { Landing, RenkuNavBar, FooterNavbar } from "./landing";
 import { Notebooks } from "./notebooks";
@@ -95,7 +97,7 @@ class App extends Component {
               p => <Help key="help" {...p} statuspageId={this.props.statuspageId} {...this.props} />} />
             <Route exact
               path={[Url.get(Url.pages.projects), Url.get(Url.pages.projects.starred), Url.get(Url.pages.projects.all)]}
-              render={p => <Project.List
+              render={p => <ProjectList
                 key="projects"
                 user={this.props.user}
                 client={this.props.client}
@@ -104,7 +106,7 @@ class App extends Component {
               />}
             />
             <Route exact path={Url.get(Url.pages.project.new)} render={
-              p => <Project.New
+              p => <NewProject
                 key="newProject"
                 client={this.props.client}
                 model={this.props.model}

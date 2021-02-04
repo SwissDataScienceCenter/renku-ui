@@ -33,15 +33,16 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import { RenkuMarkdown, Loader } from "../utils/UIComponents";
-import { ProjectListRow } from "../project";
+import { ProjectListRow } from "../project/list";
 import { StatuspageBanner } from "../statuspage";
 
-function truncatedProjectListRows(projects, projectsUrl, moreUrl) {
+function truncatedProjectListRows(projects, urlFullList) {
   const maxProjectsRows = 5;
   const projectSlice = projects.slice(0, maxProjectsRows);
-  const rows = projectSlice.map(p =>
-    <ProjectListRow key={p.id} projectsUrl={projectsUrl} compact={true} {...p} />);
-  const more = (projects.length > maxProjectsRows) ? <Link key="more" to={moreUrl}>more...</Link> : null;
+  const rows = projectSlice.map(project => <ProjectListRow key={project.id} compact={true} {...project} />);
+  const more = (projects.length > maxProjectsRows) ?
+    (<Link key="more" to={urlFullList}>more...</Link>)
+    : null;
   return [
     <Row key="projects"><Col style={{ overflowX: "auto" }}>{rows}</Col></Row>,
     more
@@ -50,37 +51,35 @@ function truncatedProjectListRows(projects, projectsUrl, moreUrl) {
 
 class YourEmptyProjects extends Component {
   render() {
-    return (<Row>
-      <Col>
-        <p>
-          You are logged in, but you are not yet a member of any projects.
-
-          If there is a project you work on, you should
-          search for it in the <Link to={this.props.projectsSearchUrl}>project search</Link>, click on it to view,
-          and fork it.
-        </p>
-        <p>
-          Alternatively, you can <Link to={this.props.projectNewUrl}>create a new project</Link>.
-        </p>
-      </Col>
-    </Row>);
+    return (
+      <Row>
+        <Col>
+          <p>
+            You are logged in, but you are not yet a member of any projects.
+            If there is a project you work on, you should search for it in
+            the <Link to={this.props.projectsSearchUrl}>project search</Link>, click on it to view, and fork it.
+          </p>
+          <p>Alternatively, you can <Link to={this.props.projectNewUrl}>create a new project</Link>.</p>
+        </Col>
+      </Row>
+    );
   }
 }
 
 class YourProjects extends Component {
   render() {
     const projects = this.props.projects || [];
-    const projectsUrl = this.props.urlMap.projectsUrl;
-    const projectsSearchUrl = this.props.urlMap.projectsSearchUrl;
+    const { projectsUrl, projectsSearchUrl } = this.props.urlMap;
+
     let projectsComponent = null;
     if (this.props.loading) {
       projectsComponent = <Loader key="loader" />;
     }
     else if (projects.length > 0) {
-      projectsComponent = truncatedProjectListRows(projects, projectsUrl, projectsUrl);
+      projectsComponent = truncatedProjectListRows(projects, projectsUrl);
     }
     else {
-      const projectNewUrl = this.props.urlMap.projectNewUrl;
+      const { projectNewUrl } = this.props.urlMap;
       projectsComponent = <YourEmptyProjects key="empty-projects" projectsSearchUrl={projectsSearchUrl}
         projectNewUrl={projectNewUrl} welcomePage={this.props.welcomePage} />;
     }
@@ -119,17 +118,17 @@ class StarredEmptyProjects extends Component {
 class Starred extends Component {
   render() {
     const projects = this.props.projects || [];
-    const projectsUrl = this.props.urlMap.projectsUrl;
+    const { projectsStarredUrl } = this.props.urlMap;
+
     let projectsComponent = null;
     if (this.props.loading) {
       projectsComponent = <Loader key="loader" />;
     }
     else if (projects.length > 0) {
-      projectsComponent = truncatedProjectListRows(projects, projectsUrl, this.props.urlMap.projectsStarredUrl);
+      projectsComponent = truncatedProjectListRows(projects, projectsStarredUrl);
     }
     else {
-      const projectNewUrl = this.props.urlMap.projectNewUrl;
-      const projectsSearchUrl = this.props.urlMap.projectsSearchUrl;
+      const { projectNewUrl, projectsSearchUrl } = this.props.urlMap;
       projectsComponent = <StarredEmptyProjects key="empty" projectsSearchUrl={projectsSearchUrl}
         projectNewUrl={projectNewUrl} welcomePage={this.props.welcomePage} />;
     }

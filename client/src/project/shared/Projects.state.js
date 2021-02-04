@@ -46,7 +46,9 @@ class ProjectsCoordinator {
       owner: project.owner,
       last_activity_at: project.last_activity_at,
       access_level: accessLevel,
-      http_url_to_repo: project.http_url_to_repo
+      http_url_to_repo: project.http_url_to_repo,
+      namespace: project.namespace,
+      path: project.path
     };
   }
 
