@@ -181,11 +181,26 @@ function ProjectList(props) {
     const newSection = getSection(props.location);
     let newSearchParams = getSearchParams(null, CONVERSIONS);
 
-    // prevent illegal searchIn
-    if (newSection !== sectionMap.all && newSearchParams.searchIn !== searchInMap.projects.value)
-      newSearchParams.searchIn = searchInMap.projects.value;
+    // consider the default params when setting the new default
+    let newParamsFull = { ...newSearchParams };
+    const newParamsKeys = Object.keys(newParamsFull);
+    for (let [param, value] of Object.entries(DEFAULT_PARAMS)) {
+      if (!newParamsKeys.includes(param))
+        newParamsFull[param] = value;
+    }
 
-    setParams(p => ({ ...p, ...newSearchParams, section: newSection }));
+    // prevent illegal searchIn
+    if (newSection !== sectionMap.all && newParamsFull.searchIn !== searchInMap.projects.value)
+      newParamsFull.searchIn = searchInMap.projects.value;
+
+    setParams(p => {
+      const newParams = { ...p, ...newParamsFull, section: newSection };
+      // prevent extra queries when changing searchIn
+      if (newParams.searchIn !== p.searchIn)
+        setTargetUser(null);
+
+      return newParams;
+    });
   }, [props.location]);
 
   // Get new projects when params change (ONLY when searching in projects)
@@ -229,6 +244,9 @@ function ProjectList(props) {
   useEffect(() => {
     if (params.searchIn === searchInMap.projects.value)
       return;
+
+    // reset target user
+    //setTargetUser(null);
 
     // Never fetch when filtering for something shorter than 3 chars
     if (params.query == null || !params.query.toString().length || params.query.toString().length < 3) {
