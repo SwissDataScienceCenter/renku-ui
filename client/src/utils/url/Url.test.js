@@ -212,26 +212,30 @@ describe("getSearchParams function", () => {
   };
 
   beforeAll(() => {
+    // ? This works fine locally, but it fails in the GitHub actions where the workaround
+    // ? is to delete global.window.location each time.
     global.window = Object.create(window);
     Object.defineProperty(window, "location", {
-      value: { search: "" }
+      value: { href: "/", search: "" }
     });
   });
 
   it("Basic behavior", () => {
-    let params;
-    window.location.search = SEARCH.nothing;
-    params = getSearchParams();
+    delete global.window.location;
+    window.location = { search: SEARCH.nothing };
+    let params = getSearchParams();
     expect(params).toBeInstanceOf(Object);
     expect(Object.keys(params).length).toBe(0);
 
-    window.location.search = SEARCH.page;
+    delete global.window.location;
+    window.location = { search: SEARCH.page };
     params = getSearchParams();
     expect(params).toBeInstanceOf(Object);
     expect(Object.keys(params).length).toBe(1);
     expect(params).toMatchObject({ q: "test" });
 
-    window.location.search = SEARCH.many;
+    delete global.window.location;
+    window.location = { search: SEARCH.many };
     params = getSearchParams();
     expect(params).toBeInstanceOf(Object);
     expect(Object.keys(params).length).toBe(3);
@@ -239,7 +243,8 @@ describe("getSearchParams function", () => {
   });
 
   it("Expected parameters", () => {
-    window.location.search = SEARCH.many;
+    delete global.window.location;
+    window.location = { search: SEARCH.many };
     const expectedParams = { "page": 1, "q": null };
     const params = getSearchParams(expectedParams);
     expect(params).toBeInstanceOf(Object);
@@ -248,22 +253,26 @@ describe("getSearchParams function", () => {
   });
 
   it("Converted legacy", () => {
-    let params;
-    window.location.search = SEARCH.legacy;
-    const expectedParams = { "page": 1, "q": null };
     const convertParams = { orderSearchAsc: "ascending" };
+    const expectedParams = { "page": 1, "q": null };
+    let params;
 
+    delete global.window.location;
+    window.location = { search: SEARCH.legacy };
     params = getSearchParams(null, convertParams);
     expect(params).toBeInstanceOf(Object);
     expect(Object.keys(params).length).toBe(3);
     expect(params).toMatchObject({ page: 4, ascending: false, perPage: 50 });
 
+    delete global.window.location;
+    window.location = { search: SEARCH.legacy };
     params = getSearchParams(expectedParams, convertParams);
     expect(params).toBeInstanceOf(Object);
     expect(Object.keys(params).length).toBe(4);
     expect(params).toMatchObject({ page: 4, ascending: false, perPage: 50, q: null });
 
-    window.location.search = SEARCH.overlapping;
+    delete global.window.location;
+    window.location = { search: SEARCH.overlapping };
     params = getSearchParams(expectedParams, convertParams);
     expect(params).toBeInstanceOf(Object);
     expect(Object.keys(params).length).toBe(4);
@@ -271,7 +280,8 @@ describe("getSearchParams function", () => {
   });
 
   it("No conversion", () => {
-    window.location.search = SEARCH.many;
+    delete global.window.location;
+    window.location = { search: SEARCH.many };
     const params = getSearchParams(null, null, false);
     expect(params).toBeInstanceOf(Object);
     expect(Object.keys(params).length).toBe(3);
