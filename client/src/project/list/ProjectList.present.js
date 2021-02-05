@@ -93,11 +93,74 @@ function ProjectListRows(props) {
   );
 }
 
+function SearchInFilter(props) {
+  const { params, sectionsMap, searchInMap, searchWithValues, currentSearchInObject } = props;
+
+  // search in
+  const [dropdownSearchIn, setDropdownSearchIn] = useState(false);
+  const toggleDropdownSearchIn = () => setDropdownSearchIn(!dropdownSearchIn);
+  const searchInItems = Object.values(searchInMap).map(v => (
+    <DropdownItem key={v.value} value={v.value} onClick={() => { searchWithValues({ searchIn: v.value }); }}>
+      {v.value === currentSearchInObject.value ? <FontAwesomeIcon icon={faCheck} /> : null} {v.text}
+    </DropdownItem>
+  ));
+
+  return params.section === sectionsMap.all ?
+  (
+    <InputGroupButtonDropdown className="input-group-prepend" addonType="append"
+      toggle={toggleDropdownSearchIn} isOpen={dropdownSearchIn} >
+      <DropdownToggle outline caret color="primary" >
+        Filter by: {currentSearchInObject.text}
+      </DropdownToggle>
+      <DropdownMenu>
+        {searchInItems}
+      </DropdownMenu>
+    </InputGroupButtonDropdown>
+  ) :
+  null;
+}
+
+function SearchOrder(props) {
+  const { params,  orderByMap, searchWithValues } = props;
+
+  const orderingIcon = params.ascending ?
+    faSortAmountUp :
+    faSortAmountDown;
+  const [dropdownOrderBy, setDropdownOrderBy] = useState(false);
+  const toggleDropdownOrderBy = () => setDropdownOrderBy(!dropdownOrderBy);
+  const currentOrderMapObject = Object.values(orderByMap).find(v => v.value === params.orderBy);
+
+
+  const orderByItems = Object.values(orderByMap).map(v => (
+    <DropdownItem key={v.value} value={v.value} onClick={() => { searchWithValues({ orderBy: v.value }); }}>
+      {v.value === currentOrderMapObject.value ? <FontAwesomeIcon icon={faCheck} /> : null} {v.text}
+    </DropdownItem>
+  ));
+
+  return <Fragment>
+    <div className="input-group-append input-group-prepend m-0">
+      <Button outline color="primary" onClick={() => { searchWithValues({ ascending: !params.ascending }); }}>
+        <FontAwesomeIcon icon={orderingIcon} />
+      </Button>
+    </div>
+    <InputGroupButtonDropdown addonType="append"
+      toggle={toggleDropdownOrderBy} isOpen={dropdownOrderBy} >
+      <DropdownToggle outline caret color="primary" >
+        Order by: {currentOrderMapObject.text}
+      </DropdownToggle>
+      <DropdownMenu>
+        {orderByItems}
+      </DropdownMenu>
+    </InputGroupButtonDropdown>
+  </Fragment>
+}
+
 function ProjectListSearch(props) {
   const { orderByMap, params, search, searchInMap, sectionsMap } = props;
 
   // input and search
   const [userInput, setUserInput] = useState(params.query.toString());
+
   const searchWithValues = (modifiedParams) => {
     let newParams = modifiedParams || {};
     if (params.query.toString() !== userInput.toString())
@@ -111,44 +174,8 @@ function ProjectListSearch(props) {
     // ? on `page` because the user could modify the search and change page without searching first
   }, [params.query, params.page]);
 
-  // order by
-  const [dropdownOrderBy, setDropdownOrderBy] = useState(false);
-  const toggleDropdownOrderBy = () => setDropdownOrderBy(!dropdownOrderBy);
-  const currentOrderMapObject = Object.values(orderByMap).find(v => v.value === params.orderBy);
-  const orderByItems = Object.values(orderByMap).map(v => (
-    <DropdownItem key={v.value} value={v.value} onClick={() => { searchWithValues({ orderBy: v.value }); }}>
-      {v.value === currentOrderMapObject.value ? <FontAwesomeIcon icon={faCheck} /> : null} {v.text}
-    </DropdownItem>
-  ));
-
-  // search in
-  const [dropdownSearchIn, setDropdownSearchIn] = useState(false);
-  const toggleDropdownSearchIn = () => setDropdownSearchIn(!dropdownSearchIn);
   const currentSearchInObject = Object.values(searchInMap).find(v => v.value === params.searchIn);
-  const searchInItems = Object.values(searchInMap).map(v => (
-    <DropdownItem key={v.value} value={v.value} onClick={() => { searchWithValues({ searchIn: v.value }); }}>
-      {v.value === currentSearchInObject.value ? <FontAwesomeIcon icon={faCheck} /> : null} {v.text}
-    </DropdownItem>
-  ));
 
-  // ordering
-  const orderingIcon = params.ascending ?
-    faSortAmountUp :
-    faSortAmountDown;
-
-  const filterSection = params.section === sectionsMap.all ?
-    (
-      <InputGroupButtonDropdown className="input-group-prepend" addonType="append"
-        toggle={toggleDropdownSearchIn} isOpen={dropdownSearchIn} >
-        <DropdownToggle outline caret color="primary" >
-          Filter by: {currentSearchInObject.text}
-        </DropdownToggle>
-        <DropdownMenu>
-          {searchInItems}
-        </DropdownMenu>
-      </InputGroupButtonDropdown>
-    ) :
-    null;
 
   return (
     <div className="mb-4">
@@ -158,21 +185,9 @@ function ProjectListSearch(props) {
             className="border-primary input-group-append" style={{ minWidth: "300px" }}
             placeholder={"Filter by " + currentSearchInObject.text.toLowerCase()} value={userInput}
             onChange={e => setUserInput(e.target.value.toString())} />
-          {filterSection}
-          <div className="input-group-append input-group-prepend m-0">
-            <Button outline color="primary" onClick={() => { searchWithValues({ ascending: !params.ascending }); }}>
-              <FontAwesomeIcon icon={orderingIcon} />
-            </Button>
-          </div>
-          <InputGroupButtonDropdown addonType="append"
-            toggle={toggleDropdownOrderBy} isOpen={dropdownOrderBy} >
-            <DropdownToggle outline caret color="primary" >
-              Order by: {currentOrderMapObject.text}
-            </DropdownToggle>
-            <DropdownMenu>
-              {orderByItems}
-            </DropdownMenu>
-          </InputGroupButtonDropdown>
+          <SearchInFilter params={params} sectionsMap={sectionsMap} searchInMap={searchInMap}
+            searchWithValues={searchWithValues} currentSearchInObject={currentSearchInObject} />
+          <SearchOrder params={params} orderByMap={orderByMap} searchWithValues={searchWithValues} />
         </InputGroup>
         &nbsp;
         <Button color="primary" id="searchButton" onClick={() => searchWithValues()}>Search</Button>
