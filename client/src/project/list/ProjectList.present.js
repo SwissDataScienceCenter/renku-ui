@@ -260,7 +260,7 @@ function ProjectListContent(props) {
       content = (<Loader />);
     }
     else if (!fetched) {
-      content = (<p>Please enter you filtering words in the field above and click on Search to get the result.</p>);
+      content = (<p>Please enter text in the field above and click on Search to see the results.</p>);
     }
     else {
       const notAllowed = verifyRules(params, searchInMap, sectionsMap);

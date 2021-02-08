@@ -280,7 +280,7 @@ function useUserProjectSearch(client, params, targetUser, setParams, setProjects
     // Fetch user or group projects
     client.getProjectsBy(params.searchIn, targetUser, queryParams)
       .then((response) => {
-        // search again for page 1 if the user was trying to get content for an un-existing page
+        // search again for page 1 if the user was trying to get content for an nonexistent page
         if (response.pagination.totalPages && response.pagination.totalPages < pageRequest) {
           setParams(p => ({ ...p, page: 1 })); // TODO: use removeDefaultParams + buildPreciseUrl
           return;
