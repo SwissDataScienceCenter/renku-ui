@@ -136,6 +136,167 @@ function removeDefaultParams(params, removeSection = false) {
   return modifiedParams;
 }
 
+/** React hook to monitor location changes and set params */
+function useLocation(props, setParams, setTargetUser) {
+  useEffect(() => {
+    const newSection = getSection(props.location);
+    let newSearchParams = getSearchParams(null, CONVERSIONS);
+
+    // consider the default params when setting the new default
+    let newParamsFull = { ...newSearchParams };
+    const newParamsKeys = Object.keys(newParamsFull);
+    for (let [param, value] of Object.entries(DEFAULT_PARAMS)) {
+      if (!newParamsKeys.includes(param))
+        newParamsFull[param] = value;
+    }
+
+    // prevent illegal searchIn
+    if (newSection !== sectionMap.all && newParamsFull.searchIn !== searchInMap.projects.value)
+      newParamsFull.searchIn = searchInMap.projects.value;
+
+    setParams(p => {
+      const newParams = { ...p, ...newParamsFull, section: newSection };
+      // prevent extra queries when changing searchIn
+      if (newParams.searchIn !== p.searchIn)
+        setTargetUser(null);
+
+      return newParams;
+    });
+  }, [props.location, setParams, setTargetUser]);
+}
+
+/** React hook to update project search results when parameters change */
+function useProjectSearchParams(client, params, setParams, setProjects) {
+  useEffect(() => {
+    if (params.searchIn !== searchInMap.projects.value)
+      return;
+
+    // prepare fetching projects
+    setProjects(p => ({ ...p, fetched: null, fetching: true }));
+    let queryParams = {
+      search: params.query,
+      page: params.page,
+      per_page: params.perPage,
+      order_by: params.orderBy,
+      sort: params.ascending ? "asc" : "desc",
+    };
+    if (params.section === sectionMap.own)
+      queryParams.membership = true;
+    else if (params.section === sectionMap.starred)
+      queryParams.starred = true;
+    const pageRequest = params.page;
+
+    // fetch projects when feasible
+    client.getProjects(queryParams).then((response) => {
+      // search again for page 1 if the user was trying to get content for an un-existing page
+      if (response.pagination.totalPages && response.pagination.totalPages < pageRequest) {
+        setParams(p => ({ ...p, page: 1 })); // TODO: use removeDefaultParams + buildPreciseUrl
+        return;
+      }
+      setProjects({
+        fetching: false,
+        fetched: new Date(),
+        total: response.pagination.totalItems,
+        pages: response.pagination.totalPages,
+        list: response.data,
+      });
+    });
+  }, [params, client, setParams, setProjects]);
+}
+
+/** React hook to update user search results when parameters change */
+function useUserSearchParams(client, params, setUsers, setTargetUser) {
+  useEffect(() => {
+    if (params.searchIn === searchInMap.projects.value)
+      return;
+
+    // reset target user
+    //setTargetUser(null);
+
+    // Never fetch when filtering for something shorter than 3 chars
+    if (params.query == null || !params.query.toString().length || params.query.toString().length < 3) {
+      setUsers({ ...DEFAULT_USERS_GROUPS, fetching: false, fetched: new Date() });
+      return;
+    }
+
+    // prepare fetching users
+    setUsers(u => ({ ...u, fetched: null, fetching: true }));
+    let queryParams = { search: params.query, per_page: 100 };
+
+    // fetch users when feasible
+    client.searchUsersOrGroups(queryParams, params.searchIn).then((response) => {
+      const data = response.data ?
+        response.data :
+        response;
+
+      // Set new target // ? mind that targetUser is not currently used
+      let target = params.targetUser ?
+        params.targetUser :
+        null;
+      if (!target && data && data.length) {
+        target = data[0].full_path ?
+          encodeURIComponent(data[0].full_path) :
+          data[0].username;
+      }
+      setTargetUser(target);
+
+      // set users at the end to prevent flickering
+      setUsers({
+        fetching: false,
+        fetched: new Date(),
+        list: data,
+      });
+    });
+
+  }, [params.targetUser, params.query, params.searchIn, setUsers, setTargetUser, client]);
+}
+
+/** React hook to update project search results when the targetUser changes */
+function useUserProjectSearch(client, params, targetUser, setParams, setProjects) {
+  useEffect(() => {
+    if (params.searchIn === searchInMap.projects.value)
+      return;
+
+    // If no users were found, we already know there won't be any project.
+    if (!targetUser) {
+      setProjects({
+        ...DEFAULT_PROJECTS,
+        fetching: false,
+        fetched: new Date(),
+      });
+      return;
+    }
+
+    // Prepare fetching user or group projects
+    setProjects(p => ({ ...p, fetched: null, fetching: true }));
+    let queryParams = {
+      page: params.page,
+      per_page: params.perPage,
+      order_by: params.orderBy,
+      sort: params.ascending ? "asc" : "desc",
+    };
+    const pageRequest = params.page;
+
+    // Fetch user or group projects
+    client.getProjectsBy(params.searchIn, targetUser, queryParams)
+      .then((response) => {
+        // search again for page 1 if the user was trying to get content for an un-existing page
+        if (response.pagination.totalPages && response.pagination.totalPages < pageRequest) {
+          setParams(p => ({ ...p, page: 1 })); // TODO: use removeDefaultParams + buildPreciseUrl
+          return;
+        }
+        setProjects({
+          fetching: false,
+          fetched: new Date(),
+          total: response.pagination.totalItems,
+          pages: response.pagination.totalPages,
+          list: response.data,
+        });
+      });
+  }, [client, params.searchIn, params.page, params.perPage, params.orderBy, params.ascending,
+    targetUser, setParams, setProjects]);
+}
+
 
 // *** React functional components ***
 
@@ -177,156 +338,16 @@ function ProjectList(props) {
 
   // *** Hooks ***
   // Monitor location changes and set params
-  useEffect(() => {
-    const newSection = getSection(props.location);
-    let newSearchParams = getSearchParams(null, CONVERSIONS);
-
-    // consider the default params when setting the new default
-    let newParamsFull = { ...newSearchParams };
-    const newParamsKeys = Object.keys(newParamsFull);
-    for (let [param, value] of Object.entries(DEFAULT_PARAMS)) {
-      if (!newParamsKeys.includes(param))
-        newParamsFull[param] = value;
-    }
-
-    // prevent illegal searchIn
-    if (newSection !== sectionMap.all && newParamsFull.searchIn !== searchInMap.projects.value)
-      newParamsFull.searchIn = searchInMap.projects.value;
-
-    setParams(p => {
-      const newParams = { ...p, ...newParamsFull, section: newSection };
-      // prevent extra queries when changing searchIn
-      if (newParams.searchIn !== p.searchIn)
-        setTargetUser(null);
-
-      return newParams;
-    });
-  }, [props.location]);
+  useLocation(props, setParams, setTargetUser);
 
   // Get new projects when params change (ONLY when searching in projects)
-  useEffect(() => {
-    if (params.searchIn !== searchInMap.projects.value)
-      return;
-
-    // prepare fetching projects
-    setProjects(p => ({ ...p, fetched: null, fetching: true }));
-    let queryParams = {
-      search: params.query,
-      page: params.page,
-      per_page: params.perPage,
-      order_by: params.orderBy,
-      sort: params.ascending ? "asc" : "desc",
-    };
-    if (params.section === sectionMap.own)
-      queryParams.membership = true;
-    else if (params.section === sectionMap.starred)
-      queryParams.starred = true;
-    const pageRequest = params.page;
-
-    // fetch projects when feasible
-    props.client.getProjects(queryParams).then((response) => {
-      // search again for page 1 if the user was trying to get content for an un-existing page
-      if (response.pagination.totalPages && response.pagination.totalPages < pageRequest) {
-        setParams(p => ({ ...p, page: 1 })); // TODO: use removeDefaultParams + buildPreciseUrl
-        return;
-      }
-      setProjects({
-        fetching: false,
-        fetched: new Date(),
-        total: response.pagination.totalItems,
-        pages: response.pagination.totalPages,
-        list: response.data,
-      });
-    });
-  }, [params, props.client]);
+  useProjectSearchParams(props.client, params, setParams, setProjects);
 
   // Get new users when params change (ONLY when searching in user or groups)
-  useEffect(() => {
-    if (params.searchIn === searchInMap.projects.value)
-      return;
-
-    // reset target user
-    //setTargetUser(null);
-
-    // Never fetch when filtering for something shorter than 3 chars
-    if (params.query == null || !params.query.toString().length || params.query.toString().length < 3) {
-      setUsers({ ...DEFAULT_USERS_GROUPS, fetching: false, fetched: new Date() });
-      return;
-    }
-
-    // prepare fetching users
-    setUsers(u => ({ ...u, fetched: null, fetching: true }));
-    let queryParams = { search: params.query, per_page: 100 };
-
-    // fetch users when feasible
-    props.client.searchUsersOrGroups(queryParams, params.searchIn).then((response) => {
-      const data = response.data ?
-        response.data :
-        response;
-
-      // Set new target // ? mind that targetUser is not currently used
-      let target = params.targetUser ?
-        params.targetUser :
-        null;
-      if (!target && data && data.length) {
-        target = data[0].full_path ?
-          encodeURIComponent(data[0].full_path) :
-          data[0].username;
-      }
-      setTargetUser(target);
-
-      // set users at the end to prevent flickering
-      setUsers({
-        fetching: false,
-        fetched: new Date(),
-        list: data,
-      });
-    });
-
-  }, [params.targetUser, params.query, params.searchIn, props.client]);
+  useUserSearchParams(props.client, params, setUsers, setTargetUser);
 
   // Get new projects when targetUser change (ONLY when searching in user or groups)
-  useEffect(() => {
-    if (params.searchIn === searchInMap.projects.value)
-      return;
-
-    // If no users were found, we already know there won't be any project.
-    if (!targetUser) {
-      setProjects({
-        ...DEFAULT_PROJECTS,
-        fetching: false,
-        fetched: new Date(),
-      });
-      return;
-    }
-
-    // Prepare fetching user or group projects
-    setProjects(p => ({ ...p, fetched: null, fetching: true }));
-    let queryParams = {
-      page: params.page,
-      per_page: params.perPage,
-      order_by: params.orderBy,
-      sort: params.ascending ? "asc" : "desc",
-    };
-    const pageRequest = params.page;
-
-    // Fetch user or group projects
-    props.client.getProjectsBy(params.searchIn, targetUser, queryParams)
-      .then((response) => {
-        // search again for page 1 if the user was trying to get content for an un-existing page
-        if (response.pagination.totalPages && response.pagination.totalPages < pageRequest) {
-          setParams(p => ({ ...p, page: 1 })); // TODO: use removeDefaultParams + buildPreciseUrl
-          return;
-        }
-        setProjects({
-          fetching: false,
-          fetched: new Date(),
-          total: response.pagination.totalItems,
-          pages: response.pagination.totalPages,
-          list: response.data,
-        });
-      });
-  }, [props.client, params.searchIn, params.page, params.perPage, params.orderBy, params.ascending, targetUser]);
+  useUserProjectSearch(props.client, params, targetUser, setParams, setProjects);
 
   // *** Functions ***
   // Set the selected user or group, if it's different from the current
