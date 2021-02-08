@@ -29,25 +29,25 @@ const CONVERSIONS = {
   q: "query", currentTab: "section", currentPage: "page", orderSearchAsc: "ascending", usersOrGroup: "targetUser"
 };
 
-const sectionMap = {
+const SECTION_MAP = {
   own: "own",
   starred: "starred",
   all: "all",
 };
 
-const searchInMap = {
+const SEARCH_IN_MAP = {
   projects: { value: "projects", text: "Project" },
   users: { value: "users", text: "User" },
   groups: { value: "groups", text: "Group" }
 };
 
-const orderByMap = {
+const ORDER_BY_MAP = {
   name: { value: "name", text: "Name" },
   creationDate: { value: "created_at", text: "Creation date" },
   updateDate: { value: "last_activity_at", text: "Update date" }
 };
 
-const urlMap = {
+const URL_MAP = {
   projectsUrl: Url.get(Url.pages.projects), // TODO: remove?
   projectsSearchUrl: Url.get(Url.pages.projects.all), // --> all --> /all
   projectNewUrl: Url.get(Url.pages.project.new),
@@ -66,8 +66,8 @@ const DEFAULT_PARAMS = {
   query: "",
   page: 1,
   perPage: 10, // TODO: change to 10
-  searchIn: searchInMap.projects.value,
-  orderBy: orderByMap.updateDate.value,
+  searchIn: SEARCH_IN_MAP.projects.value,
+  orderBy: ORDER_BY_MAP.updateDate.value,
   ascending: false,
 };
 
@@ -78,15 +78,15 @@ const DEFAULT_PARAMS = {
  * Return section based on current location.
  *
  * @param {object} location - React location object.
- * @returns {string} current section, as defined in the enum sectionMap.
+ * @returns {string} current section, as defined in the enum SECTION_MAP.
  */
 function getSection(location) {
-  let section = sectionMap.own;
+  let section = SECTION_MAP.own;
   if (location && location.pathname) {
     if (location.pathname.endsWith("/starred"))
-      section = sectionMap.starred;
+      section = SECTION_MAP.starred;
     else if (location.pathname.endsWith("/all"))
-      section = sectionMap.all;
+      section = SECTION_MAP.all;
   }
   return section;
 }
@@ -103,9 +103,9 @@ function buildPreciseUrl(params, target) {
     params.section;
 
   let page = Url.pages.projects.all;
-  if (section === sectionMap.own)
+  if (section === SECTION_MAP.own)
     page = Url.pages.projects.base;
-  else if (section === sectionMap.starred)
+  else if (section === SECTION_MAP.starred)
     page = Url.pages.projects.starred;
 
   let cleanParams = params ?
@@ -151,8 +151,8 @@ function useLocation(props, setParams, setTargetUser) {
     }
 
     // prevent illegal searchIn
-    if (newSection !== sectionMap.all && newParamsFull.searchIn !== searchInMap.projects.value)
-      newParamsFull.searchIn = searchInMap.projects.value;
+    if (newSection !== SECTION_MAP.all && newParamsFull.searchIn !== SEARCH_IN_MAP.projects.value)
+      newParamsFull.searchIn = SEARCH_IN_MAP.projects.value;
 
     setParams(p => {
       const newParams = { ...p, ...newParamsFull, section: newSection };
@@ -168,7 +168,7 @@ function useLocation(props, setParams, setTargetUser) {
 /** React hook to update project search results when parameters change */
 function useProjectSearchParams(client, params, setParams, setProjects) {
   useEffect(() => {
-    if (params.searchIn !== searchInMap.projects.value)
+    if (params.searchIn !== SEARCH_IN_MAP.projects.value)
       return;
 
     // prepare fetching projects
@@ -180,9 +180,9 @@ function useProjectSearchParams(client, params, setParams, setProjects) {
       order_by: params.orderBy,
       sort: params.ascending ? "asc" : "desc",
     };
-    if (params.section === sectionMap.own)
+    if (params.section === SECTION_MAP.own)
       queryParams.membership = true;
-    else if (params.section === sectionMap.starred)
+    else if (params.section === SECTION_MAP.starred)
       queryParams.starred = true;
     const pageRequest = params.page;
 
@@ -207,7 +207,7 @@ function useProjectSearchParams(client, params, setParams, setProjects) {
 /** React hook to update user search results when parameters change */
 function useUserSearchParams(client, params, setUsers, setTargetUser) {
   useEffect(() => {
-    if (params.searchIn === searchInMap.projects.value)
+    if (params.searchIn === SEARCH_IN_MAP.projects.value)
       return;
 
     // reset target user
@@ -254,7 +254,7 @@ function useUserSearchParams(client, params, setUsers, setTargetUser) {
 /** React hook to update project search results when the targetUser changes */
 function useUserProjectSearch(client, params, targetUser, setParams, setProjects) {
   useEffect(() => {
-    if (params.searchIn === searchInMap.projects.value)
+    if (params.searchIn === SEARCH_IN_MAP.projects.value)
       return;
 
     // If no users were found, we already know there won't be any project.
@@ -315,13 +315,13 @@ function ProjectList(props) {
     const section = getSection(props.location);
     const searchParams = getSearchParams();
     // Searching in own or starred projects
-    if (section !== sectionMap.all) {
+    if (section !== SECTION_MAP.all) {
       const newUrl = Url.get(Url.pages.projects.all, searchParams);
       props.history.push(newUrl);
     }
     // filtering per user or group
-    if (searchParams.searchIn !== searchInMap.projects.value) {
-      const newParams = { ...searchParams, searchIn: searchInMap.projects.value };
+    if (searchParams.searchIn !== SEARCH_IN_MAP.projects.value) {
+      const newParams = { ...searchParams, searchIn: SEARCH_IN_MAP.projects.value };
       const newUrl = Url.get(Url.pages.projects.all, newParams);
       props.history.push(newUrl);
     }
@@ -367,14 +367,14 @@ function ProjectList(props) {
       section :
       params.section;
     let target = Url.pages.projects.all;
-    if (targetSection === sectionMap.own)
+    if (targetSection === SECTION_MAP.own)
       target = Url.pages.projects.base;
-    else if (targetSection === sectionMap.starred)
+    else if (targetSection === SECTION_MAP.starred)
       target = Url.pages.projects.starred;
 
     // Fix illegal searchIn
-    if (targetSection !== sectionMap.all && modifiedParams.searchIn !== searchInMap.projects.value)
-      modifiedParams.searchIn = searchInMap.projects.value;
+    if (targetSection !== SECTION_MAP.all && modifiedParams.searchIn !== SEARCH_IN_MAP.projects.value)
+      modifiedParams.searchIn = SEARCH_IN_MAP.projects.value;
 
     // Move to the target url.
     let addedParams = { ...modifiedParams, ...(newParams || {}) };
@@ -386,8 +386,8 @@ function ProjectList(props) {
   // Get the url for other sections, params included
   const getPreciseUrl = (section) => {
     let modifiedParams = removeDefaultParams(params, true);
-    if (section !== sectionMap.all && modifiedParams.searchIn !== searchInMap.projects.value)
-      modifiedParams.searchIn = searchInMap.projects.value;
+    if (section !== SECTION_MAP.all && modifiedParams.searchIn !== SEARCH_IN_MAP.projects.value)
+      modifiedParams.searchIn = SEARCH_IN_MAP.projects.value;
     return buildPreciseUrl(modifiedParams, section);
   };
 
@@ -398,14 +398,14 @@ function ProjectList(props) {
       getAvatar={id => this.client.getAvatarFromNamespace(id)}
       getPreciseUrl={getPreciseUrl}
       logged={props.user ? props.user.logged : false}
-      orderByMap={orderByMap}
+      orderByMap={ORDER_BY_MAP}
       params={params}
       projectNew={PROJECT_NEW_URL}
       projects={projects.list}
       users={users}
       search={search}
-      searchInMap={searchInMap}
-      sectionsMap={sectionMap}
+      searchInMap={SEARCH_IN_MAP}
+      sectionsMap={SECTION_MAP}
       setTarget={setTarget}
       target={targetUser}
       totalProjects={projects.total}
@@ -414,12 +414,12 @@ function ProjectList(props) {
 }
 
 
-export { urlMap, ProjectList };
+export { URL_MAP as urlMap, ProjectList };
 
 // test only
 const tests = {
   defaults: { DEFAULT_PROJECTS, DEFAULT_USERS_GROUPS, DEFAULT_PARAMS },
-  maps: { orderByMap, searchInMap, sectionMap },
+  maps: { ORDER_BY_MAP, SEARCH_IN_MAP, SECTION_MAP },
   functions: { buildPreciseUrl, getSection, removeDefaultParams }
 };
 export { tests };

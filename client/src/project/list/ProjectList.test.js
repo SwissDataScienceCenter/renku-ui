@@ -64,7 +64,7 @@ describe("helper functions", () => {
   it("buildPreciseUrl", () => {
     const { buildPreciseUrl, removeDefaultParams } = tests.functions;
     const { DEFAULT_PARAMS } = tests.defaults;
-    const { sectionMap } = tests.maps;
+    const { SECTION_MAP } = tests.maps;
     let result;
 
     // Contain all the passed parameters and not more.
@@ -75,15 +75,15 @@ describe("helper functions", () => {
     expect(result).not.toContain("?");
 
     // Change the section when `target` is provided.
-    const paramsWithSection = { ...DEFAULT_PARAMS, section: sectionMap.starred };
-    result = buildPreciseUrl(paramsWithSection, sectionMap.all);
-    expect(result).not.toContain(sectionMap.starred);
-    expect(result).toContain(sectionMap.all);
+    const paramsWithSection = { ...DEFAULT_PARAMS, section: SECTION_MAP.starred };
+    result = buildPreciseUrl(paramsWithSection, SECTION_MAP.all);
+    expect(result).not.toContain(SECTION_MAP.starred);
+    expect(result).toContain(SECTION_MAP.all);
   });
 
   it("getSection", () => {
     const { getSection } = tests.functions;
-    const { sectionMap } = tests.maps;
+    const { SECTION_MAP } = tests.maps;
     let result;
 
     // Verify that the result is unambiguous.
@@ -91,9 +91,9 @@ describe("helper functions", () => {
       pathname: Url.get(Url.pages.projects.starred)
     };
     result = getSection(location);
-    expect(result).toBe(sectionMap.starred);
-    expect(result).not.toBe(sectionMap.own);
-    expect(result).not.toBe(sectionMap.all);
+    expect(result).toBe(SECTION_MAP.starred);
+    expect(result).not.toBe(SECTION_MAP.own);
+    expect(result).not.toBe(SECTION_MAP.all);
   });
 });
 
