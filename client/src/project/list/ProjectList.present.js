@@ -80,7 +80,7 @@ function ProjectListRows(props) {
   const { currentPage, getAvatar, perPage, projects, search, totalItems } = props;
 
   if (!projects || !projects.length)
-    return (<p>We couldn&apos;t find any project matching the search criteria.</p>);
+    return (<p>We could not find any matching projects.</p>);
 
   const rows = projects.map(project => <ProjectListRow key={project.id} getAvatar={getAvatar} {...project} />);
   const onPageChange = (page) => { search({ page }); };
