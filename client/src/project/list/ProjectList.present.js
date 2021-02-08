@@ -106,22 +106,22 @@ function SearchInFilter(props) {
   ));
 
   return params.section === sectionsMap.all ?
-  (
-    <InputGroupButtonDropdown className="input-group-prepend" addonType="append"
-      toggle={toggleDropdownSearchIn} isOpen={dropdownSearchIn} >
-      <DropdownToggle outline caret color="primary" >
-        Filter by: {currentSearchInObject.text}
-      </DropdownToggle>
-      <DropdownMenu>
-        {searchInItems}
-      </DropdownMenu>
-    </InputGroupButtonDropdown>
-  ) :
-  null;
+    (
+      <InputGroupButtonDropdown className="input-group-prepend" addonType="append"
+        toggle={toggleDropdownSearchIn} isOpen={dropdownSearchIn} >
+        <DropdownToggle outline caret color="primary" >
+          Filter by: {currentSearchInObject.text}
+        </DropdownToggle>
+        <DropdownMenu>
+          {searchInItems}
+        </DropdownMenu>
+      </InputGroupButtonDropdown>
+    ) :
+    null;
 }
 
 function SearchOrder(props) {
-  const { params,  orderByMap, searchWithValues } = props;
+  const { params, orderByMap, searchWithValues } = props;
 
   const orderingIcon = params.ascending ?
     faSortAmountUp :
@@ -152,7 +152,7 @@ function SearchOrder(props) {
         {orderByItems}
       </DropdownMenu>
     </InputGroupButtonDropdown>
-  </Fragment>
+  </Fragment>;
 }
 
 function ProjectListSearch(props) {
