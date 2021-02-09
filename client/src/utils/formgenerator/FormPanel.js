@@ -69,31 +69,34 @@ function SubmitButtonGroup(props) {
 }
 
 function FormPanel({ title, btnName, submitCallback, model, formLocation, onCancel, edit,
-  handlers, initializeFunction, formatServerErrorsAndWarnings }) {
-  const draft = handlers ? handlers.getDraft(formLocation) : undefined;
-  const modelValues = draft ? draft : _.cloneDeep(Object.values(model));
+  handlers, initializeFunction, formatServerErrorsAndWarnings, draft }) {
+
+  const modelValues = draft ? draft.currentFormModel : _.cloneDeep(Object.values(model));
   const initialized = useRef(false);
-  const [inputs, setInputs, setSubmit] = useForm(modelValues, submitCallback, handlers, formLocation);
-  const submitLoader = handlers.getSubmitLoader(formLocation);
-  const serverErrors = handlers.getServerErrors(formLocation);
-  const serverWarnings = handlers.getServerWarnings(formLocation);
-  const secondaryButtonText = handlers.getSecondaryButtonText(formLocation);
-  const disableAll = handlers.getDisableAll(formLocation);
+  const [inputs, setInputs, setSubmit] = useForm(submitCallback, handlers, draft);
+  const submitLoader = draft?.submitLoader;
+  const serverErrors = draft?.serverErrors;
+  const serverWarnings = draft?.serverWarnings;
+  const secondaryButtonText = draft?.secondaryButton;
+  const disableAll = draft?.disableAll;
+
 
   useEffect(()=>{
     if (modelValues && !initialized.current) {
+      initialized.current = true;
       if (initializeFunction) {
         initializeFunction(modelValues, handlers);
+        handlers.addDraft(modelValues);
       }
-      else if (!draft) {
+      else
+      if (!draft) {
         modelValues.map(field=> {
           if (field.initial)
             field.value = field.initial;
           return field;
         });
+        handlers.addDraft(modelValues);
       }
-      handlers.addDraft(modelValues, true, formLocation);
-      initialized.current = true;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -141,7 +144,7 @@ function FormPanel({ title, btnName, submitCallback, model, formLocation, onCanc
     </div>);
   };
 
-  if (!initialized.current || !inputs)
+  if (inputs.length === 0)
     return <Loader />;
 
   const errorFields = inputs.filter(input => (input.alert != null) && (input.edit !== false));

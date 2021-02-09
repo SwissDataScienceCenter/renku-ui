@@ -50,7 +50,7 @@ function New(props) {
   const issuesUrl = `/projects/${props.projectPathWithNamespace}/collaboration/issues`;
 
   const onCancel = (e, handlers) => {
-    handlers.removeDraft(props.location.pathname);
+    handlers.removeDraft();
     props.history.push({ pathname: issuesUrl });
   };
 
@@ -66,7 +66,7 @@ function New(props) {
     handlers.setSubmitLoader({ value: true, text: "Creating issue, please wait..." });
     props.client.postProjectIssue(...submitData(mappedInputs))
       .then(newIssue => {
-        handlers.removeDraft(props.location.pathname);
+        handlers.removeDraft();
         handlers.setSubmitLoader({ value: false, text: "" });
         props.history.push({ pathname: issuesUrl });
       }).catch(error=> {

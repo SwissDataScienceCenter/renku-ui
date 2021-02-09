@@ -46,12 +46,12 @@ function AddDataset(props) {
 
   const onCancel = (e, handlers) =>{
     closeModal();
-    handlers.removeDraft(props.formLocation);
+    handlers.removeDraft();
   };
 
   const redirectUser = (projectPath, datasetName, handlers) => {
     handlers.setSubmitLoader({ value: false, text: "" });
-    handlers.removeDraft(props.formLocation);
+    handlers.removeDraft();
     props.history.push({
       pathname: `/projects/${projectPath}/datasets/${datasetName}`,
       state: { reload: true }
@@ -132,7 +132,7 @@ function AddDataset(props) {
     handlers.setServerErrors(undefined);
     handlers.setSubmitLoader({ value: true, text: ImportStateMessage.ENQUEUED });
 
-    const projectOptions = handlers.getFormDraftFieldProperty(props.formLocation, "project", ["options"]);
+    const projectOptions = handlers.getFormDraftFieldProperty("project", ["options"]);
 
     const selectedProject = projectOptions.find((project)=>
       project.value === mappedInputs.project);

@@ -23,9 +23,9 @@
  *  Presentational components.
  */
 
-const useForm = (initModel, submitCallback, handlers, formLocation) => {
-  const inputs = handlers.getDraft(formLocation);
-  const setInputs = (newInputs) => handlers.addDraft(newInputs, true, formLocation);
+const useForm = (submitCallback, handlers, draft) => {
+  const inputs = draft ? draft.currentFormModel : [];
+  const setInputs = (newInputs) => handlers.addDraft(newInputs);
 
   const handleChange = e => {
     if (e.isPersistent && e.isPersistent()) e.persist();

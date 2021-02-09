@@ -99,7 +99,7 @@ function ChangeDataset(props) {
   };
 
   const onCancel = (e, handlers) => {
-    handlers.removeDraft(formLocation);
+    handlers.removeDraft();
     props.history.push({ pathname: `/projects/${props.projectPathWithNamespace}/datasets` });
   };
 
@@ -146,7 +146,7 @@ function ChangeDataset(props) {
     handlers.setSubmitLoader({ value: false, text: "" });
     if (interval !== undefined) clearInterval(interval);
     props.fetchDatasets(true);
-    handlers.removeDraft(formLocation);
+    handlers.removeDraft();
     props.history.push({
       pathname: `/projects/${props.projectPathWithNamespace}/datasets/${datasetId}/`
     });

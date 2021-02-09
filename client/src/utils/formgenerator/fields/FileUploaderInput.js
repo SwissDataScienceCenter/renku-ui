@@ -118,15 +118,15 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
   };
 
   const setFilesRx = (newFiles) => {
-    return handlers.setFormDraftInternalValuesProperty(formLocation, "files", "files", newFiles);
+    return handlers.setFormDraftInternalValuesProperty("files", "files", newFiles);
   };
 
   const setDisplayFilesRx = (newDisplayFiles) => {
-    return handlers.setFormDraftInternalValuesProperty(formLocation, "files", "displayFiles", newDisplayFiles);
+    return handlers.setFormDraftInternalValuesProperty("files", "displayFiles", newDisplayFiles);
   };
 
   const getDisplayFilesRx = () => {
-    const dFiles = handlers.getFormDraftInternalValuesProperty(formLocation, "files", "displayFiles");
+    const dFiles = handlers.getFormDraftInternalValuesProperty("files", "displayFiles");
     return dFiles !== undefined ? dFiles : [];
   };
 
@@ -190,19 +190,17 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
       },
       isPersistent: () => false
     };
-    if (handlers.isMounted(formLocation)) setInputs(artificialEvent);
-    else
-      handlers.setFormDraftInternalValuesProperty(formLocation, "files", "setFutureInputs", artificialEvent);
+    handlers.setFormDraftInternalValuesProperty("files", "setFutureInputs", artificialEvent);
   };
 
   const setUploadedFilesRx = (newUploadedFiles) => {
     updateDisplayFilesRxAfterChanges(newUploadedFiles); //DO WE NEED THIS LINEEEE???
-    handlers.setFormDraftInternalValuesProperty(formLocation, "files", "uploadedFiles", newUploadedFiles);
+    handlers.setFormDraftInternalValuesProperty("files", "uploadedFiles", newUploadedFiles);
     setInputsInForm(newUploadedFiles);
   };
 
   const getUploadedFilesRx = () => {
-    const uFiles = handlers.getFormDraftInternalValuesProperty(formLocation, "files", "uploadedFiles");
+    const uFiles = handlers.getFormDraftInternalValuesProperty("files", "uploadedFiles");
     return uFiles !== undefined ? uFiles : [];
   };
 
@@ -218,11 +216,11 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
       return dFile;
     })
     );
-    return handlers.setFormDraftInternalValuesProperty(formLocation, "files", "filesErrors", newFilesErrors);
+    return handlers.setFormDraftInternalValuesProperty( "files", "filesErrors", newFilesErrors);
   };
 
   const getFilesErrorsRx = () => {
-    const uFiles = handlers.getFormDraftInternalValuesProperty(formLocation, "files", "filesErrors");
+    const uFiles = handlers.getFormDraftInternalValuesProperty( "files", "filesErrors");
     return uFiles !== undefined ? uFiles : [];
   };
 
@@ -237,7 +235,7 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
         setInitialFilesTree(getFilesTree(value, openFolders));
       }
     }
-    const pendingCallback = handlers.getFormDraftInternalValuesProperty(formLocation, "files", "setFutureInputs");
+    const pendingCallback = handlers.getFormDraftInternalValuesProperty( "files", "setFutureInputs");
     if (pendingCallback)
       setInputs(pendingCallback);
     setInitialized(true);
