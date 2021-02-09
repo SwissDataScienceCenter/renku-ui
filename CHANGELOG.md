@@ -1,6 +1,13 @@
 
 # Changes
 
+## [0.11.5](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.4...0.11.5) (2021-02-09)
+
+### Bug Fixes
+
+* preserve any input when clicking on buttons and links on the projects list page, and improve UX for non-logged users (#1229) ([b2ee34b](https://github.com/SwissDataScienceCenter/renku-ui/commit/b2ee34b)), closes [#1229](https://github.com/SwissDataScienceCenter/renku-ui/issues/1229) [#1181](https://github.com/SwissDataScienceCenter/renku-ui/issues/1181) [#1189](https://github.com/SwissDataScienceCenter/renku-ui/issues/1189) 
+
+
 ## [0.11.4](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.3...0.11.4) (2021-02-01)
 
 ### Bug Fixes
@@ -16,7 +23,6 @@
 
 * improve and speed up file preview (#1186) 99726cf, closes  [#1186](https://github.com/SwissDataScienceCenter/renku-ui/issues/1186)  [#1147](https://github.com/SwissDataScienceCenter/renku-ui/issues/1147)
 * make fetching commits resilient to exceptions (#1184) 023f1e3, closes  [#1184](https://github.com/SwissDataScienceCenter/renku-ui/issues/1184)
-
 
 
 ## [0.11.3](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.2...0.11.3) (2020-12-11)
