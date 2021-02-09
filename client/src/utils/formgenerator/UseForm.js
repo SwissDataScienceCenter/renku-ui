@@ -25,14 +25,13 @@
 
 const useForm = (initModel, submitCallback, handlers, formLocation) => {
   const inputs = handlers.getDraft(formLocation);
-  const setInputs = (newInputs) => handlers.addDraft(newInputs, true, undefined, formLocation);
+  const setInputs = (newInputs) => handlers.addDraft(newInputs, true, formLocation);
 
   const handleChange = e => {
     if (e.isPersistent && e.isPersistent()) e.persist();
     inputs.forEach(i => {
       if (i.name === e.target.name) {
         i.value = i.type === "checkbox" ? e.target.checked : e.target.value;
-        //DELETE FOLLOWING LINE BEFORE PUSHING!!!!
         if (e.target.internalValues) i.internalValues = e.target.internalValues;
         parseInput(i);
         validateInput(i);

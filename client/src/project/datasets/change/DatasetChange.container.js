@@ -24,7 +24,6 @@
  */
 
 import React, { useState, useEffect, useMemo } from "react";
-import { Link } from "react-router-dom";
 import { datasetFormSchema } from "../../../model/RenkuModels";
 import DatasetChange from "./DatasetChange.present";
 import { JobStatusMap } from "../../../job/Job";
@@ -34,6 +33,7 @@ import { mapDataset } from "../../../dataset/index";
 import _ from "lodash";
 
 let dsFormSchema = _.cloneDeep(datasetFormSchema);
+
 function ChangeDataset(props) {
 
   if (dsFormSchema == null)
@@ -99,41 +99,8 @@ function ChangeDataset(props) {
   };
 
   const onCancel = (e, handlers) => {
-    handlers.removeDraft(props.location.pathname);
+    handlers.removeDraft(formLocation);
     props.history.push({ pathname: `/projects/${props.projectPathWithNamespace}/datasets` });
-  };
-
-  const getServerWarnings = (jobsStats) => {
-    const failed = jobsStats.failed
-      .map(job => <div key={"warn-" + job.file_url} className="pl-2">- {job.file_url}<br /></div>);
-    const progress = jobsStats.inProgress
-      .map( job => <div key={"warn-" + job.file_url} className="pl-2">- {job.file_url}<br /></div>);
-    return <div>
-      {jobsStats.tooLong ?
-        <div>
-          This operation is taking too long and it will continue being processed in the background.<br />
-          Please check the datasets list later to make sure that the changes are visible in the project. <br />
-          You can also check the <Link to={props.overviewCommitsUrl}>commits list
-          </Link> in the project to see if commits for the new dataset appear there.
-          <br/><br/>
-        </div>
-        : null
-      }
-      {jobsStats.failed.length > 0 ?
-        <div><strong>Some files had errors on upload:</strong>
-          <br />
-          {failed}
-        </div>
-        : null}
-      {jobsStats.inProgress.length > 0 ?
-        <div>
-          <strong>Uploads in progress:</strong>
-          <br />
-          {progress}
-        </div>
-        : null}
-      <br /><br />
-    </div>;
   };
 
   function setNewJobStatus(localJob, remoteJobsList) {
@@ -153,7 +120,7 @@ function ChangeDataset(props) {
       const jobStats = { failed, inProgress, tooLong };
       handlers.setDisableAll(true);
       handlers.setSecondaryButtonText(props.edit ? "Go to dataset" : "Go to list");
-      handlers.setServerWarnings(getServerWarnings(jobStats));
+      handlers.setServerWarnings(jobStats);
       handlers.setSubmitLoader({ value: false, text: "" });
     }
   }
@@ -179,7 +146,7 @@ function ChangeDataset(props) {
     handlers.setSubmitLoader({ value: false, text: "" });
     if (interval !== undefined) clearInterval(interval);
     props.fetchDatasets(true);
-    handlers.removeDraft(props.location.pathname);
+    handlers.removeDraft(formLocation);
     props.history.push({
       pathname: `/projects/${props.projectPathWithNamespace}/datasets/${datasetId}/`
     });
@@ -341,5 +308,4 @@ function ChangeDataset(props) {
     initializeFunction={initializeFunction}
   />;
 }
-
 export default ChangeDataset;

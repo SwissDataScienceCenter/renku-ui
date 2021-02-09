@@ -1,3 +1,29 @@
+/*!
+ * Copyright 2020 - Swiss Data Science Center (SDSC)
+ * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
+ * Eidgenössische Technische Hochschule Zürich (ETHZ).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ *  renku-ui
+ *
+ *  FormGenerator.state.js
+ *  FormGenerator state code.
+ */
+
+
 class FormGeneratorCoordinator {
 
   constructor(client, model) {
@@ -13,165 +39,69 @@ class FormGeneratorCoordinator {
    */
   addFormDraft(location, currentFormModel, mounted) {
     const drafts = this.model.get("formDrafts");
-    let currentDraft = drafts.find(draft => draft.location === location);
-    let newList;
-    if (currentDraft) {
+    let updateObject;
+    if (drafts[location]) {
       if (mounted !== undefined)
-        currentDraft.mounted = mounted;
+        drafts[location].mounted = mounted;
       if (currentFormModel !== undefined)
-        currentDraft.currentFormModel = currentFormModel;
-      newList = drafts.map(draft => draft.location === location ?
-        currentDraft
-        : draft);
+        drafts[location].currentFormModel = currentFormModel;
+      updateObject = { formDrafts: { $set: { ...drafts } } };
     }
     else {
-      currentDraft = {
+      const newDraft = {
         location: location,
         currentFormModel: currentFormModel,
         mounted: true,
         submitLoader: { value: false, text: "Please wait..." }
       };
-      newList = [...drafts, currentDraft];
+      updateObject = { formDrafts: { $set: { ...drafts, [location]: newDraft } } };
     }
-    let updateObject = { formDrafts: { $set: newList } };
+
     this.model.setObject(updateObject);
-    return currentDraft;
+    return drafts[location];
   }
 
   getFormDraft(location) {
-    const drafts = this.model.get("formDrafts");
-    const currentDraft = drafts.find(draft => draft.location === location);
+    const currentDraft = this.model.get("formDrafts")[location];
     return currentDraft === undefined ? undefined : currentDraft.currentFormModel;
   }
 
-  getSubmitLoader(location) {
+  removeFormDraft(location) {
     const drafts = this.model.get("formDrafts");
-    const currentDraft = drafts.find(draft => draft.location === location);
-    if (currentDraft) return currentDraft.submitLoader;
-    return true;
+    delete drafts[location];
+    let updateObject = { formDrafts: { $set: { ...drafts } } };
+    this.model.setObject(updateObject);
   }
 
-  setSubmitLoader(location, submitLoader) {
-    const formDrafts = this.model.get("formDrafts");
-    const draftIndex = formDrafts ? formDrafts.findIndex(elem=> elem.location === location) : -1;
-    const currentFormDraft = draftIndex > -1 ? formDrafts[draftIndex] : undefined;
-    if (currentFormDraft) {
-      if (currentFormDraft.submitLoader !== undefined) {
+  setDraftProperty(location, propertyName, value) {
+    const drafts = this.model.get("formDrafts");
+    if (drafts[location]) {
+      if (drafts[location][propertyName] !== undefined) {
         return this.model.setObject(
-          { formDrafts: { [draftIndex]: { submitLoader: { $set: submitLoader } } }
+          { formDrafts: { [location]: { [propertyName]: { $set: value } } }
           } );
       }
       //else
       return this.model.setObject(
-        { formDrafts: { [draftIndex]: { submitLoader: submitLoader } }
+        { formDrafts: { [location]: { [propertyName]: value } }
         } );
     }
   }
 
-  getSecondaryButtonText(location) {
+  getDraftProperty(location, property) {
     const drafts = this.model.get("formDrafts");
-    const currentDraft = drafts.find(draft => draft.location === location);
-    if (currentDraft) return currentDraft.secondaryButton;
+    //const currentDraft = drafts.find(draft => draft.location === location);
+    const currentDraft = drafts[location];
+    if (currentDraft) return currentDraft[property];
     return;
   }
 
-  setSecondaryButtonText(location, text) {
-    const formDrafts = this.model.get("formDrafts");
-    const draftIndex = formDrafts ? formDrafts.findIndex(elem=> elem.location === location) : -1;
-    const currentFormDraft = draftIndex > -1 ? formDrafts[draftIndex] : undefined;
-    if (currentFormDraft) {
-      if (currentFormDraft.text !== undefined) {
-        return this.model.setObject(
-          { formDrafts: { [draftIndex]: { secondaryButton: { $set: text } } }
-          } );
-      }
-      //else
-      return this.model.setObject(
-        { formDrafts: { [draftIndex]: { secondaryButton: text } }
-        } );
-    }
-  }
-
-  getServerErrors(location) {
-    const drafts = this.model.get("formDrafts");
-    const currentDraft = drafts.find(draft => draft.location === location);
-    if (currentDraft) return currentDraft.serverErrors;
-    return;
-  }
-
-  setServerErrors(location, serverErrors) {
-    const formDrafts = this.model.get("formDrafts");
-    const draftIndex = formDrafts ? formDrafts.findIndex(elem=> elem.location === location) : -1;
-    const currentFormDraft = draftIndex > -1 ? formDrafts[draftIndex] : undefined;
-    if (currentFormDraft) {
-      if (currentFormDraft.serverErrors !== undefined) {
-        return this.model.setObject(
-          { formDrafts: { [draftIndex]: { serverErrors: { $set: serverErrors } } }
-          } );
-      }
-      //else
-      return this.model.setObject(
-        { formDrafts: { [draftIndex]: { serverErrors: serverErrors } }
-        } );
-    }
-  }
-
-  getServerWarnings(location) {
-    const drafts = this.model.get("formDrafts");
-    const currentDraft = drafts.find(draft => draft.location === location);
-    if (currentDraft) return currentDraft.serverWarnings;
-    return;
-  }
-
-  setServerWarnings(location, serverWarnings) {
-    const formDrafts = this.model.get("formDrafts");
-    const draftIndex = formDrafts ? formDrafts.findIndex(elem=> elem.location === location) : -1;
-    const currentFormDraft = draftIndex > -1 ? formDrafts[draftIndex] : undefined;
-    if (currentFormDraft) {
-      if (currentFormDraft.serverWarnings !== undefined) {
-        return this.model.setObject(
-          { formDrafts: { [draftIndex]: { serverWarnings: { $set: serverWarnings } } }
-          } );
-      }
-      //else
-      return this.model.setObject(
-        { formDrafts: { [draftIndex]: { serverWarnings: serverWarnings } }
-        } );
-    }
-  }
-
-  getDisableAll(location) {
-    const drafts = this.model.get("formDrafts");
-    const currentDraft = drafts.find(draft => draft.location === location);
-    if (currentDraft) return currentDraft.disableAll;
-    return false;
-  }
-
-  setDisableAll(location, disableAll) {
-    const formDrafts = this.model.get("formDrafts");
-    const draftIndex = formDrafts ? formDrafts.findIndex(elem=> elem.location === location) : -1;
-    const currentFormDraft = draftIndex > -1 ? formDrafts[draftIndex] : undefined;
-    if (currentFormDraft) {
-      if (currentFormDraft.disableAll !== undefined) {
-        return this.model.setObject(
-          { formDrafts: { [draftIndex]: { disableAll: { $set: disableAll } } }
-          } );
-      }
-      //else
-      return this.model.setObject(
-        { formDrafts: { [draftIndex]: { disableAll: disableAll } }
-        } );
-    }
-  }
-
-  isMounted(location) {
-    const drafts = this.model.get("formDrafts");
-    const currentDraft = drafts.find(draft => draft.location === location);
-    if (currentDraft) return currentDraft.mounted;
-    return true;
-  }
-
-  getFormDraftProperty(location, fieldName, properties) {
+  /**
+   * Property is an array and can have nested properties
+   * to retrieve the value of something like {property1: {property2: {property 3: value}}}
+   * Here properties is [property1, property2, property3]
+   */
+  getFormDraftFieldProperty(location, fieldName, properties) {
     const draft = this.getFormDraft(location);
     let currentProp = draft.find(field => field.name === fieldName);
     if (currentProp) {
@@ -184,12 +114,31 @@ class FormGeneratorCoordinator {
     return undefined;
   }
 
-  getFormDraftFieldValue(location, fieldName) {
-    const draft = this.getFormDraft(location);
-    let currentProp = draft.find(field => field.name === fieldName);
-    return currentProp.value;
+  setFormDraftFieldValue(location, fieldName, value) {
+    const formDrafts = this.model.get("formDrafts");
+    const fieldIndex = formDrafts[location] ?
+      formDrafts[location].currentFormModel.findIndex(elem=> elem.name === fieldName) : -1;
+    const currentValue = formDrafts[location].currentFormModel[fieldIndex];
+
+    if (fieldIndex > -1) {
+      if (currentValue === undefined) {
+        return this.model.setObject(
+          { formDrafts: { [location]:
+          { currentFormModel: { [fieldIndex]: { $set: { ...value } } } } }
+          } );
+      }
+      return this.model.setObject(
+        { formDrafts: { [location]:
+          { currentFormModel: { [fieldIndex]: { ...value } } } }
+        } );
+    }
   }
 
+  /**
+   * A field can have a field called internal values that can contain state specific to the field.
+   * In cases like the file uploader we want to keep the state of field in case the component
+   * is mounted/dismounted and it is stored here.
+   */
   getFormDraftInternalValuesProperty(location, fieldName, property) {
     const draft = this.getFormDraft(location);
     let currentProp = draft ? draft.find(field => field.name === fieldName) : undefined;
@@ -203,36 +152,23 @@ class FormGeneratorCoordinator {
 
   setFormDraftInternalValuesProperty(location, fieldName, property, value) {
     const formDrafts = this.model.get("formDrafts");
-    const draftIndex = formDrafts ? formDrafts.findIndex(elem=> elem.location === location) : -1;
-    const currentFormDraft = draftIndex > -1 ? formDrafts[draftIndex] : undefined;
-    const fieldIndex = currentFormDraft ?
-      currentFormDraft.currentFormModel.findIndex(elem=> elem.name === fieldName) : -1;
+    const fieldIndex = formDrafts[location] ?
+      formDrafts[location].currentFormModel.findIndex(elem=> elem.name === fieldName) : -1;
     const currentValue = this.getFormDraftInternalValuesProperty(location, fieldName, property);
     if (fieldIndex > -1) {
       if (currentValue !== undefined) {
         return this.model.setObject(
-          { formDrafts: { [draftIndex]: { currentFormModel: { [fieldIndex]:
+          { formDrafts: { [location]: { currentFormModel: { [fieldIndex]:
             { internalValues: { [property]: { $set: value } } } } } }
           } );
       }
       //else
       return this.model.setObject(
         { formDrafts:
-            { [draftIndex]: { currentFormModel: { [fieldIndex]:
+            { [location]: { currentFormModel: { [fieldIndex]:
               { internalValues: { [property]: value } } } } }
         } );
     }
-  }
-
-  /**
-   * Remove a form draft from the list
-   *
-   * @param {string} location - is the location of the form that should be removed
-   */
-  removeFormDraft(location) {
-    const drafts = this.model.get("formDrafts");
-    let updateObject = { formDrafts: { $set: [...drafts.filter(draft => draft.location !== location)] } };
-    this.model.setObject(updateObject);
   }
 }
 

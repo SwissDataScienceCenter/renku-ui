@@ -47,12 +47,12 @@ function SubmitButtonGroup(props) {
   const { submitCallback, submitLoader, btnName, errorFields } = props;
   const { onCancel, cancelBtnName } = props;
   const submitButton = submitCallback !== undefined ?
-    <Button type="submit" disabled={submitLoader.value} className="float-right mt-1" color="primary">
+    <Button type="submit" disabled={submitLoader && submitLoader.value} className="float-right mt-1" color="primary">
       {btnName}
     </Button>
     : null;
   const cancelButton = onCancel !== undefined ?
-    <Button disabled={submitLoader.value} className="float-right mt-1 mr-1"
+    <Button disabled={submitLoader && submitLoader.value} className="float-right mt-1 mr-1"
       color="secondary" onClick={(e)=>onCancel(e, props.handlers)}>
       {cancelBtnName ? cancelBtnName : "Cancel"}
     </Button>
@@ -69,7 +69,7 @@ function SubmitButtonGroup(props) {
 }
 
 function FormPanel({ title, btnName, submitCallback, model, formLocation, onCancel, edit,
-  handlers, initializeFunction }) {
+  handlers, initializeFunction, formatServerErrorsAndWarnings }) {
   const draft = handlers ? handlers.getDraft(formLocation) : undefined;
   const modelValues = draft ? draft : _.cloneDeep(Object.values(model));
   const initialized = useRef(false);
@@ -95,7 +95,7 @@ function FormPanel({ title, btnName, submitCallback, model, formLocation, onCanc
       handlers.addDraft(modelValues, true, formLocation);
       initialized.current = true;
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const Components = {
@@ -111,24 +111,27 @@ function FormPanel({ title, btnName, submitCallback, model, formLocation, onCanc
 
   const renderInput = input => {
     const Component = Components[capitalize(input.type) + "Input"];
-    return <Component key={input.name}
+    return <Component key={input.name} value={input.value}
       disabled={(submitLoader && submitLoader.value ) || (input.edit === false && edit) || disableAll}
       setInputs={setInputs} {...input} handlers={handlers} formLocation={formLocation}/>;
   };
 
-  const extractErrorsAndWarnings = (errorOrWarning) => {
+  const extractErrorsAndWarnings = (errorOrWarning, isError) => {
     let content;
+    let formattedErrorOrWarning = formatServerErrorsAndWarnings ?
+      formatServerErrorsAndWarnings(errorOrWarning, isError) : errorOrWarning;
+
     var htmlRegex = new RegExp(/^/);
-    if (typeof errorOrWarning === "string") {
-      content = <p>{errorOrWarning}</p>;
+    if (typeof formattedErrorOrWarning === "string") {
+      content = <p>{formattedErrorOrWarning}</p>;
     }
     else {
-      if (htmlRegex.test(errorOrWarning)) { content = errorOrWarning; }
+      if (htmlRegex.test(formattedErrorOrWarning)) { content = formattedErrorOrWarning; }
       else {
       //this could be improve to extract better the error message
       //ideally we could map backend and frontend fields and put the error under the field
-        content = Object.keys(errorOrWarning).map(error =>
-          (<p key={error}>{`${error}: ${JSON.stringify(errorOrWarning[error])}`}</p>)
+        content = Object.keys(formattedErrorOrWarning).map(error =>
+          (<p key={error}>{`${error}: ${JSON.stringify(formattedErrorOrWarning[error])}`}</p>)
         );
       }
     }
@@ -138,7 +141,10 @@ function FormPanel({ title, btnName, submitCallback, model, formLocation, onCanc
     </div>);
   };
 
-  const errorFields = inputs ? inputs.filter(input => (input.alert != null) && (input.edit !== false)) : [];
+  if (!initialized.current || !inputs)
+    return <Loader />;
+
+  const errorFields = inputs.filter(input => (input.alert != null) && (input.edit !== false));
 
   return (
     <Col>
@@ -147,11 +153,11 @@ function FormPanel({ title, btnName, submitCallback, model, formLocation, onCanc
         : null }
       <Form onSubmit={setSubmit}>
         <div>
-          {inputs ? inputs.map(input => renderInput(input)) : null}
+          {inputs.map(input => renderInput(input))}
           {serverErrors ? <UncontrolledAlert color="danger">
-            {extractErrorsAndWarnings(serverErrors)}</UncontrolledAlert> : null}
+            {extractErrorsAndWarnings(serverErrors, true)}</UncontrolledAlert> : null}
           {serverWarnings ? <UncontrolledAlert color="warning">
-            {extractErrorsAndWarnings(serverWarnings)}</UncontrolledAlert> : null}
+            {extractErrorsAndWarnings(serverWarnings, false)}</UncontrolledAlert> : null}
           {submitLoader !== undefined && submitLoader.value ?
             <FormText color="primary">
               <Loader size="16" inline="true" margin="2" />

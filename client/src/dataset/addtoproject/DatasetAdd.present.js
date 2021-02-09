@@ -27,7 +27,28 @@
 import React from "react";
 import { Row, Col, Modal, ModalHeader, ModalBody } from "reactstrap";
 import { FormGenerator } from "../../utils/formgenerator";
+import { Button } from "reactstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+
 function DatasetAdd(props) {
+
+  const formatServerErrorsAndWarnings = (errorOrWarning, isError)=>{
+    const selectedProjectName = errorOrWarning;
+    if (!isError) {
+      return <div>
+        <FontAwesomeIcon icon={faExclamationTriangle} /> <strong>A new version of renku is available.</strong>
+        <br />
+        The target project ({selectedProjectName}) needs to be upgraded to allow
+        modification of datasets and is recommended for all projects.
+        <br />
+        <Button color="warning" onClick={() =>
+          props.history.push(`/projects/${selectedProjectName}/overview/status`)}>More Info</Button>
+      </div>;
+    }
+    return errorOrWarning;
+  };
+
 
   return (
     <Modal
@@ -46,8 +67,10 @@ function DatasetAdd(props) {
               model={props.addDatasetToProjectSchema}
               onCancel={props.onCancel}
               formLocation={props.formLocation}
-              model_top={props.model}
-              initializeFunction={props.initializeFunction} />
+              modelTop={props.model}
+              initializeFunction={props.initializeFunction}
+              formatServerErrorsAndWarnings={formatServerErrorsAndWarnings}
+            />
           </Col>
         </Row>
       </ModalBody>

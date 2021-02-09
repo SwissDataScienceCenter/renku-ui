@@ -91,18 +91,6 @@ function getFileObject(name, path, size, id, error, alias, controller, uncompres
   };
 }
 
-export function useIsMounted() {
-  // component is certainly mounted from the beginning
-  const componentIsMounted = useRef(true);
-  useEffect(() => {
-  // when non-SSR + (ComponentDidMount or ComponentDidUpdate):
-  // do nothing.
-  // when non-SSR + ComponentWillUnmount:
-    return () => { componentIsMounted.current = false; };
-  }, []);
-  return componentIsMounted;
-}
-
 function FileUploaderInput({ name, label, alert, value, setInputs, help, disabled = false,
   uploadFileFunction, required = false, internalValues, handlers, formLocation }) {
 

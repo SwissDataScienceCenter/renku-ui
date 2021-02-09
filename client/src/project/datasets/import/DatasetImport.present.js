@@ -51,7 +51,7 @@ function DatasetImport(props) {
     onCancel={props.onCancel}
     formLocation={props.formLocation}
     notifications={props.notifications}
-    model_top={props.model}
+    modelTop={props.model}
   />;
 
 }

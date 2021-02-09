@@ -83,7 +83,7 @@ function New(props) {
           btnName="Create Issue"
           submitCallback={submitCallback}
           model={iFormSchema}
-          model_top={props.model}
+          modelTop={props.model}
           formLocation={props.location.pathname}
           onCancel={onCancel} />
       </Col>

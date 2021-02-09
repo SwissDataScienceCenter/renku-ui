@@ -69,7 +69,7 @@ describe("rendering on create", () => {
 
     ReactDOM.render(
       <FormPanel title="Create Dataset" submitLoader={false} btnName="Create Dataset"
-        submitCallback={submitCallback} model={schema} model_top={model}
+        submitCallback={submitCallback} model={schema} modelTop={model}
         formLocation="/projects/namespace/project-name/datasets/new"/>,
       div
     );
@@ -99,7 +99,7 @@ describe("rendering on modify", () => {
 
     ReactDOM.render(
       <FormPanel title="Modify Dataset" submitLoader={false} btnName="Create Dataset"
-        submitCallback={submitCallback} model={schema} edit={true} model_top={model}
+        submitCallback={submitCallback} model={schema} edit={true} modelTop={model}
         formLocation="/projects/namespace/project-name/datasets/new"/>,
       div
     );

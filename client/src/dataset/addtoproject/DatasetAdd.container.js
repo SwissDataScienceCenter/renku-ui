@@ -30,9 +30,6 @@ import { ACCESS_LEVELS } from "../../api-client";
 import DatasetAdd from "./DatasetAdd.present";
 import { ImportStateMessage } from "../../utils/Dataset";
 import { groupBy } from "../../utils/HelperFunctions";
-import { Button } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import _ from "lodash";
 
 let dsFormSchema = _.cloneDeep(addDatasetToProjectSchema);
@@ -60,19 +57,6 @@ function AddDataset(props) {
       state: { reload: true }
     });
   };
-
-  const getServerWarnings = (selectedProjectName)=>{
-    return <div>
-      <FontAwesomeIcon icon={faExclamationTriangle} /> <strong>A new version of renku is available.</strong>
-      <br />
-      The target project ({selectedProjectName}) needs to be upgraded to allow
-      modification of datasets and is recommended for all projects.
-      <br />
-      <Button color="warning" onClick={() =>
-        props.history.push(`/projects/${selectedProjectName}/overview/status`)}>More Info</Button>
-    </div>;
-  };
-
 
   function handleJobResponse(job, monitorJob, waitedSeconds, projectPath, datasetName, handlers) {
 
@@ -148,7 +132,7 @@ function AddDataset(props) {
     handlers.setServerErrors(undefined);
     handlers.setSubmitLoader({ value: true, text: ImportStateMessage.ENQUEUED });
 
-    const projectOptions = handlers.getFormDraftProperty(props.formLocation, "project", ["options"]);
+    const projectOptions = handlers.getFormDraftFieldProperty(props.formLocation, "project", ["options"]);
 
     const selectedProject = projectOptions.find((project)=>
       project.value === mappedInputs.project);
@@ -168,9 +152,7 @@ function AddDataset(props) {
               }
               else {
                 if (response.data.result.migration_required) {
-                  // setMigrationNeeded(true);
-                  handlers.setServerWarnings(getServerWarnings(selectedProject.name));
-                  //HERE SET WARNING!!!!
+                  handlers.setServerWarnings(selectedProject.name);
                   handlers.setSubmitLoader(false);
                 }
                 else {

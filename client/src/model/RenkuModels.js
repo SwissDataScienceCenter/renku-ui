@@ -539,8 +539,7 @@ const notificationsSchema = new Schema({
 });
 
 const formGeneratorSchema = new Schema({
-  formDrafts: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
-  progressMonitor: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true }
+  formDrafts: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true }
 });
 
 export {
