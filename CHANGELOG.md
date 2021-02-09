@@ -5,7 +5,7 @@
 
 ### Bug Fixes
 
-* preserve any input when clicking on buttons and links on the projects list page, and improve UX for non-logged users (#1229) ([b2ee34b](https://github.com/SwissDataScienceCenter/renku-ui/commit/b2ee34b)), closes [#1229](https://github.com/SwissDataScienceCenter/renku-ui/issues/1229) [#1181](https://github.com/SwissDataScienceCenter/renku-ui/issues/1181) [#1189](https://github.com/SwissDataScienceCenter/renku-ui/issues/1189) 
+* preserve any input when clicking on buttons and links on the projects list page, and improve UX for non-logged users (#1229) b2ee34b, closes [#1229](https://github.com/SwissDataScienceCenter/renku-ui/issues/1229) [#1181](https://github.com/SwissDataScienceCenter/renku-ui/issues/1181) [#1189](https://github.com/SwissDataScienceCenter/renku-ui/issues/1189) 
 
 
 ## [0.11.4](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.3...0.11.4) (2021-02-01)
