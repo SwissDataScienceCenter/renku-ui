@@ -35,8 +35,6 @@ import Issue from "../collaboration/issue/Issue";
 import { FileLineage } from "../file";
 import { ACCESS_LEVELS } from "../api-client";
 import { MergeRequest } from "../collaboration/merge-request";
-import List from "./list";
-import { NewProject as New } from "./new";
 import { ShowFile } from "../file";
 import Fork from "./fork";
 import ShowDataset from "../dataset/Dataset.container";
@@ -755,5 +753,5 @@ function withProjectMapped(MappingComponent, features = [], passProps = true) {
 }
 
 
-export default { New, View, List };
+export default { View };
 export { GraphIndexingStatus, splitProjectSubRoute, mapProjectFeatures, withProjectMapped, MigrationStatus };

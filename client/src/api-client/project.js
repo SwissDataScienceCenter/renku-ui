@@ -176,6 +176,8 @@ function addProjectMethods(client) {
     let headers = client.getBasicHeaders();
     if (searchIn === "groups")
       queryParams.all_available = true;
+    if (!queryParams.per_page)
+      queryParams.per_page = 100; // ? Consider using `clientIterableFetch` it more than 100 are needed
     return client.clientFetch(`${client.baseUrl}/${searchIn}`, {
       method: "GET",
       headers,

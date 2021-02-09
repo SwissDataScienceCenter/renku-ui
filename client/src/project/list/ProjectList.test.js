@@ -24,55 +24,145 @@
  */
 
 import React from "react";
-import ReactDOM from "react-dom";
 import { MemoryRouter } from "react-router-dom";
 import { createMemoryHistory } from "history";
+import TestRenderer, { act } from "react-test-renderer";
 
-import ProjectList from "./";
-import ProjectListModel from "./ProjectList.state";
 import { testClient as client } from "../../api-client";
 import { generateFakeUser } from "../../user/User.test";
+import { Url } from "../../utils/url";
+import { tests } from "./ProjectList.container";
+import { ProjectList } from "./";
 
 
-const fakeHistory = createMemoryHistory({
-  initialEntries: ["/"],
-  initialIndex: 0,
+describe("helper functions", () => {
+  it("removeDefaultParams", () => {
+    const { removeDefaultParams } = tests.functions;
+    const { DEFAULT_PARAMS } = tests.defaults;
+    let result;
+
+    // Nothing left when passing only defaults.
+    result = removeDefaultParams(DEFAULT_PARAMS);
+    expect(result).toMatchObject({});
+    expect(Object.keys(result)).toHaveLength(0);
+
+    // Only the modified parameter left.
+    result = removeDefaultParams({ ...DEFAULT_PARAMS, page: 123 });
+    expect(result).toMatchObject({ page: 123 });
+    expect(Object.keys(result)).toHaveLength(1);
+
+    // Remove the `section` parameter correctly.
+    result = removeDefaultParams({ ...DEFAULT_PARAMS, page: 123, section: "any" });
+    expect(result).toMatchObject({ page: 123, section: "any" });
+    expect(Object.keys(result)).toHaveLength(2);
+    result = removeDefaultParams({ ...DEFAULT_PARAMS, page: 123, section: "any" }, true);
+    expect(result).not.toMatchObject({ page: 123, section: "any" });
+    expect(result).toMatchObject({ page: 123 });
+    expect(Object.keys(result)).toHaveLength(1);
+  });
+
+  it("buildPreciseUrl", () => {
+    const { buildPreciseUrl, removeDefaultParams } = tests.functions;
+    const { DEFAULT_PARAMS } = tests.defaults;
+    const { SECTION_MAP } = tests.maps;
+    let result;
+
+    // Contain all the passed parameters and not more.
+    result = buildPreciseUrl(DEFAULT_PARAMS);
+    for (const [param, value] of Object.entries(DEFAULT_PARAMS))
+      expect(result).toContain(`${param}=${value}`);
+    result = buildPreciseUrl(removeDefaultParams(DEFAULT_PARAMS));
+    expect(result).not.toContain("?");
+
+    // Change the section when `target` is provided.
+    const paramsWithSection = { ...DEFAULT_PARAMS, section: SECTION_MAP.starred };
+    result = buildPreciseUrl(paramsWithSection, SECTION_MAP.all);
+    expect(result).not.toContain(SECTION_MAP.starred);
+    expect(result).toContain(SECTION_MAP.all);
+  });
+
+  it("getSection", () => {
+    const { getSection } = tests.functions;
+    const { SECTION_MAP } = tests.maps;
+    let result;
+
+    // Verify that the result is unambiguous.
+    const location = {
+      pathname: Url.get(Url.pages.projects.starred)
+    };
+    result = getSection(location);
+    expect(result).toBe(SECTION_MAP.starred);
+    expect(result).not.toBe(SECTION_MAP.own);
+    expect(result).not.toBe(SECTION_MAP.all);
+  });
 });
-fakeHistory.push({
-  pathname: "/projects/all",
-  search: "?page=1"
-});
+
 
 describe("rendering", () => {
   const loggedUser = generateFakeUser();
+  const anonymousUser = generateFakeUser(true);
+  const fakeHistory = createMemoryHistory({
+    initialEntries: ["/"],
+    initialIndex: 0,
+  });
+  fakeHistory.push({
+    pathname: "/projects/all",
+    search: "?page=1"
+  });
 
-  it("renders list without crashing", () => {
-    const div = document.createElement("div");
-    ReactDOM.render(
-      <MemoryRouter>
-        <ProjectList client={client} history={fakeHistory} location={fakeHistory.location} user={loggedUser} />
-      </MemoryRouter>
-      , div);
-  });
-});
 
-describe("new project actions", () => {
-  const model = new ProjectListModel(client);
-  it("is initialized correctly", () => {
-    expect(model.get("currentPage")).toEqual(undefined);
-  });
-  it("does search with a query", () => {
-    return model.setQueryPageNumberAndPath("", 1, fakeHistory.pathName, "last_activity_at", false, "projects")
-      .then(() => {
-        expect(model.get("currentPage")).toEqual(1);
-        expect(model.get("totalItems")).toEqual(1);
-        expect(model.get("pathName")).toEqual(fakeHistory.pathName);
-      });
-  });
-  it("moves to page", () => {
-    return model.setPage(1).then(() => {
-      expect(model.get("currentPage")).toEqual(1);
-      expect(model.get("totalItems")).toEqual(1);
+  //TestRenderer
+  it("Renders ProjectList for logged user", async () => {
+    await act(async () => {
+      TestRenderer.create(
+        <MemoryRouter>
+          <ProjectList client={client} history={fakeHistory} location={fakeHistory.location} user={loggedUser} />
+        </MemoryRouter>
+      );
     });
+  });
+
+  it("Renders ProjectList for anonymous user", async () => {
+    await act(async () => {
+      TestRenderer.create(
+        <MemoryRouter>
+          <ProjectList client={client} history={fakeHistory} location={fakeHistory.location} user={anonymousUser} />
+        </MemoryRouter>
+      );
+    });
+  });
+
+  it("Redirects only anonymous user when accessing an illegal url", async () => {
+    fakeHistory.push({
+      pathname: "/projects/all",
+      search: "?page=1&searchIn=users"
+    });
+    let rendered, props;
+
+    // Logged users can use searchIn=users
+    await act(async () => {
+      rendered = TestRenderer.create(
+        <MemoryRouter>
+          <ProjectList client={client} history={fakeHistory} location={fakeHistory.location} user={loggedUser} />
+        </MemoryRouter>
+      );
+    });
+    props = rendered.root.findByType(ProjectList).props;
+    expect(props).toMatchObject({ client: {}, history: {}, location: {}, user: {} });
+    expect(props.history.location.search).toContain("searchIn=users");
+    expect(props.history.location.search).not.toContain("searchIn=projects");
+
+    // Anonymous users can't use searchIn=users, they should be redirected to searchIn=projects
+    await act(async () => {
+      rendered = TestRenderer.create(
+        <MemoryRouter>
+          <ProjectList client={client} history={fakeHistory} location={fakeHistory.location} user={anonymousUser} />
+        </MemoryRouter>
+      );
+    });
+    props = rendered.root.findByType(ProjectList).props;
+    expect(props).toMatchObject({ client: {}, history: {}, location: {}, user: {} });
+    expect(props.history.location.search).not.toContain("searchIn=users");
+    expect(props.history.location.search).toContain("searchIn=projects");
   });
 });

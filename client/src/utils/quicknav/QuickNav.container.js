@@ -22,6 +22,7 @@ import { withRouter } from "react-router";
 import { StateKind, Schema, StateModel } from "../../model/Model";
 import { QuickNavPresent } from "./QuickNav.present";
 import { ProjectsCoordinator } from "../../project/shared";
+import { Url } from "../../utils/url";
 
 const suggestionSchema = new Schema({
   path: { mandatory: true },
@@ -119,7 +120,8 @@ class QuickNavContainerWithRouter extends Component {
   }
 
   searchUrlForValue(value) {
-    return (value != null) ? `/projects/all?q=${value}` : null;
+    const searchUrl = Url.get(Url.pages.projects.all, { query: value });
+    return (value != null) ? searchUrl : null;
   }
 
   onSuggestionsClearRequested() {

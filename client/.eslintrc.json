@@ -134,6 +134,7 @@
           "papermill",
           "pathname",
           "poller",
+          "prepend",
           "presentational",
           "pygments",
           "react",

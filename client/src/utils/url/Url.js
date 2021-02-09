@@ -112,7 +112,9 @@ class UrlRule {
  * @param {object} data
  */
 function searchValidation(data) {
-  const allowedParams = ["q", "page", "orderBy", "orderSearchAsc", "searchIn"];
+  const allowedParams = [
+    "q", "query", "page", "perPage", "orderBy", "orderSearchAsc", "searchIn", "ascending", "targetUser", "usersOrGroup"
+  ];
   const receivedParams = Object.keys(data);
   for (const param of receivedParams) {
     if (!allowedParams.includes(param))
@@ -257,7 +259,60 @@ const Url = {
 };
 
 
-export { Url };
+/**
+ * Get and object (dictionary-like) containing the available query parameters and their values.
+ *
+ * @param {object} [expectedParams] - dictionary-like object with expected query parameters and their default value.
+ *   They will be added when the query parameters are missing.
+ * @param {object} [convertParams] - Uses the input object (dictionary-like) to convert parameter names. This is
+ *   useful to support old parameter names. Newer params have always precedence.
+ * @param {bool} [convertTypes] - Convert boolean and numbers automatically instead of leaving them as strings.
+ *   Case insensitive. Default is `true`.
+ * @returns {object} dictionary-like object containing the query parameters.
+ */
+function getSearchParams(expectedParams = null, convertParams = null, convertTypes = true) {
+  const search = new URLSearchParams(window.location.search);
+  let parameters = {};
+
+  // Assign the parameters
+  for (const [key, value] of search.entries()) {
+    let finalValue = value;
+    if (convertTypes) {
+      if (!isNaN(value) && !isNaN(parseFloat(value))) // ? REF: https://stackoverflow.com/a/175787/1303090
+        finalValue = parseFloat(value);
+      else if (value.toLowerCase() === "true")
+        finalValue = true;
+      else if (value.toLowerCase() === "false")
+        finalValue = false;
+    }
+    parameters[key] = finalValue;
+  }
+
+  // Convert the parameters
+  if (convertParams && typeof convertParams === "object" && Object.keys(convertParams).length) {
+    const currentParams = Object.keys(parameters);
+    for (const [convertForm, convertTo] of Object.entries(convertParams)) {
+      if (currentParams.includes(convertForm)) {
+        if (!currentParams.includes(convertTo))
+          parameters[convertTo] = parameters[convertForm];
+        delete parameters[convertForm];
+      }
+    }
+  }
+
+  // Add missing parameters
+  if (expectedParams && typeof expectedParams === "object" && Object.keys(expectedParams).length) {
+    const currentParams = Object.keys(parameters);
+    for (const [key, value] of Object.entries(expectedParams)) {
+      if (!currentParams.includes(key))
+        parameters[key] = value;
+    }
+  }
+
+  return parameters;
+}
+
+export { Url, getSearchParams };
 
 // testing only
 export { UrlRule };

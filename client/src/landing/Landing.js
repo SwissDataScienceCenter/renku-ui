@@ -30,15 +30,13 @@ import Present from "./Landing.present";
 import { ProjectsCoordinator } from "../project/shared";
 import { Url } from "../utils/url";
 
-function urlMap() {
-  return {
-    projectsUrl: Url.get(Url.pages.projects),
-    projectNewUrl: Url.get(Url.pages.project.new),
-    projectsSearchUrl: Url.get(Url.pages.projects.all),
-    projectsStarredUrl: Url.get(Url.pages.projects.starred),
-    siteStatusUrl: Url.get(Url.pages.help.status)
-  };
-}
+const urlMap = {
+  projectsUrl: Url.get(Url.pages.projects),
+  projectNewUrl: Url.get(Url.pages.project.new),
+  projectsSearchUrl: Url.get(Url.pages.projects.all),
+  projectsStarredUrl: Url.get(Url.pages.projects.starred),
+  siteStatusUrl: Url.get(Url.pages.help.status)
+};
 
 class Home extends Component {
   constructor(props) {
@@ -63,7 +61,7 @@ class Home extends Component {
     return <ConnectedProjectsHome
       user={this.props.user}
       welcomePage={atob(this.props.welcomePage)}
-      urlMap={urlMap()}
+      urlMap={urlMap}
       statuspageId={this.props.statuspageId}
       statuspageModel={this.props.model.subModel("statuspage")}
       store={this.props.model.reduxStore}

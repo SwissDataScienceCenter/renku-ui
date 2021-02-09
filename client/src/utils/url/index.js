@@ -23,6 +23,6 @@
  *  Components for the Url helper class
  */
 
-import { Url } from "./Url";
+import { Url, getSearchParams } from "./Url";
 
-export { Url };
+export { Url, getSearchParams };
