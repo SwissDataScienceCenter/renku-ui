@@ -144,7 +144,7 @@ function FormPanel({ title, btnName, submitCallback, model, formLocation, onCanc
     </div>);
   };
 
-  if (inputs.length === 0)
+  if (!inputs || inputs.length === 0)
     return <Loader />;
 
   const errorFields = inputs.filter(input => (input.alert != null) && (input.edit !== false));

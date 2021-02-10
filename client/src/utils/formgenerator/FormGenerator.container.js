@@ -26,6 +26,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
+import { simpleHash } from "../HelperFunctions";
 import { FormGeneratorCoordinator } from "./FormGenerator.state";
 import FormPanel from "./FormPanel";
 
@@ -35,7 +36,8 @@ class FormGenerator extends Component {
   constructor(props) {
     super(props);
     this.model = props.modelTop.subModel("formGenerator");
-    this.coordinator = new FormGeneratorCoordinator(props.client, this.model, props.formLocation);
+    this.locationHash = "uid_" + simpleHash(props.formLocation);
+    this.coordinator = new FormGeneratorCoordinator(props.client, this.model, props.formLocation, this.locationHash);
     this.handlers = {
       addDraft: this.addDraft.bind(this),
       removeDraft: this.removeDraft.bind(this),
@@ -102,7 +104,7 @@ class FormGenerator extends Component {
   mapStateToProps(state) {
     return {
       handlers: this.handlers,
-      draft: state.formGenerator.formDrafts[this.props.formLocation]
+      draft: state.formGenerator.formDrafts[this.locationHash]
     };
   }
 

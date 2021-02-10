@@ -23,19 +23,20 @@
  *  FormGenerator state code.
  */
 
-
 class FormGeneratorCoordinator {
 
-  constructor(client, model, location) {
+  constructor(client, model, location, locationHash) {
     this.client = client;
     this.model = model;
     this.location = location;
+    this.locationHash = locationHash;
   }
 
   /**
    * A form drafts the following form
    *
-   * location : {
+   * locationHash : {
+   *    location
    *    currentFormModel:[ --> array of fields
    *      {
    *        name,
@@ -62,8 +63,8 @@ class FormGeneratorCoordinator {
   addFormDraft(currentFormModel) {
     const drafts = this.model.get("formDrafts");
     let updateObject;
-    if (drafts[this.location]) {
-      this.model.set(`formDrafts.${this.location}.currentFormModel`, currentFormModel);
+    if (drafts[this.locationHash]) {
+      this.model.set(`formDrafts.${this.locationHash}.currentFormModel`, currentFormModel);
     }
     else {
       const newDraft = {
@@ -71,32 +72,32 @@ class FormGeneratorCoordinator {
         currentFormModel: currentFormModel,
         submitLoader: { value: false, text: "Please wait..." }
       };
-      updateObject = { formDrafts: { $set: { ...drafts, [this.location]: newDraft } } };
+      updateObject = { formDrafts: { $set: { ...drafts, [this.locationHash]: newDraft } } };
       this.model.setObject(updateObject);
     }
-    return drafts[this.location];
+    return drafts[this.locationHash];
   }
 
   getFormDraft() {
-    const currentDraft = this.model.get("formDrafts")[this.location];
+    const currentDraft = this.model.get("formDrafts")[this.locationHash];
     return currentDraft === undefined ? undefined : currentDraft.currentFormModel;
   }
 
   removeFormDraft() {
     const drafts = this.model.get("formDrafts");
-    delete drafts[this.location];
+    delete drafts[this.locationHash];
     let updateObject = { formDrafts: { $set: { ...drafts } } };
     this.model.setObject(updateObject);
   }
 
   setDraftProperty(propertyName, value) {
     const drafts = this.model.get("formDrafts");
-    if (drafts[this.location])
-      this.model.set(`formDrafts.${this.location}.${propertyName}`, value);
+    if (drafts[this.locationHash])
+      this.model.set(`formDrafts.${this.locationHash}.${propertyName}`, value);
   }
 
   getDraftProperty( property) {
-    const currentDraft = this.model.get(`formDrafts.${this.location}`);
+    const currentDraft = this.model.get(`formDrafts.${this.locationHash}`);
     if (currentDraft) return currentDraft[property];
     return;
   }
@@ -121,19 +122,19 @@ class FormGeneratorCoordinator {
 
   setFormDraftFieldValue(fieldName, value) {
     const formDrafts = this.model.get("formDrafts");
-    const fieldIndex = formDrafts[this.location] ?
-      formDrafts[this.location].currentFormModel.findIndex(elem=> elem.name === fieldName) : -1;
-    const currentValue = formDrafts[this.location].currentFormModel[fieldIndex];
+    const fieldIndex = formDrafts[this.locationHash] ?
+      formDrafts[this.locationHash].currentFormModel.findIndex(elem=> elem.name === fieldName) : -1;
+    const currentValue = formDrafts[this.locationHash].currentFormModel[fieldIndex];
 
     if (fieldIndex > -1) {
       if (currentValue === undefined) {
         return this.model.setObject(
-          { formDrafts: { [this.location]:
+          { formDrafts: { [this.locationHash]:
           { currentFormModel: { [fieldIndex]: { $set: { ...value } } } } }
           } );
       }
       return this.model.setObject(
-        { formDrafts: { [this.location]:
+        { formDrafts: { [this.locationHash]:
           { currentFormModel: { [fieldIndex]: { ...value } } } }
         } );
     }
@@ -157,20 +158,20 @@ class FormGeneratorCoordinator {
 
   setFormDraftInternalValuesProperty(fieldName, property, value) {
     const formDrafts = this.model.get("formDrafts");
-    const fieldIndex = formDrafts[this.location] ?
-      formDrafts[this.location].currentFormModel.findIndex(elem=> elem.name === fieldName) : -1;
+    const fieldIndex = formDrafts[this.locationHash] ?
+      formDrafts[this.locationHash].currentFormModel.findIndex(elem=> elem.name === fieldName) : -1;
     const currentValue = this.getFormDraftInternalValuesProperty(fieldName, property);
     if (fieldIndex > -1) {
       if (currentValue !== undefined) {
         return this.model.setObject(
-          { formDrafts: { [this.location]: { currentFormModel: { [fieldIndex]:
+          { formDrafts: { [this.locationHash]: { currentFormModel: { [fieldIndex]:
             { internalValues: { [property]: { $set: value } } } } } }
           } );
       }
       //else
       return this.model.setObject(
         { formDrafts:
-            { [this.location]: { currentFormModel: { [fieldIndex]:
+            { [this.locationHash]: { currentFormModel: { [fieldIndex]:
               { internalValues: { [property]: value } } } } }
         } );
     }
