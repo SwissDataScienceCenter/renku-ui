@@ -82,7 +82,6 @@ function FileAndWrapper(props) {
         <input type="checkbox" id={togglerId} className="visually-hidden fake-toggle" />
         <div className="hide-show-me">
           <FilePreview
-            previewThreshold={{ soft: 1048576, hard: 10485760 }}
             file={props.file}
             {...props}
             springConfig={props.springConfig}
