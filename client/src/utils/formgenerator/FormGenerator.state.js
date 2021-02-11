@@ -61,10 +61,10 @@ class FormGeneratorCoordinator {
    * @param {string} currentFormModel - current state of the form model
    */
   addFormDraft(currentFormModel) {
+    const draftPath = `formDrafts.${this.locationHash}`;
     const drafts = this.model.get("formDrafts");
-    let updateObject;
     if (drafts[this.locationHash]) {
-      this.model.set(`formDrafts.${this.locationHash}.currentFormModel`, currentFormModel);
+      this.model.set(`${draftPath}.currentFormModel`, currentFormModel);
     }
     else {
       const newDraft = {
@@ -72,10 +72,11 @@ class FormGeneratorCoordinator {
         currentFormModel: currentFormModel,
         submitLoader: { value: false, text: "Please wait..." }
       };
-      updateObject = { formDrafts: { $set: { ...drafts, [this.locationHash]: newDraft } } };
-      this.model.setObject(updateObject);
+      // const updateObject = { formDrafts: { $set: { ...drafts, [this.locationHash]: newDraft } } };
+      // this.model.setObject(updateObject);
+      this.model.set(draftPath, newDraft);
     }
-    return drafts[this.locationHash];
+    return this.model.get(`formDrafts.${this.locationHash}`);
   }
 
   getFormDraft() {
