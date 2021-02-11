@@ -19,13 +19,12 @@
 /**
  *  renku-ui
  *
- *  FormPanel.js
+ *  FormGenerator.present.js
  *  Presentational components.
  */
 
-import React, { Fragment, useEffect, useRef } from "react";
+import React, { Fragment } from "react";
 import { Form, Button, Col, UncontrolledAlert, FormText } from "reactstrap";
-import useForm from "./UseForm";
 import TextInput from "./fields/TextInput";
 import TextareaInput from "./fields/TexAreaInput";
 import SelectInput from "./fields/SelectInput";
@@ -35,9 +34,8 @@ import CktextareaInput from "./fields/CKEditorTextArea";
 import FileUploaderInput from "./fields/FileUploaderInput";
 import KeywordsInput from "./fields/KeywordsInput";
 import ValidationAlert from "./fields/ValidationAlert";
-import { Loader } from "../../utils/UIComponents";
+import { Loader } from "../UIComponents";
 import "./FormGenerator.css";
-import _ from "lodash";
 
 function capitalize(string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -68,38 +66,14 @@ function SubmitButtonGroup(props) {
   </Fragment>;
 }
 
-function FormPanel({ title, btnName, submitCallback, model, formLocation, onCancel, edit,
-  handlers, initializeFunction, formatServerErrorsAndWarnings, draft }) {
+function FormPanel({ title, btnName, submitCallback, formLocation, onCancel, edit, handlers,
+  formatServerErrorsAndWarnings, draft, loading, inputs, setInputs, setSubmit }) {
 
-  const modelValues = draft ? draft.currentFormModel : _.cloneDeep(Object.values(model));
-  const initialized = useRef(false);
-  const [inputs, setInputs, setSubmit] = useForm(submitCallback, handlers, draft);
   const submitLoader = draft?.submitLoader;
   const serverErrors = draft?.serverErrors;
   const serverWarnings = draft?.serverWarnings;
   const secondaryButtonText = draft?.secondaryButton;
   const disableAll = draft?.disableAll;
-
-
-  useEffect(()=>{
-    if (modelValues && !initialized.current) {
-      initialized.current = true;
-      if (initializeFunction) {
-        initializeFunction(modelValues, handlers);
-        handlers.addDraft(modelValues);
-      }
-      else
-      if (!draft) {
-        modelValues.map(field=> {
-          if (field.initial)
-            field.value = field.initial;
-          return field;
-        });
-        handlers.addDraft(modelValues);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const Components = {
     TextInput,
@@ -144,7 +118,7 @@ function FormPanel({ title, btnName, submitCallback, model, formLocation, onCanc
     </div>);
   };
 
-  if (!inputs || inputs.length === 0)
+  if (!inputs || inputs.length === 0 || loading)
     return <Loader />;
 
   const errorFields = inputs.filter(input => (input.alert != null) && (input.edit !== false));

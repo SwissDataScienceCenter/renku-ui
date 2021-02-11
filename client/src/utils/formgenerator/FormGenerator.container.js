@@ -26,9 +26,13 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
+import useForm from "./UseForm";
+
+
 import { simpleHash } from "../HelperFunctions";
 import { FormGeneratorCoordinator } from "./FormGenerator.state";
-import FormPanel from "./FormPanel";
+import FormPanel from "./FormGenerator.present";
+import _ from "lodash";
 
 
 class FormGenerator extends Component {
@@ -51,6 +55,27 @@ class FormGenerator extends Component {
       setFormDraftInternalValuesProperty: this.setFormDraftInternalValuesProperty.bind(this),
       getFormDraftInternalValuesProperty: this.getFormDraftInternalValuesProperty.bind(this)
     };
+  }
+
+  componentDidMount() {
+    const currentDraft = this.getDraft();
+    const modelValues = currentDraft ?
+      currentDraft.currentFormModel : _.cloneDeep(Object.values(this.props.model));
+
+    if (modelValues) {
+      if (this.props.initializeFunction) {
+        this.props.initializeFunction( modelValues, this.handlers);
+        this.addDraft(modelValues);
+      }
+      else if (currentDraft === undefined) {
+        modelValues.map(field=> {
+          if (field.initial)
+            field.value = field.initial;
+          return field;
+        });
+        this.addDraft(modelValues);
+      }
+    }
   }
 
   addDraft(formDraft) {
@@ -102,17 +127,26 @@ class FormGenerator extends Component {
   }
 
   mapStateToProps(state) {
+    const currentDraft = state.formGenerator.formDrafts[this.locationHash];
+    const [inputs, setInputs, setSubmit] = useForm(this.props.submitCallback, this.handlers, currentDraft);
     return {
       handlers: this.handlers,
-      draft: state.formGenerator.formDrafts[this.locationHash]
+      draft: currentDraft,
+      modelValues: this.getDraft(),
+      inputs: inputs,
+      setInputs: setInputs,
+      setSubmit: setSubmit,
+      loading: this.getDraft() === undefined
     };
   }
+
 
   render() {
     const VisibleFormGenerator = connect(this.mapStateToProps.bind(this))(FormPanel);
     return (<VisibleFormGenerator
       {...this.props}
       store={this.model.reduxStore}
+      loading={this.getDraft() === undefined}
     />);
   }
 }
