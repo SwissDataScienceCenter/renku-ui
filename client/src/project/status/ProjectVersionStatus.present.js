@@ -262,7 +262,8 @@ function ProjectVersionStatusBody(props) {
     <Fragment>
       You can launch
       an <Link to={props.launchNotebookUrl}>interactive environment</Link> and follow the&nbsp;
-      <a href="https://renku-python.readthedocs.io/en/latest/commands.html#module-renku.cli.migrate">
+      <a href={`${"https://renku.readthedocs.io/en/latest/user/upgrading_renku.html" +
+        "#upgrading-your-image-to-use-the-latest-renku-cli-version"}`}>
         instructions for upgrading</a>.
       When finished, you will need to run <code>renku migrate</code>.
     </Fragment>
