@@ -96,12 +96,6 @@ class FormGeneratorCoordinator {
       this.model.set(`formDrafts.${this.locationHash}.${propertyName}`, value);
   }
 
-  getDraftProperty( property) {
-    const currentDraft = this.model.get(`formDrafts.${this.locationHash}`);
-    if (currentDraft) return currentDraft[property];
-    return;
-  }
-
   /**
    * Property is an array and can have nested properties
    * to retrieve the value of something like {property1: {property2: {property 3: value}}}
