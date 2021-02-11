@@ -84,10 +84,7 @@ class FormGeneratorCoordinator {
   }
 
   removeFormDraft() {
-    const drafts = this.model.get("formDrafts");
-    delete drafts[this.locationHash];
-    let updateObject = { formDrafts: { $set: { ...drafts } } };
-    this.model.setObject(updateObject);
+    this.model.set(`formDrafts.${this.locationHash}`, null);
   }
 
   setDraftProperty(propertyName, value) {
