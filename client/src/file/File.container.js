@@ -90,7 +90,8 @@ class FilePreview extends React.Component {
       return null;
 
     // LFS files and big files
-    if (this.fileIsLfs() || (this.props.file.size > this.props.previewThreshold.soft && !this.state.previewAnyway)) {
+    if (this.fileIsLfs() || (this.props.previewThreshold &&
+      this.props.file.size > this.props.previewThreshold.soft && !this.state.previewAnyway)) {
       return (
         <FileNoPreview
           url={this.props.downloadLink}
