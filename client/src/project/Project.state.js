@@ -408,7 +408,7 @@ class ProjectCoordinator {
   }
 
   setProjectData(data, statistics = false) {
-    let metadata;
+    let metadata, statsObject;
 
     // set metadata
     if (!data) {
@@ -416,6 +416,13 @@ class ProjectCoordinator {
         $set: {
           ...projectGlobalSchema.createInitialized().metadata,
           exists: false,
+          fetched: new Date(),
+          fetching: false
+        }
+      };
+      statsObject = {
+        $set: {
+          ...projectGlobalSchema.createInitialized().statistics,
           fetched: new Date(),
           fetching: false
         }
@@ -436,19 +443,18 @@ class ProjectCoordinator {
         fetched: new Date(),
         fetching: false
       };
-    }
 
-    // set statistics
-    let statsObject = {};
-    if (statistics) {
-      const stats = data.all.statistics ?
-        data.all.statistics :
-        projectGlobalSchema.createInitialized().statistics.data;
-      statsObject = {
-        data: { $set: stats },
-        fetched: new Date(),
-        fetching: false
-      };
+      // set statistics
+      if (statistics) {
+        const stats = data.all && data.all.statistics ?
+          data.all.statistics :
+          projectGlobalSchema.createInitialized().statistics.data;
+        statsObject = {
+          data: { $set: stats },
+          fetched: new Date(),
+          fetching: false
+        };
+      }
     }
 
     this.model.setObject({ metadata: metadata, statistics: statsObject });
