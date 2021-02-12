@@ -81,7 +81,7 @@ class FormGeneratorCoordinator {
 
   getFormDraft() {
     const currentDraft = this.model.get("formDrafts")[this.locationHash];
-    return currentDraft === undefined ? undefined : currentDraft.currentFormModel;
+    return currentDraft ? currentDraft.currentFormModel : undefined;
   }
 
   removeFormDraft() {
