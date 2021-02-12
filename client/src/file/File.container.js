@@ -59,10 +59,8 @@ class FilePreview extends React.Component {
   fileIsImage = () => IMAGE_EXTENSIONS.indexOf(this.getFileExtension()) >= 0;
   fileHasNoExtension = () => this.getFileExtension() === null;
   fileIsLfs = () => {
-    if (this.props.file && this.props.file.content) {
-      if (atob(this.props.file.content).includes("https://git-lfs.github.com/"))
-        return true;
-    }
+    if (this.props.hashElement && this.props.hashElement.isLfs)
+      return true;
     return false;
   }
 
