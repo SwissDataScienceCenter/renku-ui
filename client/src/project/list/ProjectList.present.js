@@ -306,13 +306,16 @@ function ProjectListNav(props) {
       <Col>
         <Nav pills className="nav-pills-underline mb-4">
           <NavItem>
-            <RenkuNavLink to={getPreciseUrl(sectionsMap.own)} noSubPath={true} title="Your Projects" />
+            <RenkuNavLink title="Your Projects" id="link-projects-your"
+              to={getPreciseUrl(sectionsMap.own)} noSubPath={true} />
           </NavItem>
           <NavItem>
-            <RenkuNavLink exact={false} to={getPreciseUrl(sectionsMap.starred)} title="Starred Projects" />
+            <RenkuNavLink title="Starred Projects" id="link-projects-starred"
+              to={getPreciseUrl(sectionsMap.starred)} exact={false} />
           </NavItem>
           <NavItem>
-            <RenkuNavLink exact={false} to={getPreciseUrl(sectionsMap.all)} title="All Projects" />
+            <RenkuNavLink title="All Projects" id="link-projects-all"
+              to={getPreciseUrl(sectionsMap.all)} exact={false} />
           </NavItem>
         </Nav>
       </Col>

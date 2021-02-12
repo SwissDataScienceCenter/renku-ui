@@ -226,7 +226,7 @@ class LoggedInNavBar extends Component {
 
             <div className="d-flex flex-grow-1">
               <ul className="navbar-nav mr-auto">
-                <RenkuNavLink to="/projects" title="Projects" />
+                <RenkuNavLink to="/projects" title="Projects" id="link-projects" />
                 <RenkuNavLink to="/datasets" title="Datasets" />
                 <RenkuNavLink to="/environments" title="Environments" />
               </ul>
@@ -272,7 +272,7 @@ class AnonymousNavBar extends Component {
 
             <div className="d-flex flex-grow-1">
               <ul className="navbar-nav mr-auto">
-                <RenkuNavLink to="/projects" title="Projects" />
+                <RenkuNavLink to="/projects" title="Projects" id="link-projects" />
                 <RenkuNavLink to="/datasets" title="Datasets" />
                 <RenkuNavLink to="/environments" title="Environments" />
               </ul>
