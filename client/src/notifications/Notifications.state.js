@@ -35,6 +35,7 @@ const NotificationsInfo = {
     DATASET_CREATE: "Dataset creation",
     ENVIRONMENT_START: "Interactive environment",
     PROJECT_API: "Project data",
+    DATASET_FILES_UPLOADED: "Dataset files upload"
   },
 };
 

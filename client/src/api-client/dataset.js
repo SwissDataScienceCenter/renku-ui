@@ -11,12 +11,14 @@ export default function addDatasetMethods(client) {
     });
   };
 
-  client.uploadFile = (file, unpack_archive = false, setFileProgress, thenCallback, onErrorCallback, setController) => {
+  client.uploadFile = (file, unpack_archive = false, setFileProgress, thenCallback, onErrorCallback,
+    setController, onFileUploadEnd) => {
     const data = new FormData();
     data.append("file", file);
     data.append("file_name", file.name);
     data.append("processData", false);
 
+    let currentPercentCompleted = -1;
     let httpRequest = new XMLHttpRequest();
     const url = `${client.baseUrl}/renku/cache.files_upload?override_existing=true&unpack_archive=${unpack_archive}`;
 
@@ -27,7 +29,10 @@ export default function addDatasetMethods(client) {
 
     httpRequest.upload.addEventListener("progress", function(e) {
       let percent_completed = Math.round((e.loaded / e.total) * 100).toFixed();
-      setFileProgress(file, percent_completed);
+      if (currentPercentCompleted !== percent_completed) {
+        currentPercentCompleted = percent_completed;
+        setFileProgress(file, percent_completed);
+      }
     });
 
     httpRequest.onloadstart = function() {
@@ -36,10 +41,14 @@ export default function addDatasetMethods(client) {
 
     // eslint-disable-next-line
     httpRequest.onloadend = function() {
-      if (httpRequest.status === 200 && httpRequest.response)
+      if (httpRequest.status === 200 && httpRequest.response) {
+        if (onFileUploadEnd) onFileUploadEnd();
         thenCallback(JSON.parse(httpRequest.response));
-      else if (httpRequest.status >= 400)
+      }
+      else if (httpRequest.status >= 400) {
+        if (onFileUploadEnd) onFileUploadEnd();
         onErrorCallback({ code: httpRequest.status });
+      }
     };
 
     return httpRequest.send(data);

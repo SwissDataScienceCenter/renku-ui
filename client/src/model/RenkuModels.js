@@ -427,6 +427,8 @@ const datasetFormSchema = new Schema({
     type: FormGenerator.FieldTypes.FILES,
     uploadFileFunction: undefined,
     filesOnUploader: undefined,
+    notifyFunction: undefined,
+    internalValues: undefined,
     validators: [{
       id: "files-length",
       isValidFun: expression => FormGenerator.Validators.filesReady(expression),
@@ -436,7 +438,7 @@ const datasetFormSchema = new Schema({
 });
 
 const issueFormSchema = new Schema({
-  name: {
+  title: {
     initial: "",
     name: "title",
     label: "Title",
@@ -450,7 +452,7 @@ const issueFormSchema = new Schema({
   },
   description: {
     initial: "",
-    name: "textarea",
+    name: "description",
     label: "Description",
     type: FormGenerator.FieldTypes.TEXT_EDITOR,
     outputType: "markdown",
@@ -536,8 +538,12 @@ const notificationsSchema = new Schema({
   }
 });
 
+const formGeneratorSchema = new Schema({
+  formDrafts: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true }
+});
+
 export {
   userSchema, metaSchema, newProjectSchema, projectSchema, forkProjectSchema, notebooksSchema,
   projectsSchema, datasetFormSchema, issueFormSchema, datasetImportFormSchema, projectGlobalSchema,
-  addDatasetToProjectSchema, statuspageSchema, notificationsSchema
+  addDatasetToProjectSchema, statuspageSchema, notificationsSchema, formGeneratorSchema
 };

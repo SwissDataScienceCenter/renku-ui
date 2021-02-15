@@ -23,7 +23,7 @@
  *  Container components for new dataset.
  */
 
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { datasetFormSchema } from "../../../model/RenkuModels";
 import DatasetChange from "./DatasetChange.present";
 import { JobStatusMap } from "../../../job/Job";
@@ -33,12 +33,13 @@ import { mapDataset } from "../../../dataset/index";
 import _ from "lodash";
 
 let dsFormSchema = _.cloneDeep(datasetFormSchema);
+
 function ChangeDataset(props) {
 
   if (dsFormSchema == null)
     dsFormSchema = _.cloneDeep(datasetFormSchema);
 
-
+  const formLocation = props.location.pathname + "change";
   const [datasetFiles, setDatasetFiles] = useState();
   const dataset = useMemo(() =>
     mapDataset(props.datasets ?
@@ -46,28 +47,59 @@ function ChangeDataset(props) {
       : undefined
     , undefined, datasetFiles)
   , [props.datasets, props.datasetId, datasetFiles]);
-  const [serverErrors, setServerErrors] = useState(undefined);
-  const [submitLoader, setSubmitLoader] = useState(false);
   const [initialized, setInitialized] = useState(false);
-  const [jobsStats, setJobsStats] = useState(undefined);
-  const warningOn = useRef(false);
 
-  dsFormSchema.files.uploadFileFunction = props.client.uploadFile;
-  dsFormSchema.files.filesOnUploader = useRef(0);
+  const initializeFunction = (formSchema) => {
+    let titleField = formSchema.find(field => field.name === "title");
+    let nameField = formSchema.find(field => field.name === "name");
+    if (props.edit === false) {
+      titleField.parseFun = () => {
+        nameField.value = FormGenerator.Parsers.slugFromTitle(titleField.value);
+        return titleField.value;
+      };
+      titleField.help = `${datasetFormSchema.title.help} ${datasetFormSchema.name.help}` ;
+    }
+    else {
+      titleField.help = datasetFormSchema.title.help;
+      titleField.parseFun = undefined;
+    }
 
-  if (props.edit === false) {
-    dsFormSchema.title.parseFun = () => {
-      dsFormSchema.name.value = FormGenerator.Parsers.slugFromTitle(dsFormSchema.title.value);
-      return dsFormSchema.title.value;
-    };
-    dsFormSchema.title.help = `${datasetFormSchema.title.help} ${datasetFormSchema.name.help}` ;
-  }
-  else {
-    dsFormSchema.title.help = datasetFormSchema.title.help;
-    dsFormSchema.title.parseFun = undefined;
-  }
+    let fileField = formSchema.find(field => field.name === "files");
 
-  const onCancel = e => {
+    if (!fileField.uploadFileFunction)
+      fileField.uploadFileFunction = props.client.uploadFile;
+
+    //
+    // UNCOMMENT TO ADD NOTIFICATIONS!!!!
+    //
+    // if (!fileField.notifyFunction) {
+    //   fileField.notifyFunction = (success = true, error) => {
+    //     if (success) {
+    //       const datasetName = props.edit ? "dataset " + dataset.name : "new dataset";
+    //       //topic, desc, link, linkText, awareLocations, longDesc
+    //       props.notifications.addSuccess(
+    //         props.notifications.Topics.DATASET_FILES_UPLOADED,
+    //     `Files for the ${datasetName} in ${props.projectPathWithNamespace} finished uploading.`,
+    //     `projects/${props.projectPathWithNamespace}/datasets/new`, "Go to dataset",
+    //     "/"
+    //       );
+    //     }
+    //     else {
+    //       const fullError = `An error occurred when trying to start a new Interactive environment.
+    //       Error message: "${error.message}", Stack trace: "${error.stack}"`;
+    //       props.notifications.addError(
+    //         props.notifications.Topics.DATASET_FILES_UPLOADED,
+    //         "Unable to start the interactive environment.",
+    //         "this.props.location.pathname", "Try again",
+    //         null, // always toast
+    //         fullError);
+    //     }
+    //   };
+    // }
+  };
+
+  const onCancel = (e, handlers) => {
+    handlers.removeDraft();
     props.history.push({ pathname: `/projects/${props.projectPathWithNamespace}/datasets` });
   };
 
@@ -79,15 +111,17 @@ function ChangeDataset(props) {
     }
   }
 
-  function checkJobsAndSetWarnings(jobsList, tooLong = false) {
-    let failed = jobsList.filter(job => job.job_status === JobStatusMap.FAILED );
+  function checkJobsAndSetWarnings(jobsList, tooLong = false, handlers) {
+    let failed = jobsList.filter(job => job.job_status === JobStatusMap.FAILED);
     let inProgress = jobsList
       .filter(job => (job.job_status === JobStatusMap.IN_PROGRESS || job.job_status === JobStatusMap.ENQUEUED) );
 
     if (failed.length !== 0 || inProgress.length !== 0 || tooLong === true) {
-      setJobsStats({ failed, inProgress, tooLong });
-      warningOn.current = true;
-      setSubmitLoader(false);
+      const jobStats = { failed, inProgress, tooLong };
+      handlers.setDisableAll(true);
+      handlers.setSecondaryButtonText(props.edit ? "Go to dataset" : "Go to list");
+      handlers.setServerWarnings(jobStats);
+      handlers.setSubmitLoader({ value: false, text: "" });
     }
   }
 
@@ -108,10 +142,11 @@ function ChangeDataset(props) {
       });
   };
 
-  const redirectAfterSuccess = (interval, datasetId) => {
-    setSubmitLoader(false);
+  const redirectAfterSuccess = (interval, datasetId, handlers) => {
+    handlers.setSubmitLoader({ value: false, text: "" });
     if (interval !== undefined) clearInterval(interval);
     props.fetchDatasets(true);
+    handlers.removeDraft();
     props.history.push({
       pathname: `/projects/${props.projectPathWithNamespace}/datasets/${datasetId}/`
     });
@@ -126,30 +161,33 @@ function ChangeDataset(props) {
     return newCreator;
   };
 
-  const submitCallback = e => {
-    setServerErrors(undefined);
-    setSubmitLoader(true);
-    const dataset = {};
-    dataset.name = dsFormSchema.name.value;
-    dataset.title = dsFormSchema.title.value;
-    dataset.description = dsFormSchema.description.value;
+  const submitCallback = (e, mappedInputs, handlers) => {
+    handlers.setServerErrors(undefined);
+    handlers.setServerWarnings(undefined);
+    handlers.setDisableAll(undefined);
 
-    const pendingFiles = dsFormSchema.files.value
+    const submitLoaderText = props.edit ? "Modifying dataset, please wait..." : "Creating dataset, please wait...";
+    handlers.setSubmitLoader({ value: true, text: submitLoaderText });
+    const dataset = {};
+    dataset.name = mappedInputs.name;
+    dataset.title = mappedInputs.title;
+    dataset.description = mappedInputs.description;
+
+    const pendingFiles = mappedInputs.files
       .filter(f => f.file_status === FILE_STATUS.PENDING).map(f => ({ "file_url": f.file_name }));
-    dataset.files = [].concat.apply([], dsFormSchema.files.value
+    dataset.files = [].concat.apply([], mappedInputs.files
       .filter(f => f.file_status !== FILE_STATUS.PENDING && f.file_status !== FILE_STATUS.ADDED)
       .map(f => f.file_id)).map(f => ({ "file_id": f }));
 
     dataset.files = [...dataset.files, ...pendingFiles];
-    dataset.keywords = dsFormSchema.keywords.value;
-    dataset.creators = dsFormSchema.creators.value
-      .map(creator => getCreator(creator));
+    dataset.keywords = mappedInputs.keywords;
+    dataset.creators = mappedInputs.creators.map(creator => getCreator(creator));
 
     props.client.postDataset(props.httpProjectUrl, dataset, props.edit)
       .then(response => {
         if (response.data.error !== undefined) {
-          setSubmitLoader(false);
-          setServerErrors(response.data.error.reason);
+          handlers.setSubmitLoader({ value: false, text: "" });
+          handlers.setServerErrors(response.data.error.reason);
         }
         else {
           let filesURLJobsArray = [];
@@ -167,17 +205,19 @@ function ChangeDataset(props) {
 
           let monitorJobs = setInterval(() => {
             if (filesURLJobsArray.length === 0) {
-              redirectAfterSuccess(monitorJobs, dataset.name);
+              handlers.setSubmitLoader({ value: false, text: "" });
+              redirectAfterSuccess(monitorJobs, dataset.name, handlers);
             }
             else {
               monitorURLJobsStatuses(filesURLJobsArray).then(jobsStats => {
                 if (jobsStats.finished) {
                   if (jobsStats.failed.length === 0) {
-                    redirectAfterSuccess(monitorJobs, dataset.name);
+                    handlers.setSubmitLoader({ value: false, text: "" });
+                    redirectAfterSuccess(monitorJobs, dataset.name, handlers);
                   }
                   else {
                     //some or all failed, but all finished
-                    checkJobsAndSetWarnings(filesURLJobsArray, false);
+                    checkJobsAndSetWarnings(filesURLJobsArray, false, handlers);
                     clearInterval(monitorJobs);
                   }
                 }
@@ -185,7 +225,8 @@ function ChangeDataset(props) {
             }
 
             if (cont >= 20) {
-              checkJobsAndSetWarnings(filesURLJobsArray, true);
+              handlers.setSubmitLoader({ value: false, text: "" });
+              checkJobsAndSetWarnings(filesURLJobsArray, true, handlers);
               clearInterval(monitorJobs);
             }
             cont++;
@@ -236,7 +277,8 @@ function ChangeDataset(props) {
     }
     else {
       setInitialized(true);
-      dsFormSchema.name.value = dsFormSchema.name.initial;
+      dsFormSchema.name.value = dsFormSchema.name.value === undefined
+        ? dsFormSchema.name.initial : dsFormSchema.name.value;
       dsFormSchema.title.value = dsFormSchema.title.initial;
       dsFormSchema.description.value = dsFormSchema.description.initial;
       dsFormSchema.files.value = dsFormSchema.files.initial;
@@ -257,15 +299,13 @@ function ChangeDataset(props) {
     initialized={initialized}
     datasetFormSchema={dsFormSchema}
     accessLevel={props.accessLevel}
-    serverErrors={serverErrors}
     submitCallback={submitCallback}
-    submitLoader={submitLoader}
     onCancel={onCancel}
-    warningOn={warningOn}
-    jobsStats={jobsStats}
     overviewCommitsUrl={props.overviewCommitsUrl}
     edit={props.edit}
+    model={props.model}
+    formLocation={formLocation}
+    initializeFunction={initializeFunction}
   />;
 }
-
 export default ChangeDataset;

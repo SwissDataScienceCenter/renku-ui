@@ -92,44 +92,73 @@ function getFileObject(name, path, size, id, error, alias, controller, uncompres
 }
 
 function FileUploaderInput({ name, label, alert, value, setInputs, help, disabled = false,
-  uploadFileFunction, filesOnUploader, required = false }) {
+  uploadFileFunction, required = false, internalValues, handlers, formLocation }) {
+
 
   //send value as an already built tree/hash to display and
   // delete from the files/paths /data/dataset-name so i can check if the file is there or not
   //AFTER THIS ADD THE FILES AS DISPLAY FILES BUT DON'T DISPLAY THEM
+  const [files, setFiles] = useFiles(internalValues ? { initialState: internalValues.files } : {});
+  const [errorOnDrop, setErrorOnDrop] = useState(internalValues ? internalValues.errorOnDrop : "");
+  const [initialized, setInitialized] = useState(internalValues ? internalValues.initialized : false);
+  const [initialFilesTree, setInitialFilesTree] =
+    useState(internalValues ? internalValues.initialFilesTree : undefined);
+  const [partialFilesPath, setPartialFilesPath] = useState(internalValues ? internalValues.partialFilesPath : "");
+  const [urlInputValue, setUrlInputValue] = useState(internalValues ? internalValues.urlInputValue : "");
+  const $input = useRef(internalValues ? internalValues.input : null);
 
-  const [files, setFiles] = useFiles({});
-  const [uploadedFiles, setUploadedFiles] = useState([]);
-  const [displayFiles, setDisplayFiles] = useState([]);
-  const [filesErrors, setFilesErrors] = useState([]);
-  const [errorOnDrop, setErrorOnDrop] = useState("");
-  const [initialized, setInitialized] = useState(false);
-  const [initialFilesTree, setInitialFilesTree] = useState(undefined);
-  const [partialFilesPath, setPartialFilesPath] = useState("");
-  const [urlInputValue, setUrlInputValue] = useState("");
-  const $input = useRef(null);
+  const getInternalValues = () => {
+    const internalValues = {
+      files,
+      errorOnDrop, initialized, initialFilesTree, partialFilesPath, urlInputValue, $input };
+    internalValues.uploadedFiles = getUploadedFilesRx();
+    internalValues.displayFiles = getDisplayFilesRx();
+    internalValues.filesErrors = getFilesErrorsRx();
+    return internalValues;
+  };
 
-  useEffect(() => {
-    if (value !== undefined && !initialized && value.length > 0) {
-      let openFolders = value[value.length - 1].atLocation.startsWith("data/") ? 2 : 1;
-      let lastElement = value[value.length - 1].atLocation.split("/");
-      if (lastElement[0] === "data")
-        setPartialFilesPath(lastElement[0] + "/" + lastElement[1] + "/");
-      else setPartialFilesPath(lastElement[0] + "/");
-      setInitialFilesTree(getFilesTree(value, openFolders));
-    }
-    setInitialized(true);
-  }, [value, initialized]);
+  const setFilesRx = (newFiles) => {
+    return handlers.setFormDraftInternalValuesProperty("files", "files", newFiles);
+  };
 
-  useEffect(() => {
-    const artificialEvent = {
-      target: { name: name, value: uploadedFiles },
-      isPersistent: () => false
-    };
-    setInputs(artificialEvent);
-    setDisplayFiles(prevDisplayFiles =>
+  const setDisplayFilesRx = (newDisplayFiles) => {
+    return handlers.setFormDraftInternalValuesProperty("files", "displayFiles", newDisplayFiles);
+  };
+
+  const getDisplayFilesRx = () => {
+    const dFiles = handlers.getFormDraftInternalValuesProperty("files", "displayFiles");
+    return dFiles !== undefined ? dFiles : [];
+  };
+
+  const getNewDisplayFilesRxAfterChanges = (newDisplayFiles) => {
+    const prevDisplayFiles = getDisplayFilesRx();
+    const filesErrors = getFilesErrorsRx();
+    return prevDisplayFiles.map(dFile => {
+      let uploadingFile = newDisplayFiles.find(uFile => uFile.file_name === dFile.file_name);
+      if (uploadingFile !== undefined) {
+        return getFileObject(
+          uploadingFile.file_name,
+          partialFilesPath + uploadingFile.file_name,
+          uploadingFile.file_size,
+          uploadingFile.file_id,
+          filesErrors.find(file => file.file_name === uploadingFile.file_name),
+          uploadingFile.file_alias,
+          uploadingFile.file_controller,
+          uploadingFile.file_uncompress,
+          uploadingFile.folder_structure,
+          uploadingFile.file_status
+        );
+      }
+      return dFile;
+    });
+  };
+
+  const updateDisplayFilesRxAfterChanges = (newDisplayFiles) => {
+    const prevDisplayFiles = getDisplayFilesRx();
+    const filesErrors = getFilesErrorsRx();
+    setDisplayFilesRx(
       prevDisplayFiles.map(dFile => {
-        let uploadingFile = uploadedFiles.find(uFile => uFile.file_name === dFile.file_name);
+        let uploadingFile = newDisplayFiles.find(uFile => uFile.file_name === dFile.file_name);
         if (uploadingFile !== undefined) {
           return getFileObject(
             uploadingFile.file_name,
@@ -147,36 +176,84 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
         return dFile;
       })
     );
-    // eslint-disable-next-line
-  }, [uploadedFiles]);
+  };
+
+  const setInputsInForm = (newUploadedFiles) => {
+    const internalValues = getInternalValues();
+    internalValues.displayFiles = getNewDisplayFilesRxAfterChanges(newUploadedFiles);
+    internalValues.uploadedFiles = newUploadedFiles;
+    const artificialEvent = {
+      target: {
+        name: name,
+        value: newUploadedFiles,
+        internalValues: internalValues
+      },
+      isPersistent: () => false
+    };
+    handlers.setFormDraftInternalValuesProperty("files", "setFutureInputs", artificialEvent);
+  };
+
+  const setUploadedFilesRx = (newUploadedFiles) => {
+    updateDisplayFilesRxAfterChanges(newUploadedFiles); //DO WE NEED THIS LINEEEE???
+    handlers.setFormDraftInternalValuesProperty("files", "uploadedFiles", newUploadedFiles);
+    setInputsInForm(newUploadedFiles);
+  };
+
+  const getUploadedFilesRx = () => {
+    const uFiles = handlers.getFormDraftInternalValuesProperty("files", "uploadedFiles");
+    return uFiles !== undefined ? uFiles : [];
+  };
+
+  const setFilesErrorsRx = (newFilesErrors) => {
+    const prevDisplayFiles = getDisplayFilesRx();
+    setDisplayFilesRx( prevDisplayFiles.map(dFile => {
+      let errorFile = newFilesErrors.find(eFile => eFile.file_name === dFile.file_name);
+      if (errorFile !== undefined) {
+        return getFileObject(
+          errorFile.file_name, errorFile.file_path, errorFile.file_size, null, errorFile.file_error,
+          errorFile.file_alias, errorFile.file_controller, errorFile.file_uncompress, errorFile.folder_structure);
+      }
+      return dFile;
+    })
+    );
+    return handlers.setFormDraftInternalValuesProperty( "files", "filesErrors", newFilesErrors);
+  };
+
+  const getFilesErrorsRx = () => {
+    const uFiles = handlers.getFormDraftInternalValuesProperty( "files", "filesErrors");
+    return uFiles !== undefined ? uFiles : [];
+  };
 
   useEffect(() => {
-    setDisplayFiles(prevDisplayFiles =>
-      prevDisplayFiles.map(dFile => {
-        // eslint-disable-next-line
-        let errorFile = filesErrors.find(eFile => eFile.file_name === dFile.file_name);
-        if (errorFile !== undefined) {
-          return getFileObject(
-            errorFile.file_name, errorFile.file_path, errorFile.file_size, null, errorFile.file_error,
-            errorFile.file_alias, errorFile.file_controller, errorFile.file_uncompress, errorFile.folder_structure);
-        }
-        return dFile;
-      })
-    );
-  }, [filesErrors]);
-
+    if (value !== undefined && !initialized && value.length > 0) {
+      if (value[value.length - 1].atLocation !== undefined) {
+        let openFolders = value[value.length - 1].atLocation.startsWith("data/") ? 2 : 1;
+        let lastElement = value[value.length - 1].atLocation.split("/");
+        if (lastElement[0] === "data")
+          setPartialFilesPath(lastElement[0] + "/" + lastElement[1] + "/");
+        else setPartialFilesPath(lastElement[0] + "/");
+        setInitialFilesTree(getFilesTree(value, openFolders));
+      }
+    }
+    const pendingCallback = handlers.getFormDraftInternalValuesProperty( "files", "setFutureInputs");
+    if (pendingCallback)
+      setInputs(pendingCallback);
+    setInitialized(true);
+  }, [value, initialized, formLocation, handlers, setInputs]);
 
   let uploadFile = (file) => {
     const thenCallback = (body) => {
-
       if (body.error) {
-        setFilesErrors(prevFilesErrors => [...prevFilesErrors,
-          getFileObject(file.name, partialFilesPath + file.name, file.size, undefined, body.error.reason, undefined,
-            file.file_controller, file.file_uncompress, file.folder_structure)]
+        const prevFilesErrors = getFilesErrorsRx();
+        setFilesErrorsRx([...prevFilesErrors,
+          getFileObject(file.name, partialFilesPath +
+            file.name, file.size, undefined, body.error.reason, undefined,
+          file.file_controller, file.file_uncompress, file.folder_structure)]
         );
         return [];
       }
 
+      const prevUploadedFiles = getUploadedFilesRx();
       if (file.file_uncompress) {
         let folderPath = body.result.files[0].relative_path.split("/")[0] + "/";
         let file_alias = file.name !== body.result.files[0].relative_path.split("/")[0].replace(".unpacked", "") ?
@@ -193,7 +270,8 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
 
         newFileDraft.file_size = body.result.files ? body.result.files[0].file_size : 0;
         newFileDraft.file_id = filesTree.tree.map(file => file.id);
-        setUploadedFiles(prevUploadedFiles => [...prevUploadedFiles, newFileDraft]);
+
+        setUploadedFilesRx([...prevUploadedFiles, newFileDraft]);
         return newFileDraft;
       }
       let newFileObj = body.result.files[0];
@@ -207,13 +285,14 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
       else {
         newFileObj.file_id = [newFileObj.file_id];
       }
-      setUploadedFiles(prevUploadedFiles => [...prevUploadedFiles, newFileObj]);
+      setUploadedFilesRx([...prevUploadedFiles, newFileObj]);
       return newFileObj;
     };
 
     const onErrorCallback = (error) => {
       if (error.code !== DOMException.ABORT_ERR) {
-        setFilesErrors(prevFilesErrors => [...prevFilesErrors,
+        const prevFilesErrors = getFilesErrorsRx();
+        setFilesErrorsRx([...prevFilesErrors,
           getFileObject(file.name, partialFilesPath + file.name, file.size, undefined, "Error uploading the file",
             undefined, file.file_controller, file.file_uncompress, file.folder_structure)]);
         return [];
@@ -221,7 +300,8 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
     };
 
     const setController = (monitored_file, controller) => {
-      setDisplayFiles(prevUploadedFiles => prevUploadedFiles
+      const prevDisplayFiles = getDisplayFilesRx();
+      setDisplayFilesRx(prevDisplayFiles
         .map(file => file.file_name === monitored_file.name ?
           getFileObject(
             file.file_name,
@@ -238,26 +318,29 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
           : file));
     };
 
-    const setFileProgress = (monitored_file, progress) => {
-      setDisplayFiles(prevUploadedFiles => prevUploadedFiles
-        .map(file => file.file_name === monitored_file.name ?
-          getFileObject(
-            file.file_name,
-            file.file_path,
-            file.file_size,
-            file.file_id,
-            file.file_error,
-            file.file_alias,
-            file.file_controller,
-            file.file_uncompress,
-            file.folder_structure,
-            progress
-          )
-          : file));
+    const setFileProgress = async (monitored_file, progress) => {
+      const currentFile = getDisplayFilesRx().find(file => file.file_name === monitored_file.name);
+      if (currentFile) {
+        const prevDisplayFiles = getDisplayFilesRx();
+        setDisplayFilesRx(prevDisplayFiles
+          .map(file => file.file_name === monitored_file.name ?
+            getFileObject(
+              file.file_name,
+              file.file_path,
+              file.file_size,
+              file.file_id,
+              file.file_error,
+              file.file_alias,
+              file.file_controller,
+              file.file_uncompress,
+              file.folder_structure,
+              progress
+            )
+            : file));
+      }
     };
-
-    uploadFileFunction(file, file.file_uncompress, setFileProgress, thenCallback, onErrorCallback, setController);
-
+    uploadFileFunction(file, file.file_uncompress, setFileProgress,
+      thenCallback, onErrorCallback, setController);
   };
 
   let onDropOrChange = (e) => {
@@ -277,6 +360,7 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
 
       const nonCompressedFiles = droppedFiles.filter(file => file.type !== "application/zip");
       setFiles([...files, ...droppedFiles]);
+      setFilesRx([...files, ...droppedFiles]);
       nonCompressedFiles.map(file => uploadFile(file, file.file_controller));
       const newDisplayFiles = droppedFiles.map(file=> {
         return file.type === "application/zip" ?
@@ -287,9 +371,8 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
             undefined, undefined, file.file_controller);
       });
 
-      filesOnUploader.current = displayFiles.filter(file => file.file_status !== FILE_STATUS.ADDED).length
-        + newDisplayFiles.length;
-      setDisplayFiles([...displayFiles, ...newDisplayFiles]);
+      const displayFilesRx = getDisplayFilesRx();
+      setDisplayFilesRx([...displayFilesRx, ...newDisplayFiles]);
     }
   };
 
@@ -300,13 +383,13 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
   const onUrlInputEnter = (e) => {
     if (!disabled && (e.key === "Enter" || e.target.id === "addFileButton")) {
       e.preventDefault();
-      const fileThere = displayFiles.find(file => file.file_name === urlInputValue);
+      const fileThere = getDisplayFilesRx().find(file => file.file_name === urlInputValue);
       if (fileThere === undefined && isURL(urlInputValue)) {
         const file_url = getFileObject(urlInputValue, urlInputValue, 0, null,
           undefined, undefined, undefined, undefined, undefined, FILE_STATUS.PENDING);
-        setDisplayFiles([...displayFiles, file_url ]);
-        setUploadedFiles(prevUploadedFiles => [...prevUploadedFiles, file_url]);
-        filesOnUploader.current = filesOnUploader.current + 1;
+        setDisplayFilesRx([...getDisplayFilesRx(), file_url ]);
+        const prevUploadedFiles = getUploadedFilesRx();
+        setUploadedFilesRx([...prevUploadedFiles, file_url]);
         setUrlInputValue("");
       }
     }
@@ -314,14 +397,21 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
 
   let deleteFile = (file_name, file_controller) => {
     if (!disabled) {
-      setFilesErrors(prevfilesErrors => prevfilesErrors.filter(file => file.file_name !== file_name));
-      setDisplayFiles(prevDisplayFiles => prevDisplayFiles.filter(file => file.file_name !== file_name));
-      setUploadedFiles(prevUploadedFiles => prevUploadedFiles.filter(file => file.file_name !== file_name));
-      const filteredFiles = files.filter(file => file.name !== file_name);
-      setFiles([...filteredFiles]);
-      filesOnUploader.current = filesOnUploader.current - 1 ;
-      $input.current.value = "";
-      if (file_controller) file_controller.abort();
+      const currentFile = getDisplayFilesRx().find(file => file.file_name === file_name);
+      if (currentFile) {
+        setDisplayFilesRx(getDisplayFilesRx()
+          .filter(file => file.file_name !== file_name));
+        setFilesErrorsRx(getFilesErrorsRx()
+          .filter(file => file.file_name !== file_name));
+        setUploadedFilesRx(getUploadedFilesRx()
+          .filter(file => file.file_name !== file_name));
+
+        const filteredFiles = files.filter(file => file.name !== file_name);
+        setFiles([...filteredFiles]);
+        setFilesRx([...filteredFiles]);
+        $input.current.value = "";
+        if (file_controller) file_controller.abort();
+      }
     }
   };
 
@@ -329,15 +419,15 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
     if (!disabled) {
       let retryFile = files.find(file => file.name === file_name);
       if (retryFile !== undefined) {
-        const displayFilesFiltered = displayFiles.map(file => {
+        const displayFilesFiltered = getDisplayFilesRx().map(file => {
           if (file.file_name === file_name) {
-            return getFileObject(retryFile.name, partialFilesPath + retryFile.name, retryFile.size, null,
-              undefined, retryFile.file_alias, retryFile.file_controller, file.file_uncompress, file.folder_structure);
+            return getFileObject(retryFile.name, partialFilesPath + retryFile.name, retryFile.size, null, undefined,
+              retryFile.file_alias, retryFile.file_controller, file.file_uncompress, file.folder_structure, undefined);
           }
           return file;
         });
-        setDisplayFiles([...displayFilesFiltered]);
-        setFilesErrors(prevfilesErrors => prevfilesErrors.filter(file => file.file_name !== file_name));
+        setDisplayFilesRx([...displayFilesFiltered]);
+        setFilesErrorsRx(getFilesErrorsRx().filter(file => file.file_name !== file_name));
         uploadFile(retryFile);
       }
     }
@@ -346,17 +436,20 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
   let uploadCompressedFile = (file_name, uncompress) => {
     if (!disabled) {
       let compressedFile = files.find(file => file.name === file_name);
+      const currentDisplayFiles = getDisplayFilesRx();
       if (compressedFile !== undefined) {
-        const displayFilesFiltered = displayFiles.map(file => {
+        const displayFilesFiltered = currentDisplayFiles.map(file => {
           if (file.file_name === file_name) {
-            return getFileObject(compressedFile.name, partialFilesPath + compressedFile.name, compressedFile.size,
-              null, undefined, compressedFile.file_alias, compressedFile.file_controller, uncompress === true ?
+            const updatedFile = getFileObject(compressedFile.name, partialFilesPath + compressedFile.name,
+              compressedFile.size, null, undefined, compressedFile.file_alias,
+              compressedFile.file_controller, uncompress === true ?
                 FILE_COMPRESSED.UNCOMPRESS_YES : FILE_COMPRESSED.UNCOMPRESS_NO );
+            return updatedFile;
           }
           return file;
         });
-        setDisplayFiles([...displayFilesFiltered]);
-        setFilesErrors(prevfilesErrors => prevfilesErrors.filter(file => file.file_name !== file_name));
+        setDisplayFilesRx([...displayFilesFiltered]);
+        setFilesErrorsRx(getFilesErrorsRx().filter(file => file.file_name !== file_name));
         compressedFile.file_uncompress = uncompress;
         uploadFile(compressedFile);
       }
@@ -366,7 +459,8 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
   let getFilteredFiles = (files) => {
     let dropErrorMessage = "";
     let filteredFiles = files.filter(file => {
-      if (displayFiles.find(dFile => (dFile.file_name === file.name || dFile.file_alias === file.name)) === undefined)
+      if (getDisplayFilesRx()
+        .find(dFile => (dFile.file_name === file.name || dFile.file_alias === file.name)) === undefined)
         return true;
 
       dropErrorMessage = dropErrorMessage === "" ?
@@ -480,7 +574,7 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
             </tr>
           </thead>
           <tbody className={disabled ? "disabled-input" : ""}>
-            {displayFiles.map((file, index) => (
+            {getDisplayFilesRx().map((file, index) => (
               <tr key={file.file_name + "file"} onClick={() => { }}>
                 <td>{index + 1}</td>
                 <td>

@@ -24,77 +24,77 @@
  */
 
 
-import React, { useState } from "react";
+import React from "react";
 import { addDatasetToProjectSchema } from "../../model/RenkuModels";
 import { ACCESS_LEVELS } from "../../api-client";
 import DatasetAdd from "./DatasetAdd.present";
 import { ImportStateMessage } from "../../utils/Dataset";
 import { groupBy } from "../../utils/HelperFunctions";
+import _ from "lodash";
+
+let dsFormSchema = _.cloneDeep(addDatasetToProjectSchema);
 
 function AddDataset(props) {
 
-  const [serverErrors, setServerErrors] = useState(undefined);
-  const [submitLoader, setSubmitLoader] = useState(false);
-  const [submitLoaderText, setSubmitLoaderText] = useState(ImportStateMessage.ENQUEUED);
-  const [takingTooLong, setTakingTooLong] = useState(false);
-  const [migrationNeeded, setMigrationNeeded] = useState(false);
+  if (dsFormSchema == null)
+    dsFormSchema = _.cloneDeep(addDatasetToProjectSchema);
+
 
   const closeModal = () =>{
-    if (!submitLoader) {
-      addDatasetToProjectSchema.project.value = "";
-      addDatasetToProjectSchema.project.options = [];
-      setServerErrors(undefined);
-      setTakingTooLong(false);
-      props.setModalOpen(false);
-      setMigrationNeeded(false);
-    }
+    props.setModalOpen(false);
   };
 
-  const redirectUser = (projectPath, datasetName) => {
-    setSubmitLoader(false);
-    addDatasetToProjectSchema.project.value = "";
-    addDatasetToProjectSchema.project.options = [];
+  const onCancel = (e, handlers) =>{
+    closeModal();
+    handlers.removeDraft();
+  };
+
+  const redirectUser = (projectPath, datasetName, handlers) => {
+    handlers.setSubmitLoader({ value: false, text: "" });
+    handlers.removeDraft();
     props.history.push({
       pathname: `/projects/${projectPath}/datasets/${datasetName}`,
       state: { reload: true }
     });
   };
 
-  function handleJobResponse(job, monitorJob, waitedSeconds, projectPath, datasetName) {
+  function handleJobResponse(job, monitorJob, waitedSeconds, projectPath, datasetName, handlers) {
+
     if (job) {
       switch (job.state) {
         case "ENQUEUED":
-          setSubmitLoaderText(ImportStateMessage.ENQUEUED);
+          handlers.setSubmitLoader({ value: true, text: ImportStateMessage.ENQUEUED });
           break;
         case "IN_PROGRESS":
-          setSubmitLoaderText(ImportStateMessage.IN_PROGRESS);
+          handlers.setSubmitLoader({ value: true, text: ImportStateMessage.IN_PROGRESS });
           break;
         case "COMPLETED":
-          setSubmitLoaderText(ImportStateMessage.COMPLETED);
+          handlers.setSubmitLoader({ value: true, text: ImportStateMessage.COMPLETED });
           clearInterval(monitorJob);
-          redirectUser(projectPath, datasetName);
+          redirectUser(projectPath, datasetName, handlers);
           break;
         case "FAILED":
-          setSubmitLoader(false);
-          setServerErrors(ImportStateMessage.FAILED + job.extras.error);
+          handlers.setSubmitLoader({ value: false, text: "" });
+          handlers.setServerErrors(ImportStateMessage.FAILED + job.extras.error);
           clearInterval(monitorJob);
           break;
         default:
-          setSubmitLoader(false);
-          setServerErrors(ImportStateMessage.FAILED_NO_INFO);
+          handlers.setSubmitLoader({ value: false, text: "" });
+          handlers.setServerErrors(ImportStateMessage.FAILED_NO_INFO);
           clearInterval(monitorJob);
           break;
       }
     }
     if ((waitedSeconds > 180 && job.state !== "IN_PROGRESS") || (waitedSeconds > 360 && job.state === "IN_PROGRESS")) {
-      setSubmitLoader(false);
-      setServerErrors(ImportStateMessage.TOO_LONG);
-      setTakingTooLong(true);
+      handlers.setSubmitLoader({ value: false, text: "" });
+      handlers.setServerErrors(ImportStateMessage.TOO_LONG);
+      //here change the buttons???
+      // setTakingTooLong(true);
       clearInterval(monitorJob);
     }
   }
 
-  const monitorJobStatusAndHandleResponse = (job_id, projectPath, datasetName) => {
+  const monitorJobStatusAndHandleResponse = (job_id, projectPath, datasetName, handlers) => {
     let cont = 0;
     const INTERVAL = 6000;
     let monitorJob = setInterval(() => {
@@ -103,56 +103,60 @@ function AddDataset(props) {
           cont++;
           if (job !== undefined) {
             handleJobResponse(
-              job, monitorJob, cont * INTERVAL / 1000, projectPath, datasetName);
+              job, monitorJob, cont * INTERVAL / 1000, projectPath, datasetName, handlers);
           }
         });
     }, INTERVAL);
   };
 
-  const importDataset = (selectedProject) => {
+  const importDataset = (selectedProject, handlers) => {
     props.client.datasetImport(selectedProject.value, props.dataset.url)
       .then(response => {
         if (response.data.error !== undefined) {
-          setSubmitLoader(false);
-          setServerErrors(response.data.error.reason);
+          handlers.setSubmitLoader({ value: false, text: "" });
+          handlers.setServerErrors(response.data.error.reason);
         }
         else {
           monitorJobStatusAndHandleResponse(
             response.data.result.job_id,
             selectedProject.name,
-            props.dataset.name
+            props.dataset.name,
+            handlers
           );
         }
       });
   };
 
-  const submitCallback = e => {
-    setServerErrors(undefined);
-    setSubmitLoader(true);
 
-    const selectedProject = addDatasetToProjectSchema.project.options.find((project)=>
-      project.value === addDatasetToProjectSchema.project.value);
+  const submitCallback = (e, mappedInputs, handlers) => {
+    handlers.setServerErrors(undefined);
+    handlers.setSubmitLoader({ value: true, text: ImportStateMessage.ENQUEUED });
+
+    const projectOptions = handlers.getFormDraftFieldProperty("project", ["options"]);
+
+    const selectedProject = projectOptions.find((project)=>
+      project.value === mappedInputs.project);
 
     props.client.getProjectIdFromService(selectedProject.value)
       .then((response) => {
         if (response.data && response.data.error !== undefined) {
-          setSubmitLoader(false);
-          setServerErrors(response.data.error.reason);
+          handlers.setSubmitLoader({ value: false, text: "" });
+          handlers.setServerErrors(response.data.error.reason);
         }
         else {
           props.client.performMigrationCheck(response)
             .then((response) => {
               if (response.data && response.data.error !== undefined) {
-                setSubmitLoader(false);
-                setServerErrors(response.data.error.reason);
+                handlers.setSubmitLoader({ value: false, text: "" });
+                handlers.setServerErrors(response.data.error.reason);
               }
               else {
                 if (response.data.result.migration_required) {
-                  setMigrationNeeded(true);
-                  setSubmitLoader(false);
+                  handlers.setServerWarnings(selectedProject.name);
+                  handlers.setSubmitLoader(false);
                 }
                 else {
-                  importDataset(selectedProject);
+                  importDataset(selectedProject, handlers);
                 }
               }
             });
@@ -160,50 +164,52 @@ function AddDataset(props) {
       });
   };
 
-  addDatasetToProjectSchema.project.customHandlers = {
-    onSuggestionsFetchRequested: ( value, reason, setSuggestions ) => {
+  const initializeFunction = (formSchema, formHandlers) => {
+    let projectsField = formSchema.find(field => field.name === "project");
+    projectsField.customHandlers = {
+      onSuggestionsFetchRequested: ( value, reason, setSuggestions, handlers ) => {
 
-      setMigrationNeeded(false);
-      setServerErrors(undefined);
-      setTakingTooLong(false);
+        formHandlers.setServerErrors(undefined);
+        formHandlers.setServerWarnings(undefined);
 
-      const featured = props.projectsCoordinator.model.get("featured");
-      if (!featured.fetched || (!featured.starred.length && !featured.member.length))
-        return;
+        const featured = props.projectsCoordinator.model.get("featured");
+        if (!featured.fetched || (!featured.starred.length && !featured.member.length))
+          return;
 
-      const regex = new RegExp(value, "i");
-      const searchDomain = featured.member.filter((project)=> project.access_level >= ACCESS_LEVELS.MAINTAINER);
+        const regex = new RegExp(value, "i");
+        const searchDomain = featured.member.filter((project)=> project.access_level >= ACCESS_LEVELS.MAINTAINER);
 
-      if (addDatasetToProjectSchema.project.options.length !== searchDomain.length) {
-        addDatasetToProjectSchema.project.options = searchDomain.map((project)=>({
-          "value": project.http_url_to_repo, "name": project.path_with_namespace, "id": project.id
-        }));
-      }
-
-      const hits = {};
-      const groupedSuggestions = [];
-
-      searchDomain.forEach(d => {
-        if (regex.exec(d.path_with_namespace) != null) {
-          hits[d.path_with_namespace] = {
-            "value": d.http_url_to_repo,
-            "name": d.path_with_namespace,
-            "subgroup": d.path_with_namespace.split("/")[0],
-            "id": d.id
-          };
+        if (projectsField.options.length !== searchDomain.length) {
+          projectsField.options = searchDomain.map((project)=>({
+            "value": project.http_url_to_repo, "name": project.path_with_namespace, "id": project.id
+          }));
         }
-      });
 
-      const hitValues = Object.values(hits).sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
-      const groupedHits = groupBy(hitValues, item => item.subgroup);
-      for (var [key, val] of groupedHits) {
-        groupedSuggestions.push({
-          title: key,
-          suggestions: val
+        const hits = {};
+        const groupedSuggestions = [];
+
+        searchDomain.forEach(d => {
+          if (regex.exec(d.path_with_namespace) != null) {
+            hits[d.path_with_namespace] = {
+              "value": d.http_url_to_repo,
+              "name": d.path_with_namespace,
+              "subgroup": d.path_with_namespace.split("/")[0],
+              "id": d.id
+            };
+          }
         });
+
+        const hitValues = Object.values(hits).sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
+        const groupedHits = groupBy(hitValues, item => item.subgroup);
+        for (var [key, val] of groupedHits) {
+          groupedSuggestions.push({
+            title: key,
+            suggestions: val
+          });
+        }
+        setSuggestions(groupedSuggestions);
       }
-      setSuggestions(groupedSuggestions);
-    }
+    };
   };
 
 
@@ -211,14 +217,13 @@ function AddDataset(props) {
     <DatasetAdd
       modalOpen={props.modalOpen}
       closeModal={closeModal}
+      onCancel={onCancel}
       submitCallback={submitCallback}
-      serverErrors={serverErrors}
-      submitLoader={submitLoader}
-      submitLoaderText={submitLoaderText}
-      addDatasetToProjectSchema={addDatasetToProjectSchema}
-      takingTooLong={takingTooLong}
-      migrationNeeded={migrationNeeded}
+      addDatasetToProjectSchema={dsFormSchema}
       history={props.history}
+      initializeFunction={initializeFunction}
+      formLocation={props.formLocation}
+      model={props.model}
     />
   );
 }

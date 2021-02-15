@@ -35,7 +35,7 @@ import { faInfoCircle, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 
 import { FieldGroup, Loader, ExternalLink } from "../../utils/UIComponents";
 import { slugFromTitle } from "../../utils/HelperFunctions";
-import { capitalize } from "../../utils/formgenerator/FormPanel";
+import { capitalize } from "../../utils/formgenerator/FormGenerator.present";
 import "./Project.style.css";
 
 

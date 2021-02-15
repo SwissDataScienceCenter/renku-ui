@@ -26,7 +26,7 @@
 
 import React from "react";
 import { Col, Alert, Button } from "reactstrap";
-import { FormPanel } from "../../../utils/formgenerator";
+import { FormGenerator } from "../../../utils/formgenerator";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
@@ -44,13 +44,15 @@ function DatasetImport(props) {
     </Col>;
   }
 
-  return <FormPanel
+  return <FormGenerator
     btnName="Import Dataset"
     submitCallback={props.submitCallback}
     model={props.datasetImportFormSchema}
-    serverErrors={props.serverErrors}
-    submitLoader={{ value: props.submitLoader, text: props.submitLoaderText }}
-    onCancel={props.onCancel} />;
+    onCancel={props.onCancel}
+    formLocation={props.formLocation}
+    notifications={props.notifications}
+    modelTop={props.model}
+  />;
 
 }
 

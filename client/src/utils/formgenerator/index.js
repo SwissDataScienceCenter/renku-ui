@@ -36,16 +36,16 @@
  *
  */
 
-import FormPanel from "./FormPanel";
+import FormGenerator from "./FormGenerator.container";
 import Parsers from "./services/InputParser";
 import Validators from "./services/InputValidator";
 import Fields from "./fields";
 
 export default {
-  FormPanel,
+  FormGenerator,
   Parsers,
   Validators,
   FieldTypes: Fields.FieldTypes
 };
 
-export { FormPanel };
+export { FormGenerator };

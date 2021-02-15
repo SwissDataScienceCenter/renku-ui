@@ -25,9 +25,9 @@
 
 import { PropertyName, Schema, StateModel, StateKind, SubModel, SpecialPropVal, StatusHelper } from "./Model";
 import { globalSchema } from "./GlobalSchema";
-import { projectGlobalSchema, projectSchema } from "./RenkuModels";
+import { projectGlobalSchema, projectSchema, formGeneratorSchema } from "./RenkuModels";
 
 export {
   globalSchema, Schema, StateModel, StateKind, SubModel, SpecialPropVal, StatusHelper, projectGlobalSchema,
-  projectSchema, PropertyName
+  projectSchema, PropertyName, formGeneratorSchema
 };

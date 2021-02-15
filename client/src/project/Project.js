@@ -477,6 +477,7 @@ class View extends Component {
         graphStatus={this.isGraphReady()}
         overviewStatusUrl={subUrls.overviewStatusUrl}
         projectInsideKg={projectInsideKg}
+        location={this.props.location}
       />,
 
       newDataset: (p) => <ChangeDataset
@@ -497,6 +498,9 @@ class View extends Component {
         fetchDatasets={this.eventHandlers.fetchDatasets}
         overviewCommitsUrl={subUrls.overviewCommitsUrl}
         edit={false}
+        location={p.location}
+        notifications={p.notifications}
+        model={this.props.model}
       />,
 
       editDataset: (p) => <ChangeDataset
@@ -519,6 +523,9 @@ class View extends Component {
         fetchDatasets={this.eventHandlers.fetchDatasets}
         overviewCommitsUrl={subUrls.overviewCommitsUrl}
         edit={true}
+        location={p.location}
+        notifications={p.notifications}
+        model={this.props.model}
       />,
 
       importDataset: (p) => <ImportDataset
@@ -538,6 +545,9 @@ class View extends Component {
         httpProjectUrl={httpProjectUrl}
         fetchDatasets={this.eventHandlers.fetchDatasets}
         overviewCommitsUrl={subUrls.overviewCommitsUrl}
+        location={p.location}
+        notifications={p.notifications}
+        model={this.props.model}
       />,
 
       fork: () => <Fork
@@ -620,7 +630,7 @@ class View extends Component {
       this.fetchProjectFilesTree();
       //this.fetchModifiedFiles();
     },
-    fetchDatasets: (forceReFetch = true) => {
+    fetchDatasets: (forceReFetch) => {
       this.fetchProjectDatasetsFromKg();
       this.fetchProjectDatasets(forceReFetch);
     },

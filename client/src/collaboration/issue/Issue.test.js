@@ -25,6 +25,7 @@
 
 import React from "react";
 import ReactDOM from "react-dom";
+
 import { MemoryRouter } from "react-router-dom";
 import { createMemoryHistory } from "history";
 
@@ -33,11 +34,14 @@ import { CollaborationList, collaborationListTypeMap } from "../lists/Collaborat
 import State from "./Issue.state";
 import { testClient as client } from "../../api-client";
 import { generateFakeUser } from "../../user/User.test";
+import { StateModel, globalSchema } from "../../model";
 
 describe("rendering", () => {
   const user = generateFakeUser(true);
 
   let spy = null;
+  const model = new StateModel(globalSchema);
+
   beforeEach(() => {
     // ckeditor dumps some junk to the console.error. Ignore it.
     spy = jest.spyOn(console, "error").mockImplementation(() => {});
@@ -49,7 +53,7 @@ describe("rendering", () => {
 
   it("renders new without crashing", () => {
     const div = document.createElement("div");
-    ReactDOM.render(<Issue.New location={{ pathname: "/projects/1/issue_new" }} user={user} />, div);
+    ReactDOM.render(<Issue.New location={{ pathname: "/projects/1/issue_new" }} user={user} model={model}/>, div);
   });
   it("renders list without crashing", () => {
     const baseUrl = "base";

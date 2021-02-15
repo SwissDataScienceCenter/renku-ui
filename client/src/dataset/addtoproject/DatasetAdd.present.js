@@ -25,25 +25,30 @@
 
 
 import React from "react";
-import { Row, Col, Modal, ModalHeader, ModalBody, Button } from "reactstrap";
-import { FormPanel } from "../../utils/formgenerator";
+import { Row, Col, Modal, ModalHeader, ModalBody } from "reactstrap";
+import { FormGenerator } from "../../utils/formgenerator";
+import { Button } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
 function DatasetAdd(props) {
 
-  const selectedProject = props.addDatasetToProjectSchema.project.options.find((project) =>
-    project.value === props.addDatasetToProjectSchema.project.value);
+  const formatServerErrorsAndWarnings = (errorOrWarning, isError)=>{
+    const selectedProjectName = errorOrWarning;
+    if (!isError) {
+      return <div>
+        <FontAwesomeIcon icon={faExclamationTriangle} /> <strong>A new version of renku is available.</strong>
+        <br />
+        The target project ({selectedProjectName}) needs to be upgraded to allow
+        modification of datasets and is recommended for all projects.
+        <br />
+        <Button color="warning" onClick={() =>
+          props.history.push(`/projects/${selectedProjectName}/overview/status`)}>More Info</Button>
+      </div>;
+    }
+    return errorOrWarning;
+  };
 
-  const serverWarnings = props.migrationNeeded ? <div>
-    <FontAwesomeIcon icon={faExclamationTriangle} /> <strong>A new version of renku is available.</strong>
-    <br />
-    The target project ({selectedProject.name}) needs to be upgraded to allow
-    modification of datasets and is recommended for all projects.
-    <br />
-    <Button color="warning" onClick={() =>
-      props.history.push(`/projects/${selectedProject.name}/overview/status`)}>More Info</Button>
-  </div> : undefined;
 
   return (
     <Modal
@@ -56,15 +61,16 @@ function DatasetAdd(props) {
       <ModalBody>
         <Row className="mb-3">
           <Col>
-            <FormPanel
+            <FormGenerator
               btnName={"Add Dataset"}
               submitCallback={!props.takingTooLong ? props.submitCallback : undefined}
               model={props.addDatasetToProjectSchema}
-              serverErrors={props.serverErrors}
-              submitLoader={{ value: props.submitLoader, text: props.submitLoaderText }}
-              onCancel={props.closeModal}
-              serverWarnings={serverWarnings}
-              cancelBtnName={!props.takingTooLong ? "Cancel" : "OK"} />
+              onCancel={props.onCancel}
+              formLocation={props.formLocation}
+              modelTop={props.model}
+              initializeFunction={props.initializeFunction}
+              formatServerErrorsAndWarnings={formatServerErrorsAndWarnings}
+            />
           </Col>
         </Row>
       </ModalBody>
