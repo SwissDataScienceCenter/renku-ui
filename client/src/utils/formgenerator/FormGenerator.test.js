@@ -1,7 +1,8 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Schema } from "../../model";
-import FormGenerator, { FormPanel } from "./";
+import { StateModel, globalSchema } from "../../model";
+import FormGenerator, { FormGenerator as FormPanel } from "./";
 
 let schema = new Schema({
   name: {
@@ -45,6 +46,8 @@ let schema = new Schema({
 
 describe("rendering on create", () => {
   let spy = null;
+  const model = new StateModel(globalSchema);
+
   beforeEach(() => {
     // ckeditor dumps some junk to the console.error. Ignore it.
     spy = jest.spyOn(console, "error").mockImplementation(() => { });
@@ -66,7 +69,8 @@ describe("rendering on create", () => {
 
     ReactDOM.render(
       <FormPanel title="Create Dataset" submitLoader={false} btnName="Create Dataset"
-        submitCallback={submitCallback} model={schema} />,
+        submitCallback={submitCallback} model={schema} modelTop={model}
+        formLocation="/projects/namespace/project-name/datasets/new"/>,
       div
     );
   });
@@ -74,6 +78,8 @@ describe("rendering on create", () => {
 
 describe("rendering on modify", () => {
   let spy = null;
+  const model = new StateModel(globalSchema);
+
   beforeEach(() => {
     // ckeditor dumps some junk to the console.error. Ignore it.
     spy = jest.spyOn(console, "error").mockImplementation(() => { });
@@ -93,7 +99,8 @@ describe("rendering on modify", () => {
 
     ReactDOM.render(
       <FormPanel title="Modify Dataset" submitLoader={false} btnName="Create Dataset"
-        submitCallback={submitCallback} model={schema} edit={true} />,
+        submitCallback={submitCallback} model={schema} edit={true} modelTop={model}
+        formLocation="/projects/namespace/project-name/datasets/new"/>,
       div
     );
   });

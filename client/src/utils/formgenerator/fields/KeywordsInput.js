@@ -23,7 +23,7 @@
  *  Presentational components.
  */
 
-import * as React from "react";
+import React, { useEffect } from "react";
 import ValidationAlert from "./ValidationAlert";
 import HelpText from "./HelpText";
 import FormLabel from "./FormLabel";
@@ -62,12 +62,14 @@ function KeywordsInput(
     }
   };
 
-  React.useEffect(()=>{
-    const artificialEvent = {
-      target: { name: name, value: tags },
-      isPersistent: () => false
-    };
-    setInputs(artificialEvent);
+  useEffect(()=>{
+    if (tags.length !== value.length) {
+      const artificialEvent = {
+        target: { name: name, value: tags },
+        isPersistent: () => false
+      };
+      setInputs(artificialEvent);
+    }
     //eslint-disable-next-line
   }, [tags]);
 

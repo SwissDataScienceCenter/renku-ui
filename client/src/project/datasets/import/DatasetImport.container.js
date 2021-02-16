@@ -23,23 +23,27 @@
  *  Container components for new dataset.
  */
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { datasetImportFormSchema } from "../../../model/RenkuModels";
 import DatasetImport from "./DatasetImport.present";
 import { ImportStateMessage } from "../../../utils/Dataset";
+import _ from "lodash";
+
+let dsFormSchema = _.cloneDeep(datasetImportFormSchema);
 
 function ImportDataset(props) {
 
-  const [serverErrors, setServerErrors] = useState(undefined);
-  const [submitLoader, setSubmitLoader] = useState(false);
-  const [submitLoaderText, setSubmitLoaderText] = useState(ImportStateMessage.ENQUEUED);
+  const formLocation = props.location.pathname + "/import";
 
-  const onCancel = e => {
+  if (dsFormSchema == null)
+    dsFormSchema = _.cloneDeep(datasetImportFormSchema);
+
+  const onCancel = (e, handlers) => {
+    handlers.removeDraft(props.location.pathname + "/import");
     props.history.push({ pathname: `/projects/${props.projectPathWithNamespace}/datasets` });
   };
 
   const redirectUser = () => {
-    setSubmitLoader(false);
     props.fetchDatasets(true);
     props.history.push({
       //we should do the redirect to the new dataset
@@ -49,82 +53,75 @@ function ImportDataset(props) {
     ;
   };
 
-  function handleJobResponse(job, monitorJob, cont) {
+  function handleJobResponse(job, monitorJob, cont, handlers) {
     if (job !== null && job !== undefined) {
       switch (job.state) {
         case "ENQUEUED":
-          setSubmitLoaderText(ImportStateMessage.ENQUEUED);
+          handlers.setSubmitLoader({ value: true, text: ImportStateMessage.ENQUEUED });
           break;
         case "IN_PROGRESS":
-          setSubmitLoaderText(ImportStateMessage.IN_PROGRESS);
+          handlers.setSubmitLoader({ value: true, text: ImportStateMessage.IN_PROGRESS });
           break;
         case "COMPLETED":
-          setSubmitLoaderText(ImportStateMessage.COMPLETED);
+          handlers.setSubmitLoader({ value: false, text: "" });
           clearInterval(monitorJob);
           redirectUser();
           break;
         case "FAILED":
-          setSubmitLoader(false);
-          setServerErrors(ImportStateMessage.FAILED + job.extras.error);
+          handlers.setSubmitLoader({ value: false, text: "" });
+          handlers.setServerErrors(ImportStateMessage.FAILED + job.extras.error);
           clearInterval(monitorJob);
           break;
         default:
-          setSubmitLoader(false);
-          setServerErrors(ImportStateMessage.FAILED_NO_INFO);
+          handlers.setSubmitLoader({ value: false, text: ImportStateMessage.FAILED_NO_INFO });
+          handlers.setServerErrors(ImportStateMessage.FAILED_NO_INFO);
           clearInterval(monitorJob);
           break;
       }
     }
     if (cont === 100) {
-      setSubmitLoader(false);
-      setServerErrors(ImportStateMessage.TOO_LONG);
+      handlers.setSubmitLoader({ value: false, text: "" });
+      handlers.setServerErrors(ImportStateMessage.TOO_LONG);
       clearInterval(monitorJob);
     }
   }
 
-  const monitorJobStatusAndHandleResponse = (job_id) => {
+  const monitorJobStatusAndHandleResponse = (job_id, handlers) => {
     let cont = 0;
     let monitorJob = setInterval(() => {
       props.client.getJobStatus(job_id)
         .then(job => {
           cont++;
           if (job !== undefined || cont === 50)
-            handleJobResponse(job, monitorJob, cont);
+            handleJobResponse(job, monitorJob, cont, handlers);
         });
     }, 10000);
   };
 
-  const submitCallback = e => {
-    setServerErrors(undefined);
-    setSubmitLoader(true);
-    const dataset = {};
-    dataset.uri = datasetImportFormSchema.uri.value;
-    props.client.datasetImport(props.httpProjectUrl, dataset.uri)
+  const submitCallback = (e, mappedInputs, handlers) => {
+    handlers.setServerErrors(undefined);
+    handlers.setServerWarnings(undefined);
+    handlers.setSubmitLoader({ value: true, text: ImportStateMessage.ENQUEUED });
+    props.client.datasetImport(props.httpProjectUrl, mappedInputs.uri)
       .then(response => {
         if (response.data.error !== undefined) {
-          setSubmitLoader(false);
-          setServerErrors(response.data.error.reason);
+          handlers.setSubmitLoader({ value: false, text: "" });
+          handlers.setServerErrors(response.data.error.reason);
         }
         else {
-          monitorJobStatusAndHandleResponse(response.data.result.job_id);
+          monitorJobStatusAndHandleResponse(response.data.result.job_id, handlers);
         }
       });
   };
 
-  useEffect(()=>{
-    return (()=>{
-      datasetImportFormSchema.uri.value = datasetImportFormSchema.uri.initial;
-    });
-  }, []);
-
   return <DatasetImport
-    submitLoader={submitLoader}
-    submitLoaderText={submitLoaderText}
-    serverErrors={serverErrors}
     onCancel={onCancel}
     submitCallback={submitCallback}
-    datasetImportFormSchema={datasetImportFormSchema}
+    datasetImportFormSchema={dsFormSchema}
     accessLevel={props.accessLevel}
+    formLocation={formLocation}
+    notifications={props.notifications}
+    model={props.model}
   />;
 }
 

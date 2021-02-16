@@ -23,7 +23,7 @@
  *  Module for issue features.
  */
 
-import React, { Component, useState } from "react";
+import React, { Component } from "react";
 import { Provider, connect } from "react-redux";
 import { Row, Col, Button, Alert } from "reactstrap";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
@@ -37,51 +37,54 @@ import {
 import { Contribution, NewContribution } from "../../contribution";
 import { Loader } from "../../utils/UIComponents";
 import { issueFormSchema } from "../../model/RenkuModels";
-import { FormPanel } from "../../utils/formgenerator";
+import { FormGenerator } from "../../utils/formgenerator";
+import _ from "lodash";
+
+let iFormSchema = _.cloneDeep(issueFormSchema);
 
 function New(props) {
 
-  const [submitLoader, setSubmitLoader] = useState(false);
+  if (iFormSchema == null)
+    iFormSchema = _.cloneDeep(issueFormSchema);
+
   const issuesUrl = `/projects/${props.projectPathWithNamespace}/collaboration/issues`;
 
-  const onCancel = e => {
-    resetForm();
+  const onCancel = (e, handlers) => {
+    handlers.removeDraft();
     props.history.push({ pathname: issuesUrl });
   };
 
-  const submitData = () => {
+  const submitData = (mappedInputs) => {
     let body = {};
-    body.confidential = issueFormSchema.visibility.value === "Restricted";
-    body.title = issueFormSchema.name.value;
-    body.description = issueFormSchema.description.value;
+    body.confidential = mappedInputs.visibility === "restricted";
+    body.title = mappedInputs.title;
+    body.description = mappedInputs.description;
     return [props.projectPathWithNamespace, body];
   };
 
-  const resetForm = () => {
-    issueFormSchema.visibility.value = "Public";
-    issueFormSchema.name.value = "";
-    issueFormSchema.description.value = "";
-  };
-
-  const submitCallback = e => {
-    setSubmitLoader(true);
-    props.client.postProjectIssue(...submitData())
+  const submitCallback = (e, mappedInputs, handlers) => {
+    handlers.setSubmitLoader({ value: true, text: "Creating issue, please wait..." });
+    props.client.postProjectIssue(...submitData(mappedInputs))
       .then(newIssue => {
-        resetForm();
-        setSubmitLoader(false);
+        handlers.removeDraft();
+        handlers.setSubmitLoader({ value: false, text: "" });
         props.history.push({ pathname: issuesUrl });
+      }).catch(error=> {
+        handlers.setSubmitLoader({ value: false, text: "" });
+        handlers.setServerErrors(error.message);
       });
   };
 
   return (
     <Row>
       <Col md={8}>
-        <FormPanel
+        <FormGenerator
           title="Create Issue"
           btnName="Create Issue"
           submitCallback={submitCallback}
-          model={issueFormSchema}
-          submitLoader={{ value: submitLoader, text: "Creating issue, please wait..." }}
+          model={iFormSchema}
+          modelTop={props.model}
+          formLocation={props.location.pathname}
           onCancel={onCancel} />
       </Col>
     </Row>

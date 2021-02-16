@@ -26,6 +26,8 @@
 
 import React from "react";
 import ReactDOM from "react-dom";
+import { createMemoryHistory } from "history";
+
 import { MemoryRouter } from "react-router-dom";
 import { ACCESS_LEVELS, testClient as client } from "../../api-client";
 import { StateModel, globalSchema } from "../../model";
@@ -37,7 +39,16 @@ import { generateFakeUser } from "../../user/User.test";
 describe("rendering", () => {
   const model = new StateModel(globalSchema);
   let spy = null;
+
   const loggedUser = generateFakeUser();
+  const fakeHistory = createMemoryHistory({
+    initialEntries: ["/"],
+    initialIndex: 0,
+  });
+
+  fakeHistory.push({
+    pathname: "/projects/namespace/project-name/datasets/new"
+  });
 
   beforeEach(() => {
     // ckeditor dumps some junk to the console.error. Ignore it.
@@ -87,6 +98,7 @@ describe("rendering", () => {
           client={client}
           model={model}
           user={loggedUser}
+          location={fakeHistory}
         />
       </MemoryRouter>
       , div);
@@ -103,6 +115,7 @@ describe("rendering", () => {
           client={client}
           model={model}
           user={loggedUser}
+          location={fakeHistory}
         />
       </MemoryRouter>
       , div);

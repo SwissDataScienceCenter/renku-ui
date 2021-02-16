@@ -167,7 +167,7 @@ function sanitizedHTMLFromMarkdown(markdown, singleLine = false) {
   }));
 
   const converter = new showdown.Converter({ ...showdownOptions, extensions: [...bindings] });
-  if (singleLine) {
+  if (singleLine && markdown) {
     const lineBreakers = ["<br>", "<br />", "<br/>", "\n"];
     const breakPosition = Math.max(...lineBreakers.map(elem => markdown.indexOf(elem)));
     if (breakPosition !== -1)

@@ -35,8 +35,12 @@ function checkCreatorIsValid(input) {
 export default {
   isNotEmpty: input => checkAtLeastLength(input.value, 1),
   isAtLeastLength: (input, minLength) => checkAtLeastLength(input.value, minLength),
-  filesReady: (input) => input.value.filter(file => file.file_status !== "added").length
-    === input.filesOnUploader.current,
+  filesReady: (input) => {
+    return input.value.filter(file => file.file_status !== "added").length
+    === input.internalValues?.displayFiles?.length ||
+    (input.value.filter(file => file.file_status !== "added").length === 0
+    && input.internalValues?.displayFiles?.length === undefined);
+  },
   optionExists: (input) => input.options.find(option => option.value === input.value) !== undefined,
   creatorIsValid: (input) => checkCreatorIsValid(input)
 };

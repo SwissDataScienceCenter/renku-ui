@@ -19,13 +19,12 @@
 /**
  *  renku-ui
  *
- *  FormPanel.js
+ *  FormGenerator.present.js
  *  Presentational components.
  */
 
 import React, { Fragment } from "react";
 import { Form, Button, Col, UncontrolledAlert, FormText } from "reactstrap";
-import useForm from "./UseForm";
 import TextInput from "./fields/TextInput";
 import TextareaInput from "./fields/TexAreaInput";
 import SelectInput from "./fields/SelectInput";
@@ -35,7 +34,7 @@ import CktextareaInput from "./fields/CKEditorTextArea";
 import FileUploaderInput from "./fields/FileUploaderInput";
 import KeywordsInput from "./fields/KeywordsInput";
 import ValidationAlert from "./fields/ValidationAlert";
-import { Loader } from "../../utils/UIComponents";
+import { Loader } from "../UIComponents";
 import "./FormGenerator.css";
 
 function capitalize(string) {
@@ -46,13 +45,13 @@ function SubmitButtonGroup(props) {
   const { submitCallback, submitLoader, btnName, errorFields } = props;
   const { onCancel, cancelBtnName } = props;
   const submitButton = submitCallback !== undefined ?
-    <Button type="submit" disabled={submitLoader.value} className="float-right mt-1" color="primary">
+    <Button type="submit" disabled={submitLoader && submitLoader.value} className="float-right mt-1" color="primary">
       {btnName}
     </Button>
     : null;
   const cancelButton = onCancel !== undefined ?
-    <Button disabled={submitLoader.value} className="float-right mt-1 mr-1"
-      color="secondary" onClick={onCancel}>
+    <Button disabled={submitLoader && submitLoader.value} className="float-right mt-1 mr-1"
+      color="secondary" onClick={(e)=>onCancel(e, props.handlers)}>
       {cancelBtnName ? cancelBtnName : "Cancel"}
     </Button>
     : null;
@@ -67,10 +66,15 @@ function SubmitButtonGroup(props) {
   </Fragment>;
 }
 
-function FormPanel({ title, btnName, submitCallback, model, serverErrors,
-  serverWarnings, submitLoader, onCancel, edit, cancelBtnName, disableAll }) {
-  const modelValues = Object.values(model);
-  const [inputs, setInputs, setSubmit] = useForm(modelValues, submitCallback);
+function FormPanel({ title, btnName, submitCallback, formLocation, onCancel, edit, handlers,
+  formatServerErrorsAndWarnings, draft, loading, inputs, setInputs, setSubmit }) {
+
+  const submitLoader = draft?.submitLoader;
+  const serverErrors = draft?.serverErrors;
+  const serverWarnings = draft?.serverWarnings;
+  const secondaryButtonText = draft?.secondaryButton;
+  const disableAll = draft?.disableAll;
+
   const Components = {
     TextInput,
     TextareaInput,
@@ -81,29 +85,41 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors,
     CreatorsInput,
     KeywordsInput
   };
+
   const renderInput = input => {
     const Component = Components[capitalize(input.type) + "Input"];
-    return <Component key={input.name}
-      disabled={submitLoader.value || (input.edit === false && edit) || disableAll} setInputs={setInputs} {...input} />;
+    return <Component key={input.name} value={input.value}
+      disabled={(submitLoader && submitLoader.value ) || (input.edit === false && edit) || disableAll}
+      setInputs={setInputs} {...input} handlers={handlers} formLocation={formLocation}/>;
   };
 
-  const extractErrorsAndWarnings = (errorOrWarning) => {
+  const extractErrorsAndWarnings = (errorOrWarning, isError) => {
     let content;
-    if (typeof errorOrWarning === "string") {
-      content = <p>{errorOrWarning}</p>;
+    let formattedErrorOrWarning = formatServerErrorsAndWarnings ?
+      formatServerErrorsAndWarnings(errorOrWarning, isError) : errorOrWarning;
+
+    var htmlRegex = new RegExp(/^/);
+    if (typeof formattedErrorOrWarning === "string") {
+      content = <p>{formattedErrorOrWarning}</p>;
     }
     else {
+      if (htmlRegex.test(formattedErrorOrWarning)) { content = formattedErrorOrWarning; }
+      else {
       //this could be improve to extract better the error message
       //ideally we could map backend and frontend fields and put the error under the field
-      content = Object.keys(errorOrWarning).map(error =>
-        (<p key={error}>{`${error}: ${JSON.stringify(errorOrWarning[error])}`}</p>)
-      );
+        content = Object.keys(formattedErrorOrWarning).map(error =>
+          (<p key={error}>{`${error}: ${JSON.stringify(formattedErrorOrWarning[error])}`}</p>)
+        );
+      }
     }
     return (<div>
       <p>Errors occurred while performing this operation.</p>
       {content}
     </div>);
   };
+
+  if (!inputs || inputs.length === 0 || loading)
+    return <Loader />;
 
   const errorFields = inputs.filter(input => (input.alert != null) && (input.edit !== false));
 
@@ -116,9 +132,9 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors,
         <div>
           {inputs.map(input => renderInput(input))}
           {serverErrors ? <UncontrolledAlert color="danger">
-            {extractErrorsAndWarnings(serverErrors)}</UncontrolledAlert> : null}
+            {extractErrorsAndWarnings(serverErrors, true)}</UncontrolledAlert> : null}
           {serverWarnings ? <UncontrolledAlert color="warning">
-            {extractErrorsAndWarnings(serverWarnings)}</UncontrolledAlert> : null}
+            {extractErrorsAndWarnings(serverWarnings, false)}</UncontrolledAlert> : null}
           {submitLoader !== undefined && submitLoader.value ?
             <FormText color="primary">
               <Loader size="16" inline="true" margin="2" />
@@ -128,7 +144,7 @@ function FormPanel({ title, btnName, submitCallback, model, serverErrors,
           }
           <SubmitButtonGroup
             submitCallback={submitCallback} submitLoader={submitLoader} btnName={btnName} errorFields={errorFields}
-            onCancel={onCancel} cancelBtnName={cancelBtnName}
+            onCancel={onCancel} cancelBtnName={secondaryButtonText} handlers={handlers}
           />
         </div>
       </Form>

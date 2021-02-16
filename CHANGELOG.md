@@ -1,6 +1,21 @@
 
 # Changes
 
+
+## [0.11.6](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.5...0.11.6) (2021-02-15)
+
+### Bug Fixes
+
+* fix markdown files when they contain a file preview ([#1237](https://github.com/SwissDataScienceCenter/renku-ui/issues/1237))
+* prevent accessing stats for non existing projects ([#1235](https://github.com/SwissDataScienceCenter/renku-ui/issues/1235), [#1234](https://github.com/SwissDataScienceCenter/renku-ui/issues/1234))
+* change url to instructions for manual migration ([#1238](https://github.com/SwissDataScienceCenter/renku-ui/issues/1238), [#1213](https://github.com/SwissDataScienceCenter/renku-ui/issues/1213))
+
+
+### Features
+
+* store form state in redux  ([#1228](https://github.com/SwissDataScienceCenter/renku-ui/issues/1228), [#1216](https://github.com/SwissDataScienceCenter/renku-ui/issues/1216))
+
+
 ## [0.11.5](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.4...0.11.5) (2021-02-09)
 
 ### Bug Fixes
