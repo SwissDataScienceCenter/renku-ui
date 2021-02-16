@@ -58,9 +58,11 @@ class DatasetListRow extends Component {
             : null
         }
         {
-          dataset.created !== undefined && dataset.created !== undefined ?
+          dataset.date ?
             <small className="font-italic">
-              {"Date created: " + new Date(dataset.created).toLocaleDateString()}
+              {dataset.published && dataset.published.datePublished ?
+                "Published on: " : "Created on: "}
+              {new Date(dataset.date).toLocaleDateString()}
             </small>
             : null
         }
@@ -100,10 +102,10 @@ class DatasetSearchForm extends Component {
                 {this.props.orderBy === this.props.orderByValuesMap.TITLE ?
                   <FontAwesomeIcon icon={faCheck} /> : null} Title
               </DropdownItem>
-              <DropdownItem value={this.props.orderByValuesMap.DATE_CREATED}
+              <DropdownItem value={this.props.orderByValuesMap.DATE}
                 onClick={this.props.handlers.changeSearchDropdownOrder}>
-                {this.props.orderBy === this.props.orderByValuesMap.DATE_CREATED ?
-                  <FontAwesomeIcon icon={faCheck} /> : null} Date Created
+                {this.props.orderBy === this.props.orderByValuesMap.DATE ?
+                  <FontAwesomeIcon icon={faCheck} /> : null} Date
               </DropdownItem>
               <DropdownItem value={this.props.orderByValuesMap.PROJECTSCOUNT}
                 onClick={this.props.handlers.changeSearchDropdownOrder}>

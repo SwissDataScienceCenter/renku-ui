@@ -13,9 +13,9 @@ function mapDataset(dataset_core, dataset_kg, core_files) {
       name: dataset_core.name,
       title: dataset_core.title,
       description: dataset_core.description,
+      created: dataset_core.created_at,
       published: {
-        creator: dataset_core.creators,
-        datePublished: dataset_core.created_at
+        creator: dataset_core.creators
       },
       identifier: dataset_core.identifier,
       keywords: dataset_core.keywords,
@@ -26,6 +26,8 @@ function mapDataset(dataset_core, dataset_kg, core_files) {
       dataset.sameAs = dataset_kg.sameAs;
       dataset.isPartOf = dataset_kg.isPartOf;
       dataset.insideKg = true;
+      dataset.published.datePublished = dataset_kg.published && dataset_kg.published.datePublished ?
+        dataset_kg.published.datePublished : undefined;
     }
     else {
       dataset.insideKg = false;

@@ -146,8 +146,8 @@ class List extends Component {
     switch (this.model.get("orderBy")) {
       case orderByValuesMap.TITLE:
         return "title";
-      case orderByValuesMap.DATE_CREATED:
-        return "date created";
+      case orderByValuesMap.DATE:
+        return "date";
       case orderByValuesMap.PROJECTSCOUNT:
         return "projects count";
       default:

@@ -27,7 +27,7 @@ import { Schema, StateKind, StateModel } from "../../model/Model";
 
 const orderByValuesMap = {
   TITLE: "title",
-  DATE_CREATED: "dateCreated",
+  DATE: "date",
   PROJECTSCOUNT: "projectsCount"
 };
 
@@ -104,8 +104,8 @@ class DatasetListModel extends StateModel {
     switch (this.get("orderBy")) {
       case orderByValuesMap.TITLE:
         return "title:" + searchOrder;
-      case orderByValuesMap.DATE_CREATED:
-        return "dateCreated:" + searchOrder;
+      case orderByValuesMap.DATE:
+        return "date:" + searchOrder;
       case orderByValuesMap.PROJECTSCOUNT:
         return "projectsCount:" + searchOrder;
       default:

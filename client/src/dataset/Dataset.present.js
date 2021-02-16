@@ -130,14 +130,15 @@ export default function DatasetView(props) {
   const datasetPublished = dataset.published !== undefined && dataset.published.datePublished
     !== undefined && dataset.published.datePublished !== null;
 
-  let dateCreated = datasetPublished ? dataset.published.datePublished : dataset.created;
+  let datasetDate = datasetPublished ? dataset.published.datePublished : dataset.created;
 
   return <Col>
     <Row>
       <Col md={8} sm={12}>
-        { dateCreated ?
+        { datasetDate ?
           <small style={{ display: "block", paddingBottom: "8px" }} className="font-weight-light font-italic">
-            Created on {Time.getReadableDate(dateCreated.replace(/ /g, "T"))}.
+            {datasetPublished ? "Published on " : "Created on "}
+            {Time.getReadableDate(datasetDate.replace(/ /g, "T"))}.
           </small>
           : null
         }
