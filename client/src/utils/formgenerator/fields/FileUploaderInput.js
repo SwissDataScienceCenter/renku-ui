@@ -92,7 +92,7 @@ function getFileObject(name, path, size, id, error, alias, controller, uncompres
 }
 
 function FileUploaderInput({ name, label, alert, value, setInputs, help, disabled = false,
-  uploadFileFunction, required = false, internalValues, handlers, formLocation }) {
+  uploadFileFunction, required = false, internalValues, handlers, formLocation, notifyFunction }) {
 
 
   //send value as an already built tree/hash to display and
@@ -318,7 +318,7 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
           : file));
     };
 
-    const setFileProgress = async (monitored_file, progress) => {
+    const setFileProgress = async (monitored_file, progress, extras) => {
       const currentFile = getDisplayFilesRx().find(file => file.file_name === monitored_file.name);
       if (currentFile) {
         const prevDisplayFiles = getDisplayFilesRx();
@@ -337,6 +337,16 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
               progress
             )
             : file));
+
+        if (progress === FILE_STATUS.UPLOADED) {
+          const sendNotification = prevDisplayFiles
+            .filter(file => file.file_status !== FILE_STATUS.UPLOADED).length <= 1;
+          if (sendNotification)
+            notifyFunction(true);
+        }
+        else if (progress === FILE_STATUS.FAILED) {
+          notifyFunction(false, extras);
+        }
       }
     };
     uploadFileFunction(file, file.file_uncompress, setFileProgress,
