@@ -100,8 +100,8 @@ describe("Dataset functions", () => {
         "email": null,
         "affiliation": "Some Affiliation"
       }],
-      "datePublished": "01/01/2001",
     },
+    "created": "01/01/2001",
     "identifier": "79215657-4319-4fcf-82b9-58267f2a1db8",
     "keywords": ["test1", "test2", "test3"],
     "hasPart": [
@@ -131,8 +131,8 @@ describe("Dataset functions", () => {
         "email": null,
         "affiliation": "Some Affiliation"
       }],
-      "datePublished": "01/01/2001",
     },
+    "created": "01/01/2001",
     "identifier": "79215657-4319-4fcf-82b9-58267f2a1db8",
     "keywords": ["test1", "test2", "test3"],
     "hasPart": [
@@ -146,6 +146,17 @@ describe("Dataset functions", () => {
     ...kg_dataset,
     "insideKg": true
   };
+
+  const core_dataset_import = { ...core_dataset };
+  delete core_dataset_import.created_at;
+
+  const kg_dataset_import = { ...kg_dataset };
+
+  const result_dataset_import = {
+    ...result_dataset_in_kg
+  };
+  delete result_dataset_import.created;
+  result_dataset_import.published.datePublished = "01/01/2001";
 
 
   const core_files = [
@@ -163,6 +174,10 @@ describe("Dataset functions", () => {
 
   it("maps core dataset into kg dataset outside of a project - kg only", () => {
     expect(mapDataset(undefined, kg_dataset, undefined)).toEqual(result_dataset_only_kg);
+  });
+
+  it("maps core dataset into kg dataset in a project for imported dataset", () => {
+    expect(mapDataset(core_dataset_import, kg_dataset_import, core_files)).toEqual(result_dataset_import);
   });
 
 });

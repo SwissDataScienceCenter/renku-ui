@@ -44,7 +44,7 @@ function DatasetListRow(props) {
         {
           dataset.created_at !== undefined && dataset.created_at !== null ?
             <small className="font-italic">
-              {"Published: " + new Date(dataset.created_at.replace(/ /g, "T")).toLocaleDateString()}
+              {"Created: " + new Date(dataset.created_at.replace(/ /g, "T")).toLocaleDateString()}
             </small>
             : null
         }
