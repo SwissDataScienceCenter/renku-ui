@@ -210,7 +210,7 @@ function RenkuMarkdownWithPathTranslation(props) {
     + "/" + props.projectPathWithNamespace + "/files/blob/";
 
   for (let link of previewLinks) {
-    if (!link.getAttribute("href").match(patterns.urlRef)) {
+    if (link.getAttribute("href") && !link.getAttribute("href").match(patterns.urlRef)) {
       const newHref = fixRelativePath(link.getAttribute("href"), filesPathArray) ;
       link.href = fullBaseUrl + newHref ;
     }
