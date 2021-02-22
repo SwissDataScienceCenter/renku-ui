@@ -251,7 +251,7 @@ class ProjectViewHeaderOverview extends Component {
                 <ForkProject
                   client={this.props.client}
                   btnClass="btn-outline-primary"
-                  btnContent={(<span><FontAwesomeIcon icon={faCodeBranch} /> fork</span>)}
+                  btnContent={(<Fragment><FontAwesomeIcon icon={faCodeBranch} /> fork</Fragment>)}
                   history={this.props.history}
                   model={this.props.model}
                   notifications={this.props.notifications}
