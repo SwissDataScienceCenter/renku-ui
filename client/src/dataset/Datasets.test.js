@@ -24,9 +24,11 @@
  */
 import React from "react";
 import ReactDOM from "react-dom";
-import { createMemoryHistory } from "history";
-import ShowDataset from "./Dataset.container";
+import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
+import { createMemoryHistory } from "history";
+
+import ShowDataset from "./Dataset.container";
 import { mapDataset } from "./DatasetFunctions";
 import { testClient as client } from "../api-client";
 import { StateModel, globalSchema } from "../model";
@@ -44,35 +46,39 @@ describe("Dataset functions", () => {
     search: "?page=1"
   });
 
-  it("renders datasets list view without crashing", () => {
+  it("renders datasets list view without crashing", async () => {
     const div = document.createElement("div");
-    ReactDOM.render(
-      <MemoryRouter>
-        <DatasetList key="datasets"
-          client={client}
-          model={model}
-          history={fakeHistory}
-          location={fakeHistory.location}
-        />
-      </MemoryRouter>
-      , div);
+    await act(async () => {
+      ReactDOM.render(
+        <MemoryRouter>
+          <DatasetList key="datasets"
+            client={client}
+            model={model}
+            history={fakeHistory}
+            location={fakeHistory.location}
+          />
+        </MemoryRouter>
+        , div);
+    });
   });
 
-  it("renders dataset view without crashing", () => {
+  it("renders dataset view without crashing", async () => {
     const div = document.createElement("div");
-    ReactDOM.render(
-      <MemoryRouter>
-        <ShowDataset
-          insideProject={false}
-          identifier={"79215657-4319-4fcf-82b9-58267f2a1db8"}
-          client={client}
-          projectsUrl="/projects"
-          selectedDataset={"79215657-4319-4fcf-82b9-58267f2a1db8"}
-          logged={true}
-          model={model}
-        />
-      </MemoryRouter>
-      , div);
+    await act(async () => {
+      ReactDOM.render(
+        <MemoryRouter>
+          <ShowDataset
+            insideProject={false}
+            identifier={"79215657-4319-4fcf-82b9-58267f2a1db8"}
+            client={client}
+            projectsUrl="/projects"
+            selectedDataset={"79215657-4319-4fcf-82b9-58267f2a1db8"}
+            logged={true}
+            model={model}
+          />
+        </MemoryRouter>
+        , div);
+    });
   });
 
   const core_dataset = {

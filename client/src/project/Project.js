@@ -686,12 +686,11 @@ class View extends Component {
 
   render() {
     const ConnectedProjectView = connect(
-      this.mapStateToProps.bind(this), null, null, { storeKey: "projectStore" }
-    )(Present.ProjectView);
+      this.mapStateToProps.bind(this), null, null)(Present.ProjectView);
     const props = {
       ...this.props,
       ...this.eventHandlers,
-      projectStore: this.projectState.reduxStore,
+      store: this.projectState.reduxStore,
       projectCoordinator: this.projectCoordinator
     };
     return <ConnectedProjectView {...props} />;

@@ -1,5 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { act } from "react-dom/test-utils";
 import { BrowserRouter as Router } from "react-router-dom";
 
 import App from "./App";
@@ -12,23 +13,27 @@ describe("rendering", () => {
   const params = { WELCOME_PAGE: "Some text", STATUSPAGE_ID: "5bce9beff4ca" };
   const fakeLocation = { pathname: "" };
 
-  it("renders anonymous user without crashing", () => {
+  it("renders anonymous user without crashing", async () => {
     const div = document.createElement("div");
     const user = generateFakeUser(true);
-    ReactDOM.render(
-      <Router>
-        <App client={client} model={model} user={user} location={fakeLocation} params={params} />
-      </Router>
-      , div);
+    await act(async () => {
+      ReactDOM.render(
+        <Router>
+          <App client={client} model={model} user={user} location={fakeLocation} params={params} />
+        </Router>
+        , div);
+    });
   });
 
-  it("renders logged user without crashing", () => {
+  it("renders logged user without crashing", async () => {
     const div = document.createElement("div");
     const user = generateFakeUser();
-    ReactDOM.render(
-      <Router>
-        <App client={client} model={model} user={user} location={fakeLocation} params={params} />
-      </Router>
-      , div);
+    await act(async () => {
+      ReactDOM.render(
+        <Router>
+          <App client={client} model={model} user={user} location={fakeLocation} params={params} />
+        </Router>
+        , div);
+    });
   });
 });

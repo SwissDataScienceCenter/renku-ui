@@ -24,6 +24,7 @@
 
 import React from "react";
 import ReactDOM from "react-dom";
+import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
 
 import { NotebooksHelper, Notebooks, StartNotebookServer, CheckNotebookStatus, NotebooksDisabled } from "./index";
@@ -290,7 +291,7 @@ describe("rendering", () => {
       </MemoryRouter>, div);
   });
 
-  it("renders Notebooks", () => {
+  it("renders Notebooks", async () => {
     const props = {
       client,
       model
@@ -298,21 +299,27 @@ describe("rendering", () => {
 
     const div = document.createElement("div");
     document.body.appendChild(div);
-    ReactDOM.render(
-      <MemoryRouter>
-        <Notebooks {...props} standalone={true} />
-      </MemoryRouter>, div);
-    ReactDOM.render(
-      <MemoryRouter>
-        <Notebooks {...props} standalone={false} />
-      </MemoryRouter>, div);
-    ReactDOM.render(
-      <MemoryRouter>
-        <Notebooks {...props} standalone={true} scope={scope} />
-      </MemoryRouter>, div);
+    await act(async () => {
+      ReactDOM.render(
+        <MemoryRouter>
+          <Notebooks {...props} standalone={true} />
+        </MemoryRouter>, div);
+    });
+    await act(async () => {
+      ReactDOM.render(
+        <MemoryRouter>
+          <Notebooks {...props} standalone={false} />
+        </MemoryRouter>, div);
+    });
+    await act(async () => {
+      ReactDOM.render(
+        <MemoryRouter>
+          <Notebooks {...props} standalone={true} scope={scope} />
+        </MemoryRouter>, div);
+    });
   });
 
-  it("renders StartNotebookServer without crashing", () => {
+  it("renders StartNotebookServer without crashing", async () => {
     const props = {
       client,
       model,
@@ -323,17 +330,21 @@ describe("rendering", () => {
 
     const div = document.createElement("div");
     document.body.appendChild(div);
-    ReactDOM.render(
-      <MemoryRouter>
-        <StartNotebookServer {...props} />
-      </MemoryRouter>, div);
-    ReactDOM.render(
-      <MemoryRouter>
-        <StartNotebookServer {...props} scope={scope} />
-      </MemoryRouter>, div);
+    await act(async () => {
+      ReactDOM.render(
+        <MemoryRouter>
+          <StartNotebookServer {...props} />
+        </MemoryRouter>, div);
+    });
+    await act(async () => {
+      ReactDOM.render(
+        <MemoryRouter>
+          <StartNotebookServer {...props} scope={scope} />
+        </MemoryRouter>, div);
+    });
   });
 
-  it("renders CheckNotebookStatus", () => {
+  it("renders CheckNotebookStatus", async () => {
     const props = {
       client,
       model,
@@ -344,9 +355,11 @@ describe("rendering", () => {
 
     const div = document.createElement("div");
     document.body.appendChild(div);
-    ReactDOM.render(
-      <MemoryRouter>
-        <CheckNotebookStatus {...props} />
-      </MemoryRouter>, div);
+    await act(async () => {
+      ReactDOM.render(
+        <MemoryRouter>
+          <CheckNotebookStatus {...props} />
+        </MemoryRouter>, div);
+    });
   });
 });
