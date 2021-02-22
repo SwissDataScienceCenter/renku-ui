@@ -81,6 +81,8 @@ spec:
               value: {{ toJson .Values.templates | quote }}
             - name: PREVIEW_THRESHOLD
               value: {{ toJson .Values.previewSizeThreshold | quote }}
+            - name: UPLOAD_THRESHOLD
+              value: {{ toJson .Values.uploadSizeThreshold | quote }}
             - name: UI_VERSION
               value: {{ .Chart.Version | quote }}
           livenessProbe:

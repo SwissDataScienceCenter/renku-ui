@@ -25,6 +25,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FormGroup, Table, Button, UncontrolledCollapse,
   Card, CardBody, Input, InputGroup, InputGroupAddon, Progress } from "reactstrap";
+import { Link } from "react-router-dom";
 import ValidationAlert from "./ValidationAlert";
 import HelpText from "./HelpText";
 import FormLabel from "./FormLabel";
@@ -92,7 +93,7 @@ function getFileObject(name, path, size, id, error, alias, controller, uncompres
 }
 
 function FileUploaderInput({ name, label, alert, value, setInputs, help, disabled = false,
-  uploadFileFunction, required = false, internalValues, handlers, formLocation, notifyFunction }) {
+  uploadFileFunction, required = false, internalValues, handlers, formLocation, notifyFunction, uploadThresholdHard }) {
 
 
   //send value as an already built tree/hash to display and
@@ -514,7 +515,13 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
             </span>
           </div>;
         }
-        return <span><Progress value={file.file_status}>{file.file_status}%</Progress></span>;
+        return <span>
+          <Progress value={file.file_status}>{file.file_status}%</Progress>
+          {file.file_size >= uploadThresholdHard ? <small>
+            <span className="text-muted"> No need to wait. We will <Link to="/notifications">
+              notify you</Link> when the upload is finished.
+            </span></small> : null }
+        </span>;
     }
   };
 
