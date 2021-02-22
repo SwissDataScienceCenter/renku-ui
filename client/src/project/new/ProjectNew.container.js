@@ -23,16 +23,254 @@
  *  Container components for new project
  */
 
-import React, { Component } from "react";
+import React, { Component, useEffect, useState, useRef } from "react";
+// TODO: switch to useSelector
 import { connect } from "react-redux";
 
-import { NewProject as NewProjectPresent } from "./ProjectNew.present";
-import { NewProjectCoordinator } from "./ProjectNew.state";
+import { NewProject as NewProjectPresent, ForkProject as ForkProjectPresent } from "./ProjectNew.present";
+import { NewProjectCoordinator, validateTitle, checkTitleDuplicates } from "./ProjectNew.state";
 import { ProjectsCoordinator } from "../shared";
-import { gitLabUrlFromProfileUrl } from "../../utils/HelperFunctions";
+import { gitLabUrlFromProfileUrl, slugFromTitle } from "../../utils/HelperFunctions";
+import { Url } from "../../utils/url";
 
 const CUSTOM_REPO_NAME = "Custom";
 
+
+/** helper function -- fork notifications */
+function addForkNotification(notifications, url, info, startingLocation, success = true) {
+  if (success) {
+    notifications.addSuccess(
+      notifications.Topics.PROJECT_FORKED,
+      `Project ${info.name} successfully created.`,
+      url, "Show project",
+      [url, startingLocation],
+      `The project has been successfully forked to ${info.namespace}/${info.path}`
+    );
+  }
+  else {
+    notifications.addError(
+      notifications.Topics.PROJECT_FORKED,
+      "Forking operation did not complete.",
+      startingLocation, "Try again",
+      [startingLocation],
+      "The fork operation did not run to completion. It is possible the project has been created, but some" +
+      "elements may have not been cloned properly."
+    );
+  }
+}
+
+
+/**
+ * This component is needed to map properties from the redux store.
+ * We can remove it when we switch to the useSelector hook
+ *
+ * @param {object} props.client - client object
+ * @param {object} props.model - redux model
+ * @param {object} props.history - react history object
+ * @param {object} props.notifications - notifications object
+ * @param {string} props.title - reference project title
+ * @param {number} props.id - reference project id
+ * @param {object} [props.btnContent] - optional button content for presentation
+ * @param {object} [props.btnClass] - optional button class for presentation
+ */
+class ForkProjectMapper extends Component {
+  constructor(props) {
+    super(props);
+    this.model = props.model;
+    this.projectsCoordinator = new ProjectsCoordinator(props.client, this.model.subModel("projects"));
+
+    this.handlers = {
+      getNamespaces: this.getNamespaces.bind(this),
+      getProjects: this.getProjects.bind(this),
+    };
+  }
+
+  componentDidMount() {
+    // fetch if not yet available and refresh if older than 10 seconds
+    const tolerance = 10 * 1000;
+    const currentState = this.model.get("projects");
+    const now = new Date();
+    if (!currentState.namespaces.fetching) {
+      if (!currentState.namespaces.fetched || now - currentState.namespaces.fetched > tolerance)
+        this.getNamespaces();
+    }
+    if (!currentState.featured.fetching) {
+      if (!currentState.featured.fetched || now - currentState.featured.fetched > tolerance)
+        this.getProjects();
+    }
+  }
+
+  async getNamespaces() {
+    return await this.projectsCoordinator.getNamespaces();
+  }
+
+  async getProjects() {
+    return await this.projectsCoordinator.getFeatured();
+  }
+
+  mapStateToProps(state, ownProps) {
+    return {
+      handlers: this.handlers,
+      namespaces: { ...state.projects.namespaces },
+      // We need only a selection of the featured projects. Replicate the namespaces structure fetched/fetching/list
+      projects: {
+        fetched: state.projects.featured.fetched,
+        fetching: state.projects.featured.fetching,
+        list: state.projects.featured.member,
+      }
+    };
+  }
+
+  render() {
+    const { btnClass, btnContent, client, id, history, notifications, title } = this.props;
+
+    const ForkProjectMapped = connect(this.mapStateToProps.bind(this))(ForkProject);
+    return (
+      <ForkProjectMapped
+        store={this.model.reduxStore}
+        btnClass={btnClass ? btnClass : null}
+        btnContent={btnContent ? btnContent : null}
+        client={client}
+        forkedId={id}
+        forkedTitle={title}
+        notifications={notifications}
+        history={history} />
+    );
+  }
+}
+
+
+function ForkProject(props) {
+  const { btnClass, btnContent, forkedTitle, handlers, namespaces } = props;
+
+  const [title, setTitle] = useState(forkedTitle + " - copy");
+  const [namespace, setNamespace] = useState(""); // TODO - pick the default namespace if available
+  const [projectsPaths, setProjectsPaths] = useState([]);
+  const [error, setError] = useState(null);
+
+  const [forking, setForking] = useState(false);
+  const [forkError, setForkError] = useState(null);
+
+  // Monitor changes to projects list
+  useEffect(() => {
+    if (!props.projects.list || !props.projects.list.length)
+      setProjectsPaths([]);
+    else
+      setProjectsPaths(props.projects.list.map(project => project.path_with_namespace.toLowerCase()));
+  }, [props.projects.list]);
+
+  // Monitor changes to title, namespace or projects slug list to check for errors
+  useEffect(() => {
+    // no errors if I can't check all of the fields -- should be transitory
+    if (title == null || namespace == null || projectsPaths == null) {
+      setError(null);
+      return;
+    }
+    const validationError = validateTitle(title);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+    const duplicateError = checkTitleDuplicates(title, namespace, projectsPaths);
+    if (duplicateError) {
+      setError(
+        "Title produces a project identifier (" + slugFromTitle(title, true) +
+        ") that is already taken in the selected namespace. Please select a different title or namespace."
+      );
+      return;
+    }
+    setError(null);
+  }, [title, namespace, projectsPaths]);
+
+  // Monitor component mounted state -- helper to prevent illegal action when the fork takes long
+  const mounted = useRef(false);
+  useEffect(() => {
+    // this keeps track of the component status
+    mounted.current = true;
+    return () => { mounted.current = false; };
+  });
+
+  // fork operations including fork, status check, redirect
+  const fork = async () => {
+    const { client, forkedId, history, notifications } = props;
+
+    const path = slugFromTitle(title, true);
+    const startingLocation = history.location.pathname;
+    setForking(true);
+    setForkError(null);
+    try {
+      const forked = await client.forkProject(forkedId, title, path, namespace);
+
+      // wait for operations to finish
+      let count;
+      const THRESHOLD = 100, DELTA = 3000;
+      for (count = 0; count < THRESHOLD; count++) {
+        await new Promise(r => setTimeout(r, DELTA)); // sleep
+        const forkOperation = await client.getProjectStatus(forked.project.id);
+        if (forkOperation === "finished")
+          break;
+        else if (forkOperation === "failed" || forkOperation === "error")
+          throw new Error("Cloning operation failed");
+        else if (count === THRESHOLD - 1)
+          throw new Error("Cloning is taking too long");
+      }
+
+      // add notification and redirect
+      let newProjectData = { namespace: forked.project.namespace.full_path, path: forked.project.path };
+      const newUrl = Url.get(Url.pages.project, newProjectData);
+      newProjectData.name = forked.project.name;
+      addForkNotification(notifications, newUrl, newProjectData, startingLocation, true);
+      //client.runPipeline(forked.project.id);
+
+      // automatically redirect only when the user hasn't changed location
+      if (mounted && history.location.pathname === startingLocation)
+        history.push(newUrl);
+      return null; // this prevents further operations on non-mounted components
+    }
+    catch (e) {
+      addForkNotification(notifications, null, null, startingLocation, false);
+      if (mounted)
+        setForkError(e.message);
+    }
+    if (mounted)
+      setForking(false);
+  };
+
+  // compatibility layer to re-use the UI components from new project creation
+  const setPropertyP = (target, value) => {
+    if (target === "title") {
+      const localValue = value ? value : "";
+      setTitle(localValue);
+    }
+    setForkError(null); // reset fork error when typing
+  };
+
+  const setNamespaceP = (value) => {
+    setNamespace(value.full_path);
+  };
+
+  const adjustedHandlers = {
+    getNamespaces: handlers.getNamespaces,
+    setNamespace: setNamespaceP,
+    setProperty: setPropertyP
+  };
+
+  return (
+    <ForkProjectPresent
+      btnClass={btnClass}
+      btnContent={btnContent}
+      error={error}
+      fork={fork}
+      forkedTitle={forkedTitle}
+      forkError={forkError}
+      forking={forking}
+      handlers={adjustedHandlers}
+      namespace={namespace}
+      namespaces={namespaces}
+      title={title}
+    />
+  );
+}
 
 class NewProject extends Component {
   constructor(props) {
@@ -167,4 +405,4 @@ class NewProject extends Component {
 }
 
 
-export { NewProject, CUSTOM_REPO_NAME };
+export { NewProject, CUSTOM_REPO_NAME, ForkProjectMapper as ForkProject };

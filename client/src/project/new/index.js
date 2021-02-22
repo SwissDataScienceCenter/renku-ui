@@ -23,6 +23,7 @@
  *  Components for the new project page
  */
 
-import { NewProject } from "./ProjectNew.container";
+import { NewProject, ForkProject } from "./ProjectNew.container";
+import { validateTitle, checkTitleDuplicates } from "./ProjectNew.state";
 
-export { NewProject };
+export { NewProject, ForkProject, validateTitle, checkTitleDuplicates };

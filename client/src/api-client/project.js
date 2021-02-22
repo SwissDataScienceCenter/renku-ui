@@ -203,7 +203,7 @@ function addProjectMethods(client) {
 
   client.getEmptyProjectObject = () => { return { folder: "empty-project-template", name: "Empty Project" }; };
 
-  client.getProjectStatus = (projectId) => {
+  client.getProjectStatus = async (projectId) => {
     const headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}/import`, {
@@ -214,95 +214,28 @@ function addProjectMethods(client) {
     }).catch((error) => "error");
   };
 
-  client.startPipeline = (projectId) => {
-    const headers = client.getBasicHeaders();
-    headers.append("Content-Type", "application/json");
-    let pipelineStarted = false;
-    let counter = 0;
-    const projectStatusTimeout = setInterval(() => {
-      if (pipelineStarted === true || counter === 100) { clearInterval(projectStatusTimeout); }
-      else {
-        client.getProjectStatus(projectId).then((forkProjectStatus) => {
-          if (forkProjectStatus === "finished") {
-            client.runPipeline(projectId).then(resp => {
-              pipelineStarted = true;
-              clearInterval(projectStatusTimeout);
-            });
-          }
-          else if (forkProjectStatus === "failed" || forkProjectStatus === "error") {
-            clearInterval(projectStatusTimeout);
-          }
-          else {
-            counter++;
-          }
-        });
-      }
-    }, 3000);
-  };
-
-  function redirectWhenForkFinished(projectId, projectPathWithNamespace, history) {
-    const headers = client.getBasicHeaders();
-    headers.append("Content-Type", "application/json");
-    let redirected = false;
-    let counter = 0;
-    const projectStatusTimeout = setInterval(() => {
-      if (redirected === true || counter === 200) { clearInterval(projectStatusTimeout); }
-      else {
-        client.getProjectStatus(projectId).then((forkProjectStatus) => {
-          if (forkProjectStatus === "finished") {
-            redirected = true;
-            clearInterval(projectStatusTimeout);
-            history.push(`/projects/${projectPathWithNamespace}`);
-          }
-          else if (forkProjectStatus === "failed" || forkProjectStatus === "error") {
-            clearInterval(projectStatusTimeout);
-          }
-          else {
-            counter++;
-          }
-        });
-      }
-    }, 3000);
-  }
-
-  client.forkProject = (projectSchema, history) => {
-    const projectMeta = projectSchema.meta;
-    const gitlabProject = {
-      id: projectMeta.id,
-      name: projectSchema.display.title,
-      path: projectSchema.display.slug
-    };
-    if (projectMeta.projectNamespace != null) gitlabProject.namespace = projectMeta.projectNamespace.id;
+  client.forkProject = async (sourceId, targetTitle, targetPath, targetNamespace) => {
     const headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
 
-    let createGraphWebhookPromise;
-    const newProjectPromise = client.clientFetch(`${client.baseUrl}/projects/${projectMeta.id}/fork`, {
+    // Fork the project
+    const urlFork = `${client.baseUrl}/projects/${sourceId}/fork`;
+    const bodyFork = { id: sourceId, name: targetTitle, path: targetPath, namespace_path: targetNamespace };
+
+    const forkedProject = await client.clientFetch(urlFork, {
       method: "POST",
       headers: headers,
-      body: JSON.stringify(gitlabProject)
-    }).then(resp => {
-      if (!projectMeta.optoutKg) // eslint-disable-line
-        createGraphWebhookPromise = client.createGraphWebhook(resp.data.id);
-
-      return resp;
-    }).then(resp => {
-      client.startPipeline(resp.data.id);
-      return resp;
+      body: JSON.stringify(bodyFork)
     });
 
-    let promises = [newProjectPromise];
-    if (createGraphWebhookPromise)
-      promises = promises.concat(createGraphWebhookPromise);
+    // Wait 1 second before starting the pipeline to prevent errors
+    await new Promise(r => setTimeout(r, 1000));
+    // Start pipeline -- no need to wait for the outcome, the environment page handles this
+    const pipeline = await client.runPipeline(forkedProject.data.id);
 
-
-    return Promise.all(promises)
-      .then((results) => {
-        if (results.errorData)
-          return Promise.reject(results);
-        return Promise.resolve(results)
-          .then(() => redirectWhenForkFinished(results[0].data.id, results[0].data.path_with_namespace, history));
-      });
+    // Create KG webhook
+    const webhook = await client.createGraphWebhook(forkedProject.data.id);
+    return { project: forkedProject.data, pipeline, webhook };
   };
 
   client.setTags = (projectId, tags) => {

@@ -24,11 +24,12 @@
  */
 
 
-import React, { Component, Fragment } from "react";
+import React, { Component, Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 import Autosuggest from "react-autosuggest";
 import {
-  Row, Col, ButtonGroup, UncontrolledTooltip, Input, Button, Form, FormFeedback, FormGroup, FormText, Label, Alert
+  Row, Col, ButtonGroup, UncontrolledTooltip, Input, Button, Form, FormFeedback, FormGroup, FormText, Label, Alert,
+  Modal, ModalHeader, ModalBody, ModalFooter
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
@@ -56,6 +57,87 @@ function makeRefreshButton(refresh, tip, disabled) {
         <FontAwesomeIcon icon={faSyncAlt} />
       </Button>
       <UncontrolledTooltip key="tooltip" placement="top" target={id}>{tip}</UncontrolledTooltip>
+    </Fragment>
+  );
+}
+
+function ForkButton(props) {
+  const { btnClass, btnContent, toggle } = props;
+
+  const content = btnContent ?
+    btnContent :
+    "Fork";
+  const className = btnClass ?
+    "btn " + btnClass :
+    "btn-primary";
+  return (<button className={className} onClick={() => { toggle(); }}>{content}</button>);
+}
+
+function ForkProject(props) {
+  const { btnClass, btnContent, error, fork, forkError, forkedTitle, forking } = props;
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const toggle = () => setModalOpen(!modalOpen);
+
+  const confirmForkButton = forking ?
+    null :
+    (<Button color="primary" disabled={error ? true : false} onClick={fork}>Fork</Button>);
+
+  return (
+    <Fragment>
+      {/* <Button onClick={() => { toggle(); }}>Fork</Button> */}
+      <ForkButton btnClass={btnClass} btnContent={btnContent} toggle={toggle} />
+      <Modal isOpen={modalOpen} toggle={toggle}>
+        <ModalHeader toggle={toggle}>Fork project {forkedTitle}</ModalHeader>
+        <ModalBody>
+          <ForkProjectContent {...props} />
+          <ForkProjectStatus forkError={forkError} forking={forking} />
+        </ModalBody>
+        <ModalFooter>
+          {confirmForkButton}
+          <Button outline color="primary" onClick={toggle}>{forking ? "Close" : "Cancel"}</Button>
+        </ModalFooter>
+      </Modal>
+    </Fragment>
+  );
+}
+
+function ForkProjectStatus(props) {
+  if (props.forking) {
+    return (
+      <Fragment>
+        <span>Forking the project... </span>{" "}<Loader inline={true} size={16} />
+        <p className="mt-3">
+          <FontAwesomeIcon icon={faInfoCircle} />{" "}
+          This operation may take a while. You will be redirected automatically or
+          receive a notification at the end.
+        </p>
+      </Fragment>
+    );
+  }
+  else if (props.forkError) {
+    return (
+      <FormText key="help" color="danger">
+        An error occurred while forking: {props.forkError}
+      </FormText>
+    );
+  }
+  return null;
+}
+
+function ForkProjectContent(props) {
+  const { error, forking, handlers, namespace, namespaces, title } = props;
+  if (forking)
+    return null;
+
+  const input = { namespace, title, titlePristine: false };
+  const meta = { validation: { errors: { title: error } } };
+
+  return (
+    <Fragment>
+      <Title handlers={handlers} input={input} meta={meta} />
+      <Namespaces handlers={handlers} input={input} namespaces={namespaces} />
+      <Home input={input} />
     </Fragment>
   );
 }
@@ -118,6 +200,7 @@ class Title extends Component {
 
     return (
       <FieldGroup id="title" type="text" label="Title"
+        value={input.title}
         placeholder="A brief name to identify the project" help={help}
         feedback={error} invalid={error && !input.titlePristine}
         onChange={(e) => handlers.setProperty("title", e.target.value)} />
@@ -750,4 +833,4 @@ class Creation extends Component {
 }
 
 
-export { NewProject };
+export { NewProject, ForkProject };

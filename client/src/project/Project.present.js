@@ -52,6 +52,7 @@ import { ACCESS_LEVELS } from "../api-client";
 import ProjectVersionStatus from "./status/ProjectVersionStatus.present";
 import { NamespaceProjects } from "../namespace";
 import { ProjectOverviewCommits, ProjectOverviewStats } from "./overview";
+import { ForkProject } from "./new";
 
 import "./Project.css";
 
@@ -247,10 +248,16 @@ class ProjectViewHeaderOverview extends Component {
           <Col xs={12} md="auto">
             <div className="d-flex mb-2">
               <ButtonGroup size="sm">
-                <Button outline color="primary"
-                  onClick={this.props.toggleForkModal}>
-                  <FontAwesomeIcon icon={faCodeBranch} /> fork
-                </Button>
+                <ForkProject
+                  client={this.props.client}
+                  btnClass="btn-outline-primary"
+                  btnContent={(<span><FontAwesomeIcon icon={faCodeBranch} /> fork</span>)}
+                  history={this.props.history}
+                  model={this.props.model}
+                  notifications={this.props.notifications}
+                  title={this.props.core && this.props.core.title ? this.props.core.title : ""}
+                  id={this.props.core && this.props.core.id ? this.props.core.id : 0}
+                />
                 <Button outline color="primary"
                   href={`${this.props.externalUrl}/forks`} target="_blank" rel="noreferrer noopener">
                   {system.forks_count}
@@ -274,14 +281,12 @@ class ProjectViewHeaderOverview extends Component {
             </div>
           </Col>
         </Row>
-        {this.props.fork(this.props)}
       </Container>
     );
   }
 }
 
 class ProjectViewHeader extends Component {
-
   render() {
     let forkedFromLink = null;
     if (this.props.system.forked_from_project != null &&

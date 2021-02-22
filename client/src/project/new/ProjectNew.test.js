@@ -25,11 +25,13 @@
 
 import React from "react";
 import ReactDOM from "react-dom";
+import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
 import { createMemoryHistory } from "history";
 
 import { StateModel, globalSchema } from "../../model";
-import { NewProject } from "../new";
+import { validateTitle, checkTitleDuplicates, NewProject, ForkProject } from "./index";
+import { RESERVED_TITLE_NAMES } from "./ProjectNew.state";
 import { testClient as client } from "../../api-client";
 
 
@@ -42,23 +44,90 @@ fakeHistory.push({
   search: "?page=1"
 });
 
+describe("helper functions", () => {
+  it("validateTitle", () => {
+    // missing title
+    expect(validateTitle()).toContain("missing");
+    expect(validateTitle("")).toContain("missing");
+    expect(validateTitle("anyTitle")).toBe(null);
+
+    // reserved words -- they must be the only word in the sentence to return an error
+    for (let i = 0; i < 10; i++) {
+      const randomNumber = Math.floor(Math.random() * Math.floor(32));
+      const reservedWord = RESERVED_TITLE_NAMES[randomNumber];
+      if (randomNumber < RESERVED_TITLE_NAMES.length / 5)
+        expect(validateTitle("prefix " + reservedWord)).toBe(null);
+      else if (randomNumber > RESERVED_TITLE_NAMES.length / 5 * 4)
+        expect(validateTitle(reservedWord + " suffix")).toBe(null);
+      else
+        expect(validateTitle(reservedWord)).toContain("Reserved");
+    }
+
+    // first char
+    expect(validateTitle("_underscore")).toContain("must start with a letter or a number");
+    expect(validateTitle("1_underscore")).toBe(null);
+    expect(validateTitle("an_underscore")).toBe(null);
+
+    // any valid char
+    expect(validateTitle("äñ_")).toContain("must contain at least one letter");
+    expect(validateTitle("äañ_")).toBe(null);
+  });
+
+  it("checkTitleDuplicates", () => {
+    const projectsPaths = ["username/exist", "username/exist-different", "group/exist"];
+
+    // no previous projects
+    expect(checkTitleDuplicates("exist", "username", [])).toBe(false);
+    expect(checkTitleDuplicates("exist", "group", null)).toBe(false);
+
+    // different name
+    expect(checkTitleDuplicates("notExists", "username", projectsPaths)).toBe(false);
+    expect(checkTitleDuplicates("exist-different", "group", projectsPaths)).toBe(false);
+
+    // same final name
+    expect(checkTitleDuplicates("exist", "group", projectsPaths)).toBe(true);
+    expect(checkTitleDuplicates("exist-different", "username", projectsPaths)).toBe(true);
+    expect(checkTitleDuplicates("existä", "group", projectsPaths)).toBe(true);
+    expect(checkTitleDuplicates("exist-äõî-different", "username", projectsPaths)).toBe(true);
+  });
+});
+
 describe("rendering", () => {
   const model = new StateModel(globalSchema);
   const templates = { custom: false, repositories: [{}] };
 
-  it("renders NewProject without crashing for logged user", () => {
+  it("renders NewProject without crashing for logged user", async () => {
     const div = document.createElement("div");
     // Fix UncontrolledTooltip error. https://github.com/reactstrap/reactstrap/issues/773
     document.body.appendChild(div);
-    ReactDOM.render(
-      <MemoryRouter>
-        <NewProject
-          client={client}
-          model={model}
-          history={fakeHistory}
-          templates={templates}
-        />
-      </MemoryRouter>
-      , div);
+    await act(async () => {
+      ReactDOM.render(
+        <MemoryRouter>
+          <NewProject
+            client={client}
+            model={model}
+            history={fakeHistory}
+            templates={templates}
+          />
+        </MemoryRouter>
+        , div);
+    });
+  });
+
+  it("renders ForkProject without crashing for logged user", async () => {
+    const div = document.createElement("div");
+    // Fix UncontrolledTooltip error. https://github.com/reactstrap/reactstrap/issues/773
+    document.body.appendChild(div);
+    await act(async () => {
+      ReactDOM.render(
+        <MemoryRouter>
+          <ForkProject
+            client={client}
+            model={model}
+            history={fakeHistory}
+          />
+        </MemoryRouter>
+        , div);
+    });
   });
 });

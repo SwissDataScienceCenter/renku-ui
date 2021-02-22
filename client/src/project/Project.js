@@ -36,7 +36,6 @@ import { FileLineage } from "../file";
 import { ACCESS_LEVELS } from "../api-client";
 import { MergeRequest } from "../collaboration/merge-request";
 import { ShowFile } from "../file";
-import Fork from "./fork";
 import ShowDataset from "../dataset/Dataset.container";
 import ChangeDataset from "./datasets/change/index";
 import ImportDataset from "./datasets/import/index";
@@ -195,10 +194,8 @@ class View extends Component {
 
     const prevPathComps = splitProjectSubRoute(prevProps.match.url);
     const pathComps = splitProjectSubRoute(this.props.match.url);
-    if (prevPathComps.projectPathWithNamespace !== pathComps.projectPathWithNamespace) {
+    if (prevPathComps.projectPathWithNamespace !== pathComps.projectPathWithNamespace)
       this.fetchAll();
-      this.eventHandlers.closeForkModal();
-    }
   }
 
   componentWillUnmount() {
@@ -389,13 +386,12 @@ class View extends Component {
     const forked = (forkedData != null && Object.keys(forkedData).length > 0) ?
       true :
       false;
-    const forkModalOpen = this.projectState.get("transient.forkModalOpen");
     const projectPathWithNamespace = this.projectState.get("core.path_with_namespace");
     // Access to the project state could be given to the subComponents by connecting them here to
     // the projectStore. This is not yet necessary.
     const subUrls = this.getSubUrls();
     const subProps = {
-      ...ownProps, projectId, accessLevel, externalUrl, filesTree, projectPathWithNamespace, forkModalOpen, datasets
+      ...ownProps, projectId, accessLevel, externalUrl, filesTree, projectPathWithNamespace, datasets
     };
     const branches = {
       all: this.projectState.get("system.branches"),
@@ -550,16 +546,6 @@ class View extends Component {
         model={this.props.model}
       />,
 
-      fork: () => <Fork
-        projectId={projectId}
-        title={this.projectState.get("core.title")}
-        forkModalOpen={forkModalOpen}
-        toggleForkModal={this.eventHandlers.toggleForkModal}
-        closeForkModal={this.eventHandlers.closeForkModal}
-        history={this.props.history}
-        client={this.props.client}
-        user={this.props.user} />,
-
       kgStatusView: (displaySuccessMessage = false) =>
         <KnowledgeGraphStatus
           fetchGraphStatus={this.eventHandlers.fetchGraphStatus}
@@ -593,15 +579,6 @@ class View extends Component {
         }
         return true;
       });
-    },
-    toggleForkModal: (e) => {
-      e.preventDefault();
-      this.projectState.toggleForkModal();
-    },
-    closeForkModal: () => {
-      // Only toggle if it is currently open
-      if (this.projectState.get("transient.forkModalOpen") === true)
-        this.projectState.toggleForkModal();
     },
     onCreateMergeRequest: (branch) => {
       const core = this.projectState.get("core");
@@ -663,7 +640,6 @@ class View extends Component {
     const suggestedMRBranches = this.getMrSuggestions();
     const externalUrl = this.projectState.get("core.external_url");
     const canCreateMR = state.visibility.accessLevel >= ACCESS_LEVELS.DEVELOPER;
-    const forkModalOpen = this.projectState.get("transient.forkModalOpen");
     const isGraphReady = this.isGraphReady();
 
     return {
@@ -675,7 +651,6 @@ class View extends Component {
       ...this.getSubUrls(),
       ...this.subComponents.bind(this)(internalId, ownProps),
       starred,
-      forkModalOpen,
       settingsReadOnly,
       suggestedMRBranches,
       externalUrl,
