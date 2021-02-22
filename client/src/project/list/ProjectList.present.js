@@ -35,7 +35,7 @@ function ProjectListRow(props) {
   const {
     owner, path, path_with_namespace, last_activity_at, description, compact, avatar_url, getAvatar, tag_list
   } = props;
-  const namespace = props.namespace.path;
+  const namespace = props.namespace.full_path;
 
   const url = Url.get(Url.pages.project, { namespace, path });
   const title = (<Link to={url}>{path_with_namespace || "no title"}</Link>);
@@ -94,11 +94,14 @@ function ProjectListRows(props) {
 }
 
 function SearchInFilter(props) {
-  const { params, sectionsMap, searchInMap, searchWithValues, currentSearchInObject } = props;
+  const { logged, params, sectionsMap, searchInMap, searchWithValues, currentSearchInObject } = props;
 
   // search in
   const [dropdownSearchIn, setDropdownSearchIn] = useState(false);
   const toggleDropdownSearchIn = () => setDropdownSearchIn(!dropdownSearchIn);
+  if (!logged)
+    return null;
+
   const searchInItems = Object.values(searchInMap).map(v => (
     <DropdownItem key={v.value} value={v.value} onClick={() => { searchWithValues({ searchIn: v.value }); }}>
       {v.value === currentSearchInObject.value ? <FontAwesomeIcon icon={faCheck} /> : null} {v.text}
@@ -156,7 +159,7 @@ function SearchOrder(props) {
 }
 
 function ProjectListSearch(props) {
-  const { orderByMap, params, search, searchInMap, sectionsMap } = props;
+  const { logged, orderByMap, params, search, searchInMap, sectionsMap } = props;
 
   // input and search
   const [userInput, setUserInput] = useState(params.query.toString());
@@ -185,7 +188,7 @@ function ProjectListSearch(props) {
             className="border-primary input-group-append" style={{ minWidth: "300px" }}
             placeholder={"Filter by " + currentSearchInObject.text.toLowerCase()} value={userInput}
             onChange={e => setUserInput(e.target.value.toString())} />
-          <SearchInFilter params={params} sectionsMap={sectionsMap} searchInMap={searchInMap}
+          <SearchInFilter logged={logged} params={params} sectionsMap={sectionsMap} searchInMap={searchInMap}
             searchWithValues={searchWithValues} currentSearchInObject={currentSearchInObject} />
           <SearchOrder params={params} orderByMap={orderByMap} searchWithValues={searchWithValues} />
         </InputGroup>
@@ -241,7 +244,7 @@ function verifyRules(params, searchInMap, sectionsMap) {
 
 function ProjectListContent(props) {
   const {
-    fetched, fetching, getAvatar, orderByMap, params, projects, search, searchInMap, sectionsMap,
+    fetched, fetching, getAvatar, logged, orderByMap, params, projects, search, searchInMap, sectionsMap,
     setTarget, users, target, totalProjects
   } = props;
 
@@ -286,6 +289,7 @@ function ProjectListContent(props) {
     <Row className="mb-4">
       <Col>
         <ProjectListSearch
+          logged={logged}
           orderByMap={orderByMap}
           params={params}
           search={search}
@@ -349,6 +353,7 @@ function ProjectList(props) {
         fetching={fetching}
         fetched={fetched}
         getAvatar={getAvatar}
+        logged={logged}
         orderByMap={orderByMap}
         params={params}
         projects={projects}
