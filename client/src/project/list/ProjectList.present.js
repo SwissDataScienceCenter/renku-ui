@@ -94,12 +94,12 @@ function ProjectListRows(props) {
 }
 
 function SearchInFilter(props) {
-  const { logged, params, sectionsMap, searchInMap, searchWithValues, currentSearchInObject } = props;
+  const { loggedIn, params, sectionsMap, searchInMap, searchWithValues, currentSearchInObject } = props;
 
   // search in
   const [dropdownSearchIn, setDropdownSearchIn] = useState(false);
   const toggleDropdownSearchIn = () => setDropdownSearchIn(!dropdownSearchIn);
-  if (!logged)
+  if (!loggedIn)
     return null;
 
   const searchInItems = Object.values(searchInMap).map(v => (
@@ -159,7 +159,7 @@ function SearchOrder(props) {
 }
 
 function ProjectListSearch(props) {
-  const { logged, orderByMap, params, search, searchInMap, sectionsMap } = props;
+  const { loggedIn, orderByMap, params, search, searchInMap, sectionsMap } = props;
 
   // input and search
   const [userInput, setUserInput] = useState(params.query.toString());
@@ -188,7 +188,7 @@ function ProjectListSearch(props) {
             className="border-primary input-group-append" style={{ minWidth: "300px" }}
             placeholder={"Filter by " + currentSearchInObject.text.toLowerCase()} value={userInput}
             onChange={e => setUserInput(e.target.value.toString())} />
-          <SearchInFilter logged={logged} params={params} sectionsMap={sectionsMap} searchInMap={searchInMap}
+          <SearchInFilter loggedIn={loggedIn} params={params} sectionsMap={sectionsMap} searchInMap={searchInMap}
             searchWithValues={searchWithValues} currentSearchInObject={currentSearchInObject} />
           <SearchOrder params={params} orderByMap={orderByMap} searchWithValues={searchWithValues} />
         </InputGroup>
@@ -244,7 +244,7 @@ function verifyRules(params, searchInMap, sectionsMap) {
 
 function ProjectListContent(props) {
   const {
-    fetched, fetching, getAvatar, logged, orderByMap, params, projects, search, searchInMap, sectionsMap,
+    fetched, fetching, getAvatar, loggedIn, orderByMap, params, projects, search, searchInMap, sectionsMap,
     setTarget, users, target, totalProjects
   } = props;
 
@@ -289,7 +289,7 @@ function ProjectListContent(props) {
     <Row className="mb-4">
       <Col>
         <ProjectListSearch
-          logged={logged}
+          loggedIn={loggedIn}
           orderByMap={orderByMap}
           params={params}
           search={search}
@@ -329,14 +329,14 @@ function ProjectListNav(props) {
 
 function ProjectList(props) {
   const {
-    fetched, fetching, getAvatar, logged, orderByMap, params, projectNew, projects, search, searchInMap,
+    fetched, fetching, getAvatar, loggedIn, orderByMap, params, projectNew, projects, search, searchInMap,
     sectionsMap, setTarget, users, target, totalProjects
   } = props;
 
-  const newProjectButton = logged ?
+  const newProjectButton = loggedIn ?
     (<Link className="btn btn-primary mt-auto mb-auto" role="button" to={projectNew}>New project</Link>) :
     null;
-  const navBar = logged ?
+  const navBar = loggedIn ?
     (<ProjectListNav key="navbar" getPreciseUrl={props.getPreciseUrl} sectionsMap={props.sectionsMap} />) :
     null;
 
@@ -353,7 +353,7 @@ function ProjectList(props) {
         fetching={fetching}
         fetched={fetched}
         getAvatar={getAvatar}
-        logged={logged}
+        loggedIn={loggedIn}
         orderByMap={orderByMap}
         params={params}
         projects={projects}
