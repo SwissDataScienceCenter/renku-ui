@@ -37,22 +37,29 @@ const CUSTOM_REPO_NAME = "Custom";
 
 
 /** helper function -- fork notifications */
-function addForkNotification(notifications, url, info, startingLocation, success = true) {
+function addForkNotification(notifications, url, info, startingLocation, success = true, excludeStarting = false) {
   if (success) {
+    const locations = excludeStarting ?
+      [url] :
+      [url, startingLocation];
+    //console.log(locations)
     notifications.addSuccess(
       notifications.Topics.PROJECT_FORKED,
       `Project ${info.name} successfully created.`,
       url, "Show project",
-      [url, startingLocation],
+      locations,
       `The project has been successfully forked to ${info.namespace}/${info.path}`
     );
   }
   else {
+    const locations = excludeStarting ?
+      [] :
+      [startingLocation];
     notifications.addError(
       notifications.Topics.PROJECT_FORKED,
       "Forking operation did not complete.",
       startingLocation, "Try again",
-      [startingLocation],
+      locations,
       "The fork operation did not run to completion. It is possible the project has been created, but some" +
       "elements may have not been cloned properly."
     );
@@ -223,23 +230,29 @@ function ForkProject(props) {
           throw new Error("Cloning is taking too long");
       }
 
-      // add notification and redirect
+      // Add notification. Mark it as read and redirect automatically only when the modal is still open
       let newProjectData = { namespace: forked.project.namespace.full_path, path: forked.project.path };
       const newUrl = Url.get(Url.pages.project, newProjectData);
       newProjectData.name = forked.project.name;
-      addForkNotification(notifications, newUrl, newProjectData, startingLocation, true);
-
-      // automatically redirect only when the user hasn't changed location
-      if (mounted && history.location.pathname === startingLocation)
+      if (mounted.current) {
+        addForkNotification(notifications, newUrl, newProjectData, startingLocation, true, false);
         history.push(newUrl);
+      }
+      else {
+        addForkNotification(notifications, newUrl, newProjectData, startingLocation, true, true);
+      }
       return null; // this prevents further operations on non-mounted components
     }
     catch (e) {
-      addForkNotification(notifications, null, null, startingLocation, false);
-      if (mounted)
+      if (mounted.current) {
+        addForkNotification(notifications, null, null, startingLocation, false, false);
         setForkError(e.message);
+      }
+      else {
+        addForkNotification(notifications, null, null, startingLocation, false, true);
+      }
     }
-    if (mounted)
+    if (mounted.current)
       setForking(false);
   };
 
