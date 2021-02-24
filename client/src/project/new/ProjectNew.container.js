@@ -61,8 +61,8 @@ function addForkNotification(notifications, url, info, startingLocation, success
 
 
 /**
- * This component is needed to map properties from the redux store.
- * We can remove it when we switch to the useSelector hook
+ * This component is needed to map properties from the redux store and keep local states cleared by the
+ * mapping function. We can remove it when we switch to the useSelector hook
  *
  * @param {object} props.client - client object
  * @param {object} props.model - redux model
@@ -78,6 +78,9 @@ class ForkProjectMapper extends Component {
     super(props);
     this.model = props.model;
     this.projectsCoordinator = new ProjectsCoordinator(props.client, this.model.subModel("projects"));
+
+    this.state = { modalOpen: false };
+    this.toggleModalFunction = this.toggleModal.bind(this);
 
     this.handlers = {
       getNamespaces: this.getNamespaces.bind(this),
@@ -108,6 +111,10 @@ class ForkProjectMapper extends Component {
     return await this.projectsCoordinator.getFeatured();
   }
 
+  toggleModal() {
+    this.setState({ modalOpen: !this.state.modalOpen });
+  }
+
   mapStateToProps(state, ownProps) {
     return {
       handlers: this.handlers,
@@ -123,6 +130,10 @@ class ForkProjectMapper extends Component {
 
   render() {
     const { btnClass, btnContent, client, id, history, notifications, title } = this.props;
+    const modal = {
+      open: this.state.modalOpen,
+      toggle: this.toggleModalFunction
+    };
 
     const ForkProjectMapped = connect(this.mapStateToProps.bind(this))(ForkProject);
     return (
@@ -133,6 +144,7 @@ class ForkProjectMapper extends Component {
         client={client}
         forkedId={id}
         forkedTitle={title}
+        modal={modal}
         notifications={notifications}
         history={history} />
     );
@@ -141,7 +153,7 @@ class ForkProjectMapper extends Component {
 
 
 function ForkProject(props) {
-  const { btnClass, btnContent, forkedTitle, handlers, namespaces } = props;
+  const { btnClass, btnContent, forkedTitle, handlers, modal, namespaces } = props;
 
   const [title, setTitle] = useState(forkedTitle + " - copy");
   const [namespace, setNamespace] = useState(""); // TODO - pick the default namespace if available
@@ -265,6 +277,7 @@ function ForkProject(props) {
       forkError={forkError}
       forking={forking}
       handlers={adjustedHandlers}
+      modal={modal}
       namespace={namespace}
       namespaces={namespaces}
       title={title}

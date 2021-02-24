@@ -24,7 +24,7 @@
  */
 
 
-import React, { Component, Fragment, useState } from "react";
+import React, { Component, Fragment } from "react";
 import { Link } from "react-router-dom";
 import Autosuggest from "react-autosuggest";
 import {
@@ -74,10 +74,7 @@ function ForkButton(props) {
 }
 
 function ForkProject(props) {
-  const { btnClass, btnContent, error, fork, forkError, forkedTitle, forking } = props;
-
-  const [modalOpen, setModalOpen] = useState(false);
-  const toggle = () => setModalOpen(!modalOpen);
+  const { btnClass, btnContent, error, fork, forkError, forkedTitle, forking, modal } = props;
 
   const confirmForkButton = forking ?
     null :
@@ -85,17 +82,16 @@ function ForkProject(props) {
 
   return (
     <Fragment>
-      {/* <Button onClick={() => { toggle(); }}>Fork</Button> */}
-      <ForkButton btnClass={btnClass} btnContent={btnContent} toggle={toggle} />
-      <Modal isOpen={modalOpen} toggle={toggle}>
-        <ModalHeader toggle={toggle}>Fork project {forkedTitle}</ModalHeader>
+      <ForkButton btnClass={btnClass} btnContent={btnContent} toggle={modal.toggle} />
+      <Modal isOpen={modal.open} toggle={modal.toggle}>
+        <ModalHeader toggle={modal.toggle}>Fork project {forkedTitle}</ModalHeader>
         <ModalBody>
           <ForkProjectContent {...props} />
           <ForkProjectStatus forkError={forkError} forking={forking} />
         </ModalBody>
         <ModalFooter>
           {confirmForkButton}
-          <Button outline color="primary" onClick={toggle}>{forking ? "Close" : "Cancel"}</Button>
+          <Button outline color="primary" onClick={modal.toggle}>{forking ? "Close" : "Cancel"}</Button>
         </ModalFooter>
       </Modal>
     </Fragment>
