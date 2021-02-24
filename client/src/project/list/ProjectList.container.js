@@ -397,7 +397,7 @@ function ProjectList(props) {
       fetching={projects.fetching}
       getAvatar={id => this.client.getAvatarFromNamespace(id)}
       getPreciseUrl={getPreciseUrl}
-      logged={props.user ? props.user.logged : false}
+      loggedIn={props.user ? props.user.logged : false}
       orderByMap={ORDER_BY_MAP}
       params={params}
       projectNew={PROJECT_NEW_URL}
