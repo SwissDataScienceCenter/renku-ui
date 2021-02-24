@@ -181,7 +181,7 @@ class NotificationsMenu extends Component {
           <FontAwesomeIcon icon={faInbox} id="notificationsBarIcon" />
           {badge}
         </DropdownToggle>
-        <DropdownMenu className="notification-menu" right key="notifications-bar" aria-labelledby="notifications-menu">
+        <DropdownMenu className="notification-menu" end key="notifications-bar" aria-labelledby="notifications-menu">
           <NotificationsMenuList {...this.props} />
         </DropdownMenu>
       </Fragment>

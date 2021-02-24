@@ -19,7 +19,7 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import Autosuggest from "react-autosuggest";
-import { InputGroup, InputGroupAddon, Button } from "reactstrap";
+import { InputGroup, Button } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
@@ -78,9 +78,9 @@ class QuickNavPresent extends Component {
             inputProps={inputProps}
             theme={theme}
             renderSuggestion={this.onRenderSuggestion} />
-          <InputGroupAddon addonType="append">
-            <Button color="outline-primary"><FontAwesomeIcon icon={faSearch} /></Button>
-          </InputGroupAddon>
+          <Button outline>
+            <FontAwesomeIcon icon={faSearch} />
+          </Button>
         </InputGroup>
       </form>
     );
