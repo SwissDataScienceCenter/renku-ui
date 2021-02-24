@@ -42,7 +42,6 @@ function addForkNotification(notifications, url, info, startingLocation, success
     const locations = excludeStarting ?
       [url] :
       [url, startingLocation];
-    //console.log(locations)
     notifications.addSuccess(
       notifications.Topics.PROJECT_FORKED,
       `Project ${info.name} successfully created.`,
@@ -77,17 +76,13 @@ function addForkNotification(notifications, url, info, startingLocation, success
  * @param {object} props.notifications - notifications object
  * @param {string} props.title - reference project title
  * @param {number} props.id - reference project id
- * @param {object} [props.btnContent] - optional button content for presentation
- * @param {object} [props.btnClass] - optional button class for presentation
+ * @param {function} props.toggleModal - function to toggle the modal on and off
  */
 class ForkProjectMapper extends Component {
   constructor(props) {
     super(props);
     this.model = props.model;
     this.projectsCoordinator = new ProjectsCoordinator(props.client, this.model.subModel("projects"));
-
-    this.state = { modalOpen: false };
-    this.toggleModalFunction = this.toggleModal.bind(this);
 
     this.handlers = {
       getNamespaces: this.getNamespaces.bind(this),
@@ -114,10 +109,6 @@ class ForkProjectMapper extends Component {
     return await this.projectsCoordinator.getFeatured();
   }
 
-  toggleModal() {
-    this.setState({ modalOpen: !this.state.modalOpen });
-  }
-
   mapStateToProps(state, ownProps) {
     return {
       handlers: this.handlers,
@@ -132,22 +123,16 @@ class ForkProjectMapper extends Component {
   }
 
   render() {
-    const { btnClass, btnContent, client, id, history, notifications, title } = this.props;
-    const modal = {
-      open: this.state.modalOpen,
-      toggle: this.toggleModalFunction
-    };
+    const { client, id, history, notifications, title, toggleModal } = this.props;
 
     const ForkProjectMapped = connect(this.mapStateToProps.bind(this))(ForkProject);
     return (
       <ForkProjectMapped
         store={this.model.reduxStore}
-        btnClass={btnClass ? btnClass : null}
-        btnContent={btnContent ? btnContent : null}
         client={client}
         forkedId={id}
         forkedTitle={title}
-        modal={modal}
+        toggleModal={toggleModal}
         notifications={notifications}
         history={history} />
     );
@@ -156,7 +141,7 @@ class ForkProjectMapper extends Component {
 
 
 function ForkProject(props) {
-  const { btnClass, btnContent, forkedTitle, handlers, modal, namespaces } = props;
+  const { forkedTitle, handlers, namespaces, projects, toggleModal } = props;
 
   const [title, setTitle] = useState(forkedTitle + " - copy");
   const [namespace, setNamespace] = useState(""); // TODO - pick the default namespace if available
@@ -168,11 +153,11 @@ function ForkProject(props) {
 
   // Monitor changes to projects list
   useEffect(() => {
-    if (!props.projects.list || !props.projects.list.length)
+    if (!projects.list || !projects.list.length)
       setProjectsPaths([]);
     else
-      setProjectsPaths(props.projects.list.map(project => project.path_with_namespace.toLowerCase()));
-  }, [props.projects.list]);
+      setProjectsPaths(projects.list.map(project => project.path_with_namespace.toLowerCase()));
+  }, [projects.list]);
 
   // Monitor changes to title, namespace or projects slug list to check for errors
   useEffect(() => {
@@ -277,18 +262,17 @@ function ForkProject(props) {
 
   return (
     <ForkProjectPresent
-      btnClass={btnClass}
-      btnContent={btnContent}
       error={error}
       fork={fork}
       forkedTitle={forkedTitle}
       forkError={forkError}
       forking={forking}
       handlers={adjustedHandlers}
-      modal={modal}
       namespace={namespace}
       namespaces={namespaces}
+      projects={projects}
       title={title}
+      toggleModal={toggleModal}
     />
   );
 }

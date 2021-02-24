@@ -28,7 +28,7 @@ import React, { Component, Fragment, useState, useEffect } from "react";
 import { Link, Route, Switch } from "react-router-dom";
 import {
   Alert, Button, ButtonGroup, Card, CardBody, CardHeader, Col, Container, DropdownItem, Form, FormGroup,
-  FormText, Input, Label, Row, Table, Nav, NavItem, UncontrolledTooltip
+  FormText, Input, Label, Row, Table, Nav, NavItem, UncontrolledTooltip, Modal
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
@@ -181,6 +181,46 @@ function GitLabConnectButton(props) {
   return (<div>{button}</div>);
 }
 
+class ForkProjectModal extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { open: false };
+    this.toggleFunction = this.toggle.bind(this);
+  }
+
+  toggle() {
+    this.setState({ open: !this.state.open });
+  }
+
+  render() {
+    let content = null;
+    // this prevents flashing wrong content during the close animation
+    if (this.state.open) {
+      content = (
+        <ForkProject
+          client={this.props.client}
+          id={this.props.id}
+          history={this.props.history}
+          model={this.props.model}
+          notifications={this.props.notifications}
+          title={this.props.title}
+          toggleModal={this.toggleFunction}
+        />
+      );
+    }
+    return (
+      <Fragment>
+        <Button outline color="primary" onClick={this.toggleFunction}>
+          <FontAwesomeIcon icon={faCodeBranch} /> fork
+        </Button>
+        <Modal isOpen={this.state.open} toggle={this.toggleFunction}>
+          {content}
+        </Modal>
+      </Fragment>
+    );
+  }
+}
+
 class ProjectViewHeaderOverview extends Component {
   constructor(props) {
     super(props);
@@ -248,10 +288,8 @@ class ProjectViewHeaderOverview extends Component {
           <Col xs={12} md="auto">
             <div className="d-flex mb-2">
               <ButtonGroup size="sm">
-                <ForkProject
+                <ForkProjectModal
                   client={this.props.client}
-                  btnClass="btn-outline-primary"
-                  btnContent={(<Fragment><FontAwesomeIcon icon={faCodeBranch} /> fork</Fragment>)}
                   history={this.props.history}
                   model={this.props.model}
                   notifications={this.props.notifications}

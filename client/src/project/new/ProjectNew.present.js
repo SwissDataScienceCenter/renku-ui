@@ -29,7 +29,7 @@ import { Link } from "react-router-dom";
 import Autosuggest from "react-autosuggest";
 import {
   Row, Col, ButtonGroup, UncontrolledTooltip, Input, Button, Form, FormFeedback, FormGroup, FormText, Label, Alert,
-  Modal, ModalHeader, ModalBody, ModalFooter
+  ModalHeader, ModalBody, ModalFooter
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
@@ -61,40 +61,67 @@ function makeRefreshButton(refresh, tip, disabled) {
   );
 }
 
-function ForkButton(props) {
-  const { btnClass, btnContent, toggle } = props;
+function ForkProject(props) {
+  const { error, fork, forkedTitle, forking, namespaces, projects, toggleModal } = props;
 
-  const content = btnContent ?
-    btnContent :
-    "Fork";
-  const className = btnClass ?
-    "btn " + btnClass :
-    "btn-primary";
-  return (<button className={className} onClick={() => { toggle(); }}>{content}</button>);
+  const fetching = {
+    projects: projects.fetching,
+    namespaces: namespaces.fetching
+  };
+
+  return (
+    <Fragment>
+      <ForkProjectHeader forkedTitle={forkedTitle} toggleModal={toggleModal} />
+      <ForkProjectBody {...props} fetching={fetching} />
+      <ForkProjectFooter error={error} fetching={fetching} fork={fork} forking={forking} toggleModal={toggleModal} />
+    </Fragment>
+  );
 }
 
-function ForkProject(props) {
-  const { btnClass, btnContent, error, fork, forkError, forkedTitle, forking, modal } = props;
+function ForkProjectHeader(props) {
+  const { forkedTitle, toggleModal } = props;
+  return (
+    <ModalHeader toggle={toggleModal}>
+      Fork project <span className="font-italic">{forkedTitle}</span>
+    </ModalHeader>
+  );
+}
+
+function ForkProjectBody(props) {
+  const { fetching, forkError, forking } = props;
+  if (fetching.namespaces || fetching.projects) {
+    const text = fetching.namespaces ?
+      "namespaces" :
+      "existing projects";
+    return (
+      <ModalBody>
+        <p>Checking your {text}...</p>
+        <Loader />
+      </ModalBody>
+    );
+  }
+  return (
+    <ModalBody>
+      <ForkProjectContent {...props} />
+      <ForkProjectStatus forkError={forkError} forking={forking} />
+    </ModalBody>
+  );
+}
+
+function ForkProjectFooter(props) {
+  const { error, fetching, fork, forking, toggleModal } = props;
 
   const confirmForkButton = forking ?
     null :
     (<Button color="primary" disabled={error ? true : false} onClick={fork}>Fork</Button>);
 
+  if (fetching.namespaces || fetching.projects)
+    return null;
   return (
-    <Fragment>
-      <ForkButton btnClass={btnClass} btnContent={btnContent} toggle={modal.toggle} />
-      <Modal isOpen={modal.open} toggle={modal.toggle}>
-        <ModalHeader toggle={modal.toggle}>Fork project {forkedTitle}</ModalHeader>
-        <ModalBody>
-          <ForkProjectContent {...props} />
-          <ForkProjectStatus forkError={forkError} forking={forking} />
-        </ModalBody>
-        <ModalFooter>
-          {confirmForkButton}
-          <Button outline color="primary" onClick={modal.toggle}>{forking ? "Close" : "Cancel"}</Button>
-        </ModalFooter>
-      </Modal>
-    </Fragment>
+    <ModalFooter>
+      {confirmForkButton}
+      <Button outline color="primary" onClick={toggleModal}>{forking ? "Close" : "Cancel"}</Button>
+    </ModalFooter>
   );
 }
 
