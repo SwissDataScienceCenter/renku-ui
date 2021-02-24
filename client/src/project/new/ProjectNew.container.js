@@ -30,7 +30,7 @@ import { connect } from "react-redux";
 import { NewProject as NewProjectPresent, ForkProject as ForkProjectPresent } from "./ProjectNew.present";
 import { NewProjectCoordinator, validateTitle, checkTitleDuplicates } from "./ProjectNew.state";
 import { ProjectsCoordinator } from "../shared";
-import { gitLabUrlFromProfileUrl, slugFromTitle } from "../../utils/HelperFunctions";
+import { gitLabUrlFromProfileUrl, slugFromTitle, refreshIfNecessary } from "../../utils/HelperFunctions";
 import { Url } from "../../utils/url";
 
 const CUSTOM_REPO_NAME = "Custom";
@@ -90,17 +90,13 @@ class ForkProjectMapper extends Component {
 
   componentDidMount() {
     // fetch if not yet available and refresh if older than 10 seconds
-    const tolerance = 10 * 1000;
     const currentState = this.model.get("projects");
-    const now = new Date();
-    if (!currentState.namespaces.fetching) {
-      if (!currentState.namespaces.fetched || now - currentState.namespaces.fetched > tolerance)
-        this.getNamespaces();
-    }
-    if (!currentState.featured.fetching) {
-      if (!currentState.featured.fetched || now - currentState.featured.fetched > tolerance)
-        this.getProjects();
-    }
+    refreshIfNecessary(
+      currentState.namespaces.fetching, currentState.namespaces.fetched, () => { this.getNamespaces(); }
+    );
+    refreshIfNecessary(
+      currentState.featured.fetching, currentState.featured.fetched, () => { this.getProjects(); }
+    );
   }
 
   async getNamespaces() {
@@ -232,7 +228,6 @@ function ForkProject(props) {
       const newUrl = Url.get(Url.pages.project, newProjectData);
       newProjectData.name = forked.project.name;
       addForkNotification(notifications, newUrl, newProjectData, startingLocation, true);
-      //client.runPipeline(forked.project.id);
 
       // automatically redirect only when the user hasn't changed location
       if (mounted && history.location.pathname === startingLocation)
