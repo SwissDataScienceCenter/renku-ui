@@ -34,6 +34,7 @@ import CktextareaInput from "./fields/CKEditorTextArea";
 import FileUploaderInput from "./fields/FileUploaderInput";
 import KeywordsInput from "./fields/KeywordsInput";
 import ValidationAlert from "./fields/ValidationAlert";
+import ImageInput from "./fields/ImageInput";
 import { Loader } from "../UIComponents";
 import "./FormGenerator.css";
 
@@ -83,7 +84,8 @@ function FormPanel({ title, btnName, submitCallback, formLocation, onCancel, edi
     SelectInput,
     SelectautosuggestInput,
     CreatorsInput,
-    KeywordsInput
+    KeywordsInput,
+    ImageInput
   };
 
   const renderInput = input => {

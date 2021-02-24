@@ -3,6 +3,7 @@ import ReactDOM from "react-dom";
 import { Schema } from "../../model";
 import { StateModel, globalSchema } from "../../model";
 import FormGenerator, { FormGenerator as FormPanel } from "./";
+import { DatasetImages } from "./fields/stockimages";
 
 let schema = new Schema({
   name: {
@@ -41,6 +42,13 @@ let schema = new Schema({
     label: "Files",
     edit: true,
     type: FormGenerator.FieldTypes.FILES
+  },
+  image: {
+    initial: { options: DatasetImages, selected: -1 },
+    name: "image",
+    label: "Image",
+    edit: false,
+    type: FormGenerator.FieldTypes.IMAGE
   }
 });
 

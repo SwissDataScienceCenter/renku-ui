@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns:xl="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns="http://www.w3.org/2000/svg" viewBox="0 -1 128 128" width="128" height="128">
+  <defs/>
+  <metadata> Produced by OmniGraffle 7.18.3\n2021-03-02 13:10:18 +0000</metadata>
+  <g id="Dataset2" stroke-dasharray="none" fill="none" stroke-opacity="1" stroke="none" fill-opacity="1">
+    <title>Dataset2</title>
+    <g id="Dataset2_Layer_1">
+      <title>Layer 1</title>
+      <g id="Group_5">
+        <g id="Line_15">
+          <line x1="42.24224" y1="84.22708" x2="42.24224" y2="68.30677" stroke="#c9c9c9" stroke-linecap="butt" stroke-linejoin="round" stroke-width="10"/>
+        </g>
+        <g id="Line_14">
+          <line x1="52.85578" y1="84.22708" x2="52.85578" y2="57.69323" stroke="#c9c9c9" stroke-linecap="butt" stroke-linejoin="round" stroke-width="10"/>
+        </g>
+        <g id="Line_13">
+          <line x1="63.46932" y1="84.22708" x2="63.46932" y2="63" stroke="#c9c9c9" stroke-linecap="butt" stroke-linejoin="round" stroke-width="10"/>
+        </g>
+        <g id="Line_12">
+          <line x1="74.082865" y1="84.22708" x2="74.082865" y2="47.07969" stroke="#c9c9c9" stroke-linecap="butt" stroke-linejoin="round" stroke-width="10"/>
+        </g>
+        <g id="Line_11">
+          <line x1="84.69641" y1="84.22708" x2="84.69641" y2="63" stroke="#c9c9c9" stroke-linecap="butt" stroke-linejoin="round" stroke-width="10"/>
+        </g>
+        <g id="Line_10">
+          <line x1="32.159375" y1="84.22708" x2="32.159375" y2="63" stroke="#c9c9c9" stroke-linecap="butt" stroke-linejoin="round" stroke-width="10"/>
+        </g>
+        <g id="Line_9">
+          <line x1="21.545833" y1="84.22708" x2="21.545833" y2="52.38646" stroke="#c9c9c9" stroke-linecap="butt" stroke-linejoin="round" stroke-width="10"/>
+        </g>
+        <g id="Line_8">
+          <line x1="95.30995" y1="84.22708" x2="95.84063" y2="52.38646" stroke="#c9c9c9" stroke-linecap="butt" stroke-linejoin="round" stroke-width="10"/>
+        </g>
+        <g id="Line_7">
+          <line x1="105.92349" y1="84.22708" x2="106.45417" y2="41.772917" stroke="#c9c9c9" stroke-linecap="butt" stroke-linejoin="round" stroke-width="10"/>
+        </g>
+        <g id="Line_6">
+          <path d="M 10.932292 36.466146 L 10.932292 89.53385 L 117.06771 89.53385" stroke="#929292" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

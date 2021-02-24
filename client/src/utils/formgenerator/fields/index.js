@@ -32,6 +32,7 @@ export default {
     SELECT: "select",
     SELECTAUTOSUGGEST: "selectautosuggest",
     CREATORS: "creators",
-    KEYWORDS: "keywords"
+    KEYWORDS: "keywords",
+    IMAGE: "image"
   }
 };

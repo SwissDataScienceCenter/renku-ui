@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns:xl="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns="http://www.w3.org/2000/svg" viewBox="0 -1 128 128" width="128" height="128">
+  <defs/>
+  <metadata> Produced by OmniGraffle 7.18.3\n2021-03-02 13:10:18 +0000</metadata>
+  <g id="Dataset1" stroke-dasharray="none" fill="none" stroke-opacity="1" stroke="none" fill-opacity="1">
+    <title>Dataset1</title>
+    <g id="Dataset1_Layer_1">
+      <title>Layer 1</title>
+      <g id="Group_2">
+        <g id="Line_4">
+          <path d="M 10.932292 36.466146 L 10.932292 89.53385 L 117.06771 89.53385" stroke="#929292" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/>
+        </g>
+        <g id="Line_3">
+          <path d="M 16.239063 84.22708 L 26.852604 78.92031 L 32.159375 68.30677 L 48.07969 73.61354 L 64 47.07969 L 79.92031 52.38646 L 111.76094 36.466146" stroke="#c9c9c9" stroke-linecap="round" stroke-linejoin="round" stroke-width="5"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
