@@ -28,7 +28,7 @@ import React, { Component, Fragment, useState, useEffect } from "react";
 import { Link, Route, Switch } from "react-router-dom";
 import {
   Alert, Button, ButtonGroup, Card, CardBody, CardHeader, Col, Container, DropdownItem, Form, FormGroup,
-  FormText, Input, Label, Row, Table, Nav, NavItem, UncontrolledTooltip
+  FormText, Input, Label, Row, Table, Nav, NavItem, UncontrolledTooltip, Modal
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
@@ -52,6 +52,7 @@ import { ACCESS_LEVELS } from "../api-client";
 import ProjectVersionStatus from "./status/ProjectVersionStatus.present";
 import { NamespaceProjects } from "../namespace";
 import { ProjectOverviewCommits, ProjectOverviewStats } from "./overview";
+import { ForkProject } from "./new";
 
 import "./Project.css";
 
@@ -180,6 +181,46 @@ function GitLabConnectButton(props) {
   return (<div>{button}</div>);
 }
 
+class ForkProjectModal extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { open: false };
+    this.toggleFunction = this.toggle.bind(this);
+  }
+
+  toggle() {
+    this.setState({ open: !this.state.open });
+  }
+
+  render() {
+    let content = null;
+    // this prevents flashing wrong content during the close animation
+    if (this.state.open) {
+      content = (
+        <ForkProject
+          client={this.props.client}
+          id={this.props.id}
+          history={this.props.history}
+          model={this.props.model}
+          notifications={this.props.notifications}
+          title={this.props.title}
+          toggleModal={this.toggleFunction}
+        />
+      );
+    }
+    return (
+      <Fragment>
+        <Button outline color="primary" onClick={this.toggleFunction}>
+          <FontAwesomeIcon icon={faCodeBranch} /> fork
+        </Button>
+        <Modal isOpen={this.state.open} toggle={this.toggleFunction}>
+          {content}
+        </Modal>
+      </Fragment>
+    );
+  }
+}
+
 class ProjectViewHeaderOverview extends Component {
   constructor(props) {
     super(props);
@@ -247,10 +288,14 @@ class ProjectViewHeaderOverview extends Component {
           <Col xs={12} md="auto">
             <div className="d-flex mb-2">
               <ButtonGroup size="sm">
-                <Button outline color="primary"
-                  onClick={this.props.toggleForkModal}>
-                  <FontAwesomeIcon icon={faCodeBranch} /> fork
-                </Button>
+                <ForkProjectModal
+                  client={this.props.client}
+                  history={this.props.history}
+                  model={this.props.model}
+                  notifications={this.props.notifications}
+                  title={this.props.core && this.props.core.title ? this.props.core.title : ""}
+                  id={this.props.core && this.props.core.id ? this.props.core.id : 0}
+                />
                 <Button outline color="primary"
                   href={`${this.props.externalUrl}/forks`} target="_blank" rel="noreferrer noopener">
                   {system.forks_count}
@@ -274,14 +319,12 @@ class ProjectViewHeaderOverview extends Component {
             </div>
           </Col>
         </Row>
-        {this.props.fork(this.props)}
       </Container>
     );
   }
 }
 
 class ProjectViewHeader extends Component {
-
   render() {
     let forkedFromLink = null;
     if (this.props.system.forked_from_project != null &&

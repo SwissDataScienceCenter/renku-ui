@@ -37,6 +37,7 @@ const collaborationListTypeMap = {
 class List extends Component {
   constructor(props) {
     super(props);
+    this.state = {};
     this.model = new CollaborationListModel(props.client, props.projectId, props.fetchElements);
     this.handlers = {
       setItemsState: this.setItemsState.bind(this),

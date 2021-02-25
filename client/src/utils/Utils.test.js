@@ -31,7 +31,7 @@ import Time from "./Time";
 import { CommitsView, CommitsUtils } from "./Commits";
 import {
   splitAutosavedBranches, sanitizedHTMLFromMarkdown, parseINIString, slugFromTitle,
-  verifyTitleCharacters, convertUnicodeToAscii, formatBytes
+  verifyTitleCharacters, convertUnicodeToAscii, formatBytes, refreshIfNecessary
 } from "./HelperFunctions";
 import { RefreshButton } from "./UIComponents";
 import { StateModel, globalSchema } from "../model";
@@ -543,5 +543,28 @@ describe("function formatBytes", () => {
     expect(formatBytes(1000000)).toEqual("976.56 KB");
     expect(formatBytes(-1000000)).toEqual("-976.56 KB");
     expect(formatBytes("aaa")).toEqual("NaN");
+  });
+});
+
+describe("function refreshIfNecessary", () => {
+  it("formatBytes", () => {
+    const fakeFunction = () => { return true; };
+
+    // fetch on falsy data
+    expect(refreshIfNecessary(null, null, fakeFunction)).toBe(true);
+
+    // Do not fetch when it's already fetching
+    expect(refreshIfNecessary(true, null, fakeFunction)).toBeUndefined();
+    expect(refreshIfNecessary(false, null, fakeFunction)).toBe(true);
+
+    // Fetch only when outdated
+    const fiveSecondsAgo = new Date(+(new Date) - 5000);
+    const fifteenSecondsAgo = new Date(+(new Date) - 15000);
+    expect(refreshIfNecessary(false, fifteenSecondsAgo, fakeFunction)).toBe(true);
+    expect(refreshIfNecessary(true, fiveSecondsAgo, fakeFunction)).toBeUndefined();
+
+    // Tolerance
+    expect(refreshIfNecessary(true, fiveSecondsAgo, fakeFunction, 50)).toBeUndefined();
+    expect(refreshIfNecessary(false, fiveSecondsAgo, fakeFunction, 2)).toBe(true);
   });
 });

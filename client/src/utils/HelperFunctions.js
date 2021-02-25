@@ -283,8 +283,25 @@ function isURL(str) {
   return !!pattern.test(str);
 }
 
+/**
+ * Refresh the data when they are not available or older than `tolerance`, preventing simultaneous invokations.
+ *
+ * @param {boolean} fetching - whether any fetching operation is currently ongoing.
+ * @param {date} fetched - last fetcheing date.
+ * @param {function} action -function to invoke to refresh the data. That should automatically change
+ *   `fetched` and `fetching`
+ * @param {number} [tolerance] - Maximum age (in seconds) of the data before refreshing them. Default is 10.
+ */
+function refreshIfNecessary(fetching, fetched, action, tolerance = 10) {
+  if (fetching)
+    return;
+  const now = new Date();
+  if (!fetched || now - fetched > tolerance * 1000)
+    return action();
+}
+
 export {
   slugFromTitle, getActiveProjectPathWithNamespace, splitAutosavedBranches, sanitizedHTMLFromMarkdown,
   simpleHash, parseINIString, formatBytes, groupBy, gitLabUrlFromProfileUrl, isURL, verifyTitleCharacters,
-  convertUnicodeToAscii
+  convertUnicodeToAscii, refreshIfNecessary
 };

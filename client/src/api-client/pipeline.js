@@ -19,7 +19,7 @@
 import { API_ERRORS } from "./errors";
 
 function addPipelineMethods(client) {
-  client.runPipeline = (projectId) => {
+  client.runPipeline = async (projectId) => {
     const headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}/pipeline`, {

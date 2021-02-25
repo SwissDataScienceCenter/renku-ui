@@ -25,6 +25,7 @@
 
 import React from "react";
 import ReactDOM from "react-dom";
+import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
 
 import { testClient as client } from "../api-client";
@@ -37,27 +38,31 @@ describe("rendering", () => {
   const loggedUser = generateFakeUser();
   const model = new StateModel(globalSchema);
 
-  it("renders home without crashing for anonymous user", () => {
+  it("renders home without crashing for anonymous user", async () => {
     const div = document.createElement("div");
-    ReactDOM.render(
-      <MemoryRouter>
-        <Landing.Home
-          welcomePage={btoa("## Welcome to Renku")}
-          user={anonymousUser}
-          model={model}
-          client={client} />
-      </MemoryRouter>, div);
+    await act(async () => {
+      ReactDOM.render(
+        <MemoryRouter>
+          <Landing.Home
+            welcomePage={btoa("## Welcome to Renku")}
+            user={anonymousUser}
+            model={model}
+            client={client} />
+        </MemoryRouter>, div);
+    });
   });
 
-  it("renders home without crashing for logged user", () => {
+  it("renders home without crashing for logged user", async () => {
     const div = document.createElement("div");
-    ReactDOM.render(
-      <MemoryRouter>
-        <Landing.Home
-          welcomePage={btoa("## Welcome to Renku")}
-          user={loggedUser}
-          model={model}
-          client={client} />
-      </MemoryRouter>, div);
+    await act(async () => {
+      ReactDOM.render(
+        <MemoryRouter>
+          <Landing.Home
+            welcomePage={btoa("## Welcome to Renku")}
+            user={loggedUser}
+            model={model}
+            client={client} />
+        </MemoryRouter>, div);
+    });
   });
 });

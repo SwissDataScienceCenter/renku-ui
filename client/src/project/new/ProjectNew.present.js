@@ -28,7 +28,8 @@ import React, { Component, Fragment } from "react";
 import { Link } from "react-router-dom";
 import Autosuggest from "react-autosuggest";
 import {
-  Row, Col, ButtonGroup, UncontrolledTooltip, Input, Button, Form, FormFeedback, FormGroup, FormText, Label, Alert
+  Row, Col, ButtonGroup, UncontrolledTooltip, Input, Button, Form, FormFeedback, FormGroup, FormText, Label, Alert,
+  ModalHeader, ModalBody, ModalFooter
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
@@ -56,6 +57,110 @@ function makeRefreshButton(refresh, tip, disabled) {
         <FontAwesomeIcon icon={faSyncAlt} />
       </Button>
       <UncontrolledTooltip key="tooltip" placement="top" target={id}>{tip}</UncontrolledTooltip>
+    </Fragment>
+  );
+}
+
+function ForkProject(props) {
+  const { error, fork, forkedTitle, forking, namespaces, projects, toggleModal } = props;
+
+  const fetching = {
+    projects: projects.fetching,
+    namespaces: namespaces.fetching
+  };
+
+  return (
+    <Fragment>
+      <ForkProjectHeader forkedTitle={forkedTitle} toggleModal={toggleModal} />
+      <ForkProjectBody {...props} fetching={fetching} />
+      <ForkProjectFooter error={error} fetching={fetching} fork={fork} forking={forking} toggleModal={toggleModal} />
+    </Fragment>
+  );
+}
+
+function ForkProjectHeader(props) {
+  const { forkedTitle, toggleModal } = props;
+  return (
+    <ModalHeader toggle={toggleModal}>
+      Fork project <span className="font-italic">{forkedTitle}</span>
+    </ModalHeader>
+  );
+}
+
+function ForkProjectBody(props) {
+  const { fetching, forkError, forking } = props;
+  if (fetching.namespaces || fetching.projects) {
+    const text = fetching.namespaces ?
+      "namespaces" :
+      "existing projects";
+    return (
+      <ModalBody>
+        <p>Checking your {text}...</p>
+        <Loader />
+      </ModalBody>
+    );
+  }
+  return (
+    <ModalBody>
+      <ForkProjectContent {...props} />
+      <ForkProjectStatus forkError={forkError} forking={forking} />
+    </ModalBody>
+  );
+}
+
+function ForkProjectFooter(props) {
+  const { error, fetching, fork, forking, toggleModal } = props;
+
+  const confirmForkButton = forking ?
+    null :
+    (<Button color="primary" disabled={error ? true : false} onClick={fork}>Fork</Button>);
+
+  if (fetching.namespaces || fetching.projects)
+    return null;
+  return (
+    <ModalFooter>
+      {confirmForkButton}
+      <Button outline color="primary" onClick={toggleModal}>{forking ? "Close" : "Cancel"}</Button>
+    </ModalFooter>
+  );
+}
+
+function ForkProjectStatus(props) {
+  if (props.forking) {
+    return (
+      <Fragment>
+        <span>Forking the project... </span>{" "}<Loader inline={true} size={16} />
+        <p className="mt-3">
+          <FontAwesomeIcon icon={faInfoCircle} />{" "}
+          This operation may take a while. You will be redirected automatically or
+          receive a notification at the end.
+        </p>
+      </Fragment>
+    );
+  }
+  else if (props.forkError) {
+    return (
+      <FormText key="help" color="danger">
+        An error occurred while forking: {props.forkError}
+      </FormText>
+    );
+  }
+  return null;
+}
+
+function ForkProjectContent(props) {
+  const { error, forking, handlers, namespace, namespaces, title } = props;
+  if (forking)
+    return null;
+
+  const input = { namespace, title, titlePristine: false };
+  const meta = { validation: { errors: { title: error } } };
+
+  return (
+    <Fragment>
+      <Title handlers={handlers} input={input} meta={meta} />
+      <Namespaces handlers={handlers} input={input} namespaces={namespaces} />
+      <Home input={input} />
     </Fragment>
   );
 }
@@ -118,6 +223,7 @@ class Title extends Component {
 
     return (
       <FieldGroup id="title" type="text" label="Title"
+        value={input.title}
         placeholder="A brief name to identify the project" help={help}
         feedback={error} invalid={error && !input.titlePristine}
         onChange={(e) => handlers.setProperty("title", e.target.value)} />
@@ -750,4 +856,4 @@ class Creation extends Component {
 }
 
 
-export { NewProject };
+export { NewProject, ForkProject };

@@ -27,6 +27,54 @@ import { CUSTOM_REPO_NAME } from "./ProjectNew.container";
 import { newProjectSchema } from "../../model/RenkuModels";
 import { slugFromTitle, verifyTitleCharacters } from "../../utils/HelperFunctions";
 
+
+// ? reference https://docs.gitlab.com/ce/user/reserved_names.html#reserved-project-names
+const RESERVED_TITLE_NAMES = ["badges", "blame", "blob", "builds", "commits", "create", "create_dir",
+  "edit", "environments/folders", "files", "find_file", "gitlab-lfs/objects", "info/lfs/objects",
+  "new", "preview", "raw", "refs", "tree", "update", "wikis"];
+
+
+/**
+ * Verify whether the title is valid.
+ *
+ * @param {string} title - title to validate.
+ * @returns {string} error description or null if the string is valid.
+ */
+function validateTitle(title) {
+  if (!title || !title.length)
+    return "Title is missing.";
+  else if (RESERVED_TITLE_NAMES.includes(title))
+    return "Reserved title name.";
+  else if (title.length && ["_", "-", " ", "."].includes(title[0]))
+    return "Title must start with a letter or a number.";
+  else if (!verifyTitleCharacters(title))
+    return "Title can contain only letters, digits, '_', '.', '-' or spaces.";
+  else if (title && !slugFromTitle(title, true))
+    return "Title must contain at least one letter (without any accents) or a number.";
+  return null;
+}
+
+/**
+ * Verify whether the title and namespace will produce a duplicate.
+ *
+ * @param {string} title - current title.
+ * @param {string} namespace - current namespace.
+ * @param {string[]} projectsPaths - list of current own projects paths.
+ * @returns {boolean} whether the title would create a duplicate or not.
+ */
+function checkTitleDuplicates(title, namespace, projectsPaths) {
+  if (!title || !namespace || !projectsPaths || !projectsPaths.length)
+    return false;
+
+  const expectedTitle = slugFromTitle(title, true);
+  const expectedSlug = `${namespace}/${expectedTitle}`;
+  if (projectsPaths.includes(expectedSlug))
+    return true;
+
+  return false;
+}
+
+
 class NewProjectCoordinator {
   constructor(client, model, projectsModel) {
     this.client = client;
@@ -431,13 +479,8 @@ class NewProjectCoordinator {
     if (newTemplates)
       templates = Object.assign({}, templates, newTemplates);
 
-    // ? reference https://docs.gitlab.com/ce/user/reserved_names.html#reserved-project-names
-    const reservedNames = ["badges", "blame", "blob", "builds", "commits", "create", "create_dir",
-      "edit", "environments/folders", "files", "find_file", "gitlab-lfs/objects", "info/lfs/objects",
-      "new", "preview", "raw", "refs", "tree", "update", "wikis"];
-    let errors = {}, warnings = {};
-
-    // check warnings: temporary problems
+    // check warnings (temporary problems)
+    let warnings = {};
     if (projects && projects.namespaces.fetching)
       warnings["namespace"] = "Fetching namespaces.";
 
@@ -449,22 +492,23 @@ class NewProjectCoordinator {
     else if (!templates.fetched)
       warnings["template"] = "Must get the templates first.";
 
-    // check errors: require user intervention. Skip if there is a warning
-    const slugExplanation = " that is already taken in the selected namespace." +
-      " Please select a different title or namespace.";
-    if (!input.title || !input.title.length)
-      errors["title"] = "Title is missing.";
-    else if (reservedNames.includes(input.title))
-      errors["title"] = "Reserved title name.";
-    else if (input.title.length && ["_", "-", " ", "."].includes(input.title[0]))
-      errors["title"] = "Title must start with a letter or a number.";
-    else if (!verifyTitleCharacters(input.title))
-      errors["title"] = "Title can contain only letters, digits, '_', '.', '-' or spaces.";
-    else if (input.title && !slugFromTitle(input.title, true))
-      errors["title"] = "Title must contain at least one letter (without any accents) or a number.";
-    else if (projects && projectsPaths.includes(`${input.namespace}/${slugFromTitle(input.title, true)}`))
-      errors["title"] = `Title produces a project identifier (${slugFromTitle(input.title, true)})${slugExplanation}`;
+    // check title errors (requires user intervention)
+    let errors = {};
+    const titleNotValid = validateTitle(input.title);
+    if (titleNotValid) {
+      errors["title"] = titleNotValid;
+    }
+    else {
+      const isDuplicate = checkTitleDuplicates(input.title, input.namespace, projectsPaths);
+      if (isDuplicate) {
+        errors["title"] = "Title produces a project identifier (" +
+          slugFromTitle(input.title, true) +
+          ") that is already taken in the selected namespace. " +
+          "Please select a different title or namespace.";
+      }
+    }
 
+    // check other errors (requires user intervention). Skip if there is already a warning
     if (!warnings["namespace"] && !input.namespace)
       errors["namespace"] = "Select namespace.";
 
@@ -485,4 +529,8 @@ class NewProjectCoordinator {
   }
 }
 
-export { NewProjectCoordinator };
+
+export { NewProjectCoordinator, validateTitle, checkTitleDuplicates };
+
+// test only
+export { RESERVED_TITLE_NAMES };

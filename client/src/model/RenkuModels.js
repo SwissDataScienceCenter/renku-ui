@@ -141,7 +141,6 @@ const projectSchema = new Schema({
   transient: {
     schema: {
       requests: { initial: {} },
-      forkModalOpen: { initial: false }
     }
   },
   webhook: {
@@ -186,7 +185,7 @@ const newProjectSchema = new Schema({
   },
   input: {
     [Prop.SCHEMA]: new Schema({
-      title: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+      title: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true },
       titlePristine: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true },
       namespace: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
       namespacePristine: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true },

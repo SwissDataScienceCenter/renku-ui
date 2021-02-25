@@ -33,9 +33,10 @@ const NotificationsInfo = {
   Topics: {
     AUTHENTICATION: "Authentication",
     DATASET_CREATE: "Dataset creation",
+    DATASET_FILES_UPLOADED: "Dataset files upload",
     ENVIRONMENT_START: "Interactive environment",
     PROJECT_API: "Project data",
-    DATASET_FILES_UPLOADED: "Dataset files upload"
+    PROJECT_FORKED: "Project forked",
   },
 };
 
