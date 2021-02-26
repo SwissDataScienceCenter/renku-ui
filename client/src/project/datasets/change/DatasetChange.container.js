@@ -69,7 +69,7 @@ function ChangeDataset(props) {
     if (!fileField.uploadFileFunction)
       fileField.uploadFileFunction = props.client.uploadFile;
 
-    fileField.uploadThresholdHard = props.params.UPLOAD_THRESHOLD ? props.params.UPLOAD_THRESHOLD.hard : 104857600;
+    fileField.uploadThresholdSoft = props.params.UPLOAD_THRESHOLD ? props.params.UPLOAD_THRESHOLD.soft : 104857600;
 
     if (!fileField.notifyFunction) {
       fileField.notifyFunction = (success = true, error) => {

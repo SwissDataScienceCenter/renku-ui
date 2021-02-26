@@ -99,7 +99,7 @@ describe("rendering", () => {
           model={model}
           user={loggedUser}
           location={fakeHistory}
-          params={{ UPLOAD_THRESHOLD: { hard: 104857600 } }}
+          params={{ UPLOAD_THRESHOLD: { soft: 104857600 } }}
         />
       </MemoryRouter>
       , div);

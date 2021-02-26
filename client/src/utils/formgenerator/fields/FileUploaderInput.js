@@ -93,7 +93,7 @@ function getFileObject(name, path, size, id, error, alias, controller, uncompres
 }
 
 function FileUploaderInput({ name, label, alert, value, setInputs, help, disabled = false,
-  uploadFileFunction, required = false, internalValues, handlers, formLocation, notifyFunction, uploadThresholdHard }) {
+  uploadFileFunction, required = false, internalValues, handlers, formLocation, notifyFunction, uploadThresholdSoft }) {
 
 
   //send value as an already built tree/hash to display and
@@ -517,7 +517,7 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
         }
         return <span>
           <Progress value={file.file_status}>{file.file_status}%</Progress>
-          {file.file_size >= uploadThresholdHard ? <small>
+          {file.file_size >= uploadThresholdSoft ? <small>
             <span className="text-muted"> No need to wait. We will <Link to="/notifications">
               notify you</Link> when the upload is finished.
             </span></small> : null }
