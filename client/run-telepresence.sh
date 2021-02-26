@@ -28,6 +28,7 @@ TEMPLATES='{"custom":true,"repositories":
 {"name":"Telepresence","ref":"0.1.11",
 "url":"https://github.com/SwissDataScienceCenter/renku-project-template"}]}'
 PREVIEW_THRESHOLD='{"soft":"1048576","hard":"10485760"}'
+UPLOAD_THRESHOLD='{"soft":"104857600"}'
 CURRENT_CHART=`grep -oE "(^version: )[.0-9a-f\-]*" ../helm-chart/renku-ui/Chart.yaml | cut -d" " -f2`
 CURRENT_COMMIT=`git rev-parse --short HEAD`
 if [[ "$OSTYPE" == "linux-gnu" ]]
@@ -112,6 +113,7 @@ tee > ./public/config.json << EOF
   "PRIVACY_ENABLED": "false",
   "TEMPLATES": ${TEMPLATES},
   "PREVIEW_THRESHOLD": ${PREVIEW_THRESHOLD},
+  "UPLOAD_THRESHOLD": ${UPLOAD_THRESHOLD},
   "STATUSPAGE_ID": "${STATUSPAGE_ID}"
 }
 EOF

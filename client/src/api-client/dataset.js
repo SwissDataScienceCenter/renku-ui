@@ -43,9 +43,16 @@ export default function addDatasetMethods(client) {
     httpRequest.onloadend = function() {
       if (httpRequest.status === 200 && httpRequest.response) {
         if (onFileUploadEnd) onFileUploadEnd();
-        thenCallback(JSON.parse(httpRequest.response));
+        let jsonResponse = JSON.parse(httpRequest.response);
+
+        if (jsonResponse.error)
+          setFileProgress(file, 400, jsonResponse.error);
+        else
+          setFileProgress(file, 101);
+        thenCallback(jsonResponse);
       }
       else if (httpRequest.status >= 400) {
+        setFileProgress(file, 400, { error: { reason: "Server Error " + httpRequest.status } });
         if (onFileUploadEnd) onFileUploadEnd();
         onErrorCallback({ code: httpRequest.status });
       }

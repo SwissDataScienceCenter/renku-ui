@@ -69,33 +69,34 @@ function ChangeDataset(props) {
     if (!fileField.uploadFileFunction)
       fileField.uploadFileFunction = props.client.uploadFile;
 
-    //
-    // UNCOMMENT TO ADD NOTIFICATIONS!!!!
-    //
-    // if (!fileField.notifyFunction) {
-    //   fileField.notifyFunction = (success = true, error) => {
-    //     if (success) {
-    //       const datasetName = props.edit ? "dataset " + dataset.name : "new dataset";
-    //       //topic, desc, link, linkText, awareLocations, longDesc
-    //       props.notifications.addSuccess(
-    //         props.notifications.Topics.DATASET_FILES_UPLOADED,
-    //     `Files for the ${datasetName} in ${props.projectPathWithNamespace} finished uploading.`,
-    //     `projects/${props.projectPathWithNamespace}/datasets/new`, "Go to dataset",
-    //     "/"
-    //       );
-    //     }
-    //     else {
-    //       const fullError = `An error occurred when trying to start a new Interactive environment.
-    //       Error message: "${error.message}", Stack trace: "${error.stack}"`;
-    //       props.notifications.addError(
-    //         props.notifications.Topics.DATASET_FILES_UPLOADED,
-    //         "Unable to start the interactive environment.",
-    //         "this.props.location.pathname", "Try again",
-    //         null, // always toast
-    //         fullError);
-    //     }
-    //   };
-    // }
+    fileField.uploadThresholdSoft = props.params.UPLOAD_THRESHOLD ? props.params.UPLOAD_THRESHOLD.soft : 104857600;
+
+    if (!fileField.notifyFunction) {
+      fileField.notifyFunction = (success = true, error) => {
+        const datasetName = props.edit ? "dataset " + dataset.name : "new dataset";
+        const redirectUrl = props.edit ? `/projects/${props.projectPathWithNamespace}/datasets/${dataset.name}/modify`
+          : `/projects/${props.projectPathWithNamespace}/datasets/new`;
+        if (success) {
+          props.notifications.addSuccess(props.notifications.Topics.DATASET_FILES_UPLOADED,
+            `Files for the ${datasetName} in ${props.projectPathWithNamespace} finished uploading.`,
+            redirectUrl,
+            "Go to dataset",
+            props.location.pathname
+          );
+        }
+        else {
+          const fullError = `An error occurred while uploading a file to the 
+          ${datasetName} in ${props.projectPathWithNamespace}.
+          Error message: "${error.reason}"`;
+          props.notifications.addError(
+            props.notifications.Topics.DATASET_FILES_UPLOADED,
+            `Unable to upload file to ${datasetName}.`,
+            redirectUrl, "Try again",
+            props.location.pathname,
+            fullError);
+        }
+      };
+    }
   };
 
   const onCancel = (e, handlers) => {

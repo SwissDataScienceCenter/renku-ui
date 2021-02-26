@@ -717,7 +717,7 @@ function ProjectViewDatasets(props) {
           <Col key="btn" md={12}>
             <GoBackButton label="Back to dataset" url={`${props.datasetsUrl}/${p.match.params.datasetId}/`}/>
           </Col>,
-          props.editDataset(p)]
+          props.editDataset({ ...props, ...p })]
         }/>
       <Route path={props.datasetUrl} render={p =>[
         <Col key="btn" md={12}>
