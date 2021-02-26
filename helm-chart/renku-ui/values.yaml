@@ -74,7 +74,7 @@ previewSizeThreshold:
 # This defines the threshold for displaying a message when a user is trying to upload a large file
 # so that they know it's not necessary to wait for this. There is only hard limit for now.
 uploadSizeThreshold:
-  hard: 104857600 # 100MB
+  soft: 104857600 # 100MB
 
 # Any string here, other than 'false', will enable the maintenance page and be added on it as an info.
 # Setting 'true' will display a standard message embedded in maintenace page.
