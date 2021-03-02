@@ -16,17 +16,22 @@
  * limitations under the License.
  */
 
-import React, { useState } from "react";
-import { Row, Col, Card, CardHeader, CardBody, Table, Alert, Button,
-  UncontrolledButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
+import React, { Fragment, useState } from "react";
+import {
+  Alert, Button, Card, CardBody, CardHeader, Col, DropdownItem, DropdownMenu, DropdownToggle, Row,
+  Table, UncontrolledButtonDropdown,
+} from "reactstrap";
 import { Link } from "react-router-dom";
-import { Loader, FileExplorer, RenkuMarkdown } from "../utils/UIComponents";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLinkAlt, faPen, faPlus, faTrash, faEllipsisV } from "@fortawesome/free-solid-svg-icons";
-import Time from "../utils/Time";
-import AddDataset from "./addtoproject/DatasetAdd.container";
+import {
+  faEllipsisV, faExternalLinkAlt, faInfoCircle, faPen, faPlus, faSearch, faTrash
+} from "@fortawesome/free-solid-svg-icons";
+import { ErrorAlert, FileExplorer, InfoAlert, Loader, RenkuMarkdown } from "../utils/UIComponents";
 import { ProjectsCoordinator } from "../project/shared";
+import AddDataset from "./addtoproject/DatasetAdd.container";
 import DeleteDataset from "../project/datasets/delete/index";
+import Time from "../utils/Time";
+
 
 function DisplayFiles(props) {
   if (props.files === undefined) return null;
@@ -107,25 +112,114 @@ function LinkToExternal(props) {
     : null;
 }
 
+function DatasetError(props) {
+  const { fetchError, insideProject, location, logged } = props;
+
+  // login helper
+  let loginHelper = null;
+  if (!logged) {
+    const postLoginUrl = location.pathname;
+    const to = { "pathname": "/login", "state": { previous: postLoginUrl } };
+    const link = (<Link className="btn btn-primary btn-sm" to={to} previous={postLoginUrl}>Log in</Link>);
+    loginHelper = (
+      <p className="mb-0">
+        <FontAwesomeIcon icon={faInfoCircle} /> You might need to be logged in to see this dataset.
+        Please try to {link}
+      </p>
+    );
+  }
+
+  // inside project case
+  if (insideProject) {
+    const title = `Error ${fetchError.code ? fetchError.code : "unknown"}`;
+    let errorDetails = null;
+    if (fetchError.code === 404) {
+      errorDetails = (
+        <Fragment>
+          <p>
+            We could not find the dataset. It is possible is has been deleted by its owner or you don&apos;t have
+            permission to access it.
+          </p>
+        </Fragment>
+      );
+    }
+    else if (fetchError.message) {
+      errorDetails = (<p>Error details: {fetchError.message}</p>);
+    }
+    const tip = logged ?
+      (<p className="mb-0">You can try to select again a dataset ferom the list in the previous page.</p>) :
+      loginHelper;
+
+    return (
+      <ErrorAlert timeout={0}>
+        <h5>{title}</h5>
+        {errorDetails}
+        {tip}
+      </ErrorAlert>
+    );
+  }
+
+  // global page case
+  let errorDetails = null;
+  if (fetchError.code === 404) {
+    const info = logged ?
+      (
+        <InfoAlert timeout={0}>
+          <p>
+            <FontAwesomeIcon icon={faInfoCircle} /> If you are sure the dataset exists,
+            you may want to try the following:
+          </p>
+          <ul className="mb-0">
+            <li>Do you have multiple accounts? Are you logged in with the right user?</li>
+            <li>
+              If you received this link from someone, ask that person to make sure you have access to the dataset.
+            </li>
+          </ul>
+        </InfoAlert>
+      ) :
+      (<InfoAlert timeout={0}>{loginHelper}</InfoAlert>);
+    errorDetails = (
+      <div>
+        <h3>Dataset not found <FontAwesomeIcon icon={faSearch} flip="horizontal" /></h3>
+        <div>&nbsp;</div>
+        <p>
+          It is possible that the dataset has been deleted by its owner or you don&apos;t have permission
+          to access it.
+        </p>
+        {info}
+      </div>
+    );
+  }
+  else if (fetchError.message) {
+    errorDetails = (<p>Error details: {fetchError.message}</p>);
+  }
+
+  return (
+    <div>
+      <h1>Error {fetchError.code ? fetchError.code : "unknown"}</h1>
+      {errorDetails}
+    </div>
+  );
+}
+
 export default function DatasetView(props) {
 
   const [addDatasetModalOpen, setAddDatasetModalOpen] = useState(false);
   const [deleteDatasetModalOpen, setDeleteDatasetModalOpen] = useState(false);
   const dataset = props.dataset;
 
-  if (props.fetchError !== null && dataset === undefined)
-    return <Alert color="danger">{props.fetchError}</Alert>;
-  if (dataset === undefined) return <Loader />;
-  if (dataset === null) {
+  if (props.fetchError !== null && dataset === undefined) {
     return (
-      <Alert color="danger">
-        The dataset that was selected does not exist or could not be accessed.<br /> <br />
-        If you just created or imported the dataset
-        try <Button color="danger" size="sm" onClick={
-          () => window.location.reload()
-        }>reloading</Button> the page.</Alert>
+      <DatasetError
+        fetchError={props.fetchError}
+        insideProject={props.insideProject}
+        location={props.location}
+        logged={props.logged} />
     );
   }
+
+  if (dataset === undefined)
+    return (<Loader />);
 
   const datasetPublished = dataset.published !== undefined && dataset.published.datePublished
     !== undefined && dataset.published.datePublished !== null;
