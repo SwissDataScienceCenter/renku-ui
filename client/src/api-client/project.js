@@ -319,37 +319,16 @@ function addProjectMethods(client) {
       .then(result => yaml.load(result));
   };
 
-  client.fetchDatasetFromKG = (datasetLink) => {
+  client.fetchDatasetFromKG = async (id) => {
+    const url = `${client.baseUrl}/kg/datasets/${id}`;
     const headers = client.getBasicHeaders();
-    const datasetPromise = client.clientFetch(datasetLink, { method: "GET", headers });
-    return Promise.resolve(datasetPromise)
-      .then(dataset => dataset.data);
+    return client.clientFetch(url, { method: "GET", headers }).then(dataset => dataset.data);
   };
 
   client.getProjectDatasetsFromKG = (projectPath) => {
-    let url = `${client.baseUrl}/knowledge-graph/projects/${projectPath}/datasets`;
-    url = url.replace("/api", "");//The url should change in the backend so we don't have to do this
+    const url = `${client.baseUrl}/kg/projects/${projectPath}/datasets`;
     const headers = client.getBasicHeaders();
-    return client.clientFetch(url, { method: "GET", headers }).then((resp) => {
-      return resp.data;
-    }).then(resp => {
-      let fullDatasets = resp.map(dataset =>
-        client.fetchDatasetFromKG(dataset._links[0].href));
-      return Promise.all(fullDatasets).then(datasets => {
-        //in case one of the dataset fetch fails we return the ones that didn't fail
-        return datasets.filter(dataset => dataset !== "error");
-      });
-    });
-  };
-
-  //in the future we will get all the info we need for the dataset list from this call...
-  client.getProjectDatasetsFromKG_short = (projectPath) => {
-    let url = `${client.baseUrl}/knowledge-graph/projects/${projectPath}/datasets`;
-    url = url.replace("/api", "");//The url should change in the backend so we don't have to do this
-    const headers = client.getBasicHeaders();
-    return client.clientFetch(url, { method: "GET", headers }).then((resp) => {
-      return resp.data;
-    });
+    return client.clientFetch(url, { method: "GET", headers }).then(resp => resp.data);
   };
 
   client.getProjectDatasets = (projectId) => {
