@@ -46,7 +46,7 @@ export default function ShowDataset(props) {
                 .map(file => ({ name: file.name, atLocation: file.path })));
             }
             else {
-              setDatasetFiles(response.data);
+              setDatasetFiles([]);
               if (response.data && response.data.error) {
                 if (response.data.error.code === -32100)
                   setFetchError({ code: 404, message: "dataset not found or missing permissions" });
