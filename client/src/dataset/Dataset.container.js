@@ -51,7 +51,7 @@ export default function ShowDataset(props) {
                 if (response.data.error.code === -32100)
                   setFetchError({ code: 404, message: "dataset not found or missing permissions" });
                 else
-                  setFetchError({ code: 0, message: "error fetching dataset: " + response.data.error.reason });
+                  setFetchError({ code: 0, message: "error fetching dataset files: " + response.data.error.reason });
               }
             }
           }
