@@ -26,7 +26,7 @@
 
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import { Row, Col, Jumbotron } from "reactstrap";
+import { Row, Col } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faClone, faCloudUploadAlt as faCloudUp, faCodeBranch, faHeart, faSearch, faShieldAlt as faShield, faUserFriends
@@ -163,7 +163,7 @@ class AnonymousHome extends Component {
     return <div className="container">
       <Row key="marquee">
         <Col>
-          <Jumbotron className="bg-white text-secondary">
+          <section className="jumbotron-header rounded px-3 px-sm-4 py-3 py-sm-5 text-center mb-3">
             <Row>
               <Col md={6}>
                 <h1>RENKU</h1>
@@ -175,7 +175,7 @@ class AnonymousHome extends Component {
                 </div>
               </Col>
             </Row>
-          </Jumbotron>
+          </section>
         </Col>
       </Row>
       <Row key="content-header">
