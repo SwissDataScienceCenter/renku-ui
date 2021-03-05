@@ -246,6 +246,15 @@ function addProjectMethods(client) {
     return client.putProjectField(projectId, "description", description);
   };
 
+  client.setAvatar = (projectId, avatarFile) => {
+    // https://docs.gitlab.com/ee/api/projects.html#upload-a-project-avatar
+
+    // There is no documented API for removing the avatar
+    if (avatarFile == null)
+      return;
+    return client.putProjectFieldFormData(projectId, "avatar", avatarFile);
+  };
+
   client.starProject = (projectId, starred) => {
     const headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
@@ -271,6 +280,28 @@ function addProjectMethods(client) {
       method: "PUT",
       headers: headers,
       body: JSON.stringify(data)
+    });
+  };
+
+  /**
+   * Put the data as a multipart/form-data.
+   * @param {*} projectId
+   * @param {*} fieldNameOrObject
+   * @param {*} fieldValue
+   */
+  client.putProjectFieldFormData = async (projectId, fieldNameOrObject, fieldValue) => {
+    const headers = client.getBasicHeaders();
+
+    const formData = new FormData();
+    formData.append(fieldNameOrObject, fieldValue);
+
+    // Do not do this! See Warning: https://developer.mozilla.org/en-US/docs/Web/API/FormData/Using_FormData_Objects
+    // headers.append("Content-Type", "multipart/form-data");
+
+    return client.clientFetch(`${client.baseUrl}/projects/${projectId}`, {
+      method: "PUT",
+      headers: headers,
+      body: formData
     });
   };
 
@@ -371,6 +402,7 @@ function carveProject(projectJson) {
   result["metadata"]["core"]["owner"] = projectJson["owner"];
   result["metadata"]["core"]["namespace_path"] = projectJson["namespace"]["full_path"];
   result["metadata"]["core"]["project_path"] = projectJson["path"];
+  result["metadata"]["core"]["avatar_url"] = projectJson["avatar_url"];
 
   result["metadata"]["system"]["tag_list"] = projectJson["tag_list"];
   result["metadata"]["system"]["star_count"] = projectJson["star_count"];
