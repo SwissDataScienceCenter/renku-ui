@@ -570,6 +570,9 @@ class View extends Component {
     onProjectDescriptionChange: (description) => {
       this.projectState.setDescription(this.props.client, description);
     },
+    onAvatarChange: (avatarFile) => {
+      return this.projectState.setAvatar(this.props.client, avatarFile);
+    },
     onStar: () => {
       const starred = this.getStarred();
       return this.projectState.star(this.props.client, starred).then((project) => {

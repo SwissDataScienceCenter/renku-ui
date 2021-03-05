@@ -122,6 +122,7 @@
           "mouseout",
           "mouseover",
           "multiline",
+          "multipart",
           "mustermann",
           "namespace",
           "namespaces",

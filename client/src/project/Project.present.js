@@ -43,7 +43,7 @@ import {
 } from "../utils/UIComponents";
 import { Url } from "../utils/url";
 import { SpecialPropVal } from "../model/Model";
-import { ProjectTags, ProjectTagList } from "./shared";
+import { ProjectAvatarEdit, ProjectTags, ProjectTagList } from "./shared";
 import { Notebooks, StartNotebookServer } from "../notebooks";
 import Issue from "../collaboration/issue/Issue";
 import { CollaborationList, collaborationListTypeMap } from "../collaboration/lists/CollaborationList.container";
@@ -54,6 +54,7 @@ import ProjectVersionStatus from "./status/ProjectVersionStatus.present";
 import { NamespaceProjects } from "../namespace";
 import { ProjectOverviewCommits, ProjectOverviewStats } from "./overview";
 import { ForkProject } from "./new";
+
 
 import "./Project.css";
 
@@ -1187,24 +1188,29 @@ class ProjectDescription extends Component {
   }
 }
 
-class ProjectSettings extends Component {
-  render() {
-    return <Col key="settings" xs={12}>
-      <Row>
-        <Col xs={12} lg={6}>
-          <ProjectTags
-            tag_list={this.props.system.tag_list}
-            onProjectTagsChange={this.props.onProjectTagsChange}
-            settingsReadOnly={this.props.settingsReadOnly} />
-          <ProjectDescription {...this.props} />
-        </Col>
-        <Col xs={12} lg={6}>
-          <RepositoryClone {...this.props} />
-          <RepositoryUrls {...this.props} />
-        </Col>
-      </Row>
-    </Col>;
-  }
+function ProjectSettings(props) {
+  return <Col key="settings" xs={12}>
+    <Row>
+      <Col xs={12} lg={6}>
+        <ProjectTags
+          tag_list={props.system.tag_list}
+          onProjectTagsChange={props.onProjectTagsChange}
+          settingsReadOnly={props.settingsReadOnly} />
+        <ProjectDescription {...props} />
+      </Col>
+      <Col xs={12} lg={6}>
+        <RepositoryClone {...props} />
+        <RepositoryUrls {...props} />
+      </Col>
+    </Row>
+    <Row>
+      <Col xs={12} lg={6}>
+        <ProjectAvatarEdit externalUrl={props.externalUrl}
+          avatarUrl={props.core.avatar_url} onAvatarChange={props.onAvatarChange}
+          settingsReadOnly={props.settingsReadOnly} />
+      </Col>
+    </Row>
+  </Col>;
 }
 
 class ProjectViewNotFound extends Component {

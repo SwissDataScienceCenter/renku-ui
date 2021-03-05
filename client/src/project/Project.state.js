@@ -372,6 +372,18 @@ class ProjectModel extends StateModel {
     });
   }
 
+  setAvatar(client, avatarFile) {
+    // this.setUpdating({ core: { avatar_url: [true] } });
+    return client.setAvatar(this.get("core.id"), avatarFile)
+      .then(() => { this.fetchProject(client, this.get("core.id")); });
+  }
+
+  toggleForkModal() {
+    const forkModalOpen = this.get("transient.forkModalOpen");
+    const forkModalFlipped = forkModalOpen === false ? true : false;
+    this.set("transient.forkModalOpen", forkModalFlipped);
+  }
+
   star(client, starred) {
     return client.starProject(this.get("core.id"), starred)
       .then((resp) => resp.data);
