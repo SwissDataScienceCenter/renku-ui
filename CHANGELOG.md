@@ -1,5 +1,25 @@
-
 # Changes
+
+## [0.11.7](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.6...0.11.7) (2021-03-08)
+
+### Features
+
+* **datasets** show a notification when uploading big files ([#1247](https://github.com/SwissDataScienceCenter/renku-ui/issues/1247), [#1150](https://github.com/SwissDataScienceCenter/renku-ui/issues/1150))
+* **project** update the project fork flow to match project creation ([#1252](https://github.com/SwissDataScienceCenter/renku-ui/issues/1252), [#1118](https://github.com/SwissDataScienceCenter/renku-ui/issues/1118))
+
+
+### Bug Fixes
+
+**datasets**
+
+* fix creation date when searching datasets ([#1240](https://github.com/SwissDataScienceCenter/renku-ui/issues/1240), [#1226](https://github.com/SwissDataScienceCenter/renku-ui/issues/1226))
+* fail gracefully when trying to access a missing dataset ([#1258](https://github.com/SwissDataScienceCenter/renku-ui/issues/1258), [#1003](https://github.com/SwissDataScienceCenter/renku-ui/issues/1003))
+
+**general**
+
+* check lfs status properly when previewing a file ([#1242](https://github.com/SwissDataScienceCenter/renku-ui/issues/1242))
+* fix broken markdown preview caused by links without a reference ([#1250](https://github.com/SwissDataScienceCenter/renku-ui/issues/1250))
+* handle sub-groups on projects list ([#1253](https://github.com/SwissDataScienceCenter/renku-ui/issues/1253), [#1248](https://github.com/SwissDataScienceCenter/renku-ui/issues/1248))
 
 
 ## [0.11.6](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.5...0.11.6) (2021-02-15)
