@@ -32,49 +32,27 @@ export default function ShowDataset(props) {
       : undefined
     , datasetKg, datasetFiles)
   , [props.datasets, datasetKg, props.datasetId, datasetFiles]);
-  const [fetchError, setFetchError] = useState();
+  const [fetchError, setFetchError] = useState({});
 
   useEffect(()=>{
     let unmounted = false;
-    if (props.insideProject && datasetFiles === undefined && dataset && dataset.name) {
-      props.client.fetchDatasetFilesFromCoreService(dataset.name, props.httpProjectUrl)
-        .then(response =>{
+    if (datasetFiles === undefined && ((dataset && dataset.name) || (props.datasetId !== undefined))) {
+      const name = (dataset && dataset.name) ? dataset.name : props.datasetId;
+      props.client.fetchDatasetFilesFromCoreService(name, props.httpProjectUrl)
+        .then(response => {
           if (!unmounted && datasetFiles === undefined) {
             if (response.data.result) {
               setDatasetFiles(response.data.result.files
                 .map(file => ({ name: file.name, atLocation: file.path })));
             }
-            else { setDatasetFiles(response.data); }
-          }
-        }
-        );
-    }
-    return () => {
-      unmounted = true;
-    };
-  }, [props.insideProject, datasetFiles,
-    dataset, props.httpProjectUrl, setDatasetFiles, props.client]);
-
-  useEffect(() => {
-    let unmounted = false;
-    if (datasetKg === undefined && ((props.insideProject && dataset.identifier && props.graphStatus)
-    || (props.identifier !== undefined))) {
-      const id = props.insideProject ? dataset.identifier : props.identifier;
-      props.client
-        .fetchDatasetFromKG(props.client.baseUrl.replace("api", "knowledge-graph/datasets/") + id)
-        .then((datasetInfo) => {
-          if (!unmounted && datasetKg === undefined && datasetInfo !== undefined)
-            setDatasetKg(datasetInfo);
-        }).catch(error => {
-          if (fetchError === undefined) {
-            if (!unmounted && error.case === API_ERRORS.notFoundError) {
-              setFetchError(props.insideProject ? "Error 404: The dataset that was selected does not exist or" +
-                " could not be accessed. If you just created or imported the dataset try reloading the page."
-                : "Error 404: The dataset that was selected does not exist or" +
-                " could not be accessed.");
-            }
-            else if (!unmounted && error.case === API_ERRORS.internalServerError) {
-              setFetchError("Error 500: The dataset that was selected couldn't be fetched.");
+            else {
+              setDatasetFiles([]);
+              if (response.data && response.data.error) {
+                if (response.data.error.code === -32100)
+                  setFetchError({ code: 404, message: "dataset not found or missing permissions" });
+                else
+                  setFetchError({ code: 0, message: "error fetching dataset files: " + response.data.error.reason });
+              }
             }
           }
         });
@@ -82,8 +60,29 @@ export default function ShowDataset(props) {
     return () => {
       unmounted = true;
     };
-  }, [props.insideProject, props.datasets_kg, props.datasetId, props.identifier,
-    props.client, datasetKg, fetchError, dataset, props.graphStatus]);
+  }, [datasetFiles, props.datasetId, dataset, props.httpProjectUrl, setDatasetFiles, props.client]);
+
+  useEffect(() => {
+    let unmounted = false;
+    if (datasetKg === undefined && ((dataset && dataset.identifier && props.graphStatus)
+      || (props.identifier !== undefined))) {
+      const id = props.insideProject ? dataset.identifier : props.identifier;
+      props.client
+        .fetchDatasetFromKG(props.client.baseUrl.replace("api", "knowledge-graph/datasets/") + id)
+        .then((datasetInfo) => {
+          if (!unmounted && datasetKg === undefined && datasetInfo !== undefined)
+            setDatasetKg(datasetInfo);
+        }).catch(error => {
+          if (!unmounted && error.case === API_ERRORS.notFoundError)
+            setFetchError({ code: 404, message: "dataset not found or missing permissions" });
+          else if (!unmounted && error.case === API_ERRORS.internalServerError)
+            setFetchError({ code: 500, message: "cannot fetch selected dataset" });
+        });
+    }
+    return () => {
+      unmounted = true;
+    };
+  }, [props.insideProject, props.identifier, props.client, datasetKg, dataset, props.graphStatus]);
 
   if (props.insideProject && datasetFiles === undefined)
     return <Loader />;
