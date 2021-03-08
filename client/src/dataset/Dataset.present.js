@@ -135,19 +135,14 @@ function DatasetError(props) {
     let errorDetails = null;
     if (fetchError.code === 404) {
       errorDetails = (
-        <Fragment>
-          <p>
-            We could not find the dataset. It is possible is has been deleted by its owner or you don&apos;t have
-            permission to access it.
-          </p>
-        </Fragment>
+        <p>We could not find the dataset. It is possible it has been deleted by its owner.</p>
       );
     }
     else if (fetchError.message) {
       errorDetails = (<p>Error details: {fetchError.message}</p>);
     }
     const tip = logged ?
-      (<p className="mb-0">You can try to select again a dataset ferom the list in the previous page.</p>) :
+      (<p className="mb-0">You can try to select a dataset again from the list in the previous page.</p>) :
       loginHelper;
 
     return (
@@ -183,7 +178,7 @@ function DatasetError(props) {
         <h3>Dataset not found <FontAwesomeIcon icon={faSearch} flip="horizontal" /></h3>
         <div>&nbsp;</div>
         <p>
-          It is possible that the dataset has been deleted by its owner or you don&apos;t have permission
+          It is possible that the dataset has been deleted by its owner or you do not have permission
           to access it.
         </p>
         {info}
