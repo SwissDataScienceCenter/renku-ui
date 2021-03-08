@@ -1,0 +1,33 @@
+// In this file we can overwrite variables from bootstrap/_variables.scss
+
+// RENKU UI COLORS
+$rk-blue: #01192D;
+$rk-green: #009568;
+$rk-pink: #D26A98;
+$rk-yellow:#D1BB4C;
+$rk-dark:#3D3D3D; // titles
+$rk-text:#838383; // text
+$rk-light:#E4E7EA; // borders
+$rk-background: #F5F5F5;
+$rk-green-background: rgb(34,53,52);
+$rk-white: #FFFFFF;
+
+// This will be added to the theme colors in custom_bootstrap
+$rk-colors : (
+	"rk-yellow":$rk-yellow,
+	"rk-text":$rk-text,
+	"rk-green-background":$rk-green-background,
+	"rk-white": $rk-white
+);
+
+// We overwrite bootstraps variables
+$primary: $rk-blue;
+$secondary: $rk-green;
+$info: $rk-pink;
+$light:$rk-light;
+$dark: $rk-dark;
+
+$body-bg: $rk-background; //background color
+$body-color: $rk-dark; //text color
+
+$enable-rounded: false; //borders in general
