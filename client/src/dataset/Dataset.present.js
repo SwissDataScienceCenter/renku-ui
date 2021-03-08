@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { Fragment, useState } from "react";
+import React, { useState } from "react";
 import {
   Alert, Button, Card, CardBody, CardHeader, Col, DropdownItem, DropdownMenu, DropdownToggle, Row,
   Table, UncontrolledButtonDropdown,
