@@ -19,7 +19,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 
-import { NotebooksCoordinator, NotebooksHelper } from "./Notebooks.state";
+import { NotebooksCoordinator } from "./Notebooks.state";
 import {
   StartNotebookServer as StartNotebookServerPresent, NotebooksDisabled, Notebooks as NotebooksPresent, CheckNotebookIcon
 } from "./Notebooks.present";
@@ -340,18 +340,6 @@ class StartNotebookServer extends Component {
     const { location, history } = this.props;
     return this.coordinator.startServer().then((data) => {
       this.setState({ "starting": false });
-      // add a notification
-      // TODO: once we will get the info from ui-server, notify only when the environment is ready
-      const info = NotebooksHelper.cleanAnnotations(data.annotations);
-      const projectEnvironments = location.state.successUrl;
-      this.notifications.addSuccess(
-        this.notifications.Topics.ENVIRONMENT_START,
-        `An interactive environment for the project ${info["namespace"]}/${info["projectName"]} will be available soon`,
-        projectEnvironments, "Show environments",
-        [projectEnvironments, "/environments", `${projectEnvironments}/new`],
-        `Branch: ${info["branch"]}; Commit: ${info["commit-sha"]}`
-      );
-
       // redirect user when necessary
       if (!history || !location)
         return;
