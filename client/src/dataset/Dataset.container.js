@@ -60,8 +60,7 @@ export default function ShowDataset(props) {
     return () => {
       unmounted = true;
     };
-  }, [props.insideProject, datasetFiles, props.datasetId,
-    dataset, props.httpProjectUrl, setDatasetFiles, props.client]);
+  }, [datasetFiles, props.datasetId, dataset, props.httpProjectUrl, setDatasetFiles, props.client]);
 
   useEffect(() => {
     let unmounted = false;
@@ -83,8 +82,7 @@ export default function ShowDataset(props) {
     return () => {
       unmounted = true;
     };
-  }, [props.insideProject, props.datasets_kg, props.datasetId, props.identifier,
-    props.client, datasetKg, dataset, props.graphStatus]);
+  }, [props.insideProject, props.identifier, props.client, datasetKg, dataset, props.graphStatus]);
 
   if (props.insideProject && datasetFiles === undefined)
     return <Loader />;
