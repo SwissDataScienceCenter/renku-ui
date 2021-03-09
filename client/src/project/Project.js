@@ -142,6 +142,10 @@ function splitProjectSubRoute(subUrl) {
   return result;
 }
 
+function matchToDatasetId(matchDatasetId) {
+  return decodeURIComponent(matchDatasetId);
+}
+
 
 // TODO: This component has grown too much and needs restructuring. One option would be to insert
 // TODO: another container component between this top-level project component and the presentational
@@ -460,7 +464,7 @@ class View extends Component {
         maintainer={maintainer}
         insideProject={true}
         datasets={datasets}
-        datasetId={p.match.params.datasetId}
+        datasetId={matchToDatasetId(p.match.params.datasetId)}
         projectPathWithNamespace={projectPathWithNamespace}
         lineagesUrl={subUrls.lineagesUrl}
         fileContentUrl={subUrls.fileContentUrl}
@@ -487,7 +491,6 @@ class View extends Component {
         lineagesUrl={subUrls.lineagesUrl}
         fileContentUrl={subUrls.fileContentUrl}
         projectsUrl={subUrls.projectsUrl}
-        selectedDataset={p.match.params.datasetId}
         client={this.props.client}
         history={this.props.history}
         httpProjectUrl={httpProjectUrl}
@@ -510,10 +513,9 @@ class View extends Component {
         lineagesUrl={subUrls.lineagesUrl}
         fileContentUrl={subUrls.fileContentUrl}
         projectsUrl={subUrls.projectsUrl}
-        selectedDataset={p.match.params.datasetId}
         client={this.props.client}
         history={this.props.history}
-        datasetId={p.match.params.datasetId}
+        datasetId={matchToDatasetId(p.match.params.datasetId)}
         dataset={p.location.state ? p.location.state.dataset : null}
         httpProjectUrl={httpProjectUrl}
         fetchDatasets={this.eventHandlers.fetchDatasets}
@@ -535,7 +537,7 @@ class View extends Component {
         lineagesUrl={subUrls.lineagesUrl}
         fileContentUrl={subUrls.fileContentUrl}
         projectsUrl={subUrls.projectsUrl}
-        selectedDataset={p.match.params.datasetId}
+        selectedDataset={matchToDatasetId(p.match.params.datasetId)}
         client={this.props.client}
         history={this.props.history}
         httpProjectUrl={httpProjectUrl}
