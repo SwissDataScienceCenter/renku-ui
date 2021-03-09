@@ -177,8 +177,10 @@ function ChangeDataset(props) {
     const pendingFiles = mappedInputs.files
       .filter(f => f.file_status === FILE_STATUS.PENDING).map(f => ({ "file_url": f.file_name }));
     dataset.files = [].concat.apply([], mappedInputs.files
-      .filter(f => f.file_status !== FILE_STATUS.PENDING && f.file_status !== FILE_STATUS.ADDED)
-      .map(f => f.file_id)).map(f => ({ "file_id": f }));
+      .filter(f =>
+        f.file_status !== FILE_STATUS.PENDING && f.file_status !== FILE_STATUS.ADDED && f.file_id !== undefined)
+      .map(f => f.file_id))
+      .map(f => ({ "file_id": f }));
 
     dataset.files = [...dataset.files, ...pendingFiles];
     dataset.keywords = mappedInputs.keywords;
