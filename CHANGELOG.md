@@ -1,5 +1,12 @@
 # Changes
 
+## [0.11.8](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.7...0.11.8) (2021-03-09)
+
+### Bug Fixes
+
+* **datasets** handle datasets with ',' in the name correctly ([#1265](https://github.com/SwissDataScienceCenter/renku-ui/pull/1265))
+
+
 ## [0.11.7](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.6...0.11.7) (2021-03-08)
 
 ### Features
