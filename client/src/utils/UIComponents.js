@@ -168,7 +168,8 @@ class RenkuNavLink extends Component {
       this.props.to;
     const exact = (this.props.exact != null) ? this.props.exact : true;
     return (
-      <NavLink exact={exact} to={to} isActive={this.isActive} tag={RRNavLink} id={this.props.id}>{title}</NavLink>
+      <NavLink exact={exact} to={to} isActive={this.isActive} tag={RRNavLink}
+        id={this.props.id} className={this.props.className}>{title}</NavLink>
     );
   }
 }
@@ -750,23 +751,21 @@ function ButtonWithMenu(props) {
   const toggleOpen = () => setOpen(!dropdownOpen);
   const size = (props.size) ? props.size : "md";
 
-  return (
-    <ButtonDropdown
-      size={size}
-      isOpen={dropdownOpen}
-      toggle={toggleOpen}
-      direction={props.direction}
-      disabled={props.disabled}
+  return <ButtonDropdown 
+    size={size} 
+    isOpen={dropdownOpen} 
+    toggle={toggleOpen}
+    direction={props.direction}
+    disabled={props.disabled}
     >
-      {props.default}
-      <DropdownToggle color="primary" className="alternateToggleStyle">
-        <FontAwesomeIcon icon={faEllipsisV} style={{ color: "white", backgroundColor: "#5561A6" }} />
-      </DropdownToggle>
-      <DropdownMenu right={true}>
-        {props.children}
-      </DropdownMenu>
-    </ButtonDropdown>
-  );
+    {props.default}
+    <DropdownToggle color="primary" className="alternateToggleStyle">
+      <FontAwesomeIcon icon={faEllipsisV} style={{ color: "white", backgroundColor: "#5561A6" }} />
+    </DropdownToggle>
+    <DropdownMenu end>
+      {props.children}
+    </DropdownMenu>
+  </ButtonDropdown>;
 }
 
 /**

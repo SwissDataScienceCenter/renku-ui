@@ -20,7 +20,7 @@ import React, { Component } from "react";
 import { Link, Route, Switch } from "react-router-dom";
 import { Row, Col, Alert, Card, CardBody, Badge } from "reactstrap";
 import { Button, Form, FormText, Input, Label, InputGroup, UncontrolledCollapse } from "reactstrap";
-import { InputGroupButtonDropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
+import { DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
 import { Loader, Pagination, MarkdownTextExcerpt } from "../../utils/UIComponents";
 import { faCheck, faSortAmountUp, faSortAmountDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -83,8 +83,8 @@ class DatasetSearchForm extends Component {
             onChange={this.props.handlers.onSearchQueryChange}
             className="border-primary" />
           <Label for="searchQuery" hidden>Query</Label>
-          <InputGroupButtonDropdown
-            addonType="append"
+          <InputGroup
+            type="dropdown"
             toggle={this.props.handlers.onOrderByDropdownToggle}
             isOpen={this.props.orderByDropdownOpen}>
             <Button outline color="primary" onClick={this.props.handlers.toggleSearchSorting}>
@@ -113,7 +113,7 @@ class DatasetSearchForm extends Component {
                   <FontAwesomeIcon icon={faCheck} /> : null} Projects Count
               </DropdownItem>
             </DropdownMenu>
-          </InputGroupButtonDropdown>
+          </InputGroup>
         </InputGroup>
         &nbsp;
         <Button color="primary" onClick={this.props.handlers.onSearchSubmit}>Search</Button>

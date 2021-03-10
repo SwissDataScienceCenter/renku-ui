@@ -21,8 +21,7 @@ import Media from "react-media";
 import { Link } from "react-router-dom";
 import {
   Form, FormGroup, FormText, Label, Input, Button, ButtonGroup, Row, Col, Table, DropdownItem, UncontrolledTooltip,
-  UncontrolledPopover, PopoverHeader, PopoverBody, Badge, Modal, ModalHeader, ModalBody, ModalFooter, CustomInput,
-  Collapse
+  UncontrolledPopover, PopoverHeader, PopoverBody, Badge, Modal, ModalHeader, ModalBody, ModalFooter, Collapse
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStopCircle, faExternalLinkAlt, faInfoCircle, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
@@ -1443,8 +1442,10 @@ class ServerOptionBoolean extends Component {
     // https://stackoverflow.com/a/39709700/1303090
     const selected = !!this.props.selected;
     return (
-      <CustomInput type="switch" id={this.props.id} label={this.props.displayName}
+      <Input type="switch" id={this.props.id} label={this.props.displayName}
         checked={selected} onChange={this.props.onChange} />
+      // <CustomInput type="switch" id={this.props.id} label={this.props.displayName}
+      //   checked={selected} onChange={this.props.onChange} />
     );
   }
 }
