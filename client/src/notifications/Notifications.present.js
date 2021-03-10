@@ -176,14 +176,16 @@ class NotificationsMenu extends Component {
       null;
     return (
       <Fragment>
-        {/* This throws an error in test: Warning `Reference` should not be used outside of a `Manager` component. */}
-        <DropdownToggle className="nav-link" nav caret>
-          <FontAwesomeIcon icon={faInbox} id="notificationsBarIcon" />
-          {badge}
-        </DropdownToggle>
-        <DropdownMenu className="notification-menu" end key="notifications-bar" aria-labelledby="notifications-menu">
-          <NotificationsMenuList {...this.props} />
-        </DropdownMenu>
+        <li className="nav-item dropdown">
+          {/* This throws an error in test: Warning `Reference` should not be used outside of a `Manager` component. */}
+          <DropdownToggle className="nav-link" nav caret>
+            <FontAwesomeIcon icon={faInbox} id="notificationsBarIcon" />
+            {badge}
+          </DropdownToggle>
+          <DropdownMenu className="notification-menu" end key="notifications-bar" aria-labelledby="notifications-menu">
+            <NotificationsMenuList {...this.props} />
+          </DropdownMenu>
+        </li>
       </Fragment>
     );
   }

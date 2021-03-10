@@ -23,12 +23,13 @@
  *  NavBar for logged-in and logged-out users.
  */
 
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { Link } from "react-router-dom";
-import { UncontrolledDropdown, DropdownItem, Navbar, Nav } from "reactstrap";
+import { UncontrolledDropdown, DropdownItem, Navbar, Nav, NavbarBrand,
+  NavbarToggler, Collapse, NavItem, DropdownToggle, DropdownMenu } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
-import { faQuestionCircle } from "@fortawesome/free-regular-svg-icons";
+import { faPlus, faBars } from "@fortawesome/free-solid-svg-icons";
+import { faQuestionCircle, faUser } from "@fortawesome/free-regular-svg-icons";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 
 import logo from "./logo.svg";
@@ -65,27 +66,30 @@ class RenkuToolbarItemUser extends Component {
     const { user } = this.props;
     const gatewayURL = this.props.params.GATEWAY_URL;
     const redirect_url = encodeURIComponent(this.props.params.BASE_URL);
-    if (!user.fetched)
-      return <Loader size="16" inline="true" />;
+    if (!user.fetched) { return <Loader size="16" inline="true" />; }
 
-    else if (!user.data.id)
-      return <RenkuNavLink to="/login" title="Login" previous={this.props.location.pathname} />;
+    else if (!user.data.id) {
+      return <NavItem className="align-middle">
+        <RenkuNavLink to="/login" title="Login" previous={this.props.location.pathname} />
+      </NavItem>;
+    }
 
-
-    return <li className="nav-item dropdown">
-      { /* eslint-disable-next-line */ }
-      <a key="button" className="nav-link dropdown-toggle" id="profile-dropdown" role="button"
-        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        {this.props.userAvatar}
-      </a>
-      <div key="menu" className="dropdown-menu dropdown-menu-right" aria-labelledby="profile-dropdown">
-        <ExternalLink url={`${gatewayURL}/auth/user-profile`} title="Account" className="dropdown-item" role="link" />
-        <DropdownItem divider />
-        <a id="logout-link" className="dropdown-item" onClick={() => { LoginHelper.notifyLogout(); }}
-          href={`${gatewayURL}/auth/logout?redirect_url=${redirect_url}`}>Logout</a>
-      </div>
-    </li>;
-
+    return <UncontrolledDropdown>
+      <Fragment>
+        <li className="nav-item dropdown">
+          <DropdownToggle className="nav-link" nav caret>
+            <FontAwesomeIcon icon={faUser} id="userIcon" />
+          </DropdownToggle>
+          <DropdownMenu className="user-menu" end key="user-bar" aria-labelledby="user-menu">
+            <ExternalLink url={`${gatewayURL}/auth/user-profile`}
+              title="Account" className="dropdown-item" role="link" />
+            <DropdownItem divider />
+            <a id="logout-link" className="dropdown-item" onClick={() => { LoginHelper.notifyLogout(); }}
+              href={`${gatewayURL}/auth/logout?redirect_url=${redirect_url}`}>Logout</a>
+          </DropdownMenu>
+        </li>
+      </Fragment>
+    </UncontrolledDropdown>;
   }
 }
 
@@ -94,7 +98,8 @@ class RenkuToolbarItemPlus extends Component {
     // Display the Issue/Notebook server related header options only if a project is active.
     const activeProjectPathWithNamespace = getActiveProjectPathWithNamespace(this.props.currentPath);
     const issueDropdown = activeProjectPathWithNamespace ?
-      <Link className="dropdown-item" to={`/projects/${activeProjectPathWithNamespace}/collaboration/issues/issue_new`}>
+      <Link className="dropdown-item"
+        to={`/projects/${activeProjectPathWithNamespace}/collaboration/issues/issue_new`}>
         Issue
       </Link>
       : null;
@@ -107,42 +112,48 @@ class RenkuToolbarItemPlus extends Component {
       Project
     </Link>;
 
-    return <li className="nav-item dropdown">
-      { /* eslint-disable-next-line */}
-      <a className="nav-link dropdown-toggle" id="plus-dropdown" role="button"
-        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        <FontAwesomeIcon icon={faPlus} id="createPlus" />
-      </a>
-      <div key="plus-menu" className="dropdown-menu dropdown-menu-right" aria-labelledby="plus-dropdown">
-        {projectDropdown}
-        {issueDropdown}
-        {datasetDropdown}
-      </div>
-    </li>;
+    return <UncontrolledDropdown>
+      <Fragment>
+        <li className="nav-item dropdown">
+          <DropdownToggle className="nav-link" nav caret>
+            <FontAwesomeIcon icon={faPlus} id="createPlus" />
+          </DropdownToggle>
+          <DropdownMenu className="plus-menu" end key="plus-bar" aria-labelledby="plus-menu">
+            {projectDropdown}
+            {issueDropdown}
+            {datasetDropdown}
+          </DropdownMenu>
+        </li>
+      </Fragment>
+    </UncontrolledDropdown>;
   }
 }
 
 function RenkuToolbarHelpMenu(props) {
 
-  return <li className="nav-item dropdown">
-    { /* eslint-disable-next-line */}
-    <a className="nav-link dropdown-toggle" id="help-menu" role="button"
-      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      <FontAwesomeIcon icon={faQuestionCircle} id="helpDropdownToggle" />
-    </a>
-    <div key="help-menu" className="dropdown-menu dropdown-menu-right" aria-labelledby="help-menu">
-      <Link className="dropdown-item" to="/help">Help</Link>
-      <DropdownItem divider />
-      <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/" title="Renku Docs" className="dropdown-item" />
-      <ExternalDocsLink url="https://renku-python.readthedocs.io/en/latest/"
-        title="Renku CLI Docs" className="dropdown-item" />
-      <DropdownItem divider />
-      <ExternalDocsLink url="https://renku.discourse.group" title="Forum" className="dropdown-item" />
-      <ExternalDocsLink url="https://gitter.im/SwissDataScienceCenter/renku" title="Gitter" className="dropdown-item" />
-      <ExternalDocsLink url="https://github.com/SwissDataScienceCenter/renku"
-        title="GitHub" className="dropdown-item" />
-    </div>
-  </li>;
+  return <UncontrolledDropdown>
+    <Fragment>
+      <li className="nav-item dropdown">
+        <DropdownToggle className="nav-link" nav caret>
+          <FontAwesomeIcon icon={faQuestionCircle} id="helpDropdownToggle" />
+        </DropdownToggle>
+        <DropdownMenu className="help-menu" end key="help-bar" aria-labelledby="help-menu">
+          <Link className="dropdown-item" to="/help">Help</Link>
+          <DropdownItem divider />
+          <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/"
+            title="Renku Docs" className="dropdown-item" />
+          <ExternalDocsLink url="https://renku-python.readthedocs.io/en/latest/"
+            title="Renku CLI Docs" className="dropdown-item" />
+          <DropdownItem divider />
+          <ExternalDocsLink url="https://renku.discourse.group" title="Forum" className="dropdown-item" />
+          <ExternalDocsLink url="https://gitter.im/SwissDataScienceCenter/renku"
+            title="Gitter" className="dropdown-item" />
+          <ExternalDocsLink url="https://github.com/SwissDataScienceCenter/renku"
+            title="GitHub" className="dropdown-item" />
+        </DropdownMenu>
+      </li>
+    </Fragment>
+  </UncontrolledDropdown>;
 }
 
 function RenkuToolbarGitLabMenu(props) {
@@ -154,20 +165,23 @@ function RenkuToolbarGitLabMenu(props) {
     return "";
 
   const gitLabUrl = gitLabUrlFromProfileUrl(user.data.web_url);
-  return <li className="nav-item dropdown">
-    { /* eslint-disable-next-line */}
-    <a className="nav-link dropdown-toggle" id="gitLab-menu" role="button"
-      data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-      <FontAwesomeIcon icon={faGitlab} id="gitLabDropdownToggle" />
-    </a>
-    <div key="gitLab-menu" className="dropdown-menu dropdown-menu-right" aria-labelledby="gitLab-menu">
-      <ExternalLink url={gitLabUrl}
-        title="GitLab" className="dropdown-item" role="link" />
-      <ExternalLink url={gitLabSettingsUrlFromProfileUrl(user.data.web_url)}
-        title="Settings" className="dropdown-item" role="link" />
-      <ExternalLink url={user.data.web_url} title="Profile" className="dropdown-item" role="link" />
-    </div>
-  </li>;
+
+  return <UncontrolledDropdown>
+    <Fragment>
+      <li className="nav-item dropdown">
+        <DropdownToggle className="nav-link" nav caret id="gitLab-menu">
+          <FontAwesomeIcon icon={faGitlab} id="gitLabDropdownToggle" />
+        </DropdownToggle>
+        <DropdownMenu className="gitLab-menu" end key="gitLab-bar" aria-labelledby="gitLab-menu">
+          <ExternalLink url={gitLabUrl}
+            title="GitLab" className="dropdown-item" role="link" />
+          <ExternalLink url={gitLabSettingsUrlFromProfileUrl(user.data.web_url)}
+            title="Settings" className="dropdown-item" role="link" />
+          <ExternalLink url={user.data.web_url} title="Profile" className="dropdown-item" role="link" />
+        </DropdownMenu>
+      </li>
+    </Fragment>
+  </UncontrolledDropdown>;
 }
 
 function RenkuToolbarNotifications(props) {
@@ -212,35 +226,40 @@ class LoggedInNavBar extends Component {
   render() {
     return (
       <header>
-        <nav className="navbar navbar-expand-sm navbar-light bg-light justify-content-between">
-          <span className="navbar-brand mr-2">
-            <Link to="/"><img src={logo} alt="Renku" height="24" /></Link>
-          </span>
-          <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span className="navbar-toggler-icon"></span>
-          </button>
-
-          <div className="collapse navbar-collapse flex-wrap" id="navbarSupportedContent">
-            <QuickNav client={this.props.client} model={this.props.model} user={this.props.user} />
-
-            <div className="d-flex flex-grow-1">
-              <ul className="navbar-nav mr-auto">
-                <RenkuNavLink to="/projects" title="Projects" id="link-projects" />
-                <RenkuNavLink to="/datasets" title="Datasets" />
-                <RenkuNavLink to="/environments" title="Environments" />
-              </ul>
-              <ul className="navbar-nav">
+        <Navbar color="primary" className="navbar-dark" expand="lg" >
+          <div className="container">
+            <NavbarBrand href="/" className="mr-auto mt-2 mb-2">
+              {/* The image should be 68 but it looks too big */}
+              <img src={logo} alt="Renku" height="60" />
+            </NavbarBrand>
+            <NavbarToggler onClick={this.toggle} className="border-0">
+              <FontAwesomeIcon icon={faBars} id="userIcon" color="white" />
+            </NavbarToggler>
+            <Collapse isOpen={!this.state.isOpen} navbar>
+              <Nav className="ml-auto" navbar >
+                <NavItem className="pr-3">
+                  <QuickNav client={this.props.client} model={this.props.model} user={this.props.user} />
+                </NavItem>
+                <NavItem>
+                  <RenkuNavLink to="/projects" title="Projects" id="link-projects" className="link-secondary"/>
+                </NavItem>
+                <NavItem>
+                  <RenkuNavLink to="/datasets" title="Datasets" id="link-datasets"/>
+                </NavItem>
+                <NavItem className="mr-3">
+                  <RenkuNavLink to="/environments" title="Environments" id="link-environments"/>
+                </NavItem>
+              </Nav>
+              <div className="navbar-nav d-inline-flex throw-right" style={{ "flex-direction": "row" }}>
                 <RenkuToolbarItemPlus currentPath={this.props.location.pathname} />
                 <RenkuToolbarGitLabMenu user={this.props.user} />
                 <RenkuToolbarHelpMenu />
                 <RenkuToolbarNotifications {...this.props} />
                 <RenkuToolbarItemUser {...this.props} />
-              </ul>
-            </div>
-
+              </div>
+            </Collapse>
           </div>
-        </nav>
+        </Navbar>
       </header>
     );
   }
@@ -253,37 +272,49 @@ class AnonymousNavBar extends Component {
     this.state = {
       isOpen: true
     };
+    this.toggle = this.toggle.bind(this);
+  }
+
+  toggle() {
+    this.setState({
+      isOpen: !this.state.isOpen
+    });
   }
 
   render() {
     return (
       <header>
-        <nav className="navbar navbar-expand-sm navbar-light bg-light justify-content-between">
-          <span className="navbar-brand mr-2">
-            <Link to="/"><img src={logo} alt="Renku" height="24" /></Link>
-          </span>
-          <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span className="navbar-toggler-icon"></span>
-          </button>
-
-          <div className="collapse navbar-collapse flex-wrap" id="navbarSupportedContent">
-            <QuickNav client={this.props.client} model={this.props.model} user={this.props.user} />
-
-            <div className="d-flex flex-grow-1">
-              <ul className="navbar-nav mr-auto">
-                <RenkuNavLink to="/projects" title="Projects" id="link-projects" />
-                <RenkuNavLink to="/datasets" title="Datasets" />
-                <RenkuNavLink to="/environments" title="Environments" />
-              </ul>
-              <ul className="navbar-nav">
+        <Navbar color="primary" className="navbar-dark" expand="lg" >
+          <div className="container">
+            <NavbarBrand href="/" className="pt-1 pb-1">
+              <img src={logo} alt="Renku" height="60" />
+            </NavbarBrand>
+            <NavbarToggler onClick={this.toggle}>
+              <FontAwesomeIcon icon={faBars} id="faBarIcon" color="white" />
+            </NavbarToggler>
+            <Collapse isOpen={!this.state.isOpen} navbar>
+              <Nav className="ml-auto" navbar >
+                <NavItem className="pr-3">
+                  <QuickNav client={this.props.client} model={this.props.model} user={this.props.user} />
+                </NavItem>
+                <NavItem >
+                  <RenkuNavLink to="/projects" title="Projects" id="link-projects" className="link-secondary"/>
+                </NavItem>
+                <NavItem>
+                  <RenkuNavLink to="/datasets" title="Datasets" />
+                </NavItem>
+                <NavItem>
+                  <RenkuNavLink to="/environments" title="Environments" />
+                </NavItem>
+              </Nav>
+              <div className="navbar-nav d-inline-flex throw-right" style={{ "flex-direction": "row" }}>
                 <RenkuToolbarHelpMenu />
                 <RenkuToolbarNotifications {...this.props} />
                 <RenkuToolbarItemUser {...this.props} />
-              </ul>
-            </div>
+              </div>
+            </Collapse>
           </div>
-        </nav>
+        </Navbar>
       </header>
     );
   }

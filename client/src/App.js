@@ -79,7 +79,7 @@ class App extends Component {
         <Route render={props =>
           <RenkuNavBar {...props} {...this.props} notifications={this.notifications} />
         } />
-        <main role="main" className="container-fluid">
+        <main role="main" className="container">
           <div key="gap">&nbsp;</div>
           <Switch>
             <Route exact path="/login" render={

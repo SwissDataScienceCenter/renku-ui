@@ -50,22 +50,22 @@ class QuickNavPresent extends Component {
 
   render () {
     const theme = {
-      container: "input-group",
-      input: "form-control border-primary",
+      container: "input-group nav-input",
+      input: "form-control-sm form-control",
       suggestionsContainer: "searchBarSuggestionsContainer",
       suggestion: { listStyle: "none" }
     };
 
     const inputProps = {
-      placeholder: "Jump to or search...",
+      placeholder: "Search or jump to...",
       type: "search",
       value: this.props.value,
       onChange: this.props.callbacks.onChange
     };
 
     return (
-      <form className="form-inline m-1" onSubmit={this.props.callbacks.onSubmit}>
-        <InputGroup className="flex-nowrap">
+      <div className="form-inline mt-3">
+        <InputGroup>
           <Autosuggest
             suggestions={this.props.suggestions}
             getSuggestionValue={this.props.callbacks.getSuggestionValue}
@@ -78,11 +78,11 @@ class QuickNavPresent extends Component {
             inputProps={inputProps}
             theme={theme}
             renderSuggestion={this.onRenderSuggestion} />
-          <Button outline>
+          <Button size="sm" color="primary">
             <FontAwesomeIcon icon={faSearch} />
           </Button>
         </InputGroup>
-      </form>
+      </div>
     );
   }
 }

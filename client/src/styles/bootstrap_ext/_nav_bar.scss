@@ -1,0 +1,101 @@
+
+// TOP NAV BAR
+
+//Top bar
+
+
+.navbar-dark .navbar-nav .nav-link {
+	color: $rk-light !important;
+	// color: $rk-lighter;
+}
+
+.navbar-nav .nav-link {
+  height: 50px;
+  line-height: 50px;
+}
+
+// .nav-input {
+//   // padding-top: 0;
+//   // padding-bottom: 0;
+// 	height: 50px;
+//   line-height: 50px;
+// } 
+
+
+
+nav.navbar {
+	 > li.nav-item {
+    > a.nav-link {
+
+      // background-color: $nav-pills-underline-bg !important;
+
+      // border-bottom-width: $nav-pills-underline-border-width;
+			border-bottom-width:2px;
+      border-bottom-style: solid;
+      border-bottom-color: transparent;
+    }
+
+    > a.nav-link.active,
+    > a.nav-link.active:hover
+    {
+      text-decoration: none;
+      // color: $nav-pills-underline-border-color;
+      // border-bottom-width: $nav-pills-underline-border-width;
+      border-bottom-style: solid;
+      // border-bottom-color: $nav-pills-underline-border-color;
+    }
+
+    // bg
+    > a.nav-link.active {
+			text-decoration: underline;
+			border-bottom-width:2px;
+      border-bottom-style: solid;
+			border-bottom-color:white;
+      // border-bottom-color: transparent;
+      // background-color: $nav-pills-underline-active-bg !important;
+    }
+
+    // color
+    > a.nav-link:hover
+    {
+				border-bottom-width:2px;
+				border-bottom-style: solid;
+				border-bottom-color:white;
+      // color: $nav-pills-underline-link-hover-color;
+      // border-bottom-color: $nav-pills-underline-link-hover-color;
+      // background-color: $nav-pills-underline-hover-bg !important;
+    }
+  }
+
+
+	///
+	.navbar-brand {
+		padding: 0;
+	}
+	.nav-link {
+		color: white;
+		// margin-top: 0.1rem;
+	}
+	.nav-link{
+		padding: 0.5rem 0.5rem;
+	}
+	.nav-item{
+		color:white;
+		list-style:none;
+	}
+	// .nav-link.active{
+	// 	text-decoration: underline;
+	// }
+	.dropdown-toggle::after { 
+    content: none; 
+  }
+	.btn {
+		color:white;
+		border-color: #ffffff25;
+		border-style:solid;
+		border-width: 1px;
+	}
+	input {
+		opacity: 0.25;
+	}
+}
