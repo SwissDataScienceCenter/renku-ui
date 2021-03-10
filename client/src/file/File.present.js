@@ -19,7 +19,7 @@
 import React, { useState } from "react";
 import NotebookPreview from "@nteract/notebook-render";
 import {
-  Badge, Card, CardHeader, CardBody, CustomInput, Button, ButtonGroup, ListGroup, ListGroupItem
+  Badge, Card, CardHeader, CardBody, Button, ButtonGroup, ListGroup, ListGroupItem, Input
 } from "reactstrap";
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
@@ -345,7 +345,7 @@ function NotebookDisplayForm(props) {
   return <ListGroup key="controls" flush>
     <ListGroupItem>
       <div>
-        <CustomInput type="switch" id="code-visibility-override"
+        <Input type="switch" id="code-visibility-override"
           name="code-visibility-override" label="Override Code Visibility"
           checked={displayMode !== NotebookSourceDisplayMode.DEFAULT}
           onChange={() => { setOverride(displayMode === NotebookSourceDisplayMode.DEFAULT); }} />

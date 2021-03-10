@@ -25,7 +25,6 @@
 
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route } from "react-router-dom";
-import { Jumbotron } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faWrench } from "@fortawesome/free-solid-svg-icons";
 
@@ -45,13 +44,13 @@ class Maintenance extends Component {
         <div>
           <Route component={MaintenanceNavBar} />
           <main role="main" className="container-fluid">
-            <Jumbotron>
+            <section className="jumbotron-header rounded px-3 px-sm-4 py-3 py-sm-5 text-center mb-3">
               <h1 className="text-center text-primary">
                 <FontAwesomeIcon icon={faWrench} /> {headerText} <FontAwesomeIcon icon={faWrench} />
               </h1>
               <br />
               <p className="text-center">{body}</p>
-            </Jumbotron>
+            </section>
           </main>
           <Route component={FooterNavbar} />
         </div>
