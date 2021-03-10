@@ -20,8 +20,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Col, Button, DropdownItem, DropdownMenu, DropdownToggle, Form, FormText, Input, InputGroup,
-  InputGroupButtonDropdown, Nav, NavItem, Row
-} from "reactstrap";
+  Nav, NavItem, Row, ButtonDropdown } from "reactstrap";
 import { faCheck, faSortAmountDown, faSortAmountUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -110,15 +109,19 @@ function SearchInFilter(props) {
 
   return params.section === sectionsMap.all ?
     (
-      <InputGroupButtonDropdown className="input-group-prepend" addonType="append"
-        toggle={toggleDropdownSearchIn} isOpen={dropdownSearchIn} >
-        <DropdownToggle outline caret color="primary" >
-          Filter by: {currentSearchInObject.text}
-        </DropdownToggle>
-        <DropdownMenu>
-          {searchInItems}
-        </DropdownMenu>
-      </InputGroupButtonDropdown>
+      // <InputGroup type="dropdown"
+      //   toggle={toggleDropdownSearchIn} isOpen={dropdownSearchIn} >
+      <Fragment>
+        <ButtonDropdown toggle={toggleDropdownSearchIn} isOpen={dropdownSearchIn}
+          className="input-group-append input-group-prepend m-0">
+          <DropdownToggle outline caret color="primary" >
+            Filter by: {currentSearchInObject.text}
+          </DropdownToggle>
+          <DropdownMenu>
+            {searchInItems}
+          </DropdownMenu>
+        </ButtonDropdown>
+      </Fragment>
     ) :
     null;
 }
@@ -146,15 +149,15 @@ function SearchOrder(props) {
         <FontAwesomeIcon icon={orderingIcon} />
       </Button>
     </div>
-    <InputGroupButtonDropdown addonType="append"
-      toggle={toggleDropdownOrderBy} isOpen={dropdownOrderBy} >
+    <ButtonDropdown toggle={toggleDropdownOrderBy} isOpen={dropdownOrderBy}
+      className="input-group-append m-0">
       <DropdownToggle outline caret color="primary" >
         Order by: {currentOrderMapObject.text}
       </DropdownToggle>
       <DropdownMenu>
         {orderByItems}
       </DropdownMenu>
-    </InputGroupButtonDropdown>
+    </ButtonDropdown>
   </Fragment>;
 }
 

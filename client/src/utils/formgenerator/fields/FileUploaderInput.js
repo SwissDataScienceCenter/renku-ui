@@ -24,7 +24,7 @@
  */
 import React, { useState, useEffect, useRef } from "react";
 import { FormGroup, Table, Button, UncontrolledCollapse,
-  Card, CardBody, Input, InputGroup, InputGroupAddon, Progress } from "reactstrap";
+  Card, CardBody, Input, InputGroup, Progress } from "reactstrap";
 import { Link } from "react-router-dom";
 import ValidationAlert from "./ValidationAlert";
 import HelpText from "./HelpText";
@@ -667,11 +667,9 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
                     onChange={e => onUrlInputChange(e)}
                     value={urlInputValue}
                   />
-                  <InputGroupAddon addonType="append">
-                    <Button color="primary" id="addFileButton" onClick={e=>onUrlInputEnter(e)}>
-                      Add File from URL
-                    </Button>
-                  </InputGroupAddon>
+                  <Button color="primary" id="addFileButton" onClick={e=>onUrlInputEnter(e)}>
+                    Add File from URL
+                  </Button>
                 </InputGroup>
               </td>
             </tr>

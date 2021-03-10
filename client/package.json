@@ -45,7 +45,7 @@
     "react-router-dom": "^5.1.2",
     "react-sticky": "^6.0.3",
     "react-toastify": "^6.0.8",
-    "reactstrap": "^8.1.1",
+    "reactstrap": "github:SwissDataScienceCenter/reactstrap#npm-bs5-link",
     "redux": "^4.0.4",
     "redux-thunk": "^2.2.0",
     "sass": "^1.23.7",

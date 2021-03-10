@@ -11,7 +11,11 @@ COPY src /app/src/
 
 ENV NODE_OPTIONS="--max-old-space-size=4096"
 
-RUN npm install --silent && \
+# Delete this after reactstrap is released
+RUN apk update && apk upgrade && \
+    apk add --no-cache git
+
+RUN npm install && \
     npm run-script build
 
 FROM nginxinc/nginx-unprivileged:1.14-alpine

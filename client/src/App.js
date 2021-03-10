@@ -24,7 +24,6 @@
  */
 
 import React, { Component, Fragment } from "react";
-import { Jumbotron } from "reactstrap";
 import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
@@ -65,10 +64,10 @@ class App extends Component {
     const { user } = this.props;
     if (!user.fetched && user.fetching) {
       return (
-        <Jumbotron className="bg-white">
+        <section className="jumbotron-header rounded px-3 px-sm-4 py-3 py-sm-5 text-center mb-3">
           <h3 className="text-center text-primary">Checking user data</h3>
           <Loader />
-        </Jumbotron>
+        </section>
       );
     }
 
