@@ -1,11 +1,49 @@
-// My Bootstrap configuration
-@import 'custom_bootstrap';
+/*
+	SCSS FOLDER STRUCTURE
+	Adapted from https://medium.com/@programmiri/my-favored-scss-setup-with-bootstrap-4-547e9ea290f8
+	Github example: https://github.com/programmiri/brunch-setup-bootstrap4
 
-// Bootstrap library
+ ├──  scss/
+      └── bootstrap/
+          └── _custom_bootstrap.scss
+          └── _custom_bootstrap_variables.scss
+      ├──  bootstrap_ext/
+          └── _button.scss
+      ├──  components/
+          └── _jupyter_notebook.scss
+      ├──  fonts/
+          └── calcuta/
+          └── fonts.scss
+      ├──  _variables.scss
+      ├──  _index.scss
+
+	- bootstrap contains bootstrap configuration files.
+	- botstrap_ext contains files where bootstrap styles are customized and extended.
+		The file should be named as the bootstrap component it's being changed or extended.
+	- components contains custom scss components for the project(like jupyter_notebooks)
+	- views contains styles that are not reusable(specific to a single view like landing page).
+	- variables is a file to place variables that we need and are not in bootsrap.
+	- index should contain only imports of other files. 
+
+	Use npm run watch-css to compile scss files while making changes
+*/
+
+// -------------------       FONTS  -----------------------------
+
+@import './fonts/fonts.scss';
+
+// -------------------       BOOTSTRAP CONFIG  -----------------------------
+
+// @import 'bootstrap/scss/variables';
+@import './bootstrap/custom_bootstrap_variables';
+
 @import 'bootstrap/scss/bootstrap';
+@import './bootstrap/custom_bootstrap';
 
-// Underline pills navigation
-@import 'underline_pill_nav';
+// -------------------       BOOTSTRAP EXT  -----------------------------
 
-// Jupyter notebook styles
-@import 'jupyter_notebook';
+@import './bootstrap_ext/underline_pill_nav';
+
+// -------------------       EVERYTHING ELSE  -----------------------------
+
+@import './components/jupyter_notebook';
