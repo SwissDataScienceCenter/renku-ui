@@ -34,7 +34,6 @@
 
 // -------------------       BOOTSTRAP CONFIG  -----------------------------
 
-// @import 'bootstrap/scss/variables';
 @import './bootstrap/custom_bootstrap_variables';
 
 @import 'bootstrap/scss/bootstrap';
@@ -47,4 +46,5 @@
 
 // -------------------       EVERYTHING ELSE  -----------------------------
 
+@import './components/renku_general';
 @import './components/jupyter_notebook';

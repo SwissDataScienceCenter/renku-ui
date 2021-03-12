@@ -38,7 +38,6 @@ import { getActiveProjectPathWithNamespace, gitLabUrlFromProfileUrl } from "../u
 import QuickNav from "../utils/quicknav";
 import { NotificationsMenu } from "../notifications";
 import { LoginHelper } from "../authentication";
-
 import "./NavBar.css";
 
 
@@ -225,40 +224,45 @@ class LoggedInNavBar extends Component {
   }
   render() {
     return (
-      <header>
-        <Navbar color="primary" className="navbar-dark" expand="lg" >
-          <div className="container">
-            <NavbarBrand href="/" className="mr-auto mt-2 mb-2">
-              {/* The image should be 68 but it looks too big */}
-              <img src={logo} alt="Renku" height="60" />
-            </NavbarBrand>
-            <NavbarToggler onClick={this.toggle} className="border-0">
-              <FontAwesomeIcon icon={faBars} id="userIcon" color="white" />
-            </NavbarToggler>
-            <Collapse isOpen={!this.state.isOpen} navbar>
-              <Nav className="ml-auto" navbar >
-                <NavItem className="pr-3">
-                  <QuickNav client={this.props.client} model={this.props.model} user={this.props.user} />
-                </NavItem>
-                <NavItem>
-                  <RenkuNavLink to="/projects" title="Projects" id="link-projects" className="link-secondary"/>
-                </NavItem>
-                <NavItem>
-                  <RenkuNavLink to="/datasets" title="Datasets" id="link-datasets"/>
-                </NavItem>
-                <NavItem className="mr-3">
-                  <RenkuNavLink to="/environments" title="Environments" id="link-environments"/>
-                </NavItem>
-              </Nav>
-              <div className="navbar-nav d-inline-flex throw-right" style={{ "flex-direction": "row" }}>
+      <header className="navbar navbar-expand-lg navbar-dark rk-navbar p-0">
+        <Navbar color="primary" className="container-xxl flex-wrap flex-lg-nowrap">
+          <NavbarBrand href="/" className="navbar-brand me-2 pb-0 pt-0">
+            <img src={logo} alt="Renku" height="68" className="d-block my-1"/>
+          </NavbarBrand>
+          <NavbarToggler onClick={this.toggle} className="border-0">
+            <FontAwesomeIcon icon={faBars} id="userIcon" color="white" />
+          </NavbarToggler>
+          <Collapse isOpen={!this.state.isOpen} navbar>
+            <Nav className="navbar-nav flex-row flex-wrap ms-lg-auto">
+              <NavItem className="nav-item col-6 col-lg-auto" style={{ "padding-right": "0.5rem" }}>
+                <QuickNav client={this.props.client} model={this.props.model} user={this.props.user} />
+              </NavItem>
+              <NavItem className="nav-item col-6 col-lg-auto">
+                <RenkuNavLink to="/projects" title="Projects" id="link-projects" className="link-secondary"/>
+              </NavItem>
+              <NavItem className="nav-item col-6 col-lg-auto">
+                <RenkuNavLink to="/datasets" title="Datasets" id="link-datasets"/>
+              </NavItem>
+              <NavItem className="nav-item col-6 col-lg-auto">
+                <RenkuNavLink to="/environments" title="Environments" id="link-environments"/>
+              </NavItem>
+              <NavItem className="nav-item col-1 col-lg-auto">
                 <RenkuToolbarItemPlus currentPath={this.props.location.pathname} />
+              </NavItem>
+              <NavItem className="nav-item col-1 col-lg-auto">
                 <RenkuToolbarGitLabMenu user={this.props.user} />
+              </NavItem>
+              <NavItem className="nav-item col-1 col-lg-auto">
                 <RenkuToolbarHelpMenu />
+              </NavItem>
+              <NavItem className="nav-item col-1 col-lg-auto">
                 <RenkuToolbarNotifications {...this.props} />
+              </NavItem>
+              <NavItem className="nav-item col-1 col-lg-auto">
                 <RenkuToolbarItemUser {...this.props} />
-              </div>
-            </Collapse>
-          </div>
+              </NavItem>
+            </Nav>
+          </Collapse>
         </Navbar>
       </header>
     );
@@ -283,37 +287,39 @@ class AnonymousNavBar extends Component {
 
   render() {
     return (
-      <header>
-        <Navbar color="primary" className="navbar-dark" expand="lg" >
-          <div className="container">
-            <NavbarBrand href="/" className="pt-1 pb-1">
-              <img src={logo} alt="Renku" height="60" />
-            </NavbarBrand>
-            <NavbarToggler onClick={this.toggle}>
-              <FontAwesomeIcon icon={faBars} id="faBarIcon" color="white" />
-            </NavbarToggler>
-            <Collapse isOpen={!this.state.isOpen} navbar>
-              <Nav className="ml-auto" navbar >
-                <NavItem className="pr-3">
-                  <QuickNav client={this.props.client} model={this.props.model} user={this.props.user} />
-                </NavItem>
-                <NavItem >
-                  <RenkuNavLink to="/projects" title="Projects" id="link-projects" className="link-secondary"/>
-                </NavItem>
-                <NavItem>
-                  <RenkuNavLink to="/datasets" title="Datasets" />
-                </NavItem>
-                <NavItem>
-                  <RenkuNavLink to="/environments" title="Environments" />
-                </NavItem>
-              </Nav>
-              <div className="navbar-nav d-inline-flex throw-right" style={{ "flex-direction": "row" }}>
+      <header className="navbar navbar-expand-lg navbar-dark rk-navbar p-0">
+        <Navbar color="primary" className="container-xxl flex-wrap flex-lg-nowrap">
+          <NavbarBrand href="/" className="navbar-brand me-2 pb-0 pt-0">
+            <img src={logo} alt="Renku" height="68" className="d-block my-1"/>
+          </NavbarBrand>
+          <NavbarToggler onClick={this.toggle} className="border-0">
+            <FontAwesomeIcon icon={faBars} id="userIcon" color="white" />
+          </NavbarToggler>
+          <Collapse isOpen={!this.state.isOpen} navbar>
+            <Nav className="navbar-nav flex-row flex-wrap ms-lg-auto">
+              <NavItem className="nav-item col-6 col-lg-auto" style={{ "padding-right": "0.5rem" }}>
+                <QuickNav client={this.props.client} model={this.props.model} user={this.props.user} />
+              </NavItem>
+              <NavItem className="nav-item col-6 col-lg-auto">
+                <RenkuNavLink to="/projects" title="Projects" id="link-projects" className="link-secondary"/>
+              </NavItem>
+              <NavItem className="nav-item col-6 col-lg-auto">
+                <RenkuNavLink to="/datasets" title="Datasets" id="link-datasets"/>
+              </NavItem>
+              <NavItem className="nav-item col-6 col-lg-auto">
+                <RenkuNavLink to="/environments" title="Environments" id="link-environments"/>
+              </NavItem>
+              <NavItem className="nav-item col-1 col-lg-auto">
                 <RenkuToolbarHelpMenu />
+              </NavItem>
+              <NavItem className="nav-item col-1 col-lg-auto">
                 <RenkuToolbarNotifications {...this.props} />
+              </NavItem>
+              <NavItem className="nav-item col-1 col-lg-auto">
                 <RenkuToolbarItemUser {...this.props} />
-              </div>
-            </Collapse>
-          </div>
+              </NavItem>
+            </Nav>
+          </Collapse>
         </Navbar>
       </header>
     );
