@@ -33,7 +33,7 @@
     "popper.js": "^1.16.0",
     "query-string": "^6.8.3",
     "react": "^16.11.0",
-    "react-autosuggest": "^10.0.0",
+    "react-autosuggest": "^10.1.0",
     "react-clipboard.js": "^2.0.16",
     "react-collapse": "^5.0.0",
     "react-cookie-consent": "^5.1.2",
