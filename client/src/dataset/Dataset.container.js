@@ -67,8 +67,7 @@ export default function ShowDataset(props) {
     if (datasetKg === undefined && ((dataset && dataset.identifier && props.graphStatus)
       || (props.identifier !== undefined))) {
       const id = props.insideProject ? dataset.identifier : props.identifier;
-      props.client
-        .fetchDatasetFromKG(props.client.baseUrl.replace("api", "knowledge-graph/datasets/") + id)
+      props.client.fetchDatasetFromKG(id)
         .then((datasetInfo) => {
           if (!unmounted && datasetKg === undefined && datasetInfo !== undefined)
             setDatasetKg(datasetInfo);

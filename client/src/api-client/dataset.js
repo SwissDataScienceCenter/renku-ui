@@ -1,7 +1,7 @@
 export default function addDatasetMethods(client) {
 
   client.searchDatasets = (queryParams = { query: "" }) => {
-    const url = `${client.baseUrl.replace("/api", "")}/knowledge-graph/datasets`;
+    const url = `${client.baseUrl}/kg/datasets`;
     const headers = client.getBasicHeaders();
 
     return client.clientFetch(url, {

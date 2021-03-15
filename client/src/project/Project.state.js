@@ -269,7 +269,7 @@ class ProjectModel extends StateModel {
   fetchProjectDatasetsFromKg(client) { //from KG
     if (this.get("core.datasets_kg") === SpecialPropVal.UPDATING) return;
     this.setUpdating({ core: { datasets_kg: true } });
-    return client.getProjectDatasetsFromKG_short(this.get("core.path_with_namespace"))
+    return client.getProjectDatasetsFromKG(this.get("core.path_with_namespace"))
       .then(datasets => {
         const updatedState = { datasets_kg: { $set: datasets }, transient: { requests: { datasets_kg: false } } };
         this.setObject({ core: updatedState });
