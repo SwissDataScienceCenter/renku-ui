@@ -14,6 +14,9 @@ charts:
         # Dockerfile path relative to chartpress.yaml
         dockerfilePath: client/Dockerfile
         valuesPath: image
+        paths:
+          - client
+          - helm-chart
   - name: helm-chart/renku-ui-server
     resetTag: latest
     imagePrefix: renku/
@@ -29,3 +32,6 @@ charts:
         # Dockerfile path relative to chartpress.yaml
         dockerfilePath: server/Dockerfile
         valuesPath: image
+        paths:
+          - server
+          - helm-chart
