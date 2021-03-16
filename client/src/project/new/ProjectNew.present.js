@@ -465,7 +465,7 @@ class Visibility extends Component {
     else {
       const options = meta.namespace.visibilities.map(v => <option key={v} value={v}>{capitalize(v)}</option>);
       main = (
-        <Input id="visibility" type="select" placeholder="Choose visibility..."
+        <Input id="visibility" type="select" placeholder="Choose visibility..." className="custom-select"
           value={input.visibility} feedback={error} invalid={error && !input.visibilityPristine}
           onChange={(e) => handlers.setProperty("visibility", e.target.value)} >
           <option key="" value="" disabled>Choose visibility...</option>
@@ -657,7 +657,7 @@ class Template extends Component {
         <option key={t.id} value={t.id}>{`${t.parentRepo} / ${t.name}`}</option>)
       );
       main = (
-        <Input id="template" type="select" placeholder="Select template..."
+        <Input id="template" type="select" placeholder="Select template..." className="custom-select"
           value={input.template} feedback={error} invalid={invalid}
           onChange={(e) => handlers.setProperty("template", e.target.value)} >
           <option key="" value="" disabled>Select a template...</option>
