@@ -34,9 +34,9 @@ function register(app: express.Application) : void {
     res.send( "live" );
   } );
 
-  // requests through the gateway are routed to /ui/
-  app.get( "/ui/", ( req, res ) => {
-    res.send( "Hello ui!" );
+  // define a route handler for the ingress entry point
+  app.get( "/ui-server", ( req, res ) => {
+    res.send( "Hello ingress!" );
   } );
 }
 
