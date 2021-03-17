@@ -19,7 +19,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  Col, Button, DropdownItem, DropdownMenu, DropdownToggle, Form, FormText, Input, InputGroup,
+  Col, Button, DropdownItem, DropdownMenu, DropdownToggle, Form, Input, InputGroup,
   Nav, NavItem, Row, ButtonDropdown } from "reactstrap";
 import { faCheck, faSortAmountDown, faSortAmountUp, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -244,7 +244,9 @@ function ProjectListUsersFilter(props) {
   }
 
   const list = usersList ?
-    (<div>{usersList}</div>) :
+    (<Col className="d-flex justify-content-center justify-content-lg-start">
+      {usersList}
+    </Col>) :
     null;
 
   return (list);
@@ -326,8 +328,7 @@ function ProjectListContent(props) {
 function ProjectListNav(props) {
   const { getPreciseUrl, sectionsMap } = props;
   return (
-    <Col className="d-flex justify-content-lg-between
-      justify-content-md-center justify-content-sm-center pb-2" md={12} lg={5}>
+    <Col className="d-flex pb-2 justify-content-evenly justify-content-lg-between" md={12} lg={5}>
       <Nav pills className="nav-pills-underline" size="sm">
         <NavItem>
           <RenkuNavLink title="Your Projects" id="link-projects-your"
