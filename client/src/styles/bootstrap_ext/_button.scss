@@ -1,0 +1,27 @@
+.btn-secondary, .btn-info, .btn-warning {
+	color: $rk-white;
+}
+.btn-secondary:hover, .btn-info:hover, .btn-warning:hover {
+	color: $rk-white;
+}
+.btn-secondary:active, .btn-info:active, .btn-warning:active {
+	color: $rk-white;
+}
+.btn-secondary:focus, .btn-info:focus, .btn-warning:focus {
+	color: $rk-white;
+}
+
+.btn-rk-white{
+	border-color: $rk-light !important;
+	color:$rk-text !important;
+}
+
+.btn-rk-white:hover{
+	background-color:$rk-background;
+	border-width: 2px;
+}
+
+.btn-rk-white.active{
+	border-width: 2px;
+	background-color:$rk-background;
+}
