@@ -22,6 +22,10 @@
 .. image:: https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg?style=flat-square
     :alt: Conventional Commits
     :target: https://conventionalcommits.org
+    
+.. image:: https://img.shields.io/github/tag/SwissDataScienceCenter/renku-ui.svg
+    :alt: Release
+    :target: https://github.com/SwissDataScienceCenter/renku-ui/releases
    
 .. image:: https://pullreminders.com/badge.svg
     :target: https://pullreminders.com?ref=badge
