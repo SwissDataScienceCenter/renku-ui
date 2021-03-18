@@ -15,15 +15,22 @@
   See the License for the specific language governing permissions and
   limitations under the License.
   
+.. image:: https://github.com/SwissDataScienceCenter/renku-ui/workflows/Test%20and%20CI/badge.svg
+    :target: https://github.com/SwissDataScienceCenter/renku-ui/actions?query=branch%3Amaster+workflow%3A%22Test+and+CI%22
+    :alt: Test and CI
+   
+.. image:: https://img.shields.io/badge/Conventional%20Commits-1.0.0-yellow.svg?style=flat-square
+    :alt: Conventional Commits
+    :target: https://conventionalcommits.org
+    
+.. image:: https://img.shields.io/github/tag/SwissDataScienceCenter/renku-ui.svg
+    :alt: Release
+    :target: https://github.com/SwissDataScienceCenter/renku-ui/releases
+   
 .. image:: https://pullreminders.com/badge.svg
     :target: https://pullreminders.com?ref=badge
     :alt: Pull reminders
     :align: right
-
-.. image:: https://github.com/SwissDataScienceCenter/renku-ui/actions?query=branch%3Amaster+workflow%3A%22Test+and+CI%22
-   :target: https://github.com/SwissDataScienceCenter/renku-ui/workflows/Test%20and%20CI/badge.svg
-   :alt: Test and CI
-   :align: right
 
 ================
  Renku-UI
