@@ -12,16 +12,26 @@
 }
 
 .btn-rk-white{
-	border-color: $rk-light !important;
-	color:$rk-text !important;
+	border-color: $rk-light ;
+	color:$rk-text;
 }
 
 .btn-rk-white:hover{
-	background-color:$rk-background;
-	border-width: 2px;
+	border-color: $rk-light;
+	color:$rk-text;
+}
+
+.btn-rk-white:focus{
+	border-color: $rk-light;
+	color:$rk-text;
+}
+
+.btn-rk-white:active{
+	border-color: $rk-light;
+	color:$rk-text;
 }
 
 .btn-rk-white.active{
-	border-width: 2px;
-	background-color:$rk-background;
+	border-color: $rk-light;
+		color:$rk-text;
 }

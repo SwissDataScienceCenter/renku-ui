@@ -143,13 +143,13 @@ function SearchOrder(props) {
   ));
 
   return <Fragment>
-    <Col className="col-auto">
-      <Label>
-        Order by:&nbsp;&nbsp;
+    <Col className="col-auto ms-2">
+      <Label className="text-rk-text">
+        Order by:&nbsp;
       </Label>
       <Fragment>
         <ButtonDropdown toggle={toggleDropdownOrderBy} isOpen={dropdownOrderBy}>
-          <DropdownToggle caret color="rk-white">
+          <DropdownToggle caret color="rk-light" >
             {currentOrderMapObject.text}
           </DropdownToggle>
           <DropdownMenu>
@@ -191,19 +191,22 @@ function ProjectListSearch(props) {
     (<ProjectListNav key="navbar" getPreciseUrl={props.getPreciseUrl} sectionsMap={props.sectionsMap} />) :
     null;
 
+  const navBarJustify = props.loggedIn ?
+    "row row-cols-lg-auto justify-content-lg-end justify-content-md-center g-1"
+    : "row row-cols-lg-auto justify-content-start g-1";
+
   return (
     <Row className="justify-content-lg-between justify-content-md-center pb-2">
       {navBar}
       <Col md={12} lg={7} className="pb-2">
         <Form inline onSubmit={e => { e.preventDefault(); searchWithValues(); }}
-          className="row row-cols-lg-auto justify-content-lg-end justify-content-md-center  g-1"
+          className={navBarJustify}
           size="sm">
           <Col className="col-auto">
             <InputGroup>
               <Input name="searchQuery" id="searchQuery"
-                // className="border-light"
                 className="border-light text-rk-text"
-                placeholder={"Filter by... "} value={userInput}
+                placeholder={"Search... "} value={userInput}
                 onChange={e => setUserInput(e.target.value.toString())} />
               <SearchInFilter loggedIn={loggedIn} params={params} sectionsMap={sectionsMap} searchInMap={searchInMap}
                 searchWithValues={searchWithValues} currentSearchInObject={currentSearchInObject} />
@@ -234,8 +237,8 @@ function ProjectListUsersFilter(props) {
         true :
         false;
       return (
-        <Button key={u.id} className="mb-1 me-1" color="rk-white" size="sm"
-          onClick={() => { setTarget(identifier); }} active={active}>
+        <Button key={u.id} className="mb-1 me-1 d-inline-block" color="rk-white" size="sm"
+          onClick={() => { setTarget(identifier); }} active={active} >
           { u.name}
           <small className="font-italic d-none d-sm-block">{decodeURIComponent(identifier)}</small>
         </Button>
@@ -244,9 +247,10 @@ function ProjectListUsersFilter(props) {
   }
 
   const list = usersList ?
-    (<Col className="d-flex justify-content-center justify-content-lg-start">
+    (<Col className="d-flex flex-col flex-wrap justify-content-center justify-content-lg-start rk-button-group">
       {usersList}
-    </Col>) :
+    </Col>
+    ) :
     null;
 
   return (list);
@@ -308,7 +312,7 @@ function ProjectListContent(props) {
 
   return (
     <div>
-      <div className="pb-4">
+      <div className="pb-4 rk-search-bar">
         <ProjectListSearch
           loggedIn={loggedIn}
           orderByMap={orderByMap}
@@ -328,7 +332,7 @@ function ProjectListContent(props) {
 function ProjectListNav(props) {
   const { getPreciseUrl, sectionsMap } = props;
   return (
-    <Col className="d-flex pb-2 justify-content-evenly justify-content-lg-between" md={12} lg={5}>
+    <Col className="d-flex pb-2 mb-1 justify-content-evenly justify-content-lg-between" md={12} lg={5}>
       <Nav pills className="nav-pills-underline" size="sm">
         <NavItem>
           <RenkuNavLink title="Your Projects" id="link-projects-your"
