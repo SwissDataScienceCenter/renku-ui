@@ -54,7 +54,7 @@
 }
 
 .react-autosuggest__suggestion--highlighted, .react-autosuggest__suggestion span.highlighted {
-  background-color: #ddd;
+  background-color: #e4e7ea;
 }
 
 .react-autosuggest__section-container {

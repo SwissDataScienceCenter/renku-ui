@@ -25,7 +25,7 @@
 
 import React from "react";
 import { Link } from "react-router-dom";
-import { Row, Col, Container } from "reactstrap";
+import { Row, Col } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 
@@ -77,16 +77,14 @@ const NamespaceProjects = (props) => {
   }
 
   return (
-    <Container fluid>
-      <Row>
-        <Col>
-          <h3>{userOrGroup} {props.namespace}</h3>
-          <div>&nbsp;</div>
-          {checking}
-          {outcome}
-        </Col>
-      </Row>
-    </Container>
+    <Row>
+      <Col>
+        <h3>{userOrGroup} {props.namespace}</h3>
+        <div>&nbsp;</div>
+        {checking}
+        {outcome}
+      </Col>
+    </Row>
   );
 };
 
