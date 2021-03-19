@@ -73,13 +73,14 @@
   color: rgba(0, 0, 0, 0.5)
 }
 
-.notification-menu {
+/* .notification-menu {
   width: 250px;
 }
+*/
 
 .notification-menu > a {
   text-decoration: none;
-}
+} 
 
 .notification-list-container {
   padding: 0;

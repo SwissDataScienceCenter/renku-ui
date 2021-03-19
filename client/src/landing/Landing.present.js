@@ -160,7 +160,7 @@ class RenkuProvidesHeader extends Component {
 
 class AnonymousHome extends Component {
   render() {
-    return <div className="container">
+    return <div>
       <Row key="marquee">
         <Col>
           <section className="jumbotron-header rounded px-3 px-sm-4 py-3 py-sm-5 text-center mb-3">

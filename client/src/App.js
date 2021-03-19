@@ -26,6 +26,7 @@
 import React, { Component, Fragment } from "react";
 import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import { Container } from "reactstrap";
 
 import Project from "./project/Project";
 import { ProjectList } from "./project/list";
@@ -79,8 +80,7 @@ class App extends Component {
         <Route render={props =>
           <RenkuNavBar {...props} {...this.props} notifications={this.notifications} />
         } />
-        <main role="main" className="container-fluid">
-          <div key="gap">&nbsp;</div>
+        <Container className="container renku-container pt-4">
           <Switch>
             <Route exact path="/login" render={
               p => <Login key="login" {...p} {...this.props} />} />
@@ -172,7 +172,7 @@ class App extends Component {
             />
             <Route path="*" render={p => <NotFound {...p} />} />
           </Switch>
-        </main>
+        </Container>
         <Route render={props => <FooterNavbar {...props} params={this.props.params} />} />
         <Route render={props => <Cookie {...props} params={this.props.params} />} />
         <ToastContainer />

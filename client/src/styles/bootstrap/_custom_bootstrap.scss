@@ -2,11 +2,8 @@ $colors: map-merge($colors,$rk-colors);
 $theme-colors: map-merge($theme-colors, $rk-colors);
 
 html {
-//	font-size: 14px;
-	// font-size: 0.90rem;
 	height:95%;
 }
 body { 
 	 height: 95%;
 }
-

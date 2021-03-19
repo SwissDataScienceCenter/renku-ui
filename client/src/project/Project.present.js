@@ -27,7 +27,7 @@
 import React, { Component, Fragment, useState, useEffect } from "react";
 import { Link, Route, Switch } from "react-router-dom";
 import {
-  Alert, Button, ButtonGroup, Card, CardBody, CardHeader, Col, Container, DropdownItem, Form, FormGroup,
+  Alert, Button, ButtonGroup, Card, CardBody, CardHeader, Col, DropdownItem, Form, FormGroup,
   FormText, Input, Label, Row, Table, Nav, NavItem, UncontrolledTooltip, Modal
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -270,58 +270,56 @@ class ProjectViewHeaderOverview extends Component {
     const gitlabIDEUrl = this.props.externalUrl !== "" && this.props.externalUrl.includes("/gitlab/") ?
       this.props.externalUrl.replace("/gitlab/", "/gitlab/-/ide/project/") : null;
     return (
-      <Container fluid>
-        <Row>
-          <Col xs={12} md>
-            <h3>
-              <ProjectStatusIcon
+      <Row>
+        <Col xs={12} md>
+          <h3>
+            <ProjectStatusIcon
+              history={this.props.history}
+              webhook={this.props.webhook}
+              overviewStatusUrl={this.props.overviewStatusUrl}
+              migration_required={this.props.migration.migration_required}
+              template_update_possible={this.props.migration.template_update_possible}
+              docker_update_possible={this.props.migration.docker_update_possible}
+            />{core.title} <ProjectVisibilityLabel visibilityLevel={this.props.visibility.level} />
+          </h3>
+          <p>
+            <span>{this.props.core.path_with_namespace}{forkedFrom}</span> <br />
+          </p>
+        </Col>
+        <Col xs={12} md="auto">
+          <div className="d-flex mb-2">
+            <ButtonGroup size="sm">
+              <ForkProjectModal
+                client={this.props.client}
                 history={this.props.history}
-                webhook={this.props.webhook}
-                overviewStatusUrl={this.props.overviewStatusUrl}
-                migration_required={this.props.migration.migration_required}
-                template_update_possible={this.props.migration.template_update_possible}
-                docker_update_possible={this.props.migration.docker_update_possible}
-              />{core.title} <ProjectVisibilityLabel visibilityLevel={this.props.visibility.level} />
-            </h3>
-            <p>
-              <span>{this.props.core.path_with_namespace}{forkedFrom}</span> <br />
-            </p>
-          </Col>
-          <Col xs={12} md="auto">
-            <div className="d-flex mb-2">
-              <ButtonGroup size="sm">
-                <ForkProjectModal
-                  client={this.props.client}
-                  history={this.props.history}
-                  model={this.props.model}
-                  notifications={this.props.notifications}
-                  title={this.props.core && this.props.core.title ? this.props.core.title : ""}
-                  id={this.props.core && this.props.core.id ? this.props.core.id : 0}
-                />
-                <Button outline color="primary"
-                  href={`${this.props.externalUrl}/forks`} target="_blank" rel="noreferrer noopener">
-                  {system.forks_count}
-                </Button>
-              </ButtonGroup>
-              <ButtonGroup size="sm" className="ml-1">
-                <Button outline color="primary"
-                  disabled={this.state.updating_star}
-                  onClick={this.star.bind(this)}>
-                  {starElement} {starText}
-                </Button>
-                <Button outline color="primary" style={{ cursor: "default" }}>{system.star_count}</Button>
-              </ButtonGroup>
-            </div>
+                model={this.props.model}
+                notifications={this.props.notifications}
+                title={this.props.core && this.props.core.title ? this.props.core.title : ""}
+                id={this.props.core && this.props.core.id ? this.props.core.id : 0}
+              />
+              <Button outline color="primary"
+                href={`${this.props.externalUrl}/forks`} target="_blank" rel="noreferrer noopener">
+                {system.forks_count}
+              </Button>
+            </ButtonGroup>
+            <ButtonGroup size="sm" className="ml-1">
+              <Button outline color="primary"
+                disabled={this.state.updating_star}
+                onClick={this.star.bind(this)}>
+                {starElement} {starText}
+              </Button>
+              <Button outline color="primary" style={{ cursor: "default" }}>{system.star_count}</Button>
+            </ButtonGroup>
+          </div>
 
-            <div className="d-flex flex-md-row-reverse mb-2">
-              <GitLabConnectButton size="sm"
-                externalUrl={this.props.externalUrl}
-                gitlabIDEUrl={gitlabIDEUrl}
-                userLogged={this.props.user.logged} />
-            </div>
-          </Col>
-        </Row>
-      </Container>
+          <div className="d-flex flex-md-row-reverse mb-2">
+            <GitLabConnectButton size="sm"
+              externalUrl={this.props.externalUrl}
+              gitlabIDEUrl={gitlabIDEUrl}
+              userLogged={this.props.user.logged} />
+          </div>
+        </Col>
+      </Row>
     );
   }
 }
@@ -1260,14 +1258,12 @@ class ProjectViewLoading extends Component {
     const info = this.props.projectId ?
       <h3>Identifying project number {this.props.projectId}...</h3> :
       <h3>Loading project {this.props.projectPathWithNamespace}...</h3>;
-    return <Container fluid>
-      <Row>
-        <Col>
-          {info}
-          <Loader />
-        </Col>
-      </Row>
-    </Container>;
+    return <Row>
+      <Col>
+        {info}
+        <Loader />
+      </Col>
+    </Row>;
   }
 }
 
@@ -1324,27 +1320,25 @@ class ProjectView extends Component {
       <Row key="header"><Col xs={12}><ProjectViewHeader key="header" {...this.props} /></Col></Row>,
       <Row key="nav"><Col xs={12}><ProjectNav key="nav" {...this.props} /></Col></Row>,
       <Row key="space"><Col key="space" xs={12}>&nbsp;</Col></Row>,
-      <Container key="content" fluid>
-        <Row>
-          <Switch>
-            <Route exact path={this.props.baseUrl}
-              render={props => <ProjectViewOverview key="overview" {...this.props} />} />
-            <Route path={this.props.overviewUrl}
-              render={props => <ProjectViewOverview key="overview" {...this.props} />} />
-            <Route path={this.props.collaborationUrl}
-              render={props => <ProjectViewCollaboration key="collaboration" {...this.props} />} />
-            <Route path={this.props.filesUrl}
-              render={props => <ProjectViewFiles key="files" {...this.props} />} />
-            <Route path={this.props.datasetsUrl}
-              render={props => <ProjectViewDatasets key="datasets" {...this.props} />} />
-            <Route path={this.props.settingsUrl}
-              render={props => <ProjectSettings key="settings" {...this.props} />} />
-            <Route path={this.props.notebookServersUrl}
-              render={props => <ProjectEnvironments key="environments" {...this.props} />} />
-            <Route component={NotFoundInsideProject} />
-          </Switch>
-        </Row>
-      </Container>
+      <Row key="content">
+        <Switch>
+          <Route exact path={this.props.baseUrl}
+            render={props => <ProjectViewOverview key="overview" {...this.props} />} />
+          <Route path={this.props.overviewUrl}
+            render={props => <ProjectViewOverview key="overview" {...this.props} />} />
+          <Route path={this.props.collaborationUrl}
+            render={props => <ProjectViewCollaboration key="collaboration" {...this.props} />} />
+          <Route path={this.props.filesUrl}
+            render={props => <ProjectViewFiles key="files" {...this.props} />} />
+          <Route path={this.props.datasetsUrl}
+            render={props => <ProjectViewDatasets key="datasets" {...this.props} />} />
+          <Route path={this.props.settingsUrl}
+            render={props => <ProjectSettings key="settings" {...this.props} />} />
+          <Route path={this.props.notebookServersUrl}
+            render={props => <ProjectEnvironments key="environments" {...this.props} />} />
+          <Route component={NotFoundInsideProject} />
+        </Switch>
+      </Row>
     ];
 
   }

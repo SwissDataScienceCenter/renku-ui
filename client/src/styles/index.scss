@@ -34,7 +34,6 @@
 
 // -------------------       BOOTSTRAP CONFIG  -----------------------------
 
-// @import 'bootstrap/scss/variables';
 @import './bootstrap/custom_bootstrap_variables';
 
 @import 'bootstrap/scss/bootstrap';
@@ -42,8 +41,10 @@
 
 // -------------------       BOOTSTRAP EXT  -----------------------------
 
+@import './bootstrap_ext/nav_bar';
 @import './bootstrap_ext/underline_pill_nav';
 
 // -------------------       EVERYTHING ELSE  -----------------------------
 
+@import './components/renku_general';
 @import './components/jupyter_notebook';
