@@ -24,8 +24,6 @@
   width: 100%;
   border: 1px solid #aaa;
   background-color: #fff;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
   z-index: 2;
   max-height: 560px;
   overflow-y: auto;
@@ -80,11 +78,18 @@ svg.no-pointer {
   line-height: 1.5;
   color: #495057;
   vertical-align: middle;
-  background: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3e%3cpath fill='%23343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/%3e%3c/svg%3e") no-repeat right 0.75rem center/8px 10px;
   background-color: #fff;
   border: 1px solid #ced4da;
-  border-radius: 0.25rem;
   -webkit-appearance: none;
      -moz-appearance: none;
           appearance: none;
+}
+
+.react-autosuggest__container > input:focus{
+  box-shadow: none;
+}
+
+.react-autosuggest__container > input::-ms-clear{
+  display: none !important;
+  content: none !important;
 }
