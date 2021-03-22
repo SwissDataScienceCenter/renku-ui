@@ -76,6 +76,7 @@ class RenkuToolbarItemUser extends Component {
 
     return (
       <li className="nav-item dropdown">
+        { /* eslint-disable-next-line */ }
         <a key="button" className="nav-link dropdown-toggle" id="profile-dropdown" role="button"
           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           {this.props.userAvatar}
