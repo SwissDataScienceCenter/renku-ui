@@ -44,14 +44,15 @@ import "./Notebooks.css";
 
 class NotebooksDisabled extends Component {
   render() {
-    const postLoginUrl = this.props.location ? this.props.location.pathname : null;
-    const to = { "pathname": "/login", "state": { previous: postLoginUrl } };
-    const info = postLoginUrl == null ?
+    const { location } = this.props;
+
+    const to = Url.get(Url.pages.login.link, { pathname: location.pathname });
+    const info = !location ?
       null :
       (
         <InfoAlert timeout={0} key="login-info">
           <p className="mb-0">
-            <Link className="btn btn-primary btn-sm" to={to} previous={postLoginUrl}>Log in</Link> to use
+            <Link className="btn btn-primary btn-sm" to={to}>Log in</Link> to use
             interactive environments.
           </p>
         </InfoAlert>

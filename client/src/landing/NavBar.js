@@ -35,6 +35,7 @@ import logo from "./logo.svg";
 import { ExternalDocsLink, ExternalLink, Loader, RenkuNavLink, UserAvatar } from "../utils/UIComponents";
 import { getActiveProjectPathWithNamespace, gitLabUrlFromProfileUrl } from "../utils/HelperFunctions";
 import QuickNav from "../utils/quicknav";
+import { Url } from "../utils/url";
 import { NotificationsMenu } from "../notifications";
 import { LoginHelper } from "../authentication";
 
@@ -62,30 +63,31 @@ function gitLabSettingsUrlFromProfileUrl(webUrl) {
 
 class RenkuToolbarItemUser extends Component {
   render() {
-    const { user } = this.props;
+    const { location, user } = this.props;
     const gatewayURL = this.props.params.GATEWAY_URL;
     const redirect_url = encodeURIComponent(this.props.params.BASE_URL);
-    if (!user.fetched)
+    if (!user.fetched) {
       return <Loader size="16" inline="true" />;
+    }
+    else if (!user.logged) {
+      const to = Url.get(Url.pages.login.link, { pathname: location.pathname });
+      return (<RenkuNavLink to={to} title="Login" />);
+    }
 
-    else if (!user.data.id)
-      return <RenkuNavLink to="/login" title="Login" previous={this.props.location.pathname} />;
-
-
-    return <li className="nav-item dropdown">
-      { /* eslint-disable-next-line */ }
-      <a key="button" className="nav-link dropdown-toggle" id="profile-dropdown" role="button"
-        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        {this.props.userAvatar}
-      </a>
-      <div key="menu" className="dropdown-menu dropdown-menu-right" aria-labelledby="profile-dropdown">
-        <ExternalLink url={`${gatewayURL}/auth/user-profile`} title="Account" className="dropdown-item" role="link" />
-        <DropdownItem divider />
-        <a id="logout-link" className="dropdown-item" onClick={() => { LoginHelper.notifyLogout(); }}
-          href={`${gatewayURL}/auth/logout?redirect_url=${redirect_url}`}>Logout</a>
-      </div>
-    </li>;
-
+    return (
+      <li className="nav-item dropdown">
+        <a key="button" className="nav-link dropdown-toggle" id="profile-dropdown" role="button"
+          data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          {this.props.userAvatar}
+        </a>
+        <div key="menu" className="dropdown-menu dropdown-menu-right" aria-labelledby="profile-dropdown">
+          <ExternalLink url={`${gatewayURL}/auth/user-profile`} title="Account" className="dropdown-item" role="link" />
+          <DropdownItem divider />
+          <a id="logout-link" className="dropdown-item" onClick={() => { LoginHelper.notifyLogout(); }}
+            href={`${gatewayURL}/auth/logout?redirect_url=${redirect_url}`}>Logout</a>
+        </div>
+      </li>
+    );
   }
 }
 

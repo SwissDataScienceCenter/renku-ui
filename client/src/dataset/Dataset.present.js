@@ -31,6 +31,7 @@ import { ProjectsCoordinator } from "../project/shared";
 import AddDataset from "./addtoproject/DatasetAdd.container";
 import DeleteDataset from "../project/datasets/delete/index";
 import Time from "../utils/Time";
+import { Url } from "../utils/url";
 
 
 function DisplayFiles(props) {
@@ -118,9 +119,8 @@ function DatasetError(props) {
   // login helper
   let loginHelper = null;
   if (!logged) {
-    const postLoginUrl = location.pathname;
-    const to = { "pathname": "/login", "state": { previous: postLoginUrl } };
-    const link = (<Link className="btn btn-primary btn-sm" to={to} previous={postLoginUrl}>Log in</Link>);
+    const to = Url.get(Url.pages.login.link, { pathname: location.pathname });
+    const link = (<Link className="btn btn-primary btn-sm" to={to}>Log in</Link>);
     loginHelper = (
       <p className="mb-0">
         <FontAwesomeIcon icon={faInfoCircle} /> You might need to be logged in to see this dataset.

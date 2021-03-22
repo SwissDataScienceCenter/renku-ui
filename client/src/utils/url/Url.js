@@ -159,6 +159,28 @@ function projectPageUrlBuilder(subSection) {
   };
 }
 
+/**
+ * Construct a URL object for a project page.
+ * @returns {function} A function to construct a URL object.
+ */
+function loginUrlObject() {
+  return (data) => {
+    const url = "/login";
+    const pathname = data.pathname ?
+      data.pathname :
+      document.location.pathname;
+    const search = data.search ?
+      data.search :
+      document.location.search;
+    return {
+      pathname: url,
+      state: {
+        previous: pathname + search
+      }
+    };
+  };
+}
+
 
 /** Module-level variable for the base URL. Set only once */
 let baseUrl = null;
@@ -222,6 +244,15 @@ const Url = {
       documentation: "/help/docs",
       features: "/help/features",
       status: "/help/status",
+    },
+    login: {
+      base: "/login",
+      link: new UrlRule(
+        loginUrlObject(), [], null, [
+          "{ pathname: '/login', state: { previous: '/projects' } }",
+          "{ pathname: '/login', state: { previous: '/projects/new?data=eyJ0aXRsZSI6InRlCc3QifQ==' } }"
+        ]
+      ),
     },
     projects: {
       base: new UrlRule(
