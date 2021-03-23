@@ -191,8 +191,8 @@ function ProjectListSearch(props) {
     null;
 
   const navBarJustify = props.loggedIn ?
-    "row row-cols-lg-auto justify-content-lg-end justify-content-md-center g-1"
-    : "row row-cols-lg-auto justify-content-start g-1";
+    "row row-cols-lg-auto justify-content-lg-end justify-content-md-center g-1 pb-2"
+    : "row row-cols-lg-auto justify-content-start g-1 pb-2";
 
   return (
     <Row className="justify-content-lg-between justify-content-md-center pb-2">
@@ -335,15 +335,15 @@ function ProjectListNav(props) {
     <Col className="d-flex pb-2 mb-1 justify-content-evenly justify-content-lg-between" md={12} lg={5}>
       <Nav pills className="nav-pills-underline" size="sm">
         <NavItem>
-          <RenkuNavLink title="Your Projects" id="link-projects-your"
+          <RenkuNavLink title="Your Projects" id="link-projects-your" className="pb-2"
             to={getPreciseUrl(sectionsMap.own)} noSubPath={true} />
         </NavItem>
         <NavItem>
-          <RenkuNavLink title="Starred Projects" id="link-projects-starred"
+          <RenkuNavLink title="Starred Projects" id="link-projects-starred" className="pb-2"
             to={getPreciseUrl(sectionsMap.starred)} exact={false} />
         </NavItem>
         <NavItem>
-          <RenkuNavLink title="All Projects" id="link-projects-all"
+          <RenkuNavLink title="All Projects" id="link-projects-all" className="pb-2"
             to={getPreciseUrl(sectionsMap.all)} exact={false} />
         </NavItem>
       </Nav>
