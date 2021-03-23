@@ -41,6 +41,7 @@ import {
   Clipboard, ExternalLink, Loader, RenkuNavLink, TimeCaption,
   ButtonWithMenu, InfoAlert, GoBackButton, RenkuMarkdown,
 } from "../utils/UIComponents";
+import { Url } from "../utils/url";
 import { SpecialPropVal } from "../model/Model";
 import { ProjectTags, ProjectTagList } from "./shared";
 import { Notebooks, StartNotebookServer } from "../notebooks";
@@ -949,7 +950,7 @@ class ProjectEnvironments extends Component {
 
 function notebookWarning(userLogged, accessLevel, fork, postLoginUrl, externalUrl) {
   if (!userLogged) {
-    const to = { "pathname": "/login", "state": { previous: postLoginUrl } };
+    const to = Url.get(Url.pages.login.link, { pathname: postLoginUrl });
     return (
       <InfoAlert timeout={0} key="permissions-warning">
         <p>
@@ -959,7 +960,7 @@ function notebookWarning(userLogged, accessLevel, fork, postLoginUrl, externalUr
           you cannot save your work.
         </p>
         <p className="mb-0">
-          <Link className="btn btn-primary btn-sm" to={to} previous={postLoginUrl}>Log in</Link> for
+          <Link className="btn btn-primary btn-sm" to={to}>Log in</Link> for
           full access.
         </p>
       </InfoAlert>
@@ -1224,12 +1225,11 @@ class ProjectViewNotFound extends Component {
       </InfoAlert>;
     }
     else {
-      const postLoginUrl = this.props.location.pathname;
-      const to = { "pathname": "/login", "state": { previous: postLoginUrl } };
+      const to = Url.get(Url.pages.login.link, { pathname: this.props.location.pathname });
       tip = <InfoAlert timeout={0}>
         <p className="mb-0">
           <FontAwesomeIcon icon={faInfoCircle} /> You might need to be logged in to see this project.
-          Please try to <Link className="btn btn-primary btn-sm" to={to} previous={postLoginUrl}>Log in</Link>
+          Please try to <Link className="btn btn-primary btn-sm" to={to}>Log in</Link>
         </p>
       </InfoAlert>;
     }

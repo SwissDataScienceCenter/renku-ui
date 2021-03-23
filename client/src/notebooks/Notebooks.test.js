@@ -281,13 +281,14 @@ describe("rendering", () => {
     project: "fake",
     branch: { name: "master" }
   };
+  const fakeLocation = { pathname: "" };
 
   it("renders NotebooksDisabled", () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
     ReactDOM.render(
       <MemoryRouter>
-        <NotebooksDisabled />
+        <NotebooksDisabled location={fakeLocation} />
       </MemoryRouter>, div);
   });
 
