@@ -45,6 +45,7 @@
 
 // -------------------       BOOTSTRAP EXT  -----------------------------
 
+@import './bootstrap_ext/badge';
 @import './bootstrap_ext/button';
 @import './bootstrap_ext/nav_bar';
 @import './bootstrap_ext/underline_pill_nav';
@@ -53,6 +54,6 @@
 
 @import './components/renku_general';
 @import './components/jupyter_notebook';
-@import './components/renku_search_bar';
+@import './components/renku_search';
 
 @import './icons/icons.scss';

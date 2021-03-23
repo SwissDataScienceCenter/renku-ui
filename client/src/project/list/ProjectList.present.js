@@ -23,7 +23,7 @@ import {
   Nav, NavItem, Row, ButtonDropdown } from "reactstrap";
 import { faCheck, faSortAmountDown, faSortAmountUp, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
+import { stringScore } from "../../utils/HelperFunctions";
 import { ProjectAvatar, Loader, Pagination, TimeCaption, RenkuNavLink } from "../../utils/UIComponents";
 import { ProjectTagList } from "../shared";
 import { Url } from "../../utils/url";
@@ -33,62 +33,61 @@ import { Label } from "reactstrap/lib";
 
 function ProjectListRow(props) {
   const {
-    owner, path, path_with_namespace, last_activity_at, description, compact, avatar_url, getAvatar, tag_list
+    owner, path, path_with_namespace, last_activity_at, description, avatar_url, getAvatar, tag_list
   } = props;
   const namespace = props.namespace.full_path;
 
   const url = Url.get(Url.pages.project, { namespace, path });
-  const title = (<Link to={url}>{path_with_namespace || "no title"}</Link>);
+  const title = path_with_namespace || "no title";
 
-  let directionModifier = "", marginModifier = "";
-  if (!compact) {
-    directionModifier = " flex-sm-row";
-    marginModifier = " ml-sm-auto";
-  }
+
+  const colorsArray = ["green", "pink", "yellow"];
+  const color = colorsArray[stringScore(title) % 3];
 
   return (
-    <div className="d-flex limit-width pt-2 pb-2 border-top">
-      <div className="d-flex flex-column mt-auto mb-auto">
+    <div className="d-flex flex-row rk-search-result" onClick={()=>props.history.push(url)}>
+      <span className={"circle me-3 mt-2 " + color}></span>
+      <Col className="d-flex align-items-start flex-column col-10 overflow-hidden">
+        <div className="title d-inline-block text-truncate">
+          {title}
+        </div>
+        <div className="description text-truncate text-rk-text">
+          {description ? description : null}
+        </div>
+        <div className="tagList">
+          <ProjectTagList tagList={tag_list} />
+        </div>
+        <div className="mt-auto">
+          <TimeCaption caption="Updated" time={last_activity_at} className="text-secondary"/>
+        </div>
+      </Col>
+      <Col className="d-flex justify-content-end align-self-center flex-shrink-0">
         <ProjectAvatar
           owner={owner}
           avatar_url={avatar_url}
           namespace={namespace}
           getAvatarFromNamespace={getAvatar}
         />
-      </div>
-      <div className={"d-flex flex-fill flex-column ml-2 mw-0" + directionModifier}>
-        <div className="d-flex flex-column text-truncate">
-          <p className="mt-auto mb-auto text-truncate">
-            <b>{title}</b>
-            <span className="ml-2">
-              <ProjectTagList tagList={tag_list} />
-            </span>
-          </p>
-          {description ? <p className="mt-auto mb-auto text-truncate">{description}</p> : null}
-        </div>
-        <div className={"d-flex flex-shrink-0" + marginModifier}>
-          <p className="mt-auto mb-auto">
-            <TimeCaption caption="Updated" time={last_activity_at} />
-          </p>
-        </div>
-      </div>
+      </Col>
     </div>
   );
 }
 
 function ProjectListRows(props) {
-  const { currentPage, getAvatar, perPage, projects, search, totalItems } = props;
+  const { currentPage, getAvatar, perPage, projects, search, totalItems, history } = props;
 
   if (!projects || !projects.length)
     return (<p>We could not find any matching projects.</p>);
 
-  const rows = projects.map(project => <ProjectListRow key={project.id} getAvatar={getAvatar} {...project} />);
+  const rows = projects.map(project =>
+    <ProjectListRow key={project.id} history={history} getAvatar={getAvatar} {...project} />);
   const onPageChange = (page) => { search({ page }); };
 
   return (
     <div>
       <div className="mb-4">{rows}</div>
-      <Pagination currentPage={currentPage} perPage={perPage} totalItems={totalItems} onPageChange={onPageChange} />
+      <Pagination currentPage={currentPage} perPage={perPage} totalItems={totalItems} onPageChange={onPageChange}
+        className="d-flex justify-content-center rk-search-pagination"/>
     </div>
   );
 }
@@ -270,7 +269,7 @@ function verifyRules(params, searchInMap, sectionsMap) {
 function ProjectListContent(props) {
   const {
     fetched, fetching, getAvatar, loggedIn, orderByMap, params, projects, search, searchInMap, sectionsMap,
-    setTarget, users, target, totalProjects
+    setTarget, users, target, totalProjects, history
   } = props;
 
   let usersFilter = null;
@@ -304,6 +303,7 @@ function ProjectListContent(props) {
             projects={projects}
             search={search}
             totalItems={totalProjects}
+            history={history}
           />
         );
       }
@@ -354,7 +354,7 @@ function ProjectListNav(props) {
 function ProjectList(props) {
   const {
     fetched, fetching, getAvatar, loggedIn, orderByMap, params, projectNew, projects, search, searchInMap,
-    sectionsMap, setTarget, users, target, totalProjects
+    sectionsMap, setTarget, users, target, totalProjects, history
   } = props;
 
   const newProjectButton = loggedIn ?
@@ -388,6 +388,7 @@ function ProjectList(props) {
         target={target}
         totalProjects={totalProjects}
         getPreciseUrl={props.getPreciseUrl}
+        history={history}
       />
     </Fragment>
   );

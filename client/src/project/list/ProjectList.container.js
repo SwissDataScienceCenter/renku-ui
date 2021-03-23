@@ -409,6 +409,7 @@ function ProjectList(props) {
       setTarget={setTarget}
       target={targetUser}
       totalProjects={projects.total}
+      history={props.history}
     />
   );
 }
