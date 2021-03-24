@@ -3,31 +3,40 @@
   .navbar {
     height: 100px; //we need this to vertically align items
   }
-	.navbar-collapse{
-		padding-top:0.5em;
-	}
-	.input{
-		padding-top:0.3rem
-	}
+  .navbar-collapse{
+    padding-top:0.5em;
+  }
+  .input{
+    padding-top:0.3rem
+  }
+}
+
+footer{
+  .navbar{
+    height:75px;
+  }
+  .nav-link{
+    color:white;
+  }
 }
 
 .navbar-dark .navbar-nav .nav-link{
-			color:white;
+  color:white;
 }
 
 .navbar-dark .navbar-nav .nav-link.active{
-		    color: rgba(255, 255, 255, 0.55) ;
+  color: rgba(255, 255, 255, 0.55) ;
 
 }
 
 nav.navbar{
-	align-items: center !important;
-	padding-top: 1em;
+  align-items: center !important;
+  padding-top: 1em;
 
-	.dropdown-toggle::after { 
-    content: none; 
-	}
-	// .input {
-	// 	opacity: 0.25;
-	// }
+  .dropdown-toggle::after {
+    content: none;
+  }
+  // .input {
+  // 	opacity: 0.25;
+  // }
 }
