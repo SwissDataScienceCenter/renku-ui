@@ -33,6 +33,7 @@ import { StateModel, globalSchema } from "../../model";
 import { validateTitle, checkTitleDuplicates, NewProject, ForkProject } from "./index";
 import { RESERVED_TITLE_NAMES } from "./ProjectNew.state";
 import { testClient as client } from "../../api-client";
+import { generateFakeUser } from "../../user/User.test";
 
 
 const fakeHistory = createMemoryHistory({
@@ -43,6 +44,7 @@ fakeHistory.push({
   pathname: "/projects",
   search: "?page=1"
 });
+const fakeLocation = { pathname: "" };
 
 describe("helper functions", () => {
   it("validateTitle", () => {
@@ -96,23 +98,31 @@ describe("rendering", () => {
   const model = new StateModel(globalSchema);
   const templates = { custom: false, repositories: [{}] };
 
-  it("renders NewProject without crashing for logged user", async () => {
-    const div = document.createElement("div");
-    // Fix UncontrolledTooltip error. https://github.com/reactstrap/reactstrap/issues/773
-    document.body.appendChild(div);
-    await act(async () => {
-      ReactDOM.render(
-        <MemoryRouter>
-          <NewProject
-            client={client}
-            model={model}
-            history={fakeHistory}
-            templates={templates}
-          />
-        </MemoryRouter>
-        , div);
+  const anonymousUser = generateFakeUser(true);
+  const loggedUser = generateFakeUser();
+  const users = [{ type: "anonymous", data: anonymousUser }, { type: "logged", data: loggedUser }];
+
+  for (const user of users) {
+    it(`renders NewProject without crashing for ${user.type} user`, async () => {
+      const div = document.createElement("div");
+      // Fix UncontrolledTooltip error. https://github.com/reactstrap/reactstrap/issues/773
+      document.body.appendChild(div);
+      await act(async () => {
+        ReactDOM.render(
+          <MemoryRouter>
+            <NewProject
+              client={client}
+              model={model}
+              history={fakeHistory}
+              location={fakeLocation}
+              templates={templates}
+              user={user.data}
+            />
+          </MemoryRouter>
+          , div);
+      });
     });
-  });
+  }
 
   it("renders ForkProject without crashing for logged user", async () => {
     const div = document.createElement("div");
@@ -125,6 +135,7 @@ describe("rendering", () => {
             client={client}
             model={model}
             history={fakeHistory}
+            user={loggedUser}
           />
         </MemoryRouter>
         , div);

@@ -37,6 +37,7 @@ import { faInfoCircle, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { FieldGroup, Loader, ExternalLink } from "../../utils/UIComponents";
 import { slugFromTitle } from "../../utils/HelperFunctions";
 import { capitalize } from "../../utils/formgenerator/FormGenerator.present";
+import { Url } from "../../utils/url";
 import "./Project.style.css";
 
 
@@ -167,16 +168,15 @@ function ForkProjectContent(props) {
 
 class NewProject extends Component {
   render() {
-    const { user, config, input } = this.props;
+    const { config, input, location, user } = this.props;
     if (!user.logged) {
-      const postLoginUrl = this.props.location ? this.props.location.pathname : null;
-      const to = { "pathname": "/login", "state": { previous: postLoginUrl } };
+      const to = Url.get(Url.pages.login.link, { pathname: location.pathname });
       return (
         <Fragment>
           <p>Only authenticated users can create new projects.</p>
           <Alert color="primary">
             <p className="mb-0">
-              <Link className="btn btn-primary btn-sm" to={to} previous={postLoginUrl}>Log in</Link> to
+              <Link className="btn btn-primary btn-sm" to={to}>Log in</Link> to
               create a new project.
             </p>
           </Alert>
