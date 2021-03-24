@@ -357,7 +357,7 @@ class FooterNavbar extends Component {
           <span className="text-white">&copy; SDSC {(new Date()).getFullYear()}</span>
           <Nav className="ms-auto">
             <Link className="nav-link" to="/">
-              <img src={logo} alt="Renku" height="21" />
+              <img src={logo} alt="Renku" className="pb-2" height="44" />
             </Link>
           </Nav>
           <Nav className="ms-auto">
