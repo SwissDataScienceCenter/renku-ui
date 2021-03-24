@@ -145,11 +145,11 @@ class List extends Component {
   getOrderByLabel() {
     switch (this.model.get("orderBy")) {
       case orderByValuesMap.TITLE:
-        return "title";
+        return "Title";
       case orderByValuesMap.DATE:
-        return "date";
+        return "Date";
       case orderByValuesMap.PROJECTSCOUNT:
-        return "projects count";
+        return "Projects count";
       default:
         return "";
     }
