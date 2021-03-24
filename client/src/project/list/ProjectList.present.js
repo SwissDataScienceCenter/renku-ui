@@ -45,7 +45,7 @@ function ProjectListRow(props) {
   const color = colorsArray[stringScore(title) % 3];
 
   return (
-    <div className="d-flex flex-row rk-search-result" onClick={()=>props.history.push(url)}>
+    <Link className="d-flex flex-row rk-search-result" to={url}>
       <span className={"circle me-3 mt-2 " + color}></span>
       <Col className="d-flex align-items-start flex-column col-10 overflow-hidden">
         <div className="title d-inline-block text-truncate">
@@ -69,18 +69,17 @@ function ProjectListRow(props) {
           getAvatarFromNamespace={getAvatar}
         />
       </Col>
-    </div>
+    </Link>
   );
 }
 
 function ProjectListRows(props) {
-  const { currentPage, getAvatar, perPage, projects, search, totalItems, history } = props;
+  const { currentPage, getAvatar, perPage, projects, search, totalItems } = props;
 
   if (!projects || !projects.length)
     return (<p>We could not find any matching projects.</p>);
 
-  const rows = projects.map(project =>
-    <ProjectListRow key={project.id} history={history} getAvatar={getAvatar} {...project} />);
+  const rows = projects.map(project => <ProjectListRow key={project.id} getAvatar={getAvatar} {...project} />);
   const onPageChange = (page) => { search({ page }); };
 
   return (
@@ -269,7 +268,7 @@ function verifyRules(params, searchInMap, sectionsMap) {
 function ProjectListContent(props) {
   const {
     fetched, fetching, getAvatar, loggedIn, orderByMap, params, projects, search, searchInMap, sectionsMap,
-    setTarget, users, target, totalProjects, history
+    setTarget, users, target, totalProjects
   } = props;
 
   let usersFilter = null;
@@ -303,7 +302,6 @@ function ProjectListContent(props) {
             projects={projects}
             search={search}
             totalItems={totalProjects}
-            history={history}
           />
         );
       }
@@ -354,7 +352,7 @@ function ProjectListNav(props) {
 function ProjectList(props) {
   const {
     fetched, fetching, getAvatar, loggedIn, orderByMap, params, projectNew, projects, search, searchInMap,
-    sectionsMap, setTarget, users, target, totalProjects, history
+    sectionsMap, setTarget, users, target, totalProjects
   } = props;
 
   const newProjectButton = loggedIn ?
@@ -388,7 +386,6 @@ function ProjectList(props) {
         target={target}
         totalProjects={totalProjects}
         getPreciseUrl={props.getPreciseUrl}
-        history={history}
       />
     </Fragment>
   );

@@ -1,7 +1,7 @@
 /*
-	SCSS FOLDER STRUCTURE
-	Adapted from https://medium.com/@programmiri/my-favored-scss-setup-with-bootstrap-4-547e9ea290f8
-	Github example: https://github.com/programmiri/brunch-setup-bootstrap4
+  SCSS FOLDER STRUCTURE
+  Adapted from https://medium.com/@programmiri/my-favored-scss-setup-with-bootstrap-4-547e9ea290f8
+  Github example: https://github.com/programmiri/brunch-setup-bootstrap4
 
  ├──  scss/
       └── bootstrap/
@@ -17,15 +17,15 @@
       ├──  _variables.scss
       ├──  _index.scss
 
-	- bootstrap contains bootstrap configuration files.
-	- botstrap_ext contains files where bootstrap styles are customized and extended.
-		The file should be named as the bootstrap component it's being changed or extended.
-	- components contains custom scss components for the project(like jupyter_notebooks)
-	- views contains styles that are not reusable(specific to a single view like landing page).
-	- variables is a file to place variables that we need and are not in bootsrap.
-	- index should contain only imports of other files. 
+  - bootstrap contains bootstrap configuration files.
+  - botstrap_ext contains files where bootstrap styles are customized and extended.
+    The file should be named as the bootstrap component it's being changed or extended.
+  - components contains custom scss components for the project(like jupyter_notebooks)
+  - views contains styles that are not reusable(specific to a single view like landing page).
+  - variables is a file to place variables that we need and are not in bootsrap.
+  - index should contain only imports of other files. 
 
-	Use npm run watch-css to compile scss files while making changes
+  Use npm run watch-css to compile scss files while making changes
 */
 
 // -------------------       FONTS  -----------------------------

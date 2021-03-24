@@ -14,12 +14,12 @@ $rk-white: #FFFFFF;
 
 // This will be added to the theme colors in custom_bootstrap
 $rk-colors : (
-	"rk-yellow":$rk-yellow,
-	"rk-pink": $rk-pink,
-	"rk-green": $rk-green,
-	"rk-text":$rk-text,
-	"rk-green-background":$rk-green-background,
-	"rk-white": $rk-white
+  "rk-yellow":$rk-yellow,
+  "rk-pink": $rk-pink,
+  "rk-green": $rk-green,
+  "rk-text":$rk-text,
+  "rk-green-background":$rk-green-background,
+  "rk-white": $rk-white
 );
 
 // We overwrite bootstraps variables
