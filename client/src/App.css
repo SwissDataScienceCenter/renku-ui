@@ -141,7 +141,7 @@ body {
   width: 25px;
   height: 25px;
   margin: 5px;
-  background: #5561A6; /* Use SDSC Dark Blue */
+  background: #01192D;
   border-radius: 50px;
   animation: bouncer 0.9s infinite alternate;
 }
