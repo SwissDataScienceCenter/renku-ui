@@ -32,11 +32,11 @@
     }
 
     .btn-rk-white:hover{
-      color: $rk-dark;
-      border-color: $rk-dark;
+			background-color: $rk-hover;
     }
 
     .btn-rk-white.active{
+			background-color: $rk-hover;
       color: $rk-dark;
       border-color: $rk-dark;
     }
@@ -69,7 +69,7 @@
 .rk-search-result:hover{
   cursor: pointer;
   color: $rk-dark;
-  background-color: #f9f9f9;
+  background-color: $rk-hover;
 }
 
 .rk-search-result:last-child{

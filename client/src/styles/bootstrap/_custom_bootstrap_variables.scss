@@ -11,6 +11,7 @@ $rk-light:#E4E7EA; // borders
 $rk-background: #F5F5F5;
 $rk-green-background: rgb(34,53,52);
 $rk-white: #FFFFFF;
+$rk-hover:#f9f9f9;
 
 // This will be added to the theme colors in custom_bootstrap
 $rk-colors : (
@@ -19,7 +20,8 @@ $rk-colors : (
   "rk-green": $rk-green,
   "rk-text":$rk-text,
   "rk-green-background":$rk-green-background,
-  "rk-white": $rk-white
+  "rk-white": $rk-white,
+  "rk-hover": $rk-hover
 );
 
 // We overwrite bootstraps variables
