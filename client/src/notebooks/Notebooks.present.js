@@ -562,6 +562,7 @@ class NotebooksServerRowStatusIcon extends Component {
           <PopoverHeader>Details</PopoverHeader>
           <PopoverBody>
             <span className="font-weight-bold">Image source:</span> {image}
+            <span className="ml-1"><Clipboard clipboardText={image} /></span>
             {policy}
           </PopoverBody>
         </UncontrolledPopover>
