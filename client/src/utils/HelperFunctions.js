@@ -300,8 +300,17 @@ function refreshIfNecessary(fetching, fetched, action, tolerance = 10) {
     return action();
 }
 
+/**
+ * Simulate a sleep function.
+ * @param {number} seconds - length of the sleep time span in seconds
+ * @example await sleep(0.5) // sleep for 0.5 seconds
+ */
+async function sleep(seconds) {
+  await new Promise(r => setTimeout(r, seconds * 1000));
+}
+
 export {
   slugFromTitle, getActiveProjectPathWithNamespace, splitAutosavedBranches, sanitizedHTMLFromMarkdown,
   simpleHash, parseINIString, formatBytes, groupBy, gitLabUrlFromProfileUrl, isURL, verifyTitleCharacters,
-  convertUnicodeToAscii, refreshIfNecessary
+  convertUnicodeToAscii, refreshIfNecessary, sleep
 };

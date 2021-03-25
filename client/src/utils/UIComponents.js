@@ -750,15 +750,23 @@ function ButtonWithMenu(props) {
   const toggleOpen = () => setOpen(!dropdownOpen);
   const size = (props.size) ? props.size : "md";
 
-  return <ButtonDropdown size={size} isOpen={dropdownOpen} toggle={toggleOpen}>
-    {props.default}
-    <DropdownToggle color="primary" className="alternateToggleStyle">
-      <FontAwesomeIcon icon={faEllipsisV} style={{ color: "white", backgroundColor: "#5561A6" }} />
-    </DropdownToggle>
-    <DropdownMenu right={true}>
-      {props.children}
-    </DropdownMenu>
-  </ButtonDropdown>;
+  return (
+    <ButtonDropdown
+      size={size}
+      isOpen={dropdownOpen}
+      toggle={toggleOpen}
+      direction={props.direction}
+      disabled={props.disabled}
+    >
+      {props.default}
+      <DropdownToggle color="primary" className="alternateToggleStyle">
+        <FontAwesomeIcon icon={faEllipsisV} style={{ color: "white", backgroundColor: "#5561A6" }} />
+      </DropdownToggle>
+      <DropdownMenu right={true}>
+        {props.children}
+      </DropdownMenu>
+    </ButtonDropdown>
+  );
 }
 
 /**

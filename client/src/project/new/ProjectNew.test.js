@@ -31,8 +31,10 @@ import { createMemoryHistory } from "history";
 
 import { StateModel, globalSchema } from "../../model";
 import { validateTitle, checkTitleDuplicates, NewProject, ForkProject } from "./index";
+import { getDataFromParams } from "./ProjectNew.container";
 import { RESERVED_TITLE_NAMES } from "./ProjectNew.state";
 import { testClient as client } from "../../api-client";
+import { btoaUTF8 } from "../../utils/Encoding";
 import { generateFakeUser } from "../../user/User.test";
 
 
@@ -91,6 +93,35 @@ describe("helper functions", () => {
     expect(checkTitleDuplicates("exist-different", "username", projectsPaths)).toBe(true);
     expect(checkTitleDuplicates("existä", "group", projectsPaths)).toBe(true);
     expect(checkTitleDuplicates("exist-äõî-different", "username", projectsPaths)).toBe(true);
+  });
+
+  it("getDataFromParams", () => {
+    function encode(params) {
+      return { data: btoaUTF8(JSON.stringify(params)) };
+    }
+
+    let params = { title: "pre-filled" };
+    let urlParams = encode(params);
+
+    // title
+    let decoded = getDataFromParams(urlParams);
+    expect(decoded).toMatchObject(params);
+
+    // complex
+    params = {
+      title: "test",
+      namespace: "renku-qa",
+      template: "Custom/python-minimal",
+      url: "https://github.com/SwissDataScienceCenter/renku-project-template",
+      ref: "0.1.16",
+      visibility: "private",
+      variables: {
+        description: "description here"
+      }
+    };
+    urlParams = encode(params);
+    decoded = getDataFromParams(urlParams);
+    expect(decoded).toMatchObject(params);
   });
 });
 

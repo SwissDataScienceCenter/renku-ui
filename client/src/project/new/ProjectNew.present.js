@@ -24,17 +24,17 @@
  */
 
 
-import React, { Component, Fragment } from "react";
+import React, { Component, Fragment, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Autosuggest from "react-autosuggest";
 import {
-  Row, Col, ButtonGroup, UncontrolledTooltip, Input, Button, Form, FormFeedback, FormGroup, FormText, Label, Alert,
-  ModalHeader, ModalBody, ModalFooter
+  Alert, Button, ButtonGroup, Col, DropdownItem, Fade, Form, FormFeedback, FormGroup, FormText, Input, Label,
+  Modal, ModalBody, ModalFooter, ModalHeader, Row, Table, UncontrolledTooltip
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import { faExclamationTriangle, faInfoCircle, faLink, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 
-import { FieldGroup, Loader, ExternalLink } from "../../utils/UIComponents";
+import { ButtonWithMenu, Clipboard, ExternalLink, FieldGroup, Loader } from "../../utils/UIComponents";
 import { slugFromTitle } from "../../utils/HelperFunctions";
 import { capitalize } from "../../utils/formgenerator/FormGenerator.present";
 import { Url } from "../../utils/url";
@@ -168,7 +168,7 @@ function ForkProjectContent(props) {
 
 class NewProject extends Component {
   render() {
-    const { config, input, location, user } = this.props;
+    const { automated, config, handlers, input, location, user } = this.props;
     if (!user.logged) {
       const to = Url.get(Url.pages.login.link, { pathname: location.pathname });
       return (
@@ -190,6 +190,7 @@ class NewProject extends Component {
         <Col sm={10} md={9} lg={8} xl={7}>
           <h1>New project</h1>
           <Form className="mb-3">
+            <Automated automated={automated} removeAutomated={handlers.removeAutomated} />
             <Title {...this.props} />
             <Namespaces {...this.props} />
             <Home {...this.props} />
@@ -206,6 +207,120 @@ class NewProject extends Component {
       </Row>
     );
   }
+}
+
+function Automated(props) {
+  const { automated, removeAutomated } = props;
+
+  const [showError, setShowError] = useState(false);
+  const toggleError = () => setShowError(!showError);
+
+  const [showWarnings, setShowWarnings] = useState(false);
+  const toggleWarn = () => setShowWarnings(!showWarnings);
+
+  if (automated.received && automated.valid && !automated.finished) {
+    // Show a static modal while loading the data
+    return (<AutomatedModal removeAutomated={removeAutomated}></AutomatedModal>);
+  }
+  else if (automated.finished) {
+    // Show a feedback when the automated part has finished
+    // errors
+    if (automated.error) {
+      const error = (<pre>{automated.error}</pre>);
+      return (
+        <Alert key="alert" color="danger">
+          <p>
+            <FontAwesomeIcon icon={faExclamationTriangle} />&nbsp;
+            An error occurred while bootstrapping your pre-initialized project.
+          </p>
+          <p>
+            It is possible the metadata are not valid or outdated. You can try to contact who provided you
+            the RenkuLab link asking for a new one.
+          </p>
+
+          <Button color="link" style={{ fontSize: "smaller" }} className="font-italic" onClick={() => toggleError()}>
+            {showError ? "Hide error details" : "Show error details"}
+          </Button>
+          <Fade in={showError} tag="div">{showError ? error : null}</Fade>
+        </Alert>
+      );
+    }
+    // warnings
+    else if (automated.warnings.length) {
+      const warnings = (<pre>{automated.warnings.join("\n")}</pre>);
+      return (
+        <Alert color="warning">
+          <p>
+            <FontAwesomeIcon icon={faExclamationTriangle} />&nbsp;
+            Some pre-initializzation settings could not be applied.
+          </p>
+          <Button color="link" style={{ fontSize: "smaller" }} className="font-italic" onClick={() => toggleWarn()}>
+            {showWarnings ? "Hide warnings" : "Show warnings"}
+          </Button>
+          <Fade in={showWarnings} tag="div">{showWarnings ? warnings : null}</Fade>
+        </Alert>
+      );
+    }
+    // all good
+    return (
+      <Alert color="primary">
+        <p className="mb-0">
+          <FontAwesomeIcon icon={faInfoCircle} />&nbsp;
+          Some pre-initializzation settings were applied.
+          <br />You can still change any setting before you create the project.
+        </p>
+      </Alert>
+    );
+  }
+
+  return null;
+}
+
+
+function AutomatedModal(props) {
+  const { removeAutomated } = props;
+
+  const [showFadeIn, setShowFadeIn] = useState(false);
+
+  const toggle = () => setShowFadeIn(!showFadeIn);
+
+  const button = showFadeIn ?
+    null :
+    (
+      <Button color="link" style={{ fontSize: "smaller" }} className="font-italic" onClick={() => toggle()}>
+        Do you prefer a blank project instead?
+      </Button>
+    );
+
+  const to = Url.get(Url.pages.project.new);
+  const fadeInContent = (
+    <p className="mt-3">
+      Click here to&nbsp;
+      <Link className="btn btn-primary btn-sm" to={to} onClick={() => { removeAutomated(); }}>
+        start from scratch
+      </Link>
+    </p>
+  );
+  return (
+    <Modal isOpen={true} centered={true} keyboard={false} backdrop="static">
+      <ModalHeader>Fetching initialization data</ModalHeader>
+      <ModalBody>
+        <Row>
+          <Col>
+            <p>You entered a url containing initialization data.</p>
+            <span>
+              Please wait, we are fetching the required metadata...&nbsp;
+              <Loader inline={true} size={16} />
+            </span>
+            <div className="mt-2">
+              {button}
+              <Fade in={showFadeIn} tag="div">{showFadeIn ? fadeInContent : null}</Fade>
+            </div>
+          </Col>
+        </Row>
+      </ModalBody>
+    </Modal>
+  );
 }
 
 class Title extends Component {
@@ -275,7 +390,8 @@ class NamespacesAutosuggest extends Component {
     super(props);
     this.state = {
       value: "",
-      suggestions: []
+      suggestions: [],
+      preloadUpdated: false
     };
   }
 
@@ -294,6 +410,14 @@ class NamespacesAutosuggest extends Component {
       this.props.handlers.setNamespace(defaultNamespace);
       this.setState({ value: defaultNamespace.full_path });
     }
+  }
+
+  // Fix the inconsistent state when automated content modifies the namespace
+  componentDidUpdate() {
+    const { automated, input } = this.props;
+    const { value, preloadUpdated } = this.state;
+    if (automated && automated.received && automated.finished && input.namespace !== value && !preloadUpdated)
+      this.setState({ value: input.namespace, preloadUpdated: true });
   }
 
   getSuggestions(value) {
@@ -701,7 +825,7 @@ class Variables extends Component {
     const variables = Object.keys(template.variables).map(variable => (
       <FormGroup key={variable}>
         <Label>{capitalize(variable)}</Label>
-        <Input id={"parameter-" + variable} type="text"
+        <Input id={"parameter-" + variable} type="text" value={input.variables[variable]}
           onChange={(e) => handlers.setVariable(variable, e.target.value)} />
         <FormText>{capitalize(template.variables[variable])}</FormText>
       </FormGroup>
@@ -712,6 +836,19 @@ class Variables extends Component {
 }
 
 class Create extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      showModal: false
+    };
+
+    this.toggle = this.toggleModal.bind(this);
+  }
+
+  toggleModal() {
+    this.setState({ showModal: !this.state.showModal });
+  }
+
   render() {
     let { templates, meta, input } = this.props;
     if (input.userRepo)
@@ -781,18 +918,175 @@ class Create extends Component {
       meta.validation.warnings[`${warnings[0]}`] :
       null;
 
+    // create dropdown items
+    const disabled = loading ?
+      true :
+      false;
+    const createProject = (
+      <Button
+        id="create-new-project"
+        color="primary"
+        onClick={this.props.handlers.onSubmit}
+        disabled={disabled}
+      >
+        Create project
+      </Button>
+    );
+    const createLink = (
+      <DropdownItem onClick={this.toggle}><FontAwesomeIcon icon={faLink} /> Share link</DropdownItem>
+    );
     return (
       <Fragment>
         {alert}
-        <Button id="create-new-project" color="primary"
-          onClick={this.props.handlers.onSubmit}
-          disabled={loading ? true : false}>
-          Create project
-        </Button>
+        <ButtonWithMenu color="primary" default={createProject} disabled={disabled} direction="up">
+          {createLink}
+        </ButtonWithMenu>
         {loading && (<FormText color="primary">{loading}</FormText>)}
+        <ShareLinkModal
+          show={this.state.showModal}
+          toggle={this.toggle}
+          input={input}
+          meta={meta}
+          createUrl={this.props.handlers.createEncodedUrl}
+        />
       </Fragment>
     );
   }
+}
+
+
+function ShareLinkModal(props) {
+  const { createUrl, input } = props;
+  const { userTemplates } = props.meta;
+
+  const defaultObj = {
+    title: false, namespace: false, visibility: false, templateRepo: false, template: false, variables: false
+  };
+
+  const [available, setAvailable] = useState(defaultObj);
+  const [include, setInclude] = useState(defaultObj);
+  const [url, setUrl] = useState("");
+
+  // Set availability of inputs
+  useEffect(() => {
+    let variablesAvailable = false;
+    if (input.template && input.variables && Object.keys(input.variables).length) {
+      for (let variable of Object.keys(input.variables)) {
+        if (input.variables[variable]) {
+          variablesAvailable = true;
+          break;
+        }
+      }
+    }
+
+    setAvailable({
+      title: input.title ? true : false,
+      namespace: true,
+      visibility: true,
+      templateRepo: input.userRepo && userTemplates.fetched && userTemplates.url && userTemplates.ref ? true : false,
+      template: input.template ? true : false,
+      variables: variablesAvailable
+    });
+  }, [input, userTemplates]);
+
+  // Update selected params
+  useEffect(() => {
+    setInclude({
+      title: available.title,
+      namespace: false,
+      visibility: false,
+      templateRepo: available.templateRepo,
+      template: available.template,
+      variables: available.variables
+    });
+  }, [available]);
+
+  // Re-create shareable link
+  useEffect(() => {
+    let dataObject = {};
+    if (include.title)
+      dataObject.title = input.title;
+    if (include.namespace)
+      dataObject.namespace = input.namespace;
+    if (include.visibility)
+      dataObject.visibility = input.visibility;
+    if (include.templateRepo) {
+      dataObject.url = userTemplates.url;
+      dataObject.ref = userTemplates.ref;
+    }
+    if (include.template)
+      dataObject.template = input.template;
+    if (include.variables) {
+      let variablesObject = {};
+      for (let variable of Object.keys(input.variables)) {
+        if (input.variables[variable])
+          variablesObject[variable] = input.variables[variable];
+      }
+      dataObject.variables = variablesObject;
+    }
+
+    setUrl(createUrl(dataObject));
+  }, [createUrl, include, input, userTemplates]);
+
+  const handleCheckbox = (target, event) => {
+    setInclude({ ...include, [target]: event.target.checked });
+  };
+
+  const labels = Object.keys(include).map(item => (
+    <FormGroup key={item} check>
+      <Label check className={`text-capitalize${available[item] ? "" : " text-muted"}`}>
+        <Input
+          type="checkbox"
+          disabled={available[item] ? false : true}
+          checked={include[item]}
+          onChange={e => handleCheckbox(item, e)}
+        /> {item === "templateRepo" ? "template source" : item}
+      </Label>
+    </FormGroup>
+  ));
+
+  const feedback = include.namespace ?
+    (
+      <FormText color="danger">
+        Including the namespace may lead to errors if the user does not have access to it.
+      </FormText>
+    ) :
+    null;
+
+  return (
+    <Modal isOpen={props.show} toggle={props.toggle}>
+      <ModalHeader toggle={props.toggle}>Create shareable link</ModalHeader>
+      <ModalBody>
+        <Row>
+          <Col>
+            <p>
+              Here is your shareable link, containing the current settings for a new project.
+              Clicking on it will pre-fill the inputs automatically.
+            </p>
+            <p>
+              You can review which settings to include in the link metadata.
+            </p>
+
+            <Form className="mb-3">
+              {labels}
+              {feedback}
+            </Form>
+
+
+            <Table size="sm">
+              <tbody>
+                <tr className="border-bottom">
+                  <th scope="row">URL</th>
+                  <td style={{ wordBreak: "break-all" }}>{url}</td>
+                  <td style={{ width: 1 }}><Clipboard clipboardText={url} /></td>
+                </tr>
+              </tbody>
+            </Table>
+          </Col>
+        </Row>
+      </ModalBody>
+    </Modal>
+  );
 }
 
 class Creation extends Component {
