@@ -132,5 +132,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]
 then
   BROWSER=none telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 3000:8080 --run npm start
 else
-  BROWSER=none telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --method inject-tcp --expose 3000:8080 --run npm start
+  # Use the same method on osx since --method inject-tcp does not work on macOS 11.2 (Big Sur)
+  # See https://github.com/telepresenceio/telepresence/issues/1487
+  BROWSER=none telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 3000:8080 --run npm start
 fi

@@ -81,5 +81,7 @@ if [[ "$OSTYPE" == "linux-gnu" ]]
 then
   telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --run npm run dev
 else
-  telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --method inject-tcp --expose 8080:8080 --run npm run dev
+    # Use the same method on osx since --method inject-tcp does not work on macOS 11.2 (Big Sur)
+  # See https://github.com/telepresenceio/telepresence/issues/1487
+  telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 3000:8080 --run npm run dev
 fi
