@@ -218,62 +218,60 @@ function Automated(props) {
   const [showWarnings, setShowWarnings] = useState(false);
   const toggleWarn = () => setShowWarnings(!showWarnings);
 
-  if (automated.received && automated.valid && !automated.finished) {
+  if (!automated.finished) {
     // Show a static modal while loading the data
-    return (<AutomatedModal removeAutomated={removeAutomated}></AutomatedModal>);
+    if (automated.received && automated.valid)
+      return (<AutomatedModal removeAutomated={removeAutomated}></AutomatedModal>);
+    return null;
   }
-  else if (automated.finished) {
-    // Show a feedback when the automated part has finished
-    // errors
-    if (automated.error) {
-      const error = (<pre>{automated.error}</pre>);
-      return (
-        <Alert key="alert" color="danger">
-          <p>
-            <FontAwesomeIcon icon={faExclamationTriangle} />&nbsp;
-            An error occurred while bootstrapping your pre-initialized project.
-          </p>
-          <p>
-            It is possible the metadata are not valid or outdated. You can try to contact who provided you
-            the RenkuLab link asking for a new one.
-          </p>
-
-          <Button color="link" style={{ fontSize: "smaller" }} className="font-italic" onClick={() => toggleError()}>
-            {showError ? "Hide error details" : "Show error details"}
-          </Button>
-          <Fade in={showError} tag="div">{showError ? error : null}</Fade>
-        </Alert>
-      );
-    }
-    // warnings
-    else if (automated.warnings.length) {
-      const warnings = (<pre>{automated.warnings.join("\n")}</pre>);
-      return (
-        <Alert color="warning">
-          <p>
-            <FontAwesomeIcon icon={faExclamationTriangle} />&nbsp;
-            Some pre-initializzation settings could not be applied.
-          </p>
-          <Button color="link" style={{ fontSize: "smaller" }} className="font-italic" onClick={() => toggleWarn()}>
-            {showWarnings ? "Hide warnings" : "Show warnings"}
-          </Button>
-          <Fade in={showWarnings} tag="div">{showWarnings ? warnings : null}</Fade>
-        </Alert>
-      );
-    }
-    // all good
+  // Show a feedback when the automated part has finished
+  // errors
+  if (automated.error) {
+    const error = (<pre>{automated.error}</pre>);
     return (
-      <Alert color="primary">
-        <p className="mb-0">
-          <FontAwesomeIcon icon={faInfoCircle} />&nbsp;
-          Some pre-initializzation settings were applied.
-          <br />You can still change any setting before you create the project.
+      <Alert key="alert" color="danger">
+        <p>
+          <FontAwesomeIcon icon={faExclamationTriangle} />&nbsp;
+          An error occurred while bootstrapping your pre-initialized project.
         </p>
+        <p>
+          It is possible the metadata are outdated or not valid.
+          Please contact the source of the RenkuLab link and ask for a new one.
+        </p>
+
+        <Button color="link" style={{ fontSize: "smaller" }} className="font-italic" onClick={() => toggleError()}>
+          {showError ? "Hide error details" : "Show error details"}
+        </Button>
+        <Fade in={showError} tag="div">{showError ? error : null}</Fade>
       </Alert>
     );
   }
-
-  return null;
+  // warnings
+  else if (automated.warnings.length) {
+    const warnings = (<pre>{automated.warnings.join("\n")}</pre>);
+    return (
+      <Alert color="warning">
+        <p>
+          <FontAwesomeIcon icon={faExclamationTriangle} />&nbsp;
+          Some pre-initialization settings could not be applied.
+        </p>
+        <Button color="link" style={{ fontSize: "smaller" }} className="font-italic" onClick={() => toggleWarn()}>
+          {showWarnings ? "Hide warnings" : "Show warnings"}
+        </Button>
+        <Fade in={showWarnings} tag="div">{showWarnings ? warnings : null}</Fade>
+      </Alert>
+    );
+  }
+  // all good
+  return (
+    <Alert color="primary">
+      <p className="mb-0">
+        <FontAwesomeIcon icon={faInfoCircle} />&nbsp;
+        Some pre-initialization settings were applied.
+        <br />You can still change any setting before you create the project.
+      </p>
+    </Alert>
+  );
 }
 
 

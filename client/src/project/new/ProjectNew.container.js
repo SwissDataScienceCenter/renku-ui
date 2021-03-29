@@ -291,23 +291,20 @@ function ForkProject(props) {
  * @returns {object} parsed parameters, validated and ready to be be used to pre-fill fields.
  */
 function getDataFromParams(params) {
-  if (params && Object.keys(params).length) {
-    if (params.data) {
-      const data = JSON.parse(atobUTF8(params.data));
-      if (data && Object.keys(data).length) {
-        // validate metadata
-        const validKeys = Object.keys(newProjectSchema.createEmpty().automated.data);
-        const keys = Object.keys(data);
-        for (let key of keys) {
-          if (!validKeys.includes(key))
-            throw new Error("unexpected project field in the encoded metadata: " + key);
-        }
-      }
-      return data;
-    }
-    // Unrecognized params: should we notify? Let's start without notifications.
-    return null;
+  // Unrecognized params: should we notify? Let's start without notifications.
+  if (!params || !Object.keys(params).length || !params.data)
+    return;
+  const data = JSON.parse(atobUTF8(params.data));
+  if (!data || !Object.keys(data).length)
+    return;
+  // validate metadata
+  const validKeys = Object.keys(newProjectSchema.createEmpty().automated.data);
+  const keys = Object.keys(data);
+  for (let key of keys) {
+    if (!validKeys.includes(key))
+      throw new Error("unexpected project field in the encoded metadata: " + key);
   }
+  return data;
 }
 
 class NewProject extends Component {
