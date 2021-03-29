@@ -60,6 +60,7 @@ class UserAvatar extends Component {
       case "sm": widgetSize = { img: 18, fa: null }; break;
       case "md": widgetSize = { img: 18 * 2, fa: "2x" }; break;
       case "lg": widgetSize = { img: 18 * 3, fa: "3x" }; break;
+      case "xl": widgetSize = { img: 18 * 6, fa: "6x" }; break;
       default: break;
     }
     return widgetSize;
@@ -90,17 +91,10 @@ function ProjectAvatar(props) {
   const [avatarUrl, setAvatarUrl] = useState(null);
 
   useEffect(() => {
-    if (props.avatar_url) { setAvatarUrl(props.avatar_url); }
-    else if (props.owner && props.owner.avatar_url) { setAvatarUrl(props.owner.avatar_url); }
-    else if (props.namespace && props.namespace.kind === "group") {
-      props.getAvatarFromNamespace(props.namespace.id)
-        .then((url) => {
-          setAvatarUrl(url);
-        });
-    }
+    if (props.avatar_url) setAvatarUrl(props.avatar_url);
   }, [props]);
 
-  return <UserAvatar avatar={avatarUrl} />;
+  return props.avatar_url ? <UserAvatar avatar={avatarUrl} size="xl" /> : null;
 }
 
 class FieldGroup extends Component {
@@ -132,7 +126,8 @@ class TimeCaption extends Component {
     const caption = (this.props.caption) ? this.props.caption : "Updated";
     const endCaption = (this.props.endCaption) ? " " + this.props.endCaption : "";
     const endPunctuation = (this.props.endPunctuation) ? this.props.endPunctuation : ".";
-    return <span className="time-caption">{caption} {displayTime}{endCaption}{endPunctuation}</span>;
+    const className = this.props.className || "";
+    return <span className={"time-caption " + className}>{caption} {displayTime}{endCaption}{endPunctuation}</span>;
   }
 }
 
