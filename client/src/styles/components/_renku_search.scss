@@ -1,0 +1,95 @@
+.rk-search-bar{
+  .btn-rk-white.dropdown-toggle {
+    border-color: $rk-light;
+    color: $rk-text;
+  }
+
+  .btn-rk-light.dropdown-toggle {
+    color: $rk-text;
+  }
+
+  .btn-rk-light.dropdown-toggle:focus{
+    border-color: $rk-light;
+    color: $rk-text;
+    box-shadow: 0 0 0 0.25rem rgba(217, 217, 217, 0.5 );
+  }
+
+  .form-control{
+    border-color: $rk-light;
+    color: $rk-text;
+  }
+
+  .form-control:focus{
+    border-color: $rk-light;
+    color: $rk-text;
+    box-shadow: 0 0 0 0.25rem rgba(217, 217, 217, 0.5 );
+  }
+
+  .rk-button-group{
+    .btn-rk-white{
+      border-color: $rk-light;
+      color:$rk-text;
+    }
+
+    .btn-rk-white:hover{
+			background-color: $rk-hover;
+    }
+
+    .btn-rk-white.active{
+			background-color: $rk-hover;
+      color: $rk-dark;
+      border-color: $rk-dark;
+    }
+  }
+}
+
+.rk-search-result{
+  text-decoration: none;
+  color: $rk-dark;
+  background-color: white;
+  min-height:150px;
+  padding-top:1em;
+  padding-bottom:0.75em;
+  padding-left: 1em;
+  padding-right: 1.5em;
+  border-top: solid 1px $light;
+  border-left: solid 1px $light;
+  border-right: solid 1px $light;
+
+  .title{
+    font-size: 24px;
+  }
+  p{
+    margin-bottom:0px;
+    margin-block-end:0px;
+    margin-block-start:0px;
+  }
+}
+
+.rk-search-result:hover{
+  cursor: pointer;
+  color: $rk-dark;
+  background-color: $rk-hover;
+}
+
+.rk-search-result:last-child{
+  border-bottom: solid 1px $light;
+}
+
+.rk-search-pagination{
+  .page-link{
+    background-color: white;
+    border-color: $rk-light;
+    color: $rk-text;
+  }
+  .page-link:focus{
+    box-shadow: 0 0 0 0.25rem rgba(217, 217, 217, 0.5 );
+  }
+  .page-item.active{
+    .page-link{
+      background-color:$rk-text;
+      border-color: $rk-text;
+      color: white;
+    }
+  }
+}

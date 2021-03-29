@@ -23,7 +23,7 @@ import {
   Nav, NavItem, Row, ButtonDropdown } from "reactstrap";
 import { faCheck, faSortAmountDown, faSortAmountUp, faSearch } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
+import { stringScore } from "../../utils/HelperFunctions";
 import { ProjectAvatar, Loader, Pagination, TimeCaption, RenkuNavLink } from "../../utils/UIComponents";
 import { ProjectTagList } from "../shared";
 import { Url } from "../../utils/url";
@@ -33,46 +33,43 @@ import { Label } from "reactstrap/lib";
 
 function ProjectListRow(props) {
   const {
-    owner, path, path_with_namespace, last_activity_at, description, compact, avatar_url, getAvatar, tag_list
+    owner, path, path_with_namespace, last_activity_at, description, avatar_url, getAvatar, tag_list
   } = props;
   const namespace = props.namespace.full_path;
 
   const url = Url.get(Url.pages.project, { namespace, path });
-  const title = (<Link to={url}>{path_with_namespace || "no title"}</Link>);
+  const title = path_with_namespace || "no title";
 
-  let directionModifier = "", marginModifier = "";
-  if (!compact) {
-    directionModifier = " flex-sm-row";
-    marginModifier = " ml-sm-auto";
-  }
+
+  const colorsArray = ["green", "pink", "yellow"];
+  const color = colorsArray[stringScore(title) % 3];
 
   return (
-    <div className="d-flex limit-width pt-2 pb-2 border-top">
-      <div className="d-flex flex-column mt-auto mb-auto">
+    <Link className="d-flex flex-row rk-search-result" to={url}>
+      <span className={"circle me-3 mt-2 " + color}></span>
+      <Col className="d-flex align-items-start flex-column col-10 overflow-hidden">
+        <div className="title d-inline-block text-truncate">
+          {title}
+        </div>
+        <div className="description text-truncate text-rk-text">
+          {description ? description : null}
+        </div>
+        <div className="tagList">
+          <ProjectTagList tagList={tag_list} />
+        </div>
+        <div className="mt-auto">
+          <TimeCaption caption="Updated" time={last_activity_at} className="text-secondary"/>
+        </div>
+      </Col>
+      <Col className="d-flex justify-content-end align-self-center flex-shrink-0">
         <ProjectAvatar
           owner={owner}
           avatar_url={avatar_url}
           namespace={namespace}
           getAvatarFromNamespace={getAvatar}
         />
-      </div>
-      <div className={"d-flex flex-fill flex-column ml-2 mw-0" + directionModifier}>
-        <div className="d-flex flex-column text-truncate">
-          <p className="mt-auto mb-auto text-truncate">
-            <b>{title}</b>
-            <span className="ml-2">
-              <ProjectTagList tagList={tag_list} />
-            </span>
-          </p>
-          {description ? <p className="mt-auto mb-auto text-truncate">{description}</p> : null}
-        </div>
-        <div className={"d-flex flex-shrink-0" + marginModifier}>
-          <p className="mt-auto mb-auto">
-            <TimeCaption caption="Updated" time={last_activity_at} />
-          </p>
-        </div>
-      </div>
-    </div>
+      </Col>
+    </Link>
   );
 }
 
@@ -88,7 +85,8 @@ function ProjectListRows(props) {
   return (
     <div>
       <div className="mb-4">{rows}</div>
-      <Pagination currentPage={currentPage} perPage={perPage} totalItems={totalItems} onPageChange={onPageChange} />
+      <Pagination currentPage={currentPage} perPage={perPage} totalItems={totalItems} onPageChange={onPageChange}
+        className="d-flex justify-content-center rk-search-pagination"/>
     </div>
   );
 }
@@ -192,8 +190,8 @@ function ProjectListSearch(props) {
     null;
 
   const navBarJustify = props.loggedIn ?
-    "row row-cols-lg-auto justify-content-lg-end justify-content-md-center g-1"
-    : "row row-cols-lg-auto justify-content-start g-1";
+    "row row-cols-lg-auto justify-content-lg-end justify-content-md-center g-1 pb-2"
+    : "row row-cols-lg-auto justify-content-start g-1 pb-2";
 
   return (
     <Row className="justify-content-lg-between justify-content-md-center pb-2">
@@ -335,15 +333,15 @@ function ProjectListNav(props) {
     <Col className="d-flex pb-2 mb-1 justify-content-evenly justify-content-lg-between" md={12} lg={5}>
       <Nav pills className="nav-pills-underline" size="sm">
         <NavItem>
-          <RenkuNavLink title="Your Projects" id="link-projects-your"
+          <RenkuNavLink title="Your Projects" id="link-projects-your" className="pb-2"
             to={getPreciseUrl(sectionsMap.own)} noSubPath={true} />
         </NavItem>
         <NavItem>
-          <RenkuNavLink title="Starred Projects" id="link-projects-starred"
+          <RenkuNavLink title="Starred Projects" id="link-projects-starred" className="pb-2"
             to={getPreciseUrl(sectionsMap.starred)} exact={false} />
         </NavItem>
         <NavItem>
-          <RenkuNavLink title="All Projects" id="link-projects-all"
+          <RenkuNavLink title="All Projects" id="link-projects-all" className="pb-2"
             to={getPreciseUrl(sectionsMap.all)} exact={false} />
         </NavItem>
       </Nav>
