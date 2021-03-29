@@ -124,6 +124,7 @@ class NewProjectCoordinator {
         ...automated,
         received: true,
         valid: false,
+        finished: true,
         error: error.message ? error.message : error
       };
       this.model.set("automated", automated);
