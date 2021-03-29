@@ -20,7 +20,7 @@ import React, { Component, Fragment } from "react";
 import Media from "react-media";
 import { Link } from "react-router-dom";
 import {
-  Form, FormGroup, FormText, Label, Input, Button, ButtonGroup, Row, Col, Table, DropdownItem, UncontrolledTooltip,
+  Form, FormGroup, FormText, Label, Input, Button, ButtonGroup, Row, Col, DropdownItem, UncontrolledTooltip,
   UncontrolledPopover, PopoverHeader, PopoverBody, Badge, Modal, ModalHeader, ModalBody, ModalFooter, Collapse
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -76,9 +76,13 @@ class Notebooks extends Component {
       (<div>{this.props.message}</div>) :
       null;
 
-    return <Row>
-      <Col>
-        <NotebooksTitle standalone={this.props.standalone} />
+    return (
+      <Fragment>
+        <Row className="pt-2 pb-3">
+          <Col className="d-flex mb-2 justify-content-between">
+            <NotebooksTitle standalone={this.props.standalone} />
+          </Col>
+        </Row>
         <NotebookServers
           servers={this.props.notebooks.all}
           standalone={this.props.standalone}
@@ -98,15 +102,14 @@ class Notebooks extends Component {
           urlNewEnvironment={this.props.urlNewEnvironment}
         />
         {serverNumbers ? null : message}
-      </Col>
-    </Row>;
+      </Fragment>);
   }
 }
 
 class NotebooksTitle extends Component {
   render() {
     if (this.props.standalone)
-      return (<h1>Interactive Environments</h1>);
+      return (<h2>Interactive Environments</h2>);
     return (<h3>Interactive Environments</h3>);
   }
 }
@@ -145,11 +148,9 @@ class NotebookServers extends Component {
       return <Loader />;
 
     return (
-      <Row>
-        <Col md={12} xl={10}>
-          <NotebookServersList {...this.props} />
-        </Col>
-      </Row>
+      <div className="mb-4">
+        <NotebookServersList {...this.props} />
+      </div>
     );
   }
 }
@@ -186,56 +187,14 @@ class NotebookServersList extends Component {
         url={this.props.servers[k].url}
       />);
     });
+
     return (
-      <Table>
-        <thead className="thead-light">
-          <NotebookServersHeader scope={this.props.scope} standalone={this.props.standalone} />
-        </thead>
-        <tbody>
+      <Fragment>
+        <div className="mb-4">
           {rows}
-        </tbody>
-      </Table>
+        </div>
+      </Fragment>
     );
-  }
-}
-
-class NotebookServersHeader extends Component {
-  render() {
-    return (
-      <Media query={Sizes.md}>
-        {matches =>
-          matches ?
-            (<NotebookServerHeaderFull {...this.props} />) :
-            (<NotebookServerHeaderCompact {...this.props} />)
-        }
-      </Media>
-    );
-  }
-}
-
-class NotebookServerHeaderFull extends Component {
-  render() {
-    const project = this.props.standalone ?
-      <th className="align-middle">Project</th> :
-      null;
-
-    return (
-      <tr>
-        <th className="align-middle" style={{ width: "1px" }}></th>
-        {project}
-        <th className="align-middle">Branch</th>
-        <th className="align-middle">Commit</th>
-        <th className="align-middle">Resources</th>
-        <th className="align-middle">Status</th>
-        <th className="align-middle" style={{ width: "1px" }}>Action</th>
-      </tr>
-    );
-  }
-}
-
-class NotebookServerHeaderCompact extends Component {
-  render() {
-    return (<tr><th className="align-middle">List</th></tr>);
   }
 }
 
@@ -326,7 +285,7 @@ class NotebookServerRowCommitInfo extends Component {
 
     return (
       <span>
-        <FontAwesomeIcon id={uid} icon={faInfoCircle} style={{ color: "#5561A6" }} />
+        <FontAwesomeIcon id={uid} icon={faInfoCircle}/>
         <UncontrolledPopover target={uid} trigger="legacy" placement="bottom"
           isOpen={this.state.isOpen} toggle={() => this.toggle()}>
           <PopoverHeader>Commit details</PopoverHeader>
@@ -350,25 +309,29 @@ class NotebookServerRowFull extends Component {
       />
     </td>;
     const project = this.props.standalone ?
-      (<td className="align-middle"><NotebookServerRowProject annotations={annotations} /></td>) :
+      (<NotebookServerRowProject annotations={annotations} />) :
       null;
-    const branch = (<td className="align-middle">
-      <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text" />
-    </td>);
-    const commit = (<td className="align-middle">
+    const branch = this.props.standalone ?
+      (<span>Branch:&nbsp;
+        <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text" />
+      </span>)
+      : <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text" className="title"/>;
+    const commit = (<span>Commit:&nbsp;
       <ExternalLink url={repositoryLinks.commit} title={annotations["commit-sha"].substring(0, 8)} role="text" />
-      {" "}<NotebookServerRowCommitInfo uid={uid} name={name} commit={commitDetails} fetchCommit={fetchCommit} />
-    </td>);
+      {" "}<span className="text-dark">
+        <NotebookServerRowCommitInfo uid={uid} name={name} commit={commitDetails} fetchCommit={fetchCommit} />
+      </span></span>);
+
     const resourceList = Object.keys(resources).map(name => {
-      return (<div key={name} className="text-nowrap">{resources[name]} <i>{name}</i></div>);
+      return (<span key={name} className="text-nowrap text-center">{resources[name]} <i>{name}</i></span>);
     });
-    const resourceObject = (<td>{resourceList}</td>);
-    const statusOut = (<td className="align-middle">
-      <NotebooksServerRowStatus
-        details={details} status={status} uid={uid} startTime={this.props.startTime} annotations={annotations}
-      />
-    </td>);
-    const action = (<td className="align-middle">
+    const resourceObject = (<span>
+      <span className="text-nowrap text-center">Resources:&nbsp;</span>{resourceList}
+    </span>);
+    const statusOut = <NotebooksServerRowStatus
+      details={details} status={status} uid={uid} startTime={this.props.startTime} annotations={annotations}/>;
+
+    const action = (<span className="mb-auto">
       <NotebookServerRowAction
         name={this.props.name}
         status={status}
@@ -383,18 +346,32 @@ class NotebookServerRowFull extends Component {
         name={this.props.name}
         annotations={annotations}
       />
-    </td>);
+    </span>);
 
     return (
-      <tr>
-        {icon}
-        {project}
-        {branch}
-        {commit}
-        {resourceObject}
-        {statusOut}
-        {action}
-      </tr>
+      <div className="d-flex flex-row rk-search-result cursor-auto">
+        <span className={"me-3 mt-2"}>{icon}</span>
+        <Col className="d-flex align-items-start flex-column col-10 overflow-hidden">
+          <div className="project d-inline-block text-truncate">
+            {project}
+          </div>
+          <div className="text-truncate text-rk-text">
+            {branch}
+          </div>
+          <div className="commit text-truncate text-rk-text">
+            {commit}
+          </div>
+          <div className="commit text-truncate text-rk-text">
+            {resourceObject}
+          </div>
+          <div className="mt-auto">
+            {statusOut}
+          </div>
+        </Col>
+        <Col className="d-flex align-items-end flex-column flex-shrink-0">
+          {action}
+        </Col>
+      </div>
     );
   }
 }
@@ -412,30 +389,30 @@ class NotebookServerRowCompact extends Component {
     </span>;
     const project = this.props.standalone ?
       (<Fragment>
-        <span className="font-weight-bold">Project: </span>
+        <span className="font-weight-bold text-rk-text">Project: </span>
         <span><NotebookServerRowProject annotations={this.props.annotations} /></span>
         <br />
       </Fragment>) :
       null;
     const branch = (<Fragment>
-      <span className="font-weight-bold">Branch: </span>
+      <span className="font-weight-bold text-rk-text">Branch: </span>
       <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text" />
       <br />
     </Fragment>);
     const commit = (<Fragment>
-      <span className="font-weight-bold">Commit: </span>
+      <span className="font-weight-bold text-rk-text">Commit: </span>
       <ExternalLink url={repositoryLinks.commit} title={annotations["commit-sha"].substring(0, 8)} role="text" />
-      {" "}<NotebookServerRowCommitInfo uid={uid} name={name} commit={commitDetails} fetchCommit={fetchCommit} />
+      {" "}<NotebookServerRowCommitInfo uid={uid} name={name} commit={commitDetails} fetchCommit={fetchCommit}/>
       <br />
     </Fragment>);
     const resourceList = Object.keys(resources).map((name, num) =>
-      (<span key={name} className="text-nowrap">
+      (<span key={name} className="text-nowrap text-rk-text">
         {name}: {resources[name]}
         {num < Object.keys(resources).length - 1 ? ", " : ""}
       </span>)
     );
     const resourceObject = (<Fragment>
-      <span className="font-weight-bold">Resources: </span>
+      <span className="font-weight-bold text-rk-text">Resources: </span>
       <span>{resourceList}</span>
       <br />
     </Fragment>);
@@ -467,18 +444,16 @@ class NotebookServerRowCompact extends Component {
     </span>);
 
     return (
-      <tr>
-        <td>
-          {project}
-          {branch}
-          {commit}
-          {resourceObject}
-          <div className="d-inline-flex" >
-            {icon} &nbsp; {statusOut}
-          </div>
-          <div className="mt-1">{action}</div>
-        </td>
-      </tr>
+      <div className="rk-search-result-compact">
+        {project}
+        {branch}
+        {commit}
+        {resourceObject}
+        <div className="d-inline-flex" >
+          {icon} &nbsp; {statusOut}
+        </div>
+        <div className="mt-1">{action}</div>
+      </div>
     );
   }
 }
@@ -520,12 +495,10 @@ class NotebooksServerRowStatus extends Component {
   render() {
     const { status, details, uid, annotations } = this.props;
     const data = getStatusObject(status, annotations.default_image_used);
-    const spacing = this.props.spaced ?
-      " " :
-      (<br />);
     const info = status !== "running" ?
-      (<span>
-        <FontAwesomeIcon id={uid} style={{ color: "#5561A6" }} icon={faInfoCircle} />
+      (<span className="time-caption font-weight-bold text-secondary">
+        {data.text}&nbsp;
+        <FontAwesomeIcon id={uid} icon={faInfoCircle} />
         <UncontrolledPopover target={uid} trigger="legacy" placement="bottom">
           <PopoverHeader>Kubernetes pod status</PopoverHeader>
           <PopoverBody>
@@ -535,9 +508,9 @@ class NotebooksServerRowStatus extends Component {
           </PopoverBody>
         </UncontrolledPopover>
       </span>) :
-      (<span className="time-caption">{spacing}since {this.props.startTime}</span>);
+      (<span className="time-caption font-weight-bold text-secondary">{data.text} since {this.props.startTime}</span>);
 
-    return <div>{data.text}&nbsp;{info}</div>;
+    return <div>{info}</div>;
   }
 }
 
@@ -578,7 +551,7 @@ class NotebookServerRowProject extends Component {
     const fullPath = `${annotations["namespace"]}/${annotations["projectName"]}`;
     const data = { namespace: annotations["namespace"], path: annotations["projectName"] };
     const url = Url.get(Url.pages.project, data);
-    return (<Link to={url}>{fullPath}</Link>);
+    return (<Link to={url} className="title">{fullPath}</Link>);
   }
 }
 
@@ -591,13 +564,13 @@ class NotebookServerRowAction extends Component {
       logs: null
     };
     let defaultAction = null;
-    actions.logs = (<DropdownItem onClick={() => this.props.toggleLogs(name)}>
+    actions.logs = (<DropdownItem onClick={() => this.props.toggleLogs(name)} color="secondary">
       <FontAwesomeIcon icon={faFileAlt} /> Get logs
     </DropdownItem>);
 
     if (status === "running") {
-      defaultAction = (<ExternalLink url={this.props.url} title="Connect" />);
-      actions.connect = (<DropdownItem href={this.props.url} target="_blank">
+      defaultAction = (<ExternalLink url={this.props.url} title="Connect" color="secondary" className="text-white"/>);
+      actions.connect = (<DropdownItem href={this.props.url} target="_blank" >
         <FontAwesomeIcon icon={faExternalLinkAlt} /> Connect
       </DropdownItem>);
       actions.stop = (<DropdownItem onClick={() => this.props.stopNotebook(name)}>
@@ -605,12 +578,12 @@ class NotebookServerRowAction extends Component {
       </DropdownItem>);
     }
     else {
-      const classes = { color: "primary", className: "text-nowrap" };
+      const classes = { color: "secondary", className: "text-nowrap" };
       defaultAction = (<Button {...classes} onClick={() => this.props.toggleLogs(name)}>Get logs</Button>);
     }
 
     return (
-      <ButtonWithMenu size="sm" default={defaultAction}>
+      <ButtonWithMenu size="sm" default={defaultAction} color="secondary">
         {actions.connect}
         {actions.stop}
         {actions.logs}
