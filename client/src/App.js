@@ -35,6 +35,7 @@ import DatasetList from "./dataset/list/DatasetList.container";
 import { Landing, RenkuNavBar, FooterNavbar } from "./landing";
 import { Notebooks } from "./notebooks";
 import { Login, LoginHelper } from "./authentication";
+import { IFrameTest } from "./IFrameTest";
 import Help from "./help";
 import NotFound from "./not-found";
 import ShowDataset from "./dataset/Dataset.container";
@@ -85,6 +86,8 @@ class App extends Component {
           <Switch>
             <Route exact path="/login" render={
               p => <Login key="login" {...p} {...this.props} />} />
+            <Route exact path="/iframe" render={
+              p => <IFrameTest key="iframe" {...p} {...this.props} />} />              
             <Route exact path={Url.get(Url.pages.landing)} render={
               p => <Landing.Home
                 key="landing" welcomePage={this.props.params["WELCOME_PAGE"]}

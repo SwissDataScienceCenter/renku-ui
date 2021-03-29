@@ -128,9 +128,4 @@ EOF
 # suid bins need to run. Please switch the following two lines when trying to run multiple telepresence.
 # Reference: https://www.telepresence.io/reference/methods
 
-if [[ "$OSTYPE" == "linux-gnu" ]]
-then
-  BROWSER=none telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 3000:8080 --run npm start
-else
-  BROWSER=none telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --method inject-tcp --expose 3000:8080 --run npm start
-fi
+BROWSER=none telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 3000:8080 --run npm start
