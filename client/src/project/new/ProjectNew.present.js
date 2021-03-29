@@ -232,10 +232,10 @@ function Automated(props) {
       <Alert key="alert" color="danger">
         <p>
           <FontAwesomeIcon icon={faExclamationTriangle} />&nbsp;
-          An error occurred while bootstrapping your pre-initialized project.
+          We could not pre-fill the fields with the information provided in the RenkuLab project-creation link.
         </p>
         <p>
-          It is possible the metadata are outdated or not valid.
+          It is possible that the link is outdated or not valid.
           Please contact the source of the RenkuLab link and ask for a new one.
         </p>
 
@@ -253,7 +253,7 @@ function Automated(props) {
       <Alert color="warning">
         <p>
           <FontAwesomeIcon icon={faExclamationTriangle} />&nbsp;
-          Some pre-initialization settings could not be applied.
+          Some fields could not be pre-filled with the information provided in the RenkuLab project-creation link.
         </p>
         <Button color="link" style={{ fontSize: "smaller" }} className="font-italic" onClick={() => toggleWarn()}>
           {showWarnings ? "Hide warnings" : "Show warnings"}
@@ -267,8 +267,8 @@ function Automated(props) {
     <Alert color="primary">
       <p className="mb-0">
         <FontAwesomeIcon icon={faInfoCircle} />&nbsp;
-        Some pre-initialization settings were applied.
-        <br />You can still change any setting before you create the project.
+        Some fields were pre-filled.
+        <br />You can still change any values before you create the project.
       </p>
     </Alert>
   );
@@ -286,16 +286,16 @@ function AutomatedModal(props) {
     null :
     (
       <Button color="link" style={{ fontSize: "smaller" }} className="font-italic" onClick={() => toggle()}>
-        Do you prefer a blank project instead?
+        Taking too long?
       </Button>
     );
 
   const to = Url.get(Url.pages.project.new);
   const fadeInContent = (
     <p className="mt-3">
-      Click here to&nbsp;
+      If pre-filling the new project form is taking too long, you can
       <Link className="btn btn-primary btn-sm" to={to} onClick={() => { removeAutomated(); }}>
-        start from scratch
+        use a blank form
       </Link>
     </p>
   );
@@ -305,9 +305,9 @@ function AutomatedModal(props) {
       <ModalBody>
         <Row>
           <Col>
-            <p>You entered a url containing initialization data.</p>
+            <p>You entered a url containing information to pre-fill.</p>
             <span>
-              Please wait, we are fetching the required metadata...&nbsp;
+              Please wait while we fetch the required metadata...&nbsp;
               <Loader inline={true} size={16} />
             </span>
             <div className="mt-2">
@@ -931,7 +931,7 @@ class Create extends Component {
       </Button>
     );
     const createLink = (
-      <DropdownItem onClick={this.toggle}><FontAwesomeIcon icon={faLink} /> Share link</DropdownItem>
+      <DropdownItem onClick={this.toggle}><FontAwesomeIcon icon={faLink} /> Create link</DropdownItem>
     );
     return (
       <Fragment>
@@ -1046,7 +1046,7 @@ function ShareLinkModal(props) {
   const feedback = include.namespace ?
     (
       <FormText color="danger">
-        Including the namespace may lead to errors if the user does not have access to it.
+        Pre-filling the namespace may lead to errors since other users are not guaranteed to have access to it.
       </FormText>
     ) :
     null;
@@ -1058,11 +1058,11 @@ function ShareLinkModal(props) {
         <Row>
           <Col>
             <p>
-              Here is your shareable link, containing the current settings for a new project.
-              Clicking on it will pre-fill the inputs automatically.
+              Here is your shareable link, containing the current values for a new project.
+              Following the link will lead to a <b>New project</b> form with these values pre-filled.
             </p>
             <p>
-              You can review which settings to include in the link metadata.
+              You can control which values should be pre-filled.
             </p>
 
             <Form className="mb-3">
