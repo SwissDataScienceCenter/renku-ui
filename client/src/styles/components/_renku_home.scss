@@ -1,0 +1,35 @@
+header.rk-anon-home .nav-link {
+  color: $rk-green;
+  border: 1px solid;
+  &:hover {
+    color: $rk-blue;
+    background-color: $rk-green;
+  }
+}
+
+nav.rk-anon-home .nav-link {
+  color: $rk-white;
+  &:hover {
+    color: $rk-blue;
+    background-color: $rk-green;
+  }  
+}
+
+#nav-hamburger {
+  background-color: transparent;
+  &:hover {
+    color: $rk-blue;
+    background-color: $rk-green;
+  }  
+}
+
+#rk-anon-home-frame {
+  @extend .bg-primary;
+  padding: 10px 85px;
+  color: $rk-white;
+}
+
+#root {
+  background: $rk-blue;
+}
+

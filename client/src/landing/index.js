@@ -25,5 +25,6 @@
 
 import Landing from "./Landing";
 import { RenkuNavBar, FooterNavbar, MaintenanceNavBar } from "./NavBar";
+import AnonymousHome from "./AnonymousHome";
 
-export { Landing, RenkuNavBar, FooterNavbar, MaintenanceNavBar };
+export { AnonymousHome, Landing, RenkuNavBar, FooterNavbar, MaintenanceNavBar };

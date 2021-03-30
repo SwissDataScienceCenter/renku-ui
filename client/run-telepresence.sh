@@ -44,6 +44,22 @@ fi
 
 if [ -z "$STATUSPAGE_ID" ]; then STATUSPAGE_ID="r3j2c84ftq49"; else echo "STATUSPAGE_ID is set to '$STATUSPAGE_ID'"; fi
 
+# Set HOMEPAGE_MAIN_CONTENTMD to some markdown to try out the main content:
+# E.g.,
+# set HOMEPAGE_MAIN_CONTENTMD '# Yoyodyne'\n'Welcome to the Yoyodyne Renku instance!'
+# set HOMEPAGE_MAIN_BGURL https://eoimages.gsfc.nasa.gov/images/imagerecords/79000/79803/earth_night_rotate_lrg.jpg
+if [ -z "$HOMEPAGE_MAIN_CONTENTMD" ]
+then
+  HOMEPAGE_ENABLED="false"
+  HOMEPAGE_MAIN_CONTENTMD=""
+  HOMEPAGE_MAIN_BGURL=""
+else
+  HOMEPAGE_ENABLED="true"
+  echo "HOMEPAGE_MAIN_CONTENTMD is set to echo '${HOMEPAGE_MAIN_CONTENTMD}' | base64"
+  echo "HOMEPAGE_MAIN_BGURL is set to '${HOMEPAGE_MAIN_BGURL}'"
+  HOMEPAGE_MAIN_CONTENTMD=`echo "${HOMEPAGE_MAIN_CONTENTMD}" | base64`
+fi
+
 if [[ -n $PR ]]
 then
   DEV_NAMESPACE=renku-ci-ui-${PR}
@@ -114,7 +130,10 @@ tee > ./public/config.json << EOF
   "TEMPLATES": ${TEMPLATES},
   "PREVIEW_THRESHOLD": ${PREVIEW_THRESHOLD},
   "UPLOAD_THRESHOLD": ${UPLOAD_THRESHOLD},
-  "STATUSPAGE_ID": "${STATUSPAGE_ID}"
+  "STATUSPAGE_ID": "${STATUSPAGE_ID}",
+  "HOMEPAGE_ENABLED": "${HOMEPAGE_ENABLED}",
+  "HOMEPAGE_MAIN_CONTENTMD": "${HOMEPAGE_MAIN_CONTENTMD}",
+  "HOMEPAGE_MAIN_BGURL": "${HOMEPAGE_MAIN_BGURL}"
 }
 EOF
 

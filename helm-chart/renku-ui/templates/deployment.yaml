@@ -85,6 +85,19 @@ spec:
               value: {{ toJson .Values.uploadSizeThreshold | quote }}
             - name: UI_VERSION
               value: {{ .Chart.Version | quote }}
+            - name: HOMEPAGE_ENABLED
+              value: {{ .Values.homepage.enabled | quote }}
+            {{- if .Values.homepage.enabled }}
+            - name: HOMEPAGE_MAIN_CONTENTMD
+              value: {{ .Values.homepage.main.contentMd | default (printf "") | b64enc | quote }}
+            - name: HOMEPAGE_MAIN_BGURL
+              value: {{ .Values.homepage.main.backgroundImage.url | default (printf "") | quote }}
+            {{ else }}
+            - name: HOMEPAGE_MAIN_CONTENTMD
+              value: ""
+            - name: HOMEPAGE_MAIN_BGURL
+              value: ""
+            {{- end }}
           livenessProbe:
             httpGet:
               path: /
