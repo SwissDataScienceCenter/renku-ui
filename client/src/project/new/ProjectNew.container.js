@@ -118,6 +118,10 @@ class ForkProjectMapper extends Component {
         fetched: state.projects.featured.fetched,
         fetching: state.projects.featured.fetching,
         list: state.projects.featured.member,
+      },
+      user: {
+        logged: state.user.logged,
+        username: state.user.data && state.user.data.username ? state.user.data.username : null
       }
     };
   }
@@ -141,7 +145,7 @@ class ForkProjectMapper extends Component {
 
 
 function ForkProject(props) {
-  const { forkedTitle, handlers, namespaces, projects, toggleModal } = props;
+  const { forkedTitle, handlers, namespaces, projects, toggleModal, user } = props;
 
   const [title, setTitle] = useState(forkedTitle);
   const [namespace, setNamespace] = useState(""); // TODO - pick the default namespace if available
@@ -273,6 +277,7 @@ function ForkProject(props) {
       projects={projects}
       title={title}
       toggleModal={toggleModal}
+      user={user}
     />
   );
 }
@@ -388,7 +393,8 @@ class NewProject extends Component {
         list: state.projects.namespaces.list
       },
       user: {
-        logged: state.user.logged
+        logged: state.user.logged,
+        username: state.user.data && state.user.data.username ? state.user.data.username : null
       }
     };
 
