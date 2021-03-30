@@ -50,10 +50,10 @@ class DatasetListRow extends Component {
         </div>
         <div className="creators text-truncate text-rk-text">
           {
-            // Can't remember if we had decided to leave just the first 3 crators...
             dataset.published !== undefined && dataset.published.creator !== undefined ?
-              <small className="d-block text-dark">
-                {dataset.published.creator.map((creator) => creator.name).join("; ")}
+              <small style={{ display: "block" }} className="font-weight-light">
+                {dataset.published.creator.slice(0, 3).map((creator) => creator.name).join(", ")}
+                {dataset.published.creator.length > 3 ? ", et al." : null}
               </small>
               : null
           }
@@ -167,7 +167,7 @@ class DatasetSearchForm extends Component {
         <Col sm={12}>
           <FormText key="help" color="rk-text">
             {this.props.errorMessage} If you are not finding what you are looking
-            for, <Button className="pr-0 pl-0 pt-0 pb-0 mb-1" color="link" id="toggler">
+            for, <Button className="p-0 mb-1" color="link" id="toggler">
               <small>click here for help.</small>
             </Button>
           </FormText>
