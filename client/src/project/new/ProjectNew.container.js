@@ -143,7 +143,7 @@ class ForkProjectMapper extends Component {
 function ForkProject(props) {
   const { forkedTitle, handlers, namespaces, projects, toggleModal } = props;
 
-  const [title, setTitle] = useState(forkedTitle + " - copy");
+  const [title, setTitle] = useState(forkedTitle);
   const [namespace, setNamespace] = useState(""); // TODO - pick the default namespace if available
   const [projectsPaths, setProjectsPaths] = useState([]);
   const [error, setError] = useState(null);
