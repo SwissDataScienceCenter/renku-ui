@@ -279,12 +279,13 @@ class View extends Component {
 
   render() {
     const VisibleIssueView = connect(this.mapStateToProps, this.mapDispatchToProps.bind(this))(IssueView);
+    let propsNoStore = { ...this.props, store: null };
     return <Provider key="new" store={this.store}>
       <VisibleIssueView
         contributions={this.state ? this.state.contributions : []}
         appendContribution={this.appendContribution.bind(this)}
         expanded={this.state ? this.state.expanded : false}
-        {...this.props} />
+        {...propsNoStore} />
     </Provider>;
   }
 }
