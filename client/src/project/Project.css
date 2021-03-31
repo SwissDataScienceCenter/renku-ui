@@ -36,15 +36,6 @@ Button.alert-link {
   -webkit-box-orient: vertical;
 }
 
-
-.datasetAuthors{
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  width: 98%;
-  text-overflow: ellipsis;
-}
-
 .margin-no-triangle{
   margin-left:15px;
 }
