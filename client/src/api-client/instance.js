@@ -19,15 +19,28 @@
 // API methods that return Gitlab server instance-level information
 
 function addInstanceMethods(client) {
-  client.getNamespaces = (queryParams = {}) => {
-    // Default the number of rows to 100
-    if (undefined === queryParams.per_page) queryParams.per_page = 100;
-    const headers = client.getBasicHeaders();
-    return client.clientFetch(`${client.baseUrl}/namespaces`, {
-      method: "GET",
-      headers,
-      queryParams
-    });
+  client.getNamespaces = async (per_page = 100) => {
+    const url = `${client.baseUrl}/namespaces`;
+    let headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    const queryParams = { per_page };
+    const options = { method: "GET", headers, queryParams };
+    const namespacesIterator = client.clientIterableFetch(url, { options });
+
+    let namespaces = [], pagination = {}, error = false;
+    try {
+      for await (const namespacesPage of namespacesIterator) {
+        namespaces = [...namespaces, ...namespacesPage.data];
+        pagination = { ...namespacesPage.pagination, done: false };
+      }
+      pagination.done = true;
+    }
+    catch (exception) {
+      error = exception;
+    }
+    finally {
+      return { data: namespaces, pagination, error };
+    }
   };
 
   client.getGroupByPath = (path) => {
