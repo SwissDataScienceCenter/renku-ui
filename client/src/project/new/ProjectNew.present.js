@@ -150,7 +150,7 @@ function ForkProjectStatus(props) {
 }
 
 function ForkProjectContent(props) {
-  const { error, forking, handlers, namespace, namespaces, title } = props;
+  const { error, forking, handlers, namespace, namespaces, title, user } = props;
   if (forking)
     return null;
 
@@ -160,7 +160,7 @@ function ForkProjectContent(props) {
   return (
     <Fragment>
       <Title handlers={handlers} input={input} meta={meta} />
-      <Namespaces handlers={handlers} input={input} namespaces={namespaces} />
+      <Namespaces handlers={handlers} input={input} namespaces={namespaces} user={user} />
       <Home input={input} />
     </Fragment>
   );
@@ -281,10 +281,16 @@ class NamespacesAutosuggest extends Component {
 
   componentDidMount() {
     // set first user namespace as default (at least one should always available)
-    const { namespaces, namespace } = this.props;
+    const { namespaces, namespace, user } = this.props;
     if (namespaces.fetched && namespaces.list.length && !namespace) {
-      const nsUserSorted = namespaces.list.sort((a, b) => (a.kind === "user") ? -1 : 1);
-      const defaultNamespace = nsUserSorted[0];
+      let defaultNamespace = null, personalNs = null;
+      if (user.logged)
+        personalNs = namespaces.list.find(ns => ns.kind === "user" && ns.full_path === user.username);
+      if (personalNs)
+        defaultNamespace = personalNs;
+      else
+        defaultNamespace = namespaces.list.find(ns => ns.kind === "user");
+
       this.props.handlers.setNamespace(defaultNamespace);
       this.setState({ value: defaultNamespace.full_path });
     }
