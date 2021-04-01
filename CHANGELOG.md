@@ -1,5 +1,22 @@
 # Changes
 
+## [0.11.9](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.8...0.11.9) (2021-04-01)
+
+### Features
+
+* improve UX when forking a project, and handle up to 1000 namespaces ([#1296](https://github.com/SwissDataScienceCenter/renku-ui/issues/1296), [#1294](https://github.com/SwissDataScienceCenter/renku-ui/issues/1294), [#1277](https://github.com/SwissDataScienceCenter/renku-ui/issues/1277), [#1271](https://github.com/SwissDataScienceCenter/renku-ui/issues/1271))
+* allow setting project avatar ([#1206](https://github.com/SwissDataScienceCenter/renku-ui/issues/1206), [#1273](https://github.com/SwissDataScienceCenter/renku-ui/issues/1273))
+* simplify getting the registry image URL for running sessions ([#1290](https://github.com/SwissDataScienceCenter/renku-ui/issues/1290))
+
+### Bug Fixes
+
+* fix issue pages not loading the content ([#1295](https://github.com/SwissDataScienceCenter/renku-ui/issues/1295), [#1293](https://github.com/SwissDataScienceCenter/renku-ui/issues/1293))
+* preserve query parameters when logging in ([#1282](https://github.com/SwissDataScienceCenter/renku-ui/issues/1282))
+
+### BREAKING CHANGES
+
+* requires renku-gateway version >= 0.9.4
+
 ## [0.11.8](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.7...0.11.8) (2021-03-09)
 
 ### Bug Fixes
