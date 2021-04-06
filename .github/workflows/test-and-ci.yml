@@ -49,6 +49,7 @@ jobs:
       uses: SwissDataScienceCenter/renku/actions/publish-chart@master
       env:
         GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        CHART_NAME: renku-ui
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
     - name: Wait for chart to get published
@@ -56,5 +57,5 @@ jobs:
     - name: Update component version
       uses: SwissDataScienceCenter/renku/actions/update-component-version@master
       env:
-        CHART_NAME: renku-ui
         GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        CHART_NAME: renku-ui
