@@ -35,7 +35,7 @@ jobs:
       test-enabled: ${{ steps.deploy-comment.outputs.test-enabled}}
     steps:
       - id: deploy-comment
-        uses: SwissDataScienceCenter/renku/actions/check-pr-description@master
+        uses: SwissDataScienceCenter/renku/actions/check-pr-description@1959-deploy-commands
         with:
           string: /deploy
           pr_ref: ${{ github.event.number }}
@@ -64,7 +64,7 @@ jobs:
         body: |
           You can access the deployment of this PR at https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch
     - name: Build and deploy
-      uses: SwissDataScienceCenter/renku/actions/deploy-renku@master
+      uses: SwissDataScienceCenter/renku/actions/deploy-renku@1959-deploy-commands
       env:
         RANCHER_PROJECT_ID: ${{ secrets.CI_RANCHER_PROJECT }}
         DOCKER_PASSWORD: ${{ secrets.RENKU_DOCKER_PASSWORD }}
