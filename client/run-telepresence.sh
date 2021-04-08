@@ -46,18 +46,33 @@ if [ -z "$STATUSPAGE_ID" ]; then STATUSPAGE_ID="r3j2c84ftq49"; else echo "STATUS
 
 # Set HOMEPAGE_MAIN_CONTENTMD to some markdown to try out the main content:
 # E.g.,
-# set HOMEPAGE_MAIN_CONTENTMD '# Yoyodyne'\n'Welcome to the Yoyodyne Renku instance!'
+# set HOMEPAGE_MAIN_CONTENTMD '# Yoyodyne\nWelcome to the Yoyodyne Renku instance!'
 # set HOMEPAGE_MAIN_BGURL https://eoimages.gsfc.nasa.gov/images/imagerecords/79000/79803/earth_night_rotate_lrg.jpg
 if [ -z "$HOMEPAGE_MAIN_CONTENTMD" ]
 then
-  HOMEPAGE_ENABLED="false"
+  HOMEPAGE_CUSTOM_ENABLED="false"
   HOMEPAGE_MAIN_CONTENTMD=""
   HOMEPAGE_MAIN_BGURL=""
 else
-  HOMEPAGE_ENABLED="true"
-  echo "HOMEPAGE_MAIN_CONTENTMD is set to echo '${HOMEPAGE_MAIN_CONTENTMD}' | base64"
+  HOMEPAGE_CUSTOM_ENABLED="true"
+  echo "HOMEPAGE_MAIN_CONTENTMD is set to '${HOMEPAGE_MAIN_CONTENTMD}'"
   echo "HOMEPAGE_MAIN_BGURL is set to '${HOMEPAGE_MAIN_BGURL}'"
-  HOMEPAGE_MAIN_CONTENTMD=`echo "${HOMEPAGE_MAIN_CONTENTMD}" | base64`
+fi
+
+if [ -z "$HOMEPAGE_TUTORIAL_LINK" ]
+then
+  HOMEPAGE_TUTORIAL_LINK="https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html"
+else
+  echo "HOMEPAGE_TUTORIAL_LINK is set to '${HOMEPAGE_TUTORIAL_LINK}'"
+fi
+
+if [ -z "$HOMEPAGE_SHOW_PROJECTS" ]
+then
+  HOMEPAGE_PROJECTS="[]"
+  echo "HOMEPAGE_SHOW_PROJECTS is set to '${HOMEPAGE_PROJECTS}'"
+else
+  HOMEPAGE_PROJECTS='[{"projectPath": "julia/flights-tutorial-julia"}, {"projectPath": "cramakri/covid-19-dashboard"}]'
+  echo "HOMEPAGE_SHOW_PROJECTS is set to '${HOMEPAGE_PROJECTS}'"
 fi
 
 if [[ -n $PR ]]
@@ -131,9 +146,19 @@ tee > ./public/config.json << EOF
   "PREVIEW_THRESHOLD": ${PREVIEW_THRESHOLD},
   "UPLOAD_THRESHOLD": ${UPLOAD_THRESHOLD},
   "STATUSPAGE_ID": "${STATUSPAGE_ID}",
-  "HOMEPAGE_ENABLED": "${HOMEPAGE_ENABLED}",
-  "HOMEPAGE_MAIN_CONTENTMD": "${HOMEPAGE_MAIN_CONTENTMD}",
-  "HOMEPAGE_MAIN_BGURL": "${HOMEPAGE_MAIN_BGURL}"
+  "HOMEPAGE": {
+    "custom": {
+      "enabled":${HOMEPAGE_CUSTOM_ENABLED},
+      "main": {
+        "contentMd": "${HOMEPAGE_MAIN_CONTENTMD}",
+        "backgroundImage": {
+          "url": "${HOMEPAGE_MAIN_BGURL}"
+        }
+      }
+    },
+    "tutorialLink": "${HOMEPAGE_TUTORIAL_LINK}",
+    "projects": ${HOMEPAGE_PROJECTS}
+  }
 }
 EOF
 

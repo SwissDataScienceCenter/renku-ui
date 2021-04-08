@@ -46,18 +46,11 @@ import "./App.css";
 import "react-toastify/dist/ReactToastify.css";
 
 function CentralContentContainer(props) {
-  const { user } = props;
+  const { notifications, user } = props;
 
   if (!props.user.logged && (props.location.pathname === Url.get(Url.pages.landing))) {
-    // Show the home page for anonymous users on the landing URL
-    const homeCustomized = {
-      enabled: props.params["HOMEPAGE_ENABLED"],
-      mainContent: atob(props.params["HOMEPAGE_MAIN_CONTENTMD"]),
-      backgroundUrl: props.params["HOMEPAGE_MAIN_BGURL"]
-    };
-
     return <AnonymousHome client={props.client}
-      homeCustomized={homeCustomized}
+      homeCustomized={props.params["HOMEPAGE"]}
       user={props.user}
       model={props.model}
       location={props.location}
@@ -114,7 +107,7 @@ function CentralContentContainer(props) {
           model={props.model}
           user={props.user}
           blockAnonymous={blockAnonymous}
-          notifications={this.notifications}
+          notifications={notifications}
           {...p}
         />}
       />
@@ -157,7 +150,7 @@ function CentralContentContainer(props) {
         p => <NotificationsPage key="notifications"
           client={props.client}
           model={props.model}
-          notifications={this.notifications}
+          notifications={notifications}
           {...p}
         />}
       />
@@ -199,7 +192,7 @@ class App extends Component {
             <RenkuNavBar {...p} {...this.props} notifications={this.notifications} /> :
             null
         } />
-        <CentralContentContainer {...this.props} />
+        <CentralContentContainer notifications={this.notifications} {...this.props} />
         <Route render={props => <FooterNavbar {...props} params={this.props.params} />} />
         <Route render={props => <Cookie {...props} params={this.props.params} />} />
         <ToastContainer />

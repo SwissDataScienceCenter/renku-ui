@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2021 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -26,16 +26,15 @@
 
 import React, { Fragment, useState } from "react";
 import { Link } from "react-router-dom";
+import { HashLink } from "react-router-hash-link";
 import { Button, Row, Col } from "reactstrap";
 import { Navbar, Nav, Collapse, NavItem } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faBars,
-  faClone, faCloudUploadAlt as faCloudUp, faCodeBranch, faHeart,
-  faSearch, faShieldAlt as faShield, faUserFriends
+  faBars
 } from "@fortawesome/free-solid-svg-icons";
 
-import { RenkuNavLink } from "../utils/UIComponents";
+import { RenkuNavLink, ExternalLink } from "../utils/UIComponents";
 import { Url } from "../utils/url";
 import { StatuspageBanner } from "../statuspage";
 import QuickNav from "../utils/quicknav";
@@ -43,7 +42,15 @@ import { RenkuMarkdown } from "../utils/UIComponents";
 import { RenkuToolbarHelpMenu, RenkuToolbarNotifications } from "./NavBar";
 
 import logo from "./logo.svg";
+import Arrow_left from "./Assets/Arrow_left.svg";
+import Arrow_right from "./Assets/Arrow_right.svg";
+import Icon_Data_Scientists from "./Assets/Icon_Data_Scientists.svg";
+import Icon_Teams from "./Assets/Icon_Teams.svg";
+import Icon_Specialists from "./Assets/Icon_Specialists.svg";
+import Illustration_Theory_Practice from "./Assets/Illustration_Theory_Practice.svg";
 import VisualHead from "./Assets/Visual_Head.svg";
+import VisualDetail from "./Assets/Visual_Detail.svg";
+import VisualFooter from "./Assets/Visual_Footer.svg";
 
 function HomeHeader(props) {
   const [isOpen, setIsOpen] = useState(false);
@@ -61,10 +68,12 @@ function HomeHeader(props) {
       <div className="align-self-center flex-grow-1">
         <img src={logo} alt="Renku" height="68" className="d-block my-1" />
       </div>
-      <div className="px-2 mt-3 align-self-center">
-        <RenkuNavLink to="/login" title="Login" id="link-login" className="btn" />
+      <div className="px-2 mt-3 align-self-center bg-primary">
+        <Link className="btn btn-outline-secondary" role="button" id="link-login" to="/login">
+          Login
+        </Link>
       </div>
-      <div className="px-2 mt-1 align-self-center">
+      <div className="px-2 mt-1 align-self-center bg-primary">
         <Button onClick={toggleOpen} id="nav-hamburger" className="border-0 mt-3">
           <FontAwesomeIcon icon={faBars} id="userIcon" />
         </Button>
@@ -72,25 +81,24 @@ function HomeHeader(props) {
     </header>
     <div>
       <Collapse isOpen={isOpen} className="mt-2">
-        <Navbar color="primary" className="container-fluid flex-wrap flex-lg-nowrap renku-container
-          navbar rk-anon-home rk-navbar">
-          <Nav className="ms-auto">
-            <NavItem className="nav-item col-6 col-lg-auto pe-1">
+        <Navbar className="navbar rk-anon-home px-0">
+          <Nav className="ms-auto flex-column text-end">
+            <NavItem className="nav-item pe-1">
               <QuickNav client={props.client} model={props.model} user={props.user} />
             </NavItem>
-            <NavItem className="nav-item col-6 col-lg-auto">
+            <NavItem className="nav-item">
               <RenkuNavLink to="/projects" title="Projects" id="link-projects" className="link-secondary" />
             </NavItem>
-            <NavItem className="nav-item col-6 col-lg-auto">
+            <NavItem className="nav-item">
               <RenkuNavLink to="/datasets" title="Datasets" id="link-datasets" />
             </NavItem>
-            <NavItem className="nav-item col-6 col-lg-auto">
+            <NavItem className="nav-item">
               <RenkuNavLink to="/environments" title="Environments" id="link-environments" />
             </NavItem>
-            <NavItem className="nav-item col-1 col-lg-auto">
+            <NavItem className="nav-item">
               <RenkuToolbarHelpMenu />
             </NavItem>
-            <NavItem className="nav-item col-1 col-lg-auto">
+            <NavItem className="nav-item">
               <RenkuToolbarNotifications {...props} />
             </NavItem>
           </Nav>
@@ -100,120 +108,262 @@ function HomeHeader(props) {
   </Fragment>;
 }
 
-
-function RenkuProvidesHeader(props) {
-  return <h3 className="text-primary">
-    {props.title} <FontAwesomeIcon icon={props.icon} id={props.title.toLowerCase()} />
-  </h3>;
-}
-
-function DefaultAnonymousHome(props) {
-  const urlMap = props.urlMap;
-  return <div>
-    <Row key="statuspage">
-      <Col>
-        <StatuspageBanner siteStatusUrl={urlMap.siteStatusUrl} statuspageId={props.statuspageId}
-          statuspageModel={props.statuspageModel} />
-      </Col>
-    </Row>
-    <Row key="marquee">
-      <Col>
-        <section className="jumbotron-header rounded px-3 px-sm-4 py-3 py-sm-5 text-center mb-3">
-          <Row>
-            <Col md={6}>
-              <h1>RENKU</h1>
-              <h2>Collaborative Data Science</h2>
-            </Col>
-            <Col md={6} className="d-md-flex justify-content-center align-items-center">
-              <div>
-                <Link to="/login" id="login-button" className="btn btn-primary btn-lg">Login or Sign Up</Link>
-              </div>
-            </Col>
-          </Row>
-        </section>
-      </Col>
-    </Row>
-    <Row key="content-header">
-      <Col>
-        <h1 className="text-center">Renku Enables</h1>
-      </Col>
-    </Row>
-    <Row key="content-body">
-      <Col md={6}>
-        <RenkuProvidesHeader title="Reproducibility" icon={faClone} />
-        <p className="mb-5">Renku <b>captures the lineage</b> of your work so recreating a
-          critical piece of analysis is always possible. In addition, it tracks the details of
-          your <b>computational environment</b> so that others can reliably work with your data and code.</p>
-
-        <RenkuProvidesHeader title="Shareability" icon={faCloudUp} />
-        <p className="mb-5">Need to <b>share your results</b> with a colleague? <b>Make your data available</b> to
-          a project partner? <b>Work together</b> on a project with a teammate?
-          Renku makes all of these easy. And Renku lets you <b>track everyone&#8217;s contribution</b> to
-          the final result.
-        </p>
-
-        <RenkuProvidesHeader title="Federation" icon={faUserFriends} />
-        <p className="mb-5">
-          Collaborate across institutional boundaries,
-          while maintaining complete control of your resources.
-          Federation lets you <b>share</b> information, data, or code <b>without having to make any compromises</b>.
-        </p>
-      </Col>
-      <Col md={6} className="mt-md-5">
-        <RenkuProvidesHeader title="Reusability" icon={faCodeBranch} />
-        <p className="mb-5">
-          Stand on the shoulders of giants: <i>your colleagues</i>. Renku makes it simple
-          to <b>reuse code and data</b> in other projects. No need for you to reinvent the
-          wheel, and everyone profits from your improvements.
-        </p>
-
-        <RenkuProvidesHeader title="Security" icon={faShield} />
-        <p className="mb-5">You have the freedom to share code or data with others, with the
-          security of having <b>fine-grained control</b> over what is visible and what is kept private.
-          You decide what information about your project is available to whom.
-        </p>
-
-        <RenkuProvidesHeader title="Discoverability" icon={faSearch} />
-        <p className="mb-5">
-          The extensible Renku knowledge graph captures information about your
-          project&#8217;s data, code, processes, and lineage. With its <b>powerful search capabilities</b>,
-          if it is in the system, you can always find the information you are looking for.
-        </p>
-      </Col>
-    </Row>
-    <Row key="tutorial" className="mb-3">
-      <Col>
-        Want to learn more? Create an account
-        and <a href="https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html">follow the tutorial</a>.
-      </Col>
-    </Row>
-    <Row key="closing">
-      <Col>
-        <h3 className="text-primary">
-          <FontAwesomeIcon icon={faHeart} id="love" /> Give Renku a try.
-          We think you&#8217;ll love it!
-        </h3>
-      </Col>
-    </Row>
+function Section1(props) {
+  const backgroundUrl = VisualHead;
+  return <div id="rk-anon-home-section1"
+    style={{
+      backgroundImage: `url(${backgroundUrl})`
+    }}>
+    <HomeHeader {...props} />
+    <div className="rk-anon-home-section-content">
+      <Row>
+        <Col className="rk-pt-l rk-w-s" >
+          <h1 className="text-white">Connecting people, data, and insights</h1>
+        </Col>
+      </Row>
+      <Row>
+        <Col className="rk-pt-s rk-w-s">
+          <h3 className="text-secondary">Renku bridges the gaps to make data-driven workflows more collaborative.</h3>
+        </Col>
+      </Row>
+      <Row>
+        <Col className="rk-pt-s rk-w-s">
+          <HashLink className="btn btn-outline-info" role="button"
+            to="#rk-anon-home-section2">
+            Learn more
+          </HashLink>
+        </Col>
+      </Row>
+    </div>
   </div>;
 }
 
+function Section2(props) {
+  return <div id="rk-anon-home-section2">
+    <div className="rk-anon-home-section-content">
+      <Row className="rk-pt-m">
+        <Col md={4}>
+          <h3 className="text-info">Bringing everyone together!</h3>
+        </Col>
+        <Col md={{ size: 7, offset: 1 }}>
+          <h3 className="text-secondary">Successful data science requires collaboration; <br />
+            with Renku, everyone can make a contribution.
+          </h3>
+        </Col>
+      </Row>
+      <Row className="rk-pt-l">
+        <Col className="d-md-flex">
+          <div>
+            <div className="text-center"><img alt="data scientists" src={Icon_Data_Scientists} /></div>
+            <h3 className="rk-pt-s">Data Scientists</h3>
+            <p>
+              Work with the tools you love, like JupyterLab or RStudio. Show your findings
+              visually and discuss results with others. Reproduce past work and reuse
+              successful pipelines.
+            </p>
+          </div>
+          <div className="rk-pt-s">
+            <div className="rk-pt-m d-none d-md-inline"><img alt="arrow right" src={Arrow_right} /></div>
+          </div>
+          <div>
+            <div className="text-center"><img alt="teams" src={Icon_Teams} /></div>
+            <h3 className="rk-pt-s">Teams</h3>
+            <p>
+              Share data, code, and workflows. Make interactive
+              tools available. Each team member can bring their unique abilities to
+              the table.
+            </p>
+          </div>
+          <div className="rk-pt-s">
+            <div className="d-none d-md-inline"><img alt="arrow left" src={Arrow_left} /></div>
+          </div>
+          <div>
+            <div className="text-center"><img alt="specialists" src={Icon_Specialists} /></div>
+            <h3 className="rk-pt-s">Specialists</h3>
+            <p>
+              Share your data and your expertise, and make use of the skills of others.
+              Renku tracks contributions, so your work is seen and credited.
+              Understand how results are created and provide feedback.
+            </p>
+          </div>
+        </Col>
+      </Row>
+    </div>
+  </div>;
+}
+
+function Section3(props) {
+  return <div id="rk-anon-home-section3">
+    <div className="rk-anon-home-section-content">
+      <Row className="rk-pt-m">
+        <Col md={4} lg={6} className="p-s-4 rk-bg-white"
+          style={{ minWidth: "400px", maxWidth: "600px",
+            borderWidth: "20px", borderStyle: "solid", borderColor: "white" }}>
+          <img width="100%" alt="data science theory/practice" src={Illustration_Theory_Practice} />
+        </Col>
+        <Col md={8} lg={6} className="rk-pt-m rk-pl-lg-s" style={{ minWidth: "350px", maxWidth: "460px" }}>
+          <h3>Data-driven projects are messy</h3>
+          <p>
+            To get results, data and code may be gathered anew, or re-purposed and recombined from other projects.
+            Paths are followed, discarded and tried anew before finally getting to
+            the destination Renku accompanies the journey and helps you make sense of it.
+            All activity within Renku is captured in the Knowledge Graph.
+            This makes it possible to connect the dots, no matter where they lead.
+          </p>
+        </Col>
+      </Row>
+    </div>
+  </div>;
+}
+
+function TutorialLink(props) {
+  const url = props.url;
+  if ((url == null) || (url.length < 1))
+    return null;
+
+  if (url.startsWith("http")) {
+    return <ExternalLink
+      title="Follow the tutorial"
+      className="btn btn-outline-info" role="button" id="link-learn"
+      showLinkIcon={true}
+      url={url} />;
+  }
+  return <Link className="btn btn-outline-info" role="link" id="link-tutorial" to={url}>
+    Follow the tutorial
+  </Link>;
+}
+
+function Section4(props) {
+  const backgroundUrl = VisualDetail;
+  return <div id="rk-anon-home-section4"
+    style={{
+      backgroundImage: `url(${backgroundUrl})`
+    }}>
+    <div className="rk-anon-home-section-content">
+      <div className="rk-w-s">
+        <div className="rk-pt-l">
+          <h3 className="text-info">Connecting dots</h3>
+        </div>
+        <div className="rk-pt-s">
+          <h3 className="text-white">The knowledge graph powers Renku and helps you
+            make sense of what has been done.</h3>
+        </div>
+        <div className="rk-pt-m">
+          <h3 className="text-secondary">Ready to try it out?</h3>
+          <h3 className="text-info">Get started with Renku</h3>
+        </div>
+      </div>
+      <div className="d-flex flex-wrap rk-pt-s">
+        <div className="pt-2" style={{ minWidth: "160px" }}>
+          <span>
+            <Link className="btn btn-outline-secondary me-1" role="button" id="link-sign_up" to="/login">
+        &nbsp;Sign Up
+            </Link>
+            (It&apos;s free)
+          </span>
+        </div>
+        <div className="pt-2" style={{ minWidth: "185px" }}>
+          <TutorialLink url={props.tutorialLink} />
+        </div>
+        <div className="pt-2" style={{ minWidth: "180px" }}>
+          <ExternalLink
+            title="Learn more"
+            className="btn btn-outline-info" role="button" id="link-learn"
+            showLinkIcon={true}
+            url="https://renku.readthedocs.io/en/latest/" />
+        </div>
+      </div>
+    </div>
+  </div>;
+}
+
+function Section5(props) {
+  return (props.projects == null) || (props.projects.length < 1) ?
+    <div id="rk-anon-home-section5-empty">
+      <div className="rk-anon-home-section-content">
+        <div className="rk-pt-l">
+          <h3 className="text-info">&nbsp;</h3>
+        </div>
+      </div>
+    </div> :
+    <div id="rk-anon-home-section5">
+      <div className="rk-anon-home-section-content">
+        <div className="rk-pt-l">
+          <h3 className="text-info">Look at some example projects</h3>
+        </div>
+      </div>
+    </div>;
+}
+
+function Section6(props) {
+  const backgroundUrl = VisualFooter;
+  return <div id="rk-anon-home-section6"
+    style={{
+      backgroundImage: `url(${backgroundUrl})`
+    }}>
+    <div className="rk-anon-home-section-content">
+      <div>
+        <div><img src={logo} alt="Renku" height="68" className="d-block my-1" /></div>
+        <Row className="rk-pt-s" >
+          <Col xs={12} xl={4} >
+            <p>We have offices in both Lausanne on the EPFL campus and in Zürich at ETH Zürich.</p>
+          </Col>
+          <Col xs={12} lg={5} xl={4} className="rk-pt-up_to-lg-s bg-primary">
+            <h4 className="text-info">Lausanne</h4>
+            <p className="rk-pt-lg-s">
+              INN Building, Station 14, 1015 Lausanne<br />
+              Contact: Cindy Ravey, Executive Assistant<br />
+              +41 21 693 43 88
+            </p>
+          </Col>
+          <Col xs={12} lg={5} xl={4} className="rk-pt-up_to-lg-s bg-primary">
+            <h4 className="text-info">Zürich</h4>
+            {/* eslint-disable-next-line */}
+            <p className="rk-pt-lg-s">
+              Universitätsstrasse 25, 8006 Zürich<br />
+              Contact: Nina Pupikofer, Administration<br />
+              +41 44 632 80 74
+            </p>
+          </Col>
+        </Row>
+      </div>
+    </div>
+  </div>;
+}
+
+
+function StandardHome(props) {
+  return <Fragment>
+    <Section1 {...props} />
+    <Section2 />
+    <Section3 />
+    <Section4 tutorialLink={props.homeCustomized.tutorialLink} />
+    <Section5 projects={props.homeCustomized.projects} />
+    <Section6 />
+  </Fragment>;
+}
+
 function CustomizedAnonymousHome(props) {
-  let content = props.homeCustomized.mainContent;
+  let content = props.homeCustomized.custom.main.contentMd;
   if (content.length < 1) content = "[No content provided: please configure text to display here.]";
-  let backgroundUrl = props.homeCustomized.backgroundUrl;
+  let backgroundUrl = props.homeCustomized.custom.main.backgroundImage.url;
   let backgroundSize = "cover";
   if (backgroundUrl.length < 1) {
     backgroundUrl = VisualHead;
     backgroundSize = "cover";
   }
-  return <div style={{
+  return <div id="rk-anon-home-section1" style={{
     backgroundImage: `url(${backgroundUrl})`,
-    backgroundSize, backgroundRepeat: "no-repeat",
-    minWidth: "400px", minHeight: "700px"
+    backgroundSize, backgroundRepeat: "no-repeat"
   }}>
     <HomeHeader {...props} />
-    <RenkuMarkdown key="home" markdownText={content} />
+    <div className="rk-anon-home-section-content">
+      <Row>
+        <Col className="rk-pt-l rk-w-s" >
+          <RenkuMarkdown key="home" markdownText={content} />
+        </Col>
+      </Row>
+    </div>
   </div>;
 }
 
@@ -226,9 +376,9 @@ function AnonymousHome(props) {
 
   return <div id="rk-anon-home-frame">
     {
-      (props.homeCustomized.enabled) ?
+      (props.homeCustomized.custom.enabled) ?
         CustomizedAnonymousHome(p) :
-        DefaultAnonymousHome(p)
+        StandardHome(p)
     }
   </div>;
 }
