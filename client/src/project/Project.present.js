@@ -28,7 +28,7 @@ import React, { Component, Fragment, useState, useEffect } from "react";
 import { Link, Route, Switch } from "react-router-dom";
 import {
   Alert, Button, ButtonGroup, Card, CardBody, CardHeader, Col, DropdownItem, Form, FormGroup,
-  FormText, Input, Label, Row, Table, Nav, NavItem, UncontrolledTooltip, Modal
+  FormText, Input, Label, Row, Table, Nav, NavItem, UncontrolledTooltip, Modal, Badge
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
@@ -85,11 +85,11 @@ class ProjectVisibilityLabel extends Component {
   render() {
     switch (this.props.visibilityLevel) {
       case "private":
-        return <span className="visibilityLabel"><FontAwesomeIcon icon={faLock} /> Private</span>;
+        return <span><Badge color="secondary"><FontAwesomeIcon icon={faLock} /> Private</Badge>&nbsp;</span>;
       case "internal":
-        return <span className="visibilityLabel"><FontAwesomeIcon icon={faUserFriends} /> Internal</span>;
+        return <span><Badge color="secondary"><FontAwesomeIcon icon={faUserFriends} /> Internal</Badge>&nbsp;</span>;
       case "public":
-        return <span className="visibilityLabel"><FontAwesomeIcon icon={faGlobe} /> Public</span>;
+        return <span><Badge color="secondary"><FontAwesomeIcon icon={faGlobe} /> Public</Badge>&nbsp;</span>;
       default:
         return null;
     }
@@ -210,7 +210,7 @@ class ForkProjectModal extends Component {
     }
     return (
       <Fragment>
-        <Button outline color="primary" onClick={this.toggleFunction}>
+        <Button outline color="primary" className="border-light" onClick={this.toggleFunction}>
           <FontAwesomeIcon icon={faCodeBranch} /> fork
         </Button>
         <Modal isOpen={this.state.open} toggle={this.toggleFunction}>
@@ -268,56 +268,75 @@ class ProjectViewHeaderOverview extends Component {
     const gitlabIDEUrl = this.props.externalUrl !== "" && this.props.externalUrl.includes("/gitlab/") ?
       this.props.externalUrl.replace("/gitlab/", "/gitlab/-/ide/project/") : null;
     return (
-      <Row>
-        <Col xs={12} md>
-          <h3>
-            <ProjectStatusIcon
-              history={this.props.history}
-              webhook={this.props.webhook}
-              overviewStatusUrl={this.props.overviewStatusUrl}
-              migration_required={this.props.migration.migration_required}
-              template_update_possible={this.props.migration.template_update_possible}
-              docker_update_possible={this.props.migration.docker_update_possible}
-            />{core.title} <ProjectVisibilityLabel visibilityLevel={this.props.visibility.level} />
-          </h3>
-          <p>
-            <span>{this.props.core.path_with_namespace}{forkedFrom}</span> <br />
-          </p>
-        </Col>
-        <Col xs={12} md="auto">
-          <div className="d-flex mb-2">
-            <ButtonGroup size="sm">
-              <ForkProjectModal
-                client={this.props.client}
-                history={this.props.history}
-                model={this.props.model}
-                notifications={this.props.notifications}
-                title={this.props.core && this.props.core.title ? this.props.core.title : ""}
-                id={this.props.core && this.props.core.id ? this.props.core.id : 0}
-              />
-              <Button outline color="primary"
-                href={`${this.props.externalUrl}/forks`} target="_blank" rel="noreferrer noopener">
-                {system.forks_count}
-              </Button>
-            </ButtonGroup>
-            <ButtonGroup size="sm" className="ml-1">
-              <Button outline color="primary"
-                disabled={this.state.updating_star}
-                onClick={this.star.bind(this)}>
-                {starElement} {starText}
-              </Button>
-              <Button outline color="primary" style={{ cursor: "default" }}>{system.star_count}</Button>
-            </ButtonGroup>
-          </div>
-
-          <div className="d-flex flex-md-row-reverse mb-2">
-            <GitLabConnectButton size="sm"
-              externalUrl={this.props.externalUrl}
-              gitlabIDEUrl={gitlabIDEUrl}
-              userLogged={this.props.user.logged} />
-          </div>
-        </Col>
-      </Row>
+      <Fragment>
+        <Row className="pt-2 pb-3">
+          <Col className="d-flex mb-2 justify-content-between">
+            <div>
+              <h2>
+                <ProjectStatusIcon
+                  history={this.props.history}
+                  webhook={this.props.webhook}
+                  overviewStatusUrl={this.props.overviewStatusUrl}
+                  migration_required={this.props.migration.migration_required}
+                  template_update_possible={this.props.migration.template_update_possible}
+                  docker_update_possible={this.props.migration.docker_update_possible}
+                />{core.title}
+              </h2>
+              <div className="text-rk-text">
+                <span>{this.props.core.path_with_namespace}{forkedFrom}</span>
+              </div>
+              <div className="text-rk-text">
+                {this.props.core.description || " "}
+              </div>
+            </div>
+            <div className="d-flex flex-column align-items-end justify-content-between">
+              <div>
+                <ButtonGroup size="sm">
+                  <ForkProjectModal
+                    client={this.props.client}
+                    history={this.props.history}
+                    model={this.props.model}
+                    notifications={this.props.notifications}
+                    title={this.props.core && this.props.core.title ? this.props.core.title : ""}
+                    id={this.props.core && this.props.core.id ? this.props.core.id : 0}
+                  />
+                  <Button
+                    outline
+                    color="primary"
+                    className="border-light"
+                    href={`${this.props.externalUrl}/forks`} target="_blank" rel="noreferrer noopener">
+                    {system.forks_count}
+                  </Button>
+                </ButtonGroup>
+                <ButtonGroup size="sm" className="ms-2">
+                  <Button outline color="primary"
+                    className="border-light"
+                    disabled={this.state.updating_star}
+                    onClick={this.star.bind(this)}>
+                    {starElement} {starText}
+                  </Button>
+                  <Button outline color="primary"
+                    className="border-light"
+                    style={{ cursor: "default" }}>{system.star_count}</Button>
+                </ButtonGroup>
+                <ButtonGroup size="sm" className="ms-2">
+                  <GitLabConnectButton size="sm"
+                    externalUrl={this.props.externalUrl}
+                    gitlabIDEUrl={gitlabIDEUrl}
+                    userLogged={this.props.user.logged} />
+                </ButtonGroup>
+              </div>
+              <div className="pt-2">
+                <ProjectVisibilityLabel visibilityLevel={this.props.visibility.level} />
+                <ProjectTagList tagList={this.props.system.tag_list} />
+              </div>
+              <div className="pt-1">
+                <TimeCaption key="time-caption" time={this.props.core.last_activity_at} />
+              </div>
+            </div>
+          </Col>
+        </Row>
+      </Fragment>
     );
   }
 }
@@ -343,27 +362,31 @@ class ProjectViewHeader extends Component {
 class ProjectNav extends Component {
   render() {
     return (
-      <Nav pills className={"nav-pills-underline"}>
-        <NavItem>
-          <RenkuNavLink to={this.props.baseUrl} alternate={this.props.overviewUrl} title="Overview" />
-        </NavItem>
-        <NavItem>
-          <RenkuNavLink exact={false} to={this.props.issuesUrl}
-            alternate={this.props.collaborationUrl} title="Collaboration" />
-        </NavItem>
-        <NavItem>
-          <RenkuNavLink exact={false} to={this.props.filesUrl} title="Files" />
-        </NavItem>
-        <NavItem>
-          <RenkuNavLink exact={false} to={this.props.datasetsUrl} title="Datasets" />
-        </NavItem>
-        <NavItem>
-          <RenkuNavLink exact={false} to={this.props.notebookServersUrl} title="Environments" />
-        </NavItem>
-        <NavItem>
-          <RenkuNavLink exact={false} to={this.props.settingsUrl} title="Settings" />
-        </NavItem>
-      </Nav>
+      <div className="pb-3 rk-search-bar">
+        <Col className="d-flex pb-2 mb-1 justify-content-left " md={12} lg={12}>
+          <Nav pills className="nav-pills-underline">
+            <NavItem>
+              <RenkuNavLink to={this.props.baseUrl} alternate={this.props.overviewUrl} title="Overview" />
+            </NavItem>
+            <NavItem>
+              <RenkuNavLink exact={false} to={this.props.issuesUrl}
+                alternate={this.props.collaborationUrl} title="Collaboration" />
+            </NavItem>
+            <NavItem>
+              <RenkuNavLink exact={false} to={this.props.filesUrl} title="Files" />
+            </NavItem>
+            <NavItem>
+              <RenkuNavLink exact={false} to={this.props.datasetsUrl} title="Datasets" />
+            </NavItem>
+            <NavItem>
+              <RenkuNavLink exact={false} to={this.props.notebookServersUrl} title="Environments" />
+            </NavItem>
+            <NavItem>
+              <RenkuNavLink exact={false} to={this.props.settingsUrl} title="Settings" />
+            </NavItem>
+          </Nav>
+        </Col>
+      </div>
     );
   }
 }
@@ -401,9 +424,9 @@ class ProjectViewReadme extends Component {
       return <Loader />;
 
     return (
-      <Card className="border-0">
-        <CardHeader>README.md</CardHeader>
-        <CardBody style={{ overflow: "auto" }}>
+      <Card className="border-rk-light">
+        <CardHeader className="bg-white p-3 ps-4">README.md</CardHeader>
+        <CardBody style={{ overflow: "auto" }} className="p-4">
           <RenkuMarkdown
             projectPathWithNamespace = {this.props.core.path_with_namespace}
             filePath={""}
@@ -428,10 +451,12 @@ function ProjectKGStatus(props) {
     body = props.kgStatusView(true);
 
   return (
-    <Card className="border-0">
-      <CardHeader>Knowledge Graph integration</CardHeader>
-      <CardBody>
-        <Row><Col>{body}</Col></Row>
+    <Card className="border-rk-light">
+      <CardHeader className="bg-white p-3 ps-4">Knowledge Graph Integration</CardHeader>
+      <CardBody className="p-4 pt-3 pb-3 lh-lg">
+        <Row>
+          <Col>{body}</Col>
+        </Row>
       </CardBody>
     </Card>
   );
@@ -445,15 +470,12 @@ class ProjectViewOverviewNav extends Component {
     //   <RenkuNavLink to={`${this.props.overviewUrl}/results`} title="Results" />
     // </NavItem>
     return (
-      <Nav pills className={"flex-column"}>
+      <Nav className="flex-column nav-light">
         <NavItem>
           <RenkuNavLink to={this.props.baseUrl} title="Description" />
         </NavItem>
         <NavItem>
           <RenkuNavLink to={`${this.props.statsUrl}`} title="Stats" />
-        </NavItem>
-        <NavItem>
-          <RenkuNavLink to={`${this.props.overviewDatasetsUrl}`} title="Datasets" />
         </NavItem>
         <NavItem>
           <RenkuNavLink to={`${this.props.overviewCommitsUrl}`} title="Commits" />
@@ -467,25 +489,8 @@ class ProjectViewOverviewNav extends Component {
 
 class ProjectViewOverview extends Component {
   render() {
-    const { core, system, projectCoordinator } = this.props;
-    const description = core.description ?
-      (<Fragment><span className="lead">{core.description}</span><br /></Fragment>) :
-      null;
-
+    const { projectCoordinator } = this.props;
     return <Col key="overview">
-      <Row>
-        <Col xs={12} md={9}>
-          <p>
-            {description}
-            <TimeCaption key="time-caption" time={core.last_activity_at} />
-          </p>
-        </Col>
-        <Col xs={12} md={3}>
-          <p className="text-md-right">
-            <ProjectTagList tagList={system.tag_list} />
-          </p>
-        </Col>
-      </Row>
       <Row>
         <Col key="nav" sm={12} md={2}>
           <ProjectViewOverviewNav {...this.props} />
@@ -501,9 +506,6 @@ class ProjectViewOverview extends Component {
                 branches={this.props.system.branches}
               />
             }
-            />
-            <Route exact path={this.props.overviewDatasetsUrl} render={props =>
-              <ProjectViewDatasetsOverview {...this.props} />}
             />
             <Route exact path={this.props.overviewCommitsUrl} render={props =>
               <ProjectOverviewCommits
@@ -874,51 +876,6 @@ class ProjectViewFiles extends Component {
   }
 }
 
-class OverviewDatasetRow extends Component {
-  render() {
-    return <tr>
-      <td className="align-middle">
-        <Link to={this.props.fullDatasetUrl}>{this.props.name}</Link>
-      </td>
-    </tr>;
-  }
-}
-
-class ProjectViewDatasetsOverview extends Component {
-
-  componentDidMount() {
-    this.props.fetchDatasets(false);
-  }
-
-  render() {
-    const datasetsList = this.props.core.datasets;
-
-    if (datasetsList === undefined || datasetsList === SpecialPropVal.UPDATING)
-      return <Loader />;
-
-    if (datasetsList.length === 0)
-      return <p>No datasets to display.</p>;
-
-    let datasets = datasetsList.map((dataset) =>
-      <OverviewDatasetRow
-        key={dataset.name}
-        name={dataset.title || dataset.name}
-        fullDatasetUrl={`${this.props.datasetsUrl}/${encodeURIComponent(dataset.name)}`}
-      />
-    );
-
-    return <Col xs={12} md={10} lg={10}>
-      <Table bordered>
-        <thead className="thead-light">
-          <tr><th className="align-middle">Datasets</th></tr>
-        </thead>
-        <tbody>
-          {datasets}
-        </tbody>
-      </Table>
-    </Col>;
-  }
-}
 
 class ProjectEnvironments extends Component {
   render() {
@@ -1311,9 +1268,8 @@ class ProjectView extends Component {
     }
 
     return [
-      <Row key="header"><Col xs={12}><ProjectViewHeader key="header" {...this.props} /></Col></Row>,
-      <Row key="nav"><Col xs={12}><ProjectNav key="nav" {...this.props} /></Col></Row>,
-      <Row key="space"><Col key="space" xs={12}>&nbsp;</Col></Row>,
+      <ProjectViewHeader key="header" {...this.props} />,
+      <ProjectNav key="nav" {...this.props} />,
       <Row key="content">
         <Switch>
           <Route exact path={this.props.baseUrl}
