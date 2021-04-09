@@ -33,7 +33,7 @@ import { StatusHelper } from "../model/Model";
 import { NotebooksHelper } from "./index";
 import { simpleHash, formatBytes } from "../utils/HelperFunctions";
 import {
-  ButtonWithMenu, Loader, ExternalLink, JupyterIcon, ThrottledTooltip, WarnAlert, InfoAlert, TimeCaption, Clipboard
+  ButtonWithMenu, Loader, ExternalLink, ExternalIconLink, JupyterIcon, ThrottledTooltip, WarnAlert, InfoAlert, TimeCaption, Clipboard
 } from "../utils/UIComponents";
 import Time from "../utils/Time";
 import Sizes from "../utils/Media";
@@ -258,7 +258,7 @@ class NotebookServerRowCommitInfo extends Component {
   }
 
   render() {
-    const { commit } = this.props;
+    const { commit, url } = this.props;
     const uid = `${this.props.uid}-commit`;
     let content;
     if (!commit || !commit.data || !commit.data.id || (!commit.fetching && !commit.fetched)) {
@@ -289,7 +289,12 @@ class NotebookServerRowCommitInfo extends Component {
         <UncontrolledPopover target={uid} trigger="legacy" placement="bottom"
           isOpen={this.state.isOpen} toggle={() => this.toggle()}>
           <PopoverHeader>Commit details</PopoverHeader>
-          <PopoverBody>{content}</PopoverBody>
+          <PopoverBody>
+            {content}<br/>
+            <div className="pt-2">
+              Commit in GitLab <ExternalIconLink url={url} icon={faExternalLinkAlt} className="text-dark"/>
+            </div>
+          </PopoverBody>
         </UncontrolledPopover>
       </span>
     );
@@ -303,31 +308,36 @@ class NotebookServerRowFull extends Component {
       annotations, details, status, url, uid, resources, repositoryLinks, name, commitDetails, fetchCommit, image
     } = this.props;
 
-    const icon = <td className="align-middle">
+    const icon = <div className="align-middle">
       <NotebooksServerRowStatusIcon
         details={details} status={status} uid={uid} image={image} annotations={annotations}
       />
-    </td>;
+    </div>;
+
     const project = this.props.standalone ?
       (<NotebookServerRowProject annotations={annotations} />) :
       null;
-    const branch = this.props.standalone ?
-      (<span>Branch:&nbsp;
-        <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text" />
-      </span>)
-      : <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text" className="title"/>;
-    const commit = (<span>Commit:&nbsp;
-      <ExternalLink url={repositoryLinks.commit} title={annotations["commit-sha"].substring(0, 8)} role="text" />
+
+    const branch = <span>
+      {annotations["branch"]}&nbsp;
+      <ExternalIconLink url={repositoryLinks.branch} icon={faExternalLinkAlt} className="text-dark"/>
+    </span>;
+
+    const commit = (<span>
+      {annotations["commit-sha"].substring(0, 8)}
       {" "}<span className="text-dark">
-        <NotebookServerRowCommitInfo uid={uid} name={name} commit={commitDetails} fetchCommit={fetchCommit} />
+        <NotebookServerRowCommitInfo uid={uid} name={name} commit={commitDetails}
+          fetchCommit={fetchCommit} url={repositoryLinks.commit}/>
       </span></span>);
 
-    const resourceList = Object.keys(resources).map(name => {
-      return (<span key={name} className="text-nowrap text-center">{resources[name]} <i>{name}</i></span>);
+    const resourcesKeys = Object.keys(resources);
+
+    const resourceList = resourcesKeys.map((name, index) => {
+      return (<span key={name} className="text-nowrap text-center fw-normal">
+        <span className="fw-bold">{resources[name]} </span>
+        {name}{resourcesKeys.length - 1 === index ? " " : " | " }</span>);
     });
-    const resourceObject = (<span>
-      <span className="text-nowrap text-center">Resources:&nbsp;</span>{resourceList}
-    </span>);
+
     const statusOut = <NotebooksServerRowStatus
       details={details} status={status} uid={uid} startTime={this.props.startTime} annotations={annotations}/>;
 
@@ -349,21 +359,40 @@ class NotebookServerRowFull extends Component {
     </span>);
 
     return (
-      <div className="d-flex flex-row rk-search-result cursor-auto">
-        <span className={"me-3 mt-2"}>{icon}</span>
+      <div className="d-flex flex-row rk-search-result rk-search-result-100 cursor-auto">
+        <span className={this.props.standalone ? "me-3 mt-2" : "me-3 mt-1"}>{icon}</span>
         <Col className="d-flex align-items-start flex-column col-10 overflow-hidden">
           <div className="project d-inline-block text-truncate">
             {project}
           </div>
-          <div className="text-truncate text-rk-text">
-            {branch}
-          </div>
-          <div className="commit text-truncate text-rk-text">
-            {commit}
-          </div>
-          <div className="commit text-truncate text-rk-text">
-            {resourceObject}
-          </div>
+          <table>
+            <tbody className="gx-4 text-rk-text">
+              <tr>
+                <td className="text-dark fw-bold">
+                  Branch
+                </td>
+                <td>
+                  {branch}
+                </td>
+              </tr>
+              <tr>
+                <td className="text-dark fw-bold">
+                  Commit
+                </td>
+                <td>
+                  {commit}
+                </td>
+              </tr>
+              <tr>
+                <td className="pe-3 text-dark fw-bold">
+                  Resources
+                </td>
+                <td>
+                  {resourceList}
+                </td>
+              </tr>
+            </tbody>
+          </table>
           <div className="mt-auto">
             {statusOut}
           </div>
@@ -389,18 +418,18 @@ class NotebookServerRowCompact extends Component {
     </span>;
     const project = this.props.standalone ?
       (<Fragment>
-        <span className="font-weight-bold text-rk-text">Project: </span>
+        <span className="fw-bold text-rk-text">Project: </span>
         <span><NotebookServerRowProject annotations={this.props.annotations} /></span>
         <br />
       </Fragment>) :
       null;
     const branch = (<Fragment>
-      <span className="font-weight-bold text-rk-text">Branch: </span>
+      <span className="fw-bold text-rk-text">Branch: </span>
       <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text" />
       <br />
     </Fragment>);
     const commit = (<Fragment>
-      <span className="font-weight-bold text-rk-text">Commit: </span>
+      <span className="fw-bold text-rk-text">Commit: </span>
       <ExternalLink url={repositoryLinks.commit} title={annotations["commit-sha"].substring(0, 8)} role="text" />
       {" "}<NotebookServerRowCommitInfo uid={uid} name={name} commit={commitDetails} fetchCommit={fetchCommit}/>
       <br />
