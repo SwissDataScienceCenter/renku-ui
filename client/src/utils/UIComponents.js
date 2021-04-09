@@ -200,13 +200,15 @@ class Pagination extends Component {
 }
 
 function ExternalLinkButton(props) {
-  let className = "btn btn-primary";
+  let className = "btn";
   if (props.size != null)
     className += ` btn-${props.size}`;
   if (props.disabled)
     className += " disabled";
   if (props.color)
     className += ` btn-${props.color}`;
+  else
+    className += ` btn-primary`;
   if (props.className)
     className += ` ${props.className}`;
 
@@ -749,7 +751,7 @@ function ButtonWithMenu(props) {
   return <ButtonDropdown size={size} isOpen={dropdownOpen} toggle={toggleOpen}>
     {props.default}
     <DropdownToggle color="primary" className="alternateToggleStyle">
-      <FontAwesomeIcon icon={faEllipsisV} style={{ color: "white", backgroundColor: "#5561A6" }} />
+      <FontAwesomeIcon icon={faEllipsisV} />
     </DropdownToggle>
     <DropdownMenu end>
       {props.children}

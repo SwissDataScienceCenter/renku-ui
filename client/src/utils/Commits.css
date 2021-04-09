@@ -15,4 +15,19 @@
   font-weight: bold;
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
+  background-color: #F5F5F5;
+  border:unset;
+}
+
+.commit-date:first-of-type{
+  border-top: 1px solid #E4E7EA;
+}
+
+.commit-object{
+  border-bottom: 1px solid #E4E7EA;
+  line-height: 1.5rem;
+}
+
+.commit-cut-message > a {
+  text-decoration: none;
 }
