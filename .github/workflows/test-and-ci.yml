@@ -84,8 +84,13 @@ jobs:
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
     - name: Wait for chart to get published
       run: sleep 120
-    - name: Update component version
+    - name: Update ui version
       uses: SwissDataScienceCenter/renku/actions/update-component-version@master
       env:
         GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
         CHART_NAME: renku-ui
+    - name: Update ui-server version
+      uses: SwissDataScienceCenter/renku/actions/update-component-version@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        CHART_NAME: renku-ui-server
