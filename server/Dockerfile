@@ -11,7 +11,7 @@ COPY src /app/src/
 RUN npm install --silent && \
     npm run-script build
 
-FROM node:10.22-alpine
+FROM mhart/alpine-node:slim-10.22
 
 COPY --from=builder /app/dist app/dist
 COPY --from=builder /app/node_modules app/node_modules
