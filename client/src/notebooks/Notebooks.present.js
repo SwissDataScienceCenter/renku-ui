@@ -33,7 +33,8 @@ import { StatusHelper } from "../model/Model";
 import { NotebooksHelper } from "./index";
 import { simpleHash, formatBytes } from "../utils/HelperFunctions";
 import {
-  ButtonWithMenu, Loader, ExternalLink, ExternalIconLink, JupyterIcon, ThrottledTooltip, WarnAlert, InfoAlert, TimeCaption, Clipboard
+  ButtonWithMenu, Loader, ExternalLink, ExternalIconLink, JupyterIcon, ThrottledTooltip, WarnAlert,
+  InfoAlert, TimeCaption, Clipboard
 } from "../utils/UIComponents";
 import Time from "../utils/Time";
 import Sizes from "../utils/Media";
