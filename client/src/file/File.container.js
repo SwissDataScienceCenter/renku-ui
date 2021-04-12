@@ -34,7 +34,8 @@ const CODE_EXTENSIONS = [
   "c", "cc", "cxx", "cpp", "h", "hh", "hxx", "hpp", // C++
   "f", "for", "ftn", "fpp", "f90", "f95", "f03", "f08" // Fortran
 ];
-const TEXT_EXTENSIONS = ["txt", "csv"];
+// eslint-disable-next-line
+const TEXT_EXTENSIONS = ["csv", "dockerignore", "gitattributes", "gitkeep", "gitignore", "renkulfsignore", "txt"];
 
 // FIXME: Unify the file viewing for issues (embedded) and independent file viewing.
 // FIXME: Fix positioning of input tags when rendering Jupyter Notebooks.
