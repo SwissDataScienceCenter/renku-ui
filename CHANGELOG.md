@@ -1,5 +1,16 @@
 # Changes
 
+## [0.11.10](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.9...0.11.10) (2021-04-13)
+
+### Features
+
+* create links to the project creation page embedding metadata to automatically pre-fill input fields ([#1288](https://github.com/SwissDataScienceCenter/renku-ui/issues/1288), [#1194](https://github.com/SwissDataScienceCenter/renku-ui/issues/1194))
+* add preview for common hidden files ([#1309](https://github.com/SwissDataScienceCenter/renku-ui/issues/1309))
+
+### Bug Fixes
+
+* restore support for project-level default environments parameters ([#1308](https://github.com/SwissDataScienceCenter/renku-ui/issues/1308), [#1306](https://github.com/SwissDataScienceCenter/renku-ui/issues/1306))
+
 ## [0.11.9](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.8...0.11.9) (2021-04-01)
 
 ### Features
