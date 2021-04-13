@@ -31,7 +31,9 @@ import { NewProject as NewProjectPresent, ForkProject as ForkProjectPresent } fr
 import { NewProjectCoordinator, validateTitle, checkTitleDuplicates } from "./ProjectNew.state";
 import { ProjectsCoordinator } from "../shared";
 import { gitLabUrlFromProfileUrl, slugFromTitle, refreshIfNecessary } from "../../utils/HelperFunctions";
-import { Url } from "../../utils/url";
+import { Url, getSearchParams } from "../../utils/url";
+import { atobUTF8, btoaUTF8 } from "../../utils/Encoding";
+import { newProjectSchema } from "../../model/RenkuModels";
 
 const CUSTOM_REPO_NAME = "Custom";
 
@@ -282,27 +284,83 @@ function ForkProject(props) {
   );
 }
 
+/**
+ * Validate and decode query params.
+ *
+ * @param {object} params - query params
+ * @returns {object} parsed parameters, validated and ready to be be used to pre-fill fields.
+ */
+function getDataFromParams(params) {
+  // Unrecognized params: should we notify? Let's start without notifications.
+  if (!params || !Object.keys(params).length || !params.data)
+    return;
+  const data = JSON.parse(atobUTF8(params.data));
+  if (!data || !Object.keys(data).length)
+    return;
+  // validate metadata
+  const validKeys = Object.keys(newProjectSchema.createEmpty().automated.data);
+  const keys = Object.keys(data);
+  for (let key of keys) {
+    if (!validKeys.includes(key))
+      throw new Error("unexpected project field in the encoded metadata: " + key);
+  }
+  return data;
+}
+
 class NewProject extends Component {
   constructor(props) {
     super(props);
+    // Create model and reset inputs
     this.model = props.model;
     this.coordinator = new NewProjectCoordinator(props.client, this.model.subModel("newProject"),
       this.model.subModel("projects"));
     this.coordinator.setConfig(props.templates.custom, props.templates.repositories);
     this.projectsCoordinator = new ProjectsCoordinator(props.client, this.model.subModel("projects"));
     this.coordinator.resetInput();
+    this.removeAutomated();
+    if (!props.user.logged)
+      this.coordinator.resetAutomated();
 
+    // create handlers
     this.handlers = {
-      onSubmit: this.onSubmit.bind(this),
+      createEncodedUrl: this.createEncodedUrl.bind(this),
       getNamespaces: this.getNamespaces.bind(this),
       getTemplates: this.getTemplates.bind(this),
       getUserTemplates: this.getUserTemplates.bind(this),
+      goToProject: this.goToProject.bind(this),
+      onSubmit: this.onSubmit.bind(this),
+      removeAutomated: this.removeAutomated.bind(this),
+      setNamespace: this.setNamespace.bind(this),
       setProperty: this.setProperty.bind(this),
       setTemplateProperty: this.setTemplateProperty.bind(this),
-      setNamespace: this.setNamespace.bind(this),
       setVariable: this.setVariable.bind(this),
-      goToProject: this.goToProject.bind(this)
     };
+
+    // Handle optional param used to pre-fill inputs
+    if (!props.user.logged)
+      return;
+    const params = getSearchParams();
+    try {
+      const data = getDataFromParams(params);
+      if (data)
+        this.coordinator.setAutomated(data);
+      const newUrl = Url.get(Url.pages.project.new);
+      this.props.history.push(newUrl);
+    }
+    catch (e) {
+      this.coordinator.setAutomated(null, e);
+    }
+  }
+
+  removeAutomated(manuallyReset = true) {
+    this.coordinator.resetAutomated(manuallyReset);
+  }
+
+  createEncodedUrl(data) {
+    if (!data || !Object.keys(data).length)
+      return Url.get(Url.pages.project.new, {}, true);
+    const encodedContent = btoaUTF8(JSON.stringify(data));
+    return Url.get(Url.pages.project.new, { data: encodedContent }, true);
   }
 
   async getNamespaces() {
@@ -417,3 +475,6 @@ class NewProject extends Component {
 
 
 export { NewProject, CUSTOM_REPO_NAME, ForkProjectMapper as ForkProject };
+
+// test only
+export { getDataFromParams };
