@@ -186,14 +186,15 @@ class View extends Component {
   constructor(props) {
     super(props);
     this._mounted = false;
-    this.store = createStore(State.View.reducer);
-    this.store.dispatch(this.retrieveIssue());
-    this.state = { contributions: [] };
+    this.state = {
+      contributions: []
+    };
+    this.retrieveIssue();
   }
 
   async componentDidMount() {
     this._mounted = true;
-    this.retrieveContributions();
+    this.retrieveIssue();
   }
 
   componentWillUnmount() {
@@ -201,14 +202,15 @@ class View extends Component {
   }
 
   retrieveIssue() {
-    return (dispatch) => {
-      return this.props.client.getProjectIssue(this.props.projectId, this.props.issueIid)
-        .then(resp => {
-          dispatch(State.View.setAll(resp.data));
-        }).catch(error => {
-          dispatch(State.View.setAll({ error: error }));
-        });
-    };
+    return this.props.client.getProjectIssue(this.props.projectId, this.props.issueIid)
+      .then(resp => {
+        if (this._mounted) {
+          this.setState({ ...resp.data });
+          this.retrieveContributions();
+        }
+      }).catch(error => {
+        return this.setState({ error: error });
+      });
   }
 
   appendContribution(newContribution) {
@@ -242,50 +244,42 @@ class View extends Component {
   }
 
 
-  mapStateToProps(state, ownProps) {
-    return state;
-  }
+  onIssueStateChange(e) {
+    e.preventDefault();
+    const issueState = this.store.getState().state;
 
-  mapDispatchToProps(dispatch, ownProps) {
-    return {
-      onIssueStateChange: (e) => {
-        e.preventDefault();
-        const issueState = this.store.getState().state;
+    // FIXME: This is a terrible hack which relies on the issue being updated on the server before force-updating
+    // FIXME: the entire project component. The problem here ist that the Issue list and the Issue detail components
+    // FIXME: are siblings and they both hold the same information in their state (which is therefore duplicated).
+    // FIXME: On click, the respective state information in both siblings state needs to be updated.
+    // FIXME: The proper solution would be to elevate this information to the state their common parent and update
+    // FIXME: it there.
 
-        // FIXME: This is a terrible hack which relies on the issue being updated on the server before force-updating
-        // FIXME: the entire project component. The problem here ist that the Issue list and the Issue detail components
-        // FIXME: are siblings and they both hold the same information in their state (which is therefore duplicated).
-        // FIXME: On click, the respective state information in both siblings state needs to be updated.
-        // FIXME: The proper solution would be to elevate this information to the state their common parent and update
-        // FIXME: it there.
-
-        if (issueState === "opened") {
-          this.props.client.closeIssue(this.props.projectId, this.props.issueIid)
-            .then(() => this.props.updateProjectView());
-        }
-        else if (issueState === "closed") {
-          this.props.client.reopenIssue(this.props.projectId, this.props.issueIid)
-            .then(() => this.props.updateProjectView());
-        }
-        else {
-          throw Error(`Unknown state ${this.props.state}`);
-        }
-        // We don't even need to dispatch anything as the entire project component needs to be re-rendered
-        // (and the information reloaded from the server) anyway.
-        // dispatch(State.View.IssueState.change());
-      }
-    };
+    if (issueState === "opened") {
+      this.props.client.closeIssue(this.props.projectId, this.props.issueIid)
+        .then(() => this.props.updateProjectView());
+    }
+    else if (issueState === "closed") {
+      this.props.client.reopenIssue(this.props.projectId, this.props.issueIid)
+        .then(() => this.props.updateProjectView());
+    }
+    else {
+      throw Error(`Unknown state ${this.props.state}`);
+    }
+    // We don't even need to dispatch anything as the entire project component needs to be re-rendered
+    // (and the information reloaded from the server) anyway.
+    // dispatch(State.View.IssueState.change());
   }
 
   render() {
-    const VisibleIssueView = connect(this.mapStateToProps, this.mapDispatchToProps.bind(this))(IssueView);
-    return <Provider key="new" store={this.store}>
-      <VisibleIssueView
-        contributions={this.state ? this.state.contributions : []}
-        appendContribution={this.appendContribution.bind(this)}
-        expanded={this.state ? this.state.expanded : false}
-        {...this.props} />
-    </Provider>;
+    return <IssueView
+      {...this.state}
+      contributions={this.state ? this.state.contributions : []}
+      appendContribution={this.appendContribution.bind(this)}
+      onIssueStateChange={this.onIssueStateChange}
+      expanded={this.state ? this.state.expanded : false}
+      {...this.props} />;
+
   }
 }
 
