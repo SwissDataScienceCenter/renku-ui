@@ -29,7 +29,8 @@ import { parseINIString } from "../utils/HelperFunctions";
 const POLLING_INTERVAL = 3000;
 const IMAGE_BUILD_JOB = "image_build";
 const RENKU_INI_PATH = ".renku/renku.ini";
-const RENKU_INI_SECTION = `renku "interactive"`;
+const RENKU_INI_SECTION_LEGACY = `renku "interactive"`;
+const RENKU_INI_SECTION = "interactive";
 
 const PIPELINE_TYPES = {
   anonymous: "registries",
@@ -123,8 +124,11 @@ const NotebooksHelper = {
       parsedData = {};
     }
     // check single props when the environment sections is available
-    if (parsedData[RENKU_INI_SECTION]) {
-      const parsedOptions = parsedData[RENKU_INI_SECTION];
+    let parsedOptions = parsedData[RENKU_INI_SECTION];
+    // check also the previous section name for compatibility reasons
+    if (!parsedOptions)
+      parsedOptions = parsedData[RENKU_INI_SECTION_LEGACY];
+    if (parsedOptions) {
       Object.keys(parsedOptions).forEach(parsedOption => {
         // treat "default_url" as "defaultUrl" to allow name consistency in the the .ini file
         let option = parsedOption;
