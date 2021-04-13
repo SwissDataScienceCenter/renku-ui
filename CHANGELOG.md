@@ -4,7 +4,7 @@
 
 ### Features
 
-* create links to the project creation page embedding metadata to automatically pre-fill input fields ([#1288](https://github.com/SwissDataScienceCenter/renku-ui/issues/1288), [#1194](https://github.com/SwissDataScienceCenter/renku-ui/issues/1194))
+* generate project-creation links, embedding metadata to automatically pre-fill input fields ([#1288](https://github.com/SwissDataScienceCenter/renku-ui/issues/1288), [#1194](https://github.com/SwissDataScienceCenter/renku-ui/issues/1194))
 * add preview for common hidden files ([#1309](https://github.com/SwissDataScienceCenter/renku-ui/issues/1309))
 
 ### Bug Fixes
