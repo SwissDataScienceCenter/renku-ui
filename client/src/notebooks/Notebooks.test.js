@@ -100,7 +100,7 @@ describe("notebook server clean annotation", () => {
 describe("parse project level environment options", () => {
   it("valid content", () => {
     const content = `
-      [renku "interactive"]
+      [interactive]
       default_url = /tree
       mem_request = 2
       lfs_auto_fetch = True
@@ -254,7 +254,7 @@ describe("verify project/global options merging", () => {
     };
 
     const projectOptionsIni = `
-      [renku "interactive"]
+      [interactive]
       default_url = /tree
       cpu_request = 4
       mem_request = 8G
