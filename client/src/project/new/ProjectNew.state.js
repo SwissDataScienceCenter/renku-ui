@@ -25,7 +25,7 @@
 
 import { CUSTOM_REPO_NAME } from "./ProjectNew.container";
 import { newProjectSchema } from "../../model/RenkuModels";
-import { slugFromTitle, verifyTitleCharacters } from "../../utils/HelperFunctions";
+import { sleep, slugFromTitle, verifyTitleCharacters } from "../../utils/HelperFunctions";
 
 
 // ? reference https://docs.gitlab.com/ce/user/reserved_names.html#reserved-project-names
@@ -103,6 +103,206 @@ class NewProjectCoordinator {
       return { ...values, [variable]: text };
     }, {});
     return values;
+  }
+
+  resetAutomated(manuallyReset = false) {
+    if (this.model.get("automated.received")) {
+      const pristineAutomated = newProjectSchema.createInitialized().automated;
+      this.model.setObject({ automated: { ...pristineAutomated, manuallyReset } });
+    }
+  }
+
+  /**
+   * Set newProject.automated object with new content -- either the provided data or an error
+   * @param {object} data - data to pre-fill
+   * @param {object} [error] - error generated while parsing the data
+   */
+  setAutomated(data, error) {
+    let automated = newProjectSchema.createInitialized().automated;
+    if (error) {
+      automated = {
+        ...automated,
+        received: true,
+        valid: false,
+        finished: true,
+        error: error.message ? error.message : error
+      };
+      this.model.set("automated", automated);
+    }
+    else {
+      automated = {
+        ...automated,
+        received: true,
+        valid: true,
+        data: { ...automated.data, ...data }
+      };
+      // ? passing the content is more efficient than invoking the `model.set` and then the function.
+      this.autoFill(automated);
+    }
+  }
+
+  /**
+   * Get all the auto-fill content and fill in the provided data.
+   * @param {object} [automatedObject] - pass the up-to-date `automated` object to optimize performance.
+   */
+  async autoFill(automatedObject) {
+    let automated = automatedObject ?
+      automatedObject :
+      newProjectSchema.createInitialized().automated;
+    let availableVariables = [];
+
+    // Step 1: wait for templates and namespaces to be fetched
+    automated.step = 1;
+    this.model.set("automated", { ...automated });
+    // ? since this is triggered elsewhere, we need to use ugly timeouts here
+    const intervalLength = 1;
+    let namespaces = false, templates = false;
+    do {
+      if (this.model.get("automated.manuallyReset")) return;
+
+      // check namespaces availability
+      if (!namespaces) {
+        const namespacesStatus = this.projectsModel.get("namespaces");
+        if (namespacesStatus.fetched && !namespacesStatus.fetching)
+          namespaces = namespacesStatus.list;
+      }
+      // check templates availability
+      if (!templates) {
+        const templatesStatus = this.model.get("templates");
+        if (templatesStatus.fetched && !templatesStatus.fetching)
+          templates = templatesStatus.all;
+      }
+
+      await sleep(intervalLength);
+    } while (!namespaces || !templates);
+    const { data } = automated;
+
+    // Step 2: Set title, namespace, template (if no url/ref). Start fetching visibilities
+    if (this.model.get("automated.manuallyReset")) return;
+    automated.step = 2;
+    this.model.set("automated.step", 2);
+    let newInput = {};
+    if (data.title) {
+      this.setProperty("title", data.title);
+      newInput.title = data.title;
+    }
+    if (data.namespace) {
+      // Check if the namespace is available
+      const namespaces = this.projectsModel.get("namespaces.list");
+      const namespaceAvailable = namespaces.find(namespace => namespace.full_path === data.namespace);
+      if (!namespaceAvailable) {
+        automated.warnings = [
+          ...automated.warnings,
+          `The namespace "${data.namespace}" is not available.`
+        ];
+      }
+      else {
+        this.setProperty("namespace", data.namespace); // full path
+        newInput.namespace = data.namespace;
+        this.getVisibilities(namespaceAvailable);
+      }
+    }
+    if (data.template && !data.url) {
+      // Check if the template is available
+      const templates = this.model.get("templates.all");
+      const templateAvailable = templates.find(template => template.id === data.template);
+      if (!templateAvailable) {
+        automated.error = `The template "${data.template}" is not available.`;
+        automated.finished = true;
+        this.model.set("automated", { ...automated });
+        return;
+      }
+      this.setProperty("template", data.template);
+      newInput.template = data.template;
+      availableVariables = templateAvailable.variables;
+    }
+
+    // Step 3: Set visibility and fetch custom template (requires url/ref).
+    if (this.model.get("automated.manuallyReset")) return;
+    automated.step = 3;
+    this.model.set("automated.step", 3);
+    if (data.template && data.url) {
+      const ref = data.ref ? data.ref : "master";
+      this.setProperty("userRepo", true);
+      this.setTemplateProperty("url", data.url);
+      this.setTemplateProperty("ref", ref);
+      const repositories = [{ name: CUSTOM_REPO_NAME, url: data.url, ref: ref }];
+      const templates = await this.getTemplates(repositories, true);
+      if (this.model.get("automated.manuallyReset")) return;
+      if (!templates || !templates.length) {
+        automated.error = "Something went wrong while fetching the template repositories.";
+        automated.error += "\nSee below for further details.";
+        automated.finished = true;
+        this.model.set("automated", { ...automated });
+        return;
+      }
+      const templateAvailable = templates.find(template => template.id === data.template);
+      if (!templateAvailable) {
+        automated.error = `The template "${data.template}" is not available.`;
+        automated.finished = true;
+        this.model.set("automated", { ...automated });
+        return;
+      }
+      this.setProperty("template", data.template);
+      newInput.template = data.template;
+      availableVariables = templateAvailable.variables;
+    }
+    if (data.visibility) {
+      // wait for namespace visibilities to be available
+      let namespace, visibilities = null;
+      do {
+        // check namespaces availability
+        if (this.model.get("automated.manuallyReset")) return;
+        if (!visibilities) {
+          namespace = this.model.get("meta.namespace");
+          if (namespace.fetched && !namespace.fetching)
+            visibilities = namespace.visibilities;
+        }
+        await sleep(intervalLength);
+      } while (!visibilities);
+
+      if (visibilities.includes(data.visibility)) {
+        this.setProperty("visibility", data.visibility);
+      }
+      else {
+        automated.warnings = [
+          ...automated.warnings,
+          `The visibility "${data.namespace}" is not available in the target namespace.`
+        ];
+      }
+    }
+
+    // Step 4: Set variables.
+    if (this.model.get("automated.manuallyReset")) return;
+    automated.step = 4;
+    this.model.set("automated.step", 4);
+    if (data.template && data.variables && Object.keys(data.variables)) {
+      if (availableVariables && Object.keys(availableVariables)) {
+        // Try to set variables after checking for availability on the target template.
+        const templateVariables = Object.keys(availableVariables);
+        let unavailableVariables = [];
+        for (let variable of Object.keys(data.variables)) {
+          if (templateVariables.includes(variable))
+            this.setVariable(variable, data.variables[variable]);
+          else
+            unavailableVariables = [...unavailableVariables, variable];
+        }
+        if (unavailableVariables.length) {
+          automated.warnings = [
+            ...automated.warnings,
+            `Some variables are not available on this template: ${unavailableVariables.join(", ")}.`
+          ];
+        }
+      }
+      else {
+        automated.warnings = [
+          ...automated.warnings,
+          "No variables available for the target template."
+        ];
+      }
+    }
+    automated.finished = true;
+    this.model.set("automated", { ...automated });
   }
 
   resetInput() {

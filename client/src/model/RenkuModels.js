@@ -198,6 +198,28 @@ const newProjectSchema = new Schema({
       variables: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true }, // contains pairs "var1": "value1"
     })
   },
+  automated: {
+    [Prop.SCHEMA]: new Schema({
+      received: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
+      valid: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+      data: {
+        [Prop.SCHEMA]: new Schema({
+          title: { [Prop.INITIAL]: "", [Prop.MANDATORY]: false },
+          namespace: { [Prop.INITIAL]: "", [Prop.MANDATORY]: false },
+          visibility: { [Prop.INITIAL]: "", [Prop.MANDATORY]: false },
+          template: { [Prop.INITIAL]: "", [Prop.MANDATORY]: false },
+          url: { [Prop.INITIAL]: "", [Prop.MANDATORY]: false },
+          ref: { [Prop.INITIAL]: "", [Prop.MANDATORY]: false },
+          variables: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
+        })
+      },
+      step: { [Prop.INITIAL]: 0, [Prop.MANDATORY]: true }, // TODO: remove if not useful
+      finished: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
+      error: { [Prop.INITIAL]: "", [Prop.MANDATORY]: false },
+      warnings: { [Prop.INITIAL]: [], [Prop.MANDATORY]: false },
+      manuallyReset: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
+    })
+  },
   meta: {
     [Prop.SCHEMA]: new Schema({
       namespace: {

@@ -146,6 +146,22 @@ function projectsSearchUrlBuilder(subSection) {
 }
 
 /**
+ * Construct a URL for a project creation page.
+ * @returns {function} A function to construct a URL from data.
+ */
+function projectNewUrlBuilder() {
+  return (data) => {
+    // create base url
+    let url = "/projects/new";
+    if (!data || !data.data)
+      return url;
+    const search = new URLSearchParams();
+    search.append("data", data.data);
+    return `${url}?${search.toString()}`;
+  };
+}
+
+/**
  * Construct a URL for a project page.
  * @returns {function} A function to construct a URL from data.
  * @param {string} subSection
@@ -281,7 +297,12 @@ const Url = {
           "/projects/group/subgroup/path",
         ]
       ),
-      new: "/projects/new",
+      new: new UrlRule(
+        projectNewUrlBuilder(), [], null, [
+          "/projects/new",
+          "/projects/new?data=eyJ0aXRsZSI6InRlC3QifQ==",
+        ]
+      )
     }
   },
 
