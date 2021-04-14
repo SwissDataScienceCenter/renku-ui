@@ -64,7 +64,7 @@ jobs:
         body: |
           You can access the deployment of this PR at https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch
     - name: Build and deploy
-      uses: SwissDataScienceCenter/renku/actions/deploy-renku@master
+      uses: SwissDataScienceCenter/renku/actions/deploy-renku@0000-fix-uiserver
       env:
         RANCHER_PROJECT_ID: ${{ secrets.CI_RANCHER_PROJECT }}
         DOCKER_PASSWORD: ${{ secrets.RENKU_DOCKER_PASSWORD }}
