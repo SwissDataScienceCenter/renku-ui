@@ -40,8 +40,10 @@
 @import 'bootstrap/scss/functions';
 @import 'bootstrap/scss/variables';
 
+@import './bootstrap/custom_utilities';
 @import './bootstrap/custom_bootstrap';
 @import 'bootstrap/scss/bootstrap';
+
 
 // -------------------       BOOTSTRAP EXT  -----------------------------
 
@@ -56,5 +58,6 @@
 @import './components/renku_general';
 @import './components/jupyter_notebook';
 @import './components/renku_search';
+@import './components/renku_files';
 
 @import './icons/icons.scss';

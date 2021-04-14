@@ -1,41 +1,20 @@
-.icon-purple{
-  color: #5561A6;
-}
-
-.icon-white{
-  color:white;
-}
-
-.icon-gray{
-    color: rgba(0, 0, 0, 0.5)
-}
-
-.icon-lightgray{
-    color: lightgray;
-}
-
-.hidden-folder{
-  opacity:0.5;
-}
-
+/* 
+  TODO - MAKE SCSS
+*/
 .icon-link{
-  color: rgba(0, 0, 0, 0.5);
+  color: #838383; /* $rk-text */
   margin-left: 10px;
   font-size: larger;
   height: auto;
 }
 
 .icon-link:hover{
-  color: #5561A6;
+  color: #01192D; /* $primary $rk-blue */
   cursor: pointer;
 }
 
-.throw-right-in-flex{
-  margin-left: auto;
-}
-
 .fs-element{
-  color: #212529;
+  color: #3D3D3D; /* $rk-dark */
   text-overflow: ellipsis;
   overflow: hidden; 
   white-space: nowrap;
@@ -46,7 +25,8 @@
 }
 
 .fs-element a{
-  color:black;
+  color:#3D3D3D; /* $rk-dark */
+  text-decoration: none;
 }
 
 .tree-header-title{
@@ -68,14 +48,6 @@
   background-color: #e9ecef;
 }
 
-.tree-title-container{
-  display:block
-}
-
-.tree-title{
-  display:flex;
-}
-
 .order-first{
   order:1;
 }
@@ -86,28 +58,21 @@
 }
 
 .order-second{
-    order:2;
+  order:2;
 }
 
 .order-third{
   order:3;
 }
 
+/* TODO - do we need this???
 .tree-container{
   display: flex; 
   flex-direction: column;
   font-size: 2rem;
   font-weight: 300;
-}
+} */
 
 .tree-content {
   overflow-y: auto;
-}
-
-.lfs-badge{
-  border-color:#aaa;
-  border-width: 1.3px;
-  border-style: solid;
-  margin-right: 7px;
-  color:#aaa;
 }
