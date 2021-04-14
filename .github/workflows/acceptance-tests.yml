@@ -81,7 +81,6 @@ jobs:
         RENKU_TESTS_ENABLED: true
         TEST_ARTIFACTS_PATH: "tests-artifacts-${{ github.sha }}"
         renku_ui: "@${{ github.head_ref }}"
-        renku_ui_server: "@${{ github.head_ref }}"
         renku: "${{ needs.check-deploy.outputs.renku }}"
         renku_core: "${{ needs.check-deploy.outputs.renku-core }}"
         renku_gateway: "${{ needs.check-deploy.outputs.renku-gateway }}"
