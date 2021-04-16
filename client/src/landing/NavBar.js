@@ -355,7 +355,7 @@ class FooterNavbar extends Component {
       (<RenkuNavLink to="/privacy" title="Privacy" />) :
       null;
     return (
-      <footer className="footer mt-auto">
+      <footer className="footer mt-auto pt-4">
         <Navbar className="container-fluid flex-wrap flex-lg-nowrap renku-container navbar bg-primary">
           <span className="text-white">&copy; SDSC {(new Date()).getFullYear()}</span>
           <Nav className="ms-auto">

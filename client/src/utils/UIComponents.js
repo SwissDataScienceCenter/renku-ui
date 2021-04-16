@@ -200,13 +200,15 @@ class Pagination extends Component {
 }
 
 function ExternalLinkButton(props) {
-  let className = "btn btn-primary";
+  let className = "btn";
   if (props.size != null)
     className += ` btn-${props.size}`;
   if (props.disabled)
     className += " disabled";
   if (props.color)
     className += ` btn-${props.color}`;
+  else
+    className += ` btn-primary`;
   if (props.className)
     className += ` ${props.className}`;
 

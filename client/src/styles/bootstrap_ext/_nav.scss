@@ -1,0 +1,14 @@
+.nav.nav-light{
+  .nav-link{
+    padding-left:0em;
+    color: $rk-text;
+  }
+  
+  .nav-link:hover{
+    color :$rk-dark;
+  }
+
+  .nav-link.active{
+    color :$rk-dark;
+  }
+}

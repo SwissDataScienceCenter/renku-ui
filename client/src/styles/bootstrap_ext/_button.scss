@@ -32,3 +32,10 @@
     color:$rk-text;
   }
 }
+
+.btn-outline-primary.border-light:hover{
+  background-color: $light;
+  //not sure if this border color looks good
+  border-color:$primary !important;
+  color: $primary
+}
