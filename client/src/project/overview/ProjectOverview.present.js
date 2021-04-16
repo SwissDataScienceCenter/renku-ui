@@ -74,63 +74,67 @@ class OverviewStats extends Component {
 
     // TODO: provide a refresh button once all the data can be refreshed at once (see container)
     return (
-      <Card className="border-0">
-        <CardHeader>Project Statistics</CardHeader>
-        <CardBody><Row><Col>
-          {info}
-          <Table className="table-responsive" key="stats-table" size="sm">
-            <tbody>
-              <tr>
-                <th className="align-middle" scope="row">Number of Branches</th>
-                <td className="px-3 px-lg-4 align-middle">{branchesCount}</td>
-                <td>
-                  <ExternalLink role="text" showLinkIcon={true}
-                    url={`${metadata.repositoryUrl}/branches`} title="Branches in GitLab" />
-                </td>
-              </tr>
-              <tr>
-                <th className="align-middle" scope="row">Number of Forks</th>
-                <td className="px-3 px-lg-4 align-middle">{metadata.forksCount}</td>
-                <td>
-                  <ExternalLink role="text" showLinkIcon={true}
-                    url={`${metadata.repositoryUrl}/forks`} title="Forks in GitLab" />
-                </td>
-              </tr>
-              <tr>
-                <th className="align-middle" scope="row">Number of Stars</th>
-                <td className="px-3 px-lg-4 align-middle">{metadata.starCount}</td>
-                <td>
-                  <ExternalLink role="text" showLinkIcon={true}
-                    url={`${metadata.repositoryUrl}/-/starrers`} title="Stars in GitLab" />
-                </td>
-              </tr>
-              <tr>
-                <th className="align-middle" scope="row">Number of Commits</th>
-                <td className="px-3 px-lg-4 align-middle">{commitsCount}</td>
-                <td>
-                  <ExternalLink role="text" showLinkIcon={true}
-                    url={`${metadata.repositoryUrl}/commits`} title="Commits in GitLab" />
-                </td>
-              </tr>
-              <tr>
-                <th scope="row">Storage Size</th>
-                <td className="px-3 px-lg-4 align-middle">{storageSize}</td>
-                <td className="align-middle" rowSpan="3">
-                  <ExternalLink role="text" showLinkIcon={true}
-                    url={metadata.repositoryUrl} title="Sizes in GitLab" />
-                </td>
-              </tr>
-              <tr>
-                <th className="align-middle" scope="row">Repository Size</th>
-                <td className="px-3 px-lg-4 align-middle">{repositorySize}</td>
-              </tr>
-              <tr>
-                <th className="align-middle" scope="row">LFS Size</th>
-                <td className="px-3 px-lg-4 align-middle">{lfsSize}</td>
-              </tr>
-            </tbody>
-          </Table>
-        </Col></Row></CardBody>
+      <Card className="border-rk-light">
+        <CardHeader className="bg-white p-3 ps-4">Project Statistics</CardHeader>
+        <CardBody className="p-4 pt-3 pb-3 lh-lg">
+          <Row>
+            <Col>
+              {info}
+              <Table className="table-responsive" key="stats-table" size="sm">
+                <tbody>
+                  <tr>
+                    <th className="align-middle" scope="row">Number of Branches</th>
+                    <td className="px-3 px-lg-4 align-middle">{branchesCount}</td>
+                    <td>
+                      <ExternalLink role="text" showLinkIcon={true}
+                        url={`${metadata.repositoryUrl}/branches`} title="Branches in GitLab" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <th className="align-middle" scope="row">Number of Forks</th>
+                    <td className="px-3 px-lg-4 align-middle">{metadata.forksCount}</td>
+                    <td>
+                      <ExternalLink role="text" showLinkIcon={true}
+                        url={`${metadata.repositoryUrl}/forks`} title="Forks in GitLab" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <th className="align-middle" scope="row">Number of Stars</th>
+                    <td className="px-3 px-lg-4 align-middle">{metadata.starCount}</td>
+                    <td>
+                      <ExternalLink role="text" showLinkIcon={true}
+                        url={`${metadata.repositoryUrl}/-/starrers`} title="Stars in GitLab" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <th className="align-middle" scope="row">Number of Commits</th>
+                    <td className="px-3 px-lg-4 align-middle">{commitsCount}</td>
+                    <td>
+                      <ExternalLink role="text" showLinkIcon={true}
+                        url={`${metadata.repositoryUrl}/commits`} title="Commits in GitLab" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <th scope="row">Storage Size</th>
+                    <td className="px-3 px-lg-4 align-middle">{storageSize}</td>
+                    <td className="align-middle" rowSpan="3">
+                      <ExternalLink role="text" showLinkIcon={true}
+                        url={metadata.repositoryUrl} title="Sizes in GitLab" />
+                    </td>
+                  </tr>
+                  <tr>
+                    <th className="align-middle" scope="row">Repository Size</th>
+                    <td className="px-3 px-lg-4 align-middle">{repositorySize}</td>
+                  </tr>
+                  <tr>
+                    <th className="align-middle" scope="row">LFS Size</th>
+                    <td className="px-3 px-lg-4 align-middle">{lfsSize}</td>
+                  </tr>
+                </tbody>
+              </Table>
+            </Col>
+          </Row>
+        </CardBody>
       </Card>
     );
   }
@@ -146,7 +150,7 @@ class OverviewCommits extends Component {
 
     const commitBadgeNumber = `${commits.list.length}${tooMany ? "+" : ""}`;
     const badge = commits.fetched && !commits.fetching ?
-      (<Badge color="primary">{commitBadgeNumber}</Badge>) :
+      (<Badge color="primary" className="ms-2 me-2">{commitBadgeNumber}</Badge>) :
       null;
     const buttonGit = (
       <Fragment>
@@ -155,7 +159,7 @@ class OverviewCommits extends Component {
           id="commitLink"
           title={<FontAwesomeIcon icon={faGitlab} />}
           url={gitlabCommitsUrl}
-          className="text-primary btn ml-2 p-0"
+          className="text-primary btn ml-2 p-0 ms-2"
         />
         <UncontrolledTooltip placement="top" target="commitLink">
           Open in GitLab
@@ -170,13 +174,20 @@ class OverviewCommits extends Component {
       (<Loader />) :
       (<OverviewCommitsBody {...this.props} />);
     return (
-      <Card className="border-0">
-        <CardHeader>
-          Commits {badge}
-          <RefreshButton action={commits.refresh} updating={commits.fetching} message="Refresh commits" />
-          {buttonGit}
+
+      <Card className="border-rk-light">
+        <CardHeader className="bg-white p-3 ps-4 d-flex">
+          <span className="align-text-bottom">
+            Commits
+          </span>
+          <div>
+            {badge}
+            <RefreshButton action={commits.refresh} updating={commits.fetching} message="Refresh commits" />
+            {buttonGit}
+          </div>
         </CardHeader>
-        <CardBody className="pl-0 pr-0">
+        <CardBody className="p-4 pt-3 pb-3 lh-lg">
+          {/* <CardBody className="p-0 lh-lg"> */}
           {body}
           {info}
         </CardBody>
@@ -235,11 +246,11 @@ class OverviewCommitsBody extends Component {
           urlDiff={`${metadata.repositoryUrl}/commit/`}
         />
         <Pagination
-          className="mt-2"
           currentPage={currentPage}
           perPage={perPage}
           totalItems={commits.list.length}
           onPageChange={this.onPageChange.bind(this)}
+          className="mt-4 d-flex justify-content-center rk-search-pagination pagination-sm"
         />
       </Fragment>
     );
