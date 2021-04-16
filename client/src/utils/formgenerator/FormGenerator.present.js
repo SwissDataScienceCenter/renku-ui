@@ -45,13 +45,14 @@ function SubmitButtonGroup(props) {
   const { submitCallback, submitLoader, btnName, errorFields } = props;
   const { onCancel, cancelBtnName } = props;
   const submitButton = submitCallback !== undefined ?
-    <Button type="submit" disabled={submitLoader && submitLoader.value} className="float-right mt-1" color="primary">
+    <Button type="submit" disabled={submitLoader && submitLoader.value} className="float-end mt-1" color="secondary">
+      <span className="arrow-right"> </span>
       {btnName}
     </Button>
     : null;
   const cancelButton = onCancel !== undefined ?
-    <Button disabled={submitLoader && submitLoader.value} className="float-right mt-1 mr-1"
-      color="secondary" onClick={(e)=>onCancel(e, props.handlers)}>
+    <Button disabled={submitLoader && submitLoader.value} className="float-end mt-1 me-1"
+      color="secondary" outline onClick={(e)=>onCancel(e, props.handlers)}>
       {cancelBtnName ? cancelBtnName : "Cancel"}
     </Button>
     : null;

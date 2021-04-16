@@ -50,7 +50,7 @@ function TextInput({ name, label, type, value, alert, placeholder, setInputs,
           : null
         }
         { value && !disabled ?
-          <Button size="sm" color="light" className="float-right" onClick={switchToEditMode}>
+          <Button size="sm" color="rk-white" className="float-end" onClick={switchToEditMode}>
             <FontAwesomeIcon icon={faPencilAlt}/> Change Name
           </Button>
           : null

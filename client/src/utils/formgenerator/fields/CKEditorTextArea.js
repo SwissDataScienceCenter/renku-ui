@@ -40,19 +40,21 @@ function CktextareaInput({ name, label, type, value, alert, setInputs, help, out
 
   return <div>
     <FormGroup>
-      <FormLabel htmlFor={name} label={label} required={required}/>
-      <div style={{ float: "right" }} className="form-check form-switch">
-        <Input
-          className="form-check-input"
-          type="switch"
-          id="exampleCustomSwitch"
-          name="customSwitch"
-          checked={codeView}
-          onChange={() => { setCodeView(!codeView); }}
-        />
-        <Label check htmlFor="exampleCustomSwitch" className="form-check-label">
-          {switchLabel}
-        </Label>
+      <div className="pb-2">
+        <FormLabel htmlFor={name} label={label} required={required}/>
+        <div className="form-check form-switch float-end">
+          <Input
+            className="form-check-input rounded-pill"
+            type="switch"
+            id="exampleCustomSwitch"
+            name="customSwitch"
+            checked={codeView}
+            onChange={() => { setCodeView(!codeView); }}
+          />
+          <Label check htmlFor="exampleCustomSwitch" className="form-check-label">
+            {switchLabel}
+          </Label>
+        </div>
       </div>
       {
         codeView === false ?

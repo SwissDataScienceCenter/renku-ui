@@ -80,7 +80,7 @@ function KeywordsInput(
       { tags.map((tag, i) => (
         <li key={tag}>
           {tag}
-          <FontAwesomeIcon size="sm" icon={faTimes} className="ml-2" onClick={(e) => removeTag(i)}/>
+          <FontAwesomeIcon size="sm" icon={faTimes} className="ms-2" onClick={(e) => removeTag(i)}/>
         </li>
       ))}
       <li className="input-tag__tags__input">

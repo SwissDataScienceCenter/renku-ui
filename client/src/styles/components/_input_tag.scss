@@ -1,0 +1,64 @@
+.input-tag {
+  background: white;
+  border: 1px solid #ced4da;
+  /* border-radius: 0.25rem; */
+  display: flex; 
+  flex-wrap: wrap;
+  padding: 5px 5px 0;
+}
+
+.input-tag.disabled{
+  background-color: #e9ecef;
+  opacity: 1;
+  pointer-events:none;
+}
+
+.input-tag input {
+  border: none;
+	width: 100%;	
+}
+
+.input-tag input:disabled{
+  background-color: $rk-white;
+  opacity: 1;
+  pointer-events:none;
+}
+
+.input-tag input:focus{
+	color: $rk-dark;
+  background-color: #fff;
+  border-color: $primary;
+	border-width: 1px solid;
+  outline: 0;
+	box-shadow: 0 0 0 0.2rem $rk-hover-blue;
+	// border-radius: 0.25rem;
+}
+
+.input-tag__tags {
+  display: inline-flex;
+  flex-wrap: wrap;
+  margin: 0;
+  padding: 0;
+	width: 100%;
+	height: 70%;
+}
+
+.input-tag__tags li {
+  align-items: center;
+  border-radius: 0.25rem;
+  display: flex;
+  font-weight: 200;
+  list-style: none;
+  margin-bottom: 5px;
+  margin-right: 5px;
+  padding: 5px 10px;
+  color: $rk-dark;
+  background-color: $rk-light;
+  border-color: $rk-light;
+}
+
+.input-tag__tags li.input-tag__tags__input {
+  background: none;
+  flex-grow: 1;
+  padding: 0;
+}

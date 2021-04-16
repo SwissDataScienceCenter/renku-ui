@@ -37,11 +37,9 @@ function DisplayFiles(props) {
   if (props.files === undefined) return null;
 
   if (props.files.error !== undefined) {
-    return <Card key="datasetDetails">
-      <CardHeader className="align-items-baseline">
-        <span className="caption align-baseline">Dataset files</span>
-      </CardHeader>
-      <CardBody>
+    return <Card key="datasetDetails" className="border-rk-light mb-4">
+      <CardHeader className="bg-white p-3 ps-4">Dataset files</CardHeader>
+      <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
         <strong>Error fetching dataset files:</strong> {props.files.error.reason}
       </CardBody>
     </Card>;
@@ -51,11 +49,9 @@ function DisplayFiles(props) {
     ( props.files[0].atLocation.startsWith("data/") ? 2 : 1 )
     : 0;
 
-  return <Card key="datasetDetails">
-    <CardHeader className="align-items-baseline">
-      <span className="caption align-baseline">Dataset files ({props.files.length})</span>
-    </CardHeader>
-    <CardBody>
+  return <Card key="datasetDetails" className="border-rk-light mb-4">
+    <CardHeader className="bg-white p-3 ps-4">Dataset files ({props.files.length})</CardHeader>
+    <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
       <FileExplorer
         files={props.files}
         lineageUrl={props.lineagesUrl}
@@ -68,11 +64,9 @@ function DisplayFiles(props) {
 
 function DisplayProjects(props) {
   if (props.projects === undefined) return null;
-  return <Card key="datasetDetails">
-    <CardHeader className="align-items-baseline">
-      <span className="caption align-baseline">Projects using this dataset</span>
-    </CardHeader>
-    <CardBody>
+  return <Card key="datasetProjectDetails" className="border-rk-light mb-4">
+    <CardHeader className="bg-white p-3 ps-4">Projects using this dataset</CardHeader>
+    <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
       <Table size="sm" borderless>
         <thead>
           <tr>
@@ -243,7 +237,22 @@ export default function DatasetView(props) {
           }
         </h4>
       </Col>
-      <Col md={4} sm={12}>
+      <Col md={4} sm={12} className="d-flex flex-col justify-content-end mb-auto">
+        { props.logged ?
+          <Button disabled={dataset.insideKg === false}
+            className="float-right mb-1 me-1" size="sm" color="primary" onClick={() => setAddDatasetModalOpen(true)}>
+            <FontAwesomeIcon icon={faPlus} color="dark" /> Add to project
+          </Button>
+          : null}
+        { props.insideProject && props.maintainer ?
+          <Link className="float-right me-1 mb-1" id="editDatasetTooltip"
+            to={{ pathname: "modify", state: { dataset: dataset } }} >
+            <Button size="sm" color="primary" >
+              <FontAwesomeIcon icon={faPen} color="dark" />
+            </Button>
+          </Link>
+          : null
+        }
         { props.insideProject && props.maintainer ?
           <UncontrolledButtonDropdown size="sm" className="float-right mb-1">
             <DropdownToggle caret color="primary" className="removeArrow">
@@ -257,21 +266,6 @@ export default function DatasetView(props) {
           </UncontrolledButtonDropdown>
           : null
         }
-        { props.insideProject && props.maintainer ?
-          <Link className="float-right mr-1 mb-1" id="editDatasetTooltip"
-            to={{ pathname: "modify", state: { dataset: dataset } }} >
-            <Button size="sm" color="primary" >
-              <FontAwesomeIcon icon={faPen} color="dark" />
-            </Button>
-          </Link>
-          : null
-        }
-        { props.logged ?
-          <Button disabled={dataset.insideKg === false}
-            className="float-right mb-1 mr-1" size="sm" color="primary" onClick={() => setAddDatasetModalOpen(true)}>
-            <FontAwesomeIcon icon={faPlus} color="dark" /> Add to project
-          </Button>
-          : null}
       </Col>
     </Row>
     { dataset.published !== undefined && dataset.published.creator !== undefined ?
