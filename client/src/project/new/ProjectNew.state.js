@@ -624,6 +624,7 @@ class NewProjectCoordinator {
     if (!creation.createError && !creation.kgError && !creation.projectError) {
       const pristineModel = newProjectSchema.createInitialized();
       modelUpdates.input = pristineModel.input;
+      modelUpdates.automated = pristineModel.automated;
       modelUpdates.meta.validation = pristineModel.meta.validation;
     }
 
