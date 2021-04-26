@@ -41,12 +41,12 @@ class TreeNode extends Component {
   render() {
     const icon = this.props.node.type === "tree" ?
       (this.state.childrenOpen === false ?
-        <FontAwesomeIcon className="icon-purple" icon={faFolderClosed} />
-        : <FontAwesomeIcon className="icon-purple" icon={faFolderOpen} />)
-      : <FontAwesomeIcon className="icon-gray" icon={faFile} />;
+        <FontAwesomeIcon className="link-primary" icon={faFolderClosed} />
+        : <FontAwesomeIcon className="link-primary" icon={faFolderOpen} />)
+      : <FontAwesomeIcon className="link-rk-text" icon={faFile} />;
 
     const order = this.props.node.type === "tree" ? "order-second" : "order-third";
-    const hidden = this.props.node.name.startsWith(".") ? " hidden-folder " : "";
+    const hidden = this.props.node.name.startsWith(".") ? " rk-opacity-50 " : "";
 
     const children = this.props.node.children ?
       this.props.node.children.map((node) => {
@@ -93,7 +93,7 @@ class TreeNode extends Component {
       ;
     }
     else {
-      const childrenOpen = this.state.childrenOpen ? <div className="pl-3">{children}</div> : null;
+      const childrenOpen = this.state.childrenOpen ? <div className="ps-3">{children}</div> : null;
       elementToRender =
         <div className={order + " " + hidden} >
           <div className={"fs-element"} onClick={this.handleIconClick} >
@@ -111,21 +111,23 @@ class TreeContainer extends Component {
   render() {
     const { style, fileView, toLineage, toFile, tree } = this.props;
 
-    const switchPage = () => {
-      if (fileView)
+    const switchPage = (switchToContent) => {
+      if (fileView && !switchToContent)
         this.props.history.push(toLineage);
-      else
+      else if (!fileView && switchToContent)
         this.props.history.push(toFile);
     };
 
     return (
-      <div className="tree-container" style={style}>
-        <div className="tree-title-container">
-          <ButtonGroup className="tree-title pb-1" size="sm">
-            <Button color="primary" outline onClick={switchPage} active={fileView}>
+      <div className="d-flex flex-column" style={style}>
+        <div className="d-block">
+          <ButtonGroup className="d-flex rk-btn-group-light mb-2">
+            <Button color="rk-white" className="btn-rk-white-dark-active"
+              onClick={()=>switchPage(true)} active={fileView}>
               Contents
             </Button>
-            <Button color="primary" outline onClick={switchPage} active={!fileView}>
+            <Button color="rk-white" className="btn-rk-white-dark-active"
+              onClick={()=>switchPage(false)} active={!fileView}>
               Lineage
             </Button>
           </ButtonGroup>

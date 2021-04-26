@@ -599,9 +599,11 @@ function Clipboard(props) {
   return (
     <ReactClipboard component="a" data-clipboard-text={props.clipboardText} onSuccess={
       () => { setCopied(true); setTimeout(() => { if (isMounted.current) setCopied(false); }, timeoutDur); }
-    }> {
+    }
+    className={props.className ? props.className : ""}
+    > {
         (copied) ?
-          <FontAwesomeIcon icon={faCheck} color="green" /> :
+          <FontAwesomeIcon icon={faCheck} color="success" /> :
           <FontAwesomeIcon icon={faCopy} />
       }
     </ReactClipboard>

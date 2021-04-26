@@ -33,6 +33,37 @@
   }
 }
 
+.rk-btn-group-light{
+  border-style: solid;
+  border-width: 1px;
+  background:white;
+  border-color: $rk-text-light;
+  color:$rk-text;
+
+  .btn{
+    border:unset;
+  }
+
+  .btn.active{
+    color:$rk-text;
+    background-color:$rk-text-light;
+  }
+  
+  .btn.active:hover{
+    background-color:$rk-text-light;
+  }
+
+  .btn:hover{
+    background-color: $rk-hover;
+  }
+}
+
+// .btn-rk-white-dark-active.active{
+//   background-color: $rk-hover;
+//   color: $dark;
+//   border-color: #E4E7EA;
+// }
+
 .btn-outline-primary.border-light:hover{
   background-color: $light;
   //not sure if this border color looks good
