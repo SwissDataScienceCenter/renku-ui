@@ -26,12 +26,12 @@ then
   echo "*** DEBUG MODE ENABLED ***"
   echo "You will be able to attach an external debugger."
   echo "The configuration for the VScode remote debugger for NPM is the following:"
-  echo '{ "name": "uiserver" "type": "node", "request": "attach", "address": "localhost",'
+  echo '{ "name": "uiserver", "type": "node", "request": "attach", "address": "localhost",'
   echo '"port": 9229, "protocol": "inspector", "restart": true }'
 else
   echo "*** DEBUG MODE DISABLED ***"
   echo "If you want to attach an external debugger (E.G. VScode remote debugger for NPM)"
-  echo "set the DEBUG variable to 1. You can use the command: DEBUG=1 /reun-telepresence.sh"
+  echo "set the DEBUG variable to 1. You can use the command: DEBUG=1 ./run-telepresence.sh"
   echo "You can use DEBUGBRK instead if you want breakpoints to temporarily pause node execution."
 fi
 echo ""
