@@ -77,9 +77,9 @@ class TreeNode extends Component {
   render() {
     const icon = this.props.node.children.length ?
       (this.state.childrenOpen === false ?
-        <FontAwesomeIcon className="icon-purple" icon={faFolder} />
-        : <FontAwesomeIcon className="icon-purple" icon={faFolderOpen} />)
-      : <FontAwesomeIcon className="icon-gray" icon={faFile} />;
+        <FontAwesomeIcon className="link-primary" icon={faFolder} />
+        : <FontAwesomeIcon className="link-primary" icon={faFolderOpen} />)
+      : <FontAwesomeIcon className="link-rk-text" icon={faFile} />;
 
     const order = this.props.node.children.length ? "order-second" : "order-third";
     const hidden = this.props.node.name.startsWith(".") ? " hidden-folder " : "";
@@ -125,7 +125,7 @@ class TreeNode extends Component {
           <div className="fs-element" onClick={this.handleIconClick} >
             {icon} {this.props.node.name}
           </div>
-          <div className="pl-3">
+          <div className="ps-3">
             {children}
           </div>
         </div>

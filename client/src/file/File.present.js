@@ -31,6 +31,7 @@ import { Clipboard, ExternalIconLink, ExternalLink, Loader } from "../utils/UICo
 import { Time } from "../utils/Time";
 import { formatBytes } from "../utils/HelperFunctions";
 import { FileAndLineageSwitch } from "./FileAndLineageComponents";
+import { FormGroup, Label } from "reactstrap/lib";
 
 const commitMessageLengthLimit = 120;
 
@@ -76,20 +77,24 @@ class FileCard extends React.Component {
       );
     }
     return (
-      <Card>
-        <CardHeader className="align-items-baseline">
-          {this.props.isLFSBadge}
-          <strong>{this.props.filePath}</strong>
+      <Card className="border-rk-light">
+        <CardHeader className="d-flex align-items-center bg-white justify-content-between pe-3 ps-3">
+          <div className="d-flex align-items-end">
+            {this.props.isLFSBadge}
+            <span className="fw-bold">{this.props.filePath}</span>
           &nbsp;
-          {this.props.fileSize ? <span><small> {formatBytes(this.props.fileSize)}</small></span> : null}
+            {this.props.fileSize ? <span><small> {formatBytes(this.props.fileSize)}</small></span> : null}
           &nbsp;
-          <span className="fileBarIconButton"><Clipboard clipboardText={this.props.filePath} /></span>
+            {/* <span className="fileBarIconButton"> */}
+            <Clipboard clipboardText={this.props.filePath} className="icon-link"/>
+            {/* </span> */}
           &nbsp;
-          <div className="float-right">
-            <span className="fileBarIconButton">{this.props.buttonDownload}</span>
-            <span className="fileBarIconButton">{this.props.buttonJupyter}</span>
-            <span className="fileBarIconButton">{this.props.buttonGit}</span>
-            <span className="fileBarIconButton">{this.props.buttonGraph}</span>
+          </div>
+          <div className="d-flex align-items-end">
+            {this.props.buttonDownload}
+            {this.props.buttonJupyter}
+            {this.props.buttonGit}
+            <span className="ms-2">{this.props.buttonGraph}</span>
           </div>
         </CardHeader>
         {commitHeader}
@@ -149,8 +154,10 @@ class ShowFile extends React.Component {
 
     if (this.props.file == null) {
       return (
-        <Card>
-          <CardHeader className="align-items-baseline">&nbsp;</CardHeader>
+        <Card className="border-rk-light">
+          <CardHeader className="d-flex align-items-center bg-white justify-content-between pe-3 ps-3">
+            &nbsp;
+          </CardHeader>
           <CardBody>Downloading... <Loader size="14" inline="true" /></CardBody>
         </Card>
       );
@@ -160,7 +167,7 @@ class ShowFile extends React.Component {
       this.props.hashElement.isLfs :
       false;
     const isLFSBadge = isLFS ?
-      (<Badge className="lfs-badge" color="light">LFS</Badge>) :
+      (<Badge className="lfs-badge" color="white">LFS</Badge>) :
       null;
     const downloadLink = `${this.props.externalUrl}/-/raw/master/${gitLabFilePath}?inline=false`;
     const buttonDownload = (
@@ -323,18 +330,16 @@ function NotebookDisplayForm(props) {
 
   const overrideControl = (displayMode === NotebookSourceDisplayMode.DEFAULT) ?
     null :
-    <ButtonGroup key="controls" size="sm" className="mt-1">
+    <ButtonGroup key="controls" className="rk-btn-group-light mt-2" size="sm">
       <Button
-        color="primary"
-        outline={displayMode !== NotebookSourceDisplayMode.SHOWN}
+        color="rk-white" className="btn-rk-white-dark-active"
         onClick={() => setLocalMode(NotebookSourceDisplayMode.SHOWN)}
         active={displayMode === NotebookSourceDisplayMode.SHOWN}
       >
         Visible
       </Button>
       <Button
-        color="primary"
-        outline={displayMode !== NotebookSourceDisplayMode.HIDDEN}
+        color="rk-white" className="btn-rk-white-dark-active"
         onClick={() => setLocalMode(NotebookSourceDisplayMode.HIDDEN)}
         active={displayMode === NotebookSourceDisplayMode.HIDDEN}
       >
@@ -342,15 +347,18 @@ function NotebookDisplayForm(props) {
       </Button>
     </ButtonGroup>;
 
-  return <ListGroup key="controls" flush>
+  return <ListGroup key="controls" flush className="border-top-0">
     <ListGroupItem>
-      <div>
-        <Input type="switch" id="code-visibility-override"
-          name="code-visibility-override" label="Override Code Visibility"
+      <FormGroup switch>
+        <Input type="switch"
+          id="code-visibility-override"
+          name="code-visibility-override"
+          className="rounded-pill"
           checked={displayMode !== NotebookSourceDisplayMode.DEFAULT}
           onChange={() => { setOverride(displayMode === NotebookSourceDisplayMode.DEFAULT); }} />
-        {overrideControl}
-      </div>
+        <Label for="code-visibility-override" check className="me-4">Override Code Visibility</Label>
+      </FormGroup>
+      {overrideControl}
     </ListGroupItem>
   </ListGroup>;
 }

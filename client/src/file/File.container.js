@@ -107,7 +107,7 @@ class FilePreview extends React.Component {
     // Various types of images
     if (this.fileIsImage()) {
       return (
-        <CardBody key="file preview" className="pb-0">
+        <CardBody key="file preview" className="pb-0 bg-white">
           <img
             className="image-preview"
             alt={this.props.file.file_name}
@@ -120,7 +120,7 @@ class FilePreview extends React.Component {
     // Free text
     if (this.fileIsText()) {
       return (
-        <CardBody key="file preview" className="pb-0">
+        <CardBody key="file preview" className="pb-0 bg-white">
           <pre className="no-highlight">
             <code>{atobUTF8(this.props.file.content)}</code>
           </pre>
@@ -132,7 +132,7 @@ class FilePreview extends React.Component {
     if (this.getFileExtension() === "md") {
       let content = atobUTF8(this.props.file.content);
       return (
-        <CardBody key="file preview" className="pb-0">
+        <CardBody key="file preview" className="pb-0 bg-white">
           <RenkuMarkdown
             projectPathWithNamespace={this.props.projectPathWithNamespace}
             filePath={this.props.file.file_path}
@@ -161,8 +161,8 @@ class FilePreview extends React.Component {
     // Code with syntax highlighting
     if (this.fileIsCode()) {
       return (
-        <CardBody key="file preview" className="pb-0">
-          <pre className={`hljs ${this.getFileExtension()}`}>
+        <CardBody key="file preview" className="pb-0 bg-white">
+          <pre className={`hljs ${this.getFileExtension()} bg-white`}>
             <code>{atobUTF8(this.props.file.content)}</code>
           </pre>
         </CardBody>
@@ -172,8 +172,8 @@ class FilePreview extends React.Component {
     // No extensions
     if (this.fileHasNoExtension()) {
       return (
-        <CardBody key="file preview" className="pb-0">
-          <pre className={"hljs"}>
+        <CardBody key="file preview" className="pb-0 bg-white">
+          <pre className={"hljs bg-white"}>
             <code>{atobUTF8(this.props.file.content)}</code>
           </pre>
         </CardBody>
@@ -182,7 +182,7 @@ class FilePreview extends React.Component {
 
     // File extension not supported
     return (
-      <CardBody key="file preview">
+      <CardBody key="file preview" className="pb-0 bg-white">
         <p>{`Unable to preview file with extension .${this.getFileExtension()}`}</p>
       </CardBody>
     );
