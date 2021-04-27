@@ -410,7 +410,7 @@ class RenkuAlert extends Component {
 class InfoAlert extends Component {
   render() {
     return (
-      <RenkuAlert color="primary" {...this.props} >
+      <RenkuAlert color="info" {...this.props} >
         {this.props.children}
       </RenkuAlert>
     );
