@@ -882,22 +882,18 @@ class ProjectViewFiles extends Component {
 class ProjectEnvironments extends Component {
   render() {
     return [
-      <Col key="nav" xs={12} md={2}>
-        <Nav pills className="flex-column mb-3">
-          <NavItem>
-            <RenkuNavLink to={this.props.notebookServersUrl} title="Running" />
-          </NavItem>
-          <NavItem>
-            <RenkuNavLink to={this.props.launchNotebookUrl} title="New" />
-          </NavItem>
-        </Nav>
-      </Col>,
-      <Col key="content" xs={12} md={10}>
+      <Col key="content" xs={12}>
         <Switch>
           <Route exact path={this.props.notebookServersUrl}
             render={props => <ProjectNotebookServers {...this.props} />} />
           <Route path={this.props.launchNotebookUrl}
-            render={props => <ProjectStartNotebookServer {...this.props} />} />
+            render={props => [
+              <Col key="btn" md={12}>
+                <GoBackButton key="backToListBtn" label="Back to environments list"
+                  url={this.props.notebookServersUrl}/>
+              </Col>,
+              <ProjectStartNotebookServer key="startNotebookForm" {...this.props} />
+            ]} />
         </Switch>
       </Col>
     ];
