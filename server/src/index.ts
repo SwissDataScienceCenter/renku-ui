@@ -36,8 +36,8 @@ app.use(morgan("combined", { stream: logStream }));
 routes.register(app);
 
 // start the Express server
-const server = app.listen( port, () => {
-  logger.info(`server started at http://localhost:${ port }`);
+const server = app.listen(port, () => {
+  logger.info(`server started at http://localhost:${port}`);
 });
 
 process.on("SIGTERM", () => {

@@ -18,26 +18,26 @@
 
 import express from "express";
 
-function register(app: express.Application) : void {
+function register(app: express.Application): void {
   // define a route handler for the default home page
-  app.get( "/", ( req, res ) => {
-    res.send( "Hello world!" );
-  } );
+  app.get("/", (req, res) => {
+    res.send("Hello world!");
+  });
 
   // define a route handler for the readiness probe
-  app.get( "/readiness", ( req, res ) => {
-    res.send( "ready" );
-  } );
+  app.get("/readiness", (req, res) => {
+    res.send("ready");
+  });
 
   // define a route handler for the liveness probe
-  app.get( "/liveness", ( req, res ) => {
-    res.send( "live" );
-  } );
+  app.get("/liveness", (req, res) => {
+    res.send("live");
+  });
 
   // define a route handler for the ingress entry point
-  app.get( "/ui-server", ( req, res ) => {
-    res.send( "Hello ingress!" );
-  } );
+  app.get("/ui-server", (req, res) => {
+    res.send("Hello ingress!");
+  });
 }
 
 export default { register };
