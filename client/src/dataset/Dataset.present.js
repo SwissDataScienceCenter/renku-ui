@@ -52,12 +52,17 @@ function DisplayFiles(props) {
   return <Card key="datasetDetails" className="border-rk-light mb-4">
     <CardHeader className="bg-white p-3 ps-4">Dataset files ({props.files.length})</CardHeader>
     <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
-      <FileExplorer
-        files={props.files}
-        lineageUrl={props.lineagesUrl}
-        insideProject={props.insideProject}
-        foldersOpenOnLoad={openFolders}
-      />
+      {
+        props.files.length === 0 ?
+          <span>No files on this dataset.</span>
+          :
+          <FileExplorer
+            files={props.files}
+            lineageUrl={props.lineagesUrl}
+            insideProject={props.insideProject}
+            foldersOpenOnLoad={openFolders}
+          />
+      }
     </CardBody>
   </Card>;
 }
@@ -99,6 +104,8 @@ function DisplayProjects(props) {
 }
 
 function DisplayDescription(props) {
+  if (!props.description) return null;
+
   return <Card key="datasetDescription" className="border-rk-light mb-4">
     <CardHeader className="bg-white p-3 ps-4">Dataset description</CardHeader>
     <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
@@ -146,7 +153,7 @@ function DisplayInfoTable(props) {
     : null;
 
   // eslint-disable-next-line
-  return <Table className="mb-2 table-borderless" size="sm">
+  return <Table className="mb-4 table-borderless" size="sm">
     <tbody className="text-rk-text">
       { source ?
         <tr>
@@ -348,7 +355,6 @@ export default function DatasetView(props) {
       insideProject={props.insideProject}
       sameAs={props.sameAs}
     />
-    <br/>
     <DisplayDescription
       projectPathWithNamespace={props.projectPathWithNamespace}
       projectsUrl={props.projectsUrl}
@@ -357,16 +363,13 @@ export default function DatasetView(props) {
       description={dataset.description}
       insideProject={props.insideProject}
     />
-    <br />
     <DisplayFiles
-      description={dataset.description}
       projectsUrl={props.projectsUrl}
       fileContentUrl={props.fileContentUrl}
       lineagesUrl={props.lineagesUrl}
       files={dataset.hasPart}
       insideProject={props.insideProject}
     />
-    <br />
     {
       //here we assume that if the dataset is only in one project
       //this one project is the current project and we don't display the list
