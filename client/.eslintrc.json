@@ -29,38 +29,113 @@
     }
   },
   "rules": {
-    "max-len": ["warn", 120],
+    "max-len": [
+      "warn",
+      120
+    ],
     "no-eval": "error",
-    "quotes": ["warn", "double", { "allowTemplateLiterals": true, "avoidEscape": true }],
-    "no-unused-vars": ["warn", { "vars": "all", "args": "none", "ignoreRestSiblings": false }],
+    "quotes": [
+      "warn",
+      "double",
+      {
+        "allowTemplateLiterals": true,
+        "avoidEscape": true
+      }
+    ],
+    "no-unused-vars": [
+      "warn",
+      {
+        "vars": "all",
+        "args": "none",
+        "ignoreRestSiblings": false
+      }
+    ],
     "no-console": "warn",
     "react/prop-types": "off",
-    "curly": ["warn", "multi-or-nest", "consistent"],
-    "react/jsx-indent": ["warn", 2],
-    "indent" : ["warn", 2, { "ignoredNodes": ["TemplateLiteral"], "SwitchCase": 1 }],
-    "semi": ["warn", "always"],
-    "space-before-blocks": ["warn", "always"],
+    "curly": [
+      "warn",
+      "multi-or-nest",
+      "consistent"
+    ],
+    "react/jsx-indent": [
+      "warn",
+      2
+    ],
+    "indent": [
+      "warn",
+      2,
+      {
+        "ignoredNodes": [
+          "TemplateLiteral"
+        ],
+        "SwitchCase": 1
+      }
+    ],
+    "semi": [
+      "warn",
+      "always"
+    ],
+    "space-before-blocks": [
+      "warn",
+      "always"
+    ],
     "no-multi-spaces": "warn",
-    "brace-style": ["warn", "stroustrup", { "allowSingleLine": true }],
-    "max-nested-callbacks": ["warn", 3],
+    "brace-style": [
+      "warn",
+      "stroustrup",
+      {
+        "allowSingleLine": true
+      }
+    ],
+    "max-nested-callbacks": [
+      "warn",
+      3
+    ],
     "no-alert": "error",
     "no-else-return": "warn",
     "jest/expect-expect": "off",
     "comma-spacing": "warn",
-    "block-spacing": ["warn", "always"],
+    "block-spacing": [
+      "warn",
+      "always"
+    ],
     "key-spacing": "warn",
     "no-trailing-spaces": "warn",
-    "object-curly-spacing": ["warn", "always"],
+    "object-curly-spacing": [
+      "warn",
+      "always"
+    ],
     "space-infix-ops": "warn",
-    "space-unary-ops": ["warn", {"words": true, "nonwords": false}],
-    "keyword-spacing": ["warn", { "before": true }],
-    "no-multiple-empty-lines": ["warn", { "max": 2, "maxEOF": 1 }],
+    "space-unary-ops": [
+      "warn",
+      {
+        "words": true,
+        "nonwords": false
+      }
+    ],
+    "keyword-spacing": [
+      "warn",
+      {
+        "before": true
+      }
+    ],
+    "no-multiple-empty-lines": [
+      "warn",
+      {
+        "max": 2,
+        "maxEOF": 1
+      }
+    ],
     "no-unsafe-finally": "off",
-    "react/jsx-curly-spacing": ["warn", "never"],
+    "react/jsx-curly-spacing": [
+      "warn",
+      "never"
+    ],
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
     "spellcheck/spell-checker": [
-      "warn", {
+      "warn",
+      {
         "identifiers": true,
         "comments": true,
         "strings": true,
@@ -114,6 +189,7 @@
           "jumbotron",
           "jupyter",
           "kernelspec",
+          "Lausanne",
           "localhost",
           "maintenances",
           "mergerequests",
@@ -137,9 +213,11 @@
           "poller",
           "prepend",
           "presentational",
+          "Pupikofer",
           "pygments",
           "react",
           "readme",
+          "Ravey",
           "rect",
           "redux",
           "renderer",

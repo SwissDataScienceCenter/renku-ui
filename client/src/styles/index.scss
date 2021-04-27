@@ -55,8 +55,9 @@
 
 // -------------------       EVERYTHING ELSE  -----------------------------
 
-@import './components/renku_general';
 @import './components/jupyter_notebook';
+@import './components/renku_general';
+@import './components/renku_home';
 @import './components/renku_search';
 @import './components/renku_files';
 

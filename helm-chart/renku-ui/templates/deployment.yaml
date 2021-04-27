@@ -85,6 +85,8 @@ spec:
               value: {{ toJson .Values.uploadSizeThreshold | quote }}
             - name: UI_VERSION
               value: {{ .Chart.Version | quote }}
+            - name: HOMEPAGE
+              value: {{ toJson .Values.homepage | quote }}
           livenessProbe:
             httpGet:
               path: /

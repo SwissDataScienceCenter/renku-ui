@@ -43,6 +43,7 @@
     "react-motion": "^0.5.2",
     "react-redux": "^7.2.2",
     "react-router-dom": "^5.1.2",
+    "react-router-hash-link": "^2.4.0",
     "react-sticky": "^6.0.3",
     "react-toastify": "^6.0.8",
     "reactstrap": "github:SwissDataScienceCenter/reactstrap#npm-bs5-link",

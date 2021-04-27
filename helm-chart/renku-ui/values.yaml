@@ -108,4 +108,20 @@ privacy:
       buttonWrapperClasses: mt-2
 ## If you maintain a statuspage.io page for the status of your RenkuLab instance, put the id for it here.
 statuspage:
-  id:
+  id: ''
+
+
+homepage:
+  custom:
+    # If you want to enable a custom content on the homepage, you can enable it and provide content here
+    enabled: false
+    main:
+      contentMd: |
+        # Welcome to RenkuLab
+      backgroundImage:
+        url: ''
+  # The default is to show the tutorial from the docs, but can also link to an
+  # internal project
+  tutorialLink: https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html
+  # Projects to highlight on the homepage
+  projects: []

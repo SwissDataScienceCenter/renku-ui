@@ -25,8 +25,10 @@
 
 import React, { Component, Fragment } from "react";
 import { Link } from "react-router-dom";
-import { UncontrolledDropdown, DropdownItem, Navbar, Nav, NavbarBrand,
-  NavbarToggler, Collapse, NavItem, DropdownToggle, DropdownMenu } from "reactstrap";
+import {
+  UncontrolledDropdown, DropdownItem, Navbar, Nav, NavbarBrand,
+  NavbarToggler, Collapse, NavItem, DropdownToggle, DropdownMenu
+} from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faBars } from "@fortawesome/free-solid-svg-icons";
 import { faQuestionCircle, faUser } from "@fortawesome/free-regular-svg-icons";
@@ -134,7 +136,7 @@ function RenkuToolbarHelpMenu(props) {
       <DropdownToggle className="nav-link" nav caret>
         <FontAwesomeIcon icon={faQuestionCircle} id="helpDropdownToggle" />
       </DropdownToggle>
-      <DropdownMenu className="help-menu" end key="help-bar" aria-labelledby="help-menu">
+      <DropdownMenu className="help-menu" key="help-bar" aria-labelledby="help-menu">
         <Link className="dropdown-item" to="/help">Help</Link>
         <DropdownItem divider />
         <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/"
@@ -222,7 +224,7 @@ class LoggedInNavBar extends Component {
       <header className="navbar navbar-expand-lg navbar-dark rk-navbar p-0">
         <Navbar color="primary" className="container-fluid flex-wrap flex-lg-nowrap renku-container">
           <NavbarBrand href="/" className="navbar-brand me-2 pb-0 pt-0">
-            <img src={logo} alt="Renku" height="68" className="d-block my-1"/>
+            <img src={logo} alt="Renku" height="68" className="d-block my-1" />
           </NavbarBrand>
           <NavbarToggler onClick={this.toggle} className="border-0 mt-3">
             <FontAwesomeIcon icon={faBars} id="userIcon" color="white" />
@@ -233,13 +235,13 @@ class LoggedInNavBar extends Component {
                 <QuickNav client={this.props.client} model={this.props.model} user={this.props.user} />
               </NavItem>
               <NavItem className="nav-item col-6 col-lg-auto">
-                <RenkuNavLink to="/projects" title="Projects" id="link-projects" className="link-secondary"/>
+                <RenkuNavLink to="/projects" title="Projects" id="link-projects" className="link-secondary" />
               </NavItem>
               <NavItem className="nav-item col-6 col-lg-auto">
-                <RenkuNavLink to="/datasets" title="Datasets" id="link-datasets"/>
+                <RenkuNavLink to="/datasets" title="Datasets" id="link-datasets" />
               </NavItem>
               <NavItem className="nav-item col-6 col-lg-auto">
-                <RenkuNavLink to="/environments" title="Environments" id="link-environments"/>
+                <RenkuNavLink to="/environments" title="Environments" id="link-environments" />
               </NavItem>
               <NavItem className="nav-item col-1 col-lg-auto">
                 <RenkuToolbarItemPlus currentPath={this.props.location.pathname} />
@@ -285,7 +287,7 @@ class AnonymousNavBar extends Component {
       <header className="navbar navbar-expand-lg navbar-dark rk-navbar p-0">
         <Navbar color="primary" className="container-fluid flex-wrap flex-lg-nowrap renku-container">
           <NavbarBrand href="/" className="navbar-brand me-2 pb-0 pt-0">
-            <img src={logo} alt="Renku" height="68" className="d-block my-1"/>
+            <img src={logo} alt="Renku" height="68" className="d-block my-1" />
           </NavbarBrand>
           <NavbarToggler onClick={this.toggle} className="border-0 mt-3">
             <FontAwesomeIcon icon={faBars} id="userIcon" color="white" />
@@ -296,13 +298,13 @@ class AnonymousNavBar extends Component {
                 <QuickNav client={this.props.client} model={this.props.model} user={this.props.user} />
               </NavItem>
               <NavItem className="nav-item col-6 col-lg-auto">
-                <RenkuNavLink to="/projects" title="Projects" id="link-projects" className="link-secondary"/>
+                <RenkuNavLink to="/projects" title="Projects" id="link-projects" className="link-secondary" />
               </NavItem>
               <NavItem className="nav-item col-6 col-lg-auto">
-                <RenkuNavLink to="/datasets" title="Datasets" id="link-datasets"/>
+                <RenkuNavLink to="/datasets" title="Datasets" id="link-datasets" />
               </NavItem>
               <NavItem className="nav-item col-6 col-lg-auto">
-                <RenkuNavLink to="/environments" title="Environments" id="link-environments"/>
+                <RenkuNavLink to="/environments" title="Environments" id="link-environments" />
               </NavItem>
               <NavItem className="nav-item col-1 col-lg-auto">
                 <RenkuToolbarHelpMenu />
@@ -366,9 +368,10 @@ class FooterNavbar extends Component {
           <Nav className="ms-auto">
             <RenkuNavLink to="/help" title="Help" />
             {privacyLink}
-            <ExternalDocsLink url="https://renku.discourse.group" title="Forum" className="nav-link"/>
-            <ExternalDocsLink url="https://gitter.im/SwissDataScienceCenter/renku" title="Gitter" className="nav-link"/>
-            <ExternalDocsLink url="https://datascience.ch/who-we-are" title="About" className="nav-link"/>
+            <ExternalDocsLink url="https://renku.discourse.group" title="Forum" className="nav-link" />
+            <ExternalDocsLink url="https://gitter.im/SwissDataScienceCenter/renku"
+              title="Gitter" className="nav-link" />
+            <ExternalDocsLink url="https://datascience.ch/who-we-are" title="About" className="nav-link" />
           </Nav>
         </Navbar>
       </footer>
@@ -377,3 +380,4 @@ class FooterNavbar extends Component {
 }
 
 export { RenkuNavBar, FooterNavbar, MaintenanceNavBar };
+export { RenkuToolbarHelpMenu, RenkuToolbarNotifications };
