@@ -81,7 +81,8 @@ class Notebooks extends Component {
       <Fragment>
         <Row className="pt-2 pb-3">
           <Col className="d-flex mb-2 justify-content-between">
-            <NotebooksTitle standalone={this.props.standalone} />
+            <NotebooksHeader standalone={this.props.standalone}
+              urlNewEnvironment={this.props.urlNewEnvironment}/>
           </Col>
         </Row>
         <NotebookServers
@@ -107,11 +108,20 @@ class Notebooks extends Component {
   }
 }
 
-class NotebooksTitle extends Component {
+class NotebooksHeader extends Component {
   render() {
     if (this.props.standalone)
       return (<h2>Interactive Environments</h2>);
-    return (<h3>Interactive Environments</h3>);
+
+    return (<Fragment>
+      <h3>Interactive Environments</h3>
+      <div>
+        <Link className="btn btn-sm btn-secondary" role="button" to={this.props.urlNewEnvironment}>
+          <span className="arrow-right pt-2 pb-2">  </span>
+          New Environment
+        </Link>
+      </div>
+    </Fragment>);
   }
 }
 
@@ -127,11 +137,11 @@ class NotebooksPopup extends Component {
       let newOutput = "New";
       if (this.props.urlNewEnvironment) {
         newOutput = (<Link className="btn btn-primary btn-sm" role="button" to={this.props.urlNewEnvironment}>
-          New</Link>);
+          New Environment</Link>);
       }
 
       suggestion = (<span>
-        You can start a new interactive environment by clicking on {newOutput} in the side bar.
+        You can start a new interactive environment by clicking on the {newOutput} button on top.
       </span>);
     }
 
@@ -1442,11 +1452,11 @@ class ServerOptionBoolean extends Component {
     // The double negation solves an annoying problem happening when checked=undefined
     // https://stackoverflow.com/a/39709700/1303090
     const selected = !!this.props.selected;
-    return (
+    return (<div className="form-check form-switch">
       <Input type="switch" id={this.props.id} label={this.props.displayName}
-        checked={selected} onChange={this.props.onChange} />
-      // <CustomInput type="switch" id={this.props.id} label={this.props.displayName}
-      //   checked={selected} onChange={this.props.onChange} />
+        checked={selected} onChange={this.props.onChange} className="form-check-input rounded-pill"/>
+      <Label check htmlFor={this.props.id}>{this.props.displayName}</Label>
+    </div>
     );
   }
 }
