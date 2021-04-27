@@ -40,6 +40,7 @@ import ShowDataset from "./dataset/Dataset.container";
 import { Loader } from "./utils/UIComponents";
 import { Cookie, Privacy } from "./privacy";
 import { NotificationsManager, NotificationsPage } from "./notifications";
+import { StyleGuide } from "./styleguide";
 import { Url } from "./utils/url";
 
 import "./App.css";
@@ -151,6 +152,12 @@ function CentralContentContainer(props) {
           client={props.client}
           model={props.model}
           notifications={notifications}
+          {...p}
+        />}
+      />
+      <Route path="/style-guide" render={
+        p => <StyleGuide key="style-guide"
+          baseUrl="/style-guide"
           {...p}
         />}
       />
