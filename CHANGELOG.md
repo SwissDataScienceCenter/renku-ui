@@ -1,5 +1,11 @@
 # Changes
 
+## [0.11.11](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.10...0.11.11) (2021-04-22)
+
+### Bug Fixes
+
+* prevent occasional crashes after project creation ([#1325](https://github.com/SwissDataScienceCenter/renku-ui/issues/1325), [#1324](https://github.com/SwissDataScienceCenter/renku-ui/issues/1324))
+
 ## [0.11.10](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.9...0.11.10) (2021-04-13)
 
 ### Features

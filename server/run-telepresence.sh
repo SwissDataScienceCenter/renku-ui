@@ -21,6 +21,21 @@ set -e
 
 CURRENT_CONTEXT=`kubectl config current-context`
 
+if [[ "$DEBUG" ]] || [[ "$DEBUGBRK" ]]
+then
+  echo "*** DEBUG MODE ENABLED ***"
+  echo "You will be able to attach an external debugger."
+  echo "The configuration for the VScode remote debugger for NPM is the following:"
+  echo '{ "name": "uiserver", "type": "node", "request": "attach", "address": "localhost",'
+  echo '"port": 9229, "protocol": "inspector", "restart": true }'
+else
+  echo "*** DEBUG MODE DISABLED ***"
+  echo "If you want to attach an external debugger (E.G. VScode remote debugger for NPM)"
+  echo "set the DEBUG variable to 1. You can use the command: DEBUG=1 ./run-telepresence.sh"
+  echo "You can use DEBUGBRK instead if you want breakpoints to temporarily pause node execution."
+fi
+echo ""
+
 if [[ $CURRENT_CONTEXT == 'minikube' ]]
 then
   echo "Exchanging k8s deployments using the following context: ${CURRENT_CONTEXT}"
@@ -75,11 +90,15 @@ fi
 
 # The `inject-tcp` proxying switch helps when running multiple instances of telepresence but creates problems when
 # suid bins need to run. Please switch the following two lines when trying to run multiple telepresence.
+# to include `--method inject-tcp`
 # Reference: https://www.telepresence.io/reference/methods
 
-if [[ "$OSTYPE" == "linux-gnu" ]]
+if [[ "$DEBUG" ]]
 then
-  telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --run npm run dev
+  telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --expose 9229:9229 --run npm run dev-debug
+elif [[ "$DEBUGBRK" ]]
+then
+  telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --expose 9229:9229 --run npm run dev-debug-brk
 else
-  telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --method inject-tcp --expose 8080:8080 --run npm run dev
+  telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --run npm run dev
 fi
