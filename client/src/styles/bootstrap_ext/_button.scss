@@ -70,3 +70,16 @@
   border-color:$primary !important;
   color: $primary
 }
+
+.btn-group{
+  .btn-outline-primary {
+      background-color: white;
+    &:hover {
+      background-color: $primary;
+    }
+  }
+  
+  .btn-outline-primary.active {
+    background-color: $primary;
+  }
+}

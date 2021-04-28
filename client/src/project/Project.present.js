@@ -557,7 +557,7 @@ function ProjectAddDataset(props) {
       <Row key="header">
         <h3 className="uk-heading-divider uk-text-center pb-1 ml-4">Add Dataset</h3>
       </Row>,
-      <Row key="switch-button" className="pb-3">
+      <Row key="switch-button" className="d-inline-block pb-3">
         <ButtonGroup className={"ml-4 pt-1"}>
           <Button color="primary" outline onClick={() => setNewDataset(true)} active={newDataset}>
             Create Dataset
@@ -685,7 +685,7 @@ function ProjectViewDatasets(props) {
     return <Loader />;
 
   if (props.core.datasets.error) {
-    return <Col sm={12} md={12} lg={8}>
+    return <Col sm={12}>
       <Alert color="danger">
         There was an error fetching the datasets, please try <Button color="danger" size="sm" onClick={
           () => window.location.reload()
@@ -695,7 +695,7 @@ function ProjectViewDatasets(props) {
 
   if (!loading && props.core.datasets !== undefined && props.core.datasets.length === 0
     && props.location.pathname !== props.newDatasetUrl) {
-    return <Col sm={12} md={12} lg={8}>
+    return <Col sm={12}>
       {migrationMessage}
       <EmptyDatasets
         membership={props.visibility.accessLevel > ACCESS_LEVELS.DEVELOPER}
@@ -704,7 +704,7 @@ function ProjectViewDatasets(props) {
     </Col>;
   }
 
-  return <Col sm={12} md={12} lg={8}>
+  return <Col sm={12}>
     {migrationMessage}
     <Switch>
       <Route path={props.newDatasetUrl}

@@ -38,7 +38,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-regular-svg-icons";
 import {
-  faCheck, faExternalLinkAlt, faEllipsisV, faUser, faSyncAlt, faLongArrowAltLeft
+  faCheck, faExternalLinkAlt, faEllipsisV, faUser, faSyncAlt
 } from "@fortawesome/free-solid-svg-icons";
 
 import { sanitizedHTMLFromMarkdown, simpleHash } from "./HelperFunctions";
@@ -797,9 +797,9 @@ function RefreshButton(props) {
  * @param {string} props.label text next to the arrow
  */
 function GoBackButton(props) {
-  return <Col md={12} className="pb-2 pl-0">
-    <Link className={props.className} to={props.url}>
-      <FontAwesomeIcon icon={faLongArrowAltLeft} /> {props.label}
+  return <Col md={12} className="pb-4 pl-0">
+    <Link className={props.className + " link-rk-text text-decoration-none"} to={props.url}>
+      <span className="arrow-left">  </span>{props.label}
     </Link>
   </Col>;
 }
