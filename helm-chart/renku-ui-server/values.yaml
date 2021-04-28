@@ -58,8 +58,8 @@ autoscaling:
 
 resources:
   limits:
-    cpu: 500m
-    memory: 2Gi
+    cpu: 100m
+    memory: 128Mi
   requests:
     cpu: 100m
     memory: 128Mi
