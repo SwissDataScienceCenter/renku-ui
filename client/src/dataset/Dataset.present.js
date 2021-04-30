@@ -323,7 +323,7 @@ export default function DatasetView(props) {
     />
     <br />
     <DisplayProjects
-      projects={dataset.isPartOf}
+      projects={dataset.usedIn}
       projectsUrl={props.projectsUrl}
     />
     {
