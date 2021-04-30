@@ -25,10 +25,11 @@
 
 
 import React, { Component, Fragment, useState, useEffect } from "react";
-import { Link, Route, Switch } from "react-router-dom";
+import { Link, NavLink, Route, Switch } from "react-router-dom";
 import {
   Alert, Button, ButtonGroup, Card, CardBody, CardHeader, Col, DropdownItem, Form, FormGroup,
-  FormText, Input, Label, Row, Table, Nav, NavItem, UncontrolledTooltip, Modal, Badge
+  FormText, Input, Label, Row, Table, Nav, NavItem, UncontrolledTooltip, Modal, Badge,
+  NavLink as ReactNavLink
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
@@ -46,7 +47,7 @@ import { SpecialPropVal } from "../model/Model";
 import { ProjectAvatarEdit, ProjectTags, ProjectTagList } from "./shared";
 import { Notebooks, StartNotebookServer } from "../notebooks";
 import Issue from "../collaboration/issue/Issue";
-import { CollaborationList, collaborationListTypeMap } from "../collaboration/lists/CollaborationList.container";
+import { CollaborationList, collaborationListTypeMap, itemsStateMap } from "../collaboration/lists/CollaborationList.container";
 import FilesTreeView from "./filestreeview/FilesTreeView";
 import DatasetsListView from "./datasets/DatasetsListView";
 import { ACCESS_LEVELS } from "../api-client";
@@ -54,6 +55,7 @@ import ProjectVersionStatus from "./status/ProjectVersionStatus.present";
 import { NamespaceProjects } from "../namespace";
 import { ProjectOverviewCommits, ProjectOverviewStats } from "./overview";
 import { ForkProject } from "./new";
+import qs from "query-string";
 
 
 import "./Project.css";
@@ -147,7 +149,7 @@ class MergeRequestSuggestions extends Component {
   }
 
   render() {
-    const mrSuggestions = this.props.suggestedMRBranches.map((branch, i) => {
+    const mrSuggestions = this.props.suggestedMRBranches.slice(0, 5).map((branch, i) => {
       if (!this.props.canCreateMR) return null;
       return <Alert color="warning" key={i}>
         <p> Do you want to create a merge request for branch <b>{branch.name}</b>?</p>
@@ -160,7 +162,12 @@ class MergeRequestSuggestions extends Component {
         {/*&nbsp; <Button color="warning" onClick={this.props.createMR(branch.iid)}>No</Button>*/}
       </Alert>;
     });
-    return mrSuggestions;
+
+    return mrSuggestions.length > 0 ? <Row>
+      <Col key="mergeRequestsSuggestions" className="pb-3">
+        {mrSuggestions}
+      </Col>
+    </Row> : null;
   }
 }
 
@@ -274,7 +281,7 @@ class ProjectViewHeaderOverview extends Component {
         <Row className="pt-2 pb-3">
           <Col className="d-flex mb-2 justify-content-between">
             <div>
-              <h2>
+              <h2 className="pb-1">
                 <ProjectStatusIcon
                   history={this.props.history}
                   webhook={this.props.webhook}
@@ -288,7 +295,7 @@ class ProjectViewHeaderOverview extends Component {
                 <span>{this.props.core.path_with_namespace}{forkedFrom}</span>
               </div>
               <div className="text-rk-text">
-                {this.props.core.description || " "}
+                {this.props.core.description}
               </div>
             </div>
             <div className="d-flex flex-column align-items-end justify-content-between">
@@ -328,11 +335,11 @@ class ProjectViewHeaderOverview extends Component {
                     userLogged={this.props.user.logged} />
                 </ButtonGroup>
               </div>
-              <div className="pt-2">
+              <div>
                 <ProjectVisibilityLabel visibilityLevel={this.props.visibility.level} />
                 <ProjectTagList tagList={this.props.system.tag_list} />
               </div>
-              <div className="pt-1">
+              <div>
                 <TimeCaption key="time-caption" time={this.props.core.last_activity_at} />
               </div>
             </div>
@@ -736,87 +743,124 @@ function ProjectViewDatasets(props) {
 
 class ProjectViewCollaborationNav extends Component {
   render() {
-    return (
-      <Nav pills className={"flex-column"}>
+    let itemsState = itemsStateMap.OPENED;
+
+    if (window.location && window.location.search)
+      itemsState = qs.parse(window.location.search).itemsState;
+
+    const inIssues = this.props.location.pathname.includes(this.props.issuesUrl);
+
+    return ( <Col key="nav" sm={12} md={2}>
+      <Nav className="flex-column nav-light">
         <NavItem>
           <RenkuNavLink to={this.props.issuesUrl} matchPath={true} title="Issues" />
         </NavItem>
+        <Nav className="flex-column nav-light">
+          <NavItem className="ms-3">
+            <ReactNavLink
+              to="issues?page=1&itemsState=opened"
+              tag={NavLink}
+              isActive={() => itemsState === itemsStateMap.OPENED && inIssues}
+            >Open</ReactNavLink>
+          </NavItem>
+          <NavItem className="ms-3">
+            <ReactNavLink
+              to="issues?page=1&itemsState=closed"
+              tag={NavLink}
+              isActive={() => itemsState === itemsStateMap.CLOSED && inIssues}
+            >Closed</ReactNavLink>
+          </NavItem>
+        </Nav>
         <NavItem>
           <RenkuNavLink to={this.props.mergeRequestsOverviewUrl} matchPath={true} title="Merge Requests" />
         </NavItem>
-      </Nav>);
+        <Nav className="flex-column nav-light">
+          <NavItem className="ms-3">
+            <ReactNavLink
+              to="mergerequests?page=1&itemsState=opened"
+              tag={NavLink}
+              isActive={() => itemsState === itemsStateMap.OPENED && !inIssues}
+            >Open</ReactNavLink>
+          </NavItem>
+          <NavItem className="ms-3">
+            <ReactNavLink
+              to="mergerequests?page=1&itemsState=merged"
+              tag={NavLink}
+              isActive={() => itemsState === itemsStateMap.MERGED && !inIssues}
+            >Merged</ReactNavLink>
+          </NavItem>
+          <NavItem className="ms-3">
+            <ReactNavLink
+              to="mergerequests?page=1&itemsState=closed"
+              tag={NavLink}
+              isActive={() => itemsState === itemsStateMap.CLOSED && !inIssues}
+            >Complete</ReactNavLink>
+          </NavItem>
+        </Nav>
+      </Nav>
+    </Col>);
   }
 }
 
 class ProjectViewCollaboration extends Component {
 
   render() {
-    return <Col key="collaboration">
-      <Row>
-        <Col key="nav" sm={12} md={2}>
-          <ProjectViewCollaborationNav {...this.props} />
-        </Col>
-        <Col key="collaborationContent" sm={12} md={10}>
-          <Switch>
-            <Route path={this.props.mergeRequestUrl} render={props =>
-              <ProjectViewMergeRequests {...this.props} />} />
-            <Route path={this.props.mergeRequestsOverviewUrl} render={props =>
-              <ProjectMergeRequestList {...this.props} />} />
-            <Route exact path={this.props.issueNewUrl} render={props =>
-              <Issue.New {...props} model={this.props.model}
-                projectPathWithNamespace={this.props.core.path_with_namespace}
-                client={this.props.client} />} />
-            <Route path={this.props.issueUrl} render={props =>
-              <ProjectViewIssues {...this.props} />} />
-            <Route path={this.props.issuesUrl} render={props =>
-              <ProjectIssuesList {...this.props} />} />
-          </Switch>
-        </Col>
-      </Row>
-    </Col>;
+    return <Row>
+      <Col key="collaborationContent">
+        <Switch>
+          <Route path={this.props.mergeRequestUrl} render={props =>
+            <ProjectViewMergeRequests {...this.props} />} />
+          <Route path={this.props.mergeRequestsOverviewUrl} render={props =>
+            <ProjectMergeRequestList {...this.props} />} />
+          <Route exact path={this.props.issueNewUrl} render={props =>
+            <Issue.New {...props} model={this.props.model}
+              projectPathWithNamespace={this.props.core.path_with_namespace}
+              client={this.props.client} />} />
+          <Route path={this.props.issueUrl} render={props =>
+            <ProjectViewIssues {...this.props} />} />
+          <Route path={this.props.issuesUrl} render={props =>
+            <ProjectIssuesList {...this.props} />} />
+        </Switch>
+      </Col>
+    </Row>;
   }
 }
 
 class ProjectIssuesList extends Component {
 
   render() {
-    return <Row><Col key="issuesList" className={"pt-3"} sm={12} md={10} lg={8}>
-      <CollaborationList
-        key="issuesList"
-        listType={collaborationListTypeMap.ISSUES}
-        collaborationUrl={this.props.collaborationUrl}
-        issueNewUrl={this.props.issueNewUrl}
-        projectId={this.props.core.id}
-        user={this.props.user}
-        location={this.props.location}
-        client={this.props.client}
-        history={this.props.history}
-        fetchElements={this.props.client.getProjectIssues}
-      />
-    </Col></Row>;
+    return <Row>
+      <ProjectViewCollaborationNav {...this.props} />
+      <Col key="issuesList" sm={10}>
+        <CollaborationList
+          key="issuesList"
+          listType={collaborationListTypeMap.ISSUES}
+          collaborationUrl={this.props.collaborationUrl}
+          issueNewUrl={this.props.issueNewUrl}
+          projectId={this.props.core.id}
+          user={this.props.user}
+          location={this.props.location}
+          client={this.props.client}
+          history={this.props.history}
+          fetchElements={this.props.client.getProjectIssues}
+        />
+      </Col>
+    </Row>;
   }
 }
 
 class ProjectViewIssues extends Component {
 
   render() {
-    return <Row>
-      <Col key="issue" sm={12} md={10}>
-        <Route path={this.props.issueUrl}
-          render={props => this.props.issueView(props)} />
-      </Col>
-    </Row>;
+    return <Route path={this.props.issueUrl}
+      render={props => this.props.issueView(props)} />;
   }
 }
 
 class ProjectViewMergeRequests extends Component {
   render() {
-    return <Row>
-      <Col key="issue" sm={12} md={10}>
-        <Route path={this.props.mergeRequestUrl}
-          render={props => this.props.mrView(props)} />
-      </Col>
-    </Row>;
+    return <Route path={this.props.mergeRequestUrl}
+      render={props => this.props.mrView(props)} />;
   }
 }
 
@@ -827,32 +871,27 @@ class ProjectMergeRequestList extends Component {
   }
 
   render() {
-    return <Col>
-      <Row>
-        <Col sm={12} md={10} lg={8}>
-          <MergeRequestSuggestions
-            externalUrl={this.props.externalUrl}
-            canCreateMR={this.props.canCreateMR}
-            onCreateMergeRequest={this.props.onCreateMergeRequest}
-            suggestedMRBranches={this.props.suggestedMRBranches} />
-        </Col>
-      </Row>
-      <Row>
-        <Col key="mrList" sm={12} md={10} lg={8}>
-          <CollaborationList
-            collaborationUrl={this.props.collaborationUrl}
-            listType={collaborationListTypeMap.MREQUESTS}
-            projectId={this.props.core.id}
-            user={this.props.user}
-            location={this.props.location}
-            client={this.props.client}
-            history={this.props.history}
-            mergeRequestsOverviewUrl={this.props.mergeRequestsOverviewUrl}
-            fetchElements={this.props.client.getMergeRequests}
-          />
-        </Col>
-      </Row>
-    </Col>;
+    return <Row>
+      <ProjectViewCollaborationNav {...this.props} />
+      <Col sm={10}>
+        <MergeRequestSuggestions
+          externalUrl={this.props.externalUrl}
+          canCreateMR={this.props.canCreateMR}
+          onCreateMergeRequest={this.props.onCreateMergeRequest}
+          suggestedMRBranches={this.props.suggestedMRBranches} />
+        <CollaborationList
+          collaborationUrl={this.props.collaborationUrl}
+          listType={collaborationListTypeMap.MREQUESTS}
+          projectId={this.props.core.id}
+          user={this.props.user}
+          location={this.props.location}
+          client={this.props.client}
+          history={this.props.history}
+          mergeRequestsOverviewUrl={this.props.mergeRequestsOverviewUrl}
+          fetchElements={this.props.client.getMergeRequests}
+        />
+      </Col>
+    </Row>;
   }
 }
 
