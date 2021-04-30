@@ -26,7 +26,7 @@
 import React, { useRef, useState } from "react";
 import { Col, Row } from "reactstrap";
 import { Button, ButtonDropdown, DropdownItem, DropdownMenu, DropdownToggle, FormGroup, Input } from "reactstrap";
-import { InputGroup, InputGroupAddon } from "reactstrap";
+import { InputGroup } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretLeft, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 
@@ -220,9 +220,7 @@ function ImageContentInput({ name, value, placeholder, modes, setInputs,
   if (disabled) return null;
   return <FormGroup>
     <InputGroup id={inputGroupId}>
-      <InputGroupAddon addonType="prepend">
-        <ImageContentInputMode name={name} modes={modes} mode={mode} setMode={setMode} onClick={onModeButtonClick}/>
-      </InputGroupAddon>
+      <ImageContentInputMode name={name} modes={modes} mode={mode} setMode={setMode} onClick={onModeButtonClick}/>
       <Input id={widgetId} name={widgetId} type="text" value={inputValue}
         onDragOver={e => e.preventDefault()} onDragLeave={e => e.preventDefault()}
         onDrop={onDrop} onChange={onInputChange} disabled={disabled} placeholder={placeholder} />
@@ -272,12 +270,12 @@ function ImageInput({ name, label, value, alert, placeholder, modes,
 
   return [
     <Row key="row-title">
-      <FormLabel className="pl-3" label={label} required={required} />
+      <FormLabel className="ps-3" label={label} required={required} />
     </Row>,
     <Row key="row-content">
       <Col xs={12}>
         <div className="d-flex">
-          <div className="pr-2">
+          <div className="pe-2">
             <ImagePreview value={value} selected={selected} displayValue={displayValue}
               disabled={disabled} setInputs={setInputs} />
             <HelpText content={previewHelp} />
