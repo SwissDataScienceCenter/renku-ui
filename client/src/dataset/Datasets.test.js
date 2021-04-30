@@ -115,7 +115,7 @@ describe("Dataset functions", () => {
     ],
     "url": "https://dev.renku.ch/datasets/79215657-4319-4fcf-82b9-58267f2a1db8",
     "sameAs": "https://dev.renku.ch/datasets/79215657-4319-4fcf-82b9-58267f2a1db8",
-    "isPartOf": []
+    "usedIn": []
   };
 
   const result_dataset_in_kg = {
