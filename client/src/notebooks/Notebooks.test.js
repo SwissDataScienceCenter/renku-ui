@@ -303,19 +303,19 @@ describe("rendering", () => {
     await act(async () => {
       ReactDOM.render(
         <MemoryRouter>
-          <Notebooks {...props} standalone={true} />
+          <Notebooks {...props} standalone={true} urlNewEnvironment="new_environment"/>
         </MemoryRouter>, div);
     });
     await act(async () => {
       ReactDOM.render(
         <MemoryRouter>
-          <Notebooks {...props} standalone={false} />
+          <Notebooks {...props} standalone={false} urlNewEnvironment="new_environment"/>
         </MemoryRouter>, div);
     });
     await act(async () => {
       ReactDOM.render(
         <MemoryRouter>
-          <Notebooks {...props} standalone={true} scope={scope} />
+          <Notebooks {...props} standalone={true} scope={scope} urlNewEnvironment="new_environment"/>
         </MemoryRouter>, div);
     });
   });

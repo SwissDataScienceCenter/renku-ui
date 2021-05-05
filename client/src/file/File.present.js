@@ -31,7 +31,7 @@ import { Clipboard, ExternalIconLink, ExternalLink, Loader } from "../utils/UICo
 import { Time } from "../utils/Time";
 import { formatBytes } from "../utils/HelperFunctions";
 import { FileAndLineageSwitch } from "./FileAndLineageComponents";
-import { FormGroup, Label } from "reactstrap/lib";
+import { Label } from "reactstrap/lib";
 
 const commitMessageLengthLimit = 120;
 
@@ -349,15 +349,16 @@ function NotebookDisplayForm(props) {
 
   return <ListGroup key="controls" flush className="border-top-0">
     <ListGroupItem>
-      <FormGroup switch>
-        <Input type="switch"
+      <div className="form-check form-switch">
+        <Input
+          type="switch"
           id="code-visibility-override"
           name="code-visibility-override"
           className="rounded-pill"
           checked={displayMode !== NotebookSourceDisplayMode.DEFAULT}
           onChange={() => { setOverride(displayMode === NotebookSourceDisplayMode.DEFAULT); }} />
         <Label for="code-visibility-override" check className="me-4">Override Code Visibility</Label>
-      </FormGroup>
+      </div>
       {overrideControl}
     </ListGroupItem>
   </ListGroup>;
