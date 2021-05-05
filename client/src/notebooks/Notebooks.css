@@ -1,5 +1,6 @@
 .alternateToggleStyle {
   white-space: nowrap;
+  border-radius: 0.2rem !important;
   padding-right: 0.5625rem;
   padding-left: 0.5625rem;
 }

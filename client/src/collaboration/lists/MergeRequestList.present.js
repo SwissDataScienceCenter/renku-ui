@@ -1,12 +1,13 @@
 
 import React, { Component } from "react";
-import { NavLink } from "react-router-dom";
-import { Row, Col, Badge, ListGroup, ListGroupItem, Nav, NavItem, NavLink as ReactNavLink } from "reactstrap";
+import { Link } from "react-router-dom";
+import { Row, Col, Badge } from "reactstrap";
 import { faComments } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { UserAvatar, TimeCaption, Pagination, Loader } from "../../utils/UIComponents";
+import { TimeCaption, Pagination, Loader } from "../../utils/UIComponents";
 import { itemsStateMap } from "./CollaborationList.container";
 import { faLongArrowAltLeft as faLeftArrow } from "@fortawesome/free-solid-svg-icons";
+import { stringScore } from "../../utils/HelperFunctions";
 
 
 /**
@@ -24,17 +25,17 @@ function mergeRequestRowInfo(mr) {
   if (status === itemsStateMap.CLOSED) {
     badgeText = "Closed";
     badgeColor = "success";
-    timeCaption = <TimeCaption caption="Closed" time={mr.closed_at} />;
+    timeCaption = <TimeCaption caption="Closed" time={mr.closed_at} className="text-secondary"/>;
   }
   else if (status === itemsStateMap.MERGED) {
     badgeText = "Merged";
     badgeColor = "success";
-    timeCaption = <TimeCaption caption="Merged" time={mr.merged_at} />;
+    timeCaption = <TimeCaption caption="Merged" time={mr.merged_at} className="text-secondary"/>;
   }
   else {
     badgeText = mr.merge_status === "can_be_merged" ? "Can be merged" : "Conflicts";
     badgeColor = mr.merge_status === "can_be_merged" ? "success" : "danger";
-    timeCaption = <TimeCaption caption="Updated" time={mr.updated_at} />;
+    timeCaption = <TimeCaption caption="Updated" time={mr.updated_at} className="text-secondary"/>;
   }
 
   return {
@@ -48,99 +49,66 @@ class MergeRequestListRow extends Component {
     const { badgeText, badgeColor, timeCaption } = rowInfo;
     const statusBadge = <Badge color={badgeColor}>{badgeText}</Badge>;
 
-    const title = this.props.active ?
-      this.props.title :
-      <NavLink activeClassName="selected-issue" to={this.props.mrUrl}>{this.props.title}</NavLink>;
+    const colorsArray = ["green", "pink", "yellow"];
+    const color = colorsArray[stringScore(this.props.title) % 3];
 
-    return <ListGroupItem action className="pr-0 pl-0 pt-1 pb-1" style={{ border: "none" }}>
-      <Row>
-        <Col sm={8} md={8}>
-          <div className="d-flex project-list-row mb-3">
-            <div className="mr-2">
-              <UserAvatar size="lg" person={this.props.author} />
+    return <Link className="d-flex flex-row rk-search-result rk-search-result-100" to={this.props.mrUrl}>
+      <span className={"circle me-3 mt-2 " + color}></span>
+      <Col className="d-flex align-items-start flex-column col-9 overflow-hidden">
+        <div className="title d-inline-block text-truncate">
+          {this.props.title}
+        </div>
+        <div className="description text-truncate text-rk-text">
+          <span className="issues-description pe-2">
+            <div>
+              <Badge color="rk-text">{this.props.target_branch}</Badge>
+              <FontAwesomeIcon icon={faLeftArrow} className="me-1 ms-1"/>
+              <Badge color="rk-text">{this.props.source_branch}</Badge>
             </div>
-            <div className="issue-text-crop">
-              <b>
-                <span className="issue-title">
-                  {title}
-                </span>
-              </b><br />
-              <span className="issues-description">
-                <div>
-                  <Badge color="light">{this.props.target_branch}</Badge> <FontAwesomeIcon icon={faLeftArrow} />
-                  <Badge color="light">{this.props.source_branch}</Badge> &nbsp;&nbsp;</div>
-              </span>
-            </div>
-          </div>
-        </Col>
-        <Col sm={4} md={4} className="float-right" style={{ textAlign: "end" }}>
+          </span>
+        </div>
+        <div className="mt-auto">
+          {timeCaption}
+        </div>
+      </Col>
+      <Col className="d-flex justify-content-end flex-shrink-0">
+        <span>
           <FontAwesomeIcon icon={faComments} /> {this.props.user_notes_count} {statusBadge}
-          <br />
-          <small>{timeCaption}</small>
-        </Col>
-      </Row>
-    </ListGroupItem>;
+        </span>
+      </Col>
+    </Link>;
   }
 }
 
 
 class MergeRequestList extends Component {
   render() {
-    const { items, itemsState } = this.props;
+    const { items } = this.props;
 
     const rows = items.length > 0 ? items.map((d, i) => {
       const mrUrl = `${this.props.mergeRequestsOverviewUrl}/${d.iid}/changes`;
       return <MergeRequestListRow key={i} {...d} mrUrl={mrUrl} />;
     })
-      : <ListGroupItem style={{ border: "none" }}>
-        <Row>
-          <Col sm={8} md={8}>
-            No merge requests to display.
-          </Col>
-        </Row>
-      </ListGroupItem>;
+      : <Row>
+        <Col sm={8} md={8}>
+          No merge requests to display.
+        </Col>
+      </Row>;
 
     return [
-      <Row key="header" className="pb-3">
-        <Col sm={8}>
-          <h2>Merge Requests
-          </h2>
-        </Col>
-      </Row>,
-      <Row key="nav">
-        <Col xs={12} className="pb-2">
-          <Nav tabs>
-            <NavItem>
-              <ReactNavLink
-                to="mergerequests?page=1&itemsState=opened"
-                isActive={() => itemsState === itemsStateMap.OPENED}
-                tag={NavLink}
-              >Open</ReactNavLink>
-            </NavItem>
-            <NavItem>
-              <ReactNavLink
-                to="mergerequests?page=1&itemsState=merged"
-                tag={NavLink}
-                isActive={() => itemsState === itemsStateMap.MERGED}
-              >Merged</ReactNavLink>
-            </NavItem>
-            <NavItem>
-              <ReactNavLink
-                to="mergerequests?page=1&itemsState=closed"
-                tag={NavLink}
-                isActive={() => itemsState === itemsStateMap.CLOSED}
-              >Complete</ReactNavLink>
-            </NavItem>
-          </Nav>
+      <Row key="header" className="pt-2 pb-3">
+        <Col className="d-flex mb-2 justify-content-between">
+          <h3 className="mr-4">Merge Requests List</h3>
         </Col>
       </Row>,
       <Row key="mergeRequests"><Col xs={12}>
         {this.props.loading ?
           <Loader /> :
-          <ListGroup>{rows}</ListGroup>
+          <div className="mb-4">{rows}</div>
         }
       </Col></Row>,
-      <Pagination key="pagination" {...this.props} />
+      <Pagination key="pagination" {...this.props}
+        className="d-flex justify-content-center rk-search-pagination"/>
     ];
   }
 }
