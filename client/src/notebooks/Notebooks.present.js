@@ -74,27 +74,25 @@ function ShowSession(props) {
     handlers.fetchLogs(notebook.data.name);
   };
 
-  let content = null;
   let widthStyle = "";
-  if (tab === SESSION_TABS.session) {
-    content = (<SessionJupyter {...props} />);
+  if (tab === SESSION_TABS.session)
     widthStyle = "w-100";
-  }
-  else if (tab === SESSION_TABS.logs) {
-    content = (<SessionLogs {...props} fetchLogs={fetchLogs} />);
+  else if (tab === SESSION_TABS.logs)
     widthStyle = "overflow-auto";
-  }
-  else if (tab === SESSION_TABS.docs) {
-    content = (<SessionDocs {...props} />);
+  else if (tab === SESSION_TABS.docs)
     widthStyle = "w-100";
-  }
 
+  // Always add all sub-components and hide them one by one to preserve the iframe navigation where needed
   return (
     <div className="bg-white">
       <SessionInformation notebook={notebook} />
       <div className="d-lg-flex">
         <SessionNavbar fetchLogs={fetchLogs} setTab={setTab} tab={tab} />
-        <div className={`border sessions-iframe-border ${widthStyle}`}>{content}</div>
+        <div className={`border sessions-iframe-border ${widthStyle}`}>
+          <SessionJupyter {...props} tab={tab} />
+          <SessionLogs {...props} tab={tab} fetchLogs={fetchLogs} />
+          <SessionDocs {...props} tab={tab} />
+        </div>
       </div>
     </div>
   );
@@ -184,8 +182,11 @@ function SessionNavbar(props) {
 }
 
 function SessionLogs(props) {
-  const { fetchLogs, notebook } = props;
+  const { fetchLogs, notebook, tab } = props;
   const { logs } = notebook;
+
+  if (tab !== SESSION_TABS.logs)
+    return null;
 
   let body = null;
   if (logs.fetching) {
@@ -235,34 +236,56 @@ function SessionLogs(props) {
   );
 }
 
-function SessionDocs() {
+function SessionDocs(props) {
+  const { tab } = props;
+
   const docsUrl = "https://renku.readthedocs.io/en/latest/";
 
+  const invisible = tab !== SESSION_TABS.docs ?
+    true :
+    false;
+  const localClass = invisible ?
+    "invisible" :
+    "";
+
   return (
-    <iframe id="docs-iframe" title="documentation iframe" src={docsUrl}
+    <iframe id="docs-iframe" title="documentation iframe" src={docsUrl} className={localClass}
       width="100%" height="800px" referrerPolicy="origin" sandbox="allow-same-origin"
     />
   );
 }
 
 function SessionJupyter(props) {
-  const { filters, notebook } = props;
+  const { filters, notebook, tab } = props;
+
+  const invisible = tab !== SESSION_TABS.session ?
+    true :
+    false;
 
   let content = null;
   if (notebook.available) {
     const status = NotebooksHelper.getStatus(notebook.data.status);
     if (status === "running") {
+      const localClass = invisible ?
+        "invisible" :
+        "";
       content = (
-        <iframe id="session-iframe" title="session iframe" src={notebook.data.url}
+        <iframe id="session-iframe" title="session iframe" src={notebook.data.url} className={localClass}
           width="100%" height="800px" referrerPolicy="origin" sandbox="allow-same-origin allow-scripts"
         />
       );
+    }
+    else if (invisible) {
+      return null;
     }
     else if (status === "pending") {
       content = (<Loader />);
     }
   }
   else {
+    if (invisible)
+      return null;
+
     const urlNew = Url.get(Url.pages.project.session.new, {
       namespace: filters.namespace,
       path: filters.project,
