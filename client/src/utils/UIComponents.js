@@ -123,11 +123,16 @@ class TimeCaption extends Component {
     const time = this.props.time;
     const timeDiff = (new Date() - new Date(time)) / 1000;
     const displayTime = timeDiff < 3 ? "just now" : human(timeDiff);
-    const caption = (this.props.caption) ? this.props.caption : "Updated";
+    let caption = (this.props.caption) ? this.props.caption : "Updated";
     const endCaption = (this.props.endCaption) ? " " + this.props.endCaption : "";
     const endPunctuation = (this.props.endPunctuation) ? this.props.endPunctuation : ".";
-    const className = this.props.className || "";
-    return <span className={"time-caption " + className}>{caption} {displayTime}{endCaption}{endPunctuation}</span>;
+    let className = this.props.className || "";
+    const noCaption = this.props.noCaption;
+    if (noCaption)
+      caption = "";
+    else
+      className = "time-caption " + className;
+    return <span className={className}>{caption} {displayTime}{endCaption}{endPunctuation}</span>;
   }
 }
 

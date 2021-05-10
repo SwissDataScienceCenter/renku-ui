@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2021 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,31 +16,279 @@
  * limitations under the License.
  */
 
-import React, { Component, Fragment } from "react";
+import React, { Component, Fragment, useState } from "react";
 import Media from "react-media";
 import { Link } from "react-router-dom";
 import {
-  Form, FormGroup, FormText, Label, Input, Button, ButtonGroup, Row, Col, DropdownItem, UncontrolledTooltip,
-  UncontrolledPopover, PopoverHeader, PopoverBody, Badge, Modal, ModalHeader, ModalBody, ModalFooter, Collapse
+  Alert, Badge, Button, ButtonGroup, Col, Collapse, DropdownItem, Form, FormGroup, FormText, Input, Label,
+  Modal, ModalBody, ModalFooter, ModalHeader, Nav, NavItem, NavLink, PopoverBody, PopoverHeader, Row,
+  UncontrolledPopover, UncontrolledTooltip
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStopCircle, faExternalLinkAlt, faInfoCircle, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import {
-  faCogs, faCog, faExclamationTriangle, faRedo, faCheckCircle, faFileAlt, faSave, faTimesCircle
+  faCheckCircle, faCog, faCogs, faExclamationTriangle, faExternalLinkAlt, faFileAlt, faHistory,
+  faInfoCircle, faQuestionCircle, faRedo, faSave, faStopCircle, faSyncAlt, faTimesCircle
 } from "@fortawesome/free-solid-svg-icons";
 
 import { StatusHelper } from "../model/Model";
 import { NotebooksHelper } from "./index";
-import { simpleHash, formatBytes } from "../utils/HelperFunctions";
+import { formatBytes, simpleHash } from "../utils/HelperFunctions";
 import {
-  ButtonWithMenu, Loader, ExternalLink, ExternalIconLink, JupyterIcon, ThrottledTooltip, WarnAlert,
-  InfoAlert, TimeCaption, Clipboard
+  ButtonWithMenu, Clipboard, ExternalIconLink, ExternalLink, InfoAlert, JupyterIcon, Loader,
+  ThrottledTooltip, TimeCaption, WarnAlert
 } from "../utils/UIComponents";
 import Time from "../utils/Time";
 import Sizes from "../utils/Media";
 import { Url } from "../utils/url";
 
 import "./Notebooks.css";
+
+
+// * Constants and helpers * //
+const SESSION_TABS = {
+  session: "session",
+  commands: "commands",
+  logs: "logs",
+  docs: "docs"
+};
+
+const formatResources = function (resources) {
+  if (resources.memory) {
+    const memory = !isNaN(resources.memory) ?
+      formatBytes(resources.memory) :
+      resources.memory;
+    return { ...resources, memory };
+  }
+  return resources;
+};
+
+// * Jupyter Session code * //
+function ShowSession(props) {
+  const { handlers, notebook } = props;
+
+  const [tab, setTab] = useState(SESSION_TABS.session);
+
+  const fetchLogs = () => {
+    if (!notebook.available)
+      return;
+    handlers.fetchLogs(notebook.data.name);
+  };
+
+  let content = null;
+  let widthStyle = "";
+  if (tab === SESSION_TABS.session) {
+    content = (<SessionJupyter {...props} />);
+    widthStyle = "w-100";
+  }
+  else if (tab === SESSION_TABS.logs) {
+    content = (<SessionLogs {...props} fetchLogs={fetchLogs} />);
+    widthStyle = "overflow-auto";
+  }
+  else if (tab === SESSION_TABS.docs) {
+    content = (<SessionDocs {...props} />);
+    widthStyle = "w-100";
+  }
+
+  return (
+    <div className="bg-white">
+      <SessionInformation notebook={notebook} />
+      <div className="d-lg-flex">
+        <SessionNavbar fetchLogs={fetchLogs} setTab={setTab} tab={tab} />
+        <div className={`border sessions-iframe-border ${widthStyle}`}>{content}</div>
+      </div>
+    </div>
+  );
+}
+
+function SessionInformation(props) {
+  const { notebook } = props;
+
+  // Unavailable session, no information
+  if (!notebook.available)
+    return null;
+
+  const annotations = NotebooksHelper.cleanAnnotations(notebook.data.annotations, "renku.io");
+  const url = notebook.data.url;
+  const resources = formatResources(notebook.data.resources);
+
+  const repositoryLinks = {
+    branch: `${annotations["repository"]}/tree/${annotations["branch"]}`,
+    commit: `${annotations["repository"]}/tree/${annotations["commit-sha"]}`
+  };
+  const resourceList = Object.keys(resources).map((name, num) =>
+    (<span key={name}>
+      {name}: {resources[name]}
+      {num < Object.keys(resources).length - 1 ? ", " : ""}
+    </span>)
+  );
+
+  return (
+    <div className="d-flex flex-wrap">
+      <div className="p-2 p-lg-3 text-nowrap">
+        <span className="fw-bold text-rk-text">Branch: </span>
+        <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text"
+          showLinkIcon={true} iconAfter={true} />
+      </div>
+      <div className="p-2 p-lg-3 text-nowrap">
+        <span className="fw-bold text-rk-text">Commit: </span>
+        <ExternalLink url={repositoryLinks.commit} title={annotations["commit-sha"].substring(0, 8)}
+          role="text" showLinkIcon={true} iconAfter={true} />
+      </div>
+      <div className="p-2 p-lg-3 text-nowrap">
+        <span className="fw-bold text-rk-text">Running since: </span>
+        <TimeCaption noCaption={true} endPunctuation=" " time={notebook.data.started} />
+      </div>
+      <div className="p-2 p-lg-3 text-nowrap">
+        <span className="fw-bold text-rk-text">Resources: </span>
+        <span>{resourceList}</span>
+      </div>
+      <div className="p-2 p-lg-3 text-nowrap">
+        <ExternalLink url={url} title="Open in new tab" role="text" showLinkIcon={true} iconAfter={true} />
+      </div>
+    </div>
+  );
+}
+
+function SessionNavbar(props) {
+  const { fetchLogs, tab, setTab } = props;
+
+  return (
+    <div className="border-top">
+      <Nav className="flex-lg-column">
+        <NavItem>
+          <NavLink className="p-2 p-lg-3" onClick={() => setTab(SESSION_TABS.session)}>
+            <JupyterIcon svgClass="svg-inline--fa fa-lg" grayscale={tab === SESSION_TABS.session ? false : true} />
+          </NavLink>
+        </NavItem>
+        {/* <NavItem>
+          <NavLink className={`p-2 p-lg-3 ${tab === SESSION_TABS.commands ? "text-rk-green" : "text-rk-text"}`}
+            onClick={() => setTab(SESSION_TABS.commands)} >
+            <FontAwesomeIcon size="lg" icon={faBook} />
+          </NavLink>
+        </NavItem> */}
+        <NavItem>
+          <NavLink className={`p-2 p-lg-3 ${tab === SESSION_TABS.logs ? "text-rk-green" : "text-rk-text"}`}
+            onClick={() => { fetchLogs(); setTab(SESSION_TABS.logs); }} >
+            <FontAwesomeIcon size="lg" icon={faHistory} />
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink className={`p-2 p-lg-3 ${tab === SESSION_TABS.docs ? "text-rk-green" : "text-rk-text"}`}
+            onClick={() => setTab(SESSION_TABS.docs)} >
+            <FontAwesomeIcon size="lg" icon={faQuestionCircle} />
+          </NavLink>
+        </NavItem>
+      </Nav>
+    </div>
+  );
+}
+
+function SessionLogs(props) {
+  const { fetchLogs, notebook } = props;
+  const { logs } = notebook;
+
+  let body = null;
+  if (logs.fetching) {
+    body = (<Loader />);
+  }
+  else {
+    if (!logs.fetched) {
+      body = (
+        <p>
+          Logs unavailable. Please{" "}
+          <Button color="primary" size="sm" onClick={() => { fetchLogs(); }}>download</Button>
+          {" "}them again.
+        </p>
+      );
+    }
+    else {
+      if (logs.data && logs.data.length) {
+        body = (<pre className="small no-overflow wrap-word">{logs.data.join("\n")}</pre>);
+      }
+      else {
+        body = (
+          <Fragment>
+            <p>No logs available for this pod yet.</p>
+            <p>
+              You can try to{" "}
+              <Button color="primary" size="sm" onClick={() => { fetchLogs(); }}>refresh</Button>
+              {" "}them after a while.
+            </p>
+          </Fragment>
+        );
+      }
+    }
+  }
+
+  return (
+    <Fragment>
+      <div className="p-2 p-lg-3 text-nowrap">
+        <Button key="button" color="secondary" size="sm"
+          id="session-refresh-logs" onClick={() => fetchLogs()} disabled={logs.fetching} >
+          <FontAwesomeIcon icon={faSyncAlt} /> Refresh logs
+        </Button>
+      </div>
+      <div className="p-2 p-lg-3 border-top">
+        {body}
+      </div>
+    </Fragment>
+  );
+}
+
+function SessionDocs() {
+  const docsUrl = "https://renku.readthedocs.io/en/latest/";
+
+  return (
+    <iframe id="docs-iframe" title="documentation iframe" src={docsUrl}
+      width="100%" height="800px" referrerPolicy="origin" sandbox="allow-same-origin"
+    />
+  );
+}
+
+function SessionJupyter(props) {
+  const { filters, notebook } = props;
+
+  let content = null;
+  if (notebook.available) {
+    const status = NotebooksHelper.getStatus(notebook.data.status);
+    if (status === "running") {
+      content = (
+        <iframe id="session-iframe" title="session iframe" src={notebook.data.url}
+          width="100%" height="800px" referrerPolicy="origin" sandbox="allow-same-origin allow-scripts"
+        />
+      );
+    }
+    else if (status === "pending") {
+      content = (<Loader />);
+    }
+  }
+  else {
+    const urlNew = Url.get(Url.pages.project.session.new, {
+      namespace: filters.namespace,
+      path: filters.project,
+    });
+    const urlList = Url.get(Url.pages.project.session, {
+      namespace: filters.namespace,
+      path: filters.project,
+    });
+    content = (
+      <div className="p-2 p-lg-3 text-nowrap">
+        <p className="mt-2">The session you are trying to open is not available.</p>
+        <Alert color="primary">
+          <p className="mb-0">
+            <FontAwesomeIcon size="lg" icon={faQuestionCircle} />
+            {" "}You should either{" "}
+            <Link className="btn btn-primary btn-sm" to={urlNew}>start a new session</Link>
+            {" "}or{" "}
+            <Link className="btn btn-primary btn-sm" to={urlList}>check the running sessions</Link>
+            {" "}.
+          </p>
+        </Alert>
+      </div>
+    );
+  }
+  return content;
+}
 
 class NotebooksDisabled extends Component {
   render() {
@@ -211,16 +459,6 @@ class NotebookServersList extends Component {
 }
 
 class NotebookServerRow extends Component {
-  formatResources(resources) {
-    if (resources.memory) {
-      const memory = !isNaN(resources.memory) ?
-        formatBytes(resources.memory) :
-        resources.memory;
-      return { ...resources, memory };
-    }
-    return resources;
-  }
-
   render() {
     const annotations = NotebooksHelper.cleanAnnotations(this.props.annotations, "renku.io");
     const status = NotebooksHelper.getStatus(this.props.status);
@@ -231,7 +469,7 @@ class NotebookServerRow extends Component {
     };
     const uid = "uid_" + simpleHash(annotations["namespace"] + annotations["projectName"]
       + annotations["branch"] + annotations["commit-sha"]);
-    const resources = this.formatResources(this.props.resources);
+    const resources = formatResources(this.props.resources);
     const repositoryLinks = {
       branch: `${annotations["repository"]}/tree/${annotations["branch"]}`,
       commit: `${annotations["repository"]}/tree/${annotations["commit-sha"]}`
@@ -240,7 +478,15 @@ class NotebookServerRow extends Component {
       this.props.commits[annotations["commit-sha"]] :
       null;
     const image = this.props.image;
-    const newProps = { annotations, status, details, uid, resources, repositoryLinks, commitDetails, image };
+    const localUrl = Url.get(Url.pages.project.session.show, {
+      namespace: annotations["namespace"],
+      path: annotations["projectName"],
+      server: this.props.name,
+    });
+
+    const newProps = {
+      annotations, commitDetails, details, image, localUrl, repositoryLinks, resources, status, uid
+    };
 
     return (
       <Media query={Sizes.md}>
@@ -355,6 +601,7 @@ class NotebookServerRowFull extends Component {
 
     const action = (<span className="mb-auto">
       <NotebookServerRowAction
+        localUrl={this.props.localUrl}
         name={this.props.name}
         status={status}
         stopNotebook={this.props.stopNotebook}
@@ -611,9 +858,9 @@ class NotebookServerRowAction extends Component {
     </DropdownItem>);
 
     if (status === "running") {
-      defaultAction = (<ExternalLink url={this.props.url} title="Connect" color="secondary" className="text-white"/>);
-      actions.connect = (<DropdownItem href={this.props.url} target="_blank" >
-        <FontAwesomeIcon icon={faExternalLinkAlt} /> Connect
+      defaultAction = (<Link className="btn btn-secondary" to={this.props.localUrl}>Open</Link>);
+      actions.openExternal = (<DropdownItem href={this.props.url} target="_blank" >
+        <FontAwesomeIcon icon={faExternalLinkAlt} /> Open in new tab
       </DropdownItem>);
       actions.stop = (<DropdownItem onClick={() => this.props.stopNotebook(name)}>
         <FontAwesomeIcon icon={faStopCircle} /> Stop
@@ -626,7 +873,7 @@ class NotebookServerRowAction extends Component {
 
     return (
       <ButtonWithMenu size="sm" default={defaultAction} color="secondary">
-        {actions.connect}
+        {actions.openExternal}
         {actions.stop}
         {actions.logs}
       </ButtonWithMenu>
@@ -1290,11 +1537,22 @@ class StartNotebookOptionsRunning extends Component {
     const notebook = all[Object.keys(all)[0]];
     const status = NotebooksHelper.getStatus(notebook.status);
     if (status === "running") {
+      const annotations = NotebooksHelper.cleanAnnotations(notebook.annotations, "renku.io");
+      const localUrl = Url.get(Url.pages.project.session.show, {
+        namespace: annotations["namespace"],
+        path: annotations["projectName"],
+        server: notebook.name,
+      });
+      const url = notebook.url;
       return (
         <FormGroup>
-          <Label>An interactive environment is already running.</Label>
-          <br />
-          <ExternalLink url={notebook.url} title="Connect" />
+          <div className="mb-2">
+            <Label>An interactive environment is already running.</Label>
+          </div>
+          <div>
+            <Link className="btn btn-secondary" to={localUrl}>Open</Link>{" "}
+            <ExternalLink url={url} title="Open in new tab" showLinkIcon={true} />
+          </div>
         </FormGroup>
       );
     }
@@ -1638,4 +1896,4 @@ class CheckNotebookIcon extends Component {
   }
 }
 
-export { NotebooksDisabled, Notebooks, StartNotebookServer, CheckNotebookIcon, mergeEnumOptions };
+export { CheckNotebookIcon, Notebooks, NotebooksDisabled, ShowSession, StartNotebookServer, mergeEnumOptions };
