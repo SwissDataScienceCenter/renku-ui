@@ -150,7 +150,6 @@ class Notebooks extends Component {
       stopNotebook: this.stopNotebook.bind(this),
       fetchLogs: this.fetchLogs.bind(this),
       toggleLogs: this.toggleLogs.bind(this),
-      // ! TODO: something is not working as expected here
       fetchCommit: this.fetchCommit.bind(this)
     };
   }

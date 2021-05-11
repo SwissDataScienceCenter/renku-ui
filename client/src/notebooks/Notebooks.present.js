@@ -34,7 +34,7 @@ import { StatusHelper } from "../model/Model";
 import { NotebooksHelper } from "./index";
 import { formatBytes, simpleHash } from "../utils/HelperFunctions";
 import {
-  ButtonWithMenu, Clipboard, ExternalIconLink, ExternalLink, InfoAlert, JupyterIcon, Loader,
+  ButtonWithMenu, Clipboard, ExternalLink, InfoAlert, JupyterIcon, Loader,
   ThrottledTooltip, TimeCaption, WarnAlert
 } from "../utils/UIComponents";
 import Time from "../utils/Time";
@@ -539,8 +539,9 @@ class NotebookServerRowCommitInfo extends Component {
   }
 
   render() {
-    const { commit, url } = this.props;
+    const { commit } = this.props;
     const uid = `${this.props.uid}-commit`;
+
     let content;
     if (!commit || !commit.data || !commit.data.id || (!commit.fetching && !commit.fetched)) {
       content = (<span>Data not available.</span>);
@@ -551,15 +552,17 @@ class NotebookServerRowCommitInfo extends Component {
     else {
       content = (
         <Fragment>
-          <span className="font-weight-bold">Author:</span> <span>{commit.data.author_name}</span><br />
+          <span className="fw-bold">Author:</span> <span>{commit.data.author_name}</span><br />
           <span>
-            <span className="font-weight-bold">Date:</span>
+            <span className="fw-bold">Date:</span>
             {" "}<span>{Time.toIsoTimezoneString(commit.data.committed_date, "datetime-short")}</span>
             {" "}<TimeCaption caption="~" endPunctuation=" " time={commit.data.committed_date} />
             <br />
           </span>
-          <span className="font-weight-bold">Message:</span> <span>{commit.data.message}</span><br />
-          <span className="font-weight-bold">Full SHA:</span> <span>{commit.data.id}</span><br />
+          <span className="fw-bold">Message:</span> <span>{commit.data.message}</span><br />
+          <span className="fw-bold">Full SHA:</span> <span>{commit.data.id}</span><br />
+          <span className="fw-bold">Details:</span>
+          <ExternalLink url={commit.data.web_url} title="Open commit in GitLab" role="text" showLinkIcon={true} />
         </Fragment>
       );
     }
@@ -570,12 +573,7 @@ class NotebookServerRowCommitInfo extends Component {
         <UncontrolledPopover target={uid} trigger="legacy" placement="bottom"
           isOpen={this.state.isOpen} toggle={() => this.toggle()}>
           <PopoverHeader>Commit details</PopoverHeader>
-          <PopoverBody>
-            {content}<br/>
-            <div className="pt-2">
-              Commit in GitLab <ExternalIconLink url={url} icon={faExternalLinkAlt} className="text-dark"/>
-            </div>
-          </PopoverBody>
+          <PopoverBody>{content}</PopoverBody>
         </UncontrolledPopover>
       </span>
     );
