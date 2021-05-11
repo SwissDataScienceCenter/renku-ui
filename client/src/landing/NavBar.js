@@ -80,7 +80,7 @@ class RenkuToolbarItemUser extends Component {
 
     return <UncontrolledDropdown className="nav-item dropdown">
       <Fragment>
-        <DropdownToggle className="nav-link" nav caret>
+        <DropdownToggle className="nav-link" nav caret id="profile-dropdown">
           <FontAwesomeIcon icon={faUser} id="userIcon" />
         </DropdownToggle>
         <DropdownMenu className="user-menu" end key="user-bar" aria-labelledby="user-menu">
@@ -116,7 +116,7 @@ class RenkuToolbarItemPlus extends Component {
 
     return <UncontrolledDropdown className="nav-item dropdown">
       <Fragment>
-        <DropdownToggle className="nav-link" nav caret>
+        <DropdownToggle className="nav-link" nav caret id="plus-dropdown">
           <FontAwesomeIcon icon={faPlus} id="createPlus" />
         </DropdownToggle>
         <DropdownMenu className="plus-menu" end key="plus-bar" aria-labelledby="plus-menu">
