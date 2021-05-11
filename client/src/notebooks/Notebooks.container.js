@@ -113,16 +113,6 @@ class ShowSession extends Component {
   }
 }
 
-//* /environments/session/<id>
-/**
- * Display the notebook in an embedded iframe
- *
- * @param {props.}
- */
-// function ShowSession(props) {
-//   return null;
-// }
-
 /**
  * Display the list of Notebook servers
  *

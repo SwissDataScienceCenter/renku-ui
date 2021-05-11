@@ -123,25 +123,25 @@ function SessionInformation(props) {
   return (
     <div className="d-flex flex-wrap">
       <div className="p-2 p-lg-3 text-nowrap">
-        <span className="fw-bold text-rk-text">Branch: </span>
+        <span className="fw-bold">Branch: </span>
         <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text"
-          showLinkIcon={true} iconAfter={true} />
+          showLinkIcon={true} />
       </div>
       <div className="p-2 p-lg-3 text-nowrap">
-        <span className="fw-bold text-rk-text">Commit: </span>
+        <span className="fw-bold">Commit: </span>
         <ExternalLink url={repositoryLinks.commit} title={annotations["commit-sha"].substring(0, 8)}
-          role="text" showLinkIcon={true} iconAfter={true} />
+          role="text" showLinkIcon={true} />
       </div>
       <div className="p-2 p-lg-3 text-nowrap">
-        <span className="fw-bold text-rk-text">Running since: </span>
-        <TimeCaption noCaption={true} endPunctuation=" " time={notebook.data.started} />
-      </div>
-      <div className="p-2 p-lg-3 text-nowrap">
-        <span className="fw-bold text-rk-text">Resources: </span>
+        <span className="fw-bold">Resources: </span>
         <span>{resourceList}</span>
       </div>
       <div className="p-2 p-lg-3 text-nowrap">
-        <ExternalLink url={url} title="Open in new tab" role="text" showLinkIcon={true} iconAfter={true} />
+        <span className="fw-bold">Running since: </span>
+        <TimeCaption noCaption={true} endPunctuation=" " time={notebook.data.started} />
+      </div>
+      <div className="p-2 p-lg-3 text-nowrap">
+        <ExternalLink url={url} title="Open in new tab" role="text" showLinkIcon={true} />
       </div>
     </div>
   );
@@ -599,22 +599,21 @@ class NotebookServerRowFull extends Component {
       (<NotebookServerRowProject annotations={annotations} />) :
       null;
 
-    const branch = <span>
-      {annotations["branch"]}&nbsp;
-      <ExternalIconLink url={repositoryLinks.branch} icon={faExternalLinkAlt} className="text-dark"/>
-    </span>;
+    const branch = (
+      <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text" showLinkIcon={true} />
+    );
 
-    const commit = (<span>
-      {annotations["commit-sha"].substring(0, 8)}
-      {" "}<span className="text-dark">
-        <NotebookServerRowCommitInfo uid={uid} name={name} commit={commitDetails}
-          fetchCommit={fetchCommit} url={repositoryLinks.commit}/>
-      </span></span>);
+    const commit = (
+      <Fragment>
+        <ExternalLink url={repositoryLinks.commit}
+          title={annotations["commit-sha"].substring(0, 8)} role="text" showLinkIcon={true} />
+        {" "}<NotebookServerRowCommitInfo uid={uid} name={name} commit={commitDetails} fetchCommit={fetchCommit} />
+      </Fragment>
+    );
 
     const resourcesKeys = Object.keys(resources);
-
     const resourceList = resourcesKeys.map((name, index) => {
-      return (<span key={name} className="text-nowrap text-center fw-normal">
+      return (<span key={name} className="text-nowrap">
         <span className="fw-bold">{resources[name]} </span>
         {name}{resourcesKeys.length - 1 === index ? " " : " | " }</span>);
     });
@@ -650,34 +649,22 @@ class NotebookServerRowFull extends Component {
           <table>
             <tbody className="gx-4 text-rk-text">
               <tr>
-                <td className="text-dark fw-bold">
-                  Branch
-                </td>
-                <td>
-                  {branch}
-                </td>
+                <td className="text-dark fw-bold">Branch</td>
+                <td className="text-dark">{branch}</td>
               </tr>
               <tr>
-                <td className="text-dark fw-bold">
-                  Commit
-                </td>
-                <td>
-                  {commit}
-                </td>
+                <td className="text-dark fw-bold">Commit</td>
+                <td className="text-dark">{commit}</td>
               </tr>
               <tr>
-                <td className="pe-3 text-dark fw-bold">
-                  Resources
-                </td>
-                <td>
-                  {resourceList}
-                </td>
+                <td className="pe-3 text-dark fw-bold">Resources</td>
+                <td className="text-dark">{resourceList}</td>
+              </tr>
+              <tr>
+                <td colSpan="2">{statusOut}</td>
               </tr>
             </tbody>
           </table>
-          <div className="mt-auto">
-            {statusOut}
-          </div>
         </Col>
         <Col className="d-flex align-items-end flex-column flex-shrink-0">
           {action}
@@ -690,7 +677,8 @@ class NotebookServerRowFull extends Component {
 class NotebookServerRowCompact extends Component {
   render() {
     const {
-      annotations, details, status, url, uid, resources, repositoryLinks, name, commitDetails, fetchCommit, image
+      annotations, commitDetails, details, fetchCommit, image, localUrl, logs, name, repositoryLinks,
+      resources, standalone, startTime, status, uid, url
     } = this.props;
 
     const icon = <span>
@@ -698,32 +686,33 @@ class NotebookServerRowCompact extends Component {
         details={details} status={status} uid={uid} image={image} annotations={annotations}
       />
     </span>;
-    const project = this.props.standalone ?
+    const project = standalone ?
       (<Fragment>
-        <span className="fw-bold text-rk-text">Project: </span>
-        <span><NotebookServerRowProject annotations={this.props.annotations} /></span>
+        <span className="fw-bold">Project: </span>
+        <span><NotebookServerRowProject annotations={annotations} /></span>
         <br />
       </Fragment>) :
       null;
     const branch = (<Fragment>
-      <span className="fw-bold text-rk-text">Branch: </span>
-      <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text" />
+      <span className="fw-bold">Branch: </span>
+      <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text" showLinkIcon={true} />
       <br />
     </Fragment>);
     const commit = (<Fragment>
-      <span className="fw-bold text-rk-text">Commit: </span>
-      <ExternalLink url={repositoryLinks.commit} title={annotations["commit-sha"].substring(0, 8)} role="text" />
+      <span className="fw-bold">Commit: </span>
+      <ExternalLink url={repositoryLinks.commit}
+        title={annotations["commit-sha"].substring(0, 8)} role="text" showLinkIcon={true} />
       {" "}<NotebookServerRowCommitInfo uid={uid} name={name} commit={commitDetails} fetchCommit={fetchCommit}/>
       <br />
     </Fragment>);
     const resourceList = Object.keys(resources).map((name, num) =>
-      (<span key={name} className="text-nowrap text-rk-text">
-        {name}: {resources[name]}
+      (<span key={name} className="text-nowrap">
+        {name}: <span className="fw-bold">{resources[name]}</span>
         {num < Object.keys(resources).length - 1 ? ", " : ""}
       </span>)
     );
     const resourceObject = (<Fragment>
-      <span className="font-weight-bold text-rk-text">Resources: </span>
+      <span className="fw-bold">Resources: </span>
       <span>{resourceList}</span>
       <br />
     </Fragment>);
@@ -733,13 +722,14 @@ class NotebookServerRowCompact extends Component {
         details={details}
         status={status}
         uid={uid}
-        startTime={this.props.startTime}
+        startTime={startTime}
         annotations={annotations}
       />
     </span>);
     const action = (<span>
       <NotebookServerRowAction
-        name={this.props.name}
+        localUrl={localUrl}
+        name={name}
         status={status}
         stopNotebook={this.props.stopNotebook}
         toggleLogs={this.props.toggleLogs}
@@ -748,14 +738,14 @@ class NotebookServerRowCompact extends Component {
       <EnvironmentLogs
         fetchLogs={this.props.fetchLogs}
         toggleLogs={this.props.toggleLogs}
-        logs={this.props.logs}
-        name={this.props.name}
+        logs={logs}
+        name={name}
         annotations={annotations}
       />
     </span>);
 
     return (
-      <div className="rk-search-result-compact">
+      <div className="rk-search-result-compact cursor-auto">
         {project}
         {branch}
         {commit}
@@ -881,7 +871,7 @@ class NotebookServerRowAction extends Component {
     </DropdownItem>);
 
     if (status === "running") {
-      defaultAction = (<Link className="btn btn-secondary" to={this.props.localUrl}>Open</Link>);
+      defaultAction = (<Link className="btn btn-secondary text-white" to={this.props.localUrl}>Open</Link>);
       actions.openExternal = (<DropdownItem href={this.props.url} target="_blank" >
         <FontAwesomeIcon icon={faExternalLinkAlt} /> Open in new tab
       </DropdownItem>);
