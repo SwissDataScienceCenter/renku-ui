@@ -62,6 +62,18 @@ const formatResources = function (resources) {
   return resources;
 };
 
+/** Helper function for formatting the resource list */
+
+function formattedResourceList(resources) {
+  const resourcesKeys = Object.keys(resources);
+  const resourceList = resourcesKeys.map((name, index) => {
+    return (<span key={name} className="text-nowrap">
+      <span className="fw-bold">{resources[name]} </span>
+      {name}{resourcesKeys.length - 1 === index ? " " : " | " }</span>);
+  });
+  return resourceList;
+}
+
 // * Jupyter Session code * //
 function ShowSession(props) {
   const { handlers, notebook } = props;
@@ -113,12 +125,7 @@ function SessionInformation(props) {
     branch: `${annotations["repository"]}/tree/${annotations["branch"]}`,
     commit: `${annotations["repository"]}/tree/${annotations["commit-sha"]}`
   };
-  const resourceList = Object.keys(resources).map((name, num) =>
-    (<span key={name}>
-      {name}: {resources[name]}
-      {num < Object.keys(resources).length - 1 ? ", " : ""}
-    </span>)
-  );
+  const resourceList = formattedResourceList(resources);
 
   return (
     <div className="d-flex flex-wrap">
@@ -609,12 +616,7 @@ class NotebookServerRowFull extends Component {
       </Fragment>
     );
 
-    const resourcesKeys = Object.keys(resources);
-    const resourceList = resourcesKeys.map((name, index) => {
-      return (<span key={name} className="text-nowrap">
-        <span className="fw-bold">{resources[name]} </span>
-        {name}{resourcesKeys.length - 1 === index ? " " : " | " }</span>);
-    });
+    const resourceList = formattedResourceList(resources);
 
     const statusOut = <NotebooksServerRowStatus
       details={details} status={status} uid={uid} startTime={this.props.startTime} annotations={annotations}/>;
@@ -703,12 +705,7 @@ class NotebookServerRowCompact extends Component {
       {" "}<NotebookServerRowCommitInfo uid={uid} name={name} commit={commitDetails} fetchCommit={fetchCommit}/>
       <br />
     </Fragment>);
-    const resourceList = Object.keys(resources).map((name, num) =>
-      (<span key={name} className="text-nowrap">
-        {name}: <span className="fw-bold">{resources[name]}</span>
-        {num < Object.keys(resources).length - 1 ? ", " : ""}
-      </span>)
-    );
+    const resourceList = formattedResourceList(resources);
     const resourceObject = (<Fragment>
       <span className="fw-bold">Resources: </span>
       <span>{resourceList}</span>
