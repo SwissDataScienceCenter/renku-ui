@@ -228,6 +228,8 @@ function SessionLogs(props) {
     }
   }
 
+  // ? Having a minHeight prevent losing the vertical scroll position.
+  // TODO: Revisit after #1219
   return (
     <Fragment>
       <div className="p-2 p-lg-3 text-nowrap">
@@ -236,7 +238,7 @@ function SessionLogs(props) {
           <FontAwesomeIcon icon={faSyncAlt} /> Refresh logs
         </Button>
       </div>
-      <div className="p-2 p-lg-3 border-top">
+      <div className="p-2 p-lg-3 border-top" style={{ minHeight: 800 }}>
         {body}
       </div>
     </Fragment>
@@ -274,7 +276,7 @@ function SessionJupyter(props) {
     const status = NotebooksHelper.getStatus(notebook.data.status);
     if (status === "running") {
       const localClass = invisible ?
-        "invisible" :
+        "invisible position-absolute" : // ? position-absolute prevent showing extra margins
         "";
       content = (
         <iframe id="session-iframe" title="session iframe" src={notebook.data.url} className={localClass}
