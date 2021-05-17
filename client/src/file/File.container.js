@@ -27,7 +27,7 @@ import { StatusHelper } from "../model/Model";
 import { API_ERRORS } from "../api-client";
 import { RenkuMarkdown } from "../utils/UIComponents";
 
-const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "pdf", "gif"];
+const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "pdf", "gif", "svg"];
 const CODE_EXTENSIONS = [
   "py", "js", "json", "sh", "r", "yml", "yaml", "parquet", "cwl", "job", "prn", "rout",
   "dcf", "rproj", "rst", "bat", "ini", "rmd", "jl", "toml", "ts", "rs", "scala",
@@ -107,12 +107,16 @@ class FilePreview extends React.Component {
 
     // Various types of images
     if (this.fileIsImage()) {
+      const imageType = this.props.file.file_name.endsWith(".svg") ?
+        "/svg+xml" :
+        "";
+
       return (
-        <CardBody key="file preview" className="pb-0 bg-white">
+        <CardBody key="file preview" className="bg-white">
           <img
             className="image-preview"
             alt={this.props.file.file_name}
-            src={"data:image;base64," + this.props.file.content}
+            src={`data:image${imageType};base64,${this.props.file.content}`}
           />
         </CardBody>
       );
