@@ -26,6 +26,7 @@ import { StyledNotebook, JupyterButtonPresent, ShowFile as ShowFilePresent, File
 import { StatusHelper } from "../model/Model";
 import { API_ERRORS } from "../api-client";
 import { RenkuMarkdown } from "../utils/UIComponents";
+import { encodeImageBase64 } from "../utils/Markdown";
 
 const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "pdf", "gif", "svg"];
 const CODE_EXTENSIONS = [
@@ -107,16 +108,12 @@ class FilePreview extends React.Component {
 
     // Various types of images
     if (this.fileIsImage()) {
-      const imageType = this.props.file.file_name.endsWith(".svg") ?
-        "/svg+xml" :
-        "";
-
       return (
         <CardBody key="file preview" className="bg-white">
           <img
             className="image-preview"
             alt={this.props.file.file_name}
-            src={`data:image${imageType};base64,${this.props.file.content}`}
+            src={encodeImageBase64(this.props.file.file_name, this.props.file.content)}
           />
         </CardBody>
       );

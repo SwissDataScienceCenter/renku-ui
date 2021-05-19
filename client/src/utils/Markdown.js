@@ -58,6 +58,19 @@ const getFilesRefs = (markdownHTML, filePathArray) => {
   return filesRefs;
 };
 
+/**
+ * Return a base64 string to be used as search parameter in the img tags
+ *
+ * @param {string} name - file name with extension
+ * @param {string} data - base64 encoded image data
+ */
+function encodeImageBase64(name, data) {
+  const subType = name.endsWith(".svg") ?
+    "/svg+xml" :
+    "";
+  return `data:image${subType};base64,${data}`;
+}
+
 function FileAndWrapper(props) {
   /**
    * We are using a checkbox here because the onclick event doesn't work with the
@@ -186,10 +199,7 @@ function RenkuMarkdownWithPathTranslation(props) {
     let currentBlock = filesRefs.find(block => file.src.endsWith(block.refPath));
     if (currentBlock && currentBlock.data) {
       if (currentBlock.type === REF_TYPES.IMAGE_PREV) {
-        const subType = currentBlock.data.file_name.endsWith(".svg") ?
-          "/svg+xml" :
-          "";
-        file.src = `data:image${subType};base64,${currentBlock.data.content}`;
+        file.src = encodeImageBase64(currentBlock.data.file_name, currentBlock.data.content);
         file.setAttribute("class", "image-preview");
       }
       else {
@@ -228,4 +238,4 @@ function RenkuMarkdownWithPathTranslation(props) {
 
 }
 export default RenkuMarkdownWithPathTranslation;
-export { fixRelativePath };
+export { encodeImageBase64, fixRelativePath };
