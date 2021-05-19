@@ -224,7 +224,8 @@ function ForkProject(props) {
           throw new Error(verboseError);
         }
         if (forked.webhook.errorData) {
-          verboseError = "The forked project is available, but knowledge-graph integration failed. You may later be asked to reinitate the integration.";
+          verboseError = "The forked project is available, but knowledge-graph integration failed. ";
+          verboseError += "You may later be asked to initiate the integration.";
           throw new Error(verboseError);
         }
 
