@@ -47,7 +47,9 @@ import { SpecialPropVal } from "../model/Model";
 import { ProjectAvatarEdit, ProjectTags, ProjectTagList } from "./shared";
 import { Notebooks, StartNotebookServer } from "../notebooks";
 import Issue from "../collaboration/issue/Issue";
-import { CollaborationList, collaborationListTypeMap, itemsStateMap } from "../collaboration/lists/CollaborationList.container";
+import {
+  CollaborationList, collaborationListTypeMap, itemsStateMap
+} from "../collaboration/lists/CollaborationList.container";
 import FilesTreeView from "./filestreeview/FilesTreeView";
 import DatasetsListView from "./datasets/DatasetsListView";
 import { ACCESS_LEVELS } from "../api-client";
@@ -276,11 +278,15 @@ class ProjectViewHeaderOverview extends Component {
 
     const gitlabIDEUrl = this.props.externalUrl !== "" && this.props.externalUrl.includes("/gitlab/") ?
       this.props.externalUrl.replace("/gitlab/", "/gitlab/-/ide/project/") : null;
+    const description = this.props.core.description ?
+      (<RenkuMarkdown markdownText={this.props.core.description} fixRelativePaths={false} />) :
+      null;
+
     return (
       <Fragment>
         <Row className="pt-2 pb-3">
-          <Col className="d-flex mb-2 justify-content-between">
-            <div>
+          <Col className="d-flex mb-2">
+            <div className="me-2">
               <h2 className="pb-1">
                 <ProjectStatusIcon
                   history={this.props.history}
@@ -295,12 +301,12 @@ class ProjectViewHeaderOverview extends Component {
                 <span>{this.props.core.path_with_namespace}{forkedFrom}</span>
               </div>
               <div className="text-rk-text">
-                {this.props.core.description}
+                {description}
               </div>
             </div>
-            <div className="d-flex flex-column align-items-end justify-content-between">
-              <div>
-                <ButtonGroup size="sm">
+            <div className="d-flex flex-column align-items-end mb-2">
+              <div className="text-end">
+                <ButtonGroup size="sm" className="mb-1 ms-1">
                   <ForkProjectModal
                     client={this.props.client}
                     history={this.props.history}
@@ -317,7 +323,7 @@ class ProjectViewHeaderOverview extends Component {
                     {system.forks_count}
                   </Button>
                 </ButtonGroup>
-                <ButtonGroup size="sm" className="ms-2">
+                <ButtonGroup size="sm" className="mb-1 ms-1">
                   <Button outline color="primary"
                     className="border-light"
                     disabled={this.state.updating_star}
@@ -328,18 +334,18 @@ class ProjectViewHeaderOverview extends Component {
                     className="border-light"
                     style={{ cursor: "default" }}>{system.star_count}</Button>
                 </ButtonGroup>
-                <ButtonGroup size="sm" className="ms-2">
+                <ButtonGroup size="sm" className="mb-1 ms-1">
                   <GitLabConnectButton size="sm"
                     externalUrl={this.props.externalUrl}
                     gitlabIDEUrl={gitlabIDEUrl}
                     userLogged={this.props.user.logged} />
                 </ButtonGroup>
               </div>
-              <div>
+              <div className="text-end mb-2">
                 <ProjectVisibilityLabel visibilityLevel={this.props.visibility.level} />
                 <ProjectTagList tagList={this.props.system.tag_list} />
               </div>
-              <div>
+              <div className="mb-2">
                 <TimeCaption key="time-caption" time={this.props.core.last_activity_at} />
               </div>
             </div>
