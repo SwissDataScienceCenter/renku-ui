@@ -215,16 +215,16 @@ function ForkProject(props) {
         let newProjectData = { namespace: forked.project.namespace.full_path, path: forked.project.path };
         setForkUrl(Url.get(Url.pages.project, newProjectData));
 
-        let verboseError;// = "Project forked, but ";
+        let verboseError; // = "Project forked, but ";
         if (forked.pipeline.errorData) {
           verboseError = "pipeline creation failed";
           if (forked.pipeline.errorData.message)
             verboseError += ` (${forked.pipeline.errorData.message})`;
-          verboseError += ". You may not be able to start an interactive environment.";
+          verboseError += ". The forked project is available, but interactive sessions may use a fallback image.";
           throw new Error(verboseError);
         }
         if (forked.webhook.errorData) {
-          verboseError = "Webhook creation failed. You may need to trigger it manually.";
+          verboseError = "The forked project is available, but knowledge-graph integration failed. You may later be asked to reinitate the integration.";
           throw new Error(verboseError);
         }
 
