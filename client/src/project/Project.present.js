@@ -1171,7 +1171,7 @@ class ProjectDescription extends Component {
       <Input id="projectDescription" onChange={this.onValueChange}
         value={this.state.value === null ? "" : this.state.value} />;
     let submit = (this.props.core.description !== this.state.value) ?
-      <Button className="mb-3" color="primary">Update</Button> :
+      <Button className="mb-3 updateProjectSettings" color="primary">Update</Button> :
       <span></span>;
     return <Form onSubmit={this.onSubmit}>
       <FormGroup>
