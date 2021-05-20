@@ -47,7 +47,8 @@ import { SpecialPropVal } from "../model/Model";
 import { ProjectAvatarEdit, ProjectTags, ProjectTagList } from "./shared";
 import { Notebooks, StartNotebookServer } from "../notebooks";
 import Issue from "../collaboration/issue/Issue";
-import { CollaborationList, collaborationListTypeMap, itemsStateMap
+import {
+  CollaborationList, collaborationListTypeMap, itemsStateMap
 } from "../collaboration/lists/CollaborationList.container";
 import FilesTreeView from "./filestreeview/FilesTreeView";
 import DatasetsListView from "./datasets/DatasetsListView";
