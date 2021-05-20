@@ -296,7 +296,7 @@ class ProjectViewHeaderOverview extends Component {
               <div className="text-rk-text">
                 <span>{this.props.core.path_with_namespace}{forkedFrom}</span>
               </div>
-              <div className="text-rk-text">
+              <div className="text-rk-text project-description">
                 {this.props.core.description}
               </div>
             </div>
@@ -1167,7 +1167,7 @@ class ProjectDescription extends Component {
       <Input id="projectDescription" onChange={this.onValueChange}
         value={this.state.value === null ? "" : this.state.value} />;
     let submit = (this.props.core.description !== this.state.value) ?
-      <Button className="mb-3" color="primary">Update</Button> :
+      <Button className="mb-3 updateProjectSettings" color="primary">Update</Button> :
       <span></span>;
     return <Form onSubmit={this.onSubmit}>
       <FormGroup>
