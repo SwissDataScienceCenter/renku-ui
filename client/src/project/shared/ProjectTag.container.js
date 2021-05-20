@@ -76,7 +76,7 @@ class ProjectTags extends Component {
       <Input id="projectTags" readOnly value={this.state.value} /> :
       <Input id="projectTags" value={this.state.value} onChange={this.onValueChange} />;
     let submit = (ProjectTags.tagListString(this.props) !== this.state.value) ?
-      <Button className="mb-3" color="primary">Update</Button> :
+      <Button className="mb-3 updateProjectSettings" color="primary">Update</Button> :
       <span></span>;
     return <Form onSubmit={this.onSubmit}>
       <FormGroup>

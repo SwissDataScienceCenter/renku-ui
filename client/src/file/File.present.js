@@ -78,7 +78,8 @@ class FileCard extends React.Component {
     }
     return (
       <Card className="border-rk-light">
-        <CardHeader className="d-flex align-items-center bg-white justify-content-between pe-3 ps-3">
+        <CardHeader id="file-card-header"
+          className="d-flex align-items-center bg-white justify-content-between pe-3 ps-3" >
           <div className="d-flex align-items-end">
             {this.props.isLFSBadge}
             <span className="fw-bold">{this.props.filePath}</span>
