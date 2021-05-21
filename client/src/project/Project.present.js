@@ -300,7 +300,7 @@ class ProjectViewHeaderOverview extends Component {
               <div className="text-rk-text">
                 <span>{this.props.core.path_with_namespace}{forkedFrom}</span>
               </div>
-              <div className="text-rk-text">
+              <div className="text-rk-text project-description">
                 {description}
               </div>
             </div>
