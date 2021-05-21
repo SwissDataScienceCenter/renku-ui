@@ -78,7 +78,8 @@ class FileCard extends React.Component {
     }
     return (
       <Card className="border-rk-light">
-        <CardHeader className="d-flex align-items-center bg-white justify-content-between pe-3 ps-3">
+        <CardHeader id="file-card-header"
+          className="d-flex align-items-center bg-white justify-content-between pe-3 ps-3" >
           <div className="d-flex align-items-end">
             {this.props.isLFSBadge}
             <span className="fw-bold">{this.props.filePath}</span>
@@ -137,15 +138,23 @@ class ShowFile extends React.Component {
     );
 
     if (this.props.error !== null) {
+      const { fileInfo } = this.props;
+      const filePath = fileInfo && fileInfo.path ?
+        fileInfo.path :
+        this.props.gitLabFilePath.split("\\").pop().split("/").pop();
+      const body = fileInfo && fileInfo.type === "tree" ?
+        (<Card className="border-rk-light"><CardBody>Folder</CardBody></Card>) :
+        this.props.error;
+
       return (
         <FileCard
           gitLabUrl={this.props.externalUrl}
-          filePath={this.props.gitLabFilePath.split("\\").pop().split("/").pop()}
+          filePath={filePath}
           commit={this.props.commit}
           buttonGraph={buttonGraph}
           buttonGit={buttonGit}
           buttonJupyter={this.props.buttonJupyter}
-          body={this.props.error}
+          body={body}
           isLFSBadge={null}
           fileSize={this.props.fileSize}
         />

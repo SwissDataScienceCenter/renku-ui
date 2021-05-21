@@ -19,12 +19,15 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  Col, Button, DropdownItem, DropdownMenu, DropdownToggle, Form, Input, InputGroup,
-  Nav, NavItem, Row, ButtonDropdown } from "reactstrap";
-import { faCheck, faSortAmountDown, faSortAmountUp, faSearch } from "@fortawesome/free-solid-svg-icons";
+  Button, ButtonDropdown, Col, DropdownItem, DropdownMenu, DropdownToggle, Form, Input, InputGroup,
+  Nav, NavItem, Row
+} from "reactstrap";
+import { faCheck, faSearch, faSortAmountDown, faSortAmountUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { stringScore } from "../../utils/HelperFunctions";
-import { ProjectAvatar, Loader, Pagination, TimeCaption, RenkuNavLink } from "../../utils/UIComponents";
+import {
+  Loader, Pagination, ProjectAvatar, RenkuMarkdown, RenkuNavLink, TimeCaption
+} from "../../utils/UIComponents";
 import { ProjectTagList } from "../shared";
 import { Url } from "../../utils/url";
 import "../Project.css";
@@ -44,6 +47,15 @@ function ProjectListRow(props) {
   const colorsArray = ["green", "pink", "yellow"];
   const color = colorsArray[stringScore(title) % 3];
 
+  const descriptionMarkdown = description ?
+    (
+      <Fragment>
+        <RenkuMarkdown markdownText={description} fixRelativePaths={false} singleLine={true} />
+        <span className="ms-1">{description.includes("\n") ? " [...]" : ""}</span>
+      </Fragment>
+    ) :
+    null;
+
   return (
     <Link className="d-flex flex-row rk-search-result" to={url}>
       <span className={"circle me-3 mt-2 " + color}></span>
@@ -51,8 +63,8 @@ function ProjectListRow(props) {
         <div className="title d-inline-block text-truncate">
           {title}
         </div>
-        <div className="description text-truncate text-rk-text">
-          {description ? description : null}
+        <div className="description text-truncate text-rk-text d-flex">
+          {descriptionMarkdown}
         </div>
         <div className="tagList">
           <ProjectTagList tagList={tag_list} />
@@ -366,7 +378,7 @@ function ProjectList(props) {
     <Fragment>
       <Row className="pt-2 pb-3">
         <Col className="d-flex mb-2 justify-content-between">
-          <h2 className="mr-4">Renku Projects</h2>
+          <h2>Renku Projects</h2>
           {newProjectButton}
         </Col>
       </Row>

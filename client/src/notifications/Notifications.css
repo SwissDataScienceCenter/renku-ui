@@ -16,39 +16,25 @@
 /* Customization */
 
 .Toastify__toast {
-  opacity: 0.90;
+  width: 350px;
+  max-width: 100%;
+  font-size: .875rem;
+  pointer-events: auto;
+  background-color: rgba(255,255,255,1) !important;
+  background-clip: padding-box;
+  border: 1px solid rgba(0,0,0,.1);
+  box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 15%); 
+  border-radius: .25rem;
+  padding: 0px !important;
 }
 
-.Toastify__toast.success {
-  border: 1px solid #28a745 /* #5561A6 */
-}
-.Toastify__toast.success .Toastify__progress-bar {
-  background: #28a745;
-}
-.Toastify__toast.success svg.svg-inline--fa {
-  color: #28a745
+.Toastify__close-button{
+  display: none;
 }
 
-.Toastify__toast.warning {
-  border: 1px solid #ffc107
+.Toastify__toast .Toastify__progress-bar {
+  background: unset;
 }
-.Toastify__toast.warning .Toastify__progress-bar {
-  background: #ffc107;
-}
-.Toastify__toast.warning svg.svg-inline--fa {
-  color: #ffc107
-}
-
-.Toastify__toast.error {
-  border: 1px solid #dc3545
-}
-.Toastify__toast.error .Toastify__progress-bar {
-  background: #dc3545;
-}
-.Toastify__toast.error svg.svg-inline--fa {
-  color: #dc3545
-}
-
 
 /* Notification components */
 
@@ -61,7 +47,7 @@
   color: #5561A6
 }
 .notification.success svg.svg-inline--fa.color {
-  color: #28a745
+  color: #009568
 }
 .notification.warning svg.svg-inline--fa.color {
   color: #ffc107
@@ -73,25 +59,28 @@
   color: rgba(0, 0, 0, 0.5)
 }
 
-/* .notification-menu {
-  width: 250px;
+.notification-menu {
+  width: 300px;
 }
-*/
 
 .notification-menu > a {
   text-decoration: none;
 } 
 
 .notification-list-container {
+  width:300px;
   padding: 0;
-  margin-top: -8px;
   margin-bottom: -8px;
 }
 
 .notification-list-item {
   font-size: 80%;
-  padding: 8px;
+  padding: 10px;
   position: relative;
+}
+
+.notification-list-item:first-of-type{
+  border-top: 1px solid rgba(0, 0, 0, 0.15);
 }
 
 .notification-list-item:not(:last-of-type) {
