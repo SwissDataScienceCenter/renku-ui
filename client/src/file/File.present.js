@@ -143,7 +143,7 @@ class ShowFile extends React.Component {
         fileInfo.path :
         this.props.gitLabFilePath.split("\\").pop().split("/").pop();
       const body = fileInfo && fileInfo.type === "tree" ?
-        (<Card className="border-rk-light"><CardBody>This is a folder.</CardBody></Card>) :
+        (<Card className="border-rk-light"><CardBody>Folder</CardBody></Card>) :
         this.props.error;
 
       return (
