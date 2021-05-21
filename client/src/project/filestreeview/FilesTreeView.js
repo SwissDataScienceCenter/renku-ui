@@ -1,9 +1,10 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { Link } from "react-router-dom";
 import { StickyContainer, Sticky } from "react-sticky";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile, faFolder as faFolderClosed, faFolderOpen } from "@fortawesome/free-solid-svg-icons";
 import { Button, ButtonGroup } from "reactstrap";
+
 import "./treeviewstyle.css";
 
 
@@ -39,15 +40,6 @@ class TreeNode extends Component {
   }
 
   render() {
-    const icon = this.props.node.type === "tree" ?
-      (this.state.childrenOpen === false ?
-        <FontAwesomeIcon className="link-primary" icon={faFolderClosed} />
-        : <FontAwesomeIcon className="link-primary" icon={faFolderOpen} />)
-      : <FontAwesomeIcon className="link-rk-text" icon={faFile} />;
-
-    const order = this.props.node.type === "tree" ? "order-second" : "order-third";
-    const hidden = this.props.node.name.startsWith(".") ? " rk-opacity-50 " : "";
-
     const children = this.props.node.children ?
       this.props.node.children.map((node) => {
         return <TreeNode
@@ -64,46 +56,51 @@ class TreeNode extends Component {
           nodeInsideIsSelected={this.props.currentUrl.endsWith(node.path)}
           currentUrl={this.props.currentUrl}
           savePosition={this.props.savePosition}
+          history={this.props.history}
         />;
       })
       : null;
 
-    let elementToRender;
-    let selected = this.props.nodeInsideIsSelected ? " selected-file " : "";
+    const icon = this.props.node.type === "tree" ?
+      (this.state.childrenOpen === false ?
+        <FontAwesomeIcon className="link-primary" icon={faFolderClosed} />
+        : <FontAwesomeIcon className="link-primary" icon={faFolderOpen} />)
+      : <FontAwesomeIcon className="link-rk-text" icon={faFile} />;
 
-    if (this.props.node.type === "blob" || this.props.node.type === "commit") {
-      elementToRender =
-        <div className={order + " " + hidden + " " + selected}>
-          <div className={"fs-element"} onClick={this.handleFileClick}>
-            { this.props.fileView ?
-              <Link to= {`${this.props.projectUrl}/${this.props.node.jsonObj.path}`} >
-                <div className={"fs-element"}>
-                  {icon} {this.props.node.name}
-                </div>
-              </Link>
-              :
-              <Link to= {`${this.props.lineageUrl}/${this.props.node.jsonObj.path}`} >
-                <div className={"fs-element"}>
-                  {icon} {this.props.node.name}
-                </div>
-              </Link>
-            }
-          </div>
+    const order = this.props.node.type === "tree" ?
+      "order-second" :
+      "order-third";
+    const hidden = this.props.node.name.startsWith(".") ?
+      "rk-opacity-50" :
+      "";
+    const selected = this.props.nodeInsideIsSelected ?
+      "selected-file" :
+      "";
+
+    const urlPrefix = this.props.fileView ?
+      this.props.projectUrl :
+      this.props.lineageUrl;
+    const targetUrl = `${urlPrefix}/${this.props.node.jsonObj.path}`;
+
+    let innerElement = (<Fragment>{icon} {this.props.node.name}</Fragment>);
+    if (!(this.props.fileView && this.props.node.type === "tree"))
+      innerElement = (<Link to={targetUrl}>{innerElement}</Link>);
+    const clickHandler = this.props.node.type === "tree" ?
+      this.handleIconClick :
+      this.handleFileClick;
+
+    const childrenOpen = children && this.state.childrenOpen ?
+      (<div className="ps-3">{children}</div>) :
+      null;
+
+    return (
+      <div className={`${order} ${hidden} ${selected}`}>
+        <div className="fs-element" onClick={clickHandler}>
+          {innerElement}
         </div>
-      ;
-    }
-    else {
-      const childrenOpen = this.state.childrenOpen ? <div className="ps-3">{children}</div> : null;
-      elementToRender =
-        <div className={order + " " + hidden} >
-          <div className={"fs-element"} onClick={this.handleIconClick} >
-            {icon} {this.props.node.name}
-          </div>
-          {childrenOpen}
-        </div>;
-    }
-
-    return elementToRender;
+        {childrenOpen}
+      </div>
+    );
   }
 }
 
@@ -180,6 +177,7 @@ class FilesTreeView extends Component {
           nodeInsideIsSelected={this.props.currentUrl.endsWith(node.path)}
           currentUrl={this.props.currentUrl}
           savePosition={this.savePosition.bind(this)}
+          history={this.props.history}
         />;
       }) :
       null;

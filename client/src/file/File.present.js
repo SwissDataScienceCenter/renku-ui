@@ -138,15 +138,23 @@ class ShowFile extends React.Component {
     );
 
     if (this.props.error !== null) {
+      const { fileInfo } = this.props;
+      const filePath = fileInfo && fileInfo.path ?
+        fileInfo.path :
+        this.props.gitLabFilePath.split("\\").pop().split("/").pop();
+      const body = fileInfo && fileInfo.type === "tree" ?
+        (<Card className="border-rk-light"><CardBody>Cannot preview a folder</CardBody></Card>) :
+        this.props.error;
+
       return (
         <FileCard
           gitLabUrl={this.props.externalUrl}
-          filePath={this.props.gitLabFilePath.split("\\").pop().split("/").pop()}
+          filePath={filePath}
           commit={this.props.commit}
           buttonGraph={buttonGraph}
           buttonGit={buttonGit}
           buttonJupyter={this.props.buttonJupyter}
-          body={this.props.error}
+          body={body}
           isLFSBadge={null}
           fileSize={this.props.fileSize}
         />
