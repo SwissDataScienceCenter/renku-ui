@@ -1,4 +1,4 @@
-import React, { Component, Fragment } from "react";
+import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { StickyContainer, Sticky } from "react-sticky";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -82,9 +82,6 @@ class TreeNode extends Component {
       this.props.lineageUrl;
     const targetUrl = `${urlPrefix}/${this.props.node.jsonObj.path}`;
 
-    let innerElement = (<Fragment>{icon} {this.props.node.name}</Fragment>);
-    if (!(this.props.fileView && this.props.node.type === "tree"))
-      innerElement = (<Link to={targetUrl}>{innerElement}</Link>);
     const clickHandler = this.props.node.type === "tree" ?
       this.handleIconClick :
       this.handleFileClick;
@@ -96,7 +93,7 @@ class TreeNode extends Component {
     return (
       <div className={`${order} ${hidden} ${selected}`}>
         <div className="fs-element" onClick={clickHandler}>
-          {innerElement}
+          <Link to={targetUrl}>{icon} {this.props.node.name}</Link>
         </div>
         {childrenOpen}
       </div>
