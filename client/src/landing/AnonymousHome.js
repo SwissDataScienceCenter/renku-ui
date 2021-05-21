@@ -69,7 +69,7 @@ function HomeHeader(props) {
         <img src={logo} alt="Renku" height="68" className="d-block my-1" />
       </div>
       <div className="px-2 mt-3 align-self-center bg-primary">
-        <Link className="btn btn-outline-secondary" role="button" id="link-login" to="/login">
+        <Link className="btn btn-outline-secondary" role="button" id="login-button" to="/login">
           Login
         </Link>
       </div>

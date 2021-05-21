@@ -46,7 +46,7 @@ function CktextareaInput({ name, label, type, value, alert, setInputs, help, out
           <Input
             className="form-check-input rounded-pill"
             type="switch"
-            id="exampleCustomSwitch"
+            id="CKEditorSwitch"
             name="customSwitch"
             checked={codeView}
             onChange={() => { setCodeView(!codeView); }}
