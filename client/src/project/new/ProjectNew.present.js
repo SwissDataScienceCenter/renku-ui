@@ -63,7 +63,7 @@ function makeRefreshButton(refresh, tip, disabled) {
 }
 
 function ForkProject(props) {
-  const { error, fork, forkedTitle, forking, namespaces, projects, toggleModal } = props;
+  const { error, fork, forkedTitle, forking, forkUrl, namespaces, projects, toggleModal } = props;
 
   const fetching = {
     projects: projects.fetching,
@@ -74,7 +74,9 @@ function ForkProject(props) {
     <Fragment>
       <ForkProjectHeader forkedTitle={forkedTitle} toggleModal={toggleModal} />
       <ForkProjectBody {...props} fetching={fetching} />
-      <ForkProjectFooter error={error} fetching={fetching} fork={fork} forking={forking} toggleModal={toggleModal} />
+      <ForkProjectFooter
+        error={error} fetching={fetching} fork={fork} forking={forking} forkUrl={forkUrl} toggleModal={toggleModal}
+      />
     </Fragment>
   );
 }
@@ -110,17 +112,24 @@ function ForkProjectBody(props) {
 }
 
 function ForkProjectFooter(props) {
-  const { error, fetching, fork, forking, toggleModal } = props;
+  const { error, fetching, fork, forking, forkUrl, toggleModal } = props;
 
-  const confirmForkButton = forking ?
-    null :
-    (<Button color="primary" disabled={error ? true : false} onClick={fork}>Fork</Button>);
+  let forkButton;
+  if (forking) {
+    forkButton = null;
+  }
+  else {
+    if (forkUrl)
+      forkButton = (<Link className="btn btn-primary" to={forkUrl}>Go to forked project</Link>);
+    else
+      forkButton = (<Button color="primary" disabled={error ? true : false} onClick={fork}>Fork</Button>);
+  }
 
   if (fetching.namespaces || fetching.projects)
     return null;
   return (
     <ModalFooter>
-      {confirmForkButton}
+      {forkButton}
       <Button outline color="primary" onClick={toggleModal}>{forking ? "Close" : "Cancel"}</Button>
     </ModalFooter>
   );
