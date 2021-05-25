@@ -298,13 +298,29 @@ class JupyterButton extends React.Component {
 class ShowFile extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { file: null, commit: null, error: null };
+    this.state = { file: null, commit: null, error: null, fileInfo: null };
   }
 
   // TODO: Write a wrapper to make promises cancellable to avoid usage of this._isMounted
   componentDidMount() {
     this._isMounted = true;
     this.retrieveFile();
+  }
+
+  componentDidUpdate() {
+    // save information about the file once available
+    if (this.props.filesTree && this.props.filesTree.hash) {
+      const path = this.props.filePath.endsWith("/") ?
+        this.props.filePath.substring(0, this.props.filePath.length - 1) :
+        this.props.filePath;
+      const fileInfo = this.props.filesTree.hash[path];
+      if (fileInfo) {
+        if (!this.state.fileInfo)
+          this.setState({ fileInfo });
+        else if (fileInfo.path !== this.state.fileInfo.path)
+          this.setState({ fileInfo });
+      }
+    }
   }
 
   componentWillUnmount() { this._isMounted = false; }
@@ -380,6 +396,7 @@ class ShowFile extends React.Component {
       fileSize={fileSize}
       history={this.props.history}
       previewThreshold={previewThreshold}
+      fileInfo={this.state.fileInfo}
     />;
   }
 }

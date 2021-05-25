@@ -908,10 +908,10 @@ class ProjectViewFiles extends Component {
 
   render() {
     return [
-      <Col key="files" sm={12} md={2}>
+      <Col key="files" md={4} lg={3} xl={2}>
         <ProjectFilesNav {...this.props} />
       </Col>,
-      <Col key="content" sm={12} md={10}>
+      <Col key="content" md={8} lg={9} xl={10}>
         <Switch>
           <Route path={this.props.lineageUrl}
             render={p => this.props.lineageView(p)} />

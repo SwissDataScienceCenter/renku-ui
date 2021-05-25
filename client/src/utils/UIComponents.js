@@ -315,7 +315,7 @@ function LoaderSpinner(props) {
   const d = `${size}px`;
   // Inspired from https://www.w3schools.com/howto/howto_css_loader.asp
   const border = `${size / 10}px solid #f3f3f3`;
-  const borderTop = `${size / 10}px solid #5561A6`; // Use SDSC Dark Blue
+  const borderTop = `${size / 10}px solid #01192D`; // Use Renku Blue
   const borderRight = borderTop; // Added a borderRight to make a half-circle
   const borderRadius = "50%";
   const animation = "spin 2s linear infinite";
@@ -415,7 +415,7 @@ class RenkuAlert extends Component {
 class InfoAlert extends Component {
   render() {
     return (
-      <RenkuAlert color="primary" {...this.props} >
+      <RenkuAlert color="info" {...this.props} >
         {this.props.children}
       </RenkuAlert>
     );
