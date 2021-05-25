@@ -65,7 +65,7 @@ function ButtonsGuide(props) {
           <td><Button size="sm" color="primary" outline>Cancel</Button></td>
         </tr>
         <tr>
-          <th scope="row">Link oustide app</th>
+          <th scope="row">Link outside app</th>
           <td>ExternalLink</td>
           <td><ExternalLink size="sm" url="https://renkulab.io/"
             title="Link outside RenkuLab instance" showLinkIcon={true} />

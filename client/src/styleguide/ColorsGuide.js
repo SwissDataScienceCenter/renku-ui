@@ -76,7 +76,7 @@ function ColorsGuide(props) {
         </tr>
       </thead>
       <tbody>
-      <tr>
+        <tr>
           <th scope="row">info?</th>
           <td className="bg-info text-white">#0054C2 hsl(214, 100%, 38%)</td>
         </tr>
