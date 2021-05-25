@@ -87,6 +87,18 @@ describe("basic route extraction", () => {
     expect(pathComponents.baseUrl).toEqual("/projects/namespace/project-name");
     expect(pathComponents.namespace).toEqual("namespace");
   });
+  it("handles project-with-numeric-namespace routes", () => {
+    const pathComponents = splitProjectSubRoute("/projects/1namespace/project-name");
+    expect(pathComponents.projectPathWithNamespace).toEqual("1namespace/project-name");
+    expect(pathComponents.baseUrl).toEqual("/projects/1namespace/project-name");
+    expect(pathComponents.namespace).toEqual("1namespace");
+  });
+  it("handles project-with-numeric-namespace sub routes", () => {
+    const pathComponents = splitProjectSubRoute("/projects/21namespace/project-name/overview");
+    expect(pathComponents.projectPathWithNamespace).toEqual("21namespace/project-name");
+    expect(pathComponents.baseUrl).toEqual("/projects/21namespace/project-name");
+    expect(pathComponents.namespace).toEqual("21namespace");
+  });
 });
 
 describe("id route extraction", () => {

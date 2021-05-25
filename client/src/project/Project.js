@@ -73,7 +73,7 @@ const subRoutes = {
 // SubRoutes grouped by depth
 const srMap = _.groupBy(Object.values(subRoutes), v => v.split("/").length);
 const maxSrMapDepth = Math.max(...Object.keys(srMap).map(k => Number.parseInt(k)));
-const projectIdRegex = /^\d+/;
+const projectIdRegex = /^\d+$/;
 
 /**
  * Check if the components need to be added to the projectPathWithNamespace
