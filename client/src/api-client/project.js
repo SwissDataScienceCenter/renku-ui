@@ -230,11 +230,25 @@ function addProjectMethods(client) {
 
     // Wait 1 second before starting the pipeline to prevent errors
     await new Promise(r => setTimeout(r, 1000));
+
     // Start pipeline -- no need to wait for the outcome, the environment page handles this
-    const pipeline = await client.runPipeline(forkedProject.data.id);
+    let pipeline;
+    try {
+      pipeline = await client.runPipeline(forkedProject.data.id);
+    }
+    catch (error) {
+      pipeline = error;
+    }
 
     // Create KG webhook
-    const webhook = await client.createGraphWebhook(forkedProject.data.id);
+    let webhook;
+    try {
+      webhook = await client.createGraphWebhook(forkedProject.data.id);
+    }
+    catch (error) {
+      webhook = error;
+    }
+
     return { project: forkedProject.data, pipeline, webhook };
   };
 
