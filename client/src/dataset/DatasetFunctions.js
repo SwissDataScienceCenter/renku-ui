@@ -24,7 +24,7 @@ function mapDataset(dataset_core, dataset_kg, core_files) {
     if (dataset_kg) {
       dataset.url = dataset_kg.url;
       dataset.sameAs = dataset_kg.sameAs;
-      dataset.isPartOf = dataset_kg.isPartOf;
+      dataset.usedIn = dataset_kg.usedIn;
       dataset.insideKg = true;
       dataset.published.datePublished = dataset_kg.published && dataset_kg.published.datePublished ?
         dataset_kg.published.datePublished : undefined;
