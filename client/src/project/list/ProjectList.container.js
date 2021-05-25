@@ -65,7 +65,7 @@ const DEFAULT_USERS_GROUPS = { fetched: null, fetching: null, list: [] };
 const DEFAULT_PARAMS = {
   query: "",
   page: 1,
-  perPage: 10, // TODO: change to 10
+  perPage: 12, // TODO: change to 10
   searchIn: SEARCH_IN_MAP.projects.value,
   orderBy: ORDER_BY_MAP.updateDate.value,
   ascending: false,
@@ -269,6 +269,8 @@ function useUserProjectSearch(client, params, targetUser, setParams, setProjects
 
     // Prepare fetching user or group projects
     setProjects(p => ({ ...p, fetched: null, fetching: true }));
+
+    console.log(params.perPage);
     let queryParams = {
       page: params.page,
       per_page: params.perPage,
