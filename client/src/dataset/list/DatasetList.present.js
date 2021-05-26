@@ -43,7 +43,7 @@ class DatasetListRow extends Component {
 
     return <Link className="d-flex flex-row rk-search-result"
       to={`${datasetsUrl}/${encodeURIComponent(dataset.identifier)}`}>
-      <span className={"circle me-3 mt-2 " + color}></span>
+      <span className={"triangle me-3 mt-2 " + color}></span>
       <Col className="d-flex align-items-start flex-column col-10 overflow-hidden">
         <div className="title d-inline-block text-truncate">
           {dataset.title || dataset.name}

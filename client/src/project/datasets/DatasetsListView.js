@@ -14,7 +14,7 @@ function DatasetListRow(props) {
 
   return <Link className="d-flex flex-row rk-search-result"
     to={`${props.datasetsUrl}/${encodeURIComponent(dataset.name)}/`}>
-    <span className={"circle me-3 mt-2 " + color}></span>
+    <span className={"triangle me-3 mt-2 " + color}></span>
     <Col className="d-flex align-items-start flex-column col-9 overflow-hidden">
       <div className="title d-inline-block text-truncate">
         {dataset.title || dataset.name}
