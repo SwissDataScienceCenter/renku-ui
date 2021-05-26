@@ -756,6 +756,7 @@ function ButtonWithMenu(props) {
   const size = (props.size) ? props.size : "md";
 
   return <ButtonDropdown
+    className={props.className}
     size={size}
     isOpen={dropdownOpen}
     toggle={toggleOpen}

@@ -882,7 +882,7 @@ class NotebookServerRowAction extends Component {
     }
 
     return (
-      <ButtonWithMenu size="sm" default={defaultAction} color="secondary">
+      <ButtonWithMenu className="sessionsButton" size="sm" default={defaultAction} color="secondary">
         {actions.openExternal}
         {actions.stop}
         {actions.logs}
