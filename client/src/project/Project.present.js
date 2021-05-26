@@ -279,76 +279,72 @@ class ProjectViewHeaderOverview extends Component {
     const gitlabIDEUrl = this.props.externalUrl !== "" && this.props.externalUrl.includes("/gitlab/") ?
       this.props.externalUrl.replace("/gitlab/", "/gitlab/-/ide/project/") : null;
     const description = this.props.core.description ?
-      (<RenkuMarkdown markdownText={this.props.core.description} fixRelativePaths={false} />) :
+      (<RenkuMarkdown markdownText={this.props.core.description} fixRelativePaths={false}/>) :
       null;
 
     return (
       <Fragment>
-        <Row className="pt-2 pb-3">
-          <Col className="d-flex mb-2">
-            <div className="me-2">
-              <h2 className="pb-1">
-                <ProjectStatusIcon
-                  history={this.props.history}
-                  webhook={this.props.webhook}
-                  overviewStatusUrl={this.props.overviewStatusUrl}
-                  migration_required={this.props.migration.migration_required}
-                  template_update_possible={this.props.migration.template_update_possible}
-                  docker_update_possible={this.props.migration.docker_update_possible}
-                />{core.title}
-              </h2>
-              <div className="text-rk-text">
-                <span>{this.props.core.path_with_namespace}{forkedFrom}</span>
-              </div>
-              <div className="text-rk-text project-description">
-                {description}
-              </div>
-            </div>
-            <div className="d-flex flex-column align-items-end mb-2">
-              <div className="text-end">
-                <ButtonGroup size="sm" className="mb-1 ms-1">
-                  <ForkProjectModal
-                    client={this.props.client}
-                    history={this.props.history}
-                    model={this.props.model}
-                    notifications={this.props.notifications}
-                    title={this.props.core && this.props.core.title ? this.props.core.title : ""}
-                    id={this.props.core && this.props.core.id ? this.props.core.id : 0}
-                  />
-                  <Button
-                    outline
-                    color="primary"
-                    className="border-light"
-                    href={`${this.props.externalUrl}/forks`} target="_blank" rel="noreferrer noopener">
-                    {system.forks_count}
-                  </Button>
-                </ButtonGroup>
-                <ButtonGroup size="sm" className="mb-1 ms-1">
-                  <Button outline color="primary"
-                    className="border-light"
-                    disabled={this.state.updating_star}
-                    onClick={this.star.bind(this)}>
-                    {starElement} {starText}
-                  </Button>
-                  <Button outline color="primary"
-                    className="border-light"
-                    style={{ cursor: "default" }}>{system.star_count}</Button>
-                </ButtonGroup>
-                <ButtonGroup size="sm" className="mb-1 ms-1">
-                  <GitLabConnectButton size="sm"
-                    externalUrl={this.props.externalUrl}
-                    gitlabIDEUrl={gitlabIDEUrl}
-                    userLogged={this.props.user.logged} />
-                </ButtonGroup>
-              </div>
-              <div className="text-end mb-2">
-                <ProjectVisibilityLabel visibilityLevel={this.props.visibility.level} />
-                <ProjectTagList tagList={this.props.system.tag_list} />
-              </div>
-              <div className="mb-2">
-                <TimeCaption key="time-caption" time={this.props.core.last_activity_at} />
-              </div>
-            </div>
+        <Row className="d-flex row-cols-1 row-cols-md-2 rk-project-header gy-2 gx-2 pb-4">
+          <Col className="order-0 order-md-0">
+            <h2 className="mb-1">
+              <ProjectStatusIcon
+                history={this.props.history}
+                webhook={this.props.webhook}
+                overviewStatusUrl={this.props.overviewStatusUrl}
+                migration_required={this.props.migration.migration_required}
+                template_update_possible={this.props.migration.template_update_possible}
+                docker_update_possible={this.props.migration.docker_update_possible}
+              />{core.title}
+            </h2>
+          </Col>
+          <Col className="text-sm-start text-md-end order-3 order-md-1">
+            <ButtonGroup size="sm">
+              <ForkProjectModal
+                client={this.props.client}
+                history={this.props.history}
+                model={this.props.model}
+                notifications={this.props.notifications}
+                title={this.props.core && this.props.core.title ? this.props.core.title : ""}
+                id={this.props.core && this.props.core.id ? this.props.core.id : 0}
+              />
+              <Button
+                outline
+                color="primary"
+                className="border-light"
+                href={`${this.props.externalUrl}/forks`} target="_blank" rel="noreferrer noopener">
+                {system.forks_count}
+              </Button>
+            </ButtonGroup>
+            <ButtonGroup size="sm" className="ms-1">
+              <Button outline color="primary"
+                className="border-light"
+                disabled={this.state.updating_star}
+                onClick={this.star.bind(this)}>
+                {starElement} {starText}
+              </Button>
+              <Button outline color="primary"
+                className="border-light"
+                style={{ cursor: "default" }}>{system.star_count}</Button>
+            </ButtonGroup>
+            <ButtonGroup size="sm" className="ms-1">
+              <GitLabConnectButton size="sm"
+                externalUrl={this.props.externalUrl}
+                gitlabIDEUrl={gitlabIDEUrl}
+                userLogged={this.props.user.logged} />
+            </ButtonGroup>
+          </Col>
+          <Col className="text-rk-text order-1 order-md-2">
+            <span>{this.props.core.path_with_namespace}{forkedFrom}</span>
+          </Col>
+          <Col className="text-sm-start text-md-end order-4 order-md-3">
+            <ProjectVisibilityLabel visibilityLevel={this.props.visibility.level} />
+            <ProjectTagList tagList={this.props.system.tag_list} />
+          </Col>
+          <Col className="text-rk-text order-2 order-md-4 rk-project-description">
+            {description}
+          </Col>
+          <Col className="text-sm-start text-md-end order-5 order-md-5">
+            <TimeCaption key="time-caption" time={this.props.core.last_activity_at} />
           </Col>
         </Row>
       </Fragment>
