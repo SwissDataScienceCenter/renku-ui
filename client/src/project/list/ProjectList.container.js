@@ -65,7 +65,7 @@ const DEFAULT_USERS_GROUPS = { fetched: null, fetching: null, list: [] };
 const DEFAULT_PARAMS = {
   query: "",
   page: 1,
-  perPage: 12, // TODO: change to 10
+  perPage: 12,
   searchIn: SEARCH_IN_MAP.projects.value,
   orderBy: ORDER_BY_MAP.updateDate.value,
   ascending: false,
