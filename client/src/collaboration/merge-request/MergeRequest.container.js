@@ -20,7 +20,7 @@ import React, { Component } from "react";
 import { NotebookComparisonPresent, MergeRequestPresent } from "./MergeRequest.present";
 import Notebook from "../../file/Notebook";
 import { ACCESS_LEVELS } from "../../api-client";
-import { mergeRequestRowInfo } from "../lists/MergeRequestList.present";
+import { mergeRequestRowInfo } from "../lists-old/MergeRequestList.present";
 
 class MergeRequestContainer extends Component {
   constructor(props) {
