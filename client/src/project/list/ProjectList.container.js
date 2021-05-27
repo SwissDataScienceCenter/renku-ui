@@ -269,8 +269,6 @@ function useUserProjectSearch(client, params, targetUser, setParams, setProjects
 
     // Prepare fetching user or group projects
     setProjects(p => ({ ...p, fetched: null, fetching: true }));
-
-    console.log(params.perPage);
     let queryParams = {
       page: params.page,
       per_page: params.perPage,
