@@ -36,7 +36,8 @@ export default function ShowDataset(props) {
 
   useEffect(()=>{
     let unmounted = false;
-    if (datasetFiles === undefined && ((dataset && dataset.name) || (props.datasetId !== undefined))) {
+    if (props.insideProject && datasetFiles === undefined
+      && ((dataset && dataset.name) || (props.datasetId !== undefined))) {
       const name = (dataset && dataset.name) ? dataset.name : props.datasetId;
       props.client.fetchDatasetFilesFromCoreService(name, props.httpProjectUrl)
         .then(response => {
@@ -60,7 +61,8 @@ export default function ShowDataset(props) {
     return () => {
       unmounted = true;
     };
-  }, [datasetFiles, props.datasetId, dataset, props.httpProjectUrl, setDatasetFiles, props.client]);
+  }, [datasetFiles, props.datasetId, dataset, props.httpProjectUrl, setDatasetFiles, props.client,
+    props.insideProject]);
 
   useEffect(() => {
     let unmounted = false;
