@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2021 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,31 +16,311 @@
  * limitations under the License.
  */
 
-import React, { Component, Fragment } from "react";
+import React, { Component, Fragment, useState } from "react";
 import Media from "react-media";
 import { Link } from "react-router-dom";
 import {
-  Form, FormGroup, FormText, Label, Input, Button, ButtonGroup, Row, Col, DropdownItem, UncontrolledTooltip,
-  UncontrolledPopover, PopoverHeader, PopoverBody, Badge, Modal, ModalHeader, ModalBody, ModalFooter, Collapse
+  Alert, Badge, Button, ButtonGroup, Col, Collapse, DropdownItem, Form, FormGroup, FormText, Input, Label,
+  Modal, ModalBody, ModalFooter, ModalHeader, Nav, NavItem, NavLink, PopoverBody, PopoverHeader, Row,
+  UncontrolledPopover, UncontrolledTooltip
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStopCircle, faExternalLinkAlt, faInfoCircle, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import {
-  faCogs, faCog, faExclamationTriangle, faRedo, faCheckCircle, faFileAlt, faSave, faTimesCircle
+  faCheckCircle, faCog, faCogs, faExclamationTriangle, faExternalLinkAlt, faFileAlt, faHistory,
+  faInfoCircle, faQuestionCircle, faRedo, faSave, faStopCircle, faSyncAlt, faTimesCircle
 } from "@fortawesome/free-solid-svg-icons";
 
 import { StatusHelper } from "../model/Model";
 import { NotebooksHelper } from "./index";
-import { simpleHash, formatBytes } from "../utils/HelperFunctions";
+import { formatBytes, simpleHash } from "../utils/HelperFunctions";
 import {
-  ButtonWithMenu, Loader, ExternalLink, ExternalIconLink, JupyterIcon, ThrottledTooltip, WarnAlert,
-  InfoAlert, TimeCaption, Clipboard
+  ButtonWithMenu, Clipboard, ExternalLink, InfoAlert, JupyterIcon, Loader,
+  ThrottledTooltip, TimeCaption, WarnAlert
 } from "../utils/UIComponents";
 import Time from "../utils/Time";
 import Sizes from "../utils/Media";
 import { Url } from "../utils/url";
 
 import "./Notebooks.css";
+
+
+// * Constants and helpers * //
+const SESSION_TABS = {
+  session: "session",
+  commands: "commands",
+  logs: "logs",
+  docs: "docs"
+};
+
+const formatResources = function (resources) {
+  if (resources.memory) {
+    const memory = !isNaN(resources.memory) ?
+      formatBytes(resources.memory) :
+      resources.memory;
+    return { ...resources, memory };
+  }
+  return resources;
+};
+
+/** Helper function for formatting the resource list */
+
+function formattedResourceList(resources) {
+  const resourcesKeys = Object.keys(resources);
+  const resourceList = resourcesKeys.map((name, index) => {
+    return (<span key={name} className="text-nowrap">
+      <span className="fw-bold">{resources[name]} </span>
+      {name}{resourcesKeys.length - 1 === index ? " " : " | " }</span>);
+  });
+  return resourceList;
+}
+
+// * Jupyter Session code * //
+function ShowSession(props) {
+  const { handlers, notebook } = props;
+
+  const [tab, setTab] = useState(SESSION_TABS.session);
+
+  const fetchLogs = () => {
+    if (!notebook.available)
+      return;
+    handlers.fetchLogs(notebook.data.name);
+  };
+
+  let widthStyle = "";
+  if (tab === SESSION_TABS.session)
+    widthStyle = "w-100";
+  else if (tab === SESSION_TABS.logs)
+    widthStyle = "overflow-auto";
+  else if (tab === SESSION_TABS.docs)
+    widthStyle = "w-100";
+
+  // Always add all sub-components and hide them one by one to preserve the iframe navigation where needed
+  return (
+    <div className="bg-white">
+      <SessionInformation notebook={notebook} />
+      <div className="d-lg-flex">
+        <SessionNavbar fetchLogs={fetchLogs} setTab={setTab} tab={tab} />
+        <div className={`border sessions-iframe-border ${widthStyle}`}>
+          <SessionJupyter {...props} tab={tab} />
+          <SessionLogs {...props} tab={tab} fetchLogs={fetchLogs} />
+          <SessionDocs {...props} tab={tab} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SessionInformation(props) {
+  const { notebook } = props;
+
+  // Unavailable session, no information
+  if (!notebook.available)
+    return null;
+
+  const annotations = NotebooksHelper.cleanAnnotations(notebook.data.annotations, "renku.io");
+  const url = notebook.data.url;
+  const resources = formatResources(notebook.data.resources);
+
+  const repositoryLinks = {
+    branch: `${annotations["repository"]}/tree/${annotations["branch"]}`,
+    commit: `${annotations["repository"]}/tree/${annotations["commit-sha"]}`
+  };
+  const resourceList = formattedResourceList(resources);
+
+  return (
+    <div className="d-flex flex-wrap">
+      <div className="p-2 p-lg-3 text-nowrap">
+        <span className="fw-bold">Branch: </span>
+        <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text"
+          showLinkIcon={true} />
+      </div>
+      <div className="p-2 p-lg-3 text-nowrap">
+        <span className="fw-bold">Commit: </span>
+        <ExternalLink url={repositoryLinks.commit} title={annotations["commit-sha"].substring(0, 8)}
+          role="text" showLinkIcon={true} />
+      </div>
+      <div className="p-2 p-lg-3 text-nowrap">
+        <span className="fw-bold">Resources: </span>
+        <span>{resourceList}</span>
+      </div>
+      <div className="p-2 p-lg-3 text-nowrap">
+        <span className="fw-bold">Running since: </span>
+        <TimeCaption noCaption={true} endPunctuation=" " time={notebook.data.started} />
+      </div>
+      <div className="p-2 p-lg-3 text-nowrap">
+        <ExternalLink url={url} title="Open in new tab" role="text" showLinkIcon={true} />
+      </div>
+    </div>
+  );
+}
+
+function SessionNavbar(props) {
+  const { fetchLogs, tab, setTab } = props;
+
+  return (
+    <div className="border-top">
+      <Nav className="flex-lg-column">
+        <NavItem>
+          <NavLink className="p-2 p-lg-3" onClick={() => setTab(SESSION_TABS.session)}>
+            <JupyterIcon svgClass="svg-inline--fa fa-lg" grayscale={tab === SESSION_TABS.session ? false : true} />
+          </NavLink>
+        </NavItem>
+        {/* <NavItem>
+          <NavLink className={`p-2 p-lg-3 ${tab === SESSION_TABS.commands ? "text-rk-green" : "text-rk-text"}`}
+            onClick={() => setTab(SESSION_TABS.commands)} >
+            <FontAwesomeIcon size="lg" icon={faBook} />
+          </NavLink>
+        </NavItem> */}
+        <NavItem>
+          <NavLink className={`p-2 p-lg-3 ${tab === SESSION_TABS.logs ? "text-rk-green" : "text-rk-text"}`}
+            onClick={() => { fetchLogs(); setTab(SESSION_TABS.logs); }} >
+            <FontAwesomeIcon size="lg" icon={faHistory} />
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink className={`p-2 p-lg-3 ${tab === SESSION_TABS.docs ? "text-rk-green" : "text-rk-text"}`}
+            onClick={() => setTab(SESSION_TABS.docs)} >
+            <FontAwesomeIcon size="lg" icon={faQuestionCircle} />
+          </NavLink>
+        </NavItem>
+      </Nav>
+    </div>
+  );
+}
+
+function SessionLogs(props) {
+  const { fetchLogs, notebook, tab } = props;
+  const { logs } = notebook;
+
+  if (tab !== SESSION_TABS.logs)
+    return null;
+
+  let body = null;
+  if (logs.fetching) {
+    body = (<Loader />);
+  }
+  else {
+    if (!logs.fetched) {
+      body = (
+        <p>
+          Logs unavailable. Please{" "}
+          <Button color="primary" size="sm" onClick={() => { fetchLogs(); }}>download</Button>
+          {" "}them again.
+        </p>
+      );
+    }
+    else {
+      if (logs.data && logs.data.length) {
+        body = (<pre className="small no-overflow wrap-word">{logs.data.join("\n")}</pre>);
+      }
+      else {
+        body = (
+          <Fragment>
+            <p>No logs available for this pod yet.</p>
+            <p>
+              You can try to{" "}
+              <Button color="primary" size="sm" onClick={() => { fetchLogs(); }}>refresh</Button>
+              {" "}them after a while.
+            </p>
+          </Fragment>
+        );
+      }
+    }
+  }
+
+  // ? Having a minHeight prevent losing the vertical scroll position.
+  // TODO: Revisit after #1219
+  return (
+    <Fragment>
+      <div className="p-2 p-lg-3 text-nowrap">
+        <Button key="button" color="secondary" size="sm"
+          id="session-refresh-logs" onClick={() => fetchLogs()} disabled={logs.fetching} >
+          <FontAwesomeIcon icon={faSyncAlt} /> Refresh logs
+        </Button>
+      </div>
+      <div className="p-2 p-lg-3 border-top" style={{ minHeight: 800 }}>
+        {body}
+      </div>
+    </Fragment>
+  );
+}
+
+function SessionDocs(props) {
+  const { tab } = props;
+
+  const docsUrl = "https://renku.readthedocs.io/en/latest/";
+
+  const invisible = tab !== SESSION_TABS.docs ?
+    true :
+    false;
+  const localClass = invisible ?
+    "invisible" :
+    "";
+
+  return (
+    <iframe id="docs-iframe" title="documentation iframe" src={docsUrl} className={localClass}
+      width="100%" height="800px" referrerPolicy="origin" sandbox="allow-same-origin"
+    />
+  );
+}
+
+function SessionJupyter(props) {
+  const { filters, notebook, tab } = props;
+
+  const invisible = tab !== SESSION_TABS.session ?
+    true :
+    false;
+
+  let content = null;
+  if (notebook.available) {
+    const status = NotebooksHelper.getStatus(notebook.data.status);
+    if (status === "running") {
+      const localClass = invisible ?
+        "invisible position-absolute" : // ? position-absolute prevent showing extra margins
+        "";
+      content = (
+        <iframe id="session-iframe" title="session iframe" src={notebook.data.url} className={localClass}
+          width="100%" height="800px" referrerPolicy="origin" sandbox="allow-same-origin allow-scripts"
+        />
+      );
+    }
+    else if (invisible) {
+      return null;
+    }
+    else if (status === "pending") {
+      content = (<Loader />);
+    }
+  }
+  else {
+    if (invisible)
+      return null;
+
+    const urlNew = Url.get(Url.pages.project.session.new, {
+      namespace: filters.namespace,
+      path: filters.project,
+    });
+    const urlList = Url.get(Url.pages.project.session, {
+      namespace: filters.namespace,
+      path: filters.project,
+    });
+    content = (
+      <div className="p-2 p-lg-3 text-nowrap">
+        <p className="mt-2">The session you are trying to open is not available.</p>
+        <Alert color="primary">
+          <p className="mb-0">
+            <FontAwesomeIcon size="lg" icon={faQuestionCircle} />
+            {" "}You should either{" "}
+            <Link className="btn btn-primary btn-sm" to={urlNew}>start a new session</Link>
+            {" "}or{" "}
+            <Link className="btn btn-primary btn-sm" to={urlList}>check the running sessions</Link>
+            {" "}.
+          </p>
+        </Alert>
+      </div>
+    );
+  }
+  return content;
+}
 
 class NotebooksDisabled extends Component {
   render() {
@@ -211,16 +491,6 @@ class NotebookServersList extends Component {
 }
 
 class NotebookServerRow extends Component {
-  formatResources(resources) {
-    if (resources.memory) {
-      const memory = !isNaN(resources.memory) ?
-        formatBytes(resources.memory) :
-        resources.memory;
-      return { ...resources, memory };
-    }
-    return resources;
-  }
-
   render() {
     const annotations = NotebooksHelper.cleanAnnotations(this.props.annotations, "renku.io");
     const status = NotebooksHelper.getStatus(this.props.status);
@@ -231,7 +501,7 @@ class NotebookServerRow extends Component {
     };
     const uid = "uid_" + simpleHash(annotations["namespace"] + annotations["projectName"]
       + annotations["branch"] + annotations["commit-sha"]);
-    const resources = this.formatResources(this.props.resources);
+    const resources = formatResources(this.props.resources);
     const repositoryLinks = {
       branch: `${annotations["repository"]}/tree/${annotations["branch"]}`,
       commit: `${annotations["repository"]}/tree/${annotations["commit-sha"]}`
@@ -240,7 +510,15 @@ class NotebookServerRow extends Component {
       this.props.commits[annotations["commit-sha"]] :
       null;
     const image = this.props.image;
-    const newProps = { annotations, status, details, uid, resources, repositoryLinks, commitDetails, image };
+    const localUrl = Url.get(Url.pages.project.session.show, {
+      namespace: annotations["namespace"],
+      path: annotations["projectName"],
+      server: this.props.name,
+    });
+
+    const newProps = {
+      annotations, commitDetails, details, image, localUrl, repositoryLinks, resources, status, uid
+    };
 
     return (
       <Media query={Sizes.md}>
@@ -270,8 +548,9 @@ class NotebookServerRowCommitInfo extends Component {
   }
 
   render() {
-    const { commit, url } = this.props;
+    const { commit } = this.props;
     const uid = `${this.props.uid}-commit`;
+
     let content;
     if (!commit || !commit.data || !commit.data.id || (!commit.fetching && !commit.fetched)) {
       content = (<span>Data not available.</span>);
@@ -282,15 +561,17 @@ class NotebookServerRowCommitInfo extends Component {
     else {
       content = (
         <Fragment>
-          <span className="font-weight-bold">Author:</span> <span>{commit.data.author_name}</span><br />
+          <span className="fw-bold">Author:</span> <span>{commit.data.author_name}</span><br />
           <span>
-            <span className="font-weight-bold">Date:</span>
+            <span className="fw-bold">Date:</span>
             {" "}<span>{Time.toIsoTimezoneString(commit.data.committed_date, "datetime-short")}</span>
             {" "}<TimeCaption caption="~" endPunctuation=" " time={commit.data.committed_date} />
             <br />
           </span>
-          <span className="font-weight-bold">Message:</span> <span>{commit.data.message}</span><br />
-          <span className="font-weight-bold">Full SHA:</span> <span>{commit.data.id}</span><br />
+          <span className="fw-bold">Message:</span> <span>{commit.data.message}</span><br />
+          <span className="fw-bold">Full SHA:</span> <span>{commit.data.id}</span><br />
+          <span className="fw-bold">Details:</span>
+          <ExternalLink url={commit.data.web_url} title="Open commit in GitLab" role="text" showLinkIcon={true} />
         </Fragment>
       );
     }
@@ -301,12 +582,7 @@ class NotebookServerRowCommitInfo extends Component {
         <UncontrolledPopover target={uid} trigger="legacy" placement="bottom"
           isOpen={this.state.isOpen} toggle={() => this.toggle()}>
           <PopoverHeader>Commit details</PopoverHeader>
-          <PopoverBody>
-            {content}<br/>
-            <div className="pt-2">
-              Commit in GitLab <ExternalIconLink url={url} icon={faExternalLinkAlt} className="text-dark"/>
-            </div>
-          </PopoverBody>
+          <PopoverBody>{content}</PopoverBody>
         </UncontrolledPopover>
       </span>
     );
@@ -330,31 +606,26 @@ class NotebookServerRowFull extends Component {
       (<NotebookServerRowProject annotations={annotations} />) :
       null;
 
-    const branch = <span>
-      {annotations["branch"]}&nbsp;
-      <ExternalIconLink url={repositoryLinks.branch} icon={faExternalLinkAlt} className="text-dark"/>
-    </span>;
+    const branch = (
+      <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text" showLinkIcon={true} />
+    );
 
-    const commit = (<span>
-      {annotations["commit-sha"].substring(0, 8)}
-      {" "}<span className="text-dark">
-        <NotebookServerRowCommitInfo uid={uid} name={name} commit={commitDetails}
-          fetchCommit={fetchCommit} url={repositoryLinks.commit}/>
-      </span></span>);
+    const commit = (
+      <Fragment>
+        <ExternalLink url={repositoryLinks.commit}
+          title={annotations["commit-sha"].substring(0, 8)} role="text" showLinkIcon={true} />
+        {" "}<NotebookServerRowCommitInfo uid={uid} name={name} commit={commitDetails} fetchCommit={fetchCommit} />
+      </Fragment>
+    );
 
-    const resourcesKeys = Object.keys(resources);
-
-    const resourceList = resourcesKeys.map((name, index) => {
-      return (<span key={name} className="text-nowrap text-center fw-normal">
-        <span className="fw-bold">{resources[name]} </span>
-        {name}{resourcesKeys.length - 1 === index ? " " : " | " }</span>);
-    });
+    const resourceList = formattedResourceList(resources);
 
     const statusOut = <NotebooksServerRowStatus
       details={details} status={status} uid={uid} startTime={this.props.startTime} annotations={annotations}/>;
 
     const action = (<span className="mb-auto">
       <NotebookServerRowAction
+        localUrl={this.props.localUrl}
         name={this.props.name}
         status={status}
         stopNotebook={this.props.stopNotebook}
@@ -380,34 +651,22 @@ class NotebookServerRowFull extends Component {
           <table>
             <tbody className="gx-4 text-rk-text">
               <tr>
-                <td className="text-dark fw-bold">
-                  Branch
-                </td>
-                <td>
-                  {branch}
-                </td>
+                <td className="text-dark fw-bold">Branch</td>
+                <td className="text-dark">{branch}</td>
               </tr>
               <tr>
-                <td className="text-dark fw-bold">
-                  Commit
-                </td>
-                <td>
-                  {commit}
-                </td>
+                <td className="text-dark fw-bold">Commit</td>
+                <td className="text-dark">{commit}</td>
               </tr>
               <tr>
-                <td className="pe-3 text-dark fw-bold">
-                  Resources
-                </td>
-                <td>
-                  {resourceList}
-                </td>
+                <td className="pe-3 text-dark fw-bold">Resources</td>
+                <td className="text-dark">{resourceList}</td>
+              </tr>
+              <tr>
+                <td colSpan="2">{statusOut}</td>
               </tr>
             </tbody>
           </table>
-          <div className="mt-auto">
-            {statusOut}
-          </div>
         </Col>
         <Col className="d-flex align-items-end flex-column flex-shrink-0">
           {action}
@@ -420,7 +679,8 @@ class NotebookServerRowFull extends Component {
 class NotebookServerRowCompact extends Component {
   render() {
     const {
-      annotations, details, status, url, uid, resources, repositoryLinks, name, commitDetails, fetchCommit, image
+      annotations, commitDetails, details, fetchCommit, image, localUrl, logs, name, repositoryLinks,
+      resources, standalone, startTime, status, uid, url
     } = this.props;
 
     const icon = <span>
@@ -428,32 +688,28 @@ class NotebookServerRowCompact extends Component {
         details={details} status={status} uid={uid} image={image} annotations={annotations}
       />
     </span>;
-    const project = this.props.standalone ?
+    const project = standalone ?
       (<Fragment>
-        <span className="fw-bold text-rk-text">Project: </span>
-        <span><NotebookServerRowProject annotations={this.props.annotations} /></span>
+        <span className="fw-bold">Project: </span>
+        <span><NotebookServerRowProject annotations={annotations} /></span>
         <br />
       </Fragment>) :
       null;
     const branch = (<Fragment>
-      <span className="fw-bold text-rk-text">Branch: </span>
-      <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text" />
+      <span className="fw-bold">Branch: </span>
+      <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text" showLinkIcon={true} />
       <br />
     </Fragment>);
     const commit = (<Fragment>
-      <span className="fw-bold text-rk-text">Commit: </span>
-      <ExternalLink url={repositoryLinks.commit} title={annotations["commit-sha"].substring(0, 8)} role="text" />
+      <span className="fw-bold">Commit: </span>
+      <ExternalLink url={repositoryLinks.commit}
+        title={annotations["commit-sha"].substring(0, 8)} role="text" showLinkIcon={true} />
       {" "}<NotebookServerRowCommitInfo uid={uid} name={name} commit={commitDetails} fetchCommit={fetchCommit}/>
       <br />
     </Fragment>);
-    const resourceList = Object.keys(resources).map((name, num) =>
-      (<span key={name} className="text-nowrap text-rk-text">
-        {name}: {resources[name]}
-        {num < Object.keys(resources).length - 1 ? ", " : ""}
-      </span>)
-    );
+    const resourceList = formattedResourceList(resources);
     const resourceObject = (<Fragment>
-      <span className="font-weight-bold text-rk-text">Resources: </span>
+      <span className="fw-bold">Resources: </span>
       <span>{resourceList}</span>
       <br />
     </Fragment>);
@@ -463,13 +719,14 @@ class NotebookServerRowCompact extends Component {
         details={details}
         status={status}
         uid={uid}
-        startTime={this.props.startTime}
+        startTime={startTime}
         annotations={annotations}
       />
     </span>);
     const action = (<span>
       <NotebookServerRowAction
-        name={this.props.name}
+        localUrl={localUrl}
+        name={name}
         status={status}
         stopNotebook={this.props.stopNotebook}
         toggleLogs={this.props.toggleLogs}
@@ -478,14 +735,14 @@ class NotebookServerRowCompact extends Component {
       <EnvironmentLogs
         fetchLogs={this.props.fetchLogs}
         toggleLogs={this.props.toggleLogs}
-        logs={this.props.logs}
-        name={this.props.name}
+        logs={logs}
+        name={name}
         annotations={annotations}
       />
     </span>);
 
     return (
-      <div className="rk-search-result-compact">
+      <div className="rk-search-result-compact cursor-auto">
         {project}
         {branch}
         {commit}
@@ -611,9 +868,9 @@ class NotebookServerRowAction extends Component {
     </DropdownItem>);
 
     if (status === "running") {
-      defaultAction = (<ExternalLink url={this.props.url} title="Connect" color="secondary" className="text-white"/>);
-      actions.connect = (<DropdownItem href={this.props.url} target="_blank" >
-        <FontAwesomeIcon icon={faExternalLinkAlt} /> Connect
+      defaultAction = (<Link className="btn btn-secondary text-white" to={this.props.localUrl}>Open</Link>);
+      actions.openExternal = (<DropdownItem href={this.props.url} target="_blank" >
+        <FontAwesomeIcon icon={faExternalLinkAlt} /> Open in new tab
       </DropdownItem>);
       actions.stop = (<DropdownItem onClick={() => this.props.stopNotebook(name)}>
         <FontAwesomeIcon icon={faStopCircle} /> Stop
@@ -625,8 +882,8 @@ class NotebookServerRowAction extends Component {
     }
 
     return (
-      <ButtonWithMenu size="sm" default={defaultAction} color="secondary">
-        {actions.connect}
+      <ButtonWithMenu className="sessionsButton" size="sm" default={defaultAction} color="secondary">
+        {actions.openExternal}
         {actions.stop}
         {actions.logs}
       </ButtonWithMenu>
@@ -1290,11 +1547,22 @@ class StartNotebookOptionsRunning extends Component {
     const notebook = all[Object.keys(all)[0]];
     const status = NotebooksHelper.getStatus(notebook.status);
     if (status === "running") {
+      const annotations = NotebooksHelper.cleanAnnotations(notebook.annotations, "renku.io");
+      const localUrl = Url.get(Url.pages.project.session.show, {
+        namespace: annotations["namespace"],
+        path: annotations["projectName"],
+        server: notebook.name,
+      });
+      const url = notebook.url;
       return (
         <FormGroup>
-          <Label>An interactive environment is already running.</Label>
-          <br />
-          <ExternalLink url={notebook.url} title="Connect" />
+          <div className="mb-2">
+            <Label>An interactive environment is already running.</Label>
+          </div>
+          <div>
+            <Link className="btn btn-secondary" to={localUrl}>Open</Link>{" "}
+            <ExternalLink url={url} title="Open in new tab" showLinkIcon={true} />
+          </div>
         </FormGroup>
       );
     }
@@ -1638,4 +1906,4 @@ class CheckNotebookIcon extends Component {
   }
 }
 
-export { NotebooksDisabled, Notebooks, StartNotebookServer, CheckNotebookIcon, mergeEnumOptions };
+export { CheckNotebookIcon, Notebooks, NotebooksDisabled, ShowSession, StartNotebookServer, mergeEnumOptions };

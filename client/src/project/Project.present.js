@@ -45,7 +45,7 @@ import {
 import { Url } from "../utils/url";
 import { SpecialPropVal } from "../model/Model";
 import { ProjectAvatarEdit, ProjectTags, ProjectTagList } from "./shared";
-import { Notebooks, StartNotebookServer } from "../notebooks";
+import { ShowSession, Notebooks, StartNotebookServer } from "../notebooks";
 import Issue from "../collaboration/issue/Issue";
 import {
   CollaborationList, collaborationListTypeMap, itemsStateMap
@@ -926,19 +926,26 @@ class ProjectViewFiles extends Component {
 
 class ProjectEnvironments extends Component {
   render() {
+    const backButton = (<GoBackButton label="Back to environments list" url={this.props.notebookServersUrl} />);
     return [
       <Col key="content" xs={12}>
         <Switch>
           <Route exact path={this.props.notebookServersUrl}
             render={props => <ProjectNotebookServers {...this.props} />} />
           <Route path={this.props.launchNotebookUrl}
-            render={props => [
-              <Col key="btn" md={12}>
-                <GoBackButton key="backToListBtn" label="Back to environments list"
-                  url={this.props.notebookServersUrl}/>
-              </Col>,
-              <ProjectStartNotebookServer key="startNotebookForm" {...this.props} />
-            ]} />
+            render={props => (
+              <Fragment>
+                {backButton}
+                <ProjectStartNotebookServer key="startNotebookForm" {...this.props} />
+              </Fragment>
+            )} />
+          <Route path={this.props.sessionShowUrl}
+            render={props => (
+              <Fragment>
+                {backButton}
+                <ProjectShowSession {...this.props} match={props.match} />
+              </Fragment>
+            )} />
         </Switch>
       </Col>
     ];
@@ -990,6 +997,29 @@ function notebookWarning(userLogged, accessLevel, fork, postLoginUrl, externalUr
     );
   }
   return null;
+}
+
+
+class ProjectShowSession extends Component {
+  render() {
+    const {
+      client, model, user, visibility, toggleForkModal, location, externalUrl, launchNotebookUrl,
+      blockAnonymous, match
+    } = this.props;
+    const warning = notebookWarning(
+      user.logged, visibility.accessLevel, toggleForkModal, location.pathname, externalUrl
+    );
+
+    return (
+      <ShowSession standalone={false} client={client} model={model} location={location}
+        match={match}
+        message={warning}
+        urlNewEnvironment={launchNotebookUrl}
+        blockAnonymous={blockAnonymous}
+        scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path }}
+      />
+    );
+  }
 }
 
 class ProjectNotebookServers extends Component {

@@ -43,3 +43,14 @@
 .modal-body wrap-word {
   white-space: pre-line;
 }
+
+/* sessions page borders */
+
+.sessions-iframe-border {
+  border-width: 1px 0 0 0 !important;
+}
+@media (min-width: 992px) { 
+  .sessions-iframe-border {
+    border-width: 1px 0 0 1px !important;
+  }
+}

@@ -27,7 +27,9 @@ import ReactDOM from "react-dom";
 import { act } from "react-dom/test-utils";
 import { MemoryRouter } from "react-router-dom";
 
-import { NotebooksHelper, Notebooks, StartNotebookServer, CheckNotebookStatus, NotebooksDisabled } from "./index";
+import {
+  CheckNotebookStatus, Notebooks, NotebooksDisabled, NotebooksHelper, ShowSession, StartNotebookServer
+} from "./index";
 import { mergeEnumOptions } from "./Notebooks.present";
 import { ExpectedAnnotations } from "./Notebooks.state";
 import { StateModel, globalSchema } from "../model";
@@ -290,6 +292,23 @@ describe("rendering", () => {
       <MemoryRouter>
         <NotebooksDisabled location={fakeLocation} />
       </MemoryRouter>, div);
+  });
+
+  it("renders ShowSession", async () => {
+    const props = {
+      client,
+      model,
+      match: { params: { server: "server-session-fake-name" } }
+    };
+
+    const div = document.createElement("div");
+    document.body.appendChild(div);
+    await act(async () => {
+      ReactDOM.render(
+        <MemoryRouter>
+          <ShowSession {...props} urlNewEnvironment="new_environment"/>
+        </MemoryRouter>, div);
+    });
   });
 
   it("renders Notebooks", async () => {
