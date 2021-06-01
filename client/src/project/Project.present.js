@@ -311,7 +311,7 @@ class ProjectViewHeaderOverview extends Component {
                 outline
                 color="primary"
                 className="border-light"
-                href={`${this.props.externalUrl}/forks`} target="_blank" rel="noreferrer noopener">
+                href={`${this.props.externalUrl}/-/forks`} target="_blank" rel="noreferrer noopener">
                 {system.forks_count}
               </Button>
             </ButtonGroup>
