@@ -44,6 +44,7 @@ import {
 import { sanitizedHTMLFromMarkdown, simpleHash } from "./HelperFunctions";
 import FileExplorer, { getFilesTree } from "./FileExplorer";
 import RenkuMarkdownWithPathTranslation from "./Markdown";
+import ListDisplay from "./List";
 
 /**
  * Show user avatar
@@ -490,7 +491,9 @@ function MarkdownTextExcerpt(props) {
   const style = props.heightLimit ?
     { maxHeight: `${props.heightLimit}ch` }
     : { maxWidth: `${props.charsLimit}ch` };
-  return <RenkuMarkdown markdownText={props.markdownText} singleLine={false} style={style} />;
+  const text = props.charsLimit && props.markdownText.length > props.charsLimit ?
+    props.markdownText.slice(0, props.charsLimit) + "..." : props.markdownText;
+  return <RenkuMarkdown markdownText={text} singleLine={false} style={style} />;
 }
 
 /**
@@ -814,5 +817,5 @@ export {
   UserAvatar, TimeCaption, FieldGroup, RenkuNavLink, Pagination, RenkuMarkdown, ExternalLink, ExternalDocsLink,
   ExternalIconLink, IconLink, RefreshButton, Loader, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, JupyterIcon,
   Clipboard, ThrottledTooltip, TooltipToggleButton, ProjectAvatar, ButtonWithMenu, FileExplorer, getFilesTree,
-  MarkdownTextExcerpt, GoBackButton
+  MarkdownTextExcerpt, GoBackButton, ListDisplay
 };
