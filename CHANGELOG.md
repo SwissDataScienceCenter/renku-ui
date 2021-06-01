@@ -1,5 +1,12 @@
 # Changes
 
+## [0.11.12](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.11...0.11.12) (2021-06-01)
+
+### Bug Fixes
+
+* correct gitlab forks link ([#1368](https://github.com/SwissDataScienceCenter/renku-ui/issues/1368))
+
+
 ## [0.11.11](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.10...0.11.11) (2021-04-22)
 
 ### Bug Fixes
