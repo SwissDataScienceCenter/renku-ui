@@ -299,7 +299,7 @@ class ProjectViewHeaderOverview extends Component {
                   id={this.props.core && this.props.core.id ? this.props.core.id : 0}
                 />
                 <Button outline color="primary"
-                  href={`${this.props.externalUrl}/forks`} target="_blank" rel="noreferrer noopener">
+                  href={`${this.props.externalUrl}/-/forks`} target="_blank" rel="noreferrer noopener">
                   {system.forks_count}
                 </Button>
               </ButtonGroup>

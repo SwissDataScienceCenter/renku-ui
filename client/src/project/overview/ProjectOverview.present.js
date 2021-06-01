@@ -93,7 +93,7 @@ class OverviewStats extends Component {
                 <td className="px-3 px-lg-4 align-middle">{metadata.forksCount}</td>
                 <td>
                   <ExternalLink role="text" showLinkIcon={true}
-                    url={`${metadata.repositoryUrl}/forks`} title="Forks in GitLab" />
+                    url={`${metadata.repositoryUrl}/-/forks`} title="Forks in GitLab" />
                 </td>
               </tr>
               <tr>
