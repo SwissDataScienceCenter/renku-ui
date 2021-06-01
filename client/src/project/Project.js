@@ -67,7 +67,8 @@ const subRoutes = {
   workflows: "files/workflows",
   settings: "settings",
   environments: "environments",
-  environmentNew: "environments/new"
+  environmentNew: "environments/new",
+  showSession: "environments/show/:server"
 };
 
 // SubRoutes grouped by depth
@@ -352,7 +353,8 @@ class View extends Component {
       mrOverviewUrl: `${baseUrl}/pending`,
       mrUrl: `${baseUrl}/pending/:mrIid`,
       launchNotebookUrl: `${baseUrl}/environments/new`,
-      notebookServersUrl: `${baseUrl}/environments`
+      notebookServersUrl: `${baseUrl}/environments`,
+      sessionShowUrl: `${baseUrl}/environments/show/:server`
     };
   }
 

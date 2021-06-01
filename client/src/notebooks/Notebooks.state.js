@@ -45,13 +45,15 @@ const VALID_SETTINGS = [
 const ExpectedAnnotations = {
   domain: "renku.io",
   "renku.io": {
-    required: ["branch", "commit-sha", "default_image_used", "namespace", "projectId", "projectName", "repository"],
+    required: [
+      "branch", "commit-sha", "default_image_used", "namespace", "gitlabProjectId", "projectName", "repository"
+    ],
     default: {
       "branch": "unknown",
       "commit-sha": "00000000",
       "default_image_used": false,
       "namespace": "unknown",
-      "projectId": 0,
+      "gitlabProjectId": 0,
       "projectName": "unknown",
       "repository": "https://none"
     }
@@ -488,10 +490,10 @@ class NotebooksCoordinator {
     if (!target || !target.annotations)
       return;
     const annotations = NotebooksHelper.cleanAnnotations(target.annotations);
-    if (!annotations || !annotations["commit-sha"] || !annotations["projectId"])
+    if (!annotations || !annotations["commit-sha"] || !annotations["gitlabProjectId"])
       return;
     const commitSha = annotations["commit-sha"];
-    const projectId = annotations["projectId"];
+    const gitlabProjectId = annotations["gitlabProjectId"];
 
     // verify if the commit data are already cached
     const oldCommits = this.model.get("data.commits");
@@ -506,7 +508,7 @@ class NotebooksCoordinator {
 
     let fetched = null;
     try {
-      commitData = await this.client.getRepositoryCommit(projectId, commitSha);
+      commitData = await this.client.getRepositoryCommit(gitlabProjectId, commitSha);
       fetched = new Date();
     }
     catch (error) {

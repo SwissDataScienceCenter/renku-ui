@@ -176,6 +176,16 @@ function projectPageUrlBuilder(subSection) {
 }
 
 /**
+ * Construct a URL for a project page.
+ * @returns {function} A function to construct a URL from data.
+ */
+function projectSessionUrlBuilder() {
+  return (data) => {
+    return `/projects/${data.namespace}/${data.path}/environments/show/${data.server}`;
+  };
+}
+
+/**
  * Construct a URL object for a project page.
  * @returns {function} A function to construct a URL object.
  */
@@ -302,7 +312,30 @@ const Url = {
           "/projects/new",
           "/projects/new?data=eyJ0aXRsZSI6InRlC3QifQ==",
         ]
-      )
+      ),
+      session: {
+        base: new UrlRule(
+          projectPageUrlBuilder("/environments"), ["namespace", "path"], null, [
+            "/projects/namespace/path/environments",
+            "/projects/group/subgroup/path/environments",
+          ]
+        ),
+        new: new UrlRule(
+          projectPageUrlBuilder("/environments/new"), ["namespace", "path"], null, [
+            "/projects/namespace/path/environments/new",
+            "/projects/group/subgroup/path/environments/new",
+          ]
+        ),
+        show: new UrlRule(
+          projectSessionUrlBuilder(), ["namespace", "path", "server"], null, [
+            "/projects/namespace/path/environments/show/server-id",
+            "/projects/group/subgroup/path/environments/show/server-id",
+          ]
+        )
+      }
+    },
+    sessions: {
+      base: "/environments",
     }
   },
 

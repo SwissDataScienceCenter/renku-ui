@@ -230,3 +230,8 @@ body {
 .fake-toggle:checked ~ .hide-show-me {
   display: block;
 }
+
+iframe.invisible {
+  height: 0;
+  width: 0;
+}

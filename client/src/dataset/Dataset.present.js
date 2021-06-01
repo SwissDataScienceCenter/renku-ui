@@ -32,7 +32,7 @@ import AddDataset from "./addtoproject/DatasetAdd.container";
 import DeleteDataset from "../project/datasets/delete/index";
 import Time from "../utils/Time";
 import { Url } from "../utils/url";
-
+import _ from "lodash";
 
 function DisplayFiles(props) {
   if (props.files === undefined) return null;
@@ -293,7 +293,7 @@ export default function DatasetView(props) {
   const [deleteDatasetModalOpen, setDeleteDatasetModalOpen] = useState(false);
   const dataset = props.dataset;
 
-  if (props.fetchError !== null && dataset === undefined) {
+  if (!_.isEmpty(props.fetchError) && dataset === undefined) {
     return (
       <DatasetError
         fetchError={props.fetchError}
