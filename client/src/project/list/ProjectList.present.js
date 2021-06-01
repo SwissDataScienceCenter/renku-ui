@@ -94,7 +94,6 @@ function ProjectListRows(props) {
     return {
       id: project.id,
       url: url,
-      stringScore: stringScore(project.path_with_namespace) % 3,
       title: project.path_with_namespace,
       description: project.description ?
         <Fragment>

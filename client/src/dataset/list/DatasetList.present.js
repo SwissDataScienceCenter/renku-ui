@@ -170,7 +170,6 @@ class DatasetsRows extends Component {
       return {
         id: dataset.identifier,
         url: `${datasetsUrl}/${encodeURIComponent(dataset.identifier)}`,
-        stringScore: stringScore(dataset.identifier) % 3,
         title: dataset.title || dataset.name,
         description: dataset.description !== undefined && dataset.description !== null ?
           <Fragment>
