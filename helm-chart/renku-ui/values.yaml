@@ -17,7 +17,7 @@ replicaCount: 1
 
 image:
   repository: renku/renku-ui
-  tag: '0.11.0'
+  tag: '0.11.11-n042.hef66ea6'
   pullPolicy: IfNotPresent
 
   ## Optionally specify an array of imagePullSecrets.
@@ -109,3 +109,9 @@ privacy:
 ## If you maintain a statuspage.io page for the status of your RenkuLab instance, put the id for it here.
 statuspage:
   id:
+canary:
+  enabled: false
+  image:
+    repository: renku/renku-ui
+    tag: "0.11.11"
+  host: example.com

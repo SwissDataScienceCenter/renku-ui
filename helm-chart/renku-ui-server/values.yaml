@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: renku/renku-ui-server
-  tag: '0.11.0'
+  tag: '0.11.11-n042.hef66ea6'
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
