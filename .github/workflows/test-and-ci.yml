@@ -85,12 +85,12 @@ jobs:
     - name: Wait for chart to get published
       run: sleep 120
     - name: Update ui version
-      uses: SwissDataScienceCenter/renku/actions/update-component-version@master
+      uses: SwissDataScienceCenter/renku/actions/update-component-version@000-fix-ucv-action
       env:
         GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
         CHART_NAME: renku-ui
     - name: Update ui-server version
-      uses: SwissDataScienceCenter/renku/actions/update-component-version@master
+      uses: SwissDataScienceCenter/renku/actions/update-component-version@000-fix-ucv-action
       env:
         GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
         CHART_NAME: renku-ui-server
