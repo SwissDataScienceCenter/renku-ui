@@ -80,7 +80,7 @@ class QuickNavPresent extends Component {
     };
 
     return (
-      <div className="input-group flex-nowrap input-group-sm pr-2">
+      <div className="input-group flex-nowrap input-group-sm pe-2">
         <Autosuggest
           suggestions={this.props.suggestions}
           getSuggestionValue={this.props.callbacks.getSuggestionValue}

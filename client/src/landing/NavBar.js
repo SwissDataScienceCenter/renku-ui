@@ -231,16 +231,17 @@ class LoggedInNavBar extends Component {
           </NavbarToggler>
           <Collapse isOpen={!this.state.isOpen} navbar className="mt-2">
             <Nav className="navbar-nav flex-row flex-wrap ms-lg-auto">
-              <NavItem className="nav-item col-6 col-lg-auto pe-1">
+              <NavItem className="nav-item col-6 col-lg-auto pe-4">
                 <QuickNav client={this.props.client} model={this.props.model} user={this.props.user} />
               </NavItem>
               <NavItem className="nav-item col-6 col-lg-auto">
-                <RenkuNavLink to="/projects" title="Projects" id="link-projects" className="link-secondary" />
+                <RenkuNavLink to="/projects" alternate={["/projects/all", "/projects/starred"]}
+                  title="Projects" id="link-projects" className="link-secondary" />
               </NavItem>
               <NavItem className="nav-item col-6 col-lg-auto">
                 <RenkuNavLink to="/datasets" title="Datasets" id="link-datasets" />
               </NavItem>
-              <NavItem className="nav-item col-6 col-lg-auto">
+              <NavItem className="nav-item col-6 col-lg-auto pe-4">
                 <RenkuNavLink to="/environments" title="Environments" id="link-environments" />
               </NavItem>
               <NavItem className="nav-item col-1 col-lg-auto">
@@ -294,16 +295,17 @@ class AnonymousNavBar extends Component {
           </NavbarToggler>
           <Collapse isOpen={!this.state.isOpen} navbar className="mt-2">
             <Nav className="navbar-nav flex-row flex-wrap ms-lg-auto">
-              <NavItem className="nav-item col-6 col-lg-auto pe-1">
+              <NavItem className="nav-item col-6 col-lg-auto pe-4">
                 <QuickNav client={this.props.client} model={this.props.model} user={this.props.user} />
               </NavItem>
               <NavItem className="nav-item col-6 col-lg-auto">
-                <RenkuNavLink to="/projects" title="Projects" id="link-projects" className="link-secondary" />
+                <RenkuNavLink to="/projects" alternate={"/projects/all"}
+                  title="Projects" id="link-projects" className="link-secondary" />
               </NavItem>
               <NavItem className="nav-item col-6 col-lg-auto">
                 <RenkuNavLink to="/datasets" title="Datasets" id="link-datasets" />
               </NavItem>
-              <NavItem className="nav-item col-6 col-lg-auto">
+              <NavItem className="nav-item col-6 col-lg-auto pe-4">
                 <RenkuNavLink to="/environments" title="Environments" id="link-environments" />
               </NavItem>
               <NavItem className="nav-item col-1 col-lg-auto">
@@ -358,8 +360,8 @@ class FooterNavbar extends Component {
       null;
     return (
       <footer className="footer mt-auto pt-4">
-        <Navbar className="container-fluid flex-wrap flex-lg-nowrap renku-container navbar bg-primary">
-          <span className="text-white">&copy; SDSC {(new Date()).getFullYear()}</span>
+        <Navbar className="container-fluid flex-wrap flex-lg-nowrap renku-container navbar bg-primary navbar-dark">
+          <span className="text-white-50">&copy; SDSC {(new Date()).getFullYear()}</span>
           <Nav className="ms-auto">
             <Link className="nav-link" to="/">
               <img src={logo} alt="Renku" className="pb-2" height="44" />

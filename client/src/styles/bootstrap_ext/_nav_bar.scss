@@ -16,17 +16,11 @@ footer{
     height:75px;
   }
   .nav-link{
-    color:white;
+    color: rgba(255, 255, 255, 0.55);
+    &:hover{
+      color:rgba(255, 255, 255, 0.75);
+    }
   }
-}
-
-.navbar-dark .navbar-nav .nav-link{
-  color:white;
-}
-
-.navbar-dark .navbar-nav .nav-link.active{
-  color: rgba(255, 255, 255, 0.55) ;
-
 }
 
 nav.navbar{
