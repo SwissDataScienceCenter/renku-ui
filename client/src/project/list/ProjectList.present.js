@@ -22,7 +22,7 @@ import {
   Button, ButtonDropdown, Col, DropdownItem, DropdownMenu, DropdownToggle, Form, Input, InputGroup,
   Nav, NavItem, Row
 } from "reactstrap";
-import { faCheck, faSearch, faSortAmountDown, faSortAmountUp } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faSearch, faSortAmountDown, faSortAmountUp, faBars, faTh } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { stringScore } from "../../utils/HelperFunctions";
 import {
@@ -32,9 +32,57 @@ import { ProjectTagList } from "../shared";
 import { Url } from "../../utils/url";
 import "../Project.css";
 import { Label } from "reactstrap/lib";
+import Masonry from "react-masonry-css";
 
 
-function ProjectListRow(props) {
+function ProjectListRowCard(props) {
+  const {
+    path, path_with_namespace, last_activity_at, description, tag_list
+  } = props;
+  const namespace = props.namespace.full_path;
+
+  const url = Url.get(Url.pages.project, { namespace, path });
+  const title = path_with_namespace || "no title";
+
+
+  const colorsArray = ["green", "pink", "yellow"];
+  const color = colorsArray[stringScore(title) % 3];
+
+  return (
+    <div className="col text-decoration-none p-2 rk-search-result-card">
+      <Link to={url} className="col text-decoration-none">
+        <div className="card card-body border-0">
+          <span className={"circle me-3 mt-2 mb-2 " + color}></span>
+          <div className="title lh-sm mb-2">
+            {title}
+          </div>
+          <p className="card-text text-rk-text mb-2">
+            {description ? description : null}
+          </p>
+          {tag_list.length > 0 ?
+            <Fragment>
+              <div className="tagList mt-auto mb-2">
+                <ProjectTagList tagList={tag_list} />
+              </div>
+              <p className="card-text ">
+                <TimeCaption caption="Updated" time={last_activity_at} className="text-secondary"/>
+              </p>
+            </Fragment>
+            : <p className="card-text mt-auto">
+              <TimeCaption caption="Updated" time={last_activity_at} className="text-secondary"/>
+            </p>
+          }
+          {props.avatar_url ?
+            <img src={props.avatar_url} alt=" " className="card-img-bottom"/>
+            : null
+          }
+        </div>
+      </Link>
+    </div>
+  );
+}
+
+function ProjectListRowBar(props) {
   const {
     owner, path, path_with_namespace, last_activity_at, description, avatar_url, getAvatar, tag_list
   } = props;
@@ -86,21 +134,39 @@ function ProjectListRow(props) {
 }
 
 function ProjectListRows(props) {
-  const { currentPage, getAvatar, perPage, projects, search, totalItems } = props;
+  const { currentPage, getAvatar, perPage, projects, search, totalItems, gridDisplay } = props;
 
   if (!projects || !projects.length)
     return (<p>We could not find any matching projects.</p>);
 
-  const rows = projects.map(project => <ProjectListRow key={project.id} getAvatar={getAvatar} {...project} />);
+  const rows = gridDisplay ?
+    projects.map(project => <ProjectListRowCard key={project.id} getAvatar={getAvatar} {...project} />)
+    : projects.map(project => <ProjectListRowBar key={project.id} getAvatar={getAvatar} {...project} />);
+
   const onPageChange = (page) => { search({ page }); };
 
-  return (
+  return gridDisplay ?
+    <div>
+      <Masonry
+        className="rk-search-result-grid mb-4"
+        breakpointCols={{
+          default: 4,
+          1100: 3,
+          700: 2,
+          500: 1
+        }}
+      >
+        {rows}
+      </Masonry>
+      <Pagination currentPage={currentPage} perPage={perPage} totalItems={totalItems} onPageChange={onPageChange}
+        className="d-flex justify-content-center rk-search-pagination"/>
+    </div>
+    :
     <div>
       <div className="mb-4">{rows}</div>
       <Pagination currentPage={currentPage} perPage={perPage} totalItems={totalItems} onPageChange={onPageChange}
         className="d-flex justify-content-center rk-search-pagination"/>
-    </div>
-  );
+    </div>;
 }
 
 function SearchInFilter(props) {
@@ -177,7 +243,7 @@ function SearchOrder(props) {
 }
 
 function ProjectListSearch(props) {
-  const { loggedIn, orderByMap, params, search, searchInMap, sectionsMap } = props;
+  const { loggedIn, orderByMap, params, search, searchInMap, sectionsMap, gridDisplay, setGridDisplay } = props;
 
   // input and search
   const [userInput, setUserInput] = useState(params.query.toString());
@@ -226,6 +292,15 @@ function ProjectListSearch(props) {
           <Col className="col-auto">
             <Button color="rk-white" id="searchButton" onClick={() => searchWithValues()}>
               <FontAwesomeIcon icon={faSearch} />
+            </Button>
+          </Col>
+          <Col className="col-auto">
+            <Button color="rk-white" id="displayButton" onClick={() => setGridDisplay(!gridDisplay)}>
+              {
+                gridDisplay ?
+                  <FontAwesomeIcon icon={faBars} /> :
+                  <FontAwesomeIcon icon={faTh} />
+              }
             </Button>
           </Col>
         </Form>
@@ -283,6 +358,8 @@ function ProjectListContent(props) {
     setTarget, users, target, totalProjects
   } = props;
 
+  const [gridDisplay, setGridDisplay] = useState(true);
+
   let usersFilter = null;
   if (params.searchIn !== searchInMap.projects.value) {
     if (users.fetching)
@@ -314,6 +391,7 @@ function ProjectListContent(props) {
             projects={projects}
             search={search}
             totalItems={totalProjects}
+            gridDisplay={gridDisplay}
           />
         );
       }
@@ -331,6 +409,8 @@ function ProjectListContent(props) {
           searchInMap={searchInMap}
           sectionsMap={sectionsMap}
           getPreciseUrl={props.getPreciseUrl}
+          gridDisplay={gridDisplay}
+          setGridDisplay={setGridDisplay}
         />
         {usersFilter}
       </div>
@@ -405,4 +485,4 @@ function ProjectList(props) {
 
 
 export default ProjectList;
-export { ProjectListRow, ProjectList };
+export { ProjectListRowBar as ProjectListRow, ProjectList };
