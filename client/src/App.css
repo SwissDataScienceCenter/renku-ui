@@ -32,9 +32,7 @@ html {
   position: relative;
   min-height: 100%;
 }
-body {
-  margin-bottom: 70px; /* Margin bottom by footer height */
-}
+
 .footer {
   /* position: absolute; to fix later */
   bottom: 0;
