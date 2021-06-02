@@ -133,9 +133,9 @@ const NamespaceNotFoundActions = (props) => {
         I was looking for...
       </p>
       <div>
-        <Link className="btn btn-primary btn-sm mr-1" role="button" to={props.projectUrl}>A project</Link>
-        <Link className="btn btn-primary btn-sm mr-1" role="button" to={props.userUrl}>A user</Link>
-        <Link className="btn btn-primary btn-sm mr-1" role="button" to={props.groupUrl}>A group</Link>
+        <Link className="btn btn-primary btn-sm me-1" role="button" to={props.projectUrl}>A project</Link>
+        <Link className="btn btn-primary btn-sm me-1" role="button" to={props.userUrl}>A user</Link>
+        <Link className="btn btn-primary btn-sm me-1" role="button" to={props.groupUrl}>A group</Link>
       </div>
     </InfoAlert>
   </div>);

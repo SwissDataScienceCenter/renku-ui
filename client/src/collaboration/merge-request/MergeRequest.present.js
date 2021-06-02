@@ -45,7 +45,7 @@ function MergeRequestHeader(props) {
 
   return <Row key="header" className="pt-2 pb-2">
     <Col className="d-flex mb-2 justify-content-between">
-      <h3 className="mr-4">{props.title}</h3>
+      <h3 className="me-4">{props.title}</h3>
       <div>
         {statusBadge}
         {buttonGit}

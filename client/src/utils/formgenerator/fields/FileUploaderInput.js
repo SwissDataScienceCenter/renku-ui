@@ -495,7 +495,7 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
         return <span> File will be uploaded on submit</span>;
       case FILE_STATUS.FAILED:
         return <div>
-          <span className="mr-2">
+          <span className="me-2">
             <FontAwesomeIcon style={{ cursor: "text" }} color="var(--bs-danger)" icon={faTimes} />
             {file.file_error}
           </span>
@@ -508,8 +508,8 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
         if (file.file_uncompress === FILE_COMPRESSED.WAITING) {
           return <div style={{ fontWeight: "600" }}>
             <FontAwesomeIcon color="var(--bs-warning)" icon={faExclamationTriangle} />
-            <span className="ml-1">Unzip on upload?</span>
-            <span className="mr-1">
+            <span className="mb-1">Unzip on upload?</span>
+            <span className="me-1">
               <span className="text-primary text-button" style={{ whiteSpace: "nowrap", cursor: "pointer" }}
                 onClick={() => uploadCompressedFile(file.file_name, true)}>Yes</span> or
               <span className="text-primary  text-button" style={{ whiteSpace: "nowrap", cursor: "pointer" }}

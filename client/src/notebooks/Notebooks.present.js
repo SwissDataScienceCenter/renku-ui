@@ -831,7 +831,7 @@ class NotebooksServerRowStatusIcon extends Component {
           <PopoverHeader>Details</PopoverHeader>
           <PopoverBody>
             <span className="font-weight-bold">Image source:</span> {image}
-            <span className="ml-1"><Clipboard clipboardText={image} /></span>
+            <span className="ms-1"><Clipboard clipboardText={image} /></span>
             {policy}
           </PopoverBody>
         </UncontrolledPopover>
@@ -1132,7 +1132,7 @@ class StartNotebookBranches extends Component {
 class StartNotebookBranchesUpdate extends Component {
   render() {
     return [
-      <Button key="button" className="ml-2 p-0" color="link" size="sm"
+      <Button key="button" className="ms-2 p-0" color="link" size="sm"
         id="branchUpdateButton" disabled={this.props.disabled}
         onClick={this.props.handlers.refreshBranches}>
         <FontAwesomeIcon icon={faSyncAlt} />
@@ -1147,7 +1147,7 @@ class StartNotebookBranchesUpdate extends Component {
 class StartNotebookBranchesOptions extends Component {
   render() {
     return [
-      <Button key="button" className="ml-2 p-0" color="link" size="sm"
+      <Button key="button" className="ms-2 p-0" color="link" size="sm"
         id="branchOptionsButton" disabled={this.props.disabled}
         onClick={() => { }}>
         <FontAwesomeIcon icon={faCogs} />
@@ -1467,7 +1467,7 @@ class StartNotebookCommits extends Component {
 class StartNotebookCommitsUpdate extends Component {
   render() {
     return [
-      <Button key="button" className="ml-2 p-0" color="link" size="sm"
+      <Button key="button" className="ms-2 p-0" color="link" size="sm"
         id="commitUpdateButton" disabled={this.props.disabled}
         onClick={this.props.handlers.refreshCommits}>
         <FontAwesomeIcon icon={faSyncAlt} />
@@ -1482,7 +1482,7 @@ class StartNotebookCommitsUpdate extends Component {
 class StartNotebookCommitsOptions extends Component {
   render() {
     return [
-      <Button key="button" className="ml-2 p-0" color="link" size="sm"
+      <Button key="button" className="ms-2 p-0" color="link" size="sm"
         id="commitOptionsButton" disabled={this.props.disabled}
         onClick={() => { }}>
         <FontAwesomeIcon icon={faCogs} />

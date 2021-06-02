@@ -69,7 +69,7 @@ class HelpGetting extends Component {
         </div>
       </div>,
       <div key="main1" className="d-flex mb-3 flex-wrap">
-        <div className="mr-4" style={{ flex: "0 1", flexBasis }}>
+        <div className="me-4" style={{ flex: "0 1", flexBasis }}>
           <h2>
             <ExternalIconLink url="https://renku.discourse.group" icon={faDiscourse} title="Forum" />
           </h2>
@@ -78,7 +78,7 @@ class HelpGetting extends Component {
             discussion about Renku. This is a good place to ask questions and find answers.
           </p>
         </div>
-        <div className="mr-4" style={{ flex: "0 1", flexBasis }}>
+        <div className="me-4" style={{ flex: "0 1", flexBasis }}>
           <h2>
             <ExternalIconLink url="https://gitter.im/SwissDataScienceCenter/renku" icon={faGitter} title="Gitter" />
           </h2>
@@ -88,7 +88,7 @@ class HelpGetting extends Component {
             to chat with you.
           </p>
         </div>
-        <div className="mr-4" style={{ flex: "0 1", flexBasis }}>
+        <div className="me-4" style={{ flex: "0 1", flexBasis }}>
           <h2>
             <ExternalIconLink
               url="https://github.com/SwissDataScienceCenter/renku"

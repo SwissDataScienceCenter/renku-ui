@@ -76,7 +76,7 @@ class IssueList extends Component {
 
     return [<Row key="header" className="pt-2 pb-3">
       <Col className="d-flex mb-2 justify-content-between">
-        <h3 className="mr-4">Issues List</h3>
+        <h3 className="me-4">Issues List</h3>
         {newIssueButton}
       </Col>
     </Row>

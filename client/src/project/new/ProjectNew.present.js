@@ -53,7 +53,7 @@ function makeRefreshButton(refresh, tip, disabled) {
 
   return (
     <Fragment>
-      <Button key="button" className="ml-2 p-0" color="link" size="sm"
+      <Button key="button" className="ms-1 p-0" color="link" size="sm"
         id={id} onClick={() => refresh()} disabled={disabled} >
         <FontAwesomeIcon icon={faSyncAlt} />
       </Button>
