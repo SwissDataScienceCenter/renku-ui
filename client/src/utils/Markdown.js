@@ -86,7 +86,7 @@ function FileAndWrapper(props) {
     <Card>
       <CardBody className="p-2">
         <label className="mb-0 p-1">
-          <FontAwesomeIcon className="icon-gray mr-1" icon={faFile} />
+          <FontAwesomeIcon className="icon-gray me-1" icon={faFile} />
           {props.block.data.file_name}
         </label>
         <label className="mb-0 p-1 float-right btn btn-primary btn-sm" htmlFor={togglerId}>

@@ -277,7 +277,7 @@ class DatasetList extends Component {
     return <Fragment>
       <Row className="pt-2 pb-3">
         <Col className="d-flex mb-2">
-          <h2 className="mr-4">Renku Datasets</h2>
+          <h2 className="me-4">Renku Datasets</h2>
         </Col>
       </Row>
       <Switch>

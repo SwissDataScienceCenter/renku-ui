@@ -564,10 +564,10 @@ function ProjectAddDataset(props) {
   return <Col>
     { props.visibility.accessLevel > ACCESS_LEVELS.DEVELOPER ? [
       <Row key="header">
-        <h3 className="uk-heading-divider uk-text-center pb-1 ml-4">Add Dataset</h3>
+        <h3 className="uk-heading-divider uk-text-center pb-1 mb-4">Add Dataset</h3>
       </Row>,
       <Row key="switch-button" className="d-inline-block pb-3">
-        <ButtonGroup className={"ml-4 pt-1"}>
+        <ButtonGroup className="mb-4 pt-1">
           <Button color="primary" outline onClick={() => setNewDataset(true)} active={newDataset}>
             Create Dataset
           </Button>
@@ -577,7 +577,7 @@ function ProjectAddDataset(props) {
         </ButtonGroup>
       </Row>,
       <Row key="text-details" className="pb-3">
-        <small className={"ml-4 text-muted"}>
+        <small className="mb-4 text-muted">
           {
             newDataset ?
               <span>

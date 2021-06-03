@@ -789,7 +789,7 @@ function RefreshButton(props) {
 
   return (
     <Fragment>
-      <Button key="button" className="ml-2 p-0" color="link" size="sm" id={id} onClick={() => props.action()}>
+      <Button key="button" className="ms-2 p-0" color="link" size="sm" id={id} onClick={() => props.action()}>
         <FontAwesomeIcon icon={faSyncAlt} spin={props.updating} />
       </Button>
       {tooltip}

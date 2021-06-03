@@ -150,7 +150,7 @@ class OverviewCommits extends Component {
 
     const commitBadgeNumber = `${commits.list.length}${tooMany ? "+" : ""}`;
     const badge = commits.fetched && !commits.fetching ?
-      (<Badge color="primary" className="ms-2 me-2">{commitBadgeNumber}</Badge>) :
+      (<Badge color="primary" className="ms-2">{commitBadgeNumber}</Badge>) :
       null;
     const buttonGit = (
       <Fragment>
@@ -159,7 +159,7 @@ class OverviewCommits extends Component {
           id="commitLink"
           title={<FontAwesomeIcon icon={faGitlab} />}
           url={gitlabCommitsUrl}
-          className="text-primary btn ml-2 p-0 ms-2"
+          className="text-primary btn p-0 ms-2"
         />
         <UncontrolledTooltip placement="top" target="commitLink">
           Open in GitLab
