@@ -27,8 +27,13 @@
   background: #009568;
 }
 
-.circle.collaboration {
+.circle.workflow {
   background: #D1BB4C;
+}
+
+// TODO - DELETE WHEN COLLABORATION IFRAME IS MERGED
+.circle.collaboration {
+  background: rgba(128, 128, 128, 0.893);
 }
 
 .circle.dataset {

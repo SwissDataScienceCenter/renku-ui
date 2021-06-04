@@ -34,6 +34,7 @@ import { ProjectTagList } from "../project/shared/ProjectTag.container";
  * @param labelCaption label to put inside the time caption of the item, if empty defaults to Updated.
  * @param mediaContent image of the item.
  * @param creators creators of the item, if more than 3 they will be cropped at 3.
+ * @param itemType type of the item being rendered, the color of the circle depends on this.
  */
 function ListCard(props) {
   const { url, title, description, tagList, timeCaption, labelCaption, mediaContent, creators, itemType } = props;
@@ -149,8 +150,8 @@ function ListDisplay(props) {
     return (<p>We could not find any matching {itemsType}s.</p>);
 
   const rows = gridDisplay ?
-    items.map(item => <ListCard key={item.id} {...item} itemType={itemsType} />)
-    : items.map(item => <ListBar key={item.id} {...item} itemType={itemsType} />);
+    items.map(item => <ListCard key={item.id} {...item} />)
+    : items.map(item => <ListBar key={item.id} {...item} />);
 
   const onPageChange = (page) => { search({ page }); };
 
