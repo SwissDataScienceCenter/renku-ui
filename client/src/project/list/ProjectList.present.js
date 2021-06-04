@@ -26,7 +26,7 @@ import { faCheck, faSearch, faSortAmountDown, faSortAmountUp, faBars, faTh } fro
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { stringScore } from "../../utils/HelperFunctions";
 import {
-  Loader, ProjectAvatar, RenkuMarkdown, RenkuNavLink, TimeCaption, ListDisplay
+  Loader, ProjectAvatar, RenkuMarkdown, RenkuNavLink, TimeCaption, ListDisplay, MarkdownTextExcerpt
 } from "../../utils/UIComponents";
 import { ProjectTagList } from "../shared";
 import { Url } from "../../utils/url";
@@ -87,6 +87,28 @@ function ProjectListRowBar(props) {
 function ProjectListRows(props) {
   const { currentPage, perPage, projects, search, totalItems, gridDisplay } = props;
 
+  const projectItems = projects.map(project => {
+    const namespace = project.namespace ? project.namespace.full_path : "";
+    const path = project.path;
+    const url = Url.get(Url.pages.project, { namespace, path });
+    return {
+      id: project.id,
+      url: url,
+      stringScore: stringScore(project.path_with_namespace) % 3,
+      title: project.path_with_namespace,
+      description: project.description ?
+        <Fragment>
+          <MarkdownTextExcerpt markdownText={project.description} singleLine={gridDisplay ? false : true}
+            charsLimit={gridDisplay ? 200 : 150} />
+          <span className="ms-1">{project.description.includes("\n") ? " [...]" : ""}</span>
+        </Fragment>
+        : " ",
+      tagList: project.tag_list,
+      timeCaption: project.last_activity_at,
+      mediaContent: project.avatar_url
+    };
+  });
+
   return <ListDisplay
     itemsType="project"
     search={search}
@@ -94,26 +116,7 @@ function ProjectListRows(props) {
     gridDisplay={gridDisplay}
     totalItems={totalItems}
     perPage={perPage}
-    items={projects.map(project => {
-      const namespace = project.namespace ? project.namespace.full_path : "";
-      const path = project.path;
-      const url = Url.get(Url.pages.project, { namespace, path });
-      return {
-        id: project.id,
-        url: url,
-        stringScore: stringScore(project.path_with_namespace) % 3,
-        title: project.path_with_namespace,
-        description: project.description ?
-          <Fragment>
-            <RenkuMarkdown markdownText={project.description} fixRelativePaths={false} singleLine={true} />
-            <span className="ms-1">{project.description.includes("\n") ? " [...]" : ""}</span>
-          </Fragment>
-          : " ",
-        tagList: project.tag_list,
-        timeCaption: project.last_activity_at,
-        mediaContent: project.avatar_url
-      };
-    })}
+    items={projectItems}
   />;
 }
 

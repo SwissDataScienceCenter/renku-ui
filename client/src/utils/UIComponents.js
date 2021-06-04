@@ -491,9 +491,9 @@ function MarkdownTextExcerpt(props) {
   const style = props.heightLimit ?
     { maxHeight: `${props.heightLimit}ch` }
     : { maxWidth: `${props.charsLimit}ch` };
-  const text = props.charsLimit && props.markdownText.length > props.charsLimit ?
+  const text = props.charsLimit && (props.markdownText.length > props.charsLimit) ?
     props.markdownText.slice(0, props.charsLimit) + "..." : props.markdownText;
-  return <RenkuMarkdown markdownText={text} singleLine={false} style={style} />;
+  return <RenkuMarkdown markdownText={text} singleLine={props.singleLine || false} style={style} />;
 }
 
 /**

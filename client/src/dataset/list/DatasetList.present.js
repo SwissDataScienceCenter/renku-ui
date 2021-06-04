@@ -162,6 +162,30 @@ class DatasetsRows extends Component {
 
     const { currentPage, perPage, search, totalItems, gridDisplay } = this.props;
 
+    const datasetItems = datasets.map(dataset => {
+      const projectsCount = dataset.projectsCount > 1
+        ? `In ${dataset.projectsCount} projects`
+        : `In ${dataset.projectsCount} project`;
+
+      return {
+        id: dataset.identifier,
+        url: `${datasetsUrl}/${encodeURIComponent(dataset.identifier)}`,
+        stringScore: stringScore(dataset.identifier) % 3,
+        title: dataset.title || dataset.name,
+        description: dataset.description !== undefined && dataset.description !== null ?
+          <Fragment>
+            <MarkdownTextExcerpt markdownText={dataset.description} singleLine={gridDisplay ? false : true}
+              charsLimit={gridDisplay ? 200 : 100} />
+            <span className="ms-1">{dataset.description.includes("\n") ? " [...]" : ""}</span>
+          </Fragment>
+          : null,
+        timeCaption: new Date(dataset.date),
+        labelCaption: projectsCount + ". Created",
+        creators: dataset.published !== undefined && dataset.published.creator !== undefined ?
+          dataset.published.creator : null,
+      };
+    });
+
     return <ListDisplay
       itemsType="dataset"
       search={search}
@@ -169,24 +193,7 @@ class DatasetsRows extends Component {
       gridDisplay={gridDisplay}
       totalItems={totalItems}
       perPage={perPage}
-      items={datasets.map(dataset => {
-        const projectsCount = dataset.projectsCount > 1
-          ? `In ${dataset.projectsCount} projects`
-          : `In ${dataset.projectsCount} project`;
-        return {
-          id: dataset.identifier,
-          url: `${datasetsUrl}/${encodeURIComponent(dataset.identifier)}`,
-          stringScore: stringScore(dataset.identifier) % 3,
-          title: dataset.title || dataset.name,
-          description: dataset.description !== undefined && dataset.description !== null ?
-            <MarkdownTextExcerpt markdownText={dataset.description} charsLimit={gridDisplay ? 200 : 500} />
-            : null,
-          timeCaption: new Date(dataset.date),
-          labelCaption: projectsCount + ". Created",
-          creators: dataset.published !== undefined && dataset.published.creator !== undefined ?
-            dataset.published.creator : null,
-        };
-      })}
+      items={datasetItems}
     />;
 
   }

@@ -1,3 +1,21 @@
+/*!
+ * Copyright 2021 - Swiss Data Science Center (SDSC)
+ * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
+ * Eidgenössische Technische Hochschule Zürich (ETHZ).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
 import { Col } from "reactstrap";
@@ -5,7 +23,18 @@ import { Pagination, TimeCaption } from "./UIComponents";
 import Masonry from "react-masonry-css";
 import { ProjectTagList } from "../project/shared/ProjectTag.container";
 
-
+/**
+ * ListCard/ListBar returns a card or a bar displaying an item in a List.
+ *
+ * @param url containing a link to the item details.
+ * @param title title of the item.
+ * @param description description of the item.
+ * @param tagList tag list of the item.
+ * @param timeCaption date to put inside the time caption of the item.
+ * @param labelCaption label to put inside the time caption of the item, if empty defaults to Updated.
+ * @param mediaContent image of the item.
+ * @param creators creators of the item, if more than 3 they will be cropped at 3.
+ */
 function ListCard(props) {
   const { url, color, title, description, tagList, timeCaption, labelCaption, mediaContent, creators } = props;
 
@@ -99,6 +128,18 @@ function ListBar(props) {
     </Col>
   </Link>;
 }
+
+/**
+ * This class receives a list of "items" and displays them either in a grid or in classic list.
+ *
+ * @param itemsType string containing the type of items in the list, this is only used to display an empty message.
+ * @param search search function used inside the pagination.
+ * @param currentPage current page used in the pagination.
+ * @param gridDisplay if true the list will be displayed in grid mode.
+ * @param totalItems total items, used in the pagination.
+ * @param perPage items per page, used in the pagination.
+ * @param items items to display, documented on top on ListCard.
+ */
 
 function ListDisplay(props) {
 
