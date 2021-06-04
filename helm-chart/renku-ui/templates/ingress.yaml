@@ -55,7 +55,7 @@ metadata:
     nginx.ingress.kubernetes.io/canary-by-cookie: "other-ui"
 spec:
   rules:
-    - host: {{ .Values.canary.host }}
+    - host: {{ .Values.global.renku.domain }}
       http:
         paths:
           - path: /
