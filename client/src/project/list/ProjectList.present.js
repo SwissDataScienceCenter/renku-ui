@@ -91,6 +91,7 @@ function ProjectListRows(props) {
       id: project.id,
       url: url,
       title: project.path_with_namespace,
+      itemType: "project",
       description: project.description ?
         <Fragment>
           <MarkdownTextExcerpt markdownText={project.description} singleLine={gridDisplay ? false : true}

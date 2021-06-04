@@ -168,6 +168,7 @@ class DatasetsRows extends Component {
 
       return {
         id: dataset.identifier,
+        itemType: "dataset",
         url: `${datasetsUrl}/${encodeURIComponent(dataset.identifier)}`,
         title: dataset.title || dataset.name,
         description: dataset.description !== undefined && dataset.description !== null ?
