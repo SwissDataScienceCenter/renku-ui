@@ -26,61 +26,13 @@ import { faCheck, faSearch, faSortAmountDown, faSortAmountUp, faBars, faTh } fro
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { stringScore } from "../../utils/HelperFunctions";
 import {
-  Loader, Pagination, ProjectAvatar, RenkuMarkdown, RenkuNavLink, TimeCaption
+  Loader, ProjectAvatar, RenkuMarkdown, RenkuNavLink, TimeCaption, ListDisplay, MarkdownTextExcerpt
 } from "../../utils/UIComponents";
 import { ProjectTagList } from "../shared";
 import { Url } from "../../utils/url";
 import "../Project.css";
 import { Label } from "reactstrap/lib";
-import Masonry from "react-masonry-css";
 
-
-function ProjectListRowCard(props) {
-  const {
-    path, path_with_namespace, last_activity_at, description, tag_list
-  } = props;
-  const namespace = props.namespace.full_path;
-
-  const url = Url.get(Url.pages.project, { namespace, path });
-  const title = path_with_namespace || "no title";
-
-
-  const colorsArray = ["green", "pink", "yellow"];
-  const color = colorsArray[stringScore(title) % 3];
-
-  return (
-    <div className="col text-decoration-none p-2 rk-search-result-card">
-      <Link to={url} className="col text-decoration-none">
-        <div className="card card-body border-0">
-          <span className={"circle me-3 mt-2 mb-2 " + color}></span>
-          <div className="title lh-sm mb-2">
-            {title}
-          </div>
-          <p className="card-text text-rk-text mb-2">
-            {description ? description : null}
-          </p>
-          {tag_list.length > 0 ?
-            <Fragment>
-              <div className="tagList mt-auto mb-2">
-                <ProjectTagList tagList={tag_list} />
-              </div>
-              <p className="card-text ">
-                <TimeCaption caption="Updated" time={last_activity_at} className="text-secondary"/>
-              </p>
-            </Fragment>
-            : <p className="card-text mt-auto">
-              <TimeCaption caption="Updated" time={last_activity_at} className="text-secondary"/>
-            </p>
-          }
-          {props.avatar_url ?
-            <img src={props.avatar_url} alt=" " className="card-img-bottom"/>
-            : null
-          }
-        </div>
-      </Link>
-    </div>
-  );
-}
 
 function ProjectListRowBar(props) {
   const {
@@ -90,7 +42,6 @@ function ProjectListRowBar(props) {
 
   const url = Url.get(Url.pages.project, { namespace, path });
   const title = path_with_namespace || "no title";
-
 
   const colorsArray = ["green", "pink", "yellow"];
   const color = colorsArray[stringScore(title) % 3];
@@ -134,39 +85,39 @@ function ProjectListRowBar(props) {
 }
 
 function ProjectListRows(props) {
-  const { currentPage, getAvatar, perPage, projects, search, totalItems, gridDisplay } = props;
+  const { currentPage, perPage, projects, search, totalItems, gridDisplay } = props;
 
-  if (!projects || !projects.length)
-    return (<p>We could not find any matching projects.</p>);
+  const projectItems = projects.map(project => {
+    const namespace = project.namespace ? project.namespace.full_path : "";
+    const path = project.path;
+    const url = Url.get(Url.pages.project, { namespace, path });
+    return {
+      id: project.id,
+      url: url,
+      stringScore: stringScore(project.path_with_namespace) % 3,
+      title: project.path_with_namespace,
+      description: project.description ?
+        <Fragment>
+          <MarkdownTextExcerpt markdownText={project.description} singleLine={gridDisplay ? false : true}
+            charsLimit={gridDisplay ? 200 : 150} />
+          <span className="ms-1">{project.description.includes("\n") ? " [...]" : ""}</span>
+        </Fragment>
+        : " ",
+      tagList: project.tag_list,
+      timeCaption: project.last_activity_at,
+      mediaContent: project.avatar_url
+    };
+  });
 
-  const rows = gridDisplay ?
-    projects.map(project => <ProjectListRowCard key={project.id} getAvatar={getAvatar} {...project} />)
-    : projects.map(project => <ProjectListRowBar key={project.id} getAvatar={getAvatar} {...project} />);
-
-  const onPageChange = (page) => { search({ page }); };
-
-  return gridDisplay ?
-    <div>
-      <Masonry
-        className="rk-search-result-grid mb-4"
-        breakpointCols={{
-          default: 4,
-          1100: 3,
-          700: 2,
-          500: 1
-        }}
-      >
-        {rows}
-      </Masonry>
-      <Pagination currentPage={currentPage} perPage={perPage} totalItems={totalItems} onPageChange={onPageChange}
-        className="d-flex justify-content-center rk-search-pagination"/>
-    </div>
-    :
-    <div>
-      <div className="mb-4">{rows}</div>
-      <Pagination currentPage={currentPage} perPage={perPage} totalItems={totalItems} onPageChange={onPageChange}
-        className="d-flex justify-content-center rk-search-pagination"/>
-    </div>;
+  return <ListDisplay
+    itemsType="project"
+    search={search}
+    currentPage={currentPage}
+    gridDisplay={gridDisplay}
+    totalItems={totalItems}
+    perPage={perPage}
+    items={projectItems}
+  />;
 }
 
 function SearchInFilter(props) {

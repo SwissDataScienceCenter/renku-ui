@@ -38,11 +38,12 @@ const datasetListSchema = new Schema({
   orderSearchAsc: { initial: false, mandatory: true },
   currentPage: { initial: 1, mandatory: true },
   totalItems: { initial: 0, mandatory: true },
-  perPage: { initial: 10, mandatory: true },
+  perPage: { initial: 12, mandatory: true },
   pathName: { initial: "" },
   initialized: { initial: true },
   datasets: { initial: [] },
-  errorMessage: { initial: "" }
+  errorMessage: { initial: "" },
+  gridDisplay: { initial: true }
 });
 
 class DatasetListModel extends StateModel {
@@ -80,7 +81,11 @@ class DatasetListModel extends StateModel {
   }
 
   setPage(page) {
-    this.set("currentPage", parseInt(page, 10));
+    this.set("currentPage", parseInt(page, 12));
+  }
+
+  setGridDisplay(gridDisplay) {
+    this.set("gridDisplay", gridDisplay);
   }
 
   setQueryAndSortInSearch(query, orderBy, orderSearchAsc, pathName, pageNumber) {

@@ -17,75 +17,16 @@
  */
 
 import React, { Component, Fragment } from "react";
-import { Link, Route, Switch } from "react-router-dom";
+import { Route, Switch } from "react-router-dom";
 import { Row, Col, Alert, Card, CardBody } from "reactstrap";
 import { Button, Form, FormText, Input, Label, InputGroup, UncontrolledCollapse } from "reactstrap";
 import { DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
 import { stringScore } from "../../utils/HelperFunctions";
-import { Loader, Pagination, MarkdownTextExcerpt, TimeCaption } from "../../utils/UIComponents";
-import { faCheck, faSortAmountUp, faSortAmountDown, faSearch } from "@fortawesome/free-solid-svg-icons";
+import { MarkdownTextExcerpt, ListDisplay } from "../../utils/UIComponents";
+import { faCheck, faSortAmountUp, faSortAmountDown, faSearch, faBars, faTh } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ButtonDropdown } from "reactstrap/lib";
 
-
-class DatasetListRow extends Component {
-
-  render() {
-    const datasetsUrl = this.props.datasetsUrl;
-    const dataset = this.props.dataset;
-    const projectsCountLabel = dataset.projectsCount > 1
-      ? `In ${dataset.projectsCount} projects`
-      : `In ${dataset.projectsCount} project`;
-
-    const colorsArray = ["green", "pink", "yellow"];
-    const color = colorsArray[stringScore(dataset.name) % 3];
-    const datasetDate = new Date(dataset.date);
-
-    return <Link className="d-flex flex-row rk-search-result"
-      to={`${datasetsUrl}/${encodeURIComponent(dataset.identifier)}`}>
-      <span className={"circle me-3 mt-2 " + color}></span>
-      <Col className="d-flex align-items-start flex-column col-10 overflow-hidden">
-        <div className="title d-inline-block text-truncate">
-          {dataset.title || dataset.name}
-        </div>
-        <div className="creators text-truncate text-rk-text">
-          {
-            dataset.published !== undefined && dataset.published.creator !== undefined ?
-              <small style={{ display: "block" }} className="font-weight-light">
-                {dataset.published.creator.slice(0, 3).map((creator) => creator.name).join(", ")}
-                {dataset.published.creator.length > 3 ? ", et al." : null}
-              </small>
-              : null
-          }
-        </div>
-        <div className="description text-truncate text-rk-text">
-          {
-            dataset.description !== undefined && dataset.description !== null ?
-              <div className="datasetDescriptionText font-weight-normal">
-                <MarkdownTextExcerpt markdownText={dataset.description} charsLimit={500} />
-              </div>
-              : null
-          }
-        </div>
-        <div className="mt-auto">
-          {
-            dataset.date ?
-              <TimeCaption caption="Created"
-                time={datasetDate} className="text-secondary"/>
-              : null
-          }
-        </div>
-      </Col>
-      <Col className="d-flex justify-content-end flex-shrink-0">
-        <span className="text-secondary">
-          <small>
-            {projectsCountLabel}
-          </small>
-        </span>
-      </Col>
-    </Link>;
-  }
-}
 
 function OrderByDropdown(props) {
   return <Fragment>
@@ -163,6 +104,16 @@ class DatasetSearchForm extends Component {
               <FontAwesomeIcon icon={faSearch} />
             </Button>
           </Col>
+          <Col className="col-auto">
+            <Button color="rk-white" id="displayButton"
+              onClick={() => this.props.onGridDisplayToggle()}>
+              {
+                this.props.gridDisplay ?
+                  <FontAwesomeIcon icon={faBars} /> :
+                  <FontAwesomeIcon icon={faTh} />
+              }
+            </Button>
+          </Col>
         </Form>
         <Col sm={12}>
           <FormText key="help" color="rk-text">
@@ -206,50 +157,89 @@ class DatasetSearchForm extends Component {
 
 class DatasetsRows extends Component {
   render() {
-    if (this.props.loading) return <Col md={{ size: 2, offset: 3 }}><Loader /></Col>;
     const datasets = this.props.datasets || [];
-    const rows = datasets.map((p) => <DatasetListRow key={p.identifier}
-      datasetsUrl={this.props.urlMap.datasetsUrl}
-      dataset={p} />);
-    return <div className="mb-4">{rows}</div>;
+    const datasetsUrl = this.props.datasetsUrl;
+
+    const { currentPage, perPage, search, totalItems, gridDisplay } = this.props;
+
+    const datasetItems = datasets.map(dataset => {
+      const projectsCount = dataset.projectsCount > 1
+        ? `In ${dataset.projectsCount} projects`
+        : `In ${dataset.projectsCount} project`;
+
+      return {
+        id: dataset.identifier,
+        url: `${datasetsUrl}/${encodeURIComponent(dataset.identifier)}`,
+        stringScore: stringScore(dataset.identifier) % 3,
+        title: dataset.title || dataset.name,
+        description: dataset.description !== undefined && dataset.description !== null ?
+          <Fragment>
+            <MarkdownTextExcerpt markdownText={dataset.description} singleLine={gridDisplay ? false : true}
+              charsLimit={gridDisplay ? 200 : 100} />
+            <span className="ms-1">{dataset.description.includes("\n") ? " [...]" : ""}</span>
+          </Fragment>
+          : null,
+        timeCaption: new Date(dataset.date),
+        labelCaption: projectsCount + ". Created",
+        creators: dataset.published !== undefined && dataset.published.creator !== undefined ?
+          dataset.published.creator : null,
+      };
+    });
+
+    return <ListDisplay
+      itemsType="dataset"
+      search={search}
+      currentPage={currentPage}
+      gridDisplay={gridDisplay}
+      totalItems={totalItems}
+      perPage={perPage}
+      items={datasetItems}
+    />;
+
   }
 }
 
 
-class DatasetsSearch extends Component {
-  render() {
-    const loading = this.props.loading || false;
-    return [
-      <div key="form">
-        {
-          (this.props.loggedOutMessage !== undefined) ?
-            <Col bg={6} md={8} sm={12} ><span>{this.props.loggedOutMessage}</span><br /><br /></Col>
-            :
-            <span></span>
-        }
-        <div className="pb-2 rk-search-bar">
-          <DatasetSearchForm
-            searchQuery={this.props.searchQuery}
-            handlers={this.props.handlers}
-            errorMessage={this.props.errorMessage}
-            orderByValuesMap={this.props.orderByValuesMap}
-            orderBy={this.props.orderBy}
-            orderByDropdownOpen={this.props.orderByDropdownOpen}
-            orderSearchAsc={this.props.orderSearchAsc}
-            orderByLabel={this.props.orderByLabel}
-          />
-        </div>
-      </div>,
-      <DatasetsRows
-        key="datasets"
-        datasets={this.props.datasets}
-        urlMap={this.props.urlMap}
-        loading={loading}
-      />,
-      <Pagination key="pagination" {...this.props}
-        className="d-flex justify-content-center rk-search-pagination"/>
-    ];
-  }
+function DatasetsSearch(props) {
+
+  const loading = props.loading || false;
+
+  return [
+    <div key="form">
+      {
+        (props.loggedOutMessage !== undefined) ?
+          <Col bg={6} md={8} sm={12} ><span>{props.loggedOutMessage}</span><br /><br /></Col>
+          :
+          <span></span>
+      }
+      <div className="pb-2 rk-search-bar">
+        <DatasetSearchForm
+          searchQuery={props.searchQuery}
+          handlers={props.handlers}
+          errorMessage={props.errorMessage}
+          orderByValuesMap={props.orderByValuesMap}
+          orderBy={props.orderBy}
+          orderByDropdownOpen={props.orderByDropdownOpen}
+          orderSearchAsc={props.orderSearchAsc}
+          orderByLabel={props.orderByLabel}
+          gridDisplay={props.gridDisplay}
+          onGridDisplayToggle={props.onGridDisplayToggle}
+        />
+      </div>
+    </div>,
+    <DatasetsRows
+      key="datasets"
+      datasets={props.datasets}
+      loading={loading}
+      currentPage={props.currentPage}
+      totalItems={props.totalItems}
+      perPage={props.perPage}
+      search={props.onPageChange}
+      gridDisplay={props.gridDisplay}
+      datasetsUrl={props.urlMap.datasetsUrl}
+    />
+  ];
+
 }
 
 class NotFoundInsideDataset extends Component {
@@ -270,24 +260,22 @@ class NotFoundInsideDataset extends Component {
   }
 }
 
-class DatasetList extends Component {
-  render() {
-    const urlMap = this.props.urlMap;
+function DatasetList(props) {
 
-    return <Fragment>
-      <Row className="pt-2 pb-3">
-        <Col className="d-flex mb-2">
-          <h2 className="me-4">Renku Datasets</h2>
-        </Col>
-      </Row>
-      <Switch>
-        <Route exact path={urlMap.datasetsUrl}
-          render={props => <DatasetsSearch {...this.props} />} />
-        <Route component={NotFoundInsideDataset} />
-      </Switch>
-    </Fragment>;
-  }
+  const urlMap = props.urlMap;
+
+  return <Fragment>
+    <Row className="pt-2 pb-3">
+      <Col className="d-flex mb-2">
+        <h2 className="me-4">Renku Datasets</h2>
+      </Col>
+    </Row>
+    <Switch>
+      <Route exact path={urlMap.datasetsUrl}
+        render={p => <DatasetsSearch {...props} />} />
+      <Route component={NotFoundInsideDataset} />
+    </Switch>
+  </Fragment>;
 }
 
 export default DatasetList;
-export { DatasetListRow };
