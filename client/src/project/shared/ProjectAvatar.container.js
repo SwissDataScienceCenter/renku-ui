@@ -58,7 +58,7 @@ function ProjectAvatarSubmitButtons({ value, onCancel, onAvatarChange, externalU
         Submit
       </Button>
     </div>
-    <div className="pr-3">
+    <div className="pe-3">
       <Button
         onClick={(e) => { onCancel(); }}>
         Cancel

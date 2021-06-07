@@ -640,14 +640,14 @@ function ProjectStatusAlert(props) {
 
   const versionInfo = migration_required ?
     <span>
-      <FontAwesomeIcon icon={faExclamationTriangle} className="pr-1" />
+      <FontAwesomeIcon icon={faExclamationTriangle} className="pe-1" />
       <strong>A new version of renku is available. </strong>
       An upgrade is necessary to allow modification of datasets and is recommended for all projects.&nbsp;
     </span> :
     null;
   const kgInfo = kgDown ?
     <span>
-      <FontAwesomeIcon icon={faExclamationTriangle} className="pr-1" />
+      <FontAwesomeIcon icon={faExclamationTriangle} className="pe-1" />
       <strong>Knowledge Graph integration not active. </strong>
       This means that some operations on datasets are not possible, we recommend activating it.
     </span> :
