@@ -124,7 +124,7 @@ homepage:
   # Projects to highlight on the homepage
   projects: []
 canary:
-  enabled: false
+  enabled: true
   image:
     repository: renku/renku-ui
-    tag: "0.11.12"
+    tag: "0.11.11-n045.h8e3df79"
