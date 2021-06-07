@@ -17,3 +17,25 @@ spec:
   selector:
     app: {{ template "ui.name" . }}
     release: {{ .Release.Name }}
+---
+{{- if .Values.canary.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "ui.fullname" . }}-canary
+  labels:
+    app: {{ template "ui.name" . }}-canary
+    chart: {{ template "ui.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: 8080
+      protocol: TCP
+      name: http
+  selector:
+    app: {{ template "ui.name" . }}-canary
+    release: {{ .Release.Name }}
+{{- end }}
