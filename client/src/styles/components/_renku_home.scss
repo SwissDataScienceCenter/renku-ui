@@ -12,7 +12,7 @@ nav.rk-anon-home .nav-link {
   &:hover {
     color: $rk-blue;
     background-color: $rk-green;
-  }  
+  }
 }
 
 #nav-hamburger {
@@ -20,7 +20,7 @@ nav.rk-anon-home .nav-link {
   &:hover {
     color: $rk-blue;
     background-color: $rk-green;
-  }  
+  }
 }
 
 #rk-anon-home-frame {
@@ -110,6 +110,12 @@ nav.rk-anon-home .nav-link {
     font-size: 16px;
     line-height: 24px;
   }
+}
+
+.rk-home-gallery div {
+  flex-grow: 1;
+  flex-basis: 0;
+  padding: 0px 20px 0px 0px;
 }
 
 // #root {

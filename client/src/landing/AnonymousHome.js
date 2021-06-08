@@ -51,6 +51,7 @@ import Illustration_Theory_Practice from "./Assets/Illustration_Theory_Practice.
 import VisualHead from "./Assets/Visual_Head.svg";
 import VisualDetail from "./Assets/Visual_Detail.svg";
 import VisualFooter from "./Assets/Visual_Footer.svg";
+import TransitionalHome from "./TransitionalHome";
 
 function HomeHeader(props) {
   const [isOpen, setIsOpen] = useState(false);
@@ -373,13 +374,21 @@ function AnonymousHome(props) {
     siteStatusUrl: Url.get(Url.pages.help.status)
   };
   const p = { ...props, urlMap };
+  const normalHome = false;
 
   return <div id="rk-anon-home-frame">
     {
-      (props.homeCustomized.custom.enabled) ?
+      // TODO Reactivate after the transition
+      // (props.homeCustomized.custom.enabled) ?
+      //   CustomizedAnonymousHome(p) :
+      //   StandardHome(p)
+      (normalHome) ?
         CustomizedAnonymousHome(p) :
-        StandardHome(p)
+        (normalHome) ?
+          StandardHome(p) :
+          null
     }
+    <TransitionalHome {...p} />
   </div>;
 }
 
