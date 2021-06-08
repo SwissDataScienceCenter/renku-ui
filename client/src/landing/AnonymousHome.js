@@ -128,7 +128,7 @@ function Section1(props) {
       </Row>
       <Row>
         <Col className="rk-pt-s rk-w-s">
-          <HashLink className="btn btn-outline-info" role="button"
+          <HashLink className="btn btn-outline-rk-pink" role="button"
             to="#rk-anon-home-section2">
             Learn more
           </HashLink>
@@ -143,7 +143,7 @@ function Section2(props) {
     <div className="rk-anon-home-section-content">
       <Row className="rk-pt-m">
         <Col md={4}>
-          <h3 className="text-info">Bringing everyone together!</h3>
+          <h3 className="text-rk-pink">Bringing everyone together!</h3>
         </Col>
         <Col md={{ size: 7, offset: 1 }}>
           <h3 className="text-secondary">Successful data science requires collaboration; <br />
@@ -224,11 +224,11 @@ function TutorialLink(props) {
   if (url.startsWith("http")) {
     return <ExternalLink
       title="Follow the tutorial"
-      className="btn btn-outline-info" role="button" id="link-learn"
+      className="btn btn-outline-rk-pink" role="button" id="link-learn"
       showLinkIcon={true}
       url={url} />;
   }
-  return <Link className="btn btn-outline-info" role="link" id="link-tutorial" to={url}>
+  return <Link className="btn btn-outline-rk-pink" role="link" id="link-tutorial" to={url}>
     Follow the tutorial
   </Link>;
 }
@@ -242,7 +242,7 @@ function Section4(props) {
     <div className="rk-anon-home-section-content">
       <div className="rk-w-s">
         <div className="rk-pt-l">
-          <h3 className="text-info">Connecting dots</h3>
+          <h3 className="text-rk-pink">Connecting dots</h3>
         </div>
         <div className="rk-pt-s">
           <h3 className="text-white">The knowledge graph powers Renku and helps you
@@ -250,7 +250,7 @@ function Section4(props) {
         </div>
         <div className="rk-pt-m">
           <h3 className="text-secondary">Ready to try it out?</h3>
-          <h3 className="text-info">Get started with Renku</h3>
+          <h3 className="text-rk-pink">Get started with Renku</h3>
         </div>
       </div>
       <div className="d-flex flex-wrap rk-pt-s">
@@ -268,7 +268,7 @@ function Section4(props) {
         <div className="pt-2" style={{ minWidth: "180px" }}>
           <ExternalLink
             title="Learn more"
-            className="btn btn-outline-info" role="button" id="link-learn"
+            className="btn btn-outline-rk-pink" role="button" id="link-learn"
             showLinkIcon={true}
             url="https://renku.readthedocs.io/en/latest/" />
         </div>
@@ -282,14 +282,14 @@ function Section5(props) {
     <div id="rk-anon-home-section5-empty">
       <div className="rk-anon-home-section-content">
         <div className="rk-pt-l">
-          <h3 className="text-info">&nbsp;</h3>
+          <h3 className="text-rk-pink">&nbsp;</h3>
         </div>
       </div>
     </div> :
     <div id="rk-anon-home-section5">
       <div className="rk-anon-home-section-content">
         <div className="rk-pt-l">
-          <h3 className="text-info">Look at some example projects</h3>
+          <h3 className="text-rk-pink">Look at some example projects</h3>
         </div>
       </div>
     </div>;
@@ -309,7 +309,7 @@ function Section6(props) {
             <p>We have offices in both Lausanne on the EPFL campus and in Zürich at ETH Zürich.</p>
           </Col>
           <Col xs={12} lg={5} xl={4} className="rk-pt-up_to-lg-s bg-primary">
-            <h4 className="text-info">Lausanne</h4>
+            <h4 className="text-rk-pink">Lausanne</h4>
             <p className="rk-pt-lg-s">
               INN Building, Station 14, 1015 Lausanne<br />
               Contact: Cindy Ravey, Executive Assistant<br />
@@ -317,7 +317,7 @@ function Section6(props) {
             </p>
           </Col>
           <Col xs={12} lg={5} xl={4} className="rk-pt-up_to-lg-s bg-primary">
-            <h4 className="text-info">Zürich</h4>
+            <h4 className="text-rk-pink">Zürich</h4>
             {/* eslint-disable-next-line */}
             <p className="rk-pt-lg-s">
               Universitätsstrasse 25, 8006 Zürich<br />
