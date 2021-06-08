@@ -470,6 +470,8 @@ class RenkuMarkdown extends Component {
     let className = "text-break renku-markdown";
     if (singleLine)
       className += " children-no-spacing";
+    if (this.props.className)
+      className += " " + this.props.className;
 
     return <div className={className} style={style}
       dangerouslySetInnerHTML={{ __html: sanitizedHTMLFromMarkdown(this.props.markdownText, singleLine) }}>
