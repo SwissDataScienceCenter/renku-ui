@@ -73,9 +73,7 @@ class RenkuToolbarItemUser extends Component {
     }
     else if (!user.logged) {
       const to = Url.get(Url.pages.login.link, { pathname: location.pathname });
-      return <NavItem className="align-middle">
-        <RenkuNavLink to={to} title="Login" />
-      </NavItem>;
+      return (<RenkuNavLink to={to} title="Login" />);
     }
 
     return <UncontrolledDropdown className="nav-item dropdown">
