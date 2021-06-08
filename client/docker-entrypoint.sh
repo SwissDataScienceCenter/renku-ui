@@ -33,7 +33,7 @@ echo " PRIVACY_BANNER_LAYOUT=${PRIVACY_BANNER_LAYOUT}"
 echo " TEMPLATES=${TEMPLATES}"
 echo " PREVIEW_THRESHOLD=${PREVIEW_THRESHOLD}"
 echo " UPLOAD_THRESHOLD=${UPLOAD_THRESHOLD}"
-echo " STATUSPAGE_ID=${STATUSPAGE_ID}"
+echo " HOMEPAGE": "${HOMEPAGE}"
 echo "==================================================="
 
 echo "Privacy file contains the following markdown (first 5 lines):"
@@ -57,7 +57,8 @@ tee > "${NGINX_PATH}/config.json" << EOF
   "TEMPLATES": ${TEMPLATES},
   "PREVIEW_THRESHOLD": ${PREVIEW_THRESHOLD},
   "UPLOAD_THRESHOLD": ${UPLOAD_THRESHOLD},
-  "STATUSPAGE_ID": "${STATUSPAGE_ID}"
+  "STATUSPAGE_ID": "${STATUSPAGE_ID}",
+  "HOMEPAGE": ${HOMEPAGE}
 }
 EOF
 echo "config.json created in ${NGINX_PATH}"
