@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2021 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -17,19 +17,13 @@
  */
 
 /**
- *  renku-ui
+ * renku-ui
  *
- * Components for interacting with the notebook server (renku-notebooks)
+ * Components for project settings
  *
  */
 
-import { CheckNotebookStatus, Notebooks, ShowSession, StartNotebookServer } from "./Notebooks.container";
-import { NotebooksCoordinator, NotebooksHelper } from "./Notebooks.state";
-import {
-  CheckNotebookIcon, NotebooksDisabled, ServerOptionBoolean, ServerOptionEnum, ServerOptionRange
-} from "./Notebooks.present";
+import { ProjectSettingsSessions } from "./ProjectSettings.container";
+import { ProjectSettingsGeneral, ProjectSettingsNav } from "./ProjectSettings.present";
 
-export {
-  CheckNotebookIcon, CheckNotebookStatus, Notebooks, NotebooksCoordinator, NotebooksDisabled, NotebooksHelper,
-  ServerOptionBoolean, ServerOptionEnum, ServerOptionRange, ShowSession, StartNotebookServer
-};
+export { ProjectSettingsGeneral, ProjectSettingsNav, ProjectSettingsSessions };
