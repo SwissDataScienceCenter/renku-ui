@@ -275,10 +275,7 @@ function ProjectSettingsSessions(props) {
 
   // Information based on user's access level
   const text = devAccess ?
-    (<p>
-      Any change will be permanently saved in the project options and used as default.
-      <br /> Mind that users can still manually modify any option before starting a session.
-    </p>) :
+    null :
     (<p>Settings can be changed only by developers and maintainers.</p>);
 
   return (
@@ -405,7 +402,7 @@ function NewConfigStatus(props) {
 function SessionsDiv(props) {
   return (
     <div className="mt-2">
-      <h3>Sessions settings</h3>
+      <h3>Session settings</h3>
       {props.children}
     </div>
   );
