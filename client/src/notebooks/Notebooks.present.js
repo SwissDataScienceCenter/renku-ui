@@ -668,7 +668,7 @@ class NotebookServerRowFull extends Component {
     </span>);
 
     return (
-      <div className="d-flex flex-row rk-search-result rk-search-result-100 cursor-auto">
+      <div className="d-flex flex-row rk-search-result rk-search-result-100 cursor-auto overflow-visible">
         <span className={this.props.standalone ? "me-3 mt-2" : "me-3 mt-1"}>{icon}</span>
         <Col className="d-flex align-items-start flex-column col-10 overflow-hidden">
           <div className="project d-inline-block text-truncate">
