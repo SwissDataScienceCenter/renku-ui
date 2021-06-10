@@ -158,7 +158,7 @@ function DisplayInfoTable(props) {
     <tbody className="text-rk-text">
       { source ?
         <tr>
-          <td className="text-dark fw-bold col-sm-2">
+          <td className="text-dark fw-bold" style={{ "width": "120px" }}>
             Source
           </td>
           <td>
@@ -168,7 +168,7 @@ function DisplayInfoTable(props) {
         : null
       }
       { authors ? <tr>
-        <td className="text-dark fw-bold col-sm-2">
+        <td className="text-dark fw-bold col-auto">
           Author(s)
         </td>
         <td>
@@ -179,7 +179,7 @@ function DisplayInfoTable(props) {
       }
       { datasetDate ?
         <tr>
-          <td className="text-dark fw-bold col-sm-2">
+          <td className="text-dark fw-bold col-auto">
             {datasetPublished ? "Published on " : "Created on "}
           </td>
           <td>
@@ -189,7 +189,7 @@ function DisplayInfoTable(props) {
         : null
       }
       { keywords ? <tr>
-        <td className="text-dark fw-bold col-sm-2">
+        <td className="text-dark fw-bold col-auto">
           Keywords
         </td>
         <td>
@@ -322,14 +322,14 @@ export default function DatasetView(props) {
       <Col md={4} sm={12} className="d-flex flex-col justify-content-end mb-auto">
         { props.logged ?
           <Button disabled={dataset.insideKg === false}
-            className="float-right mb-1 me-1" size="sm" color="primary" onClick={() => setAddDatasetModalOpen(true)}>
+            className="float-right mb-1 me-1" size="sm" color="secondary" onClick={() => setAddDatasetModalOpen(true)}>
             <FontAwesomeIcon icon={faPlus} color="dark" /> Add to project
           </Button>
           : null}
         { props.insideProject && props.maintainer ?
           <Link className="float-right me-1 mb-1" id="editDatasetTooltip"
             to={{ pathname: "modify", state: { dataset: dataset } }} >
-            <Button size="sm" color="primary" >
+            <Button size="sm" color="secondary" >
               <FontAwesomeIcon icon={faPen} color="dark" />
             </Button>
           </Link>
@@ -337,7 +337,7 @@ export default function DatasetView(props) {
         }
         { props.insideProject && props.maintainer ?
           <UncontrolledButtonDropdown size="sm" className="float-right mb-1">
-            <DropdownToggle caret color="primary" className="removeArrow">
+            <DropdownToggle caret color="secondary" className="removeArrow">
               <FontAwesomeIcon icon={faEllipsisV} color="dark" />
             </DropdownToggle>
             <DropdownMenu>
