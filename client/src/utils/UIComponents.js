@@ -198,12 +198,10 @@ class Pagination extends Component {
       innerClass={className}
 
       // Some defaults for the styling
-      prevPageText={"Previous"}
-      nextPageText={"Next"}
       itemClass={"page-item"}
       linkClass={"page-link"}
       activeClass={"page-item active"}
-      hideFirstLastPages={false}
+      hideFirstLastPages={true}
       hideDisabled={true}
     />;
   }
