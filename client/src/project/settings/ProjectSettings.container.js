@@ -122,7 +122,7 @@ function ProjectSettingsSessions(props) {
 
   // Set target project config value
   const setConfig = async (key, value, keyName) => {
-    setNewConfig({ ...pristineNewConfig, keyName, updating: true });
+    setNewConfig({ ...pristineNewConfig, keyName, updating: true, error: null });
     try {
       const config = { [key]: value };
       const response = await client.setProjectConfig(repositoryUrl, config);
@@ -131,7 +131,7 @@ function ProjectSettingsSessions(props) {
       }
       else {
         const value = response.data.result.config[Object.keys(response.data.result.config)[0]];
-        setNewConfig({ ...newConfig, updating: false, updated: true, keyName, value });
+        setNewConfig({ ...newConfig, updating: false, updated: true, error: null, keyName, value });
       }
     }
     catch (error) {

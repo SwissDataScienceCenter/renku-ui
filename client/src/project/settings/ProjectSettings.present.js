@@ -440,18 +440,18 @@ function SessionsElement(props) {
       value = null;
     }
     else if (providedValue != null) {
-      value = providedValue;
+      value = providedValue.toString();
     }
     else {
       const target = event.target.type.toLowerCase();
       if (target === "button")
-        value = event.target.textContent;
+        value = event.target.textContent.toString();
 
       else if (target === "checkbox")
         value = event.target.checked.toString();
 
       else
-        value = event.target.value;
+        value = event.target.value.toString();
     }
 
     const configKey = `${configPrefix}${option}`;
