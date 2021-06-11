@@ -27,11 +27,11 @@ import React, { Component, Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Alert, Button, Col, Collapse, Form, FormGroup,
-  FormText, Input, Label, Row, Table, Nav, NavItem, UncontrolledTooltip
+  FormText, Input, InputGroup, Label, Row, Table, Nav, NavItem, UncontrolledTooltip
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faExclamationTriangle, faInfoCircle, faTimesCircle
+  faCheck, faEdit, faExclamationTriangle, faInfoCircle, faTrash, faTimesCircle
 } from "@fortawesome/free-solid-svg-icons";
 
 import { ACCESS_LEVELS } from "../../api-client";
@@ -239,14 +239,10 @@ function ProjectSettingsSessions(props) {
     );
   }
 
-  // Handle ongoing operations
+  // Handle ongoing operations and errors
   if (config.fetching || options.fetching)
     return (<SessionsDiv><Loader /></SessionsDiv>);
 
-  if (newConfig.updating)
-    return (<SessionsDiv><NewConfigStatus {...newConfig} /></SessionsDiv>);
-
-  // Handle errors
   if (config.error && config.error.code)
     return (<SessionsDiv><SessionConfigError config={config} /></SessionsDiv>);
 
@@ -263,13 +259,19 @@ function ProjectSettingsSessions(props) {
 
   const knownOptions = (
     <SessionConfigKnown availableOptions={projectData.options} defaults={projectData.defaults}
-      devAccess={devAccess} globalOptions={globalOptions} setConfig={setConfig}
+      devAccess={devAccess} globalOptions={globalOptions} setConfig={setConfig} disabled={newConfig.updating}
+    />
+  );
+
+  const advancedOptions = (
+    <SessionConfigAdvanced devAccess={devAccess} defaults={projectData.defaults.project}
+      options={projectData.options.unknown} setConfig={setConfig} disabled={newConfig.updating}
     />
   );
 
   const unknownOptions = (
     <SessionConfigUnknown devAccess={devAccess} defaults={projectData.defaults.project}
-      options={projectData.options.unknown} setConfig={setConfig}
+      options={projectData.options.unknown} setConfig={setConfig} disabled={newConfig.updating}
     />
   );
 
@@ -283,31 +285,40 @@ function ProjectSettingsSessions(props) {
       <NewConfigStatus {...newConfig} />
       {text}
       {knownOptions}
+      {advancedOptions}
       {unknownOptions}
     </SessionsDiv>
   );
 }
 
 function SessionConfigKnown(props) {
-  const { availableOptions, defaults, devAccess, globalOptions, setConfig } = props;
+  const { availableOptions, defaults, devAccess, disabled, globalOptions, setConfig } = props;
 
-  return availableOptions.known.map(option => {
+  const elementsList = availableOptions.known.map(option => {
     return (
-      <SessionsElement key={option}
-        option={option} // key cannot be accessed as a property, hence the duplication here
-        globalDefault={defaults.global[option]}
-        projectDefault={defaults.project[option]}
-        rendering={globalOptions[option]}
-        setConfig={setConfig}
-        devAccess={devAccess}
-        configPrefix={NotebooksHelper.sessionConfigPrefix}
-      />
+      <Col key={option} xs={12} lg={6}>
+        <SessionsElement
+          configPrefix={NotebooksHelper.sessionConfigPrefix}
+          devAccess={devAccess}
+          disabled={disabled}
+          globalDefault={defaults.global[option]}
+          option={option}
+          projectDefault={defaults.project[option]}
+          rendering={globalOptions[option]}
+          setConfig={setConfig}
+        />
+      </Col>
     );
   });
+  return (<Row>{elementsList}</Row>);
 }
 
 function SessionConfigUnknown(props) {
-  const { defaults, devAccess, options, setConfig } = props;
+  const { defaults, devAccess, disabled, setConfig } = props;
+  // Remove "image" from the options since that's handled separately
+  const options = props.options.length ?
+    props.options.filter(option => option !== "image") :
+    [];
 
   const [showUnknown, setShowUnknown] = useState(false);
   const toggleShowUnknown = () => setShowUnknown(!showUnknown);
@@ -326,7 +337,7 @@ function SessionConfigUnknown(props) {
     const value = defaults[option];
 
     const reset = devAccess ?
-      (<SessionsOptionReset onChange={() => resetValue(option)} option={option} />) :
+      (<SessionsOptionReset disabled={disabled} onChange={() => resetValue(option)} option={option} />) :
       null;
 
     return (
@@ -338,9 +349,9 @@ function SessionConfigUnknown(props) {
 
   // Collapse unknown values by default
   return (
-    <Fragment>
+    <div className="mb-2">
       <Collapse isOpen={showUnknown}>
-        <h4>Unrecognized settings</h4>
+        <h5>Unrecognized settings</h5>
         <p>
           The following settings are stored in the project configuration but they are not
           supported in this RenkuLab deployment.
@@ -350,7 +361,7 @@ function SessionConfigUnknown(props) {
       <Button color="link" className="font-italic btn-sm" onClick={toggleShowUnknown}>
         [{showUnknown ? "Hide " : "Show "} unrecognized settings]
       </Button>
-    </Fragment>
+    </div>
   );
 }
 
@@ -379,7 +390,11 @@ function NewConfigStatus(props) {
   const { error, keyName, updated, updating, value } = props;
 
   if (updating) {
-    return (<div><span>Updating {keyName}, please wait... <Loader size="14" inline="true" /></span></div>);
+    return (
+      <Alert color="info">
+        <span>Updating {keyName}, please wait... <Loader size="14" inline="true" /></span>
+      </Alert>
+    );
   }
   else if (error) {
     return (
@@ -409,11 +424,11 @@ function SessionsDiv(props) {
 }
 
 function SessionsOptionReset(props) {
-  const { onChange, option } = props;
+  const { disabled, onChange, option } = props;
   return (
     <Fragment>
-      <Button id={`${option}_reset`} color="outline-primary" size="sm" className="border-0"
-        onClick={(event) => onChange(event, null, true)}>
+      <Button disabled={disabled} id={`${option}_reset`} color="outline-primary" size="sm"
+        className="border-0" onClick={(event) => onChange(event, null, true)}>
         <FontAwesomeIcon icon={faTimesCircle} />
       </Button>
       <UncontrolledTooltip key="tooltip" placement="top" target={`${option}_reset`}>
@@ -424,7 +439,9 @@ function SessionsOptionReset(props) {
 }
 
 function SessionsElement(props) {
-  const { configPrefix, devAccess, globalDefault, option, projectDefault, rendering, setConfig } = props;
+  const {
+    configPrefix, devAccess, disabled, globalDefault, option, projectDefault, rendering, setConfig
+  } = props;
 
   // Compatibility layer to re-use the notebooks presentation components
   const onChange = (event, providedValue, reset = false) => {
@@ -456,47 +473,53 @@ function SessionsElement(props) {
   };
 
   // Provide default info when nothing is selected
-  const info = projectDefault != null ?
+  let info = projectDefault != null ?
     null :
-    (<Fragment>
-      <span id={`${option}_info`}><FontAwesomeIcon className="cursor-default" icon={faInfoCircle} /></span>
-      <UncontrolledTooltip key="tooltip" placement="top" target={`${option}_info`}>
-        Default RenkuLab value: <code className="text-white">{rendering.default.toString()}</code>
-      </UncontrolledTooltip>
-    </Fragment>);
+    (<FormText>
+      <FontAwesomeIcon className="cursor-default" icon={faInfoCircle} /> Default RenkuLab
+      value: <code>{rendering.default.toString()}</code>
+    </FormText>);
 
   // Add reset button
   const reset = devAccess && projectDefault != null ?
-    (<SessionsOptionReset onChange={onChange} option={option} />) :
+    (<SessionsOptionReset disabled={disabled} onChange={onChange} option={option} />) :
     null;
 
   // Render proper type
   if (rendering.type === "enum") {
-    let warning = projectDefault && !rendering.options.includes(projectDefault) && option !== "default_url" ?
-      (<Fragment>
-        <span id={`${option}_warn`} className="text-danger">
-          <FontAwesomeIcon className="cursor-default" icon={faExclamationTriangle} color="danger" />
-        </span>
-        <UncontrolledTooltip key="tooltip" placement="top" target={`${option}_warn`}>
-          Unsupported value on RenkuLab.
-          { devAccess ? " Consider changing it." : "" }
-        </UncontrolledTooltip>
-      </Fragment>) :
-      null;
+    const warning = projectDefault && !rendering.options.includes(projectDefault) && option !== "default_url" ?
+      true :
+      false;
+    if (warning) {
+      info = (<FormText color="danger">
+        <FontAwesomeIcon className="cursor-default" icon={faExclamationTriangle} /> Unsupported value on RenkuLab.
+        { devAccess ? " Consider changing it." : "" }
+      </FormText>);
+    }
+    else if (rendering.options.length === 1) {
+      info = (<FormText>
+        <FontAwesomeIcon className="cursor-default" icon={faInfoCircle} /> RenkuLab does not
+        allow changing this.
+      </FormText>);
+    }
 
+    const separator = rendering.options.length === 1 ? null : (<br />);
     return (
       <FormGroup>
-        <Label className="me-2">{rendering.displayName} {info} {warning}</Label>
+        <Label className="me-2">{rendering.displayName}</Label>
+        {separator}
         <ServerOptionEnum {...rendering} selected={projectDefault} onChange={onChange}
-          warning={warning ? projectDefault : null} />
+          warning={warning ? projectDefault : null} disabled={disabled} />
         {reset}
+        {info ? (<Fragment><br />{info}</Fragment>) : null}
       </FormGroup>
     );
   }
   else if (rendering.type === "boolean") {
     return (
       <FormGroup>
-        <ServerOptionBoolean {...rendering} selected={projectDefault} onChange={onChange} />
+        <ServerOptionBoolean {...rendering} selected={projectDefault} onChange={onChange}
+          disabled={disabled} />
         {reset}
       </FormGroup>
     );
@@ -508,11 +531,169 @@ function SessionsElement(props) {
     return (
       <FormGroup>
         <Label className="me-2">{`${rendering.displayName}: ${projectDefault || globalDefault}`}</Label>
-        <ServerOptionRange step={step} {...rendering} selected={projectDefault} onChange={onChange} />
+        <br /><ServerOptionRange step={step} {...rendering} selected={projectDefault} disabled={disabled}
+          onChange={onChange} />
         {reset}
       </FormGroup>
     );
   }
+}
+
+function SessionConfigAdvanced(props) {
+  const { defaults, devAccess, disabled, options, setConfig } = props;
+  const imageAvailable = options.length && options.includes("image") ?
+    true :
+    false;
+
+  // Collapse unknown values by default when none are already assigned
+  const [showImage, setShowImage] = useState(false);
+  const toggleShowImage = () => setShowImage(!showImage);
+
+  const warningMessage = devAccess ?
+    (<Alert color="warning">
+      <FontAwesomeIcon className="cursor-default" icon={faExclamationTriangle} color="warning" /> Changing
+      the following settings may lead to corrupted sessions.
+    </Alert>) :
+    null;
+  return (
+    <div className="mb-2">
+      <Collapse isOpen={showImage}>
+        <h5>Advanced settings</h5>
+        {warningMessage}
+        <SessionPinnedImage
+          devAccess={devAccess}
+          disabled={disabled}
+          setConfig={setConfig}
+          value={imageAvailable ? defaults["image"] : null}
+        />
+      </Collapse>
+      <Button color="link" className="font-italic btn-sm" onClick={toggleShowImage}>
+        [{showImage ? "Hide " : "Show "} advanced settings]
+      </Button>
+    </div>
+  );
+}
+
+function SessionPinnedImage(props) {
+  const { devAccess, disabled, setConfig, value } = props;
+
+  const [modifyString, setModifyString] = useState(false);
+  const [newString, setNewString] = useState("");
+  //const [modifyReference, setModifyReference] = useState(false);
+
+  const toggleModifyString = () => {
+    if (!modifyString)
+      setNewString(value ? value : "");
+    // setModifyReference(false);
+    setModifyString(!modifyString);
+  };
+
+  // const toggleModifyReference = () => {
+  //   setModifyString(false);
+  //   setModifyReference(!modifyReference);
+  // };
+
+  const setValue = (value = null) => {
+    if (value !== "")
+      setConfig(`${NotebooksHelper.sessionConfigPrefix}image`, value, "Docker image");
+    // setConfig("image", value, "Docker image");
+  };
+
+  const imageTarget = value ?
+    value :
+    "none";
+
+  // TODO: alternative solution when implementing selection through branch and commit
+  // const modify = devAccess && !modifyString && !modifyReference ?
+  //   (<div>
+  //     <ButtonGroup>
+  //       <Button id="button_change_image_reference" size="sm" color="outline-primary"
+  //         onClick={toggleModifyReference}>
+  //         Select reference
+  //       </Button>
+  //       <UncontrolledTooltip placement="top" target="button_change_image_reference">
+  //         Pick a specific branch/commit from this project
+  //       </UncontrolledTooltip>
+  //       <Button id="button_change_image_manually" size="sm" color="outline-primary"
+  //         onClick={toggleModifyString}>
+  //         Modify manually
+  //       </Button>
+  //       <UncontrolledTooltip placement="top" target="button_change_image_manually">
+  //         Provide a valid docker image uri
+  //       </UncontrolledTooltip>
+  //     </ButtonGroup>
+  //   </div>) :
+  //   null;
+  const modify = null;
+
+  let image;
+  if (modifyString) {
+    image = (<Fragment>
+      <InputGroup disabled={disabled}>
+        <Input value={newString} onChange={e => setNewString(e.target.value)} />
+        <Button id="advanced_image_confirm" color="secondary" onClick={() => setValue(newString)}>
+          <FontAwesomeIcon icon={faCheck} />
+        </Button>
+        <Button id="advanced_image_back" color="outline-primary" onClick={toggleModifyString}
+          style={{ borderLeft: 0 }}>
+          <FontAwesomeIcon icon={faTrash} />
+        </Button>
+        <UncontrolledTooltip placement="top" target="advanced_image_back">
+          Discard changes
+        </UncontrolledTooltip>
+      </InputGroup>
+    </Fragment>);
+  }
+  // TODO: implement selection through branch and commit
+  // else if (modifyReference) {
+  //   image = "Not implemented yet";
+  // }
+  else if (value) {
+    const edit = devAccess ?
+      (<Fragment>
+        <Button id="advanced_image_edit" color="outline-primary" onClick={toggleModifyString}>
+          <FontAwesomeIcon icon={faEdit} />
+        </Button>
+        <UncontrolledTooltip placement="top" target="advanced_image_edit">
+          Edit value
+        </UncontrolledTooltip>
+        <Button id="advanced_image_reset" color="primary" onClick={() => setValue()}
+          style={{ borderLeft: 0 }}>
+          <FontAwesomeIcon icon={faTimesCircle} />
+        </Button>
+        <UncontrolledTooltip placement="top" target="advanced_image_reset">
+          Reset value
+        </UncontrolledTooltip>
+      </Fragment>) :
+      null;
+    image = (<InputGroup disabled={disabled}><Input disabled={true} value={value} /> {edit}</InputGroup>);
+  }
+  else {
+    const edit = devAccess ?
+      (<Fragment>
+        <Button disabled={disabled} id="advanced_image_add" color="outline-primary" size="sm"
+          className="border-0" onClick={toggleModifyString}>
+          <FontAwesomeIcon icon={faEdit} />
+        </Button>
+        <UncontrolledTooltip placement="top" target="advanced_image_add">
+          Set image
+        </UncontrolledTooltip>
+      </Fragment>) :
+      null;
+
+    image = (<Fragment>
+      <code className="me-2">{imageTarget}</code>
+      {edit}
+    </Fragment>);
+  }
+
+  return (
+    <FormGroup>
+      <Label className="me-2">Docker image:</Label>
+      {image}
+      {modify}
+    </FormGroup>
+  );
 }
 
 export { ProjectSettingsGeneral, ProjectSettingsNav, ProjectSettingsSessions };
