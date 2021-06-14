@@ -31,7 +31,7 @@ import {
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faCheck, faEdit, faExclamationTriangle, faInfoCircle, faTrash, faTimesCircle
+  faCheck, faEdit, faExclamationTriangle, faTrash, faTimesCircle
 } from "@fortawesome/free-solid-svg-icons";
 
 import { ACCESS_LEVELS } from "../../api-client";
@@ -296,7 +296,7 @@ function SessionConfigKnown(props) {
 
   const elementsList = availableOptions.known.map(option => {
     return (
-      <Col key={option} xs={12} lg={6}>
+      <Col key={option} xs={12} lg={6} xl={5}>
         <SessionsElement
           configPrefix={NotebooksHelper.sessionConfigPrefix}
           devAccess={devAccess}
@@ -408,7 +408,7 @@ function NewConfigStatus(props) {
     const text = value == null ?
       "unset." :
       (<span>updated to <code>{value}</code></span>);
-    return (<Alert color="info"><FontAwesomeIcon icon={faInfoCircle} /> &quot;{keyName}&quot; {text}</Alert>);
+    return (<Alert color="info">&quot;{keyName}&quot; {text}</Alert>);
   }
 
   return null;
@@ -443,6 +443,10 @@ function SessionsElement(props) {
     configPrefix, devAccess, disabled, globalDefault, option, projectDefault, rendering, setConfig
   } = props;
 
+  // temporary save the new value to highlight the correct option while updating
+  const [newValue, setNewValue] = useState(null);
+  const [newValueApplied, setNewValueApplied] = useState(false);
+
   // Compatibility layer to re-use the notebooks presentation components
   const onChange = (event, providedValue, reset = false) => {
     if (!devAccess)
@@ -468,6 +472,8 @@ function SessionsElement(props) {
         value = event.target.value.toString();
     }
 
+    setNewValue(value);
+    setNewValueApplied(true);
     const configKey = `${configPrefix}${option}`;
     setConfig(configKey, value, rendering.displayName);
   };
@@ -475,10 +481,7 @@ function SessionsElement(props) {
   // Provide default info when nothing is selected
   let info = projectDefault != null ?
     null :
-    (<FormText>
-      <FontAwesomeIcon className="cursor-default" icon={faInfoCircle} /> Default RenkuLab
-      value: <code>{rendering.default.toString()}</code>
-    </FormText>);
+    (<FormText>Default value: <code>{rendering.default.toString()}</code></FormText>);
 
   // Add reset button
   const reset = devAccess && projectDefault != null ?
@@ -497,19 +500,20 @@ function SessionsElement(props) {
       </FormText>);
     }
     else if (rendering.options.length === 1) {
-      info = (<FormText>
-        <FontAwesomeIcon className="cursor-default" icon={faInfoCircle} /> RenkuLab does not
-        allow changing this.
-      </FormText>);
+      info = (<FormText>RenkuLab does not allow changing this.</FormText>);
     }
+
+    const labelLoader = newValueApplied ?
+      (<Loader size="14" inline="true" />) :
+      null;
 
     const separator = rendering.options.length === 1 ? null : (<br />);
     return (
       <FormGroup>
-        <Label className="me-2">{rendering.displayName}</Label>
+        <Label className="me-2">{rendering.displayName} {labelLoader}</Label>
         {separator}
-        <ServerOptionEnum {...rendering} selected={projectDefault} onChange={onChange}
-          warning={warning ? projectDefault : null} disabled={disabled} />
+        <ServerOptionEnum {...rendering} selected={newValueApplied ? newValue : projectDefault}
+          onChange={onChange} warning={warning ? projectDefault : null} disabled={disabled} />
         {reset}
         {info ? (<Fragment><br />{info}</Fragment>) : null}
       </FormGroup>
@@ -518,8 +522,8 @@ function SessionsElement(props) {
   else if (rendering.type === "boolean") {
     return (
       <FormGroup>
-        <ServerOptionBoolean {...rendering} selected={projectDefault} onChange={onChange}
-          disabled={disabled} />
+        <ServerOptionBoolean {...rendering} selected={newValueApplied ? newValue : projectDefault}
+          onChange={onChange} disabled={disabled} />
         {reset}
       </FormGroup>
     );
@@ -531,8 +535,8 @@ function SessionsElement(props) {
     return (
       <FormGroup>
         <Label className="me-2">{`${rendering.displayName}: ${projectDefault || globalDefault}`}</Label>
-        <br /><ServerOptionRange step={step} {...rendering} selected={projectDefault} disabled={disabled}
-          onChange={onChange} />
+        <br /><ServerOptionRange step={step} {...rendering} selected={newValueApplied ? newValue : projectDefault}
+          disabled={disabled} onChange={onChange} />
         {reset}
       </FormGroup>
     );
