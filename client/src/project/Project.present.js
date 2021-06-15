@@ -999,20 +999,26 @@ function notebookWarning(userLogged, accessLevel, fork, postLoginUrl, externalUr
 class ProjectShowSession extends Component {
   render() {
     const {
-      client, model, user, visibility, toggleForkModal, location, externalUrl, launchNotebookUrl,
-      blockAnonymous, match
+      blockAnonymous, client, externalUrl, history, launchNotebookUrl, location, match, model,
+      notifications, toggleForkModal, user, visibility
     } = this.props;
     const warning = notebookWarning(
       user.logged, visibility.accessLevel, toggleForkModal, location.pathname, externalUrl
     );
 
     return (
-      <ShowSession standalone={false} client={client} model={model} location={location}
+      <ShowSession
+        blockAnonymous={blockAnonymous}
+        client={client}
+        history={history}
+        location={location}
         match={match}
         message={warning}
-        urlNewEnvironment={launchNotebookUrl}
-        blockAnonymous={blockAnonymous}
+        model={model}
+        notifications={notifications}
         scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path }}
+        standalone={false}
+        urlNewEnvironment={launchNotebookUrl}
       />
     );
   }
