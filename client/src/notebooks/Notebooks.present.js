@@ -144,15 +144,14 @@ function SessionInformation(props) {
   const resourceList = formattedResourceList(resources);
 
   // Create dropdown menu
-  const buttonClasses = { color: "secondary", className: "text-nowrap" };
-  const defaultAction = (<Button {...buttonClasses} onClick={stop} disabled={stopping}>Stop</Button>);
+  const defaultAction = (<Button color="primary" onClick={stop} disabled={stopping}>Stop</Button>);
   const openInNewTab = (
     <DropdownItem href={url} target="_blank" disabled={stopping}>
       <FontAwesomeIcon icon={faExternalLinkAlt} /> Open in new tab
     </DropdownItem>
   );
   const dropdownMenu = (
-    <ButtonWithMenu className="sessionsButton" size="sm" color="secondary" default={defaultAction}>
+    <ButtonWithMenu className="sessionsButton" color="primary" size="sm" default={defaultAction}>
       {openInNewTab}
     </ButtonWithMenu>
   );
