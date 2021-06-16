@@ -227,6 +227,7 @@ function ProjectSettingsSessions(props) {
   const { config, location, metadata, newConfig, options, setConfig, user } = props;
   const { accessLevel } = metadata;
   const devAccess = accessLevel > ACCESS_LEVELS.DEVELOPER ? true : false;
+  const disabled = !devAccess || newConfig.updating;
 
   // ? Anonymous users may have problem with notebook options, depending on the deployment
   if (!user.logged) {
@@ -259,19 +260,19 @@ function ProjectSettingsSessions(props) {
 
   const knownOptions = (
     <SessionConfigKnown availableOptions={projectData.options} defaults={projectData.defaults}
-      devAccess={devAccess} globalOptions={globalOptions} setConfig={setConfig} disabled={newConfig.updating}
+      devAccess={devAccess} globalOptions={globalOptions} setConfig={setConfig} disabled={disabled}
     />
   );
 
   const advancedOptions = (
     <SessionConfigAdvanced devAccess={devAccess} defaults={projectData.defaults.project}
-      options={projectData.options.unknown} setConfig={setConfig} disabled={newConfig.updating}
+      options={projectData.options.unknown} setConfig={setConfig} disabled={disabled}
     />
   );
 
   const unknownOptions = (
     <SessionConfigUnknown devAccess={devAccess} defaults={projectData.defaults.project}
-      options={projectData.options.unknown} setConfig={setConfig} disabled={newConfig.updating}
+      options={projectData.options.unknown} setConfig={setConfig} disabled={disabled}
     />
   );
 
@@ -387,28 +388,15 @@ function SessionConfigError(props) {
 }
 
 function NewConfigStatus(props) {
-  const { error, keyName, updated, updating, value } = props;
+  const { error, keyName } = props;
 
-  if (updating) {
-    return (
-      <Alert color="info">
-        <span>Updating {keyName}, please wait... <Loader size="14" inline="true" /></span>
-      </Alert>
-    );
-  }
-  else if (error) {
+  if (error) {
     return (
       <Alert color="danger">
         <FontAwesomeIcon icon={faExclamationTriangle} /> Error occurred
         while updating &quot;{keyName}&quot;: {error}
       </Alert>
     );
-  }
-  else if (updated) {
-    const text = value == null ?
-      "unset." :
-      (<span>updated to <code>{value}</code></span>);
-    return (<Alert color="info">&quot;{keyName}&quot; {text}</Alert>);
   }
 
   return null;
@@ -555,8 +543,11 @@ function SessionConfigAdvanced(props) {
 
   const warningMessage = devAccess ?
     (<Alert color="warning">
-      <FontAwesomeIcon className="cursor-default" icon={faExclamationTriangle} color="warning" /> Changing
-      the following settings may lead to corrupted sessions.
+      <FontAwesomeIcon className="cursor-default" icon={faExclamationTriangle} color="warning" /> Fixing
+      an image can yield improvements, but it can also lead to sessions not working in the expected
+      way. <a href="https://renku.readthedocs.io/en/latest/user/interactive_customizing.html">
+        Please consult the documentation
+      </a> before changing this setting.
     </Alert>) :
     null;
   return (
