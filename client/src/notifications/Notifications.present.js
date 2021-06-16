@@ -78,7 +78,9 @@ class NotificationToast extends Component {
         markRead={markRead} closeToast={closeToast} icon={true} childClass={"link-" + getColorFromLevel(level)} />
     );
     const notificationsLink = longDesc ?
-      (<Link to="/notifications" onClick={() => { if (closeToast) closeToast(); }}>[more info]</Link>) :
+      (<Fragment>
+        <br /><Link to="/notifications" onClick={() => { if (closeToast) closeToast(); }}>[more info]</Link>
+      </Fragment>) :
       null;
 
     return (<Fragment>
@@ -388,10 +390,10 @@ class NotificationPageItem extends Component {
     return <div className={className}>
       <NotificationIcon className="color p-0 m-2 cursor-default" level={level}/>
       <Col className="d-flex align-items-start flex-column col-9 overflow-hidden">
-        <div className="title d-inline-block text-truncate">
+        <div className="title d-inline-block">
           {topic}  {linkButton}
         </div>
-        <div className="description text-truncate text-rk-text">
+        <div className="text-rk-text">
           <span>{desc}</span>
           <NotificationPageItemDetails text={longDesc} />
         </div>
@@ -414,6 +416,7 @@ function NotificationPageItemDetails(props) {
     return null;
   return (
     <Fragment>
+      <br />
       <span onClick={toggleVisibility} className="link-primary ms-1">
         [{visible ? "less" : "more"} info]
       </span>

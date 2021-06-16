@@ -76,7 +76,7 @@ function formattedResourceList(resources) {
 
 // * Jupyter Session code * //
 function ShowSession(props) {
-  const { handlers, notebook } = props;
+  const { filters, handlers, notebook } = props;
 
   const [tab, setTab] = useState(SESSION_TABS.session);
 
@@ -94,14 +94,19 @@ function ShowSession(props) {
   else if (tab === SESSION_TABS.docs)
     widthStyle = "w-100";
 
+  const urlList = Url.get(Url.pages.project.session, {
+    namespace: filters.namespace,
+    path: filters.project,
+  });
+
   // Always add all sub-components and hide them one by one to preserve the iframe navigation where needed
   return (
     <div className="bg-white">
-      <SessionInformation notebook={notebook} />
+      <SessionInformation notebook={notebook} stopNotebook={handlers.stopNotebook} urlList={urlList} />
       <div className="d-lg-flex">
         <SessionNavbar fetchLogs={fetchLogs} setTab={setTab} tab={tab} />
         <div className={`border sessions-iframe-border ${widthStyle}`}>
-          <SessionJupyter {...props} tab={tab} />
+          <SessionJupyter {...props} tab={tab} urlList={urlList} />
           <SessionLogs {...props} tab={tab} fetchLogs={fetchLogs} />
           <SessionDocs {...props} tab={tab} />
         </div>
@@ -111,7 +116,18 @@ function ShowSession(props) {
 }
 
 function SessionInformation(props) {
-  const { notebook } = props;
+  const { notebook, stopNotebook, urlList } = props;
+
+  const [stopping, setStopping] = useState(false);
+
+  const stop = async () => {
+    setStopping(true);
+    // ? no need to handle the error here since we use the notifications at container level
+    const success = await stopNotebook(notebook.data.name, urlList);
+    if (success !== false)
+      return;
+    setStopping(false);
+  };
 
   // Unavailable session, no information
   if (!notebook.available)
@@ -126,6 +142,19 @@ function SessionInformation(props) {
     commit: `${annotations["repository"]}/tree/${annotations["commit-sha"]}`
   };
   const resourceList = formattedResourceList(resources);
+
+  // Create dropdown menu
+  const defaultAction = (<Button color="primary" onClick={stop} disabled={stopping}>Stop</Button>);
+  const openInNewTab = (
+    <DropdownItem href={url} target="_blank" disabled={stopping}>
+      <FontAwesomeIcon icon={faExternalLinkAlt} /> Open in new tab
+    </DropdownItem>
+  );
+  const dropdownMenu = (
+    <ButtonWithMenu className="sessionsButton" color="primary" size="sm" default={defaultAction}>
+      {openInNewTab}
+    </ButtonWithMenu>
+  );
 
   return (
     <div className="d-flex flex-wrap">
@@ -147,8 +176,8 @@ function SessionInformation(props) {
         <span className="fw-bold">Running since: </span>
         <TimeCaption noCaption={true} endPunctuation=" " time={notebook.data.started} />
       </div>
-      <div className="p-2 p-lg-3 text-nowrap">
-        <ExternalLink url={url} title="Open in new tab" role="text" showLinkIcon={true} />
+      <div className="p-1 p-lg-2 m-auto me-1 me-lg-2">
+        {dropdownMenu}
       </div>
     </div>
   );
@@ -265,7 +294,7 @@ function SessionDocs(props) {
 }
 
 function SessionJupyter(props) {
-  const { filters, notebook, tab } = props;
+  const { filters, notebook, tab, urlList } = props;
 
   const invisible = tab !== SESSION_TABS.session ?
     true :
@@ -299,10 +328,7 @@ function SessionJupyter(props) {
       namespace: filters.namespace,
       path: filters.project,
     });
-    const urlList = Url.get(Url.pages.project.session, {
-      namespace: filters.namespace,
-      path: filters.project,
-    });
+
     content = (
       <div className="p-2 p-lg-3 text-nowrap">
         <p className="mt-2">The session you are trying to open is not available.</p>
@@ -313,7 +339,7 @@ function SessionJupyter(props) {
             <Link className="btn btn-primary btn-sm" to={urlNew}>start a new session</Link>
             {" "}or{" "}
             <Link className="btn btn-primary btn-sm" to={urlList}>check the running sessions</Link>
-            {" "}.
+            {" "}
           </p>
         </Alert>
       </div>

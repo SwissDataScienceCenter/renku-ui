@@ -38,7 +38,9 @@ import { ProjectCoordinator } from "../project";
  * @param {Object} scope - object containing filtering parameters
  * @param {string} scope.namespace - full path of the reference namespace
  * @param {string} scope.project - path of the reference project
+ * @param {Object} notifications - Notifications object
  * @param {Object} [location] - react location object
+ * @param {Object} [history] - react history object
  */
 class ShowSession extends Component {
   constructor(props) {
@@ -47,6 +49,7 @@ class ShowSession extends Component {
     this.userModel = props.model.subModel("user");
     this.coordinator = new NotebooksCoordinator(props.client, this.model, this.userModel);
     this.coordinator.reset();
+    this.notifications = props.notifications;
     this.target = props.match.params.server;
 
     if (props.scope)
@@ -67,8 +70,21 @@ class ShowSession extends Component {
     this.coordinator.stopNotebookPolling();
   }
 
-  stopNotebook(serverName, force) {
-    this.coordinator.stopNotebook(serverName, force);
+  async stopNotebook(serverName, redirectLocation = null) {
+    try {
+      await this.coordinator.stopNotebook(serverName, false);
+      // redirect immediately
+      if (this.props.history && redirectLocation)
+        this.props.history.push(redirectLocation);
+    }
+    catch (error) {
+      // add notification
+      this.notifications.addError(
+        this.notifications.Topics.ENVIRONMENT_START,
+        "Unable to stop the current session.", null, null, null,
+        `Error message: "${error.message}"`);
+      return false;
+    }
   }
 
   async fetchLogs(serverName, full = false) {
