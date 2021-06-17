@@ -1,5 +1,32 @@
 # Changes
 
+## [1.0.0-beta1](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.11...1.0.0-beta1) (2021-06-17)
+
+The first beta, focusing on the new look and feel for RenkuLab.
+
+### Features
+
+**sessions**
+
+* switch to iframe-based sessions ([#1394](https://github.com/SwissDataScienceCenter/renku-ui/issues/1394), [#1370](https://github.com/SwissDataScienceCenter/renku-ui/issues/1370), [#1344](https://github.com/SwissDataScienceCenter/renku-ui/issues/1344), [#1220](https://github.com/SwissDataScienceCenter/renku-ui/issues/1220), [#1291](https://github.com/SwissDataScienceCenter/renku-ui/issues/1291), [#1318](https://github.com/SwissDataScienceCenter/renku-ui/issues/1318))
+* support editing project defaults for sessions ([#1114](https://github.com/SwissDataScienceCenter/renku-ui/issues/1114), [#1386](https://github.com/SwissDataScienceCenter/renku-ui/issues/1386))
+
+**design**
+
+* implement new look and feel for UI ([#1372](https://github.com/SwissDataScienceCenter/renku-ui/issues/1372), [#1327](https://github.com/SwissDataScienceCenter/renku-ui/issues/1327), [#1254](https://github.com/SwissDataScienceCenter/renku-ui/issues/1254), [#1232](https://github.com/SwissDataScienceCenter/renku-ui/issues/1232), [#1262](https://github.com/SwissDataScienceCenter/renku-ui/issues/1262)   [#1335](https://github.com/SwissDataScienceCenter/renku-ui/issues/1335), [#1287](https://github.com/SwissDataScienceCenter/renku-ui/issues/1287), [#1268](https://github.com/SwissDataScienceCenter/renku-ui/issues/1268), [#1360](https://github.com/SwissDataScienceCenter/renku-ui/issues/1360), [#1327](https://github.com/SwissDataScienceCenter/renku-ui/issues/1327), [#1319](https://github.com/SwissDataScienceCenter/renku-ui/issues/1319), [#1315](https://github.com/SwissDataScienceCenter/renku-ui/issues/1315), [#1303](https://github.com/SwissDataScienceCenter/renku-ui/issues/1303), [#1285](https://github.com/SwissDataScienceCenter/renku-ui/issues/1285), [#1316](https://github.com/SwissDataScienceCenter/renku-ui/issues/1316), [#1286](https://github.com/SwissDataScienceCenter/renku-ui/issues/1286), [#1281](https://github.com/SwissDataScienceCenter/renku-ui/issues/1281))
+
+**misc**
+
+* handle non blocking errors on fork ([#1351](https://github.com/SwissDataScienceCenter/renku-ui/issues/1351), [#1341](https://github.com/SwissDataScienceCenter/renku-ui/issues/1341))
+* show lineage on folders ([#1356](https://github.com/SwissDataScienceCenter/renku-ui/issues/1356), [#1342](https://github.com/SwissDataScienceCenter/renku-ui/issues/1342))
+* support svg preview and fix image path ([#1353](https://github.com/SwissDataScienceCenter/renku-ui/issues/1353), [#1339](https://github.com/SwissDataScienceCenter/renku-ui/issues/1339))
+
+### Bug Fixes
+
+* adjust GitLab forks links ([#1368](https://github.com/SwissDataScienceCenter/renku-ui/issues/1368))
+* handle namespaces that start with numbers ([#1359](https://github.com/SwissDataScienceCenter/renku-ui/issues/1359), [#1257](https://github.com/SwissDataScienceCenter/renku-ui/issues/1257))
+* handle markdown in GitLab descriptions ([#1354](https://github.com/SwissDataScienceCenter/renku-ui/issues/1354), [#1346](https://github.com/SwissDataScienceCenter/renku-ui/issues/1346))
+
 ## [0.11.11](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.10...0.11.11) (2021-04-22)
 
 ### Bug Fixes
