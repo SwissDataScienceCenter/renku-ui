@@ -5,7 +5,6 @@
 ## Global variables
 ## Shared values/secrets
 global:
-
   renku:
     ## Domain name for the deployed instance of renku
     domain: example.local
@@ -17,7 +16,7 @@ replicaCount: 1
 
 image:
   repository: renku/renku-ui
-  tag: 'latest'
+  tag: "latest"
   pullPolicy: IfNotPresent
 
   ## Optionally specify an array of imagePullSecrets.
@@ -34,7 +33,8 @@ service:
 ingress:
   enabled: false
 
-resources: {}
+resources:
+  {}
   # We usually recommend not to specify default resources and to leave this as a conscious
   # choice for the user. This also increases chances charts run on environments with little
   # resources, such as Minikube. If you do want to specify resources, uncomment the following
@@ -82,8 +82,8 @@ maintenance: false
 
 sentry:
   enabled: false
-  url: ''
-  namespace: ''
+  url: ""
+  namespace: ""
 
 # If you want to enable the privacy page, please create also a configMap and set its name in the
 # privacy.page.configMapName value. As a reference, you can use the sample configMap generated when
@@ -108,7 +108,7 @@ privacy:
       buttonWrapperClasses: mt-2
 ## If you maintain a statuspage.io page for the status of your RenkuLab instance, put the id for it here.
 statuspage:
-  id: ''
+  id: ""
 homepage:
   custom:
     # If you want to enable a custom content on the homepage, you can enable it and provide content here
@@ -117,7 +117,7 @@ homepage:
       contentMd: |
         # Welcome to RenkuLab
       backgroundImage:
-        url: ''
+        url: ""
   # The default is to show the tutorial from the docs, but can also link to an
   # internal project
   tutorialLink: https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html
@@ -127,4 +127,4 @@ canary:
   enabled: true
   image:
     repository: renku/renku-ui
-    tag: "0.11.11-n045.h8e3df79"
+    tag: "1.0.0-beta1"
