@@ -535,6 +535,25 @@ class ProjectCoordinator {
     });
     return commits;
   }
+
+  async fetchProjectConfig(repositoryUrl) {
+    let configObject = {
+      error: { $set: {} },
+      fetching: true,
+    };
+    this.model.setObject({ config: configObject });
+    const response = await this.client.getProjectConfig(repositoryUrl);
+    configObject.fetching = false;
+    configObject.fetched = new Date();
+    if (response.data && response.data.error) {
+      configObject.error = response.data.error;
+      this.model.setObject({ config: configObject });
+      return response.data.error;
+    }
+    configObject.data = { $set: response.data.result };
+    this.model.setObject({ config: configObject });
+    return response.data.result;
+  }
 }
 
 export { ProjectModel, GraphIndexingStatus, ProjectCoordinator, MigrationStatus };

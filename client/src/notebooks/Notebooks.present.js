@@ -1617,8 +1617,8 @@ class StartNotebookOptionsRunning extends Component {
  */
 function mergeEnumOptions(globalOptions, projectOptions, key) {
   let options = globalOptions[key].options;
-  // defaultUrl can extend the existing options, but not the other ones
-  if (key === "defaultUrl"
+  // default_url can extend the existing options, but not the other ones
+  if (key === "default_url"
     && Object.keys(projectOptions).indexOf(key) >= 0
     && globalOptions[key].options.indexOf(projectOptions[key]) === -1)
     options = [...globalOptions[key].options, projectOptions[key]];
@@ -1660,22 +1660,23 @@ class StartNotebookServerOptions extends Component {
           case "enum": {
             const options = mergeEnumOptions(globalOptions, projectOptions, key);
             serverOption["options"] = options;
-            return <FormGroup key={key} className={serverOption.options.length === 1 ? "mb-0" : ""}>
-              <Label>{serverOption.displayName}</Label>
-              <ServerOptionEnum {...serverOption} onChange={onChange} />
+            const separator = options.length === 1 ? null : (<br />);
+            return <FormGroup key={key}>
+              <Label className="me-2">{serverOption.displayName}</Label>
+              {separator}<ServerOptionEnum {...serverOption} onChange={onChange} />
               {warning}
             </FormGroup>;
           }
           case "int":
             return <FormGroup key={key}>
-              <Label>{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
-              <ServerOptionRange step={1} {...serverOption} onChange={onChange} />
+              <Label className="me-2">{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
+              <br /><ServerOptionRange step={1} {...serverOption} onChange={onChange} />
             </FormGroup>;
 
           case "float":
             return <FormGroup key={key}>
-              <Label>{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
-              <ServerOptionRange step={0.01} {...serverOption} onChange={onChange} />
+              <Label className="me-2">{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
+              <br /><ServerOptionRange step={0.01} {...serverOption} onChange={onChange} />
             </FormGroup>;
 
           case "boolean":
@@ -1717,39 +1718,43 @@ class StartNotebookServerOptions extends Component {
 
 class ServerOptionEnum extends Component {
   render() {
-    const { selected } = this.props;
+    const { disabled, selected } = this.props;
     let { options } = this.props;
 
     if (selected && options && options.length && !options.includes(selected))
       options = options.concat(selected);
     if (options.length === 1)
-      return (<label>: {this.props.selected}</label>);
+      return (<Badge color="primary">{this.props.options[0]}</Badge>);
 
     return (
-      <div>
-        <ButtonGroup>
-          {options.map((optionName, i) => {
-            const color = optionName === selected ? "primary" : "outline-primary";
-            return (
-              <Button
-                color={color}
-                key={optionName}
-                onClick={event => this.props.onChange(event, optionName)}>{optionName}</Button>
-            );
-          })}
-        </ButtonGroup>
-      </div>
+      <ButtonGroup>
+        {options.map((optionName, i) => {
+          let color = "outline-primary";
+          if (optionName === selected) {
+            color = this.props.warning != null && this.props.warning === optionName ?
+              "danger" :
+              "primary";
+          }
+          const size = this.props.size ? this.props.size : null;
+          return (
+            <Button
+              key={optionName} color={color} size={size} disabled={disabled}
+              onClick={event => this.props.onChange(event, optionName)}>{optionName}</Button>
+          );
+        })}
+      </ButtonGroup>
     );
   }
 }
 
 class ServerOptionBoolean extends Component {
   render() {
+    const { disabled } = this.props;
     // The double negation solves an annoying problem happening when checked=undefined
     // https://stackoverflow.com/a/39709700/1303090
     const selected = !!this.props.selected;
-    return (<div className="form-check form-switch">
-      <Input type="switch" id={this.props.id} label={this.props.displayName}
+    return (<div className="form-check form-switch d-inline-block">
+      <Input type="switch" id={this.props.id} label={this.props.displayName} disabled={disabled}
         checked={selected} onChange={this.props.onChange} className="form-check-input rounded-pill"/>
       <Label check htmlFor={this.props.id}>{this.props.displayName}</Label>
     </div>
@@ -1759,6 +1764,7 @@ class ServerOptionBoolean extends Component {
 
 class ServerOptionRange extends Component {
   render() {
+    const { disabled } = this.props;
     return (
       <Input
         type="range"
@@ -1768,6 +1774,7 @@ class ServerOptionRange extends Component {
         min={this.props.range[0]}
         max={this.props.range[1]}
         step={this.props.step}
+        disabled={disabled}
       />
     );
   }
@@ -1932,4 +1939,7 @@ class CheckNotebookIcon extends Component {
   }
 }
 
-export { CheckNotebookIcon, Notebooks, NotebooksDisabled, ShowSession, StartNotebookServer, mergeEnumOptions };
+export {
+  CheckNotebookIcon, Notebooks, NotebooksDisabled, ServerOptionBoolean, ServerOptionEnum, ServerOptionRange,
+  ShowSession, StartNotebookServer, mergeEnumOptions
+};

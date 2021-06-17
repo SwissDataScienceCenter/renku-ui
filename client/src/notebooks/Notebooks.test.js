@@ -38,6 +38,32 @@ import { testClient as client } from "../api-client";
 
 const model = new StateModel(globalSchema);
 
+const simplifiedGlobalOptions = {
+  default_url: {
+    default: "/lab",
+    options: ["/lab", "/rstudio"],
+    type: "enum"
+  },
+  cpu_request: {
+    default: 1,
+    options: [0.5, 1, 2],
+    type: "enum"
+  },
+  mem_request: {
+    default: "1G",
+    options: ["1G", "2G"],
+    type: "enum"
+  },
+  lfs_auto_fetch: {
+    default: false,
+    type: "boolean"
+  },
+  gpu_request: {
+    default: 0,
+    type: "int"
+  }
+};
+
 describe("notebook status", () => {
   const servers = [{
     "status": {
@@ -103,7 +129,7 @@ describe("parse project level environment options", () => {
   it("valid content", () => {
     const content = `
       [interactive]
-      default_url = /tree
+      defaultUrl = /tree
       mem_request = 2
       lfs_auto_fetch = True
     `;
@@ -113,11 +139,11 @@ describe("parse project level environment options", () => {
     expect(Object.keys(parsedContent).length).toBe(3);
     expect(Object.keys(parsedContent)).toContain("lfs_auto_fetch");
     expect(Object.keys(parsedContent)).toContain("mem_request");
-    expect(Object.keys(parsedContent)).not.toContain("default_url");
-    expect(Object.keys(parsedContent)).toContain("defaultUrl");
+    expect(Object.keys(parsedContent)).toContain("default_url");
+    expect(Object.keys(parsedContent)).not.toContain("defaultUrl");
 
     // check values
-    expect(parsedContent.defaultUrl).toBe("/tree");
+    expect(parsedContent.default_url).toBe("/tree");
     expect(parsedContent.mem_request).not.toBe("2");
     expect(parsedContent.mem_request).toBe(2);
     expect(parsedContent.lfs_auto_fetch).not.toBe("True");
@@ -148,33 +174,12 @@ describe("parse project level environment options", () => {
 
 describe("verify project level options validity according to deployment global options", () => {
   it("valid options", () => {
-    const simplifiedGlobalOptions = {
-      defaultUrl: {
-        default: "/lab",
-        options: ["/lab", "/rstudio"],
-        type: "enum"
-      },
-      cpu_request: {
-        default: 1,
-        options: [0.5, 1, 2],
-        type: "enum"
-      },
-      lfs_auto_fetch: {
-        default: false,
-        type: "boolean"
-      },
-      gpu_request: {
-        default: 0,
-        type: "int"
-      }
-    };
-
     const testValues = [
-      { option: "defaultUrl", value: "/lab", result: true },
-      { option: "defaultUrl", value: "anyString", result: true },
-      { option: "defaultUrl", value: "", result: true },
-      { option: "defaultUrl", value: 12345, result: false },
-      { option: "defaultUrl", value: true, result: false },
+      { option: "default_url", value: "/lab", result: true },
+      { option: "default_url", value: "anyString", result: true },
+      { option: "default_url", value: "", result: true },
+      { option: "default_url", value: 12345, result: false },
+      { option: "default_url", value: true, result: false },
       { option: "cpu_request", value: 1, result: true },
       { option: "cpu_request", value: 2, result: true },
       { option: "cpu_request", value: 10, result: false },
@@ -229,32 +234,6 @@ describe("verify project settings validity", () => {
 
 describe("verify project/global options merging", () => {
   it("merges options", () => {
-    const simplifiedGlobalOptions = {
-      defaultUrl: {
-        default: "/lab",
-        options: ["/lab", "/rstudio"],
-        type: "enum"
-      },
-      cpu_request: {
-        default: 1,
-        options: [0.5, 1, 2],
-        type: "enum"
-      },
-      mem_request: {
-        default: "1G",
-        options: ["1G", "2G"],
-        type: "enum"
-      },
-      lfs_auto_fetch: {
-        default: false,
-        type: "boolean"
-      },
-      gpu_request: {
-        default: 0,
-        type: "int"
-      }
-    };
-
     const projectOptionsIni = `
       [interactive]
       default_url = /tree
@@ -265,7 +244,7 @@ describe("verify project/global options merging", () => {
     const projectOptions = NotebooksHelper.parseProjectOptions(projectOptionsIni);
 
     const testValues = [
-      { option: "defaultUrl", value: ["/lab", "/rstudio", "/tree"] },
+      { option: "default_url", value: ["/lab", "/rstudio", "/tree"] },
       { option: "cpu_request", value: [0.5, 1, 2] },
       { option: "mem_request", value: ["1G", "2G"] },
     ];
@@ -274,6 +253,52 @@ describe("verify project/global options merging", () => {
       const result = mergeEnumOptions(simplifiedGlobalOptions, projectOptions, v["option"]);
       expect(result).toEqual(v.value);
     });
+  });
+});
+
+describe("verify defaults", () => {
+  it("get defaults", () => {
+    const projectOptions = {
+      "config": {
+        "interactive.default_url": "/lab",
+        "interactive.fake": "test value",
+        "interactive.mem_request": "2G",
+        "interactive.cpu_request": "2",
+        "renku.lfs_threshold": "100 kb"
+      },
+      "default": {
+        "interactive.default_url": "/lab",
+        "renku.lfs_threshold": "100 kb"
+      }
+    };
+    const projectDefaults = NotebooksHelper.getProjectDefault(simplifiedGlobalOptions, projectOptions);
+
+    // Correct overwriting
+    expect(projectDefaults.defaults.global["mem_request"])
+      .not.toBe(projectOptions.config["interactive.mem_request"]);
+    expect(projectDefaults.defaults.global["mem_request"])
+      .toBe(simplifiedGlobalOptions["mem_request"].default);
+    expect(projectDefaults.defaults.project["mem_request"])
+      .toBe(projectOptions.config["interactive.mem_request"]);
+
+    expect(projectDefaults.defaults.global["default_url"])
+      .toBe(projectDefaults.defaults.project["default_url"]);
+    expect(projectDefaults.defaults.global["default_url"])
+      .toBe(simplifiedGlobalOptions["default_url"].default);
+    expect(projectDefaults.defaults.project["default_url"])
+      .toBe(projectOptions.config["interactive.default_url"]);
+
+    // No leaks of project-only values to default values
+    expect(projectDefaults.defaults.project).toHaveProperty("fake");
+    expect(projectDefaults.defaults.global).not.toHaveProperty("fake");
+
+    // No leaks of non-sessions options
+    expect(projectDefaults.defaults.project).not.toHaveProperty("renku.lfs_threshold");
+    expect(projectDefaults.defaults.project).not.toHaveProperty("lfs_threshold");
+
+    // No leaks of prefix
+    expect(projectDefaults.defaults.project).toHaveProperty("default_url");
+    expect(projectDefaults.defaults.project).not.toHaveProperty("interactive.default_url");
   });
 });
 

@@ -388,6 +388,45 @@ function addProjectMethods(client) {
     return Promise.resolve(datasetsPromise)
       .then(datasetsContent => Promise.all(datasetsContent));
   };
+
+  /**
+   * Get project config file data
+   * @see {@link https://github.com/SwissDataScienceCenter/renku-python/blob/master/renku/service/views/config.py}
+   * @param {string} projectRepositoryUrl - external repository full url.
+   */
+  client.getProjectConfig = async (projectRepositoryUrl) => {
+    const url = `${client.baseUrl}/renku/config.show`;
+    const queryParams = { git_url: projectRepositoryUrl };
+    let headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    headers.append("X-Requested-With", "XMLHttpRequest");
+
+    return client.clientFetch(url, {
+      method: "GET",
+      headers,
+      queryParams
+    });
+  };
+
+  /**
+   * Set project config data
+   * @see {@link https://github.com/SwissDataScienceCenter/renku-python/blob/master/renku/service/views/config.py}
+   * @param {string} projectRepositoryUrl - external repository full url.
+   * @param {object} config - config object in the form {key: value}. A null value removes the key.
+   */
+  client.setProjectConfig = async (projectRepositoryUrl, config) => {
+    const url = `${client.baseUrl}/renku/config.set`;
+    const body = { git_url: projectRepositoryUrl, config };
+    let headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    headers.append("X-Requested-With", "XMLHttpRequest");
+
+    return client.clientFetch(url, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(body)
+    });
+  };
 }
 
 

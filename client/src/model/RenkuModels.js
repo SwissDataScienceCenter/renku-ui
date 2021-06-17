@@ -314,6 +314,17 @@ const projectGlobalSchema = new Schema({
       branch: { [Prop.INITIAL]: { name: "master" }, [Prop.MANDATORY]: true },
       commit: { [Prop.INITIAL]: { id: "latest" }, [Prop.MANDATORY]: true },
     })
+  },
+  config: {
+    [Prop.SCHEMA]: new Schema({
+      data: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
+      error: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
+      fetched: { [Prop.INITIAL]: null },
+      fetching: { [Prop.INITIAL]: false },
+
+      initial: { [Prop.INITIAL]: {} },
+      input: { [Prop.INITIAL]: {} }
+    })
   }
 });
 

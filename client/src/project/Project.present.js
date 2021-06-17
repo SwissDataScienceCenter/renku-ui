@@ -27,25 +27,24 @@
 import React, { Component, Fragment, useState, useEffect } from "react";
 import { Link, NavLink, Route, Switch } from "react-router-dom";
 import {
-  Alert, Button, ButtonGroup, Card, CardBody, CardHeader, Col, DropdownItem, Form, FormGroup,
-  FormText, Input, Label, Row, Table, Nav, NavItem, UncontrolledTooltip, Modal, Badge,
-  NavLink as ReactNavLink
+  Alert, Badge, Button, ButtonGroup, Card, CardBody, CardHeader, Col, DropdownItem,
+  Row, Modal, Nav, NavLink as ReactNavLink, NavItem, UncontrolledTooltip
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
 import {
   faCodeBranch, faExclamationTriangle, faUserFriends, faGlobe, faInfoCircle, faLock, faSearch,
-  faStar as faStarSolid,
+  faStar as faStarSolid
 } from "@fortawesome/free-solid-svg-icons";
+import qs from "query-string";
 
 import {
-  Clipboard, ExternalLink, Loader, RenkuNavLink, TimeCaption,
-  ButtonWithMenu, InfoAlert, GoBackButton, RenkuMarkdown,
+  ExternalLink, Loader, RenkuNavLink, TimeCaption, ButtonWithMenu, InfoAlert, GoBackButton, RenkuMarkdown
 } from "../utils/UIComponents";
 import { Url } from "../utils/url";
 import { SpecialPropVal } from "../model/Model";
-import { ProjectAvatarEdit, ProjectTags, ProjectTagList } from "./shared";
-import { ShowSession, Notebooks, StartNotebookServer } from "../notebooks";
+import { ProjectTagList } from "./shared";
+import { Notebooks, ShowSession, StartNotebookServer } from "../notebooks";
 import Issue from "../collaboration/issue/Issue";
 import {
   CollaborationList, collaborationListTypeMap, itemsStateMap
@@ -57,8 +56,7 @@ import ProjectVersionStatus from "./status/ProjectVersionStatus.present";
 import { NamespaceProjects } from "../namespace";
 import { ProjectOverviewCommits, ProjectOverviewStats } from "./overview";
 import { ForkProject } from "./new";
-import qs from "query-string";
-
+import { ProjectSettingsGeneral, ProjectSettingsNav, ProjectSettingsSessions } from "./settings";
 
 import "./Project.css";
 
@@ -486,15 +484,16 @@ class ProjectViewOverviewNav extends Component {
           <RenkuNavLink to={this.props.baseUrl} title="Description" />
         </NavItem>
         <NavItem>
-          <RenkuNavLink to={`${this.props.statsUrl}`} title="Stats" />
+          <RenkuNavLink to={this.props.statsUrl} title="Stats" />
         </NavItem>
         <NavItem>
-          <RenkuNavLink to={`${this.props.overviewCommitsUrl}`} title="Commits" />
+          <RenkuNavLink to={this.props.overviewCommitsUrl} title="Commits" />
         </NavItem>
         <NavItem>
-          <RenkuNavLink to={`${this.props.overviewStatusUrl}`} title="Status" />
+          <RenkuNavLink to={this.props.overviewStatusUrl} title="Status" />
         </NavItem>
-      </Nav>);
+      </Nav>
+    );
   }
 }
 
@@ -1081,164 +1080,30 @@ class ProjectStartNotebookServer extends Component {
   }
 }
 
-function RepositoryUrlRow(props) {
-  return (
-    <tr>
-      <th scope="row">{props.urlType}</th>
-      <td>{props.url}</td>
-      <td style={{ width: 1 }}><Clipboard clipboardText={props.url} /></td>
-    </tr>
-  );
-}
-
-class RepositoryUrls extends Component {
-  render() {
-    return (
-      <div>
-        <Label className="font-weight-bold">Repository URL</Label>
-        <Table size="sm">
-          <tbody>
-            <RepositoryUrlRow urlType="SSH" url={this.props.system.ssh_url} />
-            <RepositoryUrlRow urlType="HTTP" url={this.props.system.http_url} />
-          </tbody>
-        </Table>
-      </div>
-    );
-  }
-}
-
-function CommandRow(props) {
-  return (
-    <tr>
-      <th scope="row">{props.application}</th>
-      <td>
-        <code>{props.command}</code>
-      </td>
-      <td style={{ width: 1 }}><Clipboard clipboardText={props.command} /></td>
-    </tr>
-  );
-}
-
-function GitCloneCmd(props) {
-  const [cmdOpen, setCmdOpen] = useState(false);
-  const { externalUrl, projectPath } = props;
-  const gitClone = `git clone ${externalUrl}.git && cd ${projectPath} && git lfs install --local --force`;
-  const gitHooksInstall = "renku githooks install"; // eslint-disable-line
-  return (cmdOpen) ?
-    <div className="mt-3">
-      <p style={{ fontSize: "smaller" }} className="font-italic">
-        If the <b>renku</b> command is not available, you can clone a project using Git.
-      </p>
-      <Table style={{ fontSize: "smaller" }} size="sm" className="mb-0" borderless={true}>
-        <tbody>
-          <tr>
-            <th scope="row">Git<sup>*</sup></th>
-            <td>
-              <code>{gitClone}</code>
-              <div className="mt-2 mb-0">
-                If you want to work with the repo using renku, {" "}
-                you need to run the following after the <code>git clone</code> completes:
-              </div>
-            </td>
-            <td style={{ width: 1 }}><Clipboard clipboardText={gitClone} /></td>
-          </tr>
-          <tr>
-            <th scope="row"></th>
-            <td>
-              <code>{gitHooksInstall}</code>
-            </td>
-            <td style={{ width: 1 }}><Clipboard clipboardText={gitHooksInstall} /></td>
-          </tr>
-        </tbody>
-      </Table>
-      <Button style={{ fontSize: "smaller" }} color="link" onClick={() => setCmdOpen(false)}>
-        Hide git command
-      </Button>
-    </div> :
-    <Button color="link" style={{ fontSize: "smaller" }} className="font-italic"
-      onClick={() => setCmdOpen(true)}>
-      Do not have renku?
-    </Button>;
-}
-
-
-class RepositoryClone extends Component {
-  render() {
-    const { externalUrl } = this.props;
-    const renkuClone = `renku clone ${externalUrl}.git`;
-    return (
-      <div>
-        <Label className="font-weight-bold">Clone commands</Label>
-        <Table size="sm" className="mb-0">
-          <tbody>
-            <CommandRow application="Renku" command={renkuClone} />
-          </tbody>
-        </Table>
-        <GitCloneCmd externalUrl={externalUrl} projectPath={this.props.core.project_path} />
-      </div>
-    );
-  }
-}
-
-class ProjectDescription extends Component {
-  constructor(props) {
-    super(props);
-    this.state = ProjectDescription.getDerivedStateFromProps(props, {});
-    this.onValueChange = this.handleChange.bind(this);
-    this.onSubmit = this.handleSubmit.bind(this);
-  }
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    const update = { value: nextProps.core.description };
-    return { ...update, ...prevState };
-  }
-
-  handleChange(e) { this.setState({ value: e.target.value }); }
-
-  handleSubmit(e) { e.preventDefault(); this.props.onProjectDescriptionChange(this.state.value); }
-
-  render() {
-    const inputField = this.props.settingsReadOnly ?
-      <Input id="projectDescription" readOnly value={this.state.value} /> :
-      <Input id="projectDescription" onChange={this.onValueChange}
-        value={this.state.value === null ? "" : this.state.value} />;
-    let submit = (this.props.core.description !== this.state.value) ?
-      <Button className="mb-3 updateProjectSettings" color="primary">Update</Button> :
-      <span></span>;
-    return <Form onSubmit={this.onSubmit}>
-      <FormGroup>
-        <Label for="projectDescription">Project Description</Label>
-        {inputField}
-        <FormText>A short description for the project</FormText>
-      </FormGroup>
-      {submit}
-    </Form>;
-  }
-}
-
 function ProjectSettings(props) {
-  return <Col key="settings" xs={12}>
-    <Row>
-      <Col xs={12} lg={6}>
-        <ProjectTags
-          tag_list={props.system.tag_list}
-          onProjectTagsChange={props.onProjectTagsChange}
-          settingsReadOnly={props.settingsReadOnly} />
-        <ProjectDescription {...props} />
-      </Col>
-      <Col xs={12} lg={6}>
-        <RepositoryClone {...props} />
-        <RepositoryUrls {...props} />
-      </Col>
-    </Row>
-    <Row>
-      <Col xs={12} lg={6}>
-        <ProjectAvatarEdit externalUrl={props.externalUrl}
-          avatarUrl={props.core.avatar_url} onAvatarChange={props.onAvatarChange}
-          settingsReadOnly={props.settingsReadOnly} />
-      </Col>
-    </Row>
-  </Col>;
+  return (
+    <Col key="settings">
+      <Row>
+        <Col key="nav" sm={12} md={2}>
+          <ProjectSettingsNav {...props} />
+        </Col>
+        <Col key="content" sm={12} md={10}>
+          <Switch>
+            <Route exact path={props.settingsUrl}
+              render={renderProps => {
+                return <ProjectSettingsGeneral {...props} />;
+              }}
+            />
+            <Route exact path={props.settingsSessionsUrl}
+              render={renderProps => {
+                return <ProjectSettingsSessions {...props} />;
+              }}
+            />
+          </Switch>
+        </Col>
+      </Row>
+    </Col>
+  );
 }
 
 class ProjectViewNotFound extends Component {

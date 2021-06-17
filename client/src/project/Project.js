@@ -66,6 +66,7 @@ const subRoutes = {
   data: "files/data",
   workflows: "files/workflows",
   settings: "settings",
+  settingsSessions: "settings/sessions",
   environments: "environments",
   environmentNew: "environments/new",
   showSession: "environments/show/:server"
@@ -350,6 +351,7 @@ class View extends Component {
       dataUrl: `${filesUrl}/data`,
       workflowsUrl: `${filesUrl}/workflows`,
       settingsUrl: `${baseUrl}/settings`,
+      settingsSessionsUrl: `${baseUrl}/settings/sessions`,
       mrOverviewUrl: `${baseUrl}/pending`,
       mrUrl: `${baseUrl}/pending/:mrIid`,
       launchNotebookUrl: `${baseUrl}/environments/new`,
@@ -745,4 +747,4 @@ function withProjectMapped(MappingComponent, features = [], passProps = true) {
 
 
 export default { View };
-export { GraphIndexingStatus, splitProjectSubRoute, mapProjectFeatures, withProjectMapped, MigrationStatus };
+export { GraphIndexingStatus, MigrationStatus, mapProjectFeatures, splitProjectSubRoute, withProjectMapped };
