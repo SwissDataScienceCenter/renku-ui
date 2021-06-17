@@ -446,23 +446,27 @@ function SessionsElement(props) {
       value = null;
     }
     else if (providedValue != null) {
-      value = providedValue.toString();
+      value = providedValue;
     }
     else {
       const target = event.target.type.toLowerCase();
       if (target === "button")
-        value = event.target.textContent.toString();
+        value = event.target.textContent;
 
       else if (target === "checkbox")
-        value = event.target.checked.toString();
+        value = event.target.checked;
 
       else
-        value = event.target.value.toString();
+        value = event.target.value;
     }
 
     setNewValue(value);
     setNewValueApplied(true);
     const configKey = `${configPrefix}${option}`;
+    // ? stringify non null values to prevent API errors
+    value = value === null ?
+      value :
+      value.toString();
     setConfig(configKey, value, rendering.displayName);
   };
 
