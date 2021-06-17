@@ -33,6 +33,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck, faEdit, faExclamationTriangle, faTrash, faTimesCircle
 } from "@fortawesome/free-solid-svg-icons";
+import _ from "lodash/array";
 
 import { ACCESS_LEVELS } from "../../api-client";
 import { ProjectAvatarEdit, ProjectTags, } from "../shared";
@@ -292,26 +293,46 @@ function ProjectSettingsSessions(props) {
   );
 }
 
+function OptionCol({ option, devAccess, disabled, defaults, globalOptions, setConfig }) {
+  return <Col key={option} xs={12} md={5} lg={4}>
+    <SessionsElement
+      configPrefix={NotebooksHelper.sessionConfigPrefix}
+      devAccess={devAccess}
+      disabled={disabled}
+      globalDefault={defaults.global[option]}
+      option={option}
+      projectDefault={defaults.project[option]}
+      rendering={globalOptions[option]}
+      setConfig={setConfig}
+    />
+  </Col>;
+
+}
+
 function SessionConfigKnown(props) {
   const { availableOptions, defaults, devAccess, disabled, globalOptions, setConfig } = props;
+  const optionsRows = [];
+  let options = availableOptions.known;
+  if (options.includes("default_url")) {
+    const option = "default_url";
+    const row = <Row key="default_url">
+      <OptionCol option={option} defaults={defaults}
+        devAccess={devAccess} disabled={disabled}
+        globalOptions={globalOptions} setConfig={setConfig} />
+    </Row>;
+    optionsRows.push(row);
+  }
 
-  const elementsList = availableOptions.known.map(option => {
-    return (
-      <Col key={option} xs={12} lg={6} xl={5}>
-        <SessionsElement
-          configPrefix={NotebooksHelper.sessionConfigPrefix}
-          devAccess={devAccess}
-          disabled={disabled}
-          globalDefault={defaults.global[option]}
-          option={option}
-          projectDefault={defaults.project[option]}
-          rendering={globalOptions[option]}
-          setConfig={setConfig}
-        />
-      </Col>
-    );
+  options = options.filter(o => o !== "default_url");
+  let chunks = _.chunk(options, 2);
+  chunks.forEach((c, i) => {
+    const elements = c.map(option => <OptionCol key={option} option={option} defaults={defaults}
+      devAccess={devAccess} disabled={disabled}
+      globalOptions={globalOptions} setConfig={setConfig} />);
+    const row = <Row key={i}>{elements}</Row>;
+    optionsRows.push(row);
   });
-  return (<Row>{elementsList}</Row>);
+  return <Fragment>{optionsRows}</Fragment>;
 }
 
 function SessionConfigUnknown(props) {
@@ -473,7 +494,7 @@ function SessionsElement(props) {
   // Provide default info when nothing is selected
   let info = projectDefault != null ?
     null :
-    (<FormText>Default value: <code>{rendering.default.toString()}</code></FormText>);
+    (<FormText>Defaults to <b>{rendering.default.toString()}</b></FormText>);
 
   // Add reset button
   const reset = devAccess && projectDefault != null ?
@@ -492,7 +513,7 @@ function SessionsElement(props) {
       </FormText>);
     }
     else if (rendering.options.length === 1) {
-      info = (<FormText>RenkuLab does not allow changing this.</FormText>);
+      info = (<FormText>Cannot be changed on this server</FormText>);
     }
 
     const labelLoader = newValueApplied ?
