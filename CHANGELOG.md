@@ -1,5 +1,13 @@
 # Changes
 
+## [0.11.13](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.12...0.11.13) (2021-06-17)
+
+### Features
+
+* add banner advertising new version  ([#1373](https://github.com/SwissDataScienceCenter/renku-ui/issues/1373), [#1383](https://github.com/SwissDataScienceCenter/renku-ui/issues/1383))
+* enable canary deployment ([#1379](https://github.com/SwissDataScienceCenter/renku-ui/issues/1379))
+
+
 ## [0.11.12](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.11...0.11.12) (2021-06-01)
 
 ### Bug Fixes
