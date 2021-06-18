@@ -181,7 +181,7 @@ function projectPageUrlBuilder(subSection) {
  */
 function projectSessionUrlBuilder() {
   return (data) => {
-    return `/projects/${data.namespace}/${data.path}/environments/show/${data.server}`;
+    return `/projects/${data.namespace}/${data.path}/sessions/show/${data.server}`;
   };
 }
 
@@ -315,27 +315,27 @@ const Url = {
       ),
       session: {
         base: new UrlRule(
-          projectPageUrlBuilder("/environments"), ["namespace", "path"], null, [
-            "/projects/namespace/path/environments",
-            "/projects/group/subgroup/path/environments",
+          projectPageUrlBuilder("/sessions"), ["namespace", "path"], null, [
+            "/projects/namespace/path/sessions",
+            "/projects/group/subgroup/path/sessions",
           ]
         ),
         new: new UrlRule(
-          projectPageUrlBuilder("/environments/new"), ["namespace", "path"], null, [
-            "/projects/namespace/path/environments/new",
-            "/projects/group/subgroup/path/environments/new",
+          projectPageUrlBuilder("/sessions/new"), ["namespace", "path"], null, [
+            "/projects/namespace/path/sessions/new",
+            "/projects/group/subgroup/path/sessions/new",
           ]
         ),
         show: new UrlRule(
           projectSessionUrlBuilder(), ["namespace", "path", "server"], null, [
-            "/projects/namespace/path/environments/show/server-id",
-            "/projects/group/subgroup/path/environments/show/server-id",
+            "/projects/namespace/path/sessions/show/server-id",
+            "/projects/group/subgroup/path/sessions/show/server-id",
           ]
         )
       }
     },
     sessions: {
-      base: "/environments",
+      base: "/sessions",
     }
   },
 

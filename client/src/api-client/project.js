@@ -231,7 +231,7 @@ function addProjectMethods(client) {
     // Wait 1 second before starting the pipeline to prevent errors
     await new Promise(r => setTimeout(r, 1000));
 
-    // Start pipeline -- no need to wait for the outcome, the environment page handles this
+    // Start pipeline -- no need to wait for the outcome, the new session page handles this
     let pipeline;
     try {
       pipeline = await client.runPipeline(forkedProject.data.id);

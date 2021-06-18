@@ -331,7 +331,7 @@ describe("rendering", () => {
     await act(async () => {
       ReactDOM.render(
         <MemoryRouter>
-          <ShowSession {...props} urlNewEnvironment="new_environment"/>
+          <ShowSession {...props} urlNewSession="new_environment"/>
         </MemoryRouter>, div);
     });
   });
@@ -347,19 +347,19 @@ describe("rendering", () => {
     await act(async () => {
       ReactDOM.render(
         <MemoryRouter>
-          <Notebooks {...props} standalone={true} urlNewEnvironment="new_environment"/>
+          <Notebooks {...props} standalone={true} urlNewSession="new_environment"/>
         </MemoryRouter>, div);
     });
     await act(async () => {
       ReactDOM.render(
         <MemoryRouter>
-          <Notebooks {...props} standalone={false} urlNewEnvironment="new_environment"/>
+          <Notebooks {...props} standalone={false} urlNewSession="new_environment"/>
         </MemoryRouter>, div);
     });
     await act(async () => {
       ReactDOM.render(
         <MemoryRouter>
-          <Notebooks {...props} standalone={true} scope={scope} urlNewEnvironment="new_environment"/>
+          <Notebooks {...props} standalone={true} scope={scope} urlNewSession="new_environment"/>
         </MemoryRouter>, div);
     });
   });

@@ -388,7 +388,7 @@ class ProjectNav extends Component {
               <RenkuNavLink exact={false} to={this.props.datasetsUrl} title="Datasets" />
             </NavItem>
             <NavItem>
-              <RenkuNavLink exact={false} to={this.props.notebookServersUrl} title="Environments" />
+              <RenkuNavLink exact={false} to={this.props.notebookServersUrl} title="Sessions" />
             </NavItem>
             <NavItem>
               <RenkuNavLink exact={false} to={this.props.settingsUrl} title="Settings" />
@@ -919,9 +919,9 @@ class ProjectViewFiles extends Component {
 }
 
 
-class ProjectEnvironments extends Component {
+class ProjectSessions extends Component {
   render() {
-    const backButton = (<GoBackButton label="Back to environments list" url={this.props.notebookServersUrl} />);
+    const backButton = (<GoBackButton label="Back to sessions list" url={this.props.notebookServersUrl} />);
     return [
       <Col key="content" xs={12}>
         <Switch>
@@ -954,7 +954,7 @@ function notebookWarning(userLogged, accessLevel, fork, postLoginUrl, externalUr
       <InfoAlert timeout={0} key="permissions-warning">
         <p>
           <FontAwesomeIcon icon={faExclamationTriangle} /> As
-          an anonymous user, you can start <ExternalLink role="text" title="Interactive Environments"
+          an anonymous user, you can start <ExternalLink role="text" title="Sessions"
             url="https://renku.readthedocs.io/en/latest/developer/services/notebooks_service.html" />, but
           you cannot save your work.
         </p>
@@ -1017,7 +1017,7 @@ class ProjectShowSession extends Component {
         notifications={notifications}
         scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path }}
         standalone={false}
-        urlNewEnvironment={launchNotebookUrl}
+        urlNewSession={launchNotebookUrl}
       />
     );
   }
@@ -1036,7 +1036,7 @@ class ProjectNotebookServers extends Component {
     return (
       <Notebooks standalone={false} client={client} model={model} location={location}
         message={warning}
-        urlNewEnvironment={launchNotebookUrl}
+        urlNewSession={launchNotebookUrl}
         blockAnonymous={blockAnonymous}
         scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path }}
       />
@@ -1229,7 +1229,7 @@ class ProjectView extends Component {
           <Route path={this.props.settingsUrl}
             render={props => <ProjectSettings key="settings" {...this.props} />} />
           <Route path={this.props.notebookServersUrl}
-            render={props => <ProjectEnvironments key="environments" {...this.props} />} />
+            render={props => <ProjectSessions key="sessions" {...this.props} />} />
           <Route component={NotFoundInsideProject} />
         </Switch>
       </Row>
