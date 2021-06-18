@@ -393,10 +393,13 @@ function addProjectMethods(client) {
    * Get project config file data
    * @see {@link https://github.com/SwissDataScienceCenter/renku-python/blob/master/renku/service/views/config.py}
    * @param {string} projectRepositoryUrl - external repository full url.
+   * @param {string} branch - target branch.
    */
-  client.getProjectConfig = async (projectRepositoryUrl) => {
+  client.getProjectConfig = async (projectRepositoryUrl, branch = null) => {
     const url = `${client.baseUrl}/renku/config.show`;
-    const queryParams = { git_url: projectRepositoryUrl };
+    let queryParams = { git_url: projectRepositoryUrl };
+    if (branch)
+      queryParams.branch = branch;
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");

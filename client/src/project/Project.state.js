@@ -536,13 +536,13 @@ class ProjectCoordinator {
     return commits;
   }
 
-  async fetchProjectConfig(repositoryUrl) {
+  async fetchProjectConfig(repositoryUrl, branch = null) {
     let configObject = {
       error: { $set: {} },
       fetching: true,
     };
     this.model.setObject({ config: configObject });
-    const response = await this.client.getProjectConfig(repositoryUrl);
+    const response = await this.client.getProjectConfig(repositoryUrl, branch);
     configObject.fetching = false;
     configObject.fetched = new Date();
     if (response.data && response.data.error) {
