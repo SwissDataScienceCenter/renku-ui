@@ -331,7 +331,7 @@ describe("rendering", () => {
     await act(async () => {
       ReactDOM.render(
         <MemoryRouter>
-          <ShowSession {...props} urlNewSession="new_environment"/>
+          <ShowSession {...props} urlNewSession="new_session"/>
         </MemoryRouter>, div);
     });
   });
