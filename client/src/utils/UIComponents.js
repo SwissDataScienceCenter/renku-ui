@@ -201,7 +201,7 @@ class Pagination extends Component {
       itemClass={"page-item"}
       linkClass={"page-link"}
       activeClass={"page-item active"}
-      hideFirstLastPages={true}
+      hideFirstLastPages={false}
       hideDisabled={true}
     />;
   }
