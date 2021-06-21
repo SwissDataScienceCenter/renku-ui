@@ -261,7 +261,7 @@ function ProjectVersionStatusBody(props) {
   const updateInstruction = (
     <Fragment>
       You can launch
-      an <Link to={props.launchNotebookUrl}>interactive environment</Link> and follow the&nbsp;
+      a <Link to={props.launchNotebookUrl}>session</Link> and follow the&nbsp;
       <a href={`${"https://renku.readthedocs.io/en/latest/user/upgrading_renku.html" +
         "#upgrading-your-image-to-use-the-latest-renku-cli-version"}`}>
         instructions for upgrading</a>.

@@ -970,14 +970,14 @@ function notebookWarning(userLogged, accessLevel, fork, postLoginUrl, externalUr
       <InfoAlert timeout={0} key="permissions-warning">
         <p>
           <FontAwesomeIcon icon={faExclamationTriangle} /> You have limited permissions for this
-          project. You can launch an interactive environment, but you will not be able to save
+          project. You can launch a session, but you will not be able to save
           any changes. If you want to save your work, consider one of the following:
         </p>
         <ul className="mb-0">
           <li>
             <Button size="sm" color="primary" onClick={(event) => fork(event)}>
               Fork the project
-            </Button> and start an interactive environment from your fork.
+            </Button> and start a session from your fork.
           </li>
           <li className="pt-1">
             <ExternalLink size="sm" title="Contact a maintainer"
