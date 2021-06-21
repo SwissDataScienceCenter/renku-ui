@@ -67,9 +67,9 @@ const subRoutes = {
   workflows: "files/workflows",
   settings: "settings",
   settingsSessions: "settings/sessions",
-  environments: "environments",
-  environmentNew: "environments/new",
-  showSession: "environments/show/:server"
+  sessions: "sessions",
+  sessionNew: "sessions/new",
+  showSession: "sessions/show/:server"
 };
 
 // SubRoutes grouped by depth
@@ -181,7 +181,7 @@ class View extends Component {
 
       // in case the route fails it tests weather it could be a projectId route
       const routes = ["overview", "issues", "issue_new", "files", "lineage", "notebooks", "collaboration",
-        "data", "workflows", "settings", "pending", "launchNotebook", "notebookServers", "datasets", "environments"];
+        "data", "workflows", "settings", "pending", "launchNotebook", "notebookServers", "datasets", "sessions"];
       const available = this.props.core ? this.props.core.available : null;
       const potentialProjectId = pathComponents.projectPathWithNamespace.split("/")[0];
       const potentialRoute = pathComponents.projectPathWithNamespace.split("/")[1];
@@ -354,9 +354,9 @@ class View extends Component {
       settingsSessionsUrl: `${baseUrl}/settings/sessions`,
       mrOverviewUrl: `${baseUrl}/pending`,
       mrUrl: `${baseUrl}/pending/:mrIid`,
-      launchNotebookUrl: `${baseUrl}/environments/new`,
-      notebookServersUrl: `${baseUrl}/environments`,
-      sessionShowUrl: `${baseUrl}/environments/show/:server`
+      launchNotebookUrl: `${baseUrl}/sessions/new`,
+      notebookServersUrl: `${baseUrl}/sessions`,
+      sessionShowUrl: `${baseUrl}/sessions/show/:server`
     };
   }
 

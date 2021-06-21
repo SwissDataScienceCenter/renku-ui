@@ -359,14 +359,14 @@ class NotebooksDisabled extends Component {
         <InfoAlert timeout={0} key="login-info">
           <p className="mb-0">
             <Link className="btn btn-primary btn-sm" to={to}>Log in</Link> to use
-            interactive environments.
+            sessions.
           </p>
         </InfoAlert>
       );
 
     return (
       <div>
-        <p>This Renkulab deployment doesn&apos;t allow unauthenticated users to start Interactive Environments.</p>
+        <p>This Renkulab deployment doesn&apos;t allow unauthenticated users to start sessions.</p>
         {info}
       </div>
     );
@@ -389,7 +389,7 @@ class Notebooks extends Component {
         <Row className="pt-2 pb-3">
           <Col className="d-flex mb-2 justify-content-between">
             <NotebooksHeader standalone={this.props.standalone}
-              urlNewEnvironment={this.props.urlNewEnvironment}/>
+              urlNewSession={this.props.urlNewSession}/>
           </Col>
         </Row>
         <NotebookServers
@@ -408,7 +408,7 @@ class Notebooks extends Component {
           servers={serverNumbers}
           standalone={this.props.standalone}
           loading={loading}
-          urlNewEnvironment={this.props.urlNewEnvironment}
+          urlNewSession={this.props.urlNewSession}
         />
         {serverNumbers ? null : message}
       </Fragment>);
@@ -418,14 +418,14 @@ class Notebooks extends Component {
 class NotebooksHeader extends Component {
   render() {
     if (this.props.standalone)
-      return (<h2>Interactive Environments</h2>);
+      return (<h2>Sessions</h2>);
 
     return (<Fragment>
-      <h3>Interactive Environments</h3>
+      <h3>Sessions</h3>
       <div>
-        <Link className="btn btn-sm btn-secondary" role="button" to={this.props.urlNewEnvironment}>
+        <Link className="btn btn-sm btn-secondary" role="button" to={this.props.urlNewSession}>
           <span className="arrow-right pt-2 pb-2">  </span>
-          New Environment
+          New session
         </Link>
       </div>
     </Fragment>);
@@ -438,17 +438,17 @@ class NotebooksPopup extends Component {
       return null;
 
     let suggestion = (<span>
-      You can start a new interactive environment from the <i>Environments</i> tab of a project.
+      You can start a new session from the <i>Sessions</i> tab of a project.
     </span>);
     if (!this.props.standalone) {
       let newOutput = "New";
-      if (this.props.urlNewEnvironment) {
-        newOutput = (<Link className="btn btn-primary btn-sm" role="button" to={this.props.urlNewEnvironment}>
-          New Environment</Link>);
+      if (this.props.urlNewSession) {
+        newOutput = (<Link className="btn btn-primary btn-sm" role="button" to={this.props.urlNewSession}>
+          New session</Link>);
       }
 
       suggestion = (<span>
-        You can start a new interactive environment by clicking on the {newOutput} button on top.
+        You can start a new session by clicking on the {newOutput} button on top.
       </span>);
     }
 
@@ -477,7 +477,7 @@ class NotebookServersList extends Component {
   render() {
     const serverNames = Object.keys(this.props.servers);
     if (serverNames.length === 0)
-      return (<p>No currently running environments.</p>);
+      return (<p>No currently running sessions.</p>);
 
     const rows = serverNames.map((k, i) => {
       const validAnnotations = Object.keys(this.props.servers[k].annotations)
@@ -596,7 +596,7 @@ class NotebookServerRowCommitInfo extends Component {
           </span>
           <span className="fw-bold">Message:</span> <span>{commit.data.message}</span><br />
           <span className="fw-bold">Full SHA:</span> <span>{commit.data.id}</span><br />
-          <span className="fw-bold">Details:</span>
+          <span className="fw-bold me-1">Details:</span>
           <ExternalLink url={commit.data.web_url} title="Open commit in GitLab" role="text" showLinkIcon={true} />
         </Fragment>
       );
@@ -1059,7 +1059,7 @@ class StartNotebookServer extends Component {
     return (
       <Row>
         <Col sm={12} md={10} lg={8}>
-          <h3>Start a new interactive environment</h3>
+          <h3>Start a new session</h3>
           {messageOutput}
           <Form>
             <StartNotebookBranches {...this.props} disabled={disabled} />
@@ -1088,7 +1088,7 @@ class StartNotebookBranches extends Component {
     else if (branches.length === 0) {
       content = (
         <React.Fragment>
-          <Label>A commit is necessary to start an interactive environment.</Label>
+          <Label>A commit is necessary to start a session.</Label>
           <InfoAlert timeout={0}>
             <p>You can still do one of the following:</p>
             <ul className="mb-0">
@@ -1348,7 +1348,7 @@ class StartNotebookPipelinesContent extends Component {
     if (pipeline.status === "running" || pipeline.status === "pending") {
       content = (
         <Label>
-          <FontAwesomeIcon icon={faCog} spin /> The Docker image for the environment is being built.
+          <FontAwesomeIcon icon={faCog} spin /> The Docker image for the session is being built.
           Please wait a moment...
           <FormText color="primary">
             <a href={pipeline.web_url} target="_blank" rel="noreferrer noopener">
@@ -1536,16 +1536,16 @@ class StartNotebookOptions extends Component {
   render() {
     const { justStarted } = this.props;
     if (justStarted)
-      return <Label>Starting a new interactive environment... <Loader size="14" inline="true" /></Label>;
+      return <Label>Starting a new session... <Loader size="14" inline="true" /></Label>;
 
 
     const { fetched, all } = this.props.notebooks;
     const { options } = this.props;
     if (!fetched)
-      return (<Label>Verifying available environments... <Loader size="14" inline="true" /></Label>);
+      return (<Label>Verifying available sessions... <Loader size="14" inline="true" /></Label>);
 
     if (Object.keys(options.global).length === 0 || options.fetching)
-      return (<Label>Loading environment parameters... <Loader size="14" inline="true" /></Label>);
+      return (<Label>Loading session parameters... <Loader size="14" inline="true" /></Label>);
 
     if (Object.keys(all).length === 1)
       return (<StartNotebookOptionsRunning {...this.props} />);
@@ -1583,7 +1583,7 @@ class StartNotebookOptionsRunning extends Component {
       return (
         <FormGroup>
           <div className="mb-2">
-            <Label>An interactive environment is already running.</Label>
+            <Label>A session is already running.</Label>
           </div>
           <div>
             <Link className="btn btn-secondary" to={localUrl}>Open</Link>{" "}
@@ -1595,7 +1595,7 @@ class StartNotebookOptionsRunning extends Component {
     else if (status === "pending") {
       return (
         <FormGroup>
-          <Label>An interactive environment for this commit is starting or terminating, please wait...</Label>
+          <Label>A session for this commit is starting or terminating, please wait...</Label>
         </FormGroup>
       );
     }
@@ -1603,8 +1603,8 @@ class StartNotebookOptionsRunning extends Component {
     return (
       <FormGroup>
         <Label>
-          An interactive environment is already running but it is currently not available.
-          You can get further details from the Environments page.
+          A session is already running but it is currently not available.
+          You can get further details from the Sessions page.
         </Label>
       </FormGroup>
     );
@@ -1701,7 +1701,7 @@ class StartNotebookServerOptions extends Component {
 
       globalWarning = (
         <Warning key="globalWarning">
-          The project configuration for interactive environments
+          The project configuration for sessions
           contains {language.article}variable{language.plural} that {language.aux} either
           unknown in this Renkulab deployment or
           contain{language.verb} {language.article}wrong value{language.plural}:
@@ -1816,7 +1816,7 @@ class ServerOptionLaunch extends Component {
     const globalNotification = (warnings.length < 1) ?
       null :
       <Warning key="globalNotification">
-        The environment cannot be configured exactly as requested for this project.
+        The session cannot be configured exactly as requested for this project.
         You can still start one, but some things may not work correctly.
       </Warning>;
     const launchErrorAlert = (launchError != null) ?
@@ -1824,8 +1824,8 @@ class ServerOptionLaunch extends Component {
         <br />
         <InfoAlert timeout={0}>
           <FontAwesomeIcon icon={faInfoCircle} /> {" "}
-          The attempt to start an environment failed. This could be an intermittent issue, so you should {" "}
-          try a second time, and the environment will hopefully start. If the problem persists, you can {" "}
+          The attempt to start a sessionn failed. This could be an intermittent issue, so you should {" "}
+          try a second time, and the session will hopefully start. If the problem persists, you can {" "}
           <Link to="/help">contact us for assistance</Link>.
         </InfoAlert>
       </Fragment> :
@@ -1833,7 +1833,7 @@ class ServerOptionLaunch extends Component {
 
     return [
       <Button key="button" color="primary" onClick={this.checkServer}>
-        Start environment
+        Start session
       </Button>,
       <AutosavedDataModal key="modal"
         toggleModal={this.toggleModal.bind(this)}
@@ -1881,7 +1881,7 @@ class AutosavedDataModal extends Component {
             <p>Please refer to this {docsLink} to get further information.</p>
           </ModalBody>
           <ModalFooter>
-            <Button color="primary" onClick={this.props.handlers.startServer}>Launch environment</Button>
+            <Button color="primary" onClick={this.props.handlers.startServer}>Launch session</Button>
           </ModalFooter>
         </Modal>
       </div>
@@ -1907,12 +1907,12 @@ class CheckNotebookIcon extends Component {
         link = (<a href={url} role="button" target="_blank" rel="noreferrer noopener">{icon}</a>);
       }
       else if (status === "pending") {
-        tooltip = "Interactive environment is either starting or stopping, please wait...";
+        tooltip = "The session is either starting or stopping, please wait...";
         icon = loader;
         link = (<span>{icon}</span>);
       }
       else {
-        tooltip = "Check interactive environment status";
+        tooltip = "Check session status";
         icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" grayscale={true} />);
         link = (<Link to={this.props.launchNotebookUrl}>{icon}</Link>);
       }
@@ -1925,7 +1925,7 @@ class CheckNotebookIcon extends Component {
         pathname: this.props.launchNotebookUrl,
         state: { successUrl }
       };
-      tooltip = "Start an interactive environment";
+      tooltip = "Start a session";
       icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" grayscale={true} />);
       link = (<Link to={target}>{icon}</Link>);
     }

@@ -112,9 +112,9 @@ function CentralContentContainer(props) {
           {...p}
         />}
       />
-      <Route exact path="/environments" render={
+      <Route exact path="/sessions" render={
         p => <Notebooks
-          key="environments"
+          key="sessions"
           standalone={true}
           client={props.client}
           model={props.model}

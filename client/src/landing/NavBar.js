@@ -240,7 +240,7 @@ class LoggedInNavBar extends Component {
                 <RenkuNavLink to="/datasets" title="Datasets" id="link-datasets" />
               </NavItem>
               <NavItem className="nav-item col-6 col-lg-auto pe-4">
-                <RenkuNavLink to="/environments" title="Environments" id="link-environments" />
+                <RenkuNavLink to="/sessions" title="Sessions" id="link-sessions" />
               </NavItem>
               <NavItem className="nav-item col-1 col-lg-auto">
                 <RenkuToolbarItemPlus currentPath={this.props.location.pathname} />
@@ -304,7 +304,7 @@ class AnonymousNavBar extends Component {
                 <RenkuNavLink to="/datasets" title="Datasets" id="link-datasets" />
               </NavItem>
               <NavItem className="nav-item col-6 col-lg-auto pe-4">
-                <RenkuNavLink to="/environments" title="Environments" id="link-environments" />
+                <RenkuNavLink to="/sessions" title="Sessions" id="link-sessions" />
               </NavItem>
               <NavItem className="nav-item col-1 col-lg-auto">
                 <RenkuToolbarHelpMenu />

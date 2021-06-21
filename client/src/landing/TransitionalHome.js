@@ -93,7 +93,7 @@ function HomeHeader(props) {
               <RenkuNavLink to="/datasets" title="Datasets" id="link-datasets" />
             </NavItem>
             <NavItem className="nav-item">
-              <RenkuNavLink to="/environments" title="Environments" id="link-environments" />
+              <RenkuNavLink to="/sessions" title="Sessions" id="link-sessions" />
             </NavItem>
             <NavItem className="nav-item">
               <RenkuToolbarHelpMenu />

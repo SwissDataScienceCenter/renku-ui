@@ -231,7 +231,7 @@ function addProjectMethods(client) {
     // Wait 1 second before starting the pipeline to prevent errors
     await new Promise(r => setTimeout(r, 1000));
 
-    // Start pipeline -- no need to wait for the outcome, the environment page handles this
+    // Start pipeline -- no need to wait for the outcome, the new session page handles this
     let pipeline;
     try {
       pipeline = await client.runPipeline(forkedProject.data.id);
@@ -393,10 +393,13 @@ function addProjectMethods(client) {
    * Get project config file data
    * @see {@link https://github.com/SwissDataScienceCenter/renku-python/blob/master/renku/service/views/config.py}
    * @param {string} projectRepositoryUrl - external repository full url.
+   * @param {string} branch - target branch.
    */
-  client.getProjectConfig = async (projectRepositoryUrl) => {
+  client.getProjectConfig = async (projectRepositoryUrl, branch = null) => {
     const url = `${client.baseUrl}/renku/config.show`;
-    const queryParams = { git_url: projectRepositoryUrl };
+    let queryParams = { git_url: projectRepositoryUrl };
+    if (branch)
+      queryParams.branch = branch;
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");

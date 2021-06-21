@@ -19,7 +19,7 @@
 /**
  *  renku-ui
  *
- * Tests for the interactive environment components
+ * Tests for the session components
  */
 
 import React from "react";
@@ -125,7 +125,7 @@ describe("notebook server clean annotation", () => {
   });
 });
 
-describe("parse project level environment options", () => {
+describe("parse project level session options", () => {
   it("valid content", () => {
     const content = `
       [interactive]
@@ -331,7 +331,7 @@ describe("rendering", () => {
     await act(async () => {
       ReactDOM.render(
         <MemoryRouter>
-          <ShowSession {...props} urlNewEnvironment="new_environment"/>
+          <ShowSession {...props} urlNewSession="new_session"/>
         </MemoryRouter>, div);
     });
   });
@@ -347,19 +347,19 @@ describe("rendering", () => {
     await act(async () => {
       ReactDOM.render(
         <MemoryRouter>
-          <Notebooks {...props} standalone={true} urlNewEnvironment="new_environment"/>
+          <Notebooks {...props} standalone={true} urlNewSession="new_session"/>
         </MemoryRouter>, div);
     });
     await act(async () => {
       ReactDOM.render(
         <MemoryRouter>
-          <Notebooks {...props} standalone={false} urlNewEnvironment="new_environment"/>
+          <Notebooks {...props} standalone={false} urlNewSession="new_session"/>
         </MemoryRouter>, div);
     });
     await act(async () => {
       ReactDOM.render(
         <MemoryRouter>
-          <Notebooks {...props} standalone={true} scope={scope} urlNewEnvironment="new_environment"/>
+          <Notebooks {...props} standalone={true} scope={scope} urlNewSession="new_session"/>
         </MemoryRouter>, div);
     });
   });

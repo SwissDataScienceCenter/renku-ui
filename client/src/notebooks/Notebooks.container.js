@@ -80,7 +80,7 @@ class ShowSession extends Component {
     catch (error) {
       // add notification
       this.notifications.addError(
-        this.notifications.Topics.ENVIRONMENT_START,
+        this.notifications.Topics.SESSION_START,
         "Unable to stop the current session.", null, null, null,
         `Error message: "${error.message}"`);
       return false;
@@ -137,7 +137,7 @@ class ShowSession extends Component {
  * @param {boolean} standalone - Indicates whether it's displayed as standalone
  * @param {boolean} blockAnonymous - When true, block non logged in users
  * @param {Object} [location] - react location object
- * @param {string} [urlNewEnvironment] - url to "new environment" page
+ * @param {string} [urlNewSession] - url to "new session" page
  * @param {Object} [scope] - object containing filtering parameters
  * @param {string} [scope.namespace] - full path of the reference namespace
  * @param {string} [scope.project] - path of the reference project
@@ -228,7 +228,7 @@ class Notebooks extends Component {
       standalone={this.props.standalone ? this.props.standalone : false}
       scope={this.props.scope}
       message={this.props.message}
-      urlNewEnvironment={this.props.urlNewEnvironment}
+      urlNewSession={this.props.urlNewSession}
     />;
   }
 }
@@ -460,11 +460,11 @@ class StartNotebookServer extends Component {
       setTimeout(() => {
         this.internalStartServer().catch((error) => {
           // crafting notification
-          const fullError = `An error occurred when trying to start a new Interactive environment.
+          const fullError = `An error occurred when trying to start a new session.
           Error message: "${error.message}", Stack trace: "${error.stack}"`;
           this.notifications.addError(
-            this.notifications.Topics.ENVIRONMENT_START,
-            "Unable to start the interactive environment.",
+            this.notifications.Topics.SESSION_START,
+            "Unable to start the session.",
             this.props.location.pathname, "Try again",
             null, // always toast
             fullError);
