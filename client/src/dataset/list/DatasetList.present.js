@@ -21,7 +21,7 @@ import { Route, Switch } from "react-router-dom";
 import { Row, Col, Alert, Card, CardBody } from "reactstrap";
 import { Button, Form, FormText, Input, Label, InputGroup, UncontrolledCollapse } from "reactstrap";
 import { DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
-import { MarkdownTextExcerpt, ListDisplay } from "../../utils/UIComponents";
+import { MarkdownTextExcerpt, ListDisplay, Loader } from "../../utils/UIComponents";
 import { faCheck, faSortAmountUp, faSortAmountDown, faSearch, faBars, faTh } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ButtonDropdown } from "reactstrap/lib";
@@ -160,6 +160,8 @@ class DatasetsRows extends Component {
     const datasetsUrl = this.props.datasetsUrl;
 
     const { currentPage, perPage, search, totalItems, gridDisplay } = this.props;
+
+    if (this.props.loading) return <Loader />;
 
     const datasetItems = datasets.map(dataset => {
       const projectsCount = dataset.projectsCount > 1

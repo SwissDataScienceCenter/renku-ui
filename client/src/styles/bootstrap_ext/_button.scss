@@ -61,28 +61,11 @@
   }
 }
 
-// .btn-rk-white-dark-active.active{
-//   background-color: $rk-hover;
-//   color: $dark;
-//   border-color: #E4E7EA;
-// }
-
-.btn-outline-primary.border-light:hover{
-  background-color: $light;
-  //not sure if this border color looks good
-  border-color:$primary !important;
-  color: $primary
-}
-
-.btn-group{
-  .btn-outline-primary {
-      background-color: white;
-    &:hover {
-      background-color: $primary;
-    }
-  }
-  
-  .btn-outline-primary.active {
+.btn-outline-primary{
+  background-color: white;
+  color: $primary;
+  &.active{
     background-color: $primary;
+    color: white;
   }
 }

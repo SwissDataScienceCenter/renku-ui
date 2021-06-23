@@ -6,9 +6,13 @@ Button.alert-link {
 
 .warningLabel {
   display: inline;
-  color: #ffc107;
+  color: #f0c800;
   margin-right: 0.3em;
-  font-size: 0.8em;
+  font-size: 0.75em;
+}
+.warningLabel > svg {
+  vertical-align: top;
+  margin-top: 0.20rem;
 }
 
 .selected-dataset{

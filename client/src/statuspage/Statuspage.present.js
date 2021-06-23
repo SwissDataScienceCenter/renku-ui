@@ -236,7 +236,7 @@ function StatuspageDisplay(props) {
     return <Loader />;
   return <Row>
     <Col md={8}>
-      <h2>RenkuLab Status</h2>
+      <h3>RenkuLab Status</h3>
       <MaintenanceSummaryDetails statuspage={summary.statuspage} />
       <SiteStatusDetails statuspage={summary.statuspage} />
       <br />
