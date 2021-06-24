@@ -37,7 +37,7 @@ import { ProjectTagList } from "../project/shared/ProjectTag.container";
  * @param itemType type of the item being rendered, the color of the circle depends on this.
  */
 function ListCard(props) {
-  const { url, title, description, tagList, timeCaption, labelCaption, mediaContent, creators, itemType } = props;
+  const { url, title, description, tagList, timeCaption, labelCaption, mediaContent, creators, itemType, slug } = props;
 
   return (
     <div className="col text-decoration-none p-2 rk-search-result-card">
@@ -47,6 +47,15 @@ function ListCard(props) {
           <div className="title lh-sm">
             {title}
           </div>
+          {
+            slug ?
+              <div className="card-text creators text-rk-text mt-1">
+                <small style={{ display: "block" }} className="font-weight-light">
+                  {slug}
+                </small>
+              </div>
+              : null
+          }
           {
             creators ?
               <div className="card-text creators text-truncate text-rk-text mt-1">
@@ -85,13 +94,20 @@ function ListCard(props) {
 
 function ListBar(props) {
 
-  const { url, title, description, tagList, timeCaption, labelCaption, mediaContent, creators, itemType } = props;
+  const { url, title, description, tagList, timeCaption, labelCaption, mediaContent, creators, itemType, slug } = props;
 
   return <Link className="d-flex flex-row rk-search-result" to={url}>
     <span className={"circle me-3 mt-2 " + itemType}></span>
     <Col className="d-flex align-items-start flex-column col-10 overflow-hidden">
       <div className="title d-inline-block text-truncate">
         {title}
+        {
+          slug ?
+            <span className="slug font-weight-light text-rk-text ms-2">
+              {slug}
+            </span>
+            : null
+        }
       </div>
       {
         creators ?
