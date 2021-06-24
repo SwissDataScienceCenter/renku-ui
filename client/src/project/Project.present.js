@@ -33,8 +33,8 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
 import {
-  faCodeBranch, faExclamationTriangle, faUserFriends, faGlobe, faInfoCircle, faLock, faSearch,
-  faStar as faStarSolid
+  faCodeBranch, faExclamationTriangle, faGlobe, faInfoCircle, faLock, faPlay, faSearch,
+  faStar as faStarSolid, faUserFriends
 } from "@fortawesome/free-solid-svg-icons";
 import qs from "query-string";
 
@@ -330,6 +330,7 @@ class ProjectViewHeaderOverview extends Component {
                 gitlabIDEUrl={gitlabIDEUrl}
                 userLogged={this.props.user.logged} />
             </ButtonGroup>
+            <StartSessionButton {...this.props} />
           </Col>
           <Col className="text-rk-text order-1 order-md-2">
             <span>{this.props.core.path_with_namespace}{forkedFrom}</span>
@@ -348,6 +349,25 @@ class ProjectViewHeaderOverview extends Component {
       </Fragment>
     );
   }
+}
+
+function StartSessionButton(props) {
+  const { launchNotebookUrl, sessionAutostartUrl } = props;
+
+  const defaultAction = (
+    <Link className="btn btn-primary btn-sm" to={sessionAutostartUrl}>
+      <FontAwesomeIcon className="me-1" icon={faPlay} /> Start
+    </Link>
+  );
+  return (
+    <ButtonGroup size="sm" className="ms-1">
+      <ButtonWithMenu className="sessionsButton" size="sm" default={defaultAction} color="primary">
+        <DropdownItem>
+          <Link className="text-decoration-none" to={launchNotebookUrl}>Start with options</Link>
+        </DropdownItem>
+      </ButtonWithMenu>
+    </ButtonGroup>
+  );
 }
 
 class ProjectViewHeader extends Component {

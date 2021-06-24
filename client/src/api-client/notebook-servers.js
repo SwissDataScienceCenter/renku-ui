@@ -108,8 +108,11 @@ function addNotebookServersMethods(client) {
       method: "POST",
       headers,
       body: JSON.stringify(parameters)
-    }).then((resp) => {
+    }).then(resp => {
       return resp.data;
+    }).catch(error => {
+      if (error.errorData && error.errorData.messages && error.errorData.messages.error)
+        throw new Error(error.errorData.messages.error);
     });
   };
 

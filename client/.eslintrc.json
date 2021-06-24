@@ -153,6 +153,7 @@
           "ascii",
           "autosave",
           "autosaved",
+          "autostart",
           "autosuggest",
           "backend",
           "bool",

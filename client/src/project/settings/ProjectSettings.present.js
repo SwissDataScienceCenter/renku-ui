@@ -436,7 +436,7 @@ function SessionsOptionReset(props) {
   const { disabled, onChange, option } = props;
   return (
     <Fragment>
-      <Button disabled={disabled} id={`${option}_reset`} color="outline-primary" size="sm"
+      <Button disabled={disabled} id={`${option}_reset`} color="" size="sm"
         className="border-0" onClick={(event) => onChange(event, null, true)}>
         <FontAwesomeIcon icon={faTimesCircle} />
       </Button>
@@ -691,7 +691,7 @@ function SessionPinnedImage(props) {
   else {
     const edit = devAccess ?
       (<Fragment>
-        <Button disabled={disabled} id="advanced_image_add" color="outline-primary" size="sm"
+        <Button disabled={disabled} id="advanced_image_add" color="" size="sm"
           className="border-0" onClick={toggleModifyString}>
           <FontAwesomeIcon icon={faEdit} />
         </Button>

@@ -370,6 +370,7 @@ describe("rendering", () => {
       model,
       branches: [],
       autosaved: [],
+      location: fakeLocation,
       refreshBranches: () => { },
     };
 
