@@ -326,6 +326,12 @@ const Url = {
             "/projects/group/subgroup/path/sessions/new",
           ]
         ),
+        autostart: new UrlRule(
+          projectPageUrlBuilder("/sessions/new?autostart=1"), ["namespace", "path"], null, [
+            "/projects/namespace/path/sessions/new?autostart=1",
+            "/projects/group/subgroup/path/sessions/new?autostart=1",
+          ]
+        ),
         show: new UrlRule(
           projectSessionUrlBuilder(), ["namespace", "path", "server"], null, [
             "/projects/namespace/path/sessions/show/server-id",

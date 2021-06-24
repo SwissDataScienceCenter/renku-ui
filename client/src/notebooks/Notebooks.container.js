@@ -18,14 +18,16 @@
 
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import qs from "query-string";
 
-import { NotebooksCoordinator } from "./Notebooks.state";
+import { NotebooksCoordinator, NotebooksHelper } from "./Notebooks.state";
 import {
   StartNotebookServer as StartNotebookServerPresent, NotebooksDisabled, Notebooks as NotebooksPresent,
   CheckNotebookIcon, ShowSession as ShowSessionPresent
 } from "./Notebooks.present";
 import { StatusHelper } from "../model/Model";
 import { ProjectCoordinator } from "../project";
+import { Url } from "../utils/url";
 
 
 /**
@@ -247,7 +249,7 @@ class Notebooks extends Component {
  * @param {string} externalUrl - GitLab repository url
  * @param {boolean} blockAnonymous - When true, block non logged in users
  * @param {Object} notifications - Notifications object
- * @param {Object} [location] - react location object. Use location.state.successUrl to indicate the
+ * @param {Object} location - react location object. Use location.state.successUrl to indicate the
  *     redirect url to be used when a notebook is successfully started
  * @param {Object} [history] - mandatory if successUrl is provided
  * @param {string} [message] - provide a useful information or warning message
@@ -268,6 +270,15 @@ class StartNotebookServer extends Component {
     if (props.scope)
       this.coordinator.setNotebookFilters(props.scope);
 
+    // Check auto start mode
+    const currentSearch = qs.parse(props.location.search);
+    this.autostart = currentSearch && currentSearch["autostart"] && currentSearch["autostart"] === "1" ?
+      true :
+      false;
+    this.state = {
+      autostartReady: false,
+      autostartTried: false
+    };
 
     this.handlers = {
       refreshBranches: this.refreshBranches.bind(this),
@@ -410,6 +421,7 @@ class StartNotebookServer extends Component {
     if (this._isMounted) {
       await this.coordinator.fetchNotebookOptions();
       await this.coordinator.startPipelinePolling();
+      this.triggerAutoStart();
     }
   }
 
@@ -418,6 +430,22 @@ class StartNotebookServer extends Component {
     const pipelineId = this.model.get("pipelines.main.id");
     await this.props.client.retryPipeline(projectPathWithNamespace, pipelineId);
     return this.refreshPipelines();
+  }
+
+  async triggerAutoStart() {
+    if (this._isMounted) {
+      if (this.autostart && !this.state.autostartReady && !this.state.autostartTried) {
+        const data = this.model.get();
+        const fetched = data.notebooks.fetched && data.options.fetched && data.pipelines.fetched;
+        if (fetched) {
+          this.setState({ autostartReady: true });
+          this.startServer();
+        }
+        else {
+          setTimeout(() => { this.triggerAutoStart(); }, 1000);
+        }
+      }
+    }
   }
 
   setServerOptionFromEvent(option, event, providedValue = null) {
@@ -446,8 +474,26 @@ class StartNotebookServer extends Component {
       // redirect user when necessary
       if (!history || !location)
         return;
-      if (location.state && location.state.successUrl && history.location.pathname === location.pathname)
-        history.push(location.state.successUrl);
+      if (location.state && location.state.successUrl && history.location.pathname === location.pathname) {
+        if (this.autostart && !this.state.autostartTried) {
+          // Derive the local Url and connect to the notebook
+          const annotations = NotebooksHelper.cleanAnnotations(data.annotations, "renku.io");
+          const localUrl = Url.get(Url.pages.project.session.show, {
+            namespace: annotations["namespace"],
+            path: annotations["projectName"],
+            server: data.name,
+          });
+
+          // ? Start with a short delay to prevent missing server information from "GET /servers" API
+          setTimeout(() => {
+            this.setState({ autostartTried: true });
+            history.push({ pathname: localUrl, search: "" });
+          }, 3000);
+        }
+        else {
+          history.push(location.state.successUrl);
+        }
+      }
     });
   }
 
@@ -469,6 +515,8 @@ class StartNotebookServer extends Component {
             null, // always toast
             fullError);
           this.setState({ "starting": false, launchError: error.message });
+          if (this.autostart && !this.state.autostartTried)
+            this.setState({ autostartTried: true });
         });
       }, 3000);
     });
@@ -525,6 +573,7 @@ class StartNotebookServer extends Component {
       inherited={this.props}
       message={this.props.message}
       justStarted={this.state.starting}
+      autoStarting={this.autostart && !this.state.autostartTried}
       launchError={this.state.launchError}
     />;
   }
