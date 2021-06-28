@@ -563,7 +563,7 @@ function SessionConfigAdvanced(props) {
     false;
 
   // Collapse unknown values by default when none are already assigned
-  const [showImage, setShowImage] = useState(false);
+  const [showImage, setShowImage] = useState(imageAvailable);
   const toggleShowImage = () => setShowImage(!showImage);
 
   const warningMessage = devAccess ?
@@ -711,8 +711,8 @@ function SessionPinnedImage(props) {
   const imagesUrl = `${repositoryUrl}/container_registry`;
   const imagesLink = (<div>
     <FormText>
-      You may want to check the {" "}
-      <ExternalLink role="link" title="available images for this project" url={imagesUrl} />.
+      A URL of a RenkuLab-compatible Docker image. For an image from this project, consult {" "}
+      <ExternalLink role="link" title="the list of images for this project" url={imagesUrl} />.
     </FormText>
   </div>);
 
