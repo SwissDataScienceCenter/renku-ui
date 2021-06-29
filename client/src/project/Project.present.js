@@ -413,7 +413,7 @@ function StartSessionButton(props) {
   );
   return (
     <ButtonGroup size="sm" className="ms-1">
-      <ButtonWithMenu className="sessionsButton" size="sm" default={defaultAction} color="primary">
+      <ButtonWithMenu className="startButton" size="sm" default={defaultAction} color="primary">
         <DropdownItem>
           <Link className="text-decoration-none" to={launchNotebookUrl}>Start with options</Link>
         </DropdownItem>
