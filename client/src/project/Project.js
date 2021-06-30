@@ -355,6 +355,7 @@ class View extends Component {
       mrOverviewUrl: `${baseUrl}/pending`,
       mrUrl: `${baseUrl}/pending/:mrIid`,
       launchNotebookUrl: `${baseUrl}/sessions/new`,
+      sessionAutostartUrl: `${baseUrl}/sessions/new?autostart=1`,
       notebookServersUrl: `${baseUrl}/sessions`,
       sessionShowUrl: `${baseUrl}/sessions/show/:server`
     };

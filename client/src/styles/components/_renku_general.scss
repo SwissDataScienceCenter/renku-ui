@@ -12,9 +12,17 @@
   background-color: $primary;
 }
 
-.h-86{
+.h-86 {
   min-height: 86%
 }
-.cursor-auto:hover{
+.cursor-auto:hover {
   cursor:auto !important;
+}
+
+.p-mb-0 > p {
+  margin-bottom: 0px;
+}
+
+.fs-small {
+  font-size: small;
 }

@@ -21,8 +21,8 @@ import Media from "react-media";
 import { Link } from "react-router-dom";
 import {
   Alert, Badge, Button, ButtonGroup, Col, Collapse, DropdownItem, Form, FormGroup, FormText, Input, Label,
-  Modal, ModalBody, ModalFooter, ModalHeader, Nav, NavItem, NavLink, PopoverBody, PopoverHeader, Row,
-  UncontrolledPopover, UncontrolledTooltip
+  Modal, ModalBody, ModalFooter, ModalHeader, Nav, NavItem, NavLink, PopoverBody, PopoverHeader, Progress,
+  Row, UncontrolledPopover, UncontrolledTooltip
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -1026,7 +1026,14 @@ function pipelineAvailable(pipelines) {
 class StartNotebookServer extends Component {
   constructor(props) {
     super(props);
-    this.state = { ignorePipeline: null };
+    this.state = {
+      ignorePipeline: null,
+      showAdvanced: false
+    };
+  }
+
+  toggleShowAdvanced() {
+    this.setState({ showAdvanced: !this.state.showAdvanced });
   }
 
   setIgnorePipeline(value) {
@@ -1036,8 +1043,12 @@ class StartNotebookServer extends Component {
   render() {
     const { branch, commit } = this.props.filters;
     const { branches } = this.props.data;
-    const { pipelines, message } = this.props;
+    const { autoStarting, pipelines, message } = this.props;
     const projectOptions = this.props.options.project;
+
+    if (autoStarting)
+      return (<StartNotebookAutostart {...this.props} />);
+
     const fetching = {
       branches: StatusHelper.isUpdating(branches) ? true : false,
       pipelines: pipelines.fetching,
@@ -1056,23 +1067,79 @@ class StartNotebookServer extends Component {
       null;
     const disabled = fetching.branches || fetching.commits;
 
+    const buttonMessage = this.state.showAdvanced ?
+      "Hide branch, commit, and image settings" :
+      "Do you want to select the branch, commit, or image?";
+
     return (
       <Row>
         <Col sm={12} md={10} lg={8}>
           <h3>Start a new session</h3>
           {messageOutput}
           <Form>
-            <StartNotebookBranches {...this.props} disabled={disabled} />
-            {show.commits ? <StartNotebookCommits {...this.props} disabled={disabled} /> : null}
-            {show.pipelines ? <StartNotebookPipelines {...this.props}
-              ignorePipeline={this.state.ignorePipeline}
-              setIgnorePipeline={this.setIgnorePipeline.bind(this)} /> : null}
-            {show.options ? <StartNotebookOptions {...this.props} /> : null}
+            <Collapse isOpen={this.state.showAdvanced}>
+              <StartNotebookBranches {...this.props} disabled={disabled} />
+              {show.commits ? <StartNotebookCommits {...this.props} disabled={disabled} /> : null}
+              {show.pipelines ? <StartNotebookPipelines {...this.props}
+                ignorePipeline={this.state.ignorePipeline}
+                setIgnorePipeline={this.setIgnorePipeline.bind(this)} /> : null}
+            </Collapse>
+
+            {show.options ?
+              (<FormGroup>
+                <Button color="link" className="font-italic btn-sm" onClick={() => { this.toggleShowAdvanced(); }}>
+                  {buttonMessage}
+                </Button>
+              </FormGroup>) :
+              null
+            }
+            {show.options ?
+              <StartNotebookOptions {...this.props} /> :
+              !this.state.showAdvanced ?
+                <Loader /> :
+                null
+            }
           </Form>
         </Col>
       </Row>
     );
   }
+}
+
+function StartNotebookAutostart(props) {
+  const { data, notebooks, options, pipelines } = props;
+  const fetching = {
+    data: data.fetched,
+    notebooks: notebooks.fetched,
+    options: options.fetched,
+    pipelines: pipelines.fetched
+  };
+  let progress = 0;
+  let message = "";
+  if (fetching.notebooks) {
+    message = "Checking existing sessions";
+    progress = 80;
+  }
+  else if (fetching.pipelines) {
+    message = "Checking GitLab jobs";
+    progress = 60;
+  }
+  else if (fetching.options) {
+    message = "Checking RenkuLab status";
+    progress = 40;
+  }
+  else if (fetching.data) {
+    message = "Checking project data";
+    progress = 20;
+  }
+
+  return (
+    <div>
+      <h3>Starting session</h3>
+      <p>{message}...</p>
+      <Progress value={progress} />
+    </div>
+  );
 }
 
 class StartNotebookBranches extends Component {
@@ -1656,37 +1723,41 @@ class StartNotebookServerOptions extends Component {
           ) :
           null;
 
-        switch (serverOption.type) {
-          case "enum": {
-            const options = mergeEnumOptions(globalOptions, projectOptions, key);
-            serverOption["options"] = options;
-            const separator = options.length === 1 ? null : (<br />);
-            return <FormGroup key={key}>
-              <Label className="me-2">{serverOption.displayName}</Label>
-              {separator}<ServerOptionEnum {...serverOption} onChange={onChange} />
-              {warning}
-            </FormGroup>;
-          }
-          case "int":
-            return <FormGroup key={key}>
-              <Label className="me-2">{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
-              <br /><ServerOptionRange step={1} {...serverOption} onChange={onChange} />
-            </FormGroup>;
-
-          case "float":
-            return <FormGroup key={key}>
-              <Label className="me-2">{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
-              <br /><ServerOptionRange step={0.01} {...serverOption} onChange={onChange} />
-            </FormGroup>;
-
-          case "boolean":
-            return <FormGroup key={key}>
-              <ServerOptionBoolean {...serverOption} onChange={onChange} />
-            </FormGroup>;
-
-          default:
-            return null;
+        let optionContent = null;
+        if (serverOption.type === "enum") {
+          const options = mergeEnumOptions(globalOptions, projectOptions, key);
+          serverOption["options"] = options;
+          const separator = options.length === 1 ? null : (<br />);
+          optionContent = (<Fragment>
+            <Label className="me-2">{serverOption.displayName}</Label>
+            {separator}<ServerOptionEnum {...serverOption} onChange={onChange} />
+            {warning}
+          </Fragment>);
         }
+        else if (serverOption.type === "int" || serverOption.type === "float") {
+          const step = serverOption.type === "int" ?
+            1 :
+            0.01;
+          optionContent = (<Fragment>
+            <Label className="me-2">{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
+            <br /><ServerOptionRange step={step} {...serverOption} onChange={onChange} />
+          </Fragment>);
+        }
+        else if (serverOption.type === "boolean") {
+          optionContent = (<ServerOptionBoolean {...serverOption} onChange={onChange} />);
+        }
+
+        if (!optionContent)
+          return null;
+
+        const formContent = (<FormGroup>{optionContent}</FormGroup>);
+        const colWidth = key === "default_url" ?
+          12 :
+          6;
+
+        return (
+          <Col key={key} xs={12} md={colWidth}>{formContent}</Col>
+        );
       });
 
     const unmatchedWarnings = warnings.filter(x => !sortedOptionKeys.includes(x));
@@ -1711,7 +1782,7 @@ class StartNotebookServerOptions extends Component {
     }
 
     return renderedServerOptions.length ?
-      renderedServerOptions.concat(globalWarning) :
+      <Row>{renderedServerOptions.concat(globalWarning)}</Row> :
       <label>Notebook options not available</label>;
   }
 }
@@ -1824,8 +1895,10 @@ class ServerOptionLaunch extends Component {
         <br />
         <InfoAlert timeout={0}>
           <FontAwesomeIcon icon={faInfoCircle} /> {" "}
-          The attempt to start a sessionn failed. This could be an intermittent issue, so you should {" "}
-          try a second time, and the session will hopefully start. If the problem persists, you can {" "}
+          The attempt to start a session failed with the following error:
+          <div><code>{launchError}</code></div>
+          This could be an intermittent issue, so you should try a second time,
+          and the session will hopefully start. If the problem persists, you can {" "}
           <Link to="/help">contact us for assistance</Link>.
         </InfoAlert>
       </Fragment> :

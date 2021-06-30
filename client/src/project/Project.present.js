@@ -33,13 +33,14 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
 import {
-  faCodeBranch, faExclamationTriangle, faUserFriends, faGlobe, faInfoCircle, faLock, faSearch,
-  faStar as faStarSolid
+  faCodeBranch, faExclamationTriangle, faGlobe, faInfoCircle, faLock, faPlay, faSearch,
+  faStar as faStarSolid, faUserFriends
 } from "@fortawesome/free-solid-svg-icons";
 import qs from "query-string";
 
 import {
-  ExternalLink, Loader, RenkuNavLink, TimeCaption, ButtonWithMenu, InfoAlert, GoBackButton, RenkuMarkdown
+  ButtonWithMenu, ExternalLink, GoBackButton,
+  InfoAlert, Loader, RenkuMarkdown, RenkuNavLink, TimeCaption
 } from "../utils/UIComponents";
 import { Url } from "../utils/url";
 import { SpecialPropVal } from "../model/Model";
@@ -85,19 +86,25 @@ function isKgDown(webhook) {
     webhookError(webhook.status);
 }
 
-class ProjectVisibilityLabel extends Component {
-  render() {
-    switch (this.props.visibilityLevel) {
-      case "private":
-        return <span><Badge color="secondary"><FontAwesomeIcon icon={faLock} /> Private</Badge>&nbsp;</span>;
-      case "internal":
-        return <span><Badge color="secondary"><FontAwesomeIcon icon={faUserFriends} /> Internal</Badge>&nbsp;</span>;
-      case "public":
-        return <span><Badge color="secondary"><FontAwesomeIcon icon={faGlobe} /> Public</Badge>&nbsp;</span>;
-      default:
-        return null;
-    }
+function ProjectVisibilityLabel({ visibilityLevel }) {
+  let text = null;
+  switch (visibilityLevel) {
+    case "private":
+      text = <Fragment><FontAwesomeIcon icon={faLock} /> Private</Fragment>;
+      break;
+    case "internal":
+      text = <Fragment><FontAwesomeIcon icon={faUserFriends} /> Internal</Fragment>;
+      break;
+    case "public":
+      text = <Fragment><FontAwesomeIcon icon={faGlobe} /> Public</Fragment>;
+      break;
+    default:
+      text = null;
   }
+  if (text == null) return null;
+  return <span className="ms-3">
+    <Badge color="secondary" style={{ verticalAlign: "middle" }}>{text}</Badge>&nbsp;
+  </span>;
 }
 
 /**
@@ -127,7 +134,7 @@ class ProjectStatusIcon extends Component {
       null;
 
     return (
-      <span className="warningLabel">
+      <span className="warningLabel" style={{ verticalAlign: "baseline" }}>
         <FontAwesomeIcon
           icon={faExclamationTriangle}
           onClick={() => history.push(overviewStatusUrl)}
@@ -230,6 +237,61 @@ class ForkProjectModal extends Component {
   }
 }
 
+function ProjectIdentifier(props) {
+  const forkedFromText = (props.forkedFromLink == null) ?
+    null :
+    [" ", <b key="forked">forked</b>, " from ", props.forkedFromLink];
+  const forkedFrom = (forkedFromText) ?
+    <Fragment><span className="text-rk-text fs-small">{forkedFromText}</span><br /></Fragment> :
+    null;
+  const projectId = props.core.path_with_namespace;
+  const projectTitle = props.core.title;
+
+  return (
+    <Fragment>
+      <div className="flex-grow-1">
+        <h2 className="mb-0">
+          <ProjectStatusIcon
+            history={props.history}
+            webhook={props.webhook}
+            overviewStatusUrl={props.overviewStatusUrl}
+            migration_required={props.migration.migration_required}
+            template_update_possible={props.migration.template_update_possible}
+            docker_update_possible={props.migration.docker_update_possible}
+          />{projectTitle}
+          <ProjectVisibilityLabel visibilityLevel={props.visibility.level} />
+        </h2>
+        <span className="text-rk-text fs-small">{projectId}</span> {forkedFrom}
+      </div>
+    </Fragment>);
+}
+
+function ProjectViewHeaderMinimal(props) {
+  const titleColSize = "col-12";
+
+  return (
+    <Fragment>
+      <Row className="d-flex rk-project-header gx-2 justify-content-md-between justify-content-sm-start">
+        <Col className={"order-1 d-flex align-items-start " + titleColSize}>
+          <ProjectIdentifier {...props} />
+          <StartSessionButton {...props} />
+        </Col>
+      </Row>
+    </Fragment>);
+}
+
+function ProjectViewHeaderOverviewDescription({ settingsReadOnly, description, settingsUrl }) {
+  if (description) {
+    return <RenkuMarkdown markdownText={description} fixRelativePaths={false}
+      className="p-mb-0 fs-6 rk-project-description"/>;
+  }
+  if (!settingsReadOnly) {
+    return <div className="p-mb-0 fs-6"><i>(This project has no description.
+      You can provide one on the <Link to={settingsUrl}>settings tab</Link>.)</i></div>;
+  }
+  return null;
+}
+
 class ProjectViewHeaderOverview extends Component {
   constructor(props) {
     super(props);
@@ -248,10 +310,6 @@ class ProjectViewHeaderOverview extends Component {
   }
 
   render() {
-    const forkedFrom = (this.props.forkedFromLink == null) ?
-      null :
-      [" ", "forked from", " ", this.props.forkedFromLink];
-    const core = this.props.core;
     const system = this.props.system;
 
     let starElement;
@@ -276,26 +334,27 @@ class ProjectViewHeaderOverview extends Component {
 
     const gitlabIDEUrl = this.props.externalUrl !== "" && this.props.externalUrl.includes("/gitlab/") ?
       this.props.externalUrl.replace("/gitlab/", "/gitlab/-/ide/project/") : null;
-    const description = this.props.core.description ?
-      (<RenkuMarkdown markdownText={this.props.core.description} fixRelativePaths={false}/>) :
-      null;
+    const description = <ProjectViewHeaderOverviewDescription
+      description={this.props.core.description}
+      settingsReadOnly={this.props.settingsReadOnly}
+      settingsUrl={this.props.settingsUrl} />;
+    const titleColSize = "col-12 col-md-8";
 
     return (
       <Fragment>
-        <Row className="d-flex row-cols-1 row-cols-md-2 rk-project-header gy-2 gx-2 pb-4">
-          <Col className="order-0 order-md-0">
-            <h2 className="mb-1">
-              <ProjectStatusIcon
-                history={this.props.history}
-                webhook={this.props.webhook}
-                overviewStatusUrl={this.props.overviewStatusUrl}
-                migration_required={this.props.migration.migration_required}
-                template_update_possible={this.props.migration.template_update_possible}
-                docker_update_possible={this.props.migration.docker_update_possible}
-              />{core.title}
-            </h2>
+        <Row className="d-flex rk-project-header gy-2 gx-2 pb-2 justify-content-md-between justify-content-sm-start">
+          <Col className={"order-1 d-flex " + titleColSize}>
+            { this.props.core.avatar_url ?
+              <div className="flex-shrink-0 pe-3" style={{ width: "120px" }}>
+                <img src={this.props.core.avatar_url} className=" rounded" alt=""
+                  style={{ objectFit: "cover", width: "100%", height: "90px" }}/>
+              </div>
+              : null }
+            <div className="flex-grow-1">
+              <span className="text-rk-text fs-small">{description}</span>
+            </div>
           </Col>
-          <Col className="text-sm-start text-md-end order-3 order-md-1">
+          <Col className="text-sm-start text-md-end order-2 col-12 col-md-4 ">
             <ButtonGroup size="sm">
               <ForkProjectModal
                 client={this.props.client}
@@ -330,24 +389,37 @@ class ProjectViewHeaderOverview extends Component {
                 gitlabIDEUrl={gitlabIDEUrl}
                 userLogged={this.props.user.logged} />
             </ButtonGroup>
-          </Col>
-          <Col className="text-rk-text order-1 order-md-2">
-            <span>{this.props.core.path_with_namespace}{forkedFrom}</span>
-          </Col>
-          <Col className="text-sm-start text-md-end order-4 order-md-3">
-            <ProjectVisibilityLabel visibilityLevel={this.props.visibility.level} />
-            <ProjectTagList tagList={this.props.system.tag_list} />
-          </Col>
-          <Col className="text-rk-text order-2 order-md-4 rk-project-description">
-            {description}
-          </Col>
-          <Col className="text-sm-start text-md-end order-5 order-md-5">
-            <TimeCaption key="time-caption" time={this.props.core.last_activity_at} />
+            { this.props.system.tag_list.length > 0 ?
+              <div className="pt-2">
+                <ProjectTagList tagList={this.props.system.tag_list} />
+              </div>
+              : null }
+            <div className="pt-1">
+              <TimeCaption key="time-caption" time={this.props.core.last_activity_at} className="text-rk-text"/>
+            </div>
           </Col>
         </Row>
-      </Fragment>
-    );
+      </Fragment>);
   }
+}
+
+function StartSessionButton(props) {
+  const { launchNotebookUrl, sessionAutostartUrl } = props;
+
+  const defaultAction = (
+    <Link className="btn btn-primary btn-sm" to={sessionAutostartUrl}>
+      <FontAwesomeIcon className="me-1" icon={faPlay} /> Start
+    </Link>
+  );
+  return (
+    <ButtonGroup size="sm" className="ms-1">
+      <ButtonWithMenu className="startButton" size="sm" default={defaultAction} color="primary">
+        <DropdownItem>
+          <Link className="text-decoration-none" to={launchNotebookUrl}>Start with options</Link>
+        </DropdownItem>
+      </ButtonWithMenu>
+    </ButtonGroup>
+  );
 }
 
 class ProjectViewHeader extends Component {
@@ -362,17 +434,15 @@ class ProjectViewHeader extends Component {
       </Link>;
     }
 
-    return <ProjectViewHeaderOverview
-      key="overviewHeader"
-      forkedFromLink={forkedFromLink} {...this.props} />;
+    return <ProjectViewHeaderMinimal key="minimalHeader" forkedFromLink={forkedFromLink} {...this.props} />;
   }
 }
 
 class ProjectNav extends Component {
   render() {
     return (
-      <div className="pb-3 rk-search-bar">
-        <Col className="d-flex pb-2 mb-1 justify-content-left " md={12} lg={12}>
+      <div className="pb-3 rk-search-bar pt-4 mt-1">
+        <Col className="d-flex pb-2 mb-1 justify-content-start" md={12} lg={12}>
           <Nav pills className="nav-pills-underline">
             <NavItem>
               <RenkuNavLink to={this.props.baseUrl} alternate={this.props.overviewUrl} title="Overview" />
@@ -390,7 +460,7 @@ class ProjectNav extends Component {
             <NavItem>
               <RenkuNavLink exact={false} to={this.props.notebookServersUrl} title="Sessions" />
             </NavItem>
-            <NavItem>
+            <NavItem className="pe-0">
               <RenkuNavLink exact={false} to={this.props.settingsUrl} title="Settings" />
             </NavItem>
           </Nav>
@@ -450,6 +520,26 @@ class ProjectViewReadme extends Component {
   }
 }
 
+function ProjectViewGeneral(props) {
+  let forkedFromLink = null;
+  if (props.system.forked_from_project != null &&
+    Object.keys(props.system.forked_from_project).length > 0) {
+    const forkedFrom = props.system.forked_from_project;
+    const projectsUrl = props.projectsUrl;
+    forkedFromLink = <Link key="forkedFrom" to={`${projectsUrl}/${forkedFrom.metadata.core.path_with_namespace}`}>
+      {forkedFrom.metadata.core.path_with_namespace || "no title"}
+    </Link>;
+  }
+
+  return <Fragment>
+    <ProjectViewHeaderOverview
+      key="overviewHeader"
+      forkedFromLink={forkedFromLink} {...props} />
+    <ProjectViewReadme {...props} />
+  </Fragment>;
+
+}
+
 function ProjectKGStatus(props) {
   const loading = false;
 
@@ -481,7 +571,7 @@ class ProjectViewOverviewNav extends Component {
     return (
       <Nav className="flex-column nav-light">
         <NavItem>
-          <RenkuNavLink to={this.props.baseUrl} title="Description" />
+          <RenkuNavLink to={this.props.baseUrl} title="General" id="nav-overview-general" />
         </NavItem>
         <NavItem>
           <RenkuNavLink to={this.props.statsUrl} title="Stats" />
@@ -508,7 +598,7 @@ class ProjectViewOverview extends Component {
         <Col key="content" sm={12} md={10}>
           <Switch>
             <Route exact path={this.props.baseUrl} render={props => {
-              return <ProjectViewReadme readme={this.props.data.readme} {...this.props} />;
+              return <ProjectViewGeneral readme={this.props.data.readme} {...this.props} />;
             }} />
             <Route exact path={this.props.statsUrl} render={props =>
               <ProjectOverviewStats
@@ -1212,7 +1302,13 @@ class ProjectView extends Component {
     }
 
     return [
-      <ProjectViewHeader key="header" {...this.props} />,
+      <Switch key="projectHeader">
+        <Route exact path={this.props.baseUrl}
+          render={props => <ProjectViewHeader {...this.props} minimalistHeader={false}/>} />
+        <Route path={this.props.overviewUrl}
+          render={props => <ProjectViewHeader {...this.props} minimalistHeader={false}/>} />
+        <Route component={()=><ProjectViewHeader {...this.props} minimalistHeader={true}/>} />
+      </Switch>,
       <ProjectNav key="nav" {...this.props} />,
       <Row key="content">
         <Switch>
