@@ -1,5 +1,33 @@
 # Changes
 
+## [1.0.0-beta2](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.0.0-beta1...1.0.0-beta2)  (2021-07-01)
+
+
+The second beta, focusing on the new look and feel for RenkuLab.
+
+### Features
+
+**design**
+
+* switch to minimalist project header ([#1385](https://github.com/SwissDataScienceCenter/renku-ui/issues/1385), [#1371](https://github.com/SwissDataScienceCenter/renku-ui/issues/1371))
+* use colors to identify entities ([#1398](https://github.com/SwissDataScienceCenter/renku-ui/issues/1398), [#1376](https://github.com/SwissDataScienceCenter/renku-ui/issues/1376))
+* implement small fixes to the UI design ([#1388](https://github.com/SwissDataScienceCenter/renku-ui/issues/1388))
+* display title and slug in search result ([#1399](https://github.com/SwissDataScienceCenter/renku-ui/issues/1399))
+
+**sessions**
+
+* add link to registry images ([#1404](https://github.com/SwissDataScienceCenter/renku-ui/issues/1404))
+* simplify starting new sessions ([#1403](https://github.com/SwissDataScienceCenter/renku-ui/issues/1403), [#1152](https://github.com/SwissDataScienceCenter/renku-ui/issues/1152))
+
+**misc**
+
+* add xml files preview ([#1401](https://github.com/SwissDataScienceCenter/renku-ui/issues/1401))
+
+### Bug Fixes
+
+* prevent duplication of falsy options ([#1406](https://github.com/SwissDataScienceCenter/renku-ui/issues/1406), [#1122](https://github.com/SwissDataScienceCenter/renku-ui/issues/1122))
+
+
 ## [1.0.0-beta1](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.11...1.0.0-beta1) (2021-06-17)
 
 The first beta, focusing on the new look and feel for RenkuLab.
