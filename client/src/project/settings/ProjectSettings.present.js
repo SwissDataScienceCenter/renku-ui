@@ -38,7 +38,7 @@ import _ from "lodash/array";
 import { ACCESS_LEVELS } from "../../api-client";
 import { ProjectAvatarEdit, ProjectTags, } from "../shared";
 import { NotebooksHelper, ServerOptionBoolean, ServerOptionEnum, ServerOptionRange } from "../../notebooks";
-import { Clipboard, Loader, RenkuNavLink } from "../../utils/UIComponents";
+import { Clipboard, ExternalLink, Loader, RenkuNavLink } from "../../utils/UIComponents";
 import { Url } from "../../utils/url";
 
 
@@ -226,7 +226,7 @@ function RepositoryUrlRow(props) {
 
 function ProjectSettingsSessions(props) {
   const { config, location, metadata, newConfig, options, setConfig, user } = props;
-  const { accessLevel } = metadata;
+  const { accessLevel, repositoryUrl } = metadata;
   const devAccess = accessLevel > ACCESS_LEVELS.DEVELOPER ? true : false;
   const disabled = !devAccess || newConfig.updating;
 
@@ -266,8 +266,8 @@ function ProjectSettingsSessions(props) {
   );
 
   const advancedOptions = (
-    <SessionConfigAdvanced devAccess={devAccess} defaults={projectData.defaults.project}
-      options={projectData.options.unknown} setConfig={setConfig} disabled={disabled}
+    <SessionConfigAdvanced devAccess={devAccess} defaults={projectData.defaults.project} disabled={disabled}
+      options={projectData.options.unknown} repositoryUrl={repositoryUrl} setConfig={setConfig}
     />
   );
 
@@ -557,13 +557,13 @@ function SessionsElement(props) {
 }
 
 function SessionConfigAdvanced(props) {
-  const { defaults, devAccess, disabled, options, setConfig } = props;
+  const { defaults, devAccess, disabled, options, repositoryUrl, setConfig } = props;
   const imageAvailable = options.length && options.includes("image") ?
     true :
     false;
 
   // Collapse unknown values by default when none are already assigned
-  const [showImage, setShowImage] = useState(false);
+  const [showImage, setShowImage] = useState(imageAvailable);
   const toggleShowImage = () => setShowImage(!showImage);
 
   const warningMessage = devAccess ?
@@ -583,6 +583,7 @@ function SessionConfigAdvanced(props) {
         <SessionPinnedImage
           devAccess={devAccess}
           disabled={disabled}
+          repositoryUrl={repositoryUrl}
           setConfig={setConfig}
           value={imageAvailable ? defaults["image"] : null}
         />
@@ -595,7 +596,7 @@ function SessionConfigAdvanced(props) {
 }
 
 function SessionPinnedImage(props) {
-  const { devAccess, disabled, setConfig, value } = props;
+  const { devAccess, disabled, repositoryUrl, setConfig, value } = props;
 
   const [modifyString, setModifyString] = useState(false);
   const [newString, setNewString] = useState("");
@@ -707,11 +708,20 @@ function SessionPinnedImage(props) {
     </Fragment>);
   }
 
+  const imagesUrl = `${repositoryUrl}/container_registry`;
+  const imagesLink = (<div>
+    <FormText>
+      A URL of a RenkuLab-compatible Docker image. For an image from this project, consult {" "}
+      <ExternalLink role="link" title="the list of images for this project" url={imagesUrl} />.
+    </FormText>
+  </div>);
+
   return (
     <FormGroup>
       <Label className="me-2">Docker image:</Label>
       {image}
       {modify}
+      {imagesLink}
     </FormGroup>
   );
 }
