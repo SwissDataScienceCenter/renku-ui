@@ -32,7 +32,7 @@ const LAYOUT = {
   disableStyles: true,
   containerClasses: "fixed-bottom p-3 bg-dark",
   contentClasses: "text-white small",
-  buttonClasses: "btn btn-sm btn-light mr-2",
+  buttonClasses: "btn btn-sm btn-light me-2",
   buttonWrapperClasses: "mt-2",
 };
 const CONTENT = `This website requires cookies in order to ensure basic functionality. By clicking

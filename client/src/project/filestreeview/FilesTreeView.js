@@ -4,6 +4,7 @@ import { StickyContainer, Sticky } from "react-sticky";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile, faFolder as faFolderClosed, faFolderOpen } from "@fortawesome/free-solid-svg-icons";
 import { Button, ButtonGroup } from "reactstrap";
+
 import "./treeviewstyle.css";
 
 
@@ -39,15 +40,6 @@ class TreeNode extends Component {
   }
 
   render() {
-    const icon = this.props.node.type === "tree" ?
-      (this.state.childrenOpen === false ?
-        <FontAwesomeIcon className="icon-purple" icon={faFolderClosed} />
-        : <FontAwesomeIcon className="icon-purple" icon={faFolderOpen} />)
-      : <FontAwesomeIcon className="icon-gray" icon={faFile} />;
-
-    const order = this.props.node.type === "tree" ? "order-second" : "order-third";
-    const hidden = this.props.node.name.startsWith(".") ? " hidden-folder " : "";
-
     const children = this.props.node.children ?
       this.props.node.children.map((node) => {
         return <TreeNode
@@ -64,46 +56,48 @@ class TreeNode extends Component {
           nodeInsideIsSelected={this.props.currentUrl.endsWith(node.path)}
           currentUrl={this.props.currentUrl}
           savePosition={this.props.savePosition}
+          history={this.props.history}
         />;
       })
       : null;
 
-    let elementToRender;
-    let selected = this.props.nodeInsideIsSelected ? " selected-file " : "";
+    const icon = this.props.node.type === "tree" ?
+      (this.state.childrenOpen === false ?
+        <FontAwesomeIcon className="link-primary" icon={faFolderClosed} />
+        : <FontAwesomeIcon className="link-primary" icon={faFolderOpen} />)
+      : <FontAwesomeIcon className="link-rk-text" icon={faFile} />;
 
-    if (this.props.node.type === "blob" || this.props.node.type === "commit") {
-      elementToRender =
-        <div className={order + " " + hidden + " " + selected}>
-          <div className={"fs-element"} onClick={this.handleFileClick}>
-            { this.props.fileView ?
-              <Link to= {`${this.props.projectUrl}/${this.props.node.jsonObj.path}`} >
-                <div className={"fs-element"}>
-                  {icon} {this.props.node.name}
-                </div>
-              </Link>
-              :
-              <Link to= {`${this.props.lineageUrl}/${this.props.node.jsonObj.path}`} >
-                <div className={"fs-element"}>
-                  {icon} {this.props.node.name}
-                </div>
-              </Link>
-            }
-          </div>
+    const order = this.props.node.type === "tree" ?
+      "order-second" :
+      "order-third";
+    const hidden = this.props.node.name.startsWith(".") ?
+      "rk-opacity-50" :
+      "";
+    const selected = this.props.nodeInsideIsSelected ?
+      "selected-file" :
+      "";
+
+    const urlPrefix = this.props.fileView ?
+      this.props.projectUrl :
+      this.props.lineageUrl;
+    const targetUrl = `${urlPrefix}/${this.props.node.jsonObj.path}`;
+
+    const clickHandler = this.props.node.type === "tree" ?
+      this.handleIconClick :
+      this.handleFileClick;
+
+    const childrenOpen = children && this.state.childrenOpen ?
+      (<div className="ps-3">{children}</div>) :
+      null;
+
+    return (
+      <div className={`${order} ${hidden} ${selected}`}>
+        <div className="fs-element" onClick={clickHandler}>
+          <Link to={targetUrl}>{icon} {this.props.node.name}</Link>
         </div>
-      ;
-    }
-    else {
-      const childrenOpen = this.state.childrenOpen ? <div className="pl-3">{children}</div> : null;
-      elementToRender =
-        <div className={order + " " + hidden} >
-          <div className={"fs-element"} onClick={this.handleIconClick} >
-            {icon} {this.props.node.name}
-          </div>
-          {childrenOpen}
-        </div>;
-    }
-
-    return elementToRender;
+        {childrenOpen}
+      </div>
+    );
   }
 }
 
@@ -111,21 +105,23 @@ class TreeContainer extends Component {
   render() {
     const { style, fileView, toLineage, toFile, tree } = this.props;
 
-    const switchPage = () => {
-      if (fileView)
+    const switchPage = (switchToContent) => {
+      if (fileView && !switchToContent)
         this.props.history.push(toLineage);
-      else
+      else if (!fileView && switchToContent)
         this.props.history.push(toFile);
     };
 
     return (
-      <div className="tree-container" style={style}>
-        <div className="tree-title-container">
-          <ButtonGroup className="tree-title pb-1" size="sm">
-            <Button color="primary" outline onClick={switchPage} active={fileView}>
+      <div className="d-flex flex-column" style={style}>
+        <div className="d-block">
+          <ButtonGroup className="d-flex rk-btn-group-light mb-2">
+            <Button color="rk-white" className="btn-rk-white-dark-active"
+              onClick={()=>switchPage(true)} active={fileView}>
               Contents
             </Button>
-            <Button color="primary" outline onClick={switchPage} active={!fileView}>
+            <Button color="rk-white" className="btn-rk-white-dark-active"
+              onClick={()=>switchPage(false)} active={!fileView}>
               Lineage
             </Button>
           </ButtonGroup>
@@ -178,6 +174,7 @@ class FilesTreeView extends Component {
           nodeInsideIsSelected={this.props.currentUrl.endsWith(node.path)}
           currentUrl={this.props.currentUrl}
           savePosition={this.savePosition.bind(this)}
+          history={this.props.history}
         />;
       }) :
       null;

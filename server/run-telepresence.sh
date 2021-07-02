@@ -100,5 +100,9 @@ elif [[ "$DEBUGBRK" ]]
 then
   telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --expose 9229:9229 --run npm run dev-debug-brk
 else
-  telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --run npm run dev
+  # if things work in mac delete current and next line
+  # telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --run npm run dev
+  # Use the same method on osx since --method inject-tcp does not work on macOS 11.2 (Big Sur)
+  # See https://github.com/telepresenceio/telepresence/issues/1487
+  telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 3000:8080 --run npm run dev
 fi

@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2021 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,31 +16,337 @@
  * limitations under the License.
  */
 
-import React, { Component, Fragment } from "react";
+import React, { Component, Fragment, useState } from "react";
 import Media from "react-media";
 import { Link } from "react-router-dom";
 import {
-  Form, FormGroup, FormText, Label, Input, Button, ButtonGroup, Row, Col, Table, DropdownItem, UncontrolledTooltip,
-  UncontrolledPopover, PopoverHeader, PopoverBody, Badge, Modal, ModalHeader, ModalBody, ModalFooter, CustomInput,
-  Collapse
+  Alert, Badge, Button, ButtonGroup, Col, Collapse, DropdownItem, Form, FormGroup, FormText, Input, Label,
+  Modal, ModalBody, ModalFooter, ModalHeader, Nav, NavItem, NavLink, PopoverBody, PopoverHeader, Progress,
+  Row, UncontrolledPopover, UncontrolledTooltip
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStopCircle, faExternalLinkAlt, faInfoCircle, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import {
-  faCogs, faCog, faExclamationTriangle, faRedo, faCheckCircle, faFileAlt, faSave, faTimesCircle
+  faCheckCircle, faCog, faCogs, faExclamationTriangle, faExternalLinkAlt, faFileAlt, faHistory,
+  faInfoCircle, faQuestionCircle, faRedo, faSave, faStopCircle, faSyncAlt, faTimesCircle
 } from "@fortawesome/free-solid-svg-icons";
 
 import { StatusHelper } from "../model/Model";
 import { NotebooksHelper } from "./index";
-import { simpleHash, formatBytes } from "../utils/HelperFunctions";
+import { formatBytes, simpleHash } from "../utils/HelperFunctions";
 import {
-  ButtonWithMenu, Loader, ExternalLink, JupyterIcon, ThrottledTooltip, WarnAlert, InfoAlert, TimeCaption, Clipboard
+  ButtonWithMenu, Clipboard, ExternalLink, InfoAlert, JupyterIcon, Loader,
+  ThrottledTooltip, TimeCaption, WarnAlert
 } from "../utils/UIComponents";
 import Time from "../utils/Time";
 import Sizes from "../utils/Media";
 import { Url } from "../utils/url";
 
 import "./Notebooks.css";
+
+
+// * Constants and helpers * //
+const SESSION_TABS = {
+  session: "session",
+  commands: "commands",
+  logs: "logs",
+  docs: "docs"
+};
+
+const formatResources = function (resources) {
+  if (resources.memory) {
+    const memory = !isNaN(resources.memory) ?
+      formatBytes(resources.memory) :
+      resources.memory;
+    return { ...resources, memory };
+  }
+  return resources;
+};
+
+/** Helper function for formatting the resource list */
+
+function formattedResourceList(resources) {
+  const resourcesKeys = Object.keys(resources);
+  const resourceList = resourcesKeys.map((name, index) => {
+    return (<span key={name} className="text-nowrap">
+      <span className="fw-bold">{resources[name]} </span>
+      {name}{resourcesKeys.length - 1 === index ? " " : " | " }</span>);
+  });
+  return resourceList;
+}
+
+// * Jupyter Session code * //
+function ShowSession(props) {
+  const { filters, handlers, notebook } = props;
+
+  const [tab, setTab] = useState(SESSION_TABS.session);
+
+  const fetchLogs = () => {
+    if (!notebook.available)
+      return;
+    handlers.fetchLogs(notebook.data.name);
+  };
+
+  let widthStyle = "";
+  if (tab === SESSION_TABS.session)
+    widthStyle = "w-100";
+  else if (tab === SESSION_TABS.logs)
+    widthStyle = "overflow-auto";
+  else if (tab === SESSION_TABS.docs)
+    widthStyle = "w-100";
+
+  const urlList = Url.get(Url.pages.project.session, {
+    namespace: filters.namespace,
+    path: filters.project,
+  });
+
+  // Always add all sub-components and hide them one by one to preserve the iframe navigation where needed
+  return (
+    <div className="bg-white">
+      <SessionInformation notebook={notebook} stopNotebook={handlers.stopNotebook} urlList={urlList} />
+      <div className="d-lg-flex">
+        <SessionNavbar fetchLogs={fetchLogs} setTab={setTab} tab={tab} />
+        <div className={`border sessions-iframe-border ${widthStyle}`}>
+          <SessionJupyter {...props} tab={tab} urlList={urlList} />
+          <SessionLogs {...props} tab={tab} fetchLogs={fetchLogs} />
+          <SessionDocs {...props} tab={tab} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function SessionInformation(props) {
+  const { notebook, stopNotebook, urlList } = props;
+
+  const [stopping, setStopping] = useState(false);
+
+  const stop = async () => {
+    setStopping(true);
+    // ? no need to handle the error here since we use the notifications at container level
+    const success = await stopNotebook(notebook.data.name, urlList);
+    if (success !== false)
+      return;
+    setStopping(false);
+  };
+
+  // Unavailable session, no information
+  if (!notebook.available)
+    return null;
+
+  const annotations = NotebooksHelper.cleanAnnotations(notebook.data.annotations, "renku.io");
+  const url = notebook.data.url;
+  const resources = formatResources(notebook.data.resources);
+
+  const repositoryLinks = {
+    branch: `${annotations["repository"]}/tree/${annotations["branch"]}`,
+    commit: `${annotations["repository"]}/tree/${annotations["commit-sha"]}`
+  };
+  const resourceList = formattedResourceList(resources);
+
+  // Create dropdown menu
+  const defaultAction = (<Button color="primary" onClick={stop} disabled={stopping}>Stop</Button>);
+  const openInNewTab = (
+    <DropdownItem href={url} target="_blank" disabled={stopping}>
+      <FontAwesomeIcon icon={faExternalLinkAlt} /> Open in new tab
+    </DropdownItem>
+  );
+  const dropdownMenu = (
+    <ButtonWithMenu className="sessionsButton" color="primary" size="sm" default={defaultAction}>
+      {openInNewTab}
+    </ButtonWithMenu>
+  );
+
+  return (
+    <div className="d-flex flex-wrap">
+      <div className="p-2 p-lg-3 text-nowrap">
+        <span className="fw-bold">Branch: </span>
+        <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text"
+          showLinkIcon={true} />
+      </div>
+      <div className="p-2 p-lg-3 text-nowrap">
+        <span className="fw-bold">Commit: </span>
+        <ExternalLink url={repositoryLinks.commit} title={annotations["commit-sha"].substring(0, 8)}
+          role="text" showLinkIcon={true} />
+      </div>
+      <div className="p-2 p-lg-3 text-nowrap">
+        <span className="fw-bold">Resources: </span>
+        <span>{resourceList}</span>
+      </div>
+      <div className="p-2 p-lg-3 text-nowrap">
+        <span className="fw-bold">Running since: </span>
+        <TimeCaption noCaption={true} endPunctuation=" " time={notebook.data.started} />
+      </div>
+      <div className="p-1 p-lg-2 m-auto me-1 me-lg-2">
+        {dropdownMenu}
+      </div>
+    </div>
+  );
+}
+
+function SessionNavbar(props) {
+  const { fetchLogs, tab, setTab } = props;
+
+  return (
+    <div className="border-top">
+      <Nav className="flex-lg-column">
+        <NavItem>
+          <NavLink className="p-2 p-lg-3" onClick={() => setTab(SESSION_TABS.session)}>
+            <JupyterIcon svgClass="svg-inline--fa fa-lg" grayscale={tab === SESSION_TABS.session ? false : true} />
+          </NavLink>
+        </NavItem>
+        {/* <NavItem>
+          <NavLink className={`p-2 p-lg-3 ${tab === SESSION_TABS.commands ? "text-rk-green" : "text-rk-text"}`}
+            onClick={() => setTab(SESSION_TABS.commands)} >
+            <FontAwesomeIcon size="lg" icon={faBook} />
+          </NavLink>
+        </NavItem> */}
+        <NavItem>
+          <NavLink className={`p-2 p-lg-3 ${tab === SESSION_TABS.logs ? "text-rk-green" : "text-rk-text"}`}
+            onClick={() => { fetchLogs(); setTab(SESSION_TABS.logs); }} >
+            <FontAwesomeIcon size="lg" icon={faHistory} />
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink className={`p-2 p-lg-3 ${tab === SESSION_TABS.docs ? "text-rk-green" : "text-rk-text"}`}
+            onClick={() => setTab(SESSION_TABS.docs)} >
+            <FontAwesomeIcon size="lg" icon={faQuestionCircle} />
+          </NavLink>
+        </NavItem>
+      </Nav>
+    </div>
+  );
+}
+
+function SessionLogs(props) {
+  const { fetchLogs, notebook, tab } = props;
+  const { logs } = notebook;
+
+  if (tab !== SESSION_TABS.logs)
+    return null;
+
+  let body = null;
+  if (logs.fetching) {
+    body = (<Loader />);
+  }
+  else {
+    if (!logs.fetched) {
+      body = (
+        <p>
+          Logs unavailable. Please{" "}
+          <Button color="primary" size="sm" onClick={() => { fetchLogs(); }}>download</Button>
+          {" "}them again.
+        </p>
+      );
+    }
+    else {
+      if (logs.data && logs.data.length) {
+        body = (<pre className="small no-overflow wrap-word">{logs.data.join("\n")}</pre>);
+      }
+      else {
+        body = (
+          <Fragment>
+            <p>No logs available for this pod yet.</p>
+            <p>
+              You can try to{" "}
+              <Button color="primary" size="sm" onClick={() => { fetchLogs(); }}>refresh</Button>
+              {" "}them after a while.
+            </p>
+          </Fragment>
+        );
+      }
+    }
+  }
+
+  // ? Having a minHeight prevent losing the vertical scroll position.
+  // TODO: Revisit after #1219
+  return (
+    <Fragment>
+      <div className="p-2 p-lg-3 text-nowrap">
+        <Button key="button" color="secondary" size="sm"
+          id="session-refresh-logs" onClick={() => fetchLogs()} disabled={logs.fetching} >
+          <FontAwesomeIcon icon={faSyncAlt} /> Refresh logs
+        </Button>
+      </div>
+      <div className="p-2 p-lg-3 border-top" style={{ minHeight: 800 }}>
+        {body}
+      </div>
+    </Fragment>
+  );
+}
+
+function SessionDocs(props) {
+  const { tab } = props;
+
+  const docsUrl = "https://renku.readthedocs.io/en/latest/";
+
+  const invisible = tab !== SESSION_TABS.docs ?
+    true :
+    false;
+  const localClass = invisible ?
+    "invisible" :
+    "";
+
+  return (
+    <iframe id="docs-iframe" title="documentation iframe" src={docsUrl} className={localClass}
+      width="100%" height="800px" referrerPolicy="origin" sandbox="allow-same-origin"
+    />
+  );
+}
+
+function SessionJupyter(props) {
+  const { filters, notebook, tab, urlList } = props;
+
+  const invisible = tab !== SESSION_TABS.session ?
+    true :
+    false;
+
+  let content = null;
+  if (notebook.available) {
+    const status = NotebooksHelper.getStatus(notebook.data.status);
+    if (status === "running") {
+      const localClass = invisible ?
+        "invisible position-absolute" : // ? position-absolute prevent showing extra margins
+        "";
+      content = (
+        <iframe id="session-iframe" title="session iframe" src={notebook.data.url} className={localClass}
+          width="100%" height="800px" referrerPolicy="origin" sandbox="allow-same-origin allow-scripts"
+        />
+      );
+    }
+    else if (invisible) {
+      return null;
+    }
+    else if (status === "pending") {
+      content = (<Loader />);
+    }
+  }
+  else {
+    if (invisible)
+      return null;
+
+    const urlNew = Url.get(Url.pages.project.session.new, {
+      namespace: filters.namespace,
+      path: filters.project,
+    });
+
+    content = (
+      <div className="p-2 p-lg-3 text-nowrap">
+        <p className="mt-2">The session you are trying to open is not available.</p>
+        <Alert color="primary">
+          <p className="mb-0">
+            <FontAwesomeIcon size="lg" icon={faQuestionCircle} />
+            {" "}You should either{" "}
+            <Link className="btn btn-primary btn-sm" to={urlNew}>start a new session</Link>
+            {" "}or{" "}
+            <Link className="btn btn-primary btn-sm" to={urlList}>check the running sessions</Link>
+            {" "}
+          </p>
+        </Alert>
+      </div>
+    );
+  }
+  return content;
+}
 
 class NotebooksDisabled extends Component {
   render() {
@@ -53,14 +359,14 @@ class NotebooksDisabled extends Component {
         <InfoAlert timeout={0} key="login-info">
           <p className="mb-0">
             <Link className="btn btn-primary btn-sm" to={to}>Log in</Link> to use
-            interactive environments.
+            sessions.
           </p>
         </InfoAlert>
       );
 
     return (
       <div>
-        <p>This Renkulab deployment doesn&apos;t allow unauthenticated users to start Interactive Environments.</p>
+        <p>This Renkulab deployment doesn&apos;t allow unauthenticated users to start sessions.</p>
         {info}
       </div>
     );
@@ -78,9 +384,14 @@ class Notebooks extends Component {
       (<div>{this.props.message}</div>) :
       null;
 
-    return <Row>
-      <Col>
-        <NotebooksTitle standalone={this.props.standalone} />
+    return (
+      <Fragment>
+        <Row className="pt-2 pb-3">
+          <Col className="d-flex mb-2 justify-content-between">
+            <NotebooksHeader standalone={this.props.standalone}
+              urlNewSession={this.props.urlNewSession}/>
+          </Col>
+        </Row>
         <NotebookServers
           servers={this.props.notebooks.all}
           standalone={this.props.standalone}
@@ -97,19 +408,27 @@ class Notebooks extends Component {
           servers={serverNumbers}
           standalone={this.props.standalone}
           loading={loading}
-          urlNewEnvironment={this.props.urlNewEnvironment}
+          urlNewSession={this.props.urlNewSession}
         />
         {serverNumbers ? null : message}
-      </Col>
-    </Row>;
+      </Fragment>);
   }
 }
 
-class NotebooksTitle extends Component {
+class NotebooksHeader extends Component {
   render() {
     if (this.props.standalone)
-      return (<h1>Interactive Environments</h1>);
-    return (<h3>Interactive Environments</h3>);
+      return (<h2>Sessions</h2>);
+
+    return (<Fragment>
+      <h3>Sessions</h3>
+      <div>
+        <Link className="btn btn-sm btn-secondary" role="button" to={this.props.urlNewSession}>
+          <span className="arrow-right pt-2 pb-2">  </span>
+          New session
+        </Link>
+      </div>
+    </Fragment>);
   }
 }
 
@@ -119,17 +438,17 @@ class NotebooksPopup extends Component {
       return null;
 
     let suggestion = (<span>
-      You can start a new interactive environment from the <i>Environments</i> tab of a project.
+      You can start a new session from the <i>Sessions</i> tab of a project.
     </span>);
     if (!this.props.standalone) {
       let newOutput = "New";
-      if (this.props.urlNewEnvironment) {
-        newOutput = (<Link className="btn btn-primary btn-sm" role="button" to={this.props.urlNewEnvironment}>
-          New</Link>);
+      if (this.props.urlNewSession) {
+        newOutput = (<Link className="btn btn-primary btn-sm" role="button" to={this.props.urlNewSession}>
+          New session</Link>);
       }
 
       suggestion = (<span>
-        You can start a new interactive environment by clicking on {newOutput} in the side bar.
+        You can start a new session by clicking on the {newOutput} button on top.
       </span>);
     }
 
@@ -147,11 +466,9 @@ class NotebookServers extends Component {
       return <Loader />;
 
     return (
-      <Row>
-        <Col md={12} xl={10}>
-          <NotebookServersList {...this.props} />
-        </Col>
-      </Row>
+      <div className="mb-4">
+        <NotebookServersList {...this.props} />
+      </div>
     );
   }
 }
@@ -160,7 +477,7 @@ class NotebookServersList extends Component {
   render() {
     const serverNames = Object.keys(this.props.servers);
     if (serverNames.length === 0)
-      return (<p>No currently running environments.</p>);
+      return (<p>No currently running sessions.</p>);
 
     const rows = serverNames.map((k, i) => {
       const validAnnotations = Object.keys(this.props.servers[k].annotations)
@@ -188,70 +505,18 @@ class NotebookServersList extends Component {
         url={this.props.servers[k].url}
       />);
     });
+
     return (
-      <Table>
-        <thead className="thead-light">
-          <NotebookServersHeader scope={this.props.scope} standalone={this.props.standalone} />
-        </thead>
-        <tbody>
+      <Fragment>
+        <div className="mb-4">
           {rows}
-        </tbody>
-      </Table>
+        </div>
+      </Fragment>
     );
-  }
-}
-
-class NotebookServersHeader extends Component {
-  render() {
-    return (
-      <Media query={Sizes.md}>
-        {matches =>
-          matches ?
-            (<NotebookServerHeaderFull {...this.props} />) :
-            (<NotebookServerHeaderCompact {...this.props} />)
-        }
-      </Media>
-    );
-  }
-}
-
-class NotebookServerHeaderFull extends Component {
-  render() {
-    const project = this.props.standalone ?
-      <th className="align-middle">Project</th> :
-      null;
-
-    return (
-      <tr>
-        <th className="align-middle" style={{ width: "1px" }}></th>
-        {project}
-        <th className="align-middle">Branch</th>
-        <th className="align-middle">Commit</th>
-        <th className="align-middle">Resources</th>
-        <th className="align-middle">Status</th>
-        <th className="align-middle" style={{ width: "1px" }}>Action</th>
-      </tr>
-    );
-  }
-}
-
-class NotebookServerHeaderCompact extends Component {
-  render() {
-    return (<tr><th className="align-middle">List</th></tr>);
   }
 }
 
 class NotebookServerRow extends Component {
-  formatResources(resources) {
-    if (resources.memory) {
-      const memory = !isNaN(resources.memory) ?
-        formatBytes(resources.memory) :
-        resources.memory;
-      return { ...resources, memory };
-    }
-    return resources;
-  }
-
   render() {
     const annotations = NotebooksHelper.cleanAnnotations(this.props.annotations, "renku.io");
     const status = NotebooksHelper.getStatus(this.props.status);
@@ -262,7 +527,7 @@ class NotebookServerRow extends Component {
     };
     const uid = "uid_" + simpleHash(annotations["namespace"] + annotations["projectName"]
       + annotations["branch"] + annotations["commit-sha"]);
-    const resources = this.formatResources(this.props.resources);
+    const resources = formatResources(this.props.resources);
     const repositoryLinks = {
       branch: `${annotations["repository"]}/tree/${annotations["branch"]}`,
       commit: `${annotations["repository"]}/tree/${annotations["commit-sha"]}`
@@ -271,7 +536,15 @@ class NotebookServerRow extends Component {
       this.props.commits[annotations["commit-sha"]] :
       null;
     const image = this.props.image;
-    const newProps = { annotations, status, details, uid, resources, repositoryLinks, commitDetails, image };
+    const localUrl = Url.get(Url.pages.project.session.show, {
+      namespace: annotations["namespace"],
+      path: annotations["projectName"],
+      server: this.props.name,
+    });
+
+    const newProps = {
+      annotations, commitDetails, details, image, localUrl, repositoryLinks, resources, status, uid
+    };
 
     return (
       <Media query={Sizes.md}>
@@ -303,6 +576,7 @@ class NotebookServerRowCommitInfo extends Component {
   render() {
     const { commit } = this.props;
     const uid = `${this.props.uid}-commit`;
+
     let content;
     if (!commit || !commit.data || !commit.data.id || (!commit.fetching && !commit.fetched)) {
       content = (<span>Data not available.</span>);
@@ -313,22 +587,24 @@ class NotebookServerRowCommitInfo extends Component {
     else {
       content = (
         <Fragment>
-          <span className="font-weight-bold">Author:</span> <span>{commit.data.author_name}</span><br />
+          <span className="fw-bold">Author:</span> <span>{commit.data.author_name}</span><br />
           <span>
-            <span className="font-weight-bold">Date:</span>
+            <span className="fw-bold">Date:</span>
             {" "}<span>{Time.toIsoTimezoneString(commit.data.committed_date, "datetime-short")}</span>
             {" "}<TimeCaption caption="~" endPunctuation=" " time={commit.data.committed_date} />
             <br />
           </span>
-          <span className="font-weight-bold">Message:</span> <span>{commit.data.message}</span><br />
-          <span className="font-weight-bold">Full SHA:</span> <span>{commit.data.id}</span><br />
+          <span className="fw-bold">Message:</span> <span>{commit.data.message}</span><br />
+          <span className="fw-bold">Full SHA:</span> <span>{commit.data.id}</span><br />
+          <span className="fw-bold me-1">Details:</span>
+          <ExternalLink url={commit.data.web_url} title="Open commit in GitLab" role="text" showLinkIcon={true} />
         </Fragment>
       );
     }
 
     return (
       <span>
-        <FontAwesomeIcon id={uid} icon={faInfoCircle} style={{ color: "#5561A6" }} />
+        <FontAwesomeIcon id={uid} icon={faInfoCircle}/>
         <UncontrolledPopover target={uid} trigger="legacy" placement="bottom"
           isOpen={this.state.isOpen} toggle={() => this.toggle()}>
           <PopoverHeader>Commit details</PopoverHeader>
@@ -346,32 +622,36 @@ class NotebookServerRowFull extends Component {
       annotations, details, status, url, uid, resources, repositoryLinks, name, commitDetails, fetchCommit, image
     } = this.props;
 
-    const icon = <td className="align-middle">
+    const icon = <div className="align-middle">
       <NotebooksServerRowStatusIcon
         details={details} status={status} uid={uid} image={image} annotations={annotations}
       />
-    </td>;
+    </div>;
+
     const project = this.props.standalone ?
-      (<td className="align-middle"><NotebookServerRowProject annotations={annotations} /></td>) :
+      (<NotebookServerRowProject annotations={annotations} />) :
       null;
-    const branch = (<td className="align-middle">
-      <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text" />
-    </td>);
-    const commit = (<td className="align-middle">
-      <ExternalLink url={repositoryLinks.commit} title={annotations["commit-sha"].substring(0, 8)} role="text" />
-      {" "}<NotebookServerRowCommitInfo uid={uid} name={name} commit={commitDetails} fetchCommit={fetchCommit} />
-    </td>);
-    const resourceList = Object.keys(resources).map(name => {
-      return (<div key={name} className="text-nowrap">{resources[name]} <i>{name}</i></div>);
-    });
-    const resourceObject = (<td>{resourceList}</td>);
-    const statusOut = (<td className="align-middle">
-      <NotebooksServerRowStatus
-        details={details} status={status} uid={uid} startTime={this.props.startTime} annotations={annotations}
-      />
-    </td>);
-    const action = (<td className="align-middle">
+
+    const branch = (
+      <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text" showLinkIcon={true} />
+    );
+
+    const commit = (
+      <Fragment>
+        <ExternalLink url={repositoryLinks.commit}
+          title={annotations["commit-sha"].substring(0, 8)} role="text" showLinkIcon={true} />
+        {" "}<NotebookServerRowCommitInfo uid={uid} name={name} commit={commitDetails} fetchCommit={fetchCommit} />
+      </Fragment>
+    );
+
+    const resourceList = formattedResourceList(resources);
+
+    const statusOut = <NotebooksServerRowStatus
+      details={details} status={status} uid={uid} startTime={this.props.startTime} annotations={annotations}/>;
+
+    const action = (<span className="mb-auto">
       <NotebookServerRowAction
+        localUrl={this.props.localUrl}
         name={this.props.name}
         status={status}
         stopNotebook={this.props.stopNotebook}
@@ -385,18 +665,39 @@ class NotebookServerRowFull extends Component {
         name={this.props.name}
         annotations={annotations}
       />
-    </td>);
+    </span>);
 
     return (
-      <tr>
-        {icon}
-        {project}
-        {branch}
-        {commit}
-        {resourceObject}
-        {statusOut}
-        {action}
-      </tr>
+      <div className="d-flex flex-row rk-search-result rk-search-result-100 cursor-auto overflow-visible">
+        <span className={this.props.standalone ? "me-3 mt-2" : "me-3 mt-1"}>{icon}</span>
+        <Col className="d-flex align-items-start flex-column col-10 overflow-hidden">
+          <div className="project d-inline-block text-truncate">
+            {project}
+          </div>
+          <table>
+            <tbody className="gx-4 text-rk-text">
+              <tr>
+                <td className="text-dark fw-bold">Branch</td>
+                <td className="text-dark">{branch}</td>
+              </tr>
+              <tr>
+                <td className="text-dark fw-bold">Commit</td>
+                <td className="text-dark">{commit}</td>
+              </tr>
+              <tr>
+                <td className="pe-3 text-dark fw-bold">Resources</td>
+                <td className="text-dark">{resourceList}</td>
+              </tr>
+              <tr>
+                <td colSpan="2">{statusOut}</td>
+              </tr>
+            </tbody>
+          </table>
+        </Col>
+        <Col className="d-flex align-items-end flex-column flex-shrink-0">
+          {action}
+        </Col>
+      </div>
     );
   }
 }
@@ -404,7 +705,8 @@ class NotebookServerRowFull extends Component {
 class NotebookServerRowCompact extends Component {
   render() {
     const {
-      annotations, details, status, url, uid, resources, repositoryLinks, name, commitDetails, fetchCommit, image
+      annotations, commitDetails, details, fetchCommit, image, localUrl, logs, name, repositoryLinks,
+      resources, standalone, startTime, status, uid, url
     } = this.props;
 
     const icon = <span>
@@ -412,32 +714,28 @@ class NotebookServerRowCompact extends Component {
         details={details} status={status} uid={uid} image={image} annotations={annotations}
       />
     </span>;
-    const project = this.props.standalone ?
+    const project = standalone ?
       (<Fragment>
-        <span className="font-weight-bold">Project: </span>
-        <span><NotebookServerRowProject annotations={this.props.annotations} /></span>
+        <span className="fw-bold">Project: </span>
+        <span><NotebookServerRowProject annotations={annotations} /></span>
         <br />
       </Fragment>) :
       null;
     const branch = (<Fragment>
-      <span className="font-weight-bold">Branch: </span>
-      <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text" />
+      <span className="fw-bold">Branch: </span>
+      <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text" showLinkIcon={true} />
       <br />
     </Fragment>);
     const commit = (<Fragment>
-      <span className="font-weight-bold">Commit: </span>
-      <ExternalLink url={repositoryLinks.commit} title={annotations["commit-sha"].substring(0, 8)} role="text" />
-      {" "}<NotebookServerRowCommitInfo uid={uid} name={name} commit={commitDetails} fetchCommit={fetchCommit} />
+      <span className="fw-bold">Commit: </span>
+      <ExternalLink url={repositoryLinks.commit}
+        title={annotations["commit-sha"].substring(0, 8)} role="text" showLinkIcon={true} />
+      {" "}<NotebookServerRowCommitInfo uid={uid} name={name} commit={commitDetails} fetchCommit={fetchCommit}/>
       <br />
     </Fragment>);
-    const resourceList = Object.keys(resources).map((name, num) =>
-      (<span key={name} className="text-nowrap">
-        {name}: {resources[name]}
-        {num < Object.keys(resources).length - 1 ? ", " : ""}
-      </span>)
-    );
+    const resourceList = formattedResourceList(resources);
     const resourceObject = (<Fragment>
-      <span className="font-weight-bold">Resources: </span>
+      <span className="fw-bold">Resources: </span>
       <span>{resourceList}</span>
       <br />
     </Fragment>);
@@ -447,13 +745,14 @@ class NotebookServerRowCompact extends Component {
         details={details}
         status={status}
         uid={uid}
-        startTime={this.props.startTime}
+        startTime={startTime}
         annotations={annotations}
       />
     </span>);
     const action = (<span>
       <NotebookServerRowAction
-        name={this.props.name}
+        localUrl={localUrl}
+        name={name}
         status={status}
         stopNotebook={this.props.stopNotebook}
         toggleLogs={this.props.toggleLogs}
@@ -462,25 +761,23 @@ class NotebookServerRowCompact extends Component {
       <EnvironmentLogs
         fetchLogs={this.props.fetchLogs}
         toggleLogs={this.props.toggleLogs}
-        logs={this.props.logs}
-        name={this.props.name}
+        logs={logs}
+        name={name}
         annotations={annotations}
       />
     </span>);
 
     return (
-      <tr>
-        <td>
-          {project}
-          {branch}
-          {commit}
-          {resourceObject}
-          <div className="d-inline-flex" >
-            {icon} &nbsp; {statusOut}
-          </div>
-          <div className="mt-1">{action}</div>
-        </td>
-      </tr>
+      <div className="rk-search-result-compact cursor-auto">
+        {project}
+        {branch}
+        {commit}
+        {resourceObject}
+        <div className="d-inline-flex" >
+          {icon} &nbsp; {statusOut}
+        </div>
+        <div className="mt-1">{action}</div>
+      </div>
     );
   }
 }
@@ -522,12 +819,10 @@ class NotebooksServerRowStatus extends Component {
   render() {
     const { status, details, uid, annotations } = this.props;
     const data = getStatusObject(status, annotations.default_image_used);
-    const spacing = this.props.spaced ?
-      " " :
-      (<br />);
     const info = status !== "running" ?
-      (<span>
-        <FontAwesomeIcon id={uid} style={{ color: "#5561A6" }} icon={faInfoCircle} />
+      (<span className="time-caption font-weight-bold text-secondary">
+        {data.text}&nbsp;
+        <FontAwesomeIcon id={uid} icon={faInfoCircle} />
         <UncontrolledPopover target={uid} trigger="legacy" placement="bottom">
           <PopoverHeader>Kubernetes pod status</PopoverHeader>
           <PopoverBody>
@@ -537,9 +832,9 @@ class NotebooksServerRowStatus extends Component {
           </PopoverBody>
         </UncontrolledPopover>
       </span>) :
-      (<span className="time-caption">{spacing}since {this.props.startTime}</span>);
+      (<span className="time-caption font-weight-bold text-secondary">{data.text} since {this.props.startTime}</span>);
 
-    return <div>{data.text}&nbsp;{info}</div>;
+    return <div>{info}</div>;
   }
 }
 
@@ -562,7 +857,7 @@ class NotebooksServerRowStatusIcon extends Component {
           <PopoverHeader>Details</PopoverHeader>
           <PopoverBody>
             <span className="font-weight-bold">Image source:</span> {image}
-            <span className="ml-1"><Clipboard clipboardText={image} /></span>
+            <span className="ms-1"><Clipboard clipboardText={image} /></span>
             {policy}
           </PopoverBody>
         </UncontrolledPopover>
@@ -581,7 +876,7 @@ class NotebookServerRowProject extends Component {
     const fullPath = `${annotations["namespace"]}/${annotations["projectName"]}`;
     const data = { namespace: annotations["namespace"], path: annotations["projectName"] };
     const url = Url.get(Url.pages.project, data);
-    return (<Link to={url}>{fullPath}</Link>);
+    return (<Link to={url} className="title">{fullPath}</Link>);
   }
 }
 
@@ -594,27 +889,27 @@ class NotebookServerRowAction extends Component {
       logs: null
     };
     let defaultAction = null;
-    actions.logs = (<DropdownItem onClick={() => this.props.toggleLogs(name)}>
+    actions.logs = (<DropdownItem onClick={() => this.props.toggleLogs(name)} color="secondary">
       <FontAwesomeIcon icon={faFileAlt} /> Get logs
     </DropdownItem>);
 
     if (status === "running") {
-      defaultAction = (<ExternalLink url={this.props.url} title="Connect" />);
-      actions.connect = (<DropdownItem href={this.props.url} target="_blank">
-        <FontAwesomeIcon icon={faExternalLinkAlt} /> Connect
+      defaultAction = (<Link className="btn btn-secondary text-white" to={this.props.localUrl}>Open</Link>);
+      actions.openExternal = (<DropdownItem href={this.props.url} target="_blank" >
+        <FontAwesomeIcon icon={faExternalLinkAlt} /> Open in new tab
       </DropdownItem>);
       actions.stop = (<DropdownItem onClick={() => this.props.stopNotebook(name)}>
         <FontAwesomeIcon icon={faStopCircle} /> Stop
       </DropdownItem>);
     }
     else {
-      const classes = { color: "primary", className: "text-nowrap" };
+      const classes = { color: "secondary", className: "text-nowrap" };
       defaultAction = (<Button {...classes} onClick={() => this.props.toggleLogs(name)}>Get logs</Button>);
     }
 
     return (
-      <ButtonWithMenu size="sm" default={defaultAction}>
-        {actions.connect}
+      <ButtonWithMenu className="sessionsButton" size="sm" default={defaultAction} color="secondary">
+        {actions.openExternal}
         {actions.stop}
         {actions.logs}
       </ButtonWithMenu>
@@ -731,7 +1026,14 @@ function pipelineAvailable(pipelines) {
 class StartNotebookServer extends Component {
   constructor(props) {
     super(props);
-    this.state = { ignorePipeline: null };
+    this.state = {
+      ignorePipeline: null,
+      showAdvanced: false
+    };
+  }
+
+  toggleShowAdvanced() {
+    this.setState({ showAdvanced: !this.state.showAdvanced });
   }
 
   setIgnorePipeline(value) {
@@ -741,8 +1043,12 @@ class StartNotebookServer extends Component {
   render() {
     const { branch, commit } = this.props.filters;
     const { branches } = this.props.data;
-    const { pipelines, message } = this.props;
+    const { autoStarting, pipelines, message } = this.props;
     const projectOptions = this.props.options.project;
+
+    if (autoStarting)
+      return (<StartNotebookAutostart {...this.props} />);
+
     const fetching = {
       branches: StatusHelper.isUpdating(branches) ? true : false,
       pipelines: pipelines.fetching,
@@ -761,23 +1067,79 @@ class StartNotebookServer extends Component {
       null;
     const disabled = fetching.branches || fetching.commits;
 
+    const buttonMessage = this.state.showAdvanced ?
+      "Hide branch, commit, and image settings" :
+      "Do you want to select the branch, commit, or image?";
+
     return (
       <Row>
         <Col sm={12} md={10} lg={8}>
-          <h3>Start a new interactive environment</h3>
+          <h3>Start a new session</h3>
           {messageOutput}
           <Form>
-            <StartNotebookBranches {...this.props} disabled={disabled} />
-            {show.commits ? <StartNotebookCommits {...this.props} disabled={disabled} /> : null}
-            {show.pipelines ? <StartNotebookPipelines {...this.props}
-              ignorePipeline={this.state.ignorePipeline}
-              setIgnorePipeline={this.setIgnorePipeline.bind(this)} /> : null}
-            {show.options ? <StartNotebookOptions {...this.props} /> : null}
+            <Collapse isOpen={this.state.showAdvanced}>
+              <StartNotebookBranches {...this.props} disabled={disabled} />
+              {show.commits ? <StartNotebookCommits {...this.props} disabled={disabled} /> : null}
+              {show.pipelines ? <StartNotebookPipelines {...this.props}
+                ignorePipeline={this.state.ignorePipeline}
+                setIgnorePipeline={this.setIgnorePipeline.bind(this)} /> : null}
+            </Collapse>
+
+            {show.options ?
+              (<FormGroup>
+                <Button color="link" className="font-italic btn-sm" onClick={() => { this.toggleShowAdvanced(); }}>
+                  {buttonMessage}
+                </Button>
+              </FormGroup>) :
+              null
+            }
+            {show.options ?
+              <StartNotebookOptions {...this.props} /> :
+              !this.state.showAdvanced ?
+                <Loader /> :
+                null
+            }
           </Form>
         </Col>
       </Row>
     );
   }
+}
+
+function StartNotebookAutostart(props) {
+  const { data, notebooks, options, pipelines } = props;
+  const fetching = {
+    data: data.fetched,
+    notebooks: notebooks.fetched,
+    options: options.fetched,
+    pipelines: pipelines.fetched
+  };
+  let progress = 0;
+  let message = "";
+  if (fetching.notebooks) {
+    message = "Checking existing sessions";
+    progress = 80;
+  }
+  else if (fetching.pipelines) {
+    message = "Checking GitLab jobs";
+    progress = 60;
+  }
+  else if (fetching.options) {
+    message = "Checking RenkuLab status";
+    progress = 40;
+  }
+  else if (fetching.data) {
+    message = "Checking project data";
+    progress = 20;
+  }
+
+  return (
+    <div>
+      <h3>Starting session</h3>
+      <p>{message}...</p>
+      <Progress value={progress} />
+    </div>
+  );
 }
 
 class StartNotebookBranches extends Component {
@@ -793,7 +1155,7 @@ class StartNotebookBranches extends Component {
     else if (branches.length === 0) {
       content = (
         <React.Fragment>
-          <Label>A commit is necessary to start an interactive environment.</Label>
+          <Label>A commit is necessary to start a session.</Label>
           <InfoAlert timeout={0}>
             <p>You can still do one of the following:</p>
             <ul className="mb-0">
@@ -863,7 +1225,7 @@ class StartNotebookBranches extends Component {
 class StartNotebookBranchesUpdate extends Component {
   render() {
     return [
-      <Button key="button" className="ml-2 p-0" color="link" size="sm"
+      <Button key="button" className="ms-2 p-0" color="link" size="sm"
         id="branchUpdateButton" disabled={this.props.disabled}
         onClick={this.props.handlers.refreshBranches}>
         <FontAwesomeIcon icon={faSyncAlt} />
@@ -878,7 +1240,7 @@ class StartNotebookBranchesUpdate extends Component {
 class StartNotebookBranchesOptions extends Component {
   render() {
     return [
-      <Button key="button" className="ml-2 p-0" color="link" size="sm"
+      <Button key="button" className="ms-2 p-0" color="link" size="sm"
         id="branchOptionsButton" disabled={this.props.disabled}
         onClick={() => { }}>
         <FontAwesomeIcon icon={faCogs} />
@@ -1053,7 +1415,7 @@ class StartNotebookPipelinesContent extends Component {
     if (pipeline.status === "running" || pipeline.status === "pending") {
       content = (
         <Label>
-          <FontAwesomeIcon icon={faCog} spin /> The Docker image for the environment is being built.
+          <FontAwesomeIcon icon={faCog} spin /> The Docker image for the session is being built.
           Please wait a moment...
           <FormText color="primary">
             <a href={pipeline.web_url} target="_blank" rel="noreferrer noopener">
@@ -1198,7 +1560,7 @@ class StartNotebookCommits extends Component {
 class StartNotebookCommitsUpdate extends Component {
   render() {
     return [
-      <Button key="button" className="ml-2 p-0" color="link" size="sm"
+      <Button key="button" className="ms-2 p-0" color="link" size="sm"
         id="commitUpdateButton" disabled={this.props.disabled}
         onClick={this.props.handlers.refreshCommits}>
         <FontAwesomeIcon icon={faSyncAlt} />
@@ -1213,7 +1575,7 @@ class StartNotebookCommitsUpdate extends Component {
 class StartNotebookCommitsOptions extends Component {
   render() {
     return [
-      <Button key="button" className="ml-2 p-0" color="link" size="sm"
+      <Button key="button" className="ms-2 p-0" color="link" size="sm"
         id="commitOptionsButton" disabled={this.props.disabled}
         onClick={() => { }}>
         <FontAwesomeIcon icon={faCogs} />
@@ -1241,16 +1603,16 @@ class StartNotebookOptions extends Component {
   render() {
     const { justStarted } = this.props;
     if (justStarted)
-      return <Label>Starting a new interactive environment... <Loader size="14" inline="true" /></Label>;
+      return <Label>Starting a new session... <Loader size="14" inline="true" /></Label>;
 
 
     const { fetched, all } = this.props.notebooks;
     const { options } = this.props;
     if (!fetched)
-      return (<Label>Verifying available environments... <Loader size="14" inline="true" /></Label>);
+      return (<Label>Verifying available sessions... <Loader size="14" inline="true" /></Label>);
 
     if (Object.keys(options.global).length === 0 || options.fetching)
-      return (<Label>Loading environment parameters... <Loader size="14" inline="true" /></Label>);
+      return (<Label>Loading session parameters... <Loader size="14" inline="true" /></Label>);
 
     if (Object.keys(all).length === 1)
       return (<StartNotebookOptionsRunning {...this.props} />);
@@ -1278,18 +1640,29 @@ class StartNotebookOptionsRunning extends Component {
     const notebook = all[Object.keys(all)[0]];
     const status = NotebooksHelper.getStatus(notebook.status);
     if (status === "running") {
+      const annotations = NotebooksHelper.cleanAnnotations(notebook.annotations, "renku.io");
+      const localUrl = Url.get(Url.pages.project.session.show, {
+        namespace: annotations["namespace"],
+        path: annotations["projectName"],
+        server: notebook.name,
+      });
+      const url = notebook.url;
       return (
         <FormGroup>
-          <Label>An interactive environment is already running.</Label>
-          <br />
-          <ExternalLink url={notebook.url} title="Connect" />
+          <div className="mb-2">
+            <Label>A session is already running.</Label>
+          </div>
+          <div>
+            <Link className="btn btn-secondary" to={localUrl}>Open</Link>{" "}
+            <ExternalLink url={url} title="Open in new tab" showLinkIcon={true} />
+          </div>
         </FormGroup>
       );
     }
     else if (status === "pending") {
       return (
         <FormGroup>
-          <Label>An interactive environment for this commit is starting or terminating, please wait...</Label>
+          <Label>A session for this commit is starting or terminating, please wait...</Label>
         </FormGroup>
       );
     }
@@ -1297,8 +1670,8 @@ class StartNotebookOptionsRunning extends Component {
     return (
       <FormGroup>
         <Label>
-          An interactive environment is already running but it is currently not available.
-          You can get further details from the Environments page.
+          A session is already running but it is currently not available.
+          You can get further details from the Sessions page.
         </Label>
       </FormGroup>
     );
@@ -1311,8 +1684,8 @@ class StartNotebookOptionsRunning extends Component {
  */
 function mergeEnumOptions(globalOptions, projectOptions, key) {
   let options = globalOptions[key].options;
-  // defaultUrl can extend the existing options, but not the other ones
-  if (key === "defaultUrl"
+  // default_url can extend the existing options, but not the other ones
+  if (key === "default_url"
     && Object.keys(projectOptions).indexOf(key) >= 0
     && globalOptions[key].options.indexOf(projectOptions[key]) === -1)
     options = [...globalOptions[key].options, projectOptions[key]];
@@ -1350,36 +1723,41 @@ class StartNotebookServerOptions extends Component {
           ) :
           null;
 
-        switch (serverOption.type) {
-          case "enum": {
-            const options = mergeEnumOptions(globalOptions, projectOptions, key);
-            serverOption["options"] = options;
-            return <FormGroup key={key} className={serverOption.options.length === 1 ? "mb-0" : ""}>
-              <Label>{serverOption.displayName}</Label>
-              <ServerOptionEnum {...serverOption} onChange={onChange} />
-              {warning}
-            </FormGroup>;
-          }
-          case "int":
-            return <FormGroup key={key}>
-              <Label>{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
-              <ServerOptionRange step={1} {...serverOption} onChange={onChange} />
-            </FormGroup>;
-
-          case "float":
-            return <FormGroup key={key}>
-              <Label>{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
-              <ServerOptionRange step={0.01} {...serverOption} onChange={onChange} />
-            </FormGroup>;
-
-          case "boolean":
-            return <FormGroup key={key}>
-              <ServerOptionBoolean {...serverOption} onChange={onChange} />
-            </FormGroup>;
-
-          default:
-            return null;
+        let optionContent = null;
+        if (serverOption.type === "enum") {
+          const options = mergeEnumOptions(globalOptions, projectOptions, key);
+          serverOption["options"] = options;
+          const separator = options.length === 1 ? null : (<br />);
+          optionContent = (<Fragment>
+            <Label className="me-2">{serverOption.displayName}</Label>
+            {separator}<ServerOptionEnum {...serverOption} onChange={onChange} />
+            {warning}
+          </Fragment>);
         }
+        else if (serverOption.type === "int" || serverOption.type === "float") {
+          const step = serverOption.type === "int" ?
+            1 :
+            0.01;
+          optionContent = (<Fragment>
+            <Label className="me-2">{`${serverOption.displayName}: ${serverOption.selected}`}</Label>
+            <br /><ServerOptionRange step={step} {...serverOption} onChange={onChange} />
+          </Fragment>);
+        }
+        else if (serverOption.type === "boolean") {
+          optionContent = (<ServerOptionBoolean {...serverOption} onChange={onChange} />);
+        }
+
+        if (!optionContent)
+          return null;
+
+        const formContent = (<FormGroup>{optionContent}</FormGroup>);
+        const colWidth = key === "default_url" ?
+          12 :
+          6;
+
+        return (
+          <Col key={key} xs={12} md={colWidth}>{formContent}</Col>
+        );
       });
 
     const unmatchedWarnings = warnings.filter(x => !sortedOptionKeys.includes(x));
@@ -1394,7 +1772,7 @@ class StartNotebookServerOptions extends Component {
 
       globalWarning = (
         <Warning key="globalWarning">
-          The project configuration for interactive environments
+          The project configuration for sessions
           contains {language.article}variable{language.plural} that {language.aux} either
           unknown in this Renkulab deployment or
           contain{language.verb} {language.article}wrong value{language.plural}:
@@ -1404,53 +1782,60 @@ class StartNotebookServerOptions extends Component {
     }
 
     return renderedServerOptions.length ?
-      renderedServerOptions.concat(globalWarning) :
+      <Row>{renderedServerOptions.concat(globalWarning)}</Row> :
       <label>Notebook options not available</label>;
   }
 }
 
 class ServerOptionEnum extends Component {
   render() {
-    const { selected } = this.props;
+    const { disabled, selected } = this.props;
     let { options } = this.props;
 
     if (selected && options && options.length && !options.includes(selected))
       options = options.concat(selected);
     if (options.length === 1)
-      return (<label>: {this.props.selected}</label>);
+      return (<Badge color="primary">{this.props.options[0]}</Badge>);
 
     return (
-      <div>
-        <ButtonGroup>
-          {options.map((optionName, i) => {
-            const color = optionName === selected ? "primary" : "outline-primary";
-            return (
-              <Button
-                color={color}
-                key={optionName}
-                onClick={event => this.props.onChange(event, optionName)}>{optionName}</Button>
-            );
-          })}
-        </ButtonGroup>
-      </div>
+      <ButtonGroup>
+        {options.map((optionName, i) => {
+          let color = "outline-primary";
+          if (optionName === selected) {
+            color = this.props.warning != null && this.props.warning === optionName ?
+              "danger" :
+              "primary";
+          }
+          const size = this.props.size ? this.props.size : null;
+          return (
+            <Button
+              key={optionName} color={color} size={size} disabled={disabled}
+              onClick={event => this.props.onChange(event, optionName)}>{optionName}</Button>
+          );
+        })}
+      </ButtonGroup>
     );
   }
 }
 
 class ServerOptionBoolean extends Component {
   render() {
+    const { disabled } = this.props;
     // The double negation solves an annoying problem happening when checked=undefined
     // https://stackoverflow.com/a/39709700/1303090
     const selected = !!this.props.selected;
-    return (
-      <CustomInput type="switch" id={this.props.id} label={this.props.displayName}
-        checked={selected} onChange={this.props.onChange} />
+    return (<div className="form-check form-switch d-inline-block">
+      <Input type="switch" id={this.props.id} label={this.props.displayName} disabled={disabled}
+        checked={selected} onChange={this.props.onChange} className="form-check-input rounded-pill"/>
+      <Label check htmlFor={this.props.id}>{this.props.displayName}</Label>
+    </div>
     );
   }
 }
 
 class ServerOptionRange extends Component {
   render() {
+    const { disabled } = this.props;
     return (
       <Input
         type="range"
@@ -1460,6 +1845,7 @@ class ServerOptionRange extends Component {
         min={this.props.range[0]}
         max={this.props.range[1]}
         step={this.props.step}
+        disabled={disabled}
       />
     );
   }
@@ -1501,7 +1887,7 @@ class ServerOptionLaunch extends Component {
     const globalNotification = (warnings.length < 1) ?
       null :
       <Warning key="globalNotification">
-        The environment cannot be configured exactly as requested for this project.
+        The session cannot be configured exactly as requested for this project.
         You can still start one, but some things may not work correctly.
       </Warning>;
     const launchErrorAlert = (launchError != null) ?
@@ -1509,8 +1895,10 @@ class ServerOptionLaunch extends Component {
         <br />
         <InfoAlert timeout={0}>
           <FontAwesomeIcon icon={faInfoCircle} /> {" "}
-          The attempt to start an environment failed. This could be an intermittent issue, so you should {" "}
-          try a second time, and the environment will hopefully start. If the problem persists, you can {" "}
+          The attempt to start a session failed with the following error:
+          <div><code>{launchError}</code></div>
+          This could be an intermittent issue, so you should try a second time,
+          and the session will hopefully start. If the problem persists, you can {" "}
           <Link to="/help">contact us for assistance</Link>.
         </InfoAlert>
       </Fragment> :
@@ -1518,7 +1906,7 @@ class ServerOptionLaunch extends Component {
 
     return [
       <Button key="button" color="primary" onClick={this.checkServer}>
-        Start environment
+        Start session
       </Button>,
       <AutosavedDataModal key="modal"
         toggleModal={this.toggleModal.bind(this)}
@@ -1566,7 +1954,7 @@ class AutosavedDataModal extends Component {
             <p>Please refer to this {docsLink} to get further information.</p>
           </ModalBody>
           <ModalFooter>
-            <Button color="primary" onClick={this.props.handlers.startServer}>Launch environment</Button>
+            <Button color="primary" onClick={this.props.handlers.startServer}>Launch session</Button>
           </ModalFooter>
         </Modal>
       </div>
@@ -1592,12 +1980,12 @@ class CheckNotebookIcon extends Component {
         link = (<a href={url} role="button" target="_blank" rel="noreferrer noopener">{icon}</a>);
       }
       else if (status === "pending") {
-        tooltip = "Interactive environment is either starting or stopping, please wait...";
+        tooltip = "The session is either starting or stopping, please wait...";
         icon = loader;
         link = (<span>{icon}</span>);
       }
       else {
-        tooltip = "Check interactive environment status";
+        tooltip = "Check session status";
         icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" grayscale={true} />);
         link = (<Link to={this.props.launchNotebookUrl}>{icon}</Link>);
       }
@@ -1610,7 +1998,7 @@ class CheckNotebookIcon extends Component {
         pathname: this.props.launchNotebookUrl,
         state: { successUrl }
       };
-      tooltip = "Start an interactive environment";
+      tooltip = "Start a session";
       icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" grayscale={true} />);
       link = (<Link to={target}>{icon}</Link>);
     }
@@ -1624,4 +2012,7 @@ class CheckNotebookIcon extends Component {
   }
 }
 
-export { NotebooksDisabled, Notebooks, StartNotebookServer, CheckNotebookIcon, mergeEnumOptions };
+export {
+  CheckNotebookIcon, Notebooks, NotebooksDisabled, ServerOptionBoolean, ServerOptionEnum, ServerOptionRange,
+  ShowSession, StartNotebookServer, mergeEnumOptions
+};

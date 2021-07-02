@@ -13,7 +13,7 @@ const patterns = {
   urlRef: /(http|ftp|https):\/\/[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:/~+#-]*[\w@?^=%&amp;/~+#-])?/
 };
 
-const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "pdf", "gif"];
+const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "pdf", "gif", "svg"];
 
 const STIFFNESS = 290;
 const DAMPING = 20;
@@ -58,6 +58,19 @@ const getFilesRefs = (markdownHTML, filePathArray) => {
   return filesRefs;
 };
 
+/**
+ * Return a base64 string to be used as search parameter in the img tags
+ *
+ * @param {string} name - file name with extension
+ * @param {string} data - base64 encoded image data
+ */
+function encodeImageBase64(name, data) {
+  const subType = name.endsWith(".svg") ?
+    "/svg+xml" :
+    "";
+  return `data:image${subType};base64,${data}`;
+}
+
 function FileAndWrapper(props) {
   /**
    * We are using a checkbox here because the onclick event doesn't work with the
@@ -73,7 +86,7 @@ function FileAndWrapper(props) {
     <Card>
       <CardBody className="p-2">
         <label className="mb-0 p-1">
-          <FontAwesomeIcon className="icon-gray mr-1" icon={faFile} />
+          <FontAwesomeIcon className="icon-gray me-1" icon={faFile} />
           {props.block.data.file_name}
         </label>
         <label className="mb-0 p-1 float-right btn btn-primary btn-sm" htmlFor={togglerId}>
@@ -143,8 +156,11 @@ function RenkuMarkdownWithPathTranslation(props) {
     filesRefs.forEach(block => {
       if (block.type === REF_TYPES.IMAGE_PREV || block.type === REF_TYPES.FILE_PREV) {
         if (!block.refPath.startsWith("https://") && !block.refPath.startsWith("http://")) {
+          const cleanPath = block.refPath && block.refPath.startsWith("/") ?
+            block.refPath.substring(1) :
+            block.refPath;
           fetchedFiles.push(
-            props.client.getRepositoryFile(props.projectId, block.refPath, "master", "base64")
+            props.client.getRepositoryFile(props.projectId, cleanPath, "master", "base64")
               .then(d => { block.data = d; return block; })
               .catch(error => { block.isOpened = false; block.filePreview = false; return block; })
           );
@@ -183,7 +199,7 @@ function RenkuMarkdownWithPathTranslation(props) {
     let currentBlock = filesRefs.find(block => file.src.endsWith(block.refPath));
     if (currentBlock && currentBlock.data) {
       if (currentBlock.type === REF_TYPES.IMAGE_PREV) {
-        file.src = "data:image;base64," + currentBlock.data.content;
+        file.src = encodeImageBase64(currentBlock.data.file_name, currentBlock.data.content);
         file.setAttribute("class", "image-preview");
       }
       else {
@@ -222,4 +238,4 @@ function RenkuMarkdownWithPathTranslation(props) {
 
 }
 export default RenkuMarkdownWithPathTranslation;
-export { fixRelativePath };
+export { encodeImageBase64, fixRelativePath };

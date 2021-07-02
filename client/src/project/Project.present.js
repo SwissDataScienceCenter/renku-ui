@@ -25,28 +25,31 @@
 
 
 import React, { Component, Fragment, useState, useEffect } from "react";
-import { Link, Route, Switch } from "react-router-dom";
+import { Link, NavLink, Route, Switch } from "react-router-dom";
 import {
-  Alert, Button, ButtonGroup, Card, CardBody, CardHeader, Col, Container, DropdownItem, Form, FormGroup,
-  FormText, Input, Label, Row, Table, Nav, NavItem, UncontrolledTooltip, Modal
+  Alert, Badge, Button, ButtonGroup, Card, CardBody, CardHeader, Col, DropdownItem,
+  Row, Modal, Nav, NavLink as ReactNavLink, NavItem, UncontrolledTooltip
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
 import {
-  faCodeBranch, faExclamationTriangle, faUserFriends, faGlobe, faInfoCircle, faLock, faSearch,
-  faStar as faStarSolid,
+  faCodeBranch, faExclamationTriangle, faGlobe, faInfoCircle, faLock, faPlay, faSearch,
+  faStar as faStarSolid, faUserFriends
 } from "@fortawesome/free-solid-svg-icons";
+import qs from "query-string";
 
 import {
-  Clipboard, ExternalLink, Loader, RenkuNavLink, TimeCaption,
-  ButtonWithMenu, InfoAlert, GoBackButton, RenkuMarkdown,
+  ButtonWithMenu, ExternalLink, GoBackButton,
+  InfoAlert, Loader, RenkuMarkdown, RenkuNavLink, TimeCaption
 } from "../utils/UIComponents";
 import { Url } from "../utils/url";
 import { SpecialPropVal } from "../model/Model";
-import { ProjectAvatarEdit, ProjectTags, ProjectTagList } from "./shared";
-import { Notebooks, StartNotebookServer } from "../notebooks";
+import { ProjectTagList } from "./shared";
+import { Notebooks, ShowSession, StartNotebookServer } from "../notebooks";
 import Issue from "../collaboration/issue/Issue";
-import { CollaborationList, collaborationListTypeMap } from "../collaboration/lists/CollaborationList.container";
+import {
+  CollaborationList, collaborationListTypeMap, itemsStateMap
+} from "../collaboration/lists/CollaborationList.container";
 import FilesTreeView from "./filestreeview/FilesTreeView";
 import DatasetsListView from "./datasets/DatasetsListView";
 import { ACCESS_LEVELS } from "../api-client";
@@ -54,7 +57,7 @@ import ProjectVersionStatus from "./status/ProjectVersionStatus.present";
 import { NamespaceProjects } from "../namespace";
 import { ProjectOverviewCommits, ProjectOverviewStats } from "./overview";
 import { ForkProject } from "./new";
-
+import { ProjectSettingsGeneral, ProjectSettingsNav, ProjectSettingsSessions } from "./settings";
 
 import "./Project.css";
 
@@ -83,19 +86,25 @@ function isKgDown(webhook) {
     webhookError(webhook.status);
 }
 
-class ProjectVisibilityLabel extends Component {
-  render() {
-    switch (this.props.visibilityLevel) {
-      case "private":
-        return <span className="visibilityLabel"><FontAwesomeIcon icon={faLock} /> Private</span>;
-      case "internal":
-        return <span className="visibilityLabel"><FontAwesomeIcon icon={faUserFriends} /> Internal</span>;
-      case "public":
-        return <span className="visibilityLabel"><FontAwesomeIcon icon={faGlobe} /> Public</span>;
-      default:
-        return null;
-    }
+function ProjectVisibilityLabel({ visibilityLevel }) {
+  let text = null;
+  switch (visibilityLevel) {
+    case "private":
+      text = <Fragment><FontAwesomeIcon icon={faLock} /> Private</Fragment>;
+      break;
+    case "internal":
+      text = <Fragment><FontAwesomeIcon icon={faUserFriends} /> Internal</Fragment>;
+      break;
+    case "public":
+      text = <Fragment><FontAwesomeIcon icon={faGlobe} /> Public</Fragment>;
+      break;
+    default:
+      text = null;
   }
+  if (text == null) return null;
+  return <span className="ms-3">
+    <Badge color="secondary" style={{ verticalAlign: "middle" }}>{text}</Badge>&nbsp;
+  </span>;
 }
 
 /**
@@ -125,7 +134,7 @@ class ProjectStatusIcon extends Component {
       null;
 
     return (
-      <span className="warningLabel">
+      <span className="warningLabel" style={{ verticalAlign: "baseline" }}>
         <FontAwesomeIcon
           icon={faExclamationTriangle}
           onClick={() => history.push(overviewStatusUrl)}
@@ -147,7 +156,7 @@ class MergeRequestSuggestions extends Component {
   }
 
   render() {
-    const mrSuggestions = this.props.suggestedMRBranches.map((branch, i) => {
+    const mrSuggestions = this.props.suggestedMRBranches.slice(0, 5).map((branch, i) => {
       if (!this.props.canCreateMR) return null;
       return <Alert color="warning" key={i}>
         <p> Do you want to create a merge request for branch <b>{branch.name}</b>?</p>
@@ -160,7 +169,12 @@ class MergeRequestSuggestions extends Component {
         {/*&nbsp; <Button color="warning" onClick={this.props.createMR(branch.iid)}>No</Button>*/}
       </Alert>;
     });
-    return mrSuggestions;
+
+    return mrSuggestions.length > 0 ? <Row>
+      <Col key="mergeRequestsSuggestions" className="pb-3">
+        {mrSuggestions}
+      </Col>
+    </Row> : null;
   }
 }
 
@@ -212,7 +226,7 @@ class ForkProjectModal extends Component {
     }
     return (
       <Fragment>
-        <Button outline color="primary" onClick={this.toggleFunction}>
+        <Button outline color="primary" className="border-light" onClick={this.toggleFunction}>
           <FontAwesomeIcon icon={faCodeBranch} /> fork
         </Button>
         <Modal isOpen={this.state.open} toggle={this.toggleFunction}>
@@ -221,6 +235,61 @@ class ForkProjectModal extends Component {
       </Fragment>
     );
   }
+}
+
+function ProjectIdentifier(props) {
+  const forkedFromText = (props.forkedFromLink == null) ?
+    null :
+    [" ", <b key="forked">forked</b>, " from ", props.forkedFromLink];
+  const forkedFrom = (forkedFromText) ?
+    <Fragment><span className="text-rk-text fs-small">{forkedFromText}</span><br /></Fragment> :
+    null;
+  const projectId = props.core.path_with_namespace;
+  const projectTitle = props.core.title;
+
+  return (
+    <Fragment>
+      <div className="flex-grow-1">
+        <h2 className="mb-0">
+          <ProjectStatusIcon
+            history={props.history}
+            webhook={props.webhook}
+            overviewStatusUrl={props.overviewStatusUrl}
+            migration_required={props.migration.migration_required}
+            template_update_possible={props.migration.template_update_possible}
+            docker_update_possible={props.migration.docker_update_possible}
+          />{projectTitle}
+          <ProjectVisibilityLabel visibilityLevel={props.visibility.level} />
+        </h2>
+        <span className="text-rk-text fs-small">{projectId}</span> {forkedFrom}
+      </div>
+    </Fragment>);
+}
+
+function ProjectViewHeaderMinimal(props) {
+  const titleColSize = "col-12";
+
+  return (
+    <Fragment>
+      <Row className="d-flex rk-project-header gx-2 justify-content-md-between justify-content-sm-start">
+        <Col className={"order-1 d-flex align-items-start " + titleColSize}>
+          <ProjectIdentifier {...props} />
+          <StartSessionButton {...props} />
+        </Col>
+      </Row>
+    </Fragment>);
+}
+
+function ProjectViewHeaderOverviewDescription({ settingsReadOnly, description, settingsUrl }) {
+  if (description) {
+    return <RenkuMarkdown markdownText={description} fixRelativePaths={false}
+      className="p-mb-0 fs-6 rk-project-description"/>;
+  }
+  if (!settingsReadOnly) {
+    return <div className="p-mb-0 fs-6"><i>(This project has no description.
+      You can provide one on the <Link to={settingsUrl}>settings tab</Link>.)</i></div>;
+  }
+  return null;
 }
 
 class ProjectViewHeaderOverview extends Component {
@@ -241,10 +310,6 @@ class ProjectViewHeaderOverview extends Component {
   }
 
   render() {
-    const forkedFrom = (this.props.forkedFromLink == null) ?
-      null :
-      [" ", "forked from", " ", this.props.forkedFromLink];
-    const core = this.props.core;
     const system = this.props.system;
 
     let starElement;
@@ -269,61 +334,92 @@ class ProjectViewHeaderOverview extends Component {
 
     const gitlabIDEUrl = this.props.externalUrl !== "" && this.props.externalUrl.includes("/gitlab/") ?
       this.props.externalUrl.replace("/gitlab/", "/gitlab/-/ide/project/") : null;
-    return (
-      <Container fluid>
-        <Row>
-          <Col xs={12} md>
-            <h3>
-              <ProjectStatusIcon
-                history={this.props.history}
-                webhook={this.props.webhook}
-                overviewStatusUrl={this.props.overviewStatusUrl}
-                migration_required={this.props.migration.migration_required}
-                template_update_possible={this.props.migration.template_update_possible}
-                docker_update_possible={this.props.migration.docker_update_possible}
-              />{core.title} <ProjectVisibilityLabel visibilityLevel={this.props.visibility.level} />
-            </h3>
-            <p>
-              <span>{this.props.core.path_with_namespace}{forkedFrom}</span> <br />
-            </p>
-          </Col>
-          <Col xs={12} md="auto">
-            <div className="d-flex mb-2">
-              <ButtonGroup size="sm">
-                <ForkProjectModal
-                  client={this.props.client}
-                  history={this.props.history}
-                  model={this.props.model}
-                  notifications={this.props.notifications}
-                  title={this.props.core && this.props.core.title ? this.props.core.title : ""}
-                  id={this.props.core && this.props.core.id ? this.props.core.id : 0}
-                />
-                <Button outline color="primary"
-                  href={`${this.props.externalUrl}/forks`} target="_blank" rel="noreferrer noopener">
-                  {system.forks_count}
-                </Button>
-              </ButtonGroup>
-              <ButtonGroup size="sm" className="ml-1">
-                <Button outline color="primary"
-                  disabled={this.state.updating_star}
-                  onClick={this.star.bind(this)}>
-                  {starElement} {starText}
-                </Button>
-                <Button outline color="primary" style={{ cursor: "default" }}>{system.star_count}</Button>
-              </ButtonGroup>
-            </div>
+    const description = <ProjectViewHeaderOverviewDescription
+      description={this.props.core.description}
+      settingsReadOnly={this.props.settingsReadOnly}
+      settingsUrl={this.props.settingsUrl} />;
+    const titleColSize = "col-12 col-md-8";
 
-            <div className="d-flex flex-md-row-reverse mb-2">
+    return (
+      <Fragment>
+        <Row className="d-flex rk-project-header gy-2 gx-2 pb-2 justify-content-md-between justify-content-sm-start">
+          <Col className={"order-1 d-flex " + titleColSize}>
+            { this.props.core.avatar_url ?
+              <div className="flex-shrink-0 pe-3" style={{ width: "120px" }}>
+                <img src={this.props.core.avatar_url} className=" rounded" alt=""
+                  style={{ objectFit: "cover", width: "100%", height: "90px" }}/>
+              </div>
+              : null }
+            <div className="flex-grow-1">
+              <span className="text-rk-text fs-small">{description}</span>
+            </div>
+          </Col>
+          <Col className="text-sm-start text-md-end order-2 col-12 col-md-4 ">
+            <ButtonGroup size="sm">
+              <ForkProjectModal
+                client={this.props.client}
+                history={this.props.history}
+                model={this.props.model}
+                notifications={this.props.notifications}
+                title={this.props.core && this.props.core.title ? this.props.core.title : ""}
+                id={this.props.core && this.props.core.id ? this.props.core.id : 0}
+              />
+              <Button
+                outline
+                color="primary"
+                className="border-light"
+                href={`${this.props.externalUrl}/-/forks`} target="_blank" rel="noreferrer noopener">
+                {system.forks_count}
+              </Button>
+            </ButtonGroup>
+            <ButtonGroup size="sm" className="ms-1">
+              <Button outline color="primary"
+                className="border-light"
+                disabled={this.state.updating_star}
+                onClick={this.star.bind(this)}>
+                {starElement} {starText}
+              </Button>
+              <Button outline color="primary"
+                className="border-light"
+                style={{ cursor: "default" }}>{system.star_count}</Button>
+            </ButtonGroup>
+            <ButtonGroup size="sm" className="ms-1">
               <GitLabConnectButton size="sm"
                 externalUrl={this.props.externalUrl}
                 gitlabIDEUrl={gitlabIDEUrl}
                 userLogged={this.props.user.logged} />
+            </ButtonGroup>
+            { this.props.system.tag_list.length > 0 ?
+              <div className="pt-2">
+                <ProjectTagList tagList={this.props.system.tag_list} />
+              </div>
+              : null }
+            <div className="pt-1">
+              <TimeCaption key="time-caption" time={this.props.core.last_activity_at} className="text-rk-text"/>
             </div>
           </Col>
         </Row>
-      </Container>
-    );
+      </Fragment>);
   }
+}
+
+function StartSessionButton(props) {
+  const { launchNotebookUrl, sessionAutostartUrl } = props;
+
+  const defaultAction = (
+    <Link className="btn btn-primary btn-sm" to={sessionAutostartUrl}>
+      <FontAwesomeIcon className="me-1" icon={faPlay} /> Start
+    </Link>
+  );
+  return (
+    <ButtonGroup size="sm" className="ms-1">
+      <ButtonWithMenu className="startButton" size="sm" default={defaultAction} color="primary">
+        <DropdownItem>
+          <Link className="text-decoration-none" to={launchNotebookUrl}>Start with options</Link>
+        </DropdownItem>
+      </ButtonWithMenu>
+    </ButtonGroup>
+  );
 }
 
 class ProjectViewHeader extends Component {
@@ -338,36 +434,38 @@ class ProjectViewHeader extends Component {
       </Link>;
     }
 
-    return <ProjectViewHeaderOverview
-      key="overviewHeader"
-      forkedFromLink={forkedFromLink} {...this.props} />;
+    return <ProjectViewHeaderMinimal key="minimalHeader" forkedFromLink={forkedFromLink} {...this.props} />;
   }
 }
 
 class ProjectNav extends Component {
   render() {
     return (
-      <Nav pills className={"nav-pills-underline"}>
-        <NavItem>
-          <RenkuNavLink to={this.props.baseUrl} alternate={this.props.overviewUrl} title="Overview" />
-        </NavItem>
-        <NavItem>
-          <RenkuNavLink exact={false} to={this.props.issuesUrl}
-            alternate={this.props.collaborationUrl} title="Collaboration" />
-        </NavItem>
-        <NavItem>
-          <RenkuNavLink exact={false} to={this.props.filesUrl} title="Files" />
-        </NavItem>
-        <NavItem>
-          <RenkuNavLink exact={false} to={this.props.datasetsUrl} title="Datasets" />
-        </NavItem>
-        <NavItem>
-          <RenkuNavLink exact={false} to={this.props.notebookServersUrl} title="Environments" />
-        </NavItem>
-        <NavItem>
-          <RenkuNavLink exact={false} to={this.props.settingsUrl} title="Settings" />
-        </NavItem>
-      </Nav>
+      <div className="pb-3 rk-search-bar pt-4 mt-1">
+        <Col className="d-flex pb-2 mb-1 justify-content-start" md={12} lg={12}>
+          <Nav pills className="nav-pills-underline">
+            <NavItem>
+              <RenkuNavLink to={this.props.baseUrl} alternate={this.props.overviewUrl} title="Overview" />
+            </NavItem>
+            <NavItem>
+              <RenkuNavLink exact={false} to={this.props.issuesUrl}
+                alternate={this.props.collaborationUrl} title="Collaboration" />
+            </NavItem>
+            <NavItem>
+              <RenkuNavLink exact={false} to={this.props.filesUrl} title="Files" />
+            </NavItem>
+            <NavItem>
+              <RenkuNavLink exact={false} to={this.props.datasetsUrl} title="Datasets" />
+            </NavItem>
+            <NavItem>
+              <RenkuNavLink exact={false} to={this.props.notebookServersUrl} title="Sessions" />
+            </NavItem>
+            <NavItem className="pe-0">
+              <RenkuNavLink exact={false} to={this.props.settingsUrl} title="Settings" />
+            </NavItem>
+          </Nav>
+        </Col>
+      </div>
     );
   }
 }
@@ -405,9 +503,9 @@ class ProjectViewReadme extends Component {
       return <Loader />;
 
     return (
-      <Card className="border-0">
-        <CardHeader>README.md</CardHeader>
-        <CardBody style={{ overflow: "auto" }}>
+      <Card className="border-rk-light">
+        <CardHeader className="bg-white p-3 ps-4">README.md</CardHeader>
+        <CardBody style={{ overflow: "auto" }} className="p-4">
           <RenkuMarkdown
             projectPathWithNamespace = {this.props.core.path_with_namespace}
             filePath={""}
@@ -422,6 +520,26 @@ class ProjectViewReadme extends Component {
   }
 }
 
+function ProjectViewGeneral(props) {
+  let forkedFromLink = null;
+  if (props.system.forked_from_project != null &&
+    Object.keys(props.system.forked_from_project).length > 0) {
+    const forkedFrom = props.system.forked_from_project;
+    const projectsUrl = props.projectsUrl;
+    forkedFromLink = <Link key="forkedFrom" to={`${projectsUrl}/${forkedFrom.metadata.core.path_with_namespace}`}>
+      {forkedFrom.metadata.core.path_with_namespace || "no title"}
+    </Link>;
+  }
+
+  return <Fragment>
+    <ProjectViewHeaderOverview
+      key="overviewHeader"
+      forkedFromLink={forkedFromLink} {...props} />
+    <ProjectViewReadme {...props} />
+  </Fragment>;
+
+}
+
 function ProjectKGStatus(props) {
   const loading = false;
 
@@ -432,10 +550,12 @@ function ProjectKGStatus(props) {
     body = props.kgStatusView(true);
 
   return (
-    <Card className="border-0">
-      <CardHeader>Knowledge Graph integration</CardHeader>
-      <CardBody>
-        <Row><Col>{body}</Col></Row>
+    <Card className="border-rk-light">
+      <CardHeader className="bg-white p-3 ps-4">Knowledge Graph Integration</CardHeader>
+      <CardBody className="p-4 pt-3 pb-3 lh-lg">
+        <Row>
+          <Col>{body}</Col>
+        </Row>
       </CardBody>
     </Card>
   );
@@ -449,47 +569,28 @@ class ProjectViewOverviewNav extends Component {
     //   <RenkuNavLink to={`${this.props.overviewUrl}/results`} title="Results" />
     // </NavItem>
     return (
-      <Nav pills className={"flex-column"}>
+      <Nav className="flex-column nav-light">
         <NavItem>
-          <RenkuNavLink to={this.props.baseUrl} title="Description" />
+          <RenkuNavLink to={this.props.baseUrl} title="General" id="nav-overview-general" />
         </NavItem>
         <NavItem>
-          <RenkuNavLink to={`${this.props.statsUrl}`} title="Stats" />
+          <RenkuNavLink to={this.props.statsUrl} title="Stats" />
         </NavItem>
         <NavItem>
-          <RenkuNavLink to={`${this.props.overviewDatasetsUrl}`} title="Datasets" />
+          <RenkuNavLink to={this.props.overviewCommitsUrl} title="Commits" />
         </NavItem>
         <NavItem>
-          <RenkuNavLink to={`${this.props.overviewCommitsUrl}`} title="Commits" />
+          <RenkuNavLink to={this.props.overviewStatusUrl} title="Status" />
         </NavItem>
-        <NavItem>
-          <RenkuNavLink to={`${this.props.overviewStatusUrl}`} title="Status" />
-        </NavItem>
-      </Nav>);
+      </Nav>
+    );
   }
 }
 
 class ProjectViewOverview extends Component {
   render() {
-    const { core, system, projectCoordinator } = this.props;
-    const description = core.description ?
-      (<Fragment><span className="lead">{core.description}</span><br /></Fragment>) :
-      null;
-
+    const { projectCoordinator } = this.props;
     return <Col key="overview">
-      <Row>
-        <Col xs={12} md={9}>
-          <p>
-            {description}
-            <TimeCaption key="time-caption" time={core.last_activity_at} />
-          </p>
-        </Col>
-        <Col xs={12} md={3}>
-          <p className="text-md-right">
-            <ProjectTagList tagList={system.tag_list} />
-          </p>
-        </Col>
-      </Row>
       <Row>
         <Col key="nav" sm={12} md={2}>
           <ProjectViewOverviewNav {...this.props} />
@@ -497,7 +598,7 @@ class ProjectViewOverview extends Component {
         <Col key="content" sm={12} md={10}>
           <Switch>
             <Route exact path={this.props.baseUrl} render={props => {
-              return <ProjectViewReadme readme={this.props.data.readme} {...this.props} />;
+              return <ProjectViewGeneral readme={this.props.data.readme} {...this.props} />;
             }} />
             <Route exact path={this.props.statsUrl} render={props =>
               <ProjectOverviewStats
@@ -505,9 +606,6 @@ class ProjectViewOverview extends Component {
                 branches={this.props.system.branches}
               />
             }
-            />
-            <Route exact path={this.props.overviewDatasetsUrl} render={props =>
-              <ProjectViewDatasetsOverview {...this.props} />}
             />
             <Route exact path={this.props.overviewCommitsUrl} render={props =>
               <ProjectOverviewCommits
@@ -555,10 +653,10 @@ function ProjectAddDataset(props) {
   return <Col>
     { props.visibility.accessLevel > ACCESS_LEVELS.DEVELOPER ? [
       <Row key="header">
-        <h3 className="uk-heading-divider uk-text-center pb-1 ml-4">Add Dataset</h3>
+        <h3 className="uk-heading-divider uk-text-center pb-1 mb-4">Add Dataset</h3>
       </Row>,
-      <Row key="switch-button" className="pb-3">
-        <ButtonGroup className={"ml-4 pt-1"}>
+      <Row key="switch-button" className="d-inline-block pb-3">
+        <ButtonGroup className="mb-4 pt-1">
           <Button color="primary" outline onClick={() => setNewDataset(true)} active={newDataset}>
             Create Dataset
           </Button>
@@ -568,7 +666,7 @@ function ProjectAddDataset(props) {
         </ButtonGroup>
       </Row>,
       <Row key="text-details" className="pb-3">
-        <small className={"ml-4 text-muted"}>
+        <small className="mb-4 text-muted">
           {
             newDataset ?
               <span>
@@ -631,14 +729,14 @@ function ProjectStatusAlert(props) {
 
   const versionInfo = migration_required ?
     <span>
-      <FontAwesomeIcon icon={faExclamationTriangle} className="pr-1" />
+      <FontAwesomeIcon icon={faExclamationTriangle} className="pe-1" />
       <strong>A new version of renku is available. </strong>
       An upgrade is necessary to allow modification of datasets and is recommended for all projects.&nbsp;
     </span> :
     null;
   const kgInfo = kgDown ?
     <span>
-      <FontAwesomeIcon icon={faExclamationTriangle} className="pr-1" />
+      <FontAwesomeIcon icon={faExclamationTriangle} className="pe-1" />
       <strong>Knowledge Graph integration not active. </strong>
       This means that some operations on datasets are not possible, we recommend activating it.
     </span> :
@@ -685,7 +783,7 @@ function ProjectViewDatasets(props) {
     return <Loader />;
 
   if (props.core.datasets.error) {
-    return <Col sm={12} md={12} lg={8}>
+    return <Col sm={12}>
       <Alert color="danger">
         There was an error fetching the datasets, please try <Button color="danger" size="sm" onClick={
           () => window.location.reload()
@@ -695,7 +793,7 @@ function ProjectViewDatasets(props) {
 
   if (!loading && props.core.datasets !== undefined && props.core.datasets.length === 0
     && props.location.pathname !== props.newDatasetUrl) {
-    return <Col sm={12} md={12} lg={8}>
+    return <Col sm={12}>
       {migrationMessage}
       <EmptyDatasets
         membership={props.visibility.accessLevel > ACCESS_LEVELS.DEVELOPER}
@@ -704,7 +802,7 @@ function ProjectViewDatasets(props) {
     </Col>;
   }
 
-  return <Col sm={12} md={12} lg={8}>
+  return <Col sm={12}>
     {migrationMessage}
     <Switch>
       <Route path={props.newDatasetUrl}
@@ -736,87 +834,124 @@ function ProjectViewDatasets(props) {
 
 class ProjectViewCollaborationNav extends Component {
   render() {
-    return (
-      <Nav pills className={"flex-column"}>
+    let itemsState = itemsStateMap.OPENED;
+
+    if (window.location && window.location.search)
+      itemsState = qs.parse(window.location.search).itemsState;
+
+    const inIssues = this.props.location.pathname.includes(this.props.issuesUrl);
+
+    return ( <Col key="nav" sm={12} md={2}>
+      <Nav className="flex-column nav-light">
         <NavItem>
           <RenkuNavLink to={this.props.issuesUrl} matchPath={true} title="Issues" />
         </NavItem>
+        <Nav className="flex-column nav-light">
+          <NavItem className="ms-3">
+            <ReactNavLink
+              to="issues?page=1&itemsState=opened"
+              tag={NavLink}
+              isActive={() => itemsState === itemsStateMap.OPENED && inIssues}
+            >Open</ReactNavLink>
+          </NavItem>
+          <NavItem className="ms-3">
+            <ReactNavLink
+              to="issues?page=1&itemsState=closed"
+              tag={NavLink}
+              isActive={() => itemsState === itemsStateMap.CLOSED && inIssues}
+            >Closed</ReactNavLink>
+          </NavItem>
+        </Nav>
         <NavItem>
           <RenkuNavLink to={this.props.mergeRequestsOverviewUrl} matchPath={true} title="Merge Requests" />
         </NavItem>
-      </Nav>);
+        <Nav className="flex-column nav-light">
+          <NavItem className="ms-3">
+            <ReactNavLink
+              to="mergerequests?page=1&itemsState=opened"
+              tag={NavLink}
+              isActive={() => itemsState === itemsStateMap.OPENED && !inIssues}
+            >Open</ReactNavLink>
+          </NavItem>
+          <NavItem className="ms-3">
+            <ReactNavLink
+              to="mergerequests?page=1&itemsState=merged"
+              tag={NavLink}
+              isActive={() => itemsState === itemsStateMap.MERGED && !inIssues}
+            >Merged</ReactNavLink>
+          </NavItem>
+          <NavItem className="ms-3">
+            <ReactNavLink
+              to="mergerequests?page=1&itemsState=closed"
+              tag={NavLink}
+              isActive={() => itemsState === itemsStateMap.CLOSED && !inIssues}
+            >Complete</ReactNavLink>
+          </NavItem>
+        </Nav>
+      </Nav>
+    </Col>);
   }
 }
 
 class ProjectViewCollaboration extends Component {
 
   render() {
-    return <Col key="collaboration">
-      <Row>
-        <Col key="nav" sm={12} md={2}>
-          <ProjectViewCollaborationNav {...this.props} />
-        </Col>
-        <Col key="collaborationContent" sm={12} md={10}>
-          <Switch>
-            <Route path={this.props.mergeRequestUrl} render={props =>
-              <ProjectViewMergeRequests {...this.props} />} />
-            <Route path={this.props.mergeRequestsOverviewUrl} render={props =>
-              <ProjectMergeRequestList {...this.props} />} />
-            <Route exact path={this.props.issueNewUrl} render={props =>
-              <Issue.New {...props} model={this.props.model}
-                projectPathWithNamespace={this.props.core.path_with_namespace}
-                client={this.props.client} />} />
-            <Route path={this.props.issueUrl} render={props =>
-              <ProjectViewIssues {...this.props} />} />
-            <Route path={this.props.issuesUrl} render={props =>
-              <ProjectIssuesList {...this.props} />} />
-          </Switch>
-        </Col>
-      </Row>
-    </Col>;
+    return <Row>
+      <Col key="collaborationContent">
+        <Switch>
+          <Route path={this.props.mergeRequestUrl} render={props =>
+            <ProjectViewMergeRequests {...this.props} />} />
+          <Route path={this.props.mergeRequestsOverviewUrl} render={props =>
+            <ProjectMergeRequestList {...this.props} />} />
+          <Route exact path={this.props.issueNewUrl} render={props =>
+            <Issue.New {...props} model={this.props.model}
+              projectPathWithNamespace={this.props.core.path_with_namespace}
+              client={this.props.client} />} />
+          <Route path={this.props.issueUrl} render={props =>
+            <ProjectViewIssues {...this.props} />} />
+          <Route path={this.props.issuesUrl} render={props =>
+            <ProjectIssuesList {...this.props} />} />
+        </Switch>
+      </Col>
+    </Row>;
   }
 }
 
 class ProjectIssuesList extends Component {
 
   render() {
-    return <Row><Col key="issuesList" className={"pt-3"} sm={12} md={10} lg={8}>
-      <CollaborationList
-        key="issuesList"
-        listType={collaborationListTypeMap.ISSUES}
-        collaborationUrl={this.props.collaborationUrl}
-        issueNewUrl={this.props.issueNewUrl}
-        projectId={this.props.core.id}
-        user={this.props.user}
-        location={this.props.location}
-        client={this.props.client}
-        history={this.props.history}
-        fetchElements={this.props.client.getProjectIssues}
-      />
-    </Col></Row>;
+    return <Row>
+      <ProjectViewCollaborationNav {...this.props} />
+      <Col key="issuesList" sm={10}>
+        <CollaborationList
+          key="issuesList"
+          listType={collaborationListTypeMap.ISSUES}
+          collaborationUrl={this.props.collaborationUrl}
+          issueNewUrl={this.props.issueNewUrl}
+          projectId={this.props.core.id}
+          user={this.props.user}
+          location={this.props.location}
+          client={this.props.client}
+          history={this.props.history}
+          fetchElements={this.props.client.getProjectIssues}
+        />
+      </Col>
+    </Row>;
   }
 }
 
 class ProjectViewIssues extends Component {
 
   render() {
-    return <Row>
-      <Col key="issue" sm={12} md={10}>
-        <Route path={this.props.issueUrl}
-          render={props => this.props.issueView(props)} />
-      </Col>
-    </Row>;
+    return <Route path={this.props.issueUrl}
+      render={props => this.props.issueView(props)} />;
   }
 }
 
 class ProjectViewMergeRequests extends Component {
   render() {
-    return <Row>
-      <Col key="issue" sm={12} md={10}>
-        <Route path={this.props.mergeRequestUrl}
-          render={props => this.props.mrView(props)} />
-      </Col>
-    </Row>;
+    return <Route path={this.props.mergeRequestUrl}
+      render={props => this.props.mrView(props)} />;
   }
 }
 
@@ -827,32 +962,27 @@ class ProjectMergeRequestList extends Component {
   }
 
   render() {
-    return <Col>
-      <Row>
-        <Col sm={12} md={10} lg={8}>
-          <MergeRequestSuggestions
-            externalUrl={this.props.externalUrl}
-            canCreateMR={this.props.canCreateMR}
-            onCreateMergeRequest={this.props.onCreateMergeRequest}
-            suggestedMRBranches={this.props.suggestedMRBranches} />
-        </Col>
-      </Row>
-      <Row>
-        <Col key="mrList" sm={12} md={10} lg={8}>
-          <CollaborationList
-            collaborationUrl={this.props.collaborationUrl}
-            listType={collaborationListTypeMap.MREQUESTS}
-            projectId={this.props.core.id}
-            user={this.props.user}
-            location={this.props.location}
-            client={this.props.client}
-            history={this.props.history}
-            mergeRequestsOverviewUrl={this.props.mergeRequestsOverviewUrl}
-            fetchElements={this.props.client.getMergeRequests}
-          />
-        </Col>
-      </Row>
-    </Col>;
+    return <Row>
+      <ProjectViewCollaborationNav {...this.props} />
+      <Col sm={10}>
+        <MergeRequestSuggestions
+          externalUrl={this.props.externalUrl}
+          canCreateMR={this.props.canCreateMR}
+          onCreateMergeRequest={this.props.onCreateMergeRequest}
+          suggestedMRBranches={this.props.suggestedMRBranches} />
+        <CollaborationList
+          collaborationUrl={this.props.collaborationUrl}
+          listType={collaborationListTypeMap.MREQUESTS}
+          projectId={this.props.core.id}
+          user={this.props.user}
+          location={this.props.location}
+          client={this.props.client}
+          history={this.props.history}
+          mergeRequestsOverviewUrl={this.props.mergeRequestsOverviewUrl}
+          fetchElements={this.props.client.getMergeRequests}
+        />
+      </Col>
+    </Row>;
   }
 }
 
@@ -863,10 +993,10 @@ class ProjectViewFiles extends Component {
 
   render() {
     return [
-      <Col key="files" sm={12} md={4} lg={3} xl={2}>
+      <Col key="files" md={4} lg={3} xl={2}>
         <ProjectFilesNav {...this.props} />
       </Col>,
-      <Col key="content" sm={12} md={8} lg={9} xl={10}>
+      <Col key="content" md={8} lg={9} xl={10}>
         <Switch>
           <Route path={this.props.lineageUrl}
             render={p => this.props.lineageView(p)} />
@@ -878,71 +1008,29 @@ class ProjectViewFiles extends Component {
   }
 }
 
-class OverviewDatasetRow extends Component {
+
+class ProjectSessions extends Component {
   render() {
-    return <tr>
-      <td className="align-middle">
-        <Link to={this.props.fullDatasetUrl}>{this.props.name}</Link>
-      </td>
-    </tr>;
-  }
-}
-
-class ProjectViewDatasetsOverview extends Component {
-
-  componentDidMount() {
-    this.props.fetchDatasets(false);
-  }
-
-  render() {
-    const datasetsList = this.props.core.datasets;
-
-    if (datasetsList === undefined || datasetsList === SpecialPropVal.UPDATING)
-      return <Loader />;
-
-    if (datasetsList.length === 0)
-      return <p>No datasets to display.</p>;
-
-    let datasets = datasetsList.map((dataset) =>
-      <OverviewDatasetRow
-        key={dataset.name}
-        name={dataset.title || dataset.name}
-        fullDatasetUrl={`${this.props.datasetsUrl}/${encodeURIComponent(dataset.name)}`}
-      />
-    );
-
-    return <Col xs={12} md={10} lg={10}>
-      <Table bordered>
-        <thead className="thead-light">
-          <tr><th className="align-middle">Datasets</th></tr>
-        </thead>
-        <tbody>
-          {datasets}
-        </tbody>
-      </Table>
-    </Col>;
-  }
-}
-
-class ProjectEnvironments extends Component {
-  render() {
+    const backButton = (<GoBackButton label="Back to sessions list" url={this.props.notebookServersUrl} />);
     return [
-      <Col key="nav" xs={12} md={2}>
-        <Nav pills className="flex-column mb-3">
-          <NavItem>
-            <RenkuNavLink to={this.props.notebookServersUrl} title="Running" />
-          </NavItem>
-          <NavItem>
-            <RenkuNavLink to={this.props.launchNotebookUrl} title="New" />
-          </NavItem>
-        </Nav>
-      </Col>,
-      <Col key="content" xs={12} md={10}>
+      <Col key="content" xs={12}>
         <Switch>
           <Route exact path={this.props.notebookServersUrl}
             render={props => <ProjectNotebookServers {...this.props} />} />
           <Route path={this.props.launchNotebookUrl}
-            render={props => <ProjectStartNotebookServer {...this.props} />} />
+            render={props => (
+              <Fragment>
+                {backButton}
+                <ProjectStartNotebookServer key="startNotebookForm" {...this.props} />
+              </Fragment>
+            )} />
+          <Route path={this.props.sessionShowUrl}
+            render={props => (
+              <Fragment>
+                {backButton}
+                <ProjectShowSession {...this.props} match={props.match} />
+              </Fragment>
+            )} />
         </Switch>
       </Col>
     ];
@@ -956,7 +1044,7 @@ function notebookWarning(userLogged, accessLevel, fork, postLoginUrl, externalUr
       <InfoAlert timeout={0} key="permissions-warning">
         <p>
           <FontAwesomeIcon icon={faExclamationTriangle} /> As
-          an anonymous user, you can start <ExternalLink role="text" title="Interactive Environments"
+          an anonymous user, you can start <ExternalLink role="text" title="Sessions"
             url="https://renku.readthedocs.io/en/latest/developer/services/notebooks_service.html" />, but
           you cannot save your work.
         </p>
@@ -972,14 +1060,14 @@ function notebookWarning(userLogged, accessLevel, fork, postLoginUrl, externalUr
       <InfoAlert timeout={0} key="permissions-warning">
         <p>
           <FontAwesomeIcon icon={faExclamationTriangle} /> You have limited permissions for this
-          project. You can launch an interactive environment, but you will not be able to save
+          project. You can launch a session, but you will not be able to save
           any changes. If you want to save your work, consider one of the following:
         </p>
         <ul className="mb-0">
           <li>
             <Button size="sm" color="primary" onClick={(event) => fork(event)}>
               Fork the project
-            </Button> and start an interactive environment from your fork.
+            </Button> and start a session from your fork.
           </li>
           <li className="pt-1">
             <ExternalLink size="sm" title="Contact a maintainer"
@@ -996,6 +1084,35 @@ function notebookWarning(userLogged, accessLevel, fork, postLoginUrl, externalUr
   return null;
 }
 
+
+class ProjectShowSession extends Component {
+  render() {
+    const {
+      blockAnonymous, client, externalUrl, history, launchNotebookUrl, location, match, model,
+      notifications, toggleForkModal, user, visibility
+    } = this.props;
+    const warning = notebookWarning(
+      user.logged, visibility.accessLevel, toggleForkModal, location.pathname, externalUrl
+    );
+
+    return (
+      <ShowSession
+        blockAnonymous={blockAnonymous}
+        client={client}
+        history={history}
+        location={location}
+        match={match}
+        message={warning}
+        model={model}
+        notifications={notifications}
+        scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path }}
+        standalone={false}
+        urlNewSession={launchNotebookUrl}
+      />
+    );
+  }
+}
+
 class ProjectNotebookServers extends Component {
   render() {
     const {
@@ -1009,7 +1126,7 @@ class ProjectNotebookServers extends Component {
     return (
       <Notebooks standalone={false} client={client} model={model} location={location}
         message={warning}
-        urlNewEnvironment={launchNotebookUrl}
+        urlNewSession={launchNotebookUrl}
         blockAnonymous={blockAnonymous}
         scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path }}
       />
@@ -1053,164 +1170,30 @@ class ProjectStartNotebookServer extends Component {
   }
 }
 
-function RepositoryUrlRow(props) {
-  return (
-    <tr>
-      <th scope="row">{props.urlType}</th>
-      <td>{props.url}</td>
-      <td style={{ width: 1 }}><Clipboard clipboardText={props.url} /></td>
-    </tr>
-  );
-}
-
-class RepositoryUrls extends Component {
-  render() {
-    return (
-      <div>
-        <Label className="font-weight-bold">Repository URL</Label>
-        <Table size="sm">
-          <tbody>
-            <RepositoryUrlRow urlType="SSH" url={this.props.system.ssh_url} />
-            <RepositoryUrlRow urlType="HTTP" url={this.props.system.http_url} />
-          </tbody>
-        </Table>
-      </div>
-    );
-  }
-}
-
-function CommandRow(props) {
-  return (
-    <tr>
-      <th scope="row">{props.application}</th>
-      <td>
-        <code>{props.command}</code>
-      </td>
-      <td style={{ width: 1 }}><Clipboard clipboardText={props.command} /></td>
-    </tr>
-  );
-}
-
-function GitCloneCmd(props) {
-  const [cmdOpen, setCmdOpen] = useState(false);
-  const { externalUrl, projectPath } = props;
-  const gitClone = `git clone ${externalUrl}.git && cd ${projectPath} && git lfs install --local --force`;
-  const gitHooksInstall = "renku githooks install"; // eslint-disable-line
-  return (cmdOpen) ?
-    <div className="mt-3">
-      <p style={{ fontSize: "smaller" }} className="font-italic">
-        If the <b>renku</b> command is not available, you can clone a project using Git.
-      </p>
-      <Table style={{ fontSize: "smaller" }} size="sm" className="mb-0" borderless={true}>
-        <tbody>
-          <tr>
-            <th scope="row">Git<sup>*</sup></th>
-            <td>
-              <code>{gitClone}</code>
-              <div className="mt-2 mb-0">
-                If you want to work with the repo using renku, {" "}
-                you need to run the following after the <code>git clone</code> completes:
-              </div>
-            </td>
-            <td style={{ width: 1 }}><Clipboard clipboardText={gitClone} /></td>
-          </tr>
-          <tr>
-            <th scope="row"></th>
-            <td>
-              <code>{gitHooksInstall}</code>
-            </td>
-            <td style={{ width: 1 }}><Clipboard clipboardText={gitHooksInstall} /></td>
-          </tr>
-        </tbody>
-      </Table>
-      <Button style={{ fontSize: "smaller" }} color="link" onClick={() => setCmdOpen(false)}>
-        Hide git command
-      </Button>
-    </div> :
-    <Button color="link" style={{ fontSize: "smaller" }} className="font-italic"
-      onClick={() => setCmdOpen(true)}>
-      Do not have renku?
-    </Button>;
-}
-
-
-class RepositoryClone extends Component {
-  render() {
-    const { externalUrl } = this.props;
-    const renkuClone = `renku clone ${externalUrl}.git`;
-    return (
-      <div>
-        <Label className="font-weight-bold">Clone commands</Label>
-        <Table size="sm" className="mb-0">
-          <tbody>
-            <CommandRow application="Renku" command={renkuClone} />
-          </tbody>
-        </Table>
-        <GitCloneCmd externalUrl={externalUrl} projectPath={this.props.core.project_path} />
-      </div>
-    );
-  }
-}
-
-class ProjectDescription extends Component {
-  constructor(props) {
-    super(props);
-    this.state = ProjectDescription.getDerivedStateFromProps(props, {});
-    this.onValueChange = this.handleChange.bind(this);
-    this.onSubmit = this.handleSubmit.bind(this);
-  }
-
-  static getDerivedStateFromProps(nextProps, prevState) {
-    const update = { value: nextProps.core.description };
-    return { ...update, ...prevState };
-  }
-
-  handleChange(e) { this.setState({ value: e.target.value }); }
-
-  handleSubmit(e) { e.preventDefault(); this.props.onProjectDescriptionChange(this.state.value); }
-
-  render() {
-    const inputField = this.props.settingsReadOnly ?
-      <Input id="projectDescription" readOnly value={this.state.value} /> :
-      <Input id="projectDescription" onChange={this.onValueChange}
-        value={this.state.value === null ? "" : this.state.value} />;
-    let submit = (this.props.core.description !== this.state.value) ?
-      <Button className="mb-3" color="primary">Update</Button> :
-      <span></span>;
-    return <Form onSubmit={this.onSubmit}>
-      <FormGroup>
-        <Label for="projectDescription">Project Description</Label>
-        {inputField}
-        <FormText>A short description for the project</FormText>
-      </FormGroup>
-      {submit}
-    </Form>;
-  }
-}
-
 function ProjectSettings(props) {
-  return <Col key="settings" xs={12}>
-    <Row>
-      <Col xs={12} lg={6}>
-        <ProjectTags
-          tag_list={props.system.tag_list}
-          onProjectTagsChange={props.onProjectTagsChange}
-          settingsReadOnly={props.settingsReadOnly} />
-        <ProjectDescription {...props} />
-      </Col>
-      <Col xs={12} lg={6}>
-        <RepositoryClone {...props} />
-        <RepositoryUrls {...props} />
-      </Col>
-    </Row>
-    <Row>
-      <Col xs={12} lg={6}>
-        <ProjectAvatarEdit externalUrl={props.externalUrl}
-          avatarUrl={props.core.avatar_url} onAvatarChange={props.onAvatarChange}
-          settingsReadOnly={props.settingsReadOnly} />
-      </Col>
-    </Row>
-  </Col>;
+  return (
+    <Col key="settings">
+      <Row>
+        <Col key="nav" sm={12} md={2}>
+          <ProjectSettingsNav {...props} />
+        </Col>
+        <Col key="content" sm={12} md={10}>
+          <Switch>
+            <Route exact path={props.settingsUrl}
+              render={renderProps => {
+                return <ProjectSettingsGeneral {...props} />;
+              }}
+            />
+            <Route exact path={props.settingsSessionsUrl}
+              render={renderProps => {
+                return <ProjectSettingsSessions {...props} />;
+              }}
+            />
+          </Switch>
+        </Col>
+      </Row>
+    </Col>
+  );
 }
 
 class ProjectViewNotFound extends Component {
@@ -1260,14 +1243,12 @@ class ProjectViewLoading extends Component {
     const info = this.props.projectId ?
       <h3>Identifying project number {this.props.projectId}...</h3> :
       <h3>Loading project {this.props.projectPathWithNamespace}...</h3>;
-    return <Container fluid>
-      <Row>
-        <Col>
-          {info}
-          <Loader />
-        </Col>
-      </Row>
-    </Container>;
+    return <Row>
+      <Col>
+        {info}
+        <Loader />
+      </Col>
+    </Row>;
   }
 }
 
@@ -1321,30 +1302,33 @@ class ProjectView extends Component {
     }
 
     return [
-      <Row key="header"><Col xs={12}><ProjectViewHeader key="header" {...this.props} /></Col></Row>,
-      <Row key="nav"><Col xs={12}><ProjectNav key="nav" {...this.props} /></Col></Row>,
-      <Row key="space"><Col key="space" xs={12}>&nbsp;</Col></Row>,
-      <Container key="content" fluid>
-        <Row>
-          <Switch>
-            <Route exact path={this.props.baseUrl}
-              render={props => <ProjectViewOverview key="overview" {...this.props} />} />
-            <Route path={this.props.overviewUrl}
-              render={props => <ProjectViewOverview key="overview" {...this.props} />} />
-            <Route path={this.props.collaborationUrl}
-              render={props => <ProjectViewCollaboration key="collaboration" {...this.props} />} />
-            <Route path={this.props.filesUrl}
-              render={props => <ProjectViewFiles key="files" {...this.props} />} />
-            <Route path={this.props.datasetsUrl}
-              render={props => <ProjectViewDatasets key="datasets" {...this.props} />} />
-            <Route path={this.props.settingsUrl}
-              render={props => <ProjectSettings key="settings" {...this.props} />} />
-            <Route path={this.props.notebookServersUrl}
-              render={props => <ProjectEnvironments key="environments" {...this.props} />} />
-            <Route component={NotFoundInsideProject} />
-          </Switch>
-        </Row>
-      </Container>
+      <Switch key="projectHeader">
+        <Route exact path={this.props.baseUrl}
+          render={props => <ProjectViewHeader {...this.props} minimalistHeader={false}/>} />
+        <Route path={this.props.overviewUrl}
+          render={props => <ProjectViewHeader {...this.props} minimalistHeader={false}/>} />
+        <Route component={()=><ProjectViewHeader {...this.props} minimalistHeader={true}/>} />
+      </Switch>,
+      <ProjectNav key="nav" {...this.props} />,
+      <Row key="content">
+        <Switch>
+          <Route exact path={this.props.baseUrl}
+            render={props => <ProjectViewOverview key="overview" {...this.props} />} />
+          <Route path={this.props.overviewUrl}
+            render={props => <ProjectViewOverview key="overview" {...this.props} />} />
+          <Route path={this.props.collaborationUrl}
+            render={props => <ProjectViewCollaboration key="collaboration" {...this.props} />} />
+          <Route path={this.props.filesUrl}
+            render={props => <ProjectViewFiles key="files" {...this.props} />} />
+          <Route path={this.props.datasetsUrl}
+            render={props => <ProjectViewDatasets key="datasets" {...this.props} />} />
+          <Route path={this.props.settingsUrl}
+            render={props => <ProjectSettings key="settings" {...this.props} />} />
+          <Route path={this.props.notebookServersUrl}
+            render={props => <ProjectSessions key="sessions" {...this.props} />} />
+          <Route component={NotFoundInsideProject} />
+        </Switch>
+      </Row>
     ];
 
   }

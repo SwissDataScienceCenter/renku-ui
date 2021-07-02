@@ -38,12 +38,13 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-regular-svg-icons";
 import {
-  faCheck, faExternalLinkAlt, faEllipsisV, faUser, faSyncAlt, faLongArrowAltLeft
+  faCheck, faExternalLinkAlt, faEllipsisV, faUser, faSyncAlt
 } from "@fortawesome/free-solid-svg-icons";
 
 import { sanitizedHTMLFromMarkdown, simpleHash } from "./HelperFunctions";
 import FileExplorer, { getFilesTree } from "./FileExplorer";
 import RenkuMarkdownWithPathTranslation from "./Markdown";
+import ListDisplay from "./List";
 
 /**
  * Show user avatar
@@ -60,6 +61,7 @@ class UserAvatar extends Component {
       case "sm": widgetSize = { img: 18, fa: null }; break;
       case "md": widgetSize = { img: 18 * 2, fa: "2x" }; break;
       case "lg": widgetSize = { img: 18 * 3, fa: "3x" }; break;
+      case "xl": widgetSize = { img: 18 * 6, fa: "6x" }; break;
       default: break;
     }
     return widgetSize;
@@ -90,17 +92,10 @@ function ProjectAvatar(props) {
   const [avatarUrl, setAvatarUrl] = useState(null);
 
   useEffect(() => {
-    if (props.avatar_url) { setAvatarUrl(props.avatar_url); }
-    else if (props.owner && props.owner.avatar_url) { setAvatarUrl(props.owner.avatar_url); }
-    else if (props.namespace && props.namespace.kind === "group") {
-      props.getAvatarFromNamespace(props.namespace.id)
-        .then((url) => {
-          setAvatarUrl(url);
-        });
-    }
+    if (props.avatar_url) setAvatarUrl(props.avatar_url);
   }, [props]);
 
-  return <UserAvatar avatar={avatarUrl} />;
+  return props.avatar_url ? <UserAvatar avatar={avatarUrl} size="xl" /> : null;
 }
 
 class FieldGroup extends Component {
@@ -129,10 +124,16 @@ class TimeCaption extends Component {
     const time = this.props.time;
     const timeDiff = (new Date() - new Date(time)) / 1000;
     const displayTime = timeDiff < 3 ? "just now" : human(timeDiff);
-    const caption = (this.props.caption) ? this.props.caption : "Updated";
+    let caption = (this.props.caption) ? this.props.caption : "Updated";
     const endCaption = (this.props.endCaption) ? " " + this.props.endCaption : "";
     const endPunctuation = (this.props.endPunctuation) ? this.props.endPunctuation : ".";
-    return <span className="time-caption">{caption} {displayTime}{endCaption}{endPunctuation}</span>;
+    let className = this.props.className || "";
+    const noCaption = this.props.noCaption;
+    if (noCaption)
+      caption = "";
+    else
+      className = "time-caption " + className;
+    return <span className={className}>{caption} {displayTime}{endCaption}{endPunctuation}</span>;
   }
 }
 
@@ -148,17 +149,21 @@ class RenkuNavLink extends Component {
   }
 
   testActive(match, location) {
-    const alt = this.props.alternate;
+    const altArray = this.props.alternate ?
+      Array.isArray(this.props.alternate) ?
+        this.props.alternate : [this.props.alternate] : undefined;
+
+
     if (this.props.matchPath === true) {
       let haveMatch = (match != null || location.pathname.startsWith(this.props.to));
-      if (alt == null) return haveMatch;
-      return haveMatch || location.pathname.startsWith(alt);
+      if (!altArray) return haveMatch;
+      return haveMatch || altArray.find(alt => location.pathname.startsWith(alt)) !== undefined;
     }
     let haveMatch = match != null;
-    if (alt == null) return haveMatch;
+    if (!altArray) return haveMatch;
     if (this.props.noSubPath)
-      return haveMatch || location.pathname.endsWith(alt);
-    return haveMatch || location.pathname.startsWith(alt);
+      return haveMatch || altArray.find(alt => location.pathname.endsWith(alt)) !== undefined;
+    return haveMatch || altArray.find(alt => location.pathname.startsWith(alt)) !== undefined;
   }
 
   render() {
@@ -168,7 +173,8 @@ class RenkuNavLink extends Component {
       this.props.to;
     const exact = (this.props.exact != null) ? this.props.exact : true;
     return (
-      <NavLink exact={exact} to={to} isActive={this.isActive} tag={RRNavLink} id={this.props.id}>{title}</NavLink>
+      <NavLink exact={exact} to={to} isActive={this.isActive} tag={RRNavLink}
+        id={this.props.id} className={this.props.className}>{title}</NavLink>
     );
   }
 }
@@ -192,8 +198,6 @@ class Pagination extends Component {
       innerClass={className}
 
       // Some defaults for the styling
-      prevPageText={"Previous"}
-      nextPageText={"Next"}
       itemClass={"page-item"}
       linkClass={"page-link"}
       activeClass={"page-item active"}
@@ -204,13 +208,15 @@ class Pagination extends Component {
 }
 
 function ExternalLinkButton(props) {
-  let className = "btn btn-primary";
+  let className = "btn";
   if (props.size != null)
     className += ` btn-${props.size}`;
   if (props.disabled)
     className += " disabled";
   if (props.color)
     className += ` btn-${props.color}`;
+  else
+    className += ` btn-primary`;
   if (props.className)
     className += ` ${props.className}`;
 
@@ -312,7 +318,7 @@ function LoaderSpinner(props) {
   const d = `${size}px`;
   // Inspired from https://www.w3schools.com/howto/howto_css_loader.asp
   const border = `${size / 10}px solid #f3f3f3`;
-  const borderTop = `${size / 10}px solid #5561A6`; // Use SDSC Dark Blue
+  const borderTop = `${size / 10}px solid #01192D`; // Use Renku Blue
   const borderRight = borderTop; // Added a borderRight to make a half-circle
   const borderRadius = "50%";
   const animation = "spin 2s linear infinite";
@@ -412,7 +418,7 @@ class RenkuAlert extends Component {
 class InfoAlert extends Component {
   render() {
     return (
-      <RenkuAlert color="primary" {...this.props} >
+      <RenkuAlert color="info" {...this.props} >
         {this.props.children}
       </RenkuAlert>
     );
@@ -464,6 +470,8 @@ class RenkuMarkdown extends Component {
     let className = "text-break renku-markdown";
     if (singleLine)
       className += " children-no-spacing";
+    if (this.props.className)
+      className += " " + this.props.className;
 
     return <div className={className} style={style}
       dangerouslySetInnerHTML={{ __html: sanitizedHTMLFromMarkdown(this.props.markdownText, singleLine) }}>
@@ -487,7 +495,9 @@ function MarkdownTextExcerpt(props) {
   const style = props.heightLimit ?
     { maxHeight: `${props.heightLimit}ch` }
     : { maxWidth: `${props.charsLimit}ch` };
-  return <RenkuMarkdown markdownText={props.markdownText} singleLine={false} style={style} />;
+  const text = props.charsLimit && (props.markdownText.length > props.charsLimit) ?
+    props.markdownText.slice(0, props.charsLimit) + "..." : props.markdownText;
+  return <RenkuMarkdown markdownText={text} singleLine={props.singleLine || false} style={style} />;
 }
 
 /**
@@ -601,9 +611,11 @@ function Clipboard(props) {
   return (
     <ReactClipboard component="a" data-clipboard-text={props.clipboardText} onSuccess={
       () => { setCopied(true); setTimeout(() => { if (isMounted.current) setCopied(false); }, timeoutDur); }
-    }> {
+    }
+    className={props.className ? props.className : ""}
+    > {
         (copied) ?
-          <FontAwesomeIcon icon={faCheck} color="green" /> :
+          <FontAwesomeIcon icon={faCheck} color="success" /> :
           <FontAwesomeIcon icon={faCopy} />
       }
     </ReactClipboard>
@@ -750,23 +762,23 @@ function ButtonWithMenu(props) {
   const toggleOpen = () => setOpen(!dropdownOpen);
   const size = (props.size) ? props.size : "md";
 
-  return (
-    <ButtonDropdown
-      size={size}
-      isOpen={dropdownOpen}
-      toggle={toggleOpen}
-      direction={props.direction}
-      disabled={props.disabled}
-    >
-      {props.default}
-      <DropdownToggle color="primary" className="alternateToggleStyle">
-        <FontAwesomeIcon icon={faEllipsisV} style={{ color: "white", backgroundColor: "#5561A6" }} />
-      </DropdownToggle>
-      <DropdownMenu right={true}>
-        {props.children}
-      </DropdownMenu>
-    </ButtonDropdown>
-  );
+  return <ButtonDropdown
+    className={props.className}
+    size={size}
+    isOpen={dropdownOpen}
+    toggle={toggleOpen}
+    color={props.color || "primary"}
+    direction={props.direction}
+    disabled={props.disabled}
+  >
+    {props.default}
+    <DropdownToggle color={props.color || "primary"}>
+      <FontAwesomeIcon icon={faEllipsisV}/>
+    </DropdownToggle>
+    <DropdownMenu end>
+      {props.children}
+    </DropdownMenu>
+  </ButtonDropdown>;
 }
 
 /**
@@ -784,7 +796,7 @@ function RefreshButton(props) {
 
   return (
     <Fragment>
-      <Button key="button" className="ml-2 p-0" color="link" size="sm" id={id} onClick={() => props.action()}>
+      <Button key="button" className="ms-2 p-0" color="link" size="sm" id={id} onClick={() => props.action()}>
         <FontAwesomeIcon icon={faSyncAlt} spin={props.updating} />
       </Button>
       {tooltip}
@@ -798,9 +810,9 @@ function RefreshButton(props) {
  * @param {string} props.label text next to the arrow
  */
 function GoBackButton(props) {
-  return <Col md={12} className="pb-2 pl-0">
-    <Link className={props.className} to={props.url}>
-      <FontAwesomeIcon icon={faLongArrowAltLeft} /> {props.label}
+  return <Col md={12} className="pb-4 pl-0">
+    <Link className={props.className + " link-rk-text text-decoration-none"} to={props.url}>
+      <span className="arrow-left">  </span>{props.label}
     </Link>
   </Col>;
 }
@@ -809,5 +821,5 @@ export {
   UserAvatar, TimeCaption, FieldGroup, RenkuNavLink, Pagination, RenkuMarkdown, ExternalLink, ExternalDocsLink,
   ExternalIconLink, IconLink, RefreshButton, Loader, InfoAlert, SuccessAlert, WarnAlert, ErrorAlert, JupyterIcon,
   Clipboard, ThrottledTooltip, TooltipToggleButton, ProjectAvatar, ButtonWithMenu, FileExplorer, getFilesTree,
-  MarkdownTextExcerpt, GoBackButton
+  MarkdownTextExcerpt, GoBackButton, ListDisplay
 };

@@ -30,16 +30,16 @@ function FileAndLineageSwitch(props) {
     props.history.push(props.switchToPath);
   };
 
-  return <small><ButtonGroup className="fileBarButtonGroup pl-2" size="sm">
-    <Button color="primary" className="fileBarButton"
-      outline onClick={performSwitch} active={props.insideFile}>
+  return <ButtonGroup className="rk-btn-group-light" size="sm">
+    <Button color="rk-white" className="btn-rk-white-dark-active"
+      onClick={performSwitch} active={props.insideFile}>
       <FontAwesomeIcon icon={faFile} />
     </Button>
-    <Button color="primary" className="fileBarButton"
-      outline onClick={performSwitch} active={!props.insideFile}>
+    <Button color="rk-white" className="btn-rk-white-dark-active"
+      onClick={performSwitch} active={!props.insideFile}>
       <FontAwesomeIcon icon={faProjectDiagram} />
     </Button>
-  </ButtonGroup></small>;
+  </ButtonGroup>;
 }
 
 export { FileAndLineageSwitch };

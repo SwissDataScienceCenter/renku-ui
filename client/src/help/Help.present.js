@@ -69,33 +69,33 @@ class HelpGetting extends Component {
         </div>
       </div>,
       <div key="main1" className="d-flex mb-3 flex-wrap">
-        <div className="mr-4" style={{ flex: "0 1", flexBasis }}>
-          <h2>
+        <div className="me-4" style={{ flex: "0 1", flexBasis }}>
+          <h3>
             <ExternalIconLink url="https://renku.discourse.group" icon={faDiscourse} title="Forum" />
-          </h2>
+          </h3>
           <p>
             We maintain a <ExternalDocsLink url="https://renku.discourse.group" title="help forum" /> for
             discussion about Renku. This is a good place to ask questions and find answers.
           </p>
         </div>
-        <div className="mr-4" style={{ flex: "0 1", flexBasis }}>
-          <h2>
+        <div className="me-4" style={{ flex: "0 1", flexBasis }}>
+          <h3>
             <ExternalIconLink url="https://gitter.im/SwissDataScienceCenter/renku" icon={faGitter} title="Gitter" />
-          </h2>
+          </h3>
           <p>
             Want to reach out to the development team live? Contact us on{" "}
             <ExternalDocsLink url="https://gitter.im/SwissDataScienceCenter/renku" title="Gitter" />, we would be happy
             to chat with you.
           </p>
         </div>
-        <div className="mr-4" style={{ flex: "0 1", flexBasis }}>
-          <h2>
+        <div className="me-4" style={{ flex: "0 1", flexBasis }}>
+          <h3>
             <ExternalIconLink
               url="https://github.com/SwissDataScienceCenter/renku"
               icon={faGithub}
               title="GitHub"
             />
-          </h2>
+          </h3>
           <p>
             Renku is open source and being developed on{" "}
             <ExternalDocsLink url="https://github.com/SwissDataScienceCenter/renku" title="GitHub" />. This is the best
@@ -113,30 +113,30 @@ class HelpDocumentation extends Component {
     return (
       <Row>
         <Col md={8}>
-          <h2>
+          <h3>
             <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html"
               title="Tutorial" />
-          </h2>
+          </h3>
           <p>
             If you are here for the first time or you are not sure how to use Renku, we recommend you
             to go through our {" "}
             <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html"
               title="tutorial" />.
           </p>
-          <h2>
+          <h3>
             <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/"
               title="Renku" />
-          </h2>
+          </h3>
           <p>
             The <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/"
               title="Renku project documentation" /> explains Renku as a whole. It describes
             the parts that make it up, how they fit together, and how to use Renku in your
             data-science projects to work more effectively.
           </p>
-          <h2>
+          <h3>
             <ExternalDocsLink url="https://renku-python.readthedocs.io/en/latest/"
               title="Renku CLI" />
-          </h2>
+          </h3>
           <p>
             The <ExternalDocsLink url="https://renku-python.readthedocs.io/en/latest/"
               title="command-line-interface (CLI) documentation" /> details the commands of the
@@ -153,7 +153,7 @@ class HelpFeatures extends Component {
     return (
       <Row>
         <Col md={8}>
-          <h2>Features</h2>
+          <h3>Features</h3>
           <p>
             Renku consists of a collection of services, including a web-based user interface and a command-line client,
             exploiting in a coherent setup the joint features of:
@@ -242,15 +242,12 @@ class HelpContent extends Component {
 class Help extends Component {
   render() {
     return [
-      <Row key="header">
-        <Col md={8}>
-          <h1>Using Renku</h1>
+      <Row key="header" className="pt-2 pb-3">
+        <Col className="d-flex mb-2 justify-content-between">
+          <h2>Using Renku</h2>
         </Col>
       </Row>,
-      <Row key="spacePre">
-        <Col>&nbsp;</Col>
-      </Row>,
-      <Row key="nav">
+      <Row key="nav" className="pb-2">
         <Col>
           <HelpNav {...this.props} />
         </Col>

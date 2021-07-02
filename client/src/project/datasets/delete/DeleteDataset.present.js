@@ -57,7 +57,7 @@ function DeleteDatasetPresent(props) {
           disabled={props.submitLoader.value} className="float-right mt-1" color="primary">
           Delete Dataset
         </Button>
-        <Button disabled={props.submitLoader.value} className="float-right mt-1 mr-1"
+        <Button disabled={props.submitLoader.value} className="float-right mt-1 me-1"
           color="secondary" onClick={props.closeModal}>
           Cancel
         </Button>

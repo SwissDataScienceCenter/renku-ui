@@ -4,19 +4,15 @@ Button.alert-link {
   vertical-align: bottom;
 }
 
-.visibilityLabel {
-  display: inline;
-  color: rgba(0, 0, 0, 0.5);
-  /* color: black; */
-  margin-left: 0.1em;
-  font-size: 0.55em;
-}
-
 .warningLabel {
   display: inline;
-  color: #ffc107;
+  color: #f0c800;
   margin-right: 0.3em;
-  font-size: 0.8em;
+  font-size: 0.75em;
+}
+.warningLabel > svg {
+  vertical-align: top;
+  margin-top: 0.20rem;
 }
 
 .selected-dataset{
@@ -34,15 +30,6 @@ Button.alert-link {
   margin-block-end: 0.5em;
   overflow: hidden; 
   -webkit-box-orient: vertical;
-}
-
-
-.datasetAuthors{
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  width: 98%;
-  text-overflow: ellipsis;
 }
 
 .margin-no-triangle{
@@ -116,51 +103,6 @@ Button.alert-link {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.fileBarIconButton{
-  display: inline-flex;
-  vertical-align: bottom;
-  position: relative;
-  padding: 0.1rem 0.1rem; 
-}
-
-.fileBarText{
-  vertical-align: sub;
-  display:inline-flex;
-}
-
-.fileBarButton{
-  padding: 0.125rem 0.3rem;
-  color: #999999;
-  border-color: #999999;
-}
-
-.fileBarButton:not(:disabled):not(.disabled):active,
-.fileBarButton:not(:disabled):not(.disabled).active, .show > .fileBarButton.dropdown-toggle {
-  color: #f6f6f6;
-  border-color: #999999;
-  background-color: #999999;
-}
-
-.fileBarButton:hover {
-  color: #f6f6f6;
-  border-color: #999999;
-  background-color: #999999;
-}
-
-.fileBarButton:focus, .fileBarButton.focus{
-  box-shadow: 0 0 0 0.2rem  rgba(115, 115, 115, 0.2);
-}
-
-.fileBarButton:focus, .fileBarButton.focus{
-  box-shadow: 0 0 0 0.2rem  rgba(115, 115, 115, 0.2);
-}
-
-.fileBarButton:not(:disabled):not(.disabled):active:focus, 
-.fileBarButton:not(:disabled):not(.disabled).active:focus, 
-.show > .fileBarButton.dropdown-toggle:focus {
-  box-shadow: 0 0 0 0.2rem  rgba(115, 115, 115, 0.2);
 }
 
 .dropdown-toggle.removeArrow{

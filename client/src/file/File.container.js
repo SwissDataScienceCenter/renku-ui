@@ -26,11 +26,12 @@ import { StyledNotebook, JupyterButtonPresent, ShowFile as ShowFilePresent, File
 import { StatusHelper } from "../model/Model";
 import { API_ERRORS } from "../api-client";
 import { RenkuMarkdown } from "../utils/UIComponents";
+import { encodeImageBase64 } from "../utils/Markdown";
 
-const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "pdf", "gif"];
+const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "pdf", "gif", "svg"];
 const CODE_EXTENSIONS = [
-  "py", "js", "json", "sh", "r", "yml", "yaml", "parquet", "cwl", "job", "prn", "rout",
-  "dcf", "rproj", "rst", "bat", "ini", "rmd", "jl", "toml", "ts", "rs", "scala",
+  "bat", "cwl", "dcf", "ini", "jl", "job", "js", "json", "parquet", "prn", "py", "r", "rmd",
+  "rout", "rproj", "rs", "rst", "scala", "sh", "toml", "ts", "xml", "yaml", "yml",
   "c", "cc", "cxx", "cpp", "h", "hh", "hxx", "hpp", // C++
   "f", "for", "ftn", "fpp", "f90", "f95", "f03", "f08" // Fortran
 ];
@@ -108,11 +109,11 @@ class FilePreview extends React.Component {
     // Various types of images
     if (this.fileIsImage()) {
       return (
-        <CardBody key="file preview" className="pb-0">
+        <CardBody key="file preview" className="bg-white">
           <img
             className="image-preview"
             alt={this.props.file.file_name}
-            src={"data:image;base64," + this.props.file.content}
+            src={encodeImageBase64(this.props.file.file_name, this.props.file.content)}
           />
         </CardBody>
       );
@@ -121,7 +122,7 @@ class FilePreview extends React.Component {
     // Free text
     if (this.fileIsText()) {
       return (
-        <CardBody key="file preview" className="pb-0">
+        <CardBody key="file preview" className="pb-0 bg-white">
           <pre className="no-highlight">
             <code>{atobUTF8(this.props.file.content)}</code>
           </pre>
@@ -133,7 +134,7 @@ class FilePreview extends React.Component {
     if (this.getFileExtension() === "md") {
       let content = atobUTF8(this.props.file.content);
       return (
-        <CardBody key="file preview" className="pb-0">
+        <CardBody key="file preview" className="pb-0 bg-white">
           <RenkuMarkdown
             projectPathWithNamespace={this.props.projectPathWithNamespace}
             filePath={this.props.file.file_path}
@@ -162,8 +163,8 @@ class FilePreview extends React.Component {
     // Code with syntax highlighting
     if (this.fileIsCode()) {
       return (
-        <CardBody key="file preview" className="pb-0">
-          <pre className={`hljs ${this.getFileExtension()}`}>
+        <CardBody key="file preview" className="pb-0 bg-white">
+          <pre className={`hljs ${this.getFileExtension()} bg-white`}>
             <code>{atobUTF8(this.props.file.content)}</code>
           </pre>
         </CardBody>
@@ -173,8 +174,8 @@ class FilePreview extends React.Component {
     // No extensions
     if (this.fileHasNoExtension()) {
       return (
-        <CardBody key="file preview" className="pb-0">
-          <pre className={"hljs"}>
+        <CardBody key="file preview" className="pb-0 bg-white">
+          <pre className={"hljs bg-white"}>
             <code>{atobUTF8(this.props.file.content)}</code>
           </pre>
         </CardBody>
@@ -183,7 +184,7 @@ class FilePreview extends React.Component {
 
     // File extension not supported
     return (
-      <CardBody key="file preview">
+      <CardBody key="file preview" className="pb-0 bg-white">
         <p>{`Unable to preview file with extension .${this.getFileExtension()}`}</p>
       </CardBody>
     );
@@ -297,13 +298,29 @@ class JupyterButton extends React.Component {
 class ShowFile extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { file: null, commit: null, error: null };
+    this.state = { file: null, commit: null, error: null, fileInfo: null };
   }
 
   // TODO: Write a wrapper to make promises cancellable to avoid usage of this._isMounted
   componentDidMount() {
     this._isMounted = true;
     this.retrieveFile();
+  }
+
+  componentDidUpdate() {
+    // save information about the file once available
+    if (this.props.filesTree && this.props.filesTree.hash) {
+      const path = this.props.filePath.endsWith("/") ?
+        this.props.filePath.substring(0, this.props.filePath.length - 1) :
+        this.props.filePath;
+      const fileInfo = this.props.filesTree.hash[path];
+      if (fileInfo) {
+        if (!this.state.fileInfo)
+          this.setState({ fileInfo });
+        else if (fileInfo.path !== this.state.fileInfo.path)
+          this.setState({ fileInfo });
+      }
+    }
   }
 
   componentWillUnmount() { this._isMounted = false; }
@@ -379,6 +396,7 @@ class ShowFile extends React.Component {
       fileSize={fileSize}
       history={this.props.history}
       previewThreshold={previewThreshold}
+      fileInfo={this.state.fileInfo}
     />;
   }
 }

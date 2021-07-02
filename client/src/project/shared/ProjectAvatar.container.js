@@ -58,7 +58,7 @@ function ProjectAvatarSubmitButtons({ value, onCancel, onAvatarChange, externalU
         Submit
       </Button>
     </div>
-    <div className="pr-3">
+    <div className="pe-3">
       <Button
         onClick={(e) => { onCancel(); }}>
         Cancel
@@ -79,7 +79,7 @@ function ProjectAvatarEdit({ avatarUrl, onAvatarChange, externalUrl, settingsRea
   }, [value.selected]);
   const maxSize = 200 * 1024; // 200KB
   // format: image/png, image/jpeg, image/gif, image/tiff
-  return <div>
+  return <div className="mb-3">
     <div>Project Avatar</div>
     <ImageInput name="project-avatar"
       value={value}

@@ -1,6 +1,6 @@
 {
   "name": "renku-ui-server",
-  "version": "0.11.11",
+  "version": "1.0.0-beta2",
   "description": "Server for renku API",
   "private": true,
   "main": "dist/index.js",

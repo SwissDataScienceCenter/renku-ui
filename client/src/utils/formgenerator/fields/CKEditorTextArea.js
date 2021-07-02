@@ -27,29 +27,35 @@ import React, { useState } from "react";
 import ValidationAlert from "./ValidationAlert";
 import HelpText from "./HelpText";
 import FormLabel from "./FormLabel";
-import { FormGroup } from "reactstrap";
+import { FormGroup, Label } from "reactstrap";
 import CKEditor from "@ckeditor/ckeditor5-react";
 import RenkuCKEditor from "@renku/ckeditor5-build-renku";
-import { CustomInput, Input } from "reactstrap";
+import { Input } from "reactstrap";
 
 
 function CktextareaInput({ name, label, type, value, alert, setInputs, help, outputType, disabled, required = false }) {
   const [codeView, setCodeView] = useState(false);
 
-  const switchLabel = (outputType === "markdown") ? "Markdown" : "HTML";
+  const switchLabel = (outputType === "markdown") ? "Raw Markdown" : "Raw HTML";
 
   return <div>
     <FormGroup>
-      <FormLabel htmlFor={name} label={label} required={required}/>
-      <CustomInput
-        className="float-right"
-        type="switch"
-        id="exampleCustomSwitch"
-        name="customSwitch"
-        label={switchLabel}
-        checked={codeView}
-        onChange={() => { setCodeView(!codeView); }}
-      />
+      <div className="pb-2">
+        <FormLabel htmlFor={name} label={label} required={required}/>
+        <div className="form-check form-switch float-end">
+          <Input
+            className="form-check-input rounded-pill"
+            type="switch"
+            id="CKEditorSwitch"
+            name="customSwitch"
+            checked={codeView}
+            onChange={() => { setCodeView(!codeView); }}
+          />
+          <Label check htmlFor="exampleCustomSwitch" className="form-check-label">
+            {switchLabel}
+          </Label>
+        </div>
+      </div>
       {
         codeView === false ?
           <CKEditor

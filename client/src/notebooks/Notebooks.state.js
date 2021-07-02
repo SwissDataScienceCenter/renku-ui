@@ -42,16 +42,20 @@ const VALID_SETTINGS = [
   "image"
 ];
 
+const SESSIONS_PREFIX = "interactive.";
+
 const ExpectedAnnotations = {
   domain: "renku.io",
   "renku.io": {
-    required: ["branch", "commit-sha", "default_image_used", "namespace", "projectId", "projectName", "repository"],
+    required: [
+      "branch", "commit-sha", "default_image_used", "namespace", "gitlabProjectId", "projectName", "repository"
+    ],
     default: {
       "branch": "unknown",
       "commit-sha": "00000000",
       "default_image_used": false,
       "namespace": "unknown",
-      "projectId": 0,
+      "gitlabProjectId": 0,
       "projectName": "unknown",
       "repository": "https://none"
     }
@@ -108,10 +112,92 @@ const NotebooksHelper = {
   },
 
   /**
+   * Get options and default values from notebooks and project options
+   *
+   * @param {object} notebooksOptions - notebook options as return by the "GET server_options" API.
+   * @param {object} projectOptions - project options as returned by the "GET config.show" API.
+   * @param {string} [projectPrefix] - project option key prefix used by config to identify session options.
+   */
+  getProjectDefault: (notebooksOptions, projectOptions, projectPrefix = SESSIONS_PREFIX) => {
+    let returnObject = {};
+    if (!notebooksOptions || !projectOptions)
+      return returnObject;
+
+    // Conversion helper
+    const convert = (value) => {
+      // return boolean
+      if (value === true || value === false)
+        return value;
+
+      // convert stringy boolean
+      if (value && value.toLowerCase() === "true")
+        return true;
+
+      else if (value && value.toLowerCase() === "false")
+        return false;
+
+      // convert stringy number
+      else if (!isNaN(value))
+        return parseFloat(value);
+
+      return value;
+    };
+
+    // Define options
+    const sortedOptions = Object.keys(notebooksOptions)
+      .sort((a, b) => parseInt(notebooksOptions[a].order) - parseInt(notebooksOptions[b].order));
+    let unknownOptions = [];
+
+    // Get RenkuLab defaults
+    let globalDefaults = [...sortedOptions].reduce((defaults, option) => {
+      if ("default" in notebooksOptions[option])
+        defaults[option] = notebooksOptions[option].default;
+      return defaults;
+    }, {});
+
+    // Overwrite renku defaults
+    if (projectOptions && projectOptions.default && Object.keys(projectOptions.default)) {
+      for (const [key, value] of Object.entries(projectOptions.default)) {
+        if (key.startsWith(projectPrefix)) {
+          const option = key.substring(projectPrefix.length);
+          if (!sortedOptions.includes(option))
+            unknownOptions.push(option);
+          globalDefaults[option] = convert(value);
+        }
+      }
+    }
+
+    // Get project defaults
+    let projectDefaults = [];
+    if (projectOptions && projectOptions.config && Object.keys(projectOptions.config)) {
+      for (const [key, value] of Object.entries(projectOptions.config)) {
+        if (key.startsWith(projectPrefix)) {
+          const option = key.substring(projectPrefix.length);
+          if (!sortedOptions.includes(option))
+            unknownOptions.push(option);
+          projectDefaults[option] = convert(value);
+        }
+      }
+    }
+
+    return {
+      defaults: {
+        global: globalDefaults,
+        project: projectDefaults
+      },
+      options: {
+        known: sortedOptions,
+        unknown: unknownOptions
+      }
+    };
+  },
+
+  /**
    * Parse project options raw data from the .ini file to a JS object
    *
    * @param {string} data - raw file content
    */
+  // TODO: use the getProjectDefault function after switching to the "GET config.show" API
   parseProjectOptions: (data) => {
     let projectOptions = {};
 
@@ -130,10 +216,10 @@ const NotebooksHelper = {
       parsedOptions = parsedData[RENKU_INI_SECTION_LEGACY];
     if (parsedOptions) {
       Object.keys(parsedOptions).forEach(parsedOption => {
-        // treat "default_url" as "defaultUrl" to allow name consistency in the the .ini file
+        // treat "defaultUrl" as "default_url" to allow name consistency in the the .ini file
         let option = parsedOption;
-        if (parsedOption === "default_url")
-          option = "defaultUrl";
+        if (parsedOption === "defaultUrl")
+          option = "default_url";
 
         // convert boolean and numbers
         let value = parsedOptions[parsedOption];
@@ -163,8 +249,8 @@ const NotebooksHelper = {
    * @param {string} currentValue - current project option value
    */
   checkOptionValidity: (globalOptions, currentOption, currentValue) => {
-    // defaultUrl is a special case and any string will fit
-    if (currentOption === "defaultUrl") {
+    // default_url is a special case and any string will fit
+    if (currentOption === "default_url") {
       if (typeof currentValue === "string")
         return true;
       return false;
@@ -215,7 +301,8 @@ const NotebooksHelper = {
   },
 
   pipelineTypes: PIPELINE_TYPES,
-  validSettings: VALID_SETTINGS
+  validSettings: VALID_SETTINGS,
+  sessionConfigPrefix: SESSIONS_PREFIX
 };
 
 class NotebooksCoordinator {
@@ -359,8 +446,9 @@ class NotebooksCoordinator {
       });
   }
 
-  async fetchNotebookOptions() {
-    await this.fetchProjectOptions();
+  async fetchNotebookOptions(skip = false) {
+    if (!skip)
+      await this.fetchProjectOptions();
     const oldData = this.model.get("options.global");
     if (Object.keys(oldData).length !== 0)
       return;
@@ -379,6 +467,7 @@ class NotebooksCoordinator {
       });
   }
 
+  // TODO: switch to the "GET config.show" API. Adapt (or remove) also the following setDefaultOptions function
   async fetchProjectOptions() {
     // prepare query data and reset warnings
     const filters = this.getQueryFilters();
@@ -488,10 +577,10 @@ class NotebooksCoordinator {
     if (!target || !target.annotations)
       return;
     const annotations = NotebooksHelper.cleanAnnotations(target.annotations);
-    if (!annotations || !annotations["commit-sha"] || !annotations["projectId"])
+    if (!annotations || !annotations["commit-sha"] || !annotations["gitlabProjectId"])
       return;
     const commitSha = annotations["commit-sha"];
-    const projectId = annotations["projectId"];
+    const gitlabProjectId = annotations["gitlabProjectId"];
 
     // verify if the commit data are already cached
     const oldCommits = this.model.get("data.commits");
@@ -506,7 +595,7 @@ class NotebooksCoordinator {
 
     let fetched = null;
     try {
-      commitData = await this.client.getRepositoryCommit(projectId, commitSha);
+      commitData = await this.client.getRepositoryCommit(gitlabProjectId, commitSha);
       fetched = new Date();
     }
     catch (error) {

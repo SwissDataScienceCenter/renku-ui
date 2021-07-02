@@ -17,58 +17,58 @@
  */
 
 import React, { Component } from "react";
-import { Badge, Row, Col, Nav, NavItem, CardHeader } from "reactstrap";
+import { Badge, Row, Col, Nav, NavItem, Card, CardHeader, CardBody, Button } from "reactstrap";
 import { Switch, Route } from "react-router-dom";
 import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
-import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 
-import { TooltipToggleButton, ExternalIconLink, RenkuNavLink, GoBackButton } from "../../utils/UIComponents";
+import { RenkuNavLink, GoBackButton, ExternalLink } from "../../utils/UIComponents";
 import { Contribution, NewContribution } from "../../contribution";
 import { CommitsView } from "../../utils/Commits";
 import _ from "lodash/collection";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 
 function MergeRequestHeader(props) {
 
   const rowInfo = props.mergeRequestRowInfo;
   const { badgeText, badgeColor } = rowInfo;
-  const statusBadge = <Badge color={badgeColor}>{badgeText}</Badge>;
+  const statusBadge = <Badge className="me-1" color={badgeColor}>{badgeText}</Badge>;
 
-  const buttonGit = <ExternalIconLink tooltip="Open in GitLab" icon={faGitlab} to={props.externalMRUrl} />;
-
-  const actionButton = props.showMergeButton ?
-    <TooltipToggleButton
-      onClick={props.onMergeClick} tooltip={`Merge`}
-      active={true}
-      activeIcon={faCodeBranch} inactiveIcon={faCodeBranch}
-      activeClass="text-success fa-flip-vertical" inactiveClass="text-primary" />
+  const buttonGit = props.externalMRUrl ?
+    <ExternalLink url={props.externalMRUrl} size="sm" title="Open in GitLab" color="primary"/>
     : null;
 
+  const actionButton = props.showMergeButton ?
+    <Button color="primary" size="sm" onClick={props.onMergeClick} className="ms-1">
+      <FontAwesomeIcon icon={faCodeBranch} /> Merge
+    </Button> : null;
 
-  return <Row key="title" className="pb-2">
-    <Col sm={8} style={{ overflow: "hidden" }}>
-      <h3>{props.title}</h3>
-    </Col>
-    <Col sm={4} className="float-right pt-3" style={{ textAlign: "end" }}>
-      {statusBadge}
-      {buttonGit}
-      {actionButton}
+  return <Row key="header" className="pt-2 pb-2">
+    <Col className="d-flex mb-2 justify-content-between">
+      <h3 className="me-4">{props.title}</h3>
+      <div>
+        {statusBadge}
+        {buttonGit}
+        {actionButton}
+      </div>
     </Col>
   </Row>;
 }
 
 function MergeRequestNavigation(props) {
-  return <Nav tabs>
-    <NavItem>
-      <RenkuNavLink to="changes" matchPath={true} title="Changes" />
-    </NavItem>
-    <NavItem>
-      <RenkuNavLink to="commits" matchPath={true} title="Commits" />
-    </NavItem>
-    <NavItem>
-      <RenkuNavLink to="discussion" matchPath={true} title="Discussion" />
-    </NavItem>
-  </Nav>;
+  return <Col key="nav" sm={12} md={2}>
+    <Nav className="flex-column nav-light">
+      <NavItem>
+        <RenkuNavLink to="changes" matchPath={true} title="Changes" />
+      </NavItem>
+      <NavItem>
+        <RenkuNavLink to="commits" matchPath={true} title="Commits" />
+      </NavItem>
+      <NavItem>
+        <RenkuNavLink to="discussion" matchPath={true} title="Discussion" />
+      </NavItem>
+    </Nav>
+  </Col>;
 }
 
 function ContributionsView(props) {
@@ -108,41 +108,46 @@ class MergeRequestPresent extends Component {
 
   render() {
     if (this.props.title == null) return null;
-    return [
-      <GoBackButton key="backButton" label="Back to list" url={this.props.mergeRequestsOverviewUrl}/>,
-      < MergeRequestHeader key="header" {...this.props} />,
-      <Row key="description" className="pb-2">
-        <Col sm={11}>
-          <p key="lead" className="lead">
-            {this.props.author.name} wants to merge changes from branch&nbsp;
-            <em><strong>{this.props.source_branch}</strong></em> into&nbsp;
-            <em><strong>{this.props.target_branch}</strong></em>.
-          </p>
+    return <Row>
+      <GoBackButton key="backButton" label="Back to list" url={this.props.mergeRequestsOverviewUrl}/>
+      <MergeRequestNavigation key="navigation" {...this.props} />
+      <Col key="content" md={10}>
+        <MergeRequestHeader key="header" {...this.props} />
+        <Row className="pb-2">
+          <Col sm={11}>
+            <p>
+              {this.props.author.name} wants to merge changes from branch&nbsp;
+              <em><strong>{this.props.source_branch}</strong></em> into&nbsp;
+              <em><strong>{this.props.target_branch}</strong></em>.
+            </p>
+          </Col>
+        </Row>
+        <Col sm={12} md={12}>
+          <Switch>
+            <Route path={this.props.mergeRequestDiscussionUrl} render={props =>
+              <ContributionsView {...this.props} />
+            } />
+            <Route path={this.props.mergeRequestChangesUrl} render={props =>
+              <ChangesView {...this.props} />
+            } />
+            <Route path={this.props.mergeRequestCommitsUrl} render={props =>
+              <Card className="border-rk-light mb-4">
+                <CardHeader className="bg-white p-3 ps-4">Commits</CardHeader>
+                <CardBody style={{ overflow: "auto" }}>
+                  <CommitsView
+                    commits={this.props.commits}
+                    fetched={true}
+                    fetching={false}
+                    urlRepository={this.props.externalUrl}
+                    urlDiff={`${this.props.externalMRUrl}?commit_id=`}
+                  />
+                </CardBody>
+              </Card>}/>
+          </Switch>
         </Col>
-      </Row>,
-      <MergeRequestNavigation key="navigation" {...this.props} />,
-      <Col key="content" sm={12} md={12}>
-        <Switch>
-          <Route path={this.props.mergeRequestDiscussionUrl} render={props =>
-            <ContributionsView {...this.props} />
-          } />
-          <Route path={this.props.mergeRequestChangesUrl} render={props =>
-            <ChangesView {...this.props} />
-          } />
-          <Route path={this.props.mergeRequestCommitsUrl} render={props =>
-            <div style={{ paddingTop: "20px" }}>
-              <CommitsView
-                commits={this.props.commits}
-                fetched={true}
-                fetching={false}
-                urlRepository={this.props.externalUrl}
-                urlDiff={`${this.props.externalMRUrl}?commit_id=`}
-              />
-            </div>
-          } />
-        </Switch>
       </Col>
-    ];
+    </Row>
+    ;
   }
 }
 
@@ -167,15 +172,14 @@ class NotebookComparisonList extends Component {
   render() {
     const notebookChanges = this.props.changes
       .map((change, i) => this.props.notebookComparisonView(change, i));
-    return [
-      <br key="space" />,
-      <Row key="header" className="mt-4 mb-4"><br /><Col><CardHeader>Notebook Changes</CardHeader></Col></Row>,
-      <Row key="titles">
+    return <Card className="border-rk-light mb-4">
+      <CardHeader className="bg-white p-3 ps-4">Notebook Changes</CardHeader>
+      <CardBody style={{ overflow: "auto" }} className="p-4">
         <Col xs={6}><p><strong>{this.props.target_branch}</strong></p></Col>
         <Col xs={6}><p><strong>{this.props.source_branch}</strong></p></Col>
-      </Row>,
-      notebookChanges
-    ];
+        {notebookChanges}
+      </CardBody>
+    </Card>;
   }
 }
 
@@ -223,10 +227,12 @@ class OpaqueChanges extends Component {
         return (changes) ? <OpaqueChangesGroup title={groupChangeTitleMap[k]} changes={changes} key={i} /> : null;
       });
 
-    return [
-      <br key="space" />,
-      <Row key="header"><Col><CardHeader>Opaque Changes</CardHeader></Col></Row>,
-      opaqueChanges];
+    return <Card className="border-rk-light pb-4">
+      <CardHeader className="bg-white p-3 ps-4">Opaque Changes</CardHeader>
+      <CardBody style={{ overflow: "auto" }} className="p-4 pt-0">
+        {opaqueChanges}
+      </CardBody>
+    </Card>;
   }
 }
 

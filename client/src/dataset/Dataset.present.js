@@ -19,30 +19,28 @@
 import React, { useState } from "react";
 import {
   Alert, Button, Card, CardBody, CardHeader, Col, DropdownItem, DropdownMenu, DropdownToggle, Row,
-  Table, UncontrolledButtonDropdown,
+  Table, UncontrolledButtonDropdown, Badge
 } from "reactstrap";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faEllipsisV, faExternalLinkAlt, faInfoCircle, faPen, faPlus, faSearch, faTrash
+  faEllipsisV, faInfoCircle, faPen, faPlus, faSearch, faTrash
 } from "@fortawesome/free-solid-svg-icons";
-import { ErrorAlert, FileExplorer, InfoAlert, Loader, RenkuMarkdown } from "../utils/UIComponents";
+import { ErrorAlert, FileExplorer, InfoAlert, Loader, RenkuMarkdown, ExternalLink } from "../utils/UIComponents";
 import { ProjectsCoordinator } from "../project/shared";
 import AddDataset from "./addtoproject/DatasetAdd.container";
 import DeleteDataset from "../project/datasets/delete/index";
 import Time from "../utils/Time";
 import { Url } from "../utils/url";
-
+import _ from "lodash";
 
 function DisplayFiles(props) {
   if (props.files === undefined) return null;
 
   if (props.files.error !== undefined) {
-    return <Card key="datasetDetails">
-      <CardHeader className="align-items-baseline">
-        <span className="caption align-baseline">Dataset files</span>
-      </CardHeader>
-      <CardBody>
+    return <Card key="datasetDetails" className="border-rk-light mb-4">
+      <CardHeader className="bg-white p-3 ps-4">Dataset files</CardHeader>
+      <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
         <strong>Error fetching dataset files:</strong> {props.files.error.reason}
       </CardBody>
     </Card>;
@@ -52,28 +50,29 @@ function DisplayFiles(props) {
     ( props.files[0].atLocation.startsWith("data/") ? 2 : 1 )
     : 0;
 
-  return <Card key="datasetDetails">
-    <CardHeader className="align-items-baseline">
-      <span className="caption align-baseline">Dataset files ({props.files.length})</span>
-    </CardHeader>
-    <CardBody>
-      <FileExplorer
-        files={props.files}
-        lineageUrl={props.lineagesUrl}
-        insideProject={props.insideProject}
-        foldersOpenOnLoad={openFolders}
-      />
+  return <Card key="datasetDetails" className="border-rk-light mb-4">
+    <CardHeader className="bg-white p-3 ps-4">Dataset files ({props.files.length})</CardHeader>
+    <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
+      {
+        props.files.length === 0 ?
+          <span>No files on this dataset.</span>
+          :
+          <FileExplorer
+            files={props.files}
+            lineageUrl={props.lineagesUrl}
+            insideProject={props.insideProject}
+            foldersOpenOnLoad={openFolders}
+          />
+      }
     </CardBody>
   </Card>;
 }
 
 function DisplayProjects(props) {
   if (props.projects === undefined) return null;
-  return <Card key="datasetDetails">
-    <CardHeader className="align-items-baseline">
-      <span className="caption align-baseline">Projects using this dataset</span>
-    </CardHeader>
-    <CardBody>
+  return <Card key="datasetProjectDetails" className="border-rk-light mb-4">
+    <CardHeader className="bg-white p-3 ps-4">Projects using this dataset</CardHeader>
+    <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
       <Table size="sm" borderless>
         <thead>
           <tr>
@@ -105,13 +104,104 @@ function DisplayProjects(props) {
   </Card>;
 }
 
-function LinkToExternal(props) {
-  return props.link ?
-    <p>
-      {props.label}: <a href={props.link} target="_blank" rel="noreferrer noopener">{props.link} </a>
-    </p>
-    : null;
+function DisplayDescription(props) {
+  if (!props.description) return null;
+
+  return <Card key="datasetDescription" className="border-rk-light mb-4">
+    <CardHeader className="bg-white p-3 ps-4">Dataset description</CardHeader>
+    <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
+      {
+        props.insideProject ?
+          <RenkuMarkdown
+            projectPathWithNamespace={props.projectPathWithNamespace}
+            filePath={""}
+            fixRelativePaths={true}
+            markdownText={props.description}
+            client={props.client}
+            projectId={props.projectId}
+          />
+          :
+          <RenkuMarkdown markdownText={props.description} />
+      }
+    </CardBody>
+  </Card>;
 }
+
+function DisplayInfoTable(props) {
+
+  const { dataset } = props;
+
+  const datasetPublished = dataset.published !== undefined && dataset.published.datePublished
+    !== undefined && dataset.published.datePublished !== null;
+  const datasetDate = datasetPublished ? dataset.published.datePublished : dataset.created;
+
+
+  const source = dataset.sameAs && dataset.sameAs.includes("doi.org") ?
+    <ExternalLink url={dataset.sameAs} title={dataset.sameAs} role="link" /> :
+    dataset.url && props.insideProject ?
+      <ExternalLink url={dataset.url} title={dataset.url} role="link" />
+      : null;
+
+  const authors = dataset.published !== undefined && dataset.published.creator !== undefined ?
+    dataset.published.creator
+      .map((creator) => creator.name + (creator.affiliation ? ` (${creator.affiliation})` : ""))
+      .join("; ")
+    : null;
+
+  const keywords = dataset.keywords && dataset.keywords.length > 0 ?
+    dataset.keywords.map(keyword=>
+      <span key={keyword}><Badge color="rk-text">{keyword}</Badge>&nbsp;</span>)
+    : null;
+
+  // eslint-disable-next-line
+  return <Table className="mb-4 table-borderless" size="sm">
+    <tbody className="text-rk-text">
+      { source ?
+        <tr>
+          <td className="text-dark fw-bold" style={{ "width": "120px" }}>
+            Source
+          </td>
+          <td>
+            {source}
+          </td>
+        </tr>
+        : null
+      }
+      { authors ? <tr>
+        <td className="text-dark fw-bold col-auto">
+          Author(s)
+        </td>
+        <td>
+          {authors}
+        </td>
+      </tr>
+        : null
+      }
+      { datasetDate ?
+        <tr>
+          <td className="text-dark fw-bold col-auto">
+            {datasetPublished ? "Published on " : "Created on "}
+          </td>
+          <td>
+            {Time.getReadableDate(datasetDate.replace(/ /g, "T"))}
+          </td>
+        </tr>
+        : null
+      }
+      { keywords ? <tr>
+        <td className="text-dark fw-bold col-auto">
+          Keywords
+        </td>
+        <td>
+          {keywords}
+        </td>
+      </tr>
+        : null
+      }
+    </tbody>
+  </Table>;
+}
+
 
 function DatasetError(props) {
   const { fetchError, insideProject, location, logged } = props;
@@ -203,7 +293,7 @@ export default function DatasetView(props) {
   const [deleteDatasetModalOpen, setDeleteDatasetModalOpen] = useState(false);
   const dataset = props.dataset;
 
-  if (props.fetchError !== null && dataset === undefined) {
+  if (!_.isEmpty(props.fetchError) && dataset === undefined) {
     return (
       <DatasetError
         fetchError={props.fetchError}
@@ -216,37 +306,38 @@ export default function DatasetView(props) {
   if (dataset === undefined)
     return (<Loader />);
 
-  const datasetPublished = dataset.published !== undefined && dataset.published.datePublished
-    !== undefined && dataset.published.datePublished !== null;
-
-  let datasetDate = datasetPublished ? dataset.published.datePublished : dataset.created;
-
   return <Col>
     <Row>
       <Col md={8} sm={12}>
-        { datasetDate ?
-          <small style={{ display: "block", paddingBottom: "8px" }} className="font-weight-light font-italic">
-            {datasetPublished ? "Published on " : "Created on "}
-            {Time.getReadableDate(datasetDate.replace(/ /g, "T"))}.
-          </small>
+        {props.insideProject ?
+          <h3 key="datasetTitle" className="mb-4">
+            {dataset.title || dataset.name}
+          </h3>
+          :
+          <h2 key="datasetTitle" className="mb-4">
+            {dataset.title || dataset.name}
+          </h2>
+        }
+      </Col>
+      <Col md={4} sm={12} className="d-flex flex-col justify-content-end mb-auto">
+        { props.logged ?
+          <Button disabled={dataset.insideKg === false}
+            className="float-right mb-1 me-1" size="sm" color="secondary" onClick={() => setAddDatasetModalOpen(true)}>
+            <FontAwesomeIcon icon={faPlus} color="dark" /> Add to project
+          </Button>
+          : null}
+        { props.insideProject && props.maintainer ?
+          <Link className="float-right me-1 mb-1" id="editDatasetTooltip"
+            to={{ pathname: "modify", state: { dataset: dataset } }} >
+            <Button size="sm" color="secondary" >
+              <FontAwesomeIcon icon={faPen} color="dark" />
+            </Button>
+          </Link>
           : null
         }
-        <h4 key="datasetTitle">
-          {dataset.title || dataset.name}
-          {dataset.url && props.insideProject ?
-            <a href={dataset.url} target="_blank" rel="noreferrer noopener">
-              <Button size="sm" color="link" style={{ color: "rgba(0, 0, 0, 0.5)" }}>
-                <FontAwesomeIcon icon={faExternalLinkAlt} color="dark" /> Go to source
-              </Button>
-            </a>
-            : null
-          }
-        </h4>
-      </Col>
-      <Col md={4} sm={12}>
         { props.insideProject && props.maintainer ?
           <UncontrolledButtonDropdown size="sm" className="float-right mb-1">
-            <DropdownToggle caret color="primary" className="removeArrow">
+            <DropdownToggle caret color="secondary" className="removeArrow">
               <FontAwesomeIcon icon={faEllipsisV} color="dark" />
             </DropdownToggle>
             <DropdownMenu>
@@ -257,63 +348,21 @@ export default function DatasetView(props) {
           </UncontrolledButtonDropdown>
           : null
         }
-        { props.insideProject && props.maintainer ?
-          <Link className="float-right mr-1 mb-1" id="editDatasetTooltip"
-            to={{ pathname: "modify", state: { dataset: dataset } }} >
-            <Button size="sm" color="primary" >
-              <FontAwesomeIcon icon={faPen} color="dark" />
-            </Button>
-          </Link>
-          : null
-        }
-        { props.logged ?
-          <Button disabled={dataset.insideKg === false}
-            className="float-right mb-1 mr-1" size="sm" color="primary" onClick={() => setAddDatasetModalOpen(true)}>
-            <FontAwesomeIcon icon={faPlus} color="dark" /> Add to project
-          </Button>
-          : null}
       </Col>
     </Row>
-    { dataset.published !== undefined && dataset.published.creator !== undefined ?
-      <small style={{ display: "block" }} className="font-weight-light">
-        {
-          dataset.published.creator
-            .map((creator) => creator.name + (creator.affiliation ? ` (${creator.affiliation})` : ""))
-            .join("; ")
-        }
-      </small>
-      : null
-    }
-    <div style={{ paddingTop: "12px" }}>
-      {
-        props.insideProject ?
-          <RenkuMarkdown
-            projectPathWithNamespace={props.projectPathWithNamespace}
-            filePath={""}
-            fixRelativePaths={true}
-            markdownText={dataset.description}
-            client={props.client}
-            projectId={props.projectId}
-          />
-          :
-          <RenkuMarkdown markdownText={dataset.description} />
-      }
-    </div>
-    {
-      dataset.url && props.insideProject ?
-        <LinkToExternal link={dataset.url} label="Source" />
-        : null
-    }
-    {
-      dataset.sameAs && dataset.sameAs.includes("doi.org") ?
-        <LinkToExternal link={dataset.sameAs} label="DOI" />
-        : null
-    }
-    {
-      dataset.keywords && dataset.keywords.length > 0 ?
-        <p>Keywords:  {dataset.keywords.join(", ")}</p>
-        : null
-    }
+    <DisplayInfoTable
+      dataset={dataset}
+      insideProject={props.insideProject}
+      sameAs={props.sameAs}
+    />
+    <DisplayDescription
+      projectPathWithNamespace={props.projectPathWithNamespace}
+      projectsUrl={props.projectsUrl}
+      client={props.client}
+      projectId={props.projectId}
+      description={dataset.description}
+      insideProject={props.insideProject}
+    />
     <DisplayFiles
       projectsUrl={props.projectsUrl}
       fileContentUrl={props.fileContentUrl}
@@ -321,14 +370,19 @@ export default function DatasetView(props) {
       files={dataset.hasPart}
       insideProject={props.insideProject}
     />
-    <br />
-    <DisplayProjects
-      projects={dataset.usedIn}
-      projectsUrl={props.projectsUrl}
-    />
+    {
+      //here we assume that if the dataset is only in one project
+      //this one project is the current project and we don't display the list
+      (dataset.isPartOf && dataset.isPartOf.length > 1) || !props.insideProject ?
+        <DisplayProjects
+          projects={dataset.isPartOf}
+          projectsUrl={props.projectsUrl}
+        />
+        : null
+    }
     {
       dataset.insideKg === false && props.projectInsideKg === true ?
-        <Alert color="warning">
+        <Alert color="warning" id="notInKGWarning">
           <strong>This dataset is not in the Knowledge Graph;</strong> this means that some
           operations on it are not possible.
           <br /><br />

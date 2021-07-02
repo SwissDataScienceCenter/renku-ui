@@ -43,10 +43,10 @@ function addMultipleNotifications(notifications, quantity = 1) {
     const rnd = Math.random();
     if (rnd <= 0.33) {
       notifications.addSuccess(
-        notifications.Topics.ENVIRONMENT_START,
-        "Environment xyz has started, you can now access it.",
-        "/environments",
-        "Environments list");
+        notifications.Topics.SESSION_START,
+        "Session xyz has started, you can now access it.",
+        "/sessions",
+        "Sessions list");
     }
     else if (rnd >= 0.67) {
       notifications.addInfo(
@@ -57,10 +57,10 @@ function addMultipleNotifications(notifications, quantity = 1) {
     }
     else {
       notifications.addError(
-        notifications.Topics.ENVIRONMENT_START,
-        "Test - environment couldn't start",
-        "/environments",
-        "Environments list");
+        notifications.Topics.SESSION_START,
+        "Test - session couldn't start",
+        "/sessions",
+        "Sessions list");
     }
   }
 }

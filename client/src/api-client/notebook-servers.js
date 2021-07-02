@@ -69,6 +69,13 @@ function addNotebookServersMethods(client) {
       anonymous
     ).then((resp) => {
       let { data } = resp;
+
+      // ? rename defaultUrl to default_url to prevent conflicts later with project options
+      if (data && "defaultUrl" in data) {
+        data.default_url = data.defaultUrl;
+        delete data.defaultUrl;
+      }
+
       Object.keys(data).forEach(key => {
         data[key].selected = data[key].default;
       });
@@ -80,6 +87,13 @@ function addNotebookServersMethods(client) {
     const headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     const url = `${client.baseUrl}/notebooks/servers`;
+
+    // ? rename default_url to legacy defaultUrl
+    if (options && options.serverOptions && "default_url" in options.serverOptions) {
+      options.serverOptions.defaultUrl = options.serverOptions.default_url;
+      delete options.serverOptions.default_url;
+    }
+
     let parameters = {
       namespace: decodeURIComponent(namespacePath),
       project: projectPath,
@@ -94,8 +108,11 @@ function addNotebookServersMethods(client) {
       method: "POST",
       headers,
       body: JSON.stringify(parameters)
-    }).then((resp) => {
+    }).then(resp => {
       return resp.data;
+    }).catch(error => {
+      if (error.errorData && error.errorData.messages && error.errorData.messages.error)
+        throw new Error(error.errorData.messages.error);
     });
   };
 

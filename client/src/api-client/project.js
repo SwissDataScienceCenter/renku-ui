@@ -230,11 +230,25 @@ function addProjectMethods(client) {
 
     // Wait 1 second before starting the pipeline to prevent errors
     await new Promise(r => setTimeout(r, 1000));
-    // Start pipeline -- no need to wait for the outcome, the environment page handles this
-    const pipeline = await client.runPipeline(forkedProject.data.id);
+
+    // Start pipeline -- no need to wait for the outcome, the new session page handles this
+    let pipeline;
+    try {
+      pipeline = await client.runPipeline(forkedProject.data.id);
+    }
+    catch (error) {
+      pipeline = error;
+    }
 
     // Create KG webhook
-    const webhook = await client.createGraphWebhook(forkedProject.data.id);
+    let webhook;
+    try {
+      webhook = await client.createGraphWebhook(forkedProject.data.id);
+    }
+    catch (error) {
+      webhook = error;
+    }
+
     return { project: forkedProject.data, pipeline, webhook };
   };
 
@@ -373,6 +387,48 @@ function addProjectMethods(client) {
 
     return Promise.resolve(datasetsPromise)
       .then(datasetsContent => Promise.all(datasetsContent));
+  };
+
+  /**
+   * Get project config file data
+   * @see {@link https://github.com/SwissDataScienceCenter/renku-python/blob/master/renku/service/views/config.py}
+   * @param {string} projectRepositoryUrl - external repository full url.
+   * @param {string} branch - target branch.
+   */
+  client.getProjectConfig = async (projectRepositoryUrl, branch = null) => {
+    const url = `${client.baseUrl}/renku/config.show`;
+    let queryParams = { git_url: projectRepositoryUrl };
+    if (branch)
+      queryParams.branch = branch;
+    let headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    headers.append("X-Requested-With", "XMLHttpRequest");
+
+    return client.clientFetch(url, {
+      method: "GET",
+      headers,
+      queryParams
+    });
+  };
+
+  /**
+   * Set project config data
+   * @see {@link https://github.com/SwissDataScienceCenter/renku-python/blob/master/renku/service/views/config.py}
+   * @param {string} projectRepositoryUrl - external repository full url.
+   * @param {object} config - config object in the form {key: value}. A null value removes the key.
+   */
+  client.setProjectConfig = async (projectRepositoryUrl, config) => {
+    const url = `${client.baseUrl}/renku/config.set`;
+    const body = { git_url: projectRepositoryUrl, config };
+    let headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    headers.append("X-Requested-With", "XMLHttpRequest");
+
+    return client.clientFetch(url, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(body)
+    });
   };
 }
 

@@ -30,7 +30,7 @@ import { sleep, slugFromTitle, verifyTitleCharacters } from "../../utils/HelperF
 
 // ? reference https://docs.gitlab.com/ce/user/reserved_names.html#reserved-project-names
 const RESERVED_TITLE_NAMES = ["badges", "blame", "blob", "builds", "commits", "create", "create_dir",
-  "edit", "environments/folders", "files", "find_file", "gitlab-lfs/objects", "info/lfs/objects",
+  "edit", "sessions/folders", "files", "find_file", "gitlab-lfs/objects", "info/lfs/objects",
   "new", "preview", "raw", "refs", "tree", "update", "wikis"];
 
 

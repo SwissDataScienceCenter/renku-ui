@@ -1,0 +1,28 @@
+.container-fluid.renku-container {
+  padding-right: 2em;
+  padding-left:2em;
+}
+
+.container-xxl.renku-container {
+  padding-right: 2em;
+  padding-left: 2em;
+}
+
+.rk-navbar {
+  background-color: $primary;
+}
+
+.h-86 {
+  min-height: 86%
+}
+.cursor-auto:hover {
+  cursor:auto !important;
+}
+
+.p-mb-0 > p {
+  margin-bottom: 0px;
+}
+
+.fs-small {
+  font-size: small;
+}

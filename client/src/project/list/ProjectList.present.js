@@ -19,78 +19,102 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  Col, Button, DropdownItem, DropdownMenu, DropdownToggle, Form, FormText, Input, InputGroup,
-  InputGroupButtonDropdown, Nav, NavItem, Row
+  Button, ButtonDropdown, Col, DropdownItem, DropdownMenu, DropdownToggle, Form, Input, InputGroup,
+  Nav, NavItem, Row
 } from "reactstrap";
-import { faCheck, faSortAmountDown, faSortAmountUp } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faSearch, faSortAmountDown, faSortAmountUp, faBars, faTh } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-import { ProjectAvatar, Loader, Pagination, TimeCaption, RenkuNavLink } from "../../utils/UIComponents";
+import {
+  Loader, ProjectAvatar, RenkuMarkdown, RenkuNavLink, TimeCaption, ListDisplay, MarkdownTextExcerpt
+} from "../../utils/UIComponents";
 import { ProjectTagList } from "../shared";
 import { Url } from "../../utils/url";
 import "../Project.css";
+import { Label } from "reactstrap/lib";
 
 
-function ProjectListRow(props) {
+function ProjectListRowBar(props) {
   const {
-    owner, path, path_with_namespace, last_activity_at, description, compact, avatar_url, getAvatar, tag_list
+    owner, path, path_with_namespace, last_activity_at, description, avatar_url, getAvatar, tag_list
   } = props;
   const namespace = props.namespace.full_path;
 
   const url = Url.get(Url.pages.project, { namespace, path });
-  const title = (<Link to={url}>{path_with_namespace || "no title"}</Link>);
+  const title = path_with_namespace || "no title";
 
-  let directionModifier = "", marginModifier = "";
-  if (!compact) {
-    directionModifier = " flex-sm-row";
-    marginModifier = " ml-sm-auto";
-  }
+  const descriptionMarkdown = description ?
+    (
+      <Fragment>
+        <RenkuMarkdown markdownText={description} fixRelativePaths={false} singleLine={true} />
+        <span className="ms-1">{description.includes("\n") ? " [...]" : ""}</span>
+      </Fragment>
+    ) :
+    null;
 
   return (
-    <div className="d-flex limit-width pt-2 pb-2 border-top">
-      <div className="d-flex flex-column mt-auto mb-auto">
+    <Link className="d-flex flex-row rk-search-result" to={url}>
+      <span className={"circle me-3 mt-2 project"}></span>
+      <Col className="d-flex align-items-start flex-column col-10 overflow-hidden">
+        <div className="title d-inline-block text-truncate">
+          {title}
+        </div>
+        <div className="description text-truncate text-rk-text d-flex">
+          {descriptionMarkdown}
+        </div>
+        <div className="tagList">
+          <ProjectTagList tagList={tag_list} />
+        </div>
+        <div className="mt-auto">
+          <TimeCaption caption="Updated" time={last_activity_at} className="text-secondary"/>
+        </div>
+      </Col>
+      <Col className="d-flex justify-content-end align-self-center flex-shrink-0">
         <ProjectAvatar
           owner={owner}
           avatar_url={avatar_url}
           namespace={namespace}
           getAvatarFromNamespace={getAvatar}
         />
-      </div>
-      <div className={"d-flex flex-fill flex-column ml-2 mw-0" + directionModifier}>
-        <div className="d-flex flex-column text-truncate">
-          <p className="mt-auto mb-auto text-truncate">
-            <b>{title}</b>
-            <span className="ml-2">
-              <ProjectTagList tagList={tag_list} />
-            </span>
-          </p>
-          {description ? <p className="mt-auto mb-auto text-truncate">{description}</p> : null}
-        </div>
-        <div className={"d-flex flex-shrink-0" + marginModifier}>
-          <p className="mt-auto mb-auto">
-            <TimeCaption caption="Updated" time={last_activity_at} />
-          </p>
-        </div>
-      </div>
-    </div>
+      </Col>
+    </Link>
   );
 }
 
 function ProjectListRows(props) {
-  const { currentPage, getAvatar, perPage, projects, search, totalItems } = props;
+  const { currentPage, perPage, projects, search, totalItems, gridDisplay } = props;
 
-  if (!projects || !projects.length)
-    return (<p>We could not find any matching projects.</p>);
+  const projectItems = projects.map(project => {
+    const namespace = project.namespace ? project.namespace.full_path : "";
+    const path = project.path;
+    const url = Url.get(Url.pages.project, { namespace, path });
+    return {
+      id: project.id,
+      url: url,
+      itemType: "project",
+      title: project.name,
+      slug: project.path_with_namespace,
+      description: project.description ?
+        <Fragment>
+          <MarkdownTextExcerpt markdownText={project.description} singleLine={gridDisplay ? false : true}
+            charsLimit={gridDisplay ? 200 : 150} />
+          <span className="ms-1">{project.description.includes("\n") ? " [...]" : ""}</span>
+        </Fragment>
+        : " ",
+      tagList: project.tag_list,
+      timeCaption: project.last_activity_at,
+      mediaContent: project.avatar_url
+    };
+  });
 
-  const rows = projects.map(project => <ProjectListRow key={project.id} getAvatar={getAvatar} {...project} />);
-  const onPageChange = (page) => { search({ page }); };
-
-  return (
-    <div>
-      <div className="mb-4">{rows}</div>
-      <Pagination currentPage={currentPage} perPage={perPage} totalItems={totalItems} onPageChange={onPageChange} />
-    </div>
-  );
+  return <ListDisplay
+    itemsType="project"
+    search={search}
+    currentPage={currentPage}
+    gridDisplay={gridDisplay}
+    totalItems={totalItems}
+    perPage={perPage}
+    items={projectItems}
+  />;
 }
 
 function SearchInFilter(props) {
@@ -110,15 +134,17 @@ function SearchInFilter(props) {
 
   return params.section === sectionsMap.all ?
     (
-      <InputGroupButtonDropdown className="input-group-prepend" addonType="append"
-        toggle={toggleDropdownSearchIn} isOpen={dropdownSearchIn} >
-        <DropdownToggle outline caret color="primary" >
-          Filter by: {currentSearchInObject.text}
-        </DropdownToggle>
-        <DropdownMenu>
-          {searchInItems}
-        </DropdownMenu>
-      </InputGroupButtonDropdown>
+      <Fragment>
+        <ButtonDropdown toggle={toggleDropdownSearchIn} isOpen={dropdownSearchIn}
+          className="input-group-append input-group-prepend m-0">
+          <DropdownToggle caret color="rk-white">
+            {currentSearchInObject.text}
+          </DropdownToggle>
+          <DropdownMenu>
+            {searchInItems}
+          </DropdownMenu>
+        </ButtonDropdown>
+      </Fragment>
     ) :
     null;
 }
@@ -141,25 +167,31 @@ function SearchOrder(props) {
   ));
 
   return <Fragment>
-    <div className="input-group-append input-group-prepend m-0">
-      <Button outline color="primary" onClick={() => { searchWithValues({ ascending: !params.ascending }); }}>
+    <Col className="col-auto ms-2">
+      <Label className="text-rk-text">
+        Order by:&nbsp;
+      </Label>
+      <Fragment>
+        <ButtonDropdown toggle={toggleDropdownOrderBy} isOpen={dropdownOrderBy}>
+          <DropdownToggle caret color="rk-light" >
+            {currentOrderMapObject.text}
+          </DropdownToggle>
+          <DropdownMenu>
+            {orderByItems}
+          </DropdownMenu>
+        </ButtonDropdown>
+      </Fragment>
+    </Col>
+    <Col className="col-auto">
+      <Button color="rk-white" onClick={() => { searchWithValues({ ascending: !params.ascending }); }}>
         <FontAwesomeIcon icon={orderingIcon} />
       </Button>
-    </div>
-    <InputGroupButtonDropdown addonType="append"
-      toggle={toggleDropdownOrderBy} isOpen={dropdownOrderBy} >
-      <DropdownToggle outline caret color="primary" >
-        Order by: {currentOrderMapObject.text}
-      </DropdownToggle>
-      <DropdownMenu>
-        {orderByItems}
-      </DropdownMenu>
-    </InputGroupButtonDropdown>
+    </Col>
   </Fragment>;
 }
 
 function ProjectListSearch(props) {
-  const { loggedIn, orderByMap, params, search, searchInMap, sectionsMap } = props;
+  const { loggedIn, orderByMap, params, search, searchInMap, sectionsMap, gridDisplay, setGridDisplay } = props;
 
   // input and search
   const [userInput, setUserInput] = useState(params.query.toString());
@@ -179,26 +211,49 @@ function ProjectListSearch(props) {
 
   const currentSearchInObject = Object.values(searchInMap).find(v => v.value === params.searchIn);
 
+  const navBar = props.loggedIn ?
+    (<ProjectListNav key="navbar" getPreciseUrl={props.getPreciseUrl} sectionsMap={props.sectionsMap} />) :
+    null;
+
+  const navBarJustify = props.loggedIn ?
+    "row row-cols-lg-auto justify-content-lg-end justify-content-md-center g-1 pb-2"
+    : "row row-cols-lg-auto justify-content-start g-1 pb-2";
 
   return (
-    <div className="mb-4">
-      <Form inline onSubmit={e => { e.preventDefault(); searchWithValues(); }}>
-        <InputGroup>
-          <Input name="searchQuery" id="searchQuery"
-            className="border-primary input-group-append" style={{ minWidth: "300px" }}
-            placeholder={"Filter by " + currentSearchInObject.text.toLowerCase()} value={userInput}
-            onChange={e => setUserInput(e.target.value.toString())} />
-          <SearchInFilter loggedIn={loggedIn} params={params} sectionsMap={sectionsMap} searchInMap={searchInMap}
-            searchWithValues={searchWithValues} currentSearchInObject={currentSearchInObject} />
+    <Row className="justify-content-lg-between justify-content-md-center pb-2">
+      {navBar}
+      <Col md={12} lg={7} className="pb-2">
+        <Form inline onSubmit={e => { e.preventDefault(); searchWithValues(); }}
+          className={navBarJustify}
+          size="sm">
+          <Col className="col-auto">
+            <InputGroup>
+              <Input name="searchQuery" id="searchQuery"
+                className="border-light text-rk-text"
+                placeholder={"Search... "} value={userInput}
+                onChange={e => setUserInput(e.target.value.toString())} />
+              <SearchInFilter loggedIn={loggedIn} params={params} sectionsMap={sectionsMap} searchInMap={searchInMap}
+                searchWithValues={searchWithValues} currentSearchInObject={currentSearchInObject} />
+            </InputGroup>
+          </Col>
           <SearchOrder params={params} orderByMap={orderByMap} searchWithValues={searchWithValues} />
-        </InputGroup>
-        &nbsp;
-        <Button color="primary" id="searchButton" onClick={() => searchWithValues()}>Search</Button>
-      </Form>
-      <FormText key="help" color="muted">
-        Leave empty to browse all projects or enter at least 3 characters to filter.
-      </FormText>
-    </div>
+          <Col className="col-auto">
+            <Button color="rk-white" id="searchButton" onClick={() => searchWithValues()}>
+              <FontAwesomeIcon icon={faSearch} />
+            </Button>
+          </Col>
+          <Col className="col-auto">
+            <Button color="rk-white" id="displayButton" onClick={() => setGridDisplay(!gridDisplay)}>
+              {
+                gridDisplay ?
+                  <FontAwesomeIcon icon={faBars} /> :
+                  <FontAwesomeIcon icon={faTh} />
+              }
+            </Button>
+          </Col>
+        </Form>
+      </Col>
+    </Row>
   );
 }
 
@@ -215,8 +270,8 @@ function ProjectListUsersFilter(props) {
         true :
         false;
       return (
-        <Button key={u.id} className="mb-1 mr-1" color="primary" size="sm" outline
-          onClick={() => { setTarget(identifier); }} active={active}>
+        <Button key={u.id} className="mb-1 me-1 d-inline-block" color="rk-white" size="sm"
+          onClick={() => { setTarget(identifier); }} active={active} >
           { u.name}
           <small className="font-italic d-none d-sm-block">{decodeURIComponent(identifier)}</small>
         </Button>
@@ -225,7 +280,10 @@ function ProjectListUsersFilter(props) {
   }
 
   const list = usersList ?
-    (<div className="mb-4">{usersList}</div>) :
+    (<Col className="d-flex flex-col flex-wrap justify-content-center justify-content-lg-start rk-button-group">
+      {usersList}
+    </Col>
+    ) :
     null;
 
   return (list);
@@ -247,6 +305,8 @@ function ProjectListContent(props) {
     fetched, fetching, getAvatar, loggedIn, orderByMap, params, projects, search, searchInMap, sectionsMap,
     setTarget, users, target, totalProjects
   } = props;
+
+  const [gridDisplay, setGridDisplay] = useState(true);
 
   let usersFilter = null;
   if (params.searchIn !== searchInMap.projects.value) {
@@ -279,6 +339,7 @@ function ProjectListContent(props) {
             projects={projects}
             search={search}
             totalItems={totalProjects}
+            gridDisplay={gridDisplay}
           />
         );
       }
@@ -286,8 +347,8 @@ function ProjectListContent(props) {
   }
 
   return (
-    <Row className="mb-4">
-      <Col>
+    <div>
+      <div className="pb-4 rk-search-bar">
         <ProjectListSearch
           loggedIn={loggedIn}
           orderByMap={orderByMap}
@@ -295,35 +356,36 @@ function ProjectListContent(props) {
           search={search}
           searchInMap={searchInMap}
           sectionsMap={sectionsMap}
+          getPreciseUrl={props.getPreciseUrl}
+          gridDisplay={gridDisplay}
+          setGridDisplay={setGridDisplay}
         />
         {usersFilter}
-        {content}
-      </Col>
-    </Row>
+      </div>
+      {content}
+    </div>
   );
 }
 
 function ProjectListNav(props) {
   const { getPreciseUrl, sectionsMap } = props;
   return (
-    <Row>
-      <Col>
-        <Nav pills className="nav-pills-underline mb-4">
-          <NavItem>
-            <RenkuNavLink title="Your Projects" id="link-projects-your"
-              to={getPreciseUrl(sectionsMap.own)} noSubPath={true} />
-          </NavItem>
-          <NavItem>
-            <RenkuNavLink title="Starred Projects" id="link-projects-starred"
-              to={getPreciseUrl(sectionsMap.starred)} exact={false} />
-          </NavItem>
-          <NavItem>
-            <RenkuNavLink title="All Projects" id="link-projects-all"
-              to={getPreciseUrl(sectionsMap.all)} exact={false} />
-          </NavItem>
-        </Nav>
-      </Col>
-    </Row>
+    <Col className="d-flex pb-2 mb-1 justify-content-evenly justify-content-lg-between" md={12} lg={5}>
+      <Nav pills className="nav-pills-underline" size="sm">
+        <NavItem>
+          <RenkuNavLink title="Your Projects" id="link-projects-your" className="pb-2"
+            to={getPreciseUrl(sectionsMap.own)} noSubPath={true} />
+        </NavItem>
+        <NavItem>
+          <RenkuNavLink title="Starred Projects" id="link-projects-starred" className="pb-2"
+            to={getPreciseUrl(sectionsMap.starred)} exact={false} />
+        </NavItem>
+        <NavItem>
+          <RenkuNavLink title="All Projects" id="link-projects-all" className="pb-2"
+            to={getPreciseUrl(sectionsMap.all)} exact={false} />
+        </NavItem>
+      </Nav>
+    </Col>
   );
 }
 
@@ -334,21 +396,20 @@ function ProjectList(props) {
   } = props;
 
   const newProjectButton = loggedIn ?
-    (<Link className="btn btn-primary mt-auto mb-auto" role="button" to={projectNew}>New project</Link>) :
+    (<div>
+      <Link className="btn btn-secondary" role="button" to={projectNew}>
+        <span className="arrow-right">  </span>
+        New project
+      </Link></div>) :
     null;
-  const navBar = loggedIn ?
-    (<ProjectListNav key="navbar" getPreciseUrl={props.getPreciseUrl} sectionsMap={props.sectionsMap} />) :
-    null;
-
   return (
     <Fragment>
-      <Row>
-        <Col className="d-flex mb-2">
-          <h1 className="mr-4">Projects</h1>
+      <Row className="pt-2 pb-3">
+        <Col className="d-flex mb-2 justify-content-between">
+          <h2>Renku Projects</h2>
           {newProjectButton}
         </Col>
       </Row>
-      {navBar}
       <ProjectListContent
         fetching={fetching}
         fetched={fetched}
@@ -364,6 +425,7 @@ function ProjectList(props) {
         users={users}
         target={target}
         totalProjects={totalProjects}
+        getPreciseUrl={props.getPreciseUrl}
       />
     </Fragment>
   );
@@ -371,4 +433,4 @@ function ProjectList(props) {
 
 
 export default ProjectList;
-export { ProjectListRow, ProjectList };
+export { ProjectListRowBar as ProjectListRow, ProjectList };

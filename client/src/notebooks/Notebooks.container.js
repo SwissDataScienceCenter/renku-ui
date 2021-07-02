@@ -18,13 +18,118 @@
 
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import qs from "query-string";
 
-import { NotebooksCoordinator } from "./Notebooks.state";
+import { NotebooksCoordinator, NotebooksHelper } from "./Notebooks.state";
 import {
-  StartNotebookServer as StartNotebookServerPresent, NotebooksDisabled, Notebooks as NotebooksPresent, CheckNotebookIcon
+  StartNotebookServer as StartNotebookServerPresent, NotebooksDisabled, Notebooks as NotebooksPresent,
+  CheckNotebookIcon, ShowSession as ShowSessionPresent
 } from "./Notebooks.present";
 import { StatusHelper } from "../model/Model";
 import { ProjectCoordinator } from "../project";
+import { Url } from "../utils/url";
+
+
+/**
+ * This component is needed to map properties from the redux store and keep local states cleared by the
+ * mapping function. We can remove it when we switch to the useSelector hook
+
+ * @param {Object} client - api-client used to query the gateway
+ * @param {Object} model - global model for the ui
+ * @param {boolean} blockAnonymous - When true, block non logged in users
+ * @param {Object} scope - object containing filtering parameters
+ * @param {string} scope.namespace - full path of the reference namespace
+ * @param {string} scope.project - path of the reference project
+ * @param {Object} notifications - Notifications object
+ * @param {Object} [location] - react location object
+ * @param {Object} [history] - react history object
+ */
+class ShowSession extends Component {
+  constructor(props) {
+    super(props);
+    this.model = props.model.subModel("notebooks");
+    this.userModel = props.model.subModel("user");
+    this.coordinator = new NotebooksCoordinator(props.client, this.model, this.userModel);
+    this.coordinator.reset();
+    this.notifications = props.notifications;
+    this.target = props.match.params.server;
+
+    if (props.scope)
+      this.coordinator.setNotebookFilters(props.scope, true);
+
+    this.handlers = {
+      stopNotebook: this.stopNotebook.bind(this),
+      fetchLogs: this.fetchLogs.bind(this),
+    };
+  }
+
+  componentDidMount() {
+    if (!this.props.blockAnonymous)
+      this.coordinator.startNotebookPolling();
+  }
+
+  componentWillUnmount() {
+    this.coordinator.stopNotebookPolling();
+  }
+
+  async stopNotebook(serverName, redirectLocation = null) {
+    try {
+      await this.coordinator.stopNotebook(serverName, false);
+      // redirect immediately
+      if (this.props.history && redirectLocation)
+        this.props.history.push(redirectLocation);
+    }
+    catch (error) {
+      // add notification
+      this.notifications.addError(
+        this.notifications.Topics.SESSION_START,
+        "Unable to stop the current session.", null, null, null,
+        `Error message: "${error.message}"`);
+      return false;
+    }
+  }
+
+  async fetchLogs(serverName, full = false) {
+    if (!serverName)
+      return;
+    return this.coordinator.fetchLogs(serverName, full);
+  }
+
+  mapStateToProps(state, ownProps) {
+    const notebooks = state.notebooks.notebooks;
+    const available = notebooks.all[this.target] ?
+      true :
+      false;
+    const notebook = {
+      available,
+      fetched: notebooks.fetched,
+      fetching: notebooks.fetching,
+      data: available ?
+        notebooks.all[this.target] :
+        {},
+      logs: state.notebooks.logs
+    };
+    return {
+      handlers: this.handlers,
+      target: this.target,
+      filters: state.notebooks.filters,
+      notebook
+    };
+  }
+
+
+  render() {
+    if (this.props.blockAnonymous)
+      return <NotebooksDisabled location={this.props.location} />;
+
+    const ShowSessionMapped = connect(this.mapStateToProps.bind(this))(ShowSessionPresent);
+    return (
+      <ShowSessionMapped
+        store={this.model.reduxStore}
+      />
+    );
+  }
+}
 
 /**
  * Display the list of Notebook servers
@@ -34,7 +139,7 @@ import { ProjectCoordinator } from "../project";
  * @param {boolean} standalone - Indicates whether it's displayed as standalone
  * @param {boolean} blockAnonymous - When true, block non logged in users
  * @param {Object} [location] - react location object
- * @param {string} [urlNewEnvironment] - url to "new environment" page
+ * @param {string} [urlNewSession] - url to "new session" page
  * @param {Object} [scope] - object containing filtering parameters
  * @param {string} [scope.namespace] - full path of the reference namespace
  * @param {string} [scope.project] - path of the reference project
@@ -125,7 +230,7 @@ class Notebooks extends Component {
       standalone={this.props.standalone ? this.props.standalone : false}
       scope={this.props.scope}
       message={this.props.message}
-      urlNewEnvironment={this.props.urlNewEnvironment}
+      urlNewSession={this.props.urlNewSession}
     />;
   }
 }
@@ -144,7 +249,7 @@ class Notebooks extends Component {
  * @param {string} externalUrl - GitLab repository url
  * @param {boolean} blockAnonymous - When true, block non logged in users
  * @param {Object} notifications - Notifications object
- * @param {Object} [location] - react location object. Use location.state.successUrl to indicate the
+ * @param {Object} location - react location object. Use location.state.successUrl to indicate the
  *     redirect url to be used when a notebook is successfully started
  * @param {Object} [history] - mandatory if successUrl is provided
  * @param {string} [message] - provide a useful information or warning message
@@ -165,6 +270,15 @@ class StartNotebookServer extends Component {
     if (props.scope)
       this.coordinator.setNotebookFilters(props.scope);
 
+    // Check auto start mode
+    const currentSearch = qs.parse(props.location.search);
+    this.autostart = currentSearch && currentSearch["autostart"] && currentSearch["autostart"] === "1" ?
+      true :
+      false;
+    this.state = {
+      autostartReady: false,
+      autostartTried: false
+    };
 
     this.handlers = {
       refreshBranches: this.refreshBranches.bind(this),
@@ -307,6 +421,7 @@ class StartNotebookServer extends Component {
     if (this._isMounted) {
       await this.coordinator.fetchNotebookOptions();
       await this.coordinator.startPipelinePolling();
+      this.triggerAutoStart();
     }
   }
 
@@ -317,10 +432,26 @@ class StartNotebookServer extends Component {
     return this.refreshPipelines();
   }
 
+  async triggerAutoStart() {
+    if (this._isMounted) {
+      if (this.autostart && !this.state.autostartReady && !this.state.autostartTried) {
+        const data = this.model.get();
+        const fetched = data.notebooks.fetched && data.options.fetched && data.pipelines.fetched;
+        if (fetched) {
+          this.setState({ autostartReady: true });
+          this.startServer();
+        }
+        else {
+          setTimeout(() => { this.triggerAutoStart(); }, 1000);
+        }
+      }
+    }
+  }
+
   setServerOptionFromEvent(option, event, providedValue = null) {
     const target = event.target.type.toLowerCase();
     let value = providedValue;
-    if (!providedValue) {
+    if (!providedValue != null) {
       if (target === "button")
         value = event.target.textContent;
 
@@ -343,8 +474,26 @@ class StartNotebookServer extends Component {
       // redirect user when necessary
       if (!history || !location)
         return;
-      if (location.state && location.state.successUrl && history.location.pathname === location.pathname)
-        history.push(location.state.successUrl);
+      if (location.state && location.state.successUrl && history.location.pathname === location.pathname) {
+        if (this.autostart && !this.state.autostartTried) {
+          // Derive the local Url and connect to the notebook
+          const annotations = NotebooksHelper.cleanAnnotations(data.annotations, "renku.io");
+          const localUrl = Url.get(Url.pages.project.session.show, {
+            namespace: annotations["namespace"],
+            path: annotations["projectName"],
+            server: data.name,
+          });
+
+          // ? Start with a short delay to prevent missing server information from "GET /servers" API
+          setTimeout(() => {
+            this.setState({ autostartTried: true });
+            history.push({ pathname: localUrl, search: "" });
+          }, 3000);
+        }
+        else {
+          history.push(location.state.successUrl);
+        }
+      }
     });
   }
 
@@ -357,15 +506,17 @@ class StartNotebookServer extends Component {
       setTimeout(() => {
         this.internalStartServer().catch((error) => {
           // crafting notification
-          const fullError = `An error occurred when trying to start a new Interactive environment.
+          const fullError = `An error occurred when trying to start a new session.
           Error message: "${error.message}", Stack trace: "${error.stack}"`;
           this.notifications.addError(
-            this.notifications.Topics.ENVIRONMENT_START,
-            "Unable to start the interactive environment.",
+            this.notifications.Topics.SESSION_START,
+            "Unable to start the session.",
             this.props.location.pathname, "Try again",
             null, // always toast
             fullError);
           this.setState({ "starting": false, launchError: error.message });
+          if (this.autostart && !this.state.autostartTried)
+            this.setState({ autostartTried: true });
         });
       }, 3000);
     });
@@ -422,6 +573,7 @@ class StartNotebookServer extends Component {
       inherited={this.props}
       message={this.props.message}
       justStarted={this.state.starting}
+      autoStarting={this.autostart && !this.state.autostartTried}
       launchError={this.state.launchError}
     />;
   }
@@ -502,4 +654,4 @@ class CheckNotebookStatus extends Component {
   }
 }
 
-export { Notebooks, StartNotebookServer, CheckNotebookStatus };
+export { CheckNotebookStatus, Notebooks, ShowSession, StartNotebookServer };

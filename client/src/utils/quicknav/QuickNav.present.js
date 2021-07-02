@@ -19,7 +19,6 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import Autosuggest from "react-autosuggest";
-import { InputGroup, InputGroupAddon, Button } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
@@ -48,41 +47,56 @@ class QuickNavPresent extends Component {
     return <strong>{section.title}</strong>;
   }
 
-  render () {
-    const theme = {
-      container: "input-group",
-      input: "form-control border-primary",
-      suggestionsContainer: "searchBarSuggestionsContainer",
-      suggestion: { listStyle: "none" }
+  getTheme() {
+    const defaultTheme = {
+      container: "react-autosuggest__container",
+      containerOpen: "react-autosuggest__container--open",
+      input: "react-autosuggest__input",
+      inputOpen: "react-autosuggest__input--open",
+      inputFocused: "react-autosuggest__input--focused",
+      suggestionsContainer: "react-autosuggest__suggestions-container searchBarSuggestionsContainer",
+      suggestionsContainerOpen: "react-autosuggest__suggestions-container--open",
+      suggestionsList: "react-autosuggest__suggestions-list",
+      suggestion: "react-autosuggest__suggestion",
+      suggestionFirst: "react-autosuggest__suggestion--first",
+      suggestionHighlighted: "react-autosuggest__suggestion--highlighted",
+      sectionContainer: "react-autosuggest__section-container",
+      sectionContainerFirst: "react-autosuggest__section-container--first",
+      sectionTitle: "react-autosuggest__section-title"
     };
+    // Override the input theme to match our visual style
+    return { ...defaultTheme, ...{ input: "form-control-sm form-control" } };
+  }
+
+
+  render () {
+    const theme = this.getTheme();
 
     const inputProps = {
-      placeholder: "Jump to or search...",
+      placeholder: "Search or jump to...",
       type: "search",
       value: this.props.value,
       onChange: this.props.callbacks.onChange
     };
 
     return (
-      <form className="form-inline m-1" onSubmit={this.props.callbacks.onSubmit}>
-        <InputGroup className="flex-nowrap">
-          <Autosuggest
-            suggestions={this.props.suggestions}
-            getSuggestionValue={this.props.callbacks.getSuggestionValue}
-            onSuggestionsFetchRequested={this.props.callbacks.onSuggestionsFetchRequested}
-            onSuggestionsClearRequested={this.props.callbacks.onSuggestionsClearRequested}
-            onSuggestionSelected={this.props.callbacks.onSuggestionSelected}
-            multiSection={true}
-            renderSectionTitle={this.onSectionTitle}
-            getSectionSuggestions={(section) => section.suggestions}
-            inputProps={inputProps}
-            theme={theme}
-            renderSuggestion={this.onRenderSuggestion} />
-          <InputGroupAddon addonType="append">
-            <Button color="outline-primary"><FontAwesomeIcon icon={faSearch} /></Button>
-          </InputGroupAddon>
-        </InputGroup>
-      </form>
+      <div className="input-group flex-nowrap input-group-sm pe-2">
+        <Autosuggest
+          suggestions={this.props.suggestions}
+          getSuggestionValue={this.props.callbacks.getSuggestionValue}
+          onSuggestionsFetchRequested={this.props.callbacks.onSuggestionsFetchRequested}
+          onSuggestionsClearRequested={this.props.callbacks.onSuggestionsClearRequested}
+          onSuggestionSelected={this.props.callbacks.onSuggestionSelected}
+          multiSection={true}
+          renderSectionTitle={this.onSectionTitle}
+          getSectionSuggestions={(section) => section.suggestions}
+          inputProps={inputProps}
+          theme={theme}
+          renderSuggestion={this.onRenderSuggestion} />
+        <span className="input-group-text" id="addon-wrapping" onClick={this.props.callbacks.onSubmit}>
+          <FontAwesomeIcon icon={faSearch} />
+        </span>
+      </div>
     );
   }
 }

@@ -23,8 +23,13 @@
  *
  */
 
-import { Notebooks, StartNotebookServer, CheckNotebookStatus } from "./Notebooks.container";
-import { CheckNotebookIcon, NotebooksDisabled } from "./Notebooks.present";
-import { NotebooksHelper } from "./Notebooks.state";
+import { CheckNotebookStatus, Notebooks, ShowSession, StartNotebookServer } from "./Notebooks.container";
+import { NotebooksCoordinator, NotebooksHelper } from "./Notebooks.state";
+import {
+  CheckNotebookIcon, NotebooksDisabled, ServerOptionBoolean, ServerOptionEnum, ServerOptionRange
+} from "./Notebooks.present";
 
-export { Notebooks, StartNotebookServer, NotebooksHelper, CheckNotebookStatus, CheckNotebookIcon, NotebooksDisabled };
+export {
+  CheckNotebookIcon, CheckNotebookStatus, Notebooks, NotebooksCoordinator, NotebooksDisabled, NotebooksHelper,
+  ServerOptionBoolean, ServerOptionEnum, ServerOptionRange, ShowSession, StartNotebookServer
+};

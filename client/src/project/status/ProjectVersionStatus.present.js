@@ -261,7 +261,7 @@ function ProjectVersionStatusBody(props) {
   const updateInstruction = (
     <Fragment>
       You can launch
-      an <Link to={props.launchNotebookUrl}>interactive environment</Link> and follow the&nbsp;
+      a <Link to={props.launchNotebookUrl}>session</Link> and follow the&nbsp;
       <a href={`${"https://renku.readthedocs.io/en/latest/user/upgrading_renku.html" +
         "#upgrading-your-image-to-use-the-latest-renku-cli-version"}`}>
         instructions for upgrading</a>.
@@ -271,10 +271,10 @@ function ProjectVersionStatusBody(props) {
 
   if (!isLogged && !props.loading) return null;
 
-  return (
-    <Card className="border-0">
-      <CardHeader>Renku Version</CardHeader>
-      <CardBody>
+  return [
+    <Card key="renkuVersion" className="border-rk-light mb-4">
+      <CardHeader className="bg-white p-3 ps-4">Renku Version</CardHeader>
+      <CardBody className="p-4 pt-3 pb-3 lh-lg">
         <Row><Col>
           <RenkuVersionStatusBody
             {...props}
@@ -282,8 +282,10 @@ function ProjectVersionStatusBody(props) {
             maintainer={maintainer}/>
         </Col></Row>
       </CardBody>
-      <CardHeader>Template Version</CardHeader>
-      <CardBody>
+    </Card>,
+    <Card key="templateVersion" className="border-rk-light mb-4">
+      <CardHeader className="bg-white p-3 ps-4">Template Version</CardHeader>
+      <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
         <Row><Col>
           <TemplateStatusBody
             {...props}
@@ -292,6 +294,6 @@ function ProjectVersionStatusBody(props) {
         </Col></Row>
       </CardBody>
     </Card>
-  );
+  ];
 }
 export default ProjectVersionStatusBody;

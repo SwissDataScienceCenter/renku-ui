@@ -32,11 +32,9 @@ html {
   position: relative;
   min-height: 100%;
 }
-body {
-  margin-bottom: 70px; /* Margin bottom by footer height */
-}
+
 .footer {
-  position: absolute;
+  /* position: absolute; to fix later */
   bottom: 0;
   width: 100%;
   background-color: #f5f5f5;
@@ -44,8 +42,8 @@ body {
 
 /* Component classes */
 .time-caption {
-  color: #AAA;
-  font-size: smaller;
+  color: #838383;
+  font-size: small;
 }
 
 .caption {
@@ -141,7 +139,7 @@ body {
   width: 25px;
   height: 25px;
   margin: 5px;
-  background: #5561A6; /* Use SDSC Dark Blue */
+  background: #01192D;
   border-radius: 50px;
   animation: bouncer 0.9s infinite alternate;
 }
@@ -229,4 +227,9 @@ body {
 }
 .fake-toggle:checked ~ .hide-show-me {
   display: block;
+}
+
+iframe.invisible {
+  height: 0;
+  width: 0;
 }

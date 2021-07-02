@@ -1,0 +1,36 @@
+
+@media (min-width:992px) { //992 lg 768 md
+  .navbar {
+    height: 100px; // we need this to vertically align items
+  }
+  .navbar-collapse{
+    padding-top:0.5em;
+  }
+  .input{
+    padding-top:0.3rem
+  }
+}
+
+footer{
+  .navbar{
+    height:75px;
+  }
+  .nav-link{
+    color: rgba(255, 255, 255, 0.55);
+    &:hover{
+      color:rgba(255, 255, 255, 0.75);
+    }
+  }
+}
+
+nav.navbar{
+  align-items: center !important;
+  padding-top: 1em;
+
+  .dropdown-toggle::after {
+    content: none;
+  }
+  // .input {
+  // 	opacity: 0.25;
+  // }
+}

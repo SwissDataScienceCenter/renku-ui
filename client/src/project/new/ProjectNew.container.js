@@ -156,6 +156,7 @@ function ForkProject(props) {
 
   const [forking, setForking] = useState(false);
   const [forkError, setForkError] = useState(null);
+  const [forkUrl, setForkUrl] = useState(null);
 
   // Monitor changes to projects list
   useEffect(() => {
@@ -204,8 +205,32 @@ function ForkProject(props) {
     const startingLocation = history.location.pathname;
     setForking(true);
     setForkError(null);
+    setForkUrl(null);
     try {
       const forked = await client.forkProject(forkedId, title, path, namespace);
+
+      // handle non-blocking errors from pipelines and hooks
+      if (forked.project.id && (forked.pipeline.errorData || forked.webhook.errorData)) {
+        // build the final URL -- that requires forked.project(.id) to be available
+        let newProjectData = { namespace: forked.project.namespace.full_path, path: forked.project.path };
+        setForkUrl(Url.get(Url.pages.project, newProjectData));
+
+        let verboseError; // = "Project forked, but ";
+        if (forked.pipeline.errorData) {
+          verboseError = "pipeline creation failed";
+          if (forked.pipeline.errorData.message)
+            verboseError += ` (${forked.pipeline.errorData.message})`;
+          verboseError += ". The forked project is available, but interactive sessions may use a fallback image.";
+          throw new Error(verboseError);
+        }
+        if (forked.webhook.errorData) {
+          verboseError = "The forked project is available, but knowledge-graph integration failed. ";
+          verboseError += "You may later be asked to initiate the integration.";
+          throw new Error(verboseError);
+        }
+
+        return null;
+      }
 
       // wait for operations to finish
       let count;
@@ -253,7 +278,10 @@ function ForkProject(props) {
       const localValue = value ? value : "";
       setTitle(localValue);
     }
-    setForkError(null); // reset fork error when typing
+
+    // ? reset fork error and url when typing
+    setForkError(null);
+    setForkUrl(null);
   };
 
   const setNamespaceP = (value) => {
@@ -272,6 +300,7 @@ function ForkProject(props) {
       fork={fork}
       forkedTitle={forkedTitle}
       forkError={forkError}
+      forkUrl={forkUrl}
       forking={forking}
       handlers={adjustedHandlers}
       namespace={namespace}

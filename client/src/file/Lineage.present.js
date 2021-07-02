@@ -232,7 +232,7 @@ class FileLineage extends Component {
     const externalFileUrl = `${externalUrl}/blob/master/${this.props.path}`;
     const isLFS = this.props.hashElement ? this.props.hashElement.isLfs : false;
     const isLFSBadge = isLFS ?
-      <Badge className="lfs-badge" color="light">LFS</Badge> : null;
+      <Badge className="lfs-badge" color="white">LFS</Badge> : null;
 
     let buttonFile = filePath !== undefined && currentNode.type !== "Directory" ?
       <FileAndLineageSwitch
@@ -262,20 +262,23 @@ class FileLineage extends Component {
       />
     );
 
-    return <Card>
-      <CardHeader className="align-items-baseline">
-        {isLFSBadge}
-        <strong>{this.props.path}</strong>
+    return <Card className="border-rk-light">
+      <CardHeader className="d-flex align-items-center bg-white justify-content-between pe-3 ps-3">
+        <div className="d-flex align-items-end">
+          {isLFSBadge}
+          <strong>{this.props.path}</strong>
         &nbsp;
-        {this.props.fileSize ? <span><small> {formatBytes(this.props.fileSize)}</small></span> : null}
+          {this.props.fileSize ? <span><small> {formatBytes(this.props.fileSize)}</small></span> : null}
         &nbsp;
-        <span className="fileBarIconButton"><Clipboard clipboardText={this.props.path} /></span>
+          <span className="fileBarIconButton"><Clipboard clipboardText={this.props.path} /></span>
         &nbsp;
-        <div className="float-right" >
+        </div>
+
+        <div className="d-flex align-items-end">
           <span className="fileBarIconButton">{buttonDownload}</span>
           <span className="fileBarIconButton">{buttonJupyter}</span>
           <span className="fileBarIconButton">{buttonGit}</span>
-          <span className="fileBarIconButton">{buttonFile}</span>
+          <span className="fileBarIconButton ms-2">{buttonFile}</span>
         </div>
       </CardHeader>
       <CardBody className="scroll-x">

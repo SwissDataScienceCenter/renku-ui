@@ -1,19 +1,25 @@
 // From https://stackoverflow.com/questions/14983776/bootstrap-pills-rendered-with-underlines
 
-$nav-pills-underline-link-active-color: $link-color !default;
-$nav-pills-underline-link-hover-color: map-get($theme-colors, "secondary") !default;
+$nav-pills-underline-link-active-color: $rk-text !default;
+$nav-pills-underline-link-hover-color: map-get($theme-colors, "dark") !default;
 
 $nav-pills-underline-bg:    transparent !default;
 $nav-pills-underline-active-bg:    transparent !default;
 $nav-pills-underline-hover-bg:    transparent !default;
 
-$nav-pills-underline-border-width:    3px !default;
-$nav-pills-underline-border-color:    map-get($theme-colors, "primary");
+$nav-pills-underline-border-width:    2px !default;
+$nav-pills-underline-border-color:    map-get($theme-colors, "dark");
 
 .nav-pills-underline {
+  align-items: flex-end !important;
+
+  .nav-item{
+    padding-right: 1em;
+  }
   .nav-link {
     @include border-radius(0);
-
+    padding:0;
+    color: $nav-pills-underline-link-active-color;
     &.active,
     .show > & {
       color: $nav-pills-underline-link-active-color;
@@ -29,6 +35,7 @@ $nav-pills-underline-border-color:    map-get($theme-colors, "primary");
       border-bottom-width: $nav-pills-underline-border-width;
       border-bottom-style: solid;
       border-bottom-color: transparent;
+      padding-bottom: 0.5rem;
     }
 
     > a.nav-link.active,

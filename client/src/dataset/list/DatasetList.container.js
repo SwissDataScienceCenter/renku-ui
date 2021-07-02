@@ -37,6 +37,7 @@ class List extends Component {
       changeSearchDropdownOrder: this.changeSearchDropdownOrder.bind(this),
       toggleSearchSorting: this.toggleSearchSorting.bind(this),
       onPaginationPageChange: this.onPaginationPageChange.bind(this),
+      onGridDisplayToggle: this.onGridDisplayToggle.bind(this),
     };
   }
 
@@ -106,8 +107,8 @@ class List extends Component {
     this.model.setQueryAndSortInSearch(query, orderBy, orderSearchAsc, pathName, pageNumber);
   }
 
-  onPaginationPageChange(pageNumber) {
-    this.model.setPage(pageNumber);
+  onPaginationPageChange({ page }) {
+    this.model.setPage(page);
     this.model.performSearch();
     this.pushNewSearchToHistory();
   }
@@ -142,14 +143,18 @@ class List extends Component {
     this.pushNewSearchToHistory();
   }
 
+  onGridDisplayToggle() {
+    this.model.setGridDisplay(!this.model.get("gridDisplay"));
+  }
+
   getOrderByLabel() {
     switch (this.model.get("orderBy")) {
       case orderByValuesMap.TITLE:
-        return "title";
+        return "Title";
       case orderByValuesMap.DATE:
-        return "date";
+        return "Date";
       case orderByValuesMap.PROJECTSCOUNT:
-        return "projects count";
+        return "Projects count";
       default:
         return "";
     }
@@ -174,7 +179,9 @@ class List extends Component {
       currentPage: this.model.get("currentPage"),
       perPage: this.model.get("perPage"),
       totalItems: this.model.get("totalItems"),
+      gridDisplay: this.model.get("gridDisplay"),
       onPageChange: this.handlers.onPaginationPageChange,
+      onGridDisplayToggle: this.handlers.onGridDisplayToggle,
     };
   }
 

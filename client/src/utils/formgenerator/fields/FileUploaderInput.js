@@ -24,7 +24,7 @@
  */
 import React, { useState, useEffect, useRef } from "react";
 import { FormGroup, Table, Button, UncontrolledCollapse,
-  Card, CardBody, Input, InputGroup, InputGroupAddon, Progress } from "reactstrap";
+  Card, CardBody, Input, InputGroup, Progress } from "reactstrap";
 import { Link } from "react-router-dom";
 import ValidationAlert from "./ValidationAlert";
 import HelpText from "./HelpText";
@@ -490,24 +490,26 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
       case FILE_STATUS.ADDED:
         return <span> in dataset</span>;
       case FILE_STATUS.UPLOADED:
-        return <span><FontAwesomeIcon color="var(--success)" icon={faCheck} /> ready to add</span>;
+        return <span><FontAwesomeIcon color="var(--bs-success)" icon={faCheck} /> ready to add</span>;
       case FILE_STATUS.PENDING:
         return <span> File will be uploaded on submit</span>;
       case FILE_STATUS.FAILED:
         return <div>
-          <span className="mr-2">
-            <FontAwesomeIcon style={{ cursor: "text" }} color="var(--danger)" icon={faTimes} /> {file.file_error}</span>
+          <span className="me-2">
+            <FontAwesomeIcon style={{ cursor: "text" }} color="var(--bs-danger)" icon={faTimes} />
+            {file.file_error}
+          </span>
           <span className="text-primary" style={{ whiteSpace: "nowrap", cursor: "pointer" }}
             onClick={() => retryUpload(file.file_name)}>
-            <FontAwesomeIcon color="var(--primary)" icon={faSyncAlt} /> Retry
+            <FontAwesomeIcon color="var(--bs-primary)" icon={faSyncAlt} /> Retry
           </span>
         </div>;
       default:
         if (file.file_uncompress === FILE_COMPRESSED.WAITING) {
           return <div style={{ fontWeight: "600" }}>
-            <FontAwesomeIcon color="var(--warning)" icon={faExclamationTriangle} />
-            <span className="ml-1">Unzip on upload?</span>
-            <span className="mr-1">
+            <FontAwesomeIcon color="var(--bs-warning)" icon={faExclamationTriangle} />
+            <span className="mb-1">Unzip on upload?</span>
+            <span className="me-1">
               <span className="text-primary text-button" style={{ whiteSpace: "nowrap", cursor: "pointer" }}
                 onClick={() => uploadCompressedFile(file.file_name, true)}>Yes</span> or
               <span className="text-primary  text-button" style={{ whiteSpace: "nowrap", cursor: "pointer" }}
@@ -580,14 +582,14 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
           e.preventDefault();
         }}
       >
-        <Table hover bordered className="table-files mb-1">
+        <Table hover bordered className="table-files mb-1 bg-white">
           <thead>
             <tr>
-              <th style={{ width: "5%" }} className="font-weight-light">#</th>
-              <th style={{ width: "45%" }} className="font-weight-light">File Name/URL</th>
-              <th style={{ width: "10%" }} className="font-weight-light">Size</th>
-              <th style={{ width: "30%" }} className="font-weight-light">Status</th>
-              <th style={{ width: "10%" }} className="font-weight-light">Delete</th>
+              <th style={{ width: "5%" }} className="fw-light">#</th>
+              <th style={{ width: "45%" }} className="fw-light">File Name/URL</th>
+              <th style={{ width: "10%" }} className="fw-light">Size</th>
+              <th style={{ width: "30%" }} className="fw-light">Status</th>
+              <th style={{ width: "10%" }} className="fw-light">Delete</th>
             </tr>
           </thead>
           <tbody className={disabled ? "disabled-input" : ""}>
@@ -608,7 +610,7 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
                   }
                   {
                     file.folder_structure ? <div>
-                      <Button className="pr-0 pl-0 pt-0 pb-0 mb-1" color="link" id={"filesCollapse" + (index + 1)}>
+                      <Button className="pe-0 ps-0 pt-0 pb-0 mb-1" color="link" id={"filesCollapse" + (index + 1)}>
                         <small>Show unzipped files</small>
                       </Button>
                       <UncontrolledCollapse
@@ -632,12 +634,12 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
                   {
                     file.file_status === FILE_STATUS.UPLOADED || file.file_status === FILE_STATUS.FAILED ||
                     file.file_status === FILE_STATUS.PENDING ?
-                      <FontAwesomeIcon color="var(--danger)" icon={faTrashAlt}
+                      <FontAwesomeIcon color="var(--bs-danger)" icon={faTrashAlt}
                         onClick={() => deleteFile(file.file_name)} />
                       : (file.file_status >= FILE_STATUS.UPLOADING && file.file_status < FILE_STATUS.UPLOADED
                           && file.file_controller !== undefined ?
                         (
-                          <FontAwesomeIcon color="var(--danger)" icon={faTrashAlt}
+                          <FontAwesomeIcon color="var(--bs-danger)" icon={faTrashAlt}
                             onClick={() => deleteFile(file.file_name, file.file_controller)} />
                         )
                         : "null")
@@ -667,11 +669,9 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
                     onChange={e => onUrlInputChange(e)}
                     value={urlInputValue}
                   />
-                  <InputGroupAddon addonType="append">
-                    <Button color="primary" id="addFileButton" onClick={e=>onUrlInputEnter(e)}>
-                      Add File from URL
-                    </Button>
-                  </InputGroupAddon>
+                  <Button color="primary" id="addFileButton" onClick={e=>onUrlInputEnter(e)}>
+                    Add File from URL
+                  </Button>
                 </InputGroup>
               </td>
             </tr>
@@ -681,11 +681,11 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
               <td colSpan="5">
                 <div onClick={() => { $input.current.click(); }} style={{ marginBottom: 10 }}>
                   <p className="mb-1">
-                    Drag and Drop files here to upload, or click <span className="text-primary"
+                    Drag and Drop files here to upload, or click <span className="text-primary fw-bold"
                       style={{ cursor: "pointer" }}>open file dialog</span> to select files for upload.
                   </p>
                   <p className="text-muted font-italic">
-                    <FontAwesomeIcon className="pr-1" color="var(--primary)" icon={faFolder} />
+                    <FontAwesomeIcon className="pe-1" color="var(--bs-primary)" icon={faFolder} />
                     To upload a folder, zip the folder, upload the zip file, and select {" "}
                     <b style={{ fontWeight: "300" }}>Unzip on upload</b>.
                   </p>
@@ -693,10 +693,10 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
                 <small className="text-muted">
                   NOTE: Support for uploading large files in RenkuLab is still under development; {" "}
                   consider using the Renku CLI for files larger than 500 MB.
-                  <Button className="pr-0 pl-1 pt-0 pb-0 mb-1" color="link" id="fileLimitToggler">
+                  <Button className="pe-0 ps-1 pt-0 pb-0 mb-1" color="link" id="fileLimitToggler">
                     <small>More info.</small>
                   </Button>
-                  <UncontrolledCollapse key="fileLimitToggler" toggler={"#fileLimitToggler"} className="pt-0 pl-3">
+                  <UncontrolledCollapse key="fileLimitToggler" toggler={"#fileLimitToggler"} className="pt-0 ps-3">
                     In practice, the file-size limitation on uploads in RenkuLab is dependent on the {" "}
                     network connection. Here are some general estimates:<br />
                     <ul>

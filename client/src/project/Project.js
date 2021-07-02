@@ -66,14 +66,16 @@ const subRoutes = {
   data: "files/data",
   workflows: "files/workflows",
   settings: "settings",
-  environments: "environments",
-  environmentNew: "environments/new"
+  settingsSessions: "settings/sessions",
+  sessions: "sessions",
+  sessionNew: "sessions/new",
+  showSession: "sessions/show/:server"
 };
 
 // SubRoutes grouped by depth
 const srMap = _.groupBy(Object.values(subRoutes), v => v.split("/").length);
 const maxSrMapDepth = Math.max(...Object.keys(srMap).map(k => Number.parseInt(k)));
-const projectIdRegex = /^\d+/;
+const projectIdRegex = /^\d+$/;
 
 /**
  * Check if the components need to be added to the projectPathWithNamespace
@@ -179,7 +181,7 @@ class View extends Component {
 
       // in case the route fails it tests weather it could be a projectId route
       const routes = ["overview", "issues", "issue_new", "files", "lineage", "notebooks", "collaboration",
-        "data", "workflows", "settings", "pending", "launchNotebook", "notebookServers", "datasets", "environments"];
+        "data", "workflows", "settings", "pending", "launchNotebook", "notebookServers", "datasets", "sessions"];
       const available = this.props.core ? this.props.core.available : null;
       const potentialProjectId = pathComponents.projectPathWithNamespace.split("/")[0];
       const potentialRoute = pathComponents.projectPathWithNamespace.split("/")[1];
@@ -349,10 +351,13 @@ class View extends Component {
       dataUrl: `${filesUrl}/data`,
       workflowsUrl: `${filesUrl}/workflows`,
       settingsUrl: `${baseUrl}/settings`,
+      settingsSessionsUrl: `${baseUrl}/settings/sessions`,
       mrOverviewUrl: `${baseUrl}/pending`,
       mrUrl: `${baseUrl}/pending/:mrIid`,
-      launchNotebookUrl: `${baseUrl}/environments/new`,
-      notebookServersUrl: `${baseUrl}/environments`
+      launchNotebookUrl: `${baseUrl}/sessions/new`,
+      sessionAutostartUrl: `${baseUrl}/sessions/new?autostart=1`,
+      notebookServersUrl: `${baseUrl}/sessions`,
+      sessionShowUrl: `${baseUrl}/sessions/show/:server`
     };
   }
 
@@ -743,4 +748,4 @@ function withProjectMapped(MappingComponent, features = [], passProps = true) {
 
 
 export default { View };
-export { GraphIndexingStatus, splitProjectSubRoute, mapProjectFeatures, withProjectMapped, MigrationStatus };
+export { GraphIndexingStatus, MigrationStatus, mapProjectFeatures, splitProjectSubRoute, withProjectMapped };
