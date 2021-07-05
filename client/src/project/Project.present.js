@@ -619,45 +619,54 @@ class ProjectDatasetsNav extends Component {
 function ProjectAddDataset(props) {
 
   const [newDataset, setNewDataset] = useState(true);
+  function toggleNewDataset() {
+    setNewDataset(!newDataset);
+  }
 
   return <Col>
     { props.visibility.accessLevel > ACCESS_LEVELS.DEVELOPER ? [
       <Row key="header">
-        <h3 className="uk-heading-divider uk-text-center pb-1 mb-4">Add Dataset</h3>
+        <Col>
+          <h3 className="uk-heading-divider uk-text-center pb-1 mb-4">Add Dataset</h3>
+        </Col>
       </Row>,
       <Row key="switch-button" className="d-inline-block pb-3">
-        <ButtonGroup className="mb-4 pt-1">
-          <Button color="primary" outline onClick={() => setNewDataset(true)} active={newDataset}>
-            Create Dataset
-          </Button>
-          <Button color="primary" outline onClick={() => setNewDataset(false)} active={!newDataset}>
-            Import Dataset
-          </Button>
-        </ButtonGroup>
+        <Col>
+          <ButtonGroup className="rk-btn-group-light mb-4">
+            <Button color="rk-white" onClick={toggleNewDataset} active={newDataset}>
+              Create Dataset
+            </Button>
+            <Button color="rk-white" onClick={toggleNewDataset} active={!newDataset}>
+              Import Dataset
+            </Button>
+          </ButtonGroup>
+        </Col>
       </Row>,
       <Row key="text-details" className="pb-3">
-        <small className="mb-4 text-muted">
-          {
-            newDataset ?
-              <span>
-                Create a new dataset by providing metadata and content. Use&nbsp;
-                <Button className="p-0" style={{ verticalAlign: "baseline" }}
-                  color="link" onClick={() => setNewDataset(false)}>
-                  <small>Import Dataset</small>
-                </Button>
+        <Col>
+          <small className="mb-4 text-muted">
+            {
+              newDataset ?
+                <span>
+                  Create a new dataset by providing metadata and content. Use&nbsp;
+                  <Button className="p-0" style={{ verticalAlign: "baseline" }}
+                    color="link" onClick={() => setNewDataset(false)}>
+                    <small>Import Dataset</small>
+                  </Button>
                 &nbsp;to reuse an existing dataset.
-              </span>
-              :
-              <span>
-                Import a published dataset from Zenodo, Dataverse, or from another Renku project. Use&nbsp;
-                <Button className="p-0" style={{ verticalAlign: "baseline" }}
-                  color="link" onClick={() => setNewDataset(true)}>
-                  <small>Create Dataset</small>
-                </Button>
+                </span>
+                :
+                <span>
+                  Import a published dataset from Zenodo, Dataverse, or from another Renku project. Use&nbsp;
+                  <Button className="p-0" style={{ verticalAlign: "baseline" }}
+                    color="link" onClick={() => setNewDataset(true)}>
+                    <small>Create Dataset</small>
+                  </Button>
                 &nbsp;to make a new dataset.
-              </span>
-          }
-        </small>
+                </span>
+            }
+          </small>
+        </Col>
       </Row>
     ]
       : null

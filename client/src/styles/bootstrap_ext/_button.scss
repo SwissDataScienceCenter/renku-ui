@@ -1,3 +1,5 @@
+@use "sass:color";
+
 .btn-secondary, .btn-info, .btn-warning {
   color: $rk-white;
   &:hover {
@@ -36,28 +38,30 @@
   }
 }
 
-.rk-btn-group-light{
+.rk-btn-group-light {
   border-style: solid;
   border-width: 1px;
-  background:white;
+  background: $rk-text-light;
   border-color: $rk-text-light;
-  color:$rk-text;
+  color: $rk-text;
 
-  .btn{
-    border:unset;
+  .btn {
+    color: $rk-blue;
+    background-color: $rk-text-light;
   }
 
-  .btn.active{
-    color:$rk-text;
-    background-color:$rk-text-light;
-  }
-  
-  .btn.active:hover{
-    background-color:$rk-text-light;
+  .btn.active {
+    color: white;
+    background-color: $rk-blue;
   }
 
-  .btn:hover{
-    background-color: $rk-hover;
+  .btn.active:hover {
+    color: white;
+    background-color: $rk-blue;
+  }
+
+  .btn:hover {
+    background-color: scale-color($rk-text-light, $lightness: -50%);
   }
 }
 
