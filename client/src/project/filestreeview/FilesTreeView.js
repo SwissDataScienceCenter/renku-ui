@@ -105,10 +105,10 @@ class TreeContainer extends Component {
   render() {
     const { style, fileView, toLineage, toFile, tree } = this.props;
 
-    const switchPage = (switchToContent) => {
-      if (fileView && !switchToContent)
+    const togglePage = () => {
+      if (fileView)
         this.props.history.push(toLineage);
-      else if (!fileView && switchToContent)
+      else
         this.props.history.push(toFile);
     };
 
@@ -117,11 +117,11 @@ class TreeContainer extends Component {
         <div className="d-block">
           <ButtonGroup className="d-flex rk-btn-group-light mb-2">
             <Button color="rk-white" className="btn-rk-white-dark-active"
-              onClick={()=>switchPage(true)} active={fileView}>
+              onClick={togglePage} active={fileView}>
               Contents
             </Button>
             <Button color="rk-white" className="btn-rk-white-dark-active"
-              onClick={()=>switchPage(false)} active={!fileView}>
+              onClick={togglePage} active={!fileView}>
               Lineage
             </Button>
           </ButtonGroup>
