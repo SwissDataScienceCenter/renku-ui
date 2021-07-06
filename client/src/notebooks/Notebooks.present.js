@@ -1006,6 +1006,7 @@ class EnvironmentLogs extends Component {
   }
 }
 
+// This is not currently used, but keeping since it may be useful in the future.
 function pipelineAvailable(pipelines) {
   const { pipelineTypes } = NotebooksHelper;
   const mainPipeline = pipelines.main;
@@ -1026,9 +1027,11 @@ function pipelineAvailable(pipelines) {
 class StartNotebookServer extends Component {
   constructor(props) {
     super(props);
+    // show advanced if there was an error
+    const initialShowAdvanced = props.launchError != null;
     this.state = {
       ignorePipeline: null,
-      showAdvanced: false
+      showAdvanced: initialShowAdvanced
     };
   }
 
@@ -1044,7 +1047,6 @@ class StartNotebookServer extends Component {
     const { branch, commit } = this.props.filters;
     const { branches } = this.props.data;
     const { autoStarting, pipelines, message } = this.props;
-    const projectOptions = this.props.options.project;
 
     if (autoStarting)
       return (<StartNotebookAutostart {...this.props} />);
@@ -1054,13 +1056,11 @@ class StartNotebookServer extends Component {
       pipelines: pipelines.fetching,
       commits: this.props.data.fetching
     };
-    const anyPipeline = this.props.justStarted || this.state.ignorePipeline || pipelineAvailable(pipelines);
-    const noPipelinesNeeded = projectOptions && projectOptions.image;
 
     let show = {};
     show.commits = !fetching.branches && branch.name ? true : false;
     show.pipelines = show.commits && !fetching.commits && commit && commit.id;
-    show.options = show.pipelines && pipelines.fetched && (anyPipeline || noPipelinesNeeded);
+    show.options = show.pipelines && pipelines.fetched;
 
     const messageOutput = message ?
       (<div key="message">{message}</div>) :
@@ -1075,6 +1075,7 @@ class StartNotebookServer extends Component {
       <Row>
         <Col sm={12} md={10} lg={8}>
           <h3>Start a new session</h3>
+          <LaunchErrorAlert key="launch-error" launchError={this.props.launchError} />
           {messageOutput}
           <Form>
             <Collapse isOpen={this.state.showAdvanced}>
@@ -1416,11 +1417,13 @@ class StartNotebookPipelinesContent extends Component {
       content = (
         <Label>
           <FontAwesomeIcon icon={faCog} spin /> The Docker image for the session is being built.
-          Please wait a moment...
+          Please wait a moment...<br />
           <FormText color="primary">
-            <a href={pipeline.web_url} target="_blank" rel="noreferrer noopener">
-              <FontAwesomeIcon icon={faExternalLinkAlt} /> View pipeline in GitLab.
-            </a>
+            <ExternalLink url={pipeline.web_url} title="View pipeline in GitLab." role="text"
+              showLinkIcon={true} />
+          </FormText><br />
+          <FormText color="text">
+            You can start a session before the build finishes by using the base image.
           </FormText>
         </Label>
       );
@@ -1430,13 +1433,12 @@ class StartNotebookPipelinesContent extends Component {
       if (this.props.ignorePipeline || this.props.justStarted) {
         actions = (
           <div>
+            <FormText color="primary">
+              <ExternalLink url={pipeline.web_url} title="View pipeline in GitLab." role="text"
+                showLinkIcon={true} />
+            </FormText> <br />
             <FormText color="text">
               The base image will be used instead. This may work fine, but it may lead to unexpected errors.
-            </FormText>
-            <FormText color="primary">
-              <a href={pipeline.web_url} target="_blank" rel="noreferrer noopener">
-                <FontAwesomeIcon icon={faExternalLinkAlt} /> View pipeline in GitLab.
-              </a>
             </FormText>
           </div>
         );
@@ -1629,7 +1631,7 @@ class StartNotebookOptions extends Component {
 function Warning(props) {
   return <div style={{ fontSize: "smaller", paddingTop: "5px" }}>
     <WarnAlert>
-      <FontAwesomeIcon icon={faInfoCircle} /> {props.children}
+      <FontAwesomeIcon icon={faExclamationTriangle} /> {props.children}
     </WarnAlert>
   </div>;
 }
@@ -1851,6 +1853,30 @@ class ServerOptionRange extends Component {
   }
 }
 
+function LaunchErrorBackendAlert({ launchError }) {
+  return <WarnAlert timeout={0}>
+    <FontAwesomeIcon icon={faExclamationTriangle} /> {" "}
+    The attempt to start a session failed with the following error:
+    <div><code>{launchError}</code></div>
+    This could be an intermittent issue, so you should try a second time,
+    and the session will hopefully start. If the problem persists, you can {" "}
+    <Link to="/help">contact us for assistance</Link>.
+  </WarnAlert>;
+}
+
+function LaunchErrorFrontendAlert({ launchError }) {
+  return <WarnAlert timeout={0}>
+    <FontAwesomeIcon icon={faExclamationTriangle} /> {launchError.errorMessage}
+  </WarnAlert>;
+}
+
+function LaunchErrorAlert({ launchError }) {
+  if (launchError == null) return null;
+  return (launchError.frontendError === true) ?
+    <LaunchErrorFrontendAlert launchError={launchError} /> :
+    <LaunchErrorBackendAlert launchError={launchError} />;
+}
+
 class ServerOptionLaunch extends Component {
   constructor(props) {
     super(props);
@@ -1883,39 +1909,40 @@ class ServerOptionLaunch extends Component {
 
   render() {
     const { warnings } = this.props.options;
-    const launchError = this.props.launchError;
     const globalNotification = (warnings.length < 1) ?
       null :
       <Warning key="globalNotification">
         The session cannot be configured exactly as requested for this project.
         You can still start one, but some things may not work correctly.
       </Warning>;
-    const launchErrorAlert = (launchError != null) ?
-      <Fragment key="launch-error">
-        <br />
-        <InfoAlert timeout={0}>
-          <FontAwesomeIcon icon={faInfoCircle} /> {" "}
-          The attempt to start a session failed with the following error:
-          <div><code>{launchError}</code></div>
-          This could be an intermittent issue, so you should try a second time,
-          and the session will hopefully start. If the problem persists, you can {" "}
-          <Link to="/help">contact us for assistance</Link>.
-        </InfoAlert>
-      </Fragment> :
-      null;
+
+    const hasImage = pipelineAvailable(this.props.pipelines);
+    const startButton = (hasImage) ?
+      <Button key="start-session" color="primary" onClick={this.checkServer}>
+        Start session
+      </Button> :
+      <Button key="start-session" color="primary" disabled={true} onClick={this.checkServer}>
+        Start session
+      </Button>;
+
+    const startBaseButton = (hasImage) ?
+      null :
+      <Button key="start-base" color="primary" onClick={this.checkServer}>
+        Start with base image
+      </Button>;
+
 
     return [
-      <Button key="button" color="primary" onClick={this.checkServer}>
-        Start session
-      </Button>,
+      startButton,
+      " ",
+      startBaseButton,
       <AutosavedDataModal key="modal"
         toggleModal={this.toggleModal.bind(this)}
         showModal={this.state.showModal}
         currentBranch={this.state.current}
         {...this.props}
       />,
-      globalNotification,
-      launchErrorAlert
+      globalNotification
     ];
   }
 }
