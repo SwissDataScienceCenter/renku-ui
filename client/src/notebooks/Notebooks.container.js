@@ -438,8 +438,33 @@ class StartNotebookServer extends Component {
         const data = this.model.get();
         const fetched = data.notebooks.fetched && data.options.fetched && data.pipelines.fetched;
         if (fetched) {
-          this.setState({ autostartReady: true });
-          this.startServer();
+          const mainPipeline = data.pipelines.main;
+          if (mainPipeline && mainPipeline.status === "success") {
+            this.setState({ autostartReady: true });
+            this.startServer();
+          }
+          else if (mainPipeline && (mainPipeline.status === "running" || mainPipeline.status === "pending")) {
+            this.setState({
+              autostartReady: true,
+              autostartTried: true,
+              launchError: {
+                frontendError: true,
+                errorMessage: `The session could not start because the image is still building.
+                Please wait for the build to finish, or start the session with the base image.`
+              },
+              starting: false });
+          }
+          else {
+            this.setState({
+              autostartReady: true,
+              autostartTried: true,
+              launchError: {
+                frontendError: true,
+                errorMessage: `The session could not start because no image is available.
+                Please select a different commit or start the session with the base image.`
+              },
+              starting: false });
+          }
         }
         else {
           setTimeout(() => { this.triggerAutoStart(); }, 1000);
@@ -500,7 +525,7 @@ class StartNotebookServer extends Component {
   startServer() {
     //* Data from notebooks/servers endpoint needs some time to update properly.
     //* To avoid flickering UI, just set a temporary state and display a loading wheel.
-    this.setState({ "starting": true });
+    this.setState({ "starting": true, launchError: null });
     this.internalStartServer().catch((error) => {
       // Some failures just go away. Try again to see if it works the second time.
       setTimeout(() => {
