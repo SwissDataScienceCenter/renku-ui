@@ -4,7 +4,7 @@ text {
 }
 
 g.code rect {
-  fill: #998ec399;
+  fill: hsl(333, 44%, 75%);
   stroke-width: 1.5px;
 }
 
@@ -19,7 +19,7 @@ g.workflow {
 }
 
 g.workflow polygon {
-  fill: #7fbf7bc9;
+  fill: hsl(50, 59%, 60%);
   stroke: unset;
 }
 
