@@ -67,10 +67,11 @@ describe("rendering", () => {
         "title": "Test dataset title",
         "identifier": "79215657-4319-4fcf-82b9-58267f2a1db8",
         "name": "test-dataset-name",
+        "created_at": "2021-06-04 04:20:24.287936+00:00",
         "creators": [{
           "name": "First, Creator",
           "email": null,
-          "affiliation": "Some Affiliation"
+          "affiliation": "Some Affiliation",
         }]
       }],
       visibility: { accessLevel: ACCESS_LEVELS.MAINTAINER },

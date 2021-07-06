@@ -1,59 +1,56 @@
-import React, { useMemo } from "react";
+import React, { Fragment, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Row, Col } from "reactstrap";
 import { ACCESS_LEVELS } from "../../api-client";
 import "../filestreeview/treeviewstyle.css";
-import { Loader, MarkdownTextExcerpt, TimeCaption } from "../../utils/UIComponents";
+import { ListDisplay, Loader, MarkdownTextExcerpt } from "../../utils/UIComponents";
 import { SpecialPropVal } from "../../model";
 
-function DatasetListRow(props) {
-  const dataset = props.dataset;
+function datasetToDict(datasetsUrl, dataset_kg, graphStatus, gridDisplay, dataset) {
+  const kgCaption =
+    dataset_kg !== undefined && graphStatus === true ?
+      "In the Knowledge Graph"
+      : "Not in the Knowledge Graph";
+  const timeCaption = (dataset.created_at != null) ?
+    new Date(dataset.created_at.replace(/ /g, "T")) :
+    "";
+  return {
+    id: dataset.name,
+    url: `${datasetsUrl}/${encodeURIComponent(dataset.name)}/`,
+    itemType: "dataset",
+    title: dataset.title || dataset.name,
+    description: dataset.description !== undefined && dataset.description !== null ?
+      <Fragment>
+        <MarkdownTextExcerpt markdownText={dataset.description} singleLine={gridDisplay ? false : true}
+          charsLimit={gridDisplay ? 200 : 100} />
+        <span className="ms-1">{dataset.description.includes("\n") ? " [...]" : ""}</span>
+      </Fragment>
+      : null,
+    timeCaption: timeCaption,
+    labelCaption: `${kgCaption}. Created `,
+    creators: dataset.creators
+  };
+}
 
-  return <Link className="d-flex flex-row rk-search-result"
-    to={`${props.datasetsUrl}/${encodeURIComponent(dataset.name)}/`}>
-    <span className={"circle me-3 mt-2 dataset"}></span>
-    <Col className="d-flex align-items-start flex-column col-9 overflow-hidden">
-      <div className="title d-inline-block text-truncate">
-        {dataset.title || dataset.name}
-      </div>
-      <div className="creators text-truncate text-rk-text">
-        {
-          dataset.creators !== undefined ?
-            <small style={{ display: "block" }} className="font-weight-light">
-              {dataset.creators.slice(0, 3).map((creator) => creator.name).join(", ")}
-              {dataset.creators.length > 3 ? ", et al." : null}
-            </small>
-            : null
-        }
-      </div>
-      <div className="description text-truncate text-rk-text">
-        {
-          dataset.description !== undefined && dataset.description !== null ?
-            <div className="datasetDescriptionText font-weight-normal">
-              <MarkdownTextExcerpt markdownText={dataset.description} charsLimit={500} />
-            </div>
-            : null
-        }
-      </div>
-      <div className="mt-auto">
-        {
-          dataset.created_at !== undefined && dataset.created_at !== null ?
-            <TimeCaption caption="Created"
-              time={new Date(dataset.created_at.replace(/ /g, "T"))} className="text-secondary"/>
-            : null
-        }
-      </div>
-    </Col>
-    <Col className="d-flex justify-content-end flex-shrink-0">
-      <span className="text-secondary">
-        <small>
-          {props.dataset_kg !== undefined && props.graphStatus === true ?
-            "In the Knowledge Graph"
-            : "Not in the Knowledge Graph"}
-        </small>
-      </span>
-    </Col>
-  </Link>;
+function DatasetList({ datasets, datasets_kg, datasetsUrl, graphStatus }) {
+  if (datasets == null ) return <Loader />;
+
+  const gridDisplay = true;
+  const datasetItems = datasets.map((d) => {
+    const dataset_kg = datasets_kg ?
+      datasets_kg.find(dataset_kg => dataset_kg.name === d.name) :
+      undefined;
+    return datasetToDict(datasetsUrl, dataset_kg, graphStatus, gridDisplay, d);
+  });
+  return <ListDisplay
+    itemsType="dataset"
+    search={null}
+    currentPage={null}
+    gridDisplay={gridDisplay}
+    totalItems={datasets.length}
+    perPage={datasets.length}
+    items={datasetItems}
+  />;
 }
 
 function AddDatasetButton(props) {
@@ -85,19 +82,11 @@ export default function DatasetsListView(props) {
   </Row>
   , <Row key="datasetsList">
     <Col xs={12}>
-      {
-        datasets !== undefined ?
-          datasets.map((dataset)=>
-            <DatasetListRow
-              key={"dataset-" + dataset.name}
-              dataset={dataset}
-              dataset_kg={props.datasets_kg
-                ? props.datasets_kg.find(dataset_kg => dataset_kg.name === dataset.name) : undefined}
-              graphStatus={props.graphStatus}
-              datasetsUrl={props.datasetsUrl} />
-          )
-          : <Loader />
-      }
+      <DatasetList
+        datasets={datasets}
+        datasets_kg={props.datasets_kg}
+        datasetsUrl={props.datasetsUrl}
+        graphStatus={props.graphStatus} />
     </Col>
   </Row>
   ];

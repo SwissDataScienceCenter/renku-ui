@@ -118,12 +118,19 @@ class FieldGroup extends Component {
   }
 }
 
+function displayTimeFromDate(time) {
+  if (time == null | time === "")
+    return "at unknown time";
+
+  const timeDiff = (new Date() - new Date(time)) / 1000;
+  const displayTime = timeDiff < 3 ? "just now" : human(timeDiff);
+  return displayTime;
+}
+
 class TimeCaption extends Component {
   // Take a time and caption and generate a span that shows it
   render() {
-    const time = this.props.time;
-    const timeDiff = (new Date() - new Date(time)) / 1000;
-    const displayTime = timeDiff < 3 ? "just now" : human(timeDiff);
+    const displayTime = displayTimeFromDate(this.props.time);
     let caption = (this.props.caption) ? this.props.caption : "Updated";
     const endCaption = (this.props.endCaption) ? " " + this.props.endCaption : "";
     const endPunctuation = (this.props.endPunctuation) ? this.props.endPunctuation : ".";
