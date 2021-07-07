@@ -37,8 +37,8 @@ function ColorsGuide(props) {
         <tr>
           <th scope="row">rk-blue | primary</th>
           <td className="bg-primary text-white">#01192D hsl(207, 96%, 9%)</td>
-          <td className="bg-primary text-white"></td>
-          <td className="bg-primary text-white"></td>
+          <td style={{ backgroundColor: "hsl(207, 12%, 91%)" }}>hsl(207, 12%, 91%)</td>
+          <td className="text-white" style={{ backgroundColor: "hsl(207, 14%, 39%)" }}>hsl(207, 14%, 39%)</td>
         </tr>
         <tr>
           <th scope="row">rk-green | secondary</th>
@@ -49,7 +49,7 @@ function ColorsGuide(props) {
         <tr>
           <th scope="row">rk-pink</th>
           <td className="bg-rk-pink text-dark">#D26A98 hsl(333, 54%, 62%)</td>
-          <td style={{ backgroundColor: "hsl(333, 54%, 70%)" }}>hsl(333, 54%, 70%)</td>
+          <td style={{ backgroundColor: "hsl(333, 44%, 75%)" }}>hsl(333, 44%, 75%)</td>
           <td style={{ backgroundColor: "hsl(333, 54%, 55%)" }} className="text-white">hsl(333, 54%, 55%)</td>
         </tr>
         <tr>
