@@ -16,14 +16,38 @@
  * limitations under the License.
  */
 
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 
-import { Button, DropdownItem, Table } from "reactstrap";
+import { Button, ButtonGroup, DropdownItem, Table } from "reactstrap";
 
 import {
   Clipboard, GoBackButton, ExternalLink, Loader, ButtonWithMenu,
   InfoAlert, SuccessAlert, WarnAlert, ErrorAlert
 } from "../utils/UIComponents";
+
+function Switch(props) {
+  const [mode, setMode] = useState(0);
+  function toggleMode() {
+    if (mode === 0)
+      setMode(1);
+    else setMode(0);
+  }
+
+  return <ButtonGroup key="controls" className="rk-btn-group-light mt-2" size="sm">
+    <Button
+      color="rk-white" className="btn-rk-white-dark-active"
+      onClick={toggleMode}
+      active={mode === 0}>
+      State 1
+    </Button>
+    <Button
+      color="rk-white" className="btn-rk-white-dark-active"
+      onClick={toggleMode}
+      active={mode === 1}>
+      State 2
+    </Button>
+  </ButtonGroup>;
+}
 
 
 function ButtonsGuide(props) {
@@ -80,6 +104,11 @@ function ButtonsGuide(props) {
           <th scope="row">Button with menu</th>
           <td>ButtonWithMenu</td>
           <td>{buttonWithMenu}</td>
+        </tr>
+        <tr>
+          <th scope="row">Switch</th>
+          <td>ButtonGroup className=&ldquo;rk-btn-group-light&rdquo;</td>
+          <td><Switch /></td>
         </tr>
       </tbody>
     </Table>
