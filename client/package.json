@@ -1,6 +1,6 @@
 {
   "name": "renku-ui",
-  "version": "1.0.0-beta2",
+  "version": "1.0.0-beta3",
   "private": true,
   "dependencies": {
     "@babel/helper-regex": "^7.8.3",
