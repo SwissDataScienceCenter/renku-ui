@@ -1006,10 +1006,11 @@ class EnvironmentLogs extends Component {
   }
 }
 
-// This is not currently used, but keeping since it may be useful in the future.
 function pipelineAvailable(pipelines) {
   const { pipelineTypes } = NotebooksHelper;
   const mainPipeline = pipelines.main;
+
+  if (pipelines.type === pipelineTypes.customImage) return true;
 
   if (pipelines.type === pipelineTypes.logged) {
     if (mainPipeline.status === "success" || mainPipeline.status === undefined)
