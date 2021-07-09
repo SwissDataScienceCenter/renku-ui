@@ -439,7 +439,8 @@ class StartNotebookServer extends Component {
         const fetched = data.notebooks.fetched && data.options.fetched && data.pipelines.fetched;
         if (fetched) {
           const mainPipeline = data.pipelines.main;
-          if (mainPipeline && mainPipeline.status === "success") {
+          if (data.pipelines.type === NotebooksHelper.pipelineTypes.customImage ||
+              (mainPipeline && mainPipeline.status === "success")) {
             this.setState({ autostartReady: true });
             this.startServer();
           }
