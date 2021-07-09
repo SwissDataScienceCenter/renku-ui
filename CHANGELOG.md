@@ -1,5 +1,17 @@
 # Changes
 
+## [1.0.0-beta3](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.0.0-beta2...1.0.0-beta3)  (2021-07-09)
+
+### Bug Fixes
+
+* do not autostart sessions if no image is available ([#1413](https://github.com/SwissDataScienceCenter/renku-ui/issues/1413), [#1415](https://github.com/SwissDataScienceCenter/renku-ui/issues/1415))
+### Features
+
+* display issues and MRs in iframes ([#1330](https://github.com/SwissDataScienceCenter/renku-ui/issues/1330), [#1361](https://github.com/SwissDataScienceCenter/renku-ui/issues/1361))
+* switch to tile display for project datasets ([#1402](https://github.com/SwissDataScienceCenter/renku-ui/issues/1402), [#1414](https://github.com/SwissDataScienceCenter/renku-ui/issues/1414))
+* use new color scheme for lineage view ([#1402](https://github.com/SwissDataScienceCenter/renku-ui/issues/1402), [#1414](https://github.com/SwissDataScienceCenter/renku-ui/issues/1414))
+
+
 ## [1.0.0-beta2](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.0.0-beta1...1.0.0-beta2)  (2021-07-01)
 
 
