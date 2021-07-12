@@ -160,8 +160,8 @@ class RenkuProvidesHeader extends Component {
 }
 
 function SwitchToNewVersion() {
-  const ninetyDays = 60 * 60 * 24 * 90;
-  document.cookie = `other-ui=always; max-age=${ninetyDays}; path=/`;
+  const hundredAndEightyDays = 60 * 60 * 24 * 180;
+  document.cookie = `other-ui=always; max-age=${hundredAndEightyDays}; path=/`;
 }
 
 class AnonymousHome extends Component {
@@ -265,6 +265,28 @@ class AnonymousHome extends Component {
   }
 }
 
+function LoggedInNewVersionBanner(props) {
+
+  const newVersionBannerStyle = {
+    backgroundColor: "#01192D",
+    fontSize: "larger"
+  };
+  const linkStyle = {
+    color: "hsl(162, 100%, 37%)"
+  };
+  const previewUrl = `/?v=${new Date().getTime()}`;
+  return <div className="text-white d-flex justify-content-center align-items-center" style={newVersionBannerStyle}>
+    <div>
+      <img src={Logo} alt="renku frog" width="60px" />
+    </div>
+    <div>An improved UI is coming to RenkuLab soon. If you want a preview, you can {" "}
+      <a href={previewUrl}
+        onClick={SwitchToNewVersion}
+        style={linkStyle}>switch to the new UI now.</a>
+    </div>
+  </div>;
+}
+
 
 class LoggedInHome extends Component {
   render() {
@@ -278,6 +300,7 @@ class LoggedInHome extends Component {
         <Col>
           <StatuspageBanner siteStatusUrl={urlMap.siteStatusUrl} statuspageId={this.props.statuspageId}
             statuspageModel={this.props.statuspageModel} />
+          <LoggedInNewVersionBanner />
           <h1>{user.data.username} @ Renku</h1>
         </Col>
       </Row>,
