@@ -67,7 +67,14 @@ function getNodeLabel(node, NODE_COUNT, lineagesUrl) {
 function nodeToClass(node, currentNodeId, label) {
   const nodeId = node.id;
   const nodeType = node.type;
-  const FORMATS = { "py": true, "r": true, "ipynb": true };
+  // see also File.container.js > CODE_EXTENSIONS
+  const CODE_EXTENSIONS = [
+    "bat", "jl", "js", "py", "r", "rmd", "rs", "scala", "sh", "ts",
+    "c", "cc", "cxx", "cpp", "h", "hh", "hxx", "hpp", // C++
+    "f", "for", "ftn", "fpp", "f90", "f95", "f03", "f08" // Fortran
+  ];
+  const FORMATS = { "ipynb": true };
+  CODE_EXTENSIONS.forEach(e => FORMATS[e] = true);
   const nodeClasses = [];
 
   if (nodeId === currentNodeId)
@@ -79,7 +86,7 @@ function nodeToClass(node, currentNodeId, label) {
     nodeClasses.push("doubleLine");
 
   if (node.type === "Directory" || node.type === "File") {
-    if (node.location.includes(".") && FORMATS[node.location.split(".").pop()])
+    if (node.location.includes(".") && FORMATS[node.location.split(".").pop().toLowerCase()])
       nodeClasses.push("code");
     else
       nodeClasses.push("data");
