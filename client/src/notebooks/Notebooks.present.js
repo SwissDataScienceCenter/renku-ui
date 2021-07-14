@@ -1800,18 +1800,18 @@ class ServerOptionEnum extends Component {
       return (<Badge color="primary">{this.props.options[0]}</Badge>);
 
     return (
-      <ButtonGroup>
+      <ButtonGroup className="rk-btn-group-light" >
         {options.map((optionName, i) => {
-          let color = "outline-primary";
+          let color = "rk-white";
           if (optionName === selected) {
             color = this.props.warning != null && this.props.warning === optionName ?
               "danger" :
-              "primary";
+              "rk-white";
           }
           const size = this.props.size ? this.props.size : null;
           return (
             <Button
-              key={optionName} color={color} size={size} disabled={disabled}
+              key={optionName} color={color} size={size} disabled={disabled} active={optionName === selected}
               onClick={event => this.props.onChange(event, optionName)}>{optionName}</Button>
           );
         })}
