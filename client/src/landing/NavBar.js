@@ -220,7 +220,7 @@ class LoggedInNavBar extends Component {
   render() {
     return (
       <header className="navbar navbar-expand-lg navbar-dark rk-navbar p-0">
-        <Navbar color="primary" className="container-fluid flex-wrap flex-lg-nowrap renku-container">
+        <Navbar color="primary" className="container-fluid flex-wrap flex-lg-nowrap pb-3 renku-container">
           <NavbarBrand href="/" className="navbar-brand me-2 pb-0 pt-0">
             <img src={logo} alt="Renku" height="50" className="d-block" />
           </NavbarBrand>
@@ -229,7 +229,7 @@ class LoggedInNavBar extends Component {
           </NavbarToggler>
           <Collapse isOpen={!this.state.isOpen} navbar>
             <Nav className="navbar-nav flex-row flex-wrap ms-lg-auto">
-              <NavItem className="nav-item col-12 col-lg-auto pe-4 my-2 my-lg-0">
+              <NavItem className="nav-item col-12 col-lg-auto pe-0 pe-lg-4 my-2 my-lg-0">
                 <QuickNav client={this.props.client} model={this.props.model} user={this.props.user} />
               </NavItem>
               <NavItem className="nav-item col-4 col-lg-auto">
