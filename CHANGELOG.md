@@ -1,5 +1,12 @@
 # Changes
 
+## [0.11.14](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.13...0.11.14) (2021-07-16)
+
+### Features
+
+* add banner advertising new version to logged-in users ([#1384](https://github.com/SwissDataScienceCenter/renku-ui/issues/1384), [#1419](https://github.com/SwissDataScienceCenter/renku-ui/issues/1419))
+
+
 ## [0.11.13](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.12...0.11.13) (2021-06-17)
 
 ### Features
