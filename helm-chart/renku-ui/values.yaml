@@ -127,4 +127,4 @@ canary:
   enabled: true
   image:
     repository: renku/renku-ui
-    tag: "1.0.0-beta1"
+    tag: "1.0.0-beta4"
