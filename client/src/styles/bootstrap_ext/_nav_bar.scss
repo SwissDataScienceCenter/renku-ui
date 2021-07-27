@@ -24,13 +24,14 @@ footer{
 }
 
 nav.navbar{
+  // in total the height of the bar is 70px
+  // 50 for the image, etc
+  // 10 on top and bottom
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
   align-items: center !important;
-  padding-top: 1em;
 
   .dropdown-toggle::after {
     content: none;
   }
-  // .input {
-  // 	opacity: 0.25;
-  // }
 }
