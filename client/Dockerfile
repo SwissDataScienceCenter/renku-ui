@@ -18,7 +18,7 @@ RUN apk update && apk upgrade && \
 RUN npm install && \
     npm run-script build
 
-FROM nginxinc/nginx-unprivileged:1.14-alpine
+FROM nginxinc/nginx-unprivileged:1.20-alpine
 
 COPY --from=0 /app/build /usr/share/nginx/html
 COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
