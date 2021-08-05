@@ -1,5 +1,19 @@
 # Changes
 
+## [1.0.0-beta4](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.0.0-beta3...1.0.0-beta4) (2021-07-16)
+
+### Bug Fixes
+
+* correct start button behavior for pinned images ([#1418](https://github.com/SwissDataScienceCenter/renku-ui/issues/1418))
+* update URL for session config documentation
+
+### Features
+
+* extend the list of extensions for code files in lineage display ([#1421](https://github.com/SwissDataScienceCenter/renku-ui/issues/1421))
+* make appearance of switch state clearer ([#1357](https://github.com/SwissDataScienceCenter/renku-ui/issues/1357),  [#1412](https://github.com/SwissDataScienceCenter/renku-ui/issues/1412))
+* use switch for notebook launch ([#1357](https://github.com/SwissDataScienceCenter/renku-ui/issues/1357)  [#1412](https://github.com/SwissDataScienceCenter/renku-ui/issues/1412))
+
+
 ## [1.0.0-beta3](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.0.0-beta2...1.0.0-beta3)  (2021-07-09)
 
 ### Bug Fixes
