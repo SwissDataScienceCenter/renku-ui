@@ -466,6 +466,20 @@ const datasetFormSchema = new Schema({
       isValidFun: expression => FormGenerator.Validators.filesReady(expression),
       alert: "Some queued files have not finished uploading. Please see the status messages and reply to any questions."
     }]
+  },
+  image: {
+    name: "image",
+    label: "Image",
+    edit: false, // for now images can't be edited :(
+    type: FormGenerator.FieldTypes.IMAGE,
+    maxSize: 200 * 1024,
+    format: "image/png,image/jpeg,image/gif,image/tiff",
+    value: {
+      options: [],
+      selected: -1
+    },
+    validators: [],
+    modes: ["Choose File"]
   }
 });
 

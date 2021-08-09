@@ -19,7 +19,8 @@ function mapDataset(dataset_core, dataset_kg, core_files) {
       },
       identifier: dataset_core.identifier,
       keywords: dataset_core.keywords,
-      hasPart: fixFetchedFiles(core_files, dataset_kg ? dataset_kg.hasPart : undefined)
+      hasPart: fixFetchedFiles(core_files, dataset_kg ? dataset_kg.hasPart : undefined),
+      mediaContent: dataset_core.mediaContent
     };
     if (dataset_kg) {
       dataset.url = dataset_kg.url;

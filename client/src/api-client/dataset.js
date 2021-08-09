@@ -61,6 +61,29 @@ export default function addDatasetMethods(client) {
     return httpRequest.send(data);
   };
 
+  client.uploadSingleFile = async (file, unpack_archive = false) => {
+    const data = new FormData();
+    data.append("file", file);
+    data.append("file_name", file.name);
+
+    let headers = new Headers({
+      "credentials": "same-origin",
+      "X-Requested-With": "XMLHttpRequest",
+      "Accept": "application/json"
+    });
+
+    let queryParams = {
+      method: "POST",
+      headers: headers,
+      body: data,
+      processData: false
+    };
+
+    return client.clientFetch(
+      `${client.baseUrl}/renku/cache.files_upload?override_existing=true&unpack_archive=${unpack_archive}`,
+      queryParams);
+  };
+
   client.addFilesToDataset = (projectUrl, datasetName, filesList) => {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
@@ -163,6 +186,9 @@ export default function addDatasetMethods(client) {
           "project_id": project_id
         };
 
+        if (renkuDataset.images)
+          body.images = renkuDataset.images;
+
         return client.clientFetch(postUrl, {
           method: "POST",
           headers: headers,
@@ -221,10 +247,20 @@ export default function addDatasetMethods(client) {
     return client.clientFetch(`${client.baseUrl}/renku/datasets.list?git_url=${git_url}`, {
       method: "GET",
       headers: headers,
-    }).catch((error) =>
-      ({
-        data: { error: { reason: error.case } }
-      }));
+    }).then((response)=>{
+      if (response.data.result && response.data.result.datasets.length > 0) {
+        response.data.result.datasets.map((dataset)=>{
+          dataset.mediaContent = git_url.substring(0, git_url.length - 4) + "/-/raw/master/"
+          + dataset.images[0].content_url;
+          return dataset;
+        });
+      }
+      return response;
+    })
+      .catch((error) =>
+        ({
+          data: { error: { reason: error.case } }
+        }));
   };
 
   client.fetchDatasetFilesFromCoreService = (name, git_url) => {
