@@ -1,5 +1,18 @@
 # Changes
 
+## [1.0.0-beta5](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.0.0-beta4...1.0.0-beta5) (2021-08-10)
+
+### Bug Fixes
+
+
+* prevent values duplication on session enumerations ([#1440](https://github.com/SwissDataScienceCenter/renku-ui/issues/1440), [#1436](https://github.com/SwissDataScienceCenter/renku-ui/issues/1436))
+
+### Features
+
+* redesign the header to take less vertical space ([#1420](https://github.com/SwissDataScienceCenter/renku-ui/issues/1420), [#1389](https://github.com/SwissDataScienceCenter/renku-ui/issues/1389))
+
+# Changes
+
 ## [1.0.0-beta4](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.0.0-beta3...1.0.0-beta4) (2021-07-16)
 
 ### Bug Fixes
@@ -19,6 +32,7 @@
 ### Bug Fixes
 
 * do not autostart sessions if no image is available ([#1413](https://github.com/SwissDataScienceCenter/renku-ui/issues/1413), [#1415](https://github.com/SwissDataScienceCenter/renku-ui/issues/1415))
+
 ### Features
 
 * display issues and MRs in iframes ([#1330](https://github.com/SwissDataScienceCenter/renku-ui/issues/1330), [#1361](https://github.com/SwissDataScienceCenter/renku-ui/issues/1361))
