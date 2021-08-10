@@ -133,5 +133,5 @@ Button.alert-link {
 .variableWidthColRight{
   flex: 1 1 0;
   overflow: auto;
-  min-width: 380px;
+  min-width: 320px;
 }
