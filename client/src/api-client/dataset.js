@@ -1,3 +1,19 @@
+
+/**
+ * Add the URL for the marquee image to the dataset. Modifies the dataset object.
+ * @param {string} gitUrl
+ * @param {object} dataset
+ */
+function addMarqueeImageToDataset(gitUrl, dataset) {
+  const urlRoot = gitUrl.substring(0, gitUrl.length - 4) + "/-/raw/master";
+  let mediaUrl = null;
+  if (dataset.images && dataset.images.length > 0)
+    mediaUrl = `${urlRoot}/${dataset.images[0].content_url}`;
+
+  dataset.mediaContent = mediaUrl;
+  return dataset;
+}
+
 export default function addDatasetMethods(client) {
 
   client.searchDatasets = (queryParams = { query: "" }) => {
@@ -247,20 +263,18 @@ export default function addDatasetMethods(client) {
     return client.clientFetch(`${client.baseUrl}/renku/datasets.list?git_url=${git_url}`, {
       method: "GET",
       headers: headers,
-    }).then((response)=>{
-      if (response.data.result && response.data.result.datasets.length > 0) {
-        response.data.result.datasets.map((dataset)=>{
-          dataset.mediaContent = git_url.substring(0, git_url.length - 4) + "/-/raw/master/"
-          + dataset.images[0].content_url;
-          return dataset;
-        });
-      }
-      return response;
     })
+      .then((response) => {
+        if (response.data.result && response.data.result.datasets.length > 0)
+          response.data.result.datasets.map((d) => addMarqueeImageToDataset(git_url, d));
+
+        return response;
+      })
       .catch((error) =>
         ({
           data: { error: { reason: error.case } }
-        }));
+        })
+      );
   };
 
   client.fetchDatasetFilesFromCoreService = (name, git_url) => {
