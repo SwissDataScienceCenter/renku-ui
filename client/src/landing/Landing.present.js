@@ -30,13 +30,13 @@ import { Row, Col } from "reactstrap";
 import { Url } from "../utils/url";
 import { MarkdownTextExcerpt, ListDisplay, RenkuMarkdown, Loader, ExternalLink } from "../utils/UIComponents";
 import { StatuspageBanner } from "../statuspage";
-import logoBlack from "./logo-black.svg";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLandmark, faPlus, faQuestion } from "@fortawesome/free-solid-svg-icons";
 
 
 function truncatedProjectListRows(projects, urlFullList, gridDisplay) {
-  const projectItems = projects.map(project => {
+  const projectSubset = projects.slice(0, 4);
+  const projectItems = projectSubset.map(project => {
     const namespace = project.namespace ? project.namespace.full_path : "";
     const path = project.path;
     const url = Url.get(Url.pages.project, { namespace, path });
@@ -58,22 +58,28 @@ function truncatedProjectListRows(projects, urlFullList, gridDisplay) {
       mediaContent: project.avatar_url
     };
   });
+  const more = (projects.length > projectSubset.length) ?
+    (<Link key="more" to={urlFullList}>more projects...</Link>)
+    : null;
 
-  return <ListDisplay
-    itemsType="project"
-    search={null}
-    currentPage={null}
-    gridDisplay={gridDisplay}
-    totalItems={projectItems.length}
-    perPage={projectItems.length}
-    items={projectItems}
-    gridColumnsBreakPoint={{
-      default: 2,
-      1100: 2,
-      700: 2,
-      500: 1
-    }}
-  />;
+  return <Fragment>
+    <ListDisplay
+      itemsType="project"
+      search={null}
+      currentPage={null}
+      gridDisplay={gridDisplay}
+      totalItems={projectItems.length}
+      perPage={projectItems.length}
+      items={projectItems}
+      gridColumnsBreakPoint={{
+        default: 2,
+        1100: 2,
+        700: 2,
+        500: 1
+      }}
+    />
+    { more}
+  </Fragment>;
 }
 
 class YourEmptyProjects extends Component {
@@ -95,7 +101,7 @@ class YourEmptyProjects extends Component {
 
 class YourProjects extends Component {
   render() {
-    const projects = this.props.projects.slice(0, 4);
+    const projects = this.props.projects || [];
     const { projectsUrl, projectsSearchUrl } = this.props.urlMap;
     let projectsComponent = null;
     if (this.props.loading) { projectsComponent = <Loader key="loader" />; }
@@ -143,10 +149,7 @@ class LoggedInHome extends Component {
             statuspageModel={this.props.statuspageModel} />
         </Col>
         <Col xs={6}>
-          <img src={logoBlack} alt="Renku" height="60" />
-        </Col>
-        <Col xs={6}>
-          <h3 className="pt-4">{user.data.username} @ Renku</h3>
+          <h3 className="pt-4 fw-bold">{user.data.username} @ Renku</h3>
         </Col>
       </Row>,
       <Row key="spacer"><Col md={12}>&nbsp;</Col></Row>,
@@ -161,25 +164,25 @@ class LoggedInHome extends Component {
       </Row>,
       <Row key="links">
         <Col sm={4}>
-          <h4>
+          <div className="fs-2 fw-bold">
             <Link to={Url.get(Url.pages.help)} className="link-rk-dark text-decoration-none">
               Learn More... <FontAwesomeIcon icon={faQuestion} />
             </Link>
-          </h4>
+          </div>
         </Col>
         <Col sm={4}>
-          <h4>
+          <div className="fs-2 fw-bold">
             <ExternalLink role="link" className="link-rk-dark text-decoration-none"
               url="https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html"
               title="...do the tutorial... " customIcon={faLandmark} iconAfter={true}/>
-          </h4>
+          </div>
         </Col>
         <Col sm={4}>
-          <h4>
+          <div className="fs-2 fw-bold">
             <Link to={Url.get(Url.pages.project.new)} className="link-rk-dark text-decoration-none">
               ...or create a project <FontAwesomeIcon icon={faPlus} />
             </Link>
-          </h4>
+          </div>
         </Col>
       </Row>
     ];
