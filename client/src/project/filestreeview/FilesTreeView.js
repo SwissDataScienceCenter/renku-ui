@@ -113,7 +113,7 @@ class TreeContainer extends Component {
     };
 
     return (
-      <div className="d-flex flex-column bg-white" style={style}>
+      <div className="d-flex flex-column" style={style}>
         <div className="d-block">
           <ButtonGroup className="d-flex rk-btn-group-light">
             <Button color="rk-white" className="btn-rk-white-dark-active"
@@ -126,7 +126,7 @@ class TreeContainer extends Component {
             </Button>
           </ButtonGroup>
         </div>
-        <div id="tree-content" className="tree-content p-2">
+        <div id="tree-content" className="tree-content mb-3 p-2">
           {tree}
         </div>
       </div>
