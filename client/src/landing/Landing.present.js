@@ -162,23 +162,23 @@ class LoggedInHome extends Component {
           <Welcome {...this.props} />
         </Col>
       </Row>,
-      <Row key="links">
+      <Row className="fs-3 fw-bold" key="links">
         <Col sm={4}>
-          <div className="fs-2 fw-bold">
+          <div>
             <Link to={Url.get(Url.pages.help)} className="link-rk-dark text-decoration-none">
               Learn More... <FontAwesomeIcon icon={faQuestion} />
             </Link>
           </div>
         </Col>
         <Col sm={4}>
-          <div className="fs-2 fw-bold">
+          <div>
             <ExternalLink role="link" className="link-rk-dark text-decoration-none"
               url="https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html"
               title="...do the tutorial... " customIcon={faLandmark} iconAfter={true}/>
           </div>
         </Col>
         <Col sm={4}>
-          <div className="fs-2 fw-bold">
+          <div>
             <Link to={Url.get(Url.pages.project.new)} className="link-rk-dark text-decoration-none">
               ...or create a project <FontAwesomeIcon icon={faPlus} />
             </Link>
