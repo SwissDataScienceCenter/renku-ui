@@ -459,6 +459,9 @@ function carveProject(projectJson) {
   result["metadata"]["core"]["namespace_path"] = projectJson["namespace"]["full_path"];
   result["metadata"]["core"]["project_path"] = projectJson["path"];
   result["metadata"]["core"]["avatar_url"] = projectJson["avatar_url"];
+  result["metadata"]["core"]["default_branch"] = projectJson["default_branch"] ?
+    projectJson["default_branch"] : "master";
+
 
   result["metadata"]["system"]["tag_list"] = projectJson["tag_list"];
   result["metadata"]["system"]["star_count"] = projectJson["star_count"];

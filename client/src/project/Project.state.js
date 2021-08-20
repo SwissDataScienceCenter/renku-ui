@@ -349,7 +349,7 @@ class ProjectModel extends StateModel {
     if (this.get("transient.requests.readme") === SpecialPropVal.UPDATING) return;
 
     this.setUpdating({ transient: { requests: { readme: true } } });
-    client.getProjectReadme(this.get("core.id"))
+    client.getProjectReadme(this.get("core.id"), this.get("core.default_branch"))
       .then(d => this.set("data.readme.text", d.text))
       .catch(error => {
         if (error.case === API_ERRORS.notFoundError)

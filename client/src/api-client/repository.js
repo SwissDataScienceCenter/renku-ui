@@ -56,8 +56,8 @@ function addRepositoryMethods(client) {
     }
   };
 
-  client.getProjectReadme = (projectId) => {
-    return client.getRepositoryFile(projectId, "README.md", "master", "raw")
+  client.getProjectReadme = (projectId, default_branch) => {
+    return client.getRepositoryFile(projectId, "README.md", default_branch, "raw")
       .then(text => {
         return { text: text || "Could not find a README.md file. Why don't you add one to the repository?" };
       });
