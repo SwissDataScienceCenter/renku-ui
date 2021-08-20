@@ -918,17 +918,17 @@ class ProjectViewFiles extends Component {
 
   render() {
     return [
-      <Col key="files" md={4} lg={3} xl={2}>
+      <div key="files" className="variableWidthColLeft me-2 pb-0 pe-0">
         <ProjectFilesNav {...this.props} />
-      </Col>,
-      <Col key="content" md={8} lg={9} xl={10}>
+      </div>,
+      <div key="content" className="flex-shrink-1 variableWidthColRight">
         <Switch>
           <Route path={this.props.lineageUrl}
             render={p => this.props.lineageView(p)} />
           <Route path={this.props.fileContentUrl}
             render={props => this.props.fileView(props)} />
         </Switch>
-      </Col>
+      </div>
     ];
   }
 }
