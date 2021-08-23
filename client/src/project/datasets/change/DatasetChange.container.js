@@ -90,7 +90,7 @@ function ChangeDataset(props) {
           );
         }
         else {
-          const fullError = `An error occurred while uploading a file to the 
+          const fullError = `An error occurred while uploading a file to the
           ${datasetName} in ${props.projectPathWithNamespace}.
           Error message: "${error.reason}"`;
           props.notifications.addError(
@@ -167,25 +167,26 @@ function ChangeDataset(props) {
     return newCreator;
   };
 
-  const getDatasetImages = async (image, handlers) => {
-    let images = undefined;
-    if (image && image.selected !== -1
-      && image.options && image.options[image.selected].FILE) {
-      const selectedFile = image.options[image.selected];
-      images = await props.client.uploadSingleFile(selectedFile.FILE)
-        .then((response) => {
-          if (response.data.error !== undefined) {
-            handlers.setSubmitLoader({ value: false, text: "" });
-            handlers.setServerErrors(response.data.error.reason);
-            return undefined;
-          }
-          return [{
-            "file_id": response.data.result.files[0].file_id,
-            "position": 0,
-            "mirror_locally": true
-          }];
-        });
-    }
+  const uploadDatasetImages = async (image, handlers) => {
+    let images = null;
+    if (image == null) return images;
+    if (image.selected === -1) return images;
+    if (!image.options) return images;
+    if (!image.options[image.selected].FILE) return images;
+    const selectedFile = image.options[image.selected];
+    images = await props.client.uploadSingleFile(selectedFile.FILE)
+      .then((response) => {
+        if (response.data.error !== undefined) {
+          handlers.setSubmitLoader({ value: false, text: "" });
+          handlers.setServerErrors(response.data.error.reason);
+          return null;
+        }
+        return [{
+          "file_id": response.data.result.files[0].file_id,
+          "position": 0,
+          "mirror_locally": true
+        }];
+      });
     return images;
   };
 
@@ -213,7 +214,7 @@ function ChangeDataset(props) {
     dataset.keywords = mappedInputs.keywords;
     dataset.creators = mappedInputs.creators.map(creator => getCreator(creator));
 
-    dataset.images = await getDatasetImages(mappedInputs.image, handlers);
+    dataset.images = await uploadDatasetImages(mappedInputs.image, handlers);
 
     props.client.postDataset(props.httpProjectUrl, dataset, props.edit)
       .then(response => {

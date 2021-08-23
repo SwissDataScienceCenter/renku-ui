@@ -27,11 +27,22 @@ export default function addDatasetMethods(client) {
     });
   };
 
-  client.uploadFile = (file, unpack_archive = false, setFileProgress, thenCallback, onErrorCallback,
-    setController, onFileUploadEnd) => {
+  function createFileUploadFormData(file) {
     const data = new FormData();
     data.append("file", file);
     data.append("file_name", file.name);
+    return data;
+  }
+
+  const uploadFileHeaders = {
+    "credentials": "same-origin",
+    "X-Requested-With": "XMLHttpRequest",
+    "Accept": "application/json"
+  };
+
+  client.uploadFile = (file, unpack_archive = false, setFileProgress, thenCallback, onErrorCallback,
+    setController, onFileUploadEnd) => {
+    const data = createFileUploadFormData(file);
     data.append("processData", false);
 
     let currentPercentCompleted = -1;
@@ -39,9 +50,9 @@ export default function addDatasetMethods(client) {
     const url = `${client.baseUrl}/renku/cache.files_upload?override_existing=true&unpack_archive=${unpack_archive}`;
 
     httpRequest.open("POST", url);
-    httpRequest.setRequestHeader("credentials", "same-origin");
-    httpRequest.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-    httpRequest.setRequestHeader("Accept", "application/json");
+    for (const [key, value] of Object.entries(uploadFileHeaders))
+      httpRequest.setRequestHeader(key, value);
+
 
     httpRequest.upload.addEventListener("progress", function(e) {
       let percent_completed = Math.round((e.loaded / e.total) * 100).toFixed();
@@ -78,15 +89,9 @@ export default function addDatasetMethods(client) {
   };
 
   client.uploadSingleFile = async (file, unpack_archive = false) => {
-    const data = new FormData();
-    data.append("file", file);
-    data.append("file_name", file.name);
+    const data = createFileUploadFormData(file);
 
-    let headers = new Headers({
-      "credentials": "same-origin",
-      "X-Requested-With": "XMLHttpRequest",
-      "Accept": "application/json"
-    });
+    let headers = new Headers(uploadFileHeaders);
 
     let queryParams = {
       method: "POST",
