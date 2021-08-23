@@ -160,7 +160,7 @@ function ListBar(props) {
 
 function ListDisplay(props) {
 
-  const { currentPage, perPage, items, search, totalItems, gridDisplay, itemsType } = props;
+  const { currentPage, perPage, items, search, totalItems, gridDisplay, itemsType, gridColumnsBreakPoint } = props;
 
   if (!items || !items.length)
     return (<p>We could not find any matching {itemsType}s.</p>);
@@ -170,17 +170,18 @@ function ListDisplay(props) {
     : items.map(item => <ListBar key={item.id} {...item} />);
 
   const onPageChange = (page) => { search({ page }); };
+  const breakPointColumns = gridColumnsBreakPoint || {
+    default: 4,
+    1100: 3,
+    700: 2,
+    500: 1
+  };
 
   return gridDisplay ?
     <div>
       <Masonry
         className="rk-search-result-grid mb-4"
-        breakpointCols={{
-          default: 4,
-          1100: 3,
-          700: 2,
-          500: 1
-        }}
+        breakpointCols= {breakPointColumns}
       >
         {rows}
       </Masonry>

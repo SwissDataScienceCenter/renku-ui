@@ -48,7 +48,8 @@ class ProjectsCoordinator {
       access_level: accessLevel,
       http_url_to_repo: project.http_url_to_repo,
       namespace: project.namespace,
-      path: project.path
+      path: project.path,
+      avatar_url: project.avatar_url
     };
   }
 
