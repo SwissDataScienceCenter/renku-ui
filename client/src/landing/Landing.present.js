@@ -24,25 +24,62 @@
  */
 
 
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { Link } from "react-router-dom";
 import { Row, Col } from "reactstrap";
-
-import { RenkuMarkdown, Loader } from "../utils/UIComponents";
-import { ProjectListRow } from "../project/list";
+import { Url } from "../utils/url";
+import { MarkdownTextExcerpt, ListDisplay, RenkuMarkdown, Loader, ExternalLink } from "../utils/UIComponents";
 import { StatuspageBanner } from "../statuspage";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faLandmark, faPlus, faQuestion } from "@fortawesome/free-solid-svg-icons";
 
-function truncatedProjectListRows(projects, urlFullList) {
-  const maxProjectsRows = 5;
-  const projectSlice = projects.slice(0, maxProjectsRows);
-  const rows = projectSlice.map(project => <ProjectListRow key={project.id} compact={true} {...project} />);
-  const more = (projects.length > maxProjectsRows) ?
-    (<Link key="more" to={urlFullList}>more...</Link>)
+
+function truncatedProjectListRows(projects, urlFullList, gridDisplay) {
+  const projectSubset = projects.slice(0, 4);
+  const projectItems = projectSubset.map(project => {
+    const namespace = project.namespace ? project.namespace.full_path : "";
+    const path = project.path;
+    const url = Url.get(Url.pages.project, { namespace, path });
+    return {
+      id: project.id,
+      url: url,
+      itemType: "project",
+      title: project.name,
+      slug: project.path_with_namespace,
+      description: project.description ?
+        <Fragment>
+          <MarkdownTextExcerpt markdownText={project.description} singleLine={gridDisplay ? false : true}
+            charsLimit={gridDisplay ? 200 : 150} />
+          <span className="ms-1">{project.description.includes("\n") ? " [...]" : ""}</span>
+        </Fragment>
+        : " ",
+      tagList: project.tag_list,
+      timeCaption: project.last_activity_at,
+      mediaContent: project.avatar_url
+    };
+  });
+  const more = (projects.length > projectSubset.length) ?
+    (<Link key="more" to={urlFullList}>more projects...</Link>)
     : null;
-  return [
-    <Row key="projects"><Col style={{ overflowX: "auto" }}>{rows}</Col></Row>,
-    more
-  ];
+
+  return <Fragment>
+    <ListDisplay
+      itemsType="project"
+      search={null}
+      currentPage={null}
+      gridDisplay={gridDisplay}
+      totalItems={projectItems.length}
+      perPage={projectItems.length}
+      items={projectItems}
+      gridColumnsBreakPoint={{
+        default: 2,
+        1100: 2,
+        700: 2,
+        500: 1
+      }}
+    />
+    { more}
+  </Fragment>;
 }
 
 class YourEmptyProjects extends Component {
@@ -66,73 +103,26 @@ class YourProjects extends Component {
   render() {
     const projects = this.props.projects || [];
     const { projectsUrl, projectsSearchUrl } = this.props.urlMap;
-
     let projectsComponent = null;
-    if (this.props.loading) {
-      projectsComponent = <Loader key="loader" />;
-    }
+    if (this.props.loading) { projectsComponent = <Loader key="loader" />; }
     else if (projects.length > 0) {
-      projectsComponent = truncatedProjectListRows(projects, projectsUrl);
+      projectsComponent = truncatedProjectListRows(projects, projectsUrl, true);
     }
     else {
       const { projectNewUrl } = this.props.urlMap;
       projectsComponent = <YourEmptyProjects key="empty-projects" projectsSearchUrl={projectsSearchUrl}
         projectNewUrl={projectNewUrl} welcomePage={this.props.welcomePage} />;
     }
-    return [
-      <h2 key="header">Your Projects</h2>,
-      projectsComponent
-    ];
+    return <Fragment>
+      <h3 key="header">Your Projects</h3>
+      {projectsComponent}
+    </Fragment>;
   }
 }
 
 class RenkuIntroText extends Component {
   render() {
     return <RenkuMarkdown key="readme" markdownText={this.props.welcomePage} />;
-  }
-
-}
-
-class StarredEmptyProjects extends Component {
-  render() {
-    return (<Row>
-      <Col>
-        <p>
-          You are logged in, but you have not yet starred any projects.
-          Starring a project declares your interest in it.
-          If there is a project you work on or want to follow, you should search for it in
-          the <Link to={this.props.projectsSearchUrl}>project search</Link>, click on it to view, and star it.
-        </p>
-        <p>
-          Alternatively, you can <Link to={this.props.projectNewUrl}>create a new project</Link>.
-        </p>
-      </Col>
-    </Row>);
-  }
-}
-
-class Starred extends Component {
-  render() {
-    const projects = this.props.projects || [];
-    const { projectsStarredUrl } = this.props.urlMap;
-
-    let projectsComponent = null;
-    if (this.props.loading) {
-      projectsComponent = <Loader key="loader" />;
-    }
-    else if (projects.length > 0) {
-      projectsComponent = truncatedProjectListRows(projects, projectsStarredUrl);
-    }
-    else {
-      const { projectNewUrl, projectsSearchUrl } = this.props.urlMap;
-      projectsComponent = <StarredEmptyProjects key="empty" projectsSearchUrl={projectsSearchUrl}
-        projectNewUrl={projectNewUrl} welcomePage={this.props.welcomePage} />;
-    }
-
-    return [
-      <h2 key="header">Starred Projects</h2>,
-      projectsComponent
-    ];
   }
 }
 
@@ -152,33 +142,47 @@ class LoggedInHome extends Component {
     const { user } = this.props;
     const projects = this.props.projects.featured;
     const neverLoaded = projects.fetched ? false : true;
-
     return [
       <Row key="username">
-        <Col>
+        <Col xs={12}>
           <StatuspageBanner siteStatusUrl={urlMap.siteStatusUrl} statuspageId={this.props.statuspageId}
             statuspageModel={this.props.statuspageModel} />
-          <h1>{user.data.username} @ Renku</h1>
+        </Col>
+        <Col xs={6}>
+          <h3 className="pt-4 fw-bold">{user.data.username} @ Renku</h3>
         </Col>
       </Row>,
       <Row key="spacer"><Col md={12}>&nbsp;</Col></Row>,
       <Row key="content">
         <Col xs={{ order: 2 }} md={{ size: 6, order: 1 }}>
-          <Row>
-            <Col>
-              <YourProjects urlMap={urlMap} loading={neverLoaded || projects.fetching} projects={projects.member} />
-            </Col>
-          </Row>
-          <Row key="spacer"><Col md={12}>&nbsp;</Col></Row>
-          <Row>
-            <Col>
-              <Starred welcomePage={this.props.welcomePage}
-                urlMap={urlMap} loading={neverLoaded || projects.fetching} projects={projects.starred} />
-            </Col>
-          </Row>
+          <YourProjects urlMap={urlMap} loading={neverLoaded || projects.fetching} projects={projects.member} />
+          <Row><Col md={12}>&nbsp;</Col></Row>
         </Col>
         <Col xs={{ order: 1 }} md={{ size: 6, order: 2 }}>
           <Welcome {...this.props} />
+        </Col>
+      </Row>,
+      <Row className="fs-3 fw-bold" key="links">
+        <Col sm={4}>
+          <div>
+            <Link to={Url.get(Url.pages.help)} className="link-rk-dark text-decoration-none">
+              Learn More... <FontAwesomeIcon icon={faQuestion} />
+            </Link>
+          </div>
+        </Col>
+        <Col sm={4}>
+          <div>
+            <ExternalLink role="link" className="link-rk-dark text-decoration-none"
+              url="https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html"
+              title="...do the tutorial... " customIcon={faLandmark} iconAfter={true}/>
+          </div>
+        </Col>
+        <Col sm={4}>
+          <div>
+            <Link to={Url.get(Url.pages.project.new)} className="link-rk-dark text-decoration-none">
+              ...or create a project <FontAwesomeIcon icon={faPlus} />
+            </Link>
+          </div>
         </Col>
       </Row>
     ];
