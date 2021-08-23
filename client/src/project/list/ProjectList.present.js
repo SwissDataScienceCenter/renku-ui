@@ -24,61 +24,10 @@ import {
 } from "reactstrap";
 import { faCheck, faSearch, faSortAmountDown, faSortAmountUp, faBars, faTh } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  Loader, ProjectAvatar, RenkuMarkdown, RenkuNavLink, TimeCaption, ListDisplay, MarkdownTextExcerpt
-} from "../../utils/UIComponents";
-import { ProjectTagList } from "../shared";
+import { Loader, RenkuNavLink, ListDisplay, MarkdownTextExcerpt } from "../../utils/UIComponents";
 import { Url } from "../../utils/url";
 import "../Project.css";
 import { Label } from "reactstrap/lib";
-
-
-function ProjectListRowBar(props) {
-  const {
-    owner, path, path_with_namespace, last_activity_at, description, avatar_url, getAvatar, tag_list
-  } = props;
-  const namespace = props.namespace.full_path;
-
-  const url = Url.get(Url.pages.project, { namespace, path });
-  const title = path_with_namespace || "no title";
-
-  const descriptionMarkdown = description ?
-    (
-      <Fragment>
-        <RenkuMarkdown markdownText={description} fixRelativePaths={false} singleLine={true} />
-        <span className="ms-1">{description.includes("\n") ? " [...]" : ""}</span>
-      </Fragment>
-    ) :
-    null;
-
-  return (
-    <Link className="d-flex flex-row rk-search-result" to={url}>
-      <span className={"circle me-3 mt-2 project"}></span>
-      <Col className="d-flex align-items-start flex-column col-10 overflow-hidden">
-        <div className="title d-inline-block text-truncate">
-          {title}
-        </div>
-        <div className="description text-truncate text-rk-text d-flex">
-          {descriptionMarkdown}
-        </div>
-        <div className="tagList">
-          <ProjectTagList tagList={tag_list} />
-        </div>
-        <div className="mt-auto">
-          <TimeCaption caption="Updated" time={last_activity_at} className="text-secondary"/>
-        </div>
-      </Col>
-      <Col className="d-flex justify-content-end align-self-center flex-shrink-0">
-        <ProjectAvatar
-          owner={owner}
-          avatar_url={avatar_url}
-          namespace={namespace}
-          getAvatarFromNamespace={getAvatar}
-        />
-      </Col>
-    </Link>
-  );
-}
 
 function ProjectListRows(props) {
   const { currentPage, perPage, projects, search, totalItems, gridDisplay } = props;
@@ -433,4 +382,4 @@ function ProjectList(props) {
 
 
 export default ProjectList;
-export { ProjectListRowBar as ProjectListRow, ProjectList };
+export { ProjectList };
