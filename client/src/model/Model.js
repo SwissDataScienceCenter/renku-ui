@@ -60,7 +60,11 @@ const PropertyName = {
   FILESONUPLOADER: "filesOnUploader",
   EDITONCLICK: "editOnClick",
   NOTIFYFUNCTION: "notifyFunction",
-  INTERNALVALUES: "internalValues"
+  INTERNALVALUES: "internalValues",
+  VALUE: "value",
+  MODES: "modes",
+  MAXSIZE: "maxSize",
+  FORMAT: "format"
 };
 
 // Named const for the bindings to the store.

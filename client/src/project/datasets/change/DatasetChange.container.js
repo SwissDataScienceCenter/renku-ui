@@ -28,6 +28,7 @@ import { datasetFormSchema } from "../../../model/RenkuModels";
 import DatasetChange from "./DatasetChange.present";
 import { JobStatusMap } from "../../../job/Job";
 import { FILE_STATUS } from "../../../utils/formgenerator/fields/FileUploaderInput";
+import { ImageFieldPropertyName as Prop } from "../../../utils/formgenerator/fields/ImageInput";
 import FormGenerator from "../../../utils/formgenerator/";
 import { mapDataset } from "../../../dataset/index";
 import _ from "lodash";
@@ -52,6 +53,7 @@ function ChangeDataset(props) {
   const initializeFunction = (formSchema) => {
     let titleField = formSchema.find(field => field.name === "title");
     let nameField = formSchema.find(field => field.name === "name");
+    let image = formSchema.find(field => field.name === "image");
     if (props.edit === false) {
       titleField.parseFun = () => {
         nameField.value = FormGenerator.Parsers.slugFromTitle(titleField.value);
@@ -62,8 +64,11 @@ function ChangeDataset(props) {
     else {
       titleField.help = datasetFormSchema.title.help;
       titleField.parseFun = undefined;
+      image.value = {
+        options: [{ [Prop.URL]: props.dataset.mediaContent }],
+        selected: 0
+      };
     }
-
     let fileField = formSchema.find(field => field.name === "files");
 
     if (!fileField.uploadFileFunction)
@@ -85,7 +90,7 @@ function ChangeDataset(props) {
           );
         }
         else {
-          const fullError = `An error occurred while uploading a file to the 
+          const fullError = `An error occurred while uploading a file to the
           ${datasetName} in ${props.projectPathWithNamespace}.
           Error message: "${error.reason}"`;
           props.notifications.addError(
@@ -162,7 +167,30 @@ function ChangeDataset(props) {
     return newCreator;
   };
 
-  const submitCallback = (e, mappedInputs, handlers) => {
+  const uploadDatasetImages = async (image, handlers) => {
+    let images = null;
+    if (image == null) return images;
+    if (image.selected === -1) return images;
+    if (!image.options) return images;
+    if (!image.options[image.selected].FILE) return images;
+    const selectedFile = image.options[image.selected];
+    images = await props.client.uploadSingleFile(selectedFile.FILE)
+      .then((response) => {
+        if (response.data.error !== undefined) {
+          handlers.setSubmitLoader({ value: false, text: "" });
+          handlers.setServerErrors(response.data.error.reason);
+          return null;
+        }
+        return [{
+          "file_id": response.data.result.files[0].file_id,
+          "position": 0,
+          "mirror_locally": true
+        }];
+      });
+    return images;
+  };
+
+  const submitCallback = async (e, mappedInputs, handlers) => {
     handlers.setServerErrors(undefined);
     handlers.setServerWarnings(undefined);
     handlers.setDisableAll(undefined);
@@ -185,6 +213,8 @@ function ChangeDataset(props) {
     dataset.files = [...dataset.files, ...pendingFiles];
     dataset.keywords = mappedInputs.keywords;
     dataset.creators = mappedInputs.creators.map(creator => getCreator(creator));
+
+    dataset.images = await uploadDatasetImages(mappedInputs.image, handlers);
 
     props.client.postDataset(props.httpProjectUrl, dataset, props.edit)
       .then(response => {

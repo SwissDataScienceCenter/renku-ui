@@ -1,3 +1,19 @@
+
+/**
+ * Add the URL for the marquee image to the dataset. Modifies the dataset object.
+ * @param {string} gitUrl
+ * @param {object} dataset
+ */
+function addMarqueeImageToDataset(gitUrl, dataset) {
+  const urlRoot = gitUrl.substring(0, gitUrl.length - 4) + "/-/raw/master";
+  let mediaUrl = null;
+  if (dataset.images && dataset.images.length > 0)
+    mediaUrl = `${urlRoot}/${dataset.images[0].content_url}`;
+
+  dataset.mediaContent = mediaUrl;
+  return dataset;
+}
+
 export default function addDatasetMethods(client) {
 
   client.searchDatasets = (queryParams = { query: "" }) => {
@@ -11,11 +27,22 @@ export default function addDatasetMethods(client) {
     });
   };
 
-  client.uploadFile = (file, unpack_archive = false, setFileProgress, thenCallback, onErrorCallback,
-    setController, onFileUploadEnd) => {
+  function createFileUploadFormData(file) {
     const data = new FormData();
     data.append("file", file);
     data.append("file_name", file.name);
+    return data;
+  }
+
+  const uploadFileHeaders = {
+    "credentials": "same-origin",
+    "X-Requested-With": "XMLHttpRequest",
+    "Accept": "application/json"
+  };
+
+  client.uploadFile = (file, unpack_archive = false, setFileProgress, thenCallback, onErrorCallback,
+    setController, onFileUploadEnd) => {
+    const data = createFileUploadFormData(file);
     data.append("processData", false);
 
     let currentPercentCompleted = -1;
@@ -23,9 +50,9 @@ export default function addDatasetMethods(client) {
     const url = `${client.baseUrl}/renku/cache.files_upload?override_existing=true&unpack_archive=${unpack_archive}`;
 
     httpRequest.open("POST", url);
-    httpRequest.setRequestHeader("credentials", "same-origin");
-    httpRequest.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-    httpRequest.setRequestHeader("Accept", "application/json");
+    for (const [key, value] of Object.entries(uploadFileHeaders))
+      httpRequest.setRequestHeader(key, value);
+
 
     httpRequest.upload.addEventListener("progress", function(e) {
       let percent_completed = Math.round((e.loaded / e.total) * 100).toFixed();
@@ -59,6 +86,23 @@ export default function addDatasetMethods(client) {
     };
 
     return httpRequest.send(data);
+  };
+
+  client.uploadSingleFile = async (file, unpack_archive = false) => {
+    const data = createFileUploadFormData(file);
+
+    let headers = new Headers(uploadFileHeaders);
+
+    let queryParams = {
+      method: "POST",
+      headers: headers,
+      body: data,
+      processData: false
+    };
+
+    return client.clientFetch(
+      `${client.baseUrl}/renku/cache.files_upload?override_existing=true&unpack_archive=${unpack_archive}`,
+      queryParams);
   };
 
   client.addFilesToDataset = (projectUrl, datasetName, filesList) => {
@@ -163,6 +207,9 @@ export default function addDatasetMethods(client) {
           "project_id": project_id
         };
 
+        if (renkuDataset.images)
+          body.images = renkuDataset.images;
+
         return client.clientFetch(postUrl, {
           method: "POST",
           headers: headers,
@@ -221,10 +268,18 @@ export default function addDatasetMethods(client) {
     return client.clientFetch(`${client.baseUrl}/renku/datasets.list?git_url=${git_url}`, {
       method: "GET",
       headers: headers,
-    }).catch((error) =>
-      ({
-        data: { error: { reason: error.case } }
-      }));
+    })
+      .then((response) => {
+        if (response.data.result && response.data.result.datasets.length > 0)
+          response.data.result.datasets.map((d) => addMarqueeImageToDataset(git_url, d));
+
+        return response;
+      })
+      .catch((error) =>
+        ({
+          data: { error: { reason: error.case } }
+        })
+      );
   };
 
   client.fetchDatasetFilesFromCoreService = (name, git_url) => {

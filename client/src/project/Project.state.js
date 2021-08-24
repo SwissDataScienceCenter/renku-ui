@@ -288,7 +288,7 @@ class ProjectModel extends StateModel {
     if (datasets === SpecialPropVal.UPDATING) return;
     if (datasets && datasets.error === undefined && !forceReFetch) return datasets;
     this.setUpdating({ core: { datasets: true } });
-    return client.listProjectDatasetsFromCoreService(this.get("system.http_url"))
+    return client.listProjectDatasetsFromCoreService(this.get("system.http_url"), this.get("core.id"))
       .then(response => {
         let responseDs = response.data.error ? response.data : response.data.result.datasets;
         const updatedState = { datasets: { $set: responseDs }, transient: { requests: { datasets: false } } };

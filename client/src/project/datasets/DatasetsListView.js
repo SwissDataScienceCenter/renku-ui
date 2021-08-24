@@ -28,7 +28,8 @@ function datasetToDict(datasetsUrl, dataset_kg, graphStatus, gridDisplay, datase
       : null,
     timeCaption: timeCaption,
     labelCaption: `${kgCaption}. Created `,
-    creators: dataset.creators
+    creators: dataset.creators,
+    mediaContent: dataset.mediaContent
   };
 }
 

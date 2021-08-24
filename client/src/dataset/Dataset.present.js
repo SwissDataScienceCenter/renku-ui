@@ -350,11 +350,21 @@ export default function DatasetView(props) {
         }
       </Col>
     </Row>
-    <DisplayInfoTable
-      dataset={dataset}
-      insideProject={props.insideProject}
-      sameAs={props.sameAs}
-    />
+    <div className="d-flex">
+      { dataset.mediaContent ?
+        <div className="flex-shrink-0 pe-3" style={{ width: "120px" }}>
+          <img src={dataset.mediaContent} className=" rounded" alt=""
+            style={{ objectFit: "cover", width: "100%", height: "90px" }}/>
+        </div>
+        : null }
+      <div className="flex-grow-1">
+        <DisplayInfoTable
+          dataset={dataset}
+          insideProject={props.insideProject}
+          sameAs={props.sameAs}
+        />
+      </div>
+    </div>
     <DisplayDescription
       projectPathWithNamespace={props.projectPathWithNamespace}
       projectsUrl={props.projectsUrl}
