@@ -1,0 +1,32 @@
+div.commands {
+  display: flex;
+  flex-direction: column;
+  min-width: 300px;
+  padding: 10px;
+}
+
+.commands h1 {
+  border-bottom: 2px solid rgba(0, 0, 0, 0.2);
+}
+
+
+.commands div.commands-row {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+}
+
+.commands div.commands-row div {
+  flex-basis: 0;
+  flex-grow: 1;
+  padding: 0 10px 5px 0;
+}
+
+.commands div.commands-row div h2 {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+.renku-info {
+  color: rgb(90, 90, 90);
+}
