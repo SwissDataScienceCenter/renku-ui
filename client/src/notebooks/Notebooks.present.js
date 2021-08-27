@@ -26,7 +26,7 @@ import {
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faCheckCircle, faCog, faCogs, faExclamationTriangle, faExternalLinkAlt, faFileAlt, faHistory,
+  faBook, faCheckCircle, faCog, faCogs, faExclamationTriangle, faExternalLinkAlt, faFileAlt, faHistory,
   faInfoCircle, faQuestionCircle, faRedo, faSave, faStopCircle, faSyncAlt, faTimesCircle
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -42,6 +42,7 @@ import Sizes from "../utils/Media";
 import { Url } from "../utils/url";
 
 import "./Notebooks.css";
+import SessionCheatSheet from "./SessionCheatSheet";
 
 
 // * Constants and helpers * //
@@ -108,6 +109,7 @@ function ShowSession(props) {
         <div className={`border sessions-iframe-border ${widthStyle}`}>
           <SessionJupyter {...props} tab={tab} urlList={urlList} />
           <SessionLogs {...props} tab={tab} fetchLogs={fetchLogs} />
+          <SessionCommands {...props} tab={tab} />
           <SessionDocs {...props} tab={tab} />
         </div>
       </div>
@@ -194,16 +196,16 @@ function SessionNavbar(props) {
             <JupyterIcon svgClass="svg-inline--fa fa-lg" grayscale={tab === SESSION_TABS.session ? false : true} />
           </NavLink>
         </NavItem>
-        {/* <NavItem>
-          <NavLink className={`p-2 p-lg-3 ${tab === SESSION_TABS.commands ? "text-rk-green" : "text-rk-text"}`}
-            onClick={() => setTab(SESSION_TABS.commands)} >
-            <FontAwesomeIcon size="lg" icon={faBook} />
-          </NavLink>
-        </NavItem> */}
         <NavItem>
           <NavLink className={`p-2 p-lg-3 ${tab === SESSION_TABS.logs ? "text-rk-green" : "text-rk-text"}`}
             onClick={() => { fetchLogs(); setTab(SESSION_TABS.logs); }} >
             <FontAwesomeIcon size="lg" icon={faHistory} />
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink className={`p-2 p-lg-3 ${tab === SESSION_TABS.commands ? "text-rk-green" : "text-rk-text"}`}
+            onClick={() => setTab(SESSION_TABS.commands)} >
+            <FontAwesomeIcon size="lg" icon={faBook} />
           </NavLink>
         </NavItem>
         <NavItem>
@@ -290,6 +292,23 @@ function SessionDocs(props) {
     <iframe id="docs-iframe" title="documentation iframe" src={docsUrl} className={localClass}
       width="100%" height="800px" referrerPolicy="origin" sandbox="allow-same-origin"
     />
+  );
+}
+
+function SessionCommands(props) {
+  const { tab } = props;
+
+  if (tab !== SESSION_TABS.commands)
+    return null;
+
+  // ? Having a minHeight prevent losing the vertical scroll position.
+  // TODO: Revisit after #1219
+  return (
+    <Fragment>
+      <div className="p-2 p-lg-3" style={{ minHeight: 800 }}>
+        <SessionCheatSheet />
+      </div>
+    </Fragment>
   );
 }
 
