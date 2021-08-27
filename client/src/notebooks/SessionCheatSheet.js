@@ -32,14 +32,20 @@ function CommandDesc({ command = "", desc = "", clipboard = true }) {
   </div>;
 }
 
+function CommandsRow({ children }) {
+  return <div className="d-flex justify-content-between flex-column flex-md-row commands-row">
+    {children}
+  </div>;
+}
+
 function TypicalWorkflow() {
   return <Fragment>
-    <div className="commands-row">
+    <CommandsRow>
       <div>
         <h2>Typical Workflow</h2>
       </div>
-    </div>
-    <div className="commands-row">
+    </CommandsRow>
+    <CommandsRow>
       <div className="renku-info">
         <p><b>Work as you normally would</b></p>
         <p style={{ paddingTop: "3px" }}>Develop your model, write analysis code, etc.</p>
@@ -51,7 +57,7 @@ function TypicalWorkflow() {
       <CommandDesc
         command="renku run &#8230;"
         desc="Run your code, capturing lineage of the inputs and outputs using Renku." />
-    </div>
+    </CommandsRow>
   </Fragment>;
 }
 
@@ -60,31 +66,31 @@ function RunningAndTrackingCommands() {
     input and output files are automatically detected from the command string.
     To override, With --input and/or --output: Manually specify input or output files to track.</span>;
   return <Fragment>
-    <div className="commands-row">
+    <CommandsRow>
       <div>
         <h2>Running and Tracking Commands</h2>
       </div>
-    </div>
-    <div className="commands-row">
+    </CommandsRow>
+    <CommandsRow>
       <CommandDesc command="renku run <command> [--input <in_file> …] [--output <out_file> …]"
         desc={desc}/>
-    </div>
+    </CommandsRow>
   </Fragment>;
 }
 
 function SavingProgress() {
   return <Fragment>
-    <div className="commands-row">
+    <CommandsRow>
       <div>
         <h2>Saving Progress on a Project</h2>
       </div>
-    </div>
-    <div className="commands-row">
+    </CommandsRow>
+    <CommandsRow>
       <CommandDesc command="git status"
         desc="See what has changed since the last commit." />
       <CommandDesc command="renku save [-m <message>]"
         desc="Save (commit) and push all local changes. With -m, provide a message for the changes made." />
-    </div>
+    </CommandsRow>
   </Fragment>;
 }
 
@@ -93,25 +99,25 @@ function ManagingContents() {
     &lt;url&gt; can be a local file path, an http(s) address or a Git git+http or git+ssh repository.
     Use --target &lt;path&gt; to retrieve just a subset of the data.</span>;
   return <Fragment>
-    <div className="commands-row">
+    <CommandsRow>
       <div>
         <h2>Managing Contents</h2>
       </div>
-    </div>
-    <div className="commands-row">
+    </CommandsRow>
+    <CommandsRow>
       <CommandDesc command="renku dataset create <dataset>"
         desc="Create a new dataset called <dataset>." />
       <CommandDesc command="renku dataset ls"
         desc="List all datasets in the project." />
-    </div>
-    <div className="commands-row">
+    </CommandsRow>
+    <CommandsRow>
       <CommandDesc command="renku dataset add <dataset> <url>"
         desc={addDesc} />
-    </div>
-    <div className="commands-row">
+    </CommandsRow>
+    <CommandsRow>
       <CommandDesc command="renku storage pull <path> …"
         desc="Retrieve the contents of the file <path> to make them available locally." />
-    </div>
+    </CommandsRow>
   </Fragment>;
 }
 
@@ -121,31 +127,31 @@ function Collaboration() {
     title="git merge docs" /> for details.
   </span>;
   return <Fragment>
-    <div className="commands-row">
+    <CommandsRow>
       <div>
         <h2>Collaboration</h2>
         <p className="renku-info">
           Working with others requires coordination, and branching/merging is a common way to handle this.
         </p>
       </div>
-    </div>
-    <div className="commands-row">
+    </CommandsRow>
+    <CommandsRow>
       <CommandDesc command="git checkout <branch>"
         desc="Switch to the <branch>, replacing the contents of your project with the version in the branch." />
       <CommandDesc command="git merge <other branch>"
         desc={mergeDesc} />
-    </div>
+    </CommandsRow>
   </Fragment>;
 }
 
 function UndoCommit() {
   return <Fragment>
-    <div className="commands-row">
+    <CommandsRow>
       <div>
         <h2>Undo Renku Command</h2>
       </div>
-    </div>
-    <div className="commands-row">
+    </CommandsRow>
+    <CommandsRow>
       <div>
         <CommandDesc command="git reset --hard HEAD^"
           desc="Undo the most recent renku command." />
@@ -154,18 +160,18 @@ function UndoCommit() {
           see the <ExternalDocsLink url="https://git-scm.com/docs/git-reset" title="git reset documentation" />.
         </p>
       </div>
-    </div>
+    </CommandsRow>
   </Fragment>;
 }
 
 function LearnMore() {
   return <Fragment>
-    <div className="commands-row">
+    <CommandsRow>
       <div>
         <h2>Want to learn more?</h2>
       </div>
-    </div>
-    <div className="commands-row">
+    </CommandsRow>
+    <CommandsRow>
       <div>
         For a brief explanation of the commands, refer to the {" "}
         {/* eslint-disable-next-line max-len */}
@@ -176,7 +182,7 @@ function LearnMore() {
         The <ExternalDocsLink url="https://renku-python.readthedocs.io/en/latest/commands.html"
           title="Renku documentation" /> covers much more.
       </div>
-    </div>
+    </CommandsRow>
   </Fragment>;
 }
 

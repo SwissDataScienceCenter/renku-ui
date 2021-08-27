@@ -9,17 +9,10 @@ div.commands {
   border-bottom: 2px solid rgba(0, 0, 0, 0.2);
 }
 
-
-.commands div.commands-row {
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: space-between;
-}
-
 .commands div.commands-row div {
   flex-basis: 0;
   flex-grow: 1;
-  padding: 0 10px 5px 0;
+  padding: 0 20px 5px 0;
 }
 
 .commands div.commands-row div h2 {
