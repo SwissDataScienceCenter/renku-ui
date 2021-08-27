@@ -305,7 +305,7 @@ function SessionCommands(props) {
   // TODO: Revisit after #1219
   return (
     <Fragment>
-      <div className="p-2 p-lg-3 border-top" style={{ minHeight: 800 }}>
+      <div className="p-2 p-lg-3" style={{ minHeight: 800 }}>
         <SessionCheatSheet />
       </div>
     </Fragment>
