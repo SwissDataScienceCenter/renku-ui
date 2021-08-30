@@ -48,7 +48,7 @@
     "react-sticky": "^6.0.3",
     "react-toastify": "^6.0.8",
     "reactstrap": "github:SwissDataScienceCenter/reactstrap#npm-bs5-link",
-    "redux": "^4.0.4",
+    "redux": "^4.1.1",
     "redux-thunk": "^2.2.0",
     "sass": "^1.37.5",
     "showdown": "^1.9.1",
