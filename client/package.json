@@ -52,7 +52,7 @@
     "redux-thunk": "^2.2.0",
     "sass": "^1.36.0",
     "showdown": "^1.9.1",
-    "styled-jsx": "^3.2.3",
+    "styled-jsx": "^3.4.5",
     "uuid": "^3.3.3",
     "xregexp": "^4.4.0",
     "yaml-js": "^0.2.3"
