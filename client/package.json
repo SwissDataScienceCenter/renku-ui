@@ -3,7 +3,7 @@
   "version": "1.0.0-beta5",
   "private": true,
   "dependencies": {
-    "@babel/helper-regex": "^7.8.3",
+    "@babel/helper-regex": "^7.10.5",
     "@ckeditor/ckeditor5-react": "^2.1.0",
     "@fortawesome/fontawesome-svg-core": "^1.2.35",
     "@fortawesome/free-brands-svg-icons": "^5.15.3",
