@@ -823,6 +823,10 @@ class ProjectViewCollaborationNav extends Component {
         <RenkuNavLink to={this.props.mergeRequestsOverviewUrl} matchPath={true}
           title="Merge Requests" className="d-inline" />
       </NavItem>
+      <NavItem style={navItemStyle}>
+        <RenkuNavLink to={this.props.forkUrl} matchPath={true}
+          title="Fork" className="d-inline" />
+      </NavItem>
     </Nav>;
   }
 }
@@ -843,6 +847,8 @@ class ProjectViewCollaboration extends Component {
           <ProjectIssuesList issueIid={props.match.params.issueIid} {...this.props} />} />
         <Route path={this.props.issuesUrl} render={props =>
           <ProjectIssuesList {...this.props} />} />
+        <Route path={this.props.forkUrl} render={props =>
+          <ProjectCollaborationFork {...this.props} />} />
       </Switch>
     </Col>;
   }
@@ -903,6 +909,25 @@ class ProjectMergeRequestList extends Component {
       </Col>
     </Row>;
   }
+}
+
+function ProjectCollaborationFork(props) {
+  return <Row>
+    <Col key="nav" sm={12} md={2}>
+      <ProjectViewCollaborationNav {...props} />
+    </Col>
+    <Col sm={12} md={10}>
+      <ForkProject
+        client={props.client}
+        id={props.core.id}
+        history={props.history}
+        model={props.model}
+        notifications={props.notifications}
+        title={props.core.title}
+        toggleModal={null}
+      />
+    </Col>
+  </Row>;
 }
 
 class ProjectViewFiles extends Component {
