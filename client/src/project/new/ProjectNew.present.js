@@ -125,12 +125,17 @@ function ForkProjectFooter(props) {
       forkButton = (<Button color="primary" disabled={error ? true : false} onClick={fork}>Fork</Button>);
   }
 
+  let closeButton = null;
+  if (toggleModal)
+    closeButton = <Button outline color="primary" onClick={toggleModal}>{forking ? "Close" : "Cancel"}</Button>;
+
+
   if (fetching.namespaces || fetching.projects)
     return null;
   return (
     <ModalFooter>
       {forkButton}
-      <Button outline color="primary" onClick={toggleModal}>{forking ? "Close" : "Cancel"}</Button>
+      {closeButton}
     </ModalFooter>
   );
 }
