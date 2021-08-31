@@ -26,8 +26,7 @@
 import React, { Component, Fragment } from "react";
 import { Link } from "react-router-dom";
 import {
-  UncontrolledDropdown, DropdownItem, Navbar, Nav, NavbarBrand,
-  NavbarToggler, Collapse, NavItem, DropdownToggle, DropdownMenu
+  UncontrolledDropdown, DropdownItem, Navbar, Nav, NavbarToggler, Collapse, NavItem, DropdownToggle, DropdownMenu
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faBars } from "@fortawesome/free-solid-svg-icons";
@@ -221,9 +220,9 @@ class LoggedInNavBar extends Component {
     return (
       <header className="navbar navbar-expand-lg navbar-dark rk-navbar p-0">
         <Navbar color="primary" className="container-fluid flex-wrap flex-lg-nowrap renku-container">
-          <NavbarBrand href="/" className="navbar-brand me-2 pb-0 pt-0">
+          <Link id="link-home" to="/" className="navbar-brand me-2 pb-0 pt-0">
             <img src={logo} alt="Renku" height="50" className="d-block" />
-          </NavbarBrand>
+          </Link>
           <NavbarToggler onClick={this.toggle} className="border-0">
             <FontAwesomeIcon icon={faBars} id="userIcon" color="white" />
           </NavbarToggler>
@@ -285,9 +284,9 @@ class AnonymousNavBar extends Component {
     return (
       <header className="navbar navbar-expand-lg navbar-dark rk-navbar p-0">
         <Navbar color="primary" className="container-fluid flex-wrap flex-lg-nowrap renku-container">
-          <NavbarBrand href="/" className="navbar-brand me-2 pb-0 pt-0">
+          <Link id="link-home" to="/" className="navbar-brand me-2 pb-0 pt-0">
             <img src={logo} alt="Renku" height="50" className="d-block" />
-          </NavbarBrand>
+          </Link>
           <NavbarToggler onClick={this.toggle} className="border-0">
             <FontAwesomeIcon icon={faBars} id="userIcon" color="white" />
           </NavbarToggler>
