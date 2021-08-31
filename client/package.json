@@ -13,7 +13,7 @@
     "@nteract/notebook-render": "^5.0.4-alpha.0",
     "@renku/ckeditor5-build-renku": "0.0.4",
     "@sentry/browser": "^5.30.0",
-    "ajv": "^6.12.3",
+    "ajv": "^6.12.6",
     "apollo-boost": "^0.4.9",
     "bootstrap": "^5.0.2",
     "cookieconsent": "^3.1.1",
