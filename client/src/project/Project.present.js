@@ -33,12 +33,12 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
 import {
-  faCodeBranch, faExclamationTriangle, faExternalLinkAlt, faGlobe, faInfoCircle, faLock, faPlay, faSearch,
+  faCodeBranch, faExclamationTriangle, faGlobe, faInfoCircle, faLock, faPlay, faSearch,
   faStar as faStarSolid, faUserFriends
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
-  ButtonWithMenu, ExternalIconLink, ExternalLink, GoBackButton,
+  ButtonWithMenu, ExternalLink, GoBackButton,
   InfoAlert, Loader, RenkuMarkdown, RenkuNavLink, TimeCaption
 } from "../utils/UIComponents";
 import { Url } from "../utils/url";
@@ -813,21 +813,15 @@ function ProjectViewDatasets(props) {
 
 class ProjectViewCollaborationNav extends Component {
   render() {
-    const issuesUrl = `${this.props.externalUrl}/-/issues`;
-    const mrUrl = `${this.props.externalUrl}/-/merge_requests`;
     // CR: This is necessary to get spacing to work correctly; do not understand why.
     const navItemStyle = { padding: "8px 0px" };
     return <Nav className="flex-column nav-light">
       <NavItem style={navItemStyle}>
         <RenkuNavLink to={this.props.issuesUrl} matchPath={true} title="Issues" className="d-inline" />
-        <ExternalIconLink url={issuesUrl} tooltip="Open GitLab issues in new tab"
-          title="" icon={faExternalLinkAlt} role="text" className="d-inline" />
       </NavItem>
       <NavItem style={navItemStyle}>
         <RenkuNavLink to={this.props.mergeRequestsOverviewUrl} matchPath={true}
           title="Merge Requests" className="d-inline" />
-        <ExternalIconLink url={mrUrl} tooltip="Open GitLab merge requests in new tab"
-          title="" icon={faExternalLinkAlt} role="text" className="d-inline" />
       </NavItem>
     </Nav>;
   }
