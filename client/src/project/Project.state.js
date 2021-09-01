@@ -25,7 +25,6 @@
 
 import { API_ERRORS } from "../api-client";
 import { StateModel, SpecialPropVal, projectSchema, projectGlobalSchema } from "../model";
-import { isNullOrUndefined } from "util";
 import { splitAutosavedBranches } from "../utils/HelperFunctions";
 
 
@@ -190,7 +189,7 @@ class ProjectModel extends StateModel {
 
   initialFetchProjectFilesTree(client, openFilePath, openFolder ) {
     this.setUpdating({ transient: { requests: { filesTree: true } } });
-    return client.getProjectFilesTree(this.get("core.id"), openFilePath)
+    return client.getProjectFilesTree(this.get("core.id"), this.get("core.default_branch"), openFilePath)
       .then(d => {
         const updatedState = { filesTree: d, transient: { requests: { filesTree: false } } };
         this.setObject(updatedState);
@@ -204,7 +203,8 @@ class ProjectModel extends StateModel {
 
   deepFetchProjectFilesTree(client, openFilePath, openFolder, oldTree) {
     this.setUpdating({ transient: { requests: { filesTree: true } } });
-    return client.getProjectFilesTree(this.get("core.id"), openFilePath, openFolder, oldTree.lfsFiles)
+    return client.getProjectFilesTree(this.get("core.id"), this.get("core.default_branch"),
+      openFilePath, openFolder, oldTree.lfsFiles)
       .then(d => {
         const updatedState = this.insertInParentTree(oldTree, d, openFolder);
         this.setObject(updatedState);
@@ -246,14 +246,13 @@ class ProjectModel extends StateModel {
     if (this.get("transient.requests.filesTree") === SpecialPropVal.UPDATING) return;
     const oldTree = this.get("filesTree");
     openFilePath = this.cleanFilePathUrl(openFilePath);
-    if (isNullOrUndefined(oldTree))
+    if (oldTree === null || oldTree === undefined)
       return this.initialFetchProjectFilesTree(client, openFilePath, openFolder);
 
     if (openFolder !== undefined && oldTree.hash[openFolder].childrenLoaded === false)
       return this.deepFetchProjectFilesTree(client, openFilePath, openFolder, oldTree);
 
     return oldTree;
-
 
   }
 
@@ -410,12 +409,13 @@ class ProjectCoordinator {
     const emptyModel = projectGlobalSchema.createInitialized();
     this.model.setObject({
       metadata: { $set: emptyModel.metadata },
-      statistics: { $set: emptyModel.statistics }
+      statistics: { $set: emptyModel.statistics },
+      filters: { $set: emptyModel.filters }
     });
   }
 
-  setProjectData(data, statistics = false) {
-    let metadata, statsObject;
+  setProjectData(data, statistics = false, filters = true) {
+    let metadata, statsObject, filtersObject;
 
     // set metadata
     if (!data) {
@@ -434,6 +434,11 @@ class ProjectCoordinator {
           fetching: false
         }
       };
+      filtersObject = {
+        ...projectGlobalSchema.createInitialized().filters,
+        fetched: new Date(),
+        fetching: false
+      };
     }
     else {
       metadata = {
@@ -447,6 +452,7 @@ class ProjectCoordinator {
         forksCount: data.all.forks_count,
         visibility: data.metadata.visibility.level, // this is computed in carveProject
         accessLevel: data.metadata.visibility.accessLevel, // this is computed in carveProject
+        defaultBranch: data.metadata.core.default_branch,
         fetched: new Date(),
         fetching: false
       };
@@ -462,9 +468,21 @@ class ProjectCoordinator {
           fetching: false
         };
       }
+
+      // set filters
+      if (filters) {
+        const filtersData = data.filters ? data.filters :
+          projectGlobalSchema.createInitialized().filters.data;
+        filtersObject = {
+          branch: { $set: filtersData.branch },
+          commit: { $set: filtersData.commit },
+          fetched: new Date(),
+          fetching: false
+        };
+      }
     }
 
-    this.model.setObject({ metadata: metadata, statistics: statsObject });
+    this.model.setObject({ metadata: metadata, statistics: statsObject, filters: filtersObject });
     return metadata;
   }
 

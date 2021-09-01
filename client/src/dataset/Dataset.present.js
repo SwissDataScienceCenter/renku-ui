@@ -117,6 +117,7 @@ function DisplayDescription(props) {
             filePath={""}
             fixRelativePaths={true}
             markdownText={props.description}
+            defaultBranch={props.defaultBranch}
             client={props.client}
             projectId={props.projectId}
           />
@@ -372,6 +373,7 @@ export default function DatasetView(props) {
       projectId={props.projectId}
       description={dataset.description}
       insideProject={props.insideProject}
+      defaultBranch={props.defaultBranch}
     />
     <DisplayFiles
       projectsUrl={props.projectsUrl}

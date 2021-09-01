@@ -19,12 +19,6 @@
 import { fetchJson } from "./utils";
 import yaml from "yaml-js";
 
-const FileCategories = {
-  data: (path) => path.startsWith("data"),
-  notebooks: (path) => path.endsWith("ipynb"),
-  workflows: (path) => path.startsWith(".renku/workflow/"),
-};
-
 function getApiUrlFromRepoUrl(url) {
   const urlArray = url.split("/");
   urlArray.splice(urlArray.length - 2, 0, "repos");
@@ -33,15 +27,6 @@ function getApiUrlFromRepoUrl(url) {
     return url.replace("https://", "https://api.");
   if (url.includes("http://"))
     return url.replace("http://", "http://api.");
-}
-
-function groupedFiles(files, projectFiles) {
-  projectFiles = (projectFiles != null) ? projectFiles : {};
-  Object.keys(FileCategories).forEach((cat) => {
-    projectFiles[cat] = files.filter(FileCategories[cat]);
-  });
-  projectFiles["all"] = files;
-  return projectFiles;
 }
 
 function buildTreeLazy(name, treeNode, jsonObj, hash, currentPath, gitAttributes, openFilePath) {
@@ -73,13 +58,13 @@ function buildTreeLazy(name, treeNode, jsonObj, hash, currentPath, gitAttributes
   treeNode.push(newNode);
 }
 
-function getFilesTreeLazy(client, files, projectId, openFilePath, lfsFiles) {
+function getFilesTreeLazy(client, branchName, files, projectId, openFilePath, lfsFiles) {
   let tree = [];
   let hash = {};
   let lfs = files.filter((treeObj) => treeObj.path === ".gitattributes"); // eslint-disable-line
 
   if (lfs.length > 0) {
-    return client.getRepositoryFile(projectId, lfs[0].path, "master", "raw")
+    return client.getRepositoryFile(projectId, lfs[0].path, branchName, "raw")
       .then(json => {
         for (let i = 0; i < files.length; i++)
           buildTreeLazy(files[i].name, tree, files[i], hash, "", json, openFilePath);
@@ -185,18 +170,10 @@ function addProjectMethods(client) {
     }).then(result => result.data);
   };
 
-  client.getProjectFiles = (projectId, path = "") => {
-    return client.getRepositoryTree(projectId, { path: path, recursive: true }).then((tree) => {
-      const files = tree
-        .filter((treeObj) => treeObj.type === "blob")
-        .map((treeObj) => treeObj.path);
-      return groupedFiles(files, {});
-    });
-  };
 
-  client.getProjectFilesTree = (projectId, openFilePath, currentPath = "", lfsFiles) => {
+  client.getProjectFilesTree = (projectId, branchName = "master", openFilePath, currentPath = "", lfsFiles) => {
     return client.getRepositoryTree(projectId, { path: currentPath, recursive: false }).then((tree) => {
-      const fileStructure = getFilesTreeLazy(client, tree, projectId, openFilePath, lfsFiles);
+      const fileStructure = getFilesTreeLazy(client, branchName, tree, projectId, openFilePath, lfsFiles);
       return fileStructure;
     });
   };
@@ -234,7 +211,8 @@ function addProjectMethods(client) {
     // Start pipeline -- no need to wait for the outcome, the new session page handles this
     let pipeline;
     try {
-      pipeline = await client.runPipeline(forkedProject.data.id);
+      pipeline = await client.runPipeline(forkedProject.data.id,
+        forkedProject.data.forked_from_project.default_branch);
     }
     catch (error) {
       pipeline = error;
@@ -319,37 +297,6 @@ function addProjectMethods(client) {
     });
   };
 
-  client.getArtifactsUrl = (projectId, job, branch = "master") => {
-    const headers = client.getBasicHeaders();
-    return client.clientFetch(`${client.baseUrl}/projects/${projectId}/jobs`, {
-      method: "GET",
-      headers: headers
-    })
-      .then(resp => resp.data)
-      .then(jobs => {
-        if (!jobs) return;
-        const filteredJobs = jobs.filter(j => j.name === job && j.ref === branch);
-        if (filteredJobs.length < 1)
-          throw new Error(`There are no artifacts for project/job (${projectId}/${job}) because there are no jobs`);
-        // Sort in reverse finishing order and take the most recent
-        const jobObj =
-          filteredJobs
-            .sort((a, b) => (a.finished_at > b.finished_at) ? -1 : +(a.finished_at < b.finished_at))[0];
-        return `${client.baseUrl}/projects/${projectId}/jobs/${jobObj.id}/artifacts`;
-      });
-  };
-
-  client.getArtifact = (projectId, job, artifact, branch = "master") => {
-    const options = { method: "GET", headers: client.getBasicHeaders() };
-    return client.getArtifactsUrl(projectId, job, branch)
-      .then(url => {
-        // If the url is undefined, we return an object with a dummy text() method.
-        if (!url) return ["", { text: () => "" }];
-        const resourceUrl = `${url}/${artifact}`;
-        return Promise.all([resourceUrl, client.clientFetch(resourceUrl, options, client.returnTypes.full)]);
-      });
-  };
-
   client.getProjectTemplates = (renkuTemplatesUrl, renkuTemplatesRef) => {
     const formattedApiURL = getApiUrlFromRepoUrl(renkuTemplatesUrl);
     return fetchJson(`${formattedApiURL}/git/trees/${renkuTemplatesRef}`)
@@ -357,11 +304,6 @@ function addProjectMethods(client) {
       .then(manifestSha => fetchJson(`${formattedApiURL}/git/blobs/${manifestSha}`))
       .then(data => { return yaml.load(atob(data.content)); })
       .then(data => { data.push(client.getEmptyProjectObject()); return data; });
-  };
-
-  client.getDatasetJson = (projectId, datasetId) => {
-    return client.getRepositoryFile(projectId, `.renku/datasets/${datasetId}/metadata.yml`, "master", "raw")
-      .then(result => yaml.load(result));
   };
 
   client.fetchDatasetFromKG = async (id) => {
@@ -374,19 +316,6 @@ function addProjectMethods(client) {
     const url = `${client.baseUrl}/kg/projects/${projectPath}/datasets`;
     const headers = client.getBasicHeaders();
     return client.clientFetch(url, { method: "GET", headers }).then(resp => resp.data);
-  };
-
-  client.getProjectDatasets = (projectId) => {
-    const datasetsPromise = client.getRepositoryTree(projectId, { path: ".renku/datasets", recursive: true })
-      .then(data =>
-        data.filter(treeObj => treeObj.type === "blob" && treeObj.name === "metadata.yml")
-          .map(dataset =>
-            client.getRepositoryFile(projectId, dataset.path, "master", "raw").then(result => yaml.load(result))
-          )
-      );
-
-    return Promise.resolve(datasetsPromise)
-      .then(datasetsContent => Promise.all(datasetsContent));
   };
 
   /**
@@ -434,7 +363,8 @@ function addProjectMethods(client) {
 
 
 function carveProject(projectJson) {
-  const result = { metadata: { core: {}, visibility: {}, system: {}, statistics: {} }, all: projectJson };
+  const result = { metadata: { core: {}, visibility: {}, system: {}, statistics: {} },
+    filters: { branch: {}, commit: {} }, all: projectJson };
   result["metadata"]["visibility"]["level"] = projectJson["visibility"];
 
   let accessLevel = 0;
@@ -478,6 +408,11 @@ function carveProject(projectJson) {
     result["metadata"]["statistics"]["repository_size"] = projectJson["statistics"]["repository_size"];
     result["metadata"]["statistics"]["lfs_objects_size"] = projectJson["statistics"]["lfs_objects_size"];
   }
+
+  result["filters"]["branch"]["name"] = projectJson["default_branch"] ?
+    projectJson["default_branch"] : "master";
+  result["filters"]["commit"]["id"] = "latest";
+
   return result;
 }
 

@@ -141,6 +141,7 @@ class FilePreview extends React.Component {
             markdownText={content}
             projectId={this.props.projectId}
             fixRelativePaths={this.props.insideProject}
+            branch={this.props.branch}
             client={this.props.client}
           />{" "}
         </CardBody>
@@ -226,14 +227,16 @@ class JupyterButton extends React.Component {
     }
   }
 
+  // we might not need this piece of code if we want to use branches in general
   getDefaultBranch() {
-    const { branches } = this.props;
+    const { branches, defaultBranch } = this.props;
     if (!branches || !branches.all || StatusHelper.isUpdating(branches.all) || !branches.all.length)
       return null;
 
-    const masterBranch = branches.all.filter(branch => branch.name === "master");
-    if (masterBranch.length)
-      return "master";
+    if (defaultBranch) {
+      const masterBranch = branches.all.filter(branch => branch.name === defaultBranch);
+      if (masterBranch.length) return masterBranch;
+    }
 
     return branches[0].name;
   }
@@ -292,7 +295,7 @@ class JupyterButton extends React.Component {
  *
  * @param {Object} client - api-client used to query the gateway
  * @param {string} filePath - path to the file - for the JupyterNotebook button. See docs for JupyterButton
- * @param {string} branchName - optional branch name, defaults to master
+ * @param {string} branch - optional branch name, defaults to master
  * @param {Object} branches - for the JupyterNotebook button. See docs for JupyterButton
  */
 class ShowFile extends React.Component {
@@ -327,9 +330,9 @@ class ShowFile extends React.Component {
 
   retrieveFile() {
     const client = this.props.client;
-    const branchName = this.props.branchName || "master";
+    const branch = this.props.branch;
     let filePath = this.props.filePath;
-    client.getRepositoryFile(this.props.projectId, filePath, branchName, "base64")
+    client.getRepositoryFile(this.props.projectId, filePath, branch, "base64")
       .catch(e => {
         if (!this._isMounted) return null;
         if (e.case === API_ERRORS.notFoundError)
@@ -397,6 +400,7 @@ class ShowFile extends React.Component {
       history={this.props.history}
       previewThreshold={previewThreshold}
       fileInfo={this.state.fileInfo}
+      branch={this.props.branch}
     />;
   }
 }
