@@ -328,7 +328,8 @@ function SessionJupyter(props) {
         "";
       content = (
         <iframe id="session-iframe" title="session iframe" src={notebook.data.url} className={localClass}
-          width="100%" height="800px" referrerPolicy="origin" sandbox="allow-same-origin allow-scripts"
+          width="100%" height="800px" referrerPolicy="origin"
+          sandbox="allow-downloads allow-forms allow-modals allow-popups allow-same-origin allow-scripts"
         />
       );
     }
