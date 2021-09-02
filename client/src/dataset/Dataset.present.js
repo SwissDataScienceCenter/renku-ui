@@ -117,7 +117,7 @@ function DisplayDescription(props) {
             filePath={""}
             fixRelativePaths={true}
             markdownText={props.description}
-            defaultBranch={props.defaultBranch}
+            branch={props.defaultBranch}
             client={props.client}
             projectId={props.projectId}
           />
