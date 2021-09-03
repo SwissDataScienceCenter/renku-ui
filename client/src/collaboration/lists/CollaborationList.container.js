@@ -18,7 +18,7 @@
 
 import React, { Fragment, useRef, useState } from "react";
 
-import { Loader } from "../../utils/UIComponents";
+import { Loader, ExternalLink } from "../../utils/UIComponents";
 
 const itemsStateMap = {
   OPENED: "opened",
@@ -50,13 +50,20 @@ function CollaborationList(props) {
   const iframeClassName = (loaded) ? "visible" : "invisible";
 
   return <Fragment>
-    <Loader className={loaderClassName}/>
-    <iframe id="collaboration-iframe" title="collaboration iframe" src={frameUrl}
-      ref={iframeRef}
-      className={iframeClassName}
-      onLoad={frameLoad}
-      width="100%" height="800px" referrerPolicy="origin" sandbox="allow-same-origin allow-scripts allow-forms"
-    />
+    <Loader className={loaderClassName} />
+    <div className={`d-flex flex-column ${iframeClassName}`}>
+      <div className="mb-3">
+        <ExternalLink url={frameUrl} showLinkIcon={true} iconAfter={true}
+          title="Open in Tab" className="d-inline" />
+      </div>
+      <div>
+        <iframe id="collaboration-iframe" title="collaboration iframe" src={frameUrl}
+          ref={iframeRef}
+          onLoad={frameLoad}
+          width="100%" height="800px" referrerPolicy="origin" sandbox="allow-same-origin allow-scripts allow-forms"
+        />
+      </div>
+    </div>
   </Fragment>;
 }
 

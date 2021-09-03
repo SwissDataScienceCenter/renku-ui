@@ -33,12 +33,12 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
 import {
-  faCodeBranch, faExclamationTriangle, faExternalLinkAlt, faGlobe, faInfoCircle, faLock, faPlay, faSearch,
+  faCodeBranch, faExclamationTriangle, faGlobe, faInfoCircle, faLock, faPlay, faSearch,
   faStar as faStarSolid, faUserFriends
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
-  ButtonWithMenu, ExternalIconLink, ExternalLink, GoBackButton,
+  ButtonWithMenu, ExternalLink, GoBackButton,
   InfoAlert, Loader, RenkuMarkdown, RenkuNavLink, TimeCaption
 } from "../utils/UIComponents";
 import { Url } from "../utils/url";
@@ -813,21 +813,19 @@ function ProjectViewDatasets(props) {
 
 class ProjectViewCollaborationNav extends Component {
   render() {
-    const issuesUrl = `${this.props.externalUrl}/-/issues`;
-    const mrUrl = `${this.props.externalUrl}/-/merge_requests`;
     // CR: This is necessary to get spacing to work correctly; do not understand why.
     const navItemStyle = { padding: "8px 0px" };
     return <Nav className="flex-column nav-light">
       <NavItem style={navItemStyle}>
         <RenkuNavLink to={this.props.issuesUrl} matchPath={true} title="Issues" className="d-inline" />
-        <ExternalIconLink url={issuesUrl} tooltip="Open GitLab issues in new tab"
-          title="" icon={faExternalLinkAlt} role="text" className="d-inline" />
       </NavItem>
       <NavItem style={navItemStyle}>
         <RenkuNavLink to={this.props.mergeRequestsOverviewUrl} matchPath={true}
           title="Merge Requests" className="d-inline" />
-        <ExternalIconLink url={mrUrl} tooltip="Open GitLab merge requests in new tab"
-          title="" icon={faExternalLinkAlt} role="text" className="d-inline" />
+      </NavItem>
+      <NavItem style={navItemStyle}>
+        <RenkuNavLink to={this.props.forkUrl} matchPath={true}
+          title="Fork" className="d-inline" />
       </NavItem>
     </Nav>;
   }
@@ -849,6 +847,8 @@ class ProjectViewCollaboration extends Component {
           <ProjectIssuesList issueIid={props.match.params.issueIid} {...this.props} />} />
         <Route path={this.props.issuesUrl} render={props =>
           <ProjectIssuesList {...this.props} />} />
+        <Route path={this.props.forkUrl} render={props =>
+          <ProjectCollaborationFork {...this.props} />} />
       </Switch>
     </Col>;
   }
@@ -911,6 +911,25 @@ class ProjectMergeRequestList extends Component {
   }
 }
 
+function ProjectCollaborationFork(props) {
+  return <Row>
+    <Col key="nav" sm={12} md={2}>
+      <ProjectViewCollaborationNav {...props} />
+    </Col>
+    <Col sm={12} md={10}>
+      <ForkProject
+        client={props.client}
+        id={props.core.id}
+        history={props.history}
+        model={props.model}
+        notifications={props.notifications}
+        title={props.core.title}
+        toggleModal={null}
+      />
+    </Col>
+  </Row>;
+}
+
 class ProjectViewFiles extends Component {
   componentDidMount() {
     this.props.fetchFiles();
@@ -962,7 +981,7 @@ class ProjectSessions extends Component {
   }
 }
 
-function notebookWarning(userLogged, accessLevel, fork, postLoginUrl, externalUrl) {
+function notebookWarning(userLogged, accessLevel, forkUrl, postLoginUrl, externalUrl) {
   if (!userLogged) {
     const to = Url.get(Url.pages.login.link, { pathname: postLoginUrl });
     return (
@@ -990,9 +1009,9 @@ function notebookWarning(userLogged, accessLevel, fork, postLoginUrl, externalUr
         </p>
         <ul className="mb-0">
           <li>
-            <Button size="sm" color="primary" onClick={(event) => fork(event)}>
+            <Link className="btn btn-primary btn-sm" color="primary" to={forkUrl}>
               Fork the project
-            </Button> and start a session from your fork.
+            </Link> and start a session from your fork.
           </li>
           <li className="pt-1">
             <ExternalLink size="sm" title="Contact a maintainer"
@@ -1014,10 +1033,10 @@ class ProjectShowSession extends Component {
   render() {
     const {
       blockAnonymous, client, externalUrl, history, launchNotebookUrl, location, match, model,
-      notifications, toggleForkModal, user, visibility
+      notifications, forkUrl, user, visibility
     } = this.props;
     const warning = notebookWarning(
-      user.logged, visibility.accessLevel, toggleForkModal, location.pathname, externalUrl
+      user.logged, visibility.accessLevel, forkUrl, location.pathname, externalUrl
     );
 
     return (
@@ -1041,11 +1060,11 @@ class ProjectShowSession extends Component {
 class ProjectNotebookServers extends Component {
   render() {
     const {
-      client, model, user, visibility, toggleForkModal, location, externalUrl, launchNotebookUrl,
+      client, model, user, visibility, forkUrl, location, externalUrl, launchNotebookUrl,
       blockAnonymous
     } = this.props;
     const warning = notebookWarning(
-      user.logged, visibility.accessLevel, toggleForkModal, location.pathname, externalUrl
+      user.logged, visibility.accessLevel, forkUrl, location.pathname, externalUrl
     );
 
     return (
@@ -1062,11 +1081,11 @@ class ProjectNotebookServers extends Component {
 class ProjectStartNotebookServer extends Component {
   render() {
     const {
-      client, model, user, visibility, toggleForkModal, externalUrl, system, location,
+      client, model, user, visibility, forkUrl, externalUrl, system, location,
       fetchBranches, notebookServersUrl, history, blockAnonymous, notifications
     } = this.props;
     const warning = notebookWarning(
-      user.logged, visibility.accessLevel, toggleForkModal, location.pathname, externalUrl
+      user.logged, visibility.accessLevel, forkUrl, location.pathname, externalUrl
     );
 
     const locationEnhanced = location && location.state && location.state.successUrl ?
