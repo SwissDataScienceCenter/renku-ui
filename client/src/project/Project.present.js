@@ -802,7 +802,7 @@ function ProjectViewDatasets(props) {
         <Col key="btn" md={12}>
           <GoBackButton key="btn" label="Back to list" url={props.datasetsUrl}/>
         </Col>,
-        props.datasetView(p, !kgDown)
+        props.datasetView(p, !kgDown, props.location)
       ]} />
       <Route exact path={props.datasetsUrl} render={p =>
         <ProjectDatasetsNav {...props} />

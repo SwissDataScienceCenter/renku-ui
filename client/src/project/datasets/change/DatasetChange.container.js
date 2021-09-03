@@ -65,7 +65,7 @@ function ChangeDataset(props) {
       titleField.help = datasetFormSchema.title.help;
       titleField.parseFun = undefined;
       image.value = {
-        options: [{ [Prop.URL]: props.dataset.mediaContent }],
+        options: [{ [Prop.URL]: props.dataset ? props.dataset.mediaContent : undefined }],
         selected: 0
       };
     }
@@ -158,6 +158,16 @@ function ChangeDataset(props) {
     });
   };
 
+  const redirectAfterAddFilesOnCreate = (datasetId, handlers) => {
+    handlers.setSubmitLoader({ value: false, text: "" });
+    props.fetchDatasets(true);
+    handlers.removeDraft();
+    props.history.push({
+      pathname: `/projects/${props.projectPathWithNamespace}/datasets/${datasetId}/`,
+      state: { errorOnCreation: true }
+    });
+  };
+
   const getCreator = (creator)=>{
     let newCreator = { name: creator.name };
     if (creator.email)
@@ -220,7 +230,17 @@ function ChangeDataset(props) {
       .then(response => {
         if (response.data.error !== undefined) {
           handlers.setSubmitLoader({ value: false, text: "" });
-          handlers.setServerErrors(response.data.error.reason);
+          if (response.data.error.errorOnFileAdd) {
+            props.edit ?
+              handlers.setServerErrors(
+                <div>
+                  The dataset was edited but there was an error adding uploaded files to it, please try again.
+                  <br/><br/>
+                  {response.data.error.reason}
+                </div>)
+              : redirectAfterAddFilesOnCreate(dataset.name, handlers);
+          }
+          else { handlers.setServerErrors(response.data.error.reason); }
         }
         else {
           let filesURLJobsArray = [];
