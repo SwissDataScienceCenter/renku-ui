@@ -981,7 +981,7 @@ class ProjectSessions extends Component {
   }
 }
 
-function notebookWarning(userLogged, accessLevel, fork, postLoginUrl, externalUrl) {
+function notebookWarning(userLogged, accessLevel, forkUrl, postLoginUrl, externalUrl) {
   if (!userLogged) {
     const to = Url.get(Url.pages.login.link, { pathname: postLoginUrl });
     return (
@@ -1009,9 +1009,9 @@ function notebookWarning(userLogged, accessLevel, fork, postLoginUrl, externalUr
         </p>
         <ul className="mb-0">
           <li>
-            <Button size="sm" color="primary" onClick={(event) => fork(event)}>
+            <Link className="btn btn-primary btn-sm" color="primary" to={forkUrl}>
               Fork the project
-            </Button> and start a session from your fork.
+            </Link> and start a session from your fork.
           </li>
           <li className="pt-1">
             <ExternalLink size="sm" title="Contact a maintainer"
@@ -1033,10 +1033,10 @@ class ProjectShowSession extends Component {
   render() {
     const {
       blockAnonymous, client, externalUrl, history, launchNotebookUrl, location, match, model,
-      notifications, toggleForkModal, user, visibility
+      notifications, forkUrl, user, visibility
     } = this.props;
     const warning = notebookWarning(
-      user.logged, visibility.accessLevel, toggleForkModal, location.pathname, externalUrl
+      user.logged, visibility.accessLevel, forkUrl, location.pathname, externalUrl
     );
 
     return (
@@ -1060,11 +1060,11 @@ class ProjectShowSession extends Component {
 class ProjectNotebookServers extends Component {
   render() {
     const {
-      client, model, user, visibility, toggleForkModal, location, externalUrl, launchNotebookUrl,
+      client, model, user, visibility, forkUrl, location, externalUrl, launchNotebookUrl,
       blockAnonymous
     } = this.props;
     const warning = notebookWarning(
-      user.logged, visibility.accessLevel, toggleForkModal, location.pathname, externalUrl
+      user.logged, visibility.accessLevel, forkUrl, location.pathname, externalUrl
     );
 
     return (
@@ -1081,11 +1081,11 @@ class ProjectNotebookServers extends Component {
 class ProjectStartNotebookServer extends Component {
   render() {
     const {
-      client, model, user, visibility, toggleForkModal, externalUrl, system, location,
+      client, model, user, visibility, forkUrl, externalUrl, system, location,
       fetchBranches, notebookServersUrl, history, blockAnonymous, notifications
     } = this.props;
     const warning = notebookWarning(
-      user.logged, visibility.accessLevel, toggleForkModal, location.pathname, externalUrl
+      user.logged, visibility.accessLevel, forkUrl, location.pathname, externalUrl
     );
 
     const locationEnhanced = location && location.state && location.state.successUrl ?
