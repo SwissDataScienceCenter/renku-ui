@@ -42,6 +42,7 @@ import { Cookie, Privacy } from "./privacy";
 import { NotificationsManager, NotificationsPage } from "./notifications";
 import { StyleGuide } from "./styleguide";
 import { Url } from "./utils/url";
+import { Unavailable } from "./Maintenance";
 
 import "./App.css";
 import "react-toastify/dist/ReactToastify.css";
@@ -190,6 +191,9 @@ class App extends Component {
           <Loader />
         </section>
       );
+    }
+    else if (user.error) {
+      return (<Unavailable />);
     }
 
     return (
