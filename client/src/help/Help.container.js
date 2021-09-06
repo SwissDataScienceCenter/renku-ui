@@ -35,6 +35,7 @@ function urlMap(baseUrl) {
     documentation: `${baseUrl}/docs`,
     features: `${baseUrl}/features`,
     status: `${baseUrl}/status`,
+    changes: `${baseUrl}/changes`,
   };
 }
 
