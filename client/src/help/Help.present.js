@@ -23,7 +23,7 @@
  *  Presentational components for help.
  */
 
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { Route } from "react-router-dom";
 
 import { Row, Col } from "reactstrap";
@@ -31,8 +31,11 @@ import { Nav, NavItem } from "reactstrap";
 
 import { faDiscourse, faGithub, faGitter } from "@fortawesome/free-brands-svg-icons";
 
-import { ExternalDocsLink, ExternalIconLink, RenkuNavLink } from "../utils/UIComponents";
+import { WhatsNew1_0_0 as WhatsNew } from "./WhatsNew";
+import { ExternalDocsLink, ExternalIconLink, ExternalLink, RenkuNavLink } from "../utils/UIComponents";
 import { StatuspageDisplay, isStatusConfigured } from "../statuspage";
+
+const discourseUrl = "https://renku.discourse.group";
 
 class HelpNav extends Component {
   render() {
@@ -53,6 +56,9 @@ class HelpNav extends Component {
           <RenkuNavLink to={this.props.url.features} title="Features" />
         </NavItem>
         { statusLink }
+        <NavItem>
+          <RenkuNavLink to={this.props.url.changes} title="What's New" />
+        </NavItem>
       </Nav>
     );
   }
@@ -74,7 +80,7 @@ class HelpGetting extends Component {
             <ExternalIconLink url="https://renku.discourse.group" icon={faDiscourse} title="Forum" />
           </h3>
           <p>
-            We maintain a <ExternalDocsLink url="https://renku.discourse.group" title="help forum" /> for
+            We maintain a <ExternalDocsLink url={discourseUrl} title="help forum" /> for
             discussion about Renku. This is a good place to ask questions and find answers.
           </p>
         </div>
@@ -207,6 +213,76 @@ class HelpFeatures extends Component {
   }
 }
 
+function HelpChanges() {
+
+  function SwitchToOldVersion() {
+    const ninetyDays = 60 * 60 * 24 * 90;
+    document.cookie = `ui-0-11-x=always; max-age=${ninetyDays}; path=/`;
+  }
+
+  const oldUiUrl = `/?v=${new Date().getTime()}`;
+  // eslint-disable-next-line
+  const discourseNewTopicUrl = `${discourseUrl}/new-topic?category=Renkulab`;
+
+  return <Fragment>
+    <Row>
+      <Col md={8}>
+        <h3>Changes to the UI [version 1.0.0]</h3>
+        <p>
+          For this new version, we have been working hard to improve the experience of using RenkuLab.
+          Here are some of the changes you can expect to find.
+        </p>
+      </Col>
+    </Row>
+    <Row>
+      <Col>
+        <WhatsNew />
+      </Col>
+    </Row>
+    <Row className="mt-4 pt-4">
+      <Col md={8}>
+        <h4>Feedback</h4>
+        <p>
+          We are interested in hearing from you about the new UI! {" "}
+          <ExternalLink
+            url={discourseNewTopicUrl} role="text"
+            title="Feel free to share your suggestions or general thoughts" />.
+        </p>
+      </Col>
+    </Row>
+    <Row className="mt-4 pt-4">
+      <Col md={8}>
+        <h4>Transitioning</h4>
+        <p>
+          We think you will prefer the new UI and all the improvements we have made. But, if there is something
+          you liked better in the previous version, {" "}
+          <ExternalLink url={discourseNewTopicUrl} role="text" title="please let us know about it" />,
+          and we will try to make the necessary improvements.
+        </p>
+        <p>
+          During the transition, you can still {" "}
+          <a href={oldUiUrl} className="text-rk-pink" onClick={SwitchToOldVersion}>
+            switch to the old version of the UI
+          </a>. If you choose to do this, {" "}
+          <ExternalLink url={discourseNewTopicUrl} role="text" title="let us know why" />, {" "}
+          so we can try to address the issues before we completely disable the old UI.
+        </p>
+      </Col>
+    </Row>
+    <Row className="mt-4 pt-4">
+      <Col md={8}>
+        <h3>Ongoing Improvements</h3>
+        <p>
+          And we are not done yet! We have some are deeper improvements planned
+          to streamline the user experience and make RenkuLab easier and more enjoyable to use. If you
+          have any ideas for features you would like, feel free to {" "}
+          <ExternalLink url={discourseNewTopicUrl} role="text" title="let us know" />!
+        </p>
+      </Col>
+    </Row>
+  </Fragment>;
+}
+
 class HelpContent extends Component {
   render() {
     return [
@@ -221,6 +297,7 @@ class HelpContent extends Component {
         key="getting"
         render={props => <HelpGetting key="getting" {...this.props} />}
       />,
+
       <Route
         path={this.props.url.documentation}
         key="documentation"
@@ -234,7 +311,12 @@ class HelpContent extends Component {
       <Route
         path={this.props.url.status} key="status"
         render={props => <StatuspageDisplay key="status" statuspageId={this.props.statuspageId}
-          statuspageModel={this.props.statuspageModel} />} />
+          statuspageModel={this.props.statuspageModel} />} />,
+      <Route
+        path={this.props.url.changes}
+        key="changes"
+        render={props => <HelpChanges key="changes" {...this.props} />}
+      />,
     ];
   }
 }
