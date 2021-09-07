@@ -51,17 +51,19 @@ class UserCoordinator {
         const status = error.response && error.response.status ?
           error.response.status :
           "N/A";
-        // we get 401 unauthorized when the user is not logged in
-        if (error.case !== API_ERRORS.unauthorizedError) {
-          this.model.setObject({
-            fetching: false,
-            fetched: null,
-            error: status,
-            logged: false,
-            data: { $set: {} }
-          });
-        }
-        return {};
+        const errorObject = {
+          fetching: false,
+          fetched: new Date(),
+          error: null,
+          logged: false,
+          data: { $set: {} }
+        };
+        // we get 401 unauthorized when the user is not logged in, but that's not an error
+        if (error.case !== API_ERRORS.unauthorizedError)
+          errorObject.error = status;
+        this.model.setObject(errorObject);
+
+        return errorObject;
       });
   }
 }

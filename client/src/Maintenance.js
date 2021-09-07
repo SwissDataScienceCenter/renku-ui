@@ -69,7 +69,7 @@ function Unavailable() {
     <main role="main" className="container-fluid">
       <section className="jumbotron-header rounded px-3 px-sm-4 py-3 py-sm-5 text-center mb-3">
         <h1 className="text-center text-primary">
-          <FontAwesomeIcon icon={faWrench} /> RenkuLab down
+          <FontAwesomeIcon icon={faWrench} /> RenkuLab Down
         </h1>
         <br />
         <p className="text-center">Some of the resources on RenkuLab are temporarily unavailable.</p>
