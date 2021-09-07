@@ -298,7 +298,7 @@ function ErrorAfterCreation(props) {
   return props.location.state && props.location.state.errorOnCreation ?
     <Alert color="danger">
       <strong>Error on creation</strong><br/>
-      The dataset was crated but there was an error adding files to it.<br/>
+      The dataset was created, but there was an error adding files to it.<br/>
       Please {editButton} the dataset to add the missing files.
     </Alert>
     : null;

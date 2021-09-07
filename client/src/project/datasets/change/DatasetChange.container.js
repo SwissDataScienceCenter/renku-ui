@@ -65,7 +65,7 @@ function ChangeDataset(props) {
       titleField.help = datasetFormSchema.title.help;
       titleField.parseFun = undefined;
       image.value = {
-        options: [{ [Prop.URL]: props.dataset ? props.dataset.mediaContent : undefined }],
+        options: [{ [Prop.URL]: props.dataset ? props.dataset.mediaContent : null }],
         selected: 0
       };
     }
@@ -234,7 +234,8 @@ function ChangeDataset(props) {
             props.edit ?
               handlers.setServerErrors(
                 <div>
-                  The dataset was edited but there was an error adding uploaded files to it, please try again.
+                  Any metadata changes were successfully applied, but some uploaded files could
+                  &nbsp;not be added to the dataset. Please try adding this files again.
                   <br/><br/>
                   {response.data.error.reason}
                 </div>)
