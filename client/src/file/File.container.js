@@ -234,8 +234,8 @@ class JupyterButton extends React.Component {
       return null;
 
     if (defaultBranch) {
-      const masterBranch = branches.all.filter(branch => branch.name === defaultBranch);
-      if (masterBranch.length) return masterBranch;
+      const defaultBranchObject = branches.all.filter(branch => branch.name === defaultBranch);
+      if (defaultBranchObject.length) return defaultBranchObject;
     }
 
     return branches[0].name;

@@ -246,7 +246,7 @@ class ProjectModel extends StateModel {
     if (this.get("transient.requests.filesTree") === SpecialPropVal.UPDATING) return;
     const oldTree = this.get("filesTree");
     openFilePath = this.cleanFilePathUrl(openFilePath);
-    if (oldTree === null || oldTree === undefined)
+    if (oldTree == null)
       return this.initialFetchProjectFilesTree(client, openFilePath, openFolder);
 
     if (openFolder !== undefined && oldTree.hash[openFolder].childrenLoaded === false)
@@ -414,7 +414,7 @@ class ProjectCoordinator {
     });
   }
 
-  setProjectData(data, statistics = false, filters = true) {
+  setProjectData(data, statistics = false) {
     let metadata, statsObject, filtersObject;
 
     // set metadata
@@ -470,16 +470,14 @@ class ProjectCoordinator {
       }
 
       // set filters
-      if (filters) {
-        const filtersData = data.filters ? data.filters :
-          projectGlobalSchema.createInitialized().filters.data;
-        filtersObject = {
-          branch: { $set: filtersData.branch },
-          commit: { $set: filtersData.commit },
-          fetched: new Date(),
-          fetching: false
-        };
-      }
+      const filtersData = data.filters ? data.filters :
+        projectGlobalSchema.createInitialized().filters.data;
+      filtersObject = {
+        branch: { $set: filtersData.branch },
+        commit: { $set: filtersData.commit },
+        fetched: new Date(),
+        fetching: false
+      };
     }
 
     this.model.setObject({ metadata: metadata, statistics: statsObject, filters: filtersObject });
