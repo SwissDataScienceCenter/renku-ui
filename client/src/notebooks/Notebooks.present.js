@@ -146,7 +146,7 @@ function SessionInformation(props) {
   const resourceList = formattedResourceList(resources);
 
   // Create dropdown menu
-  const defaultAction = (<ExternalLink color="primary" url={url} disabled={stopping} showLinkIcon={true} title="Open" />);
+  const defaultAction = <ExternalLink color="primary" url={url} disabled={stopping} showLinkIcon={true} title="Open" />;
   const stopButton = (
     <DropdownItem onClick={stop} disabled={stopping}>
       <FontAwesomeIcon icon={faStopCircle} /> Stop
