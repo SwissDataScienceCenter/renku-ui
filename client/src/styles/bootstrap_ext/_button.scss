@@ -13,6 +13,9 @@
   &:focus {
     color: $rk-white;
   }
+  &.disabled{
+    color: $rk-white;
+  }
 }
 
 .btn-outline-secondary:hover{
