@@ -123,13 +123,11 @@ function CreatorsInput({ name, label, type, value, alert, placeholder, setInputs
   useEffect(()=>{
     const filteredCreators = creators.filter(creator =>
       !(creator.name === "" && creator.email === "" && creator.affiliation === ""));
-    if (filteredCreators.length !== value.length) {
-      const artificialEvent = {
-        target: { name: name, value: filteredCreators },
-        isPersistent: () => false
-      };
-      setInputs(artificialEvent);
-    }
+    const artificialEvent = {
+      target: { name: name, value: filteredCreators },
+      isPersistent: () => false
+    };
+    setInputs(artificialEvent);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [creators]);
 

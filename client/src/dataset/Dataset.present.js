@@ -288,6 +288,23 @@ function DatasetError(props) {
   );
 }
 
+function ErrorAfterCreation(props) {
+  const editButton = <Link className="float-right me-1 mb-1" id="editDatasetTooltip"
+    to={{ pathname: "modify", state: { dataset: props.dataset } }} >
+    <Button size="sm" color="danger" >
+      <FontAwesomeIcon icon={faPen} color="dark" /> Edit
+    </Button>
+  </Link>;
+
+  return props.location.state && props.location.state.errorOnCreation ?
+    <Alert color="danger">
+      <strong>Error on creation</strong><br/>
+      The dataset was created, but there was an error adding files to it.<br/>
+      Please {editButton} the dataset to add the missing files.
+    </Alert>
+    : null;
+}
+
 export default function DatasetView(props) {
 
   const [addDatasetModalOpen, setAddDatasetModalOpen] = useState(false);
@@ -308,6 +325,7 @@ export default function DatasetView(props) {
     return (<Loader />);
 
   return <Col>
+    <ErrorAfterCreation location={props.location} dataset={dataset}/>
     <Row>
       <Col md={8} sm={12}>
         {props.insideProject ?

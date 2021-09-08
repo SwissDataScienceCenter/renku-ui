@@ -146,36 +146,36 @@ function SessionInformation(props) {
   const resourceList = formattedResourceList(resources);
 
   // Create dropdown menu
-  const defaultAction = (<Button color="primary" onClick={stop} disabled={stopping}>Stop</Button>);
-  const openInNewTab = (
-    <DropdownItem href={url} target="_blank" disabled={stopping}>
-      <FontAwesomeIcon icon={faExternalLinkAlt} /> Open in new tab
+  const defaultAction = <ExternalLink color="primary" url={url} disabled={stopping} showLinkIcon={true} title="Open" />;
+  const stopButton = (
+    <DropdownItem onClick={stop} disabled={stopping}>
+      <FontAwesomeIcon icon={faStopCircle} /> Stop
     </DropdownItem>
   );
   const dropdownMenu = (
     <ButtonWithMenu className="sessionsButton" color="primary" size="sm" default={defaultAction}>
-      {openInNewTab}
+      {stopButton}
     </ButtonWithMenu>
   );
 
   return (
     <div className="d-flex flex-wrap">
       <div className="p-2 p-lg-3 text-nowrap">
-        <span className="fw-bold">Branch: </span>
+        <span className="fw-bold">Branch </span>
         <ExternalLink url={repositoryLinks.branch} title={annotations["branch"]} role="text"
           showLinkIcon={true} />
       </div>
       <div className="p-2 p-lg-3 text-nowrap">
-        <span className="fw-bold">Commit: </span>
+        <span className="fw-bold">Commit </span>
         <ExternalLink url={repositoryLinks.commit} title={annotations["commit-sha"].substring(0, 8)}
           role="text" showLinkIcon={true} />
       </div>
       <div className="p-2 p-lg-3 text-nowrap">
-        <span className="fw-bold">Resources: </span>
+        <span className="fw-bold">Resources </span>
         <span>{resourceList}</span>
       </div>
       <div className="p-2 p-lg-3 text-nowrap">
-        <span className="fw-bold">Running since: </span>
+        <span className="fw-bold">Running since </span>
         <TimeCaption noCaption={true} endPunctuation=" " time={notebook.data.started} />
       </div>
       <div className="p-1 p-lg-2 m-auto me-1 me-lg-2">
