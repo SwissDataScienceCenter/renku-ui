@@ -145,6 +145,19 @@ function SessionInformation(props) {
   };
   const resourceList = formattedResourceList(resources);
 
+  // Create dropdown menu
+  const defaultAction = (<Button color="primary" onClick={stop} disabled={stopping}>Stop</Button>);
+  const openInNewTab = (
+    <DropdownItem href={url} target="_blank" disabled={stopping}>
+      <FontAwesomeIcon icon={faExternalLinkAlt} /> Open in new tab
+    </DropdownItem>
+  );
+  const dropdownMenu = (
+    <ButtonWithMenu className="sessionsButton" color="primary" size="sm" default={defaultAction}>
+      {openInNewTab}
+    </ButtonWithMenu>
+  );
+
   return (
     <div className="d-flex flex-wrap">
       <div className="p-2 p-lg-3 text-nowrap">
@@ -165,11 +178,8 @@ function SessionInformation(props) {
         <span className="fw-bold">Running since: </span>
         <TimeCaption noCaption={true} endPunctuation=" " time={notebook.data.started} />
       </div>
-      <div className="p-2 p-lg-3 text-nowrap">
-        <ExternalLink url={url} title="Open in new tab" role="text" showLinkIcon={true} />
-      </div>
       <div className="p-1 p-lg-2 m-auto me-1 me-lg-2">
-        <Button color="primary" onClick={stop} disabled={stopping}>Stop</Button>
+        {dropdownMenu}
       </div>
     </div>
   );
