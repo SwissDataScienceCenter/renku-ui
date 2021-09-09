@@ -115,6 +115,8 @@ function ForkProjectFooter(props) {
   const { error, fetching, fork, forking, forkUrl, toggleModal } = props;
 
   let forkButton;
+
+
   if (forking) {
     forkButton = null;
   }
