@@ -422,14 +422,13 @@ class RenkuAlert extends Component {
   }
 }
 
-class InfoAlert extends Component {
-  render() {
-    return (
-      <RenkuAlert color="info" {...this.props} >
-        {this.props.children}
-      </RenkuAlert>
-    );
-  }
+function InfoAlert(props) {
+  const { color = "info" } = props;
+  return (
+    <RenkuAlert color={color} {...props} >
+      {props.children}
+    </RenkuAlert>
+  );
 }
 
 class SuccessAlert extends Component {

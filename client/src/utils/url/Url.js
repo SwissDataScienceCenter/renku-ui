@@ -270,6 +270,7 @@ const Url = {
       documentation: "/help/docs",
       features: "/help/features",
       status: "/help/status",
+      changes: "/help/changes",
     },
     login: {
       base: "/login",
