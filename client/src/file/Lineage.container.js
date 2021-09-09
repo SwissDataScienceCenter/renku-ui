@@ -152,9 +152,9 @@ class FileLineage extends Component {
   //WE DO THIS SO WE CAN GET THE FILE SIZE!!!
   retrieveFile() {
     const client = this.props.client;
-    const branchName = this.props.branchName || "master";
+    const branch = this.props.branch;
     let filePath = this.props.gitFilePath;
-    client.getRepositoryFile(this.props.projectId, filePath, branchName, "base64")
+    client.getRepositoryFile(this.props.projectId, filePath, branch, "base64")
       .catch(e => {
         if (!this._isMounted) return null;
         if (e.case === API_ERRORS.notFoundError)

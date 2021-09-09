@@ -347,6 +347,7 @@ class NotebooksCoordinator {
    * @param {string} data.namespace - full namespace path
    * @param {string} data.project - full project path
    * @param {string|Object} data.branch - branch name or branch data as return by gitlab api
+   * @param {string|Object} data.defaultBranch - default branch of the project
    * @param {string|Object} data.commit - commit full id or commit data as return by gitlab api
    */
   setNotebookFilters(data = {}) {
@@ -355,6 +356,8 @@ class NotebooksCoordinator {
       filters.namespace = data.namespace;
     if (data.project !== undefined)
       filters.project = data.project;
+    if (data.defaultBranch)
+      filters.defaultBranch = data.defaultBranch;
     if (data.branch !== undefined)
       data.branch instanceof Object ? filters.branch = data.branch : filters.branch = { name: data.branch };
     if (data.commit !== undefined)
@@ -849,7 +852,7 @@ class NotebooksCoordinator {
     const filters = this.model.get("filters");
     const namespace = filters.namespace;
     const project = filters.project;
-    const branch = filters.branch && filters.branch.name ? filters.branch.name : "master";
+    const branch = filters.branch && filters.branch.name ? filters.branch.name : filters.defaultBranch;
     const commit = filters.commit && filters.commit.id ? filters.commit.id : "latest";
     const projectOptions = this.model.get("options.project");
     const image = projectOptions.image ?

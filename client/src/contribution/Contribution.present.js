@@ -62,6 +62,8 @@ class Contribution extends React.Component {
                   projectPathWithNamespace={this.props.projectPathWithNamespace}
                   filePath={""}
                   fixRelativePaths={true}
+                  // change to default branch if this class is used
+                  branch={"master"}
                   markdownText={contribution.body ?
                     contribution.body :
                     contribution.note}
@@ -125,6 +127,7 @@ const NewContribution = props => {
                   <RenkuMarkdown
                     projectPathWithNamespace={props.projectPathWithNamespace}
                     filePath={""}
+                    branch={"master"}
                     fixRelativePaths={true}
                     markdownText={props.contribution.body}
                     client={props.client}

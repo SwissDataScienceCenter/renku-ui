@@ -480,6 +480,7 @@ class ProjectViewReadme extends Component {
             projectPathWithNamespace = {this.props.core.path_with_namespace}
             filePath={""}
             fixRelativePaths={true}
+            branch={this.props.core.default_branch}
             markdownText={this.props.readme.text}
             client={this.props.client}
             projectId={this.props.core.id}
@@ -1072,7 +1073,8 @@ class ProjectNotebookServers extends Component {
         message={warning}
         urlNewSession={launchNotebookUrl}
         blockAnonymous={blockAnonymous}
-        scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path }}
+        scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path,
+          defaultBranch: this.props.core.default_branch }}
       />
     );
   }
@@ -1108,7 +1110,8 @@ class ProjectStartNotebookServer extends Component {
         successUrl={notebookServersUrl}
         blockAnonymous={blockAnonymous}
         notifications={notifications}
-        scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path }}
+        scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path,
+          defaultBranch: this.props.core.default_branch }}
       />
     );
   }

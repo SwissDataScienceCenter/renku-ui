@@ -40,6 +40,7 @@ import { Url } from "../utils/url";
  * @param {Object} scope - object containing filtering parameters
  * @param {string} scope.namespace - full path of the reference namespace
  * @param {string} scope.project - path of the reference project
+ * @param {string} scope.defaultBranch - default branch of the project
  * @param {Object} notifications - Notifications object
  * @param {Object} [location] - react location object
  * @param {Object} [history] - react history object
@@ -144,6 +145,7 @@ class ShowSession extends Component {
  * @param {string} [scope.namespace] - full path of the reference namespace
  * @param {string} [scope.project] - path of the reference project
  * @param {string} [scope.branch] - branch name
+ * @param {string} [scope.defaultBranch] - default branch name of the project
  * @param {string} [scope.commit] - commit full id
  * @param {string} [message] - provide a useful information or warning message
  */
@@ -345,7 +347,7 @@ class StartNotebookServer extends Component {
         if (oldBranch && oldBranch.branchName)
           branchName = oldBranch.branchName;
         else
-          branchName = "master";
+          branchName = this.model.get("filters.defaultBranch");
 
         autoBranchName = true;
       }
@@ -616,6 +618,7 @@ class StartNotebookServer extends Component {
  * @param {string} scope.namespace - full path of the reference namespace
  * @param {string} scope.project - path of the reference project
  * @param {string} scope.branch - branch name
+ * @param {string} scope.defaultBranch - default branch of the project
  * @param {string} scope.commit - commit full id or "latest"
  * @param {Object} [location] - react location object
  * @param {number} [pollingInterval] - polling timeout interval in seconds

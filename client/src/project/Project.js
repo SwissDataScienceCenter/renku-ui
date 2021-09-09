@@ -363,23 +363,6 @@ class View extends Component {
     };
   }
 
-  // TODO: Fix for MRs across forks.
-  getMrSuggestions() {
-
-    // Don't display any suggestions while the state is updating - leads to annoying flashing fo
-    // wrong information while branches are there but merge_requests are not...
-    if (this.projectState.get("system.merge_requests") === this.projectState._updatingPropVal) return [];
-    if (this.projectState.get("system.branches") === this.projectState._updatingPropVal) return [];
-
-    const mergeRequestBranches = this.projectState.get("system.merge_requests")
-      .map(mr => mr.source_branch);
-
-    return this.projectState.get("system.branches")
-      .filter(branch => branch.name !== "master")
-      .filter(branch => !branch.merged)
-      .filter(branch => mergeRequestBranches.indexOf(branch.name) < 0);
-  }
-
   subComponents(projectId, ownProps) {
     const visibility = this.projectState.get("visibility");
     const isPrivate = visibility && visibility.level === "private";
@@ -449,7 +432,8 @@ class View extends Component {
         branches={branches}
         hashElement={filesTree !== undefined ? filesTree.hash[p.match.params.filePath] : undefined}
         gitFilePath={p.location.pathname.replace(pathComponents.baseUrl + "/files/lineage/", "")}
-        history={this.props.history} />,
+        history={this.props.history}
+        branch={this.projectState.get("core.default_branch")} />,
 
       fileView: (p) => <ShowFile
         key="filePreview" {...subProps}
@@ -464,7 +448,10 @@ class View extends Component {
         hashElement={filesTree !== undefined ?
           filesTree.hash[p.location.pathname.replace(pathComponents.baseUrl + "/files/blob/", "")] :
           undefined}
-        history={this.props.history} />,
+        filesTree={filesTree}
+        history={this.props.history}
+        branch={this.projectState.get("core.default_branch")} //this can be changed
+        defaultBranch={this.projectState.get("core.default_branch")} />,
 
       datasetView: (p, projectInsideKg) => <ShowDataset
         key="datasetPreview" {...subProps}
@@ -592,18 +579,6 @@ class View extends Component {
         return true;
       });
     },
-    onCreateMergeRequest: (branch) => {
-      const core = this.projectState.get("core");
-      let newMRIid;
-      // TODO: Again, it would be nice to update the local state rather than relying on the server
-      // TODO: updating the information fast enough through all possible layers of caches, etc...
-      this.props.client.createMergeRequest(core.id, branch.name, branch.name, "master")
-        .then((d) => {
-          newMRIid = d.data.iid;
-          return this.fetchAll();
-        })
-        .then(() => this.props.history.push(`${this.getSubUrls().mergeRequestsOverviewUrl}/${newMRIid}`));
-    },
     onProjectRefresh: (e) => {
       e.preventDefault();
       this.fetchAll();
@@ -649,7 +624,6 @@ class View extends Component {
     const internalId = this.projectState.get("core.id") || parseInt(ownProps.match.params.id, 10);
     const starred = this.getStarred();
     const settingsReadOnly = state.visibility.accessLevel < ACCESS_LEVELS.MAINTAINER;
-    const suggestedMRBranches = this.getMrSuggestions();
     const externalUrl = this.projectState.get("core.external_url");
     const canCreateMR = state.visibility.accessLevel >= ACCESS_LEVELS.DEVELOPER;
     const isGraphReady = this.isGraphReady();
@@ -664,7 +638,6 @@ class View extends Component {
       ...this.subComponents.bind(this)(internalId, ownProps),
       starred,
       settingsReadOnly,
-      suggestedMRBranches,
       externalUrl,
       canCreateMR,
       isGraphReady

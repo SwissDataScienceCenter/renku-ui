@@ -19,14 +19,14 @@
 import { API_ERRORS } from "./errors";
 
 function addPipelineMethods(client) {
-  client.runPipeline = async (projectId) => {
+  client.runPipeline = async (projectId, defaultBranch = "master") => {
     const headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     return client.clientFetch(`${client.baseUrl}/projects/${projectId}/pipeline`, {
       method: "POST",
       headers: headers,
       body: JSON.stringify({
-        ref: "master"
+        ref: defaultBranch
       })
     });
   };
