@@ -1096,7 +1096,9 @@ class StartNotebookServer extends Component {
       <Row>
         <Col sm={12} md={10} lg={8}>
           <h3>Start a new session</h3>
-          <LaunchErrorAlert key="launch-error" launchError={this.props.launchError} />
+          <LaunchErrorAlert key="launch-error"
+            launchError={this.props.launchError}
+            pipelines={this.props.pipelines} />
           {messageOutput}
           <Form>
             <Collapse isOpen={this.state.showAdvanced}>
@@ -1109,14 +1111,18 @@ class StartNotebookServer extends Component {
 
             {show.options ?
               (<FormGroup>
-                <Button color="link" className="font-italic btn-sm" onClick={() => { this.toggleShowAdvanced(); }}>
+                <Button color="link" className="ps-0 pe-0 pt-2 font-italic btn-sm"
+                  onClick={() => { this.toggleShowAdvanced(); }}>
                   {buttonMessage}
                 </Button>
               </FormGroup>) :
               null
             }
             {show.options ?
-              <StartNotebookOptions {...this.props} /> :
+              <StartNotebookOptions
+                toggleShowAdvanced={this.toggleShowAdvanced.bind(this)}
+                showAdvanced={this.state.showAdvanced}
+                {...this.props} /> :
               !this.state.showAdvanced ?
                 <Loader /> :
                 null
@@ -1885,16 +1891,19 @@ function LaunchErrorBackendAlert({ launchError }) {
   </WarnAlert>;
 }
 
-function LaunchErrorFrontendAlert({ launchError }) {
+function LaunchErrorFrontendAlert({ launchError, pipelines }) {
+  const pipeline = pipelines.main;
+  if (pipeline && (pipeline.path || pipeline.status === "success"))
+    return null;
   return <WarnAlert timeout={0}>
     <FontAwesomeIcon icon={faExclamationTriangle} /> {launchError.errorMessage}
   </WarnAlert>;
 }
 
-function LaunchErrorAlert({ launchError }) {
+function LaunchErrorAlert({ launchError, pipelines }) {
   if (launchError == null) return null;
   return (launchError.frontendError === true) ?
-    <LaunchErrorFrontendAlert launchError={launchError} /> :
+    <LaunchErrorFrontendAlert launchError={launchError} pipelines={pipelines} /> :
     <LaunchErrorBackendAlert launchError={launchError} />;
 }
 
@@ -1938,13 +1947,23 @@ class ServerOptionLaunch extends Component {
       </Warning>;
 
     const hasImage = pipelineAvailable(this.props.pipelines);
-    const startButton = (hasImage) ?
-      <Button key="start-session" color="primary" onClick={this.checkServer}>
-        Start session
-      </Button> :
-      <Button key="start-session" color="primary" disabled={true} onClick={this.checkServer}>
-        Start session
-      </Button>;
+    const startButton = <Button key="start-session" color="primary" disabled={!hasImage} onClick={this.checkServer}>
+      Start session
+    </Button>;
+
+    const imageStatusAlert = !hasImage ? <div key="noImageAvailableWarning" className="pb-2">
+      <FontAwesomeIcon icon={faExclamationTriangle} className="text-warning"/>{" "}
+      The image for this commit is not available.{" "}
+      {this.props.showAdvanced ?
+        <span>See the <b>Docker Image</b> section for details.</span>
+        : <Button color="link" className="ps-0 pe-0 font-italic"
+          onClick={() => { this.props.toggleShowAdvanced(true); }}>
+          Click here for more info.
+        </Button>
+      }
+
+    </div>
+      : null;
 
     const startBaseButton = (hasImage) ?
       null :
@@ -1954,6 +1973,7 @@ class ServerOptionLaunch extends Component {
 
 
     return [
+      imageStatusAlert,
       startButton,
       " ",
       startBaseButton,
