@@ -29,6 +29,7 @@ import FormGenerator from "../utils/formgenerator/";
 const userSchema = new Schema({
   fetched: { initial: null, mandatory: true },
   fetching: { initial: false, mandatory: true },
+  error: { initial: null, mandatory: true },
   logged: { initial: false, mandatory: true },
   data: { initial: {}, mandatory: true }
 });
