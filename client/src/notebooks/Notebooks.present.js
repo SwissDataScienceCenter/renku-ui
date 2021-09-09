@@ -1955,10 +1955,10 @@ class ServerOptionLaunch extends Component {
       <FontAwesomeIcon icon={faExclamationTriangle} className="text-warning"/>{" "}
       The image for this commit is not available.{" "}
       {this.props.showAdvanced ?
-        "Find more info about this on top."
+        <span>See the <b>Docker Image</b> section for details.</span>
         : <Button color="link" className="ps-0 pe-0 font-italic"
           onClick={() => { this.props.toggleShowAdvanced(true); }}>
-          Expand more info.
+          Click here for more info.
         </Button>
       }
 
