@@ -146,6 +146,8 @@ class IssueViewHeader extends Component {
             projectPathWithNamespace={this.props.projectPathWithNamespace}
             filePath={""}
             fixRelativePaths={true}
+            // change to default branch if this class is used
+            branch={"master"}
             markdownText={description}
             client={this.props.client}
             projectId={this.props.projectId}

@@ -28,6 +28,7 @@ import React, { Component } from "react";
 import { JupyterNotebook } from "./File.container";
 import { API_ERRORS } from "../api-client";
 
+// THIS CLASS SHOULD BE DELETED AFTER WE REMOVE ENTIRELY THE OLD COLLAB FEATURES
 class Show extends Component {
   constructor(props) {
     super(props);
@@ -43,7 +44,7 @@ class Show extends Component {
   componentWillUnmount() { this._isMounted = false; }
 
   retrieveNotebook() {
-    const branchName = this.props.branchName || "master";
+    const branchName = this.props.branchName;
     this.props.client.getProjectFile(this.props.projectId, this.props.filePath, branchName, false)
       .catch(e => {
         if (e.case === API_ERRORS.notFoundError)

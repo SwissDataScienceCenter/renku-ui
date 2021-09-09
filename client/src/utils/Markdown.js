@@ -135,7 +135,7 @@ function fixRelativePath(pathToFix, filePathArray) {
  */
 function RenkuMarkdownWithPathTranslation(props) {
 
-  const { singleLine, style } = props;
+  const { singleLine, style, branch } = props;
   let className = "text-break renku-markdown";
   if (singleLine)
     className += " children-no-spacing";
@@ -160,7 +160,7 @@ function RenkuMarkdownWithPathTranslation(props) {
             block.refPath.substring(1) :
             block.refPath;
           fetchedFiles.push(
-            props.client.getRepositoryFile(props.projectId, cleanPath, "master", "base64")
+            props.client.getRepositoryFile(props.projectId, cleanPath, branch, "base64")
               .then(d => { block.data = d; return block; })
               .catch(error => { block.isOpened = false; block.filePreview = false; return block; })
           );
@@ -181,7 +181,7 @@ function RenkuMarkdownWithPathTranslation(props) {
           loading.current = false;
         }
       });
-  }, [filesRefs, props.client, props.projectId]);
+  }, [filesRefs, props.client, props.projectId, branch]);
 
   useEffect(() => {
     if (!loaded.current && !loading.current && filesRefs.length !== 0) {

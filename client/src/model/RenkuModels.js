@@ -311,7 +311,7 @@ const projectGlobalSchema = new Schema({
   },
   filters: {
     [Prop.SCHEMA]: new Schema({
-      branch: { [Prop.INITIAL]: { name: "master" }, [Prop.MANDATORY]: true },
+      branch: { [Prop.INITIAL]: { name: null }, [Prop.MANDATORY]: true },
       commit: { [Prop.INITIAL]: { id: "latest" }, [Prop.MANDATORY]: true },
     })
   },
