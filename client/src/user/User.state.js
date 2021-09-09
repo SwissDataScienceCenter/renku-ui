@@ -35,22 +35,35 @@ class UserCoordinator {
     this.model.set("fetching", true);
 
     return this.client.getUser()
-      .catch(error => {
-        // we get 401 unauthorized when the user is not logged in
-        if (error.case !== API_ERRORS.unauthorizedError)
-          throw error;
-        return {};
-      })
       .then(data => {
         // overwrite user data and set if it's logged or not
         this.model.setObject({
           fetching: false,
           fetched: new Date(),
+          error: null,
           logged: data && data.username && data.state === "active" ? true : false,
           data: { $set: data }
         });
 
         return data;
+      })
+      .catch(error => {
+        const status = error.response && error.response.status ?
+          error.response.status :
+          "N/A";
+        const errorObject = {
+          fetching: false,
+          fetched: new Date(),
+          error: null,
+          logged: false,
+          data: { $set: {} }
+        };
+        // we get 401 unauthorized when the user is not logged in, but that's not an error
+        if (error.case !== API_ERRORS.unauthorizedError)
+          errorObject.error = status;
+        this.model.setObject(errorObject);
+
+        return errorObject;
       });
   }
 }
