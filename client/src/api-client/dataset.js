@@ -228,7 +228,11 @@ export default function addDatasetMethods(client) {
               "files": renkuDataset.files,
               "project_id": project_id
             })
-          });
+          }).then(response =>
+            response.data.error ?
+              { data: { error: { reason: response.data.error.reason, errorOnFileAdd: true } } }
+              : response
+          );
         } return response;
       });
   };
