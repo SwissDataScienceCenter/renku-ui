@@ -196,7 +196,8 @@ class ForkProjectModal extends Component {
     }
     return (
       <Fragment>
-        <Button outline color="primary" className="border-light" onClick={this.toggleFunction}>
+        <Button outline color="primary" className="border-light"
+          disabled={this.props.forkProjectDisabled} onClick={this.toggleFunction}>
           <FontAwesomeIcon icon={faCodeBranch} /> fork
         </Button>
         <Modal isOpen={this.state.open} toggle={this.toggleFunction}>
@@ -308,6 +309,8 @@ class ProjectViewHeaderOverview extends Component {
       description={this.props.core.description}
       settingsReadOnly={this.props.settingsReadOnly}
       settingsUrl={this.props.settingsUrl} />;
+    const forkProjectDisabled = this.props.visibility.accessLevel < ACCESS_LEVELS.REPORTER
+    && this.props.visibility.level === "private";
     const titleColSize = "col-12 col-md-8";
 
     return (
@@ -333,11 +336,13 @@ class ProjectViewHeaderOverview extends Component {
                 notifications={this.props.notifications}
                 title={this.props.core && this.props.core.title ? this.props.core.title : ""}
                 id={this.props.core && this.props.core.id ? this.props.core.id : 0}
+                forkProjectDisabled={forkProjectDisabled}
               />
               <Button
                 outline
                 color="primary"
                 className="border-light"
+                disabled={forkProjectDisabled}
                 href={`${this.props.externalUrl}/-/forks`} target="_blank" rel="noreferrer noopener">
                 {system.forks_count}
               </Button>
