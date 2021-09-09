@@ -272,7 +272,7 @@ function ImageInput({ name, label, value, alert, placeholder, modes,
     <Row key="row-title">
       <FormLabel className="ps-3" label={label} required={required} />
     </Row>,
-    <Row key="row-content">
+    <Row key="row-content" className="mb-3">
       <Col xs={12}>
         <div className="d-flex">
           <div className="pe-2">
