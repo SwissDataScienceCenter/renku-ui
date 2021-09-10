@@ -37,3 +37,29 @@ spec:
               servicePort: http
   {{- end }}
 {{- end }}
+---
+{{- if .Values.canary.enabled }}
+{{- $fullName := include "ui.fullname" . -}}
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  name: {{ $fullName }}-canary
+  labels:
+    app: {{ template "ui.name" . }}-canary
+    chart: {{ template "ui.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/canary: "true"
+    nginx.ingress.kubernetes.io/canary-by-cookie: "ui-0-11-x"
+spec:
+  rules:
+    - host: {{ .Values.global.renku.domain }}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: {{ $fullName }}-canary
+              servicePort: 80
+{{- end }}
