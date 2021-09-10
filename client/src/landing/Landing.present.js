@@ -161,7 +161,7 @@ class RenkuProvidesHeader extends Component {
 
 function SwitchToNewVersion() {
   const hundredAndEightyDays = 60 * 60 * 24 * 180;
-  document.cookie = `other-ui=always; max-age=${hundredAndEightyDays}; path=/`;
+  document.cookie = `ui-0-11-x=never; max-age=${hundredAndEightyDays}; path=/`;
 }
 
 class AnonymousHome extends Component {
