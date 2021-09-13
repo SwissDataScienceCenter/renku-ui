@@ -1,5 +1,11 @@
 # Changes
 
+## [0.11.15](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.14...0.11.15) (2021-09-13)
+
+### Features
+
+* update banners to adapt to 1.0.0 as default UI
+
 ## [0.11.14](https://github.com/SwissDataScienceCenter/renku-ui/compare/0.11.13...0.11.14) (2021-07-16)
 
 ### Features
