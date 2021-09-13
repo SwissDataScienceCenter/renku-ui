@@ -14,7 +14,7 @@ ENV NODE_OPTIONS="--max-old-space-size=4096"
 RUN npm install --silent && \
     npm run-script build
 
-FROM nginxinc/nginx-unprivileged:1.14-alpine
+FROM nginxinc/nginx-unprivileged:1-alpine
 
 COPY --from=0 /app/build /usr/share/nginx/html
 COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
