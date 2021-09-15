@@ -32,7 +32,7 @@ import {
   faClone, faCloudUploadAlt as faCloudUp, faCodeBranch, faHeart, faSearch, faShieldAlt as faShield, faUserFriends
 } from "@fortawesome/free-solid-svg-icons";
 
-import { RenkuMarkdown, Loader } from "../utils/UIComponents";
+import { ExternalLink, RenkuMarkdown, Loader } from "../utils/UIComponents";
 import { ProjectListRow } from "../project/list";
 import { StatuspageBanner } from "../statuspage";
 import Logo from "./logo-frog.svg";
@@ -159,6 +159,8 @@ class RenkuProvidesHeader extends Component {
   }
 }
 
+const discourseNewTopicUrl = "https://renku.discourse.group/new-topic?category=Renkulab";
+
 function SwitchToNewVersion() {
   const hundredAndEightyDays = 60 * 60 * 24 * 180;
   document.cookie = `ui-0-11-x=never; max-age=${hundredAndEightyDays}; path=/`;
@@ -167,19 +169,19 @@ function SwitchToNewVersion() {
 class AnonymousHome extends Component {
   render() {
     const newVersionBannerStyle = {
-      backgroundColor: "#01192D",
-      fontSize: "larger"
+      backgroundColor: "#01192D"
     };
     const linkStyle = {
-      color: "hsl(162, 100%, 37%)"
+      color: "hsl(162, 100%, 37%)",
+      fontSize: "larger"
     };
     const previewUrl = `/?v=${new Date().getTime()}`;
     return <Fragment>
       <div className="text-white text-center" style={newVersionBannerStyle}>
-        <img src={Logo} alt="renku frog" width="60px" /> A big leap is coming!{" "}
+        <img src={Logo} alt="renku frog" width="60px" /> This is the soon-to-be-discontinued RenkuLab UI.{" "}
         <a href={previewUrl}
           onClick={SwitchToNewVersion}
-          style={linkStyle}>Try out a preview of the new RenkuLab UI.</a>
+          style={linkStyle}>Switch to the new RenkuLab UI now.</a>
       </div>
       <div className="container">
         <Row key="marquee">
@@ -269,20 +271,22 @@ function LoggedInNewVersionBanner(props) {
 
   const newVersionBannerStyle = {
     backgroundColor: "#01192D",
-    fontSize: "larger"
   };
   const linkStyle = {
-    color: "hsl(162, 100%, 37%)"
+    color: "hsl(162, 100%, 37%)",
+    fontSize: "larger"
   };
   const previewUrl = `/?v=${new Date().getTime()}`;
   return <div className="text-white d-flex justify-content-center align-items-center" style={newVersionBannerStyle}>
     <div>
       <img src={Logo} alt="renku frog" width="60px" />
     </div>
-    <div>An improved UI is coming to RenkuLab soon. If you want a preview, you can {" "}
+    <div>Support for this RenkuLab UI version will be discontinued soon. We recommend {" "}
       <a href={previewUrl}
         onClick={SwitchToNewVersion}
-        style={linkStyle}>switch to the new UI now.</a>
+        style={linkStyle}>switching to the new UI</a> {" "}
+      as soon as you can. If you prefer something in the older UI, {" "}
+      <ExternalLink url={discourseNewTopicUrl} role="text" title="let us know" />, so we can address you needs.
     </div>
   </div>;
 }
