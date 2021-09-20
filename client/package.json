@@ -1,6 +1,6 @@
 {
   "name": "renku-ui",
-  "version": "1.0.0-beta5",
+  "version": "1.0.0",
   "private": true,
   "dependencies": {
     "@babel/helper-regex": "^7.10.5",
@@ -11,6 +11,7 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.3",
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@nteract/notebook-render": "^5.0.4-alpha.0",
+    "@popperjs/core": "^2.10.1",
     "@renku/ckeditor5-build-renku": "0.0.4",
     "@sentry/browser": "^5.30.0",
     "ajv": "^6.12.6",
@@ -36,7 +37,7 @@
     "react-autosuggest": "^10.1.0",
     "react-clipboard.js": "^2.0.16",
     "react-collapse": "^5.0.0",
-    "react-cookie-consent": "^5.2.0",		
+    "react-cookie-consent": "^5.2.0",
     "react-dom": "^16.14.0",
     "react-js-pagination": "^3.0.2",
     "react-masonry-css": "^1.0.16",
