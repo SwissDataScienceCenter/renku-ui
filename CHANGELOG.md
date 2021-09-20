@@ -1,5 +1,56 @@
 # Changes
 
+## [1.0.0 🎉](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.0.0-beta5...1.0.0) (2021-09-20)
+
+The 1.0.0 UI! The biggest changes compared to the earlier 0.11.x version are explained on the RenkuLab home page
+and include:
+
+* New aesthetics, look and feel
+* Sessions (formerly "interactive environments") shown in the UI within their RenkuLab context
+* Issues and Merge Requests shown in the UI within RenkuLab context
+
+Changes compared to 1.0.0-beta5 follow below.
+
+### Features
+
+**collaboration**
+
+* add fork tab to collaboration page ([#1468](https://github.com/SwissDataScienceCenter/renku-ui/issues/1468), [#1479](https://github.com/SwissDataScienceCenter/renku-ui/issues/1479))
+* add "open in tab button" to collaboration pages ([#1468](https://github.com/SwissDataScienceCenter/renku-ui/issues/1468), [#1479](https://github.com/SwissDataScienceCenter/renku-ui/issues/1479))
+
+**dataset**
+* provide ui to add and display dataset marquee image in projects ([#1142](https://github.com/SwissDataScienceCenter/renku-ui/issues/1142),  [#1444](https://github.com/SwissDataScienceCenter/renku-ui/issues/1444))
+
+**files**
+* make file browser width adjustable ([#1441](https://github.com/SwissDataScienceCenter/renku-ui/issues/1441), [#1423](https://github.com/SwissDataScienceCenter/renku-ui/issues/1423))
+
+**sessions**
+* improve visiblity of "open in new tab" button in sessions ([#1491](https://github.com/SwissDataScienceCenter/renku-ui/issues/1491), [#1400](https://github.com/SwissDataScienceCenter/renku-ui/issues/1400))
+* added cheat sheet to session page ([#1380](https://github.com/SwissDataScienceCenter/renku-ui/issues/1380), [#1466](https://github.com/SwissDataScienceCenter/renku-ui/issues/1466))
+
+**general**
+* add help page for UI changes ([#1469](https://github.com/SwissDataScienceCenter/renku-ui/issues/1469))
+* show initial 1.0.0 home page ([#1425](https://github.com/SwissDataScienceCenter/renku-ui/issues/1425), [#1426](https://github.com/SwissDataScienceCenter/renku-ui/issues/1426), [#1425](https://github.com/SwissDataScienceCenter/renku-ui/issues/1425))
+* show new logged-in landing page ([#1447](https://github.com/SwissDataScienceCenter/renku-ui/issues/1447), [#1360](https://github.com/SwissDataScienceCenter/renku-ui/issues/1360))
+* show error page when gitlab is not available ([#1489](https://github.com/SwissDataScienceCenter/renku-ui/issues/1489), [#805](https://github.com/SwissDataScienceCenter/renku-ui/issues/805))
+* show new version info banner to logged-in users ([#1469](https://github.com/SwissDataScienceCenter/renku-ui/issues/1469))
+
+### Bug Fixes
+
+**datasets**
+* send dataset creators correctly ([#1482](https://github.com/SwissDataScienceCenter/renku-ui/issues/1482), [#1470](https://github.com/SwissDataScienceCenter/renku-ui/issues/1470))
+* proper error handling when dataset add fails ([#1488](https://github.com/SwissDataScienceCenter/renku-ui/issues/1488))
+
+**sessions**
+* allow scripts on docs iframe to quiet complaints ([#1483](https://github.com/SwissDataScienceCenter/renku-ui/issues/1483))
+* be more generous on iframe privileges ([#1465](https://github.com/SwissDataScienceCenter/renku-ui/issues/1465), [#1483](https://github.com/SwissDataScienceCenter/renku-ui/issues/1483))
+* revive the fork button on the sessions page ([#1278](https://github.com/SwissDataScienceCenter/renku-ui/issues/1278), [#1480](https://github.com/SwissDataScienceCenter/renku-ui/issues/1480))
+* make improvements to messages when no image is available ([#1492](https://github.com/SwissDataScienceCenter/renku-ui/issues/1492), [#1448](https://github.com/SwissDataScienceCenter/renku-ui/issues/1448))
+
+**general**
+* handle projects with primary branches named other than "master" ([#1457](https://github.com/SwissDataScienceCenter/renku-ui/issues/1457), [#1173](https://github.com/SwissDataScienceCenter/renku-ui/issues/1173))
+* do not reload when logo is clicked ([#1473](https://github.com/SwissDataScienceCenter/renku-ui/issues/1473))
+
 ## [1.0.0-beta5](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.0.0-beta4...1.0.0-beta5) (2021-08-10)
 
 ### Bug Fixes
