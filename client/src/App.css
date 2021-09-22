@@ -233,3 +233,7 @@ iframe.invisible {
   height: 0;
   width: 0;
 }
+
+.word-break-normal {
+  word-break: normal !important;
+}
