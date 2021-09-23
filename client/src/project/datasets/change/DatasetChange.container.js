@@ -32,6 +32,7 @@ import { ImageFieldPropertyName as Prop } from "../../../utils/formgenerator/fie
 import FormGenerator from "../../../utils/formgenerator/";
 import { mapDataset } from "../../../dataset/index";
 import _ from "lodash";
+import { Button } from "reactstrap/lib";
 
 let dsFormSchema = _.cloneDeep(datasetFormSchema);
 
@@ -107,6 +108,11 @@ function ChangeDataset(props) {
   const onCancel = (e, handlers) => {
     handlers.removeDraft();
     props.history.push({ pathname: `/projects/${props.projectPathWithNamespace}/datasets` });
+  };
+
+  const goToCollaboration = (handlers) => {
+    handlers.removeDraft();
+    props.history.push({ pathname: `/projects/${props.projectPathWithNamespace}/collaboration/mergerequests` });
   };
 
   function setNewJobStatus(localJob, remoteJobsList) {
@@ -242,6 +248,19 @@ function ChangeDataset(props) {
               : redirectAfterAddFilesOnCreate(dataset.name, handlers);
           }
           else { handlers.setServerErrors(response.data.error.reason); }
+        }
+        if (response.data.result.remote_branch) {
+          handlers.setServerWarnings(
+            <div>
+              <strong>The branch you want to merge this changes to is protected.</strong>
+              <br/><br/>
+              Review and merge the following branch: <strong>{response.data.result.remote_branch}</strong>
+              {" "}to see the changes in your project.
+              <br/><br/>
+              You can do this in the {" "}
+              <Button color="warning" size="sm" onClick={()=>goToCollaboration(handlers)}>collaboration tab</Button>
+            </div>
+          );
         }
         else {
           let filesURLJobsArray = [];

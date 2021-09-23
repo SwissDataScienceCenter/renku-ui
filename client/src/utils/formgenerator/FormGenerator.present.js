@@ -115,8 +115,11 @@ function FormPanel({ title, btnName, submitCallback, formLocation, onCancel, edi
         );
       }
     }
+    const topMessage = isError ?
+      "Errors occurred while performing this operation."
+      : "The operation was successful but there are some warning messages.";
     return (<div>
-      <p>Errors occurred while performing this operation.</p>
+      <p>{topMessage}</p>
       {content}
     </div>);
   };
