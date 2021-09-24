@@ -157,7 +157,7 @@ function sanitizedHTMLFromMarkdown(markdown, singleLine = false) {
     emoji: true
   };
   const showdownClasses = {
-    table: "table"
+    table: "table word-break-normal"
   };
   // Reference: https://github.com/showdownjs/showdown/wiki/Add-default-classes-for-each-HTML-element
   const bindings = Object.keys(showdownClasses).map(key => ({
