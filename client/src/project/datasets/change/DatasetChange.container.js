@@ -232,7 +232,7 @@ function ChangeDataset(props) {
 
     dataset.images = await uploadDatasetImages(mappedInputs.image, handlers);
 
-    props.client.postDataset(props.httpProjectUrl, dataset, props.edit)
+    props.client.postDataset(props.httpProjectUrl, dataset, props.defaultBranch, props.edit)
       .then(response => {
         if (response.data.error !== undefined) {
           handlers.setSubmitLoader({ value: false, text: "" });
@@ -249,16 +249,17 @@ function ChangeDataset(props) {
           }
           else { handlers.setServerErrors(response.data.error.reason); }
         }
-        if (response.data.result.remote_branch) {
+        if (response.data.result.remote_branch !== props.defaultBranch) {
           handlers.setServerWarnings(
             <div>
-              <strong>The branch you want to merge this changes to is protected.</strong>
+              <strong>This project requires use of merge requests to make changes.</strong>
               <br/><br/>
-              Review and merge the following branch: <strong>{response.data.result.remote_branch}</strong>
-              {" "}to see the changes in your project.
+              Create a merge request to bring the changes from <strong>{response.data.result.remote_branch}</strong>
+              {" "} into <strong>{props.defaultBranch}</strong> to see the dataset in your project.
               <br/><br/>
-              You can do this in the {" "}
-              <Button color="warning" size="sm" onClick={()=>goToCollaboration(handlers)}>collaboration tab</Button>
+              You can do this in the {" "}
+              <Button color="warning" size="sm" onClick={()=>goToCollaboration(handlers)}>
+                collaboration / MR tab</Button>
             </div>
           );
         }

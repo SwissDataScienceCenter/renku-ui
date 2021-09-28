@@ -494,6 +494,7 @@ class View extends Component {
         location={p.location}
         notifications={p.notifications}
         model={this.props.model}
+        defaultBranch={this.projectState.get("core.default_branch")}
       />,
 
       editDataset: (p) => <ChangeDataset
@@ -518,6 +519,7 @@ class View extends Component {
         location={p.location}
         notifications={p.notifications}
         model={this.props.model}
+        defaultBranch={this.projectState.get("core.default_branch")}
       />,
 
       importDataset: (p) => <ImportDataset

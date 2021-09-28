@@ -218,7 +218,7 @@ export default function addDatasetMethods(client) {
     );
   };
 
-  client.postDataset = (projectUrl, renkuDataset, edit = false) => {
+  client.postDataset = (projectUrl, renkuDataset, defaultBranch, edit = false) => {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
@@ -255,7 +255,7 @@ export default function addDatasetMethods(client) {
       .then(response => {
         if (response.data.error) return response;
 
-        if (response.data.result.remote_branch) {
+        if (response.data.result.remote_branch !== defaultBranch) {
           if (renkuDataset.files.length > 0) {
             return client.cloneProjectInCache(projectUrl, response.data.result.remote_branch)
               .then(newProjectId => {
