@@ -72,6 +72,7 @@ function FormPanel({ title, btnName, submitCallback, formLocation, onCancel, edi
   formatServerErrorsAndWarnings, draft, loading, inputs, setInputs, setSubmit }) {
 
   const submitLoader = draft?.submitLoader;
+  const hideButtons = draft?.hideButtons;
   const serverErrors = draft?.serverErrors;
   const serverWarnings = draft?.serverWarnings;
   const secondaryButtonText = draft?.secondaryButton;
@@ -148,10 +149,14 @@ function FormPanel({ title, btnName, submitCallback, formLocation, onCancel, edi
             </FormText>
             : null
           }
-          <SubmitButtonGroup
-            submitCallback={submitCallback} submitLoader={submitLoader} btnName={btnName} errorFields={errorFields}
-            onCancel={onCancel} cancelBtnName={secondaryButtonText} handlers={handlers}
-          />
+          {hideButtons === true ?
+            null
+            :
+            <SubmitButtonGroup
+              submitCallback={submitCallback} submitLoader={submitLoader} btnName={btnName} errorFields={errorFields}
+              onCancel={onCancel} cancelBtnName={secondaryButtonText} handlers={handlers}
+            />
+          }
         </div>
       </Form>
     </Col>

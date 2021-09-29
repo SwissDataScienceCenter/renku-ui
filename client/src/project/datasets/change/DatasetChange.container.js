@@ -250,6 +250,8 @@ function ChangeDataset(props) {
           else { handlers.setServerErrors(response.data.error.reason); }
         }
         if (response.data.result.remote_branch !== props.defaultBranch) {
+          handlers.setSubmitLoader(false);
+          handlers.hideButtons(true);
           handlers.setServerWarnings(
             <div>
               <strong>This project requires use of merge requests to make changes.</strong>
