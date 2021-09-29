@@ -12,7 +12,7 @@
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@nteract/notebook-render": "^5.0.4-alpha.0",
     "@popperjs/core": "^2.10.1",
-    "@renku/ckeditor5-build-renku": "0.0.4",
+    "@renku/ckeditor5-build-renku": "0.0.5",
     "@sentry/browser": "^5.30.0",
     "ajv": "^6.12.6",
     "apollo-boost": "^0.4.9",
