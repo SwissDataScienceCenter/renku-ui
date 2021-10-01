@@ -39,6 +39,7 @@ class ProjectsCoordinator {
 
     return {
       id: project.id,
+      name: project.name,
       path_with_namespace: project.path_with_namespace,
       description: project.description,
       tag_list: project.tag_list,
