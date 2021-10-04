@@ -33,8 +33,10 @@ spec:
         paths:
           - path: {{ $ingressPath }}
             backend:
-              serviceName: {{ $fullName }}
-              servicePort: http
+              service:
+                name: {{ $fullName }}
+                port:
+                  number: 80
   {{- end }}
 {{- end }}
 ---
@@ -60,6 +62,8 @@ spec:
         paths:
           - path: /
             backend:
-              serviceName: {{ $fullName }}-canary
-              servicePort: 80
+              service:
+                name: {{ $fullName }}-canary
+                port:
+                  number: 80
 {{- end }}
