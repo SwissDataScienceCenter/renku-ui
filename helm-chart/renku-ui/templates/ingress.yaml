@@ -32,6 +32,7 @@ spec:
       http:
         paths:
           - path: {{ $ingressPath }}
+            pathType: Prefix
             backend:
               service:
                 name: {{ $fullName }}
@@ -61,6 +62,7 @@ spec:
       http:
         paths:
           - path: /
+            pathType: Prefix
             backend:
               service:
                 name: {{ $fullName }}-canary
