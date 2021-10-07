@@ -32,6 +32,7 @@ import { ImageFieldPropertyName as Prop } from "../../../utils/formgenerator/fie
 import FormGenerator from "../../../utils/formgenerator/";
 import { mapDataset } from "../../../dataset/index";
 import _ from "lodash";
+import { Button } from "reactstrap/lib";
 
 let dsFormSchema = _.cloneDeep(datasetFormSchema);
 
@@ -107,6 +108,11 @@ function ChangeDataset(props) {
   const onCancel = (e, handlers) => {
     handlers.removeDraft();
     props.history.push({ pathname: `/projects/${props.projectPathWithNamespace}/datasets` });
+  };
+
+  const goToCollaboration = (handlers) => {
+    handlers.removeDraft();
+    props.history.push({ pathname: `/projects/${props.projectPathWithNamespace}/collaboration/mergerequests` });
   };
 
   function setNewJobStatus(localJob, remoteJobsList) {
@@ -226,7 +232,7 @@ function ChangeDataset(props) {
 
     dataset.images = await uploadDatasetImages(mappedInputs.image, handlers);
 
-    props.client.postDataset(props.httpProjectUrl, dataset, props.edit)
+    props.client.postDataset(props.httpProjectUrl, dataset, props.defaultBranch, props.edit)
       .then(response => {
         if (response.data.error !== undefined) {
           handlers.setSubmitLoader({ value: false, text: "" });
@@ -242,6 +248,22 @@ function ChangeDataset(props) {
               : redirectAfterAddFilesOnCreate(dataset.name, handlers);
           }
           else { handlers.setServerErrors(response.data.error.reason); }
+        }
+        if (response.data.result.remote_branch !== props.defaultBranch) {
+          handlers.setSubmitLoader(false);
+          handlers.hideButtons(true);
+          handlers.setServerWarnings(
+            <div>
+              <strong>This project requires use of merge requests to make changes.</strong>
+              <br/><br/>
+              Create a merge request to bring the changes from <strong>{response.data.result.remote_branch}</strong>
+              {" "} into <strong>{props.defaultBranch}</strong> to see the dataset in your project.
+              <br/><br/>
+              You can do this in the {" "}
+              <Button color="warning" size="sm" onClick={()=>goToCollaboration(handlers)}>
+                collaboration / MR tab</Button>
+            </div>
+          );
         }
         else {
           let filesURLJobsArray = [];

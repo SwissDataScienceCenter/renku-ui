@@ -53,7 +53,8 @@ class FormGenerator extends Component {
       setServerWarnings: this.setServerWarnings.bind(this),
       setSecondaryButtonText: this.setSecondaryButtonText.bind(this),
       setFormDraftInternalValuesProperty: this.setFormDraftInternalValuesProperty.bind(this),
-      getFormDraftInternalValuesProperty: this.getFormDraftInternalValuesProperty.bind(this)
+      getFormDraftInternalValuesProperty: this.getFormDraftInternalValuesProperty.bind(this),
+      hideButtons: this.hideButtons.bind(this)
     };
   }
 
@@ -92,6 +93,10 @@ class FormGenerator extends Component {
 
   setSubmitLoader(submitLoader) {
     return this.coordinator.setDraftProperty( "submitLoader", submitLoader);
+  }
+
+  hideButtons(hideButtons) {
+    return this.coordinator.setDraftProperty("hideButtons", hideButtons);
   }
 
   setServerErrors(serverErrors) {

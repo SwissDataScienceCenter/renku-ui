@@ -138,6 +138,27 @@ export default function addDatasetMethods(client) {
     });
   };
 
+  client.cloneProjectInCache = (projectUrl, branch) => {
+    let headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    headers.append("X-Requested-With", "XMLHttpRequest");
+
+    const payload = { depth: 1,
+      git_url: projectUrl };
+    if (branch) payload.ref = branch;
+
+    return client.clientFetch(`${client.baseUrl}/renku/cache.project_clone`, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify(payload)
+    }).then(response => {
+      if (response.data.error !== undefined)
+        return response;
+      return response.data.result.project_id;
+
+    });
+  };
+
   /**
    * This method checks weather the dataset is or not in the cache.
    * In case the project is already there it returns the id of the project in the cache.
@@ -158,31 +179,46 @@ export default function addDatasetMethods(client) {
       if (response.data.error !== undefined)
         return response;
 
-      return response.data.result.projects.find(project => project.git_url === projectUrl);
+      const currentProjects = response.data.result.projects.find(project => project.git_url === projectUrl);
+      // We need to do this because there is a BUG in the CORE SERVICE!!!
+      // ref is missing from the list of cloned projects and that makes it impossible for us
+      // to know which project id to use, in this case we need to clone the project
+      // for every operation we do on master
+      // ----->    :(     :(       :(
+      if (currentProjects.length > 1)
+        return undefined;
+      return currentProjects;
     }).then( cloned_project => {
       if (cloned_project !== undefined)
         return cloned_project.project_id;
 
-      return client.clientFetch(`${client.baseUrl}/renku/cache.project_clone`, {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify({
-          depth: 1,
-          git_url: projectUrl
-        })
-      }).then(response => {
-        if (response.data.error !== undefined)
-          return response;
-
-        return response.data.result.project_id;
-
-      }).then(project_id => {
+      return client.cloneProjectInCache(projectUrl).then(project_id => {
         return Promise.resolve(project_id);
       });
     });
   };
 
-  client.postDataset = (projectUrl, renkuDataset, edit = false) => {
+  client.addFilesToDataset = (project_id, renkuDataset) => {
+    let headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    headers.append("X-Requested-With", "XMLHttpRequest");
+
+    return client.clientFetch(`${client.baseUrl}/renku/datasets.add`, {
+      method: "POST",
+      headers: headers,
+      body: JSON.stringify({
+        "name": renkuDataset.name,
+        "files": renkuDataset.files,
+        "project_id": project_id
+      })
+    }).then(response =>
+      response.data.error ?
+        { data: { error: { reason: response.data.error.reason, errorOnFileAdd: true } } }
+        : response
+    );
+  };
+
+  client.postDataset = (projectUrl, renkuDataset, defaultBranch, edit = false) => {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
@@ -217,23 +253,30 @@ export default function addDatasetMethods(client) {
         });
       })
       .then(response => {
-        if (response.data.error) { return response; }
+        if (response.data.error) return response;
+
+        if (response.data.result.remote_branch !== defaultBranch) {
+          if (renkuDataset.files.length > 0) {
+            return client.cloneProjectInCache(projectUrl, response.data.result.remote_branch)
+              .then(newProjectId => {
+                if (newProjectId.data && newProjectId.data.error)
+                  return { data: { error: { reason: newProjectId.data.error.reason, errorOnFileAdd: true } } };
+                if (renkuDataset.files.length > 0) {
+                  return client.addFilesToDataset(newProjectId, renkuDataset)
+                    .then(response=> {
+                      if (response.data.error)
+                        return { data: { error: { reason: response.data.error.reason, errorOnFileAdd: true } } };
+                      return response;
+                    });
+                }
+              });
+          }
+        }
         else
         if (renkuDataset.files.length > 0) {
-          return client.clientFetch(`${client.baseUrl}/renku/datasets.add`, {
-            method: "POST",
-            headers: headers,
-            body: JSON.stringify({
-              "name": renkuDataset.name,
-              "files": renkuDataset.files,
-              "project_id": project_id
-            })
-          }).then(response =>
-            response.data.error ?
-              { data: { error: { reason: response.data.error.reason, errorOnFileAdd: true } } }
-              : response
-          );
-        } return response;
+          return client.addFilesToDataset(project_id, renkuDataset);
+        }
+        return response;
       });
   };
 

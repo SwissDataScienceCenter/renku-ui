@@ -52,7 +52,7 @@ function DatasetChange(props) {
 
   const formatServerErrorsAndWarnings = (errorOrWarning, isError) => {
     const jobsStats = errorOrWarning;
-    if (!isError) {
+    if (!isError && (jobsStats.failed || jobsStats.inProgress || jobsStats.tooLong)) {
       const failed = jobsStats.failed
         .map(job => <div key={"warn-" + job.file_url} className="pl-2">- {job.file_url}<br /></div>);
       const progress = jobsStats.inProgress
