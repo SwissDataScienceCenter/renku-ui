@@ -388,7 +388,11 @@ function AnonymousHome(props) {
           StandardHome(p) :
           null
     }
-    <TransitionalHome {...p} />
+    {
+      (props.homeCustomized.custom.enabled) ?
+        CustomizedAnonymousHome(p) :
+        TransitionalHome(p)
+    }
   </div>;
 }
 
