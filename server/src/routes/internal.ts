@@ -18,19 +18,22 @@
 
 import express from "express";
 
-import registerInternalRoutes from "./internal";
-import registerApiRoutes from "./apis";
-import { Authenticator } from "../authentication";
 
-function register(app: express.Application, prefix: string, authenticator: Authenticator): void {
-  registerInternalRoutes(app);
-
-  // This is only for test, it's not reachable from outside
-  app.get(prefix, (req, res) => {
-    res.send("Hello ingress!");
+function registerInternalRoutes(app: express.Application): void {
+  // define a route handler for the default home page
+  app.get("/", (req, res) => {
+    res.send("Hello world!");
   });
 
-  registerApiRoutes(app, prefix, authenticator);
+  // define a route handler for the readiness probe
+  app.get("/readiness", (req, res) => {
+    res.send("ready");
+  });
+
+  // define a route handler for the liveness probe
+  app.get("/liveness", (req, res) => {
+    res.send("live");
+  });
 }
 
-export default { register };
+export default registerInternalRoutes;

@@ -17,6 +17,7 @@ spec:
       labels:
         app.kubernetes.io/name: {{ include "ui-server.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
+        {{ include "call-nested" (list . "redis" "redis.fullname") }}-client: "true"
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -35,6 +36,35 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+          env:
+            - name: SERVER_URL
+              value: {{ .Values.serverData.url | default (printf "https://dev.renku.ch") | quote }}
+            - name: SERVER_PORT
+              value: {{ .Values.serverData.port | default (printf "8080") | quote }}
+            - name: SERVER_PREFIX
+              value: {{ .Values.serverData.prefix | default (printf "/ui-server") | quote }}
+            - name: GATEWAY_URL
+              value: {{ .Values.gateway.url | default (printf "https://dev.renku.ch/api") | quote }}
+            - name: GATEWAY_LOGIN_PATH
+              value: {{ .Values.gateway.loginSuffix | default (printf "https://dev.renku.ch/api/auth/login") | quote }}
+            - name: GATEWAY_LOGOUT_PATH
+              value: {{ .Values.gateway.logoutSuffix | default (printf "https://dev.renku.ch/api/auth/logout") | quote }}
+            - name: AUTH_SERVER_URL
+              value: {{ .Values.authentication.url | default (printf "https://dev.renku.ch/auth/realms/Renku") | quote }}
+            - name: AUTH_CLIENT_ID
+              value: {{ .Values.authentication.id | default (printf "renku") | quote }}
+            - name: AUTH_CLIENT_SECRET
+              value: {{ .Values.authentication.secret | default (printf "%s" .Values.global.gateway.clientSecret) | quote }}
+            - name: AUTH_TOKEN_TOLERANCE
+              value: {{ .Values.authentication.expirationTolerance | default (printf "10") | quote }}
+            - name: REDIS_HOST
+              value: {{ include "call-nested" (list . "redis" "redis.fullname") }}-master
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_DATABASE
+              value: "0"
+            - name: REDIS_PASSWORD
+              value:
           livenessProbe:
             httpGet:
               path: /liveness

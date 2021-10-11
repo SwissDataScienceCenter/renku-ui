@@ -6,7 +6,7 @@ replicaCount: 1
 
 image:
   repository: renku/renku-ui-server
-  tag: '0.11.0'
+  tag: '1.0.1'
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
@@ -69,3 +69,36 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+serverData:
+  url: https://url.uiserver.fake
+  port: 8080
+  prefix: /ui-server
+
+gateway:
+  url: https://url.gateway.fake
+  loginSuffix: /auth/login
+  logoutSuffix: /auth/logout
+
+authentication:
+  url: https://url.keycloak.fake/auth/realms/Renku
+  id: renku
+  # secret: 1234abcd # do not provide any value here to use the global gateway client secret
+  expirationTolerance: 10 # in seconds
+
+# ui-server dedicate redis
+redis:
+  nameOverride: ui-server-redis
+
+  cluster:
+    enabled: false
+
+  usePassword: false
+
+  master:
+    persistence:
+      enabled: false
+
+  networkPolicy:
+    enabled: true
+    allowExternal: false

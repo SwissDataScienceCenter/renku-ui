@@ -18,19 +18,25 @@
 
 import express from "express";
 
-import registerInternalRoutes from "./internal";
-import registerApiRoutes from "./apis";
 import { Authenticator } from "../authentication";
+import { renkuAuth } from "../authentication/middleware";
 
-function register(app: express.Application, prefix: string, authenticator: Authenticator): void {
-  registerInternalRoutes(app);
 
-  // This is only for test, it's not reachable from outside
-  app.get(prefix, (req, res) => {
-    res.send("Hello ingress!");
+function reigsterApiRoutes(app: express.Application, prefix: string, authenticator: Authenticator): void {
+  // match all the other api routes
+  app.get(prefix + "/api/*", renkuAuth(authenticator), (req, res) => {
+    // TODO: this works as a temporary test. Fix it when implementing the proper API routing
+    const headers = { ...req.headers };
+    if (headers["Authorization"])
+      headers["Authorization"] = "[ADJUSTED] bearer token";
+    if (headers["cookie"]) {
+      if (headers["cookie"].includes("ui-server-session"))
+        headers["cookie"] = "[ADJUSTED] cookies with ui-server-session";
+      else
+        headers["cookie"] = "[ADJUSTED] cookies not related to ui-server";
+    }
+    res.json(headers);
   });
-
-  registerApiRoutes(app, prefix, authenticator);
 }
 
-export default { register };
+export default reigsterApiRoutes;

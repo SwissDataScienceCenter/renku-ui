@@ -21,18 +21,24 @@ set -e
 
 CURRENT_CONTEXT=`kubectl config current-context`
 
-if [[ "$DEBUG" ]] || [[ "$DEBUGBRK" ]]
+if [[ "$DEBUG" ]]
 then
   echo "*** DEBUG MODE ENABLED ***"
   echo "You will be able to attach an external debugger."
   echo "The configuration for the VScode remote debugger for NPM is the following:"
   echo '{ "name": "uiserver", "type": "node", "request": "attach", "address": "localhost",'
   echo '"port": 9229, "protocol": "inspector", "restart": true }'
+elif [[ "$CONSOLE" ]]
+then
+  echo "*** CONSOLE MODE ENABLED ***"
+  echo "The ui-server telepresence pod will start in console mode."
 else
-  echo "*** DEBUG MODE DISABLED ***"
-  echo "If you want to attach an external debugger (E.G. VScode remote debugger for NPM)"
-  echo "set the DEBUG variable to 1. You can use the command: DEBUG=1 ./run-telepresence.sh"
-  echo "You can use DEBUGBRK instead if you want breakpoints to temporarily pause node execution."
+  echo "*** NO DEBUG ***"
+  echo "If you need to debug or attach an external debugger (E.G. VScode remote debugger for NPM),"
+  echo "consider starting the ui-server telepresence in debug mode by setting the DEBUG variable to 1."
+  echo "DEBUG=1 ./run-telepresence.sh"
+  echo "You can use CONSOLE=1 if you prefer full control in the ui-server pod."
+  echo "CONSOLE=1 ./run-telepresence.sh"
 fi
 echo ""
 
@@ -72,7 +78,7 @@ else
   SERVICE_NAME=${DEV_NAMESPACE}-renku-uiserver
 fi
 
-# TODO: set sentry dns if explicitly required by the user
+# TODO: set sentry dns
 # if [[ $SENTRY = 1 ]]
 # then
 #   SENTRY_URL="https://182290b8e1524dd3b7eb5dd051852f9f@sentry.dev.renku.ch/5"
@@ -81,28 +87,15 @@ fi
 #   echo "Errors won't be sent to sentry by default. To enable sentry, use 'SENTRY=1 ./run-telepresence.sh'"
 # fi
 
-
-# The following is necessary if we start telepresence with --run-shell
-# echo "================================================================================================================="
-# echo "Once telepresence has started, type the following command to start the development server:"
-# echo "npm dev"
-# echo "================================================================================================================="
-
-# The `inject-tcp` proxying switch helps when running multiple instances of telepresence but creates problems when
-# suid bins need to run. Please switch the following two lines when trying to run multiple telepresence.
-# to include `--method inject-tcp`
-# Reference: https://www.telepresence.io/reference/methods
-
-if [[ "$DEBUG" ]]
+if [[ "$CONSOLE" ]]
+then
+  echo "***** CONSOLE MODE *****"
+  echo "You can start the server in debug mode with:"
+  echo "> npm run dev-debug"
+  telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --expose 9229:9229 --run-shell
+elif [[ "$DEBUG" ]]
 then
   telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --expose 9229:9229 --run npm run dev-debug
-elif [[ "$DEBUGBRK" ]]
-then
-  telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --expose 9229:9229 --run npm run dev-debug-brk
 else
-  # if things work in mac delete current and next line
-  # telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --run npm run dev
-  # Use the same method on osx since --method inject-tcp does not work on macOS 11.2 (Big Sur)
-  # See https://github.com/telepresenceio/telepresence/issues/1487
-  telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 3000:8080 --run npm run dev
+  telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --run npm run dev
 fi

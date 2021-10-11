@@ -26,15 +26,25 @@ jobs:
         npm run-script build
       env:
         NODE_OPTIONS: '--max-old-space-size=4096'
-    - name: Run test
+    - name: Run test client
       run: |
         cd client
         npm test
       env:
         CI: true
-    - name: Run lint
+    - name: Run lint client
       run: |
         cd client
+        npm run lint
+    - name: Run test server
+      run: |
+        cd server
+        npm test
+      env:
+        CI: true
+    - name: Run lint server
+      run: |
+        cd server
         npm run lint
 
   test-chart:
