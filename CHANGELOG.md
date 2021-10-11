@@ -1,5 +1,18 @@
 # Changes
 
+## [1.0.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.0.0..1.0.1) (2021-10-11)
+
+### Bug Fixes
+
+* prevent users without fork rights from trying to fork ([#1494](https://github.com/SwissDataScienceCenter/renku-ui/issues/1494), [#1431](https://github.com/SwissDataScienceCenter/renku-ui/issues/1431))
+* reactivate configurable home page ([#1513](https://github.com/SwissDataScienceCenter/renku-ui/issues/1513), [#1515](https://github.com/SwissDataScienceCenter/renku-ui/issues/1515))
+* correct column width in markdown tables ([#1501](https://github.com/SwissDataScienceCenter/renku-ui/issues/1501), [#1496](https://github.com/SwissDataScienceCenter/renku-ui/issues/1496))
+* show titles in landing page Your Projects sections ([#1508](https://github.com/SwissDataScienceCenter/renku-ui/issues/1508))
+
+### Features
+
+* support creating and editing datasets when the default branch is protected ([#1013](https://github.com/SwissDataScienceCenter/renku-ui/issues/1013), [#1502](https://github.com/SwissDataScienceCenter/renku-ui/issues/1502))
+
 ## [1.0.0 🎉](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.0.0-beta5...1.0.0) (2021-09-20)
 
 The 1.0.0 UI! The biggest changes compared to the earlier 0.11.x version are explained on the RenkuLab home page
