@@ -66,6 +66,7 @@ class RenkuToolbarItemUser extends Component {
   render() {
     const { location, user } = this.props;
     const gatewayURL = this.props.params.GATEWAY_URL;
+    const uiserverURL = this.props.params.UISERVER_URL;
     const redirect_url = encodeURIComponent(this.props.params.BASE_URL);
     if (!user.fetched) {
       return <Loader size="16" inline="true" />;
@@ -85,7 +86,7 @@ class RenkuToolbarItemUser extends Component {
             title="Account" className="dropdown-item" role="link" />
           <DropdownItem divider />
           <a id="logout-link" className="dropdown-item" onClick={() => { LoginHelper.notifyLogout(); }}
-            href={`${gatewayURL}/auth/logout?redirect_url=${redirect_url}`}>Logout</a>
+            href={`${uiserverURL}/auth/logout?redirect_url=${redirect_url}`}>Logout</a>
         </DropdownMenu>
       </Fragment>
     </UncontrolledDropdown>;

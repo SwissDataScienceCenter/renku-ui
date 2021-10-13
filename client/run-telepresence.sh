@@ -137,6 +137,7 @@ tee > ./public/config.json << EOF
   "TELEPRESENCE": "true",
   "BASE_URL": "${BASE_URL}",
   "GATEWAY_URL": "${BASE_URL}/api",
+  "UISERVER_URL": "${BASE_URL}/ui-server",
   "WELCOME_PAGE": "${WELCOME_PAGE}",
   "SENTRY_URL": "${SENTRY_URL}",
   "SENTRY_NAMESPACE": "${SENTRY_NAMESPACE}",

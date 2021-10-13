@@ -65,8 +65,9 @@ class APIClient {
   // ku    -->  issue (old)
 
 
-  constructor(baseUrl) {
+  constructor(baseUrl, uiserverUrl) {
     this.baseUrl = baseUrl;
+    this.uiserverUrl = uiserverUrl;
     this.returnTypes = RETURN_TYPES;
     this.graphqlClient = new ApolloClient({
       uri: `${baseUrl}/kg/graphql`
@@ -110,20 +111,15 @@ class APIClient {
     return renkuFetch(url, options)
       .catch((error) => {
         // For permission errors we send the user to login
-        if (reLogin && error.case === API_ERRORS.unauthorizedError) {
-          if (anonymousLogin)
-            return this.doAnonymousLogin();
+        if (reLogin && error.case === API_ERRORS.unauthorizedError)
           return this.doLogin();
-        }
         // Alert only if corresponding option is set to true
-        else if (alertOnErr) {
+        else if (alertOnErr)
           alertAPIErrors(error);
-        }
         // Default case: Re-raise the error for the application
         // to take care of it.
-        else {
+        else
           return Promise.reject(error);
-        }
       })
       .then(response => {
         // This avoids showing errors for a second while doing the anonymous log-in.
@@ -217,20 +213,15 @@ class APIClient {
     return fetch(urlObject, { headers, method });
   }
 
-  doAnonymousLogin() {
-    window.location = `${this.baseUrl}/auth/jupyterhub/login-tmp` + // eslint-disable-line
-      `?redirect_url=${encodeURIComponent(window.location.href)}`;
-  }
-
   doLogin() {
     // This is invoked to check authentication.
     // ? It may be safer to invoke `LoginHelper.notifyLogout()`, but it doesn't seem to be necessary
-    window.location = `${this.baseUrl}/auth/login?redirect_url=${encodeURIComponent(window.location.href)}`;
+    window.location = `${this.uiserverUrl}/auth/login?redirect_url=${encodeURIComponent(window.location.href)}`;
   }
 
   doLogout() {
     // ? Whenever this will be used, remember to invoke `LoginHelper.notifyLogout()`
-    window.location = `${this.baseUrl}/auth/logout?redirect_url=${encodeURIComponent(window.location.href)}`;
+    window.location = `${this.uiserverUrl}/auth/logout?redirect_url=${encodeURIComponent(window.location.href)}`;
   }
 
   getBasicHeaders() {

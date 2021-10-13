@@ -55,7 +55,7 @@ Promise.all([configFetch, privacyFetch]).then(valuesRead => {
     Url.setBaseUrl(params["BASE_URL"]);
 
     // create client to be passed to coordinators
-    const client = new APIClient(params.GATEWAY_URL);
+    const client = new APIClient(params.GATEWAY_URL, params.UISERVER_URL);
 
     // Create the global model containing the formal schema definition and the redux store
     const model = new StateModel(globalSchema);
