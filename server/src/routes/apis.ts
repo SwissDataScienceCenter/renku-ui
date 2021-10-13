@@ -17,12 +17,35 @@
  */
 
 import express from "express";
+import { createProxyMiddleware } from "http-proxy-middleware";
 
+import config from "../config";
 import { Authenticator } from "../authentication";
 import { renkuAuth } from "../authentication/middleware";
 
 
+const tmpProxMiddleware = createProxyMiddleware({
+  target: config.deplyoment.gatewayUrl,
+  changeOrigin: true,
+  pathRewrite: (path): string => {
+    const rewrittenPath = path.substring((config.server.prefix + "/api").length);
+    return rewrittenPath;
+  },
+  onProxyReq: (clientReq) => {
+    // ? We don't need the cookie in the routed request. Let's remove them to avoid gateway conflicts with auth token
+    clientReq.removeHeader("cookie");
+  }
+});
+
+
 function reigsterApiRoutes(app: express.Application, prefix: string, authenticator: Authenticator): void {
+  app.get(prefix + "/api/projects*", renkuAuth(authenticator), tmpProxMiddleware, (req, res) => {
+    // ? This route only attaches the middleware
+    // ? REF: https://www.npmjs.com/package/http-proxy-middleware
+    // TODO: extend this correctly to unmatched /api/* routes
+    // TODO: alterative: consider using https://github.com/nodejitsu/node-http-proxy
+  });
+
   // match all the other api routes
   app.get(prefix + "/api/*", renkuAuth(authenticator), (req, res) => {
     // TODO: this works as a temporary test. Fix it when implementing the proper API routing
