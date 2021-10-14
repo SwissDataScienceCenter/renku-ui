@@ -30,12 +30,15 @@ import { Authenticator } from "./index";
  * @param res - express response
  * @return session id
  */
-function getOrSetSessionId(req: express.Request, res: express.Response) : string {
+function getOrSetSessionId(
+  req: express.Request,
+  res: express.Response,
+  serverPrefix: string = config.server.prefix): string {
   const cookiesKey = config.auth.cookiesKey;
   let sessionId: string = getSessionId(req);
   if (req.cookies[cookiesKey] == null) {
     sessionId = uuidv4();
-    res.cookie(cookiesKey, sessionId, { secure: true });
+    res.cookie(cookiesKey, sessionId, { secure: true, httpOnly: true, path: serverPrefix });
   }
   return sessionId;
 }
@@ -71,7 +74,8 @@ function getStringyParams(req: express.Request) : string {
 
 
 function registerAuthenticationRoutes(app: express.Application, authenticator: Authenticator): void {
-  const authPrefix = config.server.prefix + config.auth.suffix;
+  const serverPrefix = config.server.prefix;
+  const authPrefix = serverPrefix + config.auth.suffix;
 
   app.get(authPrefix + "/login", async (req, res, next) => {
     try {
