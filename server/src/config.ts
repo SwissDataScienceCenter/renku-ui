@@ -20,23 +20,23 @@ import { convertType } from "./utils";
 
 
 const SERVER = {
-  url: process.env.SERVER_URL || "https://dev.renku.ch",
+  url: process.env.SERVER_URL,
   port: convertType(process.env.SERVER_PORT) || 8080,
   prefix: process.env.SERVER_PREFIX || "/ui-server",
 };
 
 const DEPLOYMENT = {
-  gatewayUrl: process.env.GATEWAY_URL || "https://dev.renku.ch/api",
+  gatewayUrl: process.env.GATEWAY_URL || SERVER.url + "/api",
   gatewayLoginUrl:
-    (process.env.GATEWAY_URL || "https://dev.renku.ch/api") + (process.env.GATEWAY_LOGIN_PATH || "/auth/login"),
+    (process.env.GATEWAY_URL || SERVER.url + "/api") + (process.env.GATEWAY_LOGIN_PATH || "/auth/login"),
   gatewayLogoutUrl:
-    (process.env.GATEWAY_URL || "https://dev.renku.ch/api") + (process.env.GATEWAY_LOGOUT_PATH || "/auth/logout"),
+    (process.env.GATEWAY_URL || SERVER.url + "/api") + (process.env.GATEWAY_LOGOUT_PATH || "/auth/logout"),
 };
 
 const AUTHENTICATION = {
-  serverUrl: process.env.AUTH_SERVER_URL || "https://dev.renku.ch/auth/realms/Renku",
+  serverUrl: process.env.AUTH_SERVER_URL || SERVER.url + "/auth/realms/Renku",
   clientId: process.env.AUTH_CLIENT_ID || "renku",
-  clientSecret: process.env.AUTH_CLIENT_SECRET || "1234abcd",
+  clientSecret: process.env.AUTH_CLIENT_SECRET,
   tokenExpirationTolerance: convertType(process.env.AUTH_TOKEN_TOLERANCE) || 10,
   cookiesKey: "ui-server-session",
   suffix: "/auth",

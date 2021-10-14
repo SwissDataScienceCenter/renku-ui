@@ -106,13 +106,14 @@ class Authenticator {
   }
 
   /**
-   * Get paramater string to attach to the final login, and optionally delete the entry from the storage.
+   * The parameters for the redirect URL after login need to be temporarily stored. Get the parameter
+   * string to attach to the final login, and optionally delete the entry from the storage.
    *
    * @param sessionId - session id
-   * @param deleteAfter - session id
+   * @param deleteAfter - boolean defaults to true
    * @returns url search string, including the initial `?`
    */
-  async getParametersAndDelete(sessionId: string, deleteAfter = true): Promise<string> {
+  async getPostLoginParametersAndDelete(sessionId: string, deleteAfter = true): Promise<string> {
     const parametersKey = this.getParametersKey(sessionId);
     const parametersString = await this.storage.get(parametersKey);
     if (parametersString && parametersString != null) {
@@ -280,6 +281,8 @@ class Authenticator {
    * delete token set from the storage.
    *
    * @param sessionId - session id
+   * @returns true if the delete operation succeeded, false otherwise. Mind that trying to delete an
+   * already delete key won't make the operation fail.
    */
   async deleteTokens(sessionId: string): Promise<boolean> {
     this.checkInit();

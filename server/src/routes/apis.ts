@@ -39,7 +39,7 @@ const tmpProxMiddleware = createProxyMiddleware({
 
 
 function reigsterApiRoutes(app: express.Application, prefix: string, authenticator: Authenticator): void {
-  app.get(prefix + "/api/projects*", renkuAuth(authenticator), tmpProxMiddleware, (req, res) => {
+  app.get(prefix + "/api/projects*", renkuAuth(authenticator), tmpProxMiddleware, () => {
     // ? This route only attaches the middleware
     // ? REF: https://www.npmjs.com/package/http-proxy-middleware
     // TODO: extend this correctly to unmatched /api/* routes

@@ -30,7 +30,7 @@ import { Authenticator } from "./index";
  * @param res - express response
  * @return session id
  */
-function getOrSetSessionId(
+function getOrCreateSessionId(
   req: express.Request,
   res: express.Response,
   serverPrefix: string = config.server.prefix): string {
@@ -80,7 +80,7 @@ function registerAuthenticationRoutes(app: express.Application, authenticator: A
   app.get(authPrefix + "/login", async (req, res, next) => {
     try {
       // start the login using the code flow, preserving query params for later.
-      const sessionId = getOrSetSessionId(req, res);
+      const sessionId = getOrCreateSessionId(req, res);
       const inputParams = getStringyParams(req);
       const loginCodeUrl = await authenticator.startAuthFlow(sessionId, inputParams);
 
@@ -94,14 +94,14 @@ function registerAuthenticationRoutes(app: express.Application, authenticator: A
   app.get(authPrefix + "/callback", async (req, res, next) => {
     try {
       // finish the auth flow, exchanging the auth code with the token set.
-      const sessionId = getOrSetSessionId(req, res);
+      const sessionId = getOrCreateSessionId(req, res);
       const code = authenticator.getAuthCode(req);
       new Error("test");
       const tokens = await authenticator.finishAuthFlow(sessionId, code);
       await authenticator.storeTokens(sessionId, tokens);
 
       // create the login url, adding the original query params.
-      const originalParameters = await authenticator.getParametersAndDelete(sessionId);
+      const originalParameters = await authenticator.getPostLoginParametersAndDelete(sessionId);
       const backendLoginUrl = config.deplyoment.gatewayLoginUrl + originalParameters;
 
       // ? Do I need to set the access token here? Will this be needed when removing the `session` cookie from gateway?
@@ -116,7 +116,7 @@ function registerAuthenticationRoutes(app: express.Application, authenticator: A
   app.get(authPrefix + "/logout", async (req, res, next) => {
     try {
       // delete token set
-      const sessionId = getOrSetSessionId(req, res);
+      const sessionId = getOrCreateSessionId(req, res);
       await authenticator.deleteTokens(sessionId);
 
       // create the logout url
