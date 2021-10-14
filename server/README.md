@@ -19,7 +19,7 @@ semi-permanent storage, and one or more [Node.js](https://nodejs.org) instances,
 
 Requests come from the UI client running in the user browser.
 
-If the request should be forwared, the server checks for existing credentials and it attachs
+If the request should be forwarded, the server checks for existing credentials and it attaches
 the access token when a valid one is available (or refresh it if possible).
 The request is then forwarded to the gateway and the result returned back to the UI.
 
@@ -30,7 +30,7 @@ client that can decide to either display a feedback to the user or trigger the a
 
 Other requests are handled directly by the service, and those may use Redis to store data.
 Among those there are requests requiring aggregations from multiple endpoints, and all the
-authentication related endpoins.
+authentication related endpoints.
 
 The first category is handled similar to the forwared requests, but the final 
 response is generated only when all the endpoints have responded, and partial failures
@@ -45,9 +45,9 @@ Once you have a development instance of Renku running locally or in the cloud,
 you can [install telepresence v1](https://www.telepresence.io/docs/v1/reference/install).
 Clone the repository and run `npm install` (remember to re-run it every time there are
 changes on the requirements file!).
-No you can start a development environment by using the `run-telepresence.sh` script from the `server` folder.
+Now you can start a development environment by using the `run-telepresence.sh` script from the `server` folder.
 
-The script will print some information, ask you for an admin password (required by telepresence)  and then run the npm server.
+The script will print some information, ask you for an admin password (required by telepresence) and then run the npm server.
 
 **TIP**: If you need to debug, you should set the environment variable `DEBUG=1`.\
 That supports also attaching external debuggers to hit breakpoints (E.G. [VScode](https://code.visualstudio.com)).

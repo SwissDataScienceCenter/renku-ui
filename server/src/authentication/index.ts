@@ -171,7 +171,7 @@ class Authenticator {
 
 
   /**
-   * Starts the authentication flow. It saves the code verifier and it returns the url to redirect to.
+   * Complete the authentication flow. It cleans-up the code verifier, which is not needed anymore.
    *
    * @param sessionId - session id
    */
@@ -208,7 +208,7 @@ class Authenticator {
 
 
   /**
-   * Store strigified token set to the storage.
+   * Store stringified token set to the storage.
    *
    * @param sessionId - session id
    * @param tokens - tokens object as received from the authentication server (must contain access and refresh token)
