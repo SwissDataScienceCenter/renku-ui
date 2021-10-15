@@ -440,13 +440,16 @@ class StartNotebookServer extends Component {
         const data = this.model.get();
         const fetched = data.notebooks.fetched && data.options.fetched && data.pipelines.fetched;
         if (fetched) {
+          // check pipeline availability
           const mainPipeline = data.pipelines.main;
-          if (data.pipelines.type === NotebooksHelper.pipelineTypes.customImage ||
-              (mainPipeline && mainPipeline.status === "success")) {
-            this.setState({ autostartReady: true });
-            this.startServer();
-          }
-          else if (mainPipeline && (mainPipeline.status === "running" || mainPipeline.status === "pending")) {
+          const pipelineAvailable = NotebooksHelper.checkPipelineAvailability(data.pipelines);
+
+          // give extra context to logged users for building images
+          const loggedPipelines = data.pipelines.type === NotebooksHelper.pipelineTypes.logged ? true : false;
+          const pendingPipeline = mainPipeline &&
+            (mainPipeline.status === "running" || mainPipeline.status === "pending");
+
+          if (loggedPipelines && pendingPipeline) {
             this.setState({
               autostartReady: true,
               autostartTried: true,
@@ -455,7 +458,12 @@ class StartNotebookServer extends Component {
                 errorMessage: `The session could not start because the image is still building.
                 Please wait for the build to finish, or start the session with the base image.`
               },
-              starting: false });
+              starting: false
+            });
+          }
+          else if (pipelineAvailable) {
+            this.setState({ autostartReady: true });
+            this.startServer();
           }
           else {
             this.setState({
@@ -466,7 +474,8 @@ class StartNotebookServer extends Component {
                 errorMessage: `The session could not start because no image is available.
                 Please select a different commit or start the session with the base image.`
               },
-              starting: false });
+              starting: false
+            });
           }
         }
         else {
@@ -682,5 +691,6 @@ class CheckNotebookStatus extends Component {
     return (<VisibleNotebookIcon store={this.model.reduxStore} {...this.props} />);
   }
 }
+
 
 export { CheckNotebookStatus, Notebooks, ShowSession, StartNotebookServer };

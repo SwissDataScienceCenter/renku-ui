@@ -300,6 +300,32 @@ const NotebooksHelper = {
     return true;
   },
 
+  /**
+   * Check whether the image is available or not. This is done by checking the pipeline object, but it's not
+   * intuitive how to verify it when the user has no permissions (registry data are stored in the pipeline in
+   * that case)
+   *
+   * @param {object} pipelines - pipelines object as stored in redux.
+   * @returns {boolean} image availability.
+   */
+  checkPipelineAvailability: (pipelines) => {
+    const mainPipeline = pipelines.main;
+
+    if (pipelines.type === PIPELINE_TYPES.customImage)
+      return true;
+
+    if (pipelines.type === PIPELINE_TYPES.logged) {
+      if (mainPipeline.status === "success" || mainPipeline.status === undefined)
+        return true;
+    }
+    else if (pipelines.type === PIPELINE_TYPES.anonymous) {
+      if (mainPipeline && mainPipeline.path)
+        return true;
+    }
+
+    return false;
+  },
+
   pipelineTypes: PIPELINE_TYPES,
   validSettings: VALID_SETTINGS,
   sessionConfigPrefix: SESSIONS_PREFIX
