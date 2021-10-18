@@ -35,7 +35,7 @@ const DEPLOYMENT = {
 
 const AUTHENTICATION = {
   serverUrl: process.env.AUTH_SERVER_URL || SERVER.url + "/auth/realms/Renku",
-  clientId: process.env.AUTH_CLIENT_ID || "renku",
+  clientId: process.env.AUTH_CLIENT_ID || "renku-ui",
   clientSecret: process.env.AUTH_CLIENT_SECRET,
   tokenExpirationTolerance: convertType(process.env.AUTH_TOKEN_TOLERANCE) || 10,
   cookiesKey: "ui-server-session",

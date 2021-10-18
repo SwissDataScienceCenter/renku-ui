@@ -54,9 +54,9 @@ spec:
             - name: AUTH_SERVER_URL
               value: {{ .Values.authentication.url | default (printf "https://%s/auth/realms/Renku" .Values.global.renku.domain) | quote }}
             - name: AUTH_CLIENT_ID
-              value: {{ .Values.authentication.id | default (printf "renku") | quote }}
+              value: {{ .Values.authentication.id | default (printf "renku-ui") | quote }}
             - name: AUTH_CLIENT_SECRET
-              value: {{ .Values.authentication.secret | default (printf "%s" .Values.global.gateway.clientSecret) | quote }}
+              value: {{ .Values.authentication.secret | default (printf "%s" .Values.global.uiserver.clientSecret) | quote }}
             - name: AUTH_TOKEN_TOLERANCE
               value: {{ .Values.authentication.expirationTolerance | default (printf "10") | quote }}
             {{- if .Values.redis.install }}
