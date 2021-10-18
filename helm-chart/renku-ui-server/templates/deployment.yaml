@@ -40,19 +40,19 @@ spec:
               protocol: TCP
           env:
             - name: SERVER_URL
-              value: {{ .Values.serverData.url | default (printf "https://dev.renku.ch") | quote }}
+              value: {{ .Values.serverData.url | default (printf "https://%s" .Values.global.renku.domain) | quote }}
             - name: SERVER_PORT
               value: {{ .Values.serverData.port | default (printf "8080") | quote }}
             - name: SERVER_PREFIX
               value: {{ .Values.serverData.prefix | default (printf "/ui-server") | quote }}
             - name: GATEWAY_URL
-              value: {{ .Values.gateway.url | default (printf "https://dev.renku.ch/api") | quote }}
+              value: {{ .Values.gateway.url | default (printf "https://%s/api" .Values.global.renku.domain) | quote }}
             - name: GATEWAY_LOGIN_PATH
-              value: {{ .Values.gateway.loginSuffix | default (printf "https://dev.renku.ch/api/auth/login") | quote }}
+              value: {{ .Values.gateway.loginSuffix | default (printf "/auth/login") | quote }}
             - name: GATEWAY_LOGOUT_PATH
-              value: {{ .Values.gateway.logoutSuffix | default (printf "https://dev.renku.ch/api/auth/logout") | quote }}
+              value: {{ .Values.gateway.logoutSuffix | default (printf "/auth/logout") | quote }}
             - name: AUTH_SERVER_URL
-              value: {{ .Values.authentication.url | default (printf "https://dev.renku.ch/auth/realms/Renku") | quote }}
+              value: {{ .Values.authentication.url | default (printf "https://%s/auth/realms/Renku" .Values.global.renku.domain) | quote }}
             - name: AUTH_CLIENT_ID
               value: {{ .Values.authentication.id | default (printf "renku") | quote }}
             - name: AUTH_CLIENT_SECRET
