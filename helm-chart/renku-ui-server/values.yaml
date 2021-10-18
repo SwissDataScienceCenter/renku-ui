@@ -88,6 +88,14 @@ authentication:
 
 # ui-server dedicate redis
 redis:
+  # if you don't install a local redis instance, fill in the `external` variables (database and password optional)
+  install: true
+  external:
+    host:
+    port:
+    database:
+    password:
+
   nameOverride: ui-server-redis
 
   cluster:
