@@ -69,7 +69,8 @@ class APIClient {
     this.baseUrl = baseUrl;
     this.returnTypes = RETURN_TYPES;
     this.graphqlClient = new ApolloClient({
-      uri: `${baseUrl}/kg/graphql`
+      uri: `${baseUrl}/kg/graphql`,
+      headers: { "X-Requested-With": "XMLHttpRequest" }
     });
 
     addProjectMethods(this);
