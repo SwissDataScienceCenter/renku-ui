@@ -56,9 +56,7 @@ function CentralContentContainer(props) {
       user={props.user}
       model={props.model}
       location={props.location}
-      params={props.params}
-      statuspageId={props.statuspageId}
-      statuspageModel={props.model.subModel("statuspage")} />;
+      params={props.params} />;
   }
 
   // check anonymous sessions settings
@@ -75,11 +73,10 @@ function CentralContentContainer(props) {
             user={props.user}
             client={props.client}
             model={props.model}
-            statuspageId={props.statuspageId}
             {...p} /> : null
       } />
       <Route path={Url.get(Url.pages.help)} render={
-        p => <Help key="help" {...p} statuspageId={props.statuspageId} {...props} />} />
+        p => <Help key="help" {...p} {...props} />} />
       <Route exact
         path={[Url.get(Url.pages.projects), Url.get(Url.pages.projects.starred), Url.get(Url.pages.projects.all)]}
         render={p => <ProjectList

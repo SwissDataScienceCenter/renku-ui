@@ -49,8 +49,45 @@ class StatuspageAPI {
     };
     return fetch(`https://${pageId}.statuspage.io/api/v2/summary.json`, queryParams).then(r => r.json());
   }
+}
 
+function isStatusConfigured(statuspageId) {
+  return statuspageId != null && statuspageId.length > 0;
+}
 
+function setStatusSummary(model, statusSummary) {
+  model.setObject({ statuspage: { $set: statusSummary } });
+}
+
+const statusUpdateInterval = 1000 * 60 * 5; // Update every 5 minutes
+
+function pollStatuspage(statuspageId, model) {
+  const statusPage = new StatuspageAPI(statuspageId);
+
+  if (!isStatusConfigured(statuspageId)) {
+    setStatusSummary(model, { retrieved_at: new Date(), statuspage: null, error: null, not_configured: true });
+    return null;
+  }
+  async function fetchIncidents() {
+    try {
+      const result = await statusPage.summary();
+      setStatusSummary(model, { retrieved_at: new Date(), statuspage: result, error: null });
+    }
+    catch (error) {
+      // we abort the fetch when the component is unmounted, so we can ignore this error
+      if (error.name !== "AbortError")
+        setStatusSummary(model, { retrieved_at: new Date(), error });
+    }
+  }
+
+  // Do an initial fetch
+  setTimeout(fetchIncidents, 0);
+
+  // Start polling after the initial fetch returns
+  let id = setInterval(fetchIncidents, statusUpdateInterval);
+  return () => clearInterval(id);
 }
 
 export default StatuspageAPI;
+
+export { isStatusConfigured, pollStatuspage };

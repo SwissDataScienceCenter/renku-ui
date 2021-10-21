@@ -62,8 +62,6 @@ class Home extends Component {
       user={this.props.user}
       welcomePage={atob(this.props.welcomePage)}
       urlMap={urlMap}
-      statuspageId={this.props.statuspageId}
-      statuspageModel={this.props.model.subModel("statuspage")}
       store={this.props.model.reduxStore}
     />;
   }

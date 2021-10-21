@@ -30,7 +30,6 @@ import { Row, Col } from "reactstrap";
 import { Url } from "../utils/url";
 import { ExternalLink, InfoAlert, MarkdownTextExcerpt, ListDisplay, RenkuMarkdown,
   Loader } from "../utils/UIComponents";
-import { StatuspageBanner } from "../statuspage";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLandmark, faPlus, faQuestion } from "@fortawesome/free-solid-svg-icons";
 
@@ -166,10 +165,6 @@ class LoggedInHome extends Component {
     return [
       <LoggedInNewVersionBanner key="new-version-banner" />,
       <Row key="username">
-        <Col xs={12}>
-          <StatuspageBanner siteStatusUrl={urlMap.siteStatusUrl} statuspageId={this.props.statuspageId}
-            statuspageModel={this.props.statuspageModel} />
-        </Col>
         <Col xs={6}>
           <h3 className="pt-4 fw-bold">{user.data.username} @ Renku</h3>
         </Col>

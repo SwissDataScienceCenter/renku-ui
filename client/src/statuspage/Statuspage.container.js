@@ -23,89 +23,32 @@
  *  Components for the displaying information from statuspage.io
  */
 
-import React, { useState, useEffect } from "react";
-
-import useInterval from "../utils/UseInterval";
+import React from "react";
+import { connect } from "react-redux";
 
 import { StatuspageDisplay as DisplayPresent, StatuspageBanner as BannerPresent } from "./Statuspage.present";
-import StatuspageAPI from "./StatuspageAPI";
 
-function isStatusConfigured(statuspageId) {
-  return statuspageId != null && statuspageId.length > 0;
-}
-
-
-const statusUpdateInterval = 1000 * 60 * 5; // Update every 5 minutes
-
-function useStatuspage(statuspageId, model) {
-  const [statusSummary, setStatusSummary] = useState({});
-  // Do an initial fetch
-  useEffect(() => {
-    const statusPage = new StatuspageAPI(statuspageId);
-    async function fetchIncidents() {
-      if (!isStatusConfigured(statuspageId)) {
-        setStatusSummary({ retrieved_at: new Date(), statuspage: null, error: null, not_configured: true });
-        return;
-      }
-      try {
-        const result = await statusPage.summary();
-        setStatusSummary({ retrieved_at: new Date(), statuspage: result, error: null });
-      }
-      catch (error) {
-        // we abort the fetch when the component is unmounted, so we can ignore this error
-        if (error.name !== "AbortError")
-          setStatusSummary({ error });
-      }
-    }
-    fetchIncidents();
-    // Abort the fetch on unmount, otherwise React complains
-    return () => { if (statusPage.controller != null) statusPage.controller.abort(); };
-  }, [statuspageId]);
-
-  // Start polling after the initial fetch returns
-  useInterval(() => {
-    async function fetchIncidents() {
-      const statusPage = new StatuspageAPI(statuspageId);
-      const result = await statusPage.summary();
-      setStatusSummary({ retrieved_at: new Date(), statuspage: result, error: null });
-    }
-    fetchIncidents();
-  }, (statusSummary.retrieved_at != null) ? statusUpdateInterval : null);
-
-  // Only status the status if there is something new there
-  if (statusSummary.retrieved_at != null) {
-    model.setObject(statusSummary);
-    return statusSummary;
-  }
-  return model.get();
+function mapStateToProps(state, ownProps) {
+  return { statusSummary: state.statuspage, ...ownProps };
 }
 
 /**
  *
- * @param {string} props.statuspageId The id for the statuspage
- * @param {object} props.statuspageModel The model for the statuspage
+ * @param {object} props.model The global model
  */
 function StatuspageDisplay(props) {
-  const statuspageId = props.statuspageId;
-  const statusSummary = useStatuspage(statuspageId, props.statuspageModel);
-  if (statusSummary.not_configured) return null;
-
-  return <DisplayPresent statusSummary={statusSummary} />;
+  const VisibleDisplay = connect(mapStateToProps)(DisplayPresent);
+  return <VisibleDisplay store={props.model.reduxStore} />;
 }
 
 /**
  *
- * @param {string} props.statuspageId The id for the statuspage
- * @param {string} props.siteStatusUrl The URL for the site status page
- * @param {object} props.statuspageModel The model for the statuspage
+ * @param {object} props.model The global model
  */
 function StatuspageBanner(props) {
-  const statuspageId = props.statuspageId;
-  const statusSummary = useStatuspage(statuspageId, props.statuspageModel);
-  if (statusSummary.not_configured) return null;
-
-  return <BannerPresent statusSummary={statusSummary} siteStatusUrl={props.siteStatusUrl} />;
+  const VisibleBanner = connect(mapStateToProps)(BannerPresent);
+  return <VisibleBanner store={props.model.reduxStore} siteStatusUrl={props.siteStatusUrl} location={props.location} />;
 }
 
 
-export { StatuspageDisplay, StatuspageBanner, isStatusConfigured };
+export { StatuspageDisplay, StatuspageBanner };

@@ -35,8 +35,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle, faExclamationCircle, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { faMinusCircle, faTimesCircle, faWrench } from "@fortawesome/free-solid-svg-icons";
 
-import { Loader, TimeCaption } from "../utils/UIComponents";
 import { Time } from "../utils/Time";
+import { Loader, TimeCaption } from "../utils/UIComponents";
+import { Url } from "../utils/url";
 
 function ComponentStatusIndicator(props) {
   const status = props.status;
@@ -104,7 +105,7 @@ function SiteStatusLanding(props) {
   const siteStatusUrl = props.siteStatusUrl;
   if (status.indicator === "none")
     return null;
-  return <Alert color="warning">
+  return <Alert color="warning" className="container-xxl renku-container">
     <FontAwesomeIcon icon={faExclamationTriangle} /> RenkuLab is unstable: { status.description }. {" "}
     See <b><Link to={siteStatusUrl}>RenkuLab Status</Link></b> for more details.
   </Alert>;
@@ -140,16 +141,33 @@ function MaintenanceSummaryDetails(props) {
   return <Alert color="warning"><FontAwesomeIcon icon={faWrench} /> { summary }</Alert>;
 }
 
+function MaintenanceInfo(props) {
+  const maintenance = props.maintenance;
+  const loud = props.loud;
+  const mtf = maintenanceTimeFragment(maintenance);
+  const command = maintenance["incident_updates"][0].body;
+  const displayCommand = (loud) ?
+    <div className="py-md-3"><b>{command}</b></div> :
+    null;
+  return <Fragment>
+    <FontAwesomeIcon icon={faWrench} /> { " "}
+    {mtf}: <i>{maintenance.name}</i>. { displayCommand }
+  </Fragment>;
+}
+
 function MaintenanceSummaryLanding(props) {
   const siteStatusUrl = props.siteStatusUrl;
   const scheduled = sortedMaintenances(props.statuspage.scheduled_maintenances);
   if (scheduled.length < 1)
     return <span></span>;
+  const loud = (props.loud != null) ? props.loud : false;
+  const alertStyle = (loud) ? { "fontSize": "larger" } : {};
   const first = scheduled[0];
-  const mtf = maintenanceTimeFragment(first);
-  return <Alert color="warning"><FontAwesomeIcon icon={faWrench} /> { " "}
-    {mtf}. See <b><Link to={siteStatusUrl}>details</Link></b> { " "}
-    for information about the availability and limitations.
+  return <Alert color="warning" className="container-xxl renku-container">
+    <div style={alertStyle}><MaintenanceInfo maintenance={first} loud={loud} /></div>
+    <div style={alertStyle}>See <b><Link to={siteStatusUrl}>details</Link></b> { " "}
+      for information about the availability and limitations.
+    </div>
   </Alert>;
 }
 
@@ -228,6 +246,7 @@ function StatuspageDisplay(props) {
   const summary = props.statusSummary;
   if (summary == null)
     return <Loader />;
+  if (summary.not_configured) return null;
   if (summary.error != null) {
     return <Alert color="warning">Could not retrieve status information about this RenkuLab instance. {" "}
       Please ask an administrator to check the statuspage.io configuration.</Alert>;
@@ -255,19 +274,49 @@ function StatuspageDisplay(props) {
   </Row>;
 }
 
+
+/**
+ * Indicate whether the statuspage banner should be shown everywhere.
+ * @param {object} statusSummary
+ * @returns true if the statuspage information should be extra visible
+ */
+function displayLoud(statusSummary) {
+  if (!statusSummary.statuspage) return false;
+
+  function maintenanceHasLoudComponent(sm) {
+    const components = sm.components.filter(c => c["name"].toLowerCase() === "loud");
+    return components.length > 0;
+  }
+  // return true if any scheduled maintenance affects the "Loud" component
+  const loudMaintenances =
+    statusSummary
+      .statuspage
+      .scheduled_maintenances.filter(maintenanceHasLoudComponent);
+  return loudMaintenances.length > 0;
+}
+
 /**
  *
+ * @param {object} props.location The browser location
  * @param {object} props.statusSummary The result from the StatuspageAPI.summary() call with timing information
  * @param {string} props.siteStatusUrl The URL for the site status page
  */
 function StatuspageBanner(props) {
+  // Never show the banner on the status page
+  if (props.location.pathname === Url.get(Url.pages.help.status))
+    return null;
+
   const summary = props.statusSummary;
-  if (summary == null || summary.statuspage == null)
+  if (summary == null || summary.statuspage == null || summary.not_configured)
+    return null;
+
+  const loud = displayLoud(summary);
+  if (!loud && (props.location.pathname !== Url.get(Url.pages.landing)))
     return null;
   const statuspage = summary.statuspage;
   return <Fragment>
     <SiteStatusLanding statuspage={statuspage} siteStatusUrl={props.siteStatusUrl} />
-    <MaintenanceSummaryLanding statuspage={statuspage} siteStatusUrl={props.siteStatusUrl} />
+    <MaintenanceSummaryLanding statuspage={statuspage} siteStatusUrl={props.siteStatusUrl} loud={loud} />
   </Fragment>;
 }
 
