@@ -25,7 +25,7 @@ Some deployment-specific information will be read from the your values.yaml file
 TEMPLATES='{"custom":true,"repositories":
 [{"name":"Renku","ref":"master",
 "url":"https://github.com/SwissDataScienceCenter/renku-project-template"},
-{"name":"Telepresence","ref":"0.1.11",
+{"name":"Telepresence","ref":"0.2.1",
 "url":"https://github.com/SwissDataScienceCenter/renku-project-template"}]}'
 PREVIEW_THRESHOLD='{"soft":"1048576","hard":"10485760"}'
 UPLOAD_THRESHOLD='{"soft":"104857600"}'
