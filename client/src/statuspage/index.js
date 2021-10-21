@@ -23,7 +23,7 @@
  *  Components for the displaying information from statuspage.io
  */
 
-import { StatuspageDisplay, StatuspageBanner, isStatusConfigured } from "./Statuspage.container";
-import StatuspageAPI from "./StatuspageAPI";
+import { StatuspageDisplay, StatuspageBanner } from "./Statuspage.container";
+import StatuspageAPI, { isStatusConfigured, pollStatuspage } from "./StatuspageAPI";
 
-export { StatuspageAPI, StatuspageBanner, StatuspageDisplay, isStatusConfigured };
+export { StatuspageAPI, StatuspageBanner, StatuspageDisplay, isStatusConfigured, pollStatuspage };
