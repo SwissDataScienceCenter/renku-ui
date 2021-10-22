@@ -18,8 +18,10 @@
 
 import express from "express";
 
+import { Authenticator } from "../authentication";
 
-function registerInternalRoutes(app: express.Application): void {
+
+function registerInternalRoutes(app: express.Application, authenticator: Authenticator): void {
   // define a route handler for the default home page
   app.get("/", (req, res) => {
     res.send("Hello world!");
@@ -33,6 +35,19 @@ function registerInternalRoutes(app: express.Application): void {
   // define a route handler for the liveness probe
   app.get("/liveness", (req, res) => {
     res.send("live");
+  });
+
+  // define a route handler for the startup probe
+  app.get("/startup", (req, res) => {
+    // check if storage is ready
+    if (!authenticator.storage.ready)
+      res.status(503).send("Storage (i.e. Redis) not ready");
+    // check if authenticator is ready
+    else if (!authenticator.ready)
+      res.status(503).send("Authenticator not ready");
+    // if nothing bad happened so far... all must be working fine!
+    else
+      res.send("live");
   });
 }
 

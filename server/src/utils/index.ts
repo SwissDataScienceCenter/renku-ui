@@ -43,4 +43,14 @@ function convertType(value: string, booleans = true, numbers = true): boolean | 
   return value;
 }
 
-export { convertType };
+/**
+ * Simulate a sleep function.
+ * @param {number} seconds - length of the sleep time span in seconds
+ * @example await sleep(0.5) // sleep for 0.5 seconds
+ */
+async function sleep(seconds: number): Promise<void> {
+  await new Promise(r => setTimeout(r, seconds * 1000));
+}
+
+
+export { convertType, sleep };

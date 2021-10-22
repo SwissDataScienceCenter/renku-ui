@@ -45,14 +45,7 @@ echo ""
 if [[ $CURRENT_CONTEXT == 'minikube' ]]
 then
   echo "Exchanging k8s deployments using the following context: ${CURRENT_CONTEXT}"
-  if [[ $RENKU_DOMAIN ]]
-  then
-    # if using localhost.run, it should be http://<some-name>.localhost.run
-    BASE_URL=http://${RENKU_DOMAIN}
-  else
-    MINIKUBE_IP=`minikube ip`
-    BASE_URL=http://${MINIKUBE_IP}
-  fi
+  echo "WARNING: minikube has not been tested! You may need to adapt the telepresence script file."
   SERVICE_NAME=renku-ui
   DEV_NAMESPACE=renku
 else
@@ -74,7 +67,6 @@ else
   else
     echo "Exchanging k8s deployments for the following context/namespace: ${CURRENT_CONTEXT}/${DEV_NAMESPACE}"
   fi
-  BASE_URL=https://${DEV_NAMESPACE}.dev.renku.ch
   SERVICE_NAME=${DEV_NAMESPACE}-renku-uiserver
 fi
 

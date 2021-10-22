@@ -45,6 +45,7 @@ const AUTHENTICATION = {
   authHeaderPrefix: "bearer ",
   invalidHeaderField: "ui-server-auth",
   invalidHeaderExpired: "expired",
+  retryConnectionAttempts: 10
 };
 
 const REDIS = {

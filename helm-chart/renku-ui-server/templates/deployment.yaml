@@ -86,6 +86,12 @@ spec:
             httpGet:
               path: /readiness
               port: http
+          startupProbe:
+            httpGet:
+              path: /startup
+              port: http
+            failureThreshold: 30
+            periodSeconds: 5
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

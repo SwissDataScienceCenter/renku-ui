@@ -23,7 +23,7 @@ import registerApiRoutes from "./apis";
 import { Authenticator } from "../authentication";
 
 function register(app: express.Application, prefix: string, authenticator: Authenticator): void {
-  registerInternalRoutes(app);
+  registerInternalRoutes(app, authenticator);
 
   // This is only for test, it's not reachable from outside
   app.get(prefix, (req, res) => {

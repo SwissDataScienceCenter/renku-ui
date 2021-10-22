@@ -23,7 +23,8 @@ import logger from "../logger";
 
 
 class Storage {
-  redis: Redis.Redis
+  redis: Redis.Redis;
+  ready = false;
 
   constructor(
     host: string = config.redis.host,
@@ -31,11 +32,24 @@ class Storage {
     password: string = config.redis.password
   ) {
     // configure redis
-    const redisConfig: Redis.RedisOptions = { host, port };
+    const redisConfig: Redis.RedisOptions = {
+      host,
+      port,
+      lazyConnect: true,
+      retryStrategy: (times) => {
+        return times > 5 ?
+          null :
+          10000;
+      },
+    };
     if (password)
       redisConfig.password = password;
     try {
       this.redis = new Redis(redisConfig);
+      this.redis.connect(() => {
+        if (this.redis.status === "ready")
+          this.ready = true;
+      });
     }
     catch (error) /* istanbul ignore next */ {
       const newError = new Error(`Cannot connect to Redis -- ${error.message}`);

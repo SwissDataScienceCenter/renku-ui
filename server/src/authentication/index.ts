@@ -22,10 +22,12 @@ import { Issuer, generators, Client, TokenSet } from "openid-client";
 import config from "../config";
 import logger from "../logger";
 import { Storage } from "../storage";
+import { sleep } from "../utils";
 
 
 const verifierSuffix = "-verifier";
 const parametersSuffix = "-parameters";
+const maxAttempts = config.auth.retryConnectionAttempts;
 
 
 class Authenticator {
@@ -36,6 +38,7 @@ class Authenticator {
 
   storage: Storage;
 
+  retryAttempt = 0;
   authClient: Client;
   ready = false;
 
@@ -79,11 +82,17 @@ class Authenticator {
       return true;
     }
     catch (error) {
+      this.retryAttempt++;
       logger.error(
         "Cannot initialize the auth client. The authentication server may be down or some paramaters may be wrong. " +
+        `Attempt number ${this.retryAttempt} of ${maxAttempts} ` +
         "Please check the next log entry for further details."
       );
       logger.error(error);
+      if (this.retryAttempt < maxAttempts) {
+        await sleep(10);
+        return this.init();
+      }
       throw error;
     }
   }
