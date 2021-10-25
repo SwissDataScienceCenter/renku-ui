@@ -189,7 +189,6 @@ const newProjectSchema = new Schema({
       title: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true },
       titlePristine: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true },
       description: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true },
-      descriptionPristine: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true },
       namespace: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
       namespacePristine: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true },
       visibility: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true },
