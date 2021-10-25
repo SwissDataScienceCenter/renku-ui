@@ -81,8 +81,10 @@ class RenkuToolbarItemUser extends Component {
           <FontAwesomeIcon icon={faUser} id="userIcon" />
         </DropdownToggle>
         <DropdownMenu className="user-menu" end key="user-bar" aria-labelledby="user-menu">
-          <ExternalLink url={`${gatewayURL}/auth/user-profile`}
-            title="Account" className="dropdown-item" role="link" />
+          <DropdownItem className="p-0">
+            <ExternalLink url={`${gatewayURL}/auth/user-profile`}
+              title="Account" className="dropdown-item" role="link" />
+          </DropdownItem>
           <DropdownItem divider />
           <a id="logout-link" className="dropdown-item" onClick={() => { LoginHelper.notifyLogout(); }}
             href={`${gatewayURL}/auth/logout?redirect_url=${redirect_url}`}>Logout</a>
@@ -97,19 +99,33 @@ class RenkuToolbarItemPlus extends Component {
     // Display the Issue/Notebook server related header options only if a project is active.
     const activeProjectPathWithNamespace = getActiveProjectPathWithNamespace(this.props.currentPath);
     const issueDropdown = activeProjectPathWithNamespace ?
-      <Link className="dropdown-item"
-        to={`/projects/${activeProjectPathWithNamespace}/collaboration/issues/issue_new`}>
-        Issue
-      </Link>
+      (
+        <DropdownItem className="p-0">
+          <Link className="dropdown-item" id="navbar-issue-new"
+            to={`/projects/${activeProjectPathWithNamespace}/collaboration/issues/issue_new`}>
+            Issue
+          </Link>
+        </DropdownItem>
+      )
       : null;
     const datasetDropdown = activeProjectPathWithNamespace ?
-      <Link className="dropdown-item" to={`/projects/${activeProjectPathWithNamespace}/datasets/new`}>
-        Dataset
-      </Link>
+      (
+        <DropdownItem className="p-0">
+          <Link className="dropdown-item" id="navbar-dataset-new"
+            to={`/projects/${activeProjectPathWithNamespace}/datasets/new`}>
+            Dataset
+          </Link>
+        </DropdownItem>
+      )
       : null;
-    const projectDropdown = <Link className="dropdown-item" id="navbar-project-new" to="/projects/new">
-      Project
-    </Link>;
+    const projectDropdown = (
+      <DropdownItem className="p-0">
+        <Link className="dropdown-item" id="navbar-project-new"
+          to="/projects/new">
+          Project
+        </Link>
+      </DropdownItem>
+    );
 
     return <UncontrolledDropdown className="nav-item dropdown">
       <Fragment>
@@ -134,18 +150,30 @@ function RenkuToolbarHelpMenu(props) {
         <FontAwesomeIcon icon={faQuestionCircle} id="helpDropdownToggle" />
       </DropdownToggle>
       <DropdownMenu className="help-menu" key="help-bar" aria-labelledby="help-menu">
-        <Link className="dropdown-item" to="/help">Help</Link>
+        <DropdownItem className="p-0">
+          <Link className="dropdown-item" to="/help">Help</Link>
+        </DropdownItem>
         <DropdownItem divider />
-        <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/"
-          title="Renku Docs" className="dropdown-item" />
-        <ExternalDocsLink url="https://renku-python.readthedocs.io/en/latest/"
-          title="Renku CLI Docs" className="dropdown-item" />
+        <DropdownItem className="p-0">
+          <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/"
+            title="Renku Docs" className="dropdown-item" />
+        </DropdownItem>
+        <DropdownItem className="p-0">
+          <ExternalDocsLink url="https://renku-python.readthedocs.io/en/latest/"
+            title="Renku CLI Docs" className="dropdown-item" />
+        </DropdownItem>
         <DropdownItem divider />
-        <ExternalDocsLink url="https://renku.discourse.group" title="Forum" className="dropdown-item" />
-        <ExternalDocsLink url="https://gitter.im/SwissDataScienceCenter/renku"
-          title="Gitter" className="dropdown-item" />
-        <ExternalDocsLink url="https://github.com/SwissDataScienceCenter/renku"
-          title="GitHub" className="dropdown-item" />
+        <DropdownItem className="p-0">
+          <ExternalDocsLink url="https://renku.discourse.group" title="Forum" className="dropdown-item" />
+        </DropdownItem>
+        <DropdownItem className="p-0">
+          <ExternalDocsLink url="https://gitter.im/SwissDataScienceCenter/renku"
+            title="Gitter" className="dropdown-item" />
+        </DropdownItem>
+        <DropdownItem className="p-0">
+          <ExternalDocsLink url="https://github.com/SwissDataScienceCenter/renku"
+            title="GitHub" className="dropdown-item" />
+        </DropdownItem>
       </DropdownMenu>
     </Fragment>
   </UncontrolledDropdown>;
@@ -167,11 +195,17 @@ function RenkuToolbarGitLabMenu(props) {
         <FontAwesomeIcon icon={faGitlab} id="gitLabDropdownToggle" />
       </DropdownToggle>
       <DropdownMenu className="gitLab-menu" end key="gitLab-bar" aria-labelledby="gitLab-menu">
-        <ExternalLink url={gitLabUrl}
-          title="GitLab" className="dropdown-item" role="link" />
-        <ExternalLink url={gitLabSettingsUrlFromProfileUrl(user.data.web_url)}
-          title="Settings" className="dropdown-item" role="link" />
-        <ExternalLink url={user.data.web_url} title="Profile" className="dropdown-item" role="link" />
+        <DropdownItem className="p-0">
+          <ExternalLink url={gitLabUrl}
+            title="GitLab" className="dropdown-item" role="link" />
+        </DropdownItem>
+        <DropdownItem className="p-0">
+          <ExternalLink url={gitLabSettingsUrlFromProfileUrl(user.data.web_url)}
+            title="Settings" className="dropdown-item" role="link" />
+        </DropdownItem>
+        <DropdownItem className="p-0">
+          <ExternalLink url={user.data.web_url} title="Profile" className="dropdown-item" role="link" />
+        </DropdownItem>
       </DropdownMenu>
     </Fragment>
   </UncontrolledDropdown>;
