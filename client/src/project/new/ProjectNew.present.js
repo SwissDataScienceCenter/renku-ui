@@ -43,7 +43,7 @@ import { capitalize } from "../../utils/formgenerator/FormGenerator.present";
 import { Url } from "../../utils/url";
 
 import "./Project.style.css";
-import templateImage from "./templatePlaceholder.svg";
+import defaultTemplateIcon from "./templatePlaceholder.svg";
 
 
 /**
@@ -811,18 +811,25 @@ class Template extends Component {
       );
     }
     else {
-      const listedTemplates = input.userRepo ?
-        meta.userTemplates :
-        templates;
+      // Pass down templates and repository with the same format to the gallery component
+      let listedTemplates, repositories;
+      if (input.userRepo) {
+        listedTemplates = meta.userTemplates.all;
+        repositories = [{ url: meta.userTemplates.url, ref: meta.userTemplates.ref, name: "Custom" }];
+      }
+      else {
+        listedTemplates = templates.all;
+        repositories = config.repositories;
+      }
 
       const select = (template) => handlers.setProperty("template", template);
       main = (
         <TemplateGallery
           // error={error && invalid} // ? we may consider adding a more prominent underlining for errors
-          repositories={config.repositories}
+          repositories={repositories}
           select={select}
           selected={input.template}
-          templates={listedTemplates.all}
+          templates={listedTemplates}
         />
       );
     }
@@ -884,7 +891,7 @@ function TemplateGalleryRow(props) {
   const elements = templates.map(t => {
     const imgSrc = t.icon ?
       `data:image/png;base64,${t.icon}` :
-      templateImage;
+      defaultTemplateIcon;
     const id = "id" + simpleHash(repository.name) + simpleHash(t.id);
     const selectedClass = selected === t.id ?
       "selected" :
