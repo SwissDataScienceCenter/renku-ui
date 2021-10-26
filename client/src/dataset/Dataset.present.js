@@ -50,6 +50,25 @@ function DisplayFiles(props) {
     ( props.files[0].atLocation.startsWith("data/") ? 2 : 1 )
     : 0;
 
+  // ? This re-adds the name property on the datasets.
+  // TODO: consider refactoring FileExplorer
+  const filesWithNames = props.files.map(file => {
+    // Add the file name
+    let newFile = { ...file };
+    // Skip if it's already there
+    if (newFile.name && newFile.name.length)
+      return newFile;
+    // Skip if there is no `atLocation` property
+    if (!newFile.atLocation || !newFile.atLocation.length)
+      return newFile;
+    // Skip if it's not possible to derive it
+    const lastSlash = newFile.atLocation.lastIndexOf("/");
+    if (lastSlash === -1 || newFile.atLocation.length < lastSlash + 1)
+      return newFile;
+    newFile.name = newFile.atLocation.substring(lastSlash + 1);
+    return newFile;
+  });
+
   return <Card key="datasetDetails" className="border-rk-light mb-4">
     <CardHeader className="bg-white p-3 ps-4">Dataset files ({props.files.length})</CardHeader>
     <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
@@ -58,7 +77,7 @@ function DisplayFiles(props) {
           <span>No files on this dataset.</span>
           :
           <FileExplorer
-            files={props.files}
+            files={filesWithNames}
             lineageUrl={props.lineagesUrl}
             insideProject={props.insideProject}
             foldersOpenOnLoad={openFolders}
