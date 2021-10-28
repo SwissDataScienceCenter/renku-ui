@@ -21,4 +21,4 @@ COPY docker-entrypoint.sh /app/docker-entrypoint.sh
 # HEALTHCHECK --interval=20s --timeout=10s --retries=5 CMD test -e /var/run/nginx.pid
 
 ENTRYPOINT ["/bin/sh", "/app/docker-entrypoint.sh"]
-CMD ["node", "app"]
+CMD ["node", "--use-openssl-ca", "app"]
