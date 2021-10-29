@@ -1,5 +1,20 @@
 # Changes
 
+## [1.0.2](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.0.1..1.0.2) (2021-10-29)
+
+
+### Bug Fixes
+
+* add missing headers to graphql queries ([#1525](https://github.com/SwissDataScienceCenter/renku-ui/issues/1525), [#1520](https://github.com/SwissDataScienceCenter/renku-ui/issues/1520))
+* check the image status properly when quickstarting sessions ([#1526](https://github.com/SwissDataScienceCenter/renku-ui/issues/1526), [#1031](https://github.com/SwissDataScienceCenter/renku-ui/issues/1031))
+* use proper components for navbar dropdown links ([#1532](https://github.com/SwissDataScienceCenter/renku-ui/issues/1532))
+
+
+### Features
+
+* add 'loud' option to statuspage display ([#1524](https://github.com/SwissDataScienceCenter/renku-ui/issues/1524),  [#1531](https://github.com/SwissDataScienceCenter/renku-ui/issues/1531))
+
+
 ## [1.0.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.0.0..1.0.1) (2021-10-11)
 
 ### Bug Fixes
