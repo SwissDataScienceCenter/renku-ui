@@ -4,19 +4,22 @@ import { connect } from "react-redux";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import "bootstrap";
 import "jquery";
+
 // Use our version of bootstrap, not the one in import 'bootstrap/dist/css/bootstrap.css';
 import "./styles/index.css";
 import "./index.css";
+
 import App from "./App";
-import { Maintenance } from "./Maintenance";
 // Disable service workers for the moment -- see below where registerServiceWorker is called
 // import registerServiceWorker from './utils/ServiceWorker';
 import APIClient from "./api-client";
-import { UserCoordinator } from "./user";
 import { LoginHelper } from "./authentication";
+import { Maintenance } from "./Maintenance";
 import { StateModel, globalSchema } from "./model";
-import { Url } from "./utils/url";
+import { pollStatuspage } from "./statuspage";
+import { UserCoordinator } from "./user";
 import { Sentry } from "./utils/sentry";
+import { Url } from "./utils/url";
 
 const configFetch = fetch("/config.json");
 const privacyFetch = fetch("/privacy-statement.md");
@@ -74,6 +77,7 @@ Promise.all([configFetch, privacyFetch]).then(valuesRead => {
     }
 
     const statuspageId = params["STATUSPAGE_ID"];
+    pollStatuspage(statuspageId, model);
 
     const VisibleApp = connect(mapStateToProps)(App);
     ReactDOM.render(
@@ -82,7 +86,7 @@ Promise.all([configFetch, privacyFetch]).then(valuesRead => {
           LoginHelper.handleLoginParams(props.history);
           return (
             <VisibleApp client={client} params={params} store={model.reduxStore} model={model}
-              statuspageId={statuspageId} location={props.location}
+              location={props.location} statuspageId={statuspageId}
             />
           );
         }} />
