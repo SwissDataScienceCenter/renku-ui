@@ -19,6 +19,7 @@
 // title.Author: Alex K. - https://stackoverflow.com/users/246342/alex-k
 // Source: https://stackoverflow.com/questions/6507056/replace-all-whitespace-characters/6507078#6507078
 import showdown from "showdown";
+import showdownHighlight from "showdown-highlight";
 import DOMPurify from "dompurify";
 import XRegExp from "xregexp";
 
@@ -166,7 +167,13 @@ function sanitizedHTMLFromMarkdown(markdown, singleLine = false) {
     replace: `<${key} $1 class="$3 ${showdownClasses[key]}" $4>`
   }));
 
-  const converter = new showdown.Converter({ ...showdownOptions, extensions: [...bindings] });
+  const converter = new showdown.Converter({
+    ...showdownOptions,
+    extensions: [
+      ...bindings,
+      showdownHighlight({ pre: true })
+    ]
+  });
   if (singleLine && markdown) {
     const lineBreakers = ["<br>", "<br />", "<br/>", "\n"];
     const breakPosition = Math.max(...lineBreakers.map(elem => markdown.indexOf(elem)));
