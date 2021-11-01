@@ -391,3 +391,93 @@ describe("update redux store using immutability-helper commands", () => {
     expect(model.get()).toEqual(referenceObject);
   });
 });
+
+describe("update subModel object using immutability-helper commands", () => {
+  const schema = new Schema({ complex: { schema: complexSchema }, array: { schema: arraySchema } });
+  let model = new StateModel(schema, StateKind.REDUX);
+  const complexSubModel = model.subModel("complex");
+
+  // test object updates
+  let referenceObject = { ...simpleObject };
+  let updateObject;
+
+  it("check complex object", () => {
+    expect(model.get("complex.basics")).toEqual(referenceObject);
+  });
+
+  it("reset existing object without $set", () => {
+    updateObject = { basics: {} };
+    // ? this doesn't overwrite the final object
+    complexSubModel.setObject(updateObject);
+    expect(model.get("complex.basics")).toEqual(referenceObject);
+  });
+
+  it("update existing object without $set", () => {
+    referenceObject.name = "Max Mustermann";
+    updateObject = { basics: { name: "Max Mustermann" } };
+    // ? this updates the name property without touching anything else
+    complexSubModel.setObject(updateObject);
+    expect(model.get("complex.basics")).toEqual(referenceObject);
+  });
+
+  it("update existing object with $set", () => {
+    referenceObject = { name: "Max Mustermann" };
+    updateObject = { basics: { $set: { name: "Max Mustermann" } } };
+    // ? this replace the `basics` object entirely
+    complexSubModel.setObject(updateObject);
+    expect(model.get("complex.basics")).toEqual(referenceObject);
+  });
+
+  it("reset existing object with $set", () => {
+    referenceObject = {};
+    updateObject = { basics: { $set: {} } };
+    // ? this can be used also to reset an object
+    complexSubModel.setObject(updateObject);
+    expect(model.get("complex.basics")).toEqual(referenceObject);
+  });
+});
+
+describe("update layered subModel object using immutability-helper commands", () => {
+  const schema = new Schema({ complex: { schema: complexSchema }, array: { schema: arraySchema } });
+  let model = new StateModel(schema, StateKind.REDUX);
+  const complexBasicsSubModel = model.subModel("complex.basics");
+
+  // test object updates
+  let referenceObject = { ...simpleObject };
+  let updateObject;
+
+  it("check complex object", () => {
+    expect(model.get("complex.basics")).toEqual(referenceObject);
+  });
+
+  it("reset existing object without $set", () => {
+    updateObject = { };
+    // ? this doesn't overwrite the final object
+    complexBasicsSubModel.setObject(updateObject);
+    expect(model.get("complex.basics")).toEqual(referenceObject);
+  });
+
+  it("update existing object without $set", () => {
+    referenceObject.name = "Max Mustermann";
+    updateObject = { name: "Max Mustermann" };
+    // ? this updates the name property without touching anything else
+    complexBasicsSubModel.setObject(updateObject);
+    expect(model.get("complex.basics")).toEqual(referenceObject);
+  });
+
+  it("update existing object with $set", () => {
+    referenceObject = { name: "Max Mustermann" };
+    updateObject = { $set: { name: "Max Mustermann" } };
+    // ? this replace the `basics` object entirely
+    complexBasicsSubModel.setObject(updateObject);
+    expect(model.get("complex.basics")).toEqual(referenceObject);
+  });
+
+  it("reset existing object with $set", () => {
+    referenceObject = {};
+    updateObject = { $set: {} };
+    // ? this can be used also to reset an object
+    complexBasicsSubModel.setObject(updateObject);
+    expect(model.get("complex.basics")).toEqual(referenceObject);
+  });
+});
