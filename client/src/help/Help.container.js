@@ -40,8 +40,7 @@ function urlMap(baseUrl) {
 }
 
 function Help(props) {
-  return <HelpPresent url={urlMap(props.match.url)} statuspageId={props.statuspageId}
-    statuspageModel={props.model.subModel("statuspage")} />;
+  return <HelpPresent url={urlMap(props.match.url)} model={props.model} statuspageId={props.statuspageId} />;
 }
 
 export { Help };

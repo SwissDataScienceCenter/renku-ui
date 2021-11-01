@@ -310,8 +310,7 @@ class HelpContent extends Component {
       />,
       <Route
         path={this.props.url.status} key="status"
-        render={props => <StatuspageDisplay key="status" statuspageId={this.props.statuspageId}
-          statuspageModel={this.props.statuspageModel} />} />,
+        render={props => <StatuspageDisplay key="status" model={this.props.model} />} />,
       <Route
         path={this.props.url.changes}
         key="changes"

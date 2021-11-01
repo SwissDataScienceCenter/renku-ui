@@ -1026,23 +1026,6 @@ class EnvironmentLogs extends Component {
   }
 }
 
-function pipelineAvailable(pipelines) {
-  const { pipelineTypes } = NotebooksHelper;
-  const mainPipeline = pipelines.main;
-
-  if (pipelines.type === pipelineTypes.customImage) return true;
-
-  if (pipelines.type === pipelineTypes.logged) {
-    if (mainPipeline.status === "success" || mainPipeline.status === undefined)
-      return true;
-  }
-  else if (pipelines.type === pipelineTypes.anonymous) {
-    if (mainPipeline && mainPipeline.path)
-      return true;
-  }
-
-  return false;
-}
 
 // * StartNotebookServer code * //
 class StartNotebookServer extends Component {
@@ -1946,7 +1929,7 @@ class ServerOptionLaunch extends Component {
         You can still start one, but some things may not work correctly.
       </Warning>;
 
-    const hasImage = pipelineAvailable(this.props.pipelines);
+    const hasImage = NotebooksHelper.checkPipelineAvailability(this.props.pipelines);
     const startButton = <Button key="start-session" color="primary" disabled={!hasImage} onClick={this.checkServer}>
       Start session
     </Button>;

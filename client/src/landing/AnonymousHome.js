@@ -61,8 +61,8 @@ function HomeHeader(props) {
   return <Fragment>
     <Row key="statuspage">
       <Col>
-        <StatuspageBanner siteStatusUrl={urlMap.siteStatusUrl} statuspageId={props.statuspageId}
-          statuspageModel={props.statuspageModel} />
+        <StatuspageBanner siteStatusUrl={urlMap.siteStatusUrl} model={props.model}
+          location={{ pathname: Url.get(Url.pages.landing) }} />
       </Col>
     </Row>
     <header className="px-0 pt-2 pb-4 d-flex rk-anon-home">
