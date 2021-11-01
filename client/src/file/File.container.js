@@ -30,7 +30,7 @@ import { encodeImageBase64 } from "../utils/Markdown";
 
 const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "pdf", "gif", "svg"];
 const CODE_EXTENSIONS = [
-  "bat", "cwl", "dcf", "ini", "jl", "job", "js", "json", "parquet", "prn", "py", "r", "rmd",
+  "bat", "cwl", "dcf", "ini", "jl", "job", "js", "json", "m", "parquet", "prn", "py", "r", "rmd",
   "rout", "rproj", "rs", "rst", "scala", "sh", "toml", "ts", "xml", "yaml", "yml",
   "c", "cc", "cxx", "cpp", "h", "hh", "hxx", "hpp", // C++
   "f", "for", "ftn", "fpp", "f90", "f95", "f03", "f08" // Fortran
