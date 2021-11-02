@@ -571,7 +571,7 @@ class View extends Component {
     },
     onStar: () => {
       const starred = this.getStarred();
-      return this.projectState.star(this.props.client, starred).then((project) => {
+      return this.projectCoordinator.star(this.props.client, starred).then((project) => {
         // we know it worked, we can manually change star status without querying APIs
         if (project && project.star_count != null) {
           // first update the list of starred project, otherwise this.getStarred returns wrong

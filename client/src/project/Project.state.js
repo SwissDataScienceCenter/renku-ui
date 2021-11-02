@@ -569,6 +569,12 @@ class ProjectCoordinator {
     this.model.setObject({ config: configObject });
     return response.data.result;
   }
+
+
+  async star(client, starred) {
+    return client.starProject(this.get("metadata.id"), starred)
+      .then((resp) => resp.data);
+  }
 }
 
 export { ProjectModel, GraphIndexingStatus, ProjectCoordinator, MigrationStatus };
