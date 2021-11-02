@@ -39,6 +39,8 @@ import { Time } from "../utils/Time";
 import { Loader, TimeCaption } from "../utils/UIComponents";
 import { Url } from "../utils/url";
 
+function componentIsLoud(c) { return c["name"].toLowerCase() === "loud"; }
+
 function ComponentStatusIndicator(props) {
   const status = props.status;
   let indicator = null;
@@ -192,7 +194,7 @@ function ComponentStatusDetails(props) {
     </thead>
     <tbody>
       {
-        components.map(c => <ComponentStatusRow key={c.id} component={c} />)
+        components.filter(c => !componentIsLoud(c)).map(c => <ComponentStatusRow key={c.id} component={c} />)
       }
     </tbody>
   </Table>;
@@ -274,7 +276,6 @@ function StatuspageDisplay(props) {
   </Row>;
 }
 
-
 /**
  * Indicate whether the statuspage banner should be shown everywhere.
  * @param {object} statusSummary
@@ -284,7 +285,7 @@ function displayLoud(statusSummary) {
   if (!statusSummary.statuspage) return false;
 
   function maintenanceHasLoudComponent(sm) {
-    const components = sm.components.filter(c => c["name"].toLowerCase() === "loud");
+    const components = sm.components.filter(componentIsLoud);
     return components.length > 0;
   }
   // return true if any scheduled maintenance affects the "Loud" component
