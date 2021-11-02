@@ -132,7 +132,7 @@ class Login extends Component {
 
     // set new location
     window.location =
-      `${this.props.params.GATEWAY_URL}/auth/login?redirect_url=${encodeURIComponent(redirectUrl)}`;
+      `${this.props.params.UISERVER_URL}/auth/login?redirect_url=${encodeURIComponent(redirectUrl)}`;
     return <p>logging in</p>;
   }
 }
