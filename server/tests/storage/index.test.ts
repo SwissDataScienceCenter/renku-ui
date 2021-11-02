@@ -16,21 +16,33 @@
  * limitations under the License.
  */
 
-import express from "express";
+import { Storage } from "../../src/storage/index";
 
-import registerInternalRoutes from "./internal";
-import registerApiRoutes from "./apis";
-import { Authenticator } from "../authentication";
 
-function register(app: express.Application, prefix: string, authenticator: Authenticator): void {
-  registerInternalRoutes(app, authenticator);
+// mock ioredis for storing data
+jest.mock("ioredis", () => require("ioredis-mock/jest"));
 
-  // This is only for test, it's not reachable from outside
-  app.get(prefix, (req, res) => {
-    res.send("Hello ingress!");
+describe("Test storage", () => {
+  it("Test Storage class", async () => {
+    const storage = new Storage("localhost", 12345, "safePassword");
+
+    // save data
+    const path = "somewhere";
+    const data = "something";
+    await storage.save(path, data);
+
+    // get data
+    let savedData = await storage.get(path);
+    expect(savedData).toBe(data);
+
+    // delete data
+    await storage.delete(path);
+    savedData = await storage.get(path);
+    expect(savedData).not.toBe(data);
   });
 
-  registerApiRoutes(app, prefix, authenticator);
-}
-
-export default { register };
+  it("Test Storage disconnect", async () => {
+    const storage = new Storage();
+    storage.shutdown();
+  });
+});

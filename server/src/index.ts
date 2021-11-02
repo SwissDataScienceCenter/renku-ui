@@ -16,13 +16,21 @@
  * limitations under the License.
  */
 
+import cookieParser from "cookie-parser";
 import express from "express";
-import logger from "./logger";
-import routes from "./routes";
 import morgan from "morgan";
 
+import config from "./config";
+import logger from "./logger";
+import routes from "./routes";
+import { Authenticator } from "./authentication";
+import { registerAuthenticationRoutes } from "./authentication/routes";
+import { Storage } from "./storage";
+
+
 const app = express();
-const port = 8080; // default port to listen
+const port = config.server.port;
+const prefix = config.server.prefix;
 
 // configure logging
 const logStream = {
@@ -30,24 +38,60 @@ const logStream = {
     logger.info(message);
   },
 };
-app.use(morgan("combined", { stream: logStream }));
+app.use(morgan("combined", {
+  stream: logStream,
+  skip: function (req) {
+    // exclude from logging all the internal routes not accessible from outside
+    if (!req.url.startsWith(config.server.prefix))
+      return true;
+    return false;
+  }
+}));
 
+logger.info("Server configuration: " + JSON.stringify(config));
 
-routes.register(app);
+// configure storage
+const storage = new Storage();
+
+// configure authenticator
+const authenticator = new Authenticator(storage);
+authenticator.init().then(() => {
+  logger.info("Authenticator started");
+
+  registerAuthenticationRoutes(app, authenticator);
+});
+
+// register middlewares
+app.use(cookieParser());
+
+// register routes
+routes.register(app, prefix, authenticator);
+
+// TODO: custom error handler?
+// app.use((error: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+//   res.status(501);
+//   res.json({ status: "error", error: error });
+//   next(error);
+// });
 
 // start the Express server
 const server = app.listen(port, () => {
   logger.info(`server started at http://localhost:${port}`);
 });
 
-process.on("SIGTERM", () => {
+function shutdown() {
   server.close(() => {
-    logger.info("Shutting down.");
+    storage.shutdown();
+    logger.info("Shutdown completed.");
   });
+}
+
+process.on("SIGTERM", () => {
+  logger.info("Shutting down.");
+  shutdown();
 });
 
 process.on("SIGINT", () => {
-  server.close(() => {
-    logger.info("Interrupted, shutting down.");
-  });
+  logger.info("Interrupted, shutting down.");
+  shutdown();
 });
