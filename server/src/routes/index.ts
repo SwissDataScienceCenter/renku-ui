@@ -18,6 +18,7 @@
 
 import express from "express";
 
+import config from "../config";
 import registerInternalRoutes from "./internal";
 import registerApiRoutes from "./apis";
 import { Authenticator } from "../authentication";
@@ -30,7 +31,7 @@ function register(app: express.Application, prefix: string, authenticator: Authe
     res.send("Hello ingress!");
   });
 
-  registerApiRoutes(app, prefix, authenticator);
+  registerApiRoutes(app, prefix + config.api.prefix, authenticator);
 }
 
 export default { register };

@@ -39,7 +39,17 @@ const tmpProxMiddleware = createProxyMiddleware({
 
 
 function reigsterApiRoutes(app: express.Application, prefix: string, authenticator: Authenticator): void {
-  app.get(prefix + "/api/projects*", renkuAuth(authenticator), tmpProxMiddleware, () => {
+  app.get(prefix + "/versions", (req, res) => {
+    const uiShortSha = process.env.RENKU_UI_SHORT_SHA ?
+      process.env.RENKU_UI_SHORT_SHA :
+      "";
+    const data = {
+      "ui-short-sha": uiShortSha
+    };
+    res.json(data);
+  });
+
+  app.get(prefix + "/projects*", renkuAuth(authenticator), tmpProxMiddleware, () => {
     // ? This route only attaches the middleware
     // ? REF: https://www.npmjs.com/package/http-proxy-middleware
     // TODO: extend this correctly to unmatched /api/* routes
@@ -47,7 +57,7 @@ function reigsterApiRoutes(app: express.Application, prefix: string, authenticat
   });
 
   // match all the other api routes
-  app.get(prefix + "/api/*", renkuAuth(authenticator), (req, res) => {
+  app.get(prefix + "/*", renkuAuth(authenticator), (req, res) => {
     // TODO: this works as a temporary test. Fix it when implementing the proper API routing
     const headers = { ...req.headers };
     if (headers["Authorization"])

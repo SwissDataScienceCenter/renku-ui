@@ -55,7 +55,11 @@ const REDIS = {
   password: process.env.REDIS_PASSWORD || null,
 };
 
+const API = {
+  prefix: process.env.API_PREFIX || "/api"
+};
 
-const config = { server: SERVER, deplyoment: DEPLOYMENT, auth: AUTHENTICATION, redis: REDIS };
+
+const config = { server: SERVER, deplyoment: DEPLOYMENT, auth: AUTHENTICATION, redis: REDIS, api: API };
 
 export default config;
