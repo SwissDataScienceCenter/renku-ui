@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2021 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,16 +16,20 @@
  * limitations under the License.
  */
 
-/**
- *  renku-ui
- *
- *  landing
- *  Components for the landing page
- */
+function addEnvironmentMethods(client) {
+  /**
+   * Get the versions of the RenkuLab components.
+   */
+  client.getComponentsVersion = async () => {
+    const urlApi = `${client.uiserverUrl}/api/versions`;
+    let headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    headers.append("X-Requested-With", "XMLHttpRequest");
+    return client.clientFetch(urlApi, {
+      method: "GET",
+      headers: headers
+    }).then(resp => resp.data);
+  };
+}
 
-import AnonymousHome from "./AnonymousHome";
-import Landing from "./Landing";
-import { RenkuNavBar, FooterNavbar, MaintenanceNavBar } from "./NavBar";
-import { pollComponentsVersion } from "./NabBarWarnings";
-
-export { AnonymousHome, Landing, FooterNavbar, MaintenanceNavBar, pollComponentsVersion, RenkuNavBar };
+export default addEnvironmentMethods;

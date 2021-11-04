@@ -559,6 +559,13 @@ const addDatasetToProjectSchema = new Schema({
   }
 });
 
+const environmentSchema = new Schema({
+  fetched: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+  fetching: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
+  data: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
+  timeout: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+});
+
 /**
  * Schema for information from statuspage.io. Used by the statuspage module.
  */
@@ -592,5 +599,5 @@ const formGeneratorSchema = new Schema({
 export {
   userSchema, metaSchema, newProjectSchema, projectSchema, forkProjectSchema, notebooksSchema,
   projectsSchema, datasetFormSchema, issueFormSchema, datasetImportFormSchema, projectGlobalSchema,
-  addDatasetToProjectSchema, statuspageSchema, notificationsSchema, formGeneratorSchema
+  addDatasetToProjectSchema, statuspageSchema, notificationsSchema, formGeneratorSchema, environmentSchema
 };
