@@ -161,7 +161,6 @@ class LoggedInHome extends Component {
     const urlMap = this.props.urlMap;
     const { user } = this.props;
     const projects = this.props.projects.featured;
-    const neverLoaded = projects.fetched ? false : true;
     return [
       <LoggedInNewVersionBanner key="new-version-banner" />,
       <Row key="username">
@@ -172,7 +171,7 @@ class LoggedInHome extends Component {
       <Row key="spacer"><Col md={12}>&nbsp;</Col></Row>,
       <Row key="content">
         <Col xs={{ order: 2 }} md={{ size: 6, order: 1 }}>
-          <YourProjects urlMap={urlMap} loading={neverLoaded || projects.fetching} projects={projects.member} />
+          <YourProjects urlMap={urlMap} loading={projects.fetchingLanding} projects={projects.landing} />
           <Row><Col md={12}>&nbsp;</Col></Row>
         </Col>
         <Col xs={{ order: 1 }} md={{ size: 6, order: 2 }}>
