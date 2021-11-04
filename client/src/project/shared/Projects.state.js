@@ -59,11 +59,26 @@ class ProjectsCoordinator {
       return;
     // set status to fetching, get all the projects and filter and invoke both APIs
     this.model.set("featured.fetching", true);
-    const params = { order_by: "last_activity_at", per_page: 100 };
+    let params = { query: "last_activity_at", per_page: 100 };
     const promiseStarred = this.client.getAllProjects({ ...params, starred: true })
       .then(resp => resp.map((project) => this._starredProjectMetadata(project)))
       .catch(error => []);
-    const promiseMember = this.client.getAllProjects({ ...params, membership: true })
+    params = { query: `{
+        projects(membership: true, first: 100) {
+          pageInfo {
+            startCursor
+            endCursor
+          }
+          nodes {
+            name
+            namespace {
+              fullPath
+            }
+            path
+          }
+        }
+      }`, "variables": null, "operationName": null };
+    const promiseMember = this.client.getAllProjectsGraphQL(params)
       .then(resp => resp.map((project) => this._starredProjectMetadata(project)))
       .catch(error => []);
 
@@ -81,6 +96,7 @@ class ProjectsCoordinator {
       return { starred: values[0], member: values[1] };
     });
   }
+
 
   async getLanding() {
     if (this.model.get("landingProjects.fetching"))

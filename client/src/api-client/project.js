@@ -110,6 +110,45 @@ function addProjectMethods(client) {
     return projects;
   };
 
+  /**
+   * Use the graphQL endpoint to get minimal information for a project
+   * @param {object} query The graphQL query, should have a key "query"
+   * @returns A query response promise
+   */
+  client.getProjectsGraphQL = async (queryParams = {}) => {
+    let headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    headers.append("X-Requested-With", "XMLHttpRequest");
+    return client.clientFetch(`${client.baseUrl}/direct/api/graphql`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(queryParams),
+    });
+  };
+
+  /**
+   * Get all the projects that match the query parameters, but just
+   * return some minimal information, not the full information.
+   * @param {object} queryParams The graphQL query, should have a key "query"
+   * @returns A query response promise.
+   */
+  client.getAllProjectsGraphQL = async (queryParams = {}) => {
+    let projects = [];
+    let finished = false;
+
+    while (!finished) {
+      const resp = await client.getProjectsGraphQL({ ...queryParams });
+      projects = [...projects, ...resp.data];
+
+      // if (!resp.pagination.nextPageLink)
+      //   finished = true;
+      // else
+      //   page = resp.pagination.nextPage;
+    }
+
+    return projects;
+  };
+
   client.getAvatarForNamespace = (namespaceId = {}) => {
     let headers = client.getBasicHeaders();
     return client.clientFetch(`${client.baseUrl}/groups/${namespaceId}`, {
