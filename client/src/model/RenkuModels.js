@@ -38,11 +38,16 @@ const projectsSchema = new Schema({
   featured: {
     [Prop.SCHEMA]: new Schema({
       fetched: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
-      fetching: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
-      fetchingLanding: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
       landing: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
       member: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
       starred: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true }
+    })
+  },
+  landingProjects: {
+    [Prop.SCHEMA]: new Schema({
+      fetched: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+      fetching: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
+      list: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true }
     })
   },
   namespaces: {

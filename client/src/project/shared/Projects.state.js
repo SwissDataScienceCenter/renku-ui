@@ -83,26 +83,27 @@ class ProjectsCoordinator {
   }
 
   async getLanding() {
-    if (this.model.get("featured.fetchingLanding"))
+    if (this.model.get("landingProjects.fetching"))
       return;
-    // set status to fetchingLanding, get the projects for the landing page
-    this.model.set("featured.fetchingLanding", true);
-    const params = { order_by: "last_activity_at", per_page: 5 };
-    const promiseMember = this.client.getProjects({ ...params, membership: true })
-      .then(resp => resp.data.map((project) => this._starredProjectMetadata(project)))
-      .catch(error => []);
-
-    // set `featured` content and return only landing projects
-    return promiseMember.then(values => {
+    // set status to fetching, get the projects for the landing page
+    this.model.set("landingProjects.fetching", true);
+    const params = { order_by: "last_activity_at", per_page: 5, membership: true };
+    try {
+      const landingProjects = await this.client.getProjects({ ...params });
+      const projectList = landingProjects?.data?.map((project) => this._starredProjectMetadata(project)) ?? [];
       this.model.setObject({
-        featured: {
-          landing: { $set: values },
-          fetchingLanding: false
+        landingProjects: {
+          fetched: new Date(),
+          fetching: false,
+          list: { $set: projectList },
         }
       });
-
-      return { landing: values };
-    });
+      return { landing: projectList };
+    }
+    catch {
+      this.model.set("landingProjects.fetching", false);
+      return { landing: [] };
+    }
   }
 
   updateStarred(project, isStarred) {
