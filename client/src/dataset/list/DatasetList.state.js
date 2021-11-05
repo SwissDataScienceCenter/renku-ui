@@ -119,6 +119,7 @@ class DatasetListModel extends StateModel {
   }
 
   manageResponse(response) {
+    if (!this.get("loading")) return;
     const { pagination } = response;
     const newData = {
       datasets: { $set: response.data },
@@ -155,6 +156,11 @@ class DatasetListModel extends StateModel {
         newData.initialized = false;
         this.setObject(newData);
       });
+  }
+
+  cancelSearch() {
+    // set that is not loading or waiting for results
+    this.set("loading", false);
   }
 }
 
