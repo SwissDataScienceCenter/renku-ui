@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { Component, Fragment, useState } from "react";
+import React, { Component, Fragment, useState, memo } from "react";
 import Media from "react-media";
 import { Link } from "react-router-dom";
 import {
@@ -43,6 +43,7 @@ import { Url } from "../utils/url";
 
 import "./Notebooks.css";
 import SessionCheatSheet from "./SessionCheatSheet";
+import _ from "lodash";
 
 
 // * Constants and helpers * //
@@ -900,42 +901,44 @@ class NotebookServerRowProject extends Component {
   }
 }
 
-class NotebookServerRowAction extends Component {
-  render() {
-    const { status, name } = this.props;
-    const actions = {
-      connect: null,
-      stop: null,
-      logs: null
-    };
-    let defaultAction = null;
-    actions.logs = (<DropdownItem onClick={() => this.props.toggleLogs(name)} color="secondary">
-      <FontAwesomeIcon icon={faFileAlt} /> Get logs
+const NotebookServerRowAction = memo((props) => {
+  const { status, name } = props;
+  const actions = {
+    connect: null,
+    stop: null,
+    logs: null
+  };
+  let defaultAction = null;
+  actions.logs = (<DropdownItem onClick={() => props.toggleLogs(name)} color="secondary">
+    <FontAwesomeIcon icon={faFileAlt} /> Get logs
+  </DropdownItem>);
+
+  if (status === "running") {
+    defaultAction = (<Link className="btn btn-secondary text-white" to={props.localUrl}>Open</Link>);
+    actions.openExternal = (<DropdownItem href={props.url} target="_blank" >
+      <FontAwesomeIcon icon={faExternalLinkAlt} /> Open in new tab
     </DropdownItem>);
-
-    if (status === "running") {
-      defaultAction = (<Link className="btn btn-secondary text-white" to={this.props.localUrl}>Open</Link>);
-      actions.openExternal = (<DropdownItem href={this.props.url} target="_blank" >
-        <FontAwesomeIcon icon={faExternalLinkAlt} /> Open in new tab
-      </DropdownItem>);
-      actions.stop = (<DropdownItem onClick={() => this.props.stopNotebook(name)}>
+    actions.stop = <Fragment>
+      <DropdownItem divider />
+      <DropdownItem onClick={() => props.stopNotebook(name)}>
         <FontAwesomeIcon icon={faStopCircle} /> Stop
-      </DropdownItem>);
-    }
-    else {
-      const classes = { color: "secondary", className: "text-nowrap" };
-      defaultAction = (<Button {...classes} onClick={() => this.props.toggleLogs(name)}>Get logs</Button>);
-    }
-
-    return (
-      <ButtonWithMenu className="sessionsButton" size="sm" default={defaultAction} color="secondary">
-        {actions.openExternal}
-        {actions.stop}
-        {actions.logs}
-      </ButtonWithMenu>
-    );
+      </DropdownItem>
+    </Fragment>;
   }
-}
+  else {
+    const classes = { color: "secondary", className: "text-nowrap" };
+    defaultAction = (<Button {...classes} onClick={() => props.toggleLogs(name)}>Get logs</Button>);
+  }
+
+  return (
+    <ButtonWithMenu className="sessionsButton" size="sm" default={defaultAction} color="secondary">
+      {actions.openExternal}
+      {actions.logs}
+      {actions.stop}
+    </ButtonWithMenu>
+  );
+}, _.isEqual);
+NotebookServerRowAction.displayName = "NotebookServerRowAction";
 
 /**
  * Simple environment logs container
