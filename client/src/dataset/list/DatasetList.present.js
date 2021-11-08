@@ -82,8 +82,8 @@ function OrderByDropdown(props) {
 class DatasetSearchForm extends Component {
 
   render() {
-    return <Row className="justify-content-lg-between justify-content-md-center pb-2">
-      <Col md={12} className="pb-2">
+    return <Row className="justify-content-lg-between justify-content-md-center">
+      <Col md={12}>
         <Form key="form" inline onSubmit={this.props.handlers.onSearchSubmit}
           className="row row-cols-lg-auto justify-content-start g-1 pb-2">
           <Col className="col-auto w-25 d-inline-block">
@@ -153,7 +153,7 @@ class DatasetSearchForm extends Component {
             </Card>
           </UncontrolledCollapse>
         </Col>
-        <Col className="d-flex justify-content-end">
+        <Col className="d-flex pt-4">
           <Button color="rk-white" id="displayButton" onClick={() => this.props.onGridDisplayToggle()}>
             {
               this.props.gridDisplay ?
