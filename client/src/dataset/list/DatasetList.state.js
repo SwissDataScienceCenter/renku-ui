@@ -24,6 +24,7 @@
  */
 
 import { Schema, StateKind, StateModel } from "../../model/Model";
+import uuid from "uuid/v4";
 
 const orderByValuesMap = {
   TITLE: "title",
@@ -135,6 +136,9 @@ class DatasetListModel extends StateModel {
 
   performSearch() {
     if (this.get("loading")) return;
+
+    const searchId = uuid();
+    this.set("searchId", searchId);
     this.set("loading", true);
     const searchParams = {
       query: this.get("query") === "" ? "*" : this.get("query"),
@@ -143,7 +147,11 @@ class DatasetListModel extends StateModel {
       page: this.get("currentPage"),
     };
     return this.client.searchDatasets(searchParams)
-      .then(response => this.manageResponse(response))
+      .then( async response => {
+        const currentSearchId = this.get("searchId");
+        if (currentSearchId !== searchId) return;
+        this.manageResponse(response);
+      })
       .catch((error) => {
         let newData = {};
         if (error.response && error.response.status === 400 && this.get("initialized") === false)
