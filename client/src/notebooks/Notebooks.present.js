@@ -918,10 +918,12 @@ const NotebookServerRowAction = memo((props) => {
     actions.openExternal = (<DropdownItem href={props.url} target="_blank" >
       <FontAwesomeIcon icon={faExternalLinkAlt} /> Open in new tab
     </DropdownItem>);
-    actions.stop = (
+    actions.stop = <Fragment>
+      <DropdownItem divider />
       <DropdownItem onClick={() => props.stopNotebook(name)}>
         <FontAwesomeIcon icon={faStopCircle} /> Stop
-      </DropdownItem>);
+      </DropdownItem>
+    </Fragment>;
   }
   else {
     const classes = { color: "secondary", className: "text-nowrap" };
@@ -932,7 +934,6 @@ const NotebookServerRowAction = memo((props) => {
     <ButtonWithMenu className="sessionsButton" size="sm" default={defaultAction} color="secondary">
       {actions.openExternal}
       {actions.logs}
-      { status === "running" ? <DropdownItem divider /> : null }
       {actions.stop}
     </ButtonWithMenu>
   );
