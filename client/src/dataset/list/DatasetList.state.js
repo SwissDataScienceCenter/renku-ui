@@ -147,7 +147,7 @@ class DatasetListModel extends StateModel {
       page: this.get("currentPage"),
     };
     return this.client.searchDatasets(searchParams)
-      .then( async response => {
+      .then( response => {
         const currentSearchId = this.get("searchId");
         if (currentSearchId !== searchId) return;
         this.manageResponse(response);
