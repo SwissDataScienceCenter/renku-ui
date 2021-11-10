@@ -40,7 +40,7 @@ class ProjectsCoordinator {
     return {
       id: project.id,
       name: project.name,
-      path_with_namespace: project.path_with_namespace,
+      path_with_namespace: project.path_with_namespace ?? project?.fullPath,
       description: project.description,
       tag_list: project.tag_list,
       star_count: project.star_count,
@@ -63,24 +63,13 @@ class ProjectsCoordinator {
     const promiseStarred = this.client.getAllProjects({ ...params, starred: true })
       .then(resp => resp.map((project) => this._starredProjectMetadata(project)))
       .catch(error => []);
-    params = { query: `{
-        projects(membership: true, first: 100) {
-          pageInfo {
-            startCursor
-            endCursor
-          }
-          nodes {
-            name
-            namespace {
-              fullPath
-            }
-            path
-          }
-        }
-      }`, "variables": null, "operationName": null };
+
     const promiseMember = this.client.getAllProjectsGraphQL(params)
-      .then(resp => resp.map((project) => this._starredProjectMetadata(project)))
+      .then(resp => {
+        return resp.map((project) => this._starredProjectMetadata(project));
+      })
       .catch(error => []);
+
 
     // set `featured` content and return only `starred` and `member` projects data
     return Promise.all([promiseStarred, promiseMember]).then(values => {
