@@ -24,7 +24,7 @@ jest.mock("ioredis", () => require("ioredis-mock/jest"));
 
 describe("Test storage", () => {
   it("Test Storage class", async () => {
-    const storage = new Storage("localhost", 12345, "safePassword");
+    const storage = new Storage("localhost", 12345, 0, "safePassword");
 
     // save data
     const path = "somewhere";

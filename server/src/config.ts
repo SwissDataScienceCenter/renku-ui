@@ -51,8 +51,9 @@ const AUTHENTICATION = {
 const REDIS = {
   host: process.env.REDIS_HOST || "localhost",
   port: convertType(process.env.REDIS_PORT) || 6379,
-  database: process.env.REDIS_DATABASE || "0",
+  database: convertType(process.env.REDIS_DATABASE) || 0,
   password: process.env.REDIS_PASSWORD || null,
+  sentinel: convertType(process.env.REDIS_SENTINEL) || false
 };
 
 const API = {

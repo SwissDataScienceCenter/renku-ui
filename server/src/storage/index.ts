@@ -29,21 +29,40 @@ class Storage {
   constructor(
     host: string = config.redis.host,
     port: number = config.redis.port as number,
-    password: string = config.redis.password
+    database: number = config.redis.database as number,
+    password: string = config.redis.password,
+    sentinel: boolean = config.redis.sentinel as boolean
   ) {
     // configure redis
     const redisConfig: Redis.RedisOptions = {
-      host,
-      port,
+      db: database,
       lazyConnect: true,
       retryStrategy: (times) => {
         return times > 5 ?
           null :
           10000;
       },
+      sentinelRetryStrategy: (times) => {
+        return times > 5 ?
+          null :
+          10000;
+      },
     };
-    if (password)
-      redisConfig.password = password;
+    if (sentinel) {
+      redisConfig.sentinels = [ { host, port } ];
+      redisConfig.name = "mymaster";
+      if (password) {
+        redisConfig.sentinelPassword = password;
+        redisConfig.password = password;
+      }
+    }
+    else {
+      redisConfig.host = host;
+      redisConfig.port = port;
+      if (password)
+        redisConfig.password = password;
+    }
+
     try {
       this.redis = new Redis(redisConfig);
       this.redis.connect(() => {
@@ -54,7 +73,7 @@ class Storage {
     catch (error) /* istanbul ignore next */ {
       const newError = new Error(`Cannot connect to Redis -- ${error.message}`);
       newError.stack = newError.stack.split("\n").slice(0, 2).join("\n") + "\n" + error.stack;
-      logger.error(newError);
+      logger.error(newError.stack);
     }
   }
 

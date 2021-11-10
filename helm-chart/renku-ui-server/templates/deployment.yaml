@@ -17,9 +17,7 @@ spec:
       labels:
         app.kubernetes.io/name: {{ include "ui-server.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
-        {{- if .Values.redis.install }}
         {{ include "call-nested" (list . "redis" "redis.fullname") }}-client: "true"
-        {{- end }}
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -68,15 +66,22 @@ spec:
               value: "0"
             - name: REDIS_PASSWORD
               value:
+            - name: REDIS_SENTINEL
+              value: false
             {{ else }}
             - name: REDIS_HOST
-              value: {{ .Values.redis.external.host | quote }}
+              value: {{ .Values.global.redis.host | default (include "call-nested" (list . "redis" "redis.fullname")) }}
             - name: REDIS_PORT
-              value: {{ .Values.redis.external.port | quote }}
+              value: {{ .Values.global.redis.port | quote }}
             - name: REDIS_DATABASE
-              value: {{ .Values.redis.external.database | default (printf "0") | quote }}
+              value: {{ .Values.global.redis.dbIndex.uiServer | quote }}
             - name: REDIS_PASSWORD
-              value: {{ .Values.redis.external.password | default (printf "") | quote }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.global.redis.existingSecret }}
+                  key: {{ .Values.global.redis.existingSecretPasswordKey }}
+            - name: REDIS_SENTINEL
+              value: {{ .Values.global.redis.isSentinel | quote }}
             {{- end }}
           livenessProbe:
             httpGet:
