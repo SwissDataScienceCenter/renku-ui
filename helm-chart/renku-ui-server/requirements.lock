@@ -1,0 +1,6 @@
+dependencies:
+- name: certificates
+  repository: https://swissdatasciencecenter.github.io/helm-charts/
+  version: 0.11.0-rc1
+digest: sha256:d4165bb743f91582d406676a1101bf9ebec0aa1040b941ee140de6948728a375
+generated: "2021-11-10T13:01:21.209633+01:00"
