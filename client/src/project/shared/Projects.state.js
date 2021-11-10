@@ -82,6 +82,30 @@ class ProjectsCoordinator {
     });
   }
 
+  async getLanding() {
+    if (this.model.get("landingProjects.fetching"))
+      return;
+    // set status to fetching, get the projects for the landing page
+    this.model.set("landingProjects.fetching", true);
+    const params = { order_by: "last_activity_at", per_page: 5, membership: true };
+    try {
+      const landingProjects = await this.client.getProjects({ ...params });
+      const projectList = landingProjects?.data?.map((project) => this._starredProjectMetadata(project)) ?? [];
+      this.model.setObject({
+        landingProjects: {
+          fetched: new Date(),
+          fetching: false,
+          list: { $set: projectList },
+        }
+      });
+      return { landing: projectList };
+    }
+    catch {
+      this.model.set("landingProjects.fetching", false);
+      return { landing: [] };
+    }
+  }
+
   updateStarred(project, isStarred) {
     const starred = this.model.get("featured.starred");
     let newStarred;
