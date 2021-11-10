@@ -72,6 +72,7 @@ const forkDisplaySchema = new Schema({
   displayId: { initial: "", mandatory: false },
   slug: { initial: "", mandatory: true },
   loading: { initial: false, mandatory: false },
+  searchId: { initial: "", mandatory: false },
   errors: { initial: [], mandatory: false },
 
   statuses: { initial: [] },
