@@ -31,7 +31,7 @@ function register(app: express.Application, prefix: string, authenticator: Authe
     res.send("Hello ingress!");
   });
 
-  registerApiRoutes(app, prefix + config.api.prefix, authenticator);
+  registerApiRoutes(app, prefix + config.routes.api, authenticator);
 }
 
 export default { register };

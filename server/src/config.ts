@@ -39,13 +39,11 @@ const AUTHENTICATION = {
   clientSecret: process.env.AUTH_CLIENT_SECRET,
   tokenExpirationTolerance: convertType(process.env.AUTH_TOKEN_TOLERANCE) || 10,
   cookiesKey: "ui-server-session",
-  suffix: "/auth",
-  callbackSuffix: "/callback",
   authHeaderField: "Authorization",
   authHeaderPrefix: "bearer ",
   invalidHeaderField: "ui-server-auth",
   invalidHeaderExpired: "expired",
-  retryConnectionAttempts: 10
+  retryConnectionAttempts: 10,
 };
 
 const REDIS = {
@@ -55,11 +53,12 @@ const REDIS = {
   password: process.env.REDIS_PASSWORD || null,
 };
 
-const API = {
-  prefix: process.env.API_PREFIX || "/api"
+const ROUTES = {
+  api: "/api",
+  auth: "/auth",
 };
 
 
-const config = { server: SERVER, deplyoment: DEPLOYMENT, auth: AUTHENTICATION, redis: REDIS, api: API };
+const config = { server: SERVER, deplyoment: DEPLOYMENT, auth: AUTHENTICATION, redis: REDIS, routes: ROUTES };
 
 export default config;
