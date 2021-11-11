@@ -20,6 +20,8 @@
 // Source: https://stackoverflow.com/questions/6507056/replace-all-whitespace-characters/6507078#6507078
 import showdown from "showdown";
 import showdownHighlight from "showdown-highlight";
+// eslint-disable-next-line
+import showdownKatex from "showdown-katex";
 import DOMPurify from "dompurify";
 import XRegExp from "xregexp";
 
@@ -171,7 +173,13 @@ function sanitizedHTMLFromMarkdown(markdown, singleLine = false) {
     ...showdownOptions,
     extensions: [
       ...bindings,
-      showdownHighlight({ pre: true })
+      showdownHighlight({ pre: true }),
+      // eslint-disable-next-line
+      showdownKatex({
+        throwOnError: true,
+        displayMode: true,
+        errorColor: "#e50202",
+      }),
     ]
   });
   if (singleLine && markdown) {
@@ -180,9 +188,15 @@ function sanitizedHTMLFromMarkdown(markdown, singleLine = false) {
     if (breakPosition !== -1)
       markdown = markdown.substring(0, breakPosition);
   }
+
+  // Reference https://github.com/obedm503/showdown-katex
+  // this showdown extension only support ```ascii math or ```latex
+  // eslint-disable-next-line
+  markdown = markdown?.replace(new RegExp("\\```math", "gm"), "```asciimath");
   const htmlFromMarkdown = converter.makeHtml(markdown);
-  const sanitized = DOMPurify.sanitize(htmlFromMarkdown);
-  return sanitized;
+  if (markdown && markdown !== "")
+    return DOMPurify.sanitize(htmlFromMarkdown);
+  return markdown;
 }
 
 function simpleHash(str) {
