@@ -1,5 +1,23 @@
 # Changes
 
+
+## [1.1.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.0.2...1.1.0) (2021-11-12)
+
+
+* allow triggering another datasets search before the previous one finished ([#1352](https://github.com/SwissDataScienceCenter/renku-ui/issues/1352), [#1549](https://github.com/SwissDataScienceCenter/renku-ui/issues/1549))
+* add ui server authentication ([#1519](https://github.com/SwissDataScienceCenter/renku-ui/issues/1519), [#1337](https://github.com/SwissDataScienceCenter/renku-ui/issues/1337))
+
+* highlight code syntax in markdown files ([#1534](https://github.com/SwissDataScienceCenter/renku-ui/issues/1534), [#1358](https://github.com/SwissDataScienceCenter/renku-ui/issues/1358))
+* improve performance of landing page ([#1529](https://github.com/SwissDataScienceCenter/renku-ui/issues/1529), [#1546](https://github.com/SwissDataScienceCenter/renku-ui/issues/1546))
+* notify user when publishing a new renkulab version ([#1544](https://github.com/SwissDataScienceCenter/renku-ui/issues/1544), [#819](https://github.com/SwissDataScienceCenter/renku-ui/issues/819))
+* rearrange session menu options ([#1545](https://github.com/SwissDataScienceCenter/renku-ui/issues/1545), [#1548](https://github.com/SwissDataScienceCenter/renku-ui/issues/1548))
+* preview matlab files ([#1543](https://github.com/SwissDataScienceCenter/renku-ui/issues/1543))
+
+### Bug Fixes
+
+* filter out the internal loud component when checking RenkuLab health ([#1541](https://github.com/SwissDataScienceCenter/renku-ui/issues/1541))
+
+
 ## [1.0.2](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.0.1..1.0.2) (2021-10-29)
 
 
