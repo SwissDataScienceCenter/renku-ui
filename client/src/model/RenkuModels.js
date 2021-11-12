@@ -119,11 +119,6 @@ const projectSchema = new Schema({
         schema: {
           files: { schema: [] }
         }
-      },
-      readme: {
-        schema: {
-          text: { initial: "", mandatory: false }
-        }
       }
     },
   },
@@ -285,10 +280,41 @@ const projectStatisticsSchema = new Schema({
 });
 
 const projectGlobalSchema = new Schema({
+  commits: {
+    [Prop.SCHEMA]: new Schema({
+      list: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
+      error: { [Prop.INITIAL]: null },
+
+      fetched: { [Prop.INITIAL]: null },
+      fetching: { [Prop.INITIAL]: false },
+    })
+  },
+  config: {
+    [Prop.SCHEMA]: new Schema({
+      data: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
+      error: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
+      fetched: { [Prop.INITIAL]: null },
+      fetching: { [Prop.INITIAL]: false },
+
+      initial: { [Prop.INITIAL]: {} },
+      input: { [Prop.INITIAL]: {} }
+    })
+  },
+  data: {
+    [Prop.SCHEMA]: new Schema({
+      readme: { [Prop.INITIAL]: {} }
+    })
+  },
+  filters: {
+    [Prop.SCHEMA]: new Schema({
+      branch: { [Prop.INITIAL]: { name: null }, [Prop.MANDATORY]: true },
+      commit: { [Prop.INITIAL]: { id: "latest" }, [Prop.MANDATORY]: true },
+    })
+  },
   metadata: {
     [Prop.SCHEMA]: new Schema({
+      defaultBranch: { [Prop.INITIAL]: null },
       exists: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
-
       id: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // id
       namespace: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // namespace.full_path
       path: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // path
@@ -309,30 +335,9 @@ const projectGlobalSchema = new Schema({
       fetching: { [Prop.INITIAL]: false },
     })
   },
-  commits: {
+  transient: {
     [Prop.SCHEMA]: new Schema({
-      list: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
-      error: { [Prop.INITIAL]: null },
-
-      fetched: { [Prop.INITIAL]: null },
-      fetching: { [Prop.INITIAL]: false },
-    })
-  },
-  filters: {
-    [Prop.SCHEMA]: new Schema({
-      branch: { [Prop.INITIAL]: { name: null }, [Prop.MANDATORY]: true },
-      commit: { [Prop.INITIAL]: { id: "latest" }, [Prop.MANDATORY]: true },
-    })
-  },
-  config: {
-    [Prop.SCHEMA]: new Schema({
-      data: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
-      error: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
-      fetched: { [Prop.INITIAL]: null },
-      fetching: { [Prop.INITIAL]: false },
-
-      initial: { [Prop.INITIAL]: {} },
-      input: { [Prop.INITIAL]: {} }
+      requests: { [Prop.INITIAL]: {} }
     })
   }
 });

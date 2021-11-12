@@ -1223,7 +1223,7 @@ class NotFoundInsideProject extends Component {
 
 class ProjectView extends Component {
   render() {
-    const available = this.props.core ? this.props.core.available : null;
+    const available = this.props.metadata ? this.props.metadata.exists : null;
     const projectPathWithNamespaceOrId = this.props.projectPathWithNamespace ?
       this.props.projectPathWithNamespace
       : this.props.projectId;

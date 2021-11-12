@@ -216,12 +216,12 @@ class View extends Component {
     projectData.then(data => {
       this.projectCoordinator.setProjectData(data, true);
       this.projectCoordinator.fetchCommits();
-      // TODO: move fetchBranches to projectCoordinator. We should fetch commits after we know the defaul branch
+      // TODO: move fetchBranches to projectCoordinator. We should fetch commits after we know the default branch
       this.fetchBranches();
     });
     return projectData;
   }
-  async fetchReadme() { return this.projectState.fetchReadme(this.props.client); }
+  async fetchReadme() { return this.projectCoordinator.fetchReadme(this.props.client); }
   async fetchMergeRequests() { return this.projectState.fetchMergeRequests(this.props.client); }
   async fetchModifiedFiles() { return this.projectState.fetchModifiedFiles(this.props.client); }
   async fetchBranches() { return this.projectState.fetchBranches(this.props.client); }
@@ -632,6 +632,7 @@ class View extends Component {
 
     return {
       ...this.projectState.get(),
+      ...this.projectCoordinator.get(),
       ...ownProps,
       projectPathWithNamespace: pathComponents.projectPathWithNamespace,
       projectId: pathComponents.projectId,

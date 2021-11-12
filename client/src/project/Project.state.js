@@ -343,21 +343,6 @@ class ProjectModel extends StateModel {
       });
   }
 
-  fetchReadme(client) {
-    // Do not fetch if a fetch is in progress
-    if (this.get("transient.requests.readme") === SpecialPropVal.UPDATING) return;
-
-    this.setUpdating({ transient: { requests: { readme: true } } });
-    client.getProjectReadme(this.get("core.id"), this.get("core.default_branch"))
-      .then(d => this.set("data.readme.text", d.text))
-      .catch(error => {
-        if (error.case === API_ERRORS.notFoundError)
-          this.set("data.readme.text", "No readme file found.");
-
-      })
-      .finally(() => this.set("transient.requests.readme", false));
-  }
-
   setTags(client, tags) {
     this.setUpdating({ system: { tag_list: [true] } });
     client.setTags(this.get("core.id"), tags)
@@ -412,6 +397,24 @@ class ProjectCoordinator {
     });
   }
 
+
+  // TODO: Do we really want to re-fetch the entire project on every change?
+  fetchProject(client, projectPathWithNamespace) {
+    this.setUpdating({ metadata: { exists: true } });
+    return client.getProject(projectPathWithNamespace, { statistics: true })
+      .then(resp => resp.data)
+      .then(d => {
+        this.setProjectData(d, true);
+        return d;
+      })
+      .catch(err => {
+        if (err.case === API_ERRORS.notFoundError)
+          this.set("metadata.exists", false);
+
+        else throw err;
+      });
+  }
+
   setProjectData(data, statistics = false) {
     let metadata, statsObject, filtersObject;
 
@@ -455,6 +458,7 @@ class ProjectCoordinator {
         fetching: false
       };
 
+
       // set statistics
       if (statistics) {
         const stats = data.all && data.all.statistics ?
@@ -478,29 +482,12 @@ class ProjectCoordinator {
       };
     }
 
-    this.model.setObject({ metadata: metadata, statistics: statsObject, filters: filtersObject });
+    this.model.setObject({ metadata: metadata,
+      statistics: statsObject,
+      filters: filtersObject,
+      _transition: data
+    });
     return metadata;
-  }
-
-  async fetchStatistics(pathWithNamespace) {
-    if (this.model.get("statistics.fetching"))
-      return;
-    if (!pathWithNamespace)
-      pathWithNamespace = this.model.get("metadata.pathWithNamespace");
-    if (!pathWithNamespace)
-      return;
-    this.model.set("statistics.fetching", true);
-    const resp = await this.client.getProject(pathWithNamespace, { statistics: true });
-    const stats = resp.data.all.statistics ?
-      resp.data.all.statistics :
-      projectGlobalSchema.createInitialized().statistics.data;
-    const statsObject = {
-      fetching: false,
-      fetched: new Date(),
-      data: { $set: stats }
-    };
-    this.model.setObject({ statistics: statsObject });
-    return stats;
   }
 
   async fetchCommits(customFilters = null) {
@@ -549,6 +536,42 @@ class ProjectCoordinator {
       }
     });
     return commits;
+  }
+
+  fetchReadme(client) {
+    // Do not fetch if a fetch is in progress
+    if (this.get("transient.requests.readme") === SpecialPropVal.UPDATING) return;
+
+    this.model.setUpdating({ transient: { requests: { readme: true } } });
+    client.getProjectReadme(this.model.get("metadata.id"), this.model.get("metadata.defaultBranch"))
+      .then(d => this.model.set("data.readme.text", d.text))
+      .catch(error => {
+        if (error.case === API_ERRORS.notFoundError)
+          this.model.set("data.readme.text", "No readme file found.");
+
+      })
+      .finally(() => this.model.set("transient.requests.readme", false));
+  }
+
+  async fetchStatistics(pathWithNamespace) {
+    if (this.model.get("statistics.fetching"))
+      return;
+    if (!pathWithNamespace)
+      pathWithNamespace = this.model.get("metadata.pathWithNamespace");
+    if (!pathWithNamespace)
+      return;
+    this.model.set("statistics.fetching", true);
+    const resp = await this.client.getProject(pathWithNamespace, { statistics: true });
+    const stats = resp.data.all.statistics ?
+      resp.data.all.statistics :
+      projectGlobalSchema.createInitialized().statistics.data;
+    const statsObject = {
+      fetching: false,
+      fetched: new Date(),
+      data: { $set: stats }
+    };
+    this.model.setObject({ statistics: statsObject });
+    return stats;
   }
 
   async fetchProjectConfig(repositoryUrl, branch = null) {
