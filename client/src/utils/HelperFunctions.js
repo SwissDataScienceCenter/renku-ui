@@ -20,7 +20,6 @@
 // Source: https://stackoverflow.com/questions/6507056/replace-all-whitespace-characters/6507078#6507078
 import showdown from "showdown";
 import showdownHighlight from "showdown-highlight";
-// eslint-disable-next-line
 import showdownKatex from "showdown-katex";
 import DOMPurify from "dompurify";
 import XRegExp from "xregexp";
@@ -174,11 +173,10 @@ function sanitizedHTMLFromMarkdown(markdown, singleLine = false) {
     extensions: [
       ...bindings,
       showdownHighlight({ pre: true }),
-      // eslint-disable-next-line
       showdownKatex({
-        throwOnError: true,
+        throwOnError: false,
         displayMode: true,
-        errorColor: "#e50202",
+        errorColor: "var(--bs-danger)",
       }),
     ]
   });
@@ -191,7 +189,6 @@ function sanitizedHTMLFromMarkdown(markdown, singleLine = false) {
 
   // Reference https://github.com/obedm503/showdown-katex
   // this showdown extension only support ```ascii math or ```latex
-  // eslint-disable-next-line
   markdown = markdown?.replace(new RegExp("\\```math", "gm"), "```asciimath");
   const htmlFromMarkdown = converter.makeHtml(markdown);
   const sanitized = DOMPurify.sanitize(htmlFromMarkdown);
