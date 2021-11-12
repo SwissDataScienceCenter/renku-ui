@@ -8,8 +8,11 @@ WORKDIR /app
 COPY package.json package-lock.json /app/
 COPY public /app/public
 COPY src /app/src/
+COPY craco.config.js /app/craco.config.js
 
 ENV NODE_OPTIONS="--max-old-space-size=4096"
+ARG SHORT_SHA
+ENV RENKU_UI_SHORT_SHA=$SHORT_SHA
 
 # Delete this after reactstrap is released
 RUN apk update && apk upgrade && \
@@ -36,6 +39,9 @@ USER nginx
 
 
 HEALTHCHECK --interval=20s --timeout=10s --retries=5 CMD test -e /var/run/nginx.pid
+
+ARG SHORT_SHA
+ENV RENKU_UI_SHORT_SHA=$SHORT_SHA
 
 ENTRYPOINT ["/bin/sh", "/app/docker-entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]

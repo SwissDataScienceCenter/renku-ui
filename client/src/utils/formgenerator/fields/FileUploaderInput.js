@@ -30,8 +30,9 @@ import ValidationAlert from "./ValidationAlert";
 import HelpText from "./HelpText";
 import FormLabel from "./FormLabel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faTimes, faTrashAlt, faSyncAlt, faExclamationTriangle, faFolder }
-  from "@fortawesome/free-solid-svg-icons";
+import {
+  faCheck, faTimes, faTrashAlt, faSyncAlt, faExclamationTriangle, faFolder
+} from "@fortawesome/free-solid-svg-icons";
 import { formatBytes, isURL } from "./../../HelperFunctions";
 import { FileExplorer, getFilesTree } from "../../UIComponents";
 

@@ -38,6 +38,7 @@ import { ExternalDocsLink, ExternalLink, Loader, RenkuNavLink, UserAvatar } from
 import { getActiveProjectPathWithNamespace, gitLabUrlFromProfileUrl } from "../utils/HelperFunctions";
 import QuickNav from "../utils/quicknav";
 import { Url } from "../utils/url";
+import { VersionsBanner } from "./NabBarWarnings";
 import { NotificationsMenu } from "../notifications";
 import { LoginHelper } from "../authentication";
 import { StatuspageBanner } from "../statuspage";
@@ -300,6 +301,7 @@ class LoggedInNavBar extends Component {
         <StatuspageBanner siteStatusUrl={Url.get(Url.pages.help.status)}
           model={this.props.model}
           location={this.props.location} />
+        <VersionsBanner model={this.props.model} uiShortSha={this.props.params["UI_SHORT_SHA"]} />
       </Fragment>
     );
   }
@@ -323,42 +325,45 @@ class AnonymousNavBar extends Component {
 
   render() {
     return (
-      <header className="navbar navbar-expand-lg navbar-dark rk-navbar p-0">
-        <Navbar color="primary" className="container-fluid flex-wrap flex-lg-nowrap renku-container">
-          <Link id="link-home" to="/" className="navbar-brand me-2 pb-0 pt-0">
-            <img src={logo} alt="Renku" height="50" className="d-block" />
-          </Link>
-          <NavbarToggler onClick={this.toggle} className="border-0">
-            <FontAwesomeIcon icon={faBars} id="userIcon" color="white" />
-          </NavbarToggler>
-          <Collapse isOpen={!this.state.isOpen} navbar>
-            <Nav className="navbar-nav flex-row flex-wrap ms-lg-auto">
-              <NavItem className="nav-item col-12 col-lg-auto pe-0 pe-lg-4 my-2 my-lg-0">
-                <QuickNav client={this.props.client} model={this.props.model} user={this.props.user} />
-              </NavItem>
-              <NavItem className="nav-item col-4 col-lg-auto">
-                <RenkuNavLink to="/projects" alternate={"/projects/all"}
-                  title="Projects" id="link-projects" className="link-secondary" />
-              </NavItem>
-              <NavItem className="nav-item col-4 col-lg-auto">
-                <RenkuNavLink to="/datasets" title="Datasets" id="link-datasets" />
-              </NavItem>
-              <NavItem className="nav-item col-4 col-lg-auto pe-4">
-                <RenkuNavLink to="/sessions" title="Sessions" id="link-sessions" />
-              </NavItem>
-              <NavItem className="nav-item col-1 col-lg-auto">
-                <RenkuToolbarHelpMenu />
-              </NavItem>
-              <NavItem className="nav-item col-1 col-lg-auto">
-                <RenkuToolbarNotifications {...this.props} />
-              </NavItem>
-              <NavItem className="nav-item col-1 col-lg-auto">
-                <RenkuToolbarItemUser {...this.props} />
-              </NavItem>
-            </Nav>
-          </Collapse>
-        </Navbar>
-      </header>
+      <Fragment>
+        <header className="navbar navbar-expand-lg navbar-dark rk-navbar p-0">
+          <Navbar color="primary" className="container-fluid flex-wrap flex-lg-nowrap renku-container">
+            <Link id="link-home" to="/" className="navbar-brand me-2 pb-0 pt-0">
+              <img src={logo} alt="Renku" height="50" className="d-block" />
+            </Link>
+            <NavbarToggler onClick={this.toggle} className="border-0">
+              <FontAwesomeIcon icon={faBars} id="userIcon" color="white" />
+            </NavbarToggler>
+            <Collapse isOpen={!this.state.isOpen} navbar>
+              <Nav className="navbar-nav flex-row flex-wrap ms-lg-auto">
+                <NavItem className="nav-item col-12 col-lg-auto pe-0 pe-lg-4 my-2 my-lg-0">
+                  <QuickNav client={this.props.client} model={this.props.model} user={this.props.user} />
+                </NavItem>
+                <NavItem className="nav-item col-4 col-lg-auto">
+                  <RenkuNavLink to="/projects" alternate={"/projects/all"}
+                    title="Projects" id="link-projects" className="link-secondary" />
+                </NavItem>
+                <NavItem className="nav-item col-4 col-lg-auto">
+                  <RenkuNavLink to="/datasets" title="Datasets" id="link-datasets" />
+                </NavItem>
+                <NavItem className="nav-item col-4 col-lg-auto pe-4">
+                  <RenkuNavLink to="/sessions" title="Sessions" id="link-sessions" />
+                </NavItem>
+                <NavItem className="nav-item col-1 col-lg-auto">
+                  <RenkuToolbarHelpMenu />
+                </NavItem>
+                <NavItem className="nav-item col-1 col-lg-auto">
+                  <RenkuToolbarNotifications {...this.props} />
+                </NavItem>
+                <NavItem className="nav-item col-1 col-lg-auto">
+                  <RenkuToolbarItemUser {...this.props} />
+                </NavItem>
+              </Nav>
+            </Collapse>
+          </Navbar>
+        </header>
+        <VersionsBanner model={this.props.model} uiShortSha={this.props.params["UI_SHORT_SHA"]} />
+      </Fragment>
     );
   }
 }
