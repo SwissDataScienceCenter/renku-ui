@@ -194,9 +194,8 @@ function sanitizedHTMLFromMarkdown(markdown, singleLine = false) {
   // eslint-disable-next-line
   markdown = markdown?.replace(new RegExp("\\```math", "gm"), "```asciimath");
   const htmlFromMarkdown = converter.makeHtml(markdown);
-  if (markdown && markdown !== "")
-    return DOMPurify.sanitize(htmlFromMarkdown);
-  return markdown;
+  const sanitized = DOMPurify.sanitize(htmlFromMarkdown);
+  return sanitized;
 }
 
 function simpleHash(str) {
