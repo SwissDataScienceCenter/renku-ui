@@ -20,6 +20,7 @@
 // Source: https://stackoverflow.com/questions/6507056/replace-all-whitespace-characters/6507078#6507078
 import showdown from "showdown";
 import showdownHighlight from "showdown-highlight";
+// Version 0.8.0 of showdown-katex breaks the tests so do not update the library
 import showdownKatex from "showdown-katex";
 import DOMPurify from "dompurify";
 import XRegExp from "xregexp";
