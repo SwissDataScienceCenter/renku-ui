@@ -23,8 +23,9 @@
  *  Components for the landing page
  */
 
+import AnonymousHome from "./AnonymousHome";
 import Landing from "./Landing";
 import { RenkuNavBar, FooterNavbar, MaintenanceNavBar } from "./NavBar";
-import AnonymousHome from "./AnonymousHome";
+import { pollComponentsVersion } from "./NabBarWarnings";
 
-export { AnonymousHome, Landing, RenkuNavBar, FooterNavbar, MaintenanceNavBar };
+export { AnonymousHome, Landing, FooterNavbar, MaintenanceNavBar, pollComponentsVersion, RenkuNavBar };

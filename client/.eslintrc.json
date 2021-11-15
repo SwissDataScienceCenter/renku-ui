@@ -164,6 +164,7 @@
           "ckeditor",
           "cktextarea",
           "codemirror",
+          "craco",
           "dagre",
           "dataset",
           "datasets",
@@ -265,6 +266,7 @@
           "visibilities",
           "webhook",
           "webhooks",
+          "webpack",
           "whitespace",
           "yaml",
           "zenodo"
