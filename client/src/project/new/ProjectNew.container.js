@@ -542,7 +542,7 @@ class NewProject extends Component {
       if (creation.created) {
         this.refreshUserProjects();
         if (!creation.kgError && !creation.projectError) {
-          const slug = `${creation.newNamespace}/${creation.newName}`;
+          const slug = `${creation.newNamespace}/${creation.newNameSlug}`;
           this.props.history.push(`/projects/${slug}`);
         }
       }

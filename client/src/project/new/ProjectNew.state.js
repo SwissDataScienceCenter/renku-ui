@@ -186,6 +186,10 @@ class NewProjectCoordinator {
       this.setProperty("title", data.title);
       newInput.title = data.title;
     }
+    if (data.description) {
+      this.setProperty("description", data.description);
+      newInput.description = data.description;
+    }
     if (data.namespace) {
       // Check if the namespace is available
       const namespaces = this.projectsModel.get("namespaces.list");
@@ -428,7 +432,8 @@ class NewProjectCoordinator {
             id: `${source.name}/${template.folder}`,
             name: template.name,
             description: template.description,
-            variables: template.variables
+            variables: template.variables,
+            icon: template.icon
           });
         }
       }
@@ -509,7 +514,8 @@ class NewProjectCoordinator {
     let newProjectData = {
       project_repository: repositoryUrl,
       project_namespace: input.namespace,
-      project_name: input.title
+      project_name: input.title,
+      project_description: input.description
     };
 
     // add template details
@@ -550,9 +556,10 @@ class NewProjectCoordinator {
     }
     modelUpdates.meta.creation.created = true;
     modelUpdates.meta.creation.newName = projectResult.result.name;
+    modelUpdates.meta.creation.newNameSlug = projectResult.result.slug;
     modelUpdates.meta.creation.newNamespace = projectResult.result.namespace;
     modelUpdates.meta.creation.newUrl = projectResult.result.url;
-    const slug = `${projectResult.result.namespace}/${projectResult.result.name}`;
+    const slug = `${projectResult.result.namespace}/${projectResult.result.slug}`;
 
     // update project details like visibility and name
     modelUpdates.meta.creation.projectError = "";
@@ -666,15 +673,15 @@ class NewProjectCoordinator {
     // check warnings (temporary problems)
     let warnings = {};
     if (projects && projects.namespaces.fetching)
-      warnings["namespace"] = "Fetching namespaces.";
+      warnings["namespace"] = "Fetching namespaces...";
 
     if (meta.namespace.fetching)
-      warnings["visibility"] = "Verifying visibility constraints.";
+      warnings["visibility"] = "Verifying visibility constraints...";
 
     if (templates.fetching)
-      warnings["template"] = "Fetching templates.";
+      warnings["template"] = "Fetching templates...";
     else if (!templates.fetched)
-      warnings["template"] = "Must get the templates first.";
+      warnings["template"] = "Must fetch the templates first.";
 
     // check title errors (requires user intervention)
     let errors = {};
