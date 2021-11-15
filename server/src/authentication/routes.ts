@@ -74,8 +74,7 @@ function getStringyParams(req: express.Request) : string {
 
 
 function registerAuthenticationRoutes(app: express.Application, authenticator: Authenticator): void {
-  const serverPrefix = config.server.prefix;
-  const authPrefix = serverPrefix + config.auth.suffix;
+  const authPrefix = config.server.prefix + config.routes.auth;
 
   app.get(authPrefix + "/login", async (req, res, next) => {
     try {

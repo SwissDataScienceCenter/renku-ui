@@ -39,6 +39,7 @@ import { ExternalIconLink, RenkuNavLink } from "../utils/UIComponents";
 import { StatuspageBanner } from "../statuspage";
 import QuickNav from "../utils/quicknav";
 import { RenkuToolbarHelpMenu, RenkuToolbarNotifications } from "./NavBar";
+import { VersionsBanner } from "./NabBarWarnings";
 import { Url } from "../utils/url";
 import { WhatsNew1_0_0 as WhatsNew } from "../help/WhatsNew";
 
@@ -57,6 +58,7 @@ function HomeHeader(props) {
       <Col>
         <StatuspageBanner siteStatusUrl={urlMap.siteStatusUrl}
           model={props.model} location={{ pathname: Url.get(Url.pages.landing) }} />
+        <VersionsBanner model={props.model} uiShortSha={props.params["UI_SHORT_SHA"]} />
       </Col>
     </Row>
     <header className="px-0 pt-2 pb-4 d-flex rk-anon-home">
@@ -74,8 +76,8 @@ function HomeHeader(props) {
         </Button>
       </div>
     </header>
-    <div>
-      <Collapse isOpen={isOpen} className="mt-2">
+    <div className="rk-navbar-home">
+      <Collapse isOpen={isOpen}>
         <Navbar className="navbar rk-anon-home px-0">
           <Nav className="ms-auto flex-column text-end">
             <NavItem className="nav-item pe-1">
