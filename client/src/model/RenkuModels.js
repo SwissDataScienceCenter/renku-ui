@@ -162,6 +162,7 @@ const newProjectSchema = new Schema({
     [Prop.SCHEMA]: new Schema({
       title: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true },
       titlePristine: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true },
+      description: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true },
       namespace: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
       namespacePristine: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true },
       visibility: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true },
@@ -180,6 +181,7 @@ const newProjectSchema = new Schema({
       data: {
         [Prop.SCHEMA]: new Schema({
           title: { [Prop.INITIAL]: "", [Prop.MANDATORY]: false },
+          description: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true },
           namespace: { [Prop.INITIAL]: "", [Prop.MANDATORY]: false },
           visibility: { [Prop.INITIAL]: "", [Prop.MANDATORY]: false },
           template: { [Prop.INITIAL]: "", [Prop.MANDATORY]: false },
