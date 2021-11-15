@@ -28,25 +28,24 @@ import React, { Component, Fragment, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Autosuggest from "react-autosuggest";
 import {
-  Alert, Button, ButtonGroup, Col, DropdownItem, Fade, Form, FormFeedback, FormGroup, FormText, Input, Label,
-  Modal, ModalBody, ModalFooter, ModalHeader, Row, Table, UncontrolledTooltip
+  Alert, Button, ButtonGroup, Card, CardBody, CardText, CardFooter, Col, DropdownItem, Fade, Form,
+  FormFeedback, FormGroup, FormText, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader,
+  UncontrolledPopover, PopoverHeader, PopoverBody, Row, Table, UncontrolledTooltip
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationTriangle, faInfoCircle, faLink, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faExclamationTriangle, faInfoCircle, faLink, faQuestionCircle, faSyncAlt
+} from "@fortawesome/free-solid-svg-icons";
 
 import {
-  ButtonWithMenu,
-  Clipboard,
-  ErrorAlert,
-  ExternalLink,
-  FieldGroup,
-  Loader,
-  WarnAlert
+  ButtonWithMenu, Clipboard, ErrorAlert, ExternalLink, FieldGroup, Loader, WarnAlert
 } from "../../utils/UIComponents";
-import { slugFromTitle } from "../../utils/HelperFunctions";
+import { simpleHash, slugFromTitle } from "../../utils/HelperFunctions";
 import { capitalize } from "../../utils/formgenerator/FormGenerator.present";
 import { Url } from "../../utils/url";
+
 import "./Project.style.css";
+import defaultTemplateIcon from "./templatePlaceholder.svg";
 
 
 /**
@@ -242,6 +241,7 @@ class NewProject extends Component {
           <Form className="mb-3">
             <Automated automated={automated} removeAutomated={handlers.removeAutomated} />
             <Title {...this.props} />
+            <Description {...this.props} />
             <Namespaces {...this.props} />
             <Home {...this.props} />
             <Visibility {...this.props} />
@@ -392,6 +392,19 @@ class Title extends Component {
   }
 }
 
+function Description(props) {
+  const { handlers, meta, input } = props;
+  const error = meta.validation.errors["description"];
+
+  return (
+    <FieldGroup id="description" type="text" label="Description"
+      value={input.description}
+      placeholder="A short project description"
+      feedback={error} invalid={error && !input.descriptionPristine}
+      onChange={(e) => handlers.setProperty("description", e.target.value)} />
+  );
+}
+
 class Namespaces extends Component {
   async componentDidMount() {
     // fetch namespaces if not available yet
@@ -408,7 +421,7 @@ class Namespaces extends Component {
     const main = namespaces.fetching ?
       (<Fragment>
         <br />
-        <Label className="font-italic">Refreshing... <Loader inline={true} size={16} /></Label>
+        <Label className="font-italic d-block">Refreshing... <Loader inline={true} size={16} /></Label>
       </Fragment>) :
       (<NamespacesAutosuggest {...this.props} />);
     const { list } = namespaces;
@@ -674,13 +687,13 @@ class KnowledgeGraph extends Component {
     );
     return (
       <FormGroup>
-        <Label check style={{ marginLeft: "1.25rem" }}>
-          <Input id="knowledgeGraph" type="checkbox"
+        <Label check>
+          <Input id="knowledgeGraph" type="checkbox" className="me-2"
             checked={!this.props.input.knowledgeGraph}
             onChange={(e) => handlers.setProperty("knowledgeGraph", !e.target.checked)} />
           Opt-out from Knowledge Graph
         </Label>
-        <FormText>
+        <FormText className="d-block">
           <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> The {kgLink} may make some metadata
           public, opt-out if this is not acceptable.
         </FormText>
@@ -805,10 +818,10 @@ class Template extends Component {
   }
 
   render() {
-    const { handlers, input, templates, meta } = this.props;
+    const { config, handlers, input, templates, meta } = this.props;
     const error = meta.validation.errors["template"];
     const invalid = error && !input.templatePristine ? true : false;
-    let main, help = null;
+    let main = null;
     if ((!input.userRepo && templates.fetching) || (input.userRepo && meta.userTemplates.fetching)) {
       main = (
         <Fragment>
@@ -826,33 +839,139 @@ class Template extends Component {
       );
     }
     else {
-      const listedTemplates = input.userRepo ?
-        meta.userTemplates :
-        templates;
-      const options = listedTemplates.all.map(t => (
-        <option key={t.id} value={t.id}>{`${t.parentRepo} / ${t.name}`}</option>)
-      );
+      // Pass down templates and repository with the same format to the gallery component
+      let listedTemplates, repositories;
+      if (input.userRepo) {
+        listedTemplates = meta.userTemplates.all;
+        repositories = [{ url: meta.userTemplates.url, ref: meta.userTemplates.ref, name: "Custom" }];
+      }
+      else {
+        listedTemplates = templates.all;
+        repositories = config.repositories;
+      }
+
+      const select = (template) => handlers.setProperty("template", template);
       main = (
-        <Input id="template" type="select" placeholder="Select template..." className="custom-select"
-          value={input.template} feedback={error} invalid={invalid}
-          onChange={(e) => handlers.setProperty("template", e.target.value)} >
-          <option key="" value="" disabled>Select a template...</option>
-          {options}
-        </Input>
+        <TemplateGallery
+          // error={error && invalid} // ? we may consider adding a more prominent underlining for errors
+          repositories={repositories}
+          select={select}
+          selected={input.template}
+          templates={listedTemplates}
+        />
       );
-      if (input.template)
-        help = capitalize(listedTemplates.all.filter(t => t.id === input.template)[0].description);
     }
 
     return (
       <FormGroup>
         <Label>Template</Label>
+        {error && invalid && <div className="text-danger small">{error}</div>}
         {main}
-        {error && <FormFeedback {...invalid}>{error}</FormFeedback>}
-        {help && <FormText color="muted">{help}</FormText>}
       </FormGroup>
     );
   }
+}
+
+function TemplateGallery(props) {
+  const { repositories, select, selected, templates } = props;
+
+  // One GalleryRow for each source
+  const gallery = repositories.map((repository) => {
+    const repoTitle = repository.name;
+    const repoTemplates = templates.filter(t => t.parentRepo === repoTitle);
+    const repoKey = simpleHash(repository.url + repository.ref);
+    return (
+      <TemplateGalleryRow
+        key={repoKey}
+        repository={repository}
+        select={select}
+        selected={selected}
+        templates={repoTemplates}
+      />
+    );
+  });
+
+  return (<div>{gallery}</div>);
+}
+
+// Show a link when we have a valid url. Otherwise, just simple text
+function TemplateRepositoryLink(props) {
+  const { url } = props;
+  let repoUrl = url && url.length && url.startsWith("http") ?
+    url :
+    "";
+  if (repoUrl.endsWith(".git"))
+    repoUrl = repoUrl.substring(repoUrl.length - 4);
+  const repoLink = repoUrl ?
+    (<ExternalLink url={repoUrl} title={url} role="link" />) :
+    url;
+  return repoLink;
+}
+
+function TemplateGalleryRow(props) {
+  const { repository, select, selected, templates } = props;
+
+  // Don't render anything if there are no templates for the repository
+  if (!templates || !templates.length)
+    return null;
+
+  // Show a card for each template
+  const elements = templates.map(t => {
+    const imgSrc = t.icon ?
+      `data:image/png;base64,${t.icon}` :
+      defaultTemplateIcon;
+    const id = "id" + simpleHash(repository.name) + simpleHash(t.id);
+    const selectedClass = selected === t.id ?
+      "selected" :
+      "";
+
+    return (
+      <Col key={t.id}>
+        <Card id={id} className={`template-card mb-2 text-center ${selectedClass}`}
+          onClick={() => { select(t.id); }}>
+          <CardBody className="p-1">
+            <img src={imgSrc} alt={t.id + " template image"} />
+          </CardBody>
+          <CardFooter className="p-1">
+            <CardText className="small">{t.name}</CardText>
+          </CardFooter>
+        </Card>
+        <UncontrolledTooltip key="tooltip" placement="bottom" target={id}>
+          {t.description}
+        </UncontrolledTooltip>
+      </Col>
+    );
+  });
+
+  // Add a title with information about the source repository
+  const repositoryInfoId = `info-${repository.name}`;
+  const title = (
+    <Row>
+      <p className="fst-italic mt-2 mb-1">
+        Source: {repository.name}
+        <FontAwesomeIcon id={repositoryInfoId} className="ms-2" icon={faQuestionCircle} />
+      </p>
+      <UncontrolledPopover target={repositoryInfoId} trigger="legacy" placement="bottom">
+        <PopoverHeader>{repository.name} templates</PopoverHeader>
+        <PopoverBody>
+          <p className="mb-1">
+            <span className="fw-bold">Repository</span>:&nbsp;
+            <TemplateRepositoryLink url={repository.url} />
+          </p>
+          <p className="mb-0">
+            <span className="fw-bold">Reference</span>: {repository.ref}
+          </p>
+        </PopoverBody>
+      </UncontrolledPopover>
+    </Row>
+  );
+
+  return (
+    <div>
+      {title}
+      <Row className="row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5">{elements}</Row>
+    </div>
+  );
 }
 
 class Variables extends Component {
@@ -986,13 +1105,18 @@ class Create extends Component {
     const createLink = (
       <DropdownItem onClick={this.toggle}><FontAwesomeIcon icon={faLink} /> Create link</DropdownItem>
     );
+    const templateDetails = input.template ?
+      "based on " + (templates.all.find(t => t.id === input.template).name) :
+      "";
+
     return (
       <Fragment>
         {alert}
         <ButtonWithMenu color="primary" default={createProject} disabled={disabled} direction="up">
           {createLink}
         </ButtonWithMenu>
-        {loading && (<FormText color="primary">{loading}</FormText>)}
+        {templateDetails && (<FormText className="ms-2" color="primary">{templateDetails}</FormText>)}
+        {loading && (<FormText className="d-block" color="primary">{loading}</FormText>)}
         <ShareLinkModal
           show={this.state.showModal}
           toggle={this.toggle}
@@ -1011,7 +1135,13 @@ function ShareLinkModal(props) {
   const { userTemplates } = props.meta;
 
   const defaultObj = {
-    title: false, namespace: false, visibility: false, templateRepo: false, template: false, variables: false
+    title: false,
+    description: false,
+    namespace: false,
+    visibility: false,
+    templateRepo: false,
+    template: false,
+    variables: false
   };
 
   const [available, setAvailable] = useState(defaultObj);
@@ -1032,6 +1162,7 @@ function ShareLinkModal(props) {
 
     setAvailable({
       title: input.title ? true : false,
+      description: input.description ? true : false,
       namespace: true,
       visibility: true,
       templateRepo: input.userRepo && userTemplates.fetched && userTemplates.url && userTemplates.ref ? true : false,
@@ -1044,6 +1175,7 @@ function ShareLinkModal(props) {
   useEffect(() => {
     setInclude({
       title: available.title,
+      description: available.description,
       namespace: false,
       visibility: false,
       templateRepo: available.templateRepo,
@@ -1057,6 +1189,8 @@ function ShareLinkModal(props) {
     let dataObject = {};
     if (include.title)
       dataObject.title = input.title;
+    if (include.description)
+      dataObject.description = input.description;
     if (include.namespace)
       dataObject.namespace = input.namespace;
     if (include.visibility)
