@@ -55,6 +55,10 @@ describe("rendering", () => {
       file_name: "image.jpeg",
       content: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="
     },
+    pdf: {
+      file_name: "text.pdf",
+      content: "Q291bnRyeSwxOTkwLDE5OTBfbG93ZXIsIDE5OTBfdXBwZXIsMT"
+    },
     text: {
       file_name: "text.csv",
       content: "Q291bnRyeSwxOTkwLDE5OTBfbG93ZXIsIDE5OTBfdXBwZXIsMT"

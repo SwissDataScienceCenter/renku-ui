@@ -43,6 +43,7 @@
     "react-masonry-css": "^1.0.16",
     "react-media": "^1.10.0",
     "react-motion": "^0.5.2",
+    "react-pdf": "^5.5.0",
     "react-redux": "^7.2.2",
     "react-router-dom": "^5.1.2",
     "react-router-hash-link": "^2.4.3",
