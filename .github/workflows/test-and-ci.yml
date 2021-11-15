@@ -64,9 +64,9 @@ jobs:
         npm run lint
 
   test-chart:
-    needs: [test-client, test-server]
+    # needs: [test-client, test-server]
     runs-on: ubuntu-latest
-    if: "startsWith(github.ref, 'refs/tags/')"
+    # if: "startsWith(github.ref, 'refs/tags/')"
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v1
