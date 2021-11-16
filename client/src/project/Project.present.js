@@ -209,14 +209,14 @@ class ForkProjectModal extends Component {
 }
 
 function ProjectIdentifier(props) {
-  const forkedFromText = (props.forkedFromLink == null) ?
-    null :
-    [" ", <b key="forked">forked</b>, " from ", props.forkedFromLink];
+  const forkedFromText = (isForkedFromProject(props.forkedFromProject)) ?
+    <Fragment>{" "}<b key="forked">forked</b>{" from "} {props.forkedFromLink}</Fragment> :
+    null;
   const forkedFrom = (forkedFromText) ?
     <Fragment><span className="text-rk-text fs-small">{forkedFromText}</span><br /></Fragment> :
     null;
-  const projectId = props.core.path_with_namespace;
-  const projectTitle = props.core.title;
+  const projectId = props.metadata.pathWithNamespace;
+  const projectTitle = props.metadata.title;
 
   return (
     <Fragment>
@@ -230,7 +230,7 @@ function ProjectIdentifier(props) {
             template_update_possible={props.migration.template_update_possible}
             docker_update_possible={props.migration.docker_update_possible}
           />{projectTitle}
-          <ProjectVisibilityLabel visibilityLevel={props.visibility.level} />
+          <ProjectVisibilityLabel visibilityLevel={props.metadata.visibility} />
         </h2>
         <span className="text-rk-text fs-small">{projectId}</span> {forkedFrom}
       </div>
@@ -281,7 +281,7 @@ class ProjectViewHeaderOverview extends Component {
   }
 
   render() {
-    const system = this.props.system;
+    const metadata = this.props.metadata;
 
     let starElement;
     let starText;
@@ -306,7 +306,7 @@ class ProjectViewHeaderOverview extends Component {
     const gitlabIDEUrl = this.props.externalUrl !== "" && this.props.externalUrl.includes("/gitlab/") ?
       this.props.externalUrl.replace("/gitlab/", "/gitlab/-/ide/project/") : null;
     const description = <ProjectViewHeaderOverviewDescription
-      description={this.props.core.description}
+      description={this.props.metadata.description}
       settingsReadOnly={this.props.settingsReadOnly}
       settingsUrl={this.props.settingsUrl} />;
     const forkProjectDisabled = this.props.visibility.accessLevel < ACCESS_LEVELS.REPORTER
@@ -317,9 +317,9 @@ class ProjectViewHeaderOverview extends Component {
       <Fragment>
         <Row className="d-flex rk-project-header gy-2 gx-2 pb-2 justify-content-md-between justify-content-sm-start">
           <Col className={"order-1 d-flex " + titleColSize}>
-            { this.props.core.avatar_url ?
+            { this.props.metadata.avatarUrl ?
               <div className="flex-shrink-0 pe-3" style={{ width: "120px" }}>
-                <img src={this.props.core.avatar_url} className=" rounded" alt=""
+                <img src={this.props.metadata.avatarUrl} className=" rounded" alt=""
                   style={{ objectFit: "cover", width: "100%", height: "90px" }}/>
               </div>
               : null }
@@ -334,8 +334,8 @@ class ProjectViewHeaderOverview extends Component {
                 history={this.props.history}
                 model={this.props.model}
                 notifications={this.props.notifications}
-                title={this.props.core && this.props.core.title ? this.props.core.title : ""}
-                id={this.props.core && this.props.core.id ? this.props.core.id : 0}
+                title={this.props.metadata && this.props.metadata.title ? this.props.metadata.title : ""}
+                id={this.props.metadata && this.props.metadata.id ? this.props.metadata.id : 0}
                 forkProjectDisabled={forkProjectDisabled}
               />
               <Button
@@ -344,7 +344,7 @@ class ProjectViewHeaderOverview extends Component {
                 className="border-light"
                 disabled={forkProjectDisabled}
                 href={`${this.props.externalUrl}/-/forks`} target="_blank" rel="noreferrer noopener">
-                {system.forks_count}
+                {metadata.forksCount}
               </Button>
             </ButtonGroup>
             <ButtonGroup size="sm" className="ms-1">
@@ -356,7 +356,7 @@ class ProjectViewHeaderOverview extends Component {
               </Button>
               <Button outline color="primary"
                 className="border-light"
-                style={{ cursor: "default" }}>{system.star_count}</Button>
+                style={{ cursor: "default" }}>{metadata.starCount}</Button>
             </ButtonGroup>
             <ButtonGroup size="sm" className="ms-1">
               <GitLabConnectButton size="sm"
@@ -364,13 +364,13 @@ class ProjectViewHeaderOverview extends Component {
                 gitlabIDEUrl={gitlabIDEUrl}
                 userLogged={this.props.user.logged} />
             </ButtonGroup>
-            { this.props.system.tag_list.length > 0 ?
+            { this.props.metadata.tagList.length > 0 ?
               <div className="pt-2">
-                <ProjectTagList tagList={this.props.system.tag_list} />
+                <ProjectTagList tagList={this.props.metadata.tagList} />
               </div>
               : null }
             <div className="pt-1">
-              <TimeCaption key="time-caption" time={this.props.core.last_activity_at} className="text-rk-text"/>
+              <TimeCaption key="time-caption" time={this.props.metadata.lastActivityAt} className="text-rk-text"/>
             </div>
           </Col>
         </Row>
@@ -397,18 +397,22 @@ function StartSessionButton(props) {
   );
 }
 
+function isForkedFromProject(forkedFromProject) {
+  return forkedFromProject && Object.keys(forkedFromProject).length > 0;
+}
+
+function ForkedFromLink({ forkedFromProject, projectsUrl }) {
+  if (!isForkedFromProject(forkedFromProject)) return null;
+  return <Link key="forkedFrom" to={`${projectsUrl}/${forkedFromProject.pathWithNamespace}`}>
+    {forkedFromProject.pathWithNamespace || "no title"}
+  </Link>;
+}
+
 class ProjectViewHeader extends Component {
   render() {
-    let forkedFromLink = null;
-    if (this.props.system.forked_from_project != null &&
-      Object.keys(this.props.system.forked_from_project).length > 0) {
-      const forkedFrom = this.props.system.forked_from_project;
-      const projectsUrl = this.props.projectsUrl;
-      forkedFromLink = <Link key="forkedFrom" to={`${projectsUrl}/${forkedFrom.metadata.core.path_with_namespace}`}>
-        {forkedFrom.metadata.core.path_with_namespace || "no title"}
-      </Link>;
-    }
-
+    const forkedFromLink = <ForkedFromLink
+      forkedFromProject={this.props.forkedFromProject}
+      projectsUrl={this.props.projectsUrl} />;
     return <ProjectViewHeaderMinimal key="minimalHeader" forkedFromLink={forkedFromLink} {...this.props} />;
   }
 }
@@ -482,13 +486,13 @@ class ProjectViewReadme extends Component {
         <CardHeader className="bg-white p-3 ps-4">README.md</CardHeader>
         <CardBody style={{ overflow: "auto" }} className="p-4">
           <RenkuMarkdown
-            projectPathWithNamespace = {this.props.core.path_with_namespace}
+            projectPathWithNamespace = {this.props.metadata.pathWithNamespace}
             filePath={""}
             fixRelativePaths={true}
-            branch={this.props.core.default_branch}
+            branch={this.props.metadata.defaultBranch}
             markdownText={this.props.readme.text}
             client={this.props.client}
-            projectId={this.props.core.id}
+            projectId={this.props.metadata.id}
           />
         </CardBody>
       </Card>
@@ -497,15 +501,7 @@ class ProjectViewReadme extends Component {
 }
 
 function ProjectViewGeneral(props) {
-  let forkedFromLink = null;
-  if (props.system.forked_from_project != null &&
-    Object.keys(props.system.forked_from_project).length > 0) {
-    const forkedFrom = props.system.forked_from_project;
-    const projectsUrl = props.projectsUrl;
-    forkedFromLink = <Link key="forkedFrom" to={`${projectsUrl}/${forkedFrom.metadata.core.path_with_namespace}`}>
-      {forkedFrom.metadata.core.path_with_namespace || "no title"}
-    </Link>;
-  }
+  const forkedFromLink = <ForkedFromLink forkedFromProject={props.metadata.forkedFromProject} />;
 
   return <Fragment>
     <ProjectViewHeaderOverview
@@ -579,7 +575,7 @@ class ProjectViewOverview extends Component {
             <Route exact path={this.props.statsUrl} render={props =>
               <ProjectOverviewStats
                 projectCoordinator={projectCoordinator}
-                branches={this.props.system.branches}
+                branches={this.props.branches.standard}
               />
             }
             />
@@ -606,17 +602,17 @@ class ProjectViewOverview extends Component {
 class ProjectDatasetsNav extends Component {
 
   render() {
-    const allDatasets = this.props.core.datasets || [];
+    const allDatasets = this.props.datasets.core.datasets || [];
 
     if (allDatasets.length === 0)
       return null;
 
     return <DatasetsListView
-      datasets_kg={this.props.core.datasets_kg}
-      datasets={this.props.core.datasets}
+      datasets_kg={this.props.datasets.datasets_kg}
+      datasets={this.props.datasets.core.datasets}
       datasetsUrl={this.props.datasetsUrl}
       newDatasetUrl={this.props.newDatasetUrl}
-      visibility={this.props.visibility}
+      accessLevel={this.props.metadata.accessLevel}
       graphStatus={this.props.isGraphReady}
     />;
   }
@@ -756,18 +752,18 @@ function ProjectViewDatasets(props) {
   />;
 
   useEffect(()=>{
-    const loading = props.core.datasets === SpecialPropVal.UPDATING;
+    const loading = props.datasets.core === SpecialPropVal.UPDATING;
     if (loading) return;
     props.fetchDatasets(props.location.state && props.location.state.reload);
     props.fetchGraphStatus();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const loading = props.core.datasets === SpecialPropVal.UPDATING || props.core.datasets === undefined;
+  const loading = props.datasets.core === SpecialPropVal.UPDATING || props.datasets.core === undefined;
   if (loading)
     return <Loader />;
 
-  if (props.core.datasets.error) {
+  if (props.datasets.core.error) {
     return <Col sm={12}>
       <Alert color="danger">
         There was an error fetching the datasets, please try <Button color="danger" size="sm" onClick={
@@ -776,12 +772,12 @@ function ProjectViewDatasets(props) {
     </Col>;
   }
 
-  if (!loading && props.core.datasets !== undefined && props.core.datasets.length === 0
+  if (!loading && props.datasets.core.datasets != null && props.datasets.core.datasets.length === 0
     && props.location.pathname !== props.newDatasetUrl) {
     return <Col sm={12}>
       {migrationMessage}
       <EmptyDatasets
-        membership={props.visibility.accessLevel > ACCESS_LEVELS.DEVELOPER}
+        membership={props.metadata.accessLevel > ACCESS_LEVELS.DEVELOPER}
         newDatasetUrl={props.newDatasetUrl}
       />
     </Col>;
@@ -847,7 +843,7 @@ class ProjectViewCollaboration extends Component {
           <ProjectMergeRequestList {...this.props} />} />
         <Route exact path={this.props.issueNewUrl} render={props =>
           <Issue.New {...props} model={this.props.model}
-            projectPathWithNamespace={this.props.core.path_with_namespace}
+            projectPathWithNamespace={this.props.metadata.pathWithNamespace}
             client={this.props.client} />} />
         <Route path={this.props.issueUrl} render={props =>
           <ProjectIssuesList issueIid={props.match.params.issueIid} {...this.props} />} />
@@ -874,7 +870,7 @@ class ProjectIssuesList extends Component {
           externalUrl={this.props.externalUrl}
           collaborationUrl={this.props.collaborationUrl}
           issueNewUrl={this.props.issueNewUrl}
-          projectId={this.props.core.id}
+          projectId={this.props.metadata.id}
           user={this.props.user}
           location={this.props.location}
           thingIid={this.props.issueIid}
@@ -889,10 +885,6 @@ class ProjectIssuesList extends Component {
 
 class ProjectMergeRequestList extends Component {
 
-  componentDidMount() {
-    this.props.fetchMrSuggestions();
-  }
-
   render() {
     return <Row>
       <Col key="nav" sm={12} md={2}>
@@ -903,7 +895,7 @@ class ProjectMergeRequestList extends Component {
           collaborationUrl={this.props.collaborationUrl}
           externalUrl={this.props.externalUrl}
           listType={collaborationListTypeMap.MREQUESTS}
-          projectId={this.props.core.id}
+          projectId={this.props.metadata.id}
           user={this.props.user}
           location={this.props.location}
           client={this.props.client}
@@ -925,11 +917,11 @@ function ProjectCollaborationFork(props) {
     <Col sm={12} md={10}>
       <ForkProject
         client={props.client}
-        id={props.core.id}
+        id={props.metadata.id}
         history={props.history}
         model={props.model}
         notifications={props.notifications}
-        title={props.core.title}
+        title={props.metadata.title}
         toggleModal={null}
       />
     </Col>
@@ -1055,7 +1047,7 @@ class ProjectShowSession extends Component {
         message={warning}
         model={model}
         notifications={notifications}
-        scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path }}
+        scope={{ namespace: this.props.metadata.namespace, project: this.props.metadata.path }}
         standalone={false}
         urlNewSession={launchNotebookUrl}
       />
@@ -1078,8 +1070,8 @@ class ProjectNotebookServers extends Component {
         message={warning}
         urlNewSession={launchNotebookUrl}
         blockAnonymous={blockAnonymous}
-        scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path,
-          defaultBranch: this.props.core.default_branch }}
+        scope={{ namespace: this.props.metadata.namespace, project: this.props.metadata.path,
+          defaultBranch: this.props.metadata.defaultBranch }}
       />
     );
   }
@@ -1088,8 +1080,9 @@ class ProjectNotebookServers extends Component {
 class ProjectStartNotebookServer extends Component {
   render() {
     const {
-      client, model, user, visibility, forkUrl, externalUrl, system, location,
-      fetchBranches, notebookServersUrl, history, blockAnonymous, notifications
+      branches, client, model, user, visibility, forkUrl, externalUrl, location,
+      fetchBranches, notebookServersUrl, history, blockAnonymous, notifications,
+      projectCoordinator
     } = this.props;
     const warning = notebookWarning(
       user.logged, visibility.accessLevel, forkUrl, location.pathname, externalUrl
@@ -1108,15 +1101,20 @@ class ProjectStartNotebookServer extends Component {
     return (
       <StartNotebookServer client={client} model={model} history={history} location={locationEnhanced}
         message={warning}
-        branches={system.branches}
-        autosaved={system.autosaved}
+        branches={branches.standard}
+        autosaved={branches.autosaved}
+        fetchingBranches={branches.fetching}
         refreshBranches={fetchBranches}
         externalUrl={externalUrl}
         successUrl={notebookServersUrl}
         blockAnonymous={blockAnonymous}
+        notebooks={projectCoordinator.model.baseModel.get("notebooks")}
         notifications={notifications}
-        scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path,
-          defaultBranch: this.props.core.default_branch }}
+        commits={projectCoordinator.get("commits")}
+        projectCoordinator={projectCoordinator}
+        scope={{ namespace: this.props.metadata.namespace, project: this.props.metadata.path,
+          defaultBranch: this.props.metadata.defaultBranch }}
+        user={this.props.user}
       />
     );
   }
@@ -1223,7 +1221,7 @@ class NotFoundInsideProject extends Component {
 
 class ProjectView extends Component {
   render() {
-    const available = this.props.core ? this.props.core.available : null;
+    const available = this.props.metadata ? this.props.metadata.exists : null;
     const projectPathWithNamespaceOrId = this.props.projectPathWithNamespace ?
       this.props.projectPathWithNamespace
       : this.props.projectId;

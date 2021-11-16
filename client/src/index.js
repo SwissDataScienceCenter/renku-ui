@@ -1,6 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { connect } from "react-redux";
+import { connect, Provider } from "react-redux";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import "bootstrap";
 import "jquery";
@@ -83,16 +83,18 @@ Promise.all([configFetch, privacyFetch]).then(valuesRead => {
 
     const VisibleApp = connect(mapStateToProps)(App);
     ReactDOM.render(
-      <Router>
-        <Route render={props => {
-          LoginHelper.handleLoginParams(props.history);
-          return (
-            <VisibleApp client={client} params={params} store={model.reduxStore} model={model}
-              location={props.location} statuspageId={statuspageId}
-            />
-          );
-        }} />
-      </Router>,
+      <Provider store={model.reduxStore}>
+        <Router>
+          <Route render={props => {
+            LoginHelper.handleLoginParams(props.history);
+            return (
+              <VisibleApp client={client} params={params} model={model}
+                location={props.location} statuspageId={statuspageId}
+              />
+            );
+          }} />
+        </Router>
+      </Provider>,
       document.getElementById("root")
     );
   });

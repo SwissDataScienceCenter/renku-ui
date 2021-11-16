@@ -66,7 +66,7 @@ function ProjectSettingsGeneral(props) {
       <Row className="mt-2">
         <Col xs={12} lg={6}>
           <ProjectTags
-            tag_list={props.system.tag_list}
+            tagList={props.metadata.tagList}
             onProjectTagsChange={props.onProjectTagsChange}
             settingsReadOnly={props.settingsReadOnly} />
           <ProjectDescription {...props} />
@@ -79,7 +79,7 @@ function ProjectSettingsGeneral(props) {
       <Row>
         <Col xs={12}>
           <ProjectAvatarEdit externalUrl={props.externalUrl}
-            avatarUrl={props.core.avatar_url} onAvatarChange={props.onAvatarChange}
+            avatarUrl={props.metadata.avatarUrl} onAvatarChange={props.onAvatarChange}
             settingsReadOnly={props.settingsReadOnly} />
         </Col>
       </Row>
@@ -99,7 +99,7 @@ class RepositoryClone extends Component {
             <CommandRow application="Renku" command={renkuClone} />
           </tbody>
         </Table>
-        <GitCloneCmd externalUrl={externalUrl} projectPath={this.props.core.project_path} />
+        <GitCloneCmd externalUrl={externalUrl} projectPath={this.props.metadata.path} />
       </div>
     );
   }
@@ -156,7 +156,7 @@ class ProjectDescription extends Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    const update = { value: nextProps.core.description };
+    const update = { value: nextProps.metadata.description };
     return { ...update, ...prevState };
   }
 
@@ -169,7 +169,7 @@ class ProjectDescription extends Component {
       <Input id="projectDescription" readOnly value={this.state.value} /> :
       <Input id="projectDescription" onChange={this.onValueChange}
         value={this.state.value === null ? "" : this.state.value} />;
-    let submit = (this.props.core.description !== this.state.value) ?
+    let submit = (this.props.metadata.description !== this.state.value) ?
       <Button className="mb-3 updateProjectSettings" color="primary">Update</Button> :
       <span></span>;
     return <Form onSubmit={this.onSubmit}>
@@ -202,8 +202,8 @@ class RepositoryUrls extends Component {
         <Label className="font-weight-bold">Repository URL</Label>
         <Table size="sm">
           <tbody>
-            <RepositoryUrlRow urlType="SSH" url={this.props.system.ssh_url} />
-            <RepositoryUrlRow urlType="HTTP" url={this.props.system.http_url} />
+            <RepositoryUrlRow urlType="SSH" url={this.props.metadata.sshUrl} />
+            <RepositoryUrlRow urlType="HTTP" url={this.props.metadata.httpUrl} />
           </tbody>
         </Table>
       </div>

@@ -54,8 +54,7 @@ describe("rendering", () => {
 
   it("renders ProjectSettingsGeneral", async () => {
     const props = {
-      core: {},
-      system: {}
+      metadata: {}
     };
 
     const div = document.createElement("div");

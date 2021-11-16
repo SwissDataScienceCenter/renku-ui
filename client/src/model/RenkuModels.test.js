@@ -1,17 +1,19 @@
 /* eslint-disable */
 
 import { testClient as client } from "../api-client";
-import { StateKind, StateModel } from "../model/Model";
+import { StateModel, globalSchema } from "../model";
 // import { Project, projectSchema } from "./RenkuModels";
-import { ProjectModel } from "../project/Project.state";
+import { ProjectCoordinator } from "../project";
+
+const model = new StateModel(globalSchema);
 
 describe("fetch project", () => {
   it("fetches project", () => {
     const projectId = 3;
-    const project = new ProjectModel(StateKind.REDUX);
-    project.fetchProject(client, projectId).then(() => {
-      expect(project.get("core.id")).toEqual(projectId);
-      expect(project.get("core.title")).toEqual("A-first-project");
+    const projectCoordinator = new ProjectCoordinator(client, model.subModel("project"));
+    projectCoordinator.fetchProject(client, projectId).then(() => {
+      expect(projectCoordinator.get("metadata.id")).toEqual(projectId);
+      expect(projectCoordinator.get("metadata.title")).toEqual("A-first-project");
     });
   });
 });
