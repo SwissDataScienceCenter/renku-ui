@@ -31,7 +31,7 @@ import { RenkuMarkdown } from "../utils/UIComponents";
 import { encodeImageBase64 } from "../utils/Markdown";
 
 // Enable PDF.js worker. Reference: https://github.com/wojtekmaj/react-pdf#enable-pdfjs-worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.js";
 const PDF_EXTENSION = "pdf";
 const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "gif", "svg"];
 const CODE_EXTENSIONS = [
