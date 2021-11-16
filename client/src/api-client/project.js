@@ -147,6 +147,7 @@ function addProjectMethods(client) {
             hasNextPage
           }
           nodes {
+            id
             name
             fullPath
             namespace {

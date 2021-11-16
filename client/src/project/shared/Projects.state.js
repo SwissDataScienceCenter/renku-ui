@@ -37,8 +37,12 @@ class ProjectsCoordinator {
     if (project.permissions && project.permissions.group_access)
       accessLevel = Math.max(accessLevel, project.permissions.group_access.access_level);
 
+    // Project id can be a number e.g. 1234 or a string with the format: gid://gitlab/Project/1234
+    const projectFullId = typeof (project.id) === "number" ? [] : project.id.split("/");
+    const projectId = projectFullId.length > 1 ? projectFullId[projectFullId.length - 1] : project.id;
+
     return {
-      id: project.id,
+      id: projectId,
       name: project.name,
       path_with_namespace: project.path_with_namespace ?? project?.fullPath,
       description: project.description,
