@@ -55,8 +55,8 @@ class KnowledgeGraphStatus extends Component {
             this.setState({ graphStatusPoller: poller });
           }
         })
-        .catch((err) => {
-          this.setState({ error: err });
+        .catch((error) => {
+          this.setState({ error });
           this.stopPollingProgress();
         });
     }

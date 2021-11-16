@@ -58,7 +58,7 @@ class ProjectTags extends Component {
   }
 
   static tagListString(props) {
-    const tagList = sortedTagList(props.tag_list);
+    const tagList = sortedTagList(props.tagList);
     return tagList.join(", ");
   }
 

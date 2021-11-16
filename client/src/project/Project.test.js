@@ -25,14 +25,15 @@
 
 import React from "react";
 import ReactDOM from "react-dom";
+import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import { createMemoryHistory } from "history";
 
-import { StateKind, StateModel, globalSchema } from "../model";
+import { StateModel, globalSchema } from "../model";
 import Project, { mapProjectFeatures, withProjectMapped } from "./Project";
 import { filterPaths } from "./Project.present";
 import { OverviewCommitsBody } from "./overview/ProjectOverview.present";
-import { ProjectModel, ProjectCoordinator } from "./Project.state";
+import { ProjectCoordinator } from "./Project.state";
 import { testClient as client } from "../api-client";
 import { generateFakeUser } from "../user/User.test";
 
@@ -87,12 +88,14 @@ describe("test ProjectCoordinator related components", () => {
     const CommitsConnected = withProjectMapped(OverviewCommitsBody, categories);
 
     ReactDOM.render(
-      <MemoryRouter>
-        <CommitsConnected
-          history={fakeHistory}
-          location={fakeHistory.location}
-          projectCoordinator={projectCoordinator} />
-      </MemoryRouter>
+      <Provider store={model.reduxStore}>
+        <MemoryRouter>
+          <CommitsConnected
+            history={fakeHistory}
+            location={fakeHistory.location}
+            projectCoordinator={projectCoordinator} />
+        </MemoryRouter>
+      </Provider>
       , div);
   });
 });
@@ -105,54 +108,60 @@ describe("rendering", () => {
   it("renders view without crashing for anonymous user", () => {
     const div = document.createElement("div");
     ReactDOM.render(
-      <MemoryRouter>
-        <Project.View
-          id="1"
-          client={client}
-          user={anonymousUser}
-          model={model}
-          history={fakeHistory}
-          location={fakeHistory.location}
-          match={{ params: { id: "1" }, url: "/projects/1/" }} />
-      </MemoryRouter>
+      <Provider store={model.reduxStore}>
+        <MemoryRouter>
+          <Project.View
+            id="1"
+            client={client}
+            user={anonymousUser}
+            model={model}
+            history={fakeHistory}
+            location={fakeHistory.location}
+            match={{ params: { id: "1" }, url: "/projects/1/" }} />
+        </MemoryRouter>
+      </Provider>
       , div);
   });
   it("renders view without crashing for logged user", () => {
     const div = document.createElement("div");
     ReactDOM.render(
-      <MemoryRouter>
-        <Project.View
-          id="1"
-          client={client}
-          model={model}
-          history={fakeHistory}
-          user={loggedUser}
-          match={{ params: { id: "1" }, url: "/projects/1/" }} />
-      </MemoryRouter>
+      <Provider store={model.reduxStore}>
+        <MemoryRouter>
+          <Project.View
+            id="1"
+            client={client}
+            model={model}
+            history={fakeHistory}
+            user={loggedUser}
+            match={{ params: { id: "1" }, url: "/projects/1/" }} />
+        </MemoryRouter>
+      </Provider>
       , div);
   });
 });
 
 describe("new project actions", () => {
-  const model = new ProjectModel(StateKind.REDUX);
+  const model = new StateModel(globalSchema);
+  const projectCoordinator = new ProjectCoordinator(client, model.subModel("project"));
   it("sets a core field", () => {
-    expect(model.get("core.title")).toEqual("no title");
-    model.set("core.title", "a title");
-    expect(model.get("core.title")).toEqual("a title");
+    expect(projectCoordinator.get("metadata.title")).toEqual("");
+    projectCoordinator.set("metadata.title", "a title");
+    expect(projectCoordinator.get("metadata.title")).toEqual("a title");
   });
   it("sets a visibility field", () => {
-    expect(model.get("visibility.level")).toEqual("private");
-    model.set("visibility.level", "public");
-    expect(model.get("visibility.level")).toEqual("public");
+    expect(projectCoordinator.get("metadata.visibility")).toEqual("private");
+    projectCoordinator.set("metadata.visibility", "public");
+    expect(projectCoordinator.get("metadata.visibility")).toEqual("public");
   });
 });
 
 describe("project view actions", () => {
   it("retrieves a project from server", () => {
-    const model = new ProjectModel(StateKind.REDUX);
+    const model = new StateModel(globalSchema);
+    const projectCoordinator = new ProjectCoordinator(client, model.subModel("project"));
     // eslint-disable-next-line
-    model.fetchProject(client, 1).then(() => {
-      expect(model.get("core.title")).toEqual("A-first-project");
+    projectCoordinator.fetchProject(client, 1).then(() => {
+      expect(projectCoordinator.get("metadata.title")).toEqual("A-first-project");
     });
   });
 });

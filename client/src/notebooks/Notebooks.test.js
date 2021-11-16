@@ -33,6 +33,7 @@ import {
 import { mergeEnumOptions } from "./Notebooks.present";
 import { ExpectedAnnotations } from "./Notebooks.state";
 import { StateModel, globalSchema } from "../model";
+import { ProjectCoordinator } from "../project";
 import { testClient as client } from "../api-client";
 
 
@@ -365,9 +366,17 @@ describe("rendering", () => {
   });
 
   it("renders StartNotebookServer without crashing", async () => {
+    const projectCoordinator = new ProjectCoordinator(client, model.subModel("project"));
+    await act(async () => {
+      await projectCoordinator.fetchProject(client, "test");
+      await projectCoordinator.fetchCommits();
+    });
     const props = {
       client,
       model,
+      commits: projectCoordinator.get("commits"),
+      notebooks: model.get("notebooks"),
+      user: { logged: true, data: { username: "test" } },
       branches: [],
       autosaved: [],
       location: fakeLocation,

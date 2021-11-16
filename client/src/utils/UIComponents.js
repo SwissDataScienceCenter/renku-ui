@@ -823,8 +823,11 @@ function RefreshButton(props) {
  * @param {string} props.label text next to the arrow
  */
 function GoBackButton(props) {
+  const linkClasses = (props.className) ?
+    props.className + " link-rk-text text-decoration-none" :
+    "link-rk-text text-decoration-none";
   return <Col md={12} className="pb-4 pl-0">
-    <Link className={props.className + " link-rk-text text-decoration-none"} to={props.url}>
+    <Link className={linkClasses} to={props.url}>
       <span className="arrow-left">  </span>{props.label}
     </Link>
   </Col>;

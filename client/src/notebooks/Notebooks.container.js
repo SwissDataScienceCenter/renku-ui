@@ -45,6 +45,30 @@ import { Url } from "../utils/url";
  * @param {Object} [location] - react location object
  * @param {Object} [history] - react history object
  */
+
+function mapSessionStateToProps(state, ownProps) {
+  const notebooks = state.notebooks.notebooks;
+  const available = notebooks.all[ownProps.target] ?
+    true :
+    false;
+  const notebook = {
+    available,
+    fetched: notebooks.fetched,
+    fetching: notebooks.fetching,
+    data: available ?
+      notebooks.all[ownProps.target] :
+      {},
+    logs: state.notebooks.logs
+  };
+  return {
+    handlers: ownProps.handlers,
+    target: ownProps.target,
+    filters: state.notebooks.filters,
+    notebook
+  };
+}
+
+const ShowSessionMapped = connect(mapSessionStateToProps)(ShowSessionPresent);
 class ShowSession extends Component {
   constructor(props) {
     super(props);
@@ -96,41 +120,29 @@ class ShowSession extends Component {
     return this.coordinator.fetchLogs(serverName, full);
   }
 
-  mapStateToProps(state, ownProps) {
-    const notebooks = state.notebooks.notebooks;
-    const available = notebooks.all[this.target] ?
-      true :
-      false;
-    const notebook = {
-      available,
-      fetched: notebooks.fetched,
-      fetching: notebooks.fetching,
-      data: available ?
-        notebooks.all[this.target] :
-        {},
-      logs: state.notebooks.logs
-    };
-    return {
-      handlers: this.handlers,
-      target: this.target,
-      filters: state.notebooks.filters,
-      notebook
-    };
-  }
-
-
   render() {
     if (this.props.blockAnonymous)
       return <NotebooksDisabled location={this.props.location} />;
 
-    const ShowSessionMapped = connect(this.mapStateToProps.bind(this))(ShowSessionPresent);
     return (
       <ShowSessionMapped
+        target={this.target}
+        handlers={this.handlers}
         store={this.model.reduxStore}
       />
     );
   }
 }
+
+function mapSessionListStateToProps(state, ownProps) {
+  return {
+    handlers: ownProps.handlers,
+    ...state.notebooks,
+    logs: { ...state.notebooks.logs, show: ownProps.showingLogs }
+  };
+}
+
+const VisibleNotebooks = connect(mapSessionListStateToProps)(NotebooksPresent);
 
 /**
  * Display the list of Notebook servers
@@ -212,27 +224,19 @@ class Notebooks extends Component {
       this.fetchLogs(serverName);
   }
 
-  mapStateToProps(state, ownProps) {
-    return {
-      handlers: this.handlers,
-      ...state.notebooks,
-      logs: { ...state.notebooks.logs, show: this.state.showingLogs }
-    };
-  }
-
   render() {
     if (this.props.blockAnonymous)
       return <NotebooksDisabled location={this.props.location} />;
 
-    const VisibleNotebooks = connect(this.mapStateToProps.bind(this))(NotebooksPresent);
-
     return <VisibleNotebooks
-      store={this.model.reduxStore}
-      user={this.props.user}
-      standalone={this.props.standalone ? this.props.standalone : false}
-      scope={this.props.scope}
+      handlers={this.handlers}
+      showingLogs={this.state.showingLogs}
       message={this.props.message}
+      scope={this.props.scope}
+      store={this.model.reduxStore}
+      standalone={this.props.standalone ? this.props.standalone : false}
       urlNewSession={this.props.urlNewSession}
+      user={this.props.user}
     />;
   }
 }
@@ -243,6 +247,7 @@ class Notebooks extends Component {
  * @param {Object} client - api-client used to query the gateway
  * @param {Object} model - global model for the ui
  * @param {Object[]} branches - Branches as returned by gitlab "/branches" API - no autosaved branches
+ * @param {Object[]} commits - Commits as stored in the ProjectCoordinator
  * @param {Object[]} autosaved - Autosaved branches
  * @param {function} refreshBranches - Function to invoke to refresh the list of branches
  * @param {Object} scope - object containing filtering parameters
@@ -279,7 +284,12 @@ class StartNotebookServer extends Component {
       false;
     this.state = {
       autostartReady: false,
-      autostartTried: false
+      autostartTried: false,
+      first: true,
+      ignorePipeline: null,
+      launchError: null,
+      showAdvanced: false,
+      starting: false
     };
 
     this.handlers = {
@@ -288,16 +298,12 @@ class StartNotebookServer extends Component {
       reTriggerPipeline: this.reTriggerPipeline.bind(this),
       setBranch: this.selectBranch.bind(this),
       setCommit: this.selectCommit.bind(this),
-      toggleMergedBranches: this.toggleMergedBranches.bind(this),
+      setIgnorePipeline: this.setIgnorePipeline.bind(this),
       setDisplayedCommits: this.setDisplayedCommits.bind(this),
       setServerOption: this.setServerOptionFromEvent.bind(this),
-      startServer: this.startServer.bind(this)
-    };
-
-    this.state = {
-      first: true,
-      starting: false,
-      launchError: null
+      startServer: this.startServer.bind(this),
+      toggleMergedBranches: this.toggleMergedBranches.bind(this),
+      toggleShowAdvanced: this.toggleShowAdvanced.bind(this)
     };
   }
 
@@ -318,23 +324,32 @@ class StartNotebookServer extends Component {
   componentDidUpdate(previousProps) {
     // TODO: temporary fix to prevent issue with component rerendered multiple times at the first url load
     if (this.state.first &&
-      StatusHelper.isUpdating(previousProps.branches) &&
-      !StatusHelper.isUpdating(this.props.branches)) {
+      StatusHelper.isUpdating(previousProps.fetchingBranches) &&
+      !StatusHelper.isUpdating(this.props.fetchingBranches)) {
       this.setState({ first: false });
       if (this._isMounted)
-        this.selectBranch();
+        this.refreshBranches();
+      this.selectBranch();
+
 
     }
   }
 
+  toggleShowAdvanced() {
+    this.setState({ showAdvanced: !this.state.showAdvanced });
+  }
+
+  setIgnorePipeline(value) {
+    this.setState({ ignorePipeline: value });
+  }
+
   async refreshBranches() {
     if (this._isMounted) {
-      if (StatusHelper.isUpdating(this.props.branches))
+      if (StatusHelper.isUpdating(this.props.fetchingBranches))
         return;
       await this.props.refreshBranches();
       if (this._isMounted && this.state.first)
         this.selectBranch();
-
     }
   }
 
@@ -458,6 +473,7 @@ class StartNotebookServer extends Component {
                 errorMessage: `The session could not start because the image is still building.
                 Please wait for the build to finish, or start the session with the base image.`
               },
+              showAdvanced: true,
               starting: false
             });
           }
@@ -474,6 +490,7 @@ class StartNotebookServer extends Component {
                 errorMessage: `The session could not start because no image is available.
                 Please select a different commit or start the session with the base image.`
               },
+              showAdvanced: true,
               starting: false
             });
           }
@@ -576,25 +593,24 @@ class StartNotebookServer extends Component {
     return branches.filter(branch => branch.autosave.username === username);
   }
 
-  mapStateToProps(state, ownProps) {
-    const username = state.user.logged ?
-      state.user.data.username :
+  propsToChildProps() {
+    const username = this.props.user.logged ?
+      this.props.user.data.username :
       null;
-    const ownAutosaved = this.filterAutosavedBranches([...ownProps.inherited.autosaved], username);
+    const ownAutosaved = this.filterAutosavedBranches([...this.props.autosaved], username);
     const augmentedState = {
-      ...state.notebooks,
+      ...this.props.notebooks,
       data: {
-        fetched: state.project.commits.fetched,
-        fetching: state.project.commits.fetching,
-        commits: state.project.commits.list,
-        branches: ownProps.inherited.branches,
+        fetched: this.props.commits.fetched,
+        fetching: this.props.commits.fetching,
+        commits: this.props.commits.list,
+        branches: this.props.branches,
         autosaved: ownAutosaved
       },
-      externalUrl: ownProps.inherited.externalUrl
+      externalUrl: this.props.externalUrl
     };
     return {
       handlers: this.handlers,
-      store: ownProps.store, // adds store and other props manually added to <ConnectedStartNotebookServer />
       ...augmentedState
     };
   }
@@ -603,18 +619,35 @@ class StartNotebookServer extends Component {
     if (this.props.blockAnonymous)
       return <NotebooksDisabled location={this.props.location} />;
 
-    const ConnectedStartNotebookServer = connect(this.mapStateToProps.bind(this))(StartNotebookServerPresent);
-
-    return <ConnectedStartNotebookServer
-      store={this.model.reduxStore}
+    return <StartNotebookServerPresent
       inherited={this.props}
       message={this.props.message}
       justStarted={this.state.starting}
       autoStarting={this.autostart && !this.state.autostartTried}
       launchError={this.state.launchError}
+      ignorePipeline={this.state.ignorePipeline}
+      showAdvanced={this.state.showAdvanced}
+      {...this.propsToChildProps()}
     />;
   }
 }
+
+function mapNotebookStatusStateToProps(state, ownProps) {
+  const subState = state.notebooks;
+
+  const notebookKeys = Object.keys(subState.notebooks.all);
+  const notebook = notebookKeys.length > 0 ?
+    subState.notebooks.all[notebookKeys] :
+    null;
+
+  return {
+    fetched: subState.notebooks.fetched,
+    fetching: subState.notebooks.fetching,
+    notebook
+  };
+}
+
+const VisibleNotebookIcon = connect(mapNotebookStatusStateToProps)(CheckNotebookIcon);
 
 /**
  * Display the connect to Jupyter icon
@@ -686,8 +719,6 @@ class CheckNotebookStatus extends Component {
   }
 
   render() {
-    const VisibleNotebookIcon = connect(this.mapStateToProps.bind(this))(CheckNotebookIcon);
-
     return (<VisibleNotebookIcon store={this.model.reduxStore} {...this.props} />);
   }
 }

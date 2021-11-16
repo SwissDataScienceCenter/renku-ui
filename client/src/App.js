@@ -99,8 +99,7 @@ function CentralContentContainer(props) {
       />
       <Route path="/projects/:subUrl+" render={
         p => <Project.View
-          key={`${p.match.params.projectNamespace}/${p.match.params.projectName}`}
-          projectPathWithNamespace={`${p.match.params.projectNamespace}/${p.match.params.projectName}`}
+          key="project/view"
           client={props.client}
           params={props.params}
           model={props.model}

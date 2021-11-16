@@ -34,13 +34,24 @@ import { FormGeneratorCoordinator } from "./FormGenerator.state";
 import FormPanel from "./FormGenerator.present";
 import _ from "lodash";
 
+function locationToLocationHash(loc) { return "uid_" + simpleHash(loc); }
+
+function mapStateToProps(state, props) {
+  const currentDraft = state.formGenerator.formDrafts[props.locationHash];
+  return {
+    draft: currentDraft,
+    ...props
+  };
+}
+
+const VisibleFormGenerator = connect(mapStateToProps)(FormPanel);
 
 class FormGenerator extends Component {
 
   constructor(props) {
     super(props);
     this.model = props.modelTop.subModel("formGenerator");
-    this.locationHash = "uid_" + simpleHash(props.formLocation);
+    this.locationHash = locationToLocationHash(props.formLocation);
     this.coordinator = new FormGeneratorCoordinator(props.client, this.model, props.formLocation, this.locationHash);
     this.handlers = {
       addDraft: this.addDraft.bind(this),
@@ -131,26 +142,18 @@ class FormGenerator extends Component {
     return this.coordinator.getFormDraftInternalValuesProperty(fieldName, property);
   }
 
-  mapStateToProps(state) {
-    const currentDraft = state.formGenerator.formDrafts[this.locationHash];
-    const [inputs, setInputs, setSubmit] = useForm(this.props.submitCallback, this.handlers, currentDraft);
-    return {
-      handlers: this.handlers,
-      draft: currentDraft,
-      modelValues: this.getDraft(),
-      inputs: inputs,
-      setInputs: setInputs,
-      setSubmit: setSubmit,
-      loading: this.getDraft() === undefined
-    };
-  }
-
-
   render() {
-    const VisibleFormGenerator = connect(this.mapStateToProps.bind(this))(FormPanel);
+    const draft = this.model.get("formDrafts")[this.locationHash];
+    const [inputs, setInputs, setSubmit] = useForm(this.props.submitCallback, this.handlers, draft);
     return (<VisibleFormGenerator
       {...this.props}
+      locationHash={this.locationHash}
       store={this.model.reduxStore}
+      handlers={this.handlers}
+      modelValues={this.getDraft()}
+      inputs={inputs}
+      setInputs={setInputs}
+      setSubmit={setSubmit}
       loading={this.getDraft() === undefined}
     />);
   }

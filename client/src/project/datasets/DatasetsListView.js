@@ -55,7 +55,7 @@ function DatasetList({ datasets, datasets_kg, datasetsUrl, graphStatus }) {
 }
 
 function AddDatasetButton(props) {
-  if (props.visibility.accessLevel >= ACCESS_LEVELS.MAINTAINER) {
+  if (props.accessLevel >= ACCESS_LEVELS.MAINTAINER) {
     return <div>
       <Link className="btn btn-sm btn-secondary" role="button" to={props.newDatasetUrl}>
         <span className="arrow-right pt-2 pb-2">  </span>
@@ -77,7 +77,7 @@ export default function DatasetsListView(props) {
     <Col className="d-flex mb-2 justify-content-between">
       <h3 className="me-4">Datasets List</h3>
       <AddDatasetButton
-        visibility={props.visibility}
+        accessLevel={props.accessLevel}
         newDatasetUrl={props.newDatasetUrl} />
     </Col>
   </Row>
