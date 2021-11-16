@@ -20,5 +20,8 @@ COPY docker-entrypoint.sh /app/docker-entrypoint.sh
 
 # HEALTHCHECK --interval=20s --timeout=10s --retries=5 CMD test -e /var/run/nginx.pid
 
+ARG SHORT_SHA
+ENV RENKU_UI_SHORT_SHA=$SHORT_SHA
+
 ENTRYPOINT ["/bin/sh", "/app/docker-entrypoint.sh"]
 CMD ["node", "app"]

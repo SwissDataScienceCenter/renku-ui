@@ -47,7 +47,7 @@ class Authenticator {
     authServerUrl: string = config.auth.serverUrl,
     clientId: string = config.auth.clientId,
     clientSecret: string = config.auth.clientSecret,
-    callbackUrl: string = config.server.url + config.server.prefix + config.auth.suffix + config.auth.callbackSuffix
+    callbackUrl: string = config.server.url + config.server.prefix + config.routes.auth + "/callback"
   ) {
     // Validate and save parameters
     for (const param of ["storage", "authServerUrl", "clientId", "clientSecret", "callbackUrl"]) {

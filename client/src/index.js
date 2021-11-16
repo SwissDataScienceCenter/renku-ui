@@ -14,6 +14,7 @@ import App from "./App";
 // import registerServiceWorker from './utils/ServiceWorker';
 import APIClient from "./api-client";
 import { LoginHelper } from "./authentication";
+import { pollComponentsVersion } from "./landing";
 import { Maintenance } from "./Maintenance";
 import { StateModel, globalSchema } from "./model";
 import { pollStatuspage } from "./statuspage";
@@ -78,6 +79,7 @@ Promise.all([configFetch, privacyFetch]).then(valuesRead => {
 
     const statuspageId = params["STATUSPAGE_ID"];
     pollStatuspage(statuspageId, model);
+    pollComponentsVersion(model.subModel("environment"), client);
 
     const VisibleApp = connect(mapStateToProps)(App);
     ReactDOM.render(
