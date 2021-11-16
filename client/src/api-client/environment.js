@@ -16,22 +16,20 @@
  * limitations under the License.
  */
 
-import express from "express";
-
-import config from "../config";
-import registerInternalRoutes from "./internal";
-import registerApiRoutes from "./apis";
-import { Authenticator } from "../authentication";
-
-function register(app: express.Application, prefix: string, authenticator: Authenticator): void {
-  registerInternalRoutes(app, authenticator);
-
-  // This is only for test, it's not reachable from outside
-  app.get(prefix, (req, res) => {
-    res.send("Hello ingress!");
-  });
-
-  registerApiRoutes(app, prefix + config.routes.api, authenticator);
+function addEnvironmentMethods(client) {
+  /**
+   * Get the versions of the RenkuLab components.
+   */
+  client.getComponentsVersion = async () => {
+    const urlApi = `${client.uiserverUrl}/api/versions`;
+    let headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    headers.append("X-Requested-With", "XMLHttpRequest");
+    return client.clientFetch(urlApi, {
+      method: "GET",
+      headers: headers
+    }).then(resp => resp.data);
+  };
 }
 
-export default { register };
+export default addEnvironmentMethods;

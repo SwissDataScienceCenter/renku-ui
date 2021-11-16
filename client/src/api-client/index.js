@@ -16,27 +16,27 @@
  * limitations under the License.
  */
 
-import { APIError, alertAPIErrors, API_ERRORS } from "./errors";
-import { renkuFetch, RETURN_TYPES } from "./utils";
-import processPaginationHeaders from "./pagination";
-import ApolloClient from "apollo-boost";
-// ? Consider a minimal graphql lib: https://github.com/yoshuawuyts/nanographql
+import ApolloClient from "apollo-boost"; // ? Consider a minimal graphql lib: https://github.com/yoshuawuyts/nanographql
 
+import addDatasetMethods from "./dataset";
+import addEnvironmentMethods from "./environment";
+import addGraphMethods from "./graph";
+import addInstanceMethods from "./instance";
+import addIssueMethods from "./issue";
+import addJobMethods from "./job";
+import addMergeRequestMethods from "./merge-request";
+import addMigrationMethods from "./migration";
+import addNotebookServersMethods from "./notebook-servers";
+import processPaginationHeaders from "./pagination";
+import addPipelineMethods from "./pipeline";
 import addProjectMethods from "./project";
 import addRepositoryMethods from "./repository";
-import addUserMethods from "./user";
-import addIssueMethods from "./issue";
-import addInstanceMethods from "./instance";
-import addNotebookServersMethods from "./notebook-servers";
-import addGraphMethods from "./graph";
-import addPipelineMethods from "./pipeline";
-import addDatasetMethods from "./dataset";
-import addMergeRequestMethods from "./merge-request";
 import addTemplatesMethods from "./templates";
-import addJobMethods from "./job";
-import addMigrationMethods from "./migration";
-
 import testClient from "./test-client";
+
+import addUserMethods from "./user";
+import { APIError, alertAPIErrors, API_ERRORS } from "./errors";
+import { renkuFetch, RETURN_TYPES } from "./utils";
 
 const ACCESS_LEVELS = {
   GUEST: 10,
@@ -55,16 +55,11 @@ const FETCH_DEFAULT = {
   maxIterations: 10
 };
 
+
+/**
+ * API client to query all the RenkuLab API
+ */
 class APIClient {
-
-  // GitLab api client for Renku. Note that we do some
-  // renaming of GitLab resources within this client:
-  //
-  // Renku      GitLab
-  // -----------------
-  // ku    -->  issue (old)
-
-
   constructor(baseUrl, uiserverUrl) {
     this.baseUrl = baseUrl;
     this.uiserverUrl = uiserverUrl;
@@ -74,19 +69,20 @@ class APIClient {
       headers: { "X-Requested-With": "XMLHttpRequest" }
     });
 
+    addDatasetMethods(this);
+    addEnvironmentMethods(this);
+    addGraphMethods(this);
+    addInstanceMethods(this);
+    addIssueMethods(this);
+    addJobMethods(this);
+    addMergeRequestMethods(this);
+    addMigrationMethods(this);
+    addNotebookServersMethods(this);
+    addPipelineMethods(this);
     addProjectMethods(this);
     addRepositoryMethods(this);
-    addUserMethods(this);
-    addIssueMethods(this);
-    addInstanceMethods(this);
-    addNotebookServersMethods(this);
-    addGraphMethods(this);
-    addPipelineMethods(this);
-    addDatasetMethods(this);
-    addMergeRequestMethods(this);
     addTemplatesMethods(this);
-    addJobMethods(this);
-    addMigrationMethods(this);
+    addUserMethods(this);
   }
 
   /**
