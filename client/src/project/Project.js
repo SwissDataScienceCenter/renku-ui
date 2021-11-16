@@ -222,7 +222,6 @@ class View extends Component {
     return projectData;
   }
   async fetchReadme() { return this.projectCoordinator.fetchReadme(this.props.client); }
-  async fetchMergeRequests() { return this.projectState.fetchMergeRequests(this.props.client); }
   async fetchModifiedFiles() { return this.projectState.fetchModifiedFiles(this.props.client); }
   async fetchBranches() { return this.projectState.fetchBranches(this.props.client); }
   async createGraphWebhook() { return this.projectState.createGraphWebhook(this.props.client); }
@@ -587,10 +586,6 @@ class View extends Component {
     },
     fetchOverviewData: () => {
       return this.fetchReadme();
-    },
-    fetchMrSuggestions: async () => {
-      await this.fetchMergeRequests();
-      this.fetchBranches();
     },
     fetchFiles: () => {
       this.fetchProjectFilesTree();

@@ -307,14 +307,6 @@ class ProjectModel extends StateModel {
       });
   }
 
-  fetchMergeRequests(client) {
-    client.getMergeRequests(this.get("core.id"))
-      .then(resp => resp.data)
-      .then(d => {
-        this.set("system.merge_requests", d);
-      });
-  }
-
   // TODO: migrate branches to ProjectCoordinator and use a pattern similar to fetchCommits
   fetchBranches(client) {
     const branches = this.get("system.branches");
@@ -398,22 +390,22 @@ class ProjectCoordinator {
   }
 
 
-  // TODO: Do we really want to re-fetch the entire project on every change?
-  fetchProject(client, projectPathWithNamespace) {
-    this.setUpdating({ metadata: { exists: true } });
-    return client.getProject(projectPathWithNamespace, { statistics: true })
-      .then(resp => resp.data)
-      .then(d => {
-        this.setProjectData(d, true);
-        return d;
-      })
-      .catch(err => {
-        if (err.case === API_ERRORS.notFoundError)
-          this.set("metadata.exists", false);
+  // TODO: switch to using this method once ProjectModel is removed
+  // fetchProject(client, projectPathWithNamespace) {
+  //   this.setUpdating({ metadata: { exists: true } });
+  //   return client.getProject(projectPathWithNamespace, { statistics: true })
+  //     .then(resp => resp.data)
+  //     .then(d => {
+  //       this.setProjectData(d, true);
+  //       return d;
+  //     })
+  //     .catch(err => {
+  //       if (err.case === API_ERRORS.notFoundError)
+  //         this.set("metadata.exists", false);
 
-        else throw err;
-      });
-  }
+  //       else throw err;
+  //     });
+  // }
 
   setProjectData(data, statistics = false) {
     let metadata, statsObject, filtersObject;

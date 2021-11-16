@@ -889,10 +889,6 @@ class ProjectIssuesList extends Component {
 
 class ProjectMergeRequestList extends Component {
 
-  componentDidMount() {
-    this.props.fetchMrSuggestions();
-  }
-
   render() {
     return <Row>
       <Col key="nav" sm={12} md={2}>
