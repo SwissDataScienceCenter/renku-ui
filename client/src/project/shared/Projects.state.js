@@ -59,16 +59,16 @@ class ProjectsCoordinator {
       return;
     // set status to fetching, get all the projects and filter and invoke both APIs
     this.model.set("featured.fetching", true);
-    let params = { query: "last_activity_at", per_page: 100 };
+    const params = { query: "last_activity_at", per_page: 100 };
     const promiseStarred = this.client.getAllProjects({ ...params, starred: true })
       .then(resp => resp.map((project) => this._starredProjectMetadata(project)))
-      .catch(error => []);
+      .catch(() => []);
 
     const promiseMember = this.client.getAllProjectsGraphQL(params)
       .then(resp => {
         return resp.map((project) => this._starredProjectMetadata(project));
       })
-      .catch(error => []);
+      .catch(() => []);
 
 
     // set `featured` content and return only `starred` and `member` projects data
