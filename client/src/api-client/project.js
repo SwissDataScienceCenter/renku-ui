@@ -119,7 +119,7 @@ function addProjectMethods(client) {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
-    const resp = await client.clientFetch(`${client.baseUrl}/direct/api/graphql`, {
+    const resp = await client.clientFetch(`${client.baseUrl}/graphql`, {
       method: "POST",
       headers,
       body: JSON.stringify(queryParams),
