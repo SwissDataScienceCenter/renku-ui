@@ -407,10 +407,8 @@ class ProjectCoordinator {
 
   resetProject() {
     const emptyModel = projectGlobalSchema.createInitialized();
-    this.model.setObject({
-      metadata: { $set: emptyModel.metadata },
-      statistics: { $set: emptyModel.statistics },
-      filters: { $set: emptyModel.filters }
+    this.model.baseModel.setObject({
+      [this.model.baseModelPath]: { $set: emptyModel }
     });
   }
 
