@@ -222,15 +222,15 @@ class View extends Component {
     return projectData;
   }
   async fetchReadme() { return this.projectCoordinator.fetchReadme(this.props.client); }
-  async fetchModifiedFiles() { return this.projectState.fetchModifiedFiles(this.props.client); }
+  async fetchModifiedFiles() { return this.projectCoordinator.fetchModifiedFiles(this.props.client); }
   async fetchBranches() { return this.projectState.fetchBranches(this.props.client); }
   async createGraphWebhook() { return this.projectCoordinator.createGraphWebhook(this.props.client); }
   async fetchGraphWebhook() { this.projectCoordinator.fetchGraphWebhook(this.props.client, this.props.user); }
   async fetchProjectFilesTree() {
-    return this.projectState.fetchProjectFilesTree(this.props.client, this.cleanCurrentURL());
+    return this.projectCoordinator.fetchProjectFilesTree(this.props.client, this.cleanCurrentURL());
   }
   async setProjectOpenFolder(filePath) {
-    this.projectState.setProjectOpenFolder(this.props.client, filePath);
+    this.projectCoordinator.setProjectOpenFolder(this.props.client, filePath);
   }
   async fetchProjectDatasets(forceReFetch) {
     return this.projectState.fetchProjectDatasets(this.props.client, forceReFetch);
@@ -239,7 +239,7 @@ class View extends Component {
     return this.projectState.fetchProjectDatasetsFromKg(this.props.client);
   }
   async fetchGraphStatus() { return this.projectCoordinator.fetchGraphStatus(this.props.client); }
-  saveProjectLastNode(nodeData) { this.projectState.saveProjectLastNode(nodeData); }
+  saveProjectLastNode(nodeData) { this.projectCoordinator.saveProjectLastNode(nodeData); }
 
   async fetchMigrationCheck() { this.projectState.fetchMigrationCheck(this.props.client); }
 
@@ -572,7 +572,6 @@ class View extends Component {
     },
     fetchFiles: () => {
       this.fetchProjectFilesTree();
-      //this.fetchModifiedFiles();
     },
     fetchDatasets: (forceReFetch) => {
       this.fetchProjectDatasetsFromKg();

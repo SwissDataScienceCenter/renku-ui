@@ -135,13 +135,6 @@ const projectSchema = new Schema({
       autosaved: { schema: [], initial: [] },
     }
   },
-  files: {
-    schema: {
-      notebooks: { schema: [] },
-      data: { schema: [] },
-      modifiedFiles: { initial: {}, mandatory: true }
-    }
-  },
   transient: {
     schema: {
       requests: { initial: {} },
@@ -294,6 +287,19 @@ const projectGlobalSchema = new Schema({
   data: {
     [Prop.SCHEMA]: new Schema({
       readme: { [Prop.INITIAL]: {} }
+    })
+  },
+  files: {
+    [Prop.SCHEMA]: new Schema({
+      notebooks: { [Prop.INITIAL]: [] },
+      data: { [Prop.INITIAL]: [] },
+      modifiedFiles: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true }
+    })
+  },
+  filesTree: {
+    [Prop.SCHEMA]: new Schema({
+      hash: { [Prop.INITIAL]: {} },
+      loaded: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true }
     })
   },
   filters: {

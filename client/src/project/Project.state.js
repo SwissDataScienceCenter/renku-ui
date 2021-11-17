@@ -120,88 +120,6 @@ class ProjectModel extends StateModel {
       });
   }
 
-  saveProjectLastNode(nodeData) {
-    this.set("filesTree.last", nodeData);
-  }
-
-  initialFetchProjectFilesTree(client, openFilePath, openFolder ) {
-    this.setUpdating({ transient: { requests: { filesTree: true } } });
-    return client.getProjectFilesTree(this.get("core.id"), this.get("core.default_branch"), openFilePath)
-      .then(d => {
-        const updatedState = { filesTree: d, transient: { requests: { filesTree: false } } };
-        this.setObject(updatedState);
-        this.set("filesTree", d);
-        return d;
-      })
-      .then(d=> {
-        return this.returnTreeOrFetchNext(client, openFilePath, openFolder, d);
-      });
-  }
-
-  deepFetchProjectFilesTree(client, openFilePath, openFolder, oldTree) {
-    this.setUpdating({ transient: { requests: { filesTree: true } } });
-    return client.getProjectFilesTree(this.get("core.id"), this.get("core.default_branch"),
-      openFilePath, openFolder, oldTree.lfsFiles)
-      .then(d => {
-        const updatedState = this.insertInParentTree(oldTree, d, openFolder);
-        this.setObject(updatedState);
-        this.set("filesTree", oldTree);
-        return oldTree;
-      }).then(d=> {
-        return this.returnTreeOrFetchNext(client, openFilePath, openFolder, d);
-      });
-  }
-
-  returnTreeOrFetchNext(client, openFilePath, openFolder, tree) {
-    if (openFilePath !== undefined && openFilePath.split("/").length > 1) {
-      const openFilePathArray = openFilePath.split("/");
-      const goTo = openFolder !== undefined ?
-        openFolder + "/" + openFilePathArray[0]
-        : openFilePathArray[0];
-      return this.fetchProjectFilesTree(client, openFilePath.replace(openFilePathArray[0], ""), goTo);
-    }
-    return tree;
-
-  }
-
-  cleanFilePathUrl(openFilePath) {
-    if (openFilePath.startsWith("/"))
-      return openFilePath = openFilePath.substring(1);
-    return openFilePath;
-  }
-
-  insertInParentTree(parentTree, newTree, openFolder) {
-    parentTree.hash[openFolder].treeRef.children = newTree.tree;
-    parentTree.hash[openFolder].childrenLoaded = true;
-    parentTree.hash[openFolder].childrenOpen = true;
-    for (const node in newTree.hash)
-      parentTree.hash[node] = newTree.hash[node];
-    return { filesTree: parentTree, transient: { requests: { filesTree: false } } };
-  }
-
-  fetchProjectFilesTree(client, openFilePath, openFolder) {
-    if (this.get("transient.requests.filesTree") === SpecialPropVal.UPDATING) return;
-    const oldTree = this.get("filesTree");
-    openFilePath = this.cleanFilePathUrl(openFilePath);
-    if (oldTree == null)
-      return this.initialFetchProjectFilesTree(client, openFilePath, openFolder);
-
-    if (openFolder !== undefined && oldTree.hash[openFolder].childrenLoaded === false)
-      return this.deepFetchProjectFilesTree(client, openFilePath, openFolder, oldTree);
-
-    return oldTree;
-
-  }
-
-  setProjectOpenFolder(client, folderPath) {
-    let filesTree = this.get("filesTree");
-    if (filesTree.hash[folderPath].childrenLoaded === false)
-      this.fetchProjectFilesTree(client, "", folderPath);
-
-    filesTree.hash[folderPath].childrenOpen = !filesTree.hash[folderPath].childrenOpen;
-    this.set("filesTree", filesTree);
-  }
-
   fetchProjectDatasetsFromKg(client) { //from KG
     if (this.get("core.datasets_kg") === SpecialPropVal.UPDATING) return;
     this.setUpdating({ core: { datasets_kg: true } });
@@ -234,13 +152,6 @@ class ProjectModel extends StateModel {
       .catch(err => {
         const updatedState = { datasets: { $set: { error: err } }, transient: { requests: { datasets: false } } };
         this.setObject({ core: updatedState });
-      });
-  }
-
-  fetchModifiedFiles(client) {
-    client.getModifiedFiles(this.get("core.id"))
-      .then(d => {
-        this.set("files.modifiedFiles", d);
       });
   }
 
@@ -307,6 +218,82 @@ class ProjectModel extends StateModel {
     this.set("system.star_count", num);
   }
 }
+
+const FileTreeMixIn = {
+  fetchProjectFilesTree(client, openFilePath, openFolder) {
+    if (this.get("transient.requests.filesTree") === SpecialPropVal.UPDATING) return;
+    const oldTree = this.get("filesTree");
+    openFilePath = this.cleanFilePathUrl(openFilePath);
+    if (oldTree.loaded === false)
+      return this.initialFetchProjectFilesTree(client, openFilePath, openFolder);
+
+    if (openFolder !== undefined && oldTree.hash[openFolder].childrenLoaded === false)
+      return this.deepFetchProjectFilesTree(client, openFilePath, openFolder, oldTree);
+
+    return oldTree;
+  },
+  setProjectOpenFolder(client, folderPath) {
+    let filesTree = this.model.get("filesTree");
+    if (filesTree.hash[folderPath].childrenLoaded === false)
+      this.fetchProjectFilesTree(client, "", folderPath);
+
+    filesTree.hash[folderPath].childrenOpen = !filesTree.hash[folderPath].childrenOpen;
+    this.model.set("filesTree", filesTree);
+  },
+  saveProjectLastNode(nodeData) {
+    this.model.set("filesTree.last", nodeData);
+  },
+  initialFetchProjectFilesTree(client, openFilePath, openFolder ) {
+    this.model.setUpdating({ transient: { requests: { filesTree: true } } });
+    return client.getProjectFilesTree(this.get("metadata.id"), this.get("metadata.defaultBranch"), openFilePath)
+      .then(d => {
+        const updatedState = { filesTree: d, transient: { requests: { filesTree: false } } };
+        this.model.setObject(updatedState);
+        this.model.set("filesTree", d);
+        this.model.set("filesTree.loaded", true);
+        return d;
+      })
+      .then(d=> {
+        return this.returnTreeOrFetchNext(client, openFilePath, openFolder, d);
+      });
+  },
+  deepFetchProjectFilesTree(client, openFilePath, openFolder, oldTree) {
+    this.model.setUpdating({ transient: { requests: { filesTree: true } } });
+    return client.getProjectFilesTree(this.get("metadata.id"), this.get("metadata.defaultBranch"),
+      openFilePath, openFolder, oldTree.lfsFiles)
+      .then(d => {
+        const updatedState = this.insertInParentTree(oldTree, d, openFolder);
+        this.model.setObject(updatedState);
+        this.model.set("filesTree", oldTree);
+        return oldTree;
+      }).then(d=> {
+        return this.returnTreeOrFetchNext(client, openFilePath, openFolder, d);
+      });
+  },
+  returnTreeOrFetchNext(client, openFilePath, openFolder, tree) {
+    if (openFilePath !== undefined && openFilePath.split("/").length > 1) {
+      const openFilePathArray = openFilePath.split("/");
+      const goTo = openFolder !== undefined ?
+        openFolder + "/" + openFilePathArray[0]
+        : openFilePathArray[0];
+      return this.fetchProjectFilesTree(client, openFilePath.replace(openFilePathArray[0], ""), goTo);
+    }
+    return tree;
+  },
+  cleanFilePathUrl(openFilePath) {
+    if (openFilePath.startsWith("/"))
+      return openFilePath = openFilePath.substring(1);
+    return openFilePath;
+  },
+  insertInParentTree(parentTree, newTree, openFolder) {
+    parentTree.hash[openFolder].treeRef.children = newTree.tree;
+    parentTree.hash[openFolder].childrenLoaded = true;
+    parentTree.hash[openFolder].childrenOpen = true;
+    for (const node in newTree.hash)
+      parentTree.hash[node] = newTree.hash[node];
+    return { filesTree: parentTree, transient: { requests: { filesTree: false } } };
+  }
+};
 
 class ProjectCoordinator {
   constructor(client, model, notifications = null) {
@@ -579,6 +566,13 @@ class ProjectCoordinator {
       .finally(() => this.model.set("transient.requests.readme", false));
   }
 
+  fetchModifiedFiles(client) {
+    client.getModifiedFiles(this.get("metadata.id"))
+      .then(d => {
+        this.set("files.modifiedFiles", d);
+      });
+  }
+
   async fetchStatistics(pathWithNamespace) {
     if (this.model.get("statistics.fetching"))
       return;
@@ -605,5 +599,7 @@ class ProjectCoordinator {
       .then((resp) => resp.data);
   }
 }
+
+Object.assign(ProjectCoordinator.prototype, FileTreeMixIn);
 
 export { ProjectModel, GraphIndexingStatus, ProjectCoordinator, MigrationStatus };
