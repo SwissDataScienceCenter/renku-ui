@@ -82,6 +82,7 @@
     "eslint-plugin-spellcheck": "0.0.17",
     "fetch-mock": "^7.7.0",
     "history": "^4.10.1",
+    "jest-canvas-mock": "^2.1.2",
     "jest-localstorage-mock": "^2.4.3",
     "node-fetch": "^2.6.0",
     "react-scripts": "^3.4.4",

@@ -32,6 +32,7 @@ import { generateFakeUser } from "../user/User.test";
 import { ShowFile, JupyterButton, FilePreview } from "./index";
 import { StateModel, globalSchema } from "../model";
 import { NotebookSourceDisplayMode, tweakCellMetadata } from "./File.present";
+import "jest-canvas-mock";
 
 const model = new StateModel(globalSchema);
 
@@ -54,10 +55,6 @@ describe("rendering", () => {
     image: {
       file_name: "image.jpeg",
       content: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="
-    },
-    pdf: {
-      file_name: "text.pdf",
-      content: "Q291bnRyeSwxOTkwLDE5OTBfbG93ZXIsIDE5OTBfdXBwZXIsMT"
     },
     text: {
       file_name: "text.csv",
@@ -133,6 +130,31 @@ describe("rendering", () => {
       });
     }
   }
+});
+
+describe("rendering pdf -- console suppressed!", () => {
+  beforeEach(() => {
+    jest.spyOn(console, "log").mockImplementation(() => {});
+    jest.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  const filePdf = {
+    file_name: "text.pdf",
+    // eslint-disable-next-line
+    content: "JVBERi0xLjAKMSAwIG9iajw8L1BhZ2VzIDIgMCBSPj5lbmRvYmogMiAwIG9iajw8L0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iaiAzIDAgb2JqPDwvTWVkaWFCb3hbMCAwIDMgM10+PmVuZG9iagp0cmFpbGVyPDwvUm9vdCAxIDAgUj4+Cg=="
+  };
+
+  it("renders FilePreview for pdf", () => {
+    const previewThreshold = { PREVIEW_THRESHOLD: { soft: 1048576, hard: 10485760 } };
+    const div = document.createElement("div");
+    document.body.appendChild(div);
+    ReactDOM.render(
+      <MemoryRouter>
+        <FilePreview file={filePdf} previewThreshold={previewThreshold} />
+      </MemoryRouter>,
+      div
+    );
+  });
 });
 
 describe("cell metadata messaging", () => {

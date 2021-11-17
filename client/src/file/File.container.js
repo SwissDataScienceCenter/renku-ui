@@ -20,7 +20,7 @@ import React, { Component, useState } from "react";
 import ReactDOM from "react-dom";
 import { CardBody } from "reactstrap";
 import hljs from "highlight.js";
-import { Document, Page, pdfjs } from "react-pdf";
+import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 
 import { atobUTF8 } from "../utils/Encoding";
@@ -30,8 +30,6 @@ import { API_ERRORS } from "../api-client";
 import { RenkuMarkdown } from "../utils/UIComponents";
 import { encodeImageBase64 } from "../utils/Markdown";
 
-// Enable PDF.js worker. Reference: https://github.com/wojtekmaj/react-pdf#enable-pdfjs-worker
-pdfjs.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.js";
 const PDF_EXTENSION = "pdf";
 const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "gif", "svg"];
 const CODE_EXTENSIONS = [
@@ -128,7 +126,9 @@ class FilePreview extends React.Component {
     // pdf document
     if (this.fileIsPDF()) {
       return (
-        <PDFViewer file={`data:application/pdf;base64,${this.props.file.content}`}/>
+        <CardBody key="file preview" className="pb-0 bg-white">
+          <PDFViewer file={`data:application/pdf;base64,${this.props.file.content}`}/>
+        </CardBody>
       );
     }
 
