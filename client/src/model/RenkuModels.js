@@ -313,15 +313,18 @@ const projectGlobalSchema = new Schema({
   },
   metadata: {
     [Prop.SCHEMA]: new Schema({
+      accessLevel: { [Prop.INITIAL]: 0, [Prop.MANDATORY]: true },
       defaultBranch: { [Prop.INITIAL]: null },
       exists: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+      forksCount: { [Prop.INITIAL]: null }, // forks_count
       id: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // id
       namespace: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // namespace.full_path
+      owner: { [Prop.INITIAL]: null },
       path: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // path
       pathWithNamespace: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // path_with_namespace
       repositoryUrl: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // web_url
       starCount: { [Prop.INITIAL]: null }, // star_count
-      forksCount: { [Prop.INITIAL]: null }, // forks_count
+      visibility: { [Prop.INITIAL]: "private", [Prop.MANDATORY]: true },
 
       fetched: { [Prop.INITIAL]: null },
       fetching: { [Prop.INITIAL]: false },
@@ -339,7 +342,16 @@ const projectGlobalSchema = new Schema({
     [Prop.SCHEMA]: new Schema({
       requests: { [Prop.INITIAL]: {} }
     })
-  }
+  },
+  webhook: {
+    [Prop.SCHEMA]: {
+      status: { [Prop.INITIAL]: null },
+      created: { [Prop.INITIAL]: null },
+      possible: { [Prop.INITIAL]: null },
+      stop: { [Prop.INITIAL]: null },
+      progress: { [Prop.INITIAL]: null }
+    }
+  },
 });
 
 const notebooksSchema = new Schema({

@@ -282,22 +282,7 @@ class View extends Component {
       .replace(subUrls.fileContentUrl, "");
   }
 
-  // TODO: move all .set actions to Project.state.js
-  checkGraphWebhook() {
-    // check if data are available -- may remove this?
-    if (this.projectState.get("core.available") !== true) {
-      this.projectState.set("webhook.possible", false);
-      return;
-    }
-    // check user permissions and fetch webhook status
-    const webhookCreator = this.projectState.get("visibility.accessLevel") >= ACCESS_LEVELS.MAINTAINER ?
-      true :
-      false;
-    this.projectState.set("webhook.possible", webhookCreator);
-    if (webhookCreator)
-      this.projectState.fetchGraphWebhookStatus(this.props.client);
-
-  }
+  checkGraphWebhook() { this.projectCoordinator.checkGraphWebhook(this.props.client); }
 
   isGraphReady() {
     const webhookStatus = this.projectState.get("webhook");

@@ -23,7 +23,7 @@
  *  Redux-based state-management code.
  */
 
-import { API_ERRORS } from "../api-client";
+import { ACCESS_LEVELS, API_ERRORS } from "../api-client";
 import { StateModel, SpecialPropVal, projectSchema, projectGlobalSchema } from "../model";
 import { splitAutosavedBranches } from "../utils/HelperFunctions";
 
@@ -378,6 +378,21 @@ class ProjectCoordinator {
     this.notifications = notifications;
   }
 
+  checkGraphWebhook(client) {
+    if (this.get("metadata.exists") !== true) {
+      this.model.set("webhook.possible", false);
+      return;
+    }
+
+    // check user permissions and fetch webhook status
+    const webhookCreator = this.get("metadata.accessLevel") >= ACCESS_LEVELS.MAINTAINER ?
+      true :
+      false;
+    this.model.set("webhook.possible", webhookCreator);
+    if (webhookCreator)
+      this.fetchGraphWebhookStatus(client);
+  }
+
   get(component = "") {
     return this.model.get(component);
   }
@@ -389,6 +404,9 @@ class ProjectCoordinator {
     });
   }
 
+  set(component, value) {
+    return this.model.set(component, value);
+  }
 
   // TODO: switch to using this method once ProjectModel is removed
   // fetchProject(client, projectPathWithNamespace) {
@@ -435,17 +453,19 @@ class ProjectCoordinator {
     }
     else {
       metadata = {
+        accessLevel: data.metadata.visibility.accessLevel, // this is computed in carveProject
+        defaultBranch: data.metadata.core.default_branch,
         exists: true,
+        forksCount: data.all.forks_count,
         id: data.all.id,
         namespace: data.all.namespace.full_path,
+        owner: data.metadata.core.owner,
         path: data.all.path,
         pathWithNamespace: data.all.path_with_namespace,
         repositoryUrl: data.all.web_url,
         starCount: data.all.star_count,
-        forksCount: data.all.forks_count,
         visibility: data.metadata.visibility.level, // this is computed in carveProject
-        accessLevel: data.metadata.visibility.accessLevel, // this is computed in carveProject
-        defaultBranch: data.metadata.core.default_branch,
+
         fetched: new Date(),
         fetching: false
       };
@@ -530,6 +550,60 @@ class ProjectCoordinator {
     return commits;
   }
 
+
+  fetchGraphWebhook(client, user) {
+    if (!user) {
+      this.set("webhook.possible", false);
+      return;
+    }
+    const userIsOwner = this.get("metadata.owner.id") === user.data.id;
+    this.set("webhook.possible", userIsOwner);
+    if (userIsOwner)
+      this.fetchGraphWebhookStatus(client, this.get("metadata.id"));
+  }
+
+  fetchGraphWebhookStatus(client) {
+    this.model.set("webhook.created", false);
+    this.model.setUpdating({ webhook: { status: true } });
+    return client.checkGraphWebhook(this.get("metadata.id"))
+      .then((resp) => {
+        this.model.set("webhook.status", resp);
+      })
+      .catch((err) => {
+        this.model.set("webhook.status", err);
+      });
+  }
+
+  createGraphWebhook(client) {
+    this.model.setUpdating({ webhook: { created: true } });
+    return client.createGraphWebhook(this.get("metadata.id"))
+      .then((resp) => {
+        this.model.set("webhook.created", resp);
+      })
+      .catch((err) => {
+        this.model.set("webhook.created", err);
+      });
+  }
+
+  async fetchProjectConfig(repositoryUrl, branch = null) {
+    let configObject = {
+      error: { $set: {} },
+      fetching: true,
+    };
+    this.model.setObject({ config: configObject });
+    const response = await this.client.getProjectConfig(repositoryUrl, branch);
+    configObject.fetching = false;
+    configObject.fetched = new Date();
+    if (response.data && response.data.error) {
+      configObject.error = response.data.error;
+      this.model.setObject({ config: configObject });
+      return response.data.error;
+    }
+    configObject.data = { $set: response.data.result };
+    this.model.setObject({ config: configObject });
+    return response.data.result;
+  }
+
   fetchReadme(client) {
     // Do not fetch if a fetch is in progress
     if (this.get("transient.requests.readme") === SpecialPropVal.UPDATING) return;
@@ -565,26 +639,6 @@ class ProjectCoordinator {
     this.model.setObject({ statistics: statsObject });
     return stats;
   }
-
-  async fetchProjectConfig(repositoryUrl, branch = null) {
-    let configObject = {
-      error: { $set: {} },
-      fetching: true,
-    };
-    this.model.setObject({ config: configObject });
-    const response = await this.client.getProjectConfig(repositoryUrl, branch);
-    configObject.fetching = false;
-    configObject.fetched = new Date();
-    if (response.data && response.data.error) {
-      configObject.error = response.data.error;
-      this.model.setObject({ config: configObject });
-      return response.data.error;
-    }
-    configObject.data = { $set: response.data.result };
-    this.model.setObject({ config: configObject });
-    return response.data.result;
-  }
-
 
   async star(client, starred) {
     return client.starProject(this.get("metadata.id"), starred)
