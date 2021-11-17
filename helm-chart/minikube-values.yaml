@@ -3,6 +3,8 @@ global:
     domain: renku.build
   anonymousSessions:
     enabled: false
+  uiserver:
+    clientSecret: "secret"
 
 baseUrl: "http://localhost:3000"
 
