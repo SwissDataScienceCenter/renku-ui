@@ -147,15 +147,6 @@ const projectSchema = new Schema({
       requests: { initial: {} },
     }
   },
-  webhook: {
-    schema: {
-      status: { initial: null },
-      created: { initial: null },
-      possible: { initial: null },
-      stop: { initial: null },
-      progress: { initial: null }
-    }
-  },
   migration: {
     schema: {
       migration_required: { initial: null },

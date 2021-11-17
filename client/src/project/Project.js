@@ -224,9 +224,8 @@ class View extends Component {
   async fetchReadme() { return this.projectCoordinator.fetchReadme(this.props.client); }
   async fetchModifiedFiles() { return this.projectState.fetchModifiedFiles(this.props.client); }
   async fetchBranches() { return this.projectState.fetchBranches(this.props.client); }
-  async createGraphWebhook() { return this.projectState.createGraphWebhook(this.props.client); }
-  async stopCheckingWebhook() { this.projectState.stopCheckingWebhook(); }
-  async fetchGraphWebhook() { this.projectState.fetchGraphWebhook(this.props.client, this.props.user); }
+  async createGraphWebhook() { return this.projectCoordinator.createGraphWebhook(this.props.client); }
+  async fetchGraphWebhook() { this.projectCoordinator.fetchGraphWebhook(this.props.client, this.props.user); }
   async fetchProjectFilesTree() {
     return this.projectState.fetchProjectFilesTree(this.props.client, this.cleanCurrentURL());
   }
@@ -239,7 +238,7 @@ class View extends Component {
   async fetchProjectDatasetsFromKg() {
     return this.projectState.fetchProjectDatasetsFromKg(this.props.client);
   }
-  async fetchGraphStatus() { return this.projectState.fetchGraphStatus(this.props.client); }
+  async fetchGraphStatus() { return this.projectCoordinator.fetchGraphStatus(this.props.client); }
   saveProjectLastNode(nodeData) { this.projectState.saveProjectLastNode(nodeData); }
 
   async fetchMigrationCheck() { this.projectState.fetchMigrationCheck(this.props.client); }
@@ -285,7 +284,7 @@ class View extends Component {
   checkGraphWebhook() { this.projectCoordinator.checkGraphWebhook(this.props.client); }
 
   isGraphReady() {
-    const webhookStatus = this.projectState.get("webhook");
+    const webhookStatus = this.projectCoordinator.get("webhook");
     return webhookStatus.status || (webhookStatus.created && webhookStatus.stop)
       || webhookStatus.progress === GraphIndexingStatus.MAX_VALUE;
   }
@@ -348,16 +347,15 @@ class View extends Component {
   }
 
   subComponents(projectId, ownProps) {
-    const visibility = this.projectState.get("visibility");
-    const isPrivate = visibility && visibility.level === "private";
-    const accessLevel = visibility.accessLevel;
+    const isPrivate = this.projectCoordinator.get("metadata.visibility") === "private";
+    const accessLevel = this.projectCoordinator.get("metadata.accessLevel");
     const externalUrl = this.projectState.get("core.external_url");
     const httpProjectUrl = this.projectState.get("system.http_url");
     const updateProjectView = this.forceUpdate.bind(this);
     const filesTree = this.projectState.get("filesTree");
     const datasets = this.projectState.get("core.datasets");
-    const graphProgress = this.projectState.get("webhook.progress");
-    const maintainer = visibility.accessLevel >= ACCESS_LEVELS.MAINTAINER ?
+    const graphProgress = this.projectCoordinator.get("webhook.progress");
+    const maintainer = accessLevel >= ACCESS_LEVELS.MAINTAINER ?
       true :
       false;
     const forkedData = this.projectState.get("system.forked_from_project");

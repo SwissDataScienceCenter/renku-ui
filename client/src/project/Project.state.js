@@ -95,69 +95,6 @@ class ProjectModel extends StateModel {
       });
   }
 
-  stopCheckingWebhook() {
-    this.set("webhook.stop", true);
-  }
-
-  fetchGraphWebhook(client, user) {
-    if (!user) {
-      this.set("webhook.possible", false);
-      return;
-    }
-    const userIsOwner = this.get("core.owner.id") === user.data.id;
-    this.set("webhook.possible", userIsOwner);
-    if (userIsOwner)
-      this.fetchGraphWebhookStatus(client, this.get("core.id"));
-  }
-
-  fetchGraphStatus(client) {
-    return client.checkGraphStatus(this.get("core.id"))
-      .then((resp) => {
-        let progress;
-        if (resp.progress == null)
-          progress = GraphIndexingStatus.NO_PROGRESS;
-
-        if (resp.progress === 0 || resp.progress)
-          progress = resp.progress;
-
-        this.set("webhook.progress", progress);
-        return progress;
-      })
-      .catch((err) => {
-        if (err.case === API_ERRORS.notFoundError) {
-          const progress = GraphIndexingStatus.NO_WEBHOOK;
-          this.set("webhook.progress", progress);
-          return progress;
-        }
-
-        throw err;
-
-      });
-  }
-
-  fetchGraphWebhookStatus(client) {
-    this.set("webhook.created", false);
-    this.setUpdating({ webhook: { status: true } });
-    return client.checkGraphWebhook(this.get("core.id"))
-      .then((resp) => {
-        this.set("webhook.status", resp);
-      })
-      .catch((err) => {
-        this.set("webhook.status", err);
-      });
-  }
-
-  createGraphWebhook(client) {
-    this.setUpdating({ webhook: { created: true } });
-    return client.createGraphWebhook(this.get("core.id"))
-      .then((resp) => {
-        this.set("webhook.created", resp);
-      })
-      .catch((err) => {
-        this.set("webhook.created", err);
-      });
-  }
-
   // TODO: Do we really want to re-fetch the entire project on every change?
   fetchProject(client, projectPathWithNamespace) {
     this.setUpdating({ core: { available: true } });
@@ -550,6 +487,29 @@ class ProjectCoordinator {
     return commits;
   }
 
+  fetchGraphStatus(client) {
+    return client.checkGraphStatus(this.get("metadata.id"))
+      .then((resp) => {
+        let progress;
+        if (resp.progress == null)
+          progress = GraphIndexingStatus.NO_PROGRESS;
+
+        if (resp.progress === 0 || resp.progress)
+          progress = resp.progress;
+        this.set("webhook.progress", progress);
+        return progress;
+      })
+      .catch((err) => {
+        if (err.case === API_ERRORS.notFoundError) {
+          const progress = GraphIndexingStatus.NO_WEBHOOK;
+          this.set("webhook.progress", progress);
+          return progress;
+        }
+
+        throw err;
+
+      });
+  }
 
   fetchGraphWebhook(client, user) {
     if (!user) {
