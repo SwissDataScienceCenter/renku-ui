@@ -282,6 +282,7 @@ class ProjectViewHeaderOverview extends Component {
 
   render() {
     const system = this.props.system;
+    const metadata = this.props.metadata;
 
     let starElement;
     let starText;
@@ -356,7 +357,7 @@ class ProjectViewHeaderOverview extends Component {
               </Button>
               <Button outline color="primary"
                 className="border-light"
-                style={{ cursor: "default" }}>{system.star_count}</Button>
+                style={{ cursor: "default" }}>{metadata.starCount}</Button>
             </ButtonGroup>
             <ButtonGroup size="sm" className="ms-1">
               <GitLabConnectButton size="sm"

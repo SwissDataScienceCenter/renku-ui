@@ -201,18 +201,9 @@ class ProjectModel extends StateModel {
     return client.setAvatar(this.get("core.id"), avatarFile)
       .then(() => { this.fetchProject(client, this.get("core.id")); });
   }
-
-  star(client, starred) {
-    return client.starProject(this.get("core.id"), starred)
-      .then((resp) => resp.data);
-  }
-
-  setStars(num) {
-    this.set("system.star_count", num);
-  }
 }
 
-const FileTreeMixIn = {
+const FileTreeMixin = {
   fetchProjectFilesTree(client, openFilePath, openFolder) {
     if (this.get("transient.requests.filesTree") === SpecialPropVal.UPDATING) return;
     const oldTree = this.get("filesTree");
@@ -285,6 +276,17 @@ const FileTreeMixIn = {
     for (const node in newTree.hash)
       parentTree.hash[node] = newTree.hash[node];
     return { filesTree: parentTree, transient: { requests: { filesTree: false } } };
+  }
+};
+
+const StarMixin = {
+  async star(client, starred) {
+    return client.starProject(this.get("metadata.id"), starred)
+      .then((resp) => resp.data);
+  },
+
+  setStars(num) {
+    this.set("metadata.starCount", num);
   }
 };
 
@@ -586,13 +588,9 @@ class ProjectCoordinator {
     this.model.setObject({ statistics: statsObject });
     return stats;
   }
-
-  async star(client, starred) {
-    return client.starProject(this.get("metadata.id"), starred)
-      .then((resp) => resp.data);
-  }
 }
 
-Object.assign(ProjectCoordinator.prototype, FileTreeMixIn);
+Object.assign(ProjectCoordinator.prototype, FileTreeMixin);
+Object.assign(ProjectCoordinator.prototype, StarMixin);
 
 export { ProjectModel, GraphIndexingStatus, ProjectCoordinator, MigrationStatus };

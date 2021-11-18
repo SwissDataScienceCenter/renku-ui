@@ -294,7 +294,7 @@ class View extends Component {
     // return false until data are available
     if (!featured.fetched)
       return false;
-    return featured.starred.map((project) => project.id).indexOf(this.projectState.get("core.id")) >= 0;
+    return featured.starred.map((project) => project.id).indexOf(this.projectCoordinator.get("metadata.id")) >= 0;
   }
 
   getSubUrls() {
@@ -558,7 +558,7 @@ class View extends Component {
         if (project && project.star_count != null) {
           // first update the list of starred project, otherwise this.getStarred returns wrong
           this.projectsCoordinator.updateStarred(project, !starred);
-          this.projectState.setStars(project.star_count);
+          this.projectCoordinator.setStars(project.star_count);
         }
         return true;
       });
