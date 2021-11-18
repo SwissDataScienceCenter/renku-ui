@@ -213,12 +213,16 @@ export default function PDFViewer(props) {
   }
 
   return (
-    <Document file={props.file} onLoadSuccess={onDocumentLoadSuccess}>
+    <Document
+      file={props.file}
+      onLoadSuccess={onDocumentLoadSuccess}
+      renderMode="svg">
       {
         Array.from(
           new Array(numPages),
           (el, index) => (
             <Page
+              className="rk-pdf-page"
               key={`page_${index + 1}`}
               pageNumber={index + 1}
             />
