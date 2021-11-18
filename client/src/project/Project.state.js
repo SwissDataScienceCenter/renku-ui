@@ -202,13 +202,6 @@ class ProjectModel extends StateModel {
       .then(() => { this.fetchProject(client, this.get("core.id")); });
   }
 
-  // TODO CR: This function is not used, we should remove it and clean up the state
-  toggleForkModal() {
-    const forkModalOpen = this.get("transient.forkModalOpen");
-    const forkModalFlipped = forkModalOpen === false ? true : false;
-    this.set("transient.forkModalOpen", forkModalFlipped);
-  }
-
   star(client, starred) {
     return client.starProject(this.get("core.id"), starred)
       .then((resp) => resp.data);
