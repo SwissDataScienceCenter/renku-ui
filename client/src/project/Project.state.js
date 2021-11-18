@@ -95,29 +95,17 @@ class ProjectModel extends StateModel {
       });
   }
 
-  // TODO: Do we really want to re-fetch the entire project on every change?
-  fetchProject(client, projectPathWithNamespace) {
-    this.setUpdating({ core: { available: true } });
-    return client.getProject(projectPathWithNamespace, { statistics: true })
-      .then(resp => resp.data)
-      .then(d => {
-        const updatedState = {
-          core: { ...d.metadata.core, available: true },
-          system: {
-            ...d.metadata.system,
-            tag_list: { $set: d.metadata.system.tag_list } // fix empty tag_list not updating
-          },
-          visibility: d.metadata.visibility
-        };
-        this.setObject(updatedState);
-        return d;
-      })
-      .catch(err => {
-        if (err.case === API_ERRORS.notFoundError)
-          this.set("core.available", false);
-
-        else throw err;
-      });
+  setProjectData(data, statistics = false) {
+    const updatedState = {
+      core: { ...data.metadata.core, available: true },
+      system: {
+        ...data.metadata.system,
+        tag_list: { $set: data.metadata.system.tag_list } // fix empty tag_list not updating
+      },
+      visibility: data.metadata.visibility
+    };
+    this.setObject(updatedState);
+    return data;
   }
 
   fetchProjectDatasetsFromKg(client) { //from KG
@@ -327,22 +315,25 @@ class ProjectCoordinator {
     return this.model.set(component, value);
   }
 
-  // TODO: switch to using this method once ProjectModel is removed
-  // fetchProject(client, projectPathWithNamespace) {
-  //   this.setUpdating({ metadata: { exists: true } });
-  //   return client.getProject(projectPathWithNamespace, { statistics: true })
-  //     .then(resp => resp.data)
-  //     .then(d => {
-  //       this.setProjectData(d, true);
-  //       return d;
-  //     })
-  //     .catch(err => {
-  //       if (err.case === API_ERRORS.notFoundError)
-  //         this.set("metadata.exists", false);
+  setUpdating(options) {
+    this.model.setUpdating(options);
+  }
 
-  //       else throw err;
-  //     });
-  // }
+  fetchProject(client, projectPathWithNamespace) {
+    this.setUpdating({ metadata: { exists: true } });
+    return client.getProject(projectPathWithNamespace, { statistics: true })
+      .then(resp => resp.data)
+      .then(d => {
+        this.setProjectData(d, true);
+        return d;
+      })
+      .catch(err => {
+        if (err.case === API_ERRORS.notFoundError)
+          this.set("metadata.exists", false);
+
+        else throw err;
+      });
+  }
 
   setProjectData(data, statistics = false) {
     let metadata, statsObject, filtersObject;

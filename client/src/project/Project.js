@@ -211,14 +211,15 @@ class View extends Component {
 
   async fetchProject() {
     const pathComponents = splitProjectSubRoute(this.props.match.url);
-    const projectData = this.projectState.fetchProject(this.props.client, pathComponents.projectPathWithNamespace);
-    // TODO: gradually move queries from local store projectState to shared store projectCoordinator
+    const projectData =
+      this.projectCoordinator.fetchProject(this.props.client, pathComponents.projectPathWithNamespace);
     projectData.then(data => {
-      this.projectCoordinator.setProjectData(data, true);
+      this.projectState.setProjectData(data, true);
       this.projectCoordinator.fetchCommits();
       // TODO: move fetchBranches to projectCoordinator. We should fetch commits after we know the default branch
       this.fetchBranches();
     });
+
     return projectData;
   }
   async fetchReadme() { return this.projectCoordinator.fetchReadme(this.props.client); }
