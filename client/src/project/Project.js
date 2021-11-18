@@ -602,9 +602,10 @@ class View extends Component {
     const pathComponents = splitProjectSubRoute(ownProps.match.url);
     const internalId = this.projectState.get("core.id") || parseInt(ownProps.match.params.id, 10);
     const starred = this.getStarred();
-    const settingsReadOnly = state.visibility.accessLevel < ACCESS_LEVELS.MAINTAINER;
+    const accessLevel = this.projectCoordinator.get("metadata.accessLevel");
+    const settingsReadOnly = accessLevel < ACCESS_LEVELS.MAINTAINER;
     const externalUrl = this.projectState.get("core.external_url");
-    const canCreateMR = state.visibility.accessLevel >= ACCESS_LEVELS.DEVELOPER;
+    const canCreateMR = accessLevel >= ACCESS_LEVELS.DEVELOPER;
     const isGraphReady = this.isGraphReady();
 
     return {
@@ -630,7 +631,7 @@ class View extends Component {
     const props = {
       ...this.props,
       ...this.eventHandlers,
-      store: this.projectState.reduxStore,
+      store: this.props.model.reduxStore,
       projectCoordinator: this.projectCoordinator
     };
     return <ConnectedProjectView {...props} />;
