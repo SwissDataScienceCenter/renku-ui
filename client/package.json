@@ -54,6 +54,7 @@
     "sass": "^1.37.5",
     "showdown": "^1.9.1",
     "showdown-highlight": "^2.1.8",
+    "showdown-katex": "0.6.0",
     "styled-jsx": "^3.4.5",
     "uuid": "^3.3.3",
     "xregexp": "^4.4.0",

@@ -493,6 +493,38 @@ This is an *internal* project that is used for testing.
   });
 });
 
+describe("display latex in markdown", () => {
+  it("handles valid latex source code", () => {
+    const markdown = "This is a README with some LaTeX expressions that should render nicely:\n" +
+      "\n" +
+      "**Expression 1**\n" +
+      "```math\n" +
+      "\\int f(\\mathbf{x}) {\\rm d}u(\\mathbf{x}),\n" +
+      "```\n";
+    const html = sanitizedHTMLFromMarkdown(markdown);
+    const resultExpected = "<p>This is a README with some LaTeX expressions that should render nicely:</p>\n" +
+      "<p><strong>Expression 1</strong></p>\n" +
+      // eslint-disable-next-line max-len
+      "<span title=\"\\int f(\\mathbf{x}) {\\rm d}u(\\mathbf{x}),\"><span class=\"katex-display\"><span class=\"katex\"><span class=\"katex-mathml\"><math><mrow><mo>∫</mo><mrow><mi>f</mi><mrow><mo fence=\"true\">(</mo><mi mathvariant=\"bold\">x</mi><mo fence=\"true\">)</mo></mrow></mrow><mrow><mo fence=\"true\">{</mo><mi>r</mi><mi>m</mi><mi>d</mi><mo fence=\"true\">}</mo></mrow><mi>u</mi><mrow><mo fence=\"true\">(</mo><mi mathvariant=\"bold\">x</mi><mo fence=\"true\">)</mo></mrow><mo separator=\"true\">,</mo></mrow>\\int{f{{\\left({\\mathbf{{{x}}}}\\right)}}}{\\left\\lbrace{r}{m}{d}\\right\\rbrace}{u}{\\left({\\mathbf{{{x}}}}\\right)},</math></span><span aria-hidden=\"true\" class=\"katex-html\"><span class=\"base\"><span style=\"height:2.22225em;vertical-align:-0.86225em;\" class=\"strut\"></span><span style=\"margin-right:0.44445em;position:relative;top:-0.0011249999999999316em;\" class=\"mop op-symbol large-op\">∫</span><span style=\"margin-right:0.16666666666666666em;\" class=\"mspace\"></span><span class=\"mord\"><span style=\"margin-right:0.10764em;\" class=\"mord mathdefault\">f</span><span class=\"mord\"><span class=\"mord\"><span class=\"minner\"><span style=\"top:0em;\" class=\"mopen delimcenter\">(</span><span class=\"mord\"><span class=\"mord\"><span class=\"mord\"><span class=\"mord\"><span class=\"mord mathbf\">x</span></span></span></span></span><span style=\"top:0em;\" class=\"mclose delimcenter\">)</span></span></span></span></span><span class=\"mord\"><span class=\"minner\"><span style=\"top:0em;\" class=\"mopen delimcenter\">{</span><span class=\"mord\"><span style=\"margin-right:0.02778em;\" class=\"mord mathdefault\">r</span></span><span class=\"mord\"><span class=\"mord mathdefault\">m</span></span><span class=\"mord\"><span class=\"mord mathdefault\">d</span></span><span style=\"top:0em;\" class=\"mclose delimcenter\">}</span></span></span><span class=\"mord\"><span class=\"mord mathdefault\">u</span></span><span class=\"mord\"><span class=\"minner\"><span style=\"top:0em;\" class=\"mopen delimcenter\">(</span><span class=\"mord\"><span class=\"mord\"><span class=\"mord\"><span class=\"mord\"><span class=\"mord mathbf\">x</span></span></span></span></span><span style=\"top:0em;\" class=\"mclose delimcenter\">)</span></span></span><span class=\"mpunct\">,</span></span></span></span></span></span>";
+    expect(html).toEqual(resultExpected);
+  });
+
+  it("handles invalid latex source code", () => {
+    const markdown = "This is a README with some LaTeX expressions that should render nicely:\n" +
+      "\n" +
+      "**Expression 1**\n" +
+      "```math\n" +
+      "\\int f(\\mathbf{x}) {\\rm d}u(\\mathbf{x}),&\n" +
+      "```\n";
+    const html = sanitizedHTMLFromMarkdown(markdown);
+    const resultExpected = "<p>This is a README with some LaTeX expressions that should render nicely:</p>\n" +
+      "<p><strong>Expression 1</strong></p>\n" +
+      // eslint-disable-next-line max-len
+      "<span title=\"\\int f(\\mathbf{x}) {\\rm d}u(\\mathbf{x}),&amp;\"><span style=\"color:var(--bs-danger)\" title=\"ParseError: KaTeX parse error: Expected 'EOF', got '&amp;' at position 112: …{x}}}}\\right)},&amp;̲\" class=\"katex-error\">\\int{f{{\\left({\\mathbf{{{x}}}}\\right)}}}{\\left\\lbrace{r}{m}{d}\\right\\rbrace}{u}{\\left({\\mathbf{{{x}}}}\\right)},&amp;</span></span>";
+    expect(html).toEqual(resultExpected);
+  });
+});
+
 describe("Translate path for markdown", () => {
 
   // This is the folder structure that will be used for testing

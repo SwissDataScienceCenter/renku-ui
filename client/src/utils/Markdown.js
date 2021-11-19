@@ -5,6 +5,7 @@ import ReactDOMServer from "react-dom/server";
 import { FilePreview } from "../file";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-solid-svg-icons";
+import "katex/dist/katex.min.css";
 
 const patterns = {
   fileRefFull: /!\[(.*?)\]\((.*?)\)/g, //with !

@@ -238,7 +238,7 @@ class JupyterButton extends React.Component {
       if (defaultBranchObject.length) return defaultBranchObject;
     }
 
-    return branches[0].name;
+    return branches[0]?.name ?? branches?.all[0]?.name;
   }
 
   getScope() {
