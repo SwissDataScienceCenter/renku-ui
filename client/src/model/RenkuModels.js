@@ -118,7 +118,6 @@ const projectSchema = new Schema({
   },
   system: {
     schema: {
-      merge_requests: { schema: [], initial: [] },
       branches: { schema: [], initial: [] },
       autosaved: { schema: [], initial: [] },
     }
@@ -299,7 +298,6 @@ const projectGlobalSchema = new Schema({
     })
   },
   forkedFromProject: { [Prop.INITIAL]: {} },
-  mergeRequests: { [Prop.INITIAL]: [] },
   metadata: {
     [Prop.SCHEMA]: new Schema({
       avatarUrl: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // avatar_url
