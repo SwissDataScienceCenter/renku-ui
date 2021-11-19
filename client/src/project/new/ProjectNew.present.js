@@ -33,7 +33,7 @@ import {
   UncontrolledPopover, PopoverHeader, PopoverBody, Row, Table, UncontrolledTooltip
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle, faLink, faQuestionCircle, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import { faInfoCircle, faLink, faPaste, faQuestionCircle, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import {
   ButtonWithMenu, Clipboard, ErrorAlert, ExternalLink, FieldGroup, Loader, WarnAlert
 } from "../../utils/UIComponents";
@@ -943,6 +943,32 @@ function TemplateGalleryRow(props) {
   );
 }
 
+/**
+ * Create a "restore default" button.
+ *
+ * @param {function} restore - function to invoke
+ * @param {string} tip - message to display in the tooltip
+ * @param {boolean} disabled - whether it's disabled or not
+ */
+function RestoreButton(props) {
+  const { restore, name, disabled } = props;
+
+  const id = `restore_${name}`;
+  const tip = disabled ?
+    "Default value already selected" :
+    "Restore default value";
+
+  return (
+    <div id={id} className="d-inline ms-2">
+      <Button key="button" className="p-0" color="link" size="sm"
+        onClick={() => restore()} disabled={disabled} >
+        <FontAwesomeIcon icon={faPaste} />
+      </Button>
+      <UncontrolledTooltip key="tooltip" placement="top" target={id}>{tip}</UncontrolledTooltip>
+    </div>
+  );
+}
+
 class Variables extends Component {
   render() {
     const { input, handlers } = this.props;
@@ -956,17 +982,109 @@ class Variables extends Component {
     const template = templates.all.filter(t => t.id === input.template)[0];
     if (!template || !template.variables || !Object.keys(template.variables).length)
       return null;
-    const variables = Object.keys(template.variables).map(variable => (
-      <FormGroup key={variable}>
-        <Label>{capitalize(variable)}</Label>
-        <Input id={"parameter-" + variable} type="text" value={input.variables[variable]}
-          onChange={(e) => handlers.setVariable(variable, e.target.value)} />
-        <FormText>{capitalize(template.variables[variable])}</FormText>
-      </FormGroup>
-    ));
+    const variables = Object.keys(template.variables).map(variable => {
+      const data = template.variables[variable];
+
+      // fallback to avoid breaking old variable structure
+      if (typeof data !== "object") {
+        return (
+          <FormGroup key={variable}>
+            <Label>{capitalize(variable)}</Label>
+            <Input id={"parameter-" + variable} type="text" value={input.variables[variable]}
+              onChange={(e) => handlers.setVariable(variable, e.target.value)} />
+            <FormText>{capitalize(template.variables[variable])}</FormText>
+          </FormGroup>
+        );
+      }
+
+      // expected `data` properties: default_value, description, enum, type.
+      // changing enum to enumValues to avoid using js reserved word
+      return (
+        <Variable
+          enumValues={data["enum"]}
+          handlers={handlers}
+          key={variable}
+          input={input}
+          name={variable}
+          {...data}
+        />
+      );
+    });
 
     return variables;
   }
+}
+
+function Variable(props) {
+  const { default_value, description, enumValues, handlers, input, name, type } = props;
+  const id = `parameter-${name}`;
+
+  const descriptionOutput = description ?
+    (<FormText>{capitalize(description)}</FormText>) :
+    null;
+
+  const defaultOutput = default_value != null ?
+    `Default: ${default_value}` :
+    null;
+
+  const restoreButton = default_value != null ?
+    (
+      <RestoreButton
+        disabled={input.variables[name] === default_value}
+        name={name}
+        restore={() => handlers.setVariable(name, default_value)}
+      />
+    ) :
+    null;
+
+  let inputElement = null;
+  if (type === "boolean") {
+    inputElement = (
+      <FormGroup className="form-check form-switch d-inline-block">
+        <Input type="switch" id={id} label={name}
+          checked={input.variables[name]}
+          onChange={(e) => handlers.setVariable(name, e.target.checked)}
+          className="form-check-input rounded-pill" />
+        <Label check htmlFor={"parameter-" + name}>{name}</Label>
+        {restoreButton}
+      </FormGroup>
+    );
+    // inputElement = null;
+  }
+  else if (type === "enum") {
+    const enumObjects = enumValues.map(enumObject => {
+      const enumId = `enum-${id}-${enumObject.toString()}`;
+      return (
+        <option key={enumId} value={enumObject}>{enumObject}</option>
+      );
+    });
+    inputElement = (
+      <FormGroup>
+        <Label>{name}</Label>{restoreButton}
+        <Input id={id} type="select" value={input.variables[name]}
+          onChange={(e) => handlers.setVariable(name, e.target.value)}>
+          {enumObjects}
+        </Input>
+        {descriptionOutput}
+      </FormGroup>
+    );
+  }
+  else {
+    const inputType = type === "number" ?
+      "number" :
+      "text";
+    inputElement = (
+      <FormGroup>
+        <Label>{name}</Label>{restoreButton}
+        <Input id={id} type={inputType} value={input.variables[name]}
+          onChange={(e) => handlers.setVariable(name, e.target.value)}
+          placeholder={defaultOutput} />
+        {descriptionOutput}
+      </FormGroup>
+    );
+  }
+
+  return inputElement;
 }
 
 class Create extends Component {
@@ -1173,7 +1291,7 @@ function ShareLinkModal(props) {
     if (include.variables) {
       let variablesObject = {};
       for (let variable of Object.keys(input.variables)) {
-        if (input.variables[variable])
+        if (input.variables[variable] != null)
           variablesObject[variable] = input.variables[variable];
       }
       dataObject.variables = variablesObject;
