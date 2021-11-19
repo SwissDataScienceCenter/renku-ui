@@ -359,7 +359,7 @@ class View extends Component {
     const maintainer = accessLevel >= ACCESS_LEVELS.MAINTAINER ?
       true :
       false;
-    const forkedData = this.projectState.get("system.forked_from_project");
+    const forkedData = this.projectCoordinator.get("forkedFromProject");
     const forked = (forkedData != null && Object.keys(forkedData).length > 0) ?
       true :
       false;

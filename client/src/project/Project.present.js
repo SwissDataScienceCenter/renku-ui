@@ -209,9 +209,9 @@ class ForkProjectModal extends Component {
 }
 
 function ProjectIdentifier(props) {
-  const forkedFromText = (props.forkedFromLink == null) ?
-    null :
-    [" ", <b key="forked">forked</b>, " from ", props.forkedFromLink];
+  const forkedFromText = (isForkedFromProject(props.forkedFromProject)) ?
+    <Fragment>{" "}<b key="forked">forked</b>{" from "} {props.forkedFromLink}</Fragment> :
+    null;
   const forkedFrom = (forkedFromText) ?
     <Fragment><span className="text-rk-text fs-small">{forkedFromText}</span><br /></Fragment> :
     null;
@@ -397,18 +397,20 @@ function StartSessionButton(props) {
   );
 }
 
+function isForkedFromProject(forkedFromProject) { return forkedFromProject && Object.keys(forkedFromProject).length > 0; }
+
+function ForkedFromLink({ forkedFromProject, projectsUrl }) {
+  if (!isForkedFromProject(forkedFromProject)) return null;
+  return <Link key="forkedFrom" to={`${projectsUrl}/${forkedFromProject.pathWithNamespace}`}>
+    {forkedFromProject.pathWithNamespace || "no title"}
+  </Link>;
+}
+
 class ProjectViewHeader extends Component {
   render() {
-    let forkedFromLink = null;
-    if (this.props.system.forked_from_project != null &&
-      Object.keys(this.props.system.forked_from_project).length > 0) {
-      const forkedFrom = this.props.system.forked_from_project;
-      const projectsUrl = this.props.projectsUrl;
-      forkedFromLink = <Link key="forkedFrom" to={`${projectsUrl}/${forkedFrom.metadata.core.path_with_namespace}`}>
-        {forkedFrom.metadata.core.path_with_namespace || "no title"}
-      </Link>;
-    }
-
+    const forkedFromLink = <ForkedFromLink
+      forkedFromProject={this.props.forkedFromProject}
+      projectsUrl={this.props.projectsUrl} />;
     return <ProjectViewHeaderMinimal key="minimalHeader" forkedFromLink={forkedFromLink} {...this.props} />;
   }
 }
@@ -497,15 +499,7 @@ class ProjectViewReadme extends Component {
 }
 
 function ProjectViewGeneral(props) {
-  let forkedFromLink = null;
-  if (props.system.forked_from_project != null &&
-    Object.keys(props.system.forked_from_project).length > 0) {
-    const forkedFrom = props.system.forked_from_project;
-    const projectsUrl = props.projectsUrl;
-    forkedFromLink = <Link key="forkedFrom" to={`${projectsUrl}/${forkedFrom.metadata.core.path_with_namespace}`}>
-      {forkedFrom.metadata.core.path_with_namespace || "no title"}
-    </Link>;
-  }
+  const forkedFromLink = <ForkedFromLink forkedFromProject={props.metadata.forkedFromProject} />;
 
   return <Fragment>
     <ProjectViewHeaderOverview

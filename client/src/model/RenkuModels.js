@@ -118,7 +118,6 @@ const projectSchema = new Schema({
   },
   system: {
     schema: {
-      forked_from_project: { initial: {} },
       merge_requests: { schema: [], initial: [] },
       branches: { schema: [], initial: [] },
       autosaved: { schema: [], initial: [] },
@@ -253,6 +252,8 @@ const projectStatisticsSchema = new Schema({
 });
 
 const projectGlobalSchema = new Schema({
+  autosaved: { [Prop.INITIAL]: [] },
+  branches: { [Prop.INITIAL]: [] },
   commits: {
     [Prop.SCHEMA]: new Schema({
       list: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
@@ -297,6 +298,8 @@ const projectGlobalSchema = new Schema({
       commit: { [Prop.INITIAL]: { id: "latest" }, [Prop.MANDATORY]: true },
     })
   },
+  forkedFromProject: { [Prop.INITIAL]: {} },
+  mergeRequests: { [Prop.INITIAL]: [] },
   metadata: {
     [Prop.SCHEMA]: new Schema({
       avatarUrl: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // avatar_url

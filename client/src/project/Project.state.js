@@ -274,6 +274,37 @@ const ProjectAttributesMixin = {
   }
 };
 
+
+function metadataFromData(data) {
+  if (!data) return {};
+  return ({
+    avatarUrl: data.metadata.core.avatar_url,
+    accessLevel: data.metadata.visibility.accessLevel, // this is computed in carveProject
+    createdAt: data.metadata.core.created_at,
+    defaultBranch: data.metadata.core.default_branch,
+    description: data.metadata.core.description,
+    exists: true,
+    externalUrl: data.metadata.core.external_url,
+    forksCount: data.all.forks_count,
+    httpUrl: data.metadata.system.http_url,
+    id: data.all.id,
+    lastActivityAt: data.metadata.core.last_activity_at,
+    namespace: data.all.namespace.full_path,
+    owner: data.metadata.core.owner,
+    path: data.all.path,
+    pathWithNamespace: data.all.path_with_namespace,
+    repositoryUrl: data.all.web_url,
+    sshUrl: data.metadata.system.ssh_url,
+    starCount: data.all.star_count,
+    tagList: { $set: data.metadata.system.tag_list }, // fix empty tag_list not updating
+    title: data.metadata.core.title,
+    visibility: data.metadata.visibility.level, // this is computed in carveProject
+
+    fetched: new Date(),
+    fetching: false
+  });
+}
+
 class ProjectCoordinator {
   constructor(client, model, notifications = null) {
     this.client = client;
@@ -332,7 +363,7 @@ class ProjectCoordinator {
   }
 
   setProjectData(data, statistics = false) {
-    let metadata, statsObject, filtersObject;
+    let metadata, statsObject, filtersObject, forkedFromProject;
 
     // set metadata
     if (!data) {
@@ -344,6 +375,7 @@ class ProjectCoordinator {
           fetching: false
         }
       };
+      forkedFromProject = {};
       statsObject = {
         $set: {
           ...projectGlobalSchema.createInitialized().statistics,
@@ -358,33 +390,8 @@ class ProjectCoordinator {
       };
     }
     else {
-      metadata = {
-        avatarUrl: data.metadata.core.avatar_url,
-        accessLevel: data.metadata.visibility.accessLevel, // this is computed in carveProject
-        createdAt: data.metadata.core.created_at,
-        defaultBranch: data.metadata.core.default_branch,
-        description: data.metadata.core.description,
-        exists: true,
-        externalUrl: data.metadata.core.external_url,
-        forksCount: data.all.forks_count,
-        httpUrl: data.metadata.system.http_url,
-        id: data.all.id,
-        lastActivityAt: data.metadata.core.last_activity_at,
-        namespace: data.all.namespace.full_path,
-        owner: data.metadata.core.owner,
-        path: data.all.path,
-        pathWithNamespace: data.all.path_with_namespace,
-        repositoryUrl: data.all.web_url,
-        sshUrl: data.metadata.system.ssh_url,
-        starCount: data.all.star_count,
-        tagList: { $set: data.metadata.system.tag_list }, // fix empty tag_list not updating
-        title: data.metadata.core.title,
-        visibility: data.metadata.visibility.level, // this is computed in carveProject
-
-        fetched: new Date(),
-        fetching: false
-      };
-
+      metadata = metadataFromData(data);
+      forkedFromProject = metadataFromData(data.metadata.system.forked_from_project);
 
       // set statistics
       if (statistics) {
@@ -409,9 +416,10 @@ class ProjectCoordinator {
       };
     }
 
-    this.model.setObject({ metadata: metadata,
-      statistics: statsObject,
+    this.model.setObject({ metadata,
       filters: filtersObject,
+      forkedFromProject,
+      statistics: statsObject,
       _transition: data
     });
     return metadata;
