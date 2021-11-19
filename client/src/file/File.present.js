@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import NotebookPreview from "@nteract/notebook-render";
 import {
   Badge, Card, CardHeader, CardBody, Button, ButtonGroup, ListGroup, ListGroupItem, Input
@@ -32,6 +32,7 @@ import { Time } from "../utils/Time";
 import { formatBytes } from "../utils/HelperFunctions";
 import { FileAndLineageSwitch } from "./FileAndLineageComponents";
 import { Label } from "reactstrap/lib";
+import _ from "lodash";
 
 const commitMessageLengthLimit = 120;
 
@@ -373,20 +374,20 @@ function NotebookDisplayForm(props) {
   </ListGroup>;
 }
 
-function StyledNotebook(props) {
+const StyledNotebook = memo((props) => {
   const [displayMode, setDisplayMode] = useState(NotebookSourceDisplayMode.DEFAULT);
 
   if (props.notebook == null) return <div>Loading...</div>;
 
   const notebook = tweakCellMetadata(props.notebook, displayMode);
   return [
-    <NotebookDisplayForm key="notebook-display-form"
-      displayMode={displayMode} setDisplayMode={setDisplayMode} />,
+    <NotebookDisplayForm key="notebook-display-form" displayMode={displayMode} setDisplayMode={setDisplayMode} />,
     <CardBody key="notebook">
       <NotebookPreview defaultStyle={false} loadMathjax={false} notebook={notebook} />
     </CardBody>
   ];
-}
+}, _.isEqual);
+StyledNotebook.displayName = "StyledNotebook";
 
 class JupyterButtonPresent extends React.Component {
   render() {
