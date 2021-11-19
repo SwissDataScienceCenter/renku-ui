@@ -350,10 +350,10 @@ class View extends Component {
   subComponents(projectId, ownProps) {
     const isPrivate = this.projectCoordinator.get("metadata.visibility") === "private";
     const accessLevel = this.projectCoordinator.get("metadata.accessLevel");
-    const externalUrl = this.projectState.get("core.external_url");
-    const httpProjectUrl = this.projectState.get("system.http_url");
+    const externalUrl = this.projectCoordinator.get("metadata.externalUrl");
+    const httpProjectUrl = this.projectCoordinator.get("metadata.httpUrl");
     const updateProjectView = this.forceUpdate.bind(this);
-    const filesTree = this.projectState.get("filesTree");
+    const filesTree = this.projectCoordinator.get("filesTree");
     const datasets = this.projectState.get("core.datasets");
     const graphProgress = this.projectCoordinator.get("webhook.progress");
     const maintainer = accessLevel >= ACCESS_LEVELS.MAINTAINER ?
@@ -363,7 +363,7 @@ class View extends Component {
     const forked = (forkedData != null && Object.keys(forkedData).length > 0) ?
       true :
       false;
-    const projectPathWithNamespace = this.projectState.get("core.path_with_namespace");
+    const projectPathWithNamespace = this.projectCoordinator.get("metadata.pathWithNamespace");
     // Access to the project state could be given to the subComponents by connecting them here to
     // the projectStore. This is not yet necessary.
     const subUrls = this.getSubUrls();
@@ -410,31 +410,31 @@ class View extends Component {
         maintainer={maintainer}
         forked={forked}
         launchNotebookUrl={subUrls.launchNotebookUrl}
-        projectNamespace={this.projectState.get("core.namespace_path")}
-        projectPathOnly={this.projectState.get("core.project_path")}
+        projectNamespace={this.projectCoordinator.get("metadata.namespace")}
+        projectPathOnly={this.projectCoordinator.get("metadata.path")}
         branches={branches}
         hashElement={filesTree !== undefined ? filesTree.hash[p.match.params.filePath] : undefined}
         gitFilePath={p.location.pathname.replace(pathComponents.baseUrl + "/files/lineage/", "")}
         history={this.props.history}
-        branch={this.projectState.get("core.default_branch")} />,
+        branch={this.projectCoordinator.get("metadata.defaultBranch")} />,
 
       fileView: (p) => <ShowFile
         key="filePreview" {...subProps}
         filePath={p.location.pathname.replace(pathComponents.baseUrl + "/files/blob/", "")}
         lineagesPath={subUrls.lineagesUrl}
         launchNotebookUrl={subUrls.launchNotebookUrl}
-        projectNamespace={this.projectState.get("core.namespace_path")}
-        projectPath={this.projectState.get("core.project_path")}
+        projectNamespace={this.projectCoordinator.get("metadata.namespace")}
+        projectPath={this.projectCoordinator.get("metadata.path")}
         branches={branches}
         projectId={projectId}
-        projectPathWithNamespace={this.projectState.get("core.path_with_namespace")}
+        projectPathWithNamespace={this.projectCoordinator.get("metadata.pathWithNamespace")}
         hashElement={filesTree !== undefined ?
           filesTree.hash[p.location.pathname.replace(pathComponents.baseUrl + "/files/blob/", "")] :
           undefined}
         filesTree={filesTree}
         history={this.props.history}
-        branch={this.projectState.get("core.default_branch")} //this can be changed
-        defaultBranch={this.projectState.get("core.default_branch")} />,
+        branch={this.projectCoordinator.get("metadata.defaultBranch")} //this can be changed
+        defaultBranch={this.projectCoordinator.get("metadata.defaultBranch")} />,
 
       datasetView: (p, projectInsideKg) => <ShowDataset
         key="datasetPreview" {...subProps}
@@ -477,7 +477,7 @@ class View extends Component {
         location={p.location}
         notifications={p.notifications}
         model={this.props.model}
-        defaultBranch={this.projectState.get("core.default_branch")}
+        defaultBranch={this.projectCoordinator.get("metadata.defaultBranch")}
       />,
 
       editDataset: (p) => <ChangeDataset
@@ -502,7 +502,7 @@ class View extends Component {
         location={p.location}
         notifications={p.notifications}
         model={this.props.model}
-        defaultBranch={this.projectState.get("core.default_branch")}
+        defaultBranch={this.projectCoordinator.get("metadata.defaultBranch")}
       />,
 
       importDataset: (p) => <ImportDataset
@@ -544,13 +544,13 @@ class View extends Component {
 
   eventHandlers = {
     onProjectTagsChange: (tags) => {
-      this.projectState.setTags(this.props.client, tags);
+      this.projectCoordinator.setTags(this.props.client, tags);
     },
     onProjectDescriptionChange: (description) => {
-      this.projectState.setDescription(this.props.client, description);
+      this.projectCoordinator.setDescription(this.props.client, description);
     },
     onAvatarChange: (avatarFile) => {
-      return this.projectState.setAvatar(this.props.client, avatarFile);
+      return this.projectCoordinator.setAvatar(this.props.client, avatarFile);
     },
     onStar: () => {
       const starred = this.getStarred();
@@ -601,11 +601,11 @@ class View extends Component {
 
   mapStateToProps(state, ownProps) {
     const pathComponents = splitProjectSubRoute(ownProps.match.url);
-    const internalId = this.projectState.get("core.id") || parseInt(ownProps.match.params.id, 10);
+    const internalId = this.projectCoordinator.get("metadata.id") || parseInt(ownProps.match.params.id, 10);
     const starred = this.getStarred();
     const accessLevel = this.projectCoordinator.get("metadata.accessLevel");
     const settingsReadOnly = accessLevel < ACCESS_LEVELS.MAINTAINER;
-    const externalUrl = this.projectState.get("core.external_url");
+    const externalUrl = this.projectCoordinator.get("metadata.externalUrl");
     const canCreateMR = accessLevel >= ACCESS_LEVELS.DEVELOPER;
     const isGraphReady = this.isGraphReady();
 

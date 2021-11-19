@@ -215,8 +215,8 @@ function ProjectIdentifier(props) {
   const forkedFrom = (forkedFromText) ?
     <Fragment><span className="text-rk-text fs-small">{forkedFromText}</span><br /></Fragment> :
     null;
-  const projectId = props.core.path_with_namespace;
-  const projectTitle = props.core.title;
+  const projectId = props.metadata.pathWithNamespace;
+  const projectTitle = props.metadata.title;
 
   return (
     <Fragment>
@@ -230,7 +230,7 @@ function ProjectIdentifier(props) {
             template_update_possible={props.migration.template_update_possible}
             docker_update_possible={props.migration.docker_update_possible}
           />{projectTitle}
-          <ProjectVisibilityLabel visibilityLevel={props.visibility.level} />
+          <ProjectVisibilityLabel visibilityLevel={props.metadata.visibility} />
         </h2>
         <span className="text-rk-text fs-small">{projectId}</span> {forkedFrom}
       </div>
@@ -281,7 +281,6 @@ class ProjectViewHeaderOverview extends Component {
   }
 
   render() {
-    const system = this.props.system;
     const metadata = this.props.metadata;
 
     let starElement;
@@ -307,7 +306,7 @@ class ProjectViewHeaderOverview extends Component {
     const gitlabIDEUrl = this.props.externalUrl !== "" && this.props.externalUrl.includes("/gitlab/") ?
       this.props.externalUrl.replace("/gitlab/", "/gitlab/-/ide/project/") : null;
     const description = <ProjectViewHeaderOverviewDescription
-      description={this.props.core.description}
+      description={this.props.metadata.description}
       settingsReadOnly={this.props.settingsReadOnly}
       settingsUrl={this.props.settingsUrl} />;
     const forkProjectDisabled = this.props.visibility.accessLevel < ACCESS_LEVELS.REPORTER
@@ -318,9 +317,9 @@ class ProjectViewHeaderOverview extends Component {
       <Fragment>
         <Row className="d-flex rk-project-header gy-2 gx-2 pb-2 justify-content-md-between justify-content-sm-start">
           <Col className={"order-1 d-flex " + titleColSize}>
-            { this.props.core.avatar_url ?
+            { this.props.metadata.avatarUrl ?
               <div className="flex-shrink-0 pe-3" style={{ width: "120px" }}>
-                <img src={this.props.core.avatar_url} className=" rounded" alt=""
+                <img src={this.props.metadata.avatarUrl} className=" rounded" alt=""
                   style={{ objectFit: "cover", width: "100%", height: "90px" }}/>
               </div>
               : null }
@@ -335,8 +334,8 @@ class ProjectViewHeaderOverview extends Component {
                 history={this.props.history}
                 model={this.props.model}
                 notifications={this.props.notifications}
-                title={this.props.core && this.props.core.title ? this.props.core.title : ""}
-                id={this.props.core && this.props.core.id ? this.props.core.id : 0}
+                title={this.props.metadata && this.props.metadata.title ? this.props.metadata.title : ""}
+                id={this.props.metadata && this.props.metadata.id ? this.props.metadata.id : 0}
                 forkProjectDisabled={forkProjectDisabled}
               />
               <Button
@@ -345,7 +344,7 @@ class ProjectViewHeaderOverview extends Component {
                 className="border-light"
                 disabled={forkProjectDisabled}
                 href={`${this.props.externalUrl}/-/forks`} target="_blank" rel="noreferrer noopener">
-                {system.forks_count}
+                {metadata.forksCount}
               </Button>
             </ButtonGroup>
             <ButtonGroup size="sm" className="ms-1">
@@ -365,13 +364,13 @@ class ProjectViewHeaderOverview extends Component {
                 gitlabIDEUrl={gitlabIDEUrl}
                 userLogged={this.props.user.logged} />
             </ButtonGroup>
-            { this.props.system.tag_list.length > 0 ?
+            { this.props.metadata.tagList.length > 0 ?
               <div className="pt-2">
-                <ProjectTagList tagList={this.props.system.tag_list} />
+                <ProjectTagList tagList={this.props.metadata.tagList} />
               </div>
               : null }
             <div className="pt-1">
-              <TimeCaption key="time-caption" time={this.props.core.last_activity_at} className="text-rk-text"/>
+              <TimeCaption key="time-caption" time={this.props.metadata.lastActivityAt} className="text-rk-text"/>
             </div>
           </Col>
         </Row>
@@ -483,13 +482,13 @@ class ProjectViewReadme extends Component {
         <CardHeader className="bg-white p-3 ps-4">README.md</CardHeader>
         <CardBody style={{ overflow: "auto" }} className="p-4">
           <RenkuMarkdown
-            projectPathWithNamespace = {this.props.core.path_with_namespace}
+            projectPathWithNamespace = {this.props.metadata.pathWithNamespace}
             filePath={""}
             fixRelativePaths={true}
-            branch={this.props.core.default_branch}
+            branch={this.props.metadata.defaultBranch}
             markdownText={this.props.readme.text}
             client={this.props.client}
-            projectId={this.props.core.id}
+            projectId={this.props.metadata.id}
           />
         </CardBody>
       </Card>
@@ -617,7 +616,7 @@ class ProjectDatasetsNav extends Component {
       datasets={this.props.core.datasets}
       datasetsUrl={this.props.datasetsUrl}
       newDatasetUrl={this.props.newDatasetUrl}
-      visibility={this.props.visibility}
+      accessLevel={this.props.metadata.accessLevel}
       graphStatus={this.props.isGraphReady}
     />;
   }
@@ -782,7 +781,7 @@ function ProjectViewDatasets(props) {
     return <Col sm={12}>
       {migrationMessage}
       <EmptyDatasets
-        membership={props.visibility.accessLevel > ACCESS_LEVELS.DEVELOPER}
+        membership={props.metadata.accessLevel > ACCESS_LEVELS.DEVELOPER}
         newDatasetUrl={props.newDatasetUrl}
       />
     </Col>;
@@ -848,7 +847,7 @@ class ProjectViewCollaboration extends Component {
           <ProjectMergeRequestList {...this.props} />} />
         <Route exact path={this.props.issueNewUrl} render={props =>
           <Issue.New {...props} model={this.props.model}
-            projectPathWithNamespace={this.props.core.path_with_namespace}
+            projectPathWithNamespace={this.props.metadata.pathWithNamespace}
             client={this.props.client} />} />
         <Route path={this.props.issueUrl} render={props =>
           <ProjectIssuesList issueIid={props.match.params.issueIid} {...this.props} />} />
@@ -875,7 +874,7 @@ class ProjectIssuesList extends Component {
           externalUrl={this.props.externalUrl}
           collaborationUrl={this.props.collaborationUrl}
           issueNewUrl={this.props.issueNewUrl}
-          projectId={this.props.core.id}
+          projectId={this.props.metadata.id}
           user={this.props.user}
           location={this.props.location}
           thingIid={this.props.issueIid}
@@ -900,7 +899,7 @@ class ProjectMergeRequestList extends Component {
           collaborationUrl={this.props.collaborationUrl}
           externalUrl={this.props.externalUrl}
           listType={collaborationListTypeMap.MREQUESTS}
-          projectId={this.props.core.id}
+          projectId={this.props.metadata.id}
           user={this.props.user}
           location={this.props.location}
           client={this.props.client}
@@ -922,11 +921,11 @@ function ProjectCollaborationFork(props) {
     <Col sm={12} md={10}>
       <ForkProject
         client={props.client}
-        id={props.core.id}
+        id={props.metadata.id}
         history={props.history}
         model={props.model}
         notifications={props.notifications}
-        title={props.core.title}
+        title={props.metadata.title}
         toggleModal={null}
       />
     </Col>
@@ -1052,7 +1051,7 @@ class ProjectShowSession extends Component {
         message={warning}
         model={model}
         notifications={notifications}
-        scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path }}
+        scope={{ namespace: this.props.metadata.namespace, project: this.props.metadata.path }}
         standalone={false}
         urlNewSession={launchNotebookUrl}
       />
@@ -1075,8 +1074,8 @@ class ProjectNotebookServers extends Component {
         message={warning}
         urlNewSession={launchNotebookUrl}
         blockAnonymous={blockAnonymous}
-        scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path,
-          defaultBranch: this.props.core.default_branch }}
+        scope={{ namespace: this.props.metadata.namespace, project: this.props.metadata.path,
+          defaultBranch: this.props.metadata.defaultBranch }}
       />
     );
   }
@@ -1112,8 +1111,8 @@ class ProjectStartNotebookServer extends Component {
         successUrl={notebookServersUrl}
         blockAnonymous={blockAnonymous}
         notifications={notifications}
-        scope={{ namespace: this.props.core.namespace_path, project: this.props.core.project_path,
-          defaultBranch: this.props.core.default_branch }}
+        scope={{ namespace: this.props.metadata.namespace, project: this.props.metadata.path,
+          defaultBranch: this.props.metadata.defaultBranch }}
       />
     );
   }

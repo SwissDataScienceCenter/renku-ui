@@ -90,14 +90,8 @@ const projectSchema = new Schema({
   core: {
     schema: {
       available: { initial: null },
-      created_at: { initial: null, },
-      last_activity_at: { initial: null, },
       id: { initial: null, },
       description: { initial: "no description", mandatory: true },
-      displayId: { initial: "", },
-      title: { initial: "no title", mandatory: true },
-      external_url: { initial: "", },
-      path_with_namespace: { initial: null },
       owner: { initial: null },
     }
   },
@@ -124,12 +118,7 @@ const projectSchema = new Schema({
   },
   system: {
     schema: {
-      tag_list: { schema: [] },
-      star_count: { initial: 0, mandatory: true },
-      forks_count: { initial: 0, mandatory: true },
       forked_from_project: { initial: {} },
-      ssh_url: { initial: "", },
-      http_url: { initial: "", },
       merge_requests: { schema: [], initial: [] },
       branches: { schema: [], initial: [] },
       autosaved: { schema: [], initial: [] },
@@ -310,18 +299,27 @@ const projectGlobalSchema = new Schema({
   },
   metadata: {
     [Prop.SCHEMA]: new Schema({
-      accessLevel: { [Prop.INITIAL]: 0, [Prop.MANDATORY]: true },
-      defaultBranch: { [Prop.INITIAL]: null },
+      avatarUrl: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // avatar_url
+      accessLevel: { [Prop.INITIAL]: 0, [Prop.MANDATORY]: true }, // visibility.access_level
+      createdAt: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true }, // created_at
+      defaultBranch: { [Prop.INITIAL]: null }, // default_branch
+      description: { [Prop.INITIAL]: "" },
       exists: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+      externalUrl: { [Prop.INITIAL]: "" }, // external_url
       forksCount: { [Prop.INITIAL]: null }, // forks_count
+      httpUrl: { [Prop.INITIAL]: "", }, // http_url
       id: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // id
+      lastActivityAt: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true }, // last_activity_at
       namespace: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // namespace.full_path
       owner: { [Prop.INITIAL]: null },
-      path: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // path
+      path: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
       pathWithNamespace: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // path_with_namespace
       repositoryUrl: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // web_url
+      sshUrl: { [Prop.INITIAL]: "", }, // ssh_url
       starCount: { [Prop.INITIAL]: null }, // star_count
-      visibility: { [Prop.INITIAL]: "private", [Prop.MANDATORY]: true },
+      tagList: { [Prop.INITIAL]: [] }, // tag_list
+      title: { [Prop.INITIAL]: "" },
+      visibility: { [Prop.INITIAL]: "private", [Prop.MANDATORY]: true }, // visibility.level
 
       fetched: { [Prop.INITIAL]: null },
       fetching: { [Prop.INITIAL]: false },

@@ -170,25 +170,6 @@ class ProjectModel extends StateModel {
         return standard;
       });
   }
-
-  setTags(client, tags) {
-    this.setUpdating({ system: { tag_list: [true] } });
-    client.setTags(this.get("core.id"), tags)
-      .then(() => { this.fetchProject(client, this.get("core.id")); });
-  }
-
-  setDescription(client, description) {
-    this.setUpdating({ core: { description: true } });
-    client.setDescription(this.get("core.id"), description).then(() => {
-      this.fetchProject(client, this.get("core.id"));
-    });
-  }
-
-  setAvatar(client, avatarFile) {
-    // this.setUpdating({ core: { avatar_url: [true] } });
-    return client.setAvatar(this.get("core.id"), avatarFile)
-      .then(() => { this.fetchProject(client, this.get("core.id")); });
-  }
 }
 
 const FileTreeMixin = {
@@ -267,14 +248,29 @@ const FileTreeMixin = {
   }
 };
 
-const StarMixin = {
+const ProjectAttributesMixin = {
+  setAvatar(client, avatarFile) {
+    // this.setUpdating({ core: { avatar_url: [true] } });
+    return client.setAvatar(this.get("metadata.id"), avatarFile)
+      .then(() => { this.fetchProject(client, this.get("metadata.id")); });
+  },
+  setDescription(client, description) {
+    this.setUpdating({ metadata: { description: true } });
+    client.setDescription(this.get("metadata.id"), description).then(() => {
+      this.fetchProject(client, this.get("metadata.id"));
+    });
+  },
+  setTags(client, tags) {
+    this.setUpdating({ metadata: { tagList: [true] } });
+    client.setTags(this.get("metadata.id"), tags)
+      .then(() => { this.fetchProject(client, this.get("metadata.id")); });
+  },
+  setStars(num) {
+    this.set("metadata.starCount", num);
+  },
   async star(client, starred) {
     return client.starProject(this.get("metadata.id"), starred)
       .then((resp) => resp.data);
-  },
-
-  setStars(num) {
-    this.set("metadata.starCount", num);
   }
 };
 
@@ -363,17 +359,26 @@ class ProjectCoordinator {
     }
     else {
       metadata = {
+        avatarUrl: data.metadata.core.avatar_url,
         accessLevel: data.metadata.visibility.accessLevel, // this is computed in carveProject
+        createdAt: data.metadata.core.created_at,
         defaultBranch: data.metadata.core.default_branch,
+        description: data.metadata.core.description,
         exists: true,
+        externalUrl: data.metadata.core.external_url,
         forksCount: data.all.forks_count,
+        httpUrl: data.metadata.system.http_url,
         id: data.all.id,
+        lastActivityAt: data.metadata.core.last_activity_at,
         namespace: data.all.namespace.full_path,
         owner: data.metadata.core.owner,
         path: data.all.path,
         pathWithNamespace: data.all.path_with_namespace,
         repositoryUrl: data.all.web_url,
+        sshUrl: data.metadata.system.ssh_url,
         starCount: data.all.star_count,
+        tagList: { $set: data.metadata.system.tag_list }, // fix empty tag_list not updating
+        title: data.metadata.core.title,
         visibility: data.metadata.visibility.level, // this is computed in carveProject
 
         fetched: new Date(),
@@ -582,6 +587,6 @@ class ProjectCoordinator {
 }
 
 Object.assign(ProjectCoordinator.prototype, FileTreeMixin);
-Object.assign(ProjectCoordinator.prototype, StarMixin);
+Object.assign(ProjectCoordinator.prototype, ProjectAttributesMixin);
 
 export { ProjectModel, GraphIndexingStatus, ProjectCoordinator, MigrationStatus };
