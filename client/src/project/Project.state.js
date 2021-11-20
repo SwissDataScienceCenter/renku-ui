@@ -274,6 +274,94 @@ const ProjectAttributesMixin = {
   }
 };
 
+const RepoMixin = {
+  async fetchBranches(client) {
+    if (this.get("branches.fetching") === SpecialPropVal.UPDATING)
+      return;
+    this.setUpdating({ branches: { fetching: true } });
+    let standard = [], autosaved = [], date = null, error = null;
+    try {
+      const resp = await client.getBranches(this.get("metadata.id"));
+      if (resp.data) {
+        const data = resp.data;
+        error = resp.error;
+        date = new Date();
+        // split away autosaved branches and add external url
+        ({ standard, autosaved } = splitAutosavedBranches(data));
+        const externalUrl = this.get("metadata.externalUrl");
+        autosaved.map(branch => {
+          const url = `${externalUrl}/tree/${branch.name}`;
+          branch.autosave.url = url;
+          return branch;
+        });
+      }
+    }
+    catch (e) {
+      error = e;
+    }
+
+    const branches = {
+      fetching: false,
+      fetched: date,
+      standard,
+      autosaved,
+      error: error
+    };
+    this.model.setObject({
+      branches: { $set: branches },
+    });
+
+    return standard;
+  },
+  async fetchCommits(customFilters = null) {
+    const projectId = this.model.get("metadata.id");
+    if (!projectId)
+      return {};
+    const branch = customFilters ?
+      customFilters.branch :
+      this.model.get("filters.branch.name");
+
+    // start fetching
+    this.model.set("commits.fetching", true);
+    let response = null, date = null, commits = [], error = null;
+    try {
+      response = await this.client.getCommits(projectId, branch);
+      if (response.data)
+        commits = response.data;
+      error = response.error;
+      date = new Date();
+    }
+    catch (commitsError) {
+      error = commitsError;
+    }
+
+    if (error && this.notifications) {
+      // Add warning when something fails. It's not needed when the problem is the commits number.
+      const errorMex = error.message ?
+        error.message :
+        JSON.stringify(error);
+      if (!errorMex.startsWith("Cannot iterate more than")) {
+        const projectName = this.model.get("metadata.pathWithNamespace");
+        this.notifications.addWarning(
+          this.notifications.Topics.PROJECT_API,
+          "There was an error while fetching the project commits.",
+          null, null, [],
+            `Error for branch "${branch}" on project "${projectName}": ${errorMex}`
+        );
+      }
+    }
+    this.model.setObject({
+      commits: {
+        fetching: false,
+        fetched: date,
+        list: { $set: commits },
+        error: error
+      }
+    });
+    return commits;
+  }
+};
+
 
 function metadataFromData(data) {
   if (!data) return {};
@@ -425,54 +513,6 @@ class ProjectCoordinator {
     return metadata;
   }
 
-  async fetchCommits(customFilters = null) {
-    const projectId = this.model.get("metadata.id");
-    if (!projectId)
-      return {};
-    const branch = customFilters ?
-      customFilters.branch :
-      this.model.get("filters.branch.name");
-
-    // start fetching
-    this.model.set("commits.fetching", true);
-    let response = null, date = null, commits = [], error = null;
-    try {
-      response = await this.client.getCommits(projectId, branch);
-      if (response.data)
-        commits = response.data;
-      error = response.error;
-      date = new Date();
-    }
-    catch (commitsError) {
-      error = commitsError;
-    }
-
-    if (error && this.notifications) {
-      // Add warning when something fails. It's not needed when the problem is the commits number.
-      const errorMex = error.message ?
-        error.message :
-        JSON.stringify(error);
-      if (!errorMex.startsWith("Cannot iterate more than")) {
-        const projectName = this.model.get("metadata.pathWithNamespace");
-        this.notifications.addWarning(
-          this.notifications.Topics.PROJECT_API,
-          "There was an error while fetching the project commits.",
-          null, null, [],
-          `Error for branch "${branch}" on project "${projectName}": ${errorMex}`
-        );
-      }
-    }
-    this.model.setObject({
-      commits: {
-        fetching: false,
-        fetched: date,
-        list: { $set: commits },
-        error: error
-      }
-    });
-    return commits;
-  }
-
   fetchGraphStatus(client) {
     return client.checkGraphStatus(this.get("metadata.id"))
       .then((resp) => {
@@ -596,5 +636,7 @@ class ProjectCoordinator {
 
 Object.assign(ProjectCoordinator.prototype, FileTreeMixin);
 Object.assign(ProjectCoordinator.prototype, ProjectAttributesMixin);
+Object.assign(ProjectCoordinator.prototype, RepoMixin);
+
 
 export { ProjectModel, GraphIndexingStatus, ProjectCoordinator, MigrationStatus };

@@ -573,7 +573,7 @@ class ProjectViewOverview extends Component {
             <Route exact path={this.props.statsUrl} render={props =>
               <ProjectOverviewStats
                 projectCoordinator={projectCoordinator}
-                branches={this.props.system.branches}
+                branches={this.props.branches.standard}
               />
             }
             />
@@ -1078,7 +1078,7 @@ class ProjectNotebookServers extends Component {
 class ProjectStartNotebookServer extends Component {
   render() {
     const {
-      client, model, user, visibility, forkUrl, externalUrl, system, location,
+      branches, client, model, user, visibility, forkUrl, externalUrl, location,
       fetchBranches, notebookServersUrl, history, blockAnonymous, notifications
     } = this.props;
     const warning = notebookWarning(
@@ -1098,8 +1098,9 @@ class ProjectStartNotebookServer extends Component {
     return (
       <StartNotebookServer client={client} model={model} history={history} location={locationEnhanced}
         message={warning}
-        branches={system.branches}
-        autosaved={system.autosaved}
+        branches={branches.standard}
+        autosaved={branches.autosaved}
+        fetchingBranches={branches.fetching}
         refreshBranches={fetchBranches}
         externalUrl={externalUrl}
         successUrl={notebookServersUrl}

@@ -1059,7 +1059,7 @@ class StartNotebookServer extends Component {
       return (<StartNotebookAutostart {...this.props} />);
 
     const fetching = {
-      branches: StatusHelper.isUpdating(branches) ? true : false,
+      branches: StatusHelper.isUpdating(branches),
       pipelines: pipelines.fetching,
       commits: this.props.data.fetching
     };

@@ -318,11 +318,13 @@ class StartNotebookServer extends Component {
   componentDidUpdate(previousProps) {
     // TODO: temporary fix to prevent issue with component rerendered multiple times at the first url load
     if (this.state.first &&
-      StatusHelper.isUpdating(previousProps.branches) &&
-      !StatusHelper.isUpdating(this.props.branches)) {
+      StatusHelper.isUpdating(previousProps.fetchingBranches) &&
+      !StatusHelper.isUpdating(this.props.fetchingBranches)) {
       this.setState({ first: false });
       if (this._isMounted)
-        this.selectBranch();
+        this.refreshBranches();
+      this.selectBranch();
+
 
     }
   }

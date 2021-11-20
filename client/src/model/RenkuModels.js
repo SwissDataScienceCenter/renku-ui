@@ -251,8 +251,15 @@ const projectStatisticsSchema = new Schema({
 });
 
 const projectGlobalSchema = new Schema({
-  autosaved: { [Prop.INITIAL]: [] },
-  branches: { [Prop.INITIAL]: [] },
+  branches: {
+    [Prop.SCHEMA]: new Schema({
+      standard: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
+      autosaved: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
+      error: { [Prop.INITIAL]: null },
+      fetched: { [Prop.INITIAL]: null },
+      fetching: { [Prop.INITIAL]: false },
+    })
+  },
   commits: {
     [Prop.SCHEMA]: new Schema({
       list: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },

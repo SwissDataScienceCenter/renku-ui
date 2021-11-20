@@ -215,16 +215,16 @@ class View extends Component {
       this.projectCoordinator.fetchProject(this.props.client, pathComponents.projectPathWithNamespace);
     projectData.then(data => {
       this.projectState.setProjectData(data, true);
-      this.projectCoordinator.fetchCommits();
-      // TODO: move fetchBranches to projectCoordinator. We should fetch commits after we know the default branch
+      // TODO: We should fetch commits after we know the default branch
       this.fetchBranches();
+      this.projectCoordinator.fetchCommits();
     });
 
     return projectData;
   }
   async fetchReadme() { return this.projectCoordinator.fetchReadme(this.props.client); }
   async fetchModifiedFiles() { return this.projectCoordinator.fetchModifiedFiles(this.props.client); }
-  async fetchBranches() { return this.projectState.fetchBranches(this.props.client); }
+  async fetchBranches() { return this.projectCoordinator.fetchBranches(this.props.client); }
   async createGraphWebhook() { return this.projectCoordinator.createGraphWebhook(this.props.client); }
   async fetchGraphWebhook() { this.projectCoordinator.fetchGraphWebhook(this.props.client, this.props.user); }
   async fetchProjectFilesTree() {
@@ -371,8 +371,8 @@ class View extends Component {
       ...ownProps, projectId, accessLevel, externalUrl, filesTree, projectPathWithNamespace, datasets
     };
     const branches = {
-      all: this.projectState.get("system.branches"),
-      fetch: () => { this.fetchBranches(); }
+      all: this.projectCoordinator.get("branches"),
+      fetch: () => { this.projectCoordinator.fetchBranches(); }
     };
 
     const pathComponents = splitProjectSubRoute(this.props.match.url);
@@ -592,7 +592,7 @@ class View extends Component {
       return this.fetchGraphStatus();
     },
     fetchBranches: () => {
-      return this.fetchBranches();
+      return this.projectCoordinator.fetchBranches();
     },
     onMigrateProject: (params) => {
       return this.migrateProject(params);
