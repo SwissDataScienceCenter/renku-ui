@@ -275,7 +275,8 @@ const ProjectAttributesMixin = {
 };
 
 const RepoMixin = {
-  async fetchBranches(client) {
+  async fetchBranches() {
+    const client = this.client;
     if (this.get("branches.fetching") === SpecialPropVal.UPDATING)
       return;
     this.setUpdating({ branches: { fetching: true } });

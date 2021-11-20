@@ -279,7 +279,12 @@ class StartNotebookServer extends Component {
       false;
     this.state = {
       autostartReady: false,
-      autostartTried: false
+      autostartTried: false,
+      first: true,
+      ignorePipeline: null,
+      launchError: null,
+      showAdvanced: false,
+      starting: false
     };
 
     this.handlers = {
@@ -288,16 +293,12 @@ class StartNotebookServer extends Component {
       reTriggerPipeline: this.reTriggerPipeline.bind(this),
       setBranch: this.selectBranch.bind(this),
       setCommit: this.selectCommit.bind(this),
-      toggleMergedBranches: this.toggleMergedBranches.bind(this),
+      setIgnorePipeline: this.setIgnorePipeline.bind(this),
       setDisplayedCommits: this.setDisplayedCommits.bind(this),
       setServerOption: this.setServerOptionFromEvent.bind(this),
-      startServer: this.startServer.bind(this)
-    };
-
-    this.state = {
-      first: true,
-      starting: false,
-      launchError: null
+      startServer: this.startServer.bind(this),
+      toggleMergedBranches: this.toggleMergedBranches.bind(this),
+      toggleShowAdvanced: this.toggleShowAdvanced.bind(this)
     };
   }
 
@@ -329,14 +330,21 @@ class StartNotebookServer extends Component {
     }
   }
 
+  toggleShowAdvanced() {
+    this.setState({ showAdvanced: !this.state.showAdvanced });
+  }
+
+  setIgnorePipeline(value) {
+    this.setState({ ignorePipeline: value });
+  }
+
   async refreshBranches() {
     if (this._isMounted) {
-      if (StatusHelper.isUpdating(this.props.branches))
+      if (StatusHelper.isUpdating(this.props.fetchingBranches))
         return;
       await this.props.refreshBranches();
       if (this._isMounted && this.state.first)
         this.selectBranch();
-
     }
   }
 
@@ -460,6 +468,7 @@ class StartNotebookServer extends Component {
                 errorMessage: `The session could not start because the image is still building.
                 Please wait for the build to finish, or start the session with the base image.`
               },
+              showAdvanced: true,
               starting: false
             });
           }
@@ -476,6 +485,7 @@ class StartNotebookServer extends Component {
                 errorMessage: `The session could not start because no image is available.
                 Please select a different commit or start the session with the base image.`
               },
+              showAdvanced: true,
               starting: false
             });
           }
@@ -614,6 +624,8 @@ class StartNotebookServer extends Component {
       justStarted={this.state.starting}
       autoStarting={this.autostart && !this.state.autostartTried}
       launchError={this.state.launchError}
+      ignorePipeline={this.state.ignorePipeline}
+      showAdvanced={this.state.showAdvanced}
     />;
   }
 }

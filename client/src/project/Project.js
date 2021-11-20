@@ -224,7 +224,7 @@ class View extends Component {
   }
   async fetchReadme() { return this.projectCoordinator.fetchReadme(this.props.client); }
   async fetchModifiedFiles() { return this.projectCoordinator.fetchModifiedFiles(this.props.client); }
-  async fetchBranches() { return this.projectCoordinator.fetchBranches(this.props.client); }
+  async fetchBranches() { return this.projectCoordinator.fetchBranches(); }
   async createGraphWebhook() { return this.projectCoordinator.createGraphWebhook(this.props.client); }
   async fetchGraphWebhook() { this.projectCoordinator.fetchGraphWebhook(this.props.client, this.props.user); }
   async fetchProjectFilesTree() {

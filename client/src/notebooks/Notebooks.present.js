@@ -1032,34 +1032,23 @@ class EnvironmentLogs extends Component {
 
 // * StartNotebookServer code * //
 class StartNotebookServer extends Component {
-  constructor(props) {
-    super(props);
-    // show advanced if there was an error
-    const initialShowAdvanced = props.launchError != null;
-    this.state = {
-      ignorePipeline: null,
-      showAdvanced: initialShowAdvanced
-    };
-  }
-
   toggleShowAdvanced() {
-    this.setState({ showAdvanced: !this.state.showAdvanced });
+    this.props.handlers.toggleShowAdvanced();
   }
 
   setIgnorePipeline(value) {
-    this.setState({ ignorePipeline: value });
+    this.props.handlers.setIgnorePipeline(value);
   }
 
   render() {
     const { branch, commit } = this.props.filters;
-    const { branches } = this.props.data;
     const { autoStarting, pipelines, message } = this.props;
 
     if (autoStarting)
       return (<StartNotebookAutostart {...this.props} />);
 
     const fetching = {
-      branches: StatusHelper.isUpdating(branches),
+      branches: StatusHelper.isUpdating(this.props.fetchingBranches) ? true : false,
       pipelines: pipelines.fetching,
       commits: this.props.data.fetching
     };
@@ -1074,7 +1063,7 @@ class StartNotebookServer extends Component {
       null;
     const disabled = fetching.branches || fetching.commits;
 
-    const buttonMessage = this.state.showAdvanced ?
+    const buttonMessage = this.props.showAdvanced ?
       "Hide branch, commit, and image settings" :
       "Do you want to select the branch, commit, or image?";
 
@@ -1087,11 +1076,11 @@ class StartNotebookServer extends Component {
             pipelines={this.props.pipelines} />
           {messageOutput}
           <Form>
-            <Collapse isOpen={this.state.showAdvanced}>
+            <Collapse isOpen={this.props.showAdvanced}>
               <StartNotebookBranches {...this.props} disabled={disabled} />
               {show.commits ? <StartNotebookCommits {...this.props} disabled={disabled} /> : null}
               {show.pipelines ? <StartNotebookPipelines {...this.props}
-                ignorePipeline={this.state.ignorePipeline}
+                ignorePipeline={this.props.ignorePipeline}
                 setIgnorePipeline={this.setIgnorePipeline.bind(this)} /> : null}
             </Collapse>
 
@@ -1107,9 +1096,9 @@ class StartNotebookServer extends Component {
             {show.options ?
               <StartNotebookOptions
                 toggleShowAdvanced={this.toggleShowAdvanced.bind(this)}
-                showAdvanced={this.state.showAdvanced}
+                showAdvanced={this.props.showAdvanced}
                 {...this.props} /> :
-              !this.state.showAdvanced ?
+              !this.props.showAdvanced ?
                 <Loader /> :
                 null
             }
@@ -1161,7 +1150,7 @@ class StartNotebookBranches extends Component {
     const { branches } = this.props.data;
     const { disabled } = this.props;
     let content;
-    if (StatusHelper.isUpdating(branches)) {
+    if (StatusHelper.isUpdating(this.props.fetchingBranches)) {
       content = (
         <Label>Updating branches... <Loader size="14" inline="true" /></Label>
       );
