@@ -1031,82 +1031,74 @@ class EnvironmentLogs extends Component {
 
 
 // * StartNotebookServer code * //
-class StartNotebookServer extends Component {
-  toggleShowAdvanced() {
-    this.props.handlers.toggleShowAdvanced();
-  }
+function StartNotebookServer(props) {
+  const toggleShowAdvanced = props.handlers.toggleShowAdvanced;
+  const setIgnorePipeline = props.handlers.setIgnorePipeline;
+  const { branch, commit } = props.filters;
+  const { autoStarting, pipelines, message } = props;
 
-  setIgnorePipeline(value) {
-    this.props.handlers.setIgnorePipeline(value);
-  }
+  if (autoStarting)
+    return (<StartNotebookAutostart {...props} />);
 
-  render() {
-    const { branch, commit } = this.props.filters;
-    const { autoStarting, pipelines, message } = this.props;
+  const fetching = {
+    branches: StatusHelper.isUpdating(props.fetchingBranches) ? true : false,
+    pipelines: pipelines.fetching,
+    commits: props.data.fetching
+  };
 
-    if (autoStarting)
-      return (<StartNotebookAutostart {...this.props} />);
+  let show = {};
+  show.commits = !fetching.branches && branch.name ? true : false;
+  show.pipelines = show.commits && !fetching.commits && commit && commit.id;
+  show.options = show.pipelines && pipelines.fetched;
 
-    const fetching = {
-      branches: StatusHelper.isUpdating(this.props.fetchingBranches) ? true : false,
-      pipelines: pipelines.fetching,
-      commits: this.props.data.fetching
-    };
+  const messageOutput = message ?
+    (<div key="message">{message}</div>) :
+    null;
+  const disabled = fetching.branches || fetching.commits;
 
-    let show = {};
-    show.commits = !fetching.branches && branch.name ? true : false;
-    show.pipelines = show.commits && !fetching.commits && commit && commit.id;
-    show.options = show.pipelines && pipelines.fetched;
+  const buttonMessage = props.showAdvanced ?
+    "Hide branch, commit, and image settings" :
+    "Do you want to select the branch, commit, or image?";
 
-    const messageOutput = message ?
-      (<div key="message">{message}</div>) :
-      null;
-    const disabled = fetching.branches || fetching.commits;
+  return (
+    <Row>
+      <Col sm={12} md={10} lg={8}>
+        <h3>Start a new session</h3>
+        <LaunchErrorAlert key="launch-error"
+          launchError={props.launchError}
+          pipelines={props.pipelines} />
+        {messageOutput}
+        <Form>
+          <Collapse isOpen={props.showAdvanced}>
+            <StartNotebookBranches {...props} disabled={disabled} />
+            {show.commits ? <StartNotebookCommits {...props} disabled={disabled} /> : null}
+            {show.pipelines ? <StartNotebookPipelines {...props}
+              ignorePipeline={props.ignorePipeline}
+              setIgnorePipeline={setIgnorePipeline} /> : null}
+          </Collapse>
 
-    const buttonMessage = this.props.showAdvanced ?
-      "Hide branch, commit, and image settings" :
-      "Do you want to select the branch, commit, or image?";
-
-    return (
-      <Row>
-        <Col sm={12} md={10} lg={8}>
-          <h3>Start a new session</h3>
-          <LaunchErrorAlert key="launch-error"
-            launchError={this.props.launchError}
-            pipelines={this.props.pipelines} />
-          {messageOutput}
-          <Form>
-            <Collapse isOpen={this.props.showAdvanced}>
-              <StartNotebookBranches {...this.props} disabled={disabled} />
-              {show.commits ? <StartNotebookCommits {...this.props} disabled={disabled} /> : null}
-              {show.pipelines ? <StartNotebookPipelines {...this.props}
-                ignorePipeline={this.props.ignorePipeline}
-                setIgnorePipeline={this.setIgnorePipeline.bind(this)} /> : null}
-            </Collapse>
-
-            {show.options ?
-              (<FormGroup>
-                <Button color="link" className="ps-0 pe-0 pt-2 font-italic btn-sm"
-                  onClick={() => { this.toggleShowAdvanced(); }}>
-                  {buttonMessage}
-                </Button>
-              </FormGroup>) :
+          {show.options ?
+            (<FormGroup>
+              <Button color="link" className="ps-0 pe-0 pt-2 font-italic btn-sm"
+                onClick={() => { toggleShowAdvanced() }}>
+                {buttonMessage}
+              </Button>
+            </FormGroup>) :
+            null
+          }
+          {show.options ?
+            <StartNotebookOptions
+              toggleShowAdvanced={toggleShowAdvanced}
+              showAdvanced={props.showAdvanced}
+              {...props} /> :
+            !props.showAdvanced ?
+              <Loader /> :
               null
-            }
-            {show.options ?
-              <StartNotebookOptions
-                toggleShowAdvanced={this.toggleShowAdvanced.bind(this)}
-                showAdvanced={this.props.showAdvanced}
-                {...this.props} /> :
-              !this.props.showAdvanced ?
-                <Loader /> :
-                null
-            }
-          </Form>
-        </Col>
-      </Row>
-    );
-  }
+          }
+        </Form>
+      </Col>
+    </Row>
+  );
 }
 
 function StartNotebookAutostart(props) {

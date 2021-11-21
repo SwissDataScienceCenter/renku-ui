@@ -588,25 +588,24 @@ class StartNotebookServer extends Component {
     return branches.filter(branch => branch.autosave.username === username);
   }
 
-  mapStateToProps(state, ownProps) {
-    const username = state.user.logged ?
-      state.user.data.username :
+  propsToChildProps() {
+    const username = this.props.user.logged ?
+      this.props.user.data.username :
       null;
-    const ownAutosaved = this.filterAutosavedBranches([...ownProps.inherited.autosaved], username);
+    const ownAutosaved = this.filterAutosavedBranches([...this.props.autosaved], username);
     const augmentedState = {
-      ...state.notebooks,
+      ...this.props.notebooks,
       data: {
-        fetched: state.project.commits.fetched,
-        fetching: state.project.commits.fetching,
-        commits: state.project.commits.list,
-        branches: ownProps.inherited.branches,
+        fetched: this.props.project.commits.fetched,
+        fetching: this.props.project.commits.fetching,
+        commits: this.props.project.commits.list,
+        branches: this.props.branches,
         autosaved: ownAutosaved
       },
-      externalUrl: ownProps.inherited.externalUrl
+      externalUrl: this.props.externalUrl
     };
     return {
       handlers: this.handlers,
-      store: ownProps.store, // adds store and other props manually added to <ConnectedStartNotebookServer />
       ...augmentedState
     };
   }
@@ -615,10 +614,7 @@ class StartNotebookServer extends Component {
     if (this.props.blockAnonymous)
       return <NotebooksDisabled location={this.props.location} />;
 
-    const ConnectedStartNotebookServer = connect(this.mapStateToProps.bind(this))(StartNotebookServerPresent);
-
-    return <ConnectedStartNotebookServer
-      store={this.model.reduxStore}
+    return <StartNotebookServerPresent
       inherited={this.props}
       message={this.props.message}
       justStarted={this.state.starting}
@@ -626,6 +622,7 @@ class StartNotebookServer extends Component {
       launchError={this.state.launchError}
       ignorePipeline={this.state.ignorePipeline}
       showAdvanced={this.state.showAdvanced}
+      {...this.propsToChildProps()}
     />;
   }
 }

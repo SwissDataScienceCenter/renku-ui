@@ -142,34 +142,6 @@ class ProjectModel extends StateModel {
         this.setObject({ core: updatedState });
       });
   }
-
-  // TODO: migrate branches to ProjectCoordinator and use a pattern similar to fetchCommits
-  fetchBranches(client) {
-    const branches = this.get("system.branches");
-    if (branches === SpecialPropVal.UPDATING)
-      return;
-    this.setUpdating({ system: { branches: true } });
-    return client.getBranches(this.get("core.id"))
-      .then(resp => resp.data)
-      .then(data => {
-        // split away autosaved branches and add external url
-        const { standard, autosaved } = splitAutosavedBranches(data);
-        const externalUrl = this.get("core.external_url");
-        const autosavedUrl = autosaved.map(branch => {
-          const url = `${externalUrl}/tree/${branch.name}`;
-          branch.autosave.url = url;
-          return branch;
-        });
-        this.setObject({
-          system: {
-            branches: { $set: standard },
-            autosaved: { $set: autosavedUrl }
-          }
-        });
-
-        return standard;
-      });
-  }
 }
 
 const FileTreeMixin = {

@@ -632,7 +632,6 @@ class View extends Component {
     const props = {
       ...this.props,
       ...this.eventHandlers,
-      store: this.props.model.reduxStore,
       projectCoordinator: this.projectCoordinator
     };
     return <ConnectedProjectView {...props} />;
@@ -695,10 +694,9 @@ function withProjectMapped(MappingComponent, features = [], passProps = true) {
       const projectCoordinator = this.props.projectCoordinator;
       const mapFunction = mapProjectFeatures(projectCoordinator, features);
       const MappedComponent = connect(mapFunction.bind(this))(MappingComponent);
-      const store = projectCoordinator.model.reduxStore;
       const props = passProps ? this.props : {};
 
-      return (<MappedComponent store={store} {...props} />);
+      return (<MappedComponent projectCoordinator={projectCoordinator} {...props} />);
     }
   };
 }

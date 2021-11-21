@@ -1079,7 +1079,8 @@ class ProjectStartNotebookServer extends Component {
   render() {
     const {
       branches, client, model, user, visibility, forkUrl, externalUrl, location,
-      fetchBranches, notebookServersUrl, history, blockAnonymous, notifications
+      fetchBranches, notebookServersUrl, history, blockAnonymous, notifications,
+      projectCoordinator
     } = this.props;
     const warning = notebookWarning(
       user.logged, visibility.accessLevel, forkUrl, location.pathname, externalUrl
@@ -1105,9 +1106,13 @@ class ProjectStartNotebookServer extends Component {
         externalUrl={externalUrl}
         successUrl={notebookServersUrl}
         blockAnonymous={blockAnonymous}
+        notebooks={projectCoordinator.model.baseModel.get("notebooks")}
         notifications={notifications}
+        project={projectCoordinator.get()}
+        projectCoordinator={projectCoordinator}
         scope={{ namespace: this.props.metadata.namespace, project: this.props.metadata.path,
           defaultBranch: this.props.metadata.defaultBranch }}
+        user={this.props.user}
       />
     );
   }
