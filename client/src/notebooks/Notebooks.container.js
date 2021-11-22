@@ -45,6 +45,30 @@ import { Url } from "../utils/url";
  * @param {Object} [location] - react location object
  * @param {Object} [history] - react history object
  */
+
+function mapSessionStateToProps(state, ownProps) {
+  const notebooks = state.notebooks.notebooks;
+  const available = notebooks.all[ownProps.target] ?
+    true :
+    false;
+  const notebook = {
+    available,
+    fetched: notebooks.fetched,
+    fetching: notebooks.fetching,
+    data: available ?
+      notebooks.all[ownProps.target] :
+      {},
+    logs: state.notebooks.logs
+  };
+  return {
+    handlers: ownProps.handlers,
+    target: ownProps.target,
+    filters: state.notebooks.filters,
+    notebook
+  };
+}
+
+const ShowSessionMapped = connect(mapSessionStateToProps)(ShowSessionPresent);
 class ShowSession extends Component {
   constructor(props) {
     super(props);
@@ -96,41 +120,29 @@ class ShowSession extends Component {
     return this.coordinator.fetchLogs(serverName, full);
   }
 
-  mapStateToProps(state, ownProps) {
-    const notebooks = state.notebooks.notebooks;
-    const available = notebooks.all[this.target] ?
-      true :
-      false;
-    const notebook = {
-      available,
-      fetched: notebooks.fetched,
-      fetching: notebooks.fetching,
-      data: available ?
-        notebooks.all[this.target] :
-        {},
-      logs: state.notebooks.logs
-    };
-    return {
-      handlers: this.handlers,
-      target: this.target,
-      filters: state.notebooks.filters,
-      notebook
-    };
-  }
-
-
   render() {
     if (this.props.blockAnonymous)
       return <NotebooksDisabled location={this.props.location} />;
 
-    const ShowSessionMapped = connect(this.mapStateToProps.bind(this))(ShowSessionPresent);
     return (
       <ShowSessionMapped
+        target={this.target}
+        handlers={this.handlers}
         store={this.model.reduxStore}
       />
     );
   }
 }
+
+function mapSessionListStateToProps(state, ownProps) {
+  return {
+    handlers: ownProps.handlers,
+    ...state.notebooks,
+    logs: { ...state.notebooks.logs, show: ownProps.showingLogs }
+  };
+}
+
+const VisibleNotebooks = connect(mapSessionListStateToProps)(NotebooksPresent);
 
 /**
  * Display the list of Notebook servers
@@ -212,27 +224,19 @@ class Notebooks extends Component {
       this.fetchLogs(serverName);
   }
 
-  mapStateToProps(state, ownProps) {
-    return {
-      handlers: this.handlers,
-      ...state.notebooks,
-      logs: { ...state.notebooks.logs, show: this.state.showingLogs }
-    };
-  }
-
   render() {
     if (this.props.blockAnonymous)
       return <NotebooksDisabled location={this.props.location} />;
 
-    const VisibleNotebooks = connect(this.mapStateToProps.bind(this))(NotebooksPresent);
-
     return <VisibleNotebooks
-      store={this.model.reduxStore}
-      user={this.props.user}
-      standalone={this.props.standalone ? this.props.standalone : false}
-      scope={this.props.scope}
+      handlers={this.handlers}
+      showingLogs={this.state.showingLogs}
       message={this.props.message}
+      scope={this.props.scope}
+      store={this.model.reduxStore}
+      standalone={this.props.standalone ? this.props.standalone : false}
       urlNewSession={this.props.urlNewSession}
+      user={this.props.user}
     />;
   }
 }
@@ -627,6 +631,23 @@ class StartNotebookServer extends Component {
   }
 }
 
+function mapNotebookStatusStateToProps(state, ownProps) {
+  const subState = state.notebooks;
+
+  const notebookKeys = Object.keys(subState.notebooks.all);
+  const notebook = notebookKeys.length > 0 ?
+    subState.notebooks.all[notebookKeys] :
+    null;
+
+  return {
+    fetched: subState.notebooks.fetched,
+    fetching: subState.notebooks.fetching,
+    notebook
+  };
+}
+
+const VisibleNotebookIcon = connect(mapNotebookStatusStateToProps)(CheckNotebookIcon);
+
 /**
  * Display the connect to Jupyter icon
  *
@@ -697,8 +718,6 @@ class CheckNotebookStatus extends Component {
   }
 
   render() {
-    const VisibleNotebookIcon = connect(this.mapStateToProps.bind(this))(CheckNotebookIcon);
-
     return (<VisibleNotebookIcon store={this.model.reduxStore} {...this.props} />);
   }
 }
