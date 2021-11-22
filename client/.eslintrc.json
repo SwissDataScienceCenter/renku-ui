@@ -216,6 +216,7 @@
           "nullable",
           "papermill",
           "pathname",
+          "pdfjs",
           "poller",
           "popups",
           "prepend",
