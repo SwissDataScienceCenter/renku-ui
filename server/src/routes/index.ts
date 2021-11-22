@@ -26,9 +26,9 @@ import { Authenticator } from "../authentication";
 function register(app: express.Application, prefix: string, authenticator: Authenticator): void {
   registerInternalRoutes(app, authenticator);
 
-  // This is only for test, it's not reachable from outside
+  // Testing ingress
   app.get(prefix, (req, res) => {
-    res.send("Hello ingress!");
+    res.send("UI server up and running");
   });
 
   registerApiRoutes(app, prefix + config.routes.api, authenticator);
