@@ -602,7 +602,7 @@ class ProjectViewOverview extends Component {
 class ProjectDatasetsNav extends Component {
 
   render() {
-    const allDatasets = this.props.datasets.datasets || [];
+    const allDatasets = this.props.datasets.core.datasets || [];
 
     if (allDatasets.length === 0)
       return null;
@@ -772,7 +772,7 @@ function ProjectViewDatasets(props) {
     </Col>;
   }
 
-  if (!loading && props.datasets.core != null && props.datasets.core.length === 0
+  if (!loading && props.datasets.core.datasets != null && props.datasets.core.datasets.length === 0
     && props.location.pathname !== props.newDatasetUrl) {
     return <Col sm={12}>
       {migrationMessage}

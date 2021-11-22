@@ -354,7 +354,7 @@ class View extends Component {
     const httpProjectUrl = this.projectCoordinator.get("metadata.httpUrl");
     const updateProjectView = this.forceUpdate.bind(this);
     const filesTree = this.projectCoordinator.get("filesTree");
-    const datasets = this.projectCoordinator.get("datasets.core");
+    const datasets = this.projectCoordinator.get("datasets.core.datasets");
     const graphProgress = this.projectCoordinator.get("webhook.progress");
     const maintainer = accessLevel >= ACCESS_LEVELS.MAINTAINER ?
       true :

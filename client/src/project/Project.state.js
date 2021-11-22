@@ -168,7 +168,7 @@ const DatasetsMixin = {
     return client.listProjectDatasetsFromCoreService(this.get("metadata.httpUrl"), this.get("metadata.id"))
       .then(response => {
         let responseDs = response.data.error ? response.data : response.data.result.datasets;
-        const updatedState = { core: { datasets: { $set: responseDs } }, transient: { requests: { datasets: false } } };
+        const updatedState = { core: { $set: { datasets: responseDs } }, transient: { requests: { datasets: false } } };
         this.setObject({ datasets: updatedState });
         return responseDs;
       })
