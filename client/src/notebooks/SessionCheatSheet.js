@@ -72,7 +72,7 @@ function RunningAndTrackingCommands() {
       </div>
     </CommandsRow>
     <CommandsRow>
-      <CommandDesc command="renku run <command> [--input <in_file> …] [--output <out_file> …]"
+      <CommandDesc command="renku run --name <name> <command> [--input <in_file> …] [--output <out_file> …]"
         desc={desc}/>
     </CommandsRow>
   </Fragment>;
