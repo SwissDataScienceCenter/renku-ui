@@ -1080,7 +1080,7 @@ function StartNotebookServer(props) {
           {show.options ?
             (<FormGroup>
               <Button color="link" className="ps-0 pe-0 pt-2 font-italic btn-sm"
-                onClick={() => { toggleShowAdvanced() }}>
+                onClick={() => { toggleShowAdvanced(); }}>
                 {buttonMessage}
               </Button>
             </FormGroup>) :

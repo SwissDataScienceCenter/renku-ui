@@ -397,7 +397,9 @@ function StartSessionButton(props) {
   );
 }
 
-function isForkedFromProject(forkedFromProject) { return forkedFromProject && Object.keys(forkedFromProject).length > 0; }
+function isForkedFromProject(forkedFromProject) {
+  return forkedFromProject && Object.keys(forkedFromProject).length > 0;
+}
 
 function ForkedFromLink({ forkedFromProject, projectsUrl }) {
   if (!isForkedFromProject(forkedFromProject)) return null;

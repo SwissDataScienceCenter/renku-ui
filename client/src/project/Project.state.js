@@ -173,7 +173,10 @@ const DatasetsMixin = {
         return responseDs;
       })
       .catch(err => {
-        const updatedState = { core: { datasets: null, error: { $set: err } }, transient: { requests: { datasets: false } } };
+        const updatedState = {
+          core: { datasets: null, error: { $set: err } },
+          transient: { requests: { datasets: false } }
+        };
         this.setObject({ datasets: updatedState });
       });
   }
