@@ -25,6 +25,7 @@
 
 import React from "react";
 import ReactDOM from "react-dom";
+import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
 import { createMemoryHistory } from "history";
 
@@ -53,9 +54,11 @@ describe("rendering", () => {
       ...props
     };
     ReactDOM.render(
-      <MemoryRouter>
-        <ProjectOverviewCommits {...allProps} />
-      </MemoryRouter>,
+      <Provider store={model.reduxStore}>
+        <MemoryRouter>
+          <ProjectOverviewCommits {...allProps} />
+        </MemoryRouter>
+      </Provider>,
       div);
   });
 
@@ -67,9 +70,11 @@ describe("rendering", () => {
       ...props
     };
     ReactDOM.render(
-      <MemoryRouter>
-        <ProjectOverviewStats {...allProps} />
-      </MemoryRouter>,
+      <Provider store={model.reduxStore}>
+        <MemoryRouter>
+          <ProjectOverviewStats {...allProps} />
+        </MemoryRouter>
+      </Provider>,
       div);
   });
 });
