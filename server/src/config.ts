@@ -23,6 +23,7 @@ const SERVER = {
   url: process.env.SERVER_URL,
   port: convertType(process.env.SERVER_PORT) || 8080,
   prefix: process.env.SERVER_PREFIX || "/ui-server",
+  logLevel: process.env.SERVER_LOG_LEVEL || "info",
 };
 
 const DEPLOYMENT = {
