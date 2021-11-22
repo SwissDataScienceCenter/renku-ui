@@ -144,6 +144,41 @@ class ProjectModel extends StateModel {
   }
 }
 
+const DatasetsMixin = {
+  fetchProjectDatasetsFromKg(client) { //from KG
+    if (this.get("datasets.datasets_kg") === SpecialPropVal.UPDATING) return;
+    this.setUpdating({ datasets: { datasets_kg: true } });
+    return client.getProjectDatasetsFromKG(this.get("metadata.pathWithNamespace"))
+      .then(datasets => {
+        const updatedState = { datasets_kg: { $set: datasets }, transient: { requests: { datasets_kg: false } } };
+        this.setObject({ datasets: updatedState });
+        return datasets;
+      })
+      .catch(err => {
+        const datasets = [];
+        const updatedState = { datasets_kg: { $set: datasets }, transient: { requests: { datasets_kg: false } } };
+        this.setObject({ datasets: updatedState });
+      });
+  },
+  fetchProjectDatasets(client, forceReFetch) {
+    let core = this.get("datasets.core");
+    if (core === SpecialPropVal.UPDATING) return;
+    if (core.datasets && core.error == null && !forceReFetch) return core;
+    this.setUpdating({ datasets: { core: true } });
+    return client.listProjectDatasetsFromCoreService(this.get("metadata.httpUrl"), this.get("metadata.id"))
+      .then(response => {
+        let responseDs = response.data.error ? response.data : response.data.result.datasets;
+        const updatedState = { core: { datasets: { $set: responseDs } }, transient: { requests: { datasets: false } } };
+        this.setObject({ datasets: updatedState });
+        return responseDs;
+      })
+      .catch(err => {
+        const updatedState = { core: { datasets: null, error: { $set: err } }, transient: { requests: { datasets: false } } };
+        this.setObject({ datasets: updatedState });
+      });
+  }
+};
+
 const FileTreeMixin = {
   fetchProjectFilesTree(client, openFilePath, openFolder) {
     if (this.get("transient.requests.filesTree") === SpecialPropVal.UPDATING) return;
@@ -407,6 +442,10 @@ class ProjectCoordinator {
     this.model.setUpdating(options);
   }
 
+  setObject(value) {
+    this.model.setObject(value);
+  }
+
   fetchProject(client, projectPathWithNamespace) {
     this.setUpdating({ metadata: { exists: true } });
     return client.getProject(projectPathWithNamespace, { statistics: true })
@@ -607,6 +646,7 @@ class ProjectCoordinator {
   }
 }
 
+Object.assign(ProjectCoordinator.prototype, DatasetsMixin);
 Object.assign(ProjectCoordinator.prototype, FileTreeMixin);
 Object.assign(ProjectCoordinator.prototype, ProjectAttributesMixin);
 Object.assign(ProjectCoordinator.prototype, RepoMixin);

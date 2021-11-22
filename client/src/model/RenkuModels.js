@@ -285,6 +285,15 @@ const projectGlobalSchema = new Schema({
       readme: { [Prop.INITIAL]: {} }
     })
   },
+  datasets: {
+    [Prop.SCHEMA]: new Schema({
+      datasets_kg: { [Prop.INITIAL]: [] },
+      core: { [Prop.INITIAL]: {
+        datasets: null,
+        error: null
+      } }
+    })
+  },
   files: {
     [Prop.SCHEMA]: new Schema({
       notebooks: { [Prop.INITIAL]: [] },

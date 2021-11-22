@@ -600,14 +600,14 @@ class ProjectViewOverview extends Component {
 class ProjectDatasetsNav extends Component {
 
   render() {
-    const allDatasets = this.props.core.datasets || [];
+    const allDatasets = this.props.datasets.datasets || [];
 
     if (allDatasets.length === 0)
       return null;
 
     return <DatasetsListView
-      datasets_kg={this.props.core.datasets_kg}
-      datasets={this.props.core.datasets}
+      datasets_kg={this.props.datasets.datasets_kg}
+      datasets={this.props.datasets.core.datasets}
       datasetsUrl={this.props.datasetsUrl}
       newDatasetUrl={this.props.newDatasetUrl}
       accessLevel={this.props.metadata.accessLevel}
@@ -750,18 +750,18 @@ function ProjectViewDatasets(props) {
   />;
 
   useEffect(()=>{
-    const loading = props.core.datasets === SpecialPropVal.UPDATING;
+    const loading = props.datasets.core === SpecialPropVal.UPDATING;
     if (loading) return;
     props.fetchDatasets(props.location.state && props.location.state.reload);
     props.fetchGraphStatus();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const loading = props.core.datasets === SpecialPropVal.UPDATING || props.core.datasets === undefined;
+  const loading = props.datasets.core === SpecialPropVal.UPDATING || props.datasets.core === undefined;
   if (loading)
     return <Loader />;
 
-  if (props.core.datasets.error) {
+  if (props.datasets.core.error) {
     return <Col sm={12}>
       <Alert color="danger">
         There was an error fetching the datasets, please try <Button color="danger" size="sm" onClick={
@@ -770,7 +770,7 @@ function ProjectViewDatasets(props) {
     </Col>;
   }
 
-  if (!loading && props.core.datasets !== undefined && props.core.datasets.length === 0
+  if (!loading && props.datasets.core != null && props.datasets.core.length === 0
     && props.location.pathname !== props.newDatasetUrl) {
     return <Col sm={12}>
       {migrationMessage}

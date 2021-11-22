@@ -234,10 +234,10 @@ class View extends Component {
     this.projectCoordinator.setProjectOpenFolder(this.props.client, filePath);
   }
   async fetchProjectDatasets(forceReFetch) {
-    return this.projectState.fetchProjectDatasets(this.props.client, forceReFetch);
+    return this.projectCoordinator.fetchProjectDatasets(this.props.client, forceReFetch);
   }
   async fetchProjectDatasetsFromKg() {
-    return this.projectState.fetchProjectDatasetsFromKg(this.props.client);
+    return this.projectCoordinator.fetchProjectDatasetsFromKg(this.props.client);
   }
   async fetchGraphStatus() { return this.projectCoordinator.fetchGraphStatus(this.props.client); }
   saveProjectLastNode(nodeData) { this.projectCoordinator.saveProjectLastNode(nodeData); }
@@ -354,7 +354,7 @@ class View extends Component {
     const httpProjectUrl = this.projectCoordinator.get("metadata.httpUrl");
     const updateProjectView = this.forceUpdate.bind(this);
     const filesTree = this.projectCoordinator.get("filesTree");
-    const datasets = this.projectState.get("core.datasets");
+    const datasets = this.projectCoordinator.get("datasets.core");
     const graphProgress = this.projectCoordinator.get("webhook.progress");
     const maintainer = accessLevel >= ACCESS_LEVELS.MAINTAINER ?
       true :
