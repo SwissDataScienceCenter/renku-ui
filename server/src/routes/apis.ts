@@ -21,26 +21,44 @@ import { createProxyMiddleware } from "http-proxy-middleware";
 import fetch from "cross-fetch";
 
 import config from "../config";
+import logger from "../logger";
 import { Authenticator } from "../authentication";
 import { renkuAuth } from "../authentication/middleware";
 import { CheckURLResponse } from "./apis.interfaces";
 import { validateCSP } from "../utils/url";
 
-const tmpProxMiddleware = createProxyMiddleware({
+const proxyMiddleware = createProxyMiddleware({
+  // set gateway as target
   target: config.deplyoment.gatewayUrl,
   changeOrigin: true,
   pathRewrite: (path): string => {
-    const rewrittenPath = path.substring((config.server.prefix + "/api").length);
+    // remove basic ui-server routing
+    const rewrittenPath = path.substring((config.server.prefix + config.routes.api).length);
+    logger.debug(`rewriting path from "${path}" to "${rewrittenPath}" and routing to ${config.deplyoment.gatewayUrl}`);
     return rewrittenPath;
   },
   onProxyReq: (clientReq) => {
-    // ? We don't need the cookie in the routed request. Let's remove them to avoid gateway conflicts with auth token
+    // remove unnecessary cookies to avoid gateway conflicts with auth tokens
     clientReq.removeHeader("cookie");
+  },
+  onProxyRes: (clientRes, req: express.Request, res: express.Response) => {
+    const expHeader = req.get(config.auth.invalidHeaderField);
+    if (expHeader != null) {
+      clientRes.headers[config.auth.invalidHeaderField] = expHeader;
+      if (expHeader === config.auth.invalidHeaderExpired) {
+        // We return a different response to prevent side effects from caching mechanism on 30x responses
+        logger.warn(`Authentication expired when trying to reach ${req.originalUrl}. Attaching auth headers.`);
+        res.status(500);
+        res.setHeader(config.auth.invalidHeaderField, expHeader);
+        res.json({ error: "Invalid authentication tokens" });
+      }
+    }
   }
 });
 
 
 function registerApiRoutes(app: express.Application, prefix: string, authenticator: Authenticator): void {
+  // Locally defined APIs
   app.get(prefix + "/versions", (req, res) => {
     const uiShortSha = process.env.RENKU_UI_SHORT_SHA ?
       process.env.RENKU_UI_SHORT_SHA :
@@ -80,27 +98,14 @@ function registerApiRoutes(app: express.Application, prefix: string, authenticat
     res.json(validationResponse);
   });
 
-  app.get(prefix + "/projects*", renkuAuth(authenticator), tmpProxMiddleware, () => {
-    // ? This route only attaches the middleware
-    // ? REF: https://www.npmjs.com/package/http-proxy-middleware
-    // TODO: extend this correctly to unmatched /api/* routes
-    // TODO: alterative: consider using https://github.com/nodejitsu/node-http-proxy
-  });
-
-  // match all the other api routes
-  app.get(prefix + "/*", renkuAuth(authenticator), (req, res) => {
-    // TODO: this works as a temporary test. Fix it when implementing the proper API routing
-    const headers = { ...req.headers };
-    if (headers["Authorization"])
-      headers["Authorization"] = "[ADJUSTED] bearer token";
-    if (headers["cookie"]) {
-      if (headers["cookie"].includes("ui-server-session"))
-        headers["cookie"] = "[ADJUSTED] cookies with ui-server-session";
-      else
-        headers["cookie"] = "[ADJUSTED] cookies not related to ui-server";
-    }
-    res.json(headers);
-  });
+  // All the unmatched APIs will be routed to the gateway using the http-proxy-middleware middlewere
+  app.delete(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
+  app.get(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
+  app.head(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
+  app.options(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
+  app.patch(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
+  app.post(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
+  app.put(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
 }
 
 export default registerApiRoutes;
