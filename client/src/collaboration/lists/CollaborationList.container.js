@@ -16,9 +16,11 @@
  * limitations under the License.
  */
 
-import React, { Fragment, useRef, useState } from "react";
+import React, { Fragment, memo, useEffect, useRef, useState } from "react";
 
 import { Loader, ExternalLink } from "../../utils/UIComponents";
+import { renkuFetch } from "../../api-client/utils";
+import _ from "lodash";
 
 const itemsStateMap = {
   OPENED: "opened",
@@ -30,6 +32,42 @@ const collaborationListTypeMap = {
   ISSUES: "issues",
   MREQUESTS: "mrequests" // eslint-disable-line
 };
+
+async function isValidUrlForIframe(url, serverUrl) {
+  const response = await renkuFetch(`${serverUrl}/api/check-url/${encodeURIComponent(url)}`, {
+    method: "GET",
+    headers: new Headers({ "Accept": "application/json" })
+  });
+  const data = await response.json();
+  return data?.isIframeValid ?? false;
+}
+
+const CollaborationIframe = memo((props) => {
+  const [isUrlValid, setIsUrlValid] = useState(false);
+
+  useEffect( () => {
+    async function validateUrl() {
+      const isValid = await isValidUrlForIframe(props.iframeUrl, props.serverUrl);
+      setIsUrlValid(isValid);
+      if (!isValid)
+        props.onIFrameLoad();
+    }
+    validateUrl();
+  }, []); // eslint-disable-line
+
+  const type = props.listType === collaborationListTypeMap.ISSUES ? "Issues" : "Merge Requests";
+
+  return isUrlValid ?
+    <iframe id="collaboration-iframe" title="collaboration iframe" src={props.iframeUrl}
+      ref={props.iframeRef}
+      onLoad={props.onIFrameLoad}
+      width="100%" height="800px" referrerPolicy="origin" sandbox="allow-same-origin allow-scripts allow-forms"
+    /> : <div className="my-4">
+      This Gitlab instance cannot be embedded in RenkuLab. Please
+      <ExternalLink role="text" url={props.iframeUrl} title="Open in a separate tab" className="mx-1" />
+      to access {type} </div>;
+}, _.isEqual);
+CollaborationIframe.displayName = "CollaborationIframe";
 
 function CollaborationList(props) {
   const iframeRef = useRef(null);
@@ -57,11 +95,12 @@ function CollaborationList(props) {
           title="Open in Tab" className="d-inline" />
       </div>
       <div>
-        <iframe id="collaboration-iframe" title="collaboration iframe" src={frameUrl}
-          ref={iframeRef}
-          onLoad={frameLoad}
-          width="100%" height="800px" referrerPolicy="origin" sandbox="allow-same-origin allow-scripts allow-forms"
-        />
+        <CollaborationIframe
+          iframeRef={iframeRef}
+          onIFrameLoad={frameLoad}
+          iframeUrl={frameUrl}
+          listType={props.listType}
+          serverUrl={props.client?.uiserverUrl}/>
       </div>
     </div>
   </Fragment>;

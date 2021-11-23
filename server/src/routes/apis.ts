@@ -22,7 +22,8 @@ import { createProxyMiddleware } from "http-proxy-middleware";
 import config from "../config";
 import { Authenticator } from "../authentication";
 import { renkuAuth } from "../authentication/middleware";
-
+import fetch from "cross-fetch";
+import { CheckURLResponse } from "./apis.interfaces";
 
 const tmpProxMiddleware = createProxyMiddleware({
   target: config.deplyoment.gatewayUrl,
@@ -38,7 +39,7 @@ const tmpProxMiddleware = createProxyMiddleware({
 });
 
 
-function reigsterApiRoutes(app: express.Application, prefix: string, authenticator: Authenticator): void {
+function registerApiRoutes(app: express.Application, prefix: string, authenticator: Authenticator): void {
   app.get(prefix + "/versions", (req, res) => {
     const uiShortSha = process.env.RENKU_UI_SHORT_SHA ?
       process.env.RENKU_UI_SHORT_SHA :
@@ -46,6 +47,27 @@ function reigsterApiRoutes(app: express.Application, prefix: string, authenticat
     const data = {
       "ui-short-sha": uiShortSha
     };
+    res.json(data);
+  });
+
+  app.get(prefix + "/check-url/:url", async (req, res) => {
+    const data: CheckURLResponse = {
+      isIframeValid: false,
+      url: req?.params?.url,
+    };
+    try {
+      const externalUrl = new URL(req?.params?.url);
+      const requestExternalURL = await fetch(externalUrl.toString());
+      if (requestExternalURL.status >= 400)
+        data.error = "Bad response from server";
+      else if (requestExternalURL?.headers.has("X-Frame-Options"))
+        data.error = `X-Frame-Options: ${requestExternalURL?.headers.get("X-Frame-Options")}`;
+      else
+        data.isIframeValid = true;
+    }
+    catch (error) {
+      data.error = error.toString();
+    }
     res.json(data);
   });
 
@@ -72,4 +94,4 @@ function reigsterApiRoutes(app: express.Application, prefix: string, authenticat
   });
 }
 
-export default reigsterApiRoutes;
+export default registerApiRoutes;
