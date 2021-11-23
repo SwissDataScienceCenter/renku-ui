@@ -62,9 +62,16 @@ function TypicalWorkflow() {
 }
 
 function RunningAndTrackingCommands() {
-  const desc = <span>Execute a &lt;command&gt; with Renku tracking inputs and outputs;
-    input and output files are automatically detected from the command string.
-    To override, With --input and/or --output: Manually specify input or output files to track.</span>;
+  const desc = <Fragment>
+    Execute a &lt;command&gt;, creating a workflow template plan called
+    &lt;name&gt;, with Renku tracking inputs and outputs.
+    <ul>
+      <li>Input and output files are automatically detected from the command string.
+        With --input/--output flags, you can manually specify input or output files to track.</li>
+      <li>A name for the workflow template will be generated if none is provided, but
+        we recommend specifying one explicitly.</li>
+    </ul>
+  </Fragment>;
   return <Fragment>
     <CommandsRow>
       <div>
@@ -72,7 +79,7 @@ function RunningAndTrackingCommands() {
       </div>
     </CommandsRow>
     <CommandsRow>
-      <CommandDesc command="renku run --name <name> <command> [--input <in_file> …] [--output <out_file> …]"
+      <CommandDesc command="renku run [--name <name>] <command> [--input <in_file> …] [--output <out_file> …]"
         desc={desc}/>
     </CommandsRow>
   </Fragment>;
