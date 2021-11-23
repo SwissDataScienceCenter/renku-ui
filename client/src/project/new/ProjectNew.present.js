@@ -33,7 +33,7 @@ import {
   UncontrolledPopover, PopoverHeader, PopoverBody, Row, Table, UncontrolledTooltip
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle, faLink, faPaste, faQuestionCircle, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import { faInfoCircle, faLink, faQuestionCircle, faSyncAlt, faUndo } from "@fortawesome/free-solid-svg-icons";
 import {
   ButtonWithMenu, Clipboard, ErrorAlert, ExternalLink, FieldGroup, Loader, WarnAlert
 } from "../../utils/UIComponents";
@@ -962,7 +962,7 @@ function RestoreButton(props) {
     <div id={id} className="d-inline ms-2">
       <Button key="button" className="p-0" color="link" size="sm"
         onClick={() => restore()} disabled={disabled} >
-        <FontAwesomeIcon icon={faPaste} />
+        <FontAwesomeIcon icon={faUndo} />
       </Button>
       <UncontrolledTooltip key="tooltip" placement="top" target={id}>{tip}</UncontrolledTooltip>
     </div>
@@ -1196,6 +1196,25 @@ class Create extends Component {
       "based on " + (templates.all.find(t => t.id === input.template).name) :
       "";
 
+    const errorFields = meta.validation.errors ?
+      Object.keys(meta.validation.errors)
+        .filter(field => !input[`${field}Pristine`]) // don't consider pristine fields
+        .map(field => capitalize(field)) :
+      [];
+    const plural = errorFields.length > 1 ?
+      "s" :
+      "";
+    const errorMessage = errorFields.length ?
+      (
+        <FormText className="d-block">
+          <span className="text-danger">
+            To create a new project, please first fix problems with the following field{plural}:{" "}
+            <span className="fw-bold">{errorFields.join(", ")}</span>
+          </span>
+        </FormText>
+      ) :
+      null;
+
     return (
       <Fragment>
         {alert}
@@ -1211,6 +1230,7 @@ class Create extends Component {
           meta={meta}
           createUrl={this.props.handlers.createEncodedUrl}
         />
+        {errorMessage}
       </Fragment>
     );
   }
