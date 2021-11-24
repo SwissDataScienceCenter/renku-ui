@@ -173,5 +173,6 @@ for (let key in methods) {
   };
 }
 client.baseUrl = "some-url";
+client.uiserverUrl = "https://dev.renku.ch/ui-server";
 
 export default client;

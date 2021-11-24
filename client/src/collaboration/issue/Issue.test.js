@@ -75,9 +75,13 @@ describe("rendering", () => {
       search: "?page=1&issuesState=opened"
     });
 
+    const props = {
+      externalUrl: "https://dev.renku.ch/gitlab"
+    };
     ReactDOM.render(
       <MemoryRouter>
         <CollaborationList
+          {...props}
           client={client}
           urlMap={urlMap}
           user={user}
@@ -111,7 +115,7 @@ describe("rendering", () => {
     const mockRef = null;
 
     let rendered;
-    await act(async () => {
+    act(() => {
       rendered = TestRenderer.create(
         <MemoryRouter>
           <CollaborationIframe
@@ -143,7 +147,7 @@ describe("rendering", () => {
     const mockRef = null;
 
     let rendered;
-    await act(async () => {
+    act(() => {
       rendered = TestRenderer.create(
         <MemoryRouter>
           <CollaborationIframe
