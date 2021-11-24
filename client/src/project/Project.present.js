@@ -1110,7 +1110,7 @@ class ProjectStartNotebookServer extends Component {
         blockAnonymous={blockAnonymous}
         notebooks={projectCoordinator.model.baseModel.get("notebooks")}
         notifications={notifications}
-        project={projectCoordinator.get()}
+        commits={projectCoordinator.get("commits")}
         projectCoordinator={projectCoordinator}
         scope={{ namespace: this.props.metadata.namespace, project: this.props.metadata.path,
           defaultBranch: this.props.metadata.defaultBranch }}

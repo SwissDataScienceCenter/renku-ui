@@ -374,7 +374,7 @@ describe("rendering", () => {
     const props = {
       client,
       model,
-      project: projectCoordinator.get(),
+      commits: projectCoordinator.get("commits"),
       notebooks: model.get("notebooks"),
       user: { logged: true, data: { username: "test" } },
       branches: [],

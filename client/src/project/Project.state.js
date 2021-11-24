@@ -107,41 +107,6 @@ class ProjectModel extends StateModel {
     this.setObject(updatedState);
     return data;
   }
-
-  fetchProjectDatasetsFromKg(client) { //from KG
-    if (this.get("core.datasets_kg") === SpecialPropVal.UPDATING) return;
-    this.setUpdating({ core: { datasets_kg: true } });
-    return client.getProjectDatasetsFromKG(this.get("core.path_with_namespace"))
-      .then(datasets => {
-        const updatedState = { datasets_kg: { $set: datasets }, transient: { requests: { datasets_kg: false } } };
-        this.setObject({ core: updatedState });
-        return datasets;
-      })
-      .catch(err => {
-        const datasets = [];
-        const updatedState = { datasets_kg: { $set: datasets }, transient: { requests: { datasets_kg: false } } };
-        this.setObject({ core: updatedState });
-      });
-  }
-
-
-  fetchProjectDatasets(client, forceReFetch) {
-    let datasets = this.get("core.datasets");
-    if (datasets === SpecialPropVal.UPDATING) return;
-    if (datasets && datasets.error === undefined && !forceReFetch) return datasets;
-    this.setUpdating({ core: { datasets: true } });
-    return client.listProjectDatasetsFromCoreService(this.get("system.http_url"), this.get("core.id"))
-      .then(response => {
-        let responseDs = response.data.error ? response.data : response.data.result.datasets;
-        const updatedState = { datasets: { $set: responseDs }, transient: { requests: { datasets: false } } };
-        this.setObject({ core: updatedState });
-        return responseDs;
-      })
-      .catch(err => {
-        const updatedState = { datasets: { $set: { error: err } }, transient: { requests: { datasets: false } } };
-        this.setObject({ core: updatedState });
-      });
-  }
 }
 
 const DatasetsMixin = {
@@ -522,8 +487,7 @@ class ProjectCoordinator {
     this.model.setObject({ metadata,
       filters: filtersObject,
       forkedFromProject,
-      statistics: statsObject,
-      _transition: data
+      statistics: statsObject
     });
     return metadata;
   }

@@ -600,9 +600,9 @@ class StartNotebookServer extends Component {
     const augmentedState = {
       ...this.props.notebooks,
       data: {
-        fetched: this.props.project.commits.fetched,
-        fetching: this.props.project.commits.fetching,
-        commits: this.props.project.commits.list,
+        fetched: this.props.commits.fetched,
+        fetching: this.props.commits.fetching,
+        commits: this.props.commits.list,
         branches: this.props.branches,
         autosaved: ownAutosaved
       },
