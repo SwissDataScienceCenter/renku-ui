@@ -30,11 +30,14 @@ import { MemoryRouter } from "react-router-dom";
 import { createMemoryHistory } from "history";
 
 import Issue from "./Issue";
-import { CollaborationList, collaborationListTypeMap } from "../lists/CollaborationList.container";
+import { CollaborationIframe, CollaborationList, collaborationListTypeMap } from "../lists/CollaborationList.container";
 import State from "./Issue.state";
 import { testClient as client } from "../../api-client";
 import { generateFakeUser } from "../../user/User.test";
 import { StateModel, globalSchema } from "../../model";
+import { act } from "react-dom/test-utils";
+import TestRenderer from "react-test-renderer";
+import { sleep } from "../../utils/HelperFunctions";
 
 describe("rendering", () => {
   const user = generateFakeUser(true);
@@ -95,6 +98,69 @@ describe("rendering", () => {
         <Issue.View id="1" client={client} user={user} />
       </MemoryRouter>
       , div);
+  });
+  it("renders iframe when url is valid", async () => {
+    jest.spyOn(global, "fetch").mockImplementation(() => {
+      return Promise.resolve({
+        status: 200,
+        json: () => Promise.resolve({ isIframeValid: true })
+      });
+    });
+    const mockValidUrl = "https://dev.renku.ch/gitlab";
+    const mockUrlServer = "https://dev.renku.ch/ui-server";
+    const mockRef = null;
+
+    let rendered;
+    await act(async () => {
+      rendered = TestRenderer.create(
+        <MemoryRouter>
+          <CollaborationIframe
+            iframeRef={mockRef}
+            onIFrameLoad={() => {}}
+            iframeUrl={mockValidUrl}
+            listType={collaborationListTypeMap.ISSUES}
+            serverUrl={mockUrlServer}/>
+        </MemoryRouter>,
+      );
+    });
+    const initialRender = rendered.toJSON();
+    // Wait until the data is fetched
+    await sleep(0);
+    const finalRender = rendered.toJSON();
+    expect(initialRender.type).toBe("div");
+    expect(finalRender.type).toBe("iframe");
+    global.fetch.mockRestore();
+  });
+  it("no renders iframe when url is invalid", async () => {
+    jest.spyOn(global, "fetch").mockImplementation(() => {
+      return Promise.resolve({
+        status: 200,
+        json: () => Promise.resolve({ isIframeValid: false })
+      });
+    });
+    const mockInvalidUrl = "https://dev.renku.ch/gitlab";
+    const mockUrlServer = "https://dev.renku.ch/ui-server";
+    const mockRef = null;
+
+    let rendered;
+    await act(async () => {
+      rendered = TestRenderer.create(
+        <MemoryRouter>
+          <CollaborationIframe
+            iframeRef={mockRef}
+            onIFrameLoad={() => {}}
+            iframeUrl={mockInvalidUrl}
+            listType={collaborationListTypeMap.ISSUES}
+            serverUrl={mockUrlServer}/>
+        </MemoryRouter>,
+      );
+    });
+    // Wait until the data is fetched
+    await sleep(0);
+    const finalRender = rendered.toJSON();
+    expect(finalRender.type).toBe("div");
+    expect(finalRender.children[0]).toBe("This Gitlab instance cannot be embedded in RenkuLab. Please");
+    global.fetch.mockRestore();
   });
 });
 

@@ -106,4 +106,4 @@ function CollaborationList(props) {
   </Fragment>;
 }
 
-export { CollaborationList, itemsStateMap, collaborationListTypeMap };
+export { CollaborationList, CollaborationIframe, itemsStateMap, collaborationListTypeMap };
