@@ -16,10 +16,12 @@
  * limitations under the License.
  */
 
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import ReactDOM from "react-dom";
 import { CardBody } from "reactstrap";
 import hljs from "highlight.js";
+import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
+import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 
 import { atobUTF8 } from "../utils/Encoding";
 import { StyledNotebook, JupyterButtonPresent, ShowFile as ShowFilePresent, FileNoPreview } from "./File.present";
@@ -28,7 +30,8 @@ import { API_ERRORS } from "../api-client";
 import { RenkuMarkdown } from "../utils/UIComponents";
 import { encodeImageBase64 } from "../utils/Markdown";
 
-const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "pdf", "gif", "svg"];
+const PDF_EXTENSION = "pdf";
+const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "gif", "svg"];
 const CODE_EXTENSIONS = [
   "bat", "cwl", "dcf", "ini", "jl", "job", "js", "json", "m", "mat", "parquet", "prn", "py", "r", "rmd",
   "rout", "rproj", "rs", "rst", "scala", "sh", "toml", "ts", "xml", "yaml", "yml",
@@ -59,6 +62,7 @@ class FilePreview extends React.Component {
   fileIsCode = () => CODE_EXTENSIONS.indexOf(this.getFileExtension()) >= 0;
   fileIsText = () => TEXT_EXTENSIONS.indexOf(this.getFileExtension()) >= 0;
   fileIsImage = () => IMAGE_EXTENSIONS.indexOf(this.getFileExtension()) >= 0;
+  fileIsPDF = () => PDF_EXTENSION === this.getFileExtension();
   fileHasNoExtension = () => this.getFileExtension() === null;
   fileIsLfs = () => {
     if (this.props.hashElement && this.props.hashElement.isLfs)
@@ -115,6 +119,15 @@ class FilePreview extends React.Component {
             alt={this.props.file.file_name}
             src={encodeImageBase64(this.props.file.file_name, this.props.file.content)}
           />
+        </CardBody>
+      );
+    }
+
+    // pdf document
+    if (this.fileIsPDF()) {
+      return (
+        <CardBody key="file preview" className="pb-0 bg-white">
+          <PDFViewer file={`data:application/pdf;base64,${this.props.file.content}`}/>
         </CardBody>
       );
     }
@@ -192,6 +205,34 @@ class FilePreview extends React.Component {
   }
 }
 
+export default function PDFViewer(props) {
+  const [numPages, setNumPages] = useState(null);
+
+  function onDocumentLoadSuccess({ numPages }) {
+    setNumPages(numPages);
+  }
+
+  return (
+    <Document
+      file={props.file}
+      onLoadSuccess={onDocumentLoadSuccess}
+      renderMode="svg">
+      {
+        Array.from(
+          new Array(numPages),
+          (el, index) => (
+            <Page
+              className="rk-pdf-page"
+              key={`page_${index + 1}`}
+              pageNumber={index + 1}
+            />
+          ),
+        )
+      }
+    </Document>
+  );
+}
+
 class JupyterNotebookContainer extends Component {
   render() {
     let filePath = this.props.filePath;
@@ -238,7 +279,7 @@ class JupyterButton extends React.Component {
       if (defaultBranchObject.length) return defaultBranchObject;
     }
 
-    return branches[0].name;
+    return branches[0]?.name ?? branches?.all[0]?.name;
   }
 
   getScope() {

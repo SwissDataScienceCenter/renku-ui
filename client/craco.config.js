@@ -18,5 +18,12 @@ module.exports = {
         chunkFilename: `[name].[hash]-${version}.chunk.js`
       }
     }
+  },
+  jest: {
+    configure: {
+      moduleNameMapper: {
+        "react-pdf/dist/esm/entry.webpack": "react-pdf/dist/umd/entry.jest",
+      }
+    }
   }
 };
