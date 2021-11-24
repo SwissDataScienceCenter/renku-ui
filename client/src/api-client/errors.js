@@ -27,8 +27,16 @@ const API_ERRORS = {
   forbiddenError: "FORBIDDEN",
   notFoundError: "NOT_FOUND",
   internalServerError: "SERVER_ERROR",
-  networkError: "NETWORK_PROBLEM"
+  networkError: "NETWORK_PROBLEM",
+  authExpired: "AUTH_EXPIRED"
 };
+
+function throwAuthError(response) {
+  let error = new APIError();
+  error.case = API_ERRORS.authExpired;
+  error.response = response;
+  return Promise.reject(error);
+}
 
 function throwErrorWithData(response, data) {
   let error;
@@ -83,4 +91,4 @@ function alertAPIErrors(error) {
   }
 }
 
-export { APIError, API_ERRORS, alertAPIErrors, throwAPIErrors };
+export { APIError, API_ERRORS, alertAPIErrors, throwAPIErrors, throwAuthError };
