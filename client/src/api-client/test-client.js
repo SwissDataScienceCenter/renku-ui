@@ -124,6 +124,11 @@ const methods = {
       data: []
     }
   },
+  getAllProjectsGraphQL: {
+    response: {
+      data: []
+    }
+  },
   getTemplatesManifest: {
     response: {
       result: {

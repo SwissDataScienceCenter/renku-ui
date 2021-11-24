@@ -38,7 +38,7 @@ const projectsSchema = new Schema({
   featured: {
     [Prop.SCHEMA]: new Schema({
       fetched: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
-      landing: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
+      fetching: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
       member: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
       starred: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true }
     })

@@ -37,10 +37,14 @@ class ProjectsCoordinator {
     if (project.permissions && project.permissions.group_access)
       accessLevel = Math.max(accessLevel, project.permissions.group_access.access_level);
 
+    // Project id can be a number e.g. 1234 or a string with the format: gid://gitlab/Project/1234
+    const projectFullId = typeof (project.id) === "number" ? [] : project.id.split("/");
+    const projectId = projectFullId.length > 1 ? projectFullId[projectFullId.length - 1] : project.id;
+
     return {
-      id: project.id,
+      id: projectId,
       name: project.name,
-      path_with_namespace: project.path_with_namespace,
+      path_with_namespace: project.path_with_namespace ?? project?.fullPath,
       description: project.description,
       tag_list: project.tag_list,
       star_count: project.star_count,
@@ -59,13 +63,17 @@ class ProjectsCoordinator {
       return;
     // set status to fetching, get all the projects and filter and invoke both APIs
     this.model.set("featured.fetching", true);
-    const params = { order_by: "last_activity_at", per_page: 100 };
+    const params = { query: "last_activity_at", per_page: 100 };
     const promiseStarred = this.client.getAllProjects({ ...params, starred: true })
       .then(resp => resp.map((project) => this._starredProjectMetadata(project)))
-      .catch(error => []);
-    const promiseMember = this.client.getAllProjects({ ...params, membership: true })
-      .then(resp => resp.map((project) => this._starredProjectMetadata(project)))
-      .catch(error => []);
+      .catch(() => []);
+
+    const promiseMember = this.client.getAllProjectsGraphQL(params)
+      .then(resp => {
+        return resp.map((project) => this._starredProjectMetadata(project));
+      })
+      .catch(() => []);
+
 
     // set `featured` content and return only `starred` and `member` projects data
     return Promise.all([promiseStarred, promiseMember]).then(values => {
@@ -81,6 +89,7 @@ class ProjectsCoordinator {
       return { starred: values[0], member: values[1] };
     });
   }
+
 
   async getLanding() {
     if (this.model.get("landingProjects.fetching"))

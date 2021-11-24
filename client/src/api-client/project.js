@@ -110,6 +110,65 @@ function addProjectMethods(client) {
     return projects;
   };
 
+  /**
+   * Use the graphQL endpoint to get minimal information for a project
+   * @returns A query response promise
+   * @param queryParams The query params, should have a key "query"
+   */
+  client.getProjectsGraphQL = async (queryParams = {}) => {
+    let headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    headers.append("X-Requested-With", "XMLHttpRequest");
+    const resp = await client.clientFetch(`${client.baseUrl}/graphql`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(queryParams),
+    });
+    return resp?.data?.data?.projects;
+  };
+
+  /**
+   * Get all the projects that match the query parameters, but just
+   * return some minimal information, not the full information.
+   * @param {object} queryParams The query params, should have a key "per_page"
+   * @returns A query response promise.
+   */
+  client.getAllProjectsGraphQL = async (queryParams = {}) => {
+    let projects = [];
+    let finished = false;
+    let endCursor = "";
+    const params = { "variables": null, "operationName": null };
+
+    while (!finished) {
+      let query = `{
+        projects(membership: true, first:${queryParams.per_page}, after:"${endCursor}") {
+          pageInfo {
+            endCursor
+            hasNextPage
+          }
+          nodes {
+            id
+            name
+            fullPath
+            namespace {
+              fullPath
+            }
+            path
+          }
+        }
+      }`;
+      const resp = await client.getProjectsGraphQL({ ...params, query });
+      projects = [...projects, ...resp?.nodes];
+
+      if (!resp?.pageInfo?.hasNextPage)
+        finished = true;
+      else
+        endCursor = resp?.pageInfo?.endCursor;
+    }
+
+    return projects;
+  };
+
   client.getAvatarForNamespace = (namespaceId = {}) => {
     let headers = client.getBasicHeaders();
     return client.clientFetch(`${client.baseUrl}/groups/${namespaceId}`, {

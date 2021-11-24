@@ -112,7 +112,9 @@ class QuickNavContainerWithRouter extends Component {
     if (hitKeys.length > 0) {
       suggestions.push({
         title: "Your Projects",
-        suggestions: hitKeys.sort().map(k => ({ path: k, id: hits[k].id, url: `/projects/${hits[k].id}` }))
+        suggestions: hitKeys.sort().map(k => (
+          { path: k, id: hits[k].id, url: `/projects/${hits[k].path_with_namespace}` }
+        ))
       });
     }
 
