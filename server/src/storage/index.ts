@@ -58,6 +58,10 @@ class Storage {
     }
   }
 
+  getStatus() : string {
+    return this.redis.status;
+  }
+
   async get(path: string): Promise<string> {
     return await this.redis.get(path);
   }
