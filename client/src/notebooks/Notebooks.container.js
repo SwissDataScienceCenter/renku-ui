@@ -247,6 +247,7 @@ class Notebooks extends Component {
  * @param {Object} client - api-client used to query the gateway
  * @param {Object} model - global model for the ui
  * @param {Object[]} branches - Branches as returned by gitlab "/branches" API - no autosaved branches
+ * @param {Object[]} commits - Commits as stored in the ProjectCoordinator
  * @param {Object[]} autosaved - Autosaved branches
  * @param {function} refreshBranches - Function to invoke to refresh the list of branches
  * @param {Object} scope - object containing filtering parameters
