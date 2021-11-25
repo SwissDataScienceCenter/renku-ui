@@ -46,6 +46,11 @@ import FileExplorer, { getFilesTree } from "./FileExplorer";
 import RenkuMarkdownWithPathTranslation from "./Markdown";
 import ListDisplay from "./List";
 
+import rkInfoIcon from "./../styles/icons/assets/info.svg";
+import rkDangerIcon from "./../styles/icons/assets/danger.svg";
+import rkWarningIcon from "./../styles/icons/assets/warning.svg";
+import rkSuccessIcon from "./../styles/icons/assets/success.svg";
+
 /**
  * Show user avatar
  *
@@ -411,12 +416,35 @@ class RenkuAlert extends Component {
       this.props.dismissCallback();
   }
 
+  getIcon() {
+    switch (this.props.color) {
+      case "danger":
+        return <img alt="danger icon" src={rkDangerIcon} />;
+      case "info":
+        return <img alt="info icon" src={rkInfoIcon} />;
+      case "warning":
+        return <img alt="warning icon" src={rkWarningIcon} />;
+      case "success":
+        return <img alt="success icon" src={rkSuccessIcon} />;
+      default:
+        return "";
+    }
+  }
+
   render() {
+    const icon = this.getIcon();
     if (this.props.hidden || this.state.hidden) return null;
     const isOpen = this.props.open ? this.props.open : this.state.open;
     return (
       <Alert color={this.props.color} isOpen={isOpen} toggle={this.onDismiss}>
-        {this.props.children}
+        <div className="alert-content">
+          <div className="alert-icon">
+            {icon}
+          </div>
+          <div>
+            {this.props.children}
+          </div>
+        </div>
       </Alert>
     );
   }
