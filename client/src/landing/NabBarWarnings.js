@@ -25,9 +25,10 @@
 
 import React from "react";
 import { connect } from "react-redux";
-import { Alert, Button } from "reactstrap";
+import { Button } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationTriangle, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import { faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import { WarnAlert } from "../utils/UIComponents";
 
 
 const versionUpdateInterval = 1000 * 60 * 5; // Update every 5 minutes
@@ -88,9 +89,8 @@ function VersionsBannerPresent(props) {
     return null;
 
   return (
-    <Alert color="warning" className="container-xxl renku-container" fade={false}>
+    <WarnAlert timeout={0} className="container-xxl renku-container" fade={false}>
       <h5>
-        <FontAwesomeIcon icon={faExclamationTriangle} />{" "}
         A new version of RenkuLab is available!
       </h5>
       <p className="m-0">
@@ -100,7 +100,7 @@ function VersionsBannerPresent(props) {
         </Button>
         {" "}to refresh the UI. Sessions will keep running.
       </p>
-    </Alert>
+    </WarnAlert>
   );
 }
 

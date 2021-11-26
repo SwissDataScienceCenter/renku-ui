@@ -25,8 +25,8 @@
 
 
 import React, { Fragment } from "react";
-import { Row, Col, Modal, ModalHeader, ModalBody, Button, Alert, FormText } from "reactstrap";
-import { Loader } from "../../../utils/UIComponents";
+import { Row, Col, Modal, ModalHeader, ModalBody, Button, FormText } from "reactstrap";
+import { ErrorAlert, Loader } from "../../../utils/UIComponents";
 
 function DeleteDatasetPresent(props) {
 
@@ -34,10 +34,10 @@ function DeleteDatasetPresent(props) {
 
   if (props.serverErrors) {
     modalContent = <Col>
-      <Alert color="danger">
+      <ErrorAlert timeout={0}>
         <p>Errors occurred while deleting this dataset</p>
         <p><pre className="text-wrap">{props.serverErrors.error}</pre></p>
-      </Alert>
+      </ErrorAlert>
     </Col>;
   }
   else {

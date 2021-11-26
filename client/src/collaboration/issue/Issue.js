@@ -25,14 +25,14 @@
 
 import React, { Component } from "react";
 import { Provider, connect } from "react-redux";
-import { Row, Col, Button, Alert } from "reactstrap";
+import { Row, Col, Button } from "reactstrap";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 import { faBoxOpen, faBox } from "@fortawesome/free-solid-svg-icons";
 import { API_ERRORS } from "../../api-client";
 import { createStore } from "../../utils/EnhancedState";
 import State from "./Issue.state";
 import {
-  ExternalIconLink, RenkuMarkdown, TimeCaption, TooltipToggleButton, GoBackButton
+  ExternalIconLink, RenkuMarkdown, TimeCaption, TooltipToggleButton, GoBackButton, ErrorAlert
 } from "../../utils/UIComponents";
 import { Contribution, NewContribution } from "../../contribution";
 import { Loader } from "../../utils/UIComponents";
@@ -95,19 +95,19 @@ class IssueViewHeader extends Component {
 
   render() {
     if (this.props.error !== undefined && this.props.error.case === API_ERRORS.notFoundError) {
-      return <Alert color="danger">Error 404: The issue that was selected does not exist or could not be accessed.
+      return <ErrorAlert timeout={0}>Error 404: The issue that was selected does not exist or could not be accessed.
         <br /> <br /> You can go back to the issues list and see available issues for this project. &nbsp;
         <Button color="danger" size="sm"
           onClick={() => this.props.history.push(this.props.issuesUrl)}>Back to list</Button>
-      </Alert>;
+      </ErrorAlert>;
     }
 
     if (this.props.error !== undefined) {
-      return <Alert color="danger">Error: There was an error retrieving the issue.
+      return <ErrorAlert timeout={0}>Error: There was an error retrieving the issue.
         <br /> <br /> You can go back to the issues list and see available issues for this project. &nbsp;
         <Button color="danger" size="sm"
           onClick={() => this.props.history.push(this.props.issuesUrl)}>Back to list</Button>
-      </Alert>;
+      </ErrorAlert>;
     }
 
     if (this.props.title === undefined)

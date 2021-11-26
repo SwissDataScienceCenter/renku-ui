@@ -19,10 +19,8 @@
 import React, { Fragment } from "react";
 
 import { Link } from "react-router-dom";
-import { Row, Col, Alert, Button, Spinner, Card, CardBody, CardHeader, UncontrolledCollapse } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationTriangle, faCheck } from "@fortawesome/free-solid-svg-icons";
-import { ExternalLink, Loader } from "../../utils/UIComponents";
+import { Row, Col, Button, Spinner, Card, CardBody, CardHeader, UncontrolledCollapse } from "reactstrap";
+import { ErrorAlert, ExternalLink, Loader, SuccessAlert, WarnAlert } from "../../utils/UIComponents";
 import { ACCESS_LEVELS } from "../../api-client";
 import { MigrationStatus } from "../Project";
 
@@ -55,15 +53,14 @@ function TemplateStatusBody(props) {
     );
   }
   else if (!project_supported) {
-    projectTemplateBody = <Alert color="warning">
+    projectTemplateBody = <WarnAlert timeout={0}>
       <p>
-        <FontAwesomeIcon icon={faExclamationTriangle} /> This project appears to be using an experimental version
-        of Renku. Template migration is not supported. {" "}
+        This project appears to be using an experimental version of Renku. Template migration is not supported. {" "}
         <a href="https://renku.readthedocs.io/en/latest/how-to-guides/upgrading-renku.html">
           More info about renku migrate
         </a>.
       </p>
-    </Alert>;
+    </WarnAlert>;
   }
   else {
     if (template_update_possible) {
@@ -114,9 +111,8 @@ function TemplateStatusBody(props) {
           do that for you.</p>;
       }
       projectTemplateBody = (
-        <Alert color="warning">
+        <WarnAlert timeout={0}>
           <p className="mb-0">
-            <FontAwesomeIcon icon={faExclamationTriangle} />&nbsp;
             A new version of the <strong>project template</strong> is available.
             You can learn more about the changes in the template repository.
           </p>
@@ -130,12 +126,12 @@ function TemplateStatusBody(props) {
             </UncontrolledCollapse>
           </div>
           {updateSection}
-        </Alert>
+        </WarnAlert>
       );
     }
     else {
-      projectTemplateBody = <Alert color="success">
-        <FontAwesomeIcon icon={faCheck} /> The current version is up to date.</Alert >;
+      projectTemplateBody = <SuccessAlert timeout={0} color="success">
+        The current version is up to date.</SuccessAlert>;
     }
   }
   return <div>
@@ -144,7 +140,7 @@ function TemplateStatusBody(props) {
 }
 
 function getErrorMessage(error_while, error_what, error_reason) {
-  return <Alert color="danger">
+  return <ErrorAlert timeout={0}>
     <p>
       Error while { error_while } the { error_what } version. Please reload the page to try again.
       If the problem persists you should contact the development team on&nbsp;
@@ -154,7 +150,7 @@ function getErrorMessage(error_while, error_what, error_reason) {
         target="_blank" rel="noreferrer noopener">GitHub</a>.
     </p>
     <div><strong>Error Message</strong><pre>{error_reason}</pre></div>
-  </Alert>;
+  </ErrorAlert>;
 }
 
 function RenkuVersionStatusBody(props) {
@@ -180,13 +176,12 @@ function RenkuVersionStatusBody(props) {
   }
   else if (!project_supported) {
     body = (
-      <Alert color="warning">
-        <FontAwesomeIcon icon={faExclamationTriangle} /> This project appears to be using an experimental
-        version of Renku. Migration is not supported.{" "}
+      <WarnAlert timeout={0}>
+        This project appears to be using an experimental version of Renku. Migration is not supported.{" "}
         <a href="https://renku.readthedocs.io/en/latest/how-to-guides/upgrading-renku.html">
           More info about renku migrate
         </a>.
-      </Alert>);
+      </WarnAlert>);
   }
   else if (migration_required || docker_update_possible) {
     let updateSection = null;
@@ -231,18 +226,18 @@ function RenkuVersionStatusBody(props) {
       );
     }
     body = (
-      <Alert color="warning">
+      <WarnAlert timeout={0}>
         <p>
-          <FontAwesomeIcon icon={faExclamationTriangle} /> A new version of <strong>renku</strong> is available.
+          A new version of <strong>renku</strong> is available.
           The project needs to be migrated to keep working.
         </p>
         {updateSection}
-      </Alert>
+      </WarnAlert>
     );
   }
   // migration not needed
   else {
-    body = (<Alert color="success"><FontAwesomeIcon icon={faCheck} /> The current version is up to date.</Alert>);
+    body = (<SuccessAlert timeout={0}> The current version is up to date.</SuccessAlert>);
   }
 
   const versionStatus = <p>

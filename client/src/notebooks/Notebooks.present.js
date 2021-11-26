@@ -475,7 +475,7 @@ class NotebooksPopup extends Component {
 
     return (
       <InfoAlert timeout={0}>
-        <FontAwesomeIcon icon={faInfoCircle} /> {suggestion}
+        {suggestion}
       </InfoAlert>
     );
   }
@@ -1625,7 +1625,7 @@ class StartNotebookOptions extends Component {
 function Warning(props) {
   return <div style={{ fontSize: "smaller", paddingTop: "5px" }}>
     <WarnAlert>
-      <FontAwesomeIcon icon={faExclamationTriangle} /> {props.children}
+      {props.children}
     </WarnAlert>
   </div>;
 }
@@ -1849,7 +1849,6 @@ class ServerOptionRange extends Component {
 
 function LaunchErrorBackendAlert({ launchError }) {
   return <WarnAlert timeout={0}>
-    <FontAwesomeIcon icon={faExclamationTriangle} /> {" "}
     The attempt to start a session failed with the following error:
     <div><code>{launchError}</code></div>
     This could be an intermittent issue, so you should try a second time,
@@ -1863,7 +1862,7 @@ function LaunchErrorFrontendAlert({ launchError, pipelines }) {
   if (pipeline && (pipeline.path || pipeline.status === "success"))
     return null;
   return <WarnAlert timeout={0}>
-    <FontAwesomeIcon icon={faExclamationTriangle} /> {launchError.errorMessage}
+    {launchError.errorMessage}
   </WarnAlert>;
 }
 

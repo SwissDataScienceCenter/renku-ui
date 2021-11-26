@@ -32,9 +32,17 @@ import {
   Modal, ModalBody, ModalFooter, ModalHeader, Row, Table, UncontrolledTooltip
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationTriangle, faInfoCircle, faLink, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import { faInfoCircle, faLink, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 
-import { ButtonWithMenu, Clipboard, ExternalLink, FieldGroup, Loader } from "../../utils/UIComponents";
+import {
+  ButtonWithMenu,
+  Clipboard,
+  ErrorAlert,
+  ExternalLink,
+  FieldGroup,
+  Loader,
+  WarnAlert
+} from "../../utils/UIComponents";
 import { slugFromTitle } from "../../utils/HelperFunctions";
 import { capitalize } from "../../utils/formgenerator/FormGenerator.present";
 import { Url } from "../../utils/url";
@@ -243,9 +251,8 @@ function Automated(props) {
   if (automated.error) {
     const error = (<pre>{automated.error}</pre>);
     return (
-      <Alert key="alert" color="danger">
+      <ErrorAlert timeout={0} key="alert" >
         <p>
-          <FontAwesomeIcon icon={faExclamationTriangle} />&nbsp;
           We could not pre-fill the fields with the information provided in the RenkuLab project-creation link.
         </p>
         <p>
@@ -257,23 +264,22 @@ function Automated(props) {
           {showError ? "Hide error details" : "Show error details"}
         </Button>
         <Fade in={showError} tag="div">{showError ? error : null}</Fade>
-      </Alert>
+      </ErrorAlert>
     );
   }
   // warnings
   else if (automated.warnings.length) {
     const warnings = (<pre>{automated.warnings.join("\n")}</pre>);
     return (
-      <Alert color="warning">
+      <WarnAlert timeout={0}>
         <p>
-          <FontAwesomeIcon icon={faExclamationTriangle} />&nbsp;
           Some fields could not be pre-filled with the information provided in the RenkuLab project-creation link.
         </p>
         <Button color="link" style={{ fontSize: "smaller" }} className="font-italic" onClick={() => toggleWarn()}>
           {showWarnings ? "Hide warnings" : "Show warnings"}
         </Button>
         <Fade in={showWarnings} tag="div">{showWarnings ? warnings : null}</Fade>
-      </Alert>
+      </WarnAlert>
     );
   }
   // all good
@@ -896,9 +902,6 @@ class Create extends Component {
           content = error[0];
       }
       const fatal = templates.all && templates.all.length ? false : true;
-      const description = fatal ?
-        (<p>Unable to fetch templates.</p>) :
-        (<p>Errors happend while fetching templates. Some of them may be unavailable.</p>);
       const suggestion = input.userRepo ?
         (<span>
           Double check the Repository URL and Reference, then try to fetch again.
@@ -911,14 +914,22 @@ class Create extends Component {
           <a href="https://github.com/SwissDataScienceCenter/renku"
             target="_blank" rel="noreferrer noopener">GitHub</a>.
         </span>);
-      alert = (
-        <Alert color={fatal ? "danger" : "warning"}>
-          {description}
+      alert = fatal ? (
+        <ErrorAlert timeout={0}>
+          <p>Unable to fetch templates.</p>
           {content}
           <small>
-            <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> {suggestion}
+            {suggestion}
           </small>
-        </Alert>
+        </ErrorAlert>
+      ) : (
+        <WarnAlert timeout={0}>
+          <p>Errors happened while fetching templates. Some of them may be unavailable.</p>
+          {content}
+          <small>
+            {suggestion}
+          </small>
+        </WarnAlert>
       );
       if (fatal)
         return alert;
@@ -1159,6 +1170,18 @@ class Creation extends Component {
     }
     else {
       return null;
+    }
+
+    if (color === "warning") {
+      return (
+        <WarnAlert timeout={0}>{message}</WarnAlert>
+      );
+    }
+
+    if (color === "danger") {
+      return (
+        <ErrorAlert timeout={0}>{message}</ErrorAlert>
+      );
     }
 
     return (

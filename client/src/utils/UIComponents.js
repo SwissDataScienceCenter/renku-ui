@@ -417,30 +417,26 @@ class RenkuAlert extends Component {
   }
 
   getIcon() {
-    switch (this.props.color) {
-      case "danger":
-        return <img alt="danger icon" src={rkDangerIcon} />;
-      case "info":
-        return <img alt="info icon" src={rkInfoIcon} />;
-      case "warning":
-        return <img alt="warning icon" src={rkWarningIcon} />;
-      case "success":
-        return <img alt="success icon" src={rkSuccessIcon} />;
-      default:
-        return "";
-    }
+    const icon = ({
+      "danger": <img alt="danger icon" src={rkDangerIcon} />,
+      "info": <img alt="info icon" src={rkInfoIcon} />,
+      "warning": <img alt="warning icon" src={rkWarningIcon} />,
+      "success": <img alt="success icon" src={rkSuccessIcon} />,
+    })[this.props.color];
+
+    return icon ? (
+      <div className="alert-icon">{icon}</div>
+    ) : "";
   }
 
   render() {
-    const icon = this.getIcon();
+    const alertIcon = this.getIcon();
     if (this.props.hidden || this.state.hidden) return null;
     const isOpen = this.props.open ? this.props.open : this.state.open;
     return (
       <Alert color={this.props.color} isOpen={isOpen} toggle={this.onDismiss}>
         <div className="alert-content">
-          <div className="alert-icon">
-            {icon}
-          </div>
+          {alertIcon}
           <div>
             {this.props.children}
           </div>

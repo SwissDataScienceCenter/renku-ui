@@ -18,10 +18,10 @@
 
 import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle, faCheck, faExclamationTriangle, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
+import { faInfoCircle, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Button, Alert, Progress } from "reactstrap";
 
-import { Loader } from "../utils/UIComponents";
+import { Loader, SuccessAlert, WarnAlert } from "../utils/UIComponents";
 import { GraphIndexingStatus } from "../project/Project";
 
 function KnowledgeGraphPrivateInfo(props) {
@@ -42,7 +42,7 @@ function KnowledgeGraphPrivateInfo(props) {
 function KnowledgeGraphStatus(props) {
   const { error, progress, webhookJustCreated } = props;
   if (error != null) {
-    return <Alert color="warning">
+    return <WarnAlert timeout={0}>
       Knowledge Graph integration must be activated to view the lineage, but&nbsp;
       there is a problem with the knowledge graph integration for this project. To resolve this problem,
       you should contact the development team on&nbsp;
@@ -50,7 +50,7 @@ function KnowledgeGraphStatus(props) {
         target="_blank" rel="noreferrer noopener">Gitter</a> or&nbsp;
       <a href="https://github.com/SwissDataScienceCenter/renku"
         target="_blank" rel="noreferrer noopener">GitHub</a>.
-    </Alert>;
+    </WarnAlert>;
   }
   if (progress == null) {
     return (
@@ -60,9 +60,9 @@ function KnowledgeGraphStatus(props) {
   if (progress === GraphIndexingStatus.NO_WEBHOOK) {
     if (webhookJustCreated) {
       return (
-        <Alert color="warning">
+        <WarnAlert timeout={0}>
           Knowledge Graph activated! Lineage computation starting soon...
-        </Alert>
+        </WarnAlert>
       );
     }
 
@@ -71,8 +71,7 @@ function KnowledgeGraphStatus(props) {
       <span>You do not have sufficient rights, but a project owner can do this.</span>;
 
     return (
-      <Alert color="warning">
-        <FontAwesomeIcon icon={faExclamationTriangle} />&nbsp;
+      <WarnAlert timeout={0}>
         {props.warningMessage ?
           props.warningMessage :
           "Knowledge Graph integration must be activated to view the lineage."}
@@ -80,7 +79,7 @@ function KnowledgeGraphStatus(props) {
         <KnowledgeGraphPrivateInfo isPrivate={props.isPrivate} />
         <br />
         {action}
-      </Alert>
+      </WarnAlert>
     );
 
   }
@@ -117,9 +116,10 @@ function KnowledgeGraphStatus(props) {
     );
   }
   else if (props.displaySuccessMessage) {
-    return <Alert color="success">
-      <FontAwesomeIcon icon={faCheck} /> Knowledge Graph integration is active.
-    </Alert>;
+    return <SuccessAlert timeout={0}>
+      Knowledge Graph integration is active.
+    </SuccessAlert>
+    ;
   }
 
   return null;
