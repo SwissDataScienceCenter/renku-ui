@@ -1,5 +1,24 @@
 # Changes
 
+## [1.2.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.1.0...1.2.0) (2021-11-26)
+
+### Features
+
+**Server**
+
+* improve stability when external stores are temporarily unavailable ([#1583](https://github.com/SwissDataScienceCenter/renku-ui/issues/1583), [#1521](https://github.com/SwissDataScienceCenter/renku-ui/issues/1521))
+
+**Client**
+
+* add PDF file viewer ([#998](https://github.com/SwissDataScienceCenter/renku-ui/issues/998), [#1566](https://github.com/SwissDataScienceCenter/renku-ui/issues/1566))
+* render LaTeX math ([#1552](https://github.com/SwissDataScienceCenter/renku-ui/issues/1552), [#1557](https://github.com/SwissDataScienceCenter/renku-ui/issues/1557), [#946](https://github.com/SwissDataScienceCenter/renku-ui/issues/946))
+* improve performance when loading user's projects ([#1553](https://github.com/SwissDataScienceCenter/renku-ui/issues/1553), closes [#1529](https://github.com/SwissDataScienceCenter/renku-ui/issues/1529))
+* update Renku commands cheat sheet ([#1582](https://github.com/SwissDataScienceCenter/renku-ui/issues/1582), [#1558](https://github.com/SwissDataScienceCenter/renku-ui/issues/1558))
+
+### BREAKING CHANGES
+
+* requires renku-gateway version >= 0.10.2
+
 
 ## [1.1.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.0.2...1.1.0) (2021-11-12)
 
