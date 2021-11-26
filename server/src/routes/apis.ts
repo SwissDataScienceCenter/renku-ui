@@ -39,13 +39,17 @@ const proxyMiddleware = createProxyMiddleware({
     // remove unnecessary cookies to avoid gateway conflicts with auth tokens
     clientReq.removeHeader("cookie");
   },
-  onProxyRes: (clientRes, req: express.Request) => {
-    // preserve auth headers
+  onProxyRes: (clientRes, req: express.Request, res: express.Response) => {
     const expHeader = req.get(config.auth.invalidHeaderField);
     if (expHeader != null) {
       clientRes.headers[config.auth.invalidHeaderField] = expHeader;
-      if (expHeader === config.auth.invalidHeaderExpired)
+      if (expHeader === config.auth.invalidHeaderExpired) {
+        // We return a different response to prevent side effects from caching mechanism on 30x responses
         logger.warn(`Authentication expired when trying to reach ${req.originalUrl}. Attaching auth headers.`);
+        res.status(500);
+        res.setHeader(config.auth.invalidHeaderField, expHeader);
+        res.json({ error: "Invalid authentication tokens" });
+      }
     }
   }
 });
