@@ -105,7 +105,7 @@ jobs:
     - name: Push chart and images
       uses: SwissDataScienceCenter/renku-actions/publish-chart@v0.3.0
       env:
-        GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
         CHART_NAME: renku-ui
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
@@ -114,10 +114,10 @@ jobs:
     - name: Update ui version
       uses: SwissDataScienceCenter/renku-actions/update-component-version@v0.3.0
       env:
-        GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
         CHART_NAME: renku-ui
     - name: Update ui-server version
       uses: SwissDataScienceCenter/renku-actions/update-component-version@v0.3.0
       env:
-        GITHUB_TOKEN: ${{ secrets.DEPLOY_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
         CHART_NAME: renku-ui-server
