@@ -78,19 +78,19 @@ function ColorsGuide(props) {
       <tbody>
         <tr>
           <th scope="row">info?</th>
-          <td className="bg-info text-white">#0F7396 hsl(196, 90%, 59%)</td>
+          <td className="bg-info text-white">#0F7396 hsl(196, 82%, 32%)</td>
         </tr>
         <tr>
           <th scope="row">success?</th>
-          <td className="bg-success text-white">#009568 hsl(162, 100%, 58%)</td>
+          <td className="bg-success text-white">#009568 hsl(162, 100%, 29%)</td>
         </tr>
         <tr>
           <th scope="row">danger?</th>
-          <td className="bg-danger text-white">#B40A3C hsl(342, 94%, 71%)</td>
+          <td className="bg-danger text-white">#B40A3C hsl(342, 89%, 37%)</td>
         </tr>
         <tr>
           <th scope="row">warning?</th>
-          <td className="bg-warning text-white">#D1BB4C hsl(50, 64%, 82%)</td>
+          <td className="bg-warning text-white">#D1BB4C hsl(50, 59%, 56%)</td>
         </tr>
       </tbody>
     </Table>
