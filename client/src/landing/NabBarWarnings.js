@@ -89,7 +89,7 @@ function VersionsBannerPresent(props) {
     return null;
 
   return (
-    <WarnAlert timeout={0} className="container-xxl renku-container" fade={false}>
+    <WarnAlert className="container-xxl renku-container" fade={false}>
       <h5>
         A new version of RenkuLab is available!
       </h5>

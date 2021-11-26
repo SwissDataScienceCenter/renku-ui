@@ -42,7 +42,7 @@ function KnowledgeGraphPrivateInfo(props) {
 function KnowledgeGraphStatus(props) {
   const { error, progress, webhookJustCreated } = props;
   if (error != null) {
-    return <WarnAlert timeout={0}>
+    return <WarnAlert>
       Knowledge Graph integration must be activated to view the lineage, but&nbsp;
       there is a problem with the knowledge graph integration for this project. To resolve this problem,
       you should contact the development team on&nbsp;
@@ -60,7 +60,7 @@ function KnowledgeGraphStatus(props) {
   if (progress === GraphIndexingStatus.NO_WEBHOOK) {
     if (webhookJustCreated) {
       return (
-        <WarnAlert timeout={0}>
+        <WarnAlert>
           Knowledge Graph activated! Lineage computation starting soon...
         </WarnAlert>
       );
@@ -71,7 +71,7 @@ function KnowledgeGraphStatus(props) {
       <span>You do not have sufficient rights, but a project owner can do this.</span>;
 
     return (
-      <WarnAlert timeout={0}>
+      <WarnAlert>
         {props.warningMessage ?
           props.warningMessage :
           "Knowledge Graph integration must be activated to view the lineage."}
@@ -116,7 +116,7 @@ function KnowledgeGraphStatus(props) {
     );
   }
   else if (props.displaySuccessMessage) {
-    return <SuccessAlert timeout={0}>
+    return <SuccessAlert>
       Knowledge Graph integration is active.
     </SuccessAlert>
     ;

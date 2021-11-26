@@ -96,7 +96,7 @@ function SiteStatusDetails(props) {
       </span> { status.description }
     </div>;
   }
-  return <WarnAlert timeout={0}>{ status.description }</WarnAlert>;
+  return <WarnAlert>{ status.description }</WarnAlert>;
 }
 
 /**
@@ -107,7 +107,7 @@ function SiteStatusLanding(props) {
   const siteStatusUrl = props.siteStatusUrl;
   if (status.indicator === "none")
     return null;
-  return <WarnAlert timeout={0} className="container-xxl renku-container">
+  return <WarnAlert className="container-xxl renku-container">
     RenkuLab is unstable: { status.description }. {" "}
     See <b><Link to={siteStatusUrl}>RenkuLab Status</Link></b> for more details.
   </WarnAlert>;
@@ -140,7 +140,7 @@ function MaintenanceSummaryDetails(props) {
   const mtf = maintenanceTimeFragment(first);
   const summary =
     `${mtf}. See below for information about the availability and limitations.`;
-  return <WarnAlert timeout={0}>{ summary }</WarnAlert>;
+  return <WarnAlert>{ summary }</WarnAlert>;
 }
 
 function MaintenanceInfo(props) {
@@ -251,7 +251,7 @@ function StatuspageDisplay(props) {
     return <Loader />;
   if (summary.not_configured) return null;
   if (summary.error != null) {
-    return <WarnAlert timeout={0}>Could not retrieve status information about this RenkuLab instance. {" "}
+    return <WarnAlert>Could not retrieve status information about this RenkuLab instance. {" "}
       Please ask an administrator to check the statuspage.io configuration.</WarnAlert>;
   }
   if (summary.statuspage == null)

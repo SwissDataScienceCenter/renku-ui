@@ -394,7 +394,7 @@ function SessionConfigError(props) {
   const toggleShowError = () => setShowError(!showError);
 
   return (
-    <ErrorAlert timeout={0}>
+    <ErrorAlert>
       <h3>Error</h3>
       <p>We could not access the project settings.</p>
 
@@ -413,7 +413,7 @@ function NewConfigStatus(props) {
 
   if (error) {
     return (
-      <ErrorAlert timeout={0}>
+      <ErrorAlert>
         Error occurred
         while updating &quot;{keyName}&quot;: {error}
       </ErrorAlert>
@@ -567,7 +567,7 @@ function SessionConfigAdvanced(props) {
   const toggleShowImage = () => setShowImage(!showImage);
 
   const warningMessage = devAccess ?
-    (<WarnAlert timeout={0}>
+    (<WarnAlert>
       Fixing
       an image can yield improvements, but it can also lead to sessions not working in the expected
       way. <a href="https://renku.readthedocs.io/en/latest/user/session_customizing.html">

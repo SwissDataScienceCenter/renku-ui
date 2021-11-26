@@ -251,7 +251,7 @@ function Automated(props) {
   if (automated.error) {
     const error = (<pre>{automated.error}</pre>);
     return (
-      <ErrorAlert timeout={0} key="alert" >
+      <ErrorAlert key="alert" >
         <p>
           We could not pre-fill the fields with the information provided in the RenkuLab project-creation link.
         </p>
@@ -271,7 +271,7 @@ function Automated(props) {
   else if (automated.warnings.length) {
     const warnings = (<pre>{automated.warnings.join("\n")}</pre>);
     return (
-      <WarnAlert timeout={0}>
+      <WarnAlert>
         <p>
           Some fields could not be pre-filled with the information provided in the RenkuLab project-creation link.
         </p>
@@ -915,7 +915,7 @@ class Create extends Component {
             target="_blank" rel="noreferrer noopener">GitHub</a>.
         </span>);
       alert = fatal ? (
-        <ErrorAlert timeout={0}>
+        <ErrorAlert>
           <p>Unable to fetch templates.</p>
           {content}
           <small>
@@ -923,7 +923,7 @@ class Create extends Component {
           </small>
         </ErrorAlert>
       ) : (
-        <WarnAlert timeout={0}>
+        <WarnAlert>
           <p>Errors happened while fetching templates. Some of them may be unavailable.</p>
           {content}
           <small>
@@ -1174,13 +1174,13 @@ class Creation extends Component {
 
     if (color === "warning") {
       return (
-        <WarnAlert timeout={0}>{message}</WarnAlert>
+        <WarnAlert>{message}</WarnAlert>
       );
     }
 
     if (color === "danger") {
       return (
-        <ErrorAlert timeout={0}>{message}</ErrorAlert>
+        <ErrorAlert>{message}</ErrorAlert>
       );
     }
 

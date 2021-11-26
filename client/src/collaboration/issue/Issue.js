@@ -95,7 +95,7 @@ class IssueViewHeader extends Component {
 
   render() {
     if (this.props.error !== undefined && this.props.error.case === API_ERRORS.notFoundError) {
-      return <ErrorAlert timeout={0}>Error 404: The issue that was selected does not exist or could not be accessed.
+      return <ErrorAlert>Error 404: The issue that was selected does not exist or could not be accessed.
         <br /> <br /> You can go back to the issues list and see available issues for this project. &nbsp;
         <Button color="danger" size="sm"
           onClick={() => this.props.history.push(this.props.issuesUrl)}>Back to list</Button>
@@ -103,7 +103,7 @@ class IssueViewHeader extends Component {
     }
 
     if (this.props.error !== undefined) {
-      return <ErrorAlert timeout={0}>Error: There was an error retrieving the issue.
+      return <ErrorAlert>Error: There was an error retrieving the issue.
         <br /> <br /> You can go back to the issues list and see available issues for this project. &nbsp;
         <Button color="danger" size="sm"
           onClick={() => this.props.history.push(this.props.issuesUrl)}>Back to list</Button>

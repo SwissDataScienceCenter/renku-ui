@@ -53,7 +53,7 @@ function TemplateStatusBody(props) {
     );
   }
   else if (!project_supported) {
-    projectTemplateBody = <WarnAlert timeout={0}>
+    projectTemplateBody = <WarnAlert>
       <p>
         This project appears to be using an experimental version of Renku. Template migration is not supported. {" "}
         <a href="https://renku.readthedocs.io/en/latest/how-to-guides/upgrading-renku.html">
@@ -111,7 +111,7 @@ function TemplateStatusBody(props) {
           do that for you.</p>;
       }
       projectTemplateBody = (
-        <WarnAlert timeout={0}>
+        <WarnAlert>
           <p className="mb-0">
             A new version of the <strong>project template</strong> is available.
             You can learn more about the changes in the template repository.
@@ -140,7 +140,7 @@ function TemplateStatusBody(props) {
 }
 
 function getErrorMessage(error_while, error_what, error_reason) {
-  return <ErrorAlert timeout={0}>
+  return <ErrorAlert>
     <p>
       Error while { error_while } the { error_what } version. Please reload the page to try again.
       If the problem persists you should contact the development team on&nbsp;
@@ -176,7 +176,7 @@ function RenkuVersionStatusBody(props) {
   }
   else if (!project_supported) {
     body = (
-      <WarnAlert timeout={0}>
+      <WarnAlert>
         This project appears to be using an experimental version of Renku. Migration is not supported.{" "}
         <a href="https://renku.readthedocs.io/en/latest/how-to-guides/upgrading-renku.html">
           More info about renku migrate
@@ -226,7 +226,7 @@ function RenkuVersionStatusBody(props) {
       );
     }
     body = (
-      <WarnAlert timeout={0}>
+      <WarnAlert>
         <p>
           A new version of <strong>renku</strong> is available.
           The project needs to be migrated to keep working.

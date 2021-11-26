@@ -724,7 +724,7 @@ function ProjectStatusAlert(props) {
   const conditionalSpace = versionInfo && kgInfo ? <br /> : null;
 
   return (
-    <WarnAlert timeout={0}>
+    <WarnAlert>
       {versionInfo}
       {conditionalSpace}
       {conditionalSpace}
@@ -763,7 +763,7 @@ function ProjectViewDatasets(props) {
 
   if (props.datasets.core.error) {
     return <Col sm={12}>
-      <ErrorAlert timeout={0}>
+      <ErrorAlert>
         There was an error fetching the datasets, please try <Button color="danger" size="sm" onClick={
           () => window.location.reload()
         }> reloading </Button> the page.</ErrorAlert>

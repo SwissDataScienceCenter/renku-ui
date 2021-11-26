@@ -264,7 +264,7 @@ function DatasetError(props) {
       loginHelper;
 
     return (
-      <ErrorAlert timeout={0}>
+      <ErrorAlert>
         <h5>{title}</h5>
         {errorDetails}
         {tip}
@@ -324,7 +324,7 @@ function ErrorAfterCreation(props) {
   </Link>;
 
   return props.location.state && props.location.state.errorOnCreation ?
-    <ErrorAlert timeout={0}>
+    <ErrorAlert>
       <strong>Error on creation</strong><br/>
       The dataset was created, but there was an error adding files to it.<br/>
       Please {editButton} the dataset to add the missing files.
@@ -439,7 +439,7 @@ export default function DatasetView(props) {
     }
     {
       dataset.insideKg === false && props.projectInsideKg === true ?
-        <WarnAlert timeout={0} id="notInKGWarning">
+        <WarnAlert id="notInKGWarning">
           <strong>This dataset is not in the Knowledge Graph;</strong> this means that some
           operations on it are not possible.
           <br /><br />

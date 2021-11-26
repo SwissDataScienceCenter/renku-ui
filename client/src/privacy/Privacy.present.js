@@ -49,7 +49,7 @@ class Privacy extends Component {
     const { content } = this.props;
     if (!content || !content.length) {
       return (
-        <WarnAlert timeout={0}>
+        <WarnAlert>
           There is no content for this page.
         </WarnAlert>
       );

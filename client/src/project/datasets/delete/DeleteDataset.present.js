@@ -34,7 +34,7 @@ function DeleteDatasetPresent(props) {
 
   if (props.serverErrors) {
     modalContent = <Col>
-      <ErrorAlert timeout={0}>
+      <ErrorAlert>
         <p>Errors occurred while deleting this dataset</p>
         <p><pre className="text-wrap">{props.serverErrors.error}</pre></p>
       </ErrorAlert>

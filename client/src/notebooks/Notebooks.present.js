@@ -1848,7 +1848,7 @@ class ServerOptionRange extends Component {
 }
 
 function LaunchErrorBackendAlert({ launchError }) {
-  return <WarnAlert timeout={0}>
+  return <WarnAlert>
     The attempt to start a session failed with the following error:
     <div><code>{launchError}</code></div>
     This could be an intermittent issue, so you should try a second time,
@@ -1861,7 +1861,7 @@ function LaunchErrorFrontendAlert({ launchError, pipelines }) {
   const pipeline = pipelines.main;
   if (pipeline && (pipeline.path || pipeline.status === "success"))
     return null;
-  return <WarnAlert timeout={0}>
+  return <WarnAlert>
     {launchError.errorMessage}
   </WarnAlert>;
 }
