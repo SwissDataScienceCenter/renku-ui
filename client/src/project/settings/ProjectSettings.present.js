@@ -46,7 +46,7 @@ import { Url } from "../../utils/url";
 
 function ProjectSettingsNav(props) {
   return (
-    <Nav className="flex-column nav-light">
+    <Nav className="flex-column nav-light nav-pills-underline">
       <NavItem>
         <RenkuNavLink to={props.settingsUrl} title="General" />
       </NavItem>

@@ -541,7 +541,7 @@ class ProjectViewOverviewNav extends Component {
     //   <RenkuNavLink to={`${this.props.overviewUrl}/results`} title="Results" />
     // </NavItem>
     return (
-      <Nav className="flex-column nav-light">
+      <Nav className="flex-column nav-light nav-pills-underline">
         <NavItem>
           <RenkuNavLink to={this.props.baseUrl} title="General" id="nav-overview-general" />
         </NavItem>
@@ -815,7 +815,7 @@ class ProjectViewCollaborationNav extends Component {
   render() {
     // CR: This is necessary to get spacing to work correctly; do not understand why.
     const navItemStyle = { padding: "8px 0px" };
-    return <Nav className="flex-column nav-light">
+    return <Nav className="flex-column nav-light nav-pills-underline">
       <NavItem style={navItemStyle}>
         <RenkuNavLink to={this.props.issuesUrl} matchPath={true} title="Issues" className="d-inline" />
       </NavItem>
