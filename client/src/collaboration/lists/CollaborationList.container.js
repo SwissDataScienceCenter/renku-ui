@@ -34,7 +34,7 @@ const collaborationListTypeMap = {
 };
 
 async function isValidUrlForIframe(url, serverUrl) {
-  const response = await renkuFetch(`${serverUrl}/api/check-url/${encodeURIComponent(url)}`, {
+  const response = await renkuFetch(`${serverUrl}/api/allows-iframe/${encodeURIComponent(url)}`, {
     method: "GET",
     headers: new Headers({ "Accept": "application/json" })
   });

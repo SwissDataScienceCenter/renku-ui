@@ -24,6 +24,7 @@ import { Authenticator } from "../authentication";
 import { renkuAuth } from "../authentication/middleware";
 import fetch from "cross-fetch";
 import { CheckURLResponse } from "./apis.interfaces";
+import { validateCSP } from "../utils/url";
 
 const tmpProxMiddleware = createProxyMiddleware({
   target: config.deplyoment.gatewayUrl,
@@ -50,25 +51,33 @@ function registerApiRoutes(app: express.Application, prefix: string, authenticat
     res.json(data);
   });
 
-  app.get(prefix + "/check-url/:url", async (req, res) => {
-    const data: CheckURLResponse = {
+  app.get(prefix + "/allows-iframe/:url", async (req, res) => {
+    const validationResponse: CheckURLResponse = {
       isIframeValid: false,
       url: req?.params?.url,
     };
     try {
       const externalUrl = new URL(req?.params?.url);
       const requestExternalURL = await fetch(externalUrl.toString());
-      if (requestExternalURL.status >= 400)
-        data.error = "Bad response from server";
-      else if (requestExternalURL?.headers.has("X-Frame-Options"))
-        data.error = `X-Frame-Options: ${requestExternalURL?.headers.get("X-Frame-Options")}`;
-      else
-        data.isIframeValid = true;
+      if (requestExternalURL.status >= 400) {
+        validationResponse.error = "Bad response from server";
+      }
+      else if (!requestExternalURL?.headers.has("content-security-policy")) {
+        validationResponse.isIframeValid = true;
+        validationResponse.detail = "Header does not contain Content-Security-Policy (CSP)";
+      }
+      else {
+        // check content-security-policy
+        const validation = validateCSP(req?.params?.url, requestExternalURL?.headers.get("content-security-policy"));
+        validationResponse.isIframeValid = validation.isIframeValid;
+        validationResponse.error = validation.error;
+        validationResponse.detail = validation.detail;
+      }
     }
     catch (error) {
-      data.error = error.toString();
+      validationResponse.error = error.toString();
     }
-    res.json(data);
+    res.json(validationResponse);
   });
 
   app.get(prefix + "/projects*", renkuAuth(authenticator), tmpProxMiddleware, () => {
