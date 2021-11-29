@@ -18,6 +18,8 @@ charts:
           - client
           - server
           - helm-chart
+          - .github
+          - "."
         buildArgs:
           SHORT_SHA: "{LAST_COMMIT}"
   - name: helm-chart/renku-ui-server
@@ -39,5 +41,7 @@ charts:
           - client
           - server
           - helm-chart
+          - .github
+          - "."
         buildArgs:
           SHORT_SHA: "{LAST_COMMIT}"
