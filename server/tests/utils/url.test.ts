@@ -45,7 +45,7 @@ describe("Test url util functions", () => {
 
     // valid full match url
     const originUrl = new URL(config.server.url);
-    expect(validateCSP(url, `frame-ancestors ${originUrl.toString()}`).isIframeValid).toBe(true);
+    expect(validateCSP(url, `frame-ancestors ${originUrl.origin}`).isIframeValid).toBe(true);
 
     // valid subdomain match url
     expect(validateCSP(url, `frame-ancestors *.renku.ch`).isIframeValid).toBe(true);

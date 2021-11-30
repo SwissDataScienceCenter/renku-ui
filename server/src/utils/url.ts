@@ -42,7 +42,7 @@ export function validateCSP(url: string, csp: string): CheckURLResponse {
       return { ...response, isIframeValid: true, detail: "frame-ancestors include all domains *" };
 
     // match full url including protocol
-    if (allowedSources.includes(originUrl.toString())) {
+    if (allowedSources.includes(originUrl.origin)) {
       return {
         ...response,
         isIframeValid: true,
@@ -69,13 +69,13 @@ export function validateCSP(url: string, csp: string): CheckURLResponse {
     for (const subdomainAllowed of subdomainsAllowed) {
       // replace for valid string to use parse function
       const allowedUrlParse = parse(subdomainAllowed.replace("*", "www"));
-      const originUrlParse = parse(originUrl.toString());
+      const originUrlParse = parse(originUrl.origin);
       if (allowedUrlParse.subdomain === "www") {
         if (allowedUrlParse.domain === originUrlParse.domain) {
           return {
             ...response,
             isIframeValid: true,
-            detail: `URL ${originUrl.toString()} match frame-ancestors rule ${subdomainAllowed}` };
+            detail: `URL ${originUrl.origin} match frame-ancestors rule ${subdomainAllowed}` };
         }
       }
       else {
@@ -92,7 +92,7 @@ export function validateCSP(url: string, csp: string): CheckURLResponse {
           return {
             ...response,
             isIframeValid: true,
-            detail: `URL ${originUrl.toString()} match frame-ancestors rule ${subdomainAllowed}` };
+            detail: `URL ${originUrl.origin} match frame-ancestors rule ${subdomainAllowed}` };
         }
       }
     }
