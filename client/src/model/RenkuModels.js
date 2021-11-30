@@ -90,14 +90,8 @@ const projectSchema = new Schema({
   core: {
     schema: {
       available: { initial: null },
-      created_at: { initial: null, },
-      last_activity_at: { initial: null, },
       id: { initial: null, },
       description: { initial: "no description", mandatory: true },
-      displayId: { initial: "", },
-      title: { initial: "no title", mandatory: true },
-      external_url: { initial: "", },
-      path_with_namespace: { initial: null },
       owner: { initial: null },
     }
   },
@@ -119,46 +113,18 @@ const projectSchema = new Schema({
         schema: {
           files: { schema: [] }
         }
-      },
-      readme: {
-        schema: {
-          text: { initial: "", mandatory: false }
-        }
       }
     },
   },
   system: {
     schema: {
-      tag_list: { schema: [] },
-      star_count: { initial: 0, mandatory: true },
-      forks_count: { initial: 0, mandatory: true },
-      forked_from_project: { initial: {} },
-      ssh_url: { initial: "", },
-      http_url: { initial: "", },
-      merge_requests: { schema: [], initial: [] },
       branches: { schema: [], initial: [] },
       autosaved: { schema: [], initial: [] },
-    }
-  },
-  files: {
-    schema: {
-      notebooks: { schema: [] },
-      data: { schema: [] },
-      modifiedFiles: { initial: {}, mandatory: true }
     }
   },
   transient: {
     schema: {
       requests: { initial: {} },
-    }
-  },
-  webhook: {
-    schema: {
-      status: { initial: null },
-      created: { initial: null },
-      possible: { initial: null },
-      stop: { initial: null },
-      progress: { initial: null }
     }
   },
   migration: {
@@ -285,26 +251,11 @@ const projectStatisticsSchema = new Schema({
 });
 
 const projectGlobalSchema = new Schema({
-  metadata: {
+  branches: {
     [Prop.SCHEMA]: new Schema({
-      exists: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
-
-      id: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // id
-      namespace: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // namespace.full_path
-      path: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // path
-      pathWithNamespace: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // path_with_namespace
-      repositoryUrl: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // web_url
-      starCount: { [Prop.INITIAL]: null }, // star_count
-      forksCount: { [Prop.INITIAL]: null }, // forks_count
-
-      fetched: { [Prop.INITIAL]: null },
-      fetching: { [Prop.INITIAL]: false },
-    })
-  },
-  statistics: {
-    [Prop.SCHEMA]: new Schema({
-      data: { schema: projectStatisticsSchema },
-
+      standard: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
+      autosaved: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
+      error: { [Prop.INITIAL]: null },
       fetched: { [Prop.INITIAL]: null },
       fetching: { [Prop.INITIAL]: false },
     })
@@ -318,12 +269,6 @@ const projectGlobalSchema = new Schema({
       fetching: { [Prop.INITIAL]: false },
     })
   },
-  filters: {
-    [Prop.SCHEMA]: new Schema({
-      branch: { [Prop.INITIAL]: { name: null }, [Prop.MANDATORY]: true },
-      commit: { [Prop.INITIAL]: { id: "latest" }, [Prop.MANDATORY]: true },
-    })
-  },
   config: {
     [Prop.SCHEMA]: new Schema({
       data: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
@@ -334,7 +279,91 @@ const projectGlobalSchema = new Schema({
       initial: { [Prop.INITIAL]: {} },
       input: { [Prop.INITIAL]: {} }
     })
-  }
+  },
+  data: {
+    [Prop.SCHEMA]: new Schema({
+      readme: { [Prop.INITIAL]: {} }
+    })
+  },
+  datasets: {
+    [Prop.SCHEMA]: new Schema({
+      datasets_kg: { [Prop.INITIAL]: [] },
+      core: { [Prop.INITIAL]: {
+        datasets: null,
+        error: null
+      } }
+    })
+  },
+  files: {
+    [Prop.SCHEMA]: new Schema({
+      notebooks: { [Prop.INITIAL]: [] },
+      data: { [Prop.INITIAL]: [] },
+      modifiedFiles: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true }
+    })
+  },
+  filesTree: {
+    [Prop.SCHEMA]: new Schema({
+      hash: { [Prop.INITIAL]: {} },
+      loaded: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true }
+    })
+  },
+  filters: {
+    [Prop.SCHEMA]: new Schema({
+      branch: { [Prop.INITIAL]: { name: null }, [Prop.MANDATORY]: true },
+      commit: { [Prop.INITIAL]: { id: "latest" }, [Prop.MANDATORY]: true },
+    })
+  },
+  forkedFromProject: { [Prop.INITIAL]: {} },
+  metadata: {
+    [Prop.SCHEMA]: new Schema({
+      avatarUrl: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // avatar_url
+      accessLevel: { [Prop.INITIAL]: 0, [Prop.MANDATORY]: true }, // visibility.access_level
+      createdAt: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true }, // created_at
+      defaultBranch: { [Prop.INITIAL]: null }, // default_branch
+      description: { [Prop.INITIAL]: "" },
+      exists: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+      externalUrl: { [Prop.INITIAL]: "" }, // external_url
+      forksCount: { [Prop.INITIAL]: null }, // forks_count
+      httpUrl: { [Prop.INITIAL]: "", }, // http_url
+      id: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // id
+      lastActivityAt: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true }, // last_activity_at
+      namespace: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // namespace.full_path
+      owner: { [Prop.INITIAL]: null },
+      path: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+      pathWithNamespace: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // path_with_namespace
+      repositoryUrl: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // web_url
+      sshUrl: { [Prop.INITIAL]: "", }, // ssh_url
+      starCount: { [Prop.INITIAL]: null }, // star_count
+      tagList: { [Prop.INITIAL]: [] }, // tag_list
+      title: { [Prop.INITIAL]: "" },
+      visibility: { [Prop.INITIAL]: "private", [Prop.MANDATORY]: true }, // visibility.level
+
+      fetched: { [Prop.INITIAL]: null },
+      fetching: { [Prop.INITIAL]: false },
+    })
+  },
+  statistics: {
+    [Prop.SCHEMA]: new Schema({
+      data: { schema: projectStatisticsSchema },
+
+      fetched: { [Prop.INITIAL]: null },
+      fetching: { [Prop.INITIAL]: false },
+    })
+  },
+  transient: {
+    [Prop.SCHEMA]: new Schema({
+      requests: { [Prop.INITIAL]: {} }
+    })
+  },
+  webhook: {
+    [Prop.SCHEMA]: {
+      status: { [Prop.INITIAL]: null },
+      created: { [Prop.INITIAL]: null },
+      possible: { [Prop.INITIAL]: null },
+      stop: { [Prop.INITIAL]: null },
+      progress: { [Prop.INITIAL]: null }
+    }
+  },
 });
 
 const notebooksSchema = new Schema({
