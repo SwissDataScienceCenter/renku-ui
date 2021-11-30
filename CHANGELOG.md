@@ -1,5 +1,11 @@
 # Changes
 
+## [1.2.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.2.0...1.2.1) (2021-11-29)
+
+### Bug Fixes
+
+* adjust the build pipeline to prevent showing version update popups when unnecessary ([#1594](https://github.com/SwissDataScienceCenter/renku-ui/issues/1594))
+
 ## [1.2.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.1.0...1.2.0) (2021-11-26)
 
 ### Features
