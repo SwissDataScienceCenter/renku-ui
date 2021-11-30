@@ -57,9 +57,11 @@ function TemplateStatusBody(props) {
   else if (!project_supported) {
     projectTemplateBody = <Alert color="warning">
       <p>
-        <FontAwesomeIcon icon={faExclamationTriangle} />&nbsp;
-        This project appears to be using an experimental version of Renku. Template migration is not supported.&nbsp;
-        <a href="https://renku.readthedocs.io/en/latest/user/upgrading_renku.html">More info about renku migrate</a>.
+        <FontAwesomeIcon icon={faExclamationTriangle} /> This project appears to be using an experimental version
+        of Renku. Template migration is not supported. {" "}
+        <a href="https://renku.readthedocs.io/en/latest/how-to-guides/upgrading-renku.html">
+          More info about renku migrate
+        </a>.
       </p>
     </Alert>;
   }
@@ -108,7 +110,7 @@ function TemplateStatusBody(props) {
       else {
         updateSection = <p><strong>You do not have the required permissions to upgrade this project.</strong>
           &nbsp;You can <ExternalLink role="text" size="sm"
-            title="ask a project maintainer" url={`${props.externalUrl}/project_members`} /> to
+            title="ask a project maintainer" url={`${props.externalUrl}/-/project_members`} /> to
           do that for you.</p>;
       }
       projectTemplateBody = (
@@ -179,9 +181,11 @@ function RenkuVersionStatusBody(props) {
   else if (!project_supported) {
     body = (
       <Alert color="warning">
-        <FontAwesomeIcon icon={faExclamationTriangle} />&nbsp;
-        This project appears to be using an experimental version of Renku. Migration is not supported.&nbsp;
-        <a href="https://renku.readthedocs.io/en/latest/user/upgrading_renku.html">More info about renku migrate</a>.
+        <FontAwesomeIcon icon={faExclamationTriangle} /> This project appears to be using an experimental
+        version of Renku. Migration is not supported.{" "}
+        <a href="https://renku.readthedocs.io/en/latest/how-to-guides/upgrading-renku.html">
+          More info about renku migrate
+        </a>.
       </Alert>);
   }
   else if (migration_required || docker_update_possible) {
@@ -221,7 +225,7 @@ function RenkuVersionStatusBody(props) {
         <p>
           <strong>You do not have the required permissions to upgrade this project.</strong>
             &nbsp;You can <ExternalLink role="text" size="sm"
-            title="ask a project maintainer" url={`${props.externalUrl}/project_members`} /> to
+            title="ask a project maintainer" url={`${props.externalUrl}/-/project_members`} /> to
           do that for you.
         </p>
       );
@@ -258,14 +262,12 @@ function ProjectVersionStatusBody(props) {
   const maintainer = props.visibility.accessLevel >= ACCESS_LEVELS.MAINTAINER;
   const isLogged = props.user && props.user.logged;
 
+  const docUrl = "https://renku.readthedocs.io/en/latest/how-to-guides/upgrading-renku.html" +
+    "#upgrading-your-image-to-use-the-latest-renku-cli-version";
   const updateInstruction = (
     <Fragment>
-      You can launch
-      a <Link to={props.launchNotebookUrl}>session</Link> and follow the&nbsp;
-      <a href={`${"https://renku.readthedocs.io/en/latest/user/upgrading_renku.html" +
-        "#upgrading-your-image-to-use-the-latest-renku-cli-version"}`}>
-        instructions for upgrading</a>.
-      When finished, you will need to run <code>renku migrate</code>.
+      You can launch a <Link to={props.launchNotebookUrl}>session</Link> and follow the{" "}
+      <a href={docUrl}>instructions for upgrading</a>. When finished, you will need to run <code>renku migrate</code>.
     </Fragment>
   );
 
