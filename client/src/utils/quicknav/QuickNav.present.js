@@ -76,7 +76,11 @@ class QuickNavPresent extends Component {
       placeholder: "Search or jump to...",
       type: "search",
       value: this.props.value,
-      onChange: this.props.callbacks.onChange
+      onChange: this.props.callbacks.onChange,
+      onKeyDown: (e) => {
+        if (e.key === "Enter")
+          return this.props.callbacks.onSubmit(e);
+      }
     };
 
     return (
@@ -87,6 +91,7 @@ class QuickNavPresent extends Component {
           onSuggestionsFetchRequested={this.props.callbacks.onSuggestionsFetchRequested}
           onSuggestionsClearRequested={this.props.callbacks.onSuggestionsClearRequested}
           onSuggestionSelected={this.props.callbacks.onSuggestionSelected}
+          onSuggestionHighlighted={this.props.callbacks.onSuggestionHighlighted}
           multiSection={true}
           renderSectionTitle={this.onSectionTitle}
           getSectionSuggestions={(section) => section.suggestions}

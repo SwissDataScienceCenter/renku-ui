@@ -58,6 +58,7 @@ class QuickNavContainerWithRouter extends Component {
       onSuggestionsFetchRequested: this.onSuggestionsFetchRequested.bind(this),
       onSuggestionsClearRequested: this.onSuggestionsClearRequested.bind(this),
       onSuggestionSelected: this.onSuggestionSelected.bind(this),
+      onSuggestionHighlighted: this.onSuggestionHighlighted.bind(this),
       getSuggestionValue: (suggestion) => suggestion ? suggestion.path : ""
     };
     this.currentSearchValue = null;
@@ -135,8 +136,19 @@ class QuickNavContainerWithRouter extends Component {
   }
 
   onSuggestionSelected(event, { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }) {
+    if (this.bar.get("suggestions") == null)
+      return;
+
     const selectedSuggestion = this.bar.get("suggestions")[sectionIndex].suggestions[suggestionIndex];
     this.bar.set("selectedSuggestion", selectedSuggestion);
+  }
+
+  onSuggestionHighlighted({ suggestion }) {
+    if (suggestion == null)
+      return;
+
+    if (suggestion.id > 0)
+      this.bar.set("selectedSuggestion", suggestion);
   }
 
   render() {
