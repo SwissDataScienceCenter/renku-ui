@@ -144,7 +144,7 @@ class QuickNavContainerWithRouter extends Component {
   }
 
   onSuggestionHighlighted({ suggestion }) {
-    if (suggestion === null)
+    if (suggestion == null)
       return;
 
     if (suggestion.id > 0)
