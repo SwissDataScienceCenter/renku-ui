@@ -136,7 +136,7 @@ class QuickNavContainerWithRouter extends Component {
   }
 
   onSuggestionSelected(event, { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }) {
-    if (this.bar.get("suggestions") === undefined)
+    if (this.bar.get("suggestions") == null)
       return;
 
     const selectedSuggestion = this.bar.get("suggestions")[sectionIndex].suggestions[suggestionIndex];
