@@ -113,7 +113,7 @@ function NavGuide(props) {
     <br />
     <h4>Second-level Nav</h4>
     <p>If a secondary navigation is necessary, use a second-level nav.</p>
-    <Nav className="flex-column nav-light">
+    <Nav className="flex-column nav-light nav-pills-underline">
       <NavItem>
         <RenkuNavLink to={navUrl} title="Tab 1" />
       </NavItem>
