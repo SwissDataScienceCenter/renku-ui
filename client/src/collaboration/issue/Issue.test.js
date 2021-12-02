@@ -104,16 +104,13 @@ describe("rendering", () => {
       , div);
   });
   it("renders iframe when url is valid", async () => {
-    jest.spyOn(global, "fetch").mockImplementation(() => {
-      return Promise.resolve({
-        status: 200,
-        json: () => Promise.resolve({ isIframeValid: true })
-      });
-    });
     const mockValidUrl = "https://dev.renku.ch/gitlab";
     const mockUrlServer = "https://dev.renku.ch/ui-server";
     const mockRef = null;
-    const client = { uiserverUrl: mockUrlServer };
+    const client = {
+      uiserverUrl: mockUrlServer,
+      isValidUrlForIframe: () => true,
+    };
 
     let rendered;
     act(() => {
@@ -134,19 +131,12 @@ describe("rendering", () => {
     const finalRender = rendered.toJSON();
     expect(initialRender.type).toBe("div");
     expect(finalRender.type).toBe("iframe");
-    global.fetch.mockRestore();
   });
   it("no renders iframe when url is invalid", async () => {
-    jest.spyOn(global, "fetch").mockImplementation(() => {
-      return Promise.resolve({
-        status: 200,
-        json: () => Promise.resolve({ isIframeValid: false })
-      });
-    });
     const mockInvalidUrl = "https://dev.renku.ch/gitlab";
     const mockUrlServer = "https://dev.renku.ch/ui-server";
     const mockRef = null;
-    const client = { uiserverUrl: mockUrlServer };
+    const client = { uiserverUrl: mockUrlServer, isValidUrlForIframe: () => false };
 
     let rendered;
     act(() => {
@@ -166,7 +156,6 @@ describe("rendering", () => {
     const finalRender = rendered.toJSON();
     expect(finalRender.type).toBe("div");
     expect(finalRender.children[0]).toBe("This Gitlab instance cannot be embedded in RenkuLab. Please");
-    global.fetch.mockRestore();
   });
 });
 

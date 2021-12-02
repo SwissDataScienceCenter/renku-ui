@@ -18,6 +18,8 @@
 
 // API methods that return Gitlab server instance-level information
 
+import { renkuFetch } from "./utils";
+
 function addInstanceMethods(client) {
   client.getNamespaces = async (per_page = 100) => {
     const url = `${client.baseUrl}/namespaces`;
@@ -50,6 +52,15 @@ function addInstanceMethods(client) {
       method: "GET",
       headers
     });
+  };
+
+  client.isValidUrlForIframe = async (url) => {
+    const response = await renkuFetch(`${client.uiserverUrl}/api/allows-iframe/${encodeURIComponent(url)}`, {
+      method: "GET",
+      headers: new Headers({ "Accept": "application/json" })
+    });
+    const data = await response.json();
+    return data?.isIframeValid ?? false;
   };
 }
 

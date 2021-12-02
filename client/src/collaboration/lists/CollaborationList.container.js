@@ -16,11 +16,9 @@
  * limitations under the License.
  */
 
-import React, { Fragment, memo, useEffect, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 
 import { Loader, ExternalLink } from "../../utils/UIComponents";
-import { renkuFetch } from "../../api-client/utils";
-import _ from "lodash";
 
 const itemsStateMap = {
   OPENED: "opened",
@@ -33,27 +31,18 @@ const collaborationListTypeMap = {
   MREQUESTS: "mrequests" // eslint-disable-line
 };
 
-async function isValidUrlForIframe(url, serverUrl) {
-  const response = await renkuFetch(`${serverUrl}/api/allows-iframe/${encodeURIComponent(url)}`, {
-    method: "GET",
-    headers: new Headers({ "Accept": "application/json" })
-  });
-  const data = await response.json();
-  return data?.isIframeValid ?? false;
-}
-
-const CollaborationIframe = memo((props) => {
+const CollaborationIframe = (props) => {
   const [isUrlValid, setIsUrlValid] = useState(false);
 
   useEffect( () => {
     async function validateUrl() {
-      const isValid = await isValidUrlForIframe(props.iframeUrl, props.client.uiserverUrl);
+      const isValid = await props.client.isValidUrlForIframe(props.iframeUrl);
       setIsUrlValid(isValid);
       if (!isValid)
         props.onIFrameLoad();
     }
     validateUrl();
-  }, [props.iframeUrl, props.client.uiserverUrl]); // eslint-disable-line
+  }, [props.iframeUrl]); // eslint-disable-line
 
   const type = props.listType === collaborationListTypeMap.ISSUES ? "Issues" : "Merge Requests";
 
@@ -66,8 +55,7 @@ const CollaborationIframe = memo((props) => {
       This Gitlab instance cannot be embedded in RenkuLab. Please
       <ExternalLink role="text" url={props.iframeUrl} title="Open in a separate tab" className="mx-1" />
       to access {type} </div>;
-}, _.isEqual);
-CollaborationIframe.displayName = "CollaborationIframe";
+};
 
 function CollaborationList(props) {
   const iframeRef = useRef(null);
