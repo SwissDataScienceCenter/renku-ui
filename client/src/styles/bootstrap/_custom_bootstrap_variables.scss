@@ -16,10 +16,17 @@ $rk-white: #FFFFFF;
 $rk-hover:#f9f9f9;
 $rk-hover-blue:#99a3ab; //from bootraps mix https://codepen.io/emdeoh/pen/zYOQOPB
 
-$rk-info: hsl(214, 100%, 38%);
-$rk-success: hsl(128, 72%, 42%);
-$rk-danger: hsl(3, 72%, 50%);
-$rk-warning: hsl(50, 100%, 47%);
+$rk-info: #0F7396;
+$rk-success: #009568;
+$rk-danger: #B40A3C;
+$rk-warning: #D1BB4C;
+
+$rk-info-text: #0F7396;
+$rk-success-text: #009568;
+$rk-danger-text: #B40A3C;
+$rk-warning-text: #897B31;
+
+$rk-table-border: #E4E7EA;
 
 // This will be added to the theme colors in custom_bootstrap
 $rk-colors : (
@@ -41,6 +48,9 @@ $info: $rk-info;
 $success: $rk-success;
 $danger: $rk-danger;
 $warning: $rk-warning;
+
+// Table styles
+$table-border-color: $rk-table-border;
 
 $body-bg: $rk-background; //background color
 $body-color: $rk-dark; //text color
