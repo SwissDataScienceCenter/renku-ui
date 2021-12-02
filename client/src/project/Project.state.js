@@ -96,6 +96,7 @@ class ProjectModel extends StateModel {
   }
 
   setProjectData(data, statistics = false) {
+    if (data == null) return;
     const updatedState = {
       core: { ...data.metadata.core, available: true },
       system: {
