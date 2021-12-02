@@ -263,6 +263,75 @@ function ProjectViewHeaderOverviewDescription({ settingsReadOnly, description, s
   return null;
 }
 
+const ProjectSuggestActions = (props) => {
+  const isProjectMaintainer = props.visibility.accessLevel >= ACCESS_LEVELS.MAINTAINER;
+  const commits = props.projectCoordinator.get("commits");
+  const commitsReadme = props.projectCoordinator.get("commitsReadme");
+  const datasets = props.projectCoordinator.get("datasets.core");
+  const countTotalCommits = commits?.list?.length ?? 0;
+  const countCommitsReadme = commitsReadme?.list.length ?? null;
+  let isReadmeCommitInitial = countCommitsReadme === 1;
+  if (countCommitsReadme === 1 && commits.list.length > 0) {
+    const firstCommit = commits?.list.sort((a, b) => new Date(a.committed_date) - new Date(b.committed_date))[0];
+    isReadmeCommitInitial = firstCommit.id === commitsReadme.list[0].id;
+  }
+
+  const isLoadingDatasets = typeof (datasets) === "string" || datasets?.datasets === null;
+  let hasDatasets = !isLoadingDatasets ? datasets.datasets?.length > 0 : true;
+  const isLoadingData = !commits.fetched ||
+    !commitsReadme.fetched ||
+    countCommitsReadme === null ||
+    isLoadingDatasets;
+
+  useEffect(() => {
+    props.fetchDatasets();
+    if (props.projectCoordinator?.get("metadata.id") !== null)
+      props.projectCoordinator.fetchReadmeCommits();
+  }, []); // eslint-disable-line
+
+  if (!isProjectMaintainer || isLoadingData || countTotalCommits > 4 ||
+    (countCommitsReadme > 1 && hasDatasets) ||
+    (!isReadmeCommitInitial && hasDatasets && countCommitsReadme !== 0)) return null;
+
+  const gitlabIDEUrl = props.externalUrl !== "" && props.externalUrl.includes("/gitlab/") ?
+    props.externalUrl.replace("/gitlab/", "/gitlab/-/ide/project/") : null;
+  const addReadmeUrl = `${gitlabIDEUrl}/edit/${props.core.default_branch}/-/README.md`;
+
+  const suggestionReadme = countCommitsReadme > 1 || (!isReadmeCommitInitial && countCommitsReadme !== 0) ? null
+    : <li><p style={{ fontSize: "smaller" }}>
+      <a className="mx-1" href={addReadmeUrl} target="_blank" rel="noopener noreferrer">
+        <strong className="suggestionTitle">Edit README.md</strong>
+      </a>
+      Use the README to explain your project to others, letting them understand what you want
+      to do and what you have already accomplished.
+    </p></li>;
+
+  const suggestionDataset = hasDatasets ? null
+    : <li><p style={{ fontSize: "smaller" }}>
+      <Link className="mx-1" to={props.newDatasetUrl}>
+        <strong className="suggestionTitle">Add some datasets</strong>
+      </Link>
+      Datasets let you work with data in a structured way, facilitating easier sharing.
+      You can create a new dataset with data you already have, or importing one from another
+      Renku project or from a public data repository such as
+      <ExternalLink className="mx-1" url="https://zenodo.org/" title="Zenodo" role="link" /> or
+      <ExternalLink className="mx-1" url="https://dataverse.harvard.edu/" title="Dataverse" role="link" />.</p></li>;
+
+  return (
+    <InfoAlert timeout={0}>
+      <div className="mb-0" style={{ textAlign: "justify" }}>
+        <span><FontAwesomeIcon icon={faInfoCircle} /> </span>
+        <strong>Welcome</strong> to your new Renku project!
+        It looks like this project is just getting started, so here are some suggestions to help you.  <br/>
+        <ul className="my-2">
+          { suggestionReadme }
+          { suggestionDataset }
+        </ul>
+      </div>
+    </InfoAlert>
+  );
+};
+
 class ProjectViewHeaderOverview extends Component {
   constructor(props) {
     super(props);
@@ -507,6 +576,7 @@ function ProjectViewGeneral(props) {
     <ProjectViewHeaderOverview
       key="overviewHeader"
       forkedFromLink={forkedFromLink} {...props} />
+    <ProjectSuggestActions {...props} />
     <ProjectViewReadme {...props} />
   </Fragment>;
 
@@ -1288,3 +1358,4 @@ export default { ProjectView };
 
 // For testing
 export { filterPaths };
+export { ProjectSuggestActions };

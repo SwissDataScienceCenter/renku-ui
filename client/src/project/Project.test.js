@@ -27,15 +27,18 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
+import TestRenderer, { act } from "react-test-renderer";
 import { createMemoryHistory } from "history";
 
-import { StateModel, globalSchema } from "../model";
+import { StateModel, globalSchema, projectGlobalSchema, SpecialPropVal } from "../model";
 import Project, { mapProjectFeatures, withProjectMapped } from "./Project";
 import { filterPaths } from "./Project.present";
 import { OverviewCommitsBody } from "./overview/ProjectOverview.present";
 import { ProjectCoordinator } from "./Project.state";
-import { testClient as client } from "../api-client";
+import { ACCESS_LEVELS, testClient as client } from "../api-client";
 import { generateFakeUser } from "../user/User.test";
+import { ProjectSuggestActions } from "./Project.present";
+import { sleep } from "../utils/HelperFunctions";
 
 
 const fakeHistory = createMemoryHistory({
@@ -46,6 +49,36 @@ fakeHistory.push({
   pathname: "/projects",
   search: "?page=1"
 });
+
+const getProjectSuggestionProps = (props, loading = true, commits = [], readmeCommits = [], datasets = []) => {
+  props.projectCoordinator.get = (ref) => {
+    switch (ref) {
+      case "commitsReadme":
+        return {
+          fetching: true,
+          fetched: !loading,
+          list: readmeCommits,
+        };
+      case "commits":
+        return {
+          fetching: true,
+          fetched: !loading,
+          list: commits,
+        };
+      case "datasets.core":
+        return loading ? SpecialPropVal.UPDATING : { datasets: datasets };
+    }
+    return {};
+  };
+  props.projectCoordinator.fetchReadmeCommits = () => readmeCommits;
+  props.core = {
+    default_branch: "master"
+  };
+  props.externalUrl = "/gitlab/";
+  props.newDatasetUrl = "new-dataset-url";
+
+  return props;
+};
 
 describe("test ProjectCoordinator related components", () => {
   const model = new StateModel(globalSchema);
@@ -186,5 +219,113 @@ describe("path filtering", () => {
     expect(paths).toEqual(["foo.txt", "bar", "myFolder/.hidden", "myFolder/visible",
       "myFolder/.alsoHidden/other.txt",
       "myFolder/alsoVisible/.hidden", "myFolder/alsoVisible/other.txt"]);
+  });
+});
+
+describe("rendering ProjectSuggestActions", () => {
+  const model = new StateModel(globalSchema);
+  const projectCoordinator = new ProjectCoordinator(client, model.subModel("project"));
+
+  const props = {
+    ...projectGlobalSchema,
+    projectCoordinator,
+    model: {},
+    fetchDatasets: () => {},
+    visibility: { accessLevel: ACCESS_LEVELS.MAINTAINER }
+  };
+
+  it("Don't render if is loading data", () => {
+    const allProps = getProjectSuggestionProps(props, true);
+    const component = TestRenderer.create(
+      <ProjectSuggestActions key="suggestions" {...allProps} />,
+    );
+    expect(component.toJSON()).toBe(null);
+  });
+
+  it("Don't render if user is not a project maintainer", () => {
+    const allProps = getProjectSuggestionProps(props, true);
+    allProps.visibility.accessLevel = ACCESS_LEVELS.GUEST;
+    const component = TestRenderer.create(
+      <ProjectSuggestActions key="suggestions" {...allProps} />,
+    );
+    expect(component.toJSON()).toBe(null);
+    allProps.visibility.accessLevel = ACCESS_LEVELS.MAINTAINER;
+  });
+
+  it("only render readme suggestion when exist datasets", async () => {
+    const exampleCommit = [{ id: "abc", committed_date: "2021-01-01" }];
+    const allProps = getProjectSuggestionProps(props, false, exampleCommit, exampleCommit, [{}]);
+    let rendered;
+    act(() => {
+      rendered = TestRenderer.create(
+        <MemoryRouter>
+          <ProjectSuggestActions key="suggestions" {...allProps} />
+        </MemoryRouter>,
+      );
+    });
+    await sleep(0);
+    const testInstance = rendered.root;
+    const suggestions = testInstance.findAllByProps({ className: "suggestionTitle" });
+    expect(suggestions.length).toBe(1);
+    expect(suggestions[0]?.children[0]).toBe("Edit README.md");
+  });
+
+  it("only render dataset suggestion when exist more that 1 commit in readme", async () => {
+    const exampleCommits = [{ id: "abc", committed_date: "2021-01-01" }, { id: "def", committed_date: "2021-01-02" }];
+    const allProps = getProjectSuggestionProps(props, false, exampleCommits, exampleCommits, []);
+    let rendered;
+    act(() => {
+      rendered = TestRenderer.create(
+        <MemoryRouter>
+          <ProjectSuggestActions key="suggestions" {...allProps} />
+        </MemoryRouter>,
+      );
+    });
+    await sleep(0);
+    const testInstance = rendered.root;
+    const suggestions = testInstance.findAllByProps({ className: "suggestionTitle" });
+    expect(suggestions.length).toBe(1);
+    expect(suggestions[0]?.children[0]).toBe("Add some datasets");
+  });
+
+  it("render all suggestion when exist only that 1 readme commit and no datasets", async () => {
+    const exampleCommit = [{ id: "abc", committed_date: "2021-01-01" }];
+    const allProps = getProjectSuggestionProps(props, false, exampleCommit, exampleCommit, []);
+    let rendered;
+    act(() => {
+      rendered = TestRenderer.create(
+        <MemoryRouter>
+          <ProjectSuggestActions key="suggestions" {...allProps} />
+        </MemoryRouter>,
+      );
+    });
+    await sleep(0);
+    const testInstance = rendered.root;
+    const suggestions = testInstance.findAllByProps({ className: "suggestionTitle" });
+    expect(suggestions.length).toBe(2);
+    expect(suggestions[0]?.children[0]).toBe("Edit README.md");
+    expect(suggestions[1]?.children[0]).toBe("Add some datasets");
+  });
+
+  it("no render all suggestion when exist more than 4 commits", async () => {
+    const exampleCommits = [
+      { id: "abc1", committed_date: "2021-01-01" },
+      { id: "abc2", committed_date: "2021-01-02" },
+      { id: "abc3", committed_date: "2021-01-03" },
+      { id: "abc4", committed_date: "2021-01-04" },
+      { id: "abc5", committed_date: "2021-01-05" }];
+    const exampleReadmeCommit = [{ id: "abc1", committed_date: "2021-01-01" }];
+    const allProps = getProjectSuggestionProps(props, false, exampleCommits, exampleReadmeCommit, []);
+    let rendered;
+    act(() => {
+      rendered = TestRenderer.create(
+        <MemoryRouter>
+          <ProjectSuggestActions key="suggestions" {...allProps} />
+        </MemoryRouter>,
+      );
+    });
+    const testInstance = rendered.root;
+    const suggestions = testInstance.findAllByProps({ className: "suggestionTitle" });
+    expect(suggestions.length).toBe(0);
   });
 });

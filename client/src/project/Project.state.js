@@ -550,6 +550,43 @@ class ProjectCoordinator {
       });
   }
 
+  async fetchReadmeCommits() {
+    // Do not fetch if a fetch is in progress
+    if (this.get("commitsReadme.fetching") === SpecialPropVal.UPDATING) return;
+    this.model.setUpdating({ transient: { requests: { commitsReadme: true } } });
+    const projectId = this.model.get("metadata.id");
+
+    // bring only 2 commits just to validate if the user already edit the readme file
+    try {
+      const request = await this.client.getCommits(
+        projectId,
+        this.model.get("metadata.defaultBranch"),
+        2,
+        "README.md",
+        1);
+      this.model.setObject({
+        commitsReadme: {
+          fetching: false,
+          fetched: new Date(),
+          list: request.data,
+        }
+      });
+      return request.data.length;
+    }
+    catch (error) {
+      if (error.case === API_ERRORS.notFoundError) {
+        this.model.setObject({
+          commitsReadme: {
+            fetching: false,
+            fetched: null,
+            list: [],
+          }
+        });
+      }
+    }
+    return null;
+  }
+
   async fetchProjectConfig(repositoryUrl, branch = null) {
     let configObject = {
       error: { $set: {} },
