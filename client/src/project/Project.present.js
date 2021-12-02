@@ -320,7 +320,6 @@ const ProjectSuggestActions = (props) => {
   return (
     <InfoAlert timeout={0}>
       <div className="mb-0" style={{ textAlign: "justify" }}>
-        <span><FontAwesomeIcon icon={faInfoCircle} /> </span>
         <strong>Welcome</strong> to your new Renku project!
         It looks like this project is just getting started, so here are some suggestions to help you.  <br/>
         <ul className="my-2">
