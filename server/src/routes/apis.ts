@@ -18,11 +18,11 @@
 
 import express from "express";
 import { createProxyMiddleware } from "http-proxy-middleware";
+import fetch from "cross-fetch";
 
 import config from "../config";
 import { Authenticator } from "../authentication";
 import { renkuAuth } from "../authentication/middleware";
-import fetch from "cross-fetch";
 import { CheckURLResponse } from "./apis.interfaces";
 import { validateCSP } from "../utils/url";
 
@@ -54,21 +54,21 @@ function registerApiRoutes(app: express.Application, prefix: string, authenticat
   app.get(prefix + "/allows-iframe/:url", async (req, res) => {
     const validationResponse: CheckURLResponse = {
       isIframeValid: false,
-      url: req?.params?.url,
+      url: req.params.url,
     };
     try {
-      const externalUrl = new URL(req?.params?.url);
+      const externalUrl = new URL(req.params.url);
       const requestExternalURL = await fetch(externalUrl.toString());
       if (requestExternalURL.status >= 400) {
         validationResponse.error = "Bad response from server";
       }
-      else if (!requestExternalURL?.headers.has("content-security-policy")) {
+      else if (!requestExternalURL.headers.has("content-security-policy")) {
         validationResponse.isIframeValid = true;
         validationResponse.detail = "Header does not contain Content-Security-Policy (CSP)";
       }
       else {
         // check content-security-policy
-        const validation = validateCSP(req?.params?.url, requestExternalURL?.headers.get("content-security-policy"));
+        const validation = validateCSP(req.params.url, requestExternalURL.headers.get("content-security-policy"));
         validationResponse.isIframeValid = validation.isIframeValid;
         validationResponse.error = validation.error;
         validationResponse.detail = validation.detail;

@@ -113,6 +113,7 @@ describe("rendering", () => {
     const mockValidUrl = "https://dev.renku.ch/gitlab";
     const mockUrlServer = "https://dev.renku.ch/ui-server";
     const mockRef = null;
+    const client = { uiserverUrl: mockUrlServer };
 
     let rendered;
     act(() => {
@@ -123,7 +124,7 @@ describe("rendering", () => {
             onIFrameLoad={() => {}}
             iframeUrl={mockValidUrl}
             listType={collaborationListTypeMap.ISSUES}
-            serverUrl={mockUrlServer}/>
+            client={client}/>
         </MemoryRouter>,
       );
     });
@@ -145,6 +146,7 @@ describe("rendering", () => {
     const mockInvalidUrl = "https://dev.renku.ch/gitlab";
     const mockUrlServer = "https://dev.renku.ch/ui-server";
     const mockRef = null;
+    const client = { uiserverUrl: mockUrlServer };
 
     let rendered;
     act(() => {
@@ -155,7 +157,7 @@ describe("rendering", () => {
             onIFrameLoad={() => {}}
             iframeUrl={mockInvalidUrl}
             listType={collaborationListTypeMap.ISSUES}
-            serverUrl={mockUrlServer}/>
+            client={client}/>
         </MemoryRouter>,
       );
     });

@@ -22,7 +22,7 @@ import config from "../../src/config";
 
 describe("Test url util functions", () => {
   it("Test validateCSP", async () => {
-    const url = "https://www.example.org";
+    const url = "https://gitlab.com/myNamespace/myProject/-/issues";
     config.server.url = "https://dev.renku.ch";
 
     // Invalid url
@@ -53,6 +53,16 @@ describe("Test url util functions", () => {
     // valid subdomain-composed match
     config.server.url = "https://test.dev.renku.ch";
     expect(validateCSP(url, `frame-ancestors *.dev.renku.ch`).isIframeValid).toBe(true);
+
+    // valid subdomain-composed match
+    config.server.url = "https://dev.renku.ch";
+    expect(validateCSP(url, `frame-ancestors *.dev.renku.ch`).isIframeValid).toBe(false);
+
+    // validate subdomain-composed match and protocol
+    config.server.url = "https://test.dev.renku.ch";
+    expect(validateCSP(url, `frame-ancestors http://*.dev.renku.ch`).isIframeValid).toBe(false);
+    config.server.url = "https://test.dev.renku.ch";
+    expect(validateCSP(url, `frame-ancestors https://*.dev.renku.ch`).isIframeValid).toBe(true);
 
     // valid 'self' match
     config.server.url = "https://dev.renku.ch";

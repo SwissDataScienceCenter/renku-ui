@@ -47,13 +47,13 @@ const CollaborationIframe = memo((props) => {
 
   useEffect( () => {
     async function validateUrl() {
-      const isValid = await isValidUrlForIframe(props.iframeUrl, props.serverUrl);
+      const isValid = await isValidUrlForIframe(props.iframeUrl, props.client.uiserverUrl);
       setIsUrlValid(isValid);
       if (!isValid)
         props.onIFrameLoad();
     }
     validateUrl();
-  }, []); // eslint-disable-line
+  }, [props.iframeUrl, props.client.uiserverUrl]); // eslint-disable-line
 
   const type = props.listType === collaborationListTypeMap.ISSUES ? "Issues" : "Merge Requests";
 
@@ -100,7 +100,7 @@ function CollaborationList(props) {
           onIFrameLoad={frameLoad}
           iframeUrl={frameUrl}
           listType={props.listType}
-          serverUrl={props.client?.uiserverUrl}/>
+          client={props.client}/>
       </div>
     </div>
   </Fragment>;

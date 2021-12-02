@@ -18,7 +18,6 @@
 
 import { CheckURLResponse } from "../routes/apis.interfaces";
 import config from "../config";
-import { parse } from "tldts";
 
 export function validateCSP(url: string, csp: string): CheckURLResponse {
   const response: CheckURLResponse = {
@@ -28,6 +27,7 @@ export function validateCSP(url: string, csp: string): CheckURLResponse {
 
   try {
     const externalUrl = new URL(url);
+    // TODO: update originUrl when the client url is different from the server url
     const originUrl = new URL(config.server.url);
     const frameAncestor = csp.split(";").find( (p: string) => p.split(" ")?.includes("frame-ancestors"));
 
@@ -67,33 +67,28 @@ export function validateCSP(url: string, csp: string): CheckURLResponse {
     const subdomainsAllowed = allowedSources
       .filter( (source: string) => !specialCases.includes(source) && source.includes("*"));
     for (const subdomainAllowed of subdomainsAllowed) {
-      // replace for valid string to use parse function
-      const allowedUrlParse = parse(subdomainAllowed.replace("*", "www"));
-      const originUrlParse = parse(originUrl.origin);
-      if (allowedUrlParse.subdomain === "www") {
-        if (allowedUrlParse.domain === originUrlParse.domain) {
-          return {
-            ...response,
-            isIframeValid: true,
-            detail: `URL ${originUrl.origin} match frame-ancestors rule ${subdomainAllowed}` };
-        }
-      }
-      else {
-        // subdomain composed
-        const subdomainList = allowedUrlParse.subdomain.split(".");
-        const asteriskIndex = subdomainList.indexOf("www");
-        if (asteriskIndex > -1)
-          subdomainList.splice(asteriskIndex, 1);
+      const cleanAllowedSourceUrl = subdomainAllowed
+        .replace("http://", "")
+        .replace("https://", "")
+        .replace("*", "");
 
-        const subdomainOrigin = originUrlParse.subdomain.split(".");
-        // remove at the same location as the asterisk index to compare the rest of the string
-        subdomainOrigin.splice(asteriskIndex, 1);
-        if (subdomainList.toString() === subdomainOrigin.toString()) {
-          return {
-            ...response,
-            isIframeValid: true,
-            detail: `URL ${originUrl.origin} match frame-ancestors rule ${subdomainAllowed}` };
-        }
+      const cleanEntryUrl = originUrl.origin
+        .replace("http://", "")
+        .replace("https://", "");
+
+      let isValidProtocol = true;
+      if (subdomainAllowed.includes("https://") || subdomainAllowed.includes("http://")) {
+        const isHttpsAllowedSource = subdomainAllowed.includes("https://");
+        const isHttpsEntrySource = originUrl.origin.includes("https://");
+        isValidProtocol = isHttpsAllowedSource === isHttpsEntrySource;
+      }
+
+      if (cleanAllowedSourceUrl === cleanEntryUrl.substr(cleanEntryUrl.length - cleanAllowedSourceUrl.length)
+        && isValidProtocol) {
+        return {
+          ...response,
+          isIframeValid: true,
+          detail: `URL ${originUrl.origin} match frame-ancestors rule ${subdomainAllowed}` };
       }
     }
     return { ...response, error: "URL does not match any Content-Security-Policy rule" };
