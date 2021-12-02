@@ -7,14 +7,13 @@ $nav-pills-underline-bg:    transparent !default;
 $nav-pills-underline-active-bg:    transparent !default;
 $nav-pills-underline-hover-bg:    transparent !default;
 
-$nav-pills-underline-border-width:    2px !default;
+$nav-pills-underline-border-width:    1px !default;
 $nav-pills-underline-border-color:    map-get($theme-colors, "dark");
 
 .nav-pills-underline {
-  align-items: flex-end !important;
 
   .nav-item{
-    padding-right: 1em;
+    padding: 0.5em 1em 0.5em 0;
   }
   .nav-link {
     @include border-radius(0);
@@ -29,13 +28,14 @@ $nav-pills-underline-border-color:    map-get($theme-colors, "dark");
 
   > li.nav-item {
     > a.nav-link {
+      display: inline-block;
 
       background-color: $nav-pills-underline-bg !important;
 
       border-bottom-width: $nav-pills-underline-border-width;
       border-bottom-style: solid;
       border-bottom-color: transparent;
-      padding-bottom: 0.5rem;
+      padding-bottom: 0;
     }
 
     > a.nav-link.active,

@@ -32,11 +32,11 @@ import { Row, Col } from "reactstrap";
 import { Alert, Badge, Table } from "reactstrap";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheckCircle, faExclamationCircle, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import { faCheckCircle, faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { faMinusCircle, faTimesCircle, faWrench } from "@fortawesome/free-solid-svg-icons";
 
 import { Time } from "../utils/Time";
-import { Loader, TimeCaption } from "../utils/UIComponents";
+import { Loader, TimeCaption, WarnAlert } from "../utils/UIComponents";
 import { Url } from "../utils/url";
 
 function componentIsLoud(c) { return c["name"].toLowerCase() === "loud"; }
@@ -96,7 +96,7 @@ function SiteStatusDetails(props) {
       </span> { status.description }
     </div>;
   }
-  return <Alert color="warning"><FontAwesomeIcon icon={faExclamationTriangle} /> { status.description }</Alert>;
+  return <WarnAlert>{ status.description }</WarnAlert>;
 }
 
 /**
@@ -107,10 +107,10 @@ function SiteStatusLanding(props) {
   const siteStatusUrl = props.siteStatusUrl;
   if (status.indicator === "none")
     return null;
-  return <Alert color="warning" className="container-xxl renku-container">
-    <FontAwesomeIcon icon={faExclamationTriangle} /> RenkuLab is unstable: { status.description }. {" "}
+  return <WarnAlert className="container-xxl renku-container">
+    RenkuLab is unstable: { status.description }. {" "}
     See <b><Link to={siteStatusUrl}>RenkuLab Status</Link></b> for more details.
-  </Alert>;
+  </WarnAlert>;
 }
 
 /**
@@ -140,7 +140,7 @@ function MaintenanceSummaryDetails(props) {
   const mtf = maintenanceTimeFragment(first);
   const summary =
     `${mtf}. See below for information about the availability and limitations.`;
-  return <Alert color="warning"><FontAwesomeIcon icon={faWrench} /> { summary }</Alert>;
+  return <WarnAlert>{ summary }</WarnAlert>;
 }
 
 function MaintenanceInfo(props) {
@@ -165,6 +165,7 @@ function MaintenanceSummaryLanding(props) {
   const loud = (props.loud != null) ? props.loud : false;
   const alertStyle = (loud) ? { "fontSize": "larger" } : {};
   const first = scheduled[0];
+  // Not use custom Alert due it use a custom icon
   return <Alert color="warning" className="container-xxl renku-container">
     <div style={alertStyle}><MaintenanceInfo maintenance={first} loud={loud} /></div>
     <div style={alertStyle}>See <b><Link to={siteStatusUrl}>details</Link></b> { " "}
@@ -250,8 +251,8 @@ function StatuspageDisplay(props) {
     return <Loader />;
   if (summary.not_configured) return null;
   if (summary.error != null) {
-    return <Alert color="warning">Could not retrieve status information about this RenkuLab instance. {" "}
-      Please ask an administrator to check the statuspage.io configuration.</Alert>;
+    return <WarnAlert>Could not retrieve status information about this RenkuLab instance. {" "}
+      Please ask an administrator to check the statuspage.io configuration.</WarnAlert>;
   }
   if (summary.statuspage == null)
     return <Loader />;

@@ -322,15 +322,15 @@ function ProjectListNav(props) {
     <Col className="d-flex pb-2 mb-1 justify-content-evenly justify-content-lg-between" md={12} lg={5}>
       <Nav pills className="nav-pills-underline" size="sm">
         <NavItem>
-          <RenkuNavLink title="Your Projects" id="link-projects-your" className="pb-2"
+          <RenkuNavLink title="Your Projects" id="link-projects-your"
             to={getPreciseUrl(sectionsMap.own)} noSubPath={true} />
         </NavItem>
         <NavItem>
-          <RenkuNavLink title="Starred Projects" id="link-projects-starred" className="pb-2"
+          <RenkuNavLink title="Starred Projects" id="link-projects-starred"
             to={getPreciseUrl(sectionsMap.starred)} exact={false} />
         </NavItem>
         <NavItem>
-          <RenkuNavLink title="All Projects" id="link-projects-all" className="pb-2"
+          <RenkuNavLink title="All Projects" id="link-projects-all"
             to={getPreciseUrl(sectionsMap.all)} exact={false} />
         </NavItem>
       </Nav>

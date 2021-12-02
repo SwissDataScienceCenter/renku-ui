@@ -26,7 +26,7 @@
 import React, { Component, Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  Alert, Button, Col, Collapse, Form, FormGroup,
+  Button, Col, Collapse, Form, FormGroup,
   FormText, Input, InputGroup, Label, Row, Table, Nav, NavItem, UncontrolledTooltip
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -38,7 +38,7 @@ import _ from "lodash/array";
 import { ACCESS_LEVELS } from "../../api-client";
 import { ProjectAvatarEdit, ProjectTags, } from "../shared";
 import { NotebooksHelper, ServerOptionBoolean, ServerOptionEnum, ServerOptionRange } from "../../notebooks";
-import { Clipboard, ExternalLink, Loader, RenkuNavLink } from "../../utils/UIComponents";
+import { Clipboard, ErrorAlert, ExternalLink, Loader, RenkuNavLink, WarnAlert } from "../../utils/UIComponents";
 import { Url } from "../../utils/url";
 
 
@@ -46,7 +46,7 @@ import { Url } from "../../utils/url";
 
 function ProjectSettingsNav(props) {
   return (
-    <Nav className="flex-column nav-light">
+    <Nav className="flex-column nav-light nav-pills-underline">
       <NavItem>
         <RenkuNavLink to={props.settingsUrl} title="General" />
       </NavItem>
@@ -394,7 +394,7 @@ function SessionConfigError(props) {
   const toggleShowError = () => setShowError(!showError);
 
   return (
-    <Alert color="danger">
+    <ErrorAlert>
       <h3>Error</h3>
       <p>We could not access the project settings.</p>
 
@@ -404,7 +404,7 @@ function SessionConfigError(props) {
       <Button color="link" className="font-italic btn-sm" onClick={toggleShowError}>
         [{showError ? "Hide details" : "Show details"} info]
       </Button>
-    </Alert>
+    </ErrorAlert>
   );
 }
 
@@ -413,10 +413,10 @@ function NewConfigStatus(props) {
 
   if (error) {
     return (
-      <Alert color="danger">
-        <FontAwesomeIcon icon={faExclamationTriangle} /> Error occurred
+      <ErrorAlert>
+        Error occurred
         while updating &quot;{keyName}&quot;: {error}
-      </Alert>
+      </ErrorAlert>
     );
   }
 
@@ -567,13 +567,13 @@ function SessionConfigAdvanced(props) {
   const toggleShowImage = () => setShowImage(!showImage);
 
   const warningMessage = devAccess ?
-    (<Alert color="warning">
-      <FontAwesomeIcon className="cursor-default" icon={faExclamationTriangle} color="warning" /> Fixing
+    (<WarnAlert>
+      Fixing
       an image can yield improvements, but it can also lead to sessions not working in the expected
       way. <a href="https://renku.readthedocs.io/en/latest/user/session_customizing.html">
         Please consult the documentation
       </a> before changing this setting.
-    </Alert>) :
+    </WarnAlert>) :
     null;
   return (
     <div className="mb-2">
