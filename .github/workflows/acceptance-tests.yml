@@ -119,6 +119,24 @@ jobs:
         name: acceptance-test-artifacts
         path: ${{ github.workspace }}/test-artifacts/
 
+  run-e2e:
+    needs: [ check-deploy, deploy-pr ]
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
+        if: "needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'"
+        env:
+          KUBECONFIG: ${{ github.workspace }}/renkubot-kube.config
+          RENKUBOT_KUBECONFIG: ${{ secrets.RENKUBOT_DEV_KUBECONFIG }}
+          RENKU_RELEASE: renku-ci-ui-${{ github.event.number }}
+        with:
+          working-directory: e2e
+          command: npm run e2eHeadless
+
   cleanup:
     needs: check-deploy
     if: github.event.action == 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true'
