@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { Fragment, useRef, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 
 import { Loader, ExternalLink } from "../../utils/UIComponents";
 
@@ -29,6 +29,32 @@ const itemsStateMap = {
 const collaborationListTypeMap = {
   ISSUES: "issues",
   MREQUESTS: "mrequests" // eslint-disable-line
+};
+
+const CollaborationIframe = (props) => {
+  const [isUrlValid, setIsUrlValid] = useState(false);
+
+  useEffect( () => {
+    async function validateUrl() {
+      const isValid = await props.client.isValidUrlForIframe(props.iframeUrl);
+      setIsUrlValid(isValid);
+      if (!isValid)
+        props.onIFrameLoad();
+    }
+    validateUrl();
+  }, [props.iframeUrl]); // eslint-disable-line
+
+  const type = props.listType === collaborationListTypeMap.ISSUES ? "Issues" : "Merge Requests";
+
+  return isUrlValid ?
+    <iframe id="collaboration-iframe" title="collaboration iframe" src={props.iframeUrl}
+      ref={props.iframeRef}
+      onLoad={props.onIFrameLoad}
+      width="100%" height="800px" referrerPolicy="origin" sandbox="allow-same-origin allow-scripts allow-forms"
+    /> : <div className="my-4">
+      This Gitlab instance cannot be embedded in RenkuLab. Please
+      <ExternalLink role="text" url={props.iframeUrl} title="Open in a separate tab" className="mx-1" />
+      to access {type} </div>;
 };
 
 function CollaborationList(props) {
@@ -57,14 +83,15 @@ function CollaborationList(props) {
           title="Open in Tab" className="d-inline" />
       </div>
       <div>
-        <iframe id="collaboration-iframe" title="collaboration iframe" src={frameUrl}
-          ref={iframeRef}
-          onLoad={frameLoad}
-          width="100%" height="800px" referrerPolicy="origin" sandbox="allow-same-origin allow-scripts allow-forms"
-        />
+        <CollaborationIframe
+          iframeRef={iframeRef}
+          onIFrameLoad={frameLoad}
+          iframeUrl={frameUrl}
+          listType={props.listType}
+          client={props.client}/>
       </div>
     </div>
   </Fragment>;
 }
 
-export { CollaborationList, itemsStateMap, collaborationListTypeMap };
+export { CollaborationList, CollaborationIframe, itemsStateMap, collaborationListTypeMap };
