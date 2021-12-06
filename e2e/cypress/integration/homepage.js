@@ -1,6 +1,6 @@
 describe("render the home page", () => {
   it("renders correctly", () => {
-    cy.log(process.env.RENKU_RELEASE);
+    console.log("CYPRESS_BASE_URL", Cypress.env("BASE_URL"));
     cy.visit("/");
     cy.get("body").should("exist");
   });

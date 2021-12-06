@@ -133,6 +133,8 @@ jobs:
           KUBECONFIG: ${{ github.workspace }}/renkubot-kube.config
           RENKUBOT_KUBECONFIG: ${{ secrets.RENKUBOT_DEV_KUBECONFIG }}
           RENKU_RELEASE: renku-ci-ui-${{ github.event.number }}
+          CYPRESS_RENKU_RELEASE: renku-ci-ui-${{ github.event.number }}
+          CYPRESS_BASE_URL: https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch/
         with:
           working-directory: e2e
           command: npm run e2eHeadless

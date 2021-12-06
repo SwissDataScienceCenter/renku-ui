@@ -1,4 +1,7 @@
 {
   "baseUrl": "https://andrea.dev.renku.ch/",
-  "experimentalStudio": true
+  "experimentalStudio": true,
+  "env": {
+    "RENKU_RELEASE": "andrea"
+  }
 }

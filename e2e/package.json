@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "e2e": "cypress open",
-    "e2eHeadless": "./node_modules/.bin/cypress run --headless"
+    "e2eHeadless": "ELECTRON_ENABLE_LOGGING=1  ./node_modules/.bin/cypress run --headless"
   },
   "author": "",
   "devDependencies": {
