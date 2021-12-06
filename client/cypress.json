@@ -1,4 +1,5 @@
 {
-  "baseUrl": "https://andrea.dev.renku.ch/",
-  "experimentalStudio": true
+  "baseUrl": "https://dev.renku.ch/",
+  "experimentalStudio": true,
+  "chromeWebSecurity": false
 }
