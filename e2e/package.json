@@ -1,0 +1,15 @@
+{
+  "name": "acceptance-tests",
+  "version": "0.0.1",
+  "description": "Acceptance tests for Renku",
+  "main": "index.js",
+  "scripts": {
+    "e2e": "cypress open",
+    "e2eHeadless": "./node_modules/.bin/cypress run --headless"
+  },
+  "author": "",
+  "devDependencies": {
+    "cypress": "^9.1.0"
+  },
+  "dependencies": {}
+}
