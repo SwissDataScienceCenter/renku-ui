@@ -269,6 +269,15 @@ const projectGlobalSchema = new Schema({
       fetching: { [Prop.INITIAL]: false },
     })
   },
+  commitsReadme: {
+    [Prop.SCHEMA]: new Schema({
+      list: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
+      error: { [Prop.INITIAL]: null },
+
+      fetched: { [Prop.INITIAL]: null },
+      fetching: { [Prop.INITIAL]: false },
+    })
+  },
   config: {
     [Prop.SCHEMA]: new Schema({
       data: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
