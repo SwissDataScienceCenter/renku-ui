@@ -61,7 +61,6 @@ describe("Test url util functions", () => {
     // validate subdomain-composed match and protocol
     config.server.url = "https://test.dev.renku.ch";
     expect(validateCSP(url, `frame-ancestors http://*.dev.renku.ch`).isIframeValid).toBe(false);
-    config.server.url = "https://test.dev.renku.ch";
     expect(validateCSP(url, `frame-ancestors https://*.dev.renku.ch`).isIframeValid).toBe(true);
 
     // valid 'self' match
