@@ -17,7 +17,7 @@
  */
 
 describe("render the home page", () => {
-  const userData = { firstname: "e2e", lastname: "", email: "e2e@renku.ch", password: "123456" };
+  const userData = { firstname: "e2e", lastname: "tests", email: "e2e@renku.ch", password: "123456" };
 
   it("renders correctly", () => {
     cy.visit("/");
