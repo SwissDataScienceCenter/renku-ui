@@ -135,9 +135,12 @@ jobs:
           RENKU_RELEASE: renku-ci-ui-${{ github.event.number }}
           CYPRESS_RENKU_RELEASE: renku-ci-ui-${{ github.event.number }}
           CYPRESS_BASE_URL: https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch/
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITLAB_TOKEN: ${{ secrets.DEV_GITLAB_TOKEN }}
         with:
           working-directory: e2e
           command: npm run e2eHeadless
+          record: true
 
   cleanup:
     needs: check-deploy
