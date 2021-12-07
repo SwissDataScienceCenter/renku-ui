@@ -135,7 +135,6 @@ jobs:
           GITLAB_TOKEN: ${{ secrets.DEV_GITLAB_TOKEN }}
         with:
           working-directory: e2e
-          headless: true
           record: true
 
   cleanup:
