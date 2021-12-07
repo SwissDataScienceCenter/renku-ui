@@ -17,6 +17,7 @@ import "./authentication/gui_commands";
 import { User } from "./authentication/user.interfaces";
 
 declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
     interface Chainable {
       gui_kc_login(user: User, startFromHome: boolean): void,
@@ -27,8 +28,7 @@ declare global {
   }
 }
 
-Cypress.on('uncaught:exception', (err, runnable) => {
-  // returning false here prevents Cypress from
-  // failing the test
+Cypress.on("uncaught:exception", () => {
+  // returning false here prevents Cypress from failing the test
   return false;
 });

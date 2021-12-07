@@ -1,5 +1,6 @@
 {
   "projectId": "2nbsft",
-  "baseUrl": "https://andrea.dev.renku.ch/",
+  "defaultCommandTimeout": 6000,
+  "baseUrl": "https://dev.renku.ch/",
   "experimentalStudio": true
 }
