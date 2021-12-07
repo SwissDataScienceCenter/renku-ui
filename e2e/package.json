@@ -5,6 +5,8 @@
   "main": "index.js",
   "scripts": {
     "e2e": "cypress open",
+    "e2e:run": "cypress run",
+    "e2e:headless": "cypress run --headless",
     "lint": "eslint . --ext .ts"
   },
   "author": "",
