@@ -130,15 +130,13 @@ jobs:
         uses: cypress-io/github-action@v2
         if: "needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'"
         env:
-          KUBECONFIG: ${{ github.workspace }}/renkubot-kube.config
-          RENKUBOT_KUBECONFIG: ${{ secrets.RENKUBOT_DEV_KUBECONFIG }}
-          RENKU_RELEASE: renku-ci-ui-${{ github.event.number }}
           CYPRESS_BASE_URL: https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch/
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITLAB_TOKEN: ${{ secrets.DEV_GITLAB_TOKEN }}
         with:
           working-directory: e2e
-          command: npm run e2eHeadless --record
+          headless: true
+          record: true
 
   cleanup:
     needs: check-deploy
