@@ -17,15 +17,17 @@
  */
 
 import express from "express";
-import { createProxyMiddleware } from "http-proxy-middleware";
 import fetch from "cross-fetch";
+import { createProxyMiddleware } from "http-proxy-middleware";
 
 import config from "../config";
 import logger from "../logger";
 import { Authenticator } from "../authentication";
-import { renkuAuth } from "../authentication/middleware";
 import { CheckURLResponse } from "./apis.interfaces";
+import { getCookieValueByName } from "../utils";
+import { renkuAuth } from "../authentication/middleware";
 import { validateCSP } from "../utils/url";
+
 
 const proxyMiddleware = createProxyMiddleware({
   // set gateway as target
@@ -39,7 +41,11 @@ const proxyMiddleware = createProxyMiddleware({
   },
   onProxyReq: (clientReq) => {
     // remove unnecessary cookies to avoid gateway conflicts with auth tokens
+    const cookies = clientReq.getHeader("cookie") as string;
+    const anonId = getCookieValueByName(cookies, "anon-id");
     clientReq.removeHeader("cookie");
+    if (anonId)
+      clientReq.setHeader("cookie", `anon-id=${anonId}`);
   },
   onProxyRes: (clientRes, req: express.Request, res: express.Response) => {
     const expHeader = req.get(config.auth.invalidHeaderField);
