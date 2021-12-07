@@ -4,12 +4,13 @@
   "description": "Acceptance tests for Renku",
   "main": "index.js",
   "scripts": {
-    "e2e": "cypress open",
+    "e2e": "ELECTRON_ENABLE_LOGGING=1 cypress open",
     "e2eHeadless": "ELECTRON_ENABLE_LOGGING=1  ./node_modules/.bin/cypress run --headless"
   },
   "author": "",
   "devDependencies": {
-    "cypress": "^9.1.0"
+    "cypress": "^9.1.0",
+    "typescript": "^4.5.2"
   },
   "dependencies": {}
 }

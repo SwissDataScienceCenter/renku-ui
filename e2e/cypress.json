@@ -1,8 +1,5 @@
 {
   "projectId": "2nbsft",
   "baseUrl": "https://andrea.dev.renku.ch/",
-  "experimentalStudio": true,
-  "env": {
-    "RENKU_RELEASE": "andrea"
-  }
+  "experimentalStudio": true
 }

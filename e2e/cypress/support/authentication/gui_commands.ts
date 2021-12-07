@@ -54,7 +54,7 @@ Cypress.Commands.add('gui_is_welcome_page_logged_user', (username) => {
   });
 });
 
-Cypress.Commands.add('gui_loggout', () => {
+Cypress.Commands.add('gui_logout', () => {
   cy.visit('/');
   cy.get('#profile-dropdown > #userIcon').click();
   cy.get('#logout-link').click();

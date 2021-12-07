@@ -13,14 +13,22 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
-// Import commands.js using ES2015 syntax:
-import "./commands";
 import "./authentication/gui_commands";
+import { User } from "./authentication/user.interfaces";
+
+declare global {
+  namespace Cypress {
+    interface Chainable {
+      gui_kc_login(user: User, startFromHome: boolean): void,
+      gui_kc_register(user: User): void,
+      gui_is_welcome_page_logged_user(username: string): void,
+      gui_logout(): void
+    }
+  }
+}
 
 Cypress.on('uncaught:exception', (err, runnable) => {
   // returning false here prevents Cypress from
   // failing the test
   return false;
 });
-// Alternatively you can use CommonJS syntax:
-// require('./commands')
