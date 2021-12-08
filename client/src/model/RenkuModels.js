@@ -86,63 +86,6 @@ const forkProjectSchema = new Schema({
   display: { schema: forkDisplaySchema, mandatory: true }
 });
 
-const projectSchema = new Schema({
-  core: {
-    schema: {
-      available: { initial: null },
-      id: { initial: null, },
-      description: { initial: "no description", mandatory: true },
-      owner: { initial: null },
-    }
-  },
-  visibility: {
-    schema: {
-      level: { initial: "private", mandatory: true },
-      accessLevel: { initial: 0, mandatory: true }
-    }
-  },
-  data: {
-    schema: {
-      reference: {
-        schema: {
-          url_or_doi: { initial: "" },
-          author: { initial: "" }
-        },
-      },
-      upload: {
-        schema: {
-          files: { schema: [] }
-        }
-      }
-    },
-  },
-  system: {
-    schema: {
-      branches: { schema: [], initial: [] },
-      autosaved: { schema: [], initial: [] },
-    }
-  },
-  transient: {
-    schema: {
-      requests: { initial: {} },
-    }
-  },
-  migration: {
-    schema: {
-      migration_required: { initial: null },
-      project_supported: { initial: null },
-      docker_update_possible: { initial: null }, //boolean
-      latest_version: { initial: null }, //string
-      project_version: { initial: null }, //string
-      template_update_possible: { initial: null }, //boolean
-      migrating: { initial: false },
-      migration_status: { initial: null },
-      migration_error: { initial: null },
-      check_error: { initial: null }
-    }
-  }
-});
-
 const newProjectSchema = new Schema({
   config: {
     [Prop.SCHEMA]: new Schema({
@@ -327,8 +270,8 @@ const projectGlobalSchema = new Schema({
   forkedFromProject: { [Prop.INITIAL]: {} },
   metadata: {
     [Prop.SCHEMA]: new Schema({
-      avatarUrl: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // avatar_url
       accessLevel: { [Prop.INITIAL]: 0, [Prop.MANDATORY]: true }, // visibility.access_level
+      avatarUrl: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // avatar_url
       createdAt: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true }, // created_at
       defaultBranch: { [Prop.INITIAL]: null }, // default_branch
       description: { [Prop.INITIAL]: "" },
@@ -351,6 +294,39 @@ const projectGlobalSchema = new Schema({
 
       fetched: { [Prop.INITIAL]: null },
       fetching: { [Prop.INITIAL]: false },
+    })
+  },
+  migration: {
+    [Prop.SCHEMA]: new Schema({
+      check: { [Prop.INITIAL]: {
+        core_renku_version: undefined,
+        project_supported: undefined,
+        project_renku_version: undefined,
+        core_compatibility_status: {
+          project_metadata_version: undefined,
+          migration_required: undefined,
+          current_metadata_version: undefined
+        },
+        dockerfile_renku_status: {
+          latest_renku_version: undefined,
+          dockerfile_renku_version: undefined,
+          automated_dockerfile_update: undefined,
+          newer_renku_available: undefined
+        },
+        template_status: {
+          newer_template_available: undefined,
+          template_id: undefined,
+          automated_template_update: undefined,
+          template_ref: undefined,
+          project_template_version: undefined,
+          template_source: undefined,
+          latest_template_version: undefined
+        }
+      },
+      migrating: { [Prop.INITIAL]: false },
+      migration_status: { [Prop.INITIAL]: null },
+      migration_error: { [Prop.INITIAL]: null },
+      }
     })
   },
   statistics: {
@@ -645,7 +621,7 @@ const formGeneratorSchema = new Schema({
 });
 
 export {
-  userSchema, metaSchema, newProjectSchema, projectSchema, forkProjectSchema, notebooksSchema,
+  userSchema, metaSchema, newProjectSchema, forkProjectSchema, notebooksSchema,
   projectsSchema, datasetFormSchema, issueFormSchema, datasetImportFormSchema, projectGlobalSchema,
   addDatasetToProjectSchema, statuspageSchema, notificationsSchema, formGeneratorSchema, environmentSchema
 };
