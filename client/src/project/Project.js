@@ -27,9 +27,8 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import _ from "lodash/collection";
 
-import { StateKind } from "../model/Model";
 import Present from "./Project.present";
-import { ProjectModel, GraphIndexingStatus, ProjectCoordinator, MigrationStatus } from "./Project.state";
+import { GraphIndexingStatus, ProjectCoordinator, MigrationStatus } from "./Project.state";
 import { ProjectsCoordinator } from "./shared";
 import Issue from "../collaboration/issue/Issue";
 import { FileLineage } from "../file";
@@ -160,7 +159,6 @@ class View extends Component {
     const currentSearch = qs.parse(props.location.search);
     this.autostart = currentSearch?.autostart;
     this.customBranch = currentSearch?.branch;
-    this.projectState = new ProjectModel(StateKind.REDUX);
     // TODO: Could move projectsCoordinator once ProjectModel goes away
     this.projectsCoordinator = new ProjectsCoordinator(props.client, props.model.subModel("projects"));
     this.projectCoordinator = new ProjectCoordinator(props.client, props.model.subModel("project"));
@@ -187,11 +185,10 @@ class View extends Component {
       // in case the route fails it tests weather it could be a projectId route
       const routes = ["overview", "issues", "issue_new", "files", "lineage", "notebooks", "collaboration",
         "data", "workflows", "settings", "pending", "launchNotebook", "notebookServers", "datasets", "sessions"];
-      const available = this.props.core ? this.props.core.available : null;
       const potentialProjectId = pathComponents.projectPathWithNamespace.split("/")[0];
       const potentialRoute = pathComponents.projectPathWithNamespace.split("/")[1];
 
-      if (!available && !isNaN(potentialProjectId) && routes.indexOf(potentialRoute) > 0) {
+      if (!isNaN(potentialProjectId) && routes.indexOf(potentialRoute) > 0) {
         this.redirectAfterFetchFails(pathComponents.projectPathWithNamespace,
           this.props.location.pathname.replace("/projects/" + potentialProjectId, ""));
       }
@@ -216,14 +213,12 @@ class View extends Component {
   async fetchProject() {
     const pathComponents = splitProjectSubRoute(this.props.match.url);
     const projectData =
-      this.projectCoordinator.fetchProject(this.props.client, pathComponents.projectPathWithNamespace);
-    projectData.then( data => {
-      this.projectState.setProjectData(data, true);
+      await this.projectCoordinator.fetchProject(this.props.client, pathComponents.projectPathWithNamespace);
       // TODO: We should fetch commits after we know the default branch
-      this.fetchBranches();
-      if (!this.autostart && !this.customBranch)
-        this.projectCoordinator.fetchCommits();
-    });
+    this.fetchBranches();
+    if (!this.autostart && !this.customBranch)
+      this.projectCoordinator.fetchCommits();
+    this.projectCoordinator.fetchCommits();
 
     return projectData;
   }
@@ -247,7 +242,7 @@ class View extends Component {
   async fetchGraphStatus() { return this.projectCoordinator.fetchGraphStatus(this.props.client); }
   saveProjectLastNode(nodeData) { this.projectCoordinator.saveProjectLastNode(nodeData); }
 
-  async fetchMigrationCheck() { this.projectState.fetchMigrationCheck(this.props.client); }
+  async fetchMigrationCheck() { this.projectCoordinator.fetchMigrationCheck(this.props.client); }
 
   async fetchAll() {
     const pathComponents = splitProjectSubRoute(this.props.match.url);
@@ -260,7 +255,7 @@ class View extends Component {
   }
 
   migrateProject(params) {
-    this.projectState.migrateProject(this.props.client, params);
+    this.projectCoordinator.migrateProject(this.props.client, params);
   }
 
   redirectProjectWithNumericId(projectId) {
@@ -615,7 +610,6 @@ class View extends Component {
     const isGraphReady = this.isGraphReady();
 
     return {
-      ...this.projectState.get(),
       ...this.projectCoordinator.get(),
       ...ownProps,
       projectPathWithNamespace: pathComponents.projectPathWithNamespace,

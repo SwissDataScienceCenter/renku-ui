@@ -24,7 +24,7 @@
  */
 
 import { ACCESS_LEVELS, API_ERRORS } from "../api-client";
-import { StateModel, SpecialPropVal, projectSchema, projectGlobalSchema } from "../model";
+import { SpecialPropVal, projectGlobalSchema } from "../model";
 import { splitAutosavedBranches } from "../utils/HelperFunctions";
 
 
@@ -41,74 +41,6 @@ const MigrationStatus = {
   ERROR: "ERROR"
 };
 
-class ProjectModel extends StateModel {
-  constructor(stateBinding, stateHolder, initialState) {
-    super(projectSchema, stateBinding, stateHolder, initialState);
-  }
-
-  fetchMigrationCheck(client) {
-    return client.getProjectIdFromService(this.get("system.http_url"))
-      .then((response)=>{
-        if (response.data && response.data.error !== undefined) {
-          this.set("migration.check_error", response.data.error.reason);
-        }
-        else {
-          client.performMigrationCheck(response)
-            .then((response)=>{
-              if (response.data && response.data.error !== undefined) {
-                this.set("migration.check_error", response.data.error);
-              }
-              else {
-                this.set("migration.migration_required", response.data.result.migration_required);
-                this.set("migration.project_supported", response.data.result.project_supported);
-                this.set("migration.docker_update_possible", response.data.result.docker_update_possible);
-                this.set("migration.latest_version", response.data.result.latest_version);
-                this.set("migration.project_version", response.data.result.project_version);
-                this.set("migration.template_update_possible", response.data.result.template_update_possible);
-                this.set("migration.latest_template_version", response.data.result.latest_template_version);
-                this.set("migration.current_template_version", response.data.result.current_template_version);
-              }
-            });
-        }
-      });
-  }
-
-  migrateProject(client, params) {
-    if (this.get("migration.migration_status") === MigrationStatus.MIGRATING)
-      return;
-    this.set("migration.migration_status", MigrationStatus.MIGRATING);
-    client.getProjectIdFromService(this.get("system.http_url"))
-      .then((projectId)=>{
-        client.performMigration(projectId, params)
-          .then((response)=>{
-            if (response.data.error) {
-              this.set("migration.migration_status", MigrationStatus.ERROR);
-              this.set("migration.migration_error", response.data.error);
-            }
-            else {
-              this.fetchMigrationCheck(client).then(response => {
-                this.set("migration.migration_status", MigrationStatus.FINISHED);
-                this.set("migration.migration_error", null);
-              });
-            }
-          });
-      });
-  }
-
-  setProjectData(data, statistics = false) {
-    if (data == null) return;
-    const updatedState = {
-      core: { ...data.metadata.core, available: true },
-      system: {
-        ...data.metadata.system,
-        tag_list: { $set: data.metadata.system.tag_list } // fix empty tag_list not updating
-      },
-      visibility: data.metadata.visibility
-    };
-    this.setObject(updatedState);
-    return data;
-  }
-}
 
 const DatasetsMixin = {
   fetchProjectDatasetsFromKg(client) { //from KG
@@ -247,6 +179,48 @@ const ProjectAttributesMixin = {
   async star(client, starred) {
     return client.starProject(this.get("metadata.id"), starred)
       .then((resp) => resp.data);
+  }
+};
+
+const MigrationMixin = {
+  fetchMigrationCheck(client) {
+    return client.getProjectIdFromService(this.get("metadata.httpUrl"))
+      .then((response)=>{
+        if (response.data && response.data.error !== undefined) {
+          this.set("migration.check.check_error", response.data.error.reason);
+        }
+        else {
+          client.performMigrationCheck(response)
+            .then((response)=>{
+              if (response.data && response.data.error !== undefined)
+                this.set("migration.check.check_error", response.data.error);
+
+              else
+                this.set("migration.check", response.data.result);
+            });
+        }
+      });
+  },
+  migrateProject(client, params) {
+    if (this.get("migration.migration_status") === MigrationStatus.MIGRATING)
+      return;
+    this.set("migration.migration_status", MigrationStatus.MIGRATING);
+    client.getProjectIdFromService(this.get("metadata.httpUrl"))
+      .then((projectId)=>{
+        client.performMigration(projectId, params)
+          .then((response)=>{
+            if (response.data.error) {
+              this.set("migration.migration_status", MigrationStatus.ERROR);
+              this.set("migration.migration_error", response.data.error);
+            }
+            else {
+              this.fetchMigrationCheck(client).then(response => {
+                this.set("migration.migration_status", MigrationStatus.FINISHED);
+                this.set("migration.migration_error", null);
+              });
+            }
+          });
+      });
   }
 };
 
@@ -654,7 +628,8 @@ class ProjectCoordinator {
 Object.assign(ProjectCoordinator.prototype, DatasetsMixin);
 Object.assign(ProjectCoordinator.prototype, FileTreeMixin);
 Object.assign(ProjectCoordinator.prototype, ProjectAttributesMixin);
+Object.assign(ProjectCoordinator.prototype, MigrationMixin);
 Object.assign(ProjectCoordinator.prototype, RepoMixin);
 
 
-export { ProjectModel, GraphIndexingStatus, ProjectCoordinator, MigrationStatus };
+export { GraphIndexingStatus, ProjectCoordinator, MigrationStatus };
