@@ -53,6 +53,7 @@ import FilesTreeView from "./filestreeview/FilesTreeView";
 import DatasetsListView from "./datasets/DatasetsListView";
 import { ACCESS_LEVELS } from "../api-client";
 import ProjectVersionStatus from "./status/ProjectVersionStatus.present";
+import { shouldDisplayVersionWarning } from "./status/MigrationUtils.js";
 import { NamespaceProjects } from "../namespace";
 import { ProjectOverviewCommits, ProjectOverviewStats } from "./overview";
 import { ForkProject } from "./new";
@@ -111,21 +112,21 @@ function ProjectVisibilityLabel({ visibilityLevel }) {
  *
  * @param {Object} webhook - project.webhook store object
  * @param {bool} migration_required - whether it's necessary to migrate the project or not
- * @param {bool} template_update_possible - whether it's necessary to migrate the template or not
   * @param {bool} docker_update_possible - whether it's necessary to migrate the docker image or not
  * @param {Object} history - react history object
  * @param {string} overviewStatusUrl - overview status url
  */
 class ProjectStatusIcon extends Component {
   render() {
-    const { webhook, migration_required, docker_update_possible, template_update_possible,
-      overviewStatusUrl, history } = this.props;
+    const { webhook, overviewStatusUrl, history, migration } = this.props;
     const kgDown = isKgDown(webhook);
 
-    if (!migration_required && !docker_update_possible && !template_update_possible && !kgDown)
+    const warningSignForVersionDisplayed = shouldDisplayVersionWarning(migration);
+
+    if (!warningSignForVersionDisplayed && !kgDown)
       return null;
 
-    const versionInfo = (migration_required || docker_update_possible || template_update_possible) ?
+    const versionInfo = warningSignForVersionDisplayed ?
       "Current project is outdated. " :
       null;
     const kgInfo = kgDown ?
@@ -226,9 +227,7 @@ function ProjectIdentifier(props) {
             history={props.history}
             webhook={props.webhook}
             overviewStatusUrl={props.overviewStatusUrl}
-            migration_required={props.migration.migration_required}
-            template_update_possible={props.migration.template_update_possible}
-            docker_update_possible={props.migration.docker_update_possible}
+            migration={props.migration}
           />{projectTitle}
           <ProjectVisibilityLabel visibilityLevel={props.metadata.visibility} />
         </h2>
@@ -264,7 +263,7 @@ function ProjectViewHeaderOverviewDescription({ settingsReadOnly, description, s
 }
 
 const ProjectSuggestActions = (props) => {
-  const isProjectMaintainer = props.visibility.accessLevel >= ACCESS_LEVELS.MAINTAINER;
+  const isProjectMaintainer = props.metadata.accessLevel >= ACCESS_LEVELS.MAINTAINER;
   const commits = props.projectCoordinator.get("commits");
   const commitsReadme = props.projectCoordinator.get("commitsReadme");
   const datasets = props.projectCoordinator.get("datasets.core");
@@ -295,7 +294,7 @@ const ProjectSuggestActions = (props) => {
 
   const gitlabIDEUrl = props.externalUrl !== "" && props.externalUrl.includes("/gitlab/") ?
     props.externalUrl.replace("/gitlab/", "/gitlab/-/ide/project/") : null;
-  const addReadmeUrl = `${gitlabIDEUrl}/edit/${props.core.default_branch}/-/README.md`;
+  const addReadmeUrl = `${gitlabIDEUrl}/edit/${props.metadata.defaultBranch}/-/README.md`;
 
   const suggestionReadme = countCommitsReadme > 1 || (!isReadmeCommitInitial && countCommitsReadme !== 0) ? null
     : <li><p style={{ fontSize: "smaller" }}>
@@ -377,8 +376,8 @@ class ProjectViewHeaderOverview extends Component {
       description={this.props.metadata.description}
       settingsReadOnly={this.props.settingsReadOnly}
       settingsUrl={this.props.settingsUrl} />;
-    const forkProjectDisabled = this.props.visibility.accessLevel < ACCESS_LEVELS.REPORTER
-    && this.props.visibility.level === "private";
+    const forkProjectDisabled = metadata.accessLevel < ACCESS_LEVELS.REPORTER
+    && metadata.visibility === "private";
     const titleColSize = "col-12 col-md-8";
 
     return (
@@ -671,10 +670,10 @@ class ProjectViewOverview extends Component {
 class ProjectDatasetsNav extends Component {
 
   render() {
-    const allDatasets = this.props.datasets.core.datasets || [];
-
-    if (allDatasets.length === 0)
-      return null;
+    const coreDatasets = this.props.datasets.core.datasets;
+    if (coreDatasets == null) return null;
+    if (coreDatasets.error != null) return null;
+    if (coreDatasets.length === 0) return null;
 
     return <DatasetsListView
       datasets_kg={this.props.datasets.datasets_kg}
@@ -695,7 +694,7 @@ function ProjectAddDataset(props) {
   }
 
   return <Col>
-    { props.visibility.accessLevel > ACCESS_LEVELS.DEVELOPER ? [
+    { props.metadata.accessLevel > ACCESS_LEVELS.DEVELOPER ? [
       <Row key="header">
         <Col>
           <h3 className="uk-heading-divider uk-text-center pb-1 mb-4">Add Dataset</h3>
@@ -814,7 +813,7 @@ function ProjectViewDatasets(props) {
   const migrationMessage = <ProjectStatusAlert
     history={props.history}
     overviewStatusUrl={props.overviewStatusUrl}
-    migration_required={props.migration.migration_required}
+    migration_required={props.migration.check?.core_compatibility_status?.migration_required}
     webhook={props.webhook}
   />;
 
@@ -1097,11 +1096,11 @@ function notebookWarning(userLogged, accessLevel, forkUrl, postLoginUrl, externa
 class ProjectShowSession extends Component {
   render() {
     const {
-      blockAnonymous, client, externalUrl, history, launchNotebookUrl, location, match, model,
-      notifications, forkUrl, user, visibility
+      blockAnonymous, client, externalUrl, history, launchNotebookUrl, location, match,
+      metadata, model, notifications, forkUrl, user
     } = this.props;
     const warning = notebookWarning(
-      user.logged, visibility.accessLevel, forkUrl, location.pathname, externalUrl
+      user.logged, metadata.accessLevel, forkUrl, location.pathname, externalUrl
     );
 
     return (
@@ -1125,11 +1124,11 @@ class ProjectShowSession extends Component {
 class ProjectNotebookServers extends Component {
   render() {
     const {
-      client, model, user, visibility, forkUrl, location, externalUrl, launchNotebookUrl,
+      client, metadata, model, user, forkUrl, location, externalUrl, launchNotebookUrl,
       blockAnonymous
     } = this.props;
     const warning = notebookWarning(
-      user.logged, visibility.accessLevel, forkUrl, location.pathname, externalUrl
+      user.logged, metadata.accessLevel, forkUrl, location.pathname, externalUrl
     );
 
     return (
@@ -1147,12 +1146,12 @@ class ProjectNotebookServers extends Component {
 class ProjectStartNotebookServer extends Component {
   render() {
     const {
-      branches, client, model, user, visibility, forkUrl, externalUrl, location,
+      branches, client, model, user, forkUrl, externalUrl, location, metadata,
       fetchBranches, notebookServersUrl, history, blockAnonymous, notifications,
       projectCoordinator
     } = this.props;
     const warning = notebookWarning(
-      user.logged, visibility.accessLevel, forkUrl, location.pathname, externalUrl
+      user.logged, metadata.accessLevel, forkUrl, location.pathname, externalUrl
     );
 
     const locationEnhanced = location && location.state && location.state.successUrl ?
