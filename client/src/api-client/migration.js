@@ -38,7 +38,7 @@ export default function addMigrationMethods(client) {
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
 
-    return client.clientFetch(`${client.baseUrl}/renku/cache.migrations_check?project_id=${projectId}`, {
+    return client.clientFetch(`${client.baseUrl}/renku/1.0/cache.migrations_check?project_id=${projectId}`, {
       method: "GET",
       headers: headers,
     }).catch((error)=>
