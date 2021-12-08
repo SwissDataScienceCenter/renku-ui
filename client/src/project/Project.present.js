@@ -38,8 +38,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import {
-  ButtonWithMenu, ExternalLink, GoBackButton,
-  InfoAlert, Loader, RenkuMarkdown, RenkuNavLink, TimeCaption
+  ButtonWithMenu, ErrorAlert, ExternalLink, GoBackButton,
+  InfoAlert, Loader, RenkuMarkdown, RenkuNavLink, TimeCaption, WarnAlert
 } from "../utils/UIComponents";
 import { Url } from "../utils/url";
 import { SpecialPropVal } from "../model/Model";
@@ -262,6 +262,74 @@ function ProjectViewHeaderOverviewDescription({ settingsReadOnly, description, s
   }
   return null;
 }
+
+const ProjectSuggestActions = (props) => {
+  const isProjectMaintainer = props.visibility.accessLevel >= ACCESS_LEVELS.MAINTAINER;
+  const commits = props.projectCoordinator.get("commits");
+  const commitsReadme = props.projectCoordinator.get("commitsReadme");
+  const datasets = props.projectCoordinator.get("datasets.core");
+  const countTotalCommits = commits?.list?.length ?? 0;
+  const countCommitsReadme = commitsReadme?.list.length ?? null;
+  let isReadmeCommitInitial = countCommitsReadme === 1;
+  if (countCommitsReadme === 1 && commits.list.length > 0) {
+    const firstCommit = commits?.list.sort((a, b) => new Date(a.committed_date) - new Date(b.committed_date))[0];
+    isReadmeCommitInitial = firstCommit.id === commitsReadme.list[0].id;
+  }
+
+  const isLoadingDatasets = typeof (datasets) === "string" || datasets?.datasets === null;
+  let hasDatasets = !isLoadingDatasets ? datasets.datasets?.length > 0 : true;
+  const isLoadingData = !commits.fetched ||
+    !commitsReadme.fetched ||
+    countCommitsReadme === null ||
+    isLoadingDatasets;
+
+  useEffect(() => {
+    props.fetchDatasets();
+    if (props.projectCoordinator?.get("metadata.id") !== null)
+      props.projectCoordinator.fetchReadmeCommits();
+  }, []); // eslint-disable-line
+
+  if (!isProjectMaintainer || isLoadingData || countTotalCommits > 4 ||
+    (countCommitsReadme > 1 && hasDatasets) ||
+    (!isReadmeCommitInitial && hasDatasets && countCommitsReadme !== 0)) return null;
+
+  const gitlabIDEUrl = props.externalUrl !== "" && props.externalUrl.includes("/gitlab/") ?
+    props.externalUrl.replace("/gitlab/", "/gitlab/-/ide/project/") : null;
+  const addReadmeUrl = `${gitlabIDEUrl}/edit/${props.core.default_branch}/-/README.md`;
+
+  const suggestionReadme = countCommitsReadme > 1 || (!isReadmeCommitInitial && countCommitsReadme !== 0) ? null
+    : <li><p style={{ fontSize: "smaller" }}>
+      <a className="mx-1" href={addReadmeUrl} target="_blank" rel="noopener noreferrer">
+        <strong className="suggestionTitle">Edit README.md</strong>
+      </a>
+      Use the README to explain your project to others, letting them understand what you want
+      to do and what you have already accomplished.
+    </p></li>;
+
+  const suggestionDataset = hasDatasets ? null
+    : <li><p style={{ fontSize: "smaller" }}>
+      <Link className="mx-1" to={props.newDatasetUrl}>
+        <strong className="suggestionTitle">Add some datasets</strong>
+      </Link>
+      Datasets let you work with data in a structured way, facilitating easier sharing.
+      You can create a new dataset with data you already have, or importing one from another
+      Renku project or from a public data repository such as
+      <ExternalLink className="mx-1" url="https://zenodo.org/" title="Zenodo" role="link" /> or
+      <ExternalLink className="mx-1" url="https://dataverse.harvard.edu/" title="Dataverse" role="link" />.</p></li>;
+
+  return (
+    <InfoAlert timeout={0}>
+      <div className="mb-0" style={{ textAlign: "justify" }}>
+        <strong>Welcome</strong> to your new Renku project!
+        It looks like this project is just getting started, so here are some suggestions to help you.  <br/>
+        <ul className="my-2">
+          { suggestionReadme }
+          { suggestionDataset }
+        </ul>
+      </div>
+    </InfoAlert>
+  );
+};
 
 class ProjectViewHeaderOverview extends Component {
   constructor(props) {
@@ -507,6 +575,7 @@ function ProjectViewGeneral(props) {
     <ProjectViewHeaderOverview
       key="overviewHeader"
       forkedFromLink={forkedFromLink} {...props} />
+    <ProjectSuggestActions {...props} />
     <ProjectViewReadme {...props} />
   </Fragment>;
 
@@ -541,7 +610,7 @@ class ProjectViewOverviewNav extends Component {
     //   <RenkuNavLink to={`${this.props.overviewUrl}/results`} title="Results" />
     // </NavItem>
     return (
-      <Nav className="flex-column nav-light">
+      <Nav className="flex-column nav-light nav-pills-underline">
         <NavItem>
           <RenkuNavLink to={this.props.baseUrl} title="General" id="nav-overview-general" />
         </NavItem>
@@ -710,14 +779,12 @@ function ProjectStatusAlert(props) {
 
   const versionInfo = migration_required ?
     <span>
-      <FontAwesomeIcon icon={faExclamationTriangle} className="pe-1" />
       <strong>A new version of renku is available. </strong>
       An upgrade is necessary to allow modification of datasets and is recommended for all projects.&nbsp;
     </span> :
     null;
   const kgInfo = kgDown ?
     <span>
-      <FontAwesomeIcon icon={faExclamationTriangle} className="pe-1" />
       <strong>Knowledge Graph integration not active. </strong>
       This means that some operations on datasets are not possible, we recommend activating it.
     </span> :
@@ -726,7 +793,7 @@ function ProjectStatusAlert(props) {
   const conditionalSpace = versionInfo && kgInfo ? <br /> : null;
 
   return (
-    <Alert color="warning">
+    <WarnAlert>
       {versionInfo}
       {conditionalSpace}
       {conditionalSpace}
@@ -736,7 +803,7 @@ function ProjectStatusAlert(props) {
       <Button color="warning" onClick={() => history.push(overviewStatusUrl)}>
         See details
       </Button>
-    </Alert>
+    </WarnAlert>
   );
 }
 
@@ -765,10 +832,10 @@ function ProjectViewDatasets(props) {
 
   if (props.datasets.core.error) {
     return <Col sm={12}>
-      <Alert color="danger">
+      <ErrorAlert>
         There was an error fetching the datasets, please try <Button color="danger" size="sm" onClick={
           () => window.location.reload()
-        }> reloading </Button> the page.</Alert>
+        }> reloading </Button> the page.</ErrorAlert>
     </Col>;
   }
 
@@ -817,7 +884,7 @@ class ProjectViewCollaborationNav extends Component {
   render() {
     // CR: This is necessary to get spacing to work correctly; do not understand why.
     const navItemStyle = { padding: "8px 0px" };
-    return <Nav className="flex-column nav-light">
+    return <Nav className="flex-column nav-light nav-pills-underline">
       <NavItem style={navItemStyle}>
         <RenkuNavLink to={this.props.issuesUrl} matchPath={true} title="Issues" className="d-inline" />
       </NavItem>
@@ -985,7 +1052,7 @@ function notebookWarning(userLogged, accessLevel, forkUrl, postLoginUrl, externa
     return (
       <InfoAlert timeout={0} key="permissions-warning">
         <p>
-          <FontAwesomeIcon icon={faExclamationTriangle} /> As
+          As
           an anonymous user, you can start <ExternalLink role="text" title="Sessions"
             url="https://renku.readthedocs.io/en/latest/developer/services/notebooks_service.html" />, but
           you cannot save your work.
@@ -1001,7 +1068,7 @@ function notebookWarning(userLogged, accessLevel, forkUrl, postLoginUrl, externa
     return (
       <InfoAlert timeout={0} key="permissions-warning">
         <p>
-          <FontAwesomeIcon icon={faExclamationTriangle} /> You have limited permissions for this
+          You have limited permissions for this
           project. You can launch a session, but you will not be able to save
           any changes. If you want to save your work, consider one of the following:
         </p>
@@ -1152,7 +1219,7 @@ class ProjectViewNotFound extends Component {
     if (this.props.logged) {
       tip = <InfoAlert timeout={0}>
         <p>
-          <FontAwesomeIcon icon={faInfoCircle} /> If you are sure the project exists,
+          If you are sure the project exists,
           you may want to try the following:
         </p>
         <ul className="mb-0">
@@ -1167,7 +1234,7 @@ class ProjectViewNotFound extends Component {
       const to = Url.get(Url.pages.login.link, { pathname: this.props.location.pathname });
       tip = <InfoAlert timeout={0}>
         <p className="mb-0">
-          <FontAwesomeIcon icon={faInfoCircle} /> You might need to be logged in to see this project.
+          You might need to be logged in to see this project.
           Please try to <Link className="btn btn-primary btn-sm" to={to}>Log in</Link>
         </p>
       </InfoAlert>;
@@ -1288,3 +1355,4 @@ export default { ProjectView };
 
 // For testing
 export { filterPaths };
+export { ProjectSuggestActions };

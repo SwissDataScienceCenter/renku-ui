@@ -18,15 +18,23 @@
 
 import React, { useState } from "react";
 import {
-  Alert, Button, Card, CardBody, CardHeader, Col, DropdownItem, DropdownMenu, DropdownToggle, Row,
+  Button, Card, CardBody, CardHeader, Col, DropdownItem, DropdownMenu, DropdownToggle, Row,
   Table, UncontrolledButtonDropdown, Badge
 } from "reactstrap";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faEllipsisV, faInfoCircle, faPen, faPlus, faSearch, faTrash
+  faEllipsisV, faPen, faPlus, faSearch, faTrash
 } from "@fortawesome/free-solid-svg-icons";
-import { ErrorAlert, FileExplorer, InfoAlert, Loader, RenkuMarkdown, ExternalLink } from "../utils/UIComponents";
+import {
+  ErrorAlert,
+  FileExplorer,
+  InfoAlert,
+  Loader,
+  RenkuMarkdown,
+  ExternalLink,
+  WarnAlert
+} from "../utils/UIComponents";
 import { ProjectsCoordinator } from "../project/shared";
 import AddDataset from "./addtoproject/DatasetAdd.container";
 import DeleteDataset from "../project/datasets/delete/index";
@@ -233,7 +241,7 @@ function DatasetError(props) {
     const link = (<Link className="btn btn-primary btn-sm" to={to}>Log in</Link>);
     loginHelper = (
       <p className="mb-0">
-        <FontAwesomeIcon icon={faInfoCircle} /> You might need to be logged in to see this dataset.
+        You might need to be logged in to see this dataset.
         Please try to {link}
       </p>
     );
@@ -256,7 +264,7 @@ function DatasetError(props) {
       loginHelper;
 
     return (
-      <ErrorAlert timeout={0}>
+      <ErrorAlert>
         <h5>{title}</h5>
         {errorDetails}
         {tip}
@@ -271,7 +279,7 @@ function DatasetError(props) {
       (
         <InfoAlert timeout={0}>
           <p>
-            <FontAwesomeIcon icon={faInfoCircle} /> If you are sure the dataset exists,
+            If you are sure the dataset exists,
             you may want to try the following:
           </p>
           <ul className="mb-0">
@@ -316,11 +324,11 @@ function ErrorAfterCreation(props) {
   </Link>;
 
   return props.location.state && props.location.state.errorOnCreation ?
-    <Alert color="danger">
+    <ErrorAlert>
       <strong>Error on creation</strong><br/>
       The dataset was created, but there was an error adding files to it.<br/>
       Please {editButton} the dataset to add the missing files.
-    </Alert>
+    </ErrorAlert>
     : null;
 }
 
@@ -431,7 +439,7 @@ export default function DatasetView(props) {
     }
     {
       dataset.insideKg === false && props.projectInsideKg === true ?
-        <Alert color="warning" id="notInKGWarning">
+        <WarnAlert id="notInKGWarning">
           <strong>This dataset is not in the Knowledge Graph;</strong> this means that some
           operations on it are not possible.
           <br /><br />
@@ -444,7 +452,7 @@ export default function DatasetView(props) {
           <Button size="sm" color="warning" onClick={() => props.history.push(props.overviewStatusUrl)}>
             status page
           </Button>.
-        </Alert>
+        </WarnAlert>
         : null
     }
     {

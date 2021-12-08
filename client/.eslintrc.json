@@ -126,6 +126,7 @@
         "maxEOF": 1
       }
     ],
+    "eol-last": 1,
     "no-unsafe-finally": "off",
     "react/jsx-curly-spacing": [
       "warn",

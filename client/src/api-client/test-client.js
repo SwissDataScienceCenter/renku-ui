@@ -161,6 +161,9 @@ const methods = {
     "url": "https://dev.renku.ch/datasets/79215657-4319-4fcf-82b9-58267f2a1db8",
     "sameAs": "https://dev.renku.ch/datasets/79215657-4319-4fcf-82b9-58267f2a1db8",
     "usedIn": []
+  },
+  isValidUrlForIframe: {
+    response: true
   }
 };
 
@@ -173,5 +176,6 @@ for (let key in methods) {
   };
 }
 client.baseUrl = "some-url";
+client.uiserverUrl = "https://dev.renku.ch/ui-server";
 
 export default client;
