@@ -133,6 +133,7 @@ jobs:
           CYPRESS_BASE_URL: https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch/
           CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
           GITLAB_TOKEN: ${{ secrets.DEV_GITLAB_TOKEN }}
+          CYPRESS_USER: ${{ secrets.CYPRESS_USER }}
         with:
           working-directory: e2e
 

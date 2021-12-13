@@ -1,6 +1,9 @@
 {
   "projectId": "2nbsft",
   "defaultCommandTimeout": 6000,
-  "baseUrl": "https://dev.renku.ch/",
-  "experimentalStudio": true
+  "baseUrl": "",
+  "experimentalStudio": true,
+  "env": {
+    "USER": ""
+  }
 }

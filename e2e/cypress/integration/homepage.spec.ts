@@ -1,5 +1,5 @@
 /*!
- * Copyright 2020 - Swiss Data Science Center (SDSC)
+ * Copyright 2021 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,8 +16,10 @@
  * limitations under the License.
  */
 
+import { User } from "../support/authentication/user.interfaces";
+
 describe("render the home page", () => {
-  const userData = { firstname: "e2e", lastname: "tests", email: "e2e@renku.ch", password: "123456" };
+  const userData: User = Cypress.env("USER");
 
   it("renders correctly", () => {
     cy.visit("/");
