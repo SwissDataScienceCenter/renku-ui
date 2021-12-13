@@ -136,6 +136,7 @@ jobs:
           CYPRESS_USER: ${{ secrets.CYPRESS_USER }}
         with:
           working-directory: e2e
+          record: true
 
   cleanup:
     needs: check-deploy
