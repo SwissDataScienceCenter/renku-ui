@@ -282,6 +282,12 @@ class StartNotebookServer extends Component {
     this.autostart = currentSearch && currentSearch["autostart"] && currentSearch["autostart"] === "1" ?
       true :
       false;
+    this.customBranch = currentSearch && this.autostart && currentSearch["branch"] ?
+      currentSearch["branch"] :
+      null;
+    this.customCommit = currentSearch && this.autostart && currentSearch["commit"] ?
+      currentSearch["commit"] :
+      null;
     this.state = {
       autostartReady: false,
       autostartTried: false,
@@ -329,7 +335,7 @@ class StartNotebookServer extends Component {
       this.setState({ first: false });
       if (this._isMounted)
         this.refreshBranches();
-      this.selectBranch();
+      this.selectBranch(this.customBranch);
 
 
     }
@@ -349,7 +355,7 @@ class StartNotebookServer extends Component {
         return;
       await this.props.refreshBranches();
       if (this._isMounted && this.state.first)
-        this.selectBranch();
+        this.selectBranch(this.customBranch);
     }
   }
 
@@ -403,7 +409,7 @@ class StartNotebookServer extends Component {
       if (this.projectModel.get("commits.fetching"))
         setTimeout(() => { this.selectCommitWhenReady(); }, 100);
       else
-        this.selectCommit();
+        this.selectCommit(this.customCommit);
     }
   }
 
@@ -579,12 +585,12 @@ class StartNotebookServer extends Component {
   toggleMergedBranches() {
     const currentSetting = this.model.get("filters.includeMergedBranches");
     this.coordinator.setMergedBranches(!currentSetting);
-    this.selectBranch();
+    this.selectBranch(this.customBranch);
   }
 
   setDisplayedCommits(number) {
     this.coordinator.setDisplayedCommits(number);
-    this.selectCommit();
+    this.selectCommit(this.customCommit);
   }
 
   filterAutosavedBranches(branches, username) {
