@@ -4,6 +4,7 @@
   "baseUrl": "",
   "experimentalStudio": true,
   "env": {
+    "GITLAB_PROVIDER": "dev.renku.ch",
     "USER": ""
   }
 }
