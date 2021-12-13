@@ -821,6 +821,12 @@ function getStatusObject(status, defaultImage) {
         icon: <Loader size="16" inline="true" />,
         text: "Pending"
       };
+    case "stopping":
+      return {
+        color: "warning",
+        icon: <Loader size="16" inline="true" />,
+        text: "Stopping session"
+      };
     case "error":
       return {
         color: "danger",
@@ -913,17 +919,19 @@ const NotebookServerRowAction = memo((props) => {
     <FontAwesomeIcon icon={faFileAlt} /> Get logs
   </DropdownItem>);
 
-  if (status === "running") {
-    defaultAction = (<Link className="btn btn-secondary text-white" to={props.localUrl}>Open</Link>);
-    actions.openExternal = (<DropdownItem href={props.url} target="_blank" >
-      <FontAwesomeIcon icon={faExternalLinkAlt} /> Open in new tab
-    </DropdownItem>);
+  if (status !== "stopping") {
     actions.stop = <Fragment>
       <DropdownItem divider />
       <DropdownItem onClick={() => props.stopNotebook(name)}>
         <FontAwesomeIcon icon={faStopCircle} /> Stop
       </DropdownItem>
     </Fragment>;
+  }
+  if (status === "running") {
+    defaultAction = (<Link className="btn btn-secondary text-white" to={props.localUrl}>Open</Link>);
+    actions.openExternal = (<DropdownItem href={props.url} target="_blank" >
+      <FontAwesomeIcon icon={faExternalLinkAlt} /> Open in new tab
+    </DropdownItem>);
   }
   else {
     const classes = { color: "secondary", className: "text-nowrap" };
@@ -2014,7 +2022,12 @@ class CheckNotebookIcon extends Component {
         link = (<a href={url} role="button" target="_blank" rel="noreferrer noopener">{icon}</a>);
       }
       else if (status === "pending") {
-        tooltip = "The session is either starting or stopping, please wait...";
+        tooltip = "The session is either starting, please wait...";
+        icon = loader;
+        link = (<span>{icon}</span>);
+      }
+      else if (status === "stopping") {
+        tooltip = "The session is either stopping, please wait...";
         icon = loader;
         link = (<span>{icon}</span>);
       }

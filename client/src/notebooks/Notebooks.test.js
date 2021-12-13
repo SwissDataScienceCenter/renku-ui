@@ -84,6 +84,17 @@ describe("notebook status", () => {
       "step": "ContainersReady"
     },
     "expected": "pending"
+  },
+  {
+    "status": {
+      "message": "containers with unready status: [notebook]",
+      "phase": "Pending",
+      "ready": false,
+      "reason": "ContainersNotReady",
+      "step": "ContainersReady",
+      "stopping": true,
+    },
+    "expected": "stopping"
   }];
 
   it("computed vs expected", () => {
