@@ -16,13 +16,19 @@
  * limitations under the License.
  */
 
-import { APIError, API_ERRORS, throwAPIErrors } from "./errors";
+import { APIError, API_ERRORS, throwAPIErrors, throwAuthError } from "./errors";
 
 const RETURN_TYPES = {
   json: "json",
   text: "text",
   full: "full"
 };
+
+const AUTH_HEADER = {
+  invalidHeaderField: "ui-server-auth",
+  invalidHeaderExpired: "expired"
+};
+
 
 // Wrapper around fetch which will throw exceptions on all non 20x responses.
 // Adapted from https://github.com/github/fetch/issues/155
@@ -57,11 +63,13 @@ function renkuFetch(url, options) {
 
     // Raise an error for all non 200 responses.
     .then((response) => {
-      if (response.status >= 200 && response.status < 300)
+      // check the headers to verify if a re-login should be triggered
+      const authHeader = response.headers.get(AUTH_HEADER.invalidHeaderField);
+      if (authHeader && authHeader === AUTH_HEADER.invalidHeaderExpired)
+        return throwAuthError(response);
+      else if (response.status >= 200 && response.status < 300)
         return response;
-
       return throwAPIErrors(response);
-
     });
 
 }
@@ -71,4 +79,4 @@ function fetchJson(...args) {
   return fetch(...args).then(response => response.json());
 }
 
-export { renkuFetch, fetchJson, RETURN_TYPES };
+export { fetchJson, renkuFetch, AUTH_HEADER, RETURN_TYPES };

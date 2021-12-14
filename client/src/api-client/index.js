@@ -60,12 +60,16 @@ const FETCH_DEFAULT = {
  * API client to query all the RenkuLab API
  */
 class APIClient {
-  constructor(baseUrl, uiserverUrl) {
-    this.baseUrl = baseUrl;
+  /**
+   * @param {string} apiUrl - base API url
+   * @param {string} uiserverUrl - UI server base url, mainly used for authentication
+   */
+  constructor(apiUrl, uiserverUrl) {
+    this.baseUrl = apiUrl;
     this.uiserverUrl = uiserverUrl;
     this.returnTypes = RETURN_TYPES;
     this.graphqlClient = new ApolloClient({
-      uri: `${baseUrl}/kg/graphql`,
+      uri: `${apiUrl}/kg/graphql`,
       headers: { "X-Requested-With": "XMLHttpRequest" }
     });
 
@@ -107,6 +111,8 @@ class APIClient {
   ) {
     return renkuFetch(url, options)
       .catch((error) => {
+        if (error.case === API_ERRORS.authExpired)
+          return this.doLogin();
         // For permission errors we send the user to login
         if (reLogin && error.case === API_ERRORS.unauthorizedError)
           return this.doLogin();
