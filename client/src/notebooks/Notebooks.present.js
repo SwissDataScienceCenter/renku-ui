@@ -2027,7 +2027,7 @@ class CheckNotebookIcon extends Component {
         link = (<span>{icon}</span>);
       }
       else if (status === "stopping") {
-        tooltip = "The session is either stopping, please wait...";
+        tooltip = "The session is stopping, please wait...";
         icon = loader;
         link = (<span>{icon}</span>);
       }
