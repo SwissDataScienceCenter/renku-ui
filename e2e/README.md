@@ -6,7 +6,22 @@ Quickstart
 
 The e2e project depends on a running instance of Renku being present.
 
-Once you have a development instance of Renku running locally or in the cloud, set the baseUrl in the `cypress.json` file.
+Once you have a development instance of Renku running locally or in the cloud, set the baseUrl and a valid user data (`env.USER`) in the `cypress.json` file.
+
+**Note:** The user should also exist in dev.renku.ch
+
+````
+"baseUrl": "https://<my-namespace>.dev.renku.ch/"
+"env": {
+    "USER": {
+      "firstname": "<firstname>",
+      "lastname": "<lastname>",
+      "email": "<email>",
+      "password": "<password>"
+    }
+````
+
+**Note:** For CI purposes the user data is saved as secret with key CYPRESS_USER
 
 
 ## Installation
