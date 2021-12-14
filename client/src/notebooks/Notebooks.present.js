@@ -337,7 +337,7 @@ function SessionJupyter(props) {
     else if (invisible) {
       return null;
     }
-    else if (status === "pending") {
+    else if (status === "pending" || status === "stopping") {
       content = (<Loader />);
     }
   }
@@ -1328,7 +1328,7 @@ class StartNotebookPipelinesBadge extends Component {
         color = "danger";
         text = "not available";
       }
-      else if (pipeline.status === "running" || pipeline.status === "pending") {
+      else if (["running", "pending", "stopping"].includes(pipeline.status)) {
         color = "warning";
         text = "building";
       }
@@ -1415,7 +1415,7 @@ class StartNotebookPipelinesContent extends Component {
       return null;
 
     let content = null;
-    if (pipeline.status === "running" || pipeline.status === "pending") {
+    if (["running", "pending", "stopping"].includes(pipeline.status)) {
       content = (
         <Label>
           <FontAwesomeIcon icon={faCog} spin /> The Docker image for the session is being built.
@@ -1663,7 +1663,7 @@ class StartNotebookOptionsRunning extends Component {
         </FormGroup>
       );
     }
-    else if (status === "pending") {
+    else if (status === "pending" || status === "stopping") {
       return (
         <FormGroup>
           <Label>A session for this commit is starting or terminating, please wait...</Label>

@@ -461,8 +461,7 @@ class StartNotebookServer extends Component {
 
           // give extra context to logged users for building images
           const loggedPipelines = data.pipelines.type === NotebooksHelper.pipelineTypes.logged ? true : false;
-          const pendingPipeline = mainPipeline &&
-            (mainPipeline.status === "running" || mainPipeline.status === "pending");
+          const pendingPipeline = mainPipeline && ["running", "pending", "stopping"].includes(mainPipeline.status);
 
           if (loggedPipelines && pendingPipeline) {
             this.setState({
