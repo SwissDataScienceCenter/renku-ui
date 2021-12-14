@@ -19,6 +19,7 @@ Once you have a development instance of Renku running locally or in the cloud, s
       "email": "<email>",
       "password": "<password>"
     }
+}
 ````
 
 **Note:** For CI purposes the user data is saved as secret with key CYPRESS_USER
