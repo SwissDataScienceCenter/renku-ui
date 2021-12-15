@@ -337,7 +337,7 @@ function SessionJupyter(props) {
     else if (invisible) {
       return null;
     }
-    else if (status === "pending") {
+    else if (status === "pending" || status === "stopping") {
       content = (<Loader />);
     }
   }
@@ -821,6 +821,12 @@ function getStatusObject(status, defaultImage) {
         icon: <Loader size="16" inline="true" />,
         text: "Pending"
       };
+    case "stopping":
+      return {
+        color: "warning",
+        icon: <Loader size="16" inline="true" />,
+        text: "Stopping session"
+      };
     case "error":
       return {
         color: "danger",
@@ -913,17 +919,19 @@ const NotebookServerRowAction = memo((props) => {
     <FontAwesomeIcon icon={faFileAlt} /> Get logs
   </DropdownItem>);
 
-  if (status === "running") {
-    defaultAction = (<Link className="btn btn-secondary text-white" to={props.localUrl}>Open</Link>);
-    actions.openExternal = (<DropdownItem href={props.url} target="_blank" >
-      <FontAwesomeIcon icon={faExternalLinkAlt} /> Open in new tab
-    </DropdownItem>);
+  if (status !== "stopping") {
     actions.stop = <Fragment>
       <DropdownItem divider />
       <DropdownItem onClick={() => props.stopNotebook(name)}>
         <FontAwesomeIcon icon={faStopCircle} /> Stop
       </DropdownItem>
     </Fragment>;
+  }
+  if (status === "running") {
+    defaultAction = (<Link className="btn btn-secondary text-white" to={props.localUrl}>Open</Link>);
+    actions.openExternal = (<DropdownItem href={props.url} target="_blank" >
+      <FontAwesomeIcon icon={faExternalLinkAlt} /> Open in new tab
+    </DropdownItem>);
   }
   else {
     const classes = { color: "secondary", className: "text-nowrap" };
@@ -1320,7 +1328,7 @@ class StartNotebookPipelinesBadge extends Component {
         color = "danger";
         text = "not available";
       }
-      else if (pipeline.status === "running" || pipeline.status === "pending") {
+      else if (["running", "pending", "stopping"].includes(pipeline.status)) {
         color = "warning";
         text = "building";
       }
@@ -1407,7 +1415,7 @@ class StartNotebookPipelinesContent extends Component {
       return null;
 
     let content = null;
-    if (pipeline.status === "running" || pipeline.status === "pending") {
+    if (["running", "pending", "stopping"].includes(pipeline.status)) {
       content = (
         <Label>
           <FontAwesomeIcon icon={faCog} spin /> The Docker image for the session is being built.
@@ -1655,7 +1663,7 @@ class StartNotebookOptionsRunning extends Component {
         </FormGroup>
       );
     }
-    else if (status === "pending") {
+    else if (status === "pending" || status === "stopping") {
       return (
         <FormGroup>
           <Label>A session for this commit is starting or terminating, please wait...</Label>
@@ -2029,7 +2037,12 @@ class CheckNotebookIcon extends Component {
         link = (<a href={url} role="button" target="_blank" rel="noreferrer noopener">{icon}</a>);
       }
       else if (status === "pending") {
-        tooltip = "The session is either starting or stopping, please wait...";
+        tooltip = "The session is either starting, please wait...";
+        icon = loader;
+        link = (<span>{icon}</span>);
+      }
+      else if (status === "stopping") {
+        tooltip = "The session is stopping, please wait...";
         icon = loader;
         link = (<span>{icon}</span>);
       }

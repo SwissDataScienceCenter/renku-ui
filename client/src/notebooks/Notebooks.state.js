@@ -76,6 +76,8 @@ const NotebooksHelper = {
 
     if (status.ready)
       return "running";
+    if (status.stopping)
+      return "stopping";
     if (status.step === "Unschedulable")
       return "error";
     return "pending";
@@ -462,6 +464,15 @@ class NotebooksCoordinator {
           const filters = this.getQueryFilters();
           if (this.model.get("notebooks.lastParameters") === JSON.stringify(filters)) {
             updatedNotebooks.fetched = new Date();
+            const currentServers = this.model.get("notebooks.all");
+
+            // check if the stopping status exist to attach to the current object
+            // TODO: this should be removed once that status is returned by fetching notebooks
+            for (const serverName in resp.data) {
+              const currentStatus = currentServers[serverName]?.status;
+              if (currentStatus && "stopping" in currentStatus)
+                resp.data[serverName].status.stopping = true;
+            }
             updatedNotebooks.all = { $set: resp.data };
           }
           // TODO: re-invoke `fetchNotebooks()` immediately if parameters are outdated
@@ -892,7 +903,7 @@ class NotebooksCoordinator {
     // manually set the state and temporarily throw away servers data until the promise resolves
     const updatedState = {
       filters: { discard: true },
-      notebooks: { all: { [serverName]: { status: { ready: false } } } }
+      notebooks: { all: { [serverName]: { status: { ready: false, stopping: true } } } }
     };
     this.model.setObject(updatedState);
     return this.client.stopNotebookServer(serverName, force)
