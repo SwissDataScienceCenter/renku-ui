@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { User } from "./user.interfaces";
+import { User, userToUsername } from "./user.interfaces";
 const GITLAB_PROVIDER = Cypress.env("GITLAB_PROVIDER");
 
 Cypress.Commands.add("gui_kc_login", (user: User, startFromHome = false) => {
@@ -42,10 +42,10 @@ Cypress.Commands.add("gui_kc_login", (user: User, startFromHome = false) => {
     else if (url.includes(`${GITLAB_PROVIDER}/gitlab/oauth/authorize`)) {
       // Accept gitlab authorization
       cy.get("[data-qa-selector='authorization_button']").click();
-      cy.gui_is_welcome_page_logged_user(user.firstname);
+      cy.gui_is_welcome_page_logged_user(user);
     }
     else {
-      cy.gui_is_welcome_page_logged_user(user.firstname);
+      cy.gui_is_welcome_page_logged_user(user);
     }
   });
 
@@ -68,8 +68,9 @@ Cypress.Commands.add("gui_kc_register", (user: User) => {
   cy.get("#kc-form-buttons > input").click();
 });
 
-Cypress.Commands.add("gui_is_welcome_page_logged_user", (username: string) => {
+Cypress.Commands.add("gui_is_welcome_page_logged_user", (user: User) => {
   cy.url().then( () => {
+    const username = userToUsername(user);
     cy.url().should("be.equal", Cypress.config("baseUrl"));
     cy.get("[data-cy='username-home']").contains(`${username} @ Renku`);
   });

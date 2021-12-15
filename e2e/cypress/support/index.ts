@@ -25,7 +25,7 @@ declare global {
     interface Chainable {
       gui_kc_login(user: User, startFromHome: boolean): void,
       gui_kc_register(user: User): void,
-      gui_is_welcome_page_logged_user(username: string): void,
+      gui_is_welcome_page_logged_user(user: User): void,
       gui_logout(): void
     }
   }
