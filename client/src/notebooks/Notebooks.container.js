@@ -349,6 +349,18 @@ class StartNotebookServer extends Component {
     this.setState({ ignorePipeline: value });
   }
 
+  setErrorInAutostart() {
+    this.autostart = false;
+    this.setState({
+      "starting": false,
+      launchError: {
+        frontendError: true,
+        pipelineError: false,
+        errorMessage: `The session could not be started because the commit or the branch name was not found.`
+      },
+    });
+  }
+
   async refreshBranches() {
     if (this._isMounted) {
       if (StatusHelper.isUpdating(this.props.fetchingBranches))
@@ -373,29 +385,37 @@ class StartNotebookServer extends Component {
         autoBranchName = true;
       }
 
-      // get the proper branch and set it
+      // get the proper branch
+      let branchToSet;
       const { branches } = this.props;
+
       const branch = branches.filter(branch => branch.name === branchName);
+
       if (branch.length === 1) {
-        this.coordinator.setBranch(branch[0]);
-        this.refreshCommits();
+        branchToSet = branch[0];
       }
-      else {
-        if (autoBranchName && branches && branches.length) {
-          this.coordinator.setBranch(branches[0]);
-          this.refreshCommits();
-        }
-        else {
-          this.coordinator.setBranch({});
-          this.coordinator.setCommit({});
-        }
+      else if (autoBranchName && branches?.length) {
+        branchToSet = branches[0];
       }
+      else if (this.customBranch || this.customCommit) {
+        branchToSet = branches[0]; // allow form to start a new session
+        this.setErrorInAutostart();
+      }
+
+      // set branch
+      this.coordinator.setBranch(branchToSet ?? {});
+      if (!branchToSet) {
+        this.coordinator.setCommit({});
+        return;
+      }
+      // force get commit of branch selected when autostart session
+      this.refreshCommits(this.autostart);
     }
   }
 
-  async refreshCommits() {
+  async refreshCommits(force = false) {
     if (this._isMounted) {
-      if (!this.projectModel.get("commits.fetching")) {
+      if (!this.projectModel.get("commits.fetching") || force) {
         const branch = this.model.get("filters.branch");
         await this.projectCoordinator.fetchCommits({ branch: branch.name });
       }
@@ -425,9 +445,12 @@ class StartNotebookServer extends Component {
       // find the proper commit or return
       if (commitId) {
         const filteredCommits = commits.filter(commit => commit.id === commitId);
-        if (filteredCommits.length !== 1)
+        if (filteredCommits.length === 1)
+          commit = filteredCommits[0];
+        else if (this.customBranch || this.customCommit)
+          this.setErrorInAutostart();
+        else
           return;
-        commit = filteredCommits[0];
       }
       else {
         const oldCommit = this.model.get("filters.commit");
@@ -476,6 +499,7 @@ class StartNotebookServer extends Component {
               autostartTried: true,
               launchError: {
                 frontendError: true,
+                pipelineError: true,
                 errorMessage: `The session could not start because the image is still building.
                 Please wait for the build to finish, or start the session with the base image.`
               },
@@ -493,6 +517,7 @@ class StartNotebookServer extends Component {
               autostartTried: true,
               launchError: {
                 frontendError: true,
+                pipelineError: true,
                 errorMessage: `The session could not start because no image is available.
                 Please select a different commit or start the session with the base image.`
               },

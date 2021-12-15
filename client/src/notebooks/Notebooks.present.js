@@ -1859,7 +1859,7 @@ function LaunchErrorBackendAlert({ launchError }) {
 
 function LaunchErrorFrontendAlert({ launchError, pipelines }) {
   const pipeline = pipelines.main;
-  if (pipeline && (pipeline.path || pipeline.status === "success"))
+  if (launchError.pipelineError && pipeline && (pipeline.path || pipeline.status === "success"))
     return null;
   return <WarnAlert>
     {launchError.errorMessage}
