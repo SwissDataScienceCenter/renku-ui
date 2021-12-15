@@ -43,6 +43,22 @@ function convertType(value: string, booleans = true, numbers = true): boolean | 
   return value;
 }
 
+
+/**
+ * Return target cookies if matched.
+ *
+ * @param cookies - cookies string containing all cookies
+ * @param target - target cookie name
+ * @returns value of the target cookie. Null if unmatched
+ */
+function getCookieValueByName(cookies: string, target: string): string {
+  if (!cookies || !target || cookies.length < 1 || target.length < 1)
+    return null;
+  const match = cookies.match(new RegExp("(^| )" + target + "=([^;]+)"));
+  return match ? match[2] : null;
+}
+
+
 /**
  * Simulate a sleep function.
  * @param {number} seconds - length of the sleep time span in seconds
@@ -53,4 +69,4 @@ async function sleep(seconds: number): Promise<void> {
 }
 
 
-export { convertType, sleep };
+export { convertType, getCookieValueByName, sleep };
