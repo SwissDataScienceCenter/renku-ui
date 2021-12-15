@@ -38,3 +38,6 @@ yarn-error.log*
 # Video and screenshots local tests
 videos/
 screenshots/
+
+# Machine-specific configuration
+cypress.env.json

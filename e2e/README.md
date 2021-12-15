@@ -23,6 +23,7 @@ Once you have a development instance of Renku running locally or in the cloud, s
 ````
 
 **Note:** For CI purposes the user data is saved as secret with key CYPRESS_USER
+**Note:** The `USER` configuration can be put in `cypress.env.json`, which is in `.gitignore`, so you do not need to worry about accidentally pushing passwords to the Git server.
 
 
 ## Installation
