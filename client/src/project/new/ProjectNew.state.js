@@ -91,17 +91,32 @@ class NewProjectCoordinator {
       Object.keys(template.variables) :
       [];
 
-    // preserve already set values
+    // preserve already set values or set default values when available
     const oldValues = currentInput.template ?
       currentInput.variables :
       {};
     const oldVariables = Object.keys(oldValues);
     const values = variables.reduce((values, variable) => {
-      const text = oldVariables.includes(variable) ?
-        oldValues[variable] :
-        "";
-      return { ...values, [variable]: text };
+      let value = "";
+
+      const variableData = template.variables[variable];
+      if (typeof variableData === "object") {
+        // set first value for enum, and "false" for boolean
+        if (variableData["type"] === "enum" && variableData["enum"] && variableData["enum"].length)
+          value = variableData["enum"][0];
+
+        // set default, if any
+        if (typeof variableData === "object" && variableData["default_value"] != null)
+          value = variableData["default_value"];
+      }
+
+      // set older value, if any
+      if (oldVariables.includes(variable))
+        value = oldValues[variable];
+
+      return { ...values, [variable]: value };
     }, {});
+
     return values;
   }
 
@@ -535,10 +550,10 @@ class NewProjectCoordinator {
       newProjectData.ref = userTemplates.ref;
     }
 
-    // add variables
+    // add variables after converting to string (renku core accept string only)
     let parameters = [];
     for (let variable of Object.keys(input.variables))
-      parameters.push({ key: variable, value: input.variables[variable] });
+      parameters.push({ key: variable, value: input.variables[variable].toString() });
     newProjectData.parameters = parameters;
 
     // reset all previous creation progresses and invoke the project creation API
