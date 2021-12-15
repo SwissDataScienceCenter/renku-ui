@@ -2107,6 +2107,10 @@ const ShareLinkSessionModal = (props) => {
                     onChange={e => setCommit(e.target.checked)}/> Commit
                 </Label>
               </FormGroup>
+              <FormText>
+                <FontAwesomeIcon id="commit-info" icon={faInfoCircle} />
+                &nbsp;To use commit key is necessary to include the branch name
+              </FormText>
             </Form>
 
             <Table size="sm">
