@@ -40,6 +40,7 @@ import ShowDataset from "../dataset/Dataset.container";
 import ChangeDataset from "./datasets/change/index";
 import ImportDataset from "./datasets/import/index";
 import KnowledgeGraphStatus from "../file/KnowledgeGraphStatus.container";
+import qs from "query-string";
 
 
 const subRoutes = {
@@ -156,6 +157,9 @@ function matchToDatasetId(matchDatasetId) {
 class View extends Component {
   constructor(props) {
     super(props);
+    const currentSearch = qs.parse(props.location.search);
+    this.autostart = currentSearch?.autostart;
+    this.customBranch = currentSearch?.branch;
     this.projectState = new ProjectModel(StateKind.REDUX);
     // TODO: Could move projectsCoordinator once ProjectModel goes away
     this.projectsCoordinator = new ProjectsCoordinator(props.client, props.model.subModel("projects"));
@@ -213,11 +217,12 @@ class View extends Component {
     const pathComponents = splitProjectSubRoute(this.props.match.url);
     const projectData =
       this.projectCoordinator.fetchProject(this.props.client, pathComponents.projectPathWithNamespace);
-    projectData.then(data => {
+    projectData.then(async (data) => {
       this.projectState.setProjectData(data, true);
       // TODO: We should fetch commits after we know the default branch
-      this.fetchBranches();
-      this.projectCoordinator.fetchCommits();
+      await this.fetchBranches();
+      if (!this.autostart && !this.customBranch)
+        await this.projectCoordinator.fetchCommits();
     });
 
     return projectData;

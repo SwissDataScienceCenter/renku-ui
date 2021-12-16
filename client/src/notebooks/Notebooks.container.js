@@ -408,14 +408,14 @@ class StartNotebookServer extends Component {
         this.coordinator.setCommit({});
         return;
       }
-      // force get commit of branch selected when autostart session
-      this.refreshCommits(this.autostart);
+
+      this.refreshCommits();
     }
   }
 
-  async refreshCommits(force = false) {
+  async refreshCommits() {
     if (this._isMounted) {
-      if (!this.projectModel.get("commits.fetching") || force) {
+      if (!this.projectModel.get("commits.fetching")) {
         const branch = this.model.get("filters.branch");
         await this.projectCoordinator.fetchCommits({ branch: branch.name });
       }
