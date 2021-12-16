@@ -25,7 +25,6 @@ import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 
 import { atobUTF8 } from "../utils/Encoding";
 import { StyledNotebook, JupyterButtonPresent, ShowFile as ShowFilePresent, FileNoPreview } from "./File.present";
-import { StatusHelper } from "../model/Model";
 import { API_ERRORS } from "../api-client";
 import { RenkuMarkdown } from "../utils/UIComponents";
 import { encodeImageBase64 } from "../utils/Markdown";
@@ -261,9 +260,10 @@ class JupyterNotebookContainer extends Component {
  */
 class JupyterButton extends React.Component {
   componentDidMount() {
+    // fetch branches if needed
     if (this.props.user.logged) {
       const { branches } = this.props;
-      if (branches && branches.all && !branches.all.length && !StatusHelper.isUpdating(branches.all))
+      if (!branches.all.fetched || !branches.all.fetching)
         branches.fetch();
     }
   }
@@ -271,15 +271,19 @@ class JupyterButton extends React.Component {
   // we might not need this piece of code if we want to use branches in general
   getDefaultBranch() {
     const { branches, defaultBranch } = this.props;
-    if (!branches || !branches.all || StatusHelper.isUpdating(branches.all) || !branches.all.length)
+
+    // return if we don't have branches (not fetched yet)
+    if (!branches.all.standard.length)
       return null;
 
+    // return the full branch object corresponding to the default -- if any is set (this is generally the case)
     if (defaultBranch) {
-      const defaultBranchObject = branches.all.filter(branch => branch.name === defaultBranch);
-      if (defaultBranchObject.length) return defaultBranchObject;
+      const defaultBranchObject = branches.all.standard.find(branch => branch.name === defaultBranch);
+      if (defaultBranchObject)
+        return defaultBranchObject;
     }
 
-    return branches[0]?.name ?? branches?.all[0]?.name;
+    return branches.all.standard[0]?.name;
   }
 
   getScope() {
@@ -294,7 +298,10 @@ class JupyterButton extends React.Component {
   }
 
   render() {
-    if (!this.props.user.logged) {
+    const { branches, file, user } = this.props;
+
+    // anonymous users can't currently use this feature
+    if (!user.logged) {
       return (
         <JupyterButtonPresent
           access={false}
@@ -303,9 +310,8 @@ class JupyterButton extends React.Component {
       );
     }
 
-    const { file, branches } = this.props;
     let updating = false;
-    if (branches.all && StatusHelper.isUpdating(branches.all))
+    if (branches.all.fetching || !branches.all.standard.length)
       updating = true;
 
     let filePath = "";
