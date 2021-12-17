@@ -2078,15 +2078,19 @@ const ShareLinkSessionModal = (props) => {
   const [includeBranch, setIncludeBranch] = useState(false);
   const [includeCommit, setIncludeCommit] = useState(false);
   const [url, setUrl] = useState("");
-  const data = { namespace: props.filters?.namespace, path: props.filters?.project };
+  const data = {
+    namespace: props.filters?.namespace,
+    path: props.filters?.project,
+    branch: props.filters.branch.name,
+    commit: props.filters.commit.id,
+  };
 
   useEffect(() => {
     if (!data.namespace || !data.path)
       return;
     let urlSession = Url.get(Url.pages.project.session.autostart, data, true);
-    const parameters = JSON.parse(props.notebooks.lastParameters);
-    urlSession = includeCommit ? `${urlSession}&commit=${parameters.commit}` : urlSession;
-    urlSession = includeBranch ? `${urlSession}&branch=${parameters.branch}` : urlSession;
+    urlSession = includeCommit ? `${urlSession}&commit=${data.commit}` : urlSession;
+    urlSession = includeBranch ? `${urlSession}&branch=${data.branch}` : urlSession;
     setUrl(urlSession);
   }, [ includeCommit, includeBranch, props.notebooks.lastParameters, data ]);
 
