@@ -2089,7 +2089,7 @@ const ShareLinkSessionModal = (props) => {
     urlSession = includeCommit ? `${urlSession}&commit=${data.commit}` : urlSession;
     urlSession = includeBranch ? `${urlSession}&branch=${data.branch}` : urlSession;
     setUrl(urlSession);
-  }, [ includeCommit, includeBranch, props.notebooks.lastParameters, data ]);
+  }, [ includeCommit, includeBranch, data ]);
 
   const setCommit = (checked) => {
     setIncludeCommit(checked);
