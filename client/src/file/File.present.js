@@ -395,7 +395,7 @@ class JupyterButtonPresent extends React.Component {
       return <CheckNotebookIcon fetched={true} launchNotebookUrl={this.props.launchNotebookUrl} />;
 
     if (this.props.updating)
-      return (<span style={{ verticalAlign: "text-bottom" }}><Loader size="19" inline="true" /></span>);
+      return (<span className="ms-2 pb-1"><Loader size="19" inline="true" /></span>);
 
     return (
       <CheckNotebookStatus
