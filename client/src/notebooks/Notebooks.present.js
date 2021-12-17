@@ -2023,28 +2023,25 @@ class AutosavedDataModal extends Component {
 class CheckNotebookIcon extends Component {
   render() {
     const { fetched, notebook, location } = this.props;
-    const loader = (<span style={{ verticalAlign: "text-bottom" }}><Loader size="19" inline="true" /></span>);
+    const loader = (<span className="ms-2 pb-1"><Loader size="19" inline="true" /></span>);
     if (!fetched)
       return loader;
 
-    let tooltip, link, icon;
+    let tooltip, link, icon, aligner = null;
     if (notebook) {
       const status = NotebooksHelper.getStatus(notebook.status);
       if (status === "running") {
         tooltip = "Connect to JupyterLab";
         icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" />);
-        const url = `${notebook.url}lab/tree/${this.props.filePath}`;
+        const url = `${notebook.url}/lab/tree/${this.props.filePath}`;
         link = (<a href={url} role="button" target="_blank" rel="noreferrer noopener">{icon}</a>);
       }
-      else if (status === "pending") {
-        tooltip = "The session is either starting, please wait...";
-        icon = loader;
-        link = (<span>{icon}</span>);
-      }
-      else if (status === "stopping") {
-        tooltip = "The session is stopping, please wait...";
-        icon = loader;
-        link = (<span>{icon}</span>);
+      else if (status === "pending" || status === "stopping") {
+        tooltip = status === "stopping" ?
+          "The session is stopping, please wait..." :
+          "The session is starting, please wait...";
+        aligner = "pb-1";
+        link = loader;
       }
       else {
         tooltip = "Check session status";
@@ -2067,7 +2064,7 @@ class CheckNotebookIcon extends Component {
 
     return (
       <React.Fragment>
-        <span id="checkNotebookIcon">{link}</span>
+        <span id="checkNotebookIcon" className={aligner}>{link}</span>
         <ThrottledTooltip target="checkNotebookIcon" tooltip={tooltip} />
       </React.Fragment>
     );

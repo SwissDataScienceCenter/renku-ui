@@ -95,7 +95,7 @@ describe("rendering", () => {
       const div = document.createElement("div");
       // * fix for tooltips https://github.com/reactstrap/reactstrap/issues/773#issuecomment-357409863
       document.body.appendChild(div);
-      const branches = { all: [], fetch: () => {} };
+      const branches = { all: { standard: [] }, fetch: () => {} };
       ReactDOM.render(
         <MemoryRouter>
           <JupyterButton user={user.data} branches={branches} {...props} />
