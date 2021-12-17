@@ -2122,7 +2122,7 @@ const ShareLinkSessionModal = (props) => {
               </FormGroup>
               <FormText>
                 <FontAwesomeIcon id="commit-info" icon={faInfoCircle} />
-                &nbsp;To use commit key is necessary to include the branch name
+                &nbsp;The commit requires including also the branch
               </FormText>
             </Form>
 
