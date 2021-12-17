@@ -118,7 +118,11 @@ function SiteStatusLanding(props) {
  * @param {array} maintenances
  */
 function sortedMaintenances(maintenances) {
-  return maintenances.sort((a, b) => new Date(a.scheduled_for) > new Date(b.scheduled_for));
+  return maintenances.sort((a, b) => {
+    return (new Date(a.scheduled_for) < new Date(b.scheduled_for)) ?
+      -1 :
+      1;
+  });
 }
 
 function maintenanceTimeFragment(first) {
