@@ -214,13 +214,6 @@ class HelpFeatures extends Component {
 }
 
 function HelpChanges() {
-
-  function SwitchToOldVersion() {
-    const ninetyDays = 60 * 60 * 24 * 90;
-    document.cookie = `ui-0-11-x=always; max-age=${ninetyDays}; path=/`;
-  }
-
-  const oldUiUrl = `/?v=${new Date().getTime()}`;
   // eslint-disable-next-line
   const discourseNewTopicUrl = `${discourseUrl}/new-topic?category=Renkulab`;
 
@@ -247,25 +240,6 @@ function HelpChanges() {
           <ExternalLink
             url={discourseNewTopicUrl} role="text"
             title="Feel free to share your suggestions or general thoughts" />.
-        </p>
-      </Col>
-    </Row>
-    <Row className="mt-4 pt-4">
-      <Col md={8}>
-        <h4>Transitioning</h4>
-        <p>
-          We think you will prefer the new UI and all the improvements we have made. But, if there is something
-          you liked better in the previous version, {" "}
-          <ExternalLink url={discourseNewTopicUrl} role="text" title="please let us know about it" />,
-          and we will try to make the necessary improvements.
-        </p>
-        <p>
-          During the transition, you can still {" "}
-          <a href={oldUiUrl} className="text-rk-pink" onClick={SwitchToOldVersion}>
-            switch to the old version of the UI
-          </a>. If you choose to do this, {" "}
-          <ExternalLink url={discourseNewTopicUrl} role="text" title="let us know why" />, {" "}
-          so we can try to address the issues before we completely disable the old UI.
         </p>
       </Col>
     </Row>
