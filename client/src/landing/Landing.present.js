@@ -28,7 +28,7 @@ import React, { Component, Fragment } from "react";
 import { Link } from "react-router-dom";
 import { Row, Col } from "reactstrap";
 import { Url } from "../utils/url";
-import { ExternalLink, InfoAlert, MarkdownTextExcerpt, ListDisplay, RenkuMarkdown,
+import { ExternalLink, MarkdownTextExcerpt, ListDisplay, RenkuMarkdown,
   Loader } from "../utils/UIComponents";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLandmark, faPlus, faQuestion } from "@fortawesome/free-solid-svg-icons";
@@ -136,33 +136,12 @@ class Welcome extends Component {
   }
 }
 
-function LoggedInNewVersionBanner() {
-
-  const newVersionBannerStyle = {
-    fontSize: "larger"
-  };
-
-  return <InfoAlert color="primary" timeout={20}>
-    <div className="d-flex justify-content-center align-items-center" style={newVersionBannerStyle}>
-      <div>
-        <span role="img" aria-label="tada">🎉</span> {" "}
-        Welcome to the new Renku UI!  {" "}
-        <span role="img" aria-label="tada">🎉</span> {" "}
-        <Link to={Url.get(Url.pages.help.changes)} className="link-rk-dark">
-          Learn about what has changed.
-        </Link>
-      </div>
-    </div>
-  </InfoAlert>;
-}
-
 class LoggedInHome extends Component {
   render() {
     const urlMap = this.props.urlMap;
     const { user } = this.props;
     const projects = this.props.projects.landingProjects;
     return [
-      <LoggedInNewVersionBanner key="new-version-banner" />,
       <Row key="username">
         <Col xs={6}>
           <h3 data-cy="username-home" className="pt-4 fw-bold">{user.data.username} @ Renku</h3>
