@@ -166,6 +166,7 @@ describe("rendering", () => {
             model={model}
             history={fakeHistory}
             user={loggedUser}
+            location={fakeHistory.location}
             match={{ params: { id: "1" }, url: "/projects/1/" }} />
         </MemoryRouter>
       </Provider>

@@ -1118,7 +1118,7 @@ function StartNotebookAutostart(props) {
     pipelines: pipelines.fetched
   };
   let progress = 0;
-  let message = "";
+  let message = "Getting project data";
   if (fetching.notebooks) {
     message = "Checking existing sessions";
     progress = 80;

@@ -316,7 +316,8 @@ class StartNotebookServer extends Component {
   componentDidMount() {
     this._isMounted = true;
     if (!this.props.blockAnonymous) {
-      this.coordinator.startNotebookPolling();
+      if (!this.autostart)
+        this.coordinator.startNotebookPolling();
       this.refreshBranches();
     }
   }
@@ -403,7 +404,8 @@ class StartNotebookServer extends Component {
       }
 
       // set branch
-      this.coordinator.setBranch(branchToSet ?? {});
+      // do not retrieve the books yet, wait for the commit to be set
+      this.coordinator.setBranch(branchToSet ?? {}, !this.autostart);
       if (!branchToSet) {
         this.coordinator.setCommit({});
         return;

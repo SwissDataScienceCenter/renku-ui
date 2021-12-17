@@ -217,12 +217,12 @@ class View extends Component {
     const pathComponents = splitProjectSubRoute(this.props.match.url);
     const projectData =
       this.projectCoordinator.fetchProject(this.props.client, pathComponents.projectPathWithNamespace);
-    projectData.then(async (data) => {
+    projectData.then( data => {
       this.projectState.setProjectData(data, true);
       // TODO: We should fetch commits after we know the default branch
-      await this.fetchBranches();
+      this.fetchBranches();
       if (!this.autostart && !this.customBranch)
-        await this.projectCoordinator.fetchCommits();
+        this.projectCoordinator.fetchCommits();
     });
 
     return projectData;
