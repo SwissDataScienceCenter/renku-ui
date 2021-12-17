@@ -28,6 +28,7 @@ import {
 import { StatusHelper } from "../model/Model";
 import { ProjectCoordinator } from "../project";
 import { Url } from "../utils/url";
+import { Loader } from "../utils/UIComponents";
 
 
 /**
@@ -123,6 +124,9 @@ class ShowSession extends Component {
   render() {
     if (this.props.blockAnonymous)
       return <NotebooksDisabled location={this.props.location} />;
+
+    if (!this.model.get("notebooks.fetched"))
+      return <Loader />;
 
     return (
       <ShowSessionMapped
@@ -360,6 +364,7 @@ class StartNotebookServer extends Component {
         errorMessage: `The session could not be started because the commit or the branch name was not found.`
       },
     });
+    this.coordinator.startNotebookPolling();
   }
 
   async refreshBranches() {
