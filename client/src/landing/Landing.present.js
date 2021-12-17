@@ -165,7 +165,7 @@ class LoggedInHome extends Component {
       <LoggedInNewVersionBanner key="new-version-banner" />,
       <Row key="username">
         <Col xs={6}>
-          <h3 className="pt-4 fw-bold">{user.data.username} @ Renku</h3>
+          <h3 data-cy="username-home" className="pt-4 fw-bold">{user.data.username} @ Renku</h3>
         </Col>
       </Row>,
       <Row key="spacer"><Col md={12}>&nbsp;</Col></Row>,

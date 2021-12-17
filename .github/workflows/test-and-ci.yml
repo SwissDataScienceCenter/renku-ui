@@ -63,6 +63,25 @@ jobs:
         cd server
         npm run lint
 
+  test-e2e:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up node ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: '14.18.0'
+      - name: Install project e2e dependencies
+        run: |
+          cd e2e
+          npm install
+        env:
+          NODE_OPTIONS: '--max-old-space-size=4096'
+      - name: Run lint e2e
+        run: |
+          cd e2e
+          npm run lint
+
   test-chart:
     needs: [test-client, test-server]
     runs-on: ubuntu-latest
