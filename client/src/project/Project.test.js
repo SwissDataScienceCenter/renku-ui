@@ -30,7 +30,7 @@ import { MemoryRouter } from "react-router-dom";
 import TestRenderer, { act } from "react-test-renderer";
 import { createMemoryHistory } from "history";
 
-import { StateModel, globalSchema, projectGlobalSchema, SpecialPropVal } from "../model";
+import { StateModel, globalSchema, projectSchema, SpecialPropVal } from "../model";
 import Project, { mapProjectFeatures, withProjectMapped } from "./Project";
 import { filterPaths } from "./Project.present";
 import { OverviewCommitsBody } from "./overview/ProjectOverview.present";
@@ -226,7 +226,7 @@ describe("rendering ProjectSuggestActions", () => {
   const projectCoordinator = new ProjectCoordinator(client, model.subModel("project"));
 
   const props = {
-    ...projectGlobalSchema,
+    ...projectSchema,
     projectCoordinator,
     model: {},
     fetchDatasets: () => {},

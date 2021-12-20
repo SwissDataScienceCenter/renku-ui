@@ -24,7 +24,7 @@
  */
 
 import { ACCESS_LEVELS, API_ERRORS } from "../api-client";
-import { SpecialPropVal, projectGlobalSchema } from "../model";
+import { SpecialPropVal, projectSchema } from "../model";
 import { splitAutosavedBranches } from "../utils/HelperFunctions";
 
 
@@ -371,7 +371,7 @@ class ProjectCoordinator {
   }
 
   resetProject() {
-    const emptyModel = projectGlobalSchema.createInitialized();
+    const emptyModel = projectSchema.createInitialized();
     this.model.baseModel.setObject({
       [this.model.baseModelPath]: { $set: emptyModel }
     });
@@ -412,7 +412,7 @@ class ProjectCoordinator {
     if (!data) {
       metadata = {
         $set: {
-          ...projectGlobalSchema.createInitialized().metadata,
+          ...projectSchema.createInitialized().metadata,
           exists: false,
           fetched: new Date(),
           fetching: false
@@ -421,13 +421,13 @@ class ProjectCoordinator {
       forkedFromProject = {};
       statsObject = {
         $set: {
-          ...projectGlobalSchema.createInitialized().statistics,
+          ...projectSchema.createInitialized().statistics,
           fetched: new Date(),
           fetching: false
         }
       };
       filtersObject = {
-        ...projectGlobalSchema.createInitialized().filters,
+        ...projectSchema.createInitialized().filters,
         fetched: new Date(),
         fetching: false
       };
@@ -440,7 +440,7 @@ class ProjectCoordinator {
       if (statistics) {
         const stats = data.all && data.all.statistics ?
           data.all.statistics :
-          projectGlobalSchema.createInitialized().statistics.data;
+          projectSchema.createInitialized().statistics.data;
         statsObject = {
           data: { $set: stats },
           fetched: new Date(),
@@ -449,8 +449,9 @@ class ProjectCoordinator {
       }
 
       // set filters
-      const filtersData = data.filters ? data.filters :
-        projectGlobalSchema.createInitialized().filters.data;
+      const filtersData = data.filters ?
+        data.filters :
+        projectSchema.createInitialized().filters.data;
       filtersObject = {
         branch: { $set: filtersData.branch },
         commit: { $set: filtersData.commit },
@@ -614,7 +615,7 @@ class ProjectCoordinator {
     const resp = await this.client.getProject(pathWithNamespace, { statistics: true });
     const stats = resp.data.all.statistics ?
       resp.data.all.statistics :
-      projectGlobalSchema.createInitialized().statistics.data;
+      projectSchema.createInitialized().statistics.data;
     const statsObject = {
       fetching: false,
       fetched: new Date(),
