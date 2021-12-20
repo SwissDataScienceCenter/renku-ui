@@ -63,7 +63,7 @@ function RenkuLabCompatibilityBody({ project_supported, migration_required }) {
 
 /**
  * Show the RenkuLab compatibility status.
- * @param {object} props {migration: projectGlobalSchema.migration, loading: bool}
+ * @param {object} props {migration: projectSchema.migration, loading: bool}
  * @returns Component
  */
 function RenkuLabCompatibilityStatus({ loading, migration }) {

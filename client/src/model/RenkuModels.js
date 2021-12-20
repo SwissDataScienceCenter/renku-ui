@@ -59,33 +59,6 @@ const projectsSchema = new Schema({
   }
 });
 
-const metaSchema = new Schema({
-  id: { initial: "", mandatory: false },
-  projectNamespace: { initial: {}, mandatory: false },
-  visibility: { initial: "public", mandatory: true },
-  optoutKg: { initial: false, mandatory: false }, // eslint-disable-line
-});
-
-const forkDisplaySchema = new Schema({
-  title: { initial: "", mandatory: true },
-  description: { initial: "", mandatory: true },
-  displayId: { initial: "", mandatory: false },
-  slug: { initial: "", mandatory: true },
-  loading: { initial: false, mandatory: false },
-  searchId: { initial: "", mandatory: false },
-  errors: { initial: [], mandatory: false },
-
-  statuses: { initial: [] },
-  namespaces: { initial: [] },
-  namespaceGroup: { initial: null },
-  namespacesFetched: { initial: false }
-});
-
-const forkProjectSchema = new Schema({
-  meta: { schema: metaSchema, mandatory: true },
-  display: { schema: forkDisplaySchema, mandatory: true }
-});
-
 const newProjectSchema = new Schema({
   config: {
     [Prop.SCHEMA]: new Schema({
@@ -186,16 +159,7 @@ const newProjectSchema = new Schema({
   }
 });
 
-const projectStatisticsSchema = new Schema({
-  commit_count: { [Prop.INITIAL]: null },
-  storage_size: { [Prop.INITIAL]: null },
-  repository_size: { [Prop.INITIAL]: null },
-  wiki_size: { [Prop.INITIAL]: null },
-  lfs_objects_size: { [Prop.INITIAL]: null },
-  job_artifacts_size: { [Prop.INITIAL]: null }
-});
-
-const projectGlobalSchema = new Schema({
+const projectSchema = new Schema({
   branches: {
     [Prop.SCHEMA]: new Schema({
       standard: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
@@ -331,8 +295,16 @@ const projectGlobalSchema = new Schema({
   },
   statistics: {
     [Prop.SCHEMA]: new Schema({
-      data: { schema: projectStatisticsSchema },
-
+      data: {
+        schema: new Schema({
+          commit_count: { [Prop.INITIAL]: null },
+          storage_size: { [Prop.INITIAL]: null },
+          repository_size: { [Prop.INITIAL]: null },
+          wiki_size: { [Prop.INITIAL]: null },
+          lfs_objects_size: { [Prop.INITIAL]: null },
+          job_artifacts_size: { [Prop.INITIAL]: null }
+        })
+      },
       fetched: { [Prop.INITIAL]: null },
       fetching: { [Prop.INITIAL]: false },
     })
@@ -621,7 +593,7 @@ const formGeneratorSchema = new Schema({
 });
 
 export {
-  userSchema, metaSchema, newProjectSchema, forkProjectSchema, notebooksSchema,
-  projectsSchema, datasetFormSchema, issueFormSchema, datasetImportFormSchema, projectGlobalSchema,
-  addDatasetToProjectSchema, statuspageSchema, notificationsSchema, formGeneratorSchema, environmentSchema
+  addDatasetToProjectSchema, datasetFormSchema, datasetImportFormSchema, environmentSchema,
+  formGeneratorSchema, issueFormSchema, newProjectSchema, notebooksSchema, notificationsSchema,
+  projectSchema, projectsSchema, statuspageSchema, userSchema
 };
