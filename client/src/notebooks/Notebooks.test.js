@@ -408,6 +408,14 @@ describe("rendering", () => {
           <StartNotebookServer {...props} scope={scope} />
         </MemoryRouter>, div);
     });
+    // autostart session
+    const autostartFakeLocation = { pathname: "", search: "autostart=1" };
+    await act(async () => {
+      ReactDOM.render(
+        <MemoryRouter>
+          <StartNotebookServer {...props} location={autostartFakeLocation} />
+        </MemoryRouter>, div);
+    });
   });
 
   it("renders CheckNotebookStatus", async () => {

@@ -16,18 +16,18 @@
  * limitations under the License.
  */
 
-import React, { Component, Fragment, useState, memo } from "react";
+import React, { Component, Fragment, useState, memo, useEffect } from "react";
 import Media from "react-media";
 import { Link } from "react-router-dom";
 import {
   Alert, Badge, Button, ButtonGroup, Col, Collapse, DropdownItem, Form, FormGroup, FormText, Input, Label,
   Modal, ModalBody, ModalFooter, ModalHeader, Nav, NavItem, NavLink, PopoverBody, PopoverHeader, Progress,
-  Row, UncontrolledPopover, UncontrolledTooltip
+  Row, Table, UncontrolledPopover, UncontrolledTooltip
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBook, faCheckCircle, faCog, faCogs, faExclamationTriangle, faExternalLinkAlt, faFileAlt, faHistory,
-  faInfoCircle, faQuestionCircle, faRedo, faSave, faStopCircle, faSyncAlt, faTimesCircle
+  faInfoCircle, faLink, faQuestionCircle, faRedo, faSave, faStopCircle, faSyncAlt, faTimesCircle
 } from "@fortawesome/free-solid-svg-icons";
 
 import { StatusHelper } from "../model/Model";
@@ -1118,7 +1118,7 @@ function StartNotebookAutostart(props) {
     pipelines: pipelines.fetched
   };
   let progress = 0;
-  let message = "";
+  let message = "Getting project data";
   if (fetching.notebooks) {
     message = "Checking existing sessions";
     progress = 80;
@@ -1867,7 +1867,7 @@ function LaunchErrorBackendAlert({ launchError }) {
 
 function LaunchErrorFrontendAlert({ launchError, pipelines }) {
   const pipeline = pipelines.main;
-  if (pipeline && (pipeline.path || pipeline.status === "success"))
+  if (launchError.pipelineError && pipeline && (pipeline.path || pipeline.status === "success"))
     return null;
   return <WarnAlert>
     {launchError.errorMessage}
@@ -1886,15 +1886,20 @@ class ServerOptionLaunch extends Component {
     super(props);
     this.state = {
       showModal: false,
-      current: {}
+      current: {},
+      showShareLinkModal: false,
     };
 
     this.checkServer = this.checkServer.bind(this);
     this.toggleModal = this.toggleModal.bind(this);
+    this.toggleShareLinkModal = this.toggleShareLinkModal.bind(this);
   }
 
   toggleModal() {
     this.setState({ showModal: !this.state.showModal });
+  }
+  toggleShareLinkModal() {
+    this.setState({ showShareLinkModal: !this.state.showShareLinkModal });
   }
 
   checkServer() {
@@ -1921,9 +1926,15 @@ class ServerOptionLaunch extends Component {
       </Warning>;
 
     const hasImage = NotebooksHelper.checkPipelineAvailability(this.props.pipelines);
+    const createLink = (
+      <DropdownItem onClick={this.toggleShareLinkModal}><FontAwesomeIcon icon={faLink} /> Create link</DropdownItem>
+    );
     const startButton = <Button key="start-session" color="primary" disabled={!hasImage} onClick={this.checkServer}>
       Start session
     </Button>;
+    const startButtonWithMenu = <ButtonWithMenu key="button-menu" color="primary" default={startButton} direction="up">
+      {createLink}
+    </ButtonWithMenu>;
 
     const imageStatusAlert = !hasImage ? <div key="noImageAvailableWarning" className="pb-2">
       <FontAwesomeIcon icon={faExclamationTriangle} className="text-warning"/>{" "}
@@ -1948,13 +1959,17 @@ class ServerOptionLaunch extends Component {
 
     return [
       imageStatusAlert,
-      startButton,
+      startButtonWithMenu,
       " ",
       startBaseButton,
       <AutosavedDataModal key="modal"
         toggleModal={this.toggleModal.bind(this)}
         showModal={this.state.showModal}
         currentBranch={this.state.current}
+        {...this.props}
+      />,
+      <ShareLinkSessionModal key="shareLinkModal"
+        toggleModal={this.toggleShareLinkModal.bind(this)} showModal={this.state.showShareLinkModal}
         {...this.props}
       />,
       globalNotification
@@ -2055,6 +2070,78 @@ class CheckNotebookIcon extends Component {
     );
   }
 }
+
+const ShareLinkSessionModal = (props) => {
+  const [includeBranch, setIncludeBranch] = useState(false);
+  const [includeCommit, setIncludeCommit] = useState(false);
+  const [url, setUrl] = useState("");
+  const data = {
+    namespace: props.filters?.namespace,
+    path: props.filters?.project,
+    branch: props.filters.branch.name,
+    commit: props.filters.commit.id,
+  };
+
+  useEffect(() => {
+    if (!data.namespace || !data.path)
+      return;
+    let urlSession = Url.get(Url.pages.project.session.autostart, data, true);
+    urlSession = includeCommit ? `${urlSession}&commit=${data.commit}` : urlSession;
+    urlSession = includeBranch ? `${urlSession}&branch=${data.branch}` : urlSession;
+    setUrl(urlSession);
+  }, [ includeCommit, includeBranch, data ]);
+
+  const setCommit = (checked) => {
+    setIncludeCommit(checked);
+    if (checked)
+      setIncludeBranch(checked);
+  };
+  const setBranch = (checked) => {
+    setIncludeBranch(checked);
+    if (!checked)
+      setIncludeCommit(checked);
+  };
+
+  return (
+    <Modal isOpen={props.showModal} toggle={props.toggleModal}>
+      <ModalHeader toggle={props.toggleModal}>Create shareable link</ModalHeader>
+      <ModalBody>
+        <Row>
+          <Col>
+            <Form className="mb-3">
+              <FormGroup key="link-branch" check>
+                <Label check>
+                  <Input type="checkbox" checked={includeBranch}
+                    onChange={e => setBranch(e.target.checked)}/> Branch
+                </Label>
+              </FormGroup>
+              <FormGroup key="link-commit" check>
+                <Label check>
+                  <Input type="checkbox" checked={includeCommit}
+                    onChange={e => setCommit(e.target.checked)}/> Commit
+                </Label>
+              </FormGroup>
+              <FormText>
+                <FontAwesomeIcon id="commit-info" icon={faInfoCircle} />
+                &nbsp;The commit requires including also the branch
+              </FormText>
+            </Form>
+
+            <Table size="sm">
+              <tbody>
+                <tr className="border-bottom">
+                  <th scope="row">URL</th>
+                  <td style={{ wordBreak: "break-all" }}>{url}</td>
+                  <td style={{ width: 1 }}><Clipboard clipboardText={url} /></td>
+                </tr>
+              </tbody>
+            </Table>
+          </Col>
+        </Row>
+      </ModalBody>
+    </Modal>
+  );
+};
 
 export {
   CheckNotebookIcon, Notebooks, NotebooksDisabled, ServerOptionBoolean, ServerOptionEnum, ServerOptionRange,

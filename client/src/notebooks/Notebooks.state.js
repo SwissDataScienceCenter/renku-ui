@@ -394,12 +394,14 @@ class NotebooksCoordinator {
     this.model.setObject({ filters });
   }
 
-  setBranch(branch) {
+  setBranch(branch, fetchNotebook = true) {
     this.model.setObject({
       notebooks: { fetched: null },
       filters: { branch: { $set: branch } }
     });
-    this.fetchNotebooks();
+
+    if (fetchNotebook)
+      this.fetchNotebooks();
   }
 
   setCommit(commit) {
