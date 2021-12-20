@@ -1,5 +1,11 @@
 # Changes
 
+## [1.2.2](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.2.1...1.2.2) (2021-12-20)
+
+### Bug Fixes
+
+* order maintenance by schedule date asc ([#1612](https://github.com/SwissDataScienceCenter/renku-ui/issues/1612))
+
 ## [1.2.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.2.0...1.2.1) (2021-11-29)
 
 ### Bug Fixes
