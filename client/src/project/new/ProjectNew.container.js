@@ -89,6 +89,7 @@ class ForkProjectMapper extends Component {
     this.handlers = {
       getNamespaces: this.getNamespaces.bind(this),
       getProjects: this.getProjects.bind(this),
+      getVisibilities: this.getVisibilities.bind(this),
     };
   }
 
@@ -109,6 +110,10 @@ class ForkProjectMapper extends Component {
 
   async getProjects() {
     return await this.projectsCoordinator.getFeatured();
+  }
+
+  async getVisibilities(namespace) {
+    return await this.projectsCoordinator.getVisibilities(namespace, this.props.projectVisibility);
   }
 
   mapStateToProps(state, ownProps) {
@@ -151,11 +156,15 @@ function ForkProject(props) {
 
   const [title, setTitle] = useState(forkedTitle);
   const [namespace, setNamespace] = useState("");
+  const [fullNamespace, setFullNamespace] = useState(null);
+  const [visibilities, setVisibilities] = useState(null);
+  const [visibility, setVisibility] = useState(null);
   const [projectsPaths, setProjectsPaths] = useState([]);
   const [error, setError] = useState(null);
 
   const [forking, setForking] = useState(false);
   const [forkError, setForkError] = useState(null);
+  const [forkVisibilityError, setForkVisibilityError] = useState(null);
   const [forkUrl, setForkUrl] = useState(null);
 
   // Monitor changes to projects list
@@ -188,6 +197,30 @@ function ForkProject(props) {
     }
     setError(null);
   }, [title, namespace, projectsPaths]);
+
+  // monitor namespace changes to calculate visibility
+  useEffect(() => {
+    const getVisibilities = async (namespace) => {
+      // empty values to display fetching
+      setVisibilities(null);
+      setVisibility(null);
+
+      // calculate visibilities values
+      const availableVisibilities = await handlers.getVisibilities(namespace);
+      setVisibilities(availableVisibilities?.visibilities ?? null);
+      setVisibility(availableVisibilities?.default ?? null);
+    };
+    if (fullNamespace) {
+      getVisibilities(fullNamespace);
+    }
+    else {
+      setVisibilities(null);
+      setVisibility(null);
+    }
+    // the useEffect uses the function handlers.getVisibility,
+    // if we include it as a dependency the effect will be trigger many times
+    // since the function changes in each rendering.
+  }, [fullNamespace]); // eslint-disable-line
 
   // Monitor component mounted state -- helper to prevent illegal action when the fork takes long
   const mounted = useRef(false);
@@ -246,10 +279,26 @@ function ForkProject(props) {
           throw new Error("Cloning is taking too long");
       }
 
+      // set visibility value forked project
+      let visibilityError;
+      await client.setVisibility(forked.project.id, visibility)
+        .catch((e) => {
+          visibilityError = true;
+          const errorMessage = e.errorData.message?.visibility_level ? `, ${e.errorData.message?.visibility_level[0]}` :
+            `, not supported ${visibility} visibility.`;
+          setForkVisibilityError(errorMessage);
+        });
+
       // Add notification. Mark it as read and redirect automatically only when the modal is still open
       let newProjectData = { namespace: forked.project.namespace.full_path, path: forked.project.path };
       const newUrl = Url.get(Url.pages.project, newProjectData);
       newProjectData.name = forked.project.name;
+
+      if (visibilityError) {
+        setForking(false); // finish forking
+        setForkUrl(newUrl); // allow display the button to go to the forked project
+        return;
+      }
       if (mounted.current) {
         addForkNotification(notifications, newUrl, newProjectData, startingLocation, true, false);
         history.push(newUrl);
@@ -279,12 +328,19 @@ function ForkProject(props) {
       setTitle(localValue);
     }
 
+    if (target === "visibility") {
+      const localValue = value ? value : "";
+      setVisibility(localValue);
+    }
+
     // ? reset fork error and url when typing
     setForkError(null);
     setForkUrl(null);
   };
 
   const setNamespaceP = (value) => {
+    // it is necessary to save the complete namespace data to obtain the type for visibility purposes
+    setFullNamespace(value);
     setNamespace(value.full_path);
   };
 
@@ -300,6 +356,7 @@ function ForkProject(props) {
       fork={fork}
       forkedTitle={forkedTitle}
       forkError={forkError}
+      forkVisibilityError={forkVisibilityError}
       forkUrl={forkUrl}
       forking={forking}
       handlers={adjustedHandlers}
@@ -309,6 +366,8 @@ function ForkProject(props) {
       title={title}
       toggleModal={toggleModal}
       user={user}
+      visibilities={visibilities}
+      visibility={visibility}
     />
   );
 }
