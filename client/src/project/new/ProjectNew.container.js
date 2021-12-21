@@ -39,8 +39,9 @@ const CUSTOM_REPO_NAME = "Custom";
 
 
 /** helper function -- fork notifications */
-function addForkNotification(notifications, url, info, startingLocation, success = true, excludeStarting = false) {
-  if (success) {
+function addForkNotification(notifications, url, info, startingLocation, success = true,
+  excludeStarting = false, visibilityException = false) {
+  if (success && !visibilityException) {
     const locations = excludeStarting ?
       [url] :
       [url, startingLocation];
@@ -50,6 +51,19 @@ function addForkNotification(notifications, url, info, startingLocation, success
       url, "Show project",
       locations,
       `The project has been successfully forked to ${info.namespace}/${info.path}`
+    );
+  }
+  else if (visibilityException) {
+    const locations = excludeStarting ?
+      [url] :
+      [url, startingLocation];
+    notifications.addWarning(
+      notifications.Topics.PROJECT_FORKED,
+      `Project ${info.name} has been created with an exception.`,
+      url, "Show project",
+      locations,
+      `The project has been successfully forked to ${info.namespace}/${info.path} 
+      although it was not possible to configure the visibility${visibilityException?.message}`
     );
   }
   else {
@@ -281,12 +295,14 @@ function ForkProject(props) {
 
       // set visibility value forked project
       let visibilityError;
+      let visibilityErrorMessage;
       await client.setVisibility(forked.project.id, visibility)
         .catch((e) => {
           visibilityError = true;
-          const errorMessage = e.errorData.message?.visibility_level ? `, ${e.errorData.message?.visibility_level[0]}` :
+          visibilityErrorMessage = e.errorData.message?.visibility_level ?
+            `, ${e.errorData.message?.visibility_level[0]}` :
             `, not supported ${visibility} visibility.`;
-          setForkVisibilityError(errorMessage);
+          setForkVisibilityError(visibilityErrorMessage);
         });
 
       // Add notification. Mark it as read and redirect automatically only when the modal is still open
@@ -294,17 +310,18 @@ function ForkProject(props) {
       const newUrl = Url.get(Url.pages.project, newProjectData);
       newProjectData.name = forked.project.name;
 
-      if (visibilityError) {
+      if (mounted.current && !visibilityError) {
+        addForkNotification(notifications, newUrl, newProjectData, startingLocation, true, false);
+        history.push(newUrl);
+      }
+      else if (mounted.current && visibilityError) {
         setForking(false); // finish forking
         setForkUrl(newUrl); // allow display the button to go to the forked project
         return;
       }
-      if (mounted.current) {
-        addForkNotification(notifications, newUrl, newProjectData, startingLocation, true, false);
-        history.push(newUrl);
-      }
       else {
-        addForkNotification(notifications, newUrl, newProjectData, startingLocation, true, true);
+        addForkNotification(notifications, newUrl, newProjectData, startingLocation, true, true,
+          visibilityError ? { message: visibilityErrorMessage } : false);
       }
       return null; // this prevents further operations on non-mounted components
     }

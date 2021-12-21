@@ -32,7 +32,7 @@ import {
   Modal, ModalBody, ModalFooter, ModalHeader, Row, Table, UncontrolledTooltip
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle, faLink, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import { faExclamationTriangle, faInfoCircle, faLink, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 
 import {
   ButtonWithMenu,
@@ -171,9 +171,9 @@ function ForkProjectStatus(props) {
   else if (props.forkVisibilityError) {
     return (
       <p>
-        <FontAwesomeIcon icon={faInfoCircle} />
+        <FontAwesomeIcon icon={faExclamationTriangle} />
         {" "} The project has been forked but an error occurred when setting the visibility
-        {" "}{props.forkVisibilityError}
+        {props.forkVisibilityError}
       </p>
     );
   }
