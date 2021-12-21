@@ -28,6 +28,7 @@ import {
 import { StatusHelper } from "../model/Model";
 import { ProjectCoordinator } from "../project";
 import { Url } from "../utils/url";
+import { Loader } from "../utils/UIComponents";
 
 
 /**
@@ -123,6 +124,9 @@ class ShowSession extends Component {
   render() {
     if (this.props.blockAnonymous)
       return <NotebooksDisabled location={this.props.location} />;
+
+    if (!this.model.get("notebooks.fetched"))
+      return <Loader />;
 
     return (
       <ShowSessionMapped
@@ -282,6 +286,12 @@ class StartNotebookServer extends Component {
     this.autostart = currentSearch && currentSearch["autostart"] && currentSearch["autostart"] === "1" ?
       true :
       false;
+    this.customBranch = currentSearch && this.autostart && currentSearch["branch"] ?
+      currentSearch["branch"] :
+      null;
+    this.customCommit = currentSearch && this.autostart && currentSearch["commit"] ?
+      currentSearch["commit"] :
+      null;
     this.state = {
       autostartReady: false,
       autostartTried: false,
@@ -310,7 +320,8 @@ class StartNotebookServer extends Component {
   componentDidMount() {
     this._isMounted = true;
     if (!this.props.blockAnonymous) {
-      this.coordinator.startNotebookPolling();
+      if (!this.autostart)
+        this.coordinator.startNotebookPolling();
       this.refreshBranches();
     }
   }
@@ -329,7 +340,7 @@ class StartNotebookServer extends Component {
       this.setState({ first: false });
       if (this._isMounted)
         this.refreshBranches();
-      this.selectBranch();
+      this.selectBranch(this.customBranch);
 
 
     }
@@ -343,13 +354,26 @@ class StartNotebookServer extends Component {
     this.setState({ ignorePipeline: value });
   }
 
+  setErrorInAutostart() {
+    this.autostart = false;
+    this.setState({
+      "starting": false,
+      launchError: {
+        frontendError: true,
+        pipelineError: false,
+        errorMessage: `The session could not be started because the commit or the branch name was not found.`
+      },
+    });
+    this.coordinator.startNotebookPolling();
+  }
+
   async refreshBranches() {
     if (this._isMounted) {
       if (StatusHelper.isUpdating(this.props.fetchingBranches))
         return;
       await this.props.refreshBranches();
       if (this._isMounted && this.state.first)
-        this.selectBranch();
+        this.selectBranch(this.customBranch);
     }
   }
 
@@ -367,23 +391,32 @@ class StartNotebookServer extends Component {
         autoBranchName = true;
       }
 
-      // get the proper branch and set it
+      // get the proper branch
+      let branchToSet;
       const { branches } = this.props;
+
       const branch = branches.filter(branch => branch.name === branchName);
+
       if (branch.length === 1) {
-        this.coordinator.setBranch(branch[0]);
-        this.refreshCommits();
+        branchToSet = branch[0];
       }
-      else {
-        if (autoBranchName && branches && branches.length) {
-          this.coordinator.setBranch(branches[0]);
-          this.refreshCommits();
-        }
-        else {
-          this.coordinator.setBranch({});
-          this.coordinator.setCommit({});
-        }
+      else if (autoBranchName && branches?.length) {
+        branchToSet = branches[0];
       }
+      else if (this.customBranch || this.customCommit) {
+        branchToSet = branches[0]; // allow form to start a new session
+        this.setErrorInAutostart();
+      }
+
+      // set branch
+      // do not retrieve the books yet, wait for the commit to be set
+      this.coordinator.setBranch(branchToSet ?? {}, !this.autostart);
+      if (!branchToSet) {
+        this.coordinator.setCommit({});
+        return;
+      }
+
+      this.refreshCommits();
     }
   }
 
@@ -403,7 +436,7 @@ class StartNotebookServer extends Component {
       if (this.projectModel.get("commits.fetching"))
         setTimeout(() => { this.selectCommitWhenReady(); }, 100);
       else
-        this.selectCommit();
+        this.selectCommit(this.customCommit);
     }
   }
 
@@ -419,9 +452,12 @@ class StartNotebookServer extends Component {
       // find the proper commit or return
       if (commitId) {
         const filteredCommits = commits.filter(commit => commit.id === commitId);
-        if (filteredCommits.length !== 1)
+        if (filteredCommits.length === 1)
+          commit = filteredCommits[0];
+        else if (this.customBranch || this.customCommit)
+          this.setErrorInAutostart();
+        else
           return;
-        commit = filteredCommits[0];
       }
       else {
         const oldCommit = this.model.get("filters.commit");
@@ -469,6 +505,7 @@ class StartNotebookServer extends Component {
               autostartTried: true,
               launchError: {
                 frontendError: true,
+                pipelineError: true,
                 errorMessage: `The session could not start because the image is still building.
                 Please wait for the build to finish, or start the session with the base image.`
               },
@@ -486,6 +523,7 @@ class StartNotebookServer extends Component {
               autostartTried: true,
               launchError: {
                 frontendError: true,
+                pipelineError: true,
                 errorMessage: `The session could not start because no image is available.
                 Please select a different commit or start the session with the base image.`
               },
@@ -578,12 +616,12 @@ class StartNotebookServer extends Component {
   toggleMergedBranches() {
     const currentSetting = this.model.get("filters.includeMergedBranches");
     this.coordinator.setMergedBranches(!currentSetting);
-    this.selectBranch();
+    this.selectBranch(this.customBranch);
   }
 
   setDisplayedCommits(number) {
     this.coordinator.setDisplayedCommits(number);
-    this.selectCommit();
+    this.selectCommit(this.customCommit);
   }
 
   filterAutosavedBranches(branches, username) {
