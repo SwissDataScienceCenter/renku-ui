@@ -180,7 +180,7 @@ function RenkuVersionInfo({ migration }) {
   const shownRenkuVersion = dockerfile_renku_version ?? project_renku_version;
   return newer_renku_available === true || newer_renku_available == null ?
     <p>
-      <strong>Project Renku Version</strong> {shownRenkuVersion}<br />
+      <strong>Project Renku Version</strong> <span id="project_version">{shownRenkuVersion}</span><br />
       <strong>Latest Renku Version</strong> {core_renku_version}<br />
     </p> :
     <p>
