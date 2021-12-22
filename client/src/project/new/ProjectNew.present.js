@@ -634,7 +634,7 @@ class Visibility extends Component {
       main = (
         <Fragment>
           <br />
-          <Label className="font-italic">Verifying... <Loader inline={true} size={16} /></Label>
+          <Label className="font-italic">Determining options... <Loader inline={true} size={16} /></Label>
         </Fragment>
       );
     }

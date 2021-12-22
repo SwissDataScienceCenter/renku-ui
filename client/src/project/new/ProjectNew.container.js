@@ -492,6 +492,13 @@ class NewProject extends Component {
     return this.coordinator.getTemplates(repositories, true);
   }
 
+  async calculateVisibilities(namespace) {
+    // temporarily reset visibility metadata
+    this.coordinator.resetVisibility(namespace);
+    const availableVisibilities = await this.projectsCoordinator.getVisibilities(namespace);
+    this.coordinator.setVisibilities(availableVisibilities, namespace);
+  }
+
   refreshUserProjects() {
     this.projectsCoordinator.getFeatured();
   }
@@ -502,7 +509,7 @@ class NewProject extends Component {
 
   setNamespace(namespace) {
     this.setProperty("namespace", namespace.full_path);
-    this.coordinator.getVisibilities(namespace);
+    this.calculateVisibilities(namespace);
   }
 
   setTemplateProperty(property, value) {

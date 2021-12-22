@@ -159,7 +159,7 @@ class ProjectsCoordinator {
       });
   }
 
-  async getVisibilities(namespace, projectVisibility = "private") {
+  async getVisibilities(namespace, projectVisibility) {
     const computeVisibilities = (options) => {
       if (options.includes("private")) {
         return {
@@ -180,16 +180,19 @@ class ProjectsCoordinator {
     };
 
     let availableVisibilities = null;
-    if (!namespace || !projectVisibility)
+    let options = projectVisibility ? [projectVisibility] : [];
+    if (!namespace)
       return null;
 
     if (namespace?.kind === "user") {
-      return computeVisibilities(["public", projectVisibility]);
+      options.push("public");
+      return computeVisibilities(options);
     }
     else if (namespace?.kind === "group") {
       // get group visibility
       const group = await this.client.getGroupByPath(namespace.full_path).then(r => r.data);
-      return computeVisibilities([group.visibility, projectVisibility]);
+      options.push(group.visibility);
+      return computeVisibilities(options);
     }
     return availableVisibilities;
   }

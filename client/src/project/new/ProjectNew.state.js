@@ -463,55 +463,38 @@ class NewProjectCoordinator {
     return "No templates available in this repo.";
   }
 
-  async getVisibilities(namespace) {
-    // function to compute available visibilities based on the current group visibility
-    const computeVisibilities = (max) => {
-      if (max === "private")
-        return ["private"];
-      else if (max === "internal")
-        return ["private", "internal"];
-      return ["private", "internal", "public"];
-    };
+  resetVisibility(namespace) {
+    this.model.setObject({
+      meta: {
+        namespace: {
+          fetched: null,
+          fetching: true,
+          id: namespace.full_path,
+          visibility: null,
+          visibilities: { $set: null },
+        }
+      }
+    });
+  }
 
-    let visibilities, updateObject = { meta: { namespace: {} } };
-    if (namespace.kind === "user") {
-      visibilities = computeVisibilities("public");
-      updateObject.meta.namespace = {
-        visibility: "public",
-        visibilities: { $set: visibilities },
-      };
-    }
-    else {
-      // temporarily reset visibility metadata
-      this.model.setObject({
-        meta: {
+  async setVisibilities(availableVisibilities, namespace) {
+    let updateObject = {
+      meta:
+        {
           namespace: {
-            fetched: null,
-            fetching: true,
+            visibility: availableVisibilities.default,
+            visibilities: availableVisibilities.visibilities,
+            fetched: new Date(),
+            fetching: false,
             id: namespace.full_path,
-            visibility: null,
-            visibilities: { $set: [] },
           }
         }
-      });
-      // verify group visibility
-      const group = await this.client.getGroupByPath(namespace.full_path).then(r => r.data);
-      visibilities = computeVisibilities(group.visibility);
-      updateObject.meta.namespace = {
-        visibility: group.visibility,
-        visibilities: { $set: visibilities },
-      };
-    }
-
-    // set common properties
-    updateObject.meta.namespace.fetched = new Date();
-    updateObject.meta.namespace.fetching = false;
-    updateObject.meta.namespace.id = namespace.full_path;
+    };
 
     // save the model and invoke the normal setProperty
     this.model.setObject(updateObject);
-    this.setProperty("visibility", visibilities[visibilities.length - 1]);
-    return visibilities;
+    this.setProperty("visibility", availableVisibilities.default);
+    return availableVisibilities.visibilities;
   }
 
   /**
