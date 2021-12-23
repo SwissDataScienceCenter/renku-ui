@@ -19,6 +19,8 @@
 import React, { Fragment, useState } from "react";
 import { Button, Collapse, Spinner } from "reactstrap";
 
+import human from "human-time";
+
 import { ManualUpdateInstructions, MigrationSuccessAlert, MigrationInfoAlert, MigrationWarnAlert,
   isMigrationFailure, isMigrationCheckLoading } from "./MigrationUtils";
 import { migrationCheckToRenkuVersionStatus, RENKU_VERSION_SCENARIOS } from "./MigrationUtils";
@@ -39,14 +41,41 @@ function UpdateSection(props) {
   </div>;
 }
 
-function UpdateInfo({ renkuVersionStatus }) {
+/**
+ * Compute an estimate of how long the migration will take in seconds.
+ * @param {int} commitCount
+ * @returns
+ */
+function commitCountToMigrationTimeSecs(commitCount) {
+  return (0.01 * commitCount) + 30;
+}
+
+function MigrationTimeEstimate({ current_metadata_version, project_metadata_version, statistics }) {
+  if ((current_metadata_version == null) || (statistics == null)) return null;
+  if (current_metadata_version !== "9") return null;
+  if (project_metadata_version === "9") return null;
+  if (statistics.data?.commit_count == null) return null;
+  const migrationDurS = commitCountToMigrationTimeSecs(statistics.data.commit_count);
+  // remove 'ago' from the duration
+  const humanMigrationDur = human(migrationDurS).slice(0, -4);
+  return <span>
+    The update should take about {humanMigrationDur}.
+  </span>;
+}
+
+function UpdateInfo({ current_metadata_version, project_metadata_version, renkuVersionStatus, statistics }) {
   if (updateNotRequired(renkuVersionStatus)) {
     return <p>
       If you wish to take advantage of new features, you can update to the latest version of{" "}
-      <strong>renku</strong>.
+      <strong>renku</strong>. {" "}
+      <MigrationTimeEstimate current_metadata_version={current_metadata_version}
+        project_metadata_version={project_metadata_version} statistics={statistics} />
     </p>;
   }
-  return <p>An update is necessary to work with datasets from the UI.</p>;
+  return <p>An update is necessary to work with datasets from the UI. {" "}
+    <MigrationTimeEstimate current_metadata_version={current_metadata_version}
+      project_metadata_version={project_metadata_version} statistics={statistics} />
+  </p>;
 }
 
 function AutoUpdateButton({ externalUrl, maintainer, migration_status, onMigrateProject, renkuVersionStatus }) {
@@ -75,7 +104,8 @@ const docUrl = "https://renku.readthedocs.io/en/latest/how-to-guides/upgrading-r
 "#upgrading-your-image-to-use-the-latest-renku-cli-version";
 
 function RenkuVersionAutomaticUpdateSection(
-  { externalUrl, maintainer, migration_status, onMigrateProject, launchNotebookUrl, renkuVersionStatus }) {
+  { current_metadata_version, externalUrl, launchNotebookUrl, maintainer,
+    migration_status, onMigrateProject, project_metadata_version, renkuVersionStatus, statistics }) {
   const linkClassName = updateNotRequired(renkuVersionStatus) ?
     "" :
     "link-alert-warning";
@@ -83,7 +113,8 @@ function RenkuVersionAutomaticUpdateSection(
   const toggleOpen = () => setOpen(!isOpen);
 
   return <Fragment>
-    <UpdateInfo renkuVersionStatus={renkuVersionStatus} />
+    <UpdateInfo current_metadata_version={current_metadata_version} project_metadata_version={project_metadata_version}
+      renkuVersionStatus={renkuVersionStatus} statistics={statistics} />
     <AutoUpdateButton externalUrl={externalUrl} maintainer={maintainer}
       migration_status={migration_status} onMigrateProject={onMigrateProject}
       renkuVersionStatus={renkuVersionStatus} />
@@ -99,7 +130,8 @@ function RenkuVersionAutomaticUpdateSection(
   </Fragment>;
 }
 
-function RenkuVersionManualUpdateSection({ renkuVersionStatus, launchNotebookUrl }) {
+function RenkuVersionManualUpdateSection({ current_metadata_version, launchNotebookUrl,
+  project_metadata_version, renkuVersionStatus, statistics }) {
   const [isOpen, setOpen] = useState(false);
   const toggleOpen = () => setOpen(!isOpen);
 
@@ -108,7 +140,8 @@ function RenkuVersionManualUpdateSection({ renkuVersionStatus, launchNotebookUrl
     "" :
     "link-alert-warning";
   return <Fragment>
-    <UpdateInfo renkuVersionStatus={renkuVersionStatus} />
+    <UpdateInfo current_metadata_version={current_metadata_version} project_metadata_version={project_metadata_version}
+      renkuVersionStatus={renkuVersionStatus} statistics={statistics} />
     <UpdateSection>
       <Button color="link" className={`ps-0 mb-2 ${linkClassName} text-start`} onClick={toggleOpen}>
         <i>Automated update is not possible, but you can follow these instructions to update manually.</i>
@@ -120,15 +153,19 @@ function RenkuVersionManualUpdateSection({ renkuVersionStatus, launchNotebookUrl
   </Fragment>;
 }
 
-function RenkuVersionStatusBody({ externalUrl, maintainer, migration, onMigrateProject, launchNotebookUrl }) {
+function RenkuVersionStatusBody({ externalUrl, launchNotebookUrl, maintainer, migration, onMigrateProject,
+  statistics }) {
 
   let body = null;
   let updateSection = null;
 
   const renkuVersionStatus = migrationCheckToRenkuVersionStatus(migration.check);
   const { migration_status } = migration;
-  const updateProps = { externalUrl, maintainer, migration_status, onMigrateProject,
-    renkuVersionStatus, launchNotebookUrl };
+  const current_metadata_version = migration?.check?.core_compatibility_status?.current_metadata_version;
+  const project_metadata_version = migration?.check?.core_compatibility_status?.project_metadata_version;
+  const updateProps = { current_metadata_version, externalUrl, launchNotebookUrl,
+    maintainer, migration_status, onMigrateProject, project_metadata_version,
+    renkuVersionStatus, statistics };
 
 
   switch (renkuVersionStatus) {
@@ -196,14 +233,15 @@ function RenkuVersionStatus(props) {
 
   if (isMigrationFailure({ check_error, migration_error, migration_status })) return null;
 
-  const { maintainer, onMigrateProject, launchNotebookUrl, externalUrl } = props;
+  const { externalUrl, launchNotebookUrl, maintainer, onMigrateProject,
+    statistics } = props;
 
   return <div>
     <RenkuVersionInfo migration={props.migration} />
     <RenkuVersionStatusBody
-      externalUrl={externalUrl} maintainer={maintainer}
-      migration={props.migration} onMigrateProject={onMigrateProject}
-      launchNotebookUrl={launchNotebookUrl} />
+      externalUrl={externalUrl} launchNotebookUrl={launchNotebookUrl}
+      maintainer={maintainer} migration={props.migration}
+      onMigrateProject={onMigrateProject} statistics={statistics} />
   </div>;
 }
 
