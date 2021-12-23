@@ -22,7 +22,7 @@ const GITLAB_PROVIDER = Cypress.env("GITLAB_PROVIDER");
 Cypress.Commands.add("gui_kc_login", (user: User, startFromHome = false) => {
   if (startFromHome) {
     cy.visit("/");
-    cy.get(".rk-pt-s > #login-button").click();
+    cy.get("#login-button").click();
   }
   cy.get("#username").clear();
   cy.get("#username").type(user.email);
@@ -82,7 +82,7 @@ Cypress.Commands.add("gui_logout", () => {
   cy.get("#logout-link").click();
   cy.url().then( () => {
     cy.url().should("be.equal", Cypress.config("baseUrl"));
-    cy.get(".rk-pt-s > #login-button").contains("Login");
+    cy.get("#login-button").contains("Login");
   });
 });
 
