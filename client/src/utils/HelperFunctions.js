@@ -178,6 +178,9 @@ function sanitizedHTMLFromMarkdown(markdown, singleLine = false) {
         throwOnError: false,
         displayMode: true,
         errorColor: "var(--bs-danger)",
+        delimiters: [
+          { left: "$", right: "$", display: false },
+        ],
       }),
     ]
   });
@@ -188,6 +191,9 @@ function sanitizedHTMLFromMarkdown(markdown, singleLine = false) {
       markdown = markdown.substring(0, breakPosition);
   }
 
+  // support inline math code between $` and `$
+  markdown = markdown?.replace(new RegExp(/\$`/i, "gm"), "$");
+  markdown = markdown?.replace(new RegExp(/`\$/i, "gm"), "$");
   // Reference https://github.com/obedm503/showdown-katex
   // this showdown extension only support ```ascii math or ```latex
   markdown = markdown?.replace(new RegExp("\\```math", "gm"), "```asciimath");
