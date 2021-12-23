@@ -39,8 +39,9 @@ const CUSTOM_REPO_NAME = "Custom";
 
 
 /** helper function -- fork notifications */
-function addForkNotification(notifications, url, info, startingLocation, success = true, excludeStarting = false) {
-  if (success) {
+function addForkNotification(notifications, url, info, startingLocation, success = true,
+  excludeStarting = false, visibilityException = false) {
+  if (success && !visibilityException) {
     const locations = excludeStarting ?
       [url] :
       [url, startingLocation];
@@ -50,6 +51,19 @@ function addForkNotification(notifications, url, info, startingLocation, success
       url, "Show project",
       locations,
       `The project has been successfully forked to ${info.namespace}/${info.path}`
+    );
+  }
+  else if (visibilityException) {
+    const locations = excludeStarting ?
+      [url] :
+      [url, startingLocation];
+    notifications.addWarning(
+      notifications.Topics.PROJECT_FORKED,
+      `Project ${info.name} has been created with an exception.`,
+      url, "Show project",
+      locations,
+      `The project has been successfully forked to ${info.namespace}/${info.path} 
+      although it was not possible to configure the visibility${visibilityException?.message}`
     );
   }
   else {
@@ -89,6 +103,7 @@ class ForkProjectMapper extends Component {
     this.handlers = {
       getNamespaces: this.getNamespaces.bind(this),
       getProjects: this.getProjects.bind(this),
+      getVisibilities: this.getVisibilities.bind(this),
     };
   }
 
@@ -109,6 +124,10 @@ class ForkProjectMapper extends Component {
 
   async getProjects() {
     return await this.projectsCoordinator.getFeatured();
+  }
+
+  async getVisibilities(namespace) {
+    return await this.projectsCoordinator.getVisibilities(namespace, this.props.projectVisibility);
   }
 
   mapStateToProps(state, ownProps) {
@@ -151,11 +170,15 @@ function ForkProject(props) {
 
   const [title, setTitle] = useState(forkedTitle);
   const [namespace, setNamespace] = useState("");
+  const [fullNamespace, setFullNamespace] = useState(null);
+  const [visibilities, setVisibilities] = useState(null);
+  const [visibility, setVisibility] = useState(null);
   const [projectsPaths, setProjectsPaths] = useState([]);
   const [error, setError] = useState(null);
 
   const [forking, setForking] = useState(false);
   const [forkError, setForkError] = useState(null);
+  const [forkVisibilityError, setForkVisibilityError] = useState(null);
   const [forkUrl, setForkUrl] = useState(null);
 
   // Monitor changes to projects list
@@ -188,6 +211,30 @@ function ForkProject(props) {
     }
     setError(null);
   }, [title, namespace, projectsPaths]);
+
+  // monitor namespace changes to calculate visibility
+  useEffect(() => {
+    const getVisibilities = async (namespace) => {
+      // empty values to display fetching
+      setVisibilities(null);
+      setVisibility(null);
+
+      // calculate visibilities values
+      const availableVisibilities = await handlers.getVisibilities(namespace);
+      setVisibilities(availableVisibilities?.visibilities ?? null);
+      setVisibility(availableVisibilities?.default ?? null);
+    };
+    if (fullNamespace) {
+      getVisibilities(fullNamespace);
+    }
+    else {
+      setVisibilities(null);
+      setVisibility(null);
+    }
+    // the useEffect uses the function handlers.getVisibility,
+    // if we include it as a dependency the effect will be trigger many times
+    // since the function changes in each rendering.
+  }, [fullNamespace]); // eslint-disable-line
 
   // Monitor component mounted state -- helper to prevent illegal action when the fork takes long
   const mounted = useRef(false);
@@ -246,16 +293,35 @@ function ForkProject(props) {
           throw new Error("Cloning is taking too long");
       }
 
+      // set visibility value forked project
+      let visibilityError;
+      let visibilityErrorMessage;
+      await client.setVisibility(forked.project.id, visibility)
+        .catch((e) => {
+          visibilityError = true;
+          visibilityErrorMessage = e.errorData.message?.visibility_level ?
+            `, ${e.errorData.message?.visibility_level[0]}` :
+            `, not supported ${visibility} visibility.`;
+          setForkVisibilityError(visibilityErrorMessage);
+        });
+
       // Add notification. Mark it as read and redirect automatically only when the modal is still open
       let newProjectData = { namespace: forked.project.namespace.full_path, path: forked.project.path };
       const newUrl = Url.get(Url.pages.project, newProjectData);
       newProjectData.name = forked.project.name;
-      if (mounted.current) {
+
+      if (mounted.current && !visibilityError) {
         addForkNotification(notifications, newUrl, newProjectData, startingLocation, true, false);
         history.push(newUrl);
       }
+      else if (mounted.current && visibilityError) {
+        setForking(false); // finish forking
+        setForkUrl(newUrl); // allow display the button to go to the forked project
+        return;
+      }
       else {
-        addForkNotification(notifications, newUrl, newProjectData, startingLocation, true, true);
+        addForkNotification(notifications, newUrl, newProjectData, startingLocation, true, true,
+          visibilityError ? { message: visibilityErrorMessage } : false);
       }
       return null; // this prevents further operations on non-mounted components
     }
@@ -279,12 +345,19 @@ function ForkProject(props) {
       setTitle(localValue);
     }
 
+    if (target === "visibility") {
+      const localValue = value ? value : "";
+      setVisibility(localValue);
+    }
+
     // ? reset fork error and url when typing
     setForkError(null);
     setForkUrl(null);
   };
 
   const setNamespaceP = (value) => {
+    // it is necessary to save the complete namespace data to obtain the type for visibility purposes
+    setFullNamespace(value);
     setNamespace(value.full_path);
   };
 
@@ -300,6 +373,7 @@ function ForkProject(props) {
       fork={fork}
       forkedTitle={forkedTitle}
       forkError={forkError}
+      forkVisibilityError={forkVisibilityError}
       forkUrl={forkUrl}
       forking={forking}
       handlers={adjustedHandlers}
@@ -309,6 +383,8 @@ function ForkProject(props) {
       title={title}
       toggleModal={toggleModal}
       user={user}
+      visibilities={visibilities}
+      visibility={visibility}
     />
   );
 }
@@ -416,6 +492,13 @@ class NewProject extends Component {
     return this.coordinator.getTemplates(repositories, true);
   }
 
+  async calculateVisibilities(namespace) {
+    // temporarily reset visibility metadata
+    this.coordinator.resetVisibility(namespace);
+    const availableVisibilities = await this.projectsCoordinator.getVisibilities(namespace);
+    this.coordinator.setVisibilities(availableVisibilities, namespace);
+  }
+
   refreshUserProjects() {
     this.projectsCoordinator.getFeatured();
   }
@@ -426,7 +509,7 @@ class NewProject extends Component {
 
   setNamespace(namespace) {
     this.setProperty("namespace", namespace.full_path);
-    this.coordinator.getVisibilities(namespace);
+    this.calculateVisibilities(namespace);
   }
 
   setTemplateProperty(property, value) {

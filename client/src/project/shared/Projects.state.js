@@ -158,6 +158,44 @@ class ProjectsCoordinator {
         throw error;
       });
   }
+
+  async getVisibilities(namespace, projectVisibility) {
+    const computeVisibilities = (options) => {
+      if (options.includes("private")) {
+        return {
+          visibilities: ["private"],
+          default: "private",
+        };
+      }
+      else if (options.includes("internal")) {
+        return {
+          visibilities: ["private", "internal"],
+          default: "internal",
+        };
+      }
+      return {
+        visibilities: ["private", "internal", "public"],
+        default: "public"
+      };
+    };
+
+    let availableVisibilities = null;
+    let options = projectVisibility ? [projectVisibility] : [];
+    if (!namespace)
+      return null;
+
+    if (namespace?.kind === "user") {
+      options.push("public");
+      return computeVisibilities(options);
+    }
+    else if (namespace?.kind === "group") {
+      // get group visibility
+      const group = await this.client.getGroupByPath(namespace.full_path).then(r => r.data);
+      options.push(group.visibility);
+      return computeVisibilities(options);
+    }
+    return availableVisibilities;
+  }
 }
 
 export { ProjectsCoordinator };
