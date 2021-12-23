@@ -16,8 +16,9 @@ charts:
         valuesPath: image
         paths:
           - client
-          - server
+          - e2e
           - helm-chart
+          - server
           - .github
           - "."
         buildArgs:
@@ -39,8 +40,9 @@ charts:
         valuesPath: image
         paths:
           - client
-          - server
+          - e2e
           - helm-chart
+          - server
           - .github
           - "."
         buildArgs:
