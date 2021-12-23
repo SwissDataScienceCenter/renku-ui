@@ -306,6 +306,10 @@ function addProjectMethods(client) {
     return client.putProjectFieldFormData(projectId, "avatar", avatarFile);
   };
 
+  client.setVisibility = (projectId, visibility) => {
+    return client.putProjectField(projectId, "visibility", visibility);
+  };
+
   client.starProject = (projectId, starred) => {
     const headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");

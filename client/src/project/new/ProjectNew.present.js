@@ -32,7 +32,7 @@ import {
   Modal, ModalBody, ModalFooter, ModalHeader, Row, Table, UncontrolledTooltip
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle, faLink, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import { faExclamationTriangle, faInfoCircle, faLink, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 
 import {
   ButtonWithMenu,
@@ -99,7 +99,7 @@ function ForkProjectHeader(props) {
 }
 
 function ForkProjectBody(props) {
-  const { fetching, forkError, forking } = props;
+  const { fetching, forkError, forkVisibilityError, forking } = props;
   if (fetching.namespaces || fetching.projects) {
     const text = fetching.namespaces ?
       "namespaces" :
@@ -114,7 +114,7 @@ function ForkProjectBody(props) {
   return (
     <ModalBody>
       <ForkProjectContent {...props} />
-      <ForkProjectStatus forkError={forkError} forking={forking} />
+      <ForkProjectStatus forkVisibilityError={forkVisibilityError} forkError={forkError} forking={forking} />
     </ModalBody>
   );
 }
@@ -168,22 +168,50 @@ function ForkProjectStatus(props) {
       </FormText>
     );
   }
+  else if (props.forkVisibilityError) {
+    return (
+      <p>
+        <FontAwesomeIcon icon={faExclamationTriangle} />
+        {" "} The project has been forked but an error occurred when setting the visibility
+        {props.forkVisibilityError}
+      </p>
+    );
+  }
   return null;
 }
 
 function ForkProjectContent(props) {
-  const { error, forking, handlers, namespace, namespaces, title, user } = props;
-  if (forking)
+  const {
+    fetching,
+    error,
+    forking,
+    handlers,
+    namespace,
+    namespaces,
+    title,
+    user,
+    visibility,
+    visibilities,
+    forkVisibilityError } = props;
+
+  if (forking || forkVisibilityError)
     return null;
 
-  const input = { namespace, title, titlePristine: false };
-  const meta = { validation: { errors: { title: error } } };
+  const input = { namespace, title, titlePristine: false, visibility, visibilityPristine: false };
+  const meta = {
+    validation: { errors: { title: error } },
+    namespace: {
+      fetching: fetching.namespaces,
+      visibilities,
+    },
+  };
 
   return (
     <Fragment>
       <Title handlers={handlers} input={input} meta={meta} />
       <Namespaces handlers={handlers} input={input} namespaces={namespaces} user={user} />
       <Home input={input} />
+      <Visibility handlers={handlers} input={input} meta={meta}/>
     </Fragment>
   );
 }
@@ -602,11 +630,11 @@ class Visibility extends Component {
         </Fragment>
       );
     }
-    else if (meta.namespace.fetching) {
+    else if (meta.namespace.fetching || !meta.namespace.visibilities || !input.visibility) {
       main = (
         <Fragment>
           <br />
-          <Label className="font-italic">Verifying... <Loader inline={true} size={16} /></Label>
+          <Label className="font-italic">Determining options... <Loader inline={true} size={16} /></Label>
         </Fragment>
       );
     }
