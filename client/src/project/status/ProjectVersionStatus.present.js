@@ -53,7 +53,8 @@ function ProjectVersionStatusBody(props) {
             loading={props.loading}
             maintainer={maintainer}
             migration={props.migration}
-            onMigrateProject={onMigrateProject} />
+            onMigrateProject={onMigrateProject}
+            statistics={props.statistics} />
         </Col></Row>
       </CardBody>
     </Card>
