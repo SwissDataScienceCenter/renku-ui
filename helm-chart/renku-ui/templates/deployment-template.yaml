@@ -86,6 +86,8 @@ spec:
               value: {{ toJson .Values.previewSizeThreshold | quote }}
             - name: UPLOAD_THRESHOLD
               value: {{ toJson .Values.uploadSizeThreshold | quote }}
+            - name: CORE_API_VERSION
+              value: {{ .Values.coreApiVersion | default (printf "") | quote }}
             - name: UI_VERSION
               value: {{ .Chart.Version | quote }}
             - name: HOMEPAGE

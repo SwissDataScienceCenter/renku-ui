@@ -75,6 +75,9 @@ previewSizeThreshold:
 uploadSizeThreshold:
   soft: 104857600 # 100MB
 
+# Fix the core API version to invoke. Is not available, no version will be specified. Leave blank to use latest
+coreApiVersion: ""
+
 # Any string here, other than 'false', will enable the maintenance page and be added on it as an info.
 # Setting 'true' will display a standard message embedded in maintenace page.
 maintenance: false

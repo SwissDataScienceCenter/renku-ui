@@ -29,6 +29,8 @@ TEMPLATES='{"custom":true,"repositories":
 "url":"https://github.com/SwissDataScienceCenter/renku-project-template"}]}'
 PREVIEW_THRESHOLD='{"soft":"1048576","hard":"10485760"}'
 UPLOAD_THRESHOLD='{"soft":"104857600"}'
+# ! TODO: remove value CORE_API_VERSION
+CORE_API_VERSION="1.0"
 CURRENT_CHART=`grep -oE "(^version: )[.0-9a-f\-]*" ../helm-chart/renku-ui/Chart.yaml | cut -d" " -f2`
 CURRENT_COMMIT=`git rev-parse --short HEAD`
 if [[ "$OSTYPE" == "linux-gnu" ]]
@@ -147,6 +149,7 @@ tee > ./public/config.json << EOF
   "TEMPLATES": ${TEMPLATES},
   "PREVIEW_THRESHOLD": ${PREVIEW_THRESHOLD},
   "UPLOAD_THRESHOLD": ${UPLOAD_THRESHOLD},
+  "CORE_API_VERSION": "${CORE_API_VERSION}",
   "STATUSPAGE_ID": "${STATUSPAGE_ID}",
   "HOMEPAGE": {
     "custom": {
