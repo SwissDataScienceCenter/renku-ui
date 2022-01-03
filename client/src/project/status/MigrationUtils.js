@@ -34,7 +34,7 @@ function GeneralErrorMessage({ error_while, error_what, error_reason }) {
       or create an issue in {" "}
       <ExternalIconLink url="https://github.com/SwissDataScienceCenter/renku/issues" icon={faGithub} title="GitHub" />.
     </p>
-    <div><strong>Error Message</strong><pre>{error_reason}</pre></div>
+    <div><strong>Error Message</strong><pre style={{ whiteSpace: "pre-wrap" }}>{error_reason}</pre></div>
   </ErrorAlert>;
 }
 
