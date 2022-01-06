@@ -147,14 +147,15 @@ class FormGenerator extends Component {
     const [inputs, setInputs, setSubmit] = useForm(this.props.submitCallback, this.handlers, draft);
     return (<VisibleFormGenerator
       {...this.props}
-      locationHash={this.locationHash}
-      store={this.model.reduxStore}
       handlers={this.handlers}
-      modelValues={this.getDraft()}
       inputs={inputs}
+      loading={this.getDraft() === undefined}
+      locationHash={this.locationHash}
+      modelValues={this.getDraft()}
       setInputs={setInputs}
       setSubmit={setSubmit}
-      loading={this.getDraft() === undefined}
+      store={this.model.reduxStore}
+      versionUrl={this.props.versionUrl ? this.props.versionUrl : ""}
     />);
   }
 }

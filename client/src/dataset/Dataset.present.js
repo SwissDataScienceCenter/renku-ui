@@ -55,7 +55,7 @@ function DisplayFiles(props) {
   }
 
   let openFolders = props.files.length > 0 ?
-    ( props.files[0].atLocation.startsWith("data/") ? 2 : 1 )
+    (props.files[0].atLocation.startsWith("data/") ? 2 : 1)
     : 0;
 
   // ? This re-adds the name property on the datasets.
@@ -177,14 +177,14 @@ function DisplayInfoTable(props) {
     : null;
 
   const keywords = dataset.keywords && dataset.keywords.length > 0 ?
-    dataset.keywords.map(keyword=>
+    dataset.keywords.map(keyword =>
       <span key={keyword}><Badge color="rk-text">{keyword}</Badge>&nbsp;</span>)
     : null;
 
   // eslint-disable-next-line
   return <Table className="mb-4 table-borderless" size="sm">
     <tbody className="text-rk-text">
-      { source ?
+      {source ?
         <tr>
           <td className="text-dark fw-bold" style={{ "width": "120px" }}>
             Source
@@ -195,7 +195,7 @@ function DisplayInfoTable(props) {
         </tr>
         : null
       }
-      { authors ? <tr>
+      {authors ? <tr>
         <td className="text-dark fw-bold col-auto">
           Author(s)
         </td>
@@ -205,7 +205,7 @@ function DisplayInfoTable(props) {
       </tr>
         : null
       }
-      { datasetDate ?
+      {datasetDate ?
         <tr>
           <td className="text-dark fw-bold col-auto">
             {datasetPublished ? "Published on " : "Created on "}
@@ -216,7 +216,7 @@ function DisplayInfoTable(props) {
         </tr>
         : null
       }
-      { keywords ? <tr>
+      {keywords ? <tr>
         <td className="text-dark fw-bold col-auto">
           Keywords
         </td>
@@ -325,8 +325,8 @@ function ErrorAfterCreation(props) {
 
   return props.location.state && props.location.state.errorOnCreation ?
     <ErrorAlert>
-      <strong>Error on creation</strong><br/>
-      The dataset was created, but there was an error adding files to it.<br/>
+      <strong>Error on creation</strong><br />
+      The dataset was created, but there was an error adding files to it.<br />
       Please {editButton} the dataset to add the missing files.
     </ErrorAlert>
     : null;
@@ -338,21 +338,23 @@ export default function DatasetView(props) {
   const [deleteDatasetModalOpen, setDeleteDatasetModalOpen] = useState(false);
   const dataset = props.dataset;
 
-  if (!_.isEmpty(props.fetchError) && dataset === undefined) {
-    return (
-      <DatasetError
-        fetchError={props.fetchError}
-        insideProject={props.insideProject}
-        location={props.location}
-        logged={props.logged} />
-    );
+  if (dataset === undefined) {
+    if (!_.isEmpty(props.fetchError)) {
+      return (
+        <DatasetError
+          fetchError={props.fetchError}
+          insideProject={props.insideProject}
+          location={props.location}
+          logged={props.logged} />
+      );
+    }
+
+    if (props.loadingDatasets || !props.insideProject)
+      return <Loader />;
   }
 
-  if (dataset === undefined)
-    return (<Loader />);
-
   return <Col>
-    <ErrorAfterCreation location={props.location} dataset={dataset}/>
+    <ErrorAfterCreation location={props.location} dataset={dataset} />
     <Row>
       <Col md={8} sm={12}>
         {props.insideProject ?
@@ -366,13 +368,13 @@ export default function DatasetView(props) {
         }
       </Col>
       <Col md={4} sm={12} className="d-flex flex-col justify-content-end mb-auto">
-        { props.logged ?
+        {props.logged ?
           <Button disabled={dataset.insideKg === false}
             className="float-right mb-1 me-1" size="sm" color="secondary" onClick={() => setAddDatasetModalOpen(true)}>
             <FontAwesomeIcon icon={faPlus} color="dark" /> Add to project
           </Button>
           : null}
-        { props.insideProject && props.maintainer ?
+        {props.insideProject && props.maintainer ?
           <Link className="float-right me-1 mb-1" id="editDatasetTooltip"
             to={{ pathname: "modify", state: { dataset: dataset } }} >
             <Button size="sm" color="secondary" >
@@ -381,7 +383,7 @@ export default function DatasetView(props) {
           </Link>
           : null
         }
-        { props.insideProject && props.maintainer ?
+        {props.insideProject && props.maintainer ?
           <UncontrolledButtonDropdown size="sm" className="float-right mb-1">
             <DropdownToggle caret color="secondary" className="removeArrow">
               <FontAwesomeIcon icon={faEllipsisV} color="dark" />
@@ -397,12 +399,12 @@ export default function DatasetView(props) {
       </Col>
     </Row>
     <div className="d-flex">
-      { dataset.mediaContent ?
+      {dataset.mediaContent ?
         <div className="flex-shrink-0 pe-3" style={{ width: "120px" }}>
           <img src={dataset.mediaContent} className=" rounded" alt=""
-            style={{ objectFit: "cover", width: "100%", height: "90px" }}/>
+            style={{ objectFit: "cover", width: "100%", height: "90px" }} />
         </div>
-        : null }
+        : null}
       <div className="flex-grow-1">
         <DisplayInfoTable
           dataset={dataset}
@@ -458,28 +460,30 @@ export default function DatasetView(props) {
     {
       props.logged ?
         <AddDataset
-          dataset={dataset}
-          modalOpen={addDatasetModalOpen}
-          setModalOpen={setAddDatasetModalOpen}
-          projectsCoordinator={new ProjectsCoordinator(props.client, props.model.subModel("projects"))}
-          model={props.model}
-          history={props.history}
           client={props.client}
-          user={props.user}
+          dataset={dataset}
           formLocation={props.location.pathname + "/add"}
+          history={props.history}
+          modalOpen={addDatasetModalOpen}
+          model={props.model}
+          projectsCoordinator={new ProjectsCoordinator(props.client, props.model.subModel("projects"))}
+          setModalOpen={setAddDatasetModalOpen}
+          user={props.user}
+          versionUrl={props.migration.core.versionUrl}
         />
         : null
     }
-    { props.insideProject && props.maintainer ?
+    {props.insideProject && props.maintainer ?
       <DeleteDataset
-        dataset={dataset}
-        modalOpen={deleteDatasetModalOpen}
-        setModalOpen={setDeleteDatasetModalOpen}
-        httpProjectUrl={props.httpProjectUrl}
-        projectPathWithNamespace={props.projectPathWithNamespace}
-        history={props.history}
         client={props.client}
+        dataset={dataset}
+        history={props.history}
+        httpProjectUrl={props.httpProjectUrl}
+        modalOpen={deleteDatasetModalOpen}
+        projectPathWithNamespace={props.projectPathWithNamespace}
+        setModalOpen={setDeleteDatasetModalOpen}
         user={props.user}
+        versionUrl={props.migration.core.versionUrl}
       />
       : null
     }

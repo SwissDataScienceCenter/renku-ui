@@ -68,8 +68,10 @@ function SubmitButtonGroup(props) {
   </Fragment>;
 }
 
-function FormPanel({ title, btnName, submitCallback, formLocation, onCancel, edit, handlers,
-  formatServerErrorsAndWarnings, draft, loading, inputs, setInputs, setSubmit }) {
+function FormPanel({
+  btnName, draft, edit, formLocation, formatServerErrorsAndWarnings, handlers, inputs, loading,
+  onCancel, setInputs, setSubmit, submitCallback, title, versionUrl
+}) {
 
   const submitLoader = draft?.submitLoader;
   const hideButtons = draft?.hideButtons;
@@ -79,22 +81,31 @@ function FormPanel({ title, btnName, submitCallback, formLocation, onCancel, edi
   const disableAll = draft?.disableAll;
 
   const Components = {
-    TextInput,
-    TextareaInput,
     CktextareaInput,
+    CreatorsInput,
     FileUploaderInput,
+    ImageInput,
+    KeywordsInput,
     SelectInput,
     SelectautosuggestInput,
-    CreatorsInput,
-    KeywordsInput,
-    ImageInput
+    TextInput,
+    TextareaInput,
   };
 
   const renderInput = input => {
     const Component = Components[capitalize(input.type) + "Input"];
-    return <Component key={input.name} value={input.value}
-      disabled={(submitLoader && submitLoader.value ) || (input.edit === false && edit) || disableAll}
-      setInputs={setInputs} {...input} handlers={handlers} formLocation={formLocation}/>;
+    const disabled = (submitLoader && submitLoader.value) || (input.edit === false && edit) || disableAll;
+    return (
+      <Component {...input}
+        disabled={disabled}
+        formLocation={formLocation}
+        handlers={handlers}
+        key={input.name}
+        setInputs={setInputs}
+        value={input.value}
+        versionUrl={versionUrl}
+      />
+    );
   };
 
   const extractErrorsAndWarnings = (errorOrWarning, isError) => {

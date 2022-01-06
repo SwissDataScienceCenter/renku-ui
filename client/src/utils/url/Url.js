@@ -339,6 +339,32 @@ const Url = {
             "/projects/group/subgroup/path/sessions/show/server-id",
           ]
         )
+      },
+      overview: {
+        base: new UrlRule(
+          projectPageUrlBuilder(""), ["namespace", "path"], null, [
+            "/projects/namespace/path",
+            "/projects/group/subgroup/path",
+          ]
+        ),
+        stats: new UrlRule(
+          projectPageUrlBuilder("/overview/stats"), ["namespace", "path"], null, [
+            "/projects/namespace/path/overview/stats",
+            "/projects/group/subgroup/path/overview/stats",
+          ]
+        ),
+        commits: new UrlRule(
+          projectPageUrlBuilder("/overview/commits"), ["namespace", "path"], null, [
+            "/projects/namespace/path/overview/commits",
+            "/projects/group/subgroup/path/overview/commits",
+          ]
+        ),
+        status: new UrlRule(
+          projectPageUrlBuilder("/overview/status"), ["namespace", "path"], null, [
+            "/projects/namespace/path/overview/status",
+            "/projects/group/subgroup/path/overview/status",
+          ]
+        )
       }
     },
     sessions: {
