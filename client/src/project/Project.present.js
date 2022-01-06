@@ -264,12 +264,11 @@ function ProjectViewHeaderOverviewDescription({ settingsReadOnly, description, s
 }
 
 const ProjectSuggestActions = (props) => {
+  const { commits, commitsReadme } = props;
+  const datasets = props.datasets.core;
   const isProjectMaintainer = props.metadata.accessLevel >= ACCESS_LEVELS.MAINTAINER;
-  const commits = props.projectCoordinator.get("commits");
-  const commitsReadme = props.projectCoordinator.get("commitsReadme");
-  const datasets = props.projectCoordinator.get("datasets.core");
   const countTotalCommits = commits?.list?.length ?? 0;
-  const countCommitsReadme = commitsReadme?.list.length ?? null;
+  const countCommitsReadme = commitsReadme?.list?.length ?? null;
   let isReadmeCommitInitial = countCommitsReadme === 1;
   if (countCommitsReadme === 1 && commits.list.length > 0) {
     const firstCommit = commits?.list.sort((a, b) => new Date(a.committed_date) - new Date(b.committed_date))[0];
@@ -284,14 +283,14 @@ const ProjectSuggestActions = (props) => {
     isLoadingDatasets;
 
   useEffect(() => {
-    props.fetchDatasets();
-    if (props.projectCoordinator?.get("metadata.id") !== null)
-      props.projectCoordinator.fetchReadmeCommits();
+    if (props.metadata.id !== null)
+      props.fetchReadmeCommits();
   }, []); // eslint-disable-line
 
-  if (!isProjectMaintainer || isLoadingData || countTotalCommits > 4 ||
-    (countCommitsReadme > 1 && hasDatasets) ||
-    (!isReadmeCommitInitial && hasDatasets && countCommitsReadme !== 0)) return null;
+  const cHasDataset = countCommitsReadme > 1 && hasDatasets;
+  const cCombo = !isReadmeCommitInitial && hasDatasets && countCommitsReadme !== 0;
+  if (!isProjectMaintainer || isLoadingData || countTotalCommits > 4 || cHasDataset || cCombo)
+    return null;
 
   const gitlabIDEUrl = props.externalUrl !== "" && props.externalUrl.includes("/gitlab/") ?
     props.externalUrl.replace("/gitlab/", "/gitlab/-/ide/project/") : null;
@@ -767,23 +766,16 @@ function EmptyDatasets(props) {
  * Shows a warning Alert when Renku version is outdated or Knowledge Graph integration is not active.
  *
  * @param {Object} webhook - project.webhook store object
- * @param {bool} migration_required - whether it's necessary to migrate the project or not
  * @param {Object} history - react history object
  * @param {string} overviewStatusUrl - overview status url
  */
 function ProjectStatusAlert(props) {
-  const { webhook, migration_required, overviewStatusUrl, history } = props;
+  const { webhook, overviewStatusUrl, history } = props;
   const kgDown = isKgDown(webhook);
 
-  if (!migration_required && !kgDown)
+  if (!kgDown)
     return null;
 
-  const versionInfo = migration_required ?
-    <span>
-      <strong>A new version of renku is available. </strong>
-      An upgrade is necessary to allow modification of datasets and is recommended for all projects.&nbsp;
-    </span> :
-    null;
   const kgInfo = kgDown ?
     <span>
       <strong>Knowledge Graph integration not active. </strong>
@@ -791,13 +783,8 @@ function ProjectStatusAlert(props) {
     </span> :
     null;
 
-  const conditionalSpace = versionInfo && kgInfo ? <br /> : null;
-
   return (
     <WarnAlert>
-      {versionInfo}
-      {conditionalSpace}
-      {conditionalSpace}
       {kgInfo}
       <br />
       <br />
@@ -815,23 +802,66 @@ function ProjectViewDatasets(props) {
   const migrationMessage = <ProjectStatusAlert
     history={props.history}
     overviewStatusUrl={props.overviewStatusUrl}
-    migration_required={props.migration.check?.core_compatibility_status?.migration_required}
     webhook={props.webhook}
   />;
 
-  useEffect(()=>{
-    const loading = props.datasets.core === SpecialPropVal.UPDATING;
-    if (loading) return;
-    props.fetchDatasets(props.location.state && props.location.state.reload);
+  useEffect(() => {
     props.fetchGraphStatus();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const loading = props.datasets.core === SpecialPropVal.UPDATING || props.datasets.core === undefined;
-  if (loading)
-    return <Loader />;
+  useEffect(() => {
+    const datasetsLoading = props.datasets.core === SpecialPropVal.UPDATING;
+    if (datasetsLoading || !props.migration.core.fetched || props.migration.core.fetching)
+      return;
+    props.fetchDatasets(props.location.state && props.location.state.reload);
+  }, [props.migration.core.fetched]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (props.datasets.core.error) {
+  if (props.migration.core.fetched && !props.migration.core.backendAvailable) {
+    const overviewStatusUrl = Url.get(Url.pages.project.overview.status, {
+      namespace: props.metadata.namespace,
+      path: props.metadata.path,
+    });
+    const updateInfo = props.metadata.accessLevel >= ACCESS_LEVELS.DEVELOPER ?
+      "Updating this project" :
+      "Asking a project maintainer to update this project (or forking and updating it)";
+    return (
+      <div>
+        <WarnAlert dismissible={false}>
+          <p>
+            <b>Datasets have limited functionality</b> because the project is not compatible with
+            this RenkuLab instance.
+          </p>
+          <p>You can search for datasets, but you cannot interact with them from the project page.</p>
+          <p>
+            {updateInfo} should resolve the problem.
+            <br />The <Link to={overviewStatusUrl}>Project status</Link> page provides further information.
+          </p>
+        </WarnAlert>
+      </div>
+    );
+  }
+
+  const checkingBackend = props.migration.core.fetching || !props.migration.core.fetched;
+  if (checkingBackend) {
+    return (
+      <div>
+        <p>Checking project version and RenkuLab compatibility...</p>
+        <Loader />
+      </div>
+    );
+  }
+
+  const loadingDatasets = props.datasets.core === SpecialPropVal.UPDATING || props.datasets.core === undefined;
+  if (loadingDatasets) {
+    return (
+      <div>
+        <p>Loading datasets...</p>
+        <Loader />
+      </div>
+    );
+  }
+
+  if (props.datasets.core.error || props.datasets.core.datasets?.error) {
     return <Col sm={12}>
       <ErrorAlert>
         There was an error fetching the datasets, please try <Button color="danger" size="sm" onClick={
@@ -840,7 +870,7 @@ function ProjectViewDatasets(props) {
     </Col>;
   }
 
-  if (!loading && props.datasets.core.datasets != null && props.datasets.core.datasets.length === 0
+  if (props.datasets.core.datasets != null && props.datasets.core.datasets.length === 0
     && props.location.pathname !== props.newDatasetUrl) {
     return <Col sm={12}>
       {migrationMessage}

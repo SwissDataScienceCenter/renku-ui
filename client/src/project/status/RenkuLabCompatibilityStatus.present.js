@@ -40,7 +40,7 @@ function RenkuLabVersionInfo({ core_compatibility_status }) {
   </p>;
 }
 
-function RenkuLabCompatibilityBody({ project_supported, migration_required }) {
+function RenkuLabCompatibilityBody({ backendAvailable, migration_required, project_supported }) {
   if (project_supported === false) {
     return <MigrationWarnAlert>
       This project appears to be using an experimental version of Renku.&nbsp;<br /><br />
@@ -50,6 +50,16 @@ function RenkuLabCompatibilityBody({ project_supported, migration_required }) {
   }
   if (migration_required === false)
     return <MigrationSuccessAlert>This project and the RenkuLab UI are compatible.</MigrationSuccessAlert>;
+  if (backendAvailable) {
+    return (
+      <MigrationWarnAlert>
+        <p>
+          This project is compatible with the RenkuLab UI, but upgrading to the
+          latest <b>renku version</b> is highly recommended.
+        </p>
+      </MigrationWarnAlert>
+    );
+  }
   return <MigrationWarnAlert>
     <p>
       This project is not compatible with the RenkuLab UI.
@@ -71,6 +81,7 @@ function RenkuLabCompatibilityStatus({ loading, migration }) {
 
   const { migration_status, migration_error } = migration;
   const { check_error, project_supported } = migration.check;
+  const { backendAvailable } = migration.core;
   const migrationErrorProps = { check_error, migration_error, migration_status };
   if (isMigrationFailure(migrationErrorProps))
     return <ShowMigrationFailure {...migrationErrorProps} />;
@@ -81,8 +92,9 @@ function RenkuLabCompatibilityStatus({ loading, migration }) {
   return <div>
     <RenkuLabVersionInfo core_compatibility_status={core_compatibility_status} />
     <RenkuLabCompatibilityBody
-      project_supported={project_supported}
+      backendAvailable={backendAvailable}
       migration_required={migration_required}
+      project_supported={project_supported}
     />
   </div>;
 }

@@ -63,7 +63,9 @@ function MigrationTimeEstimate({ current_metadata_version, project_metadata_vers
   </span>;
 }
 
-function UpdateInfo({ current_metadata_version, project_metadata_version, renkuVersionStatus, statistics }) {
+function UpdateInfo({
+  backendAvailable, current_metadata_version, project_metadata_version, renkuVersionStatus, statistics
+}) {
   if (updateNotRequired(renkuVersionStatus)) {
     return <p>
       If you wish to take advantage of new features, you can update to the latest version of{" "}
@@ -72,10 +74,16 @@ function UpdateInfo({ current_metadata_version, project_metadata_version, renkuV
         project_metadata_version={project_metadata_version} statistics={statistics} />
     </p>;
   }
-  return <p>An update is necessary to work with datasets from the UI. {" "}
-    <MigrationTimeEstimate current_metadata_version={current_metadata_version}
-      project_metadata_version={project_metadata_version} statistics={statistics} />
-  </p>;
+  const updateMessage = backendAvailable ?
+    null :
+    (<span>An update is necessary to work with datasets from the UI.<br /></span>);
+  return (
+    <p>
+      {updateMessage}
+      <MigrationTimeEstimate current_metadata_version={current_metadata_version}
+        project_metadata_version={project_metadata_version} statistics={statistics} />
+    </p>)
+  ;
 }
 
 function AutoUpdateButton({ externalUrl, maintainer, migration_status, onMigrateProject, renkuVersionStatus }) {
@@ -103,9 +111,10 @@ function AutoUpdateButton({ externalUrl, maintainer, migration_status, onMigrate
 const docUrl = "https://renku.readthedocs.io/en/latest/how-to-guides/upgrading-renku.html" +
 "#upgrading-your-image-to-use-the-latest-renku-cli-version";
 
-function RenkuVersionAutomaticUpdateSection(
-  { current_metadata_version, externalUrl, launchNotebookUrl, maintainer,
-    migration_status, onMigrateProject, project_metadata_version, renkuVersionStatus, statistics }) {
+function RenkuVersionAutomaticUpdateSection({
+  backendAvailable, current_metadata_version, externalUrl, launchNotebookUrl, maintainer,
+  migration_status, onMigrateProject, project_metadata_version, renkuVersionStatus, statistics
+}) {
   const linkClassName = updateNotRequired(renkuVersionStatus) ?
     "" :
     "link-alert-warning";
@@ -113,8 +122,9 @@ function RenkuVersionAutomaticUpdateSection(
   const toggleOpen = () => setOpen(!isOpen);
 
   return <Fragment>
-    <UpdateInfo current_metadata_version={current_metadata_version} project_metadata_version={project_metadata_version}
-      renkuVersionStatus={renkuVersionStatus} statistics={statistics} />
+    <UpdateInfo backendAvailable={backendAvailable} current_metadata_version={current_metadata_version}
+      project_metadata_version={project_metadata_version} renkuVersionStatus={renkuVersionStatus}
+      statistics={statistics} />
     <AutoUpdateButton externalUrl={externalUrl} maintainer={maintainer}
       migration_status={migration_status} onMigrateProject={onMigrateProject}
       renkuVersionStatus={renkuVersionStatus} />
@@ -130,8 +140,10 @@ function RenkuVersionAutomaticUpdateSection(
   </Fragment>;
 }
 
-function RenkuVersionManualUpdateSection({ current_metadata_version, launchNotebookUrl,
-  project_metadata_version, renkuVersionStatus, statistics }) {
+function RenkuVersionManualUpdateSection({
+  backendAvailable, current_metadata_version, launchNotebookUrl, project_metadata_version, renkuVersionStatus,
+  statistics
+}) {
   const [isOpen, setOpen] = useState(false);
   const toggleOpen = () => setOpen(!isOpen);
 
@@ -140,8 +152,9 @@ function RenkuVersionManualUpdateSection({ current_metadata_version, launchNoteb
     "" :
     "link-alert-warning";
   return <Fragment>
-    <UpdateInfo current_metadata_version={current_metadata_version} project_metadata_version={project_metadata_version}
-      renkuVersionStatus={renkuVersionStatus} statistics={statistics} />
+    <UpdateInfo backendAvailable={backendAvailable} current_metadata_version={current_metadata_version}
+      project_metadata_version={project_metadata_version} renkuVersionStatus={renkuVersionStatus}
+      statistics={statistics} />
     <UpdateSection>
       <Button color="link" className={`ps-0 mb-2 ${linkClassName} text-start`} onClick={toggleOpen}>
         <i>Automated update is not possible, but you can follow these instructions to update manually.</i>
@@ -161,12 +174,13 @@ function RenkuVersionStatusBody({ externalUrl, launchNotebookUrl, maintainer, mi
 
   const renkuVersionStatus = migrationCheckToRenkuVersionStatus(migration.check);
   const { migration_status } = migration;
+  const { backendAvailable } = migration.core;
   const current_metadata_version = migration?.check?.core_compatibility_status?.current_metadata_version;
   const project_metadata_version = migration?.check?.core_compatibility_status?.project_metadata_version;
-  const updateProps = { current_metadata_version, externalUrl, launchNotebookUrl,
-    maintainer, migration_status, onMigrateProject, project_metadata_version,
-    renkuVersionStatus, statistics };
-
+  const updateProps = {
+    backendAvailable, current_metadata_version, externalUrl, launchNotebookUrl, maintainer, migration_status,
+    onMigrateProject, project_metadata_version, renkuVersionStatus, statistics
+  };
 
   switch (renkuVersionStatus) {
     case RENKU_VERSION_SCENARIOS.PROJECT_NOT_SUPPORTED :
