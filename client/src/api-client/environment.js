@@ -30,6 +30,30 @@ function addEnvironmentMethods(client) {
       headers: headers
     }).then(resp => resp.data);
   };
+
+  /**
+   * Check core version availability
+   *
+   * @param {string} version - target core version to test
+   */
+  client.checkCoreAvailability = async (version) => {
+    const urlApi = `${client.uiserverUrl}/api/renku/${version}/version`;
+    let headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    headers.append("X-Requested-With", "XMLHttpRequest");
+    const resp = await client.clientFetch(urlApi, {
+      method: "GET",
+      headers: headers
+    });
+    if (resp.error) {
+      if (resp.error.reason === "Not found")
+        return { available: false };
+      return resp;
+    }
+    if (resp.data.result?.supported_project_version)
+      return { ...resp.data.result, available: true };
+    return resp.data;
+  };
 }
 
 export default addEnvironmentMethods;

@@ -93,9 +93,10 @@ function getFileObject(name, path, size, id, error, alias, controller, uncompres
   };
 }
 
-function FileUploaderInput({ name, label, alert, value, setInputs, help, disabled = false,
-  uploadFileFunction, required = false, internalValues, handlers, formLocation, notifyFunction, uploadThresholdSoft }) {
-
+function FileUploaderInput({
+  alert, disabled = false, formLocation, handlers, help, internalValues, label, name, notifyFunction,
+  required = false, setInputs, uploadFileFunction, uploadThresholdSoft, value, versionUrl
+}) {
 
   //send value as an already built tree/hash to display and
   // delete from the files/paths /data/dataset-name so i can check if the file is there or not
@@ -351,7 +352,7 @@ function FileUploaderInput({ name, label, alert, value, setInputs, help, disable
         }
       }
     };
-    uploadFileFunction(file, file.file_uncompress, setFileProgress,
+    uploadFileFunction(versionUrl, file, file.file_uncompress, setFileProgress,
       thenCallback, onErrorCallback, setController);
   };
 

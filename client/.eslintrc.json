@@ -219,6 +219,7 @@
           "noreferrer",
           "nowrap",
           "nullable",
+          "onloadend",
           "papermill",
           "pathname",
           "pdfjs",

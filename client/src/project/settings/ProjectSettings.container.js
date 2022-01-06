@@ -55,6 +55,16 @@ class ProjectSettingsSessionsMapper extends Component {
     };
   }
 
+  // Refresh on update since componentDidMount may still need operations to finish
+  componentDidUpdate(prevProps) {
+    if (!prevProps.migration.core.fetched && this.props.migration.core.fetched) {
+      const currentConfig = this.model.get("project.config");
+      refreshIfNecessary(
+        currentConfig.fetching, currentConfig.fetched, () => { this.refreshConfig(); }
+      );
+    }
+  }
+
   componentDidMount() {
     // Refresh project configuration for logged user
     if (!this.model.get("user.logged"))
@@ -72,6 +82,10 @@ class ProjectSettingsSessionsMapper extends Component {
   }
 
   async refreshConfig(repositoryUrl = null) {
+    // Prevent refreshing when not possible
+    const backend = this.model.get("project.migration.core");
+    if (!backend.fetched || !backend.backendAvailable)
+      return;
     const url = repositoryUrl ?
       repositoryUrl :
       this.props.externalUrl;
@@ -84,6 +98,7 @@ class ProjectSettingsSessionsMapper extends Component {
 
   mapStateToProps(state, ownProps) {
     return {
+      backend: state.project.migration.core,
       options: state.notebooks.options,
       metadata: state.project.metadata,
       config: state.project.config,
@@ -109,7 +124,7 @@ class ProjectSettingsSessionsMapper extends Component {
  * Component to manage project level sessions settings.
  */
 function ProjectSettingsSessions(props) {
-  const { client, config, handlers, location, metadata, options, repositoryUrl, user } = props;
+  const { backend, client, config, handlers, location, metadata, options, repositoryUrl, user } = props;
 
   const pristineNewConfig = {
     updating: false,
@@ -118,6 +133,7 @@ function ProjectSettingsSessions(props) {
     updated: false,
     error: null
   };
+
   const [newConfig, setNewConfig] = useState({ ...pristineNewConfig });
 
   // Set target project config value
@@ -125,7 +141,7 @@ function ProjectSettingsSessions(props) {
     setNewConfig({ ...pristineNewConfig, keyName, updating: true, error: null });
     try {
       const config = { [key]: value };
-      const response = await client.setProjectConfig(repositoryUrl, config);
+      const response = await client.setProjectConfig(repositoryUrl, config, backend.versionUrl);
       if (response.data.error) {
         setNewConfig({ ...newConfig, updating: false, keyName, error: response.data.error.reason });
       }
@@ -144,6 +160,7 @@ function ProjectSettingsSessions(props) {
 
   return (
     <ProjectSettingsSessionsPresent
+      backend={backend}
       config={config}
       location={location}
       metadata={metadata}

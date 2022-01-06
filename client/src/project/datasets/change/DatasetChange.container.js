@@ -50,6 +50,7 @@ function ChangeDataset(props) {
     , undefined, datasetFiles)
   , [props.datasets, props.datasetId, datasetFiles]);
   const [initialized, setInitialized] = useState(false);
+  const versionUrl = props.migration.core.versionUrl;
 
   const initializeFunction = (formSchema) => {
     let titleField = formSchema.find(field => field.name === "title");
@@ -190,7 +191,7 @@ function ChangeDataset(props) {
     if (!image.options) return images;
     if (!image.options[image.selected].FILE) return images;
     const selectedFile = image.options[image.selected];
-    images = await props.client.uploadSingleFile(selectedFile.FILE)
+    images = await props.client.uploadSingleFile(selectedFile.FILE, false, versionUrl)
       .then((response) => {
         if (response.data.error !== undefined) {
           handlers.setSubmitLoader({ value: false, text: "" });
@@ -232,7 +233,7 @@ function ChangeDataset(props) {
 
     dataset.images = await uploadDatasetImages(mappedInputs.image, handlers);
 
-    props.client.postDataset(props.httpProjectUrl, dataset, props.defaultBranch, props.edit)
+    props.client.postDataset(props.httpProjectUrl, dataset, props.defaultBranch, props.edit, versionUrl)
       .then(response => {
         if (response.data.error !== undefined) {
           handlers.setSubmitLoader({ value: false, text: "" });
@@ -315,7 +316,7 @@ function ChangeDataset(props) {
     let unmounted = false;
     if (props.edit) {
       if (!initialized && dataset !== undefined) {
-        props.client.fetchDatasetFilesFromCoreService(dataset.name, props.httpProjectUrl)
+        props.client.fetchDatasetFilesFromCoreService(dataset.name, props.httpProjectUrl, versionUrl)
           .then(response => {
             if (!unmounted && datasetFiles === undefined) {
               if (response.data.result) {
@@ -368,20 +369,20 @@ function ChangeDataset(props) {
       ];
       dsFormSchema.keywords.value = dsFormSchema.keywords.initial;
     }
-  }, [props, initialized, dataset, datasetFiles,
-    setDatasetFiles, props.client]);
+  }, [props, initialized, dataset, datasetFiles, versionUrl, setDatasetFiles, props.client]);
 
   return <DatasetChange
-    initialized={initialized}
-    datasetFormSchema={dsFormSchema}
     accessLevel={props.accessLevel}
-    submitCallback={submitCallback}
-    onCancel={onCancel}
-    overviewCommitsUrl={props.overviewCommitsUrl}
+    datasetFormSchema={dsFormSchema}
     edit={props.edit}
-    model={props.model}
     formLocation={formLocation}
     initializeFunction={initializeFunction}
+    initialized={initialized}
+    model={props.model}
+    onCancel={onCancel}
+    overviewCommitsUrl={props.overviewCommitsUrl}
+    submitCallback={submitCallback}
+    versionUrl={versionUrl}
   />;
 }
 export default ChangeDataset;

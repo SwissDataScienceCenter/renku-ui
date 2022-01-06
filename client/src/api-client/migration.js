@@ -1,5 +1,6 @@
 export default function addMigrationMethods(client) {
 
+  // TODO: merge this with getProjectIdFromCoreService
   client.getProjectIdFromService = async (projectUrl) => {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
@@ -33,17 +34,38 @@ export default function addMigrationMethods(client) {
     return project.data.result.project_id;
   };
 
-  client.performMigrationCheck = (projectId) => {
+  // TODO: switch to git_url + branch for migrations. Requires SwissDataScienceCenter/renku-python#2541
+  client.checkMigration = async (git_url, branch) => {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
+    const url = `${client.baseUrl}/renku/cache.migrations_check`;
+    const queryParams = { git_url, branch };
 
-    return client.clientFetch(`${client.baseUrl}/renku/1.0/cache.migrations_check?project_id=${projectId}`, {
+    return await client.clientFetch(url, {
       method: "GET",
-      headers: headers,
-    }).catch((error)=>
-      ({ data: { error: { reason: error.case } }
-      }));
+      headers,
+      queryParams
+    });
+  };
+
+  client.performMigrationCheck = async (projectId) => {
+    let headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    headers.append("X-Requested-With", "XMLHttpRequest");
+    const url = `${client.baseUrl}/renku/cache.migrations_check`;
+    const queryParams = { project_id: projectId };
+
+    try {
+      return await client.clientFetch(url, {
+        method: "GET",
+        headers,
+        queryParams
+      });
+    }
+    catch (error) {
+      return { data: { error: { reason: error.case } } };
+    }
   };
 
   /**

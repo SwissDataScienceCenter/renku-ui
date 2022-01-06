@@ -63,7 +63,12 @@ const DatasetsMixin = {
     if (core === SpecialPropVal.UPDATING) return;
     if (core.datasets && core.error == null && !forceReFetch) return core;
     this.setUpdating({ datasets: { core: true } });
-    return client.listProjectDatasetsFromCoreService(this.get("metadata.httpUrl"), this.get("metadata.id"))
+    const migration = this.model.get("migration.core");
+    if (migration.backendAvailable === false)
+      return false;
+    const versionUrl = migration.versionUrl;
+    const gitUrl = this.get("metadata.httpUrl");
+    return client.listProjectDatasetsFromCoreService(gitUrl, versionUrl)
       .then(response => {
         let responseDs = response.data.error ? response.data : response.data.result.datasets;
         const updatedState = { core: { $set: { datasets: responseDs } }, transient: { requests: { datasets: false } } };
@@ -183,29 +188,29 @@ const ProjectAttributesMixin = {
 };
 
 const MigrationMixin = {
-  fetchMigrationCheck(client) {
-    return client.getProjectIdFromService(this.get("metadata.httpUrl"))
-      .then((response)=>{
-        if (response.data && response.data.error !== undefined) {
-          this.set("migration.check.check_error", response.data.error.reason);
-        }
-        else {
-          client.performMigrationCheck(response)
-            .then((response)=>{
-              if (response.data && response.data.error !== undefined)
-                this.set("migration.check.check_error", response.data.error);
-
-              else
-                this.set("migration.check", response.data.result);
-            });
-        }
-      });
+  async fetchMigrationCheck(client) {
+    const url = this.get("metadata.httpUrl");
+    const cacheIdResponse = await client.getProjectIdFromService(url);
+    if (cacheIdResponse.data && cacheIdResponse.data.error !== undefined) {
+      this.set("migration.check.check_error", cacheIdResponse.data.error.reason);
+      return cacheIdResponse.data.error.reason;
+    }
+    const cacheId = cacheIdResponse;
+    const migrationResponse = await client.performMigrationCheck(cacheId);
+    if (migrationResponse.data && migrationResponse.data.error !== undefined) {
+      this.set("migration.check.check_error", migrationResponse.data.error);
+      return migrationResponse.data.error;
+    }
+    const migrationData = migrationResponse.data.result;
+    this.set("migration.check", migrationData);
+    return migrationData;
   },
   migrateProject(client, params) {
     if (this.get("migration.migration_status") === MigrationStatus.MIGRATING)
       return;
     this.set("migration.migration_status", MigrationStatus.MIGRATING);
-    client.getProjectIdFromService(this.get("metadata.httpUrl"))
+    const url = this.get("metadata.httpUrl");
+    client.getProjectIdFromService(url)
       .then((projectId)=>{
         client.performMigration(projectId, params)
           .then((response)=>{
@@ -564,12 +569,16 @@ class ProjectCoordinator {
   }
 
   async fetchProjectConfig(repositoryUrl, branch = null) {
+    const fetching = this.model.get("config.fetching");
+    if (fetching)
+      return false;
+    const versionUrl = this.model.get("migration.core.versionUrl");
     let configObject = {
       error: { $set: {} },
       fetching: true,
     };
     this.model.setObject({ config: configObject });
-    const response = await this.client.getProjectConfig(repositoryUrl, branch);
+    const response = await this.client.getProjectConfig(repositoryUrl, versionUrl, branch);
     configObject.fetching = false;
     configObject.fetched = new Date();
     if (response.data && response.data.error) {
@@ -623,6 +632,57 @@ class ProjectCoordinator {
     };
     this.model.setObject({ statistics: statsObject });
     return stats;
+  }
+
+  async checkCoreAvailability(version) {
+    // get the project version if not already passed
+    const projectVersion = version ?
+      version.toString() :
+      (this.model.get("migration.check"))?.core_compatibility_status?.project_metadata_version.toString();
+    let data = { versionUrl: `/${projectVersion}` };
+
+    // check if the APIs for the target project version were already tested
+    const coreVersion = this.model.baseModel.get("environment.coreVersions");
+    if (coreVersion.available[projectVersion]) {
+      data.fetched = new Date();
+      data.backendAvailable = true;
+      this.model.setObject({ migration: { core: { ...data } } });
+      return true;
+    }
+    if (coreVersion.unavailable[projectVersion]) {
+      data.fetched = new Date();
+      data.backendAvailable = false;
+      this.model.setObject({ migration: { core: { ...data } } });
+      return false;
+    }
+
+    // Test the version endpoint to get info on the backend
+    data.fetching = true;
+    this.model.setObject({ migration: { core: { ...data } } });
+    const resp = await this.client.checkCoreAvailability(projectVersion);
+    data.fetching = false;
+    data.fetched = new Date();
+    if (resp.available) {
+      this.model.baseModel.setObject({
+        environment: { coreVersions: { available: { [projectVersion]: resp } } }
+      });
+      data.backendAvailable = true;
+      if (resp.maximum_api_version)
+        data.maximum_api_version = resp.maximum_api_version;
+      if (resp.minimum_api_version)
+        data.minimum_api_version = resp.minimum_api_version;
+      // TODO: adjust versionUrl when api version is fixed on the UI and available in backend
+    }
+    else {
+      this.model.baseModel.setObject({
+        environment: { coreVersions: { unavailable: { [projectVersion]: true } } }
+      });
+      data.backendAvailable = false;
+    }
+    this.model.setObject({ migration: { core: { ...data } } });
+
+    // return availability
+    return data.backendAvailable;
   }
 }
 

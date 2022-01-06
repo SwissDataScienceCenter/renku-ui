@@ -110,7 +110,7 @@ function AddDataset(props) {
   };
 
   const importDataset = (selectedProject, handlers) => {
-    props.client.datasetImport(selectedProject.value, props.dataset.url)
+    props.client.datasetImport(selectedProject.value, props.dataset.url, props.versionUrl)
       .then(response => {
         if (response.data.error !== undefined) {
           handlers.setSubmitLoader({ value: false, text: "" });

@@ -262,34 +262,44 @@ const projectSchema = new Schema({
   },
   migration: {
     [Prop.SCHEMA]: new Schema({
-      check: { [Prop.INITIAL]: {
-        core_renku_version: undefined,
-        project_supported: undefined,
-        project_renku_version: undefined,
-        core_compatibility_status: {
-          project_metadata_version: undefined,
-          migration_required: undefined,
-          current_metadata_version: undefined
+      check: {
+        [Prop.INITIAL]: {
+          core_renku_version: undefined,
+          project_supported: undefined,
+          project_renku_version: undefined,
+          core_compatibility_status: {
+            project_metadata_version: undefined,
+            migration_required: undefined,
+            current_metadata_version: undefined
+          },
+          dockerfile_renku_status: {
+            latest_renku_version: undefined,
+            dockerfile_renku_version: undefined,
+            automated_dockerfile_update: undefined,
+            newer_renku_available: undefined
+          },
+          template_status: {
+            newer_template_available: undefined,
+            template_id: undefined,
+            automated_template_update: undefined,
+            template_ref: undefined,
+            project_template_version: undefined,
+            template_source: undefined,
+            latest_template_version: undefined
+          }
         },
-        dockerfile_renku_status: {
-          latest_renku_version: undefined,
-          dockerfile_renku_version: undefined,
-          automated_dockerfile_update: undefined,
-          newer_renku_available: undefined
-        },
-        template_status: {
-          newer_template_available: undefined,
-          template_id: undefined,
-          automated_template_update: undefined,
-          template_ref: undefined,
-          project_template_version: undefined,
-          template_source: undefined,
-          latest_template_version: undefined
-        }
+        migrating: { [Prop.INITIAL]: false },
+        migration_status: { [Prop.INITIAL]: null },
+        migration_error: { [Prop.INITIAL]: null },
       },
-      migrating: { [Prop.INITIAL]: false },
-      migration_status: { [Prop.INITIAL]: null },
-      migration_error: { [Prop.INITIAL]: null },
+      core: {
+        [Prop.SCHEMA]: new Schema({
+          versionUrl: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+          backendAvailable: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+
+          fetched: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+          fetching: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
+        })
       }
     })
   },
@@ -560,6 +570,12 @@ const environmentSchema = new Schema({
   fetching: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
   data: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
   timeout: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+  coreVersions: {
+    [Prop.SCHEMA]: new Schema({
+      available: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
+      unavailable: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
+    })
+  },
 });
 
 /**
