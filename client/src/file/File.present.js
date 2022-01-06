@@ -24,6 +24,7 @@ import {
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 import "../../node_modules/highlight.js/styles/atom-one-light.css";
+import DOMPurify from "dompurify";
 
 import { FilePreview } from "./index";
 import { CheckNotebookStatus, CheckNotebookIcon } from "../notebooks";
@@ -321,6 +322,43 @@ function tweakCellMetadata(nb, displayMode = NotebookSourceDisplayMode.DEFAULT) 
   return result;
 }
 
+
+/**
+ * Remove any problematic content from the cells
+ *
+ * @param {object} [cell] - The cell to process
+ * @param {array} [accumulator] - The place to store the result
+ */
+function sanitizeCell(cell, accumulator) {
+  const clone = { ...cell };
+  if (clone.outputs == null) {
+    accumulator.push(clone);
+    return;
+  }
+  const outputs = clone.outputs.map((oo) => {
+    const o = { ...oo };
+    o.data = { ...oo.data };
+    if (o.data["text/html"] != null)
+      o.data["text/html"] = [DOMPurify.sanitize([o.data["text/html"].join("\n")])];
+    return o;
+  });
+  clone.outputs = outputs;
+  accumulator.push(clone);
+}
+
+/**
+ * Modify the notebook cells to sanitize HTML content
+ *
+ * @param {object} [nb] - The notebook to process
+ */
+function sanitizeNotebook(nb) {
+  const result = { ...nb };
+  result.cells = [];
+  nb.cells.forEach((cell) => sanitizeCell(cell, result.cells));
+  return result;
+}
+
+
 function NotebookDisplayForm(props) {
   const displayMode = props.displayMode;
   const setDisplayMode = props.setDisplayMode;
@@ -379,7 +417,7 @@ const StyledNotebook = memo((props) => {
 
   if (props.notebook == null) return <div>Loading...</div>;
 
-  const notebook = tweakCellMetadata(props.notebook, displayMode);
+  const notebook = sanitizeNotebook(tweakCellMetadata(props.notebook, displayMode));
   return [
     <NotebookDisplayForm key="notebook-display-form" displayMode={displayMode} setDisplayMode={setDisplayMode} />,
     <CardBody key="notebook">
@@ -411,5 +449,6 @@ class JupyterButtonPresent extends React.Component {
 }
 
 export {
-  StyledNotebook, JupyterButtonPresent, ShowFile, tweakCellMetadata, NotebookSourceDisplayMode, FileNoPreview
+  JupyterButtonPresent, FileNoPreview, NotebookSourceDisplayMode, ShowFile, StyledNotebook,
+  sanitizeNotebook, tweakCellMetadata
 };

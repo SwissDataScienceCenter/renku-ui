@@ -151,6 +151,7 @@
         ],
         "skipWords": [
           "accessor",
+          "allowfullscreen",
           "ascii",
           "asciimath",
           "autosave",
@@ -176,6 +177,7 @@
           "enum",
           "formgenerator",
           "fortran",
+          "frameborder",
           "frontend",
           "gitlab",
           "gitter",
