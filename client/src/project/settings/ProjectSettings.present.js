@@ -225,7 +225,7 @@ function RepositoryUrlRow(props) {
 //** Sessions settings **//
 
 function ProjectSettingsSessions(props) {
-  const { config, location, metadata, newConfig, options, setConfig, user } = props;
+  const { backend, config, location, metadata, newConfig, options, setConfig, user } = props;
   const { accessLevel, repositoryUrl } = metadata;
   const devAccess = accessLevel > ACCESS_LEVELS.DEVELOPER ? true : false;
   const disabled = !devAccess || newConfig.updating;
@@ -242,8 +242,49 @@ function ProjectSettingsSessions(props) {
   }
 
   // Handle ongoing operations and errors
-  if (config.fetching || options.fetching)
-    return (<SessionsDiv><Loader /></SessionsDiv>);
+  if (config.fetching || options.fetching || backend.fetching || !backend.fetched) {
+    let message;
+    if (config.fetching)
+      message = "Getting project settings...";
+    else if (options.fetching)
+      message = "Getting RenkuLab settings...";
+    else if (backend.fetching || !backend.fetched)
+      message = "Checking project version and RenkuLab compatibility...";
+    else
+      message = "Please wait...";
+
+    return (
+      <SessionsDiv>
+        <p>{message}</p>
+        <Loader />
+      </SessionsDiv>
+    );
+  }
+
+  if (!backend.backendAvailable) {
+    const overviewStatusUrl = Url.get(Url.pages.project.overview.status, {
+      namespace: metadata.namespace,
+      path: metadata.path,
+    });
+    const updateInfo = devAccess ?
+      "It is necessary to update this project" :
+      "It is necessary to update this project. Either contact a project maintainer, or fork and update it";
+    return (
+      <SessionsDiv>
+        <p>Session settings not available.</p>
+        <WarnAlert dismissible={false}>
+          <p>
+            <b>Session settings are unavailable</b> because the project is not compatible with this
+            RenkuLab instance.
+          </p>
+          <p>
+            {updateInfo}.
+            <br />The <Link to={overviewStatusUrl}>Project status</Link> page provides further information.
+          </p>
+        </WarnAlert>
+      </SessionsDiv>
+    );
+  }
 
   if (config.error && config.error.code)
     return (<SessionsDiv><SessionConfigError config={config} /></SessionsDiv>);

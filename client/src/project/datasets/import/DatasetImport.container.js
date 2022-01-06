@@ -102,7 +102,7 @@ function ImportDataset(props) {
     handlers.setServerErrors(undefined);
     handlers.setServerWarnings(undefined);
     handlers.setSubmitLoader({ value: true, text: ImportStateMessage.ENQUEUED });
-    props.client.datasetImport(props.httpProjectUrl, mappedInputs.uri)
+    props.client.datasetImport(props.httpProjectUrl, mappedInputs.uri, props.migration.core.versionUrl)
       .then(response => {
         if (response.data.error !== undefined) {
           handlers.setSubmitLoader({ value: false, text: "" });
