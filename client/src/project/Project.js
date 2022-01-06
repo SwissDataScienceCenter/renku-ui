@@ -212,9 +212,12 @@ class View extends Component {
     const projectData =
       await this.projectCoordinator.fetchProject(this.props.client, pathComponents.projectPathWithNamespace);
     this.fetchBranches();
-    if (!this.autostart && !this.customBranch) {
-      const defaultBranch = projectData.all?.default_branch;
-      this.projectCoordinator.fetchCommits({ branch: defaultBranch });
+    if (projectData && !this.autostart && !this.customBranch) {
+      const defaultBranch = projectData?.all?.default_branch;
+      const commitOptions = defaultBranch ?
+        { branch: defaultBranch } :
+        {};
+      this.projectCoordinator.fetchCommits(commitOptions);
     }
 
     return projectData;
@@ -239,8 +242,8 @@ class View extends Component {
   async fetchGraphStatus() { return this.projectCoordinator.fetchGraphStatus(this.props.client); }
   saveProjectLastNode(nodeData) { this.projectCoordinator.saveProjectLastNode(nodeData); }
 
-  async fetchMigrationCheck() {
-    return this.projectCoordinator.fetchMigrationCheck(this.props.client);
+  async fetchMigrationCheck(gitUrl, defaultBranch) {
+    return this.projectCoordinator.fetchMigrationCheck(this.props.client, gitUrl, defaultBranch);
   }
   async fetchReadmeCommits() {
     return this.projectCoordinator.fetchReadmeCommits(this.props.client);
@@ -257,25 +260,23 @@ class View extends Component {
     if (pathComponents.projectPathWithNamespace)
       projectData = await this.fetchProject();
 
-    // TODO: check project version for anonymous users. Requires SwissDataScienceCenter/renku-python#2541
-    // if (projectData) {
-    //   const gitUrl = projectData.all?.http_url_to_repo;
-    //   const defaultBranch = projectData.all?.default_branch;
-    //   const checkMigration = await this.props.client.checkMigration(gitUrl, defaultBranch);
-    // }
+    if (projectData) {
+      // check project webhook
+      if (this.props.user.logged)
+        this.checkGraphWebhook();
 
-    // Check the supported core versions
-    if (projectData && this.props.user.logged) {
-      this.checkGraphWebhook();
-      const migrationData = await this.fetchMigrationCheck();
+      // Check the supported core versions
+      const gitUrl = projectData.all?.http_url_to_repo;
+      const defaultBranch = projectData.all?.default_branch;
+      const migrationData = await this.fetchMigrationCheck(gitUrl, defaultBranch);
       const projectVersion = migrationData.core_compatibility_status?.project_metadata_version;
       await this.checkCoreAvailability(projectVersion);
       this.fetchProjectDatasets();
     }
   }
 
-  migrateProject(params) {
-    this.projectCoordinator.migrateProject(this.props.client, params);
+  migrateProject(gitUrl, branch, options) {
+    this.projectCoordinator.migrateProject(this.props.client, gitUrl, branch, options);
   }
 
   redirectProjectWithNumericId(projectId) {
@@ -615,8 +616,8 @@ class View extends Component {
     fetchBranches: () => {
       return this.projectCoordinator.fetchBranches();
     },
-    onMigrateProject: (params) => {
-      return this.migrateProject(params);
+    onMigrateProject: (gitUrl, branch, options) => {
+      return this.migrateProject(gitUrl, branch, options);
     }
   };
 
