@@ -221,7 +221,7 @@ function RenkuVersionInfo({ migration }) {
       <strong>Latest Renku Version</strong> {core_renku_version}<br />
     </p> :
     <p>
-      <strong>Project / Latest Renku Version</strong> {shownRenkuVersion}<br />
+      <strong>Project / Latest Renku Version</strong> <span id="project_version">{shownRenkuVersion}</span><br />
     </p>;
 }
 
