@@ -461,7 +461,7 @@ class ProjectCoordinator {
 
     this.model.setObject({ metadata,
       filters: filtersObject,
-      forkedFromProject,
+      forkedFromProject: { $set: forkedFromProject },
       statistics: statsObject
     });
     return metadata;
