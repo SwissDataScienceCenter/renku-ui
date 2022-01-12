@@ -1,5 +1,25 @@
 # Changes
 
+## [1.3.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.2.2...1.3.0) (2022-01-07)
+
+### Bug Fixes
+
+* show the correct session status on notebooks preview ([#1610](https://github.com/SwissDataScienceCenter/renku-ui/issues/1610), [#1606](https://github.com/SwissDataScienceCenter/renku-ui/issues/1606))
+* correct links to migration documentation  ([#1591](https://github.com/SwissDataScienceCenter/renku-ui/issues/1591), [#1588](https://github.com/SwissDataScienceCenter/renku-ui/issues/1588))
+* order scheduled maintenances to show the next one first  ([#1612](https://github.com/SwissDataScienceCenter/renku-ui/issues/1612), [#1609](https://github.com/SwissDataScienceCenter/renku-ui/issues/1609))
+* sanitize Jupyter notebooks to remove problematic HTML  ([#1629](https://github.com/SwissDataScienceCenter/renku-ui/issues/1629))
+
+### Features
+
+* show suggestions for things to do on new projects  ([#1512](https://github.com/SwissDataScienceCenter/renku-ui/issues/1512), [#1578](https://github.com/SwissDataScienceCenter/renku-ui/issues/1578))
+* support links for sharing sessions with options  ([#1596](https://github.com/SwissDataScienceCenter/renku-ui/issues/1596), [#1608](https://github.com/SwissDataScienceCenter/renku-ui/issues/1608))
+* add visibility open when forking a project  ([#1272](https://github.com/SwissDataScienceCenter/renku-ui/issues/1272), [#1617](https://github.com/SwissDataScienceCenter/renku-ui/issues/1617))
+* allow stopping a session that is not fully started  ([#787](https://github.com/SwissDataScienceCenter/renku-ui/issues/787), [#1605](https://github.com/SwissDataScienceCenter/renku-ui/issues/1605))
+* handle Enter key on project search bar  ([#1576](https://github.com/SwissDataScienceCenter/renku-ui/issues/1576), [#1595](https://github.com/SwissDataScienceCenter/renku-ui/issues/1595))
+* updates to style of alerts, menus, and tables  ([#1571](https://github.com/SwissDataScienceCenter/renku-ui/issues/1571),  [#1589](https://github.com/SwissDataScienceCenter/renku-ui/issues/1589))
+* improve UX when GitLab does not allow iframes  ([#1584](https://github.com/SwissDataScienceCenter/renku-ui/issues/1584), [#1572](https://github.com/SwissDataScienceCenter/renku-ui/issues/1572))
+
+
 ## [1.2.2](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.2.1...1.2.2) (2021-12-20)
 
 ### Bug Fixes
