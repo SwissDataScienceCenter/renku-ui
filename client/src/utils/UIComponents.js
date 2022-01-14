@@ -435,7 +435,7 @@ class RenkuAlert extends Component {
     const isOpen = this.props.open ? this.props.open : this.state.open;
     const toggle = (this.props.dismissible === false) ? null : this.onDismiss;
     return (
-      <Alert color={this.props.color} isOpen={isOpen} toggle={toggle}>
+      <Alert color={this.props.color} isOpen={isOpen} toggle={toggle} className={this.props.className}>
         <div className="alert-content">
           {alertIcon}
           <div>
