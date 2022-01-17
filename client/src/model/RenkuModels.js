@@ -336,6 +336,15 @@ const projectSchema = new Schema({
 });
 
 const notebooksSchema = new Schema({
+  autosaves: {
+    schema: {
+      list: { initial: [] },
+      error: { initial: null },
+      fetched: { initial: null },
+      fetching: { initial: false },
+      pvsSupport: { initial: null },
+    }
+  },
   notebooks: {
     schema: {
       all: { initial: {} },
