@@ -167,9 +167,9 @@ function RenkuVersionManualUpdateSection({
   </Fragment>;
 }
 
-function RenkuVersionStatusBody({ externalUrl, launchNotebookUrl, maintainer, migration, onMigrateProject,
-  statistics }) {
-
+function RenkuVersionStatusBody({
+  externalUrl, launchNotebookUrl, logged, maintainer, migration, onMigrateProject, statistics
+}) {
   let body = null;
   let updateSection = null;
 
@@ -215,11 +215,11 @@ function RenkuVersionStatusBody({ externalUrl, launchNotebookUrl, maintainer, mi
       (renkuVersionStatus === RENKU_VERSION_SCENARIOS.NEW_VERSION_NOT_REQUIRED_MANUAL)) ?
       (<MigrationInfoAlert>
         {newVersionText}
-        {updateSection}
+        {logged ? updateSection : null}
       </MigrationInfoAlert>) :
       (<MigrationWarnAlert>
         {newVersionText}
-        {updateSection}
+        {logged ? updateSection : null}
       </MigrationWarnAlert>);
   }
   return body;
@@ -248,15 +248,13 @@ function RenkuVersionStatus(props) {
 
   if (isMigrationFailure({ check_error, migration_error, migration_status })) return null;
 
-  const { externalUrl, launchNotebookUrl, maintainer, onMigrateProject,
-    statistics } = props;
+  const { externalUrl, launchNotebookUrl, logged, maintainer, migration, onMigrateProject, statistics } = props;
 
   return <div>
-    <RenkuVersionInfo migration={props.migration} />
+    <RenkuVersionInfo migration={migration} />
     <RenkuVersionStatusBody
-      externalUrl={externalUrl} launchNotebookUrl={launchNotebookUrl}
-      maintainer={maintainer} migration={props.migration}
-      onMigrateProject={onMigrateProject} statistics={statistics} />
+      externalUrl={externalUrl} launchNotebookUrl={launchNotebookUrl} logged={logged} maintainer={maintainer}
+      migration={migration} onMigrateProject={onMigrateProject} statistics={statistics} />
   </div>;
 }
 

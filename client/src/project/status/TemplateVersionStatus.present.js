@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 import { Button, Spinner, Collapse } from "reactstrap";
 
 import { ManualUpdateInstructions, MigrationSuccessAlert, MigrationWarnAlert,
@@ -44,8 +44,9 @@ function getTemplateVersionStatus({ automated_template_update, newer_template_av
 }
 
 
-function TemplateUpdateSection({ launchNotebookUrl, maintainer, projectTemplateStatus,
-  migration_status, onMigrateProject, externalUrl }) {
+function TemplateUpdateSection({
+  launchNotebookUrl, logged, maintainer, projectTemplateStatus, migration_status, onMigrateProject, externalUrl
+}) {
 
   const [isOpen, setOpen] = useState(false);
   const toggleOpen = () => setOpen(!isOpen);
@@ -76,34 +77,42 @@ function TemplateUpdateSection({ launchNotebookUrl, maintainer, projectTemplateS
       do that for you.
     </p>;
 
-  return <MigrationWarnAlert>
-    <p>
-      A new version of the <strong>project template</strong> is available.
-    </p>
-    <p>
-      If you wish to take advantage of new features, you can update to the latest version of
-      the <strong>template</strong>.
-      {/**
-       * TODO: provide more information about the template when that is possible.
-       * <ExternalLink role="text" size="sm"
-       * title="See the template repository" url={`${template_source}`} /> to learn more about
-       * the new features.
-       */}
-    </p>
-    {projectTemplateStatus === TEMPLATE_VERSION_SCENARIOS.NEW_TEMPLATE_AUTO ?
-      automaticUpdateAction : null }
-    <Button color="link" className="ps-0 mb-2 link-alert-warning text-start" onClick={toggleOpen}>
+  const UpdateActions = (
+    <Fragment>
+      <p>
+        If you wish to take advantage of new features, you can update to the latest version of
+        the <strong>template</strong>.
+        {/**
+         * TODO: provide more information about the template when that is possible.
+         * <ExternalLink role="text" size="sm"
+         * title="See the template repository" url={`${template_source}`} /> to learn more about
+         * the new features.
+         */}
+      </p>
       {
         projectTemplateStatus === TEMPLATE_VERSION_SCENARIOS.NEW_TEMPLATE_AUTO ?
-          <i>Do you prefer manual instructions?</i>
-          : <i>Automated update is not possible, but you can follow these instructions to update manually.</i>
+          automaticUpdateAction :
+          null
       }
-    </Button>
-    <Collapse isOpen={isOpen}>
-      <ManualUpdateInstructions docUrl={docUrl} launchNotebookUrl={launchNotebookUrl} />
-    </Collapse>
-  </MigrationWarnAlert>;
+      <Button color="link" className="ps-0 mb-2 link-alert-warning text-start" onClick={toggleOpen}>
+        {
+          projectTemplateStatus === TEMPLATE_VERSION_SCENARIOS.NEW_TEMPLATE_AUTO ?
+            (<i>Do you prefer manual instructions?</i>) :
+            (<i>Automated update is not possible, but you can follow these instructions to update manually.</i>)
+        }
+      </Button>
+      <Collapse isOpen={isOpen}>
+        <ManualUpdateInstructions docUrl={docUrl} launchNotebookUrl={launchNotebookUrl} />
+      </Collapse>
+    </Fragment>
+  );
 
+  return (
+    <MigrationWarnAlert>
+      <p>A new version of the <strong>project template</strong> is available.</p>
+      {logged ? UpdateActions : null}
+    </MigrationWarnAlert>
+  );
 }
 
 function TemplateSource({ template_source }) {
@@ -145,7 +154,7 @@ function TemplateVersionInfo({ check }) {
     </p>;
 }
 
-function TemplateVersionBody({ externalUrl, launchNotebookUrl, maintainer, migration }) {
+function TemplateVersionBody({ externalUrl, launchNotebookUrl, logged, maintainer, migration }) {
 
   const { onMigrateProject, migration_status } = migration;
   const { project_supported } = migration.check;
@@ -173,6 +182,7 @@ function TemplateVersionBody({ externalUrl, launchNotebookUrl, maintainer, migra
       return <TemplateUpdateSection
         externalUrl={externalUrl}
         launchNotebookUrl={launchNotebookUrl}
+        logged={logged}
         maintainer={maintainer}
         migration_status={migration_status}
         onMigrateProject={onMigrateProject}
@@ -185,7 +195,7 @@ function TemplateVersionBody({ externalUrl, launchNotebookUrl, maintainer, migra
 }
 
 function TemplateStatus(props) {
-  const { launchNotebookUrl, maintainer, externalUrl } = props;
+  const { launchNotebookUrl, logged, maintainer, externalUrl } = props;
   const { check_error } = props.migration.check;
   const { migration_status, migration_error } = props.migration;
   if (isMigrationCheckLoading(props.loading, props.migration)) return <Loader />;
@@ -193,7 +203,7 @@ function TemplateStatus(props) {
 
   return <div>
     <TemplateVersionInfo check={props.migration.check} />
-    <TemplateVersionBody externalUrl={externalUrl} launchNotebookUrl={launchNotebookUrl}
+    <TemplateVersionBody externalUrl={externalUrl} launchNotebookUrl={launchNotebookUrl} logged={logged}
       maintainer={maintainer} migration={props.migration} />
   </div>;
 }
