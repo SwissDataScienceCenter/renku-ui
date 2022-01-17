@@ -137,31 +137,21 @@ function AddDataset(props) {
     const selectedProject = projectOptions.find((project)=>
       project.value === mappedInputs.project);
 
-    props.client.getProjectIdFromService(selectedProject.value)
-      .then((response) => {
-        if (response.data && response.data.error !== undefined) {
-          handlers.setSubmitLoader({ value: false, text: "" });
-          handlers.setServerErrors(response.data.error.reason);
+    props.client.checkMigration(props.httpProjectUrl).then((response) => {
+      if (response && response.error !== undefined) {
+        handlers.setSubmitLoader({ value: false, text: "" });
+        handlers.setServerErrors(response.error.reason);
+      }
+      else {
+        if (response.result.migration_required) {
+          handlers.setServerWarnings(selectedProject.name);
+          handlers.setSubmitLoader(false);
         }
         else {
-          props.client.performMigrationCheck(response)
-            .then((response) => {
-              if (response.data && response.data.error !== undefined) {
-                handlers.setSubmitLoader({ value: false, text: "" });
-                handlers.setServerErrors(response.data.error.reason);
-              }
-              else {
-                if (response.data.result.migration_required) {
-                  handlers.setServerWarnings(selectedProject.name);
-                  handlers.setSubmitLoader(false);
-                }
-                else {
-                  importDataset(selectedProject, handlers);
-                }
-              }
-            });
+          importDataset(selectedProject, handlers);
         }
-      });
+      }
+    });
   };
 
   const initializeFunction = (formSchema, formHandlers) => {

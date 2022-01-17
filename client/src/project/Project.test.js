@@ -327,16 +327,6 @@ describe("rendering ProjectVersionStatus", () => {
     user: { logged: true },
   };
 
-  it("does not render if is user not logged in", () => {
-    const allProps = { ...props };
-    allProps.user.logged = false;
-    const component = TestRenderer.create(
-      <ProjectVersionStatus key="versionStatus" {...allProps} />
-    );
-    expect(component.toJSON()).toBe(null);
-    allProps.user.logged = true;
-  });
-
   it("shows bouncer if loading", () => {
     const allProps = { ...props };
     allProps.loading = true;

@@ -188,44 +188,37 @@ const ProjectAttributesMixin = {
 };
 
 const MigrationMixin = {
-  async fetchMigrationCheck(client) {
-    const url = this.get("metadata.httpUrl");
-    const cacheIdResponse = await client.getProjectIdFromService(url);
-    if (cacheIdResponse.data && cacheIdResponse.data.error !== undefined) {
-      this.set("migration.check.check_error", cacheIdResponse.data.error.reason);
-      return cacheIdResponse.data.error.reason;
+  async fetchMigrationCheck(client, gitUrl, defaultBranch = null) {
+    const migrationData = await client.checkMigration(gitUrl, defaultBranch);
+    if (migrationData && migrationData.error !== undefined) {
+      this.set("migration.check.check_error", migrationData.error.reason);
+      return migrationData.error.reason;
     }
-    const cacheId = cacheIdResponse;
-    const migrationResponse = await client.performMigrationCheck(cacheId);
-    if (migrationResponse.data && migrationResponse.data.error !== undefined) {
-      this.set("migration.check.check_error", migrationResponse.data.error);
-      return migrationResponse.data.error;
-    }
-    const migrationData = migrationResponse.data.result;
-    this.set("migration.check", migrationData);
-    return migrationData;
+    this.set("migration.check", migrationData.result);
+    return migrationData.result;
   },
-  migrateProject(client, params) {
+  async migrateProject(client, gitUrl, defaultBranch = null, options) {
     if (this.get("migration.migration_status") === MigrationStatus.MIGRATING)
       return;
     this.set("migration.migration_status", MigrationStatus.MIGRATING);
-    const url = this.get("metadata.httpUrl");
-    client.getProjectIdFromService(url)
-      .then((projectId)=>{
-        client.performMigration(projectId, params)
-          .then((response)=>{
-            if (response.data.error) {
-              this.set("migration.migration_status", MigrationStatus.ERROR);
-              this.set("migration.migration_error", response.data.error);
-            }
-            else {
-              this.fetchMigrationCheck(client).then(response => {
-                this.set("migration.migration_status", MigrationStatus.FINISHED);
-                this.set("migration.migration_error", null);
-              });
-            }
-          });
+    const response = await client.migrateProject(gitUrl, defaultBranch, options);
+    if (response.error) {
+      this.setObject({
+        migration: {
+          migration_status: MigrationStatus.ERROR,
+          migration_error: response.error
+        }
       });
+    }
+    else {
+      await this.fetchMigrationCheck(client, gitUrl, defaultBranch);
+      this.setObject({
+        migration: {
+          migration_status: MigrationStatus.FINISHED,
+          migration_error: { $set: null }
+        }
+      });
+    }
   }
 };
 

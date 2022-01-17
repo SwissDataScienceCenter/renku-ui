@@ -460,6 +460,7 @@ export default function DatasetView(props) {
     {
       props.logged ?
         <AddDataset
+          httpProjectUrl={props.httpProjectUrl}
           client={props.client}
           dataset={dataset}
           formLocation={props.location.pathname + "/add"}
