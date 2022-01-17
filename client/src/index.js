@@ -19,8 +19,8 @@ import { Maintenance } from "./Maintenance";
 import { StateModel, globalSchema } from "./model";
 import { pollStatuspage } from "./statuspage";
 import { UserCoordinator } from "./user";
-import { Sentry } from "./utils/sentry";
-import { Url } from "./utils/url";
+import { Sentry } from "./utils/helpers/sentry";
+import { Url } from "./utils/helpers/url";
 
 const configFetch = fetch("/config.json");
 const privacyFetch = fetch("/privacy-statement.md");

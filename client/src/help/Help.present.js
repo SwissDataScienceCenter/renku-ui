@@ -32,8 +32,9 @@ import { Nav, NavItem } from "reactstrap";
 import { faDiscourse, faGithub, faGitter } from "@fortawesome/free-brands-svg-icons";
 
 import { WhatsNew1_0_0 as WhatsNew } from "./WhatsNew";
-import { ExternalDocsLink, ExternalIconLink, ExternalLink, RenkuNavLink } from "../utils/UIComponents";
 import { StatuspageDisplay, isStatusConfigured } from "../statuspage";
+import { RenkuNavLink } from "../utils/components/RenkuNavLink";
+import { ExternalDocsLink, ExternalIconLink, ExternalLink } from "../utils/components/ExternalLinks";
 
 const discourseUrl = "https://renku.discourse.group";
 

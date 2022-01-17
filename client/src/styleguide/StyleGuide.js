@@ -28,14 +28,12 @@ import React, { Fragment } from "react";
 import { Col, Nav, NavItem, Row, Table } from "reactstrap";
 import { Route, Switch } from "react-router-dom";
 
-import {
-  RenkuNavLink, TimeCaption,
-} from "../utils/UIComponents";
-
 import ButtonsGuide from "./ButtonsGuide";
 import ColorsGuide from "./ColorsGuide";
 import FormsGuide from "./FormsGuide";
 import ListsGuide from "./ListsGuide";
+import { TimeCaption } from "../utils/components/TimeCaption";
+import { RenkuNavLink } from "../utils/components/RenkuNavLink";
 
 
 function Overview(props) {

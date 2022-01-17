@@ -30,8 +30,8 @@ import { Col, Alert, Button } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import { Loader } from "../../../utils/UIComponents";
-import FormGenerator from "../../../utils/formgenerator/FormGenerator.container";
+import FormGenerator from "../../../utils/components/formgenerator/FormGenerator.container";
+import { Loader } from "../../../utils/components/Loader";
 
 
 function DatasetChange(props) {

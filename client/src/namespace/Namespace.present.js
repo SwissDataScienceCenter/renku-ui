@@ -26,8 +26,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Row, Col } from "reactstrap";
-
-import { Loader, InfoAlert, ExternalLink } from "../utils/UIComponents";
+import { Loader } from "../utils/components/Loader";
+import { ExternalLink } from "../utils/components/ExternalLinks";
+import { InfoAlert } from "../utils/components/Alert";
 
 const NamespaceProjects = (props) => {
   const { namespace } = props;

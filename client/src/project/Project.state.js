@@ -25,7 +25,7 @@
 
 import { ACCESS_LEVELS, API_ERRORS } from "../api-client";
 import { SpecialPropVal, projectSchema } from "../model";
-import { splitAutosavedBranches } from "../utils/HelperFunctions";
+import { splitAutosavedBranches } from "../utils/helpers/HelperFunctions";
 
 
 const GraphIndexingStatus = {

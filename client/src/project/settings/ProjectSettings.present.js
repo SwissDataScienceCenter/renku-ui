@@ -38,8 +38,12 @@ import _ from "lodash/array";
 import { ACCESS_LEVELS } from "../../api-client";
 import { ProjectAvatarEdit, ProjectTags, } from "../shared";
 import { NotebooksHelper, ServerOptionBoolean, ServerOptionEnum, ServerOptionRange } from "../../notebooks";
-import { Clipboard, ErrorAlert, ExternalLink, Loader, RenkuNavLink, WarnAlert } from "../../utils/UIComponents";
-import { Url } from "../../utils/url";
+import { Url } from "../../utils/helpers/url";
+import { RenkuNavLink } from "../../utils/components/RenkuNavLink";
+import { Clipboard } from "../../utils/components/Clipboard";
+import { Loader } from "../../utils/components/Loader";
+import { ErrorAlert, WarnAlert } from "../../utils/components/Alert";
+import { ExternalLink } from "../../utils/components/ExternalLinks";
 
 
 //** Navigation **//

@@ -34,11 +34,9 @@ import {
   faBars
 } from "@fortawesome/free-solid-svg-icons";
 
-import { RenkuNavLink, ExternalLink } from "../utils/UIComponents";
-import { Url } from "../utils/url";
+import { Url } from "../utils/helpers/url";
 import { StatuspageBanner } from "../statuspage";
-import QuickNav from "../utils/quicknav";
-import { RenkuMarkdown } from "../utils/UIComponents";
+import QuickNav from "../utils/components/quicknav";
 import { RenkuToolbarHelpMenu, RenkuToolbarNotifications } from "./NavBar";
 import { VersionsBanner } from "./NabBarWarnings";
 
@@ -52,6 +50,9 @@ import Illustration_Theory_Practice from "./Assets/Illustration_Theory_Practice.
 import VisualHead from "./Assets/Visual_Head.svg";
 import VisualDetail from "./Assets/Visual_Detail.svg";
 import VisualFooter from "./Assets/Visual_Footer.svg";
+import { RenkuNavLink } from "../utils/components/RenkuNavLink";
+import { ExternalLink } from "../utils/components/ExternalLinks";
+import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
 
 function HomeHeader(props) {
   const [isOpen, setIsOpen] = useState(false);

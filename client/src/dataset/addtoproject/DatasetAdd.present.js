@@ -26,7 +26,7 @@
 
 import React from "react";
 import { Row, Col, Modal, ModalHeader, ModalBody } from "reactstrap";
-import { FormGenerator } from "../../utils/formgenerator";
+import { FormGenerator } from "../../utils/components/formgenerator";
 import { Button } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";

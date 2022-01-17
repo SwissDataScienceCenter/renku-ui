@@ -21,7 +21,6 @@ import { Route, Switch } from "react-router-dom";
 import { Row, Col, Alert, Card, CardBody } from "reactstrap";
 import { Button, Form, FormText, Input, Label, InputGroup, UncontrolledCollapse } from "reactstrap";
 import { DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
-import { MarkdownTextExcerpt, ListDisplay, Loader } from "../../utils/UIComponents";
 import {
   faCheck,
   faSortAmountUp,
@@ -33,6 +32,9 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ButtonDropdown } from "reactstrap/lib";
+import { Loader } from "../../utils/components/Loader";
+import { MarkdownTextExcerpt } from "../../utils/components/markdown/RenkuMarkdown";
+import ListDisplay from "../../utils/components/List";
 
 
 function OrderByDropdown(props) {

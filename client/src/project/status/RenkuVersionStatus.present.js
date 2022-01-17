@@ -25,7 +25,8 @@ import { ManualUpdateInstructions, MigrationSuccessAlert, MigrationInfoAlert, Mi
   isMigrationFailure, isMigrationCheckLoading } from "./MigrationUtils";
 import { migrationCheckToRenkuVersionStatus, RENKU_VERSION_SCENARIOS } from "./MigrationUtils";
 import { MigrationStatus } from "../Project";
-import { ExternalLink, Loader } from "../../utils/UIComponents";
+import { ExternalLink } from "../../utils/components/ExternalLinks";
+import { Loader } from "../../utils/components/Loader";
 
 function updateNotRequired(renkuVersionStatus) {
   return renkuVersionStatus === RENKU_VERSION_SCENARIOS.NEW_VERSION_NOT_REQUIRED_AUTO ||

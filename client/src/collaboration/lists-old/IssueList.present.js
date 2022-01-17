@@ -4,8 +4,11 @@ import { Link } from "react-router-dom";
 import { Row, Col, Badge } from "reactstrap";
 import { faComments } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { RenkuMarkdown, TimeCaption, Pagination, Loader } from "../../utils/UIComponents";
 import { itemsStateMap } from "./CollaborationList.container";
+import { RenkuMarkdown } from "../../utils/components/markdown/RenkuMarkdown";
+import { TimeCaption } from "../../utils/components/TimeCaption";
+import { Loader } from "../../utils/components/Loader";
+import { Pagination } from "../../utils/components/Pagination";
 
 function issueStateBadge(issueStateValue) {
   let issueState = <Badge color="secondary">{issueStateValue}</Badge>;

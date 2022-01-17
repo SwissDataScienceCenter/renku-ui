@@ -26,9 +26,9 @@
 import { Button } from "reactstrap";
 import React, { useEffect, useState } from "react";
 
-import ImageInput, { ImageFieldPropertyName as Prop } from "../../utils/formgenerator/fields/ImageInput";
-import { ImageInputMode } from "../../utils/formgenerator/fields/ImageInput";
-import { ExternalLink } from "../../utils/UIComponents";
+import ImageInput, { ImageFieldPropertyName as Prop } from "../../utils/components/formgenerator/fields/ImageInput";
+import { ImageInputMode } from "../../utils/components/formgenerator/fields/ImageInput";
+import { ExternalLink } from "../../utils/components/ExternalLinks";
 
 const CURRENT_AVATAR_NAME = "[Current Avatar]";
 

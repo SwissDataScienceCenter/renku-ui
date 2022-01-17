@@ -27,12 +27,10 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 import useForm from "./UseForm";
-
-
-import { simpleHash } from "../HelperFunctions";
 import { FormGeneratorCoordinator } from "./FormGenerator.state";
 import FormPanel from "./FormGenerator.present";
 import _ from "lodash";
+import { simpleHash } from "../../helpers/HelperFunctions";
 
 function locationToLocationHash(loc) { return "uid_" + simpleHash(loc); }
 

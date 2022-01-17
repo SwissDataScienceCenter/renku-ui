@@ -19,10 +19,10 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router";
 
-import { StateKind, Schema, StateModel } from "../../model/Model";
+import { StateKind, Schema, StateModel } from "../../../model/Model";
 import { QuickNavPresent } from "./QuickNav.present";
-import { ProjectsCoordinator } from "../../project/shared";
-import { Url } from "../../utils/url";
+import { ProjectsCoordinator } from "../../../project/shared";
+import { Url } from "../../helpers/url";
 
 const suggestionSchema = new Schema({
   path: { mandatory: true },

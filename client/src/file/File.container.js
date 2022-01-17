@@ -23,11 +23,12 @@ import hljs from "highlight.js";
 import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
 import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 
-import { atobUTF8 } from "../utils/Encoding";
+
 import { StyledNotebook, JupyterButtonPresent, ShowFile as ShowFilePresent, FileNoPreview } from "./File.present";
 import { API_ERRORS } from "../api-client";
-import { RenkuMarkdown } from "../utils/UIComponents";
-import { encodeImageBase64 } from "../utils/Markdown";
+import { atobUTF8 } from "../utils/helpers/Encoding";
+import { encodeImageBase64 } from "../utils/components/markdown/RenkuMarkdownWithPathTranslation";
+import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
 
 const PDF_EXTENSION = "pdf";
 const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "gif", "svg"];

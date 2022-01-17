@@ -25,7 +25,7 @@
 
 import { CUSTOM_REPO_NAME } from "./ProjectNew.container";
 import { newProjectSchema } from "../../model/RenkuModels";
-import { sleep, slugFromTitle, verifyTitleCharacters } from "../../utils/HelperFunctions";
+import { sleep, slugFromTitle, verifyTitleCharacters } from "../../utils/helpers/HelperFunctions";
 
 
 // ? reference https://docs.gitlab.com/ce/user/reserved_names.html#reserved-project-names

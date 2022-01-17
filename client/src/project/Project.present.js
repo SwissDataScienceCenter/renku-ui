@@ -37,11 +37,8 @@ import {
   faStar as faStarSolid, faUserFriends
 } from "@fortawesome/free-solid-svg-icons";
 
-import {
-  ButtonWithMenu, ErrorAlert, ExternalLink, GoBackButton,
-  InfoAlert, Loader, RenkuMarkdown, RenkuNavLink, TimeCaption, WarnAlert
-} from "../utils/UIComponents";
-import { Url } from "../utils/url";
+
+import { Url } from "../utils/helpers/url";
 import { SpecialPropVal } from "../model/Model";
 import { ProjectTagList } from "./shared";
 import { Notebooks, ShowSession, StartNotebookServer } from "../notebooks";
@@ -60,6 +57,13 @@ import { ForkProject } from "./new";
 import { ProjectSettingsGeneral, ProjectSettingsNav, ProjectSettingsSessions } from "./settings";
 
 import "./Project.css";
+import { ExternalLink } from "../utils/components/ExternalLinks";
+import { ButtonWithMenu, GoBackButton } from "../utils/components/Button";
+import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
+import { ErrorAlert, InfoAlert, WarnAlert } from "../utils/components/Alert";
+import { RenkuNavLink } from "../utils/components/RenkuNavLink";
+import { Loader } from "../utils/components/Loader";
+import { TimeCaption } from "../utils/components/TimeCaption";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.

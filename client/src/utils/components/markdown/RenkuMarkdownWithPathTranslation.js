@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef, useCallback } from "react";
-import { sanitizedHTMLFromMarkdown } from "./HelperFunctions";
 import { CardBody, Card } from "reactstrap";
 import ReactDOMServer from "react-dom/server";
-import { FilePreview } from "../file";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile } from "@fortawesome/free-solid-svg-icons";
 import "katex/dist/katex.min.css";
+import { FilePreview } from "../../../file";
+import { sanitizedHTMLFromMarkdown } from "../../helpers/HelperFunctions";
 
 const patterns = {
   fileRefFull: /!\[(.*?)\]\((.*?)\)/g, //with !

@@ -21,7 +21,7 @@ import React, { Fragment } from "react";
 import { MigrationSuccessAlert, MigrationWarnAlert,
   ShowMigrationFailure, isMigrationFailure, isMigrationCheckLoading } from "./MigrationUtils";
 
-import { Loader } from "../../utils/UIComponents";
+import { Loader } from "../../utils/components/Loader";
 
 function RenkuLabVersionInfo({ core_compatibility_status }) {
 

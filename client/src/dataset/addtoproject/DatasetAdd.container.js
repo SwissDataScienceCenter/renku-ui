@@ -28,8 +28,8 @@ import React from "react";
 import { addDatasetToProjectSchema } from "../../model/RenkuModels";
 import { ACCESS_LEVELS } from "../../api-client";
 import DatasetAdd from "./DatasetAdd.present";
-import { ImportStateMessage } from "../../utils/Dataset";
-import { groupBy } from "../../utils/HelperFunctions";
+import { ImportStateMessage } from "../../utils/constants/Dataset";
+import { groupBy } from "../../utils/helpers/HelperFunctions";
 import _ from "lodash";
 
 let dsFormSchema = _.cloneDeep(addDatasetToProjectSchema);
