@@ -26,11 +26,11 @@ import TemplateStatus from "./TemplateVersionStatus.present";
 import { ACCESS_LEVELS } from "../../api-client";
 
 function ProjectVersionStatusBody(props) {
+  const logged = props.user.logged;
   const maintainer = props.metadata.accessLevel >= ACCESS_LEVELS.MAINTAINER;
-  const isLogged = props.user.logged;
-  const onMigrateProject = props.onMigrateProject;
-
-  if (!isLogged) return null;
+  const onMigrateProject = async (options) => {
+    return await props.onMigrateProject(props.metadata?.httpUrl, props.metadata?.defaultBranch, options);
+  };
 
   return <Fragment>
     <Card key="renkuLabUICompatibility" className="border-rk-light mb-4">
@@ -51,6 +51,7 @@ function ProjectVersionStatusBody(props) {
           <RenkuVersionStatus
             launchNotebookUrl={props.launchNotebookUrl}
             loading={props.loading}
+            logged={logged}
             maintainer={maintainer}
             migration={props.migration}
             onMigrateProject={onMigrateProject}
@@ -66,6 +67,7 @@ function ProjectVersionStatusBody(props) {
             externalUrl={props.externalUrl}
             launchNotebookUrl={props.launchNotebookUrl}
             loading={props.loading}
+            logged={logged}
             maintainer={maintainer}
             migration={props.migration}
             onMigrateProject={onMigrateProject} />
