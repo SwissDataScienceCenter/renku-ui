@@ -23,8 +23,10 @@
  *  Sentry configuration object.
  */
 
-import * as SentryLib from "@sentry/browser";
-import { API_ERRORS } from "../../../api-client";
+import * as SentryLib from "@sentry/react";
+import { Integrations as TracingIntegrations } from "@sentry/tracing";
+import _ from "lodash";
+import { API_ERRORS } from "../../../api-client/errors";
 
 
 const NAMESPACE_DEFAULT = "unknown";
@@ -41,6 +43,7 @@ const EXCLUDED_URLS = [
 let uiVersion = VERSION_DEFAULT;
 let sentryInitialized = false;
 let sentryUrl = null;
+let sentrySampleRate = 0;
 let sentryNamespace = NAMESPACE_DEFAULT;
 let sentryDenyUrls = [
   ...EXCLUDED_URLS,
@@ -48,6 +51,17 @@ let sentryDenyUrls = [
 let disableSentry = false;
 
 // module functions
+
+/**
+ * higher-order component that attaches React related spans to the current active transaction on the scope
+ *
+ * @param {Component} component
+ * @param {object} [options] - Profiler Options {name, includeRender, includeUpdates}
+ */
+function sentryWithProfiler(component, options) {
+  return SentryLib.withProfiler(component, options);
+}
+
 /**
  * Initialize listener to send frontend exceptions to Sentry. This can invoked only once.
  *
@@ -59,8 +73,10 @@ let disableSentry = false;
  *   data. When provided, the user metadata will be added to the exception metadata.
  * @param {string} [version] - UI version.
  * @param {bool} [telepresence] - whether the UI is running on telepresence
+ * @param {number} [sampleRate] - transaction trace number between 0 and 1 for performance monitoring
  */
-function sentryInit(url, namespace = null, userPromise = null, version = null, telepresence = false) {
+function sentryInit(url, namespace = null, userPromise = null, version = null, telepresence = false,
+  sampleRate = 0.0) {
   // Prevent re-initializing
   if (sentryInitialized)
     throw new Error("Cannot re-initialize the Sentry client.");
@@ -92,6 +108,7 @@ function sentryInit(url, namespace = null, userPromise = null, version = null, t
   // Save data
   sentryUrl = url;
   sentryNamespace = namespace;
+  sentrySampleRate = _.clamp(parseFloat(sampleRate) || 0, 0, 1);
 
   // Initialize client
   // ? Reference: https://docs.sentry.io/platforms/javascript/configuration/options/
@@ -100,11 +117,15 @@ function sentryInit(url, namespace = null, userPromise = null, version = null, t
     environment: sentryNamespace,
     release: getRelease(uiVersion),
     beforeSend: (event) => hookBeforeSend(event),
-    denyUrls: sentryDenyUrls
+    denyUrls: sentryDenyUrls,
+    integrations: [new TracingIntegrations.BrowserTracing(
+      { tracingOrigins: ["localhost", /^\//, /ui-server\/api/] },
+    )],
+    tracesSampleRate: sentrySampleRate, // number between 0 and 1. (e.g. to send 20% of transactions use 0.2)
   });
   SentryLib.setTags({
     component: UI_COMPONENT,
-    telepresence: telepresence ? true : false
+    telepresence: !!telepresence
   });
 
   // Handle user data
@@ -186,7 +207,8 @@ const SentrySettings = {
   initialized: sentryInitialized,
   url: sentryUrl,
   namespace: sentryNamespace,
-  init: sentryInit
+  init: sentryInit,
+  withProfiler: sentryWithProfiler
 };
 
 

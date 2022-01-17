@@ -69,8 +69,15 @@ Promise.all([configFetch, privacyFetch]).then(valuesRead => {
     let userPromise = userCoordinator.fetchUser();
 
     // configure Sentry
-    if (params.SENTRY_URL)
-      Sentry.init(params.SENTRY_URL, params.SENTRY_NAMESPACE, userPromise, params.UI_VERSION, params.TELEPRESENCE);
+    if (params.SENTRY_URL) {
+      Sentry.init(
+        params.SENTRY_URL,
+        params.SENTRY_NAMESPACE,
+        userPromise,
+        params.UI_VERSION,
+        params.TELEPRESENCE,
+        params.SENTRY_SAMPLE_RATE);
+    }
     // Map redux data to react - note we are mapping the model, not its whole content (only user)
     // Use model.get("something") and map it wherever needed
     function mapStateToProps(state, ownProps) {

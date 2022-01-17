@@ -26,6 +26,7 @@
 import React, { Component, Fragment } from "react";
 import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import { Sentry } from "./utils/helpers/sentry";
 
 import Project from "./project/Project";
 import { ProjectList } from "./project/list";
@@ -163,6 +164,7 @@ function CentralContentContainer(props) {
   </div>;
 }
 
+let isSentryEnabled = false;
 
 class App extends Component {
   constructor(props) {
@@ -175,6 +177,8 @@ class App extends Component {
     // Setup authentication listeners and notifications
     LoginHelper.setupListener();
     LoginHelper.triggerNotifications(this.notifications);
+
+    isSentryEnabled = !!this.props.params.SENTRY_URL;
   }
 
   render() {
@@ -209,4 +213,4 @@ class App extends Component {
   }
 }
 
-export default App;
+export default isSentryEnabled ? Sentry.withProfiler(App) : App;
