@@ -91,33 +91,15 @@ jobs:
   run-acceptance-tests:
     needs: [check-deploy, deploy-pr]
     if: github.event.action != 'closed'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v1
+    - uses: SwissDataScienceCenter/renku-actions/test-renku@v0.4.0
       with:
-        python-version: 3.8
-    - name: Test the PR
-      if: "needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'"
-      env:
-        KUBECONFIG: ${{ github.workspace }}/renkubot-kube.config
-        RENKUBOT_KUBECONFIG: ${{ secrets.RENKUBOT_DEV_KUBECONFIG }}
-        RENKU_RELEASE: renku-ci-ui-${{ github.event.number }}
-      run: |
-        echo "$RENKUBOT_KUBECONFIG" > ${{ github.workspace }}/renkubot-kube.config
-        helm test ${RENKU_RELEASE} --namespace ${RENKU_RELEASE} --timeout 80m --logs
-    - name: Download artifact for packaging on failure
-      if: failure()
-      uses: SwissDataScienceCenter/renku-actions/download-test-artifacts@v0.4.0
-      env:
-        RENKU_VALUES: ${{ secrets.CI_RENKU_VALUES }}
-        TEST_ARTIFACTS_PATH: "tests-artifacts-${{ github.sha }}"
-    - name: Upload screenshots on failure
-      if: failure()
-      uses: actions/upload-artifact@v1
-      with:
-        name: acceptance-test-artifacts
-        path: ${{ github.workspace }}/test-artifacts/
+        renkubot-kubeconfig: ${{ secrets.RENKUBOT_DEV_KUBECONFIG }}
+        renku-release: renku-ci-ui-${{ github.event.number }}
+        gitlab-token: ${{ secrets.DEV_GITLAB_TOKEN }}
+        persist: "${{ needs.check-deploy.outputs.persist }}"
+        ci-renku-values: ${{ secrets.CI_RENKU_VALUES }}
 
   run-e2e:
     needs: [ check-deploy, deploy-pr ]
@@ -158,9 +140,11 @@ jobs:
         issue-number: ${{ github.event.pull_request.number }}
         body: |
           Tearing down the temporary RenkuLab deplyoment for this PR.
-    - uses: SwissDataScienceCenter/renku-actions/teardown-renku@v0.4.0
+    - name: renku teardown
+      uses: SwissDataScienceCenter/renku-actions/cleanup-renku-ci-deployments@v0.4.0
       env:
-        GITLAB_TOKEN: ${{ secrets.GITLAB_DEV_TOKEN }}
-        KUBECONFIG: ${{ github.workspace }}/renkubot-kube.config
+        HELM_RELEASE_REGEX: "^renku-ci-ui-${{ github.event.number }}$"
+        GITLAB_TOKEN: ${{ secrets.DEV_GITLAB_TOKEN }}
         RENKUBOT_KUBECONFIG: ${{ secrets.RENKUBOT_DEV_KUBECONFIG }}
-        RENKU_RELEASE: renku-ci-ui-${{ github.event.number }}
+        MAX_AGE_SECONDS: 0
+        DELETE_NAMESPACE: "true"
