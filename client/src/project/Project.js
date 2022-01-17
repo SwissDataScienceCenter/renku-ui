@@ -225,6 +225,7 @@ class View extends Component {
   async fetchReadme() { return this.projectCoordinator.fetchReadme(this.props.client); }
   async fetchModifiedFiles() { return this.projectCoordinator.fetchModifiedFiles(this.props.client); }
   async fetchBranches() { return this.projectCoordinator.fetchBranches(); }
+  async fetchCommits(branch) { return this.projectCoordinator.fetchCommits({ branch }); }
   async createGraphWebhook() { return this.projectCoordinator.createGraphWebhook(this.props.client); }
   async fetchGraphWebhook() { this.projectCoordinator.fetchGraphWebhook(this.props.client, this.props.user); }
   async fetchProjectFilesTree() {
@@ -615,6 +616,9 @@ class View extends Component {
     },
     fetchBranches: () => {
       return this.projectCoordinator.fetchBranches();
+    },
+    fetchCommits: (branch = null) => {
+      return this.projectCoordinator.fetchCommits(branch);
     },
     onMigrateProject: (gitUrl, branch, options) => {
       return this.migrateProject(gitUrl, branch, options);
