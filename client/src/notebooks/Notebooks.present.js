@@ -1707,6 +1707,7 @@ class StartNotebookOptions extends Component {
         const annotations = NotebooksHelper.cleanAnnotations(all[k].annotations, "renku.io");
         if (annotations["commit-sha"] === currentCommit)
           return true;
+        return false;
       });
       if (currentNotebook)
         return (<StartNotebookOptionsRunning notebook={all[currentNotebook]} />);
