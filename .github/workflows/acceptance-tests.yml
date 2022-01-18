@@ -90,7 +90,7 @@ jobs:
 
   run-acceptance-tests:
     needs: [check-deploy, deploy-pr]
-    if: github.event.action != 'closed'
+    if: ${{ github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true' }}
     runs-on: ubuntu-20.04
     steps:
     - uses: SwissDataScienceCenter/renku-actions/test-renku@v0.4.1
