@@ -476,6 +476,8 @@ class StartNotebookServer extends Component {
         const filteredCommits = commits.filter(commit => commit.id === commitId);
         if (filteredCommits.length === 1)
           commit = filteredCommits[0];
+        else if (commitId === "latest")
+          commit = commits[0];
         else if (this.customBranch || this.customCommit)
           this.setErrorInAutostart();
         else
@@ -512,6 +514,7 @@ class StartNotebookServer extends Component {
                 commit = targetCommit;
                 return true;
               }
+              return false;
             });
           }
         }
@@ -618,8 +621,10 @@ class StartNotebookServer extends Component {
     if (this._isMounted) {
       const result = await this.coordinator.deleteAutosave(autosave);
       // refresh autosaves only when no error was triggered
-      if (result)
-        this.coordinator.fetchAutosaves();
+      if (result) {
+        await this.coordinator.fetchAutosaves();
+        this.selectCommit("latest");
+      }
       return result;
     }
   }
