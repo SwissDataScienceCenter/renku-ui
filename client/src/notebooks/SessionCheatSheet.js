@@ -172,6 +172,36 @@ function UndoCommit() {
   </Fragment>;
 }
 
+function Autosaves() {
+  const twoLineCommand = (<span>
+    git push --set-upstream origin your-branch-name-here
+    <br />git reset --hard origin/[default branch name]
+  </span>);
+  return <Fragment>
+    <CommandsRow>
+      <div>
+        <h2>Autosave</h2>
+        <p className="mb-1">If you want to see what work was saved, you can diff the current contents:</p>
+      </div>
+    </CommandsRow>
+    <CommandsRow>
+      <CommandDesc command="git diff HEAD^"
+        desc="Against the previous state." />
+      <CommandDesc command="git diff origin [default branch name]"
+        desc="Against the latest state of the project." />
+    </CommandsRow>
+    <CommandsRow>
+      <p className="mb-1">If you want to discard the unsaved work in the running session:</p>
+    </CommandsRow>
+    <CommandsRow>
+      <CommandDesc command="git reset --hard origin/[default branch name]"
+        desc="Return to the latest version." />
+      <CommandDesc command={twoLineCommand}
+        desc="Keep this work around for later." />
+    </CommandsRow>
+  </Fragment>;
+}
+
 function LearnMore() {
   return <Fragment>
     <CommandsRow>
@@ -204,6 +234,7 @@ function SessionCheatSheet() {
     <ManagingContents />
     <Collaboration />
     <UndoCommit />
+    <Autosaves />
     <LearnMore />
   </div>;
 }
