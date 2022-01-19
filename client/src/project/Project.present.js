@@ -227,7 +227,7 @@ function ProjectIdentifier(props) {
   return (
     <Fragment>
       <div className="flex-grow-1">
-        <h2 className="mb-0">
+        <h2 className="mb-0" data-cy="project-header">
           <ProjectStatusIcon
             history={props.history}
             webhook={props.webhook}

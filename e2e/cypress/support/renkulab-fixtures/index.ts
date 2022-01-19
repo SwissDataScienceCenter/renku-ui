@@ -1,5 +1,5 @@
 /*!
- * Copyright 2021 - Swiss Data Science Center (SDSC)
+ * Copyright 2022 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,23 +16,13 @@
  * limitations under the License.
  */
 
-import { User } from "../support/authentication/user.interfaces";
+/**
+ * Common fixtures defined in one place.
+ */
+import BaseFixtures from "./fixtures";
+import { User } from "./user";
+import { Projects } from "./projects";
 
-describe("render the home page", () => {
-  const userData: User = Cypress.env("USER");
+const Fixtures = Projects(User(BaseFixtures));
 
-  it("renders correctly", () => {
-    cy.visit("/");
-    cy.get("body").should("exist");
-  });
-
-  it("login", () => {
-    cy.gui_kc_login(userData, true);
-  });
-
-  it("logout", () => {
-    cy.gui_kc_login(userData, true);
-    cy.gui_logout();
-  });
-
-});
+export default Fixtures;

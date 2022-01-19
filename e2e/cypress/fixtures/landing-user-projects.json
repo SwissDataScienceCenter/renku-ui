@@ -1,0 +1,86 @@
+{
+  "data": {
+    "projects": {
+      "pageInfo": { "endCursor": "eyJpZCI6IjQxIn0", "hasNextPage": false },
+      "nodes": [
+        {
+          "id": "gid://gitlab/Project/417",
+          "name": "flights tutorial julia",
+          "fullPath": "julia/flights-tutorial-julia",
+          "namespace": { "fullPath": "julia" },
+          "path": "flights-tutorial-julia"
+        },
+        {
+          "id": "gid://gitlab/Project/247",
+          "name": "julia-playground",
+          "fullPath": "test-user/julia-playground",
+          "namespace": { "fullPath": "test-user" },
+          "path": "julia-playground"
+        },
+        {
+          "id": "gid://gitlab/Project/240",
+          "name": "outdated",
+          "fullPath": "test-user/outdated",
+          "namespace": { "fullPath": "test-user" },
+          "path": "outdated"
+        },
+        {
+          "id": "gid://gitlab/Project/239",
+          "name": "internal playground",
+          "fullPath": "test-user-internal/internal-playground",
+          "namespace": { "fullPath": "test-user-internal" },
+          "path": "internal-playground"
+        },
+        {
+          "id": "gid://gitlab/Project/238",
+          "name": "julia playground future",
+          "fullPath": "test-user/julia-playground-future",
+          "namespace": { "fullPath": "test-user" },
+          "path": "julia-playground-future"
+        },
+        {
+          "id": "gid://gitlab/Project/237",
+          "name": "a private project with space",
+          "fullPath": "test-user-private/a-private-project-with-space",
+          "namespace": { "fullPath": "test-user-private" },
+          "path": "a-private-project-with-space"
+        },
+        {
+          "id": "gid://gitlab/Project/236",
+          "name": "New test",
+          "fullPath": "test-user/new-test",
+          "namespace": { "fullPath": "test-user" },
+          "path": "new-test"
+        },
+        {
+          "id": "gid://gitlab/Project/190",
+          "name": "old-title",
+          "fullPath": "renku-qa/old-title",
+          "namespace": { "fullPath": "renku-qa" },
+          "path": "old-title"
+        },
+        {
+          "id": "gid://gitlab/Project/186",
+          "name": "new-project-testing",
+          "fullPath": "test-user/new-project-testing",
+          "namespace": { "fullPath": "test-user" },
+          "path": "new-project-testing"
+        },
+        {
+          "id": "gid://gitlab/Project/79",
+          "name": "dataset-test-project",
+          "fullPath": "test-user/dataset-test-project",
+          "namespace": { "fullPath": "test-user" },
+          "path": "dataset-test-project"
+        },
+        {
+          "id": "gid://gitlab/Project/41",
+          "name": "covid-19-dashboard",
+          "fullPath": "test-user/covid-19-dashboard",
+          "namespace": { "fullPath": "test-user" },
+          "path": "covid-19-dashboard"
+        }
+      ]
+    }
+  }
+}
