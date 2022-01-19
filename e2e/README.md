@@ -1,10 +1,13 @@
 # E2E Tests for Renku UI
 
+The `e2e` folder implements two kinds of Cypress-based UI tests. The first kind, which are in the `cypress/integration/live` folder, run against a live instance of RenkuLab (such as https://dev.renku.ch). These are useful for testing the end-to-end behavior of an actual running system.
 
-Quickstart
-----------
+The second kind, which are in the `cypress/integration/local` folder, run against a UI running on `localhost` and use mocked data. These are designed to test components, isolated, in a variety of situations.
 
-The e2e project depends on a running instance of Renku being present.
+Quickstart: Live
+----------------
+
+The e2e live tests depend on a running instance of Renku being present.
 
 Once you have a development instance of Renku running locally or in the cloud, set the baseUrl and a valid user data (`env.USER`) in the `cypress.json` file.
 
@@ -36,6 +39,14 @@ npm install
 ````
 npm run e2e
 ````
+
+
+## Running the local tests
+````
+npm run e2e:local
+````
+
+This will start the RenkuLab UI locally and open the Cypress GUI.
 
 ## Running from the CLI
 ````
