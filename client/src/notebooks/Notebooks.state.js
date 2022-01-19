@@ -813,7 +813,7 @@ class NotebooksCoordinator {
     let autosavesData = { fetching: false, fetched: new Date() };
     if (response && response.autosaves) {
       autosavesData.error = null;
-      autosavesData.list = response.autosaves;
+      autosavesData.list = { $set: response.autosaves };
       autosavesData.pvsSupport = response.pvsSupport;
     }
     else {

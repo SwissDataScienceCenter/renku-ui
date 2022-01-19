@@ -1175,11 +1175,14 @@ function AutosavesInfoAlert({ autosaves, autosavesId, currentId, deleteAutosave,
   if (autosavesId === currentId) {
     return (
       <InfoAlert dismissible={false} timeout={0}>
-        <p>There is unsaved work left from your last session. This work will be restored.</p>
+        <p>
+          There is unsaved work from your last session which will be restored.
+          If you do not wish to keep it, you can{" "}
+          <Button color="info" size="sm" onClick={() => deleteCurrentAutosave()}>delete the autosave</Button>.
+        </p>
         <p className="mb-0">
-          You can{" "}
-          <Button color="info" size="sm" onClick={() => deleteCurrentAutosave()}>delete the autosave</Button>
-          {" "}to start from the latest commit instead.
+          For more options, start a session and look at the session cheatsheet,
+          which is available under this icon <FontAwesomeIcon icon={faBook} />.
         </p>
       </InfoAlert>
     );

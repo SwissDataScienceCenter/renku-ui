@@ -163,6 +163,7 @@
           "bool",
           "cancellable",
           "cancelled",
+          "cheatsheet",
           "checkbox",
           "ckeditor",
           "cktextarea",
