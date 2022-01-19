@@ -1,0 +1,18 @@
+[
+  {
+    "id": "172a784d465a7bd45bacc165df2b64a591ac6b18",
+    "short_id": "172a784d",
+    "created_at": "2022-01-20T14:14:54.000+00:00",
+    "parent_ids": [],
+    "title": "service: renku init -n \"local-test-project\" -s \"https://github.com/SwissDataScienceCenter/renku-p...",
+    "message": "service: renku init -n \"local-test-project\" -s \"https://github.com/SwissDataScienceCenter/renku-p...",
+    "author_name": "e2e User",
+    "author_email": "e2e@renku.ch",
+    "authored_date": "2022-01-20T14:14:54.000+00:00",
+    "committer_name": "renku 0.16.2",
+    "committer_email": "https://github.com/swissdatasciencecenter/renku-python/tree/v0.16.2",
+    "committed_date": "2022-01-20T14:14:54.000+00:00",
+    "trailers": {},
+    "web_url": "https://dev.renku.ch/gitlab/e2e/local-test-project/-/commit/172a784d465a7bd45bacc165df2b64a591ac6b18"
+  }
+]
