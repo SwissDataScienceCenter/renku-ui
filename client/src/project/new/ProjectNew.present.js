@@ -37,15 +37,19 @@ import {
   faExclamationTriangle, faInfoCircle, faLink, faQuestionCircle, faSyncAlt, faUndo
 } from "@fortawesome/free-solid-svg-icons";
 
-import {
-  ButtonWithMenu, Clipboard, ErrorAlert, ExternalLink, FieldGroup, Loader, WarnAlert
-} from "../../utils/UIComponents";
-import { simpleHash, slugFromTitle } from "../../utils/HelperFunctions";
-import { capitalize } from "../../utils/formgenerator/FormGenerator.present";
-import { Url } from "../../utils/url";
+
+import { simpleHash, slugFromTitle } from "../../utils/helpers/HelperFunctions";
+import { capitalize } from "../../utils/components/formgenerator/FormGenerator.present";
+import { Url } from "../../utils/helpers/url";
 
 import "./Project.style.css";
 import defaultTemplateIcon from "./templatePlaceholder.svg";
+import { Loader } from "../../utils/components/Loader";
+import { ErrorAlert, WarnAlert } from "../../utils/components/Alert";
+import { ExternalLink } from "../../utils/components/ExternalLinks";
+import { FieldGroup } from "../../utils/components/FieldGroups";
+import { ButtonWithMenu } from "../../utils/components/Button";
+import { Clipboard } from "../../utils/components/Clipboard";
 
 
 /**

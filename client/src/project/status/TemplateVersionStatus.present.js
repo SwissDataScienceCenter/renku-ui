@@ -22,7 +22,8 @@ import { Button, Spinner, Collapse } from "reactstrap";
 import { ManualUpdateInstructions, MigrationSuccessAlert, MigrationWarnAlert,
   isMigrationFailure, isMigrationCheckLoading } from "./MigrationUtils";
 import { MigrationStatus } from "../Project";
-import { ExternalLink, Loader } from "../../utils/UIComponents";
+import { ExternalLink } from "../../utils/components/ExternalLinks";
+import { Loader } from "../../utils/components/Loader";
 
 const TEMPLATE_VERSION_SCENARIOS = {
   PROJECT_NOT_SUPPORTED: "PROJECT_NOT_SUPPORTED",

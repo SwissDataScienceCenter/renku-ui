@@ -1,9 +1,9 @@
 
 import React, { Component, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { Loader } from "../utils/UIComponents";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile, faFolder, faFolderOpen } from "@fortawesome/free-solid-svg-icons";
+import { Loader } from "./Loader";
 
 function buildTree(parts, treeNode, jsonObj, hash, currentPath, foldersOpenOnLoad) {
   if (parts.length === 0)

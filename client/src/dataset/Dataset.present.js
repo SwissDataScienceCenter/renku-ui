@@ -26,21 +26,18 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faEllipsisV, faPen, faPlus, faSearch, faTrash
 } from "@fortawesome/free-solid-svg-icons";
-import {
-  ErrorAlert,
-  FileExplorer,
-  InfoAlert,
-  Loader,
-  RenkuMarkdown,
-  ExternalLink,
-  WarnAlert
-} from "../utils/UIComponents";
+import _ from "lodash";
+
 import { ProjectsCoordinator } from "../project/shared";
 import AddDataset from "./addtoproject/DatasetAdd.container";
 import DeleteDataset from "../project/datasets/delete/index";
-import Time from "../utils/Time";
-import { Url } from "../utils/url";
-import _ from "lodash";
+import Time from "../utils/helpers/Time";
+import { Url } from "../utils/helpers/url";
+import FileExplorer from "../utils/components/FileExplorer";
+import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
+import { ExternalLink } from "../utils/components/ExternalLinks";
+import { ErrorAlert, InfoAlert, WarnAlert } from "../utils/components/Alert";
+import { Loader } from "../utils/components/Loader";
 
 function DisplayFiles(props) {
   if (props.files === undefined) return null;

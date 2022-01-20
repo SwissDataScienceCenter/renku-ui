@@ -19,9 +19,10 @@
 import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
 import { Col } from "reactstrap";
-import { Pagination, TimeCaption } from "./UIComponents";
 import Masonry from "react-masonry-css";
-import { ProjectTagList } from "../project/shared/ProjectTag.container";
+import { TimeCaption } from "./TimeCaption";
+import { Pagination } from "./Pagination";
+import { ProjectTagList } from "../../project/shared";
 
 /**
  * ListCard/ListBar returns a card or a bar displaying an item in a List.

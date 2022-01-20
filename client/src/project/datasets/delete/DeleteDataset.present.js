@@ -26,7 +26,8 @@
 
 import React, { Fragment } from "react";
 import { Row, Col, Modal, ModalHeader, ModalBody, Button, FormText } from "reactstrap";
-import { ErrorAlert, Loader } from "../../../utils/UIComponents";
+import { ErrorAlert } from "../../../utils/components/Alert";
+import { Loader } from "../../../utils/components/Loader";
 
 function DeleteDatasetPresent(props) {
 

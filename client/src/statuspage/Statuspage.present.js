@@ -35,9 +35,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckCircle, faExclamationCircle } from "@fortawesome/free-solid-svg-icons";
 import { faMinusCircle, faTimesCircle, faWrench } from "@fortawesome/free-solid-svg-icons";
 
-import { Time } from "../utils/Time";
-import { Loader, TimeCaption, WarnAlert } from "../utils/UIComponents";
-import { Url } from "../utils/url";
+import { Time } from "../utils/helpers/Time";
+import { Url } from "../utils/helpers/url";
+import { WarnAlert } from "../utils/components/Alert";
+import { Loader } from "../utils/components/Loader";
+import { TimeCaption } from "../utils/components/TimeCaption";
 
 function componentIsLoud(c) { return c["name"].toLowerCase() === "loud"; }
 

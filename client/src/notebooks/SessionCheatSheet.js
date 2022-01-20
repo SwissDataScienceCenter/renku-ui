@@ -19,8 +19,9 @@
 
 import React, { Fragment } from "react";
 
-import { Clipboard, ExternalDocsLink } from "../utils/UIComponents";
 import "./SessionCheatSheet.css";
+import { Clipboard } from "../utils/components/Clipboard";
+import { ExternalDocsLink } from "../utils/components/ExternalLinks";
 
 function CommandDesc({ command = "", desc = "", clipboard = true }) {
   return <div>

@@ -26,11 +26,12 @@ import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 import KnowledgeGraphStatus from "./KnowledgeGraphStatus.container";
 import { GraphIndexingStatus } from "../project/Project";
 import { JupyterButton } from "./index";
-import { Clipboard, ExternalIconLink } from "../utils/UIComponents";
-import { formatBytes } from "../utils/HelperFunctions";
+import { formatBytes } from "../utils/helpers/HelperFunctions";
 import { FileAndLineageSwitch } from "./FileAndLineageComponents";
 
 import "./Lineage.css";
+import { ExternalIconLink } from "../utils/components/ExternalLinks";
+import { Clipboard } from "../utils/components/Clipboard";
 
 function cropLabelStart(limit, label) {
   if (label.length > limit)

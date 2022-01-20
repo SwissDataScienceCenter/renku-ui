@@ -27,11 +27,13 @@
 import React, { Component, Fragment } from "react";
 import { Link } from "react-router-dom";
 import { Row, Col } from "reactstrap";
-import { Url } from "../utils/url";
-import { ExternalLink, MarkdownTextExcerpt, ListDisplay, RenkuMarkdown,
-  Loader } from "../utils/UIComponents";
+import { Url } from "../utils/helpers/url";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLandmark, faPlus, faQuestion } from "@fortawesome/free-solid-svg-icons";
+import { MarkdownTextExcerpt, RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
+import ListDisplay from "../utils/components/List";
+import { ExternalLink } from "../utils/components/ExternalLinks";
+import { Loader } from "../utils/components/Loader";
 
 
 function truncatedProjectListRows(projects, urlFullList, gridDisplay) {

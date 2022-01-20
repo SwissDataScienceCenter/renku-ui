@@ -29,10 +29,13 @@ import { Row, Col, ListGroup, ListGroupItem, ButtonGroup, Button, UncontrolledTo
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFolderOpen } from "@fortawesome/free-regular-svg-icons";
 
-import { ExternalLink, TimeCaption, Clipboard, Loader } from "./UIComponents";
-import Time from "./Time";
+import Time from "./../../helpers/Time";
 
 import "./Commits.css";
+import { Loader } from "../Loader";
+import { TimeCaption } from "../TimeCaption";
+import { ExternalLink } from "../ExternalLinks";
+import { Clipboard } from "../Clipboard";
 
 // Constants
 const CommitElement = {

@@ -32,18 +32,22 @@ import {
 
 import { StatusHelper } from "../model/Model";
 import { NotebooksHelper } from "./index";
-import { formatBytes, simpleHash } from "../utils/HelperFunctions";
-import {
-  ButtonWithMenu, Clipboard, ExternalLink, InfoAlert, JupyterIcon, Loader,
-  ThrottledTooltip, TimeCaption, WarnAlert
-} from "../utils/UIComponents";
-import Time from "../utils/Time";
-import Sizes from "../utils/Media";
-import { Url } from "../utils/url";
+import { formatBytes, simpleHash } from "../utils/helpers/HelperFunctions";
+import Time from "../utils/helpers/Time";
+import Sizes from "../utils/constants/Media";
+import { Url } from "../utils/helpers/url";
 
 import "./Notebooks.css";
 import SessionCheatSheet from "./SessionCheatSheet";
 import _ from "lodash";
+import { ExternalLink } from "../utils/components/ExternalLinks";
+import { ButtonWithMenu } from "../utils/components/Button";
+import { TimeCaption } from "../utils/components/TimeCaption";
+import { Loader } from "../utils/components/Loader";
+import { InfoAlert, WarnAlert } from "../utils/components/Alert";
+import { Clipboard } from "../utils/components/Clipboard";
+import { JupyterIcon } from "../utils/components/Icon";
+import { ThrottledTooltip } from "../utils/components/Tooltip";
 
 
 // * Constants and helpers * //
