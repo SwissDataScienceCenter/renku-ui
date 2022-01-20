@@ -1185,7 +1185,7 @@ function AutosavesInfoAlert({ autosaves, autosavesId, currentId, deleteAutosave,
         </p>
         <p className="mb-0">
           For more options, start a session and look at the session cheatsheet,
-          which is available under this icon <FontAwesomeIcon icon={faBook} />.
+          which is available under this icon <FontAwesomeIcon className="cursor-default" icon={faBook} />.
         </p>
       </InfoAlert>
     );
