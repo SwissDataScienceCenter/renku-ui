@@ -26,7 +26,7 @@
 import React from "react";
 import { datasetImportFormSchema } from "../../../model/RenkuModels";
 import DatasetImport from "./DatasetImport.present";
-import { ImportStateMessage } from "../../../utils/Dataset";
+import { ImportStateMessage } from "../../../utils/constants/Dataset";
 import _ from "lodash";
 
 let dsFormSchema = _.cloneDeep(datasetImportFormSchema);

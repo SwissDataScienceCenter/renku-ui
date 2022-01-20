@@ -21,11 +21,13 @@ import { Badge, Row, Col, Nav, NavItem, Card, CardHeader, CardBody, Button } fro
 import { Switch, Route } from "react-router-dom";
 import { faCodeBranch } from "@fortawesome/free-solid-svg-icons";
 
-import { RenkuNavLink, GoBackButton, ExternalLink } from "../../utils/UIComponents";
 import { Contribution, NewContribution } from "../../contribution";
-import { CommitsView } from "../../utils/Commits";
 import _ from "lodash/collection";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { ExternalLink } from "../../utils/components/ExternalLinks";
+import { RenkuNavLink } from "../../utils/components/RenkuNavLink";
+import { GoBackButton } from "../../utils/components/Button";
+import { CommitsView } from "../../utils/components/commits/Commits";
 
 
 function MergeRequestHeader(props) {

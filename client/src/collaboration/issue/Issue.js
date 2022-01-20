@@ -29,16 +29,19 @@ import { Row, Col, Button } from "reactstrap";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 import { faBoxOpen, faBox } from "@fortawesome/free-solid-svg-icons";
 import { API_ERRORS } from "../../api-client";
-import { createStore } from "../../utils/EnhancedState";
+import { createStore } from "../../utils/helpers/EnhancedState";
 import State from "./Issue.state";
-import {
-  ExternalIconLink, RenkuMarkdown, TimeCaption, TooltipToggleButton, GoBackButton, ErrorAlert
-} from "../../utils/UIComponents";
 import { Contribution, NewContribution } from "../../contribution";
-import { Loader } from "../../utils/UIComponents";
+import { Loader } from "../../utils/components/Loader";
 import { issueFormSchema } from "../../model/RenkuModels";
-import { FormGenerator } from "../../utils/formgenerator";
+import { FormGenerator } from "../../utils/components/formgenerator";
 import _ from "lodash";
+import { ErrorAlert } from "../../utils/components/Alert";
+import { ExternalIconLink } from "../../utils/components/ExternalLinks";
+import { TooltipToggleButton } from "../../utils/components/Tooltip";
+import { GoBackButton } from "../../utils/components/Button";
+import { RenkuMarkdown } from "../../utils/components/markdown/RenkuMarkdown";
+import { TimeCaption } from "../../utils/components/TimeCaption";
 
 let iFormSchema = _.cloneDeep(issueFormSchema);
 

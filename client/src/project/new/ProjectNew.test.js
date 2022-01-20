@@ -34,7 +34,7 @@ import { validateTitle, checkTitleDuplicates, NewProject, ForkProject } from "./
 import { getDataFromParams } from "./ProjectNew.container";
 import { RESERVED_TITLE_NAMES } from "./ProjectNew.state";
 import { testClient as client } from "../../api-client";
-import { btoaUTF8 } from "../../utils/Encoding";
+import { btoaUTF8 } from "../../utils/helpers/Encoding";
 import { generateFakeUser } from "../../user/User.test";
 
 

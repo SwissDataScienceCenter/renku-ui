@@ -34,15 +34,18 @@ import { faQuestionCircle, faUser } from "@fortawesome/free-regular-svg-icons";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 
 import logo from "./logo.svg";
-import { ExternalDocsLink, ExternalLink, Loader, RenkuNavLink, UserAvatar } from "../utils/UIComponents";
-import { getActiveProjectPathWithNamespace, gitLabUrlFromProfileUrl } from "../utils/HelperFunctions";
-import QuickNav from "../utils/quicknav";
-import { Url } from "../utils/url";
+import { getActiveProjectPathWithNamespace, gitLabUrlFromProfileUrl } from "../utils/helpers/HelperFunctions";
+import QuickNav from "../utils/components/quicknav";
+import { Url } from "../utils/helpers/url";
 import { VersionsBanner } from "./NabBarWarnings";
 import { NotificationsMenu } from "../notifications";
 import { LoginHelper } from "../authentication";
 import { StatuspageBanner } from "../statuspage";
 import "./NavBar.css";
+import { UserAvatar } from "../utils/components/Avatar";
+import { ExternalDocsLink, ExternalLink } from "../utils/components/ExternalLinks";
+import { RenkuNavLink } from "../utils/components/RenkuNavLink";
+import { Loader } from "../utils/components/Loader";
 
 
 class RenkuNavBar extends Component {

@@ -28,7 +28,7 @@ import { connect } from "react-redux";
 
 import { ProjectSettingsSessions as ProjectSettingsSessionsPresent } from "./ProjectSettings.present";
 import { NotebooksCoordinator } from "../../notebooks";
-import { refreshIfNecessary } from "../../utils/HelperFunctions";
+import { refreshIfNecessary } from "../../utils/helpers/HelperFunctions";
 
 /**
  * Mapper component for ProjectSettingsSessions.

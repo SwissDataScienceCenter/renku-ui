@@ -35,7 +35,7 @@ import FileUploaderInput from "./fields/FileUploaderInput";
 import KeywordsInput from "./fields/KeywordsInput";
 import ValidationAlert from "./fields/ValidationAlert";
 import ImageInput from "./fields/ImageInput";
-import { Loader } from "../UIComponents";
+import { Loader } from "../Loader";
 import "./FormGenerator.css";
 
 function capitalize(string) {

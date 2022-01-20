@@ -24,7 +24,7 @@
  */
 
 import { API_ERRORS } from "../api-client/errors";
-import { parseINIString } from "../utils/HelperFunctions";
+import { parseINIString } from "../utils/helpers/HelperFunctions";
 
 const POLLING_INTERVAL = 3000;
 const IMAGE_BUILD_JOB = "image_build";

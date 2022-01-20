@@ -27,15 +27,18 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { MemoryRouter } from "react-router-dom";
 
-import Time from "./Time";
-import { CommitsView, CommitsUtils } from "./Commits";
-import {
-  splitAutosavedBranches, sanitizedHTMLFromMarkdown, parseINIString, slugFromTitle,
-  verifyTitleCharacters, convertUnicodeToAscii, formatBytes, refreshIfNecessary
-} from "./HelperFunctions";
-import { RefreshButton } from "./UIComponents";
 import { StateModel, globalSchema } from "../model";
-import { fixRelativePath } from "./Markdown";
+import { Time } from "./helpers/Time";
+import { RefreshButton } from "./components/Button";
+import { CommitsUtils, CommitsView } from "./components/commits/Commits";
+import {
+  convertUnicodeToAscii, formatBytes,
+  parseINIString, refreshIfNecessary, sanitizedHTMLFromMarkdown,
+  splitAutosavedBranches,
+  verifyTitleCharacters,
+  slugFromTitle,
+} from "./helpers/HelperFunctions";
+import { fixRelativePath } from "./components/markdown/RenkuMarkdownWithPathTranslation";
 
 
 describe("Render React components and functions", () => {

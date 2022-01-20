@@ -24,7 +24,7 @@
  */
 
 import * as SentryLib from "@sentry/browser";
-import { API_ERRORS } from "../../api-client/errors";
+import { API_ERRORS } from "../../../api-client";
 
 
 const NAMESPACE_DEFAULT = "unknown";

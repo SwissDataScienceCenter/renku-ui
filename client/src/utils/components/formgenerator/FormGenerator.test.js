@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { Schema } from "../../model";
-import { StateModel, globalSchema } from "../../model";
+import { Schema } from "../../../model";
+import { StateModel, globalSchema } from "../../../model";
 import FormGenerator, { FormGenerator as FormPanel } from "./";
 import { DatasetImages } from "./fields/stockimages";
 

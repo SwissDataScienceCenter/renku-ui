@@ -26,7 +26,7 @@
 
 import React from "react";
 import { Col, Alert, Button } from "reactstrap";
-import { FormGenerator } from "../../../utils/formgenerator";
+import { FormGenerator } from "../../../utils/components/formgenerator";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";

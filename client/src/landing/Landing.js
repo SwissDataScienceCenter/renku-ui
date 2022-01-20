@@ -28,7 +28,7 @@ import { connect } from "react-redux";
 
 import Present from "./Landing.present";
 import { ProjectsCoordinator } from "../project/shared";
-import { Url } from "../utils/url";
+import { Url } from "../utils/helpers/url";
 
 const urlMap = {
   projectsUrl: Url.get(Url.pages.projects),

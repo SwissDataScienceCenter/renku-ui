@@ -33,8 +33,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck, faTimes, faTrashAlt, faSyncAlt, faExclamationTriangle, faFolder
 } from "@fortawesome/free-solid-svg-icons";
-import { formatBytes, isURL } from "./../../HelperFunctions";
-import { FileExplorer, getFilesTree } from "../../UIComponents";
+import { formatBytes, isURL } from "./../../../helpers/HelperFunctions";
+import FileExplorer, { getFilesTree } from "../../FileExplorer";
 
 const FILE_STATUS = {
   ADDED: 201,

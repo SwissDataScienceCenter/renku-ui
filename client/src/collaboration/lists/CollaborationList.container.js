@@ -17,8 +17,8 @@
  */
 
 import React, { Fragment, useEffect, useRef, useState } from "react";
-
-import { Loader, ExternalLink } from "../../utils/UIComponents";
+import { ExternalLink } from "../../utils/components/ExternalLinks";
+import { Loader } from "../../utils/components/Loader";
 
 const itemsStateMap = {
   OPENED: "opened",
