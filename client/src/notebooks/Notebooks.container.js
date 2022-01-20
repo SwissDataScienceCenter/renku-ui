@@ -26,8 +26,8 @@ import {
   CheckNotebookIcon, ShowSession as ShowSessionPresent
 } from "./Notebooks.present";
 import { StatusHelper } from "../model/Model";
-import { Url } from "../utils/url";
-import { Loader } from "../utils/UIComponents";
+import { Url } from "../utils/helpers/url";
+import { Loader } from "../utils/components/Loader";
 
 
 /**
