@@ -22,7 +22,7 @@ import React, { Fragment } from "react";
 import "./SessionCheatSheet.css";
 import { Clipboard } from "../utils/components/Clipboard";
 import { ExternalDocsLink } from "../utils/components/ExternalLinks";
-import Time from "../utils/Time";
+import Time from "../utils/helpers/Time";
 
 function CommandDesc({ command = "", desc = "", clipboard = true }) {
   return <div>
