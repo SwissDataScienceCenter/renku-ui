@@ -301,17 +301,20 @@ function SessionDocs(props) {
 }
 
 function SessionCommands(props) {
-  const { tab } = props;
+  const { tab, notebook } = props;
 
   if (tab !== SESSION_TABS.commands)
     return null;
+
+  const annotations = NotebooksHelper.cleanAnnotations(notebook.data.annotations, "renku.io");
+  const branch = annotations["branch"];
 
   // ? Having a minHeight prevent losing the vertical scroll position.
   // TODO: Revisit after #1219
   return (
     <Fragment>
       <div className="p-2 p-lg-3" style={{ minHeight: 800 }}>
-        <SessionCheatSheet />
+        <SessionCheatSheet branch={branch}/>
       </div>
     </Fragment>
   );
