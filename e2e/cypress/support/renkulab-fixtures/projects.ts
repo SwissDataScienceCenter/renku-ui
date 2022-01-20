@@ -41,6 +41,48 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    interceptMigrationCheck(name, fixture) {
+      const coreUrl = "/ui-server/api/renku/cache.migrations_check";
+      const params =
+        "git_url=https%3A%2F%2Fdev.renku.ch%2Fgitlab%2Fe2e%2Flocal-test-project.git&branch=master";
+      cy.intercept(`${coreUrl}?${params}`, {
+        fixture: fixture
+      }).as(name);
+      return this;
+    }
+
+    projectMigrationUpToDate(name = "getMigration") {
+      this.interceptMigrationCheck(
+        name,
+        "test-project_migration_up-to-date.json"
+      );
+      return this;
+    }
+
+    projectMigrationOptional(name = "getMigration") {
+      this.interceptMigrationCheck(
+        name,
+        "test-project_migration_update-optional.json"
+      );
+      return this;
+    }
+
+    projectMigrationRecommended(name = "getMigration") {
+      this.interceptMigrationCheck(
+        name,
+        "test-project_migration_update-recommended.json"
+      );
+      return this;
+    }
+
+    projectMigrationRequired(name = "getMigration") {
+      this.interceptMigrationCheck(
+        name,
+        "test-project_migration_update-required.json"
+      );
+      return this;
+    }
+
     projectTest(
       names = {
         projectBranchesName: "projectBranches",
@@ -83,7 +125,9 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       cy.intercept("/ui-server/api/projects/39646/graph/webhooks/validation", {
         body: { message: "Hook valid" }
       }).as(validationName);
-      // TODO make a fixture for the cache.migrations_check request
+      cy.intercept("/ui-server/api/projects/39646/graph/status", {
+        body: { done: 1, total: 1, progress: 100.0 }
+      });
     }
   };
 }
