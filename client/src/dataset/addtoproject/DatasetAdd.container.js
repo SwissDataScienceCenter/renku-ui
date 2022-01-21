@@ -134,10 +134,12 @@ function AddDataset(props) {
 
     const projectOptions = handlers.getFormDraftFieldProperty("project", ["options"]);
 
-    const selectedProject = projectOptions.find((project)=>
+    const selectedProject = projectOptions.find((project) =>
       project.value === mappedInputs.project);
 
-    props.client.checkMigration(props.httpProjectUrl).then((response) => {
+    // TODO: is this what we want? Should we check that both the target and the source are up-to-date?
+    const target = selectedProject.value; // It was props.httpProjectUrl, but it's not always set
+    props.client.checkMigration(target).then((response) => {
       if (response && response.error !== undefined) {
         handlers.setSubmitLoader({ value: false, text: "" });
         handlers.setServerErrors(response.error.reason);
