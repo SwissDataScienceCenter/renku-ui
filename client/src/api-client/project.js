@@ -153,7 +153,13 @@ function addProjectMethods(client) {
             namespace {
               fullPath
             }
-            path
+            path,
+            httpUrlToRepo,
+            userPermissions {
+              adminProject,
+              pushCode,
+              removeProject
+            }
           }
         }
       }`;
