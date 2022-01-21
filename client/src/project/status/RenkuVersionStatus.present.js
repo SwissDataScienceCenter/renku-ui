@@ -21,16 +21,14 @@ import { Button, Collapse, Spinner } from "reactstrap";
 
 import human from "human-time";
 
-import { ManualUpdateInstructions, MigrationSuccessAlert, MigrationInfoAlert, MigrationWarnAlert,
+import { AskMaintainer, ManualUpdateInstructions, MigrationSuccessAlert, MigrationInfoAlert, MigrationWarnAlert,
   isMigrationFailure, isMigrationCheckLoading } from "./MigrationUtils";
-import { migrationCheckToRenkuVersionStatus, RENKU_VERSION_SCENARIOS } from "./MigrationUtils";
+import { migrationCheckToRenkuVersionStatus, RENKU_VERSION_SCENARIOS, RENKU_UPDATE_MODE } from "./MigrationUtils";
 import { MigrationStatus } from "../Project";
-import { ExternalLink } from "../../utils/components/ExternalLinks";
 import { Loader } from "../../utils/components/Loader";
 
 function updateNotRequired(renkuVersionStatus) {
-  return renkuVersionStatus === RENKU_VERSION_SCENARIOS.NEW_VERSION_NOT_REQUIRED_AUTO ||
-    renkuVersionStatus === RENKU_VERSION_SCENARIOS.NEW_VERSION_NOT_REQUIRED_MANUAL;
+  return renkuVersionStatus === RENKU_VERSION_SCENARIOS.NEW_VERSION_NOT_REQUIRED;
 }
 
 
@@ -68,22 +66,24 @@ function UpdateInfo({
   backendAvailable, current_metadata_version, project_metadata_version, renkuVersionStatus, statistics
 }) {
   if (updateNotRequired(renkuVersionStatus)) {
-    return <p>
-      If you wish to take advantage of new features, you can update to the latest version of{" "}
-      <strong>renku</strong>. {" "}
+    return <div>
+      <strong>A new version of renku is available.</strong> <br />
+      If you wish to take advantage new features, you can update to the latest version.
       <MigrationTimeEstimate current_metadata_version={current_metadata_version}
         project_metadata_version={project_metadata_version} statistics={statistics} />
-    </p>;
+    </div>;
   }
   const updateMessage = backendAvailable ?
     null :
-    (<span>An update is necessary to work with datasets from the UI.<br /></span>);
+    (<p className="lh-sm">You can launch and work in interactive sessions,{" "}
+      but to make changes to the project from the UI{" "}
+      you will need to <strong>update the renku version</strong>.</p>);
   return (
-    <p>
+    <div>
       {updateMessage}
       <MigrationTimeEstimate current_metadata_version={current_metadata_version}
         project_metadata_version={project_metadata_version} statistics={statistics} />
-    </p>)
+    </div>)
   ;
 }
 
@@ -102,10 +102,9 @@ function AutoUpdateButton({ externalUrl, maintainer, migration_status, onMigrate
       }
     </Button>;
   }
-  return <p>
-    <strong>You do not have the required permissions to update this project.</strong> You can{" "}
-    <ExternalLink role="text" size="sm"
-      title="ask a project maintainer" url={`${externalUrl}/project_members`} /> to do that for you.
+  return <p className="lh-sm">
+    You do not have the required permissions to update this project, but you can{" "}
+    <AskMaintainer externalUrl={externalUrl} /> to do that for you.
   </p>;
 }
 
@@ -122,60 +121,64 @@ function RenkuVersionAutomaticUpdateSection({
   const [isOpen, setOpen] = useState(false);
   const toggleOpen = () => setOpen(!isOpen);
 
+  const updateDetails = (maintainer) ?
+    <Fragment>
+      <AutoUpdateButton externalUrl={externalUrl} maintainer={maintainer}
+        migration_status={migration_status} onMigrateProject={onMigrateProject}
+        renkuVersionStatus={renkuVersionStatus} />
+      <br/><br/>
+      <UpdateSection>
+        <Button color="link" className={`ps-0 mb-2 ${linkClassName} text-start`} onClick={toggleOpen}>
+          <i>Do you prefer manual instructions?</i>
+        </Button>
+        <Collapse isOpen={isOpen}>
+          <ManualUpdateInstructions docUrl={docUrl} launchNotebookUrl={launchNotebookUrl}/>
+        </Collapse>
+      </UpdateSection>
+    </Fragment> :
+    <div className="lh-sm">
+      You do not have the required permissions to update this project, but you can{" "}
+      <AskMaintainer externalUrl={externalUrl} /> to do that for you.
+    </div>;
+
   return <Fragment>
     <UpdateInfo backendAvailable={backendAvailable} current_metadata_version={current_metadata_version}
       project_metadata_version={project_metadata_version} renkuVersionStatus={renkuVersionStatus}
       statistics={statistics} />
-    <AutoUpdateButton externalUrl={externalUrl} maintainer={maintainer}
-      migration_status={migration_status} onMigrateProject={onMigrateProject}
-      renkuVersionStatus={renkuVersionStatus} />
-    <br/><br/>
-    <UpdateSection>
-      <Button color="link" className={`ps-0 mb-2 ${linkClassName} text-start`} onClick={toggleOpen}>
-        <i>Do you prefer manual instructions?</i>
-      </Button>
-      <Collapse isOpen={isOpen}>
-        <ManualUpdateInstructions docUrl={docUrl} launchNotebookUrl={launchNotebookUrl}/>
-      </Collapse>
-    </UpdateSection>
+    {updateDetails}
   </Fragment>;
 }
 
 function RenkuVersionManualUpdateSection({
-  backendAvailable, current_metadata_version, launchNotebookUrl, project_metadata_version, renkuVersionStatus,
-  statistics
+  backendAvailable, current_metadata_version, externalUrl, launchNotebookUrl, maintainer,
+  project_metadata_version, renkuVersionStatus, statistics
 }) {
-  const [isOpen, setOpen] = useState(false);
-  const toggleOpen = () => setOpen(!isOpen);
-
-  // Shall we display a different message for maintainer / not maintainer
-  const linkClassName = updateNotRequired(renkuVersionStatus) ?
-    "" :
-    "link-alert-warning";
   return <Fragment>
     <UpdateInfo backendAvailable={backendAvailable} current_metadata_version={current_metadata_version}
       project_metadata_version={project_metadata_version} renkuVersionStatus={renkuVersionStatus}
       statistics={statistics} />
-    <UpdateSection>
-      <Button color="link" className={`ps-0 mb-2 ${linkClassName} text-start`} onClick={toggleOpen}>
-        <i>Automated update is not possible, but you can follow these instructions to update manually.</i>
-      </Button>
-      <Collapse isOpen={isOpen}>
-        <ManualUpdateInstructions docUrl={docUrl} launchNotebookUrl={launchNotebookUrl}/>
-      </Collapse>
-    </UpdateSection>
+    {
+      maintainer ?
+        <UpdateSection>
+          <ManualUpdateInstructions docUrl={docUrl} launchNotebookUrl={launchNotebookUrl}
+            introText="Automatic update is not possible, but you" />
+        </UpdateSection> :
+        <p className="lh-sm">
+          You do not have the required permissions to update this project, but you can{" "}
+          <AskMaintainer externalUrl={externalUrl} /> to do that for you.
+        </p>
+    }
   </Fragment>;
 }
 
 function RenkuVersionStatusBody({
   externalUrl, launchNotebookUrl, logged, maintainer, migration, onMigrateProject, statistics
 }) {
-  let body = null;
-  let updateSection = null;
-
-  const renkuVersionStatus = migrationCheckToRenkuVersionStatus(migration.check);
+  const fullVersionStatus = migrationCheckToRenkuVersionStatus(migration.check);
+  const { renkuVersionStatus, updateMode } = fullVersionStatus;
   const { migration_status } = migration;
   const { backendAvailable } = migration.core;
+
   const current_metadata_version = migration?.check?.core_compatibility_status?.current_metadata_version;
   const project_metadata_version = migration?.check?.core_compatibility_status?.project_metadata_version;
   const updateProps = {
@@ -183,45 +186,55 @@ function RenkuVersionStatusBody({
     onMigrateProject, project_metadata_version, renkuVersionStatus, statistics
   };
 
-  switch (renkuVersionStatus) {
-    case RENKU_VERSION_SCENARIOS.PROJECT_NOT_SUPPORTED :
-      body = <MigrationWarnAlert>
-        This project appears to be using an experimental version of Renku. Migration is not supported.
-      </MigrationWarnAlert>;
-      break;
-    case RENKU_VERSION_SCENARIOS.RENKU_UP_TO_DATE :
-      body = <MigrationSuccessAlert>
-        This project is using the latest version of renku.
-      </MigrationSuccessAlert>;
-      break;
-    case RENKU_VERSION_SCENARIOS.NEW_VERSION_NOT_REQUIRED_AUTO:
-    case RENKU_VERSION_SCENARIOS.NEW_VERSION_REQUIRED_AUTO :
+  let updateSection = null;
+
+  switch (updateMode) {
+    case RENKU_UPDATE_MODE.UPDATE_AUTO:
       updateSection = <RenkuVersionAutomaticUpdateSection {...updateProps} />;
       break;
-    case RENKU_VERSION_SCENARIOS.NEW_VERSION_NOT_REQUIRED_MANUAL:
-    case RENKU_VERSION_SCENARIOS.NEW_VERSION_REQUIRED_MANUAL:
+    case RENKU_UPDATE_MODE.UPDATE_MANUAL:
       updateSection = <RenkuVersionManualUpdateSection {...updateProps} />;
       break;
     default:
       break;
   }
-
-  // new version available
-  if (body === null && updateSection) {
-    const newVersionText = <p>
-      A new version of <strong>renku</strong> is available.
-    </p>;
-    body = ((renkuVersionStatus === RENKU_VERSION_SCENARIOS.NEW_VERSION_NOT_REQUIRED_AUTO) ||
-      (renkuVersionStatus === RENKU_VERSION_SCENARIOS.NEW_VERSION_NOT_REQUIRED_MANUAL)) ?
-      (<MigrationInfoAlert>
-        {newVersionText}
-        {logged ? updateSection : null}
-      </MigrationInfoAlert>) :
-      (<MigrationWarnAlert>
-        {newVersionText}
-        {logged ? updateSection : null}
+  let body = null, message = null;
+  switch (renkuVersionStatus) {
+    case RENKU_VERSION_SCENARIOS.RENKU_UP_TO_DATE:
+      body = <MigrationSuccessAlert>
+        This project is using the latest version of renku.
+      </MigrationSuccessAlert>;
+      break;
+    case RENKU_VERSION_SCENARIOS.NEW_VERSION_NOT_REQUIRED:
+      body = <MigrationInfoAlert>
+        {updateSection}
+      </MigrationInfoAlert>;
+      break;
+    case RENKU_VERSION_SCENARIOS.NEW_VERSION_REQUIRED:
+      message = (backendAvailable) ?
+        <div><strong>Updating to the latest version of renku is highly recommended</strong>.
+          <p className="lh-sm">
+            Although this project is compatible with the RenkuLab UI, it is using an older version of{" "}
+            renku.
+          </p>
+        </div> :
+        <strong>This project is not compatible with the RenkuLab UI.</strong>;
+      body = (<MigrationWarnAlert>
+        {message}
+        {updateSection}
       </MigrationWarnAlert>);
+      break;
+    case RENKU_VERSION_SCENARIOS.PROJECT_NOT_SUPPORTED:
+      body = <MigrationWarnAlert>
+        This project appears to be using an experimental version of Renku.&nbsp;<br /><br />
+        You can launch and work in interactive sessions, but creating or modifying datasets&nbsp;
+        are not supported from the UI.
+      </MigrationWarnAlert>;
+      break;
+    default:
+      break;
   }
+
   return body;
 }
 
@@ -230,14 +243,31 @@ function RenkuVersionInfo({ migration }) {
   const { newer_renku_available, dockerfile_renku_version } =
     migration.check.dockerfile_renku_status;
   const shownRenkuVersion = dockerfile_renku_version ?? project_renku_version;
+
+  const { project_metadata_version, current_metadata_version } = migration.check.core_compatibility_status;
+
   return newer_renku_available === true || newer_renku_available == null ?
-    <p>
-      <strong>Project Renku Version</strong> <span id="project_version">{shownRenkuVersion}</span><br />
-      <strong>Latest Renku Version</strong> {core_renku_version}<br />
-    </p> :
-    <p>
-      <strong>Project / Latest Renku Version</strong> <span id="project_version">{shownRenkuVersion}</span><br />
-    </p>;
+    <table style={{ borderSpacing: "10px 5px" }}>
+      <tbody>
+        <tr>
+          <th className="mr-2" scope="row">Project Renku Version</th>
+          <td className="mr-2"><span id="project_version">{shownRenkuVersion}</span></td>
+          <td style={{ fontSize: "smaller" }}>(v{project_metadata_version})</td></tr>
+        <tr>
+          <th scope="row">Latest Renku Version</th>
+          <td>{core_renku_version}</td>
+          <td style={{ fontSize: "smaller" }}>(v{current_metadata_version})</td></tr>
+      </tbody>
+    </table> :
+    <table style={{ borderSpacing: "10px 5px" }}>
+      <tbody>
+        <tr>
+          <th scope="row">Project / Latest Renku Version</th>
+          <td><span id="project_version">{shownRenkuVersion}</span></td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>;
 }
 
 function RenkuVersionStatus(props) {
@@ -252,9 +282,14 @@ function RenkuVersionStatus(props) {
 
   return <div>
     <RenkuVersionInfo migration={migration} />
-    <RenkuVersionStatusBody
-      externalUrl={externalUrl} launchNotebookUrl={launchNotebookUrl} logged={logged} maintainer={maintainer}
-      migration={migration} onMigrateProject={onMigrateProject} statistics={statistics} />
+    {
+      (logged) ?
+        <RenkuVersionStatusBody
+          externalUrl={externalUrl} launchNotebookUrl={launchNotebookUrl} logged={logged} maintainer={maintainer}
+          migration={migration} onMigrateProject={onMigrateProject} statistics={statistics} /> :
+        null
+    }
+
   </div>;
 }
 

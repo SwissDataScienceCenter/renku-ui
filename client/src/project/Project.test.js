@@ -336,9 +336,9 @@ describe("rendering ProjectVersionStatus", () => {
       <ProjectVersionStatus key="suggestions" {...allProps} />
       , div);
 
-    expect(div.children.length).toBe(3);
+    expect(div.children.length).toBe(2);
     const bouncers = div.querySelectorAll(".bouncer");
-    expect(bouncers.length).toBe(3);
+    expect(bouncers.length).toBe(2);
   });
 
   it("shows success if everything is ok", async () => {
@@ -382,13 +382,13 @@ describe("rendering ProjectVersionStatus", () => {
         <ProjectVersionStatus key="suggestions" {...allProps} />
       </MemoryRouter>
       , div);
-    expect(div.children.length).toBe(3);
+    expect(div.children.length).toBe(2);
 
     const bouncers = div.querySelectorAll(".bouncer");
     expect(bouncers.length).toBe(0);
 
     const success = div.querySelectorAll(".alert-success");
-    expect(success.length).toBe(3);
+    expect(success.length).toBe(2);
   });
 
 });

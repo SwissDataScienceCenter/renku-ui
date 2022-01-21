@@ -83,29 +83,23 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    projectTest(
+    projectTestContents(
       names = {
-        projectBranchesName: "projectBranches",
-        projectCommitsName: "projectCommits",
-        projectName: "getProject",
+        coreServiceVersionName: "getCoreServiceVersion",
+        projectBranchesName: "getProjectBranches",
+        projectCommitsName: "getProjectCommits",
         projectReadmeCommits: "getProjectReadmeCommits",
         readmeName: "getReadme",
         validationName: "getValidation"
       }
     ) {
       const {
+        coreServiceVersionName,
         projectBranchesName,
         projectCommitsName,
-        projectName,
         readmeName
       } = names;
       const { projectReadmeCommits, validationName } = names;
-      cy.intercept(
-        "/ui-server/api/projects/e2e%2Flocal-test-project?statistics=true",
-        {
-          fixture: "test-project.json"
-        }
-      ).as(projectName);
       cy.intercept(
         "/ui-server/api/projects/39646/repository/files/README.md/raw?ref=master",
         { fixture: "test-project-readme.md" }
@@ -128,6 +122,59 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       cy.intercept("/ui-server/api/projects/39646/graph/status", {
         body: { done: 1, total: 1, progress: 100.0 }
       });
+      cy.intercept("/ui-server/api/renku/8/version", {
+        body: {
+          result: {
+            latest_version: "0.16.2",
+            supported_project_version: 8.0
+          }
+        }
+      }).as(coreServiceVersionName);
+      return this;
+    }
+
+    projectTest(
+      names = {
+        coreServiceVersionName: "getCoreServiceVersion",
+        projectBranchesName: "getProjectBranches",
+        projectCommitsName: "getProjectCommits",
+        projectName: "getProject",
+        projectReadmeCommits: "getProjectReadmeCommits",
+        readmeName: "getReadme",
+        validationName: "getValidation"
+      }
+    ) {
+      const { projectName } = names;
+      cy.intercept(
+        "/ui-server/api/projects/e2e%2Flocal-test-project?statistics=true",
+        {
+          fixture: "test-project.json"
+        }
+      ).as(projectName);
+      return this.projectTestContents(names);
+    }
+
+    projectTestObserver(
+      names = {
+        coreServiceVersionName: "getCoreServiceVersion",
+        projectBranchesName: "getProjectBranches",
+        projectCommitsName: "getProjectCommits",
+        projectName: "getProject",
+        projectReadmeCommits: "getProjectReadmeCommits",
+        readmeName: "getReadme",
+        validationName: "getValidation"
+      }
+    ) {
+      const { projectName } = names;
+      cy.fixture("test-project.json").then((project) => {
+        project.permissions.project_access.access_level = 10;
+        cy.intercept(
+          "GET",
+          "/ui-server/api/projects/e2e%2Flocal-test-project?statistics=true",
+          project
+        ).as(projectName);
+      });
+      return this.projectTestContents(names);
     }
   };
 }

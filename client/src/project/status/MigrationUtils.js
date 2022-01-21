@@ -76,27 +76,40 @@ function shouldDisplayVersionWarning(migration) {
 const RENKU_VERSION_SCENARIOS = {
   PROJECT_NOT_SUPPORTED: "PROJECT_NOT_SUPPORTED",
   RENKU_UP_TO_DATE: "RENKU_UP_TO_DATE",
-  NEW_VERSION_NOT_REQUIRED_AUTO: "NEW_VERSION_NOT_REQUIRED_AUTO",
-  NEW_VERSION_REQUIRED_AUTO: "NEW_VERSION_REQUIRED_AUTO",
-  NEW_VERSION_NOT_REQUIRED_MANUAL: "NEW_VERSION_NOT_REQUIRED_MANUAL",
-  NEW_VERSION_REQUIRED_MANUAL: "NEW_VERSION_REQUIRED_MANUAL"
+  NEW_VERSION_NOT_REQUIRED: "NEW_VERSION_NOT_REQUIRED",
+  NEW_VERSION_REQUIRED: "NEW_VERSION_REQUIRED",
 };
 
+const RENKU_UPDATE_MODE = {
+  PROJECT_NOT_SUPPORTED: "PROJECT_NOT_SUPPORTED",
+  UP_TO_DATE: "UP_TO_DATE",
+  UPDATE_AUTO: "UPDATE_AUTO",
+  UPDATE_MANUAL: "UPDATE_MANUAL",
+};
+
+
 function migrationCheckToRenkuVersionStatus({ project_supported, dockerfile_renku_status, core_compatibility_status }) {
-  if (project_supported === false) return RENKU_VERSION_SCENARIOS.PROJECT_NOT_SUPPORTED;
+  if (project_supported === false) {
+    return {
+      renkuVersionStatus: RENKU_VERSION_SCENARIOS.PROJECT_NOT_SUPPORTED,
+      updateMode: RENKU_UPDATE_MODE.PROJECT_NOT_SUPPORTED
+    };
+  }
 
   const { migration_required } = core_compatibility_status;
-  if (dockerfile_renku_status.newer_renku_available === false)
-    return RENKU_VERSION_SCENARIOS.RENKU_UP_TO_DATE;
-
-  if (dockerfile_renku_status.automated_dockerfile_update) {
-    if (migration_required)
-      return RENKU_VERSION_SCENARIOS.NEW_VERSION_REQUIRED_AUTO;
-    return RENKU_VERSION_SCENARIOS.NEW_VERSION_NOT_REQUIRED_AUTO;
+  if (dockerfile_renku_status.newer_renku_available === false) {
+    return {
+      renkuVersionStatus: RENKU_VERSION_SCENARIOS.RENKU_UP_TO_DATE,
+      updateMode: RENKU_UPDATE_MODE.UP_TO_DATE
+    };
   }
-  if (migration_required)
-    return RENKU_VERSION_SCENARIOS.NEW_VERSION_REQUIRED_MANUAL;
-  return RENKU_VERSION_SCENARIOS.NEW_VERSION_NOT_REQUIRED_MANUAL;
+  const updateMode = (dockerfile_renku_status.automated_dockerfile_update) ?
+    RENKU_UPDATE_MODE.UPDATE_AUTO :
+    RENKU_UPDATE_MODE.UPDATE_MANUAL;
+  const renkuVersionStatus = (migration_required) ?
+    RENKU_VERSION_SCENARIOS.NEW_VERSION_REQUIRED :
+    RENKU_VERSION_SCENARIOS.NEW_VERSION_NOT_REQUIRED;
+  return { renkuVersionStatus, updateMode };
 }
 
 function isMigrationCheckLoading(loading, migration) {
@@ -128,15 +141,25 @@ function ShowMigrationFailure({ check_error, migration_error, migration_status }
   return null;
 }
 
-function ManualUpdateInstructions({ docUrl, launchNotebookUrl }) {
-  return <p>
-    You can launch a <Link to={launchNotebookUrl}>session</Link> and follow the{" "}
+function ManualUpdateInstructions({ docUrl, launchNotebookUrl, introText }) {
+  if (introText == null)
+    introText = "You";
+
+  return <p className="lh-sm">
+    {introText} can launch a <Link to={launchNotebookUrl}>session</Link> and follow the{" "}
     <ExternalLink role="text" size="sm" url={docUrl} title="instructions for upgrading" />.
   </p>;
 }
 
-export { GeneralErrorMessage, MigrationInfoAlert, MigrationSuccessAlert, MigrationWarnAlert };
+function AskMaintainer({ externalUrl, title }) {
+  if (title == null)
+    title = "ask a project maintainer";
+
+  return <ExternalLink role="text" size="sm" title={title} url={`${externalUrl}/-/project_members`} />;
+}
+
+export { AskMaintainer, GeneralErrorMessage, MigrationInfoAlert, MigrationSuccessAlert, MigrationWarnAlert };
 export { ManualUpdateInstructions };
 export { ShowMigrationFailure, isMigrationFailure };
-export { migrationCheckToRenkuVersionStatus, RENKU_VERSION_SCENARIOS };
+export { migrationCheckToRenkuVersionStatus, RENKU_VERSION_SCENARIOS, RENKU_UPDATE_MODE };
 export { isMigrationCheckLoading, shouldDisplayVersionWarning };
