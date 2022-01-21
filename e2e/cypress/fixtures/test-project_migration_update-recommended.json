@@ -1,7 +1,7 @@
 {
   "result": {
     "core_compatibility_status": {
-      "migration_required": false,
+      "migration_required": true,
       "project_metadata_version": "8",
       "current_metadata_version": "9"
     },
