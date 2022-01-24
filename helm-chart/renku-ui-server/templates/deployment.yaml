@@ -61,6 +61,14 @@ spec:
               value: {{ .Values.authentication.secret | default (printf "%s" .Values.global.uiserver.clientSecret) | quote }}
             - name: AUTH_TOKEN_TOLERANCE
               value: {{ .Values.authentication.expirationTolerance | default (printf "10") | quote }}
+            {{- if .Values.sentry.enabled }}
+            - name: SENTRY_URL
+              value: {{ .Values.sentry.url | quote }}
+            - name: SENTRY_NAMESPACE
+              value: {{ .Values.sentry.namespace | default (printf "%s" .Release.Namespace) | quote }}
+            - name: SENTRY_TRACE_RATE
+              value: {{ .Values.sentry.sampleRate | quote }}
+            {{ - end }}
             {{- if .Values.redis.install }}
             - name: REDIS_HOST
               value: {{ include "call-nested" (list . "redis" "redis.fullname") }}-master
