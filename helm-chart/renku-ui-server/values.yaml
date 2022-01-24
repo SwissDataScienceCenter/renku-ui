@@ -80,6 +80,11 @@ gateway:
   loginSuffix: /auth/login
   logoutSuffix: /auth/logout
 
+sentry:
+  enabled: false
+  url: ""
+  namespace: ""
+
 authentication:
   url:
   id: renku-ui
