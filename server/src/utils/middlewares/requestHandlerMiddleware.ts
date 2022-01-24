@@ -1,5 +1,5 @@
 /*!
- * Copyright 2020 - Swiss Data Science Center (SDSC)
+ * Copyright 2022 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,22 +16,28 @@
  * limitations under the License.
  */
 
-//
-// Global logging support
-//
+/**
+ *  renku-ui-server
+ *
+ *  requestHandlerMiddleware.ts
+ *  requestHandler middleware
+ */
 
-import winston from "winston";
+import http from "http";
+import domain from "domain";
 
-import config from "./config";
+const requestHandlerMiddleware = (
+  req: http.IncomingMessage,
+  res: http.ServerResponse,
+  next: (error?: Error) => void,
+): void => {
 
+  const local = domain.create();
+  local.add(req);
+  local.add(res);
+  local.on("error", next);
 
-const logger = winston.createLogger({
-  level: config.server.logLevel,
-  format: winston.format.json(),
-  defaultMeta: { service: "renku-ui-server" },
-  transports: [
-    new winston.transports.Console({ format: winston.format.simple() }),
-  ]
-});
+  local.run(() => next);
+};
 
-export default logger;
+export default requestHandlerMiddleware;

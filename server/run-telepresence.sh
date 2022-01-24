@@ -70,14 +70,19 @@ else
   SERVICE_NAME=${DEV_NAMESPACE}-renku-uiserver
 fi
 
-# TODO: set sentry dns
- if [[ $SENTRY = 1 ]]
- then
-   SENTRY_URL="https://4daf5346cec5498e98f73fa44c6d6a3b@sentry.dev.renku.ch/9"
-   SENTRY_NAMESPACE="${DEV_NAMESPACE}"
- else
-   echo "Errors won't be sent to sentry by default. To enable sentry, use 'SENTRY=1 ./run-telepresence.sh'"
- fi
+  SENTRY_URL="https://4daf5346cec5498e98f73fa44c6d6a3b@sentry.dev.renku.ch/9"
+  SENTRY_NAMESPACE="${DEV_NAMESPACE}"
+  SENTRY_TRACE_RATE=1.0
+   echo ""
+   echo "***** SENTRY Instructions *****"
+   echo "To enable sentry these environment values must exist. You can add them in the .env file"
+   echo "SENTRY_URL=${SENTRY_URL}"
+   echo "SENTRY_NAMESPACE=${SENTRY_NAMESPACE}"
+   echo "SENTRY_TRACE_RATE=${SENTRY_TRACE_RATE}"
+   echo "TELEPRESENCE=true"
+   echo "************************"
+   echo ""
+
 
 if [[ "$CONSOLE" ]]
 then

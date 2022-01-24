@@ -26,7 +26,12 @@
 import * as SentryLib from "@sentry/node";
 import * as Tracing from "@sentry/tracing";
 import express from "express";
+import _ from "lodash";
+
 import { getRelease } from "../index";
+import config from "../../config";
+import logger from "../../logger";
+import requestHandlerMiddleware from "../middlewares/requestHandlerMiddleware";
 
 export interface SentryConfiguration {
   url: string;
@@ -86,7 +91,7 @@ class Sentry {
         // enable Express.js middleware tracing
         new Tracing.Integrations.Express({ app }),
       ],
-      tracesSampleRate: options.sampleRate,
+      tracesSampleRate: _.clamp(options.sampleRate, 0, 1),
     });
 
     SentryLib.setTags({
@@ -106,4 +111,28 @@ class Sentry {
   }
 }
 
-export { Sentry };
+const initializeSentry = (app: express.Application) : void => {
+  let sentryInitialized = false;
+  logger.info(`Sentry Enabled: ${config.sentry.enabled}`);
+  if (config.sentry.enabled) {
+    logger.info(`trying to set up SENTRY`);
+    const configSentry : SentryConfiguration = {
+      url: config.sentry.url,
+      namespace: config.sentry.namespace,
+      version: config.server.serverUiVersion,
+      telepresence: !!process.env.TELEPRESENCE,
+      sampleRate: config.sentry.sampleRate,
+    };
+
+    const sentry = new Sentry();
+    sentry.init(configSentry, app);
+    sentryInitialized = sentry.sentryInitialized;
+  }
+  else {
+    // include request Handler middleware to unblock app if has a uncaughtException
+    app.use(requestHandlerMiddleware);
+  }
+  logger.info(`Sentry Initialized: ${sentryInitialized}`);
+};
+
+export { initializeSentry };
