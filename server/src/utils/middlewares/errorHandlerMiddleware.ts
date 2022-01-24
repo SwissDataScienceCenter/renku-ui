@@ -23,9 +23,9 @@
  *  errorHandler middleware
  */
 
-import { BaseError } from "./baseError";
-import logger from "../logger";
-import { errorHandler } from "./errorHandler";
+import { BaseError } from "../baseError";
+import logger from "../../logger";
+import { errorHandler } from "../errorHandler";
 import express from "express";
 
 const errorHandlerMiddleware = (
@@ -34,7 +34,7 @@ const errorHandlerMiddleware = (
   res: express.Response,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   next: express.NextFunction): void => {
-  logger.info("Error handled in errorHandler middleware 😉...");
+  logger.info("Error handled in the errorHandler middleware 😉");
   errorHandler.handleError(err);
   if (err instanceof BaseError) {
     res.status(err.httpCode);

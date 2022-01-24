@@ -17,6 +17,7 @@
  */
 
 import cookieParser from "cookie-parser";
+import "dotenv/config";
 import express from "express";
 import morgan from "morgan";
 
@@ -27,33 +28,15 @@ import { Authenticator } from "./authentication";
 import { registerAuthenticationRoutes } from "./authentication/routes";
 import { Storage } from "./storage";
 import { errorHandler } from "./utils/errorHandler";
-import errorHandlerMiddleware from "./utils/errorHandlerMiddleware";
-import { SentryConfiguration, Sentry } from "./utils/sentry/sentry";
+import errorHandlerMiddleware from "./utils/middlewares/errorHandlerMiddleware";
+import { initializeSentry } from "./utils/sentry/sentry";
 
 const app = express();
 const port = config.server.port;
 const prefix = config.server.prefix;
-let sentryInitialized = false;
-if (config.sentry.enabled) {
-  // const configSentry : SentryConfiguration = {
-  //   url: config.sentry.url,
-  //   namespace: config.sentry.namespace,
-  //   version: config.server.serverUiVersion,
-  //   telepresence: !!process.env.TELEPRESENCE,
-  //   sampleRate: config.sentry.sampleRate,
-  // };
-  const configSentry : SentryConfiguration = {
-    url: "https://4daf5346cec5498e98f73fa44c6d6a3b@sentry.dev.renku.ch/9",
-    namespace: "andrea",
-    version: "1.3.0",
-    telepresence: true,
-    sampleRate: 1.0,
-  };
-  const sentry = new Sentry();
-  sentry.init(configSentry, app);
-  sentryInitialized = sentry.sentryInitialized;
-}
-logger.info(`Sentry Initialized: ${sentryInitialized}`);
+
+// initialize sentry if the SENTRY_URL is set
+initializeSentry(app);
 
 // configure logging
 const logStream = {
@@ -82,7 +65,8 @@ authenticator.init().then(() => {
   logger.info("Authenticator started");
 
   registerAuthenticationRoutes(app, authenticator);
-  // Necessary error handler middleware after register router
+  // The error handler middleware is needed here because the registration of authentication
+  // routes is asynchronous and the middleware has to be registered after them
   app.use(errorHandlerMiddleware);
 });
 
@@ -92,7 +76,6 @@ app.use(cookieParser());
 // register routes
 routes.register(app, prefix, authenticator);
 
-app.use(errorHandlerMiddleware);
 
 process.on("unhandledRejection", (reason: Error) => {
   errorHandler.handleError(reason);

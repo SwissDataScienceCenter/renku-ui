@@ -36,11 +36,11 @@ const DEPLOYMENT = {
 };
 
 const SENTRY = {
-  enabled: process.env.SENTRY_URL ?? true,
+  enabled: !!process.env.SENTRY_URL ?? false,
   url: process.env.SENTRY_URL || undefined,
   namespace: process.env.SENTRY_NAMESPACE || undefined,
   telepresence: !!process.env.TELEPRESENCE,
-  sampleRate: parseFloat(process.env.SAMPLE_TRACE_RATE) ?? 0
+  sampleRate: parseFloat(process.env.SENTRY_TRACE_RATE) || 0
 };
 
 const AUTHENTICATION = {
