@@ -41,6 +41,8 @@ spec:
           env:
             - name: SERVER_URL
               value: {{ .Values.serverData.url | default (printf "https://%s" .Values.global.renku.domain) | quote }}
+            - name: UI_SERVER_VERSION
+              value: {{ .Chart.Version | quote }}
             - name: SERVER_PORT
               value: {{ .Values.serverData.port | default (printf "8080") | quote }}
             - name: SERVER_PREFIX

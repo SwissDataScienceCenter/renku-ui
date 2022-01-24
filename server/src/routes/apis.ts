@@ -81,6 +81,12 @@ function registerApiRoutes(app: express.Application,
     res.json(data);
   });
 
+  app.get(prefix + "/debug-sentry", async () => {
+    setTimeout(() => {
+      throw new Error("Async Fn error!");
+    }, 1000);
+  });
+
   app.get(prefix + "/allows-iframe/:url", async (req, res) => {
     const validationResponse: CheckURLResponse = {
       isIframeValid: false,

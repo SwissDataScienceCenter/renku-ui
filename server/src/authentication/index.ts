@@ -23,6 +23,8 @@ import config from "../config";
 import logger from "../logger";
 import { Storage, StorageGetOptions, StorageSaveOptions, TypeData } from "../storage";
 import { sleep } from "../utils";
+import { APIError } from "../utils/apiError";
+import { HttpStatusCode } from "../utils/baseError";
 import jwt from "jsonwebtoken";
 
 const verifierSuffix = "-verifier";
@@ -203,9 +205,8 @@ class Authenticator {
       await this.storage.delete(`${config.auth.storagePrefix}${verifierKey}`);
     }
     else {
-      const error = "Code challange not available. Are you re-loading an old page?";
-      logger.error(error);
-      throw new Error(error);
+      const error = "Code challenge not available. Are you re-loading an old page?";
+      throw new APIError("Auth callback reloading page error", HttpStatusCode.INTERNAL_SERVER, error);
     }
 
     try {
@@ -219,8 +220,7 @@ class Authenticator {
       return null;
     }
     catch (error) {
-      logger.error(error);
-      throw error;
+      throw new APIError("Error callback for Authorization Server", HttpStatusCode.INTERNAL_SERVER, error);
     }
   }
 

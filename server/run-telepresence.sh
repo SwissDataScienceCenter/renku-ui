@@ -71,13 +71,13 @@ else
 fi
 
 # TODO: set sentry dns
-# if [[ $SENTRY = 1 ]]
-# then
-#   SENTRY_URL="https://182290b8e1524dd3b7eb5dd051852f9f@sentry.dev.renku.ch/5"
-#   SENTRY_NAMESPACE="${DEV_NAMESPACE}"
-# else
-#   echo "Errors won't be sent to sentry by default. To enable sentry, use 'SENTRY=1 ./run-telepresence.sh'"
-# fi
+ if [[ $SENTRY = 1 ]]
+ then
+   SENTRY_URL="https://4daf5346cec5498e98f73fa44c6d6a3b@sentry.dev.renku.ch/9"
+   SENTRY_NAMESPACE="${DEV_NAMESPACE}"
+ else
+   echo "Errors won't be sent to sentry by default. To enable sentry, use 'SENTRY=1 ./run-telepresence.sh'"
+ fi
 
 if [[ "$CONSOLE" ]]
 then
