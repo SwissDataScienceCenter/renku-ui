@@ -69,4 +69,37 @@ async function sleep(seconds: number): Promise<void> {
 }
 
 
-export { convertType, getCookieValueByName, sleep };
+const RELEASE_UNKNOWN = "unknown";
+const RELEASE_DEV = "-dev";
+
+/**
+ * Return the release definition.
+ *
+ * @param {string} [version] - server UI version in the format "<major>.<minor>.<patch>-<short-SHA>".
+ */
+function getRelease(version: string): string {
+  // Check input validity
+  if (!version || typeof version !== "string")
+    return RELEASE_UNKNOWN;
+
+  // Check format validity
+  const regValid = new RegExp(/^\d*(\.\d*){0,2}(-[a-f0-9]{7,32})?$/);
+  const resValid = version.match(regValid);
+  if (!resValid || !resValid[0])
+    return RELEASE_UNKNOWN;
+
+  // Extract information
+  const regRelease = new RegExp(/^\d*(\.\d*){0,2}/);
+  const resRelease = version.match(regRelease);
+  const release = (!resRelease || !resRelease[0]) ?
+    RELEASE_UNKNOWN :
+    resRelease[0];
+  const regPatch = new RegExp(/-[a-f0-9]{6,32}$/);
+  const resPatch = version.match(regPatch);
+  const patch = (!resPatch || !resPatch[0]) ?
+    "" :
+    RELEASE_DEV;
+  return release + patch;
+}
+
+export { convertType, getCookieValueByName, getRelease, sleep };
