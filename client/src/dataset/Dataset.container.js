@@ -27,6 +27,8 @@ export default function ShowDataset(props) {
 
   const [datasetKg, setDatasetKg] = useState();
   const [datasetFiles, setDatasetFiles] = useState();
+  const [fetchedKg, setFetchedKg] = useState(false);
+
   const dataset = useMemo(() =>
     mapDataset(props.datasets ?
       props.datasets.find(dataset => dataset.name === props.datasetId)
@@ -79,9 +81,12 @@ export default function ShowDataset(props) {
       const id = props.insideProject ? dataset.identifier : props.identifier;
       props.client.fetchDatasetFromKG(id)
         .then((datasetInfo) => {
-          if (!unmounted && datasetKg === undefined && datasetInfo !== undefined)
+          if (!unmounted && datasetKg === undefined && datasetInfo !== undefined) {
+            setFetchedKg(true);
             setDatasetKg(datasetInfo);
+          }
         }).catch(error => {
+          setFetchedKg(true);
           if (!unmounted && error.case === API_ERRORS.notFoundError)
             setFetchError({ code: 404, message: "dataset not found or missing permissions" });
           else if (!unmounted && error.case === API_ERRORS.internalServerError)
@@ -98,6 +103,7 @@ export default function ShowDataset(props) {
     dataset={dataset}
     datasets={props.datasets}
     fetchError={fetchError}
+    fetchedKg={fetchedKg}
     fileContentUrl={props.fileContentUrl}
     history={props.history}
     httpProjectUrl={props.httpProjectUrl}
