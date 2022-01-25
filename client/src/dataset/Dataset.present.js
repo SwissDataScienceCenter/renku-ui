@@ -437,7 +437,7 @@ export default function DatasetView(props) {
         : null
     }
     {
-      dataset.insideKg === false && props.projectInsideKg === true ?
+      props.fetchedKg === true && dataset.insideKg === false && props.projectInsideKg === true ?
         <WarnAlert className="not-in-kg-warning">
           <strong>This dataset is not in the Knowledge Graph;</strong> this means that some
           operations on it are not possible.
