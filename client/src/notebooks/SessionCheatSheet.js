@@ -22,6 +22,7 @@ import React, { Fragment } from "react";
 import "./SessionCheatSheet.css";
 import { Clipboard } from "../utils/components/Clipboard";
 import { ExternalDocsLink } from "../utils/components/ExternalLinks";
+import Time from "../utils/helpers/Time";
 
 function CommandDesc({ command = "", desc = "", clipboard = true }) {
   return <div>
@@ -29,7 +30,7 @@ function CommandDesc({ command = "", desc = "", clipboard = true }) {
     {
       (clipboard === true) ? <Clipboard clipboardText={command} /> : null
     }
-    <p className="renku-info" style={{ paddingTop: "3px" }}>{desc}</p>
+    <div className="renku-info" style={{ paddingTop: "3px" }}>{desc}</div>
   </div>;
 }
 
@@ -172,6 +173,40 @@ function UndoCommit() {
   </Fragment>;
 }
 
+function Autosaves({ branch }) {
+  const defaultBranchName = branch;
+  const nowString = Time.formatDateTime(new Date());
+  const nowIdString = Time.formatDateTime(new Date(), { d3FormatString: "%Y-%m-%d_%H-%M" });
+  const gitCheckoutFragment = `git checkout -b unsaved-${nowIdString}`;
+  const gitAddFragment = "git add .";
+  const gitCommitFragment = `git commit -m 'wip: save unsaved work ${nowString}'`;
+  const gitPushFragment = `git push --set-upstream origin unsaved-${nowIdString}`;
+  const twoLineCommand = `${gitCheckoutFragment};${gitAddFragment};${gitCommitFragment};${gitPushFragment}`;
+  return <Fragment>
+    <CommandsRow>
+      <div>
+        <h2>Autosave</h2>
+        <b className="mb-1">To see unsaved work, diff the contents</b>
+      </div>
+    </CommandsRow>
+    <CommandsRow>
+      <CommandDesc command="git diff HEAD"
+        desc="Diff against the previous state." />
+      <CommandDesc command={`git diff origin/${defaultBranchName}`}
+        desc="Diff against the server state." />
+    </CommandsRow>
+    <CommandsRow>
+      <b className="mb-1">To manage unsaved work</b>
+    </CommandsRow>
+    <CommandsRow>
+      <CommandDesc command={`git reset --hard origin/${defaultBranchName}`}
+        desc="Discard unsaved work and return to latest version." />
+      <CommandDesc command={twoLineCommand}
+        desc="Keep this work around for later." />
+    </CommandsRow>
+  </Fragment>;
+}
+
 function LearnMore() {
   return <Fragment>
     <CommandsRow>
@@ -195,7 +230,7 @@ function LearnMore() {
 }
 
 
-function SessionCheatSheet() {
+function SessionCheatSheet({ branch }) {
   return <div className="commands">
     <h1 className="mb-5">Renku Cheat Sheet</h1>
     <TypicalWorkflow />
@@ -204,6 +239,7 @@ function SessionCheatSheet() {
     <ManagingContents />
     <Collaboration />
     <UndoCommit />
+    <Autosaves branch={branch}/>
     <LearnMore />
   </div>;
 }
