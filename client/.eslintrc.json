@@ -156,12 +156,14 @@
           "asciimath",
           "autosave",
           "autosaved",
+          "autosaves",
           "autostart",
           "autosuggest",
           "backend",
           "bool",
           "cancellable",
           "cancelled",
+          "cheatsheet",
           "checkbox",
           "ckeditor",
           "cktextarea",
@@ -276,6 +278,7 @@
           "webhooks",
           "webpack",
           "whitespace",
+          "wip",
           "yaml",
           "zenodo"
         ]

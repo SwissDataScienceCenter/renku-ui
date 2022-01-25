@@ -262,8 +262,10 @@ const RepoMixin = {
 
     return standard;
   },
-  async fetchCommits(customFilters = null) {
-    const projectId = this.model.get("metadata.id");
+  async fetchCommits(customFilters = null, customProjectId = null) {
+    const projectId = customProjectId ?
+      customProjectId :
+      this.model.get("metadata.id");
     if (!projectId)
       return {};
     const branch = customFilters ?
@@ -271,6 +273,9 @@ const RepoMixin = {
       this.model.get("filters.branch.name");
 
     // start fetching
+    const alreadyFetching = this.model.get("commits.fetching");
+    if (alreadyFetching)
+      return {};
     this.model.set("commits.fetching", true);
     let response = null, date = null, commits = [], error = null;
     try {
@@ -294,8 +299,7 @@ const RepoMixin = {
         this.notifications.addWarning(
           this.notifications.Topics.PROJECT_API,
           "There was an error while fetching the project commits.",
-          null, null, [],
-            `Error for branch "${branch}" on project "${projectName}": ${errorMex}`
+          null, null, [], `Error for branch "${branch}" on project "${projectName}": ${errorMex}`
         );
       }
     }

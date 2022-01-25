@@ -1182,8 +1182,8 @@ class ProjectNotebookServers extends Component {
 class ProjectStartNotebookServer extends Component {
   render() {
     const {
-      branches, client, model, user, forkUrl, externalUrl, location, metadata,
-      fetchBranches, notebookServersUrl, history, blockAnonymous, notifications,
+      branches, client, commits, model, user, forkUrl, externalUrl, location, metadata,
+      fetchBranches, fetchCommits, notebookServersUrl, history, blockAnonymous, notifications,
       projectCoordinator
     } = this.props;
     const warning = notebookWarning(
@@ -1200,22 +1200,31 @@ class ProjectStartNotebookServer extends Component {
         }
       };
 
+    const scope = {
+      defaultBranch: this.props.metadata.defaultBranch,
+      namespace: this.props.metadata.namespace,
+      project: this.props.metadata.path
+    };
+
     return (
-      <StartNotebookServer client={client} model={model} history={history} location={locationEnhanced}
-        message={warning}
-        branches={branches.standard}
+      <StartNotebookServer
         autosaved={branches.autosaved}
-        fetchingBranches={branches.fetching}
-        refreshBranches={fetchBranches}
-        externalUrl={externalUrl}
-        successUrl={notebookServersUrl}
         blockAnonymous={blockAnonymous}
+        branches={branches.standard}
+        client={client}
+        commits={commits}
+        externalUrl={externalUrl}
+        fetchingBranches={branches.fetching}
+        history={history}
+        location={locationEnhanced}
+        message={warning}
+        model={model}
         notebooks={projectCoordinator.model.baseModel.get("notebooks")}
         notifications={notifications}
-        commits={projectCoordinator.get("commits")}
-        projectCoordinator={projectCoordinator}
-        scope={{ namespace: this.props.metadata.namespace, project: this.props.metadata.path,
-          defaultBranch: this.props.metadata.defaultBranch }}
+        refreshBranches={fetchBranches}
+        refreshCommits={fetchCommits}
+        scope={scope}
+        successUrl={notebookServersUrl}
         user={this.props.user}
       />
     );
