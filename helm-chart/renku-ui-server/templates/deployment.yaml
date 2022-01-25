@@ -68,7 +68,7 @@ spec:
               value: {{ .Values.sentry.namespace | default (printf "%s" .Release.Namespace) | quote }}
             - name: SENTRY_TRACE_RATE
               value: {{ .Values.sentry.sampleRate | quote }}
-            {{ - end }}
+            {{- end }}
             {{- if .Values.redis.install }}
             - name: REDIS_HOST
               value: {{ include "call-nested" (list . "redis" "redis.fullname") }}-master
