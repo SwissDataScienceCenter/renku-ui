@@ -65,7 +65,7 @@ authenticator.init().then(() => {
 app.use(cookieParser());
 
 // register routes
-routes.register(app, prefix, authenticator);
+routes.register(app, prefix, authenticator, storage);
 
 // TODO: custom error handler?
 // app.use((error: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {

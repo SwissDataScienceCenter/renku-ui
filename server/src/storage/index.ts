@@ -21,6 +21,8 @@ import Redis from "ioredis";
 import config from "../config";
 import logger from "../logger";
 
+// eslint-disable-next-line no-unused-vars
+export enum REDIS_PREFIX { AUTH = "AUTH_", DATA = "DATA_" }
 
 class Storage {
   redis: Redis.Redis;
@@ -62,21 +64,40 @@ class Storage {
     return this.redis.status;
   }
 
-  async get(path: string): Promise<string> {
-    return await this.redis.get(path);
+  async get(path: string, prefix: REDIS_PREFIX): Promise<string> {
+    return await this.redis.get(`${prefix}${path}`);
   }
 
-  async save(path: string, value: string): Promise<boolean> {
-    const result = await this.redis.set(path, value);
+  async save(path: string, value: string, prefix: REDIS_PREFIX): Promise<boolean> {
+    const result = await this.redis.set(`${prefix}${path}`, value);
     if (result === "OK")
       return true;
     // istanbul ignore next
     return false;
   }
 
-  async delete(path: string): Promise<number> {
-    const result = this.redis.del(path);
-    return result;
+  async lpush(path: string, value: string, prefix: REDIS_PREFIX): Promise<boolean> {
+    const result = await this.redis.lpush(`${prefix}${path}`, value);
+    if (typeof result == "number")
+      return true;
+    // istanbul ignore next
+    return false;
+  }
+
+  async ltrim(path: string, length: number, prefix: REDIS_PREFIX): Promise<boolean> {
+    const result = await this.redis.ltrim(`${prefix}${path}`, 0, length - 1);
+    if (result == "OK")
+      return true;
+    // istanbul ignore next
+    return false;
+  }
+
+  async lrange(path: string, start: number, stop: number, prefix: REDIS_PREFIX): Promise<string[]> {
+    return await this.redis.lrange(`${prefix}${path}`, start, stop);
+  }
+
+  async delete(path: string, prefix: REDIS_PREFIX): Promise<number> {
+    return this.redis.del(`${prefix}${path}`);
   }
 
   shutdown(): void {

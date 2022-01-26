@@ -27,7 +27,8 @@ import { CheckURLResponse } from "./apis.interfaces";
 import { getCookieValueByName } from "../utils";
 import { renkuAuth } from "../authentication/middleware";
 import { validateCSP } from "../utils/url";
-
+import { REDIS_PREFIX, Storage } from "../storage";
+import { getUserIdFromToken, lastProjectsMiddleware } from "../utils/middlewares/lastProjectsMiddleware";
 
 const proxyMiddleware = createProxyMiddleware({
   // set gateway as target
@@ -66,7 +67,8 @@ const proxyMiddleware = createProxyMiddleware({
 });
 
 
-function registerApiRoutes(app: express.Application, prefix: string, authenticator: Authenticator): void {
+function registerApiRoutes(
+  app: express.Application, prefix: string, authenticator: Authenticator, storage: Storage): void {
   // Locally defined APIs
   app.get(prefix + "/versions", (req, res) => {
     const uiShortSha = process.env.RENKU_UI_SHORT_SHA ?
@@ -107,6 +109,23 @@ function registerApiRoutes(app: express.Application, prefix: string, authenticat
     res.json(validationResponse);
   });
 
+  // route handler for projects and track it by user
+  app.get(
+    prefix + "/projects/:projectName",
+    [renkuAuth(authenticator), lastProjectsMiddleware(storage)],
+    proxyMiddleware
+  );
+
+  app.get(prefix + "/last-projects/:length", renkuAuth(authenticator), async (req, res) => {
+    const token = req.headers[config.auth.authHeaderField] as string;
+    const userId = getUserIdFromToken(token);
+    const endList = (parseFloat(req.params["length"]) || 0 ) - 1;
+    let data: string[] = [];
+
+    if (userId)
+      data = await storage.lrange(userId, 0, endList, REDIS_PREFIX.DATA);
+    res.json(data);
+  });
   // All the unmatched APIs will be routed to the gateway using the http-proxy-middleware middlewere
   app.delete(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
   app.get(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);

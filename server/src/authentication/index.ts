@@ -21,8 +21,9 @@ import { Issuer, generators, Client, TokenSet } from "openid-client";
 
 import config from "../config";
 import logger from "../logger";
-import { Storage } from "../storage";
+import { REDIS_PREFIX, Storage } from "../storage";
 import { sleep } from "../utils";
+import jwt from "jsonwebtoken";
 
 
 const verifierSuffix = "-verifier";
@@ -124,10 +125,10 @@ class Authenticator {
    */
   async getPostLoginParametersAndDelete(sessionId: string, deleteAfter = true): Promise<string> {
     const parametersKey = this.getParametersKey(sessionId);
-    const parametersString = await this.storage.get(parametersKey);
+    const parametersString = await this.storage.get(parametersKey, REDIS_PREFIX.AUTH);
     if (parametersString && parametersString != null) {
       if (deleteAfter)
-        await this.storage.delete(parametersKey);
+        await this.storage.delete(parametersKey, REDIS_PREFIX.AUTH);
       return parametersString;
     }
     return "";
@@ -147,10 +148,10 @@ class Authenticator {
     const verifier = generators.codeVerifier();
     const challenge = generators.codeChallenge(verifier);
     const verifierKey = this.getVerifierKey(sessionId);
-    await this.storage.save(verifierKey, verifier);
+    await this.storage.save(verifierKey, verifier, REDIS_PREFIX.AUTH);
     if (redirectParams) {
       const parametersKey = this.getParametersKey(sessionId);
-      await this.storage.save(parametersKey, redirectParams);
+      await this.storage.save(parametersKey, redirectParams, REDIS_PREFIX.AUTH);
     }
 
     // create and return the login url
@@ -190,9 +191,9 @@ class Authenticator {
 
     // get the verifier code and remove it from redis
     const verifierKey = this.getVerifierKey(sessionId);
-    const verifier = await this.storage.get(verifierKey);
+    const verifier = await this.storage.get(verifierKey, REDIS_PREFIX.AUTH);
     if (verifier != null) {
-      await this.storage.delete(verifierKey);
+      await this.storage.delete(verifierKey, REDIS_PREFIX.AUTH);
     }
     else {
       const error = "Code challange not available. Are you re-loading an old page?";
@@ -226,8 +227,7 @@ class Authenticator {
   async storeTokens(sessionId: string, tokens: TokenSet): Promise<boolean> {
     this.checkInit();
 
-    const result = await this.storage.save(sessionId, JSON.stringify(tokens));
-    return result;
+    return await this.storage.save(sessionId, JSON.stringify(tokens), REDIS_PREFIX.AUTH);
   }
 
 
@@ -242,7 +242,7 @@ class Authenticator {
     this.checkInit();
 
     // Get tokens from the store
-    const stringyTokens = await this.storage.get(sessionId);
+    const stringyTokens = await this.storage.get(sessionId, REDIS_PREFIX.AUTH);
     if (stringyTokens == null)
       return null;
     let tokens = new TokenSet(JSON.parse(stringyTokens) as TokenSet);
@@ -296,7 +296,7 @@ class Authenticator {
   async deleteTokens(sessionId: string): Promise<boolean> {
     this.checkInit();
 
-    const result = await this.storage.delete(sessionId);
+    const result = await this.storage.delete(sessionId, REDIS_PREFIX.AUTH);
     return result >= 0 ?
       true :
       false;
@@ -326,5 +326,22 @@ class Authenticator {
   }
 }
 
+/**
+ * Return user Id from token
+ *
+ * @param authHeader - jwt token using bearer schema
+ */
+const getUserIdFromToken = (authHeader: string): string => {
+  if (!authHeader)
+    return undefined;
 
-export { Authenticator };
+  const authItems = authHeader.split(" ");
+
+  if (authItems.length <= 1)
+    return undefined;
+
+  const user = jwt.decode(authItems[1]);
+  return user.sub as string || undefined;
+};
+
+export { Authenticator, getUserIdFromToken };

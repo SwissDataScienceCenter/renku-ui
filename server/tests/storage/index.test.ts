@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { Storage } from "../../src/storage/index";
+import { REDIS_PREFIX, Storage } from "../../src/storage/index";
 
 
 // mock ioredis for storing data
@@ -29,16 +29,32 @@ describe("Test storage", () => {
     // save data
     const path = "somewhere";
     const data = "something";
-    await storage.save(path, data);
+    await storage.save(path, data, REDIS_PREFIX.AUTH);
 
     // get data
-    let savedData = await storage.get(path);
+    let savedData = await storage.get(path, REDIS_PREFIX.AUTH);
     expect(savedData).toBe(data);
 
     // delete data
-    await storage.delete(path);
-    savedData = await storage.get(path);
+    await storage.delete(path, REDIS_PREFIX.AUTH);
+    savedData = await storage.get(path, REDIS_PREFIX.AUTH);
     expect(savedData).not.toBe(data);
+
+    // save access to the project
+    const userId = "userId";
+    const projects = [
+      "namespace/my-project",
+      "namespace/my-projectA",
+      "namespace/my-projectB",
+      "namespace/my-project",
+    ];
+
+    for (const project of projects)
+      await storage.lpush(userId, project, REDIS_PREFIX.DATA);
+
+    // get the last accessed projects
+    const projectList = await storage.lrange(userId, 0, -1, REDIS_PREFIX.DATA);
+    expect(projectList).toEqual(projects.reverse());
   });
 
   it("Test Storage disconnect", async () => {
