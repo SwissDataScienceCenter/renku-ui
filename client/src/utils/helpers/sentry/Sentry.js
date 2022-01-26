@@ -74,9 +74,10 @@ function sentryWithProfiler(component, options) {
  * @param {string} [version] - UI version.
  * @param {bool} [telepresence] - whether the UI is running on telepresence
  * @param {number} [sampleRate] - transaction trace number between 0 and 1 for performance monitoring
+ * @param {Array<string | RegExp>} tracingOrigins - String or regex to match request URL for sentry trace
  */
 function sentryInit(url, namespace = null, userPromise = null, version = null, telepresence = false,
-  sampleRate = 0.0) {
+  sampleRate = 0.0, tracingOrigins) {
   // Prevent re-initializing
   if (sentryInitialized)
     throw new Error("Cannot re-initialize the Sentry client.");
@@ -118,9 +119,10 @@ function sentryInit(url, namespace = null, userPromise = null, version = null, t
     release: getRelease(uiVersion),
     beforeSend: (event) => hookBeforeSend(event),
     denyUrls: sentryDenyUrls,
-    integrations: [new TracingIntegrations.BrowserTracing(
-      { tracingOrigins: ["localhost", /^\//, /ui-server\/api/] },
-    )],
+    integrations: [new TracingIntegrations.BrowserTracing({
+      tracingOrigins,
+      maxTransactionDuration: 30
+    })],
     tracesSampleRate: sentrySampleRate, // number between 0 and 1. (e.g. to send 20% of transactions use 0.2)
   });
   SentryLib.setTags({

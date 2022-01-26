@@ -77,7 +77,8 @@ Promise.all([configFetch, privacyFetch]).then(valuesRead => {
         userPromise,
         params.UI_VERSION,
         params.TELEPRESENCE,
-        params.SENTRY_SAMPLE_RATE
+        params.SENTRY_SAMPLE_RATE,
+        [ params.UISERVER_URL ]
       );
       const profiler = !!params.SENTRY_SAMPLE_RATE;
       if (profiler)
