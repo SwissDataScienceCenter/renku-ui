@@ -98,7 +98,7 @@ function AddDataset(props) {
     let cont = 0;
     const INTERVAL = 6000;
     let monitorJob = setInterval(() => {
-      props.client.getJobStatus(job_id)
+      props.client.getJobStatus(job_id, props.versionUrl)
         .then(job => {
           cont++;
           if (job !== undefined) {
