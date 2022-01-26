@@ -23,6 +23,9 @@
  *  Projects controller code.
  */
 
+import { ACCESS_LEVELS } from "../../api-client";
+
+
 class ProjectsCoordinator {
   constructor(client, model) {
     this.client = client;
@@ -31,23 +34,38 @@ class ProjectsCoordinator {
 
   _starredProjectMetadata(project) {
     let accessLevel = 0;
-    if (project.permissions && project.permissions.project_access)
-      accessLevel = Math.max(accessLevel, project.permissions.project_access.access_level);
+    // check permissions from v4 API
+    if (project?.permissions) {
+      if (project?.permissions?.project_access)
+        accessLevel = Math.max(accessLevel, project.permissions.project_access.access_level);
+      if (project?.permissions?.group_access)
+        accessLevel = Math.max(accessLevel, project.permissions.group_access.access_level);
+    }
+    // check permissions from GraphQL -- // ? REF: https://docs.gitlab.com/ee/user/permissions.html
+    else if (project?.userPermissions) {
+      if (project.userPermissions.removeProject)
+        accessLevel = Math.max(accessLevel, ACCESS_LEVELS.OWNER);
+      else if (project.userPermissions.adminProject)
+        accessLevel = Math.max(accessLevel, ACCESS_LEVELS.MAINTAINER);
+      else if (project.userPermissions.pushCode)
+        accessLevel = Math.max(accessLevel, ACCESS_LEVELS.DEVELOPER);
+    }
 
-    if (project.permissions && project.permissions.group_access)
-      accessLevel = Math.max(accessLevel, project.permissions.group_access.access_level);
+    // Project id can be a number e.g. 1234 or a string with the format: gid://gitlab/Project/1234
+    const projectFullId = typeof (project.id) === "number" ? [] : project.id.split("/");
+    const projectId = projectFullId.length > 1 ? projectFullId[projectFullId.length - 1] : project.id;
 
     return {
-      id: project.id,
+      id: projectId,
       name: project.name,
-      path_with_namespace: project.path_with_namespace,
+      path_with_namespace: project.path_with_namespace ?? project?.fullPath,
       description: project.description,
       tag_list: project.tag_list,
       star_count: project.star_count,
       owner: project.owner,
       last_activity_at: project.last_activity_at,
       access_level: accessLevel,
-      http_url_to_repo: project.http_url_to_repo,
+      http_url_to_repo: project.http_url_to_repo ? project.http_url_to_repo : project.httpUrlToRepo,
       namespace: project.namespace,
       path: project.path,
       avatar_url: project.avatar_url
@@ -59,13 +77,17 @@ class ProjectsCoordinator {
       return;
     // set status to fetching, get all the projects and filter and invoke both APIs
     this.model.set("featured.fetching", true);
-    const params = { order_by: "last_activity_at", per_page: 100 };
+    const params = { query: "last_activity_at", per_page: 100 };
     const promiseStarred = this.client.getAllProjects({ ...params, starred: true })
       .then(resp => resp.map((project) => this._starredProjectMetadata(project)))
-      .catch(error => []);
-    const promiseMember = this.client.getAllProjects({ ...params, membership: true })
-      .then(resp => resp.map((project) => this._starredProjectMetadata(project)))
-      .catch(error => []);
+      .catch(() => []);
+
+    const promiseMember = this.client.getAllProjectsGraphQL(params)
+      .then(resp => {
+        return resp.map((project) => this._starredProjectMetadata(project));
+      })
+      .catch(() => []);
+
 
     // set `featured` content and return only `starred` and `member` projects data
     return Promise.all([promiseStarred, promiseMember]).then(values => {
@@ -80,6 +102,31 @@ class ProjectsCoordinator {
 
       return { starred: values[0], member: values[1] };
     });
+  }
+
+
+  async getLanding() {
+    if (this.model.get("landingProjects.fetching"))
+      return;
+    // set status to fetching, get the projects for the landing page
+    this.model.set("landingProjects.fetching", true);
+    const params = { order_by: "last_activity_at", per_page: 5, membership: true };
+    try {
+      const landingProjects = await this.client.getProjects({ ...params });
+      const projectList = landingProjects?.data?.map((project) => this._starredProjectMetadata(project)) ?? [];
+      this.model.setObject({
+        landingProjects: {
+          fetched: new Date(),
+          fetching: false,
+          list: { $set: projectList },
+        }
+      });
+      return { landing: projectList };
+    }
+    catch {
+      this.model.set("landingProjects.fetching", false);
+      return { landing: [] };
+    }
   }
 
   updateStarred(project, isStarred) {
@@ -124,6 +171,44 @@ class ProjectsCoordinator {
         });
         throw error;
       });
+  }
+
+  async getVisibilities(namespace, projectVisibility) {
+    const computeVisibilities = (options) => {
+      if (options.includes("private")) {
+        return {
+          visibilities: ["private"],
+          default: "private",
+        };
+      }
+      else if (options.includes("internal")) {
+        return {
+          visibilities: ["private", "internal"],
+          default: "internal",
+        };
+      }
+      return {
+        visibilities: ["private", "internal", "public"],
+        default: "public"
+      };
+    };
+
+    let availableVisibilities = null;
+    let options = projectVisibility ? [projectVisibility] : [];
+    if (!namespace)
+      return null;
+
+    if (namespace?.kind === "user") {
+      options.push("public");
+      return computeVisibilities(options);
+    }
+    else if (namespace?.kind === "group") {
+      // get group visibility
+      const group = await this.client.getGroupByPath(namespace.full_path).then(r => r.data);
+      options.push(group.visibility);
+      return computeVisibilities(options);
+    }
+    return availableVisibilities;
   }
 }
 

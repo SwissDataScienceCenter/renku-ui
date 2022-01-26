@@ -25,19 +25,20 @@
 
 import { Schema, PropertyName as Prop } from "./index";
 import {
-  notebooksSchema, userSchema, projectsSchema, projectGlobalSchema, newProjectSchema,
-  statuspageSchema, notificationsSchema, formGeneratorSchema
+  environmentSchema, formGeneratorSchema, newProjectSchema, notebooksSchema, notificationsSchema,
+  projectsSchema, projectSchema, statuspageSchema, userSchema
 } from "./RenkuModels";
 
 const globalSchema = new Schema({
-  notebooks: { [Prop.SCHEMA]: notebooksSchema },
-  user: { [Prop.SCHEMA]: userSchema },
-  projects: { [Prop.SCHEMA]: projectsSchema },
-  project: { [Prop.SCHEMA]: projectGlobalSchema },
+  environment: { [Prop.SCHEMA]: environmentSchema },
+  formGenerator: { [Prop.SCHEMA]: formGeneratorSchema },
   newProject: { [Prop.SCHEMA]: newProjectSchema },
-  statuspage: { [Prop.SCHEMA]: statuspageSchema },
+  notebooks: { [Prop.SCHEMA]: notebooksSchema },
   notifications: { [Prop.SCHEMA]: notificationsSchema },
-  formGenerator: { [Prop.SCHEMA]: formGeneratorSchema }
+  project: { [Prop.SCHEMA]: projectSchema },
+  projects: { [Prop.SCHEMA]: projectsSchema },
+  statuspage: { [Prop.SCHEMA]: statuspageSchema },
+  user: { [Prop.SCHEMA]: userSchema },
 });
 
 export { globalSchema };

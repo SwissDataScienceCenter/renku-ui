@@ -1,0 +1,27 @@
+.alert {
+  padding: 29px;
+  border: none;
+}
+
+.alert-dismissible {
+  padding-right: 3rem; }
+
+.alert-content {
+  display: flex;
+}
+
+.alert-info {
+  color: $rk-info-text;
+}
+
+.alert-success {
+  color: $rk-success-text;
+}
+
+.alert-warning {
+  color: $rk-warning-text;
+}
+
+.alert-danger {
+  color: $rk-danger-text;
+}

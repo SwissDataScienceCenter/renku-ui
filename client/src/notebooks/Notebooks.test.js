@@ -33,6 +33,7 @@ import {
 import { mergeEnumOptions } from "./Notebooks.present";
 import { ExpectedAnnotations } from "./Notebooks.state";
 import { StateModel, globalSchema } from "../model";
+import { ProjectCoordinator } from "../project";
 import { testClient as client } from "../api-client";
 
 
@@ -83,6 +84,17 @@ describe("notebook status", () => {
       "step": "ContainersReady"
     },
     "expected": "pending"
+  },
+  {
+    "status": {
+      "message": "containers with unready status: [notebook]",
+      "phase": "Pending",
+      "ready": false,
+      "reason": "ContainersNotReady",
+      "step": "ContainersReady",
+      "stopping": true,
+    },
+    "expected": "stopping"
   }];
 
   it("computed vs expected", () => {
@@ -365,9 +377,17 @@ describe("rendering", () => {
   });
 
   it("renders StartNotebookServer without crashing", async () => {
+    const projectCoordinator = new ProjectCoordinator(client, model.subModel("project"));
+    await act(async () => {
+      await projectCoordinator.fetchProject(client, "test");
+      await projectCoordinator.fetchCommits();
+    });
     const props = {
       client,
       model,
+      commits: projectCoordinator.get("commits"),
+      notebooks: model.get("notebooks"),
+      user: { logged: true, data: { username: "test" } },
       branches: [],
       autosaved: [],
       location: fakeLocation,
@@ -386,6 +406,14 @@ describe("rendering", () => {
       ReactDOM.render(
         <MemoryRouter>
           <StartNotebookServer {...props} scope={scope} />
+        </MemoryRouter>, div);
+    });
+    // autostart session
+    const autostartFakeLocation = { pathname: "", search: "autostart=1" };
+    await act(async () => {
+      ReactDOM.render(
+        <MemoryRouter>
+          <StartNotebookServer {...props} location={autostartFakeLocation} />
         </MemoryRouter>, div);
     });
   });

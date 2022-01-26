@@ -25,8 +25,9 @@
 
 
 import React, { Fragment } from "react";
-import { Row, Col, Modal, ModalHeader, ModalBody, Button, Alert, FormText } from "reactstrap";
-import { Loader } from "../../../utils/UIComponents";
+import { Row, Col, Modal, ModalHeader, ModalBody, Button, FormText } from "reactstrap";
+import { ErrorAlert } from "../../../utils/components/Alert";
+import { Loader } from "../../../utils/components/Loader";
 
 function DeleteDatasetPresent(props) {
 
@@ -34,10 +35,10 @@ function DeleteDatasetPresent(props) {
 
   if (props.serverErrors) {
     modalContent = <Col>
-      <Alert color="danger">
+      <ErrorAlert>
         <p>Errors occurred while deleting this dataset</p>
         <p><pre className="text-wrap">{props.serverErrors.error}</pre></p>
-      </Alert>
+      </ErrorAlert>
     </Col>;
   }
   else {
@@ -50,15 +51,16 @@ function DeleteDatasetPresent(props) {
           <FormText color="primary">
             <Loader size="16" inline="true" margin="2" />
             {props.submitLoader.text}
+            <br />
           </FormText>
           : null
         }
         <Button type="submit" onClick={props.deleteDataset}
-          disabled={props.submitLoader.value} className="float-right mt-1" color="primary">
-          Delete Dataset
+          disabled={props.submitLoader.value} className="float-right mt-1" color="secondary">
+          Delete dataset
         </Button>
-        <Button disabled={props.submitLoader.value} className="float-right mt-1 me-1"
-          color="secondary" onClick={props.closeModal}>
+        <Button disabled={props.submitLoader.value} className="float-right mt-1 ms-2"
+          color="primary" onClick={props.closeModal}>
           Cancel
         </Button>
       </Fragment>

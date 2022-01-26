@@ -1,5 +1,89 @@
 # Changes
 
+## [1.3.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.2.2...1.3.0) (2022-01-07)
+
+### Bug Fixes
+
+* show the correct session status on notebooks preview ([#1610](https://github.com/SwissDataScienceCenter/renku-ui/issues/1610), [#1606](https://github.com/SwissDataScienceCenter/renku-ui/issues/1606))
+* correct links to migration documentation  ([#1591](https://github.com/SwissDataScienceCenter/renku-ui/issues/1591), [#1588](https://github.com/SwissDataScienceCenter/renku-ui/issues/1588))
+* order scheduled maintenances to show the next one first  ([#1612](https://github.com/SwissDataScienceCenter/renku-ui/issues/1612), [#1609](https://github.com/SwissDataScienceCenter/renku-ui/issues/1609))
+* sanitize Jupyter notebooks to remove problematic HTML  ([#1629](https://github.com/SwissDataScienceCenter/renku-ui/issues/1629))
+
+### Features
+
+* show suggestions for things to do on new projects  ([#1512](https://github.com/SwissDataScienceCenter/renku-ui/issues/1512), [#1578](https://github.com/SwissDataScienceCenter/renku-ui/issues/1578))
+* support links for sharing sessions with options  ([#1596](https://github.com/SwissDataScienceCenter/renku-ui/issues/1596), [#1608](https://github.com/SwissDataScienceCenter/renku-ui/issues/1608))
+* add visibility open when forking a project  ([#1272](https://github.com/SwissDataScienceCenter/renku-ui/issues/1272), [#1617](https://github.com/SwissDataScienceCenter/renku-ui/issues/1617))
+* allow stopping a session that is not fully started  ([#787](https://github.com/SwissDataScienceCenter/renku-ui/issues/787), [#1605](https://github.com/SwissDataScienceCenter/renku-ui/issues/1605))
+* handle Enter key on project search bar  ([#1576](https://github.com/SwissDataScienceCenter/renku-ui/issues/1576), [#1595](https://github.com/SwissDataScienceCenter/renku-ui/issues/1595))
+* updates to style of alerts, menus, and tables  ([#1571](https://github.com/SwissDataScienceCenter/renku-ui/issues/1571),  [#1589](https://github.com/SwissDataScienceCenter/renku-ui/issues/1589))
+* improve UX when GitLab does not allow iframes  ([#1584](https://github.com/SwissDataScienceCenter/renku-ui/issues/1584), [#1572](https://github.com/SwissDataScienceCenter/renku-ui/issues/1572))
+
+
+## [1.2.2](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.2.1...1.2.2) (2021-12-20)
+
+### Bug Fixes
+
+* order maintenance by schedule date asc ([#1612](https://github.com/SwissDataScienceCenter/renku-ui/issues/1612))
+
+## [1.2.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.2.0...1.2.1) (2021-11-29)
+
+### Bug Fixes
+
+* adjust the build pipeline to prevent showing version update popups when unnecessary ([#1594](https://github.com/SwissDataScienceCenter/renku-ui/issues/1594))
+
+## [1.2.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.1.0...1.2.0) (2021-11-26)
+
+### Features
+
+**Server**
+
+* improve stability when external stores are temporarily unavailable ([#1583](https://github.com/SwissDataScienceCenter/renku-ui/issues/1583), [#1521](https://github.com/SwissDataScienceCenter/renku-ui/issues/1521))
+
+**Client**
+
+* add PDF file viewer ([#998](https://github.com/SwissDataScienceCenter/renku-ui/issues/998), [#1566](https://github.com/SwissDataScienceCenter/renku-ui/issues/1566))
+* render LaTeX math ([#1552](https://github.com/SwissDataScienceCenter/renku-ui/issues/1552), [#1557](https://github.com/SwissDataScienceCenter/renku-ui/issues/1557), [#946](https://github.com/SwissDataScienceCenter/renku-ui/issues/946))
+* improve performance when loading user's projects ([#1553](https://github.com/SwissDataScienceCenter/renku-ui/issues/1553), closes [#1529](https://github.com/SwissDataScienceCenter/renku-ui/issues/1529))
+* update Renku commands cheat sheet ([#1582](https://github.com/SwissDataScienceCenter/renku-ui/issues/1582), [#1558](https://github.com/SwissDataScienceCenter/renku-ui/issues/1558))
+
+### BREAKING CHANGES
+
+* requires renku-gateway version >= 0.10.2
+
+
+## [1.1.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.0.2...1.1.0) (2021-11-12)
+
+
+* allow canceling a dataset search before before it completes ([#1352](https://github.com/SwissDataScienceCenter/renku-ui/issues/1352), [#1549](https://github.com/SwissDataScienceCenter/renku-ui/issues/1549))
+* use ui server for authentication ([#1519](https://github.com/SwissDataScienceCenter/renku-ui/issues/1519), [#1337](https://github.com/SwissDataScienceCenter/renku-ui/issues/1337))
+
+* highlight code syntax in markdown files ([#1534](https://github.com/SwissDataScienceCenter/renku-ui/issues/1534), [#1358](https://github.com/SwissDataScienceCenter/renku-ui/issues/1358))
+* improve performance of landing page ([#1529](https://github.com/SwissDataScienceCenter/renku-ui/issues/1529), [#1546](https://github.com/SwissDataScienceCenter/renku-ui/issues/1546))
+* notify user when a new renkulab version is available ([#1544](https://github.com/SwissDataScienceCenter/renku-ui/issues/1544), [#819](https://github.com/SwissDataScienceCenter/renku-ui/issues/819))
+* rearrange session menu options ([#1545](https://github.com/SwissDataScienceCenter/renku-ui/issues/1545), [#1548](https://github.com/SwissDataScienceCenter/renku-ui/issues/1548))
+* preview matlab files ([#1543](https://github.com/SwissDataScienceCenter/renku-ui/issues/1543))
+
+### Bug Fixes
+
+* filter out the internal loud component when checking RenkuLab health ([#1541](https://github.com/SwissDataScienceCenter/renku-ui/issues/1541))
+
+
+## [1.0.2](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.0.1..1.0.2) (2021-10-29)
+
+
+### Bug Fixes
+
+* add missing headers to graphql queries ([#1525](https://github.com/SwissDataScienceCenter/renku-ui/issues/1525), [#1520](https://github.com/SwissDataScienceCenter/renku-ui/issues/1520))
+* check the image status properly when quickstarting sessions ([#1526](https://github.com/SwissDataScienceCenter/renku-ui/issues/1526), [#1031](https://github.com/SwissDataScienceCenter/renku-ui/issues/1031))
+* use proper components for navbar dropdown links ([#1532](https://github.com/SwissDataScienceCenter/renku-ui/issues/1532))
+
+
+### Features
+
+* add 'loud' option to statuspage display ([#1524](https://github.com/SwissDataScienceCenter/renku-ui/issues/1524),  [#1531](https://github.com/SwissDataScienceCenter/renku-ui/issues/1531))
+
+
 ## [1.0.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.0.0..1.0.1) (2021-10-11)
 
 ### Bug Fixes

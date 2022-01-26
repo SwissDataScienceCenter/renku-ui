@@ -17,6 +17,9 @@ spec:
       labels:
         app.kubernetes.io/name: {{ include "ui-server.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
+        {{- if .Values.redis.install }}
+        {{ include "call-nested" (list . "redis" "redis.fullname") }}-client: "true"
+        {{- end }}
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -37,6 +40,46 @@ spec:
             - name: http
               containerPort: 8080
               protocol: TCP
+          env:
+            - name: SERVER_URL
+              value: {{ .Values.serverData.url | default (printf "https://%s" .Values.global.renku.domain) | quote }}
+            - name: SERVER_PORT
+              value: {{ .Values.serverData.port | default (printf "8080") | quote }}
+            - name: SERVER_PREFIX
+              value: {{ .Values.serverData.prefix | default (printf "/ui-server") | quote }}
+            - name: GATEWAY_URL
+              value: {{ .Values.gateway.url | default (printf "https://%s/api" .Values.global.renku.domain) | quote }}
+            - name: GATEWAY_LOGIN_PATH
+              value: {{ .Values.gateway.loginSuffix | default (printf "/auth/login") | quote }}
+            - name: GATEWAY_LOGOUT_PATH
+              value: {{ .Values.gateway.logoutSuffix | default (printf "/auth/logout") | quote }}
+            - name: AUTH_SERVER_URL
+              value: {{ .Values.authentication.url | default (printf "https://%s/auth/realms/Renku" .Values.global.renku.domain) | quote }}
+            - name: AUTH_CLIENT_ID
+              value: {{ .Values.authentication.id | default (printf "renku-ui") | quote }}
+            - name: AUTH_CLIENT_SECRET
+              value: {{ .Values.authentication.secret | default (printf "%s" .Values.global.uiserver.clientSecret) | quote }}
+            - name: AUTH_TOKEN_TOLERANCE
+              value: {{ .Values.authentication.expirationTolerance | default (printf "10") | quote }}
+            {{- if .Values.redis.install }}
+            - name: REDIS_HOST
+              value: {{ include "call-nested" (list . "redis" "redis.fullname") }}-master
+            - name: REDIS_PORT
+              value: "6379"
+            - name: REDIS_DATABASE
+              value: "0"
+            - name: REDIS_PASSWORD
+              value:
+            {{ else }}
+            - name: REDIS_HOST
+              value: {{ .Values.redis.external.host | quote }}
+            - name: REDIS_PORT
+              value: {{ .Values.redis.external.port | quote }}
+            - name: REDIS_DATABASE
+              value: {{ .Values.redis.external.database | default (printf "0") | quote }}
+            - name: REDIS_PASSWORD
+              value: {{ .Values.redis.external.password | default (printf "") | quote }}
+            {{- end }}
           livenessProbe:
             httpGet:
               path: /liveness
@@ -45,6 +88,12 @@ spec:
             httpGet:
               path: /readiness
               port: http
+          startupProbe:
+            httpGet:
+              path: /startup
+              port: http
+            failureThreshold: 10
+            periodSeconds: 5
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:

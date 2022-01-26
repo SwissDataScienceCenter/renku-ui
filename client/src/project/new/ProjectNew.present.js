@@ -28,17 +28,28 @@ import React, { Component, Fragment, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Autosuggest from "react-autosuggest";
 import {
-  Alert, Button, ButtonGroup, Col, DropdownItem, Fade, Form, FormFeedback, FormGroup, FormText, Input, Label,
-  Modal, ModalBody, ModalFooter, ModalHeader, Row, Table, UncontrolledTooltip
+  Alert, Button, ButtonGroup, Card, CardBody, CardText, CardFooter, Col, DropdownItem, Fade, Form,
+  FormFeedback, FormGroup, FormText, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader,
+  UncontrolledPopover, PopoverHeader, PopoverBody, Row, Table, UncontrolledTooltip
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationTriangle, faInfoCircle, faLink, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
+import {
+  faExclamationTriangle, faInfoCircle, faLink, faQuestionCircle, faSyncAlt, faUndo
+} from "@fortawesome/free-solid-svg-icons";
 
-import { ButtonWithMenu, Clipboard, ExternalLink, FieldGroup, Loader } from "../../utils/UIComponents";
-import { slugFromTitle } from "../../utils/HelperFunctions";
-import { capitalize } from "../../utils/formgenerator/FormGenerator.present";
-import { Url } from "../../utils/url";
+
+import { simpleHash, slugFromTitle } from "../../utils/helpers/HelperFunctions";
+import { capitalize } from "../../utils/components/formgenerator/FormGenerator.present";
+import { Url } from "../../utils/helpers/url";
+
 import "./Project.style.css";
+import defaultTemplateIcon from "./templatePlaceholder.svg";
+import { Loader } from "../../utils/components/Loader";
+import { ErrorAlert, WarnAlert } from "../../utils/components/Alert";
+import { ExternalLink } from "../../utils/components/ExternalLinks";
+import { FieldGroup } from "../../utils/components/FieldGroups";
+import { ButtonWithMenu } from "../../utils/components/Button";
+import { Clipboard } from "../../utils/components/Clipboard";
 
 
 /**
@@ -91,7 +102,7 @@ function ForkProjectHeader(props) {
 }
 
 function ForkProjectBody(props) {
-  const { fetching, forkError, forking } = props;
+  const { fetching, forkError, forkVisibilityError, forking } = props;
   if (fetching.namespaces || fetching.projects) {
     const text = fetching.namespaces ?
       "namespaces" :
@@ -106,7 +117,7 @@ function ForkProjectBody(props) {
   return (
     <ModalBody>
       <ForkProjectContent {...props} />
-      <ForkProjectStatus forkError={forkError} forking={forking} />
+      <ForkProjectStatus forkVisibilityError={forkVisibilityError} forkError={forkError} forking={forking} />
     </ModalBody>
   );
 }
@@ -160,22 +171,50 @@ function ForkProjectStatus(props) {
       </FormText>
     );
   }
+  else if (props.forkVisibilityError) {
+    return (
+      <p>
+        <FontAwesomeIcon icon={faExclamationTriangle} />
+        {" "} The project has been forked but an error occurred when setting the visibility
+        {props.forkVisibilityError}
+      </p>
+    );
+  }
   return null;
 }
 
 function ForkProjectContent(props) {
-  const { error, forking, handlers, namespace, namespaces, title, user } = props;
-  if (forking)
+  const {
+    fetching,
+    error,
+    forking,
+    handlers,
+    namespace,
+    namespaces,
+    title,
+    user,
+    visibility,
+    visibilities,
+    forkVisibilityError } = props;
+
+  if (forking || forkVisibilityError)
     return null;
 
-  const input = { namespace, title, titlePristine: false };
-  const meta = { validation: { errors: { title: error } } };
+  const input = { namespace, title, titlePristine: false, visibility, visibilityPristine: false };
+  const meta = {
+    validation: { errors: { title: error } },
+    namespace: {
+      fetching: fetching.namespaces,
+      visibilities,
+    },
+  };
 
   return (
     <Fragment>
       <Title handlers={handlers} input={input} meta={meta} />
       <Namespaces handlers={handlers} input={input} namespaces={namespaces} user={user} />
       <Home input={input} />
+      <Visibility handlers={handlers} input={input} meta={meta}/>
     </Fragment>
   );
 }
@@ -206,6 +245,7 @@ class NewProject extends Component {
           <Form className="mb-3">
             <Automated automated={automated} removeAutomated={handlers.removeAutomated} />
             <Title {...this.props} />
+            <Description {...this.props} />
             <Namespaces {...this.props} />
             <Home {...this.props} />
             <Visibility {...this.props} />
@@ -243,9 +283,8 @@ function Automated(props) {
   if (automated.error) {
     const error = (<pre>{automated.error}</pre>);
     return (
-      <Alert key="alert" color="danger">
+      <ErrorAlert key="alert" >
         <p>
-          <FontAwesomeIcon icon={faExclamationTriangle} />&nbsp;
           We could not pre-fill the fields with the information provided in the RenkuLab project-creation link.
         </p>
         <p>
@@ -257,23 +296,22 @@ function Automated(props) {
           {showError ? "Hide error details" : "Show error details"}
         </Button>
         <Fade in={showError} tag="div">{showError ? error : null}</Fade>
-      </Alert>
+      </ErrorAlert>
     );
   }
   // warnings
   else if (automated.warnings.length) {
     const warnings = (<pre>{automated.warnings.join("\n")}</pre>);
     return (
-      <Alert color="warning">
+      <WarnAlert>
         <p>
-          <FontAwesomeIcon icon={faExclamationTriangle} />&nbsp;
           Some fields could not be pre-filled with the information provided in the RenkuLab project-creation link.
         </p>
         <Button color="link" style={{ fontSize: "smaller" }} className="font-italic" onClick={() => toggleWarn()}>
           {showWarnings ? "Hide warnings" : "Show warnings"}
         </Button>
         <Fade in={showWarnings} tag="div">{showWarnings ? warnings : null}</Fade>
-      </Alert>
+      </WarnAlert>
     );
   }
   // all good
@@ -358,6 +396,19 @@ class Title extends Component {
   }
 }
 
+function Description(props) {
+  const { handlers, meta, input } = props;
+  const error = meta.validation.errors["description"];
+
+  return (
+    <FieldGroup id="description" type="text" label="Description"
+      value={input.description}
+      placeholder="A short project description"
+      feedback={error} invalid={error && !input.descriptionPristine}
+      onChange={(e) => handlers.setProperty("description", e.target.value)} />
+  );
+}
+
 class Namespaces extends Component {
   async componentDidMount() {
     // fetch namespaces if not available yet
@@ -374,7 +425,7 @@ class Namespaces extends Component {
     const main = namespaces.fetching ?
       (<Fragment>
         <br />
-        <Label className="font-italic">Refreshing... <Loader inline={true} size={16} /></Label>
+        <Label className="font-italic d-block">Refreshing... <Loader inline={true} size={16} /></Label>
       </Fragment>) :
       (<NamespacesAutosuggest {...this.props} />);
     const { list } = namespaces;
@@ -596,11 +647,11 @@ class Visibility extends Component {
         </Fragment>
       );
     }
-    else if (meta.namespace.fetching) {
+    else if (meta.namespace.fetching || !meta.namespace.visibilities || !input.visibility) {
       main = (
         <Fragment>
           <br />
-          <Label className="font-italic">Verifying... <Loader inline={true} size={16} /></Label>
+          <Label className="font-italic">Determining options... <Loader inline={true} size={16} /></Label>
         </Fragment>
       );
     }
@@ -640,13 +691,13 @@ class KnowledgeGraph extends Component {
     );
     return (
       <FormGroup>
-        <Label check style={{ marginLeft: "1.25rem" }}>
-          <Input id="knowledgeGraph" type="checkbox"
+        <Label check>
+          <Input id="knowledgeGraph" type="checkbox" className="me-2"
             checked={!this.props.input.knowledgeGraph}
             onChange={(e) => handlers.setProperty("knowledgeGraph", !e.target.checked)} />
           Opt-out from Knowledge Graph
         </Label>
-        <FormText>
+        <FormText className="d-block">
           <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> The {kgLink} may make some metadata
           public, opt-out if this is not acceptable.
         </FormText>
@@ -771,10 +822,10 @@ class Template extends Component {
   }
 
   render() {
-    const { handlers, input, templates, meta } = this.props;
+    const { config, handlers, input, templates, meta } = this.props;
     const error = meta.validation.errors["template"];
     const invalid = error && !input.templatePristine ? true : false;
-    let main, help = null;
+    let main = null;
     if ((!input.userRepo && templates.fetching) || (input.userRepo && meta.userTemplates.fetching)) {
       main = (
         <Fragment>
@@ -792,33 +843,165 @@ class Template extends Component {
       );
     }
     else {
-      const listedTemplates = input.userRepo ?
-        meta.userTemplates :
-        templates;
-      const options = listedTemplates.all.map(t => (
-        <option key={t.id} value={t.id}>{`${t.parentRepo} / ${t.name}`}</option>)
-      );
+      // Pass down templates and repository with the same format to the gallery component
+      let listedTemplates, repositories;
+      if (input.userRepo) {
+        listedTemplates = meta.userTemplates.all;
+        repositories = [{ url: meta.userTemplates.url, ref: meta.userTemplates.ref, name: "Custom" }];
+      }
+      else {
+        listedTemplates = templates.all;
+        repositories = config.repositories;
+      }
+
+      const select = (template) => handlers.setProperty("template", template);
       main = (
-        <Input id="template" type="select" placeholder="Select template..." className="custom-select"
-          value={input.template} feedback={error} invalid={invalid}
-          onChange={(e) => handlers.setProperty("template", e.target.value)} >
-          <option key="" value="" disabled>Select a template...</option>
-          {options}
-        </Input>
+        <TemplateGallery
+          // error={error && invalid} // ? we may consider adding a more prominent underlining for errors
+          repositories={repositories}
+          select={select}
+          selected={input.template}
+          templates={listedTemplates}
+        />
       );
-      if (input.template)
-        help = capitalize(listedTemplates.all.filter(t => t.id === input.template)[0].description);
     }
 
     return (
       <FormGroup>
         <Label>Template</Label>
+        {error && invalid && <div className="text-danger small">{error}</div>}
         {main}
-        {error && <FormFeedback {...invalid}>{error}</FormFeedback>}
-        {help && <FormText color="muted">{help}</FormText>}
       </FormGroup>
     );
   }
+}
+
+function TemplateGallery(props) {
+  const { repositories, select, selected, templates } = props;
+
+  // One GalleryRow for each source
+  const gallery = repositories.map((repository) => {
+    const repoTitle = repository.name;
+    const repoTemplates = templates.filter(t => t.parentRepo === repoTitle);
+    const repoKey = simpleHash(repository.url + repository.ref);
+    return (
+      <TemplateGalleryRow
+        key={repoKey}
+        repository={repository}
+        select={select}
+        selected={selected}
+        templates={repoTemplates}
+      />
+    );
+  });
+
+  return (<div>{gallery}</div>);
+}
+
+// Show a link when we have a valid url. Otherwise, just simple text
+function TemplateRepositoryLink(props) {
+  const { url } = props;
+  let repoUrl = url && url.length && url.startsWith("http") ?
+    url :
+    "";
+  if (repoUrl.endsWith(".git"))
+    repoUrl = repoUrl.substring(repoUrl.length - 4);
+  const repoLink = repoUrl ?
+    (<ExternalLink url={repoUrl} title={url} role="link" />) :
+    url;
+  return repoLink;
+}
+
+function TemplateGalleryRow(props) {
+  const { repository, select, selected, templates } = props;
+
+  // Don't render anything if there are no templates for the repository
+  if (!templates || !templates.length)
+    return null;
+
+  // Show a card for each template
+  const elements = templates.map(t => {
+    const imgSrc = t.icon ?
+      `data:image/png;base64,${t.icon}` :
+      defaultTemplateIcon;
+    const id = "id" + simpleHash(repository.name) + simpleHash(t.id);
+    const selectedClass = selected === t.id ?
+      "selected" :
+      "";
+
+    return (
+      <Col key={t.id}>
+        <Card id={id} className={`template-card mb-2 text-center ${selectedClass}`}
+          onClick={() => { select(t.id); }}>
+          <CardBody className="p-1">
+            <img src={imgSrc} alt={t.id + " template image"} />
+          </CardBody>
+          <CardFooter className="p-1">
+            <CardText className="small">{t.name}</CardText>
+          </CardFooter>
+        </Card>
+        <UncontrolledTooltip key="tooltip" placement="bottom" target={id}>
+          {t.description}
+        </UncontrolledTooltip>
+      </Col>
+    );
+  });
+
+  // Add a title with information about the source repository
+  const repositoryInfoId = `info-${repository.name}`;
+  const title = (
+    <Row>
+      <p className="fst-italic mt-2 mb-1">
+        Source: {repository.name}
+        <FontAwesomeIcon id={repositoryInfoId} className="ms-2" icon={faQuestionCircle} />
+      </p>
+      <UncontrolledPopover target={repositoryInfoId} trigger="legacy" placement="bottom">
+        <PopoverHeader>{repository.name} templates</PopoverHeader>
+        <PopoverBody>
+          <p className="mb-1">
+            <span className="fw-bold">Repository</span>:&nbsp;
+            <TemplateRepositoryLink url={repository.url} />
+          </p>
+          <p className="mb-0">
+            <span className="fw-bold">Reference</span>: {repository.ref}
+          </p>
+        </PopoverBody>
+      </UncontrolledPopover>
+    </Row>
+  );
+
+  return (
+    <div>
+      {title}
+      <Row className="row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5">{elements}</Row>
+    </div>
+  );
+}
+
+/**
+ * Create a "restore default" button.
+ *
+ * @param {function} restore - function to invoke
+ * @param {string} tip - message to display in the tooltip
+ * @param {boolean} disabled - whether it's disabled or not
+ */
+function RestoreButton(props) {
+  const { restore, name, disabled } = props;
+
+  const id = `restore_${name}`;
+  const tip = disabled ?
+    "Default value already selected" :
+    "Restore default value";
+
+  return (
+    <div id={id} className="d-inline ms-2">
+      <Button key="button" className="p-0" color="link" size="sm"
+        onClick={() => restore()} disabled={disabled} >
+        <FontAwesomeIcon icon={faUndo} />
+      </Button>
+      <UncontrolledTooltip key="tooltip" placement="top" target={id}>{tip}</UncontrolledTooltip>
+    </div>
+  );
 }
 
 class Variables extends Component {
@@ -834,17 +1017,109 @@ class Variables extends Component {
     const template = templates.all.filter(t => t.id === input.template)[0];
     if (!template || !template.variables || !Object.keys(template.variables).length)
       return null;
-    const variables = Object.keys(template.variables).map(variable => (
-      <FormGroup key={variable}>
-        <Label>{capitalize(variable)}</Label>
-        <Input id={"parameter-" + variable} type="text" value={input.variables[variable]}
-          onChange={(e) => handlers.setVariable(variable, e.target.value)} />
-        <FormText>{capitalize(template.variables[variable])}</FormText>
-      </FormGroup>
-    ));
+    const variables = Object.keys(template.variables).map(variable => {
+      const data = template.variables[variable];
+
+      // fallback to avoid breaking old variable structure
+      if (typeof data !== "object") {
+        return (
+          <FormGroup key={variable}>
+            <Label>{capitalize(variable)}</Label>
+            <Input id={"parameter-" + variable} type="text" value={input.variables[variable]}
+              onChange={(e) => handlers.setVariable(variable, e.target.value)} />
+            <FormText>{capitalize(template.variables[variable])}</FormText>
+          </FormGroup>
+        );
+      }
+
+      // expected `data` properties: default_value, description, enum, type.
+      // changing enum to enumValues to avoid using js reserved word
+      return (
+        <Variable
+          enumValues={data["enum"]}
+          handlers={handlers}
+          key={variable}
+          input={input}
+          name={variable}
+          {...data}
+        />
+      );
+    });
 
     return variables;
   }
+}
+
+function Variable(props) {
+  const { default_value, description, enumValues, handlers, input, name, type } = props;
+  const id = `parameter-${name}`;
+
+  const descriptionOutput = description ?
+    (<FormText>{capitalize(description)}</FormText>) :
+    null;
+
+  const defaultOutput = default_value != null ?
+    `Default: ${default_value}` :
+    null;
+
+  const restoreButton = default_value != null ?
+    (
+      <RestoreButton
+        disabled={input.variables[name] === default_value}
+        name={name}
+        restore={() => handlers.setVariable(name, default_value)}
+      />
+    ) :
+    null;
+
+  let inputElement = null;
+  if (type === "boolean") {
+    inputElement = (
+      <FormGroup className="form-check form-switch d-inline-block">
+        <Input type="switch" id={id} label={name}
+          checked={input.variables[name]}
+          onChange={(e) => handlers.setVariable(name, e.target.checked)}
+          className="form-check-input rounded-pill" />
+        <Label check htmlFor={"parameter-" + name}>{name}</Label>
+        {restoreButton}
+      </FormGroup>
+    );
+    // inputElement = null;
+  }
+  else if (type === "enum") {
+    const enumObjects = enumValues.map(enumObject => {
+      const enumId = `enum-${id}-${enumObject.toString()}`;
+      return (
+        <option key={enumId} value={enumObject}>{enumObject}</option>
+      );
+    });
+    inputElement = (
+      <FormGroup>
+        <Label>{name}</Label>{restoreButton}
+        <Input id={id} type="select" value={input.variables[name]}
+          onChange={(e) => handlers.setVariable(name, e.target.value)}>
+          {enumObjects}
+        </Input>
+        {descriptionOutput}
+      </FormGroup>
+    );
+  }
+  else {
+    const inputType = type === "number" ?
+      "number" :
+      "text";
+    inputElement = (
+      <FormGroup>
+        <Label>{name}</Label>{restoreButton}
+        <Input id={id} type={inputType} value={input.variables[name]}
+          onChange={(e) => handlers.setVariable(name, e.target.value)}
+          placeholder={defaultOutput} />
+        {descriptionOutput}
+      </FormGroup>
+    );
+  }
+
+  return inputElement;
 }
 
 class Create extends Component {
@@ -896,9 +1171,6 @@ class Create extends Component {
           content = error[0];
       }
       const fatal = templates.all && templates.all.length ? false : true;
-      const description = fatal ?
-        (<p>Unable to fetch templates.</p>) :
-        (<p>Errors happend while fetching templates. Some of them may be unavailable.</p>);
       const suggestion = input.userRepo ?
         (<span>
           Double check the Repository URL and Reference, then try to fetch again.
@@ -911,14 +1183,22 @@ class Create extends Component {
           <a href="https://github.com/SwissDataScienceCenter/renku"
             target="_blank" rel="noreferrer noopener">GitHub</a>.
         </span>);
-      alert = (
-        <Alert color={fatal ? "danger" : "warning"}>
-          {description}
+      alert = fatal ? (
+        <ErrorAlert>
+          <p>Unable to fetch templates.</p>
           {content}
           <small>
-            <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> {suggestion}
+            {suggestion}
           </small>
-        </Alert>
+        </ErrorAlert>
+      ) : (
+        <WarnAlert>
+          <p>Errors happened while fetching templates. Some of them may be unavailable.</p>
+          {content}
+          <small>
+            {suggestion}
+          </small>
+        </WarnAlert>
       );
       if (fatal)
         return alert;
@@ -947,13 +1227,37 @@ class Create extends Component {
     const createLink = (
       <DropdownItem onClick={this.toggle}><FontAwesomeIcon icon={faLink} /> Create link</DropdownItem>
     );
+    const templateDetails = input.template ?
+      "based on " + (templates.all.find(t => t.id === input.template).name) :
+      "";
+
+    const errorFields = meta.validation.errors ?
+      Object.keys(meta.validation.errors)
+        .filter(field => !input[`${field}Pristine`]) // don't consider pristine fields
+        .map(field => capitalize(field)) :
+      [];
+    const plural = errorFields.length > 1 ?
+      "s" :
+      "";
+    const errorMessage = errorFields.length ?
+      (
+        <FormText className="d-block">
+          <span className="text-danger">
+            To create a new project, please first fix problems with the following field{plural}:{" "}
+            <span className="fw-bold">{errorFields.join(", ")}</span>
+          </span>
+        </FormText>
+      ) :
+      null;
+
     return (
       <Fragment>
         {alert}
         <ButtonWithMenu color="primary" default={createProject} disabled={disabled} direction="up">
           {createLink}
         </ButtonWithMenu>
-        {loading && (<FormText color="primary">{loading}</FormText>)}
+        {templateDetails && (<FormText className="ms-2" color="primary">{templateDetails}</FormText>)}
+        {loading && (<FormText className="d-block" color="primary">{loading}</FormText>)}
         <ShareLinkModal
           show={this.state.showModal}
           toggle={this.toggle}
@@ -961,6 +1265,7 @@ class Create extends Component {
           meta={meta}
           createUrl={this.props.handlers.createEncodedUrl}
         />
+        {errorMessage}
       </Fragment>
     );
   }
@@ -972,7 +1277,13 @@ function ShareLinkModal(props) {
   const { userTemplates } = props.meta;
 
   const defaultObj = {
-    title: false, namespace: false, visibility: false, templateRepo: false, template: false, variables: false
+    title: false,
+    description: false,
+    namespace: false,
+    visibility: false,
+    templateRepo: false,
+    template: false,
+    variables: false
   };
 
   const [available, setAvailable] = useState(defaultObj);
@@ -993,6 +1304,7 @@ function ShareLinkModal(props) {
 
     setAvailable({
       title: input.title ? true : false,
+      description: input.description ? true : false,
       namespace: true,
       visibility: true,
       templateRepo: input.userRepo && userTemplates.fetched && userTemplates.url && userTemplates.ref ? true : false,
@@ -1005,6 +1317,7 @@ function ShareLinkModal(props) {
   useEffect(() => {
     setInclude({
       title: available.title,
+      description: available.description,
       namespace: false,
       visibility: false,
       templateRepo: available.templateRepo,
@@ -1018,6 +1331,8 @@ function ShareLinkModal(props) {
     let dataObject = {};
     if (include.title)
       dataObject.title = input.title;
+    if (include.description)
+      dataObject.description = input.description;
     if (include.namespace)
       dataObject.namespace = input.namespace;
     if (include.visibility)
@@ -1031,7 +1346,7 @@ function ShareLinkModal(props) {
     if (include.variables) {
       let variablesObject = {};
       for (let variable of Object.keys(input.variables)) {
-        if (input.variables[variable])
+        if (input.variables[variable] != null)
           variablesObject[variable] = input.variables[variable];
       }
       dataObject.variables = variablesObject;
@@ -1159,6 +1474,18 @@ class Creation extends Component {
     }
     else {
       return null;
+    }
+
+    if (color === "warning") {
+      return (
+        <WarnAlert>{message}</WarnAlert>
+      );
+    }
+
+    if (color === "danger") {
+      return (
+        <ErrorAlert>{message}</ErrorAlert>
+      );
     }
 
     return (

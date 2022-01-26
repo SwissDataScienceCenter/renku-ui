@@ -26,10 +26,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Row, Col } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-
-import { Loader, InfoAlert, ExternalLink } from "../utils/UIComponents";
+import { Loader } from "../utils/components/Loader";
+import { ExternalLink } from "../utils/components/ExternalLinks";
+import { InfoAlert } from "../utils/components/Alert";
 
 const NamespaceProjects = (props) => {
   const { namespace } = props;
@@ -126,7 +125,7 @@ const NamespaceNotFoundActions = (props) => {
 
     <InfoAlert timeout={0}>
       <p>
-        <FontAwesomeIcon icon={faInfoCircle} /> If you know what you were looking for, you can try
+        If you know what you were looking for, you can try
         using our search feature.
       </p>
       <p>

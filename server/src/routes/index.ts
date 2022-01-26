@@ -1,5 +1,5 @@
 /*!
- * Copyright 2020 - Swiss Data Science Center (SDSC)
+ * Copyright 2021 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -18,26 +18,20 @@
 
 import express from "express";
 
-function register(app: express.Application): void {
-  // define a route handler for the default home page
-  app.get("/", (req, res) => {
-    res.send("Hello world!");
+import config from "../config";
+import registerInternalRoutes from "./internal";
+import registerApiRoutes from "./apis";
+import { Authenticator } from "../authentication";
+
+function register(app: express.Application, prefix: string, authenticator: Authenticator): void {
+  registerInternalRoutes(app, authenticator);
+
+  // Testing ingress
+  app.get(prefix, (req, res) => {
+    res.send("UI server up and running");
   });
 
-  // define a route handler for the readiness probe
-  app.get("/readiness", (req, res) => {
-    res.send("ready");
-  });
-
-  // define a route handler for the liveness probe
-  app.get("/liveness", (req, res) => {
-    res.send("live");
-  });
-
-  // define a route handler for the ingress entry point
-  app.get("/ui-server", (req, res) => {
-    res.send("Hello ingress!");
-  });
+  registerApiRoutes(app, prefix + config.routes.api, authenticator);
 }
 
 export default { register };

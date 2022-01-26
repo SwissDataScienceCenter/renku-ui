@@ -26,8 +26,8 @@ import {
   CheckNotebookIcon, ShowSession as ShowSessionPresent
 } from "./Notebooks.present";
 import { StatusHelper } from "../model/Model";
-import { ProjectCoordinator } from "../project";
-import { Url } from "../utils/url";
+import { Url } from "../utils/helpers/url";
+import { Loader } from "../utils/components/Loader";
 
 
 /**
@@ -45,6 +45,30 @@ import { Url } from "../utils/url";
  * @param {Object} [location] - react location object
  * @param {Object} [history] - react history object
  */
+
+function mapSessionStateToProps(state, ownProps) {
+  const notebooks = state.notebooks.notebooks;
+  const available = notebooks.all[ownProps.target] ?
+    true :
+    false;
+  const notebook = {
+    available,
+    fetched: notebooks.fetched,
+    fetching: notebooks.fetching,
+    data: available ?
+      notebooks.all[ownProps.target] :
+      {},
+    logs: state.notebooks.logs
+  };
+  return {
+    handlers: ownProps.handlers,
+    target: ownProps.target,
+    filters: state.notebooks.filters,
+    notebook
+  };
+}
+
+const ShowSessionMapped = connect(mapSessionStateToProps)(ShowSessionPresent);
 class ShowSession extends Component {
   constructor(props) {
     super(props);
@@ -96,41 +120,32 @@ class ShowSession extends Component {
     return this.coordinator.fetchLogs(serverName, full);
   }
 
-  mapStateToProps(state, ownProps) {
-    const notebooks = state.notebooks.notebooks;
-    const available = notebooks.all[this.target] ?
-      true :
-      false;
-    const notebook = {
-      available,
-      fetched: notebooks.fetched,
-      fetching: notebooks.fetching,
-      data: available ?
-        notebooks.all[this.target] :
-        {},
-      logs: state.notebooks.logs
-    };
-    return {
-      handlers: this.handlers,
-      target: this.target,
-      filters: state.notebooks.filters,
-      notebook
-    };
-  }
-
-
   render() {
     if (this.props.blockAnonymous)
       return <NotebooksDisabled location={this.props.location} />;
 
-    const ShowSessionMapped = connect(this.mapStateToProps.bind(this))(ShowSessionPresent);
+    if (!this.model.get("notebooks.fetched"))
+      return <Loader />;
+
     return (
       <ShowSessionMapped
+        target={this.target}
+        handlers={this.handlers}
         store={this.model.reduxStore}
       />
     );
   }
 }
+
+function mapSessionListStateToProps(state, ownProps) {
+  return {
+    handlers: ownProps.handlers,
+    ...state.notebooks,
+    logs: { ...state.notebooks.logs, show: ownProps.showingLogs }
+  };
+}
+
+const VisibleNotebooks = connect(mapSessionListStateToProps)(NotebooksPresent);
 
 /**
  * Display the list of Notebook servers
@@ -212,27 +227,19 @@ class Notebooks extends Component {
       this.fetchLogs(serverName);
   }
 
-  mapStateToProps(state, ownProps) {
-    return {
-      handlers: this.handlers,
-      ...state.notebooks,
-      logs: { ...state.notebooks.logs, show: this.state.showingLogs }
-    };
-  }
-
   render() {
     if (this.props.blockAnonymous)
       return <NotebooksDisabled location={this.props.location} />;
 
-    const VisibleNotebooks = connect(this.mapStateToProps.bind(this))(NotebooksPresent);
-
     return <VisibleNotebooks
-      store={this.model.reduxStore}
-      user={this.props.user}
-      standalone={this.props.standalone ? this.props.standalone : false}
-      scope={this.props.scope}
+      handlers={this.handlers}
+      showingLogs={this.state.showingLogs}
       message={this.props.message}
+      scope={this.props.scope}
+      store={this.model.reduxStore}
+      standalone={this.props.standalone ? this.props.standalone : false}
       urlNewSession={this.props.urlNewSession}
+      user={this.props.user}
     />;
   }
 }
@@ -243,6 +250,7 @@ class Notebooks extends Component {
  * @param {Object} client - api-client used to query the gateway
  * @param {Object} model - global model for the ui
  * @param {Object[]} branches - Branches as returned by gitlab "/branches" API - no autosaved branches
+ * @param {Object[]} commits - Commits as stored in the redux store
  * @param {Object[]} autosaved - Autosaved branches
  * @param {function} refreshBranches - Function to invoke to refresh the list of branches
  * @param {Object} scope - object containing filtering parameters
@@ -262,11 +270,9 @@ class StartNotebookServer extends Component {
     this.model = props.model.subModel("notebooks");
     this.userModel = props.model.subModel("user");
     this.coordinator = new NotebooksCoordinator(props.client, this.model, this.userModel);
-    // TODO: this should go away when moving all project content to projectCoordinator
-    this.projectModel = props.model.subModel("project");
-    this.projectCoordinator = new ProjectCoordinator(props.client, this.projectModel, props.notifications);
     this.notifications = props.notifications;
-    // temporarily reset data since notebooks model was not designed to be static
+
+    // reset data since notebooks model was not designed to be static
     this.coordinator.reset();
 
     if (props.scope)
@@ -277,34 +283,45 @@ class StartNotebookServer extends Component {
     this.autostart = currentSearch && currentSearch["autostart"] && currentSearch["autostart"] === "1" ?
       true :
       false;
+    this.customBranch = currentSearch && this.autostart && currentSearch["branch"] ?
+      currentSearch["branch"] :
+      null;
+    this.customCommit = currentSearch && this.autostart && currentSearch["commit"] ?
+      currentSearch["commit"] :
+      null;
     this.state = {
+      autosavesCommit: false,
       autostartReady: false,
-      autostartTried: false
+      autostartTried: false,
+      first: true,
+      ignorePipeline: null,
+      launchError: null,
+      showAdvanced: false,
+      starting: false
     };
 
     this.handlers = {
+      deleteAutosave: this.deleteAutosave.bind(this),
       refreshBranches: this.refreshBranches.bind(this),
       refreshCommits: this.refreshCommits.bind(this),
       reTriggerPipeline: this.reTriggerPipeline.bind(this),
       setBranch: this.selectBranch.bind(this),
       setCommit: this.selectCommit.bind(this),
-      toggleMergedBranches: this.toggleMergedBranches.bind(this),
+      setIgnorePipeline: this.setIgnorePipeline.bind(this),
       setDisplayedCommits: this.setDisplayedCommits.bind(this),
       setServerOption: this.setServerOptionFromEvent.bind(this),
-      startServer: this.startServer.bind(this)
-    };
-
-    this.state = {
-      first: true,
-      starting: false,
-      launchError: null
+      startServer: this.startServer.bind(this),
+      toggleMergedBranches: this.toggleMergedBranches.bind(this),
+      toggleShowAdvanced: this.toggleShowAdvanced.bind(this)
     };
   }
 
-  componentDidMount() {
+  async componentDidMount() {
     this._isMounted = true;
     if (!this.props.blockAnonymous) {
-      this.coordinator.startNotebookPolling();
+      if (!this.autostart)
+        this.coordinator.startNotebookPolling();
+      this.coordinator.fetchAutosaves();
       this.refreshBranches();
     }
   }
@@ -315,26 +332,56 @@ class StartNotebookServer extends Component {
     this._isMounted = false;
   }
 
-  componentDidUpdate(previousProps) {
+  async componentDidUpdate(previousProps) {
     // TODO: temporary fix to prevent issue with component rerendered multiple times at the first url load
     if (this.state.first &&
-      StatusHelper.isUpdating(previousProps.branches) &&
-      !StatusHelper.isUpdating(this.props.branches)) {
+      StatusHelper.isUpdating(previousProps.fetchingBranches) &&
+      !StatusHelper.isUpdating(this.props.fetchingBranches)) {
       this.setState({ first: false });
       if (this._isMounted)
-        this.selectBranch();
-
+        this.refreshBranches().then(r => this.selectBranchWhenReady());
     }
+  }
+
+  toggleShowAdvanced() {
+    this.setState({ showAdvanced: !this.state.showAdvanced });
+  }
+
+  setIgnorePipeline(value) {
+    this.setState({ ignorePipeline: value });
+  }
+
+  setErrorInAutostart() {
+    this.autostart = false;
+    this.setState({
+      starting: false,
+      launchError: {
+        frontendError: true,
+        pipelineError: false,
+        errorMessage: `The session could not be started because the commit or the branch name was not found.`
+      },
+    });
+    this.coordinator.startNotebookPolling();
   }
 
   async refreshBranches() {
     if (this._isMounted) {
-      if (StatusHelper.isUpdating(this.props.branches))
+      if (StatusHelper.isUpdating(this.props.fetchingBranches))
         return;
       await this.props.refreshBranches();
-      if (this._isMounted && this.state.first)
-        this.selectBranch();
+      if (this.state.first)
+        this.selectBranchWhenReady();
+    }
+  }
 
+  async selectBranchWhenReady() {
+    // Select branch only when autosaves data are available
+    if (this._isMounted) {
+      const autosavesAvailable = this.model.get("autosaves.fetched");
+      if (this.props.branches.fetching || !autosavesAvailable)
+        setTimeout(() => { this.selectBranchWhenReady(); }, 500);
+      else
+        this.selectBranch(this.customBranch);
     }
   }
 
@@ -352,43 +399,66 @@ class StartNotebookServer extends Component {
         autoBranchName = true;
       }
 
-      // get the proper branch and set it
+      // get the proper branch
+      let branchToSet = {};
       const { branches } = this.props;
+
       const branch = branches.filter(branch => branch.name === branchName);
+
       if (branch.length === 1) {
-        this.coordinator.setBranch(branch[0]);
+        branchToSet = branch[0];
+      }
+      else if (autoBranchName && branches?.length) {
+        branchToSet = branches[0];
+      }
+      else if (this.customBranch || this.customCommit) {
+        // set the error and get the first branch anyway
+        branchToSet = branches[0];
+        this.setErrorInAutostart();
+      }
+
+      this.coordinator.setBranch(branchToSet);
+      this.setState({ autosavesCommit: false });
+      if (!branchToSet)
+        this.coordinator.setCommit({});
+      else
         this.refreshCommits();
-      }
-      else {
-        if (autoBranchName && branches && branches.length) {
-          this.coordinator.setBranch(branches[0]);
-          this.refreshCommits();
-        }
-        else {
-          this.coordinator.setBranch({});
-          this.coordinator.setCommit({});
-        }
-      }
     }
   }
 
   async refreshCommits() {
     if (this._isMounted) {
-      if (!this.projectModel.get("commits.fetching")) {
-        const branch = this.model.get("filters.branch");
-        await this.projectCoordinator.fetchCommits({ branch: branch.name });
-      }
+      const branch = this.model.get("filters.branch");
+      await this.props.refreshCommits({ branch: branch.name });
       this.selectCommitWhenReady();
     }
   }
 
-  // TODO: ugly workaround until branches and commits will be unified in projectCoordinator
   async selectCommitWhenReady() {
+    // Ugly workaround to prevent stalling when commits.fetch was invoked somewhere else
     if (this._isMounted) {
-      if (this.projectModel.get("commits.fetching"))
-        setTimeout(() => { this.selectCommitWhenReady(); }, 100);
+      // check also if notebooks have been fetched, to be sure running sessions are not ignored
+      const notebooks = this.model.get("notebooks");
+      let delay = false;
+      // if (this.props.commits.fetching || !notebooks.fetched)
+      if (this.props.commits.fetching) {
+        delay = 500;
+      }
+      else if (!notebooks.fetched) {
+        if (notebooks.fetching) {
+          delay = 500;
+        }
+        else {
+          // this may happen with autostart
+          this.coordinator.startNotebookPolling();
+          delay = 5000;
+        }
+      }
+
+      if (delay)
+        setTimeout(() => { this.selectCommitWhenReady(); }, delay);
       else
-        this.selectCommit();
+        this.selectCommit(this.customCommit);
     }
   }
 
@@ -397,18 +467,59 @@ class StartNotebookServer extends Component {
       // filter the list of commits according to the constraints
       const maximum = this.model.get("filters.displayedCommits");
       const commits = maximum && parseInt(maximum) > 0 ?
-        this.projectModel.get("commits.list").slice(0, maximum) :
-        this.projectModel.get("commits.list");
+        this.props.commits.list.slice(0, maximum) :
+        this.props.commits.list;
       let commit = commits[0];
 
       // find the proper commit or return
       if (commitId) {
         const filteredCommits = commits.filter(commit => commit.id === commitId);
-        if (filteredCommits.length !== 1)
+        if (filteredCommits.length === 1)
+          commit = filteredCommits[0];
+        else if (commitId === "latest")
+          commit = commits[0];
+        else if (this.customBranch || this.customCommit)
+          this.setErrorInAutostart();
+        else
           return;
-        commit = filteredCommits[0];
       }
       else {
+        // check if there is an autosave for this branch, and find the corresponding commit
+        const autosaves = this.model.get("autosaves");
+        const branch = this.model.get("filters.branch");
+        let autosaveFound = false;
+        if (branch.name && autosaves.fetched && !autosaves.error && autosaves.list?.length) {
+          const autosave = autosaves.list.find(a => a.branch === branch.name);
+          if (autosave) {
+            const autosaveCommit = commits.find(commit => commit.id.startsWith(autosave.commit));
+            commit = autosaveCommit;
+            autosaveFound = true;
+            if (this.state.autosavesCommit !== autosaveCommit.id)
+              this.setState({ autosavesCommit: autosaveCommit.id });
+          }
+        }
+
+        // set a running session if any is active and valid
+        if (!autosaveFound) {
+          // verify data and sessions
+          const notebooks = this.model.get("notebooks");
+          const anyNotebook = notebooks?.all && Object.keys(notebooks.all).length ? true : false;
+          const validNotebooks = branch.name && notebooks.lastParameters.includes(branch.name) ? true : false;
+          if (anyNotebook && validNotebooks) {
+            // get the first session with a valid commit -- that should almost always be the case for running sessions
+            Object.keys(notebooks.all).find(k => {
+              const annotations = NotebooksHelper.cleanAnnotations(notebooks.all[k].annotations, "renku.io");
+              const targetCommit = commits.find(commit => commit.id === annotations["commit-sha"]);
+              if (targetCommit) {
+                commit = targetCommit;
+                return true;
+              }
+              return false;
+            });
+          }
+        }
+
+        // check if the current commit needs to be updated
         const oldCommit = this.model.get("filters.commit");
         if (oldCommit && oldCommit.id && oldCommit.id === commit.id)
           return;
@@ -446,8 +557,7 @@ class StartNotebookServer extends Component {
 
           // give extra context to logged users for building images
           const loggedPipelines = data.pipelines.type === NotebooksHelper.pipelineTypes.logged ? true : false;
-          const pendingPipeline = mainPipeline &&
-            (mainPipeline.status === "running" || mainPipeline.status === "pending");
+          const pendingPipeline = mainPipeline && ["running", "pending", "stopping"].includes(mainPipeline.status);
 
           if (loggedPipelines && pendingPipeline) {
             this.setState({
@@ -455,9 +565,11 @@ class StartNotebookServer extends Component {
               autostartTried: true,
               launchError: {
                 frontendError: true,
+                pipelineError: true,
                 errorMessage: `The session could not start because the image is still building.
                 Please wait for the build to finish, or start the session with the base image.`
               },
+              showAdvanced: true,
               starting: false
             });
           }
@@ -471,9 +583,11 @@ class StartNotebookServer extends Component {
               autostartTried: true,
               launchError: {
                 frontendError: true,
+                pipelineError: true,
                 errorMessage: `The session could not start because no image is available.
                 Please select a different commit or start the session with the base image.`
               },
+              showAdvanced: true,
               starting: false
             });
           }
@@ -501,6 +615,18 @@ class StartNotebookServer extends Component {
     }
 
     this.coordinator.setNotebookOptions(option, value);
+  }
+
+  async deleteAutosave(autosave) {
+    if (this._isMounted) {
+      const result = await this.coordinator.deleteAutosave(autosave);
+      // refresh autosaves only when no error was triggered
+      if (result) {
+        await this.coordinator.fetchAutosaves();
+        this.selectCommit("latest");
+      }
+      return result;
+    }
   }
 
   internalStartServer() {
@@ -562,12 +688,12 @@ class StartNotebookServer extends Component {
   toggleMergedBranches() {
     const currentSetting = this.model.get("filters.includeMergedBranches");
     this.coordinator.setMergedBranches(!currentSetting);
-    this.selectBranch();
+    this.selectBranch(this.customBranch);
   }
 
   setDisplayedCommits(number) {
     this.coordinator.setDisplayedCommits(number);
-    this.selectCommit();
+    this.selectCommit(this.customCommit);
   }
 
   filterAutosavedBranches(branches, username) {
@@ -576,25 +702,24 @@ class StartNotebookServer extends Component {
     return branches.filter(branch => branch.autosave.username === username);
   }
 
-  mapStateToProps(state, ownProps) {
-    const username = state.user.logged ?
-      state.user.data.username :
+  propsToChildProps() {
+    const username = this.props.user.logged ?
+      this.props.user.data.username :
       null;
-    const ownAutosaved = this.filterAutosavedBranches([...ownProps.inherited.autosaved], username);
+    const ownAutosaved = this.filterAutosavedBranches([...this.props.autosaved], username);
     const augmentedState = {
-      ...state.notebooks,
+      ...this.props.notebooks,
       data: {
-        fetched: state.project.commits.fetched,
-        fetching: state.project.commits.fetching,
-        commits: state.project.commits.list,
-        branches: ownProps.inherited.branches,
-        autosaved: ownAutosaved
+        autosaved: ownAutosaved,
+        branches: this.props.branches,
+        commits: this.props.commits.list,
+        fetched: this.props.commits.fetched,
+        fetching: this.props.commits.fetching,
       },
-      externalUrl: ownProps.inherited.externalUrl
+      externalUrl: this.props.externalUrl
     };
     return {
       handlers: this.handlers,
-      store: ownProps.store, // adds store and other props manually added to <ConnectedStartNotebookServer />
       ...augmentedState
     };
   }
@@ -603,18 +728,36 @@ class StartNotebookServer extends Component {
     if (this.props.blockAnonymous)
       return <NotebooksDisabled location={this.props.location} />;
 
-    const ConnectedStartNotebookServer = connect(this.mapStateToProps.bind(this))(StartNotebookServerPresent);
-
-    return <ConnectedStartNotebookServer
-      store={this.model.reduxStore}
-      inherited={this.props}
-      message={this.props.message}
-      justStarted={this.state.starting}
+    return <StartNotebookServerPresent
       autoStarting={this.autostart && !this.state.autostartTried}
+      autosavesCommit={this.state.autosavesCommit}
+      ignorePipeline={this.state.ignorePipeline}
+      inherited={this.props}
+      justStarted={this.state.starting}
       launchError={this.state.launchError}
+      message={this.props.message}
+      showAdvanced={this.state.showAdvanced}
+      {...this.propsToChildProps()}
     />;
   }
 }
+
+function mapNotebookStatusStateToProps(state, ownProps) {
+  const subState = state.notebooks;
+
+  const notebookKeys = Object.keys(subState.notebooks.all);
+  const notebook = notebookKeys.length > 0 ?
+    subState.notebooks.all[notebookKeys] :
+    null;
+
+  return {
+    fetched: subState.notebooks.fetched,
+    fetching: subState.notebooks.fetching,
+    notebook
+  };
+}
+
+const VisibleNotebookIcon = connect(mapNotebookStatusStateToProps)(CheckNotebookIcon);
 
 /**
  * Display the connect to Jupyter icon
@@ -638,8 +781,7 @@ class CheckNotebookStatus extends Component {
     this.model = props.model.subModel("notebooks");
     this.userModel = props.model.subModel("user");
     this.coordinator = new NotebooksCoordinator(props.client, this.model, this.userModel);
-    // TODO: this should go away when moving all project content to projectCoordinator
-    this.projectCoordinator = new ProjectCoordinator(props.client, props.model.subModel("project"));
+
     // temporarily reset data since notebooks model was not designed to be static
     this.coordinator.reset();
 
@@ -649,15 +791,10 @@ class CheckNotebookStatus extends Component {
   }
 
   async componentDidMount() {
-    // ! temporary -- ignore missing branch and get "latest" commit
     let { scope } = this.props;
-    if (!scope.branch || !scope.commit)
+    if (!scope.branch)
       return;
-    if (scope.commit === "latest") {
-      let commits = await this.projectCoordinator.fetchCommits();
-      scope.commit = commits[0];
-      this.coordinator.setNotebookFilters(scope);
-    }
+    this.coordinator.setNotebookFilters(scope);
 
     const pollingInterval = this.props.pollingInterval ?
       parseInt(this.props.pollingInterval) * 1000 :
@@ -686,8 +823,6 @@ class CheckNotebookStatus extends Component {
   }
 
   render() {
-    const VisibleNotebookIcon = connect(this.mapStateToProps.bind(this))(CheckNotebookIcon);
-
     return (<VisibleNotebookIcon store={this.model.reduxStore} {...this.props} />);
   }
 }

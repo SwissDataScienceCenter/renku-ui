@@ -24,7 +24,7 @@
  */
 
 import { API_ERRORS } from "../api-client/errors";
-import { parseINIString } from "../utils/HelperFunctions";
+import { parseINIString } from "../utils/helpers/HelperFunctions";
 
 const POLLING_INTERVAL = 3000;
 const IMAGE_BUILD_JOB = "image_build";
@@ -76,6 +76,8 @@ const NotebooksHelper = {
 
     if (status.ready)
       return "running";
+    if (status.stopping)
+      return "stopping";
     if (status.step === "Unschedulable")
       return "error";
     return "pending";
@@ -397,7 +399,6 @@ class NotebooksCoordinator {
       notebooks: { fetched: null },
       filters: { branch: { $set: branch } }
     });
-    this.fetchNotebooks();
   }
 
   setCommit(commit) {
@@ -454,7 +455,7 @@ class NotebooksCoordinator {
 
     // get notebooks
     return this.client.getNotebookServers(
-      filters.namespace, filters.project, filters.branch, filters.commit, anonymous)
+      filters.namespace, filters.project, filters.branch, null, anonymous)
       .then(resp => {
         let updatedNotebooks = { fetching: false };
         // check if result is still valid
@@ -462,6 +463,15 @@ class NotebooksCoordinator {
           const filters = this.getQueryFilters();
           if (this.model.get("notebooks.lastParameters") === JSON.stringify(filters)) {
             updatedNotebooks.fetched = new Date();
+            const currentServers = this.model.get("notebooks.all");
+
+            // check if the stopping status exist to attach to the current object
+            // TODO: this should be removed once that status is returned by fetching notebooks
+            for (const serverName in resp.data) {
+              const currentStatus = currentServers[serverName]?.status;
+              if (currentStatus && "stopping" in currentStatus)
+                resp.data[serverName].status.stopping = true;
+            }
             updatedNotebooks.all = { $set: resp.data };
           }
           // TODO: re-invoke `fetchNotebooks()` immediately if parameters are outdated
@@ -786,6 +796,44 @@ class NotebooksCoordinator {
     return pipelinesState;
   }
 
+  async fetchAutosaves(force = false) {
+    // prevent double fetch
+    if (!force) {
+      const fetching = this.model.get("autosaves.fetching");
+      if (fetching)
+        return;
+    }
+
+    // get filters
+    const filters = this.getQueryFilters();
+    if (!filters.namespace || !filters.project)
+      return;
+    this.model.set("autosaves.fetching", true);
+    const response = await this.client.getProjectAutosaves(filters.namespace, filters.project);
+    let autosavesData = { fetching: false, fetched: new Date() };
+    if (response && response.autosaves) {
+      autosavesData.error = null;
+      autosavesData.list = { $set: response.autosaves };
+      autosavesData.pvsSupport = response.pvsSupport;
+    }
+    else {
+      autosavesData.error = response.error ?
+        response.error :
+        response.toString();
+      autosavesData.list = { $set: [] };
+      autosavesData.pvsSupport = null;
+    }
+    this.model.setObject({ autosaves: autosavesData });
+    return autosavesData;
+  }
+
+  async deleteAutosave(autosave) {
+    const filters = this.getQueryFilters();
+    if (!filters.namespace || !filters.project)
+      return;
+    return await this.client.deleteProjectAutosave(filters.namespace, filters.project, autosave);
+  }
+
 
   // * Handle polling * //
   startNotebookPolling(interval = POLLING_INTERVAL) {
@@ -892,7 +940,7 @@ class NotebooksCoordinator {
     // manually set the state and temporarily throw away servers data until the promise resolves
     const updatedState = {
       filters: { discard: true },
-      notebooks: { all: { [serverName]: { status: { ready: false } } } }
+      notebooks: { all: { [serverName]: { status: { ready: false, stopping: true } } } }
     };
     this.model.setObject(updatedState);
     return this.client.stopNotebookServer(serverName, force)

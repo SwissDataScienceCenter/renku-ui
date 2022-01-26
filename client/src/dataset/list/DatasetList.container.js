@@ -31,6 +31,7 @@ class List extends Component {
     super(props);
     this.model = new DatasetListModel(props.client);
     this.handlers = {
+      onCancelSearch: this.onCancelSearch.bind(this),
       onSearchQueryChange: this.onSearchQueryChange.bind(this),
       onSearchSubmit: this.onSearchSubmit.bind(this),
       onOrderByDropdownToggle: this.onOrderByDropdownToggle.bind(this),
@@ -165,6 +166,11 @@ class List extends Component {
     this.model.resetBeforeNewSearch();
     this.model.performSearch();
     this.pushNewSearchToHistory();
+  }
+
+  onCancelSearch(e) {
+    e.preventDefault();
+    this.model.cancelSearch();
   }
 
   mapStateToProps(ownProps) {

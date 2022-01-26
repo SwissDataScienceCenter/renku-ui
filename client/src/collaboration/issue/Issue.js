@@ -25,20 +25,23 @@
 
 import React, { Component } from "react";
 import { Provider, connect } from "react-redux";
-import { Row, Col, Button, Alert } from "reactstrap";
+import { Row, Col, Button } from "reactstrap";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 import { faBoxOpen, faBox } from "@fortawesome/free-solid-svg-icons";
 import { API_ERRORS } from "../../api-client";
-import { createStore } from "../../utils/EnhancedState";
+import { createStore } from "../../utils/helpers/EnhancedState";
 import State from "./Issue.state";
-import {
-  ExternalIconLink, RenkuMarkdown, TimeCaption, TooltipToggleButton, GoBackButton
-} from "../../utils/UIComponents";
 import { Contribution, NewContribution } from "../../contribution";
-import { Loader } from "../../utils/UIComponents";
+import { Loader } from "../../utils/components/Loader";
 import { issueFormSchema } from "../../model/RenkuModels";
-import { FormGenerator } from "../../utils/formgenerator";
+import { FormGenerator } from "../../utils/components/formgenerator";
 import _ from "lodash";
+import { ErrorAlert } from "../../utils/components/Alert";
+import { ExternalIconLink } from "../../utils/components/ExternalLinks";
+import { TooltipToggleButton } from "../../utils/components/Tooltip";
+import { GoBackButton } from "../../utils/components/Button";
+import { RenkuMarkdown } from "../../utils/components/markdown/RenkuMarkdown";
+import { TimeCaption } from "../../utils/components/TimeCaption";
 
 let iFormSchema = _.cloneDeep(issueFormSchema);
 
@@ -95,19 +98,19 @@ class IssueViewHeader extends Component {
 
   render() {
     if (this.props.error !== undefined && this.props.error.case === API_ERRORS.notFoundError) {
-      return <Alert color="danger">Error 404: The issue that was selected does not exist or could not be accessed.
+      return <ErrorAlert>Error 404: The issue that was selected does not exist or could not be accessed.
         <br /> <br /> You can go back to the issues list and see available issues for this project. &nbsp;
         <Button color="danger" size="sm"
           onClick={() => this.props.history.push(this.props.issuesUrl)}>Back to list</Button>
-      </Alert>;
+      </ErrorAlert>;
     }
 
     if (this.props.error !== undefined) {
-      return <Alert color="danger">Error: There was an error retrieving the issue.
+      return <ErrorAlert>Error: There was an error retrieving the issue.
         <br /> <br /> You can go back to the issues list and see available issues for this project. &nbsp;
         <Button color="danger" size="sm"
           onClick={() => this.props.history.push(this.props.issuesUrl)}>Back to list</Button>
-      </Alert>;
+      </ErrorAlert>;
     }
 
     if (this.props.title === undefined)

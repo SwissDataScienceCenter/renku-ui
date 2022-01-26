@@ -45,6 +45,18 @@ describe("Dataset functions", () => {
     pathname: "/projects",
     search: "?page=1"
   });
+  const migration = { core: { versionUrl: "" } };
+  const datasets = [{
+    "title": "Test dataset title",
+    "identifier": "79215657-4319-4fcf-82b9-58267f2a1db8",
+    "name": "test-dataset-name",
+    "created_at": "2021-06-04 04:20:24.287936+00:00",
+    "creators": [{
+      "name": "First, Creator",
+      "email": null,
+      "affiliation": "Some Affiliation",
+    }]
+  }];
 
   it("renders datasets list view without crashing", async () => {
     const div = document.createElement("div");
@@ -53,9 +65,10 @@ describe("Dataset functions", () => {
         <MemoryRouter>
           <DatasetList key="datasets"
             client={client}
-            model={model}
             history={fakeHistory}
             location={fakeHistory.location}
+            migration={migration}
+            model={model}
           />
         </MemoryRouter>
         , div);
@@ -68,13 +81,17 @@ describe("Dataset functions", () => {
       ReactDOM.render(
         <MemoryRouter>
           <ShowDataset
-            insideProject={false}
-            identifier={"79215657-4319-4fcf-82b9-58267f2a1db8"}
             client={client}
-            projectsUrl="/projects"
-            selectedDataset={"79215657-4319-4fcf-82b9-58267f2a1db8"}
+            datasets={datasets}
+            datasetId="test-dataset-name"
+            identifier="79215657-4319-4fcf-82b9-58267f2a1db8"
+            insideProject={false}
+            location={fakeHistory.location}
             logged={true}
+            migration={migration}
             model={model}
+            projectsUrl="/projects"
+            selectedDataset="79215657-4319-4fcf-82b9-58267f2a1db8"
           />
         </MemoryRouter>
         , div);

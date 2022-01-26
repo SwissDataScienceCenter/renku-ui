@@ -1,22 +1,26 @@
 import React from "react";
 import ReactDOM from "react-dom";
-import { connect } from "react-redux";
+import { connect, Provider } from "react-redux";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import "bootstrap";
 import "jquery";
+
 // Use our version of bootstrap, not the one in import 'bootstrap/dist/css/bootstrap.css';
 import "./styles/index.css";
 import "./index.css";
+
 import App from "./App";
-import { Maintenance } from "./Maintenance";
 // Disable service workers for the moment -- see below where registerServiceWorker is called
 // import registerServiceWorker from './utils/ServiceWorker';
 import APIClient from "./api-client";
-import { UserCoordinator } from "./user";
 import { LoginHelper } from "./authentication";
+import { pollComponentsVersion } from "./landing";
+import { Maintenance } from "./Maintenance";
 import { StateModel, globalSchema } from "./model";
-import { Url } from "./utils/url";
-import { Sentry } from "./utils/sentry";
+import { pollStatuspage } from "./statuspage";
+import { UserCoordinator } from "./user";
+import { Sentry } from "./utils/helpers/sentry";
+import { Url } from "./utils/helpers/url";
 
 const configFetch = fetch("/config.json");
 const privacyFetch = fetch("/privacy-statement.md");
@@ -55,7 +59,7 @@ Promise.all([configFetch, privacyFetch]).then(valuesRead => {
     Url.setBaseUrl(params["BASE_URL"]);
 
     // create client to be passed to coordinators
-    const client = new APIClient(params.GATEWAY_URL);
+    const client = new APIClient(params.UISERVER_URL + "/api", params.UISERVER_URL);
 
     // Create the global model containing the formal schema definition and the redux store
     const model = new StateModel(globalSchema);
@@ -74,19 +78,23 @@ Promise.all([configFetch, privacyFetch]).then(valuesRead => {
     }
 
     const statuspageId = params["STATUSPAGE_ID"];
+    pollStatuspage(statuspageId, model);
+    pollComponentsVersion(model.subModel("environment"), client);
 
     const VisibleApp = connect(mapStateToProps)(App);
     ReactDOM.render(
-      <Router>
-        <Route render={props => {
-          LoginHelper.handleLoginParams(props.history);
-          return (
-            <VisibleApp client={client} params={params} store={model.reduxStore} model={model}
-              statuspageId={statuspageId} location={props.location}
-            />
-          );
-        }} />
-      </Router>,
+      <Provider store={model.reduxStore}>
+        <Router>
+          <Route render={props => {
+            LoginHelper.handleLoginParams(props.history);
+            return (
+              <VisibleApp client={client} params={params} model={model}
+                location={props.location} statuspageId={statuspageId}
+              />
+            );
+          }} />
+        </Router>
+      </Provider>,
       document.getElementById("root")
     );
   });

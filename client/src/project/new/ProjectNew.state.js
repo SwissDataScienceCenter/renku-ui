@@ -25,7 +25,7 @@
 
 import { CUSTOM_REPO_NAME } from "./ProjectNew.container";
 import { newProjectSchema } from "../../model/RenkuModels";
-import { sleep, slugFromTitle, verifyTitleCharacters } from "../../utils/HelperFunctions";
+import { sleep, slugFromTitle, verifyTitleCharacters } from "../../utils/helpers/HelperFunctions";
 
 
 // ? reference https://docs.gitlab.com/ce/user/reserved_names.html#reserved-project-names
@@ -91,17 +91,32 @@ class NewProjectCoordinator {
       Object.keys(template.variables) :
       [];
 
-    // preserve already set values
+    // preserve already set values or set default values when available
     const oldValues = currentInput.template ?
       currentInput.variables :
       {};
     const oldVariables = Object.keys(oldValues);
     const values = variables.reduce((values, variable) => {
-      const text = oldVariables.includes(variable) ?
-        oldValues[variable] :
-        "";
-      return { ...values, [variable]: text };
+      let value = "";
+
+      const variableData = template.variables[variable];
+      if (typeof variableData === "object") {
+        // set first value for enum, and "false" for boolean
+        if (variableData["type"] === "enum" && variableData["enum"] && variableData["enum"].length)
+          value = variableData["enum"][0];
+
+        // set default, if any
+        if (typeof variableData === "object" && variableData["default_value"] != null)
+          value = variableData["default_value"];
+      }
+
+      // set older value, if any
+      if (oldVariables.includes(variable))
+        value = oldValues[variable];
+
+      return { ...values, [variable]: value };
     }, {});
+
     return values;
   }
 
@@ -185,6 +200,10 @@ class NewProjectCoordinator {
     if (data.title) {
       this.setProperty("title", data.title);
       newInput.title = data.title;
+    }
+    if (data.description) {
+      this.setProperty("description", data.description);
+      newInput.description = data.description;
     }
     if (data.namespace) {
       // Check if the namespace is available
@@ -428,7 +447,8 @@ class NewProjectCoordinator {
             id: `${source.name}/${template.folder}`,
             name: template.name,
             description: template.description,
-            variables: template.variables
+            variables: template.variables,
+            icon: template.icon
           });
         }
       }
@@ -463,55 +483,38 @@ class NewProjectCoordinator {
     return "No templates available in this repo.";
   }
 
-  async getVisibilities(namespace) {
-    // function to compute available visibilities based on the current group visibility
-    const computeVisibilities = (max) => {
-      if (max === "private")
-        return ["private"];
-      else if (max === "internal")
-        return ["private", "internal"];
-      return ["private", "internal", "public"];
-    };
+  resetVisibility(namespace) {
+    this.model.setObject({
+      meta: {
+        namespace: {
+          fetched: null,
+          fetching: true,
+          id: namespace.full_path,
+          visibility: null,
+          visibilities: { $set: null },
+        }
+      }
+    });
+  }
 
-    let visibilities, updateObject = { meta: { namespace: {} } };
-    if (namespace.kind === "user") {
-      visibilities = computeVisibilities("public");
-      updateObject.meta.namespace = {
-        visibility: "public",
-        visibilities: { $set: visibilities },
-      };
-    }
-    else {
-      // temporarily reset visibility metadata
-      this.model.setObject({
-        meta: {
+  async setVisibilities(availableVisibilities, namespace) {
+    let updateObject = {
+      meta:
+        {
           namespace: {
-            fetched: null,
-            fetching: true,
+            visibility: availableVisibilities.default,
+            visibilities: availableVisibilities.visibilities,
+            fetched: new Date(),
+            fetching: false,
             id: namespace.full_path,
-            visibility: null,
-            visibilities: { $set: [] },
           }
         }
-      });
-      // verify group visibility
-      const group = await this.client.getGroupByPath(namespace.full_path).then(r => r.data);
-      visibilities = computeVisibilities(group.visibility);
-      updateObject.meta.namespace = {
-        visibility: group.visibility,
-        visibilities: { $set: visibilities },
-      };
-    }
-
-    // set common properties
-    updateObject.meta.namespace.fetched = new Date();
-    updateObject.meta.namespace.fetching = false;
-    updateObject.meta.namespace.id = namespace.full_path;
+    };
 
     // save the model and invoke the normal setProperty
     this.model.setObject(updateObject);
-    this.setProperty("visibility", visibilities[visibilities.length - 1]);
-    return visibilities;
+    this.setProperty("visibility", availableVisibilities.default);
+    return availableVisibilities.visibilities;
   }
 
   /**
@@ -526,7 +529,8 @@ class NewProjectCoordinator {
     let newProjectData = {
       project_repository: repositoryUrl,
       project_namespace: input.namespace,
-      project_name: input.title
+      project_name: input.title,
+      project_description: input.description
     };
 
     // add template details
@@ -546,10 +550,10 @@ class NewProjectCoordinator {
       newProjectData.ref = userTemplates.ref;
     }
 
-    // add variables
+    // add variables after converting to string (renku core accept string only)
     let parameters = [];
     for (let variable of Object.keys(input.variables))
-      parameters.push({ key: variable, value: input.variables[variable] });
+      parameters.push({ key: variable, value: input.variables[variable].toString() });
     newProjectData.parameters = parameters;
 
     // reset all previous creation progresses and invoke the project creation API
@@ -567,9 +571,10 @@ class NewProjectCoordinator {
     }
     modelUpdates.meta.creation.created = true;
     modelUpdates.meta.creation.newName = projectResult.result.name;
+    modelUpdates.meta.creation.newNameSlug = projectResult.result.slug;
     modelUpdates.meta.creation.newNamespace = projectResult.result.namespace;
     modelUpdates.meta.creation.newUrl = projectResult.result.url;
-    const slug = `${projectResult.result.namespace}/${projectResult.result.name}`;
+    const slug = `${projectResult.result.namespace}/${projectResult.result.slug}`;
 
     // update project details like visibility and name
     modelUpdates.meta.creation.projectError = "";
@@ -683,15 +688,15 @@ class NewProjectCoordinator {
     // check warnings (temporary problems)
     let warnings = {};
     if (projects && projects.namespaces.fetching)
-      warnings["namespace"] = "Fetching namespaces.";
+      warnings["namespace"] = "Fetching namespaces...";
 
     if (meta.namespace.fetching)
-      warnings["visibility"] = "Verifying visibility constraints.";
+      warnings["visibility"] = "Verifying visibility constraints...";
 
     if (templates.fetching)
-      warnings["template"] = "Fetching templates.";
+      warnings["template"] = "Fetching templates...";
     else if (!templates.fetched)
-      warnings["template"] = "Must get the templates first.";
+      warnings["template"] = "Must fetch the templates first.";
 
     // check title errors (requires user intervention)
     let errors = {};

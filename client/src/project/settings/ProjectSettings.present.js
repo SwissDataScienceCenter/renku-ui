@@ -26,7 +26,7 @@
 import React, { Component, Fragment, useState } from "react";
 import { Link } from "react-router-dom";
 import {
-  Alert, Button, Col, Collapse, Form, FormGroup,
+  Button, Col, Collapse, Form, FormGroup,
   FormText, Input, InputGroup, Label, Row, Table, Nav, NavItem, UncontrolledTooltip
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -38,15 +38,19 @@ import _ from "lodash/array";
 import { ACCESS_LEVELS } from "../../api-client";
 import { ProjectAvatarEdit, ProjectTags, } from "../shared";
 import { NotebooksHelper, ServerOptionBoolean, ServerOptionEnum, ServerOptionRange } from "../../notebooks";
-import { Clipboard, ExternalLink, Loader, RenkuNavLink } from "../../utils/UIComponents";
-import { Url } from "../../utils/url";
+import { Url } from "../../utils/helpers/url";
+import { RenkuNavLink } from "../../utils/components/RenkuNavLink";
+import { Clipboard } from "../../utils/components/Clipboard";
+import { Loader } from "../../utils/components/Loader";
+import { ErrorAlert, WarnAlert } from "../../utils/components/Alert";
+import { ExternalLink } from "../../utils/components/ExternalLinks";
 
 
 //** Navigation **//
 
 function ProjectSettingsNav(props) {
   return (
-    <Nav className="flex-column nav-light">
+    <Nav className="flex-column nav-light nav-pills-underline">
       <NavItem>
         <RenkuNavLink to={props.settingsUrl} title="General" />
       </NavItem>
@@ -66,7 +70,7 @@ function ProjectSettingsGeneral(props) {
       <Row className="mt-2">
         <Col xs={12} lg={6}>
           <ProjectTags
-            tag_list={props.system.tag_list}
+            tagList={props.metadata.tagList}
             onProjectTagsChange={props.onProjectTagsChange}
             settingsReadOnly={props.settingsReadOnly} />
           <ProjectDescription {...props} />
@@ -79,7 +83,7 @@ function ProjectSettingsGeneral(props) {
       <Row>
         <Col xs={12}>
           <ProjectAvatarEdit externalUrl={props.externalUrl}
-            avatarUrl={props.core.avatar_url} onAvatarChange={props.onAvatarChange}
+            avatarUrl={props.metadata.avatarUrl} onAvatarChange={props.onAvatarChange}
             settingsReadOnly={props.settingsReadOnly} />
         </Col>
       </Row>
@@ -99,7 +103,7 @@ class RepositoryClone extends Component {
             <CommandRow application="Renku" command={renkuClone} />
           </tbody>
         </Table>
-        <GitCloneCmd externalUrl={externalUrl} projectPath={this.props.core.project_path} />
+        <GitCloneCmd externalUrl={externalUrl} projectPath={this.props.metadata.path} />
       </div>
     );
   }
@@ -156,7 +160,7 @@ class ProjectDescription extends Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    const update = { value: nextProps.core.description };
+    const update = { value: nextProps.metadata.description };
     return { ...update, ...prevState };
   }
 
@@ -169,7 +173,7 @@ class ProjectDescription extends Component {
       <Input id="projectDescription" readOnly value={this.state.value} /> :
       <Input id="projectDescription" onChange={this.onValueChange}
         value={this.state.value === null ? "" : this.state.value} />;
-    let submit = (this.props.core.description !== this.state.value) ?
+    let submit = (this.props.metadata.description !== this.state.value) ?
       <Button className="mb-3 updateProjectSettings" color="primary">Update</Button> :
       <span></span>;
     return <Form onSubmit={this.onSubmit}>
@@ -202,8 +206,8 @@ class RepositoryUrls extends Component {
         <Label className="font-weight-bold">Repository URL</Label>
         <Table size="sm">
           <tbody>
-            <RepositoryUrlRow urlType="SSH" url={this.props.system.ssh_url} />
-            <RepositoryUrlRow urlType="HTTP" url={this.props.system.http_url} />
+            <RepositoryUrlRow urlType="SSH" url={this.props.metadata.sshUrl} />
+            <RepositoryUrlRow urlType="HTTP" url={this.props.metadata.httpUrl} />
           </tbody>
         </Table>
       </div>
@@ -225,7 +229,7 @@ function RepositoryUrlRow(props) {
 //** Sessions settings **//
 
 function ProjectSettingsSessions(props) {
-  const { config, location, metadata, newConfig, options, setConfig, user } = props;
+  const { backend, config, location, metadata, newConfig, options, setConfig, user } = props;
   const { accessLevel, repositoryUrl } = metadata;
   const devAccess = accessLevel > ACCESS_LEVELS.DEVELOPER ? true : false;
   const disabled = !devAccess || newConfig.updating;
@@ -242,8 +246,49 @@ function ProjectSettingsSessions(props) {
   }
 
   // Handle ongoing operations and errors
-  if (config.fetching || options.fetching)
-    return (<SessionsDiv><Loader /></SessionsDiv>);
+  if (config.fetching || options.fetching || backend.fetching || !backend.fetched) {
+    let message;
+    if (config.fetching)
+      message = "Getting project settings...";
+    else if (options.fetching)
+      message = "Getting RenkuLab settings...";
+    else if (backend.fetching || !backend.fetched)
+      message = "Checking project version and RenkuLab compatibility...";
+    else
+      message = "Please wait...";
+
+    return (
+      <SessionsDiv>
+        <p>{message}</p>
+        <Loader />
+      </SessionsDiv>
+    );
+  }
+
+  if (!backend.backendAvailable) {
+    const overviewStatusUrl = Url.get(Url.pages.project.overview.status, {
+      namespace: metadata.namespace,
+      path: metadata.path,
+    });
+    const updateInfo = devAccess ?
+      "It is necessary to update this project" :
+      "It is necessary to update this project. Either contact a project maintainer, or fork and update it";
+    return (
+      <SessionsDiv>
+        <p>Session settings not available.</p>
+        <WarnAlert dismissible={false}>
+          <p>
+            <b>Session settings are unavailable</b> because the project is not compatible with this
+            RenkuLab instance.
+          </p>
+          <p>
+            {updateInfo}.
+            <br />The <Link to={overviewStatusUrl}>Project status</Link> page provides further information.
+          </p>
+        </WarnAlert>
+      </SessionsDiv>
+    );
+  }
 
   if (config.error && config.error.code)
     return (<SessionsDiv><SessionConfigError config={config} /></SessionsDiv>);
@@ -394,7 +439,7 @@ function SessionConfigError(props) {
   const toggleShowError = () => setShowError(!showError);
 
   return (
-    <Alert color="danger">
+    <ErrorAlert>
       <h3>Error</h3>
       <p>We could not access the project settings.</p>
 
@@ -404,7 +449,7 @@ function SessionConfigError(props) {
       <Button color="link" className="font-italic btn-sm" onClick={toggleShowError}>
         [{showError ? "Hide details" : "Show details"} info]
       </Button>
-    </Alert>
+    </ErrorAlert>
   );
 }
 
@@ -413,10 +458,10 @@ function NewConfigStatus(props) {
 
   if (error) {
     return (
-      <Alert color="danger">
-        <FontAwesomeIcon icon={faExclamationTriangle} /> Error occurred
+      <ErrorAlert>
+        Error occurred
         while updating &quot;{keyName}&quot;: {error}
-      </Alert>
+      </ErrorAlert>
     );
   }
 
@@ -567,13 +612,13 @@ function SessionConfigAdvanced(props) {
   const toggleShowImage = () => setShowImage(!showImage);
 
   const warningMessage = devAccess ?
-    (<Alert color="warning">
-      <FontAwesomeIcon className="cursor-default" icon={faExclamationTriangle} color="warning" /> Fixing
+    (<WarnAlert>
+      Fixing
       an image can yield improvements, but it can also lead to sessions not working in the expected
       way. <a href="https://renku.readthedocs.io/en/latest/user/session_customizing.html">
         Please consult the documentation
       </a> before changing this setting.
-    </Alert>) :
+    </WarnAlert>) :
     null;
   return (
     <div className="mb-2">

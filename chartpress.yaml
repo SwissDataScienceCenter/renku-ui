@@ -16,7 +16,13 @@ charts:
         valuesPath: image
         paths:
           - client
+          - e2e
           - helm-chart
+          - server
+          - .github
+          - "."
+        buildArgs:
+          SHORT_SHA: "{LAST_COMMIT}"
   - name: helm-chart/renku-ui-server
     resetTag: latest
     imagePrefix: renku/
@@ -33,5 +39,11 @@ charts:
         dockerfilePath: server/Dockerfile
         valuesPath: image
         paths:
-          - server
+          - client
+          - e2e
           - helm-chart
+          - server
+          - .github
+          - "."
+        buildArgs:
+          SHORT_SHA: "{LAST_COMMIT}"

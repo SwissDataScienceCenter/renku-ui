@@ -20,9 +20,9 @@ import React, { Fragment } from "react";
 
 import { Row, Col, Card, CardBody, CardHeader } from "reactstrap";
 
-import FormGenerator, { FormGenerator as FormPanel } from "../utils/formgenerator";
+import FormGenerator, { FormGenerator as FormPanel } from "../utils/components/formgenerator";
 import { Schema, StateModel, globalSchema } from "../model";
-import { DatasetImages } from "../utils/formgenerator/fields/stockimages";
+import { DatasetImages } from "../utils/components/formgenerator/fields/stockimages";
 
 let schema = new Schema({
   name: {

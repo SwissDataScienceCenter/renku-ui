@@ -15,6 +15,12 @@ nav.rk-anon-home .nav-link {
   }
 }
 
+@media screen and (min-width: 992px) {
+  div.rk-navbar-home {
+    height: 0;
+  }
+}
+
 #nav-hamburger {
   background-color: transparent;
   &:hover {

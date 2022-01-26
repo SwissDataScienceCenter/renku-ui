@@ -27,12 +27,13 @@
 import React, { Component, Fragment } from "react";
 import { Link } from "react-router-dom";
 import { Row, Col } from "reactstrap";
-import { Url } from "../utils/url";
-import { ExternalLink, InfoAlert, MarkdownTextExcerpt, ListDisplay, RenkuMarkdown,
-  Loader } from "../utils/UIComponents";
-import { StatuspageBanner } from "../statuspage";
+import { Url } from "../utils/helpers/url";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLandmark, faPlus, faQuestion } from "@fortawesome/free-solid-svg-icons";
+import { MarkdownTextExcerpt, RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
+import ListDisplay from "../utils/components/List";
+import { ExternalLink } from "../utils/components/ExternalLinks";
+import { Loader } from "../utils/components/Loader";
 
 
 function truncatedProjectListRows(projects, urlFullList, gridDisplay) {
@@ -137,47 +138,21 @@ class Welcome extends Component {
   }
 }
 
-function LoggedInNewVersionBanner() {
-
-  const newVersionBannerStyle = {
-    fontSize: "larger"
-  };
-
-  return <InfoAlert color="primary" timeout={20}>
-    <div className="d-flex justify-content-center align-items-center" style={newVersionBannerStyle}>
-      <div>
-        <span role="img" aria-label="tada">🎉</span> {" "}
-        Welcome to the new Renku UI!  {" "}
-        <span role="img" aria-label="tada">🎉</span> {" "}
-        <Link to={Url.get(Url.pages.help.changes)} className="link-rk-dark">
-          Learn about what has changed.
-        </Link>
-      </div>
-    </div>
-  </InfoAlert>;
-}
-
 class LoggedInHome extends Component {
   render() {
     const urlMap = this.props.urlMap;
     const { user } = this.props;
-    const projects = this.props.projects.featured;
-    const neverLoaded = projects.fetched ? false : true;
+    const projects = this.props.projects.landingProjects;
     return [
-      <LoggedInNewVersionBanner key="new-version-banner" />,
       <Row key="username">
-        <Col xs={12}>
-          <StatuspageBanner siteStatusUrl={urlMap.siteStatusUrl} statuspageId={this.props.statuspageId}
-            statuspageModel={this.props.statuspageModel} />
-        </Col>
         <Col xs={6}>
-          <h3 className="pt-4 fw-bold">{user.data.username} @ Renku</h3>
+          <h3 data-cy="username-home" className="pt-4 fw-bold">{user.data.username} @ Renku</h3>
         </Col>
       </Row>,
       <Row key="spacer"><Col md={12}>&nbsp;</Col></Row>,
       <Row key="content">
         <Col xs={{ order: 2 }} md={{ size: 6, order: 1 }}>
-          <YourProjects urlMap={urlMap} loading={neverLoaded || projects.fetching} projects={projects.member} />
+          <YourProjects urlMap={urlMap} loading={projects.fetching} projects={projects.list} />
           <Row><Col md={12}>&nbsp;</Col></Row>
         </Col>
         <Col xs={{ order: 1 }} md={{ size: 6, order: 2 }}>

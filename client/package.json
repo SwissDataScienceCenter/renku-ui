@@ -1,6 +1,6 @@
 {
   "name": "renku-ui",
-  "version": "1.0.1",
+  "version": "1.3.0",
   "private": true,
   "dependencies": {
     "@babel/helper-regex": "^7.10.5",
@@ -43,6 +43,7 @@
     "react-masonry-css": "^1.0.16",
     "react-media": "^1.10.0",
     "react-motion": "^0.5.2",
+    "react-pdf": "^5.5.0",
     "react-redux": "^7.2.2",
     "react-router-dom": "^5.1.2",
     "react-router-hash-link": "^2.4.3",
@@ -53,6 +54,8 @@
     "redux-thunk": "^2.2.0",
     "sass": "^1.37.5",
     "showdown": "^1.9.1",
+    "showdown-highlight": "^2.1.8",
+    "showdown-katex": "0.6.0",
     "styled-jsx": "^3.4.5",
     "uuid": "^3.3.3",
     "xregexp": "^4.4.0",
@@ -61,17 +64,18 @@
   "scripts": {
     "build-css": "node-sass-chokidar --include-path ./src/styles --include-path ./node_modules src/styles/ -o src/styles/",
     "watch-css": "npm run build-css && node-sass-chokidar --include-path ./src/styles --include-path ./node_modules src/styles/ -o src/styles --watch --recursive",
-    "start-js": "REACT_APP_UI_DEV_MODE=$UI_DEV_MODE REACT_APP_RENKU_UI_URL=$RENKU_UI_URL react-scripts --max_old_space_size=4096 start",
+    "start-js": "REACT_APP_UI_DEV_MODE=$UI_DEV_MODE REACT_APP_RENKU_UI_URL=$RENKU_UI_URL craco --max_old_space_size=4096 start",
     "start": "npm-run-all -p watch-css start-js ",
-    "build": "npm run build-css && REACT_APP_UI_DEV_MODE=false react-scripts --max_old_space_size=4096 build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
+    "build": "npm run build-css && REACT_APP_UI_DEV_MODE=false craco --max_old_space_size=4096 build",
+    "test": "craco test",
+    "eject": "craco eject",
     "lint": "node_modules/eslint/bin/eslint.js --max-warnings=0 src/",
     "lint-fix": "node_modules/eslint/bin/eslint.js src/ --fix",
     "node": "node_modules/.bin/babel-node"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",
+    "@craco/craco": "^5.8.0",
     "cz-conventional-changelog": "^3.1.0",
     "eslint-plugin-jest": "^23.8.0",
     "eslint-plugin-react": "^7.18.3",
@@ -79,10 +83,11 @@
     "eslint-plugin-spellcheck": "0.0.17",
     "fetch-mock": "^7.7.0",
     "history": "^4.10.1",
+    "jest-canvas-mock": "^2.1.2",
     "jest-localstorage-mock": "^2.4.3",
     "node-fetch": "^2.6.0",
-    "react-scripts": "^3.4.1",
-    "react-test-renderer": "^17.0.1",
+    "react-scripts": "^3.4.4",
+    "react-test-renderer": "^16.14.0",
     "typescript": "^3.8.2"
   },
   "browserslist": [

@@ -25,7 +25,7 @@ Some deployment-specific information will be read from the your values.yaml file
 TEMPLATES='{"custom":true,"repositories":
 [{"name":"Renku","ref":"master",
 "url":"https://github.com/SwissDataScienceCenter/renku-project-template"},
-{"name":"Telepresence","ref":"0.1.11",
+{"name":"Telepresence","ref":"0.2.1",
 "url":"https://github.com/SwissDataScienceCenter/renku-project-template"}]}'
 PREVIEW_THRESHOLD='{"soft":"1048576","hard":"10485760"}'
 UPLOAD_THRESHOLD='{"soft":"104857600"}'
@@ -134,9 +134,11 @@ fi
 tee > ./public/config.json << EOF
 {
   "UI_VERSION": "${CURRENT_CHART}-${CURRENT_COMMIT}",
+  "UI_SHORT_SHA": "development",
   "TELEPRESENCE": "true",
   "BASE_URL": "${BASE_URL}",
   "GATEWAY_URL": "${BASE_URL}/api",
+  "UISERVER_URL": "${BASE_URL}/ui-server",
   "WELCOME_PAGE": "${WELCOME_PAGE}",
   "SENTRY_URL": "${SENTRY_URL}",
   "SENTRY_NAMESPACE": "${SENTRY_NAMESPACE}",

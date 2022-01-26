@@ -110,6 +110,71 @@ function addProjectMethods(client) {
     return projects;
   };
 
+  /**
+   * Use the graphQL endpoint to get minimal information for a project
+   * @returns A query response promise
+   * @param queryParams The query params, should have a key "query"
+   */
+  client.getProjectsGraphQL = async (queryParams = {}) => {
+    let headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    headers.append("X-Requested-With", "XMLHttpRequest");
+    const resp = await client.clientFetch(`${client.baseUrl}/graphql`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(queryParams),
+    });
+    return resp?.data?.data?.projects;
+  };
+
+  /**
+   * Get all the projects that match the query parameters, but just
+   * return some minimal information, not the full information.
+   * @param {object} queryParams The query params, should have a key "per_page"
+   * @returns A query response promise.
+   */
+  client.getAllProjectsGraphQL = async (queryParams = {}) => {
+    let projects = [];
+    let finished = false;
+    let endCursor = "";
+    const params = { "variables": null, "operationName": null };
+
+    while (!finished) {
+      let query = `{
+        projects(membership: true, first:${queryParams.per_page}, after:"${endCursor}") {
+          pageInfo {
+            endCursor
+            hasNextPage
+          }
+          nodes {
+            id
+            name
+            fullPath
+            namespace {
+              fullPath
+            }
+            path,
+            httpUrlToRepo,
+            userPermissions {
+              adminProject,
+              pushCode,
+              removeProject
+            }
+          }
+        }
+      }`;
+      const resp = await client.getProjectsGraphQL({ ...params, query });
+      projects = [...projects, ...resp?.nodes];
+
+      if (!resp?.pageInfo?.hasNextPage)
+        finished = true;
+      else
+        endCursor = resp?.pageInfo?.endCursor;
+    }
+
+    return projects;
+  };
+
   client.getAvatarForNamespace = (namespaceId = {}) => {
     let headers = client.getBasicHeaders();
     return client.clientFetch(`${client.baseUrl}/groups/${namespaceId}`, {
@@ -247,6 +312,10 @@ function addProjectMethods(client) {
     return client.putProjectFieldFormData(projectId, "avatar", avatarFile);
   };
 
+  client.setVisibility = (projectId, visibility) => {
+    return client.putProjectField(projectId, "visibility", visibility);
+  };
+
   client.starProject = (projectId, starred) => {
     const headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
@@ -322,10 +391,11 @@ function addProjectMethods(client) {
    * Get project config file data
    * @see {@link https://github.com/SwissDataScienceCenter/renku-python/blob/master/renku/service/views/config.py}
    * @param {string} projectRepositoryUrl - external repository full url.
-   * @param {string} branch - target branch.
+   * @param {string} [versionUrl] - project version url.
+   * @param {string} [branch] - target branch.
    */
-  client.getProjectConfig = async (projectRepositoryUrl, branch = null) => {
-    const url = `${client.baseUrl}/renku/config.show`;
+  client.getProjectConfig = async (projectRepositoryUrl, versionUrl = null, branch = null) => {
+    const url = client.versionedCoreUrl("config.show", versionUrl);
     let queryParams = { git_url: projectRepositoryUrl };
     if (branch)
       queryParams.branch = branch;
@@ -345,10 +415,14 @@ function addProjectMethods(client) {
    * @see {@link https://github.com/SwissDataScienceCenter/renku-python/blob/master/renku/service/views/config.py}
    * @param {string} projectRepositoryUrl - external repository full url.
    * @param {object} config - config object in the form {key: value}. A null value removes the key.
+   * @param {string} [versionUrl] - project version url.
+   * @param {string} [branch] - target branch.
    */
-  client.setProjectConfig = async (projectRepositoryUrl, config) => {
-    const url = `${client.baseUrl}/renku/config.set`;
-    const body = { git_url: projectRepositoryUrl, config };
+  client.setProjectConfig = async (projectRepositoryUrl, config, versionUrl = null, branch = null) => {
+    const url = client.versionedCoreUrl("config.set", versionUrl);
+    let body = { git_url: projectRepositoryUrl, config };
+    if (branch)
+      body.branch = branch;
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");

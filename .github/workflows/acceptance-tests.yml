@@ -13,6 +13,7 @@ on:
     - server/**
     - helm-chart/**
     - .github/workflows/**
+    - chartpress.yaml
 
 jobs:
   cleanup-previous-runs:
@@ -33,9 +34,10 @@ jobs:
       renku-graph: ${{ steps.deploy-comment.outputs.renku-graph}}
       renku-notebooks: ${{ steps.deploy-comment.outputs.renku-notebooks}}
       test-enabled: ${{ steps.deploy-comment.outputs.test-enabled}}
+      extra-values: ${{ steps.deploy-comment.outputs.extra-values}}
     steps:
       - id: deploy-comment
-        uses: SwissDataScienceCenter/renku-actions/check-pr-description@v0.3.0
+        uses: SwissDataScienceCenter/renku-actions/check-pr-description@v0.3.2
         with:
           string: /deploy
           pr_ref: ${{ github.event.number }}
@@ -64,7 +66,7 @@ jobs:
         body: |
           You can access the deployment of this PR at https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch
     - name: Build and deploy
-      uses: SwissDataScienceCenter/renku-actions/deploy-renku@v0.3.0
+      uses: SwissDataScienceCenter/renku-actions/deploy-renku@v0.3.2
       env:
         RANCHER_PROJECT_ID: ${{ secrets.CI_RANCHER_PROJECT }}
         DOCKER_PASSWORD: ${{ secrets.RENKU_DOCKER_PASSWORD }}
@@ -86,7 +88,7 @@ jobs:
         renku_gateway: "${{ needs.check-deploy.outputs.renku-gateway }}"
         renku_graph: "${{ needs.check-deploy.outputs.renku-graph }}"
         renku_notebooks: "${{ needs.check-deploy.outputs.renku-notebooks }}"
-
+        extra_values: "${{ needs.check-deploy.outputs.extra-values }}"
   run-acceptance-tests:
     needs: [check-deploy, deploy-pr]
     if: github.event.action != 'closed'
@@ -107,7 +109,7 @@ jobs:
         helm test ${RENKU_RELEASE} --namespace ${RENKU_RELEASE} --timeout 80m --logs
     - name: Download artifact for packaging on failure
       if: failure()
-      uses: SwissDataScienceCenter/renku-actions/download-test-artifacts@v0.3.0
+      uses: SwissDataScienceCenter/renku-actions/download-test-artifacts@v0.3.2
       env:
         RENKU_VALUES: ${{ secrets.CI_RENKU_VALUES }}
         TEST_ARTIFACTS_PATH: "tests-artifacts-${{ github.sha }}"
@@ -117,6 +119,25 @@ jobs:
       with:
         name: acceptance-test-artifacts
         path: ${{ github.workspace }}/test-artifacts/
+
+  run-e2e:
+    needs: [ check-deploy, deploy-pr ]
+    if: github.event.action != 'closed'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Cypress run
+        uses: cypress-io/github-action@v2
+        if: "needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true'"
+        env:
+          CYPRESS_BASE_URL: https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch/
+          CYPRESS_RECORD_KEY: ${{ secrets.CYPRESS_RECORD_KEY }}
+          GITLAB_TOKEN: ${{ secrets.DEV_GITLAB_TOKEN }}
+          CYPRESS_USER: ${{ secrets.CYPRESS_USER }}
+        with:
+          working-directory: e2e
+          record: true
 
   cleanup:
     needs: check-deploy
@@ -138,7 +159,7 @@ jobs:
         issue-number: ${{ github.event.pull_request.number }}
         body: |
           Tearing down the temporary RenkuLab deplyoment for this PR.
-    - uses: SwissDataScienceCenter/renku-actions/teardown-renku@v0.3.0
+    - uses: SwissDataScienceCenter/renku-actions/teardown-renku@v0.3.2
       env:
         GITLAB_TOKEN: ${{ secrets.GITLAB_DEV_TOKEN }}
         KUBECONFIG: ${{ github.workspace }}/renkubot-kube.config

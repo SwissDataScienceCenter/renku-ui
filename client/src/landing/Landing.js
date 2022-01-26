@@ -28,7 +28,7 @@ import { connect } from "react-redux";
 
 import Present from "./Landing.present";
 import { ProjectsCoordinator } from "../project/shared";
-import { Url } from "../utils/url";
+import { Url } from "../utils/helpers/url";
 
 const urlMap = {
   projectsUrl: Url.get(Url.pages.projects),
@@ -47,7 +47,7 @@ class Home extends Component {
 
   componentDidMount() {
     if (this.props.user.logged)
-      this.projectsCoordinator.getFeatured();
+      this.projectsCoordinator.getLanding();
   }
 
   mapStateToProps(state, ownProps) {
@@ -62,8 +62,6 @@ class Home extends Component {
       user={this.props.user}
       welcomePage={atob(this.props.welcomePage)}
       urlMap={urlMap}
-      statuspageId={this.props.statuspageId}
-      statuspageModel={this.props.model.subModel("statuspage")}
       store={this.props.model.reduxStore}
     />;
   }

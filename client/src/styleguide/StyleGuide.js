@@ -28,14 +28,12 @@ import React, { Fragment } from "react";
 import { Col, Nav, NavItem, Row, Table } from "reactstrap";
 import { Route, Switch } from "react-router-dom";
 
-import {
-  RenkuNavLink, TimeCaption,
-} from "../utils/UIComponents";
-
 import ButtonsGuide from "./ButtonsGuide";
 import ColorsGuide from "./ColorsGuide";
 import FormsGuide from "./FormsGuide";
 import ListsGuide from "./ListsGuide";
+import { TimeCaption } from "../utils/components/TimeCaption";
+import { RenkuNavLink } from "../utils/components/RenkuNavLink";
 
 
 function Overview(props) {
@@ -113,7 +111,7 @@ function NavGuide(props) {
     <br />
     <h4>Second-level Nav</h4>
     <p>If a secondary navigation is necessary, use a second-level nav.</p>
-    <Nav className="flex-column nav-light">
+    <Nav className="flex-column nav-light nav-pills-underline">
       <NavItem>
         <RenkuNavLink to={navUrl} title="Tab 1" />
       </NavItem>

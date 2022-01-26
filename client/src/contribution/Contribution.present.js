@@ -23,9 +23,11 @@ import {
 } from "reactstrap";
 import { default as classNames } from "classnames"; // eslint-disable-line
 
-import { UserAvatar, TimeCaption, RenkuMarkdown } from "../utils/UIComponents";
 import { EDIT, PREVIEW } from "./Contribution.constants";
 import { Card, CardHeader, CardBody } from "reactstrap";
+import { UserAvatar } from "../utils/components/Avatar";
+import { TimeCaption } from "../utils/components/TimeCaption";
+import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
 
 /**
  * Contribution

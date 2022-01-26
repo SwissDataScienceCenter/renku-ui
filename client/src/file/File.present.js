@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from "react";
+import React, { memo, useState } from "react";
 import NotebookPreview from "@nteract/notebook-render";
 import {
   Badge, Card, CardHeader, CardBody, Button, ButtonGroup, ListGroup, ListGroupItem, Input
@@ -24,14 +24,18 @@ import {
 import { faDownload } from "@fortawesome/free-solid-svg-icons";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 import "../../node_modules/highlight.js/styles/atom-one-light.css";
+import DOMPurify from "dompurify";
 
 import { FilePreview } from "./index";
 import { CheckNotebookStatus, CheckNotebookIcon } from "../notebooks";
-import { Clipboard, ExternalIconLink, ExternalLink, Loader } from "../utils/UIComponents";
-import { Time } from "../utils/Time";
-import { formatBytes } from "../utils/HelperFunctions";
+import { Time } from "../utils/helpers/Time";
+import { formatBytes } from "../utils/helpers/HelperFunctions";
 import { FileAndLineageSwitch } from "./FileAndLineageComponents";
 import { Label } from "reactstrap/lib";
+import _ from "lodash";
+import { Clipboard } from "../utils/components/Clipboard";
+import { ExternalIconLink, ExternalLink } from "../utils/components/ExternalLinks";
+import { Loader } from "../utils/components/Loader";
 
 const commitMessageLengthLimit = 120;
 
@@ -320,6 +324,43 @@ function tweakCellMetadata(nb, displayMode = NotebookSourceDisplayMode.DEFAULT) 
   return result;
 }
 
+
+/**
+ * Remove any problematic content from the cells
+ *
+ * @param {object} [cell] - The cell to process
+ * @param {array} [accumulator] - The place to store the result
+ */
+function sanitizeCell(cell, accumulator) {
+  const clone = { ...cell };
+  if (clone.outputs == null) {
+    accumulator.push(clone);
+    return;
+  }
+  const outputs = clone.outputs.map((oo) => {
+    const o = { ...oo };
+    o.data = { ...oo.data };
+    if (o.data["text/html"] != null)
+      o.data["text/html"] = [DOMPurify.sanitize([o.data["text/html"].join("\n")])];
+    return o;
+  });
+  clone.outputs = outputs;
+  accumulator.push(clone);
+}
+
+/**
+ * Modify the notebook cells to sanitize HTML content
+ *
+ * @param {object} [nb] - The notebook to process
+ */
+function sanitizeNotebook(nb) {
+  const result = { ...nb };
+  result.cells = [];
+  nb.cells.forEach((cell) => sanitizeCell(cell, result.cells));
+  return result;
+}
+
+
 function NotebookDisplayForm(props) {
   const displayMode = props.displayMode;
   const setDisplayMode = props.setDisplayMode;
@@ -373,20 +414,20 @@ function NotebookDisplayForm(props) {
   </ListGroup>;
 }
 
-function StyledNotebook(props) {
+const StyledNotebook = memo((props) => {
   const [displayMode, setDisplayMode] = useState(NotebookSourceDisplayMode.DEFAULT);
 
   if (props.notebook == null) return <div>Loading...</div>;
 
-  const notebook = tweakCellMetadata(props.notebook, displayMode);
+  const notebook = sanitizeNotebook(tweakCellMetadata(props.notebook, displayMode));
   return [
-    <NotebookDisplayForm key="notebook-display-form"
-      displayMode={displayMode} setDisplayMode={setDisplayMode} />,
+    <NotebookDisplayForm key="notebook-display-form" displayMode={displayMode} setDisplayMode={setDisplayMode} />,
     <CardBody key="notebook">
       <NotebookPreview defaultStyle={false} loadMathjax={false} notebook={notebook} />
     </CardBody>
   ];
-}
+}, _.isEqual);
+StyledNotebook.displayName = "StyledNotebook";
 
 class JupyterButtonPresent extends React.Component {
   render() {
@@ -394,7 +435,7 @@ class JupyterButtonPresent extends React.Component {
       return <CheckNotebookIcon fetched={true} launchNotebookUrl={this.props.launchNotebookUrl} />;
 
     if (this.props.updating)
-      return (<span style={{ verticalAlign: "text-bottom" }}><Loader size="19" inline="true" /></span>);
+      return (<span className="ms-2 pb-1"><Loader size="19" inline="true" /></span>);
 
     return (
       <CheckNotebookStatus
@@ -410,5 +451,6 @@ class JupyterButtonPresent extends React.Component {
 }
 
 export {
-  StyledNotebook, JupyterButtonPresent, ShowFile, tweakCellMetadata, NotebookSourceDisplayMode, FileNoPreview
+  JupyterButtonPresent, FileNoPreview, NotebookSourceDisplayMode, ShowFile, StyledNotebook,
+  sanitizeNotebook, tweakCellMetadata
 };

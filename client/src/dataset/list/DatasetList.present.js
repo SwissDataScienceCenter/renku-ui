@@ -21,10 +21,20 @@ import { Route, Switch } from "react-router-dom";
 import { Row, Col, Alert, Card, CardBody } from "reactstrap";
 import { Button, Form, FormText, Input, Label, InputGroup, UncontrolledCollapse } from "reactstrap";
 import { DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
-import { MarkdownTextExcerpt, ListDisplay, Loader } from "../../utils/UIComponents";
-import { faCheck, faSortAmountUp, faSortAmountDown, faSearch, faBars, faTh } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCheck,
+  faSortAmountUp,
+  faSortAmountDown,
+  faSearch,
+  faBars,
+  faTh,
+  faStop
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ButtonDropdown } from "reactstrap/lib";
+import { Loader } from "../../utils/components/Loader";
+import { MarkdownTextExcerpt } from "../../utils/components/markdown/RenkuMarkdown";
+import ListDisplay from "../../utils/components/List";
 
 
 function OrderByDropdown(props) {
@@ -74,8 +84,8 @@ function OrderByDropdown(props) {
 class DatasetSearchForm extends Component {
 
   render() {
-    return <Row className="justify-content-lg-between justify-content-md-center pb-2">
-      <Col md={12} className="pb-2">
+    return <Row className="justify-content-lg-between justify-content-md-center">
+      <Col md={12}>
         <Form key="form" inline onSubmit={this.props.handlers.onSearchSubmit}
           className="row row-cols-lg-auto justify-content-start g-1 pb-2">
           <Col className="col-auto w-25 d-inline-block">
@@ -83,6 +93,7 @@ class DatasetSearchForm extends Component {
               <Input type="text"
                 name="searchQuery"
                 id="searchQuery"
+                disabled={this.props.loading}
                 placeholder={"Search... "}
                 value={decodeURIComponent(this.props.searchQuery) || ""}
                 onChange={this.props.handlers.onSearchQueryChange}
@@ -99,19 +110,14 @@ class DatasetSearchForm extends Component {
             orderSearchAsc={this.props.orderSearchAsc}
           />
           <Col className="col-auto">
-            <Button color="rk-white" id="searchButton" onClick={this.props.handlers.onSearchSubmit}>
-              <FontAwesomeIcon icon={faSearch} />
-            </Button>
-          </Col>
-          <Col className="col-auto">
-            <Button color="rk-white" id="displayButton"
-              onClick={() => this.props.onGridDisplayToggle()}>
-              {
-                this.props.gridDisplay ?
-                  <FontAwesomeIcon icon={faBars} /> :
-                  <FontAwesomeIcon icon={faTh} />
-              }
-            </Button>
+            { this.props.loading ?
+              <Button color="rk-white" id="cancelButton" onClick={this.props.handlers.onCancelSearch}>
+                <FontAwesomeIcon icon={faStop}/>
+              </Button> :
+              <Button color="rk-white" id="searchButton" onClick={this.props.handlers.onSearchSubmit}>
+                <FontAwesomeIcon icon={faSearch}/>
+              </Button>
+            }
           </Col>
         </Form>
         <Col sm={12}>
@@ -148,6 +154,14 @@ class DatasetSearchForm extends Component {
               </CardBody>
             </Card>
           </UncontrolledCollapse>
+        </Col>
+        <Col className="d-flex pt-4">
+          <Button color="rk-white" id="displayButton" onClick={() => this.props.onGridDisplayToggle()}>
+            {
+              this.props.gridDisplay ?
+                <FontAwesomeIcon icon={faBars} /> : <FontAwesomeIcon icon={faTh} />
+            }
+          </Button>
         </Col>
       </Col>
     </Row>;
@@ -216,6 +230,7 @@ function DatasetsSearch(props) {
       <div className="pb-2 rk-search-bar">
         <DatasetSearchForm
           searchQuery={props.searchQuery}
+          loading={loading}
           handlers={props.handlers}
           errorMessage={props.errorMessage}
           orderByValuesMap={props.orderByValuesMap}

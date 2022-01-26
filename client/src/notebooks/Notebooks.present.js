@@ -16,33 +16,38 @@
  * limitations under the License.
  */
 
-import React, { Component, Fragment, useState } from "react";
+import React, { Component, Fragment, useState, memo, useEffect } from "react";
 import Media from "react-media";
 import { Link } from "react-router-dom";
 import {
   Alert, Badge, Button, ButtonGroup, Col, Collapse, DropdownItem, Form, FormGroup, FormText, Input, Label,
   Modal, ModalBody, ModalFooter, ModalHeader, Nav, NavItem, NavLink, PopoverBody, PopoverHeader, Progress,
-  Row, UncontrolledPopover, UncontrolledTooltip
+  Row, Table, UncontrolledPopover, UncontrolledTooltip
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBook, faCheckCircle, faCog, faCogs, faExclamationTriangle, faExternalLinkAlt, faFileAlt, faHistory,
-  faInfoCircle, faQuestionCircle, faRedo, faSave, faStopCircle, faSyncAlt, faTimesCircle
+  faInfoCircle, faLink, faQuestionCircle, faRedo, faSave, faStopCircle, faSyncAlt, faTimesCircle
 } from "@fortawesome/free-solid-svg-icons";
+import _ from "lodash";
 
-import { StatusHelper } from "../model/Model";
 import { NotebooksHelper } from "./index";
-import { formatBytes, simpleHash } from "../utils/HelperFunctions";
-import {
-  ButtonWithMenu, Clipboard, ExternalLink, InfoAlert, JupyterIcon, Loader,
-  ThrottledTooltip, TimeCaption, WarnAlert
-} from "../utils/UIComponents";
-import Time from "../utils/Time";
-import Sizes from "../utils/Media";
-import { Url } from "../utils/url";
+import { StatusHelper } from "../model/Model";
+import { formatBytes, simpleHash } from "../utils/helpers/HelperFunctions";
+import Time from "../utils/helpers/Time";
+import Sizes from "../utils/constants/Media";
+import { Url } from "../utils/helpers/url";
+import { ExternalLink } from "../utils/components/ExternalLinks";
+import { ButtonWithMenu } from "../utils/components/Button";
+import { TimeCaption } from "../utils/components/TimeCaption";
+import { Loader } from "../utils/components/Loader";
+import { InfoAlert, SuccessAlert, WarnAlert } from "../utils/components/Alert";
+import { Clipboard } from "../utils/components/Clipboard";
+import { JupyterIcon } from "../utils/components/Icon";
+import { ThrottledTooltip } from "../utils/components/Tooltip";
+import SessionCheatSheet from "./SessionCheatSheet";
 
 import "./Notebooks.css";
-import SessionCheatSheet from "./SessionCheatSheet";
 
 
 // * Constants and helpers * //
@@ -296,17 +301,20 @@ function SessionDocs(props) {
 }
 
 function SessionCommands(props) {
-  const { tab } = props;
+  const { tab, notebook } = props;
 
   if (tab !== SESSION_TABS.commands)
     return null;
+
+  const annotations = NotebooksHelper.cleanAnnotations(notebook.data.annotations, "renku.io");
+  const branch = annotations["branch"];
 
   // ? Having a minHeight prevent losing the vertical scroll position.
   // TODO: Revisit after #1219
   return (
     <Fragment>
       <div className="p-2 p-lg-3" style={{ minHeight: 800 }}>
-        <SessionCheatSheet />
+        <SessionCheatSheet branch={branch}/>
       </div>
     </Fragment>
   );
@@ -336,7 +344,7 @@ function SessionJupyter(props) {
     else if (invisible) {
       return null;
     }
-    else if (status === "pending") {
+    else if (status === "pending" || status === "stopping") {
       content = (<Loader />);
     }
   }
@@ -474,7 +482,7 @@ class NotebooksPopup extends Component {
 
     return (
       <InfoAlert timeout={0}>
-        <FontAwesomeIcon icon={faInfoCircle} /> {suggestion}
+        {suggestion}
       </InfoAlert>
     );
   }
@@ -820,6 +828,12 @@ function getStatusObject(status, defaultImage) {
         icon: <Loader size="16" inline="true" />,
         text: "Pending"
       };
+    case "stopping":
+      return {
+        color: "warning",
+        icon: <Loader size="16" inline="true" />,
+        text: "Stopping session"
+      };
     case "error":
       return {
         color: "danger",
@@ -900,42 +914,46 @@ class NotebookServerRowProject extends Component {
   }
 }
 
-class NotebookServerRowAction extends Component {
-  render() {
-    const { status, name } = this.props;
-    const actions = {
-      connect: null,
-      stop: null,
-      logs: null
-    };
-    let defaultAction = null;
-    actions.logs = (<DropdownItem onClick={() => this.props.toggleLogs(name)} color="secondary">
-      <FontAwesomeIcon icon={faFileAlt} /> Get logs
-    </DropdownItem>);
+const NotebookServerRowAction = memo((props) => {
+  const { status, name } = props;
+  const actions = {
+    connect: null,
+    stop: null,
+    logs: null
+  };
+  let defaultAction = null;
+  actions.logs = (<DropdownItem onClick={() => props.toggleLogs(name)} color="secondary">
+    <FontAwesomeIcon icon={faFileAlt} /> Get logs
+  </DropdownItem>);
 
-    if (status === "running") {
-      defaultAction = (<Link className="btn btn-secondary text-white" to={this.props.localUrl}>Open</Link>);
-      actions.openExternal = (<DropdownItem href={this.props.url} target="_blank" >
-        <FontAwesomeIcon icon={faExternalLinkAlt} /> Open in new tab
-      </DropdownItem>);
-      actions.stop = (<DropdownItem onClick={() => this.props.stopNotebook(name)}>
+  if (status !== "stopping") {
+    actions.stop = <Fragment>
+      <DropdownItem divider />
+      <DropdownItem onClick={() => props.stopNotebook(name)}>
         <FontAwesomeIcon icon={faStopCircle} /> Stop
-      </DropdownItem>);
-    }
-    else {
-      const classes = { color: "secondary", className: "text-nowrap" };
-      defaultAction = (<Button {...classes} onClick={() => this.props.toggleLogs(name)}>Get logs</Button>);
-    }
-
-    return (
-      <ButtonWithMenu className="sessionsButton" size="sm" default={defaultAction} color="secondary">
-        {actions.openExternal}
-        {actions.stop}
-        {actions.logs}
-      </ButtonWithMenu>
-    );
+      </DropdownItem>
+    </Fragment>;
   }
-}
+  if (status === "running") {
+    defaultAction = (<Link className="btn btn-secondary text-white" to={props.localUrl}>Open</Link>);
+    actions.openExternal = (<DropdownItem href={props.url} target="_blank" >
+      <FontAwesomeIcon icon={faExternalLinkAlt} /> Open in new tab
+    </DropdownItem>);
+  }
+  else {
+    const classes = { color: "secondary", className: "text-nowrap" };
+    defaultAction = (<Button {...classes} onClick={() => props.toggleLogs(name)}>Get logs</Button>);
+  }
+
+  return (
+    <ButtonWithMenu className="sessionsButton" size="sm" default={defaultAction} color="secondary">
+      {actions.openExternal}
+      {actions.logs}
+      {actions.stop}
+    </ButtonWithMenu>
+  );
+}, _.isEqual);
+NotebookServerRowAction.displayName = "NotebookServerRowAction";
 
 /**
  * Simple environment logs container
@@ -1028,122 +1046,186 @@ class EnvironmentLogs extends Component {
 
 
 // * StartNotebookServer code * //
-class StartNotebookServer extends Component {
-  constructor(props) {
-    super(props);
-    // show advanced if there was an error
-    const initialShowAdvanced = props.launchError != null;
-    this.state = {
-      ignorePipeline: null,
-      showAdvanced: initialShowAdvanced
-    };
-  }
+function StartNotebookServer(props) {
+  const { deleteAutosave, setCommit, setIgnorePipeline, toggleShowAdvanced } = props.handlers;
+  const { branch, commit } = props.filters;
+  const { autosaves, autoStarting, pipelines, message } = props;
 
-  toggleShowAdvanced() {
-    this.setState({ showAdvanced: !this.state.showAdvanced });
-  }
+  if (autoStarting)
+    return (<StartNotebookAutostart {...props} />);
 
-  setIgnorePipeline(value) {
-    this.setState({ ignorePipeline: value });
-  }
+  const fetching = {
+    autosaves: autosaves.fetching,
+    branches: StatusHelper.isUpdating(props.fetchingBranches) ? true : false,
+    pipelines: pipelines.fetching,
+    commits: props.data.fetching
+  };
 
-  render() {
-    const { branch, commit } = this.props.filters;
-    const { branches } = this.props.data;
-    const { autoStarting, pipelines, message } = this.props;
+  let show = {};
+  show.commits = !autosaves.fetching && !fetching.branches && branch.name ? true : false;
+  show.pipelines = show.commits && !fetching.commits && commit && commit.id;
+  show.options = show.pipelines && pipelines.fetched && autosaves.fetched;
 
-    if (autoStarting)
-      return (<StartNotebookAutostart {...this.props} />);
+  const messageOutput = message ?
+    (<div key="message">{message}</div>) :
+    null;
+  const disabled = fetching.branches || fetching.commits;
 
-    const fetching = {
-      branches: StatusHelper.isUpdating(branches) ? true : false,
-      pipelines: pipelines.fetching,
-      commits: this.props.data.fetching
-    };
+  const buttonMessage = props.showAdvanced ?
+    "Hide branch, commit, and image settings" :
+    "Do you want to select the branch, commit, or image?";
 
-    let show = {};
-    show.commits = !fetching.branches && branch.name ? true : false;
-    show.pipelines = show.commits && !fetching.commits && commit && commit.id;
-    show.options = show.pipelines && pipelines.fetched;
+  const advancedSelection = (
+    <Fragment>
+      <Collapse isOpen={props.showAdvanced}>
+        <AutosavesInfoAlert autosaves={autosaves} autosavesId={props.autosavesCommit}
+          currentId={props.filters.commit?.id} deleteAutosave={deleteAutosave} setCommit={setCommit} />
+        <StartNotebookBranches {...props} disabled={disabled} />
+        {show.commits ? <StartNotebookCommits {...props} disabled={disabled} /> : null}
+        {show.pipelines ? <StartNotebookPipelines {...props}
+          ignorePipeline={props.ignorePipeline}
+          setIgnorePipeline={setIgnorePipeline} /> : null}
+      </Collapse>
+      <FormGroup>
+        <Button color="link" className="ps-0 pe-0 pt-2 font-italic btn-sm"
+          onClick={() => { toggleShowAdvanced(); }}>
+          {buttonMessage}
+        </Button>
+      </FormGroup>
+    </Fragment>
+  );
 
-    const messageOutput = message ?
-      (<div key="message">{message}</div>) :
-      null;
-    const disabled = fetching.branches || fetching.commits;
+  const options = show.options ?
+    (<StartNotebookOptions toggleShowAdvanced={toggleShowAdvanced} showAdvanced={props.showAdvanced} {...props} />) :
+    null;
 
-    const buttonMessage = this.state.showAdvanced ?
-      "Hide branch, commit, and image settings" :
-      "Do you want to select the branch, commit, or image?";
+  const loader = autosaves.fetching || !show.options ?
+    (
+      <div>
+        <p>Checking sessions status...</p>
+        <Loader />
+      </div>
+    ) :
+    null;
 
+  return (
+    <Row>
+      <Col sm={12} md={10} lg={8}>
+        <h3>Start a new session</h3>
+        <LaunchErrorAlert autosaves={autosaves} launchError={props.launchError} pipelines={props.pipelines} />
+        {messageOutput}
+        <Form>
+          {advancedSelection}
+          {options}
+          {loader}
+        </Form>
+      </Col>
+    </Row>
+  );
+}
+
+function AutosavesInfoAlert({ autosaves, autosavesId, currentId, deleteAutosave, setCommit }) {
+  const [deleteOngoing, setDeleteOngoing] = useState(false);
+  const [deleteResult, setDeleteResult] = useState(null);
+
+  // Return when autosaves data are not available
+  if (!autosaves?.fetched || autosaves?.fetching)
+    return null;
+
+  // Temporary store data when deleting autosaves to keep track of ongoing actions or failures
+  const deleteCurrentAutosave = async () => {
+    if (deleteResult != null)
+      setDeleteResult(null);
+    setDeleteOngoing(true);
+
+    // find the autosave name
+    const targetAutosave = autosaves.list.find(a => autosavesId.startsWith(a.commit));
+    const deleteOutcome = await deleteAutosave(targetAutosave.name);
+    setDeleteResult(deleteOutcome);
+    setDeleteOngoing(false);
+  };
+
+  // Manage ongoing or recently finished actions
+  if (deleteOngoing) {
     return (
-      <Row>
-        <Col sm={12} md={10} lg={8}>
-          <h3>Start a new session</h3>
-          <LaunchErrorAlert key="launch-error"
-            launchError={this.props.launchError}
-            pipelines={this.props.pipelines} />
-          {messageOutput}
-          <Form>
-            <Collapse isOpen={this.state.showAdvanced}>
-              <StartNotebookBranches {...this.props} disabled={disabled} />
-              {show.commits ? <StartNotebookCommits {...this.props} disabled={disabled} /> : null}
-              {show.pipelines ? <StartNotebookPipelines {...this.props}
-                ignorePipeline={this.state.ignorePipeline}
-                setIgnorePipeline={this.setIgnorePipeline.bind(this)} /> : null}
-            </Collapse>
-
-            {show.options ?
-              (<FormGroup>
-                <Button color="link" className="ps-0 pe-0 pt-2 font-italic btn-sm"
-                  onClick={() => { this.toggleShowAdvanced(); }}>
-                  {buttonMessage}
-                </Button>
-              </FormGroup>) :
-              null
-            }
-            {show.options ?
-              <StartNotebookOptions
-                toggleShowAdvanced={this.toggleShowAdvanced.bind(this)}
-                showAdvanced={this.state.showAdvanced}
-                {...this.props} /> :
-              !this.state.showAdvanced ?
-                <Loader /> :
-                null
-            }
-          </Form>
-        </Col>
-      </Row>
+      <InfoAlert dismissible={false} timeout={0}>
+        Deleting the autosave... <Loader size="14" inline="true" />
+      </InfoAlert>
     );
   }
+
+  if (deleteResult === true)
+    return (<SuccessAlert>Autosave successfully deleted.</SuccessAlert>);
+
+  if (deleteResult === false) {
+    return (
+      <WarnAlert timeout={0}>
+        <p>Could not delete the autosave.</p>
+        <p className="mb-0">
+          You might{" "}
+          <Button size="sm" color="warning" onClick={() => window.location.reload()}>refresh the page</Button>
+          {" "}and try again. The autosave may have been deleted in another session.
+        </p>
+      </WarnAlert>
+    );
+  }
+
+  // Return when there are no relevant autosaves
+  if (!currentId || !autosavesId)
+    return null;
+
+  // Show autosaves info
+  if (autosavesId === currentId) {
+    return (
+      <InfoAlert dismissible={false} timeout={0}>
+        <p>
+          There is unsaved work from your last session which will be restored.
+          If you do not wish to keep it, you can{" "}
+          <Button color="info" size="sm" onClick={() => deleteCurrentAutosave()}>delete the autosave</Button>.
+        </p>
+        <p className="mb-0">
+          For more options, start a session and look at the session cheatsheet,
+          which is available under this icon <FontAwesomeIcon className="cursor-default" icon={faBook} />.
+        </p>
+      </InfoAlert>
+    );
+  }
+  return (
+    <WarnAlert dismissible={false} timeout={0}>
+      <p>
+        There is unsaved work left from your last session.<br />
+        Starting a session on a different commit will discard any unsaved work.
+      </p>
+      <p className="mb-0">
+        You can{" "}
+        <Button color="warning" size="sm" onClick={() => setCommit(autosavesId)}>restore the autosave</Button>
+        {" "}to start from there instead.
+      </p>
+    </WarnAlert>
+  );
 }
 
 function StartNotebookAutostart(props) {
   const { data, notebooks, options, pipelines } = props;
   const fetching = {
     data: data.fetched,
-    notebooks: notebooks.fetched,
     options: options.fetched,
     pipelines: pipelines.fetched
   };
-  let progress = 0;
-  let message = "";
-  if (fetching.notebooks) {
-    message = "Checking existing sessions";
-    progress = 80;
-  }
-  else if (fetching.pipelines) {
-    message = "Checking GitLab jobs";
-    progress = 60;
-  }
-  else if (fetching.options) {
-    message = "Checking RenkuLab status";
-    progress = 40;
-  }
-  else if (fetching.data) {
-    message = "Checking project data";
-    progress = 20;
-  }
 
+  // Compute fetching status, but ignore notebooks.fetched since it may be unreliable
+  let fetched = Object.keys(fetching).filter(k => fetching[k] ? true : false);
+  if (!notebooks.fetched)
+    fetched = false;
+  const multiplier = Object.keys(fetching).length + 1;
+  let progress = fetched.length * 100 / multiplier;
+  let message = "Checking project data";
+  if (fetching.pipelines)
+    message = "Checking GitLab jobs";
+  else if (fetching.options)
+    message = "Checking RenkuLab status";
+  else if (fetching.notebooks)
+    message = "Checking existing sessions";
   return (
     <div>
       <h3>Starting session</h3>
@@ -1158,7 +1240,7 @@ class StartNotebookBranches extends Component {
     const { branches } = this.props.data;
     const { disabled } = this.props;
     let content;
-    if (StatusHelper.isUpdating(branches)) {
+    if (StatusHelper.isUpdating(this.props.fetchingBranches)) {
       content = (
         <Label>Updating branches... <Loader size="14" inline="true" /></Label>
       );
@@ -1336,7 +1418,7 @@ class StartNotebookPipelinesBadge extends Component {
         color = "danger";
         text = "not available";
       }
-      else if (pipeline.status === "running" || pipeline.status === "pending") {
+      else if (["running", "pending", "stopping"].includes(pipeline.status)) {
         color = "warning";
         text = "building";
       }
@@ -1423,7 +1505,7 @@ class StartNotebookPipelinesContent extends Component {
       return null;
 
     let content = null;
-    if (pipeline.status === "running" || pipeline.status === "pending") {
+    if (["running", "pending", "stopping"].includes(pipeline.status)) {
       content = (
         <Label>
           <FontAwesomeIcon icon={faCog} spin /> The Docker image for the session is being built.
@@ -1617,18 +1699,25 @@ class StartNotebookOptions extends Component {
     if (justStarted)
       return <Label>Starting a new session... <Loader size="14" inline="true" /></Label>;
 
-
-    const { fetched, all } = this.props.notebooks;
-    const { options } = this.props;
+    const { all, fetched } = this.props.notebooks;
+    const { filters, options } = this.props;
     if (!fetched)
       return (<Label>Verifying available sessions... <Loader size="14" inline="true" /></Label>);
 
     if (Object.keys(options.global).length === 0 || options.fetching)
       return (<Label>Loading session parameters... <Loader size="14" inline="true" /></Label>);
 
-    if (Object.keys(all).length === 1)
-      return (<StartNotebookOptionsRunning {...this.props} />);
-
+    if (Object.keys(all).length > 0) {
+      const currentCommit = filters.commit?.id;
+      const currentNotebook = Object.keys(all).find(k => {
+        const annotations = NotebooksHelper.cleanAnnotations(all[k].annotations, "renku.io");
+        if (annotations["commit-sha"] === currentCommit)
+          return true;
+        return false;
+      });
+      if (currentNotebook)
+        return (<StartNotebookOptionsRunning notebook={all[currentNotebook]} />);
+    }
 
     return [
       <StartNotebookServerOptions key="options" {...this.props} />,
@@ -1641,15 +1730,15 @@ class StartNotebookOptions extends Component {
 function Warning(props) {
   return <div style={{ fontSize: "smaller", paddingTop: "5px" }}>
     <WarnAlert>
-      <FontAwesomeIcon icon={faExclamationTriangle} /> {props.children}
+      {props.children}
     </WarnAlert>
   </div>;
 }
 
 class StartNotebookOptionsRunning extends Component {
   render() {
-    const { all } = this.props.notebooks;
-    const notebook = all[Object.keys(all)[0]];
+    const { notebook } = this.props;
+
     const status = NotebooksHelper.getStatus(notebook.status);
     if (status === "running") {
       const annotations = NotebooksHelper.cleanAnnotations(notebook.annotations, "renku.io");
@@ -1671,7 +1760,7 @@ class StartNotebookOptionsRunning extends Component {
         </FormGroup>
       );
     }
-    else if (status === "pending") {
+    else if (status === "pending" || status === "stopping") {
       return (
         <FormGroup>
           <Label>A session for this commit is starting or terminating, please wait...</Label>
@@ -1864,8 +1953,7 @@ class ServerOptionRange extends Component {
 }
 
 function LaunchErrorBackendAlert({ launchError }) {
-  return <WarnAlert timeout={0}>
-    <FontAwesomeIcon icon={faExclamationTriangle} /> {" "}
+  return <WarnAlert>
     The attempt to start a session failed with the following error:
     <div><code>{launchError}</code></div>
     This could be an intermittent issue, so you should try a second time,
@@ -1876,18 +1964,38 @@ function LaunchErrorBackendAlert({ launchError }) {
 
 function LaunchErrorFrontendAlert({ launchError, pipelines }) {
   const pipeline = pipelines.main;
-  if (pipeline && (pipeline.path || pipeline.status === "success"))
+  if (launchError.pipelineError && pipeline && (pipeline.path || pipeline.status === "success"))
     return null;
-  return <WarnAlert timeout={0}>
-    <FontAwesomeIcon icon={faExclamationTriangle} /> {launchError.errorMessage}
+  return <WarnAlert>
+    {launchError.errorMessage}
   </WarnAlert>;
 }
 
-function LaunchErrorAlert({ launchError, pipelines }) {
-  if (launchError == null) return null;
-  return (launchError.frontendError === true) ?
-    <LaunchErrorFrontendAlert launchError={launchError} pipelines={pipelines} /> :
-    <LaunchErrorBackendAlert launchError={launchError} />;
+function AutosavesErrorAlert({ autosaves }) {
+  if (autosaves.error == null)
+    return null;
+  return <WarnAlert>
+    <p>Autosaves are currently unavailable.</p>
+    <p className="mb-0">If you recently worked on the project, any previous unsaved work cannot be recovered.</p>
+  </WarnAlert>;
+}
+
+function LaunchErrorAlert({ autosaves, launchError, pipelines }) {
+  let launchErrorElement = null;
+  if (launchError != null) {
+    if (launchError.frontendError === true)
+      launchErrorElement = (<LaunchErrorFrontendAlert launchError={launchError} pipelines={pipelines} />);
+    else
+      launchErrorElement = (<LaunchErrorBackendAlert launchError={launchError} />);
+  }
+
+  let autosavesErrorElement = null;
+  if (autosaves.error != null)
+    autosavesErrorElement = (<AutosavesErrorAlert autosaves={autosaves} />);
+  return (<Fragment>
+    {launchErrorElement}
+    {autosavesErrorElement}
+  </Fragment>);
 }
 
 class ServerOptionLaunch extends Component {
@@ -1895,15 +2003,20 @@ class ServerOptionLaunch extends Component {
     super(props);
     this.state = {
       showModal: false,
-      current: {}
+      current: {},
+      showShareLinkModal: false,
     };
 
     this.checkServer = this.checkServer.bind(this);
     this.toggleModal = this.toggleModal.bind(this);
+    this.toggleShareLinkModal = this.toggleShareLinkModal.bind(this);
   }
 
   toggleModal() {
     this.setState({ showModal: !this.state.showModal });
+  }
+  toggleShareLinkModal() {
+    this.setState({ showShareLinkModal: !this.state.showShareLinkModal });
   }
 
   checkServer() {
@@ -1930,9 +2043,15 @@ class ServerOptionLaunch extends Component {
       </Warning>;
 
     const hasImage = NotebooksHelper.checkPipelineAvailability(this.props.pipelines);
+    const createLink = (
+      <DropdownItem onClick={this.toggleShareLinkModal}><FontAwesomeIcon icon={faLink} /> Create link</DropdownItem>
+    );
     const startButton = <Button key="start-session" color="primary" disabled={!hasImage} onClick={this.checkServer}>
       Start session
     </Button>;
+    const startButtonWithMenu = <ButtonWithMenu key="button-menu" color="primary" default={startButton} direction="up">
+      {createLink}
+    </ButtonWithMenu>;
 
     const imageStatusAlert = !hasImage ? <div key="noImageAvailableWarning" className="pb-2">
       <FontAwesomeIcon icon={faExclamationTriangle} className="text-warning"/>{" "}
@@ -1957,13 +2076,17 @@ class ServerOptionLaunch extends Component {
 
     return [
       imageStatusAlert,
-      startButton,
+      startButtonWithMenu,
       " ",
       startBaseButton,
       <AutosavedDataModal key="modal"
         toggleModal={this.toggleModal.bind(this)}
         showModal={this.state.showModal}
         currentBranch={this.state.current}
+        {...this.props}
+      />,
+      <ShareLinkSessionModal key="shareLinkModal"
+        toggleModal={this.toggleShareLinkModal.bind(this)} showModal={this.state.showShareLinkModal}
         {...this.props}
       />,
       globalNotification
@@ -2017,23 +2140,25 @@ class AutosavedDataModal extends Component {
 class CheckNotebookIcon extends Component {
   render() {
     const { fetched, notebook, location } = this.props;
-    const loader = (<span style={{ verticalAlign: "text-bottom" }}><Loader size="19" inline="true" /></span>);
+    const loader = (<span className="ms-2 pb-1"><Loader size="19" inline="true" /></span>);
     if (!fetched)
       return loader;
 
-    let tooltip, link, icon;
+    let tooltip, link, icon, aligner = null;
     if (notebook) {
       const status = NotebooksHelper.getStatus(notebook.status);
       if (status === "running") {
         tooltip = "Connect to JupyterLab";
         icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" />);
-        const url = `${notebook.url}lab/tree/${this.props.filePath}`;
+        const url = `${notebook.url}/lab/tree/${this.props.filePath}`;
         link = (<a href={url} role="button" target="_blank" rel="noreferrer noopener">{icon}</a>);
       }
-      else if (status === "pending") {
-        tooltip = "The session is either starting or stopping, please wait...";
-        icon = loader;
-        link = (<span>{icon}</span>);
+      else if (status === "pending" || status === "stopping") {
+        tooltip = status === "stopping" ?
+          "The session is stopping, please wait..." :
+          "The session is starting, please wait...";
+        aligner = "pb-1";
+        link = loader;
       }
       else {
         tooltip = "Check session status";
@@ -2056,12 +2181,84 @@ class CheckNotebookIcon extends Component {
 
     return (
       <React.Fragment>
-        <span id="checkNotebookIcon">{link}</span>
+        <span id="checkNotebookIcon" className={aligner}>{link}</span>
         <ThrottledTooltip target="checkNotebookIcon" tooltip={tooltip} />
       </React.Fragment>
     );
   }
 }
+
+const ShareLinkSessionModal = (props) => {
+  const [includeBranch, setIncludeBranch] = useState(false);
+  const [includeCommit, setIncludeCommit] = useState(false);
+  const [url, setUrl] = useState("");
+  const data = {
+    namespace: props.filters?.namespace,
+    path: props.filters?.project,
+    branch: props.filters.branch.name,
+    commit: props.filters.commit.id,
+  };
+
+  useEffect(() => {
+    if (!data.namespace || !data.path)
+      return;
+    let urlSession = Url.get(Url.pages.project.session.autostart, data, true);
+    urlSession = includeCommit ? `${urlSession}&commit=${data.commit}` : urlSession;
+    urlSession = includeBranch ? `${urlSession}&branch=${data.branch}` : urlSession;
+    setUrl(urlSession);
+  }, [ includeCommit, includeBranch, data ]);
+
+  const setCommit = (checked) => {
+    setIncludeCommit(checked);
+    if (checked)
+      setIncludeBranch(checked);
+  };
+  const setBranch = (checked) => {
+    setIncludeBranch(checked);
+    if (!checked)
+      setIncludeCommit(checked);
+  };
+
+  return (
+    <Modal isOpen={props.showModal} toggle={props.toggleModal}>
+      <ModalHeader toggle={props.toggleModal}>Create shareable link</ModalHeader>
+      <ModalBody>
+        <Row>
+          <Col>
+            <Form className="mb-3">
+              <FormGroup key="link-branch" check>
+                <Label check>
+                  <Input type="checkbox" checked={includeBranch}
+                    onChange={e => setBranch(e.target.checked)}/> Branch
+                </Label>
+              </FormGroup>
+              <FormGroup key="link-commit" check>
+                <Label check>
+                  <Input type="checkbox" checked={includeCommit}
+                    onChange={e => setCommit(e.target.checked)}/> Commit
+                </Label>
+              </FormGroup>
+              <FormText>
+                <FontAwesomeIcon id="commit-info" icon={faInfoCircle} />
+                &nbsp;The commit requires including also the branch
+              </FormText>
+            </Form>
+
+            <Table size="sm">
+              <tbody>
+                <tr className="border-bottom">
+                  <th scope="row">URL</th>
+                  <td style={{ wordBreak: "break-all" }}>{url}</td>
+                  <td style={{ width: 1 }}><Clipboard clipboardText={url} /></td>
+                </tr>
+              </tbody>
+            </Table>
+          </Col>
+        </Row>
+      </ModalBody>
+    </Modal>
+  );
+};
 
 export {
   CheckNotebookIcon, Notebooks, NotebooksDisabled, ServerOptionBoolean, ServerOptionEnum, ServerOptionRange,

@@ -6,3 +6,12 @@
 		}
 	}
 }
+.rk-pdf-page {
+	width: 100%;
+	height: auto;
+
+	svg, div {
+		width: 100% !important;
+		height: auto !important;
+	}
+}

@@ -34,9 +34,10 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import { NotificationsInfo } from ".";
-import { ExternalLink, TimeCaption } from "../utils/UIComponents";
 
 import "./Notifications.css";
+import { ExternalLink } from "../utils/components/ExternalLinks";
+import { TimeCaption } from "../utils/components/TimeCaption";
 
 
 /**

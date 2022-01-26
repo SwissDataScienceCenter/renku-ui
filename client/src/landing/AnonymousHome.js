@@ -34,12 +34,11 @@ import {
   faBars
 } from "@fortawesome/free-solid-svg-icons";
 
-import { RenkuNavLink, ExternalLink } from "../utils/UIComponents";
-import { Url } from "../utils/url";
+import { Url } from "../utils/helpers/url";
 import { StatuspageBanner } from "../statuspage";
-import QuickNav from "../utils/quicknav";
-import { RenkuMarkdown } from "../utils/UIComponents";
+import QuickNav from "../utils/components/quicknav";
 import { RenkuToolbarHelpMenu, RenkuToolbarNotifications } from "./NavBar";
+import { VersionsBanner } from "./NabBarWarnings";
 
 import logo from "./logo.svg";
 import Arrow_left from "./Assets/Arrow_left.svg";
@@ -51,18 +50,20 @@ import Illustration_Theory_Practice from "./Assets/Illustration_Theory_Practice.
 import VisualHead from "./Assets/Visual_Head.svg";
 import VisualDetail from "./Assets/Visual_Detail.svg";
 import VisualFooter from "./Assets/Visual_Footer.svg";
-import TransitionalHome from "./TransitionalHome";
+import { RenkuNavLink } from "../utils/components/RenkuNavLink";
+import { ExternalLink } from "../utils/components/ExternalLinks";
+import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
 
 function HomeHeader(props) {
   const [isOpen, setIsOpen] = useState(false);
   const toggleOpen = () => setIsOpen(!isOpen);
   const { urlMap } = props;
-
   return <Fragment>
     <Row key="statuspage">
       <Col>
-        <StatuspageBanner siteStatusUrl={urlMap.siteStatusUrl} statuspageId={props.statuspageId}
-          statuspageModel={props.statuspageModel} />
+        <StatuspageBanner siteStatusUrl={urlMap.siteStatusUrl} model={props.model}
+          location={{ pathname: Url.get(Url.pages.landing) }} />
+        <VersionsBanner model={props.model} uiShortSha={props.params["UI_SHORT_SHA"]} />
       </Col>
     </Row>
     <header className="px-0 pt-2 pb-4 d-flex rk-anon-home">
@@ -80,8 +81,8 @@ function HomeHeader(props) {
         </Button>
       </div>
     </header>
-    <div>
-      <Collapse isOpen={isOpen} className="mt-2">
+    <div className="rk-navbar-home">
+      <Collapse isOpen={isOpen}>
         <Navbar className="navbar rk-anon-home px-0">
           <Nav className="ms-auto flex-column text-end">
             <NavItem className="nav-item pe-1">
@@ -313,7 +314,6 @@ function Section6(props) {
             <h4 className="text-rk-pink">Lausanne</h4>
             <p className="rk-pt-lg-s">
               INN Building, Station 14, 1015 Lausanne<br />
-              Contact: Cindy Ravey, Executive Assistant<br />
               +41 21 693 43 88
             </p>
           </Col>
@@ -321,8 +321,7 @@ function Section6(props) {
             <h4 className="text-rk-pink">Zürich</h4>
             {/* eslint-disable-next-line */}
             <p className="rk-pt-lg-s">
-              Universitätsstrasse 25, 8006 Zürich<br />
-              Contact: Nina Pupikofer, Administration<br />
+              Turnerstrasse 1, 8092 Zürich<br />
               +41 44 632 80 74
             </p>
           </Col>
@@ -374,24 +373,12 @@ function AnonymousHome(props) {
     siteStatusUrl: Url.get(Url.pages.help.status)
   };
   const p = { ...props, urlMap };
-  const normalHome = false;
 
   return <div id="rk-anon-home-frame">
     {
-      // TODO Reactivate after the transition
-      // (props.homeCustomized.custom.enabled) ?
-      //   CustomizedAnonymousHome(p) :
-      //   StandardHome(p)
-      (normalHome) ?
-        CustomizedAnonymousHome(p) :
-        (normalHome) ?
-          StandardHome(p) :
-          null
-    }
-    {
       (props.homeCustomized.custom.enabled) ?
         CustomizedAnonymousHome(p) :
-        TransitionalHome(p)
+        StandardHome(p)
     }
   </div>;
 }

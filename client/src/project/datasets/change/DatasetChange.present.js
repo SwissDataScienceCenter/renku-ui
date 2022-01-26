@@ -30,8 +30,8 @@ import { Col, Alert, Button } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import { Loader } from "../../../utils/UIComponents";
-import FormGenerator from "../../../utils/formgenerator/FormGenerator.container";
+import FormGenerator from "../../../utils/components/formgenerator/FormGenerator.container";
+import { Loader } from "../../../utils/components/Loader";
 
 
 function DatasetChange(props) {
@@ -92,16 +92,17 @@ function DatasetChange(props) {
   const edit = props.edit;
 
   return <FormGenerator
-    title={edit ? "Modify Dataset" : undefined}
     btnName={edit ? "Modify Dataset" : "Create Dataset"}
-    submitCallback={props.submitCallback}
-    model={props.datasetFormSchema}
-    onCancel={props.onCancel}
     edit={edit}
-    modelTop={props.model}
     formLocation={props.formLocation}
-    initializeFunction={props.initializeFunction}
     formatServerErrorsAndWarnings={formatServerErrorsAndWarnings}
+    initializeFunction={props.initializeFunction}
+    model={props.datasetFormSchema}
+    modelTop={props.model}
+    onCancel={props.onCancel}
+    submitCallback={props.submitCallback}
+    title={edit ? "Modify Dataset" : undefined}
+    versionUrl={props.versionUrl}
   />;
 }
 

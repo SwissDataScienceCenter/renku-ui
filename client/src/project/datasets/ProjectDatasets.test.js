@@ -45,6 +45,7 @@ describe("rendering", () => {
     initialEntries: ["/"],
     initialIndex: 0,
   });
+  const migration = { core: { versionUrl: "" } };
 
   fakeHistory.push({
     pathname: "/projects/namespace/project-name/datasets/new"
@@ -74,9 +75,10 @@ describe("rendering", () => {
           "affiliation": "Some Affiliation",
         }]
       }],
-      visibility: { accessLevel: ACCESS_LEVELS.MAINTAINER },
       graphStatus: false,
-      user: loggedUser
+      migration,
+      user: loggedUser,
+      visibility: { accessLevel: ACCESS_LEVELS.MAINTAINER }
     };
     const div = document.createElement("div");
     ReactDOM.render(
@@ -94,13 +96,14 @@ describe("rendering", () => {
     ReactDOM.render(
       <MemoryRouter>
         <ChangeDataset
-          edit={false}
-          maintainer={ACCESS_LEVELS.maintainer}
           client={client}
-          model={model}
-          user={loggedUser}
+          edit={false}
           location={fakeHistory}
+          maintainer={ACCESS_LEVELS.maintainer}
+          migration={migration}
+          model={model}
           params={{ UPLOAD_THRESHOLD: { soft: 104857600 } }}
+          user={loggedUser}
         />
       </MemoryRouter>
       , div);
@@ -112,12 +115,13 @@ describe("rendering", () => {
     ReactDOM.render(
       <MemoryRouter>
         <DatasetImport
-          edit={false}
-          maintainer={ACCESS_LEVELS.maintainer}
           client={client}
+          edit={false}
+          location={fakeHistory}
+          maintainer={ACCESS_LEVELS.maintainer}
+          migration={migration}
           model={model}
           user={loggedUser}
-          location={fakeHistory}
         />
       </MemoryRouter>
       , div);

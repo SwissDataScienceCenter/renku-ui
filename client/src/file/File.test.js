@@ -31,9 +31,19 @@ import { testClient as client } from "../api-client";
 import { generateFakeUser } from "../user/User.test";
 import { ShowFile, JupyterButton, FilePreview } from "./index";
 import { StateModel, globalSchema } from "../model";
-import { NotebookSourceDisplayMode, tweakCellMetadata } from "./File.present";
+import { NotebookSourceDisplayMode, sanitizeNotebook, tweakCellMetadata } from "./File.present";
+import "jest-canvas-mock";
 
 const model = new StateModel(globalSchema);
+
+function notebookCellOutputsMatch(modified, original, shouldNotMatch) {
+  modified.outputs?.forEach((o, j) => {
+    const oo = original.outputs[j];
+    let expectation = expect(o.data["text/html"]);
+    if (shouldNotMatch) expectation.not.toEqual(oo.data["text/html"]);
+    else expectation.toEqual(oo.data["text/html"]);
+  });
+}
 
 describe("rendering", () => {
   const users = [
@@ -94,7 +104,7 @@ describe("rendering", () => {
       const div = document.createElement("div");
       // * fix for tooltips https://github.com/reactstrap/reactstrap/issues/773#issuecomment-357409863
       document.body.appendChild(div);
-      const branches = { all: [], fetch: () => {} };
+      const branches = { all: { standard: [] }, fetch: () => {} };
       ReactDOM.render(
         <MemoryRouter>
           <JupyterButton user={user.data} branches={branches} {...props} />
@@ -129,6 +139,31 @@ describe("rendering", () => {
       });
     }
   }
+});
+
+describe("rendering pdf -- console suppressed!", () => {
+  beforeEach(() => {
+    jest.spyOn(console, "log").mockImplementation(() => {});
+    jest.spyOn(console, "error").mockImplementation(() => {});
+  });
+
+  const filePdf = {
+    file_name: "text.pdf",
+    // eslint-disable-next-line
+    content: "JVBERi0xLjAKMSAwIG9iajw8L1BhZ2VzIDIgMCBSPj5lbmRvYmogMiAwIG9iajw8L0tpZHNbMyAwIFJdL0NvdW50IDE+PmVuZG9iaiAzIDAgb2JqPDwvTWVkaWFCb3hbMCAwIDMgM10+PmVuZG9iagp0cmFpbGVyPDwvUm9vdCAxIDAgUj4+Cg=="
+  };
+
+  it("renders FilePreview for pdf", () => {
+    const previewThreshold = { PREVIEW_THRESHOLD: { soft: 1048576, hard: 10485760 } };
+    const div = document.createElement("div");
+    document.body.appendChild(div);
+    ReactDOM.render(
+      <MemoryRouter>
+        <FilePreview file={filePdf} previewThreshold={previewThreshold} />
+      </MemoryRouter>,
+      div
+    );
+  });
 });
 
 describe("cell metadata messaging", () => {
@@ -376,5 +411,157 @@ describe("cell metadata messaging", () => {
     expect(result.cells[1].metadata.hide_input).toEqual(false);
     expect(modeNotebook.metadata.hide_input).toEqual(true);
     expect(result.metadata.hide_input).toEqual(false);
+  });
+
+  it("sanitizes input correctly", () => {
+    const modelNotebook = {
+      "cells": [
+        {
+          "cell_type": "code",
+          "execution_count": 1,
+          "id": "c8aec876-82cb-4ce9-9697-3f058f91a968",
+          "metadata": {},
+          "outputs": [],
+          "source": [
+            "from IPython.display import IFrame, display, HTML"
+          ]
+        },
+        {
+          "cell_type": "code",
+          "execution_count": 2,
+          "id": "36b265a7-1dd7-4a4e-9c98-e8399f696a65",
+          "metadata": {},
+          "outputs": [
+            {
+              "data": {
+                "text/html": [
+                  "<script>alert(\"hello!\")</script>"
+                ],
+                "text/plain": [
+                  "<IPython.core.display.HTML object>"
+                ]
+              },
+              "metadata": {},
+              "output_type": "display_data"
+            }
+          ],
+          "source": [
+            "display(HTML('<script>alert(\"hello!\")</script>'))"
+          ]
+        },
+        {
+          "cell_type": "code",
+          "execution_count": 3,
+          "id": "7af4d628-78ce-4a2b-9e70-0f87420551f7",
+          "metadata": {
+            "tags": []
+          },
+          "outputs": [
+            {
+              "data": {
+                "text/html": [
+                  "<script>document.title = \"New Title\"</script>"
+                ],
+                "text/plain": [
+                  "<IPython.core.display.HTML object>"
+                ]
+              },
+              "metadata": {},
+              "output_type": "display_data"
+            },
+            {
+              "data": {
+                "text/html": [
+                  "\n",
+                  "        <iframe\n",
+                  "            width=\"100%\"\n",
+                  "            height=\"2000\"\n",
+                  "            src=\"https://fr.wikipedia.org/wiki/Main_Page\"\n",
+                  "            frameborder=\"0\"\n",
+                  "            allowfullscreen\n",
+                  "        ></iframe>\n",
+                  "        "
+                ],
+                "text/plain": [
+                  "<IPython.lib.display.IFrame at 0x103e7e310>"
+                ]
+              },
+              "execution_count": 3,
+              "metadata": {},
+              "output_type": "execute_result"
+            }
+          ],
+          "source": [
+            "display(HTML('<script>document.title = \"New Title\"</script>'))\n",
+            "IFrame(src = \"https://fr.wikipedia.org/wiki/Main_Page\", width = \"100%\", height = 2000)"
+          ]
+        },
+        {
+          "cell_type": "code",
+          "execution_count": 4,
+          "id": "15e62d41-3199-451a-8850-e123ea9fbd5c",
+          "metadata": {},
+          "outputs": [
+            {
+              "data": {
+                "text/html": [
+                  "<h1>This header is fine</h1>"
+                ],
+                "text/plain": [
+                  "<IPython.core.display.HTML object>"
+                ]
+              },
+              "metadata": {},
+              "output_type": "display_data"
+            }
+          ],
+          "source": [
+            "display(HTML(\"<h1>This header is fine</h1>\"))"
+          ]
+        },
+        {
+          "cell_type": "markdown",
+          "id": "fc9a7746-d99e-491f-ac6a-83f99e9f8a35",
+          "metadata": {},
+          "source": [
+            "# Some markdown\n",
+            "\n",
+            "This should render. Do you see the alert?\n",
+            "\n",
+            "<script>alert(\"hello\")</script>"
+          ]
+        }
+      ],
+      "metadata": {
+        "kernelspec": {
+          "display_name": "Python 3",
+          "language": "python",
+          "name": "python3"
+        },
+        "language_info": {
+          "codemirror_mode": {
+            "name": "ipython",
+            "version": 3
+          },
+          "file_extension": ".py",
+          "mimetype": "text/x-python",
+          "name": "python",
+          "nbconvert_exporter": "python",
+          "pygments_lexer": "ipython3",
+          "version": "3.9.5"
+        }
+      },
+      "nbformat": 4,
+      "nbformat_minor": 5
+    };
+    const notebook = sanitizeNotebook(modelNotebook);
+
+    expect(notebook.cells[1].outputs[0].data["text/html"]).toEqual([""]);
+    expect(notebook.cells.length).toEqual(modelNotebook.cells.length);
+    const modifiedCells = [1, 2];
+    notebook.cells.forEach((c, i) => {
+      const orig = modelNotebook.cells[i];
+      notebookCellOutputsMatch(c, orig, modifiedCells.includes(i));
+    });
   });
 });

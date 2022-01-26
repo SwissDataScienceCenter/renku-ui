@@ -1,84 +1,69 @@
 export default function addMigrationMethods(client) {
 
-  client.getProjectIdFromService = async (projectUrl) => {
+  /**
+   * Check migration status of a project.
+   *
+   * @param {string} git_url - Project repository URL.
+   * @param {string} [branch] - Target branch.
+   * @returns {object} migration data.
+   */
+  client.checkMigration = async (git_url, branch = null) => {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
+    const url = `${client.baseUrl}/renku/cache.migrations_check`;
+    let queryParams = { git_url };
+    if (branch)
+      queryParams.branch = branch;
 
-    // If the project is in the cache, get the id from the cache
-    let projectsList = await client.clientFetch(`${client.baseUrl}/renku/cache.project_list`, {
+    return await client.clientFetch(url, {
       method: "GET",
-      headers: headers
-    });
-
-    if (projectsList.data != null && projectsList.data.error == null) {
-      const project = projectsList.data.result.projects
-        .find(project => project.git_url === projectUrl);
-      if (project != null)
-        return project.project_id;
-    }
-
-    // Otherwise clone it and get the id
-    let project = await client.clientFetch(`${client.baseUrl}/renku/cache.project_clone`, {
-      method: "POST",
-      headers: headers,
-      body: JSON.stringify({
-        depth: 1,
-        git_url: projectUrl
-      })
-    });
-
-    if (project.data !== undefined && project.data.error !== undefined)
-      return project;
-    return project.data.result.project_id;
+      headers,
+      queryParams
+    }).then(response => response?.data ? response.data : response);
   };
 
-  client.performMigrationCheck = (projectId) => {
-    let headers = client.getBasicHeaders();
-    headers.append("Content-Type", "application/json");
-    headers.append("X-Requested-With", "XMLHttpRequest");
-
-    return client.clientFetch(`${client.baseUrl}/renku/cache.migrations_check?project_id=${projectId}`, {
-      method: "GET",
-      headers: headers,
-    }).catch((error)=>
-      ({ data: { error: { reason: error.case } }
-      }));
-  };
 
   /**
-   * Performs project migrations
+   * Migrate target project.
    *
-   * - force_template_update: set to true to update the template even
-   * if automated_template_update is not set on the template (probably not a good idea...)
-   * - skip_template_update: don't try to update the template (superseedes force_template_update)
-   * - skip_docker_update: don't try to update the Dockerfile.
-   * - skip_migrations: don't execute migrations.
+   * @param {string} git_url - Project repository URL.
+   * @param {string} [branch] - Target branch.
+   * @param {object} [options] - Migration options.
+   * @param {boolean} [options.force_template_update] - set to true to update the template even
+   *  if automated_template_update is not set on the template (usually not a good idea)
+   * @param {boolean} [options.skip_template_update] - do not update the template
+   *  (superseedes force_template_update)
+   * @param {boolean} [options.skip_docker_update] - do not update the Dockerfile.
+   * @param {boolean} [options.skip_migrations] - do not execute migrations
+   * @returns {object} migration data.
    */
-
-  client.performMigration = (projectId,
-    { force_template_update = false,
-      skip_template_update = false,
-      skip_docker_update = false,
-      skip_migrations = false }
-  ) => {
+  client.migrateProject = async (git_url, branch = null, options = {
+    force_template_update: false,
+    skip_template_update: false,
+    skip_docker_update: false,
+    skip_migrations: false
+  }) => {
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
+    const url = `${client.baseUrl}/renku/cache.migrate`;
+    let body = {
+      git_url,
+      force_template_update: options.force_template_update,
+      skip_template_update: options.skip_template_update,
+      skip_docker_update: options.skip_docker_update,
+      skip_migrations: options.skip_migrations
+    };
+    if (branch)
+      body.branch = branch;
 
-    return client.clientFetch(`${client.baseUrl}/renku/cache.migrate`, {
+    return await client.clientFetch(url, {
       method: "POST",
-      headers: headers,
-      body: JSON.stringify({
-        project_id: projectId,
-        force_template_update,
-        skip_template_update,
-        skip_docker_update,
-        skip_migrations
-      })
-    }).catch((error)=>
-      ({ data: { error: { reason: error.case } }
-      }));
+      headers,
+      body: JSON.stringify(body)
+    })
+      .then(response => response?.data ? response.data : response)
+      .catch(error => ({ error: { reason: error.case } }));
   };
-
 }

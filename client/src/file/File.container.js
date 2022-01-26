@@ -16,21 +16,24 @@
  * limitations under the License.
  */
 
-import React, { Component } from "react";
+import React, { Component, useState } from "react";
 import ReactDOM from "react-dom";
 import { CardBody } from "reactstrap";
 import hljs from "highlight.js";
+import { Document, Page } from "react-pdf/dist/esm/entry.webpack";
+import "react-pdf/dist/esm/Page/AnnotationLayer.css";
 
-import { atobUTF8 } from "../utils/Encoding";
+
 import { StyledNotebook, JupyterButtonPresent, ShowFile as ShowFilePresent, FileNoPreview } from "./File.present";
-import { StatusHelper } from "../model/Model";
 import { API_ERRORS } from "../api-client";
-import { RenkuMarkdown } from "../utils/UIComponents";
-import { encodeImageBase64 } from "../utils/Markdown";
+import { atobUTF8 } from "../utils/helpers/Encoding";
+import { encodeImageBase64 } from "../utils/components/markdown/RenkuMarkdownWithPathTranslation";
+import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
 
-const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "pdf", "gif", "svg"];
+const PDF_EXTENSION = "pdf";
+const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "gif", "svg"];
 const CODE_EXTENSIONS = [
-  "bat", "cwl", "dcf", "ini", "jl", "job", "js", "json", "parquet", "prn", "py", "r", "rmd",
+  "bat", "cwl", "dcf", "ini", "jl", "job", "js", "json", "m", "mat", "parquet", "prn", "py", "r", "rmd",
   "rout", "rproj", "rs", "rst", "scala", "sh", "toml", "ts", "xml", "yaml", "yml",
   "c", "cc", "cxx", "cpp", "h", "hh", "hxx", "hpp", // C++
   "f", "for", "ftn", "fpp", "f90", "f95", "f03", "f08" // Fortran
@@ -59,6 +62,7 @@ class FilePreview extends React.Component {
   fileIsCode = () => CODE_EXTENSIONS.indexOf(this.getFileExtension()) >= 0;
   fileIsText = () => TEXT_EXTENSIONS.indexOf(this.getFileExtension()) >= 0;
   fileIsImage = () => IMAGE_EXTENSIONS.indexOf(this.getFileExtension()) >= 0;
+  fileIsPDF = () => PDF_EXTENSION === this.getFileExtension();
   fileHasNoExtension = () => this.getFileExtension() === null;
   fileIsLfs = () => {
     if (this.props.hashElement && this.props.hashElement.isLfs)
@@ -115,6 +119,15 @@ class FilePreview extends React.Component {
             alt={this.props.file.file_name}
             src={encodeImageBase64(this.props.file.file_name, this.props.file.content)}
           />
+        </CardBody>
+      );
+    }
+
+    // pdf document
+    if (this.fileIsPDF()) {
+      return (
+        <CardBody key="file preview" className="pb-0 bg-white">
+          <PDFViewer file={`data:application/pdf;base64,${this.props.file.content}`}/>
         </CardBody>
       );
     }
@@ -192,6 +205,34 @@ class FilePreview extends React.Component {
   }
 }
 
+export default function PDFViewer(props) {
+  const [numPages, setNumPages] = useState(null);
+
+  function onDocumentLoadSuccess({ numPages }) {
+    setNumPages(numPages);
+  }
+
+  return (
+    <Document
+      file={props.file}
+      onLoadSuccess={onDocumentLoadSuccess}
+      renderMode="svg">
+      {
+        Array.from(
+          new Array(numPages),
+          (el, index) => (
+            <Page
+              className="rk-pdf-page"
+              key={`page_${index + 1}`}
+              pageNumber={index + 1}
+            />
+          ),
+        )
+      }
+    </Document>
+  );
+}
+
 class JupyterNotebookContainer extends Component {
   render() {
     let filePath = this.props.filePath;
@@ -220,9 +261,10 @@ class JupyterNotebookContainer extends Component {
  */
 class JupyterButton extends React.Component {
   componentDidMount() {
+    // fetch branches if needed
     if (this.props.user.logged) {
       const { branches } = this.props;
-      if (branches && branches.all && !branches.all.length && !StatusHelper.isUpdating(branches.all))
+      if (!branches.all.fetched || !branches.all.fetching)
         branches.fetch();
     }
   }
@@ -230,15 +272,19 @@ class JupyterButton extends React.Component {
   // we might not need this piece of code if we want to use branches in general
   getDefaultBranch() {
     const { branches, defaultBranch } = this.props;
-    if (!branches || !branches.all || StatusHelper.isUpdating(branches.all) || !branches.all.length)
+
+    // return if we don't have branches (not fetched yet)
+    if (!branches.all.standard.length)
       return null;
 
+    // return the full branch object corresponding to the default -- if any is set (this is generally the case)
     if (defaultBranch) {
-      const defaultBranchObject = branches.all.filter(branch => branch.name === defaultBranch);
-      if (defaultBranchObject.length) return defaultBranchObject;
+      const defaultBranchObject = branches.all.standard.find(branch => branch.name === defaultBranch);
+      if (defaultBranchObject)
+        return defaultBranchObject;
     }
 
-    return branches[0].name;
+    return branches.all.standard[0]?.name;
   }
 
   getScope() {
@@ -246,14 +292,16 @@ class JupyterButton extends React.Component {
       namespace: this.props.projectNamespace,
       project: this.props.projectPath,
     };
-    // TODO: plug in branch and commit coming from project page when it available
-    scope.commit = "latest";
+    // TODO: plug in branch coming from project page when it available
     scope.branch = this.getDefaultBranch();
     return scope;
   }
 
   render() {
-    if (!this.props.user.logged) {
+    const { branches, file, user } = this.props;
+
+    // anonymous users can't currently use this feature
+    if (!user.logged) {
       return (
         <JupyterButtonPresent
           access={false}
@@ -262,9 +310,8 @@ class JupyterButton extends React.Component {
       );
     }
 
-    const { file, branches } = this.props;
     let updating = false;
-    if (branches.all && StatusHelper.isUpdating(branches.all))
+    if (branches.all.fetching || !branches.all.standard.length)
       updating = true;
 
     let filePath = "";

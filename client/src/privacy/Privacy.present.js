@@ -25,11 +25,8 @@
 
 import React, { Component } from "react";
 import CookieConsent from "react-cookie-consent";
-import { Alert } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
-
-import { RenkuMarkdown } from "../utils/UIComponents";
+import { WarnAlert } from "../utils/components/Alert";
+import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
 
 /**
  * Return the HTML content with support for react routing
@@ -52,9 +49,9 @@ class Privacy extends Component {
     const { content } = this.props;
     if (!content || !content.length) {
       return (
-        <Alert color="warning">
-          <FontAwesomeIcon icon={faExclamationTriangle} /> There is no content for this page.
-        </Alert>
+        <WarnAlert>
+          There is no content for this page.
+        </WarnAlert>
       );
     }
 

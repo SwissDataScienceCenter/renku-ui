@@ -19,11 +19,11 @@
 import React, { Fragment, useState } from "react";
 
 import { Button, ButtonGroup, DropdownItem, Table } from "reactstrap";
-
-import {
-  Clipboard, GoBackButton, ExternalLink, Loader, ButtonWithMenu,
-  InfoAlert, SuccessAlert, WarnAlert, ErrorAlert
-} from "../utils/UIComponents";
+import { Loader } from "../utils/components/Loader";
+import { ErrorAlert, InfoAlert, SuccessAlert, WarnAlert } from "../utils/components/Alert";
+import { Clipboard } from "../utils/components/Clipboard";
+import { ButtonWithMenu, GoBackButton } from "../utils/components/Button";
+import { ExternalLink } from "../utils/components/ExternalLinks";
 
 function Switch(props) {
   const [mode, setMode] = useState(0);
@@ -114,37 +114,39 @@ function ButtonsGuide(props) {
     </Table>
 
     <h3 className="pt-5">Alert</h3>
-    <Table>
-      <thead>
-        <tr>
-          <th scope="col">Use</th>
-          <th scope="col">Tag</th>
-          <th scope="col">Appearance</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th scope="row">Info</th>
-          <td>InfoAlert</td>
-          <td><InfoAlert>Some information for you.</InfoAlert></td>
-        </tr>
-        <tr>
-          <th scope="row">Success</th>
-          <td>SuccessAlert</td>
-          <td><SuccessAlert>Your action was successful!</SuccessAlert></td>
-        </tr>
-        <tr>
-          <th scope="row">Warning</th>
-          <td>WarnAlert</td>
-          <td><WarnAlert>Something that you should look out for.</WarnAlert></td>
-        </tr>
-        <tr>
-          <th scope="row">Failure</th>
-          <td>ErrorAlert</td>
-          <td><ErrorAlert>Your action failed.</ErrorAlert></td>
-        </tr>
-      </tbody>
-    </Table>
+    <div className="overflow-auto">
+      <Table>
+        <thead>
+          <tr>
+            <th scope="col">Use</th>
+            <th scope="col">Tag</th>
+            <th scope="col">Appearance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Info</th>
+            <td>InfoAlert</td>
+            <td><InfoAlert timeout={0}>Some information for you.</InfoAlert></td>
+          </tr>
+          <tr>
+            <th scope="row">Success</th>
+            <td>SuccessAlert</td>
+            <td><SuccessAlert timeout={0}>Your action was successful!</SuccessAlert></td>
+          </tr>
+          <tr>
+            <th scope="row">Warning</th>
+            <td>WarnAlert</td>
+            <td><WarnAlert>Something that you should look out for.</WarnAlert></td>
+          </tr>
+          <tr>
+            <th scope="row">Failure</th>
+            <td>ErrorAlert</td>
+            <td><ErrorAlert>Your action failed.</ErrorAlert></td>
+          </tr>
+        </tbody>
+      </Table>
+    </div>
 
     <h3 className="pt-5">Other Elements</h3>
     <Table>

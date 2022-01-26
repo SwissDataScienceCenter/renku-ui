@@ -32,13 +32,14 @@ function addRepositoryMethods(client) {
     });
   };
 
-  client.getCommits = async (projectId, ref = "master", per_page = 100) => {
+  client.getCommits = async (projectId, ref = "master", per_page = 100, path, maxIterations) => {
     const url = `${client.baseUrl}/projects/${projectId}/repository/commits`;
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     const queryParams = { ref_name: ref, per_page };
+    if (path) queryParams.path = path;
     const options = { method: "GET", headers, queryParams };
-    const commitsIterator = client.clientIterableFetch(url, { options });
+    const commitsIterator = client.clientIterableFetch(url, { options, maxIterations });
 
     let commits = [], pagination = {}, error = false;
     try {

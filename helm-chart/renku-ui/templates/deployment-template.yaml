@@ -47,6 +47,8 @@ spec:
               value: {{ .Values.baseUrl | default (printf "%s://%s" (include "ui.protocol" .) .Values.global.renku.domain) | quote }}
             - name: GATEWAY_URL
               value: {{ .Values.gatewayUrl | default (printf "%s://%s/api" (include "ui.protocol" .) .Values.global.renku.domain) | quote }}
+            - name: UISERVER_URL
+              value: {{ .Values.uiserverUrl | default (printf "%s://%s/ui-server" (include "ui.protocol" .) .Values.global.renku.domain) | quote }}
             - name: WELCOME_PAGE
               value: {{ .Values.welcomePage.text | b64enc | quote }}
             {{- if .Values.statuspage }}
