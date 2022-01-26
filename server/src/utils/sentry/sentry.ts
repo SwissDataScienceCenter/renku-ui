@@ -26,12 +26,12 @@
 import * as SentryLib from "@sentry/node";
 import * as Tracing from "@sentry/tracing";
 import express from "express";
-import _ from "lodash";
 
 import { getRelease } from "../index";
 import config from "../../config";
 import logger from "../../logger";
 import requestHandlerMiddleware from "../middlewares/requestHandlerMiddleware";
+import { clamp } from "../index";
 
 export interface SentryConfiguration {
   url: string;
@@ -91,7 +91,7 @@ class Sentry {
         // enable Express.js middleware tracing
         new Tracing.Integrations.Express({ app }),
       ],
-      tracesSampleRate: _.clamp(options.sampleRate, 0, 1),
+      tracesSampleRate: clamp(options.sampleRate, 0, 1),
     });
 
     SentryLib.setTags({

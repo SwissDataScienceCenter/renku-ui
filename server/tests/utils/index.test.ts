@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { convertType, getCookieValueByName } from "../../src/utils/index";
+import { convertType, getCookieValueByName, getRelease } from "../../src/utils";
 
 
 describe("Test utils functions", () => {
@@ -80,5 +80,13 @@ describe("Test utils functions", () => {
     ];
     for (const value of values)
       expect(getCookieValueByName(value.cookies, target)).toBe(value.result);
+  });
+
+  it("Test get release", () => {
+    expect(getRelease("1.3.0-n24.h376dd06")).toBe("1.3.0-dev");
+    expect(getRelease("1.3.0")).toBe("1.3.0");
+    expect(getRelease("")).toBe("unknown");
+    expect(getRelease(undefined)).toBe("unknown");
+    expect(getRelease("abc")).toBe("unknown");
   });
 });

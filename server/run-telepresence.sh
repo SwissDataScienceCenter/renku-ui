@@ -70,19 +70,6 @@ else
   SERVICE_NAME=${DEV_NAMESPACE}-renku-uiserver
 fi
 
-  SENTRY_URL="https://4daf5346cec5498e98f73fa44c6d6a3b@sentry.dev.renku.ch/9"
-  SENTRY_NAMESPACE="${DEV_NAMESPACE}"
-  SENTRY_TRACE_RATE=1.0
-   echo ""
-   echo "***** SENTRY Instructions *****"
-   echo "To enable sentry these environment values must exist. You can add them in the .env file"
-   echo "SENTRY_URL=${SENTRY_URL}"
-   echo "SENTRY_NAMESPACE=${SENTRY_NAMESPACE}"
-   echo "SENTRY_TRACE_RATE=${SENTRY_TRACE_RATE}"
-   echo "TELEPRESENCE=true"
-   echo "************************"
-   echo ""
-
 
 if [[ "$CONSOLE" ]]
 then
@@ -92,7 +79,20 @@ then
   telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --expose 9229:9229 --run-shell
 elif [[ "$DEBUG" ]]
 then
+  echo "***** CONSOLE MODE *****"
   telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --expose 9229:9229 --run npm run dev-debug
+elif [[ "$SENTRY" ]]
+then
+  SENTRY_URL="https://4daf5346cec5498e98f73fa44c6d6a3b@sentry.dev.renku.ch/9"
+  SENTRY_NAMESPACE="${DEV_NAMESPACE}"
+  SENTRY_TRACE_RATE=1.0
+  echo "***** SENTRY ENABLED *****"
+  echo "SENTRY_ENABLED=true"
+  echo "SENTRY_URL=${SENTRY_URL}"
+  echo "SENTRY_NAMESPACE=${SENTRY_NAMESPACE}"
+  echo "SENTRY_TRACE_RATE=${SENTRY_TRACE_RATE}"
+  echo "TELEPRESENCE=true"
+  SENTRY_ENABLED=true SENTRY_URL=${SENTRY_URL} SENTRY_NAMESPACE=${SENTRY_NAMESPACE} SENTRY_TRACE_RATE=${SENTRY_TRACE_RATE} TELEPRESENCE=true telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --run npm run dev
 else
   telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --run npm run dev
 fi
