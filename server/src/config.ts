@@ -36,7 +36,7 @@ const DEPLOYMENT = {
 };
 
 const SENTRY = {
-  enabled: !!process.env.SENTRY_URL ?? false,
+  enabled: !!process.env.SENTRY_ENABLED,
   url: process.env.SENTRY_URL || undefined,
   namespace: process.env.SENTRY_NAMESPACE || undefined,
   telepresence: !!process.env.TELEPRESENCE,

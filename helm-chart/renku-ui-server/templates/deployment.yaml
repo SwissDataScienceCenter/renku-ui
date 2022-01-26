@@ -62,6 +62,8 @@ spec:
             - name: AUTH_TOKEN_TOLERANCE
               value: {{ .Values.authentication.expirationTolerance | default (printf "10") | quote }}
             {{- if .Values.sentry.enabled }}
+            - name: SENTRY_ENABLED
+              value: {{ .Values.sentry.enabled | quote }}
             - name: SENTRY_URL
               value: {{ .Values.sentry.url | quote }}
             - name: SENTRY_NAMESPACE

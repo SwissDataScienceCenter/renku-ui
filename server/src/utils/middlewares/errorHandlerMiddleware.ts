@@ -26,9 +26,9 @@
 import { BaseError } from "../baseError";
 import logger from "../../logger";
 import { errorHandler } from "../errorHandler";
-import express from "express";
+import express, { ErrorRequestHandler } from "express";
 
-const errorHandlerMiddleware = (
+const errorHandlerMiddleware : ErrorRequestHandler = (
   err: Error,
   req: express.Request,
   res: express.Response,

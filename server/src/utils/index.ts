@@ -75,7 +75,7 @@ const RELEASE_DEV = "-dev";
 /**
  * Return the release definition.
  *
- * @param {string} [version] - server UI version in the format "<major>.<minor>.<patch>-<short-SHA>".
+ * @param {string} [version] - UI server version in the format "<major>.<minor>.<patch>-<short-SHA>".
  */
 function getRelease(version: string): string {
   // Check input validity
@@ -83,7 +83,7 @@ function getRelease(version: string): string {
     return RELEASE_UNKNOWN;
 
   // Check format validity
-  const regValid = new RegExp(/^\d*(\.\d*){0,2}(-[a-f0-9]{7,32})?$/);
+  const regValid = new RegExp(/^\d*(\.\d*){0,2}(-[a-z0-9.]{7,32})?$/);
   const resValid = version.match(regValid);
   if (!resValid || !resValid[0])
     return RELEASE_UNKNOWN;
@@ -94,7 +94,7 @@ function getRelease(version: string): string {
   const release = (!resRelease || !resRelease[0]) ?
     RELEASE_UNKNOWN :
     resRelease[0];
-  const regPatch = new RegExp(/-[a-f0-9]{6,32}$/);
+  const regPatch = new RegExp(/-[a-z0-9.]{6,32}$/);
   const resPatch = version.match(regPatch);
   const patch = (!resPatch || !resPatch[0]) ?
     "" :
@@ -102,4 +102,16 @@ function getRelease(version: string): string {
   return release + patch;
 }
 
-export { convertType, getCookieValueByName, getRelease, sleep };
+/**
+ * Clamps `number` within the inclusive `lower` and `upper` bounds.
+ *
+ * @param {number} number The number to clamp
+ * @param {number} min The lower bound
+ * @param {number} max The upper bound
+ * @returns {number} Returns the clamped number
+ */
+function clamp(number: number, min:number, max:number): number {
+  return Math.max(min, Math.min(number, max));
+}
+
+export { clamp, convertType, getCookieValueByName, getRelease, sleep };

@@ -35,9 +35,9 @@ const requestHandlerMiddleware = (
   const local = domain.create();
   local.add(req);
   local.add(res);
-  local.on("error", next);
+  local.on("error", () => next());
 
-  local.run(() => next);
+  local.run(() => next());
 };
 
 export default requestHandlerMiddleware;
