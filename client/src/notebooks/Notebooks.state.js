@@ -928,8 +928,11 @@ class NotebooksCoordinator {
   startServer() {
     const options = {
       serverOptions: this.model.get("filters.options"),
-      s3mounts: this.model.get("filters.objectStoresConfiguration")
     };
+    const cloudstorage = this.model.get("filters.objectStoresConfiguration");
+    if (cloudstorage.length > 0)
+      options["cloudstorage"] = cloudstorage;
+
     const filters = this.model.get("filters");
     const namespace = filters.namespace;
     const project = filters.project;
