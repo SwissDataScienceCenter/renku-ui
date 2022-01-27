@@ -37,15 +37,15 @@ import { Login, LoginHelper } from "./authentication";
 import Help from "./help";
 import NotFound from "./not-found";
 import ShowDataset from "./dataset/Dataset.container";
-import { Loader } from "./utils/UIComponents";
 import { Cookie, Privacy } from "./privacy";
 import { NotificationsManager, NotificationsPage } from "./notifications";
 import { StyleGuide } from "./styleguide";
-import { Url } from "./utils/url";
+import { Url } from "./utils/helpers/url";
 import { Unavailable } from "./Maintenance";
 
 import "./App.css";
 import "react-toastify/dist/ReactToastify.css";
+import { Loader } from "./utils/components/Loader";
 
 function CentralContentContainer(props) {
   const { notifications, user } = props;

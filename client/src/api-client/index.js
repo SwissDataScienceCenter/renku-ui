@@ -233,6 +233,17 @@ class APIClient {
     };
     return new Headers(headers);
   }
+
+  /**
+   * Return a versioned endpoint url for the core service.
+   * @param {string} endpoint
+   * @param {string or null} version
+   * @returns string
+   */
+  versionedCoreUrl(endpoint, version) {
+    const urlAddition = version ? version : "";
+    return `${this.baseUrl}/renku${urlAddition}/${endpoint}`;
+  }
 }
 
 export default APIClient;

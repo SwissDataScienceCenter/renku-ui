@@ -55,7 +55,7 @@ function addInstanceMethods(client) {
   };
 
   client.isValidUrlForIframe = async (url) => {
-    const response = await renkuFetch(`${client.uiserverUrl}/api/allows-iframe/${encodeURIComponent(url)}`, {
+    const response = await renkuFetch(`${client.baseUrl}/allows-iframe/${encodeURIComponent(url)}`, {
       method: "GET",
       headers: new Headers({ "Accept": "application/json" })
     });

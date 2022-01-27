@@ -28,12 +28,14 @@ import DOMPurify from "dompurify";
 
 import { FilePreview } from "./index";
 import { CheckNotebookStatus, CheckNotebookIcon } from "../notebooks";
-import { Clipboard, ExternalIconLink, ExternalLink, Loader } from "../utils/UIComponents";
-import { Time } from "../utils/Time";
-import { formatBytes } from "../utils/HelperFunctions";
+import { Time } from "../utils/helpers/Time";
+import { formatBytes } from "../utils/helpers/HelperFunctions";
 import { FileAndLineageSwitch } from "./FileAndLineageComponents";
 import { Label } from "reactstrap/lib";
 import _ from "lodash";
+import { Clipboard } from "../utils/components/Clipboard";
+import { ExternalIconLink, ExternalLink } from "../utils/components/ExternalLinks";
+import { Loader } from "../utils/components/Loader";
 
 const commitMessageLengthLimit = 120;
 

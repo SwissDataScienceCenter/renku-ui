@@ -30,9 +30,9 @@ import { connect } from "react-redux";
 import { NewProject as NewProjectPresent, ForkProject as ForkProjectPresent } from "./ProjectNew.present";
 import { NewProjectCoordinator, validateTitle, checkTitleDuplicates } from "./ProjectNew.state";
 import { ProjectsCoordinator } from "../shared";
-import { gitLabUrlFromProfileUrl, slugFromTitle, refreshIfNecessary } from "../../utils/HelperFunctions";
-import { Url, getSearchParams } from "../../utils/url";
-import { atobUTF8, btoaUTF8 } from "../../utils/Encoding";
+import { gitLabUrlFromProfileUrl, slugFromTitle, refreshIfNecessary } from "../../utils/helpers/HelperFunctions";
+import { Url, getSearchParams } from "../../utils/helpers/url";
+import { atobUTF8, btoaUTF8 } from "../../utils/helpers/Encoding";
 import { newProjectSchema } from "../../model/RenkuModels";
 
 const CUSTOM_REPO_NAME = "Custom";
@@ -542,7 +542,7 @@ class NewProject extends Component {
       if (creation.created) {
         this.refreshUserProjects();
         if (!creation.kgError && !creation.projectError) {
-          const slug = `${creation.newNamespace}/${creation.newName}`;
+          const slug = `${creation.newNamespace}/${creation.newNameSlug}`;
           this.props.history.push(`/projects/${slug}`);
         }
       }

@@ -19,7 +19,7 @@
 import React, { useState, useEffect } from "react";
 
 import { ProjectList as ProjectListPresent } from "./ProjectList.present";
-import { Url, getSearchParams } from "../../utils/url";
+import { Url, getSearchParams } from "../../utils/helpers/url";
 
 
 // *** Constants ***

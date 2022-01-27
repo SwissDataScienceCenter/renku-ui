@@ -30,7 +30,7 @@ import TestRenderer, { act } from "react-test-renderer";
 
 import { testClient as client } from "../../api-client";
 import { generateFakeUser } from "../../user/User.test";
-import { Url } from "../../utils/url";
+import { Url } from "../../utils/helpers/url";
 import { tests } from "./ProjectList.container";
 import { ProjectList } from "./";
 

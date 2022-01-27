@@ -24,7 +24,7 @@
  */
 
 import { API_ERRORS } from "../api-client/errors";
-import { parseINIString } from "../utils/HelperFunctions";
+import { parseINIString } from "../utils/helpers/HelperFunctions";
 
 const POLLING_INTERVAL = 3000;
 const IMAGE_BUILD_JOB = "image_build";
@@ -394,14 +394,11 @@ class NotebooksCoordinator {
     this.model.setObject({ filters });
   }
 
-  setBranch(branch, fetchNotebook = true) {
+  setBranch(branch) {
     this.model.setObject({
       notebooks: { fetched: null },
       filters: { branch: { $set: branch } }
     });
-
-    if (fetchNotebook)
-      this.fetchNotebooks();
   }
 
   setCommit(commit) {
@@ -458,7 +455,7 @@ class NotebooksCoordinator {
 
     // get notebooks
     return this.client.getNotebookServers(
-      filters.namespace, filters.project, filters.branch, filters.commit, anonymous)
+      filters.namespace, filters.project, filters.branch, null, anonymous)
       .then(resp => {
         let updatedNotebooks = { fetching: false };
         // check if result is still valid
@@ -797,6 +794,44 @@ class NotebooksCoordinator {
 
     this.model.setObject({ pipelines: pipelinesState });
     return pipelinesState;
+  }
+
+  async fetchAutosaves(force = false) {
+    // prevent double fetch
+    if (!force) {
+      const fetching = this.model.get("autosaves.fetching");
+      if (fetching)
+        return;
+    }
+
+    // get filters
+    const filters = this.getQueryFilters();
+    if (!filters.namespace || !filters.project)
+      return;
+    this.model.set("autosaves.fetching", true);
+    const response = await this.client.getProjectAutosaves(filters.namespace, filters.project);
+    let autosavesData = { fetching: false, fetched: new Date() };
+    if (response && response.autosaves) {
+      autosavesData.error = null;
+      autosavesData.list = { $set: response.autosaves };
+      autosavesData.pvsSupport = response.pvsSupport;
+    }
+    else {
+      autosavesData.error = response.error ?
+        response.error :
+        response.toString();
+      autosavesData.list = { $set: [] };
+      autosavesData.pvsSupport = null;
+    }
+    this.model.setObject({ autosaves: autosavesData });
+    return autosavesData;
+  }
+
+  async deleteAutosave(autosave) {
+    const filters = this.getQueryFilters();
+    if (!filters.namespace || !filters.project)
+      return;
+    return await this.client.deleteProjectAutosave(filters.namespace, filters.project, autosave);
   }
 
 

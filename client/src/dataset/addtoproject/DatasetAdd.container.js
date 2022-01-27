@@ -28,8 +28,8 @@ import React from "react";
 import { addDatasetToProjectSchema } from "../../model/RenkuModels";
 import { ACCESS_LEVELS } from "../../api-client";
 import DatasetAdd from "./DatasetAdd.present";
-import { ImportStateMessage } from "../../utils/Dataset";
-import { groupBy } from "../../utils/HelperFunctions";
+import { ImportStateMessage } from "../../utils/constants/Dataset";
+import { groupBy } from "../../utils/helpers/HelperFunctions";
 import _ from "lodash";
 
 let dsFormSchema = _.cloneDeep(addDatasetToProjectSchema);
@@ -98,7 +98,7 @@ function AddDataset(props) {
     let cont = 0;
     const INTERVAL = 6000;
     let monitorJob = setInterval(() => {
-      props.client.getJobStatus(job_id)
+      props.client.getJobStatus(job_id, props.versionUrl)
         .then(job => {
           cont++;
           if (job !== undefined) {
@@ -110,7 +110,7 @@ function AddDataset(props) {
   };
 
   const importDataset = (selectedProject, handlers) => {
-    props.client.datasetImport(selectedProject.value, props.dataset.url)
+    props.client.datasetImport(selectedProject.value, props.dataset.url, props.versionUrl)
       .then(response => {
         if (response.data.error !== undefined) {
           handlers.setSubmitLoader({ value: false, text: "" });
@@ -134,34 +134,26 @@ function AddDataset(props) {
 
     const projectOptions = handlers.getFormDraftFieldProperty("project", ["options"]);
 
-    const selectedProject = projectOptions.find((project)=>
+    const selectedProject = projectOptions.find((project) =>
       project.value === mappedInputs.project);
 
-    props.client.getProjectIdFromService(selectedProject.value)
-      .then((response) => {
-        if (response.data && response.data.error !== undefined) {
-          handlers.setSubmitLoader({ value: false, text: "" });
-          handlers.setServerErrors(response.data.error.reason);
+    // TODO: is this what we want? Should we check that both the target and the source are up-to-date?
+    const target = selectedProject.value; // It was props.httpProjectUrl, but it's not always set
+    props.client.checkMigration(target).then((response) => {
+      if (response && response.error !== undefined) {
+        handlers.setSubmitLoader({ value: false, text: "" });
+        handlers.setServerErrors(response.error.reason);
+      }
+      else {
+        if (response.result.migration_required) {
+          handlers.setServerWarnings(selectedProject.name);
+          handlers.setSubmitLoader(false);
         }
         else {
-          props.client.performMigrationCheck(response)
-            .then((response) => {
-              if (response.data && response.data.error !== undefined) {
-                handlers.setSubmitLoader({ value: false, text: "" });
-                handlers.setServerErrors(response.data.error.reason);
-              }
-              else {
-                if (response.data.result.migration_required) {
-                  handlers.setServerWarnings(selectedProject.name);
-                  handlers.setSubmitLoader(false);
-                }
-                else {
-                  importDataset(selectedProject, handlers);
-                }
-              }
-            });
+          importDataset(selectedProject, handlers);
         }
-      });
+      }
+    });
   };
 
   const initializeFunction = (formSchema, formHandlers) => {

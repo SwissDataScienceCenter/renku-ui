@@ -1,10 +1,13 @@
 import React, { Fragment, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { Row, Col } from "reactstrap";
+
 import { ACCESS_LEVELS } from "../../api-client";
 import "../filestreeview/treeviewstyle.css";
-import { ListDisplay, Loader, MarkdownTextExcerpt } from "../../utils/UIComponents";
 import { SpecialPropVal } from "../../model";
+import { MarkdownTextExcerpt } from "../../utils/components/markdown/RenkuMarkdown";
+import { Loader } from "../../utils/components/Loader";
+import ListDisplay from "../../utils/components/List";
 
 function datasetToDict(datasetsUrl, dataset_kg, graphStatus, gridDisplay, dataset) {
   const kgCaption =
@@ -32,6 +35,7 @@ function datasetToDict(datasetsUrl, dataset_kg, graphStatus, gridDisplay, datase
     mediaContent: dataset.mediaContent
   };
 }
+
 
 function DatasetList({ datasets, datasets_kg, datasetsUrl, graphStatus }) {
   if (datasets == null ) return <Loader />;

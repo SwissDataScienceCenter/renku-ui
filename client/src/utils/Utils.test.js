@@ -27,15 +27,18 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { MemoryRouter } from "react-router-dom";
 
-import Time from "./Time";
-import { CommitsView, CommitsUtils } from "./Commits";
-import {
-  splitAutosavedBranches, sanitizedHTMLFromMarkdown, parseINIString, slugFromTitle,
-  verifyTitleCharacters, convertUnicodeToAscii, formatBytes, refreshIfNecessary
-} from "./HelperFunctions";
-import { RefreshButton } from "./UIComponents";
 import { StateModel, globalSchema } from "../model";
-import { fixRelativePath } from "./Markdown";
+import { Time } from "./helpers/Time";
+import { RefreshButton } from "./components/Button";
+import { CommitsUtils, CommitsView } from "./components/commits/Commits";
+import {
+  convertUnicodeToAscii, formatBytes,
+  parseINIString, refreshIfNecessary, sanitizedHTMLFromMarkdown,
+  splitAutosavedBranches,
+  verifyTitleCharacters,
+  slugFromTitle,
+} from "./helpers/HelperFunctions";
+import { fixRelativePath } from "./components/markdown/RenkuMarkdownWithPathTranslation";
 
 
 describe("Render React components and functions", () => {
@@ -505,7 +508,10 @@ describe("display latex in markdown", () => {
     const resultExpected = "<p>This is a README with some LaTeX expressions that should render nicely:</p>\n" +
       "<p><strong>Expression 1</strong></p>\n" +
       // eslint-disable-next-line max-len
-      "<span title=\"\\int f(\\mathbf{x}) {\\rm d}u(\\mathbf{x}),\"><span class=\"katex-display\"><span class=\"katex\"><span class=\"katex-mathml\"><math><mrow><mo>∫</mo><mrow><mi>f</mi><mrow><mo fence=\"true\">(</mo><mi mathvariant=\"bold\">x</mi><mo fence=\"true\">)</mo></mrow></mrow><mrow><mo fence=\"true\">{</mo><mi>r</mi><mi>m</mi><mi>d</mi><mo fence=\"true\">}</mo></mrow><mi>u</mi><mrow><mo fence=\"true\">(</mo><mi mathvariant=\"bold\">x</mi><mo fence=\"true\">)</mo></mrow><mo separator=\"true\">,</mo></mrow>\\int{f{{\\left({\\mathbf{{{x}}}}\\right)}}}{\\left\\lbrace{r}{m}{d}\\right\\rbrace}{u}{\\left({\\mathbf{{{x}}}}\\right)},</math></span><span aria-hidden=\"true\" class=\"katex-html\"><span class=\"base\"><span style=\"height:2.22225em;vertical-align:-0.86225em;\" class=\"strut\"></span><span style=\"margin-right:0.44445em;position:relative;top:-0.0011249999999999316em;\" class=\"mop op-symbol large-op\">∫</span><span style=\"margin-right:0.16666666666666666em;\" class=\"mspace\"></span><span class=\"mord\"><span style=\"margin-right:0.10764em;\" class=\"mord mathdefault\">f</span><span class=\"mord\"><span class=\"mord\"><span class=\"minner\"><span style=\"top:0em;\" class=\"mopen delimcenter\">(</span><span class=\"mord\"><span class=\"mord\"><span class=\"mord\"><span class=\"mord\"><span class=\"mord mathbf\">x</span></span></span></span></span><span style=\"top:0em;\" class=\"mclose delimcenter\">)</span></span></span></span></span><span class=\"mord\"><span class=\"minner\"><span style=\"top:0em;\" class=\"mopen delimcenter\">{</span><span class=\"mord\"><span style=\"margin-right:0.02778em;\" class=\"mord mathdefault\">r</span></span><span class=\"mord\"><span class=\"mord mathdefault\">m</span></span><span class=\"mord\"><span class=\"mord mathdefault\">d</span></span><span style=\"top:0em;\" class=\"mclose delimcenter\">}</span></span></span><span class=\"mord\"><span class=\"mord mathdefault\">u</span></span><span class=\"mord\"><span class=\"minner\"><span style=\"top:0em;\" class=\"mopen delimcenter\">(</span><span class=\"mord\"><span class=\"mord\"><span class=\"mord\"><span class=\"mord\"><span class=\"mord mathbf\">x</span></span></span></span></span><span style=\"top:0em;\" class=\"mclose delimcenter\">)</span></span></span><span class=\"mpunct\">,</span></span></span></span></span></span>";
+      "<span title=\"\\int f(\\mathbf{x}) {\\rm d}u(\\mathbf{x}),\"><span class=\"katex-display\"><span class=\"katex\"><span class=\"katex-mathml\"><math><mrow><mo>∫</mo><mi>f</mi><mo>(</mo><mi mathvariant=\"bold\">x</mi><mo>)</mo><mi mathvariant=\"normal\">d</mi><mi>u</mi><mo>(</mo><mi mathvariant=\"bold\">x</mi><mo>)</mo><mo separator=\"true\">,</mo></mrow>\\int f(\\mathbf{x}) {\\rm d}u(\\mathbf{x}),\n" +
+      // eslint-disable-next-line max-len
+      "</math></span><span aria-hidden=\"true\" class=\"katex-html\"><span class=\"base\"><span style=\"height:2.22225em;vertical-align:-0.86225em;\" class=\"strut\"></span><span style=\"margin-right:0.44445em;position:relative;top:-0.0011249999999999316em;\" class=\"mop op-symbol large-op\">∫</span><span style=\"margin-right:0.16666666666666666em;\" class=\"mspace\"></span><span style=\"margin-right:0.10764em;\" class=\"mord mathdefault\">f</span><span class=\"mopen\">(</span><span class=\"mord\"><span class=\"mord mathbf\">x</span></span><span class=\"mclose\">)</span><span class=\"mord\"><span class=\"mord\"><span class=\"mord mathrm\">d</span></span></span><span class=\"mord mathdefault\">u</span><span class=\"mopen\">(</span><span class=\"mord\"><span class=\"mord mathbf\">x</span></span><span class=\"mclose\">)</span><span class=\"mpunct\">,</span></span></span></span></span></span>";
+
     expect(html).toEqual(resultExpected);
   });
 
@@ -520,7 +526,8 @@ describe("display latex in markdown", () => {
     const resultExpected = "<p>This is a README with some LaTeX expressions that should render nicely:</p>\n" +
       "<p><strong>Expression 1</strong></p>\n" +
       // eslint-disable-next-line max-len
-      "<span title=\"\\int f(\\mathbf{x}) {\\rm d}u(\\mathbf{x}),&amp;\"><span style=\"color:var(--bs-danger)\" title=\"ParseError: KaTeX parse error: Expected 'EOF', got '&amp;' at position 112: …{x}}}}\\right)},&amp;̲\" class=\"katex-error\">\\int{f{{\\left({\\mathbf{{{x}}}}\\right)}}}{\\left\\lbrace{r}{m}{d}\\right\\rbrace}{u}{\\left({\\mathbf{{{x}}}}\\right)},&amp;</span></span>";
+      "<span title=\"\\int f(\\mathbf{x}) {\\rm d}u(\\mathbf{x}),&amp;\"><span style=\"color:var(--bs-danger)\" title=\"ParseError: KaTeX parse error: Expected 'EOF', got '&amp;' at position 41: …}u(\\mathbf{x}),&amp;̲\" class=\"katex-error\">\\int f(\\mathbf{x}) {\\rm d}u(\\mathbf{x}),&amp;\n" +
+      "</span></span>";
     expect(html).toEqual(resultExpected);
   });
 });

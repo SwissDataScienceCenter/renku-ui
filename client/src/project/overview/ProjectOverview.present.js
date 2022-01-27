@@ -33,9 +33,12 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import { faGitlab } from "@fortawesome/free-brands-svg-icons";
 
-import { CommitsView } from "../../utils/Commits";
-import { ExternalLink, Loader, Pagination, RefreshButton } from "../../utils/UIComponents";
 import { StatusHelper } from "../../model/Model";
+import { CommitsView } from "../../utils/components/commits/Commits";
+import { Loader } from "../../utils/components/Loader";
+import { ExternalLink } from "../../utils/components/ExternalLinks";
+import { RefreshButton } from "../../utils/components/Button";
+import { Pagination } from "../../utils/components/Pagination";
 
 
 class OverviewStats extends Component {

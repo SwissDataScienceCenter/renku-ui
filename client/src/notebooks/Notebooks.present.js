@@ -29,21 +29,25 @@ import {
   faBook, faCheckCircle, faCog, faCogs, faExclamationTriangle, faExternalLinkAlt, faFileAlt, faHistory,
   faInfoCircle, faLink, faQuestionCircle, faRedo, faSave, faStopCircle, faSyncAlt, faTimesCircle
 } from "@fortawesome/free-solid-svg-icons";
+import _ from "lodash";
 
-import { StatusHelper } from "../model/Model";
 import { NotebooksHelper } from "./index";
-import { formatBytes, simpleHash } from "../utils/HelperFunctions";
-import {
-  ButtonWithMenu, Clipboard, ExternalLink, InfoAlert, JupyterIcon, Loader,
-  ThrottledTooltip, TimeCaption, WarnAlert
-} from "../utils/UIComponents";
-import Time from "../utils/Time";
-import Sizes from "../utils/Media";
-import { Url } from "../utils/url";
+import { StatusHelper } from "../model/Model";
+import { formatBytes, simpleHash } from "../utils/helpers/HelperFunctions";
+import Time from "../utils/helpers/Time";
+import Sizes from "../utils/constants/Media";
+import { Url } from "../utils/helpers/url";
+import { ExternalLink } from "../utils/components/ExternalLinks";
+import { ButtonWithMenu } from "../utils/components/Button";
+import { TimeCaption } from "../utils/components/TimeCaption";
+import { Loader } from "../utils/components/Loader";
+import { InfoAlert, SuccessAlert, WarnAlert } from "../utils/components/Alert";
+import { Clipboard } from "../utils/components/Clipboard";
+import { JupyterIcon } from "../utils/components/Icon";
+import { ThrottledTooltip } from "../utils/components/Tooltip";
+import SessionCheatSheet from "./SessionCheatSheet";
 
 import "./Notebooks.css";
-import SessionCheatSheet from "./SessionCheatSheet";
-import _ from "lodash";
 
 
 // * Constants and helpers * //
@@ -297,17 +301,20 @@ function SessionDocs(props) {
 }
 
 function SessionCommands(props) {
-  const { tab } = props;
+  const { tab, notebook } = props;
 
   if (tab !== SESSION_TABS.commands)
     return null;
+
+  const annotations = NotebooksHelper.cleanAnnotations(notebook.data.annotations, "renku.io");
+  const branch = annotations["branch"];
 
   // ? Having a minHeight prevent losing the vertical scroll position.
   // TODO: Revisit after #1219
   return (
     <Fragment>
       <div className="p-2 p-lg-3" style={{ minHeight: 800 }}>
-        <SessionCheatSheet />
+        <SessionCheatSheet branch={branch}/>
       </div>
     </Fragment>
   );
@@ -1040,24 +1047,24 @@ class EnvironmentLogs extends Component {
 
 // * StartNotebookServer code * //
 function StartNotebookServer(props) {
-  const toggleShowAdvanced = props.handlers.toggleShowAdvanced;
-  const setIgnorePipeline = props.handlers.setIgnorePipeline;
+  const { deleteAutosave, setCommit, setIgnorePipeline, toggleShowAdvanced } = props.handlers;
   const { branch, commit } = props.filters;
-  const { autoStarting, pipelines, message } = props;
+  const { autosaves, autoStarting, pipelines, message } = props;
 
   if (autoStarting)
     return (<StartNotebookAutostart {...props} />);
 
   const fetching = {
+    autosaves: autosaves.fetching,
     branches: StatusHelper.isUpdating(props.fetchingBranches) ? true : false,
     pipelines: pipelines.fetching,
     commits: props.data.fetching
   };
 
   let show = {};
-  show.commits = !fetching.branches && branch.name ? true : false;
+  show.commits = !autosaves.fetching && !fetching.branches && branch.name ? true : false;
   show.pipelines = show.commits && !fetching.commits && commit && commit.id;
-  show.options = show.pipelines && pipelines.fetched;
+  show.options = show.pipelines && pipelines.fetched && autosaves.fetched;
 
   const messageOutput = message ?
     (<div key="message">{message}</div>) :
@@ -1068,44 +1075,133 @@ function StartNotebookServer(props) {
     "Hide branch, commit, and image settings" :
     "Do you want to select the branch, commit, or image?";
 
+  const advancedSelection = (
+    <Fragment>
+      <Collapse isOpen={props.showAdvanced}>
+        <AutosavesInfoAlert autosaves={autosaves} autosavesId={props.autosavesCommit}
+          currentId={props.filters.commit?.id} deleteAutosave={deleteAutosave} setCommit={setCommit} />
+        <StartNotebookBranches {...props} disabled={disabled} />
+        {show.commits ? <StartNotebookCommits {...props} disabled={disabled} /> : null}
+        {show.pipelines ? <StartNotebookPipelines {...props}
+          ignorePipeline={props.ignorePipeline}
+          setIgnorePipeline={setIgnorePipeline} /> : null}
+      </Collapse>
+      <FormGroup>
+        <Button color="link" className="ps-0 pe-0 pt-2 font-italic btn-sm"
+          onClick={() => { toggleShowAdvanced(); }}>
+          {buttonMessage}
+        </Button>
+      </FormGroup>
+    </Fragment>
+  );
+
+  const options = show.options ?
+    (<StartNotebookOptions toggleShowAdvanced={toggleShowAdvanced} showAdvanced={props.showAdvanced} {...props} />) :
+    null;
+
+  const loader = autosaves.fetching || !show.options ?
+    (
+      <div>
+        <p>Checking sessions status...</p>
+        <Loader />
+      </div>
+    ) :
+    null;
+
   return (
     <Row>
       <Col sm={12} md={10} lg={8}>
         <h3>Start a new session</h3>
-        <LaunchErrorAlert key="launch-error"
-          launchError={props.launchError}
-          pipelines={props.pipelines} />
+        <LaunchErrorAlert autosaves={autosaves} launchError={props.launchError} pipelines={props.pipelines} />
         {messageOutput}
         <Form>
-          <Collapse isOpen={props.showAdvanced}>
-            <StartNotebookBranches {...props} disabled={disabled} />
-            {show.commits ? <StartNotebookCommits {...props} disabled={disabled} /> : null}
-            {show.pipelines ? <StartNotebookPipelines {...props}
-              ignorePipeline={props.ignorePipeline}
-              setIgnorePipeline={setIgnorePipeline} /> : null}
-          </Collapse>
-
-          {show.options ?
-            (<FormGroup>
-              <Button color="link" className="ps-0 pe-0 pt-2 font-italic btn-sm"
-                onClick={() => { toggleShowAdvanced(); }}>
-                {buttonMessage}
-              </Button>
-            </FormGroup>) :
-            null
-          }
-          {show.options ?
-            <StartNotebookOptions
-              toggleShowAdvanced={toggleShowAdvanced}
-              showAdvanced={props.showAdvanced}
-              {...props} /> :
-            !props.showAdvanced ?
-              <Loader /> :
-              null
-          }
+          {advancedSelection}
+          {options}
+          {loader}
         </Form>
       </Col>
     </Row>
+  );
+}
+
+function AutosavesInfoAlert({ autosaves, autosavesId, currentId, deleteAutosave, setCommit }) {
+  const [deleteOngoing, setDeleteOngoing] = useState(false);
+  const [deleteResult, setDeleteResult] = useState(null);
+
+  // Return when autosaves data are not available
+  if (!autosaves?.fetched || autosaves?.fetching)
+    return null;
+
+  // Temporary store data when deleting autosaves to keep track of ongoing actions or failures
+  const deleteCurrentAutosave = async () => {
+    if (deleteResult != null)
+      setDeleteResult(null);
+    setDeleteOngoing(true);
+
+    // find the autosave name
+    const targetAutosave = autosaves.list.find(a => autosavesId.startsWith(a.commit));
+    const deleteOutcome = await deleteAutosave(targetAutosave.name);
+    setDeleteResult(deleteOutcome);
+    setDeleteOngoing(false);
+  };
+
+  // Manage ongoing or recently finished actions
+  if (deleteOngoing) {
+    return (
+      <InfoAlert dismissible={false} timeout={0}>
+        Deleting the autosave... <Loader size="14" inline="true" />
+      </InfoAlert>
+    );
+  }
+
+  if (deleteResult === true)
+    return (<SuccessAlert>Autosave successfully deleted.</SuccessAlert>);
+
+  if (deleteResult === false) {
+    return (
+      <WarnAlert timeout={0}>
+        <p>Could not delete the autosave.</p>
+        <p className="mb-0">
+          You might{" "}
+          <Button size="sm" color="warning" onClick={() => window.location.reload()}>refresh the page</Button>
+          {" "}and try again. The autosave may have been deleted in another session.
+        </p>
+      </WarnAlert>
+    );
+  }
+
+  // Return when there are no relevant autosaves
+  if (!currentId || !autosavesId)
+    return null;
+
+  // Show autosaves info
+  if (autosavesId === currentId) {
+    return (
+      <InfoAlert dismissible={false} timeout={0}>
+        <p>
+          There is unsaved work from your last session which will be restored.
+          If you do not wish to keep it, you can{" "}
+          <Button color="info" size="sm" onClick={() => deleteCurrentAutosave()}>delete the autosave</Button>.
+        </p>
+        <p className="mb-0">
+          For more options, start a session and look at the session cheatsheet,
+          which is available under this icon <FontAwesomeIcon className="cursor-default" icon={faBook} />.
+        </p>
+      </InfoAlert>
+    );
+  }
+  return (
+    <WarnAlert dismissible={false} timeout={0}>
+      <p>
+        There is unsaved work left from your last session.<br />
+        Starting a session on a different commit will discard any unsaved work.
+      </p>
+      <p className="mb-0">
+        You can{" "}
+        <Button color="warning" size="sm" onClick={() => setCommit(autosavesId)}>restore the autosave</Button>
+        {" "}to start from there instead.
+      </p>
+    </WarnAlert>
   );
 }
 
@@ -1113,29 +1209,23 @@ function StartNotebookAutostart(props) {
   const { data, notebooks, options, pipelines } = props;
   const fetching = {
     data: data.fetched,
-    notebooks: notebooks.fetched,
     options: options.fetched,
     pipelines: pipelines.fetched
   };
-  let progress = 0;
-  let message = "Getting project data";
-  if (fetching.notebooks) {
-    message = "Checking existing sessions";
-    progress = 80;
-  }
-  else if (fetching.pipelines) {
-    message = "Checking GitLab jobs";
-    progress = 60;
-  }
-  else if (fetching.options) {
-    message = "Checking RenkuLab status";
-    progress = 40;
-  }
-  else if (fetching.data) {
-    message = "Checking project data";
-    progress = 20;
-  }
 
+  // Compute fetching status, but ignore notebooks.fetched since it may be unreliable
+  let fetched = Object.keys(fetching).filter(k => fetching[k] ? true : false);
+  if (!notebooks.fetched)
+    fetched = false;
+  const multiplier = Object.keys(fetching).length + 1;
+  let progress = fetched.length * 100 / multiplier;
+  let message = "Checking project data";
+  if (fetching.pipelines)
+    message = "Checking GitLab jobs";
+  else if (fetching.options)
+    message = "Checking RenkuLab status";
+  else if (fetching.notebooks)
+    message = "Checking existing sessions";
   return (
     <div>
       <h3>Starting session</h3>
@@ -1609,18 +1699,25 @@ class StartNotebookOptions extends Component {
     if (justStarted)
       return <Label>Starting a new session... <Loader size="14" inline="true" /></Label>;
 
-
-    const { fetched, all } = this.props.notebooks;
-    const { options } = this.props;
+    const { all, fetched } = this.props.notebooks;
+    const { filters, options } = this.props;
     if (!fetched)
       return (<Label>Verifying available sessions... <Loader size="14" inline="true" /></Label>);
 
     if (Object.keys(options.global).length === 0 || options.fetching)
       return (<Label>Loading session parameters... <Loader size="14" inline="true" /></Label>);
 
-    if (Object.keys(all).length === 1)
-      return (<StartNotebookOptionsRunning {...this.props} />);
-
+    if (Object.keys(all).length > 0) {
+      const currentCommit = filters.commit?.id;
+      const currentNotebook = Object.keys(all).find(k => {
+        const annotations = NotebooksHelper.cleanAnnotations(all[k].annotations, "renku.io");
+        if (annotations["commit-sha"] === currentCommit)
+          return true;
+        return false;
+      });
+      if (currentNotebook)
+        return (<StartNotebookOptionsRunning notebook={all[currentNotebook]} />);
+    }
 
     return [
       <StartNotebookServerOptions key="options" {...this.props} />,
@@ -1640,8 +1737,8 @@ function Warning(props) {
 
 class StartNotebookOptionsRunning extends Component {
   render() {
-    const { all } = this.props.notebooks;
-    const notebook = all[Object.keys(all)[0]];
+    const { notebook } = this.props;
+
     const status = NotebooksHelper.getStatus(notebook.status);
     if (status === "running") {
       const annotations = NotebooksHelper.cleanAnnotations(notebook.annotations, "renku.io");
@@ -1874,11 +1971,31 @@ function LaunchErrorFrontendAlert({ launchError, pipelines }) {
   </WarnAlert>;
 }
 
-function LaunchErrorAlert({ launchError, pipelines }) {
-  if (launchError == null) return null;
-  return (launchError.frontendError === true) ?
-    <LaunchErrorFrontendAlert launchError={launchError} pipelines={pipelines} /> :
-    <LaunchErrorBackendAlert launchError={launchError} />;
+function AutosavesErrorAlert({ autosaves }) {
+  if (autosaves.error == null)
+    return null;
+  return <WarnAlert>
+    <p>Autosaves are currently unavailable.</p>
+    <p className="mb-0">If you recently worked on the project, any previous unsaved work cannot be recovered.</p>
+  </WarnAlert>;
+}
+
+function LaunchErrorAlert({ autosaves, launchError, pipelines }) {
+  let launchErrorElement = null;
+  if (launchError != null) {
+    if (launchError.frontendError === true)
+      launchErrorElement = (<LaunchErrorFrontendAlert launchError={launchError} pipelines={pipelines} />);
+    else
+      launchErrorElement = (<LaunchErrorBackendAlert launchError={launchError} />);
+  }
+
+  let autosavesErrorElement = null;
+  if (autosaves.error != null)
+    autosavesErrorElement = (<AutosavesErrorAlert autosaves={autosaves} />);
+  return (<Fragment>
+    {launchErrorElement}
+    {autosavesErrorElement}
+  </Fragment>);
 }
 
 class ServerOptionLaunch extends Component {

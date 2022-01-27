@@ -30,7 +30,7 @@ import { MemoryRouter } from "react-router-dom";
 import TestRenderer, { act } from "react-test-renderer";
 import { createMemoryHistory } from "history";
 
-import { StateModel, globalSchema, projectGlobalSchema, SpecialPropVal } from "../model";
+import { StateModel, globalSchema, projectSchema } from "../model";
 import Project, { mapProjectFeatures, withProjectMapped } from "./Project";
 import { filterPaths } from "./Project.present";
 import { OverviewCommitsBody } from "./overview/ProjectOverview.present";
@@ -38,7 +38,7 @@ import { ProjectCoordinator } from "./Project.state";
 import { ACCESS_LEVELS, testClient as client } from "../api-client";
 import { generateFakeUser } from "../user/User.test";
 import { ProjectSuggestActions } from "./Project.present";
-import { sleep } from "../utils/HelperFunctions";
+import ProjectVersionStatus from "./status/ProjectVersionStatus.present";
 
 
 const fakeHistory = createMemoryHistory({
@@ -50,32 +50,17 @@ fakeHistory.push({
   search: "?page=1"
 });
 
-const getProjectSuggestionProps = (props, loading = true, commits = [], readmeCommits = [], datasets = []) => {
-  props.projectCoordinator.get = (ref) => {
-    switch (ref) {
-      case "commitsReadme":
-        return {
-          fetching: true,
-          fetched: !loading,
-          list: readmeCommits,
-        };
-      case "commits":
-        return {
-          fetching: true,
-          fetched: !loading,
-          list: commits,
-        };
-      case "datasets.core":
-        return loading ? SpecialPropVal.UPDATING : { datasets: datasets };
-    }
-    return {};
-  };
-  props.projectCoordinator.fetchReadmeCommits = () => readmeCommits;
-  props.core = {
-    default_branch: "master"
-  };
+const getProjectSuggestionProps = (props, loading = true, commits = [], commitsReadme = [], datasets = [{}]) => {
+  props.fetchReadmeCommits = () => commitsReadme;
+  if (commits)
+    props.commits = { fetched: true, fetching: !loading, list: commits };
+  if (commitsReadme)
+    props.commitsReadme = { fetched: true, fetching: !loading, list: commitsReadme };
+  props.datasets.core.datasets = datasets;
   props.externalUrl = "/gitlab/";
   props.newDatasetUrl = "new-dataset-url";
+  if (loading)
+    props.datasets.core.datasets = null;
 
   return props;
 };
@@ -228,11 +213,11 @@ describe("rendering ProjectSuggestActions", () => {
   const projectCoordinator = new ProjectCoordinator(client, model.subModel("project"));
 
   const props = {
-    ...projectGlobalSchema,
+    ...projectSchema.createInitialized(),
     projectCoordinator,
     model: {},
     fetchDatasets: () => {},
-    visibility: { accessLevel: ACCESS_LEVELS.MAINTAINER }
+    metadata: { accessLevel: ACCESS_LEVELS.MAINTAINER, defaultBranch: "master", id: 12345 }
   };
 
   it("Don't render if is loading data", () => {
@@ -244,27 +229,26 @@ describe("rendering ProjectSuggestActions", () => {
   });
 
   it("Don't render if user is not a project maintainer", () => {
-    const allProps = getProjectSuggestionProps(props, true);
-    allProps.visibility.accessLevel = ACCESS_LEVELS.GUEST;
+    const allProps = getProjectSuggestionProps(props, false);
+    allProps.metadata.accessLevel = ACCESS_LEVELS.GUEST;
     const component = TestRenderer.create(
       <ProjectSuggestActions key="suggestions" {...allProps} />,
     );
     expect(component.toJSON()).toBe(null);
-    allProps.visibility.accessLevel = ACCESS_LEVELS.MAINTAINER;
+    allProps.metadata.accessLevel = ACCESS_LEVELS.MAINTAINER;
   });
 
   it("only render readme suggestion when exist datasets", async () => {
     const exampleCommit = [{ id: "abc", committed_date: "2021-01-01" }];
     const allProps = getProjectSuggestionProps(props, false, exampleCommit, exampleCommit, [{}]);
     let rendered;
-    act(() => {
+    await act(async () => {
       rendered = TestRenderer.create(
         <MemoryRouter>
           <ProjectSuggestActions key="suggestions" {...allProps} />
         </MemoryRouter>,
       );
     });
-    await sleep(0);
     const testInstance = rendered.root;
     const suggestions = testInstance.findAllByProps({ className: "suggestionTitle" });
     expect(suggestions.length).toBe(1);
@@ -275,14 +259,13 @@ describe("rendering ProjectSuggestActions", () => {
     const exampleCommits = [{ id: "abc", committed_date: "2021-01-01" }, { id: "def", committed_date: "2021-01-02" }];
     const allProps = getProjectSuggestionProps(props, false, exampleCommits, exampleCommits, []);
     let rendered;
-    act(() => {
+    await act(async () => {
       rendered = TestRenderer.create(
         <MemoryRouter>
           <ProjectSuggestActions key="suggestions" {...allProps} />
         </MemoryRouter>,
       );
     });
-    await sleep(0);
     const testInstance = rendered.root;
     const suggestions = testInstance.findAllByProps({ className: "suggestionTitle" });
     expect(suggestions.length).toBe(1);
@@ -292,15 +275,16 @@ describe("rendering ProjectSuggestActions", () => {
   it("render all suggestion when exist only that 1 readme commit and no datasets", async () => {
     const exampleCommit = [{ id: "abc", committed_date: "2021-01-01" }];
     const allProps = getProjectSuggestionProps(props, false, exampleCommit, exampleCommit, []);
+    allProps.commits = { list: exampleCommit, fetched: true };
+    allProps.commitsReadme = { list: exampleCommit, fetched: true };
     let rendered;
-    act(() => {
+    await act(async () => {
       rendered = TestRenderer.create(
         <MemoryRouter>
           <ProjectSuggestActions key="suggestions" {...allProps} />
         </MemoryRouter>,
       );
     });
-    await sleep(0);
     const testInstance = rendered.root;
     const suggestions = testInstance.findAllByProps({ className: "suggestionTitle" });
     expect(suggestions.length).toBe(2);
@@ -317,8 +301,10 @@ describe("rendering ProjectSuggestActions", () => {
       { id: "abc5", committed_date: "2021-01-05" }];
     const exampleReadmeCommit = [{ id: "abc1", committed_date: "2021-01-01" }];
     const allProps = getProjectSuggestionProps(props, false, exampleCommits, exampleReadmeCommit, []);
+    allProps.commits = { list: exampleCommits, fetched: true };
+    allProps.commitsReadme = { list: exampleReadmeCommit, fetched: true };
     let rendered;
-    act(() => {
+    await act(async () => {
       rendered = TestRenderer.create(
         <MemoryRouter>
           <ProjectSuggestActions key="suggestions" {...allProps} />
@@ -329,4 +315,80 @@ describe("rendering ProjectSuggestActions", () => {
     const suggestions = testInstance.findAllByProps({ className: "suggestionTitle" });
     expect(suggestions.length).toBe(0);
   });
+});
+
+describe("rendering ProjectVersionStatus", () => {
+  const props = {
+    launchNotebookUrl: "http://renku.url/project/namespace/sessions/new",
+    loading: false,
+    metadata: { accessLevel: ACCESS_LEVELS.MAINTAINER, defaultBranch: "master", id: 12345 },
+    migration: { check: {}, core: {} },
+    onMigrationProject: () => {},
+    user: { logged: true },
+  };
+
+  it("shows bouncer if loading", () => {
+    const allProps = { ...props };
+    allProps.loading = true;
+    const div = document.createElement("div");
+
+    ReactDOM.render(
+      <ProjectVersionStatus key="suggestions" {...allProps} />
+      , div);
+
+    expect(div.children.length).toBe(3);
+    const bouncers = div.querySelectorAll(".bouncer");
+    expect(bouncers.length).toBe(3);
+  });
+
+  it("shows success if everything is ok", async () => {
+    // This fails with SyntaxError: '##btn_instructions_template' is not a valid selector
+    // but it works in the browser, and I do not know why
+    const allProps = { ...props };
+    allProps.migration = {
+      check: {
+        "project_supported": true,
+        "dockerfile_renku_status": {
+          "latest_renku_version": "1.0.0",
+          "dockerfile_renku_version": "1.0.0",
+          "automated_dockerfile_update": false,
+          "newer_renku_available": false
+        },
+        "core_compatibility_status": {
+          "project_metadata_version": "9",
+          "migration_required": false,
+          "current_metadata_version": "9"
+        },
+        "core_renku_version": "1.0.0",
+        "project_renku_version": "1.0.0",
+        "template_status": {
+          "newer_template_available": false,
+          "template_id": "python-minimal",
+          "automated_template_update": false,
+          "template_ref": null,
+          "project_template_version": "1.0.0",
+          "template_source": "renku",
+          "latest_template_version": "1.0.0"
+        }
+      },
+      core: {
+        backendAvailable: true
+      }
+    };
+
+    const div = document.createElement("div");
+    ReactDOM.render(
+      <MemoryRouter>
+        <ProjectVersionStatus key="suggestions" {...allProps} />
+      </MemoryRouter>
+      , div);
+    expect(div.children.length).toBe(3);
+
+    const bouncers = div.querySelectorAll(".bouncer");
+    expect(bouncers.length).toBe(0);
+
+    const success = div.querySelectorAll(".alert-success");
+    expect(success.length).toBe(3);
+  });
+
 });
