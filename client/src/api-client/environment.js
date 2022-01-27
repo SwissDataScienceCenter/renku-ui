@@ -21,7 +21,7 @@ function addEnvironmentMethods(client) {
    * Get the versions of the RenkuLab components.
    */
   client.getComponentsVersion = async () => {
-    const urlApi = `${client.uiserverUrl}/api/versions`;
+    const urlApi = `${client.baseUrl}/versions`;
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
@@ -37,7 +37,7 @@ function addEnvironmentMethods(client) {
    * @param {string} version - target core version to test
    */
   client.checkCoreAvailability = async (version) => {
-    const urlApi = `${client.uiserverUrl}/api/renku/${version}/version`;
+    const urlApi = `${client.baseUrl}/renku/${version}/version`;
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");

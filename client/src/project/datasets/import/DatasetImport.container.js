@@ -89,7 +89,7 @@ function ImportDataset(props) {
   const monitorJobStatusAndHandleResponse = (job_id, handlers) => {
     let cont = 0;
     let monitorJob = setInterval(() => {
-      props.client.getJobStatus(job_id)
+      props.client.getJobStatus(job_id, props.migration.core.versionUrl)
         .then(job => {
           cont++;
           if (job !== undefined || cont === 50)
