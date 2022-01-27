@@ -683,24 +683,34 @@ class StartNotebookServer extends Component {
     //* To avoid flickering UI, just set a temporary state and display a loading wheel.
     this.setState({ "starting": true, launchError: null });
     this.internalStartServer().catch((error) => {
-      // Some failures just go away. Try again to see if it works the second time.
-      setTimeout(() => {
-        this.internalStartServer().catch((error) => {
-          // crafting notification
-          const fullError = `An error occurred when trying to start a new session.
-          Error message: "${error.message}", Stack trace: "${error.stack}"`;
-          this.notifications.addError(
-            this.notifications.Topics.SESSION_START,
-            "Unable to start the session.",
-            this.props.location.pathname, "Try again",
-            null, // always toast
-            fullError);
-          this.setState({ "starting": false, launchError: error.message });
-          if (this.autostart && !this.state.autostartTried)
-            this.setState({ autostartTried: true });
-        });
-      }, 3000);
+      if (error.cause && error.cause.response && error.cause.response.status) {
+        if (error.cause.response.status === 500) {
+          // Some failures just go away. Try again to see if it works the second time.
+          setTimeout(() => {
+            this.internalStartServer().catch((error) => {
+              this.handleNotebookStartError(error);
+            });
+          }, 3000);
+        }
+        else { this.handleNotebookStartError(error); }
+      }
+      else { this.handleNotebookStartError(error); }
     });
+  }
+
+  handleNotebookStartError(error) {
+    // crafting notification
+    const fullError = `An error occurred when trying to start a new session.
+              Error message: "${error.message}", Stack trace: "${error.stack}"`;
+    this.notifications.addError(
+      this.notifications.Topics.SESSION_START,
+      "Unable to start the session.",
+      this.props.location.pathname, "Try again",
+      null, // always toast
+      fullError);
+    this.setState({ "starting": false, launchError: error.message });
+    if (this.autostart && !this.state.autostartTried)
+      this.setState({ autostartTried: true });
   }
 
   toggleMergedBranches() {
