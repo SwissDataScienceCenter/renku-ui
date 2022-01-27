@@ -1464,7 +1464,7 @@ class StartNotebookPipelinesContent extends Component {
 
       // this style trick makes it appear as the other Label + Input components
       const style = { marginTop: -8 };
-      const url = "https://renku.readthedocs.io/en/latest/user/templates.html?highlight=.dockerignore#renku";
+      const url = "https://renku.readthedocs.io/en/latest/reference/templates.html?highlight=.dockerignore#renku";
       return (
         <Fragment>
           <Input type="input" disabled={true} id="customImage" style={style} value={projectOptions.image}></Input>
