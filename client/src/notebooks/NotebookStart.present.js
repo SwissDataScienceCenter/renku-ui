@@ -29,7 +29,6 @@ import {
   faInfoCircle, faLink, faRedo, faSyncAlt,
 } from "@fortawesome/free-solid-svg-icons";
 
-import { NotebooksHelper } from "./index";
 import { StatusHelper } from "../model/Model";
 import { InfoAlert, SuccessAlert, WarnAlert } from "../utils/components/Alert";
 import { ButtonWithMenu } from "../utils/components/Button";
@@ -40,12 +39,17 @@ import { Loader } from "../utils/components/Loader";
 import { ThrottledTooltip } from "../utils/components/Tooltip";
 import { Url } from "../utils/helpers/url";
 import Time from "../utils/helpers/Time";
+import { NotebooksHelper } from "./index";
+import { ObjectStoresConfigurationButton, ObjectStoresConfigurationModal } from "./ObjectStoresConfig.present";
 
 // * StartNotebookServer code * //
 function StartNotebookServer(props) {
-  const { deleteAutosave, setCommit, setIgnorePipeline, toggleShowAdvanced } = props.handlers;
+  const { autosaves, autoStarting, pipelines, message, showObjectStoreModal } = props;
   const { branch, commit } = props.filters;
-  const { autosaves, autoStarting, pipelines, message } = props;
+  const { objectStoresConfiguration } = props.filters;
+  const { deleteAutosave, setCommit, setIgnorePipeline, toggleShowAdvanced } = props.handlers;
+  const { toggleShowObjectStoresConfigModal } = props.handlers;
+
 
   if (autoStarting)
     return (<StartNotebookAutostart {...props} />);
@@ -66,10 +70,15 @@ function StartNotebookServer(props) {
     (<div key="message">{message}</div>) :
     null;
   const disabled = fetching.branches || fetching.commits;
+  const s3MountsConfig = props.options.global.cloudstorage?.s3;
+  const cloudStorageAvailable = s3MountsConfig?.enabled ?? false;
+  const showAdvancedMessage = cloudStorageAvailable ?
+    "Do you want to select the branch, commit, or image, or configure cloud storage?" :
+    "Do you want to select the branch, commit, or image?";
 
   const buttonMessage = props.showAdvanced ?
-    "Hide branch, commit, and image settings" :
-    "Do you want to select the branch, commit, or image?";
+    "Hide advanced settings" :
+    showAdvancedMessage;
 
   const advancedSelection = (
     <Fragment>
@@ -81,6 +90,19 @@ function StartNotebookServer(props) {
         {show.pipelines ? <StartNotebookPipelines {...props}
           ignorePipeline={props.ignorePipeline}
           setIgnorePipeline={setIgnorePipeline} /> : null}
+        {cloudStorageAvailable ?
+          <Fragment>
+            <ObjectStoresConfigurationButton
+              objectStoresConfiguration={objectStoresConfiguration}
+              toggleShowObjectStoresConfigModal={toggleShowObjectStoresConfigModal} />
+            <ObjectStoresConfigurationModal
+              objectStoresConfiguration={objectStoresConfiguration}
+              showObjectStoreModal={showObjectStoreModal}
+              toggleShowObjectStoresConfigModal={toggleShowObjectStoresConfigModal}
+              setObjectStoresConfiguration={props.handlers.setObjectStoresConfiguration} />
+          </Fragment> :
+          null
+        }
       </Collapse>
       <FormGroup>
         <Button color="link" className="ps-0 pe-0 pt-2 font-italic btn-sm"

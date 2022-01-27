@@ -355,7 +355,8 @@ class NotebooksCoordinator {
         project: null,
         branch: { $set: {} },
         commit: { $set: {} },
-        options: { $set: {} }
+        options: { $set: {} },
+        objectStoresConfiguration: { $set: [] },
       },
       pipelines: {
         fetched: null,
@@ -421,6 +422,10 @@ class NotebooksCoordinator {
 
   setNotebookOptions(option, value) {
     this.model.set(`filters.options.${option}`, value);
+  }
+
+  setObjectStoresConfiguration(value) {
+    this.model.set("filters.objectStoresConfiguration", value);
   }
 
   getQueryFilters() {
@@ -922,7 +927,8 @@ class NotebooksCoordinator {
   // * Change notebook status * //
   startServer() {
     const options = {
-      serverOptions: this.model.get("filters.options")
+      serverOptions: this.model.get("filters.options"),
+      s3mounts: this.model.get("filters.objectStoresConfiguration")
     };
     const filters = this.model.get("filters");
     const namespace = filters.namespace;

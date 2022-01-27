@@ -50,7 +50,7 @@ function Session<T extends FixturesConstructor>(Parent: T) {
 
     sessionPipelines(
       names = {
-        sessionPipelineJobsName: "sessionPipelineJobsName",
+        sessionPipelineJobsName: "getSessionPipelineJobsName",
         sessionPipelinesName: "getSessionPipelines"
       }
     ) {
@@ -83,8 +83,8 @@ function Session<T extends FixturesConstructor>(Parent: T) {
 
     sessionServerOptions(cloudStorage?, name = "getSessionServerOptions") {
       cy.fixture("session/server-options.json").then((options) => {
-        if (cloudStorage == null) delete options["s3mounts"];
-        else if (!cloudStorage) options["s3mounts"] = false;
+        if (cloudStorage == null) delete options["cloudstorage"];
+        else if (!cloudStorage) options["cloudstorage"]["s3"] = false;
 
         cy.intercept(
           "GET",

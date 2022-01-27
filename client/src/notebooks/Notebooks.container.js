@@ -298,6 +298,7 @@ class StartNotebookServer extends Component {
       ignorePipeline: null,
       launchError: null,
       showAdvanced: false,
+      showObjectStoreModal: false,
       starting: false
     };
 
@@ -313,8 +314,10 @@ class StartNotebookServer extends Component {
       setDisplayedCommits: this.setDisplayedCommits.bind(this),
       setServerOption: this.setServerOptionFromEvent.bind(this),
       startServer: this.startServer.bind(this),
+      setObjectStoresConfiguration: this.setObjectStoresConfiguration.bind(this),
       toggleMergedBranches: this.toggleMergedBranches.bind(this),
-      toggleShowAdvanced: this.toggleShowAdvanced.bind(this)
+      toggleShowAdvanced: this.toggleShowAdvanced.bind(this),
+      toggleShowObjectStoresConfigModal: this.toggleShowObjectStoresConfigModal.bind(this)
     };
   }
 
@@ -347,6 +350,10 @@ class StartNotebookServer extends Component {
 
   toggleShowAdvanced() {
     this.setState({ showAdvanced: !this.state.showAdvanced });
+  }
+
+  toggleShowObjectStoresConfigModal() {
+    this.setState({ showObjectStoreModal: !this.state.showObjectStoreModal });
   }
 
   setIgnorePipeline(value) {
@@ -647,6 +654,11 @@ class StartNotebookServer extends Component {
     }
   }
 
+
+  setObjectStoresConfiguration(value) {
+    this.coordinator.setObjectStoresConfiguration(value);
+  }
+
   internalStartServer() {
     // The core internal logic extracted here for re-use
     const { location, history } = this.props;
@@ -744,7 +756,8 @@ class StartNotebookServer extends Component {
         fetched: this.props.commits.fetched,
         fetching: this.props.commits.fetching,
       },
-      externalUrl: this.props.externalUrl
+      externalUrl: this.props.externalUrl,
+      showObjectStoreModal: this.state.showObjectStoreModal
     };
     return {
       handlers: this.handlers,

@@ -41,6 +41,7 @@ describe("launch sessions", () => {
   it("displays cloud storage options", () => {
     fixtures.sessionServerOptions(true);
     cy.visit("/projects/e2e/local-test-project/sessions/new");
+    cy.wait("@getSessionPipelineJobsName", { timeout: 10000 });
     cy.contains(
       "Do you want to select the branch, commit, or image, or configure cloud storage?"
     ).should("be.visible");

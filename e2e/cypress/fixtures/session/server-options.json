@@ -40,7 +40,9 @@
     "order": 4,
     "type": "enum"
   },
-  "s3mounts": {
-    "enabled": true
+  "cloudstorage": {
+    "s3": {
+      "enabled": true
+    }
   }
 }
