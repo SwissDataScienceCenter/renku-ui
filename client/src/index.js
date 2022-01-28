@@ -69,19 +69,34 @@ Promise.all([configFetch, privacyFetch]).then(valuesRead => {
     let userPromise = userCoordinator.fetchUser();
 
     // configure Sentry
-    if (params.SENTRY_URL)
-      Sentry.init(params.SENTRY_URL, params.SENTRY_NAMESPACE, userPromise, params.UI_VERSION, params.TELEPRESENCE);
-    // Map redux data to react - note we are mapping the model, not its whole content (only user)
-    // Use model.get("something") and map it wherever needed
-    function mapStateToProps(state, ownProps) {
-      return { user: state.user, ...ownProps };
+    let uiApplication = App;
+    if (params.SENTRY_URL) {
+      Sentry.init(
+        params.SENTRY_URL,
+        params.SENTRY_NAMESPACE,
+        userPromise,
+        params.UI_VERSION,
+        params.TELEPRESENCE,
+        params.SENTRY_SAMPLE_RATE,
+        [ params.UISERVER_URL ]
+      );
+      const profiler = !!params.SENTRY_SAMPLE_RATE;
+      if (profiler)
+        uiApplication = Sentry.withProfiler(App);
     }
 
+    // Set up polling
     const statuspageId = params["STATUSPAGE_ID"];
     pollStatuspage(statuspageId, model);
     pollComponentsVersion(model.subModel("environment"), client);
 
-    const VisibleApp = connect(mapStateToProps)(App);
+    // Map redux user data to the initial react application
+    function mapStateToProps(state, ownProps) {
+      return { user: state.user, ...ownProps };
+    }
+
+    // Render UI application
+    const VisibleApp = connect(mapStateToProps)(uiApplication);
     ReactDOM.render(
       <Provider store={model.reduxStore}>
         <Router>
