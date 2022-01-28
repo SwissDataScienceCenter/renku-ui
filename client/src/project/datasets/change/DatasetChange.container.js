@@ -147,7 +147,7 @@ function ChangeDataset(props) {
   }
 
   const monitorURLJobsStatuses = (datasetsJobsArray) => {
-    return props.client.getAllJobStatus()
+    return props.client.getAllJobStatus(versionUrl)
       .then(response => {
         //we set the new status and then we check if they are all finished (completed or failed)
         datasetsJobsArray.map(localJob => setNewJobStatus(localJob, response.jobs));

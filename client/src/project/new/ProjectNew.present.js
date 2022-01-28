@@ -770,7 +770,7 @@ class UserTemplate extends Component {
     if (config.repositories && config.repositories.length)
       refExample = config.repositories[0].ref;
     const templatesDocs = (
-      <a href="https://renku.readthedocs.io/en/latest/user/templates.html"
+      <a href="https://renku.readthedocs.io/en/latest/reference/templates.html"
         target="_blank" rel="noopener noreferrer">
         Renku templates
       </a>
