@@ -95,7 +95,6 @@ function registerAuthenticationRoutes(app: express.Application, authenticator: A
       // finish the auth flow, exchanging the auth code with the token set.
       const sessionId = getOrCreateSessionId(req, res);
       const code = authenticator.getAuthCode(req);
-      new Error("test");
       const tokens = await authenticator.finishAuthFlow(sessionId, code);
       await authenticator.storeTokens(sessionId, tokens);
 

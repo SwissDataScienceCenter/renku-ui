@@ -26,11 +26,16 @@ import routes from "./routes";
 import { Authenticator } from "./authentication";
 import { registerAuthenticationRoutes } from "./authentication/routes";
 import { Storage } from "./storage";
-
+import { errorHandler } from "./utils/errorHandler";
+import errorHandlerMiddleware from "./utils/middlewares/errorHandlerMiddleware";
+import { initializeSentry } from "./utils/sentry/sentry";
 
 const app = express();
 const port = config.server.port;
 const prefix = config.server.prefix;
+
+// initialize sentry if the SENTRY_URL is set
+initializeSentry(app);
 
 // configure logging
 const logStream = {
@@ -59,6 +64,9 @@ authenticator.init().then(() => {
   logger.info("Authenticator started");
 
   registerAuthenticationRoutes(app, authenticator);
+  // The error handler middleware is needed here because the registration of authentication
+  // routes is asynchronous and the middleware has to be registered after them
+  app.use(errorHandlerMiddleware);
 });
 
 // register middlewares
@@ -67,12 +75,14 @@ app.use(cookieParser());
 // register routes
 routes.register(app, prefix, authenticator);
 
-// TODO: custom error handler?
-// app.use((error: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
-//   res.status(501);
-//   res.json({ status: "error", error: error });
-//   next(error);
-// });
+
+process.on("unhandledRejection", (reason: Error) => {
+  errorHandler.handleError(reason);
+});
+
+process.on("uncaughtException", (error: Error) => {
+  errorHandler.handleError(error);
+});
 
 // start the Express server
 const server = app.listen(port, () => {
