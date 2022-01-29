@@ -48,6 +48,9 @@ const proxyMiddleware = createProxyMiddleware({
       clientReq.setHeader("cookie", `anon-id=${anonId}`);
   },
   onProxyRes: (clientRes, req: express.Request, res: express.Response) => {
+    // Add CORS for sentry
+    res.setHeader("Access-Control-Allow-Headers", "sentry-trace");
+
     const expHeader = req.get(config.auth.invalidHeaderField);
     if (expHeader != null) {
       clientRes.headers[config.auth.invalidHeaderField] = expHeader;
