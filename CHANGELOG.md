@@ -27,6 +27,7 @@
 ### BREAKING CHANGES
 
 * requires renku-python >=1.0.4
+* requires renku-graph >=2.0.0
 
 
 ## [1.3.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.2.2...1.3.0) (2022-01-07)
