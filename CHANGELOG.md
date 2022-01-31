@@ -1,5 +1,34 @@
 # Changes
 
+## [2.0.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.3.0...2.0.0-rc1) (2022-02-??)
+
+### Features
+
+**markdown**
+* display math formulas ([#1600](https://github.com/SwissDataScienceCenter/renku-ui/issues/1600), [#1622](https://github.com/SwissDataScienceCenter/renku-ui/issues/1622))
+
+**sessions**
+* more robust autosave infrastructure ([#1645](https://github.com/SwissDataScienceCenter/renku-ui/issues/1645), [#1345](https://github.com/SwissDataScienceCenter/renku-ui/issues/1345), [#789](https://github.com/SwissDataScienceCenter/renku-ui/issues/789))
+
+**repo support**
+* support multiple versions of renku core ([#1620](https://github.com/SwissDataScienceCenter/renku-ui/issues/1620), [#1630](https://github.com/SwissDataScienceCenter/renku-ui/issues/1630), [#1507](https://github.com/SwissDataScienceCenter/renku-ui/issues/1507))
+* improve presentation of migration suggestions ([#1621](https://github.com/SwissDataScienceCenter/renku-ui/issues/1621), [#1602](https://github.com/SwissDataScienceCenter/renku-ui/issues/1602), [#1422](https://github.com/SwissDataScienceCenter/renku-ui/issues/1422), [#1233](https://github.com/SwissDataScienceCenter/renku-ui/issues/1233), [#1651](https://github.com/SwissDataScienceCenter/renku-ui/issues/1651), [#1659](https://github.com/SwissDataScienceCenter/renku-ui/issues/1659))
+
+**project templates**
+* support template-defined parameter validation ([#1579](https://github.com/SwissDataScienceCenter/renku-ui/issues/1579), [#1320](https://github.com/SwissDataScienceCenter/renku-ui/issues/1320))
+* support icons and description for templates ([#1530](https://github.com/SwissDataScienceCenter/renku-ui/issues/1530), [#1467](https://github.com/SwissDataScienceCenter/renku-ui/issues/1467), [#1487](https://github.com/SwissDataScienceCenter/renku-ui/issues/1487))
+
+
+### Bug Fixes
+
+**datasets**
+*  fix problems with dataset "add to project" button ([#1656](https://github.com/SwissDataScienceCenter/renku-ui/issues/1656))
+
+### BREAKING CHANGES
+
+* requires renku-python >=1.0.4
+
+
 ## [1.3.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.2.2...1.3.0) (2022-01-07)
 
 ### Bug Fixes
