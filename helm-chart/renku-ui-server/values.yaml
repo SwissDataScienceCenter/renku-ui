@@ -54,12 +54,9 @@ autoscaling:
   enabled: true
   minReplicas: 1
   maxReplicas: 5
-  cpuUtilization: 80
+  cpuUtilization: 95
 
 resources:
-  limits:
-    cpu: 100m
-    memory: 128Mi
   requests:
     cpu: 100m
     memory: 128Mi
