@@ -76,13 +76,13 @@ app.use(cookieParser());
 routes.register(app, prefix, authenticator);
 
 
-process.on("unhandledRejection", (reason: Error) => {
-  errorHandler.handleError(reason);
-});
+// process.on("unhandledRejection", (reason: Error) => {
+//   errorHandler.handleError(reason);
+// });
 
-process.on("uncaughtException", (error: Error) => {
-  errorHandler.handleError(error);
-});
+// process.on("uncaughtException", (error: Error) => {
+//   errorHandler.handleError(error);
+// });
 
 // start the Express server
 const server = app.listen(port, () => {
