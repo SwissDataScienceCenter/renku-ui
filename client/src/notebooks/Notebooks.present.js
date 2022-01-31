@@ -1370,6 +1370,12 @@ class StartNotebookPipelines extends Component {
     this.setState({ justTriggered: false });
   }
 
+  async runPipeline() {
+    this.setState({ justTriggered: true });
+    await this.props.handlers.runPipeline();
+    this.setState({ justTriggered: false });
+  }
+
   toggleInfo() {
     this.setState({ showInfo: !this.state.showInfo });
   }
@@ -1395,7 +1401,8 @@ class StartNotebookPipelines extends Component {
       <FormGroup>
         <StartNotebookPipelinesBadge {...this.props} infoButton={infoButton} />
         <Collapse isOpen={!customImage || showInfo}>
-          <StartNotebookPipelinesContent {...this.props} buildAgain={this.reTriggerPipeline.bind(this)} />
+          <StartNotebookPipelinesContent {...this.props}
+            buildAgain={this.reTriggerPipeline.bind(this)} tryToBuild={this.runPipeline.bind(this)} />
         </Collapse>
       </FormGroup>
     );
@@ -1509,14 +1516,15 @@ class StartNotebookPipelinesContent extends Component {
       content = (
         <Label>
           <FontAwesomeIcon icon={faCog} spin /> The Docker image for the session is being built.
-          Please wait a moment...<br />
-          <FormText color="primary">
-            <ExternalLink url={pipeline.web_url} title="View pipeline in GitLab." role="text"
-              showLinkIcon={true} />
-          </FormText><br />
-          <FormText color="text">
-            You can start a session before the build finishes by using the base image.
-          </FormText>
+          Please wait a moment...
+          <br />
+          You can use the base image instead, but it may lead to unexpected errors.
+          <br />
+          <ExternalLink id="image_check_pipeline" role="button" showLinkIcon={true} size="sm"
+            title="View pipeline in GitLab" url={pipeline.web_url} />
+          <UncontrolledPopover trigger="hover" placement="top" target="image_check_pipeline">
+            <PopoverBody>Check the GitLab pipeline. For expert users.</PopoverBody>
+          </UncontrolledPopover>
         </Label>
       );
     }
@@ -1525,43 +1533,24 @@ class StartNotebookPipelinesContent extends Component {
       if (this.props.ignorePipeline || this.props.justStarted) {
         actions = (
           <div>
-            <FormText color="primary">
-              <ExternalLink url={pipeline.web_url} title="View pipeline in GitLab." role="text"
-                showLinkIcon={true} />
-            </FormText> <br />
-            <FormText color="text">
-              The base image will be used instead. This may work fine, but it may lead to unexpected errors.
-            </FormText>
+            <ExternalLink id="image_check_pipeline" role="button" showLinkIcon={true} size="sm"
+              title="View pipeline in GitLab" url={pipeline.web_url} />
           </div>
         );
       }
       else {
         actions = (
           <div>
-            <Button color="primary" size="sm" className="mb-1" id="image_build_again"
+            <Button color="primary" size="sm" id="image_build_again"
               onClick={this.props.buildAgain}>
               <FontAwesomeIcon icon={faRedo} /> Build again
             </Button>
             <UncontrolledPopover trigger="hover" placement="top" target="image_build_again">
-              <PopoverBody>Try this if it is the first time you see this error for this commit.</PopoverBody>
+              <PopoverBody>Try to build again if it is the first time you see this error on this commit.</PopoverBody>
             </UncontrolledPopover>
             &nbsp;
-            <Button color="primary" size="sm" className="mb-1" id="image_ignore"
-              onClick={() => { this.props.setIgnorePipeline(true); }}>
-              <FontAwesomeIcon icon={faExclamationTriangle} /> Ignore
-            </Button>
-            <UncontrolledPopover trigger="hover" placement="top" target="image_ignore">
-              <PopoverBody>
-                The base image will be used instead.
-                <br /><FontAwesomeIcon icon={faExclamationTriangle} /> This may work fine, but it may lead
-                to unexpected errors.
-              </PopoverBody>
-            </UncontrolledPopover>
-            &nbsp;
-            <a className="btn btn-primary btn-sm mb-1" target="_blank" rel="noopener noreferrer"
-              href={pipeline.web_url} id="image_check_pipeline">
-              <FontAwesomeIcon icon={faExternalLinkAlt} /> View pipeline in GitLab
-            </a>
+            <ExternalLink id="image_check_pipeline" role="button" showLinkIcon={true} size="sm"
+              title="View pipeline in GitLab" url={pipeline.web_url} />
             <UncontrolledPopover trigger="hover" placement="top" target="image_check_pipeline">
               <PopoverBody>Check the GitLab pipeline. For expert users.</PopoverBody>
             </UncontrolledPopover>
@@ -1571,7 +1560,8 @@ class StartNotebookPipelinesContent extends Component {
       content = (
         <div>
           <Label key="message">
-            <FontAwesomeIcon icon={faExclamationTriangle} color="red" /> The Docker image build failed.
+            <FontAwesomeIcon icon={faExclamationTriangle} className="text-danger" /> The Docker image build failed.
+            You can use the base image instead, but it may lead to unexpected errors.
           </Label>
           {actions}
         </div>
@@ -1579,10 +1569,23 @@ class StartNotebookPipelinesContent extends Component {
     }
     else if (pipeline.status === undefined) {
       content = (
-        <Label>
-          <FontAwesomeIcon icon={faExclamationTriangle} /> The base image will be used instead. This may
-          work fine, but it may lead to unexpected errors.
-        </Label>
+        <div>
+          <Label key="message">
+            <FontAwesomeIcon icon={faExclamationTriangle} className="text-danger" /> No Docker image found.
+            You can use the base image instead, but it may lead to unexpected errors.
+            <br />
+            You can still try to build the image for the branch (it will reference the last commit).
+          </Label>
+          <div>
+            <Button color="primary" size="sm" id="image_build"
+              onClick={this.props.tryToBuild}>
+              <FontAwesomeIcon icon={faRedo} /> Build branch image
+            </Button>
+            <UncontrolledPopover trigger="hover" placement="top" target="image_build">
+              <PopoverBody>Try to build again if it is the first time you see this error on this commit.</PopoverBody>
+            </UncontrolledPopover>
+          </div>
+        </div>
       );
     }
     else {

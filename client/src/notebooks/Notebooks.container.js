@@ -26,8 +26,9 @@ import {
   CheckNotebookIcon, ShowSession as ShowSessionPresent
 } from "./Notebooks.present";
 import { StatusHelper } from "../model/Model";
-import { Url } from "../utils/helpers/url";
 import { Loader } from "../utils/components/Loader";
+import { Url } from "../utils/helpers/url";
+import { sleep } from "../utils/helpers/HelperFunctions";
 
 
 /**
@@ -305,6 +306,7 @@ class StartNotebookServer extends Component {
       refreshBranches: this.refreshBranches.bind(this),
       refreshCommits: this.refreshCommits.bind(this),
       reTriggerPipeline: this.reTriggerPipeline.bind(this),
+      runPipeline: this.runPipeline.bind(this),
       setBranch: this.selectBranch.bind(this),
       setCommit: this.selectCommit.bind(this),
       setIgnorePipeline: this.setIgnorePipeline.bind(this),
@@ -545,6 +547,22 @@ class StartNotebookServer extends Component {
     return this.refreshPipelines();
   }
 
+  async runPipeline() {
+    const projectPathWithNamespace = `${encodeURIComponent(this.props.scope.namespace)}%2F${this.props.scope.project}`;
+    const branch = this.model.get("filters.branch");
+    const reference = branch?.name ?
+      branch.name :
+      null;
+    if (reference) {
+      try {
+        await this.props.client.runPipeline(projectPathWithNamespace, reference);
+      }
+      catch {
+        // ? Swallow exceptions that may happen when not working on the latest branch's commit after multiple clicks
+      }
+      sleep(NotebooksHelper.pollingInterval + 1); // ? This is bad, but it prevents flashing a wrong status
+    }
+  }
   async triggerAutoStart() {
     if (this._isMounted) {
       if (this.autostart && !this.state.autostartReady && !this.state.autostartTried) {
