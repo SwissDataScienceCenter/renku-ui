@@ -16,22 +16,34 @@
  * limitations under the License.
  */
 
-import { REDIS_PREFIX, Storage } from "../../storage";
+import { Storage, TypeData } from "../../storage";
 import express from "express";
 import config from "../../config";
 import { getUserIdFromToken } from "../../authentication";
+import { LPROJECTS_DEFAULT_LENGTH, LPROJECTS_PREFIX } from "../const";
 
 const lastProjectsMiddleware = (storage: Storage) =>
   (req: express.Request, res: express.Response, next: express.NextFunction): void => {
     const token = req.headers[config.auth.authHeaderField] as string;
     const projectName = req.params["projectName"];
+
     res.on("finish", function() {
-      const userId = getUserIdFromToken(token);
-      // Save project only if the project return a valid code and the user exist
-      if ([304, 200].includes(res.statusCode) && !!userId) {
-        storage.lpush(userId, projectName, REDIS_PREFIX.DATA);
-        storage.ltrim(userId, 100, REDIS_PREFIX.DATA); //adjust list length to 100
+      if (![304, 200].includes(res.statusCode) || !token) {
+        next();
+        return;
       }
+
+      const userId = getUserIdFromToken(token);
+      // Save as ordered collection
+      storage.save(
+        `${LPROJECTS_PREFIX}${userId}`,
+        projectName,
+        {
+          type: TypeData.Collections,
+          limit: LPROJECTS_DEFAULT_LENGTH,
+          score: Date.now()
+        }
+      );
     });
     next();
   };

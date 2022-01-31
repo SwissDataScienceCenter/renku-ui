@@ -16,7 +16,9 @@
  * limitations under the License.
  */
 
-import { REDIS_PREFIX, Storage } from "../../src/storage/index";
+import { RedisStorage } from "../../src/storage/RedisStorage";
+import { TypeData } from "../../src/storage";
+import { AUTH_PREFIX, LPROJECTS_PREFIX } from "../../src/utils/const";
 
 
 // mock ioredis for storing data
@@ -24,20 +26,20 @@ jest.mock("ioredis", () => require("ioredis-mock/jest"));
 
 describe("Test storage", () => {
   it("Test Storage class", async () => {
-    const storage = new Storage("localhost", 12345, "safePassword");
+    const storage = new RedisStorage("localhost", 12345, "safePassword");
 
     // save data
     const path = "somewhere";
     const data = "something";
-    await storage.save(path, data, REDIS_PREFIX.AUTH);
+    await storage.save(`${AUTH_PREFIX}${path}`, data, { type: TypeData.String });
 
     // get data
-    let savedData = await storage.get(path, REDIS_PREFIX.AUTH);
+    let savedData = await storage.get(`${AUTH_PREFIX}${path}`, { type: TypeData.String });
     expect(savedData).toBe(data);
 
     // delete data
-    await storage.delete(path, REDIS_PREFIX.AUTH);
-    savedData = await storage.get(path, REDIS_PREFIX.AUTH);
+    await storage.delete(`${AUTH_PREFIX}${path}`);
+    savedData = await storage.get(`${AUTH_PREFIX}${path}`, { type: TypeData.String });
     expect(savedData).not.toBe(data);
 
     // save access to the project
@@ -46,19 +48,36 @@ describe("Test storage", () => {
       "namespace/my-project",
       "namespace/my-projectA",
       "namespace/my-projectB",
+      "namespace/my-projectB",
+    ];
+    const projectsExpected = [
+      "namespace/my-projectB",
+      "namespace/my-projectA",
       "namespace/my-project",
     ];
 
-    for (const project of projects)
-      await storage.lpush(userId, project, REDIS_PREFIX.DATA);
+    for (const project of projects) {
+      const projectDate = Date.now();
+      await storage.save(`${LPROJECTS_PREFIX}${userId}`, project,
+        {
+          type: TypeData.Collections,
+          limit: 10,
+          score: projectDate
+        });
+    }
+
 
     // get the last accessed projects
-    const projectList = await storage.lrange(userId, 0, -1, REDIS_PREFIX.DATA);
-    expect(projectList).toEqual(projects.reverse());
+    const projectList = await storage.get(`${LPROJECTS_PREFIX}${userId}`, {
+      type: TypeData.Collections,
+      start: 0,
+      stop: 4
+    });
+    expect(projectList).toEqual(projectsExpected);
   });
 
   it("Test Storage disconnect", async () => {
-    const storage = new Storage();
+    const storage = new RedisStorage();
     storage.shutdown();
   });
 });

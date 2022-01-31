@@ -1,5 +1,5 @@
 /*!
- * Copyright 2021 - Swiss Data Science Center (SDSC)
+ * Copyright 2022 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,94 +16,39 @@
  * limitations under the License.
  */
 
-import Redis from "ioredis";
-
-import config from "../config";
-import logger from "../logger";
-
-// eslint-disable-next-line no-unused-vars
-export enum REDIS_PREFIX { AUTH = "AUTH_", DATA = "DATA_" }
-
-class Storage {
-  redis: Redis.Redis;
-  ready = false;
-
-  constructor(
-    host: string = config.redis.host,
-    port: number = config.redis.port as number,
-    password: string = config.redis.password
-  ) {
-    // configure redis
-    const redisConfig: Redis.RedisOptions = {
-      host,
-      port,
-      lazyConnect: true,
-      retryStrategy: (times) => {
-        return times > 5 ?
-          null :
-          10000;
-      },
-    };
-    if (password)
-      redisConfig.password = password;
-    try {
-      this.redis = new Redis(redisConfig);
-      this.redis.connect(() => {
-        if (this.redis.status === "ready")
-          this.ready = true;
-      });
-    }
-    catch (error) /* istanbul ignore next */ {
-      const newError = new Error(`Cannot connect to Redis -- ${error.message}`);
-      newError.stack = newError.stack.split("\n").slice(0, 2).join("\n") + "\n" + error.stack;
-      logger.error(newError);
-    }
-  }
-
-  getStatus() : string {
-    return this.redis.status;
-  }
-
-  async get(path: string, prefix: REDIS_PREFIX): Promise<string> {
-    return await this.redis.get(`${prefix}${path}`);
-  }
-
-  async save(path: string, value: string, prefix: REDIS_PREFIX): Promise<boolean> {
-    const result = await this.redis.set(`${prefix}${path}`, value);
-    if (result === "OK")
-      return true;
-    // istanbul ignore next
-    return false;
-  }
-
-  async lpush(path: string, value: string, prefix: REDIS_PREFIX): Promise<boolean> {
-    const result = await this.redis.lpush(`${prefix}${path}`, value);
-    if (typeof result == "number")
-      return true;
-    // istanbul ignore next
-    return false;
-  }
-
-  async ltrim(path: string, length: number, prefix: REDIS_PREFIX): Promise<boolean> {
-    const result = await this.redis.ltrim(`${prefix}${path}`, 0, length - 1);
-    if (result == "OK")
-      return true;
-    // istanbul ignore next
-    return false;
-  }
-
-  async lrange(path: string, start: number, stop: number, prefix: REDIS_PREFIX): Promise<string[]> {
-    return await this.redis.lrange(`${prefix}${path}`, start, stop);
-  }
-
-  async delete(path: string, prefix: REDIS_PREFIX): Promise<number> {
-    return this.redis.del(`${prefix}${path}`);
-  }
-
-  shutdown(): void {
-    this.redis.disconnect();
-  }
+export interface StorageSaveOptions {
+  type: TypeData,
+  limit?: number, // to trim current set of ordered values only apply to the collections
+  score?: number, // to order values, only apply to the collections
 }
 
+export interface StorageGetOptions {
+  type: TypeData,
+  start?: number, // performs an index range query, represent zero-based indexes, only apply to the collections
+  stop?: number, // performs an index range query, represent zero-based indexes, only apply to the collections
+}
+
+export interface SaveCollectionOptions {
+  limit?: number, // to trim current set of ordered values
+  score?: number, // to order values
+}
+
+// eslint-disable-next-line no-unused-vars
+export enum TypeData { String, Collections}
+
+interface Storage {
+
+  ready: boolean;
+
+  getStatus() : string;
+
+  get(path: string, options: StorageGetOptions): Promise<string|string[]>;
+
+  save(path: string, value: string, options: StorageSaveOptions): Promise<boolean>;
+
+  delete(path: string): Promise<number>;
+
+  shutdown(): void;
+}
 
 export { Storage };
