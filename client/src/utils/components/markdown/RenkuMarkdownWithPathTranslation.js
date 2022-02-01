@@ -6,6 +6,7 @@ import { faFile } from "@fortawesome/free-solid-svg-icons";
 import "katex/dist/katex.min.css";
 import { FilePreview } from "../../../file";
 import { sanitizedHTMLFromMarkdown } from "../../helpers/HelperFunctions";
+import { Url } from "../../helpers/url";
 
 const patterns = {
   fileRefFull: /!\[(.*?)\]\((.*?)\)/g, //with !
@@ -223,7 +224,7 @@ function RenkuMarkdownWithPathTranslation(props) {
   }
 
   const previewLinks = divWithMarkdown.getElementsByTagName("a");
-  const fullBaseUrl = props.client.baseUrl.replace("/api", "/projects")
+  const fullBaseUrl = Url.get(Url.pages.projects)
     + "/" + props.projectPathWithNamespace + "/files/blob/";
 
   for (let link of previewLinks) {
