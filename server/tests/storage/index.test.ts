@@ -18,8 +18,7 @@
 
 import { RedisStorage } from "../../src/storage/RedisStorage";
 import { TypeData } from "../../src/storage";
-import { AUTH_PREFIX, LPROJECTS_PREFIX } from "../../src/utils/const";
-
+import config from "../../src/config";
 
 // mock ioredis for storing data
 jest.mock("ioredis", () => require("ioredis-mock/jest"));
@@ -31,15 +30,15 @@ describe("Test storage", () => {
     // save data
     const path = "somewhere";
     const data = "something";
-    await storage.save(`${AUTH_PREFIX}${path}`, data, { type: TypeData.String });
+    await storage.save(`${config.auth.storagePrefix}${path}`, data, { type: TypeData.String });
 
     // get data
-    let savedData = await storage.get(`${AUTH_PREFIX}${path}`, { type: TypeData.String });
+    let savedData = await storage.get(`${config.auth.storagePrefix}${path}`, { type: TypeData.String });
     expect(savedData).toBe(data);
 
     // delete data
-    await storage.delete(`${AUTH_PREFIX}${path}`);
-    savedData = await storage.get(`${AUTH_PREFIX}${path}`, { type: TypeData.String });
+    await storage.delete(`${config.auth.storagePrefix}${path}`);
+    savedData = await storage.get(`${config.auth.storagePrefix}${path}`, { type: TypeData.String });
     expect(savedData).not.toBe(data);
 
     // save access to the project
@@ -58,7 +57,7 @@ describe("Test storage", () => {
 
     for (const project of projects) {
       const projectDate = Date.now();
-      await storage.save(`${LPROJECTS_PREFIX}${userId}`, project,
+      await storage.save(`${config.data.projectsStoragePrefix}${userId}`, project,
         {
           type: TypeData.Collections,
           limit: 10,
@@ -68,7 +67,7 @@ describe("Test storage", () => {
 
 
     // get the last accessed projects
-    const projectList = await storage.get(`${LPROJECTS_PREFIX}${userId}`, {
+    const projectList = await storage.get(`${config.data.projectsStoragePrefix}${userId}`, {
       type: TypeData.Collections,
       start: 0,
       stop: 4

@@ -20,7 +20,6 @@ import { Storage, TypeData } from "../../storage";
 import express from "express";
 import config from "../../config";
 import { getUserIdFromToken } from "../../authentication";
-import { LPROJECTS_DEFAULT_LENGTH, LPROJECTS_PREFIX } from "../const";
 
 const lastProjectsMiddleware = (storage: Storage) =>
   (req: express.Request, res: express.Response, next: express.NextFunction): void => {
@@ -36,11 +35,11 @@ const lastProjectsMiddleware = (storage: Storage) =>
       const userId = getUserIdFromToken(token);
       // Save as ordered collection
       storage.save(
-        `${LPROJECTS_PREFIX}${userId}`,
+        `${config.data.projectsStoragePrefix}${userId}`,
         projectName,
         {
           type: TypeData.Collections,
-          limit: LPROJECTS_DEFAULT_LENGTH,
+          limit: config.data.projectsDefaultLength,
           score: Date.now()
         }
       );

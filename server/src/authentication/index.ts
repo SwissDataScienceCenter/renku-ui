@@ -24,7 +24,6 @@ import logger from "../logger";
 import { Storage, StorageGetOptions, StorageSaveOptions, TypeData } from "../storage";
 import { sleep } from "../utils";
 import jwt from "jsonwebtoken";
-import { AUTH_PREFIX } from "../utils/const";
 
 const verifierSuffix = "-verifier";
 const parametersSuffix = "-parameters";
@@ -131,10 +130,11 @@ class Authenticator {
    */
   async getPostLoginParametersAndDelete(sessionId: string, deleteAfter = true): Promise<string> {
     const parametersKey = this.getParametersKey(sessionId);
-    const parametersString = await this.storage.get(`${AUTH_PREFIX}${parametersKey}`, this.getStorageOptions) as string;
+    const parametersString = await this.storage.get(`${config.auth.storagePrefix}${parametersKey}`,
+      this.getStorageOptions) as string;
     if (parametersString && parametersString != null) {
       if (deleteAfter)
-        await this.storage.delete(`${AUTH_PREFIX}${parametersKey}`);
+        await this.storage.delete(`${config.auth.storagePrefix}${parametersKey}`);
       return parametersString;
     }
     return "";
@@ -154,10 +154,10 @@ class Authenticator {
     const verifier = generators.codeVerifier();
     const challenge = generators.codeChallenge(verifier);
     const verifierKey = this.getVerifierKey(sessionId);
-    await this.storage.save(`${AUTH_PREFIX}${verifierKey}`, verifier, this.saveStorageOptions);
+    await this.storage.save(`${config.auth.storagePrefix}${verifierKey}`, verifier, this.saveStorageOptions);
     if (redirectParams) {
       const parametersKey = this.getParametersKey(sessionId);
-      await this.storage.save(`${AUTH_PREFIX}${parametersKey}`, redirectParams, this.saveStorageOptions);
+      await this.storage.save(`${config.auth.storagePrefix}${parametersKey}`, redirectParams, this.saveStorageOptions);
     }
 
     // create and return the login url
@@ -197,9 +197,10 @@ class Authenticator {
 
     // get the verifier code and remove it from redis
     const verifierKey = this.getVerifierKey(sessionId);
-    const verifier = await this.storage.get(`${AUTH_PREFIX}${verifierKey}`, this.getStorageOptions) as string;
+    const verifier = await this.storage.get(`${config.auth.storagePrefix}${verifierKey}`,
+      this.getStorageOptions) as string;
     if (verifier != null) {
-      await this.storage.delete(`${AUTH_PREFIX}${verifierKey}`);
+      await this.storage.delete(`${config.auth.storagePrefix}${verifierKey}`);
     }
     else {
       const error = "Code challange not available. Are you re-loading an old page?";
@@ -233,7 +234,8 @@ class Authenticator {
   async storeTokens(sessionId: string, tokens: TokenSet): Promise<boolean> {
     this.checkInit();
 
-    return await this.storage.save(`${AUTH_PREFIX}${sessionId}`, JSON.stringify(tokens), this.saveStorageOptions);
+    return await this.storage.save(`${config.auth.storagePrefix}${sessionId}`,
+      JSON.stringify(tokens), this.saveStorageOptions);
   }
 
 
@@ -248,7 +250,8 @@ class Authenticator {
     this.checkInit();
 
     // Get tokens from the store
-    const stringyTokens = await this.storage.get(`${AUTH_PREFIX}${sessionId}`, this.getStorageOptions) as string;
+    const stringyTokens = await this.storage.get(`${config.auth.storagePrefix}${sessionId}`,
+      this.getStorageOptions) as string;
     if (stringyTokens == null)
       return null;
     let tokens = new TokenSet(JSON.parse(stringyTokens) as TokenSet);
@@ -302,7 +305,7 @@ class Authenticator {
   async deleteTokens(sessionId: string): Promise<boolean> {
     this.checkInit();
 
-    const result = await this.storage.delete(`${AUTH_PREFIX}${sessionId}`);
+    const result = await this.storage.delete(`${config.auth.storagePrefix}${sessionId}`);
     return result >= 0 ?
       true :
       false;

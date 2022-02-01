@@ -29,16 +29,15 @@ import { renkuAuth } from "../authentication/middleware";
 import { validateCSP } from "../utils/url";
 import { Storage, StorageGetOptions, TypeData } from "../storage";
 import { getUserIdFromToken, lastProjectsMiddleware } from "../utils/middlewares/lastProjectsMiddleware";
-import { LPROJECTS_PREFIX } from "../utils/const";
 
 const proxyMiddleware = createProxyMiddleware({
   // set gateway as target
-  target: config.deplyoment.gatewayUrl,
+  target: config.deployment.gatewayUrl,
   changeOrigin: true,
   pathRewrite: (path): string => {
     // remove basic ui-server routing
     const rewrittenPath = path.substring((config.server.prefix + config.routes.api).length);
-    logger.debug(`rewriting path from "${path}" to "${rewrittenPath}" and routing to ${config.deplyoment.gatewayUrl}`);
+    logger.debug(`rewriting path from "${path}" to "${rewrittenPath}" and routing to ${config.deployment.gatewayUrl}`);
     return rewrittenPath;
   },
   onProxyReq: (clientReq) => {
@@ -113,8 +112,10 @@ function registerApiRoutes(app: express.Application,
 
   app.get(prefix + "/last-projects/:length", renkuAuth(authenticator), async (req, res) => {
     const token = req.headers[config.auth.authHeaderField] as string;
-    if (!token)
+    if (!token) {
       res.json([]);
+      return;
+    }
 
     const userId = getUserIdFromToken(token);
     let data: string[] = [];
@@ -125,7 +126,7 @@ function registerApiRoutes(app: express.Application,
     };
 
     if (userId)
-      data = await storage.get(`${LPROJECTS_PREFIX}${userId}`, options) as string[];
+      data = await storage.get(`${config.data.projectsStoragePrefix}${userId}`, options) as string[];
     res.json(data);
   });
 
