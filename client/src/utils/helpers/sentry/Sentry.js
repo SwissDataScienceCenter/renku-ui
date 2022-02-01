@@ -185,7 +185,7 @@ function getRelease(version) {
     return RELEASE_UNKNOWN;
 
   // Check format validity
-  const regValid = new RegExp(/^\d*(\.\d*){0,2}(-[a-f0-9]{7,32})?$/);
+  const regValid = new RegExp(/^\d*(\.\d*){0,2}(-[a-z0-9.]{7,32})?$/);
   const resValid = version.match(regValid);
   if (!resValid || !resValid[0])
     return RELEASE_UNKNOWN;
@@ -196,7 +196,7 @@ function getRelease(version) {
   const release = (!resRelease || !resRelease[0]) ?
     RELEASE_UNKNOWN :
     resRelease[0];
-  const regPatch = new RegExp(/-[a-f0-9]{6,32}$/);
+  const regPatch = new RegExp(/-[a-z0-9.]{6,32}$/);
   const resPatch = version.match(regPatch);
   const patch = (!resPatch || !resPatch[0]) ?
     "" :
