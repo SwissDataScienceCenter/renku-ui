@@ -1518,7 +1518,8 @@ class StartNotebookPipelinesContent extends Component {
           <FontAwesomeIcon icon={faCog} spin /> The Docker image for the session is being built.
           Please wait a moment...
           <br />
-          You can use the base image instead, but it may lead to unexpected errors.
+          You can use the base image to start a session instead of waiting,{" "}
+          but project-specific dependencies will not be available.
           <br />
           <ExternalLink id="image_check_pipeline" role="button" showLinkIcon={true} size="sm"
             title="View pipeline in GitLab" url={pipeline.web_url} />
@@ -1561,7 +1562,7 @@ class StartNotebookPipelinesContent extends Component {
         <div>
           <Label key="message">
             <FontAwesomeIcon icon={faExclamationTriangle} className="text-danger" /> The Docker image build failed.
-            You can use the base image instead, but it may lead to unexpected errors.
+            You can use the base image to start a session, but project-specific dependencies will not be available.
           </Label>
           {actions}
         </div>
@@ -1572,19 +1573,15 @@ class StartNotebookPipelinesContent extends Component {
         <div>
           <Label key="message">
             <FontAwesomeIcon icon={faExclamationTriangle} className="text-danger" /> No Docker image found.
-            You can use the base image instead, but it may lead to unexpected errors.
+            You can use the base image to start a session, but project-specific dependencies will not be available.
             <br />
-            You can still try to build the image for the branch (it will reference the last commit).
-          </Label>
-          <div>
+            If you are seeing this error for the first time,{" "}
             <Button color="primary" size="sm" id="image_build"
               onClick={this.props.tryToBuild}>
-              <FontAwesomeIcon icon={faRedo} /> Build branch image
-            </Button>
-            <UncontrolledPopover trigger="hover" placement="top" target="image_build">
-              <PopoverBody>Try to build again if it is the first time you see this error on this commit.</PopoverBody>
-            </UncontrolledPopover>
-          </div>
+              <FontAwesomeIcon icon={faRedo} /> building the branch image
+            </Button>{" "}
+            will probably solve the problem.
+          </Label>
         </div>
       );
     }
@@ -2079,9 +2076,9 @@ class ServerOptionLaunch extends Component {
 
     return [
       imageStatusAlert,
-      startButtonWithMenu,
-      " ",
       startBaseButton,
+      " ",
+      startButtonWithMenu,
       <AutosavedDataModal key="modal"
         toggleModal={this.toggleModal.bind(this)}
         showModal={this.state.showModal}
