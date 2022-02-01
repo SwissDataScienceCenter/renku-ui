@@ -82,6 +82,7 @@ sentry:
   url: ""
   namespace: ""
   sampleRate: 0
+  debugMode: false
 
 authentication:
   url:
