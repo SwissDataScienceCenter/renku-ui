@@ -317,7 +317,7 @@ const NotebooksHelper = {
       return true;
 
     if (pipelines.type === PIPELINE_TYPES.logged) {
-      if (mainPipeline.status === "success" || mainPipeline.status === undefined)
+      if (mainPipeline.status === "success")
         return true;
     }
     else if (pipelines.type === PIPELINE_TYPES.anonymous) {
@@ -329,8 +329,9 @@ const NotebooksHelper = {
   },
 
   pipelineTypes: PIPELINE_TYPES,
-  validSettings: VALID_SETTINGS,
-  sessionConfigPrefix: SESSIONS_PREFIX
+  pollingInterval: POLLING_INTERVAL,
+  sessionConfigPrefix: SESSIONS_PREFIX,
+  validSettings: VALID_SETTINGS
 };
 
 class NotebooksCoordinator {
