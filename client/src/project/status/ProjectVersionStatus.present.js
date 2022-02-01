@@ -19,7 +19,6 @@
 import React, { Fragment } from "react";
 import { Row, Col, Card, CardBody, CardHeader } from "reactstrap";
 
-import RenkuLabUiCompatibilityStatus from "./RenkuLabCompatibilityStatus.present";
 import RenkuVersionStatus from "./RenkuVersionStatus.present";
 import TemplateStatus from "./TemplateVersionStatus.present";
 
@@ -33,22 +32,12 @@ function ProjectVersionStatusBody(props) {
   };
 
   return <Fragment>
-    <Card key="renkuLabUICompatibility" className="border-rk-light mb-4">
-      <CardHeader className="bg-white p-3 ps-4">RenkuLab UI Compatibility</CardHeader>
-      <CardBody className="p-4 pt-3 pb-3 lh-lg">
-        <Row><Col>
-          <RenkuLabUiCompatibilityStatus
-            loading={props.loading}
-            maintainer={maintainer}
-            migration={props.migration} />
-        </Col></Row>
-      </CardBody>
-    </Card>
     <Card key="renkuVersion" className="border-rk-light mb-4">
       <CardHeader className="bg-white p-3 ps-4">Renku Version</CardHeader>
       <CardBody className="p-4 pt-3 pb-3 lh-lg">
         <Row><Col>
           <RenkuVersionStatus
+            externalUrl={props.externalUrl}
             launchNotebookUrl={props.launchNotebookUrl}
             loading={props.loading}
             logged={logged}

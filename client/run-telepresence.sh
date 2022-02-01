@@ -127,6 +127,8 @@ if [[ $SENTRY = 1 ]]
 then
   SENTRY_URL="https://182290b8e1524dd3b7eb5dd051852f9f@sentry.dev.renku.ch/5"
   SENTRY_NAMESPACE="${DEV_NAMESPACE}"
+  # set SENTRY_SAMPLE_RATE as a number between 0 and 1. (For example, to send 20% of transactions, set tracesSampleRate to 0.2.)
+  SENTRY_SAMPLE_RATE=1.0
 else
   echo "Errors won't be sent to sentry by default. To enable sentry, use 'SENTRY=1 ./run-telepresence.sh'"
 fi
@@ -142,6 +144,7 @@ tee > ./public/config.json << EOF
   "WELCOME_PAGE": "${WELCOME_PAGE}",
   "SENTRY_URL": "${SENTRY_URL}",
   "SENTRY_NAMESPACE": "${SENTRY_NAMESPACE}",
+  "SENTRY_SAMPLE_RATE": "${SENTRY_SAMPLE_RATE}",
   "ANONYMOUS_SESSIONS": "true",
   "PRIVACY_ENABLED": "false",
   "TEMPLATES": ${TEMPLATES},
