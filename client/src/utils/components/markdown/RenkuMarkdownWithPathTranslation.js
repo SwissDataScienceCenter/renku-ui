@@ -238,5 +238,14 @@ function RenkuMarkdownWithPathTranslation(props) {
   </div>;
 
 }
-export default RenkuMarkdownWithPathTranslation;
+
+function GuardedRenkuMarkdownWithPathTranslation(props) {
+  // Return null if markdownText is null, otherwise there are problems with the hooks
+  if (props.markdownText == null)
+    return null;
+
+  return <RenkuMarkdownWithPathTranslation {...props} />;
+}
+
+export default GuardedRenkuMarkdownWithPathTranslation;
 export { encodeImageBase64, fixRelativePath };
