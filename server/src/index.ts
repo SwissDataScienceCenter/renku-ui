@@ -34,9 +34,6 @@ const app = express();
 const port = config.server.port;
 const prefix = config.server.prefix;
 
-// initialize sentry if the SENTRY_URL is set
-initializeSentry(app);
-
 // configure logging
 const logStream = {
   write: (message: string) => {
@@ -54,6 +51,9 @@ app.use(morgan("combined", {
 }));
 
 logger.info("Server configuration: " + JSON.stringify(config));
+
+// initialize sentry if the SENTRY_URL is set
+initializeSentry(app);
 
 // configure storage
 const storage = new RedisStorage();

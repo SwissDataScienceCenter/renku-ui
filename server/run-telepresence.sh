@@ -83,16 +83,20 @@ then
   telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --expose 9229:9229 --run npm run dev-debug
 elif [[ "$SENTRY" ]]
 then
-  SENTRY_URL="https://4daf5346cec5498e98f73fa44c6d6a3b@sentry.dev.renku.ch/9"
+  SENTRY_ENABLED=true
+  SENTRY_URL="https://14558ba28035458ba9c7d206b7a48cb5@sentry.dev.renku.ch/4"
   SENTRY_NAMESPACE="${DEV_NAMESPACE}"
   SENTRY_TRACE_RATE=1.0
+  SENTRY_DEBUG_MODE=true
   echo "***** SENTRY ENABLED *****"
-  echo "SENTRY_ENABLED=true"
+  echo "SENTRY_ENABLED=${SENTRY_ENABLED}"
   echo "SENTRY_URL=${SENTRY_URL}"
   echo "SENTRY_NAMESPACE=${SENTRY_NAMESPACE}"
   echo "SENTRY_TRACE_RATE=${SENTRY_TRACE_RATE}"
   echo "TELEPRESENCE=true"
-  SENTRY_ENABLED=true SENTRY_URL=${SENTRY_URL} SENTRY_NAMESPACE=${SENTRY_NAMESPACE} SENTRY_TRACE_RATE=${SENTRY_TRACE_RATE} TELEPRESENCE=true telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --run npm run dev
+  echo "DEBUG_MODE=${SENTRY_DEBUG_MODE}"
+  echo ""
+  SENTRY_ENABLED=${SENTRY_ENABLED} SENTRY_URL=${SENTRY_URL} SENTRY_NAMESPACE=${SENTRY_NAMESPACE} SENTRY_TRACE_RATE=${SENTRY_TRACE_RATE} SENTRY_DEBUG=${SENTRY_DEBUG_MODE} TELEPRESENCE=true telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --run npm run dev
 else
   telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --run npm run dev
 fi

@@ -113,9 +113,8 @@ class Sentry {
 
 const initializeSentry = (app: express.Application) : void => {
   let sentryInitialized = false;
-  logger.info(`Sentry Enabled: ${config.sentry.enabled}`);
   if (config.sentry.enabled) {
-    logger.info(`trying to set up SENTRY`);
+    logger.info(`Initializing Sentry`);
     const configSentry : SentryConfiguration = {
       url: config.sentry.url,
       namespace: config.sentry.namespace,
@@ -124,9 +123,17 @@ const initializeSentry = (app: express.Application) : void => {
       sampleRate: config.sentry.sampleRate,
     };
 
-    const sentry = new Sentry();
-    sentry.init(configSentry, app);
-    sentryInitialized = sentry.sentryInitialized;
+    try {
+      const sentry = new Sentry();
+      sentry.init(configSentry, app);
+      sentryInitialized = sentry.sentryInitialized;
+    }
+    catch (e) {
+      logger.profile("Sentry");
+      logger.error(e.message);
+      // include request Handler middleware to unblock the app if has a uncaughtException and Sentry is not available
+      app.use(requestHandlerMiddleware);
+    }
   }
   else {
     // include request Handler middleware to unblock app if has a uncaughtException
