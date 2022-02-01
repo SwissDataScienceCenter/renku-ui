@@ -163,7 +163,6 @@ function CentralContentContainer(props) {
   </div>;
 }
 
-
 class App extends Component {
   constructor(props) {
     super(props);

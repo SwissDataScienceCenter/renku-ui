@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import { migrationCheckToRenkuVersionStatus, RENKU_VERSION_SCENARIOS } from "./MigrationUtils";
+import { migrationCheckToRenkuVersionStatus, RENKU_VERSION_SCENARIOS, RENKU_UPDATE_MODE } from "./MigrationUtils";
 import { shouldDisplayVersionWarning } from "./MigrationUtils";
 
 const exampleMigrationChecks = {
@@ -129,23 +129,26 @@ const exampleMigrationChecks = {
 describe("test version status", () => {
   it("handles up-to-date", () => {
     const result = migrationCheckToRenkuVersionStatus(exampleMigrationChecks.current);
-    expect(result).toEqual(RENKU_VERSION_SCENARIOS.RENKU_UP_TO_DATE);
+    expect(result.renkuVersionStatus).toEqual(RENKU_VERSION_SCENARIOS.RENKU_UP_TO_DATE);
   });
   it("handles not supported", () => {
     const result = migrationCheckToRenkuVersionStatus(exampleMigrationChecks.notSupported);
-    expect(result).toEqual(RENKU_VERSION_SCENARIOS.PROJECT_NOT_SUPPORTED);
+    expect(result.renkuVersionStatus).toEqual(RENKU_VERSION_SCENARIOS.PROJECT_NOT_SUPPORTED);
   });
   it("handles new version not required", () => {
     const result = migrationCheckToRenkuVersionStatus(exampleMigrationChecks.notRequired);
-    expect(result).toEqual(RENKU_VERSION_SCENARIOS.NEW_VERSION_NOT_REQUIRED_AUTO);
+    expect(result.renkuVersionStatus).toEqual(RENKU_VERSION_SCENARIOS.NEW_VERSION_NOT_REQUIRED);
+    expect(result.updateMode).toEqual(RENKU_UPDATE_MODE.UPDATE_AUTO);
   });
   it("handles new version not required, auto-update possible", () => {
     const result = migrationCheckToRenkuVersionStatus(exampleMigrationChecks.requiredAuto);
-    expect(result).toEqual(RENKU_VERSION_SCENARIOS.NEW_VERSION_REQUIRED_AUTO);
+    expect(result.renkuVersionStatus).toEqual(RENKU_VERSION_SCENARIOS.NEW_VERSION_REQUIRED);
+    expect(result.updateMode).toEqual(RENKU_UPDATE_MODE.UPDATE_AUTO);
   });
   it("handles new version not required, auto-update not possible", () => {
     const result = migrationCheckToRenkuVersionStatus(exampleMigrationChecks.requiredManual);
-    expect(result).toEqual(RENKU_VERSION_SCENARIOS.NEW_VERSION_REQUIRED_MANUAL);
+    expect(result.renkuVersionStatus).toEqual(RENKU_VERSION_SCENARIOS.NEW_VERSION_REQUIRED);
+    expect(result.updateMode).toEqual(RENKU_UPDATE_MODE.UPDATE_MANUAL);
   });
 });
 
