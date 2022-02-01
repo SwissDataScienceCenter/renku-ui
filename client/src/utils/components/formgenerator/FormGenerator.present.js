@@ -29,7 +29,6 @@ import TextInput from "./fields/TextInput";
 import TextareaInput from "./fields/TexAreaInput";
 import SelectInput from "./fields/SelectInput";
 import CreatorsInput from "./fields/CreatorsInput";
-import SelectautosuggestInput from "./fields/SelectAutosuggestInput";
 import CktextareaInput from "./fields/CKEditorTextArea";
 import FileUploaderInput from "./fields/FileUploaderInput";
 import KeywordsInput from "./fields/KeywordsInput";
@@ -87,7 +86,6 @@ function FormPanel({
     ImageInput,
     KeywordsInput,
     SelectInput,
-    SelectautosuggestInput,
     TextInput,
     TextareaInput,
   };
