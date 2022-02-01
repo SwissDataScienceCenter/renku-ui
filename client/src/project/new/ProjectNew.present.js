@@ -165,11 +165,7 @@ function ForkProjectStatus(props) {
     );
   }
   else if (props.forkError) {
-    return (
-      <FormText key="help" color="danger">
-        An error occurred while forking: {props.forkError}
-      </FormText>
-    );
+    return (<FormText key="help" color="danger" style={{ textTransform: "capitalize" }}>{props.forkError}</FormText>);
   }
   else if (props.forkVisibilityError) {
     return (
