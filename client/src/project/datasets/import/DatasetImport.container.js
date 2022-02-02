@@ -26,7 +26,7 @@
 import React from "react";
 import { datasetImportFormSchema } from "../../../model/RenkuModels";
 import DatasetImport from "./DatasetImport.present";
-import { ImportStateMessage } from "../../../utils/Dataset";
+import { ImportStateMessage } from "../../../utils/constants/Dataset";
 import _ from "lodash";
 
 let dsFormSchema = _.cloneDeep(datasetImportFormSchema);
@@ -89,7 +89,7 @@ function ImportDataset(props) {
   const monitorJobStatusAndHandleResponse = (job_id, handlers) => {
     let cont = 0;
     let monitorJob = setInterval(() => {
-      props.client.getJobStatus(job_id)
+      props.client.getJobStatus(job_id, props.migration.core.versionUrl)
         .then(job => {
           cont++;
           if (job !== undefined || cont === 50)
@@ -102,7 +102,7 @@ function ImportDataset(props) {
     handlers.setServerErrors(undefined);
     handlers.setServerWarnings(undefined);
     handlers.setSubmitLoader({ value: true, text: ImportStateMessage.ENQUEUED });
-    props.client.datasetImport(props.httpProjectUrl, mappedInputs.uri)
+    props.client.datasetImport(props.httpProjectUrl, mappedInputs.uri, props.migration.core.versionUrl)
       .then(response => {
         if (response.data.error !== undefined) {
           handlers.setSubmitLoader({ value: false, text: "" });

@@ -37,11 +37,8 @@ import {
   faStar as faStarSolid, faUserFriends
 } from "@fortawesome/free-solid-svg-icons";
 
-import {
-  ButtonWithMenu, ErrorAlert, ExternalLink, GoBackButton,
-  InfoAlert, Loader, RenkuMarkdown, RenkuNavLink, TimeCaption, WarnAlert
-} from "../utils/UIComponents";
-import { Url } from "../utils/url";
+
+import { Url } from "../utils/helpers/url";
 import { SpecialPropVal } from "../model/Model";
 import { ProjectTagList } from "./shared";
 import { Notebooks, ShowSession, StartNotebookServer } from "../notebooks";
@@ -53,12 +50,20 @@ import FilesTreeView from "./filestreeview/FilesTreeView";
 import DatasetsListView from "./datasets/DatasetsListView";
 import { ACCESS_LEVELS } from "../api-client";
 import ProjectVersionStatus from "./status/ProjectVersionStatus.present";
+import { shouldDisplayVersionWarning } from "./status/MigrationUtils.js";
 import { NamespaceProjects } from "../namespace";
 import { ProjectOverviewCommits, ProjectOverviewStats } from "./overview";
 import { ForkProject } from "./new";
 import { ProjectSettingsGeneral, ProjectSettingsNav, ProjectSettingsSessions } from "./settings";
 
 import "./Project.css";
+import { ExternalLink } from "../utils/components/ExternalLinks";
+import { ButtonWithMenu, GoBackButton } from "../utils/components/Button";
+import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
+import { ErrorAlert, InfoAlert, WarnAlert } from "../utils/components/Alert";
+import { RenkuNavLink } from "../utils/components/RenkuNavLink";
+import { Loader } from "../utils/components/Loader";
+import { TimeCaption } from "../utils/components/TimeCaption";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -111,21 +116,21 @@ function ProjectVisibilityLabel({ visibilityLevel }) {
  *
  * @param {Object} webhook - project.webhook store object
  * @param {bool} migration_required - whether it's necessary to migrate the project or not
- * @param {bool} template_update_possible - whether it's necessary to migrate the template or not
   * @param {bool} docker_update_possible - whether it's necessary to migrate the docker image or not
  * @param {Object} history - react history object
  * @param {string} overviewStatusUrl - overview status url
  */
 class ProjectStatusIcon extends Component {
   render() {
-    const { webhook, migration_required, docker_update_possible, template_update_possible,
-      overviewStatusUrl, history } = this.props;
+    const { webhook, overviewStatusUrl, history, migration } = this.props;
     const kgDown = isKgDown(webhook);
 
-    if (!migration_required && !docker_update_possible && !template_update_possible && !kgDown)
+    const warningSignForVersionDisplayed = shouldDisplayVersionWarning(migration);
+
+    if (!warningSignForVersionDisplayed && !kgDown)
       return null;
 
-    const versionInfo = (migration_required || docker_update_possible || template_update_possible) ?
+    const versionInfo = warningSignForVersionDisplayed ?
       "Current project is outdated. " :
       null;
     const kgInfo = kgDown ?
@@ -222,14 +227,12 @@ function ProjectIdentifier(props) {
   return (
     <Fragment>
       <div className="flex-grow-1">
-        <h2 className="mb-0">
+        <h2 className="mb-0" data-cy="project-header">
           <ProjectStatusIcon
             history={props.history}
             webhook={props.webhook}
             overviewStatusUrl={props.overviewStatusUrl}
-            migration_required={props.migration.migration_required}
-            template_update_possible={props.migration.template_update_possible}
-            docker_update_possible={props.migration.docker_update_possible}
+            migration={props.migration}
           />{projectTitle}
           <ProjectVisibilityLabel visibilityLevel={props.metadata.visibility} />
         </h2>
@@ -265,12 +268,11 @@ function ProjectViewHeaderOverviewDescription({ settingsReadOnly, description, s
 }
 
 const ProjectSuggestActions = (props) => {
-  const isProjectMaintainer = props.visibility.accessLevel >= ACCESS_LEVELS.MAINTAINER;
-  const commits = props.projectCoordinator.get("commits");
-  const commitsReadme = props.projectCoordinator.get("commitsReadme");
-  const datasets = props.projectCoordinator.get("datasets.core");
+  const { commits, commitsReadme } = props;
+  const datasets = props.datasets.core;
+  const isProjectMaintainer = props.metadata.accessLevel >= ACCESS_LEVELS.MAINTAINER;
   const countTotalCommits = commits?.list?.length ?? 0;
-  const countCommitsReadme = commitsReadme?.list.length ?? null;
+  const countCommitsReadme = commitsReadme?.list?.length ?? null;
   let isReadmeCommitInitial = countCommitsReadme === 1;
   if (countCommitsReadme === 1 && commits.list.length > 0) {
     const firstCommit = commits?.list.sort((a, b) => new Date(a.committed_date) - new Date(b.committed_date))[0];
@@ -285,18 +287,18 @@ const ProjectSuggestActions = (props) => {
     isLoadingDatasets;
 
   useEffect(() => {
-    props.fetchDatasets();
-    if (props.projectCoordinator?.get("metadata.id") !== null)
-      props.projectCoordinator.fetchReadmeCommits();
+    if (props.metadata.id !== null)
+      props.fetchReadmeCommits();
   }, []); // eslint-disable-line
 
-  if (!isProjectMaintainer || isLoadingData || countTotalCommits > 4 ||
-    (countCommitsReadme > 1 && hasDatasets) ||
-    (!isReadmeCommitInitial && hasDatasets && countCommitsReadme !== 0)) return null;
+  const cHasDataset = countCommitsReadme > 1 && hasDatasets;
+  const cCombo = !isReadmeCommitInitial && hasDatasets && countCommitsReadme !== 0;
+  if (!isProjectMaintainer || isLoadingData || countTotalCommits > 4 || cHasDataset || cCombo)
+    return null;
 
   const gitlabIDEUrl = props.externalUrl !== "" && props.externalUrl.includes("/gitlab/") ?
     props.externalUrl.replace("/gitlab/", "/gitlab/-/ide/project/") : null;
-  const addReadmeUrl = `${gitlabIDEUrl}/edit/${props.core.default_branch}/-/README.md`;
+  const addReadmeUrl = `${gitlabIDEUrl}/edit/${props.metadata.defaultBranch}/-/README.md`;
 
   const suggestionReadme = countCommitsReadme > 1 || (!isReadmeCommitInitial && countCommitsReadme !== 0) ? null
     : <li><p style={{ fontSize: "smaller" }}>
@@ -378,8 +380,8 @@ class ProjectViewHeaderOverview extends Component {
       description={this.props.metadata.description}
       settingsReadOnly={this.props.settingsReadOnly}
       settingsUrl={this.props.settingsUrl} />;
-    const forkProjectDisabled = this.props.visibility.accessLevel < ACCESS_LEVELS.REPORTER
-    && this.props.visibility.level === "private";
+    const forkProjectDisabled = metadata.accessLevel < ACCESS_LEVELS.REPORTER
+    && metadata.visibility === "private";
     const titleColSize = "col-12 col-md-8";
 
     return (
@@ -406,7 +408,7 @@ class ProjectViewHeaderOverview extends Component {
                 title={this.props.metadata && this.props.metadata.title ? this.props.metadata.title : ""}
                 id={this.props.metadata && this.props.metadata.id ? this.props.metadata.id : 0}
                 forkProjectDisabled={forkProjectDisabled}
-                projectVisibility={this.props.visibility.level}
+                projectVisibility={this.props.metadata.visibility}
               />
               <Button
                 outline
@@ -673,10 +675,10 @@ class ProjectViewOverview extends Component {
 class ProjectDatasetsNav extends Component {
 
   render() {
-    const allDatasets = this.props.datasets.core.datasets || [];
-
-    if (allDatasets.length === 0)
-      return null;
+    const coreDatasets = this.props.datasets.core.datasets;
+    if (coreDatasets == null) return null;
+    if (coreDatasets.error != null) return null;
+    if (coreDatasets.length === 0) return null;
 
     return <DatasetsListView
       datasets_kg={this.props.datasets.datasets_kg}
@@ -697,7 +699,7 @@ function ProjectAddDataset(props) {
   }
 
   return <Col>
-    { props.visibility.accessLevel > ACCESS_LEVELS.DEVELOPER ? [
+    { props.metadata.accessLevel > ACCESS_LEVELS.DEVELOPER ? [
       <Row key="header">
         <Col>
           <h3 className="uk-heading-divider uk-text-center pb-1 mb-4">Add Dataset</h3>
@@ -768,23 +770,16 @@ function EmptyDatasets(props) {
  * Shows a warning Alert when Renku version is outdated or Knowledge Graph integration is not active.
  *
  * @param {Object} webhook - project.webhook store object
- * @param {bool} migration_required - whether it's necessary to migrate the project or not
  * @param {Object} history - react history object
  * @param {string} overviewStatusUrl - overview status url
  */
 function ProjectStatusAlert(props) {
-  const { webhook, migration_required, overviewStatusUrl, history } = props;
+  const { webhook, overviewStatusUrl, history } = props;
   const kgDown = isKgDown(webhook);
 
-  if (!migration_required && !kgDown)
+  if (!kgDown)
     return null;
 
-  const versionInfo = migration_required ?
-    <span>
-      <strong>A new version of renku is available. </strong>
-      An upgrade is necessary to allow modification of datasets and is recommended for all projects.&nbsp;
-    </span> :
-    null;
   const kgInfo = kgDown ?
     <span>
       <strong>Knowledge Graph integration not active. </strong>
@@ -792,13 +787,8 @@ function ProjectStatusAlert(props) {
     </span> :
     null;
 
-  const conditionalSpace = versionInfo && kgInfo ? <br /> : null;
-
   return (
     <WarnAlert>
-      {versionInfo}
-      {conditionalSpace}
-      {conditionalSpace}
       {kgInfo}
       <br />
       <br />
@@ -816,23 +806,66 @@ function ProjectViewDatasets(props) {
   const migrationMessage = <ProjectStatusAlert
     history={props.history}
     overviewStatusUrl={props.overviewStatusUrl}
-    migration_required={props.migration.migration_required}
     webhook={props.webhook}
   />;
 
-  useEffect(()=>{
-    const loading = props.datasets.core === SpecialPropVal.UPDATING;
-    if (loading) return;
-    props.fetchDatasets(props.location.state && props.location.state.reload);
+  useEffect(() => {
     props.fetchGraphStatus();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const loading = props.datasets.core === SpecialPropVal.UPDATING || props.datasets.core === undefined;
-  if (loading)
-    return <Loader />;
+  useEffect(() => {
+    const datasetsLoading = props.datasets.core === SpecialPropVal.UPDATING;
+    if (datasetsLoading || !props.migration.core.fetched || props.migration.core.fetching)
+      return;
+    props.fetchDatasets(props.location.state && props.location.state.reload);
+  }, [props.migration.core.fetched]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  if (props.datasets.core.error) {
+  if (props.migration.core.fetched && !props.migration.core.backendAvailable) {
+    const overviewStatusUrl = Url.get(Url.pages.project.overview.status, {
+      namespace: props.metadata.namespace,
+      path: props.metadata.path,
+    });
+    const updateInfo = props.metadata.accessLevel >= ACCESS_LEVELS.DEVELOPER ?
+      "Updating this project" :
+      "Asking a project maintainer to update this project (or forking and updating it)";
+    return (
+      <div>
+        <WarnAlert dismissible={false}>
+          <p>
+            <b>Datasets have limited functionality</b> because the project is not compatible with
+            this RenkuLab instance.
+          </p>
+          <p>You can search for datasets, but you cannot interact with them from the project page.</p>
+          <p>
+            {updateInfo} should resolve the problem.
+            <br />The <Link to={overviewStatusUrl}>Project status</Link> page provides further information.
+          </p>
+        </WarnAlert>
+      </div>
+    );
+  }
+
+  const checkingBackend = props.migration.core.fetching || !props.migration.core.fetched;
+  if (checkingBackend) {
+    return (
+      <div>
+        <p>Checking project version and RenkuLab compatibility...</p>
+        <Loader />
+      </div>
+    );
+  }
+
+  const loadingDatasets = props.datasets.core === SpecialPropVal.UPDATING || props.datasets.core === undefined;
+  if (loadingDatasets) {
+    return (
+      <div>
+        <p>Loading datasets...</p>
+        <Loader />
+      </div>
+    );
+  }
+
+  if (props.datasets.core.error || props.datasets.core.datasets?.error) {
     return <Col sm={12}>
       <ErrorAlert>
         There was an error fetching the datasets, please try <Button color="danger" size="sm" onClick={
@@ -841,7 +874,7 @@ function ProjectViewDatasets(props) {
     </Col>;
   }
 
-  if (!loading && props.datasets.core.datasets != null && props.datasets.core.datasets.length === 0
+  if (props.datasets.core.datasets != null && props.datasets.core.datasets.length === 0
     && props.location.pathname !== props.newDatasetUrl) {
     return <Col sm={12}>
       {migrationMessage}
@@ -1099,11 +1132,11 @@ function notebookWarning(userLogged, accessLevel, forkUrl, postLoginUrl, externa
 class ProjectShowSession extends Component {
   render() {
     const {
-      blockAnonymous, client, externalUrl, history, launchNotebookUrl, location, match, model,
-      notifications, forkUrl, user, visibility
+      blockAnonymous, client, externalUrl, history, launchNotebookUrl, location, match,
+      metadata, model, notifications, forkUrl, user
     } = this.props;
     const warning = notebookWarning(
-      user.logged, visibility.accessLevel, forkUrl, location.pathname, externalUrl
+      user.logged, metadata.accessLevel, forkUrl, location.pathname, externalUrl
     );
 
     return (
@@ -1127,11 +1160,11 @@ class ProjectShowSession extends Component {
 class ProjectNotebookServers extends Component {
   render() {
     const {
-      client, model, user, visibility, forkUrl, location, externalUrl, launchNotebookUrl,
+      client, metadata, model, user, forkUrl, location, externalUrl, launchNotebookUrl,
       blockAnonymous
     } = this.props;
     const warning = notebookWarning(
-      user.logged, visibility.accessLevel, forkUrl, location.pathname, externalUrl
+      user.logged, metadata.accessLevel, forkUrl, location.pathname, externalUrl
     );
 
     return (
@@ -1149,12 +1182,12 @@ class ProjectNotebookServers extends Component {
 class ProjectStartNotebookServer extends Component {
   render() {
     const {
-      branches, client, model, user, visibility, forkUrl, externalUrl, location,
-      fetchBranches, notebookServersUrl, history, blockAnonymous, notifications,
+      branches, client, commits, model, user, forkUrl, externalUrl, location, metadata,
+      fetchBranches, fetchCommits, notebookServersUrl, history, blockAnonymous, notifications,
       projectCoordinator
     } = this.props;
     const warning = notebookWarning(
-      user.logged, visibility.accessLevel, forkUrl, location.pathname, externalUrl
+      user.logged, metadata.accessLevel, forkUrl, location.pathname, externalUrl
     );
 
     const locationEnhanced = location && location.state && location.state.successUrl ?
@@ -1167,22 +1200,31 @@ class ProjectStartNotebookServer extends Component {
         }
       };
 
+    const scope = {
+      defaultBranch: this.props.metadata.defaultBranch,
+      namespace: this.props.metadata.namespace,
+      project: this.props.metadata.path
+    };
+
     return (
-      <StartNotebookServer client={client} model={model} history={history} location={locationEnhanced}
-        message={warning}
-        branches={branches.standard}
+      <StartNotebookServer
         autosaved={branches.autosaved}
-        fetchingBranches={branches.fetching}
-        refreshBranches={fetchBranches}
-        externalUrl={externalUrl}
-        successUrl={notebookServersUrl}
         blockAnonymous={blockAnonymous}
+        branches={branches.standard}
+        client={client}
+        commits={commits}
+        externalUrl={externalUrl}
+        fetchingBranches={branches.fetching}
+        history={history}
+        location={locationEnhanced}
+        message={warning}
+        model={model}
         notebooks={projectCoordinator.model.baseModel.get("notebooks")}
         notifications={notifications}
-        commits={projectCoordinator.get("commits")}
-        projectCoordinator={projectCoordinator}
-        scope={{ namespace: this.props.metadata.namespace, project: this.props.metadata.path,
-          defaultBranch: this.props.metadata.defaultBranch }}
+        refreshBranches={fetchBranches}
+        refreshCommits={fetchCommits}
+        scope={scope}
+        successUrl={notebookServersUrl}
         user={this.props.user}
       />
     );

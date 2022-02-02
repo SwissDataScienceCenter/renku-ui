@@ -37,7 +37,7 @@ import { generateFakeUser } from "../../user/User.test";
 import { StateModel, globalSchema } from "../../model";
 import { act } from "react-dom/test-utils";
 import TestRenderer from "react-test-renderer";
-import { sleep } from "../../utils/HelperFunctions";
+import { sleep } from "../../utils/helpers/HelperFunctions";
 
 describe("rendering", () => {
   const user = generateFakeUser(true);

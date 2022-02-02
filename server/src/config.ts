@@ -45,6 +45,7 @@ const AUTHENTICATION = {
   invalidHeaderField: "ui-server-auth",
   invalidHeaderExpired: "expired",
   retryConnectionAttempts: 10,
+  storagePrefix: "AUTH_",
 };
 
 const REDIS = {
@@ -59,7 +60,10 @@ const ROUTES = {
   auth: "/auth",
 };
 
+const DATA = { projectsStoragePrefix: "LPROJECT_", projectsDefaultLength: 20 };
 
-const config = { server: SERVER, deplyoment: DEPLOYMENT, auth: AUTHENTICATION, redis: REDIS, routes: ROUTES };
+
+const config = {
+  server: SERVER, deployment: DEPLOYMENT, auth: AUTHENTICATION, redis: REDIS, routes: ROUTES, data: DATA };
 
 export default config;

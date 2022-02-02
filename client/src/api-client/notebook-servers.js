@@ -17,6 +17,7 @@
  */
 
 import { FETCH_DEFAULT } from "./index";
+import { RETURN_TYPES } from "./utils";
 
 function addNotebookServersMethods(client) {
   client.getNotebookServers = (namespace, project, branch, commit, anonymous = false) => {
@@ -128,6 +129,42 @@ function addNotebookServersMethods(client) {
     }).then((resp) => {
       return resp.data;
     });
+  };
+
+  client.getProjectAutosaves = async (namespace, project) => {
+    const headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    const projectId = encodeURIComponent(`${namespace}/${project}`); // %2F
+    const url = `${client.baseUrl}/notebooks/${projectId}/autosave`;
+
+    let response;
+    try {
+      response = await client.clientFetch(url, { method: "GET", headers });
+    }
+    catch (errorResponse) {
+      if (errorResponse?.errorData?.messages)
+        return errorResponse.errorData.messages;
+      return errorResponse;
+    }
+    return response.data;
+  };
+
+  client.deleteProjectAutosave = async (namespace, project, autosave) => {
+    const headers = client.getBasicHeaders();
+    const projectId = encodeURIComponent(`${namespace}/${project}`); // %2F
+    const autosaveSafe = encodeURIComponent(autosave);
+    const url = `${client.baseUrl}/notebooks/${projectId}/autosave/${autosaveSafe}`;
+
+    // the API doesn't return any response, hence returning `true` or `false` based on the response status
+    try {
+      const response = await client.clientFetch(url, { method: "DELETE", headers }, RETURN_TYPES.full);
+      if (response.status >= 200 && response.status < 400)
+        return true;
+      return false;
+    }
+    catch (errorResponse) {
+      return false;
+    }
   };
 }
 

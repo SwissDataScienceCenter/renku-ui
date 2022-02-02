@@ -46,7 +46,7 @@ function DeleteDataset(props) {
     setServerErrors(undefined);
     setSubmitLoader(true);
     setSubmitLoaderText("Deleting dataset...");
-    props.client.deleteDataset(props.httpProjectUrl, props.dataset.name)
+    props.client.deleteDataset(props.httpProjectUrl, props.dataset.name, props.versionUrl)
       .then(response => {
         if (response.data.error !== undefined) {
           setSubmitLoader(false);

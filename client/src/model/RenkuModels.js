@@ -24,7 +24,7 @@
  */
 
 import { Schema, PropertyName as Prop } from "./Model";
-import FormGenerator from "../utils/formgenerator/";
+import FormGenerator from "../utils/components/formgenerator/";
 
 const userSchema = new Schema({
   fetched: { initial: null, mandatory: true },
@@ -59,90 +59,6 @@ const projectsSchema = new Schema({
   }
 });
 
-const metaSchema = new Schema({
-  id: { initial: "", mandatory: false },
-  projectNamespace: { initial: {}, mandatory: false },
-  visibility: { initial: "public", mandatory: true },
-  optoutKg: { initial: false, mandatory: false }, // eslint-disable-line
-});
-
-const forkDisplaySchema = new Schema({
-  title: { initial: "", mandatory: true },
-  description: { initial: "", mandatory: true },
-  displayId: { initial: "", mandatory: false },
-  slug: { initial: "", mandatory: true },
-  loading: { initial: false, mandatory: false },
-  searchId: { initial: "", mandatory: false },
-  errors: { initial: [], mandatory: false },
-
-  statuses: { initial: [] },
-  namespaces: { initial: [] },
-  namespaceGroup: { initial: null },
-  namespacesFetched: { initial: false }
-});
-
-const forkProjectSchema = new Schema({
-  meta: { schema: metaSchema, mandatory: true },
-  display: { schema: forkDisplaySchema, mandatory: true }
-});
-
-const projectSchema = new Schema({
-  core: {
-    schema: {
-      available: { initial: null },
-      id: { initial: null, },
-      description: { initial: "no description", mandatory: true },
-      owner: { initial: null },
-    }
-  },
-  visibility: {
-    schema: {
-      level: { initial: "private", mandatory: true },
-      accessLevel: { initial: 0, mandatory: true }
-    }
-  },
-  data: {
-    schema: {
-      reference: {
-        schema: {
-          url_or_doi: { initial: "" },
-          author: { initial: "" }
-        },
-      },
-      upload: {
-        schema: {
-          files: { schema: [] }
-        }
-      }
-    },
-  },
-  system: {
-    schema: {
-      branches: { schema: [], initial: [] },
-      autosaved: { schema: [], initial: [] },
-    }
-  },
-  transient: {
-    schema: {
-      requests: { initial: {} },
-    }
-  },
-  migration: {
-    schema: {
-      migration_required: { initial: null },
-      project_supported: { initial: null },
-      docker_update_possible: { initial: null }, //boolean
-      latest_version: { initial: null }, //string
-      project_version: { initial: null }, //string
-      template_update_possible: { initial: null }, //boolean
-      migrating: { initial: false },
-      migration_status: { initial: null },
-      migration_error: { initial: null },
-      check_error: { initial: null }
-    }
-  }
-});
-
 const newProjectSchema = new Schema({
   config: {
     [Prop.SCHEMA]: new Schema({
@@ -162,6 +78,7 @@ const newProjectSchema = new Schema({
     [Prop.SCHEMA]: new Schema({
       title: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true },
       titlePristine: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true },
+      description: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true },
       namespace: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
       namespacePristine: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true },
       visibility: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true },
@@ -180,6 +97,7 @@ const newProjectSchema = new Schema({
       data: {
         [Prop.SCHEMA]: new Schema({
           title: { [Prop.INITIAL]: "", [Prop.MANDATORY]: false },
+          description: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true },
           namespace: { [Prop.INITIAL]: "", [Prop.MANDATORY]: false },
           visibility: { [Prop.INITIAL]: "", [Prop.MANDATORY]: false },
           template: { [Prop.INITIAL]: "", [Prop.MANDATORY]: false },
@@ -241,16 +159,7 @@ const newProjectSchema = new Schema({
   }
 });
 
-const projectStatisticsSchema = new Schema({
-  commit_count: { [Prop.INITIAL]: null },
-  storage_size: { [Prop.INITIAL]: null },
-  repository_size: { [Prop.INITIAL]: null },
-  wiki_size: { [Prop.INITIAL]: null },
-  lfs_objects_size: { [Prop.INITIAL]: null },
-  job_artifacts_size: { [Prop.INITIAL]: null }
-});
-
-const projectGlobalSchema = new Schema({
+const projectSchema = new Schema({
   branches: {
     [Prop.SCHEMA]: new Schema({
       standard: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
@@ -325,8 +234,8 @@ const projectGlobalSchema = new Schema({
   forkedFromProject: { [Prop.INITIAL]: {} },
   metadata: {
     [Prop.SCHEMA]: new Schema({
-      avatarUrl: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // avatar_url
       accessLevel: { [Prop.INITIAL]: 0, [Prop.MANDATORY]: true }, // visibility.access_level
+      avatarUrl: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // avatar_url
       createdAt: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true }, // created_at
       defaultBranch: { [Prop.INITIAL]: null }, // default_branch
       description: { [Prop.INITIAL]: "" },
@@ -351,10 +260,61 @@ const projectGlobalSchema = new Schema({
       fetching: { [Prop.INITIAL]: false },
     })
   },
+  migration: {
+    [Prop.SCHEMA]: new Schema({
+      check: {
+        [Prop.INITIAL]: {
+          core_renku_version: undefined,
+          project_supported: undefined,
+          project_renku_version: undefined,
+          core_compatibility_status: {
+            project_metadata_version: undefined,
+            migration_required: undefined,
+            current_metadata_version: undefined
+          },
+          dockerfile_renku_status: {
+            latest_renku_version: undefined,
+            dockerfile_renku_version: undefined,
+            automated_dockerfile_update: undefined,
+            newer_renku_available: undefined
+          },
+          template_status: {
+            newer_template_available: undefined,
+            template_id: undefined,
+            automated_template_update: undefined,
+            template_ref: undefined,
+            project_template_version: undefined,
+            template_source: undefined,
+            latest_template_version: undefined
+          }
+        },
+        migrating: { [Prop.INITIAL]: false },
+        migration_status: { [Prop.INITIAL]: null },
+        migration_error: { [Prop.INITIAL]: null },
+      },
+      core: {
+        [Prop.SCHEMA]: new Schema({
+          versionUrl: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+          backendAvailable: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+
+          fetched: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+          fetching: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
+        })
+      }
+    })
+  },
   statistics: {
     [Prop.SCHEMA]: new Schema({
-      data: { schema: projectStatisticsSchema },
-
+      data: {
+        schema: new Schema({
+          commit_count: { [Prop.INITIAL]: null },
+          storage_size: { [Prop.INITIAL]: null },
+          repository_size: { [Prop.INITIAL]: null },
+          wiki_size: { [Prop.INITIAL]: null },
+          lfs_objects_size: { [Prop.INITIAL]: null },
+          job_artifacts_size: { [Prop.INITIAL]: null }
+        })
+      },
       fetched: { [Prop.INITIAL]: null },
       fetching: { [Prop.INITIAL]: false },
     })
@@ -376,6 +336,15 @@ const projectGlobalSchema = new Schema({
 });
 
 const notebooksSchema = new Schema({
+  autosaves: {
+    schema: {
+      list: { initial: [] },
+      error: { initial: null },
+      fetched: { initial: null },
+      fetching: { initial: false },
+      pvsSupport: { initial: null },
+    }
+  },
   notebooks: {
     schema: {
       all: { initial: {} },
@@ -610,6 +579,12 @@ const environmentSchema = new Schema({
   fetching: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
   data: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
   timeout: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+  coreVersions: {
+    [Prop.SCHEMA]: new Schema({
+      available: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
+      unavailable: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
+    })
+  },
 });
 
 /**
@@ -643,7 +618,7 @@ const formGeneratorSchema = new Schema({
 });
 
 export {
-  userSchema, metaSchema, newProjectSchema, projectSchema, forkProjectSchema, notebooksSchema,
-  projectsSchema, datasetFormSchema, issueFormSchema, datasetImportFormSchema, projectGlobalSchema,
-  addDatasetToProjectSchema, statuspageSchema, notificationsSchema, formGeneratorSchema, environmentSchema
+  addDatasetToProjectSchema, datasetFormSchema, datasetImportFormSchema, environmentSchema,
+  formGeneratorSchema, issueFormSchema, newProjectSchema, notebooksSchema, notificationsSchema,
+  projectSchema, projectsSchema, statuspageSchema, userSchema
 };

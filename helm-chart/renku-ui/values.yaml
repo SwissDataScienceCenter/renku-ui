@@ -16,7 +16,7 @@ replicaCount: 1
 
 image:
   repository: renku/renku-ui
-  tag: "1.3.0"
+  tag: "2.0.0-rc1"
   pullPolicy: IfNotPresent
 
   ## Optionally specify an array of imagePullSecrets.
@@ -83,6 +83,7 @@ sentry:
   enabled: false
   url: ""
   namespace: ""
+  sampleRate: 0 # number between 0 and 1. (e.g., to send 20% of transactions, set 0.2.)
 
 # If you want to enable the privacy page, please create also a configMap and set its name in the
 # privacy.page.configMapName value. As a reference, you can use the sample configMap generated when
@@ -124,7 +125,7 @@ homepage:
   # Projects to highlight on the homepage
   projects: []
 canary:
-  enabled: true
+  enabled: false
   image:
     repository: renku/renku-ui
     tag: "0.11.16"

@@ -24,8 +24,8 @@
  */
 
 import { ACCESS_LEVELS, API_ERRORS } from "../api-client";
-import { StateModel, SpecialPropVal, projectSchema, projectGlobalSchema } from "../model";
-import { splitAutosavedBranches } from "../utils/HelperFunctions";
+import { SpecialPropVal, projectSchema } from "../model";
+import { splitAutosavedBranches } from "../utils/helpers/HelperFunctions";
 
 
 const GraphIndexingStatus = {
@@ -41,74 +41,6 @@ const MigrationStatus = {
   ERROR: "ERROR"
 };
 
-class ProjectModel extends StateModel {
-  constructor(stateBinding, stateHolder, initialState) {
-    super(projectSchema, stateBinding, stateHolder, initialState);
-  }
-
-  fetchMigrationCheck(client) {
-    return client.getProjectIdFromService(this.get("system.http_url"))
-      .then((response)=>{
-        if (response.data && response.data.error !== undefined) {
-          this.set("migration.check_error", response.data.error.reason);
-        }
-        else {
-          client.performMigrationCheck(response)
-            .then((response)=>{
-              if (response.data && response.data.error !== undefined) {
-                this.set("migration.check_error", response.data.error);
-              }
-              else {
-                this.set("migration.migration_required", response.data.result.migration_required);
-                this.set("migration.project_supported", response.data.result.project_supported);
-                this.set("migration.docker_update_possible", response.data.result.docker_update_possible);
-                this.set("migration.latest_version", response.data.result.latest_version);
-                this.set("migration.project_version", response.data.result.project_version);
-                this.set("migration.template_update_possible", response.data.result.template_update_possible);
-                this.set("migration.latest_template_version", response.data.result.latest_template_version);
-                this.set("migration.current_template_version", response.data.result.current_template_version);
-              }
-            });
-        }
-      });
-  }
-
-  migrateProject(client, params) {
-    if (this.get("migration.migration_status") === MigrationStatus.MIGRATING)
-      return;
-    this.set("migration.migration_status", MigrationStatus.MIGRATING);
-    client.getProjectIdFromService(this.get("system.http_url"))
-      .then((projectId)=>{
-        client.performMigration(projectId, params)
-          .then((response)=>{
-            if (response.data.error) {
-              this.set("migration.migration_status", MigrationStatus.ERROR);
-              this.set("migration.migration_error", response.data.error);
-            }
-            else {
-              this.fetchMigrationCheck(client).then(response => {
-                this.set("migration.migration_status", MigrationStatus.FINISHED);
-                this.set("migration.migration_error", null);
-              });
-            }
-          });
-      });
-  }
-
-  setProjectData(data, statistics = false) {
-    if (data == null) return;
-    const updatedState = {
-      core: { ...data.metadata.core, available: true },
-      system: {
-        ...data.metadata.system,
-        tag_list: { $set: data.metadata.system.tag_list } // fix empty tag_list not updating
-      },
-      visibility: data.metadata.visibility
-    };
-    this.setObject(updatedState);
-    return data;
-  }
-}
 
 const DatasetsMixin = {
   fetchProjectDatasetsFromKg(client) { //from KG
@@ -131,7 +63,12 @@ const DatasetsMixin = {
     if (core === SpecialPropVal.UPDATING) return;
     if (core.datasets && core.error == null && !forceReFetch) return core;
     this.setUpdating({ datasets: { core: true } });
-    return client.listProjectDatasetsFromCoreService(this.get("metadata.httpUrl"), this.get("metadata.id"))
+    const migration = this.model.get("migration.core");
+    if (migration.backendAvailable === false)
+      return false;
+    const versionUrl = migration.versionUrl;
+    const gitUrl = this.get("metadata.httpUrl");
+    return client.listProjectDatasetsFromCoreService(gitUrl, versionUrl)
       .then(response => {
         let responseDs = response.data.error ? response.data : response.data.result.datasets;
         const updatedState = { core: { $set: { datasets: responseDs } }, transient: { requests: { datasets: false } } };
@@ -250,6 +187,41 @@ const ProjectAttributesMixin = {
   }
 };
 
+const MigrationMixin = {
+  async fetchMigrationCheck(client, gitUrl, defaultBranch = null) {
+    const migrationData = await client.checkMigration(gitUrl, defaultBranch);
+    if (migrationData && migrationData.error !== undefined) {
+      this.set("migration.check.check_error", migrationData.error.reason);
+      return migrationData.error.reason;
+    }
+    this.set("migration.check", migrationData.result);
+    return migrationData.result;
+  },
+  async migrateProject(client, gitUrl, defaultBranch = null, options) {
+    if (this.get("migration.migration_status") === MigrationStatus.MIGRATING)
+      return;
+    this.set("migration.migration_status", MigrationStatus.MIGRATING);
+    const response = await client.migrateProject(gitUrl, defaultBranch, options);
+    if (response.error) {
+      this.setObject({
+        migration: {
+          migration_status: MigrationStatus.ERROR,
+          migration_error: response.error
+        }
+      });
+    }
+    else {
+      await this.fetchMigrationCheck(client, gitUrl, defaultBranch);
+      this.setObject({
+        migration: {
+          migration_status: MigrationStatus.FINISHED,
+          migration_error: { $set: null }
+        }
+      });
+    }
+  }
+};
+
 const RepoMixin = {
   async fetchBranches() {
     const client = this.client;
@@ -290,8 +262,10 @@ const RepoMixin = {
 
     return standard;
   },
-  async fetchCommits(customFilters = null) {
-    const projectId = this.model.get("metadata.id");
+  async fetchCommits(customFilters = null, customProjectId = null) {
+    const projectId = customProjectId ?
+      customProjectId :
+      this.model.get("metadata.id");
     if (!projectId)
       return {};
     const branch = customFilters ?
@@ -299,6 +273,9 @@ const RepoMixin = {
       this.model.get("filters.branch.name");
 
     // start fetching
+    const alreadyFetching = this.model.get("commits.fetching");
+    if (alreadyFetching)
+      return {};
     this.model.set("commits.fetching", true);
     let response = null, date = null, commits = [], error = null;
     try {
@@ -322,8 +299,7 @@ const RepoMixin = {
         this.notifications.addWarning(
           this.notifications.Topics.PROJECT_API,
           "There was an error while fetching the project commits.",
-          null, null, [],
-            `Error for branch "${branch}" on project "${projectName}": ${errorMex}`
+          null, null, [], `Error for branch "${branch}" on project "${projectName}": ${errorMex}`
         );
       }
     }
@@ -397,7 +373,7 @@ class ProjectCoordinator {
   }
 
   resetProject() {
-    const emptyModel = projectGlobalSchema.createInitialized();
+    const emptyModel = projectSchema.createInitialized();
     this.model.baseModel.setObject({
       [this.model.baseModelPath]: { $set: emptyModel }
     });
@@ -438,7 +414,7 @@ class ProjectCoordinator {
     if (!data) {
       metadata = {
         $set: {
-          ...projectGlobalSchema.createInitialized().metadata,
+          ...projectSchema.createInitialized().metadata,
           exists: false,
           fetched: new Date(),
           fetching: false
@@ -447,13 +423,13 @@ class ProjectCoordinator {
       forkedFromProject = {};
       statsObject = {
         $set: {
-          ...projectGlobalSchema.createInitialized().statistics,
+          ...projectSchema.createInitialized().statistics,
           fetched: new Date(),
           fetching: false
         }
       };
       filtersObject = {
-        ...projectGlobalSchema.createInitialized().filters,
+        ...projectSchema.createInitialized().filters,
         fetched: new Date(),
         fetching: false
       };
@@ -466,7 +442,7 @@ class ProjectCoordinator {
       if (statistics) {
         const stats = data.all && data.all.statistics ?
           data.all.statistics :
-          projectGlobalSchema.createInitialized().statistics.data;
+          projectSchema.createInitialized().statistics.data;
         statsObject = {
           data: { $set: stats },
           fetched: new Date(),
@@ -475,8 +451,9 @@ class ProjectCoordinator {
       }
 
       // set filters
-      const filtersData = data.filters ? data.filters :
-        projectGlobalSchema.createInitialized().filters.data;
+      const filtersData = data.filters ?
+        data.filters :
+        projectSchema.createInitialized().filters.data;
       filtersObject = {
         branch: { $set: filtersData.branch },
         commit: { $set: filtersData.commit },
@@ -487,7 +464,7 @@ class ProjectCoordinator {
 
     this.model.setObject({ metadata,
       filters: filtersObject,
-      forkedFromProject,
+      forkedFromProject: { $set: forkedFromProject },
       statistics: statsObject
     });
     return metadata;
@@ -589,12 +566,16 @@ class ProjectCoordinator {
   }
 
   async fetchProjectConfig(repositoryUrl, branch = null) {
+    const fetching = this.model.get("config.fetching");
+    if (fetching)
+      return false;
+    const versionUrl = this.model.get("migration.core.versionUrl");
     let configObject = {
       error: { $set: {} },
       fetching: true,
     };
     this.model.setObject({ config: configObject });
-    const response = await this.client.getProjectConfig(repositoryUrl, branch);
+    const response = await this.client.getProjectConfig(repositoryUrl, versionUrl, branch);
     configObject.fetching = false;
     configObject.fetched = new Date();
     if (response.data && response.data.error) {
@@ -640,7 +621,7 @@ class ProjectCoordinator {
     const resp = await this.client.getProject(pathWithNamespace, { statistics: true });
     const stats = resp.data.all.statistics ?
       resp.data.all.statistics :
-      projectGlobalSchema.createInitialized().statistics.data;
+      projectSchema.createInitialized().statistics.data;
     const statsObject = {
       fetching: false,
       fetched: new Date(),
@@ -649,12 +630,64 @@ class ProjectCoordinator {
     this.model.setObject({ statistics: statsObject });
     return stats;
   }
+
+  async checkCoreAvailability(version) {
+    // get the project version if not already passed
+    const projectVersion = version ?
+      version.toString() :
+      (this.model.get("migration.check"))?.core_compatibility_status?.project_metadata_version.toString();
+    let data = { versionUrl: `/${projectVersion}` };
+
+    // check if the APIs for the target project version were already tested
+    const coreVersion = this.model.baseModel.get("environment.coreVersions");
+    if (coreVersion.available[projectVersion]) {
+      data.fetched = new Date();
+      data.backendAvailable = true;
+      this.model.setObject({ migration: { core: { ...data } } });
+      return true;
+    }
+    if (coreVersion.unavailable[projectVersion]) {
+      data.fetched = new Date();
+      data.backendAvailable = false;
+      this.model.setObject({ migration: { core: { ...data } } });
+      return false;
+    }
+
+    // Test the version endpoint to get info on the backend
+    data.fetching = true;
+    this.model.setObject({ migration: { core: { ...data } } });
+    const resp = await this.client.checkCoreAvailability(projectVersion);
+    data.fetching = false;
+    data.fetched = new Date();
+    if (resp.available) {
+      this.model.baseModel.setObject({
+        environment: { coreVersions: { available: { [projectVersion]: resp } } }
+      });
+      data.backendAvailable = true;
+      if (resp.maximum_api_version)
+        data.maximum_api_version = resp.maximum_api_version;
+      if (resp.minimum_api_version)
+        data.minimum_api_version = resp.minimum_api_version;
+      // TODO: adjust versionUrl when api version is fixed on the UI and available in backend
+    }
+    else {
+      this.model.baseModel.setObject({
+        environment: { coreVersions: { unavailable: { [projectVersion]: true } } }
+      });
+      data.backendAvailable = false;
+    }
+    this.model.setObject({ migration: { core: { ...data } } });
+
+    // return availability
+    return data.backendAvailable;
+  }
 }
 
 Object.assign(ProjectCoordinator.prototype, DatasetsMixin);
 Object.assign(ProjectCoordinator.prototype, FileTreeMixin);
 Object.assign(ProjectCoordinator.prototype, ProjectAttributesMixin);
+Object.assign(ProjectCoordinator.prototype, MigrationMixin);
 Object.assign(ProjectCoordinator.prototype, RepoMixin);
 
 
-export { ProjectModel, GraphIndexingStatus, ProjectCoordinator, MigrationStatus };
+export { GraphIndexingStatus, ProjectCoordinator, MigrationStatus };

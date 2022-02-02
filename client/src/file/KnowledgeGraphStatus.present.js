@@ -21,8 +21,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle, faExternalLinkAlt } from "@fortawesome/free-solid-svg-icons";
 import { Button, Alert, Progress } from "reactstrap";
 
-import { Loader, SuccessAlert, WarnAlert } from "../utils/UIComponents";
 import { GraphIndexingStatus } from "../project/Project";
+import { MigrationSuccessAlert, MigrationWarnAlert } from "../project/status/MigrationUtils";
+import { Loader } from "../utils/components/Loader";
 
 function KnowledgeGraphPrivateInfo(props) {
   if (!props.isPrivate) return null;
@@ -42,7 +43,7 @@ function KnowledgeGraphPrivateInfo(props) {
 function KnowledgeGraphStatus(props) {
   const { error, progress, webhookJustCreated } = props;
   if (error != null) {
-    return <WarnAlert>
+    return <MigrationWarnAlert>
       Knowledge Graph integration must be activated to view the lineage, but&nbsp;
       there is a problem with the knowledge graph integration for this project. To resolve this problem,
       you should contact the development team on&nbsp;
@@ -50,7 +51,7 @@ function KnowledgeGraphStatus(props) {
         target="_blank" rel="noreferrer noopener">Gitter</a> or&nbsp;
       <a href="https://github.com/SwissDataScienceCenter/renku"
         target="_blank" rel="noreferrer noopener">GitHub</a>.
-    </WarnAlert>;
+    </MigrationWarnAlert>;
   }
   if (progress == null) {
     return (
@@ -60,9 +61,9 @@ function KnowledgeGraphStatus(props) {
   if (progress === GraphIndexingStatus.NO_WEBHOOK) {
     if (webhookJustCreated) {
       return (
-        <WarnAlert>
+        <MigrationWarnAlert>
           Knowledge Graph activated! Lineage computation starting soon...
-        </WarnAlert>
+        </MigrationWarnAlert>
       );
     }
 
@@ -71,7 +72,7 @@ function KnowledgeGraphStatus(props) {
       <span>You do not have sufficient rights, but a project owner can do this.</span>;
 
     return (
-      <WarnAlert>
+      <MigrationWarnAlert>
         {props.warningMessage ?
           props.warningMessage :
           "Knowledge Graph integration must be activated to view the lineage."}
@@ -79,7 +80,7 @@ function KnowledgeGraphStatus(props) {
         <KnowledgeGraphPrivateInfo isPrivate={props.isPrivate} />
         <br />
         {action}
-      </WarnAlert>
+      </MigrationWarnAlert>
     );
 
   }
@@ -116,9 +117,9 @@ function KnowledgeGraphStatus(props) {
     );
   }
   else if (props.displaySuccessMessage) {
-    return <SuccessAlert>
+    return <MigrationSuccessAlert>
       Knowledge Graph integration is active.
-    </SuccessAlert>
+    </MigrationSuccessAlert>
     ;
   }
 

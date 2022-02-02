@@ -19,11 +19,11 @@
 import React, { Fragment, useState } from "react";
 
 import { Button, ButtonGroup, DropdownItem, Table } from "reactstrap";
-
-import {
-  Clipboard, GoBackButton, ExternalLink, Loader, ButtonWithMenu,
-  InfoAlert, SuccessAlert, WarnAlert, ErrorAlert
-} from "../utils/UIComponents";
+import { Loader } from "../utils/components/Loader";
+import { ErrorAlert, InfoAlert, SuccessAlert, WarnAlert } from "../utils/components/Alert";
+import { Clipboard } from "../utils/components/Clipboard";
+import { ButtonWithMenu, GoBackButton } from "../utils/components/Button";
+import { ExternalLink } from "../utils/components/ExternalLinks";
 
 function Switch(props) {
   const [mode, setMode] = useState(0);

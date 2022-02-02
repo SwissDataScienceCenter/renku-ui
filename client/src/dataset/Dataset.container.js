@@ -17,15 +17,18 @@
  */
 
 import React, { useState, useMemo, useEffect } from "react";
+
 import DatasetView from "./Dataset.present";
 import { API_ERRORS } from "../api-client";
-import { Loader } from "../utils/UIComponents";
 import { mapDataset } from "./index";
+import { projectSchema } from "../model";
 
 export default function ShowDataset(props) {
 
   const [datasetKg, setDatasetKg] = useState();
   const [datasetFiles, setDatasetFiles] = useState();
+  const [fetchedKg, setFetchedKg] = useState(false);
+
   const dataset = useMemo(() =>
     mapDataset(props.datasets ?
       props.datasets.find(dataset => dataset.name === props.datasetId)
@@ -33,14 +36,18 @@ export default function ShowDataset(props) {
     , datasetKg, datasetFiles)
   , [props.datasets, datasetKg, props.datasetId, datasetFiles]);
   const [fetchError, setFetchError] = useState({});
+  const migration = props.insideProject ?
+    props.migration :
+    projectSchema.createInitialized().migration;
 
-  useEffect(()=>{
+  useEffect(() => {
     let unmounted = false;
     if (props.insideProject && datasetFiles === undefined
       && ((dataset && dataset.name) || (props.datasetId !== undefined))) {
       const name = (dataset && dataset.name) ? dataset.name : props.datasetId;
-      props.client.fetchDatasetFilesFromCoreService(name, props.httpProjectUrl)
-        .then(response => {
+      if (migration.core.fetched && migration.core.backendAvailable) {
+        const versionUrl = migration.core.versionUrl;
+        props.client.fetchDatasetFilesFromCoreService(name, props.httpProjectUrl, versionUrl).then(response => {
           if (!unmounted && datasetFiles === undefined) {
             if (response.data.result) {
               setDatasetFiles(response.data.result.files
@@ -57,12 +64,15 @@ export default function ShowDataset(props) {
             }
           }
         });
+      }
     }
     return () => {
       unmounted = true;
     };
-  }, [datasetFiles, props.datasetId, dataset, props.httpProjectUrl, setDatasetFiles, props.client,
-    props.insideProject]);
+  }, [
+    dataset, datasetFiles, props.client, props.datasetId, props.httpProjectUrl, props.insideProject,
+    migration.core.backendAvailable, migration.core.fetched, migration.core.versionUrl, setDatasetFiles
+  ]);
 
   useEffect(() => {
     let unmounted = false;
@@ -71,9 +81,12 @@ export default function ShowDataset(props) {
       const id = props.insideProject ? dataset.identifier : props.identifier;
       props.client.fetchDatasetFromKG(id)
         .then((datasetInfo) => {
-          if (!unmounted && datasetKg === undefined && datasetInfo !== undefined)
+          if (!unmounted && datasetKg === undefined && datasetInfo !== undefined) {
+            setFetchedKg(true);
             setDatasetKg(datasetInfo);
+          }
         }).catch(error => {
+          setFetchedKg(true);
           if (!unmounted && error.case === API_ERRORS.notFoundError)
             setFetchError({ code: 404, message: "dataset not found or missing permissions" });
           else if (!unmounted && error.case === API_ERRORS.internalServerError)
@@ -85,29 +98,29 @@ export default function ShowDataset(props) {
     };
   }, [props.insideProject, props.identifier, props.client, datasetKg, dataset, props.graphStatus]);
 
-  if (props.insideProject && datasetFiles === undefined)
-    return <Loader />;
-
   return <DatasetView
-    maintainer={props.maintainer}
-    insideProject={props.insideProject}
-    identifier={props.identifier}
-    progress={props.progress}
-    lineagesUrl={props.lineagesUrl}
-    fileContentUrl={props.fileContentUrl}
-    projectsUrl={props.projectsUrl}
     client={props.client}
-    datasets={props.datasets}
-    history={props.history}
-    logged={props.logged}
-    model={props.model}
-    projectId={props.projectId}
-    projectPathWithNamespace={props.projectPathWithNamespace}
     dataset={dataset}
+    datasets={props.datasets}
     fetchError={fetchError}
-    overviewStatusUrl={props.overviewStatusUrl}
-    projectInsideKg={props.projectInsideKg}
+    fetchedKg={fetchedKg}
+    fileContentUrl={props.fileContentUrl}
+    history={props.history}
     httpProjectUrl={props.httpProjectUrl}
+    identifier={props.identifier}
+    insideProject={props.insideProject}
+    lineagesUrl={props.lineagesUrl}
     location={props.location}
+    loadingDatasets={props.insideProject && datasetFiles === undefined}
+    logged={props.logged}
+    maintainer={props.maintainer}
+    migration={migration}
+    model={props.model}
+    overviewStatusUrl={props.overviewStatusUrl}
+    progress={props.progress}
+    projectId={props.projectId}
+    projectInsideKg={props.projectInsideKg}
+    projectPathWithNamespace={props.projectPathWithNamespace}
+    projectsUrl={props.projectsUrl}
   />;
 }

@@ -24,10 +24,14 @@ import {
 } from "reactstrap";
 import { faCheck, faSearch, faSortAmountDown, faSortAmountUp, faBars, faTh } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Loader, RenkuNavLink, ListDisplay, MarkdownTextExcerpt } from "../../utils/UIComponents";
-import { Url } from "../../utils/url";
+
+import { Url } from "../../utils/helpers/url";
 import "../Project.css";
 import { Label } from "reactstrap/lib";
+import { Loader } from "../../utils/components/Loader";
+import { RenkuNavLink } from "../../utils/components/RenkuNavLink";
+import { MarkdownTextExcerpt } from "../../utils/components/markdown/RenkuMarkdown";
+import ListDisplay from "../../utils/components/List";
 
 function ProjectListRows(props) {
   const { currentPage, perPage, projects, search, totalItems, gridDisplay } = props;
