@@ -16,33 +16,67 @@
  * limitations under the License.
  */
 
-import { Storage } from "../../src/storage/index";
-
+import { RedisStorage } from "../../src/storage/RedisStorage";
+import { TypeData } from "../../src/storage";
+import config from "../../src/config";
 
 // mock ioredis for storing data
 jest.mock("ioredis", () => require("ioredis-mock/jest"));
 
 describe("Test storage", () => {
   it("Test Storage class", async () => {
-    const storage = new Storage("localhost", 12345, "safePassword");
+    const storage = new RedisStorage("localhost", 12345, "safePassword");
 
     // save data
     const path = "somewhere";
     const data = "something";
-    await storage.save(path, data);
+    await storage.save(`${config.auth.storagePrefix}${path}`, data, { type: TypeData.String });
 
     // get data
-    let savedData = await storage.get(path);
+    let savedData = await storage.get(`${config.auth.storagePrefix}${path}`, { type: TypeData.String });
     expect(savedData).toBe(data);
 
     // delete data
-    await storage.delete(path);
-    savedData = await storage.get(path);
+    await storage.delete(`${config.auth.storagePrefix}${path}`);
+    savedData = await storage.get(`${config.auth.storagePrefix}${path}`, { type: TypeData.String });
     expect(savedData).not.toBe(data);
+
+    // save access to the project
+    const userId = "userId";
+    const projects = [
+      "namespace/my-project",
+      "namespace/my-projectA",
+      "namespace/my-projectB",
+      "namespace/my-projectB",
+    ];
+    const projectsExpected = [
+      "namespace/my-projectB",
+      "namespace/my-projectA",
+      "namespace/my-project",
+    ];
+
+    for (const project of projects) {
+      const projectDate = Date.now();
+      await storage.save(`${config.data.projectsStoragePrefix}${userId}`, project,
+        {
+          type: TypeData.Collections,
+          limit: 10,
+          score: projectDate
+        });
+    }
+
+
+    // get the last accessed projects
+    const projectList = await storage.get(`${config.data.projectsStoragePrefix}${userId}`, {
+      type: TypeData.Collections,
+      start: 0,
+      stop: 4
+    });
+    expect(projectList).toEqual(projectsExpected);
   });
 
   it("Test Storage disconnect", async () => {
-    const storage = new Storage();
+    const storage = new RedisStorage();
     storage.shutdown();
   });
 });

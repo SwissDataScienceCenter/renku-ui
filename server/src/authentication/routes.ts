@@ -101,7 +101,7 @@ function registerAuthenticationRoutes(app: express.Application, authenticator: A
 
       // create the login url, adding the original query params.
       const originalParameters = await authenticator.getPostLoginParametersAndDelete(sessionId);
-      const backendLoginUrl = config.deplyoment.gatewayLoginUrl + originalParameters;
+      const backendLoginUrl = config.deployment.gatewayLoginUrl + originalParameters;
 
       // ? Do I need to set the access token here? Will this be needed when removing the `session` cookie from gateway?
       // ? res.set(config.auth.authHeaderField, config.auth.authHeaderPrefix + tokens["access_token"]);
@@ -120,7 +120,7 @@ function registerAuthenticationRoutes(app: express.Application, authenticator: A
 
       // create the logout url
       const inputParams = getStringyParams(req);
-      const backendLoginUrl = config.deplyoment.gatewayLogoutUrl + inputParams;
+      const backendLoginUrl = config.deployment.gatewayLogoutUrl + inputParams;
       res.redirect(backendLoginUrl);
     }
     catch (error) {
