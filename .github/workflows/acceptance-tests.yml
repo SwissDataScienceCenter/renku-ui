@@ -37,7 +37,7 @@ jobs:
       extra-values: ${{ steps.deploy-comment.outputs.extra-values}}
     steps:
       - id: deploy-comment
-        uses: SwissDataScienceCenter/renku-actions/check-pr-description@v0.3.2
+        uses: SwissDataScienceCenter/renku-actions/check-pr-description@v0.5.0
         with:
           string: /deploy
           pr_ref: ${{ github.event.number }}
@@ -66,7 +66,7 @@ jobs:
         body: |
           You can access the deployment of this PR at https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch
     - name: Build and deploy
-      uses: SwissDataScienceCenter/renku-actions/deploy-renku@v0.3.2
+      uses: SwissDataScienceCenter/renku-actions/deploy-renku@v0.5.0
       env:
         RANCHER_PROJECT_ID: ${{ secrets.CI_RANCHER_PROJECT }}
         DOCKER_PASSWORD: ${{ secrets.RENKU_DOCKER_PASSWORD }}
@@ -109,7 +109,7 @@ jobs:
         helm test ${RENKU_RELEASE} --namespace ${RENKU_RELEASE} --timeout 80m --logs
     - name: Download artifact for packaging on failure
       if: failure()
-      uses: SwissDataScienceCenter/renku-actions/download-test-artifacts@v0.3.2
+      uses: SwissDataScienceCenter/renku-actions/download-test-artifacts@v0.5.0
       env:
         RENKU_VALUES: ${{ secrets.CI_RENKU_VALUES }}
         TEST_ARTIFACTS_PATH: "tests-artifacts-${{ github.sha }}"
@@ -159,7 +159,7 @@ jobs:
         issue-number: ${{ github.event.pull_request.number }}
         body: |
           Tearing down the temporary RenkuLab deplyoment for this PR.
-    - uses: SwissDataScienceCenter/renku-actions/teardown-renku@v0.3.2
+    - uses: SwissDataScienceCenter/renku-actions/teardown-renku@v0.5.0
       env:
         GITLAB_TOKEN: ${{ secrets.GITLAB_DEV_TOKEN }}
         KUBECONFIG: ${{ github.workspace }}/renkubot-kube.config
