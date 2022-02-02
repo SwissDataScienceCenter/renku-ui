@@ -38,3 +38,148 @@ describe("display a project", () => {
     cy.get("h1").first().should("contain.text", "local test project");
   });
 });
+
+describe("display migration information", () => {
+  const fixtures = new Fixtures(cy);
+  beforeEach(() => {
+    fixtures.config().versions().userTest();
+    fixtures.projects().landingUserProjects().projectTest();
+    cy.visit("/projects/e2e/local-test-project");
+  });
+
+  it("displays up-to-date migration", () => {
+    fixtures.projectMigrationUpToDate();
+    cy.visit("/projects/e2e/local-test-project/overview/status");
+    // Check that the project up-to-date info is shown
+    cy.contains("This project is using the latest version of renku.").should(
+      "be.visible"
+    );
+  });
+
+  it("displays optional migration", () => {
+    fixtures.projectMigrationOptional();
+    cy.visit("/projects/e2e/local-test-project/overview/status");
+    // Check that the migration suggestion is shown
+    cy.contains("A new version of renku is available").should("be.visible");
+  });
+
+  it("displays recommended migration", () => {
+    fixtures.projectMigrationRecommended();
+    cy.visit("/projects/e2e/local-test-project/overview/status");
+    cy.wait("@getCoreServiceVersion");
+    // Check that the migration suggestion is shown
+    cy.contains(
+      "Updating to the latest version of renku is highly recommended."
+    ).should("be.visible");
+  });
+
+  it("displays required migration", () => {
+    fixtures.projectMigrationRequired();
+    cy.visit("/projects/e2e/local-test-project/overview/status");
+    // Check that the migration suggestion is shown
+    cy.contains("This project is not compatible with the RenkuLab UI").should(
+      "be.visible"
+    );
+  });
+});
+
+describe("display migration information for anon user", () => {
+  const fixtures = new Fixtures(cy);
+  beforeEach(() => {
+    fixtures.config().versions().userNone();
+    fixtures.projects().landingUserProjects().projectTest();
+    cy.visit("/projects/e2e/local-test-project");
+  });
+
+  it("displays up-to-date migration", () => {
+    fixtures.projectMigrationUpToDate();
+    cy.visit("/projects/e2e/local-test-project/overview/status");
+    cy.contains("Project / Latest Renku Version");
+    // Check that the project up-to-date info is not shown
+    cy.contains("This project is using the latest version of renku.").should(
+      "not.exist"
+    );
+  });
+
+  it("displays optional migration", () => {
+    fixtures.projectMigrationOptional();
+    cy.visit("/projects/e2e/local-test-project/overview/status");
+    // Check that the migration suggestion is not shown
+    cy.contains("Project Renku Version");
+    cy.contains("A new version of renku is available").should("not.exist");
+  });
+
+  it("displays recommended migration", () => {
+    fixtures.projectMigrationRecommended();
+    cy.visit("/projects/e2e/local-test-project/overview/status");
+    cy.wait("@getCoreServiceVersion");
+    // Check that the migration suggestion is not shown
+    cy.contains("Project Renku Version");
+    cy.contains(
+      "Updating to the latest version of renku is highly recommended."
+    ).should("not.exist");
+  });
+
+  it("displays required migration", () => {
+    fixtures.projectMigrationRequired();
+    cy.visit("/projects/e2e/local-test-project/overview/status");
+    // Check that the migration suggestion is not shown
+    cy.contains("Project Renku Version");
+    cy.contains("This project is not compatible with the RenkuLab UI").should(
+      "not.exist"
+    );
+  });
+});
+
+describe("display migration information for observer user", () => {
+  const fixtures = new Fixtures(cy);
+  beforeEach(() => {
+    fixtures.config().versions().userTest();
+    fixtures.projects().landingUserProjects().projectTestObserver();
+    cy.visit("/projects/e2e/local-test-project");
+  });
+
+  it("displays up-to-date migration", () => {
+    fixtures.projectMigrationUpToDate();
+    cy.visit("/projects/e2e/local-test-project/overview/status");
+    // Check that the project up-to-date info is shown
+    cy.contains("This project is using the latest version of renku.").should(
+      "be.visible"
+    );
+  });
+
+  it("displays optional migration", () => {
+    fixtures.projectMigrationOptional();
+    cy.visit("/projects/e2e/local-test-project/overview/status");
+    // Check that the migration suggestion is shown
+    cy.contains("A new version of renku is available").should("be.visible");
+    cy.contains("You do not have the required permissions").should(
+      "be.visible"
+    );
+  });
+
+  it("displays recommended migration", () => {
+    fixtures.projectMigrationRecommended();
+    cy.visit("/projects/e2e/local-test-project/overview/status");
+    cy.wait("@getCoreServiceVersion");
+    // Check that the migration suggestion is shown
+    cy.contains(
+      "Updating to the latest version of renku is highly recommended."
+    ).should("be.visible");
+    cy.contains("You do not have the required permissions").should(
+      "be.visible"
+    );
+  });
+
+  it("displays required migration", () => {
+    fixtures.projectMigrationRequired();
+    cy.visit("/projects/e2e/local-test-project/overview/status");
+    // Check that the migration suggestion is  shown
+    cy.contains("This project is not compatible with the RenkuLab UI").should(
+      "be.visible"
+    );
+    cy.contains("You do not have the required permissions").should(
+      "be.visible"
+    );
+  });
+});

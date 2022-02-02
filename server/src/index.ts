@@ -1,5 +1,5 @@
 /*!
- * Copyright 2020 - Swiss Data Science Center (SDSC)
+ * Copyright 2022 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -25,7 +25,7 @@ import logger from "./logger";
 import routes from "./routes";
 import { Authenticator } from "./authentication";
 import { registerAuthenticationRoutes } from "./authentication/routes";
-import { Storage } from "./storage";
+import { RedisStorage } from "./storage/RedisStorage";
 
 
 const app = express();
@@ -51,7 +51,7 @@ app.use(morgan("combined", {
 logger.info("Server configuration: " + JSON.stringify(config));
 
 // configure storage
-const storage = new Storage();
+const storage = new RedisStorage();
 
 // configure authenticator
 const authenticator = new Authenticator(storage);
@@ -65,7 +65,7 @@ authenticator.init().then(() => {
 app.use(cookieParser());
 
 // register routes
-routes.register(app, prefix, authenticator);
+routes.register(app, prefix, authenticator, storage);
 
 // TODO: custom error handler?
 // app.use((error: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {

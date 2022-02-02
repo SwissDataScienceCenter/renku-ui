@@ -55,16 +55,18 @@ spec:
             - name: STATUSPAGE_ID
               value: {{ .Values.statuspage.id | quote }}
             {{- end }}
-              {{- if .Values.sentry.enabled }}
+            {{- if .Values.sentry.enabled }}
             - name: SENTRY_URL
               value: {{ .Values.sentry.url | quote }}
             - name: SENTRY_NAMESPACE
               value: {{ .Values.sentry.namespace | default (printf "%s" .Release.Namespace) | quote }}
-              {{- end }}
-              {{- if .Values.maintenance }}
+            - name: SENTRY_SAMPLE_RATE
+              value: {{ .Values.sentry.sampleRate | quote }}
+            {{- end }}
+            {{- if .Values.maintenance }}
             - name: MAINTENANCE
               value: {{ .Values.maintenance | default (printf "false") | quote }}
-              {{- end }}
+            {{- end }}
             - name: ANONYMOUS_SESSIONS
               value: {{ .Values.global.anonymousSessions.enabled | default (printf "false") | quote }}
             - name: PRIVACY_ENABLED
