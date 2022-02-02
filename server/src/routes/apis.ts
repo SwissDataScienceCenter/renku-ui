@@ -113,7 +113,7 @@ function registerApiRoutes(app: express.Application,
   app.get(prefix + "/last-projects/:length", renkuAuth(authenticator), async (req, res) => {
     const token = req.headers[config.auth.authHeaderField] as string;
     if (!token) {
-      res.json([]);
+      res.json({ error: "User not authenticated" });
       return;
     }
 
@@ -127,7 +127,7 @@ function registerApiRoutes(app: express.Application,
 
     if (userId)
       data = await storage.get(`${config.data.projectsStoragePrefix}${userId}`, options) as string[];
-    res.json(data);
+    res.json({ projects: data });
   });
 
   /*
