@@ -27,16 +27,17 @@ import { CheckURLResponse } from "./apis.interfaces";
 import { getCookieValueByName } from "../utils";
 import { renkuAuth } from "../authentication/middleware";
 import { validateCSP } from "../utils/url";
-
+import { Storage, StorageGetOptions, TypeData } from "../storage";
+import { getUserIdFromToken, lastProjectsMiddleware } from "../utils/middlewares/lastProjectsMiddleware";
 
 const proxyMiddleware = createProxyMiddleware({
   // set gateway as target
-  target: config.deplyoment.gatewayUrl,
+  target: config.deployment.gatewayUrl,
   changeOrigin: true,
   pathRewrite: (path): string => {
     // remove basic ui-server routing
     const rewrittenPath = path.substring((config.server.prefix + config.routes.api).length);
-    logger.debug(`rewriting path from "${path}" to "${rewrittenPath}" and routing to ${config.deplyoment.gatewayUrl}`);
+    logger.debug(`rewriting path from "${path}" to "${rewrittenPath}" and routing to ${config.deployment.gatewayUrl}`);
     return rewrittenPath;
   },
   onProxyReq: (clientReq) => {
@@ -66,7 +67,9 @@ const proxyMiddleware = createProxyMiddleware({
 });
 
 
-function registerApiRoutes(app: express.Application, prefix: string, authenticator: Authenticator): void {
+function registerApiRoutes(app: express.Application,
+  prefix: string, authenticator: Authenticator, storage: Storage): void {
+
   // Locally defined APIs
   app.get(prefix + "/versions", (req, res) => {
     const uiShortSha = process.env.RENKU_UI_SHORT_SHA ?
@@ -107,7 +110,34 @@ function registerApiRoutes(app: express.Application, prefix: string, authenticat
     res.json(validationResponse);
   });
 
-  // All the unmatched APIs will be routed to the gateway using the http-proxy-middleware middlewere
+  app.get(prefix + "/last-projects/:length", renkuAuth(authenticator), async (req, res) => {
+    const token = req.headers[config.auth.authHeaderField] as string;
+    if (!token) {
+      res.json({ error: "User not authenticated" });
+      return;
+    }
+
+    const userId = getUserIdFromToken(token);
+    let data: string[] = [];
+    const options: StorageGetOptions = {
+      type: TypeData.Collections,
+      start: 0,
+      stop: (parseFloat(req.params["length"]) || 0 ) - 1
+    };
+
+    if (userId)
+      data = await storage.get(`${config.data.projectsStoragePrefix}${userId}`, options) as string[];
+    res.json({ projects: data });
+  });
+
+  /*
+   * All the unmatched APIs will be routed to the gateway using the http-proxy-middleware middleware
+   */
+  app.get(
+    prefix + "/projects/:projectName",
+    [renkuAuth(authenticator), lastProjectsMiddleware(storage)],
+    proxyMiddleware
+  );
   app.delete(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
   app.get(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
   app.head(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
