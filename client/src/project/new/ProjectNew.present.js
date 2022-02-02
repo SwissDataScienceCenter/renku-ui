@@ -165,7 +165,7 @@ function ForkProjectStatus(props) {
     );
   }
   else if (props.forkError) {
-    return (<FormText key="help" color="danger" style={{ textTransform: "capitalize" }}>{props.forkError}</FormText>);
+    return (<FormText key="help" color="danger">{props.forkError}</FormText>);
   }
   else if (props.forkVisibilityError) {
     return (

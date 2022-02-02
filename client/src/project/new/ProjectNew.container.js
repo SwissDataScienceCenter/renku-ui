@@ -64,7 +64,7 @@ function addForkNotification(notifications, url, info, startingLocation, success
       `Project ${info.name} has been created with an exception.`,
       url, "Show project",
       locations,
-      `The project has been successfully forked to ${info.namespace}/${info.path} 
+      `The project has been successfully forked to ${info.namespace}/${info.path}
       although it was not possible to configure the visibility${visibilityException?.message}`
     );
   }
@@ -269,13 +269,13 @@ function ForkProject(props) {
 
         let verboseError; // = "Project forked, but ";
         if (forked.pipeline.errorData) {
-          verboseError = "pipeline creation failed. ";
-          verboseError += "The forked project is available, but sessions may require building a Docker image.";
+          verboseError = "Pipeline creation failed: ";
+          verboseError += "the forked project is available, but sessions may require building a Docker image.";
           throw new Error(verboseError);
         }
         if (forked.webhook.errorData) {
-          verboseError = "Knowledge graph error. ";
-          verboseError = "The forked project is available, but knowledge-graph needs to be activated later.";
+          verboseError = "Knowledge graph error: ";
+          verboseError = "the forked project is available, but the knowledge graph needs to be activated later.";
           throw new Error(verboseError);
         }
 
