@@ -24,6 +24,7 @@ const SERVER = {
   port: convertType(process.env.SERVER_PORT) || 8080,
   prefix: process.env.SERVER_PREFIX || "/ui-server",
   logLevel: process.env.SERVER_LOG_LEVEL || "info",
+  serverUiVersion: process.env.UI_SERVER_VERSION || "unknown"
 };
 
 const DEPLOYMENT = {
@@ -32,6 +33,15 @@ const DEPLOYMENT = {
     (process.env.GATEWAY_URL || SERVER.url + "/api") + (process.env.GATEWAY_LOGIN_PATH || "/auth/login"),
   gatewayLogoutUrl:
     (process.env.GATEWAY_URL || SERVER.url + "/api") + (process.env.GATEWAY_LOGOUT_PATH || "/auth/logout"),
+};
+
+const SENTRY = {
+  enabled: [ true, "true" ].includes(process.env.SENTRY_ENABLED),
+  url: process.env.SENTRY_URL || undefined,
+  namespace: process.env.SENTRY_NAMESPACE || undefined,
+  telepresence: !!process.env.TELEPRESENCE,
+  sampleRate: parseFloat(process.env.SENTRY_TRACE_RATE) || 0,
+  debugMode: [ true, "true" ].includes(process.env.SENTRY_DEBUG)
 };
 
 const AUTHENTICATION = {
@@ -62,8 +72,13 @@ const ROUTES = {
 
 const DATA = { projectsStoragePrefix: "LPROJECT_", projectsDefaultLength: 20 };
 
-
 const config = {
-  server: SERVER, deployment: DEPLOYMENT, auth: AUTHENTICATION, redis: REDIS, routes: ROUTES, data: DATA };
+  server: SERVER,
+  deployment: DEPLOYMENT,
+  auth: AUTHENTICATION,
+  redis: REDIS,
+  routes: ROUTES,
+  data: DATA,
+  sentry: SENTRY };
 
 export default config;

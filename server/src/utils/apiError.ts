@@ -1,5 +1,5 @@
 /*!
- * Copyright 2020 - Swiss Data Science Center (SDSC)
+ * Copyright 2022 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,22 +16,21 @@
  * limitations under the License.
  */
 
-//
-// Global logging support
-//
+/**
+ *  renku-ui-server
+ *
+ *  apiError.ts
+ *  APIError class
+ */
+import { BaseError, HttpStatusCode } from "./baseError";
 
-import winston from "winston";
+class APIError extends BaseError {
+  constructor(
+    name: string,
+    httpCode = HttpStatusCode.INTERNAL_SERVER,
+    description = "internal server error") {
+    super(name, httpCode, description);
+  }
+}
 
-import config from "./config";
-
-
-const logger = winston.createLogger({
-  level: config.server.logLevel,
-  format: winston.format.json(),
-  defaultMeta: { service: "renku-ui-server" },
-  transports: [
-    new winston.transports.Console({ format: winston.format.simple() }),
-  ]
-});
-
-export default logger;
+export { APIError };
