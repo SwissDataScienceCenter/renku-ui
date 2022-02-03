@@ -43,6 +43,8 @@ spec:
           env:
             - name: SERVER_URL
               value: {{ .Values.serverData.url | default (printf "https://%s" .Values.global.renku.domain) | quote }}
+            - name: UI_SERVER_VERSION
+              value: {{ .Chart.Version | quote }}
             - name: SERVER_PORT
               value: {{ .Values.serverData.port | default (printf "8080") | quote }}
             - name: SERVER_PREFIX
@@ -61,6 +63,18 @@ spec:
               value: {{ .Values.authentication.secret | default (printf "%s" .Values.global.uiserver.clientSecret) | quote }}
             - name: AUTH_TOKEN_TOLERANCE
               value: {{ .Values.authentication.expirationTolerance | default (printf "10") | quote }}
+            {{- if .Values.sentry.enabled }}
+            - name: SENTRY_ENABLED
+              value: {{ .Values.sentry.enabled | quote }}
+            - name: SENTRY_URL
+              value: {{ .Values.sentry.url | quote }}
+            - name: SENTRY_NAMESPACE
+              value: {{ .Values.sentry.namespace | default (printf "%s" .Release.Namespace) | quote }}
+            - name: SENTRY_TRACE_RATE
+              value: {{ .Values.sentry.sampleRate | quote }}
+            - name: SENTRY_DEBUG
+              value: {{ .Values.sentry.debugMode | quote }}
+            {{- end }}
             {{- if .Values.redis.install }}
             - name: REDIS_HOST
               value: {{ include "call-nested" (list . "redis" "redis.fullname") }}-master
