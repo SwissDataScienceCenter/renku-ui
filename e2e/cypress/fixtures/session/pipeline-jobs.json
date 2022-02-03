@@ -1,0 +1,90 @@
+[
+  {
+    "id": 182909,
+    "status": "success",
+    "stage": "build",
+    "name": "image_build",
+    "ref": "master",
+    "tag": false,
+    "coverage": null,
+    "allow_failure": false,
+    "created_at": "2022-01-20T14:14:58.450Z",
+    "started_at": "2022-01-20T14:15:02.605Z",
+    "finished_at": "2022-01-20T14:16:03.136Z",
+    "duration": 60.531174,
+    "queued_duration": 3.619096,
+    "user": {
+      "id": 69,
+      "username": "e2e",
+      "name": "E2E User",
+      "state": "active",
+      "avatar_url": "https://secure.gravatar.com/avatar/67294be6fc8a46e7dd5ae6a3cf11a0ae?s=80\u0026d=identicon",
+      "web_url": "https://dev.renku.ch/gitlab/e2e",
+      "created_at": "2021-12-06T10:28:48.021Z",
+      "bio": "",
+      "location": null,
+      "public_email": "",
+      "skype": "",
+      "linkedin": "",
+      "twitter": "",
+      "website_url": "",
+      "organization": null,
+      "job_title": "",
+      "pronouns": null,
+      "bot": false,
+      "work_information": null,
+      "followers": 0,
+      "following": 0,
+      "local_time": "4:28 PM"
+    },
+    "commit": {
+      "id": "172a784d465a7bd45bacc165df2b64a591ac6b18",
+      "short_id": "172a784d",
+      "created_at": "2022-01-20T14:14:54.000+00:00",
+      "parent_ids": [],
+      "title": "service: renku init -n \"local-test-project\" -s \"https://github.com/SwissDataScienceCenter/renku-p...",
+      "message": "service: renku init -n \"local-test-project\" -s \"https://github.com/SwissDataScienceCenter/renku-p...",
+      "author_name": "e2e User",
+      "author_email": "e2e@renku.ch",
+      "authored_date": "2022-01-20T14:14:54.000+00:00",
+      "committer_name": "renku 0.16.2",
+      "committer_email": "https://github.com/swissdatasciencecenter/renku-python/tree/v0.16.2",
+      "committed_date": "2022-01-20T14:14:54.000+00:00",
+      "trailers": {},
+      "web_url": "https://dev.renku.ch/gitlab/e2e/local-test-project/-/commit/172a784d465a7bd45bacc165df2b64a591ac6b18"
+    },
+    "pipeline": {
+      "id": 182743,
+      "project_id": 39646,
+      "sha": "172a784d465a7bd45bacc165df2b64a591ac6b18",
+      "ref": "master",
+      "status": "success",
+      "source": "push",
+      "created_at": "2022-01-20T14:14:58.405Z",
+      "updated_at": "2022-01-20T14:16:03.339Z",
+      "web_url": "https://dev.renku.ch/gitlab/e2e/local-test-project/-/pipelines/182743"
+    },
+    "web_url": "https://dev.renku.ch/gitlab/e2e/local-test-project/-/jobs/182909",
+    "artifacts": [
+      {
+        "file_type": "trace",
+        "size": 5360,
+        "filename": "job.log",
+        "file_format": null
+      }
+    ],
+    "runner": {
+      "id": 76,
+      "description": "gitlab/gl-runner-0",
+      "ip_address": "10.42.31.240",
+      "active": true,
+      "is_shared": true,
+      "runner_type": "instance_type",
+      "name": "gitlab-runner",
+      "online": false,
+      "status": "offline"
+    },
+    "artifacts_expire_at": null,
+    "tag_list": []
+  }
+]

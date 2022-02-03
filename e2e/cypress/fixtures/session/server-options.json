@@ -1,0 +1,46 @@
+{
+  "cpu_request": {
+    "default": 0.1,
+    "displayName": "Number of CPUs",
+    "options": [0.1, 0.5],
+    "order": 2,
+    "type": "enum"
+  },
+  "defaultUrl": {
+    "default": "/lab",
+    "displayName": "Default Environment",
+    "options": ["/lab", "/rstudio"],
+    "order": 1,
+    "type": "enum"
+  },
+  "disk_request": {
+    "default": "1G",
+    "displayName": "Amount of Storage",
+    "options": ["1G", "4G", "16G"],
+    "order": 3,
+    "type": "enum"
+  },
+  "gpu_request": {
+    "default": 0,
+    "displayName": "Number of GPUs",
+    "options": [0],
+    "order": 5,
+    "type": "enum"
+  },
+  "lfs_auto_fetch": {
+    "default": false,
+    "displayName": "Automatically fetch LFS data",
+    "order": 6,
+    "type": "boolean"
+  },
+  "mem_request": {
+    "default": "1G",
+    "displayName": "Amount of Memory",
+    "options": ["1G", "2G"],
+    "order": 4,
+    "type": "enum"
+  },
+  "s3mounts": {
+    "enabled": true
+  }
+}
