@@ -1,5 +1,5 @@
 /*!
- * Copyright 2020 - Swiss Data Science Center (SDSC)
+ * Copyright 2022 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,22 +16,29 @@
  * limitations under the License.
  */
 
-//
-// Global logging support
-//
+/**
+ *  renku-ui-server
+ *
+ *  baseError.ts
+ *  BaseError class
+ */
 
-import winston from "winston";
+// eslint-disable-next-line no-unused-vars
+export enum HttpStatusCode { BAD_REQUEST = 400, NOT_FOUND = 404, INTERNAL_SERVER = 500}
 
-import config from "./config";
+class BaseError extends Error {
+  public readonly name: string;
+  public readonly httpCode: HttpStatusCode;
+  public readonly isOperational: boolean;
 
+  constructor(name: string, httpCode: HttpStatusCode, description: string) {
+    super(description);
 
-const logger = winston.createLogger({
-  level: config.server.logLevel,
-  format: winston.format.json(),
-  defaultMeta: { service: "renku-ui-server" },
-  transports: [
-    new winston.transports.Console({ format: winston.format.simple() }),
-  ]
-});
+    this.name = name;
+    this.httpCode = httpCode;
 
-export default logger;
+    Error.captureStackTrace(this);
+  }
+}
+
+export { BaseError };

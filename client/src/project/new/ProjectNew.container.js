@@ -39,6 +39,8 @@ const CUSTOM_REPO_NAME = "Custom";
 
 
 /** helper function -- fork notifications */
+// TODO: restore after #1585
+// eslint-disable-next-line
 function addForkNotification(notifications, url, info, startingLocation, success = true,
   excludeStarting = false, visibilityException = false) {
   if (success && !visibilityException) {
@@ -62,7 +64,7 @@ function addForkNotification(notifications, url, info, startingLocation, success
       `Project ${info.name} has been created with an exception.`,
       url, "Show project",
       locations,
-      `The project has been successfully forked to ${info.namespace}/${info.path} 
+      `The project has been successfully forked to ${info.namespace}/${info.path}
       although it was not possible to configure the visibility${visibilityException?.message}`
     );
   }
@@ -132,7 +134,6 @@ class ForkProjectMapper extends Component {
 
   mapStateToProps(state, ownProps) {
     return {
-      handlers: this.handlers,
       namespaces: { ...state.projects.namespaces },
       // We need only a selection of the featured projects. Replicate the namespaces structure fetched/fetching/list
       projects: {
@@ -153,13 +154,15 @@ class ForkProjectMapper extends Component {
     const ForkProjectMapped = connect(this.mapStateToProps.bind(this))(ForkProject);
     return (
       <ForkProjectMapped
-        store={this.model.reduxStore}
         client={client}
         forkedId={id}
         forkedTitle={title}
-        toggleModal={toggleModal}
+        handlers={this.handlers}
+        history={history}
         notifications={notifications}
-        history={history} />
+        store={this.model.reduxStore}
+        toggleModal={toggleModal}
+      />
     );
   }
 }
@@ -246,10 +249,12 @@ function ForkProject(props) {
 
   // fork operations including fork, status check, redirect
   const fork = async () => {
-    const { client, forkedId, history, notifications } = props;
+    // TODO: re-add notifications after #1585 is addressed-- for some reason the project's sub-components
+    // TODO: ("mrView", "issuesVIew", ...) trigger a re-render after adding a notification, losing local states.
+    const { client, forkedId, history } = props;
 
     const path = slugFromTitle(title, true);
-    const startingLocation = history.location.pathname;
+    // const startingLocation = history.location.pathname;
     setForking(true);
     setForkError(null);
     setForkUrl(null);
@@ -264,15 +269,13 @@ function ForkProject(props) {
 
         let verboseError; // = "Project forked, but ";
         if (forked.pipeline.errorData) {
-          verboseError = "pipeline creation failed";
-          if (forked.pipeline.errorData.message)
-            verboseError += ` (${forked.pipeline.errorData.message})`;
-          verboseError += ". The forked project is available, but interactive sessions may use a fallback image.";
+          verboseError = "Pipeline creation failed: ";
+          verboseError += "the forked project is available, but sessions may require building a Docker image.";
           throw new Error(verboseError);
         }
         if (forked.webhook.errorData) {
-          verboseError = "The forked project is available, but knowledge-graph integration failed. ";
-          verboseError += "You may later be asked to initiate the integration.";
+          verboseError = "Knowledge graph error: ";
+          verboseError = "the forked project is available, but the knowledge graph needs to be activated later.";
           throw new Error(verboseError);
         }
 
@@ -311,7 +314,7 @@ function ForkProject(props) {
       newProjectData.name = forked.project.name;
 
       if (mounted.current && !visibilityError) {
-        addForkNotification(notifications, newUrl, newProjectData, startingLocation, true, false);
+        // addForkNotification(notifications, newUrl, newProjectData, startingLocation, true, false);
         history.push(newUrl);
       }
       else if (mounted.current && visibilityError) {
@@ -320,18 +323,18 @@ function ForkProject(props) {
         return;
       }
       else {
-        addForkNotification(notifications, newUrl, newProjectData, startingLocation, true, true,
-          visibilityError ? { message: visibilityErrorMessage } : false);
+        // addForkNotification(notifications, newUrl, newProjectData, startingLocation, true, true,
+        //  visibilityError ? { message: visibilityErrorMessage } : false);
       }
       return null; // this prevents further operations on non-mounted components
     }
     catch (e) {
       if (mounted.current) {
-        addForkNotification(notifications, null, null, startingLocation, false, false);
         setForkError(e.message);
+        // addForkNotification(notifications, null, null, startingLocation, false, false);
       }
       else {
-        addForkNotification(notifications, null, null, startingLocation, false, true);
+        // addForkNotification(notifications, null, null, startingLocation, false, true);
       }
     }
     if (mounted.current)

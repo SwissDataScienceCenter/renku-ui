@@ -1,5 +1,5 @@
 /*!
- * Copyright 2020 - Swiss Data Science Center (SDSC)
+ * Copyright 2022 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -16,22 +16,24 @@
  * limitations under the License.
  */
 
-//
-// Global logging support
-//
+/**
+ *  renku-ui-server
+ *
+ *  errorHandler.ts
+ *  ErrorHandler class
+ */
 
-import winston from "winston";
+import logger from "./../logger";
+import * as SentryLib from "@sentry/node";
+import config from "../config";
 
-import config from "./config";
-
-
-const logger = winston.createLogger({
-  level: config.server.logLevel,
-  format: winston.format.json(),
-  defaultMeta: { service: "renku-ui-server" },
-  transports: [
-    new winston.transports.Console({ format: winston.format.simple() }),
-  ]
-});
-
-export default logger;
+class ErrorHandler {
+  public async handleError(err: Error): Promise<void> {
+    logger.error(err.message);
+    if (config.sentry.enabled) {
+      logger.info("Sending error to sentry");
+      SentryLib.captureException(err);
+    }
+  }
+}
+export const errorHandler = new ErrorHandler();
