@@ -29,7 +29,7 @@ import { Row, Col, Modal, ModalHeader, ModalBody } from "reactstrap";
 import { Button } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
-import SelectautosuggestInput from "../../utils/components/formgenerator/fields/SelectAutosuggestInput";
+import SelectAutosuggestInput from "../../utils/components/SelectAutosuggestInput";
 import { ModalFooter } from "reactstrap/lib";
 import { Loader } from "../../utils/components/Loader";
 
@@ -100,7 +100,7 @@ function DatasetAdd(props) {
 
   let suggestionInput;
   if (props.isProjectsReady && props.isDatasetValid) {
-    suggestionInput = (<SelectautosuggestInput
+    suggestionInput = (<SelectAutosuggestInput
       existingValue={existingProject?.name || null}
       name="project"
       label="Project"

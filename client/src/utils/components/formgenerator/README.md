@@ -15,7 +15,6 @@ Currently the form has 9 fields types:
 - File(s): used to input files, at the moment this was created to work with the core-service. Accepts local files and links (i.e dropbox). Inputs are uploaded to the core-service. Can uncompress files, display progress, errors per file, ...
 - Image: used to upload images.
 - Keywords: used to input keywords. You need to write a keyword and press enter for the keyword to be taken, you can delete keywords with a click.
-- SelectAutosuggest: this field is used inside the "add dataset to project" form, is used to suggest the user project paths where the dataset can be added.
 - Select: classic dropdown input.
 
 Field properties (shared):

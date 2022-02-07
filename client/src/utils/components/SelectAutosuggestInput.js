@@ -25,13 +25,13 @@
 
 import * as React from "react";
 import { useState } from "react";
-import ValidationAlert from "./ValidationAlert";
-import HelpText from "./HelpText";
-import FormLabel from "./FormLabel";
+import ValidationAlert from "./formgenerator/fields/ValidationAlert";
+import HelpText from "./formgenerator/fields/HelpText";
+import FormLabel from "./formgenerator/fields/FormLabel";
 import { FormGroup } from "reactstrap";
 import Autosuggest from "react-autosuggest";
 
-function SelectautosuggestInput({ name, label, existingValue, alert, options,
+function SelectAutosuggestInput({ name, label, existingValue, alert, options,
   placeholder, setInputs, help, customHandlers, disabled = false, required = false }) {
   const [localValue, setLocalValue] = useState(null);
   const [suggestions, setSuggestions ] = useState([]);
@@ -143,4 +143,4 @@ function SelectautosuggestInput({ name, label, existingValue, alert, options,
   </FormGroup>;
 }
 
-export default SelectautosuggestInput;
+export default SelectAutosuggestInput;
