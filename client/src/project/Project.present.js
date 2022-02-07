@@ -190,13 +190,13 @@ class ForkProjectModal extends Component {
       content = (
         <ForkProject
           client={this.props.client}
-          id={this.props.id}
           history={this.props.history}
+          id={this.props.id}
           model={this.props.model}
           notifications={this.props.notifications}
+          projectVisibility={this.props.projectVisibility}
           title={this.props.title}
           toggleModal={this.toggleFunction}
-          projectVisibility={this.props.projectVisibility}
         />
       );
     }

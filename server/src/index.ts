@@ -1,5 +1,5 @@
 /*!
- * Copyright 2020 - Swiss Data Science Center (SDSC)
+ * Copyright 2022 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -25,8 +25,10 @@ import logger from "./logger";
 import routes from "./routes";
 import { Authenticator } from "./authentication";
 import { registerAuthenticationRoutes } from "./authentication/routes";
-import { Storage } from "./storage";
-
+import { RedisStorage } from "./storage/RedisStorage";
+import { errorHandler } from "./utils/errorHandler";
+import errorHandlerMiddleware from "./utils/middlewares/errorHandlerMiddleware";
+import { initializeSentry } from "./utils/sentry/sentry";
 
 const app = express();
 const port = config.server.port;
@@ -50,8 +52,11 @@ app.use(morgan("combined", {
 
 logger.info("Server configuration: " + JSON.stringify(config));
 
+// initialize sentry if the SENTRY_URL is set
+initializeSentry(app);
+
 // configure storage
-const storage = new Storage();
+const storage = new RedisStorage();
 
 // configure authenticator
 const authenticator = new Authenticator(storage);
@@ -59,20 +64,25 @@ authenticator.init().then(() => {
   logger.info("Authenticator started");
 
   registerAuthenticationRoutes(app, authenticator);
+  // The error handler middleware is needed here because the registration of authentication
+  // routes is asynchronous and the middleware has to be registered after them
+  app.use(errorHandlerMiddleware);
 });
 
 // register middlewares
 app.use(cookieParser());
 
 // register routes
-routes.register(app, prefix, authenticator);
+routes.register(app, prefix, authenticator, storage);
 
-// TODO: custom error handler?
-// app.use((error: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
-//   res.status(501);
-//   res.json({ status: "error", error: error });
-//   next(error);
-// });
+
+process.on("unhandledRejection", (reason: Error) => {
+  errorHandler.handleError(reason);
+});
+
+process.on("uncaughtException", (error: Error) => {
+  errorHandler.handleError(error);
+});
 
 // start the Express server
 const server = app.listen(port, () => {
