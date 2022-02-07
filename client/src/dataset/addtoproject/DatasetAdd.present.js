@@ -25,13 +25,15 @@
 
 
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { Row, Col, Modal, ModalHeader, ModalBody } from "reactstrap";
 import { Button } from "reactstrap";
+import { ModalFooter } from "reactstrap/lib";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
-import SelectAutosuggestInput from "../../utils/components/SelectAutosuggestInput";
-import { ModalFooter } from "reactstrap/lib";
+
 import { Loader } from "../../utils/components/Loader";
+import SelectAutosuggestInput from "../../utils/components/SelectAutosuggestInput";
 
 function ImportDatasetStatus(status, text, existingProject, history) {
   let statusProject = null;
@@ -39,13 +41,11 @@ function ImportDatasetStatus(status, text, existingProject, history) {
     case "errorNeedMigration" :
       statusProject = (
         <div>
-          <FontAwesomeIcon icon={faExclamationTriangle} /> <strong>A new version of Renku is available.</strong>
+          <FontAwesomeIcon icon={faExclamationTriangle} /> <strong>This project must be upgraded.</strong>
           <br />
-          The target project ({existingProject}) needs to be upgraded to allow
-          modification of datasets and is recommended for all projects.
+          The target project ({existingProject}) needs to be upgraded before datasets can be imported into it.
           <br />
-          <Button color="warning" onClick={() =>
-            history.push(`/projects/${existingProject}/overview/status`)}>More Info</Button>
+          <i className="pt-2"><Link to={`/projects/${existingProject}/overview/status`}>More info</Link></i>
         </div>
       );
       break;
@@ -123,7 +123,7 @@ function DatasetAdd(props) {
       <ModalHeader toggle={props.closeModal}>
         Add dataset to existing project
       </ModalHeader>
-      <ModalBody style={{ lineBreak: "anywhere" }}>
+      <ModalBody>
         <Row className="mb-3">
           <Col>
             <form onSubmit={onSubmit}>

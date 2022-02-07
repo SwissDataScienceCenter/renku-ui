@@ -26,9 +26,11 @@
 
 import React, { useEffect, useState } from "react";
 import { ACCESS_LEVELS } from "../../api-client";
-import DatasetAdd from "./DatasetAdd.present";
+
 import { ImportStateMessage } from "../../utils/constants/Dataset";
 import { groupBy } from "../../utils/helpers/HelperFunctions";
+import { migrationCheckToRenkuVersionStatus, RENKU_VERSION_SCENARIOS } from "../../project/status/MigrationUtils";
+import DatasetAdd from "./DatasetAdd.present";
 
 function AddDataset(props) {
   const [currentStatus, setCurrentStatus] = useState(null);
@@ -88,13 +90,16 @@ function AddDataset(props) {
     setIsDatasetValid(true);
 
     // check if the dataset project is supported
-    const projectVersion = checkOrigin.result.project_renku_version;
-    if (!checkOrigin.result.project_supported) {
+    const projectVersion = checkOrigin.result.core_compatibility_status.project_metadata_version;
+    const datasetProjectVersionStatus = migrationCheckToRenkuVersionStatus(checkOrigin.result);
+    if (datasetProjectVersionStatus.renkuVersionStatus === RENKU_VERSION_SCENARIOS.PROJECT_NOT_SUPPORTED) {
       setCurrentStatus({
         status: "error",
-        text: `The dataset project version ${projectVersion} is not supported` });
+        text: `The dataset project version ${projectVersion} is not supported`
+      });
       return false;
     }
+
     setDatasetProjectVersion(projectVersion);
     setCurrentStatus(null);
     return projectVersion;
@@ -106,14 +111,14 @@ function AddDataset(props) {
 
     //  start checking project
     setCurrentStatus({ status: "checkingProject", text: null });
-    setCurrentStatus({ status: "inProcess", text: "Checking project status..." });
+    setCurrentStatus({ status: "inProcess", text: "Checking dataset/project compatibility..." });
     let originProjectVersion;
     if (validateOrigin || datasetProjectVersion == null)
       originProjectVersion = await validateDatasetProject();
     else
       originProjectVersion = datasetProjectVersion;
 
-    setCurrentStatus({ status: "inProcess", text: "Checking project status..." });
+    setCurrentStatus({ status: "inProcess", text: "Checking dataset/project compatibility..." });
     // check selected project migration status
     const checkTarget = await props.client.checkMigration(project.value);
     if (checkTarget && checkTarget.error !== undefined) {
@@ -122,21 +127,34 @@ function AddDataset(props) {
     }
 
     // check if the selected project doesn't need migration
-    if (checkTarget.result?.core_compatibility_status?.migration_required) {
-      setCurrentStatus({ status: "errorNeedMigration", text: null });
+    const targetProjectVersionStatus = migrationCheckToRenkuVersionStatus(checkTarget.result);
+    if (targetProjectVersionStatus.renkuVersionStatus === RENKU_VERSION_SCENARIOS.PROJECT_NOT_SUPPORTED) {
+      setCurrentStatus({ status: "error", text: "Operations on this project are not supported in the UI." });
       return false;
     }
 
     // check if dataset project version and selected project version has the same version
-    if (checkTarget.result.project_renku_version !== originProjectVersion) {
+    const target_metadata_version = checkTarget.result.core_compatibility_status.project_metadata_version;
+    if (target_metadata_version !== originProjectVersion) {
       setCurrentStatus(
         {
           status: "error",
-          text: `Dataset Project version (${originProjectVersion})
-          and selected project version (${checkTarget.result.project_renku_version}) should be the same.` });
+          text: `Dataset project metadata version (${originProjectVersion})
+          and selected project metadata version (${target_metadata_version}) must be the same for import.` });
       return false;
     }
-    setCurrentStatus({ status: "validProject", text: "Selected Project is valid" });
+    // check if the dataset project is supported
+    const projectVersion = checkTarget.result.core_compatibility_status.project_metadata_version;
+    if (targetProjectVersionStatus.renkuVersionStatus === RENKU_VERSION_SCENARIOS.NEW_VERSION_REQUIRED) {
+      const backendAvailability = await props.client.checkCoreAvailability(projectVersion);
+      if (!backendAvailability.available) {
+        setCurrentStatus({ status: "errorNeedMigration", text: null });
+        return false;
+      }
+      // Project is older, but backend is available
+    }
+
+    setCurrentStatus({ status: "validProject", text: "Selected project is compatible with dataset." });
     return true;
   };
 
