@@ -429,9 +429,9 @@ export default function DatasetView(props) {
     {
       //here we assume that if the dataset is only in one project
       //this one project is the current project and we don't display the list
-      (dataset.isPartOf && dataset.isPartOf.length > 1) || !props.insideProject ?
+      (dataset.usedIn && dataset.usedIn.length > 1) || !props.insideProject ?
         <DisplayProjects
-          projects={dataset.isPartOf}
+          projects={dataset.usedIn}
           projectsUrl={props.projectsUrl}
         />
         : null
