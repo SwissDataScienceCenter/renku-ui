@@ -144,9 +144,8 @@ function AddDataset(props) {
       return false;
     }
     // check if the dataset project is supported
-    const projectVersion = checkTarget.result.core_compatibility_status.project_metadata_version;
     if (targetProjectVersionStatus.renkuVersionStatus === RENKU_VERSION_SCENARIOS.NEW_VERSION_REQUIRED) {
-      const backendAvailability = await props.client.checkCoreAvailability(projectVersion);
+      const backendAvailability = await props.client.checkCoreAvailability(target_metadata_version);
       if (!backendAvailability.available) {
         setCurrentStatus({ status: "errorNeedMigration", text: null });
         return false;

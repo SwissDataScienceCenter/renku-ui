@@ -123,7 +123,7 @@ function DatasetAdd(props) {
       <ModalHeader toggle={props.closeModal}>
         Add dataset to existing project
       </ModalHeader>
-      <ModalBody>
+      <ModalBody className={"text-break"}>
         <Row className="mb-3">
           <Col>
             <form onSubmit={onSubmit}>
