@@ -78,7 +78,7 @@ function DisplayFiles(props) {
   });
 
   return <Card key="datasetDetails" className="border-rk-light mb-4">
-    <CardHeader className="bg-white p-3 ps-4">Dataset files ({files.length})</CardHeader>
+    <CardHeader className="bg-white p-3 ps-4" data-cy="dataset-file-title">Dataset files ({files.length})</CardHeader>
     <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
       {
         files.length === 0 ?
@@ -355,11 +355,11 @@ export default function DatasetView(props) {
     <Row>
       <Col md={8} sm={12}>
         {props.insideProject ?
-          <h3 key="datasetTitle" className="mb-4">
+          <h3 data-cy="dataset-title" key="datasetTitle" className="mb-4">
             {dataset.title || dataset.name}
           </h3>
           :
-          <h2 key="datasetTitle" className="mb-4">
+          <h2 data-cy="dataset-title" key="datasetTitle" className="mb-4">
             {dataset.title || dataset.name}
           </h2>
         }

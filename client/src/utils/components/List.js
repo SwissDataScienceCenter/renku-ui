@@ -41,11 +41,11 @@ function ListCard(props) {
   const { url, title, description, tagList, timeCaption, labelCaption, mediaContent, creators, itemType, slug } = props;
 
   return (
-    <div className="col text-decoration-none p-2 rk-search-result-card">
+    <div data-cy="dataset-card" className="col text-decoration-none p-2 rk-search-result-card">
       <Link to={url} className="col text-decoration-none">
         <div className="card card-body border-0">
           <span className={"circle me-3 mt-2 mb-2 " + itemType}> </span>
-          <div className="title lh-sm">
+          <div className="title lh-sm" data-cy="dataset-card-title">
             {title}
           </div>
           {

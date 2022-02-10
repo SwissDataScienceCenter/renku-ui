@@ -1,0 +1,207 @@
+[
+  {
+    "_links":[
+      {
+        "rel":"details",
+        "href":"https://andrea.dev.renku.ch/knowledge-graph/datasets/c23f114791984453afdffc79ea5b4033"
+      }
+    ],
+    "identifier":"c23f114791984453afdffc79ea5b4033",
+    "title":"generated",
+    "name":"generated",
+    "published":{
+      "creator":[
+        {
+          "email":"cramakri@ethz.ch",
+          "name":"Chandrasekhar Ramakrishnan"
+        }
+      ]
+    },
+    "date":"2021-03-24T13:16:11Z",
+    "projectsCount":1,
+    "keywords":[
+
+    ],
+    "images":[
+
+    ]
+  },
+  {
+    "_links":[
+      {
+        "rel":"details",
+        "href":"https://andrea.dev.renku.ch/knowledge-graph/datasets/84193a80733c43b39154efd150a94543"
+      }
+    ],
+    "identifier":"84193a80733c43b39154efd150a94543",
+    "title":"health",
+    "name":"health",
+    "published":{
+      "creator":[
+        {
+          "email":"dandrea.cordoba@gmail.com",
+          "name":"Andrea Cordoba"
+        }
+      ]
+    },
+    "date":"2021-11-05T16:00:19Z",
+    "projectsCount":1,
+    "keywords":[
+
+    ],
+    "images":[
+
+    ]
+  },
+  {
+    "_links":[
+      {
+        "rel":"details",
+        "href":"https://andrea.dev.renku.ch/knowledge-graph/datasets/3117816964734179b3f3ccef5dcd43d2"
+      }
+    ],
+    "identifier":"3117816964734179b3f3ccef5dcd43d2",
+    "title":"flight test init project",
+    "name":"flight-test",
+    "published":{
+      "creator":[
+        {
+          "email":"dalatinrofrau@gmail.com",
+          "name":"Andrea Cordoba"
+        },
+        {
+          "email":"dandrea.cordoba@gmail.com",
+          "name":"Andrea Cordoba"
+        }
+      ]
+    },
+    "date":"2022-01-31T17:12:17Z",
+    "projectsCount":1,
+    "keywords":[
+
+    ],
+    "images":[
+
+    ]
+  },
+  {
+    "_links":[
+      {
+        "rel":"details",
+        "href":"https://andrea.dev.renku.ch/knowledge-graph/datasets/a20838d8cd514eaab3efbd54a8104732"
+      }
+    ],
+    "description":"Example description",
+    "identifier":"a20838d8cd514eaab3efbd54a8104732",
+    "title":"test-new-dataset",
+    "name":"test-new-dataset",
+    "published":{
+      "creator":[
+        {
+          "email":"dalatinrofrau@gmail.com",
+          "name":"Andrea Cordoba"
+        },
+        {
+          "email":"dandrea.cordoba@gmail.com",
+          "name":"Andrea Cordoba"
+        }
+      ]
+    },
+    "date":"2022-02-10T14:38:14Z",
+    "projectsCount":1,
+    "keywords":[
+      "keywords",
+      "new",
+      "test",
+      "with"
+    ],
+    "images":[
+
+    ]
+  },
+  {
+    "_links":[
+      {
+        "rel":"details",
+        "href":"https://andrea.dev.renku.ch/knowledge-graph/datasets/42a765ed5b024d52ba8db22eeffc98bf"
+      }
+    ],
+    "identifier":"42a765ed5b024d52ba8db22eeffc98bf",
+    "title":"tmp-dataset2",
+    "name":"tmp-dataset2",
+    "published":{
+      "creator":[
+        {
+          "email":"dandrea.cordoba@gmail.com",
+          "name":"Andrea Cordoba"
+        },
+        {
+          "email":"dalatinrofrau@gmail.com",
+          "name":"Darlin Andrea Cordoba Osnas"
+        }
+      ]
+    },
+    "date":"2022-01-31T14:43:38Z",
+    "projectsCount":1,
+    "keywords":[
+      "todelete"
+    ],
+    "images":[
+
+    ]
+  },
+  {
+    "_links":[
+      {
+        "rel":"details",
+        "href":"https://andrea.dev.renku.ch/knowledge-graph/datasets/089ffd7dba944deebfeb7875c0f04cb1"
+      }
+    ],
+    "identifier":"089ffd7dba944deebfeb7875c0f04cb1",
+    "title":"test from acceptance tests",
+    "name":"test-from-acceptance-tests",
+    "published":{
+      "creator":[
+        {
+          "email":"lorenzo.cavazzi.tech@gmail.com",
+          "name":"Lorenšo Cavazzi"
+        }
+      ]
+    },
+    "date":"2022-01-25T13:23:39Z",
+    "projectsCount":1,
+    "keywords":[
+
+    ],
+    "images":[
+
+    ]
+  },
+  {
+    "_links":[
+      {
+        "rel":"details",
+        "href":"https://andrea.dev.renku.ch/knowledge-graph/datasets/0656a95d041a4376920c2729fcf025d3"
+      }
+    ],
+    "identifier":"0656a95d041a4376920c2729fcf025d3",
+    "title":"fake dataset",
+    "name":"fake-dataset",
+    "published":{
+      "creator":[
+        {
+          "email":"lorenzo.cavazzi.tech@gmail.com",
+          "name":"Lorenšo Cavazzi"
+        }
+      ]
+    },
+    "date":"2022-01-24T14:05:55Z",
+    "projectsCount":1,
+    "keywords":[
+      "fake"
+    ],
+    "images":[
+
+    ]
+  }
+]

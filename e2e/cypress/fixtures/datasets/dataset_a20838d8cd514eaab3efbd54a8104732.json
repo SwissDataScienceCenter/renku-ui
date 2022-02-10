@@ -1,0 +1,80 @@
+{
+  "_links":[
+    {
+      "rel":"self",
+      "href":"https://andrea.dev.renku.ch/knowledge-graph/datasets/a20838d8cd514eaab3efbd54a8104732"
+    },
+    {
+      "rel":"initial-version",
+      "href":"https://andrea.dev.renku.ch/knowledge-graph/datasets/a2dc5657f34f4e99a1105428a324e383"
+    }
+  ],
+  "identifier":"a20838d8cd514eaab3efbd54a8104732",
+  "name":"test-new-dataset",
+  "title":"test-new-dataset",
+  "url":"https://andrea.dev.renku.ch/datasets/a20838d8cd514eaab3efbd54a8104732",
+  "derivedFrom":"https://andrea.dev.renku.ch/datasets/a2dc5657f34f4e99a1105428a324e383",
+  "versions":{
+    "initial":"a2dc5657f34f4e99a1105428a324e383"
+  },
+  "description":"Example description",
+  "published":{
+    "creator":[
+      {
+        "name":"Andrea Cordoba",
+        "email":"dalatinrofrau@gmail.com"
+      },
+      {
+        "name":"Andrea Cordoba",
+        "email":"dandrea.cordoba@gmail.com"
+      }
+    ]
+  },
+  "created":"2022-02-10T14:38:14Z",
+  "hasPart":[
+    {
+      "atLocation":"data/test-new-dataset/math-data.rtf"
+    }
+  ],
+  "project":{
+    "_links":[
+      {
+        "rel":"project-details",
+        "href":"https://andrea.dev.renku.ch/knowledge-graph/projects/dandrea.cordoba/init-project"
+      }
+    ],
+    "path":"dandrea.cordoba/init-project",
+    "name":"init project"
+  },
+  "usedIn":[
+    {
+      "_links":[
+        {
+          "rel":"project-details",
+          "href":"https://andrea.dev.renku.ch/knowledge-graph/projects/dandrea.cordoba/init-project"
+        }
+      ],
+      "path":"dandrea.cordoba/init-project",
+      "name":"init project"
+    },
+    {
+      "_links":[
+        {
+          "rel":"project-details",
+          "href":"https://andrea.dev.renku.ch/knowledge-graph/projects/dandrea.cordoba/tmp-project-to-datasets"
+        }
+      ],
+      "path":"dandrea.cordoba/tmp-project-to-datasets",
+      "name":"tmp-project-to-datasets"
+    }
+  ],
+  "keywords":[
+    "keywords",
+    "new",
+    "test",
+    "with"
+  ],
+  "images":[
+
+  ]
+}

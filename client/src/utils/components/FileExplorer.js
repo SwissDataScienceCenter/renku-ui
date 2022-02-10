@@ -106,14 +106,14 @@ class TreeNode extends Component {
       elementToRender = this.props.insideProject ?
         <div className={eltClassName}>
           <Link to= {`${this.props.lineageUrl}/${this.props.node.jsonObj.atLocation}`} >
-            <div className="fs-element">
+            <div className="fs-element" data-cy="dataset-fs-element">
               {icon} {this.props.node.name}
             </div>
           </Link>
         </div>
         :
         <div className={eltClassName}>
-          <div className="fs-element" style={{ cursor: "default" }}>
+          <div className="fs-element" data-cy="dataset-fs-element" style={{ cursor: "default" }}>
             {icon} {this.props.node.name}
           </div>
         </div>
@@ -122,7 +122,7 @@ class TreeNode extends Component {
     else {
       elementToRender = this.state.childrenOpen ?
         <div className={eltClassName} >
-          <div className="fs-element" onClick={this.handleIconClick} >
+          <div className="fs-element" data-cy="dataset-fs-folder" onClick={this.handleIconClick} >
             {icon} {this.props.node.name}
           </div>
           <div className="ps-3">
@@ -131,7 +131,7 @@ class TreeNode extends Component {
         </div>
         :
         <div className={eltClassName} >
-          <div className="fs-element" onClick={this.handleIconClick}>
+          <div className="fs-element" data-cy="dataset-fs-folder" onClick={this.handleIconClick}>
             {icon} {this.props.node.name}
           </div>
         </div>;

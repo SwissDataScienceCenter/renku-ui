@@ -16,14 +16,35 @@
  * limitations under the License.
  */
 
+import { FixturesConstructor } from "./fixtures";
+
 /**
- * Common fixtures defined in one place.
+ * Fixtures for Datasets
  */
-import BaseFixtures from "./fixtures";
-import { User } from "./user";
-import { Projects } from "./projects";
-import { Datasets } from "./datasets";
 
-const Fixtures = Datasets(Projects(User(BaseFixtures)));
+function Datasets<T extends FixturesConstructor>(Parent: T) {
+  return class DatasetsFixtures extends Parent {
 
-export default Fixtures;
+    datasets(name = "getDataset") {
+      cy.intercept(
+        "ui-server/api/kg/datasets?query=*&sort=projectsCount%3Adesc&per_page=12&page=1",
+        {
+          fixture: "datasets.json"
+        }
+      ).as(name);
+      return this;
+    }
+
+    datasetById(name = "getDatasetById", id = "a20838d8cd514eaab3efbd54a8104732") {
+      cy.intercept(
+        "ui-server/api/kg/datasets/" + id,
+        {
+          fixture: `datasets/dataset_${id}.json`
+        }
+      ).as(name);
+      return this;
+    }
+  };
+}
+
+export { Datasets };
