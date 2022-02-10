@@ -46,6 +46,10 @@ import { Unavailable } from "./Maintenance";
 import "./App.css";
 import "react-toastify/dist/ReactToastify.css";
 import { Loader } from "./utils/components/Loader";
+import AddDataset from "./dataset/addtoproject/DatasetAdd.container";
+import { ProjectsCoordinator } from "./project/shared";
+import { projectSchema } from "./model";
+import { DatasetCoordinator } from "./dataset/Dataset.state";
 
 function CentralContentContainer(props) {
   const { notifications, user } = props;
@@ -119,6 +123,22 @@ function CentralContentContainer(props) {
           {...p}
         />}
       />
+      <Route path="/datasets/:identifier/add" render={
+        p => <AddDataset
+          key="addDatasetNew" {...p}
+          insideProject={false}
+          identifier={`${p.match.params.identifier}`}
+          client={props.client}
+          projectsUrl="/projects"
+          selectedDataset={p.match.params.datasetId}
+          logged={props.user.logged}
+          model={props.model}
+          httpProjectUrl={props.httpProjectUrl}
+          projectsCoordinator={new ProjectsCoordinator(props.client, props.model.subModel("projects"))}
+          datasetCoordinator={new DatasetCoordinator(props.client, props.model.subModel("dataset"))}
+          versionUrl={projectSchema.createInitialized().migration}
+        />}
+      />
       <Route path="/datasets/:identifier" render={
         p => <ShowDataset
           key="datasetPreview" {...p}
@@ -127,6 +147,7 @@ function CentralContentContainer(props) {
           client={props.client}
           projectsUrl="/projects"
           selectedDataset={p.match.params.datasetId}
+          datasetCoordinator={new DatasetCoordinator(props.client, props.model.subModel("dataset"))}
           logged={props.user.logged}
           model={props.model}
         />}

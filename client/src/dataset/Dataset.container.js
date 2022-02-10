@@ -16,94 +16,89 @@
  * limitations under the License.
  */
 
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 import DatasetView from "./Dataset.present";
-import { API_ERRORS } from "../api-client";
-import { mapDataset } from "./index";
 import { projectSchema } from "../model";
 
 export default function ShowDataset(props) {
 
-  const [datasetKg, setDatasetKg] = useState();
-  const [datasetFiles, setDatasetFiles] = useState();
-  const [fetchedKg, setFetchedKg] = useState(false);
+  const [dataset, setDataset] = useState(null);
+  const [datasetFiles, setDatasetFiles] = useState(null);
 
-  const dataset = useMemo(() =>
-    mapDataset(props.datasets ?
-      props.datasets.find(dataset => dataset.name === props.datasetId)
-      : undefined
-    , datasetKg, datasetFiles)
-  , [props.datasets, datasetKg, props.datasetId, datasetFiles]);
-  const [fetchError, setFetchError] = useState({});
   const migration = props.insideProject ?
     props.migration :
     projectSchema.createInitialized().migration;
 
+  // Use Effect to calculate dataset
   useEffect(() => {
-    let unmounted = false;
-    if (props.insideProject && datasetFiles === undefined
-      && ((dataset && dataset.name) || (props.datasetId !== undefined))) {
-      const name = (dataset && dataset.name) ? dataset.name : props.datasetId;
-      if (migration.core.fetched && migration.core.backendAvailable) {
-        const versionUrl = migration.core.versionUrl;
-        props.client.fetchDatasetFilesFromCoreService(name, props.httpProjectUrl, versionUrl).then(response => {
-          if (!unmounted && datasetFiles === undefined) {
-            if (response.data.result) {
-              setDatasetFiles(response.data.result.files
-                .map(file => ({ name: file.name, atLocation: file.path })));
-            }
-            else {
-              setDatasetFiles([]);
-              if (response.data && response.data.error) {
-                if (response.data.error.code === -32100)
-                  setFetchError({ code: 404, message: "dataset not found or missing permissions" });
-                else
-                  setFetchError({ code: 0, message: "error fetching dataset files: " + response.data.error.reason });
-              }
-            }
-          }
-        });
+    const fetchDatasets = async (id) => {
+      props.datasetCoordinator.resetDataset();
+      const fetchKG = props.insideProject ? props.graphStatus : true;
+      await props.datasetCoordinator.fetchDataset(id, props.datasets, fetchKG);
+      let currentFiles = props.datasetCoordinator.get("files");
+      let currentDataset = props.datasetCoordinator.get("metadata");
+      if (currentFiles && currentFiles?.hasPart)
+        setDatasetFiles(currentFiles);
+      setDataset(currentDataset);
+    };
+
+    const findDatasetId = (name, datasets) => {
+      const dataset = datasets?.find((d) => d.name === name);
+      return dataset?.identifier;
+    };
+
+    if (props.datasetCoordinator) {
+      const currentDataset = props.datasetCoordinator.get("metadata");
+      const datasetId = props.insideProject ? findDatasetId(props.datasetId, props.datasets) : props.identifier;
+      if (props.insideProject && datasetId && props.datasets && (!currentDataset || !currentDataset?.fetching))
+        fetchDatasets(datasetId);
+      else if (!props.insideProject && props.identifier)
+        fetchDatasets(datasetId);
+      else {
+        setDataset(currentDataset);
       }
     }
-    return () => {
-      unmounted = true;
-    };
   }, [
-    dataset, datasetFiles, props.client, props.datasetId, props.httpProjectUrl, props.insideProject,
-    migration.core.backendAvailable, migration.core.fetched, migration.core.versionUrl, setDatasetFiles
-  ]);
+    props.datasetCoordinator,
+    props.identifier,
+    props.datasets,
+    props.insideProject,
+    props.datasetId,
+    props.graphStatus ]);
 
+
+  // use effect to calculate files
   useEffect(() => {
-    let unmounted = false;
-    if (datasetKg === undefined && ((dataset && dataset.identifier && props.graphStatus)
-      || (props.identifier !== undefined))) {
-      const id = props.insideProject ? dataset.identifier : props.identifier;
-      props.client.fetchDatasetFromKG(id)
-        .then((datasetInfo) => {
-          if (!unmounted && datasetKg === undefined && datasetInfo !== undefined) {
-            setFetchedKg(true);
-            setDatasetKg(datasetInfo);
-          }
-        }).catch(error => {
-          setFetchedKg(true);
-          if (!unmounted && error.case === API_ERRORS.notFoundError)
-            setFetchError({ code: 404, message: "dataset not found or missing permissions" });
-          else if (!unmounted && error.case === API_ERRORS.internalServerError)
-            setFetchError({ code: 500, message: "cannot fetch selected dataset" });
-        });
-    }
-    return () => {
-      unmounted = true;
+    const fetchFiles = async (name, httpProjectUrl, versionUrl) => {
+      await props.datasetCoordinator.fetchDatasetFilesFromCoreService(name, httpProjectUrl, versionUrl);
+      const files = props.datasetCoordinator.get("files");
+      setDatasetFiles(files);
     };
-  }, [props.insideProject, props.identifier, props.client, datasetKg, dataset, props.graphStatus]);
+
+    if (props.insideProject && props.datasetCoordinator && dataset?.identifier !== undefined && !datasetFiles) {
+      const isFilesFetching = props.datasetCoordinator.get("files")?.fetching;
+
+      if (migration.core.fetched && migration.core.backendAvailable && !isFilesFetching) {
+        const versionUrl = migration.core.versionUrl;
+        fetchFiles(dataset?.name, props.httpProjectUrl, versionUrl);
+      }
+    }
+  },
+  [
+    dataset, props.httpProjectUrl, props.insideProject, migration.core.backendAvailable,
+    migration.core.fetched, migration.core.versionUrl, props.datasetCoordinator, datasetFiles]
+  );
+
+  const loadingDatasets = dataset === null || dataset?.fetching || !dataset?.fetched;
 
   return <DatasetView
     client={props.client}
     dataset={dataset}
+    files={datasetFiles}
     datasets={props.datasets}
-    fetchError={fetchError}
-    fetchedKg={fetchedKg}
+    fetchError={dataset?.fetchError}
+    fetchedKg={dataset?.fetched}
     fileContentUrl={props.fileContentUrl}
     history={props.history}
     httpProjectUrl={props.httpProjectUrl}
@@ -111,7 +106,7 @@ export default function ShowDataset(props) {
     insideProject={props.insideProject}
     lineagesUrl={props.lineagesUrl}
     location={props.location}
-    loadingDatasets={props.insideProject && datasetFiles === undefined}
+    loadingDatasets={loadingDatasets}
     logged={props.logged}
     maintainer={props.maintainer}
     migration={migration}

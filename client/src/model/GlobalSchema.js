@@ -25,7 +25,7 @@
 
 import { Schema, PropertyName as Prop } from "./index";
 import {
-  environmentSchema, formGeneratorSchema, newProjectSchema, notebooksSchema, notificationsSchema,
+  datasetSchema, environmentSchema, formGeneratorSchema, newProjectSchema, notebooksSchema, notificationsSchema,
   projectsSchema, projectSchema, statuspageSchema, userSchema
 } from "./RenkuModels";
 
@@ -37,6 +37,7 @@ const globalSchema = new Schema({
   notifications: { [Prop.SCHEMA]: notificationsSchema },
   project: { [Prop.SCHEMA]: projectSchema },
   projects: { [Prop.SCHEMA]: projectsSchema },
+  dataset: { [Prop.SCHEMA]: datasetSchema },
   statuspage: { [Prop.SCHEMA]: statuspageSchema },
   user: { [Prop.SCHEMA]: userSchema },
 });

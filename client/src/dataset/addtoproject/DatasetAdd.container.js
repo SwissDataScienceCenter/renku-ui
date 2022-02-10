@@ -39,11 +39,19 @@ function AddDataset(props) {
   const [isDatasetValid, setIsDatasetValid] = useState(null);
   const [datasetProjectVersion, setDatasetProjectVersion] = useState(null);
   let projectsMonitorJob = null;
+  console.log("someone here...");
 
   useEffect(() => {
     validateDatasetProject();
     monitorProjectList();
   }, []); // eslint-disable-line
+
+  if (props.datasetCoordinator) {
+    console.log({
+      fetched: props.datasetCoordinator.get("metadata.fetched"),
+      identifier: props.datasetCoordinator.get("metadata.identifier")
+    });
+  }
 
   /* validate project */
   const onProjectSelected = (value) => {
