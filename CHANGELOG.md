@@ -1,5 +1,15 @@
 # Changes
 
+## [2.0.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.0.0...2.0.1) (2022-02-10)
+### Features
+
+* support custom CA certificates ([#1537](https://github.com/SwissDataScienceCenter/renku-ui/issues/1537))
+
+### Bug Fixes
+
+* use the new usedIn field to get dataset projects ([#1684](https://github.com/SwissDataScienceCenter/renku-ui/issues/1684))
+
+
 ## [2.0.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/1.3.0...2.0.0) (2022-02-04)
 
 
