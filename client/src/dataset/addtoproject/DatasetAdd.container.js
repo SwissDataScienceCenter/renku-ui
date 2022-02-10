@@ -24,186 +24,293 @@
  */
 
 
-import React from "react";
-import { addDatasetToProjectSchema } from "../../model/RenkuModels";
+import React, { useEffect, useState } from "react";
 import { ACCESS_LEVELS } from "../../api-client";
-import DatasetAdd from "./DatasetAdd.present";
+
 import { ImportStateMessage } from "../../utils/constants/Dataset";
 import { groupBy } from "../../utils/helpers/HelperFunctions";
-import _ from "lodash";
-
-let dsFormSchema = _.cloneDeep(addDatasetToProjectSchema);
+import { migrationCheckToRenkuVersionStatus, RENKU_VERSION_SCENARIOS } from "../../project/status/MigrationUtils";
+import DatasetAdd from "./DatasetAdd.present";
 
 function AddDataset(props) {
+  const [currentStatus, setCurrentStatus] = useState(null);
+  const [importingDataset, setImportingDataset] = useState(false);
+  const [isProjectsReady, setIsProjectsReady] = useState(false);
+  const [isDatasetValid, setIsDatasetValid] = useState(null);
+  const [datasetProjectVersion, setDatasetProjectVersion] = useState(null);
+  let projectsMonitorJob = null;
 
-  if (dsFormSchema == null)
-    dsFormSchema = _.cloneDeep(addDatasetToProjectSchema);
+  useEffect(() => {
+    validateDatasetProject();
+    monitorProjectList();
+  }, []); // eslint-disable-line
 
-
-  const closeModal = () =>{
-    props.setModalOpen(false);
+  /* validate project */
+  const onProjectSelected = (value) => {
+    if (value)
+      validateProject(value, false); // validate origin only when start import
+    else
+      setCurrentStatus(null);
   };
 
-  const onCancel = (e, handlers) =>{
-    closeModal();
-    handlers.removeDraft();
-  };
+  const validateDatasetProject = async () => {
+    // check dataset has valid project url
+    setCurrentStatus({ status: "inProcess", text: "Checking Dataset..." });
+    if (!props.dataset.project || !props.dataset.project.path) {
+      setCurrentStatus({ status: "error", text: "Invalid Dataset, refresh the page to get updated values" });
+      setIsDatasetValid(false);
+      return false;
+    }
 
-  const redirectUser = (projectPath, datasetName, handlers) => {
-    handlers.setSubmitLoader({ value: false, text: "" });
-    handlers.removeDraft();
-    props.history.push({
-      pathname: `/projects/${projectPath}/datasets/${datasetName}`,
-      state: { reload: true }
-    });
-  };
+    // fetch dataset project values and check it has a valid git url
+    // TODO remove this request when dataset include httpUrlToRepo
+    let checkOrigin;
+    try {
+      const fetchDatasetProject = await props.client.getProject(props.dataset.project?.path);
+      const urlProjectOrigin = fetchDatasetProject?.data?.all?.http_url_to_repo;
+      if (!urlProjectOrigin) {
+        setCurrentStatus({ status: "error", text: "Invalid Dataset" });
+        setIsDatasetValid(false);
+        return false;
+      }
 
-  function handleJobResponse(job, monitorJob, waitedSeconds, projectPath, datasetName, handlers) {
-
-    if (job) {
-      switch (job.state) {
-        case "ENQUEUED":
-          handlers.setSubmitLoader({ value: true, text: ImportStateMessage.ENQUEUED });
-          break;
-        case "IN_PROGRESS":
-          handlers.setSubmitLoader({ value: true, text: ImportStateMessage.IN_PROGRESS });
-          break;
-        case "COMPLETED":
-          handlers.setSubmitLoader({ value: true, text: ImportStateMessage.COMPLETED });
-          clearInterval(monitorJob);
-          redirectUser(projectPath, datasetName, handlers);
-          break;
-        case "FAILED":
-          handlers.setSubmitLoader({ value: false, text: "" });
-          handlers.setServerErrors(ImportStateMessage.FAILED + job.extras.error);
-          clearInterval(monitorJob);
-          break;
-        default:
-          handlers.setSubmitLoader({ value: false, text: "" });
-          handlers.setServerErrors(ImportStateMessage.FAILED_NO_INFO);
-          clearInterval(monitorJob);
-          break;
+      // check dataset project migration status
+      checkOrigin = await props.client.checkMigration(urlProjectOrigin);
+      if (checkOrigin && checkOrigin.error !== undefined) {
+        setCurrentStatus({ status: "error", text: checkOrigin.error.reason });
+        setIsDatasetValid(false);
+        return false;
       }
     }
-    if ((waitedSeconds > 180 && job.state !== "IN_PROGRESS") || (waitedSeconds > 360 && job.state === "IN_PROGRESS")) {
-      handlers.setSubmitLoader({ value: false, text: "" });
-      handlers.setServerErrors(ImportStateMessage.TOO_LONG);
-      //here change the buttons???
-      // setTakingTooLong(true);
-      clearInterval(monitorJob);
+    catch (e) {
+      setCurrentStatus({ status: "error", text: "Invalid Dataset" });
+      setIsDatasetValid(false);
+      return false;
     }
-  }
+    setIsDatasetValid(true);
 
-  const monitorJobStatusAndHandleResponse = (job_id, projectPath, datasetName, handlers) => {
-    let cont = 0;
-    const INTERVAL = 6000;
-    let monitorJob = setInterval(() => {
-      props.client.getJobStatus(job_id, props.versionUrl)
-        .then(job => {
-          cont++;
-          if (job !== undefined) {
-            handleJobResponse(
-              job, monitorJob, cont * INTERVAL / 1000, projectPath, datasetName, handlers);
-          }
-        });
-    }, INTERVAL);
+    // check if the dataset project is supported
+    const projectVersion = checkOrigin.result.core_compatibility_status.project_metadata_version;
+    const datasetProjectVersionStatus = migrationCheckToRenkuVersionStatus(checkOrigin.result);
+    if (datasetProjectVersionStatus.renkuVersionStatus === RENKU_VERSION_SCENARIOS.PROJECT_NOT_SUPPORTED) {
+      setCurrentStatus({
+        status: "error",
+        text: `The dataset project version ${projectVersion} is not supported`
+      });
+      return false;
+    }
+
+    setDatasetProjectVersion(projectVersion);
+    setCurrentStatus(null);
+    return projectVersion;
   };
 
-  const importDataset = (selectedProject, handlers) => {
+  const validateProject = async (project, validateOrigin) => {
+    if (!project)
+      return false;
+
+    //  start checking project
+    setCurrentStatus({ status: "checkingProject", text: null });
+    setCurrentStatus({ status: "inProcess", text: "Checking dataset/project compatibility..." });
+    let originProjectVersion;
+    if (validateOrigin || datasetProjectVersion == null)
+      originProjectVersion = await validateDatasetProject();
+    else
+      originProjectVersion = datasetProjectVersion;
+
+    setCurrentStatus({ status: "inProcess", text: "Checking dataset/project compatibility..." });
+    // check selected project migration status
+    const checkTarget = await props.client.checkMigration(project.value);
+    if (checkTarget && checkTarget.error !== undefined) {
+      setCurrentStatus({ status: "error", text: checkTarget.error.reason });
+      return false;
+    }
+
+    // check if the selected project doesn't need migration
+    const targetProjectVersionStatus = migrationCheckToRenkuVersionStatus(checkTarget.result);
+    if (targetProjectVersionStatus.renkuVersionStatus === RENKU_VERSION_SCENARIOS.PROJECT_NOT_SUPPORTED) {
+      setCurrentStatus({ status: "error", text: "Operations on this project are not supported in the UI." });
+      return false;
+    }
+
+    // check if dataset project version and selected project version has the same version
+    const target_metadata_version = checkTarget.result.core_compatibility_status.project_metadata_version;
+    if (target_metadata_version !== originProjectVersion) {
+      setCurrentStatus(
+        {
+          status: "error",
+          text: `Dataset project metadata version (${originProjectVersion})
+          and selected project metadata version (${target_metadata_version}) must be the same for import.` });
+      return false;
+    }
+    // check if the dataset project is supported
+    if (targetProjectVersionStatus.renkuVersionStatus === RENKU_VERSION_SCENARIOS.NEW_VERSION_REQUIRED) {
+      const backendAvailability = await props.client.checkCoreAvailability(target_metadata_version);
+      if (!backendAvailability.available) {
+        setCurrentStatus({ status: "errorNeedMigration", text: null });
+        return false;
+      }
+      // Project is older, but backend is available
+    }
+
+    setCurrentStatus({ status: "validProject", text: "Selected project is compatible with dataset." });
+    return true;
+  };
+
+  const onSuggestionsFetchRequested = ( value, setSuggestions ) => {
+    const featured = props.projectsCoordinator.model.get("featured");
+    if (!featured.fetched || (!featured.starred.length && !featured.member.length))
+      return;
+
+    const regex = new RegExp(value, "i");
+    const searchDomain = featured.member.filter((project)=> {
+      return project.access_level >= ACCESS_LEVELS.MAINTAINER;
+    });
+
+    const hits = {};
+    const groupedSuggestions = [];
+
+    searchDomain.forEach(d => {
+      if (regex.exec(d.path_with_namespace) != null) {
+        hits[d.path_with_namespace] = {
+          "value": d.http_url_to_repo,
+          "name": d.path_with_namespace,
+          "subgroup": d.path_with_namespace.split("/")[0],
+          "id": d.id
+        };
+      }
+    });
+
+    const hitValues = Object.values(hits).sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
+    const groupedHits = groupBy(hitValues, item => item.subgroup);
+    for (var [key, val] of groupedHits) {
+      groupedSuggestions.push({
+        title: key,
+        suggestions: val
+      });
+    }
+    setCurrentStatus(null);
+    setSuggestions(groupedSuggestions);
+  };
+  /* end validate project */
+
+  /* import dataset */
+  const submitCallback = async (project) => {
+    if (!project)
+      setCurrentStatus({ status: "error", text: "Empty project" });
+
+    const isProjectValid = await validateProject(project, true);
+    if (isProjectValid) {
+      setCurrentStatus({ status: "inProcess", text: ImportStateMessage.ENQUEUED });
+      importDataset(project);
+    }
+  };
+
+  const importDataset = (selectedProject) => {
+    setImportingDataset(true);
     props.client.datasetImport(selectedProject.value, props.dataset.url, props.versionUrl)
       .then(response => {
         if (response.data.error !== undefined) {
-          handlers.setSubmitLoader({ value: false, text: "" });
-          handlers.setServerErrors(response.data.error.reason);
+          setCurrentStatus({ status: "error", text: response.data.error.reason });
+          setImportingDataset(false);
         }
         else {
           monitorJobStatusAndHandleResponse(
             response.data.result.job_id,
             selectedProject.name,
-            props.dataset.name,
-            handlers
+            props.dataset.name
           );
         }
       });
   };
 
-
-  const submitCallback = (e, mappedInputs, handlers) => {
-    handlers.setServerErrors(undefined);
-    handlers.setSubmitLoader({ value: true, text: ImportStateMessage.ENQUEUED });
-
-    const projectOptions = handlers.getFormDraftFieldProperty("project", ["options"]);
-
-    const selectedProject = projectOptions.find((project) =>
-      project.value === mappedInputs.project);
-
-    // TODO: is this what we want? Should we check that both the target and the source are up-to-date?
-    const target = selectedProject.value; // It was props.httpProjectUrl, but it's not always set
-    props.client.checkMigration(target).then((response) => {
-      if (response && response.error !== undefined) {
-        handlers.setSubmitLoader({ value: false, text: "" });
-        handlers.setServerErrors(response.error.reason);
-      }
-      else {
-        if (response.result.migration_required) {
-          handlers.setServerWarnings(selectedProject.name);
-          handlers.setSubmitLoader(false);
-        }
-        else {
-          importDataset(selectedProject, handlers);
+  const monitorJobStatusAndHandleResponse = (job_id, projectPath, datasetName) => {
+    let cont = 0;
+    const INTERVAL = 6000;
+    let monitorJob = setInterval(async () => {
+      try {
+        const job = await props.client.getJobStatus(job_id, props.versionUrl);
+        cont++;
+        if (job !== undefined) {
+          handleJobResponse(
+            job, monitorJob, cont * INTERVAL / 1000, projectPath, datasetName);
         }
       }
+      catch (e) {
+        setCurrentStatus({ status: "error", text: e.message });
+        setImportingDataset(false);
+        clearInterval(monitorJob);
+      }
+    }, INTERVAL);
+  };
+
+  function handleJobResponse(job, monitorJob, waitedSeconds, projectPath, datasetName) {
+    if (job) {
+      switch (job.state) {
+        case "ENQUEUED":
+          setCurrentStatus({ status: "inProcess", text: ImportStateMessage.ENQUEUED });
+          break;
+        case "IN_PROGRESS":
+          setCurrentStatus({ status: "inProcess", text: ImportStateMessage.IN_PROGRESS });
+          break;
+        case "COMPLETED":
+          setCurrentStatus({ status: "completed", text: ImportStateMessage.COMPLETED });
+          setImportingDataset(false);
+          clearInterval(monitorJob);
+          redirectUser(projectPath, datasetName);
+          break;
+        case "FAILED":
+          setCurrentStatus({ status: "error", text: ImportStateMessage.FAILED + job.extras.error });
+          setImportingDataset(false);
+          clearInterval(monitorJob);
+          break;
+        default:
+          setCurrentStatus({ status: "error", text: ImportStateMessage.FAILED_NO_INFO });
+          setImportingDataset(false);
+          clearInterval(monitorJob);
+          break;
+      }
+    }
+    if ((waitedSeconds > 180 && job.state !== "IN_PROGRESS") || (waitedSeconds > 360 && job.state === "IN_PROGRESS")) {
+      setCurrentStatus({ status: "error", text: ImportStateMessage.TOO_LONG });
+      setImportingDataset(false);
+      clearInterval(monitorJob);
+    }
+  }
+
+  const redirectUser = (projectPath, datasetName) => {
+    setCurrentStatus(null);
+    props.history.push({
+      pathname: `/projects/${projectPath}/datasets/${datasetName}`,
+      state: { reload: true }
     });
   };
+  /* end import dataset */
 
-  const initializeFunction = (formSchema, formHandlers) => {
-    let projectsField = formSchema.find(field => field.name === "project");
-    projectsField.customHandlers = {
-      onSuggestionsFetchRequested: ( value, reason, setSuggestions, handlers ) => {
-
-        formHandlers.setServerErrors(undefined);
-        formHandlers.setServerWarnings(undefined);
-
-        const featured = props.projectsCoordinator.model.get("featured");
-        if (!featured.fetched || (!featured.starred.length && !featured.member.length))
-          return;
-
-        const regex = new RegExp(value, "i");
-        const searchDomain = featured.member.filter((project)=> project.access_level >= ACCESS_LEVELS.MAINTAINER);
-
-        if (projectsField.options.length !== searchDomain.length) {
-          projectsField.options = searchDomain.map((project)=>({
-            "value": project.http_url_to_repo, "name": project.path_with_namespace, "id": project.id
-          }));
-        }
-
-        const hits = {};
-        const groupedSuggestions = [];
-
-        searchDomain.forEach(d => {
-          if (regex.exec(d.path_with_namespace) != null) {
-            hits[d.path_with_namespace] = {
-              "value": d.http_url_to_repo,
-              "name": d.path_with_namespace,
-              "subgroup": d.path_with_namespace.split("/")[0],
-              "id": d.id
-            };
-          }
-        });
-
-        const hitValues = Object.values(hits).sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
-        const groupedHits = groupBy(hitValues, item => item.subgroup);
-        for (var [key, val] of groupedHits) {
-          groupedSuggestions.push({
-            title: key,
-            suggestions: val
-          });
-        }
-        setSuggestions(groupedSuggestions);
-      }
-    };
+  // monitor to check when the list of projects is ready
+  const monitorProjectList = () => {
+    const INTERVAL = 2000;
+    projectsMonitorJob = setInterval(() => {
+      const featured = props.projectsCoordinator.model.get("featured");
+      const isReady = !(!featured.fetched || (!featured.starred.length && !featured.member.length));
+      setIsProjectsReady(isReady);
+      if (isReady)
+        clearInterval(projectsMonitorJob);
+    }, INTERVAL);
   };
 
+  const closeModal = () => {
+    props.setModalOpen(false);
+  };
+
+  const onCancel = () => {
+    closeModal();
+  };
+
+  const customHandlers = {
+    onSuggestionsFetchRequested,
+    onProjectSelected,
+  };
 
   return (
     <DatasetAdd
@@ -211,11 +318,12 @@ function AddDataset(props) {
       closeModal={closeModal}
       onCancel={onCancel}
       submitCallback={submitCallback}
-      addDatasetToProjectSchema={dsFormSchema}
       history={props.history}
-      initializeFunction={initializeFunction}
-      formLocation={props.formLocation}
-      model={props.model}
+      customHandlers={customHandlers}
+      currentStatus={currentStatus}
+      importingDataset={importingDataset}
+      isProjectsReady={isProjectsReady}
+      isDatasetValid={isDatasetValid}
     />
   );
 }

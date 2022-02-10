@@ -555,25 +555,6 @@ const datasetImportFormSchema = new Schema({
   }
 });
 
-const addDatasetToProjectSchema = new Schema({
-  project: {
-    initial: "",
-    name: "project",
-    label: "Project",
-    placeholder: "Select a project...",
-    type: FormGenerator.FieldTypes.SELECTAUTOSUGGEST,
-    options: [
-    ],
-    validators: [
-      {
-        id: "valid-option",
-        isValidFun: expression => FormGenerator.Validators.optionExists(expression),
-        alert: "Selected project is not valid"
-      }
-    ]
-  }
-});
-
 const environmentSchema = new Schema({
   fetched: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
   fetching: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
@@ -618,7 +599,7 @@ const formGeneratorSchema = new Schema({
 });
 
 export {
-  addDatasetToProjectSchema, datasetFormSchema, datasetImportFormSchema, environmentSchema,
+  datasetFormSchema, datasetImportFormSchema, environmentSchema,
   formGeneratorSchema, issueFormSchema, newProjectSchema, notebooksSchema, notificationsSchema,
   projectSchema, projectsSchema, statuspageSchema, userSchema
 };
