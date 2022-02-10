@@ -51,13 +51,13 @@ export default function ShowDataset(props) {
     if (props.datasetCoordinator) {
       const currentDataset = props.datasetCoordinator.get("metadata");
       const datasetId = props.insideProject ? findDatasetId(props.datasetId, props.datasets) : props.identifier;
+      // fetch dataset data when the need data is ready (datasets list when is insideProject)
       if (props.insideProject && datasetId && props.datasets && (!currentDataset || !currentDataset?.fetching))
         fetchDatasets(datasetId);
       else if (!props.insideProject && props.identifier)
         fetchDatasets(datasetId);
-      else {
+      else
         setDataset(currentDataset);
-      }
     }
   }, [
     props.datasetCoordinator,

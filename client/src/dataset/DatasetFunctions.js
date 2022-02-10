@@ -35,4 +35,14 @@ function mapDataset(dataset_core, dataset_kg) {
   return dataset_kg;
 }
 
-export { mapDataset };
+function getDatasetAuthors(dataset) {
+  if (!dataset) return null;
+
+  return dataset.published !== undefined && dataset.published.creator !== undefined ?
+    dataset.published.creator
+      .map((creator) => creator.name + (creator.affiliation ? ` (${creator.affiliation})` : ""))
+      .join("; ")
+    : null;
+}
+
+export { mapDataset, getDatasetAuthors };

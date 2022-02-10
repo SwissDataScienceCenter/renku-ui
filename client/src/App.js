@@ -136,7 +136,7 @@ function CentralContentContainer(props) {
           httpProjectUrl={props.httpProjectUrl}
           projectsCoordinator={new ProjectsCoordinator(props.client, props.model.subModel("projects"))}
           datasetCoordinator={new DatasetCoordinator(props.client, props.model.subModel("dataset"))}
-          versionUrl={projectSchema.createInitialized().migration}
+          migration={projectSchema.createInitialized().migration}
         />}
       />
       <Route path="/datasets/:identifier" render={

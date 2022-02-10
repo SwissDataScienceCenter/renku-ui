@@ -26,16 +26,40 @@
 
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Row, Col, Modal, ModalHeader, ModalBody } from "reactstrap";
+import { Row, Col } from "reactstrap";
 import { Button } from "reactstrap";
-import { ModalFooter } from "reactstrap/lib";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
 import { Loader } from "../../utils/components/Loader";
 import SelectAutosuggestInput from "../../utils/components/SelectAutosuggestInput";
+import { ButtonGroup, Table } from "reactstrap/lib";
+import { getDatasetAuthors } from "../DatasetFunctions";
 
-function ImportDatasetStatus(status, text, existingProject, history) {
+function HeaderAddDataset(dataset) {
+  if (!dataset) return null;
+  const authors = getDatasetAuthors(dataset);
+  return (
+    <>
+      <h2>Add dataset to project</h2>
+      {/* eslint-disable-next-line */}
+      <Table className="mb-4 table-borderless" size="sm">
+        <tbody className="text-rk-text">
+          <tr>
+            <td className="text-dark fw-bold" style={{ "width": "120px" }}>Title:</td>
+            <td>{ dataset?.title || dataset?.name }</td>
+          </tr>
+          <tr>
+            <td className="text-dark fw-bold" style={{ "width": "120px" }}>Authors:</td>
+            <td>{ authors }</td>
+          </tr>
+        </tbody>
+      </Table>
+    </>
+  );
+}
+
+function ImportDatasetStatus(status, text, existingProject) {
   let statusProject = null;
   switch (status) {
     case "errorNeedMigration" :
@@ -69,6 +93,7 @@ function ImportDatasetStatus(status, text, existingProject, history) {
 
 function DatasetAdd(props) {
   const [existingProject, setExistingProject] = useState(null);
+  const [isNewProject, setIsNewProject] = useState(false);
 
   useEffect( () => {
     props.customHandlers.onProjectSelected(existingProject);
@@ -85,16 +110,26 @@ function DatasetAdd(props) {
 
   /* buttons */
   const addDatasetButton = (
-    <Button
-      color="primary"
-      disabled={props.currentStatus?.status !== "validProject" || props.importingDataset}
-      onClick={startImportDataset}>
-      Add Dataset
-    </Button>);
+    <div className="mt-4 d-flex justify-content-end">
+      <Button
+        color="primary"
+        disabled={props.currentStatus?.status !== "validProject" || props.importingDataset}
+        onClick={startImportDataset}>
+        Add Dataset to existing Project
+      </Button>
+    </div>
+  );
 
-  let closeButton = null;
-  if (props.modalOpen)
-    closeButton = <Button outline color="primary" onClick={props.closeModal}>Close</Button>;
+  const buttonGroup = (
+    <ButtonGroup className="d-flex">
+      <Button color="primary" outline active={!isNewProject} onClick={(e) => setIsNewProject(false)}>
+        Existing Project
+      </Button>
+      <Button color="primary" outline active={isNewProject} onClick={(e) => setIsNewProject(true)}>
+        New Project
+      </Button>
+    </ButtonGroup>
+  );
 
   /* end buttons */
 
@@ -118,26 +153,30 @@ function DatasetAdd(props) {
     suggestionInput = <div><Loader size="14" inline="true" />{" "}Loading projects...</div>;
   }
 
+  if (!props.dataset) return null;
+
+  const formToDisplay = !isNewProject ?
+    (
+      <div className="mt-4">
+        <form onSubmit={onSubmit} className={"mt-2"}>
+          {suggestionInput}
+          {statusImportDataset}
+          {addDatasetButton}
+        </form>
+      </div>
+    ) : null;
+
+  const header = HeaderAddDataset(props.dataset);
   return (
-    <Modal isOpen={props.modalOpen} toggle={props.closeModal}>
-      <ModalHeader toggle={props.closeModal}>
-        Add dataset to existing project
-      </ModalHeader>
-      <ModalBody className={"text-break"}>
-        <Row className="mb-3">
-          <Col>
-            <form onSubmit={onSubmit}>
-              {suggestionInput}
-              {statusImportDataset}
-            </form>
-          </Col>
-        </Row>
-      </ModalBody>
-      <ModalFooter>
-        {closeButton}
-        {addDatasetButton}
-      </ModalFooter>
-    </Modal>
+    <>
+      <Row className="mb-3">
+        <Col sm={10} md={9} lg={8} xl={7}>
+          { header }
+          { buttonGroup }
+          { formToDisplay }
+        </Col>
+      </Row>
+    </>
   );
 }
 

@@ -38,20 +38,32 @@ function AddDataset(props) {
   const [isProjectsReady, setIsProjectsReady] = useState(false);
   const [isDatasetValid, setIsDatasetValid] = useState(null);
   const [datasetProjectVersion, setDatasetProjectVersion] = useState(null);
+  const [dataset, setDataset] = useState(null);
   let projectsMonitorJob = null;
-  console.log("someone here...");
+  const versionUrl = props.migration.core.versionUrl;
 
   useEffect(() => {
-    validateDatasetProject();
-    monitorProjectList();
-  }, []); // eslint-disable-line
+    const fetchDataset = async () => {
+      await props.datasetCoordinator.fetchDataset(props.identifier, props.datasets, true);
+      const currentDataset = props.datasetCoordinator.get("metadata");
+      setDataset(currentDataset);
+    };
 
-  if (props.datasetCoordinator) {
-    console.log({
-      fetched: props.datasetCoordinator.get("metadata.fetched"),
-      identifier: props.datasetCoordinator.get("metadata.identifier")
-    });
-  }
+    if (props.datasetCoordinator && props.identifier) {
+      const currentDataset = props.datasetCoordinator.get("metadata");
+      if (currentDataset && currentDataset?.identifier === props.identifier && currentDataset.projects)
+        setDataset(currentDataset);
+      else
+        fetchDataset();
+    }
+  }, [props.datasetCoordinator && props.identifier]); // eslint-disable-line
+
+  useEffect(() => {
+    if (dataset) {
+      validateDatasetProject();
+      monitorProjectList();
+    }
+  }, [dataset]); // eslint-disable-line
 
   /* validate project */
   const onProjectSelected = (value) => {
@@ -64,7 +76,7 @@ function AddDataset(props) {
   const validateDatasetProject = async () => {
     // check dataset has valid project url
     setCurrentStatus({ status: "inProcess", text: "Checking Dataset..." });
-    if (!props.dataset.project || !props.dataset.project.path) {
+    if (!dataset.project || !dataset.project.path) {
       setCurrentStatus({ status: "error", text: "Invalid Dataset, refresh the page to get updated values" });
       setIsDatasetValid(false);
       return false;
@@ -74,7 +86,7 @@ function AddDataset(props) {
     // TODO remove this request when dataset include httpUrlToRepo
     let checkOrigin;
     try {
-      const fetchDatasetProject = await props.client.getProject(props.dataset.project?.path);
+      const fetchDatasetProject = await props.client.getProject(dataset.project?.path);
       const urlProjectOrigin = fetchDatasetProject?.data?.all?.http_url_to_repo;
       if (!urlProjectOrigin) {
         setCurrentStatus({ status: "error", text: "Invalid Dataset" });
@@ -216,9 +228,9 @@ function AddDataset(props) {
 
   const importDataset = (selectedProject) => {
     setImportingDataset(true);
-    props.client.datasetImport(selectedProject.value, props.dataset.url, props.versionUrl)
+    props.client.datasetImport(selectedProject.value, dataset.url, versionUrl)
       .then(response => {
-        if (response.data.error !== undefined) {
+        if (response?.data?.error !== undefined) {
           setCurrentStatus({ status: "error", text: response.data.error.reason });
           setImportingDataset(false);
         }
@@ -226,7 +238,7 @@ function AddDataset(props) {
           monitorJobStatusAndHandleResponse(
             response.data.result.job_id,
             selectedProject.name,
-            props.dataset.name
+            dataset.name
           );
         }
       });
@@ -237,7 +249,7 @@ function AddDataset(props) {
     const INTERVAL = 6000;
     let monitorJob = setInterval(async () => {
       try {
-        const job = await props.client.getJobStatus(job_id, props.versionUrl);
+        const job = await props.client.getJobStatus(job_id, versionUrl);
         cont++;
         if (job !== undefined) {
           handleJobResponse(
@@ -332,6 +344,7 @@ function AddDataset(props) {
       importingDataset={importingDataset}
       isProjectsReady={isProjectsReady}
       isDatasetValid={isDatasetValid}
+      dataset={dataset}
     />
   );
 }

@@ -36,6 +36,7 @@ import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
 import { ExternalLink } from "../utils/components/ExternalLinks";
 import { ErrorAlert, InfoAlert, WarnAlert } from "../utils/components/Alert";
 import { Loader } from "../utils/components/Loader";
+import { getDatasetAuthors } from "./DatasetFunctions";
 
 function DisplayFiles(props) {
   if (!props.files || !props.files?.hasPart) return null;
@@ -170,11 +171,7 @@ function DisplayInfoTable(props) {
       <ExternalLink url={dataset.url} title={dataset.url} role="link" />
       : null;
 
-  const authors = dataset.published !== undefined && dataset.published.creator !== undefined ?
-    dataset.published.creator
-      .map((creator) => creator.name + (creator.affiliation ? ` (${creator.affiliation})` : ""))
-      .join("; ")
-    : null;
+  const authors = getDatasetAuthors(dataset);
 
   const keywords = dataset.keywords && dataset.keywords.length > 0 ?
     dataset.keywords.map(keyword =>
@@ -459,23 +456,6 @@ export default function DatasetView(props) {
         </WarnAlert>
         : null
     }
-    {/*{*/}
-    {/*  props.logged ?*/}
-    {/*    <AddDataset*/}
-    {/*      httpProjectUrl={props.httpProjectUrl}*/}
-    {/*      client={props.client}*/}
-    {/*      dataset={dataset}*/}
-    {/*      formLocation={props.location.pathname + "/add"}*/}
-    {/*      history={props.history}*/}
-    {/*      modalOpen={addDatasetModalOpen}*/}
-    {/*      model={props.model}*/}
-    {/*      projectsCoordinator={new ProjectsCoordinator(props.client, props.model.subModel("projects"))}*/}
-    {/*      setModalOpen={setAddDatasetModalOpen}*/}
-    {/*      user={props.user}*/}
-    {/*      versionUrl={props.migration.core.versionUrl}*/}
-    {/*    />*/}
-    {/*    : null*/}
-    {/*}*/}
     {props.insideProject && props.maintainer ?
       <DeleteDataset
         client={props.client}
