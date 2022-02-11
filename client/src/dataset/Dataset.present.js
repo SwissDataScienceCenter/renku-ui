@@ -248,6 +248,8 @@ export default function DatasetView(props) {
 
   const [deleteDatasetModalOpen, setDeleteDatasetModalOpen] = useState(false);
   const dataset = props.dataset;
+  // We only get the locked prop if we are inside a project
+  const locked = props.insideProject && (props.lockStatus?.locked === true);
 
   if (props.loadingDatasets)
     return <Loader />;
@@ -283,7 +285,7 @@ export default function DatasetView(props) {
         }
       </Col>
       <Col md={4} sm={12} className="d-flex flex-col justify-content-end mb-auto">
-        {props.logged ?
+        {props.logged && !locked ?
           <>
             <Button
               data-cy="add-to-project-button"
@@ -293,7 +295,7 @@ export default function DatasetView(props) {
             </Button>
           </>
           : null}
-        {props.insideProject && props.maintainer ?
+        {props.insideProject && props.maintainer && !locked ?
           <Link className="float-right mb-1 me-1" id="editDatasetTooltip"
             data-cy="edit-dataset-button"
             to={{ pathname: "modify", state: { dataset: dataset } }} >
@@ -303,7 +305,7 @@ export default function DatasetView(props) {
           </Link>
           : null
         }
-        {props.insideProject && props.maintainer ?
+        {props.insideProject && props.maintainer && !locked ?
           <UncontrolledButtonDropdown size="sm" className="float-right mb-1">
             <DropdownToggle data-cy="more-options-button" caret color="secondary" className="removeArrow">
               <FontAwesomeIcon icon={faEllipsisV} color="dark" />

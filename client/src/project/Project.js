@@ -256,6 +256,10 @@ class View extends Component {
     return await this.projectCoordinator.checkCoreAvailability(version);
   }
 
+  async fetchProjectLockStatus(gitUrl) {
+    return await this.projectCoordinator.fetchProjectLockStatus(this.props.client, gitUrl);
+  }
+
   async fetchAll() {
     // Get the project main data
     const pathComponents = splitProjectSubRoute(this.props.match.url);
@@ -274,6 +278,7 @@ class View extends Component {
       const migrationData = await this.fetchMigrationCheck(gitUrl, defaultBranch);
       const projectVersion = migrationData.core_compatibility_status?.project_metadata_version;
       await this.checkCoreAvailability(projectVersion);
+      await this.fetchProjectLockStatus(gitUrl);
       this.fetchProjectDatasets();
     }
   }
@@ -386,6 +391,7 @@ class View extends Component {
     const forked = (forkedData != null && Object.keys(forkedData).length > 0) ? true : false;
     const graphProgress = this.projectCoordinator.get("webhook.progress");
     const httpProjectUrl = this.projectCoordinator.get("metadata.httpUrl");
+    const lockStatus = this.projectCoordinator.get("lockStatus");
     const maintainer = accessLevel >= ACCESS_LEVELS.MAINTAINER ? true : false;
     const migration = this.projectCoordinator.get("migration");
     const pathComponents = splitProjectSubRoute(this.props.match.url);
@@ -465,6 +471,7 @@ class View extends Component {
         insideProject={true}
         lineagesUrl={subUrls.lineagesUrl}
         location={this.props.location}
+        lockStatus={lockStatus}
         logged={this.props.user.logged}
         maintainer={maintainer}
         migration={migration}

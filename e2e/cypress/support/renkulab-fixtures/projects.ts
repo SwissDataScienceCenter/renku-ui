@@ -107,6 +107,18 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    projectLockStatus(locked = false, name = "getProjectLockStatus") {
+      const coreUrl = "/ui-server/api/renku/project.lock_status";
+      const params =
+        "git_url=*";
+      cy.intercept(`${coreUrl}?${params}`, {
+        body: {
+          result: { locked }
+        }
+      }).as(name);
+      return this;
+    }
+
     projectTestContents(
       names = {
         coreServiceVersionName: "getCoreServiceVersion",

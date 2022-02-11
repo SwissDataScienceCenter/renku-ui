@@ -51,6 +51,23 @@ function checkDatasetDisplay(cy, fixtures, datasets) {
   });
 }
 
+function checkDatasetLimitedPermissionDisplay(cy, fixtures, datasets) {
+  datasets.forEach((d, i) => {
+    const datasetIdentifier = d.identifier.replace(/-/g, "");
+    const requestId = `getDatasetById${i}`;
+    fixtures.datasetById(datasetIdentifier, requestId);
+    cy.get_cy("dataset-card-title").contains(d.title).click();
+    cy.wait(`@${requestId}`);
+
+    cy.get_cy("dataset-title").should("contain.text", d.title);
+
+    cy.get_cy("edit-dataset-button").should("not.exist");
+    cy.get_cy("more-options-button").should("not.exist");
+
+    cy.get_cy("go-back-button").click();
+  });
+}
+
 describe("Project dataset", () => {
   const fixtures = new Fixtures(cy);
   fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
@@ -63,14 +80,19 @@ describe("Project dataset", () => {
     fixtures.projectKGDatasetList(projectPath);
     fixtures.projectDatasetList();
     fixtures.projectTestContents(undefined, 9);
-    fixtures.projectMigrationUpToDate({ queryUrl: "*", fixtureName: "getMigration" });
+    fixtures.projectMigrationUpToDate({
+      queryUrl: "*",
+      fixtureName: "getMigration"
+    });
+    fixtures.projectLockStatus();
   });
 
   it("displays project datasets", () => {
     cy.visit(`projects/${projectPath}/datasets`);
     cy.wait("@getProject");
     cy.wait("@datasetList")
-      .its("response.body").then( data => {
+      .its("response.body")
+      .then((data) => {
         const datasets = data.result.datasets;
         // all datasets are displayed
         const totalDatasets = datasets?.length;
@@ -81,21 +103,18 @@ describe("Project dataset", () => {
 
   it("dataset limited options if has not permissions", () => {
     const projectPath = "e2e/testing-datasets";
-    fixtures.project(projectPath, "getProjectLimited", "projects/project-limited-permissions.json");
+    fixtures.project(
+      projectPath,
+      "getProjectLimited",
+      "projects/project-limited-permissions.json"
+    );
     cy.visit(`projects/${projectPath}/datasets`);
     cy.wait("@getProjectLimited");
     cy.wait("@datasetList")
-      .its("response.body").then( data => {
+      .its("response.body")
+      .then((data) => {
         const datasets = data.result.datasets;
-        if (datasets.length > 0) {
-          const datasetIdentifier = datasets[0].identifier;
-          fixtures.datasetById(datasetIdentifier);
-          cy.get_cy("list-card-title").contains(datasets[0].title).click();
-          cy.wait("@getDatasetById");
-          /* 3. Verify displaying info dataset with permissions  */
-          cy.get_cy("edit-dataset-button").should("not.exist");
-          cy.get_cy("more-options-button").should("not.exist");
-        }
+        checkDatasetLimitedPermissionDisplay(cy, fixtures, datasets);
       });
   });
 
@@ -116,7 +135,6 @@ describe("Project dataset", () => {
     cy.get_cy("add-to-project-button").should("not.be.enabled");
     cy.get_cy("not-in-kg-warning").should("exist");
   });
-
 });
 
 describe("Project dataset (legacy ids)", () => {
@@ -179,5 +197,42 @@ describe("Error loading datasets", () => {
         cy.get_cy("error-datasets-modal").should("exist");
       });
   });
+});
 
+describe("Project dataset (locked)", () => {
+  const fixtures = new Fixtures(cy);
+  fixtures.useMockedData = true;
+  const projectPath = "e2e/testing-datasets";
+
+  beforeEach(() => {
+    fixtures.config().versions().userTest();
+    fixtures.projects().landingUserProjects();
+    fixtures.project(projectPath);
+    fixtures.projectKGDatasetList(projectPath);
+    fixtures.projectDatasetList();
+    fixtures.projectTestContents(undefined, 9);
+    fixtures.projectMigrationUpToDate({
+      queryUrl: "*",
+      fixtureName: "getMigration"
+    });
+    fixtures.projectLockStatus(true);
+  });
+
+  it("displays project datasets", () => {
+    cy.visit(`projects/${projectPath}/datasets`);
+    cy.contains("currently being modified").should("be.visible");
+
+    cy.wait("@getProject");
+    cy.wait("@datasetList")
+      .its("response.body")
+      .then((data) => {
+        const datasets = data.result.datasets;
+        // all datasets are displayed
+        const totalDatasets = datasets?.length;
+        cy.get_cy("list-card").should("have.length", totalDatasets);
+        checkDatasetLimitedPermissionDisplay(cy, fixtures, datasets);
+      });
+
+    cy.contains("Project is being modified.").should("be.visible");
+  });
 });

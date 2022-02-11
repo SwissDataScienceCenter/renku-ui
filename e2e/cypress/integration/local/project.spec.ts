@@ -24,6 +24,7 @@ describe("display a project", () => {
     const fixtures = new Fixtures(cy);
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects().projectTest();
+    fixtures.projectLockStatus();
     cy.visit("/projects/e2e/local-test-project");
   });
 
@@ -80,6 +81,28 @@ describe("display migration information", () => {
     cy.contains("This project is not compatible with the RenkuLab UI").should(
       "be.visible"
     );
+  });
+});
+
+describe("display lock status", () => {
+  const fixtures = new Fixtures(cy);
+  beforeEach(() => {
+    fixtures.config().versions().userTest();
+    fixtures.projects().landingUserProjects().projectTest();
+    fixtures.projectMigrationUpToDate();
+    cy.visit("/projects/e2e/local-test-project");
+  });
+
+  it("displays nothing for non-locked project", () => {
+    fixtures.projectLockStatus();
+    cy.visit("/projects/e2e/local-test-project/");
+    cy.contains("currently being modified").should("not.exist");
+  });
+
+  it("displays messages for locked project", () => {
+    fixtures.projectLockStatus(true);
+    cy.visit("/projects/e2e/local-test-project/");
+    cy.contains("currently being modified").should("be.visible");
   });
 });
 

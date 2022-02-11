@@ -38,6 +38,13 @@ describe("launch sessions", () => {
     );
   });
 
+  it.only("displays new session page (locked project)", () => {
+    fixtures.projectLockStatus(true).sessionServerOptions();
+    cy.visit("/projects/e2e/local-test-project/sessions/new");
+    cy.wait("@getSessionPipelineJobsName", { timeout: 10000 });
+    cy.contains("Project is being modified").should("be.visible");
+  });
+
   it("displays cloud storage options", () => {
     fixtures.sessionServerOptions(true);
     cy.visit("/projects/e2e/local-test-project/sessions/new");
@@ -47,3 +54,4 @@ describe("launch sessions", () => {
     ).should("be.visible");
   });
 });
+

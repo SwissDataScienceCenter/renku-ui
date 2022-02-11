@@ -105,8 +105,9 @@ export default function ShowDataset(props) {
     identifier={props.identifier}
     insideProject={props.insideProject}
     lineagesUrl={props.lineagesUrl}
-    location={props.location}
     loadingDatasets={loadingDatasets}
+    location={props.location}
+    lockStatus={props.lockStatus}
     logged={props.logged}
     maintainer={props.maintainer}
     migration={migration}

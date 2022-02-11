@@ -26,7 +26,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBook, faCog, faCogs, faExclamationTriangle,
-  faInfoCircle, faLink, faRedo, faSyncAlt,
+  faInfoCircle, faLink, faRedo, faSyncAlt, faUserClock
 } from "@fortawesome/free-solid-svg-icons";
 
 import { StatusHelper } from "../model/Model";
@@ -41,6 +41,20 @@ import { Url } from "../utils/helpers/url";
 import Time from "../utils/helpers/Time";
 import { NotebooksHelper } from "./index";
 import { ObjectStoresConfigurationButton, ObjectStoresConfigurationModal } from "./ObjectStoresConfig.present";
+
+
+function ProjectSessionLockAlert({ lockStatus }) {
+  if (lockStatus == null) return null;
+  const isLocked = lockStatus.locked;
+  if (!isLocked) return null;
+
+  return <WarnAlert>
+    <FontAwesomeIcon icon={faUserClock} />{" "}
+    <i>Project is being modified. You can start a session, but to avoid{" "}
+      conflicts you should not push any changes.</i>
+  </WarnAlert>;
+}
+
 
 // * StartNotebookServer code * //
 function StartNotebookServer(props) {
@@ -130,6 +144,7 @@ function StartNotebookServer(props) {
     <Row>
       <Col sm={12} md={10} lg={8}>
         <h3>Start a new session</h3>
+        <ProjectSessionLockAlert lockStatus={props.lockStatus} />
         <LaunchErrorAlert autosaves={autosaves} launchError={props.launchError} pipelines={props.pipelines} />
         {messageOutput}
         <Form>

@@ -32,6 +32,7 @@ import {
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
+import { faUserClock } from "@fortawesome/free-solid-svg-icons";
 import {
   faCodeBranch, faExclamationTriangle, faGlobe, faInfoCircle, faLock, faPlay, faSearch,
   faStar as faStarSolid, faUserFriends
@@ -109,6 +110,27 @@ function ProjectVisibilityLabel({ visibilityLevel }) {
   return <span className="ms-3">
     <Badge color="secondary" style={{ verticalAlign: "middle" }}>{text}</Badge>&nbsp;
   </span>;
+}
+
+function ProjectLockStatus({ lockStatus }) {
+  if (lockStatus == null) return null;
+  const isLocked = lockStatus.locked;
+  if (!isLocked) return null;
+  return <span className="fs-6 fw-normal">
+    <FontAwesomeIcon icon={faUserClock} /> <i>currently being modified</i>
+  </span>;
+}
+
+function ProjectDatasetLockAlert({ lockStatus }) {
+  if (lockStatus == null) return null;
+  const isLocked = lockStatus.locked;
+  if (!isLocked) return null;
+
+  return <WarnAlert>
+    <FontAwesomeIcon icon={faUserClock} />{" "}
+    <i>Project is being modified. Datasets cannot be created or edited{" "}
+      until the action completes.</i>
+  </WarnAlert>;
 }
 
 /**
@@ -235,6 +257,7 @@ function ProjectIdentifier(props) {
             migration={props.migration}
           />{projectTitle}
           <ProjectVisibilityLabel visibilityLevel={props.metadata.visibility} />
+          <ProjectLockStatus lockStatus={props.lockStatus} />
         </h2>
         <span className="text-rk-text fs-small">{projectId}</span> {forkedFrom}
       </div>
@@ -691,6 +714,7 @@ class ProjectDatasetsNav extends Component {
       datasets_kg={this.props.datasets.datasets_kg}
       datasets={this.props.datasets.core.datasets}
       datasetsUrl={this.props.datasetsUrl}
+      locked={this.props.lockStatus?.locked ?? true}
       newDatasetUrl={this.props.newDatasetUrl}
       accessLevel={this.props.metadata.accessLevel}
       graphStatus={this.props.isGraphReady}
@@ -760,14 +784,15 @@ function ProjectAddDataset(props) {
   </Col>;
 }
 
-function EmptyDatasets(props) {
+function EmptyDatasets({ locked, membership, newDatasetUrl }) {
   return <Alert timeout={0} color="primary">
     No datasets found for this project.
-    { props.membership ?
+    { membership && !locked ?
       <div><br /><FontAwesomeIcon icon={faInfoCircle} />  If you recently activated the knowledge graph or
         added the datasets try refreshing the page. <br /><br />
-        You can also click on the button to
-        &nbsp;<Link className="btn btn-primary btn-sm" to={props.newDatasetUrl}>Add a Dataset</Link></div>
+        You can also click on the button to{" "}
+      <Link className="btn btn-primary btn-sm" to={newDatasetUrl}>Add a Dataset</Link>
+      </div>
       : null
     }
   </Alert>;
@@ -883,9 +908,11 @@ function ProjectViewDatasets(props) {
 
   if (props.datasets.core.datasets != null && props.datasets.core.datasets.length === 0
     && props.location.pathname !== props.newDatasetUrl) {
-    return <Col sm={12}>
+    return <Col sm={12}>x
       {migrationMessage}
+      <ProjectDatasetLockAlert lockStatus={props.lockStatus} />
       <EmptyDatasets
+        locked={props.lockStatus?.locked ?? true}
         membership={props.metadata.accessLevel > ACCESS_LEVELS.DEVELOPER}
         newDatasetUrl={props.newDatasetUrl}
       />
@@ -894,6 +921,7 @@ function ProjectViewDatasets(props) {
 
   return <Col sm={12}>
     {migrationMessage}
+    <ProjectDatasetLockAlert lockStatus={props.lockStatus} />
     <Switch>
       <Route path={props.newDatasetUrl}
         render={p =>[
@@ -1192,7 +1220,7 @@ class ProjectStartNotebookServer extends Component {
     const {
       branches, client, commits, model, user, forkUrl, externalUrl, location, metadata,
       fetchBranches, fetchCommits, notebookServersUrl, history, blockAnonymous, notifications,
-      projectCoordinator
+      projectCoordinator, lockStatus
     } = this.props;
     const warning = notebookWarning(
       user.logged, metadata.accessLevel, forkUrl, location.pathname, externalUrl
@@ -1225,6 +1253,7 @@ class ProjectStartNotebookServer extends Component {
         fetchingBranches={branches.fetching}
         history={history}
         location={locationEnhanced}
+        lockStatus={lockStatus}
         message={warning}
         model={model}
         notebooks={projectCoordinator.model.baseModel.get("notebooks")}
