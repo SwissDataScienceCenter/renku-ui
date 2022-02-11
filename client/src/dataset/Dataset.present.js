@@ -264,6 +264,10 @@ export default function DatasetView(props) {
     }
   }
   const addDatasetUrl = `/datasets/${dataset?.identifier}/add`;
+  const goToAddToProject = () => {
+    if (props.history)
+      props.history.push(addDatasetUrl);
+  };
 
   return <Col>
     <ErrorAfterCreation location={props.location} dataset={dataset} />
@@ -282,9 +286,11 @@ export default function DatasetView(props) {
       <Col md={4} sm={12} className="d-flex flex-col justify-content-end mb-auto">
         {props.logged ?
           <>
-            <Link className="float-right me-1 mb-1 btn btn-secondary" role="button" to={addDatasetUrl}>
+            <Button
+              disabled={dataset?.insideKg === false}
+              className="float-right mb-1 me-1" size="sm" color="secondary" onClick={() => goToAddToProject()}>
               <FontAwesomeIcon icon={faPlus} color="dark" /> Add to project
-            </Link>
+            </Button>
           </>
           : null}
         {props.insideProject && props.maintainer ?
