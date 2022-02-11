@@ -406,19 +406,19 @@ const notebooksSchema = new Schema({
 const datasetSchema = new Schema({
   metadata: {
     [Prop.SCHEMA]: new Schema({
-      name: { [Prop.INITIAL]: "" }, // dataset_core.name,
-      title: { [Prop.INITIAL]: "" }, // dataset_core.title,
-      description: { [Prop.INITIAL]: "" }, // dataset_core.description,
-      created: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true }, // dataset_core.created_at,
-      published: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, //,
-      identifier: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // dataset_core.identifier,
-      keywords: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true }, // dataset_core.keywords,
+      name: { [Prop.INITIAL]: "" }, // dataset_core.name
+      title: { [Prop.INITIAL]: "" }, // dataset_core.title
+      description: { [Prop.INITIAL]: "" }, // dataset_core.description
+      created: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true }, // dataset_core.created_at
+      published: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+      identifier: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // dataset_core.identifier
+      keywords: { [Prop.INITIAL]: "", [Prop.MANDATORY]: true }, // dataset_core.keywords
       hasPart: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
       mediaContent: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true }, // dataset_core.mediaContent
-      url: { [Prop.INITIAL]: null }, // dataset_kg.url;
-      sameAs: { [Prop.INITIAL]: null }, // dataset_kg.sameAs;
-      usedIn: { [Prop.INITIAL]: null }, // dataset_kg.usedIn;
-      insideKg: { [Prop.INITIAL]: null }, //  true;
+      url: { [Prop.INITIAL]: null }, // dataset_kg.url
+      sameAs: { [Prop.INITIAL]: null }, // dataset_kg.sameAs
+      usedIn: { [Prop.INITIAL]: null }, // dataset_kg.usedIn
+      insideKg: { [Prop.INITIAL]: null }, //  true if dataset is in the KG
       exists: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
       fetched: { [Prop.INITIAL]: null },
       fetching: { [Prop.INITIAL]: false },

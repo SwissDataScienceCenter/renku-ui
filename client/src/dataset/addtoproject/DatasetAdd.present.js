@@ -24,19 +24,19 @@
  */
 
 
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import _ from "lodash";
 import { Row, Col } from "reactstrap";
 import { Button } from "reactstrap";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
-
-import { Loader } from "../../utils/components/Loader";
-import SelectAutosuggestInput from "../../utils/components/SelectAutosuggestInput";
 import { ButtonGroup, Table } from "reactstrap/lib";
-import { getDatasetAuthors } from "../DatasetFunctions";
 
-function HeaderAddDataset(dataset) {
+import { getDatasetAuthors } from "../DatasetFunctions";
+import { AddDatasetExistingProject } from "./addDatasetExistingProject";
+import { DatasetError } from "../DatasetError";
+import { Loader } from "../../utils/components/Loader";
+
+function HeaderAddDataset(props) {
+  const { dataset } = props;
   if (!dataset) return null;
   const authors = getDatasetAuthors(dataset);
   return (
@@ -59,67 +59,8 @@ function HeaderAddDataset(dataset) {
   );
 }
 
-function ImportDatasetStatus(status, text, existingProject) {
-  let statusProject = null;
-  switch (status) {
-    case "errorNeedMigration" :
-      statusProject = (
-        <div>
-          <FontAwesomeIcon icon={faExclamationTriangle} /> <strong>This project must be upgraded.</strong>
-          <br />
-          The target project ({existingProject}) needs to be upgraded before datasets can be imported into it.
-          <br />
-          <i className="pt-2"><Link to={`/projects/${existingProject}/overview/status`}>More info</Link></i>
-        </div>
-      );
-      break;
-    case "error" :
-      statusProject = <div><FontAwesomeIcon icon={faExclamationTriangle} /> {text}</div>;
-      break;
-    case "inProcess" :
-      statusProject = <div><Loader size="14" inline="true" /> {text}</div>;
-      break;
-    case "validProject" :
-      statusProject = <div><FontAwesomeIcon icon={faCheck} color={"var(--bs-success)"} /> {text}</div>;
-      break;
-    case "completed" :
-      statusProject = <div><FontAwesomeIcon icon={faCheck} color={"var(--bs-success)"} /> {text}</div>;
-      break;
-    default:
-      statusProject = null;
-  }
-  return statusProject;
-}
-
 function DatasetAdd(props) {
-  const [existingProject, setExistingProject] = useState(null);
   const [isNewProject, setIsNewProject] = useState(false);
-
-  useEffect( () => {
-    props.customHandlers.onProjectSelected(existingProject);
-  }, [existingProject]); // eslint-disable-line
-
-  const setProjectValue = value => setExistingProject(value);
-  const startImportDataset = () => props.submitCallback(existingProject);
-  const onSubmit = (e) => e.preventDefault();
-  let statusImportDataset = null;
-  if (props.currentStatus) {
-    statusImportDataset = ImportDatasetStatus(
-      props.currentStatus.status, props.currentStatus?.text || null, existingProject?.name, props.history);
-  }
-
-  /* buttons */
-  const addDatasetButton = (
-    <div className="mt-4 d-flex justify-content-end">
-      <Button
-        color="primary"
-        disabled={props.currentStatus?.status !== "validProject" || props.importingDataset}
-        onClick={startImportDataset}>
-        Add Dataset to existing Project
-      </Button>
-    </div>
-  );
-
   const buttonGroup = (
     <ButtonGroup className="d-flex">
       <Button color="primary" outline active={!isNewProject} onClick={(e) => setIsNewProject(false)}>
@@ -130,48 +71,37 @@ function DatasetAdd(props) {
       </Button>
     </ButtonGroup>
   );
-
-  /* end buttons */
-
-  let suggestionInput;
-  if (props.isProjectsReady && props.isDatasetValid) {
-    suggestionInput = (<SelectAutosuggestInput
-      existingValue={existingProject?.name || null}
-      name="project"
-      label="Project"
-      placeholder="Select a project..."
-      customHandlers={props.customHandlers}
-      setInputs={setProjectValue}
-      options={props.options}
-      disabled={props.importingDataset || props.currentStatus?.status === "inProcess"}
-    />);
-  }
-  else if (props.isDatasetValid === null || props.isDatasetValid === false) {
-    suggestionInput = null;
-  }
-  else {
-    suggestionInput = <div><Loader size="14" inline="true" />{" "}Loading projects...</div>;
-  }
-
-  if (!props.dataset) return null;
-
   const formToDisplay = !isNewProject ?
-    (
-      <div className="mt-4">
-        <form onSubmit={onSubmit} className={"mt-2"}>
-          {suggestionInput}
-          {statusImportDataset}
-          {addDatasetButton}
-        </form>
-      </div>
-    ) : null;
+    (<AddDatasetExistingProject
+      dataset={props.dataset}
+      currentStatus={props.currentStatus}
+      setCurrentStatus={props.setCurrentStatus}
+      submitCallback={props.submitCallback}
+      isProjectListReady={props.isProjectListReady}
+      setIsProjectListReady={props.setIsProjectListReady}
+      isDatasetValid={props.isDatasetValid}
+      importingDataset={props.importingDataset}
+      projectsCoordinator={props.projectsCoordinator}
+      validateProject={props.validateProject}
+    />) : null;
 
-  const header = HeaderAddDataset(props.dataset);
+  if (!props.dataset) return <Loader />;
+  if (!props.dataset?.exists) {
+    if (!_.isEmpty(props.dataset?.fetchError)) {
+      return (
+        <DatasetError
+          fetchError={props.dataset?.fetchError}
+          insideProject={props.insideProject}
+          location={props.location}
+          logged={props.logged} />
+      );
+    }
+  }
   return (
     <>
       <Row className="mb-3">
         <Col sm={10} md={9} lg={8} xl={7}>
-          { header }
+          <HeaderAddDataset dataset={props.dataset} />
           { buttonGroup }
           { formToDisplay }
         </Col>

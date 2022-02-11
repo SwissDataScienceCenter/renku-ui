@@ -25,21 +25,19 @@
 
 
 import React, { useEffect, useState } from "react";
-import { ACCESS_LEVELS } from "../../api-client";
 
 import { ImportStateMessage } from "../../utils/constants/Dataset";
-import { groupBy } from "../../utils/helpers/HelperFunctions";
 import { migrationCheckToRenkuVersionStatus, RENKU_VERSION_SCENARIOS } from "../../project/status/MigrationUtils";
 import DatasetAdd from "./DatasetAdd.present";
 
 function AddDataset(props) {
   const [currentStatus, setCurrentStatus] = useState(null);
   const [importingDataset, setImportingDataset] = useState(false);
-  const [isProjectsReady, setIsProjectsReady] = useState(false);
+  const [isProjectListReady, setIsProjectListReady] = useState(false);
   const [isDatasetValid, setIsDatasetValid] = useState(null);
   const [datasetProjectVersion, setDatasetProjectVersion] = useState(null);
   const [dataset, setDataset] = useState(null);
-  let projectsMonitorJob = null;
+
   const versionUrl = props.migration.core.versionUrl;
 
   useEffect(() => {
@@ -59,20 +57,11 @@ function AddDataset(props) {
   }, [props.datasetCoordinator && props.identifier]); // eslint-disable-line
 
   useEffect(() => {
-    if (dataset) {
+    if (dataset)
       validateDatasetProject();
-      monitorProjectList();
-    }
   }, [dataset]); // eslint-disable-line
 
   /* validate project */
-  const onProjectSelected = (value) => {
-    if (value)
-      validateProject(value, false); // validate origin only when start import
-    else
-      setCurrentStatus(null);
-  };
-
   const validateDatasetProject = async () => {
     // check dataset has valid project url
     setCurrentStatus({ status: "inProcess", text: "Checking Dataset..." });
@@ -124,7 +113,6 @@ function AddDataset(props) {
     setCurrentStatus(null);
     return projectVersion;
   };
-
   const validateProject = async (project, validateOrigin) => {
     if (!project)
       return false;
@@ -176,42 +164,6 @@ function AddDataset(props) {
     setCurrentStatus({ status: "validProject", text: "Selected project is compatible with dataset." });
     return true;
   };
-
-  const onSuggestionsFetchRequested = ( value, setSuggestions ) => {
-    const featured = props.projectsCoordinator.model.get("featured");
-    if (!featured.fetched || (!featured.starred.length && !featured.member.length))
-      return;
-
-    const regex = new RegExp(value, "i");
-    const searchDomain = featured.member.filter((project)=> {
-      return project.access_level >= ACCESS_LEVELS.MAINTAINER;
-    });
-
-    const hits = {};
-    const groupedSuggestions = [];
-
-    searchDomain.forEach(d => {
-      if (regex.exec(d.path_with_namespace) != null) {
-        hits[d.path_with_namespace] = {
-          "value": d.http_url_to_repo,
-          "name": d.path_with_namespace,
-          "subgroup": d.path_with_namespace.split("/")[0],
-          "id": d.id
-        };
-      }
-    });
-
-    const hitValues = Object.values(hits).sort((a, b) => (a.name > b.name) ? 1 : ((b.name > a.name) ? -1 : 0));
-    const groupedHits = groupBy(hitValues, item => item.subgroup);
-    for (var [key, val] of groupedHits) {
-      groupedSuggestions.push({
-        title: key,
-        suggestions: val
-      });
-    }
-    setCurrentStatus(null);
-    setSuggestions(groupedSuggestions);
-  };
   /* end validate project */
 
   /* import dataset */
@@ -251,10 +203,8 @@ function AddDataset(props) {
       try {
         const job = await props.client.getJobStatus(job_id, versionUrl);
         cont++;
-        if (job !== undefined) {
-          handleJobResponse(
-            job, monitorJob, cont * INTERVAL / 1000, projectPath, datasetName);
-        }
+        if (job !== undefined)
+          handleJobResponse(job, monitorJob, cont * INTERVAL / 1000, projectPath, datasetName);
       }
       catch (e) {
         setCurrentStatus({ status: "error", text: e.message });
@@ -307,44 +257,21 @@ function AddDataset(props) {
   };
   /* end import dataset */
 
-  // monitor to check when the list of projects is ready
-  const monitorProjectList = () => {
-    const INTERVAL = 2000;
-    projectsMonitorJob = setInterval(() => {
-      const featured = props.projectsCoordinator.model.get("featured");
-      const isReady = !(!featured.fetched || (!featured.starred.length && !featured.member.length));
-      setIsProjectsReady(isReady);
-      if (isReady)
-        clearInterval(projectsMonitorJob);
-    }, INTERVAL);
-  };
-
-  const closeModal = () => {
-    props.setModalOpen(false);
-  };
-
-  const onCancel = () => {
-    closeModal();
-  };
-
-  const customHandlers = {
-    onSuggestionsFetchRequested,
-    onProjectSelected,
-  };
-
   return (
     <DatasetAdd
-      modalOpen={props.modalOpen}
-      closeModal={closeModal}
-      onCancel={onCancel}
+      dataset={dataset}
       submitCallback={submitCallback}
       history={props.history}
-      customHandlers={customHandlers}
       currentStatus={currentStatus}
+      setCurrentStatus={setCurrentStatus}
       importingDataset={importingDataset}
-      isProjectsReady={isProjectsReady}
+      isProjectListReady={isProjectListReady}
+      setIsProjectListReady={setIsProjectListReady}
       isDatasetValid={isDatasetValid}
-      dataset={dataset}
+      validateProject={validateProject}
+      projectsCoordinator={props.projectsCoordinator}
+      logged={props.logged}
+      insideProject={props.insideProject}
     />
   );
 }
