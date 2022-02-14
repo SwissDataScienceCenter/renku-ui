@@ -25,19 +25,18 @@
 
 import * as React from "react";
 import { useState } from "react";
-import ValidationAlert from "./ValidationAlert";
-import HelpText from "./HelpText";
-import FormLabel from "./FormLabel";
+import ValidationAlert from "./formgenerator/fields/ValidationAlert";
+import HelpText from "./formgenerator/fields/HelpText";
+import FormLabel from "./formgenerator/fields/FormLabel";
 import { FormGroup } from "reactstrap";
 import Autosuggest from "react-autosuggest";
 
-function SelectautosuggestInput({ name, label, type, value, alert, options, initial,
+function SelectAutosuggestInput({ name, label, existingValue, alert, options,
   placeholder, setInputs, help, customHandlers, disabled = false, required = false }) {
-
-  const [localValue, setLocalValue] = useState("");
+  const [localValue, setLocalValue] = useState(null);
   const [suggestions, setSuggestions ] = useState([]);
 
-  const getSuggestions = (value, reason) => {
+  const getSuggestions = (value) => {
     const inputValue = value.trim().toLowerCase();
     const inputLength = inputValue.length;
 
@@ -48,47 +47,32 @@ function SelectautosuggestInput({ name, label, type, value, alert, options, init
 
   const getSuggestionValue = suggestion => suggestion;
 
-  const renderSuggestion = suggestion => (
-    <span>
-      {suggestion.name}
-    </span>
-  );
+  const renderSuggestion = suggestion => <span>{suggestion.name}</span>;
 
-  const onSuggestionSelected = (event, { method }) => {
+  const onSuggestionSelected = (event, { suggestion, method }) => {
     if (method === "enter")
       event.preventDefault();
+    setLocalValue(suggestion.name);
+    setInputs(suggestion);
+  };
+
+  const onSuggestionsFetchRequested = ({ value }) => {
+    if (customHandlers.onSuggestionsFetchRequested)
+      customHandlers.onSuggestionsFetchRequested(value, setSuggestions);
+    else
+      setSuggestions(getSuggestions(value));
   };
 
   const onChange = (event, { newValue, method }) => {
+    if (method === "enter")
+      event.preventDefault();
     if (method !== "type") {
       setLocalValue(newValue.name);
-      const artificialEvent = {
-        target: { name: name, value: newValue !== undefined ? newValue.value : "" },
-        isPersistent: () => false
-      };
-      setInputs(artificialEvent);
     }
     else {
       // If the user typed, store it as local input, otherwise set the selection
       setLocalValue(newValue);
-      const selectedOption = options.find(option => option.name === newValue );
-      const artificialEvent = {
-        target: { name: name, value: selectedOption !== undefined ? selectedOption.value : "" },
-        isPersistent: () => false
-      };
-      setInputs(artificialEvent);
     }
-
-  };
-
-  // Autosuggest will call this function every time you need to update suggestions.
-  // You already implemented this logic above, so just use it.
-  // TODO allow custom handlers for more events
-  const onSuggestionsFetchRequested = ({ value, reason }) => {
-    if (customHandlers.onSuggestionsFetchRequested)
-      customHandlers.onSuggestionsFetchRequested(value, reason, setSuggestions);
-    else
-      setSuggestions( getSuggestions(value, reason));
   };
 
   // Autosuggest will call this function every time you need to clear suggestions.
@@ -104,10 +88,12 @@ function SelectautosuggestInput({ name, label, type, value, alert, options, init
     return <strong>{section.title}</strong>;
   };
 
-  // Autosuggest will pass through all these props to the input.
+  // Allow to set existing value of it exist when load for first time the component
+  const defaultValue = localValue === null && existingValue?.length > 0 ? existingValue : localValue;
+
   const inputProps = {
     placeholder: placeholder,
-    value: localValue || "",
+    value: defaultValue || "",
     onChange: onChange,
     disabled: disabled
   };
@@ -150,10 +136,11 @@ function SelectautosuggestInput({ name, label, type, value, alert, options, init
       theme={theme}
       shouldRenderSuggestions={(v) => true}
       onSuggestionSelected={onSuggestionSelected}
+      focusInputOnSuggestionClick={false}
     />
     <HelpText content={help} />
     <ValidationAlert content={alert} />
   </FormGroup>;
 }
 
-export default SelectautosuggestInput;
+export default SelectAutosuggestInput;

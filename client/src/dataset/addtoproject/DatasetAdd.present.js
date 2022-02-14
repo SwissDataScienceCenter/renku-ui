@@ -24,56 +24,119 @@
  */
 
 
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { Row, Col, Modal, ModalHeader, ModalBody } from "reactstrap";
-import { FormGenerator } from "../../utils/components/formgenerator";
 import { Button } from "reactstrap";
+import { ModalFooter } from "reactstrap/lib";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import { faCheck, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+
+import { Loader } from "../../utils/components/Loader";
+import SelectAutosuggestInput from "../../utils/components/SelectAutosuggestInput";
+
+function ImportDatasetStatus(status, text, existingProject, history) {
+  let statusProject = null;
+  switch (status) {
+    case "errorNeedMigration" :
+      statusProject = (
+        <div>
+          <FontAwesomeIcon icon={faExclamationTriangle} /> <strong>This project must be upgraded.</strong>
+          <br />
+          The target project ({existingProject}) needs to be upgraded before datasets can be imported into it.
+          <br />
+          <i className="pt-2"><Link to={`/projects/${existingProject}/overview/status`}>More info</Link></i>
+        </div>
+      );
+      break;
+    case "error" :
+      statusProject = <div><FontAwesomeIcon icon={faExclamationTriangle} /> {text}</div>;
+      break;
+    case "inProcess" :
+      statusProject = <div><Loader size="14" inline="true" /> {text}</div>;
+      break;
+    case "validProject" :
+      statusProject = <div><FontAwesomeIcon icon={faCheck} color={"var(--bs-success)"} /> {text}</div>;
+      break;
+    case "completed" :
+      statusProject = <div><FontAwesomeIcon icon={faCheck} color={"var(--bs-success)"} /> {text}</div>;
+      break;
+    default:
+      statusProject = null;
+  }
+  return statusProject;
+}
 
 function DatasetAdd(props) {
+  const [existingProject, setExistingProject] = useState(null);
 
-  const formatServerErrorsAndWarnings = (errorOrWarning, isError)=>{
-    const selectedProjectName = errorOrWarning;
-    if (!isError) {
-      return <div>
-        <FontAwesomeIcon icon={faExclamationTriangle} /> <strong>A new version of renku is available.</strong>
-        <br />
-        The target project ({selectedProjectName}) needs to be upgraded to allow
-        modification of datasets and is recommended for all projects.
-        <br />
-        <Button color="warning" onClick={() =>
-          props.history.push(`/projects/${selectedProjectName}/overview/status`)}>More Info</Button>
-      </div>;
-    }
-    return errorOrWarning;
-  };
+  useEffect( () => {
+    props.customHandlers.onProjectSelected(existingProject);
+  }, [existingProject]); // eslint-disable-line
 
+  const setProjectValue = value => setExistingProject(value);
+  const startImportDataset = () => props.submitCallback(existingProject);
+  const onSubmit = (e) => e.preventDefault();
+  let statusImportDataset = null;
+  if (props.currentStatus) {
+    statusImportDataset = ImportDatasetStatus(
+      props.currentStatus.status, props.currentStatus?.text || null, existingProject?.name, props.history);
+  }
+
+  /* buttons */
+  const addDatasetButton = (
+    <Button
+      color="primary"
+      disabled={props.currentStatus?.status !== "validProject" || props.importingDataset}
+      onClick={startImportDataset}>
+      Add Dataset
+    </Button>);
+
+  let closeButton = null;
+  if (props.modalOpen)
+    closeButton = <Button outline color="primary" onClick={props.closeModal}>Close</Button>;
+
+  /* end buttons */
+
+  let suggestionInput;
+  if (props.isProjectsReady && props.isDatasetValid) {
+    suggestionInput = (<SelectAutosuggestInput
+      existingValue={existingProject?.name || null}
+      name="project"
+      label="Project"
+      placeholder="Select a project..."
+      customHandlers={props.customHandlers}
+      setInputs={setProjectValue}
+      options={props.options}
+      disabled={props.importingDataset || props.currentStatus?.status === "inProcess"}
+    />);
+  }
+  else if (props.isDatasetValid === null || props.isDatasetValid === false) {
+    suggestionInput = null;
+  }
+  else {
+    suggestionInput = <div><Loader size="14" inline="true" />{" "}Loading projects...</div>;
+  }
 
   return (
-    <Modal
-      isOpen={props.modalOpen}
-      toggle={props.closeModal}
-    >
+    <Modal isOpen={props.modalOpen} toggle={props.closeModal}>
       <ModalHeader toggle={props.closeModal}>
-        Add dataset to project
+        Add dataset to existing project
       </ModalHeader>
-      <ModalBody>
+      <ModalBody className={"text-break"}>
         <Row className="mb-3">
           <Col>
-            <FormGenerator
-              btnName={"Add Dataset"}
-              submitCallback={!props.takingTooLong ? props.submitCallback : undefined}
-              model={props.addDatasetToProjectSchema}
-              onCancel={props.onCancel}
-              formLocation={props.formLocation}
-              modelTop={props.model}
-              initializeFunction={props.initializeFunction}
-              formatServerErrorsAndWarnings={formatServerErrorsAndWarnings}
-            />
+            <form onSubmit={onSubmit}>
+              {suggestionInput}
+              {statusImportDataset}
+            </form>
           </Col>
         </Row>
       </ModalBody>
+      <ModalFooter>
+        {closeButton}
+        {addDatasetButton}
+      </ModalFooter>
     </Modal>
   );
 }

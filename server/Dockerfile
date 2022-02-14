@@ -24,4 +24,4 @@ ARG SHORT_SHA
 ENV RENKU_UI_SHORT_SHA=$SHORT_SHA
 
 ENTRYPOINT ["/bin/sh", "/app/docker-entrypoint.sh"]
-CMD ["node", "app"]
+CMD ["node", "--use-openssl-ca", "app"]

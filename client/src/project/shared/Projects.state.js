@@ -99,7 +99,6 @@ class ProjectsCoordinator {
           fetching: false
         }
       });
-
       return { starred: values[0], member: values[1] };
     });
   }

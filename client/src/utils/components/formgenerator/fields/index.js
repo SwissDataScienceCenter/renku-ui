@@ -30,7 +30,6 @@ export default {
     TEXT_EDITOR: "cktextarea",
     FILES: "fileUploader",
     SELECT: "select",
-    SELECTAUTOSUGGEST: "selectautosuggest",
     CREATORS: "creators",
     KEYWORDS: "keywords",
     IMAGE: "image"
