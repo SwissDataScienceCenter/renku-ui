@@ -112,7 +112,6 @@ jobs:
           version: '3.8.0'
       - name: Update helm dependencies
         run: |
-          helm init --client-only
           helm dependency update helm-chart/renku-ui-server
       - name: Build chart and images
         run: |
