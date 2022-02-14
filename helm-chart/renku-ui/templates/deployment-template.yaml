@@ -57,9 +57,9 @@ spec:
             {{- end }}
             {{- if .Values.sentry.enabled }}
             - name: SENTRY_URL
-              value: {{ .Values.sentry.url | quote }}
+              value: {{ .Values.sentry.dsn | quote }}
             - name: SENTRY_NAMESPACE
-              value: {{ .Values.sentry.namespace | default (printf "%s" .Release.Namespace) | quote }}
+              value: {{ .Values.sentry.environment | default (printf "%s" .Release.Namespace) | quote }}
             - name: SENTRY_SAMPLE_RATE
               value: {{ .Values.sentry.sampleRate | quote }}
             {{- end }}

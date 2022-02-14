@@ -81,8 +81,8 @@ maintenance: false
 
 sentry:
   enabled: false
-  url: ""
-  namespace: ""
+  dsn: ""
+  environment: ""
   sampleRate: 0 # number between 0 and 1. (e.g., to send 20% of transactions, set 0.2.)
 
 # If you want to enable the privacy page, please create also a configMap and set its name in the
