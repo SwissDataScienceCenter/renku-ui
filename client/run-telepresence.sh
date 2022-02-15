@@ -125,7 +125,7 @@ fi
 # set sentry dns if explicitly required by the user
 if [[ $SENTRY = 1 ]]
 then
-  SENTRY_URL="https://182290b8e1524dd3b7eb5dd051852f9f@sentry.dev.renku.ch/5"
+  SENTRY_URL="https://4c715ff0b37642618a8b2a048b4da4fd@sentry.dev.renku.ch/3"
   SENTRY_NAMESPACE="${DEV_NAMESPACE}"
   # set SENTRY_SAMPLE_RATE as a number between 0 and 1. (For example, to send 20% of transactions, set tracesSampleRate to 0.2.)
   SENTRY_SAMPLE_RATE=1.0
