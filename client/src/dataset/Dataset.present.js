@@ -294,7 +294,7 @@ export default function DatasetView(props) {
           </>
           : null}
         {props.insideProject && props.maintainer ?
-          <Link className="float-right me-1" id="editDatasetTooltip"
+          <Link className="float-right mb-1 me-1" id="editDatasetTooltip"
             to={{ pathname: "modify", state: { dataset: dataset } }} >
             <Button color="secondary" >
               <FontAwesomeIcon icon={faPen} color="dark" />
