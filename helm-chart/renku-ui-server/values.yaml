@@ -92,8 +92,8 @@ gateway:
 
 sentry:
   enabled: false
-  url: ""
-  namespace: ""
+  dsn: ""
+  environment: ""
   sampleRate: 0
   debugMode: false
 
