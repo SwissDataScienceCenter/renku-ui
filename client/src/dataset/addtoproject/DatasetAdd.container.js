@@ -143,12 +143,12 @@ function AddDataset(props) {
 
     // check if dataset project version and selected project version has the same version
     const target_metadata_version = checkTarget.result.core_compatibility_status.project_metadata_version;
-    if (target_metadata_version !== originProjectVersion) {
+    if (target_metadata_version < originProjectVersion) {
       setCurrentStatus(
         {
           status: "error",
           text: `Dataset project metadata version (${originProjectVersion})
-          and selected project metadata version (${target_metadata_version}) must be the same for import.` });
+          cannot be newer than the project metadata version (${target_metadata_version}) for import.` });
       return false;
     }
     // check if the dataset project is supported
