@@ -66,6 +66,19 @@ function isCloudStorageEndpointValid(cloudStoreConfig) {
   return (cloudStoreConfig["endpoint"].length > 0);
 }
 
+function EndpointMessage({ validationState }) {
+  if (!validationState.endpoint) return <FormFeedback>Please enter an endpoint</FormFeedback>;
+  return (validationState.bucket) ?
+    <FormText>Data mounted at:</FormText> :
+    null;
+}
+
+function BucketMessage({ credentials, validationState }) {
+  return (validationState.bucket) ?
+    <FormText>/cloudstorage/{credentials.bucket}</FormText> :
+    <FormFeedback>Please enter an bucket</FormFeedback>;
+}
+
 /**
  * Check if the bucket is valid.
  * @param {object} cloudStoreConfig
@@ -84,18 +97,14 @@ function ObjectStoreRow({ credentials, index, onChangeValue, onDeleteValue }) {
     bucket: isCloudStorageBucketValid(credentials),
   };
 
-  return <tr className="pb-2">
+  return <tr>
     <td>
       <FormGroup>
         <Input placeholder="endpoint" type="text" autoComplete="text"
           id={`s3-endpoint-${index}`} name="endpoint"
           bsSize="sm" value={credentials.endpoint}
           onChange={changeHandler("endpoint")} invalid={!validationState.endpoint} />
-        {
-          (validationState.endpoint) ?
-            null :
-            <FormFeedback>Please enter an endpoint</FormFeedback>
-        }
+        <EndpointMessage credentials={credentials} validationState={validationState} />
       </FormGroup>
     </td>
     <td>
@@ -105,11 +114,7 @@ function ObjectStoreRow({ credentials, index, onChangeValue, onDeleteValue }) {
           id={`s3-bucket-${index}`} name="bucket"
           bsSize="sm" value={credentials.bucket}
           onChange={changeHandler("bucket")} invalid={!validationState.bucket} />
-        {
-          (validationState.bucket) ?
-            null :
-            <FormFeedback>Please enter a bucket</FormFeedback>
-        }
+        <BucketMessage credentials={credentials} validationState={validationState} />
       </FormGroup>
     </td>
     <td>
@@ -139,7 +144,7 @@ function emptyObjectStoreCredentials() {
 
 function ObjectStoresTable({ objectStoresConfiguration, onChangeValue, onDeleteValue }) {
 
-  return <Table>
+  return <Table borderless={true}>
     <thead>
       <tr>
         <th>Endpoint</th>
@@ -166,11 +171,20 @@ function ObjectStoresTable({ objectStoresConfiguration, onChangeValue, onDeleteV
  * @param {array} storesConfig
  */
 function validateStoresConfig(storesConfig) {
+  const invalidConfigs = {};
+  const bucketNamesMap = {};
   for (const cs of storesConfig) {
-    if (!isCloudStorageEndpointValid(cs)) return false;
-    if (!isCloudStorageBucketValid(cs)) return false;
+    if (!isCloudStorageEndpointValid(cs)) invalidConfigs[cs.bucket] = cs;
+    else if (!isCloudStorageBucketValid(cs)) invalidConfigs[cs.bucket] = cs;
+    if (bucketNamesMap[cs.bucket]) bucketNamesMap[cs.bucket].push(cs);
+    else bucketNamesMap[cs.bucket] = [cs];
   }
-  return true;
+
+  const conflictingConfigs = {};
+  Object.keys(bucketNamesMap).forEach((k) => {
+    if (bucketNamesMap[k].length > 1) conflictingConfigs[k] = bucketNamesMap[k];
+  });
+  return { invalidConfigs, conflictingConfigs };
 }
 
 function filterConfig(storesConfig) {
@@ -189,10 +203,12 @@ function filterConfig(storesConfig) {
 
 function saveValidStoresConfig(storesConfig, setObjectStoresConfiguration,
   setSaveStatusMessage, toggleShowObjectStoresConfigModal) {
-  const filteredConfig = filterConfig(storesConfig).filter((cs) => {
-    // remove invalid rows that contain only empty values
-    if (!isCloudStorageEndpointValid(cs)) return false;
-    if (!isCloudStorageBucketValid(cs)) return false;
+  // remove any rows that contain only empty values
+  let filteredConfig = filterConfig(storesConfig);
+  const validatedStores = validateStoresConfig(filteredConfig);
+  filteredConfig = filteredConfig.filter((cs) => {
+    if (validatedStores.conflictingConfigs[cs.bucket]) return false;
+    if (validatedStores.invalidConfigs[cs.bucket]) return false;
     return true;
   });
 
@@ -207,7 +223,16 @@ function saveStoresConfig(storesConfig, setObjectStoresConfiguration,
   // const keys = ["bucket", "endpoint", "access_key", "secret_key"];
   // remove any rows that contain only empty values
   const filteredConfig = filterConfig(storesConfig);
-  if (!validateStoresConfig(filteredConfig)) {
+  const validatedStores = validateStoresConfig(filteredConfig);
+  const conflictingBucketNames = Object.keys(validatedStores.conflictingConfigs);
+  if (conflictingBucketNames.length > 0) {
+    const namesStr = conflictingBucketNames.join(", ");
+    setSaveStatusMessage(<span>Bucket names must be unique; multiple rows share <b>{namesStr}</b>.</span>);
+    return;
+  }
+
+  const invalidBucketNames = Object.keys(validatedStores.invalidConfigs);
+  if (invalidBucketNames.length > 0) {
     setSaveStatusMessage("Please fix all credentials before saving.");
     return;
   }
@@ -238,6 +263,10 @@ function saveStoresConfig(storesConfig, setObjectStoresConfiguration,
 function ObjectStoresConfigurationModal({ objectStoresConfiguration, showObjectStoreModal,
   toggleShowObjectStoresConfigModal, setObjectStoresConfiguration }) {
   const [storesConfig, setStoresConfig] = useState([]);
+  const setStoresConfigAndClearMessage = (value) => {
+    setStoresConfig(value);
+    setSaveStatusMessage("");
+  };
   useEffect(() => {
     const initialCredentials = (objectStoresConfiguration.length > 0) ?
       List(objectStoresConfiguration) :
@@ -247,12 +276,12 @@ function ObjectStoresConfigurationModal({ objectStoresConfiguration, showObjectS
   const onChangeValue = (index, field, value) => {
     const old = Map(storesConfig.get(index));
     const newElt = old.set(field, value).toJS();
-    setStoresConfig(storesConfig.set(index, newElt));
+    setStoresConfigAndClearMessage(storesConfig.set(index, newElt));
   };
   const onDeleteValue = (index) => {
     let c = storesConfig.remove(index);
     if (c.size < 1) c = List([emptyObjectStoreCredentials()]);
-    setStoresConfig(c);
+    setStoresConfigAndClearMessage(c);
   };
   const onAddValue = () => {
     setStoresConfig(storesConfig.push(emptyObjectStoreCredentials()));
@@ -286,7 +315,7 @@ function ObjectStoresConfigurationModal({ objectStoresConfiguration, showObjectS
           setCredentials={setStoresConfig} />
       </ModalBody>
       <ModalFooter>
-        <FormText>{saveStatusMessage}</FormText>
+        <FormText color="danger">{saveStatusMessage}</FormText>
         <Button color="primary" onClick={onAddValue}>Add Bucket</Button>
         <Button color="secondary"
           onClick={onSave}>
