@@ -91,7 +91,7 @@ function DatasetError(props) {
       (<InfoAlert timeout={0}>{loginHelper}</InfoAlert>);
     errorDetails = (
       <div>
-        <h3>Dataset not found <FontAwesomeIcon icon={faSearch} flip="horizontal" /></h3>
+        <h3 data-cy="dataset-error-title">Dataset not found <FontAwesomeIcon icon={faSearch} flip="horizontal" /></h3>
         <div>&nbsp;</div>
         <p>
           It is possible that the dataset has been deleted by its owner or you do not have permission

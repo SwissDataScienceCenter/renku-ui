@@ -123,82 +123,57 @@
     "_links":[
       {
         "rel":"details",
-        "href":"https://andrea.dev.renku.ch/knowledge-graph/datasets/42a765ed5b024d52ba8db22eeffc98bf"
+        "href":"https://andrea.dev.renku.ch/knowledge-graph/datasets/0c05524991aa44658e2f8065fc71be03"
       }
     ],
-    "identifier":"42a765ed5b024d52ba8db22eeffc98bf",
-    "title":"tmp-dataset2",
-    "name":"tmp-dataset2",
+    "description":"This is a test dataset.",
+    "identifier":"0c05524991aa44658e2f8065fc71be03",
+    "title":"test-dataset-v1",
+    "name":"test-dataset-v1",
     "published":{
       "creator":[
         {
-          "email":"dandrea.cordoba@gmail.com",
-          "name":"Andrea Cordoba"
+          "email":"cramakri@ethz.ch",
+          "name":"Chandrasekhar Ramakrishnan"
+        }
+      ]
+    },
+    "date":"2022-02-07T10:21:37Z",
+    "projectsCount":1,
+    "keywords":[
+      "test"
+    ],
+    "images":[
+
+    ]
+  },
+  {
+    "_links":[
+      {
+        "rel":"details",
+        "href":"https://andrea.dev.renku.ch/knowledge-graph/datasets/cbd12fca1276456fa314ae0641b8e107"
+      }
+    ],
+    "identifier":"cbd12fca1276456fa314ae0641b8e107",
+    "title":"dataset-one-file",
+    "name":"dataset-one-file",
+    "published":{
+      "creator":[
+        {
+          "email":"e2e@renku.ch",
+          "name":"E2E User"
         },
         {
-          "email":"dalatinrofrau@gmail.com",
-          "name":"Darlin Andrea Cordoba Osnas"
+          "email":"e2ea@renku.ch",
+          "name":"e2e User"
         }
       ]
     },
-    "date":"2022-01-31T14:43:38Z",
+    "date":"2022-02-15T07:50:04Z",
     "projectsCount":1,
     "keywords":[
-      "todelete"
-    ],
-    "images":[
-
-    ]
-  },
-  {
-    "_links":[
-      {
-        "rel":"details",
-        "href":"https://andrea.dev.renku.ch/knowledge-graph/datasets/089ffd7dba944deebfeb7875c0f04cb1"
-      }
-    ],
-    "identifier":"089ffd7dba944deebfeb7875c0f04cb1",
-    "title":"test from acceptance tests",
-    "name":"test-from-acceptance-tests",
-    "published":{
-      "creator":[
-        {
-          "email":"lorenzo.cavazzi.tech@gmail.com",
-          "name":"Lorenšo Cavazzi"
-        }
-      ]
-    },
-    "date":"2022-01-25T13:23:39Z",
-    "projectsCount":1,
-    "keywords":[
-
-    ],
-    "images":[
-
-    ]
-  },
-  {
-    "_links":[
-      {
-        "rel":"details",
-        "href":"https://andrea.dev.renku.ch/knowledge-graph/datasets/0656a95d041a4376920c2729fcf025d3"
-      }
-    ],
-    "identifier":"0656a95d041a4376920c2729fcf025d3",
-    "title":"fake dataset",
-    "name":"fake-dataset",
-    "published":{
-      "creator":[
-        {
-          "email":"lorenzo.cavazzi.tech@gmail.com",
-          "name":"Lorenšo Cavazzi"
-        }
-      ]
-    },
-    "date":"2022-01-24T14:05:55Z",
-    "projectsCount":1,
-    "keywords":[
-      "fake"
+      "one file",
+      "test"
     ],
     "images":[
 

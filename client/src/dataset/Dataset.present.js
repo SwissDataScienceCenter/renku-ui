@@ -110,7 +110,7 @@ function DisplayProjects(props) {
         </thead>
         <tbody>
           {props.projects.map((project, index) =>
-            <tr key={project.name + index}>
+            <tr data-cy="project-using-dataset" key={project.name + index}>
               <td className="text-break">
                 <Link to={`${props.projectsUrl}/${project.path}`}>
                   {project.path}
@@ -287,6 +287,7 @@ export default function DatasetView(props) {
         {props.logged ?
           <>
             <Button
+              data-cy="add-to-project-button"
               disabled={dataset?.insideKg === false}
               className="float-right mb-1 me-1" size="sm" color="secondary" onClick={() => goToAddToProject()}>
               <FontAwesomeIcon icon={faPlus} color="dark" /> Add to project
@@ -295,6 +296,7 @@ export default function DatasetView(props) {
           : null}
         {props.insideProject && props.maintainer ?
           <Link className="float-right mb-1 me-1" id="editDatasetTooltip"
+            data-cy="edit-dataset-button"
             to={{ pathname: "modify", state: { dataset: dataset } }} >
             <Button color="secondary" >
               <FontAwesomeIcon icon={faPen} color="dark" />
@@ -304,11 +306,11 @@ export default function DatasetView(props) {
         }
         {props.insideProject && props.maintainer ?
           <UncontrolledButtonDropdown size="sm" className="float-right mb-1">
-            <DropdownToggle caret color="secondary" className="removeArrow">
+            <DropdownToggle data-cy="more-options-button" caret color="secondary" className="removeArrow">
               <FontAwesomeIcon icon={faEllipsisV} color="dark" />
             </DropdownToggle>
             <DropdownMenu>
-              <DropdownItem onClick={() => setDeleteDatasetModalOpen(true)}>
+              <DropdownItem data-cy="delete-dataset-button" onClick={() => setDeleteDatasetModalOpen(true)}>
                 <FontAwesomeIcon icon={faTrash} color="dark" /> Delete
               </DropdownItem>
             </DropdownMenu>
@@ -362,7 +364,7 @@ export default function DatasetView(props) {
     {
       dataset.insideKg === false && props.projectInsideKg === true ?
         <WarnAlert className="not-in-kg-warning">
-          <strong>This dataset is not in the Knowledge Graph;</strong> this means that some
+          <strong data-cy="not-in-kg-warning">This dataset is not in the Knowledge Graph;</strong> this means that some
           operations on it are not possible.
           <br /><br />
           If the dataset was created recently, and the Knowledge Graph integration for the project is active,

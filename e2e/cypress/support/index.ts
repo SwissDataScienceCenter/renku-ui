@@ -23,10 +23,13 @@ declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace Cypress {
     interface Chainable {
+      get_cy(element: string): Chainable
       gui_kc_login(user: User, startFromHome: boolean): void,
       gui_kc_register(user: User): void,
       gui_is_welcome_page_logged_user(user: User): void,
       gui_logout(): void
+      gui_search_dataset(datasetName: string, fixtures, useMockedData, resultFile): void
+      gui_open_project(path: string, fixtures, useMockedData, resultFile): void;
     }
   }
 }

@@ -25,22 +25,57 @@ import { FixturesConstructor } from "./fixtures";
 function Datasets<T extends FixturesConstructor>(Parent: T) {
   return class DatasetsFixtures extends Parent {
 
-    datasets(name = "getDataset") {
+    datasets(useFixture = true, name = "getDatasets", resultFile = "datasets.json") {
+      const fixture = useFixture ? { fixture: resultFile } : undefined;
       cy.intercept(
-        "ui-server/api/kg/datasets?query=*&sort=projectsCount%3Adesc&per_page=12&page=1",
-        {
-          fixture: "datasets.json"
-        }
+        "/ui-server/api/kg/datasets?query=*&sort=projectsCount%3Adesc&per_page=12&page=1",
+        fixture
       ).as(name);
       return this;
     }
 
-    datasetById(name = "getDatasetById", id = "a20838d8cd514eaab3efbd54a8104732") {
+    datasetById(useFixture = true, id = "a20838d8cd514eaab3efbd54a8104732", name = "getDatasetById" ) {
+      const fixture = useFixture ? { fixture: `datasets/dataset_${id}.json` } : undefined;
       cy.intercept(
-        "ui-server/api/kg/datasets/" + id,
-        {
-          fixture: `datasets/dataset_${id}.json`
-        }
+        "/ui-server/api/kg/datasets/" + id,
+        fixture
+      ).as(name);
+      return this;
+    }
+
+    invalidDataset(useFixture = true, id = "a46c10c94a40359181965e5c4cdabc", name = "invalidDataset") {
+      const fixture = useFixture ? { fixture: `datasets/no-dataset.json`, statusCode: 404 } : undefined;
+      cy.intercept(
+        "/ui-server/api/kg/datasets/" + id,
+        fixture
+      ).as(name);
+      return this;
+    }
+
+    projectKGDatasetList(
+      useFixture = true, path = "", name = "datasetKGList", resultFile = "datasets/project-dataset-kg-list.json") {
+      const fixture = useFixture ? { fixture: resultFile } : undefined;
+      cy.intercept(
+        `/ui-server/api/kg/projects/${path}/datasets`,
+        fixture
+      ).as(name);
+      return this;
+    }
+
+    projectDatasetList(useFixture = true, name = "datasetList", resultFile = "datasets/project-dataset-list.json") {
+      const fixture = useFixture ? { fixture: resultFile } : undefined;
+      cy.intercept(
+        "/ui-server/api/renku/*/datasets.list?git_url=*",
+        fixture
+      ).as(name);
+      return this;
+    }
+
+    getFiles(useFixture = true, name = "getFiles" ) {
+      const fixture = useFixture ? { fixture: `datasets/dataset-files.json` } : undefined;
+      cy.intercept(
+        "/ui-server/api/renku/*/datasets.files_list?*",
+        fixture
       ).as(name);
       return this;
     }

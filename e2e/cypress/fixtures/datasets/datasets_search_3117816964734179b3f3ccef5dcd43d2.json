@@ -1,0 +1,33 @@
+[
+  {
+    "_links":[
+      {
+        "rel":"details",
+        "href":"https://andrea.dev.renku.ch/knowledge-graph/datasets/3117816964734179b3f3ccef5dcd43d2"
+      }
+    ],
+    "identifier":"3117816964734179b3f3ccef5dcd43d2",
+    "title":"flight test init project",
+    "name":"flight-test",
+    "published":{
+      "creator":[
+        {
+          "email":"dalatinrofrau@gmail.com",
+          "name":"Andrea Cordoba"
+        },
+        {
+          "email":"dandrea.cordoba@gmail.com",
+          "name":"Andrea Cordoba"
+        }
+      ]
+    },
+    "date":"2022-01-31T17:12:17Z",
+    "projectsCount":1,
+    "keywords":[
+
+    ],
+    "images":[
+
+    ]
+  }
+]

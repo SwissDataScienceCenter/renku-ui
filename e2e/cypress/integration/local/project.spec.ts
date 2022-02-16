@@ -41,6 +41,8 @@ describe("display a project", () => {
 
 describe("display migration information", () => {
   const fixtures = new Fixtures(cy);
+  const params = "git_url=https%3A%2F%2Fdev.renku.ch%2Fgitlab%2Fe2e%2Flocal-test-project.git&branch=master";
+
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects().projectTest();
@@ -48,7 +50,7 @@ describe("display migration information", () => {
   });
 
   it("displays up-to-date migration", () => {
-    fixtures.projectMigrationUpToDate();
+    fixtures.projectMigrationUpToDate(params);
     cy.visit("/projects/e2e/local-test-project/overview/status");
     // Check that the project up-to-date info is shown
     cy.contains("This project is using the latest version of renku.").should(
@@ -57,14 +59,14 @@ describe("display migration information", () => {
   });
 
   it("displays optional migration", () => {
-    fixtures.projectMigrationOptional();
+    fixtures.projectMigrationOptional(params);
     cy.visit("/projects/e2e/local-test-project/overview/status");
     // Check that the migration suggestion is shown
     cy.contains("A new version of renku is available").should("be.visible");
   });
 
   it("displays recommended migration", () => {
-    fixtures.projectMigrationRecommended();
+    fixtures.projectMigrationRecommended(params);
     cy.visit("/projects/e2e/local-test-project/overview/status");
     cy.wait("@getCoreServiceVersion");
     // Check that the migration suggestion is shown
@@ -74,7 +76,7 @@ describe("display migration information", () => {
   });
 
   it("displays required migration", () => {
-    fixtures.projectMigrationRequired();
+    fixtures.projectMigrationRequired(params);
     cy.visit("/projects/e2e/local-test-project/overview/status");
     // Check that the migration suggestion is shown
     cy.contains("This project is not compatible with the RenkuLab UI").should(
@@ -85,6 +87,7 @@ describe("display migration information", () => {
 
 describe("display migration information for anon user", () => {
   const fixtures = new Fixtures(cy);
+  const params = "git_url=https%3A%2F%2Fdev.renku.ch%2Fgitlab%2Fe2e%2Flocal-test-project.git&branch=master";
   beforeEach(() => {
     fixtures.config().versions().userNone();
     fixtures.projects().landingUserProjects().projectTest();
@@ -92,7 +95,7 @@ describe("display migration information for anon user", () => {
   });
 
   it("displays up-to-date migration", () => {
-    fixtures.projectMigrationUpToDate();
+    fixtures.projectMigrationUpToDate(params);
     cy.visit("/projects/e2e/local-test-project/overview/status");
     cy.contains("Project / Latest Renku Version");
     // Check that the project up-to-date info is not shown
@@ -102,7 +105,7 @@ describe("display migration information for anon user", () => {
   });
 
   it("displays optional migration", () => {
-    fixtures.projectMigrationOptional();
+    fixtures.projectMigrationOptional(params);
     cy.visit("/projects/e2e/local-test-project/overview/status");
     // Check that the migration suggestion is not shown
     cy.contains("Project Renku Version");
@@ -110,7 +113,7 @@ describe("display migration information for anon user", () => {
   });
 
   it("displays recommended migration", () => {
-    fixtures.projectMigrationRecommended();
+    fixtures.projectMigrationRecommended(params);
     cy.visit("/projects/e2e/local-test-project/overview/status");
     cy.wait("@getCoreServiceVersion");
     // Check that the migration suggestion is not shown
@@ -121,7 +124,7 @@ describe("display migration information for anon user", () => {
   });
 
   it("displays required migration", () => {
-    fixtures.projectMigrationRequired();
+    fixtures.projectMigrationRequired(params);
     cy.visit("/projects/e2e/local-test-project/overview/status");
     // Check that the migration suggestion is not shown
     cy.contains("Project Renku Version");
@@ -133,6 +136,7 @@ describe("display migration information for anon user", () => {
 
 describe("display migration information for observer user", () => {
   const fixtures = new Fixtures(cy);
+  const params = "git_url=https%3A%2F%2Fdev.renku.ch%2Fgitlab%2Fe2e%2Flocal-test-project.git&branch=master";
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects().projectTestObserver();
@@ -140,7 +144,7 @@ describe("display migration information for observer user", () => {
   });
 
   it("displays up-to-date migration", () => {
-    fixtures.projectMigrationUpToDate();
+    fixtures.projectMigrationUpToDate(params);
     cy.visit("/projects/e2e/local-test-project/overview/status");
     // Check that the project up-to-date info is shown
     cy.contains("This project is using the latest version of renku.").should(
@@ -149,7 +153,7 @@ describe("display migration information for observer user", () => {
   });
 
   it("displays optional migration", () => {
-    fixtures.projectMigrationOptional();
+    fixtures.projectMigrationOptional(params);
     cy.visit("/projects/e2e/local-test-project/overview/status");
     // Check that the migration suggestion is shown
     cy.contains("A new version of renku is available").should("be.visible");
@@ -159,7 +163,7 @@ describe("display migration information for observer user", () => {
   });
 
   it("displays recommended migration", () => {
-    fixtures.projectMigrationRecommended();
+    fixtures.projectMigrationRecommended(params);
     cy.visit("/projects/e2e/local-test-project/overview/status");
     cy.wait("@getCoreServiceVersion");
     // Check that the migration suggestion is shown
@@ -172,7 +176,7 @@ describe("display migration information for observer user", () => {
   });
 
   it("displays required migration", () => {
-    fixtures.projectMigrationRequired();
+    fixtures.projectMigrationRequired(params);
     cy.visit("/projects/e2e/local-test-project/overview/status");
     // Check that the migration suggestion is  shown
     cy.contains("This project is not compatible with the RenkuLab UI").should(
