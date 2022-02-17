@@ -27,12 +27,12 @@ class RedisStorage implements Storage {
   constructor(
     host: string = config.redis.host,
     port: number = config.redis.port as number,
-    password: string = config.redis.password
+    password: string = config.redis.password,
+    isSentinel: boolean = config.redis.isSentinel,
+    masterSet: string = config.redis.masterSet,
   ) {
     // configure redis
     const redisConfig: Redis.RedisOptions = {
-      host,
-      port,
       lazyConnect: true,
       retryStrategy: (times) => {
         return times > 5 ?
@@ -40,6 +40,18 @@ class RedisStorage implements Storage {
           10000;
       },
     };
+    if (isSentinel){
+      redisConfig.sentinels = [
+        { host, port },
+      ];
+      redisConfig.name = masterSet;
+      if (password) {
+        redisConfig.sentinelPassword = password;
+      }
+    } else {
+      redisConfig.host = host;
+      redisConfig.port = port;
+    }
     if (password)
       redisConfig.password = password;
     try {

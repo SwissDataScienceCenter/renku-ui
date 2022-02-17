@@ -63,6 +63,8 @@ const REDIS = {
   port: convertType(process.env.REDIS_PORT) || 6379,
   database: process.env.REDIS_DATABASE || "0",
   password: process.env.REDIS_PASSWORD || null,
+  isSentinel: (process.env.REDIS_IS_SENTINEL || "false") == "true",
+  masterSet: process.env.REDIS_MASTER_SET || "mymaster",
 };
 
 const ROUTES = {

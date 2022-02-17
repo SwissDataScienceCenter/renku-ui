@@ -1,9 +1,6 @@
 dependencies:
-- name: redis
-  repository: https://charts.bitnami.com/bitnami
-  version: 10.7.11
 - name: certificates
   repository: https://swissdatasciencecenter.github.io/helm-charts/
   version: 0.0.1
-digest: sha256:4b8b48caa00825e471f2d379f5384d853f509ea3a9b32d3e904c9aa885bbbc59
-generated: "2022-01-26T14:46:56.715585+01:00"
+digest: sha256:405914c6b5d6eb9ba72165de7aa4b815c71b310daabfdbef79c365fc032787ae
+generated: "2022-02-16T16:25:03.784364+01:00"
