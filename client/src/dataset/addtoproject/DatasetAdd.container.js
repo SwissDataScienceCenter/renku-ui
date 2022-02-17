@@ -143,7 +143,7 @@ function AddDataset(props) {
 
     // check if dataset project version and selected project version has the same version
     const target_metadata_version = checkTarget.result.core_compatibility_status.project_metadata_version;
-    if (target_metadata_version < originProjectVersion) {
+    if (+target_metadata_version < +originProjectVersion) {
       setCurrentStatus(
         {
           status: "error",

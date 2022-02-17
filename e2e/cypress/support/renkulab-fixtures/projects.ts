@@ -22,6 +22,11 @@ import { FixturesConstructor } from "./fixtures";
  * Fixtures for Projects
  */
 
+interface MigrationCheckParams {
+  fixtureName?: string;
+  queryUrl?: string
+}
+
 function Projects<T extends FixturesConstructor>(Parent: T) {
   return class ProjectsFixtures extends Parent {
     landingUserProjects(name = "getLandingUserProjects") {
@@ -41,8 +46,8 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    project(useFixture = true, path = "", name = "getProject", result = "projects/project.json") {
-      const fixture = useFixture ? { fixture: result } : undefined;
+    project(path = "", name = "getProject", result = "projects/project.json") {
+      const fixture = this.useMockedData ? { fixture: result } : undefined;
       cy.intercept(
         `/ui-server/api/projects/${encodeURIComponent(path)}?statistics=true`,
         fixture
@@ -50,46 +55,47 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    interceptMigrationCheck(name, fixture, params) {
+    interceptMigrationCheck(name, fixture, queryUrl = null) {
       const coreUrl = "/ui-server/api/renku/cache.migrations_check";
-      cy.intercept(`${coreUrl}?${params}`, {
+      const defaultQuery = "git_url=https%3A%2F%2Fdev.renku.ch%2Fgitlab%2Fe2e%2Flocal-test-project.git&branch=master";
+      cy.intercept(`${coreUrl}?${ queryUrl || defaultQuery}`, {
         fixture: fixture
       }).as(name);
       return this;
     }
 
-    projectMigrationUpToDate(params, name = "getMigration") {
+    projectMigrationUpToDate(params: MigrationCheckParams = { queryUrl: null, fixtureName: "getMigration" }) {
       this.interceptMigrationCheck(
-        name,
+        params.fixtureName,
         "test-project_migration_up-to-date.json",
-        params
+        params.queryUrl
       );
       return this;
     }
 
-    projectMigrationOptional(params, name = "getMigration") {
+    projectMigrationOptional(params: MigrationCheckParams = { queryUrl: null, fixtureName: "getMigration" }) {
       this.interceptMigrationCheck(
-        name,
+        params.fixtureName,
         "test-project_migration_update-optional.json",
-        params
+        params.queryUrl
       );
       return this;
     }
 
-    projectMigrationRecommended(params, name = "getMigration") {
+    projectMigrationRecommended(params: MigrationCheckParams = { queryUrl: null, fixtureName: "getMigration" }) {
       this.interceptMigrationCheck(
-        name,
+        params.fixtureName,
         "test-project_migration_update-recommended.json",
-        params
+        params.queryUrl
       );
       return this;
     }
 
-    projectMigrationRequired(params, name = "getMigration") {
+    projectMigrationRequired(params: MigrationCheckParams = { queryUrl: null, fixtureName: "getMigration" }) {
       this.interceptMigrationCheck(
-        name,
+        params.fixtureName,
         "test-project_migration_update-required.json",
-        params
+        params.queryUrl
       );
       return this;
     }
@@ -191,4 +197,4 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
   };
 }
 
-export { Projects };
+export { Projects, MigrationCheckParams };

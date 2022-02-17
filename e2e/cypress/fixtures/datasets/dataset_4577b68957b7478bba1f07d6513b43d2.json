@@ -2,18 +2,18 @@
   "_links":[
     {
       "rel":"self",
-      "href":"https://andrea.dev.renku.ch/knowledge-graph/datasets/4577b68957b7478bba1f07d6513b43d2"
+      "href":"https://dev.renku.ch/knowledge-graph/datasets/4577b68957b7478bba1f07d6513b43d2"
     },
     {
       "rel":"initial-version",
-      "href":"https://andrea.dev.renku.ch/knowledge-graph/datasets/c8c01080845c4d9e9f1f2930d4892627"
+      "href":"https://dev.renku.ch/knowledge-graph/datasets/c8c01080845c4d9e9f1f2930d4892627"
     }
   ],
   "identifier":"4577b68957b7478bba1f07d6513b43d2",
   "name":"abcd",
   "title":"abcd",
-  "url":"https://andrea.dev.renku.ch/datasets/4577b68957b7478bba1f07d6513b43d2",
-  "derivedFrom":"https://andrea.dev.renku.ch/datasets/c8c01080845c4d9e9f1f2930d4892627",
+  "url":"https://dev.renku.ch/datasets/4577b68957b7478bba1f07d6513b43d2",
+  "derivedFrom":"https://dev.renku.ch/datasets/c8c01080845c4d9e9f1f2930d4892627",
   "versions":{
     "initial":"c8c01080845c4d9e9f1f2930d4892627"
   },
@@ -25,13 +25,13 @@
         "email":"e2e@renku.ch"
       },
       {
-        "name":"e2e User",
-        "email":"e2ea@renku.ch"
-      },
-      {
         "name":"Andrea",
         "email":"a@renku.ch",
         "affiliation":"co-creator"
+      },
+      {
+        "name":"e2e User",
+        "email":"e2ea@renku.ch"
       }
     ]
   },
@@ -48,7 +48,7 @@
     "_links":[
       {
         "rel":"project-details",
-        "href":"https://andrea.dev.renku.ch/knowledge-graph/projects/e2e/testing-datasets"
+        "href":"https://dev.renku.ch/knowledge-graph/projects/e2e/testing-datasets"
       }
     ],
     "path":"e2e/testing-datasets",
@@ -59,11 +59,21 @@
       "_links":[
         {
           "rel":"project-details",
-          "href":"https://andrea.dev.renku.ch/knowledge-graph/projects/e2e/testing-datasets"
+          "href":"https://dev.renku.ch/knowledge-graph/projects/e2e/testing-datasets"
         }
       ],
       "path":"e2e/testing-datasets",
       "name":"testing-datasets"
+    },
+    {
+      "_links":[
+        {
+          "rel":"project-details",
+          "href":"https://dev.renku.ch/knowledge-graph/projects/cchoirat/chuv"
+        }
+      ],
+      "path":"cchoirat/chuv",
+      "name":"chuv"
     }
   ],
   "keywords":[

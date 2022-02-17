@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 
-Cypress.Commands.add("gui_search_dataset", (datasetName: string, fixtures, useMockedData, resultFile) => {
-  fixtures.datasets(useMockedData, "getDatasetsSearch", resultFile);
+Cypress.Commands.add("gui_search_dataset", (datasetName: string, fixtures, resultFile) => {
+  fixtures.datasets("getDatasetsSearch", resultFile);
   cy.get("[data-cy='search-dataset-input']").type(datasetName);
   cy.get("[data-cy='search-dataset-submit']").click();
   cy.wait("@getDatasetsSearch");

@@ -2,18 +2,18 @@
   "_links":[
     {
       "rel":"self",
-      "href":"https://andrea.dev.renku.ch/knowledge-graph/datasets/897ee9effb9b42efab454011a8fba5e4"
+      "href":"https://dev.renku.ch/knowledge-graph/datasets/897ee9effb9b42efab454011a8fba5e4"
     },
     {
       "rel":"initial-version",
-      "href":"https://andrea.dev.renku.ch/knowledge-graph/datasets/83f12182178b45ddb1e689990d9b4fa2"
+      "href":"https://dev.renku.ch/knowledge-graph/datasets/83f12182178b45ddb1e689990d9b4fa2"
     }
   ],
   "identifier":"897ee9effb9b42efab454011a8fba5e4",
   "name":"efgh",
   "title":"efgh",
-  "url":"https://andrea.dev.renku.ch/datasets/897ee9effb9b42efab454011a8fba5e4",
-  "derivedFrom":"https://andrea.dev.renku.ch/datasets/83f12182178b45ddb1e689990d9b4fa2",
+  "url":"https://dev.renku.ch/datasets/897ee9effb9b42efab454011a8fba5e4",
+  "derivedFrom":"https://dev.renku.ch/datasets/83f12182178b45ddb1e689990d9b4fa2",
   "versions":{
     "initial":"83f12182178b45ddb1e689990d9b4fa2"
   },
@@ -39,7 +39,7 @@
     "_links":[
       {
         "rel":"project-details",
-        "href":"https://andrea.dev.renku.ch/knowledge-graph/projects/e2e/testing-datasets"
+        "href":"https://dev.renku.ch/knowledge-graph/projects/e2e/testing-datasets"
       }
     ],
     "path":"e2e/testing-datasets",
@@ -50,7 +50,7 @@
       "_links":[
         {
           "rel":"project-details",
-          "href":"https://andrea.dev.renku.ch/knowledge-graph/projects/e2e/testing-datasets"
+          "href":"https://dev.renku.ch/knowledge-graph/projects/e2e/testing-datasets"
         }
       ],
       "path":"e2e/testing-datasets",

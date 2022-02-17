@@ -28,8 +28,7 @@ declare global {
       gui_kc_register(user: User): void,
       gui_is_welcome_page_logged_user(user: User): void,
       gui_logout(): void
-      gui_search_dataset(datasetName: string, fixtures, useMockedData, resultFile): void
-      gui_open_project(path: string, fixtures, useMockedData, resultFile): void;
+      gui_search_dataset(datasetName: string, fixtures, resultFile): void
     }
   }
 }

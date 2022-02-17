@@ -25,8 +25,8 @@ import { FixturesConstructor } from "./fixtures";
 function Datasets<T extends FixturesConstructor>(Parent: T) {
   return class DatasetsFixtures extends Parent {
 
-    datasets(useFixture = true, name = "getDatasets", resultFile = "datasets.json") {
-      const fixture = useFixture ? { fixture: resultFile } : undefined;
+    datasets(name = "getDatasets", resultFile = "datasets/datasets.json") {
+      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
       cy.intercept(
         "/ui-server/api/kg/datasets?query=*&sort=projectsCount%3Adesc&per_page=12&page=1",
         fixture
@@ -34,8 +34,8 @@ function Datasets<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    datasetById(useFixture = true, id = "a20838d8cd514eaab3efbd54a8104732", name = "getDatasetById" ) {
-      const fixture = useFixture ? { fixture: `datasets/dataset_${id}.json` } : undefined;
+    datasetById(id = "a20838d8cd514eaab3efbd54a8104732", name = "getDatasetById" ) {
+      const fixture = this.useMockedData ? { fixture: `datasets/dataset_${id}.json` } : undefined;
       cy.intercept(
         "/ui-server/api/kg/datasets/" + id,
         fixture
@@ -43,8 +43,8 @@ function Datasets<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    invalidDataset(useFixture = true, id = "a46c10c94a40359181965e5c4cdabc", name = "invalidDataset") {
-      const fixture = useFixture ? { fixture: `datasets/no-dataset.json`, statusCode: 404 } : undefined;
+    invalidDataset(id = "a46c10c94a40359181965e5c4cdabc", name = "invalidDataset") {
+      const fixture = this.useMockedData ? { fixture: `datasets/no-dataset.json`, statusCode: 404 } : undefined;
       cy.intercept(
         "/ui-server/api/kg/datasets/" + id,
         fixture
@@ -52,9 +52,8 @@ function Datasets<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    projectKGDatasetList(
-      useFixture = true, path = "", name = "datasetKGList", resultFile = "datasets/project-dataset-kg-list.json") {
-      const fixture = useFixture ? { fixture: resultFile } : undefined;
+    projectKGDatasetList(path = "", name = "datasetKGList", resultFile = "datasets/project-dataset-kg-list.json") {
+      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
       cy.intercept(
         `/ui-server/api/kg/projects/${path}/datasets`,
         fixture
@@ -62,8 +61,8 @@ function Datasets<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    projectDatasetList(useFixture = true, name = "datasetList", resultFile = "datasets/project-dataset-list.json") {
-      const fixture = useFixture ? { fixture: resultFile } : undefined;
+    projectDatasetList(name = "datasetList", resultFile = "datasets/project-dataset-list.json") {
+      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
       cy.intercept(
         "/ui-server/api/renku/*/datasets.list?git_url=*",
         fixture
@@ -71,8 +70,8 @@ function Datasets<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    getFiles(useFixture = true, name = "getFiles" ) {
-      const fixture = useFixture ? { fixture: `datasets/dataset-files.json` } : undefined;
+    getFiles(name = "getFiles" ) {
+      const fixture = this.useMockedData ? { fixture: `datasets/dataset-files.json` } : undefined;
       cy.intercept(
         "/ui-server/api/renku/*/datasets.files_list?*",
         fixture

@@ -23,11 +23,11 @@ import "../../support/datasets/gui_commands";
 
 describe("display a dataset", () => {
   const fixtures = new Fixtures(cy);
-  const useMockedData = Cypress.env("USE_FIXTURES") === true;
+  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
-    fixtures.datasets(useMockedData);
+    fixtures.datasets();
     cy.visit("datasets");
   });
 
@@ -47,11 +47,11 @@ describe("display a dataset", () => {
 
   it("displays the dataset overview", () => {
     cy.wait("@getDatasets");
-    const datasetName = "flight test init project";
-    const datasetIdentifier = "3117816964734179b3f3ccef5dcd43d2";
+    const datasetName = "abcd";
+    const datasetIdentifier = "4577b68957b7478bba1f07d6513b43d2";
 
-    fixtures.datasetById(useMockedData, datasetIdentifier);
-    cy.gui_search_dataset(datasetName, fixtures, useMockedData, `datasets/datasets_search_${datasetIdentifier}.json`);
+    fixtures.datasetById(datasetIdentifier);
+    cy.gui_search_dataset(datasetName, fixtures, `datasets/datasets-search_${datasetIdentifier}.json`);
     cy.get_cy("dataset-card-title").contains(datasetName).click();
     cy.wait("@getDatasetById")
       .its("response.body").then( dataset => {
@@ -60,7 +60,7 @@ describe("display a dataset", () => {
         // files are displayed
         const totalFiles = dataset?.hasPart?.length;
         cy.get_cy("dataset-file-title").should("contain.text", `Dataset files (${totalFiles})`);
-        cy.get_cy("dataset-fs-element").should("have.length", 1);
+        cy.get_cy("dataset-fs-element").should("have.length", 2);
 
         // projects that use the dataset are displayed
         const totalProjectsUsingDataset = dataset?.usedIn?.length || 0;
@@ -72,7 +72,7 @@ describe("display a dataset", () => {
 
   it("displays warning when dataset is invalid", () => {
     const invalidDatasetId = "99a46c10c94a40359181965e5c4cdabc";
-    fixtures.invalidDataset(useMockedData, invalidDatasetId);
+    fixtures.invalidDataset(invalidDatasetId);
     cy.visit(`/datasets/${invalidDatasetId}`);
     cy.wait("@invalidDataset");
     cy.get_cy("dataset-error-title").should("contain.text", "Dataset not found");

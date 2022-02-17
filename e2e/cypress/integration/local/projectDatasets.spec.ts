@@ -23,17 +23,17 @@ import "../../support/datasets/gui_commands";
 
 describe("Project dataset", () => {
   const fixtures = new Fixtures(cy);
-  const useMockedData = Cypress.env("USE_FIXTURES") === true;
+  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
   const projectPath = "e2e/testing-datasets";
 
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects();
-    fixtures.project(useMockedData, projectPath);
-    fixtures.projectKGDatasetList(useMockedData, projectPath);
-    fixtures.projectDatasetList(useMockedData);
+    fixtures.project(projectPath);
+    fixtures.projectKGDatasetList(projectPath);
+    fixtures.projectDatasetList();
     fixtures.projectTestContents(undefined, 9);
-    fixtures.projectMigrationUpToDate("*");
+    fixtures.projectMigrationUpToDate({ queryUrl: "*", fixtureName: "getMigration" });
   });
 
   it("displays project datasets", () => {
@@ -50,13 +50,13 @@ describe("Project dataset", () => {
           const firstDataset = datasets[0];
           const secondDataset = datasets[1];
           let datasetIdentifier = firstDataset.identifier;
-          fixtures.datasetById(useMockedData, datasetIdentifier);
+          fixtures.datasetById(datasetIdentifier);
           cy.get_cy("dataset-card-title").contains(firstDataset.title).click();
           cy.wait("@getDatasetById");
           cy.get_cy("dataset-title").should("contain.text", firstDataset.title);
           datasetIdentifier = secondDataset.identifier;
           cy.get_cy("go-back-button").click();
-          fixtures.datasetById(useMockedData, datasetIdentifier, "getDatasetById2");
+          fixtures.datasetById(datasetIdentifier, "getDatasetById2");
           cy.get_cy("dataset-card-title").contains(secondDataset.title).click();
           cy.wait("@getDatasetById2");
           cy.get_cy("dataset-title").should("contain.text", secondDataset.title);
@@ -71,7 +71,7 @@ describe("Project dataset", () => {
 
   it("dataset limited options if has not permissions", () => {
     const projectPath = "e2e/testing-datasets";
-    fixtures.project(useMockedData, projectPath, "getProjectLimited", "projects/project-limited-permissions.json");
+    fixtures.project(projectPath, "getProjectLimited", "projects/project-limited-permissions.json");
     cy.visit(`projects/${projectPath}/datasets`);
     cy.wait("@getProjectLimited");
     cy.wait("@datasetList")
@@ -79,7 +79,7 @@ describe("Project dataset", () => {
         const datasets = data.result.datasets;
         if (datasets.length > 0) {
           const datasetIdentifier = datasets[0].identifier;
-          fixtures.datasetById(useMockedData, datasetIdentifier);
+          fixtures.datasetById(datasetIdentifier);
           cy.get_cy("dataset-card-title").contains(datasets[0].title).click();
           cy.wait("@getDatasetById");
           /* 3. Verify displaying info dataset with permissions  */
@@ -92,7 +92,7 @@ describe("Project dataset", () => {
   it("dataset is in Kg", () => {
     const datasetName = "abcd";
     const datasetIdentifier = "4577b68957b7478bba1f07d6513b43d2";
-    fixtures.datasetById(useMockedData, datasetIdentifier);
+    fixtures.datasetById(datasetIdentifier);
     cy.visit(`projects/${projectPath}/datasets/${datasetName}`);
     cy.wait("@getProject");
     cy.wait("@datasetList");
@@ -104,8 +104,8 @@ describe("Project dataset", () => {
   it("dataset is NOT in Kg", () => {
     const datasetName = "abcd";
     const datasetIdentifier = "4577b68957b7478bba1f07d6513b43d2";
-    fixtures.invalidDataset(useMockedData, datasetIdentifier);
-    fixtures.getFiles(useMockedData);
+    fixtures.invalidDataset(datasetIdentifier);
+    fixtures.getFiles();
     cy.visit(`projects/${projectPath}/datasets/${datasetName}`);
     cy.wait("@getProject");
     cy.wait("@datasetList");
