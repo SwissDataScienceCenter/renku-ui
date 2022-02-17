@@ -615,7 +615,7 @@ function SessionConfigAdvanced(props) {
     (<WarnAlert>
       Fixing
       an image can yield improvements, but it can also lead to sessions not working in the expected
-      way. <a href="https://renku.readthedocs.io/en/latest/user/session_customizing.html">
+      way. <a href="https://renku.readthedocs.io/en/latest/how-to-guides/session-customizing.html">
         Please consult the documentation
       </a> before changing this setting.
     </WarnAlert>) :
