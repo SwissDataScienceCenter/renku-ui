@@ -368,7 +368,11 @@ function SessionConfigKnown(props) {
     optionsRows.push(row);
   }
 
-  options = options.filter(o => o !== "default_url");
+  options = options.filter(o => {
+    if (o === "default_url") return false;
+    if (globalOptions[o].default == null) return false;
+    return true;
+  });
   let chunks = _.chunk(options, 2);
   chunks.forEach((c, i) => {
     const elements = c.map(option => <OptionCol key={option} option={option} defaults={defaults}
@@ -402,6 +406,7 @@ function SessionConfigUnknown(props) {
   // Create option elements
   const unknownOptions = options.map(option => {
     const value = defaults[option];
+    if (value == null) return null;
 
     const reset = devAccess ?
       (<SessionsOptionReset disabled={disabled} onChange={() => resetValue(option)} option={option} />) :
@@ -497,9 +502,12 @@ function SessionsElement(props) {
     configPrefix, devAccess, disabled, globalDefault, option, projectDefault, rendering, setConfig
   } = props;
 
+
   // temporary save the new value to highlight the correct option while updating
   const [newValue, setNewValue] = useState(null);
   const [newValueApplied, setNewValueApplied] = useState(false);
+
+  if (rendering.default == null) return null;
 
   // Compatibility layer to re-use the notebooks presentation components
   const onChange = (event, providedValue, reset = false) => {
