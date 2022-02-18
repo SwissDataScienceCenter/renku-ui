@@ -1,0 +1,205 @@
+{
+  "_links":[
+    {
+      "rel":"self",
+      "href":"https://dev.renku.ch/knowledge-graph/datasets/1ad4e4dbb8eb47209dc21e27e18b88fd"
+    },
+    {
+      "rel":"initial-version",
+      "href":"https://dev.renku.ch/knowledge-graph/datasets/1ad4e4dbb8eb47209dc21e27e18b88fd"
+    }
+  ],
+  "identifier":"1ad4e4dbb8eb47209dc21e27e18b88fd",
+  "name":"flight-data",
+  "title":"2019-01 US Flights",
+  "url":"https://dev.renku.ch/datasets/1ad4e4dbb8eb47209dc21e27e18b88fd",
+  "sameAs":"https://doi.org/10.7910/DVN/WTZS4K",
+  "versions":{
+    "initial":"1ad4e4dbb8eb47209dc21e27e18b88fd"
+  },
+  "description":"Flight data from the US Department of Transportation, Bureau of Transportation Statistics. Downloaded on 2019-07-04. https://www.transtats.bts.gov Data are here for use in software tutorials.",
+  "published":{
+    "datePublished":"2020-01-16",
+    "creator":[
+      {
+        "name":"Ramakrishnan, Chandrasekhar",
+        "affiliation":"ETH Zürich"
+      }
+    ]
+  },
+  "hasPart":[
+    {
+      "atLocation":"data/flight-data/2019-01-flights.csv.zip"
+    }
+  ],
+  "project":{
+    "_links":[
+      {
+        "rel":"project-details",
+        "href":"https://dev.renku.ch/knowledge-graph/projects/lorenzo.cavazzi.tech/readme-file-dev"
+      }
+    ],
+    "path":"lorenzo.cavazzi.tech/readme-file-dev",
+    "name":"readme file dev"
+  },
+  "usedIn":[
+    {
+      "_links":[
+        {
+          "rel":"project-details",
+          "href":"https://dev.renku.ch/knowledge-graph/projects/rokroskar/try-to-make-another-project-with-a-funny-name"
+        }
+      ],
+      "path":"rokroskar/try-to-make-another-project-with-a-funny-name",
+      "name":"Try to make another project with a funny name"
+    },
+    {
+      "_links":[
+        {
+          "rel":"project-details",
+          "href":"https://dev.renku.ch/knowledge-graph/projects/cchoirat/chuv"
+        }
+      ],
+      "path":"cchoirat/chuv",
+      "name":"chuv"
+    },
+    {
+      "_links":[
+        {
+          "rel":"project-details",
+          "href":"https://dev.renku.ch/knowledge-graph/projects/cchoirat/chuv-demo"
+        }
+      ],
+      "path":"cchoirat/chuv-demo",
+      "name":"chuv-demo"
+    },
+    {
+      "_links":[
+        {
+          "rel":"project-details",
+          "href":"https://dev.renku.ch/knowledge-graph/projects/jakub.chrobasik/deduplicate-creators"
+        }
+      ],
+      "path":"jakub.chrobasik/deduplicate-creators",
+      "name":"deduplicate creators"
+    },
+    {
+      "_links":[
+        {
+          "rel":"project-details",
+          "href":"https://dev.renku.ch/knowledge-graph/projects/jakub.chrobasik/flights-tutorial"
+        }
+      ],
+      "path":"jakub.chrobasik/flights-tutorial",
+      "name":"flights-tutorial"
+    },
+    {
+      "_links":[
+        {
+          "rel":"project-details",
+          "href":"https://dev.renku.ch/knowledge-graph/projects/david.kunzmann/neo4j-migration-renku-ds"
+        }
+      ],
+      "path":"david.kunzmann/neo4j-migration-renku-ds",
+      "name":"neo4j migration renku ds"
+    },
+    {
+      "_links":[
+        {
+          "rel":"project-details",
+          "href":"https://dev.renku.ch/knowledge-graph/projects/lorenzo.cavazzi.tech/readme-file-dev"
+        }
+      ],
+      "path":"lorenzo.cavazzi.tech/readme-file-dev",
+      "name":"readme file dev"
+    },
+    {
+      "_links":[
+        {
+          "rel":"project-details",
+          "href":"https://dev.renku.ch/knowledge-graph/projects/lorenzo.cavazzi.tech/service-vs-cli"
+        }
+      ],
+      "path":"lorenzo.cavazzi.tech/service-vs-cli",
+      "name":"service vs cli"
+    },
+    {
+      "_links":[
+        {
+          "rel":"project-details",
+          "href":"https://dev.renku.ch/knowledge-graph/projects/jakub.chrobasik/test-2020-09-24-15-19-43"
+        }
+      ],
+      "path":"jakub.chrobasik/test-2020-09-24-15-19-43",
+      "name":"test 2020-09-24 15-19-43"
+    },
+    {
+      "_links":[
+        {
+          "rel":"project-details",
+          "href":"https://dev.renku.ch/knowledge-graph/projects/renku-test/test-2021-08-16-11-52-14"
+        }
+      ],
+      "path":"renku-test/test-2021-08-16-11-52-14",
+      "name":"test 2021-08-16 11-52-14"
+    },
+    {
+      "_links":[
+        {
+          "rel":"project-details",
+          "href":"https://dev.renku.ch/knowledge-graph/projects/renku-test/test-2021-10-12-10-06-45"
+        }
+      ],
+      "path":"renku-test/test-2021-10-12-10-06-45",
+      "name":"test 2021-10-12 10-06-45"
+    },
+    {
+      "_links":[
+        {
+          "rel":"project-details",
+          "href":"https://dev.renku.ch/knowledge-graph/projects/rokroskar/test-0.12.0"
+        }
+      ],
+      "path":"rokroskar/test-0.12.0",
+      "name":"test-0.12.0"
+    },
+    {
+      "_links":[
+        {
+          "rel":"project-details",
+          "href":"https://dev.renku.ch/knowledge-graph/projects/jakub.chrobasik/test-2021-09-27-11-38-05-public"
+        }
+      ],
+      "path":"jakub.chrobasik/test-2021-09-27-11-38-05-public",
+      "name":"test-2021-09-27-11-38-05-public"
+    },
+    {
+      "_links":[
+        {
+          "rel":"project-details",
+          "href":"https://dev.renku.ch/knowledge-graph/projects/jakub.chrobasik/test_2020_07_13_1450_37"
+        }
+      ],
+      "path":"jakub.chrobasik/test_2020_07_13_1450_37",
+      "name":"test_2020_07_13_1450_37"
+    },
+    {
+      "_links":[
+        {
+          "rel":"project-details",
+          "href":"https://dev.renku.ch/knowledge-graph/projects/jakub.chrobasik/test_2020_07_23_1113_45"
+        }
+      ],
+      "path":"jakub.chrobasik/test_2020_07_23_1113_45",
+      "name":"test_2020_07_23_1113_45"
+    }
+  ],
+  "keywords":[
+    "Computer and Information Science",
+    "flight data",
+    "software tutorial data"
+  ],
+  "images":[
+
+  ]
+}

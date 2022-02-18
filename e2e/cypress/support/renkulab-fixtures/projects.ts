@@ -22,6 +22,11 @@ import { FixturesConstructor } from "./fixtures";
  * Fixtures for Projects
  */
 
+interface MigrationCheckParams {
+  fixtureName?: string;
+  queryUrl?: string
+}
+
 function Projects<T extends FixturesConstructor>(Parent: T) {
   return class ProjectsFixtures extends Parent {
     landingUserProjects(name = "getLandingUserProjects") {
@@ -41,44 +46,56 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    interceptMigrationCheck(name, fixture) {
+    project(path = "", name = "getProject", result = "projects/project.json") {
+      const fixture = this.useMockedData ? { fixture: result } : undefined;
+      cy.intercept(
+        `/ui-server/api/projects/${encodeURIComponent(path)}?statistics=true`,
+        fixture
+      ).as(name);
+      return this;
+    }
+
+    interceptMigrationCheck(name, fixture, queryUrl = null) {
       const coreUrl = "/ui-server/api/renku/cache.migrations_check";
-      const params =
-        "git_url=https%3A%2F%2Fdev.renku.ch%2Fgitlab%2Fe2e%2Flocal-test-project.git&branch=master";
-      cy.intercept(`${coreUrl}?${params}`, {
+      const defaultQuery = "git_url=https%3A%2F%2Fdev.renku.ch%2Fgitlab%2Fe2e%2Flocal-test-project.git&branch=master";
+      cy.intercept(`${coreUrl}?${ queryUrl || defaultQuery}`, {
         fixture: fixture
       }).as(name);
       return this;
     }
 
-    projectMigrationUpToDate(name = "getMigration") {
+    projectMigrationUpToDate(params: MigrationCheckParams = { queryUrl: null, fixtureName: "getMigration" }) {
       this.interceptMigrationCheck(
-        name,
-        "test-project_migration_up-to-date.json"
+        params.fixtureName,
+        "test-project_migration_up-to-date.json",
+        params.queryUrl
       );
       return this;
     }
 
-    projectMigrationOptional(name = "getMigration") {
+    projectMigrationOptional(params: MigrationCheckParams = { queryUrl: null, fixtureName: "getMigration" }) {
       this.interceptMigrationCheck(
-        name,
-        "test-project_migration_update-optional.json"
+        params.fixtureName,
+        "test-project_migration_update-optional.json",
+        params.queryUrl
       );
       return this;
     }
 
-    projectMigrationRecommended(name = "getMigration") {
+    projectMigrationRecommended(params: MigrationCheckParams = { queryUrl: null, fixtureName: "getMigration" }) {
       this.interceptMigrationCheck(
-        name,
-        "test-project_migration_update-recommended.json"
+        params.fixtureName,
+        "test-project_migration_update-recommended.json",
+        params.queryUrl
       );
       return this;
     }
 
-    projectMigrationRequired(name = "getMigration") {
+    projectMigrationRequired(params: MigrationCheckParams = { queryUrl: null, fixtureName: "getMigration" }) {
       this.interceptMigrationCheck(
-        name,
-        "test-project_migration_update-required.json"
+        params.fixtureName,
+        "test-project_migration_update-required.json",
+        params.queryUrl
       );
       return this;
     }
@@ -91,7 +108,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
         projectReadmeCommits: "getProjectReadmeCommits",
         readmeName: "getReadme",
         validationName: "getValidation"
-      }
+      }, coreVersion = 8
     ) {
       const {
         coreServiceVersionName,
@@ -101,32 +118,32 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       } = names;
       const { projectReadmeCommits, validationName } = names;
       cy.intercept(
-        "/ui-server/api/projects/39646/repository/files/README.md/raw?ref=master",
+        "/ui-server/api/projects/*/repository/files/README.md/raw?ref=master",
         { fixture: "test-project-readme.md" }
       ).as(readmeName);
       cy.intercept(
-        "/ui-server/api/projects/39646/repository/commits?ref_name=master&per_page=2&path=README.md&page=1",
+        "/ui-server/api/projects/*/repository/commits?ref_name=master&per_page=2&path=README.md&page=1",
         { fixture: "test-project-readme-commits.json" }
       ).as(projectReadmeCommits);
       cy.intercept(
-        "/ui-server/api/projects/39646/repository/commits?ref_name=master&per_page=100&page=1",
+        "/ui-server/api/projects/*/repository/commits?ref_name=master&per_page=100&page=1",
         { fixture: "test-project-commits.json" }
       ).as(projectCommitsName);
       cy.intercept(
-        "/ui-server/api/projects/39646/repository/branches?per_page=100&page=1",
+        "/ui-server/api/projects/*/repository/branches?per_page=100&page=1",
         { fixture: "test-project-branches.json" }
       ).as(projectBranchesName);
-      cy.intercept("/ui-server/api/projects/39646/graph/webhooks/validation", {
+      cy.intercept("/ui-server/api/projects/*/graph/webhooks/validation", {
         body: { message: "Hook valid" }
       }).as(validationName);
-      cy.intercept("/ui-server/api/projects/39646/graph/status", {
+      cy.intercept("/ui-server/api/projects/*/graph/status", {
         body: { done: 1, total: 1, progress: 100.0 }
       });
-      cy.intercept("/ui-server/api/renku/8/version", {
+      cy.intercept(`/ui-server/api/renku/${coreVersion}/version`, {
         body: {
           result: {
             latest_version: "0.16.2",
-            supported_project_version: 8.0
+            supported_project_version: coreVersion
           }
         }
       }).as(coreServiceVersionName);
@@ -141,7 +158,8 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
         projectName: "getProject",
         projectReadmeCommits: "getProjectReadmeCommits",
         readmeName: "getReadme",
-        validationName: "getValidation"
+        validationName: "getValidation",
+        coreVersion: 8
       }
     ) {
       const { projectName } = names;
@@ -179,4 +197,4 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
   };
 }
 
-export { Projects };
+export { Projects, MigrationCheckParams };

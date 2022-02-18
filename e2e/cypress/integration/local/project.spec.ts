@@ -41,6 +41,7 @@ describe("display a project", () => {
 
 describe("display migration information", () => {
   const fixtures = new Fixtures(cy);
+
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects().projectTest();
