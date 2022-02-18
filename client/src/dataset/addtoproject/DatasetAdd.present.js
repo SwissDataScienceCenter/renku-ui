@@ -24,7 +24,7 @@
  */
 
 
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import _ from "lodash";
 import { Row, Col } from "reactstrap";
 import { Button } from "reactstrap";
@@ -34,6 +34,8 @@ import { getDatasetAuthors } from "../DatasetFunctions";
 import { AddDatasetExistingProject } from "./addDatasetExistingProject";
 import { DatasetError } from "../DatasetError";
 import { Loader } from "../../utils/components/Loader";
+import { AddDatasetNewProject } from "./addDatasetNewProject";
+import { AddDatasetContext } from "./DatasetAdd.container";
 
 function HeaderAddDataset(props) {
   const { dataset } = props;
@@ -60,13 +62,16 @@ function HeaderAddDataset(props) {
 }
 
 function DatasetAdd(props) {
+  const datasetContext = useContext(AddDatasetContext);
   const [isNewProject, setIsNewProject] = useState(false);
   const buttonGroup = (
     <ButtonGroup className="d-flex">
-      <Button color="primary" outline active={!isNewProject} onClick={(e) => setIsNewProject(false)}>
+      <Button disabled={datasetContext.currentStatus?.status === "inProcess"}
+        color="primary" outline active={!isNewProject} onClick={(e) => setIsNewProject(false)}>
         Existing Project
       </Button>
-      <Button color="primary" outline active={isNewProject} onClick={(e) => setIsNewProject(true)}>
+      <Button disabled={datasetContext.currentStatus?.status === "inProcess"}
+        color="primary" outline active={isNewProject} onClick={(e) => setIsNewProject(true)}>
         New Project
       </Button>
     </ButtonGroup>
@@ -74,16 +79,9 @@ function DatasetAdd(props) {
   const formToDisplay = !isNewProject ?
     (<AddDatasetExistingProject
       dataset={props.dataset}
-      currentStatus={props.currentStatus}
-      setCurrentStatus={props.setCurrentStatus}
-      submitCallback={props.submitCallback}
-      isProjectListReady={props.isProjectListReady}
-      setIsProjectListReady={props.setIsProjectListReady}
-      isDatasetValid={props.isDatasetValid}
-      importingDataset={props.importingDataset}
-      projectsCoordinator={props.projectsCoordinator}
       validateProject={props.validateProject}
-    />) : null;
+    />) : <AddDatasetNewProject
+      dataset={props.dataset}/>;
 
   if (!props.dataset) return <Loader />;
   if (!props.dataset?.exists) {
@@ -92,7 +90,7 @@ function DatasetAdd(props) {
         <DatasetError
           fetchError={props.dataset?.fetchError}
           insideProject={props.insideProject}
-          location={props.location}
+          location={datasetContext.location}
           logged={props.logged} />
       );
     }

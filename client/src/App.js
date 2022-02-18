@@ -46,7 +46,7 @@ import { Unavailable } from "./Maintenance";
 import "./App.css";
 import "react-toastify/dist/ReactToastify.css";
 import { Loader } from "./utils/components/Loader";
-import AddDataset from "./dataset/addtoproject/DatasetAdd.container";
+import { AddDataset } from "./dataset/addtoproject/DatasetAdd.container";
 import { ProjectsCoordinator } from "./project/shared";
 import { projectSchema } from "./model";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
@@ -137,6 +137,8 @@ function CentralContentContainer(props) {
           projectsCoordinator={new ProjectsCoordinator(props.client, props.model.subModel("projects"))}
           datasetCoordinator={new DatasetCoordinator(props.client, props.model.subModel("dataset"))}
           migration={projectSchema.createInitialized().migration}
+          projectTemplate={props.params["TEMPLATES"]}
+          user={props.user}
         />}
       />
       <Route path="/datasets/:identifier" render={

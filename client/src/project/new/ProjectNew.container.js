@@ -420,6 +420,7 @@ class NewProject extends Component {
     super(props);
     // Create model and reset inputs
     this.model = props.model;
+    this.importingDataset = props.importingDataset || false;
     this.coordinator = new NewProjectCoordinator(props.client, this.model.subModel("newProject"),
       this.model.subModel("projects"));
     this.coordinator.setConfig(props.templates.custom, props.templates.repositories);
@@ -452,8 +453,12 @@ class NewProject extends Component {
       const data = getDataFromParams(params);
       if (data)
         this.coordinator.setAutomated(data);
-      const newUrl = Url.get(Url.pages.project.new);
-      this.props.history.push(newUrl);
+
+      // do not update url if is importing a dataset
+      if (!this.importingDataset) {
+        const newUrl = Url.get(Url.pages.project.new);
+        this.props.history.push(newUrl);
+      }
     }
     catch (e) {
       this.coordinator.setAutomated(null, e);
@@ -528,6 +533,11 @@ class NewProject extends Component {
     this.props.history.push(`/projects/${slug}`);
   }
 
+  sendProjectToAddDataset(projectPath) {
+    if (projectPath)
+      this.props.startImportDataset(projectPath);
+  }
+
   onSubmit(e) {
     e.preventDefault();
 
@@ -546,7 +556,13 @@ class NewProject extends Component {
         this.refreshUserProjects();
         if (!creation.kgError && !creation.projectError) {
           const slug = `${creation.newNamespace}/${creation.newNameSlug}`;
-          this.props.history.push(`/projects/${slug}`);
+          if (this.props.importingDataset) {
+            this.sendProjectToAddDataset(slug);
+          }
+          else {
+            // continue regular process
+            this.props.history.push(`/projects/${slug}`);
+          }
         }
       }
     });
@@ -568,7 +584,8 @@ class NewProject extends Component {
       user: {
         logged: state.user.logged,
         username: state.user.data && state.user.data.username ? state.user.data.username : null
-      }
+      },
+      importingDataset: this.importingDataset,
     };
 
     return {
