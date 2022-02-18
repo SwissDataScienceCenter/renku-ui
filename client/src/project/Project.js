@@ -40,6 +40,7 @@ import ChangeDataset from "./datasets/change/index";
 import ImportDataset from "./datasets/import/index";
 import KnowledgeGraphStatus from "../file/KnowledgeGraphStatus.container";
 import qs from "query-string";
+import { DatasetCoordinator } from "../dataset/Dataset.state";
 
 
 const subRoutes = {
@@ -162,6 +163,7 @@ class View extends Component {
     // TODO: Could move projectsCoordinator once ProjectModel goes away
     this.projectsCoordinator = new ProjectsCoordinator(props.client, props.model.subModel("projects"));
     this.projectCoordinator = new ProjectCoordinator(props.client, props.model.subModel("project"));
+    this.datasetCoordinator = new DatasetCoordinator(props.client, props.model.subModel("dataset"));
 
     // fetch useful projects data in not yet loaded
     if (this.props.user.logged) {
@@ -472,6 +474,7 @@ class View extends Component {
         projectInsideKg={projectInsideKg}
         projectPathWithNamespace={projectPathWithNamespace}
         projectsUrl={subUrls.projectsUrl}
+        datasetCoordinator={this.datasetCoordinator}
       />,
 
       newDataset: (p) => <ChangeDataset

@@ -24,40 +24,43 @@ import {
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faEllipsisV, faPen, faPlus, faSearch, faTrash
+  faEllipsisV, faPen, faPlus, faTrash
 } from "@fortawesome/free-solid-svg-icons";
 import _ from "lodash";
 
-import { ProjectsCoordinator } from "../project/shared";
-import AddDataset from "./addtoproject/DatasetAdd.container";
 import DeleteDataset from "../project/datasets/delete/index";
 import Time from "../utils/helpers/Time";
-import { Url } from "../utils/helpers/url";
 import FileExplorer from "../utils/components/FileExplorer";
 import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
 import { ExternalLink } from "../utils/components/ExternalLinks";
-import { ErrorAlert, InfoAlert, WarnAlert } from "../utils/components/Alert";
+import { ErrorAlert, WarnAlert } from "../utils/components/Alert";
 import { Loader } from "../utils/components/Loader";
+import { getDatasetAuthors } from "./DatasetFunctions";
+import { DatasetError } from "./DatasetError";
 
 function DisplayFiles(props) {
-  if (props.files === undefined) return null;
+  if (!props.files || !props.files?.hasPart) return null;
+  if (props.files?.fetching || props.loadingDatasets) return "LOADING FILES...";
 
-  if (props.files.error !== undefined) {
+
+  if (props.files.fetchError !== null) {
     return <Card key="datasetDetails" className="border-rk-light mb-4">
       <CardHeader className="bg-white p-3 ps-4">Dataset files</CardHeader>
       <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
-        <strong>Error fetching dataset files:</strong> {props.files.error.reason}
+        <strong>Error fetching dataset files:</strong> {props.files.fetchError.message}
       </CardBody>
     </Card>;
   }
 
-  let openFolders = props.files.length > 0 ?
-    (props.files[0].atLocation.startsWith("data/") ? 2 : 1)
+  const files = props.files.hasPart;
+
+  let openFolders = files.length > 0 ?
+    (files[0].atLocation.startsWith("data/") ? 2 : 1)
     : 0;
 
   // ? This re-adds the name property on the datasets.
   // TODO: consider refactoring FileExplorer
-  const filesWithNames = props.files.map(file => {
+  const filesWithNames = files.map(file => {
     // Add the file name
     let newFile = { ...file };
     // Skip if it's already there
@@ -75,10 +78,10 @@ function DisplayFiles(props) {
   });
 
   return <Card key="datasetDetails" className="border-rk-light mb-4">
-    <CardHeader className="bg-white p-3 ps-4">Dataset files ({props.files.length})</CardHeader>
+    <CardHeader className="bg-white p-3 ps-4" data-cy="dataset-file-title">Dataset files ({files.length})</CardHeader>
     <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
       {
-        props.files.length === 0 ?
+        files.length === 0 ?
           <span>No files on this dataset.</span>
           :
           <FileExplorer
@@ -107,7 +110,7 @@ function DisplayProjects(props) {
         </thead>
         <tbody>
           {props.projects.map((project, index) =>
-            <tr key={project.name + index}>
+            <tr data-cy="project-using-dataset" key={project.name + index}>
               <td className="text-break">
                 <Link to={`${props.projectsUrl}/${project.path}`}>
                   {project.path}
@@ -155,6 +158,7 @@ function DisplayDescription(props) {
 function DisplayInfoTable(props) {
 
   const { dataset } = props;
+  if (!dataset || !dataset?.exists) return null;
 
   const datasetPublished = dataset.published !== undefined && dataset.published.datePublished
     !== undefined && dataset.published.datePublished !== null;
@@ -167,11 +171,7 @@ function DisplayInfoTable(props) {
       <ExternalLink url={dataset.url} title={dataset.url} role="link" />
       : null;
 
-  const authors = dataset.published !== undefined && dataset.published.creator !== undefined ?
-    dataset.published.creator
-      .map((creator) => creator.name + (creator.affiliation ? ` (${creator.affiliation})` : ""))
-      .join("; ")
-    : null;
+  const authors = getDatasetAuthors(dataset);
 
   const keywords = dataset.keywords && dataset.keywords.length > 0 ?
     dataset.keywords.map(keyword =>
@@ -227,91 +227,6 @@ function DisplayInfoTable(props) {
   </Table>;
 }
 
-
-function DatasetError(props) {
-  const { fetchError, insideProject, location, logged } = props;
-
-  // login helper
-  let loginHelper = null;
-  if (!logged) {
-    const to = Url.get(Url.pages.login.link, { pathname: location.pathname });
-    const link = (<Link className="btn btn-primary btn-sm" to={to}>Log in</Link>);
-    loginHelper = (
-      <p className="mb-0">
-        You might need to be logged in to see this dataset.
-        Please try to {link}
-      </p>
-    );
-  }
-
-  // inside project case
-  if (insideProject) {
-    const title = `Error ${fetchError.code ? fetchError.code : "unknown"}`;
-    let errorDetails = null;
-    if (fetchError.code === 404) {
-      errorDetails = (
-        <p>We could not find the dataset. It is possible it has been deleted by its owner.</p>
-      );
-    }
-    else if (fetchError.message) {
-      errorDetails = (<p>Error details: {fetchError.message}</p>);
-    }
-    const tip = logged ?
-      (<p className="mb-0">You can try to select a dataset again from the list in the previous page.</p>) :
-      loginHelper;
-
-    return (
-      <ErrorAlert>
-        <h5>{title}</h5>
-        {errorDetails}
-        {tip}
-      </ErrorAlert>
-    );
-  }
-
-  // global page case
-  let errorDetails = null;
-  if (fetchError.code === 404) {
-    const info = logged ?
-      (
-        <InfoAlert timeout={0}>
-          <p>
-            If you are sure the dataset exists,
-            you may want to try the following:
-          </p>
-          <ul className="mb-0">
-            <li>Do you have multiple accounts? Are you logged in with the right user?</li>
-            <li>
-              If you received this link from someone, ask that person to make sure you have access to the dataset.
-            </li>
-          </ul>
-        </InfoAlert>
-      ) :
-      (<InfoAlert timeout={0}>{loginHelper}</InfoAlert>);
-    errorDetails = (
-      <div>
-        <h3>Dataset not found <FontAwesomeIcon icon={faSearch} flip="horizontal" /></h3>
-        <div>&nbsp;</div>
-        <p>
-          It is possible that the dataset has been deleted by its owner or you do not have permission
-          to access it.
-        </p>
-        {info}
-      </div>
-    );
-  }
-  else if (fetchError.message) {
-    errorDetails = (<p>Error details: {fetchError.message}</p>);
-  }
-
-  return (
-    <div>
-      <h1>Error {fetchError.code ? fetchError.code : "unknown"}</h1>
-      {errorDetails}
-    </div>
-  );
-}
-
 function ErrorAfterCreation(props) {
   const editButton = <Link className="float-right me-1 mb-1" id="editDatasetTooltip"
     to={{ pathname: "modify", state: { dataset: props.dataset } }} >
@@ -331,11 +246,13 @@ function ErrorAfterCreation(props) {
 
 export default function DatasetView(props) {
 
-  const [addDatasetModalOpen, setAddDatasetModalOpen] = useState(false);
   const [deleteDatasetModalOpen, setDeleteDatasetModalOpen] = useState(false);
   const dataset = props.dataset;
 
-  if (dataset === undefined) {
+  if (props.loadingDatasets)
+    return <Loader />;
+
+  if (dataset === undefined || !dataset?.exists) {
     if (!_.isEmpty(props.fetchError)) {
       return (
         <DatasetError
@@ -345,36 +262,43 @@ export default function DatasetView(props) {
           logged={props.logged} />
       );
     }
-
-    if (props.loadingDatasets || !props.insideProject)
-      return <Loader />;
   }
+  const addDatasetUrl = `/datasets/${dataset?.identifier}/add`;
+  const goToAddToProject = () => {
+    if (props.history)
+      props.history.push(addDatasetUrl);
+  };
 
   return <Col>
     <ErrorAfterCreation location={props.location} dataset={dataset} />
     <Row>
       <Col md={8} sm={12}>
         {props.insideProject ?
-          <h3 key="datasetTitle" className="mb-4">
+          <h3 data-cy="dataset-title" key="datasetTitle" className="mb-4">
             {dataset.title || dataset.name}
           </h3>
           :
-          <h2 key="datasetTitle" className="mb-4">
+          <h2 data-cy="dataset-title" key="datasetTitle" className="mb-4">
             {dataset.title || dataset.name}
           </h2>
         }
       </Col>
       <Col md={4} sm={12} className="d-flex flex-col justify-content-end mb-auto">
         {props.logged ?
-          <Button disabled={dataset.insideKg === false}
-            className="float-right mb-1 me-1" size="sm" color="secondary" onClick={() => setAddDatasetModalOpen(true)}>
-            <FontAwesomeIcon icon={faPlus} color="dark" /> Add to project
-          </Button>
+          <>
+            <Button
+              data-cy="add-to-project-button"
+              disabled={dataset?.insideKg === false}
+              className="float-right mb-1 me-1" size="sm" color="secondary" onClick={() => goToAddToProject()}>
+              <FontAwesomeIcon icon={faPlus} color="dark" /> Add to project
+            </Button>
+          </>
           : null}
         {props.insideProject && props.maintainer ?
-          <Link className="float-right me-1 mb-1" id="editDatasetTooltip"
+          <Link className="float-right mb-1 me-1" id="editDatasetTooltip"
+            data-cy="edit-dataset-button"
             to={{ pathname: "modify", state: { dataset: dataset } }} >
-            <Button size="sm" color="secondary" >
+            <Button color="secondary" >
               <FontAwesomeIcon icon={faPen} color="dark" />
             </Button>
           </Link>
@@ -382,11 +306,11 @@ export default function DatasetView(props) {
         }
         {props.insideProject && props.maintainer ?
           <UncontrolledButtonDropdown size="sm" className="float-right mb-1">
-            <DropdownToggle caret color="secondary" className="removeArrow">
+            <DropdownToggle data-cy="more-options-button" caret color="secondary" className="removeArrow">
               <FontAwesomeIcon icon={faEllipsisV} color="dark" />
             </DropdownToggle>
             <DropdownMenu>
-              <DropdownItem onClick={() => setDeleteDatasetModalOpen(true)}>
+              <DropdownItem data-cy="delete-dataset-button" onClick={() => setDeleteDatasetModalOpen(true)}>
                 <FontAwesomeIcon icon={faTrash} color="dark" /> Delete
               </DropdownItem>
             </DropdownMenu>
@@ -423,13 +347,14 @@ export default function DatasetView(props) {
       projectsUrl={props.projectsUrl}
       fileContentUrl={props.fileContentUrl}
       lineagesUrl={props.lineagesUrl}
-      files={dataset.hasPart}
+      files={props.files}
       insideProject={props.insideProject}
+      loadingDatasets={props.loadingDatasets}
     />
     {
       //here we assume that if the dataset is only in one project
       //this one project is the current project and we don't display the list
-      (dataset.usedIn && dataset.usedIn.length > 1) || !props.insideProject ?
+      (dataset.usedIn && dataset.usedIn.length > 1) && !props.insideProject ?
         <DisplayProjects
           projects={dataset.usedIn}
           projectsUrl={props.projectsUrl}
@@ -437,9 +362,9 @@ export default function DatasetView(props) {
         : null
     }
     {
-      props.fetchedKg === true && dataset.insideKg === false && props.projectInsideKg === true ?
+      dataset.insideKg === false && props.projectInsideKg === true ?
         <WarnAlert className="not-in-kg-warning">
-          <strong>This dataset is not in the Knowledge Graph;</strong> this means that some
+          <strong data-cy="not-in-kg-warning">This dataset is not in the Knowledge Graph;</strong> this means that some
           operations on it are not possible.
           <br /><br />
           If the dataset was created recently, and the Knowledge Graph integration for the project is active,
@@ -452,23 +377,6 @@ export default function DatasetView(props) {
             status page
           </Button>.
         </WarnAlert>
-        : null
-    }
-    {
-      props.logged ?
-        <AddDataset
-          httpProjectUrl={props.httpProjectUrl}
-          client={props.client}
-          dataset={dataset}
-          formLocation={props.location.pathname + "/add"}
-          history={props.history}
-          modalOpen={addDatasetModalOpen}
-          model={props.model}
-          projectsCoordinator={new ProjectsCoordinator(props.client, props.model.subModel("projects"))}
-          setModalOpen={setAddDatasetModalOpen}
-          user={props.user}
-          versionUrl={props.migration.core.versionUrl}
-        />
         : null
     }
     {props.insideProject && props.maintainer ?

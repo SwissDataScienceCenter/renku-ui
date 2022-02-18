@@ -5,6 +5,7 @@
   "experimentalStudio": true,
   "env": {
     "GITLAB_PROVIDER": "dev.renku.ch",
-    "USER": ""
+    "USER": "",
+    "USE_FIXTURES": true
   }
 }

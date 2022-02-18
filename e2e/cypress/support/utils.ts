@@ -16,14 +16,6 @@
  * limitations under the License.
  */
 
-/**
- * Common fixtures defined in one place.
- */
-import BaseFixtures from "./fixtures";
-import { User } from "./user";
-import { Projects } from "./projects";
-import { Datasets } from "./datasets";
-
-const Fixtures = Datasets(Projects(User(BaseFixtures)));
-
-export default Fixtures;
+Cypress.Commands.add("get_cy", (element: string) => {
+  return cy.get(`[data-cy='${element}']`);
+});
