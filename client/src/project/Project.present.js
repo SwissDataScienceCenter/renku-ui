@@ -891,7 +891,7 @@ function ProjectViewDatasets(props) {
       <Route path={props.newDatasetUrl}
         render={p =>[
           <Col key="btn" md={12}>
-            <GoBackButton label="Back to list" url={props.datasetsUrl}/>
+            <GoBackButton data-cy="go-back-dataset" label="Back to list" url={props.datasetsUrl}/>
           </Col>,
           <ProjectAddDataset key="projectsAddDataset" {...props} />
         ]}/>

@@ -110,7 +110,8 @@ describe("Dataset functions", () => {
       "name": "First, Creator",
       "email": null,
       "affiliation": "Some Affiliation"
-    }]
+    }],
+    "mediaContent": "",
   };
 
   const kg_dataset = {
@@ -137,11 +138,15 @@ describe("Dataset functions", () => {
 
   const result_dataset_in_kg = {
     ...kg_dataset,
-    "hasPart": [
-      { "name": "Data file 2.xls", "atLocation": "data/test_dataset/Data file 2.xls" },
-      { "name": "Data file 1.xls", "atLocation": "data/test_dataset/Data file 1.xls" }
-    ],
     "insideKg": true
+  };
+
+  const result_dataset_in_kg_and_core = {
+    ...kg_dataset,
+    hasPart: undefined,
+    "insideKg": true,
+    "mediaContent": "",
+    "exists": true,
   };
 
   const result_dataset_no_kg = {
@@ -158,16 +163,15 @@ describe("Dataset functions", () => {
     "created": "01/01/2001",
     "identifier": "79215657-4319-4fcf-82b9-58267f2a1db8",
     "keywords": ["test1", "test2", "test3"],
-    "hasPart": [
-      { "name": "Data file 2.xls", "atLocation": "data/test_dataset/Data file 2.xls" },
-      { "name": "Data file 1.xls", "atLocation": "data/test_dataset/Data file 1.xls" }
-    ],
-    "insideKg": false
+    "insideKg": false,
+    "mediaContent": "",
+    "exists": true,
   };
 
   const result_dataset_only_kg = {
     ...kg_dataset,
-    "insideKg": true
+    "insideKg": true,
+    "exists": true,
   };
 
   const core_dataset_import = { ...core_dataset };
@@ -176,7 +180,10 @@ describe("Dataset functions", () => {
   const kg_dataset_import = { ...kg_dataset };
 
   const result_dataset_import = {
-    ...result_dataset_in_kg
+    ...result_dataset_in_kg,
+    hasPart: undefined,
+    "exists": true,
+    "mediaContent": "",
   };
   delete result_dataset_import.created;
   result_dataset_import.published.datePublished = "01/01/2001";
@@ -188,7 +195,7 @@ describe("Dataset functions", () => {
   ];
 
   it("maps core dataset into kg dataset structure", () => {
-    expect(mapDataset(core_dataset, kg_dataset, core_files)).toEqual(result_dataset_in_kg);
+    expect(mapDataset(core_dataset, kg_dataset, core_files)).toEqual(result_dataset_in_kg_and_core);
   });
 
   it("maps core dataset into kg dataset structure for dataset outside of kg", () => {

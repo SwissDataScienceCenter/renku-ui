@@ -1,0 +1,86 @@
+{
+  "_links":[
+    {
+      "rel":"self",
+      "href":"https://dev.renku.ch/knowledge-graph/datasets/4577b68957b7478bba1f07d6513b43d2"
+    },
+    {
+      "rel":"initial-version",
+      "href":"https://dev.renku.ch/knowledge-graph/datasets/c8c01080845c4d9e9f1f2930d4892627"
+    }
+  ],
+  "identifier":"4577b68957b7478bba1f07d6513b43d2",
+  "name":"abcd",
+  "title":"abcd",
+  "url":"https://dev.renku.ch/datasets/4577b68957b7478bba1f07d6513b43d2",
+  "derivedFrom":"https://dev.renku.ch/datasets/c8c01080845c4d9e9f1f2930d4892627",
+  "versions":{
+    "initial":"c8c01080845c4d9e9f1f2930d4892627"
+  },
+  "description":"Dataset for testing purposes",
+  "published":{
+    "creator":[
+      {
+        "name":"E2E User",
+        "email":"e2e@renku.ch"
+      },
+      {
+        "name":"Andrea",
+        "email":"a@renku.ch",
+        "affiliation":"co-creator"
+      },
+      {
+        "name":"e2e User",
+        "email":"e2ea@renku.ch"
+      }
+    ]
+  },
+  "created":"2022-02-15T09:25:54Z",
+  "hasPart":[
+    {
+      "atLocation":"data/abcd/W.txt"
+    },
+    {
+      "atLocation":"data/abcd/air_quality_no2.txt"
+    }
+  ],
+  "project":{
+    "_links":[
+      {
+        "rel":"project-details",
+        "href":"https://dev.renku.ch/knowledge-graph/projects/e2e/testing-datasets"
+      }
+    ],
+    "path":"e2e/testing-datasets",
+    "name":"testing-datasets"
+  },
+  "usedIn":[
+    {
+      "_links":[
+        {
+          "rel":"project-details",
+          "href":"https://dev.renku.ch/knowledge-graph/projects/e2e/testing-datasets"
+        }
+      ],
+      "path":"e2e/testing-datasets",
+      "name":"testing-datasets"
+    },
+    {
+      "_links":[
+        {
+          "rel":"project-details",
+          "href":"https://dev.renku.ch/knowledge-graph/projects/cchoirat/chuv"
+        }
+      ],
+      "path":"cchoirat/chuv",
+      "name":"chuv"
+    }
+  ],
+  "keywords":[
+    "test",
+    "testing datasets"
+  ],
+  "images":[
+
+  ]
+}

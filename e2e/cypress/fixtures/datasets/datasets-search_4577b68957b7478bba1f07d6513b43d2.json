@@ -1,0 +1,39 @@
+[
+  {
+    "_links":[
+      {
+        "rel":"details",
+        "href":"https://dev.renku.ch/knowledge-graph/datasets/4577b68957b7478bba1f07d6513b43d2"
+      }
+    ],
+    "description":"Dataset for testing purposes",
+    "identifier":"4577b68957b7478bba1f07d6513b43d2",
+    "title":"abcd",
+    "name":"abcd",
+    "published":{
+      "creator":[
+        {
+          "email":"e2e@renku.ch",
+          "name":"E2E User"
+        },
+        {
+          "email":"a@renku.ch",
+          "name":"Andrea"
+        },
+        {
+          "email":"e2ea@renku.ch",
+          "name":"e2e User"
+        }
+      ]
+    },
+    "date":"2022-02-15T09:25:54Z",
+    "projectsCount":1,
+    "keywords":[
+      "test",
+      "testing datasets"
+    ],
+    "images":[
+
+    ]
+  }
+]

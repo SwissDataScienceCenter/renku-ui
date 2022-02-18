@@ -171,13 +171,13 @@ export default function addDatasetMethods(client) {
         return undefined;
       return currentProjects;
     }).then(cloned_project => {
-      if (cloned_project !== undefined)
+      if (cloned_project.project_id !== undefined)
         return cloned_project.project_id;
 
       return client.cloneProjectInCache(projectUrl, null, versionUrl).then(project_id => {
         return Promise.resolve(project_id);
       });
-    });
+    }).catch(response => response);
   };
 
   client.addFilesToDataset = (project_id, renkuDataset, versionUrl = null) => {

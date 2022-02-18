@@ -1,0 +1,66 @@
+{
+  "_links":[
+    {
+      "rel":"self",
+      "href":"https://dev.renku.ch/knowledge-graph/datasets/897ee9effb9b42efab454011a8fba5e4"
+    },
+    {
+      "rel":"initial-version",
+      "href":"https://dev.renku.ch/knowledge-graph/datasets/83f12182178b45ddb1e689990d9b4fa2"
+    }
+  ],
+  "identifier":"897ee9effb9b42efab454011a8fba5e4",
+  "name":"efgh",
+  "title":"efgh",
+  "url":"https://dev.renku.ch/datasets/897ee9effb9b42efab454011a8fba5e4",
+  "derivedFrom":"https://dev.renku.ch/datasets/83f12182178b45ddb1e689990d9b4fa2",
+  "versions":{
+    "initial":"83f12182178b45ddb1e689990d9b4fa2"
+  },
+  "published":{
+    "creator":[
+      {
+        "name":"E2E User",
+        "email":"e2e@renku.ch"
+      },
+      {
+        "name":"e2e User",
+        "email":"e2ea@renku.ch"
+      }
+    ]
+  },
+  "created":"2022-02-15T09:28:13Z",
+  "hasPart":[
+    {
+      "atLocation":"data/efgh/filter_flights.txt"
+    }
+  ],
+  "project":{
+    "_links":[
+      {
+        "rel":"project-details",
+        "href":"https://dev.renku.ch/knowledge-graph/projects/e2e/testing-datasets"
+      }
+    ],
+    "path":"e2e/testing-datasets",
+    "name":"testing-datasets"
+  },
+  "usedIn":[
+    {
+      "_links":[
+        {
+          "rel":"project-details",
+          "href":"https://dev.renku.ch/knowledge-graph/projects/e2e/testing-datasets"
+        }
+      ],
+      "path":"e2e/testing-datasets",
+      "name":"testing-datasets"
+    }
+  ],
+  "keywords":[
+    "second"
+  ],
+  "images":[
+
+  ]
+}
