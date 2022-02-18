@@ -1082,6 +1082,7 @@ class ProjectSessions extends Component {
 }
 
 function notebookWarning(userLogged, accessLevel, forkUrl, postLoginUrl, externalUrl) {
+  const collaborationDocRoot = "https://renku.readthedocs.io/en/latest/how-to-guides/collaboration.html";
   if (!userLogged) {
     const to = Url.get(Url.pages.login.link, { pathname: postLoginUrl });
     return (
@@ -1116,7 +1117,7 @@ function notebookWarning(userLogged, accessLevel, forkUrl, postLoginUrl, externa
           <li className="pt-1">
             <ExternalLink size="sm" title="Contact a maintainer"
               url={`${externalUrl}/project_members`} /> and ask them
-            to <a href="https://renku.readthedocs.io/en/latest/how-to-guides/collaboration.html#add-or-be-added-as-a-developer-on-a-project"
+            to <a href={`${collaborationDocRoot}#add-or-be-added-as-a-developer-on-a-project`}
               target="_blank" rel="noreferrer noopener">
               grant you the necessary permissions
             </a>.
