@@ -1,0 +1,340 @@
+[
+  {
+    "_links":[
+      {
+        "rel":"details",
+        "href":"https://dev.renku.ch/knowledge-graph/datasets/1ad4e4dbb8eb47209dc21e27e18b88fd"
+      }
+    ],
+    "description":"Flight data from the US Department of Transportation, Bureau of Transportation Statistics. Downloaded on 2019-07-04. https://www.transtats.bts.gov Data are here for use in software tutorials.",
+    "identifier":"1ad4e4dbb8eb47209dc21e27e18b88fd",
+    "title":"2019-01 US Flights",
+    "name":"flight-data",
+    "published":{
+      "creator":[
+        {
+          "name":"Ramakrishnan, Chandrasekhar"
+        }
+      ],
+      "datePublished":"2020-01-16"
+    },
+    "date":"2020-01-16T00:00:00Z",
+    "projectsCount":15,
+    "keywords":[
+      "Computer and Information Science",
+      "flight data",
+      "software tutorial data"
+    ],
+    "images":[
+
+    ]
+  },
+  {
+    "_links":[
+      {
+        "rel":"details",
+        "href":"https://dev.renku.ch/knowledge-graph/datasets/edb11ee3ecf9435bb62f4799c384db70"
+      }
+    ],
+    "description":"Test to add a dataset with a file from a url",
+    "identifier":"edb11ee3ecf9435bb62f4799c384db70",
+    "title":"dataset-with-url-file",
+    "name":"dataset-with-url-file",
+    "published":{
+      "creator":[
+        {
+          "email":"virginia.friedrich@gmail.com",
+          "name":"Virginia Friedrich"
+        }
+      ]
+    },
+    "date":"2020-07-14T09:24:09Z",
+    "projectsCount":8,
+    "keywords":[
+
+    ],
+    "images":[
+
+    ]
+  },
+  {
+    "_links":[
+      {
+        "rel":"details",
+        "href":"https://dev.renku.ch/knowledge-graph/datasets/28067ed1783a41e6988620651c0f044e"
+      }
+    ],
+    "description":"dcafsdcfasadsfacsdacsdsxadads",
+    "identifier":"28067ed1783a41e6988620651c0f044e",
+    "title":"asdfasdfascfasfcasfs",
+    "name":"asdfasdfascfasfcasfs",
+    "published":{
+      "creator":[
+        {
+          "email":"virginia.friedrich@gmail.com",
+          "name":"Virginia Friedrich"
+        }
+      ]
+    },
+    "date":"2020-07-14T09:20:50Z",
+    "projectsCount":6,
+    "keywords":[
+
+    ],
+    "images":[
+
+    ]
+  },
+  {
+    "_links":[
+      {
+        "rel":"details",
+        "href":"https://dev.renku.ch/knowledge-graph/datasets/428c36261c56463d8753336470cc6917"
+      }
+    ],
+    "description":"Test to add a file with a url",
+    "identifier":"428c36261c56463d8753336470cc6917",
+    "title":"dataset-test-url-2",
+    "name":"dataset-test-url-2",
+    "published":{
+      "creator":[
+        {
+          "email":"virginia.friedrich@gmail.com",
+          "name":"Virginia Friedrich"
+        }
+      ]
+    },
+    "date":"2020-07-14T09:24:54Z",
+    "projectsCount":6,
+    "keywords":[
+
+    ],
+    "images":[
+
+    ]
+  },
+  {
+    "_links":[
+      {
+        "rel":"details",
+        "href":"https://dev.renku.ch/knowledge-graph/datasets/9f129723c54d462e881129d43be163ed"
+      }
+    ],
+    "description":"alskdjfölaksjdfölakjsdföklajsdöflkjasöldkfjaölsdjföalkj",
+    "identifier":"9f129723c54d462e881129d43be163ed",
+    "title":"test-dataset-add",
+    "name":"test-dataset-add",
+    "published":{
+      "creator":[
+        {
+          "email":"virginia.friedrich@gmail.com",
+          "name":"Virginia Friedrich"
+        }
+      ]
+    },
+    "date":"2020-07-21T13:06:49Z",
+    "projectsCount":5,
+    "keywords":[
+
+    ],
+    "images":[
+
+    ]
+  },
+  {
+    "_links":[
+      {
+        "rel":"details",
+        "href":"https://dev.renku.ch/knowledge-graph/datasets/ecf085750b9845fa91a334d3bc4cceba"
+      }
+    ],
+    "description":"Test dataset add dev",
+    "identifier":"ecf085750b9845fa91a334d3bc4cceba",
+    "title":"test-add-dev",
+    "name":"test-add-dev",
+    "published":{
+      "creator":[
+        {
+          "email":"virginiafriedrich@gmail.com",
+          "name":"Virginia Friedrich"
+        }
+      ]
+    },
+    "date":"2020-07-21T13:08:22Z",
+    "projectsCount":5,
+    "keywords":[
+
+    ],
+    "images":[
+
+    ]
+  },
+  {
+    "_links":[
+      {
+        "rel":"details",
+        "href":"https://dev.renku.ch/knowledge-graph/datasets/8d9faada2eaa479f836db3b047eab5d1"
+      }
+    ],
+    "description":"lakjsdflökajsdölfjasöldfkjaölsdfjaölj",
+    "identifier":"8d9faada2eaa479f836db3b047eab5d1",
+    "title":"01-create-dataset",
+    "name":"01-create-dataset",
+    "published":{
+      "creator":[
+        {
+          "email":"virginia.friedrich@gmail.com",
+          "name":"Virginia Friedrich"
+        }
+      ]
+    },
+    "date":"2020-07-21T13:22:04Z",
+    "projectsCount":5,
+    "keywords":[
+
+    ],
+    "images":[
+
+    ]
+  },
+  {
+    "_links":[
+      {
+        "rel":"details",
+        "href":"https://dev.renku.ch/knowledge-graph/datasets/c3177e090582494d8be3a558ded9ea63"
+      }
+    ],
+    "description":"Testing the dataset create!!!!",
+    "identifier":"c3177e090582494d8be3a558ded9ea63",
+    "title":"02-dataset-create",
+    "name":"02-dataset-create",
+    "published":{
+      "creator":[
+        {
+          "email":"virginia.friedrich@gmail.com",
+          "name":"Virginia Friedrich"
+        }
+      ]
+    },
+    "date":"2020-07-21T13:24:11Z",
+    "projectsCount":5,
+    "keywords":[
+
+    ],
+    "images":[
+
+    ]
+  },
+  {
+    "_links":[
+      {
+        "rel":"details",
+        "href":"https://dev.renku.ch/knowledge-graph/datasets/62bdb35ae91146c8b30f84aa7a6a797a"
+      }
+    ],
+    "description":"testing the dataset create again",
+    "identifier":"62bdb35ae91146c8b30f84aa7a6a797a",
+    "title":"03-dataset-create",
+    "name":"03-dataset-create",
+    "published":{
+      "creator":[
+        {
+          "email":"virginia.friedrich@gmail.com",
+          "name":"Virginia Friedrich"
+        }
+      ]
+    },
+    "date":"2020-07-21T13:45:22Z",
+    "projectsCount":5,
+    "keywords":[
+
+    ],
+    "images":[
+
+    ]
+  },
+  {
+    "_links":[
+      {
+        "rel":"details",
+        "href":"https://dev.renku.ch/knowledge-graph/datasets/e3e1beba05594fdd8e4682963cec9fe2"
+      }
+    ],
+    "description":"With files from urls!!!!",
+    "identifier":"e3e1beba05594fdd8e4682963cec9fe2",
+    "title":"testing-create-04",
+    "name":"testing-create-04",
+    "published":{
+      "creator":[
+        {
+          "email":"virginia.friedrich@gmail.com",
+          "name":"Virginia Friedrich"
+        }
+      ]
+    },
+    "date":"2020-07-21T13:46:15Z",
+    "projectsCount":5,
+    "keywords":[
+
+    ],
+    "images":[
+
+    ]
+  },
+  {
+    "_links":[
+      {
+        "rel":"details",
+        "href":"https://dev.renku.ch/knowledge-graph/datasets/32f9b62c4130417d95d3ca5a1b84dc38"
+      }
+    ],
+    "description":"LEGO sets from Rebrickable.",
+    "identifier":"32f9b62c4130417d95d3ca5a1b84dc38",
+    "title":"sets",
+    "name":"sets",
+    "published":{
+      "creator":[
+        {
+          "email":"mohammad.alisafaee@epfl.ch",
+          "name":"Mohammad Alisafaee"
+        }
+      ]
+    },
+    "date":"2020-10-14T13:23:30Z",
+    "projectsCount":4,
+    "keywords":[
+
+    ],
+    "images":[
+
+    ]
+  },
+  {
+    "_links":[
+      {
+        "rel":"details",
+        "href":"https://dev.renku.ch/knowledge-graph/datasets/8418851ad7194b26b41219fd5ec8bb0f"
+      }
+    ],
+    "description":"sdfsdf",
+    "identifier":"8418851ad7194b26b41219fd5ec8bb0f",
+    "title":"another-new-dataset",
+    "name":"another-new-dataset",
+    "published":{
+      "creator":[
+        {
+          "email":"rokroskar@gmail.com",
+          "name":"Rok Roškar"
+        }
+      ]
+    },
+    "date":"2020-11-06T17:13:28Z",
+    "projectsCount":3,
+    "keywords":[
+
+    ],
+    "images":[
+
+    ]
+  }
+]

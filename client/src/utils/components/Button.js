@@ -92,7 +92,7 @@ function GoBackButton(props) {
     props.className + " link-rk-text text-decoration-none" :
     "link-rk-text text-decoration-none";
   return <Col md={12} className="pb-4 pl-0">
-    <Link className={linkClasses} to={props.url}>
+    <Link data-cy="go-back-button" className={linkClasses} to={props.url}>
       <span className="arrow-left">  </span>{props.label}
     </Link>
   </Col>;

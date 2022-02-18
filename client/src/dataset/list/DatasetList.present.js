@@ -93,6 +93,7 @@ class DatasetSearchForm extends Component {
               <Input type="text"
                 name="searchQuery"
                 id="searchQuery"
+                data-cy="search-dataset-input"
                 disabled={this.props.loading}
                 placeholder={"Search... "}
                 value={decodeURIComponent(this.props.searchQuery) || ""}
@@ -114,7 +115,8 @@ class DatasetSearchForm extends Component {
               <Button color="rk-white" id="cancelButton" onClick={this.props.handlers.onCancelSearch}>
                 <FontAwesomeIcon icon={faStop}/>
               </Button> :
-              <Button color="rk-white" id="searchButton" onClick={this.props.handlers.onSearchSubmit}>
+              <Button color="rk-white" id="searchButton" onClick={this.props.handlers.onSearchSubmit}
+                data-cy="search-dataset-submit">
                 <FontAwesomeIcon icon={faSearch}/>
               </Button>
             }
@@ -283,7 +285,7 @@ function DatasetList(props) {
   return <Fragment>
     <Row className="pt-2 pb-3">
       <Col className="d-flex mb-2">
-        <h2 className="me-4">Renku Datasets</h2>
+        <h2 data-cy="datasets-title" className="me-4">Renku Datasets</h2>
       </Col>
     </Row>
     <Switch>

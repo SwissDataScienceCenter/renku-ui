@@ -1,0 +1,17 @@
+{
+  "result":{
+    "files":[
+      {
+        "path":"data/abcd/W.txt",
+        "added":"2022-02-02T12:58:56+00:00",
+        "name":"W.txt"
+      },
+      {
+        "path":"data/abcd/air_quality_no2.txt",
+        "added":"2022-02-02T12:58:56+00:00",
+        "name":"air_quality_no2.txt"
+      }
+    ],
+    "name":"abcd"
+  }
+}

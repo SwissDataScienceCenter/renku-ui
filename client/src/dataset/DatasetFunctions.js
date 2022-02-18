@@ -1,12 +1,4 @@
-function fixFetchedFiles(core_files, kg_files) {
-  if (core_files) {
-    if (core_files.error) return core_files;
-    return core_files;
-  }
-  return kg_files;
-}
-
-function mapDataset(dataset_core, dataset_kg, core_files) {
+function mapDataset(dataset_core, dataset_kg) {
   let dataset = {};
   if (dataset_core) {
     dataset = {
@@ -19,8 +11,8 @@ function mapDataset(dataset_core, dataset_kg, core_files) {
       },
       identifier: dataset_core.identifier,
       keywords: dataset_core.keywords,
-      hasPart: fixFetchedFiles(core_files, dataset_kg ? dataset_kg.hasPart : undefined),
-      mediaContent: dataset_core.mediaContent
+      mediaContent: dataset_core.mediaContent,
+      exists: true,
     };
     if (dataset_kg) {
       dataset.url = dataset_kg.url;
@@ -36,9 +28,21 @@ function mapDataset(dataset_core, dataset_kg, core_files) {
     return dataset;
   }
   //while things are loading dataset_kg could be undefined
-  if (dataset_kg)
+  if (dataset_kg) {
     dataset_kg.insideKg = true;
+    dataset_kg.exists = true;
+  }
   return dataset_kg;
 }
 
-export { mapDataset };
+function getDatasetAuthors(dataset) {
+  if (!dataset) return null;
+
+  return dataset.published !== undefined && dataset.published.creator !== undefined ?
+    dataset.published.creator
+      .map((creator) => creator.name + (creator.affiliation ? ` (${creator.affiliation})` : ""))
+      .join("; ")
+    : null;
+}
+
+export { mapDataset, getDatasetAuthors };

@@ -1,0 +1,46 @@
+[
+  {
+    "_links":[
+      {
+        "rel":"details",
+        "href":"https://dev.renku.ch/knowledge-graph/datasets/4577b68957b7478bba1f07d6513b43d2"
+      },
+      {
+        "rel":"initial-version",
+        "href":"https://dev.renku.ch/knowledge-graph/datasets/c8c01080845c4d9e9f1f2930d4892627"
+      }
+    ],
+    "derivedFrom":"https://dev.renku.ch/datasets/c8c01080845c4d9e9f1f2930d4892627",
+    "identifier":"4577b68957b7478bba1f07d6513b43d2",
+    "versions":{
+      "initial":"c8c01080845c4d9e9f1f2930d4892627"
+    },
+    "title":"abcd",
+    "name":"abcd",
+    "images":[
+
+    ]
+  },
+  {
+    "_links":[
+      {
+        "rel":"details",
+        "href":"https://dev.renku.ch/knowledge-graph/datasets/897ee9effb9b42efab454011a8fba5e4"
+      },
+      {
+        "rel":"initial-version",
+        "href":"https://dev.renku.ch/knowledge-graph/datasets/83f12182178b45ddb1e689990d9b4fa2"
+      }
+    ],
+    "derivedFrom":"https://dev.renku.ch/datasets/83f12182178b45ddb1e689990d9b4fa2",
+    "identifier":"897ee9effb9b42efab454011a8fba5e4",
+    "versions":{
+      "initial":"83f12182178b45ddb1e689990d9b4fa2"
+    },
+    "title":"efgh",
+    "name":"efgh",
+    "images":[
+
+    ]
+  }
+]
