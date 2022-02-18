@@ -30,10 +30,11 @@ import { ImportStateMessage } from "../../utils/constants/Dataset";
 import { migrationCheckToRenkuVersionStatus, RENKU_VERSION_SCENARIOS } from "../../project/status/MigrationUtils";
 import DatasetAdd from "./DatasetAdd.present";
 
+const AddDatasetContext = React.createContext(null);
+
 function AddDataset(props) {
   const [currentStatus, setCurrentStatus] = useState(null);
   const [importingDataset, setImportingDataset] = useState(false);
-  const [isProjectListReady, setIsProjectListReady] = useState(false);
   const [isDatasetValid, setIsDatasetValid] = useState(null);
   const [datasetProjectVersion, setDatasetProjectVersion] = useState(null);
   const [dataset, setDataset] = useState(null);
@@ -257,23 +258,31 @@ function AddDataset(props) {
   };
   /* end import dataset */
 
+  const contextData = {
+    model: props.model,
+    client: props.client,
+    projectsCoordinator: props.projectsCoordinator,
+    user: props.user,
+    history: props.history,
+    projectTemplate: props.projectTemplate,
+    location: props.location,
+    currentStatus,
+    setCurrentStatus,
+    submitCallback,
+    isDatasetValid,
+    importingDataset
+  };
+
   return (
-    <DatasetAdd
-      dataset={dataset}
-      submitCallback={submitCallback}
-      history={props.history}
-      currentStatus={currentStatus}
-      setCurrentStatus={setCurrentStatus}
-      importingDataset={importingDataset}
-      isProjectListReady={isProjectListReady}
-      setIsProjectListReady={setIsProjectListReady}
-      isDatasetValid={isDatasetValid}
-      validateProject={validateProject}
-      projectsCoordinator={props.projectsCoordinator}
-      logged={props.logged}
-      insideProject={props.insideProject}
-    />
+    <AddDatasetContext.Provider value={contextData}>
+      <DatasetAdd
+        dataset={dataset}
+        validateProject={validateProject}
+        logged={props.logged}
+        insideProject={props.insideProject}
+      />
+    </AddDatasetContext.Provider>
   );
 }
 
-export default AddDataset;
+export { AddDataset, AddDatasetContext };
