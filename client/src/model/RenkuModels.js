@@ -47,7 +47,8 @@ const projectsSchema = new Schema({
     [Prop.SCHEMA]: new Schema({
       fetched: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
       fetching: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
-      list: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true }
+      list: { [Prop.INITIAL]: [], [Prop.MANDATORY]: true },
+      lastVisited: { [Prop.INITIAL]: true, [Prop.MANDATORY]: true }
     })
   },
   namespaces: {
