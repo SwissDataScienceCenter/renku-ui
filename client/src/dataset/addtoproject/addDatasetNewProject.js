@@ -22,7 +22,7 @@ import { NewProject } from "../../project/new";
 import { AddDatasetContext } from "./DatasetAdd.container";
 import { Loader } from "../../utils/components/Loader";
 import { Link } from "react-router-dom";
-import { InfoAlert } from "../../utils/components/Alert";
+import { WarnAlert } from "../../utils/components/Alert";
 
 /**
  *  incubator-renku-ui
@@ -91,13 +91,13 @@ const AddDatasetNewProject = (props) => {
   // in case the import fail indicate that the project was created
   const extraInfo = !addDatasetContext.importingDataset && addDatasetContext.currentStatus?.status === "error" ?
     (
-      <InfoAlert timeout={0} dismissible={false}>
+      <WarnAlert timeout={0} dismissible={false}>
         <div>The project was created correctly but it was not possible to import the dataset.
           <br/>
           You can view the project <i className="pt-2"><Link to={`/projects/${newProject?.name}`}>here</Link>{" "}</i>
           or try again to import the dataset using the <b>Existing Project</b> option.
         </div>
-      </InfoAlert>
+      </WarnAlert>
     ) : null;
 
   return (
