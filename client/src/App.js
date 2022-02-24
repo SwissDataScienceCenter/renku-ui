@@ -137,7 +137,7 @@ function CentralContentContainer(props) {
           projectsCoordinator={new ProjectsCoordinator(props.client, props.model.subModel("projects"))}
           datasetCoordinator={new DatasetCoordinator(props.client, props.model.subModel("dataset"))}
           migration={projectSchema.createInitialized().migration}
-          projectTemplate={props.params["TEMPLATES"]}
+          templates={props.params["TEMPLATES"]}
           user={props.user}
         />}
       />

@@ -264,7 +264,7 @@ function AddDataset(props) {
     projectsCoordinator: props.projectsCoordinator,
     user: props.user,
     history: props.history,
-    projectTemplate: props.projectTemplate,
+    templates: props.templates,
     location: props.location,
     currentStatus,
     setCurrentStatus,

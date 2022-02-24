@@ -80,7 +80,7 @@ const AddDatasetNewProject = (props) => {
         client={addDatasetContext.client}
         model={addDatasetContext.model}
         user={addDatasetContext.user}
-        templates={addDatasetContext.projectTemplate}
+        templates={addDatasetContext.templates}
         history={addDatasetContext.history}
         location={addDatasetContext.location}
         importingDataset={true}
