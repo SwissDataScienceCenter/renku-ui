@@ -617,7 +617,7 @@ class StartNotebookCommits extends Component {
         true :
         false;
       if (autosaveExists) {
-        const url = "https://renku.readthedocs.io/en/latest/user/interactive_stopping_and_saving.html" +
+        const url = "https://renku.readthedocs.io/en/latest/how-to-guides/session-stopping-and-saving.html" +
           "#autosave-in-interactive-environments";
         commitComment = (
           <FormText>
@@ -1101,7 +1101,7 @@ class AutosavedDataModal extends Component {
     const docsLink = (
       <ExternalLink
         role="text" iconSup={true} iconAfter={true} title="documentation"
-        url="https://renku.readthedocs.io/en/latest/user/autosave.html"
+        url="https://renku.readthedocs.io/en/latest/how-to-guides/session-stopping-and-saving.html#autosave-in-sessions"
       />
     );
     const command = `git reset --hard ${this.props.filters.commit.short_id} && git clean -f -d`;

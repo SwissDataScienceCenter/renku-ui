@@ -51,7 +51,7 @@ Clone the main Renku repository and follow these instructions_ to get Renku up
 and running.
 You can also deploy an environment in a remote development cluster.
 
-.. _instructions: https://renku.readthedocs.io/en/latest/developer/setup.html
+.. _instructions: https://renku.readthedocs.io/en/latest/how-to-guides/admin/index.html
 
 Developing the UI
 -----------------
