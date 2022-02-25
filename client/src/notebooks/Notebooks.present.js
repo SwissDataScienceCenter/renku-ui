@@ -21,13 +21,13 @@ import Media from "react-media";
 import { Link } from "react-router-dom";
 import {
   Alert, Badge, Button, Col, DropdownItem,
-  Modal, ModalBody, ModalFooter, ModalHeader, Nav, NavItem, NavLink, PopoverBody, PopoverHeader,
+  Nav, NavItem, NavLink, PopoverBody, PopoverHeader,
   Row, UncontrolledPopover
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBook, faCheckCircle, faExclamationTriangle, faExternalLinkAlt, faFileAlt, faHistory,
-  faInfoCircle, faQuestionCircle, faRedo, faSave, faStopCircle, faSyncAlt, faTimesCircle
+  faInfoCircle, faQuestionCircle, faStopCircle, faSyncAlt, faTimesCircle
 } from "@fortawesome/free-solid-svg-icons";
 import _ from "lodash";
 
@@ -50,6 +50,7 @@ import {
 } from "./NotebookStart.present";
 
 import "./Notebooks.css";
+import { EnvironmentLogs } from "../utils/components/Logs";
 import { SessionStatus } from "../utils/constants/Notebooks";
 
 
@@ -969,95 +970,6 @@ const NotebookServerRowAction = memo((props) => {
   );
 }, _.isEqual);
 NotebookServerRowAction.displayName = "NotebookServerRowAction";
-
-/**
- * Simple environment logs container
- *
- * @param {function} fetchLogs - async function to get logs as an array string
- * @param {function} toggleLogs - toggle logs visibility and fetch logs on show
- * @param {object} logs - log object from redux store enhanced with `show` property
- * @param {string} name - server name
- * @param {object} annotations - list of cleaned annotations
- */
-class EnvironmentLogs extends Component {
-  async save() {
-    // get full logs
-    const { fetchLogs, name } = this.props;
-    const fullLogs = await fetchLogs(name, true);
-
-    // create the blob element to download logs as a file
-    const elem = document.createElement("a");
-    const file = new Blob([fullLogs.join("\n")], { type: "text/plain" });
-    elem.href = URL.createObjectURL(file);
-    this.props.fetchLogs();
-    elem.download = `Logs_${this.props.name}.txt`;
-    document.body.appendChild(elem);
-    elem.click();
-  }
-
-  render() {
-    const { logs, name, toggleLogs, fetchLogs, annotations } = this.props;
-    if (!logs.show || logs.show !== name)
-      return null;
-
-    let body;
-    if (logs.fetching) {
-      body = (<Loader />);
-    }
-    else {
-      if (!logs.fetched) {
-        body = (<p>Logs unavailable. Please
-          <Button color="primary" onClick={() => { fetchLogs(name); }}>download</Button> them again.
-        </p>);
-      }
-      else {
-        if (logs.data && logs.data.length) {
-          body = (<pre className="small no-overflow wrap-word">{logs.data.join("\n")}</pre>);
-        }
-        else {
-          body = (<div>
-            <p>No logs available for this pod yet.</p>
-            <p>You can try to <Button color="primary" onClick={() => { fetchLogs(name); }}>Refresh</Button>
-              them after a while.</p>
-          </div>);
-        }
-      }
-    }
-
-    const canDownload = (logs) => {
-      if (logs.fetching)
-        return false;
-      if (!logs.data || !logs.data.length)
-        return false;
-      if (logs.data.length === 1 && logs.data[0].startsWith("Logs unavailable"))
-        return false;
-      return true;
-    };
-
-    return (
-      <Modal
-        isOpen={logs.show ? true : false}
-        className="modal-dynamic-width"
-        scrollable={true}
-        toggle={() => { toggleLogs(name); }}>
-        <ModalHeader toggle={() => { toggleLogs(name); }} className="header-multiline">
-          Logs
-          <br /><small>{annotations["namespace"]}/{annotations["projectName"]}</small>
-          <br /><small>{annotations["branch"]}@{annotations["commit-sha"].substring(0, 8)}</small>
-        </ModalHeader>
-        <ModalBody>{body}</ModalBody>
-        <ModalFooter>
-          <Button color="primary" disabled={!canDownload(logs)} onClick={() => { this.save(); }}>
-            <FontAwesomeIcon icon={faSave} /> Download
-          </Button>
-          <Button color="primary" disabled={logs.fetching} onClick={() => { fetchLogs(name); }}>
-            <FontAwesomeIcon icon={faRedo} /> Refresh
-          </Button>
-        </ModalFooter>
-      </Modal>
-    );
-  }
-}
 
 export {
   CheckNotebookIcon, Notebooks, NotebooksDisabled, ServerOptionBoolean, ServerOptionEnum, ServerOptionRange,
