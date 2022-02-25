@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { Component, useState } from "react";
+import React, { Component, useEffect, useState } from "react";
 import { Loader } from "./Loader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRedo, faSave } from "@fortawesome/free-solid-svg-icons";
@@ -28,15 +28,29 @@ import {
   ModalHeader,
   Nav,
   NavItem,
+  NavLink,
   Row,
   TabContent,
   TabPane
 } from "reactstrap/lib";
-import { NavLink } from "react-router-dom";
 
 
 const LogTabs = ({ logs }) => {
   const [activeTab, setActiveTab] = useState(0);
+  useEffect(() => {
+    if (logs) {
+      const keys = Object.keys(logs);
+      if (keys.length)
+        setActiveTab(keys[0]);
+    }
+  }, [logs]);
+
+  const getTitle = (name) => {
+    return name.split("-").map(word => word.charAt(0).toUpperCase() + word.toLowerCase().slice(1)).join(" ");
+  };
+
+  if (!logs)
+    return null;
 
   return (
     <div>
@@ -47,7 +61,7 @@ const LogTabs = ({ logs }) => {
               <NavLink
                 className={activeTab === tab ? "active" : ""}
                 onClick={() => { setActiveTab(tab); }}>
-                tab
+                {getTitle(tab)}
               </NavLink>
             </NavItem>
           );
@@ -56,10 +70,10 @@ const LogTabs = ({ logs }) => {
       <TabContent activeTab={activeTab}>
         { Object.keys(logs).map(tab => {
           return (
-            <TabPane key={`log_${tab}`} tabId={ tab }>
+            <TabPane key={`log_${tab}`} tabId={tab}>
               <Row>
                 <Col sm="12">
-                  <pre>
+                  <pre style={{ height: "600px" }}>
                     { logs[tab] }
                   </pre>
                 </Col>
@@ -99,7 +113,6 @@ class EnvironmentLogs extends Component {
 
   render() {
     const { logs, name, toggleLogs, fetchLogs, annotations } = this.props;
-    console.log(logs);
     if (!logs.show || logs.show !== name)
       return null;
 
@@ -114,8 +127,7 @@ class EnvironmentLogs extends Component {
         </p>);
       }
       else {
-        if (logs.data && logs.data.length) {
-          // body = (<pre className="small no-overflow wrap-word">{logs.data.join("\n")}</pre>);
+        if (logs.data) {
           body = (<LogTabs logs={logs.data}/> );
         }
         else {
@@ -131,8 +143,9 @@ class EnvironmentLogs extends Component {
     const canDownload = (logs) => {
       if (logs.fetching)
         return false;
-      if (!logs.data || !logs.data.length)
+      if (!logs.data)
         return false;
+      // Validate if this result is possible
       if (logs.data.length === 1 && logs.data[0].startsWith("Logs unavailable"))
         return false;
       return true;
