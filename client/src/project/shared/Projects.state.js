@@ -139,7 +139,7 @@ class ProjectsCoordinator {
           this.model.set("landingProjects.fetching", false);
         });
       }
-      else {
+      if (!lastProjectsVisited?.length || !projectList.length) {
         // in case there is not records in the last projects list bring user projects
         const params = { order_by: "last_activity_at", per_page: 5, membership: true };
         const landingProjects = await this.client.getProjects({ ...params });
