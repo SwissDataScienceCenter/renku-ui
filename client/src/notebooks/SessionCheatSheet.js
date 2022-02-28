@@ -222,7 +222,7 @@ function LearnMore() {
           title="cheat sheet"/>.
       </div>
       <div>
-        The <ExternalDocsLink url="https://renku-python.readthedocs.io/en/latest/commands.html"
+        The <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/renku-python/docs/reference/commands.html"
           title="Renku documentation" /> covers much more.
       </div>
     </CommandsRow>

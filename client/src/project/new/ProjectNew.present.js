@@ -680,7 +680,7 @@ class KnowledgeGraph extends Component {
       return null;
 
     const kgLink = (
-      <a href="https://renku.readthedocs.io/en/latest/user/knowledge-graph.html"
+      <a href="https://renku.readthedocs.io/en/latest/topic-guides/knowledge-graph.html"
         target="_blank" rel="noopener noreferrer">
         Knowledge Graph
       </a>

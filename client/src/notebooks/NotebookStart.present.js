@@ -617,7 +617,7 @@ class StartNotebookCommits extends Component {
         true :
         false;
       if (autosaveExists) {
-        const url = "https://renku.readthedocs.io/en/latest/user/interactive_stopping_and_saving.html" +
+        const url = "https://renku.readthedocs.io/en/latest/how-to-guides/session-stopping-and-saving.html" +
           "#autosave-in-interactive-environments";
         commitComment = (
           <FormText>
@@ -1101,7 +1101,7 @@ class AutosavedDataModal extends Component {
     const docsLink = (
       <ExternalLink
         role="text" iconSup={true} iconAfter={true} title="documentation"
-        url="https://renku.readthedocs.io/en/latest/user/autosave.html"
+        url="https://renku.readthedocs.io/en/latest/how-to-guides/session-stopping-and-saving.html#autosave-in-sessions"
       />
     );
     const command = `git reset --hard ${this.props.filters.commit.short_id} && git clean -f -d`;
@@ -1215,6 +1215,8 @@ const ShareLinkSessionModal = (props) => {
       setIncludeCommit(checked);
   };
 
+  const markdown = `[![launch - renku](${Url.get(Url.pages.landing, undefined, true)}renku-badge.svg)](${url})`;
+
   return (
     <Modal isOpen={props.showModal} toggle={props.toggleModal}>
       <ModalHeader toggle={props.toggleModal}>Create shareable link</ModalHeader>
@@ -1246,6 +1248,18 @@ const ShareLinkSessionModal = (props) => {
                   <th scope="row">URL</th>
                   <td style={{ wordBreak: "break-all" }}>{url}</td>
                   <td style={{ width: 1 }}><Clipboard clipboardText={url} /></td>
+                </tr>
+                <tr style={{ borderBottomColor: "transparent" }} >
+                  <th scope="row">Badge</th>
+                  <td colSpan={2} style={{ wordBreak: "break-all" }}>
+                    <small>Paste it in your README to show a </small>
+                    <img src="/renku-badge.svg" alt="renku-badge"/>
+                  </td>
+                </tr>
+                <tr className="border-bottom">
+                  <th scope="row"> </th>
+                  <td style={{ wordBreak: "break-all" }}>{markdown}</td>
+                  <td style={{ width: 1 }}><Clipboard clipboardText={markdown} /></td>
                 </tr>
               </tbody>
             </Table>
