@@ -50,7 +50,7 @@ function ButtonWithMenu(props) {
     disabled={props.disabled}
   >
     {props.default}
-    <DropdownToggle color={props.color || "primary"}>
+    <DropdownToggle data-cy="more-menu" color={props.color || "primary"}>
       <FontAwesomeIcon icon={faEllipsisV}/>
     </DropdownToggle>
     <DropdownMenu end>
