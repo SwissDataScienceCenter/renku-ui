@@ -14,6 +14,16 @@ function addMarqueeImageToDataset(gitUrl, dataset) {
   return dataset;
 }
 
+/**
+ * Remove dashes from the dataset identifier
+ * @param {object} dataset
+ */
+function cleanDatasetId(dataset) {
+  if (dataset.identifier)
+    dataset.identifier = dataset.identifier.replace(/-/g, "");
+  return dataset;
+}
+
 export default function addDatasetMethods(client) {
 
   client.searchDatasets = (queryParams = { query: "" }) => {
@@ -303,8 +313,11 @@ export default function addDatasetMethods(client) {
       headers,
       queryParams
     }).then((response) => {
-      if (response.data.result && response.data.result.datasets.length > 0)
-        response.data.result.datasets.map((d) => addMarqueeImageToDataset(git_url, d));
+      if (response.data.result && response.data.result.datasets.length > 0) {
+        response.data.result.datasets.map((d) =>
+          addMarqueeImageToDataset(git_url, cleanDatasetId(d))
+        );
+      }
 
       return response;
     }).catch(error => ({
