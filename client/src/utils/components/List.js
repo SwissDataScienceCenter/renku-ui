@@ -23,17 +23,25 @@ import Masonry from "react-masonry-css";
 import { faGlobe, faLock, faUserFriends } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
+import { ProjectTagList } from "../../project/shared";
+import { toCapitalized } from "../helpers/HelperFunctions";
 import { TimeCaption } from "./TimeCaption";
 import { Pagination } from "./Pagination";
-import { ProjectTagList } from "../../project/shared";
 
 const VisibilityIcon = ({ visibility }) => {
+  if (!visibility) return null;
   const icon = {
     public: <FontAwesomeIcon icon={faGlobe} />,
     private: <FontAwesomeIcon icon={faLock} />,
     internal: <FontAwesomeIcon icon={faUserFriends} />
   };
-  return <span className="fs-small text-rk-text" title={visibility}>{ icon[visibility] || "" }</span>;
+  const style = {
+    position: "relative",
+    top: "-3px"
+  };
+  return <span className="text-rk-text" style={style} title={toCapitalized(visibility)}>
+    { icon[visibility] || "" }
+  </span>;
 };
 
 /**
@@ -56,10 +64,12 @@ function ListCard(props) {
     <div data-cy="dataset-card" className="col text-decoration-none p-2 rk-search-result-card">
       <Link to={url} className="col text-decoration-none">
         <div className="card card-body border-0">
-          <span className={"circle me-3 mt-2 mb-2 " + itemType}> </span>
-          <div className="title lh-sm" data-cy="dataset-card-title">
-            {title}{" "}
+          <div className="mt-2 mb-2">
+            <span className={"circle me-1 " + itemType}> </span>
             <VisibilityIcon visibility={visibility} />
+          </div>
+          <div className="title lh-sm" data-cy="dataset-card-title">
+            {title}
           </div>
           {
             slug ?
@@ -112,11 +122,17 @@ function ListBar(props) {
     mediaContent, creators, itemType, slug, visibility } = props;
 
   return <Link className="d-flex flex-row rk-search-result" to={url}>
-    <span className={"circle me-3 mt-2 " + itemType}> </span>
+    <div className="me-3 mt-2 d-flex flex-column align-items-center">
+      <div>
+        <span className={"circle " + itemType}> </span>
+      </div>
+      <div>
+        <VisibilityIcon visibility={visibility} />
+      </div>
+    </div>
     <Col className="d-flex align-items-start flex-column col-10 overflow-hidden">
       <div className="title d-inline-block text-truncate">
-        {title}{" "}
-        <VisibilityIcon visibility={visibility} />
+        {title}
         {
           slug ?
             <span className="slug font-weight-light text-rk-text ms-2">

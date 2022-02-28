@@ -334,8 +334,16 @@ async function sleep(seconds) {
   await new Promise(r => setTimeout(r, seconds * 1000));
 }
 
+/**
+ * Capitalize a string.
+ * @param {string} aString
+ */
+function toCapitalized(aString) {
+  return aString.charAt(0).toUpperCase() + aString.slice(1);
+}
+
 export {
   slugFromTitle, getActiveProjectPathWithNamespace, splitAutosavedBranches, sanitizedHTMLFromMarkdown,
   simpleHash, parseINIString, formatBytes, groupBy, gitLabUrlFromProfileUrl, isURL, verifyTitleCharacters,
-  convertUnicodeToAscii, refreshIfNecessary, sleep
+  convertUnicodeToAscii, refreshIfNecessary, sleep, toCapitalized
 };
