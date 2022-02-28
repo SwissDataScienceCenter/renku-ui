@@ -32,7 +32,7 @@ function KnowledgeGraphPrivateInfo(props) {
       This is a private project. Though contents remain private,
       the Knowledge Graph may make some metadata public. Only activate if that is acceptable.
       <br />
-      <a href="https://renku.readthedocs.io/en/latest/user/knowledge-graph.html"
+      <a href="https://renku.readthedocs.io/en/latest/topic-guides/knowledge-graph.html"
         target="_blank" rel="noopener noreferrer">
         <FontAwesomeIcon icon={faExternalLinkAlt} /> Read more about the Knowledge Graph integration.
       </a>
