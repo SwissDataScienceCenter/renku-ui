@@ -58,7 +58,7 @@ const LogTabs = ({ logs }) => {
       <Nav tabs>
         { Object.keys(logs).map( tab => {
           return (
-            <NavItem key={tab}>
+            <NavItem key={tab} data-cy="logs-tab">
               <NavLink
                 className={activeTab === tab ? "active" : ""}
                 onClick={() => { setActiveTab(tab); }}>
@@ -137,14 +137,14 @@ class EnvironmentLogs extends Component {
         </p>);
       }
       else {
-        if (logs.data) {
+        if (logs.data && typeof logs.data !== "string") {
           body = (<LogTabs logs={logs.data}/> );
         }
         else {
           body = (<div>
-            <p>No logs available for this pod yet.</p>
+            <p data-cy="no-logs-available">No logs available for this pod yet.</p>
             <p>You can try to <Button color="primary" onClick={() => { fetchLogs(name); }}>Refresh</Button>
-              them after a while.</p>
+              {" "}them after a while.</p>
           </div>);
         }
       }
@@ -153,7 +153,7 @@ class EnvironmentLogs extends Component {
     const canDownload = (logs) => {
       if (logs.fetching || this.downloading)
         return false;
-      if (!logs.data)
+      if (!logs.data || typeof logs.data === "string")
         return false;
       // Validate if this result is possible
       if (logs.data.length === 1 && logs.data[0].startsWith("Logs unavailable"))
@@ -174,7 +174,8 @@ class EnvironmentLogs extends Component {
         </ModalHeader>
         <ModalBody>{body}</ModalBody>
         <ModalFooter>
-          <Button color="primary" disabled={!canDownload(logs)} onClick={() => { this.save(); }}>
+          <Button data-cy="session-log-download-button" color="primary"
+            disabled={!canDownload(logs)} onClick={() => { this.save(); }}>
             <FontAwesomeIcon icon={faSave} />
             { this.downloading ? " Downloading " : " Download"}
             { this.downloading ? <Loader inline={true} size={16} /> : ""}

@@ -938,7 +938,7 @@ const NotebookServerRowAction = memo((props) => {
     logs: null
   };
   let defaultAction = null;
-  actions.logs = (<DropdownItem onClick={() => props.toggleLogs(name)} color="secondary">
+  actions.logs = (<DropdownItem data-cy="session-log-button" onClick={() => props.toggleLogs(name)} color="secondary">
     <FontAwesomeIcon icon={faFileAlt} /> Get logs
   </DropdownItem>);
 
@@ -962,7 +962,8 @@ const NotebookServerRowAction = memo((props) => {
   }
 
   return (
-    <ButtonWithMenu className="sessionsButton" size="sm" default={defaultAction} color="secondary">
+    <ButtonWithMenu
+      data-cy="sessions-button" className="sessionsButton" size="sm" default={defaultAction} color="secondary">
       {actions.openExternal}
       {actions.logs}
       {actions.stop}

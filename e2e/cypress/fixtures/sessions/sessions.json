@@ -1,0 +1,36 @@
+{
+  "servers":{
+    "e2e-40renk-local-2dtest-2dproject-84756d7d":{
+      "annotations":{
+        "renku.io/branch":"master",
+        "renku.io/commit-sha":"172a784d465a7bd45bacc165df2b64a591ac6b18",
+        "renku.io/default_image_used":"False",
+        "renku.io/git-host":"dev.renku.ch",
+        "renku.io/gitlabProjectId":"39646",
+        "renku.io/namespace":"e2e",
+        "renku.io/projectName":"local-test-project",
+        "renku.io/repository":"https://dev.renku.ch/gitlab/e2e/local-test-project",
+        "renku.io/username":"e2e@renku.ch"
+      },
+      "image":"registry.dev.renku.ch/e2e/local-test-project:172a784",
+      "name":"e2e-40renk-local-2dtest-2dproject-84756d7d",
+      "resources":{
+        "cpu":"0.5",
+        "memory":"1G",
+        "storage":"1G"
+      },
+      "started":"2022-02-28T14:15:59+00:00",
+      "state":{
+        "pod_name":"e2e-40renk-local-2dtest-2dproject-84756d7d-0"
+      },
+      "status":{
+        "message":null,
+        "phase":"Running",
+        "ready":true,
+        "reason":null,
+        "step":"Ready"
+      },
+      "url":"https://dev.renku.ch/sessions/e2e-40renk-local-2dtest-2dproject-84756d7d"
+    }
+  }
+}

@@ -16,17 +16,7 @@
  * limitations under the License.
  */
 
-/**
- * Common fixtures defined in one place.
- */
-import BaseFixtures from "./fixtures";
-import { Datasets } from "./datasets";
-import { Projects } from "./projects";
-import { Session } from "./session";
-import { Sessions } from "./sessions";
-import { User } from "./user";
-import { NewProject } from "./newProject";
-
-const Fixtures = NewProject(Sessions(Datasets(Projects(Session(User(BaseFixtures))))));
-
-export default Fixtures;
+Cypress.Commands.add("gui_open_logs", () => {
+  cy.get(".sessionsButton").find("[data-cy='more-menu']").click();
+  cy.get_cy("session-log-button").click();
+});
