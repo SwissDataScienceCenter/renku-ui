@@ -17,7 +17,6 @@
  */
 
 import React, { Component, useEffect, useState } from "react";
-import { Loader } from "./Loader";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRedo, faSave } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -33,6 +32,8 @@ import {
   TabContent,
   TabPane
 } from "reactstrap/lib";
+import { Loader } from "./Loader";
+import { capitalizeFirstLetter, generateZip } from "../helpers/HelperFunctions";
 
 
 const LogTabs = ({ logs }) => {
@@ -46,7 +47,7 @@ const LogTabs = ({ logs }) => {
   }, [logs]);
 
   const getTitle = (name) => {
-    return name.split("-").map(word => word.charAt(0).toUpperCase() + word.toLowerCase().slice(1)).join(" ");
+    return name.split("-").map(word => capitalizeFirstLetter(word)).join(" ");
   };
 
   if (!logs)
@@ -97,18 +98,27 @@ const LogTabs = ({ logs }) => {
  */
 class EnvironmentLogs extends Component {
   async save() {
-    // get full logs
+    this.downloading = true;
     const { fetchLogs, name } = this.props;
     const fullLogs = await fetchLogs(name, true);
 
-    // create the blob element to download logs as a file
-    const elem = document.createElement("a");
-    const file = new Blob([fullLogs.join("\n")], { type: "text/plain" });
-    elem.href = URL.createObjectURL(file);
-    this.props.fetchLogs();
-    elem.download = `Logs_${this.props.name}.txt`;
-    document.body.appendChild(elem);
-    elem.click();
+    if (!fullLogs) {
+      this.downloading = false;
+      return;
+    }
+    const files = [];
+    for (const fullLogsKey in fullLogs) {
+      const data = fullLogs[fullLogsKey];
+      // create the blob element to download logs as a file
+      const file = new Blob([data], { type: "text/plain" });
+      files.push({
+        name: `${fullLogsKey}.txt`,
+        content: file,
+      });
+    }
+
+    await generateZip(files, `Logs_${this.props.name}`);
+    this.downloading = false;
   }
 
   render() {
@@ -141,7 +151,7 @@ class EnvironmentLogs extends Component {
     }
 
     const canDownload = (logs) => {
-      if (logs.fetching)
+      if (logs.fetching || this.downloading)
         return false;
       if (!logs.data)
         return false;
@@ -153,7 +163,7 @@ class EnvironmentLogs extends Component {
 
     return (
       <Modal
-        isOpen={logs.show ? true : false}
+        isOpen={!!logs.show}
         className="modal-dynamic-width"
         scrollable={true}
         toggle={() => { toggleLogs(name); }}>
@@ -165,7 +175,9 @@ class EnvironmentLogs extends Component {
         <ModalBody>{body}</ModalBody>
         <ModalFooter>
           <Button color="primary" disabled={!canDownload(logs)} onClick={() => { this.save(); }}>
-            <FontAwesomeIcon icon={faSave} /> Download
+            <FontAwesomeIcon icon={faSave} />
+            { this.downloading ? " Downloading " : " Download"}
+            { this.downloading ? <Loader inline={true} size={16} /> : ""}
           </Button>
           <Button color="primary" disabled={logs.fetching} onClick={() => { fetchLogs(name); }}>
             <FontAwesomeIcon icon={faRedo} /> Refresh

@@ -335,6 +335,35 @@ async function sleep(seconds) {
 }
 
 /**
+ * Generate a .zip file and save it
+ * @param {object} files - files to include in the .zip, It has the format  [{ name, content }...]
+ * for the files name and content
+ * @param {string} name -  name for the .zip file
+ */
+const generateZip = async (files, name) => {
+  if (!files.length && !name)
+    return;
+
+  const JSZip = await require("jszip");
+  const { saveAs } = await import ("file-saver");
+  const zip = new JSZip();
+
+  for (const file of files)
+    zip.file(file?.name, file?.content);
+
+  const content = await zip.generateAsync({ type: "blob" });
+  saveAs(content, `${name}.zip`);
+};
+
+/**
+ * Capitalize the first character of all words in a string
+ * @param {string} text - text to capitalize
+ * @example capitalizeFirstLetter("hello world!") returns "Hello World"
+ */
+const capitalizeFirstLetter = (text) => text.charAt(0).toUpperCase() + text.toLowerCase().slice(1);
+
+
+/**
  * Capitalize a string.
  * @param {string} aString
  */
@@ -343,6 +372,7 @@ function toCapitalized(aString) {
 }
 
 export {
+  capitalizeFirstLetter, generateZip,
   slugFromTitle, getActiveProjectPathWithNamespace, splitAutosavedBranches, sanitizedHTMLFromMarkdown,
   simpleHash, parseINIString, formatBytes, groupBy, gitLabUrlFromProfileUrl, isURL, verifyTitleCharacters,
   convertUnicodeToAscii, refreshIfNecessary, sleep, toCapitalized
