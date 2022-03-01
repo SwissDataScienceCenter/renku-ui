@@ -115,6 +115,14 @@ class ProjectsCoordinator {
     });
   }
 
+  async _getOwnProjectsForLanding() {
+    let projectList = [];
+    const params = { order_by: "last_activity_at", per_page: 5, membership: true };
+    const landingProjects = await this.client.getProjects({ ...params });
+    projectList = landingProjects?.data?.map((project) => this._starredProjectMetadata(project)) ?? [];
+    this._setLandingProjects(projectList, false);
+  }
+
   async getLanding() {
     if (this.model.get("landingProjects.fetching"))
       return;
@@ -125,6 +133,7 @@ class ProjectsCoordinator {
       const lastProjectsVisited = lastProjects?.data?.projects;
       let projectList = [];
       if (lastProjectsVisited?.length > 0) {
+        // if the user has recent projects get the project information
         const projectRequests = [];
         for (const project of lastProjectsVisited)
           projectRequests.push(this.client.getProject(project));
@@ -134,17 +143,20 @@ class ProjectsCoordinator {
             if (result?.status === "fulfilled" && result?.value?.data?.all)
               projectList.push(this._starredProjectMetadata(result?.value?.data.all));
           }
+
+          // if couldn't get any project of the list
+          if (!projectList.length)
+            this._getOwnProjectsForLanding();
+
+          // set projects
           this._setLandingProjects(projectList, true);
         }).catch( () => {
           this.model.set("landingProjects.fetching", false);
         });
       }
-      if (!lastProjectsVisited?.length || !projectList.length) {
+      else {
         // in case there is not records in the last projects list bring user projects
-        const params = { order_by: "last_activity_at", per_page: 5, membership: true };
-        const landingProjects = await this.client.getProjects({ ...params });
-        projectList = landingProjects?.data?.map((project) => this._starredProjectMetadata(project)) ?? [];
-        this._setLandingProjects(projectList, false);
+        this._getOwnProjectsForLanding();
       }
     }
     catch {
