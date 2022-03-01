@@ -67,7 +67,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
     projectMigrationUpToDate(params: MigrationCheckParams = { queryUrl: null, fixtureName: "getMigration" }) {
       this.interceptMigrationCheck(
         params.fixtureName,
-        "test-project_migration_up-to-date.json",
+        "project/test-project_migration_up-to-date.json",
         params.queryUrl
       );
       return this;
@@ -76,7 +76,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
     projectMigrationOptional(params: MigrationCheckParams = { queryUrl: null, fixtureName: "getMigration" }) {
       this.interceptMigrationCheck(
         params.fixtureName,
-        "test-project_migration_update-optional.json",
+        "project/test-project_migration_update-optional.json",
         params.queryUrl
       );
       return this;
@@ -85,7 +85,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
     projectMigrationRecommended(params: MigrationCheckParams = { queryUrl: null, fixtureName: "getMigration" }) {
       this.interceptMigrationCheck(
         params.fixtureName,
-        "test-project_migration_update-recommended.json",
+        "project/test-project_migration_update-recommended.json",
         params.queryUrl
       );
       return this;
@@ -94,7 +94,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
     projectMigrationRequired(params: MigrationCheckParams = { queryUrl: null, fixtureName: "getMigration" }) {
       this.interceptMigrationCheck(
         params.fixtureName,
-        "test-project_migration_update-required.json",
+        "project/test-project_migration_update-required.json",
         params.queryUrl
       );
       return this;
@@ -121,19 +121,19 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       const { projectReadmeCommits, validationName } = names;
       cy.intercept(
         "/ui-server/api/projects/*/repository/files/README.md/raw?ref=master",
-        { fixture: "test-project-readme.md" }
+        { fixture: "project/test-project-readme.md" }
       ).as(readmeName);
       cy.intercept(
         "/ui-server/api/projects/*/repository/commits?ref_name=master&per_page=2&path=README.md&page=1",
-        { fixture: "test-project-readme-commits.json" }
+        { fixture: "project/test-project-readme-commits.json" }
       ).as(projectReadmeCommits);
       cy.intercept(
         "/ui-server/api/projects/*/repository/commits?ref_name=master&per_page=100&page=1",
-        { fixture: "test-project-commits.json" }
+        { fixture: "project/test-project-commits.json" }
       ).as(projectCommitsName);
       cy.intercept(
         "/ui-server/api/projects/*/repository/branches?per_page=100&page=1",
-        { fixture: "test-project-branches.json" }
+        { fixture: "project/test-project-branches.json" }
       ).as(projectBranchesName);
       cy.intercept("/ui-server/api/projects/*/graph/webhooks/validation", {
         body: { message: "Hook valid" }
@@ -177,7 +177,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       cy.intercept(
         "/ui-server/api/projects/e2e%2Flocal-test-project?statistics=true",
         {
-          fixture: "test-project.json"
+          fixture: "project/test-project.json"
         }
       ).as(projectName);
       return this.projectTestContents(names);
@@ -196,7 +196,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       }
     ) {
       const { projectName } = names;
-      cy.fixture("test-project.json").then((project) => {
+      cy.fixture("project/test-project.json").then((project) => {
         project.permissions.project_access.access_level = 10;
         cy.intercept(
           "GET",
