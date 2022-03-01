@@ -112,8 +112,11 @@ function addNotebookServersMethods(client) {
     }).then(resp => {
       return resp.data;
     }).catch(error => {
-      if (error.errorData && error.errorData.messages && error.errorData.messages.error)
-        throw new Error(error.errorData.messages.error);
+      if (error.errorData && error.errorData.messages && error.errorData.messages.error) {
+        const err = new Error(error.errorData.messages.error);
+        err.cause = error;
+        throw err;
+      }
     });
   };
 

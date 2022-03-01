@@ -1,0 +1,13 @@
+[
+  {
+    "id": 182743,
+    "project_id": 39646,
+    "sha": "172a784d465a7bd45bacc165df2b64a591ac6b18",
+    "ref": "master",
+    "status": "success",
+    "source": "push",
+    "created_at": "2022-01-20T14:14:58.405Z",
+    "updated_at": "2022-01-20T14:16:03.339Z",
+    "web_url": "https://dev.renku.ch/gitlab/e2e/local-test-project/-/pipelines/182743"
+  }
+]

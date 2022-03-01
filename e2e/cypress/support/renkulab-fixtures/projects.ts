@@ -103,6 +103,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
     projectTestContents(
       names = {
         coreServiceVersionName: "getCoreServiceVersion",
+        coreService8VersionName: "getCoreService8Version",
         projectBranchesName: "getProjectBranches",
         projectCommitsName: "getProjectCommits",
         projectReadmeCommits: "getProjectReadmeCommits",
@@ -112,6 +113,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
     ) {
       const {
         coreServiceVersionName,
+        coreService8VersionName,
         projectBranchesName,
         projectCommitsName,
         readmeName
@@ -146,6 +148,14 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
             supported_project_version: coreVersion
           }
         }
+      }).as(coreService8VersionName);
+      cy.intercept("/ui-server/api/renku/9/version", {
+        body: {
+          result: {
+            latest_version: "1.0.4",
+            supported_project_version: 9.0
+          }
+        }
       }).as(coreServiceVersionName);
       return this;
     }
@@ -153,6 +163,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
     projectTest(
       names = {
         coreServiceVersionName: "getCoreServiceVersion",
+        coreService8VersionName: "getCoreService8Version",
         projectBranchesName: "getProjectBranches",
         projectCommitsName: "getProjectCommits",
         projectName: "getProject",
@@ -175,6 +186,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
     projectTestObserver(
       names = {
         coreServiceVersionName: "getCoreServiceVersion",
+        coreService8VersionName: "getCoreService8Version",
         projectBranchesName: "getProjectBranches",
         projectCommitsName: "getProjectCommits",
         projectName: "getProject",

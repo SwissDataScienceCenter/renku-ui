@@ -362,7 +362,7 @@ const notebooksSchema = new Schema({
       commit: { initial: {} },
       discard: { initial: false },
       options: { initial: {} },
-
+      objectStoresConfiguration: { initial: [] },
       includeMergedBranches: { initial: false },
       displayedCommits: { initial: 25 },
     }

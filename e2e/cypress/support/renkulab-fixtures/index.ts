@@ -20,10 +20,11 @@
  * Common fixtures defined in one place.
  */
 import BaseFixtures from "./fixtures";
-import { User } from "./user";
-import { Projects } from "./projects";
 import { Datasets } from "./datasets";
+import { Projects } from "./projects";
+import { Session } from "./session";
+import { User } from "./user";
 
-const Fixtures = Datasets(Projects(User(BaseFixtures)));
+const Fixtures = Datasets(Projects(Session(User(BaseFixtures))));
 
 export default Fixtures;
