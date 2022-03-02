@@ -194,7 +194,8 @@ function addProjectMethods(client) {
   client.getProject = async (projectPathWithNamespace, options = {}) => {
     const headers = client.getBasicHeaders();
     const queryParams = {
-      statistics: options.statistics || false
+      statistics: options.statistics || false,
+      doNotTrack: options.doNotTrack,
     };
     return client.clientFetch(`${client.baseUrl}/projects/${encodeURIComponent(projectPathWithNamespace)}`, {
       method: "GET",

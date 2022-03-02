@@ -26,24 +26,26 @@ const lastProjectsMiddleware = (storage: Storage) =>
     const token = req.headers[config.auth.authHeaderField] as string;
     const projectName = req.params["projectName"];
 
-    res.on("finish", function() {
-      if (![304, 200].includes(res.statusCode) || !token) {
-        next();
-        return;
-      }
-
-      const userId = getUserIdFromToken(token);
-      // Save as ordered collection
-      storage.save(
-        `${config.data.projectsStoragePrefix}${userId}`,
-        projectName,
-        {
-          type: TypeData.Collections,
-          limit: config.data.projectsDefaultLength,
-          score: Date.now()
+    if (req.query?.doNotTrack !== "true") {
+      res.on("finish", function() {
+        if (![304, 200].includes(res.statusCode) || !token) {
+          next();
+          return;
         }
-      );
-    });
+
+        const userId = getUserIdFromToken(token);
+        // Save as ordered collection
+        storage.save(
+          `${config.data.projectsStoragePrefix}${userId}`,
+          projectName,
+          {
+            type: TypeData.Collections,
+            limit: config.data.projectsDefaultLength,
+            score: Date.now()
+          }
+        );
+      });
+    }
     next();
   };
 

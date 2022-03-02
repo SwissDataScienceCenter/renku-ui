@@ -136,7 +136,7 @@ class ProjectsCoordinator {
         // if the user has recent projects get the project information
         const projectRequests = [];
         for (const project of lastProjectsVisited)
-          projectRequests.push(this.client.getProject(project));
+          projectRequests.push(this.client.getProject(project, { doNotTrack: true }));
 
         Promise.allSettled(projectRequests).then( results => {
           for (const result of results) {
