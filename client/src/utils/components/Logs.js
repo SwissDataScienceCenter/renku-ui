@@ -35,6 +35,25 @@ import {
 import { Loader } from "./Loader";
 import { capitalizeFirstLetter, generateZip } from "../helpers/HelperFunctions";
 
+function LogBody({ fetchLogs, logs, name }) {
+  if (logs.fetching) return <Loader />;
+
+  if (!logs.fetched) {
+    return <p>Logs unavailable. Please
+      <Button color="primary" onClick={() => { fetchLogs(name); }}>download</Button> them again.
+    </p>;
+  }
+
+  if (logs.data && typeof logs.data !== "string")
+    return <LogTabs logs={logs.data}/>;
+
+  return <div>
+    <p data-cy="no-logs-available">No logs available for this pod yet.</p>
+    <p>You can try to <Button color="primary" onClick={() => { fetchLogs(name); }}>Refresh</Button>
+      {" "}them after a while.</p>
+  </div>;
+}
+
 
 const LogTabs = ({ logs }) => {
   const [activeTab, setActiveTab] = useState(0);
@@ -55,7 +74,7 @@ const LogTabs = ({ logs }) => {
 
   return (
     <div>
-      <Nav tabs>
+      <Nav pills className="nav-pills-underline">
         { Object.keys(logs).map( tab => {
           return (
             <NavItem key={tab} data-cy="logs-tab">
@@ -71,7 +90,7 @@ const LogTabs = ({ logs }) => {
       <TabContent activeTab={activeTab}>
         { Object.keys(logs).map(tab => {
           return (
-            <TabPane key={`log_${tab}`} tabId={tab}>
+            <TabPane className="bg-white p-1" key={`log_${tab}`} tabId={tab}>
               <Row>
                 <Col sm="12">
                   <pre style={{ height: "600px" }}>
@@ -126,30 +145,6 @@ class EnvironmentLogs extends Component {
     if (!logs.show || logs.show !== name)
       return null;
 
-    let body;
-    if (logs.fetching) {
-      body = (<Loader />);
-    }
-    else {
-      if (!logs.fetched) {
-        body = (<p>Logs unavailable. Please
-          <Button color="primary" onClick={() => { fetchLogs(name); }}>download</Button> them again.
-        </p>);
-      }
-      else {
-        if (logs.data && typeof logs.data !== "string") {
-          body = (<LogTabs logs={logs.data}/> );
-        }
-        else {
-          body = (<div>
-            <p data-cy="no-logs-available">No logs available for this pod yet.</p>
-            <p>You can try to <Button color="primary" onClick={() => { fetchLogs(name); }}>Refresh</Button>
-              {" "}them after a while.</p>
-          </div>);
-        }
-      }
-    }
-
     const canDownload = (logs) => {
       if (logs.fetching || this.downloading)
         return false;
@@ -167,13 +162,13 @@ class EnvironmentLogs extends Component {
         className="modal-dynamic-width"
         scrollable={true}
         toggle={() => { toggleLogs(name); }}>
-        <ModalHeader toggle={() => { toggleLogs(name); }} className="header-multiline">
-          Logs
-          <br /><small>{annotations["namespace"]}/{annotations["projectName"]}</small>
-          <br /><small>{annotations["branch"]}@{annotations["commit-sha"].substring(0, 8)}</small>
+        <ModalHeader className="bg-body header-multiline" toggle={() => { toggleLogs(name); }} >
+          Logs <small>
+            {annotations["namespace"]}/{annotations["projectName"]}{" "}
+            [{annotations["branch"]}@{annotations["commit-sha"].substring(0, 8)}]</small>
         </ModalHeader>
-        <ModalBody>{body}</ModalBody>
-        <ModalFooter>
+        <ModalBody className="bg-body"><LogBody fetchLogs={fetchLogs} logs={logs} name={name} /></ModalBody>
+        <ModalFooter className="bg-body">
           <Button data-cy="session-log-download-button" color="primary"
             disabled={!canDownload(logs)} onClick={() => { this.save(); }}>
             <FontAwesomeIcon icon={faSave} />
