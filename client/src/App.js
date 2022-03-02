@@ -26,6 +26,7 @@
 import React, { Component, Fragment } from "react";
 import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import Project from "./project/Project";
 import { ProjectList } from "./project/list";
@@ -42,14 +43,11 @@ import { NotificationsManager, NotificationsPage } from "./notifications";
 import { StyleGuide } from "./styleguide";
 import { Url } from "./utils/helpers/url";
 import { Unavailable } from "./Maintenance";
-
 import "./App.css";
-import "react-toastify/dist/ReactToastify.css";
 import { Loader } from "./utils/components/Loader";
 import { AddDataset } from "./dataset/addtoproject/DatasetAdd.container";
-import { ProjectsCoordinator } from "./project/shared";
-import { projectSchema } from "./model";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
+import AppContext from "./utils/context/appContext";
 
 function CentralContentContainer(props) {
   const { notifications, user } = props;
@@ -66,123 +64,120 @@ function CentralContentContainer(props) {
   // check anonymous sessions settings
   const blockAnonymous = !user.logged && !props.params["ANONYMOUS_SESSIONS"];
 
+  const appContext = {
+    client: props.client,
+    params: props.params,
+    location: props.location,
+  };
+
   return <div className="container-xxl pt-4 mt-2 renku-container">
-    <Switch>
-      <Route exact path="/login" render={
-        p => <Login key="login" {...p} {...props} />} />
-      <Route exact path={Url.get(Url.pages.landing)} render={
-        p => (props.user.logged) ?
-          <Landing.Home
-            key="landing" welcomePage={props.params["WELCOME_PAGE"]}
+    <AppContext.Provider value={appContext}>
+      <Switch>
+        <Route exact path="/login" render={
+          p => <Login key="login" {...p} {...props} />} />
+        <Route exact path={Url.get(Url.pages.landing)} render={
+          p => (props.user.logged) ?
+            <Landing.Home
+              key="landing" welcomePage={props.params["WELCOME_PAGE"]}
+              user={props.user}
+              client={props.client}
+              model={props.model}
+              {...p} /> : null
+        } />
+        <Route path={Url.get(Url.pages.help)} render={
+          p => <Help key="help" {...p} {...props} />} />
+        <Route exact
+          path={[Url.get(Url.pages.projects), Url.get(Url.pages.projects.starred), Url.get(Url.pages.projects.all)]}
+          render={p => <ProjectList
+            key="projects"
             user={props.user}
             client={props.client}
+            statusSummary={props.statusSummary}
+            {...p}
+          />}
+        />
+        <Route exact path={Url.get(Url.pages.project.new)} render={
+          p => <NewProject
+            key="newProject"
             model={props.model}
-            {...p} /> : null
-      } />
-      <Route path={Url.get(Url.pages.help)} render={
-        p => <Help key="help" {...p} {...props} />} />
-      <Route exact
-        path={[Url.get(Url.pages.projects), Url.get(Url.pages.projects.starred), Url.get(Url.pages.projects.all)]}
-        render={p => <ProjectList
-          key="projects"
-          user={props.user}
-          client={props.client}
-          statusSummary={props.statusSummary}
-          {...p}
-        />}
-      />
-      <Route exact path={Url.get(Url.pages.project.new)} render={
-        p => <NewProject
-          key="newProject"
-          client={props.client}
-          model={props.model}
-          user={props.user}
-          templates={props.params["TEMPLATES"]}
-          {...p}
-        />}
-      />
-      <Route path="/projects/:subUrl+" render={
-        p => <Project.View
-          key="project/view"
-          client={props.client}
-          params={props.params}
-          model={props.model}
-          user={props.user}
-          blockAnonymous={blockAnonymous}
-          notifications={notifications}
-          {...p}
-        />}
-      />
-      <Route exact path="/sessions" render={
-        p => <Notebooks
-          key="sessions"
-          standalone={true}
-          client={props.client}
-          model={props.model}
-          blockAnonymous={blockAnonymous}
-          {...p}
-        />}
-      />
-      <Route path="/datasets/:identifier/add" render={
-        p => <AddDataset
-          key="addDatasetNew" {...p}
-          insideProject={false}
-          identifier={`${p.match.params.identifier}`}
-          client={props.client}
-          projectsUrl="/projects"
-          selectedDataset={p.match.params.datasetId}
-          logged={props.user.logged}
-          model={props.model}
-          httpProjectUrl={props.httpProjectUrl}
-          projectsCoordinator={new ProjectsCoordinator(props.client, props.model.subModel("projects"))}
-          datasetCoordinator={new DatasetCoordinator(props.client, props.model.subModel("dataset"))}
-          migration={projectSchema.createInitialized().migration}
-          templates={props.params["TEMPLATES"]}
-          user={props.user}
-        />}
-      />
-      <Route path="/datasets/:identifier" render={
-        p => <ShowDataset
-          key="datasetPreview" {...p}
-          insideProject={false}
-          identifier={`${p.match.params.identifier}`}
-          client={props.client}
-          projectsUrl="/projects"
-          selectedDataset={p.match.params.datasetId}
-          datasetCoordinator={new DatasetCoordinator(props.client, props.model.subModel("dataset"))}
-          logged={props.user.logged}
-          model={props.model}
-        />}
-      />
-      <Route path="/datasets" render={
-        p => <DatasetList key="datasets"
-          client={props.client}
-          model={props.model}
-          {...p}
-        />}
-      />
-      <Route path="/privacy" render={
-        p => <Privacy key="privacy"
-          params={props.params}
-          {...p}
-        />}
-      />
-      <Route path="/notifications" render={
-        p => <NotificationsPage key="notifications"
-          client={props.client}
-          model={props.model}
-          notifications={notifications}
-          {...p}
-        />}
-      />
-      <Route path="/style-guide" render={
-        p => <StyleGuide key="style-guide"
-          baseUrl="/style-guide"
-          {...p}
-        />}
-      />
-      <Route path="*" render={p => <NotFound {...p} />} />
-    </Switch>
+            user={props.user}
+            {...p}
+          />}
+        />
+        <Route path="/projects/:subUrl+" render={
+          p => <Project.View
+            key="project/view"
+            client={props.client}
+            params={props.params}
+            model={props.model}
+            user={props.user}
+            blockAnonymous={blockAnonymous}
+            notifications={notifications}
+            {...p}
+          />}
+        />
+        <Route exact path="/sessions" render={
+          p => <Notebooks
+            key="sessions"
+            standalone={true}
+            client={props.client}
+            model={props.model}
+            blockAnonymous={blockAnonymous}
+            {...p}
+          />}
+        />
+        <Route path="/datasets/:identifier/add" render={
+          p => <AddDataset
+            key="addDatasetNew"
+            insideProject={false}
+            identifier={`${p.match.params.identifier}`}
+            datasets={p.datasets}
+            model={props.model}
+          />}
+        />
+        <Route path="/datasets/:identifier" render={
+          p => <ShowDataset
+            key="datasetPreview" {...p}
+            insideProject={false}
+            identifier={`${p.match.params.identifier}`}
+            client={props.client}
+            projectsUrl="/projects"
+            selectedDataset={p.match.params.datasetId}
+            datasetCoordinator={new DatasetCoordinator(props.client, props.model.subModel("dataset"))}
+            logged={props.user.logged}
+            model={props.model}
+          />}
+        />
+        <Route path="/datasets" render={
+          p => <DatasetList key="datasets"
+            client={props.client}
+            model={props.model}
+            {...p}
+          />}
+        />
+        <Route path="/privacy" render={
+          p => <Privacy key="privacy"
+            params={props.params}
+            {...p}
+          />}
+        />
+        <Route path="/notifications" render={
+          p => <NotificationsPage key="notifications"
+            client={props.client}
+            model={props.model}
+            notifications={notifications}
+            {...p}
+          />}
+        />
+        <Route path="/style-guide" render={
+          p => <StyleGuide key="style-guide"
+            baseUrl="/style-guide"
+            {...p}
+          />}
+        />
+        <Route path="*" render={p => <NotFound {...p} />} />
+      </Switch>
+    </AppContext.Provider>
   </div>;
 }
 

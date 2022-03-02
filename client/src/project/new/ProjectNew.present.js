@@ -37,19 +37,19 @@ import {
   faExclamationTriangle, faInfoCircle, faLink, faQuestionCircle, faSyncAlt, faUndo
 } from "@fortawesome/free-solid-svg-icons";
 
+import "./Project.style.css";
+import defaultTemplateIcon from "./templatePlaceholder.svg";
 
 import { simpleHash, slugFromTitle } from "../../utils/helpers/HelperFunctions";
 import { capitalize } from "../../utils/components/formgenerator/FormGenerator.present";
 import { Url } from "../../utils/helpers/url";
-
-import "./Project.style.css";
-import defaultTemplateIcon from "./templatePlaceholder.svg";
 import { Loader } from "../../utils/components/Loader";
 import { ErrorAlert, WarnAlert } from "../../utils/components/Alert";
 import { ExternalLink } from "../../utils/components/ExternalLinks";
 import { FieldGroup } from "../../utils/components/FieldGroups";
 import { ButtonWithMenu } from "../../utils/components/Button";
 import { Clipboard } from "../../utils/components/Clipboard";
+import AppContext from "../../utils/context/appContext";
 
 
 /**
@@ -216,8 +216,11 @@ function ForkProjectContent(props) {
 }
 
 class NewProject extends Component {
+  static contextType = AppContext;
+
   render() {
-    const { automated, config, handlers, input, location, user, importingDataset } = this.props;
+    const { automated, config, handlers, input, user, importingDataset } = this.props;
+    const { location } = this.context;
     if (!user.logged) {
       const to = Url.get(Url.pages.login.link, { pathname: location.pathname });
       return (

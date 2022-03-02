@@ -17,13 +17,16 @@
  */
 
 import React, { useContext, useEffect, useRef, useState } from "react";
+
+import { Button } from "reactstrap/lib";
+
+import { AddDatasetStatus } from "./addDatasetStatus";
+import { ACCESS_LEVELS } from "../../api-client";
+import { ProjectsCoordinator } from "../../project/shared";
 import SelectAutosuggestInput from "../../utils/components/SelectAutosuggestInput";
 import { Loader } from "../../utils/components/Loader";
-import { Button } from "reactstrap/lib";
-import { ACCESS_LEVELS } from "../../api-client";
+import AppContext from "../../utils/context/appContext";
 import { groupBy } from "../../utils/helpers/HelperFunctions";
-import { AddDatasetStatus } from "./addDatasetStatus";
-import { AddDatasetContext } from "./DatasetAdd.container";
 
 /**
  *  incubator-renku-ui
@@ -32,14 +35,20 @@ import { AddDatasetContext } from "./DatasetAdd.container";
  *  Component for add dataset to existing project
  */
 
-const AddDatasetExistingProject = (props) => {
+const AddDatasetExistingProject = (
+  { dataset, model, handlers, isDatasetValid, currentStatus, importingDataset, project }) => {
 
   const [existingProject, setExistingProject] = useState(null);
   const [isProjectListReady, setIsProjectListReady] = useState(false);
-  const addDatasetContext = useContext(AddDatasetContext);
-  const setCurrentStatus = addDatasetContext.setCurrentStatus;
+  const [projectsCoordinator, setProjectsCoordinator] = useState(null);
+  const { client } = useContext(AppContext);
   const mounted = useRef(false);
+  const setCurrentStatus = handlers.setCurrentStatus;
   let projectsMonitorJob = null;
+
+  useEffect(() => {
+    setProjectsCoordinator(new ProjectsCoordinator(client, model.subModel("projects")));
+  }, [client, model]);
 
   useEffect(() => {
     mounted.current = true;
@@ -52,22 +61,22 @@ const AddDatasetExistingProject = (props) => {
 
   useEffect( () => {
     if (existingProject)
-      props.validateProject(existingProject, false); // validate origin only when start import
+      handlers.validateProject(existingProject, false); // validate origin only when start import
     else
       setCurrentStatus(null);
   }, [existingProject]); // eslint-disable-line
 
   useEffect(() => {
-    if (props.dataset)
+    if (dataset && projectsCoordinator)
       monitorProjectList();
-  }, [props.dataset]); // eslint-disable-line
+  }, [dataset, projectsCoordinator]); // eslint-disable-line
 
   // monitor to check when the list of projects is ready
   const monitorProjectList = () => {
     const INTERVAL = 1000;
     projectsMonitorJob = setInterval(() => {
-      if (!addDatasetContext.projectsCoordinator) return;
-      const featured = addDatasetContext.projectsCoordinator.model.get("featured");
+      if (!projectsCoordinator) return;
+      const featured = projectsCoordinator.model.get("featured");
       const isReady = !(!featured.fetched || (!featured.starred.length && !featured.member.length));
       setIsProjectListReady(isReady);
       if (isReady)
@@ -75,9 +84,9 @@ const AddDatasetExistingProject = (props) => {
     }, INTERVAL);
   };
 
-  const startImportDataset = () => addDatasetContext.submitCallback(existingProject);
+  const startImportDataset = () => handlers.submitCallback(existingProject);
   const onSuggestionsFetchRequested = ( value, setSuggestions ) => {
-    const featured = addDatasetContext.projectsCoordinator.model.get("featured");
+    const featured = projectsCoordinator.model.get("featured");
     if (!featured.fetched || (!featured.starred.length && !featured.member.length))
       return;
 
@@ -111,7 +120,7 @@ const AddDatasetExistingProject = (props) => {
   const customHandlers = { onSuggestionsFetchRequested };
 
   let suggestionInput;
-  if (isProjectListReady && addDatasetContext.isDatasetValid) {
+  if (isProjectListReady && isDatasetValid) {
     suggestionInput = (<SelectAutosuggestInput
       existingValue={existingProject?.name || null}
       name="project"
@@ -119,10 +128,10 @@ const AddDatasetExistingProject = (props) => {
       placeholder="Select a project..."
       customHandlers={customHandlers}
       setInputs={setExistingProject}
-      disabled={addDatasetContext.importingDataset || addDatasetContext.currentStatus?.status === "inProcess"}
+      disabled={importingDataset || currentStatus?.status === "inProcess"}
     />);
   }
-  else if (addDatasetContext.isDatasetValid === null || addDatasetContext.isDatasetValid === false) {
+  else if (isDatasetValid === null || isDatasetValid === false) {
     suggestionInput = null;
   }
   else {
@@ -133,7 +142,7 @@ const AddDatasetExistingProject = (props) => {
     <div className="mt-4 d-flex justify-content-end">
       <Button
         color="primary"
-        disabled={addDatasetContext.currentStatus?.status !== "validProject" || addDatasetContext.importingDataset}
+        disabled={currentStatus?.status !== "validProject" || importingDataset}
         onClick={startImportDataset}>
         Add Dataset to existing Project
       </Button>
@@ -142,22 +151,22 @@ const AddDatasetExistingProject = (props) => {
 
   const onSubmit = (e) => e.preventDefault();
 
-  const addDatasetStatus = addDatasetContext.currentStatus ?
+  const addDatasetStatus = currentStatus ?
     <AddDatasetStatus
-      status={addDatasetContext.currentStatus.status}
-      text={addDatasetContext.currentStatus?.text || null}
-      projectName={props.project?.name}
+      status={currentStatus.status}
+      text={currentStatus?.text || null}
+      projectName={project?.name}
     /> : null;
 
-  if (!props.dataset) return null;
+  if (!dataset) return null;
 
   return (
     <div className="mt-4 mx-3">
       <form onSubmit={onSubmit} className={"mt-2"}>
         {suggestionInput}
       </form>
-      { addDatasetStatus }
-      { addDatasetButton }
+      {addDatasetStatus}
+      {addDatasetButton}
     </div>
   );
 };
