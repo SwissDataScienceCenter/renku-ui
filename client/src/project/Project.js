@@ -25,7 +25,7 @@
 
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import _ from "lodash/collection";
+import _ from "lodash";
 
 import Present from "./Project.present";
 import { GraphIndexingStatus, ProjectCoordinator, MigrationStatus } from "./Project.state";

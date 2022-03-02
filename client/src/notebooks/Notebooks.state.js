@@ -25,7 +25,7 @@
 
 import { API_ERRORS } from "../api-client/errors";
 import { parseINIString } from "../utils/helpers/HelperFunctions";
-
+import _ from "lodash";
 const POLLING_INTERVAL = 3000;
 const IMAGE_BUILD_JOB = "image_build";
 const RENKU_INI_PATH = ".renku/renku.ini";
@@ -63,26 +63,6 @@ const ExpectedAnnotations = {
 };
 
 const NotebooksHelper = {
-  /**
-   * Compute the status of a notebook
-   *
-   * @param {Object} data - either the notebook or the notebook.status object as returned
-   *   by the GET /servers API
-   */
-  getStatus: (data) => {
-    let status = data;
-    if (data.status)
-      status = data.status;
-
-    if (status.ready)
-      return "running";
-    if (status.stopping)
-      return "stopping";
-    if (status.step === "Unschedulable")
-      return "error";
-    return "pending";
-  },
-
   /**
    * Add missing annotations from the notebook servers
    *
@@ -463,26 +443,31 @@ class NotebooksCoordinator {
     return this.client.getNotebookServers(
       filters.namespace, filters.project, filters.branch, null, anonymous)
       .then(resp => {
+        let updateFullObject = true;
         let updatedNotebooks = { fetching: false };
         // check if result is still valid
         if (!this.model.get("filters.discard")) {
           const filters = this.getQueryFilters();
           if (this.model.get("notebooks.lastParameters") === JSON.stringify(filters)) {
-            updatedNotebooks.fetched = new Date();
             const currentServers = this.model.get("notebooks.all");
-
-            // check if the stopping status exist to attach to the current object
-            // TODO: this should be removed once that status is returned by fetching notebooks
-            for (const serverName in resp.data) {
-              const currentStatus = currentServers[serverName]?.status;
-              if (currentStatus && "stopping" in currentStatus)
-                resp.data[serverName].status.stopping = true;
+            if (_.isEqual(resp.data, currentServers)) {
+              updateFullObject = false;
             }
-            updatedNotebooks.all = { $set: resp.data };
+            else {
+              updatedNotebooks.all = { $set: resp.data };
+              updatedNotebooks.fetched = new Date();
+            }
           }
           // TODO: re-invoke `fetchNotebooks()` immediately if parameters are outdated
         }
-        this.model.setObject({ notebooks: updatedNotebooks });
+        if (updateFullObject) {
+          this.model.setObject({ notebooks: updatedNotebooks });
+        }
+        else {
+          this.model.set("notebooks.fetching", false);
+          if (this.model.get("notebooks.fetched") === null)
+            this.model.set("notebooks.fetched", new Date());
+        }
         return resp.data;
       })
       .catch(error => {
