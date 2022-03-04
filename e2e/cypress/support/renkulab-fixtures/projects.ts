@@ -56,7 +56,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
     project(path = "", name = "getProject", result = "projects/project.json", statistics = true) {
       const fixture = this.useMockedData ? { fixture: result } : undefined;
       cy.intercept(
-        `/ui-server/api/projects/${encodeURIComponent(path)}?statistics=${statistics}`,
+        `/ui-server/api/projects/${encodeURIComponent(path)}?statistics=${statistics}&doNotTrack=*`,
         fixture
       ).as(name);
       return this;
@@ -182,7 +182,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
     ) {
       const { projectName } = names;
       cy.intercept(
-        "/ui-server/api/projects/e2e%2Flocal-test-project?statistics=true",
+        "/ui-server/api/projects/e2e%2Flocal-test-project?statistics=true&doNotTrack=*",
         {
           fixture: "project/test-project.json"
         }
@@ -207,7 +207,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
         project.permissions.project_access.access_level = 10;
         cy.intercept(
           "GET",
-          "/ui-server/api/projects/e2e%2Flocal-test-project?statistics=true",
+          "/ui-server/api/projects/e2e%2Flocal-test-project?statistics=true&doNotTrack=*",
           project
         ).as(projectName);
       });
