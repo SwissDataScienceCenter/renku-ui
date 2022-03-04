@@ -20,9 +20,29 @@ import React, { Fragment } from "react";
 import { Link } from "react-router-dom";
 import { Col } from "reactstrap";
 import Masonry from "react-masonry-css";
+import { faGlobe, faLock, faUserFriends } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+
+import { ProjectTagList } from "../../project/shared";
+import { toCapitalized } from "../helpers/HelperFunctions";
 import { TimeCaption } from "./TimeCaption";
 import { Pagination } from "./Pagination";
-import { ProjectTagList } from "../../project/shared";
+
+const VisibilityIcon = ({ visibility }) => {
+  if (!visibility) return null;
+  const icon = {
+    public: <FontAwesomeIcon icon={faGlobe} />,
+    private: <FontAwesomeIcon icon={faLock} />,
+    internal: <FontAwesomeIcon icon={faUserFriends} />
+  };
+  const style = {
+    position: "relative",
+    top: "-3px"
+  };
+  return <span className="text-rk-text" style={style} title={toCapitalized(visibility)}>
+    { icon[visibility] || "" }
+  </span>;
+};
 
 /**
  * ListCard/ListBar returns a card or a bar displaying an item in a List.
@@ -38,13 +58,16 @@ import { ProjectTagList } from "../../project/shared";
  * @param itemType type of the item being rendered, the color of the circle depends on this.
  */
 function ListCard(props) {
-  const { url, title, description, tagList, timeCaption, labelCaption, mediaContent, creators, itemType, slug } = props;
-
+  const { url, title, description, tagList, timeCaption,
+    labelCaption, mediaContent, creators, itemType, slug, visibility } = props;
   return (
     <div data-cy="dataset-card" className="col text-decoration-none p-2 rk-search-result-card">
       <Link to={url} className="col text-decoration-none">
         <div className="card card-body border-0">
-          <span className={"circle me-3 mt-2 mb-2 " + itemType}> </span>
+          <div className="mt-2 mb-2">
+            <span className={"circle me-1 " + itemType}> </span>
+            <VisibilityIcon visibility={visibility} />
+          </div>
           <div className="title lh-sm" data-cy="dataset-card-title">
             {title}
           </div>
@@ -95,10 +118,18 @@ function ListCard(props) {
 
 function ListBar(props) {
 
-  const { url, title, description, tagList, timeCaption, labelCaption, mediaContent, creators, itemType, slug } = props;
+  const { url, title, description, tagList, timeCaption, labelCaption,
+    mediaContent, creators, itemType, slug, visibility } = props;
 
   return <Link className="d-flex flex-row rk-search-result" to={url}>
-    <span className={"circle me-3 mt-2 " + itemType}></span>
+    <div className="me-3 mt-2 d-flex flex-column align-items-center">
+      <div>
+        <span className={"circle " + itemType}> </span>
+      </div>
+      <div>
+        <VisibilityIcon visibility={visibility} />
+      </div>
+    </div>
     <Col className="d-flex align-items-start flex-column col-10 overflow-hidden">
       <div className="title d-inline-block text-truncate">
         {title}

@@ -68,7 +68,8 @@ class ProjectsCoordinator {
       http_url_to_repo: project.http_url_to_repo ? project.http_url_to_repo : project.httpUrlToRepo,
       namespace: project.namespace,
       path: project.path,
-      avatar_url: project.avatar_url
+      avatar_url: project.avatar_url,
+      visibility: project.visibility
     };
   }
 
