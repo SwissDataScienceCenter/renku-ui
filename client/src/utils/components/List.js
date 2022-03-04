@@ -61,14 +61,14 @@ function ListCard(props) {
   const { url, title, description, tagList, timeCaption,
     labelCaption, mediaContent, creators, itemType, slug, visibility } = props;
   return (
-    <div data-cy="dataset-card" className="col text-decoration-none p-2 rk-search-result-card">
+    <div data-cy="list-card" className="col text-decoration-none p-2 rk-search-result-card">
       <Link to={url} className="col text-decoration-none">
         <div className="card card-body border-0">
           <div className="mt-2 mb-2">
             <span className={"circle me-1 " + itemType}> </span>
             <VisibilityIcon visibility={visibility} />
           </div>
-          <div className="title lh-sm" data-cy="dataset-card-title">
+          <div className="title lh-sm" data-cy="list-card-title">
             {title}
           </div>
           {
