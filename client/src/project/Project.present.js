@@ -316,7 +316,8 @@ const ProjectSuggestActions = (props) => {
 
   const cHasDataset = countCommitsReadme > 1 && hasDatasets;
   const cCombo = !isReadmeCommitInitial && hasDatasets && countCommitsReadme !== 0;
-  if (!isProjectMaintainer || isLoadingData || countTotalCommits > 4 || cHasDataset || cCombo)
+  const isLocked = props.lockStatus?.locked ?? true;
+  if (!isProjectMaintainer || isLoadingData || countTotalCommits > 4 || cHasDataset || cCombo || isLocked)
     return null;
 
   const gitlabIDEUrl = props.externalUrl !== "" && props.externalUrl.includes("/gitlab/") ?
