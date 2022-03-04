@@ -232,6 +232,7 @@ function ProjectSettingsSessions(props) {
   const { backend, config, location, metadata, newConfig, options, setConfig, user } = props;
   const { accessLevel, repositoryUrl } = metadata;
   const devAccess = accessLevel > ACCESS_LEVELS.DEVELOPER ? true : false;
+  const locked = props.lockStatus?.locked ?? false;
   const disabled = !devAccess || newConfig.updating;
 
   // ? Anonymous users may have problem with notebook options, depending on the deployment
@@ -241,6 +242,16 @@ function ProjectSettingsSessions(props) {
       <SessionsDiv>
         <p>Anonymous users cannot access sessions settings.</p>
         <p>You can <Link className="btn btn-primary btn-sm" to={to}>Log in</Link> to see them.</p>
+      </SessionsDiv>
+    );
+  }
+  if (locked) {
+    return (
+      <SessionsDiv>
+        <p className="text-muted">
+          This project is currently being modified. You will be able to change the{" "}
+          session settings once the changes to the project are complete.
+        </p>
       </SessionsDiv>
     );
   }
