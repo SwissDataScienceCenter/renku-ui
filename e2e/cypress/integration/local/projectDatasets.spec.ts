@@ -38,7 +38,7 @@ function checkDatasetDisplay(cy, fixtures, datasets) {
     const datasetIdentifier = d.identifier.replace(/-/g, "");
     const requestId = `getDatasetById${i}`;
     fixtures.datasetById(datasetIdentifier, requestId);
-    cy.get_cy("dataset-card-title").contains(d.title).click();
+    cy.get_cy("list-card-title").contains(d.title).click();
     cy.wait(`@${requestId}`);
 
     cy.get_cy("dataset-title").should("contain.text", d.title);
@@ -74,7 +74,7 @@ describe("Project dataset", () => {
         const datasets = data.result.datasets;
         // all datasets are displayed
         const totalDatasets = datasets?.length;
-        cy.get_cy("dataset-card").should("have.length", totalDatasets);
+        cy.get_cy("list-card").should("have.length", totalDatasets);
         checkDatasetDisplay(cy, fixtures, datasets);
       });
   });
@@ -90,7 +90,7 @@ describe("Project dataset", () => {
         if (datasets.length > 0) {
           const datasetIdentifier = datasets[0].identifier;
           fixtures.datasetById(datasetIdentifier);
-          cy.get_cy("dataset-card-title").contains(datasets[0].title).click();
+          cy.get_cy("list-card-title").contains(datasets[0].title).click();
           cy.wait("@getDatasetById");
           /* 3. Verify displaying info dataset with permissions  */
           cy.get_cy("edit-dataset-button").should("not.exist");
@@ -146,7 +146,7 @@ describe("Project dataset (legacy ids)", () => {
         const datasets = data.result.datasets;
         // all datasets are displayed
         const totalDatasets = datasets?.length;
-        cy.get_cy("dataset-card").should("have.length", totalDatasets);
+        cy.get_cy("list-card").should("have.length", totalDatasets);
         checkDatasetDisplay(cy, fixtures, datasets);
       });
   });

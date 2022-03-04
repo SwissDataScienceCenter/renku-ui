@@ -83,6 +83,14 @@ function getFilesTreeLazy(client, branchName, files, projectId, openFilePath, lf
 
 function addProjectMethods(client) {
 
+  client.getRecentProjects = async (count) => {
+    let headers = client.getBasicHeaders();
+    return client.clientFetch(`${client.baseUrl}/last-projects/${count}`, {
+      method: "GET",
+      headers,
+    });
+  };
+
   client.getProjects = async (queryParams = {}) => {
     let headers = client.getBasicHeaders();
     return client.clientFetch(`${client.baseUrl}/projects`, {
@@ -186,7 +194,8 @@ function addProjectMethods(client) {
   client.getProject = async (projectPathWithNamespace, options = {}) => {
     const headers = client.getBasicHeaders();
     const queryParams = {
-      statistics: options.statistics || false
+      statistics: options.statistics || false,
+      doNotTrack: options.doNotTrack,
     };
     return client.clientFetch(`${client.baseUrl}/projects/${encodeURIComponent(projectPathWithNamespace)}`, {
       method: "GET",
