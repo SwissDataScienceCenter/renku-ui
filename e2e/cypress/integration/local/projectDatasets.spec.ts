@@ -21,6 +21,36 @@ import "../../support/utils";
 import Fixtures from "../../support/renkulab-fixtures";
 import "../../support/datasets/gui_commands";
 
+function checkDatasetInKg(cy, fixtures, projectPath) {
+  const datasetName = "abcd";
+  const datasetIdentifier = "4577b68957b7478bba1f07d6513b43d2";
+  fixtures.datasetById(datasetIdentifier);
+  cy.visit(`projects/${projectPath}/datasets/${datasetName}`);
+  cy.wait("@getProject");
+  cy.wait("@datasetList");
+  cy.wait("@getDatasetById");
+  cy.get_cy("add-to-project-button").should("be.enabled");
+  cy.get_cy("not-in-kg-warning").should("not.exist");
+}
+
+function checkDatasetDisplay(cy, fixtures, datasets) {
+  datasets.forEach((d, i) => {
+    const datasetIdentifier = d.identifier.replace(/-/g, "");
+    const requestId = `getDatasetById${i}`;
+    fixtures.datasetById(datasetIdentifier, requestId);
+    cy.get_cy("dataset-card-title").contains(d.title).click();
+    cy.wait(`@${requestId}`);
+
+    cy.get_cy("dataset-title").should("contain.text", d.title);
+
+    cy.get_cy("edit-dataset-button").should("exist");
+    cy.get_cy("more-options-button").click();
+    cy.get_cy("delete-dataset-button").should("exist");
+
+    cy.get_cy("go-back-button").click();
+  });
+}
+
 describe("Project dataset", () => {
   const fixtures = new Fixtures(cy);
   fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
@@ -45,27 +75,7 @@ describe("Project dataset", () => {
         // all datasets are displayed
         const totalDatasets = datasets?.length;
         cy.get_cy("dataset-card").should("have.length", totalDatasets);
-        /* 2. Navigation datasets, check first 2 datasets in the list  */
-        if (totalDatasets > 1) {
-          const firstDataset = datasets[0];
-          const secondDataset = datasets[1];
-          let datasetIdentifier = firstDataset.identifier;
-          fixtures.datasetById(datasetIdentifier);
-          cy.get_cy("dataset-card-title").contains(firstDataset.title).click();
-          cy.wait("@getDatasetById");
-          cy.get_cy("dataset-title").should("contain.text", firstDataset.title);
-          datasetIdentifier = secondDataset.identifier;
-          cy.get_cy("go-back-button").click();
-          fixtures.datasetById(datasetIdentifier, "getDatasetById2");
-          cy.get_cy("dataset-card-title").contains(secondDataset.title).click();
-          cy.wait("@getDatasetById2");
-          cy.get_cy("dataset-title").should("contain.text", secondDataset.title);
-        }
-
-        /* 3. Verify displaying info dataset with permissions  */
-        cy.get_cy("edit-dataset-button").should("exist");
-        cy.get_cy("more-options-button").click();
-        cy.get_cy("delete-dataset-button").should("exist");
+        checkDatasetDisplay(cy, fixtures, datasets);
       });
   });
 
@@ -90,15 +100,7 @@ describe("Project dataset", () => {
   });
 
   it("dataset is in Kg", () => {
-    const datasetName = "abcd";
-    const datasetIdentifier = "4577b68957b7478bba1f07d6513b43d2";
-    fixtures.datasetById(datasetIdentifier);
-    cy.visit(`projects/${projectPath}/datasets/${datasetName}`);
-    cy.wait("@getProject");
-    cy.wait("@datasetList");
-    cy.wait("@getDatasetById");
-    cy.get_cy("add-to-project-button").should("be.enabled");
-    cy.get_cy("not-in-kg-warning").should("not.exist");
+    checkDatasetInKg(cy, fixtures, projectPath);
   });
 
   it("dataset is NOT in Kg", () => {
@@ -115,4 +117,41 @@ describe("Project dataset", () => {
     cy.get_cy("not-in-kg-warning").should("exist");
   });
 
+});
+
+describe("Project dataset (legacy ids)", () => {
+  const fixtures = new Fixtures(cy);
+  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
+  const projectPath = "e2e/testing-datasets";
+
+  beforeEach(() => {
+    fixtures.config().versions().userTest();
+    fixtures.projects().landingUserProjects();
+    fixtures.project(projectPath);
+    fixtures.projectKGDatasetList(projectPath);
+    fixtures.projectDatasetLegacyIdList();
+    fixtures.projectTestContents(undefined, 9);
+    fixtures.projectMigrationUpToDate({
+      queryUrl: "*",
+      fixtureName: "getMigration"
+    });
+  });
+
+  it("displays legacy project datasets", () => {
+    cy.visit(`projects/${projectPath}/datasets`);
+    cy.wait("@getProject");
+    cy.wait("@datasetList")
+      .its("response.body")
+      .then((data) => {
+        const datasets = data.result.datasets;
+        // all datasets are displayed
+        const totalDatasets = datasets?.length;
+        cy.get_cy("dataset-card").should("have.length", totalDatasets);
+        checkDatasetDisplay(cy, fixtures, datasets);
+      });
+  });
+
+  it("legacy dataset details", () => {
+    checkDatasetInKg(cy, fixtures, projectPath);
+  });
 });
