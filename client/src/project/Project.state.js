@@ -212,7 +212,12 @@ const MigrationMixin = {
   async migrateProject(client, gitUrl, defaultBranch = null, options) {
     if (this.get("migration.migration_status") === MigrationStatus.MIGRATING)
       return;
-    this.set("migration.migration_status", MigrationStatus.MIGRATING);
+    this.setObject({
+      lockStatus: { locked: true },
+      migration: {
+        migration_status: MigrationStatus.MIGRATING,
+      }
+    });
     const response = await client.migrateProject(gitUrl, defaultBranch, options);
     if (response.error) {
       this.setObject({
@@ -230,6 +235,7 @@ const MigrationMixin = {
           migration_error: { $set: null }
         }
       });
+      await this.fetchProjectLockStatus(client, gitUrl);
     }
   }
 };
