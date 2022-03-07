@@ -789,10 +789,14 @@ function EmptyDatasets({ locked, membership, newDatasetUrl }) {
   return <Alert timeout={0} color="primary">
     No datasets found for this project.
     { membership && !locked ?
-      <div><br /><FontAwesomeIcon icon={faInfoCircle} />  If you recently activated the knowledge graph or
+      <div>
+        <br />
+        <FontAwesomeIcon icon={faInfoCircle} />  If you recently activated the knowledge graph or
         added the datasets try refreshing the page. <br /><br />
         You can also click on the button to{" "}
-      <Link className="btn btn-primary btn-sm" to={newDatasetUrl}>Add a Dataset</Link>
+        <Link className="btn btn-primary btn-sm" to={newDatasetUrl}>
+          Add a Dataset
+        </Link>
       </div>
       : null
     }

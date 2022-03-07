@@ -1,3 +1,4 @@
+/* eslint-disable max-len */
 /*!
  * Copyright 2017 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
@@ -442,6 +443,7 @@ function addProjectMethods(client) {
       body: JSON.stringify(body)
     });
   };
+
 
   /**
    * Find out if a project is locked
