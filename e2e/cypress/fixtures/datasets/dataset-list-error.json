@@ -1,0 +1,7 @@
+{
+  "error": {
+    "code": -32100,
+    "project_initialization_required": true,
+    "reason": "/svc/cache/projects/00000000005jYXZhenppLnRlY2hnbWFpbC5jb20=/000000000035476597e68f5cd78f5737/lee.gavin.k/renku-mls-demo does not seem to be a Renku project.\nInitialize it with \"renku init\""
+  }
+}
