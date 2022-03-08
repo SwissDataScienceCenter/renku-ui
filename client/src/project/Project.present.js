@@ -866,7 +866,7 @@ function ProjectViewDatasets(props) {
   }
 
   if (props.datasets.core.error || props.datasets.core.datasets?.error) {
-    return <Col sm={12}>
+    return <Col sm={12} data-cy="error-datasets-modal">
       <ErrorAlert>
         There was an error fetching the datasets, please try <Button color="danger" size="sm" onClick={
           () => window.location.reload()
