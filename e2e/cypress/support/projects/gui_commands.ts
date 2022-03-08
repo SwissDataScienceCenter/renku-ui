@@ -16,16 +16,10 @@
  * limitations under the License.
  */
 
-/**
- * Common fixtures defined in one place.
- */
-import BaseFixtures from "./fixtures";
-import { Datasets } from "./datasets";
-import { Projects } from "./projects";
-import { Session } from "./session";
-import { User } from "./user";
-import { NewProject } from "./newProject";
-
-const Fixtures = NewProject(Datasets(Projects(Session(User(BaseFixtures)))));
-
-export default Fixtures;
+Cypress.Commands.add("gui_create_project", (title: string) => {
+  // create project with the minimum required: title and template
+  cy.get_cy("project-title-input").type(title);
+  cy.get_cy("visibility-select").select("Private");
+  cy.get_cy("project-template-card").first().click();
+  cy.get_cy("create-project-button").click();
+});

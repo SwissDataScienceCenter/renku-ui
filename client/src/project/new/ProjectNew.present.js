@@ -383,7 +383,7 @@ class Title extends Component {
     );
 
     return (
-      <FieldGroup id="title" type="text" label="Title"
+      <FieldGroup id="title" type="text" label="Title" data-cy="project-title-input"
         value={input.title}
         placeholder="A brief name to identify the project" help={help}
         feedback={error} invalid={error && !input.titlePristine}
@@ -656,7 +656,7 @@ class Visibility extends Component {
       main = (
         <Input id="visibility" type="select" placeholder="Choose visibility..." className="custom-select"
           value={input.visibility} feedback={error} invalid={error && !input.visibilityPristine}
-          onChange={(e) => handlers.setProperty("visibility", e.target.value)} >
+          onChange={(e) => handlers.setProperty("visibility", e.target.value)} data-cy="visibility-select" >
           <option key="" value="" disabled>Choose visibility...</option>
           {options}
         </Input>
@@ -928,7 +928,7 @@ function TemplateGalleryRow(props) {
     return (
       <Col key={t.id}>
         <Card id={id} className={`template-card mb-2 text-center ${selectedClass}`}
-          onClick={() => { select(t.id); }}>
+          onClick={() => { select(t.id); }} data-cy="project-template-card">
           <CardBody className="p-1">
             <img src={imgSrc} alt={t.id + " template image"} />
           </CardBody>
@@ -1214,6 +1214,7 @@ class Create extends Component {
       <Button
         id="create-new-project"
         color="primary"
+        data-cy="create-project-button"
         onClick={this.props.handlers.onSubmit}
         disabled={disabled}
       >
