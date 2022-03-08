@@ -18,10 +18,14 @@
 
 import { FixturesConstructor } from "./fixtures";
 
+function toLegacyIdentifier(datasetId) {
+  return datasetId.slice(0, 8) + "-" + datasetId.slice(8, 12) + "-" + datasetId.slice(12, 16) +
+    "-" + datasetId.slice(16, 20) + "-" + datasetId.slice(20);
+}
+
 /**
  * Fixtures for Datasets
  */
-
 function Datasets<T extends FixturesConstructor>(Parent: T) {
   return class DatasetsFixtures extends Parent {
 
@@ -67,6 +71,20 @@ function Datasets<T extends FixturesConstructor>(Parent: T) {
         "/ui-server/api/renku/*/datasets.list?git_url=*",
         fixture
       ).as(name);
+      return this;
+    }
+
+    projectDatasetLegacyIdList(name = "datasetList", resultFile = "datasets/project-dataset-list.json") {
+      if (!this.useMockedData) return;
+      cy.fixture(resultFile).then((result) => {
+        for (const ds of result.result.datasets)
+          ds.identifier = toLegacyIdentifier(ds.identifier);
+        cy.intercept(
+          "GET",
+          "/ui-server/api/renku/*/datasets.list?git_url=*",
+          result
+        ).as(name);
+      });
       return this;
     }
 

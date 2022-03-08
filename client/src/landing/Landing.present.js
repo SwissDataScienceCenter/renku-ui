@@ -36,7 +36,7 @@ import { ExternalLink } from "../utils/components/ExternalLinks";
 import { Loader } from "../utils/components/Loader";
 
 
-function truncatedProjectListRows(projects, urlFullList, gridDisplay) {
+function truncatedProjectListRows(projects, urlFullList, gridDisplay, lastVisited) {
   const projectSubset = projects.slice(0, 4);
   const projectItems = projectSubset.map(project => {
     const namespace = project.namespace ? project.namespace.full_path : "";
@@ -57,10 +57,11 @@ function truncatedProjectListRows(projects, urlFullList, gridDisplay) {
         : " ",
       tagList: project.tag_list,
       timeCaption: project.last_activity_at,
-      mediaContent: project.avatar_url
+      mediaContent: project.avatar_url,
+      visibility: project.visibility
     };
   });
-  const more = (projects.length > projectSubset.length) ?
+  const more = (projects.length > projectSubset.length || lastVisited) ?
     (<Link key="more" to={urlFullList}>more projects...</Link>)
     : null;
 
@@ -106,17 +107,21 @@ class YourProjects extends Component {
     const projects = this.props.projects || [];
     const { projectsUrl, projectsSearchUrl } = this.props.urlMap;
     let projectsComponent = null;
-    if (this.props.loading) { projectsComponent = <Loader key="loader" />; }
-    else if (projects.length > 0) {
-      projectsComponent = truncatedProjectListRows(projects, projectsUrl, true);
+    if (this.props.loading)
+      return <Loader key="loader" />;
+
+    if (projects.length > 0) {
+      projectsComponent = truncatedProjectListRows(projects, projectsUrl, true, this.props.lastVisited);
     }
     else {
       const { projectNewUrl } = this.props.urlMap;
       projectsComponent = <YourEmptyProjects key="empty-projects" projectsSearchUrl={projectsSearchUrl}
         projectNewUrl={projectNewUrl} welcomePage={this.props.welcomePage} />;
     }
+
+    const title = this.props.lastVisited ? "Recent Projects" : "Your Projects";
     return <Fragment>
-      <h3 key="header">Your Projects</h3>
+      <h3 key="header">{title}</h3>
       {projectsComponent}
     </Fragment>;
   }
@@ -152,7 +157,8 @@ class LoggedInHome extends Component {
       <Row key="spacer"><Col md={12}>&nbsp;</Col></Row>,
       <Row key="content">
         <Col xs={{ order: 2 }} md={{ size: 6, order: 1 }}>
-          <YourProjects urlMap={urlMap} loading={projects.fetching} projects={projects.list} />
+          <YourProjects
+            urlMap={urlMap} loading={projects.fetching} projects={projects.list} lastVisited={projects.lastVisited} />
           <Row><Col md={12}>&nbsp;</Col></Row>
         </Col>
         <Col xs={{ order: 1 }} md={{ size: 6, order: 2 }}>

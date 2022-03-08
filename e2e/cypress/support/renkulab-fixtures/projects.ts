@@ -36,6 +36,13 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    getLastVisitedProjects(name = "getLastVisitedProjects") {
+      cy.intercept("/ui-server/api/last-projects/4", {
+        fixture: "projects/last-visited-projects.json"
+      }).as(name);
+      return this;
+    }
+
     projects(name = "getProjects") {
       cy.intercept(
         "/ui-server/api/projects?query=last_activity_at&per_page=100&starred=true&page=1",
@@ -46,10 +53,10 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    project(path = "", name = "getProject", result = "projects/project.json") {
+    project(path = "", name = "getProject", result = "projects/project.json", statistics = true) {
       const fixture = this.useMockedData ? { fixture: result } : undefined;
       cy.intercept(
-        `/ui-server/api/projects/${encodeURIComponent(path)}?statistics=true`,
+        `/ui-server/api/projects/${encodeURIComponent(path)}?statistics=${statistics}&doNotTrack=*`,
         fixture
       ).as(name);
       return this;
@@ -175,7 +182,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
     ) {
       const { projectName } = names;
       cy.intercept(
-        "/ui-server/api/projects/e2e%2Flocal-test-project?statistics=true",
+        "/ui-server/api/projects/e2e%2Flocal-test-project?statistics=true&doNotTrack=*",
         {
           fixture: "project/test-project.json"
         }
@@ -200,7 +207,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
         project.permissions.project_access.access_level = 10;
         cy.intercept(
           "GET",
-          "/ui-server/api/projects/e2e%2Flocal-test-project?statistics=true",
+          "/ui-server/api/projects/e2e%2Flocal-test-project?statistics=true&doNotTrack=*",
           project
         ).as(projectName);
       });

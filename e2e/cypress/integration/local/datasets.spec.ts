@@ -35,7 +35,7 @@ describe("display a dataset", () => {
     cy.wait("@getDatasets").then((data) => {
       const totalDatasets = data.response.body.length;
       // all datasets are displayed
-      cy.get_cy("dataset-card").should("have.length", totalDatasets);
+      cy.get_cy("list-card").should("have.length", totalDatasets);
 
       // the dataset title is displayed
       cy.get_cy("datasets-title").should(
@@ -52,7 +52,7 @@ describe("display a dataset", () => {
 
     fixtures.datasetById(datasetIdentifier);
     cy.gui_search_dataset(datasetName, fixtures, `datasets/datasets-search_${datasetIdentifier}.json`);
-    cy.get_cy("dataset-card-title").contains(datasetName).click();
+    cy.get_cy("list-card-title").contains(datasetName).click();
     cy.wait("@getDatasetById")
       .its("response.body").then( dataset => {
         // the dataset title is displayed

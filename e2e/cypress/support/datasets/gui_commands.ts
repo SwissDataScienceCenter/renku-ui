@@ -21,5 +21,5 @@ Cypress.Commands.add("gui_search_dataset", (datasetName: string, fixtures, resul
   cy.get("[data-cy='search-dataset-input']").type(datasetName);
   cy.get("[data-cy='search-dataset-submit']").click();
   cy.wait("@getDatasetsSearch");
-  cy.get("[data-cy='dataset-card-title']").contains(datasetName);
+  cy.get("[data-cy='list-card-title']").contains(datasetName);
 });

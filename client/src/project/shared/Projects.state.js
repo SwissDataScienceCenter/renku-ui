@@ -68,7 +68,8 @@ class ProjectsCoordinator {
       http_url_to_repo: project.http_url_to_repo ? project.http_url_to_repo : project.httpUrlToRepo,
       namespace: project.namespace,
       path: project.path,
-      avatar_url: project.avatar_url
+      avatar_url: project.avatar_url,
+      visibility: project.visibility
     };
   }
 
@@ -103,24 +104,60 @@ class ProjectsCoordinator {
     });
   }
 
+  _setLandingProjects(projectList, lastVisited) {
+    this.model.setObject({
+      landingProjects: {
+        fetched: new Date(),
+        fetching: false,
+        list: { $set: projectList },
+        lastVisited,
+      }
+    });
+  }
+
+  async _getOwnProjectsForLanding() {
+    let projectList = [];
+    const params = { order_by: "last_activity_at", per_page: 5, membership: true };
+    const landingProjects = await this.client.getProjects({ ...params });
+    projectList = landingProjects?.data?.map((project) => this._starredProjectMetadata(project)) ?? [];
+    this._setLandingProjects(projectList, false);
+  }
 
   async getLanding() {
     if (this.model.get("landingProjects.fetching"))
       return;
     // set status to fetching, get the projects for the landing page
     this.model.set("landingProjects.fetching", true);
-    const params = { order_by: "last_activity_at", per_page: 5, membership: true };
     try {
-      const landingProjects = await this.client.getProjects({ ...params });
-      const projectList = landingProjects?.data?.map((project) => this._starredProjectMetadata(project)) ?? [];
-      this.model.setObject({
-        landingProjects: {
-          fetched: new Date(),
-          fetching: false,
-          list: { $set: projectList },
-        }
-      });
-      return { landing: projectList };
+      const lastProjects = await this.client.getRecentProjects(4);
+      const lastProjectsVisited = lastProjects?.data?.projects;
+      let projectList = [];
+      if (lastProjectsVisited?.length > 0) {
+        // if the user has recent projects get the project information
+        const projectRequests = [];
+        for (const project of lastProjectsVisited)
+          projectRequests.push(this.client.getProject(project, { doNotTrack: true }));
+
+        Promise.allSettled(projectRequests).then( results => {
+          for (const result of results) {
+            if (result?.status === "fulfilled" && result?.value?.data?.all)
+              projectList.push(this._starredProjectMetadata(result?.value?.data.all));
+          }
+
+          // if couldn't get any project of the list
+          if (!projectList.length)
+            this._getOwnProjectsForLanding();
+
+          // set projects
+          this._setLandingProjects(projectList, true);
+        }).catch( () => {
+          this.model.set("landingProjects.fetching", false);
+        });
+      }
+      else {
+        // in case there is not records in the last projects list bring user projects
+        this._getOwnProjectsForLanding();
+      }
     }
     catch {
       this.model.set("landingProjects.fetching", false);
