@@ -37,19 +37,19 @@ import {
   faExclamationTriangle, faInfoCircle, faLink, faQuestionCircle, faSyncAlt, faUndo
 } from "@fortawesome/free-solid-svg-icons";
 
+import "./Project.style.css";
+import defaultTemplateIcon from "./templatePlaceholder.svg";
 
 import { simpleHash, slugFromTitle } from "../../utils/helpers/HelperFunctions";
 import { capitalize } from "../../utils/components/formgenerator/FormGenerator.present";
 import { Url } from "../../utils/helpers/url";
-
-import "./Project.style.css";
-import defaultTemplateIcon from "./templatePlaceholder.svg";
 import { Loader } from "../../utils/components/Loader";
 import { ErrorAlert, WarnAlert } from "../../utils/components/Alert";
 import { ExternalLink } from "../../utils/components/ExternalLinks";
 import { FieldGroup } from "../../utils/components/FieldGroups";
 import { ButtonWithMenu } from "../../utils/components/Button";
 import { Clipboard } from "../../utils/components/Clipboard";
+import AppContext from "../../utils/context/appContext";
 
 
 /**
@@ -216,8 +216,11 @@ function ForkProjectContent(props) {
 }
 
 class NewProject extends Component {
+  static contextType = AppContext;
+
   render() {
-    const { automated, config, handlers, input, location, user } = this.props;
+    const { automated, config, handlers, input, user, importingDataset } = this.props;
+    const { location } = this.context;
     if (!user.logged) {
       const to = Url.get(Url.pages.login.link, { pathname: location.pathname });
       return (
@@ -232,12 +235,13 @@ class NewProject extends Component {
         </Fragment>
       );
     }
+    const title = importingDataset ? null : <h1>New project</h1>;
 
     const userRepo = config.custom && input.userRepo;
     return (
       <Row>
-        <Col sm={10} md={9} lg={8} xl={7}>
-          <h1>New project</h1>
+        <Col className={!this.props.importingDataset ? "col-sm-10 col-md-9 col-lg-8 col-xl-7" : ""}>
+          {title}
           <Form className="mb-3">
             <Automated automated={automated} removeAutomated={handlers.removeAutomated} />
             <Title {...this.props} />
@@ -652,6 +656,10 @@ class Visibility extends Component {
       );
     }
     else {
+      // sometimes meta.namespace.visibilities is an object instead of an array, this is a fix for those cases
+      if (typeof meta.namespace.visibilities === "object")
+        meta.namespace.visibilities = Object.values(meta.namespace.visibilities).filter( v => v !== null);
+
       const options = meta.namespace.visibilities.map(v => <option key={v} value={v}>{capitalize(v)}</option>);
       main = (
         <Input id="visibility" type="select" placeholder="Choose visibility..." className="custom-select"
@@ -1207,19 +1215,15 @@ class Create extends Component {
       null;
 
     // create dropdown items
-    const disabled = loading ?
-      true :
-      false;
+    const disabled = !!loading;
     const createProject = (
       <Button
         id="create-new-project"
         color="primary"
         onClick={this.props.handlers.onSubmit}
         disabled={disabled}
-      >
-        Create project
-      </Button>
-    );
+      > Create project
+      </Button>);
     const createLink = (
       <DropdownItem onClick={this.toggle}><FontAwesomeIcon icon={faLink} /> Create link</DropdownItem>
     );
@@ -1246,12 +1250,25 @@ class Create extends Component {
       ) :
       null;
 
+    // when is also importing a new dataset show a different submit button
+    const submitButton = !this.props.importingDataset ?
+      <ButtonWithMenu color="primary" default={createProject} disabled={disabled} direction="up">
+        {createLink}
+      </ButtonWithMenu> :
+      (<div className="mt-4 d-flex justify-content-end">
+        <Button
+          id="create-new-project"
+          color="primary"
+          onClick={this.props.handlers.onSubmit}
+          disabled={disabled}>
+          Add Dataset New Project
+        </Button>
+      </div>);
+
     return (
       <Fragment>
         {alert}
-        <ButtonWithMenu color="primary" default={createProject} disabled={disabled} direction="up">
-          {createLink}
-        </ButtonWithMenu>
+        {submitButton}
         {templateDetails && (<FormText className="ms-2" color="primary">{templateDetails}</FormText>)}
         {loading && (<FormText className="d-block" color="primary">{loading}</FormText>)}
         <ShareLinkModal

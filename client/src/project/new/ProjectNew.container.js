@@ -26,6 +26,7 @@
 import React, { Component, useEffect, useState, useRef } from "react";
 // TODO: switch to useSelector
 import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
 
 import { NewProject as NewProjectPresent, ForkProject as ForkProjectPresent } from "./ProjectNew.present";
 import { NewProjectCoordinator, validateTitle, checkTitleDuplicates } from "./ProjectNew.state";
@@ -34,6 +35,7 @@ import { gitLabUrlFromProfileUrl, slugFromTitle, refreshIfNecessary } from "../.
 import { Url, getSearchParams } from "../../utils/helpers/url";
 import { atobUTF8, btoaUTF8 } from "../../utils/helpers/Encoding";
 import { newProjectSchema } from "../../model/RenkuModels";
+import AppContext from "../../utils/context/appContext";
 
 const CUSTOM_REPO_NAME = "Custom";
 
@@ -416,14 +418,15 @@ function getDataFromParams(params) {
 }
 
 class NewProject extends Component {
-  constructor(props) {
-    super(props);
+  constructor(props, context) {
+    super(props, context);
+    const { client, params } = this.context;
     // Create model and reset inputs
     this.model = props.model;
-    this.coordinator = new NewProjectCoordinator(props.client, this.model.subModel("newProject"),
+    this.coordinator = new NewProjectCoordinator(client, this.model.subModel("newProject"),
       this.model.subModel("projects"));
-    this.coordinator.setConfig(props.templates.custom, props.templates.repositories);
-    this.projectsCoordinator = new ProjectsCoordinator(props.client, this.model.subModel("projects"));
+    this.coordinator.setConfig(params["TEMPLATES"].custom, params["TEMPLATES"].repositories);
+    this.projectsCoordinator = new ProjectsCoordinator(client, this.model.subModel("projects"));
     this.coordinator.resetInput();
     this.removeAutomated();
     if (!props.user.logged)
@@ -447,13 +450,17 @@ class NewProject extends Component {
     // Handle optional param used to pre-fill inputs
     if (!props.user.logged)
       return;
-    const params = getSearchParams();
+    const searchParams = getSearchParams();
     try {
-      const data = getDataFromParams(params);
+      const data = getDataFromParams(searchParams);
       if (data)
         this.coordinator.setAutomated(data);
-      const newUrl = Url.get(Url.pages.project.new);
-      this.props.history.push(newUrl);
+
+      // do not update url if is importing a dataset
+      if (!props.importingDataset) {
+        const newUrl = Url.get(Url.pages.project.new);
+        this.props.history.push(newUrl);
+      }
     }
     catch (e) {
       this.coordinator.setAutomated(null, e);
@@ -528,6 +535,11 @@ class NewProject extends Component {
     this.props.history.push(`/projects/${slug}`);
   }
 
+  sendProjectToAddDataset(projectPath) {
+    if (projectPath)
+      this.props.startImportDataset(projectPath);
+  }
+
   onSubmit(e) {
     e.preventDefault();
 
@@ -546,7 +558,13 @@ class NewProject extends Component {
         this.refreshUserProjects();
         if (!creation.kgError && !creation.projectError) {
           const slug = `${creation.newNamespace}/${creation.newNameSlug}`;
-          this.props.history.push(`/projects/${slug}`);
+          if (this.props.importingDataset) {
+            this.sendProjectToAddDataset(slug);
+          }
+          else {
+            // continue regular process
+            this.props.history.push(`/projects/${slug}`);
+          }
         }
       }
     });
@@ -568,7 +586,7 @@ class NewProject extends Component {
       user: {
         logged: state.user.logged,
         username: state.user.data && state.user.data.username ? state.user.data.username : null
-      }
+      },
     };
 
     return {
@@ -583,13 +601,14 @@ class NewProject extends Component {
 
     return <ConnectedNewProject
       store={this.model.reduxStore}
-      location={this.props.location}
+      importingDataset={this.props.importingDataset}
     />;
   }
 }
+NewProject.contextType = AppContext;
+const NewProjectContainer = withRouter(NewProject);
 
-
-export { NewProject, CUSTOM_REPO_NAME, ForkProjectMapper as ForkProject };
+export { NewProjectContainer as NewProject, CUSTOM_REPO_NAME, ForkProjectMapper as ForkProject };
 
 // test only
 export { getDataFromParams };
