@@ -53,6 +53,7 @@ import VisualFooter from "./Assets/Visual_Footer.svg";
 import { RenkuNavLink } from "../utils/components/RenkuNavLink";
 import { ExternalLink } from "../utils/components/ExternalLinks";
 import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
+import { Docs } from "../utils/constants/Docs";
 
 function HomeHeader(props) {
   const [isOpen, setIsOpen] = useState(false);
@@ -272,7 +273,7 @@ function Section4(props) {
             title="Learn more"
             className="btn btn-outline-rk-pink" role="button" id="link-learn"
             showLinkIcon={true}
-            url="https://renku.readthedocs.io/en/latest/" />
+            url={Docs.READ_THE_DOCS_ROOT} />
         </div>
       </div>
     </div>

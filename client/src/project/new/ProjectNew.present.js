@@ -50,6 +50,7 @@ import { ExternalLink } from "../../utils/components/ExternalLinks";
 import { FieldGroup } from "../../utils/components/FieldGroups";
 import { ButtonWithMenu } from "../../utils/components/Button";
 import { Clipboard } from "../../utils/components/Clipboard";
+import { Docs, Links } from "../../utils/constants/Docs";
 
 
 /**
@@ -680,7 +681,7 @@ class KnowledgeGraph extends Component {
       return null;
 
     const kgLink = (
-      <a href="https://renku.readthedocs.io/en/latest/user/knowledge-graph.html"
+      <a href={`${Docs.READ_THE_DOCS_USER}/knowledge-graph.html`}
         target="_blank" rel="noopener noreferrer">
         Knowledge Graph
       </a>
@@ -766,7 +767,7 @@ class UserTemplate extends Component {
     if (config.repositories && config.repositories.length)
       refExample = config.repositories[0].ref;
     const templatesDocs = (
-      <a href="https://renku.readthedocs.io/en/latest/reference/templates.html"
+      <a href={`${Docs.READ_THE_DOCS_REFERENCE}/templates.html`}
         target="_blank" rel="noopener noreferrer">
         Renku templates
       </a>
@@ -1174,9 +1175,9 @@ class Create extends Component {
         </span>) :
         (<span>
           You can try refreshing the page. If the error persists, you should contact the development team on&nbsp;
-          <a href="https://gitter.im/SwissDataScienceCenter/renku"
+          <a href={Links.GITTER}
             target="_blank" rel="noreferrer noopener">Gitter</a> or&nbsp;
-          <a href="https://github.com/SwissDataScienceCenter/renku"
+          <a href={Links.GITHUB}
             target="_blank" rel="noreferrer noopener">GitHub</a>.
         </span>);
       alert = fatal ? (

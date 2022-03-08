@@ -50,6 +50,7 @@ import {
 } from "./NotebookStart.present";
 
 import "./Notebooks.css";
+import { Docs } from "../utils/constants/Docs";
 
 
 // * Constants and helpers * //
@@ -286,8 +287,6 @@ function SessionLogs(props) {
 function SessionDocs(props) {
   const { tab } = props;
 
-  const docsUrl = "https://renku.readthedocs.io/en/latest/";
-
   const invisible = tab !== SESSION_TABS.docs ?
     true :
     false;
@@ -296,7 +295,7 @@ function SessionDocs(props) {
     "";
 
   return (
-    <iframe id="docs-iframe" title="documentation iframe" src={docsUrl} className={localClass}
+    <iframe id="docs-iframe" title="documentation iframe" src={Docs.READ_THE_DOCS_ROOT} className={localClass}
       width="100%" height="800px" referrerPolicy="origin" sandbox="allow-same-origin allow-scripts"
     />
   );

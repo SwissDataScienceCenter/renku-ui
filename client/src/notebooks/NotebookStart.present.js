@@ -40,6 +40,7 @@ import { Loader } from "../utils/components/Loader";
 import { ThrottledTooltip } from "../utils/components/Tooltip";
 import { Url } from "../utils/helpers/url";
 import Time from "../utils/helpers/Time";
+import { Docs } from "../utils/constants/Docs";
 
 // * StartNotebookServer code * //
 function StartNotebookServer(props) {
@@ -467,7 +468,7 @@ class StartNotebookPipelinesContent extends Component {
 
       // this style trick makes it appear as the other Label + Input components
       const style = { marginTop: -8 };
-      const url = "https://renku.readthedocs.io/en/latest/reference/templates.html?highlight=.dockerignore#renku";
+      const url = `${Docs.READ_THE_DOCS_REFERENCE}/templates.html?highlight=.dockerignore#renku`;
       return (
         <Fragment>
           <Input type="input" disabled={true} id="customImage" style={style} value={projectOptions.image}></Input>
@@ -617,8 +618,7 @@ class StartNotebookCommits extends Component {
         true :
         false;
       if (autosaveExists) {
-        const url = "https://renku.readthedocs.io/en/latest/user/interactive_stopping_and_saving.html" +
-          "#autosave-in-interactive-environments";
+        const url = `${Docs.READ_THE_DOCS_USER}/interactive_stopping_and_saving.html#autosave-in-interactive-environments`
         commitComment = (
           <FormText>
             <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> We
@@ -1101,7 +1101,7 @@ class AutosavedDataModal extends Component {
     const docsLink = (
       <ExternalLink
         role="text" iconSup={true} iconAfter={true} title="documentation"
-        url="https://renku.readthedocs.io/en/latest/user/autosave.html"
+        url={`${Docs.READ_THE_DOCS_USER}/autosave.html`}
       />
     );
     const command = `git reset --hard ${this.props.filters.commit.short_id} && git clean -f -d`;

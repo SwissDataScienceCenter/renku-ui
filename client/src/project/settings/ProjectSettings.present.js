@@ -44,6 +44,7 @@ import { Clipboard } from "../../utils/components/Clipboard";
 import { Loader } from "../../utils/components/Loader";
 import { ErrorAlert, WarnAlert } from "../../utils/components/Alert";
 import { ExternalLink } from "../../utils/components/ExternalLinks";
+import { Docs } from "../../utils/constants/Docs";
 
 
 //** Navigation **//
@@ -615,7 +616,7 @@ function SessionConfigAdvanced(props) {
     (<WarnAlert>
       Fixing
       an image can yield improvements, but it can also lead to sessions not working in the expected
-      way. <a href="https://renku.readthedocs.io/en/latest/user/session_customizing.html">
+      way. <a href={`${Docs.READ_THE_DOCS_USER}/session_customizing.html`}>
         Please consult the documentation
       </a> before changing this setting.
     </WarnAlert>) :

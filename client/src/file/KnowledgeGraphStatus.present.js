@@ -24,6 +24,7 @@ import { Button, Alert, Progress } from "reactstrap";
 import { GraphIndexingStatus } from "../project/Project";
 import { MigrationSuccessAlert, MigrationWarnAlert } from "../project/status/MigrationUtils";
 import { Loader } from "../utils/components/Loader";
+import { Docs, Links } from "../utils/constants/Docs";
 
 function KnowledgeGraphPrivateInfo(props) {
   if (!props.isPrivate) return null;
@@ -32,7 +33,7 @@ function KnowledgeGraphPrivateInfo(props) {
       This is a private project. Though contents remain private,
       the Knowledge Graph may make some metadata public. Only activate if that is acceptable.
       <br />
-      <a href="https://renku.readthedocs.io/en/latest/user/knowledge-graph.html"
+      <a href={`${Docs.READ_THE_DOCS_USER}/knowledge-graph.html`}
         target="_blank" rel="noopener noreferrer">
         <FontAwesomeIcon icon={faExternalLinkAlt} /> Read more about the Knowledge Graph integration.
       </a>
@@ -47,9 +48,9 @@ function KnowledgeGraphStatus(props) {
       Knowledge Graph integration must be activated to view the lineage, but&nbsp;
       there is a problem with the knowledge graph integration for this project. To resolve this problem,
       you should contact the development team on&nbsp;
-      <a href="https://gitter.im/SwissDataScienceCenter/renku"
+      <a href={Links.GITTER}
         target="_blank" rel="noreferrer noopener">Gitter</a> or&nbsp;
-      <a href="https://github.com/SwissDataScienceCenter/renku"
+      <a href={Links.GITHUB}
         target="_blank" rel="noreferrer noopener">GitHub</a>.
     </MigrationWarnAlert>;
   }
