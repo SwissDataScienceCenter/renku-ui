@@ -155,3 +155,29 @@ describe("Project dataset (legacy ids)", () => {
     checkDatasetInKg(cy, fixtures, projectPath);
   });
 });
+
+describe("Error loading datasets", () => {
+  const fixtures = new Fixtures(cy);
+  fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;
+  const projectPath = "e2e/testing-datasets";
+
+  beforeEach(() => {
+    fixtures.config().versions().userTest();
+    fixtures.projects().landingUserProjects();
+    fixtures.project(projectPath);
+    fixtures.projectKGDatasetList(projectPath);
+    fixtures.projectDatasetList("datasetList", "datasets/dataset-list-error.json");
+    fixtures.projectTestContents(undefined, 9);
+    fixtures.projectMigrationUpToDate({ queryUrl: "*", fixtureName: "getMigration" });
+  });
+
+  it("displays project datasets", () => {
+    cy.visit(`projects/${projectPath}/datasets`);
+    cy.wait("@getProject");
+    cy.wait("@datasetList")
+      .its("response.body").then( () => {
+        cy.get_cy("error-datasets-modal").should("exist");
+      });
+  });
+
+});
