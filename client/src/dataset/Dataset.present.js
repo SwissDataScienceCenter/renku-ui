@@ -28,6 +28,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import _ from "lodash";
 
+import { DatasetError } from "./DatasetError";
+import { getDatasetAuthors } from "./DatasetFunctions";
 import DeleteDataset from "../project/datasets/delete/index";
 import Time from "../utils/helpers/Time";
 import FileExplorer from "../utils/components/FileExplorer";
@@ -35,8 +37,6 @@ import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
 import { ExternalLink } from "../utils/components/ExternalLinks";
 import { ErrorAlert, WarnAlert } from "../utils/components/Alert";
 import { Loader } from "../utils/components/Loader";
-import { getDatasetAuthors } from "./DatasetFunctions";
-import { DatasetError } from "./DatasetError";
 
 function DisplayFiles(props) {
   if (!props.files || !props.files?.hasPart) return null;
@@ -258,7 +258,6 @@ export default function DatasetView(props) {
         <DatasetError
           fetchError={props.fetchError}
           insideProject={props.insideProject}
-          location={props.location}
           logged={props.logged} />
       );
     }

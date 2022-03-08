@@ -15,12 +15,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from "react";
-import { Url } from "../utils/helpers/url";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
-import { ErrorAlert, InfoAlert } from "../utils/components/Alert";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
+
+import { Url } from "../utils/helpers/url";
+import { ErrorAlert, InfoAlert } from "../utils/components/Alert";
+import AppContext from "../utils/context/appContext";
 
 /**
  *  incubator-renku-ui
@@ -29,8 +31,8 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
  *  Components for show dataset error
  */
 
-function DatasetError(props) {
-  const { fetchError, insideProject, location, logged } = props;
+function DatasetError({ fetchError, insideProject, logged }) {
+  const { location } = useContext(AppContext);
 
   // login helper
   let loginHelper = null;

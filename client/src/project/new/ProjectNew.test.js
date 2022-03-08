@@ -36,6 +36,7 @@ import { RESERVED_TITLE_NAMES } from "./ProjectNew.state";
 import { testClient as client } from "../../api-client";
 import { btoaUTF8 } from "../../utils/helpers/Encoding";
 import { generateFakeUser } from "../../user/User.test";
+import AppContext from "../../utils/context/appContext";
 
 
 const fakeHistory = createMemoryHistory({
@@ -132,6 +133,11 @@ describe("rendering", () => {
   const anonymousUser = generateFakeUser(true);
   const loggedUser = generateFakeUser();
   const users = [{ type: "anonymous", data: anonymousUser }, { type: "logged", data: loggedUser }];
+  const appContext = {
+    client: client,
+    params: { "TEMPLATES": templates },
+    location: fakeLocation,
+  };
 
   for (const user of users) {
     it(`renders NewProject without crashing for ${user.type} user`, async () => {
@@ -141,14 +147,13 @@ describe("rendering", () => {
       await act(async () => {
         ReactDOM.render(
           <MemoryRouter>
-            <NewProject
-              client={client}
-              model={model}
-              history={fakeHistory}
-              location={fakeLocation}
-              templates={templates}
-              user={user.data}
-            />
+            <AppContext.Provider value={appContext}>
+              <NewProject
+                model={model}
+                history={fakeHistory}
+                user={user.data}
+              />
+            </AppContext.Provider>
           </MemoryRouter>
           , div);
       });

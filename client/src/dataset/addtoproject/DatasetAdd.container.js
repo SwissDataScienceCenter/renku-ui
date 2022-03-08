@@ -24,37 +24,48 @@
  */
 
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 
+import DatasetAdd from "./DatasetAdd.present";
+import { DatasetCoordinator } from "../Dataset.state";
 import { ImportStateMessage } from "../../utils/constants/Dataset";
 import { migrationCheckToRenkuVersionStatus, RENKU_VERSION_SCENARIOS } from "../../project/status/MigrationUtils";
-import DatasetAdd from "./DatasetAdd.present";
+import AppContext from "../../utils/context/appContext";
+import { projectSchema } from "../../model";
 
-function AddDataset(props) {
+function AddDataset({ datasets, identifier, insideProject, model }) {
+  const migration = projectSchema.createInitialized().migration;
+  const versionUrl = migration.core.versionUrl;
+
   const [currentStatus, setCurrentStatus] = useState(null);
   const [importingDataset, setImportingDataset] = useState(false);
-  const [isProjectListReady, setIsProjectListReady] = useState(false);
   const [isDatasetValid, setIsDatasetValid] = useState(null);
   const [datasetProjectVersion, setDatasetProjectVersion] = useState(null);
   const [dataset, setDataset] = useState(null);
+  const [datasetCoordinator, setDatasetCoordinator] = useState(null);
+  const { client } = useContext(AppContext);
+  const history = useHistory();
 
-  const versionUrl = props.migration.core.versionUrl;
+  useEffect(() => {
+    setDatasetCoordinator(new DatasetCoordinator(client, model.subModel("dataset")));
+  }, [client, model]);
 
   useEffect(() => {
     const fetchDataset = async () => {
-      await props.datasetCoordinator.fetchDataset(props.identifier, props.datasets, true);
-      const currentDataset = props.datasetCoordinator.get("metadata");
+      await datasetCoordinator.fetchDataset(identifier, datasets, true);
+      const currentDataset = datasetCoordinator.get("metadata");
       setDataset(currentDataset);
     };
 
-    if (props.datasetCoordinator && props.identifier) {
-      const currentDataset = props.datasetCoordinator.get("metadata");
-      if (currentDataset && currentDataset?.identifier === props.identifier && currentDataset.projects)
+    if (datasetCoordinator && identifier) {
+      const currentDataset = datasetCoordinator.get("metadata");
+      if (currentDataset && currentDataset?.identifier === identifier && currentDataset.projects)
         setDataset(currentDataset);
       else
         fetchDataset();
     }
-  }, [props.datasetCoordinator && props.identifier]); // eslint-disable-line
+  }, [datasetCoordinator && identifier]); // eslint-disable-line
 
   useEffect(() => {
     if (dataset)
@@ -75,7 +86,7 @@ function AddDataset(props) {
     // TODO remove this request when dataset include httpUrlToRepo
     let checkOrigin;
     try {
-      const fetchDatasetProject = await props.client.getProject(dataset.project?.path);
+      const fetchDatasetProject = await client.getProject(dataset.project?.path);
       const urlProjectOrigin = fetchDatasetProject?.data?.all?.http_url_to_repo;
       if (!urlProjectOrigin) {
         setCurrentStatus({ status: "error", text: "Invalid Dataset" });
@@ -84,7 +95,7 @@ function AddDataset(props) {
       }
 
       // check dataset project migration status
-      checkOrigin = await props.client.checkMigration(urlProjectOrigin);
+      checkOrigin = await client.checkMigration(urlProjectOrigin);
       if (checkOrigin && checkOrigin.error !== undefined) {
         setCurrentStatus({ status: "error", text: checkOrigin.error.reason });
         setIsDatasetValid(false);
@@ -128,7 +139,7 @@ function AddDataset(props) {
 
     setCurrentStatus({ status: "inProcess", text: "Checking dataset/project compatibility..." });
     // check selected project migration status
-    const checkTarget = await props.client.checkMigration(project.value);
+    const checkTarget = await client.checkMigration(project.value);
     if (checkTarget && checkTarget.error !== undefined) {
       setCurrentStatus({ status: "error", text: checkTarget.error.reason });
       return false;
@@ -153,7 +164,7 @@ function AddDataset(props) {
     }
     // check if the dataset project is supported
     if (targetProjectVersionStatus.renkuVersionStatus === RENKU_VERSION_SCENARIOS.NEW_VERSION_REQUIRED) {
-      const backendAvailability = await props.client.checkCoreAvailability(target_metadata_version);
+      const backendAvailability = await client.checkCoreAvailability(target_metadata_version);
       if (!backendAvailability.available) {
         setCurrentStatus({ status: "errorNeedMigration", text: null });
         return false;
@@ -180,7 +191,7 @@ function AddDataset(props) {
 
   const importDataset = (selectedProject) => {
     setImportingDataset(true);
-    props.client.datasetImport(selectedProject.value, dataset.url, versionUrl)
+    client.datasetImport(selectedProject.value, dataset.url, versionUrl)
       .then(response => {
         if (response?.data?.error !== undefined) {
           setCurrentStatus({ status: "error", text: response.data.error.reason });
@@ -201,7 +212,7 @@ function AddDataset(props) {
     const INTERVAL = 6000;
     let monitorJob = setInterval(async () => {
       try {
-        const job = await props.client.getJobStatus(job_id, versionUrl);
+        const job = await client.getJobStatus(job_id, versionUrl);
         cont++;
         if (job !== undefined)
           handleJobResponse(job, monitorJob, cont * INTERVAL / 1000, projectPath, datasetName);
@@ -250,30 +261,30 @@ function AddDataset(props) {
 
   const redirectUser = (projectPath, datasetName) => {
     setCurrentStatus(null);
-    props.history.push({
+    history.push({
       pathname: `/projects/${projectPath}/datasets/${datasetName}`,
       state: { reload: true }
     });
   };
   /* end import dataset */
 
+  const handlers = {
+    setCurrentStatus,
+    submitCallback,
+    validateProject,
+  };
+
   return (
     <DatasetAdd
+      handlers={handlers}
+      model={model}
+      insideProject={insideProject}
       dataset={dataset}
-      submitCallback={submitCallback}
-      history={props.history}
       currentStatus={currentStatus}
-      setCurrentStatus={setCurrentStatus}
-      importingDataset={importingDataset}
-      isProjectListReady={isProjectListReady}
-      setIsProjectListReady={setIsProjectListReady}
       isDatasetValid={isDatasetValid}
-      validateProject={validateProject}
-      projectsCoordinator={props.projectsCoordinator}
-      logged={props.logged}
-      insideProject={props.insideProject}
+      importingDataset={importingDataset}
     />
   );
 }
 
-export default AddDataset;
+export { AddDataset };
