@@ -56,7 +56,7 @@ function checkDatasetLimitedPermissionDisplay(cy, fixtures, datasets) {
     const datasetIdentifier = d.identifier.replace(/-/g, "");
     const requestId = `getDatasetById${i}`;
     fixtures.datasetById(datasetIdentifier, requestId);
-    cy.get_cy("dataset-card-title").contains(d.title).click();
+    cy.get_cy("list-card-title").contains(d.title).click();
     cy.wait(`@${requestId}`);
 
     cy.get_cy("dataset-title").should("contain.text", d.title);
