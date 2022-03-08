@@ -16,13 +16,17 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
+
+import { Button } from "reactstrap/lib";
+
+import { AddDatasetStatus } from "./addDatasetStatus";
+import { ACCESS_LEVELS } from "../../api-client";
+import { ProjectsCoordinator } from "../../project/shared";
 import SelectAutosuggestInput from "../../utils/components/SelectAutosuggestInput";
 import { Loader } from "../../utils/components/Loader";
-import { Button } from "reactstrap/lib";
-import { ACCESS_LEVELS } from "../../api-client";
+import AppContext from "../../utils/context/appContext";
 import { groupBy } from "../../utils/helpers/HelperFunctions";
-import { AddDatasetStatus } from "./addDatasetStatus";
 
 /**
  *  incubator-renku-ui
@@ -31,39 +35,58 @@ import { AddDatasetStatus } from "./addDatasetStatus";
  *  Component for add dataset to existing project
  */
 
-const AddDatasetExistingProject = (props) => {
+const AddDatasetExistingProject = (
+  { dataset, model, handlers, isDatasetValid, currentStatus, importingDataset, project }) => {
 
   const [existingProject, setExistingProject] = useState(null);
+  const [isProjectListReady, setIsProjectListReady] = useState(false);
+  const [projectsCoordinator, setProjectsCoordinator] = useState(null);
+  const { client } = useContext(AppContext);
+  const mounted = useRef(false);
+  const setCurrentStatus = handlers.setCurrentStatus;
+  let projectsMonitorJob = null;
+
+  useEffect(() => {
+    setProjectsCoordinator(new ProjectsCoordinator(client, model.subModel("projects")));
+  }, [client, model]);
+
+  useEffect(() => {
+    mounted.current = true;
+    setCurrentStatus(null);
+    return () => {
+      mounted.current = false;
+      clearInterval(projectsMonitorJob);
+    };
+  }, [setCurrentStatus, projectsMonitorJob]);
 
   useEffect( () => {
     if (existingProject)
-      props.validateProject(existingProject, false); // validate origin only when start import
+      handlers.validateProject(existingProject, false); // validate origin only when start import
     else
-      props.setCurrentStatus(null);
+      setCurrentStatus(null);
   }, [existingProject]); // eslint-disable-line
 
   useEffect(() => {
-    if (props.dataset)
+    if (dataset && projectsCoordinator)
       monitorProjectList();
-  }, [props.dataset]); // eslint-disable-line
+  }, [dataset, projectsCoordinator]); // eslint-disable-line
 
   // monitor to check when the list of projects is ready
-  let projectsMonitorJob = null;
   const monitorProjectList = () => {
-    const INTERVAL = 2000;
+    const INTERVAL = 1000;
     projectsMonitorJob = setInterval(() => {
-      if (!props.projectsCoordinator) return;
-      const featured = props.projectsCoordinator.model.get("featured");
+      if (!projectsCoordinator) return;
+      const featured = projectsCoordinator.model.get("featured");
       const isReady = !(!featured.fetched || (!featured.starred.length && !featured.member.length));
-      props.setIsProjectListReady(isReady);
+      setIsProjectListReady(isReady);
       if (isReady)
         clearInterval(projectsMonitorJob);
     }, INTERVAL);
   };
 
-  const startImportDataset = () => props.submitCallback(existingProject);
+  const startImportDataset = () => handlers.submitCallback(existingProject);
   const onSuggestionsFetchRequested = ( value, setSuggestions ) => {
-    const featured = props.projectsCoordinator.model.get("featured");
+    const featured = projectsCoordinator.model.get("featured");
     if (!featured.fetched || (!featured.starred.length && !featured.member.length))
       return;
 
@@ -91,13 +114,13 @@ const AddDatasetExistingProject = (props) => {
     for (const [key, val] of groupedHits)
       groupedSuggestions.push({ title: key, suggestions: val });
 
-    props.setCurrentStatus(null);
+    setCurrentStatus(null);
     setSuggestions(groupedSuggestions);
   };
   const customHandlers = { onSuggestionsFetchRequested };
 
   let suggestionInput;
-  if (props.isProjectListReady && props.isDatasetValid) {
+  if (isProjectListReady && isDatasetValid) {
     suggestionInput = (<SelectAutosuggestInput
       existingValue={existingProject?.name || null}
       name="project"
@@ -105,10 +128,10 @@ const AddDatasetExistingProject = (props) => {
       placeholder="Select a project..."
       customHandlers={customHandlers}
       setInputs={setExistingProject}
-      disabled={props.importingDataset || props.currentStatus?.status === "inProcess"}
+      disabled={importingDataset || currentStatus?.status === "inProcess"}
     />);
   }
-  else if (props.isDatasetValid === null || props.isDatasetValid === false) {
+  else if (isDatasetValid === null || isDatasetValid === false) {
     suggestionInput = null;
   }
   else {
@@ -119,7 +142,7 @@ const AddDatasetExistingProject = (props) => {
     <div className="mt-4 d-flex justify-content-end">
       <Button
         color="primary"
-        disabled={props.currentStatus?.status !== "validProject" || props.importingDataset}
+        disabled={currentStatus?.status !== "validProject" || importingDataset}
         onClick={startImportDataset}>
         Add Dataset to existing Project
       </Button>
@@ -128,22 +151,22 @@ const AddDatasetExistingProject = (props) => {
 
   const onSubmit = (e) => e.preventDefault();
 
-  const addDatasetStatus = props.currentStatus ?
+  const addDatasetStatus = currentStatus ?
     <AddDatasetStatus
-      status={props.currentStatus.status}
-      text={props.currentStatus?.text || null}
-      projectName={props.project?.name}
+      status={currentStatus.status}
+      text={currentStatus?.text || null}
+      projectName={project?.name}
     /> : null;
 
-  if (!props.dataset) return null;
+  if (!dataset) return null;
 
   return (
-    <div className="mt-4">
+    <div className="mt-4 mx-3">
       <form onSubmit={onSubmit} className={"mt-2"}>
         {suggestionInput}
       </form>
-      { addDatasetStatus }
-      { addDatasetButton }
+      {addDatasetStatus}
+      {addDatasetButton}
     </div>
   );
 };

@@ -25,24 +25,24 @@
 
 
 import React, { useState } from "react";
+import { useSelector } from "react-redux";
 import _ from "lodash";
 import { Row, Col } from "reactstrap";
 import { Button } from "reactstrap";
 import { ButtonGroup, Table } from "reactstrap/lib";
 
-import { getDatasetAuthors } from "../DatasetFunctions";
 import { AddDatasetExistingProject } from "./addDatasetExistingProject";
+import { AddDatasetNewProject } from "./addDatasetNewProject";
+import { getDatasetAuthors } from "../DatasetFunctions";
 import { DatasetError } from "../DatasetError";
 import { Loader } from "../../utils/components/Loader";
 
-function HeaderAddDataset(props) {
-  const { dataset } = props;
+function HeaderAddDataset({ dataset }) {
   if (!dataset) return null;
   const authors = getDatasetAuthors(dataset);
   return (
     <>
       <h2>Add dataset to project</h2>
-      {/* eslint-disable-next-line */}
       <Table className="mb-4 table-borderless" size="sm">
         <tbody className="text-rk-text">
           <tr>
@@ -59,41 +59,48 @@ function HeaderAddDataset(props) {
   );
 }
 
-function DatasetAdd(props) {
+function DatasetAdd({ dataset, model, handlers, isDatasetValid, currentStatus, importingDataset, insideProject }) {
   const [isNewProject, setIsNewProject] = useState(false);
+  const logged = useSelector((state) => state.user.logged);
+
   const buttonGroup = (
     <ButtonGroup className="d-flex">
-      <Button color="primary" outline active={!isNewProject} onClick={(e) => setIsNewProject(false)}>
+      <Button disabled={currentStatus?.status === "inProcess"}
+        color="primary" outline active={!isNewProject} onClick={() => setIsNewProject(false)}>
         Existing Project
       </Button>
-      <Button color="primary" outline active={isNewProject} onClick={(e) => setIsNewProject(true)}>
+      <Button disabled={currentStatus?.status === "inProcess"}
+        color="primary" outline active={isNewProject} onClick={() => setIsNewProject(true)}>
         New Project
       </Button>
     </ButtonGroup>
   );
   const formToDisplay = !isNewProject ?
     (<AddDatasetExistingProject
-      dataset={props.dataset}
-      currentStatus={props.currentStatus}
-      setCurrentStatus={props.setCurrentStatus}
-      submitCallback={props.submitCallback}
-      isProjectListReady={props.isProjectListReady}
-      setIsProjectListReady={props.setIsProjectListReady}
-      isDatasetValid={props.isDatasetValid}
-      importingDataset={props.importingDataset}
-      projectsCoordinator={props.projectsCoordinator}
-      validateProject={props.validateProject}
-    />) : null;
+      handlers={handlers}
+      model={model}
+      dataset={dataset}
+      currentStatus={currentStatus}
+      isDatasetValid={isDatasetValid}
+      importingDataset={importingDataset}
+    />) : <AddDatasetNewProject
+      handlers={handlers}
+      model={model}
+      dataset={dataset}
+      currentStatus={currentStatus}
+      isDatasetValid={isDatasetValid}
+      importingDataset={importingDataset}
+    />;
 
-  if (!props.dataset) return <Loader />;
-  if (!props.dataset?.exists) {
-    if (!_.isEmpty(props.dataset?.fetchError)) {
+  if (!dataset) return <Loader />;
+  if (!dataset?.exists) {
+    if (!_.isEmpty(dataset?.fetchError)) {
       return (
         <DatasetError
-          fetchError={props.dataset?.fetchError}
-          insideProject={props.insideProject}
-          location={props.location}
-          logged={props.logged} />
+          fetchError={dataset?.fetchError}
+          insideProject={insideProject}
+          logged={logged}
+        />
       );
     }
   }
@@ -101,9 +108,9 @@ function DatasetAdd(props) {
     <>
       <Row className="mb-3">
         <Col sm={10} md={9} lg={8} xl={7}>
-          <HeaderAddDataset dataset={props.dataset} />
-          { buttonGroup }
-          { formToDisplay }
+          <HeaderAddDataset dataset={dataset} />
+          {buttonGroup}
+          {formToDisplay}
         </Col>
       </Row>
     </>
