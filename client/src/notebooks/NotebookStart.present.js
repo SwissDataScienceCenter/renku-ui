@@ -1182,10 +1182,15 @@ class CheckNotebookIcon extends Component {
     if (notebook) {
       const status = notebook.status?.state;
       if (status === SessionStatus.running) {
+        const annotations = NotebooksHelper.cleanAnnotations(notebook.annotations, "renku.io");
+        const sessionUrl = Url.get(Url.pages.project.session.show, {
+          namespace: annotations["namespace"],
+          path: annotations["projectName"],
+          server: notebook.name,
+        });
         tooltip = "Connect to JupyterLab";
         icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" />);
-        const url = `${notebook.url}/lab/tree/${this.props.filePath}`;
-        link = (<a href={url} role="button" target="_blank" rel="noreferrer noopener">{icon}</a>);
+        link = <Link to={{ pathname: sessionUrl, state: { from: location.pathname } }} >{icon}</Link>;
       }
       else if (status === SessionStatus.starting || status === SessionStatus.stopping) {
         tooltip = status === SessionStatus.stopping ?
