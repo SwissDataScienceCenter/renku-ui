@@ -48,6 +48,20 @@ class Fixtures {
     }).as(name);
     return this;
   }
+
+  namespaces(name = "getNamespaces") {
+    cy.intercept("/ui-server/api/namespaces?per_page=100&page=1", {
+      fixture: "namespaces.json"
+    }).as(name);
+    return this;
+  }
+
+  templates(name = "getTemplates") {
+    cy.intercept("/ui-server/api/renku/templates.read_manifest?*", {
+      fixture: "templates.json"
+    }).as(name);
+    return this;
+  }
 }
 
 export default Fixtures;

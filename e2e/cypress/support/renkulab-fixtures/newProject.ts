@@ -16,16 +16,23 @@
  * limitations under the License.
  */
 
+import { FixturesConstructor } from "./fixtures";
+
 /**
- * Common fixtures defined in one place.
+ * Fixtures for New Project
  */
-import BaseFixtures from "./fixtures";
-import { Datasets } from "./datasets";
-import { Projects } from "./projects";
-import { Session } from "./session";
-import { User } from "./user";
-import { NewProject } from "./newProject";
 
-const Fixtures = NewProject(Datasets(Projects(Session(User(BaseFixtures)))));
+function NewProject<T extends FixturesConstructor>(Parent: T) {
+  return class NewProjectFixtures extends Parent {
+    createProject(name = "createProject", result = "project/create-project.json") {
+      const fixture = this.useMockedData ? { fixture: result } : undefined;
+      cy.intercept(
+        "/ui-server/api/renku/templates.create_project",
+        fixture
+      ).as(name);
+      return this;
+    }
+  };
+}
 
-export default Fixtures;
+export { NewProject };
