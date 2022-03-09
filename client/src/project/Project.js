@@ -316,9 +316,9 @@ class View extends Component {
 
   getStarred() {
     const featured = this.props.model.get("projects.featured");
-    // return false until data are available
+    // return null until data are available
     if (!featured.fetched)
-      return false;
+      return null;
     return featured.starred.map((project) => project.id).indexOf(this.projectCoordinator.get("metadata.id")) >= 0;
   }
 

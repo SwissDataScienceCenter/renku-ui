@@ -344,6 +344,8 @@ class ProjectViewHeaderOverview extends Component {
 
   star(event) {
     event.preventDefault();
+    // do nothing if the star state is not yet loaded
+    if (this.props.starred == null) return;
     this.setState({ updating_star: true });
     this.props.onStar().then(
       result => {
@@ -364,7 +366,12 @@ class ProjectViewHeaderOverview extends Component {
         starText = "starring...";
     }
     else {
-      if (this.props.starred) {
+      const starred = this.props.starred;
+      if (starred == null) {
+        starElement = (<Loader inline size={14} />);
+        starText = "";
+      }
+      else if (starred) {
         starText = "unstar";
         starElement = (<FontAwesomeIcon icon={faStarSolid} />);
       }
@@ -422,7 +429,7 @@ class ProjectViewHeaderOverview extends Component {
             <ButtonGroup size="sm" className="ms-1">
               <Button outline color="primary"
                 className="border-light"
-                disabled={this.state.updating_star}
+                disabled={this.state.updating_star || this.props.starred == null}
                 onClick={this.star.bind(this)}>
                 {starElement} {starText}
               </Button>
