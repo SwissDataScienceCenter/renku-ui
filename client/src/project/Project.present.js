@@ -913,7 +913,7 @@ function ProjectViewDatasets(props) {
 
   if (props.datasets.core.datasets != null && props.datasets.core.datasets.length === 0
     && props.location.pathname !== props.newDatasetUrl) {
-    return <Col sm={12}>x
+    return <Col sm={12}>
       {migrationMessage}
       <ProjectDatasetLockAlert lockStatus={props.lockStatus} />
       <EmptyDatasets
