@@ -50,10 +50,9 @@ import {
 } from "./NotebookStart.present";
 
 import "./Notebooks.css";
-import { EnvironmentLogs } from "../utils/components/Logs";
+import { EnvironmentLogs, LogTabs } from "../utils/components/Logs";
 import { SessionStatus } from "../utils/constants/Notebooks";
 import { Docs } from "../utils/constants/Docs";
-
 
 // * Constants and helpers * //
 const SESSION_TABS = {
@@ -255,8 +254,8 @@ function SessionLogs(props) {
       );
     }
     else {
-      if (logs.data && logs.data.length) {
-        body = (<pre className="small no-overflow wrap-word">{logs.data.join("\n")}</pre>);
+      if (logs.data && typeof logs.data !== "string") {
+        body = <LogTabs logs={logs.data}/>;
       }
       else {
         body = (

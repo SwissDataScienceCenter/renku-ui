@@ -14,10 +14,6 @@
   font-style: italic;
 }
 
-li.nav-item {
-  cursor: pointer;
-}
-
 /* Modals with dynamic width */
 
 .modal-dynamic-width.modal-dialog {

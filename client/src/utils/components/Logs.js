@@ -77,7 +77,7 @@ const LogTabs = ({ logs }) => {
       <Nav pills className="nav-pills-underline">
         { Object.keys(logs).map( tab => {
           return (
-            <NavItem key={tab} data-cy="logs-tab">
+            <NavItem key={tab} data-cy="logs-tab" role="button">
               <NavLink
                 className={activeTab === tab ? "active" : ""}
                 onClick={() => { setActiveTab(tab); }}>
@@ -184,4 +184,4 @@ class EnvironmentLogs extends Component {
   }
 }
 
-export { EnvironmentLogs };
+export { EnvironmentLogs, LogTabs };
