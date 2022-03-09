@@ -37,6 +37,7 @@ import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
 import { ExternalLink } from "../utils/components/ExternalLinks";
 import { ErrorAlert, WarnAlert } from "../utils/components/Alert";
 import { Loader } from "../utils/components/Loader";
+import { ThrottledTooltip } from "../utils/components/Tooltip";
 
 function DisplayFiles(props) {
   if (!props.files || !props.files?.hasPart) return null;
@@ -244,6 +245,60 @@ function ErrorAfterCreation(props) {
     : null;
 }
 
+function AddToProjectButton({ goToAddToProject, insideKg, locked, logged, }) {
+  if (!logged) return null;
+  const tooltip = (locked) ?
+    <ThrottledTooltip
+      target="add-dataset-to-project-button"
+      tooltip="Cannot add dataset to project until project modification finishes." /> :
+    null;
+  return <span id="add-dataset-to-project-button">
+    <Button
+      data-cy="add-to-project-button"
+      disabled={insideKg === false || locked}
+      className="float-right mb-1 me-1" size="sm" color="secondary" onClick={() => goToAddToProject()}>
+      <FontAwesomeIcon icon={faPlus} color="dark" /> Add to project
+    </Button>
+    {tooltip}
+  </span>;
+}
+
+function EditDatasetButton({ dataset, insideProject, locked, maintainer }) {
+  if (!insideProject || !maintainer) return null;
+  if (locked) {
+    return <span className="float-right mb-1 me-1" id="editDatasetTooltip">
+      <Button color="secondary" data-cy="edit-dataset-button" disabled={true} size="sm">
+        <FontAwesomeIcon icon={faPen} color="dark" />
+      </Button>
+      <ThrottledTooltip
+        target="editDatasetTooltip"
+        tooltip="Cannot edit dataset until project modification finishes." />
+    </span>;
+  }
+  return <Link className="float-right mb-1 me-1" id="editDatasetTooltip"
+    data-cy="edit-dataset-button"
+    to={{ pathname: "modify", state: { dataset: dataset } }} >
+    <Button color="secondary" size="sm">
+      <FontAwesomeIcon icon={faPen} color="dark" />
+    </Button>
+  </Link>;
+}
+
+function MoreOptionsDatasetButton({ insideProject, locked, maintainer, setDeleteDatasetModalOpen }) {
+  if (!insideProject || !maintainer || locked) return null;
+  return <UncontrolledButtonDropdown size="sm" className="float-right mb-1">
+    <DropdownToggle data-cy="more-options-button" caret color="secondary" className="removeArrow">
+      <FontAwesomeIcon icon={faEllipsisV} color="dark" />
+    </DropdownToggle>
+    <DropdownMenu>
+      <DropdownItem data-cy="delete-dataset-button" onClick={() => setDeleteDatasetModalOpen(true)}>
+        <FontAwesomeIcon icon={faTrash} color="dark" /> Delete
+      </DropdownItem>
+    </DropdownMenu>
+  </UncontrolledButtonDropdown>;
+}
+
+
 export default function DatasetView(props) {
 
   const [deleteDatasetModalOpen, setDeleteDatasetModalOpen] = useState(false);
@@ -285,39 +340,15 @@ export default function DatasetView(props) {
         }
       </Col>
       <Col md={4} sm={12} className="d-flex flex-col justify-content-end mb-auto">
-        {props.logged && !locked ?
-          <>
-            <Button
-              data-cy="add-to-project-button"
-              disabled={dataset?.insideKg === false}
-              className="float-right mb-1 me-1" size="sm" color="secondary" onClick={() => goToAddToProject()}>
-              <FontAwesomeIcon icon={faPlus} color="dark" /> Add to project
-            </Button>
-          </>
-          : null}
-        {props.insideProject && props.maintainer && !locked ?
-          <Link className="float-right mb-1 me-1" id="editDatasetTooltip"
-            data-cy="edit-dataset-button"
-            to={{ pathname: "modify", state: { dataset: dataset } }} >
-            <Button color="secondary" >
-              <FontAwesomeIcon icon={faPen} color="dark" />
-            </Button>
-          </Link>
-          : null
-        }
-        {props.insideProject && props.maintainer && !locked ?
-          <UncontrolledButtonDropdown size="sm" className="float-right mb-1">
-            <DropdownToggle data-cy="more-options-button" caret color="secondary" className="removeArrow">
-              <FontAwesomeIcon icon={faEllipsisV} color="dark" />
-            </DropdownToggle>
-            <DropdownMenu>
-              <DropdownItem data-cy="delete-dataset-button" onClick={() => setDeleteDatasetModalOpen(true)}>
-                <FontAwesomeIcon icon={faTrash} color="dark" /> Delete
-              </DropdownItem>
-            </DropdownMenu>
-          </UncontrolledButtonDropdown>
-          : null
-        }
+        <AddToProjectButton goToAddToProject={goToAddToProject}
+          insideKg={dataset?.insideKg} locked={locked} logged={props.logged} />
+        <EditDatasetButton
+          dataset={dataset}
+          insideProject={props.insideProject} locked={locked} maintainer={props.maintainer} />
+        <MoreOptionsDatasetButton
+          insideProject={props.insideProject} locked={locked} maintainer={props.maintainer}
+          setDeleteDatasetModalOpen={setDeleteDatasetModalOpen} />
+
       </Col>
     </Row>
     <div className="d-flex">

@@ -1,6 +1,6 @@
 import React, { Fragment, useMemo } from "react";
 import { Link } from "react-router-dom";
-import { Row, Col } from "reactstrap";
+import { Button, Row, Col } from "reactstrap";
 
 import { ACCESS_LEVELS } from "../../api-client";
 import "../filestreeview/treeviewstyle.css";
@@ -8,6 +8,7 @@ import { SpecialPropVal } from "../../model";
 import { MarkdownTextExcerpt } from "../../utils/components/markdown/RenkuMarkdown";
 import { Loader } from "../../utils/components/Loader";
 import ListDisplay from "../../utils/components/List";
+import { ThrottledTooltip } from "../../utils/components/Tooltip";
 
 function datasetToDict(datasetsUrl, dataset_kg, graphStatus, gridDisplay, dataset) {
   const kgCaption =
@@ -58,16 +59,26 @@ function DatasetList({ datasets, datasets_kg, datasetsUrl, graphStatus }) {
   />;
 }
 
-function AddDatasetButton(props) {
-  if (props.accessLevel >= ACCESS_LEVELS.MAINTAINER) {
-    return <div>
-      <Link className="btn btn-sm btn-secondary" role="button" to={props.newDatasetUrl}>
+function AddDatasetButton({ accessLevel, locked, newDatasetUrl }) {
+  if (accessLevel < ACCESS_LEVELS.MAINTAINER) return null;
+  if (locked) {
+    return <div id="add-dataset-button">
+      <Button data-cy="add-dataset-button" disabled={true}>
         <span className="arrow-right pt-2 pb-2">  </span>
         Add Dataset
-      </Link>
+      </Button>
+      <ThrottledTooltip
+        target="add-dataset-button"
+        tooltip="Cannot add dataset until project modification finishes." />
     </div>;
   }
-  return null;
+
+  return <div>
+    <Link className="btn btn-sm btn-secondary" role="button" to={newDatasetUrl}>
+      <span className="arrow-right pt-2 pb-2">  </span>
+      Add Dataset
+    </Link>
+  </div>;
 }
 
 export default function DatasetsListView(props) {
@@ -80,12 +91,10 @@ export default function DatasetsListView(props) {
   return [ <Row key="header" className="pt-2 pb-3">
     <Col className="d-flex mb-2 justify-content-between">
       <h3 className="me-4">Datasets List</h3>
-      { (props.locked) ?
-        null :
-        <AddDatasetButton
-          accessLevel={props.accessLevel}
-          newDatasetUrl={props.newDatasetUrl} />
-      }
+      <AddDatasetButton
+        accessLevel={props.accessLevel}
+        locked={props.locked}
+        newDatasetUrl={props.newDatasetUrl} />
     </Col>
   </Row>
   , <Row key="datasetsList">

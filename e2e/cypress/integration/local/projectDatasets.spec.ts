@@ -51,7 +51,7 @@ function checkDatasetDisplay(cy, fixtures, datasets) {
   });
 }
 
-function checkDatasetLimitedPermissionDisplay(cy, fixtures, datasets) {
+function checkDatasetLimitedPermissionDisplay(cy, fixtures, datasets, editDisabled = false) {
   datasets.forEach((d, i) => {
     const datasetIdentifier = d.identifier.replace(/-/g, "");
     const requestId = `getDatasetById${i}`;
@@ -61,7 +61,14 @@ function checkDatasetLimitedPermissionDisplay(cy, fixtures, datasets) {
 
     cy.get_cy("dataset-title").should("contain.text", d.title);
 
-    cy.get_cy("edit-dataset-button").should("not.exist");
+    if (editDisabled) {
+      cy.get_cy("edit-dataset-button").should("be.disabled");
+      cy.get_cy("add-to-project-button").should("be.disabled");
+    }
+    else {
+      cy.get_cy("edit-dataset-button").should("not.exist");
+      cy.get_cy("add-to-project-button").should("not.exist");
+    }
     cy.get_cy("more-options-button").should("not.exist");
 
     cy.get_cy("go-back-button").click();
@@ -199,7 +206,7 @@ describe("Error loading datasets", () => {
   });
 });
 
-describe("Project dataset (locked)", () => {
+describe.only("Project dataset (locked)", () => {
   const fixtures = new Fixtures(cy);
   fixtures.useMockedData = true;
   const projectPath = "e2e/testing-datasets";
@@ -220,9 +227,9 @@ describe("Project dataset (locked)", () => {
 
   it("displays project datasets", () => {
     cy.visit(`projects/${projectPath}/datasets`);
-    cy.contains("currently being modified").should("be.visible");
-
     cy.wait("@getProject");
+    cy.wait("@getProjectLockStatus");
+    cy.contains("currently being modified").should("be.visible");
     cy.wait("@datasetList")
       .its("response.body")
       .then((data) => {
@@ -230,9 +237,10 @@ describe("Project dataset (locked)", () => {
         // all datasets are displayed
         const totalDatasets = datasets?.length;
         cy.get_cy("list-card").should("have.length", totalDatasets);
-        checkDatasetLimitedPermissionDisplay(cy, fixtures, datasets);
+        checkDatasetLimitedPermissionDisplay(cy, fixtures, datasets, true);
       });
 
     cy.contains("Project is being modified.").should("be.visible");
+    cy.get_cy("add-dataset-button").should("be.disabled");
   });
 });
