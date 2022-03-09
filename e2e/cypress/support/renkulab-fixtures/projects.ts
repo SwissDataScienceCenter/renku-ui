@@ -213,6 +213,19 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       });
       return this.projectTestContents(names);
     }
+
+    updateProject(path = "", name = "updateProject", result = "project/update-project.json") {
+      const fixture = this.useMockedData ? { fixture: result } : undefined;
+      cy.intercept("/ui-server/api/projects/*/graph/webhooks", {
+        body: { message: "Hook created" }
+      });
+      cy.intercept(
+        "PUT",
+        `/ui-server/api/projects/${encodeURIComponent(path)}`,
+        fixture
+      ).as(name);
+      return this;
+    }
   };
 }
 

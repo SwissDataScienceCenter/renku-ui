@@ -1,0 +1,12 @@
+[
+  {
+    "id":117,
+    "name":"E2E User",
+    "path":"e2e",
+    "kind":"user",
+    "full_path":"e2e",
+    "parent_id":null,
+    "avatar_url":"https://secure.gravatar.com/avatar/67294be6fc8a46e7dd5ae6a3cf11a0ae?s=80\u0026d=identicon",
+    "web_url":"https://dev.renku.ch/gitlab/e2e"
+  }
+]

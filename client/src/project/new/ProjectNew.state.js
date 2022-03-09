@@ -577,14 +577,16 @@ class NewProjectCoordinator {
     const slug = `${projectResult.result.namespace}/${projectResult.result.slug}`;
 
     // update project details like visibility and name
+    // currently postNewProject returns the project name as the original project name even when it is created with "-"
+    // the way to validate if the project name needs to be updated is to check against the slug
     modelUpdates.meta.creation.projectError = "";
-    if (input.visibility !== "private" || projectResult.result.name !== input.title) {
+    if (input.visibility !== "private" || projectResult.result.slug !== input.title) {
       modelUpdates.meta.creation.projectUpdating = true;
       this.model.setObject(modelUpdates);
       let projectObject = {};
       if (input.visibility !== "private")
         projectObject["visibility"] = input.visibility;
-      if (projectResult.result.name !== input.title)
+      if (projectResult.result.slug !== input.title)
         projectObject["name"] = input.title;
       try {
         await this.client.putProjectField(encodeURIComponent(slug), projectObject);
