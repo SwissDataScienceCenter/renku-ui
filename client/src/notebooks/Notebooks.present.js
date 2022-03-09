@@ -18,7 +18,7 @@
 
 import React, { Component, Fragment, useState, memo } from "react";
 import Media from "react-media";
-import { Link } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import {
   Alert, Badge, Button, Col, DropdownItem,
   Modal, ModalBody, ModalFooter, ModalHeader, Nav, NavItem, NavLink, PopoverBody, PopoverHeader,
@@ -329,7 +329,7 @@ function SessionCommands(props) {
 
 function SessionJupyter(props) {
   const { filters, notebook, tab, urlList } = props;
-
+  const history = useHistory();
   const invisible = tab !== SESSION_TABS.session ?
     true :
     false;
@@ -338,11 +338,14 @@ function SessionJupyter(props) {
   if (notebook.available) {
     const status = notebook.data.status.state;
     if (status === SessionStatus.running) {
+      const locationFilePath = history?.location?.state?.filePath;
+      const notebookUrl = locationFilePath ? `${notebook.data.url}/lab/tree/${locationFilePath}` : notebook.data.url;
+
       const localClass = invisible ?
         "invisible position-absolute" : // ? position-absolute prevent showing extra margins
         "";
       content = (
-        <iframe id="session-iframe" title="session iframe" src={notebook.data.url} className={localClass}
+        <iframe id="session-iframe" title="session iframe" src={notebookUrl} className={localClass}
           width="100%" height="800px" referrerPolicy="origin"
           sandbox="allow-downloads allow-forms allow-modals allow-popups allow-same-origin allow-scripts"
         />

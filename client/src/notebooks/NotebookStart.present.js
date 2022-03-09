@@ -1173,7 +1173,7 @@ class AutosavedDataModal extends Component {
 // * CheckNotebookIcon code * //
 class CheckNotebookIcon extends Component {
   render() {
-    const { fetched, notebook, location } = this.props;
+    const { fetched, notebook, location, filePath } = this.props;
     const loader = (<span className="ms-2 pb-1"><Loader size="19" inline="true" /></span>);
     if (!fetched)
       return loader;
@@ -1188,9 +1188,10 @@ class CheckNotebookIcon extends Component {
           path: annotations["projectName"],
           server: notebook.name,
         });
+        const state = { from: location.pathname, filePath };
         tooltip = "Connect to JupyterLab";
         icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" />);
-        link = <Link to={{ pathname: sessionUrl, state: { from: location.pathname } }} >{icon}</Link>;
+        link = <Link to={{ pathname: sessionUrl, state }} >{icon}</Link>;
       }
       else if (status === SessionStatus.starting || status === SessionStatus.stopping) {
         tooltip = status === SessionStatus.stopping ?
