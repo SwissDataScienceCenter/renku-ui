@@ -856,28 +856,34 @@ function getStatusObject(status, defaultImage) {
 
 class NotebooksServerRowStatus extends Component {
   render() {
-    const { status, details, uid, annotations } = this.props;
+    const { status, details, uid, annotations, startTime } = this.props;
     const data = getStatusObject(status, annotations.default_image_used);
+    const textColor = {
+      "running": "text-secondary",
+      "failed": "text-danger",
+      "starting": "text-secondary",
+      "stopping": "text-secondary",
+    };
 
-    if (status === SessionStatus.running) {
-      return <span className="time-caption font-weight-bold text-secondary">
-        {data.text} since {this.props.startTime}</span>;
-    }
+    const textStatus = status === SessionStatus.running ? `${data.text} since ${startTime}` : data.text;
 
-    const info = !details.message ?
-      (<span className="time-caption font-weight-bold text-secondary">{data.text}</span>) :
-      (<span className="time-caption font-weight-bold text-secondary">
-        {data.text}&nbsp;
-        <FontAwesomeIcon id={uid} icon={faInfoCircle} />
+    const extraInfo = details.message ?
+      (<>
+        {" "}<FontAwesomeIcon id={uid} icon={faInfoCircle} />
         <UncontrolledPopover target={uid} trigger="legacy" placement="bottom">
           <PopoverHeader>Kubernetes pod status</PopoverHeader>
           <PopoverBody>
             <span>{details.message}</span><br />
           </PopoverBody>
         </UncontrolledPopover>
-      </span>);
+      </>) : null;
 
-    return <div>{info}</div>;
+    return <>
+      <span className={`time-caption font-weight-bold ${textColor[status]}`}>
+        {textStatus}
+        {extraInfo}
+      </span>
+    </>;
   }
 }
 

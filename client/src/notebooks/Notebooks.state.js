@@ -443,31 +443,18 @@ class NotebooksCoordinator {
     return this.client.getNotebookServers(
       filters.namespace, filters.project, filters.branch, null, anonymous)
       .then(resp => {
-        let updateFullObject = true;
-        let updatedNotebooks = { fetching: false };
+        let updatedNotebooks = { fetching: false, fetched: new Date() };
         // check if result is still valid
         if (!this.model.get("filters.discard")) {
           const filters = this.getQueryFilters();
           if (this.model.get("notebooks.lastParameters") === JSON.stringify(filters)) {
             const currentServers = this.model.get("notebooks.all");
-            if (_.isEqual(resp.data, currentServers)) {
-              updateFullObject = false;
-            }
-            else {
+            if (!(_.isEqual(resp.data, currentServers)))
               updatedNotebooks.all = { $set: resp.data };
-              updatedNotebooks.fetched = new Date();
-            }
           }
           // TODO: re-invoke `fetchNotebooks()` immediately if parameters are outdated
         }
-        if (updateFullObject) {
-          this.model.setObject({ notebooks: updatedNotebooks });
-        }
-        else {
-          this.model.set("notebooks.fetching", false);
-          if (this.model.get("notebooks.fetched") === null)
-            this.model.set("notebooks.fetched", new Date());
-        }
+        this.model.setObject({ notebooks: updatedNotebooks });
         return resp.data;
       })
       .catch(error => {
