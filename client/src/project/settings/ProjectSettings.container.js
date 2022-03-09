@@ -89,6 +89,8 @@ class ProjectSettingsSessionsMapper extends Component {
     const url = repositoryUrl ?
       repositoryUrl :
       this.props.externalUrl;
+    // Check if the project is locked
+    await this.projectCoordinator.fetchProjectLockStatus();
     return await this.projectCoordinator.fetchProjectConfig(url);
   }
 

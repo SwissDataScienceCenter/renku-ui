@@ -256,8 +256,8 @@ class View extends Component {
     return await this.projectCoordinator.checkCoreAvailability(version);
   }
 
-  async fetchProjectLockStatus(gitUrl) {
-    return await this.projectCoordinator.fetchProjectLockStatus(this.props.client, gitUrl);
+  async fetchProjectLockStatus() {
+    return await this.projectCoordinator.fetchProjectLockStatus();
   }
 
   async fetchAll() {
@@ -278,7 +278,7 @@ class View extends Component {
       const migrationData = await this.fetchMigrationCheck(gitUrl, defaultBranch);
       const projectVersion = migrationData.core_compatibility_status?.project_metadata_version;
       await this.checkCoreAvailability(projectVersion);
-      await this.fetchProjectLockStatus(gitUrl);
+      await this.fetchProjectLockStatus();
       this.fetchProjectDatasets();
     }
   }
@@ -607,6 +607,8 @@ class View extends Component {
     fetchDatasets: (forceReFetch) => {
       this.fetchProjectDatasetsFromKg();
       this.fetchProjectDatasets(forceReFetch);
+      // Also check if the project is locked
+      this.fetchProjectLockStatus();
     },
     setOpenFolder: (filePath) => {
       this.setProjectOpenFolder(filePath);

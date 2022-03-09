@@ -42,7 +42,9 @@ const MigrationStatus = {
 };
 
 const CoreServiceProjectMixin = {
-  async fetchProjectLockStatus(client, gitUrl) {
+  async fetchProjectLockStatus() {
+    const client = this.client;
+    const gitUrl = this.get("metadata.httpUrl");
     const lockStatus = await client.getProjectLockStatus(gitUrl);
     if (lockStatus && lockStatus.error !== undefined) {
       this.set("lockStatus.error", lockStatus.error.reason);
@@ -235,7 +237,7 @@ const MigrationMixin = {
           migration_error: { $set: null }
         }
       });
-      await this.fetchProjectLockStatus(client, gitUrl);
+      await this.fetchProjectLockStatus();
     }
   }
 };
