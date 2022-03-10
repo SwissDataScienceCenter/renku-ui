@@ -33,7 +33,7 @@ function KnowledgeGraphPrivateInfo(props) {
       This is a private project. Though contents remain private,
       the Knowledge Graph may make some metadata public. Only activate if that is acceptable.
       <br />
-      <a href={`${Docs.READ_THE_DOCS_USER}/knowledge-graph.html`}
+      <a href={Docs.rtdTopicGuide("knowledge-graph.html")}
         target="_blank" rel="noopener noreferrer">
         <FontAwesomeIcon icon={faExternalLinkAlt} /> Read more about the Knowledge Graph integration.
       </a>

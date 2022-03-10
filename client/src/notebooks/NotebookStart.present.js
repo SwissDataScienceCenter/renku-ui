@@ -506,7 +506,7 @@ class StartNotebookPipelinesContent extends Component {
 
       // this style trick makes it appear as the other Label + Input components
       const style = { marginTop: -8 };
-      const url = `${Docs.READ_THE_DOCS_REFERENCE}/templates.html?highlight=.dockerignore#renku`;
+      const url = Docs.rtdReferencePage("templates.html?highlight=pinned#renku");
       return (
         <Fragment>
           <Input type="input" disabled={true} id="customImage" style={style} value={projectOptions.image}></Input>
@@ -656,7 +656,7 @@ class StartNotebookCommits extends Component {
         true :
         false;
       if (autosaveExists) {
-        const url = `${Docs.READ_THE_DOCS_USER}/interactive_stopping_and_saving.html#autosave-in-interactive-environments`;
+        const url = Docs.rtdHowToGuide("session-stopping-and-saving.html#autosave-in-sessions");
         commitComment = (
           <FormText>
             <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> We
@@ -1139,7 +1139,7 @@ class AutosavedDataModal extends Component {
     const docsLink = (
       <ExternalLink
         role="text" iconSup={true} iconAfter={true} title="documentation"
-        url={`${Docs.READ_THE_DOCS_USER}/autosave.html`}
+        url={Docs.rtdHowToGuide("session-stopping-and-saving.html#autosave-in-sessions")}
       />
     );
     const command = `git reset --hard ${this.props.filters.commit.short_id} && git clean -f -d`;

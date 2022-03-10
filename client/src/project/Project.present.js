@@ -1097,7 +1097,6 @@ class ProjectSessions extends Component {
 }
 
 function notebookWarning(userLogged, accessLevel, forkUrl, postLoginUrl, externalUrl) {
-  const collaborationDocRoot = "https://renku.readthedocs.io/en/latest/how-to-guides/collaboration.html";
   if (!userLogged) {
     const to = Url.get(Url.pages.login.link, { pathname: postLoginUrl });
     return (
@@ -1105,7 +1104,7 @@ function notebookWarning(userLogged, accessLevel, forkUrl, postLoginUrl, externa
         <p>
           As
           an anonymous user, you can start <ExternalLink role="text" title="Sessions"
-            url={`${Docs.READ_THE_DOCS_DEVELOPER}/services/notebooks_service.html`} />, but
+            url={Docs.rtdHowToGuide("sessions.html")} />, but
           you cannot save your work.
         </p>
         <p className="mb-0">
@@ -1132,7 +1131,7 @@ function notebookWarning(userLogged, accessLevel, forkUrl, postLoginUrl, externa
           <li className="pt-1">
             <ExternalLink size="sm" title="Contact a maintainer"
               url={`${externalUrl}/project_members`} /> and ask them
-            to <a href={`${Docs.READ_THE_DOCS_USER}/collaboration.html#added-to-project`}
+            to <a href={Docs.rtdHowToGuide("collaboration.html#add-or-be-added-as-a-developer-on-a-project")}
               target="_blank" rel="noreferrer noopener">
               grant you the necessary permissions
             </a>.
