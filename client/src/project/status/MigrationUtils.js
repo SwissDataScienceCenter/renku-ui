@@ -23,6 +23,7 @@ import { faGithub, faGitter } from "@fortawesome/free-brands-svg-icons";
 import { MigrationStatus } from "../Project";
 import { ErrorAlert, InfoAlert, SuccessAlert, WarnAlert } from "../../utils/components/Alert";
 import { ExternalIconLink, ExternalLink } from "../../utils/components/ExternalLinks";
+import { Links } from "../../utils/constants/Docs";
 
 
 function GeneralErrorMessage({ error_while, error_what, error_reason }) {
@@ -30,9 +31,9 @@ function GeneralErrorMessage({ error_while, error_what, error_reason }) {
     <p>
       Error while { error_while } the { error_what } version. Please reload the page to try again.
       If the problem persists you should contact the development team on{" "}
-      <ExternalIconLink url="https://gitter.im/SwissDataScienceCenter/renku" icon={faGitter} title="Gitter" />{" "}
+      <ExternalIconLink url={Links.GITTER} icon={faGitter} title="Gitter" />{" "}
       or create an issue in {" "}
-      <ExternalIconLink url="https://github.com/SwissDataScienceCenter/renku/issues" icon={faGithub} title="GitHub" />.
+      <ExternalIconLink url={`${Links.GITHUB}/issues`} icon={faGithub} title="GitHub" />.
     </p>
     <div><strong>Error Message</strong><pre style={{ whiteSpace: "pre-wrap" }}>{error_reason}</pre></div>
   </ErrorAlert>;

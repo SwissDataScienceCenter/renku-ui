@@ -64,6 +64,7 @@ import { ErrorAlert, InfoAlert, WarnAlert } from "../utils/components/Alert";
 import { RenkuNavLink } from "../utils/components/RenkuNavLink";
 import { Loader } from "../utils/components/Loader";
 import { TimeCaption } from "../utils/components/TimeCaption";
+import { Docs } from "../utils/constants/Docs";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -1104,7 +1105,7 @@ function notebookWarning(userLogged, accessLevel, forkUrl, postLoginUrl, externa
         <p>
           As
           an anonymous user, you can start <ExternalLink role="text" title="Sessions"
-            url="https://renku.readthedocs.io/en/latest/reference/services/notebooks-service.html" />, but
+            url={`${Docs.READ_THE_DOCS_DEVELOPER}/services/notebooks_service.html`} />, but
           you cannot save your work.
         </p>
         <p className="mb-0">
@@ -1131,7 +1132,7 @@ function notebookWarning(userLogged, accessLevel, forkUrl, postLoginUrl, externa
           <li className="pt-1">
             <ExternalLink size="sm" title="Contact a maintainer"
               url={`${externalUrl}/project_members`} /> and ask them
-            to <a href={`${collaborationDocRoot}#add-or-be-added-as-a-developer-on-a-project`}
+            to <a href={`${Docs.READ_THE_DOCS_USER}/collaboration.html#added-to-project`}
               target="_blank" rel="noreferrer noopener">
               grant you the necessary permissions
             </a>.
