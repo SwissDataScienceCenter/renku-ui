@@ -194,8 +194,21 @@ function TemplateVersionBody({ externalUrl, launchNotebookUrl, logged, maintaine
   }
 }
 
+function GuardedTemplateVersionBody({ externalUrl, launchNotebookUrl, lockStatus, logged,
+  maintainer, migration }) {
+  if (!logged) return null;
+  if (lockStatus?.locked === true) {
+    return <div className="text-muted">
+      This project is currently being modified. You will be able to view the{" "}
+      template update options once the changes to the project are complete.
+    </div>;
+  }
+  return <TemplateVersionBody externalUrl={externalUrl} launchNotebookUrl={launchNotebookUrl} logged={logged}
+    maintainer={maintainer} migration={migration} />;
+}
+
 function TemplateStatus(props) {
-  const { launchNotebookUrl, logged, maintainer, externalUrl } = props;
+  const { launchNotebookUrl, lockStatus, logged, maintainer, externalUrl } = props;
   const { check_error } = props.migration.check;
   const { migration_status, migration_error } = props.migration;
   if (isMigrationCheckLoading(props.loading, props.migration)) return <Loader />;
@@ -203,8 +216,8 @@ function TemplateStatus(props) {
 
   return <div>
     <TemplateVersionInfo check={props.migration.check} />
-    <TemplateVersionBody externalUrl={externalUrl} launchNotebookUrl={launchNotebookUrl} logged={logged}
-      maintainer={maintainer} migration={props.migration} />
+    <GuardedTemplateVersionBody externalUrl={externalUrl} launchNotebookUrl={launchNotebookUrl}
+      lockStatus={lockStatus} logged={logged} maintainer={maintainer} migration={props.migration} />
   </div>;
 }
 

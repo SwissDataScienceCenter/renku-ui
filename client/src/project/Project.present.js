@@ -50,10 +50,9 @@ import {
 import FilesTreeView from "./filestreeview/FilesTreeView";
 import DatasetsListView from "./datasets/DatasetsListView";
 import { ACCESS_LEVELS } from "../api-client";
-import ProjectVersionStatus from "./status/ProjectVersionStatus.present";
 import { shouldDisplayVersionWarning } from "./status/MigrationUtils.js";
 import { NamespaceProjects } from "../namespace";
-import { ProjectOverviewCommits, ProjectOverviewStats } from "./overview";
+import { ProjectOverviewCommits, ProjectOverviewStats, ProjectOverviewVersion } from "./overview";
 import { ForkProject } from "./new";
 import { ProjectSettingsGeneral, ProjectSettingsNav, ProjectSettingsSessions } from "./settings";
 
@@ -613,28 +612,6 @@ function ProjectViewGeneral(props) {
     <ProjectSuggestActions {...props} />
     <ProjectViewReadme {...props} />
   </Fragment>;
-
-}
-
-function ProjectKGStatus(props) {
-  const loading = false;
-
-  let body = null;
-  if (loading)
-    body = (<Loader />);
-  else
-    body = props.kgStatusView(true);
-
-  return (
-    <Card className="border-rk-light">
-      <CardHeader className="bg-white p-3 ps-4">Knowledge Graph Integration</CardHeader>
-      <CardBody className="p-4 pt-3 pb-3 lh-lg">
-        <Row>
-          <Col>{body}</Col>
-        </Row>
-      </CardBody>
-    </Card>
-  );
 }
 
 class ProjectViewOverviewNav extends Component {
@@ -691,11 +668,8 @@ class ProjectViewOverview extends Component {
               />}
             />
             <Route exact path={this.props.overviewStatusUrl} render={props =>
-              <Fragment>
-                <ProjectVersionStatus {...this.props} isLoading={isRequestPending(this.props, "readme")} />
-                <ProjectKGStatus {...this.props} />
-              </Fragment>}
-            />
+              <ProjectOverviewVersion {...this.props} isLoading={isRequestPending(this.props, "readme")} />
+            } />
           </Switch>
         </Col>
       </Row>
