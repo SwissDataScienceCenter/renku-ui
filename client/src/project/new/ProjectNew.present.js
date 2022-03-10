@@ -689,7 +689,7 @@ class KnowledgeGraph extends Component {
       return null;
 
     const kgLink = (
-      <a href={`${Docs.READ_THE_DOCS_USER}/knowledge-graph.html`}
+      <a href={Docs.rtdTopicGuide("knowledge-graph.html")}
         target="_blank" rel="noopener noreferrer">
         Knowledge Graph
       </a>
@@ -775,7 +775,7 @@ class UserTemplate extends Component {
     if (config.repositories && config.repositories.length)
       refExample = config.repositories[0].ref;
     const templatesDocs = (
-      <a href={`${Docs.READ_THE_DOCS_REFERENCE}/templates.html`}
+      <a href={Docs.rtdReferencePage("templates.html")}
         target="_blank" rel="noopener noreferrer">
         Renku templates
       </a>

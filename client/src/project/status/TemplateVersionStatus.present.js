@@ -52,7 +52,7 @@ function TemplateUpdateSection({
   const [isOpen, setOpen] = useState(false);
   const toggleOpen = () => setOpen(!isOpen);
 
-  const docUrl = `${Docs.READ_THE_DOCS_RENKU_PYTHON}/docs/reference/commands.html?highlight=template#module-renku.cli.migrate`
+  const docUrl = Docs.rtdPythonReferencePage("commands.html?highlight=template#module-renku.cli.migrate");
 
   const automaticUpdateAction = maintainer ?
   /* check if this is correct... maybe we can use the other button instead */

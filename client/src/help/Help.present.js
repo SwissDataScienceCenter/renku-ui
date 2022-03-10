@@ -37,8 +37,6 @@ import { RenkuNavLink } from "../utils/components/RenkuNavLink";
 import { ExternalDocsLink, ExternalIconLink, ExternalLink } from "../utils/components/ExternalLinks";
 import { Docs, Links, RenkuPythonDocs } from "../utils/constants/Docs";
 
-const discourseUrl = Links.DISCOURSE;
-
 class HelpNav extends Component {
   render() {
     const statusLink = isStatusConfigured(this.props.statuspageId) ?
@@ -82,7 +80,7 @@ class HelpGetting extends Component {
             <ExternalIconLink url={Links.DISCOURSE} icon={faDiscourse} title="Forum" />
           </h3>
           <p>
-            We maintain a <ExternalDocsLink url={discourseUrl} title="help forum" /> for
+            We maintain a <ExternalDocsLink url={Links.DISCOURSE} title="help forum" /> for
             discussion about Renku. This is a good place to ask questions and find answers.
           </p>
         </div>
@@ -122,13 +120,13 @@ class HelpDocumentation extends Component {
       <Row>
         <Col md={8}>
           <h3>
-            <ExternalDocsLink url={`${Docs.READ_THE_DOCS_TUTORIALS}/01_firststeps.html`} 
+            <ExternalDocsLink url={Docs.READ_THE_DOCS_TUTORIALS_STARTING}
               title="Tutorial" />
           </h3>
           <p>
             If you are here for the first time or you are not sure how to use Renku, we recommend you
             to go through our {" "}
-            <ExternalDocsLink url={`${Docs.READ_THE_DOCS_TUTORIALS}/01_firststeps.html`}
+            <ExternalDocsLink url={Docs.READ_THE_DOCS_TUTORIALS_STARTING}
               title="tutorial" />.
           </p>
           <h3>
@@ -217,7 +215,7 @@ class HelpFeatures extends Component {
 
 function HelpChanges() {
   // eslint-disable-next-line
-  const discourseNewTopicUrl = `${discourseUrl}/new-topic?category=Renkulab`;
+  const discourseNewTopicUrl = `${Links.DISCOURSE}/new-topic?category=Renkulab`;
 
   return <Fragment>
     <Row>

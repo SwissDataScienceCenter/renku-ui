@@ -177,7 +177,7 @@ class LoggedInHome extends Component {
         <Col sm={4}>
           <div>
             <ExternalLink role="link" className="link-rk-dark text-decoration-none"
-              url={`${Docs.READ_THE_DOCS_TUTORIALS}/01_firststeps.html`}
+              url={Docs.READ_THE_DOCS_TUTORIALS_STARTING}
               title="...do the tutorial... " customIcon={faLandmark} iconAfter={true}/>
           </div>
         </Col>
