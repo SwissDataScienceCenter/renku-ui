@@ -90,6 +90,7 @@ describe("display lock status", () => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects().projectTest();
     fixtures.projectMigrationUpToDate();
+    fixtures.projectLockStatus();
     cy.visit("/projects/e2e/local-test-project");
   });
 
@@ -111,6 +112,7 @@ describe("display migration information for anon user", () => {
   beforeEach(() => {
     fixtures.config().versions().userNone();
     fixtures.projects().landingUserProjects().projectTest();
+    fixtures.projectLockStatus();
     cy.visit("/projects/e2e/local-test-project");
   });
 
@@ -145,6 +147,7 @@ describe("display migration information for anon user", () => {
   it("displays required migration", () => {
     fixtures.projectMigrationRequired();
     cy.visit("/projects/e2e/local-test-project/overview/status");
+    cy.wait("@getProjectLockStatus");
     // Check that the migration suggestion is not shown
     cy.contains("Project Renku Version");
     cy.contains("This project is not compatible with the RenkuLab UI").should(
@@ -158,6 +161,7 @@ describe("display migration information for observer user", () => {
   beforeEach(() => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects().projectTestObserver();
+    fixtures.projectLockStatus();
     cy.visit("/projects/e2e/local-test-project");
   });
 
@@ -183,6 +187,7 @@ describe("display migration information for observer user", () => {
   it("displays recommended migration", () => {
     fixtures.projectMigrationRecommended();
     cy.visit("/projects/e2e/local-test-project/overview/status");
+    cy.wait("@getProjectLockStatus");
     // Check that the migration suggestion is shown
     cy.contains(
       "Updating to the latest version of renku is highly recommended."
@@ -195,6 +200,7 @@ describe("display migration information for observer user", () => {
   it("displays required migration", () => {
     fixtures.projectMigrationRequired();
     cy.visit("/projects/e2e/local-test-project/overview/status");
+    cy.wait("@getProjectLockStatus");
     // Check that the migration suggestion is  shown
     cy.contains("This project is not compatible with the RenkuLab UI").should(
       "be.visible"

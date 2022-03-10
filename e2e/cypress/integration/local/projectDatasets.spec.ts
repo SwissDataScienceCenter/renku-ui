@@ -67,7 +67,7 @@ function checkDatasetLimitedPermissionDisplay(cy, fixtures, datasets, editDisabl
     }
     else {
       cy.get_cy("edit-dataset-button").should("not.exist");
-      cy.get_cy("add-to-project-button").should("not.exist");
+      cy.get_cy("add-to-project-button").should("be.visible");
     }
     cy.get_cy("more-options-button").should("not.exist");
 
@@ -160,6 +160,7 @@ describe("Project dataset (legacy ids)", () => {
       queryUrl: "*",
       fixtureName: "getMigration"
     });
+    fixtures.projectLockStatus();
   });
 
   it("displays legacy project datasets", () => {
@@ -194,6 +195,7 @@ describe("Error loading datasets", () => {
     fixtures.projectDatasetList("datasetList", "datasets/dataset-list-error.json");
     fixtures.projectTestContents(undefined, 9);
     fixtures.projectMigrationUpToDate({ queryUrl: "*", fixtureName: "getMigration" });
+    fixtures.projectLockStatus();
   });
 
   it("displays project datasets", () => {
