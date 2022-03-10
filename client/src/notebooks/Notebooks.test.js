@@ -65,46 +65,6 @@ const simplifiedGlobalOptions = {
   }
 };
 
-describe("notebook status", () => {
-  const servers = [{
-    "status": {
-      "message": null,
-      "phase": "Running",
-      "ready": true,
-      "reason": null,
-      "step": "Ready"
-    },
-    "expected": "running"
-  }, {
-    "status": {
-      "message": "containers with unready status: [notebook]",
-      "phase": "Pending",
-      "ready": false,
-      "reason": "ContainersNotReady",
-      "step": "ContainersReady"
-    },
-    "expected": "pending"
-  },
-  {
-    "status": {
-      "message": "containers with unready status: [notebook]",
-      "phase": "Pending",
-      "ready": false,
-      "reason": "ContainersNotReady",
-      "step": "ContainersReady",
-      "stopping": true,
-    },
-    "expected": "stopping"
-  }];
-
-  it("computed vs expected", () => {
-    for (let server of servers) {
-      expect(NotebooksHelper.getStatus(server)).toBe(server.expected);
-      expect(NotebooksHelper.getStatus(server.status)).toBe(server.expected);
-    }
-  });
-});
-
 describe("notebook server clean annotation", () => {
   const domain = ExpectedAnnotations.domain;
   const baseAnnotations = ExpectedAnnotations[domain].default;

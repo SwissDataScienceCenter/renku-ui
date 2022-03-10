@@ -25,7 +25,7 @@
 
 import { API_ERRORS } from "../api-client/errors";
 import { parseINIString } from "../utils/helpers/HelperFunctions";
-
+import _ from "lodash";
 const POLLING_INTERVAL = 3000;
 const IMAGE_BUILD_JOB = "image_build";
 const RENKU_INI_PATH = ".renku/renku.ini";
@@ -63,26 +63,6 @@ const ExpectedAnnotations = {
 };
 
 const NotebooksHelper = {
-  /**
-   * Compute the status of a notebook
-   *
-   * @param {Object} data - either the notebook or the notebook.status object as returned
-   *   by the GET /servers API
-   */
-  getStatus: (data) => {
-    let status = data;
-    if (data.status)
-      status = data.status;
-
-    if (status.ready)
-      return "running";
-    if (status.stopping)
-      return "stopping";
-    if (status.step === "Unschedulable")
-      return "error";
-    return "pending";
-  },
-
   /**
    * Add missing annotations from the notebook servers
    *
@@ -470,15 +450,8 @@ class NotebooksCoordinator {
           if (this.model.get("notebooks.lastParameters") === JSON.stringify(filters)) {
             updatedNotebooks.fetched = new Date();
             const currentServers = this.model.get("notebooks.all");
-
-            // check if the stopping status exist to attach to the current object
-            // TODO: this should be removed once that status is returned by fetching notebooks
-            for (const serverName in resp.data) {
-              const currentStatus = currentServers[serverName]?.status;
-              if (currentStatus && "stopping" in currentStatus)
-                resp.data[serverName].status.stopping = true;
-            }
-            updatedNotebooks.all = { $set: resp.data };
+            if (!(_.isEqual(resp.data, currentServers)))
+              updatedNotebooks.all = { $set: resp.data };
           }
           // TODO: re-invoke `fetchNotebooks()` immediately if parameters are outdated
         }

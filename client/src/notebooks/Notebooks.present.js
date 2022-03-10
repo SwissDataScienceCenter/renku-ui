@@ -50,6 +50,7 @@ import {
 } from "./NotebookStart.present";
 
 import "./Notebooks.css";
+import { SessionStatus } from "../utils/constants/Notebooks";
 
 
 // * Constants and helpers * //
@@ -106,6 +107,10 @@ function ShowSession(props) {
     namespace: filters.namespace,
     path: filters.project,
   });
+
+  // redirect immediately if the session fail
+  if (props.history && notebook.data.status.state === SessionStatus.failed)
+    props.history.push(urlList);
 
   // Always add all sub-components and hide them one by one to preserve the iframe navigation where needed
   return (
@@ -331,8 +336,8 @@ function SessionJupyter(props) {
 
   let content = null;
   if (notebook.available) {
-    const status = NotebooksHelper.getStatus(notebook.data.status);
-    if (status === "running") {
+    const status = notebook.data.status.state;
+    if (status === SessionStatus.running) {
       const localClass = invisible ?
         "invisible position-absolute" : // ? position-absolute prevent showing extra margins
         "";
@@ -346,7 +351,7 @@ function SessionJupyter(props) {
     else if (invisible) {
       return null;
     }
-    else if (status === "pending" || status === "stopping") {
+    else if (status === SessionStatus.starting || status === SessionStatus.stopping) {
       content = (<Loader />);
     }
   }
@@ -549,11 +554,9 @@ class NotebookServersList extends Component {
 class NotebookServerRow extends Component {
   render() {
     const annotations = NotebooksHelper.cleanAnnotations(this.props.annotations, "renku.io");
-    const status = NotebooksHelper.getStatus(this.props.status);
+    const status = this.props.status.state;
     const details = {
-      message: this.props.status.message,
-      reason: this.props.status.reason,
-      step: this.props.status.step,
+      message: this.props.status.message
     };
     const uid = "uid_" + simpleHash(annotations["namespace"] + annotations["projectName"]
       + annotations["branch"] + annotations["commit-sha"]);
@@ -814,7 +817,7 @@ class NotebookServerRowCompact extends Component {
 
 function getStatusObject(status, defaultImage) {
   switch (status) {
-    case "running":
+    case SessionStatus.running:
       return {
         color: defaultImage ?
           "warning" :
@@ -824,19 +827,19 @@ function getStatusObject(status, defaultImage) {
           (<FontAwesomeIcon icon={faCheckCircle} size="lg" />),
         text: "Running"
       };
-    case "pending":
+    case SessionStatus.starting:
       return {
         color: "warning",
         icon: <Loader size="16" inline="true" />,
-        text: "Pending"
+        text: "Starting..."
       };
-    case "stopping":
+    case SessionStatus.stopping:
       return {
         color: "warning",
         icon: <Loader size="16" inline="true" />,
-        text: "Stopping session"
+        text: "Stopping session..."
       };
-    case "error":
+    case SessionStatus.failed:
       return {
         color: "danger",
         icon: <FontAwesomeIcon icon={faTimesCircle} size="lg" />,
@@ -853,24 +856,34 @@ function getStatusObject(status, defaultImage) {
 
 class NotebooksServerRowStatus extends Component {
   render() {
-    const { status, details, uid, annotations } = this.props;
+    const { status, details, uid, annotations, startTime } = this.props;
     const data = getStatusObject(status, annotations.default_image_used);
-    const info = status !== "running" ?
-      (<span className="time-caption font-weight-bold text-secondary">
-        {data.text}&nbsp;
-        <FontAwesomeIcon id={uid} icon={faInfoCircle} />
+    const textColor = {
+      "running": "text-secondary",
+      "failed": "text-danger",
+      "starting": "text-secondary",
+      "stopping": "text-secondary",
+    };
+
+    const textStatus = status === SessionStatus.running ? `${data.text} since ${startTime}` : data.text;
+
+    const extraInfo = details.message ?
+      (<>
+        {" "}<FontAwesomeIcon id={uid} icon={faInfoCircle} />
         <UncontrolledPopover target={uid} trigger="legacy" placement="bottom">
           <PopoverHeader>Kubernetes pod status</PopoverHeader>
           <PopoverBody>
-            <span className="font-weight-bold">Step:</span> <span>{details.step}</span><br />
-            <span className="font-weight-bold">Reason:</span> <span>{details.reason}</span><br />
-            <span className="font-weight-bold">Message:</span> <span>{details.message}</span><br />
+            <span>{details.message}</span><br />
           </PopoverBody>
         </UncontrolledPopover>
-      </span>) :
-      (<span className="time-caption font-weight-bold text-secondary">{data.text} since {this.props.startTime}</span>);
+      </>) : null;
 
-    return <div>{info}</div>;
+    return <>
+      <span className={`time-caption font-weight-bold ${textColor[status]}`}>
+        {textStatus}
+        {extraInfo}
+      </span>
+    </>;
   }
 }
 
@@ -886,7 +899,7 @@ class NotebooksServerRowStatusIcon extends Component {
       (<span><br /><span className="font-weight-bold">Warning:</span> a fallback image was used.</span>) :
       null;
 
-    const popover = !image || status !== "running" ?
+    const popover = !image || status !== SessionStatus.running ?
       null :
       (
         <UncontrolledPopover target={id} trigger="legacy" placement="bottom">
@@ -928,7 +941,7 @@ const NotebookServerRowAction = memo((props) => {
     <FontAwesomeIcon icon={faFileAlt} /> Get logs
   </DropdownItem>);
 
-  if (status !== "stopping") {
+  if (status !== SessionStatus.stopping) {
     actions.stop = <Fragment>
       <DropdownItem divider />
       <DropdownItem onClick={() => props.stopNotebook(name)}>
@@ -936,7 +949,7 @@ const NotebookServerRowAction = memo((props) => {
       </DropdownItem>
     </Fragment>;
   }
-  if (status === "running") {
+  if (status === SessionStatus.running) {
     defaultAction = (<Link className="btn btn-secondary text-white" to={props.localUrl}>Open</Link>);
     actions.openExternal = (<DropdownItem href={props.url} target="_blank" >
       <FontAwesomeIcon icon={faExternalLinkAlt} /> Open in new tab
