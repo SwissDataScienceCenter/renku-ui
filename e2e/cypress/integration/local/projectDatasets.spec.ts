@@ -206,7 +206,7 @@ describe("Error loading datasets", () => {
   });
 });
 
-describe.only("Project dataset (locked)", () => {
+describe("Project dataset (locked)", () => {
   const fixtures = new Fixtures(cy);
   fixtures.useMockedData = true;
   const projectPath = "e2e/testing-datasets";
