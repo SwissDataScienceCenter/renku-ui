@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 /*!
  * Copyright 2017 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
@@ -445,12 +444,15 @@ function addProjectMethods(client) {
   };
 
 
+  /* eslint-disable max-len */
   /**
    * Find out if a project is locked
+   *
    * @see {@link https://github.com/SwissDataScienceCenter/renku-python/blob/master/renku/service/controllers/project_lock_status.py}
    * @param {string} projectRepositoryUrl - external repository full url.
    * @param {string} [versionUrl] - project version url.
    */
+  /* eslint-enable max-len */
   client.getProjectLockStatus = async (projectRepositoryUrl, versionUrl = null) => {
     const url = client.versionedCoreUrl("project.lock_status", versionUrl);
     const queryParams = { git_url: projectRepositoryUrl };
