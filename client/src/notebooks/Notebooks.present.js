@@ -50,8 +50,9 @@ import {
 } from "./NotebookStart.present";
 
 import "./Notebooks.css";
-import { EnvironmentLogs, LogTabs } from "../utils/components/Logs";
 import { SessionStatus } from "../utils/constants/Notebooks";
+import { EnvironmentLogs, LogDownloadButton, LogTabs, useDownloadLogs } from "../utils/components/Logs";
+
 
 // * Constants and helpers * //
 const SESSION_TABS = {
@@ -92,16 +93,8 @@ function ShowSession(props) {
   const fetchLogs = () => {
     if (!notebook.available)
       return;
-    handlers.fetchLogs(notebook.data.name);
+    return handlers.fetchLogs(notebook.data.name);
   };
-
-  let widthStyle = "";
-  if (tab === SESSION_TABS.session)
-    widthStyle = "w-100";
-  else if (tab === SESSION_TABS.logs)
-    widthStyle = "overflow-auto";
-  else if (tab === SESSION_TABS.docs)
-    widthStyle = "w-100";
 
   const urlList = Url.get(Url.pages.project.session, {
     namespace: filters.namespace,
@@ -118,7 +111,7 @@ function ShowSession(props) {
       <SessionInformation notebook={notebook} stopNotebook={handlers.stopNotebook} urlList={urlList} />
       <div className="d-lg-flex">
         <SessionNavbar fetchLogs={fetchLogs} setTab={setTab} tab={tab} />
-        <div className={`border sessions-iframe-border ${widthStyle}`}>
+        <div className={`border sessions-iframe-border w-100`}>
           <SessionJupyter {...props} tab={tab} urlList={urlList} />
           <SessionLogs {...props} tab={tab} fetchLogs={fetchLogs} />
           <SessionCommands {...props} tab={tab} />
@@ -234,6 +227,8 @@ function SessionNavbar(props) {
 function SessionLogs(props) {
   const { fetchLogs, notebook, tab } = props;
   const { logs } = notebook;
+  const sessionName = notebook.data.name;
+  const [ downloading, save ] = useDownloadLogs(logs, fetchLogs, sessionName);
 
   if (tab !== SESSION_TABS.logs)
     return null;
@@ -276,12 +271,13 @@ function SessionLogs(props) {
   return (
     <Fragment>
       <div className="p-2 p-lg-3 text-nowrap">
-        <Button key="button" color="secondary" size="sm"
+        <Button key="button" color="secondary" size="sm" style={{ marginRight: 8 }}
           id="session-refresh-logs" onClick={() => fetchLogs()} disabled={logs.fetching} >
           <FontAwesomeIcon icon={faSyncAlt} /> Refresh logs
         </Button>
+        <LogDownloadButton logs={logs} downloading={downloading} save={save} size="sm" color="secondary"/>
       </div>
-      <div className="p-2 p-lg-3 border-top" style={{ minHeight: 800 }}>
+      <div className="p-2 p-lg-3 border-top">
         {body}
       </div>
     </Fragment>

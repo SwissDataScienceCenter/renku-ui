@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { Component, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faRedo, faSave } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -90,10 +90,11 @@ const LogTabs = ({ logs }) => {
       <TabContent activeTab={activeTab}>
         { Object.keys(logs).map(tab => {
           return (
-            <TabPane className="bg-white p-1" key={`log_${tab}`} tabId={tab}>
+            <TabPane key={`log_${tab}`} tabId={tab}>
               <Row>
                 <Col sm="12">
-                  <pre style={{ height: "600px" }}>
+                  <pre
+                    className="bg-primary text-white p-2 w-100 overflow-auto log-container">
                     { logs[tab] }
                   </pre>
                 </Col>
@@ -106,23 +107,36 @@ const LogTabs = ({ logs }) => {
   );
 };
 
-/**
- * Simple environment logs container
- *
- * @param {function} fetchLogs - async function to get logs as an array string
- * @param {function} toggleLogs - toggle logs visibility and fetch logs on show
- * @param {object} logs - log object from redux store enhanced with `show` property
- * @param {string} name - server name
- * @param {object} annotations - list of cleaned annotations
- */
-class EnvironmentLogs extends Component {
-  async save() {
-    this.downloading = true;
-    const { fetchLogs, name } = this.props;
-    const fullLogs = await fetchLogs(name, true);
+const LogDownloadButton = ({ logs, downloading, save, size, color }) => {
+
+  const canDownload = (logs) => {
+    if (logs.fetching || downloading)
+      return false;
+    if (!logs.data || typeof logs.data === "string")
+      return false;
+    // Validate if this result is possible
+    return !(logs.data.length === 1 && logs.data[0].startsWith("Logs unavailable"));
+  };
+
+  return (
+    <Button data-cy="session-log-download-button" color={color ?? "primary"} size={size ?? "s"}
+      disabled={!canDownload(logs)} onClick={() => { save(); }}>
+      <FontAwesomeIcon icon={faSave} />
+      { downloading ? " Downloading " : " Download"}
+      { downloading ? <Loader inline={true} size={16} /> : ""}
+    </Button>
+  );
+};
+
+const useDownloadLogs = (logs, fetchLogs, sessionName) => {
+  const [downloading, setDownloading] = useState(null);
+
+  const save = async () => {
+    setDownloading(true);
+    const fullLogs = await fetchLogs(sessionName, true);
 
     if (!fullLogs) {
-      this.downloading = false;
+      setDownloading(false);
       return;
     }
     const files = [];
@@ -136,52 +150,50 @@ class EnvironmentLogs extends Component {
       });
     }
 
-    await generateZip(files, `Logs_${this.props.name}`);
-    this.downloading = false;
-  }
+    await generateZip(files, `Logs_${sessionName}`);
+    setDownloading(false);
+  };
 
-  render() {
-    const { logs, name, toggleLogs, fetchLogs, annotations } = this.props;
-    if (!logs.show || logs.show !== name)
-      return null;
+  return [downloading, save];
+};
 
-    const canDownload = (logs) => {
-      if (logs.fetching || this.downloading)
-        return false;
-      if (!logs.data || typeof logs.data === "string")
-        return false;
-      // Validate if this result is possible
-      if (logs.data.length === 1 && logs.data[0].startsWith("Logs unavailable"))
-        return false;
-      return true;
-    };
+/**
+ * Simple environment logs container
+ *
+ * @param {function} fetchLogs - async function to get logs as an array string
+ * @param {function} toggleLogs - toggle logs visibility and fetch logs on show
+ * @param {object} logs - log object from redux store enhanced with `show` property
+ * @param {string} name - server name
+ * @param {object} annotations - list of cleaned annotations
+ */
+const EnvironmentLogs = ({ logs, name, toggleLogs, fetchLogs, annotations }) => {
 
-    return (
-      <Modal
-        isOpen={!!logs.show}
-        className="modal-dynamic-width"
-        scrollable={true}
-        toggle={() => { toggleLogs(name); }}>
-        <ModalHeader className="bg-body header-multiline" toggle={() => { toggleLogs(name); }} >
-          Logs <small>
-            {annotations["namespace"]}/{annotations["projectName"]}{" "}
-            [{annotations["branch"]}@{annotations["commit-sha"].substring(0, 8)}]</small>
-        </ModalHeader>
-        <ModalBody className="bg-body"><LogBody fetchLogs={fetchLogs} logs={logs} name={name} /></ModalBody>
-        <ModalFooter className="bg-body">
-          <Button data-cy="session-log-download-button" color="primary"
-            disabled={!canDownload(logs)} onClick={() => { this.save(); }}>
-            <FontAwesomeIcon icon={faSave} />
-            { this.downloading ? " Downloading " : " Download"}
-            { this.downloading ? <Loader inline={true} size={16} /> : ""}
-          </Button>
-          <Button color="primary" disabled={logs.fetching} onClick={() => { fetchLogs(name); }}>
-            <FontAwesomeIcon icon={faRedo} /> Refresh
-          </Button>
-        </ModalFooter>
-      </Modal>
-    );
-  }
-}
+  const [ downloading, save ] = useDownloadLogs(logs, fetchLogs, name);
 
-export { EnvironmentLogs, LogTabs };
+  if (!logs.show || logs.show !== name)
+    return null;
+
+  return (
+    <Modal
+      isOpen={!!logs.show}
+      className="modal-dynamic-width"
+      scrollable={true}
+      toggle={() => { toggleLogs(name); }}>
+      <ModalHeader className="bg-body header-multiline" toggle={() => { toggleLogs(name); }} >
+        Logs <small>
+          {annotations["namespace"]}/{annotations["projectName"]}{" "}
+          [{annotations["branch"]}@{annotations["commit-sha"].substring(0, 8)}]</small>
+      </ModalHeader>
+      <ModalBody className="bg-body logs-modal">
+        <LogBody fetchLogs={fetchLogs} logs={logs} name={name} />
+      </ModalBody>
+      <ModalFooter className="bg-body">
+        <LogDownloadButton logs={logs} downloading={downloading} save={save}/>
+        <Button color="primary" disabled={logs.fetching} onClick={() => { fetchLogs(name); }}>
+          <FontAwesomeIcon icon={faRedo} /> Refresh
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
+};
+export { EnvironmentLogs, LogTabs, LogDownloadButton, useDownloadLogs };
