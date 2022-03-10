@@ -443,11 +443,12 @@ class NotebooksCoordinator {
     return this.client.getNotebookServers(
       filters.namespace, filters.project, filters.branch, null, anonymous)
       .then(resp => {
-        let updatedNotebooks = { fetching: false, fetched: new Date() };
+        let updatedNotebooks = { fetching: false };
         // check if result is still valid
         if (!this.model.get("filters.discard")) {
           const filters = this.getQueryFilters();
           if (this.model.get("notebooks.lastParameters") === JSON.stringify(filters)) {
+            updatedNotebooks.fetched = new Date();
             const currentServers = this.model.get("notebooks.all");
             if (!(_.isEqual(resp.data, currentServers)))
               updatedNotebooks.all = { $set: resp.data };
