@@ -611,17 +611,21 @@ class ProjectCoordinator {
 
   fetchReadme(client) {
     // Do not fetch if a fetch is in progress
-    if (this.get("transient.requests.readme") === SpecialPropVal.UPDATING) return;
+    if (this.get("data.readme.fetching") === SpecialPropVal.UPDATING) return;
 
-    this.model.setUpdating({ transient: { requests: { readme: true } } });
+    this.model.setUpdating({ data: { readme: { fetching: true } } });
     client.getProjectReadme(this.model.get("metadata.id"), this.model.get("metadata.defaultBranch"))
-      .then(d => this.model.set("data.readme.text", d.text))
+      .then(d => {
+        this.model.setObject({data: {readme: {text: d.text, error: {}}}});
+      })
       .catch(error => {
         if (error.case === API_ERRORS.notFoundError)
           this.model.set("data.readme.text", "No readme file found.");
+        else
+        this.model.setObject({data: {readme: {text: null, error}}});
 
       })
-      .finally(() => this.model.set("transient.requests.readme", false));
+      .finally(() => this.model.set("data.readme.fetching", false));
   }
 
   fetchModifiedFiles(client) {

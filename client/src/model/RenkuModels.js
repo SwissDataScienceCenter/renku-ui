@@ -201,7 +201,12 @@ const projectSchema = new Schema({
   },
   data: {
     [Prop.SCHEMA]: new Schema({
-      readme: { [Prop.INITIAL]: {} }
+      readme: { [Prop.INITIAL]: {
+        text: null,
+        error: {},
+        fetched: null,
+        fetching: false
+      } }
     })
   },
   datasets: {

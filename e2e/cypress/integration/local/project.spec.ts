@@ -39,6 +39,22 @@ describe("display a project", () => {
     cy.get("h1").first().should("contain.text", "local test project");
   });
 
+  it("displays the project overview page when there is no readme", () => {
+    cy.intercept(
+      "/ui-server/api/projects/*/repository/files/README.md/raw?ref=master", {
+        statusCode: 404,
+        body: {} }
+    ).as("getNoReadme");
+    cy.wait("@getNoReadme");
+    // Check that the project header is shown
+    cy.get("[data-cy='project-header']").should(
+      "contain.text",
+      "local-test-project Public"
+    );
+    // Check that the readme is shown
+    cy.contains("No readme file found").should("be.visible");
+  });
+
   it("displays project settings", () => {
     fixtures.sessionServerOptions();
     cy.visit("/projects/e2e/local-test-project/settings/sessions");
