@@ -141,6 +141,7 @@ const AddDatasetExistingProject = (
   const addDatasetButton = (
     <div className="mt-4 d-flex justify-content-end">
       <Button
+        data-cy="add-dataset-submit-button"
         color="primary"
         disabled={currentStatus?.status !== "validProject" || importingDataset}
         onClick={startImportDataset}>
@@ -162,7 +163,7 @@ const AddDatasetExistingProject = (
 
   return (
     <div className="mt-4 mx-3">
-      <form onSubmit={onSubmit} className={"mt-2"}>
+      <form onSubmit={onSubmit} className={"mt-2"} data-cy="form-project-exist">
         {suggestionInput}
       </form>
       {addDatasetStatus}

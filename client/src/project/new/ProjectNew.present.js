@@ -1259,6 +1259,7 @@ class Create extends Component {
       </ButtonWithMenu> :
       (<div className="mt-4 d-flex justify-content-end">
         <Button
+          data-cy="add-dataset-submit-button"
           id="create-new-project"
           color="primary"
           onClick={this.props.handlers.onSubmit}

@@ -18,6 +18,7 @@
 
 import "./authentication/gui_commands";
 import { User } from "./authentication/user.interfaces";
+import "./projects/gui_commands";
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -31,6 +32,8 @@ declare global {
       gui_search_dataset(datasetName: string, fixtures, resultFile): void
       gui_open_logs(): void
       gui_create_project(title: string): void
+      gui_create_project_add_dataset(title: string, path: string, fixtures): void
+      gui_select_project_autosuggestion_list(project: string, fixtures, migrationCheckResult): void
     }
   }
 }

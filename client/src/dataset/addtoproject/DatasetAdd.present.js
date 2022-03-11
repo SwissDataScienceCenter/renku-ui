@@ -47,7 +47,7 @@ function HeaderAddDataset({ dataset }) {
         <tbody className="text-rk-text">
           <tr>
             <td className="text-dark fw-bold" style={{ "width": "120px" }}>Title:</td>
-            <td>{ dataset?.title || dataset?.name }</td>
+            <td data-cy="add-dataset-to-project-title">{ dataset?.title || dataset?.name }</td>
           </tr>
           <tr>
             <td className="text-dark fw-bold" style={{ "width": "120px" }}>Authors:</td>
@@ -66,10 +66,12 @@ function DatasetAdd({ dataset, model, handlers, isDatasetValid, currentStatus, i
   const buttonGroup = (
     <ButtonGroup className="d-flex">
       <Button disabled={currentStatus?.status === "inProcess"}
+        data-cy="add-dataset-existing-project-option-button"
         color="primary" outline active={!isNewProject} onClick={() => setIsNewProject(false)}>
         Existing Project
       </Button>
       <Button disabled={currentStatus?.status === "inProcess"}
+        data-cy="add-dataset-new-project-option-button"
         color="primary" outline active={isNewProject} onClick={() => setIsNewProject(true)}>
         New Project
       </Button>

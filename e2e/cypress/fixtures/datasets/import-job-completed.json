@@ -1,0 +1,20 @@
+{
+  "result":{
+    "client_extras":"",
+    "project":{
+      "name":"local-test-project",
+      "email":"e2e@renku.ch",
+      "project_id":"693591cdfbad4e58978deacef2d272a1",
+      "fullname":"e2e User",
+      "owner":"e2e"
+    },
+    "state":"COMPLETED",
+    "extras":{
+      "remote_branch":"master"
+    },
+    "updated_at":"2022-02-21T12:43:59.000867",
+    "job_id":"2d24760f2dc1484e972f81cc150d69eb",
+    "created_at":"2022-02-21T12:43:59.001037",
+    "renku_op":"dataset_import"
+  }
+}
