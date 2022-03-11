@@ -63,13 +63,13 @@ const DatasetsMixin = {
     this.setUpdating({ datasets: { datasets_kg: true } });
     return client.getProjectDatasetsFromKG(this.get("metadata.pathWithNamespace"))
       .then(datasets => {
-        const updatedState = { datasets_kg: { $set: datasets }, transient: { requests: { datasets_kg: false } } };
+        const updatedState = { datasets_kg: { $set: datasets } };
         this.setObject({ datasets: updatedState });
         return datasets;
       })
       .catch(err => {
         const datasets = [];
-        const updatedState = { datasets_kg: { $set: datasets }, transient: { requests: { datasets_kg: false } } };
+        const updatedState = { datasets_kg: { $set: datasets } };
         this.setObject({ datasets: updatedState });
       });
   },
