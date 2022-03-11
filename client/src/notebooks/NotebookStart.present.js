@@ -41,6 +41,7 @@ import { Url } from "../utils/helpers/url";
 import Time from "../utils/helpers/Time";
 import { NotebooksHelper } from "./index";
 import { ObjectStoresConfigurationButton, ObjectStoresConfigurationModal } from "./ObjectStoresConfig.present";
+import { SessionStatus } from "../utils/constants/Notebooks";
 
 
 function ProjectSessionLockAlert({ lockStatus }) {
@@ -772,8 +773,8 @@ class StartNotebookOptionsRunning extends Component {
   render() {
     const { notebook } = this.props;
 
-    const status = NotebooksHelper.getStatus(notebook.status);
-    if (status === "running") {
+    const status = notebook.status?.state;
+    if (status === SessionStatus.running) {
       const annotations = NotebooksHelper.cleanAnnotations(notebook.annotations, "renku.io");
       const localUrl = Url.get(Url.pages.project.session.show, {
         namespace: annotations["namespace"],
@@ -793,7 +794,7 @@ class StartNotebookOptionsRunning extends Component {
         </FormGroup>
       );
     }
-    else if (status === "pending" || status === "stopping") {
+    else if (status === SessionStatus.starting || status === SessionStatus.stopping) {
       return (
         <FormGroup>
           <Label>A session for this commit is starting or terminating, please wait...</Label>
@@ -1179,15 +1180,15 @@ class CheckNotebookIcon extends Component {
 
     let tooltip, link, icon, aligner = null;
     if (notebook) {
-      const status = NotebooksHelper.getStatus(notebook.status);
-      if (status === "running") {
+      const status = notebook.status?.state;
+      if (status === SessionStatus.running) {
         tooltip = "Connect to JupyterLab";
         icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" />);
         const url = `${notebook.url}/lab/tree/${this.props.filePath}`;
         link = (<a href={url} role="button" target="_blank" rel="noreferrer noopener">{icon}</a>);
       }
-      else if (status === "pending" || status === "stopping") {
-        tooltip = status === "stopping" ?
+      else if (status === SessionStatus.starting || status === SessionStatus.stopping) {
+        tooltip = status === SessionStatus.stopping ?
           "The session is stopping, please wait..." :
           "The session is starting, please wait...";
         aligner = "pb-1";

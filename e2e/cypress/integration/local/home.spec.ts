@@ -54,15 +54,21 @@ describe("display the landing page", () => {
   });
 
   it("displays the landing page header", () => {
+    let projects;
     cy.wait("@getUser");
     cy.wait("@getProjects");
-    cy.wait("@getLastVisitedProjects");
+    cy.wait("@getLastVisitedProjects").then( result => projects = result.response.body.projects);
+
+    const findProject = (path, projects) => {
+      return projects.find( result => result.response.body.path_with_namespace === path);
+    };
 
     cy.get("h3").first().should("have.text", "e2e @ Renku");
     cy.wait(["@projectLanding", "@projectLanding", "@projectLanding", "@projectLanding"])
-      .then( (result) => {
-        const firstProject = result[0].response?.body;
-        cy.get_cy("list-card-title").first().should("have.text", firstProject.name);
+      .then( (results) => {
+        const firstProject = findProject(projects[0], results);
+        const projectData = firstProject.response?.body;
+        cy.get_cy("list-card-title").first().should("have.text", projectData.name);
       });
   });
 });

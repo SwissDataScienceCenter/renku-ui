@@ -133,6 +133,7 @@ class ShowSession extends Component {
         target={this.target}
         handlers={this.handlers}
         store={this.model.reduxStore}
+        history={this.props.history}
       />
     );
   }
