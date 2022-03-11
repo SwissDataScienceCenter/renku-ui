@@ -41,6 +41,20 @@ const MigrationStatus = {
   ERROR: "ERROR"
 };
 
+const CoreServiceProjectMixin = {
+  async fetchProjectLockStatus() {
+    const client = this.client;
+    const gitUrl = this.get("metadata.httpUrl");
+    const lockStatus = await client.getProjectLockStatus(gitUrl);
+    if (lockStatus && lockStatus.error !== undefined) {
+      this.set("lockStatus.error", lockStatus.error.reason);
+      return lockStatus.error.reason;
+    }
+    this.set("lockStatus", lockStatus.data.result);
+    return lockStatus.data.result;
+  },
+};
+
 
 const DatasetsMixin = {
   fetchProjectDatasetsFromKg(client) { //from KG
@@ -200,7 +214,12 @@ const MigrationMixin = {
   async migrateProject(client, gitUrl, defaultBranch = null, options) {
     if (this.get("migration.migration_status") === MigrationStatus.MIGRATING)
       return;
-    this.set("migration.migration_status", MigrationStatus.MIGRATING);
+    this.setObject({
+      lockStatus: { locked: true },
+      migration: {
+        migration_status: MigrationStatus.MIGRATING,
+      }
+    });
     const response = await client.migrateProject(gitUrl, defaultBranch, options);
     if (response.error) {
       this.setObject({
@@ -218,6 +237,7 @@ const MigrationMixin = {
           migration_error: { $set: null }
         }
       });
+      await this.fetchProjectLockStatus();
     }
   }
 };
@@ -683,6 +703,7 @@ class ProjectCoordinator {
   }
 }
 
+Object.assign(ProjectCoordinator.prototype, CoreServiceProjectMixin);
 Object.assign(ProjectCoordinator.prototype, DatasetsMixin);
 Object.assign(ProjectCoordinator.prototype, FileTreeMixin);
 Object.assign(ProjectCoordinator.prototype, ProjectAttributesMixin);

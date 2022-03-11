@@ -89,6 +89,8 @@ class ProjectSettingsSessionsMapper extends Component {
     const url = repositoryUrl ?
       repositoryUrl :
       this.props.externalUrl;
+    // Check if the project is locked
+    await this.projectCoordinator.fetchProjectLockStatus();
     return await this.projectCoordinator.fetchProjectConfig(url);
   }
 
@@ -113,6 +115,7 @@ class ProjectSettingsSessionsMapper extends Component {
         store={this.model.reduxStore}
         handlers={this.handlers}
         location={this.props.location}
+        lockStatus={this.props.lockStatus}
         client={this.props.client}
         repositoryUrl={this.props.externalUrl}
       />
@@ -125,6 +128,7 @@ class ProjectSettingsSessionsMapper extends Component {
  */
 function ProjectSettingsSessions(props) {
   const { backend, client, config, handlers, location, metadata, options, repositoryUrl, user } = props;
+  const { lockStatus } = props;
 
   const pristineNewConfig = {
     updating: false,
@@ -163,6 +167,7 @@ function ProjectSettingsSessions(props) {
       backend={backend}
       config={config}
       location={location}
+      lockStatus={lockStatus}
       metadata={metadata}
       newConfig={newConfig}
       options={options}

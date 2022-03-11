@@ -59,6 +59,7 @@ const getProjectSuggestionProps = (props, loading = true, commits = [], commitsR
   props.datasets.core.datasets = datasets;
   props.externalUrl = "/gitlab/";
   props.newDatasetUrl = "new-dataset-url";
+  props.lockStatus = { locked: false };
   if (loading)
     props.datasets.core.datasets = null;
 
@@ -315,6 +316,19 @@ describe("rendering ProjectSuggestActions", () => {
     const suggestions = testInstance.findAllByProps({ className: "suggestionTitle" });
     expect(suggestions.length).toBe(0);
   });
+
+  it("Don't render if the project is locked", () => {
+    const exampleCommit = [{ id: "abc", committed_date: "2021-01-01" }];
+    const allProps = getProjectSuggestionProps(props, false, exampleCommit, exampleCommit, []);
+    allProps.commits = { list: exampleCommit, fetched: true };
+    allProps.commitsReadme = { list: exampleCommit, fetched: true };
+    allProps.lockStatus.locked = true;
+    const component = TestRenderer.create(
+      <ProjectSuggestActions key="suggestions" {...allProps} />,
+    );
+    expect(component.toJSON()).toBe(null);
+  });
+
 });
 
 describe("rendering ProjectVersionStatus", () => {

@@ -777,6 +777,7 @@ class StartNotebookServer extends Component {
       inherited={this.props}
       justStarted={this.state.starting}
       launchError={this.state.launchError}
+      lockStatus={this.props.lockStatus}
       message={this.props.message}
       showAdvanced={this.state.showAdvanced}
       {...this.propsToChildProps()}

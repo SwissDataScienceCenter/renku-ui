@@ -442,6 +442,30 @@ function addProjectMethods(client) {
       body: JSON.stringify(body)
     });
   };
+
+
+  /* eslint-disable max-len */
+  /**
+   * Find out if a project is locked
+   *
+   * @see {@link https://github.com/SwissDataScienceCenter/renku-python/blob/master/renku/service/controllers/project_lock_status.py}
+   * @param {string} projectRepositoryUrl - external repository full url.
+   * @param {string} [versionUrl] - project version url.
+   */
+  /* eslint-enable max-len */
+  client.getProjectLockStatus = async (projectRepositoryUrl, versionUrl = null) => {
+    const url = client.versionedCoreUrl("project.lock_status", versionUrl);
+    const queryParams = { git_url: projectRepositoryUrl };
+    const headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    headers.append("X-Requested-With", "XMLHttpRequest");
+
+    return client.clientFetch(url, {
+      method: "GET",
+      headers,
+      queryParams
+    });
+  };
 }
 
 

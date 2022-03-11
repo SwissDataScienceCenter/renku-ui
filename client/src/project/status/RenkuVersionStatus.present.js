@@ -270,6 +270,24 @@ function RenkuVersionInfo({ migration }) {
     </table>;
 }
 
+function GuardedRenkuVersionStatusBody(props) {
+  const { externalUrl, launchNotebookUrl, logged, lockStatus, maintainer,
+    migration, onMigrateProject, statistics } = props;
+
+  if (!logged) return null;
+  if (lockStatus?.locked === true) {
+    return <div className="text-muted">
+      This project is currently being modified. You will be able to view the{" "}
+      project update options once the changes to the project are complete.
+    </div>;
+  }
+
+  return <RenkuVersionStatusBody
+    externalUrl={externalUrl} launchNotebookUrl={launchNotebookUrl} logged={logged} maintainer={maintainer}
+    migration={migration} onMigrateProject={onMigrateProject} statistics={statistics} />;
+}
+
+
 function RenkuVersionStatus(props) {
   if (isMigrationCheckLoading(props.loading, props.migration)) return <Loader />;
 
@@ -278,17 +296,11 @@ function RenkuVersionStatus(props) {
 
   if (isMigrationFailure({ check_error, migration_error, migration_status })) return null;
 
-  const { externalUrl, launchNotebookUrl, logged, maintainer, migration, onMigrateProject, statistics } = props;
+  const { migration } = props;
 
   return <div>
     <RenkuVersionInfo migration={migration} />
-    {
-      (logged) ?
-        <RenkuVersionStatusBody
-          externalUrl={externalUrl} launchNotebookUrl={launchNotebookUrl} logged={logged} maintainer={maintainer}
-          migration={migration} onMigrateProject={onMigrateProject} statistics={statistics} /> :
-        null
-    }
+    <GuardedRenkuVersionStatusBody {...props} />
 
   </div>;
 }

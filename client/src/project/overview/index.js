@@ -23,6 +23,9 @@
  *  Components for the project overview page
  */
 
-import { OverviewCommits, OverviewStats } from "./ProjectOverview.container";
+import { OverviewCommits, OverviewStats, OverviewVersion } from "./ProjectOverview.container";
 
-export { OverviewCommits as ProjectOverviewCommits, OverviewStats as ProjectOverviewStats };
+export { OverviewCommits as ProjectOverviewCommits,
+  OverviewStats as ProjectOverviewStats,
+  OverviewVersion as ProjectOverviewVersion
+};

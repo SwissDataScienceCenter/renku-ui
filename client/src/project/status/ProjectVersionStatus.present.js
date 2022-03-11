@@ -40,6 +40,7 @@ function ProjectVersionStatusBody(props) {
             externalUrl={props.externalUrl}
             launchNotebookUrl={props.launchNotebookUrl}
             loading={props.loading}
+            lockStatus={props.lockStatus}
             logged={logged}
             maintainer={maintainer}
             migration={props.migration}
@@ -56,6 +57,7 @@ function ProjectVersionStatusBody(props) {
             externalUrl={props.externalUrl}
             launchNotebookUrl={props.launchNotebookUrl}
             loading={props.loading}
+            lockStatus={props.lockStatus}
             logged={logged}
             maintainer={maintainer}
             migration={props.migration}
