@@ -552,7 +552,7 @@ class ProjectCoordinator {
   async fetchReadmeCommits() {
     // Do not fetch if a fetch is in progress
     if (this.get("commitsReadme.fetching") === SpecialPropVal.UPDATING) return;
-    this.model.setUpdating({ transient: { requests: { commitsReadme: true } } });
+    this.model.setUpdating({ commitsReadme: { fetching: true } } );
     const projectId = this.model.get("metadata.id");
 
     // bring only 2 commits just to validate if the user already edit the readme file
@@ -582,6 +582,9 @@ class ProjectCoordinator {
           }
         });
       }
+    }
+    finally {
+      this.model.set("commitsReadme.fetching", false);
     }
     return null;
   }
