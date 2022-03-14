@@ -23,6 +23,7 @@ import "./SessionCheatSheet.css";
 import { Clipboard } from "../utils/components/Clipboard";
 import { ExternalDocsLink } from "../utils/components/ExternalLinks";
 import Time from "../utils/helpers/Time";
+import { RenkuPythonDocs } from "../utils/constants/Docs";
 
 function CommandDesc({ command = "", desc = "", clipboard = true }) {
   return <div>
@@ -218,11 +219,11 @@ function LearnMore() {
       <div>
         For a brief explanation of the commands, refer to the {" "}
         {/* eslint-disable-next-line max-len */}
-        <ExternalDocsLink url="https://raw.githubusercontent.com/SwissDataScienceCenter/renku/master/docs/_static/cheatsheet/cheatsheet.pdf"
+        <ExternalDocsLink url={`${RenkuPythonDocs.READ_THE_DOCS_ROOT}/_static/cheatsheet/cheatsheet.pdf`}
           title="cheat sheet"/>.
       </div>
       <div>
-        The <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/renku-python/docs/reference/commands.html"
+        The <ExternalDocsLink url={`${RenkuPythonDocs.READ_THE_DOCS_ROOT}/reference/commands.html`}
           title="Renku documentation" /> covers much more.
       </div>
     </CommandsRow>

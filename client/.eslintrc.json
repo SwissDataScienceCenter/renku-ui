@@ -180,6 +180,7 @@
           "dismissible",
           "dropdown",
           "dockerfile",
+          "dockerignore",
           "enum",
           "formgenerator",
           "fortran",

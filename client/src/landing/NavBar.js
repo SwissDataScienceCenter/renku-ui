@@ -46,6 +46,7 @@ import { UserAvatar } from "../utils/components/Avatar";
 import { ExternalDocsLink, ExternalLink } from "../utils/components/ExternalLinks";
 import { RenkuNavLink } from "../utils/components/RenkuNavLink";
 import { Loader } from "../utils/components/Loader";
+import { Docs, Links, RenkuPythonDocs } from "../utils/constants/Docs";
 
 
 class RenkuNavBar extends Component {
@@ -161,23 +162,23 @@ function RenkuToolbarHelpMenu(props) {
         </DropdownItem>
         <DropdownItem divider />
         <DropdownItem className="p-0">
-          <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/"
+          <ExternalDocsLink url={Docs.READ_THE_DOCS_ROOT}
             title="Renku Docs" className="dropdown-item" />
         </DropdownItem>
         <DropdownItem className="p-0">
-          <ExternalDocsLink url="https://renku-python.readthedocs.io/en/latest/"
+          <ExternalDocsLink url={RenkuPythonDocs.READ_THE_DOCS_ROOT}
             title="Renku CLI Docs" className="dropdown-item" />
         </DropdownItem>
         <DropdownItem divider />
         <DropdownItem className="p-0">
-          <ExternalDocsLink url="https://renku.discourse.group" title="Forum" className="dropdown-item" />
+          <ExternalDocsLink url={Links.DISCOURSE} title="Forum" className="dropdown-item" />
         </DropdownItem>
         <DropdownItem className="p-0">
-          <ExternalDocsLink url="https://gitter.im/SwissDataScienceCenter/renku"
+          <ExternalDocsLink url={Links.GITTER}
             title="Gitter" className="dropdown-item" />
         </DropdownItem>
         <DropdownItem className="p-0">
-          <ExternalDocsLink url="https://github.com/SwissDataScienceCenter/renku"
+          <ExternalDocsLink url={Links.GITHUB}
             title="GitHub" className="dropdown-item" />
         </DropdownItem>
       </DropdownMenu>
@@ -416,10 +417,10 @@ class FooterNavbar extends Component {
           <Nav className="ms-auto">
             <RenkuNavLink to="/help" title="Help" />
             {privacyLink}
-            <ExternalDocsLink url="https://renku.discourse.group" title="Forum" className="nav-link" />
-            <ExternalDocsLink url="https://gitter.im/SwissDataScienceCenter/renku"
+            <ExternalDocsLink url={Links.DISCOURSE} title="Forum" className="nav-link" />
+            <ExternalDocsLink url={Links.GITTER}
               title="Gitter" className="nav-link" />
-            <ExternalDocsLink url="https://datascience.ch/who-we-are" title="About" className="nav-link" />
+            <ExternalDocsLink url={`${Links.HOMEPAGE}/who-we-are`} title="About" className="nav-link" />
           </Nav>
         </Navbar>
       </footer>

@@ -26,6 +26,7 @@ import { AskMaintainer, ManualUpdateInstructions, MigrationSuccessAlert, Migrati
 import { migrationCheckToRenkuVersionStatus, RENKU_VERSION_SCENARIOS, RENKU_UPDATE_MODE } from "./MigrationUtils";
 import { MigrationStatus } from "../Project";
 import { Loader } from "../../utils/components/Loader";
+import { Docs } from "../../utils/constants/Docs";
 
 function updateNotRequired(renkuVersionStatus) {
   return renkuVersionStatus === RENKU_VERSION_SCENARIOS.NEW_VERSION_NOT_REQUIRED;
@@ -108,8 +109,7 @@ function AutoUpdateButton({ externalUrl, maintainer, migration_status, onMigrate
   </p>;
 }
 
-const docUrl = "https://renku.readthedocs.io/en/latest/how-to-guides/upgrading-renku.html" +
-"#upgrading-your-image-to-use-the-latest-renku-cli-version";
+const docUrl = Docs.rtdHowToGuide("upgrading-renku.html#upgrading-your-image-to-use-the-latest-renku-cli-version");
 
 function RenkuVersionAutomaticUpdateSection({
   backendAvailable, current_metadata_version, externalUrl, launchNotebookUrl, maintainer,

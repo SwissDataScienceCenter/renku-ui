@@ -24,6 +24,7 @@ import { ManualUpdateInstructions, MigrationSuccessAlert, MigrationWarnAlert,
 import { MigrationStatus } from "../Project";
 import { ExternalLink } from "../../utils/components/ExternalLinks";
 import { Loader } from "../../utils/components/Loader";
+import { Docs } from "../../utils/constants/Docs";
 
 const TEMPLATE_VERSION_SCENARIOS = {
   PROJECT_NOT_SUPPORTED: "PROJECT_NOT_SUPPORTED",
@@ -51,8 +52,7 @@ function TemplateUpdateSection({
   const [isOpen, setOpen] = useState(false);
   const toggleOpen = () => setOpen(!isOpen);
 
-  const docUrl = "https://renku.readthedocs.io/en/latest/renku-python/docs/reference/commands.html" +
-  "?highlight=template#module-renku.cli.migrate";
+  const docUrl = Docs.rtdPythonReferencePage("commands.html?highlight=template#module-renku.cli.migrate");
 
   const automaticUpdateAction = maintainer ?
   /* check if this is correct... maybe we can use the other button instead */

@@ -34,6 +34,7 @@ import { MarkdownTextExcerpt, RenkuMarkdown } from "../utils/components/markdown
 import ListDisplay from "../utils/components/List";
 import { ExternalLink } from "../utils/components/ExternalLinks";
 import { Loader } from "../utils/components/Loader";
+import { Docs } from "../utils/constants/Docs";
 
 
 function truncatedProjectListRows(projects, urlFullList, gridDisplay, lastVisited) {
@@ -176,7 +177,7 @@ class LoggedInHome extends Component {
         <Col sm={4}>
           <div>
             <ExternalLink role="link" className="link-rk-dark text-decoration-none"
-              url="https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html"
+              url={Docs.READ_THE_DOCS_TUTORIALS_STARTING}
               title="...do the tutorial... " customIcon={faLandmark} iconAfter={true}/>
           </div>
         </Col>

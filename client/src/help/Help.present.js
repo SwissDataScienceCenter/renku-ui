@@ -35,8 +35,7 @@ import { WhatsNew1_0_0 as WhatsNew } from "./WhatsNew";
 import { StatuspageDisplay, isStatusConfigured } from "../statuspage";
 import { RenkuNavLink } from "../utils/components/RenkuNavLink";
 import { ExternalDocsLink, ExternalIconLink, ExternalLink } from "../utils/components/ExternalLinks";
-
-const discourseUrl = "https://renku.discourse.group";
+import { Docs, Links, RenkuPythonDocs } from "../utils/constants/Docs";
 
 class HelpNav extends Component {
   render() {
@@ -78,34 +77,34 @@ class HelpGetting extends Component {
       <div key="main1" className="d-flex mb-3 flex-wrap">
         <div className="me-4" style={{ flex: "0 1", flexBasis }}>
           <h3>
-            <ExternalIconLink url="https://renku.discourse.group" icon={faDiscourse} title="Forum" />
+            <ExternalIconLink url={Links.DISCOURSE} icon={faDiscourse} title="Forum" />
           </h3>
           <p>
-            We maintain a <ExternalDocsLink url={discourseUrl} title="help forum" /> for
+            We maintain a <ExternalDocsLink url={Links.DISCOURSE} title="help forum" /> for
             discussion about Renku. This is a good place to ask questions and find answers.
           </p>
         </div>
         <div className="me-4" style={{ flex: "0 1", flexBasis }}>
           <h3>
-            <ExternalIconLink url="https://gitter.im/SwissDataScienceCenter/renku" icon={faGitter} title="Gitter" />
+            <ExternalIconLink url={Links.GITTER} icon={faGitter} title="Gitter" />
           </h3>
           <p>
             Want to reach out to the development team live? Contact us on{" "}
-            <ExternalDocsLink url="https://gitter.im/SwissDataScienceCenter/renku" title="Gitter" />, we would be happy
+            <ExternalDocsLink url={Links.GITTER} title="Gitter" />, we would be happy
             to chat with you.
           </p>
         </div>
         <div className="me-4" style={{ flex: "0 1", flexBasis }}>
           <h3>
             <ExternalIconLink
-              url="https://github.com/SwissDataScienceCenter/renku"
+              url={Links.GITHUB}
               icon={faGithub}
               title="GitHub"
             />
           </h3>
           <p>
             Renku is open source and being developed on{" "}
-            <ExternalDocsLink url="https://github.com/SwissDataScienceCenter/renku" title="GitHub" />. This is the best
+            <ExternalDocsLink url={Links.GITHUB} title="GitHub" />. This is the best
             place to report issues and ask for new features, but feel free to contact us with questions, comments, or
             any kind of feedback.
           </p>
@@ -121,31 +120,31 @@ class HelpDocumentation extends Component {
       <Row>
         <Col md={8}>
           <h3>
-            <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html"
+            <ExternalDocsLink url={Docs.READ_THE_DOCS_TUTORIALS_STARTING}
               title="Tutorial" />
           </h3>
           <p>
             If you are here for the first time or you are not sure how to use Renku, we recommend you
             to go through our {" "}
-            <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html"
+            <ExternalDocsLink url={Docs.READ_THE_DOCS_TUTORIALS_STARTING}
               title="tutorial" />.
           </p>
           <h3>
-            <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/"
+            <ExternalDocsLink url={Docs.READ_THE_DOCS_ROOT}
               title="Renku" />
           </h3>
           <p>
-            The <ExternalDocsLink url="https://renku.readthedocs.io/en/latest/"
+            The <ExternalDocsLink url={Docs.READ_THE_DOCS_ROOT}
               title="Renku project documentation" /> explains Renku as a whole. It describes
             the parts that make it up, how they fit together, and how to use Renku in your
             data-science projects to work more effectively.
           </p>
           <h3>
-            <ExternalDocsLink url="https://renku-python.readthedocs.io/en/latest/"
+            <ExternalDocsLink url={RenkuPythonDocs.READ_THE_DOCS_ROOT}
               title="Renku CLI" />
           </h3>
           <p>
-            The <ExternalDocsLink url="https://renku-python.readthedocs.io/en/latest/"
+            The <ExternalDocsLink url={RenkuPythonDocs.READ_THE_DOCS_ROOT}
               title="command-line-interface (CLI) documentation" /> details the commands of the
             CLI, their parameters and options, and their behavior.
           </p>
@@ -200,7 +199,7 @@ class HelpFeatures extends Component {
           <p>
             More information is available in our{" "}
             <a
-              href="https://renku.readthedocs.io/en/latest/introduction/index.html#features"
+              href={`${Docs.READ_THE_DOCS_INTRODUCTION}/index.html#features`}
               target="_blank"
               rel="noreferrer noopener"
             >
@@ -216,7 +215,7 @@ class HelpFeatures extends Component {
 
 function HelpChanges() {
   // eslint-disable-next-line
-  const discourseNewTopicUrl = `${discourseUrl}/new-topic?category=Renkulab`;
+  const discourseNewTopicUrl = `${Links.DISCOURSE}/new-topic?category=Renkulab`;
 
   return <Fragment>
     <Row>

@@ -42,6 +42,7 @@ import Time from "../utils/helpers/Time";
 import { NotebooksHelper } from "./index";
 import { ObjectStoresConfigurationButton, ObjectStoresConfigurationModal } from "./ObjectStoresConfig.present";
 import { SessionStatus } from "../utils/constants/Notebooks";
+import { Docs } from "../utils/constants/Docs";
 
 
 function ProjectSessionLockAlert({ lockStatus }) {
@@ -505,7 +506,7 @@ class StartNotebookPipelinesContent extends Component {
 
       // this style trick makes it appear as the other Label + Input components
       const style = { marginTop: -8 };
-      const url = "https://renku.readthedocs.io/en/latest/reference/templates.html?highlight=.dockerignore#renku";
+      const url = Docs.rtdReferencePage("templates.html?highlight=pinned#renku");
       return (
         <Fragment>
           <Input type="input" disabled={true} id="customImage" style={style} value={projectOptions.image}></Input>
@@ -655,8 +656,7 @@ class StartNotebookCommits extends Component {
         true :
         false;
       if (autosaveExists) {
-        const url = "https://renku.readthedocs.io/en/latest/how-to-guides/session-stopping-and-saving.html" +
-          "#autosave-in-interactive-environments";
+        const url = Docs.rtdHowToGuide("session-stopping-and-saving.html#autosave-in-sessions");
         commitComment = (
           <FormText>
             <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> We
@@ -1139,7 +1139,7 @@ class AutosavedDataModal extends Component {
     const docsLink = (
       <ExternalLink
         role="text" iconSup={true} iconAfter={true} title="documentation"
-        url="https://renku.readthedocs.io/en/latest/how-to-guides/session-stopping-and-saving.html#autosave-in-sessions"
+        url={Docs.rtdHowToGuide("session-stopping-and-saving.html#autosave-in-sessions")}
       />
     );
     const command = `git reset --hard ${this.props.filters.commit.short_id} && git clean -f -d`;
