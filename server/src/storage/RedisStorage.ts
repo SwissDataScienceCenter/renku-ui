@@ -28,7 +28,7 @@ class RedisStorage implements Storage {
     host: string = config.redis.host,
     port: number = config.redis.port as number,
     password: string = config.redis.password,
-    isSentinel: boolean = config.redis.isSentinel,
+    isSentinel: boolean = config.redis.isSentinel as boolean,
     masterSet: string = config.redis.masterSet,
   ) {
     // configure redis
@@ -40,15 +40,15 @@ class RedisStorage implements Storage {
           10000;
       },
     };
-    if (isSentinel){
+    if (isSentinel) {
       redisConfig.sentinels = [
         { host, port },
       ];
       redisConfig.name = masterSet;
-      if (password) {
+      if (password)
         redisConfig.sentinelPassword = password;
-      }
-    } else {
+    }
+    else {
       redisConfig.host = host;
       redisConfig.port = port;
     }
