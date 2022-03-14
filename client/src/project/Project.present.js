@@ -1067,34 +1067,36 @@ class ProjectViewFiles extends Component {
   }
 }
 
+const ProjectSessions = (props) => {
+  const locationFrom = props.history?.location?.state?.from;
+  const backButtonLabel = locationFrom ? "Back to notebook file" : "Back to sessions list";
+  const backUrl = locationFrom ?? props.notebookServersUrl;
 
-class ProjectSessions extends Component {
-  render() {
-    const backButton = (<GoBackButton label="Back to sessions list" url={this.props.notebookServersUrl} />);
-    return [
-      <Col key="content" xs={12}>
-        <Switch>
-          <Route exact path={this.props.notebookServersUrl}
-            render={props => <ProjectNotebookServers {...this.props} />} />
-          <Route path={this.props.launchNotebookUrl}
-            render={props => (
-              <Fragment>
-                {backButton}
-                <ProjectStartNotebookServer key="startNotebookForm" {...this.props} />
-              </Fragment>
-            )} />
-          <Route path={this.props.sessionShowUrl}
-            render={props => (
-              <Fragment>
-                {backButton}
-                <ProjectShowSession {...this.props} match={props.match} />
-              </Fragment>
-            )} />
-        </Switch>
-      </Col>
-    ];
-  }
-}
+  const backButton = (<GoBackButton label={backButtonLabel} url={backUrl} />);
+
+  return [
+    <Col key="content" xs={12}>
+      <Switch>
+        <Route exact path={props.notebookServersUrl}
+          render={p => <ProjectNotebookServers {...props} />} />
+        <Route path={props.launchNotebookUrl}
+          render={p => (
+            <Fragment>
+              {backButton}
+              <ProjectStartNotebookServer key="startNotebookForm" {...props} />
+            </Fragment>
+          )} />
+        <Route path={props.sessionShowUrl}
+          render={p => (
+            <Fragment>
+              {backButton}
+              <ProjectShowSession {...props} match={p.match} />
+            </Fragment>
+          )} />
+      </Switch>
+    </Col>
+  ];
+};
 
 function notebookWarning(userLogged, accessLevel, forkUrl, postLoginUrl, externalUrl) {
   if (!userLogged) {
