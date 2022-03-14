@@ -68,6 +68,23 @@ function addPipelineMethods(client) {
   };
 
   /**
+   * Get single job
+   *
+   * @param {number|string} projectId - project id or slug
+   * @param {number} jobId - job id
+   */
+  client.getProjectJob = (projectId, jobId) => {
+    const headers = client.getBasicHeaders();
+    headers.append("Content-Type", "application/json");
+    const url = `${client.baseUrl}/projects/${projectId}/jobs/${jobId}`;
+
+    return client.clientFetch(url, {
+      method: "GET",
+      headers,
+    }).then(response => response.data);
+  };
+
+  /**
    * Run again all jobs for a specific pipeline
    *
    * @param {number|string} projectId - project id or slug

@@ -23,19 +23,38 @@
  *  Notebooks controller code.
  */
 
-import { API_ERRORS } from "../api-client/errors";
-import { parseINIString } from "../utils/helpers/HelperFunctions";
 import _ from "lodash";
+
+import { API_ERRORS } from "../api-client/errors";
+import { notebooksSchema } from "../model";
+import { parseINIString, sleep } from "../utils/helpers/HelperFunctions";
+
+
 const POLLING_INTERVAL = 3000;
 const IMAGE_BUILD_JOB = "image_build";
 const RENKU_INI_PATH = ".renku/renku.ini";
 const RENKU_INI_SECTION_LEGACY = `renku "interactive"`;
 const RENKU_INI_SECTION = "interactive";
 
-const PIPELINE_TYPES = {
-  anonymous: "registries",
-  logged: "jobs",
-  customImage: "none"
+const CI_TYPES = {
+  anonymous: "anonymous",
+  pinned: "pinned",
+  logged: "logged",
+  owner: "owner"
+};
+
+const CI_STAGES = {
+  starting: "starting",
+  pipelines: "pipelines",
+  jobs: "jobs",
+  image: "image"
+};
+
+const CI_STATUSES = {
+  wrong: "wrong",
+  success: "success",
+  running: "running",
+  failure: "failure"
 };
 
 const VALID_SETTINGS = [
@@ -283,32 +302,69 @@ const NotebooksHelper = {
   },
 
   /**
-   * Check whether the image is available or not. This is done by checking the pipeline object, but it's not
-   * intuitive how to verify it when the user has no permissions (registry data are stored in the pipeline in
-   * that case)
+   * Check the CI status for the currently selected commit.
    *
-   * @param {object} pipelines - pipelines object as stored in redux.
-   * @returns {boolean} image availability.
+   * @param {object} ci - ci object as stored in redux.
+   * @returns {object} ci status, including `stage` ("starting" --> "pipelines" --> "jobs" --> "image"),
+   *   `error` (null or <string>), ongoing (<bool>), finished (<bool>).
+   *   The props should be check in order, so that a null stage means nothing has been checked, no matter
+   *   what error contains. In the same way, when we get an error it does not matter what available says.
    */
-  checkPipelineAvailability: (pipelines) => {
-    const mainPipeline = pipelines.main;
+  checkCiStatus: (ci) => {
+    const returnObject = {
+      stage: null,
+      error: null,
+      ongoing: null,
+      available: false
+    };
 
-    if (pipelines.type === PIPELINE_TYPES.customImage)
-      return true;
-
-    if (pipelines.type === PIPELINE_TYPES.logged) {
-      if (mainPipeline.status === "success")
-        return true;
+    if (ci.stage == null)
+      return returnObject;
+    if (ci.stage === CI_STAGES.starting) {
+      returnObject.stage = CI_STAGES.starting;
+      returnObject.ongoing = true;
+      return returnObject;
     }
-    else if (pipelines.type === PIPELINE_TYPES.anonymous) {
-      if (mainPipeline && mainPipeline.path)
-        return true;
+
+    returnObject.stage = ci.stage;
+    const currentCi = ci[ci.stage];
+
+    if (currentCi.error != null) {
+      returnObject.error = currentCi.error;
+      returnObject.ongoing = false;
+    }
+    else if (!currentCi.fetched) {
+      returnObject.ongoing = true;
+    }
+    else if (ci.stage === CI_STAGES.pipelines) {
+      returnObject.ongoing = currentCi.fetched ? false : true;
+    }
+    else if (ci.stage === CI_STAGES.jobs) {
+      returnObject.ongoing = currentCi.fetched ? false : true;
+    }
+    else if (ci.stage === CI_STAGES.image) {
+      returnObject.ongoing = currentCi.fetched ? false : true;
+      returnObject.available = currentCi.available ? true : false;
     }
 
-    return false;
+    return returnObject;
   },
 
-  pipelineTypes: PIPELINE_TYPES,
+  getCiJobStatus: (job) => {
+    if (job && job["id"]) {
+      if (job.status === "success")
+        return CI_STATUSES.success;
+      if (["running", "pending", "stopping"].includes(job.status))
+        return CI_STATUSES.running;
+      if (["failed", "canceled"].includes(job.status))
+        return CI_STATUSES.failure;
+    }
+    return CI_STATUSES.wrong;
+  },
+
+  ciStatuses: CI_STATUSES,
+  ciStages: CI_STAGES,
+  ciTypes: CI_TYPES,
   pollingInterval: POLLING_INTERVAL,
   sessionConfigPrefix: SESSIONS_PREFIX,
   validSettings: VALID_SETTINGS
@@ -342,6 +398,11 @@ class NotebooksCoordinator {
         fetched: null,
         lastParameters: null,
         lastMainId: null
+      },
+      ci: {
+        type: null,
+        stage: null,
+        error: null
       },
       options: {
         fetched: null
@@ -627,154 +688,6 @@ class NotebooksCoordinator {
     return { ...commitData };
   }
 
-  async fetchPipeline() {
-    // check if already fetching data
-    const fetching = this.model.get("pipelines.fetching");
-    if (fetching)
-      return;
-
-    // get filters and stop fetching if not all parameters are available
-    const filters = this.getQueryFilters();
-    if (filters.branch === null || filters.commit === null) {
-      this.stopPipelinePolling();
-      return;
-    }
-
-    // update current state and start fetching
-    this.model.setObject({
-      pipelines: {
-        fetching: true,
-        lastParameters: JSON.stringify(filters)
-      }
-    });
-    const projectId = `${encodeURIComponent(filters.namespace)}%2F${filters.project}`;
-    const pipelines = await this.client.getPipelines(projectId, filters.commit).catch(error => {
-      this.model.set("pipelines.fetching", false);
-      throw error;
-    });
-
-    // check if results are outdated
-    let pipelinesState = { fetching: false };
-    const lastParameters = this.model.get("pipelines.lastParameters");
-    if (lastParameters !== JSON.stringify(filters)) {
-      pipelinesState.fetched = null;
-      this.model.setObject({ pipelines: pipelinesState });
-      return {};
-    }
-
-    // stop if no pipelines are available
-    let mainPipeline = {};
-    pipelinesState.fetched = new Date();
-    if (pipelines.length === 0) {
-      pipelinesState.lastMainId = null;
-      pipelinesState.main = { $set: mainPipeline };
-      this.model.setObject({ pipelines: pipelinesState });
-      return mainPipeline;
-    }
-
-    // try to use cached data to find image_build pipeline id
-    const lastMainId = this.model.get("pipelines.lastMainId");
-    if (lastMainId) {
-      const mainPipelines = pipelines.filter(pipeline => pipeline.id === lastMainId);
-      if (mainPipelines.length === 1) {
-        mainPipeline = mainPipelines[0];
-        pipelinesState.main = mainPipeline;
-        this.model.setObject({ pipelines: pipelinesState });
-        return mainPipeline;
-      }
-    }
-
-    // search for the proper pipeline
-    for (let pipeline of pipelines) {
-      // fetch jobs
-      const jobs = await this.client.getPipelineJobs(projectId, pipeline.id).catch(error => {
-        this.model.set("pipelines.fetching", false);
-        throw error;
-      });
-      const imageJobs = jobs.filter(job => job.name === IMAGE_BUILD_JOB);
-      if (imageJobs.length > 0) {
-        mainPipeline = pipeline;
-        pipelinesState.lastMainId = pipeline.id;
-        pipelinesState.main = mainPipeline;
-        this.model.setObject({ pipelines: pipelinesState });
-        return mainPipeline;
-      }
-    }
-
-    pipelinesState.lastMainId = null;
-    pipelinesState.main = mainPipeline;
-    this.model.setObject({ pipelines: pipelinesState });
-
-    // reset pipelines.main object attributes if needed
-    const currentMain = this.model.get("pipelines.main");
-    if (currentMain && currentMain.id && !mainPipeline.id)
-      this.model.set("pipelines.main", {});
-
-    return mainPipeline;
-  }
-
-  async fetchRegistries() {
-    // check if already fetching data
-    const fetching = this.model.get("pipelines.fetching");
-    if (fetching)
-      return;
-
-    // get filters and stop fetching if not all parameters are available
-    let filters = this.getQueryFilters();
-    if (filters.branch === null || filters.commit === null) {
-      this.stopPipelinePolling();
-      return;
-    }
-    const projectId = `${encodeURIComponent(filters.namespace)}%2F${filters.project}`;
-
-    // verify if parameters have changed and if I have an id
-    const lastParameters = this.model.get("pipelines.lastParameters");
-    const lastMainId = this.model.get("pipelines.lastMainId");
-    const newParameters = JSON.stringify(filters);
-    let newMainId, pipelinesState = {};
-    if (newParameters === lastParameters && lastMainId != null) {
-      newMainId = lastMainId;
-    }
-    else {
-      // update current state and start fetching
-      this.model.setObject({
-        pipelines: {
-          fetching: true,
-          lastParameters: newParameters
-        }
-      });
-      const registries = await this.client.getRegistries(projectId)
-        .catch(error => {
-          this.model.set("pipelines.fetching", false);
-          throw error;
-        });
-
-      // verify that a registry can be found
-      pipelinesState = { fetching: false };
-      if (registries.length === 0) {
-        pipelinesState.fetched = true;
-        pipelinesState.lastMainId = null;
-        pipelinesState.main = { $set: {} };
-        this.model.setObject({ pipelines: pipelinesState });
-        return {};
-      }
-
-      newMainId = registries[0].id;
-      pipelinesState.lastMainId = newMainId;
-    }
-
-    // use the registry id to get the image
-    const tag_id = filters.commit.substring(0, 7);
-    const tag = await this.client.getRegistryTag(projectId, newMainId, tag_id);
-    pipelinesState.fetched = true;
-    pipelinesState.main = tag ?
-      tag :
-      { $set: {} };
-
-    this.model.setObject({ pipelines: pipelinesState });
-    return pipelinesState;
-  }
-
   async fetchAutosaves(force = false) {
     // prevent double fetch
     if (!force) {
@@ -814,7 +727,7 @@ class NotebooksCoordinator {
   }
 
 
-  // * Handle polling * //
+  // * Handle notebooks polling * //
   startNotebookPolling(interval = POLLING_INTERVAL) {
     const oldPoller = this.model.get("notebooks.poller");
     if (oldPoller == null) {
@@ -836,64 +749,375 @@ class NotebooksCoordinator {
     }
   }
 
-  startPipelinePolling(interval = POLLING_INTERVAL) {
-    // compute current data
-    const projectOptions = this.model.get("options.project");
-    const userLogged = this.userModel.get("logged");
-    let newPipelinesType;
-    if (projectOptions["image"])
-      newPipelinesType = PIPELINE_TYPES.customImage;
-    else if (userLogged)
-      newPipelinesType = PIPELINE_TYPES.logged;
-    else
-      newPipelinesType = PIPELINE_TYPES.anonymous;
+  // * Handle CI, polling included * //
 
-    // if poller type changes, stop the old one and re-invoke later
-    const oldPoller = this.model.get("pipelines.poller");
-    const oldPipelinesType = this.model.get("pipelines.type");
-    if (oldPoller != null) {
-      if (oldPipelinesType !== newPipelinesType) {
-        this.model.set("pipelines.fetched", null);
-        this.stopPipelinePolling();
-        setTimeout(() => { this.startPipelinePolling(); }, 1000);
-        return false;
+  /**
+   * Verify if current target commit is still valid.
+   * @param {string} expectedTarget - original commit when fetching CI was initiated
+   * @returns {boolean}
+   */
+  _checkTarget(expectedTarget) {
+    const currentTarget = this.model.get("ci.target");
+    if (expectedTarget !== currentTarget)
+      return false;
+    return true;
+  }
+
+  /**
+   * Create an error message from the current error.
+   * @param {object} error - error object
+   * @returns {string}
+   */
+  _getErrorMessage(error) {
+    if (error?.errorData?.message)
+      return error.errorData.message;
+    if (error?.message)
+      return error.message;
+    if (error?.case)
+      return error.case;
+    return error ?
+      error.toString() :
+      false;
+  }
+
+  /**
+   * Start checking the CI status according to the user status for the project.
+   *
+   * @param {boolean} force - whether the user is logged in or not
+   * @param {boolean} logged - whether the user is logged in or not
+   * @param {boolean} owner  - whether the user is project owner or not
+   * @param {function} [problemCallback]  - callback to invoke when there is a problem
+   */
+  async fetchOrPollCi(force = false, logged = null, owner = null, problemCallback = null) {
+    // Verify current commit and avoid re-fetching if not needed
+    const filters = this.model.get("filters");
+    const commit = filters?.commit?.id;
+    if (!commit)
+      return;
+    const previousCi = this.model.get("ci");
+    if (previousCi.target === commit && !force)
+      return;
+
+    // Get basic information
+    const options = this.model.get("options.project");
+    let ciType;
+    if (options["image"])
+      ciType = CI_TYPES.pinned;
+    else if (!logged)
+      ciType = CI_TYPES.anonymous;
+    else if (!owner)
+      ciType = CI_TYPES.logged;
+    else
+      ciType = CI_TYPES.owner;
+
+    // set up the basic object
+    let ciObject = notebooksSchema.createInitialized().ci;
+    ciObject.type = ciType;
+    ciObject.stage = CI_STAGES.starting;
+    ciObject.target = commit;
+    this.model.setObject({ ci: ciObject });
+
+    // Trigger next step passing project info
+    const projectId = `${encodeURIComponent(filters.namespace)}%2F${filters.project}`;
+    if (ciType === CI_TYPES.pinned || ciType === CI_TYPES.anonymous)
+      this.checkCiImage(projectId, commit, problemCallback);
+    else
+      this.checkCiPipelines(projectId, commit, problemCallback);
+  }
+
+  /**
+   * Fetch pipelines and keep polling until we get one or an error
+   * @param {string} projectId - target project id, already URI-encoded
+   * @param {string} expectedTarget - original commit when fetching CI was initiated
+   * @param {function} [problemCallback]  - callback to invoke when there is a problem
+   */
+  async checkCiPipelines(projectId, target, problemCallback = null) {
+    // set state and fetch pipelines
+    this.model.set("ci.stage", CI_STAGES.pipelines);
+    let pipelinesList = await this.fetchCiPipeline(projectId, target);
+
+    // keep fetching until we get a non-empty list or an error
+    while (pipelinesList !== false && !pipelinesList?.length) {
+      if (problemCallback) problemCallback();
+      await sleep(POLLING_INTERVAL / 1000);
+      pipelinesList = await this.fetchCiPipeline(projectId, target);
+    }
+
+    // invoke next step if the result is valid
+    if (pipelinesList !== false)
+      this.checkCiJobs(projectId, target, problemCallback);
+  }
+
+  /**
+   * Fetch the pipeline if the current ci target is the same passed as argument
+   * @param {string} projectId - target project id, already URI-encoded
+   * @param {string} expectedTarget - original commit when fetching CI was initiated
+   */
+  async fetchCiPipeline(projectId, expectedTarget) {
+    // block fetching and falsify when the current target has changed
+    if (!this._checkTarget(expectedTarget))
+      return false;
+
+    let pipelineObject = { fetching: true };
+    let pipelinesList = [];
+
+    // return early if it's still fetching
+    const fetching = this.model.get("ci.pipelines.fetching");
+    if (fetching)
+      return pipelinesList;
+
+    // start fetching and wait for the result
+    this.model.setObject({ ci: { pipelines: pipelineObject } });
+    try {
+      pipelinesList = await this.client.getPipelines(projectId, expectedTarget);
+      pipelineObject.error = null;
+    }
+    catch (e) {
+      pipelineObject.error = this._getErrorMessage(e);
+    }
+    pipelineObject.list = { $set: pipelinesList };
+    pipelineObject.target = pipelinesList?.length === 1 ? pipelinesList[0] : null;
+    pipelineObject.available = !pipelineObject.error && pipelinesList?.length ? true : false;
+    pipelineObject.fetching = false;
+    pipelineObject.fetched = new Date();
+    this.model.setObject({ ci: { pipelines: pipelineObject } });
+
+    // return either the list or false if any error occurred
+    return pipelineObject.error ?
+      false :
+      pipelinesList;
+  }
+
+  /**
+   * Fetch jobs and keep polling until we get a status confirmation or an error.
+   * @param {string} projectId - target project id, already URI-encoded
+   * @param {string} target - original commit when fetching CI was initiated
+   * @param {function} [problemCallback]  - callback to invoke when there is a problem
+   */
+  async checkCiJobs(projectId, target, problemCallback = null) {
+    this.model.set("ci.stage", CI_STAGES.jobs);
+
+    // Get the pipelines, filtering for the one containing the target job (if any).
+    const pipelines = this.model.get("ci.pipelines");
+    let pipelinesList = pipelines.target?.id ?
+      [pipelines.target] :
+      pipelines.list;
+
+    // Get jobs from the pipelines
+    let jobs = await this.fetchCiJobs(projectId, target, pipelinesList);
+    while (jobs !== false && !jobs.length) {
+      if (problemCallback) problemCallback();
+      await sleep(POLLING_INTERVAL / 1000);
+      jobs = await this.fetchCiJobs(projectId, target, pipelinesList, true);
+    }
+
+    // check and keep checking job status if necessary
+    if (jobs?.length === 1) {
+      let status = NotebooksHelper.getCiJobStatus(jobs[0]);
+      while (status === CI_STATUSES.running) {
+        await sleep(POLLING_INTERVAL / 1000);
+        const job = await this.fetchCiJob(projectId, target, jobs[0].id);
+        status = NotebooksHelper.getCiJobStatus(job);
       }
+      if (status === CI_STATUSES.success)
+        this.checkCiImage(projectId, target, problemCallback);
     }
     else {
-      let newPipelines = {
-        fetched: null,
-        type: newPipelinesType
-      };
-
-      let returnValue;
-      if (newPipelinesType === PIPELINE_TYPES.customImage) {
-        newPipelines.poller = null;
-        newPipelines.fetched = new Date();
-        newPipelines.fetching = false;
-        returnValue = true;
-      }
-      else if (newPipelinesType === PIPELINE_TYPES.logged) {
-        const newPoller = setInterval(() => { this.fetchPipeline(); }, interval);
-        newPipelines.poller = newPoller;
-        returnValue = this.fetchPipeline();
-      }
-      else {
-        const newPoller = setInterval(() => { this.fetchRegistries(); }, interval);
-        newPipelines.poller = newPoller;
-        returnValue = this.fetchRegistries();
-      }
-
-      this.model.setObject({ pipelines: newPipelines });
-      return returnValue;
+      this.model.set("ci.jobs.error", "Unexpected errors with GitLab pipelines: duplicate jobs name");
+      if (problemCallback) problemCallback();
     }
   }
 
-  stopPipelinePolling() {
-    const poller = this.model.get("pipelines.poller");
-    if (poller) {
-      this.model.set("pipelines.poller", null);
-      clearTimeout(poller);
+  /**
+   * Fetch the pipeline if the current ci target is the same passed as argument
+   * @param {string} projectId - target project id, already URI-encoded
+   * @param {string} expectedTarget - original commit when fetching CI was initiated
+   * @param {object[]} pipelinesList - list of all the relevant pipelines
+   * @param {boolean} reFetching -whether it's a re-try or not
+   */
+  async fetchCiJobs(projectId, expectedTarget, pipelinesList, reFetching = false) {
+    // block fetching and falsify when the current target has changed
+    if (!this._checkTarget(expectedTarget))
+      return false;
+
+    let jobsList = [];
+    let jobsObject = {};
+    if (reFetching)
+      jobsObject.reFetching = true;
+    else
+      jobsObject.fetching = true;
+
+    this.model.setObject({ ci: { jobs: jobsObject } });
+    for (const pipeline of pipelinesList) {
+      try {
+        // check the jobs and break if we find the one we are looking for
+        const pipelineJobs = await this.client.getPipelineJobs(projectId, pipeline.id);
+        const imageJob = pipelineJobs.find(job => job.name === IMAGE_BUILD_JOB);
+        jobsObject.error = null;
+        if (imageJob) {
+          jobsObject.target = imageJob;
+          break;
+        }
+        else {
+          jobsList = [...jobsList, ...pipelineJobs];
+        }
+      }
+      // block on errors
+      catch (e) {
+        jobsObject.error = this._getErrorMessage(e);
+        break;
+      }
     }
+
+    jobsObject.list = { $set: jobsList };
+    jobsObject.fetching = false;
+    jobsObject.reFetching = false;
+    jobsObject.fetched = new Date();
+    jobsObject.available = jobsObject.target || !jobsObject.error ? true : false;
+    this.model.setObject({ ci: { jobs: jobsObject } });
+
+    // return either an array with the target jobs (it's 1 or none) or false if error occurred
+    if (jobsObject.error)
+      return false;
+    else if (jobsObject.target)
+      return [jobsObject.target];
+    return [];
+  }
+
+  /**
+   * Fetch the pipeline if the current ci target is the same passed as argument
+   * @param {string} projectId - target project id, already URI-encoded
+   * @param {string} expectedTarget - original commit when fetching CI was initiated
+   * @param {string} jobId - target jobId
+   */
+  async fetchCiJob(projectId, expectedTarget, jobId) {
+    // block fetching and falsify when the current target has changed
+    if (!this._checkTarget(expectedTarget))
+      return false;
+
+    let jobsObject = { reFetching: true };
+    this.model.setObject({ ci: { jobs: jobsObject } });
+
+    let job;
+    try {
+      job = await this.client.getProjectJob(projectId, jobId);
+      jobsObject.error = null;
+    }
+    // block on errors
+    catch (e) {
+      jobsObject.error = this._getErrorMessage(e);
+    }
+
+    jobsObject.target = job;
+    jobsObject.reFetching = false;
+    jobsObject.fetched = new Date();
+    this.model.setObject({ ci: { jobs: jobsObject } });
+    return job?.id && !jobsObject.error ?
+      job :
+      false;
+  }
+
+  /**
+   * Fetch jobs and keep polling until we get a status confirmation or an error.
+   * @param {string} projectId - target project id, already URI-encoded
+   * @param {string} target - original commit when fetching CI was initiated
+   * @param {function} [problemCallback]  - callback to invoke when there is a problem
+   */
+  async checkCiImage(projectId, target, problemCallback = null) {
+    this.model.set("ci.stage", CI_STAGES.image);
+
+    // fetch reference registry for the project. It should be 1 per project.
+    let imageObject = { fetching: true };
+    let registries = [];
+    this.model.setObject({ ci: { image: imageObject } });
+    try {
+      registries = await this.client.getRegistries(projectId);
+      // filter the ones without names?
+      if (!registries?.length) {
+        imageObject.error = "This project does not have any Docker image repository";
+      }
+      else if (registries?.length !== 1) {
+        // ? try to use the no name registry. It's not guaranteed that it will work -- we should set a renku name
+        const filteredRegistries = registries.find(registry => registry.name === "");
+        if (filteredRegistries?.id) {
+          registries = [filteredRegistries];
+          imageObject.error = null;
+        }
+        else {
+          imageObject.error = "The project has multiple Docker image repositories. We can't identify the correct one";
+        }
+      }
+      else {
+        imageObject.error = null;
+      }
+    }
+    catch (e) {
+      imageObject.error = this._getErrorMessage(e);
+    }
+
+    // stop here if there is any error.
+    if (imageObject.error) {
+      if (problemCallback) problemCallback();
+      imageObject.available = false;
+      imageObject.fetching = false;
+      imageObject.fetched = true;
+      this.model.setObject({ ci: { image: imageObject } });
+      return;
+    }
+
+    const id = registries[0]?.id;
+    let imageAvailable = await this.fetchCiImage(projectId, target, id);
+    while (imageAvailable !== false && imageAvailable !== true) {
+      if (problemCallback) problemCallback();
+      await sleep(POLLING_INTERVAL / 1000);
+      imageAvailable = await this.fetchCiImage(projectId, target, id);
+    }
+  }
+
+
+  /**
+   * Fetch the pipeline if the current ci target is the same passed as argument
+   * @param {string} projectId - target project id, already URI-encoded
+   * @param {string} expectedTarget - original commit when fetching CI was initiated
+   * @param {string} registryId - target registry
+   */
+  async fetchCiImage(projectId, expectedTarget, registryId) {
+    // block fetching and falsify when the current target has changed
+    if (!this._checkTarget(expectedTarget))
+      return false;
+
+    let imageObject = { fetching: true };
+    this.model.setObject({ ci: { image: imageObject } });
+
+    let image;
+    const commitShortSha = expectedTarget.substring(0, 7);
+    try {
+      image = await this.client.getRegistryTag(projectId, registryId, commitShortSha);
+      imageObject.error = null;
+    }
+    // block on errors
+    catch (e) {
+      imageObject.error = this._getErrorMessage(e);
+    }
+
+    imageObject.fetching = false;
+    imageObject.fetched = new Date();
+    if (image?.location)
+      imageObject.available = true;
+
+    this.model.setObject({ ci: { image: imageObject } });
+    if (imageObject.error)
+      return false;
+    if (imageObject.available)
+      return true;
+    return undefined;
+  }
+
+  /**
+   * Stop the ci polling by cleaning up the schema. This works cause the ci.target is removed.
+   */
+  stopCiPolling() {
+    this.model.set("ci", notebooksSchema.createInitialized().ci);
   }
 
 
