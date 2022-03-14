@@ -29,9 +29,9 @@ interface MigrationCheckParams {
 
 function Projects<T extends FixturesConstructor>(Parent: T) {
   return class ProjectsFixtures extends Parent {
-    landingUserProjects(name = "getLandingUserProjects") {
+    landingUserProjects(name = "getLandingUserProjects", fixture = "landing-user-projects.json") {
       cy.intercept("/ui-server/api/graphql", {
-        fixture: "landing-user-projects.json"
+        fixture
       }).as(name);
       return this;
     }
@@ -57,6 +57,37 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       const fixture = this.useMockedData ? { fixture: result } : undefined;
       cy.intercept(
         `/ui-server/api/projects/${encodeURIComponent(path)}?statistics=${statistics}&doNotTrack=*`,
+        fixture
+      ).as(name);
+      return this;
+    }
+
+    errorProject(path = "", name = "getErrorProject") {
+      const fixture = this.useMockedData ? { fixture: `projects/no-project.json`, statusCode: 404 } : undefined;
+      cy.intercept(
+        `/ui-server/api/projects/${encodeURIComponent(path)}?statistics=*`,
+        fixture
+      ).as(name);
+      return this;
+    }
+
+    changeVisibility(path = "", name = "changeVisibility", result = "projects/change-visibility.json") {
+      const fixture = this.useMockedData ? { fixture: result } : undefined;
+      cy.intercept("/ui-server/api/projects/*/graph/webhooks", {
+        body: { message: "Hook created" }
+      });
+      cy.intercept(
+        "PUT",
+        `/ui-server/api/projects/${encodeURIComponent(path)}`,
+        fixture
+      ).as(name);
+      return this;
+    }
+
+    cacheProjectList(name = "getCacheProjectList", result = "projects/cache-project-list.json") {
+      const fixture = this.useMockedData ? { fixture: result } : undefined;
+      cy.intercept(
+        `/ui-server/api/renku/cache.project_list`,
         fixture
       ).as(name);
       return this;

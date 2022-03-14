@@ -1,0 +1,11 @@
+{
+   "result":{
+      "projects":[
+         {
+            "initialized":true,
+            "project_id":"fabe2de762e5423a8acf63e4e0cfdb80",
+            "git_url":"https://dev.renku.ch/gitlab/e2e/testing-datasets.git"
+         }
+      ]
+   }
+}

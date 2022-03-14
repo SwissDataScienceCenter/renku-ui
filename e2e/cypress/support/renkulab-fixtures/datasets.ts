@@ -96,6 +96,33 @@ function Datasets<T extends FixturesConstructor>(Parent: T) {
       ).as(name);
       return this;
     }
+
+    importToProject(name = "importToProject", resultFile = "datasets/datasets-import.json") {
+      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
+      cy.intercept(
+        "/ui-server/api/renku/datasets.import",
+        fixture
+      ).as(name);
+      return this;
+    }
+
+    importJobCompleted(name = "importJobCompleted", resultFile = "datasets/import-job-completed.json") {
+      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
+      cy.intercept(
+        "/ui-server/api/renku/jobs/*",
+        fixture,
+      ).as(name);
+      return this;
+    }
+
+    importJobError(name = "importJobError", resultFile = "datasets/import-job-error.json") {
+      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
+      cy.intercept(
+        "/ui-server/api/renku/jobs/*",
+        fixture,
+      ).as(name);
+      return this;
+    }
   };
 }
 

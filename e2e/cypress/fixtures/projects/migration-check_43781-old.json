@@ -1,0 +1,27 @@
+{
+  "result":{
+    "core_renku_version":"1.0.6",
+    "dockerfile_renku_status":{
+      "newer_renku_available":true,
+      "dockerfile_renku_version":"1.0.5",
+      "latest_renku_version":"1.0.6",
+      "automated_dockerfile_update":true
+    },
+    "template_status":{
+      "latest_template_version":"fc5fddb1e14055ef5ac3b3332fc9bb8e271d7e08",
+      "template_id":"python-minimal",
+      "template_source":"https://github.com/SwissDataScienceCenter/renku-project-template",
+      "newer_template_available":false,
+      "project_template_version":"fc5fddb1e14055ef5ac3b3332fc9bb8e271d7e08",
+      "template_ref":"master",
+      "automated_template_update":false
+    },
+    "project_renku_version":"1.0.4",
+    "core_compatibility_status":{
+      "current_metadata_version":"8",
+      "migration_required":false,
+      "project_metadata_version":"8"
+    },
+    "project_supported":true
+  }
+}

@@ -23,3 +23,12 @@ Cypress.Commands.add("gui_search_dataset", (datasetName: string, fixtures, resul
   cy.wait("@getDatasetsSearch");
   cy.get("[data-cy='list-card-title']").contains(datasetName);
 });
+
+Cypress.Commands.add("gui_select_project_autosuggestion_list", (project: string, fixtures, migrationCheckResult) => {
+  fixtures.interceptMigrationCheck("migrationCheckSelectedProject", migrationCheckResult, "*");
+  // click in project suggestion list to display options and type project to import dataset and select it
+  cy.get_cy("form-project-exist").get(".mb-3 > .react-autosuggest__container > .form-control").click();
+  cy.get_cy("form-project-exist").get(".mb-3 > .react-autosuggest__container > .form-control").type(project);
+  cy.get_cy("form-project-exist").get("#react-autowhatever-project-section-0-item-0 > span").click();
+  cy.wait("@migrationCheckSelectedProject");
+});

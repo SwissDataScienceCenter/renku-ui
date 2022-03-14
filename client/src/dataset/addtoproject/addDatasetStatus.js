@@ -59,7 +59,8 @@ function AddDatasetStatus(props) {
     default:
       statusProject = null;
   }
-  return statusProject;
+  return statusProject ?
+    <div data-cy="import-dataset-status">{ statusProject }</div> : statusProject;
 }
 
 export { AddDatasetStatus };
