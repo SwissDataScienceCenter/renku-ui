@@ -87,13 +87,15 @@ function RefreshButton(props) {
  * @param {string} props.url url to go back to
  * @param {string} props.label text next to the arrow
  */
-function GoBackButton(props) {
-  const linkClasses = (props.className) ?
-    props.className + " link-rk-text text-decoration-none" :
+function GoBackButton({ className, label, url }) {
+
+  const linkClasses = (className) ?
+    className + " link-rk-text text-decoration-none" :
     "link-rk-text text-decoration-none";
+
   return <Col md={12} className="pb-4 pl-0">
-    <Link data-cy="go-back-button" className={linkClasses} to={props.url}>
-      <span className="arrow-left">  </span>{props.label}
+    <Link data-cy="go-back-button" className={linkClasses} to={url}>
+      <span className="arrow-left">  </span>{label}
     </Link>
   </Col>;
 }

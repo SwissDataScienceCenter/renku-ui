@@ -1173,7 +1173,7 @@ class AutosavedDataModal extends Component {
 // * CheckNotebookIcon code * //
 class CheckNotebookIcon extends Component {
   render() {
-    const { fetched, notebook, location } = this.props;
+    const { fetched, notebook, location, filePath } = this.props;
     const loader = (<span className="ms-2 pb-1"><Loader size="19" inline="true" /></span>);
     if (!fetched)
       return loader;
@@ -1182,10 +1182,16 @@ class CheckNotebookIcon extends Component {
     if (notebook) {
       const status = notebook.status?.state;
       if (status === SessionStatus.running) {
+        const annotations = NotebooksHelper.cleanAnnotations(notebook.annotations, "renku.io");
+        const sessionUrl = Url.get(Url.pages.project.session.show, {
+          namespace: annotations["namespace"],
+          path: annotations["projectName"],
+          server: notebook.name,
+        });
+        const state = { from: location.pathname, filePath };
         tooltip = "Connect to JupyterLab";
         icon = (<JupyterIcon svgClass="svg-inline--fa fa-w-16 icon-link" />);
-        const url = `${notebook.url}/lab/tree/${this.props.filePath}`;
-        link = (<a href={url} role="button" target="_blank" rel="noreferrer noopener">{icon}</a>);
+        link = <Link to={{ pathname: sessionUrl, state }} >{icon}</Link>;
       }
       else if (status === SessionStatus.starting || status === SessionStatus.stopping) {
         tooltip = status === SessionStatus.stopping ?
