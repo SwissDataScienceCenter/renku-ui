@@ -34,14 +34,34 @@
   }
 }
 
-/* Modals body personalizations */
 
-.modal-body .no-overflow {
-  overflow: unset;
+.log-container {
+  white-space: pre-line;
 }
 
-.modal-body wrap-word {
+/* Modals body personalization for logs */
+.logs-modal.log-container {
   white-space: pre-line;
+  height: 600px;
+}
+
+@media (max-height: 1024px) {
+  .logs-modal .log-container {
+    height: 400px;
+  }
+}
+
+@media (max-height: 700px) {
+  .logs-modal .log-container {
+    height: auto;
+  }
+}
+
+/* Logs personalization for session-view */
+@media (min-height: 1200px) {
+  .log-container {
+    height: 600px;
+  }
 }
 
 /* sessions page borders */
@@ -49,7 +69,7 @@
 .sessions-iframe-border {
   border-width: 1px 0 0 0 !important;
 }
-@media (min-width: 992px) { 
+@media (min-width: 992px) {
   .sessions-iframe-border {
     border-width: 1px 0 0 1px !important;
   }

@@ -21,13 +21,13 @@ import Media from "react-media";
 import { Link, useHistory } from "react-router-dom";
 import {
   Alert, Badge, Button, Col, DropdownItem,
-  Modal, ModalBody, ModalFooter, ModalHeader, Nav, NavItem, NavLink, PopoverBody, PopoverHeader,
+  Nav, NavItem, NavLink, PopoverBody, PopoverHeader,
   Row, UncontrolledPopover
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBook, faCheckCircle, faExclamationTriangle, faExternalLinkAlt, faFileAlt, faHistory,
-  faInfoCircle, faQuestionCircle, faRedo, faSave, faStopCircle, faSyncAlt, faTimesCircle
+  faInfoCircle, faQuestionCircle, faStopCircle, faSyncAlt, faTimesCircle
 } from "@fortawesome/free-solid-svg-icons";
 import _ from "lodash";
 
@@ -50,6 +50,7 @@ import {
 } from "./NotebookStart.present";
 
 import "./Notebooks.css";
+import { EnvironmentLogs, LogDownloadButton, LogTabs, useDownloadLogs } from "../utils/components/Logs";
 import { SessionStatus } from "../utils/constants/Notebooks";
 import { Docs } from "../utils/constants/Docs";
 
@@ -93,16 +94,8 @@ function ShowSession(props) {
   const fetchLogs = () => {
     if (!notebook.available)
       return;
-    handlers.fetchLogs(notebook.data.name);
+    return handlers.fetchLogs(notebook.data.name);
   };
-
-  let widthStyle = "";
-  if (tab === SESSION_TABS.session)
-    widthStyle = "w-100";
-  else if (tab === SESSION_TABS.logs)
-    widthStyle = "overflow-auto";
-  else if (tab === SESSION_TABS.docs)
-    widthStyle = "w-100";
 
   const urlList = Url.get(Url.pages.project.session, {
     namespace: filters.namespace,
@@ -119,7 +112,7 @@ function ShowSession(props) {
       <SessionInformation notebook={notebook} stopNotebook={handlers.stopNotebook} urlList={urlList} />
       <div className="d-lg-flex">
         <SessionNavbar fetchLogs={fetchLogs} setTab={setTab} tab={tab} />
-        <div className={`border sessions-iframe-border ${widthStyle}`}>
+        <div className={`border sessions-iframe-border w-100`}>
           <SessionJupyter {...props} tab={tab} urlList={urlList} />
           <SessionLogs {...props} tab={tab} fetchLogs={fetchLogs} />
           <SessionCommands {...props} tab={tab} />
@@ -235,6 +228,8 @@ function SessionNavbar(props) {
 function SessionLogs(props) {
   const { fetchLogs, notebook, tab } = props;
   const { logs } = notebook;
+  const sessionName = notebook.data.name;
+  const [ downloading, save ] = useDownloadLogs(logs, fetchLogs, sessionName);
 
   if (tab !== SESSION_TABS.logs)
     return null;
@@ -254,8 +249,8 @@ function SessionLogs(props) {
       );
     }
     else {
-      if (logs.data && logs.data.length) {
-        body = (<pre className="small no-overflow wrap-word">{logs.data.join("\n")}</pre>);
+      if (logs.data && typeof logs.data !== "string") {
+        body = <LogTabs logs={logs.data}/>;
       }
       else {
         body = (
@@ -277,12 +272,13 @@ function SessionLogs(props) {
   return (
     <Fragment>
       <div className="p-2 p-lg-3 text-nowrap">
-        <Button key="button" color="secondary" size="sm"
+        <Button key="button" color="secondary" size="sm" style={{ marginRight: 8 }}
           id="session-refresh-logs" onClick={() => fetchLogs()} disabled={logs.fetching} >
           <FontAwesomeIcon icon={faSyncAlt} /> Refresh logs
         </Button>
+        <LogDownloadButton logs={logs} downloading={downloading} save={save} size="sm" color="secondary"/>
       </div>
-      <div className="p-2 p-lg-3 border-top" style={{ minHeight: 800 }}>
+      <div className="p-2 p-lg-3 border-top">
         {body}
       </div>
     </Fragment>
@@ -939,7 +935,7 @@ const NotebookServerRowAction = memo((props) => {
     logs: null
   };
   let defaultAction = null;
-  actions.logs = (<DropdownItem onClick={() => props.toggleLogs(name)} color="secondary">
+  actions.logs = (<DropdownItem data-cy="session-log-button" onClick={() => props.toggleLogs(name)} color="secondary">
     <FontAwesomeIcon icon={faFileAlt} /> Get logs
   </DropdownItem>);
 
@@ -963,7 +959,8 @@ const NotebookServerRowAction = memo((props) => {
   }
 
   return (
-    <ButtonWithMenu className="sessionsButton" size="sm" default={defaultAction} color="secondary">
+    <ButtonWithMenu
+      data-cy="sessions-button" className="sessionsButton" size="sm" default={defaultAction} color="secondary">
       {actions.openExternal}
       {actions.logs}
       {actions.stop}
@@ -971,95 +968,6 @@ const NotebookServerRowAction = memo((props) => {
   );
 }, _.isEqual);
 NotebookServerRowAction.displayName = "NotebookServerRowAction";
-
-/**
- * Simple environment logs container
- *
- * @param {function} fetchLogs - async function to get logs as an array string
- * @param {function} toggleLogs - toggle logs visibility and fetch logs on show
- * @param {object} logs - log object from redux store enhanced with `show` property
- * @param {string} name - server name
- * @param {object} annotations - list of cleaned annotations
- */
-class EnvironmentLogs extends Component {
-  async save() {
-    // get full logs
-    const { fetchLogs, name } = this.props;
-    const fullLogs = await fetchLogs(name, true);
-
-    // create the blob element to download logs as a file
-    const elem = document.createElement("a");
-    const file = new Blob([fullLogs.join("\n")], { type: "text/plain" });
-    elem.href = URL.createObjectURL(file);
-    this.props.fetchLogs();
-    elem.download = `Logs_${this.props.name}.txt`;
-    document.body.appendChild(elem);
-    elem.click();
-  }
-
-  render() {
-    const { logs, name, toggleLogs, fetchLogs, annotations } = this.props;
-    if (!logs.show || logs.show !== name)
-      return null;
-
-    let body;
-    if (logs.fetching) {
-      body = (<Loader />);
-    }
-    else {
-      if (!logs.fetched) {
-        body = (<p>Logs unavailable. Please
-          <Button color="primary" onClick={() => { fetchLogs(name); }}>download</Button> them again.
-        </p>);
-      }
-      else {
-        if (logs.data && logs.data.length) {
-          body = (<pre className="small no-overflow wrap-word">{logs.data.join("\n")}</pre>);
-        }
-        else {
-          body = (<div>
-            <p>No logs available for this pod yet.</p>
-            <p>You can try to <Button color="primary" onClick={() => { fetchLogs(name); }}>Refresh</Button>
-              them after a while.</p>
-          </div>);
-        }
-      }
-    }
-
-    const canDownload = (logs) => {
-      if (logs.fetching)
-        return false;
-      if (!logs.data || !logs.data.length)
-        return false;
-      if (logs.data.length === 1 && logs.data[0].startsWith("Logs unavailable"))
-        return false;
-      return true;
-    };
-
-    return (
-      <Modal
-        isOpen={logs.show ? true : false}
-        className="modal-dynamic-width"
-        scrollable={true}
-        toggle={() => { toggleLogs(name); }}>
-        <ModalHeader toggle={() => { toggleLogs(name); }} className="header-multiline">
-          Logs
-          <br /><small>{annotations["namespace"]}/{annotations["projectName"]}</small>
-          <br /><small>{annotations["branch"]}@{annotations["commit-sha"].substring(0, 8)}</small>
-        </ModalHeader>
-        <ModalBody>{body}</ModalBody>
-        <ModalFooter>
-          <Button color="primary" disabled={!canDownload(logs)} onClick={() => { this.save(); }}>
-            <FontAwesomeIcon icon={faSave} /> Download
-          </Button>
-          <Button color="primary" disabled={logs.fetching} onClick={() => { fetchLogs(name); }}>
-            <FontAwesomeIcon icon={faRedo} /> Refresh
-          </Button>
-        </ModalFooter>
-      </Modal>
-    );
-  }
-}
 
 export {
   CheckNotebookIcon, Notebooks, NotebooksDisabled, ServerOptionBoolean, ServerOptionEnum, ServerOptionRange,
