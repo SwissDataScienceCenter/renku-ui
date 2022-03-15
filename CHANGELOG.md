@@ -21,6 +21,10 @@
 * update old documentation links ([#1704](https://github.com/SwissDataScienceCenter/renku-ui/issues/1704))
 
 
+### BREAKING CHANGES
+
+* requires renku-notebooks >=1.5.0
+
 ## [2.0.2](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.0.1...2.0.2) (2022-02-15)
 
 Minor internal changes, not relevant to users.
