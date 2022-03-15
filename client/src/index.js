@@ -14,6 +14,7 @@ import App from "./App";
 // import registerServiceWorker from './utils/ServiceWorker';
 import APIClient from "./api-client";
 import { LoginHelper } from "./authentication";
+import { EnvironmentCoordinator } from "./environment";
 import { pollComponentsVersion } from "./landing";
 import { Maintenance } from "./Maintenance";
 import { StateModel, globalSchema } from "./model";
@@ -89,6 +90,9 @@ Promise.all([configFetch, privacyFetch]).then(valuesRead => {
     const statuspageId = params["STATUSPAGE_ID"];
     pollStatuspage(statuspageId, model);
     pollComponentsVersion(model.subModel("environment"), client);
+
+    // Retrieve service environment information
+    new EnvironmentCoordinator(client, model.subModel("environment")).fetchCoreServiceVersions();
 
     // Map redux user data to the initial react application
     function mapStateToProps(state, ownProps) {
