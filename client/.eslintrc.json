@@ -152,6 +152,7 @@
         "skipWords": [
           "accessor",
           "allowfullscreen",
+          "apiversion",
           "ascii",
           "asciimath",
           "autosave",

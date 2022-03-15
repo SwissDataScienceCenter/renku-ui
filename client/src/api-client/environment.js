@@ -37,7 +37,7 @@ function addEnvironmentMethods(client) {
    * @param {string} version - target core version to test
    */
   client.checkCoreAvailability = async (version) => {
-    const urlApi = `${client.baseUrl}/renku/${version}/version`;
+    const urlApi = `${client.baseUrl}/renku/${version}/apiversion`;
     let headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
