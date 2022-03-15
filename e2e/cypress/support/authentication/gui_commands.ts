@@ -22,7 +22,7 @@ const GITLAB_PROVIDER = Cypress.env("GITLAB_PROVIDER");
 Cypress.Commands.add("gui_kc_login", (user: User, startFromHome = false) => {
   if (startFromHome) {
     cy.visit("/");
-    cy.get("#login-button").click({ force: true });
+    cy.get("#login-button").click({ force: true }); // eslint-disable-line cypress/no-force
   }
   cy.get("#username").clear();
   cy.get("#username").type(user.email);

@@ -67,7 +67,7 @@
   "scripts": {
     "build-css": "node-sass-chokidar --include-path ./src/styles --include-path ./node_modules src/styles/ -o src/styles/",
     "watch-css": "npm run build-css && node-sass-chokidar --include-path ./src/styles --include-path ./node_modules src/styles/ -o src/styles --watch --recursive",
-    "start-js": "REACT_APP_UI_DEV_MODE=$UI_DEV_MODE REACT_APP_RENKU_UI_URL=$RENKU_UI_URL craco --max_old_space_size=4096 start",
+    "start-js": "BROWSER=none REACT_APP_UI_DEV_MODE=$UI_DEV_MODE REACT_APP_RENKU_UI_URL=$RENKU_UI_URL craco --max_old_space_size=4096 start",
     "start": "npm-run-all -p watch-css start-js ",
     "build": "npm run build-css && REACT_APP_UI_DEV_MODE=false craco --max_old_space_size=4096 build",
     "test": "craco test",

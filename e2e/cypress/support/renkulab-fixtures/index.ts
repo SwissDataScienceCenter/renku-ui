@@ -22,11 +22,12 @@
 import BaseFixtures from "./fixtures";
 import { Datasets } from "./datasets";
 import { NewProject } from "./newProject";
+import { NewSession } from "./newSession";
 import { Projects } from "./projects";
 import { Session } from "./session";
 import { Sessions } from "./sessions";
 import { User } from "./user";
 
-const Fixtures = NewProject(Sessions(Datasets(Projects(Session(User(BaseFixtures))))));
+const Fixtures = NewProject(NewSession(Sessions(Datasets(Projects(Session(User(BaseFixtures)))))));
 
 export default Fixtures;
