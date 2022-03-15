@@ -3,21 +3,21 @@
 ## [2.1.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.0.2...2.1.0) (2022-03-15)
 ### Features
 
-* support creating a new project and importing a dataset into it as one action ([#1604](https://github.com/SwissDataScienceCenter/renku-ui/issues/1604)) ([#1703](https://github.com/SwissDataScienceCenter/renku-ui/issues/1703))
-* show project visibility in projects list ([#1637](https://github.com/SwissDataScienceCenter/renku-ui/issues/1637)) ([#1711](https://github.com/SwissDataScienceCenter/renku-ui/issues/1711))
-* generate links with badge to "Start on renku" ([#1678](https://github.com/SwissDataScienceCenter/renku-ui/issues/1678))([#1706](https://github.com/SwissDataScienceCenter/renku-ui/issues/1706))
-* redirect Notebook connect button to file in session ([#1613](https://github.com/SwissDataScienceCenter/renku-ui/issues/1613)) ([#1725](https://github.com/SwissDataScienceCenter/renku-ui/issues/1725))
-* display recently accessed projects on the home page ([#1628](https://github.com/SwissDataScienceCenter/renku-ui/issues/1628)) ([#1708](https://github.com/SwissDataScienceCenter/renku-ui/issues/1708))
-* show session logs for sub containers ([#1647](https://github.com/SwissDataScienceCenter/renku-ui/issues/1647))([#1713](https://github.com/SwissDataScienceCenter/renku-ui/issues/1713))
+* support creating a new project and importing a dataset into it as one action ([#1604](https://github.com/SwissDataScienceCenter/renku-ui/issues/1604), [#1703](https://github.com/SwissDataScienceCenter/renku-ui/issues/1703))
+* show project visibility in projects list ([#1637](https://github.com/SwissDataScienceCenter/renku-ui/issues/1637), [#1711](https://github.com/SwissDataScienceCenter/renku-ui/issues/1711))
+* generate links with badge to "Start on renku" ([#1678](https://github.com/SwissDataScienceCenter/renku-ui/issues/1678), [#1706](https://github.com/SwissDataScienceCenter/renku-ui/issues/1706))
+* redirect Notebook connect button to file in session ([#1613](https://github.com/SwissDataScienceCenter/renku-ui/issues/1613), [#1725](https://github.com/SwissDataScienceCenter/renku-ui/issues/1725))
+* display recently accessed projects on the home page ([#1628](https://github.com/SwissDataScienceCenter/renku-ui/issues/1628), [#1708](https://github.com/SwissDataScienceCenter/renku-ui/issues/1708))
+* show session logs for sub containers ([#1647](https://github.com/SwissDataScienceCenter/renku-ui/issues/1647), [#1713](https://github.com/SwissDataScienceCenter/renku-ui/issues/1713))
 * move documentation links to utility class ([#1724](https://github.com/SwissDataScienceCenter/renku-ui/issues/1724))
-* support mounting cloud storage in sessions ([#1499](https://github.com/SwissDataScienceCenter/renku-ui/issues/1499)) ([#1518](https://github.com/SwissDataScienceCenter/renku-ui/issues/1518))
+* support mounting cloud storage in sessions ([#1499](https://github.com/SwissDataScienceCenter/renku-ui/issues/1499), [#1518](https://github.com/SwissDataScienceCenter/renku-ui/issues/1518))
 
 
 ### Bug Fixes
 
-* set project name in GitLab after project creation ([#1685](https://github.com/SwissDataScienceCenter/renku-ui/issues/1685))([#1722](https://github.com/SwissDataScienceCenter/renku-ui/issues/1722))
-* reformat dataset identifiers from old projects to be consistent with current format ([#1694](https://github.com/SwissDataScienceCenter/renku-ui/issues/1694)) ([#1716](https://github.com/SwissDataScienceCenter/renku-ui/issues/1716))
-* do not show project star status until it is available ([#1657](https://github.com/SwissDataScienceCenter/renku-ui/issues/1657)) ([#1723](https://github.com/SwissDataScienceCenter/renku-ui/issues/1723))
+* set project name in GitLab after project creation ([#1685](https://github.com/SwissDataScienceCenter/renku-ui/issues/1685), [#1722](https://github.com/SwissDataScienceCenter/renku-ui/issues/1722))
+* reformat dataset identifiers from old projects to be consistent with current format ([#1694](https://github.com/SwissDataScienceCenter/renku-ui/issues/1694), [#1716](https://github.com/SwissDataScienceCenter/renku-ui/issues/1716))
+* do not show project star status until it is available ([#1657](https://github.com/SwissDataScienceCenter/renku-ui/issues/1657), [#1723](https://github.com/SwissDataScienceCenter/renku-ui/issues/1723))
 * update old documentation links ([#1704](https://github.com/SwissDataScienceCenter/renku-ui/issues/1704))
 
 
