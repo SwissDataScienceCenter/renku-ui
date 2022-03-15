@@ -915,12 +915,15 @@ class NotebooksCoordinator {
     if (jobs?.length === 1) {
       let status = NotebooksHelper.getCiJobStatus(jobs[0]);
       while (status === CI_STATUSES.running) {
+        if (problemCallback) problemCallback();
         await sleep(POLLING_INTERVAL / 1000);
         const job = await this.fetchCiJob(projectId, target, jobs[0].id);
         status = NotebooksHelper.getCiJobStatus(job);
       }
       if (status === CI_STATUSES.success)
         this.checkCiImage(projectId, target, problemCallback);
+      else if (problemCallback)
+        problemCallback();
     }
     else {
       this.model.set("ci.jobs.error", "Unexpected errors with GitLab pipelines: duplicate jobs name");
