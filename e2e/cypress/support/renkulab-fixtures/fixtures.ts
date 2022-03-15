@@ -42,10 +42,21 @@ class Fixtures {
     return this;
   }
 
-  versions(name = "getVersion") {
+  versions( names = {
+    coreVersionsName: "getCoreVersions",
+    uiVersionName: "getUiVersion",
+  }) {
+    const {
+      coreVersionsName,
+      uiVersionName,
+    } = names;
     cy.intercept("/ui-server/api/versions", {
-      fixture: "version.json"
-    }).as(name);
+      fixture: "version-ui.json"
+    }).as(uiVersionName);
+    cy.intercept("/ui-server/api/renku/version", {
+      fixture: "version-core.json"
+    }).as(coreVersionsName);
+
     return this;
   }
 

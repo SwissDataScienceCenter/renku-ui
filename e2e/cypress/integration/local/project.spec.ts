@@ -90,7 +90,6 @@ describe("display lock status", () => {
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects().projectTest();
     fixtures.projectMigrationUpToDate();
-    fixtures.projectLockStatus();
     cy.visit("/projects/e2e/local-test-project");
   });
 
@@ -103,6 +102,8 @@ describe("display lock status", () => {
   it("displays messages for locked project", () => {
     fixtures.projectLockStatus(true);
     cy.visit("/projects/e2e/local-test-project/");
+    cy.wait("@getProject");
+    cy.wait("@getProjectLockStatus");
     cy.contains("currently being modified").should("be.visible");
   });
 });

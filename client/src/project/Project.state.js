@@ -26,6 +26,7 @@
 import { ACCESS_LEVELS, API_ERRORS } from "../api-client";
 import { SpecialPropVal, projectSchema } from "../model";
 import { splitAutosavedBranches } from "../utils/helpers/HelperFunctions";
+import { EnvironmentCoordinator } from "../environment";
 
 
 const GraphIndexingStatus = {
@@ -660,44 +661,22 @@ class ProjectCoordinator {
 
     // check if the APIs for the target project version were already tested
     const coreVersion = this.model.baseModel.get("environment.coreVersions");
+    if (Object.keys(coreVersion.available).length === 0) {
+      // get the core versions
+      await new EnvironmentCoordinator(this.client,
+        this.model.baseModel.subModel("environment")).fetchCoreServiceVersions();
+    }
+    // The core version will tell us if we have a backend
     if (coreVersion.available[projectVersion]) {
       data.fetched = new Date();
       data.backendAvailable = true;
-      this.model.setObject({ migration: { core: { ...data } } });
-      return true;
-    }
-    if (coreVersion.unavailable[projectVersion]) {
-      data.fetched = new Date();
-      data.backendAvailable = false;
-      this.model.setObject({ migration: { core: { ...data } } });
-      return false;
-    }
-
-    // Test the version endpoint to get info on the backend
-    data.fetching = true;
-    this.model.setObject({ migration: { core: { ...data } } });
-    const resp = await this.client.checkCoreAvailability(projectVersion);
-    data.fetching = false;
-    data.fetched = new Date();
-    if (resp.available) {
-      this.model.baseModel.setObject({
-        environment: { coreVersions: { available: { [projectVersion]: resp } } }
-      });
-      data.backendAvailable = true;
-      if (resp.maximum_api_version)
-        data.maximum_api_version = resp.maximum_api_version;
-      if (resp.minimum_api_version)
-        data.minimum_api_version = resp.minimum_api_version;
-      // TODO: adjust versionUrl when api version is fixed on the UI and available in backend
     }
     else {
-      this.model.baseModel.setObject({
-        environment: { coreVersions: { unavailable: { [projectVersion]: true } } }
-      });
+      data.fetched = new Date();
       data.backendAvailable = false;
     }
-    this.model.setObject({ migration: { core: { ...data } } });
 
+    this.model.setObject({ migration: { core: { ...data } } });
     // return availability
     return data.backendAvailable;
   }
