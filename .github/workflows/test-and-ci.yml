@@ -135,8 +135,8 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
         CHART_NAME: renku-ui
-        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        DOCKER_USERNAME: ${{ secrets.RENKU_DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.RENKU_DOCKER_PASSWORD }}
     - name: Wait for chart to get published
       run: sleep 120
     - name: Update ui version
