@@ -48,31 +48,8 @@ function Session<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    sessionPipelines(
-      names = {
-        sessionPipelineJobsName: "getSessionPipelineJobsName",
-        sessionPipelinesName: "getSessionPipelines"
-      }
-    ) {
-      const { sessionPipelineJobsName, sessionPipelinesName } = names;
-      cy.intercept(
-        "/ui-server/api/projects/e2e%2Flocal-test-project/pipelines?sha=172a784d465a7bd45bacc165df2b64a591ac6b18",
-        {
-          fixture: "session/pipelines.json"
-        }
-      ).as(sessionPipelinesName);
-      cy.intercept(
-        "/ui-server/api/projects/e2e%2Flocal-test-project/pipelines/182743/jobs",
-        {
-          fixture: "session/pipeline-jobs.json"
-        }
-      ).as(sessionPipelineJobsName);
-      return this;
-    }
-
     sessionServersEmpty(name = "getSessionServers") {
       cy.intercept(
-        //"/ui-server/api/notebooks/servers?namespace=e2e&project=local-test-project",
         "/ui-server/api/notebooks/servers?namespace=e2e&project=local-test-project*",
         {
           body: { servers: {} }

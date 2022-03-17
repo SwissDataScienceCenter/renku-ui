@@ -5,8 +5,10 @@
   "main": "index.js",
   "scripts": {
     "cypress:local": "cypress open --config-file cypress.local.json",
+    "cypress:local-headless": "cypress run --headless --config-file cypress.local.json --spec '**/local/*'",
     "e2e": "cypress open",
     "e2e:local": "start-server-and-test start:local 3000 cypress:local",
+    "e2e:local-headless": "start-server-and-test start:local 3000 cypress:local-headless",
     "e2e:run": "cypress run",
     "e2e:headless": "cypress run --headless",
     "lint": "eslint . --ext .ts",

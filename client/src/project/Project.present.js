@@ -1132,7 +1132,7 @@ function notebookWarning(userLogged, accessLevel, forkUrl, postLoginUrl, externa
           </li>
           <li className="pt-1">
             <ExternalLink size="sm" title="Contact a maintainer"
-              url={`${externalUrl}/project_members`} /> and ask them
+              url={`${externalUrl}/-/project_members`} /> and ask them
             to <a href={Docs.rtdHowToGuide("collaboration.html#add-or-be-added-as-a-developer-on-a-project")}
               target="_blank" rel="noreferrer noopener">
               grant you the necessary permissions
@@ -1225,6 +1225,7 @@ class ProjectStartNotebookServer extends Component {
 
     return (
       <StartNotebookServer
+        accessLevel={metadata?.accessLevel}
         autosaved={branches.autosaved}
         blockAnonymous={blockAnonymous}
         branches={branches.standard}
@@ -1243,7 +1244,7 @@ class ProjectStartNotebookServer extends Component {
         refreshCommits={fetchCommits}
         scope={scope}
         successUrl={notebookServersUrl}
-        user={this.props.user}
+        user={user}
       />
     );
   }

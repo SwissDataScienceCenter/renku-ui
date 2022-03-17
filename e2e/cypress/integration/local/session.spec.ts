@@ -20,42 +20,6 @@ import Fixtures from "../../support/renkulab-fixtures";
 import "../../support/utils";
 import "../../support/sessions/gui_commands";
 
-describe("launch sessions", () => {
-  const fixtures = new Fixtures(cy);
-  beforeEach(() => {
-    fixtures.config().versions().userTest();
-    fixtures.projects().landingUserProjects().projectTest();
-    fixtures.projectMigrationUpToDate();
-    fixtures.sessionAutosave().sessionServersEmpty().renkuIni();
-    fixtures.sessionPipelines();
-    cy.visit("/projects/e2e/local-test-project");
-  });
-
-  it("displays new session page", () => {
-    fixtures.sessionServerOptions();
-    cy.visit("/projects/e2e/local-test-project/sessions/new");
-    cy.contains("Do you want to select the branch, commit, or image?").should(
-      "be.visible"
-    );
-  });
-
-  it("displays new session page (locked project)", () => {
-    fixtures.projectLockStatus(true).sessionServerOptions();
-    cy.visit("/projects/e2e/local-test-project/sessions/new");
-    cy.wait("@getSessionPipelineJobsName", { timeout: 10000 });
-    cy.contains("Project is being modified").should("be.visible");
-  });
-
-  it("displays cloud storage options", () => {
-    fixtures.sessionServerOptions(true);
-    cy.visit("/projects/e2e/local-test-project/sessions/new");
-    cy.wait("@getSessionPipelineJobsName", { timeout: 10000 });
-    cy.contains(
-      "Do you want to select the branch, commit, or image, or configure cloud storage?"
-    ).should("be.visible");
-  });
-});
-
 describe("display a session", () => {
   const fixtures = new Fixtures(cy);
   fixtures.useMockedData = Cypress.env("USE_FIXTURES") === true;

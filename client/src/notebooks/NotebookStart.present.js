@@ -29,8 +29,7 @@ import {
   faInfoCircle, faLink, faRedo, faSyncAlt, faUserClock
 } from "@fortawesome/free-solid-svg-icons";
 
-import { StatusHelper } from "../model/Model";
-import { InfoAlert, SuccessAlert, WarnAlert } from "../utils/components/Alert";
+import { ErrorAlert, InfoAlert, SuccessAlert, WarnAlert } from "../utils/components/Alert";
 import { ButtonWithMenu } from "../utils/components/Button";
 import { Clipboard } from "../utils/components/Clipboard";
 import { ExternalLink } from "../utils/components/ExternalLinks";
@@ -60,27 +59,28 @@ function ProjectSessionLockAlert({ lockStatus }) {
 
 // * StartNotebookServer code * //
 function StartNotebookServer(props) {
-  const { autosaves, autoStarting, pipelines, message, showObjectStoreModal } = props;
+  const { autosaves, autoStarting, ci, message, showAdvanced, showObjectStoreModal } = props;
   const { branch, commit } = props.filters;
   const { objectStoresConfiguration } = props.filters;
   const { deleteAutosave, setCommit, setIgnorePipeline, toggleShowAdvanced } = props.handlers;
   const { toggleShowObjectStoresConfigModal } = props.handlers;
 
-
+  // Show fetching status when auto-starting
   if (autoStarting)
     return (<StartNotebookAutostart {...props} />);
 
+  const ciStatus = NotebooksHelper.checkCiStatus(ci);
   const fetching = {
     autosaves: autosaves.fetching,
-    branches: StatusHelper.isUpdating(props.fetchingBranches) ? true : false,
-    pipelines: pipelines.fetching,
-    commits: props.data.fetching
+    branches: props.fetchingBranches || props.delays.branch,
+    commits: props.data.fetching || props.delays.commit,
+    ci: ciStatus.ongoing
   };
 
   let show = {};
   show.commits = !autosaves.fetching && !fetching.branches && branch.name ? true : false;
-  show.pipelines = show.commits && !fetching.commits && commit && commit.id;
-  show.options = show.pipelines && pipelines.fetched && autosaves.fetched;
+  show.ci = show.commits && !fetching.commits && commit && commit.id;
+  show.options = show.ci && !fetching.ci && autosaves.fetched;
 
   const messageOutput = message ?
     (<div key="message">{message}</div>) :
@@ -92,18 +92,18 @@ function StartNotebookServer(props) {
     "Do you want to select the branch, commit, or image, or configure cloud storage?" :
     "Do you want to select the branch, commit, or image?";
 
-  const buttonMessage = props.showAdvanced ?
+  const buttonMessage = showAdvanced ?
     "Hide advanced settings" :
     showAdvancedMessage;
 
   const advancedSelection = (
     <Fragment>
-      <Collapse isOpen={props.showAdvanced}>
+      <Collapse isOpen={showAdvanced}>
         <AutosavesInfoAlert autosaves={autosaves} autosavesId={props.autosavesCommit}
           currentId={props.filters.commit?.id} deleteAutosave={deleteAutosave} setCommit={setCommit} />
         <StartNotebookBranches {...props} disabled={disabled} />
         {show.commits ? <StartNotebookCommits {...props} disabled={disabled} /> : null}
-        {show.pipelines ? <StartNotebookPipelines {...props}
+        {show.ci ? <StartNotebookPipelines {...props}
           ignorePipeline={props.ignorePipeline}
           setIgnorePipeline={setIgnorePipeline} /> : null}
         {cloudStorageAvailable ?
@@ -130,7 +130,7 @@ function StartNotebookServer(props) {
   );
 
   const options = show.options ?
-    (<StartNotebookOptions toggleShowAdvanced={toggleShowAdvanced} showAdvanced={props.showAdvanced} {...props} />) :
+    (<StartNotebookOptions toggleShowAdvanced={toggleShowAdvanced} showAdvanced={showAdvanced} {...props} />) :
     null;
 
   const loader = autosaves.fetching || !show.options ?
@@ -147,7 +147,7 @@ function StartNotebookServer(props) {
       <Col sm={12} md={10} lg={8}>
         <h3>Start a new session</h3>
         <ProjectSessionLockAlert lockStatus={props.lockStatus} />
-        <LaunchErrorAlert autosaves={autosaves} launchError={props.launchError} pipelines={props.pipelines} />
+        <LaunchErrorAlert autosaves={autosaves} launchError={props.launchError} ci={props.ci} />
         {messageOutput}
         <Form>
           {advancedSelection}
@@ -241,11 +241,13 @@ function AutosavesInfoAlert({ autosaves, autosavesId, currentId, deleteAutosave,
 }
 
 function StartNotebookAutostart(props) {
-  const { data, notebooks, options, pipelines } = props;
+  const { ci, data, notebooks, options } = props;
+  const ciStatus = NotebooksHelper.checkCiStatus(ci);
+
   const fetching = {
-    data: data.fetched,
-    options: options.fetched,
-    pipelines: pipelines.fetched
+    ci: ciStatus.ongoing === false ? true : false,
+    data: data.fetched ? true : false,
+    options: options.fetched ? true : false
   };
 
   // Compute fetching status, but ignore notebooks.fetched since it may be unreliable
@@ -255,7 +257,7 @@ function StartNotebookAutostart(props) {
   const multiplier = Object.keys(fetching).length + 1;
   let progress = fetched.length * 100 / multiplier;
   let message = "Checking project data";
-  if (fetching.pipelines)
+  if (fetching.ci)
     message = "Checking GitLab jobs";
   else if (fetching.options)
     message = "Checking RenkuLab status";
@@ -275,7 +277,7 @@ class StartNotebookBranches extends Component {
     const { branches } = this.props.data;
     const { disabled } = this.props;
     let content;
-    if (StatusHelper.isUpdating(this.props.fetchingBranches)) {
+    if (this.props.fetchingBranches || this.props.delays.branch) {
       content = (
         <Label>Updating branches... <Loader size="14" inline="true" /></Label>
       );
@@ -416,15 +418,18 @@ class StartNotebookPipelines extends Component {
   }
 
   render() {
-    if (!this.props.pipelines.fetched)
+    const { ci } = this.props;
+    const { showInfo } = this.state;
+    const ciStatus = NotebooksHelper.checkCiStatus(ci);
+
+    if (ciStatus.ongoing !== false)
       return (<Label>Checking Docker image status... <Loader size="14" inline="true" /></Label>);
     if (this.state.justTriggered)
       return (<Label>Triggering Docker image build... <Loader size="14" inline="true" /></Label>);
 
-    const customImage = this.props.pipelines.type === NotebooksHelper.pipelineTypes.customImage ?
+    const customImage = ci.type === NotebooksHelper.ciTypes.pinned ?
       true :
       false;
-    const { showInfo } = this.state;
     let infoButton = null;
     if (customImage) {
       const text = showInfo ?
@@ -446,31 +451,33 @@ class StartNotebookPipelines extends Component {
 
 class StartNotebookPipelinesBadge extends Component {
   render() {
-    const pipelineType = this.props.pipelines.type;
-    const pipeline = this.props.pipelines.main;
-    const { infoButton } = this.props;
+    const { ci, infoButton } = this.props;
+    const ciStatus = NotebooksHelper.checkCiStatus(ci);
 
     let color, text;
-    if (pipelineType === NotebooksHelper.pipelineTypes.logged) {
-      if (pipeline.status === "success") {
+    if (ci.type === NotebooksHelper.ciTypes.logged || ci.type === NotebooksHelper.ciTypes.owner) {
+      if (ciStatus.available) {
         color = "success";
         text = "available";
       }
-      else if (pipeline.status === undefined) {
-        color = "danger";
-        text = "not available";
-      }
-      else if (["running", "pending", "stopping"].includes(pipeline.status)) {
+      else if (
+        ciStatus.stage === NotebooksHelper.ciStages.jobs &&
+        NotebooksHelper.getCiJobStatus(ci.jobs?.target) === NotebooksHelper.ciStatuses.running
+      ) {
         color = "warning";
         text = "building";
+      }
+      else if (!ciStatus.available && !ciStatus.ongoing) {
+        color = "danger";
+        text = "not available";
       }
       else {
         color = "danger";
         text = "error";
       }
     }
-    else if (pipelineType === NotebooksHelper.pipelineTypes.anonymous) {
-      if (pipeline && pipeline.path) {
+    else if (ci.type === NotebooksHelper.ciTypes.anonymous) {
+      if (ciStatus.available) {
         color = "success";
         text = "available";
       }
@@ -479,9 +486,15 @@ class StartNotebookPipelinesBadge extends Component {
         text = "not available";
       }
     }
-    else if (pipelineType === NotebooksHelper.pipelineTypes.customImage) {
-      color = "primary";
-      text = "pinned";
+    else if (ci.type === NotebooksHelper.ciTypes.pinned) {
+      if (ciStatus.available) {
+        color = "primary";
+        text = "pinned";
+      }
+      else {
+        color = "danger";
+        text = "pinned not available";
+      }
     }
     else {
       color = "danger";
@@ -494,12 +507,21 @@ class StartNotebookPipelinesBadge extends Component {
 
 class StartNotebookPipelinesContent extends Component {
   render() {
-    const pipeline = this.props.pipelines.main;
-    const pipelineType = this.props.pipelines.type;
-    const { pipelineTypes } = NotebooksHelper;
+    const { ci } = this.props;
+    const ciStatus = NotebooksHelper.checkCiStatus(ci);
 
-    // customImage
-    if (pipelineType === pipelineTypes.customImage) {
+    // error
+    if (ciStatus.error) {
+      return (
+        <ErrorAlert>
+          <p>An error occurred while checking the Image availability.</p>
+          <code className="mb-0">{ciStatus.error}.</code>
+        </ErrorAlert>
+      );
+    }
+
+    // custom image
+    if (ci.type === NotebooksHelper.ciTypes.pinned) {
       const projectOptions = this.props.options.project;
       if (!projectOptions || !projectOptions.image)
         return null;
@@ -507,22 +529,33 @@ class StartNotebookPipelinesContent extends Component {
       // this style trick makes it appear as the other Label + Input components
       const style = { marginTop: -8 };
       const url = Docs.rtdReferencePage("templates.html?highlight=pinned#renku");
+
+      const pinnedImagesDoc = (
+        <ExternalLink role="text" iconSup={true} iconAfter={true} url={url} title="pinned image" />
+      );
+      if (ciStatus.available) {
+        return (
+          <Fragment>
+            <Input type="input" disabled={true} id="customImage" style={style} value={projectOptions.image}></Input>
+            <FormText>
+              <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> This project specifies
+              a {pinnedImagesDoc}. A pinned image has advantages for projects with many forks, but it will not
+              reflect changes to the <code>Dockerfile</code> or any project dependency files.
+            </FormText>
+          </Fragment>
+        );
+      }
       return (
         <Fragment>
-          <Input type="input" disabled={true} id="customImage" style={style} value={projectOptions.image}></Input>
-          <FormText>
-            <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> This project specifies
-            a <ExternalLink role="text" iconSup={true} iconAfter={true} url={url} title="pinned image" />. A
-            pinned image has advantages for projects with many forks, but it will not reflect changes
-            to the <code>Dockerfile</code> or any project dependency files.
-          </FormText>
+          <FontAwesomeIcon icon={faExclamationTriangle} className="text-danger" /> No Docker image found.
+          Since this project specifies a {pinnedImagesDoc}, it is unlekly to work with a base image.
         </Fragment>
       );
     }
 
     // anonymous
-    if (pipelineType === pipelineTypes.anonymous) {
-      if (pipeline && pipeline.path)
+    if (ci.type === NotebooksHelper.ciTypes.anonymous) {
+      if (ciStatus.available)
         return null;
 
       return (
@@ -534,7 +567,7 @@ class StartNotebookPipelinesContent extends Component {
             <p>
               Since building it takes a while, consider waiting a few minutes if the commit is very recent.
               <br />Otherwise, you can either select another commit or <ExternalLink role="text" size="sm"
-                title="contact a maintainer" url={`${this.props.externalUrl}/project_members`} /> for
+                title="contact a maintainer" url={`${this.props.externalUrl}/-/project_members`} /> for
               help.
             </p>
           </Label>
@@ -543,11 +576,15 @@ class StartNotebookPipelinesContent extends Component {
     }
 
     // logged in
-    if (pipeline.status === "success")
+    if (!ciStatus.ongoing && ciStatus.available)
       return null;
 
+    const { ciStages, ciStatuses, getCiJobStatus } = NotebooksHelper;
     let content = null;
-    if (["running", "pending", "stopping"].includes(pipeline.status)) {
+    const owner = ci.type === NotebooksHelper.ciTypes.owner;
+
+    // Job to make the image is still running
+    if (ciStatus.stage === ciStages.jobs && getCiJobStatus(ci.jobs?.target) === ciStatuses.running) {
       content = (
         <Label>
           <FontAwesomeIcon icon={faCog} spin /> The Docker image for the session is being built.
@@ -557,36 +594,43 @@ class StartNotebookPipelinesContent extends Component {
           but project-specific dependencies will not be available.
           <br />
           <ExternalLink id="image_check_pipeline" role="button" showLinkIcon={true} size="sm"
-            title="View pipeline in GitLab" url={pipeline.web_url} />
+            title="View pipeline in GitLab" url={ci.jobs?.target?.web_url} />
           <UncontrolledPopover trigger="hover" placement="top" target="image_check_pipeline">
             <PopoverBody>Check the GitLab pipeline. For expert users.</PopoverBody>
           </UncontrolledPopover>
         </Label>
       );
     }
-    else if (pipeline.status === "failed" || pipeline.status === "canceled") {
+    else if (ciStatus.stage === ciStages.jobs && getCiJobStatus(ci.jobs?.target) === ciStatuses.failure) {
       let actions;
       if (this.props.ignorePipeline || this.props.justStarted) {
         actions = (
           <div>
             <ExternalLink id="image_check_pipeline" role="button" showLinkIcon={true} size="sm"
-              title="View pipeline in GitLab" url={pipeline.web_url} />
+              title="View pipeline in GitLab" url={ci.jobs?.target?.web_url} />
           </div>
         );
       }
       else {
+        const buildAgain = owner ?
+          (
+            <Fragment>
+              <Button color="primary" size="sm" id="image_build_again"
+                onClick={this.props.buildAgain}>
+                <FontAwesomeIcon icon={faRedo} /> Build again
+              </Button>
+              <UncontrolledPopover trigger="hover" placement="top" target="image_build_again">
+                <PopoverBody>Try to build again if it is the first time you see this error on this commit.</PopoverBody>
+              </UncontrolledPopover>
+              &nbsp;
+            </Fragment>
+          ) :
+          null;
         actions = (
           <div>
-            <Button color="primary" size="sm" id="image_build_again"
-              onClick={this.props.buildAgain}>
-              <FontAwesomeIcon icon={faRedo} /> Build again
-            </Button>
-            <UncontrolledPopover trigger="hover" placement="top" target="image_build_again">
-              <PopoverBody>Try to build again if it is the first time you see this error on this commit.</PopoverBody>
-            </UncontrolledPopover>
-            &nbsp;
+            {buildAgain}
             <ExternalLink id="image_check_pipeline" role="button" showLinkIcon={true} size="sm"
-              title="View pipeline in GitLab" url={pipeline.web_url} />
+              title="View pipeline in GitLab" url={ci.jobs?.target?.web_url} />
             <UncontrolledPopover trigger="hover" placement="top" target="image_check_pipeline">
               <PopoverBody>Check the GitLab pipeline. For expert users.</PopoverBody>
             </UncontrolledPopover>
@@ -603,12 +647,13 @@ class StartNotebookPipelinesContent extends Component {
         </div>
       );
     }
-    else if (pipeline.status === undefined) {
-      content = (
-        <div>
-          <Label key="message">
-            <FontAwesomeIcon icon={faExclamationTriangle} className="text-danger" /> No Docker image found.
-            You can use the base image to start a session, but project-specific dependencies will not be available.
+    else if (
+      (ciStatus.stage === ciStages.jobs && getCiJobStatus(ci.jobs?.target) === ciStatuses.wrong) ||
+      (ciStatus.stage === ciStages.image && !ci.available)
+    ) {
+      const tryBuild = owner ?
+        (
+          <Fragment>
             <br />
             If you are seeing this error for the first time,{" "}
             <Button color="primary" size="sm" id="image_build"
@@ -616,6 +661,15 @@ class StartNotebookPipelinesContent extends Component {
               <FontAwesomeIcon icon={faRedo} /> building the branch image
             </Button>{" "}
             will probably solve the problem.
+          </Fragment>
+        ) :
+        null;
+      content = (
+        <div>
+          <Label key="message">
+            <FontAwesomeIcon icon={faExclamationTriangle} className="text-danger" /> No Docker image found.
+            You can use the base image to start a session, but project-specific dependencies will not be available.
+            {tryBuild}
           </Label>
         </div>
       );
@@ -631,13 +685,15 @@ class StartNotebookPipelinesContent extends Component {
 class StartNotebookCommits extends Component {
   render() {
     const { commits, fetching, autosaved } = this.props.data;
-    if (fetching)
-      return (<Label>Updating commits... <Loader size="14" inline="true" /></Label>);
+    const { delays, disabled, filters } = this.props;
 
-    const { filters, disabled } = this.props;
-    const { displayedCommits } = filters;
-    const filteredCommits = displayedCommits && displayedCommits > 0 ?
-      commits.slice(0, displayedCommits) :
+    if (fetching)
+      return (<FormGroup><Label>Updating commits... <Loader size="14" inline="true" /></Label></FormGroup>);
+    if (delays.commit)
+      return (<FormGroup><Label>Verifying commit autosaves... <Loader size="14" inline="true" /></Label></FormGroup>);
+
+    const filteredCommits = filters.displayedCommits && filters.displayedCommits > 0 ?
+      commits.slice(0, filters.displayedCommits) :
       commits;
     const autosavedCommits = autosaved.map(autosaveObject => autosaveObject.autosave.commit);
     const commitOptions = filteredCommits.map((commit) => {
@@ -996,13 +1052,11 @@ function LaunchErrorBackendAlert({ launchError }) {
   </WarnAlert>;
 }
 
-function LaunchErrorFrontendAlert({ launchError, pipelines }) {
-  const pipeline = pipelines.main;
-  if (launchError.pipelineError && pipeline && (pipeline.path || pipeline.status === "success"))
+function LaunchErrorFrontendAlert({ launchError, ci }) {
+  const ciStatus = NotebooksHelper.checkCiStatus(ci);
+  if (launchError.pipelineError && ciStatus.available)
     return null;
-  return <WarnAlert>
-    {launchError.errorMessage}
-  </WarnAlert>;
+  return (<WarnAlert>{launchError.errorMessage}</WarnAlert>);
 }
 
 function AutosavesErrorAlert({ autosaves }) {
@@ -1014,11 +1068,11 @@ function AutosavesErrorAlert({ autosaves }) {
   </WarnAlert>;
 }
 
-function LaunchErrorAlert({ autosaves, launchError, pipelines }) {
+function LaunchErrorAlert({ autosaves, launchError, ci }) {
   let launchErrorElement = null;
   if (launchError != null) {
     if (launchError.frontendError === true)
-      launchErrorElement = (<LaunchErrorFrontendAlert launchError={launchError} pipelines={pipelines} />);
+      launchErrorElement = (<LaunchErrorFrontendAlert launchError={launchError} ci={ci} />);
     else
       launchErrorElement = (<LaunchErrorBackendAlert launchError={launchError} />);
   }
@@ -1068,7 +1122,10 @@ class ServerOptionLaunch extends Component {
   }
 
   render() {
+    const { ci } = this.props;
     const { warnings } = this.props.options;
+
+    const ciStatus = NotebooksHelper.checkCiStatus(ci);
     const globalNotification = (warnings.length < 1) ?
       null :
       <Warning key="globalNotification">
@@ -1076,7 +1133,7 @@ class ServerOptionLaunch extends Component {
         You can still start one, but some things may not work correctly.
       </Warning>;
 
-    const hasImage = NotebooksHelper.checkPipelineAvailability(this.props.pipelines);
+    const hasImage = ciStatus.available;
     const createLink = (
       <DropdownItem onClick={this.toggleShareLinkModal}><FontAwesomeIcon icon={faLink} /> Create link</DropdownItem>
     );

@@ -274,6 +274,17 @@ describe("verify defaults", () => {
   });
 });
 
+describe("ci helper functions", () => {
+  it("getCiJobStatus", () => {
+    expect(NotebooksHelper.getCiJobStatus({ status: "running" })).toBe(NotebooksHelper.ciStatuses.wrong);
+    expect(NotebooksHelper.getCiJobStatus({ id: 1, status: "running" })).toBe(NotebooksHelper.ciStatuses.running);
+    expect(NotebooksHelper.getCiJobStatus({ id: 1, status: "canceled" })).toBe(NotebooksHelper.ciStatuses.failure);
+    expect(NotebooksHelper.getCiJobStatus({ id: 1, status: "success" })).toBe(NotebooksHelper.ciStatuses.success);
+    expect(NotebooksHelper.getCiJobStatus({ id: 1, status: "fake" })).toBe(NotebooksHelper.ciStatuses.wrong);
+    expect(NotebooksHelper.getCiJobStatus()).toBe(NotebooksHelper.ciStatuses.wrong);
+  });
+});
+
 describe("rendering", () => {
   const scope = {
     namespace: "fake",

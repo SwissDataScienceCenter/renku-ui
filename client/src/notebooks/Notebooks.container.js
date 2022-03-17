@@ -20,6 +20,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import qs from "query-string";
 
+import { ACCESS_LEVELS } from "../api-client";
 import { NotebooksCoordinator, NotebooksHelper } from "./Notebooks.state";
 import {
   StartNotebookServer as StartNotebookServerPresent, NotebooksDisabled, Notebooks as NotebooksPresent,
@@ -263,6 +264,8 @@ class Notebooks extends Component {
  * @param {Object} notifications - Notifications object
  * @param {Object} location - react location object. Use location.state.successUrl to indicate the
  *     redirect url to be used when a notebook is successfully started
+ * @param {Object} user - user object
+ * @param {number} accessLevel - project access level
  * @param {Object} [history] - mandatory if successUrl is provided
  * @param {string} [message] - provide a useful information or warning message
  */
@@ -300,7 +303,9 @@ class StartNotebookServer extends Component {
       launchError: null,
       showAdvanced: false,
       showObjectStoreModal: false,
-      starting: false
+      starting: false,
+      commitDelay: false, // used in setCommitWhenReady
+      branchDelay: false // used in setBranchWhenReady
     };
 
     this.handlers = {
@@ -334,7 +339,7 @@ class StartNotebookServer extends Component {
 
   componentWillUnmount() {
     this.coordinator.stopNotebookPolling();
-    this.coordinator.stopPipelinePolling();
+    this.coordinator.stopCiPolling();
     this._isMounted = false;
   }
 
@@ -388,10 +393,14 @@ class StartNotebookServer extends Component {
     // Select branch only when autosaves data are available
     if (this._isMounted) {
       const autosavesAvailable = this.model.get("autosaves.fetched");
-      if (this.props.branches.fetching || !autosavesAvailable)
+      if (this.props.branches.fetching || !autosavesAvailable) {
+        this.setState({ branchDelay: true });
         setTimeout(() => { this.selectBranchWhenReady(); }, 500);
-      else
+      }
+      else {
+        this.setState({ branchDelay: false });
         this.selectBranch(this.customBranch);
+      }
     }
   }
 
@@ -461,14 +470,18 @@ class StartNotebookServer extends Component {
         else {
           // this may happen with autostart
           this.coordinator.startNotebookPolling();
-          delay = 5000;
+          delay = 2000;
         }
       }
 
-      if (delay)
+      if (delay) {
+        this.setState({ commitDelay: true });
         setTimeout(() => { this.selectCommitWhenReady(); }, delay);
-      else
+      }
+      else {
+        this.setState({ commitDelay: false });
         this.selectCommit(this.customCommit);
+      }
     }
   }
 
@@ -540,19 +553,24 @@ class StartNotebookServer extends Component {
     }
   }
 
-  async refreshPipelines() {
+  async refreshPipelines(force = false) {
     if (this._isMounted) {
-      await this.coordinator.fetchNotebookOptions();
-      await this.coordinator.startPipelinePolling();
+      const { accessLevel, user } = this.props;
+      await this.coordinator.fetchNotebookOptions(); // TODO: this should not be here
+      const callback = () => { this.setState({ showAdvanced: true }); };
+      const owner = accessLevel >= ACCESS_LEVELS.DEVELOPER;
+      await this.coordinator.fetchOrPollCi(force, user.logged, owner, callback);
       this.triggerAutoStart();
     }
   }
 
   async reTriggerPipeline() {
     const projectPathWithNamespace = `${encodeURIComponent(this.props.scope.namespace)}%2F${this.props.scope.project}`;
-    const pipelineId = this.model.get("pipelines.main.id");
-    await this.props.client.retryPipeline(projectPathWithNamespace, pipelineId);
-    return this.refreshPipelines();
+    const pipeline = this.model.get("ci.pipelines.target");
+    if (pipeline?.id) {
+      await this.props.client.retryPipeline(projectPathWithNamespace, pipeline.id);
+      return this.refreshPipelines();
+    }
   }
 
   async runPipeline() {
@@ -571,48 +589,45 @@ class StartNotebookServer extends Component {
       sleep(NotebooksHelper.pollingInterval + 1); // ? This is bad, but it prevents flashing a wrong status
     }
   }
+
   async triggerAutoStart() {
     if (this._isMounted) {
       if (this.autostart && !this.state.autostartReady && !this.state.autostartTried) {
         const data = this.model.get();
-        const fetched = data.notebooks.fetched && data.options.fetched && data.pipelines.fetched;
+        const ciStatus = NotebooksHelper.checkCiStatus(data.ci);
+        const fetched = data.notebooks.fetched && data.options.fetched && !ciStatus.ongoing;
         if (fetched) {
-          // check pipeline availability
-          const mainPipeline = data.pipelines.main;
-          const pipelineAvailable = NotebooksHelper.checkPipelineAvailability(data.pipelines);
-
-          // give extra context to logged users for building images
-          const loggedPipelines = data.pipelines.type === NotebooksHelper.pipelineTypes.logged ? true : false;
-          const pendingPipeline = mainPipeline && ["running", "pending", "stopping"].includes(mainPipeline.status);
-
-          if (loggedPipelines && pendingPipeline) {
-            this.setState({
-              autostartReady: true,
-              autostartTried: true,
-              launchError: {
-                frontendError: true,
-                pipelineError: true,
-                errorMessage: `The session could not start because the image is still building.
-                Please wait for the build to finish, or start the session with the base image.`
-              },
-              showAdvanced: true,
-              starting: false
-            });
-          }
-          else if (pipelineAvailable) {
+          // start when the image is available
+          if (ciStatus.available) {
             this.setState({ autostartReady: true });
             this.startServer();
           }
           else {
+            let errorMessage;
+
+            // image is building through the job
+            if (
+              ciStatus.stage === NotebooksHelper.ciStages.jobs &&
+              NotebooksHelper.getCiJobStatus(data.ci.jobs?.target) === NotebooksHelper.ciStatuses.running
+            ) {
+              errorMessage = "The session could not start because the image is still building. " +
+                "Please wait for the build to finish, or start the session with the base image";
+            }
+            // images is not available
+            else if (!ciStatus.available) {
+              errorMessage = "The session could not start because no image is available. " +
+                "Please select a different commit or start the session with the base image.";
+            }
+            // it's probably lost in some short-living temporary state before assessing the image is not available
+            else {
+              errorMessage = "The session could not start. If it's the first time you see this message, " +
+                "please wait a few minutes and try to refresh the page.";
+            }
+
             this.setState({
               autostartReady: true,
               autostartTried: true,
-              launchError: {
-                frontendError: true,
-                pipelineError: true,
-                errorMessage: `The session could not start because no image is available.
-                Please select a different commit or start the session with the base image.`
-              },
+              launchError: { frontendError: true, pipelineError: true, errorMessage },
               showAdvanced: true,
               starting: false
             });
@@ -757,7 +772,12 @@ class StartNotebookServer extends Component {
         fetched: this.props.commits.fetched,
         fetching: this.props.commits.fetching,
       },
+      delays: {
+        branch: this.state.branchDelay,
+        commit: this.state.commitDelay
+      },
       externalUrl: this.props.externalUrl,
+      fetchingBranches: StatusHelper.isUpdating(this.props.fetchingBranches),
       showObjectStoreModal: this.state.showObjectStoreModal
     };
     return {

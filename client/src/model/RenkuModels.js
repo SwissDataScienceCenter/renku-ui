@@ -207,10 +207,12 @@ const projectSchema = new Schema({
   datasets: {
     [Prop.SCHEMA]: new Schema({
       datasets_kg: { [Prop.INITIAL]: [] },
-      core: { [Prop.INITIAL]: {
-        datasets: null,
-        error: null
-      } }
+      core: {
+        [Prop.INITIAL]: {
+          datasets: null,
+          error: null
+        }
+      }
     })
   },
   files: {
@@ -389,6 +391,42 @@ const notebooksSchema = new Schema({
       lastParameters: { initial: null },
       lastMainId: { initial: null },
     }
+  },
+  ci: {
+    [Prop.SCHEMA]: new Schema({
+      pipelines: {
+        [Prop.SCHEMA]: new Schema({
+          list: { [Prop.INITIAL]: [] },
+          target: { [Prop.INITIAL]: null }, // `false` or list object id
+          available: { [Prop.INITIAL]: null },
+          fetched: { [Prop.INITIAL]: null },
+          fetching: { [Prop.INITIAL]: false },
+          error: { [Prop.INITIAL]: null },
+        })
+      },
+      jobs: {
+        [Prop.SCHEMA]: new Schema({
+          list: { [Prop.INITIAL]: [] },
+          target: { [Prop.INITIAL]: null }, // `false` or list object id
+          available: { [Prop.INITIAL]: null },
+          fetched: { [Prop.INITIAL]: null },
+          fetching: { [Prop.INITIAL]: false },
+          reFetching: { [Prop.INITIAL]: false },
+          error: { [Prop.INITIAL]: null },
+        })
+      },
+      image: {
+        [Prop.SCHEMA]: new Schema({
+          available: { [Prop.INITIAL]: null },
+          fetched: { [Prop.INITIAL]: null },
+          fetching: { [Prop.INITIAL]: false },
+          error: { [Prop.INITIAL]: null },
+        })
+      },
+      target: { [Prop.INITIAL]: null }, // target commit id
+      type: { [Prop.INITIAL]: null }, // anonymous, pinned, logged, owner
+      stage: { [Prop.INITIAL]: null }, // starting --> pipelines --> jobs --> images
+    })
   },
   logs: {
     schema: {
