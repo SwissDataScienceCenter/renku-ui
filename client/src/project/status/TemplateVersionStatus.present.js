@@ -17,10 +17,11 @@
  */
 
 import React, { Fragment, useState } from "react";
-import { Button, Spinner, Collapse } from "reactstrap";
+import { Button, Collapse, Spinner } from "reactstrap";
 
-import { ManualUpdateInstructions, MigrationSuccessAlert, MigrationWarnAlert,
-  isMigrationFailure, isMigrationCheckLoading } from "./MigrationUtils";
+import {
+  ManualUpdateInstructions, MigrationSuccessAlert, MigrationWarnAlert, isMigrationFailure, isMigrationCheckLoading
+} from "./MigrationUtils";
 import { MigrationStatus } from "../Project";
 import { ExternalLink } from "../../utils/components/ExternalLinks";
 import { Loader } from "../../utils/components/Loader";
@@ -55,24 +56,24 @@ function TemplateUpdateSection({
   const docUrl = Docs.rtdPythonReferencePage("commands.html?highlight=template#module-renku.cli.migrate");
 
   const automaticUpdateAction = maintainer ?
-  /* check if this is correct... maybe we can use the other button instead */
+    /* check if this is correct... maybe we can use the other button instead */
     <Button
       color="warning"
       className="float-end"
-      disabled={migration_status === MigrationStatus.MIGRATING
-                  || migration_status === MigrationStatus.FINISHED}
-      onClick={() => onMigrateProject({ skip_migrations: true, skip_docker_update: true,
-        skip_template_update: false, force_template_update: false })}>
+      disabled={migration_status === MigrationStatus.MIGRATING || migration_status === MigrationStatus.FINISHED}
+      onClick={() => onMigrateProject({
+        skip_migrations: true, skip_docker_update: true,
+        skip_template_update: false, force_template_update: false
+      })}>
       {migration_status === MigrationStatus.MIGRATING || migration_status === MigrationStatus.FINISHED ?
-        <span><Spinner size="sm" /> Updating...</span>
-        :
+        <span><Spinner size="sm" /> Updating...</span> :
         "Update"
       }
     </Button>
     :
     <p>
       <strong>You do not have the required permissions to update this projects template.</strong>
-            &nbsp;You can <ExternalLink role="text" size="sm"
+      &nbsp;You can <ExternalLink role="text" size="sm"
         title="ask a project maintainer" url={`${externalUrl}/-/project_members`} /> to
       do that for you.
     </p>;
@@ -154,25 +155,26 @@ function TemplateVersionInfo({ check }) {
     </p>;
 }
 
-function TemplateVersionBody({ externalUrl, launchNotebookUrl, logged, maintainer, migration }) {
+function TemplateVersionBody({ externalUrl, launchNotebookUrl, logged, maintainer, migration, onMigrateProject }) {
 
-  const { onMigrateProject, migration_status } = migration;
+  const { migration_status } = migration;
   const { project_supported } = migration.check;
 
   const { automated_template_update, template_id, template_source, newer_template_available }
     = migration.check.template_status;
 
   const projectTemplateStatus = getTemplateVersionStatus({
-    automated_template_update, project_supported, template_id, newer_template_available, });
+    automated_template_update, project_supported, template_id, newer_template_available,
+  });
 
   switch (projectTemplateStatus) {
-    case TEMPLATE_VERSION_SCENARIOS.PROJECT_NOT_SUPPORTED :
+    case TEMPLATE_VERSION_SCENARIOS.PROJECT_NOT_SUPPORTED:
       return <MigrationWarnAlert>
         Automatic upgrading of the <strong>template</strong> version is not supported with this project.
       </MigrationWarnAlert>;
-    case TEMPLATE_VERSION_SCENARIOS.TEMPLATE_NOT_VERSIONED :
+    case TEMPLATE_VERSION_SCENARIOS.TEMPLATE_NOT_VERSIONED:
       //if the template has no version it cant be migrated
-      return <p> This project does not use a versioned template.<br/></p>;
+      return <p> This project does not use a versioned template.<br /></p>;
     case TEMPLATE_VERSION_SCENARIOS.TEMPLATE_UP_TO_DATE:
       return <MigrationSuccessAlert>
         This project is using the latest version of the template.
@@ -195,7 +197,7 @@ function TemplateVersionBody({ externalUrl, launchNotebookUrl, logged, maintaine
 }
 
 function GuardedTemplateVersionBody({ externalUrl, launchNotebookUrl, lockStatus, logged,
-  maintainer, migration }) {
+  maintainer, migration, onMigrateProject }) {
   if (!logged) return null;
   if (lockStatus?.locked === true) {
     return <div className="text-muted">
@@ -204,11 +206,11 @@ function GuardedTemplateVersionBody({ externalUrl, launchNotebookUrl, lockStatus
     </div>;
   }
   return <TemplateVersionBody externalUrl={externalUrl} launchNotebookUrl={launchNotebookUrl} logged={logged}
-    maintainer={maintainer} migration={migration} />;
+    maintainer={maintainer} migration={migration} onMigrateProject={onMigrateProject} />;
 }
 
 function TemplateStatus(props) {
-  const { launchNotebookUrl, lockStatus, logged, maintainer, externalUrl } = props;
+  const { externalUrl, launchNotebookUrl, lockStatus, logged, maintainer, onMigrateProject } = props;
   const { check_error } = props.migration.check;
   const { migration_status, migration_error } = props.migration;
   if (isMigrationCheckLoading(props.loading, props.migration)) return <Loader />;
@@ -217,7 +219,8 @@ function TemplateStatus(props) {
   return <div>
     <TemplateVersionInfo check={props.migration.check} />
     <GuardedTemplateVersionBody externalUrl={externalUrl} launchNotebookUrl={launchNotebookUrl}
-      lockStatus={lockStatus} logged={logged} maintainer={maintainer} migration={props.migration} />
+      lockStatus={lockStatus} logged={logged} maintainer={maintainer} migration={props.migration}
+      onMigrateProject={onMigrateProject} />
   </div>;
 }
 
