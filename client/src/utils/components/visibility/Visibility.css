@@ -1,0 +1,26 @@
+.visibilities-box {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin: 6px 0;
+}
+
+.visibility-box {
+    min-width: 200px;
+    width: 33%;
+    margin: 10px 0;
+}
+
+.visibility-box label {
+    padding: 0 5px;
+}
+
+.visibility-input {
+    border: solid 1px var(--bs-primary);
+}
+.visibility-input--error {
+    border: solid 1px var(--bs-danger);
+}
+.icon-disabled {
+    opacity: 0.5;
+}

@@ -49,4 +49,8 @@ describe("Add new project", () => {
     cy.url().should("include", `projects/${ newProjectPath }`);
   });
 
+  it.only("visibility", () => {
+    // stop to test visibility
+  });
+
 });

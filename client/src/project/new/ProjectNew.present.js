@@ -51,6 +51,7 @@ import { ButtonWithMenu } from "../../utils/components/Button";
 import { Clipboard } from "../../utils/components/Clipboard";
 import AppContext from "../../utils/context/appContext";
 import { Docs, Links } from "../../utils/constants/Docs";
+import { VisibilityInput } from "../../utils/components/visibility/Visibility";
 
 
 /**
@@ -657,18 +658,12 @@ class Visibility extends Component {
       );
     }
     else {
-      // sometimes meta.namespace.visibilities is an object instead of an array, this is a fix for those cases
-      if (typeof meta.namespace.visibilities === "object")
-        meta.namespace.visibilities = Object.values(meta.namespace.visibilities).filter( v => v !== null);
-
-      const options = meta.namespace.visibilities.map(v => <option key={v} value={v}>{capitalize(v)}</option>);
       main = (
-        <Input id="visibility" type="select" placeholder="Choose visibility..." className="custom-select"
-          value={input.visibility} feedback={error} invalid={error && !input.visibilityPristine}
-          onChange={(e) => handlers.setProperty("visibility", e.target.value)} data-cy="visibility-select" >
-          <option key="" value="" disabled>Choose visibility...</option>
-          {options}
-        </Input>
+        <VisibilityInput
+          namespaceVisibility={meta.namespace.visibility}
+          invalid={error && !input.visibilityPristine}
+          data-cy="visibility-select"
+          onChange={(value) => handlers.setProperty("visibility", value)} value={input.visibility} />
       );
     }
 
