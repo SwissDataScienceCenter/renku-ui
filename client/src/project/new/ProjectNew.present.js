@@ -51,7 +51,7 @@ import { ButtonWithMenu } from "../../utils/components/Button";
 import { Clipboard } from "../../utils/components/Clipboard";
 import AppContext from "../../utils/context/appContext";
 import { Docs, Links } from "../../utils/constants/Docs";
-import { VisibilityInput } from "../../utils/components/visibility/Visibility";
+import VisibilityInput from "../../utils/components/visibility/Visibility";
 
 
 /**
@@ -640,37 +640,17 @@ class Visibility extends Component {
   render() {
     const { handlers, meta, input } = this.props;
     const error = meta.validation.errors["visibility"];
-    let main;
-    if (!input.namespace) {
-      main = (
-        <Fragment>
-          <br />
-          <Label className="font-italic">Please select a namespace first.</Label>
-        </Fragment>
-      );
-    }
-    else if (meta.namespace.fetching || !meta.namespace.visibilities || !input.visibility) {
-      main = (
-        <Fragment>
-          <br />
-          <Label className="font-italic">Determining options... <Loader inline={true} size={16} /></Label>
-        </Fragment>
-      );
-    }
-    else {
-      main = (
+    if (meta.namespace.fetching || !meta.namespace.visibilities || !input.visibility)
+      return <Label className="font-italic">Determining options... <Loader inline={true} size={16} /></Label>;
+
+    return (
+      <FormGroup>
         <VisibilityInput
           namespaceVisibility={meta.namespace.visibility}
           invalid={error && !input.visibilityPristine}
           data-cy="visibility-select"
+          isRequired={true}
           onChange={(value) => handlers.setProperty("visibility", value)} value={input.visibility} />
-      );
-    }
-
-    return (
-      <FormGroup>
-        <Label>Visibility</Label>
-        {main}
       </FormGroup>
     );
   }
