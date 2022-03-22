@@ -20,11 +20,11 @@
 import Fixtures from "../../support/renkulab-fixtures";
 
 describe("display a project", () => {
+  const fixtures = new Fixtures(cy);
   beforeEach(() => {
-    const fixtures = new Fixtures(cy);
     fixtures.config().versions().userTest();
     fixtures.projects().landingUserProjects().projectTest();
-    fixtures.projectLockStatus();
+    fixtures.projectLockStatus().projectMigrationUpToDate();
     cy.visit("/projects/e2e/local-test-project");
   });
 
@@ -37,6 +37,22 @@ describe("display a project", () => {
     );
     // Check that the readme is shown
     cy.get("h1").first().should("contain.text", "local test project");
+  });
+
+  it("displays project settings", () => {
+    fixtures.sessionServerOptions();
+    cy.visit("/projects/e2e/local-test-project/settings/sessions");
+    cy.wait("@getSessionServerOptions");
+    cy.wait("@getProjectLockStatus");
+    cy.contains("Number of CPUs").should("be.visible");
+  });
+
+  it("displays project settings with cloud-storage enabled ", () => {
+    fixtures.sessionServerOptions(true);
+    cy.visit("/projects/e2e/local-test-project/settings/sessions");
+    cy.wait("@getSessionServerOptions");
+    cy.wait("@getProjectLockStatus");
+    cy.contains("Number of CPUs").should("be.visible");
   });
 });
 
