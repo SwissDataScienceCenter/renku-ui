@@ -5,7 +5,7 @@ RUN apk update && apk add python make g++
 WORKDIR /app
 
 #: Use only required files.
-COPY package.json package-lock.json /app/
+COPY package.json package-lock.json tsconfig.json /app/
 COPY public /app/public
 COPY src /app/src/
 COPY craco.config.js /app/craco.config.js
