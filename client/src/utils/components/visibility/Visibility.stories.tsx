@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { Story } from "@storybook/react";
 import VisibilityInput, { Visibilities, VisibilityInputProps } from "./Visibility";
 export default {
