@@ -87,33 +87,38 @@ const VisibilityInput = ({ namespaceVisibility, disabled, value, isInvalid, isRe
   const options = items.map(item => {
     const disabledByNamespace = visibilities.disabled.includes(item.value);
     const isDisabled = disabled || disabledByNamespace;
-    const disabledByNamespaceText = disabledByNamespace ?
-      <div className="input-hint">Disabled due to namespace restrictions</div> : null;
 
     return (
-      <div className="visibility-box" key={`visibility-${item.value}`}>
-        <div className={isDisabled ? "cursor-not-allowed" : ""}>
-          <Input type="radio"
-            name={name}
-            value={item.value}
-            disabled={isDisabled}
-            checked={visibility === item.value}
-            onChange={(e) => changeVisibility(e.target.value)}
-            className={markInvalid && !isDisabled ?
-              "visibility-input--error" : "visibility-input"}
-            data-cy={`visibility-${item.value}`}/>
+      <div className="visibility-box col-sm-12 col-md-4 col-lg-4 px-0" key={`visibility-${item.value}`}>
+        <div className="d-flex">
+          <div className={isDisabled ? "cursor-not-allowed d-inline" : "d-inline"}>
+            <Input type="radio"
+              name={name}
+              value={item.value}
+              disabled={isDisabled}
+              checked={visibility === item.value}
+              onChange={(e) => changeVisibility(e.target.value)}
+              className={markInvalid && !isDisabled ?
+                "visibility-input--error" : "visibility-input"}
+              data-cy={`visibility-${item.value}`}/>
+          </div>
+          <div className={isDisabled ? "cursor-not-allowed px-2" : "cursor-pointer px-2"}
+            onClick={()=> changeVisibility(item.value, isDisabled)}>
+            <label className={isDisabled ? "cursor-not-allowed" : "cursor-pointer"}>{item.title}</label>
+            <FontAwesomeIcon icon={item.icon} className={isDisabled ? "icon-disabled" : ""} />
+          </div>
         </div>
-        <div className={isDisabled ? "cursor-not-allowed" : "cursor-pointer"}
-          onClick={()=> changeVisibility(item.value, isDisabled)}>
-          <label className={isDisabled ? "cursor-not-allowed" : "cursor-pointer"}>{item.title}</label>
-          <FontAwesomeIcon icon={item.icon} className={isDisabled ? "icon-disabled" : ""} />
-          <div className="input-hint">{item.hint}</div>
-          {disabledByNamespaceText}
-        </div>
+        <div className="input-hint" onClick={()=> changeVisibility(item.value, isDisabled)}>{item.hint}</div>
       </div>
     );
   });
 
+  const disableByNamespaceOptions = {
+    public: "",
+    private: "Public and Internal options are not available due to namespace restrictions",
+    internal: "Public is not available due to namespace restrictions"
+  };
+  const disabledByNamespace = <span className="input-hint">{disableByNamespaceOptions[namespaceVisibility]}</span>;
   const requiredLabel = isRequired ? (<span className="required-label">*</span>) : null;
   const errorFeedback = markInvalid ?
     (<div className="error-feedback">
@@ -121,13 +126,14 @@ const VisibilityInput = ({ namespaceVisibility, disabled, value, isInvalid, isRe
     : null;
 
   return (
-    <>
+    <div className="py-3">
       <Label>Visibility {requiredLabel}</Label>
-      <div className="visibilities-box">
+      <div className="visibilities-box row">
         {options}
       </div>
       {errorFeedback}
-    </>
+      {disabledByNamespace}
+    </div>
   );
 };
 
