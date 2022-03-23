@@ -1,6 +1,24 @@
+/*!
+ * Copyright 2022 - Swiss Data Science Center (SDSC)
+ * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
+ * Eidgenössische Technische Hochschule Zürich (ETHZ).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 import * as React from "react";
 import { Story } from "@storybook/react";
 import VisibilityInput, { Visibilities, VisibilityInputProps } from "./Visibility";
+
 export default {
   title: "components/Visibility",
   component: VisibilityInput,
@@ -25,6 +43,12 @@ export default {
     },
     isRequired: {
       control: { type: "boolean" },
+    },
+    name: {
+      control: {
+        type: "text"
+      },
+      description: "To customize input name. Default: visibility"
     }
   },
 };
@@ -41,22 +65,26 @@ Default.args = {
 export const NoNamespace = Template.bind({});
 NoNamespace.args = {
   namespaceVisibility: undefined,
+  name: "visibility2"
 };
 
 export const Disabled = Template.bind({});
 Disabled.args = {
   namespaceVisibility: Visibilities.Public,
   disabled: true,
+  name: "visibility3"
 };
 
 export const Invalid = Template.bind({});
 Invalid.args = {
   namespaceVisibility: Visibilities.Public,
   isRequired: true,
-  isInvalid: true
+  isInvalid: true,
+  name: "visibility4"
 };
 
 export const Limited = Template.bind({});
 Limited.args = {
   namespaceVisibility: Visibilities.Private,
+  name: "visibility5"
 };

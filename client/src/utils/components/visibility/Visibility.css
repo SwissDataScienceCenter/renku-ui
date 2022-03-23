@@ -11,6 +11,7 @@
 .visibility-box label {
     padding: 0 5px 0 0;
 }
+
 .visibility-box input {
     width: 20px;
     height: 20px;
@@ -21,9 +22,11 @@
 .visibility-input {
     border: solid 1px var(--bs-primary);
 }
+
 .visibility-input--error {
     border: solid 1px var(--bs-danger);
 }
+
 .icon-disabled {
     opacity: 0.5;
 }

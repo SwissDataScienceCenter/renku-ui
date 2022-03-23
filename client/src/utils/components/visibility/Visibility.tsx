@@ -36,7 +36,8 @@ export interface VisibilityInputProps {
   isInvalid?: boolean,
   isRequired: boolean,
   disabled?: boolean,
-  onChange: Function
+  onChange: Function,
+  name?: string,
 }
 
 /**
@@ -55,8 +56,9 @@ export interface VisibilityInputProps {
  * @param {boolean} props.isInvalid - to show error feedback and mark input as invalid if there is no selection
  * @param {boolean} props.isRequired - to indicate the input is required
  * @param {function} props.onChange - to be executed when a value change
+ * @param {string} props.name - input name optional
  */
-const VisibilityInput = ({ namespaceVisibility, disabled, value, isInvalid, isRequired, onChange }
+const VisibilityInput = ({ namespaceVisibility, disabled, value, isInvalid, isRequired, onChange, name = "visibility" }
                            : VisibilityInputProps) => {
   const [visibility, setVisibility] = useState<string | null>(null);
   useEffect(() => setVisibility(value), [value]);
@@ -92,7 +94,7 @@ const VisibilityInput = ({ namespaceVisibility, disabled, value, isInvalid, isRe
       <div className="visibility-box" key={`visibility-${item.value}`}>
         <div className={isDisabled ? "cursor-not-allowed" : ""}>
           <Input type="radio"
-            name="visibility"
+            name={name}
             value={item.value}
             disabled={isDisabled}
             checked={visibility === item.value}
