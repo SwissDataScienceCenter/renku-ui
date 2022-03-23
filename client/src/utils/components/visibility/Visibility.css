@@ -24,7 +24,3 @@
 .visibility-input--error {
     border: solid 1px var(--bs-danger);
 }
-
-.icon-disabled {
-    opacity: 0.5;
-}

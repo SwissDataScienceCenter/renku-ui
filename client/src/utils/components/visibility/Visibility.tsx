@@ -104,7 +104,7 @@ const VisibilityInput = ({ namespaceVisibility, disabled, value, isInvalid, isRe
           </div>
           <div className={isDisabled ? "cursor-not-allowed px-2" : "cursor-pointer px-2"}
             onClick={()=> changeVisibility(item.value, isDisabled)}>
-            <label className={isDisabled ? "cursor-not-allowed" : "cursor-pointer"}>{item.title}</label>
+            <label className={isDisabled ? "cursor-not-allowed label-disabled" : "cursor-pointer"}>{item.title}</label>
             <FontAwesomeIcon icon={item.icon} className={isDisabled ? "icon-disabled" : ""} />
           </div>
         </div>

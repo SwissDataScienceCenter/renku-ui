@@ -17,3 +17,11 @@
   color: var(--bs-danger);
   padding-top: 6px;
 }
+
+.label-disabled, .icon-disabled {
+  opacity: 0.5;;
+}
+
+.form-check-input:disabled {
+  opacity: 0.3;
+}
