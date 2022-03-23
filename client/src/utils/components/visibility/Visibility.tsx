@@ -24,22 +24,6 @@ import { faExclamationTriangle, faGlobe, faLock, faUserFriends } from "@fortawes
 import "./Visibility.css";
 import { computeVisibilities } from "../../helpers/HelperFunctions";
 
-export enum Visibilities {
-  Public = "public",
-  Private = "private",
-  Internal = "internal"
-}
-
-export interface VisibilityInputProps {
-  namespaceVisibility : Visibilities,
-  value: Visibilities,
-  isInvalid?: boolean,
-  isRequired: boolean,
-  disabled?: boolean,
-  onChange: Function,
-  name?: string,
-}
-
 /**
  *  renku-ui
  *
@@ -47,16 +31,48 @@ export interface VisibilityInputProps {
  *  Visibility input
  */
 
+export enum Visibilities {
+  Public = "public",
+  Private = "private",
+  Internal = "internal"
+}
+
+export interface VisibilityInputProps {
+  /** It restrict the options to show */
+  namespaceVisibility : Visibilities;
+
+  /** Default value */
+  value: Visibilities;
+
+  /**
+   * To show error feedback and mark input as invalid if there is no selection
+   * @default false;
+   */
+  isInvalid?: boolean;
+
+  /**
+   * To indicate the input is required
+   * @default false
+   */
+  isRequired: boolean;
+
+  /** To force the disabling of all the options
+   * @default false
+   */
+  disabled?: boolean;
+
+  /** To be executed when a value change */
+  onChange: Function;
+
+  /** Input name
+   * @default visibility
+   */
+  name?: string;
+}
+
 /**
- * Project Visibility
- * @param {Object} props - Visibility options
- * @param {string} props.namespaceVisibility - public | private | internal, it restrict the options to show
- * @param {boolean} props.disabled - to force the disabling of all the options
- * @param {text} props.value - default value public | private | internal
- * @param {boolean} props.isInvalid - to show error feedback and mark input as invalid if there is no selection
- * @param {boolean} props.isRequired - to indicate the input is required
- * @param {function} props.onChange - to be executed when a value change
- * @param {string} props.name - input name optional
+ * Project Visibility functional component
+ * @param {VisibilityInputProps} props - visibility options
  */
 const VisibilityInput = ({ namespaceVisibility, disabled, value, isInvalid, isRequired, onChange, name = "visibility" }
                            : VisibilityInputProps) => {
