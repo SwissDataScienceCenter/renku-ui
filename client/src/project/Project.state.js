@@ -59,17 +59,17 @@ const CoreServiceProjectMixin = {
 
 const DatasetsMixin = {
   fetchProjectDatasetsFromKg(client) { //from KG
-    if (this.get("datasets.datasets_kg") === SpecialPropVal.UPDATING) return;
-    this.setUpdating({ datasets: { datasets_kg: true } });
+    if (this.get("datasets.datasets_kg.fetching") === SpecialPropVal.UPDATING) return;
+    this.setUpdating({ datasets: { datasets_kg: { fetching: true } } });
     return client.getProjectDatasetsFromKG(this.get("metadata.pathWithNamespace"))
       .then(datasets => {
-        const updatedState = { datasets_kg: { $set: datasets } };
+        const updatedState = { datasets_kg: { list: { $set: datasets }, fetching: false } };
         this.setObject({ datasets: updatedState });
         return datasets;
       })
       .catch(err => {
         const datasets = [];
-        const updatedState = { datasets_kg: { $set: datasets } };
+        const updatedState = { datasets_kg: { list: { $set: datasets }, error: { $set: err }, fetching: false } };
         this.setObject({ datasets: updatedState });
       });
   },

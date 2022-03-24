@@ -85,7 +85,7 @@ export default function DatasetsListView(props) {
 
   const datasets = useMemo(()=>props.datasets, [props.datasets]);
 
-  if (props.datasets_kg === SpecialPropVal.UPDATING)
+  if (props.datasets_kg.fetching === SpecialPropVal.UPDATING)
     return <Loader />;
 
   return [ <Row key="header" className="pt-2 pb-3">
@@ -101,7 +101,7 @@ export default function DatasetsListView(props) {
     <Col xs={12}>
       <DatasetList
         datasets={datasets}
-        datasets_kg={props.datasets_kg}
+        datasets_kg={props.datasets_kg.list}
         datasetsUrl={props.datasetsUrl}
         graphStatus={props.graphStatus} />
     </Col>
