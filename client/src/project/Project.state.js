@@ -619,13 +619,13 @@ class ProjectCoordinator {
     this.model.setUpdating({ data: { readme: { fetching: true } } });
     client.getProjectReadme(this.model.get("metadata.id"), this.model.get("metadata.defaultBranch"))
       .then(d => {
-        this.model.setObject({data: {readme: {text: d.text, error: {}}}});
+        this.model.setObject({ data: { readme: { text: d.text, error: {} } } });
       })
       .catch(error => {
         if (error.case === API_ERRORS.notFoundError)
           this.model.set("data.readme.text", "No readme file found.");
         else
-        this.model.setObject({data: {readme: {text: null, error}}});
+          this.model.setObject({ data: { readme: { text: null, error } } });
 
       })
       .finally(() => this.model.set("data.readme.fetching", false));
