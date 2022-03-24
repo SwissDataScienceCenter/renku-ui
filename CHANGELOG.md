@@ -1,5 +1,15 @@
 # Changes
 
+## [2.1.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.1.0...2.1.1) (2022-03-24)
+
+### Features
+
+**sessions**
+* improve feedback while starting sessions ([#1730](https://github.com/SwissDataScienceCenter/renku-ui/issues/1730), [#1408](https://github.com/SwissDataScienceCenter/renku-ui/issues/1408), [#1679](https://github.com/SwissDataScienceCenter/renku-ui/issues/1679))
+### Bug Fixes
+
+* correctly support updating project templates ([#1745](https://github.com/SwissDataScienceCenter/renku-ui/issues/1745))
+
 ## [2.1.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.0.2...2.1.0) (2022-03-15)
 ### Features
 
