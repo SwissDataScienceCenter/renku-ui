@@ -1,0 +1,15 @@
+{
+  "result": {
+    "config": {
+      "interactive.default_url": "/lab",
+      "interactive.cpu_request": "0.5",
+      "renku.autocommit_lfs": "false",
+      "renku.lfs_threshold": "100kb"
+    },
+    "default": {
+      "interactive.default_url": "/lab",
+      "renku.autocommit_lfs": "false",
+      "renku.lfs_threshold": "100kb"
+    }
+  }
+}

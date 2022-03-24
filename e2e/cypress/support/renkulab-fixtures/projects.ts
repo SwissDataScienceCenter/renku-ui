@@ -102,6 +102,26 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
+    projectConfigShow(error = false) {
+      const fixture = error ?
+        "errors/core-error-2001.json" :
+        "project/config-show.json";
+      cy.intercept(
+        "/ui-server/api/renku/*/config.show?git_url=*",
+        { fixture }
+      ).as("getProjectConfigShow");
+      return this;
+    }
+
+    projectMigrationError(params: MigrationCheckParams = { queryUrl: null, fixtureName: "getMigration" }) {
+      this.interceptMigrationCheck(
+        params.fixtureName,
+        "errors/core-error-2001.json",
+        params.queryUrl
+      );
+      return this;
+    }
+
     projectMigrationUpToDate(params: MigrationCheckParams = { queryUrl: null, fixtureName: "getMigration" }) {
       this.interceptMigrationCheck(
         params.fixtureName,
@@ -138,15 +158,16 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       return this;
     }
 
-    projectLockStatus(locked = false, name = "getProjectLockStatus") {
+    projectLockStatus(locked = false, error = false, name = "getProjectLockStatus") {
       const coreUrl = "/ui-server/api/renku/project.lock_status";
-      const params =
-        "git_url=*";
-      cy.intercept(`${coreUrl}?${params}`, {
-        body: {
-          result: { locked }
-        }
-      }).as(name);
+      const params = "git_url=*";
+      const data = error ?
+        { fixture: "errors/core-error-2001.json" } :
+        { body: { result: { locked } } };
+      cy.intercept(
+        `${coreUrl}?${params}`,
+        data
+      ).as(name);
       return this;
     }
 

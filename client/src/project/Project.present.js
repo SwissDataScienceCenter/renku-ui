@@ -113,12 +113,22 @@ function ProjectVisibilityLabel({ visibilityLevel }) {
 }
 
 function ProjectLockStatus({ lockStatus }) {
-  if (lockStatus == null) return null;
-  const isLocked = lockStatus.locked;
-  if (!isLocked) return null;
-  return <span className="fs-6 fw-normal">
-    <FontAwesomeIcon icon={faUserClock} /> <i>currently being modified</i>
-  </span>;
+  // return null when not locked and no errors occurred
+  if (!lockStatus || (!lockStatus?.locked && !lockStatus?.error))
+    return null;
+
+  const content = lockStatus.error ?
+    (<Fragment>
+      <FontAwesomeIcon icon={faExclamationTriangle} /> <i>cannot verify status</i>
+      <UncontrolledTooltip key="tooltip" placement="bottom" target="locked-status-info">
+        {lockStatus.error?.userMessage ? lockStatus.error.userMessage : lockStatus.error?.reason}
+      </UncontrolledTooltip>
+    </Fragment>) :
+    (<Fragment>
+      <FontAwesomeIcon icon={faUserClock} /> <i>currently being modified</i>
+    </Fragment>);
+
+  return (<span className="fs-6 fw-normal m-2" id="locked-status-info">{content}</span>);
 }
 
 function ProjectDatasetLockAlert({ lockStatus }) {

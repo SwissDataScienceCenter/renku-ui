@@ -43,17 +43,34 @@ describe("display a project", () => {
     fixtures.sessionServerOptions();
     cy.visit("/projects/e2e/local-test-project/settings/sessions");
     cy.wait("@getSessionServerOptions");
-    cy.wait("@getProjectLockStatus");
     cy.contains("Number of CPUs").should("be.visible");
   });
 
   it("displays project settings with cloud-storage enabled ", () => {
-    fixtures.sessionServerOptions(true);
+    fixtures.sessionServerOptions(true).projectConfigShow();
+    cy.visit("/projects/e2e/local-test-project/settings/sessions");
+    cy.wait("@getSessionServerOptions");
+    cy.contains("Number of CPUs").should("be.visible");
+  });
+
+  it("displays project settings complete", () => {
+    fixtures.sessionServerOptions().projectConfigShow();
     cy.visit("/projects/e2e/local-test-project/settings/sessions");
     cy.wait("@getSessionServerOptions");
     cy.wait("@getProjectLockStatus");
     cy.wait("@getProjectConfig");
     cy.contains("Number of CPUs").should("be.visible");
+    cy.get("button.active").contains("0.5").should("be.visible");
+  });
+
+  it("displays project settings error", () => {
+    fixtures.sessionServerOptions().projectConfigShow(true);
+    cy.visit("/projects/e2e/local-test-project/settings/sessions");
+    cy.wait("@getSessionServerOptions");
+    cy.wait("@getProjectLockStatus");
+    cy.wait("@getProjectConfigShow");
+    cy.contains("Number of CPUs").should("not.exist");
+    cy.contains("Error").should("be.visible");
   });
 });
 
@@ -99,6 +116,16 @@ describe("display migration information", () => {
       "be.visible"
     );
   });
+
+  it("displays gets an error on migration", () => {
+    fixtures.projectMigrationError();
+    cy.visit("/projects/e2e/local-test-project/overview/status");
+    cy.wait("@getMigration");
+    // Check that the project up-to-date info is shown
+    cy.contains("unexpected error while handling project data").should(
+      "be.visible"
+    );
+  });
 });
 
 describe("display lock status", () => {
@@ -122,6 +149,12 @@ describe("display lock status", () => {
     cy.wait("@getProject");
     cy.wait("@getProjectLockStatus");
     cy.contains("currently being modified").should("be.visible");
+  });
+
+  it("displays error when the API fails", () => {
+    fixtures.projectLockStatus(true, true);
+    cy.visit("/projects/e2e/local-test-project/");
+    cy.contains("cannot verify status").should("be.visible");
   });
 });
 

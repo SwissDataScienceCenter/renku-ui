@@ -46,13 +46,20 @@ const CoreServiceProjectMixin = {
   async fetchProjectLockStatus() {
     const client = this.client;
     const gitUrl = this.get("metadata.httpUrl");
+    let lockStatusObject = { fetching: true, error: null };
+    this.setObject({ lockStatus: lockStatusObject });
     const lockStatus = await client.getProjectLockStatus(gitUrl);
-    if (lockStatus && lockStatus.error !== undefined) {
-      this.set("lockStatus.error", lockStatus.error.reason);
-      return lockStatus.error.reason;
-    }
-    this.set("lockStatus", lockStatus.data.result);
-    return lockStatus.data.result;
+    if (lockStatus?.data?.error)
+      lockStatusObject.error = lockStatus.data.error;
+    else
+      lockStatusObject.locked = lockStatus?.data?.result?.locked;
+    lockStatusObject.fetching = false;
+    lockStatusObject.fetched = new Date();
+    this.setObject({ lockStatus: lockStatusObject });
+
+    return lockStatus.error ?
+      lockStatus.error :
+      lockStatus.locked;
   },
 };
 
@@ -205,11 +212,11 @@ const ProjectAttributesMixin = {
 const MigrationMixin = {
   async fetchMigrationCheck(client, gitUrl, defaultBranch = null) {
     const migrationData = await client.checkMigration(gitUrl, defaultBranch);
-    if (migrationData && migrationData.error !== undefined) {
-      this.set("migration.check.check_error", migrationData.error.reason);
-      return migrationData.error.reason;
+    if (migrationData?.error) {
+      this.set("migration.check.check_error", migrationData.error);
+      return migrationData.error;
     }
-    this.set("migration.check", migrationData.result);
+    this.set("migration.check", { ...migrationData.result, check_error: null });
     return migrationData.result;
   },
   async migrateProject(client, gitUrl, defaultBranch = null, options) {
@@ -654,28 +661,39 @@ class ProjectCoordinator {
 
   async checkCoreAvailability(version) {
     // get the project version if not already passed
-    const projectVersion = version ?
-      version.toString() :
-      (this.model.get("migration.check"))?.core_compatibility_status?.project_metadata_version.toString();
-    let data = { versionUrl: `/${projectVersion}` };
-
-    // check if the APIs for the target project version were already tested
-    const coreVersion = this.model.baseModel.get("environment.coreVersions");
-    if (Object.keys(coreVersion.available).length === 0) {
-      // get the core versions
-      await new EnvironmentCoordinator(this.client,
-        this.model.baseModel.subModel("environment")).fetchCoreServiceVersions();
-    }
-    // The core version will tell us if we have a backend
-    if (coreVersion.available[projectVersion]) {
-      data.fetched = new Date();
-      data.backendAvailable = true;
+    let projectVersion;
+    if (version) {
+      projectVersion = version.toString();
     }
     else {
-      data.fetched = new Date();
-      data.backendAvailable = false;
+      const migrationCheck = this.model.get("migration.check");
+      if (migrationCheck?.core_compatibility_status?.project_metadata_version)
+        projectVersion = migrationCheck.core_compatibility_status?.project_metadata_version.toString();
+      else if (migrationCheck.check_error)
+        projectVersion = false;
     }
 
+    let data = { versionUrl: projectVersion ? `/${projectVersion}` : null };
+    if (!projectVersion) {
+      data.error = true;
+      data.backendAvailable = false;
+    }
+    else {
+      // check if the APIs for the target project version were already tested
+      const coreVersion = this.model.baseModel.get("environment.coreVersions");
+      if (Object.keys(coreVersion.available).length === 0) {
+        // get the core versions
+        await new EnvironmentCoordinator(this.client,
+          this.model.baseModel.subModel("environment")).fetchCoreServiceVersions();
+      }
+      // The core version will tell us if we have a backend
+      if (coreVersion.available[projectVersion])
+        data.backendAvailable = true;
+      else
+        data.backendAvailable = false;
+    }
+
+    data.fetched = new Date();
     this.model.setObject({ migration: { core: { ...data } } });
     // return availability
     return data.backendAvailable;
