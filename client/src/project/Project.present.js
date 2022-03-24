@@ -302,7 +302,7 @@ const ProjectSuggestActions = (props) => {
     isReadmeCommitInitial = firstCommit.id === commitsReadme.list[0].id;
   }
 
-  const isLoadingDatasets = typeof (datasets) === "string" || datasets?.datasets === null;
+  const isLoadingDatasets = datasets.fetching === SpecialPropVal.UPDATING || datasets?.datasets === null;
   let hasDatasets = !isLoadingDatasets ? datasets.datasets?.length > 0 : true;
   const isLoadingData = !commits.fetched ||
     !commitsReadme.fetched ||
@@ -826,7 +826,7 @@ function ProjectViewDatasets(props) {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    const datasetsLoading = props.datasets.core === SpecialPropVal.UPDATING;
+    const datasetsLoading = props.datasets.core.fetching === SpecialPropVal.UPDATING;
     if (datasetsLoading || !props.migration.core.fetched || props.migration.core.fetching)
       return;
     props.fetchDatasets(props.location.state && props.location.state.reload);
@@ -867,7 +867,7 @@ function ProjectViewDatasets(props) {
     );
   }
 
-  const loadingDatasets = props.datasets.core === SpecialPropVal.UPDATING || props.datasets.core === undefined;
+  const loadingDatasets = props.datasets.core.fetching === SpecialPropVal.UPDATING || props.datasets.core === undefined;
   if (loadingDatasets) {
     return (
       <div>

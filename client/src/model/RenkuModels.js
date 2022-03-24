@@ -211,11 +211,19 @@ const projectSchema = new Schema({
   },
   datasets: {
     [Prop.SCHEMA]: new Schema({
+      kg: { [Prop.INITIAL]: {
+        list: [],
+        error: {},
+        fetched: null,
+        fetching: false
+      } },
       datasets_kg: { [Prop.INITIAL]: [] },
       core: {
         [Prop.INITIAL]: {
           datasets: null,
-          error: null
+          error: null,
+          fetched: null,
+          fetching: false
         }
       }
     })

@@ -75,25 +75,24 @@ const DatasetsMixin = {
   },
   fetchProjectDatasets(client, forceReFetch) {
     let core = this.get("datasets.core");
-    if (core === SpecialPropVal.UPDATING) return;
+    if (core.fetching === SpecialPropVal.UPDATING) return;
     if (core.datasets && core.error == null && !forceReFetch) return core;
-    this.setUpdating({ datasets: { core: true } });
     const migration = this.model.get("migration.core");
     if (migration.backendAvailable === false)
       return false;
+    this.setUpdating({ datasets: { core: { fetching: true } } });
     const versionUrl = migration.versionUrl;
     const gitUrl = this.get("metadata.httpUrl");
     return client.listProjectDatasetsFromCoreService(gitUrl, versionUrl)
       .then(response => {
         let responseDs = response.data.error ? response.data : response.data.result.datasets;
-        const updatedState = { core: { $set: { datasets: responseDs } }, transient: { requests: { datasets: false } } };
+        const updatedState = { core: { $set: { datasets: responseDs, fetching: false } } };
         this.setObject({ datasets: updatedState });
         return responseDs;
       })
       .catch(err => {
         const updatedState = {
-          core: { datasets: null, error: { $set: err } },
-          transient: { requests: { datasets: false } }
+          core: { datasets: null, error: { $set: err }, fetching: false }
         };
         this.setObject({ datasets: updatedState });
       });
