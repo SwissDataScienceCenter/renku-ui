@@ -554,8 +554,8 @@ class ProjectNav extends Component {
 
 class ProjectFilesNav extends Component {
   render() {
-    const loading = isRequestPending(this.props, "filesTree");
-    const allFiles = this.props.filesTree || [];
+    const loading = this.props.filesTree.fetching === SpecialPropVal.UPDATING;
+    const allFiles = this.props.filesTree.hash || {};
     if ((loading && Object.keys(allFiles).length < 1) || this.props.filesTree === undefined)
       return <Loader />;
 

@@ -101,7 +101,7 @@ const DatasetsMixin = {
 
 const FileTreeMixin = {
   fetchProjectFilesTree(client, openFilePath, openFolder) {
-    if (this.get("transient.requests.filesTree") === SpecialPropVal.UPDATING) return;
+    if (this.model.get("filesTree.fetching") === SpecialPropVal.UPDATING) return;
     const oldTree = this.get("filesTree");
     openFilePath = this.cleanFilePathUrl(openFilePath);
     if (oldTree.loaded === false)
@@ -124,13 +124,14 @@ const FileTreeMixin = {
     this.model.set("filesTree.last", nodeData);
   },
   initialFetchProjectFilesTree(client, openFilePath, openFolder ) {
-    this.model.setUpdating({ transient: { requests: { filesTree: true } } });
+    this.model.setUpdating({ filesTree: { fetching: true } } );
     return client.getProjectFilesTree(this.get("metadata.id"), this.get("metadata.defaultBranch"), openFilePath)
       .then(d => {
-        const updatedState = { filesTree: d, transient: { requests: { filesTree: false } } };
+        d["fetching"] = false;
+        d["error"] = null;
+        d["loaded"] = true;
+        const updatedState = { filesTree: { $set: d } };
         this.model.setObject(updatedState);
-        this.model.set("filesTree", d);
-        this.model.set("filesTree.loaded", true);
         return d;
       })
       .then(d=> {
@@ -138,7 +139,7 @@ const FileTreeMixin = {
       });
   },
   deepFetchProjectFilesTree(client, openFilePath, openFolder, oldTree) {
-    this.model.setUpdating({ transient: { requests: { filesTree: true } } });
+    this.model.setUpdating({ filesTree: { fetching: true } });
     return client.getProjectFilesTree(this.get("metadata.id"), this.get("metadata.defaultBranch"),
       openFilePath, openFolder, oldTree.lfsFiles)
       .then(d => {
@@ -169,9 +170,10 @@ const FileTreeMixin = {
     parentTree.hash[openFolder].treeRef.children = newTree.tree;
     parentTree.hash[openFolder].childrenLoaded = true;
     parentTree.hash[openFolder].childrenOpen = true;
+    parentTree["fetching"] = false;
     for (const node in newTree.hash)
       parentTree.hash[node] = newTree.hash[node];
-    return { filesTree: parentTree, transient: { requests: { filesTree: false } } };
+    return { filesTree: parentTree };
   }
 };
 

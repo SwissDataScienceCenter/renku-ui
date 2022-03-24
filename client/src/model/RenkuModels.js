@@ -237,7 +237,10 @@ const projectSchema = new Schema({
   filesTree: {
     [Prop.SCHEMA]: new Schema({
       hash: { [Prop.INITIAL]: {} },
-      loaded: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true }
+      loaded: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
+      error: { [Prop.INITIAL]: null },
+      fetched: { [Prop.INITIAL]: null },
+      fetching: { [Prop.INITIAL]: false },
     })
   },
   filters: {

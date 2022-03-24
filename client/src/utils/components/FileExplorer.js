@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faFile, faFolder, faFolderOpen } from "@fortawesome/free-solid-svg-icons";
 import { Loader } from "./Loader";
+import { SpecialPropVal } from "../../model";
 
 function buildTree(parts, treeNode, jsonObj, hash, currentPath, foldersOpenOnLoad) {
   if (parts.length === 0)
@@ -198,7 +199,7 @@ function FileExplorer(props) {
     setFilesTree(filesTree);
   };
 
-  const loading = filesTree === undefined;
+  const loading = filesTree == null || filesTree.fetching === SpecialPropVal.UPDATING;
 
   if (loading)
     return <Loader />;
