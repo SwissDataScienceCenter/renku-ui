@@ -337,11 +337,6 @@ const projectSchema = new Schema({
       fetching: { [Prop.INITIAL]: false },
     })
   },
-  transient: {
-    [Prop.SCHEMA]: new Schema({
-      requests: { [Prop.INITIAL]: {} }
-    })
-  },
   webhook: {
     [Prop.SCHEMA]: {
       status: { [Prop.INITIAL]: null },

@@ -72,12 +72,6 @@ function filterPaths(paths, blacklist) {
   return result;
 }
 
-function isRequestPending(props, request) {
-  const transient = props.transient || {};
-  const requests = transient.requests || {};
-  return requests[request] === SpecialPropVal.UPDATING;
-}
-
 function webhookError(props) {
   if (props == null || props === SpecialPropVal.UPDATING || props === true || props === false)
     return false;
@@ -580,7 +574,7 @@ class ProjectViewReadme extends Component {
 
   render() {
     const readmeText = this.props.readme.text;
-    const loading = isRequestPending(this.props, "readme");
+    const loading = this.props.readme.fetching === SpecialPropVal.UPDATING;
     if (loading && readmeText === "")
       return <Loader />;
 
@@ -644,6 +638,7 @@ class ProjectViewOverviewNav extends Component {
 class ProjectViewOverview extends Component {
   render() {
     const { projectCoordinator } = this.props;
+    const isLoading = projectCoordinator.get("data.readme.fetching") === SpecialPropVal.UPDATING;
     return <Col key="overview">
       <Row>
         <Col key="nav" sm={12} md={2}>
@@ -669,7 +664,7 @@ class ProjectViewOverview extends Component {
               />}
             />
             <Route exact path={this.props.overviewStatusUrl} render={props =>
-              <ProjectOverviewVersion {...this.props} isLoading={isRequestPending(this.props, "readme")} />
+              <ProjectOverviewVersion {...this.props} isLoading={isLoading} />
             } />
           </Switch>
         </Col>
