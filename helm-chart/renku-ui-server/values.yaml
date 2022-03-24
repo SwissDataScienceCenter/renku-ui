@@ -25,7 +25,7 @@ global:
       uiServer: "2"
     host: renku-redis
     port: 26379
-    clientLabel: 
+    clientLabel:
       renku-redis-host: "true"
     existingSecret: redis-secret
     existingSecretPasswordKey: redis-password
@@ -34,7 +34,7 @@ replicaCount: 1
 
 image:
   repository: renku/renku-ui-server
-  tag: "2.1.0"
+  tag: "2.1.1"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []
