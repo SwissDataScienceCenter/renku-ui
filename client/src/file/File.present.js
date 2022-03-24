@@ -124,6 +124,7 @@ class FileCard extends React.Component {
 class ShowFile extends React.Component {
   render() {
     const gitLabFilePath = this.props.gitLabFilePath;
+    const branch = this.props.branch ?? "master";
     const buttonGraph =
       this.props.lineagesPath !== undefined ?
         <FileAndLineageSwitch
@@ -137,7 +138,7 @@ class ShowFile extends React.Component {
       <ExternalIconLink
         tooltip="Open in GitLab"
         icon={faGitlab}
-        to={`${this.props.externalUrl}/blob/master/${gitLabFilePath}`}
+        to={`${this.props.externalUrl}/blob/${branch}/${gitLabFilePath}`}
       />
     );
 
@@ -182,7 +183,7 @@ class ShowFile extends React.Component {
     const isLFSBadge = isLFS ?
       (<Badge className="lfs-badge" color="white">LFS</Badge>) :
       null;
-    const downloadLink = `${this.props.externalUrl}/-/raw/master/${gitLabFilePath}?inline=false`;
+    const downloadLink = `${this.props.externalUrl}/-/raw/${branch}/${gitLabFilePath}?inline=false`;
     const buttonDownload = (
       <ExternalIconLink tooltip="Download File" icon={faDownload} to={downloadLink} />
     );
