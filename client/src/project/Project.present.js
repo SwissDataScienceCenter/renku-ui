@@ -61,6 +61,7 @@ import { ExternalLink } from "../utils/components/ExternalLinks";
 import { ButtonWithMenu, GoBackButton } from "../utils/components/Button";
 import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
 import { ErrorAlert, InfoAlert, WarnAlert } from "../utils/components/Alert";
+import { CoreErrorAlert } from "../utils/components/errors/CoreErrorAlert";
 import { RenkuNavLink } from "../utils/components/RenkuNavLink";
 import { Loader } from "../utils/components/Loader";
 import { TimeCaption } from "../utils/components/TimeCaption";
@@ -888,12 +889,23 @@ function ProjectViewDatasets(props) {
   }
 
   if (props.datasets.core.error || props.datasets.core.datasets?.error) {
-    return <Col sm={12} data-cy="error-datasets-modal">
-      <ErrorAlert>
-        There was an error fetching the datasets, please try <Button color="danger" size="sm" onClick={
-          () => window.location.reload()
-        }> reloading </Button> the page.</ErrorAlert>
-    </Col>;
+    const error = props.datasets.core.error ?
+      props.datasets.core.error :
+      props.datasets.core.datasets?.error;
+    let errorObject;
+    if (error.code) {
+      errorObject = (<CoreErrorAlert error={error}/>);
+    }
+    else {
+      errorObject = (
+        <ErrorAlert>
+          There was an error fetching the datasets, please try{" "}
+          <Button color="danger" size="sm" onClick={() => window.location.reload()}> reloading </Button>
+          {" "}the page.
+        </ErrorAlert>
+      );
+    }
+    return (<Col sm={12} data-cy="error-datasets-modal">{errorObject}</Col>);
   }
 
   if (props.datasets.core.datasets != null && props.datasets.core.datasets.length === 0

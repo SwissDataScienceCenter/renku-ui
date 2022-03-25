@@ -196,7 +196,8 @@ function AddDataset({ datasets, identifier, insideProject, model }) {
     client.datasetImport(selectedProject.value, dataset.url, versionUrl)
       .then(response => {
         if (response?.data?.error !== undefined) {
-          setCurrentStatus({ status: "error", text: response.data.error.reason });
+          const error = response.data.error;
+          setCurrentStatus({ status: "error", text: error.userMessage ? error.userMessage : error.reason });
           setImportingDataset(false);
         }
         else {
