@@ -1,0 +1,27 @@
+.input-hint {
+  font-size: 14px;
+  line-height: 16px;
+  color: #626262;
+  padding-top: 5px;
+}
+
+.required-label {
+  color: var(--bs-danger);
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.error-feedback {
+  font-size: 14px;
+  line-height: 16px;
+  color: var(--bs-danger);
+  padding-top: 6px;
+}
+
+.label-disabled, .icon-disabled {
+  opacity: 0.5;;
+}
+
+.form-check-input:disabled {
+  opacity: 0.3;
+}
