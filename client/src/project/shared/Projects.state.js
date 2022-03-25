@@ -24,6 +24,7 @@
  */
 
 import { ACCESS_LEVELS } from "../../api-client";
+import { computeVisibilities } from "../../utils/helpers/HelperFunctions";
 
 
 class ProjectsCoordinator {
@@ -210,25 +211,6 @@ class ProjectsCoordinator {
   }
 
   async getVisibilities(namespace, projectVisibility) {
-    const computeVisibilities = (options) => {
-      if (options.includes("private")) {
-        return {
-          visibilities: ["private"],
-          default: "private",
-        };
-      }
-      else if (options.includes("internal")) {
-        return {
-          visibilities: ["private", "internal"],
-          default: "internal",
-        };
-      }
-      return {
-        visibilities: ["private", "internal", "public"],
-        default: "public"
-      };
-    };
-
     let availableVisibilities = null;
     let options = projectVisibility ? [projectVisibility] : [];
     if (!namespace)

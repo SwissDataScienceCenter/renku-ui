@@ -371,8 +371,34 @@ function toCapitalized(aString) {
   return aString.charAt(0).toUpperCase() + aString.slice(1);
 }
 
+/**
+ * computeVisibilities.
+ * @param {[string]} options
+ */
+const computeVisibilities = (options) => {
+  if (options.includes("private")) {
+    return {
+      visibilities: ["private"],
+      disabled: ["public", "internal"],
+      default: "private",
+    };
+  }
+  else if (options.includes("internal")) {
+    return {
+      visibilities: ["private", "internal"],
+      disabled: ["public"],
+      default: "internal",
+    };
+  }
+  return {
+    visibilities: ["private", "internal", "public"],
+    disabled: [],
+    default: "public"
+  };
+};
+
 export {
-  capitalizeFirstLetter, generateZip,
+  capitalizeFirstLetter, generateZip, computeVisibilities,
   slugFromTitle, getActiveProjectPathWithNamespace, splitAutosavedBranches, sanitizedHTMLFromMarkdown,
   simpleHash, parseINIString, formatBytes, groupBy, gitLabUrlFromProfileUrl, isURL, verifyTitleCharacters,
   convertUnicodeToAscii, refreshIfNecessary, sleep, toCapitalized
