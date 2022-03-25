@@ -52,6 +52,7 @@ describe("display a project", () => {
     cy.visit("/projects/e2e/local-test-project/settings/sessions");
     cy.wait("@getSessionServerOptions");
     cy.wait("@getProjectLockStatus");
+    cy.wait("@getProjectConfig");
     cy.contains("Number of CPUs").should("be.visible");
   });
 });
