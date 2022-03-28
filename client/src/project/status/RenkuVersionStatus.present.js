@@ -28,6 +28,8 @@ import { MigrationStatus } from "../Project";
 import { Loader } from "../../utils/components/Loader";
 import { Docs } from "../../utils/constants/Docs";
 import { CoreErrorAlert } from "../../utils/components/errors/CoreErrorAlert";
+import { CoreError } from "../../utils/components/errors/CoreErrorHelpers";
+
 
 function updateNotRequired(renkuVersionStatus) {
   return renkuVersionStatus === RENKU_VERSION_SCENARIOS.NEW_VERSION_NOT_REQUIRED;
@@ -298,9 +300,9 @@ function RenkuVersionStatus(props) {
 
   if (isMigrationFailure({ check_error, migration_error, migration_status })) {
     let error;
-    if (migration_error?.code)
+    if (CoreError.isValid(migration_error))
       error = migration_error;
-    else if (check_error?.code)
+    else if (CoreError.isValid(check_error))
       error = check_error;
     else
       return null;

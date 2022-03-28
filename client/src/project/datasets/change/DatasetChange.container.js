@@ -35,6 +35,7 @@ import { ImageFieldPropertyName as Prop } from "../../../utils/components/formge
 import FormGenerator from "../../../utils/components/formgenerator/";
 import { mapDataset } from "../../../dataset/index";
 import { CoreErrorAlert } from "../../../utils/components/errors/CoreErrorAlert";
+import { CoreError } from "../../../utils/components/errors/CoreErrorHelpers";
 
 
 let dsFormSchema = _.cloneDeep(datasetFormSchema);
@@ -379,7 +380,7 @@ function ChangeDataset(props) {
     }
   }, [props, initialized, dataset, datasetFiles, versionUrl, setDatasetFiles, props.client]);
 
-  if (datasetFiles?.error?.code)
+  if (CoreError.isValid(datasetFiles?.error))
     return (<CoreErrorAlert error={datasetFiles.error} />);
 
   return <DatasetChange

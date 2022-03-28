@@ -39,6 +39,8 @@ import { ErrorAlert, WarnAlert } from "../utils/components/Alert";
 import { Loader } from "../utils/components/Loader";
 import { ThrottledTooltip } from "../utils/components/Tooltip";
 import { CoreErrorAlert } from "../utils/components/errors/CoreErrorAlert";
+import { CoreError } from "../utils/components/errors/CoreErrorHelpers";
+
 
 function DisplayFiles(props) {
   if (!props.files || !props.files?.hasPart) return null;
@@ -48,7 +50,7 @@ function DisplayFiles(props) {
   if (props.files.fetchError !== null) {
     const error = props.files.fetchError;
     let errorObject;
-    if (error?.code >= 1000 || error?.code < 0)
+    if (CoreError.isValid(error))
       errorObject = (<CoreErrorAlert error={error}/>);
     else
       errorObject = (<span><strong>Error fetching dataset files:</strong> {props.files.fetchError.message}</span>);

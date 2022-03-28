@@ -27,6 +27,7 @@ import { Button, Collapse } from "reactstrap";
 
 import { RenkuAlert } from "../Alert";
 import { ExternalLink } from "../ExternalLinks";
+import { CoreError } from "./CoreErrorHelpers";
 
 function CoreErrorAlert({
   color = null, details = null, dismissible = false, error = {}, message = null, suggestion = null, title = null
@@ -36,17 +37,17 @@ function CoreErrorAlert({
   const toggleShowError = () => setShowError(!showError);
 
   // return null if there is no error
-  if (!error?.code)
+  if (!CoreError.isValid(error))
     return null;
 
   // define parameters
-  const legacy = error.code < 0 ? true : false;
+  const legacy = CoreError.isLegacy(error);
   const hasDetails = details || legacy || error.userReference ? true : false;
 
   if (!color) {
-    if (legacy || error.code >= 2000)
+    if (legacy || !CoreError.isInput(error))
       color = "danger";
-    else if (error.code >= 1000)
+    else if (CoreError.isInput(error))
       color = "warning";
     else
       color = "info";
@@ -60,7 +61,7 @@ function CoreErrorAlert({
   }
 
   if (!title) {
-    if (legacy || error.code >= 2000)
+    if (legacy || !CoreError.isInput(error))
       title = "Error";
     else
       title = "Warning";

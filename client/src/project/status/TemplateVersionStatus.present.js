@@ -27,6 +27,8 @@ import { ExternalLink } from "../../utils/components/ExternalLinks";
 import { Loader } from "../../utils/components/Loader";
 import { Docs } from "../../utils/constants/Docs";
 import { CoreErrorAlert } from "../../utils/components/errors/CoreErrorAlert";
+import { CoreError } from "../../utils/components/errors/CoreErrorHelpers";
+
 
 const TEMPLATE_VERSION_SCENARIOS = {
   PROJECT_NOT_SUPPORTED: "PROJECT_NOT_SUPPORTED",
@@ -218,9 +220,9 @@ function TemplateStatus(props) {
     return <Loader />;
   if (isMigrationFailure({ check_error, migration_error, migration_status })) {
     let error;
-    if (migration_error?.code)
+    if (CoreError.isValid(migration_error))
       error = migration_error;
-    else if (check_error?.code)
+    else if (CoreError.isValid(check_error))
       error = check_error;
     else
       return null;
