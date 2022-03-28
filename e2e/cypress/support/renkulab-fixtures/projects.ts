@@ -152,6 +152,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
 
     projectTestContents(
       names = {
+        configName: "getProjectConfig",
         coreServiceVersionName: "getCoreServiceVersion",
         coreService8VersionName: "getCoreService8Version",
         projectBranchesName: "getProjectBranches",
@@ -162,6 +163,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       }, coreVersion = 8
     ) {
       const {
+        configName,
         coreServiceVersionName,
         coreService8VersionName,
         projectBranchesName,
@@ -207,11 +209,15 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
           }
         }
       }).as(coreServiceVersionName);
+      cy.intercept("/ui-server/api/renku/9/config.show?git_url=*",
+        { fixture: "project/test-project_config.json" }
+      ).as(configName);
       return this;
     }
 
     projectTest(
       names = {
+        configName: "getProjectConfig",
         coreServiceVersionName: "getCoreServiceVersion",
         coreService8VersionName: "getCoreService8Version",
         projectBranchesName: "getProjectBranches",
@@ -235,6 +241,7 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
 
     projectTestObserver(
       names = {
+        configName: "getProjectConfig",
         coreServiceVersionName: "getCoreServiceVersion",
         coreService8VersionName: "getCoreService8Version",
         projectBranchesName: "getProjectBranches",
