@@ -90,7 +90,7 @@ class OverviewStats extends Component {
                     <td className="px-3 px-lg-4 align-middle">{branchesCount}</td>
                     <td>
                       <ExternalLink role="text" showLinkIcon={true}
-                        url={`${metadata.repositoryUrl}/branches`} title="Branches in GitLab" />
+                        url={`${metadata.repositoryUrl}/-/branches`} title="Branches in GitLab" />
                     </td>
                   </tr>
                   <tr>
