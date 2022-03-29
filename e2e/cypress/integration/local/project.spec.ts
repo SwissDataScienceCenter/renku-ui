@@ -58,7 +58,7 @@ describe("display a project", () => {
     cy.visit("/projects/e2e/local-test-project/settings/sessions");
     cy.wait("@getSessionServerOptions");
     cy.wait("@getProjectLockStatus");
-    cy.wait("@getProjectConfig");
+    cy.wait("@getProjectConfigShow");
     cy.contains("Number of CPUs").should("be.visible");
     cy.get("button.active").contains("0.5").should("be.visible");
   });
