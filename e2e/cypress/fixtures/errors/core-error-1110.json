@@ -1,9 +1,0 @@
-{
-  "error": {
-    "code": 1110,
-    "userMessage": "The target project is not a Renku project.",
-    "devMessage": "Cannot work on a non Renku project.",
-    "devReference": "https://renku-python.readthedocs.io/en/latest/service_errors.html#renku.service.errors.UserNonRenkuProjectError",
-    "sentry": "https://sentry.dev.renku.ch/organizations/sentry?query=4e9d99e75efd4b338b116a59686b527d"
-  }
-}
