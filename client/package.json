@@ -19,7 +19,7 @@
     "apollo-boost": "^0.4.9",
     "bootstrap": "^5.0.2",
     "cookieconsent": "^3.1.1",
-    "d3": "^5.12.0",
+    "d3": "^7.0.0",
     "dagre-d3": "^0.6.4",
     "dompurify": "^2.3.0",
     "file-saver": "^2.0.5",
@@ -62,7 +62,8 @@
     "styled-jsx": "^3.4.5",
     "uuid": "^3.3.3",
     "xregexp": "^4.4.0",
-    "yaml-js": "^0.2.3"
+    "yaml-js": "^0.2.3",
+    "@snyk/protect": "latest"
   },
   "scripts": {
     "build-css": "node-sass-chokidar --include-path ./src/styles --include-path ./node_modules src/styles/ -o src/styles/",
@@ -74,7 +75,9 @@
     "eject": "craco eject",
     "lint": "node_modules/eslint/bin/eslint.js --max-warnings=0 src/",
     "lint-fix": "node_modules/eslint/bin/eslint.js src/ --fix",
-    "node": "node_modules/.bin/babel-node"
+    "node": "node_modules/.bin/babel-node",
+    "prepare": "npm run snyk-protect",
+    "snyk-protect": "snyk-protect"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",
@@ -102,5 +105,6 @@
     "commitizen": {
       "path": "./node_modules/cz-conventional-changelog"
     }
-  }
+  },
+  "snyk": true
 }

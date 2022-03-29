@@ -1,0 +1,50 @@
+# Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
+version: v1.22.1
+ignore: {}
+# patches apply the minimum changes required to fix a vulnerability
+patch:
+  SNYK-JS-LODASH-567746:
+    - '@babel/helper-regex > lodash':
+        patched: '2022-03-29T21:47:29.624Z'
+    - dagre-d3 > lodash:
+        patched: '2022-03-29T21:47:29.624Z'
+    - dagre-d3 > graphlib > lodash:
+        patched: '2022-03-29T21:47:29.624Z'
+    - dagre-d3 > dagre > lodash:
+        patched: '2022-03-29T21:47:29.624Z'
+    - node-sass-chokidar > node-sass > lodash:
+        patched: '2022-03-29T21:47:29.624Z'
+    - node-sass-chokidar > sass-graph > lodash:
+        patched: '2022-03-29T21:47:29.624Z'
+    - styled-jsx > @babel/types > lodash:
+        patched: '2022-03-29T21:47:29.624Z'
+    - '@nteract/notebook-render > @nteract/transforms > @nteract/transform-vdom > lodash':
+        patched: '2022-03-29T21:47:29.624Z'
+    - dagre-d3 > dagre > graphlib > lodash:
+        patched: '2022-03-29T21:47:29.624Z'
+    - node-sass-chokidar > node-sass > sass-graph > lodash:
+        patched: '2022-03-29T21:47:29.624Z'
+    - '@nteract/notebook-render > @nteract/display-area > @nteract/transforms > @nteract/transform-vdom > lodash':
+        patched: '2022-03-29T21:47:29.624Z'
+    - '@nteract/notebook-render > @nteract/presentational-components > styled-components > babel-plugin-styled-components > lodash':
+        patched: '2022-03-29T21:47:29.624Z'
+    - '@nteract/notebook-render > @nteract/presentational-components > styled-jsx > babel-types > lodash':
+        patched: '2022-03-29T21:47:29.624Z'
+    - node-sass-chokidar > node-sass > gaze > globule > lodash:
+        patched: '2022-03-29T21:47:29.624Z'
+    - '@nteract/notebook-render > @nteract/presentational-components > styled-components > @babel/helper-module-imports > @babel/types > lodash':
+        patched: '2022-03-29T21:47:29.624Z'
+    - '@nteract/notebook-render > @nteract/display-area > @nteract/transforms > styled-components > babel-plugin-styled-components > lodash':
+        patched: '2022-03-29T21:47:29.624Z'
+    - '@nteract/notebook-render > @nteract/presentational-components > @nteract/styled-blueprintjsx > styled-jsx > babel-types > lodash':
+        patched: '2022-03-29T21:47:29.624Z'
+    - '@renku/ckeditor5-build-renku > @ckeditor/ckeditor5-markdown-gfm > turndown > jsdom > whatwg-url > lodash':
+        patched: '2022-03-29T21:47:29.624Z'
+    - '@nteract/notebook-render > @nteract/presentational-components > styled-components > babel-plugin-styled-components > @babel/helper-annotate-as-pure > @babel/types > lodash':
+        patched: '2022-03-29T21:47:29.624Z'
+    - '@nteract/notebook-render > @nteract/display-area > @nteract/transforms > styled-components > @babel/helper-module-imports > @babel/types > lodash':
+        patched: '2022-03-29T21:47:29.624Z'
+    - '@renku/ckeditor5-build-renku > @ckeditor/ckeditor5-markdown-gfm > turndown > jsdom > data-urls > whatwg-url > lodash':
+        patched: '2022-03-29T21:47:29.624Z'
+    - '@nteract/notebook-render > @nteract/display-area > @nteract/transforms > styled-components > babel-plugin-styled-components > @babel/helper-annotate-as-pure > @babel/types > lodash':
+        patched: '2022-03-29T21:47:29.624Z'
