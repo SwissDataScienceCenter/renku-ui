@@ -50,7 +50,7 @@ function DeleteDataset(props) {
       .then(response => {
         if (response.data.error !== undefined) {
           setSubmitLoader(false);
-          setServerErrors({ error: response.data.error.reason });
+          setServerErrors(response.data.error);
         }
         else {
           setSubmitLoaderText("Dataset deleted, you will be redirected soon...");

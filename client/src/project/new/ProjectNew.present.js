@@ -45,6 +45,7 @@ import { capitalize } from "../../utils/components/formgenerator/FormGenerator.p
 import { Url } from "../../utils/helpers/url";
 import { Loader } from "../../utils/components/Loader";
 import { ErrorAlert, WarnAlert } from "../../utils/components/Alert";
+import { CoreErrorAlert } from "../../utils/components/errors/CoreErrorAlert";
 import { ExternalLink } from "../../utils/components/ExternalLinks";
 import { FieldGroup } from "../../utils/components/FieldGroups";
 import { ButtonWithMenu } from "../../utils/components/Button";
@@ -1155,32 +1156,14 @@ class Create extends Component {
 
     // check template errors and provide adequate feedback
     let alert = null;
-    const error = templates.errors && templates.errors.length ?
+    let error = templates.errors && templates.errors.length ?
       templates.errors[0] :
       null;
     if (error) {
-      let content;
-      if (typeof error == "string") {
-        content = <pre className="text-wrap">{error}</pre>;
-      }
-      else {
-        const errors = Object.keys(error).map(v => {
-          const text = typeof error[v] == "string" ?
-            `${v}: ${error[v]}` :
-            `Error message: ${JSON.stringify(error[v])}`;
-          return (<pre key={v} className="text-wrap">{text}</pre>);
-        });
-        if (errors.length === 1)
-          content = (errors[0]);
-        else
-          content = error[0];
-      }
       const fatal = templates.all && templates.all.length ? false : true;
+
       const suggestion = input.userRepo ?
-        (<span>
-          Double check the Repository URL and Reference, then try to fetch again.
-          If the error persists, you may want to use a RenkuLab template instead.
-        </span>) :
+        null :
         (<span>
           You can try refreshing the page. If the error persists, you should contact the development team on&nbsp;
           <a href={Links.GITTER}
@@ -1188,23 +1171,33 @@ class Create extends Component {
           <a href={Links.GITHUB}
             target="_blank" rel="noreferrer noopener">GitHub</a>.
         </span>);
-      alert = fatal ? (
-        <ErrorAlert>
-          <p>Unable to fetch templates.</p>
-          {content}
-          <small>
-            {suggestion}
-          </small>
-        </ErrorAlert>
-      ) : (
-        <WarnAlert>
-          <p>Errors happened while fetching templates. Some of them may be unavailable.</p>
-          {content}
-          <small>
-            {suggestion}
-          </small>
-        </WarnAlert>
-      );
+
+      // extract message and details
+      let details = null, errorObject = null;
+      if (typeof error === "string") {
+        details = error;
+        errorObject = { code: 10000 };
+      }
+      else {
+        const first = error[Object.keys(error)[0]];
+        if (typeof error === "string") {
+          details = first;
+          errorObject = { code: 10000 };
+        }
+        else {
+          details = first.userMessage ? first.userMessage : first.reason;
+          errorObject = first;
+          if (fatal && !input.userRepo)
+            errorObject.code = 10000;
+        }
+      }
+      const message = fatal ?
+        "Unable to fetch templates." :
+        "Some templates could not be fetched.";
+
+      alert = (<CoreErrorAlert details={details} error={errorObject} message={message} suggestion={suggestion} />);
+
+      // Do not show the create button if there are no templates
       if (fatal)
         return alert;
     }
@@ -1448,19 +1441,19 @@ class Creation extends Component {
     }
     else if (creation.createError) {
       color = "danger";
-      let errors;
-      if (typeof creation.createError === "string") {
-        errors = <p>{creation.createError}</p>;
-      }
-      else {
-        errors = Object.keys(creation.createError).map(error =>
-          (<p key={error}>{`${error}: ${creation.createError[error]}`}</p>)
-        );
-      }
-      message = (<div>
-        <p>Errors occurred while creating the project.</p>
-        {errors}
-      </div>);
+      let error;
+      if (typeof creation.createError === "string")
+        error = creation.createError;
+      else if (creation.createError?.code)
+        error = creation.createError.userMessage ? creation.createError.userMessage : creation.createError.reason;
+      else
+        error = creation.createError.toString();
+      message = (
+        <div>
+          <p>An error occurred while creating the project.</p>
+          <p>{error}</p>
+        </div>
+      );
     }
     else if (creation.projectUpdating) {
       message = (<span>Updating project metadata... {loader}</span>);

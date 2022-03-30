@@ -146,19 +146,17 @@ function ProjectSettingsSessions(props) {
     try {
       const config = { [key]: value };
       const response = await client.setProjectConfig(repositoryUrl, config, backend.versionUrl);
-      if (response.data.error) {
-        setNewConfig({ ...newConfig, updating: false, keyName, error: response.data.error.reason });
+      if (response?.data?.error) {
+        setNewConfig({ ...newConfig, keyName, updating: false, error: response.data.error });
       }
       else {
         const value = response.data.result.config[Object.keys(response.data.result.config)[0]];
         setNewConfig({ ...newConfig, updating: false, updated: true, error: null, keyName, value });
+        await handlers.refreshConfig();
       }
     }
     catch (error) {
-      setNewConfig({ ...newConfig, keyName, error: error.message });
-    }
-    finally {
-      await handlers.refreshConfig();
+      setNewConfig({ ...newConfig, keyName, error: error?.message ? error.message : "Unexpected error." });
     }
   };
 

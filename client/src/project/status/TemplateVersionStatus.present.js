@@ -26,6 +26,9 @@ import { MigrationStatus } from "../Project";
 import { ExternalLink } from "../../utils/components/ExternalLinks";
 import { Loader } from "../../utils/components/Loader";
 import { Docs } from "../../utils/constants/Docs";
+import { CoreErrorAlert } from "../../utils/components/errors/CoreErrorAlert";
+import { CoreError } from "../../utils/components/errors/CoreErrorHelpers";
+
 
 const TEMPLATE_VERSION_SCENARIOS = {
   PROJECT_NOT_SUPPORTED: "PROJECT_NOT_SUPPORTED",
@@ -213,8 +216,18 @@ function TemplateStatus(props) {
   const { externalUrl, launchNotebookUrl, lockStatus, logged, maintainer, onMigrateProject } = props;
   const { check_error } = props.migration.check;
   const { migration_status, migration_error } = props.migration;
-  if (isMigrationCheckLoading(props.loading, props.migration)) return <Loader />;
-  if (isMigrationFailure({ check_error, migration_error, migration_status })) return null;
+  if (isMigrationCheckLoading(props.loading, props.migration))
+    return <Loader />;
+  if (isMigrationFailure({ check_error, migration_error, migration_status })) {
+    let error;
+    if (CoreError.isValid(migration_error))
+      error = migration_error;
+    else if (CoreError.isValid(check_error))
+      error = check_error;
+    else
+      return null;
+    return (<CoreErrorAlert error={error} />);
+  }
 
   return <div>
     <TemplateVersionInfo check={props.migration.check} />
