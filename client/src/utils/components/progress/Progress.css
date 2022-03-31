@@ -8,7 +8,7 @@
 }
 
 .progress-box--dark {
-    background-color: #C5CBCF;
+    background-color: var(--bs-dark-bg);
 }
 
 .progress-box h2 {
@@ -52,7 +52,7 @@
     position: absolute;
     background-color: var(--bs-primary);
     animation-name: determinateAnimationWaiting;
-    animation-duration: 5s;
+    animation-duration: 10s;
     animation-timing-function: linear;
     animation-iteration-count: infinite;
     animation-direction: normal;
@@ -93,7 +93,7 @@
     transform-origin: 0 100%;
     animation-name: indeterminateAnimationWaiting;
     animation-fill-mode: forwards;
-    animation-duration: 5s;
+    animation-duration: 20s;
     animation-timing-function: linear;
     animation-iteration-count: infinite;
     animation-direction: normal;
@@ -104,12 +104,12 @@
         width: 0;
         visibility: hidden;
     }
-    60% {
+    20% {
         width: 100%;
         visibility: hidden;
         transform:  translateX(0) scaleX(0);
     }
-    60.1% {
+    20.1% {
         width: 100%;
         visibility: visible;
         transform:  translateX(0) scaleX(0);
