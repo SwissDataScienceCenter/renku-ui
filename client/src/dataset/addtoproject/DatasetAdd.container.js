@@ -97,7 +97,8 @@ function AddDataset({ datasets, identifier, insideProject, model }) {
       // check dataset project migration status
       checkOrigin = await client.checkMigration(urlProjectOrigin);
       if (checkOrigin && checkOrigin.error !== undefined) {
-        setCurrentStatus({ status: "error", text: checkOrigin.error.reason });
+        const errorMessage = checkOrigin.error?.userMessage ?? checkOrigin.error?.reason;
+        setCurrentStatus({ status: "error", text: errorMessage });
         setIsDatasetValid(false);
         return false;
       }
@@ -141,7 +142,8 @@ function AddDataset({ datasets, identifier, insideProject, model }) {
     // check selected project migration status
     const checkTarget = await client.checkMigration(project.value);
     if (checkTarget && checkTarget.error !== undefined) {
-      setCurrentStatus({ status: "error", text: checkTarget.error.reason });
+      const errorMessage = checkTarget.error?.userMessage ?? checkTarget.error?.reason;
+      setCurrentStatus({ status: "error", text: errorMessage });
       return false;
     }
 
@@ -194,7 +196,8 @@ function AddDataset({ datasets, identifier, insideProject, model }) {
     client.datasetImport(selectedProject.value, dataset.url, versionUrl)
       .then(response => {
         if (response?.data?.error !== undefined) {
-          setCurrentStatus({ status: "error", text: response.data.error.reason });
+          const error = response.data.error;
+          setCurrentStatus({ status: "error", text: error.userMessage ? error.userMessage : error.reason });
           setImportingDataset(false);
         }
         else {

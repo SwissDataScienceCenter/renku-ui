@@ -59,11 +59,8 @@ function addEnvironmentMethods(client) {
       method: "GET",
       headers: headers
     });
-    if (resp.error) {
-      if (resp.error.reason === "Not found")
-        return { available: false };
-      return resp;
-    }
+    if (resp.error)
+      return { ...resp.data.error, available: false };
     if (resp.data.result?.supported_project_version)
       return { ...resp.data.result, available: true };
     return resp.data;

@@ -1,0 +1,6 @@
+{
+  "error": {
+    "code": -32602,
+    "reason": "Validation error: `gitUrl` - Unknown field."
+  }
+}

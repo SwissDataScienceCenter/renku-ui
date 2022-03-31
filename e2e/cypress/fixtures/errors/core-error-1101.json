@@ -1,0 +1,9 @@
+{
+  "error": {
+    "code": 1101,
+    "userMessage": "The target repository is not a valid Renku template repository.",
+    "devMessage": "Target repository is not a valid template.",
+    "devReference": "https://renku-python.readthedocs.io/en/latest/service_errors.html#renku.service.errors.UserTemplateInvalidError",
+    "sentry": "https://sentry.dev.renku.ch/organizations/sentry?query=228c34f108344c3c9e8e0669871d1a41"
+  }
+}

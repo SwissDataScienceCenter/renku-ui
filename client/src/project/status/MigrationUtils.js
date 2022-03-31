@@ -120,9 +120,9 @@ function isMigrationCheckLoading(loading, migration) {
 }
 
 function isMigrationFailure({ check_error, migration_error, migration_status }) {
-  if (check_error) return true;
-  return migration_status === MigrationStatus.ERROR && migration_error
-  && (migration_error.dockerfile_update_failed || migration_error.migrations_failed);
+  if (check_error)
+    return true;
+  return migration_status === MigrationStatus.ERROR && migration_error;
 }
 
 function ShowMigrationFailure({ check_error, migration_error, migration_status }) {

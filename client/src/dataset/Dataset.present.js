@@ -38,6 +38,9 @@ import { ExternalLink } from "../utils/components/ExternalLinks";
 import { ErrorAlert, WarnAlert } from "../utils/components/Alert";
 import { Loader } from "../utils/components/Loader";
 import { ThrottledTooltip } from "../utils/components/Tooltip";
+import { CoreErrorAlert } from "../utils/components/errors/CoreErrorAlert";
+import { CoreError } from "../utils/components/errors/CoreErrorHelpers";
+
 
 function DisplayFiles(props) {
   if (!props.files || !props.files?.hasPart) return null;
@@ -45,12 +48,19 @@ function DisplayFiles(props) {
 
 
   if (props.files.fetchError !== null) {
-    return <Card key="datasetDetails" className="border-rk-light mb-4">
-      <CardHeader className="bg-white p-3 ps-4">Dataset files</CardHeader>
-      <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">
-        <strong>Error fetching dataset files:</strong> {props.files.fetchError.message}
-      </CardBody>
-    </Card>;
+    const error = props.files.fetchError;
+    let errorObject;
+    if (CoreError.isValid(error))
+      errorObject = (<CoreErrorAlert error={error}/>);
+    else
+      errorObject = (<span><strong>Error fetching dataset files:</strong> {props.files.fetchError.message}</span>);
+
+    return (
+      <Card key="datasetDetails" className="border-rk-light mb-4">
+        <CardHeader className="bg-white p-3 ps-4">Dataset files</CardHeader>
+        <CardBody className="p-4 pt-3 pb-3 lh-lg pb-2">{errorObject}</CardBody>
+      </Card>
+    );
   }
 
   const files = props.files.hasPart;

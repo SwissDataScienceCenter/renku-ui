@@ -42,7 +42,8 @@ import { Url } from "../../utils/helpers/url";
 import { RenkuNavLink } from "../../utils/components/RenkuNavLink";
 import { Clipboard } from "../../utils/components/Clipboard";
 import { Loader } from "../../utils/components/Loader";
-import { ErrorAlert, WarnAlert } from "../../utils/components/Alert";
+import { WarnAlert } from "../../utils/components/Alert";
+import { CoreErrorAlert } from "../../utils/components/errors/CoreErrorAlert";
 import { ExternalLink } from "../../utils/components/ExternalLinks";
 import { Docs } from "../../utils/constants/Docs";
 
@@ -303,7 +304,7 @@ function ProjectSettingsSessions(props) {
   }
 
   if (config.error && config.error.code)
-    return (<SessionsDiv><SessionConfigError config={config} /></SessionsDiv>);
+    return (<SessionsDiv><CoreErrorAlert error={config.error} /></SessionsDiv>);
 
   // ? this prevents early rendering when hitting the sessions page on the url bar directly
   const globalOptions = options.global;
@@ -317,8 +318,8 @@ function ProjectSettingsSessions(props) {
   );
 
   const knownOptions = (
-    <SessionConfigKnown availableOptions={projectData.options} defaults={projectData.defaults}
-      devAccess={devAccess} globalOptions={globalOptions} setConfig={setConfig} disabled={disabled}
+    <SessionConfigKnown availableOptions={projectData.options} defaults={projectData.defaults} disabled={disabled}
+      devAccess={devAccess} globalOptions={globalOptions} newConfig={newConfig} setConfig={setConfig}
     />
   );
 
@@ -449,40 +450,22 @@ function SessionConfigUnknown(props) {
   );
 }
 
-function SessionConfigError(props) {
-  const { config } = props;
-
-  const [showError, setShowError] = useState(false);
-  const toggleShowError = () => setShowError(!showError);
-
-  return (
-    <ErrorAlert>
-      <h3>Error</h3>
-      <p>We could not access the project settings.</p>
-
-      <Collapse isOpen={showError}>
-        <code>{config.error.reason ? config.error.reason : `Error code ${config.error.code}`}</code>
-      </Collapse>
-      <Button color="link" className="font-italic btn-sm" onClick={toggleShowError}>
-        [{showError ? "Hide details" : "Show details"} info]
-      </Button>
-    </ErrorAlert>
-  );
-}
-
 function NewConfigStatus(props) {
   const { error, keyName } = props;
 
-  if (error) {
-    return (
-      <ErrorAlert>
-        Error occurred
-        while updating &quot;{keyName}&quot;: {error}
-      </ErrorAlert>
-    );
-  }
+  if (!error)
+    return null;
 
-  return null;
+  let message = `Error occurred while updating "${keyName}"`;
+  if (error.reason)
+    message += `: ${error.reason}`;
+  else if (error.userMessage)
+    message += `: ${error.userMessage}`;
+  else
+    message += ".";
+  return (
+    <CoreErrorAlert error={error} message={message} />
+  );
 }
 
 function SessionsDiv(props) {

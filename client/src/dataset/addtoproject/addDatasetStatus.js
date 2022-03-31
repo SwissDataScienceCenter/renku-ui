@@ -17,10 +17,13 @@
  */
 
 import React from "react";
+import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
-import { Link } from "react-router-dom";
+
+import { ErrorAlert } from "../../utils/components/Alert";
 import { Loader } from "../../utils/components/Loader";
+
 
 /**
  *  incubator-renku-ui
@@ -45,7 +48,12 @@ function AddDatasetStatus(props) {
       );
       break;
     case "error" :
-      statusProject = <div><FontAwesomeIcon icon={faExclamationTriangle} /> {text}</div>;
+      statusProject = (
+        <ErrorAlert>
+          <h3>Error</h3>
+          <p className="mb-0">{text}</p>
+        </ErrorAlert>
+      );
       break;
     case "inProcess" :
       statusProject = <div><Loader size="14" inline="true" /> {text}</div>;
