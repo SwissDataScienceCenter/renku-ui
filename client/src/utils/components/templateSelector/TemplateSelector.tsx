@@ -1,6 +1,6 @@
 import * as React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationTriangle, faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
+import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
 
 import defaultTemplateIcon from "../../../project/new/templatePlaceholder.svg";
 import { simpleHash } from "../../helpers/HelperFunctions";
@@ -9,9 +9,10 @@ import "./TemplateSelector.css";
 
 import {
   Card, CardBody, CardText, CardFooter, Col,
-  UncontrolledPopover, PopoverHeader, PopoverBody, Row, UncontrolledTooltip, Label
+  UncontrolledPopover, PopoverHeader, PopoverBody, Row, UncontrolledTooltip,
 } from "reactstrap/lib";
 import { useEffect, useState } from "react";
+import { ErrorLabel, HelperLabel, InputLabel, LoadingLabel } from "../formlabels/FormLabels";
 
 export interface Repository {
   url: string;
@@ -39,8 +40,14 @@ export interface TemplateSelectorProps {
 
   templates: ProjectTemplate[];
 
+  /** when the data(templates) is loading */
+  isFetching: boolean;
+
+  /** when is user repo and there is nothing fetched */
+  noFetchedUserRepo: boolean;
+
   /** To indicate the input is required */
-  isRequired?: boolean;
+  isRequired: boolean;
 
   /** To show error feedback and mark input as invalid if there is no selection */
   isInvalid?: boolean;
@@ -63,37 +70,52 @@ interface TemplateGalleryRowProps {
  * @param {TemplateSelectorProps} props - TemplateSelector options
  */
 function TemplateSelector(
-  { repositories, select, selected, templates, isRequired, isInvalid, isDisabled }: TemplateSelectorProps) {
+  {
+    repositories,
+    select,
+    selected,
+    templates,
+    isRequired,
+    isInvalid,
+    isDisabled,
+    isFetching,
+    noFetchedUserRepo
+  }: TemplateSelectorProps) {
 
-  const requiredLabel = isRequired ? (<span className="required-label">*</span>) : null;
-  const errorFeedback = isInvalid ?
-    (<div className="error-feedback">
-      <FontAwesomeIcon icon={faExclamationTriangle} />{" "}Please select template</div>)
-    : null;
-  // One GalleryRow for each source
-  const gallery = repositories.map((repository: Repository) => {
-    const repoTitle = repository.name;
-    const repoTemplates = templates.filter(t => t.parentRepo === repoTitle);
-    const repoKey = simpleHash(repository.url + repository.ref);
-    return (
-      <TemplateGalleryRow
-        key={repoKey}
-        repository={repository}
-        select={select}
-        selected={selected}
-        templates={repoTemplates}
-        isDisabled={isDisabled}
-        isInvalid={isInvalid}
-      />
-    );
-  });
+  let content;
+  const errorFeedback = isInvalid ? <ErrorLabel text="Please select a template"/> : null;
+
+  if (isFetching) {
+    content = <LoadingLabel text="Fetching templates..." />;
+  }
+  else if (noFetchedUserRepo) {
+    content = <HelperLabel text="Fetch templates first, or switch template source to RenkuLab" />;
+  }
+  else {
+    content = repositories.map((repository: Repository) => {
+      const repoTitle = repository.name;
+      const repoTemplates = templates.filter(t => t.parentRepo === repoTitle);
+      const repoKey = simpleHash(repository.url + repository.ref);
+      return (
+        <TemplateGalleryRow
+          key={repoKey}
+          repository={repository}
+          select={select}
+          selected={selected}
+          templates={repoTemplates}
+          isDisabled={isDisabled}
+          isInvalid={isInvalid}
+        />
+      );
+    });
+  }
 
   return (
-    <div className="py-3">
-      <Label>Template {requiredLabel}</Label>
-      <div>{gallery}</div>
+    <>
+      <InputLabel text="Template" isRequired={isRequired} />
+      <div>{content}</div>
       {errorFeedback}
-    </div>);
+    </>);
 }
 
 interface TemplateRepositoryLinkProps {
@@ -162,7 +184,7 @@ function TemplateGalleryRow(
     <Row>
       <p className="fst-italic mt-2 mb-1">
         Source: {repository.name}
-        <FontAwesomeIcon id={repositoryInfoId} className="ms-2" icon={faQuestionCircle} />
+        <FontAwesomeIcon id={repositoryInfoId} className="ms-2 cursor-pointer" icon={faQuestionCircle} />
       </p>
       <UncontrolledPopover target={repositoryInfoId} trigger="legacy" placement="bottom">
         <PopoverHeader>{repository.name} templates</PopoverHeader>

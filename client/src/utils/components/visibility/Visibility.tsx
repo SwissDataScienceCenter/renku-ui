@@ -17,12 +17,13 @@
  */
 import * as React from "react";
 import { useEffect, useState } from "react";
-import { Input, Label } from "reactstrap/lib";
+import { Input } from "reactstrap/lib";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationTriangle, faGlobe, faLock, faUserFriends } from "@fortawesome/free-solid-svg-icons";
+import { faGlobe, faLock, faUserFriends } from "@fortawesome/free-solid-svg-icons";
 
 import "./Visibility.css";
 import { computeVisibilities } from "../../helpers/HelperFunctions";
+import { ErrorLabel, HelperLabel, InputHintLabel, InputLabel } from "../formlabels/FormLabels";
 
 /**
  *  renku-ui
@@ -79,8 +80,13 @@ const VisibilityInput = ({ namespaceVisibility, disabled, value, isInvalid, isRe
   const [visibility, setVisibility] = useState<string | null>(null);
   useEffect(() => setVisibility(value), [value]);
 
-  if (!namespaceVisibility)
-    return <Label className="font-italic">Please select a namespace first.</Label>;
+  if (!namespaceVisibility) {
+    return (
+      <>
+        <InputLabel text="Visibility" isRequired={isRequired}/>
+        <div><HelperLabel text="Please select a namespace first"/></div>
+      </>);
+  }
 
   const changeVisibility = (value: string, disabledInput?: boolean) => {
     if (disabledInput)
@@ -124,7 +130,9 @@ const VisibilityInput = ({ namespaceVisibility, disabled, value, isInvalid, isRe
             <FontAwesomeIcon icon={item.icon} className={isDisabled ? "icon-disabled" : ""} />
           </div>
         </div>
-        <div className="input-hint" onClick={()=> changeVisibility(item.value, isDisabled)}>{item.hint}</div>
+        <div onClick={()=> changeVisibility(item.value, isDisabled)}>
+          <InputHintLabel text={item.hint}/>
+        </div>
       </div>
     );
   });
@@ -134,22 +142,19 @@ const VisibilityInput = ({ namespaceVisibility, disabled, value, isInvalid, isRe
     private: "Public and Internal options are not available due to namespace restrictions",
     internal: "Public is not available due to namespace restrictions"
   };
-  const disabledByNamespace = <span className="input-hint">{disableByNamespaceOptions[namespaceVisibility]}</span>;
-  const requiredLabel = isRequired ? (<span className="required-label">*</span>) : null;
-  const errorFeedback = markInvalid ?
-    (<div className="error-feedback">
-      <FontAwesomeIcon icon={faExclamationTriangle} />{" "}Please select visibility</div>)
-    : null;
+  const disabledByNamespace = namespaceVisibility !== Visibilities.Public ?
+    <InputHintLabel text={disableByNamespaceOptions[namespaceVisibility]} /> : null;
+  const errorFeedback = markInvalid ? <ErrorLabel text="Please select visibility" /> : null;
 
   return (
-    <div className="py-3">
-      <Label>Visibility {requiredLabel}</Label>
+    <>
+      <InputLabel text="Visibility" isRequired={isRequired} />
       <div className="visibilities-box row">
         {options}
       </div>
       {errorFeedback}
       {disabledByNamespace}
-    </div>
+    </>
   );
 };
 

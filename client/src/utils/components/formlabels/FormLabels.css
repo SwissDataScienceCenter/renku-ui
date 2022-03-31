@@ -1,0 +1,11 @@
+.loading-label span {
+    font-size: 15px;
+    margin-right: 15px;
+    font-style: italic;
+}
+
+.helper-label {
+    font-size: 15px;
+    font-style: italic;
+    padding-right: 10px;
+}

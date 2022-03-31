@@ -134,6 +134,26 @@ Default.args = {
   isDisabled: false
 };
 
+export const FetchingTemplates = Template.bind({});
+FetchingTemplates.args = {
+  repositories,
+  templates,
+  isRequired: true,
+  isInvalid: false,
+  isDisabled: false,
+  isFetching: true,
+};
+
+export const CustomRepoNoFetchedData = Template.bind({});
+CustomRepoNoFetchedData.args = {
+  repositories,
+  templates,
+  isRequired: true,
+  isInvalid: false,
+  isDisabled: false,
+  noFetchedUserRepo: true,
+};
+
 export const Selected = Template.bind({});
 Selected.args = {
   repositories,

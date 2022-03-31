@@ -804,23 +804,9 @@ class Template extends Component {
     const { config, handlers, input, templates, meta } = this.props;
     const error = meta.validation.errors["template"];
     const invalid = error && !input.templatePristine;
-    if ((!input.userRepo && templates.fetching) || (input.userRepo && meta.userTemplates.fetching)) {
-      return (
-        <Fragment>
-          <br />
-          <Label className="font-italic">Fetching... <Loader inline={true} size={16} /></Label>
-        </Fragment>
-      );
-    }
-    else if (input.userRepo && !meta.userTemplates.fetched) {
-      return (
-        <Fragment>
-          <br />
-          <Label className="font-italic">Fetch templates first, or switch source to RenkuLab.</Label>
-        </Fragment>
-      );
-    }
 
+    const isFetching = (!input.userRepo && templates.fetching) || (input.userRepo && meta.userTemplates.fetching);
+    const noFetchedUserRepo = input.userRepo && !meta.userTemplates.fetched;
     // Pass down templates and repository with the same format to the gallery component
     let listedTemplates, repositories;
     if (input.userRepo) {
@@ -843,6 +829,8 @@ class Template extends Component {
           templates={listedTemplates}
           isRequired
           isInvalid={invalid}
+          isFetching={isFetching}
+          noFetchedUserRepo={noFetchedUserRepo}
         />
       </FormGroup>
     );
