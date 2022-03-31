@@ -23,11 +23,12 @@
  */
 
 import React, { Component } from "react";
+import { Alert } from "reactstrap";
+
 import rkDangerIcon from "../../styles/icons/assets/danger.svg";
 import rkInfoIcon from "../../styles/icons/assets/info.svg";
 import rkWarningIcon from "../../styles/icons/assets/warning.svg";
 import rkSuccessIcon from "../../styles/icons/assets/success.svg";
-import { Alert } from "reactstrap";
 
 /**
  * Display a alert that can be dismissed.
@@ -154,4 +155,4 @@ class ErrorAlert extends Component {
   }
 }
 
-export { InfoAlert, SuccessAlert, WarnAlert, ErrorAlert };
+export { ErrorAlert, InfoAlert, RenkuAlert, SuccessAlert, WarnAlert };

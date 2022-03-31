@@ -24,6 +24,9 @@
  */
 
 import React, { useState, useEffect, useMemo } from "react";
+import { Button } from "reactstrap";
+import _ from "lodash";
+
 import { datasetFormSchema } from "../../../model/RenkuModels";
 import DatasetChange from "./DatasetChange.present";
 import { JobStatusMap } from "../../../job/Job";
@@ -31,8 +34,9 @@ import { FILE_STATUS } from "../../../utils/components/formgenerator/fields/File
 import { ImageFieldPropertyName as Prop } from "../../../utils/components/formgenerator/fields/ImageInput";
 import FormGenerator from "../../../utils/components/formgenerator/";
 import { mapDataset } from "../../../dataset/index";
-import _ from "lodash";
-import { Button } from "reactstrap/lib";
+import { CoreErrorAlert } from "../../../utils/components/errors/CoreErrorAlert";
+import { CoreError } from "../../../utils/components/errors/CoreErrorHelpers";
+
 
 let dsFormSchema = _.cloneDeep(datasetFormSchema);
 
@@ -194,8 +198,9 @@ function ChangeDataset(props) {
     images = await props.client.uploadSingleFile(selectedFile.FILE, false, versionUrl)
       .then((response) => {
         if (response.data.error !== undefined) {
+          const error = response.data.error;
           handlers.setSubmitLoader({ value: false, text: "" });
-          handlers.setServerErrors(response.data.error.reason);
+          handlers.setServerErrors(error.userMessage ? error.userMessage : error.reason);
           return null;
         }
         return [{
@@ -236,21 +241,23 @@ function ChangeDataset(props) {
     props.client.postDataset(props.httpProjectUrl, dataset, props.defaultBranch, props.edit, versionUrl)
       .then(response => {
         if (response.data.error !== undefined) {
+          const error = response.data.error;
           handlers.setSubmitLoader({ value: false, text: "" });
-          if (response.data.error.errorOnFileAdd) {
+          if (error.errorOnFileAdd) {
             props.edit ?
               handlers.setServerErrors(
                 <div>
-                  Any metadata changes were successfully applied, but some uploaded files could
-                  &nbsp;not be added to the dataset. Please try adding this files again.
-                  <br/><br/>
-                  {response.data.error.reason}
-                </div>)
+                  <p>Metadata changes were successfully applied, but some files could not be updated.</p>
+                  <p>{error.userMessage ? error.userMessage : error.reason}</p>
+                </div>
+              )
               : redirectAfterAddFilesOnCreate(dataset.name, handlers);
           }
-          else { handlers.setServerErrors(response.data.error.reason); }
+          else {
+            handlers.setServerErrors(error.userMessage ? error.userMessage : error.reason);
+          }
         }
-        if (response.data.result.remote_branch !== props.defaultBranch) {
+        else if (response.data.result.remote_branch !== props.defaultBranch) {
           handlers.setSubmitLoader(false);
           handlers.hideButtons(true);
           handlers.setServerWarnings(
@@ -347,7 +354,9 @@ function ChangeDataset(props) {
                   .map(file => ({ name: file.name, atLocation: file.path, file_status: "added" }));
                 setInitialized(true);
               }
-              else { setDatasetFiles(response.data); }
+              else {
+                setDatasetFiles(response.data);
+              }
             }
           });
       }
@@ -370,6 +379,9 @@ function ChangeDataset(props) {
       dsFormSchema.keywords.value = dsFormSchema.keywords.initial;
     }
   }, [props, initialized, dataset, datasetFiles, versionUrl, setDatasetFiles, props.client]);
+
+  if (CoreError.isValid(datasetFiles?.error))
+    return (<CoreErrorAlert error={datasetFiles.error} />);
 
   return <DatasetChange
     accessLevel={props.accessLevel}

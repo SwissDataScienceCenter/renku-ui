@@ -105,8 +105,9 @@ function ImportDataset(props) {
     props.client.datasetImport(props.httpProjectUrl, mappedInputs.uri, props.migration.core.versionUrl)
       .then(response => {
         if (response.data.error !== undefined) {
+          const error = response.data.error;
           handlers.setSubmitLoader({ value: false, text: "" });
-          handlers.setServerErrors(response.data.error.reason);
+          handlers.setServerErrors(error.userMessage ? error.userMessage : error.reason);
         }
         else {
           monitorJobStatusAndHandleResponse(response.data.result.job_id, handlers);

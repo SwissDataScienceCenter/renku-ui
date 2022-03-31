@@ -114,7 +114,7 @@ describe("launch sessions", () => {
   });
 
   it("new session page - locked project", () => {
-    fixtures.projectLockStatus(true);
+    fixtures.projectLockStatus({ locked: true });
     fixtures.userTest();
     fixtures.newSessionPipelines().newSessionJobs().newSessionImages();
     cy.visit("/projects/e2e/local-test-project/sessions/new");

@@ -31,7 +31,7 @@ import HelpText from "./HelpText";
 import FormLabel from "./FormLabel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faCheck, faTimes, faTrashAlt, faSyncAlt, faExclamationTriangle, faFolder
+  faCheck, faTrashAlt, faSyncAlt, faExclamationTriangle, faFolder
 } from "@fortawesome/free-solid-svg-icons";
 import { formatBytes, isURL } from "./../../../helpers/HelperFunctions";
 import FileExplorer, { getFilesTree } from "../../FileExplorer";
@@ -248,11 +248,14 @@ function FileUploaderInput({
     const thenCallback = (body) => {
       if (body.error) {
         const prevFilesErrors = getFilesErrorsRx();
-        setFilesErrorsRx([...prevFilesErrors,
-          getFileObject(file.name, partialFilesPath +
-            file.name, file.size, undefined, body.error.reason, undefined,
-          file.file_controller, file.file_uncompress, file.folder_structure)]
-        );
+        setFilesErrorsRx([
+          ...prevFilesErrors,
+          getFileObject(
+            file.name, partialFilesPath + file.name, file.size, undefined,
+            body.error.userMessage ? body.error.userMessage : body.error.reason,
+            undefined, file.file_controller, file.file_uncompress, file.folder_structure
+          )
+        ]);
         return [];
       }
 
@@ -332,7 +335,7 @@ function FileUploaderInput({
               file.file_path,
               file.file_size,
               file.file_id,
-              file.file_error,
+              file.file_error ? file.file_error : extras?.code ? extras?.userMessage : undefined,
               file.file_alias,
               file.file_controller,
               file.file_uncompress,
@@ -498,7 +501,8 @@ function FileUploaderInput({
       case FILE_STATUS.FAILED:
         return <div>
           <span className="me-2">
-            <FontAwesomeIcon style={{ cursor: "text" }} color="var(--bs-danger)" icon={faTimes} />
+            <FontAwesomeIcon icon={faExclamationTriangle}
+              className="me-2" color="var(--bs-danger)" style={{ cursor: "text" }} />
             {file.file_error}
           </span>
           <span className="text-primary" style={{ whiteSpace: "nowrap", cursor: "pointer" }}

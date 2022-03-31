@@ -27,6 +27,9 @@ import { migrationCheckToRenkuVersionStatus, RENKU_VERSION_SCENARIOS, RENKU_UPDA
 import { MigrationStatus } from "../Project";
 import { Loader } from "../../utils/components/Loader";
 import { Docs } from "../../utils/constants/Docs";
+import { CoreErrorAlert } from "../../utils/components/errors/CoreErrorAlert";
+import { CoreError } from "../../utils/components/errors/CoreErrorHelpers";
+
 
 function updateNotRequired(renkuVersionStatus) {
   return renkuVersionStatus === RENKU_VERSION_SCENARIOS.NEW_VERSION_NOT_REQUIRED;
@@ -291,18 +294,27 @@ function GuardedRenkuVersionStatusBody(props) {
 function RenkuVersionStatus(props) {
   if (isMigrationCheckLoading(props.loading, props.migration)) return <Loader />;
 
-  const { migration_status, migration_error } = props.migration;
-  const { check_error } = props.migration.check;
-
-  if (isMigrationFailure({ check_error, migration_error, migration_status })) return null;
-
   const { migration } = props;
+  const { migration_status, migration_error } = migration;
+  const { check_error } = migration.check;
 
-  return <div>
-    <RenkuVersionInfo migration={migration} />
-    <GuardedRenkuVersionStatusBody {...props} />
+  if (isMigrationFailure({ check_error, migration_error, migration_status })) {
+    let error;
+    if (CoreError.isValid(migration_error))
+      error = migration_error;
+    else if (CoreError.isValid(check_error))
+      error = check_error;
+    else
+      return null;
+    return (<CoreErrorAlert error={error} />);
+  }
 
-  </div>;
+  return (
+    <div>
+      <RenkuVersionInfo migration={migration} />
+      <GuardedRenkuVersionStatusBody {...props} />
+    </div>
+  );
 }
 
 export default RenkuVersionStatus;

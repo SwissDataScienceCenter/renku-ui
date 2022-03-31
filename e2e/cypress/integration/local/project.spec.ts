@@ -43,17 +43,45 @@ describe("display a project", () => {
     fixtures.sessionServerOptions();
     cy.visit("/projects/e2e/local-test-project/settings/sessions");
     cy.wait("@getSessionServerOptions");
-    cy.wait("@getProjectLockStatus");
     cy.contains("Number of CPUs").should("be.visible");
   });
 
   it("displays project settings with cloud-storage enabled ", () => {
-    fixtures.sessionServerOptions(true);
+    fixtures.sessionServerOptions(true).projectConfigShow();
+    cy.visit("/projects/e2e/local-test-project/settings/sessions");
+    cy.wait("@getSessionServerOptions");
+    cy.contains("Number of CPUs").should("be.visible");
+  });
+
+  it("displays project settings complete", () => {
+    fixtures.sessionServerOptions().projectConfigShow();
     cy.visit("/projects/e2e/local-test-project/settings/sessions");
     cy.wait("@getSessionServerOptions");
     cy.wait("@getProjectLockStatus");
-    cy.wait("@getProjectConfig");
+    cy.wait("@getProjectConfigShow");
     cy.contains("Number of CPUs").should("be.visible");
+    cy.get("button.active").contains("0.5").should("be.visible");
+  });
+
+  it("displays project settings error", () => {
+    fixtures.sessionServerOptions().projectConfigShow({ error: true });
+    cy.visit("/projects/e2e/local-test-project/settings/sessions");
+    cy.wait("@getSessionServerOptions");
+    cy.wait("@getProjectLockStatus");
+    cy.wait("@getProjectConfigShow");
+    cy.contains("Number of CPUs").should("not.exist");
+    cy.contains("Error").should("be.visible");
+  });
+
+  it("displays project settings legacy error", () => {
+    fixtures.sessionServerOptions().projectConfigShow({ legacyError: true });
+    cy.visit("/projects/e2e/local-test-project/settings/sessions");
+    cy.wait("@getSessionServerOptions");
+    cy.wait("@getProjectLockStatus");
+    cy.wait("@getProjectConfigShow");
+    cy.contains("Number of CPUs").should("not.exist");
+    cy.contains("Error").should("be.visible");
+    cy.contains("[Show details]").should("be.visible");
   });
 });
 
@@ -70,9 +98,7 @@ describe("display migration information", () => {
     fixtures.projectMigrationUpToDate();
     cy.visit("/projects/e2e/local-test-project/overview/status");
     // Check that the project up-to-date info is shown
-    cy.contains("This project is using the latest version of renku.").should(
-      "be.visible"
-    );
+    cy.contains("This project is using the latest version of renku.").should("be.visible");
   });
 
   it("displays optional migration", () => {
@@ -86,18 +112,31 @@ describe("display migration information", () => {
     fixtures.projectMigrationRecommended();
     cy.visit("/projects/e2e/local-test-project/overview/status");
     // Check that the migration suggestion is shown
-    cy.contains(
-      "Updating to the latest version of renku is highly recommended."
-    ).should("be.visible");
+    cy.contains("Updating to the latest version of renku is highly recommended.").should("be.visible");
   });
 
   it("displays required migration", () => {
     fixtures.projectMigrationRequired();
     cy.visit("/projects/e2e/local-test-project/overview/status");
     // Check that the migration suggestion is shown
-    cy.contains("This project is not compatible with the RenkuLab UI").should(
-      "be.visible"
-    );
+    cy.contains("This project is not compatible with the RenkuLab UI").should("be.visible");
+  });
+
+  it("displays error on migration", () => {
+    fixtures.projectMigrationError();
+    cy.visit("/projects/e2e/local-test-project/overview/status");
+    cy.wait("@getMigration");
+    // Check that the project up-to-date info is shown
+    cy.contains("unexpected error while handling project data").should("be.visible");
+  });
+
+  it("displays legacy error on migration", () => {
+    fixtures.projectMigrationLegacyError();
+    cy.visit("/projects/e2e/local-test-project/overview/status");
+    cy.wait("@getMigration");
+    // Check that the project up-to-date info is shown
+    cy.contains("error occurred").should("be.visible");
+    cy.contains("[Show details]").should("be.visible");
   });
 });
 
@@ -117,11 +156,23 @@ describe("display lock status", () => {
   });
 
   it("displays messages for locked project", () => {
-    fixtures.projectLockStatus(true);
+    fixtures.projectLockStatus({ locked: true });
     cy.visit("/projects/e2e/local-test-project/");
     cy.wait("@getProject");
     cy.wait("@getProjectLockStatus");
     cy.contains("currently being modified").should("be.visible");
+  });
+
+  it("displays error when the API fails", () => {
+    fixtures.projectLockStatus({ locked: true, error: true });
+    cy.visit("/projects/e2e/local-test-project/");
+    cy.contains("cannot verify status").should("be.visible");
+  });
+
+  it("displays error when the legacy API fails", () => {
+    fixtures.projectLockStatus({ locked: true, legacyError: true });
+    cy.visit("/projects/e2e/local-test-project/");
+    cy.contains("cannot verify status").should("be.visible");
   });
 });
 

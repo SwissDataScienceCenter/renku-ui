@@ -29,24 +29,42 @@ describe("Add new project", () => {
   const newProjectPath = `e2e/${slug}`;
 
   beforeEach(() => {
-    fixtures.config().versions().userTest().namespaces().templates();
+    fixtures.config().versions().userTest().namespaces();
     fixtures.projects().landingUserProjects("getLandingUserProjects");
     cy.visit("projects/new");
   });
 
   it("create a new project that should change name", () => {
     fixtures
+      .templates()
       .createProject()
       .project(newProjectPath, "getNewProject", "projects/project.json", false)
       .updateProject(newProjectPath);
     cy.gui_create_project(newProjectTitle);
+    cy.wait("@getTemplates");
     cy.wait("@createProject");
     cy.wait("@getNewProject");
-    cy.wait("@updateProject").should( result => {
+    cy.wait("@updateProject").should(result => {
       const request = result.request.body;
       expect(request).to.have.property("name");
     });
-    cy.url().should("include", `projects/${ newProjectPath }`);
+    cy.url().should("include", `projects/${newProjectPath}`);
   });
 
+  it("error on getting templates", () => {
+    fixtures.templates(true);
+    cy.wait("@getTemplates");
+    cy.contains("Unable to fetch templates").should("be.visible");
+  });
+
+  it("error on creating a new project", () => {
+    const error = "errors/core-error-1102.json";
+    fixtures
+      .templates()
+      .createProject(error);
+    cy.gui_create_project(newProjectTitle);
+    cy.wait("@getTemplates");
+    cy.wait("@createProject");
+    cy.contains("error occurred while creating the project").should("be.visible");
+  });
 });
