@@ -60,8 +60,10 @@ function Session<T extends FixturesConstructor>(Parent: T) {
 
     sessionServerOptions(cloudStorage?, name = "getSessionServerOptions") {
       cy.fixture("session/server-options.json").then((options) => {
-        if (cloudStorage == null) delete options["cloudstorage"];
-        else if (!cloudStorage) options["cloudstorage"]["s3"] = false;
+        if (cloudStorage == null)
+          delete options["cloudstorage"];
+        else if (!cloudStorage)
+          options["cloudstorage"]["s3"] = false;
 
         cy.intercept(
           "GET",

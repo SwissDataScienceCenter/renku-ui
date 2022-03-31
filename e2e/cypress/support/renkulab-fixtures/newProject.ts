@@ -24,12 +24,12 @@ import { FixturesConstructor } from "./fixtures";
 
 function NewProject<T extends FixturesConstructor>(Parent: T) {
   return class NewProjectFixtures extends Parent {
-    createProject(name = "createProject", result = "project/create-project.json") {
+    createProject(result = "project/create-project.json") {
       const fixture = this.useMockedData ? { fixture: result } : undefined;
       cy.intercept(
         "/ui-server/api/renku/templates.create_project",
         fixture
-      ).as(name);
+      ).as("createProject");
       return this;
     }
   };

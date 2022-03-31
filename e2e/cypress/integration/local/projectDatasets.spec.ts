@@ -224,7 +224,7 @@ describe("Project dataset (locked)", () => {
       queryUrl: "*",
       fixtureName: "getMigration"
     });
-    fixtures.projectLockStatus(true);
+    fixtures.projectLockStatus({ locked: true });
   });
 
   it("displays project datasets", () => {

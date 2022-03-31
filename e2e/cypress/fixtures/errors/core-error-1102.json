@@ -1,0 +1,9 @@
+{
+  "error": {
+    "code": 1102,
+    "userMessage": "There is an error with a project field: the template 'NONEXISTING' does not exist in the target template's repository.",
+    "devMessage": "Project creation from a Renku template failed. The user provided wrong field(s): the template 'NONEXISTING' does not exist in the target template's repository.",
+    "devReference": "https://renku-python.readthedocs.io/en/latest/service_errors.html#renku.service.errors.UserProjectCreationError",
+    "sentry": "https://sentry.dev.renku.ch/organizations/sentry?query=c511c29793724d5689364a54dc6f8b0e"
+  }
+}

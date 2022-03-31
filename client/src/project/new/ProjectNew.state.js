@@ -477,7 +477,7 @@ class NewProjectCoordinator {
   async getTemplate(url, ref) {
     const resp = await this.client.getTemplatesManifest(url, ref);
     if (resp.error)
-      return resp.error.reason;
+      return resp.error;
     else if (resp.result.templates && resp.result.templates.length)
       return resp.result.templates;
     return "No templates available in this repo.";
@@ -565,7 +565,7 @@ class NewProjectCoordinator {
     modelUpdates.meta.creation.creating = false;
     if (projectResult.error) {
       modelUpdates.meta.creation.created = false;
-      modelUpdates.meta.creation.createError = projectResult.error.reason;
+      modelUpdates.meta.creation.createError = projectResult.error;
       this.model.setObject(modelUpdates);
       return modelUpdates;
     }
