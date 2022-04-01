@@ -1,0 +1,16 @@
+.loading-label span {
+    margin-right: 15px;
+    font-style: italic;
+}
+
+.helper-label {
+    font-style: italic;
+    padding-right: 10px;
+}
+
+.error-feedback {
+    line-height: 16px;
+    color: var(--bs-danger);
+    padding-top: 6px;
+    display: block;
+}
