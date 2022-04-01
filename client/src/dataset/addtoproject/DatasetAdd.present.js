@@ -61,7 +61,7 @@ function HeaderAddDataset({ dataset }) {
 
 function DatasetAdd({ dataset, model, handlers, isDatasetValid, currentStatus, importingDataset, insideProject }) {
   const [isNewProject, setIsNewProject] = useState(false);
-  const logged = useSelector((state) => state.user.logged);
+  const logged = useSelector((state) => state.stateModel.user.logged);
 
   const buttonGroup = (
     <ButtonGroup className="d-flex">

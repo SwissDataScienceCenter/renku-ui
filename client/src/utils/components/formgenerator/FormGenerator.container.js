@@ -35,7 +35,7 @@ import { simpleHash } from "../../helpers/HelperFunctions";
 function locationToLocationHash(loc) { return "uid_" + simpleHash(loc); }
 
 function mapStateToProps(state, props) {
-  const currentDraft = state.formGenerator.formDrafts[props.locationHash];
+  const currentDraft = state.stateModel.formGenerator.formDrafts[props.locationHash];
   return {
     draft: currentDraft,
     ...props
