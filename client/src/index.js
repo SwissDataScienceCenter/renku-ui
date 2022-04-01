@@ -96,7 +96,7 @@ Promise.all([configFetch, privacyFetch]).then(valuesRead => {
 
     // Map redux user data to the initial react application
     function mapStateToProps(state, ownProps) {
-      return { user: state.user, ...ownProps };
+      return { user: state.stateModel.user, ...ownProps };
     }
 
     // Render UI application

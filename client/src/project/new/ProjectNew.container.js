@@ -136,16 +136,17 @@ class ForkProjectMapper extends Component {
 
   mapStateToProps(state, ownProps) {
     return {
-      namespaces: { ...state.projects.namespaces },
+      namespaces: { ...state.stateModel.projects.namespaces },
       // We need only a selection of the featured projects. Replicate the namespaces structure fetched/fetching/list
       projects: {
-        fetched: state.projects.featured.fetched,
-        fetching: state.projects.featured.fetching,
-        list: state.projects.featured.member,
+        fetched: state.stateModel.projects.featured.fetched,
+        fetching: state.stateModel.projects.featured.fetching,
+        list: state.stateModel.projects.featured.member,
       },
       user: {
-        logged: state.user.logged,
-        username: state.user.data && state.user.data.username ? state.user.data.username : null
+        logged: state.stateModel.user.logged,
+        username: state.stateModel.user.data && state.stateModel.user.data.username ?
+          state.stateModel.user.data.username : null
       }
     };
   }
@@ -580,24 +581,25 @@ class NewProject extends Component {
     // map minimal projects and user information
     const additional = {
       projects: {
-        fetched: state.projects.featured.fetched,
-        fetching: state.projects.featured.fetching,
-        list: state.projects.featured.member
+        fetched: state.stateModel.projects.featured.fetched,
+        fetching: state.stateModel.projects.featured.fetching,
+        list: state.stateModel.projects.featured.member
       },
       namespaces: {
-        fetched: state.projects.namespaces.fetched,
-        fetching: state.projects.namespaces.fetching,
-        list: state.projects.namespaces.list
+        fetched: state.stateModel.projects.namespaces.fetched,
+        fetching: state.stateModel.projects.namespaces.fetching,
+        list: state.stateModel.projects.namespaces.list
       },
       user: {
-        logged: state.user.logged,
-        username: state.user.data && state.user.data.username ? state.user.data.username : null
+        logged: state.stateModel.user.logged,
+        username: state.stateModel.user.data && state.stateModel.user.data.username ?
+          state.stateModel.user.data.username : null
       },
     };
 
     return {
       ...additional,
-      ...state.newProject,
+      ...state.stateModel.newProject,
       handlers: this.handlers
     };
   }

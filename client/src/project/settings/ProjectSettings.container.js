@@ -139,11 +139,11 @@ class ProjectSettingsSessionsMapper extends Component {
 
   mapStateToProps(state, ownProps) {
     return {
-      backend: state.project.migration.core,
-      options: state.notebooks.options,
-      metadata: state.project.metadata,
-      config: state.project.config,
-      user: state.user
+      backend: state.stateModel.project.migration.core,
+      options: state.stateModel.notebooks.options,
+      metadata: state.stateModel.project.metadata,
+      config: state.stateModel.project.config,
+      user: state.stateModel.user
     };
   }
   render() {
