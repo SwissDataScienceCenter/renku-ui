@@ -28,19 +28,17 @@ import React, { Component, Fragment, useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Autosuggest from "react-autosuggest";
 import {
-  Alert, Button, ButtonGroup, Card, CardBody, CardText, CardFooter, Col, DropdownItem, Fade, Form,
+  Alert, Button, ButtonGroup, Col, DropdownItem, Fade, Form,
   FormFeedback, FormGroup, FormText, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader,
-  UncontrolledPopover, PopoverHeader, PopoverBody, Row, Table, UncontrolledTooltip
+  Row, Table, UncontrolledTooltip
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faExclamationTriangle, faInfoCircle, faLink, faQuestionCircle, faSyncAlt, faUndo
+  faExclamationTriangle, faInfoCircle, faLink, faSyncAlt, faUndo
 } from "@fortawesome/free-solid-svg-icons";
 
 import "./Project.style.css";
-import defaultTemplateIcon from "./templatePlaceholder.svg";
-
-import { simpleHash, slugFromTitle } from "../../utils/helpers/HelperFunctions";
+import { slugFromTitle } from "../../utils/helpers/HelperFunctions";
 import { capitalize } from "../../utils/components/formgenerator/FormGenerator.present";
 import { Url } from "../../utils/helpers/url";
 import { Loader } from "../../utils/components/Loader";
@@ -52,6 +50,7 @@ import { Clipboard } from "../../utils/components/Clipboard";
 import AppContext from "../../utils/context/appContext";
 import { Docs, Links } from "../../utils/constants/Docs";
 import VisibilityInput from "../../utils/components/visibility/Visibility";
+import TemplateSelector from "../../utils/components/templateSelector/TemplateSelector";
 
 
 /**
@@ -804,158 +803,38 @@ class Template extends Component {
   render() {
     const { config, handlers, input, templates, meta } = this.props;
     const error = meta.validation.errors["template"];
-    const invalid = error && !input.templatePristine ? true : false;
-    let main = null;
-    if ((!input.userRepo && templates.fetching) || (input.userRepo && meta.userTemplates.fetching)) {
-      main = (
-        <Fragment>
-          <br />
-          <Label className="font-italic">Fetching... <Loader inline={true} size={16} /></Label>
-        </Fragment>
-      );
-    }
-    else if (input.userRepo && !meta.userTemplates.fetched) {
-      main = (
-        <Fragment>
-          <br />
-          <Label className="font-italic">Fetch templates first, or switch source to RenkuLab.</Label>
-        </Fragment>
-      );
+    const invalid = error && !input.templatePristine;
+
+    const isFetching = (!input.userRepo && templates.fetching) || (input.userRepo && meta.userTemplates.fetching);
+    const noFetchedUserRepo = input.userRepo && !meta.userTemplates.fetched;
+    // Pass down templates and repository with the same format to the gallery component
+    let listedTemplates, repositories;
+    if (input.userRepo) {
+      listedTemplates = meta.userTemplates.all;
+      repositories = [{ url: meta.userTemplates.url, ref: meta.userTemplates.ref, name: "Custom" }];
     }
     else {
-      // Pass down templates and repository with the same format to the gallery component
-      let listedTemplates, repositories;
-      if (input.userRepo) {
-        listedTemplates = meta.userTemplates.all;
-        repositories = [{ url: meta.userTemplates.url, ref: meta.userTemplates.ref, name: "Custom" }];
-      }
-      else {
-        listedTemplates = templates.all;
-        repositories = config.repositories;
-      }
+      listedTemplates = templates.all;
+      repositories = config.repositories;
+    }
 
-      const select = (template) => handlers.setProperty("template", template);
-      main = (
-        <TemplateGallery
-          // error={error && invalid} // ? we may consider adding a more prominent underlining for errors
+    const select = (template) => handlers.setProperty("template", template);
+
+    return (
+      <FormGroup>
+        <TemplateSelector
           repositories={repositories}
           select={select}
           selected={input.template}
           templates={listedTemplates}
+          isRequired
+          isInvalid={invalid}
+          isFetching={isFetching}
+          noFetchedUserRepo={noFetchedUserRepo}
         />
-      );
-    }
-
-    return (
-      <FormGroup>
-        <Label>Template</Label>
-        {error && invalid && <div className="text-danger small">{error}</div>}
-        {main}
       </FormGroup>
     );
   }
-}
-
-function TemplateGallery(props) {
-  const { repositories, select, selected, templates } = props;
-
-  // One GalleryRow for each source
-  const gallery = repositories.map((repository) => {
-    const repoTitle = repository.name;
-    const repoTemplates = templates.filter(t => t.parentRepo === repoTitle);
-    const repoKey = simpleHash(repository.url + repository.ref);
-    return (
-      <TemplateGalleryRow
-        key={repoKey}
-        repository={repository}
-        select={select}
-        selected={selected}
-        templates={repoTemplates}
-      />
-    );
-  });
-
-  return (<div>{gallery}</div>);
-}
-
-// Show a link when we have a valid url. Otherwise, just simple text
-function TemplateRepositoryLink(props) {
-  const { url } = props;
-  let repoUrl = url && url.length && url.startsWith("http") ?
-    url :
-    "";
-  if (repoUrl.endsWith(".git"))
-    repoUrl = repoUrl.substring(repoUrl.length - 4);
-  const repoLink = repoUrl ?
-    (<ExternalLink url={repoUrl} title={url} role="link" />) :
-    url;
-  return repoLink;
-}
-
-function TemplateGalleryRow(props) {
-  const { repository, select, selected, templates } = props;
-
-  // Don't render anything if there are no templates for the repository
-  if (!templates || !templates.length)
-    return null;
-
-  // Show a card for each template
-  const elements = templates.map(t => {
-    const imgSrc = t.icon ?
-      `data:image/png;base64,${t.icon}` :
-      defaultTemplateIcon;
-    const id = "id" + simpleHash(repository.name) + simpleHash(t.id);
-    const selectedClass = selected === t.id ?
-      "selected" :
-      "";
-
-    return (
-      <Col key={t.id}>
-        <Card id={id} className={`template-card mb-2 text-center ${selectedClass}`}
-          onClick={() => { select(t.id); }} data-cy="project-template-card">
-          <CardBody className="p-1">
-            <img src={imgSrc} alt={t.id + " template image"} />
-          </CardBody>
-          <CardFooter className="p-1">
-            <CardText className="small">{t.name}</CardText>
-          </CardFooter>
-        </Card>
-        <UncontrolledTooltip key="tooltip" placement="bottom" target={id}>
-          {t.description}
-        </UncontrolledTooltip>
-      </Col>
-    );
-  });
-
-  // Add a title with information about the source repository
-  const repositoryInfoId = `info-${repository.name}`;
-  const title = (
-    <Row>
-      <p className="fst-italic mt-2 mb-1">
-        Source: {repository.name}
-        <FontAwesomeIcon id={repositoryInfoId} className="ms-2" icon={faQuestionCircle} />
-      </p>
-      <UncontrolledPopover target={repositoryInfoId} trigger="legacy" placement="bottom">
-        <PopoverHeader>{repository.name} templates</PopoverHeader>
-        <PopoverBody>
-          <p className="mb-1">
-            <span className="fw-bold">Repository</span>:&nbsp;
-            <TemplateRepositoryLink url={repository.url} />
-          </p>
-          <p className="mb-0">
-            <span className="fw-bold">Reference</span>: {repository.ref}
-          </p>
-        </PopoverBody>
-      </UncontrolledPopover>
-    </Row>
-  );
-
-  return (
-    <div>
-      {title}
-      <Row className="row-cols-2 row-cols-sm-3 row-cols-md-4 row-cols-lg-5">{elements}</Row>
-    </div>
-  );
 }
 
 /**
