@@ -52,7 +52,7 @@ class Home extends Component {
 
   mapStateToProps(state, ownProps) {
     // map projects to props
-    return { projects: state.projects };
+    return { projects: state.stateModel.projects };
   }
 
   render() {

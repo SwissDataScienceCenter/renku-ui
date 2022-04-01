@@ -49,7 +49,7 @@ import { sleep } from "../utils/helpers/HelperFunctions";
  */
 
 function mapSessionStateToProps(state, ownProps) {
-  const notebooks = state.notebooks.notebooks;
+  const notebooks = state.stateModel.notebooks.notebooks;
   const available = notebooks.all[ownProps.target] ?
     true :
     false;
@@ -60,12 +60,12 @@ function mapSessionStateToProps(state, ownProps) {
     data: available ?
       notebooks.all[ownProps.target] :
       {},
-    logs: state.notebooks.logs
+    logs: state.stateModel.notebooks.logs
   };
   return {
     handlers: ownProps.handlers,
     target: ownProps.target,
-    filters: state.notebooks.filters,
+    filters: state.stateModel.notebooks.filters,
     notebook
   };
 }
@@ -143,8 +143,8 @@ class ShowSession extends Component {
 function mapSessionListStateToProps(state, ownProps) {
   return {
     handlers: ownProps.handlers,
-    ...state.notebooks,
-    logs: { ...state.notebooks.logs, show: ownProps.showingLogs }
+    ...state.stateModel.notebooks,
+    logs: { ...state.stateModel.notebooks.logs, show: ownProps.showingLogs }
   };
 }
 
@@ -806,7 +806,7 @@ class StartNotebookServer extends Component {
 }
 
 function mapNotebookStatusStateToProps(state, ownProps) {
-  const subState = state.notebooks;
+  const subState = state.stateModel.notebooks;
 
   const notebookKeys = Object.keys(subState.notebooks.all);
   const notebook = notebookKeys.length > 0 ?
@@ -871,7 +871,7 @@ class CheckNotebookStatus extends Component {
   }
 
   mapStateToProps(state, ownProps) {
-    const subState = state.notebooks;
+    const subState = state.stateModel.notebooks;
 
     const notebookKeys = Object.keys(subState.notebooks.all);
     const notebook = notebookKeys.length > 0 ?
