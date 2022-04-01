@@ -30,7 +30,7 @@ import { CheckNotebookStatus, CheckNotebookIcon } from "../notebooks";
 import { Time } from "../utils/helpers/Time";
 import { formatBytes } from "../utils/helpers/HelperFunctions";
 import { FileAndLineageSwitch } from "./FileAndLineageComponents";
-import { Label } from "reactstrap/lib";
+import { Label } from "reactstrap";
 import _ from "lodash";
 import { Clipboard } from "../utils/components/Clipboard";
 import { ExternalIconLink, ExternalLink } from "../utils/components/ExternalLinks";
