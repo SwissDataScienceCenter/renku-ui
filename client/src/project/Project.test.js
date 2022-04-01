@@ -27,7 +27,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { MemoryRouter } from "react-router-dom";
-import TestRenderer, { act } from "react-test-renderer";
+import TestRenderer, { act, create } from "react-test-renderer";
 import { createMemoryHistory } from "history";
 
 import { StateModel, globalSchema, projectSchema } from "../model";
@@ -37,7 +37,7 @@ import { OverviewCommitsBody } from "./overview/ProjectOverview.present";
 import { ProjectCoordinator } from "./Project.state";
 import { ACCESS_LEVELS, testClient as client } from "../api-client";
 import { generateFakeUser } from "../user/User.test";
-import { ProjectSuggestActions } from "./Project.present";
+import { ProjectSuggestActions, ProjectSuggestionDataset, ProjectSuggestionReadme } from "./Project.present";
 import ProjectVersionStatus from "./status/ProjectVersionStatus.present";
 
 
@@ -243,10 +243,14 @@ describe("rendering ProjectSuggestActions", () => {
     const exampleCommit = [{ id: "abc", committed_date: "2021-01-01" }];
     const allProps = getProjectSuggestionProps(props, false, exampleCommit, exampleCommit, [{}]);
     let rendered;
+    // ProjectSuggestActions does not play well with js dom because of the transition -- use the underlying components
     await act(async () => {
-      rendered = TestRenderer.create(
+      rendered = create(
         <MemoryRouter>
-          <ProjectSuggestActions key="suggestions" {...allProps} />
+          <>
+            <ProjectSuggestionReadme {...allProps} />
+            <ProjectSuggestionDataset {...allProps} />
+          </>
         </MemoryRouter>,
       );
     });
@@ -260,10 +264,14 @@ describe("rendering ProjectSuggestActions", () => {
     const exampleCommits = [{ id: "abc", committed_date: "2021-01-01" }, { id: "def", committed_date: "2021-01-02" }];
     const allProps = getProjectSuggestionProps(props, false, exampleCommits, exampleCommits, []);
     let rendered;
+    // ProjectSuggestActions does not play well with js dom because of the transition -- use the underlying components
     await act(async () => {
-      rendered = TestRenderer.create(
+      rendered = create(
         <MemoryRouter>
-          <ProjectSuggestActions key="suggestions" {...allProps} />
+          <>
+            <ProjectSuggestionReadme {...allProps} />
+            <ProjectSuggestionDataset {...allProps} />
+          </>
         </MemoryRouter>,
       );
     });
@@ -279,10 +287,14 @@ describe("rendering ProjectSuggestActions", () => {
     allProps.commits = { list: exampleCommit, fetched: true };
     allProps.commitsReadme = { list: exampleCommit, fetched: true };
     let rendered;
+    // ProjectSuggestActions does not play well with js dom because of the transition -- use the underlying components
     await act(async () => {
-      rendered = TestRenderer.create(
+      rendered = create(
         <MemoryRouter>
-          <ProjectSuggestActions key="suggestions" {...allProps} />
+          <>
+            <ProjectSuggestionReadme {...allProps} />
+            <ProjectSuggestionDataset {...allProps} />
+          </>
         </MemoryRouter>,
       );
     });
@@ -306,7 +318,7 @@ describe("rendering ProjectSuggestActions", () => {
     allProps.commitsReadme = { list: exampleReadmeCommit, fetched: true };
     let rendered;
     await act(async () => {
-      rendered = TestRenderer.create(
+      rendered = create(
         <MemoryRouter>
           <ProjectSuggestActions key="suggestions" {...allProps} />
         </MemoryRouter>,
