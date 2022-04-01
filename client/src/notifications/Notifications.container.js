@@ -173,9 +173,9 @@ class NotificationsMenu extends Component {
   mapStateToProps(state, ownProps) {
     return {
       handlers: this.handlers,
-      notifications: state.notifications.all,
-      unread: state.notifications.unread,
-      enabled: state.notifications.dropdown.enabled
+      notifications: state.stateModel.notifications.all,
+      unread: state.stateModel.notifications.unread,
+      enabled: state.stateModel.notifications.dropdown.enabled
     };
   }
 
@@ -213,8 +213,8 @@ class NotificationsPage extends Component {
   mapStateToProps(state, ownProps) {
     return {
       handlers: this.handlers,
-      notifications: state.notifications.all,
-      unread: state.notifications.unread
+      notifications: state.stateModel.notifications.all,
+      unread: state.stateModel.notifications.unread
     };
   }
 
