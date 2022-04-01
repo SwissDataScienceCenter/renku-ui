@@ -24,24 +24,21 @@
  *  Utility UI state management.
  */
 
-import { createStore as reduxCreateStore, applyMiddleware, compose } from "redux";
-import thunk from "redux-thunk";
+import { configureStore } from "@reduxjs/toolkit";
 
 function createStore(reducer, name = "renku") {
-  const composeEnhancers =
-  typeof window === "object" &&
-  window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ ?
-    window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__({
-      // Specify extension’s options like name, actionsBlacklist, actionsCreators, serialize...
-      name,
-      trace: true, traceLimit: 25
-    }) : compose;
 
-  const enhancer = composeEnhancers(
-    applyMiddleware(thunk),
-    // other store enhancers if any
-  );
-  return reduxCreateStore(reducer, enhancer);
+  // For the moment, disable the custom middleware, since it causes
+  // problems for our app.
+  const store = configureStore({
+    reducer: reducer,
+    middleware: (getDefaultMiddleware) =>
+      getDefaultMiddleware({
+        immutableCheck: false,
+        serializableCheck: false,
+      }),
+  });
+  return store;
 }
 
 // TODO: Introduce a mock store for testing
