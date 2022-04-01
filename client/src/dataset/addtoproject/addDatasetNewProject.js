@@ -40,7 +40,7 @@ const AddDatasetNewProject = (
   const [ newProject, setNewProject ] = useState(null);
   const setCurrentStatus = handlers.setCurrentStatus;
   const { client } = useContext(AppContext);
-  const user = useSelector( (state) => state.user);
+  const user = useSelector( (state) => state.stateModel.user);
 
   useEffect(() => setCurrentStatus(null), [setCurrentStatus]);
 
