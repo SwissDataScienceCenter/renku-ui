@@ -1,18 +1,18 @@
 import * as React from "react";
+import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faQuestionCircle } from "@fortawesome/free-solid-svg-icons";
-
-import defaultTemplateIcon from "../../../project/new/templatePlaceholder.svg";
-import { simpleHash } from "../../helpers/HelperFunctions";
-import { ExternalLink } from "../ExternalLinks";
-import "./TemplateSelector.css";
-
+import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
 import {
   Card, CardBody, CardText, CardFooter, Col,
   UncontrolledPopover, PopoverHeader, PopoverBody, Row, UncontrolledTooltip,
 } from "reactstrap/lib";
-import { useEffect, useState } from "react";
+
+import defaultTemplateIcon from "../../../project/new/templatePlaceholder.svg";
+import { simpleHash } from "../../helpers/HelperFunctions";
+import { ExternalLink } from "../ExternalLinks";
 import { ErrorLabel, HelperLabel, InputLabel, LoadingLabel } from "../formlabels/FormLabels";
+import "./TemplateSelector.css";
+
 
 export interface Repository {
   url: string;
@@ -184,7 +184,7 @@ function TemplateGalleryRow(
     <Row>
       <p className="fst-italic mt-2 mb-1">
         Source: {repository.name}
-        <FontAwesomeIcon id={repositoryInfoId} className="ms-2 cursor-pointer" icon={faQuestionCircle} />
+        <FontAwesomeIcon id={repositoryInfoId} className="ms-2 cursor-pointer" icon={faInfoCircle} />
       </p>
       <UncontrolledPopover target={repositoryInfoId} trigger="legacy" placement="bottom">
         <PopoverHeader>{repository.name} templates</PopoverHeader>

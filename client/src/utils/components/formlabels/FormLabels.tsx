@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Label } from "reactstrap/lib";
+import { FormText, FormFeedback, Label } from "reactstrap/lib";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
@@ -12,42 +12,46 @@ interface LabelProps {
 
 interface InputLabelProps extends LabelProps {
   isRequired: boolean;
+  isOptional?: boolean;
 }
 
 
-const InputLabel = ({ text, isRequired }: InputLabelProps) => {
+const InputLabel = ({ text, isRequired = false, isOptional = false }: InputLabelProps) => {
   const requiredLabel = isRequired ? (<span className="required-label">*</span>) : null;
+  const optionalLabel = isOptional ? (<span> (Optional)</span>) : null;
   return (
-    <Label>{ text } {requiredLabel}</Label>
+    <Label>{ text } {requiredLabel} {optionalLabel}</Label>
   );
 };
 
 const LoadingLabel = ({ text }: LabelProps) => {
   return (
-    <div className="loading-label">
+    <FormText className="loading-label">
       <span>{text}</span>
       <Loader inline={true} size={16} />
-    </div>
+    </FormText>
   );
 };
 
 const HelperLabel = ({ text }: LabelProps) => {
   return (
-    <div className="helper-label"><Label>{ text }</Label></div>
+    <FormText className="helper-label">
+      { text }
+    </FormText>
   );
 };
 
 const InputHintLabel = ({ text }: LabelProps) => {
   return (
-    <Label className="input-hint">{ text }</Label>
+    <FormText className="input-hint">{ text }</FormText>
   );
 };
 
 const ErrorLabel = ({ text }: LabelProps) => {
   return (
-    <div className="error-feedback">
+    <FormFeedback className="error-feedback">
       <FontAwesomeIcon icon={faExclamationTriangle} />{" "}{ text }
-    </div>);
+    </FormFeedback>);
 };
 
 export { InputLabel, LoadingLabel, HelperLabel, InputHintLabel, ErrorLabel } ;
