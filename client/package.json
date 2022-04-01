@@ -12,6 +12,7 @@
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@nteract/notebook-render": "^5.0.4-alpha.0",
     "@popperjs/core": "^2.10.1",
+    "@reduxjs/toolkit": "^1.8.1",
     "@renku/ckeditor5-build-renku": "0.0.5",
     "@sentry/react": "^6.16.1",
     "@sentry/tracing": "^6.16.1",
