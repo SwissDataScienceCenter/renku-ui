@@ -142,17 +142,24 @@ class Schema {
   }
 }
 
+function getReduxState(reduxStore, slice) {
+  const state = reduxStore.getState();
+  if (slice) return state[slice];
+  return state;
+}
+
 class ReduxStateModel {
 
-  constructor(owner, stateBinding, stateHolder, initialState) {
+  constructor(owner, stateBinding, stateHolder, initialState, slice = null) {
     this.stateBinding = stateBinding; // We know stateBinding === StateKind.REDUX
     this.reduxStore = stateHolder;
+    this.slice = slice;
     // Initialize state
-    const updateObj = updateObjectFromObject(initialState, this.reduxStore.getState());
+    const updateObj = updateObjectFromObject(initialState, getReduxState(stateHolder, slice));
     this.immutableUpdate(updateObj, null);
   }
 
-  getStateObject() { return this.reduxStore.getState(); }
+  getStateObject() { return getReduxState(this.reduxStore, this.slice); }
 
   immutableUpdate(updateObj, callback) {
     this.reduxStore.dispatch({
@@ -194,8 +201,12 @@ class StateModel {
     const initializedState = initialState ? initialState : schema.createInitialized();
 
     if (stateBinding === StateKind.REDUX) {
-      if (!stateHolder) stateHolder = createStore(schema.reducer(), this.constructor.name);
-      this._stateModel = new ReduxStateModel(this, stateBinding, stateHolder, initializedState);
+      let slice = null;
+      if (!stateHolder) {
+        slice = "stateModel";
+        stateHolder = createStore({ [slice]: schema.reducer() }, this.constructor.name);
+      }
+      this._stateModel = new ReduxStateModel(this, stateBinding, stateHolder, initializedState, slice);
       this.reduxStore = this._stateModel.reduxStore;
     }
     else if (stateBinding === StateKind.REACT) {

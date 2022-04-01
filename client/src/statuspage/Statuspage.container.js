@@ -29,7 +29,7 @@ import { connect } from "react-redux";
 import { StatuspageDisplay as DisplayPresent, StatuspageBanner as BannerPresent } from "./Statuspage.present";
 
 function mapStateToProps(state, ownProps) {
-  return { statusSummary: state.statuspage, ...ownProps };
+  return { statusSummary: state.stateModel.statuspage, ...ownProps };
 }
 
 /**

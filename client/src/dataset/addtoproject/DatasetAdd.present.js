@@ -62,7 +62,7 @@ function HeaderAddDataset({ dataset }) {
 
 function DatasetAdd({ dataset, model, handlers, isDatasetValid, currentStatus, importingDataset, insideProject }) {
   const [isNewProject, setIsNewProject] = useState(false);
-  const logged = useSelector((state) => state.user.logged);
+  const logged = useSelector((state) => state.stateModel.user.logged);
 
   // Return early if there is no dataset
   if (!dataset) return <Loader />;

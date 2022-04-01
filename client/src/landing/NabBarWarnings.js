@@ -64,7 +64,7 @@ function pollComponentsVersion(model, client) {
  */
 function VersionsBanner(props) {
   function mapStateToProps(state, ownProps) {
-    return { environment: state.environment };
+    return { environment: state.stateModel.environment };
   }
 
   const VisibleBanner = connect(mapStateToProps)(VersionsBannerPresent);

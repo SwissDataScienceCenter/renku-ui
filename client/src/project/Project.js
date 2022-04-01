@@ -689,7 +689,7 @@ class View extends Component {
  */
 function mapProjectFeatures(projectCoordinator, features = [], parentProperty = null) {
   let mapStateToProps = function (state) {
-    const projectState = state.project;
+    const projectState = projectCoordinator.get();
     if (!features || !features.length)
       features = Object.keys(projectState);
 

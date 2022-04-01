@@ -26,12 +26,12 @@
 
 import { configureStore } from "@reduxjs/toolkit";
 
-function createStore(reducer, name = "renku") {
+function createStore(renkuStateModelReducer, name = "renku") {
 
   // For the moment, disable the custom middleware, since it causes
   // problems for our app.
   const store = configureStore({
-    reducer: reducer,
+    reducer: renkuStateModelReducer,
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
         immutableCheck: false,
