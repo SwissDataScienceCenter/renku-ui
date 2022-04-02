@@ -819,7 +819,9 @@ class NotebooksCoordinator {
 
     // Trigger next step passing project info
     const projectId = `${encodeURIComponent(filters.namespace)}%2F${filters.project}`;
-    if (ciType === CI_TYPES.pinned || ciType === CI_TYPES.anonymous)
+    if (ciType === CI_TYPES.pinned)
+      this.checkRemoteImage(options["image"], commit, problemCallback);
+    else if (ciType === CI_TYPES.anonymous)
       this.checkCiImage(projectId, commit, problemCallback);
     else
       this.checkCiPipelines(projectId, commit, problemCallback);
@@ -1021,7 +1023,7 @@ class NotebooksCoordinator {
   }
 
   /**
-   * Fetch jobs and keep polling until we get a status confirmation or an error.
+   * Fetch CI image local registry and check Docker image status.
    * @param {string} projectId - target project id, already URI-encoded
    * @param {string} target - original commit when fetching CI was initiated
    * @param {function} [problemCallback]  - callback to invoke when there is a problem
@@ -1075,6 +1077,39 @@ class NotebooksCoordinator {
       await sleep(POLLING_INTERVAL / 1000);
       imageAvailable = await this.fetchCiImage(projectId, target, id);
     }
+  }
+
+
+  /**
+   * Verify CI image from any v2 Docker registry.
+   * @param {string} registryUrl - target registry full URL
+   * @param {string} target - original commit when fetching CI was initiated
+   * @param {function} [problemCallback]  - callback to invoke when there is a problem
+   */
+  async checkRemoteImage(registryUrl, target, problemCallback = null) {
+    this.model.set("ci.stage", CI_STAGES.image);
+
+    // fetch reference registry for the project. It should be 1 per project.
+    let imageObject = { fetching: true };
+    this.model.setObject({ ci: { image: imageObject } });
+    try {
+      const imageStatus = await this.client.getImageStatus(registryUrl);
+      if (imageStatus.available)
+        imageObject.available = true;
+      else
+        imageObject.available = false;
+      imageObject.error = null;
+    }
+    catch (e) {
+      imageObject.available = false;
+      imageObject.error = this._getErrorMessage(e);
+    }
+
+    imageObject.fetching = false;
+    imageObject.fetched = new Date();
+    this.model.setObject({ ci: { image: imageObject } });
+
+    if (!imageObject.available && problemCallback) problemCallback();
   }
 
 
