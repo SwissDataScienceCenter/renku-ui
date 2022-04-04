@@ -23,7 +23,7 @@ import { faGlobe, faLock, faUserFriends } from "@fortawesome/free-solid-svg-icon
 
 import "./Visibility.css";
 import { computeVisibilities } from "../../helpers/HelperFunctions";
-import { ErrorLabel, HelperLabel, InputHintLabel, InputLabel } from "../formlabels/FormLabels";
+import { ErrorLabel, HelperLabel, InputHintLabel, InputLabel, LoadingLabel } from "../formlabels/FormLabels";
 
 /**
  *  renku-ui
@@ -43,7 +43,7 @@ export interface VisibilityInputProps {
   namespaceVisibility : Visibilities;
 
   /** Default value */
-  value: Visibilities;
+  value: Visibilities | null;
 
   /**
    * To show error feedback and mark input as invalid if there is no selection
@@ -69,16 +69,29 @@ export interface VisibilityInputProps {
    * @default visibility
    */
   name?: string;
+
+  isLoadingData: boolean;
 }
 
 /**
  * Project Visibility functional component
  * @param {VisibilityInputProps} props - visibility options
  */
-const VisibilityInput = ({ namespaceVisibility, disabled, value, isInvalid, isRequired, onChange, name = "visibility" }
+const VisibilityInput = (
+  { namespaceVisibility, disabled, value, isInvalid, isRequired, onChange, name = "visibility", isLoadingData }
                            : VisibilityInputProps) => {
   const [visibility, setVisibility] = useState<string | null>(null);
   useEffect(() => setVisibility(value), [value]);
+
+
+  if (isLoadingData) {
+    return (
+      <>
+        <InputLabel text="Visibility" isRequired={isRequired} />
+        <div><LoadingLabel text="Determining options... "/></div>
+      </>
+    );
+  }
 
   if (!namespaceVisibility) {
     return (

@@ -8,7 +8,7 @@
 }
 
 .progress-box--dark {
-    background-color: var(--bs-dark-bg);
+    background-color: var(--bs-rk-dark-bg);
 }
 
 .progress-box h2 {
