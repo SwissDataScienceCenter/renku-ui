@@ -46,7 +46,6 @@ const Title = ({ handlers, meta, input }: TitleProps) => {
     <FieldGroup
       id="title"
       label="Title"
-      data-cy="project-title-input"
       value={input.title ?? ""}
       help={help}
       feedback={error}

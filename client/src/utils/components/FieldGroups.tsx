@@ -43,13 +43,13 @@ interface FieldGroupProps {
 }
 
 const FieldGroup = (
-  { label, help, feedback, value, onChange, invalid,
+  { id, label, help, feedback, value, onChange, invalid,
     isRequired = false, isOptional = false, type = "text" }: FieldGroupProps) => {
   return <FormGroup className="field-group">
     <Label>
       <InputLabel text={label} isRequired={isRequired} isOptional={isOptional} />
     </Label>
-    <Input invalid={invalid} type={type} value={value} onChange={onChange} />
+    <Input data-cy={`field-group-${id}`} invalid={invalid} type={type} value={value} onChange={onChange} />
     {feedback && invalid && <ErrorLabel text={feedback}/> }
 
     {help && <FormText color="muted">{help}</FormText>}
