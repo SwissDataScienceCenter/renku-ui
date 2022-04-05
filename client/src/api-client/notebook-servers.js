@@ -169,6 +169,21 @@ function addNotebookServersMethods(client) {
       return false;
     }
   };
+
+  client.getImageStatus = async (registryUrl) => {
+    const queryParams = { image_url: registryUrl };
+    const url = `${client.baseUrl}/notebooks/images`;
+
+    return client.simpleFetch(url, "GET", queryParams).then((resp) => {
+      if (resp.status === 200)
+        return true;
+      else if (resp.status === 404)
+        return false;
+
+      // Throw error for any other case
+      throw new Error(`Error ${resp.status}`);
+    });
+  };
 }
 
 export default addNotebookServersMethods;
