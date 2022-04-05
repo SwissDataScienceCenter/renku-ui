@@ -172,14 +172,13 @@ function addNotebookServersMethods(client) {
 
   client.getImageStatus = async (registryUrl) => {
     const headers = client.getBasicHeaders();
-    headers.append("Content-Type", "application/json");
     const url = `${client.baseUrl}/notebooks/images`;
 
     return client.clientFetch(url, {
       method: "GET",
       headers,
       queryParams: { image_url: registryUrl }
-    }).then((resp) => {
+    }, "full").then((resp) => {
       return resp.data;
     });
   };
