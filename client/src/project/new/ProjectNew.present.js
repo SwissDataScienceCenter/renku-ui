@@ -211,7 +211,7 @@ const NewProjectForm = (
   };
 
   const onProgress = isFormProcessingOrFinished(meta);
-  const creation = <Creation handlers={handlers} meta={meta} />;
+  const creation = <Creation handlers={handlers} meta={meta} importingDataset={importingDataset} />;
   if (onProgress)
     return creation;
 
@@ -303,7 +303,7 @@ class NewProject extends Component {
 
 class Creation extends Component {
   render() {
-    const { handlers } = this.props;
+    const { handlers, importingDataset } = this.props;
     const { creation } = this.props.meta;
     if (!creation.creating && !creation.createError && !creation.projectUpdating &&
       !creation.projectError && !creation.kgUpdating && !creation.kgError && !creation.newName)
@@ -372,14 +372,22 @@ class Creation extends Component {
       );
     }
 
+    // customize the progress indicator when importing a dataset
+    const title = importingDataset ? "Creating a project to import the dataset..." :
+      "Creating Project...";
+    const feedback = importingDataset ?
+      "Once the process is completed, you will be redirected to the page " +
+      "of the imported dataset in the created project."
+      : "You'll be redirected to the new project page when the creation is completed.";
+
     return (
       <ProgressIndicator
         type={ProgressType.Indeterminate}
         style={ProgressStyle.Dark}
-        title="Creating Project..."
+        title={title}
         description="We've received your project information. This may take a while."
         currentStatus={message}
-        feedback="You'll be redirected to the new project page when the creation is completed."
+        feedback={feedback}
       />
     );
   }
