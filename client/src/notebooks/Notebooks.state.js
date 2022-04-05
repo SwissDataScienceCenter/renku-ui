@@ -1093,15 +1093,16 @@ class NotebooksCoordinator {
     let imageObject = { fetching: true };
     this.model.setObject({ ci: { image: imageObject } });
     try {
-      await this.client.getImageStatus(registryUrl);
-      imageObject.available = true;
+      const imageAvailable = await this.client.getImageStatus(registryUrl);
+      if (imageAvailable)
+        imageObject.available = true;
+      else
+        imageObject.available = false;
       imageObject.error = null;
     }
     catch (e) {
       imageObject.available = false;
-      const error = this._getErrorMessage(e);
-      if (!error.includes("JSON.parse"))
-        imageObject.error = error;
+      imageObject.error = this._getErrorMessage(e);
     }
 
     imageObject.fetching = false;

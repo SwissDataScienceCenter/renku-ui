@@ -171,15 +171,17 @@ function addNotebookServersMethods(client) {
   };
 
   client.getImageStatus = async (registryUrl) => {
-    const headers = client.getBasicHeaders();
+    const queryParams = { image_url: registryUrl };
     const url = `${client.baseUrl}/notebooks/images`;
 
-    return client.clientFetch(url, {
-      method: "GET",
-      headers,
-      queryParams: { image_url: registryUrl }
-    }, "full").then((resp) => {
-      return resp.data;
+    return client.simpleFetch(url, "GET", queryParams).then((resp) => {
+      if (resp.status === 200)
+        return true;
+      else if (resp.status === 404)
+        return false;
+
+      // Throw error for any other case
+      throw new Error(`Error ${resp.status}`);
     });
   };
 }

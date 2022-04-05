@@ -206,9 +206,12 @@ class APIClient {
   // REF: https://stackoverflow.com/questions/4500741/suppress-chrome-failed-to-load-resource-messages-in-console
   simpleFetch(
     url,
-    method = "GET"
+    method = "GET",
+    queryParams = null
   ) {
     const urlObject = new URL(url);
+    if (queryParams)
+      urlObject.search = new URLSearchParams(queryParams).toString();
     let headers = new Headers({
       "credentials": "same-origin",
       "X-Requested-With": "XMLHttpRequest"
