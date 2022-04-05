@@ -1,3 +1,27 @@
+/*!
+ * Copyright 2022 - Swiss Data Science Center (SDSC)
+ * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
+ * Eidgenössische Technische Hochschule Zürich (ETHZ).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ *  renku-ui
+ *
+ *  TemplateSelector.tsx
+ *  TemplateSelector component
+ */
 import * as React from "react";
 import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -53,6 +77,8 @@ export interface TemplateSelectorProps {
   isInvalid?: boolean;
 
   isDisabled?: boolean;
+
+  error?: string
 }
 
 interface TemplateGalleryRowProps {
@@ -79,11 +105,12 @@ function TemplateSelector(
     isInvalid,
     isDisabled,
     isFetching,
-    noFetchedUserRepo
+    noFetchedUserRepo,
+    error
   }: TemplateSelectorProps) {
 
   let content;
-  const errorFeedback = isInvalid ? <ErrorLabel text="Please select a template"/> : null;
+  let totalTemplates = 0;
 
   if (isFetching) {
     content = <LoadingLabel text="Fetching templates..." />;
@@ -95,6 +122,7 @@ function TemplateSelector(
     content = repositories.map((repository: Repository) => {
       const repoTitle = repository.name;
       const repoTemplates = templates.filter(t => t.parentRepo === repoTitle);
+      totalTemplates += repoTemplates.length;
       const repoKey = simpleHash(repository.url + repository.ref);
       return (
         <TemplateGalleryRow
@@ -109,6 +137,12 @@ function TemplateSelector(
       );
     });
   }
+
+  let errorFeedback;
+  if (isInvalid && totalTemplates > 0)
+    errorFeedback = <ErrorLabel text={error ?? "Please select a valid template"} />;
+  else if (isInvalid && totalTemplates === 0 && !noFetchedUserRepo)
+    errorFeedback = <ErrorLabel text={"Error no templates available"} />;
 
   return (
     <>

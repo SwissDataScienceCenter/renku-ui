@@ -14,3 +14,9 @@
     padding-top: 6px;
     display: block;
 }
+
+.input-hint {
+    line-height: 16px;
+    padding-top: 5px;
+    display: block;
+}
