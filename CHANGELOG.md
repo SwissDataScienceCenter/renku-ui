@@ -1,5 +1,12 @@
 # Changes
 
+## [2.1.2](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.1.1...2.1.2) (2022-04-05)
+
+### Bug Fixes
+
+**sessions**
+* fix problems starting projects with pinned images ( [#1769](https://github.com/SwissDataScienceCenter/renku-ui/issues/1769), [#1767](https://github.com/SwissDataScienceCenter/renku-ui/issues/1767))
+
 ## [2.1.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.1.0...2.1.1) (2022-03-24)
 
 ### Features
