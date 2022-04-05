@@ -25,7 +25,9 @@ $rk-info-text: #0F7396;
 $rk-success-text: #009568;
 $rk-danger-text: #B40A3C;
 $rk-warning-text: #897B31;
+$rk-dark-bg: #C5CBCF;
 
+$rk-danger-shadow: rgba(180, 10, 60, 0.5);
 $rk-table-border: #E4E7EA;
 
 // This will be added to the theme colors in custom_bootstrap
@@ -36,7 +38,9 @@ $rk-colors : (
   "rk-text":$rk-text,
   "rk-green-background":$rk-green-background,
   "rk-white": $rk-white,
-  "rk-hover": $rk-hover
+  "rk-hover": $rk-hover,
+  "rk-danger-shadow": $rk-danger-shadow,
+  "rk-dark-bg": $rk-dark-bg
 );
 
 // We overwrite bootstraps variables
