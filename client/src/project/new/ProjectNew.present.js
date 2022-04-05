@@ -373,7 +373,7 @@ class Creation extends Component {
         type={ProgressType.Indeterminate}
         style={ProgressStyle.Dark}
         title="Creating Project..."
-        description="We've receive your project information. This may take a while."
+        description="We've received your project information. This may take a while."
         currentStatus={message}
         feedback="You'll be redirected to the new project page when the creation is completed."
       />
