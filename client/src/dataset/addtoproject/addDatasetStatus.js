@@ -21,6 +21,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { Loader } from "../../utils/components/Loader";
+import ProgressIndicator, { ProgressStyle, ProgressType } from "../../utils/components/progress/Progress";
 
 /**
  *  incubator-renku-ui
@@ -49,6 +50,18 @@ function AddDatasetStatus(props) {
       break;
     case "inProcess" :
       statusProject = <div><Loader size="14" inline="true" /> {text}</div>;
+      break;
+    case "importing" :
+      statusProject = (
+        <ProgressIndicator
+          type={ProgressType.Indeterminate}
+          style={ProgressStyle.Dark}
+          title={"Importing Dataset..."}
+          description="We've received your project information. This may take a while."
+          currentStatus={text}
+          feedback="Once the process is completed, you will be redirected to the page of the imported dataset"
+        />
+      );
       break;
     case "validProject" :
       statusProject = <div><FontAwesomeIcon icon={faCheck} color={"var(--bs-success)"} /> {text}</div>;

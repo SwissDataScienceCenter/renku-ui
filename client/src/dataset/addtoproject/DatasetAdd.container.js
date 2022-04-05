@@ -73,9 +73,9 @@ function AddDataset({ datasets, identifier, insideProject, model }) {
   }, [dataset]); // eslint-disable-line
 
   /* validate project */
-  const validateDatasetProject = async () => {
+  const validateDatasetProject = async (isSubmit = false) => {
     // check dataset has valid project url
-    setCurrentStatus({ status: "inProcess", text: "Checking Dataset..." });
+    setCurrentStatus({ status: isSubmit ? "importing" : "inProcess", text: "Checking Dataset..." });
     if (!dataset.project || !dataset.project.path) {
       setCurrentStatus({ status: "error", text: "Invalid Dataset, refresh the page to get updated values" });
       setIsDatasetValid(false);
@@ -124,20 +124,21 @@ function AddDataset({ datasets, identifier, insideProject, model }) {
     setCurrentStatus(null);
     return projectVersion;
   };
-  const validateProject = async (project, validateOrigin) => {
+  const validateProject = async (project, validateOrigin, isSubmit = false) => {
     if (!project)
       return false;
 
+    const processStatus = isSubmit ? "importing" : "inProcess";
     //  start checking project
     setCurrentStatus({ status: "checkingProject", text: null });
-    setCurrentStatus({ status: "inProcess", text: "Checking dataset/project compatibility..." });
+    setCurrentStatus({ status: processStatus, text: "Checking dataset/project compatibility..." });
     let originProjectVersion;
     if (validateOrigin || datasetProjectVersion == null)
-      originProjectVersion = await validateDatasetProject();
+      originProjectVersion = await validateDatasetProject(isSubmit);
     else
       originProjectVersion = datasetProjectVersion;
 
-    setCurrentStatus({ status: "inProcess", text: "Checking dataset/project compatibility..." });
+    setCurrentStatus({ status: processStatus, text: "Checking dataset/project compatibility..." });
     // check selected project migration status
     const checkTarget = await client.checkMigration(project.value);
     if (checkTarget && checkTarget.error !== undefined) {
@@ -182,9 +183,9 @@ function AddDataset({ datasets, identifier, insideProject, model }) {
     if (!project)
       setCurrentStatus({ status: "error", text: "Empty project" });
 
-    const isProjectValid = await validateProject(project, true);
+    const isProjectValid = await validateProject(project, true, true);
     if (isProjectValid) {
-      setCurrentStatus({ status: "inProcess", text: ImportStateMessage.ENQUEUED });
+      setCurrentStatus({ status: "importing", text: ImportStateMessage.ENQUEUED });
       importDataset(project);
     }
   };
@@ -229,10 +230,10 @@ function AddDataset({ datasets, identifier, insideProject, model }) {
     if (job) {
       switch (job.state) {
         case "ENQUEUED":
-          setCurrentStatus({ status: "inProcess", text: ImportStateMessage.ENQUEUED });
+          setCurrentStatus({ status: "importing", text: ImportStateMessage.ENQUEUED });
           break;
         case "IN_PROGRESS":
-          setCurrentStatus({ status: "inProcess", text: ImportStateMessage.IN_PROGRESS });
+          setCurrentStatus({ status: "importing", text: ImportStateMessage.IN_PROGRESS });
           break;
         case "COMPLETED":
           setCurrentStatus({ status: "completed", text: ImportStateMessage.COMPLETED });
