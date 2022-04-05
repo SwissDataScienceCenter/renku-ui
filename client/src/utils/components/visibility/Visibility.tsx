@@ -114,7 +114,7 @@ const VisibilityInput = (
   const visibilities = computeVisibilities([namespaceVisibility]);
   const markInvalid = !visibility && isInvalid && isRequired;
   const items = [
-    { title: "Public", value: "public", icon: faGlobe, hint: "Access to all users" },
+    { title: "Public", value: "public", icon: faGlobe, hint: "Access without authentication" },
     { title: "Internal", value: "internal", icon: faUserFriends, hint: "Access only for authenticated users" },
     { title: "Private", value: "private", icon: faLock, hint: "Access only for the creator or contributors" },
   ];

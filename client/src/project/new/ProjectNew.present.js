@@ -32,7 +32,7 @@ import {
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faExclamationTriangle, faInfoCircle,
+  faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 
 import "./Project.style.css";
@@ -136,14 +136,14 @@ function ForkProjectFooter(props) {
 function ForkProjectStatus(props) {
   if (props.forking) {
     return (
-      <Fragment>
-        <span>Forking the project... </span>{" "}<Loader inline={true} size={16} />
-        <p className="mt-3">
-          <FontAwesomeIcon icon={faInfoCircle} />{" "}
-          This operation may take a while. You will be redirected automatically or
-          receive a notification at the end.
-        </p>
-      </Fragment>
+      <ProgressIndicator
+        type={ProgressType.Indeterminate}
+        style={ProgressStyle.Light}
+        title="Forking the project..."
+        description="Project is being created."
+        currentStatus=""
+        feedback="You will be redirected automatically or receive a notification at the end"
+      />
     );
   }
   else if (props.forkError) {
@@ -183,7 +183,8 @@ function ForkProjectContent(props) {
     validation: { errors: { title: error } },
     namespace: {
       fetching: fetching.namespaces,
-      visibilities,
+      visibilities: visibilities?.visibilities,
+      visibility: visibilities?.default
     },
   };
 

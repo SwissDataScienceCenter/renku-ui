@@ -226,7 +226,7 @@ function ForkProject(props) {
 
       // calculate visibilities values
       const availableVisibilities = await handlers.getVisibilities(namespace);
-      setVisibilities(availableVisibilities?.visibilities ?? null);
+      setVisibilities(availableVisibilities ?? null);
       setVisibility(availableVisibilities?.default ?? null);
     };
     if (fullNamespace) {
