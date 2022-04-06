@@ -211,7 +211,7 @@ const NewProjectForm = (
   };
 
   const onProgress = isFormProcessingOrFinished(meta);
-  const creation = <Creation handlers={handlers} meta={meta} importingDataset={importingDataset} />;
+  const creation = <Creation handlers={handlers} meta={meta}  importingDataset={importingDataset} />;
   if (onProgress)
     return creation;
 

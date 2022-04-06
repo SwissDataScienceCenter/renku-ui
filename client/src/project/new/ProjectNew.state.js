@@ -358,9 +358,13 @@ class NewProjectCoordinator {
 
   getSlugAndReset() {
     const creation = this.model.get("meta.creation");
+    this.resetCreationResult();
+    return `${creation.newNamespace}/${creation.newName}`;
+  }
+
+  resetCreationResult() {
     const pristineCreation = newProjectSchema.createInitialized().meta.creation;
     this.model.setObject({ meta: { creation: pristineCreation } });
-    return `${creation.newNamespace}/${creation.newName}`;
   }
 
   setVariable(variable, value) {
