@@ -547,8 +547,8 @@ class StartNotebookPipelinesContent extends Component {
       }
       return (
         <Fragment>
-          <FontAwesomeIcon icon={faExclamationTriangle} className="text-danger" /> No Docker image found.
-          Since this project specifies a {pinnedImagesDoc}, it is unlekly to work with a base image.
+          <FontAwesomeIcon icon={faExclamationTriangle} className="text-danger" /> Pinned Docker image not found.
+          Since this project specifies a {pinnedImagesDoc}, it is unlikely to work with a base image.
         </Fragment>
       );
     }
