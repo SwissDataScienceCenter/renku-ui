@@ -1,0 +1,21 @@
+.rk-forms {
+    max-width: 650px;
+}
+
+@media (min-width: 1200px) {
+    .col-xl-forms--header {
+        position: absolute;
+        width: 250px;
+        flex: none;
+    }
+
+    .rk-forms {
+        margin: auto;
+    }
+}
+
+@media (min-width: 1440px) {
+    .col-xl-forms--header {
+        width: 300px;
+    }
+}

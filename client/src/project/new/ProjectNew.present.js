@@ -24,56 +24,36 @@
  */
 
 
-import React, { Component, Fragment, useState, useEffect } from "react";
+import React, { Component, Fragment } from "react";
 import { Link } from "react-router-dom";
-import Autosuggest from "react-autosuggest";
 import {
-  Alert, Button, ButtonGroup, Col, DropdownItem, Fade, Form,
-  FormFeedback, FormGroup, FormText, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader,
-  Row, Table, UncontrolledTooltip
+  Alert, Button, Form,
+  FormText, ModalBody, ModalFooter, ModalHeader,
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faExclamationTriangle, faInfoCircle, faLink, faSyncAlt, faUndo
+  faExclamationTriangle, faInfoCircle,
 } from "@fortawesome/free-solid-svg-icons";
 
 import "./Project.style.css";
-import { slugFromTitle } from "../../utils/helpers/HelperFunctions";
-import { capitalize } from "../../utils/components/formgenerator/FormGenerator.present";
 import { Url } from "../../utils/helpers/url";
 import { Loader } from "../../utils/components/Loader";
 import { ErrorAlert, WarnAlert } from "../../utils/components/Alert";
-import { CoreErrorAlert } from "../../utils/components/errors/CoreErrorAlert";
-import { ExternalLink } from "../../utils/components/ExternalLinks";
-import { FieldGroup } from "../../utils/components/FieldGroups";
-import { ButtonWithMenu } from "../../utils/components/Button";
-import { Clipboard } from "../../utils/components/Clipboard";
 import AppContext from "../../utils/context/appContext";
-import { Docs, Links } from "../../utils/constants/Docs";
-import VisibilityInput from "../../utils/components/visibility/Visibility";
-import TemplateSelector from "../../utils/components/templateSelector/TemplateSelector";
-
-
-/**
- * Generate refresh button
- *
- * @param {function} refresh - function to invoke
- * @param {string} tip - message to display in the tooltip
- * @param {boolean} disabled - whether it's disabled or not
- */
-function makeRefreshButton(refresh, tip, disabled) {
-  const id = refresh.name.replace(" ", "");
-
-  return (
-    <Fragment>
-      <Button key="button" className="ms-1 p-0" color="link" size="sm"
-        id={id} onClick={() => refresh()} disabled={disabled} >
-        <FontAwesomeIcon icon={faSyncAlt} />
-      </Button>
-      <UncontrolledTooltip key="tooltip" placement="top" target={id}>{tip}</UncontrolledTooltip>
-    </Fragment>
-  );
-}
+import FormSchema from "../../utils/components/formschema/FormSchema";
+import Automated from "./components/Automated";
+import Title from "./components/Title";
+import Description from "./components/Description";
+import Namespaces from "./components/Namespaces";
+import ProjectIdentifier from "./components/ProjectIdentifier";
+import Visibility from "./components/Visibility";
+import TemplateSource from "./components/TemplateSource";
+import UserTemplate, { ErrorTemplateFeedback } from "./components/UserTemplate";
+import Template from "./components/Template";
+import TemplateVariables from "./components/TemplateVariables";
+import { FormErrors, FormWarnings } from "./components/FormValidations";
+import SubmitFormButton from "./components/SubmitFormButton";
+import ProgressIndicator, { ProgressStyle, ProgressType } from "../../utils/components/progress/Progress";
 
 function ForkProject(props) {
   const { error, fork, forkedTitle, forking, forkUrl, namespaces, projects, toggleModal } = props;
@@ -211,22 +191,80 @@ function ForkProjectContent(props) {
     <Fragment>
       <Title handlers={handlers} input={input} meta={meta} />
       <Namespaces handlers={handlers} input={input} namespaces={namespaces} user={user} />
-      <Home input={input} />
+      <ProjectIdentifier input={input} />
       <Visibility handlers={handlers} input={input} meta={meta}/>
     </Fragment>
   );
 }
 
+const NewProjectForm = (
+  { automated, config, handlers, input, meta, namespaces, namespace,
+    user, importingDataset, userRepo, templates } ) => {
+
+  const isFormProcessingOrFinished = (meta) => {
+    // posting
+    if (meta.creation.creating || meta.creation.projectUpdating || meta.creation.kgUpdating)
+      return true;
+    // posted successfully with visibility or KG warning
+    if (meta.creation.created) return true;
+    return (meta.creation.projectError || meta.creation.kgError);
+  };
+
+  const onProgress = isFormProcessingOrFinished(meta);
+  const creation = <Creation handlers={handlers} meta={meta} />;
+  if (onProgress)
+    return creation;
+
+  const errorTemplateAlert = <ErrorTemplateFeedback templates={templates} meta={meta} input={input}/>;
+  return (
+    <Form className="mb-4">
+      {creation}
+      <Automated automated={automated} removeAutomated={handlers.removeAutomated} />
+      <Title handlers={handlers} meta={meta} input={input} />
+      <Namespaces
+        namespaces={namespaces}
+        handlers={handlers}
+        automated={automated}
+        input={input}
+        namespace={namespace}
+        user={user} />
+      <ProjectIdentifier input={input} />
+      <Description handlers={handlers} meta={meta} input={input} />
+      <Visibility handlers={handlers} meta={meta} input={input} />
+      {config.custom ? <TemplateSource handlers={handlers} input={input} /> : null}
+      {userRepo ?
+        <UserTemplate meta={meta} handlers={handlers} config={config} templates={templates} input={input} /> : null}
+      <Template config={config} handlers={handlers} input={input} templates={templates} meta={meta} />
+      <TemplateVariables handlers={handlers} input={input} templates={templates} meta={meta} />
+      {errorTemplateAlert}
+      <SubmitFormButton input={input} meta={meta} importingDataset={importingDataset} handlers={handlers} />
+      <FormWarnings meta={meta} />
+      <FormErrors meta={meta} input={input} />
+    </Form>
+  );
+};
+
 class NewProject extends Component {
   static contextType = AppContext;
 
   render() {
-    const { automated, config, handlers, input, user, importingDataset } = this.props;
+    const {
+      automated,
+      config,
+      handlers,
+      input,
+      user,
+      importingDataset,
+      meta,
+      namespace,
+      namespaces,
+      templates
+    } = this.props;
     const { location } = this.context;
     if (!user.logged) {
       const to = Url.get(Url.pages.login.link, { pathname: location.pathname });
       return (
-        <Fragment>
+        <>
           <p>Only authenticated users can create new projects.</p>
           <Alert color="primary">
             <p className="mb-0">
@@ -234,1049 +272,33 @@ class NewProject extends Component {
               create a new project.
             </p>
           </Alert>
-        </Fragment>
+        </>
       );
     }
-    const title = importingDataset ? null : <h1>New project</h1>;
 
+    const title = "New Project";
+    const desc = "Create a project to house your files, include datasets," +
+      "plan your work, and collaborate on code, among other things.";
     const userRepo = config.custom && input.userRepo;
-    return (
-      <Row>
-        <Col className={!this.props.importingDataset ? "col-sm-10 col-md-9 col-lg-8 col-xl-7" : ""}>
-          {title}
-          <Form className="mb-3">
-            <Automated automated={automated} removeAutomated={handlers.removeAutomated} />
-            <Title {...this.props} />
-            <Description {...this.props} />
-            <Namespaces {...this.props} />
-            <Home {...this.props} />
-            <Visibility {...this.props} />
-            <KnowledgeGraph {...this.props} />
-            {config.custom ? <TemplateSource {...this.props} /> : null}
-            {userRepo ? <UserTemplate {...this.props} /> : null}
-            <Template {...this.props} />
-            <Variables {...this.props} />
-            <Creation {...this.props} />
-            <Create {...this.props} />
-          </Form>
-        </Col>
-      </Row>
-    );
+    const form = <NewProjectForm
+      automated={automated}
+      config={config}
+      handlers={handlers}
+      input={input}
+      importingDataset={importingDataset}
+      meta={meta}
+      namespaces={namespaces}
+      namespace={namespace}
+      user={user}
+      userRepo={userRepo}
+      templates={templates}
+    />;
+    return !this.props.importingDataset ? (
+      <FormSchema showHeader={true} title={title} description={desc}>
+        {form}
+      </FormSchema>
+    ) : form ;
   }
-}
-
-function Automated(props) {
-  const { automated, removeAutomated } = props;
-
-  const [showError, setShowError] = useState(false);
-  const toggleError = () => setShowError(!showError);
-
-  const [showWarnings, setShowWarnings] = useState(false);
-  const toggleWarn = () => setShowWarnings(!showWarnings);
-
-  if (!automated.finished) {
-    // Show a static modal while loading the data
-    if (automated.received && automated.valid)
-      return (<AutomatedModal removeAutomated={removeAutomated}></AutomatedModal>);
-    return null;
-  }
-  // Show a feedback when the automated part has finished
-  // errors
-  if (automated.error) {
-    const error = (<pre>{automated.error}</pre>);
-    return (
-      <ErrorAlert key="alert" >
-        <p>
-          We could not pre-fill the fields with the information provided in the RenkuLab project-creation link.
-        </p>
-        <p>
-          It is possible that the link is outdated or not valid.
-          Please contact the source of the RenkuLab link and ask for a new one.
-        </p>
-
-        <Button color="link" style={{ fontSize: "smaller" }} className="font-italic" onClick={() => toggleError()}>
-          {showError ? "Hide error details" : "Show error details"}
-        </Button>
-        <Fade in={showError} tag="div">{showError ? error : null}</Fade>
-      </ErrorAlert>
-    );
-  }
-  // warnings
-  else if (automated.warnings.length) {
-    const warnings = (<pre>{automated.warnings.join("\n")}</pre>);
-    return (
-      <WarnAlert>
-        <p>
-          Some fields could not be pre-filled with the information provided in the RenkuLab project-creation link.
-        </p>
-        <Button color="link" style={{ fontSize: "smaller" }} className="font-italic" onClick={() => toggleWarn()}>
-          {showWarnings ? "Hide warnings" : "Show warnings"}
-        </Button>
-        <Fade in={showWarnings} tag="div">{showWarnings ? warnings : null}</Fade>
-      </WarnAlert>
-    );
-  }
-  // all good
-  return (
-    <Alert color="primary">
-      <p className="mb-0">
-        <FontAwesomeIcon icon={faInfoCircle} />&nbsp;
-        Some fields were pre-filled.
-        <br />You can still change any values before you create the project.
-      </p>
-    </Alert>
-  );
-}
-
-
-function AutomatedModal(props) {
-  const { removeAutomated } = props;
-
-  const [showFadeIn, setShowFadeIn] = useState(false);
-
-  const toggle = () => setShowFadeIn(!showFadeIn);
-
-  const button = showFadeIn ?
-    null :
-    (
-      <Button color="link" style={{ fontSize: "smaller" }} className="font-italic" onClick={() => toggle()}>
-        Taking too long?
-      </Button>
-    );
-
-  const to = Url.get(Url.pages.project.new);
-  const fadeInContent = (
-    <p className="mt-3">
-      If pre-filling the new project form is taking too long, you can
-      <Link className="btn btn-primary btn-sm" to={to} onClick={() => { removeAutomated(); }}>
-        use a blank form
-      </Link>
-    </p>
-  );
-  return (
-    <Modal isOpen={true} centered={true} keyboard={false} backdrop="static">
-      <ModalHeader>Fetching initialization data</ModalHeader>
-      <ModalBody>
-        <Row>
-          <Col>
-            <p>You entered a url containing information to pre-fill.</p>
-            <span>
-              Please wait while we fetch the required metadata...&nbsp;
-              <Loader inline={true} size={16} />
-            </span>
-            <div className="mt-2">
-              {button}
-              <Fade in={showFadeIn} tag="div">{showFadeIn ? fadeInContent : null}</Fade>
-            </div>
-          </Col>
-        </Row>
-      </ModalBody>
-    </Modal>
-  );
-}
-
-class Title extends Component {
-  render() {
-    const { handlers, meta, input } = this.props;
-    const error = meta.validation.errors["title"];
-    const url = "https://docs.gitlab.com/ce/user/reserved_names.html#reserved-project-names";
-
-    const help = (
-      <span>
-        <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> There are a
-        few <ExternalLink url={url} title="reserved names" role="link" /> you cannot use.
-      </span>
-    );
-
-    return (
-      <FieldGroup id="title" type="text" label="Title" data-cy="project-title-input"
-        value={input.title}
-        placeholder="A brief name to identify the project" help={help}
-        feedback={error} invalid={error && !input.titlePristine}
-        onChange={(e) => handlers.setProperty("title", e.target.value)} />
-    );
-  }
-}
-
-function Description(props) {
-  const { handlers, meta, input } = props;
-  const error = meta.validation.errors["description"];
-
-  return (
-    <FieldGroup id="description" type="text" label="Description"
-      value={input.description}
-      placeholder="A short project description"
-      feedback={error} invalid={error && !input.descriptionPristine}
-      onChange={(e) => handlers.setProperty("description", e.target.value)} />
-  );
-}
-
-class Namespaces extends Component {
-  async componentDidMount() {
-    // fetch namespaces if not available yet
-    const { namespaces, handlers } = this.props;
-    if (!namespaces.fetched && !namespaces.fetching)
-      handlers.getNamespaces();
-  }
-
-  render() {
-    const { namespaces, handlers } = this.props;
-    const refreshButton = makeRefreshButton(handlers.getNamespaces, "Refresh namespaces", namespaces.fetching);
-
-    // loading or autosuggest
-    const main = namespaces.fetching ?
-      (<Fragment>
-        <br />
-        <Label className="font-italic d-block">Refreshing... <Loader inline={true} size={16} /></Label>
-      </Fragment>) :
-      (<NamespacesAutosuggest {...this.props} />);
-    const { list } = namespaces;
-
-    // show info about visibility only when group namespaces are available
-    const info = namespaces.fetched && list.length && list.filter(n => n.kind === "group").length ?
-      (<FormText>
-        <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> Group namespaces may
-        restrict the visibility options.
-      </FormText>) :
-      null;
-
-    return (
-      <FormGroup>
-        <Label>Namespace {refreshButton}</Label>
-        {main}
-        {info}
-      </FormGroup>
-    );
-  }
-}
-
-class NamespacesAutosuggest extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      value: "",
-      suggestions: [],
-      preloadUpdated: false
-    };
-  }
-
-  componentDidMount() {
-    // set first user namespace as default (at least one should always available)
-    const { namespaces, namespace, user } = this.props;
-    if (namespaces.fetched && namespaces.list.length && !namespace) {
-      let defaultNamespace = null, personalNs = null;
-      if (user.logged)
-        personalNs = namespaces.list.find(ns => ns.kind === "user" && ns.full_path === user.username);
-      if (personalNs)
-        defaultNamespace = personalNs;
-      else
-        defaultNamespace = namespaces.list.find(ns => ns.kind === "user");
-
-      this.props.handlers.setNamespace(defaultNamespace);
-      this.setState({ value: defaultNamespace.full_path });
-    }
-  }
-
-  // Fix the inconsistent state when automated content modifies the namespace
-  componentDidUpdate() {
-    const { automated, input } = this.props;
-    const { value, preloadUpdated } = this.state;
-    if (automated && automated.received && automated.finished && input.namespace !== value && !preloadUpdated)
-      this.setState({ value: input.namespace, preloadUpdated: true });
-  }
-
-  getSuggestions(value) {
-    const { namespaces } = this.props;
-    const inputValue = value.trim().toLowerCase();
-
-    // filter namespaces
-    const filtered = inputValue.length === 0 ?
-      namespaces.list :
-      namespaces.list.filter(namespace => namespace.full_path.toLowerCase().indexOf(inputValue) >= 0);
-    if (!filtered.length)
-      return [];
-
-    // separate different namespaces kind
-    const suggestionsObject = filtered.reduce(
-      (suggestions, namespace) => {
-        namespace.kind === "group" ? suggestions.group.push(namespace) : suggestions.user.push(namespace);
-        return suggestions;
-      },
-      { user: [], group: [] }
-    );
-
-    // filter 0 length groups
-    return Object.keys(suggestionsObject).reduce(
-      (suggestions, kind) => suggestionsObject[kind].length ?
-        [...suggestions, { kind, namespaces: suggestionsObject[kind] }] :
-        suggestions,
-      []
-    );
-  }
-
-  getSuggestionValue(suggestion) {
-    return suggestion.full_path;
-  }
-
-  getSectionSuggestions(suggestion) {
-    return suggestion.namespaces;
-  }
-
-  renderSuggestion = (suggestion) => {
-    const className = suggestion.full_path === this.state.value ? "highlighted" : "";
-    return (<span className={className}>{suggestion.full_path}</span>);
-  }
-
-  renderSectionTitle(suggestion) {
-    return (<strong>{suggestion.kind}</strong>);
-  }
-
-  onBlur = (event, { newValue }) => {
-    if (newValue)
-      this.props.handlers.setNamespace(newValue);
-    else if (this.props.input.namespace)
-      this.setState({ value: this.props.input.namespace });
-  }
-
-  onChange = (event, { newValue, method }) => {
-    if (method === "type")
-      this.setState({ value: newValue });
-  };
-
-  onSuggestionsFetchRequested = ({ value, reason }) => {
-    // show all namespaces on mouse click
-    if (reason === "input-focused")
-      value = "";
-    this.setState({ suggestions: this.getSuggestions(value) });
-  };
-
-  onSuggestionsClearRequested = () => {
-    this.setState({ suggestions: [] });
-  };
-
-  onSuggestionSelected = (event, { suggestionValue, method }) => {
-    this.setState({ value: suggestionValue });
-    const namespace = this.props.namespaces.list.filter(ns => ns.full_path === suggestionValue)[0];
-    this.props.handlers.setNamespace(namespace);
-  }
-
-  getTheme() {
-    const defaultTheme = {
-      container: "react-autosuggest__container",
-      containerOpen: "react-autosuggest__container--open",
-      input: "react-autosuggest__input",
-      inputOpen: "react-autosuggest__input--open",
-      inputFocused: "react-autosuggest__input--focused",
-      suggestionsContainer: "react-autosuggest__suggestions-container",
-      suggestionsContainerOpen: "react-autosuggest__suggestions-container--open",
-      suggestionsList: "react-autosuggest__suggestions-list",
-      suggestion: "react-autosuggest__suggestion",
-      suggestionFirst: "react-autosuggest__suggestion--first",
-      suggestionHighlighted: "react-autosuggest__suggestion--highlighted",
-      sectionContainer: "react-autosuggest__section-container",
-      sectionContainerFirst: "react-autosuggest__section-container--first",
-      sectionTitle: "react-autosuggest__section-title"
-    };
-    // Override the input theme to match our visual style
-    return { ...defaultTheme, ...{ input: "form-control" } };
-  }
-
-  render() {
-    const { value, suggestions } = this.state;
-    const theme = this.getTheme();
-
-    const inputProps = {
-      placeholder: "Select a namespace...",
-      value,
-      onChange: this.onChange,
-      onBlur: this.onBlur
-    };
-
-    return (
-      <Autosuggest
-        id="namespace"
-        multiSection={true}
-        suggestions={suggestions}
-        onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
-        onSuggestionsClearRequested={this.onSuggestionsClearRequested}
-        onSuggestionSelected={this.onSuggestionSelected}
-        getSuggestionValue={this.getSuggestionValue}
-        getSectionSuggestions={this.getSectionSuggestions}
-        renderSuggestion={this.renderSuggestion}
-        renderSectionTitle={this.renderSectionTitle}
-        shouldRenderSuggestions={(v) => true}
-        inputProps={inputProps}
-        theme={theme}
-      />
-    );
-  }
-}
-
-class Home extends Component {
-  render() {
-    const { input } = this.props;
-    const namespace = input.namespace ?
-      input.namespace :
-      "<no namespace>";
-    const title = input.title ?
-      slugFromTitle(input.title, true) :
-      "<no title>";
-    const slug = `${namespace}/${title}`;
-
-    return (
-      <FormGroup>
-        <Label>Identifier</Label>
-        <Input id="slug" readOnly value={slug} />
-        <FormText>
-          <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> This is automatically derived from
-          Namespace and Title.
-        </FormText>
-      </FormGroup>
-    );
-  }
-}
-
-class Visibility extends Component {
-  render() {
-    const { handlers, meta, input } = this.props;
-    const error = meta.validation.errors["visibility"];
-    if (meta.namespace.fetching || !meta.namespace.visibilities || !input.visibility)
-      return <Label className="font-italic">Determining options... <Loader inline={true} size={16} /></Label>;
-
-    return (
-      <FormGroup>
-        <VisibilityInput
-          namespaceVisibility={meta.namespace.visibility}
-          invalid={error && !input.visibilityPristine}
-          data-cy="visibility-select"
-          isRequired={true}
-          onChange={(value) => handlers.setProperty("visibility", value)} value={input.visibility} />
-      </FormGroup>
-    );
-  }
-}
-
-class KnowledgeGraph extends Component {
-  render() {
-    const { handlers, input, meta } = this.props;
-
-    if (input.visibility !== "private" || meta.namespace.fetching)
-      return null;
-
-    const kgLink = (
-      <a href={Docs.rtdTopicGuide("knowledge-graph.html")}
-        target="_blank" rel="noopener noreferrer">
-        Knowledge Graph
-      </a>
-    );
-    return (
-      <FormGroup>
-        <Label check>
-          <Input id="knowledgeGraph" type="checkbox" className="me-2"
-            checked={!this.props.input.knowledgeGraph}
-            onChange={(e) => handlers.setProperty("knowledgeGraph", !e.target.checked)} />
-          Opt-out from Knowledge Graph
-        </Label>
-        <FormText className="d-block">
-          <FontAwesomeIcon className="no-pointer" icon={faInfoCircle} /> The {kgLink} may make some metadata
-          public, opt-out if this is not acceptable.
-        </FormText>
-      </FormGroup>
-    );
-  }
-}
-
-class TemplateSource extends Component {
-  render() {
-    const { handlers, input } = this.props;
-    return (
-      <FormGroup>
-        <Label>Template source</Label>
-        <br />
-        <ButtonGroup size="sm">
-          <Button color="primary" outline active={!input.userRepo}
-            onClick={(e) => handlers.setProperty("userRepo", false)}>
-            RenkuLab
-          </Button>
-          <Button color="primary" outline active={input.userRepo}
-            onClick={(e) => handlers.setProperty("userRepo", true)}>
-            Custom
-          </Button>
-        </ButtonGroup>
-      </FormGroup>
-    );
-  }
-}
-
-class UserTemplate extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      missingUrl: false,
-      missingRef: false
-    };
-  }
-
-  fetchTemplates() {
-    const { meta } = this.props;
-
-    // check if url or ref are missing
-    const { missingUrl, missingRef } = this.state;
-    let newState = {
-      missingUrl: false,
-      missingRef: false
-    };
-    if (!meta.userTemplates.url)
-      newState.missingUrl = true;
-    if (!meta.userTemplates.ref)
-      newState.missingRef = true;
-    if (missingUrl !== newState.missingUrl || missingRef !== newState.missingRef)
-      this.setState(newState);
-
-    // try to get user templates if repository data are available
-    if (newState.missingUrl || newState.missingRef)
-      return;
-    return this.props.handlers.getUserTemplates();
-  }
-
-  render() {
-    const { meta, handlers, config } = this.props;
-
-    // placeholders and links
-    let urlExample = "https://github.com/SwissDataScienceCenter/renku-project-template";
-    if (config.repositories && config.repositories.length)
-      urlExample = config.repositories[0].url;
-    let refExample = "0.1.11";
-    if (config.repositories && config.repositories.length)
-      refExample = config.repositories[0].ref;
-    const templatesDocs = (
-      <a href={Docs.rtdReferencePage("templates.html")}
-        target="_blank" rel="noopener noreferrer">
-        Renku templates
-      </a>
-    );
-
-    return (
-      <Fragment>
-        <FormGroup>
-          <Label>Repository URL</Label>
-          <Input type="text" placeholder={`E.G. ${urlExample}`} value={meta.userTemplates.url}
-            onChange={(e) => handlers.setTemplateProperty("url", e.target.value)}
-            invalid={this.state.missingUrl} />
-          <FormFeedback>Provide a template repository URL.</FormFeedback>
-          <FormText>
-            <FontAwesomeIcon icon={faInfoCircle} /> A valid {templatesDocs} repository.
-          </FormText>
-        </FormGroup>
-        <FormGroup>
-          <Label>Repository Reference</Label>
-          <Input type="text" placeholder={`E.G. ${refExample}`} value={meta.userTemplates.ref}
-            onChange={(e) => handlers.setTemplateProperty("ref", e.target.value)}
-            invalid={this.state.missingRef} />
-          <FormFeedback>Provide a template repository reference.</FormFeedback>
-          <FormText>
-            <FontAwesomeIcon icon={faInfoCircle} /> Preferably a tag or a commit. A branch is also valid,
-            but it is not a static reference.
-          </FormText>
-        </FormGroup>
-        <FormGroup>
-          <Button id="fetch-custom-templates" color="primary" size="sm"
-            onClick={() => this.fetchTemplates()}>
-            Fetch templates
-          </Button>
-        </FormGroup>
-      </Fragment>
-    );
-  }
-}
-
-class Template extends Component {
-  async componentDidMount() {
-    // fetch templates if not available yet
-    const { templates, handlers } = this.props;
-    if (!templates.fetched && !templates.fetching) {
-      let templates = await handlers.getTemplates();
-      if (templates && templates.length === 1)
-        handlers.setProperty("template", templates[0].id);
-    }
-  }
-
-  render() {
-    const { config, handlers, input, templates, meta } = this.props;
-    const error = meta.validation.errors["template"];
-    const invalid = error && !input.templatePristine;
-
-    const isFetching = (!input.userRepo && templates.fetching) || (input.userRepo && meta.userTemplates.fetching);
-    const noFetchedUserRepo = input.userRepo && !meta.userTemplates.fetched;
-    // Pass down templates and repository with the same format to the gallery component
-    let listedTemplates, repositories;
-    if (input.userRepo) {
-      listedTemplates = meta.userTemplates.all;
-      repositories = [{ url: meta.userTemplates.url, ref: meta.userTemplates.ref, name: "Custom" }];
-    }
-    else {
-      listedTemplates = templates.all;
-      repositories = config.repositories;
-    }
-
-    const select = (template) => handlers.setProperty("template", template);
-
-    return (
-      <FormGroup>
-        <TemplateSelector
-          repositories={repositories}
-          select={select}
-          selected={input.template}
-          templates={listedTemplates}
-          isRequired
-          isInvalid={invalid}
-          isFetching={isFetching}
-          noFetchedUserRepo={noFetchedUserRepo}
-        />
-      </FormGroup>
-    );
-  }
-}
-
-/**
- * Create a "restore default" button.
- *
- * @param {function} restore - function to invoke
- * @param {string} tip - message to display in the tooltip
- * @param {boolean} disabled - whether it's disabled or not
- */
-function RestoreButton(props) {
-  const { restore, name, disabled } = props;
-
-  const id = `restore_${name}`;
-  const tip = disabled ?
-    "Default value already selected" :
-    "Restore default value";
-
-  return (
-    <div id={id} className="d-inline ms-2">
-      <Button key="button" className="p-0" color="link" size="sm"
-        onClick={() => restore()} disabled={disabled} >
-        <FontAwesomeIcon icon={faUndo} />
-      </Button>
-      <UncontrolledTooltip key="tooltip" placement="top" target={id}>{tip}</UncontrolledTooltip>
-    </div>
-  );
-}
-
-class Variables extends Component {
-  render() {
-    const { input, handlers } = this.props;
-    if (!input.template)
-      return null;
-
-    const templates = input.userRepo ?
-      this.props.meta.userTemplates :
-      this.props.templates;
-
-    const template = templates.all.filter(t => t.id === input.template)[0];
-    if (!template || !template.variables || !Object.keys(template.variables).length)
-      return null;
-    const variables = Object.keys(template.variables).map(variable => {
-      const data = template.variables[variable];
-
-      // fallback to avoid breaking old variable structure
-      if (typeof data !== "object") {
-        return (
-          <FormGroup key={variable}>
-            <Label>{capitalize(variable)}</Label>
-            <Input id={"parameter-" + variable} type="text" value={input.variables[variable]}
-              onChange={(e) => handlers.setVariable(variable, e.target.value)} />
-            <FormText>{capitalize(template.variables[variable])}</FormText>
-          </FormGroup>
-        );
-      }
-
-      // expected `data` properties: default_value, description, enum, type.
-      // changing enum to enumValues to avoid using js reserved word
-      return (
-        <Variable
-          enumValues={data["enum"]}
-          handlers={handlers}
-          key={variable}
-          input={input}
-          name={variable}
-          {...data}
-        />
-      );
-    });
-
-    return variables;
-  }
-}
-
-function Variable(props) {
-  const { default_value, description, enumValues, handlers, input, name, type } = props;
-  const id = `parameter-${name}`;
-
-  const descriptionOutput = description ?
-    (<FormText>{capitalize(description)}</FormText>) :
-    null;
-
-  const defaultOutput = default_value != null ?
-    `Default: ${default_value}` :
-    null;
-
-  const restoreButton = default_value != null ?
-    (
-      <RestoreButton
-        disabled={input.variables[name] === default_value}
-        name={name}
-        restore={() => handlers.setVariable(name, default_value)}
-      />
-    ) :
-    null;
-
-  let inputElement = null;
-  if (type === "boolean") {
-    inputElement = (
-      <FormGroup className="form-check form-switch d-inline-block">
-        <Input type="switch" id={id} label={name}
-          checked={input.variables[name]}
-          onChange={(e) => handlers.setVariable(name, e.target.checked)}
-          className="form-check-input rounded-pill" />
-        <Label check htmlFor={"parameter-" + name}>{name}</Label>
-        {restoreButton}
-      </FormGroup>
-    );
-    // inputElement = null;
-  }
-  else if (type === "enum") {
-    const enumObjects = enumValues.map(enumObject => {
-      const enumId = `enum-${id}-${enumObject.toString()}`;
-      return (
-        <option key={enumId} value={enumObject}>{enumObject}</option>
-      );
-    });
-    inputElement = (
-      <FormGroup>
-        <Label>{name}</Label>{restoreButton}
-        <Input id={id} type="select" value={input.variables[name]}
-          onChange={(e) => handlers.setVariable(name, e.target.value)}>
-          {enumObjects}
-        </Input>
-        {descriptionOutput}
-      </FormGroup>
-    );
-  }
-  else {
-    const inputType = type === "number" ?
-      "number" :
-      "text";
-    inputElement = (
-      <FormGroup>
-        <Label>{name}</Label>{restoreButton}
-        <Input id={id} type={inputType} value={input.variables[name]}
-          onChange={(e) => handlers.setVariable(name, e.target.value)}
-          placeholder={defaultOutput} />
-        {descriptionOutput}
-      </FormGroup>
-    );
-  }
-
-  return inputElement;
-}
-
-class Create extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      showModal: false
-    };
-
-    this.toggle = this.toggleModal.bind(this);
-  }
-
-  toggleModal() {
-    this.setState({ showModal: !this.state.showModal });
-  }
-
-  render() {
-    let { templates, meta, input } = this.props;
-    if (input.userRepo)
-      templates = meta.userTemplates;
-
-    // do not show while posting
-    if (meta.creation.creating || meta.creation.projectUpdating || meta.creation.kgUpdating)
-      return null;
-    // do not show if posted successfully with visibility or KG warning
-    if (meta.creation.created && (meta.creation.projectError || meta.creation.kgError))
-      return null;
-
-    // check template errors and provide adequate feedback
-    let alert = null;
-    let error = templates.errors && templates.errors.length ?
-      templates.errors[0] :
-      null;
-    if (error) {
-      const fatal = templates.all && templates.all.length ? false : true;
-
-      const suggestion = input.userRepo ?
-        null :
-        (<span>
-          You can try refreshing the page. If the error persists, you should contact the development team on&nbsp;
-          <a href={Links.GITTER}
-            target="_blank" rel="noreferrer noopener">Gitter</a> or&nbsp;
-          <a href={Links.GITHUB}
-            target="_blank" rel="noreferrer noopener">GitHub</a>.
-        </span>);
-
-      // extract message and details
-      let details = null, errorObject = null;
-      if (typeof error === "string") {
-        details = error;
-        errorObject = { code: 10000 };
-      }
-      else {
-        const first = error[Object.keys(error)[0]];
-        if (typeof error === "string") {
-          details = first;
-          errorObject = { code: 10000 };
-        }
-        else {
-          details = first.userMessage ? first.userMessage : first.reason;
-          errorObject = first;
-          if (fatal && !input.userRepo)
-            errorObject.code = 10000;
-        }
-      }
-      const message = fatal ?
-        "Unable to fetch templates." :
-        "Some templates could not be fetched.";
-
-      alert = (<CoreErrorAlert details={details} error={errorObject} message={message} suggestion={suggestion} />);
-
-      // Do not show the create button if there are no templates
-      if (fatal)
-        return alert;
-    }
-
-    // provide a minimal feedback under the button if any loading operation is ongoing
-    const warnings = Object.keys(meta.validation.warnings);
-    const loading = warnings.length ?
-      meta.validation.warnings[`${warnings[0]}`] :
-      null;
-
-    // create dropdown items
-    const disabled = !!loading;
-    const createProject = (
-      <Button
-        id="create-new-project"
-        color="primary"
-        data-cy="create-project-button"
-        onClick={this.props.handlers.onSubmit}
-        disabled={disabled}
-      > Create project
-      </Button>);
-    const createLink = (
-      <DropdownItem onClick={this.toggle}><FontAwesomeIcon icon={faLink} /> Create link</DropdownItem>
-    );
-    const templateDetails = input.template ?
-      "based on " + (templates.all.find(t => t.id === input.template).name) :
-      "";
-
-    const errorFields = meta.validation.errors ?
-      Object.keys(meta.validation.errors)
-        .filter(field => !input[`${field}Pristine`]) // don't consider pristine fields
-        .map(field => capitalize(field)) :
-      [];
-    const plural = errorFields.length > 1 ?
-      "s" :
-      "";
-    const errorMessage = errorFields.length ?
-      (
-        <FormText className="d-block">
-          <span className="text-danger">
-            To create a new project, please first fix problems with the following field{plural}:{" "}
-            <span className="fw-bold">{errorFields.join(", ")}</span>
-          </span>
-        </FormText>
-      ) :
-      null;
-
-    // when is also importing a new dataset show a different submit button
-    const submitButton = !this.props.importingDataset ?
-      <ButtonWithMenu color="primary" default={createProject} disabled={disabled} direction="up">
-        {createLink}
-      </ButtonWithMenu> :
-      (<div className="mt-4 d-flex justify-content-end">
-        <Button
-          data-cy="add-dataset-submit-button"
-          id="create-new-project"
-          color="primary"
-          onClick={this.props.handlers.onSubmit}
-          disabled={disabled}>
-          Add Dataset New Project
-        </Button>
-      </div>);
-
-    return (
-      <Fragment>
-        {alert}
-        {submitButton}
-        {templateDetails && (<FormText className="ms-2" color="primary">{templateDetails}</FormText>)}
-        {loading && (<FormText className="d-block" color="primary">{loading}</FormText>)}
-        <ShareLinkModal
-          show={this.state.showModal}
-          toggle={this.toggle}
-          input={input}
-          meta={meta}
-          createUrl={this.props.handlers.createEncodedUrl}
-        />
-        {errorMessage}
-      </Fragment>
-    );
-  }
-}
-
-
-function ShareLinkModal(props) {
-  const { createUrl, input } = props;
-  const { userTemplates } = props.meta;
-
-  const defaultObj = {
-    title: false,
-    description: false,
-    namespace: false,
-    visibility: false,
-    templateRepo: false,
-    template: false,
-    variables: false
-  };
-
-  const [available, setAvailable] = useState(defaultObj);
-  const [include, setInclude] = useState(defaultObj);
-  const [url, setUrl] = useState("");
-
-  // Set availability of inputs
-  useEffect(() => {
-    let variablesAvailable = false;
-    if (input.template && input.variables && Object.keys(input.variables).length) {
-      for (let variable of Object.keys(input.variables)) {
-        if (input.variables[variable]) {
-          variablesAvailable = true;
-          break;
-        }
-      }
-    }
-
-    setAvailable({
-      title: input.title ? true : false,
-      description: input.description ? true : false,
-      namespace: true,
-      visibility: true,
-      templateRepo: input.userRepo && userTemplates.fetched && userTemplates.url && userTemplates.ref ? true : false,
-      template: input.template ? true : false,
-      variables: variablesAvailable
-    });
-  }, [input, userTemplates]);
-
-  // Update selected params
-  useEffect(() => {
-    setInclude({
-      title: available.title,
-      description: available.description,
-      namespace: false,
-      visibility: false,
-      templateRepo: available.templateRepo,
-      template: available.template,
-      variables: available.variables
-    });
-  }, [available]);
-
-  // Re-create shareable link
-  useEffect(() => {
-    let dataObject = {};
-    if (include.title)
-      dataObject.title = input.title;
-    if (include.description)
-      dataObject.description = input.description;
-    if (include.namespace)
-      dataObject.namespace = input.namespace;
-    if (include.visibility)
-      dataObject.visibility = input.visibility;
-    if (include.templateRepo) {
-      dataObject.url = userTemplates.url;
-      dataObject.ref = userTemplates.ref;
-    }
-    if (include.template)
-      dataObject.template = input.template;
-    if (include.variables) {
-      let variablesObject = {};
-      for (let variable of Object.keys(input.variables)) {
-        if (input.variables[variable] != null)
-          variablesObject[variable] = input.variables[variable];
-      }
-      dataObject.variables = variablesObject;
-    }
-
-    setUrl(createUrl(dataObject));
-  }, [createUrl, include, input, userTemplates]);
-
-  const handleCheckbox = (target, event) => {
-    setInclude({ ...include, [target]: event.target.checked });
-  };
-
-  const labels = Object.keys(include).map(item => (
-    <FormGroup key={item} check>
-      <Label check className={`text-capitalize${available[item] ? "" : " text-muted"}`}>
-        <Input
-          type="checkbox"
-          disabled={available[item] ? false : true}
-          checked={include[item]}
-          onChange={e => handleCheckbox(item, e)}
-        /> {item === "templateRepo" ? "template source" : item}
-      </Label>
-    </FormGroup>
-  ));
-
-  const feedback = include.namespace ?
-    (
-      <FormText color="danger">
-        Pre-filling the namespace may lead to errors since other users are not guaranteed to have access to it.
-      </FormText>
-    ) :
-    null;
-
-  return (
-    <Modal isOpen={props.show} toggle={props.toggle}>
-      <ModalHeader toggle={props.toggle}>Create shareable link</ModalHeader>
-      <ModalBody>
-        <Row>
-          <Col>
-            <p>
-              Here is your shareable link, containing the current values for a new project.
-              Following the link will lead to a <b>New project</b> form with these values pre-filled.
-            </p>
-            <p>
-              You can control which values should be pre-filled.
-            </p>
-
-            <Form className="mb-3">
-              {labels}
-              {feedback}
-            </Form>
-
-
-            <Table size="sm">
-              <tbody>
-                <tr className="border-bottom">
-                  <th scope="row">URL</th>
-                  <td style={{ wordBreak: "break-all" }}>{url}</td>
-                  <td style={{ width: 1 }}><Clipboard clipboardText={url} /></td>
-                </tr>
-              </tbody>
-            </Table>
-          </Col>
-        </Row>
-      </ModalBody>
-    </Modal>
-  );
 }
 
 class Creation extends Component {
@@ -1289,9 +311,8 @@ class Creation extends Component {
 
     let color = "primary";
     let message = "";
-    const loader = (<Loader inline={true} size={16} />);
     if (creation.creating) {
-      message = (<span>Initializing project... {loader}</span>);
+      message = "Initializing project...";
     }
     else if (creation.createError) {
       color = "danger";
@@ -1310,7 +331,7 @@ class Creation extends Component {
       );
     }
     else if (creation.projectUpdating) {
-      message = (<span>Updating project metadata... {loader}</span>);
+      message = "Updating project metadata...";
     }
     else if (creation.projectError) {
       color = "warning";
@@ -1323,7 +344,7 @@ class Creation extends Component {
       </div>);
     }
     else if (creation.kgUpdating) {
-      message = (<span>Activating the knowledge graph... {loader}</span>);
+      message = "Activating the knowledge graph...";
     }
     else if (creation.kgError) {
       color = "warning";
@@ -1352,10 +373,16 @@ class Creation extends Component {
     }
 
     return (
-      <Alert color={color}>{message}</Alert>
+      <ProgressIndicator
+        type={ProgressType.Indeterminate}
+        style={ProgressStyle.Dark}
+        title="Creating Project..."
+        description="We've received your project information. This may take a while."
+        currentStatus={message}
+        feedback="You'll be redirected to the new project page when the creation is completed."
+      />
     );
   }
 }
-
 
 export { NewProject, ForkProject };
