@@ -79,14 +79,9 @@ describe("Add dataset to existing project", () => {
     cy.get_cy("import-dataset-status").should("contain.text", "Something fail");
   });
 
-  it("no same project metadata version", () => {
+  it("error importing from project with different metadata version", () => {
     cy.gui_select_project_autosuggestion_list(projectSelected, fixtures, "projects/migration-check_43781-old.json");
-    cy.get_cy("import-dataset-status")
-      .should(($div) => {
-        expect($div.text().trim().replace(/[\n\r\t\s]+/g, " "))
-          // eslint-disable-next-line max-len
-          .equal("Dataset project metadata version (9) cannot be newer than the project metadata version (8) for import.");
-      });
+    cy.get_cy("import-dataset-status").contains("cannot be newer than the project metadata version");
     cy.get_cy("add-dataset-submit-button").should("be.disabled");
   });
 });
@@ -159,7 +154,7 @@ describe("Invalid dataset", () => {
     fixtures.invalidDataset(datasetIdentifier);
     cy.visit(`datasets/${ datasetIdentifier }/add`);
     cy.wait("@invalidDataset");
-    cy.get_cy("dataset-error-title").should("contain.text", "Dataset not found");
+    cy.get_cy("dataset-error-title").contains("Dataset not found").should("be.visible");
   });
 
   it("displays warning when dataset is invalid", () => {
@@ -172,6 +167,6 @@ describe("Invalid dataset", () => {
     cy.wait("@getDatasetById");
     cy.wait("@getErrorProject");
     cy.get_cy("add-dataset-submit-button").should("be.disabled");
-    cy.get_cy("import-dataset-status").should("contain.text", " Invalid Dataset");
+    cy.get_cy("import-dataset-status").contains("Invalid Dataset").should("be.visible");
   });
 });

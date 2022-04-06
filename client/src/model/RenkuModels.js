@@ -235,6 +235,15 @@ const projectSchema = new Schema({
     })
   },
   forkedFromProject: { [Prop.INITIAL]: {} },
+  lockStatus: {
+    [Prop.SCHEMA]: new Schema({
+      fetched: { [Prop.INITIAL]: null },
+      fetching: { [Prop.INITIAL]: false },
+      error: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+
+      locked: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+    })
+  },
   metadata: {
     [Prop.SCHEMA]: new Schema({
       accessLevel: { [Prop.INITIAL]: 0, [Prop.MANDATORY]: true }, // visibility.access_level
@@ -300,6 +309,7 @@ const projectSchema = new Schema({
           versionUrl: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
           backendAvailable: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
 
+          error: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
           fetched: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
           fetching: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
         })
@@ -637,6 +647,14 @@ const environmentSchema = new Schema({
       unavailable: { [Prop.INITIAL]: {}, [Prop.MANDATORY]: true },
     })
   },
+  services: {
+    [Prop.SCHEMA]: new Schema({
+      fetched: { [Prop.INITIAL]: null, [Prop.MANDATORY]: true },
+      fetching: { [Prop.INITIAL]: false, [Prop.MANDATORY]: true },
+      // each value has the structure {name: string, versions: [{version, data}]}
+      list: { [Prop.INITIAL]: [] }
+    })
+  }
 });
 
 /**

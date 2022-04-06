@@ -38,7 +38,7 @@ jobs:
       extra-values: ${{ steps.deploy-comment.outputs.extra-values}}
     steps:
       - id: deploy-comment
-        uses: SwissDataScienceCenter/renku-actions/check-pr-description@v0.5.0
+        uses: SwissDataScienceCenter/renku-actions/check-pr-description@v0.5.1
         with:
           string: /deploy
           pr_ref: ${{ github.event.number }}
@@ -67,7 +67,7 @@ jobs:
         body: |
           You can access the deployment of this PR at https://renku-ci-ui-${{ github.event.number }}.dev.renku.ch
     - name: Build and deploy
-      uses: SwissDataScienceCenter/renku-actions/deploy-renku@v0.5.0
+      uses: SwissDataScienceCenter/renku-actions/deploy-renku@v0.5.1
       env:
         RANCHER_PROJECT_ID: ${{ secrets.CI_RANCHER_PROJECT }}
         DOCKER_PASSWORD: ${{ secrets.RENKU_DOCKER_PASSWORD }}
@@ -95,7 +95,7 @@ jobs:
     if: ${{ github.event.action != 'closed' && needs.check-deploy.outputs.pr-contains-string == 'true' && needs.check-deploy.outputs.test-enabled == 'true' }}
     runs-on: ubuntu-20.04
     steps:
-    - uses: SwissDataScienceCenter/renku-actions/test-renku@v0.5.0
+    - uses: SwissDataScienceCenter/renku-actions/test-renku@v0.5.1
       with:
         renkubot-kubeconfig: ${{ secrets.RENKUBOT_DEV_KUBECONFIG }}
         renku-release: renku-ci-ui-${{ github.event.number }}
@@ -143,7 +143,7 @@ jobs:
         body: |
           Tearing down the temporary RenkuLab deplyoment for this PR.
     - name: renku teardown
-      uses: SwissDataScienceCenter/renku-actions/cleanup-renku-ci-deployments@v0.5.0
+      uses: SwissDataScienceCenter/renku-actions/cleanup-renku-ci-deployments@v0.5.1
       env:
         HELM_RELEASE_REGEX: "^renku-ci-ui-${{ github.event.number }}$"
         GITLAB_TOKEN: ${{ secrets.DEV_GITLAB_TOKEN }}

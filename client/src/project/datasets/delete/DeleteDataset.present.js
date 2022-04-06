@@ -26,20 +26,16 @@
 
 import React, { Fragment } from "react";
 import { Row, Col, Modal, ModalHeader, ModalBody, Button, FormText } from "reactstrap";
-import { ErrorAlert } from "../../../utils/components/Alert";
+
+import { CoreErrorAlert } from "../../../utils/components/errors/CoreErrorAlert";
 import { Loader } from "../../../utils/components/Loader";
 
-function DeleteDatasetPresent(props) {
 
+function DeleteDatasetPresent(props) {
   let modalContent = null;
 
   if (props.serverErrors) {
-    modalContent = <Col>
-      <ErrorAlert>
-        <p>Errors occurred while deleting this dataset</p>
-        <p><pre className="text-wrap">{props.serverErrors.error}</pre></p>
-      </ErrorAlert>
-    </Col>;
+    modalContent = (<Col><CoreErrorAlert error={props.serverErrors} /></Col>);
   }
   else {
     modalContent = <Col>
@@ -67,19 +63,18 @@ function DeleteDatasetPresent(props) {
     </Col>;
   }
 
-  return <Modal
-    isOpen={props.modalOpen}
-    toggle={props.closeModal}
-  >
-    <ModalHeader toggle={props.closeModal}>
-      Delete Dataset
-    </ModalHeader>
-    <ModalBody>
-      <Row className="mb-3">
-        {modalContent}
-      </Row>
-    </ModalBody>
-  </Modal>;
+  return (
+    <Modal isOpen={props.modalOpen} toggle={props.closeModal}>
+      <ModalHeader toggle={props.closeModal}>
+        Delete Dataset
+      </ModalHeader>
+      <ModalBody>
+        <Row className="mb-3">
+          {modalContent}
+        </Row>
+      </ModalBody>
+    </Modal>
+  );
 }
 
 export default DeleteDatasetPresent;

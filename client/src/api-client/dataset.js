@@ -206,7 +206,7 @@ export default function addDatasetMethods(client) {
         "project_id": project_id
       })
     }).then(response => response.data.error ?
-      { data: { error: { reason: response.data.error.reason, errorOnFileAdd: true } } } :
+      { data: { error: { ...response.data.error, errorOnFileAdd: true } } } :
       response
     );
   };
@@ -253,13 +253,13 @@ export default function addDatasetMethods(client) {
           if (renkuDataset.files.length > 0) {
             return client.cloneProjectInCache(projectUrl, response.data.result.remote_branch, versionUrl)
               .then(newProjectId => {
-                if (newProjectId.data && newProjectId.data.error)
-                  return { data: { error: { reason: newProjectId.data.error.reason, errorOnFileAdd: true } } };
+                if (newProjectId?.data?.error)
+                  return { data: { error: { ...newProjectId.data.error, errorOnFileAdd: true } } };
                 if (renkuDataset.files.length > 0) {
                   return client.addFilesToDataset(newProjectId, renkuDataset, versionUrl)
                     .then(response => {
                       if (response.data.error)
-                        return { data: { error: { reason: response.data.error.reason, errorOnFileAdd: true } } };
+                        return { data: { error: { ...newProjectId.data.error, errorOnFileAdd: true } } };
                       return response;
                     });
                 }

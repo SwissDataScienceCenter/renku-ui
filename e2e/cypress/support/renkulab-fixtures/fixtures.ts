@@ -42,10 +42,21 @@ class Fixtures {
     return this;
   }
 
-  versions(name = "getVersion") {
+  versions( names = {
+    coreVersionsName: "getCoreVersions",
+    uiVersionName: "getUiVersion",
+  }) {
+    const {
+      coreVersionsName,
+      uiVersionName,
+    } = names;
     cy.intercept("/ui-server/api/versions", {
-      fixture: "version.json"
-    }).as(name);
+      fixture: "version-ui.json"
+    }).as(uiVersionName);
+    cy.intercept("/ui-server/api/renku/version", {
+      fixture: "version-core.json"
+    }).as(coreVersionsName);
+
     return this;
   }
 
@@ -56,10 +67,14 @@ class Fixtures {
     return this;
   }
 
-  templates(name = "getTemplates") {
-    cy.intercept("/ui-server/api/renku/templates.read_manifest?*", {
-      fixture: "templates.json"
-    }).as(name);
+  templates(error = false) {
+    const fixture = error ?
+      "errors/core-error-1101.json" :
+      "templates.json";
+    cy.intercept(
+      "/ui-server/api/renku/templates.read_manifest?*",
+      { fixture }
+    ).as("getTemplates");
     return this;
   }
 }

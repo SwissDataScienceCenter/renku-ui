@@ -16,23 +16,7 @@
  * limitations under the License.
  */
 
-import { FixturesConstructor } from "./fixtures";
+import { EnvironmentCoordinator } from "./EnvironmentCoordinator";
 
-/**
- * Fixtures for New Project
- */
 
-function NewProject<T extends FixturesConstructor>(Parent: T) {
-  return class NewProjectFixtures extends Parent {
-    createProject(result = "project/create-project.json") {
-      const fixture = this.useMockedData ? { fixture: result } : undefined;
-      cy.intercept(
-        "/ui-server/api/renku/templates.create_project",
-        fixture
-      ).as("createProject");
-      return this;
-    }
-  };
-}
-
-export { NewProject };
+export { EnvironmentCoordinator };

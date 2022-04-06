@@ -54,13 +54,14 @@ class DatasetCoordinator {
     this.model.setUpdating(options);
   }
 
-  setDatasetFiles(files) {
+  setDatasetFiles(files, error = null) {
     // this.set("files.hasPart", files);
     this.model.setObject({
       files: {
         hasPart: files,
         fetched: new Date(),
-        fetching: false
+        fetching: false,
+        fetchError: error
       }
     });
   }
@@ -125,15 +126,13 @@ class DatasetCoordinator {
           this.setDatasetFiles(files);
           return { hasPart: files };
         }
-        this.setDatasetFiles([]);
-        if (response.data && response.data.error) {
-          if (response.data.error.code === -32100) {
-            this.set("files.fetchError", { code: 404, message: "dataset not found or missing permissions" });
-          }
-          else {
-            this.set("files.fetchError",
-              { code: 0, message: response.data.error.reason });
-          }
+        else if (response.data?.error) {
+          const error = response.data.error;
+          const message = error.userMessage ? error.userMessage : error.reason;
+          this.setDatasetFiles([], { ...error, message });
+        }
+        else {
+          this.setDatasetFiles([]);
         }
         return { hasPart: [] };
       });

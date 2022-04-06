@@ -17,9 +17,8 @@ spec:
       labels:
         app.kubernetes.io/name: {{ include "ui-server.name" . }}
         app.kubernetes.io/instance: {{ .Release.Name }}
-        {{- if .Values.redis.install }}
-        {{ include "call-nested" (list . "redis" "redis.fullname") }}-client: "true"
-        {{- end }}
+        # The label below enables the gateway to connect to redis
+        {{ .Values.global.redis.clientLabel | toYaml | nindent 8 }}
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -75,25 +74,21 @@ spec:
             - name: SENTRY_DEBUG
               value: {{ .Values.sentry.debugMode | quote }}
             {{- end }}
-            {{- if .Values.redis.install }}
             - name: REDIS_HOST
-              value: {{ include "call-nested" (list . "redis" "redis.fullname") }}-master
-            - name: REDIS_PORT
-              value: "6379"
+              value: {{ .Values.global.redis.host | quote }}
+            - name: REDIS_IS_SENTINEL
+              value: {{ .Values.global.redis.sentinel.enabled | quote }}
+            - name: REDIS_MASTER_SET
+              value: {{ .Values.global.redis.sentinel.masterSet | quote }}
             - name: REDIS_DATABASE
-              value: "0"
-            - name: REDIS_PASSWORD
-              value:
-            {{ else }}
-            - name: REDIS_HOST
-              value: {{ .Values.redis.external.host | quote }}
+              value: {{ .Values.global.redis.dbIndex.uiServer | quote }}
             - name: REDIS_PORT
-              value: {{ .Values.redis.external.port | quote }}
-            - name: REDIS_DATABASE
-              value: {{ .Values.redis.external.database | default (printf "0") | quote }}
+              value: {{ .Values.global.redis.port | quote }}
             - name: REDIS_PASSWORD
-              value: {{ .Values.redis.external.password | default (printf "") | quote }}
-            {{- end }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.global.redis.existingSecret }}
+                  key: {{ .Values.global.redis.existingSecretPasswordKey }}
           livenessProbe:
             httpGet:
               path: /liveness

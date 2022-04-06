@@ -61,6 +61,7 @@ import { ExternalLink } from "../utils/components/ExternalLinks";
 import { ButtonWithMenu, GoBackButton } from "../utils/components/Button";
 import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
 import { ErrorAlert, InfoAlert, WarnAlert } from "../utils/components/Alert";
+import { CoreErrorAlert } from "../utils/components/errors/CoreErrorAlert";
 import { RenkuNavLink } from "../utils/components/RenkuNavLink";
 import { Loader } from "../utils/components/Loader";
 import { TimeCaption } from "../utils/components/TimeCaption";
@@ -113,12 +114,22 @@ function ProjectVisibilityLabel({ visibilityLevel }) {
 }
 
 function ProjectLockStatus({ lockStatus }) {
-  if (lockStatus == null) return null;
-  const isLocked = lockStatus.locked;
-  if (!isLocked) return null;
-  return <span className="fs-6 fw-normal">
-    <FontAwesomeIcon icon={faUserClock} /> <i>currently being modified</i>
-  </span>;
+  // return null when not locked and no errors occurred
+  if (!lockStatus || (!lockStatus?.locked && !lockStatus?.error))
+    return null;
+
+  const content = lockStatus.error ?
+    (<Fragment>
+      <FontAwesomeIcon icon={faExclamationTriangle} /> <i>cannot verify status</i>
+      <UncontrolledTooltip key="tooltip" placement="bottom" target="locked-status-info">
+        {lockStatus.error?.userMessage ? lockStatus.error.userMessage : lockStatus.error?.reason}
+      </UncontrolledTooltip>
+    </Fragment>) :
+    (<Fragment>
+      <FontAwesomeIcon icon={faUserClock} /> <i>currently being modified</i>
+    </Fragment>);
+
+  return (<span className="fs-6 fw-normal m-2" id="locked-status-info">{content}</span>);
 }
 
 function ProjectDatasetLockAlert({ lockStatus }) {
@@ -290,6 +301,46 @@ function ProjectViewHeaderOverviewDescription({ settingsReadOnly, description, s
   return null;
 }
 
+function ProjectSuggestionReadme({ commits, commitsReadme, externalUrl, metadata }) {
+  const countCommitsReadme = commitsReadme?.list?.length ?? null;
+  let isReadmeCommitInitial = countCommitsReadme === 1;
+  if (countCommitsReadme === 1 && commits.list.length > 0) {
+    const firstCommit = commits?.list.sort((a, b) => new Date(a.committed_date) - new Date(b.committed_date))[0];
+    isReadmeCommitInitial = firstCommit.id === commitsReadme.list[0].id;
+  }
+
+  if (countCommitsReadme > 1 || (!isReadmeCommitInitial && countCommitsReadme !== 0)) return null;
+
+  const gitlabIDEUrl = externalUrl !== "" && externalUrl.includes("/gitlab/") ?
+    externalUrl.replace("/gitlab/", "/gitlab/-/ide/project/") : null;
+  const addReadmeUrl = `${gitlabIDEUrl}/edit/${metadata.defaultBranch}/-/README.md`;
+  return <li><p style={{ fontSize: "smaller" }}>
+    <a className="mx-1" href={addReadmeUrl} target="_blank" rel="noopener noreferrer">
+      <strong className="suggestionTitle">Edit README.md</strong>
+    </a>
+    Use the README to explain your project to others, letting them understand what you want
+    to do and what you have already accomplished.
+  </p></li>;
+}
+
+function ProjectSuggestionDataset(props) {
+  const datasets = props.datasets.core;
+  const isLoadingDatasets = typeof (datasets) === "string" || datasets?.datasets === null;
+  let hasDatasets = !isLoadingDatasets ? datasets.datasets?.length > 0 : true;
+
+  if (hasDatasets) return null;
+  return <li><p style={{ fontSize: "smaller" }}>
+    <Link className="mx-1" to={props.newDatasetUrl}>
+      <strong className="suggestionTitle">Add some datasets</strong>
+    </Link>
+    Datasets let you work with data in a structured way, facilitating easier sharing.
+    You can create a new dataset with data you already have, or importing one from another
+    Renku project or from a public data repository such as
+    <ExternalLink className="mx-1" url="https://zenodo.org/" title="Zenodo" role="link" /> or
+    <ExternalLink className="mx-1" url="https://dataverse.harvard.edu/" title="Dataverse" role="link" />.</p></li>;
+
+}
+
 const ProjectSuggestActions = (props) => {
   const { commits, commitsReadme } = props;
   const datasets = props.datasets.core;
@@ -320,29 +371,6 @@ const ProjectSuggestActions = (props) => {
   if (!isProjectMaintainer || isLoadingData || countTotalCommits > 4 || cHasDataset || cCombo || isLocked)
     return null;
 
-  const gitlabIDEUrl = props.externalUrl !== "" && props.externalUrl.includes("/gitlab/") ?
-    props.externalUrl.replace("/gitlab/", "/gitlab/-/ide/project/") : null;
-  const addReadmeUrl = `${gitlabIDEUrl}/edit/${props.metadata.defaultBranch}/-/README.md`;
-
-  const suggestionReadme = countCommitsReadme > 1 || (!isReadmeCommitInitial && countCommitsReadme !== 0) ? null
-    : <li><p style={{ fontSize: "smaller" }}>
-      <a className="mx-1" href={addReadmeUrl} target="_blank" rel="noopener noreferrer">
-        <strong className="suggestionTitle">Edit README.md</strong>
-      </a>
-      Use the README to explain your project to others, letting them understand what you want
-      to do and what you have already accomplished.
-    </p></li>;
-
-  const suggestionDataset = hasDatasets ? null
-    : <li><p style={{ fontSize: "smaller" }}>
-      <Link className="mx-1" to={props.newDatasetUrl}>
-        <strong className="suggestionTitle">Add some datasets</strong>
-      </Link>
-      Datasets let you work with data in a structured way, facilitating easier sharing.
-      You can create a new dataset with data you already have, or importing one from another
-      Renku project or from a public data repository such as
-      <ExternalLink className="mx-1" url="https://zenodo.org/" title="Zenodo" role="link" /> or
-      <ExternalLink className="mx-1" url="https://dataverse.harvard.edu/" title="Dataverse" role="link" />.</p></li>;
 
   return (
     <InfoAlert timeout={0}>
@@ -350,8 +378,8 @@ const ProjectSuggestActions = (props) => {
         <strong>Welcome</strong> to your new Renku project!
         It looks like this project is just getting started, so here are some suggestions to help you.  <br/>
         <ul className="my-2">
-          { suggestionReadme }
-          { suggestionDataset }
+          <ProjectSuggestionReadme {...props} />
+          <ProjectSuggestionDataset {...props} />
         </ul>
       </div>
     </InfoAlert>
@@ -878,12 +906,23 @@ function ProjectViewDatasets(props) {
   }
 
   if (props.datasets.core.error || props.datasets.core.datasets?.error) {
-    return <Col sm={12} data-cy="error-datasets-modal">
-      <ErrorAlert>
-        There was an error fetching the datasets, please try <Button color="danger" size="sm" onClick={
-          () => window.location.reload()
-        }> reloading </Button> the page.</ErrorAlert>
-    </Col>;
+    const error = props.datasets.core.error ?
+      props.datasets.core.error :
+      props.datasets.core.datasets?.error;
+    let errorObject;
+    if (error.code) {
+      errorObject = (<CoreErrorAlert error={error}/>);
+    }
+    else {
+      errorObject = (
+        <ErrorAlert>
+          There was an error fetching the datasets, please try{" "}
+          <Button color="danger" size="sm" onClick={() => window.location.reload()}> reloading </Button>
+          {" "}the page.
+        </ErrorAlert>
+      );
+    }
+    return (<Col sm={12} data-cy="error-datasets-modal">{errorObject}</Col>);
   }
 
   if (props.datasets.core.datasets != null && props.datasets.core.datasets.length === 0
@@ -1418,4 +1457,4 @@ export default { ProjectView };
 
 // For testing
 export { filterPaths };
-export { ProjectSuggestActions };
+export { ProjectSuggestActions, ProjectSuggestionDataset, ProjectSuggestionReadme };

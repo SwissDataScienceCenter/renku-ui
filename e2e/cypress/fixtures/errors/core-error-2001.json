@@ -1,0 +1,9 @@
+{
+  "error": {
+    "code": 2001,
+    "userMessage": "There was an unexpected error while handling project data.",
+    "devMessage": "Unexpected fields have been provided: 'fake': Unknown field.",
+    "devReference": "https://renku-python.readthedocs.io/en/latest/service_errors.html#renku.service.errors.ProgramInvalidGenericFieldsError",
+    "sentry": "https://sentry.dev.renku.ch/organizations/sentry?query=38558d7711e44e1aa39e04e744b00e20"
+  }
+}
