@@ -6,7 +6,7 @@ import "bootstrap";
 import "jquery";
 
 // Use our version of bootstrap, not the one in import 'bootstrap/dist/css/bootstrap.css';
-import "./styles/index.css";
+import "./styles/index.scss";
 import "./index.css";
 
 import App from "./App";

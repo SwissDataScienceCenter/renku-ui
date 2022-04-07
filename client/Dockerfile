@@ -1,6 +1,6 @@
-FROM node:14.18.0-alpine
+FROM node:16.14.2-alpine
 
-RUN apk update && apk add python make g++
+RUN apk update && apk add python3 make g++
 
 WORKDIR /app
 
@@ -18,7 +18,12 @@ ENV RENKU_UI_SHORT_SHA=$SHORT_SHA
 RUN apk update && apk upgrade && \
     apk add --no-cache git
 
-RUN npm install && \
+# There is some incompatibility between craco and react-scripts >4
+# that causes problems with linting. Lint errors should have been
+# caught before we get here, so we can turn this off.
+# But look into https://github.com/gsoft-inc/craco/pull/219 for a better fix
+ENV DISABLE_ESLINT_PLUGIN=true
+RUN npm ci && \
     npm run-script build
 
 FROM nginxinc/nginx-unprivileged:1.20-alpine

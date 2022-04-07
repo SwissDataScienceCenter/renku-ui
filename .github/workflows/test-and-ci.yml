@@ -18,7 +18,7 @@ jobs:
     - name: Set up node ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
-        node-version: '14.18.0'
+        node-version: '16.13.2'
     - name: Install client dependencies and build
       run: |
         cd client
@@ -44,7 +44,7 @@ jobs:
     - name: Set up node ${{ matrix.node-version }}
       uses: actions/setup-node@v1
       with:
-        node-version: '14.18.0'
+        node-version: '16.13.2'
     - name: Install server dependencies and build
       run: |
         cd server
@@ -70,7 +70,7 @@ jobs:
       - name: Set up node ${{ matrix.node-version }}
         uses: actions/setup-node@v1
         with:
-          node-version: '14.18.0'
+          node-version: '16.13.2'
       - name: Install project e2e dependencies
         run: |
           cd e2e

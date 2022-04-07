@@ -1,5 +1,5 @@
 {
-  "parser": "babel-eslint",
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
     "ecmaVersion": 2020,
     "ecmaFeatures": {
@@ -57,10 +57,7 @@
       "multi-or-nest",
       "consistent"
     ],
-    "react/jsx-indent": [
-      "warn",
-      2
-    ],
+    "react/jsx-indent": [0],
     "indent": [
       "warn",
       2,
