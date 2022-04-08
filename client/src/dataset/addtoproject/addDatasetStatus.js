@@ -23,6 +23,7 @@ import { faCheck, faExclamationTriangle } from "@fortawesome/free-solid-svg-icon
 
 import { ErrorAlert } from "../../utils/components/Alert";
 import { Loader } from "../../utils/components/Loader";
+import ProgressIndicator, { ProgressStyle, ProgressType } from "../../utils/components/progress/Progress";
 
 
 /**
@@ -57,6 +58,18 @@ function AddDatasetStatus(props) {
       break;
     case "inProcess" :
       statusProject = <div><Loader size="14" inline="true" /> {text}</div>;
+      break;
+    case "importing" :
+      statusProject = (
+        <ProgressIndicator
+          type={ProgressType.Indeterminate}
+          style={ProgressStyle.Dark}
+          title={"Importing Dataset..."}
+          description="Project is being created, afterwards the data set will be imported into it."
+          currentStatus={text}
+          feedback="Once the process is completed, you will be redirected to the page of the imported dataset"
+        />
+      );
       break;
     case "validProject" :
       statusProject = <div><FontAwesomeIcon icon={faCheck} color={"var(--bs-success)"} /> {text}</div>;

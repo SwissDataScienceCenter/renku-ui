@@ -65,12 +65,12 @@ function DatasetAdd({ dataset, model, handlers, isDatasetValid, currentStatus, i
 
   const buttonGroup = (
     <ButtonGroup className="d-flex">
-      <Button disabled={currentStatus?.status === "inProcess"}
+      <Button disabled={["inProcess", "importing"].includes(currentStatus?.status)}
         data-cy="add-dataset-existing-project-option-button"
         color="primary" outline active={!isNewProject} onClick={() => setIsNewProject(false)}>
         Existing Project
       </Button>
-      <Button disabled={currentStatus?.status === "inProcess"}
+      <Button disabled={["inProcess", "importing"].includes(currentStatus?.status)}
         data-cy="add-dataset-new-project-option-button"
         color="primary" outline active={isNewProject} onClick={() => setIsNewProject(true)}>
         New Project
