@@ -120,7 +120,7 @@ const AddDatasetExistingProject = (
   const customHandlers = { onSuggestionsFetchRequested };
 
   let suggestionInput;
-  if (isProjectListReady && isDatasetValid) {
+  if (isProjectListReady && isDatasetValid && currentStatus?.status !== "importing") {
     suggestionInput = (<SelectAutosuggestInput
       existingValue={existingProject?.name || null}
       name="project"
@@ -131,19 +131,19 @@ const AddDatasetExistingProject = (
       disabled={importingDataset || currentStatus?.status === "inProcess"}
     />);
   }
-  else if (isDatasetValid === null || isDatasetValid === false) {
+  else if (isDatasetValid === null || isDatasetValid === false || currentStatus?.status === "importing") {
     suggestionInput = null;
   }
   else {
     suggestionInput = <div><Loader size="14" inline="true" />{" "}Loading projects...</div>;
   }
   /* buttons */
-  const addDatasetButton = (
+  const addDatasetButton = currentStatus?.status === "importing" ? null : (
     <div className="mt-4 d-flex justify-content-end">
       <Button
         data-cy="add-dataset-submit-button"
         color="primary"
-        disabled={currentStatus?.status !== "validProject" || importingDataset}
+        disabled={currentStatus?.status !== "validProject"}
         onClick={startImportDataset}>
         Add Dataset to existing Project
       </Button>
