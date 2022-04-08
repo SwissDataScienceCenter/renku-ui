@@ -115,7 +115,7 @@ function ForkProjectFooter(props) {
     if (forkUrl)
       forkButton = (<Link className="btn btn-primary" to={forkUrl}>Go to forked project</Link>);
     else
-      forkButton = (<Button color="primary" disabled={error ? true : false} onClick={fork}>Fork</Button>);
+      forkButton = (<Button color="primary" disabled={error ? true : false} onClick={fork}>Fork Project</Button>);
   }
 
   let closeButton = null;
@@ -127,8 +127,8 @@ function ForkProjectFooter(props) {
     return null;
   return (
     <ModalFooter>
-      {forkButton}
       {closeButton}
+      {forkButton}
     </ModalFooter>
   );
 }
