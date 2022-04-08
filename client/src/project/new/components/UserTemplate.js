@@ -130,6 +130,7 @@ class UserTemplate extends Component {
             type="text"
             value={meta.userTemplates.url}
             onChange={(e) => handlers.setTemplateProperty("url", e.target.value)}
+            data-cy="url-repository"
             invalid={this.state.missingUrl} />
           {this.state.missingUrl && <ErrorLabel text="Provide a template repository URL" />}
           <FormText>
@@ -143,6 +144,7 @@ class UserTemplate extends Component {
             type="text"
             value={meta.userTemplates.ref}
             onChange={(e) => handlers.setTemplateProperty("ref", e.target.value)}
+            data-cy="ref-repository"
             invalid={this.state.missingRef} />
           {this.state.missingRef && <ErrorLabel text="Provide a template repository reference" />}
           <InputHintLabel text={`Preferably a tag or a commit.
@@ -151,6 +153,7 @@ class UserTemplate extends Component {
         <FormGroup className="field-group">
           <Button
             id="fetch-custom-templates" color="primary" size="sm"
+            data-cy="fetch-templates-button"
             onClick={() => this.fetchTemplates()}>Fetch templates
           </Button>
         </FormGroup>
