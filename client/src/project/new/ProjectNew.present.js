@@ -142,7 +142,7 @@ function ForkProjectStatus(props) {
         title="Forking the project..."
         description="Project is being created."
         currentStatus=""
-        feedback="You will be redirected automatically or receive a notification at the end"
+        feedback="You will be redirected automatically or receive a notification at the end."
       />
     );
   }
