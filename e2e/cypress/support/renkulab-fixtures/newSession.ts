@@ -24,11 +24,13 @@ import { FixturesConstructor } from "./fixtures";
 
 function NewSession<T extends FixturesConstructor>(Parent: T) {
   return class NewSessionFixtures extends Parent {
-    newSessionPipelines() {
-      const fixture = "session/ci-pipelines.json";
+    newSessionPipelines(empty = false) {
+      const data = empty ?
+        [] :
+        { fixture: "session/ci-pipelines.json" };
       cy.intercept(
         "/ui-server/api/projects/e2e%2Flocal-test-project/pipelines?sha=172a784d465a7bd45bacc165df2b64a591ac6b18",
-        { fixture }
+        data
       ).as("getSessionPipelines");
       return this;
     }
