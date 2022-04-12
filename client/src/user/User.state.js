@@ -59,7 +59,7 @@ class UserCoordinator {
           data: { $set: {} }
         };
         // we get 401 unauthorized when the user is not logged in, but that's not an error
-        if (error.case !== API_ERRORS.unauthorizedError)
+        if (error.case !== API_ERRORS.unauthorizedError && error.case !== API_ERRORS.authExpired)
           errorObject.error = status;
         this.model.setObject(errorObject);
 
