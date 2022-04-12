@@ -49,6 +49,19 @@ describe("launch sessions", () => {
     cy.contains("Start with base image").should("not.exist");
   });
 
+  it("new session page - logged - missing pipeline", () => {
+    fixtures.userTest();
+    fixtures.newSessionPipelines(true);
+    cy.visit("/projects/e2e/local-test-project/sessions/new");
+    cy.wait("@getSessionPipelines", { timeout: 10000 });
+    cy.contains("Hide advanced settings").should("be.visible");
+    cy.contains("Start with base image").should("be.visible");
+    cy.contains("Start session").should("be.visible").should("be.disabled");
+    cy.contains("No Docker image found").should("be.visible");
+    cy.contains("building the branch image").should("be.visible");
+    cy.get(".badge").contains("not available").should("be.visible");
+  });
+
   it("new session page - anonymous - missing image", () => {
     fixtures.userNone();
     fixtures.newSessionPipelines().newSessionJobs().newSessionImages(true);
