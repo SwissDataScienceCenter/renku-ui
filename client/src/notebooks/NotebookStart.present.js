@@ -42,6 +42,7 @@ import { NotebooksHelper } from "./index";
 import { ObjectStoresConfigurationButton, ObjectStoresConfigurationModal } from "./ObjectStoresConfig.present";
 import { SessionStatus } from "../utils/constants/Notebooks";
 import { Docs } from "../utils/constants/Docs";
+import { sleep } from "../utils/helpers/HelperFunctions";
 
 
 function ProjectSessionLockAlert({ lockStatus }) {
@@ -404,12 +405,14 @@ class StartNotebookPipelines extends Component {
   async reTriggerPipeline() {
     this.setState({ justTriggered: true });
     await this.props.handlers.reTriggerPipeline();
+    await sleep(5);
     this.setState({ justTriggered: false });
   }
 
   async runPipeline() {
     this.setState({ justTriggered: true });
     await this.props.handlers.runPipeline();
+    await sleep(5);
     this.setState({ justTriggered: false });
   }
 
@@ -441,7 +444,7 @@ class StartNotebookPipelines extends Component {
       <FormGroup>
         <StartNotebookPipelinesBadge {...this.props} infoButton={infoButton} />
         <Collapse isOpen={!customImage || showInfo}>
-          <StartNotebookPipelinesContent {...this.props}
+          <StartNotebookPipelinesContent {...this.props} justTriggered={this.state.justTriggered}
             buildAgain={this.reTriggerPipeline.bind(this)} tryToBuild={this.runPipeline.bind(this)} />
         </Collapse>
       </FormGroup>
@@ -648,6 +651,7 @@ class StartNotebookPipelinesContent extends Component {
       );
     }
     else if (
+      (ciStatus.stage === ciStages.pipelines && !ciStatus.ongoing && !ciStatus.available) ||
       (ciStatus.stage === ciStages.jobs && getCiJobStatus(ci.jobs?.target) === ciStatuses.wrong) ||
       (ciStatus.stage === ciStages.image && !ci.available)
     ) {

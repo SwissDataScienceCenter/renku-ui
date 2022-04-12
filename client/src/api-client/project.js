@@ -19,6 +19,8 @@
 import { fetchJson } from "./utils";
 import yaml from "yaml-js";
 
+import { sleep } from "../utils/helpers/HelperFunctions";
+
 function getApiUrlFromRepoUrl(url) {
   const urlArray = url.split("/");
   urlArray.splice(urlArray.length - 2, 0, "repos");
@@ -280,16 +282,24 @@ function addProjectMethods(client) {
     });
 
     // Wait 1 second before starting the pipeline to prevent errors
-    await new Promise(r => setTimeout(r, 1000));
+    await sleep(1);
 
-    // Start pipeline -- no need to wait for the outcome, the new session page handles this
+    // Start pipeline
     let pipeline;
     try {
       pipeline = await client.runPipeline(forkedProject.data.id,
         forkedProject.data.forked_from_project.default_branch);
     }
     catch (error) {
-      pipeline = error;
+      // Sometimes triggering the pipelines after a few seconds succeed.
+      await sleep(3);
+      try {
+        pipeline = await client.runPipeline(forkedProject.data.id,
+          forkedProject.data.forked_from_project.default_branch);
+      }
+      catch (error) {
+        pipeline = error;
+      }
     }
 
     // Create KG webhook
