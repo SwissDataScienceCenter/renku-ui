@@ -111,8 +111,10 @@ class APIClient {
   ) {
     return renkuFetch(url, options)
       .catch((error) => {
-        if (error.case === API_ERRORS.authExpired)
-          return this.doLogin();
+        if (error.case === API_ERRORS.authExpired) {
+          this.doLogin();
+          return Promise.reject(error);
+        }
         // For permission errors we send the user to login
         if (reLogin && error.case === API_ERRORS.unauthorizedError)
           return this.doLogin();
