@@ -1,5 +1,30 @@
 # Changes
 
+## [2.2.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.1.2...2.2.0) (2022-04-12)
+
+### Features
+
+**sessions**
+* improve error handling on missing pipelines ([#1778](https://github.com/SwissDataScienceCenter/renku-ui/issues/1778))
+* improve starting new sessions ([#1730](https://github.com/SwissDataScienceCenter/renku-ui/issues/1730), [#1408](https://github.com/SwissDataScienceCenter/renku-ui/issues/1408), [#1679](https://github.com/SwissDataScienceCenter/renku-ui/issues/1679))
+* use new api for pinned images ([#1769](https://github.com/SwissDataScienceCenter/renku-ui/issues/1769), [#1767](https://github.com/SwissDataScienceCenter/renku-ui/issues/1767))
+
+**core**
+* use versions endpoint to detect core-service versions
+* handle new renku-core api errors ([#1757](https://github.com/SwissDataScienceCenter/renku-ui/issues/1757),  [#1709](https://github.com/SwissDataScienceCenter/renku-ui/issues/1709))
+* adapt to new name of core-service version endpoint ([#1714](https://github.com/SwissDataScienceCenter/renku-ui/issues/1714))
+
+### Bug Fixes
+
+**misc**
+* fix link to download files so it works for all default-branch names ([#1750](https://github.com/SwissDataScienceCenter/renku-ui/issues/1750), [#1753](https://github.com/SwissDataScienceCenter/renku-ui/issues/1753))
+* do not flash "RenkuLab down" when the user's auth token has expired ([#1759](https://github.com/SwissDataScienceCenter/renku-ui/issues/1759), [#1788](https://github.com/SwissDataScienceCenter/renku-ui/issues/1788))
+* fix the update project template button ([#1745](https://github.com/SwissDataScienceCenter/renku-ui/issues/1745))
+
+### BREAKING CHANGES
+
+* Requires renku-core/renku-python >= v1.2.0
+
 ## [2.1.2](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.1.1...2.1.2) (2022-04-05)
 
 ### Bug Fixes
