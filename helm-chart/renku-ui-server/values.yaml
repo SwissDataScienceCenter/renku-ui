@@ -50,7 +50,6 @@ serviceAccount:
 
 podSecurityContext:
   runAsUser: 1000
-  runAsGroup: 1000
 
 securityContext:
   allowPrivilegeEscalation: false
