@@ -131,7 +131,7 @@ jobs:
         echo "GIT_USER=Renku Bot" >> $GITHUB_ENV
         echo "GIT_EMAIL=renku@datascience.ch" >> $GITHUB_ENV
     - name: Push chart and images
-      uses: SwissDataScienceCenter/renku-actions/publish-chart@v0.5.1
+      uses: SwissDataScienceCenter/renku-actions/publish-chart@000-git-version-adapt
       env:
         GITHUB_TOKEN: ${{ secrets.RENKUBOT_GITHUB_TOKEN }}
         CHART_NAME: renku-ui
