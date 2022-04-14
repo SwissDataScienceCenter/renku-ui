@@ -67,7 +67,12 @@ else
   else
     echo "Exchanging k8s deployments for the following context/namespace: ${CURRENT_CONTEXT}/${DEV_NAMESPACE}"
   fi
-  SERVICE_NAME=${DEV_NAMESPACE}-renku-uiserver
+  if [[ ! $SERVICE_NAME ]]
+  then
+    SERVICE_NAME=${DEV_NAMESPACE}-renku-uiserver
+  else
+    echo "Exchanging k8s deployments for the following service name: ${SERVICE_NAME}"
+  fi
 fi
 
 
