@@ -103,7 +103,7 @@ function ShowSession(props) {
   });
 
   // redirect immediately if the session fail
-  if (props.history && notebook.data.status.state === SessionStatus.failed)
+  if (props.history && notebook.data?.status?.state === SessionStatus.failed)
     props.history.push(urlList);
 
   // Always add all sub-components and hide them one by one to preserve the iframe navigation where needed
@@ -152,17 +152,21 @@ function SessionInformation(props) {
   const resourceList = formattedResourceList(resources);
 
   // Create dropdown menu
+  const ready = notebook.data?.status?.state === SessionStatus.running ? true : false;
+  const stopContent = (<Fragment><FontAwesomeIcon icon={faStopCircle} /> Stop</Fragment>);
+  const stopButton = (<DropdownItem onClick={stop} disabled={stopping}>{stopContent}</DropdownItem>);
   const defaultAction = <ExternalLink color="primary" url={url} disabled={stopping} showLinkIcon={true} title="Open" />;
-  const stopButton = (
-    <DropdownItem onClick={stop} disabled={stopping}>
-      <FontAwesomeIcon icon={faStopCircle} /> Stop
-    </DropdownItem>
-  );
-  const dropdownMenu = (
-    <ButtonWithMenu className="sessionsButton" color="primary" size="sm" default={defaultAction}>
-      {stopButton}
-    </ButtonWithMenu>
-  );
+  const menu = ready ?
+    (
+      <ButtonWithMenu className="sessionsButton" color="primary" size="sm" default={defaultAction}>
+        {stopButton}
+      </ButtonWithMenu>
+    ) :
+    (
+      <Button className="sessionsButton" color="primary" size="sm" onClick={stop} disabled={stopping}>
+        {stopContent}
+      </Button>
+    );
 
   return (
     <div className="d-flex flex-wrap">
@@ -181,12 +185,10 @@ function SessionInformation(props) {
         <span>{resourceList}</span>
       </div>
       <div className="p-2 p-lg-3 text-nowrap">
-        <span className="fw-bold">Running since </span>
+        <span className="fw-bold">{ ready ? "Running since" : "Started" } </span>
         <TimeCaption noCaption={true} endPunctuation=" " time={notebook.data.started} />
       </div>
-      <div className="p-1 p-lg-2 m-auto me-1 me-lg-2">
-        {dropdownMenu}
-      </div>
+      <div className="p-1 p-lg-2 m-auto me-1 me-lg-2">{menu}</div>
     </div>
   );
 }
