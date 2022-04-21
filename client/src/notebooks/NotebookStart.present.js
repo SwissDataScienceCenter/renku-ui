@@ -531,7 +531,7 @@ class StartNotebookPipelinesContent extends Component {
 
       // this style trick makes it appear as the other Label + Input components
       const style = { marginTop: -8 };
-      const url = Docs.rtdReferencePage("templates.html?highlight=pinned#renku");
+      const url = Docs.rtdReferencePage("templates.html#pin-a-docker-image");
 
       const pinnedImagesDoc = (
         <ExternalLink role="text" iconSup={true} iconAfter={true} url={url} title="pinned image" />
