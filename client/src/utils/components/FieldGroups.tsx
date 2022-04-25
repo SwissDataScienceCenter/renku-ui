@@ -49,7 +49,7 @@ const FieldGroup = (
     <Label>
       <InputLabel text={label} isRequired={isRequired} isOptional={isOptional} />
     </Label>
-    <Input data-cy={`field-group-${id}`} invalid={invalid} type={type} value={value} onChange={onChange} />
+    <Input id={id} data-cy={`field-group-${id}`} invalid={invalid} type={type} value={value} onChange={onChange} />
     {feedback && invalid && <ErrorLabel text={feedback}/> }
 
     {help && <FormText color="muted">{help}</FormText>}

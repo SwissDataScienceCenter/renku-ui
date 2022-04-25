@@ -32,7 +32,7 @@ import {
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faExclamationTriangle, faInfoCircle,
+  faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 
 import "./Project.style.css";
@@ -115,7 +115,7 @@ function ForkProjectFooter(props) {
     if (forkUrl)
       forkButton = (<Link className="btn btn-primary" to={forkUrl}>Go to forked project</Link>);
     else
-      forkButton = (<Button color="primary" disabled={error ? true : false} onClick={fork}>Fork</Button>);
+      forkButton = (<Button color="primary" disabled={!!error} onClick={fork}>Fork Project</Button>);
   }
 
   let closeButton = null;
@@ -127,8 +127,8 @@ function ForkProjectFooter(props) {
     return null;
   return (
     <ModalFooter>
-      {forkButton}
       {closeButton}
+      {forkButton}
     </ModalFooter>
   );
 }
@@ -136,14 +136,14 @@ function ForkProjectFooter(props) {
 function ForkProjectStatus(props) {
   if (props.forking) {
     return (
-      <Fragment>
-        <span>Forking the project... </span>{" "}<Loader inline={true} size={16} />
-        <p className="mt-3">
-          <FontAwesomeIcon icon={faInfoCircle} />{" "}
-          This operation may take a while. You will be redirected automatically or
-          receive a notification at the end.
-        </p>
-      </Fragment>
+      <ProgressIndicator
+        type={ProgressType.Indeterminate}
+        style={ProgressStyle.Light}
+        title="Forking the project..."
+        description="Project is being created."
+        currentStatus=""
+        feedback="You will be redirected automatically or receive a notification at the end."
+      />
     );
   }
   else if (props.forkError) {
@@ -183,7 +183,8 @@ function ForkProjectContent(props) {
     validation: { errors: { title: error } },
     namespace: {
       fetching: fetching.namespaces,
-      visibilities,
+      visibilities: visibilities?.visibilities,
+      visibility: visibilities?.default
     },
   };
 

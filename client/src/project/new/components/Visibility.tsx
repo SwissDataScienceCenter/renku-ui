@@ -43,7 +43,8 @@ const Visibility = ({ handlers, meta, input }: VisibilityProps) => {
         isInvalid={!!error && !input.visibilityPristine}
         data-cy="visibility-select"
         isRequired={true}
-        onChange={(value: string) => handlers.setProperty("visibility", value)} value={input.visibility ?? null} />
+        onChange={(value: string) => handlers.setProperty("visibility", value)}
+        value={input.visibility ?? null} />
     </FormGroup>
   );
 };
