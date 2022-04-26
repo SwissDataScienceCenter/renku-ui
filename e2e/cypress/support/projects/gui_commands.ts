@@ -20,7 +20,7 @@ Cypress.Commands.add("gui_create_project", (title: string) => {
   // create project with the minimum required: title and template
   cy.get_cy("project-title-input").type(title);
   cy.get_cy("visibility-select").select("Private");
-  cy.get_cy("project-template-card").first().click();
+  cy.get_cy("project-template-card").first().scrollIntoView().click();
   cy.get_cy("create-project-button").click();
 });
 
@@ -31,7 +31,7 @@ Cypress.Commands.add("gui_create_project_add_dataset", (title: string, path: str
     .changeVisibility(path);
   // create project with the minimum required: title and template
   cy.get_cy("project-title-input").type(title);
-  cy.get_cy("project-template-card").first().click();
+  cy.get_cy("project-template-card").first().scrollIntoView().click();
   cy.get_cy("add-dataset-submit-button").click();
   cy.wait("@createProject");
   cy.wait("@getNewProject");
