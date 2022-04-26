@@ -44,7 +44,7 @@ function makeRefreshButton(refresh, tip, disabled) {
     <Fragment>
       <Button
         key="button" className="ms-1 p-0" color="link" size="sm"
-        id={id} onClick={() => refresh()} disabled={disabled} >
+        id={id} data-cy="refresh-namespace-list" onClick={() => refresh()} disabled={disabled} >
         <FontAwesomeIcon icon={faSyncAlt} />
       </Button>
       <UncontrolledTooltip key="tooltip" placement="top" target={id}>{tip}</UncontrolledTooltip>
@@ -191,7 +191,8 @@ class NamespacesAutosuggest extends Component {
       placeholder: "Select a namespace...",
       value,
       onChange: this.onChange,
-      onBlur: this.onBlur
+      onBlur: this.onBlur,
+      id: "namespace-input"
     };
 
     return (

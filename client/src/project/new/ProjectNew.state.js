@@ -722,13 +722,13 @@ class NewProjectCoordinator {
 
     // check other errors (requires user intervention). Skip if there is already a warning
     if (!warnings["namespace"] && !input.namespace)
-      errors["namespace"] = "Please select the namespace for the project";
+      errors["namespace"] = "Please select the namespace for the project.";
 
     if (!warnings["visibility"] && !input.visibility)
-      errors["visibility"] = "Please select a visibility level";
+      errors["visibility"] = "Please select a visibility level.";
 
     if (!warnings["template"] && !input.template)
-      errors["template"] = "Please select a template";
+      errors["template"] = "Please select a template.";
 
     // create validation object and update model directly or return it;
     const validation = {

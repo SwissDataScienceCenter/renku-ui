@@ -309,6 +309,15 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
       ).as(name);
       return this;
     }
+
+    getNamespace(namespace = "", name = "getNamespace", result = "projects/namespace-128.json") {
+      const fixture = this.useMockedData ? { fixture: result } : undefined;
+      cy.intercept(
+        `/ui-server/api/groups/${namespace}`,
+        fixture
+      ).as(name);
+      return this;
+    }
   };
 }
 

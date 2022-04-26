@@ -212,13 +212,13 @@ const NewProjectForm = (
   };
 
   const onProgress = isFormProcessingOrFinished(meta);
-  const creation = <Creation handlers={handlers} meta={meta}  importingDataset={importingDataset} />;
+  const creation = <Creation handlers={handlers} meta={meta} importingDataset={importingDataset} />;
   if (onProgress)
     return creation;
 
   const errorTemplateAlert = <ErrorTemplateFeedback templates={templates} meta={meta} input={input}/>;
   return (
-    <Form className="mb-4">
+    <Form data-cy="create-project-form" className="mb-4">
       {creation}
       <Automated automated={automated} removeAutomated={handlers.removeAutomated} />
       <Title handlers={handlers} meta={meta} input={input} />
