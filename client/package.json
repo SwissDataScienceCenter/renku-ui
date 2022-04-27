@@ -63,7 +63,8 @@
     "styled-jsx": "^3.4.5",
     "uuid": "^3.3.3",
     "xregexp": "^4.4.0",
-    "yaml-js": "^0.2.3"
+    "yaml-js": "^0.2.3",
+    "@snyk/protect": "latest"
   },
   "scripts": {
     "build-css": "node-sass-chokidar --include-path ./src/styles --include-path ./node_modules src/styles/ -o src/styles/",
@@ -77,7 +78,9 @@
     "lint-fix": "node_modules/eslint/bin/eslint.js src/ --fix",
     "node": "node_modules/.bin/babel-node",
     "storybook": "start-storybook -p 6006 -s public",
-    "build-storybook": "build-storybook -s public"
+    "build-storybook": "build-storybook -s public",
+    "prepare": "npm run snyk-protect",
+    "snyk-protect": "snyk-protect"
   },
   "devDependencies": {
     "@babel/cli": "^7.8.4",
@@ -133,5 +136,6 @@
         }
       }
     ]
-  }
+  },
+  "snyk": true
 }
