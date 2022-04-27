@@ -226,7 +226,7 @@ function ForkProject(props) {
 
       // calculate visibilities values
       const availableVisibilities = await handlers.getVisibilities(namespace);
-      setVisibilities(availableVisibilities?.visibilities ?? null);
+      setVisibilities(availableVisibilities ?? null);
       setVisibility(availableVisibilities?.default ?? null);
     };
     if (fullNamespace) {
@@ -439,6 +439,7 @@ class NewProject extends Component {
       getTemplates: this.getTemplates.bind(this),
       getUserTemplates: this.getUserTemplates.bind(this),
       goToProject: this.goToProject.bind(this),
+      resetCreationResult: this.resetCreationResult.bind(this),
       onSubmit: this.onSubmit.bind(this),
       removeAutomated: this.removeAutomated.bind(this),
       setNamespace: this.setNamespace.bind(this),
@@ -530,6 +531,10 @@ class NewProject extends Component {
     this.coordinator.setVariable(variable, value);
   }
 
+  resetCreationResult() {
+    this.coordinator.resetCreationResult();
+  }
+
   goToProject() {
     const slug = this.coordinator.getSlugAndReset();
     this.props.history.push(`/projects/${slug}`);
@@ -565,6 +570,7 @@ class NewProject extends Component {
             // continue regular process
             this.props.history.push(`/projects/${slug}`);
           }
+          this.resetCreationResult();
         }
       }
     });

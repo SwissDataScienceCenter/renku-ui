@@ -67,14 +67,14 @@ class Fixtures {
     return this;
   }
 
-  templates(error = false) {
+  templates(error = false, urlSource = "*", name = "getTemplates") {
     const fixture = error ?
       "errors/core-error-1101.json" :
       "templates.json";
     cy.intercept(
-      "/ui-server/api/renku/templates.read_manifest?*",
+      "/ui-server/api/renku/templates.read_manifest?" + urlSource,
       { fixture }
-    ).as("getTemplates");
+    ).as(name);
     return this;
   }
 }

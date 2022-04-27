@@ -358,9 +358,13 @@ class NewProjectCoordinator {
 
   getSlugAndReset() {
     const creation = this.model.get("meta.creation");
+    this.resetCreationResult();
+    return `${creation.newNamespace}/${creation.newName}`;
+  }
+
+  resetCreationResult() {
     const pristineCreation = newProjectSchema.createInitialized().meta.creation;
     this.model.setObject({ meta: { creation: pristineCreation } });
-    return `${creation.newNamespace}/${creation.newName}`;
   }
 
   setVariable(variable, value) {
@@ -718,13 +722,13 @@ class NewProjectCoordinator {
 
     // check other errors (requires user intervention). Skip if there is already a warning
     if (!warnings["namespace"] && !input.namespace)
-      errors["namespace"] = "Select namespace.";
+      errors["namespace"] = "Please select the namespace for the project.";
 
     if (!warnings["visibility"] && !input.visibility)
-      errors["visibility"] = "Select visibility.";
+      errors["visibility"] = "Please select a visibility level.";
 
     if (!warnings["template"] && !input.template)
-      errors["template"] = "Select a template.";
+      errors["template"] = "Please select a template.";
 
     // create validation object and update model directly or return it;
     const validation = {
