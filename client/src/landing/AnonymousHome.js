@@ -90,12 +90,6 @@ function HomeHeader(props) {
               <QuickNav client={props.client} model={props.model} user={props.user} />
             </NavItem>
             <NavItem className="nav-item">
-              <RenkuNavLink to="/projects" title="Projects" id="link-projects" className="link-secondary" />
-            </NavItem>
-            <NavItem className="nav-item">
-              <RenkuNavLink to="/datasets" title="Datasets" id="link-datasets" />
-            </NavItem>
-            <NavItem className="nav-item">
               <RenkuNavLink to="/sessions" title="Sessions" id="link-sessions" />
             </NavItem>
             <NavItem className="nav-item">
