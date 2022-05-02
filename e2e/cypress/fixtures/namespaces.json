@@ -8,5 +8,27 @@
     "parent_id":null,
     "avatar_url":"https://secure.gravatar.com/avatar/67294be6fc8a46e7dd5ae6a3cf11a0ae?s=80\u0026d=identicon",
     "web_url":"https://dev.renku.ch/gitlab/e2e"
+  },
+  {
+    "id":128,
+    "name":"internal-space",
+    "path":"internal-space",
+    "kind":"group",
+    "full_path":"internal-space",
+    "parent_id":null,
+    "avatar_url":null,
+    "web_url":"https://dev.renku.ch/gitlab/groups/internal-space",
+    "members_count_with_descendants":1
+  },
+  {
+    "id":129,
+    "name":"private-space",
+    "path":"private-space",
+    "kind":"group",
+    "full_path":"private-space",
+    "parent_id":null,
+    "avatar_url":null,
+    "web_url":"https://dev.renku.ch/gitlab/groups/private-space",
+    "members_count_with_descendants":1
   }
 ]

@@ -1,0 +1,26 @@
+.template--invalid {
+    border-color: var(--bs-danger);
+}
+
+.template--disabled {
+    opacity: 0.5;
+}
+
+.template--active:hover {
+    border-color: #009568;
+}
+
+.template--active:hover .card-footer {
+    border-color: #009568;
+    color: #009568;
+    background-color: white;
+}
+
+.template--active.selected {
+    border: 3px solid #009568;
+    color: #009568;
+}
+
+.template-card img {
+    height: 60px;
+}

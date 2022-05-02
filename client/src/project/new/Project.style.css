@@ -94,24 +94,3 @@ svg.no-pointer {
   display: none !important;
   content: none !important;
 }
-
-.template-card {
-  cursor: pointer;
-}
-
-.template-card:hover {
-  border-color: #009568;
-}
-.template-card:hover .card-footer {
-  border-color: #009568;
-  color: #009568;
-  background-color: white;
-}
-.template-card.selected {
-  border: 3px solid #009568;
-  color: #009568;
-}
-
-.template-card img {
-  height: 60px;
-}

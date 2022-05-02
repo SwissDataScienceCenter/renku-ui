@@ -23,7 +23,7 @@
   - components contains custom scss components for the project(like jupyter_notebooks)
   - views contains styles that are not reusable(specific to a single view like landing page).
   - variables is a file to place variables that we need and are not in bootsrap.
-  - index should contain only imports of other files. 
+  - index should contain only imports of other files.
 
   Use npm run watch-css to compile scss files while making changes
 */
@@ -65,5 +65,6 @@
 @import './components/file_uploader';
 @import './components/renku_styleguide';
 @import './components/project_display';
+@import './components/renku_form';
 
 @import './icons/icons.scss';

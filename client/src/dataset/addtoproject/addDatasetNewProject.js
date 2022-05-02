@@ -48,7 +48,7 @@ const AddDatasetNewProject = (
     if (!client)
       setCurrentStatus({ status: "error", text: "Unable to import the dataset" });
     // 1. get github url of project
-    setCurrentStatus({ status: "inProcess", text: "Get new project data..." });
+    setCurrentStatus({ status: "importing", text: "Get new project data..." });
     const fetchProject = await client.getProject(projectPath);
     const urlProjectOrigin = fetchProject?.data?.all?.http_url_to_repo;
     if (!urlProjectOrigin) {
@@ -78,7 +78,7 @@ const AddDatasetNewProject = (
 
   // do not display form if is an import in process, error or the dataset is not valid
   const form = importingDataset || !isDatasetValid
-    || ["inProcess", "error"].includes(currentStatus?.status) ? null :
+    || ["inProcess", "importing", "error"].includes(currentStatus?.status) ? null :
     (
       <NewProject
         key="newProject"
