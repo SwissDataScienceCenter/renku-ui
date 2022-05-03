@@ -17,7 +17,6 @@
  */
 
 import React, { memo, useState } from "react";
-import NotebookPreview from "@nteract/notebook-render";
 import {
   Badge, Card, CardHeader, CardBody, Button, ButtonGroup, ListGroup, ListGroupItem, Input
 } from "reactstrap";
@@ -36,6 +35,7 @@ import _ from "lodash";
 import { Clipboard } from "../utils/components/Clipboard";
 import { ExternalIconLink, ExternalLink } from "../utils/components/ExternalLinks";
 import { Loader } from "../utils/components/Loader";
+import NotebookPreview from "../utils/components/notebook";
 
 const commitMessageLengthLimit = 120;
 
