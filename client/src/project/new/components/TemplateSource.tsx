@@ -22,8 +22,8 @@
  *  TemplateSource.tsx
  *  Template Source field group component
  */
-import * as React from "react";
-import { Button, ButtonGroup, FormGroup } from "reactstrap/lib";
+import React from "react";
+import { Button, ButtonGroup, FormGroup } from "../../../utils/ts-wrappers";
 import { InputLabel } from "../../../utils/components/formlabels/FormLabels";
 import { NewProjectInputs } from "./newProject.d";
 
@@ -40,14 +40,22 @@ const TemplateSource = ({ handlers, input }: TemplateSourceProps) => {
       <InputLabel text="Template source" />
       <br />
       <ButtonGroup size="sm">
-        <Button color="primary" outline active={!input.userRepo}
+        <Button
+          color="primary"
+          outline
+          active={!input.userRepo}
           data-cy="renkulab-source-button"
-          onClick={(e) => handlers.setProperty("userRepo", false)}>
+          onClick={(_e: unknown) => handlers.setProperty("userRepo", false)}
+        >
           RenkuLab
         </Button>
-        <Button color="primary" outline active={!!input.userRepo}
+        <Button
+          color="primary"
+          outline
+          active={!!input.userRepo}
           data-cy="custom-source-button"
-          onClick={(e) => handlers.setProperty("userRepo", true)}>
+          onClick={(_e: unknown) => handlers.setProperty("userRepo", true)}
+        >
           Custom
         </Button>
       </ButtonGroup>
