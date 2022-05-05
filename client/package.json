@@ -71,7 +71,7 @@
     "styled-jsx": "^3.4.5",
     "uuid": "^3.3.3",
     "xregexp": "^4.4.0",
-    "yaml-js": "^0.2.3"
+    "yaml": "^2.0.1"
   },
   "scripts": {
     "start-js": "BROWSER=none REACT_APP_UI_DEV_MODE=$UI_DEV_MODE REACT_APP_RENKU_UI_URL=$RENKU_UI_URL craco --max_old_space_size=4096 start",
@@ -143,6 +143,9 @@
     ]
   },
   "jest": {
-    "resetMocks": false
+    "resetMocks": false,
+    "transformIgnorePatterns": [
+      "^node_modules/(?!(highlight.js|katex|react-markdown|react-pdf)).*/"
+    ]
   }
 }
