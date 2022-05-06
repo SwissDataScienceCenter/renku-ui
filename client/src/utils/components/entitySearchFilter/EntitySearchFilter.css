@@ -1,0 +1,10 @@
+.filter-label {
+    font-size: medium;
+    font-weight: bold;
+}
+
+.filter-box {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
