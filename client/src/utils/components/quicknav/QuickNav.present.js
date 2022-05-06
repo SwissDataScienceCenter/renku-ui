@@ -25,7 +25,6 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import "./QuickNav.style.css";
 import { Label } from "reactstrap";
 import { defaultAnonymousSuggestionQuickBar, defaultSuggestionQuickBar } from "./QuickNav.container";
-
 class QuickNavPresent extends Component {
 
   constructor(props) {

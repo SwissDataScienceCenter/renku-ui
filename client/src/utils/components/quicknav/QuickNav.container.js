@@ -60,6 +60,7 @@ const QuickNavContainerWithRouter = ({ user }) => {
 
   const getLastQueries = (lastQueries) => {
     const suggestionLastQueries = [];
+    suggestionLastQueries.push(defaultSuggestionQuickBar);
     if (lastQueries && lastQueries?.length) {
       for (const query of lastQueries) {
         suggestionLastQueries.push({

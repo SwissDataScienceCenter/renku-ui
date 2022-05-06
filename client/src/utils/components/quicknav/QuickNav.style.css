@@ -85,3 +85,46 @@
   }
 }
 
+
+.suggestion-icon {
+  margin-right: 20px;
+}
+
+.search-input-label {
+  color: white;
+  font-size: small;
+  font-style: italic;
+}
+
+.search-button {
+  width: 60px;
+  background-color: var(--bs-secondary);
+  color: white;
+  display: flex;
+  justify-content: center;
+  border: none;
+}
+
+.search-box {
+  width: 100%;
+  margin: 10px 0 0 0;
+}
+
+@media (min-width: 992px) {
+  .search-box{
+    max-width: 500px;
+  }
+}
+
+@media (min-width: 1080px) {
+  .search-box{
+    max-width: 600px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .search-box{
+    max-width: 800px;
+  }
+}
+
