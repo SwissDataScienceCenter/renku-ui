@@ -35,6 +35,11 @@ import ListDisplay from "../utils/components/List";
 import { ExternalLink } from "../utils/components/ExternalLinks";
 import { Loader } from "../utils/components/Loader";
 import { Docs } from "../utils/constants/Docs";
+import { WarnAlert } from "../utils/components/Alert";
+import { useSelector } from "react-redux";
+import { useInactiveProjectSelector } from "../features/inactiveKgProjects/inactiveKgProjectsSlice";
+import { urlMap } from "../project/list/ProjectList.container";
+import useGetInactiveProjects from "../utils/customHooks/UseGetInactiveProjects";
 
 
 function truncatedProjectListRows(projects, urlFullList, gridDisplay, lastVisited) {
@@ -107,13 +112,13 @@ class YourEmptyProjects extends Component {
 class YourProjects extends Component {
   render() {
     const projects = this.props.projects || [];
-    const { projectsUrl, projectsSearchUrl } = this.props.urlMap;
+    const { searchEntities, projectsSearchUrl } = this.props.urlMap;
     let projectsComponent = null;
     if (this.props.loading)
       return <Loader key="loader" />;
 
     if (projects.length > 0) {
-      projectsComponent = truncatedProjectListRows(projects, projectsUrl, true, this.props.lastVisited);
+      projectsComponent = truncatedProjectListRows(projects, searchEntities, true, this.props.lastVisited);
     }
     else {
       const { projectNewUrl } = this.props.urlMap;
@@ -123,7 +128,13 @@ class YourProjects extends Component {
 
     const title = this.props.lastVisited ? "Recent Projects" : "Your Projects";
     return <div className="landing-projects-section">
-      <h3 key="header">{title}</h3>
+      <div className="d-flex justify-content-between align-items-center flex-wrap">
+        <h3 key="header">{title}</h3>
+        <Link className="btn btn-secondary btn-icon-text" role="button" to={urlMap.projectNewUrl}>
+          <FontAwesomeIcon icon={faPlus} />
+          New project
+        </Link>
+      </div>
       {projectsComponent}
     </div>;
   }
@@ -145,6 +156,35 @@ class Welcome extends Component {
   }
 }
 
+export function ProjectsInactiveKGWarning() {
+  const user = useSelector((state) => state.stateModel.user);
+  const projectList = useInactiveProjectSelector(
+    (state) => state.kgInactiveProjects
+  );
+  const { data, isFetching, isLoading } = useGetInactiveProjects(user?.data?.id);
+
+  if (!user.logged)
+    return null;
+
+  if (isLoading || isFetching || data?.length === 0)
+    return null;
+
+  let totalProjects;
+  if (projectList.length > 0) {
+    totalProjects = projectList.filter( p => p.progressActivation !== 100).length;
+    if (totalProjects === 0)
+      return null;
+  }
+  else {
+    totalProjects = data?.length;
+  }
+
+  return <WarnAlert>
+    You have {totalProjects} projects that are not in the Knowledge Graph.{" "}
+    <Link to="/inactive-kg-projects">Activate your projects</Link> to make them searchable on Renku.
+  </WarnAlert>;
+}
+
 class LoggedInHome extends Component {
   render() {
     const urlMap = this.props.urlMap;
@@ -164,6 +204,7 @@ class LoggedInHome extends Component {
           <Row><Col md={12}>&nbsp;</Col></Row>
         </Col>
         <Col xs={{ order: 1 }} md={{ size: 5, order: 2 }}>
+          <ProjectsInactiveKGWarning />
           <Welcome {...this.props} />
         </Col>
       </Row>,
