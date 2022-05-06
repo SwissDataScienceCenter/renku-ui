@@ -1,10 +1,7 @@
 
 @media (min-width:992px) { //992 lg 768 md
   .navbar {
-    height: 70px; // we need this to vertically align items
-  }
-  .navbar-collapse{
-    padding-top:0.5em;
+    height: 92px; // we need this to vertically align items
   }
   .input{
     padding-top:0.3rem
@@ -24,14 +21,16 @@ footer{
 }
 
 nav.navbar{
-  // in total the height of the bar is 70px
   // 50 for the image, etc
   // 10 on top and bottom
   padding-top: 10px !important;
   padding-bottom: 10px !important;
-  align-items: center !important;
 
   .dropdown-toggle::after {
     content: none;
   }
+}
+
+.container-fluid.renku-container {
+  align-items: center;
 }
