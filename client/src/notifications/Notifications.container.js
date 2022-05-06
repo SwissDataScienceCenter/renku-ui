@@ -78,10 +78,8 @@ class NotificationsManager {
     const locations = Array.isArray(awareLocations) ?
       awareLocations :
       [awareLocations];
-    let forceRead = level === this.Levels.INFO ?
-      true :
-      false;
-    if (!forceRead && locations.length && locations.includes(this.getLocation().pathname))
+    let forceRead = level === this.Levels.INFO;
+    if (!forceRead && locations.length && locations.includes(window.location.pathname))
       forceRead = true;
 
     // add the notification
