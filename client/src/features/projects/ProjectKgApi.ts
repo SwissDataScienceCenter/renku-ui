@@ -27,7 +27,7 @@ export const projectKgApi = createApi({
   endpoints: (builder) => ({
     projectJsonLd: builder.query<any, string>({
       query: (projectPath) => ({ url: `projects/${projectPath}`, headers }),
-    }),
+    })
   })
 });
 

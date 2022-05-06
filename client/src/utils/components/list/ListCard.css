@@ -1,0 +1,27 @@
+.visibility-icon {
+    position: relative;
+    top: -3px;
+}
+
+.list-card {
+    max-width: 400px;
+    margin: auto;
+}
+
+.card-title {
+    font-size: 24px;
+}
+
+.card-footer {
+    background-color: white;
+    height: 70px;
+}
+
+
+/*tmp styles*/
+.text-rk-text {
+    color: var(--bs-rk-text);
+}
+.bg-rk-text {
+    background-color: var(--bs-rk-text);
+}

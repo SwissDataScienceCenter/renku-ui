@@ -269,6 +269,8 @@ const Url = {
   // Please assign only strings or UrlRule objects.
   pages: {
     landing: "/",
+    search: "/search",
+    inactiveKgProjects: "/inactive-kg-projects",
     help: {
       base: "/help",
       documentation: "/help/docs",
@@ -399,7 +401,13 @@ const Url = {
     },
     sessions: {
       base: "/sessions",
-    }
+    },
+    datasets: {
+      base: "/datasets",
+    },
+    searchEntities: {
+      base: "/search",
+    },
   },
 
   setBaseUrl: setBaseUrl,

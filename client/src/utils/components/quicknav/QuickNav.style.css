@@ -5,22 +5,37 @@
 }
 .quick-nav {
   background-color: white;
-  border-radius: 1000px;
+  border-radius: 12px;
+  max-width: 550px;
+  height: 70px;
+  box-shadow: 0 0 50px rgba(0, 0, 0, 0.05);
+  margin: auto;
 }
 .quick-nav .react-autosuggest__container > input {
   border: 0;
   border-radius: 1000px;
+  height: 70px;
+}
+
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+input[type="search"]:focus::-webkit-search-cancel-button {
+  display: none;
 }
 
 .searchBarSuggestionsContainer {
   position: absolute;
-  top: 100%;
-  z-index: 100;
-  left: 0px;
+  top: 102%;
+  z-index: 2000;
+  left: 20px;
   right: auto;
   display: block;
   background-color: #fff;
   min-width: 300px;
+  max-width: 550px;
+  border: none;
 }
 
 .searchBarSuggestionsContainer > div {
@@ -40,4 +55,72 @@
 .quick-nav-icon {
   color: var(--bs-rk-green);
   font-size: 20px;
+}
+
+.suggestion-icon {
+  margin-right: 20px;
+}
+
+.search-input-label {
+  color: white;
+  font-size: small;
+  font-style: italic;
+}
+
+.search-button {
+  width: 60px;
+  background-color: var(--bs-secondary);
+  color: white;
+  display: flex;
+  justify-content: center;
+  border: none;
+}
+
+.search-box {
+  width: 100%;
+  margin: 10px 0 0 0;
+  padding-bottom: 50px;
+}
+
+@media (min-width: 992px) {
+  .search-box{
+    max-width: 500px;
+  }
+}
+
+@media (min-width: 1080px) {
+  .search-box{
+    max-width: 600px;
+  }
+}
+
+@media (min-width: 1440px) {
+  .search-box{
+    max-width: 800px;
+  }
+}
+
+
+.suggestion-icon {
+  margin-right: 20px;
+}
+
+.search-input-label {
+  color: white;
+  font-size: small;
+  font-style: italic;
+}
+
+.search-button {
+  width: 60px;
+  background-color: var(--bs-secondary);
+  color: white;
+  display: flex;
+  justify-content: center;
+  border: none;
+}
+
+.search-box {
+  width: 100%;
+  max-width: 900px;
 }

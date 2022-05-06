@@ -141,7 +141,6 @@ function ListBar(props) {
  * @param perPage items per page, used in the pagination.
  * @param items items to display, documented on top on ListCard.
  */
-
 function ListDisplay(props) {
 
   const { currentPage, perPage, items, search, totalItems, gridDisplay, itemsType, gridColumnsBreakPoint } = props;
