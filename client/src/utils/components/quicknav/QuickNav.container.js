@@ -41,6 +41,24 @@ class SearchBarModel extends StateModel {
   }
 }
 
+export const defaultSuggestionQuickBar = {
+  title: "",
+  type: "fixed",
+  suggestions: [
+    { type: "fixed", path: "", id: "link-projects", url: "/projects", label: "My Projects", icon: "/project-icon.svg" },
+    { type: "fixed", path: "", id: "link-datasets", url: "/datasets", label: "My datasets", icon: "/dataset-icon.svg" },
+  ]
+};
+
+export const defaultAnonymousSuggestionQuickBar = {
+  title: "",
+  type: "fixed",
+  suggestions: [
+    { type: "fixed", path: "", id: "link-projects", url: "/projects", label: "Projects", icon: "/project-icon.svg" },
+    { type: "fixed", path: "", id: "link-datasets", url: "/datasets", label: "Datasets", icon: "/dataset-icon.svg" },
+  ]
+};
+
 class QuickNavContainerWithRouter extends Component {
   constructor(props) {
     super(props);
@@ -59,7 +77,7 @@ class QuickNavContainerWithRouter extends Component {
       onSuggestionsClearRequested: this.onSuggestionsClearRequested.bind(this),
       onSuggestionSelected: this.onSuggestionSelected.bind(this),
       onSuggestionHighlighted: this.onSuggestionHighlighted.bind(this),
-      getSuggestionValue: (suggestion) => suggestion ? suggestion.path : ""
+      getSuggestionValue: (suggestion) => suggestion ? suggestion.path : "",
     };
     this.currentSearchValue = null;
   }
@@ -106,13 +124,19 @@ class QuickNavContainerWithRouter extends Component {
     if (value.length > 0) {
       suggestions.push({
         title: "Search in All Projects",
+        type: "all",
         suggestions: [{ query: value, id: -1, path: value, url: this.searchUrlForValue(value) }]
       });
     }
+
+    // add fixed suggestions
+    suggestions.push(defaultSuggestionQuickBar);
+
     const hitKeys = Object.keys(hits);
     if (hitKeys.length > 0) {
       suggestions.push({
         title: "Your Projects",
+        type: "own-projects",
         suggestions: hitKeys.sort().map(k => (
           { path: k, id: hits[k].id, url: `/projects/${hits[k].path_with_namespace}` }
         ))
@@ -136,7 +160,7 @@ class QuickNavContainerWithRouter extends Component {
   }
 
   onSuggestionSelected(event, { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }) {
-    if (this.bar.get("suggestions") == null)
+    if (this.bar.get("suggestions") == null || suggestion?.type === "fixed")
       return;
 
     const selectedSuggestion = this.bar.get("suggestions")[sectionIndex].suggestions[suggestionIndex];
@@ -153,6 +177,7 @@ class QuickNavContainerWithRouter extends Component {
 
   render() {
     return <QuickNavPresent
+      loggedIn={this.props.user ? this.props.user.logged : false}
       suggestions={this.bar.get("suggestions")}
       value={this.bar.get("value")}
       callbacks={this.callbacks}
