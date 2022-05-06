@@ -28,13 +28,13 @@ import { FormGroup, Table, Button, UncontrolledCollapse,
 import { Link } from "react-router-dom";
 import ValidationAlert from "./ValidationAlert";
 import HelpText from "./HelpText";
-import FormLabel from "./FormLabel";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faCheck, faTrashAlt, faSyncAlt, faExclamationTriangle, faFolder
+  faCheck, faTrashAlt, faSyncAlt, faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
-import { formatBytes, isURL } from "./../../../helpers/HelperFunctions";
+import { formatBytes, isURL } from "../../../helpers/HelperFunctions";
 import FileExplorer, { getFilesTree } from "../../FileExplorer";
+import { ErrorLabel, InputLabel } from "../../formlabels/FormLabels";
 
 const FILE_STATUS = {
   ADDED: 201,
@@ -108,6 +108,7 @@ function FileUploaderInput({
     useState(internalValues ? internalValues.initialFilesTree : undefined);
   const [partialFilesPath, setPartialFilesPath] = useState(internalValues ? internalValues.partialFilesPath : "");
   const [urlInputValue, setUrlInputValue] = useState(internalValues ? internalValues.urlInputValue : "");
+  const [errorUrlInput, setErrorUrlInput] = useState(false);
   const $input = useRef(internalValues ? internalValues.input : null);
 
   const getInternalValues = () => {
@@ -393,12 +394,15 @@ function FileUploaderInput({
   };
 
   const onUrlInputChange = (e) => {
+    setErrorUrlInput(false);
     setUrlInputValue(e.target.value);
   };
 
   const onUrlInputEnter = (e) => {
     if (!disabled && (e.key === "Enter" || e.target.id === "addFileButton")) {
       e.preventDefault();
+      if (!urlInputValue)
+        setErrorUrlInput(true);
       const fileThere = getDisplayFilesRx().find(file => file.file_name === urlInputValue);
       if (fileThere === undefined && isURL(urlInputValue)) {
         const file_url = getFileObject(urlInputValue, urlInputValue, 0, null,
@@ -407,6 +411,9 @@ function FileUploaderInput({
         const prevUploadedFiles = getUploadedFilesRx();
         setUploadedFilesRx([...prevUploadedFiles, file_url]);
         setUrlInputValue("");
+      }
+      else {
+        setErrorUrlInput(true);
       }
     }
   };
@@ -495,7 +502,7 @@ function FileUploaderInput({
       case FILE_STATUS.ADDED:
         return <span> in dataset</span>;
       case FILE_STATUS.UPLOADED:
-        return <span><FontAwesomeIcon color="var(--bs-success)" icon={faCheck} /> ready to add</span>;
+        return <span><FontAwesomeIcon color="var(--bs-success)" icon={faCheck} /> Ready to add</span>;
       case FILE_STATUS.PENDING:
         return <span> File will be uploaded on submit</span>;
       case FILE_STATUS.FAILED:
@@ -514,7 +521,7 @@ function FileUploaderInput({
         if (file.file_uncompress === FILE_COMPRESSED.WAITING) {
           return <div style={{ fontWeight: "600" }}>
             <FontAwesomeIcon color="var(--bs-warning)" icon={faExclamationTriangle} />
-            <span className="mb-1">Unzip on upload?</span>
+            <span className="mb-1">&nbsp;Unzip on upload?</span>
             <span className="me-1">
               <span className="text-primary text-button" style={{ whiteSpace: "nowrap", cursor: "pointer" }}
                 onClick={() => uploadCompressedFile(file.file_name, true)}>Yes</span> or
@@ -524,7 +531,7 @@ function FileUploaderInput({
           </div>;
         }
         return <span>
-          <Progress value={file.file_status}>{file.file_status}%</Progress>
+          <Progress color="primary" value={file.file_status}>{file.file_status}%</Progress>
           {file.file_size >= uploadThresholdSoft ? <small>
             <span className="text-muted"> No need to wait. We will <Link to="/notifications">
               notify you</Link> when the upload is finished.
@@ -562,9 +569,111 @@ function FileUploaderInput({
     return null;
   };
 
+  const currentFiles = getDisplayFilesRx();
+  const filesTable = currentFiles.length ? (
+    <Table hover bordered className="table-files mb-1 bg-white">
+      <thead>
+        <tr>
+          <th style={{ width: "5%" }} className="fw-light">#</th>
+          <th style={{ width: "45%" }} className="fw-light">File Name/URL</th>
+          <th style={{ width: "10%" }} className="fw-light">Size</th>
+          <th style={{ width: "30%" }} className="fw-light">Status</th>
+          <th style={{ width: "10%" }} className="fw-light">Delete</th>
+        </tr>
+      </thead>
+      <tbody className={disabled ? "disabled-input" : ""}>
+        {currentFiles.map((file, index) => (
+          <tr key={file.file_name + "file"} onClick={() => { }}>
+            <td>{index + 1}</td>
+            <td>
+              <span>{file.file_name}</span>
+              {file.file_alias ?
+                <small>
+                  <br/><br/>
+                  <span className="text-danger">
+                    *The name of this file contains
+                    disallowed characters; it has been renamed to <i> {file.file_alias}</i>
+                  </span>
+                </small> : null}
+              {fileWillBeOverwritten(file)}
+              {file.folder_structure ?
+                <div>
+                  <Button className="pe-0 ps-0 pt-0 pb-0 mb-1" color="link" id={"filesCollapse" + (index + 1)}>
+                    <small>Show unzipped files</small>
+                  </Button>
+                  <UncontrolledCollapse
+                    key={"#" + (index + 1) + "key"}
+                    toggler={"#filesCollapse" + (index + 1)}
+                    className="pt-2">
+                    <small>
+                      <FileExplorer
+                        filesTree={file.folder_structure}
+                        lineageUrl={" "}
+                        insideProject={false}
+                        foldersOpenOnLoad={0}
+                      /></small>
+                  </UncontrolledCollapse>
+                </div> : null}
+            </td>
+            <td>{file.file_size ? formatBytes(file.file_size) : "-"}</td>
+            <td>{getFileStatusComp(file)}</td>
+            <td>
+              {
+                file.file_status === FILE_STATUS.UPLOADED || file.file_status === FILE_STATUS.FAILED ||
+                file.file_status === FILE_STATUS.PENDING ?
+                  <FontAwesomeIcon style={{ cursor: "pointer" }}
+                    color="var(--bs-danger)" icon={faTrashAlt}
+                    onClick={() => deleteFile(file.file_name)} />
+                  : (file.file_status >= FILE_STATUS.UPLOADING && file.file_status < FILE_STATUS.UPLOADED
+                  && file.file_controller !== undefined ?
+                    (
+                      <FontAwesomeIcon style={{ cursor: "pointer" }}
+                        color="var(--bs-danger)" icon={faTrashAlt}
+                        onClick={() => deleteFile(file.file_name, file.file_controller)} />
+                    )
+                    : "null")
+              }
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </Table>
+  ) : null;
+
+  // dropdown part
+  const dropFileStyles = {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 10,
+    minHeight: "127px",
+    backgroundColor: "#F3F3F3",
+    borderStyle: "dashed",
+    borderColor: "#D3D3D3",
+  };
+  const chooseFileStyles = {
+    cursor: "pointer",
+    textDecoration: "underline"
+  };
+  const dropFileBox = (
+    <div
+      onClick={() => { $input.current.click(); }}
+      style={dropFileStyles}>
+      <p className="mb-1">
+        Or Drag and drop files here or
+        <span className="text-primary mx-1" style={chooseFileStyles}>choose a file</span>
+      </p>
+    </div>
+  );
+
+  const errorLabelURLInput = !errorUrlInput ? null :
+    (<div className="pb-1">
+      <ErrorLabel text="Please insert a valid dataset URL"/>
+    </div>);
+
   return (
     <FormGroup>
-      <FormLabel htmlFor={name} label={label} required={required}/>
+      <InputLabel isRequired={required} isOptional={true} text={label}/>
       {initialFilesTree !== undefined ?
         <Card className="mb-4">
           <CardBody style={{ backgroundColor: "#e9ecef" }}>
@@ -577,6 +686,7 @@ function FileUploaderInput({
         </Card>
         : null
       }
+      {filesTable}
       <div
         onDrop={e => {
           onDropOrChange(e);
@@ -589,76 +699,7 @@ function FileUploaderInput({
         }}
       >
         <Table hover bordered className="table-files mb-1 bg-white">
-          <thead>
-            <tr>
-              <th style={{ width: "5%" }} className="fw-light">#</th>
-              <th style={{ width: "45%" }} className="fw-light">File Name/URL</th>
-              <th style={{ width: "10%" }} className="fw-light">Size</th>
-              <th style={{ width: "30%" }} className="fw-light">Status</th>
-              <th style={{ width: "10%" }} className="fw-light">Delete</th>
-            </tr>
-          </thead>
           <tbody className={disabled ? "disabled-input" : ""}>
-            {getDisplayFilesRx().map((file, index) => (
-              <tr key={file.file_name + "file"} onClick={() => { }}>
-                <td>{index + 1}</td>
-                <td>
-                  <span>{file.file_name}</span>
-                  {
-                    file.file_alias ? <small><br></br>
-                      <span className="text-danger"> *The name of this file contains
-                        disallowed characters; it has been renamed to <i> {file.file_alias}</i>
-                      </span></small>
-                      : null
-                  }
-                  {
-                    fileWillBeOverwritten(file)
-                  }
-                  {
-                    file.folder_structure ? <div>
-                      <Button className="pe-0 ps-0 pt-0 pb-0 mb-1" color="link" id={"filesCollapse" + (index + 1)}>
-                        <small>Show unzipped files</small>
-                      </Button>
-                      <UncontrolledCollapse
-                        key={"#" + (index + 1) + "key"}
-                        toggler={"#filesCollapse" + (index + 1)}
-                        className="pt-2">
-                        <small>
-                          <FileExplorer
-                            filesTree={file.folder_structure}
-                            lineageUrl={" "}
-                            insideProject={false}
-                            foldersOpenOnLoad={0}
-                          /></small>
-                      </UncontrolledCollapse>
-                    </div> : null
-                  }
-                </td>
-                <td>{file.file_size ? formatBytes(file.file_size) : "-"}</td>
-                <td>{getFileStatusComp(file)}</td>
-                <td>
-                  {
-                    file.file_status === FILE_STATUS.UPLOADED || file.file_status === FILE_STATUS.FAILED ||
-                    file.file_status === FILE_STATUS.PENDING ?
-                      <FontAwesomeIcon color="var(--bs-danger)" icon={faTrashAlt}
-                        onClick={() => deleteFile(file.file_name)} />
-                      : (file.file_status >= FILE_STATUS.UPLOADING && file.file_status < FILE_STATUS.UPLOADED
-                          && file.file_controller !== undefined ?
-                        (
-                          <FontAwesomeIcon color="var(--bs-danger)" icon={faTrashAlt}
-                            onClick={() => deleteFile(file.file_name, file.file_controller)} />
-                        )
-                        : "null")
-                  }
-                </td>
-              </tr>
-            ))
-            }
-            <tr>
-              <td colSpan="5">
-                &nbsp;
-              </td>
-            </tr>
             <tr>
               <td colSpan="5">
                 <div className="pb-1">
@@ -679,43 +720,37 @@ function FileUploaderInput({
                     Add File from URL
                   </Button>
                 </InputGroup>
+                {errorLabelURLInput}
               </td>
             </tr>
           </tbody>
           <tfoot className={disabled ? "disabled-input" : ""} style={{ fontWeight: "normal" }}>
             <tr>
               <td colSpan="5">
-                <div onClick={() => { $input.current.click(); }} style={{ marginBottom: 10 }}>
-                  <p className="mb-1">
-                    Drag and Drop files here to upload, or click <span className="text-primary fw-bold"
-                      style={{ cursor: "pointer" }}>open file dialog</span> to select files for upload.
-                  </p>
-                  <p className="text-muted font-italic">
-                    <FontAwesomeIcon className="pe-1" color="var(--bs-primary)" icon={faFolder} />
-                    To upload a folder, zip the folder, upload the zip file, and select {" "}
-                    <b style={{ fontWeight: "300" }}>Unzip on upload</b>.
-                  </p>
-                </div>
-                <small className="text-muted">
-                  NOTE: Support for uploading large files in RenkuLab is still under development; {" "}
-                  consider using the Renku CLI for files larger than 500 MB.
-                  <Button className="pe-0 ps-1 pt-0 pb-0 mb-1" color="link" id="fileLimitToggler">
-                    <small>More info.</small>
-                  </Button>
-                  <UncontrolledCollapse key="fileLimitToggler" toggler={"#fileLimitToggler"} className="pt-0 ps-3">
-                    In practice, the file-size limitation on uploads in RenkuLab is dependent on the {" "}
-                    network connection. Here are some general estimates:<br />
-                    <ul>
-                      <li>Files under 500MB can be reliably uploaded within a few minutes</li>
-                      <li>Files between 500MB and 2GB may be uploadable in RenkuLab, but will take some time</li>
-                      <li>For files larger than 2GB, we recommend using the Renku CLI for uploading</li>
-                    </ul>
-                  </UncontrolledCollapse>
-                </small>
+                {dropFileBox}
               </td>
             </tr>
           </tfoot>
         </Table>
+        <div>
+          <small className="text-muted">
+            To upload a folder, zip the folder, upload the zip file, and select Unzip on upload. <br/>
+            NOTE: Support for uploading large files in RenkuLab is still under development; {" "}
+            consider using the Renku CLI for files larger than 500 MB.
+            <Button className="pe-0 ps-1 pt-0 pb-0 mb-1" color="link" id="fileLimitToggler">
+              <small>More info.</small>
+            </Button>
+            <UncontrolledCollapse key="fileLimitToggler" toggler={"#fileLimitToggler"} className="pt-0 ps-3">
+              In practice, the file-size limitation on uploads in RenkuLab is dependent on the {" "}
+              network connection. Here are some general estimates:<br />
+              <ul>
+                <li>Files under 500MB can be reliably uploaded within a few minutes</li>
+                <li>Files between 500MB and 2GB may be uploadable in RenkuLab, but will take some time</li>
+                <li>For files larger than 2GB, we recommend using the Renku CLI for uploading</li>
+              </ul>
+            </UncontrolledCollapse>
+          </small>
+        </div>
       </div>
       <input
         style={{ display: "none" }}

@@ -44,6 +44,23 @@ function mapStateToProps(state, props) {
 
 const VisibleFormGenerator = connect(mapStateToProps)(FormPanel);
 
+function FormGeneratorWrapper(props) {
+  const draft = props.model.get("formDrafts")[props.locationHash];
+  const [inputs, setInputs, setSubmit] = useForm(props.submitCallback, props.handlers, draft);
+  return (<VisibleFormGenerator
+    {...props}
+    handlers={props.handlers}
+    inputs={inputs}
+    loading={props.isLoading}
+    locationHash={props.locationHash}
+    modelValues={props.modelValues}
+    setInputs={setInputs}
+    setSubmit={setSubmit}
+    store={props.store}
+    versionUrl={props.versionUrl}
+  />);
+}
+
 class FormGenerator extends Component {
 
   constructor(props) {
@@ -142,19 +159,17 @@ class FormGenerator extends Component {
 
   render() {
     const draft = this.model.get("formDrafts")[this.locationHash];
-    const [inputs, setInputs, setSubmit] = useForm(this.props.submitCallback, this.handlers, draft);
-    return (<VisibleFormGenerator
+    return <FormGeneratorWrapper
       {...this.props}
+      draft={draft}
       handlers={this.handlers}
-      inputs={inputs}
       loading={this.getDraft() === undefined}
       locationHash={this.locationHash}
+      model={this.model}
       modelValues={this.getDraft()}
-      setInputs={setInputs}
-      setSubmit={setSubmit}
       store={this.model.reduxStore}
       versionUrl={this.props.versionUrl ? this.props.versionUrl : ""}
-    />);
+    />;
   }
 }
 export default FormGenerator;

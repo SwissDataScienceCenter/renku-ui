@@ -27,7 +27,7 @@ import ShareLinkModal from "./ShareLinkModal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faLink } from "@fortawesome/free-solid-svg-icons";
 import { ButtonWithMenu } from "../../../utils/components/Button";
-import { Button, DropdownItem } from "reactstrap/lib";
+import { Button, DropdownItem } from "../../../utils/ts-wrappers";
 import { NewProjectInputs, NewProjectMeta } from "./newProject.d";
 
 interface SubmitFormButtonProps {
@@ -35,15 +35,15 @@ interface SubmitFormButtonProps {
   meta: NewProjectMeta;
   importingDataset: boolean;
   handlers: {
-    createEncodedUrl: Function,
-    onSubmit: MouseEventHandler<HTMLButtonElement>,
+    createEncodedUrl: Function;
+    onSubmit: MouseEventHandler<HTMLButtonElement>;
   };
 }
 
 const SubmitFormButton = ({ input, meta, importingDataset, handlers }: SubmitFormButtonProps) => {
   const [showModal, setShotModal] = useState(false);
   const toggleModal = () => {
-    setShotModal( showModal => !showModal);
+    setShotModal((showModal) => !showModal);
   };
   const shareLinkModal = (
     <ShareLinkModal
@@ -56,35 +56,31 @@ const SubmitFormButton = ({ input, meta, importingDataset, handlers }: SubmitFor
   );
 
   const createProject = (
-    <Button
-      id="create-new-project"
-      color="secondary"
-      data-cy="create-project-button"
-      onClick={handlers.onSubmit}
-    > Create project
-    </Button>);
+    <Button id="create-new-project" color="secondary" data-cy="create-project-button" onClick={handlers.onSubmit}>
+      {" "}
+      Create project
+    </Button>
+  );
   const createLink = (
-    <DropdownItem onClick={toggleModal}><FontAwesomeIcon icon={faLink} /> Create link</DropdownItem>
+    <DropdownItem onClick={toggleModal}>
+      <FontAwesomeIcon icon={faLink} /> Create link
+    </DropdownItem>
   );
   // when is also importing a new dataset show a different submit button
-  const button = !importingDataset ?
+  const button = !importingDataset ? (
     <ButtonWithMenu color="secondary" default={createProject} direction="up">
       {createLink}
-    </ButtonWithMenu> :
-    (<Button
-      data-cy="add-dataset-submit-button"
-      id="create-new-project"
-      color="secondary"
-      onClick={handlers.onSubmit}>
+    </ButtonWithMenu>
+  ) : (
+    <Button data-cy="add-dataset-submit-button" id="create-new-project" color="secondary" onClick={handlers.onSubmit}>
       Add Dataset New Project
-    </Button>);
+    </Button>
+  );
 
   return (
     <>
       {shareLinkModal}
-      <div className="mt-4 d-flex justify-content-end">
-        {button}
-      </div>
+      <div className="mt-4 d-flex justify-content-end">{button}</div>
     </>
   );
 };

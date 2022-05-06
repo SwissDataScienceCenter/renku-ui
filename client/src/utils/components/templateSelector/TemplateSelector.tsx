@@ -27,16 +27,23 @@ import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons/faInfoCircle";
 import {
-  Card, CardBody, CardText, CardFooter, Col,
-  UncontrolledPopover, PopoverHeader, PopoverBody, Row, UncontrolledTooltip,
-} from "reactstrap/lib";
+  Card,
+  CardBody,
+  CardText,
+  CardFooter,
+  Col,
+  UncontrolledPopover,
+  PopoverHeader,
+  PopoverBody,
+  Row,
+  UncontrolledTooltip,
+} from "../../ts-wrappers";
 
 import defaultTemplateIcon from "../../../project/new/templatePlaceholder.svg";
 import { simpleHash } from "../../helpers/HelperFunctions";
 import { ExternalLink } from "../ExternalLinks";
 import { ErrorLabel, HelperLabel, InputLabel, LoadingLabel } from "../formlabels/FormLabels";
 import "./TemplateSelector.css";
-
 
 export interface Repository {
   url: string;
@@ -78,7 +85,7 @@ export interface TemplateSelectorProps {
 
   isDisabled?: boolean;
 
-  error?: string
+  error?: string;
 }
 
 interface TemplateGalleryRowProps {
@@ -90,25 +97,22 @@ interface TemplateGalleryRowProps {
   isDisabled?: boolean;
 }
 
-
 /**
  * Template Selector functional component
  * @param {TemplateSelectorProps} props - TemplateSelector options
  */
-function TemplateSelector(
-  {
-    repositories,
-    select,
-    selected,
-    templates,
-    isRequired,
-    isInvalid,
-    isDisabled,
-    isFetching,
-    noFetchedUserRepo,
-    error
-  }: TemplateSelectorProps) {
-
+function TemplateSelector({
+  repositories,
+  select,
+  selected,
+  templates,
+  isRequired,
+  isInvalid,
+  isDisabled,
+  isFetching,
+  noFetchedUserRepo,
+  error,
+}: TemplateSelectorProps) {
   let content;
   let totalTemplates = 0;
 
@@ -121,7 +125,7 @@ function TemplateSelector(
   else {
     content = repositories.map((repository: Repository) => {
       const repoTitle = repository.name;
-      const repoTemplates = templates.filter(t => t.parentRepo === repoTitle);
+      const repoTemplates = templates.filter((t) => t.parentRepo === repoTitle);
       totalTemplates += repoTemplates.length;
       const repoKey = simpleHash(repository.url + repository.ref);
       return (
@@ -144,12 +148,14 @@ function TemplateSelector(
   else if (isInvalid && totalTemplates === 0 && !noFetchedUserRepo)
     errorFeedback = <ErrorLabel text={"Error no templates available"} />;
 
+
   return (
     <>
       <InputLabel text="Template" isRequired={isRequired} />
       <div>{content}</div>
       {errorFeedback}
-    </>);
+    </>
+  );
 }
 
 interface TemplateRepositoryLinkProps {
@@ -157,37 +163,33 @@ interface TemplateRepositoryLinkProps {
 }
 // Show a link when we have a valid url. Otherwise, just simple text
 function TemplateRepositoryLink({ url }: TemplateRepositoryLinkProps) {
-  let repoUrl = url && url.length && url.startsWith("http") ?
-    url :
-    "";
-  if (repoUrl.endsWith(".git"))
-    repoUrl = repoUrl.substring(repoUrl.length - 4);
-  return repoUrl ?
-    (<ExternalLink url={repoUrl} title={url} role="link" />) :
-    null;
+  let repoUrl = url && url.length && url.startsWith("http") ? url : "";
+  if (repoUrl.endsWith(".git")) repoUrl = repoUrl.substring(repoUrl.length - 4);
+  return repoUrl ? <ExternalLink url={repoUrl} title={url} role="link" /> : null;
 }
 
-function TemplateGalleryRow(
-  { repository, select, selected, templates, isInvalid, isDisabled }: TemplateGalleryRowProps) {
-
+function TemplateGalleryRow({
+  repository,
+  select,
+  selected,
+  templates,
+  isInvalid,
+  isDisabled,
+}: TemplateGalleryRowProps) {
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   useEffect(() => setSelectedTemplate(selected), [selected]);
   const handleSelectedTemplate = (id: string) => {
     setSelectedTemplate(id);
 
-    if (select && !isDisabled)
-      select(id);
+    if (select && !isDisabled) select(id);
   };
 
   // Don't render anything if there are no templates for the repository
-  if (!templates || !templates.length)
-    return null;
+  if (!templates || !templates.length) return null;
 
   // Show a card for each template
-  const elements = templates.map(t => {
-    const imgSrc = t.icon ?
-      `data:image/png;base64,${t.icon}` :
-      defaultTemplateIcon;
+  const elements = templates.map((t) => {
+    const imgSrc = t.icon ? `data:image/png;base64,${t.icon}` : defaultTemplateIcon;
     const id = "id" + simpleHash(repository.name) + simpleHash(t.id);
     const selectedClass = selectedTemplate === t.id ? "selected" : "";
     const invalidTemplate = isInvalid ? "template--invalid" : "";
@@ -195,9 +197,14 @@ function TemplateGalleryRow(
 
     return (
       <Col key={t.id}>
-        <Card id={id}
+        <Card
+          id={id}
           className={`template-card mb-2 text-center ${selectedClass} ${invalidTemplate} ${statusTemplate}`}
-          onClick={() => { handleSelectedTemplate(t.id); }} data-cy="project-template-card">
+          onClick={() => {
+            handleSelectedTemplate(t.id);
+          }}
+          data-cy="project-template-card"
+        >
           <CardBody className="p-1">
             <img src={imgSrc} alt={t.id + " template image"} />
           </CardBody>

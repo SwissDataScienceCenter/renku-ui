@@ -185,27 +185,6 @@ class NotebookComparisonList extends Component {
   }
 }
 
-class NotebookComparisonPresent extends Component {
-  render() {
-    return (
-      <Row>
-        <Col xs={6}>
-          <p><br />{this.props.filePath}</p>
-          <div className="notebook-comparison">
-            {this.props.leftNotebookComponent}
-          </div>
-        </Col>
-        <Col xs={6}>
-          <p><br />{this.props.filePath}</p>
-          <div className="notebook-comparison">
-            {this.props.rightNotebookComponent}
-          </div>
-        </Col>
-      </Row>
-    );
-  }
-}
-
 function changeToType(change) {
   if (change.new_file) return "new_file";
   else if (change.deleted_file) return "deleted_file";
@@ -253,4 +232,4 @@ class OpaqueChangesGroup extends Component {
 }
 
 
-export { NotebookComparisonPresent, MergeRequestPresent };
+export { MergeRequestPresent };

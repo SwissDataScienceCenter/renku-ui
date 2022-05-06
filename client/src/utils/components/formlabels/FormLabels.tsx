@@ -23,7 +23,7 @@
  *  FormLabels components.
  */
 import * as React from "react";
-import { FormText, FormFeedback, Label } from "reactstrap/lib";
+import { FormText, FormFeedback, Label } from "../../ts-wrappers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
@@ -32,7 +32,7 @@ import { Loader } from "../Loader";
 
 interface LabelProps {
   text: string;
-  children?: React.ReactNode
+  children?: React.ReactNode;
 }
 
 interface InputLabelProps extends LabelProps {
@@ -40,12 +40,13 @@ interface InputLabelProps extends LabelProps {
   isOptional?: boolean;
 }
 
-
 const InputLabel = ({ text, isRequired = false, isOptional = false }: InputLabelProps) => {
-  const requiredLabel = isRequired ? (<span className="required-label">*</span>) : null;
-  const optionalLabel = isOptional ? (<span> (Optional)</span>) : null;
+  const requiredLabel = isRequired ? <span className="required-label">*</span> : null;
+  const optionalLabel = isOptional ? <span> (Optional)</span> : null;
   return (
-    <Label>{ text } {requiredLabel} {optionalLabel}</Label>
+    <Label>
+      {text} {requiredLabel} {optionalLabel}
+    </Label>
   );
 };
 
@@ -59,24 +60,19 @@ const LoadingLabel = ({ text }: LabelProps) => {
 };
 
 const HelperLabel = ({ text }: LabelProps) => {
-  return (
-    <FormText className="helper-label">
-      { text }
-    </FormText>
-  );
+  return <FormText className="helper-label">{text}</FormText>;
 };
 
 const InputHintLabel = ({ text }: LabelProps) => {
-  return (
-    <FormText className="input-hint">{ text }</FormText>
-  );
+  return <FormText className="input-hint">{text}</FormText>;
 };
 
 const ErrorLabel = ({ text, children }: LabelProps) => {
   return (
     <FormFeedback className="error-feedback">
-      <FontAwesomeIcon icon={faExclamationTriangle} />{" "}{ text } {children}
-    </FormFeedback>);
+      <FontAwesomeIcon icon={faExclamationTriangle} /> {text} {children}
+    </FormFeedback>
+  );
 };
 
-export { InputLabel, LoadingLabel, HelperLabel, InputHintLabel, ErrorLabel } ;
+export { InputLabel, LoadingLabel, HelperLabel, InputHintLabel, ErrorLabel };

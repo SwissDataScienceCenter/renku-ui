@@ -24,7 +24,7 @@
  */
 import React from "react";
 import { slugFromTitle } from "../../../utils/helpers/HelperFunctions";
-import { FormGroup, Input } from "reactstrap/lib";
+import { FormGroup, Input } from "../../../utils/ts-wrappers";
 import { InputHintLabel, InputLabel } from "../../../utils/components/formlabels/FormLabels";
 import { NewProjectInputs } from "./newProject.d";
 
@@ -33,19 +33,15 @@ interface ProjectIdentifierProps {
 }
 
 const ProjectIdentifier = ({ input }: ProjectIdentifierProps) => {
-  const namespace = input.namespace ?
-    input.namespace :
-    "<no namespace>";
-  const title = input.title ?
-    slugFromTitle(input.title, true) :
-    "<no title>";
+  const namespace = input.namespace ? input.namespace : "<no namespace>";
+  const title = input.title ? slugFromTitle(input.title, true) : "<no title>";
   const slug = `${namespace}/${title}`;
 
   return (
     <FormGroup className="field-group">
       <InputLabel text="Identifier" />
       <Input id="slug" readOnly value={slug} />
-      <InputHintLabel text="This is automatically derived from Namespace and Title"/>
+      <InputHintLabel text="This is automatically derived from Namespace and Title" />
     </FormGroup>
   );
 };

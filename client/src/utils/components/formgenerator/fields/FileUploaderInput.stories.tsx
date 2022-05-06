@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2022 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -15,24 +15,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as React from "react";
+import { Story } from "@storybook/react";
+import FileUploaderInput from "./FileUploaderInput";
 
-/**
- *  incubator-renku-ui
- *
- *  Notebook.test.js
- *  Tests for the notebook renderer.
- */
+export default {
+  title: "components/FileUploaderInput",
+  component: FileUploaderInput,
+  argTypes: {
+  },
+};
 
-import React from "react";
-import ReactDOM from "react-dom";
 
-import Notebook from "./Notebook";
-import { testClient as client } from "../api-client";
+const Template: Story<any> = (args) => <FileUploaderInput {...args} />;
 
-describe("rendering", () => {
-  it("renders new without crashing", () => {
-    const div = document.createElement("div");
-    ReactDOM.render(<Notebook.Show filePath="notebooks/test.js" client={client} />, div);
-  });
-
-});
+export const Default = Template.bind({});
+Default.args = {
+  label: "Files",
+  required: false,
+  handlers: {
+    getFormDraftInternalValuesProperty: () => undefined
+  }
+};

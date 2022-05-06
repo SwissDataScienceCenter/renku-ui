@@ -17,8 +17,7 @@
  */
 
 import React, { Component } from "react";
-import { NotebookComparisonPresent, MergeRequestPresent } from "./MergeRequest.present";
-import Notebook from "../../file/Notebook";
+import { MergeRequestPresent } from "./MergeRequest.present";
 import { ACCESS_LEVELS } from "../../api-client";
 import { mergeRequestRowInfo } from "../lists-old/MergeRequestList.present";
 
@@ -148,15 +147,9 @@ class MergeRequestContainer extends Component {
 
 class NotebookComparisonContainer extends Component {
   render() {
-    const notebook1 = <Notebook.Show {...this.props} accessLevel={0} branchName={this.props.ref1} />;
-    const notebook2 = <Notebook.Show {...this.props} accessLevel={0} branchName={this.props.ref2} />;
-
-    return <NotebookComparisonPresent
-      filePath={this.props.filePath}
-      leftNotebookComponent={notebook1}
-      rightNotebookComponent={notebook2}
-    />;
+    return <div>Notebook comparisons are not supported anymore.</div>;
   }
+
 }
 
 export { MergeRequestContainer };
