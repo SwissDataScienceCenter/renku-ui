@@ -35,7 +35,8 @@ const urlMap = {
   projectNewUrl: Url.get(Url.pages.project.new),
   projectsSearchUrl: Url.get(Url.pages.projects.all),
   projectsStarredUrl: Url.get(Url.pages.projects.starred),
-  siteStatusUrl: Url.get(Url.pages.help.status)
+  siteStatusUrl: Url.get(Url.pages.help.status),
+  searchEntities: Url.get(Url.pages.searchEntities),
 };
 
 class Home extends Component {
