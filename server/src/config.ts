@@ -17,6 +17,7 @@
  */
 
 import { convertType, urlJoin } from "./utils";
+import { StoragePrefix } from "./storage";
 
 const SERVER = {
   url: process.env.SERVER_URL,
@@ -83,7 +84,9 @@ const ROUTES = {
 };
 
 const DATA = {
-  projectsStoragePrefix: "LPROJECT_",
+  projectsStoragePrefix: StoragePrefix.LAST_PROJECTS,
+  searchStoragePrefix: StoragePrefix.LAST_SEARCHES,
+  searchDefaultLength: 10,
   projectsDefaultLength: 20,
   userSessionsPrefix: "SESSIONS_",
 };
@@ -93,6 +96,7 @@ const WEBSOCKET = {
   shortIntervalSec: 5, // ? in seconds
   longIntervalSec: 180, // ? in seconds
   delayStartSec: 3, // ? in seconds
+  timeoutActivationStatus: 120 // in minutes
 };
 
 const config = {

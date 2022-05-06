@@ -28,7 +28,7 @@ const lastProjectsMiddleware = (storage: Storage) =>
 
     if (req.query?.doNotTrack !== "true") {
       res.on("finish", function() {
-        if (![304, 200].includes(res.statusCode) || !token) {
+        if (res.statusCode >= 400 || !token) {
           next();
           return;
         }

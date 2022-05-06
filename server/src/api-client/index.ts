@@ -47,6 +47,19 @@ class APIClient {
   }
 
   /**
+   * Fetch kg activation status by projectId
+   *
+   * @param {number} projectId - Project Id
+   * @param {Headers} authHeaders - Authentication headers
+   */
+  async kgActivationStatus(projectId: number, authHeaders: Headers): Promise<Response> {
+    const headers = new Headers(authHeaders);
+    const activationStatusURL = `${ this.gatewayUrl }/projects/${ projectId }/graph/status`;
+    logger.info(`Fetching kg activation from ${ projectId } project`);
+    return this.clientFetch(activationStatusURL, { headers }, RETURN_TYPES.json);
+  }
+
+  /**
    * A fetch method which is attached to an API client instance
    * Optional arguments default values are set from FETCH_DEFAULT.
    *
@@ -93,6 +106,9 @@ class APIClient {
     }
 
     options["credentials"] = "same-origin";
+    // Add a custom header for protection against CSRF attacks.
+    options.headers.append("X-Requested-With", "XMLHttpRequest");
+
     const request = new Request(urlObject.toString());
 
     return fetch(request, options)
