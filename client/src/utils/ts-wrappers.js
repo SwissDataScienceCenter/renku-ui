@@ -26,6 +26,7 @@ import {
   ModalBody as WrappedModalBody,
   ModalHeader as WrappedModalHeader,
   ModalFooter as WrappedModalFooter,
+  Progress as WrappedProgress,
   Row as WrappedRow,
   Table as WrappedTable,
 } from "reactstrap";
@@ -66,6 +67,9 @@ import {
   StopCircle as WrappedStopCircle,
   InfoCircle as WrappedInfoCircle,
   XCircleFill as WrappedXCircleFill,
+  Funnel as WrappedFunnel,
+  FunnelFill as WrappedFunnelFull,
+  Balloon as WrappedBalloon,
 } from "react-bootstrap-icons";
 
 import { FormGroup as WrappedFormGroup, Input as WrappedInput, InputGroup as WrappedInputGroup } from "reactstrap";
@@ -318,6 +322,14 @@ function XCircleFill(props) {
   return <WrappedXCircleFill {...props} />;
 }
 
+function Funnel(props) {
+  return <WrappedFunnel {...props} />;
+}
+
+function FunnelFill(props) {
+  return <WrappedFunnelFull {...props} />;
+}
+
 function Bookmarks(props) {
   return <WrappedBookmarks {...props} />;
 }
@@ -330,15 +342,24 @@ function XLg(props) {
   return <WrappedXLg {...props} />;
 }
 
+function Progress(props) {
+  return <WrappedProgress {...props} />;
+}
+
+function Balloon(props) {
+  return <WrappedBalloon {...props} />;
+}
+
 export { ArrowClockwise };
 export { Accordion, AccordionItem, AccordionHeader, AccordionBody };
-export { Alert, Badge, Button, ButtonDropdown, ButtonGroup, CheckCircleFill, XCircleFill };
+export { Alert, Badge, Button, ButtonDropdown, ButtonGroup, Progress, CheckCircleFill, XCircleFill };
 export { Card, CardBody, CardFooter, CardHeader, CardText, Col, DropdownItem, DropdownMenu, DropdownToggle };
 export { FormFeedback, FormText, Fade, Form, FormGroup, Input, InputGroup, Label };
 export { PopoverHeader, PopoverBody };
 export { Modal, ModalBody, ModalHeader, ModalFooter, Row, Table };
 export { UncontrolledPopover, UncontrolledTooltip };
 export { ArrowLeft, Briefcase, CardList, Diagram3, Download, Globe, HddStack, InfoCircle, Journals, Lock };
-export { People, Save, StopCircle };
+export { People, Save, StopCircle, Balloon };
 export { Nav, NavItem, NavLink, TabContent, TabPane };
 export { Bookmarks, CaretDownFill, CaretRightFill, Calendar4, Diagram2, XLg };
+export { Funnel, FunnelFill };

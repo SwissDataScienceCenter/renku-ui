@@ -75,3 +75,18 @@ a:focus-visible, svg:focus, svg:focus-visible {
 .border-radius-8 {
   border-radius: 8px;
 }
+
+.pagination {
+  border: 1px solid #F5F6FA;
+}
+
+.rk-search-pagination .page-item.active .page-link {
+  background-color: var(--bs-rk-green) !important;
+  color: white !important;
+}
+
+.rk-search-pagination .page-link {
+  background-color: white !important;
+  border-color: #f5f6fa !important;
+  color: #3A3A3D !important;
+}

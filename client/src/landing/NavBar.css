@@ -11,3 +11,12 @@
 .icons-menu svg {
     outline-style: none;
 }
+
+.menu-right {
+    margin: auto;
+    flex-grow: 0;
+}
+
+.menu-right ul{
+    justify-content: space-between;
+}

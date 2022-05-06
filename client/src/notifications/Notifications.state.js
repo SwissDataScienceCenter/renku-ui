@@ -37,6 +37,7 @@ const NotificationsInfo = {
     SESSION_START: "Session",
     PROJECT_API: "Project data",
     PROJECT_FORKED: "Project forked",
+    KG_ACTIVATION: "KG Activation"
   },
 };
 
@@ -64,9 +65,7 @@ class NotificationsCoordinator {
    * @param {string} [forceRead] - mark the notification as read
    */
   addNotification(level, topic, desc, link, linkText, awareLocations, longDesc, forceRead) {
-    const read = forceRead || level === NotificationsInfo.Levels.INFO ?
-      true :
-      false;
+    const read = !!(forceRead || level === NotificationsInfo.Levels.INFO);
     const notification = {
       id: Math.random().toString(36).substring(2),
       timestamp: new Date(),

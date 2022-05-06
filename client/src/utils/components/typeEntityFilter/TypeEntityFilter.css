@@ -1,0 +1,14 @@
+.filter-label {
+    font-size: medium;
+    font-weight: bold;
+}
+
+.type-entity-label {
+    width: 100px;
+    margin-top: 0.2rem;
+}
+
+.type-entity-icon {
+    margin-top: 0.5rem;
+    width: 24px;
+}

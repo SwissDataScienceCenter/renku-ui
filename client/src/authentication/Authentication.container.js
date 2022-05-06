@@ -96,7 +96,7 @@ const LoginHelper = {
     const login = sessionStorage.getItem(RenkuQueryParams.login);
     if (login) {
       sessionStorage.removeItem(RenkuQueryParams.login);
-      notifications.addSuccess(
+      notifications?.addSuccess(
         notifications.Topics.AUTHENTICATION,
         "The page was refreshed because you recently logged in on a different tab."
       );
@@ -106,7 +106,7 @@ const LoginHelper = {
     const logout = sessionStorage.getItem(RenkuQueryParams.logout);
     if (logout) {
       sessionStorage.removeItem(RenkuQueryParams.logout);
-      notifications.addWarning(
+      notifications?.addWarning(
         notifications.Topics.AUTHENTICATION,
         "The page was refreshed because you recently logged out on a different tab."
       );
