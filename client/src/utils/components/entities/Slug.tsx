@@ -31,7 +31,7 @@ export interface SlugProps {
 }
 
 function Slug({ display, slug }: SlugProps) {
-  if (!slug) return null;
+  if (!slug) slug = "";
   if (display === "list") {
     return <div className="card-entity-row card-text text-rk-text-light">
       {slug}

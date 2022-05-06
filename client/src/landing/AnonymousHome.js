@@ -40,7 +40,6 @@ import {
 
 import { Url } from "../utils/helpers/url";
 import { StatuspageBanner } from "../statuspage";
-import QuickNav from "../utils/components/quicknav";
 import { RenkuToolbarHelpMenu, RenkuToolbarNotifications } from "./NavBar";
 import { NavBarWarnings } from "./NavBarWarnings";
 
@@ -69,6 +68,7 @@ import { RenkuNavLink } from "../utils/components/RenkuNavLink";
 import { ExternalIconLink, ExternalLink } from "../utils/components/ExternalLinks";
 import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
 import { Docs } from "../utils/constants/Docs";
+import { Search } from "react-bootstrap-icons";
 
 function HomeHeader(props) {
   const [isOpen, setIsOpen] = useState(false);
@@ -81,6 +81,7 @@ function HomeHeader(props) {
     github: "https://github.com/SwissDataScienceCenter/renku",
     docs: Docs.READ_THE_DOCS_ROOT
   };
+  const searchIcon = <Search />;
   return <Fragment>
     <Row key="statuspage">
       <Col>
@@ -146,16 +147,11 @@ function HomeHeader(props) {
         <Navbar className="navbar rk-anon-home px-0">
           <Nav className="ms-auto flex-column rk-bg-shaded-dark text-end"
             style={{ "--rk-bg-opacity": 0.8 }}>
-            <NavItem className="nav-item pe-1">
-              <QuickNav client={props.client} model={props.model} user={props.user} />
+            <NavItem className="nav-item">
+              <RenkuNavLink to="/search" title="Search" id="link-search"
+                icon={searchIcon} />
             </NavItem>
-            <NavItem>
-              <RenkuNavLink to="/projects" title="Projects" id="link-projects" className="link-secondary" />
-            </NavItem>
-            <NavItem>
-              <RenkuNavLink to="/datasets" title="Datasets" id="link-datasets" />
-            </NavItem>
-            <NavItem>
+            <NavItem className="nav-item">
               <RenkuNavLink to="/sessions" title="Sessions" id="link-sessions" />
             </NavItem>
             <NavItem className="d-inline d-md-none">
@@ -238,7 +234,7 @@ function Section1(props) {
         </Row>
         <Row>
           <Col className="rk-pt-s rk-w-s">
-            <HashLink className="btn btn-secondary-home" role="button"
+            <HashLink className="btn btn-outline-rk-pink" role="button"
               to="#rk-anon-home-section-features">
             Learn more
             </HashLink>
@@ -257,11 +253,11 @@ function TutorialLink(props) {
   if (url.startsWith("http")) {
     return <ExternalLink
       title="Follow the tutorial"
-      className="btn btn-secondary-home" role="button" id="link-learn"
+      className="btn btn-outline-rk-pink" role="button" id="link-learn"
       showLinkIcon={true}
       url={url} />;
   }
-  return <Link className="btn btn-secondary-home" role="link" id="link-tutorial" to={url}>
+  return <Link className="btn btn-outline-rk-pink" role="link" id="link-tutorial" to={url}>
     Follow the tutorial
   </Link>;
 }
@@ -301,7 +297,7 @@ function Section4(props) {
         <div className="pt-2" style={{ minWidth: "180px" }}>
           <ExternalLink
             title="Learn more"
-            className="btn btn-secondary-home" role="button" id="link-learn"
+            className="btn btn-outline-rk-pink" role="button" id="link-learn"
             showLinkIcon={true}
             url={Docs.READ_THE_DOCS_ROOT} />
         </div>
