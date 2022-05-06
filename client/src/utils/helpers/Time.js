@@ -89,7 +89,7 @@ class Time {
    * Format a date/time string using either toLocale[Date,Time]String (default) or d3 format string.
    *
    * formatString should be a d3TimeFormat format string:
-   * @param {string} dt The date to format
+   * @param {string | Date} dt The date to format
    * @param {object} options {localeTimeOptions: object, d3FormatString: string or null}.
    *   The localeTimeOptions are passed to toLocaleTimeString. Defaults to
    *     { hour: "2-digit", minute: "2-digit" }.

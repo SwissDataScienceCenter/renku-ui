@@ -190,7 +190,8 @@ function constructUrlMap(baseUrl) {
     fontsUrl: `${baseUrl}/fonts`,
     formsUrl: `${baseUrl}/forms`,
     listsUrl: `${baseUrl}/lists`,
-    navUrl: `${baseUrl}/nav`
+    navUrl: `${baseUrl}/nav`,
+    searchUrl: `${baseUrl}/search`
   };
 }
 
