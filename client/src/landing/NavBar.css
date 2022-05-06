@@ -3,3 +3,28 @@
     padding: 0.5rem;
     white-space: nowrap;
 }
+
+.menu-right {
+    margin-top: 10px;
+}
+
+.menu-right ul{
+    justify-content: space-between;
+}
+
+@media (min-width: 992px) {
+    .menu-right{
+        max-width: 260px;
+        margin-top: 0;
+    }
+}
+
+@media (min-width: 1440px) {
+    .menu-right{
+        max-width: 280px;
+        margin-top: 0;
+    }
+    .navbar-brand {
+        width: 280px;
+    }
+}
