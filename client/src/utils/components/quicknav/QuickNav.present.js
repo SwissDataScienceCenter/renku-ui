@@ -23,6 +23,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
 import "./QuickNav.style.css";
+import { Label } from "reactstrap/lib";
+import { defaultAnonymousSuggestionQuickBar, defaultSuggestionQuickBar } from "./QuickNav.container";
 
 class QuickNavPresent extends Component {
 
@@ -33,11 +35,24 @@ class QuickNavPresent extends Component {
   }
 
   doRenderSuggestion(suggestion, { query, isHighlighted }) {
+    const style = { padding: "5px 0", borderBottom: "1px solid #e1e4e8" };
+
+    if (suggestion.type === "fixed") {
+      return (
+        <div style={style}>
+          <Link id={suggestion.id} to={suggestion.url} style={{ textDecoration: "none", display: "block" }}>
+            <img src={suggestion.icon} className="suggestion-icon" width="27" alt={suggestion.label} />
+            {suggestion.label}
+          </Link>
+        </div>
+      );
+    }
+
     // If the suggestion is actually a query, make an appropriate link
     const link = (suggestion.query == null) ?
       <Link to={suggestion.url}>{suggestion.path}</Link> :
       <Link to={suggestion.url}>{suggestion.query}</Link>;
-    const style = { padding: "5px 0", borderBottom: "1px solid #e1e4e8" };
+
     return (isHighlighted) ?
       <div style={style} className="bg-light">{link}</div> :
       <div style={style}>{link}</div>;
@@ -83,24 +98,33 @@ class QuickNavPresent extends Component {
       }
     };
 
+    let suggestionList = [defaultAnonymousSuggestionQuickBar];
+    if (this.props.loggedIn)
+      suggestionList = this.props.suggestions.length ? this.props.suggestions : [defaultSuggestionQuickBar];
+
     return (
-      <div id="quick-nav" className="input-group flex-nowrap input-group-sm pe-2">
-        <Autosuggest
-          suggestions={this.props.suggestions}
-          getSuggestionValue={this.props.callbacks.getSuggestionValue}
-          onSuggestionsFetchRequested={this.props.callbacks.onSuggestionsFetchRequested}
-          onSuggestionsClearRequested={this.props.callbacks.onSuggestionsClearRequested}
-          onSuggestionSelected={this.props.callbacks.onSuggestionSelected}
-          onSuggestionHighlighted={this.props.callbacks.onSuggestionHighlighted}
-          multiSection={true}
-          renderSectionTitle={this.onSectionTitle}
-          getSectionSuggestions={(section) => section.suggestions}
-          inputProps={inputProps}
-          theme={theme}
-          renderSuggestion={this.onRenderSuggestion} />
-        <span className="input-group-text" id="addon-wrapping" onClick={this.props.callbacks.onSubmit}>
-          <FontAwesomeIcon icon={faSearch} />
-        </span>
+      <div className="search-box flex-nowrap justify-content-center">
+        <div id="quick-nav" className="input-group flex-nowrap input-group-sm justify-content-center">
+          <Autosuggest
+            suggestions={suggestionList}
+            getSuggestionValue={this.props.callbacks.getSuggestionValue}
+            onSuggestionsFetchRequested={this.props.callbacks.onSuggestionsFetchRequested}
+            onSuggestionsClearRequested={this.props.callbacks.onSuggestionsClearRequested}
+            onSuggestionSelected={this.props.callbacks.onSuggestionSelected}
+            onSuggestionHighlighted={this.props.callbacks.onSuggestionHighlighted}
+            multiSection={true}
+            renderSectionTitle={this.onSectionTitle}
+            getSectionSuggestions={(section) => section.suggestions}
+            inputProps={inputProps}
+            theme={theme}
+            shouldRenderSuggestions={() => true}
+            focusInputOnSuggestionClick={false}
+            renderSuggestion={this.onRenderSuggestion} />
+          <span className="input-group-text search-button" id="addon-wrapping" onClick={this.props.callbacks.onSubmit}>
+            <FontAwesomeIcon size="lg" icon={faSearch} />
+          </span>
+        </div>
+        <Label className="search-input-label">Search for Project, Dataset ...</Label>
       </div>
     );
   }
