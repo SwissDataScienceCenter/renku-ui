@@ -23,8 +23,12 @@
  */
 import React from "react";
 import VisibilityInput from "../../../utils/components/visibility/Visibility";
-import { FormGroup } from "reactstrap/lib";
-import { NewProjectHandlers, NewProjectInputs, NewProjectMeta } from "./newProject.d";
+import { FormGroup } from "../../../utils/ts-wrappers";
+import {
+  NewProjectHandlers,
+  NewProjectInputs,
+  NewProjectMeta
+} from "./newProject.d";
 
 interface VisibilityProps {
   handlers: NewProjectHandlers;
@@ -38,13 +42,18 @@ const Visibility = ({ handlers, meta, input }: VisibilityProps) => {
   return (
     <FormGroup className="field-group">
       <VisibilityInput
-        isLoadingData={meta.namespace.fetching || !meta.namespace.visibilities || !input.visibility}
+        isLoadingData={
+          meta.namespace.fetching ||
+          !meta.namespace.visibilities ||
+          !input.visibility
+        }
         namespaceVisibility={meta.namespace.visibility}
         isInvalid={!!error && !input.visibilityPristine}
         data-cy="visibility-select"
         isRequired={true}
         onChange={(value: string) => handlers.setProperty("visibility", value)}
-        value={input.visibility ?? null} />
+        value={input.visibility ?? null}
+      />
     </FormGroup>
   );
 };

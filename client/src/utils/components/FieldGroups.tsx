@@ -24,8 +24,7 @@
  */
 
 import React from "react";
-import { FormGroup, FormText, Input, Label
-} from "reactstrap/lib";
+import { FormGroup, FormText, Input, Label } from "../ts-wrappers";
 import { ErrorLabel, InputLabel } from "./formlabels/FormLabels";
 
 interface FieldGroupProps {
@@ -42,18 +41,29 @@ interface FieldGroupProps {
   isOptional?: boolean;
 }
 
-const FieldGroup = (
-  { id, label, help, feedback, value, onChange, invalid,
-    isRequired = false, isOptional = false, type = "text" }: FieldGroupProps) => {
-  return <FormGroup className="field-group">
-    <Label>
-      <InputLabel text={label} isRequired={isRequired} isOptional={isOptional} />
-    </Label>
-    <Input id={id} data-cy={`field-group-${id}`} invalid={invalid} type={type} value={value} onChange={onChange} />
-    {feedback && invalid && <ErrorLabel text={feedback}/> }
+const FieldGroup = ({
+  id,
+  label,
+  help,
+  feedback,
+  value,
+  onChange,
+  invalid,
+  isRequired = false,
+  isOptional = false,
+  type = "text",
+}: FieldGroupProps) => {
+  return (
+    <FormGroup className="field-group">
+      <Label>
+        <InputLabel text={label} isRequired={isRequired} isOptional={isOptional} />
+      </Label>
+      <Input id={id} data-cy={`field-group-${id}`} invalid={invalid} type={type} value={value} onChange={onChange} />
+      {feedback && invalid && <ErrorLabel text={feedback} />}
 
-    {help && <FormText color="muted">{help}</FormText>}
-  </FormGroup>;
+      {help && <FormText color="muted">{help}</FormText>}
+    </FormGroup>
+  );
 };
 
 export default FieldGroup;

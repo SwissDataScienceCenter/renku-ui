@@ -22,13 +22,13 @@
  *  Automated.tsx
  *  Automated Project component
  */
-import * as React from "react";
+import React from "react";
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
-import {
-  Alert, Button, Col, Fade, Modal, ModalBody, ModalHeader, Row
-} from "reactstrap/lib";
+
+import { Col, Row } from "../../../utils/ts-wrappers";
+import { Alert, Button, Fade, Modal, ModalBody, ModalHeader } from "../../../utils/ts-wrappers";
 
 import { ErrorAlert, WarnAlert } from "../../../utils/components/Alert";
 import { Url } from "../../../utils/helpers/url";
@@ -56,16 +56,15 @@ interface AutomatedData extends Project {
 }
 
 interface AutomatedProps {
-  automated: AutomatedData,
-  removeAutomated: Function
+  automated: AutomatedData;
+  removeAutomated: Function;
 }
 
 interface AutomatedModalProps {
-  removeAutomated: Function
+  removeAutomated: Function;
 }
 
 function Automated({ automated, removeAutomated }: AutomatedProps) {
-
   const [showError, setShowError] = useState(false);
   const toggleError = () => setShowError(!showError);
 
@@ -74,43 +73,42 @@ function Automated({ automated, removeAutomated }: AutomatedProps) {
 
   if (!automated.finished) {
     // Show a static modal while loading the data
-    if (automated.received && automated.valid)
-      return <AutomatedModal removeAutomated={removeAutomated}/>;
+    if (automated.received && automated.valid) return <AutomatedModal removeAutomated={removeAutomated} />;
     return null;
   }
   // Show a feedback when the automated part has finished
   // errors
   if (automated.error) {
-    const error = (<pre>{automated.error}</pre>);
+    const error = <pre>{automated.error}</pre>;
     return (
-      <ErrorAlert key="alert" >
+      <ErrorAlert key="alert">
+        <p>We could not pre-fill the fields with the information provided in the RenkuLab project-creation link.</p>
         <p>
-          We could not pre-fill the fields with the information provided in the RenkuLab project-creation link.
-        </p>
-        <p>
-          It is possible that the link is outdated or not valid.
-          Please contact the source of the RenkuLab link and ask for a new one.
+          It is possible that the link is outdated or not valid. Please contact the source of the RenkuLab link and ask
+          for a new one.
         </p>
 
         <Button color="link" style={{ fontSize: "smaller" }} className="font-italic" onClick={() => toggleError()}>
           {showError ? "Hide error details" : "Show error details"}
         </Button>
-        <Fade in={showError} tag="div">{showError ? error : null}</Fade>
+        <Fade in={showError} tag="div">
+          {showError ? error : null}
+        </Fade>
       </ErrorAlert>
     );
   }
   // warnings
   else if (automated.warnings.length) {
-    const warnings = (<pre>{automated.warnings.join("\n")}</pre>);
+    const warnings = <pre>{automated.warnings.join("\n")}</pre>;
     return (
       <WarnAlert>
-        <p>
-          Some fields could not be pre-filled with the information provided in the RenkuLab project-creation link.
-        </p>
+        <p>Some fields could not be pre-filled with the information provided in the RenkuLab project-creation link.</p>
         <Button color="link" style={{ fontSize: "smaller" }} className="font-italic" onClick={() => toggleWarn()}>
           {showWarnings ? "Hide warnings" : "Show warnings"}
         </Button>
-        <Fade in={showWarnings} tag="div">{showWarnings ? warnings : null}</Fade>
+        <Fade in={showWarnings} tag="div">
+          {showWarnings ? warnings : null}
+        </Fade>
       </WarnAlert>
     );
   }
@@ -118,14 +116,14 @@ function Automated({ automated, removeAutomated }: AutomatedProps) {
   return (
     <Alert color="primary">
       <p className="mb-0">
-        <FontAwesomeIcon icon={faInfoCircle} />&nbsp;
-        Some fields were pre-filled.
-        <br />You can still change any values before you create the project.
+        <FontAwesomeIcon icon={faInfoCircle} />
+        &nbsp; Some fields were pre-filled.
+        <br />
+        You can still change any values before you create the project.
       </p>
     </Alert>
   );
 }
-
 
 function AutomatedModal(props: AutomatedModalProps) {
   const { removeAutomated } = props;
@@ -134,19 +132,23 @@ function AutomatedModal(props: AutomatedModalProps) {
 
   const toggle = () => setShowFadeIn(!showFadeIn);
 
-  const button = showFadeIn ?
-    null :
-    (
-      <Button color="link" style={{ fontSize: "smaller" }} className="font-italic" onClick={() => toggle()}>
-        Taking too long?
-      </Button>
-    );
+  const button = showFadeIn ? null : (
+    <Button color="link" style={{ fontSize: "smaller" }} className="font-italic" onClick={() => toggle()}>
+      Taking too long?
+    </Button>
+  );
 
   const to = Url.get(Url.pages.project.new);
   const fadeInContent = (
     <p className="mt-3">
       If pre-filling the new project form is taking too long, you can
-      <Link className="btn btn-primary btn-sm" to={to} onClick={() => { removeAutomated(); }}>
+      <Link
+        className="btn btn-primary btn-sm"
+        to={to}
+        onClick={() => {
+          removeAutomated();
+        }}
+      >
         use a blank form
       </Link>
     </p>
@@ -164,7 +166,9 @@ function AutomatedModal(props: AutomatedModalProps) {
             </span>
             <div className="mt-2">
               {button}
-              <Fade in={showFadeIn} tag="div">{showFadeIn ? fadeInContent : null}</Fade>
+              <Fade in={showFadeIn} tag="div">
+                {showFadeIn ? fadeInContent : null}
+              </Fade>
             </div>
           </Col>
         </Row>

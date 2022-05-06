@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { useEffect, useState } from "react";
-import { Input } from "reactstrap/lib";
+import { ChangeEvent, useEffect, useState } from "react";
+import { Input } from "../../ts-wrappers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe, faLock, faUserFriends } from "@fortawesome/free-solid-svg-icons";
 
@@ -32,15 +32,18 @@ import { ErrorLabel, HelperLabel, InputHintLabel, InputLabel, LoadingLabel } fro
  *  Visibility input
  */
 
+// These are used by the TS compiler does not realize it.
+/* eslint-disable no-unused-vars */
 export enum Visibilities {
   Public = "public",
   Private = "private",
-  Internal = "internal"
+  Internal = "internal",
 }
+/* eslint-enable no-unused-vars */
 
 export interface VisibilityInputProps {
   /** It restrict the options to show */
-  namespaceVisibility : Visibilities;
+  namespaceVisibility: Visibilities;
 
   /** Default value */
   value: Visibilities | null;
@@ -77,18 +80,26 @@ export interface VisibilityInputProps {
  * Project Visibility functional component
  * @param {VisibilityInputProps} props - visibility options
  */
-const VisibilityInput = (
-  { namespaceVisibility, disabled, value, isInvalid, isRequired, onChange, name = "visibility", isLoadingData }
-                           : VisibilityInputProps) => {
+const VisibilityInput = ({
+  namespaceVisibility,
+  disabled,
+  value,
+  isInvalid,
+  isRequired,
+  onChange,
+  name = "visibility",
+  isLoadingData,
+}: VisibilityInputProps) => {
   const [visibility, setVisibility] = useState<string | null>(null);
   useEffect(() => setVisibility(value), [value]);
-
 
   if (isLoadingData) {
     return (
       <>
         <InputLabel text="Visibility" isRequired={isRequired} />
-        <div><LoadingLabel text="Determining options... "/></div>
+        <div>
+          <LoadingLabel text="Determining options... " />
+        </div>
       </>
     );
   }
@@ -96,30 +107,46 @@ const VisibilityInput = (
   if (!namespaceVisibility) {
     return (
       <>
-        <InputLabel text="Visibility" isRequired={isRequired}/>
-        <div><HelperLabel text="Please select a namespace first"/></div>
-      </>);
+        <InputLabel text="Visibility" isRequired={isRequired} />
+        <div>
+          <HelperLabel text="Please select a namespace first" />
+        </div>
+      </>
+    );
   }
 
   const changeVisibility = (value: string, disabledInput?: boolean) => {
-    if (disabledInput)
-      return;
+    if (disabledInput) return;
 
     setVisibility(value);
 
-    if (onChange)
-      onChange(value);
+    if (onChange) onChange(value);
   };
 
   const visibilities = computeVisibilities([namespaceVisibility]);
   const markInvalid = !visibility && isInvalid && isRequired;
   const items = [
-    { title: "Public", value: "public", icon: faGlobe, hint: "Access without authentication" },
-    { title: "Internal", value: "internal", icon: faUserFriends, hint: "Access only for authenticated users" },
-    { title: "Private", value: "private", icon: faLock, hint: "Access only for the creator or contributors" },
+    {
+      title: "Public",
+      value: "public",
+      icon: faGlobe,
+      hint: "Access without authentication",
+    },
+    {
+      title: "Internal",
+      value: "internal",
+      icon: faUserFriends,
+      hint: "Access only for authenticated users",
+    },
+    {
+      title: "Private",
+      value: "private",
+      icon: faLock,
+      hint: "Access only for the creator or contributors",
+    },
   ];
 
-  const options = items.map(item => {
+  const options = items.map((item) => {
     const disabledByNamespace = visibilities.disabled.includes(item.value);
     const isDisabled = disabled || disabledByNamespace;
 
@@ -127,24 +154,27 @@ const VisibilityInput = (
       <div className="visibility-box col-sm-12 col-md-4 col-lg-4 px-0" key={`visibility-${item.value}`}>
         <div className="d-flex">
           <div className={isDisabled ? "cursor-not-allowed d-inline" : "d-inline"}>
-            <Input type="radio"
+            <Input
+              type="radio"
               name={name}
               value={item.value}
               disabled={isDisabled}
               checked={visibility === item.value}
-              onChange={(e) => changeVisibility(e.target.value)}
-              className={markInvalid && !isDisabled ?
-                "visibility-input--error" : "visibility-input"}
-              data-cy={`visibility-${item.value}`}/>
+              onChange={(e: ChangeEvent<HTMLInputElement>) => changeVisibility(e.target.value)}
+              className={markInvalid && !isDisabled ? "visibility-input--error" : "visibility-input"}
+              data-cy={`visibility-${item.value}`}
+            />
           </div>
-          <div className={isDisabled ? "cursor-not-allowed px-2" : "cursor-pointer px-2"}
-            onClick={()=> changeVisibility(item.value, isDisabled)}>
+          <div
+            className={isDisabled ? "cursor-not-allowed px-2" : "cursor-pointer px-2"}
+            onClick={() => changeVisibility(item.value, isDisabled)}
+          >
             <label className={isDisabled ? "cursor-not-allowed label-disabled" : "cursor-pointer"}>{item.title}</label>
             <FontAwesomeIcon icon={item.icon} className={isDisabled ? "icon-disabled" : ""} />
           </div>
         </div>
-        <div onClick={()=> changeVisibility(item.value, isDisabled)}>
-          <InputHintLabel text={item.hint}/>
+        <div onClick={() => changeVisibility(item.value, isDisabled)}>
+          <InputHintLabel text={item.hint} />
         </div>
       </div>
     );
@@ -153,18 +183,18 @@ const VisibilityInput = (
   const disableByNamespaceOptions = {
     public: "",
     private: "Public and Internal options are not available due to namespace restrictions",
-    internal: "Public is not available due to namespace restrictions"
+    internal: "Public is not available due to namespace restrictions",
   };
-  const disabledByNamespace = namespaceVisibility !== Visibilities.Public ?
-    <InputHintLabel text={disableByNamespaceOptions[namespaceVisibility]} /> : null;
+  const disabledByNamespace =
+    namespaceVisibility !== Visibilities.Public ? (
+      <InputHintLabel text={disableByNamespaceOptions[namespaceVisibility]} />
+    ) : null;
   const errorFeedback = markInvalid ? <ErrorLabel text="Please select visibility" /> : null;
 
   return (
     <>
       <InputLabel text="Visibility" isRequired={isRequired} />
-      <div className="visibilities-box row">
-        {options}
-      </div>
+      <div className="visibilities-box row">{options}</div>
       {errorFeedback}
       {disabledByNamespace}
     </>

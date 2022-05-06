@@ -23,24 +23,24 @@
  *  FormSchema component.
  */
 import * as React from "react";
-import { Col, Row } from "reactstrap/lib";
+import { Col, Row } from "../../ts-wrappers";
 import { ReactNode } from "react";
 
 import "./FormSchema.css";
 
 interface FormSchemaProps {
   title: string;
-  description: string,
-  showHeader: boolean,
-  children: ReactNode
+  description: string;
+  showHeader: boolean;
+  children: ReactNode;
 }
 
 interface FormHeaderProps {
   title: string;
-  description: string
+  description: string;
 }
 
-const FormHeader = ({ title, description }: FormHeaderProps) =>{
+const FormHeader = ({ title, description }: FormHeaderProps) => {
   return (
     <>
       <h2>{title}</h2>
@@ -50,16 +50,12 @@ const FormHeader = ({ title, description }: FormHeaderProps) =>{
 };
 
 const FormSchema = ({ title, description, showHeader, children }: FormSchemaProps) => {
-  const header = showHeader ? (<FormHeader title={title} description={description}/>) : null;
+  const header = showHeader ? <FormHeader title={title} description={description} /> : null;
   return (
     <Row>
-      <Col className="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-forms--header pb-2">
-        {header}
-      </Col>
+      <Col className="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-forms--header pb-2">{header}</Col>
       <Col className="col-12 col-sm-12 col-md-9 col-lg-9 col-xl-12">
-        <div className="rk-forms">
-          {children}
-        </div>
+        <div className="rk-forms">{children}</div>
       </Col>
     </Row>
   );

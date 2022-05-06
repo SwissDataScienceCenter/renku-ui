@@ -25,7 +25,8 @@ import "./Progress.css";
  *  Progress component
  */
 
-
+// These values are actually used, but the ts compiler does not realize it
+/* eslint-disable no-unused-vars */
 export enum ProgressType {
   Determinate = "Determinate",
   Indeterminate = "Indeterminate",
@@ -33,8 +34,9 @@ export enum ProgressType {
 
 export enum ProgressStyle {
   Light = "light",
-  Dark = "dark"
+  Dark = "dark",
 }
+/* eslint-enable no-unused-vars */
 
 export interface ProgressIndicatorProps {
   /**
@@ -59,34 +61,31 @@ export interface ProgressIndicatorProps {
  * Project Visibility functional component
  * @param {ProgressIndicatorProps} props - progress indicator options
  */
-const ProgressIndicator = (
-  {
-    type = ProgressType.Indeterminate,
-    style = ProgressStyle.Dark,
-    title,
-    description,
-    percentage,
-    currentStatus = "",
-    feedback = ""
-  }: ProgressIndicatorProps) => {
+const ProgressIndicator = ({
+  type = ProgressType.Indeterminate,
+  style = ProgressStyle.Dark,
+  title,
+  description,
+  percentage,
+  currentStatus = "",
+  feedback = "",
+}: ProgressIndicatorProps) => {
+  const progressBar =
+    type === ProgressType.Indeterminate ? (
+      <div className="progress-bar">
+        <div className="progress-bar-determinate-auto"></div>
+        <div className="progress-bar-indeterminate"></div>
+      </div>
+    ) : (
+      <div className="progress-bar">
+        <div className="progress-bar-determinate" style={{ width: `${percentage ?? 0}%` }}></div>
+      </div>
+    );
 
-  const progressBar = type === ProgressType.Indeterminate ? (
-    <div className="progress-bar">
-      <div className="progress-bar-determinate-auto">
-      </div>
-      <div className="progress-bar-indeterminate">
-      </div>
-    </div>
-  ) : (
-    <div className="progress-bar">
-      <div className="progress-bar-determinate"
-        style={{ width: `${percentage ?? 0}%` }}>
-      </div>
-    </div>
-  );
-
-  const percentageLabel = type === ProgressType.Determinate && typeof percentage === "number" ?
-    (<span className="fw-bold px-2">{percentage}%</span>) : null;
+  const percentageLabel =
+    type === ProgressType.Determinate && typeof percentage === "number" ? (
+      <span className="fw-bold px-2">{percentage}%</span>
+    ) : null;
 
   return (
     <div className={`progress-box progress-box--${style}`}>
@@ -96,7 +95,10 @@ const ProgressIndicator = (
         <div className={`progress-bar-box ${style === ProgressStyle.Light ? "progress-bar-box--light" : ""}`}>
           {progressBar}
         </div>
-        <p className="pt-1">{currentStatus}{percentageLabel}</p>
+        <p className="pt-1">
+          {currentStatus}
+          {percentageLabel}
+        </p>
       </div>
       <p className="pt-1">{feedback}</p>
     </div>

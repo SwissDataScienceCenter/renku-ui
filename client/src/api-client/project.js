@@ -17,7 +17,7 @@
  */
 
 import { fetchJson } from "./utils";
-import yaml from "yaml-js";
+import yaml from "yaml";
 
 import { sleep } from "../utils/helpers/HelperFunctions";
 
@@ -390,7 +390,7 @@ function addProjectMethods(client) {
     return fetchJson(`${formattedApiURL}/git/trees/${renkuTemplatesRef}`)
       .then(data => data.tree.filter(obj => obj.path === "manifest.yaml")[0]["sha"])
       .then(manifestSha => fetchJson(`${formattedApiURL}/git/blobs/${manifestSha}`))
-      .then(data => { return yaml.load(atob(data.content)); })
+      .then(data => { return yaml.parse(atob(data.content)); })
       .then(data => { data.push(client.getEmptyProjectObject()); return data; });
   };
 
