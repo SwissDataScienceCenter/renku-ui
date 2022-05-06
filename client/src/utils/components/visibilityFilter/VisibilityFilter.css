@@ -1,0 +1,13 @@
+.filter-label {
+    font-size: medium;
+    font-weight: bold;
+}
+
+.visibility-label {
+    width: 80px;
+    margin-top: 0.5rem;
+}
+
+.visibility-icon {
+    margin-top: 0.5rem;
+}
