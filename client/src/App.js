@@ -130,7 +130,7 @@ function CentralContentContainer(props) {
           p => <AddDataset
             key="addDatasetNew"
             insideProject={false}
-            identifier={`${p.match.params.identifier}`}
+            identifier={p.match.params?.identifier?.replaceAll("-", "")}
             datasets={p.datasets}
             model={props.model}
           />}
@@ -139,7 +139,7 @@ function CentralContentContainer(props) {
           p => <ShowDataset
             key="datasetPreview" {...p}
             insideProject={false}
-            identifier={`${p.match.params.identifier}`}
+            identifier={p.match.params?.identifier?.replaceAll("-", "")}
             client={props.client}
             projectsUrl="/projects"
             selectedDataset={p.match.params.datasetId}
