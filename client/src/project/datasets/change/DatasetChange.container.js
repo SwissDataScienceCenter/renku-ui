@@ -377,6 +377,7 @@ function ChangeDataset(props) {
         }
       ];
       dsFormSchema.keywords.value = dsFormSchema.keywords.initial;
+      dsFormSchema.image.optional = true;
     }
   }, [props, initialized, dataset, datasetFiles, versionUrl, setDatasetFiles, props.client]);
 
