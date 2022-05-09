@@ -64,7 +64,7 @@ function gitLabSettingsUrlFromProfileUrl(webUrl) {
   // Yes, the settings URL ends with 'profile'; the profile URL ends with the username
   const comps = webUrl.split("/");
   comps.pop();
-  comps.push("profile");
+  comps.push("-/profile");
   return comps.join("/");
 }
 
