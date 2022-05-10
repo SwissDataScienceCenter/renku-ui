@@ -28,9 +28,10 @@ import { VisibilityFilter } from "../visibilityFilter/VisibilityFilter";
  */
 
 export interface FilterProps {
+  authorDefaultValue: "all" | "user";
 }
 
-const FilterEntitySearch = ({}: FilterProps) => {
+const FilterEntitySearch = ({ authorDefaultValue = "all" }: FilterProps) => {
   const visibilityHandler = () => {
     // handle visibility change
   };
@@ -50,18 +51,18 @@ const FilterEntitySearch = ({}: FilterProps) => {
     public: true,
     internal: true,
     private: true,
-  }
+  };
 
   return (
     <>
       <div className="filter-box">
         <h3 className="filter-label">FILTER BY</h3>
         <div><TypeEntityFilter handler={typeHandler} value={defaultTypeValues} /></div>
-        <div><AuthorFilter handler={authorHandler} value="all"/></div>
+        <div><AuthorFilter handler={authorHandler} value={authorDefaultValue} /></div>
         <div><VisibilityFilter handler={visibilityHandler} value={defaultVisibilityValues} /></div>
       </div>
     </>
-  )
-}
+  );
+};
 
 export { FilterEntitySearch };
