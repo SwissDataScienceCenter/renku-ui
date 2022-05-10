@@ -31,7 +31,7 @@ import {
   faStop
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { ButtonDropdown } from "reactstrap/lib";
+import { ButtonDropdown } from "reactstrap";
 import { Loader } from "../../utils/components/Loader";
 import { MarkdownTextExcerpt } from "../../utils/components/markdown/RenkuMarkdown";
 import ListDisplay from "../../utils/components/List";

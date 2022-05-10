@@ -24,7 +24,7 @@
  */
 import React, { Component, Fragment } from "react";
 import { Docs, Links } from "../../../utils/constants/Docs";
-import { Button, FormGroup, FormText, Input } from "reactstrap/lib";
+import { Button, FormGroup, FormText, Input } from "reactstrap";
 import { ErrorLabel, InputHintLabel, InputLabel } from "../../../utils/components/formlabels/FormLabels";
 import { CoreErrorAlert } from "../../../utils/components/errors/CoreErrorAlert";
 

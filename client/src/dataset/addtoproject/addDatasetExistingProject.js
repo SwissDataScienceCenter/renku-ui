@@ -18,7 +18,7 @@
 
 import React, { useContext, useEffect, useRef, useState } from "react";
 
-import { Button } from "reactstrap/lib";
+import { Button } from "reactstrap";
 
 import { AddDatasetStatus } from "./addDatasetStatus";
 import { ACCESS_LEVELS } from "../../api-client";
