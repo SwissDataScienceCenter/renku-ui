@@ -23,7 +23,7 @@
  */
 import React, { Component } from "react";
 import TemplateSelector from "../../../utils/components/templateSelector/TemplateSelector";
-import { FormGroup } from "reactstrap/lib";
+import { FormGroup } from "reactstrap";
 
 class Template extends Component {
   async componentDidMount() {

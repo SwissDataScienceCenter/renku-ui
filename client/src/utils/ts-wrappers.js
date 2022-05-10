@@ -17,7 +17,7 @@ import {
   ModalBody as WrappedModalBody,
   ModalHeader as WrappedModalHeader,
   Row as WrappedRow,
-} from "reactstrap/lib";
+} from "reactstrap";
 
 
 import {
@@ -29,10 +29,10 @@ import {
   PopoverBody as WrappedPopoverBody,
   UncontrolledPopover as WrappedUncontrolledPopover,
   UncontrolledTooltip as WrappedUncontrolledTooltip
-} from "reactstrap/lib";
+} from "reactstrap";
 
 
-import { FormGroup as WrappedFormGroup, Input as WrappedInput } from "reactstrap/lib";
+import { FormGroup as WrappedFormGroup, Input as WrappedInput } from "reactstrap";
 
 function Alert(props) {
   return <WrappedAlert {...props} />;

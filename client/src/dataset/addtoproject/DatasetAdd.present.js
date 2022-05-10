@@ -29,7 +29,7 @@ import { useSelector } from "react-redux";
 import _ from "lodash";
 import { Row, Col } from "reactstrap";
 import { Button } from "reactstrap";
-import { ButtonGroup, Table } from "reactstrap/lib";
+import { ButtonGroup, Table } from "reactstrap";
 
 import { AddDatasetExistingProject } from "./addDatasetExistingProject";
 import { AddDatasetNewProject } from "./addDatasetNewProject";
