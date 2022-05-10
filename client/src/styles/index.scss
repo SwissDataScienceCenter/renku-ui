@@ -30,41 +30,36 @@
 
 // -------------------       FONTS  -----------------------------
 
-@import './fonts/fonts.scss';
+@import "./fonts/fonts";
 
 // -------------------       BOOTSTRAP CONFIG  -----------------------------
 
+@import "./bootstrap/custom_bootstrap_variables";
+@import "./bootstrap/custom_utilities";
 
-@import './bootstrap/custom_bootstrap_variables';
-
-@import 'bootstrap/scss/functions';
-@import 'bootstrap/scss/variables';
-
-@import './bootstrap/custom_utilities';
-@import './bootstrap/custom_bootstrap';
-@import 'bootstrap/scss/bootstrap';
-
+@import "~bootstrap/scss/bootstrap";
+@import "./bootstrap/custom_bootstrap";
 
 // -------------------       BOOTSTRAP EXT  -----------------------------
 
-@import './bootstrap_ext/alert';
-@import './bootstrap_ext/badge';
-@import './bootstrap_ext/button';
-@import './bootstrap_ext/nav';
-@import './bootstrap_ext/nav_bar';
-@import './bootstrap_ext/underline_pill_nav';
+@import "./bootstrap_ext/alert";
+@import "./bootstrap_ext/badge";
+@import "./bootstrap_ext/button";
+@import "./bootstrap_ext/nav";
+@import "./bootstrap_ext/nav_bar";
+@import "./bootstrap_ext/underline_pill_nav";
 
 // -------------------       EVERYTHING ELSE  -----------------------------
 
-@import './components/jupyter_notebook';
-@import './components/renku_general';
-@import './components/renku_home';
-@import './components/renku_search';
-@import './components/renku_files';
-@import './components/input_tag';
-@import './components/file_uploader';
-@import './components/renku_styleguide';
-@import './components/project_display';
-@import './components/renku_form';
+@import "./components/jupyter_notebook";
+@import "./components/renku_general";
+@import "./components/renku_home";
+@import "./components/renku_search";
+@import "./components/renku_files";
+@import "./components/input_tag";
+@import "./components/file_uploader";
+@import "./components/renku_styleguide";
+@import "./components/project_display";
+@import "./components/renku_form";
 
-@import './icons/icons.scss';
+@import "./icons/icons.scss";
