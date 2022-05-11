@@ -196,28 +196,32 @@ function SessionInformation(props) {
 function SessionNavbar(props) {
   const { fetchLogs, tab, setTab } = props;
 
+  const navLinkClassName = (tabId) => tab === tabId ? "text-rk-green" : "text-rk-text cursor-pointer";
+
+  const navItemClassName = "pt-2 pt-lg-3";
+
   return (
     <div className="border-top">
-      <Nav className="flex-lg-column">
-        <NavItem>
-          <NavLink className="p-2 p-lg-3" onClick={() => setTab(SESSION_TABS.session)}>
+      <Nav vertical>
+        <NavItem className={navItemClassName}>
+          <NavLink className={navLinkClassName(SESSION_TABS.session)} onClick={() => setTab(SESSION_TABS.session)}>
             <JupyterIcon svgClass="svg-inline--fa fa-lg" grayscale={tab === SESSION_TABS.session ? false : true} />
           </NavLink>
         </NavItem>
-        <NavItem>
-          <NavLink className={`p-2 p-lg-3 ${tab === SESSION_TABS.logs ? "text-rk-green" : "text-rk-text"}`}
+        <NavItem className={navItemClassName}>
+          <NavLink className={navLinkClassName(SESSION_TABS.logs)}
             onClick={() => { fetchLogs(); setTab(SESSION_TABS.logs); }} >
             <FontAwesomeIcon size="lg" icon={faHistory} />
           </NavLink>
         </NavItem>
-        <NavItem>
-          <NavLink className={`p-2 p-lg-3 ${tab === SESSION_TABS.commands ? "text-rk-green" : "text-rk-text"}`}
+        <NavItem className={navItemClassName}>
+          <NavLink className={navLinkClassName(SESSION_TABS.commands)}
             onClick={() => setTab(SESSION_TABS.commands)} >
             <FontAwesomeIcon size="lg" icon={faBook} />
           </NavLink>
         </NavItem>
-        <NavItem>
-          <NavLink className={`p-2 p-lg-3 ${tab === SESSION_TABS.docs ? "text-rk-green" : "text-rk-text"}`}
+        <NavItem className={navItemClassName}>
+          <NavLink className={navLinkClassName(SESSION_TABS.docs)}
             onClick={() => setTab(SESSION_TABS.docs)} >
             <FontAwesomeIcon size="lg" icon={faQuestionCircle} />
           </NavLink>

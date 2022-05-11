@@ -42,7 +42,7 @@ class JupyterIcon extends Component {
 
     /* eslint-disable max-len */
     return (
-      <svg width="44" height="51" viewBox="0 0 44 51" version="2.0" xmlns="http://www.w3.org/2000/svg"
+      <svg viewBox="0 0 44 51" version="2.0" xmlns="http://www.w3.org/2000/svg"
         xmlnsXlink="http://www.w3.org/1999/xlink" className={this.props.svgClass}>
 
         <g id="Canvas" transform="translate(-1640 -2453)">
