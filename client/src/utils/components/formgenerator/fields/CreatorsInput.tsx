@@ -23,17 +23,47 @@
  *  Presentational components.
  */
 
-import React, { useEffect } from "react";
+import React, { ChangeEvent, ReactNode, useEffect } from "react";
 import ValidationAlert from "./ValidationAlert";
 import HelpText from "./HelpText";
-import { FormGroup, Input, Label, Row, Col, Button } from "reactstrap";
+import { FormGroup, Input, Label, Row, Col, Button } from "../../../ts-wrappers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserPlus, faUserMinus } from "@fortawesome/free-solid-svg-icons";
+import { InputHintLabel, InputLabel } from "../../formlabels/FormLabels";
 
-function Creator(props) {
 
-  const onChangeCreator = (event)=>{
-    props.creator[event.target.name] = event.target.value;
+interface Creator {
+  id: number,
+  name: string,
+  email: string,
+  affiliation: string,
+  identifier?: string,
+  default?: boolean
+}
+
+export interface CreatorInputProps {
+  name: string,
+  label: string,
+  value?: Creator[],
+  alert?: ReactNode,
+  setInputs: Function,
+  help?: ReactNode,
+  disabled?: boolean
+}
+
+interface CreatorFormProps {
+  creator: Creator;
+  disabled: boolean;
+  setCreator: Function;
+  deleteCreator: Function;
+  default: boolean;
+}
+
+function CreatorForm(props: CreatorFormProps) {
+
+  const onChangeCreator = (event: ChangeEvent<HTMLInputElement>)=>{
+    const inputKey = event.target.name as keyof Creator;
+    props.creator[inputKey] = event.target.value as never;
     props.setCreator(props.creator);
   };
 
@@ -75,6 +105,7 @@ function Creator(props) {
           disabled={props.disabled}
           onChange={onChangeCreator}
         />
+        <InputHintLabel text="e.g. National Institute of Science"/>
       </FormGroup>
     </Col>
     <Col md={1}>
@@ -84,6 +115,7 @@ function Creator(props) {
           outline
           color="danger"
           disabled={props.disabled}
+          className="mb-3"
           onClick={props.deleteCreator}>
           <FontAwesomeIcon icon={faUserMinus} />
         </Button>
@@ -92,9 +124,9 @@ function Creator(props) {
   </Row>;
 }
 
-function CreatorsInput({ name, label, type, value, alert, placeholder, setInputs, help, disabled = false }) {
+function CreatorsInput({ name, label, value, alert, setInputs, help, disabled = false }: CreatorInputProps) {
   const counter = React.useRef(value !== undefined && value.length > 0 ? value.length : 1);
-  const [creators, setCreators] = React.useState(value !== undefined && value.length > 0 ?
+  const [creators, setCreators] = React.useState<Creator[]>(value !== undefined && value.length > 0 ?
     value.map((creator, index) => ({ id: index, name: creator.name, email: creator.email,
       affiliation: creator.affiliation, identifier: "", default: creator.default === true }))
     : [{ id: 1, name: "", email: "", affiliation: "", identifier: "", default: false }]);
@@ -106,11 +138,11 @@ function CreatorsInput({ name, label, type, value, alert, placeholder, setInputs
       { id: counter.current, name: "", email: "", affiliation: "", identifier: "", default: false }]);
   };
 
-  const deleteCreator = (id) => {
+  const deleteCreator = (id: number) => {
     setCreators(creators.filter(creator => creator.id !== id));
   };
 
-  const setCreator = (newCreator) => {
+  const setCreator = (newCreator: Creator) => {
     setCreators(prevCreators =>
       prevCreators.map(oldCreator => oldCreator.id === newCreator.id ?
         { id: newCreator.id, name: newCreator.name, email: newCreator.email,
@@ -136,44 +168,52 @@ function CreatorsInput({ name, label, type, value, alert, placeholder, setInputs
 
   return <FormGroup>
     <Label htmlFor={name}>{label}</Label>
-    {
-      <Row>
-        <Col>
-          {defaultCreators.map(creator =>
-            <span key={creator.email} className="text-muted">{creator.name} ({creator.email})</span>)}
-          <Button size="sm" color="rk-white" className="float-end" disabled={disabled} onClick={addEmptyCreator}>
-            <FontAwesomeIcon icon={faUserPlus} /> Add Creator
-          </Button>
-        </Col>
-      </Row>
-    }
+    <Row className="mb-2">
+      <Col>
+        {defaultCreators.map(creator =>
+          <Input
+            disabled={true}
+            key={creator.email}
+            name="default-creator"
+            value={`${creator.name} (${creator.email})`}/>
+        )}
+      </Col>
+    </Row>
     {
       nonDefaultCreators.length > 0 ?
-        <Row>
+        <Row className="my-2">
           <Col md={4} className="d-none d-md-block">
-            <Label for="name" size="sm" className="text-muted">Name</Label>
+            <InputLabel text="Name" />
           </Col>
           <Col md={4} className="d-none d-md-block">
-            <Label for="email" size="sm" className="text-muted">Email</Label>
+            <InputLabel text="Email" />
           </Col>
           <Col md={3} className="d-none d-md-block">
-            <Label for="affiliation" size="sm" className="text-muted">Affiliation</Label>
+            <InputLabel text="Affiliation" />
           </Col>
         </Row>
         : null
     }
 
     { nonDefaultCreators.map((creator) =>
-      <Creator
+      <CreatorForm
         key={"author" + creator.id}
         creator={creator}
         disabled={disabled}
-        default={creator.default}
+        default={creator.default ?? false}
         setCreator={setCreator}
         deleteCreator={()=>deleteCreator(creator.id)}
       />)
     }
+
     <HelpText content={help} />
+    <Row>
+      <Col>
+        <Button size="sm" color="rk-white" disabled={disabled} onClick={addEmptyCreator}>
+          <FontAwesomeIcon icon={faUserPlus} /> Add Creator
+        </Button>
+      </Col>
+    </Row>
     <ValidationAlert content={alert} />
   </FormGroup>;
 }
