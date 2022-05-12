@@ -404,6 +404,15 @@ const notebooksSchema = new Schema({
   },
   ci: {
     [Prop.SCHEMA]: new Schema({
+      image: {
+        [Prop.SCHEMA]: new Schema({
+          available: { [Prop.INITIAL]: null },
+          fetched: { [Prop.INITIAL]: null },
+          fetching: { [Prop.INITIAL]: false },
+          registryId: { [Prop.INITIAL]: null },
+          error: { [Prop.INITIAL]: null },
+        })
+      },
       pipelines: {
         [Prop.SCHEMA]: new Schema({
           list: { [Prop.INITIAL]: [] },
@@ -425,7 +434,7 @@ const notebooksSchema = new Schema({
           error: { [Prop.INITIAL]: null },
         })
       },
-      image: {
+      looping: {
         [Prop.SCHEMA]: new Schema({
           available: { [Prop.INITIAL]: null },
           fetched: { [Prop.INITIAL]: null },
@@ -435,7 +444,7 @@ const notebooksSchema = new Schema({
       },
       target: { [Prop.INITIAL]: null }, // target commit id
       type: { [Prop.INITIAL]: null }, // anonymous, pinned, logged, owner
-      stage: { [Prop.INITIAL]: null }, // starting --> pipelines --> jobs --> images
+      stage: { [Prop.INITIAL]: null }, // starting --> images --> (pipelines --> jobs -->) looping
     })
   },
   logs: {

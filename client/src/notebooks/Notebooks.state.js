@@ -31,6 +31,7 @@ import { parseINIString, sleep } from "../utils/helpers/HelperFunctions";
 
 
 const POLLING_INTERVAL = 3000;
+const POLLING_CI = 5; // in seconds, for the sleep function
 const IMAGE_BUILD_JOB = "image_build";
 const RENKU_INI_PATH = ".renku/renku.ini";
 const RENKU_INI_SECTION_LEGACY = `renku "interactive"`;
@@ -45,9 +46,10 @@ const CI_TYPES = {
 
 const CI_STAGES = {
   starting: "starting",
+  image: "image",
   pipelines: "pipelines",
   jobs: "jobs",
-  image: "image"
+  looping: "looping"
 };
 
 const CI_STATUSES = {
@@ -336,16 +338,12 @@ const NotebooksHelper = {
     else if (!currentCi.fetched) {
       returnObject.ongoing = true;
     }
-    else if (ci.stage === CI_STAGES.pipelines) {
-      returnObject.ongoing = currentCi.fetched ? false : true;
-    }
-    else if (ci.stage === CI_STAGES.jobs) {
-      returnObject.ongoing = currentCi.fetched ? false : true;
-    }
-    else if (ci.stage === CI_STAGES.image) {
-      returnObject.ongoing = currentCi.fetched ? false : true;
+    else if (ci.stage === CI_STAGES.image || ci.stage === CI_STAGES.looping) {
+      // Can't be available if we are checking pipelines in another stage
       returnObject.available = currentCi.available ? true : false;
     }
+    // We don't use `fetching` because some stages keep polling
+    returnObject.ongoing = currentCi.fetched ? false : true;
 
     return returnObject;
   },
@@ -817,14 +815,12 @@ class NotebooksCoordinator {
     ciObject.target = commit;
     this.model.setObject({ ci: ciObject });
 
-    // Trigger next step passing project info
+    // Check for image availability
     const projectId = `${encodeURIComponent(filters.namespace)}%2F${filters.project}`;
     if (ciType === CI_TYPES.pinned)
       this.checkRemoteImage(options["image"], commit, problemCallback);
-    else if (ciType === CI_TYPES.anonymous)
-      this.checkCiImage(projectId, commit, problemCallback);
     else
-      this.checkCiPipelines(projectId, commit, problemCallback);
+      this.checkCiImage(projectId, commit, problemCallback);
   }
 
   /**
@@ -841,7 +837,7 @@ class NotebooksCoordinator {
     // keep fetching until we get a non-empty list or an error
     while (pipelinesList !== false && !pipelinesList?.length) {
       if (problemCallback) problemCallback();
-      await sleep(POLLING_INTERVAL / 1000);
+      await sleep(POLLING_CI);
       pipelinesList = await this.fetchCiPipeline(projectId, target);
     }
 
@@ -909,7 +905,7 @@ class NotebooksCoordinator {
     let jobs = await this.fetchCiJobs(projectId, target, pipelinesList);
     while (jobs !== false && !jobs.length) {
       if (problemCallback) problemCallback();
-      await sleep(POLLING_INTERVAL / 1000);
+      await sleep(POLLING_CI);
       jobs = await this.fetchCiJobs(projectId, target, pipelinesList, true);
     }
 
@@ -918,12 +914,12 @@ class NotebooksCoordinator {
       let status = NotebooksHelper.getCiJobStatus(jobs[0]);
       while (status === CI_STATUSES.running) {
         if (problemCallback) problemCallback();
-        await sleep(POLLING_INTERVAL / 1000);
+        await sleep(POLLING_CI);
         const job = await this.fetchCiJob(projectId, target, jobs[0].id);
         status = NotebooksHelper.getCiJobStatus(job);
       }
       if (status === CI_STATUSES.success)
-        this.checkCiImage(projectId, target, problemCallback);
+        this.loopCiImage(projectId, target, problemCallback);
       else if (problemCallback)
         problemCallback();
     }
@@ -1030,55 +1026,174 @@ class NotebooksCoordinator {
    */
   async checkCiImage(projectId, target, problemCallback = null) {
     this.model.set("ci.stage", CI_STAGES.image);
+    const ciType = this.model.get("ci.type");
 
     // fetch reference registry for the project. It should be 1 per project.
     let imageObject = { fetching: true };
-    let registries = [];
     this.model.setObject({ ci: { image: imageObject } });
-    try {
-      registries = await this.client.getRegistries(projectId);
-      // filter the ones without names?
-      if (!registries?.length) {
-        imageObject.error = "This project does not have any Docker image repository";
-      }
-      else if (registries?.length !== 1) {
-        // ? try to use the no name registry. It's not guaranteed that it will work -- we should set a renku name
-        const filteredRegistries = registries.find(registry => registry.name === "");
-        if (filteredRegistries?.id) {
-          registries = [filteredRegistries];
-          imageObject.error = null;
-        }
-        else {
-          imageObject.error = "The project has multiple Docker image repositories. We can't identify the correct one";
-        }
-      }
-      else {
-        imageObject.error = null;
-      }
-    }
-    catch (e) {
-      imageObject.error = this._getErrorMessage(e);
-    }
 
-    // stop here if there is any error.
-    if (imageObject.error) {
+    const registry = await this.fetchCiRegistry(projectId, target);
+    if (registry?.error) {
       if (problemCallback) problemCallback();
       imageObject.available = false;
       imageObject.fetching = false;
-      imageObject.fetched = true;
+      imageObject.fetched = new Date();
+      imageObject.registryId = null;
       this.model.setObject({ ci: { image: imageObject } });
-      return;
+      if (ciType !== CI_TYPES.anonymous) {
+        // Check the pipelines for owners or logged users
+        this.checkCiPipelines(projectId, target, problemCallback);
+      }
+      else {
+        // Keep looping for images
+        imageObject.error = registry.error;
+      }
     }
+    else if (registry?.id) {
+      // save the registry id
+      imageObject.registryId = registry.id;
 
-    const id = registries[0]?.id;
-    let imageAvailable = await this.fetchCiImage(projectId, target, id);
-    while (imageAvailable !== false && imageAvailable !== true) {
-      if (problemCallback) problemCallback();
-      await sleep(POLLING_INTERVAL / 1000);
-      imageAvailable = await this.fetchCiImage(projectId, target, id);
+      // fetch the image
+      const imageAvailable = await this.fetchCiImage(projectId, target, registry.id);
+      imageObject.fetching = false;
+      imageObject.fetched = new Date();
+      imageObject.available = imageAvailable ? true : false;
+      this.model.setObject({ ci: { image: imageObject } });
+      if (imageAvailable !== true) {
+        if (ciType !== CI_TYPES.anonymous) {
+          // Check the pipelines for owners or logged users
+          this.checkCiPipelines(projectId, target, problemCallback);
+        }
+        else {
+          // Keep looping for images
+          this.loopCiImage(projectId, target, problemCallback);
+        }
+      }
     }
   }
 
+
+  /**
+   * Fetch the image registry if the current ci target is the same passed as argument
+   * @param {string} projectId - target project id, already URI-encoded
+   * @param {string} expectedTarget - original commit when fetching CI was initiated
+   */
+  async fetchCiRegistry(projectId, expectedTarget) {
+    // block fetching and falsify when the current target has changed
+    if (!this._checkTarget(expectedTarget))
+      return false;
+
+    let registries = [];
+    let error = null;
+    try {
+      registries = await this.client.getRegistries(projectId);
+      // There should be at least 1 Docker registry
+      if (!registries?.length) {
+        error = "This project does not have any Docker image repository";
+      }
+      else if (registries?.length !== 1) {
+        // The CI we define has no name
+        // ! This is not totally reliable since users can change it. We should probably give it a Renku name
+        const filteredRegistries = registries.find(registry => registry.name === "");
+        if (filteredRegistries?.id) {
+          registries = [filteredRegistries];
+          error = null;
+        }
+        else {
+          error = "The project has multiple Docker image repositories. We can't identify the correct one";
+        }
+      }
+      else {
+        // Is we have only 1 registry, we don't need to check anything else.
+        error = null;
+      }
+    }
+    catch (e) {
+      error = this._getErrorMessage(e);
+    }
+
+    // return either the error or the id
+    return error ?
+      { error } :
+      { id: registries?.length === 1 ? registries[0]?.id : null };
+  }
+
+
+  /**
+   * Fetch the pipeline if the current ci target is the same passed as argument
+   * @param {string} projectId - target project id, already URI-encoded
+   * @param {string} expectedTarget - original commit when fetching CI was initiated
+   * @param {string} registryId - target registry
+   */
+  async fetchCiImage(projectId, expectedTarget, registryId) {
+    // block fetching and falsify when the current target has changed
+    if (!this._checkTarget(expectedTarget))
+      return false;
+
+    // let imageObject = { fetching: true };
+    // this.model.setObject({ ci: { image: imageObject } });
+
+    const commitShortSha = expectedTarget.substring(0, 7);
+    try {
+      const image = await this.client.getRegistryTag(projectId, registryId, commitShortSha);
+      if (image?.location)
+        return true;
+      return false;
+    }
+    // block on errors
+    catch (e) {
+      return this._getErrorMessage(e);
+    }
+  }
+
+  /**
+   * Fetch CI image local registry and check Docker image status.
+   * @param {string} projectId - target project id, already URI-encoded
+   * @param {string} target - original commit when fetching CI was initiated
+   * @param {function} [problemCallback]  - callback to invoke when there is a problem
+   */
+  async loopCiImage(projectId, target, problemCallback = null) {
+    this.model.set("ci.stage", CI_STAGES.looping);
+
+    // get image registry id
+    let loopingObject = { fetching: true };
+    let registryId = this.model.get("ci.image.registryId");
+    if (!registryId) {
+      this.model.setObject({ ci: { looping: loopingObject } });
+      let registry = await this.fetchCiRegistry(projectId, target);
+      loopingObject.fetched = new Date();
+      if (registry?.error || !registry?.id) {
+        if (problemCallback) problemCallback();
+        loopingObject.error = registry.error ? registry.error : "Cannot find the project's Docker registry.";
+        loopingObject.available = false;
+        loopingObject.fetching = false;
+      }
+      else {
+        registryId = registry.id;
+      }
+      this.model.setObject({ ci: { looping: loopingObject } });
+    }
+
+    // start looping only if we have a valid registry id
+    if (registryId) {
+      let firstCycle = true;
+      let imageAvailable = false;
+      do {
+        loopingObject = { fetching: true };
+        this.model.setObject({ ci: { looping: loopingObject } });
+        imageAvailable = await this.fetchCiImage(projectId, target, registryId);
+        loopingObject.available = imageAvailable ? true : false;
+        loopingObject.fetching = false;
+        loopingObject.fetched = new Date();
+        this.model.setObject({ ci: { looping: loopingObject } });
+        if (firstCycle && !imageAvailable && problemCallback) {
+          firstCycle = false;
+          problemCallback();
+        }
+        await sleep(POLLING_CI);
+      } while (imageAvailable === false);
+    }
+  }
 
   /**
    * Verify CI image from any v2 Docker registry.
@@ -1110,45 +1225,6 @@ class NotebooksCoordinator {
     this.model.setObject({ ci: { image: imageObject } });
 
     if (!imageObject.available && problemCallback) problemCallback();
-  }
-
-
-  /**
-   * Fetch the pipeline if the current ci target is the same passed as argument
-   * @param {string} projectId - target project id, already URI-encoded
-   * @param {string} expectedTarget - original commit when fetching CI was initiated
-   * @param {string} registryId - target registry
-   */
-  async fetchCiImage(projectId, expectedTarget, registryId) {
-    // block fetching and falsify when the current target has changed
-    if (!this._checkTarget(expectedTarget))
-      return false;
-
-    let imageObject = { fetching: true };
-    this.model.setObject({ ci: { image: imageObject } });
-
-    let image;
-    const commitShortSha = expectedTarget.substring(0, 7);
-    try {
-      image = await this.client.getRegistryTag(projectId, registryId, commitShortSha);
-      imageObject.error = null;
-    }
-    // block on errors
-    catch (e) {
-      imageObject.error = this._getErrorMessage(e);
-    }
-
-    imageObject.fetching = false;
-    imageObject.fetched = new Date();
-    if (image?.location)
-      imageObject.available = true;
-
-    this.model.setObject({ ci: { image: imageObject } });
-    if (imageObject.error)
-      return false;
-    if (imageObject.available)
-      return true;
-    return undefined;
   }
 
   /**
