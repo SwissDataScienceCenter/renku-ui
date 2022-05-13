@@ -17,8 +17,8 @@
  */
 import * as React from "react";
 import "./AutorFilter.css";
-import { Input } from "reactstrap/lib";
-import { useEffect, useState } from "react";
+import { Input } from "../../ts-wrappers";
+import { ChangeEvent, useEffect, useState } from "react";
 /**
  *  renku-ui
  *
@@ -53,13 +53,14 @@ const AuthorFilter = ({ handler, value }: AuthorFilterProps) => {
     const nameInput = `author-${item.value}`
     return (
       <div className="d-flex align-items-center" key={nameInput}>
-        <Input type="radio"
-               name="author-filter"
-               value={item.value}
-               onChange={(e) => changeAuthor(e.target.value)}
-               className="author-input"
-               checked={authorSelected === item.value}
-               data-cy={nameInput}/>
+        <Input
+          type="radio"
+          name="author-filter"
+          value={item.value}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => changeAuthor(e.target.value)}
+          className="author-input"
+          checked={authorSelected === item.value}
+          data-cy={nameInput}/>
         <label className="px-2 author-label">{item.title}</label>
       </div>
     );
