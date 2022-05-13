@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { useEffect, useState } from "react";
-import { Input } from "reactstrap/lib";
+import { ChangeEvent, useEffect, useState } from "react";
+import { Input } from "../../ts-wrappers";
 import "./TypeEntityFilter.css";
 /**
  *  renku-ui
@@ -66,12 +66,13 @@ const TypeEntityFilter = ({ handler, value }: TypeFilterProps) => {
     const itemValueAsKey = item.value as keyof TypeEntitySelection;
     return (
       <div className="d-flex align-items-center" key={nameInput}>
-        <Input type="checkbox"
-               name={nameInput}
-               defaultChecked={value ? value[itemValueAsKey] : false}
-               onChange={(e) => changeType(item.value, e.target.checked)}
-               className="type-entity-input"
-               data-cy={nameInput}/>
+        <Input
+          type="checkbox"
+          name={nameInput}
+          defaultChecked={value ? value[itemValueAsKey] : false}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => changeType(item.value, e.target.checked)}
+          className="type-entity-input"
+          data-cy={nameInput}/>
         <label className="px-2 type-entity-label">{item.title}</label>
         <img className="type-entity-icon" src={item.pathIcon} />
       </div>
