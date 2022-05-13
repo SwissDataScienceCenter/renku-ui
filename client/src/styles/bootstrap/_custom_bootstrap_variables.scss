@@ -35,7 +35,7 @@ $rk-colors : (
   "rk-yellow":$rk-yellow,
   "rk-pink": $rk-pink,
   "rk-green": $rk-green,
-  "rk-text":$rk-text,
+  "rk-text": $rk-text,
   "rk-green-background":$rk-green-background,
   "rk-white": $rk-white,
   "rk-hover": $rk-hover,
@@ -46,12 +46,26 @@ $rk-colors : (
 // We overwrite bootstraps variables
 $primary: $rk-blue;
 $secondary: $rk-green;
-$light:$rk-light;
-$dark: $rk-dark;
-$info: $rk-info;
 $success: $rk-success;
-$danger: $rk-danger;
+$info: $rk-info;
 $warning: $rk-warning;
+$danger: $rk-danger;
+$light: $rk-light;
+$dark: $rk-dark;
+
+$theme-colors: (
+  "primary":    $primary,
+  "secondary":  $secondary,
+  "success":    $success,
+  "info":       $info,
+  "warning":    $warning,
+  "danger":     $danger,
+  "light":      $light,
+  "dark":       $dark
+);
+
+$theme-colors: map-merge($theme-colors, $rk-colors);
+
 
 // Table styles
 $table-border-color: $rk-table-border;

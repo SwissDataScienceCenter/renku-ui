@@ -724,7 +724,7 @@ function FileUploaderInput({
               </td>
             </tr>
           </tbody>
-          <tfoot className={disabled ? "disabled-input" : ""} style={{ fontWeight: "normal" }}>
+          <tfoot className={disabled ? "disabled-input border-top-0" : "border-top-0"} style={{ fontWeight: "normal" }}>
             <tr>
               <td colSpan="5">
                 {dropFileBox}
