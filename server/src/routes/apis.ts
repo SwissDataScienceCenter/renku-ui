@@ -29,6 +29,7 @@ import { renkuAuth } from "../authentication/middleware";
 import { validateCSP } from "../utils/url";
 import { Storage, StorageGetOptions, TypeData } from "../storage";
 import { getUserIdFromToken, lastProjectsMiddleware } from "../utils/middlewares/lastProjectsMiddleware";
+import uploadFileMiddleware from "../utils/middlewares/uploadFileMiddleware";
 
 const proxyMiddleware = createProxyMiddleware({
   // set gateway as target
@@ -146,6 +147,11 @@ function registerApiRoutes(app: express.Application,
   app.get(
     prefix + "/projects/:projectName",
     [renkuAuth(authenticator), lastProjectsMiddleware(storage)],
+    proxyMiddleware
+  );
+  app.post(
+    prefix + "/renku/cache.files_upload",
+    [renkuAuth(authenticator), uploadFileMiddleware],
     proxyMiddleware
   );
   app.delete(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);

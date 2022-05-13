@@ -22,25 +22,36 @@
  *  FileUploaderInput.js
  *  Presentational components.
  */
-import React, { useState, useEffect, useRef } from "react";
-import { FormGroup, Table, Button, UncontrolledCollapse,
-  Card, CardBody, Input, InputGroup, Progress } from "reactstrap";
-import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useContext, useEffect, useState } from "react";
 import {
-  faCheck, faTrashAlt, faSyncAlt, faExclamationTriangle,
-} from "@fortawesome/free-solid-svg-icons";
+  Button,
+  Card,
+  CardBody,
+  FormGroup,
+  Input,
+  InputGroup,
+  Progress,
+  Table,
+  UncontrolledCollapse
+} from "reactstrap";
+import { Link } from "react-router-dom";
+import Dropzone from "dropzone";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faCheck, faExclamationTriangle, faSyncAlt, faTimes, faTrashAlt } from "@fortawesome/free-solid-svg-icons";
+
 import { formatBytes, isURL } from "../../../helpers/HelperFunctions";
 import FileExplorer, { getFilesTree } from "../../FileExplorer";
 import { ErrorLabel, InputLabel } from "../../formlabels/FormLabels";
 import { FormText } from "../../../ts-wrappers";
+import AppContext from "../../../context/appContext";
+import { ThrottledTooltip } from "../../Tooltip";
 
 const FILE_STATUS = {
   ADDED: 201,
   UPLOADED: 101,
   UPLOADING: 0,
   FAILED: 400,
-  PENDING: -1
+  PENDING: -1,
 };
 
 const FILE_COMPRESSED = {
@@ -49,27 +60,18 @@ const FILE_COMPRESSED = {
   UNCOMPRESS_NO: "uncompress_no",
 };
 
-const URL_FILE_ID = "urlFileInput";
+const INPUT_URL_ERROR = {
+  INVALID: "invalid",
+  DUPLICATED: "duplicated"
+};
 
-function useFiles({ initialState = [] }) {
-  const [state, setState] = useState(initialState);
-  function withBlobs(files) {
-    const deStructured = [...files];
-    const blobs = deStructured
-      .map(file => {
-        return file;
-      })
-      .filter(elem => elem !== null);
-    setState(blobs);
-  }
-  return [state, withBlobs];
-}
+const URL_FILE_ID = "urlFileInput";
 
 function getFileStatus(id, error, status) {
   if (status === FILE_STATUS.PENDING)
     return FILE_STATUS.PENDING;
   if (status !== undefined)
-    return status;
+    return parseInt(status);
   if (error !== undefined)
     return FILE_STATUS.FAILED;
   if (id !== undefined && id !== null)
@@ -77,323 +79,159 @@ function getFileStatus(id, error, status) {
   return FILE_STATUS.UPLOADING;
 }
 
-function getFileObject(name, path, size, id, error, alias, controller, uncompress, folderStructure, status) {
-  return {
-    file_name: name,
-    file_path: path,
-    file_size: size,
-    file_id: id,
-    file_error: error,
-    file_alias: alias,
-    file_status: getFileStatus(id, error, status),
-    file_controller: controller,
-    file_uncompress: uncompress,
-    folder_structure: folderStructure //this is for uncompressed files
-  };
-}
+const isFileUploading = (fileStatus) => {
+  return fileStatus ? fileStatus >= FILE_STATUS.UPLOADING && fileStatus < FILE_STATUS.UPLOADED : false;
+};
 
 function FileUploaderInput({
-  alert, disabled = false, formLocation, handlers, help, internalValues, label, name, notifyFunction,
-  required = false, setInputs, uploadFileFunction, uploadThresholdSoft, value, versionUrl
-}) {
-
+  value, alert, disabled = false, handlers, help, internalValues, label, name, notifyFunction,
+  required = false, setInputs, uploadThresholdSoft, formLocation }) {
   //send value as an already built tree/hash to display and
   // delete from the files/paths /data/dataset-name so i can check if the file is there or not
   //AFTER THIS ADD THE FILES AS DISPLAY FILES BUT DON'T DISPLAY THEM
-  const [files, setFiles] = useFiles(internalValues ? { initialState: internalValues.files } : {});
   const [errorOnDrop, setErrorOnDrop] = useState(internalValues ? internalValues.errorOnDrop : "");
   const [initialized, setInitialized] = useState(internalValues ? internalValues.initialized : false);
   const [initialFilesTree, setInitialFilesTree] =
     useState(internalValues ? internalValues.initialFilesTree : undefined);
   const [partialFilesPath, setPartialFilesPath] = useState(internalValues ? internalValues.partialFilesPath : "");
   const [urlInputValue, setUrlInputValue] = useState(internalValues ? internalValues.urlInputValue : "");
-  const [errorUrlInput, setErrorUrlInput] = useState(false);
-  const $input = useRef(internalValues ? internalValues.input : null);
-
-  const getInternalValues = () => {
-    const internalValues = {
-      files,
-      errorOnDrop, initialized, initialFilesTree, partialFilesPath, urlInputValue, $input };
-    internalValues.uploadedFiles = getUploadedFilesRx();
-    internalValues.displayFiles = getDisplayFilesRx();
-    internalValues.filesErrors = getFilesErrorsRx();
-    return internalValues;
-  };
-
-  const setFilesRx = (newFiles) => {
-    return handlers.setFormDraftInternalValuesProperty("files", "files", newFiles);
-  };
-
-  const setDisplayFilesRx = (newDisplayFiles) => {
-    return handlers.setFormDraftInternalValuesProperty("files", "displayFiles", newDisplayFiles);
-  };
-
-  const getDisplayFilesRx = () => {
-    const dFiles = handlers.getFormDraftInternalValuesProperty("files", "displayFiles");
-    return dFiles !== undefined ? dFiles : [];
-  };
-
-  const getNewDisplayFilesRxAfterChanges = (newDisplayFiles) => {
-    const prevDisplayFiles = getDisplayFilesRx();
-    const filesErrors = getFilesErrorsRx();
-    return prevDisplayFiles.map(dFile => {
-      let uploadingFile = newDisplayFiles.find(uFile => uFile.file_name === dFile.file_name);
-      if (uploadingFile !== undefined) {
-        return getFileObject(
-          uploadingFile.file_name,
-          partialFilesPath + uploadingFile.file_name,
-          uploadingFile.file_size,
-          uploadingFile.file_id,
-          filesErrors.find(file => file.file_name === uploadingFile.file_name),
-          uploadingFile.file_alias,
-          uploadingFile.file_controller,
-          uploadingFile.file_uncompress,
-          uploadingFile.folder_structure,
-          uploadingFile.file_status
-        );
-      }
-      return dFile;
-    });
-  };
-
-  const updateDisplayFilesRxAfterChanges = (newDisplayFiles) => {
-    const prevDisplayFiles = getDisplayFilesRx();
-    const filesErrors = getFilesErrorsRx();
-    setDisplayFilesRx(
-      prevDisplayFiles.map(dFile => {
-        let uploadingFile = newDisplayFiles.find(uFile => uFile.file_name === dFile.file_name);
-        if (uploadingFile !== undefined) {
-          return getFileObject(
-            uploadingFile.file_name,
-            partialFilesPath + uploadingFile.file_name,
-            uploadingFile.file_size,
-            uploadingFile.file_id,
-            filesErrors.find(file => file.file_name === uploadingFile.file_name),
-            uploadingFile.file_alias,
-            uploadingFile.file_controller,
-            uploadingFile.file_uncompress,
-            uploadingFile.folder_structure,
-            uploadingFile.file_status
-          );
-        }
-        return dFile;
-      })
-    );
-  };
-
-  const setInputsInForm = (newUploadedFiles) => {
-    const internalValues = getInternalValues();
-    internalValues.displayFiles = getNewDisplayFilesRxAfterChanges(newUploadedFiles);
-    internalValues.uploadedFiles = newUploadedFiles;
-    const artificialEvent = {
-      target: {
-        name: name,
-        value: newUploadedFiles,
-        internalValues: internalValues
-      },
-      isPersistent: () => false
-    };
-    handlers.setFormDraftInternalValuesProperty("files", "setFutureInputs", artificialEvent);
-  };
-
-  const setUploadedFilesRx = (newUploadedFiles) => {
-    updateDisplayFilesRxAfterChanges(newUploadedFiles); //DO WE NEED THIS LINEEEE???
-    handlers.setFormDraftInternalValuesProperty("files", "uploadedFiles", newUploadedFiles);
-    setInputsInForm(newUploadedFiles);
-  };
-
-  const getUploadedFilesRx = () => {
-    const uFiles = handlers.getFormDraftInternalValuesProperty("files", "uploadedFiles");
-    return uFiles !== undefined ? uFiles : [];
-  };
-
-  const setFilesErrorsRx = (newFilesErrors) => {
-    const prevDisplayFiles = getDisplayFilesRx();
-    setDisplayFilesRx( prevDisplayFiles.map(dFile => {
-      let errorFile = newFilesErrors.find(eFile => eFile.file_name === dFile.file_name);
-      if (errorFile !== undefined) {
-        return getFileObject(
-          errorFile.file_name, errorFile.file_path, errorFile.file_size, null, errorFile.file_error,
-          errorFile.file_alias, errorFile.file_controller, errorFile.file_uncompress, errorFile.folder_structure);
-      }
-      return dFile;
-    })
-    );
-    return handlers.setFormDraftInternalValuesProperty( "files", "filesErrors", newFilesErrors);
-  };
-
-  const getFilesErrorsRx = () => {
-    const uFiles = handlers.getFormDraftInternalValuesProperty( "files", "filesErrors");
-    return uFiles !== undefined ? uFiles : [];
-  };
+  const [errorUrlInput, setErrorUrlInput] = useState(null);
+  const [dropzone, setDropzone] = useState(null);
+  const { client } = useContext(AppContext);
 
   useEffect(() => {
-    if (value !== undefined && !initialized && value.length > 0) {
-      if (value[value.length - 1].atLocation !== undefined) {
-        let openFolders = value[value.length - 1].atLocation.startsWith("data/") ? 2 : 1;
-        let lastElement = value[value.length - 1].atLocation.split("/");
-        if (lastElement[0] === "data")
-          setPartialFilesPath(lastElement[0] + "/" + lastElement[1] + "/");
-        else setPartialFilesPath(lastElement[0] + "/");
-        setInitialFilesTree(getFilesTree(value, openFolders));
-      }
-    }
-    const pendingCallback = handlers.getFormDraftInternalValuesProperty( "files", "setFutureInputs");
-    if (pendingCallback)
-      setInputs(pendingCallback);
+    calculateFilePathAndTree();
     setInitialized(true);
-  }, [value, initialized, formLocation, handlers, setInputs]);
+  }, [value, initialized, formLocation, handlers, setInputs]); // eslint-disable-line
 
-  let uploadFile = (file) => {
-    const thenCallback = (body) => {
-      if (body.error) {
-        const prevFilesErrors = getFilesErrorsRx();
-        setFilesErrorsRx([
-          ...prevFilesErrors,
-          getFileObject(
-            file.name, partialFilesPath + file.name, file.size, undefined,
-            body.error.userMessage ? body.error.userMessage : body.error.reason,
-            undefined, file.file_controller, file.file_uncompress, file.folder_structure
-          )
-        ]);
-        return [];
-      }
-
-      const prevUploadedFiles = getUploadedFilesRx();
-      if (file.file_uncompress) {
-        let folderPath = body.result.files[0].relative_path.split("/")[0] + "/";
-        let file_alias = file.name !== body.result.files[0].relative_path.split("/")[0].replace(".unpacked", "") ?
-          body.result.files[0].relative_path.split("/")[0].replace(".unpacked", "") : undefined;
-        let filesTree = getFilesTree(body.result.files.map(file=>
-          ({ "atLocation": file.relative_path.replace(folderPath, ""),
-            "id": file.file_id
-          })));
-
-        let newFileDraft = getFileObject(
-          file.name, partialFilesPath + file.name, 0, [], undefined, file_alias,
-          undefined,
-          file.file_uncompress, filesTree);
-
-        newFileDraft.file_size = body.result.files ? body.result.files[0].file_size : 0;
-        newFileDraft.file_id = filesTree.tree.map(file => file.id);
-
-        setUploadedFilesRx([...prevUploadedFiles, newFileDraft]);
-        return newFileDraft;
-      }
-      let newFileObj = body.result.files[0];
-      if (newFileObj.file_name !== undefined && newFileObj.file_name !== file.name) {
-        newFileObj = getFileObject(
-          file.name, partialFilesPath + file.name, newFileObj.file_size, [newFileObj.file_id],
-          undefined, newFileObj.file_name,
-          undefined,
-          file.file_uncompress, undefined);
-      }
-      else {
-        newFileObj.file_id = [newFileObj.file_id];
-      }
-      setUploadedFilesRx([...prevUploadedFiles, newFileObj]);
-      return newFileObj;
-    };
-
-    const onErrorCallback = (error) => {
-      if (error.code !== DOMException.ABORT_ERR) {
-        const prevFilesErrors = getFilesErrorsRx();
-        setFilesErrorsRx([...prevFilesErrors,
-          getFileObject(file.name, partialFilesPath + file.name, file.size, undefined, "Error uploading the file",
-            undefined, file.file_controller, file.file_uncompress, file.folder_structure)]);
-        return [];
-      }
-    };
-
-    const setController = (monitored_file, controller) => {
-      const prevDisplayFiles = getDisplayFilesRx();
-      setDisplayFilesRx(prevDisplayFiles
-        .map(file => file.file_name === monitored_file.name ?
-          getFileObject(
-            file.file_name,
-            file.file_path,
-            file.file_size,
-            file.file_id,
-            file.file_error,
-            file.file_alias,
-            controller,
-            file.file_uncompress,
-            file.folder_structure,
-            file.file_status
-          )
-          : file));
-    };
-
-    const setFileProgress = async (monitored_file, progress, extras) => {
-      const currentFile = getDisplayFilesRx().find(file => file.file_name === monitored_file.name);
-      if (currentFile) {
-        const prevDisplayFiles = getDisplayFilesRx();
-        setDisplayFilesRx(prevDisplayFiles
-          .map(file => file.file_name === monitored_file.name ?
-            getFileObject(
-              file.file_name,
-              file.file_path,
-              file.file_size,
-              file.file_id,
-              file.file_error ? file.file_error : extras?.code ? extras?.userMessage : undefined,
-              file.file_alias,
-              file.file_controller,
-              file.file_uncompress,
-              file.folder_structure,
-              progress
-            )
-            : file));
-
-        if (progress === FILE_STATUS.UPLOADED) {
-          const sendNotification = prevDisplayFiles
-            .filter(file => file.file_status !== FILE_STATUS.UPLOADED).length <= 1;
-          if (sendNotification)
-            notifyFunction(true);
-        }
-        else if (progress === FILE_STATUS.FAILED) {
-          notifyFunction(false, extras);
-        }
-      }
-    };
-    uploadFileFunction(versionUrl, file, file.file_uncompress, setFileProgress,
-      thenCallback, onErrorCallback, setController);
-  };
-
-  let onDropOrChange = (e) => {
-    e.preventDefault();
-    e.persist();
-
-    if (!disabled) {
-      let eventFiles = e.dataTransfer ? e.dataTransfer.files : e.target.files;
-      let droppedFiles = getFilteredFiles(Array.from(eventFiles));
-
-      droppedFiles = "signal" in new Request("") ?
-        droppedFiles.map(file => {
-          file.file_controller = new AbortController();
-          return file;
-        })
-        : droppedFiles;
-
-      const nonCompressedFiles = droppedFiles.filter(file => file.type !== "application/zip");
-      setFiles([...files, ...droppedFiles]);
-      setFilesRx([...files, ...droppedFiles]);
-      nonCompressedFiles.map(file => uploadFile(file, file.file_controller));
-      const newDisplayFiles = droppedFiles.map(file=> {
-        return file.type === "application/zip" ?
-          getFileObject(file.name, partialFilesPath + file.name, file.size, null,
-            undefined, undefined, file.file_controller, FILE_COMPRESSED.WAITING)
-          :
-          getFileObject(file.name, partialFilesPath + file.name, file.size, null,
-            undefined, undefined, file.file_controller);
+  useEffect(() => {
+    const myDropzone = new Dropzone(
+      "#dropzone",
+      {
+        url: (data) => getUploadURL(data),
+        chunking: true,
+        forceChunking: true,
+        addRemoveLinks: true,
+        uploadMultiple: false,
+        maxFilesize: 1024, // eslint-disable-line spellcheck/spell-checker
+        previewsContainer: false,
+        autoProcessQueue: false,
+        parallelUploads: 5,
+        dictDefaultMessage: "Drag and drop files here or <span>choose a file</span>"
       });
 
-      const displayFilesRx = getDisplayFilesRx();
-      setDisplayFilesRx([...displayFilesRx, ...newDisplayFiles]);
+    myDropzone.on("addedfile", (file) => onAddFileUpload(file, myDropzone));
+    myDropzone.on("error", (file, message) => onErrorUpload(file, message));
+    myDropzone.on("complete", (file) => onCompletedUpload(file, myDropzone));
+    myDropzone.on("uploadprogress", (file, progress) => onProgressUpload(file, progress));
+    myDropzone.on("sending", (file, xhr, data) => onSendingFile(file, xhr, data));
+    setDropzone(myDropzone);
+  }, []); // eslint-disable-line
+
+  const onSendingFile = (file, xhr, data) => {
+    data.append("chunked_content_type", file.type);
+  };
+
+  const onAddFileUpload = (file, myDropzone) => {
+    setErrorOnDrop("");
+    const existingFile = getFileByName(file.name);
+    // No add if file is UPLOADING, FAILED OR UPLOADED
+    if (existingFile &&
+      ([FILE_STATUS.UPLOADED, FILE_STATUS.FAILED].includes(existingFile?.file_status) ||
+      isFileUploading(existingFile?.file_status))) {
+      myDropzone.removeFile(file);
+      setErrorOnDrop(`${file.name} is already in the list`);
+      return;
+    }
+
+    const isFileCompressed = file.type === "application/zip";
+    // No add if file is an existing .zip with waiting status
+    if (existingFile && isFileCompressed && existingFile?.file_status === FILE_COMPRESSED.WAITING) {
+      myDropzone.removeFile(file);
+      setErrorOnDrop(`${file.name} is already in the list`);
+      return;
+    }
+
+    let fileToUpload = {
+      upload_id: file?.upload?.uuid,
+      file_name: file.name,
+      file_path: partialFilesPath + file.name,
+      file_size: file.size,
+      file: file
+    };
+    // .zip for first time  is removed of the queue, is upload when include uncompress confirmation
+    if (file.type === "application/zip" && !existingFile) {
+      myDropzone.removeFile(file);
+      file.file_id = null;
+      fileToUpload.file_status = null;
+      fileToUpload.file_uncompress = FILE_COMPRESSED.WAITING;
+    }
+    else {
+      if (existingFile)
+        fileToUpload = { ...existingFile, ...fileToUpload };
+      // dropzone will not upload the file if not call processQueue
+      setTimeout(() => myDropzone.processQueue(), 1000);
+    }
+
+    if (existingFile) {
+      updateAndSetDisplayFilesAfterChanges(fileToUpload);
+    }
+    else {
+      const allCurrentFiles = getCurrentFiles();
+      setDisplayFilesRx(allCurrentFiles.length ? [...allCurrentFiles, fileToUpload] : [fileToUpload]);
+    }
+  };
+
+  const onErrorUpload = (file, message) => {
+    const fileError = message ?? "Error uploading file " + file.name;
+    const currentFile = getFileByName(file.name);
+    currentFile.file_status = getFileStatus(currentFile.file_id, fileError);
+    currentFile.file_error = fileError;
+    updateAndSetDisplayFilesAfterChanges(currentFile);
+    notifyUpload(currentFile, fileError);
+  };
+
+  const onCompletedUpload = (file, myDropzone) => {
+    const resultRequest = file.xhr?.response ? JSON.parse(file.xhr?.response) : null;
+    const resultFiles = resultRequest ? resultRequest?.result?.files : [];
+    // THIS COULD CHANGE PENDING FOR FIX WHEN UPLOAD UNCOMPRESS_YES FILE
+    let resultFile = resultFiles ? resultFiles[0] : null;
+    const currentFile = { ...getFileByName(file.name), ...resultFile };
+    if (currentFile && resultFile) {
+      currentFile.file_id = [resultFile.file_id];
+      currentFile.file_status = FILE_STATUS.UPLOADED;
+      currentFile.file_name = file.name;
+
+      if (currentFile.file_uncompress === FILE_COMPRESSED.UNCOMPRESS_YES) {
+        currentFile.file_path = resultFile.relative_path.split("/")[0] + "/";
+        currentFile.file_alias = file.name !== resultFile.relative_path.split("/")[0].replace(".unpacked", "") ?
+          resultFile.relative_path.split("/")[0].replace(".unpacked", "") : undefined;
+        currentFile.folder_structure = getFilesTree(resultFiles.map(fileInZip =>
+          ({
+            "atLocation": fileInZip.relative_path.replace(currentFile.file_path, ""),
+            "id": fileInZip.file_id
+          })));
+        currentFile.file_size = resultFile.file_size ?? 0;
+        currentFile.file_id = currentFile.folder_structure?.tree?.map(file => file.id);
+      }
+      updateAndSetDisplayFilesAfterChanges(currentFile);
+      notifyUpload(currentFile);
+    }
+    setInputsInForm();
+    // run if there is something left in the queue
+    setTimeout(() => myDropzone?.processQueue(), 1000);
+  };
+
+  const onProgressUpload = (monitored_file, progress) => {
+    const currentFile = getFileByName(monitored_file.name);
+    if (currentFile) {
+      currentFile.file_status = getFileStatus(currentFile.file_id, currentFile.file_error, progress);
+      updateAndSetDisplayFilesAfterChanges(currentFile);
     }
   };
 
   const onUrlInputChange = (e) => {
-    setErrorUrlInput(false);
+    setErrorUrlInput(null);
     setUrlInputValue(e.target.value);
   };
 
@@ -401,101 +239,149 @@ function FileUploaderInput({
     if (!disabled && (e.key === "Enter" || e.target.id === "addFileButton")) {
       e.preventDefault();
       if (!urlInputValue)
-        setErrorUrlInput(true);
-      const fileThere = getDisplayFilesRx().find(file => file.file_name === urlInputValue);
+        setErrorUrlInput(INPUT_URL_ERROR.INVALID);
+      const fileThere = getFileByName(urlInputValue);
       if (fileThere === undefined && isURL(urlInputValue)) {
-        const file_url = getFileObject(urlInputValue, urlInputValue, 0, null,
-          undefined, undefined, undefined, undefined, undefined, FILE_STATUS.PENDING);
-        setDisplayFilesRx([...getDisplayFilesRx(), file_url ]);
-        const prevUploadedFiles = getUploadedFilesRx();
-        setUploadedFilesRx([...prevUploadedFiles, file_url]);
+        const file_url = {
+          file_name: urlInputValue,
+          file_path: urlInputValue,
+          file_size: 0,
+          file_status: getFileStatus(null, undefined, FILE_STATUS.PENDING),
+        };
+        setDisplayFilesRx([ ...getCurrentFiles(), file_url ]);
         setUrlInputValue("");
+        setInputsInForm();
+      }
+      else if (fileThere) {
+        setErrorUrlInput(INPUT_URL_ERROR.DUPLICATED);
       }
       else {
-        setErrorUrlInput(true);
+        setErrorUrlInput(INPUT_URL_ERROR.INVALID);
       }
     }
   };
 
-  let deleteFile = (file_name, file_controller) => {
+  const getFileByName = (fileName) => {
+    return getCurrentFiles().find(file => file.file_name === fileName);
+  };
+
+  const updateAndSetDisplayFilesAfterChanges = (file) => {
+    const displayFiles = getCurrentFiles()
+      .map(dFile => dFile.file_name === file.file_name ? file : dFile);
+    setDisplayFilesRx(displayFiles);
+  };
+
+  const getUploadURL = (data) => {
+    if (data.length && data[0].type === "application/zip") {
+      const currentFile = getFileByName(data[0].name);
+      if (currentFile.file_uncompress === FILE_COMPRESSED.UNCOMPRESS_YES)
+        return `${ client.uploadFileURL() }&unpack_archive=true`;
+      if (currentFile.file_uncompress === FILE_COMPRESSED.UNCOMPRESS_NO)
+        return `${ client.uploadFileURL() }&unpack_archive=false`;
+    }
+    return client.uploadFileURL();
+  };
+
+  const setInputsInForm = () => {
+    const internalValues = { errorOnDrop, initialized, partialFilesPath, urlInputValue };
+    internalValues.displayFiles = getCurrentFiles();
+    internalValues.initialFilesTree = calculateFilePathAndTree()?.filesTree;
+    const artificialEvent = {
+      target: {
+        name: name,
+        value: internalValues.displayFiles
+          .filter(f => [FILE_STATUS.UPLOADED, FILE_STATUS.PENDING].includes(f.file_status)),
+        internalValues: internalValues
+      },
+      isPersistent: () => false
+    };
+    setInputs(artificialEvent);
+  };
+
+  const getCurrentFiles = () => {
+    const dFiles = handlers.getFormDraftInternalValuesProperty("files", "displayFiles");
+    return dFiles !== undefined ? dFiles : [];
+  };
+
+  const setDisplayFilesRx = (newDisplayFiles) => {
+    return handlers.setFormDraftInternalValuesProperty("files", "displayFiles", newDisplayFiles);
+  };
+
+  const notifyUpload = (file, extras) => {
+    if (file.file_status === FILE_STATUS.UPLOADED)
+      notifyFunction(true);
+    else if (file.file_status === FILE_STATUS.FAILED)
+      notifyFunction(false, extras);
+  };
+
+  const calculateFilePathAndTree = () => {
+    if (value !== undefined && !initialized && value.length > 0) {
+      if (value[value.length - 1].atLocation !== undefined) {
+        let openFolders = value[value.length - 1].atLocation.startsWith("data/") ? 2 : 1;
+        let lastElement = value[value.length - 1].atLocation.split("/");
+        let partialPath;
+        if (lastElement[0] === "data")
+          partialPath = lastElement[0] + "/" + lastElement[1] + "/";
+        else partialPath = lastElement[0] + "/";
+        const filesTree = getFilesTree(value, openFolders);
+        setPartialFilesPath(partialPath);
+        setInitialFilesTree(filesTree);
+        return {
+          partialPath,
+          filesTree
+        };
+      }
+    }
+    return null;
+  };
+
+  // file handlers
+  const deleteFile = (file_name) => {
     if (!disabled) {
-      const currentFile = getDisplayFilesRx().find(file => file.file_name === file_name);
+      setErrorOnDrop("");
+      const currentFile = getFileByName(file_name);
       if (currentFile) {
-        setDisplayFilesRx(getDisplayFilesRx()
+        setDisplayFilesRx(getCurrentFiles()
           .filter(file => file.file_name !== file_name));
-        setFilesErrorsRx(getFilesErrorsRx()
-          .filter(file => file.file_name !== file_name));
-        setUploadedFilesRx(getUploadedFilesRx()
-          .filter(file => file.file_name !== file_name));
-
-        const filteredFiles = files.filter(file => file.name !== file_name);
-        setFiles([...filteredFiles]);
-        setFilesRx([...filteredFiles]);
-        $input.current.value = "";
-        if (file_controller) file_controller.abort();
+        setInputsInForm();
       }
     }
   };
 
-  let retryUpload = (file_name) => {
+  const cancelUpload = (uploadId) => {
+    if (!uploadId)
+      return;
+    setErrorOnDrop("");
+    const dropzoneFiles = dropzone.getActiveFiles();
+    const fileToDelete = dropzoneFiles.filter(file => file.upload?.uuid === uploadId);
+    if (fileToDelete.length)
+      dropzone.removeFile(fileToDelete[0]);
+  };
+
+  const retryUpload = (file_name) => {
     if (!disabled) {
-      let retryFile = files.find(file => file.name === file_name);
-      if (retryFile !== undefined) {
-        const displayFilesFiltered = getDisplayFilesRx().map(file => {
-          if (file.file_name === file_name) {
-            return getFileObject(retryFile.name, partialFilesPath + retryFile.name, retryFile.size, null, undefined,
-              retryFile.file_alias, retryFile.file_controller, file.file_uncompress, file.folder_structure, undefined);
-          }
-          return file;
-        });
-        setDisplayFilesRx([...displayFilesFiltered]);
-        setFilesErrorsRx(getFilesErrorsRx().filter(file => file.file_name !== file_name));
-        uploadFile(retryFile);
-      }
+      setErrorOnDrop("");
+      const currentFile = getFileByName(file_name);
+      currentFile.file_status = FILE_STATUS.UPLOADING;
+      currentFile.file_error = null;
+      updateAndSetDisplayFilesAfterChanges(currentFile);
+      dropzone.addFile(currentFile.file);
     }
   };
 
-  let uploadCompressedFile = (file_name, uncompress) => {
+  const uploadCompressedFile = (file_name, uncompressed) => {
     if (!disabled) {
-      let compressedFile = files.find(file => file.name === file_name);
-      const currentDisplayFiles = getDisplayFilesRx();
-      if (compressedFile !== undefined) {
-        const displayFilesFiltered = currentDisplayFiles.map(file => {
-          if (file.file_name === file_name) {
-            const updatedFile = getFileObject(compressedFile.name, partialFilesPath + compressedFile.name,
-              compressedFile.size, null, undefined, compressedFile.file_alias,
-              compressedFile.file_controller, uncompress === true ?
-                FILE_COMPRESSED.UNCOMPRESS_YES : FILE_COMPRESSED.UNCOMPRESS_NO );
-            return updatedFile;
-          }
-          return file;
-        });
-        setDisplayFilesRx([...displayFilesFiltered]);
-        setFilesErrorsRx(getFilesErrorsRx().filter(file => file.file_name !== file_name));
-        compressedFile.file_uncompress = uncompress;
-        uploadFile(compressedFile);
+      const currentFile = getFileByName(file_name);
+      if (currentFile) {
+        currentFile.file_uncompress = uncompressed;
+        updateAndSetDisplayFilesAfterChanges(currentFile);
+        if ([FILE_COMPRESSED.UNCOMPRESS_YES, FILE_COMPRESSED.UNCOMPRESS_NO].includes(uncompressed))
+          dropzone.addFile(currentFile.file);
       }
     }
   };
 
-  let getFilteredFiles = (files) => {
-    let dropErrorMessage = "";
-    let filteredFiles = files.filter(file => {
-      if (getDisplayFilesRx()
-        .find(dFile => (dFile.file_name === file.name || dFile.file_alias === file.name)) === undefined)
-        return true;
-
-      dropErrorMessage = dropErrorMessage === "" ?
-        "Files can't have the same name (This file(s) alredy exist(s): " + file.name
-        : dropErrorMessage + ", " + file.name;
-      return false;
-
-    });
-    dropErrorMessage = dropErrorMessage !== "" ? dropErrorMessage + ")." : "";
-    setErrorOnDrop(dropErrorMessage);
-    return filteredFiles;
-  };
-
+  // html comp
   const getFileStatusComp = (file) => {
     switch (file.file_status) {
       case FILE_STATUS.ADDED:
@@ -506,14 +392,10 @@ function FileUploaderInput({
         return <span> File will be uploaded on submit</span>;
       case FILE_STATUS.FAILED:
         return <div>
-          <span className="me-2">
+          <span className="me-2 text-danger fst-italic">
             <FontAwesomeIcon icon={faExclamationTriangle}
               className="me-2" color="var(--bs-danger)" style={{ cursor: "text" }} />
             {file.file_error}
-          </span>
-          <span className="text-primary" style={{ whiteSpace: "nowrap", cursor: "pointer" }}
-            onClick={() => retryUpload(file.file_name)}>
-            <FontAwesomeIcon color="var(--bs-primary)" icon={faSyncAlt} /> Retry
           </span>
         </div>;
       default:
@@ -523,12 +405,14 @@ function FileUploaderInput({
             <span className="mb-1">&nbsp;Unzip on upload?</span>
             <span className="me-1">
               <span className="text-primary text-button" style={{ whiteSpace: "nowrap", cursor: "pointer" }}
-                onClick={() => uploadCompressedFile(file.file_name, true)}>Yes</span> or
+                onClick={() => uploadCompressedFile(file.file_name, FILE_COMPRESSED.UNCOMPRESS_YES)}>Yes</span> or
               <span className="text-primary  text-button" style={{ whiteSpace: "nowrap", cursor: "pointer" }}
-                onClick={() => uploadCompressedFile(file.file_name, false)}>No</span>
+                onClick={() => uploadCompressedFile(file.file_name, FILE_COMPRESSED.UNCOMPRESS_NO)}>No</span>
             </span>
           </div>;
         }
+        if (!file.file_status)
+          return <span>File in queue pending upload...</span>;
         return <span>
           <Progress color="primary" value={file.file_status}>{file.file_status}%</Progress>
           {file.file_size >= uploadThresholdSoft ? <small>
@@ -568,16 +452,49 @@ function FileUploaderInput({
     return null;
   };
 
-  const currentFiles = getDisplayFilesRx();
+  const currentFiles = getCurrentFiles();
+  const getActions = (file, index) => {
+    if ([FILE_STATUS.UPLOADED, FILE_STATUS.FAILED, FILE_STATUS.PENDING].includes(file.file_status)) {
+      const deleteButton = (<div id={"delete-" + index}>
+        <FontAwesomeIcon
+          style={{ cursor: "pointer" }}
+          color="var(--bs-danger)" icon={faTrashAlt}
+          onClick={() => deleteFile(file.file_name)}/>
+        <ThrottledTooltip
+          target={"delete-" + index}
+          tooltip="Delete file" /></div>);
+      const retryButton = file.file_status === FILE_STATUS.FAILED ?
+        (<div id={"retry-" + index}>
+          <FontAwesomeIcon
+            style={{ cursor: "pointer" }} icon={faSyncAlt} onClick={() => retryUpload(file.file_name)}/>
+          <ThrottledTooltip
+            target={"retry-" + index}
+            tooltip="Retry upload file" /></div>) : null;
+      return (
+        <div className="d-flex justify-content-evenly">
+          {retryButton}
+          {deleteButton}
+        </div>
+      );
+    }
+    else if (isFileUploading(file.file_status) && file.file_uncompress !== FILE_COMPRESSED.WAITING) {
+      return (<span
+        className="text-primary  text-button"
+        style={{ whiteSpace: "nowrap", cursor: "pointer" }}
+        onClick={() => cancelUpload(file.upload_id)}>Cancel</span>);
+    }
+    return null;
+  };
+
   const filesTable = currentFiles.length ? (
-    <Table hover bordered className="table-files mb-1 bg-white">
+    <Table hover bordered className="table-files m-0 bg-white">
       <thead>
         <tr>
           <th style={{ width: "5%" }} className="fw-light">#</th>
           <th style={{ width: "45%" }} className="fw-light">File Name/URL</th>
           <th style={{ width: "10%" }} className="fw-light">Size</th>
           <th style={{ width: "30%" }} className="fw-light">Status</th>
-          <th style={{ width: "10%" }} className="fw-light">Delete</th>
+          <th style={{ width: "10%" }} className="fw-light">Actions</th>
         </tr>
       </thead>
       <tbody className={disabled ? "disabled-input" : ""}>
@@ -614,24 +531,10 @@ function FileUploaderInput({
                   </UncontrolledCollapse>
                 </div> : null}
             </td>
-            <td>{file.file_size ? formatBytes(file.file_size) : "-"}</td>
+            <td>{file.file_size ? formatBytes(file.file_size, 0) : "-"}</td>
             <td>{getFileStatusComp(file)}</td>
-            <td>
-              {
-                file.file_status === FILE_STATUS.UPLOADED || file.file_status === FILE_STATUS.FAILED ||
-                file.file_status === FILE_STATUS.PENDING ?
-                  <FontAwesomeIcon style={{ cursor: "pointer" }}
-                    color="var(--bs-danger)" icon={faTrashAlt}
-                    onClick={() => deleteFile(file.file_name)} />
-                  : (file.file_status >= FILE_STATUS.UPLOADING && file.file_status < FILE_STATUS.UPLOADED
-                  && file.file_controller !== undefined ?
-                    (
-                      <FontAwesomeIcon style={{ cursor: "pointer" }}
-                        color="var(--bs-danger)" icon={faTrashAlt}
-                        onClick={() => deleteFile(file.file_name, file.file_controller)} />
-                    )
-                    : "null")
-              }
+            <td className="text-center">
+              {getActions(file, index)}
             </td>
           </tr>
         ))}
@@ -639,131 +542,94 @@ function FileUploaderInput({
     </Table>
   ) : null;
 
-  // dropdown part
-  const dropFileStyles = {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 10,
-    minHeight: "127px",
-    backgroundColor: "#F3F3F3",
-    borderStyle: "dashed",
-    borderColor: "#D3D3D3",
+  const getAlert = (alert) => {
+    if (alert.length && getCurrentFiles().filter(f => f.file_uncompress === FILE_COMPRESSED.WAITING).length)
+      return `${alert} Please see the status messages and reply to any questions.`;
+    return alert;
   };
-  const chooseFileStyles = {
-    cursor: "pointer",
-    textDecoration: "underline"
-  };
-  const dropFileBox = (
-    <div
-      onClick={() => { $input.current.click(); }}
-      style={dropFileStyles}>
-      <p className="mb-1">
-        Or Drag and drop files here or
-        <span className="text-primary mx-1" style={chooseFileStyles}>choose a file</span>
-      </p>
-    </div>
-  );
 
   const errorLabelURLInput = !errorUrlInput ? null :
     (<div className="pb-1">
-      <ErrorLabel text="Please insert a valid dataset URL"/>
+      { errorUrlInput === INPUT_URL_ERROR.INVALID ?
+        <ErrorLabel text="Please insert a valid dataset URL"/> :
+        <ErrorLabel text="URL already exist"/>
+      }
     </div>);
+
+  const inputUrl = (<>
+    <div className="pb-1">
+      <span className="text-muted"><small>{ "Insert a URL and press enter:" }</small></span>
+    </div>
+    <InputGroup size="sm">
+      <Input
+        type="text"
+        name="fileUrl"
+        disabled={disabled}
+        id={URL_FILE_ID}
+        placeholder="Upload a file using a URL"
+        onKeyDown={e => onUrlInputEnter(e)}
+        onChange={e => onUrlInputChange(e)}
+        value={urlInputValue}
+      />
+      <Button color="primary" id="addFileButton" onClick={e=>onUrlInputEnter(e)}>
+        Add File from URL
+      </Button>
+    </InputGroup>
+    {errorLabelURLInput}
+  </>);
+
+  const dropFiles = <div className="dropzone" id="dropzone"/>;
+
+  const uploadFileDescription = (<>
+    <div className="pt-2">
+      <small className="text-muted">
+        To upload a folder, zip the folder, upload the zip file, and select Unzip on upload. <br/>
+        NOTE: Support for uploading large files in RenkuLab is still under development; {" "}
+        consider using the Renku CLI for files larger than 1 GB.
+        <Button className="pe-0 ps-1 pt-0 pb-0 mb-1" color="link" id="fileLimitToggler">
+          <small>More info.</small>
+        </Button>
+        <UncontrolledCollapse key="fileLimitToggler" toggler={"#fileLimitToggler"} className="pt-0 ps-3">
+          In practice, the file-size limitation on uploads in RenkuLab is dependent on the {" "}
+          network connection. Here are some general estimates:<br />
+          <ul>
+            <li>Files under 500MB can be reliably uploaded within a few minutes</li>
+            <li>Files between 500MB and 2GB may be uploadable in RenkuLab, but will take some time</li>
+            <li>For files larger than 2GB, we recommend using the Renku CLI for uploading</li>
+          </ul>
+        </UncontrolledCollapse>
+      </small>
+    </div>
+  </>);
+
+  const currentFilesCard = (initialFilesTree !== undefined ?
+    <Card className="mb-4">
+      <CardBody style={{ backgroundColor: "#e9ecef" }}>
+        <FileExplorer filesTree={initialFilesTree} lineageUrl=" " insideProject={false}/>
+      </CardBody>
+    </Card>
+    : null);
 
   return (
     <FormGroup className="field-group">
       <InputLabel isRequired={required} text={label}/>
-      {initialFilesTree !== undefined ?
-        <Card className="mb-4">
-          <CardBody style={{ backgroundColor: "#e9ecef" }}>
-            <FileExplorer
-              filesTree={initialFilesTree}
-              lineageUrl={" "}
-              insideProject={false}
-            />
-          </CardBody>
-        </Card>
-        : null
-      }
+      {currentFilesCard}
       {filesTable}
-      <div
-        onDrop={e => {
-          onDropOrChange(e);
-        }}
-        onDragOver={e => {
-          e.preventDefault();
-        }}
-        onDragLeave={e => {
-          e.preventDefault();
-        }}
-      >
-        <Table hover bordered className="table-files mb-1 bg-white">
-          <tbody className={disabled ? "disabled-input" : ""}>
-            <tr>
-              <td colSpan="5">
-                <div className="pb-1">
-                  <span className="text-muted"><small>{ "Insert a URL and press enter:" }</small></span>
-                </div>
-                <InputGroup size="sm">
-                  <Input
-                    type="text"
-                    name="fileUrl"
-                    disabled={disabled}
-                    id={URL_FILE_ID}
-                    placeholder="Upload a file using a URL"
-                    onKeyDown={e => onUrlInputEnter(e)}
-                    onChange={e => onUrlInputChange(e)}
-                    value={urlInputValue}
-                  />
-                  <Button color="primary" id="addFileButton" onClick={e=>onUrlInputEnter(e)}>
-                    Add File from URL
-                  </Button>
-                </InputGroup>
-                {errorLabelURLInput}
-              </td>
-            </tr>
-          </tbody>
-          <tfoot className={disabled ? "disabled-input border-top-0" : "border-top-0"} style={{ fontWeight: "normal" }}>
-            <tr>
-              <td colSpan="5">
-                {dropFileBox}
-              </td>
-            </tr>
-          </tfoot>
-        </Table>
-        <div>
-          <small className="text-muted">
-            To upload a folder, zip the folder, upload the zip file, and select Unzip on upload. <br/>
-            NOTE: Support for uploading large files in RenkuLab is still under development; {" "}
-            consider using the Renku CLI for files larger than 500 MB.
-            <Button className="pe-0 ps-1 pt-0 pb-0 mb-1" color="link" id="fileLimitToggler">
-              <small>More info.</small>
-            </Button>
-            <UncontrolledCollapse key="fileLimitToggler" toggler={"#fileLimitToggler"} className="pt-0 ps-3">
-              In practice, the file-size limitation on uploads in RenkuLab is dependent on the {" "}
-              network connection. Here are some general estimates:<br />
-              <ul>
-                <li>Files under 500MB can be reliably uploaded within a few minutes</li>
-                <li>Files between 500MB and 2GB may be uploadable in RenkuLab, but will take some time</li>
-                <li>For files larger than 2GB, we recommend using the Renku CLI for uploading</li>
-              </ul>
-            </UncontrolledCollapse>
-          </small>
-        </div>
+      <div className="p-2 bg-white upload-file-box">
+        {inputUrl}
+        {dropFiles}
+        {errorOnDrop && (
+          <div className="d-flex justify-content-evenly align-items-center">
+            <ErrorLabel text={errorOnDrop} />
+            <FontAwesomeIcon
+              color="var(--bs-danger)"
+              style={{ cursor: "pointer" }}
+              icon={faTimes} onClick={() => setErrorOnDrop(null)}/>
+          </div>)}
+        {help && <FormText color="muted">{help}</FormText>}
+        {alert && <ErrorLabel text={getAlert(alert)} />}
       </div>
-      <input
-        style={{ display: "none" }}
-        type="file"
-        ref={$input}
-        onChange={e => {
-          onDropOrChange(e);
-        }}
-        disabled={disabled}
-        multiple={true}
-      />
-      {errorOnDrop && <ErrorLabel text={errorOnDrop} />}
-      {help && <FormText color="muted">{help}</FormText>}
-      {alert && <ErrorLabel text={alert} />}
+      {uploadFileDescription}
     </FormGroup>
   );
 }
