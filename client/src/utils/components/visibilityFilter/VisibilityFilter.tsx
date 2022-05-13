@@ -16,10 +16,10 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import "./VisibilityFilter.css";
 import { faGlobe, faLock, faUserFriends } from "@fortawesome/free-solid-svg-icons";
-import { Input } from "reactstrap/lib";
+import { Input } from "../../ts-wrappers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 /**
@@ -72,13 +72,14 @@ const VisibilityFilter = ({ handler, value }: VisibilityFilterProps) => {
     const itemValueAsKey = item.value as keyof VisibilitiesFilter;
     return (
       <div className="d-flex align-items-center" key={nameInput}>
-        <Input type="checkbox"
-               name={nameInput}
-               defaultChecked={value ? value[itemValueAsKey] : false}
-               value={item.value}
-               onChange={(e) => selectVisibility(item.value, e.target.checked)}
-               className="visibility-input"
-               data-cy={nameInput}/>
+        <Input
+          type="checkbox"
+          name={nameInput}
+          defaultChecked={value ? value[itemValueAsKey] : false}
+          value={item.value}
+          onChange={(e: ChangeEvent<HTMLInputElement>) => selectVisibility(item.value, e.target.checked)}
+          className="visibility-input"
+          data-cy={nameInput}/>
         <label className="px-2 visibility-label">{item.title}</label>
         <FontAwesomeIcon className="visibility-icon" icon={item.icon} />
       </div>

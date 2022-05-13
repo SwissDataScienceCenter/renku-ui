@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { useEffect, useState } from "react";
-import { Input, Label } from "reactstrap/lib";
+import { ChangeEvent, useEffect, useState } from "react";
+import { Input, Label } from "../../ts-wrappers";
 
 import "./SortingEntities.css";
 
@@ -76,11 +76,12 @@ const SortingEntities = (
     <>
       <div className={styleType === "desk" ? "d-flex align-items-center" : ""}>
         {styleType === "desk" ? <Label className="mx-2">Sort By</Label> : <h3 className="sorting-label">Sort By</h3>}
-        <Input type="select"
-               className="sorting-input"
-               name="sorting"
-               value={sorting as string}
-               onChange={(event) => { changeSorting(event.target.value); }}>
+        <Input
+          type="select"
+          className="sorting-input"
+          name="sorting"
+          value={sorting as string}
+          onChange={(event: ChangeEvent<HTMLInputElement>) => { changeSorting(event.target.value); }}>
           {options}
         </Input>
       </div>
