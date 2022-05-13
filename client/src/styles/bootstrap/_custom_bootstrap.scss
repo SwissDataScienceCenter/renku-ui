@@ -1,2 +1,1 @@
-$colors: map-merge($colors,$rk-colors);
-$theme-colors: map-merge($theme-colors, $rk-colors);
+$colors: map-merge($colors, $rk-colors);
