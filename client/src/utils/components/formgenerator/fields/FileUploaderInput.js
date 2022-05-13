@@ -34,6 +34,7 @@ import { formatBytes, isURL } from "../../../helpers/HelperFunctions";
 import FileExplorer, { getFilesTree } from "../../FileExplorer";
 import { ErrorLabel, InputLabel } from "../../formlabels/FormLabels";
 import { FormText } from "../../../ts-wrappers";
+import DropzoneFiles from "../../dropzone/Dropzone";
 
 const FILE_STATUS = {
   ADDED: 201,
@@ -244,6 +245,39 @@ function FileUploaderInput({
     setInitialized(true);
   }, [value, initialized, formLocation, handlers, setInputs]);
 
+
+  const setFileProgress = (monitored_file, progress, extras) => {
+    const currentFile = getDisplayFilesRx().find(file => file.file_name === monitored_file.name);
+    if (currentFile) {
+      const prevDisplayFiles = getDisplayFilesRx();
+      setDisplayFilesRx(prevDisplayFiles
+        .map(file => file.file_name === monitored_file.name ?
+          getFileObject(
+            file.file_name,
+            file.file_path,
+            file.file_size,
+            file.file_id,
+            file.file_error ? file.file_error : extras?.code ? extras?.userMessage : undefined,
+            file.file_alias,
+            file.file_controller,
+            file.file_uncompress,
+            file.folder_structure,
+            progress
+          )
+          : file));
+
+      if (progress === FILE_STATUS.UPLOADED) {
+        const sendNotification = prevDisplayFiles
+          .filter(file => file.file_status !== FILE_STATUS.UPLOADED).length <= 1;
+        if (sendNotification)
+          notifyFunction(true);
+      }
+      else if (progress === FILE_STATUS.FAILED) {
+        notifyFunction(false, extras);
+      }
+    }
+  };
+
   let uploadFile = (file) => {
     const thenCallback = (body) => {
       if (body.error) {
@@ -324,37 +358,6 @@ function FileUploaderInput({
           : file));
     };
 
-    const setFileProgress = async (monitored_file, progress, extras) => {
-      const currentFile = getDisplayFilesRx().find(file => file.file_name === monitored_file.name);
-      if (currentFile) {
-        const prevDisplayFiles = getDisplayFilesRx();
-        setDisplayFilesRx(prevDisplayFiles
-          .map(file => file.file_name === monitored_file.name ?
-            getFileObject(
-              file.file_name,
-              file.file_path,
-              file.file_size,
-              file.file_id,
-              file.file_error ? file.file_error : extras?.code ? extras?.userMessage : undefined,
-              file.file_alias,
-              file.file_controller,
-              file.file_uncompress,
-              file.folder_structure,
-              progress
-            )
-            : file));
-
-        if (progress === FILE_STATUS.UPLOADED) {
-          const sendNotification = prevDisplayFiles
-            .filter(file => file.file_status !== FILE_STATUS.UPLOADED).length <= 1;
-          if (sendNotification)
-            notifyFunction(true);
-        }
-        else if (progress === FILE_STATUS.FAILED) {
-          notifyFunction(false, extras);
-        }
-      }
-    };
     uploadFileFunction(versionUrl, file, file.file_uncompress, setFileProgress,
       thenCallback, onErrorCallback, setController);
   };
@@ -389,6 +392,24 @@ function FileUploaderInput({
 
       const displayFilesRx = getDisplayFilesRx();
       setDisplayFilesRx([...displayFilesRx, ...newDisplayFiles]);
+    }
+  };
+
+  const handleNewFileDropzone = (file) => {
+    const newDisplayFiles = getFileObject(file.name, partialFilesPath + file.name, file.size, null,
+      undefined, undefined, undefined);
+    const displayFilesRx = getDisplayFilesRx();
+    setDisplayFilesRx(displayFilesRx.length ? [...displayFilesRx, newDisplayFiles] : [newDisplayFiles]);
+  };
+
+  const handleCompletedUpload = (file) => {
+    const prevUploadedFiles = getUploadedFilesRx();
+    const resultRequest = file.xhr?.response ? JSON.parse(file.xhr?.response) : null;
+    let newFileObj = resultRequest ? resultRequest?.result?.files[0] : null;
+    if (newFileObj) {
+      newFileObj.file_id = [newFileObj.file_id];
+      setFileProgress(newFileObj, 100);
+      setUploadedFilesRx(prevUploadedFiles.length ? [...prevUploadedFiles, newFileObj] : [newFileObj]);
     }
   };
 
@@ -751,6 +772,7 @@ function FileUploaderInput({
           </small>
         </div>
       </div>
+      <DropzoneFiles onAddFile={handleNewFileDropzone} onCompletedUpload={handleCompletedUpload} />
       <input
         style={{ display: "none" }}
         type="file"
