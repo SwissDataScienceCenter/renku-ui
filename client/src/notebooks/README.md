@@ -2,73 +2,70 @@
 
 The logic behind sessions is complex because the process of identifying if a session can be started is complicated.
 
+Here is a recap. When reaching an error state, we generally keep polling the resource,
+but we also show immediate feedback to the user since it's unlikely we can recover (see labels).
+Project owners can usually trigger actions to start pipelines or jobs again.
+
 # Find image
 
 ```mermaid
 stateDiagram-v2
-    [*] --> GetRemoteImage
-    [*] --> GetProjectImage
+  [*] --> GetPinnedImage: pinned image 
+  [*] --> GetProjectImage: project image
 
-    GetProjectImage --> Error
-    GetProjectImage --> Found
+  GetProjectImage --> Found
 
-    GetRemoteImage --> Error
-    GetRemoteImage --> Found
+  GetPinnedImage --> Error
+  GetPinnedImage --> Found
 
-    Found --> [*]
-    Error --> [*]
+  note right of Error : Image N/A, refresh page
+  Found --> [*]
 
-    state GetProjectImage {
-      [*] --> GetRegistry
+  state GetProjectImage {
+    [*] --> GetImageRegistry
 
-      GetRegistry --> pi_error
-      GetRegistry --> GetImage
-      GetRegistry --> Unavailable
+    GetImageRegistry --> RegistryError
+    GetImageRegistry --> GetImage
 
-      GetImage --> pi_error
-      GetImage --> pi_found
-      GetImage --> Unavailable
+    RegistryError --> GetPipelines: logged
+    note right of RegistryError : Image N/A if anonymous
 
-      Unavailable --> GetImage: if anon
-      Unavailable --> GetPipelines
-      GetPipelines --> GetJobs
-      GetJobs --> JobSuccess
-      GetJobs --> JobFail
-      GetJobs --> JobRunning
+    GetImage --> ImageError
+    GetImage --> ImageAvailable
 
-      JobSuccess --> GetProjectImageNoEscape
+    ImageAvailable --> [*]
 
-      GetProjectImageNoEscape --> pi_error
-      GetProjectImageNoEscape --> pi_found
-      JobFail --> pi_error
-      JobRunning --> GetJobs
+    ImageError --> LoopImage : anonymous
+    ImageError --> GetPipelines: logged
 
-      pi_found --> [*]
-      pi_error --> [*]
-    }
+    GetPipelines --> PipelinesAvailable
+    GetPipelines --> PipelinesError
 
-    state GetProjectImageNoEscape {
-      [*] --> no_escape_GetRegistry
+    PipelinesAvailable --> GetJobs
+    PipelinesError --> GetPipelines
+    note right of PipelinesError : Trigger pipeline if owner
 
-      no_escape_GetRegistry --> no_escape_error
-      no_escape_GetRegistry --> no_escape_Image
+    GetJobs --> JobsAvailable
+    GetJobs --> JobsError
 
-      no_escape_Image --> no_escape_error
-      no_escape_Image --> no_escape_found
-      no_escape_Image --> no_escape_Unavailable
-      no_escape_Image --> no_escape_Jobs
+    JobsAvailable --> GetJob
+    JobsError --> GetJobs
+    note right of JobsError : Retrigger job if owner
 
-      no_escape_Unavailable --> no_escape_Image: if anon
-      no_escape_Jobs --> no_escape_JobSuccess
-      no_escape_Jobs --> no_escape_JobFail
-      no_escape_Jobs --> no_escape_JobRunning
+    GetJob --> JobSuccess
+    GetJob --> JobFailOrError
+    GetJob --> JobRunning
 
-      no_escape_JobSuccess --> no_escape_Registry: if no initial registry
-      no_escape_JobSuccess --> no_escape_Image
-      no_escape_JobFail --> no_escape_error
-      no_escape_JobRunning --> no_escape_Jobs
+    JobSuccess --> LoopImage
+    JobRunning --> JobRunning: still running
+    JobRunning --> JobSuccess
+    JobRunning --> JobFailOrError
 
-      no_escape_found --> [*]
-      no_escape_error --> [*]
-    }
+    LoopImage --> ImageAvailable
+    LoopImage --> ImageNotAvailable
+    note right of JobFailOrError : Retrigger job if owner
+
+    ImageNotAvailable --> LoopImage
+    note right of ImageNotAvailable : Image N/A
+  }
 ```
