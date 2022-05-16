@@ -36,12 +36,39 @@ stateDiagram-v2
       GetJobs --> JobFail
       GetJobs --> JobRunning
 
-      JobSuccess --> GetRegistry: if no initial registry
-      JobSuccess --> GetImage
+      JobSuccess --> GetProjectImageNoEscape
+
+      GetProjectImageNoEscape --> pi_error
+      GetProjectImageNoEscape --> pi_found
       JobFail --> pi_error
       JobRunning --> GetJobs
 
       pi_found --> [*]
       pi_error --> [*]
+    }
+
+    state GetProjectImageNoEscape {
+      [*] --> no_escape_GetRegistry
+
+      no_escape_GetRegistry --> no_escape_error
+      no_escape_GetRegistry --> no_escape_Image
+
+      no_escape_Image --> no_escape_error
+      no_escape_Image --> no_escape_found
+      no_escape_Image --> no_escape_Unavailable
+      no_escape_Image --> no_escape_Jobs
+
+      no_escape_Unavailable --> no_escape_Image: if anon
+      no_escape_Jobs --> no_escape_JobSuccess
+      no_escape_Jobs --> no_escape_JobFail
+      no_escape_Jobs --> no_escape_JobRunning
+
+      no_escape_JobSuccess --> no_escape_Registry: if no initial registry
+      no_escape_JobSuccess --> no_escape_Image
+      no_escape_JobFail --> no_escape_error
+      no_escape_JobRunning --> no_escape_Jobs
+
+      no_escape_found --> [*]
+      no_escape_error --> [*]
     }
 ```
