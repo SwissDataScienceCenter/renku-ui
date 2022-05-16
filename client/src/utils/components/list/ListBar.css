@@ -1,0 +1,16 @@
+.button-box {
+    flex-basis: 160px;
+    align-items: end;
+    flex-grow: 0;
+}
+
+.icons-box {
+    flex-basis: 30px;
+    flex-direction: column;
+}
+
+.media-box {
+    max-width: 130px;
+    margin: 0 10px;
+    height: fit-content;
+}
