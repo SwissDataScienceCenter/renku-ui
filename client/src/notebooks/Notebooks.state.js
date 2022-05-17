@@ -1104,7 +1104,7 @@ class NotebooksCoordinator {
         }
       }
       else {
-        // Is we have only 1 registry, we don't need to check anything else.
+        // If we have only 1 registry, we don't need to check anything else.
         error = null;
       }
     }
