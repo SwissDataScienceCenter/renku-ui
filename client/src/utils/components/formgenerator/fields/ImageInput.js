@@ -32,13 +32,8 @@ import { faCaretLeft, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 
 import { ImageFieldPropertyName as Prop } from "./stockimages";
 import ValidationAlert from "./ValidationAlert";
-import HelpText from "./HelpText";
-import FormLabel from "./FormLabel";
 import { formatBytes } from "../../../helpers/HelperFunctions";
-
-// eslint-disable-next-line
-const emptyPNG = "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";
-
+import { ErrorLabel, InputHintLabel, InputLabel } from "../../formlabels/FormLabels";
 /**
  * Update the value of the function
  * @param {integer} current The current value
@@ -89,19 +84,25 @@ function ImagePreviewControls({ value, options, rotate, disabled }) {
 function ImagePreview({ name, value, selected, displayValue, disabled, setInputs }) {
   const options = value.options;
   const selectedIndex = value.selected;
-  const imageStyle = { width: 128, height: 128, objectFit: "cover" };
-  const imageSrc = (selectedIndex > -1) ?
-    selected[Prop.URL] :
-    `data:image/png;base64, ${emptyPNG}`;
-  const image = <img src={imageSrc} alt={displayValue} style={imageStyle} />;
+  const imageSize = { width: 160, height: 135 };
+  const imageStyle = { ...imageSize, objectFit: "cover" };
+  const imagePreviewStyle = { ...imageStyle, backgroundColor: "#C4C4C4" };
+  const image = (selectedIndex > -1) ?
+    <img src={selected[Prop.URL]} alt={displayValue} style={imageStyle} /> :
+    (<div style={imagePreviewStyle}
+      className="d-flex justify-content-center align-items-center text-white">
+      <div>Image Preview</div>
+    </div>);
 
   const rotate = (direction) => rotateValue(name, value.selected, direction, options, setInputs);
-  return <div style={{ maxWidth: 164, minWidth: 164 }}>
+  const imageControls = options.length > 1 ?
+    <ImagePreviewControls value={displayValue} options={options} rotate={rotate} disabled={disabled} /> : null;
+  return (<div className="m-auto" style={imageSize}>
     <div className="d-flex justify-content-around border">
-      <div style={{ maxWidth: 128, minWidth: 128, }}>{image}</div>
+      <div style={imageSize}>{image}</div>
     </div>
-    <ImagePreviewControls value={displayValue} options={options} rotate={rotate} disabled={disabled} />
-  </div>;
+    {imageControls}
+  </div>);
 }
 
 function urlInputValue(value) {
@@ -197,12 +198,11 @@ function ImageContentInput({ name, value, placeholder, modes, setInputs,
   const inputGroupId = `${name}-input-group`;
   const hiddenInputId = `${name}-file-input-hidden`;
 
-  const helpIsString = ((typeof help) == "string") || (help == null);
-
+  const helpIsString = (typeof help) == "string" || help == null;
 
   let helpValue, inputValue, onInputChange, onModeButtonClick, onDrop;
   if (mode === ImageInputMode.URL) {
-    helpValue = (helpIsString) ? help : help["url"];
+    helpValue = helpIsString ? help : help["url"];
     inputValue = urlInputValue(value);
     onInputChange = (e) => onUrlInputChange(name, options, setInputs, e);
     onModeButtonClick = () => { };
@@ -218,6 +218,7 @@ function ImageContentInput({ name, value, placeholder, modes, setInputs,
     onDrop = (e) => onFileInputChange(name, options, maxSize, setInputs, setSizeAlert, e);
   }
   if (disabled) return null;
+  const sizeAlertLabel = sizeAlert ? <ErrorLabel text={sizeAlert} /> : null;
   return <FormGroup>
     <InputGroup id={inputGroupId}>
       <ImageContentInputMode name={name} modes={modes} mode={mode} setMode={setMode} onClick={onModeButtonClick}/>
@@ -225,13 +226,13 @@ function ImageContentInput({ name, value, placeholder, modes, setInputs,
         onDragOver={e => e.preventDefault()} onDragLeave={e => e.preventDefault()}
         onDrop={onDrop} onChange={onInputChange} disabled={disabled} placeholder={placeholder} />
     </InputGroup>
+    <InputHintLabel text={helpValue} />
     <input id={hiddenInputId} name={hiddenInputId} style={{ display: "none" }}
       type="file" accept={format}
       onChange={(e) => onFileInputChange(name, options, maxSize, setInputs, setSizeAlert, e)}
       onDrop={(e) => onFileInputChange(name, options, maxSize, setInputs, setSizeAlert, e)}
       ref={fileInput} />
-    <HelpText content={help} />
-    <ValidationAlert content={sizeAlert} />
+    {sizeAlertLabel}
   </FormGroup>;
 
 }
@@ -242,7 +243,7 @@ function ImageContentInput({ name, value, placeholder, modes, setInputs,
  * @param {string} label The label text displayed for the component
  * @param {object} value The value has a complex structure (documentation coming)
  * @param {string} alert The alert text to display
- * @param {string} placeholder The placeholder text shown in the URL input field
+ * @param {string} help The help text shown in the URL input field
  * @param {array} modes A list of allowed modes, null allows all
  * @param {function} setInputs The function invoked when the input changes
  * @param {string or object} help Either help text or an object with structure
@@ -251,10 +252,22 @@ function ImageContentInput({ name, value, placeholder, modes, setInputs,
  * @param {string} format The allowed formats. Defaults to "image/*"
  * @param {boolean} disabled True if the component is not editable
  * @param {boolean} required True if a value is required
+ * @param {boolean} optional True if a value is optional
  */
-function ImageInput({ name, label, value, alert, placeholder, modes,
-  setInputs, help, maxSize, format = "image/*", disabled = false, required = false }) {
-
+function ImageInput(
+  {
+    name,
+    label,
+    value,
+    alert,
+    modes,
+    setInputs,
+    help,
+    maxSize,
+    format = "image/*",
+    disabled = false,
+    required = false,
+    optional }) {
   const options = value.options;
   const selectedIndex = value.selected;
   const selected = (selectedIndex > -1) ?
@@ -262,29 +275,27 @@ function ImageInput({ name, label, value, alert, placeholder, modes,
     { [Prop.NAME]: "[none]", [Prop.URL]: "", [Prop.STOCK]: false };
   const displayValue = selected[Prop.NAME];
   const allowedModes = (modes) ? modes : [ImageInputMode.FILE, ImageInputMode.URL];
-
-  const helpIsString = ((typeof help) == "string") || (help == null);
-  const previewHelp = (helpIsString) ? help : help["preview"];
-  const inputHelp = (helpIsString) ? null : help;
-
+  const helpIsString = (typeof help) == "string" || help == null;
+  const previewHelp = !helpIsString && help["preview"] ? help["preview"] : null;
 
   return [
     <Row key="row-title">
-      <FormLabel className="ps-3" label={label} required={required} />
+      <InputLabel className="ps-3" text={label} isRequired={required} isOptional={optional} />
     </Row>,
     <Row key="row-content" className="mb-3">
       <Col xs={12}>
-        <div className="d-flex">
-          <div className="pe-2">
-            <ImagePreview value={value} selected={selected} displayValue={displayValue}
-              disabled={disabled} setInputs={setInputs} />
-            <HelpText content={previewHelp} />
-          </div>
+        <div className="d-block d-md-flex d-lg-flex gap-5">
           <div className="flex-grow-1">
-            <ImageContentInput name={name} value={selected} placeholder={placeholder}
-              setInputs={setInputs} help={inputHelp} maxSize={maxSize}
+            <ImageContentInput name={name} value={selected}
+              setInputs={setInputs} help={help} maxSize={maxSize}
               disabled={disabled} options={options} modes={allowedModes} format={format} />
             <ValidationAlert content={alert} />
+          </div>
+          <div className="pe-2">
+            <ImagePreview
+              value={value} selected={selected} displayValue={displayValue}
+              disabled={disabled} setInputs={setInputs} />
+            <InputHintLabel text={previewHelp} />
           </div>
         </div>
       </Col>
