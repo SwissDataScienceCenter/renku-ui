@@ -491,8 +491,8 @@ class StartNotebookPipelinesBadge extends Component {
     }
     else if (ci.type === NotebooksHelper.ciTypes.pinned) {
       if (ciStatus.available) {
-        color = "primary";
-        text = "pinned";
+        color = "success";
+        text = "pinned available";
       }
       else {
         color = "danger";
@@ -565,9 +565,10 @@ class StartNotebookPipelinesContent extends Component {
         <div>
           <Label>
             <p>
-              <FontAwesomeIcon icon={faExclamationTriangle} /> The image for this commit is not currently available.
+              <FontAwesomeIcon icon={faExclamationTriangle} className="text-danger" /> The
+              image for this commit is not currently available.
             </p>
-            <p>
+            <p className="mb-0">
               Since building it takes a while, consider waiting a few minutes if the commit is very recent.
               <br />Otherwise, you can either select another commit or <ExternalLink role="text" size="sm"
                 title="contact a maintainer" url={`${this.props.externalUrl}/-/project_members`} /> for
@@ -653,7 +654,8 @@ class StartNotebookPipelinesContent extends Component {
     else if (
       (ciStatus.stage === ciStages.pipelines && !ciStatus.ongoing && !ciStatus.available) ||
       (ciStatus.stage === ciStages.jobs && getCiJobStatus(ci.jobs?.target) === ciStatuses.wrong) ||
-      (ciStatus.stage === ciStages.image && !ci.available)
+      (ciStatus.stage === ciStages.image && !ci.available) ||
+      (ciStatus.stage === ciStages.looping && !ci.available)
     ) {
       const tryBuild = owner ?
         (
