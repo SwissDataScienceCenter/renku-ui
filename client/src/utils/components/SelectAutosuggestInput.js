@@ -25,11 +25,11 @@
 
 import * as React from "react";
 import { useState } from "react";
-import ValidationAlert from "./formgenerator/fields/ValidationAlert";
-import HelpText from "./formgenerator/fields/HelpText";
 import FormLabel from "./formgenerator/fields/FormLabel";
 import { FormGroup } from "reactstrap";
 import Autosuggest from "react-autosuggest";
+import { FormText } from "../ts-wrappers";
+import { ErrorLabel } from "./formlabels/FormLabels";
 
 function SelectAutosuggestInput({ name, label, existingValue, alert, options,
   placeholder, setInputs, help, customHandlers, disabled = false, required = false }) {
@@ -138,8 +138,8 @@ function SelectAutosuggestInput({ name, label, existingValue, alert, options,
       onSuggestionSelected={onSuggestionSelected}
       focusInputOnSuggestionClick={false}
     />
-    <HelpText content={help} />
-    <ValidationAlert content={alert} />
+    {help && <FormText color="muted">{help}</FormText>}
+    {alert && <ErrorLabel text={alert} />}
   </FormGroup>;
 }
 

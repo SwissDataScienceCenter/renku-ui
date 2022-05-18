@@ -31,7 +31,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretLeft, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 
 import { ImageFieldPropertyName as Prop } from "./stockimages";
-import ValidationAlert from "./ValidationAlert";
 import { formatBytes } from "../../../helpers/HelperFunctions";
 import { ErrorLabel, InputHintLabel, InputLabel } from "../../formlabels/FormLabels";
 /**
@@ -81,21 +80,22 @@ function ImagePreviewControls({ value, options, rotate, disabled }) {
   </div>;
 }
 
-function ImagePreview({ name, value, selected, displayValue, disabled, setInputs }) {
+function ImagePreview({ name, value, selected, displayValue, disabled, setInputs, imageControlsDisabled = false }) {
   const options = value.options;
   const selectedIndex = value.selected;
   const imageSize = { width: 160, height: 135 };
   const imageStyle = { ...imageSize, objectFit: "cover" };
   const imagePreviewStyle = { ...imageStyle, backgroundColor: "#C4C4C4" };
-  const image = (selectedIndex > -1) ?
+
+  const image = (selectedIndex > -1 && selected[Prop.URL]) ?
     <img src={selected[Prop.URL]} alt={displayValue} style={imageStyle} /> :
     (<div style={imagePreviewStyle}
       className="d-flex justify-content-center align-items-center text-white">
-      <div>Image Preview</div>
+      <div>No Image Yet</div>
     </div>);
 
   const rotate = (direction) => rotateValue(name, value.selected, direction, options, setInputs);
-  const imageControls = options.length > 1 ?
+  const imageControls = options.length > 1 && !imageControlsDisabled ?
     <ImagePreviewControls value={displayValue} options={options} rotate={rotate} disabled={disabled} /> : null;
   return (<div className="m-auto" style={imageSize}>
     <div className="d-flex justify-content-around border">
@@ -253,6 +253,7 @@ function ImageContentInput({ name, value, placeholder, modes, setInputs,
  * @param {boolean} disabled True if the component is not editable
  * @param {boolean} required True if a value is required
  * @param {boolean} optional True if a value is optional
+ * @param {boolean} imageControlsDisabled To so not show image controls
  */
 function ImageInput(
   {
@@ -267,7 +268,8 @@ function ImageInput(
     format = "image/*",
     disabled = false,
     required = false,
-    optional }) {
+    optional,
+    imageControlsDisabled }) {
   const options = value.options;
   const selectedIndex = value.selected;
   const selected = (selectedIndex > -1) ?
@@ -282,24 +284,31 @@ function ImageInput(
     <Row key="row-title">
       <InputLabel className="ps-3" text={label} isRequired={required} isOptional={optional} />
     </Row>,
-    <Row key="row-content" className="mb-3">
+    !disabled ? (<Row key="row-content" className="field-group">
       <Col xs={12}>
         <div className="d-block d-md-flex d-lg-flex gap-5">
           <div className="flex-grow-1">
             <ImageContentInput name={name} value={selected}
               setInputs={setInputs} help={help} maxSize={maxSize}
               disabled={disabled} options={options} modes={allowedModes} format={format} />
-            <ValidationAlert content={alert} />
+            {alert && <ErrorLabel text={alert} />}
           </div>
           <div className="pe-2">
             <ImagePreview
               value={value} selected={selected} displayValue={displayValue}
-              disabled={disabled} setInputs={setInputs} />
+              disabled={disabled} setInputs={setInputs} disableImageControls={imageControlsDisabled} />
             <InputHintLabel text={previewHelp} />
           </div>
         </div>
       </Col>
-    </Row>
+    </Row>) : (
+      <div key="row-content" className="pe-2">
+        <ImagePreview
+          value={value} selected={selected} displayValue={displayValue}
+          disabled={disabled} setInputs={setInputs} />
+        <InputHintLabel text={previewHelp} />
+      </div>
+    )
   ];
 }
 

@@ -396,6 +396,7 @@ function ChangeDataset(props) {
     overviewCommitsUrl={props.overviewCommitsUrl}
     submitCallback={submitCallback}
     versionUrl={versionUrl}
+    toggleNewDataset={props.toggleNewDataset}
   />;
 }
 export default ChangeDataset;

@@ -30,6 +30,7 @@ import { FormGenerator } from "../../../utils/components/formgenerator";
 import { ACCESS_LEVELS } from "../../../api-client";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
+import FormSchema from "../../../utils/components/formschema/FormSchema";
 
 function DatasetImport(props) {
 
@@ -44,15 +45,36 @@ function DatasetImport(props) {
     </Col>;
   }
 
-  return <FormGenerator
-    btnName="Import Dataset"
-    submitCallback={props.submitCallback}
-    model={props.datasetImportFormSchema}
-    onCancel={props.onCancel}
-    formLocation={props.formLocation}
-    notifications={props.notifications}
-    modelTop={props.model}
-  />;
+  const form = (
+    <FormGenerator
+      btnName="Import Dataset"
+      submitCallback={props.submitCallback}
+      model={props.datasetImportFormSchema}
+      onCancel={props.onCancel}
+      formLocation={props.formLocation}
+      notifications={props.notifications}
+      modelTop={props.model}
+      toggleNewDataset={props.toggleNewDataset}
+      showAddDatasetOptions={true}
+      addDatasetOptionSelected={"importDataset"}
+    />);
+
+  const title = "Import Dataset";
+  const desc = (
+    <span>
+      Import a published dataset from Zenodo, Dataverse, or from another Renku project. Use&nbsp;
+      <Button className="p-0" style={{ verticalAlign: "baseline" }} color="link" onClick={props.toggleNewDataset}>
+        <small>Create Dataset</small>
+      </Button>
+      &nbsp;to make a new dataset.
+    </span>
+  );
+
+  return (
+    <FormSchema showHeader={true} title={title} description={desc}>
+      {form}
+    </FormSchema>
+  );
 
 }
 

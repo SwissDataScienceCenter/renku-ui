@@ -32,7 +32,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import FormGenerator from "../../../utils/components/formgenerator/FormGenerator.container";
 import { Loader } from "../../../utils/components/Loader";
-
+import FormSchema from "../../../utils/components/formschema/FormSchema";
 
 function DatasetChange(props) {
 
@@ -91,7 +91,7 @@ function DatasetChange(props) {
 
   const edit = props.edit;
 
-  return <FormGenerator
+  const form = <FormGenerator
     btnName={edit ? "Modify Dataset" : "Create Dataset"}
     edit={edit}
     formLocation={props.formLocation}
@@ -103,7 +103,27 @@ function DatasetChange(props) {
     submitCallback={props.submitCallback}
     title={edit ? "Modify Dataset" : undefined}
     versionUrl={props.versionUrl}
+    toggleNewDataset={props.toggleNewDataset}
+    showAddDatasetOptions={!edit}
+    addDatasetOptionSelected={"addDataset"}
   />;
+
+  const title = edit ? "Modify Dataset" : "Add Dataset";
+  const desc = !edit ? (
+    <span>
+      Create a new dataset by providing metadata and content. Use&nbsp;
+      <Button className="p-0" style={{ verticalAlign: "baseline" }} color="link" onClick={props.toggleNewDataset}>
+        <small>Import Dataset</small>
+      </Button>
+      &nbsp;to reuse an existing dataset.
+    </span>
+  ) : "Update dataset metadata or upload dataset files";
+
+  return (
+    <FormSchema showHeader={true} title={title} description={desc}>
+      {form}
+    </FormSchema>
+  );
 }
 
 export default DatasetChange;

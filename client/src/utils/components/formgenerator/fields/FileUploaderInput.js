@@ -26,8 +26,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { FormGroup, Table, Button, UncontrolledCollapse,
   Card, CardBody, Input, InputGroup, Progress } from "reactstrap";
 import { Link } from "react-router-dom";
-import ValidationAlert from "./ValidationAlert";
-import HelpText from "./HelpText";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck, faTrashAlt, faSyncAlt, faExclamationTriangle,
@@ -35,6 +33,7 @@ import {
 import { formatBytes, isURL } from "../../../helpers/HelperFunctions";
 import FileExplorer, { getFilesTree } from "../../FileExplorer";
 import { ErrorLabel, InputLabel } from "../../formlabels/FormLabels";
+import { FormText } from "../../../ts-wrappers";
 
 const FILE_STATUS = {
   ADDED: 201,
@@ -672,7 +671,7 @@ function FileUploaderInput({
     </div>);
 
   return (
-    <FormGroup>
+    <FormGroup className="field-group">
       <InputLabel isRequired={required} isOptional={true} text={label}/>
       {initialFilesTree !== undefined ?
         <Card className="mb-4">
@@ -762,9 +761,9 @@ function FileUploaderInput({
         disabled={disabled}
         multiple={true}
       />
-      <div><span><small className="text-danger">{errorOnDrop}</small></span></div>
-      <HelpText content={help} />
-      <ValidationAlert content={alert} />
+      {errorOnDrop && <ErrorLabel text={errorOnDrop} />}
+      {help && <FormText color="muted">{help}</FormText>}
+      {alert && <ErrorLabel text={alert} />}
     </FormGroup>
   );
 }

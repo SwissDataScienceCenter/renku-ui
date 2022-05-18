@@ -24,12 +24,11 @@
  */
 
 import React, { ChangeEvent, ReactNode, useEffect } from "react";
-import ValidationAlert from "./ValidationAlert";
 import HelpText from "./HelpText";
 import { FormGroup, Input, Label, Row, Col, Button } from "../../../ts-wrappers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserPlus, faUserMinus } from "@fortawesome/free-solid-svg-icons";
-import { InputHintLabel, InputLabel } from "../../formlabels/FormLabels";
+import { ErrorLabel, InputHintLabel, InputLabel } from "../../formlabels/FormLabels";
 
 
 interface Creator {
@@ -45,7 +44,7 @@ export interface CreatorInputProps {
   name: string,
   label: string,
   value?: Creator[],
-  alert?: ReactNode,
+  alert?: string,
   setInputs: Function,
   help?: ReactNode,
   disabled?: boolean
@@ -166,7 +165,7 @@ function CreatorsInput({ name, label, value, alert, setInputs, help, disabled = 
   const defaultCreators = creators.filter(creator=>creator.default === true);
   const nonDefaultCreators = creators.filter(creator=>creator.default !== true);
 
-  return <FormGroup>
+  return <FormGroup className="field-group">
     <Label htmlFor={name}>{label}</Label>
     <Row className="mb-2">
       <Col>
@@ -214,7 +213,7 @@ function CreatorsInput({ name, label, value, alert, setInputs, help, disabled = 
         </Button>
       </Col>
     </Row>
-    <ValidationAlert content={alert} />
+    {alert && <ErrorLabel text={alert} />}
   </FormGroup>;
 }
 

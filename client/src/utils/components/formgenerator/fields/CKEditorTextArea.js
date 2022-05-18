@@ -24,24 +24,25 @@
  */
 
 import React, { useState } from "react";
-import ValidationAlert from "./ValidationAlert";
-import HelpText from "./HelpText";
 import FormLabel from "./FormLabel";
 import { FormGroup, Label } from "reactstrap";
 import CKEditor from "@ckeditor/ckeditor5-react";
 import RenkuCKEditor from "@renku/ckeditor5-build-renku";
 import { Input } from "reactstrap";
+import { FormText } from "../../../ts-wrappers";
+import { ErrorLabel } from "../../formlabels/FormLabels";
 
 
-function CktextareaInput({ name, label, type, value, alert, setInputs, help, outputType, disabled, required = false }) {
+function CktextareaInput(
+  { name, label, type, value, alert, setInputs, help, outputType, disabled, required = false, optional = false }) {
   const [codeView, setCodeView] = useState(false);
 
   const switchLabel = (outputType === "markdown") ? "Raw Markdown" : "Raw HTML";
 
   return <div>
-    <FormGroup>
+    <FormGroup className="field-group">
       <div className="pb-2">
-        <FormLabel htmlFor={name} label={label} required={required}/>
+        <FormLabel htmlFor={name} label={label} required={required} optional={optional} />
         <div className="form-check form-switch float-end">
           <Input
             className="form-check-input rounded-pill"
@@ -87,8 +88,8 @@ function CktextareaInput({ name, label, type, value, alert, setInputs, help, out
             rows={value ? value.split("\n").length + 1 : 2}
           />
       }
-      <HelpText content={help} />
-      <ValidationAlert content={alert} />
+      {help && <FormText color="muted">{help}</FormText>}
+      {alert && <ErrorLabel text={alert} />}
     </FormGroup>
   </div>;
 }

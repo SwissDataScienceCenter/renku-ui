@@ -64,7 +64,9 @@ const PropertyName = {
   VALUE: "value",
   MODES: "modes",
   MAXSIZE: "maxSize",
-  FORMAT: "format"
+  FORMAT: "format",
+  OPTIONAL: "optional",
+  IMAGECONTROLSDISABLED: "imageControlsDisabled",
 };
 
 // Named const for the bindings to the store.
