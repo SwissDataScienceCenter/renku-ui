@@ -26,10 +26,12 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { projectKgApi } from "../../features/projects/ProjectKgApi";
 import { sessionSidecarApi } from "../../features/session/sidecarApi";
+import { kgSearchApi } from "../../features/kg-search";
 
 function createStore(renkuStateModelReducer, name = "renku") {
   renkuStateModelReducer[projectKgApi.reducerPath] = projectKgApi.reducer;
   renkuStateModelReducer[sessionSidecarApi.reducerPath] = sessionSidecarApi.reducer;
+  renkuStateModelReducer[kgSearchApi.reducerPath] = kgSearchApi.reducer;
   // For the moment, disable the custom middleware, since it causes
   // problems for our app.
   const store = configureStore({
@@ -38,7 +40,7 @@ function createStore(renkuStateModelReducer, name = "renku") {
       getDefaultMiddleware({
         immutableCheck: false,
         serializableCheck: false,
-      }).concat(sessionSidecarApi.middleware),
+      }).concat(sessionSidecarApi.middleware).concat(kgSearchApi.middleware),
   });
   return store;
 }
