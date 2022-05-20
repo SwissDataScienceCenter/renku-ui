@@ -108,8 +108,9 @@ nav.rk-anon-home .nav-link {
 }
 
 #rk-anon-home-section6 {
-  @extend .section-content, .bg-primary;
-  color: $rk-white;
+  @extend .section-content;
+  background-color: $rk-white;
+  color: $rk-dark;
   min-height: 800px;
 
   h4 {
@@ -117,6 +118,7 @@ nav.rk-anon-home .nav-link {
     line-height: 24px;
   }
 }
+
 
 .rk-home-gallery div {
   flex-grow: 1;

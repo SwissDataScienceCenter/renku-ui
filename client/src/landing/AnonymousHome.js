@@ -41,6 +41,9 @@ import { RenkuToolbarHelpMenu, RenkuToolbarNotifications } from "./NavBar";
 import { VersionsBanner } from "./NabBarWarnings";
 
 import logo from "./logo.svg";
+import logo_EPFL from "./Logos/EPFL.svg";
+import logo_ETH from "./Logos/ETH.svg";
+import logo_SDSC from "./Logos/SDSC.svg";
 import Arrow_left from "./Assets/Arrow_left.svg";
 import Arrow_right from "./Assets/Arrow_right.svg";
 import Icon_Data_Scientists from "./Assets/Icon_Data_Scientists.svg";
@@ -285,13 +288,7 @@ function Section4(props) {
 
 function Section5(props) {
   return (props.projects == null) || (props.projects.length < 1) ?
-    <div id="rk-anon-home-section5-empty">
-      <div className="rk-anon-home-section-content">
-        <div className="rk-pt-l">
-          <h3 className="text-rk-pink">&nbsp;</h3>
-        </div>
-      </div>
-    </div> :
+    null :
     <div id="rk-anon-home-section5">
       <div className="rk-anon-home-section-content">
         <div className="rk-pt-l">
@@ -309,24 +306,41 @@ function Section6(props) {
     }}>
     <div className="rk-anon-home-section-content">
       <div>
-        <div><img src={logo} alt="Renku" height="68" className="d-block my-1" /></div>
+        <div><img src={logo} alt="Renku" height="92" className="d-block my-1" /></div>
         <Row className="rk-pt-s" >
-          <Col xs={12} xl={4} >
-            <p>We have offices in both Lausanne on the EPFL campus and in Zürich at ETH Zürich.</p>
+          <Col xs={12} lg={{ offset: 5, size: 5 }} xl={{ offset: 4, size: 4 }}>
+            <h3>Developed at</h3>
+            <a target="_blank" rel="noreferrer noopener" href="https://datascience.ch/">
+              <img src={logo_SDSC} alt="SDSC" height="68" />
+            </a>
           </Col>
-          <Col xs={12} lg={5} xl={4} className="rk-pt-up_to-lg-s bg-primary">
-            <h4 className="text-rk-pink">Lausanne</h4>
-            <p className="rk-pt-lg-s">
+        </Row>
+        <Row className="rk-pt-m" >
+          <Col xs={12} lg={5} xl={4} className="rk-pt-up_to-lg-s">
+            <h4 className="text-rk-pink">With offices at</h4>
+          </Col>
+        </Row>
+        <Row className="rk-pt-lg-s bg-white" style={{ "--bs-bg-opacity": .9 }} >
+          <Col xs={12} lg={5} xl={4} className="rk-pt-up_to-lg-s">
+            <p>
+              <a target="_blank" rel="noreferrer noopener" href="https://www.epfl.ch/en/">
+                <img src={logo_EPFL} alt="EPFL" height="68" />
+              </a>
+              <p>
               INN Building, Station 14, 1015 Lausanne<br />
               +41 21 693 43 88
+              </p>
             </p>
           </Col>
-          <Col xs={12} lg={5} xl={4} className="rk-pt-up_to-lg-s bg-primary">
-            <h4 className="text-rk-pink">Zürich</h4>
-            {/* eslint-disable-next-line */}
-            <p className="rk-pt-lg-s">
+          <Col xs={12} lg={5} xl={4} className="rk-pt-up_to-lg-s">
+            <p>
+              <a target="_blank" rel="noreferrer noopener" href="https://ethz.ch/en.html">
+                <img src={logo_ETH} alt="ETH" height="68" />
+              </a>
+              <p>
               Turnerstrasse 1, 8092 Zürich<br />
               +41 44 632 80 74
+              </p>
             </p>
           </Col>
         </Row>
