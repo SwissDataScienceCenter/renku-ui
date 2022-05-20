@@ -462,7 +462,6 @@ function addProjectMethods(client) {
    * @param {string} projectRepositoryUrl - external repository full url.
    * @param {string} [versionUrl] - project version url.
    */
-  /* eslint-enable max-len */
   client.getProjectLockStatus = async (projectRepositoryUrl, versionUrl = null) => {
     const url = client.versionedCoreUrl("project.lock_status", versionUrl);
     const queryParams = { git_url: projectRepositoryUrl };

@@ -157,7 +157,7 @@ describe("display lock status", () => {
 
   it("displays messages for locked project", () => {
     fixtures.projectLockStatus({ locked: true });
-    cy.visit("/projects/e2e/local-test-project/");
+    cy.visit("/projects/e2e/local-test-project/datasets");
     cy.wait("@getProject");
     cy.wait("@getProjectLockStatus");
     cy.contains("currently being modified").should("be.visible");
@@ -165,13 +165,15 @@ describe("display lock status", () => {
 
   it("displays error when the API fails", () => {
     fixtures.projectLockStatus({ locked: true, error: true });
-    cy.visit("/projects/e2e/local-test-project/");
+    cy.visit("/projects/e2e/local-test-project/datasets");
+    cy.wait("@getProjectLockStatus");
     cy.contains("cannot verify status").should("be.visible");
   });
 
   it("displays error when the legacy API fails", () => {
     fixtures.projectLockStatus({ locked: true, legacyError: true });
-    cy.visit("/projects/e2e/local-test-project/");
+    cy.visit("/projects/e2e/local-test-project/datasets");
+    cy.wait("@getProjectLockStatus");
     cy.contains("cannot verify status").should("be.visible");
   });
 });
