@@ -171,3 +171,7 @@ nav.rk-anon-home .nav-link {
 // Colors
 .rk-bg-white { background-color: $rk-white; }
 
+.rk-bg-shaded-dark {
+  --rk-bg-opacity: 0.5;
+  background-color: rgba($rk-blue, var(--rk-bg-opacity)) !important;
+}

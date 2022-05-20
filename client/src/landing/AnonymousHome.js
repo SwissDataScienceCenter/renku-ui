@@ -119,24 +119,27 @@ function Section1(props) {
     }}>
     <HomeHeader {...props} />
     <div className="rk-anon-home-section-content">
-      <Row>
-        <Col className="rk-pt-l rk-w-s" >
-          <h1 className="text-white">Connecting people, data, and insights</h1>
-        </Col>
-      </Row>
-      <Row>
-        <Col className="rk-pt-s rk-w-s">
-          <h3 className="text-secondary">Renku bridges the gaps to make data-driven workflows more collaborative.</h3>
-        </Col>
-      </Row>
-      <Row>
-        <Col className="rk-pt-s rk-w-s">
-          <HashLink className="btn btn-outline-rk-pink" role="button"
-            to="#rk-anon-home-section2">
+      <div className="rk-bg-shaded-dark">
+        <Row>
+          <Col className="rk-pt-l" >
+            <h1 className="text-white">An open-source knowledge infrastructure for{" "}
+          collaborative and reproducible data science</h1>
+          </Col>
+        </Row>
+        <Row>
+          <Col className="rk-pt-s">
+            <h3 className="text-secondary">Connecting people, data, and insights</h3>
+          </Col>
+        </Row>
+        <Row>
+          <Col className="rk-pt-s rk-w-s">
+            <HashLink className="btn btn-outline-rk-pink" role="button"
+              to="#rk-anon-home-section2">
             Learn more
-          </HashLink>
-        </Col>
-      </Row>
+            </HashLink>
+          </Col>
+        </Row>
+      </div>
     </div>
   </div>;
 }
