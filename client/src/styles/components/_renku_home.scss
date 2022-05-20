@@ -68,16 +68,20 @@ nav.rk-anon-home .nav-link {
   }
 }
 
+.rk-anon-home-section-bg-white {
+  @extend .section-content;
+  background-color: $rk-white;
+  color: $rk-dark;
+  min-height: 600px;
+}
+
 #rk-anon-home-section1 {
   @extend .section-content;
   min-height: 800px;
 }
 
 #rk-anon-home-section2 {
-  @extend .section-content;
-  background-color: $rk-white;
-  color: $rk-dark;
-  min-height: 600px;
+  @extend .rk-anon-home-section-bg-white;
 }
 
 #rk-anon-home-section3 {
@@ -117,6 +121,10 @@ nav.rk-anon-home .nav-link {
     font-size: 16px;
     line-height: 24px;
   }
+}
+
+#rk-anon-home-section-features {
+  --bs-bg-opacity: .3 !important;
 }
 
 
@@ -176,4 +184,19 @@ nav.rk-anon-home .nav-link {
 .rk-bg-shaded-dark {
   --rk-bg-opacity: 0.5;
   background-color: rgba($rk-blue, var(--rk-bg-opacity)) !important;
+}
+
+.rk-bg-data {
+  --rk-bg-opacity: 0.5;
+  background-color: rgba($rk-green, var(--rk-bg-opacity)) !important;
+}
+
+.rk-bg-sessions {
+  --rk-bg-opacity: 0.5;
+  background-color: rgba($rk-pink, var(--rk-bg-opacity)) !important;
+}
+
+.rk-bg-lineage {
+  --rk-bg-opacity: 0.5;
+  background-color: rgba($rk-yellow, var(--rk-bg-opacity)) !important;
 }

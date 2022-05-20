@@ -40,10 +40,6 @@ import QuickNav from "../utils/components/quicknav";
 import { RenkuToolbarHelpMenu, RenkuToolbarNotifications } from "./NavBar";
 import { VersionsBanner } from "./NabBarWarnings";
 
-import logo from "./logo.svg";
-import logo_EPFL from "./Logos/EPFL.svg";
-import logo_ETH from "./Logos/ETH.svg";
-import logo_SDSC from "./Logos/SDSC.svg";
 import Arrow_left from "./Assets/Arrow_left.svg";
 import Arrow_right from "./Assets/Arrow_right.svg";
 import Icon_Data_Scientists from "./Assets/Icon_Data_Scientists.svg";
@@ -53,6 +49,20 @@ import Illustration_Theory_Practice from "./Assets/Illustration_Theory_Practice.
 import VisualHead from "./Assets/Visual_Head.svg";
 import VisualDetail from "./Assets/Visual_Detail.svg";
 import VisualFooter from "./Assets/Visual_Footer.svg";
+
+import graphic_containers from "./Graphics/Features/Containers.svg";
+import graphic_data from "./Graphics/Features/Data.svg";
+import graphic_git from "./Graphics/Features/VersionControl.svg";
+import graphic_provenance from "./Graphics/Features/Provenance.svg";
+import graphic_sessions from "./Graphics/Features/Sessions.svg";
+import graphic_workflows from "./Graphics/Features/Workflows.svg";
+
+import logo from "./logo.svg";
+import logo_EPFL from "./Logos/EPFL.svg";
+import logo_ETH from "./Logos/ETH.svg";
+import logo_SDSC from "./Logos/SDSC.svg";
+
+
 import { RenkuNavLink } from "../utils/components/RenkuNavLink";
 import { ExternalLink } from "../utils/components/ExternalLinks";
 import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
@@ -125,7 +135,7 @@ function Section1(props) {
       <div className="rk-bg-shaded-dark">
         <Row>
           <Col className="rk-pt-l" >
-            <h1 className="text-white">An open-source knowledge infrastructure for{" "}
+            <h1 className="text-white">An open-source knowledge infrastructure for
           collaborative and reproducible data science</h1>
           </Col>
         </Row>
@@ -349,12 +359,109 @@ function Section6(props) {
   </div>;
 }
 
+function SectionFeatures(props) {
+  return <div className="rk-anon-home-section-bg-white" id="rk-anon-home-section-features">
+    <div className="rk-anon-home-section-content">
+      <Row className="rk-pt-m">
+        <Col md={4}>
+          <h3 className="text-rk-pink">Renku features</h3>
+        </Col>
+        <Col md={{ size: 7, offset: 1 }}>
+          <h3 className="text-secondary">Empowering all stages of your work
+          </h3>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <div>Renku gives you tools and functionality for each stage of the data science lifecycle:
+            from datasets to workflow execution</div>
+        </Col>
+      </Row>
+      <Row className="rk-pt-m">
+        <Col className="d-md-flex justify-content-between rk-bg-data p-3 me-2">
+          <div className="me-2">
+            <h4>Versioned Data</h4>
+            <p>
+              Renku Datasets equip your files with versioning and metadata.
+            </p>
+          </div>
+          <div>
+            <img src={graphic_data} alt="Versioned Data" height="68" />
+          </div>
+        </Col>
+        <Col className="d-md-flex justify-content-between rk-bg-sessions p-3">
+          <div>
+            <h4>Interactive Computing</h4>
+            <p>
+              Access free computing resources directly in the browser with familiar front-ends like
+              Jupyter, RStudio, and VSCode.
+            </p>
+          </div>
+          <div className="p-3 bg-white" style={{ "--bs-bg-opacity": .4 }}>
+            <img src={graphic_sessions} alt="Interactive Computing" height="68" />
+          </div>
+        </Col>
+      </Row>
+      <Row className="mt-2">
+        <Col className="d-md-flex justify-content-between rk-bg-lineage p-3 me-2">
+          <div className="me-2">
+            <h4>Automatic Provenance</h4>
+            <p>
+              Track inputs and outputs easily without having to learn a new workflow language.
+            </p>
+          </div>
+          <div>
+            <img src={graphic_provenance} alt="Automatic Provenance" height="68" />
+          </div>
+        </Col>
+        <Col className="d-md-flex justify-content-between rk-bg-data p-3">
+          <div>
+            <h4>Version Control by Default</h4>
+            <p>
+              Leverage Renku&apos;s GitLab instance to automatically version your project&apos;s files.
+            </p>
+          </div>
+          <div>
+            <img src={graphic_git} alt="Version Control" height="68" />
+          </div>
+        </Col>
+      </Row>
+      <Row className="mt-2 mb-5">
+        <Col className="d-md-flex justify-content-between rk-bg-sessions p-3 me-2">
+          <div>
+            <h4>Containers as Standard</h4>
+            <p>
+              Access a maintained stack of Docker images and project templates which ensure
+              computational reproducibility.
+            </p>
+          </div>
+          <div>
+            <img src={graphic_containers} alt="Containers" height="68" />
+          </div>
+        </Col>
+        <Col className="d-md-flex justify-content-between rk-bg-lineage p-3">
+          <div>
+            <h4>Reusable Workflows</h4>
+            <p>
+              Flexibly track your commands and reuse them as templates with different inputs or parameters.
+            </p>
+          </div>
+          <div>
+            <img src={graphic_workflows} alt="Containers" height="68" />
+          </div>
+        </Col>
+      </Row>
+    </div>
+  </div>;
+}
+
 
 function StandardHome(props) {
   return <Fragment>
     <Section1 {...props} />
     <Section2 />
     <Section3 />
+    <SectionFeatures />
     <Section4 tutorialLink={props.homeCustomized.tutorialLink} />
     <Section5 projects={props.homeCustomized.projects} />
     <Section6 />
