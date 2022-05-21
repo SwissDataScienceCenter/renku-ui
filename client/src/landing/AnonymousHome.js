@@ -57,6 +57,10 @@ import graphic_provenance from "./Graphics/Features/Provenance.svg";
 import graphic_sessions from "./Graphics/Features/Sessions.svg";
 import graphic_workflows from "./Graphics/Features/Workflows.svg";
 
+import graphic_build from "./Graphics/Features/Build.svg";
+import graphic_collaborate from "./Graphics/Features/Collaborate.svg";
+import graphic_teach from "./Graphics/Features/Teach.svg";
+
 import logo from "./logo.svg";
 import logo_EPFL from "./Logos/EPFL.svg";
 import logo_ETH from "./Logos/ETH.svg";
@@ -455,6 +459,71 @@ function SectionFeatures(props) {
   </div>;
 }
 
+function SectionUseCases(props) {
+  return <div className="rk-anon-home-section-bg-gray" id="rk-anon-home-section-use-cases">
+    <div className="rk-anon-home-section-content">
+      <Row className="rk-pt-m">
+        <Col md={4}>
+          <h3 className="text-rk-pink">Renku Use Cases</h3>
+        </Col>
+        <Col md={{ size: 7, offset: 1 }}>
+          <h3 className="text-secondary">Built to be versatile
+          </h3>
+        </Col>
+      </Row>
+      <Row className="rk-pt-m">
+        <Col className="d-md-flex align-items-center justify-content-between rk-bg-data p-3 me-2"
+          md={{ size: 8 }}>
+          <div className="me-2">
+            <h4>Collaborative Scientific Research</h4>
+            <p>
+              Ensure computational reproducibility between you and
+              your colleagues throughout the entire scientific process.
+            </p>
+          </div>
+          <div>
+            <img src={graphic_collaborate} alt="Versioned Data" height="68" />
+          </div>
+        </Col>
+      </Row>
+      <Row className="mt-2" >
+        <Col className="d-md-flex align-items-center justify-content-between rk-bg-sessions p-3"
+          md={{ size: 8, offset: 4 }}>
+          <div>
+            <h4>Teach a Class or Workshop</h4>
+            <p>
+              Access project templates in Python, R, Julia (and more!)
+              out of the box, or create your own template to share with students.
+            </p>
+            <p>
+              They can work together in the browser in our out of class.
+            </p>
+          </div>
+          <div className="p-3 bg-white" style={{ "--bs-bg-opacity": .4 }}>
+            <img src={graphic_teach} alt="Interactive Computing" height="68" />
+          </div>
+        </Col>
+      </Row>
+      <Row className="mt-2 mb-5">
+        <Col className="d-md-flex align-items-center justify-content-between rk-bg-lineage p-3 me-2"
+          md={{ size: 8, offset: 2 }}>
+          <div className="me-2">
+            <h4>Build, execute, and track workflows</h4>
+            <p>
+              Automate processes and follow them in real time. Rest easy, as
+              re-executions are reproducible given the same computational
+              environment.
+            </p>
+          </div>
+          <div>
+            <img src={graphic_build} alt="Automatic Provenance" height="68" />
+          </div>
+        </Col>
+      </Row>
+    </div>
+  </div>;
+}
+
 
 function StandardHome(props) {
   return <Fragment>
@@ -462,6 +531,7 @@ function StandardHome(props) {
     <Section2 />
     <Section3 />
     <SectionFeatures />
+    <SectionUseCases />
     <Section4 tutorialLink={props.homeCustomized.tutorialLink} />
     <Section5 projects={props.homeCustomized.projects} />
     <Section6 />

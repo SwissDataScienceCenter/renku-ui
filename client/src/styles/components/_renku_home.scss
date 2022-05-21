@@ -75,6 +75,13 @@ nav.rk-anon-home .nav-link {
   min-height: 600px;
 }
 
+.rk-anon-home-section-bg-gray {
+  @extend .section-content;
+  background-color: $rk-background;
+  color: $rk-dark;
+  min-height: 600px;
+}
+
 #rk-anon-home-section1 {
   @extend .section-content;
   min-height: 800px;
@@ -85,10 +92,7 @@ nav.rk-anon-home .nav-link {
 }
 
 #rk-anon-home-section3 {
-  @extend .section-content;
-  background-color: $rk-background;
-  color: $rk-dark;
-  min-height: 600px;
+  @extend .rk-anon-home-section-bg-gray;
 }
 
 #rk-anon-home-section4 {
