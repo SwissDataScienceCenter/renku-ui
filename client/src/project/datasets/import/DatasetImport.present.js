@@ -24,7 +24,7 @@
  */
 
 
-import React from "react";
+import React, { useState } from "react";
 import { Col, Alert, Button } from "reactstrap";
 import { FormGenerator } from "../../../utils/components/formgenerator";
 import { ACCESS_LEVELS } from "../../../api-client";
@@ -33,6 +33,7 @@ import { faInfoCircle } from "@fortawesome/free-solid-svg-icons";
 import FormSchema from "../../../utils/components/formschema/FormSchema";
 
 function DatasetImport(props) {
+  const [showHeader, setShowHeader] = useState(true);
 
   if (props.accessLevel < ACCESS_LEVELS.MAINTAINER) {
     return <Col sm={12} md={10} lg={8}>
@@ -56,7 +57,8 @@ function DatasetImport(props) {
       modelTop={props.model}
       toggleNewDataset={props.toggleNewDataset}
       showAddDatasetOptions={true}
-      addDatasetOptionSelected={"importDataset"}
+      addDatasetOptionSelected="importDataset"
+      setShowHeader={setShowHeader}
     />);
 
   const title = "Import Dataset";
@@ -71,7 +73,7 @@ function DatasetImport(props) {
   );
 
   return (
-    <FormSchema showHeader={true} title={title} description={desc}>
+    <FormSchema showHeader={showHeader} title={title} description={desc}>
       {form}
     </FormSchema>
   );

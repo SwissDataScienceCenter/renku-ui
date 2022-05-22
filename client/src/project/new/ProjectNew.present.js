@@ -281,6 +281,7 @@ class NewProject extends Component {
     const desc = "Create a project to house your files, include datasets," +
       "plan your work, and collaborate on code, among other things.";
     const userRepo = config.custom && input.userRepo;
+    const formOnProcess = meta.creation.creating || meta.creation.projectUpdating || meta.creation.kgUpdating;
     const form = <NewProjectForm
       automated={automated}
       config={config}
@@ -295,7 +296,7 @@ class NewProject extends Component {
       templates={templates}
     />;
     return !this.props.importingDataset ? (
-      <FormSchema showHeader={true} title={title} description={desc}>
+      <FormSchema showHeader={!formOnProcess} title={title} description={desc}>
         {form}
       </FormSchema>
     ) : form ;

@@ -24,7 +24,7 @@
  */
 
 
-import React from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Col, Alert, Button } from "reactstrap";
 import { ACCESS_LEVELS } from "../../../api-client";
@@ -35,6 +35,7 @@ import { Loader } from "../../../utils/components/Loader";
 import FormSchema from "../../../utils/components/formschema/FormSchema";
 
 function DatasetChange(props) {
+  const [showHeader, setShowHeader] = useState(true);
 
   if (!props.initialized)
     return <Loader />;
@@ -106,6 +107,7 @@ function DatasetChange(props) {
     toggleNewDataset={props.toggleNewDataset}
     showAddDatasetOptions={!edit}
     addDatasetOptionSelected="addDataset"
+    setShowHeader={setShowHeader}
   />;
 
   const title = edit ? "Modify Dataset" : "Add Dataset";
@@ -120,7 +122,7 @@ function DatasetChange(props) {
   ) : "Update dataset metadata or upload dataset files";
 
   return (
-    <FormSchema showHeader={true} title={title} description={desc}>
+    <FormSchema showHeader={showHeader} title={title} description={desc}>
       {form}
     </FormSchema>
   );

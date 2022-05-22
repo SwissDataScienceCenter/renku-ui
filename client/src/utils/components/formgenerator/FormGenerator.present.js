@@ -23,7 +23,7 @@
  *  Presentational components.
  */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Form, Button, Col, UncontrolledAlert } from "reactstrap";
 import TextInput from "./fields/TextInput";
 import TextareaInput from "./fields/TexAreaInput";
@@ -67,7 +67,7 @@ function SubmitButtonGroup(props) {
 function FormPanel({
   btnName, draft, edit, formLocation, formatServerErrorsAndWarnings, handlers, inputs, loading,
   onCancel, setInputs, setSubmit, submitCallback, addDatasetOptionSelected, versionUrl,
-  toggleNewDataset, showAddDatasetOptions
+  toggleNewDataset, showAddDatasetOptions, setShowHeader
 }) {
 
   const submitLoader = draft?.submitLoader && draft?.submitLoader.value;
@@ -76,6 +76,11 @@ function FormPanel({
   const serverWarnings = draft?.serverWarnings;
   const secondaryButtonText = draft?.secondaryButton;
   const disableAll = draft?.disableAll;
+
+  useEffect(() => {
+    if (setShowHeader)
+      setShowHeader(!submitLoader);
+  }, [submitLoader, setShowHeader]);
 
   const Components = {
     CktextareaInput,
