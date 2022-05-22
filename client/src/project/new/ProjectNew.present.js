@@ -192,7 +192,7 @@ function ForkProjectContent(props) {
     <Fragment>
       <Title handlers={handlers} input={input} meta={meta} />
       <Namespaces handlers={handlers} input={input} namespaces={namespaces} user={user} />
-      <ProjectIdentifier input={input} />
+      <ProjectIdentifier input={input} isRequired={true} />
       <Visibility handlers={handlers} input={input} meta={meta}/>
     </Fragment>
   );
@@ -229,10 +229,10 @@ const NewProjectForm = (
         input={input}
         namespace={namespace}
         user={user} />
-      <ProjectIdentifier input={input} />
+      <ProjectIdentifier input={input} isRequired={true} />
       <Description handlers={handlers} meta={meta} input={input} />
       <Visibility handlers={handlers} meta={meta} input={input} />
-      {config.custom ? <TemplateSource handlers={handlers} input={input} /> : null}
+      {config.custom ? <TemplateSource handlers={handlers} input={input} isRequired={true} /> : null}
       {userRepo ?
         <UserTemplate meta={meta} handlers={handlers} config={config} templates={templates} input={input} /> : null}
       <Template config={config} handlers={handlers} input={input} templates={templates} meta={meta} />

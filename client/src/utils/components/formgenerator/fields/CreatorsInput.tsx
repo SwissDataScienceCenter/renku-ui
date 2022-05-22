@@ -166,7 +166,7 @@ function CreatorsInput({ name, label, value, alert, setInputs, help, disabled = 
   const nonDefaultCreators = creators.filter(creator=>creator.default !== true);
 
   return <FormGroup className="field-group">
-    <Label htmlFor={name}>{label}</Label>
+    <InputLabel text={label} isRequired={false} />
     <Row className="mb-2">
       <Col>
         {defaultCreators.map(creator =>
@@ -182,13 +182,13 @@ function CreatorsInput({ name, label, value, alert, setInputs, help, disabled = 
       nonDefaultCreators.length > 0 ?
         <Row className="my-2">
           <Col md={4} className="d-none d-md-block">
-            <InputLabel text="Name" />
+            <Label>Name</Label>
           </Col>
           <Col md={4} className="d-none d-md-block">
-            <InputLabel text="Email" />
+            <Label>Email</Label>
           </Col>
           <Col md={3} className="d-none d-md-block">
-            <InputLabel text="Affiliation" />
+            <Label>Affiliation</Label>
           </Col>
         </Row>
         : null

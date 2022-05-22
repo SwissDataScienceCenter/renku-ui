@@ -35,10 +35,11 @@ import { formatBytes } from "../../../helpers/HelperFunctions";
 import { ErrorLabel, InputHintLabel, InputLabel } from "../../formlabels/FormLabels";
 /**
  * Update the value of the function
+ * @param {string} name Field name
  * @param {integer} current The current value
  * @param {+1/-1} direction The direction to rotate towards
  * @param {array} options The full list of options
- * @param {function} setValue The setValue function
+ * @param {function} setInputs The setValue function
  */
 function rotateValue(name, current, direction, options, setInputs) {
   const length = options.length;
@@ -62,30 +63,40 @@ function userInputOption(options) {
 }
 
 
-function ImagePreviewControls({ value, options, rotate, disabled }) {
+function ImagePreviewControls({ value, options, rotate, disabled, currentImageIndex }) {
   if ((options.length < 1) || disabled)
     return <div className="d-flex justify-content-around p-0"></div>;
-  return <div className="d-flex justify-content-around p-0">
-    <div>
-      <Button color="link" onClick={() => { rotate(-1); }}>
-        <FontAwesomeIcon icon={faCaretLeft} />
-      </Button>
-    </div>
-    <div className="pt-2" style={{ fontSize: "smaller" }}>{value}</div>
+
+  const lastImageIndex = options.length - 1;
+  const rightControl = currentImageIndex !== lastImageIndex ? (
     <div>
       <Button color="link" onClick={() => { rotate(1); }}>
         <FontAwesomeIcon icon={faCaretRight} />
       </Button>
     </div>
+  ) : null;
+
+  const leftControl = currentImageIndex !== 0 ? (
+    <div>
+      <Button color="link" onClick={() => { rotate(-1); }}>
+        <FontAwesomeIcon icon={faCaretLeft} />
+      </Button>
+    </div>
+  ) : null;
+  return <div className="d-flex justify-content-around p-0">
+    {leftControl}
+    <div className="pt-2" style={{ fontSize: "smaller" }}>{value}</div>
+    {rightControl}
   </div>;
 }
 
-function ImagePreview({ name, value, selected, displayValue, disabled, setInputs, imageControlsDisabled = false }) {
-  const options = value.options;
+function ImagePreview({ name, value, selected, disabled, setInputs }) {
+  const options = value.options.length > 0 ? value.options.filter(o => o.URL && o.URL.length > 0) : [];
   const selectedIndex = value.selected;
   const imageSize = { width: 160, height: 135 };
   const imageStyle = { ...imageSize, objectFit: "cover" };
   const imagePreviewStyle = { ...imageStyle, backgroundColor: "#C4C4C4" };
+  const displayValue = selected[Prop.NAME] ?? "Current Image";
 
   const image = (selectedIndex > -1 && selected[Prop.URL]) ?
     <img src={selected[Prop.URL]} alt={displayValue} style={imageStyle} /> :
@@ -95,8 +106,16 @@ function ImagePreview({ name, value, selected, displayValue, disabled, setInputs
     </div>);
 
   const rotate = (direction) => rotateValue(name, value.selected, direction, options, setInputs);
-  const imageControls = options.length > 1 && !imageControlsDisabled ?
-    <ImagePreviewControls value={displayValue} options={options} rotate={rotate} disabled={disabled} /> : null;
+
+  const imageControls = options.length > 1 ?
+    <ImagePreviewControls
+      value={displayValue}
+      options={options}
+      disabled={disabled}
+      currentImageIndex={selectedIndex}
+      rotate={rotate}
+    />
+    : null;
   return (<div className="m-auto" style={imageSize}>
     <div className="d-flex justify-content-around border">
       <div style={imageSize}>{image}</div>
@@ -253,7 +272,6 @@ function ImageContentInput({ name, value, placeholder, modes, setInputs,
  * @param {boolean} disabled True if the component is not editable
  * @param {boolean} required True if a value is required
  * @param {boolean} optional True if a value is optional
- * @param {boolean} imageControlsDisabled To so not show image controls
  */
 function ImageInput(
   {
@@ -268,21 +286,20 @@ function ImageInput(
     format = "image/*",
     disabled = false,
     required = false,
-    optional,
-    imageControlsDisabled }) {
+    optional
+  }) {
   const options = value.options;
   const selectedIndex = value.selected;
   const selected = (selectedIndex > -1) ?
     options[selectedIndex] :
     { [Prop.NAME]: "[none]", [Prop.URL]: "", [Prop.STOCK]: false };
-  const displayValue = selected[Prop.NAME];
   const allowedModes = (modes) ? modes : [ImageInputMode.FILE, ImageInputMode.URL];
   const helpIsString = (typeof help) == "string" || help == null;
   const previewHelp = !helpIsString && help["preview"] ? help["preview"] : null;
 
   return [
     <Row key="row-title">
-      <InputLabel className="ps-3" text={label} isRequired={required} isOptional={optional} />
+      <InputLabel className="ps-3" text={label} isRequired={required} />
     </Row>,
     !disabled ? (<Row key="row-content" className="field-group">
       <Col xs={12}>
@@ -295,8 +312,9 @@ function ImageInput(
           </div>
           <div className="pe-2">
             <ImagePreview
-              value={value} selected={selected} displayValue={displayValue}
-              disabled={disabled} setInputs={setInputs} disableImageControls={imageControlsDisabled} />
+              name={name}
+              value={value} selected={selected}
+              disabled={disabled} setInputs={setInputs} />
             <InputHintLabel text={previewHelp} />
           </div>
         </div>
@@ -304,7 +322,7 @@ function ImageInput(
     </Row>) : (
       <div key="row-content" className="pe-2">
         <ImagePreview
-          value={value} selected={selected} displayValue={displayValue}
+          value={value} selected={selected}
           disabled={disabled} setInputs={setInputs} />
         <InputHintLabel text={previewHelp} />
       </div>

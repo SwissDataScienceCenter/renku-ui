@@ -589,7 +589,6 @@ const datasetFormSchema = new Schema({
     },
     validators: [],
     modes: ["Choose File"],
-    imageControlsDisabled: true,
   }
 });
 

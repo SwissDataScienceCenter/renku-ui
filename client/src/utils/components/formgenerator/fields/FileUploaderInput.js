@@ -672,7 +672,7 @@ function FileUploaderInput({
 
   return (
     <FormGroup className="field-group">
-      <InputLabel isRequired={required} isOptional={true} text={label}/>
+      <InputLabel isRequired={required} text={label}/>
       {initialFilesTree !== undefined ?
         <Card className="mb-4">
           <CardBody style={{ backgroundColor: "#e9ecef" }}>

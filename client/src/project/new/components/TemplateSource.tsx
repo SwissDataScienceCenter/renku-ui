@@ -32,12 +32,13 @@ interface TemplateSourceProps {
     setProperty: Function;
   };
   input: NewProjectInputs;
+  isRequired: boolean;
 }
 
-const TemplateSource = ({ handlers, input }: TemplateSourceProps) => {
+const TemplateSource = ({ handlers, input, isRequired }: TemplateSourceProps) => {
   return (
     <FormGroup className="field-group">
-      <InputLabel text="Template source" />
+      <InputLabel text="Template source" isRequired={isRequired} />
       <br />
       <ButtonGroup size="sm">
         <Button

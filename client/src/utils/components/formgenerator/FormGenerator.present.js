@@ -165,7 +165,7 @@ function FormPanel({
           style={ProgressStyle.Dark}
           title={titleProgress}
           description="We've received your dataset information. This may take a while."
-          currentStatus={""}
+          currentStatus=""
           feedback={feedbackProgress}
         />
       ) : (

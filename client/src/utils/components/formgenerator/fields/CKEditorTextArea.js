@@ -34,7 +34,7 @@ import { ErrorLabel } from "../../formlabels/FormLabels";
 
 
 function CktextareaInput(
-  { name, label, type, value, alert, setInputs, help, outputType, disabled, required = false, optional = false }) {
+  { name, label, type, value, alert, setInputs, help, outputType, disabled, required = false }) {
   const [codeView, setCodeView] = useState(false);
 
   const switchLabel = (outputType === "markdown") ? "Raw Markdown" : "Raw HTML";
@@ -42,7 +42,7 @@ function CktextareaInput(
   return <div>
     <FormGroup className="field-group">
       <div className="pb-2">
-        <FormLabel htmlFor={name} label={label} required={required} optional={optional} />
+        <FormLabel htmlFor={name} label={label} required={required} />
         <div className="form-check form-switch float-end">
           <Input
             className="form-check-input rounded-pill"
@@ -66,7 +66,8 @@ function CktextareaInput(
             data={value || ""}
             disabled={disabled}
             invalid={alert !== undefined}
-            rows={7}
+            customConfig={{ height: 500 }}
+            height={800}
             onChange={
               (event, editor) => {
                 const artificialEvent = {
@@ -85,7 +86,7 @@ function CktextareaInput(
             disabled={disabled}
             value={value || ""}
             onChange={setInputs}
-            rows={value ? value.split("\n").length + 1 : 2}
+            rows={value ? value.split("\n").length + 2 : 4}
           />
       }
       {help && <FormText color="muted">{help}</FormText>}

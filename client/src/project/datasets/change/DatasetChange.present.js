@@ -105,7 +105,7 @@ function DatasetChange(props) {
     versionUrl={props.versionUrl}
     toggleNewDataset={props.toggleNewDataset}
     showAddDatasetOptions={!edit}
-    addDatasetOptionSelected={"addDataset"}
+    addDatasetOptionSelected="addDataset"
   />;
 
   const title = edit ? "Modify Dataset" : "Add Dataset";

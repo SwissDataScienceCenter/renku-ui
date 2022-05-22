@@ -27,10 +27,10 @@ import React from "react";
 import { Label } from "reactstrap";
 import { InputLabel } from "../../formlabels/FormLabels";
 
-const FormLabel = ({ name, label, required, optional }) => {
+const FormLabel = ({ name, label, required }) => {
   return (
     <Label htmlFor={name} required={required}>
-      <InputLabel text={label} isRequired={required} isOptional={optional} />
+      <InputLabel text={label} isRequired={required} />
     </Label>
   );
 };
