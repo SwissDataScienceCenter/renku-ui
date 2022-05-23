@@ -123,6 +123,7 @@ function ImportDataset(props) {
     formLocation={formLocation}
     notifications={props.notifications}
     model={props.model}
+    toggleNewDataset={props.toggleNewDataset}
   />;
 }
 

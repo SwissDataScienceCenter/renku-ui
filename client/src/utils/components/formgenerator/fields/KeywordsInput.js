@@ -24,15 +24,15 @@
  */
 
 import React, { useEffect } from "react";
-import ValidationAlert from "./ValidationAlert";
-import HelpText from "./HelpText";
 import FormLabel from "./FormLabel";
 import { FormGroup } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { ErrorLabel } from "../../formlabels/FormLabels";
+import { FormText } from "../../../ts-wrappers";
 
 function KeywordsInput(
-  { name, label, type, value, alert, placeholder, setInputs, help, disabled = false, required = false }) {
+  { name, label, value, alert, setInputs, help, disabled = false, required = false, optional = false }) {
 
   const [tags, setTags] = React.useState(value);
   const tagInput = React.useRef(null);
@@ -92,11 +92,11 @@ function KeywordsInput(
     </ul>
   </div>;
 
-  return <FormGroup>
-    <FormLabel htmlFor={name} label={label} required={required}/>
+  return <FormGroup className="field-group">
+    <FormLabel htmlFor={name} label={label} required={required} optional={optional} />
     {tagsList}
-    <HelpText content={help} />
-    <ValidationAlert content={alert} />
+    {help && <FormText color="muted">{help}</FormText>}
+    {alert && <ErrorLabel text={alert} />}
   </FormGroup>;
 }
 

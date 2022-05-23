@@ -192,7 +192,7 @@ function ForkProjectContent(props) {
     <Fragment>
       <Title handlers={handlers} input={input} meta={meta} />
       <Namespaces handlers={handlers} input={input} namespaces={namespaces} user={user} />
-      <ProjectIdentifier input={input} />
+      <ProjectIdentifier input={input} isRequired={true} />
       <Visibility handlers={handlers} input={input} meta={meta}/>
     </Fragment>
   );
@@ -229,10 +229,10 @@ const NewProjectForm = (
         input={input}
         namespace={namespace}
         user={user} />
-      <ProjectIdentifier input={input} />
+      <ProjectIdentifier input={input} isRequired={true} />
       <Description handlers={handlers} meta={meta} input={input} />
       <Visibility handlers={handlers} meta={meta} input={input} />
-      {config.custom ? <TemplateSource handlers={handlers} input={input} /> : null}
+      {config.custom ? <TemplateSource handlers={handlers} input={input} isRequired={true} /> : null}
       {userRepo ?
         <UserTemplate meta={meta} handlers={handlers} config={config} templates={templates} input={input} /> : null}
       <Template config={config} handlers={handlers} input={input} templates={templates} meta={meta} />
@@ -281,6 +281,7 @@ class NewProject extends Component {
     const desc = "Create a project to house your files, include datasets," +
       "plan your work, and collaborate on code, among other things.";
     const userRepo = config.custom && input.userRepo;
+    const formOnProcess = meta.creation.creating || meta.creation.projectUpdating || meta.creation.kgUpdating;
     const form = <NewProjectForm
       automated={automated}
       config={config}
@@ -295,7 +296,7 @@ class NewProject extends Component {
       templates={templates}
     />;
     return !this.props.importingDataset ? (
-      <FormSchema showHeader={true} title={title} description={desc}>
+      <FormSchema showHeader={!formOnProcess} title={title} description={desc}>
         {form}
       </FormSchema>
     ) : form ;

@@ -505,6 +505,7 @@ class View extends Component {
         overviewCommitsUrl={subUrls.overviewCommitsUrl}
         progress={graphProgress}
         projectsUrl={subUrls.projectsUrl}
+        toggleNewDataset={p.toggleNewDataset}
       />,
 
       editDataset: (p) => <ChangeDataset
@@ -531,6 +532,7 @@ class View extends Component {
         overviewCommitsUrl={subUrls.overviewCommitsUrl}
         progress={graphProgress}
         projectsUrl={subUrls.projectsUrl}
+        toggleNewDataset={p.toggleNewDataset}
       />,
 
       importDataset: (p) => <ImportDataset
@@ -554,6 +556,7 @@ class View extends Component {
         progress={graphProgress}
         projectsUrl={subUrls.projectsUrl}
         selectedDataset={matchToDatasetId(p.match.params.datasetId)}
+        toggleNewDataset={p.toggleNewDataset}
       />,
 
       kgStatusView: (displaySuccessMessage = false) =>

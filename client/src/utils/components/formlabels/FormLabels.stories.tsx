@@ -22,7 +22,6 @@ import { ErrorLabel, HelperLabel, InputHintLabel, InputLabel, LoadingLabel } fro
 interface LabelsProps {
   text: string;
   isRequired: boolean;
-  isOptional: boolean;
 }
 
 
@@ -32,7 +31,7 @@ export default {
 
 export const Input = (args: LabelsProps) => (
   <>
-    <InputLabel isRequired={args.isRequired} isOptional={args.isOptional} text={args.text} />
+    <InputLabel isRequired={args.isRequired} text={args.text} />
   </>
 );
 Input.args = {
@@ -41,7 +40,7 @@ Input.args = {
 
 export const Required = (args: LabelsProps) => (
   <>
-    <InputLabel isRequired={args.isRequired} isOptional={args.isOptional} text={args.text} />
+    <InputLabel isRequired={args.isRequired} text={args.text} />
   </>
 );
 Required.args = {
@@ -51,12 +50,12 @@ Required.args = {
 
 export const Optional = (args: LabelsProps) => (
   <>
-    <InputLabel isRequired={args.isRequired} isOptional={args.isOptional} text={args.text} />
+    <InputLabel isRequired={args.isRequired} text={args.text} />
   </>
 );
 Optional.args = {
   text: "My Label",
-  isOptional: true,
+  isRequired: false,
 };
 
 export const Loading = (args: LabelsProps) => (

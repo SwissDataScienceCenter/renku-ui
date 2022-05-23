@@ -37,15 +37,13 @@ interface LabelProps {
 
 interface InputLabelProps extends LabelProps {
   isRequired?: boolean;
-  isOptional?: boolean;
 }
 
-const InputLabel = ({ text, isRequired = false, isOptional = false }: InputLabelProps) => {
-  const requiredLabel = isRequired ? <span className="required-label">*</span> : null;
-  const optionalLabel = isOptional ? <span> (Optional)</span> : null;
+const InputLabel = ({ text, isRequired = false }: InputLabelProps) => {
+  const labelType = isRequired ? <span className="required-label">*</span> : <span> (Optional)</span>;
   return (
     <Label>
-      {text} {requiredLabel} {optionalLabel}
+      {text} {labelType}
     </Label>
   );
 };
