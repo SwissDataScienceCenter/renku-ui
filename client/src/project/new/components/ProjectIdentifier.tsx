@@ -30,16 +30,17 @@ import { NewProjectInputs } from "./newProject.d";
 
 interface ProjectIdentifierProps {
   input: NewProjectInputs;
+  isRequired: boolean;
 }
 
-const ProjectIdentifier = ({ input }: ProjectIdentifierProps) => {
+const ProjectIdentifier = ({ input, isRequired }: ProjectIdentifierProps) => {
   const namespace = input.namespace ? input.namespace : "<no namespace>";
   const title = input.title ? slugFromTitle(input.title, true) : "<no title>";
   const slug = `${namespace}/${title}`;
 
   return (
     <FormGroup className="field-group">
-      <InputLabel text="Identifier" />
+      <InputLabel text="Identifier" isRequired={isRequired} />
       <Input id="slug" readOnly value={slug} />
       <InputHintLabel text="This is automatically derived from Namespace and Title" />
     </FormGroup>

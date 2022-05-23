@@ -38,7 +38,6 @@ interface FieldGroupProps {
   valid?: boolean;
   invalid?: boolean;
   isRequired?: boolean;
-  isOptional?: boolean;
 }
 
 const FieldGroup = ({
@@ -50,13 +49,12 @@ const FieldGroup = ({
   onChange,
   invalid,
   isRequired = false,
-  isOptional = false,
   type = "text",
 }: FieldGroupProps) => {
   return (
     <FormGroup className="field-group">
       <Label>
-        <InputLabel text={label} isRequired={isRequired} isOptional={isOptional} />
+        <InputLabel text={label} isRequired={isRequired} />
       </Label>
       <Input id={id} data-cy={`field-group-${id}`} invalid={invalid} type={type} value={value} onChange={onChange} />
       {feedback && invalid && <ErrorLabel text={feedback} />}

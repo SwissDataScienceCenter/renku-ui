@@ -30,21 +30,24 @@ import "./FormSchema.css";
 
 interface FormSchemaProps {
   title: string;
-  description: string;
+  description: string | ReactNode;
   showHeader: boolean;
   children: ReactNode;
 }
 
 interface FormHeaderProps {
   title: string;
-  description: string;
+  description: string | ReactNode;
 }
 
 const FormHeader = ({ title, description }: FormHeaderProps) => {
+  const desc = typeof description === "string" ?
+    <p>{description}</p> :
+    description;
   return (
     <>
-      <h2>{title}</h2>
-      <p>{description}</p>
+      <h2 id="form-header">{title}</h2>
+      {desc}
     </>
   );
 };

@@ -24,17 +24,17 @@
  */
 
 import * as React from "react";
-import ValidationAlert from "./ValidationAlert";
-import HelpText from "./HelpText";
 import FormLabel from "./FormLabel";
 import { FormGroup, Input } from "reactstrap";
+import { FormText } from "../../../ts-wrappers";
+import { ErrorLabel } from "../../formlabels/FormLabels";
 
 function TextareaInput({ name, label, type, value, alert, setInputs, help, disabled = false, required = false }) {
-  return <FormGroup>
+  return <FormGroup className="field-group">
     <FormLabel htmlFor={name} label={label} required={required}/>
     <Input id={name} name={name} type={type} value={value || ""} onChange={setInputs} disabled={disabled}/>
-    <HelpText content={help} />
-    <ValidationAlert content={alert} />
+    {help && <FormText color="muted">{help}</FormText>}
+    {alert && <ErrorLabel text={alert} />}
   </FormGroup>;
 }
 

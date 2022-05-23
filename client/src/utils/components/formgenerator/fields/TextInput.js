@@ -24,12 +24,12 @@
  */
 
 import * as React from "react";
-import ValidationAlert from "./ValidationAlert";
-import HelpText from "./HelpText";
 import FormLabel from "./FormLabel";
 import { FormGroup, Input, Label, Button } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencilAlt } from "@fortawesome/free-solid-svg-icons";
+import { FormText } from "../../../ts-wrappers";
+import { ErrorLabel } from "../../formlabels/FormLabels";
 
 function TextInput({ name, label, type, value, alert, placeholder, setInputs,
   help, disabled = false, required = false, editOnClick = false }) {
@@ -40,8 +40,8 @@ function TextInput({ name, label, type, value, alert, placeholder, setInputs,
     setOnlyView(false);
   };
 
-  const formContent = onlyView ?
-    <FormGroup>
+  return onlyView ?
+    <FormGroup className="field-group">
       <small>
         {value ?
           <Label className="font-italic text-muted">
@@ -62,11 +62,9 @@ function TextInput({ name, label, type, value, alert, placeholder, setInputs,
       <FormLabel htmlFor={name} label={label} required={required}/>
       <Input id={name} name={name} type={type} value={value || ""}
         onChange={setInputs} disabled={disabled} placeholder={placeholder} />
-      <HelpText content={help} />
-      <ValidationAlert content={alert} />
+      {help && <FormText color="muted">{help}</FormText>}
+      {alert && <ErrorLabel text={alert} />}
     </FormGroup>;
-
-  return formContent;
 }
 
 export default TextInput;

@@ -31,15 +31,15 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretLeft, faCaretRight } from "@fortawesome/free-solid-svg-icons";
 
 import { ImageFieldPropertyName as Prop } from "./stockimages";
-import ValidationAlert from "./ValidationAlert";
 import { formatBytes } from "../../../helpers/HelperFunctions";
 import { ErrorLabel, InputHintLabel, InputLabel } from "../../formlabels/FormLabels";
 /**
  * Update the value of the function
+ * @param {string} name Field name
  * @param {integer} current The current value
  * @param {+1/-1} direction The direction to rotate towards
  * @param {array} options The full list of options
- * @param {function} setValue The setValue function
+ * @param {function} setInputs The setValue function
  */
 function rotateValue(name, current, direction, options, setInputs) {
   const length = options.length;
@@ -63,40 +63,59 @@ function userInputOption(options) {
 }
 
 
-function ImagePreviewControls({ value, options, rotate, disabled }) {
+function ImagePreviewControls({ value, options, rotate, disabled, currentImageIndex }) {
   if ((options.length < 1) || disabled)
     return <div className="d-flex justify-content-around p-0"></div>;
-  return <div className="d-flex justify-content-around p-0">
-    <div>
-      <Button color="link" onClick={() => { rotate(-1); }}>
-        <FontAwesomeIcon icon={faCaretLeft} />
-      </Button>
-    </div>
-    <div className="pt-2" style={{ fontSize: "smaller" }}>{value}</div>
+
+  const lastImageIndex = options.length - 1;
+  const rightControl = currentImageIndex !== lastImageIndex ? (
     <div>
       <Button color="link" onClick={() => { rotate(1); }}>
         <FontAwesomeIcon icon={faCaretRight} />
       </Button>
     </div>
+  ) : null;
+
+  const leftControl = currentImageIndex !== 0 ? (
+    <div>
+      <Button color="link" onClick={() => { rotate(-1); }}>
+        <FontAwesomeIcon icon={faCaretLeft} />
+      </Button>
+    </div>
+  ) : null;
+  return <div className="d-flex justify-content-around p-0">
+    {leftControl}
+    <div className="pt-2" style={{ fontSize: "smaller" }}>{value}</div>
+    {rightControl}
   </div>;
 }
 
-function ImagePreview({ name, value, selected, displayValue, disabled, setInputs }) {
-  const options = value.options;
+function ImagePreview({ name, value, selected, disabled, setInputs }) {
+  const options = value.options.length > 0 ? value.options.filter(o => o.URL && o.URL.length > 0) : [];
   const selectedIndex = value.selected;
   const imageSize = { width: 160, height: 135 };
   const imageStyle = { ...imageSize, objectFit: "cover" };
   const imagePreviewStyle = { ...imageStyle, backgroundColor: "#C4C4C4" };
-  const image = (selectedIndex > -1) ?
+  const displayValue = selected[Prop.NAME] ?? "Current Image";
+
+  const image = (selectedIndex > -1 && selected[Prop.URL]) ?
     <img src={selected[Prop.URL]} alt={displayValue} style={imageStyle} /> :
     (<div style={imagePreviewStyle}
       className="d-flex justify-content-center align-items-center text-white">
-      <div>Image Preview</div>
+      <div>No Image Yet</div>
     </div>);
 
   const rotate = (direction) => rotateValue(name, value.selected, direction, options, setInputs);
+
   const imageControls = options.length > 1 ?
-    <ImagePreviewControls value={displayValue} options={options} rotate={rotate} disabled={disabled} /> : null;
+    <ImagePreviewControls
+      value={displayValue}
+      options={options}
+      disabled={disabled}
+      currentImageIndex={selectedIndex}
+      rotate={rotate}
+    />
+    : null;
   return (<div className="m-auto" style={imageSize}>
     <div className="d-flex justify-content-around border">
       <div style={imageSize}>{image}</div>
@@ -267,39 +286,47 @@ function ImageInput(
     format = "image/*",
     disabled = false,
     required = false,
-    optional }) {
+    optional
+  }) {
   const options = value.options;
   const selectedIndex = value.selected;
   const selected = (selectedIndex > -1) ?
     options[selectedIndex] :
     { [Prop.NAME]: "[none]", [Prop.URL]: "", [Prop.STOCK]: false };
-  const displayValue = selected[Prop.NAME];
   const allowedModes = (modes) ? modes : [ImageInputMode.FILE, ImageInputMode.URL];
   const helpIsString = (typeof help) == "string" || help == null;
   const previewHelp = !helpIsString && help["preview"] ? help["preview"] : null;
 
   return [
     <Row key="row-title">
-      <InputLabel className="ps-3" text={label} isRequired={required} isOptional={optional} />
+      <InputLabel className="ps-3" text={label} isRequired={required} />
     </Row>,
-    <Row key="row-content" className="mb-3">
+    !disabled ? (<Row key="row-content" className="field-group">
       <Col xs={12}>
         <div className="d-block d-md-flex d-lg-flex gap-5">
           <div className="flex-grow-1">
             <ImageContentInput name={name} value={selected}
               setInputs={setInputs} help={help} maxSize={maxSize}
               disabled={disabled} options={options} modes={allowedModes} format={format} />
-            <ValidationAlert content={alert} />
+            {alert && <ErrorLabel text={alert} />}
           </div>
           <div className="pe-2">
             <ImagePreview
-              value={value} selected={selected} displayValue={displayValue}
+              name={name}
+              value={value} selected={selected}
               disabled={disabled} setInputs={setInputs} />
             <InputHintLabel text={previewHelp} />
           </div>
         </div>
       </Col>
-    </Row>
+    </Row>) : (
+      <div key="row-content" className="pe-2">
+        <ImagePreview
+          value={value} selected={selected}
+          disabled={disabled} setInputs={setInputs} />
+        <InputHintLabel text={previewHelp} />
+      </div>
+    )
   ];
 }
 

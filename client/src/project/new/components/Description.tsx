@@ -45,7 +45,7 @@ function Description({ handlers, meta, input }: DescriptionProps) {
       type="textarea"
       value={input.description ?? ""}
       help="Let people know what the project is about"
-      isOptional={true}
+      isRequired={false}
       feedback={error} invalid={isInvalid}
       onChange={(e) => handlers.setProperty("description", e.target.value)} />
   );

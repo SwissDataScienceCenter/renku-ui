@@ -24,12 +24,11 @@
  */
 
 import React, { ChangeEvent, ReactNode, useEffect } from "react";
-import ValidationAlert from "./ValidationAlert";
 import HelpText from "./HelpText";
 import { FormGroup, Input, Label, Row, Col, Button } from "../../../ts-wrappers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUserPlus, faUserMinus } from "@fortawesome/free-solid-svg-icons";
-import { InputHintLabel, InputLabel } from "../../formlabels/FormLabels";
+import { ErrorLabel, InputHintLabel, InputLabel } from "../../formlabels/FormLabels";
 
 
 interface Creator {
@@ -45,7 +44,7 @@ export interface CreatorInputProps {
   name: string,
   label: string,
   value?: Creator[],
-  alert?: ReactNode,
+  alert?: string,
   setInputs: Function,
   help?: ReactNode,
   disabled?: boolean
@@ -166,8 +165,8 @@ function CreatorsInput({ name, label, value, alert, setInputs, help, disabled = 
   const defaultCreators = creators.filter(creator=>creator.default === true);
   const nonDefaultCreators = creators.filter(creator=>creator.default !== true);
 
-  return <FormGroup>
-    <Label htmlFor={name}>{label}</Label>
+  return <FormGroup className="field-group">
+    <InputLabel text={label} isRequired={false} />
     <Row className="mb-2">
       <Col>
         {defaultCreators.map(creator =>
@@ -183,13 +182,13 @@ function CreatorsInput({ name, label, value, alert, setInputs, help, disabled = 
       nonDefaultCreators.length > 0 ?
         <Row className="my-2">
           <Col md={4} className="d-none d-md-block">
-            <InputLabel text="Name" />
+            <Label>Name</Label>
           </Col>
           <Col md={4} className="d-none d-md-block">
-            <InputLabel text="Email" />
+            <Label>Email</Label>
           </Col>
           <Col md={3} className="d-none d-md-block">
-            <InputLabel text="Affiliation" />
+            <Label>Affiliation</Label>
           </Col>
         </Row>
         : null
@@ -214,7 +213,7 @@ function CreatorsInput({ name, label, value, alert, setInputs, help, disabled = 
         </Button>
       </Col>
     </Row>
-    <ValidationAlert content={alert} />
+    {alert && <ErrorLabel text={alert} />}
   </FormGroup>;
 }
 

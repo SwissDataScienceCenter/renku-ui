@@ -20,6 +20,10 @@
 	// border-color:#c4c4c4;
 }
 
+.table > :not(:first-child) {
+  border-top: 1px solid currentColor;
+}
+
 .table-files td{
 	overflow: unset;
 	text-overflow: unset;
