@@ -321,24 +321,18 @@ function Section6(props) {
     <div className="rk-anon-home-section-content">
       <div>
         <div><img src={logo} alt="Renku" height="92" className="d-block my-1" /></div>
-        <Row className="rk-pt-s" >
-          <Col xs={12} lg={{ offset: 5, size: 5 }} xl={{ offset: 4, size: 4 }}>
+        <Row className="rk-pt-lg-s bg-white" style={{ "--bs-bg-opacity": .9 }} >
+          <Col xs={12} lg={4}>
             <h3>Developed at</h3>
             <a target="_blank" rel="noreferrer noopener" href="https://datascience.ch/">
               <img src={logo_SDSC} alt="SDSC" height="68" />
             </a>
           </Col>
-        </Row>
-        <Row className="rk-pt-m" >
-          <Col xs={12} lg={5} xl={4} className="rk-pt-up_to-lg-s">
-            <h4 className="text-rk-pink">With offices at</h4>
-          </Col>
-        </Row>
-        <Row className="rk-pt-lg-s bg-white" style={{ "--bs-bg-opacity": .9 }} >
-          <Col xs={12} lg={5} xl={4} className="rk-pt-up_to-lg-s">
+          <Col xs={12} lg={4} className="rk-pt-up_to-lg-s">
             <div>
+              <h4 className="text-rk-pink">With offices at</h4>
               <a target="_blank" rel="noreferrer noopener" href="https://www.epfl.ch/en/">
-                <img src={logo_EPFL} alt="EPFL" height="68" />
+                <img src={logo_EPFL} alt="EPFL" height="52" />
               </a>
               <div>
               INN Building, Station 14, 1015 Lausanne<br />
@@ -346,10 +340,11 @@ function Section6(props) {
               </div>
             </div>
           </Col>
-          <Col xs={12} lg={5} xl={4} className="rk-pt-up_to-lg-s">
+          <Col xs={12} lg={4} className="rk-pt-up_to-lg-s">
             <div>
+              <h4 className="text-rk-pink">and</h4>
               <a target="_blank" rel="noreferrer noopener" href="https://ethz.ch/en.html">
-                <img src={logo_ETH} alt="ETH" height="68" />
+                <img src={logo_ETH} alt="ETH" height="52" />
               </a>
               <div>
               Turnerstrasse 1, 8092 Zürich<br />
@@ -367,12 +362,8 @@ function SectionFeatures(props) {
   return <div className="rk-anon-home-section-bg-white" id="rk-anon-home-section-features">
     <div className="rk-anon-home-section-content mb-5">
       <Row className="rk-pt-m">
-        <Col md={4}>
-          <h3 className="text-rk-pink">Renku features</h3>
-        </Col>
-        <Col md={{ size: 7, offset: 1 }}>
-          <h3 className="text-secondary">Empowering all stages of your work
-          </h3>
+        <Col>
+          <h3 className="text-rk-pink">Renku features: Empowering all stages of your work</h3>
         </Col>
       </Row>
       <Row>
@@ -381,87 +372,87 @@ function SectionFeatures(props) {
             from datasets to workflow execution</div>
         </Col>
       </Row>
-      <Row className="rk-pt-m g-2">
+      <Row className="rk-pt-m">
         <Col xs={12} md={6}>
-          <div className="d-flex h-100 justify-content-between rk-bg-data p-3">
-            <div className="me-2">
+          <div className="d-flex h-100 justify-content-between rk-bg-features">
+            <div className="p-4">
               <h4>Versioned Data</h4>
               <div>
               Renku Datasets equip your files with versioning and metadata.
               </div>
             </div>
-            <div className="align-self-center">
+            <div className="align-self-center p-3 m-4">
               <img src={graphic_data} alt="Versioned Data" height="68" />
             </div>
           </div>
         </Col>
         <Col xs={12} md={6}>
-          <div className="d-flex h-100 justify-content-between rk-bg-sessions p-3">
-            <div>
+          <div className="d-flex h-100 justify-content-between rk-bg-features">
+            <div className="p-4">
               <h4>Interactive Computing</h4>
               <div>
               Access free computing resources directly in the browser with familiar front-ends like
               Jupyter, RStudio, and VSCode.
               </div>
             </div>
-            <div className="p-3 align-self-center bg-white" style={{ "--bs-bg-opacity": .4 }}>
+            <div className="align-self-center p-3 m-4" style={{ "--bs-bg-opacity": .4 }}>
               <img src={graphic_sessions} alt="Interactive Computing" height="68" />
             </div>
           </div>
         </Col>
       </Row>
-      <Row className="g-2 pt-2">
+      <Row className="mt-4">
         <Col xs={12} md={6}>
-          <div className="d-flex h-100 justify-content-between rk-bg-lineage p-3">
-            <div className="me-2">
+          <div className="d-flex h-100 justify-content-between rk-bg-features">
+            <div className="p-4">
               <h4>Automatic Provenance</h4>
               <div>
               Track inputs and outputs easily without having to learn a new workflow language.
               </div>
             </div>
-            <div className="align-self-center">
+            <div className="align-self-center p-3 m-4">
               <img src={graphic_provenance} alt="Automatic Provenance" height="68" />
             </div>
           </div>
         </Col>
         <Col xs={12} md={6}>
-          <div className="d-flex h-100 justify-content-between rk-bg-data p-3">
-            <div>
+          <div className="d-flex h-100 justify-content-between rk-bg-features">
+            <div className="p-4">
               <h4>Version Control by Default</h4>
               <div>
               Leverage Renku&apos;s GitLab instance to automatically version your project&apos;s files.
               </div>
             </div>
-            <div className="align-self-center">
-              <img src={graphic_git} alt="Version Control" height="68" />
+            <div className="align-self-center p-3 m-4">
+              <img src={graphic_git} alt="Version Control" height="52" />
             </div>
           </div>
         </Col>
       </Row>
-      <Row className="g-2 pt-2">
+      <Row className="mt-4">
         <Col xs={12} md={6}>
-          <div className="d-flex h-100 justify-content-between rk-bg-sessions p-3">
-            <div>
+          <div className="d-flex h-100 justify-content-between rk-bg-features">
+            <div className="p-4">
               <h4>Containers as Standard</h4>
               <div>
               Access a maintained stack of Docker images and project templates which ensure
               computational reproducibility.
               </div>
             </div>
-            <div className="align-self-center">
+            <div className="align-self-center p-3 m-4">
               <img src={graphic_containers} alt="Containers" height="68" />
             </div>
           </div>
         </Col>
         <Col xs={12} md={6}>
-          <div className="d-flex h-100 justify-content-between rk-bg-lineage p-3">
-            <div>
+          <div className="d-flex h-100 justify-content-between rk-bg-features">
+            <div className="p-4">
               <h4>Reusable Workflows</h4>
               <div>
               Flexibly track your commands and reuse them as templates with different inputs or parameters.
               </div>
             </div>
-            <div className="align-self-center">
+            <div className="align-self-center p-3 m-4">
               <img src={graphic_workflows} alt="Containers" height="68" />
             </div>
           </div>
@@ -475,34 +466,30 @@ function SectionUseCases(props) {
   return <div className="rk-anon-home-section-bg-gray" id="rk-anon-home-section-use-cases">
     <div className="rk-anon-home-section-content">
       <Row className="rk-pt-m">
-        <Col md={4}>
-          <h3 className="text-rk-pink">Renku Use Cases</h3>
-        </Col>
-        <Col md={{ size: 7, offset: 1 }}>
-          <h3 className="text-secondary">Built to be versatile
-          </h3>
+        <Col>
+          <h3 className="text-secondary">Renku Use Cases: Built to be versatile</h3>
         </Col>
       </Row>
       <Row className="rk-pt-m">
         <Col md={{ size: 8 }}>
-          <div className="d-md-flex align-items-center justify-content-between rk-bg-data p-3">
-            <div className="me-2">
+          <div className="d-md-flex align-items-center justify-content-between rk-bg-use-case p-4">
+            <div className="p-4">
               <h4>Collaborative Scientific Research</h4>
               <div>
               Ensure computational reproducibility between you and
               your colleagues throughout the entire scientific process.
               </div>
             </div>
-            <div>
+            <div className="p-3 m-4" style={{ "--bs-bg-opacity": .4 }}>
               <img src={graphic_collaborate} alt="Versioned Data" height="68" />
             </div>
           </div>
         </Col>
       </Row>
-      <Row className="mt-2" >
+      <Row className="mt-4" >
         <Col md={{ size: 8, offset: 4 }}>
-          <div className="d-md-flex align-items-center justify-content-between rk-bg-sessions p-3">
-            <div>
+          <div className="d-md-flex align-items-center justify-content-between rk-bg-use-case p-3">
+            <div className="p-4">
               <h4>Teach a Class or Workshop</h4>
               <div>
               Access project templates in Python, R, Julia (and more!)
@@ -512,16 +499,16 @@ function SectionUseCases(props) {
               They can work together in the browser in or out of class.
               </div>
             </div>
-            <div className="p-3 bg-white" style={{ "--bs-bg-opacity": .4 }}>
+            <div className="p-3 m-4" style={{ "--bs-bg-opacity": .4 }}>
               <img src={graphic_teach} alt="Interactive Computing" height="68" />
             </div>
           </div>
         </Col>
       </Row>
-      <Row className="mt-2 mb-5">
+      <Row className="mt-4 mb-5">
         <Col md={{ size: 8, offset: 2 }}>
-          <div className="d-md-flex align-items-center justify-content-between rk-bg-lineage p-3">
-            <div className="me-2">
+          <div className="d-md-flex align-items-center justify-content-between rk-bg-use-case p-3">
+            <div className="p-4">
               <h4>Build, execute, and track workflows</h4>
               <div>
               Automate processes and follow them in real time. Rest easy, as
@@ -529,7 +516,7 @@ function SectionUseCases(props) {
               environment.
               </div>
             </div>
-            <div>
+            <div className="p-3 m-4" style={{ "--bs-bg-opacity": .4 }}>
               <img src={graphic_build} alt="Automatic Provenance" height="68" />
             </div>
           </div>

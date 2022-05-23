@@ -191,17 +191,12 @@ nav.rk-anon-home .nav-link {
   background-color: rgba($rk-blue, var(--rk-bg-opacity)) !important;
 }
 
-.rk-bg-data {
-  --rk-bg-opacity: 0.5;
+.rk-bg-features {
+  --rk-bg-opacity: 0.2;
   background-color: rgba($rk-green, var(--rk-bg-opacity)) !important;
 }
 
-.rk-bg-sessions {
-  --rk-bg-opacity: 0.5;
+.rk-bg-use-case {
+  --rk-bg-opacity: 0.2;
   background-color: rgba($rk-pink, var(--rk-bg-opacity)) !important;
-}
-
-.rk-bg-lineage {
-  --rk-bg-opacity: 0.5;
-  background-color: rgba($rk-yellow, var(--rk-bg-opacity)) !important;
 }
