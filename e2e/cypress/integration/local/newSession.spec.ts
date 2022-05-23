@@ -126,15 +126,6 @@ describe("launch sessions", () => {
     cy.get("#image_check_pipeline").should("be.visible");
   });
 
-  it("new session page - locked project", () => {
-    fixtures.projectLockStatus({ locked: true });
-    fixtures.userTest();
-    fixtures.newSessionImages();
-    cy.visit("/projects/e2e/local-test-project/sessions/new");
-    cy.wait("@getSessionImage", { timeout: 10000 });
-    cy.contains("Project is being modified").should("be.visible");
-  });
-
   it("new session page - show cloud storage options", () => {
     fixtures.sessionServerOptions(true);
     fixtures.userTest();
