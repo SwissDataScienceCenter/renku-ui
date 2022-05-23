@@ -179,11 +179,11 @@ function Section2(props) {
           <div>
             <div className="text-center"><img alt="data scientists" src={Icon_Data_Scientists} /></div>
             <h3 className="rk-pt-s">Data Scientists</h3>
-            <p>
+            <div>
               Work with the tools you love, like JupyterLab or RStudio. Show your findings
               visually and discuss results with others. Reproduce past work and reuse
               successful pipelines.
-            </p>
+            </div>
           </div>
           <div className="rk-pt-s">
             <div className="rk-pt-m d-none d-md-inline"><img alt="arrow right" src={Arrow_right} /></div>
@@ -191,11 +191,11 @@ function Section2(props) {
           <div>
             <div className="text-center"><img alt="teams" src={Icon_Teams} /></div>
             <h3 className="rk-pt-s">Teams</h3>
-            <p>
+            <div>
               Share data, code, and workflows. Make interactive
               tools available. Each team member can bring their unique abilities to
               the table.
-            </p>
+            </div>
           </div>
           <div className="rk-pt-s">
             <div className="d-none d-md-inline"><img alt="arrow left" src={Arrow_left} /></div>
@@ -203,11 +203,11 @@ function Section2(props) {
           <div>
             <div className="text-center"><img alt="specialists" src={Icon_Specialists} /></div>
             <h3 className="rk-pt-s">Specialists</h3>
-            <p>
+            <div>
               Share your data and your expertise, and make use of the skills of others.
               Renku tracks contributions, so your work is seen and credited.
               Understand how results are created and provide feedback.
-            </p>
+            </div>
           </div>
         </Col>
       </Row>
@@ -226,13 +226,13 @@ function Section3(props) {
         </Col>
         <Col md={8} lg={6} className="rk-pt-m rk-pl-lg-s" style={{ minWidth: "350px", maxWidth: "460px" }}>
           <h3>Data-driven projects are messy</h3>
-          <p>
+          <div>
             To get results, data and code may be gathered anew, or re-purposed and recombined from other projects.
             Paths are followed, discarded and tried anew before finally getting to
             the destination Renku accompanies the journey and helps you make sense of it.
             All activity within Renku is captured in the Knowledge Graph.
             This makes it possible to connect the dots, no matter where they lead.
-          </p>
+          </div>
         </Col>
       </Row>
     </div>
@@ -336,26 +336,26 @@ function Section6(props) {
         </Row>
         <Row className="rk-pt-lg-s bg-white" style={{ "--bs-bg-opacity": .9 }} >
           <Col xs={12} lg={5} xl={4} className="rk-pt-up_to-lg-s">
-            <p>
+            <div>
               <a target="_blank" rel="noreferrer noopener" href="https://www.epfl.ch/en/">
                 <img src={logo_EPFL} alt="EPFL" height="68" />
               </a>
-              <p>
+              <div>
               INN Building, Station 14, 1015 Lausanne<br />
               +41 21 693 43 88
-              </p>
-            </p>
+              </div>
+            </div>
           </Col>
           <Col xs={12} lg={5} xl={4} className="rk-pt-up_to-lg-s">
-            <p>
+            <div>
               <a target="_blank" rel="noreferrer noopener" href="https://ethz.ch/en.html">
                 <img src={logo_ETH} alt="ETH" height="68" />
               </a>
-              <p>
+              <div>
               Turnerstrasse 1, 8092 Zürich<br />
               +41 44 632 80 74
-              </p>
-            </p>
+              </div>
+            </div>
           </Col>
         </Row>
       </div>
@@ -365,7 +365,7 @@ function Section6(props) {
 
 function SectionFeatures(props) {
   return <div className="rk-anon-home-section-bg-white" id="rk-anon-home-section-features">
-    <div className="rk-anon-home-section-content">
+    <div className="rk-anon-home-section-content mb-5">
       <Row className="rk-pt-m">
         <Col md={4}>
           <h3 className="text-rk-pink">Renku features</h3>
@@ -381,77 +381,89 @@ function SectionFeatures(props) {
             from datasets to workflow execution</div>
         </Col>
       </Row>
-      <Row className="rk-pt-m">
-        <Col className="d-md-flex justify-content-between rk-bg-data p-3 me-2">
-          <div className="me-2">
-            <h4>Versioned Data</h4>
-            <p>
+      <Row className="rk-pt-m g-2">
+        <Col xs={12} md={6}>
+          <div className="d-flex h-100 justify-content-between rk-bg-data p-3">
+            <div className="me-2">
+              <h4>Versioned Data</h4>
+              <div>
               Renku Datasets equip your files with versioning and metadata.
-            </p>
-          </div>
-          <div>
-            <img src={graphic_data} alt="Versioned Data" height="68" />
+              </div>
+            </div>
+            <div className="align-self-center">
+              <img src={graphic_data} alt="Versioned Data" height="68" />
+            </div>
           </div>
         </Col>
-        <Col className="d-md-flex justify-content-between rk-bg-sessions p-3">
-          <div>
-            <h4>Interactive Computing</h4>
-            <p>
+        <Col xs={12} md={6}>
+          <div className="d-flex h-100 justify-content-between rk-bg-sessions p-3">
+            <div>
+              <h4>Interactive Computing</h4>
+              <div>
               Access free computing resources directly in the browser with familiar front-ends like
               Jupyter, RStudio, and VSCode.
-            </p>
-          </div>
-          <div className="p-3 bg-white" style={{ "--bs-bg-opacity": .4 }}>
-            <img src={graphic_sessions} alt="Interactive Computing" height="68" />
+              </div>
+            </div>
+            <div className="p-3 align-self-center bg-white" style={{ "--bs-bg-opacity": .4 }}>
+              <img src={graphic_sessions} alt="Interactive Computing" height="68" />
+            </div>
           </div>
         </Col>
       </Row>
-      <Row className="mt-2">
-        <Col className="d-md-flex justify-content-between rk-bg-lineage p-3 me-2">
-          <div className="me-2">
-            <h4>Automatic Provenance</h4>
-            <p>
+      <Row className="g-2 pt-2">
+        <Col xs={12} md={6}>
+          <div className="d-flex h-100 justify-content-between rk-bg-lineage p-3">
+            <div className="me-2">
+              <h4>Automatic Provenance</h4>
+              <div>
               Track inputs and outputs easily without having to learn a new workflow language.
-            </p>
-          </div>
-          <div>
-            <img src={graphic_provenance} alt="Automatic Provenance" height="68" />
+              </div>
+            </div>
+            <div className="align-self-center">
+              <img src={graphic_provenance} alt="Automatic Provenance" height="68" />
+            </div>
           </div>
         </Col>
-        <Col className="d-md-flex justify-content-between rk-bg-data p-3">
-          <div>
-            <h4>Version Control by Default</h4>
-            <p>
+        <Col xs={12} md={6}>
+          <div className="d-flex h-100 justify-content-between rk-bg-data p-3">
+            <div>
+              <h4>Version Control by Default</h4>
+              <div>
               Leverage Renku&apos;s GitLab instance to automatically version your project&apos;s files.
-            </p>
-          </div>
-          <div>
-            <img src={graphic_git} alt="Version Control" height="68" />
+              </div>
+            </div>
+            <div className="align-self-center">
+              <img src={graphic_git} alt="Version Control" height="68" />
+            </div>
           </div>
         </Col>
       </Row>
-      <Row className="mt-2 mb-5">
-        <Col className="d-md-flex justify-content-between rk-bg-sessions p-3 me-2">
-          <div>
-            <h4>Containers as Standard</h4>
-            <p>
+      <Row className="g-2 pt-2">
+        <Col xs={12} md={6}>
+          <div className="d-flex h-100 justify-content-between rk-bg-sessions p-3">
+            <div>
+              <h4>Containers as Standard</h4>
+              <div>
               Access a maintained stack of Docker images and project templates which ensure
               computational reproducibility.
-            </p>
-          </div>
-          <div>
-            <img src={graphic_containers} alt="Containers" height="68" />
+              </div>
+            </div>
+            <div className="align-self-center">
+              <img src={graphic_containers} alt="Containers" height="68" />
+            </div>
           </div>
         </Col>
-        <Col className="d-md-flex justify-content-between rk-bg-lineage p-3">
-          <div>
-            <h4>Reusable Workflows</h4>
-            <p>
+        <Col xs={12} md={6}>
+          <div className="d-flex h-100 justify-content-between rk-bg-lineage p-3">
+            <div>
+              <h4>Reusable Workflows</h4>
+              <div>
               Flexibly track your commands and reuse them as templates with different inputs or parameters.
-            </p>
-          </div>
-          <div>
-            <img src={graphic_workflows} alt="Containers" height="68" />
+              </div>
+            </div>
+            <div className="align-self-center">
+              <img src={graphic_workflows} alt="Containers" height="68" />
+            </div>
           </div>
         </Col>
       </Row>
@@ -472,51 +484,54 @@ function SectionUseCases(props) {
         </Col>
       </Row>
       <Row className="rk-pt-m">
-        <Col className="d-md-flex align-items-center justify-content-between rk-bg-data p-3 me-2"
-          md={{ size: 8 }}>
-          <div className="me-2">
-            <h4>Collaborative Scientific Research</h4>
-            <p>
+        <Col md={{ size: 8 }}>
+          <div className="d-md-flex align-items-center justify-content-between rk-bg-data p-3">
+            <div className="me-2">
+              <h4>Collaborative Scientific Research</h4>
+              <div>
               Ensure computational reproducibility between you and
               your colleagues throughout the entire scientific process.
-            </p>
-          </div>
-          <div>
-            <img src={graphic_collaborate} alt="Versioned Data" height="68" />
+              </div>
+            </div>
+            <div>
+              <img src={graphic_collaborate} alt="Versioned Data" height="68" />
+            </div>
           </div>
         </Col>
       </Row>
       <Row className="mt-2" >
-        <Col className="d-md-flex align-items-center justify-content-between rk-bg-sessions p-3"
-          md={{ size: 8, offset: 4 }}>
-          <div>
-            <h4>Teach a Class or Workshop</h4>
-            <p>
+        <Col md={{ size: 8, offset: 4 }}>
+          <div className="d-md-flex align-items-center justify-content-between rk-bg-sessions p-3">
+            <div>
+              <h4>Teach a Class or Workshop</h4>
+              <div>
               Access project templates in Python, R, Julia (and more!)
               out of the box, or create your own template to share with students.
-            </p>
-            <p>
+              </div>
+              <div>
               They can work together in the browser in our out of class.
-            </p>
-          </div>
-          <div className="p-3 bg-white" style={{ "--bs-bg-opacity": .4 }}>
-            <img src={graphic_teach} alt="Interactive Computing" height="68" />
+              </div>
+            </div>
+            <div className="p-3 bg-white" style={{ "--bs-bg-opacity": .4 }}>
+              <img src={graphic_teach} alt="Interactive Computing" height="68" />
+            </div>
           </div>
         </Col>
       </Row>
       <Row className="mt-2 mb-5">
-        <Col className="d-md-flex align-items-center justify-content-between rk-bg-lineage p-3 me-2"
-          md={{ size: 8, offset: 2 }}>
-          <div className="me-2">
-            <h4>Build, execute, and track workflows</h4>
-            <p>
+        <Col md={{ size: 8, offset: 2 }}>
+          <div className="d-md-flex align-items-center justify-content-between rk-bg-lineage p-3">
+            <div className="me-2">
+              <h4>Build, execute, and track workflows</h4>
+              <div>
               Automate processes and follow them in real time. Rest easy, as
               re-executions are reproducible given the same computational
               environment.
-            </p>
-          </div>
-          <div>
-            <img src={graphic_build} alt="Automatic Provenance" height="68" />
+              </div>
+            </div>
+            <div>
+              <img src={graphic_build} alt="Automatic Provenance" height="68" />
+            </div>
           </div>
         </Col>
       </Row>
