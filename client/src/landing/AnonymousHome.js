@@ -509,7 +509,7 @@ function SectionUseCases(props) {
               out of the box, or create your own template to share with students.
               </div>
               <div>
-              They can work together in the browser in our out of class.
+              They can work together in the browser in or out of class.
               </div>
             </div>
             <div className="p-3 bg-white" style={{ "--bs-bg-opacity": .4 }}>
