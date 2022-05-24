@@ -401,7 +401,7 @@ function SectionFeatures(props) {
           </div>
         </Col>
       </Row>
-      <Row className="mt-4 g-4">
+      <Row className="mt-1 g-4">
         <Col xs={12} md={6}>
           <div className="d-flex h-100 justify-content-between rk-bg-features">
             <div className="p-4">
@@ -429,7 +429,7 @@ function SectionFeatures(props) {
           </div>
         </Col>
       </Row>
-      <Row className="mt-4 g-4">
+      <Row className="mt-1 g-4">
         <Col xs={12} md={6}>
           <div className="d-flex h-100 justify-content-between rk-bg-features">
             <div className="p-4">
@@ -470,54 +470,57 @@ function SectionUseCases(props) {
           <h3 className="text-secondary">Renku Use Cases: Built to be versatile</h3>
         </Col>
       </Row>
-      <Row className="rk-pt-m">
-        <Col md={{ size: 8 }}>
-          <div className="d-md-flex align-items-center justify-content-between rk-bg-use-case p-4">
-            <div className="p-4">
+      <Row className="rk-pt-m g-4">
+        <Col md={6}>
+          <div className="d-flex flex-column h-100 justify-content-between rk-bg-use-case p-4">
+            <div className="pb-2">
               <h4>Collaborative Scientific Research</h4>
+            </div>
+            <div className="flex-grow-1 d-md-flex align-items-center justify-content-between">
               <div>
               Ensure computational reproducibility between you and
               your colleagues throughout the entire scientific process.
               </div>
-            </div>
-            <div className="p-3 m-4" style={{ "--bs-bg-opacity": .4 }}>
-              <img src={graphic_collaborate} alt="Versioned Data" height="68" />
+              <div className="p-2" style={{ "--bs-bg-opacity": .4 }}>
+                <img src={graphic_collaborate} alt="Versioned Data" height="68" />
+              </div>
             </div>
           </div>
         </Col>
-      </Row>
-      <Row className="mt-4" >
-        <Col md={{ size: 8, offset: 4 }}>
-          <div className="d-md-flex align-items-center justify-content-between rk-bg-use-case p-3">
-            <div className="p-4">
+        <Col md={6}>
+          <div className="d-flex flex-column h-100 justify-content-between rk-bg-use-case p-4">
+            <div className="pb-2">
               <h4>Teach a Class or Workshop</h4>
-              <div>
-              Access project templates in Python, R, Julia (and more!)
-              out of the box, or create your own template to share with students.
-              </div>
-              <div>
-              They can work together in the browser in or out of class.
-              </div>
             </div>
-            <div className="p-3 m-4" style={{ "--bs-bg-opacity": .4 }}>
-              <img src={graphic_teach} alt="Interactive Computing" height="68" />
+            <div className="flex-grow-1 d-md-flex align-items-center justify-content-between">
+              <div>
+                <div>Access project templates in Python, R, Julia (and more!)
+                  out of the box, or create your own template to share with students.
+                </div>
+                <div className="mt-1">They can work together in the browser in or out of class.</div>
+              </div>
+              <div className="p-2" style={{ "--bs-bg-opacity": .4 }}>
+                <img src={graphic_teach} alt="Interactive Computing" height="68" />
+              </div>
             </div>
           </div>
         </Col>
       </Row>
       <Row className="mt-4 mb-5">
-        <Col md={{ size: 8, offset: 2 }}>
-          <div className="d-md-flex align-items-center justify-content-between rk-bg-use-case p-3">
-            <div className="p-4">
+        <Col md={{ size: 6, offset: 3 }}>
+          <div className="d-flex flex-column h-100 justify-content-between rk-bg-use-case p-4">
+            <div className="pb-2">
               <h4>Build, execute, and track workflows</h4>
+            </div>
+            <div className="d-md-flex align-items-center justify-content-between">
               <div>
               Automate processes and follow them in real time. Rest easy, as
               re-executions are reproducible given the same computational
               environment.
               </div>
-            </div>
-            <div className="p-3 m-4" style={{ "--bs-bg-opacity": .4 }}>
-              <img src={graphic_build} alt="Automatic Provenance" height="68" />
+              <div className="p-2" style={{ "--bs-bg-opacity": .4 }}>
+                <img src={graphic_build} alt="Automatic Provenance" height="68" />
+              </div>
             </div>
           </div>
         </Col>
