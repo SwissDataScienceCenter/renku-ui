@@ -332,7 +332,7 @@ function Section6(props) {
             <div>
               <h4 className="text-rk-pink">With offices at</h4>
               <a target="_blank" rel="noreferrer noopener" href="https://www.epfl.ch/en/">
-                <img src={logo_EPFL} alt="EPFL" height="52" />
+                <img className="mb-2" src={logo_EPFL} alt="EPFL" height="52" />
               </a>
               <div>
               INN Building, Station 14, 1015 Lausanne<br />
@@ -344,7 +344,7 @@ function Section6(props) {
             <div>
               <h4 className="text-rk-pink">and</h4>
               <a target="_blank" rel="noreferrer noopener" href="https://ethz.ch/en.html">
-                <img src={logo_ETH} alt="ETH" height="52" />
+                <img className="mb-2" src={logo_ETH} alt="ETH" height="52" />
               </a>
               <div>
               Turnerstrasse 1, 8092 Zürich<br />
