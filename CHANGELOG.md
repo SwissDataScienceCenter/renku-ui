@@ -1,5 +1,26 @@
 # Changes
 
+
+## [2.3.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.2.0...2.3.0) (2022-05-23)
+
+
+### Bug Fixes
+
+* correct listing of projects on datasets ([#1842](https://github.com/SwissDataScienceCenter/renku-ui/issues/1842), [#1843](https://github.com/SwissDataScienceCenter/renku-ui/issues/1843))
+* prevent wrong feedback on session pages ([#1797](https://github.com/SwissDataScienceCenter/renku-ui/issues/1797), [#1796](https://github.com/SwissDataScienceCenter/renku-ui/issues/1796))
+* update link to GitLab user profile ([#1822](https://github.com/SwissDataScienceCenter/renku-ui/issues/1822), [#1820](https://github.com/SwissDataScienceCenter/renku-ui/issues/1820))
+* prevent unnecessary queries to check project lock status ([#1860](https://github.com/SwissDataScienceCenter/renku-ui/issues/1860), [#1858](https://github.com/SwissDataScienceCenter/renku-ui/issues/1858))
+
+
+### Features
+
+* speed up checking docker images availability ([#1839](https://github.com/SwissDataScienceCenter/renku-ui/issues/1839), [#1742](https://github.com/SwissDataScienceCenter/renku-ui/issues/1742))
+* support legacy dataset URLs ([#1824](https://github.com/SwissDataScienceCenter/renku-ui/issues/1824), [#1819](https://github.com/SwissDataScienceCenter/renku-ui/issues/1819))
+* ux improvements to project creation ([#1734](https://github.com/SwissDataScienceCenter/renku-ui/issues/1734), [#1760](https://github.com/SwissDataScienceCenter/renku-ui/issues/1760), [#1736](https://github.com/SwissDataScienceCenter/renku-ui/issues/1736), [#1770](https://github.com/SwissDataScienceCenter/renku-ui/issues/1770), [#1802](https://github.com/SwissDataScienceCenter/renku-ui/issues/1802))
+* ux improvements to dataset creation ([#1747](https://github.com/SwissDataScienceCenter/renku-ui/issues/1747), [#1733](https://github.com/SwissDataScienceCenter/renku-ui/issues/1733), [#1738](https://github.com/SwissDataScienceCenter/renku-ui/issues/1738), [#1827](https://github.com/SwissDataScienceCenter/renku-ui/issues/1827), [#1739](https://github.com/SwissDataScienceCenter/renku-ui/issues/1739), [#1815](https://github.com/SwissDataScienceCenter/renku-ui/issues/1815), [#1828](https://github.com/SwissDataScienceCenter/renku-ui/issues/1828), [#1829](https://github.com/SwissDataScienceCenter/renku-ui/issues/1829), [#1854](https://github.com/SwissDataScienceCenter/renku-ui/issues/1854), [#1740](https://github.com/SwissDataScienceCenter/renku-ui/issues/1740))
+* ux improvements to progress indicator ([#1761](https://github.com/SwissDataScienceCenter/renku-ui/issues/1761), [#1735](https://github.com/SwissDataScienceCenter/renku-ui/issues/1735), [#1774](https://github.com/SwissDataScienceCenter/renku-ui/issues/1774), [#1775](https://github.com/SwissDataScienceCenter/renku-ui/issues/1775))
+
+
 ## [2.2.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.1.2...2.2.0) (2022-04-12)
 
 ### Features
