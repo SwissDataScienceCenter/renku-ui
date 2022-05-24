@@ -369,7 +369,7 @@ function SectionFeatures(props) {
       <Row>
         <Col>
           <div>Renku gives you tools and functionality for each stage of the data science lifecycle:
-            from datasets to workflow execution</div>
+            from datasets to workflow execution.</div>
         </Col>
       </Row>
       <Row className="rk-pt-m g-4">
