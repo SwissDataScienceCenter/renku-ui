@@ -373,7 +373,7 @@ function SectionFeatures(props) {
         </Col>
       </Row>
       <Row className="rk-pt-m g-4">
-        <Col xs={12} md={6}>
+        <Col xs={12} lg={6}>
           <div className="d-flex h-100 justify-content-between rk-bg-features">
             <div className="p-4">
               <h4>Versioned Data</h4>
@@ -386,7 +386,7 @@ function SectionFeatures(props) {
             </div>
           </div>
         </Col>
-        <Col xs={12} md={6}>
+        <Col xs={12} lg={6}>
           <div className="d-flex h-100 justify-content-between rk-bg-features">
             <div className="p-4">
               <h4>Interactive Computing</h4>
@@ -402,7 +402,7 @@ function SectionFeatures(props) {
         </Col>
       </Row>
       <Row className="mt-1 g-4">
-        <Col xs={12} md={6}>
+        <Col xs={12} lg={6}>
           <div className="d-flex h-100 justify-content-between rk-bg-features">
             <div className="p-4">
               <h4>Automatic Provenance</h4>
@@ -415,7 +415,7 @@ function SectionFeatures(props) {
             </div>
           </div>
         </Col>
-        <Col xs={12} md={6}>
+        <Col xs={12} lg={6}>
           <div className="d-flex h-100 justify-content-between rk-bg-features">
             <div className="p-4">
               <h4>Version Control by Default</h4>
@@ -430,7 +430,7 @@ function SectionFeatures(props) {
         </Col>
       </Row>
       <Row className="mt-1 g-4">
-        <Col xs={12} md={6}>
+        <Col xs={12} lg={6}>
           <div className="d-flex h-100 justify-content-between rk-bg-features">
             <div className="p-4">
               <h4>Containers as Standard</h4>
@@ -444,7 +444,7 @@ function SectionFeatures(props) {
             </div>
           </div>
         </Col>
-        <Col xs={12} md={6}>
+        <Col xs={12} lg={6}>
           <div className="d-flex h-100 justify-content-between rk-bg-features">
             <div className="p-4">
               <h4>Reusable Workflows</h4>
@@ -471,7 +471,7 @@ function SectionUseCases(props) {
         </Col>
       </Row>
       <Row className="rk-pt-m g-4">
-        <Col md={6}>
+        <Col lg={6}>
           <div className="d-flex flex-column h-100 justify-content-between rk-bg-use-case p-4">
             <div className="pb-2">
               <h4>Collaborative Scientific Research</h4>
@@ -487,7 +487,7 @@ function SectionUseCases(props) {
             </div>
           </div>
         </Col>
-        <Col md={6}>
+        <Col lg={6}>
           <div className="d-flex flex-column h-100 justify-content-between rk-bg-use-case p-4">
             <div className="pb-2">
               <h4>Teach a Class or Workshop</h4>
@@ -507,7 +507,7 @@ function SectionUseCases(props) {
         </Col>
       </Row>
       <Row className="mt-4 mb-5">
-        <Col md={{ size: 6, offset: 3 }}>
+        <Col lg={{ size: 6, offset: 3 }}>
           <div className="d-flex flex-column h-100 justify-content-between rk-bg-use-case p-4">
             <div className="pb-2">
               <h4>Build, execute, and track workflows</h4>
