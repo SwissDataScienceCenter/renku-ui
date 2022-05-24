@@ -194,9 +194,11 @@ nav.rk-anon-home .nav-link {
 .rk-bg-features {
   --rk-bg-opacity: 0.2;
   background-color: rgba($rk-green, var(--rk-bg-opacity)) !important;
+  border-radius: .375rem;
 }
 
 .rk-bg-use-case {
   --rk-bg-opacity: 0.2;
   background-color: rgba($rk-pink, var(--rk-bg-opacity)) !important;
+  border-radius: .375rem;
 }
