@@ -407,21 +407,28 @@ class FooterNavbar extends Component {
       null;
     return (
       <footer className="footer mt-auto pt-4">
-        <Navbar className="container-fluid flex-wrap flex-lg-nowrap renku-container navbar bg-primary navbar-dark">
-          <span className="text-white-50">&copy; SDSC {(new Date()).getFullYear()}</span>
-          <Nav className="ms-auto">
-            <Link className="nav-link" to="/">
-              <img src={logo} alt="Renku" className="pb-2" height="44" />
-            </Link>
-          </Nav>
-          <Nav className="ms-auto">
-            <RenkuNavLink to="/help" title="Help" />
-            {privacyLink}
-            <ExternalDocsLink url={Links.DISCOURSE} title="Forum" className="nav-link" />
-            <ExternalDocsLink url={Links.GITTER}
-              title="Gitter" className="nav-link" />
-            <ExternalDocsLink url={`${Links.HOMEPAGE}/who-we-are`} title="About" className="nav-link" />
-          </Nav>
+        <Navbar className="container-fluid flex-wrap flex-lg-nowrap justify-content-between
+          renku-container navbar bg-primary navbar-dark">
+          <div>
+            <span className="text-white-50">&copy; SDSC {(new Date()).getFullYear()}</span>
+          </div>
+          <div>
+            <Nav className="ms-auto">
+              <Link className="nav-link" to="/">
+                <img src={logo} alt="Renku" className="pb-2" height="44" />
+              </Link>
+            </Nav>
+          </div>
+          <div className="d-none d-lg-inline">
+            <Nav className="ms-auto">
+              <RenkuNavLink to="/help" title="Help" />
+              {privacyLink}
+              <ExternalDocsLink url={Links.DISCOURSE} title="Forum" className="nav-link" />
+              <ExternalDocsLink url={Links.GITTER}
+                title="Gitter" className="nav-link" />
+              <ExternalDocsLink url={`${Links.HOMEPAGE}/who-we-are`} title="About" className="nav-link" />
+            </Nav>
+          </div>
         </Navbar>
       </footer>
     );

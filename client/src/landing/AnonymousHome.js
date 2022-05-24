@@ -220,7 +220,7 @@ function Section3(props) {
     <div className="rk-anon-home-section-content">
       <Row className="rk-pt-m">
         <Col md={4} lg={6} className="p-s-4 rk-bg-white"
-          style={{ minWidth: "400px", maxWidth: "600px",
+          style={{ minWidth: "300px", maxWidth: "600px",
             borderWidth: "20px", borderStyle: "solid", borderColor: "white" }}>
           <img width="100%" alt="data science theory/practice" src={Illustration_Theory_Practice} />
         </Col>
@@ -372,7 +372,7 @@ function SectionFeatures(props) {
             from datasets to workflow execution</div>
         </Col>
       </Row>
-      <Row className="rk-pt-m">
+      <Row className="rk-pt-m g-4">
         <Col xs={12} md={6}>
           <div className="d-flex h-100 justify-content-between rk-bg-features">
             <div className="p-4">
@@ -401,7 +401,7 @@ function SectionFeatures(props) {
           </div>
         </Col>
       </Row>
-      <Row className="mt-4">
+      <Row className="mt-4 g-4">
         <Col xs={12} md={6}>
           <div className="d-flex h-100 justify-content-between rk-bg-features">
             <div className="p-4">
@@ -429,7 +429,7 @@ function SectionFeatures(props) {
           </div>
         </Col>
       </Row>
-      <Row className="mt-4">
+      <Row className="mt-4 g-4">
         <Col xs={12} md={6}>
           <div className="d-flex h-100 justify-content-between rk-bg-features">
             <div className="p-4">
