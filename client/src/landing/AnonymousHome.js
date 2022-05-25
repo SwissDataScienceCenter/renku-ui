@@ -321,7 +321,7 @@ function Section6(props) {
     <div className="rk-anon-home-section-content">
       <div>
         <div><img src={logo} alt="Renku" height="92" className="d-block my-1" /></div>
-        <Row className="rk-pt-lg-s bg-white" style={{ "--bs-bg-opacity": .9 }} >
+        <Row className="rk-pt-s bg-white" style={{ "--bs-bg-opacity": .9 }} >
           <Col xs={12} lg={4}>
             <h3>Developed at</h3>
             <a target="_blank" rel="noreferrer noopener" href="https://datascience.ch/">
