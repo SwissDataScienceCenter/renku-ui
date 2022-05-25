@@ -3,6 +3,10 @@
     font-weight: bold;
 }
 
+.sorting-label--desk {
+    min-width: 60px;
+}
+
 .sorting-input {
     max-width: 140px;
 }

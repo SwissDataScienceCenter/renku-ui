@@ -48,6 +48,7 @@ import { Loader } from "./utils/components/Loader";
 import { AddDataset } from "./dataset/addtoproject/DatasetAdd.container";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
 import AppContext from "./utils/context/appContext";
+import SearchPage from "./features/kgSearch/KgSearchPage";
 
 function CentralContentContainer(props) {
   const { notifications, user } = props;
@@ -86,6 +87,8 @@ function CentralContentContainer(props) {
         } />
         <Route path={Url.get(Url.pages.help)} render={
           p => <Help key="help" {...p} {...props} />} />
+        <Route path={Url.get(Url.pages.search)} render={
+          () => <SearchPage key="kg-search" userName={props.user?.data?.name} />} />
         <Route exact
           path={[Url.get(Url.pages.projects), Url.get(Url.pages.projects.starred), Url.get(Url.pages.projects.all)]}
           render={p => <ProjectList

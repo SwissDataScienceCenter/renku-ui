@@ -46,21 +46,25 @@ const VisibilityFilter = ({ handler, value }: VisibilityFilterProps) => {
     internal: false,
     private: false,
   });
+
   useEffect(() => {
     if (value)
       setVisibilities(value);
-  }, []);
+  }, []); // eslint-disable-line
+
+  useEffect(() => {
+    if (handler)
+      handler(visibilities);
+  }, [visibilities, handler]);
 
   const selectVisibility = (visibility: string, value: boolean) => {
     switch (visibility) {
-      case "public": setVisibilities({...visibilities, public: value}); break;
-      case "internal": setVisibilities({...visibilities, public: value}); break;
-      case "private": setVisibilities({...visibilities, public: value}); break;
+      case "public": setVisibilities({ ...visibilities, public: value }); break;
+      case "internal": setVisibilities({ ...visibilities, internal: value }); break;
+      case "private": setVisibilities({ ...visibilities, private: value }); break;
     }
+  };
 
-    if (handler)
-      handler(visibility, value);
-  }
   const items = [
     { title: "Public", value: "public", icon: faGlobe },
     { title: "Internal", value: "internal", icon: faUserFriends },
@@ -90,7 +94,7 @@ const VisibilityFilter = ({ handler, value }: VisibilityFilterProps) => {
       <h3 className="filter-label">By Visibility</h3>
       {options}
     </>
-  )
-}
+  );
+};
 
 export { VisibilityFilter };

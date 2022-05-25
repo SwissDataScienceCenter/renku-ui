@@ -19,6 +19,7 @@ import * as React from "react";
 import "./AutorFilter.css";
 import { Input } from "../../ts-wrappers";
 import { ChangeEvent, useEffect, useState } from "react";
+import { KgAuthor } from "../../../features/kgSearch/KgSearch";
 /**
  *  renku-ui
  *
@@ -27,8 +28,8 @@ import { ChangeEvent, useEffect, useState } from "react";
  */
 
 export interface AuthorFilterProps {
-  handler: Function,
-  value: "all" | "user"
+  handler: Function;
+  value: KgAuthor;
 }
 
 const AuthorFilter = ({ handler, value }: AuthorFilterProps) => {
@@ -36,21 +37,21 @@ const AuthorFilter = ({ handler, value }: AuthorFilterProps) => {
   useEffect(() => {
     if (value)
       setAuthorSelected(value);
-  }, []);
+  }, []); // eslint-disable-line
 
   const changeAuthor = (value: string) => {
     setAuthorSelected(value);
 
     if (handler)
       handler(value);
-  }
+  };
   const items = [
     { title: "All", value: "all" },
     { title: "Only Me", value: "user" },
   ];
 
   const options = items.map(item => {
-    const nameInput = `author-${item.value}`
+    const nameInput = `author-${item.value}`;
     return (
       <div className="d-flex align-items-center" key={nameInput}>
         <Input
@@ -70,7 +71,7 @@ const AuthorFilter = ({ handler, value }: AuthorFilterProps) => {
       <h3 className="filter-label">By Author</h3>
       {options}
     </>
-  )
-}
+  );
+};
 
 export { AuthorFilter };

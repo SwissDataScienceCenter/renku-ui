@@ -17,6 +17,7 @@
  */
 import * as React from "react";
 import { ChangeEvent, useEffect, useState } from "react";
+
 import { Input } from "../../ts-wrappers";
 import "./TypeEntityFilter.css";
 /**
@@ -35,26 +36,30 @@ export interface TypeFilterProps {
   value?: TypeEntitySelection
 }
 
+export const initialTypeValues: TypeEntitySelection = {
+  project: false,
+  dataset: false
+};
+
 const TypeEntityFilter = ({ handler, value }: TypeFilterProps) => {
-  const [typeSelected, setTypeSelected] = useState({
-    project: false,
-    dataset: false
-  });
+  const [typeSelected, setTypeSelected] = useState(initialTypeValues);
 
   useEffect(() => {
     if (value)
       setTypeSelected(value);
-  }, []);
+  }, []); // eslint-disable-line
+
+  useEffect(() => {
+    if (handler)
+      handler(typeSelected);
+  }, [typeSelected, handler]);
 
   const changeType = (type: string, value: boolean) => {
     if (type === "project")
-      setTypeSelected({...typeSelected, project: value});
+      setTypeSelected({ ...typeSelected, project: value });
     else
-      setTypeSelected({...typeSelected, dataset: value});
-
-    if (handler)
-      handler(type, value);
-  }
+      setTypeSelected({ ...typeSelected, dataset: value });
+  };
 
   const items = [
     { title: "Project", value: "project", pathIcon: "/project-icon.png" },
@@ -83,7 +88,7 @@ const TypeEntityFilter = ({ handler, value }: TypeFilterProps) => {
       <h3 className="filter-label">By Type</h3>
       {options}
     </>
-  )
-}
+  );
+};
 
 export { TypeEntityFilter };

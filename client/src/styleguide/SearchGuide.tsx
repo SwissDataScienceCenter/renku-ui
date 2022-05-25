@@ -17,11 +17,12 @@
  */
 
 import React, { useState } from "react";
-import { Loader } from "../utils/components/Loader";
 
-import { useSearchEntitiesQuery } from "../features/kg-search/kg-search-api";
-import { KgSearchResult, ListResponse } from "../features/kg-search/kg-search";
+import { Loader } from "../utils/components/Loader";
 import { Pagination } from "../utils/components/Pagination";
+import { KgSearchResult, ListResponse } from "../features/kgSearch/KgSearch";
+import { useSearchEntitiesQuery } from "../features/kgSearch/KgSearchApi";
+import { SortingOptions } from "../utils/components/sortingEntities/SortingEntities";
 
 function SearchResultRow(props: { index: number; row: {} }) {
   const { index, row } = props;
@@ -74,9 +75,15 @@ function SearchGuide() {
   const [page, setPage] = useState(1);
   const { data, isFetching, isLoading } = useSearchEntitiesQuery({
     phrase: "*",
-    sort: "date:asc",
+    sort: SortingOptions.AscTitle,
     page,
-    perPage: 1
+    perPage: 1,
+    author: "all",
+    userName: undefined,
+    type: {
+      project: true,
+      dataset: true,
+    },
   });
   return (
     <>

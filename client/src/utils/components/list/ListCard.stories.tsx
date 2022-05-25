@@ -1,7 +1,9 @@
 import * as React from "react";
 import { Story } from "@storybook/react";
+
+import { EntityType } from "../../../features/kgSearch";
 import { Visibilities } from "../visibility/Visibility";
-import { EntityType, ListElementProps, ListDisplayType } from "./List.d";
+import { ListElementProps, ListDisplayType } from "./List.d";
 import List from "./List";
 const MemoryRouter = require("react-router-dom").MemoryRouter;
 

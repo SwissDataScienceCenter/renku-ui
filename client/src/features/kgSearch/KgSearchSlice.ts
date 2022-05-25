@@ -1,0 +1,71 @@
+/*!
+ * Copyright 2022 - Swiss Data Science Center (SDSC)
+ * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
+ * Eidgenössische Technische Hochschule Zürich (ETHZ).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { TypedUseSelectorHook, useSelector } from "react-redux";
+import { TypeEntitySelection } from "../../utils/components/typeEntityFilter/TypeEntityFilter";
+import { VisibilitiesFilter } from "../../utils/components/visibilityFilter/VisibilityFilter";
+import { SortingOptions } from "../../utils/components/sortingEntities/SortingEntities";
+import { KgAuthor } from "./KgSearch";
+
+export interface KgSearchFormState {
+  phrase: string;
+  sort: SortingOptions;
+  page: number;
+  perPage: number;
+  type: TypeEntitySelection;
+  author: KgAuthor;
+  visibility?: VisibilitiesFilter;
+}
+
+const initialState: KgSearchFormState = {
+  phrase: "*",
+  sort: SortingOptions.AscTitle,
+  page: 1,
+  perPage: 20,
+  type: {
+    project: true,
+    dataset: true,
+  },
+  author: "all",
+  visibility: {
+    private: true,
+    public: true,
+    internal: true,
+  },
+};
+
+type RootStateWithKgSearchForm = { kgSearchForm: KgSearchFormState };
+
+export const kgSearchFormSlice = createSlice({
+  name: "kgSearchForm",
+  initialState,
+  reducers: {
+    setAuthor: (state, action: PayloadAction<KgAuthor>) => { state.author = action.payload; },
+    setPhrase: (state, action: PayloadAction<string>) => { state.phrase = action.payload; },
+    setSort: (state, action: PayloadAction<SortingOptions>) => { state.sort = action.payload; },
+    setType: (state, action: PayloadAction<TypeEntitySelection>) => { state.type = action.payload; },
+    setVisibility: (state, action: PayloadAction<VisibilitiesFilter>) => { state.visibility = action.payload; },
+    setPage: (state, action: PayloadAction<number>) => { state.page = action.payload; },
+  },
+});
+
+export const { setAuthor, setVisibility, setPage, setPhrase, setSort, setType } = kgSearchFormSlice.actions;
+export const useKgSearchFormSelector: TypedUseSelectorHook<RootStateWithKgSearchForm> =
+  useSelector;
+export default kgSearchFormSlice;
