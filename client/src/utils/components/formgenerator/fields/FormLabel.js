@@ -25,12 +25,14 @@
 
 import React from "react";
 import { Label } from "reactstrap";
+import { InputLabel } from "../../formlabels/FormLabels";
 
 const FormLabel = ({ name, label, required }) => {
-  return <Label htmlFor={name} required={required}>
-    {label}
-    {required ? <span style={{ "color": "#dc3545" }}>*</span> : null}
-  </Label>;
+  return (
+    <Label htmlFor={name} required={required}>
+      <InputLabel text={label} isRequired={required} />
+    </Label>
+  );
 };
 
 export default FormLabel;

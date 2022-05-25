@@ -257,7 +257,7 @@ class View extends Component {
   }
 
   async fetchProjectLockStatus() {
-    return await this.projectCoordinator.fetchProjectLockStatus();
+    return await this.projectCoordinator.fetchProjectLockStatus(this.props.user.logged);
   }
 
   async fetchAll() {
@@ -278,7 +278,6 @@ class View extends Component {
       const migrationData = await this.fetchMigrationCheck(gitUrl, defaultBranch);
       const projectVersion = migrationData.core_compatibility_status?.project_metadata_version;
       await this.checkCoreAvailability(projectVersion);
-      await this.fetchProjectLockStatus();
       this.fetchProjectDatasets();
     }
   }
@@ -506,6 +505,7 @@ class View extends Component {
         overviewCommitsUrl={subUrls.overviewCommitsUrl}
         progress={graphProgress}
         projectsUrl={subUrls.projectsUrl}
+        toggleNewDataset={p.toggleNewDataset}
       />,
 
       editDataset: (p) => <ChangeDataset
@@ -532,6 +532,7 @@ class View extends Component {
         overviewCommitsUrl={subUrls.overviewCommitsUrl}
         progress={graphProgress}
         projectsUrl={subUrls.projectsUrl}
+        toggleNewDataset={p.toggleNewDataset}
       />,
 
       importDataset: (p) => <ImportDataset
@@ -555,6 +556,7 @@ class View extends Component {
         progress={graphProgress}
         projectsUrl={subUrls.projectsUrl}
         selectedDataset={matchToDatasetId(p.match.params.datasetId)}
+        toggleNewDataset={p.toggleNewDataset}
       />,
 
       kgStatusView: (displaySuccessMessage = false) =>
@@ -606,9 +608,9 @@ class View extends Component {
     },
     fetchDatasets: (forceReFetch) => {
       this.fetchProjectDatasetsFromKg();
-      this.fetchProjectDatasets(forceReFetch);
-      // Also check if the project is locked
-      this.fetchProjectLockStatus();
+      this.fetchProjectDatasets(forceReFetch).then(() => {
+        this.fetchProjectLockStatus();
+      });
     },
     setOpenFolder: (filePath) => {
       this.setProjectOpenFolder(filePath);

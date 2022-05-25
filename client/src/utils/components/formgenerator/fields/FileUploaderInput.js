@@ -26,8 +26,6 @@ import React, { useState, useEffect, useRef } from "react";
 import { FormGroup, Table, Button, UncontrolledCollapse,
   Card, CardBody, Input, InputGroup, Progress } from "reactstrap";
 import { Link } from "react-router-dom";
-import ValidationAlert from "./ValidationAlert";
-import HelpText from "./HelpText";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheck, faTrashAlt, faSyncAlt, faExclamationTriangle,
@@ -35,6 +33,7 @@ import {
 import { formatBytes, isURL } from "../../../helpers/HelperFunctions";
 import FileExplorer, { getFilesTree } from "../../FileExplorer";
 import { ErrorLabel, InputLabel } from "../../formlabels/FormLabels";
+import { FormText } from "../../../ts-wrappers";
 
 const FILE_STATUS = {
   ADDED: 201,
@@ -672,8 +671,8 @@ function FileUploaderInput({
     </div>);
 
   return (
-    <FormGroup>
-      <InputLabel isRequired={required} isOptional={true} text={label}/>
+    <FormGroup className="field-group">
+      <InputLabel isRequired={required} text={label}/>
       {initialFilesTree !== undefined ?
         <Card className="mb-4">
           <CardBody style={{ backgroundColor: "#e9ecef" }}>
@@ -724,7 +723,7 @@ function FileUploaderInput({
               </td>
             </tr>
           </tbody>
-          <tfoot className={disabled ? "disabled-input" : ""} style={{ fontWeight: "normal" }}>
+          <tfoot className={disabled ? "disabled-input border-top-0" : "border-top-0"} style={{ fontWeight: "normal" }}>
             <tr>
               <td colSpan="5">
                 {dropFileBox}
@@ -762,9 +761,9 @@ function FileUploaderInput({
         disabled={disabled}
         multiple={true}
       />
-      <div><span><small className="text-danger">{errorOnDrop}</small></span></div>
-      <HelpText content={help} />
-      <ValidationAlert content={alert} />
+      {errorOnDrop && <ErrorLabel text={errorOnDrop} />}
+      {help && <FormText color="muted">{help}</FormText>}
+      {alert && <ErrorLabel text={alert} />}
     </FormGroup>
   );
 }

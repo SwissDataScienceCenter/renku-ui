@@ -41,7 +41,7 @@ describe("launch sessions", () => {
 
   it("new session page - logged - success", () => {
     fixtures.userTest();
-    fixtures.newSessionPipelines().newSessionJobs().newSessionImages();
+    fixtures.newSessionImages();
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionImage", { timeout: 10000 });
     cy.contains("Do you want to select the branch, commit, or image?").should("be.visible");
@@ -51,7 +51,7 @@ describe("launch sessions", () => {
 
   it("new session page - logged - missing pipeline", () => {
     fixtures.userTest();
-    fixtures.newSessionPipelines(true);
+    fixtures.newSessionPipelines(true).newSessionImages(true);
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionPipelines", { timeout: 10000 });
     cy.contains("Hide advanced settings").should("be.visible");
@@ -86,7 +86,7 @@ describe("launch sessions", () => {
 
   it("new session page - logged - missing job", () => {
     fixtures.userTest();
-    fixtures.newSessionPipelines().newSessionJobs(true).newSessionImages();
+    fixtures.newSessionPipelines().newSessionJobs(true).newSessionImages(true);
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionJobs", { timeout: 10000 });
     cy.contains("Hide advanced settings").should("be.visible");
@@ -100,7 +100,7 @@ describe("launch sessions", () => {
 
   it("new session page - logged - running job", () => {
     fixtures.userTest();
-    fixtures.newSessionPipelines().newSessionJobs(false, true).newSessionImages();
+    fixtures.newSessionPipelines().newSessionJobs(false, true).newSessionImages(true);
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionJob", { timeout: 15000 });
     cy.contains("Hide advanced settings").should("be.visible");
@@ -114,7 +114,7 @@ describe("launch sessions", () => {
 
   it("new session page - logged - failed job", () => {
     fixtures.userTest();
-    fixtures.newSessionPipelines().newSessionJobs(false, false, true);
+    fixtures.newSessionPipelines().newSessionJobs(false, false, true).newSessionImages(true);
     cy.visit("/projects/e2e/local-test-project/sessions/new");
     cy.wait("@getSessionJobs", { timeout: 10000 });
     cy.contains("Hide advanced settings").should("be.visible");
@@ -124,15 +124,6 @@ describe("launch sessions", () => {
     cy.get("#image_build").should("not.exist");
     cy.get("#image_build_again").should("be.visible");
     cy.get("#image_check_pipeline").should("be.visible");
-  });
-
-  it("new session page - locked project", () => {
-    fixtures.projectLockStatus({ locked: true });
-    fixtures.userTest();
-    fixtures.newSessionPipelines().newSessionJobs().newSessionImages();
-    cy.visit("/projects/e2e/local-test-project/sessions/new");
-    cy.wait("@getSessionPipelines", { timeout: 10000 });
-    cy.contains("Project is being modified").should("be.visible");
   });
 
   it("new session page - show cloud storage options", () => {

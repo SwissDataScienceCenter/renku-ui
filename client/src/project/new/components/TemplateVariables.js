@@ -23,7 +23,7 @@
  */
 import React, { Component } from "react";
 import { capitalize } from "../../../utils/components/formgenerator/FormGenerator.present";
-import { Button, FormGroup, Input, Label, UncontrolledTooltip } from "reactstrap/lib";
+import { Button, FormGroup, Input, Label, UncontrolledTooltip } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUndo } from "@fortawesome/free-solid-svg-icons";
 import { InputHintLabel, InputLabel } from "../../../utils/components/formlabels/FormLabels";

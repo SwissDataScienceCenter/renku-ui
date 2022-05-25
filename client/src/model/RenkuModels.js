@@ -404,6 +404,15 @@ const notebooksSchema = new Schema({
   },
   ci: {
     [Prop.SCHEMA]: new Schema({
+      image: {
+        [Prop.SCHEMA]: new Schema({
+          available: { [Prop.INITIAL]: null },
+          fetched: { [Prop.INITIAL]: null },
+          fetching: { [Prop.INITIAL]: false },
+          registryId: { [Prop.INITIAL]: null },
+          error: { [Prop.INITIAL]: null },
+        })
+      },
       pipelines: {
         [Prop.SCHEMA]: new Schema({
           list: { [Prop.INITIAL]: [] },
@@ -425,7 +434,7 @@ const notebooksSchema = new Schema({
           error: { [Prop.INITIAL]: null },
         })
       },
-      image: {
+      looping: {
         [Prop.SCHEMA]: new Schema({
           available: { [Prop.INITIAL]: null },
           fetched: { [Prop.INITIAL]: null },
@@ -435,7 +444,7 @@ const notebooksSchema = new Schema({
       },
       target: { [Prop.INITIAL]: null }, // target commit id
       type: { [Prop.INITIAL]: null }, // anonymous, pinned, logged, owner
-      stage: { [Prop.INITIAL]: null }, // starting --> pipelines --> jobs --> images
+      stage: { [Prop.INITIAL]: null }, // starting --> images --> (pipelines --> jobs -->) looping
     })
   },
   logs: {
@@ -496,7 +505,8 @@ const datasetFormSchema = new Schema({
       isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression),
       alert: "Title is too short"
     }],
-    help: "The title is displayed in listings of datasets."
+    help: "The title is displayed in listings of datasets. " +
+      "The *name* is automatically derived from the title, but can be changed."
   },
   name: {
     initial: "",
@@ -512,8 +522,7 @@ const datasetFormSchema = new Schema({
       isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression),
       alert: "Name is too short"
     }],
-    help: "The *name* is automatically derived from the title, but can be changed. " +
-      " It is used as an identifier in renku commands."
+    help: " It is used as an identifier in renku commands."
   },
   creators: {
     initial: [],
@@ -533,7 +542,8 @@ const datasetFormSchema = new Schema({
     label: "Keywords",
     help: "To insert a keyword, type it and press enter.",
     type: FormGenerator.FieldTypes.KEYWORDS,
-    validators: []
+    validators: [],
+    optional: true,
   },
   description: {
     initial: "",
@@ -546,7 +556,8 @@ const datasetFormSchema = new Schema({
       id: "name-length",
       //  isValidFun: expression => FormGenerator.Validators.isNotEmpty(expression, 3),
       alert: "Description can't be empty"
-    }]
+    }],
+    optional: true,
   },
   files: {
     initial: [],
@@ -567,16 +578,17 @@ const datasetFormSchema = new Schema({
   image: {
     name: "image",
     label: "Image",
-    edit: false, // for now images can't be edited :(
+    edit: true,
     type: FormGenerator.FieldTypes.IMAGE,
     maxSize: 200 * 1024,
     format: "image/png,image/jpeg,image/gif,image/tiff",
+    help: "JPG, PNG, and JPEG files are allowed, up to 200KB.",
     value: {
       options: [],
       selected: -1
     },
     validators: [],
-    modes: ["Choose File"]
+    modes: ["Choose File"],
   }
 });
 
@@ -626,6 +638,7 @@ const datasetImportFormSchema = new Schema({
     name: "uri",
     label: "Renku dataset URL; Dataverse or Zenodo dataset URL or DOI",
     edit: false,
+    required: true,
     type: FormGenerator.FieldTypes.TEXT,
     // parseFun: expression => FormGenerator.Parsers.slugFromTitle(expression),
     validators: [{

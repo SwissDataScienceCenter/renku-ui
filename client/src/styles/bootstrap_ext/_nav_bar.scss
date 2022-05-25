@@ -1,29 +1,41 @@
-
-@media (min-width:992px) { //992 lg 768 md
+@media (min-width: 992px) {
+  //992 lg 768 md
   .navbar {
     height: 70px; // we need this to vertically align items
   }
-  .navbar-collapse{
-    padding-top:0.5em;
+  .navbar-collapse {
+    padding-top: 0.5em;
   }
-  .input{
-    padding-top:0.3rem
+  .input {
+    padding-top: 0.3rem;
   }
 }
 
-footer{
-  .navbar{
-    height:75px;
+footer {
+  .navbar {
+    height: 75px;
   }
-  .nav-link{
+  .nav-link {
     color: rgba(255, 255, 255, 0.55);
-    &:hover{
-      color:rgba(255, 255, 255, 0.75);
+    &:link {
+      color: rgba(255, 255, 255, 0.55);
+    }
+    &:visited {
+      color: rgba(255, 255, 255, 0.55);
+    }
+    &:hover {
+      color: rgba(255, 255, 255, 0.75);
+    }
+    &.active {
+      color: rgba(255, 255, 255, 0.55);
+    }
+    &:active {
+      color: rgba(255, 255, 255, 0.55);
     }
   }
 }
 
-nav.navbar{
+nav.navbar {
   // in total the height of the bar is 70px
   // 50 for the image, etc
   // 10 on top and bottom

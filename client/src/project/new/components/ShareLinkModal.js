@@ -35,7 +35,7 @@ import {
   Col,
   Form,
   Table
-} from "reactstrap/lib";
+} from "reactstrap";
 
 function ShareLinkModal(props) {
   const { createUrl, input } = props;

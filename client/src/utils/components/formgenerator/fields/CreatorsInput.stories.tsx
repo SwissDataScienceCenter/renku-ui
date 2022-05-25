@@ -1,5 +1,5 @@
 /*!
- * Copyright 2018 - Swiss Data Science Center (SDSC)
+ * Copyright 2022 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -15,18 +15,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import * as React from "react";
+import CreatorsInput, { CreatorInputProps } from "./CreatorsInput";
+import { Story } from "@storybook/react";
 
-/**
- *  renku-ui
- *
- *  ValidationAlert.js
- *  Presentational components.
- */
 
-import React from "react";
-
-const ValidationAlert = ({ content }) => {
-  return <div><span><small className="text-danger">{ content }</small></span></div>;
+export default {
+  title: "components/CreatorsInput",
+  component: CreatorsInput,
 };
 
-export default ValidationAlert;
+const Template: Story<CreatorInputProps> = (args) => <CreatorsInput {...args} />;
+export const Default = Template.bind({});
+Default.args = {
+  name: "author",
+  label: "Creators",
+  setInputs: () => true,
+  value: [{
+    id: 1,
+    name: "E2E User",
+    email: "e2e.test@renku.ch",
+    affiliation: "creator",
+    default: true
+  }],
+};

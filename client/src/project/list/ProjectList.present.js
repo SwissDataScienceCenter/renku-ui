@@ -27,7 +27,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { Url } from "../../utils/helpers/url";
 import "../Project.css";
-import { Label } from "reactstrap/lib";
+import { Label } from "reactstrap";
 import { Loader } from "../../utils/components/Loader";
 import { RenkuNavLink } from "../../utils/components/RenkuNavLink";
 import { MarkdownTextExcerpt } from "../../utils/components/markdown/RenkuMarkdown";

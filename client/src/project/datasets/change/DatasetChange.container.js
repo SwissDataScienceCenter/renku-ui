@@ -236,7 +236,11 @@ function ChangeDataset(props) {
     dataset.keywords = mappedInputs.keywords;
     dataset.creators = mappedInputs.creators.map(creator => getCreator(creator));
 
-    dataset.images = await uploadDatasetImages(mappedInputs.image, handlers);
+    if (mappedInputs.image.options.length && mappedInputs.image.selected) {
+      const images = await uploadDatasetImages(mappedInputs.image, handlers);
+      if (images)
+        dataset.images = images;
+    }
 
     props.client.postDataset(props.httpProjectUrl, dataset, props.defaultBranch, props.edit, versionUrl)
       .then(response => {
@@ -377,6 +381,7 @@ function ChangeDataset(props) {
         }
       ];
       dsFormSchema.keywords.value = dsFormSchema.keywords.initial;
+      dsFormSchema.image.optional = true;
     }
   }, [props, initialized, dataset, datasetFiles, versionUrl, setDatasetFiles, props.client]);
 
@@ -395,6 +400,7 @@ function ChangeDataset(props) {
     overviewCommitsUrl={props.overviewCommitsUrl}
     submitCallback={submitCallback}
     versionUrl={versionUrl}
+    toggleNewDataset={props.toggleNewDataset}
   />;
 }
 export default ChangeDataset;

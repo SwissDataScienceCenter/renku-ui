@@ -25,7 +25,7 @@
 
 import { ACCESS_LEVELS, API_ERRORS } from "../api-client";
 import { SpecialPropVal, projectSchema } from "../model";
-import { splitAutosavedBranches } from "../utils/helpers/HelperFunctions";
+import { refreshIfNecessary, splitAutosavedBranches } from "../utils/helpers/HelperFunctions";
 import { EnvironmentCoordinator } from "../environment";
 
 
@@ -43,23 +43,35 @@ const MigrationStatus = {
 };
 
 const CoreServiceProjectMixin = {
-  async fetchProjectLockStatus() {
-    const client = this.client;
-    const gitUrl = this.get("metadata.httpUrl");
-    let lockStatusObject = { fetching: true, error: null };
-    this.setObject({ lockStatus: lockStatusObject });
-    const lockStatus = await client.getProjectLockStatus(gitUrl);
-    if (lockStatus?.data?.error)
-      lockStatusObject.error = lockStatus.data.error;
-    else
-      lockStatusObject.locked = lockStatus?.data?.result?.locked;
-    lockStatusObject.fetching = false;
-    lockStatusObject.fetched = new Date();
-    this.setObject({ lockStatus: lockStatusObject });
+  async fetchProjectLockStatus(logged = true) {
+    // Set project unlocked for anonymous users
+    if (!logged) {
+      this.setObject({ fetching: false, fetched: new Date(), locked: false, error: null });
+      return false;
+    }
 
-    return lockStatus.error ?
-      lockStatus.error :
-      lockStatus.locked;
+    const fetchLockStatus = async () => {
+      const client = this.client;
+      const gitUrl = this.get("metadata.httpUrl");
+      let lockStatusObject = { fetching: true, error: null };
+      this.setObject({ lockStatus: lockStatusObject });
+      const lockStatus = await client.getProjectLockStatus(gitUrl);
+      if (lockStatus?.data?.error)
+        lockStatusObject.error = lockStatus.data.error;
+      else
+        lockStatusObject.locked = lockStatus?.data?.result?.locked;
+      lockStatusObject.fetching = false;
+      lockStatusObject.fetched = new Date();
+      this.setObject({ lockStatus: lockStatusObject });
+
+      return lockStatus.error ?
+        lockStatus.error :
+        lockStatus.locked;
+    };
+
+    // prevent re-fetching too soon
+    const current = this.get("lockStatus");
+    return await refreshIfNecessary(current.fetching, current.fetched, fetchLockStatus, 1);
   },
 };
 

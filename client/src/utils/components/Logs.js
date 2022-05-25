@@ -31,7 +31,7 @@ import {
   Row,
   TabContent,
   TabPane
-} from "reactstrap/lib";
+} from "reactstrap";
 import { Loader } from "./Loader";
 import { capitalizeFirstLetter, generateZip } from "../helpers/HelperFunctions";
 

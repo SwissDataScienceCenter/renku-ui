@@ -64,14 +64,20 @@ const FormErrors = ({ meta, input }: FormErrorsProps) => {
   if (!errorFields.length)
     return null;
 
+  return <FormErrorFields errorFields={errorFields} />;
+};
+
+interface FormErrorFieldsProps {
+  errorFields: string[];
+}
+const FormErrorFields = ({ errorFields }: FormErrorFieldsProps) => {
   const plural = errorFields.length > 1 ? "s" : "";
   return (<div className="mt-1 text-end">
     <ErrorLabel text={""}>
-      To create a new project, please first fix problems with the following field{plural}:{" "}
+      Please fix problems in the following field{plural}:{" "}
       <span className="fw-bold">{errorFields.join(", ")}</span>
     </ErrorLabel>
-  </div>
-  );
+  </div>);
 };
 
-export { FormErrors, FormWarnings };
+export { FormErrors, FormWarnings, FormErrorFields };
