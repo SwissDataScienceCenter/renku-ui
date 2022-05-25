@@ -30,7 +30,7 @@ describe("display the home page", () => {
     cy.get("h1").should("have.length", 1);
     cy.get("h1")
       .first()
-      .should("have.text", "Connecting people, data, and insights");
+      .should("have.text", "An open-source knowledge infrastructure for collaborative and reproducible data science");
   });
 });
 
