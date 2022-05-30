@@ -60,6 +60,7 @@
     "react-toastify": "^6.2.0",
     "reactstrap": "^9.0.1",
     "redux": "^4.1.2",
+    "redux-mock-store": "^1.5.4",
     "redux-thunk": "^2.2.0",
     "rehype-katex": "^6.0.2",
     "rehype-stringify": "^9.0.3",
