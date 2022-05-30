@@ -1,9 +1,10 @@
 import * as React from "react";
 import { Story } from "@storybook/react";
+
+import { EntityType } from "../../../features/kgSearch";
 import { Visibilities } from "../visibility/Visibility";
 import { ListElementProps, ListDisplayType } from "./List.d";
 import List from "./List";
-import { EntityType } from "../../../features/kgSearch";
 const MemoryRouter = require("react-router-dom").MemoryRouter;
 
 export default {

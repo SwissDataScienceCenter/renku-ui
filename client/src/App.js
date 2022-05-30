@@ -88,7 +88,7 @@ function CentralContentContainer(props) {
         <Route path={Url.get(Url.pages.help)} render={
           p => <Help key="help" {...p} {...props} />} />
         <Route path={Url.get(Url.pages.search)} render={
-          () => <SearchPage key="kg-search" userName={props.user?.data?.name} />} />
+          () => <SearchPage key="kg-search" userName={props.user?.data?.name} isLoggedUser={props.user.logged} />} />
         <Route exact
           path={[Url.get(Url.pages.projects), Url.get(Url.pages.projects.starred), Url.get(Url.pages.projects.all)]}
           render={p => <ProjectList

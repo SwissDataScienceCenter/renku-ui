@@ -7,6 +7,10 @@
     min-width: 60px;
 }
 
+.sorting--mobile {
+    margin-top: 40px;
+}
+
 .sorting-input {
     max-width: 140px;
 }

@@ -33,35 +33,30 @@ import "./EntitySearchFilter.css";
  */
 
 export interface FilterProps {
-  authorDefaultValue: KgAuthor;
+  author: KgAuthor;
+  type: TypeEntitySelection;
+  visibility: VisibilitiesFilter;
+  isLoggedUser: boolean;
 }
 
-const FilterEntitySearch = ({ authorDefaultValue = "all" }: FilterProps) => {
-  const defaultTypeValues = {
-    dataset: false,
-    project: false,
-  };
-
-  const defaultVisibilityValues = {
-    public: false,
-    internal: false,
-    private: false,
-  };
-
+const FilterEntitySearch = ({ author, type, visibility, isLoggedUser }: FilterProps) => {
   const dispatch = useDispatch();
+  const authorComponent = isLoggedUser ? (
+    <div><AuthorFilter
+      handler={(value: KgAuthor) => dispatch(setAuthor(value))}
+      value={author} /></div>
+  ) : null;
   return (
     <>
+      <h3 className="filter-label d-none d-sm-none d-md-block d-lg-block d-xl-block pb-3">FILTER BY</h3>
       <div className="filter-box">
-        <h3 className="filter-label">FILTER BY</h3>
         <div><TypeEntityFilter
           handler={(value: TypeEntitySelection) => dispatch(setType(value))}
-          value={defaultTypeValues} /></div>
-        <div><AuthorFilter
-          handler={(value: KgAuthor) => dispatch(setAuthor(value))}
-          value={authorDefaultValue} /></div>
+          value={type} /></div>
+        {authorComponent}
         <div><VisibilityFilter
           handler={(value: VisibilitiesFilter) => dispatch(setVisibility(value))}
-          value={defaultVisibilityValues} /></div>
+          value={visibility} /></div>
       </div>
     </>
   );

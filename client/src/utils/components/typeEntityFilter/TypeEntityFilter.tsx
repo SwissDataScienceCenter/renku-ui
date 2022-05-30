@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent } from "react";
 
 import { Input } from "../../ts-wrappers";
 import "./TypeEntityFilter.css";
@@ -33,7 +33,7 @@ export interface TypeEntitySelection {
 
 export interface TypeFilterProps {
   handler: Function;
-  value?: TypeEntitySelection
+  value: TypeEntitySelection
 }
 
 export const initialTypeValues: TypeEntitySelection = {
@@ -42,23 +42,15 @@ export const initialTypeValues: TypeEntitySelection = {
 };
 
 const TypeEntityFilter = ({ handler, value }: TypeFilterProps) => {
-  const [typeSelected, setTypeSelected] = useState(initialTypeValues);
 
-  useEffect(() => {
-    if (value)
-      setTypeSelected(value);
-  }, []); // eslint-disable-line
+  const changeType = (typeKey: string, type: boolean) => {
+    if (!handler)
+      return;
 
-  useEffect(() => {
-    if (handler)
-      handler(typeSelected);
-  }, [typeSelected, handler]);
-
-  const changeType = (type: string, value: boolean) => {
-    if (type === "project")
-      setTypeSelected({ ...typeSelected, project: value });
+    if (typeKey === "project")
+      handler({ ...value, project: type });
     else
-      setTypeSelected({ ...typeSelected, dataset: value });
+      handler({ ...value, dataset: type });
   };
 
   const items = [
@@ -74,7 +66,7 @@ const TypeEntityFilter = ({ handler, value }: TypeFilterProps) => {
         <Input
           type="checkbox"
           name={nameInput}
-          defaultChecked={value ? value[itemValueAsKey] : false}
+          checked={value[itemValueAsKey]}
           onChange={(e: ChangeEvent<HTMLInputElement>) => changeType(item.value, e.target.checked)}
           className="type-entity-input"
           data-cy={nameInput}/>
@@ -85,7 +77,7 @@ const TypeEntityFilter = ({ handler, value }: TypeFilterProps) => {
   });
   return (
     <>
-      <h3 className="filter-label">By Type</h3>
+      <h3 className="filter-label">Type</h3>
       {options}
     </>
   );

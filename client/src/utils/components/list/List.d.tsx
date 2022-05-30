@@ -8,8 +8,8 @@ export interface Creator {
 // These are used by the TS compiler does not realize it.
 /* eslint-disable no-unused-vars */
 export enum ListDisplayType {
-  Card, // eslint-disable-line
-  Bar, // eslint-disable-line
+  Card,
+  Bar,
 }
 /* eslint-enable no-unused-vars */
 

@@ -56,6 +56,16 @@ function setVisibilityInQuery(query: string, visibilities?: VisibilitiesFilter) 
   return query;
 }
 
+const getPhrase = (phrase?: string) => {
+  if (!phrase)
+    return "*";
+
+  if (phrase.includes("*"))
+    return phrase;
+
+  return `*${phrase}*`;
+};
+
 
 // Define a service using a base URL and expected endpoints
 export const kgSearchApi = createApi({
@@ -67,7 +77,7 @@ export const kgSearchApi = createApi({
       SearchEntitiesQueryParams
     >({
       query: ({ phrase, sort, page, perPage, type, visibility, author, userName }) => {
-        const url = `entities?query=${phrase}&sort=${sort}&page=${page}&per_page=${perPage}`;
+        const url = `entities?query=${getPhrase(phrase)}&sort=${sort}&page=${page}&per_page=${perPage}`;
         return setAuthor(setVisibilityInQuery(setTypeInQuery(url, type), visibility), author, userName) ;
       },
       transformResponse: (

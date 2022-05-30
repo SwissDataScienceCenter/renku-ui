@@ -19,6 +19,8 @@
 import React from "react";
 import Masonry from "react-masonry-css";
 import { useHistory } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faSadCry } from "@fortawesome/free-solid-svg-icons";
 
 import { KgSearchResult, ListResponse } from "../../../features/kgSearch/KgSearch";
 import { mapSearchResultToEntity } from "../../helpers/KgSearchFunctions";
@@ -31,17 +33,44 @@ interface SearchResultProps {
   isFetching: boolean;
   isLoading: boolean;
   onPageChange: Function;
+  phrase: string;
+  onRemoveFilters: Function;
 }
+interface EmptyResultProps {
+  phrase: string;
+  onRemoveFilters: Function;
+}
+const EmptyResult = ({ phrase, onRemoveFilters } : EmptyResultProps) => {
+  const removeFilters = () => {
+    if (onRemoveFilters)
+      onRemoveFilters();
+  };
+
+  const phraseText = (<p>
+    We could not find any matching for phrase <span className="fst-italic rk-search-result-title">{phrase}</span>
+  </p>);
+
+  return (
+    <div className="mt-5 text-center">
+      <FontAwesomeIcon icon={faSadCry} size="3x" className="opacity-25" />{" "}
+      { phrase ? phraseText : " We could not find any matching." }
+      <p>
+        To get some data you can modify the current filters or remove all filters.{" "}
+        <button onClick={removeFilters}>Yes, remove all filters</button>
+      </p>
+    </div>);
+};
+
 
 const SearchResultsContent = (
-  { data, isFetching, isLoading, onPageChange }: SearchResultProps) => {
+  { data, isFetching, isLoading, onPageChange, phrase, onRemoveFilters }: SearchResultProps) => {
   const history = useHistory();
   if (isLoading) return <Loader />;
   if (isFetching) return <Loader />;
   if (data == null) return <Loader />;
 
   if (!data || data.total === 0)
-    return (<p>We could not find any matching</p>);
+    return (<EmptyResult phrase={phrase} onRemoveFilters={onRemoveFilters} />);
 
 
   const rows = data.results
@@ -52,7 +81,7 @@ const SearchResultsContent = (
 
   const breakPointColumns = {
     default: 3,
-    1100: 3,
+    1100: 2,
     700: 2,
     500: 1
   };

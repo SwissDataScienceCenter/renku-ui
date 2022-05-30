@@ -153,5 +153,30 @@
 }
 
 .rk-search-result-title {
-  font-size: x-large;
+  font-size: larger;
+}
+
+.filter-modal {
+  position: absolute;
+  bottom: 0;
+  margin: 0;
+  width: 100%;
+  background-color: white;
+  border-top-right-radius: 20px;
+  border-top-left-radius: 20px;
+
+  .modal-content {
+    border: none;
+    border-top-right-radius: 20px;
+    border-top-left-radius: 20px;
+  }
+
+  .modal-header {
+    border-bottom: none;
+    margin-top: 10px;
+
+    h5 {
+      padding-left: 20px;
+    }
+  }
 }

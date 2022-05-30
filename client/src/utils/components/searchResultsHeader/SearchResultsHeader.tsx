@@ -30,9 +30,14 @@ const SearchResultsHeader = ({ total, phrase, sort, handleSort }: ResultHeaderPr
   if (!total)
     return null;
 
+  const totalText = total > 1 ? "Results" : "Result";
+  const title = phrase ?
+    <div className="rk-search-result-title">
+      {total} {totalText} for <span className="fw-bold">{`"${phrase}"`}</span></div> :
+    <div className="rk-search-result-title">{total} {totalText} </div>;
   return (
     <div className="d-flex justify-content-between align-items-center">
-      <div className="rk-search-result-title">{total} Results for <span className="fw-bold">{`"${phrase}"`}</span></div>
+      {title}
       <SortingEntities styleType="desk" sort={sort} setSort={handleSort} />
     </div>
   );

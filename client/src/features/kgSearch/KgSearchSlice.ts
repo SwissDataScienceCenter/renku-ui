@@ -30,23 +30,23 @@ export interface KgSearchFormState {
   perPage: number;
   type: TypeEntitySelection;
   author: KgAuthor;
-  visibility?: VisibilitiesFilter;
+  visibility: VisibilitiesFilter;
 }
 
 const initialState: KgSearchFormState = {
-  phrase: "*",
+  phrase: "",
   sort: SortingOptions.AscTitle,
   page: 1,
   perPage: 20,
   type: {
-    project: true,
-    dataset: true,
+    project: false,
+    dataset: false,
   },
   author: "all",
   visibility: {
-    private: true,
-    public: true,
-    internal: true,
+    private: false,
+    public: false,
+    internal: false,
   },
 };
 
@@ -56,16 +56,50 @@ export const kgSearchFormSlice = createSlice({
   name: "kgSearchForm",
   initialState,
   reducers: {
-    setAuthor: (state, action: PayloadAction<KgAuthor>) => { state.author = action.payload; },
-    setPhrase: (state, action: PayloadAction<string>) => { state.phrase = action.payload; },
-    setSort: (state, action: PayloadAction<SortingOptions>) => { state.sort = action.payload; },
-    setType: (state, action: PayloadAction<TypeEntitySelection>) => { state.type = action.payload; },
-    setVisibility: (state, action: PayloadAction<VisibilitiesFilter>) => { state.visibility = action.payload; },
+    setAuthor: (state, action: PayloadAction<KgAuthor>) => {
+      state.author = action.payload;
+      state.page = 1;
+    },
+    setPhrase: (state, action: PayloadAction<string>) => {
+      state.phrase = action.payload;
+      state.page = 1;
+    },
+    setSort: (state, action: PayloadAction<SortingOptions>) => {
+      state.sort = action.payload;
+      state.page = 1;
+    },
+    setType: (state, action: PayloadAction<TypeEntitySelection>) => {
+      state.type = action.payload;
+      state.page = 1;
+    },
+    setVisibility: (state, action: PayloadAction<VisibilitiesFilter>) => {
+      state.visibility = action.payload;
+      state.page = 1;
+    },
     setPage: (state, action: PayloadAction<number>) => { state.page = action.payload; },
+    setMyProjects: (state, action: PayloadAction) => {
+      state.type = {
+        project: true,
+        dataset: false,
+      };
+      state.author = "user";
+      state.page = 1;
+    },
+    setMyDatasets: (state, action: PayloadAction) => {
+      state.type = {
+        project: false,
+        dataset: true,
+      };
+      state.author = "user";
+      state.page = 1;
+    },
+    reset: () => initialState
   },
 });
 
-export const { setAuthor, setVisibility, setPage, setPhrase, setSort, setType } = kgSearchFormSlice.actions;
+export const {
+  setAuthor, setVisibility, setPage, setPhrase, setSort, setType, setMyDatasets, setMyProjects, reset } =
+  kgSearchFormSlice.actions;
 export const useKgSearchFormSelector: TypedUseSelectorHook<RootStateWithKgSearchForm> =
   useSelector;
 export default kgSearchFormSlice;

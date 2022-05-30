@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { Col } from "../../ts-wrappers";
 import { ProjectTagList } from "../../../project/shared";
+import { Col } from "../../ts-wrappers";
 import { TimeCaption } from "../TimeCaption";
 import { ListElementProps } from "./List.d";
 import "./ListBar.css";
