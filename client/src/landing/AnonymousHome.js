@@ -102,7 +102,8 @@ function HomeHeader(props) {
     <div className="rk-navbar-home">
       <Collapse isOpen={isOpen}>
         <Navbar className="navbar rk-anon-home px-0">
-          <Nav className="ms-auto flex-column text-end">
+          <Nav className="ms-auto flex-column rk-bg-shaded-dark text-end"
+            style={{ "--rk-bg-opacity": 0.8 }}>
             <NavItem className="nav-item pe-1">
               <QuickNav client={props.client} model={props.model} user={props.user} />
             </NavItem>
