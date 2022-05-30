@@ -177,11 +177,10 @@ EOF
 # suid bins need to run. Please switch the following two lines when trying to run multiple telepresence.
 # Reference: https://www.telepresence.io/reference/methods
 
-if [[ "$OSTYPE" == "linux-gnu" ]]
+if [[ "$INJECTTCP" ]]
 then
-  BROWSER=none telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 3000:8080 --run npm start
+  # More info on the methods: https://www.telepresence.io/docs/v1/reference/methods/
+  BROWSER=none telepresence --method inject-tcp --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 3000:8080 --run npm start
 else
-  # Use the same method on osx since --method inject-tcp does not work on macOS 11.2 (Big Sur)
-  # See https://github.com/telepresenceio/telepresence/issues/1487
   BROWSER=none telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 3000:8080 --run npm start
 fi
