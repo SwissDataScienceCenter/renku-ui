@@ -218,7 +218,6 @@ describe("display migration information for anon user", () => {
   it("displays required migration", () => {
     fixtures.projectMigrationRequired();
     cy.visit("/projects/e2e/local-test-project/overview/status");
-    cy.wait("@getProjectLockStatus");
     // Check that the migration suggestion is not shown
     cy.contains("Project Renku Version");
     cy.contains("This project is not compatible with the RenkuLab UI").should(

@@ -102,7 +102,7 @@ const AddDatasetNewProject = (
     ) : null;
 
   return (
-    <div className="mt-4 mx-3">
+    <div className="mt-4">
       {form}
       {addDatasetStatus}
       {extraInfo}
