@@ -25,7 +25,7 @@
 
 import * as React from "react";
 import { Story } from "@storybook/react";
-// import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter } from "react-router-dom";
 import LoginAlert, { LoginAlertProps } from "./LoginAlert";
 
 export default {
@@ -34,38 +34,41 @@ export default {
   argTypes: {
     logged: {
       control: { type: "boolean" },
-      description: "Whether the user is logged or not."
+      description: "Whether the user is logged or not.",
     },
     textIntro: {
       control: { type: "text" },
-      description: "Additional text to show in a paragraph outside the Alert."
+      description: "Additional text to show in a paragraph outside the Alert.",
     },
     textLogin: {
       control: { type: "text" },
-      description: "Log in button text."
+      description: "Log in button text.",
     },
     textPost: {
       control: { type: "text" },
-      description: "Text after the log in button."
+      description: "Text after the log in button.",
     },
     textPre: {
       control: { type: "text" },
-      description: "Text before the log in button."
-    }
+      description: "Text before the log in button.",
+    },
   },
 };
 
-
-const Template: Story<LoginAlertProps> = (args) => <LoginAlert {...args} />;
+const Template: Story<LoginAlertProps> = (args) => (
+  <MemoryRouter>
+    <LoginAlert {...args} />
+  </MemoryRouter>
+);
 
 export const Default = Template.bind({});
 Default.args = {
-  logged: false
+  logged: false,
 };
 
 export const Logged = Template.bind({});
 Default.args = {
-  logged: true
+  logged: true,
 };
 
 export const Complete = Template.bind({});
@@ -76,5 +79,3 @@ Default.args = {
   textPost: "Text: textPost",
   textPre: "Text: textPre",
 };
-
-// Default.decorators = [(Story => { <MemoryRouter><Story /></MemoryRouter> })]
