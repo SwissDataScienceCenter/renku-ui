@@ -1,5 +1,5 @@
 /*!
- * Copyright 2021 - Swiss Data Science Center (SDSC)
+ * Copyright 2022 - Swiss Data Science Center (SDSC)
  * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
  * Eidgenössische Technische Hochschule Zürich (ETHZ).
  *
@@ -48,10 +48,18 @@ interface ModalFilterProps {
   isLoggedUser: boolean;
 }
 
-const ModalFilter = (
-  { author, type, visibility, sort, handleSort, isOpen, onToggle, isLoggedUser }: ModalFilterProps) => {
+const ModalFilter = ({
+  author,
+  type,
+  visibility,
+  sort,
+  handleSort,
+  isOpen,
+  onToggle,
+  isLoggedUser,
+}: ModalFilterProps) => {
   return (
-    <Modal isOpen={isOpen} toggle={onToggle} className="filter-modal" >
+    <Modal isOpen={isOpen} toggle={onToggle} className="filter-modal">
       <ModalHeader toggle={onToggle}>
         <span className="filter-label">FILTER BY</span>
       </ModalHeader>
@@ -66,8 +74,9 @@ const ModalFilter = (
 };
 
 function SearchPage({ userName, isLoggedUser }: SearchPageProps) {
-  const { phrase, sort, page, type, author, visibility, perPage } =
-    useKgSearchFormSelector((state) => state.kgSearchForm);
+  const { phrase, sort, page, type, author, visibility, perPage } = useKgSearchFormSelector(
+    (state) => state.kgSearchForm
+  );
   const [isOpenFilterModal, setIsOpenFilterModal] = useState(false);
   const dispatch = useDispatch();
   const searchRequest = {
@@ -80,7 +89,7 @@ function SearchPage({ userName, isLoggedUser }: SearchPageProps) {
     visibility,
     userName,
   };
-  const onRemoveFilters = () =>{
+  const onRemoveFilters = () => {
     dispatch(reset());
   };
 
@@ -89,8 +98,8 @@ function SearchPage({ userName, isLoggedUser }: SearchPageProps) {
     <>
       <div className="d-sm-block d-md-none d-lg-none d-xl-none d-xxl-none text-end">
         <div className="fw-bold" onClick={() => setIsOpenFilterModal(!isOpenFilterModal)}>
-          Filter & Sort {" "}
-          <FontAwesomeIcon icon={isOpenFilterModal ? faAngleUp : faAngleDown} /></div>
+          Filter & Sort <FontAwesomeIcon icon={isOpenFilterModal ? faAngleUp : faAngleDown} />
+        </div>
       </div>
       <div className="bg-white p-4 rounded-2 d-none d-sm-none d-md-block d-lg-block d-xl-block d-xxl-block">
         <FilterEntitySearch author={author} type={type} visibility={visibility} isLoggedUser={isLoggedUser} />
@@ -107,7 +116,8 @@ function SearchPage({ userName, isLoggedUser }: SearchPageProps) {
             total={data?.total}
             phrase={phrase}
             sort={sort}
-            handleSort={(value: SortingOptions) => dispatch(setSort(value))} />
+            handleSort={(value: SortingOptions) => dispatch(setSort(value))}
+          />
           <SearchResultsContent
             data={data}
             isFetching={isFetching}
