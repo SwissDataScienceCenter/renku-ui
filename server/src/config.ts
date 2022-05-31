@@ -17,6 +17,7 @@
  */
 
 import { convertType } from "./utils";
+import { StoragePrefix } from "./storage";
 
 
 const SERVER = {
@@ -73,9 +74,9 @@ const ROUTES = {
 };
 
 const DATA = {
-  projectsStoragePrefix: "LPROJECT_",
+  projectsStoragePrefix: StoragePrefix.LAST_PROJECTS,
   projectsDefaultLength: 20,
-  searchStoragePrefix: "LSEARCH_",
+  searchStoragePrefix: StoragePrefix.LAST_SEARCHES,
   searchDefaultLength: 10,
 };
 

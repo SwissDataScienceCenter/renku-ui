@@ -33,8 +33,13 @@ export interface SaveCollectionOptions {
   score?: number, // to order values
 }
 
-// eslint-disable-next-line no-unused-vars
+/* eslint-disable no-unused-vars */
 export enum TypeData { String, Collections}
+export enum StoragePrefix {
+  LAST_PROJECTS = "LPROJECT_",
+  LAST_SEARCHES = "LSEARCH_"
+}
+/* eslint-enable no-unused-vars */
 
 interface Storage {
 

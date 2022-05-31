@@ -126,7 +126,8 @@ function registerApiRoutes(app: express.Application,
       res.json({ error: "User not authenticated" });
       return;
     }
-    const data = await getUserData(config.data.projectsStoragePrefix, token, storage, parseFloat(req.params["length"]));
+    const length = parseInt(req.params["length"]) || 0;
+    const data = await getUserData(config.data.projectsStoragePrefix, token, storage, length);
     res.json({ projects: data });
   });
 
@@ -136,8 +137,8 @@ function registerApiRoutes(app: express.Application,
       res.json({ error: "User not authenticated" });
       return;
     }
-
-    const data = await getUserData(config.data.searchStoragePrefix, token, storage, parseFloat(req.params["length"]));
+    const length = parseInt(req.params["length"]) || 0;
+    const data = await getUserData(config.data.searchStoragePrefix, token, storage, length);
     res.json({ queries: data });
   });
 

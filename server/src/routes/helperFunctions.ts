@@ -19,13 +19,22 @@
 import { getUserIdFromToken } from "../authentication";
 import { Storage, StorageGetOptions, TypeData } from "../storage";
 
-export async function getUserData(prefix: string, token: string, storage: Storage, length?: number): Promise<string[]> {
+/**
+ * Get data from the Storage by user token
+ *
+ * @param {string} prefix - the data prefix (StoragePrefix)
+ * @param {string} token - jwt token using bearer schema
+ * @param {Storage} storage - storage api
+ * @param {number} length - number of records, if the value <= 0 it will return all the user's records
+ */
+export async function getUserData(prefix: string, token: string, storage: Storage, length = 0): Promise<string[]> {
   const userId = getUserIdFromToken(token);
   let data: string[] = [];
+  const stop = length - 1; // -1 would bring all records
   const options: StorageGetOptions = {
     type: TypeData.Collections,
     start: 0,
-    stop: (length || 0 ) - 1
+    stop,
   };
 
   if (userId)
