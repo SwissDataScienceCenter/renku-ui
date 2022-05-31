@@ -1,5 +1,11 @@
 # Changes
 
+## [2.3.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.3.0...2.3.1) (2022-05-31)
+### Features
+
+* updated content of anonymous home page ([#1849](https://github.com/SwissDataScienceCenter/renku-ui/issues/1849), [#1850](https://github.com/SwissDataScienceCenter/renku-ui/issues/1850), [#1851](https://github.com/SwissDataScienceCenter/renku-ui/issues/1851), [#1852](https://github.com/SwissDataScienceCenter/renku-ui/issues/1852), [#1853](https://github.com/SwissDataScienceCenter/renku-ui/issues/1853), [#1859](https://github.com/SwissDataScienceCenter/renku-ui/issues/1859), [#1868](https://github.com/SwissDataScienceCenter/renku-ui/issues/1868))
+
+* add action button to datasets page for anonymous users ([#1836](https://github.com/SwissDataScienceCenter/renku-ui/issues/1836), [#1873](https://github.com/SwissDataScienceCenter/renku-ui/issues/1873))
 
 ## [2.3.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.2.0...2.3.0) (2022-05-23)
 
