@@ -72,7 +72,12 @@ const ROUTES = {
   auth: "/auth",
 };
 
-const DATA = { projectsStoragePrefix: "LPROJECT_", projectsDefaultLength: 20 };
+const DATA = {
+  projectsStoragePrefix: "LPROJECT_",
+  projectsDefaultLength: 20,
+  searchStoragePrefix: "LSEARCH_",
+  searchDefaultLength: 10,
+};
 
 const config = {
   server: SERVER,
