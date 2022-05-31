@@ -16,7 +16,7 @@ describe("rendering", () => {
   const params = { WELCOME_PAGE: "Some text", STATUSPAGE_ID: "5bce9beff4ca" };
   const fakeLocation = { pathname: "" };
   const useDispatchMock = jest.spyOn(reactRedux, "useDispatch");
-  const initialState = { phrase: "" };
+  const initialState = { kgSearchForm: { phrase: "" } };
   const mockStore = configureStore();
   let store;
 
@@ -37,20 +37,25 @@ describe("rendering", () => {
           <Router>
             <App client={client} model={model} user={user} location={fakeLocation} params={params} />
           </Router>
-        </Provider>
-        , div);
+        </Provider>,
+        div
+      );
     });
   });
 
   it("renders logged user without crashing", async () => {
     const div = document.createElement("div");
     const user = generateFakeUser();
+    store = mockStore(initialState);
     await act(async () => {
       ReactDOM.render(
-        <Router>
-          <App client={client} model={model} user={user} location={fakeLocation} params={params} />
-        </Router>
-        , div);
+        <Provider store={store}>
+          <Router>
+            <App client={client} model={model} user={user} location={fakeLocation} params={params} />
+          </Router>
+        </Provider>,
+        div
+      );
     });
   });
 });
