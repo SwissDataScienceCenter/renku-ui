@@ -25,8 +25,10 @@
 
 import * as React from "react";
 import { Story } from "@storybook/react";
-import { MemoryRouter } from "react-router-dom";
+// import { MemoryRouter } from "react-router-dom";
 import LoginAlert, { LoginAlertProps } from "./LoginAlert";
+
+// TODO: re-enable MemoryRouter as soon as the version is compatible again
 
 export default {
   title: "components/LoginAlert",
@@ -55,11 +57,23 @@ export default {
   },
 };
 
+// const Template: Story<LoginAlertProps> = (args) => (
+//   <MemoryRouter>
+//     <LoginAlert {...args} />
+//   </MemoryRouter>
+// );
 const Template: Story<LoginAlertProps> = (args) => (
-  <MemoryRouter>
-    <LoginAlert {...args} />
-  </MemoryRouter>
+  <LoginAlert {...args} />
 );
+
+export const Complete = Template.bind({});
+Complete.args = {
+  logged: false,
+  textLogin: "log in",
+  textIntro: "You need to log in to modify workflows.",
+  textPost: " and unleash your creativity.",
+  textPre: "To unlock it, please ",
+};
 
 export const Default = Template.bind({});
 Default.args = {
@@ -67,15 +81,6 @@ Default.args = {
 };
 
 export const Logged = Template.bind({});
-Default.args = {
+Logged.args = {
   logged: true,
-};
-
-export const Complete = Template.bind({});
-Default.args = {
-  logged: true,
-  textLogin: "Text: textLogin",
-  textIntro: "Text: textIntro",
-  textPost: "Text: textPost",
-  textPre: "Text: textPre",
 };
