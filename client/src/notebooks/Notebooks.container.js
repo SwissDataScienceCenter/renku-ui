@@ -80,6 +80,7 @@ class ShowSession extends Component {
     this.coordinator.reset();
     this.notifications = props.notifications;
     this.target = props.match.params.server;
+    this.userLogged = this.userModel.get("logged");
 
     if (props.scope)
       this.coordinator.setNotebookFilters(props.scope, true);
@@ -123,8 +124,8 @@ class ShowSession extends Component {
   }
 
   render() {
-    if (this.props.blockAnonymous)
-      return <NotebooksDisabled location={this.props.location} />;
+    if (this.props.blockAnonymous && !this.userLogged)
+      return <NotebooksDisabled logged={this.userLogged} />;
 
     if (!this.model.get("notebooks.fetched"))
       return <Loader />;
@@ -175,6 +176,7 @@ class Notebooks extends Component {
     this.coordinator = new NotebooksCoordinator(props.client, this.model, this.userModel);
     // temporarily reset data since notebooks model was not designed to be static
     this.coordinator.reset();
+    this.userLogged = this.userModel.get("logged");
 
     if (props.scope)
       this.coordinator.setNotebookFilters(props.scope, true);
@@ -231,8 +233,8 @@ class Notebooks extends Component {
   }
 
   render() {
-    if (this.props.blockAnonymous)
-      return <NotebooksDisabled location={this.props.location} />;
+    if (this.props.blockAnonymous && !this.userLogged)
+      return <NotebooksDisabled logged={this.userLogged} />;
 
     return <VisibleNotebooks
       handlers={this.handlers}
@@ -276,6 +278,7 @@ class StartNotebookServer extends Component {
     this.userModel = props.model.subModel("user");
     this.coordinator = new NotebooksCoordinator(props.client, this.model, this.userModel);
     this.notifications = props.notifications;
+    this.userLogged = this.userModel.get("logged");
 
     // reset data since notebooks model was not designed to be static
     this.coordinator.reset();
@@ -787,8 +790,8 @@ class StartNotebookServer extends Component {
   }
 
   render() {
-    if (this.props.blockAnonymous)
-      return <NotebooksDisabled location={this.props.location} />;
+    if (this.props.blockAnonymous && !this.userLogged)
+      return <NotebooksDisabled logged={this.userLogged} />;
 
     return <StartNotebookServerPresent
       autoStarting={this.autostart && !this.state.autostartTried}

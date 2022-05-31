@@ -15,14 +15,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useContext } from "react";
-import { Link } from "react-router-dom";
+import React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 
-import { Url } from "../utils/helpers/url";
 import { ErrorAlert, InfoAlert } from "../utils/components/Alert";
-import AppContext from "../utils/context/appContext";
+import LoginAlert from "../utils/components/loginAlert/LoginAlert";
 
 /**
  *  incubator-renku-ui
@@ -32,20 +30,8 @@ import AppContext from "../utils/context/appContext";
  */
 
 function DatasetError({ fetchError, insideProject, logged }) {
-  const { location } = useContext(AppContext);
-
-  // login helper
-  let loginHelper = null;
-  if (!logged) {
-    const to = Url.get(Url.pages.login.link, { pathname: location.pathname });
-    const link = (<Link className="btn btn-primary btn-sm" to={to}>Log in</Link>);
-    loginHelper = (
-      <p className="mb-0">
-        You might need to be logged in to see this dataset.
-        Please try to {link}
-      </p>
-    );
-  }
+  const textPre = "You might need to be logged in to see this dataset. ";
+  const textPost = "and try again.";
 
   // inside project case
   if (insideProject) {
@@ -61,7 +47,7 @@ function DatasetError({ fetchError, insideProject, logged }) {
     }
     const tip = logged ?
       (<p className="mb-0">You can try to select a dataset again from the list in the previous page.</p>) :
-      loginHelper;
+      (<LoginAlert logged={logged} textPost={textPost} textPre={textPre} />);
 
     return (
       <ErrorAlert>
@@ -90,7 +76,7 @@ function DatasetError({ fetchError, insideProject, logged }) {
           </ul>
         </InfoAlert>
       ) :
-      (<InfoAlert timeout={0}>{loginHelper}</InfoAlert>);
+      (<LoginAlert logged={logged} textPost={textPost} textPre={textPre} />);
     errorDetails = (
       <div>
         <h3 data-cy="dataset-error-title">Dataset not found <FontAwesomeIcon icon={faSearch} flip="horizontal" /></h3>

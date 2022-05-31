@@ -256,8 +256,7 @@ function ErrorAfterCreation(props) {
 }
 
 function AddToProjectButton({ goToAddToProject, insideKg, locked, logged, }) {
-  if (!logged) return null;
-  const tooltip = (locked) ?
+  const tooltip = (logged && locked) ?
     <ThrottledTooltip
       target="add-dataset-to-project-button"
       tooltip="Cannot add dataset to project until project modification finishes." /> :

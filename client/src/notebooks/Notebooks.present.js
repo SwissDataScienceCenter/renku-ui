@@ -20,9 +20,7 @@ import React, { Component, Fragment, useState, memo } from "react";
 import Media from "react-media";
 import { Link, useHistory } from "react-router-dom";
 import {
-  Alert, Badge, Button, Col, DropdownItem,
-  Nav, NavItem, NavLink, PopoverBody, PopoverHeader,
-  Row, UncontrolledPopover
+  Alert, Badge, Button, Col, DropdownItem, Nav, NavItem, NavLink, PopoverBody, PopoverHeader, Row, UncontrolledPopover
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -32,10 +30,16 @@ import {
 import _ from "lodash";
 
 import { NotebooksHelper } from "./index";
+import SessionCheatSheet from "./SessionCheatSheet";
+import {
+  CheckNotebookIcon, StartNotebookServer, mergeEnumOptions, ServerOptionBoolean, ServerOptionEnum,
+  ServerOptionRange
+} from "./NotebookStart.present";
 import { formatBytes, simpleHash } from "../utils/helpers/HelperFunctions";
 import Time from "../utils/helpers/Time";
-import Sizes from "../utils/constants/Media";
 import { Url } from "../utils/helpers/url";
+import Sizes from "../utils/constants/Media";
+import { Docs } from "../utils/constants/Docs";
 import { ExternalLink } from "../utils/components/ExternalLinks";
 import { ButtonWithMenu } from "../utils/components/Button";
 import { TimeCaption } from "../utils/components/TimeCaption";
@@ -43,16 +47,11 @@ import { Loader } from "../utils/components/Loader";
 import { InfoAlert, } from "../utils/components/Alert";
 import { Clipboard } from "../utils/components/Clipboard";
 import { JupyterIcon } from "../utils/components/Icon";
-import SessionCheatSheet from "./SessionCheatSheet";
-import {
-  CheckNotebookIcon, StartNotebookServer, mergeEnumOptions, ServerOptionBoolean, ServerOptionEnum,
-  ServerOptionRange
-} from "./NotebookStart.present";
-
-import "./Notebooks.css";
+import LoginAlert from "../utils/components/loginAlert/LoginAlert";
 import { EnvironmentLogs, LogDownloadButton, LogTabs, useDownloadLogs } from "../utils/components/Logs";
 import { SessionStatus } from "../utils/constants/Notebooks";
-import { Docs } from "../utils/constants/Docs";
+
+import "./Notebooks.css";
 
 
 // * Constants and helpers * //
@@ -389,26 +388,9 @@ function SessionJupyter(props) {
 
 class NotebooksDisabled extends Component {
   render() {
-    const { location } = this.props;
-
-    const to = Url.get(Url.pages.login.link, { pathname: location.pathname });
-    const info = !location ?
-      null :
-      (
-        <InfoAlert timeout={0} key="login-info">
-          <p className="mb-0">
-            <Link className="btn btn-primary btn-sm" to={to}>Log in</Link> to use
-            sessions.
-          </p>
-        </InfoAlert>
-      );
-
-    return (
-      <div>
-        <p>This Renkulab deployment doesn&apos;t allow unauthenticated users to start sessions.</p>
-        {info}
-      </div>
-    );
+    const textIntro = "This Renkulab deployment does not allow unauthenticated users to start sessions.";
+    const textPost = "to use sessions.";
+    return (<LoginAlert logged={this.props.logged} textIntro={textIntro} textPost={textPost} />);
   }
 }
 
