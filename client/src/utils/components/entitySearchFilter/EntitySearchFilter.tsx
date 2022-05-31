@@ -48,7 +48,7 @@ const FilterEntitySearch = ({ author, type, visibility, isLoggedUser }: FilterPr
   ) : null;
   return (
     <>
-      <h3 className="filter-label d-none d-sm-none d-md-block d-lg-block d-xl-block pb-3">FILTER BY</h3>
+      <h3 className="filter-label d-none d-sm-none d-md-none d-lg-block d-xl-block pb-3">Filter by</h3>
       <div className="filter-box">
         <div><TypeEntityFilter
           handler={(value: TypeEntitySelection) => dispatch(setType(value))}

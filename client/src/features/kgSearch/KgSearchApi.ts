@@ -37,8 +37,8 @@ function getHeaderFieldNumeric(headers: Headers, field: string): number {
   return +(headers.get(field) ?? 0);
 }
 
-function setAuthor(query: string, author: KgAuthor, userName?: string) {
-  if (author === "user" && userName) query = `${query}&author=${userName}`;
+function setAuthorInQuery(query: string, author: KgAuthor, userName?: string) {
+  if (author === "user" && userName) query = `${query}&creator=${userName}`;
 
   return query;
 }
@@ -99,7 +99,7 @@ export const kgSearchApi = createApi({
         const url = `entities?query=${getPhrase(
           phrase
         )}&sort=${sort}&page=${page}&per_page=${perPage}`;
-        return setAuthor(
+        return setAuthorInQuery(
           setVisibilityInQuery(setTypeInQuery(url, type), visibility),
           author,
           userName

@@ -161,6 +161,7 @@
   bottom: 0;
   margin: 0;
   width: 100%;
+  max-width: none;
   background-color: white;
   border-top-right-radius: 20px;
   border-top-left-radius: 20px;
@@ -177,6 +178,9 @@
 
     h5 {
       padding-left: 20px;
+    }
+    .btn-close {
+      padding-right: 20px;
     }
   }
 }

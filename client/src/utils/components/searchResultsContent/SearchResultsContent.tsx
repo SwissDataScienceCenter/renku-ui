@@ -27,6 +27,7 @@ import { mapSearchResultToEntity } from "../../helpers/KgSearchFunctions";
 import { Loader } from "../Loader";
 import ListCard from "../list/ListCard";
 import { Pagination } from "../Pagination";
+import { Button } from "../../ts-wrappers";
 
 interface SearchResultProps {
   data?: ListResponse<KgSearchResult>;
@@ -47,16 +48,16 @@ const EmptyResult = ({ phrase, onRemoveFilters } : EmptyResultProps) => {
   };
 
   const phraseText = (<p>
-    We could not find any matching for phrase <span className="fst-italic rk-search-result-title">{phrase}</span>
+    We could not find any matches for phrase <span className="fst-italic fw-bold">{phrase}.</span>
   </p>);
 
   return (
     <div className="mt-5 text-center">
       <FontAwesomeIcon icon={faSadCry} size="3x" className="opacity-25" />{" "}
-      { phrase ? phraseText : " We could not find any matching." }
+      { phrase ? phraseText : " We could not find any matches." }
       <p>
         To get some data you can modify the current filters or remove all filters.{" "}
-        <button onClick={removeFilters}>Yes, remove all filters</button>
+        <Button color="primary" size="sm" onClick={removeFilters}>Yes, remove all filters</Button>
       </p>
     </div>);
 };

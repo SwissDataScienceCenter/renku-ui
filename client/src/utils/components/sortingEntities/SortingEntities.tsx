@@ -75,7 +75,7 @@ const SortingEntities = (
   return (
     <>
       <div className={styleType === "desk" ?
-        "align-items-center d-none d-sm-none d-md-flex d-lg-flex d-xl-flex d-xxl-flex"
+        "align-items-center d-none d-sm-none d-md-none d-lg-flex d-xl-flex d-xxl-flex"
         : "sorting--mobile"}>
         {styleType === "desk" ?
           <Label className="mx-2 sorting-label--desk">Sort By</Label> :

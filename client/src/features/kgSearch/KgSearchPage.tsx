@@ -61,7 +61,7 @@ const ModalFilter = ({
   return (
     <Modal isOpen={isOpen} toggle={onToggle} className="filter-modal">
       <ModalHeader toggle={onToggle}>
-        <span className="filter-label">FILTER BY</span>
+        <span className="filter-label">Filter by</span>
       </ModalHeader>
       <ModalBody>
         <div className="bg-white px-4 pb-4 w-100">
@@ -96,12 +96,12 @@ function SearchPage({ userName, isLoggedUser }: SearchPageProps) {
   const { data, isFetching, isLoading } = useSearchEntitiesQuery(searchRequest);
   const filter = (
     <>
-      <div className="d-sm-block d-md-none d-lg-none d-xl-none d-xxl-none text-end">
+      <div className="d-sm-block d-md-block d-lg-none d-xl-none d-xxl-none text-end">
         <div className="fw-bold" onClick={() => setIsOpenFilterModal(!isOpenFilterModal)}>
           Filter & Sort <FontAwesomeIcon icon={isOpenFilterModal ? faAngleUp : faAngleDown} />
         </div>
       </div>
-      <div className="bg-white p-4 rounded-2 d-none d-sm-none d-md-block d-lg-block d-xl-block d-xxl-block">
+      <div className="bg-white p-4 rounded-2 d-none d-sm-none d-md-none d-lg-block d-xl-block d-xxl-block">
         <FilterEntitySearch author={author} type={type} visibility={visibility} isLoggedUser={isLoggedUser} />
       </div>
     </>

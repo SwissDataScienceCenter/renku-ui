@@ -32,7 +32,6 @@ import ButtonsGuide from "./ButtonsGuide";
 import ColorsGuide from "./ColorsGuide";
 import FormsGuide from "./FormsGuide";
 import ListsGuide from "./ListsGuide";
-import SearchGuide from "./SearchGuide";
 import { TimeCaption } from "../utils/components/TimeCaption";
 import { RenkuNavLink } from "../utils/components/RenkuNavLink";
 
@@ -230,10 +229,6 @@ function StyleGuide(props) {
     <Switch>
       <Route exact path={urlMap.listsUrl} render={
         p => <ListsGuide key="lists" {...p} urlMap={urlMap} />} />
-    </Switch>
-    <Switch>
-      <Route exact path={urlMap.searchUrl} render={
-        p => <SearchGuide key="search" {...p} urlMap={urlMap} />} />
     </Switch>
   </Fragment>;
 }
