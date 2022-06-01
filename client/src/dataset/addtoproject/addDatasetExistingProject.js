@@ -18,7 +18,7 @@
 
 import React, { useContext, useEffect, useRef, useState } from "react";
 
-import { Alert, Button } from "reactstrap";
+import { Button } from "reactstrap";
 
 import { AddDatasetStatus } from "./addDatasetStatus";
 import { ACCESS_LEVELS } from "../../api-client";
@@ -28,8 +28,6 @@ import { Loader } from "../../utils/components/Loader";
 import AppContext from "../../utils/context/appContext";
 import { groupBy } from "../../utils/helpers/HelperFunctions";
 import { useSelector } from "react-redux";
-import { Url } from "../../utils/helpers/url";
-import { Link, useHistory } from "react-router-dom";
 
 /**
  *  incubator-renku-ui
@@ -46,7 +44,6 @@ const AddDatasetExistingProject = (
   const [projectsCoordinator, setProjectsCoordinator] = useState(null);
   const user = useSelector( (state) => state.stateModel.user);
   const { client } = useContext(AppContext);
-  const history = useHistory();
   const mounted = useRef(false);
   const setCurrentStatus = handlers.setCurrentStatus;
   let projectsMonitorJob = null;
@@ -127,21 +124,6 @@ const AddDatasetExistingProject = (
     setSuggestions(groupedSuggestions);
   };
   const customHandlers = { onSuggestionsFetchRequested };
-
-  if (!user.logged) {
-    const to = Url.get(Url.pages.login.link, { pathname: history?.location.pathname });
-    return (
-      <>
-        <p className="pt-4">Oops, only authenticated users can add datasets to an existing project.</p>
-        <Alert color="primary">
-          <p className="mb-0">
-            <Link className="btn btn-primary btn-sm" to={to}>Log in</Link> to
-            load your projects or create a new project with this dataset.
-          </p>
-        </Alert>
-      </>
-    );
-  }
 
   let suggestionInput;
   if (isProjectListReady && isDatasetValid && currentStatus?.status !== "importing") {

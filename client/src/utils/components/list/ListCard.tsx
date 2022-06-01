@@ -43,7 +43,7 @@ function ListCard(
   }: ListElementProps) {
 
   return (
-    <div data-cy="list-card" className="col text-decoration-none p-4 rk-search-result-card list-card rounded-3">
+    <div data-cy="list-card" className="col text-decoration-none p-3 rk-search-result-card list-card rounded-3">
       <Link to={url} className="col text-decoration-none">
         <div className="card card-body border-0">
           <div className="mt-2 mb-2 d-flex align-items-center">
@@ -87,7 +87,7 @@ function ListCard(
           </div>
           {tagList && tagList.length > 0 ?
             <Fragment>
-              <div className="tagList mt-auto mb-2">
+              <div className="tagList mt-auto mb-2 overflow-hidden">
                 <ProjectTagList tagList={tagList} />
               </div>
             </Fragment> : null}

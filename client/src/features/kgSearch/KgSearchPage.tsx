@@ -61,7 +61,7 @@ const ModalFilter = ({
   return (
     <Modal isOpen={isOpen} toggle={onToggle} className="filter-modal">
       <ModalHeader toggle={onToggle}>
-        <span className="filter-label">Filter by</span>
+        <span className="filter-title">Filter by</span>
       </ModalHeader>
       <ModalBody>
         <div className="bg-white px-4 pb-4 w-100">

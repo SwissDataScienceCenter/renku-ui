@@ -78,8 +78,8 @@ const SortingEntities = (
         "align-items-center d-none d-sm-none d-md-none d-lg-flex d-xl-flex d-xxl-flex"
         : "sorting--mobile"}>
         {styleType === "desk" ?
-          <Label className="mx-2 sorting-label--desk">Sort By</Label> :
-          <h3 className="sorting-label">Sort By</h3>}
+          <Label className="mx-2 sorting-label--desk">Sort by</Label> :
+          <h3 className="sorting-label">Sort by</h3>}
         <Input
           type="select"
           className="sorting-input"
