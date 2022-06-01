@@ -23,13 +23,16 @@ import { createProxyMiddleware } from "http-proxy-middleware";
 import config from "../config";
 import logger from "../logger";
 import { Authenticator } from "../authentication";
-import { CheckURLResponse } from "./apis.interfaces";
+import { getCookieValueByName } from "../utils";
 import { renkuAuth } from "../authentication/middleware";
 import { getCookieValueByName, serializeCookie } from "../utils";
 import { validateCSP } from "../utils/url";
-import { Storage, StorageGetOptions, TypeData } from "../storage";
-import { getUserIdFromToken, lastProjectsMiddleware } from "../utils/middlewares/lastProjectsMiddleware";
+import { lastProjectsMiddleware } from "../utils/middlewares/lastProjectsMiddleware";
+import { lastSearchQueriesMiddleware } from "../utils/middlewares/lastSearchQueriesMiddleware";
 import uploadFileMiddleware from "../utils/middlewares/uploadFileMiddleware";
+import { Storage } from "../storage";
+import { CheckURLResponse } from "./apis.interfaces";
+import { getUserData } from "./helperFunctions";
 
 const proxyMiddleware = createProxyMiddleware({
   // set gateway as target
@@ -154,18 +157,20 @@ function registerApiRoutes(app: express.Application,
       res.json({ error: "User not authenticated" });
       return;
     }
-
-    const userId = getUserIdFromToken(token);
-    let data: string[] = [];
-    const options: StorageGetOptions = {
-      type: TypeData.Collections,
-      start: 0,
-      stop: (parseFloat(req.params["length"]) || 0) - 1
-    };
-
-    if (userId)
-      data = await storage.get(`${config.data.projectsStoragePrefix}${userId}`, options) as string[];
+    const length = parseInt(req.params["length"]) || 0;
+    const data = await getUserData(config.data.projectsStoragePrefix, token, storage, length);
     res.json({ projects: data });
+  });
+
+  app.get(prefix + "/last-searches/:length", renkuAuth(authenticator), async (req, res) => {
+    const token = req.headers[config.auth.authHeaderField] as string;
+    if (!token) {
+      res.json({ error: "User not authenticated" });
+      return;
+    }
+    const length = parseInt(req.params["length"]) || 0;
+    const data = await getUserData(config.data.searchStoragePrefix, token, storage, length);
+    res.json({ queries: data });
   });
 
   /*
@@ -179,6 +184,11 @@ function registerApiRoutes(app: express.Application,
   app.post(
     prefix + "/renku/cache.files_upload",
     [renkuAuth(authenticator), uploadFileMiddleware],
+    proxyMiddleware
+  );
+  app.get(
+    prefix + "/kg/entities",
+    [renkuAuth(authenticator), lastSearchQueriesMiddleware(storage)],
     proxyMiddleware
   );
   app.delete(prefix + "/*", renkuAuth(authenticator), proxyMiddleware);
