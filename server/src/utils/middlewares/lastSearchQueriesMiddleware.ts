@@ -25,7 +25,7 @@ const lastSearchQueriesMiddleware = (storage: Storage) =>
   (req: express.Request, res: express.Response, next: express.NextFunction): void => {
     const token = req.headers[config.auth.authHeaderField] as string;
     const query = req.query["query"];
-    const phrase = query ? (query as string).trim().replace(/\*/g, "") : "";
+    const phrase = query ? (query as string).trim() : "";
 
     if (req.query?.doNotTrack !== "true" && phrase) {
       res.on("finish", function() {
