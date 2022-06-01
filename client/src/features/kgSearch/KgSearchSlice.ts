@@ -83,6 +83,7 @@ export const kgSearchFormSlice = createSlice({
         dataset: false,
       };
       state.author = "user";
+      state.phrase = "";
       state.page = 1;
     },
     setMyDatasets: (state, action: PayloadAction) => {
@@ -91,6 +92,7 @@ export const kgSearchFormSlice = createSlice({
         dataset: true,
       };
       state.author = "user";
+      state.phrase = "";
       state.page = 1;
     },
     reset: () => initialState
