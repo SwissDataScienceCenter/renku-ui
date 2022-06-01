@@ -17,6 +17,7 @@
  */
 
 import { convertType, urlJoin } from "./utils";
+import { StoragePrefix } from "./storage";
 
 const SERVER = {
   url: process.env.SERVER_URL,
@@ -83,7 +84,9 @@ const ROUTES = {
 };
 
 const DATA = {
-  projectsStoragePrefix: "LPROJECT_",
+  projectsStoragePrefix: StoragePrefix.LAST_PROJECTS,
+  searchStoragePrefix: StoragePrefix.LAST_SEARCHES,
+  searchDefaultLength: 10,
   projectsDefaultLength: 20,
   userSessionsPrefix: "SESSIONS_",
 };
