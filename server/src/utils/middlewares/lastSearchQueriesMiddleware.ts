@@ -21,26 +21,25 @@ import express from "express";
 import config from "../../config";
 import { getUserIdFromToken } from "../../authentication";
 
-const lastProjectsMiddleware = (storage: Storage) =>
+const lastSearchQueriesMiddleware = (storage: Storage) =>
   (req: express.Request, res: express.Response, next: express.NextFunction): void => {
     const token = req.headers[config.auth.authHeaderField] as string;
-    const projectName = req.params["projectName"];
+    const query = req.query["query"];
+    const phrase = query ? (query as string).trim() : "";
 
-    if (req.query?.doNotTrack !== "true") {
+    if (req.query?.doNotTrack !== "true" && phrase) {
       res.on("finish", function() {
         if (res.statusCode >= 400 || !token) {
           next();
           return;
         }
 
-        const userId = getUserIdFromToken(token);
-        // Save as ordered collection
         storage.save(
-          `${config.data.projectsStoragePrefix}${userId}`,
-          projectName,
+          `${config.data.searchStoragePrefix}${getUserIdFromToken(token)}`,
+          phrase,
           {
             type: TypeData.Collections,
-            limit: config.data.projectsDefaultLength,
+            limit: config.data.searchDefaultLength,
             score: Date.now()
           }
         );
@@ -49,4 +48,4 @@ const lastProjectsMiddleware = (storage: Storage) =>
     next();
   };
 
-export { lastProjectsMiddleware, getUserIdFromToken };
+export { lastSearchQueriesMiddleware };

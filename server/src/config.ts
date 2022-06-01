@@ -17,6 +17,7 @@
  */
 
 import { convertType } from "./utils";
+import { StoragePrefix } from "./storage";
 
 
 const SERVER = {
@@ -72,7 +73,12 @@ const ROUTES = {
   auth: "/auth",
 };
 
-const DATA = { projectsStoragePrefix: "LPROJECT_", projectsDefaultLength: 20 };
+const DATA = {
+  projectsStoragePrefix: StoragePrefix.LAST_PROJECTS,
+  projectsDefaultLength: 20,
+  searchStoragePrefix: StoragePrefix.LAST_SEARCHES,
+  searchDefaultLength: 10,
+};
 
 const config = {
   server: SERVER,
