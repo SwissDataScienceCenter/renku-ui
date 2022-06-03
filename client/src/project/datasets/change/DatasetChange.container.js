@@ -241,7 +241,13 @@ function ChangeDataset(props) {
       if (images)
         dataset.images = images;
     }
-
+    else if (mappedInputs.image.options.length && !mappedInputs.image.selected && mappedInputs.image.options[0]?.URL) {
+      dataset.images = [{
+        "content_url": mappedInputs.image.options[0]?.URL,
+        "position": 0,
+        "mirror_locally": true
+      }];
+    }
     props.client.postDataset(props.httpProjectUrl, dataset, props.defaultBranch, props.edit, versionUrl)
       .then(response => {
         if (response.data.error !== undefined) {
