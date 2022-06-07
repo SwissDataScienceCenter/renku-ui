@@ -39,6 +39,12 @@ The second category is fully managed by the service, errors included.
 
 ![Authentication flow](./public/server-flow-auth.png)
 
+## WebSocket channel
+
+The UI server also creates a [WebSocket](https://en.wikipedia.org/wiki/WebSocket)
+channel to send notification to the client and to receive subscriptions to specific
+events. More information can be found in the [WebSocket folder](/src/websocket).
+
 ## Developing the UI server
 
 Once you have a development instance of Renku running locally or in the cloud,

@@ -42,9 +42,9 @@ interface Storage {
 
   getStatus() : string;
 
-  get(path: string, options: StorageGetOptions): Promise<string|string[]>;
+  get(path: string, options?: StorageGetOptions ): Promise<string|string[]>;
 
-  save(path: string, value: string, options: StorageSaveOptions): Promise<boolean>;
+  save(path: string, value: string, options?: StorageSaveOptions): Promise<boolean>;
 
   delete(path: string): Promise<number>;
 

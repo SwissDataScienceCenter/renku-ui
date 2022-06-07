@@ -47,6 +47,28 @@ function addAuthInvalid(req: express.Request) : void {
 }
 
 
+async function wsRenkuAuth(authenticator: Authenticator, sessionId: string): Promise<Record<string, string>> {
+  let tokens: TokenSet;
+  try {
+    tokens = await authenticator.getTokens(sessionId, true);
+  }
+  catch (error) {
+    const stringyError = error.toString();
+    const expired = stringyError.includes("expired") || stringyError.includes("invalid");
+    if (expired)
+      throw new Error("expired");
+    throw error;
+  }
+
+  if (tokens) {
+    const property = config.auth.authHeaderField;
+    const value = config.auth.authHeaderPrefix + tokens.access_token;
+    return { [property]: value };
+  }
+  throw new Error("auth");
+}
+
+
 function renkuAuth(authenticator: Authenticator) {
   return async (req: express.Request, res: express.Response, next: express.NextFunction): Promise<void> => {
     // check session
@@ -76,4 +98,4 @@ function renkuAuth(authenticator: Authenticator) {
   };
 }
 
-export { renkuAuth, addAuthToken };
+export { addAuthToken, renkuAuth, wsRenkuAuth };

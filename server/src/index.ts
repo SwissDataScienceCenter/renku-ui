@@ -19,12 +19,14 @@
 import cookieParser from "cookie-parser";
 import express from "express";
 import morgan from "morgan";
+import ws from "ws";
 
 import config from "./config";
 import logger from "./logger";
 import routes from "./routes";
 import { Authenticator } from "./authentication";
 import { registerAuthenticationRoutes } from "./authentication/routes";
+import { configureWebsocket } from "./websocket";
 import { RedisStorage } from "./storage/RedisStorage";
 import { errorHandler } from "./utils/errorHandler";
 import errorHandlerMiddleware from "./utils/middlewares/errorHandlerMiddleware";
@@ -60,7 +62,8 @@ const storage = new RedisStorage();
 
 // configure authenticator
 const authenticator = new Authenticator(storage);
-authenticator.init().then(() => {
+const authPromise = authenticator.init();
+authPromise.then(() => {
   logger.info("Authenticator started");
 
   registerAuthenticationRoutes(app, authenticator);
@@ -75,19 +78,21 @@ app.use(cookieParser());
 // register routes
 routes.register(app, prefix, authenticator, storage);
 
-
-process.on("unhandledRejection", (reason: Error) => {
-  errorHandler.handleError(reason);
-});
-
-process.on("uncaughtException", (error: Error) => {
-  errorHandler.handleError(error);
-});
-
 // start the Express server
 const server = app.listen(port, () => {
-  logger.info(`server started at http://localhost:${port}`);
+  logger.info(`Express server started at http://localhost:${port}`);
 });
+
+// start the WebSocket server
+if (config.websocket.enabled) {
+  const path = `${config.server.prefix}${config.server.wsSuffix}`;
+  const wsServer = new ws.Server({ server, path });
+  authPromise.then(() => {
+    logger.info("Configuring WebSocket server");
+
+    configureWebsocket(wsServer, authenticator, storage);
+  });
+}
 
 function shutdown() {
   server.close(() => {
@@ -104,4 +109,12 @@ process.on("SIGTERM", () => {
 process.on("SIGINT", () => {
   logger.info("Interrupted, shutting down.");
   shutdown();
+});
+
+process.on("unhandledRejection", (reason: Error) => {
+  errorHandler.handleError(reason);
+});
+
+process.on("uncaughtException", (error: Error) => {
+  errorHandler.handleError(error);
 });

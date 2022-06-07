@@ -24,7 +24,8 @@ const SERVER = {
   port: convertType(process.env.SERVER_PORT) || 8080,
   prefix: process.env.SERVER_PREFIX || "/ui-server",
   logLevel: process.env.SERVER_LOG_LEVEL || "info",
-  serverUiVersion: process.env.UI_SERVER_VERSION || "unknown"
+  serverUiVersion: process.env.UI_SERVER_VERSION || "unknown",
+  wsSuffix: process.env.SERVER_WS_SUFFIX || "/ws"
 };
 
 const DEPLOYMENT = {
@@ -67,20 +68,31 @@ const REDIS = {
   masterSet: process.env.REDIS_MASTER_SET || "mymaster",
 };
 
+const WEBSOCKET = {
+  enabled: convertType(process.env.WEBSOCKET_ENABLED) || true,
+  interval: convertType(process.env.WEBSOCKET_INTERVAL) || 5, // ? in seconds
+};
+
 const ROUTES = {
   api: "/api",
   auth: "/auth",
 };
 
-const DATA = { projectsStoragePrefix: "LPROJECT_", projectsDefaultLength: 20 };
+const DATA = {
+  projectsStoragePrefix: "LPROJECT_",
+  projectsDefaultLength: 20,
+  userSessionsPrefix: "SESSIONS_",
+};
 
 const config = {
-  server: SERVER,
-  deployment: DEPLOYMENT,
   auth: AUTHENTICATION,
+  data: DATA,
+  deployment: DEPLOYMENT,
   redis: REDIS,
   routes: ROUTES,
-  data: DATA,
-  sentry: SENTRY };
+  sentry: SENTRY,
+  server: SERVER,
+  websocket: WEBSOCKET,
+};
 
 export default config;

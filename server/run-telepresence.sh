@@ -75,17 +75,23 @@ else
   fi
 fi
 
+if [[ "$INJECTTCP" ]]
+then
+  TP_METHOD="--method inject-tcp"
+else
+  TP_METHOD=""
+fi
 
 if [[ "$CONSOLE" ]]
 then
   echo "***** CONSOLE MODE *****"
   echo "You can start the server in debug mode with:"
   echo "> npm run dev-debug"
-  telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --expose 9229:9229 --run-shell
+  telepresence ${TP_METHOD} --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --expose 9229:9229 --run-shell
 elif [[ "$DEBUG" ]]
 then
   echo "***** CONSOLE MODE *****"
-  telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --expose 9229:9229 --run npm run dev-debug
+  telepresence ${TP_METHOD} --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --expose 9229:9229 --run npm run dev-debug
 elif [[ "$SENTRY" ]]
 then
   SENTRY_ENABLED=true
@@ -101,7 +107,7 @@ then
   echo "TELEPRESENCE=true"
   echo "DEBUG_MODE=${SENTRY_DEBUG_MODE}"
   echo ""
-  SENTRY_ENABLED=${SENTRY_ENABLED} SENTRY_URL=${SENTRY_URL} SENTRY_NAMESPACE=${SENTRY_NAMESPACE} SENTRY_TRACE_RATE=${SENTRY_TRACE_RATE} SENTRY_DEBUG=${SENTRY_DEBUG_MODE} TELEPRESENCE=true telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --run npm run dev
+  SENTRY_ENABLED=${SENTRY_ENABLED} SENTRY_URL=${SENTRY_URL} SENTRY_NAMESPACE=${SENTRY_NAMESPACE} SENTRY_TRACE_RATE=${SENTRY_TRACE_RATE} SENTRY_DEBUG=${SENTRY_DEBUG_MODE} TELEPRESENCE=true telepresence ${TP_METHOD} --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --run npm run dev
 else
-  telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --run npm run dev
+  telepresence ${TP_METHOD} --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --run npm run dev
 fi

@@ -33,7 +33,7 @@
     "openid-client": "^4.9.0",
     "uuid": "^8.3.2",
     "winston": "^3.3.3",
-    "ws": "^7.5.3"
+    "ws": "^7.5.7"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.2",
