@@ -16,39 +16,24 @@
  * limitations under the License.
  */
 
-import React, { Component } from "react";
-import { withRouter } from "react-router";
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useHistory, withRouter } from "react-router-dom";
 
-import { ProjectsCoordinator } from "../../../project/shared";
+import {
+  setMyDatasets,
+  setMyProjects,
+  setPhrase,
+  useKgSearchFormSelector
+} from "../../../features/kgSearch/KgSearchSlice";
 import { QuickNavPresent } from "./QuickNav.present";
-import { refreshIfNecessary } from "../../helpers/HelperFunctions";
-import { Schema, StateKind, StateModel } from "../../../model/Model";
-import { Url } from "../../helpers/url";
-
-
-const suggestionSchema = new Schema({
-  path: { mandatory: true },
-  id: { mandatory: true }
-});
-
-const searchBarSchema = new Schema({
-  value: { initial: "", mandatory: false },
-  suggestions: { schema: [suggestionSchema], mandatory: true, initial: [] },
-  selectedSuggestion: { schema: suggestionSchema, mandatory: false }
-});
-
-class SearchBarModel extends StateModel {
-  constructor(stateBinding, stateHolder, initialState) {
-    super(searchBarSchema, stateBinding, stateHolder, initialState);
-  }
-}
 
 export const defaultSuggestionQuickBar = {
   title: "",
   type: "fixed",
   suggestions: [
-    { type: "fixed", path: "", id: "link-projects", url: "/projects", label: "My Projects", icon: "/project-icon.svg" },
-    { type: "fixed", path: "", id: "link-datasets", url: "/datasets", label: "My datasets", icon: "/dataset-icon.svg" },
+    { type: "fixed", path: "", id: "link-projects", url: "/search", label: "My Projects", icon: "/project-icon.svg" },
+    { type: "fixed", path: "", id: "link-datasets", url: "/search", label: "My datasets", icon: "/dataset-icon.svg" },
   ]
 };
 
@@ -56,136 +41,65 @@ export const defaultAnonymousSuggestionQuickBar = {
   title: "",
   type: "fixed",
   suggestions: [
-    { type: "fixed", path: "", id: "link-projects", url: "/projects", label: "Projects", icon: "/project-icon.svg" },
-    { type: "fixed", path: "", id: "link-datasets", url: "/datasets", label: "Datasets", icon: "/dataset-icon.svg" },
+    { type: "fixed", path: "", id: "link-projects", url: "/search", label: "Projects", icon: "/project-icon.svg" },
+    { type: "fixed", path: "", id: "link-datasets", url: "/search", label: "Datasets", icon: "/dataset-icon.svg" },
   ]
 };
 
-class QuickNavContainerWithRouter extends Component {
-  constructor(props) {
-    super(props);
-    this.bar = new SearchBarModel(StateKind.REACT, this);
-    this.projectsCoordinator = new ProjectsCoordinator(props.client, props.model.subModel("projects"));
-    if (this.props.user.logged) {
-      const featured = this.projectsCoordinator.model.get("featured");
-      refreshIfNecessary(featured.fetching, featured.fetched, () => this.projectsCoordinator.getFeatured(), 120);
-    }
+const QuickNavContainerWithRouter = ({ user }) => {
+  const history = useHistory();
+  const dispatch = useDispatch();
+  const { phrase } = useKgSearchFormSelector((state) => state.kgSearchForm);
+  const [currentPhrase, setCurrentPhrase] = useState("");
 
-    this.callbacks = {
-      onChange: this.onChange.bind(this),
-      onSubmit: this.onSubmit.bind(this),
-      onSuggestionsFetchRequested: this.onSuggestionsFetchRequested.bind(this),
-      onSuggestionsClearRequested: this.onSuggestionsClearRequested.bind(this),
-      onSuggestionSelected: this.onSuggestionSelected.bind(this),
-      onSuggestionHighlighted: this.onSuggestionHighlighted.bind(this),
-      getSuggestionValue: (suggestion) => suggestion ? suggestion.path : "",
-    };
-    this.currentSearchValue = null;
-  }
+  useEffect(() => {
+    setCurrentPhrase(phrase);
+  }, [phrase]);
 
-  onSubmit(e) {
+  const onSubmit = async (e) => {
     e.preventDefault();
-    const suggestion = this.bar.get("selectedSuggestion");
-    const value = this.bar.get("value");
-    this.bar.set("value", "");
-    this.bar.set("selectedSuggestion", null);
-
-    let url = null;
-    if (suggestion == null || suggestion.url == null)
-      url = this.searchUrlForValue(value);
-    else
-      url = suggestion.url;
-
-    if (url == null) return;
-    this.props.history.push(url);
-  }
-
-  onSuggestionsFetchRequested({ value, reason }) {
-    this.currentSearchValue = value;
-    if (this.currentSearchValue !== value)
+    dispatch(setPhrase(currentPhrase));
+    if (history.location.pathname === "/search")
       return;
+    history.push("/search");
+  };
 
-    // constants come from react-autosuggest
-    if (reason === "suggestions-revealed")
-      return;
-    const featured = this.projectsCoordinator.model.get("featured");
-    if (!featured.fetched || (!featured.starred.length && !featured.member.length))
-      return;
+  const onSuggestionsFetchRequested = () => {};
 
-    // Search member projects and starred project
-    const regex = new RegExp(value, "i");
-    const searchDomain = featured.starred.concat(featured.member);
-    const hits = {};
-    searchDomain.forEach(d => {
-      if (regex.exec(d.path_with_namespace) != null)
-        hits[d.path_with_namespace] = d;
+  const onSuggestionsClearRequested = () => {};
 
-    });
-    const suggestions = [];
-    if (value.length > 0) {
-      suggestions.push({
-        title: "Search in All Projects",
-        type: "all",
-        suggestions: [{ query: value, id: -1, path: value, url: this.searchUrlForValue(value) }]
-      });
+  const onChange = (event, { newValue }) => {
+    setCurrentPhrase(newValue);
+  };
+
+  const onSuggestionSelected = (event, { suggestion }) => {
+    if (suggestion && suggestion?.type === "fixed") {
+      if (suggestion.id === "link-datasets")
+        dispatch(setMyDatasets());
+
+      if (suggestion.id === "link-projects")
+        dispatch(setMyProjects());
     }
+  };
 
-    // add fixed suggestions
-    suggestions.push(defaultSuggestionQuickBar);
+  const onSuggestionHighlighted = () => {};
 
-    const hitKeys = Object.keys(hits);
-    if (hitKeys.length > 0) {
-      suggestions.push({
-        title: "Your Projects",
-        type: "own-projects",
-        suggestions: hitKeys.sort().map(k => (
-          { path: k, id: hits[k].id, url: `/projects/${hits[k].path_with_namespace}` }
-        ))
-      });
-    }
+  const callbacks = {
+    onChange,
+    onSubmit,
+    onSuggestionsFetchRequested,
+    onSuggestionsClearRequested,
+    onSuggestionSelected,
+    onSuggestionHighlighted,
+    getSuggestionValue: (suggestion) => suggestion ? suggestion.path : "",
+  };
 
-    this.bar.set("suggestions", suggestions);
-  }
-
-  searchUrlForValue(value) {
-    const searchUrl = Url.get(Url.pages.projects.all, { query: value });
-    return (value != null) ? searchUrl : null;
-  }
-
-  onSuggestionsClearRequested() {
-    this.bar.set("suggestions", []);
-  }
-
-  onChange(event, { newValue, method }) {
-    this.bar.set("value", newValue);
-  }
-
-  onSuggestionSelected(event, { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }) {
-    if (this.bar.get("suggestions") == null || suggestion?.type === "fixed")
-      return;
-
-    const selectedSuggestion = this.bar.get("suggestions")[sectionIndex].suggestions[suggestionIndex];
-    this.bar.set("selectedSuggestion", selectedSuggestion);
-  }
-
-  onSuggestionHighlighted({ suggestion }) {
-    if (suggestion == null)
-      return;
-
-    if (suggestion.id > 0)
-      this.bar.set("selectedSuggestion", suggestion);
-  }
-
-  render() {
-    return <QuickNavPresent
-      loggedIn={this.props.user ? this.props.user.logged : false}
-      suggestions={this.bar.get("suggestions")}
-      value={this.bar.get("value")}
-      callbacks={this.callbacks}
-    />;
-  }
-}
+  return <QuickNavPresent
+    loggedIn={user ? user.logged : false}
+    value={currentPhrase}
+    callbacks={callbacks}
+  />;
+};
 
 const QuickNavContainer = withRouter(QuickNavContainerWithRouter);
-
 export { QuickNavContainer };
