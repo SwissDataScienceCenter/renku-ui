@@ -88,7 +88,7 @@ class QuickNavPresent extends Component {
     const theme = this.getTheme();
 
     const inputProps = {
-      placeholder: "Search or jump to...",
+      placeholder: "Search...",
       type: "search",
       value: this.props.value,
       onChange: this.props.callbacks.onChange,
@@ -100,7 +100,7 @@ class QuickNavPresent extends Component {
 
     let suggestionList = [defaultAnonymousSuggestionQuickBar];
     if (this.props.loggedIn)
-      suggestionList = this.props.suggestions.length ? this.props.suggestions : [defaultSuggestionQuickBar];
+      suggestionList = this.props.suggestions?.length ? this.props.suggestions : [defaultSuggestionQuickBar];
 
     return (
       <div className="search-box flex-nowrap justify-content-center">
@@ -127,7 +127,7 @@ class QuickNavPresent extends Component {
             <FontAwesomeIcon icon={faSearch} />
           </span>
         </div>
-        <Label className="search-input-label">Search for Project, Dataset ...</Label>
+        <Label className="search-input-label">Search for Projects or Datasets</Label>
       </div>
     );
   }

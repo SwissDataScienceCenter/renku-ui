@@ -18,19 +18,20 @@
 import * as React from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGlobe, faLock, faPlay, faPlus, faUserFriends } from "@fortawesome/free-solid-svg-icons";
-import "./ListCard.css";
+
 import { toCapitalized } from "../../helpers/HelperFunctions";
 import { Button } from "../../ts-wrappers";
+import "./ListCard.css";
 import {
-  EntityType,
   ListElementProps,
   ListDisplayType,
   VisibilityIconProps,
   EntityIconProps,
-  EntityButtonProps
+  EntityButtonProps,
 } from "./List.d";
 import ListCard from "./ListCard";
 import ListBar from "./ListBar";
+import { EntityType } from "../../../features/kgSearch";
 
 export const VisibilityIcon = ({ visibility }: VisibilityIconProps) => {
   if (!visibility) return null;
