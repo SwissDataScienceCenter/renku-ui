@@ -268,7 +268,6 @@ class LoggedInNavBar extends Component {
               <FontAwesomeIcon icon={faBars} id="userIcon" color="white" />
             </NavbarToggler>
             <QuickNav client={this.props.client} model={this.props.model} user={this.props.user} />
-            <QuickNav client={this.props.client} model={this.props.model} user={this.props.user} />
             <Collapse isOpen={!this.state.isOpen} navbar className="menu-right">
               <Nav className="navbar-nav flex-row flex-wrap ms-lg-auto">
                 <NavItem className="nav-item col-4 col-lg-auto pe-lg-4">

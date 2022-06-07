@@ -116,7 +116,7 @@ class QuickNavPresent extends Component {
 
     return (
       <div className="search-box flex-nowrap justify-content-center">
-        <div id="quick-nav" className="quick-nav input-group flex-nowrap input-group-sm justify-content-center pe-2">
+        <div id="quick-nav" className="input-group flex-nowrap input-group-sm justify-content-center">
           <Autosuggest
             suggestions={suggestionList}
             getSuggestionValue={this.props.callbacks.getSuggestionValue}
