@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent } from "react";
 import { Input, Label } from "../../ts-wrappers";
 
 import "./SortingEntities.css";
@@ -28,12 +28,15 @@ import "./SortingEntities.css";
  *  Sorting Entities input
  */
 
+// These are used by the TS compiler does not realize it.
+/* eslint-disable no-unused-vars */
 export enum SortingOptions {
-  AscTitle = "ascTitle",
-  DescTitle = "descTitle",
-  AscDate = "askDate",
-  DescDate = "descDate"
+  AscTitle = "name:asc",
+  DescTitle = "name:desc",
+  AscDate = "date:asc",
+  DescDate = "date:desc"
 }
+/* eslint-enable no-unused-vars */
 
 interface SortingItems {
   AscTitle: string,
@@ -43,45 +46,45 @@ interface SortingItems {
 }
 
 export interface SortingInputProps {
-  value: SortingOptions | null;
-  onChange: Function;
+  sort: SortingOptions | null;
+  setSort: Function;
   styleType: "mobile" | "desk"
 }
 
+type SortOptionsStrings = keyof typeof SortingOptions;
+
 const SortingEntities = (
-  { value, onChange, styleType } : SortingInputProps) => {
-  const [sorting, setSorting] = useState<string | null>(SortingOptions.AscTitle);
-  useEffect(() => setSorting(value), [value]);
+  { setSort, styleType, sort } : SortingInputProps) => {
 
-  const changeSorting = (value: string) => {
-    setSorting(value);
-
-    if (onChange)
-      onChange(value);
+  const changeSorting = (value: SortOptionsStrings) => {
+    if (setSort)
+      setSort(SortingOptions[value]);
   };
 
   const items: SortingItems = {
     AscTitle: "Title: A - Z",
     DescTitle: "Title: Z - A",
-    AscDate: "New - Old",
-    DescDate: "Old - New"
+    AscDate: "Old - New",
+    DescDate: "New - Old"
   };
 
   const options = [];
-  for (const key in items) {
-    options.push(<option value={key} key={key}>{items[key as keyof SortingItems]}</option>)
-  }
+  for (const key in items)
+    options.push(<option value={key} key={key}>{items[key as keyof SortingItems]}</option>);
 
   return (
     <>
-      <div className={styleType === "desk" ? "d-flex align-items-center" : ""}>
-        {styleType === "desk" ? <Label className="mx-2">Sort By</Label> : <h3 className="sorting-label">Sort By</h3>}
+      <div className={styleType === "desk" ?
+        "align-items-center d-none d-sm-none d-md-none d-lg-flex d-xl-flex d-xxl-flex"
+        : "sorting--mobile"}>
+        {styleType === "desk" ?
+          <Label className="mx-2 sorting-label--desk">Sort by</Label> :
+          <h3 className="sorting-label">Sort by</h3>}
         <Input
           type="select"
           className="sorting-input"
           name="sorting"
-          value={sorting as string}
-          onChange={(event: ChangeEvent<HTMLInputElement>) => { changeSorting(event.target.value); }}>
+          onChange={(event: ChangeEvent<HTMLInputElement>) => changeSorting(event.target.value as SortOptionsStrings)}>
           {options}
         </Input>
       </div>

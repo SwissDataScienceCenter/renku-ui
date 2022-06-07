@@ -16,8 +16,8 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { Col } from "../../ts-wrappers";
 import { ProjectTagList } from "../../../project/shared";
+import { Col } from "../../ts-wrappers";
 import { TimeCaption } from "../TimeCaption";
 import { ListElementProps } from "./List.d";
 import "./ListBar.css";
@@ -70,8 +70,11 @@ function ListBar(
         creators ?
           <div className="creators text-truncate text-rk-text">
             <small style={{ display: "block" }} className="font-weight-light">
-              {creators.slice(0, 3).map((creator) => creator.name).join(", ")}
-              {creators.length > 3 ? ", et al." : null}
+              {Array.isArray(creators) ?
+                creators.slice(0, 3).map((creator) => creator.name).join(", ") :
+                creators
+              }
+              {Array.isArray(creators) && creators.length > 3 ? ", et al." : null}
             </small>
           </div>
           : null

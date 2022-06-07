@@ -1,6 +1,14 @@
 .sorting-label {
-    font-size: 16px;
+    font-size: larger;
     font-weight: bold;
+}
+
+.sorting-label--desk {
+    min-width: 60px;
+}
+
+.sorting--mobile {
+    margin-top: 40px;
 }
 
 .sorting-input {

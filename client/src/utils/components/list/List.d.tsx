@@ -1,18 +1,17 @@
 import { Visibilities } from "../visibility/Visibility";
+import { EntityType } from "../../../features/kgSearch/KgSearch";
 
-export enum EntityType {
-  Project = "project",
-  Dataset = "dataset",
-}
-
-interface Creator {
+export interface Creator {
   name: string;
 }
 
+// These are used by the TS compiler does not realize it.
+/* eslint-disable no-unused-vars */
 export enum ListDisplayType {
   Card,
   Bar,
 }
+/* eslint-enable no-unused-vars */
 
 export interface ListElementProps {
   type?: ListDisplayType;
@@ -23,7 +22,7 @@ export interface ListElementProps {
   timeCaption: string;
   labelCaption: string;
   mediaContent?: any;
-  creators: Creator[];
+  creators: Creator[] | string;
   itemType?: EntityType;
   slug: string;
   visibility?: Visibilities,
