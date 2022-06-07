@@ -48,7 +48,6 @@ import { RenkuNavLink } from "../utils/components/RenkuNavLink";
 import { Loader } from "../utils/components/Loader";
 import { Docs, Links, RenkuPythonDocs } from "../utils/constants/Docs";
 
-
 class RenkuNavBar extends Component {
   render() {
     const { user } = this.props;
@@ -268,7 +267,7 @@ class LoggedInNavBar extends Component {
             <NavbarToggler onClick={this.toggle} className="border-0">
               <FontAwesomeIcon icon={faBars} id="userIcon" color="white" />
             </NavbarToggler>
-            <QuickNav client={this.props.client} model={this.props.model} user={this.props.user} />
+            <QuickNav user={this.props.user} />
             <Collapse isOpen={!this.state.isOpen} navbar className="menu-right">
               <Nav className="navbar-nav flex-row flex-wrap ms-lg-auto">
                 <NavItem className="nav-item col-4 col-lg-auto pe-lg-4">
