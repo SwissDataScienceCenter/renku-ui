@@ -48,6 +48,17 @@ class QuickNavPresent extends Component {
       );
     }
 
+    if (suggestion.type === "last-queries") {
+      return (
+        <div style={style}>
+          <Link id={suggestion.id} to={suggestion.url} style={{ textDecoration: "none", display: "block" }}>
+            <img src="/clock-rotate-left-icon.svg" className="suggestion-icon" width="20" alt={suggestion.label} />
+            {suggestion.label}
+          </Link>
+        </div>
+      );
+    }
+
     // If the suggestion is actually a query, make an appropriate link
     const link = (suggestion.query == null) ?
       <Link to={suggestion.url}>{suggestion.path}</Link> :
@@ -99,8 +110,10 @@ class QuickNavPresent extends Component {
     };
 
     let suggestionList = [defaultAnonymousSuggestionQuickBar];
-    if (this.props.loggedIn)
-      suggestionList = this.props.suggestions?.length ? this.props.suggestions : [defaultSuggestionQuickBar];
+    if (this.props.loggedIn) {
+      suggestionList = this.props.suggestions ?
+        [this.props.suggestions, defaultSuggestionQuickBar] : [defaultSuggestionQuickBar];
+    }
 
     return (
       <div className="search-box flex-nowrap justify-content-center">
@@ -119,6 +132,7 @@ class QuickNavPresent extends Component {
             theme={theme}
             shouldRenderSuggestions={() => true}
             focusInputOnSuggestionClick={false}
+            alwaysRenderSuggestions={false}
             renderSuggestion={this.onRenderSuggestion} />
           <span className="input-group-text search-button" id="addon-wrapping" onClick={this.props.callbacks.onSubmit}>
             <FontAwesomeIcon size="lg" icon={faSearch} />
