@@ -50,6 +50,7 @@ import { AddDataset } from "./dataset/addtoproject/DatasetAdd.container";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
 import AppContext from "./utils/context/appContext";
 import { setupWebSocket } from "./websocket";
+import SearchPage from "./features/kgSearch/KgSearchPage";
 
 export const ContainerWrap = ({ children, fullSize = false }) => {
   const classContainer = !fullSize ? "container-xxl py-4 mt-2 renku-container" : "w-100";
@@ -98,6 +99,10 @@ function CentralContentContainer(props) {
         } />
         <Route path={Url.get(Url.pages.help)} render={
           p => <ContainerWrap><Help key="help" {...p} {...props} /></ContainerWrap>} />
+        <Route path={Url.get(Url.pages.search)} render={
+          () => <ContainerWrap>
+            <SearchPage key="kg-search" userName={props.user?.data?.name} isLoggedUser={props.user.logged} />
+          </ContainerWrap>} />
         <Route exact
           path={[Url.get(Url.pages.projects), Url.get(Url.pages.projects.starred), Url.get(Url.pages.projects.all)]}
           render={p => <ContainerWrap><ProjectList

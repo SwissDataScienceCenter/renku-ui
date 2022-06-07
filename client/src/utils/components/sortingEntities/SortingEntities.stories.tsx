@@ -31,5 +31,5 @@ const Template: Story<SortingInputProps> = (args) => <SortingEntities {...args} 
 export const Default = Template.bind({});
 Default.args = {
   styleType: "desk",
-  value: SortingOptions.AscTitle
+  sort: SortingOptions.AscTitle,
 };

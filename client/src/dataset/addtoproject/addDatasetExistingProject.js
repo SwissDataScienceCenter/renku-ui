@@ -27,6 +27,7 @@ import SelectAutosuggestInput from "../../utils/components/SelectAutosuggestInpu
 import { Loader } from "../../utils/components/Loader";
 import AppContext from "../../utils/context/appContext";
 import { groupBy } from "../../utils/helpers/HelperFunctions";
+import { useSelector } from "react-redux";
 
 /**
  *  incubator-renku-ui
@@ -41,6 +42,7 @@ const AddDatasetExistingProject = (
   const [existingProject, setExistingProject] = useState(null);
   const [isProjectListReady, setIsProjectListReady] = useState(false);
   const [projectsCoordinator, setProjectsCoordinator] = useState(null);
+  const user = useSelector( (state) => state.stateModel.user);
   const { client } = useContext(AppContext);
   const mounted = useRef(false);
   const setCurrentStatus = handlers.setCurrentStatus;
@@ -67,8 +69,12 @@ const AddDatasetExistingProject = (
   }, [existingProject]); // eslint-disable-line
 
   useEffect(() => {
-    if (dataset && projectsCoordinator)
+    if (dataset && projectsCoordinator && user.logged) {
+      const featured = projectsCoordinator.model.get("featured");
+      if (!featured.featured && !featured.fetching)
+        projectsCoordinator.getFeatured();
       monitorProjectList();
+    }
   }, [dataset, projectsCoordinator]); // eslint-disable-line
 
   // monitor to check when the list of projects is ready
