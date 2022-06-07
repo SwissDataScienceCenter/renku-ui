@@ -134,7 +134,8 @@ export const kgSearchApi = createApi({
         };
       }
     })
-  })
+  }),
+  refetchOnMountOrArgChange: 3,
 });
 
 // Export hooks for usage in function components, which are
