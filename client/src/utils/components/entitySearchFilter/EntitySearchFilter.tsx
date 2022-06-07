@@ -16,10 +16,15 @@
  * limitations under the License.
  */
 import * as React from "react";
-import "./EntitySearchFilter.css";
-import { TypeEntityFilter } from "../typeEntityFilter/TypeEntityFilter";
+import { useDispatch } from "react-redux";
+
+import { KgAuthor } from "../../../features/kgSearch/KgSearch";
+import { setAuthor, setType, setVisibility } from "../../../features/kgSearch/KgSearchSlice";
+import { TypeEntityFilter, TypeEntitySelection } from "../typeEntityFilter/TypeEntityFilter";
 import { AuthorFilter } from "../authorFilter/AuthorFilter";
-import { VisibilityFilter } from "../visibilityFilter/VisibilityFilter";
+import { VisibilitiesFilter, VisibilityFilter } from "../visibilityFilter/VisibilityFilter";
+import "./EntitySearchFilter.css";
+
 /**
  *  renku-ui
  *
@@ -28,38 +33,30 @@ import { VisibilityFilter } from "../visibilityFilter/VisibilityFilter";
  */
 
 export interface FilterProps {
-  authorDefaultValue: "all" | "user";
+  author: KgAuthor;
+  type: TypeEntitySelection;
+  visibility: VisibilitiesFilter;
+  isLoggedUser: boolean;
 }
 
-const FilterEntitySearch = ({ authorDefaultValue = "all" }: FilterProps) => {
-  const visibilityHandler = () => {
-    // handle visibility change
-  };
-  const typeHandler = () => {
-    // handle visibility change
-  };
-  const authorHandler = () => {
-    // handle visibility change
-  };
-
-  const defaultTypeValues = {
-    dataset: true,
-    project: true,
-  };
-
-  const defaultVisibilityValues = {
-    public: true,
-    internal: true,
-    private: true,
-  };
-
+const FilterEntitySearch = ({ author, type, visibility, isLoggedUser }: FilterProps) => {
+  const dispatch = useDispatch();
+  const authorComponent = isLoggedUser ? (
+    <div><AuthorFilter
+      handler={(value: KgAuthor) => dispatch(setAuthor(value))}
+      value={author} /></div>
+  ) : null;
   return (
     <>
+      <h3 className="filter-title d-none d-sm-none d-md-none d-lg-block d-xl-block pb-3">Filter by</h3>
       <div className="filter-box">
-        <h3 className="filter-label">FILTER BY</h3>
-        <div><TypeEntityFilter handler={typeHandler} value={defaultTypeValues} /></div>
-        <div><AuthorFilter handler={authorHandler} value={authorDefaultValue} /></div>
-        <div><VisibilityFilter handler={visibilityHandler} value={defaultVisibilityValues} /></div>
+        <div><TypeEntityFilter
+          handler={(value: TypeEntitySelection) => dispatch(setType(value))}
+          value={type} /></div>
+        {authorComponent}
+        <div><VisibilityFilter
+          handler={(value: VisibilitiesFilter) => dispatch(setVisibility(value))}
+          value={visibility} /></div>
       </div>
     </>
   );

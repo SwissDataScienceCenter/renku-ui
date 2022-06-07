@@ -16,7 +16,8 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent } from "react";
+
 import { Input } from "../../ts-wrappers";
 import "./TypeEntityFilter.css";
 /**
@@ -32,29 +33,25 @@ export interface TypeEntitySelection {
 
 export interface TypeFilterProps {
   handler: Function;
-  value?: TypeEntitySelection
+  value: TypeEntitySelection
 }
 
+export const initialTypeValues: TypeEntitySelection = {
+  project: false,
+  dataset: false
+};
+
 const TypeEntityFilter = ({ handler, value }: TypeFilterProps) => {
-  const [typeSelected, setTypeSelected] = useState({
-    project: false,
-    dataset: false
-  });
 
-  useEffect(() => {
-    if (value)
-      setTypeSelected(value);
-  }, []);
+  const changeType = (typeKey: string, type: boolean) => {
+    if (!handler)
+      return;
 
-  const changeType = (type: string, value: boolean) => {
-    if (type === "project")
-      setTypeSelected({...typeSelected, project: value});
+    if (typeKey === "project")
+      handler({ ...value, project: type });
     else
-      setTypeSelected({...typeSelected, dataset: value});
-
-    if (handler)
-      handler(type, value);
-  }
+      handler({ ...value, dataset: type });
+  };
 
   const items = [
     { title: "Project", value: "project", pathIcon: "/project-icon.png" },
@@ -69,7 +66,7 @@ const TypeEntityFilter = ({ handler, value }: TypeFilterProps) => {
         <Input
           type="checkbox"
           name={nameInput}
-          defaultChecked={value ? value[itemValueAsKey] : false}
+          checked={value[itemValueAsKey]}
           onChange={(e: ChangeEvent<HTMLInputElement>) => changeType(item.value, e.target.checked)}
           className="type-entity-input"
           data-cy={nameInput}/>
@@ -80,10 +77,10 @@ const TypeEntityFilter = ({ handler, value }: TypeFilterProps) => {
   });
   return (
     <>
-      <h3 className="filter-label">By Type</h3>
+      <h3 className="filter-label">Type</h3>
       {options}
     </>
-  )
-}
+  );
+};
 
 export { TypeEntityFilter };

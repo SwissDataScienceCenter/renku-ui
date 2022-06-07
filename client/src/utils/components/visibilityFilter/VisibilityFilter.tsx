@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 import * as React from "react";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent } from "react";
 import "./VisibilityFilter.css";
 import { faGlobe, faLock, faUserFriends } from "@fortawesome/free-solid-svg-icons";
 import { Input } from "../../ts-wrappers";
@@ -41,26 +41,17 @@ export interface VisibilityFilterProps {
 }
 
 const VisibilityFilter = ({ handler, value }: VisibilityFilterProps) => {
-  const [visibilities, setVisibilities] = useState({
-    public: false,
-    internal: false,
-    private: false,
-  });
-  useEffect(() => {
-    if (value)
-      setVisibilities(value);
-  }, []);
 
-  const selectVisibility = (visibility: string, value: boolean) => {
-    switch (visibility) {
-      case "public": setVisibilities({...visibilities, public: value}); break;
-      case "internal": setVisibilities({...visibilities, public: value}); break;
-      case "private": setVisibilities({...visibilities, public: value}); break;
+  const selectVisibility = (visibilityKey: string, visibility: boolean) => {
+    if (!handler)
+      return;
+    switch (visibilityKey) {
+      case "public": handler({ ...value, public: visibility }); break;
+      case "internal": handler({ ...value, internal: visibility }); break;
+      case "private": handler({ ...value, private: visibility }); break;
     }
+  };
 
-    if (handler)
-      handler(visibility, value);
-  }
   const items = [
     { title: "Public", value: "public", icon: faGlobe },
     { title: "Internal", value: "internal", icon: faUserFriends },
@@ -75,7 +66,7 @@ const VisibilityFilter = ({ handler, value }: VisibilityFilterProps) => {
         <Input
           type="checkbox"
           name={nameInput}
-          defaultChecked={value ? value[itemValueAsKey] : false}
+          checked={value ? value[itemValueAsKey] : false}
           value={item.value}
           onChange={(e: ChangeEvent<HTMLInputElement>) => selectVisibility(item.value, e.target.checked)}
           className="visibility-input"
@@ -87,10 +78,10 @@ const VisibilityFilter = ({ handler, value }: VisibilityFilterProps) => {
   });
   return (
     <>
-      <h3 className="filter-label">By Visibility</h3>
+      <h3 className="filter-label">Visibility</h3>
       {options}
     </>
-  )
-}
+  );
+};
 
 export { VisibilityFilter };

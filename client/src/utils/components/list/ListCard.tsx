@@ -17,11 +17,13 @@
  */
 import * as React from "react";
 import { Fragment } from "react";
-import "./ListCard.css";
-import { TimeCaption } from "../TimeCaption";
+
 import { ProjectTagList } from "../../../project/shared";
+import { TimeCaption } from "../TimeCaption";
 import { EntityButton, EntityIcon, VisibilityIcon } from "./List";
 import { ListElementProps } from "./List.d";
+import "./ListCard.css";
+
 const Link = require("react-router-dom").Link;
 
 function ListCard(
@@ -41,7 +43,7 @@ function ListCard(
   }: ListElementProps) {
 
   return (
-    <div data-cy="list-card" className="col text-decoration-none p-2 rk-search-result-card list-card">
+    <div data-cy="list-card" className="col text-decoration-none p-3 rk-search-result-card list-card rounded-3">
       <Link to={url} className="col text-decoration-none">
         <div className="card card-body border-0">
           <div className="mt-2 mb-2 d-flex align-items-center">
@@ -63,11 +65,14 @@ function ListCard(
               : null
           }
           {
-            creators ?
+            creators && creators.length ?
               <div className="card-text creators text-truncate text-rk-text mt-1">
                 <small style={{ display: "block" }} className="font-weight-light">
-                  {creators.slice(0, 3).map((creator) => creator.name).join(", ")}
-                  {creators.length > 3 ? ", et al." : null}
+                  {Array.isArray(creators) ?
+                    creators.slice(0, 3).map((creator) => creator.name).join(", ") :
+                    creators
+                  }
+                  {Array.isArray(creators) && creators.length > 3 ? ", et al." : null}
                 </small>
               </div>
               : null
@@ -82,7 +87,7 @@ function ListCard(
           </div>
           {tagList && tagList.length > 0 ?
             <Fragment>
-              <div className="tagList mt-auto mb-2">
+              <div className="tagList mt-auto mb-2 overflow-hidden">
                 <ProjectTagList tagList={tagList} />
               </div>
             </Fragment> : null}

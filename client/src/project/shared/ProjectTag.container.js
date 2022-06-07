@@ -30,7 +30,7 @@ import { Badge, Input } from "reactstrap";
 
 class ProjectTag extends Component {
   render() {
-    return <span><Badge color="rk-text">{this.props.tag}</Badge>&nbsp;</span>;
+    return <Badge className="badge--entity-card" color="rk-text">{this.props.tag}</Badge>;
   }
 }
 

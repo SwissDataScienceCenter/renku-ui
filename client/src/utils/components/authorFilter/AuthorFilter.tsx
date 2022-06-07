@@ -18,7 +18,8 @@
 import * as React from "react";
 import "./AutorFilter.css";
 import { Input } from "../../ts-wrappers";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent } from "react";
+import { KgAuthor } from "../../../features/kgSearch/KgSearch";
 /**
  *  renku-ui
  *
@@ -27,30 +28,22 @@ import { ChangeEvent, useEffect, useState } from "react";
  */
 
 export interface AuthorFilterProps {
-  handler: Function,
-  value: "all" | "user"
+  handler: Function;
+  value: KgAuthor;
 }
 
 const AuthorFilter = ({ handler, value }: AuthorFilterProps) => {
-  const [authorSelected, setAuthorSelected] = useState("all");
-  useEffect(() => {
-    if (value)
-      setAuthorSelected(value);
-  }, []);
-
-  const changeAuthor = (value: string) => {
-    setAuthorSelected(value);
-
+  const changeAuthor = (author: string) => {
     if (handler)
-      handler(value);
-  }
+      handler(author);
+  };
   const items = [
     { title: "All", value: "all" },
     { title: "Only Me", value: "user" },
   ];
 
   const options = items.map(item => {
-    const nameInput = `author-${item.value}`
+    const nameInput = `author-${item.value}`;
     return (
       <div className="d-flex align-items-center" key={nameInput}>
         <Input
@@ -59,7 +52,7 @@ const AuthorFilter = ({ handler, value }: AuthorFilterProps) => {
           value={item.value}
           onChange={(e: ChangeEvent<HTMLInputElement>) => changeAuthor(e.target.value)}
           className="author-input"
-          checked={authorSelected === item.value}
+          checked={value === item.value}
           data-cy={nameInput}/>
         <label className="px-2 author-label">{item.title}</label>
       </div>
@@ -67,10 +60,10 @@ const AuthorFilter = ({ handler, value }: AuthorFilterProps) => {
   });
   return (
     <>
-      <h3 className="filter-label">By Author</h3>
+      <h3 className="filter-label">Author</h3>
       {options}
     </>
-  )
-}
+  );
+};
 
 export { AuthorFilter };
