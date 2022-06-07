@@ -27,6 +27,7 @@ import {
   useKgSearchFormSelector
 } from "../../../features/kgSearch/KgSearchSlice";
 import { QuickNavPresent } from "./QuickNav.present";
+import { TOTAL_QUERIES, useSearchLastQueriesQuery } from "./KgLastQueriesApi";
 
 export const defaultSuggestionQuickBar = {
   title: "",
@@ -51,14 +52,52 @@ const QuickNavContainerWithRouter = ({ user }) => {
   const dispatch = useDispatch();
   const { phrase } = useKgSearchFormSelector((state) => state.kgSearchForm);
   const [currentPhrase, setCurrentPhrase] = useState("");
+  const { data, isFetching, isLoading, refetch } = useSearchLastQueriesQuery(TOTAL_QUERIES);
 
   useEffect(() => {
     setCurrentPhrase(phrase);
   }, [phrase]);
 
+  const getLastQueries = (lastQueries) => {
+    const suggestionLastQueries = [];
+    if (lastQueries && lastQueries?.length) {
+      for (const query of lastQueries) {
+        suggestionLastQueries.push({
+          type: "last-queries",
+          path: "",
+          id: "last-queries",
+          url: "/search",
+          label: query,
+          query
+        });
+      }
+    }
+
+    if (suggestionLastQueries?.length) {
+      return {
+        title: "",
+        type: "last-queries",
+        suggestions: suggestionLastQueries
+      };
+    }
+    return null;
+  };
+
+  const lastQueriesSuggestions = !isFetching && !isLoading && data && !data.error ?
+    getLastQueries(data?.queries) : null;
+
+  const refetchLastQueries = (target) => {
+    setTimeout(() => {
+      // wait to retrieve the last queries after changing the phrase requesting a new entity search
+      target.blur(); // so when refetch the last queries it will no open the suggestions list again
+      refetch();
+    }, 1000);
+  };
+
   const onSubmit = async (e) => {
     e.preventDefault();
     dispatch(setPhrase(currentPhrase));
+    refetchLastQueries(e.currentTarget);
     if (history.location.pathname === "/search")
       return;
     history.push("/search");
@@ -80,9 +119,19 @@ const QuickNavContainerWithRouter = ({ user }) => {
       if (suggestion.id === "link-projects")
         dispatch(setMyProjects());
     }
+
+    if (suggestion && suggestion?.type === "last-queries" && event.type === "click") {
+      dispatch(setPhrase(suggestion.label));
+      refetchLastQueries(event.currentTarget);
+    }
   };
 
-  const onSuggestionHighlighted = () => {};
+  const onSuggestionHighlighted = ({ suggestion }) => {
+    if (suggestion && suggestion?.type === "last-queries")
+      setCurrentPhrase(suggestion.query);
+    else
+      setCurrentPhrase("");
+  };
 
   const callbacks = {
     onChange,
@@ -98,6 +147,7 @@ const QuickNavContainerWithRouter = ({ user }) => {
     loggedIn={user ? user.logged : false}
     value={currentPhrase}
     callbacks={callbacks}
+    suggestions={lastQueriesSuggestions}
   />;
 };
 
