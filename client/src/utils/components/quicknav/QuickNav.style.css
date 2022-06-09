@@ -14,13 +14,14 @@
 
 .searchBarSuggestionsContainer {
   position: absolute;
-  top: 100%;
+  top: 105%;
   z-index: 100;
-  left: 0px;
+  left: 20px;
   right: auto;
   display: block;
   background-color: #fff;
   min-width: 300px;
+  border: none;
 }
 
 .searchBarSuggestionsContainer > div {

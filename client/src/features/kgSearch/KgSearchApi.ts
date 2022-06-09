@@ -80,7 +80,7 @@ const getPhrase = (phrase?: string) => {
 // Define a service using a base URL and expected endpoints
 export const kgSearchApi = createApi({
   reducerPath: "kgSearchApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "/api/kg/" }),
+  baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/kg/" }),
   endpoints: (builder) => ({
     searchEntities: builder.query<
       ListResponse<KgSearchResult>,
@@ -134,7 +134,8 @@ export const kgSearchApi = createApi({
         };
       }
     })
-  })
+  }),
+  refetchOnMountOrArgChange: 3,
 });
 
 // Export hooks for usage in function components, which are
