@@ -28,11 +28,13 @@ import { projectKgApi } from "../../features/projects/ProjectKgApi";
 import { sessionSidecarApi } from "../../features/session/sidecarApi";
 import { kgSearchApi } from "../../features/kgSearch";
 import kgSearchFormSlice from "../../features/kgSearch/KgSearchSlice";
+import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
 
 function createStore(renkuStateModelReducer, name = "renku") {
   renkuStateModelReducer[projectKgApi.reducerPath] = projectKgApi.reducer;
   renkuStateModelReducer[sessionSidecarApi.reducerPath] = sessionSidecarApi.reducer;
   renkuStateModelReducer[kgSearchApi.reducerPath] = kgSearchApi.reducer;
+  renkuStateModelReducer[recentUserActivityApi.reducerPath] = recentUserActivityApi.reducer;
   renkuStateModelReducer[kgSearchFormSlice.name] = kgSearchFormSlice.reducer;
   // For the moment, disable the custom middleware, since it causes
   // problems for our app.
