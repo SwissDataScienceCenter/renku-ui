@@ -27,7 +27,7 @@ import {
   useKgSearchFormSelector
 } from "../../../features/kgSearch/KgSearchSlice";
 import { QuickNavPresent } from "./QuickNav.present";
-import { TOTAL_QUERIES, useSearchLastQueriesQuery } from "./KgLastQueriesApi";
+import { TOTAL_QUERIES, useSearchLastQueriesQuery } from "../../../features/recentUserActivity/RecentUserActivityApi";
 
 export const defaultSuggestionQuickBar = {
   title: "",

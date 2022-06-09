@@ -19,7 +19,7 @@ describe("rendering", () => {
   const useDispatchMock = jest.spyOn(reactRedux, "useDispatch");
   const initialState = {
     kgSearchForm: { phrase: "" },
-    kgLastQueriesApi: { data: [], isFetching: false, isLoading: false, refetch: () => true }
+    recentUserActivityApi: { data: [], isFetching: false, isLoading: false, refetch: () => true }
   };
   const middleware = [thunk];
   const mockStore = configureStore(middleware);

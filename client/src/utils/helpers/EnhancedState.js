@@ -27,16 +27,16 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { kgSearchApi } from "../../features/kgSearch";
 import kgSearchFormSlice from "../../features/kgSearch/KgSearchSlice";
-import { kgLastQueriesApi } from "../components/quicknav/KgLastQueriesApi";
+import { recentUserActivityApi } from "../../features/recentUserActivity/RecentUserActivityApi";
 
-function createStore(renkuStateModelReducer, name = "renku") {
+function createStore(renkuStateModelReducer) {
 
   renkuStateModelReducer[kgSearchApi.reducerPath] = kgSearchApi.reducer;
-  renkuStateModelReducer[kgLastQueriesApi.reducerPath] = kgLastQueriesApi.reducer;
+  renkuStateModelReducer[recentUserActivityApi.reducerPath] = recentUserActivityApi.reducer;
   renkuStateModelReducer[kgSearchFormSlice.name] = kgSearchFormSlice.reducer;
   // For the moment, disable the custom middleware, since it causes
   // problems for our app.
-  const store = configureStore({
+  return configureStore({
     reducer: renkuStateModelReducer,
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
@@ -44,7 +44,6 @@ function createStore(renkuStateModelReducer, name = "renku") {
         serializableCheck: false,
       }).concat(kgSearchApi.middleware),
   });
-  return store;
 }
 
 // TODO: Introduce a mock store for testing

@@ -21,21 +21,22 @@ interface KgLastSearchResult {
   queries?: string[],
   error?: string,
 }
-export const TOTAL_QUERIES = 5;
+export const TOTAL_QUERIES = 6;
 
 
-export const kgLastQueriesApi = createApi({
-  reducerPath: "kgLastQueriesApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/last-searches" }),
+export const recentUserActivityApi = createApi({
+  reducerPath: "recentUserActivityApi",
+  baseQuery: fetchBaseQuery({ baseUrl: "/ui-server/api/" }),
   endpoints: (builder) => ({
     searchLastQueries: builder.query<KgLastSearchResult, number>({
-      query: (numberWords) => `/${numberWords}`,
+      query: (numberWords) => `last-searches/${numberWords}`,
       transformResponse: (response: KgLastSearchResult) => {
         let queries: string[] = [];
         if (response?.queries?.length) {
           queries = response?.queries
             .map(query => query.replace(/\*/g, "").trim())
-            .filter(query => query.length > 0);
+            .filter(query => query.length > 0)
+            .slice(0, 5);
         }
         response.queries = queries;
         return response;
@@ -46,4 +47,4 @@ export const kgLastQueriesApi = createApi({
 
 // Export hooks for usage in function components, which are
 // auto-generated based on the defined endpoints
-export const { useSearchLastQueriesQuery } = kgLastQueriesApi;
+export const { useSearchLastQueriesQuery } = recentUserActivityApi;
