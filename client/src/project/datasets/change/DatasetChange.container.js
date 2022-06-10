@@ -236,18 +236,22 @@ function ChangeDataset(props) {
     dataset.keywords = mappedInputs.keywords;
     dataset.creators = mappedInputs.creators.map(creator => getCreator(creator));
 
-    if (mappedInputs.image.options.length && mappedInputs.image.selected) {
-      const images = await uploadDatasetImages(mappedInputs.image, handlers);
-      if (images)
-        dataset.images = images;
+    if (mappedInputs.image.options.length) {
+      const imageSelected = mappedInputs.image.options[mappedInputs.image.selected];
+      if (imageSelected.STOCK === false) {
+        const images = await uploadDatasetImages(mappedInputs.image, handlers);
+        if (images)
+          dataset.images = images;
+      }
+      else {
+        dataset.images = [{
+          "content_url": mappedInputs.image.options[mappedInputs.image.selected]?.URL,
+          "position": 0,
+          "mirror_locally": true
+        }];
+      }
     }
-    else if (mappedInputs.image.options.length && !mappedInputs.image.selected && mappedInputs.image.options[0]?.URL) {
-      dataset.images = [{
-        "content_url": mappedInputs.image.options[0]?.URL,
-        "position": 0,
-        "mirror_locally": true
-      }];
-    }
+
     props.client.postDataset(props.httpProjectUrl, dataset, props.defaultBranch, props.edit, versionUrl)
       .then(response => {
         if (response.data.error !== undefined) {
