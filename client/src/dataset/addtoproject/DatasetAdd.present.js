@@ -36,6 +36,7 @@ import { AddDatasetNewProject } from "./addDatasetNewProject";
 import { getDatasetAuthors } from "../DatasetFunctions";
 import { DatasetError } from "../DatasetError";
 import { Loader } from "../../utils/components/Loader";
+import LoginAlert from "../../utils/components/loginAlert/LoginAlert";
 
 function HeaderAddDataset({ dataset }) {
   if (!dataset) return null;
@@ -63,37 +64,7 @@ function DatasetAdd({ dataset, model, handlers, isDatasetValid, currentStatus, i
   const [isNewProject, setIsNewProject] = useState(false);
   const logged = useSelector((state) => state.user.logged);
 
-  const buttonGroup = (
-    <ButtonGroup className="d-flex">
-      <Button disabled={["inProcess", "importing"].includes(currentStatus?.status)}
-        data-cy="add-dataset-existing-project-option-button"
-        color="primary" outline active={!isNewProject} onClick={() => setIsNewProject(false)}>
-        Existing Project
-      </Button>
-      <Button disabled={["inProcess", "importing"].includes(currentStatus?.status)}
-        data-cy="add-dataset-new-project-option-button"
-        color="primary" outline active={isNewProject} onClick={() => setIsNewProject(true)}>
-        New Project
-      </Button>
-    </ButtonGroup>
-  );
-  const formToDisplay = !isNewProject ?
-    (<AddDatasetExistingProject
-      handlers={handlers}
-      model={model}
-      dataset={dataset}
-      currentStatus={currentStatus}
-      isDatasetValid={isDatasetValid}
-      importingDataset={importingDataset}
-    />) : <AddDatasetNewProject
-      handlers={handlers}
-      model={model}
-      dataset={dataset}
-      currentStatus={currentStatus}
-      isDatasetValid={isDatasetValid}
-      importingDataset={importingDataset}
-    />;
-
+  // Return early if there is no dataset
   if (!dataset) return <Loader />;
   if (!dataset?.exists) {
     if (!_.isEmpty(dataset?.fetchError)) {
@@ -106,16 +77,57 @@ function DatasetAdd({ dataset, model, handlers, isDatasetValid, currentStatus, i
       );
     }
   }
+
+  // Set different content for logged and anonymous users
+  let mainContent = null;
+  if (logged) {
+    const disabled = ["inProcess", "importing"].includes(currentStatus?.status) ? true : false;
+    const buttonGroup = (
+      <ButtonGroup className="d-flex">
+        <Button disabled={disabled}
+          data-cy="add-dataset-existing-project-option-button"
+          color="primary" outline active={!isNewProject} onClick={() => setIsNewProject(false)}>
+          Existing Project
+        </Button>
+        <Button disabled={disabled}
+          data-cy="add-dataset-new-project-option-button"
+          color="primary" outline active={isNewProject} onClick={() => setIsNewProject(true)}>
+          New Project
+        </Button>
+      </ButtonGroup>
+    );
+    const formToDisplay = !isNewProject ?
+      (<AddDatasetExistingProject
+        handlers={handlers}
+        model={model}
+        dataset={dataset}
+        currentStatus={currentStatus}
+        isDatasetValid={isDatasetValid}
+        importingDataset={importingDataset}
+      />) :
+      (<AddDatasetNewProject
+        handlers={handlers}
+        model={model}
+        dataset={dataset}
+        currentStatus={currentStatus}
+        isDatasetValid={isDatasetValid}
+        importingDataset={importingDataset}
+      />);
+    mainContent = (<>{buttonGroup}{formToDisplay}</>);
+  }
+  else {
+    const textIntro = "Only authenticated users can create new projects.";
+    const textPost = "to create new project with dataset.";
+    mainContent = (<LoginAlert logged={logged} textIntro={textIntro} textPost={textPost} />);
+  }
+
   return (
-    <>
-      <Row className="mb-3">
-        <Col sm={10} md={9} lg={8} xl={7}>
-          <HeaderAddDataset dataset={dataset} />
-          {buttonGroup}
-          {formToDisplay}
-        </Col>
-      </Row>
-    </>
+    <Row className="mb-3">
+      <Col md={10} lg={9} xl={8}>
+        <HeaderAddDataset dataset={dataset} />
+        {mainContent}
+      </Col>
+    </Row>
   );
 }
 

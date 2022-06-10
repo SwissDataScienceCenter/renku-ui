@@ -89,6 +89,16 @@ function HomeHeader(props) {
         <img src={logo} alt="Renku" height="68" className="d-block my-1" />
       </div>
       <div className="px-2 mt-3 align-self-center bg-primary">
+        <ExternalLink
+          title="Docs"
+          className="btn btn-outline-rk-pink d-none d-md-inline-block me-2" role="button"
+          showLinkIcon={true}
+          url={Docs.READ_THE_DOCS_ROOT} />{" "}
+        <ExternalLink
+          title="GitHub"
+          className="btn btn-outline-rk-pink d-none d-md-inline-block me-2" role="button"
+          showLinkIcon={true}
+          url="https://github.com/SwissDataScienceCenter/renku"/>{" "}
         <Link className="btn btn-outline-secondary" role="button" id="login-button" to="/login">
           Login
         </Link>
@@ -102,21 +112,38 @@ function HomeHeader(props) {
     <div className="rk-navbar-home">
       <Collapse isOpen={isOpen}>
         <Navbar className="navbar rk-anon-home px-0">
-          <Nav className="ms-auto flex-column text-end">
+          <Nav className="ms-auto flex-column rk-bg-shaded-dark text-end"
+            style={{ "--rk-bg-opacity": 0.8 }}>
             <NavItem className="nav-item pe-1">
               <QuickNav client={props.client} model={props.model} user={props.user} />
             </NavItem>
-            <NavItem className="nav-item">
+            <NavItem>
               <RenkuNavLink to="/projects" title="Projects" id="link-projects" className="link-secondary" />
             </NavItem>
-            <NavItem className="nav-item">
+            <NavItem>
               <RenkuNavLink to="/datasets" title="Datasets" id="link-datasets" />
             </NavItem>
-            <NavItem className="nav-item">
+            <NavItem>
               <RenkuNavLink to="/sessions" title="Sessions" id="link-sessions" />
             </NavItem>
-            <NavItem className="nav-item">
+            <NavItem>
               <RenkuToolbarHelpMenu />
+            </NavItem>
+            <NavItem className="d-inline d-md-none">
+              <ExternalLink
+                className="nav-link"
+                title="Docs"
+                role="text"
+                showLinkIcon={true}
+                url={Docs.READ_THE_DOCS_ROOT} />
+            </NavItem>
+            <NavItem className="d-inline d-md-none">
+              <ExternalLink
+                className="nav-link"
+                title="GitHub"
+                role="text"
+                showLinkIcon={true}
+                url="https://github.com/SwissDataScienceCenter/renku" />
             </NavItem>
             <NavItem className="nav-item">
               <RenkuToolbarNotifications {...props} />

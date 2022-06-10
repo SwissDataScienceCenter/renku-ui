@@ -162,8 +162,8 @@ const AddDatasetExistingProject = (
   if (!dataset) return null;
 
   return (
-    <div className="mt-4 mx-3">
-      <form onSubmit={onSubmit} className={"mt-2"} data-cy="form-project-exist">
+    <div className="mt-4">
+      <form onSubmit={onSubmit} className="mt-2" data-cy="form-project-exist">
         {suggestionInput}
       </form>
       {addDatasetStatus}

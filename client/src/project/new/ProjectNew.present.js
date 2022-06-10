@@ -26,21 +26,15 @@
 
 import React, { Component, Fragment } from "react";
 import { Link } from "react-router-dom";
-import {
-  Alert, Button, Form,
-  FormText, ModalBody, ModalFooter, ModalHeader,
-} from "reactstrap";
+import { Button, Form, FormText, ModalBody, ModalFooter, ModalHeader } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faExclamationTriangle,
-} from "@fortawesome/free-solid-svg-icons";
+import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
 
-import "./Project.style.css";
-import { Url } from "../../utils/helpers/url";
 import { Loader } from "../../utils/components/Loader";
 import { ErrorAlert, WarnAlert } from "../../utils/components/Alert";
-import AppContext from "../../utils/context/appContext";
+import LoginAlert from "../../utils/components/loginAlert/LoginAlert";
 import FormSchema from "../../utils/components/formschema/FormSchema";
+import ProgressIndicator, { ProgressStyle, ProgressType } from "../../utils/components/progress/Progress";
 import Automated from "./components/Automated";
 import Title from "./components/Title";
 import Description from "./components/Description";
@@ -53,7 +47,9 @@ import Template from "./components/Template";
 import TemplateVariables from "./components/TemplateVariables";
 import { FormErrors, FormWarnings } from "./components/FormValidations";
 import SubmitFormButton from "./components/SubmitFormButton";
-import ProgressIndicator, { ProgressStyle, ProgressType } from "../../utils/components/progress/Progress";
+import AppContext from "../../utils/context/appContext";
+
+import "./Project.style.css";
 
 function ForkProject(props) {
   const { error, fork, forkedTitle, forking, forkUrl, namespaces, projects, toggleModal } = props;
@@ -261,20 +257,11 @@ class NewProject extends Component {
       namespaces,
       templates
     } = this.props;
-    const { location } = this.context;
+
     if (!user.logged) {
-      const to = Url.get(Url.pages.login.link, { pathname: location.pathname });
-      return (
-        <>
-          <p>Only authenticated users can create new projects.</p>
-          <Alert color="primary">
-            <p className="mb-0">
-              <Link className="btn btn-primary btn-sm" to={to}>Log in</Link> to
-              create a new project.
-            </p>
-          </Alert>
-        </>
-      );
+      const textIntro = "Only authenticated users can create new projects.";
+      const textPost = "to create a new project.";
+      return (<LoginAlert logged={user.logged} textIntro={textIntro} textPost={textPost} />);
     }
 
     const title = "New Project";

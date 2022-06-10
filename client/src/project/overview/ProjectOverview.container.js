@@ -158,7 +158,7 @@ class OverviewVersion extends Component {
   }
 
   componentDidMount() {
-    this.projectCoordinator.fetchProjectLockStatus();
+    this.projectCoordinator.fetchProjectLockStatus(this.props.user.logged);
   }
 
   render() {

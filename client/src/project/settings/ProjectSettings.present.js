@@ -45,6 +45,7 @@ import { Loader } from "../../utils/components/Loader";
 import { WarnAlert } from "../../utils/components/Alert";
 import { CoreErrorAlert } from "../../utils/components/errors/CoreErrorAlert";
 import { ExternalLink } from "../../utils/components/ExternalLinks";
+import LoginAlert from "../../utils/components/loginAlert/LoginAlert";
 import { Docs } from "../../utils/constants/Docs";
 
 
@@ -231,7 +232,7 @@ function RepositoryUrlRow(props) {
 //** Sessions settings **//
 
 function ProjectSettingsSessions(props) {
-  const { backend, config, location, metadata, newConfig, options, setConfig, user } = props;
+  const { backend, config, metadata, newConfig, options, setConfig, user } = props;
   const { accessLevel, repositoryUrl } = metadata;
   const devAccess = accessLevel > ACCESS_LEVELS.DEVELOPER ? true : false;
   const locked = props.lockStatus?.locked ?? false;
@@ -239,11 +240,11 @@ function ProjectSettingsSessions(props) {
 
   // ? Anonymous users may have problem with notebook options, depending on the deployment
   if (!user.logged) {
-    const to = Url.get(Url.pages.login.link, { pathname: location.pathname });
+    const textIntro = "Only authenticated users can access sessions setting.";
+    const textPost = "to visualize sessions settings.";
     return (
       <SessionsDiv>
-        <p>Anonymous users cannot access sessions settings.</p>
-        <p>You can <Link className="btn btn-primary btn-sm" to={to}>Log in</Link> to see them.</p>
+        <LoginAlert logged={user.logged} textIntro={textIntro} textPost={textPost} />
       </SessionsDiv>
     );
   }
