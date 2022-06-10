@@ -262,13 +262,19 @@ class FileLineage extends Component {
       );
     }
 
-    const buttonDownload = (
-      <ExternalIconLink
-        tooltip="Download File"
-        icon={faDownload}
-        to={`${this.props.externalUrl}/-/raw/master/${this.props.path}?inline=false`}
-      />
-    );
+    const fileInfo = this.props.filesTree?.hash && this.props.gitFilePath ?
+      this.props.filesTree.hash[this.props.gitFilePath] :
+      null;
+    // Do not show the download button if it's a folder
+    const buttonDownload = fileInfo && fileInfo.type === "tree" ?
+      null :
+      (
+        <ExternalIconLink
+          tooltip="Download File"
+          icon={faDownload}
+          to={`${this.props.externalUrl}/-/raw/master/${this.props.path}?inline=false`}
+        />
+      );
 
     return <Card className="border-rk-light">
       <CardHeader className="d-flex align-items-center bg-white justify-content-between pe-3 ps-3">
