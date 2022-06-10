@@ -1,5 +1,13 @@
 # Changes
 
+## [2.3.2](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.3.1...2.3.2) (2022-06-10)
+
+### Bug Fixes
+
+* do not show download button for folders in lineage view  ([#1893](https://github.com/SwissDataScienceCenter/renku-ui/issues/1893))
+* retain dataset image when updating a dataset ([#1861](https://github.com/SwissDataScienceCenter/renku-ui/issues/1861), [#1887](https://github.com/SwissDataScienceCenter/renku-ui/issues/1887))
+
+
 ## [2.3.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.3.0...2.3.1) (2022-05-31)
 ### Features
 
