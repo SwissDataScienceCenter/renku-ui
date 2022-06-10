@@ -17,6 +17,7 @@
  */
 
 import React, { useState } from "react";
+import { Helmet } from "react-helmet";
 import {
   Button, Card, CardBody, CardHeader, Col, DropdownItem, DropdownMenu, DropdownToggle, Row,
   Table, UncontrolledButtonDropdown, Badge
@@ -334,8 +335,20 @@ export default function DatasetView(props) {
       props.history.push(addDatasetUrl);
   };
 
+  const datasetTitle = dataset.title || dataset.name;
+  const datasetDesc = dataset.description;
+  const pageTitle = datasetDesc ?
+    `${datasetTitle} • Dataset • ${datasetDesc}` :
+    `${datasetTitle} • Dataset`;
+
   return <Col>
     <ErrorAfterCreation location={props.location} dataset={dataset} />
+    {
+      props.insideProject ? null :
+        <Helmet>
+          <title>{pageTitle}</title>
+        </Helmet>
+    }
     <Row>
       <Col md={8} sm={12}>
         {props.insideProject ?

@@ -24,6 +24,7 @@
  */
 
 import React, { Component, Fragment } from "react";
+import { Helmet } from "react-helmet";
 import { Route, Switch } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -72,6 +73,9 @@ function CentralContentContainer(props) {
 
   return <div className="container-xxl pt-4 mt-2 renku-container">
     <AppContext.Provider value={appContext}>
+      <Helmet>
+        <title>Reproducible Data Science | Open Research | Renku</title>
+      </Helmet>
       <Switch>
         <Route exact path="/login" render={
           p => <Login key="login" {...p} {...props} />} />
