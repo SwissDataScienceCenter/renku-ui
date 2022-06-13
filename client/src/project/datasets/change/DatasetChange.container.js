@@ -244,11 +244,15 @@ function ChangeDataset(props) {
           dataset.images = images;
       }
       else {
-        dataset.images = [{
-          "content_url": mappedInputs.image.options[mappedInputs.image.selected]?.URL,
-          "position": 0,
-          "mirror_locally": true
-        }];
+        if (mappedInputs.image.options[mappedInputs.image.selected]?.URL != null) {
+          dataset.images = [
+            {
+              content_url: mappedInputs.image.options[mappedInputs.image.selected]?.URL,
+              position: 0,
+              mirror_locally: true,
+            },
+          ];
+        }
       }
     }
 
