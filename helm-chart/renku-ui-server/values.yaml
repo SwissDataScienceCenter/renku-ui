@@ -34,7 +34,7 @@ replicaCount: 1
 
 image:
   repository: renku/renku-ui-server
-  tag: "2.3.2"
+  tag: "2.4.0"
   pullPolicy: IfNotPresent
 
 imagePullSecrets: []

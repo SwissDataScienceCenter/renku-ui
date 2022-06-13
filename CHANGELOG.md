@@ -1,5 +1,20 @@
 # Changes
 
+# [2.4.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.3.2...2.4.0) (2022-06-13)
+
+
+### Bug Fixes
+
+* edit datasets without images works as expected ([1899](https://github.com/SwissDataScienceCenter/renku-ui/issues/1899))
+
+* support new server resources format ([#1825](https://github.com/SwissDataScienceCenter/renku-ui/issues/1825), [#1791](https://github.com/SwissDataScienceCenter/renku-ui/issues/1791))
+
+
+### BREAKING CHANGES
+
+* requires renku-notebooks >= v1.8.0
+
+
 ## [2.3.2](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.3.1...2.3.2) (2022-06-10)
 
 ### Bug Fixes
