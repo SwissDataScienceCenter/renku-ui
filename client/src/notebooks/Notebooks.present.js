@@ -142,7 +142,7 @@ function SessionInformation(props) {
 
   const annotations = NotebooksHelper.cleanAnnotations(notebook.data.annotations, "renku.io");
   const url = notebook.data.url;
-  const resources = formatResources(notebook.data.resources);
+  const resources = formatResources(notebook.data.resources?.requests);
 
   const repositoryLinks = {
     branch: `${annotations["repository"]}/tree/${annotations["branch"]}`,
@@ -504,7 +504,7 @@ class NotebookServersList extends Component {
       const validAnnotations = Object.keys(this.props.servers[k].annotations)
         .filter(key => key.startsWith("renku.io"))
         .reduce((obj, key) => { obj[key] = this.props.servers[k].annotations[key]; return obj; }, {});
-      const resources = this.props.servers[k].resources;
+      const resources = this.props.servers[k].resources?.requests;
       const startTime = Time.toIsoTimezoneString(this.props.servers[k].started, "datetime-short");
 
       return (<NotebookServerRow

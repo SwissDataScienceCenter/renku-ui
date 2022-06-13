@@ -15,9 +15,12 @@
       "image":"registry.dev.renku.ch/e2e/local-test-project:172a784",
       "name":"e2e-40renk-local-2dtest-2dproject-84756d7d",
       "resources":{
-        "cpu":"0.5",
-        "memory":"1G",
-        "storage":"1G"
+        "requests": {
+          "cpu":"0.5",
+          "memory":"1G",
+          "storage":"1G"
+        },
+        "usage": {}
       },
       "started":"2022-02-28T14:15:59+00:00",
       "state":{
