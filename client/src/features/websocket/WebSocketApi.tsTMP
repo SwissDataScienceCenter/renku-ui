@@ -1,0 +1,78 @@
+/*!
+ * Copyright 2022 - Swiss Data Science Center (SDSC)
+ * A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
+ * Eidgenössische Technische Hochschule Zürich (ETHZ).
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+
+export type Channel = "redux" | "general";
+
+export interface Message {
+  id: number
+  channel: Channel
+  userName: string
+  text: string
+}
+
+// TODO: use websocket with createApi
+// ? REFERENCE: https://redux-toolkit.js.org/rtk-query/usage/streaming-updates
+
+export const websocketApi = createApi({
+  reducerPath: "WebSocketApi",
+  baseQuery: fetchBaseQuery({ baseUrl: "/ui-server" }), // ! TODO: make this dynamic
+  endpoints: (builder) => ({
+    getWsMessages: builder.query<Message[], Channel>({
+      // query: (channel) => `messages/${channel}`,
+      query: (channel) => ``,
+      async onCacheEntryAdded(
+        arg,
+        { updateCachedData, cacheDataLoaded, cacheEntryRemoved }
+      ) {
+        // create a websocket connection when the cache subscription starts
+        // eslint-disable-next-line spellcheck/spell-checker
+        const ws = new WebSocket("wss://lorenzo.dev.renku.ch/ui-server/ws");
+        console.log(ws);
+        try {
+          // wait for the initial query to resolve before proceeding
+          await cacheDataLoaded;
+
+          // when data is received from the socket connection to the server,
+          // if it is a message and for the appropriate channel,
+          // update our query result with the received message
+          const listener = (event: MessageEvent) => {
+            const data = JSON.parse(event.data);
+            // if (!isMessage(data) || data.channel !== arg) return
+
+            updateCachedData((draft) => {
+              draft.push(data);
+            });
+          };
+
+          ws.addEventListener("message", listener);
+        } catch {
+          // no-op in case `cacheEntryRemoved` resolves before `cacheDataLoaded`,
+          // in which case `cacheDataLoaded` will throw
+        }
+        // cacheEntryRemoved will resolve when the cache subscription is no longer active
+        await cacheEntryRemoved;
+        // perform cleanup steps once the `cacheEntryRemoved` promise resolves
+        ws.close();
+      },
+    }),
+  })
+});
+
+export const { useGetWsMessagesQuery } = websocketApi;

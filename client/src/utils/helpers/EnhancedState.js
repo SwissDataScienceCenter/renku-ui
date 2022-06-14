@@ -42,7 +42,26 @@ function createStore(reducer, name = "renku") {
     // other store enhancers if any
   );
   return reduxCreateStore(reducer, enhancer);
+
 }
+
+
+// ! MOCK FROM THe OLD CODE
+// import { websocketApi } from "../../features/websocket";
+// function createStore(renkuStateModelReducer, name = "renku") {
+//   // renkuStateModelReducer[websocketApi.reducerPath] = websocketApi.reducer;
+//   // For the moment, disable the custom middleware, since it causes
+//   // problems for our app.
+//   const store = configureStore({
+//     reducer: renkuStateModelReducer,
+//     middleware: (getDefaultMiddleware) =>
+//       getDefaultMiddleware({
+//         immutableCheck: false,
+//         serializableCheck: false,
+//       }).concat(websocketApi.middleware),
+//   });
+//   return store;
+// }
 
 // TODO: Introduce a mock store for testing
 // import configureMockStore from 'redux-mock-store'

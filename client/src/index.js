@@ -99,6 +99,69 @@ Promise.all([configFetch, privacyFetch]).then(valuesRead => {
       return { user: state.user, ...ownProps };
     }
 
+
+    class WsMessage {
+      // timestamp = new Date();
+      // type;
+      // scope;
+      // data;
+
+      constructor(data, scope, type = "user") {
+        this.timestamp = new Date();
+        if (typeof data === "string")
+          this.data = { message: data };
+        else
+          this.data = data;
+        this.scope = scope;
+        this.type = type;
+      }
+
+      toString() {
+        return JSON.stringify({
+          timestamp: this.timestamp,
+          type: this.type,
+          scope: this.scope,
+          data: this.data
+        });
+      }
+    }
+
+    // Setup WebSocket channel
+    userPromise.then(resp => {
+      const webSocketModel = model.subModel("websocket");
+      webSocketModel.setObject({
+        open: null, messages: [], last: null, error: null
+      });
+      const uiServerWs = params["UISERVER_URL"].replace("https://", "wss://");
+      const ws = new WebSocket(`${uiServerWs}/ws`); // TODO: need to add as variable in the values
+      ws.onerror = (error) => {
+        webSocketModel.setObject({ open: false, error: { ...error }, last: new Date() });
+      };
+      ws.onopen = (status) => {
+        const open = status?.target?.readyState ?
+          true :
+          false;
+        webSocketModel.setObject({ open, last: new Date() });
+
+        // send setup data
+        const mex = new WsMessage({ version: params.UI_SHORT_SHA }, "init");
+        ws.send(mex.toString());
+      };
+      ws.onmessage = (message) => {
+        if (message.type === "message" && message.data) {
+          const messages = webSocketModel.get("messages");
+          webSocketModel.setObject({ messages: [...messages, message.data], last: new Date() });
+          console.log(message.data);
+        }
+        else {
+          console.log("unexpected mex: ", message)
+        }
+      };
+      // TODO:
+      // - modify the first message so that it sends the require information from the backend
+      // // ws.addEventListener
+    });
+
     // Render UI application
     const VisibleApp = connect(mapStateToProps)(uiApplication);
     ReactDOM.render(
