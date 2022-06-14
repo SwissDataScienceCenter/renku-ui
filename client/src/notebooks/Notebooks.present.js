@@ -676,6 +676,7 @@ class NotebookServerRowFull extends Component {
         stopNotebook={this.props.stopNotebook}
         toggleLogs={this.props.toggleLogs}
         url={url}
+        scope={this.props.scope}
       />
       <EnvironmentLogs
         fetchLogs={this.props.fetchLogs}
@@ -916,7 +917,7 @@ class NotebookServerRowProject extends Component {
 }
 
 const NotebookServerRowAction = memo((props) => {
-  const { status, name } = props;
+  const { status, name, scope } = props;
   const actions = {
     connect: null,
     stop: null,
@@ -936,7 +937,9 @@ const NotebookServerRowAction = memo((props) => {
     </Fragment>;
   }
   if (status === SessionStatus.running) {
-    defaultAction = (<Link className="btn btn-secondary text-white" to={props.localUrl}>Open</Link>);
+    const state = scope?.filePath ? { filePath: scope?.filePath } : undefined;
+    defaultAction = (
+      <Link className="btn btn-secondary text-white" to={{ pathname: props.localUrl, state }}>Open</Link>);
     actions.openExternal = (<DropdownItem href={props.url} target="_blank" >
       <FontAwesomeIcon icon={faExternalLinkAlt} /> Open in new tab
     </DropdownItem>);

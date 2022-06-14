@@ -1212,7 +1212,8 @@ class ProjectStartNotebookServer extends Component {
     const scope = {
       defaultBranch: this.props.metadata.defaultBranch,
       namespace: this.props.metadata.namespace,
-      project: this.props.metadata.path
+      project: this.props.metadata.path,
+      filePath: location?.state?.filePath,
     };
 
     return (
@@ -1237,6 +1238,7 @@ class ProjectStartNotebookServer extends Component {
         scope={scope}
         successUrl={notebookServersUrl}
         user={user}
+        openShareLinkModal={location?.state?.openShareLinkModal}
       />
     );
   }

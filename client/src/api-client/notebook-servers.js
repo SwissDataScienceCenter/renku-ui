@@ -88,11 +88,16 @@ function addNotebookServersMethods(client) {
     const headers = client.getBasicHeaders();
     headers.append("Content-Type", "application/json");
     const url = `${client.baseUrl}/notebooks/servers`;
+    let notebook;
 
     // ? rename default_url to legacy defaultUrl
     if (options && options.serverOptions && "default_url" in options.serverOptions) {
       options.serverOptions.defaultUrl = options.serverOptions.default_url;
       delete options.serverOptions.default_url;
+    }
+    if (options && options.serverOptions && "notebook" in options.serverOptions) {
+      notebook = options.serverOptions.notebook;
+      delete options.serverOptions.notebook;
     }
 
     let parameters = {
@@ -100,6 +105,7 @@ function addNotebookServersMethods(client) {
       project: projectPath,
       commit_sha: commitId,
       branch: branchName,
+      notebook,
       ...options
     };
     if (image)

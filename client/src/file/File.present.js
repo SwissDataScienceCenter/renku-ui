@@ -96,6 +96,7 @@ class FileCard extends React.Component {
           &nbsp;
           </div>
           <div className="d-flex align-items-end">
+            {this.props.buttonShareLinkSession}
             {this.props.buttonDownload}
             {this.props.buttonJupyter}
             {this.props.buttonGit}
@@ -159,6 +160,7 @@ class ShowFile extends React.Component {
           buttonGraph={buttonGraph}
           buttonGit={buttonGit}
           buttonJupyter={this.props.buttonJupyter}
+          buttonShareLinkSession={this.props.buttonShareLinkSession}
           body={body}
           isLFSBadge={null}
           fileSize={this.props.fileSize}
@@ -197,6 +199,7 @@ class ShowFile extends React.Component {
         buttonGraph={buttonGraph}
         buttonGit={buttonGit}
         buttonJupyter={this.props.buttonJupyter}
+        buttonShareLinkSession={this.props.buttonShareLinkSession}
         body={body}
         isLFSBadge={isLFSBadge}
         buttonDownload={buttonDownload}

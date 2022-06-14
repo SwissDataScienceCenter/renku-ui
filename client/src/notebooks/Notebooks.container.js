@@ -236,11 +236,14 @@ class Notebooks extends Component {
     if (this.props.blockAnonymous && !this.userLogged)
       return <NotebooksDisabled logged={this.userLogged} />;
 
+    const filePath = this.coordinator?.model?.get("filters.filePath");
+    const scope = { ...this.props.scope, filePath };
+
     return <VisibleNotebooks
       handlers={this.handlers}
       showingLogs={this.state.showingLogs}
       message={this.props.message}
-      scope={this.props.scope}
+      scope={scope}
       store={this.model.reduxStore}
       standalone={this.props.standalone ? this.props.standalone : false}
       urlNewSession={this.props.urlNewSession}
@@ -288,14 +291,15 @@ class StartNotebookServer extends Component {
 
     // Check auto start mode
     const currentSearch = qs.parse(props.location.search);
-    this.autostart = currentSearch && currentSearch["autostart"] && currentSearch["autostart"] === "1" ?
-      true :
-      false;
+    this.autostart = !!(currentSearch && currentSearch["autostart"] && currentSearch["autostart"] === "1");
     this.customBranch = currentSearch && this.autostart && currentSearch["branch"] ?
       currentSearch["branch"] :
       null;
     this.customCommit = currentSearch && this.autostart && currentSearch["commit"] ?
       currentSearch["commit"] :
+      null;
+    this.customNotebookFilePath = currentSearch && this.autostart && currentSearch["notebook"] ?
+      currentSearch["notebook"] :
       null;
     this.state = {
       autosavesCommit: false,
@@ -308,7 +312,9 @@ class StartNotebookServer extends Component {
       showObjectStoreModal: false,
       starting: false,
       commitDelay: false, // used in setCommitWhenReady
-      branchDelay: false // used in setBranchWhenReady
+      branchDelay: false, // used in setBranchWhenReady
+      showShareLinkModal: props.location?.state?.showShareLinkModal,
+      filePath: props.location?.state?.filePath,
     };
 
     this.handlers = {
@@ -336,6 +342,7 @@ class StartNotebookServer extends Component {
       if (!this.autostart)
         this.coordinator.startNotebookPolling();
       this.coordinator.fetchAutosaves();
+      this.selectNotebookFilePath(this.customNotebookFilePath);
       this.refreshBranches();
     }
   }
@@ -405,6 +412,12 @@ class StartNotebookServer extends Component {
         this.selectBranch(this.customBranch);
       }
     }
+  }
+
+  selectNotebookFilePath(notebookFilePath) {
+    if (!notebookFilePath)
+      return;
+    this.coordinator.setNotebookFilePath(notebookFilePath);
   }
 
   async selectBranch(branchName) {
@@ -695,11 +708,12 @@ class StartNotebookServer extends Component {
             path: annotations["projectName"],
             server: data.name,
           });
+          const state = { filePath: this.customNotebookFilePath };
 
           // ? Start with a short delay to prevent missing server information from "GET /servers" API
           setTimeout(() => {
             this.setState({ autostartTried: true });
-            history.push({ pathname: localUrl, search: "" });
+            history.push({ pathname: localUrl, search: "", state });
           }, 3000);
         }
         else {
