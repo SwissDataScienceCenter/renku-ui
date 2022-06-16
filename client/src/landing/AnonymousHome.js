@@ -40,12 +40,6 @@ import QuickNav from "../utils/components/quicknav";
 import { RenkuToolbarHelpMenu, RenkuToolbarNotifications } from "./NavBar";
 import { VersionsBanner } from "./NabBarWarnings";
 
-import Arrow_left from "./Assets/Arrow_left.svg";
-import Arrow_right from "./Assets/Arrow_right.svg";
-import Icon_Data_Scientists from "./Assets/Icon_Data_Scientists.svg";
-import Icon_Teams from "./Assets/Icon_Teams.svg";
-import Icon_Specialists from "./Assets/Icon_Specialists.svg";
-import Illustration_Theory_Practice from "./Assets/Illustration_Theory_Practice.svg";
 import VisualHead from "./Assets/Visual_Head.svg";
 import VisualDetail from "./Assets/Visual_Detail.svg";
 import VisualFooter from "./Assets/Visual_Footer.svg";
@@ -184,84 +178,6 @@ function Section1(props) {
           </Col>
         </Row>
       </div>
-    </div>
-  </div>;
-}
-
-function Section2(props) {
-  return <div id="rk-anon-home-section2">
-    <div className="rk-anon-home-section-content">
-      <Row className="rk-pt-m">
-        <Col md={4}>
-          <h3 className="text-rk-pink">Bringing everyone together!</h3>
-        </Col>
-        <Col md={{ size: 7, offset: 1 }}>
-          <h3 className="text-secondary">Successful data science requires collaboration; <br />
-            with Renku, everyone can make a contribution.
-          </h3>
-        </Col>
-      </Row>
-      <Row className="rk-pt-l">
-        <Col className="d-md-flex">
-          <div>
-            <div className="text-center"><img alt="data scientists" src={Icon_Data_Scientists} /></div>
-            <h3 className="rk-pt-s">Data Scientists</h3>
-            <div>
-              Work with the tools you love, like JupyterLab or RStudio. Show your findings
-              visually and discuss results with others. Reproduce past work and reuse
-              successful pipelines.
-            </div>
-          </div>
-          <div className="rk-pt-s">
-            <div className="rk-pt-m d-none d-md-inline"><img alt="arrow right" src={Arrow_right} /></div>
-          </div>
-          <div>
-            <div className="text-center"><img alt="teams" src={Icon_Teams} /></div>
-            <h3 className="rk-pt-s">Teams</h3>
-            <div>
-              Share data, code, and workflows. Make interactive
-              tools available. Each team member can bring their unique abilities to
-              the table.
-            </div>
-          </div>
-          <div className="rk-pt-s">
-            <div className="d-none d-md-inline"><img alt="arrow left" src={Arrow_left} /></div>
-          </div>
-          <div>
-            <div className="text-center"><img alt="specialists" src={Icon_Specialists} /></div>
-            <h3 className="rk-pt-s">Specialists</h3>
-            <div>
-              Share your data and your expertise, and make use of the skills of others.
-              Renku tracks contributions, so your work is seen and credited.
-              Understand how results are created and provide feedback.
-            </div>
-          </div>
-        </Col>
-      </Row>
-    </div>
-  </div>;
-}
-
-function Section3(props) {
-  return <div id="rk-anon-home-section3">
-    <div className="rk-anon-home-section-content">
-      <Row className="rk-pt-m">
-        <Col md={4} lg={6} className="p-s-4 rk-bg-white"
-          style={{ minWidth: "300px", maxWidth: "600px",
-            borderWidth: "20px", borderStyle: "solid", borderColor: "white" }}>
-          <img width="100%" alt="data science theory/practice" src={Illustration_Theory_Practice} />
-        </Col>
-        <Col md={8} lg={6} className="rk-pt-m rk-pl-lg-s" style={{ minWidth: "350px", maxWidth: "460px" }}>
-          <h3>Data-driven projects are messy</h3>
-          <div>
-            To get results, data and code may be gathered anew, or re-purposed and recombined from other projects.
-            Paths are followed, discarded and tried anew before finally getting to
-            the destination Renku accompanies the journey and helps you make sense of it.
-            All activity within Renku is captured in the Knowledge Graph.
-            This makes it possible to connect the dots, no matter where they lead.
-          </div>
-        </Col>
-      </Row>
     </div>
   </div>;
 }
@@ -560,8 +476,6 @@ function SectionUseCases(props) {
 function StandardHome(props) {
   return <Fragment>
     <Section1 {...props} />
-    <Section2 />
-    <Section3 />
     <SectionFeatures />
     <SectionUseCases />
     <Section4 tutorialLink={props.homeCustomized.tutorialLink} />
