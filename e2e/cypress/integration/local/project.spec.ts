@@ -29,6 +29,7 @@ describe("display a project", () => {
   });
 
   it("displays the project overview page", () => {
+    cy.wait("@getProject");
     cy.wait("@getReadme");
     // Check that the project header is shown
     cy.get("[data-cy='project-header']").should(
@@ -37,6 +38,9 @@ describe("display a project", () => {
     );
     // Check that the readme is shown
     cy.get("h1").first().should("contain.text", "local test project");
+
+    // Check that the title is correct
+    cy.get("title").first().should("contain.text", "local-test-project • Project • e2e/local-test-project");
   });
 
   it("displays project settings", () => {
