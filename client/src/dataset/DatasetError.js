@@ -16,11 +16,12 @@
  * limitations under the License.
  */
 import React from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { Link, useLocation } from "react-router-dom";
 
-import { ErrorAlert, InfoAlert } from "../utils/components/Alert";
+import { ErrorAlert } from "../utils/components/Alert";
 import LoginAlert from "../utils/components/loginAlert/LoginAlert";
+import NotFound from "../not-found";
+import { Url } from "../utils/helpers/url";
 
 /**
  *  incubator-renku-ui
@@ -32,6 +33,8 @@ import LoginAlert from "../utils/components/loginAlert/LoginAlert";
 function DatasetError({ fetchError, insideProject, logged }) {
   const textPre = "You might need to be logged in to see this dataset. ";
   const textPost = "and try again.";
+  const location = useLocation();
+  const loginUrl = Url.get(Url.pages.login.link, { pathname: location.pathname });
 
   // inside project case
   if (insideProject) {
@@ -63,7 +66,7 @@ function DatasetError({ fetchError, insideProject, logged }) {
   if (fetchError.code === 404) {
     const info = logged ?
       (
-        <InfoAlert timeout={0}>
+        <>
           <p>
             If you are sure the dataset exists,
             you may want to try the following:
@@ -74,20 +77,21 @@ function DatasetError({ fetchError, insideProject, logged }) {
               If you received this link from someone, ask that person to make sure you have access to the dataset.
             </li>
           </ul>
-        </InfoAlert>
+        </>
       ) :
-      (<LoginAlert logged={logged} textPost={textPost} textPre={textPre} />);
+      (<p>{textPre}<Link className="btn btn-secondary btn-sm mx-2" to={loginUrl}>Log in</Link>{textPost}</p>);
     errorDetails = (
-      <div>
-        <h3 data-cy="dataset-error-title">Dataset not found <FontAwesomeIcon icon={faSearch} flip="horizontal" /></h3>
-        <div>&nbsp;</div>
+      <NotFound
+        title="Dataset not found"
+        description="">
         <p>
           It is possible that the dataset has been deleted by its owner or you do not have permission
           to access it.
         </p>
         {info}
-      </div>
+      </NotFound>
     );
+    return errorDetails;
   }
   else if (fetchError.message) {
     errorDetails = (<p>Error details: {fetchError.message}</p>);

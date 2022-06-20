@@ -154,7 +154,7 @@ describe("Invalid dataset", () => {
     fixtures.invalidDataset(datasetIdentifier);
     cy.visit(`datasets/${ datasetIdentifier }/add`);
     cy.wait("@invalidDataset");
-    cy.get_cy("dataset-error-title").contains("Dataset not found").should("be.visible");
+    cy.get("h3").contains("Dataset not found").should("be.visible");
   });
 
   it("displays warning when dataset is invalid", () => {

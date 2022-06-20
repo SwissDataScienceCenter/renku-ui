@@ -77,6 +77,6 @@ describe("display a dataset", () => {
     fixtures.invalidDataset(invalidDatasetId);
     cy.visit(`/datasets/${invalidDatasetId}`);
     cy.wait("@invalidDataset");
-    cy.get_cy("dataset-error-title").should("contain.text", "Dataset not found");
+    cy.get("h3").should("contain.text", "Dataset not found");
   });
 });

@@ -37,6 +37,7 @@ import { getDatasetAuthors } from "../DatasetFunctions";
 import { DatasetError } from "../DatasetError";
 import { Loader } from "../../utils/components/Loader";
 import LoginAlert from "../../utils/components/loginAlert/LoginAlert";
+import { ContainerWrap } from "../../App";
 
 function HeaderAddDataset({ dataset }) {
   if (!dataset) return null;
@@ -122,12 +123,14 @@ function DatasetAdd({ dataset, model, handlers, isDatasetValid, currentStatus, i
   }
 
   return (
-    <Row className="mb-3">
-      <Col md={10} lg={9} xl={8}>
-        <HeaderAddDataset dataset={dataset} />
-        {mainContent}
-      </Col>
-    </Row>
+    <ContainerWrap>
+      <Row className="mb-3">
+        <Col md={10} lg={9} xl={8}>
+          <HeaderAddDataset dataset={dataset} />
+          {mainContent}
+        </Col>
+      </Row>
+    </ContainerWrap>
   );
 }
 

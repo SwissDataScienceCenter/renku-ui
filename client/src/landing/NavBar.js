@@ -406,7 +406,7 @@ class FooterNavbar extends Component {
       (<RenkuNavLink to="/privacy" title="Privacy" />) :
       null;
     return (
-      <footer className="footer mt-auto pt-4">
+      <footer className="footer mt-auto">
         <Navbar className="container-fluid flex-wrap flex-lg-nowrap justify-content-between
           renku-container navbar bg-primary navbar-dark">
           <div>

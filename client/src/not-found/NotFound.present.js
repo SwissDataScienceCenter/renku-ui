@@ -23,35 +23,39 @@
  *  Presentational components for not-found
  */
 
-import React, { Component } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import { Row, Col, Button } from "reactstrap";
+import { Button } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { faHome } from "@fortawesome/free-solid-svg-icons";
+import "./NotFound.css";
 
-class NotFound extends Component {
-  render() {
-    return (
-      <Row>
-        <Col>
-          <h1>Error 404</h1>
-          <h3>
-            Page not found <FontAwesomeIcon icon={faSearch} flip="horizontal" />
+const NotFound = (props) => {
+  const title = props.title ?? "Page not found";
+  const description = props.description ??
+    "We cannot seem to find the page you are looking for, sorry!";
+  return (
+    <div className="not-found-box">
+      <div className="container-xxl pt-5 renku-container">
+        <div className="not-found-box-text">
+          <h1 className="title">404</h1>
+          <h3 className="subtitle">
+            {title}
           </h3>
-          <div>&nbsp;</div>
           <p>
-            We could not find the page &quot;<i>{ this.props.match.url }</i>&quot; in our website.
+            {description}
           </p>
           <Link to="/">
-            <Button color="primary">
-              Back to home
+            <Button color="secondary">
+              <FontAwesomeIcon icon={faHome} /> Return Home
             </Button>
           </Link>
-
-        </Col>
-      </Row>
-    );
-  }
-}
+        </div>
+        <div className="not-found-box-text mt-4">
+          {props.children}
+        </div>
+      </div>
+    </div>);
+};
 
 export { NotFound };
