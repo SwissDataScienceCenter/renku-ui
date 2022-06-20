@@ -1061,7 +1061,9 @@ class ProjectViewFiles extends Component {
 
 const ProjectSessions = (props) => {
   const locationFrom = props.history?.location?.state?.from;
-  const backButtonLabel = locationFrom ? "Back to notebook file" : "Back to sessions list";
+  const filePath = props.history?.location?.state?.filePath;
+  const backNotebookLabel = filePath ? `Back to ${filePath}` : "Back to notebook file";
+  const backButtonLabel = locationFrom ? backNotebookLabel : "Back to sessions list";
   const backUrl = locationFrom ?? props.notebookServersUrl;
 
   const backButton = (<GoBackButton label={backButtonLabel} url={backUrl} />);

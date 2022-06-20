@@ -16,12 +16,12 @@
  * limitations under the License.
  */
 
-import React, { Component, Fragment, useState, useEffect } from "react";
+import React, { Component, Fragment, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Badge, Button, ButtonGroup, Col, Collapse, DropdownItem, Form, FormGroup, FormText, Input, Label,
   Modal, ModalBody, ModalFooter, ModalHeader, PopoverBody, PopoverHeader, Progress,
-  Row, Table, UncontrolledPopover, UncontrolledTooltip
+  Row, UncontrolledPopover, UncontrolledTooltip
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -32,7 +32,7 @@ import {
 import { ErrorAlert, InfoAlert, SuccessAlert, WarnAlert } from "../utils/components/Alert";
 import { ButtonWithMenu } from "../utils/components/Button";
 import { Clipboard } from "../utils/components/Clipboard";
-import { ExternalLink, IconLink } from "../utils/components/ExternalLinks";
+import { ExternalLink } from "../utils/components/ExternalLinks";
 import { JupyterIcon } from "../utils/components/Icon";
 import { Loader } from "../utils/components/Loader";
 import { ThrottledTooltip } from "../utils/components/Tooltip";
@@ -43,6 +43,7 @@ import { ObjectStoresConfigurationButton, ObjectStoresConfigurationModal } from 
 import { SessionStatus } from "../utils/constants/Notebooks";
 import { Docs } from "../utils/constants/Docs";
 import { sleep } from "../utils/helpers/HelperFunctions";
+import { ShareLinkSessionModal } from "../utils/components/shareLinkSession/ShareLinkSession";
 
 
 function ProjectSessionLockAlert({ lockStatus }) {
@@ -1308,107 +1309,6 @@ class CheckNotebookIcon extends Component {
   }
 }
 
-const ShareLinkSessionIcon = ({ filePath, launchNotebookUrl }) => {
-  const location = useLocation();
-  const state = { filePath, showShareLinkModal: true, from: location.pathname };
-  return <IconLink
-    tooltip="Share link Session" icon={faLink} to={{ pathname: launchNotebookUrl, search: "", state }} />;
-};
-
-const ShareLinkSessionModal = ({ filters, showModal, toggleModal, notebookFilePath }) => {
-  const [includeBranch, setIncludeBranch] = useState(false);
-  const [includeCommit, setIncludeCommit] = useState(false);
-  const [url, setUrl] = useState("");
-
-  useEffect(() => {
-    const data = {
-      namespace: filters?.namespace,
-      path: filters?.project,
-      branch: filters?.branch?.name,
-      commit: filters?.commit?.id,
-    };
-
-    if (!data.namespace || !data.path)
-      return;
-    let urlSession = Url.get(Url.pages.project.session.autostart, data, true);
-    urlSession = notebookFilePath ? `${urlSession}&notebook=${notebookFilePath}` : urlSession;
-    urlSession = includeCommit ? `${urlSession}&commit=${data.commit}` : urlSession;
-    urlSession = includeBranch ? `${urlSession}&branch=${data.branch}` : urlSession;
-    setUrl(urlSession);
-  }, [ includeCommit, includeBranch, filters, notebookFilePath ]);
-
-  const setCommit = (checked) => {
-    setIncludeCommit(checked);
-    if (checked)
-      setIncludeBranch(checked);
-  };
-  const setBranch = (checked) => {
-    setIncludeBranch(checked);
-    if (!checked)
-      setIncludeCommit(checked);
-  };
-
-  const markdown = `[![launch - renku](${Url.get(Url.pages.landing, undefined, true)}renku-badge.svg)](${url})`;
-  const notebookFilePathLabel = notebookFilePath ? (
-    <FormGroup key="notebook-file-path">
-      <Label><b>Notebook:</b> {notebookFilePath}</Label>
-    </FormGroup>
-  ) : null;
-  return (
-    <Modal isOpen={showModal} toggle={toggleModal}>
-      <ModalHeader toggle={toggleModal}>Create shareable link</ModalHeader>
-      <ModalBody>
-        <Row>
-          <Col>
-            <Form className="mb-3">
-              {notebookFilePathLabel}
-              <FormGroup key="link-branch" check>
-                <Label check>
-                  <Input type="checkbox" checked={includeBranch}
-                    onChange={e => setBranch(e.target.checked)}/> Branch
-                </Label>
-              </FormGroup>
-              <FormGroup key="link-commit" check>
-                <Label check>
-                  <Input type="checkbox" checked={includeCommit}
-                    onChange={e => setCommit(e.target.checked)}/> Commit
-                </Label>
-              </FormGroup>
-              <FormText>
-                <FontAwesomeIcon id="commit-info" icon={faInfoCircle} />
-                &nbsp;The commit requires including also the branch
-              </FormText>
-            </Form>
-
-            <Table size="sm">
-              <tbody>
-                <tr className="border-bottom">
-                  <th scope="row">URL</th>
-                  <td style={{ wordBreak: "break-all" }}>{url}</td>
-                  <td style={{ width: 1 }}><Clipboard clipboardText={url} /></td>
-                </tr>
-                <tr style={{ borderBottomColor: "transparent" }} >
-                  <th scope="row">Badge</th>
-                  <td colSpan={2} style={{ wordBreak: "break-all" }}>
-                    <small>Paste it in your README to show a </small>
-                    <img src="/renku-badge.svg" alt="renku-badge"/>
-                  </td>
-                </tr>
-                <tr className="border-bottom">
-                  <th scope="row"> </th>
-                  <td style={{ wordBreak: "break-all" }}>{markdown}</td>
-                  <td style={{ width: 1 }}><Clipboard clipboardText={markdown} /></td>
-                </tr>
-              </tbody>
-            </Table>
-          </Col>
-        </Row>
-      </ModalBody>
-    </Modal>
-  );
-};
-
 export {
   CheckNotebookIcon, StartNotebookServer, mergeEnumOptions, ServerOptionBoolean, ServerOptionEnum, ServerOptionRange,
-  ShareLinkSessionIcon
 };

@@ -29,7 +29,7 @@ import { API_ERRORS } from "../api-client";
 import { atobUTF8 } from "../utils/helpers/Encoding";
 import { encodeImageBase64 } from "../utils/components/markdown/RenkuMarkdownWithPathTranslation";
 import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
-import { ShareLinkSessionIcon } from "../notebooks/NotebookStart.present";
+import { ShareLinkSessionIcon } from "../utils/components/shareLinkSession/ShareLinkSession";
 
 const PDF_EXTENSION = "pdf";
 const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "tiff", "gif", "svg"];
@@ -413,19 +413,19 @@ class ShowFile extends React.Component {
       filePath = this.props.filePath.split("\\").pop().split("/").pop();
 
 
-    let buttonJupyter, buttonShareLinkSession = null;
-    if (this.props.filePath.endsWith(".ipynb")) {
+    let buttonJupyter = null;
+    if (this.props.filePath.endsWith(".ipynb"))
       buttonJupyter = (<JupyterButton {...this.props} file={filePath}/>);
-      const filters = {
-        namespace: this.props.projectNamespace,
-        project: this.props.projectPath,
-        branch: this.props.branch ? { name: this.props.branch } : undefined,
-        commit: this.state.commit,
-      };
-      buttonShareLinkSession = (
-        <ShareLinkSessionIcon
+    const filters = {
+      namespace: this.props.projectNamespace,
+      project: this.props.projectPath,
+      branch: this.props.branch ? { name: this.props.branch } : undefined,
+      commit: this.state.commit,
+    };
+    const buttonShareLinkSession =
+      !this.state.fileInfo || this.state.fileInfo?.type === "tree" ? null :
+        (<ShareLinkSessionIcon
           filters={filters} filePath={filePath} launchNotebookUrl={this.props.launchNotebookUrl} />);
-    }
 
     let fileSize = this.state.file ? this.state.file.size : undefined;
 
