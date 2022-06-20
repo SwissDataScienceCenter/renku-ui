@@ -34,6 +34,8 @@ const proxyMiddleware = createProxyMiddleware({
   // set gateway as target
   target: config.deployment.gatewayUrl,
   changeOrigin: true,
+  proxyTimeout: 600000,
+  timeout: 600000,
   pathRewrite: (path): string => {
     // remove basic ui-server routing
     const rewrittenPath = path.substring((config.server.prefix + config.routes.api).length);
