@@ -229,7 +229,7 @@ function setBaseUrl(url) {
 /**
  * Create a Url based on the target page. Depending on the specific page, it may require context data.
  *
- * @param {object} target - the page you are targeting, as contained in the `pages`  member
+ * @param {object | string} target - the page you are targeting, as contained in the `pages`  member
  *   (e.g. pages.landing, pages.project.stats, ...).
  * @param {object} [data] - the context data you need to provide, if any
  *   (e.g. for project, you need to provide a `namespace` and a `path`).

@@ -41,6 +41,7 @@ import ImportDataset from "./datasets/import/index";
 import KnowledgeGraphStatus from "../file/KnowledgeGraphStatus.container";
 import qs from "query-string";
 import { DatasetCoordinator } from "../dataset/Dataset.state";
+import { NotebooksCoordinator } from "../notebooks";
 
 
 const subRoutes = {
@@ -164,6 +165,9 @@ class View extends Component {
     this.projectsCoordinator = new ProjectsCoordinator(props.client, props.model.subModel("projects"));
     this.projectCoordinator = new ProjectCoordinator(props.client, props.model.subModel("project"));
     this.datasetCoordinator = new DatasetCoordinator(props.client, props.model.subModel("dataset"));
+    this.notebookCoordinator = new NotebooksCoordinator(props.client, props.model.subModel("notebooks"));
+    // reset filter file path when load a new project
+    this.notebookCoordinator.setNotebookFilePath(null);
 
     // fetch useful projects data in not yet loaded
     if (this.props.user.logged) {

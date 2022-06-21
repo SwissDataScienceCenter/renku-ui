@@ -16,12 +16,12 @@
  * limitations under the License.
  */
 
-import React, { Component, Fragment, useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import React, { Component, Fragment, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import {
   Badge, Button, ButtonGroup, Col, Collapse, DropdownItem, Form, FormGroup, FormText, Input, Label,
   Modal, ModalBody, ModalFooter, ModalHeader, PopoverBody, PopoverHeader, Progress,
-  Row, Table, UncontrolledPopover, UncontrolledTooltip
+  Row, UncontrolledPopover, UncontrolledTooltip
 } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -43,6 +43,7 @@ import { ObjectStoresConfigurationButton, ObjectStoresConfigurationModal } from 
 import { SessionStatus } from "../utils/constants/Notebooks";
 import { Docs } from "../utils/constants/Docs";
 import { sleep } from "../utils/helpers/HelperFunctions";
+import { ShareLinkSessionModal } from "../utils/components/shareLinkSession/ShareLinkSession";
 
 
 function ProjectSessionLockAlert({ lockStatus }) {
@@ -65,6 +66,10 @@ function StartNotebookServer(props) {
   const { objectStoresConfiguration } = props.filters;
   const { deleteAutosave, setCommit, setIgnorePipeline, toggleShowAdvanced } = props.handlers;
   const { toggleShowObjectStoresConfigModal } = props.handlers;
+  const location = useLocation();
+
+  const [showShareLinkModal, setShowShareLinkModal] = useState(location?.state?.showShareLinkModal ?? false);
+  const toggleShareLinkModal = () => setShowShareLinkModal(!showShareLinkModal);
 
   // Show fetching status when auto-starting
   if (autoStarting)
@@ -131,7 +136,12 @@ function StartNotebookServer(props) {
   );
 
   const options = show.options ?
-    (<StartNotebookOptions toggleShowAdvanced={toggleShowAdvanced} showAdvanced={showAdvanced} {...props} />) :
+    (<StartNotebookOptions
+      notebookFilePath={location?.state?.filePath}
+      toggleShowAdvanced={toggleShowAdvanced}
+      toggleShareLinkModal={toggleShareLinkModal}
+      showShareLinkModal={showShareLinkModal}
+      showAdvanced={showAdvanced} {...props} />) :
     null;
 
   const loader = autosaves.fetching || !show.options ?
@@ -811,13 +821,29 @@ class StartNotebookOptions extends Component {
           return true;
         return false;
       });
-      if (currentNotebook)
-        return (<StartNotebookOptionsRunning notebook={all[currentNotebook]} />);
+      if (currentNotebook) {
+        return [
+          <StartNotebookOptionsRunning key="notebook-options-running" notebook={all[currentNotebook]}/>,
+          <ShareLinkSessionModal
+            key="shareLinkModal"
+            toggleModal={this.props.toggleShareLinkModal}
+            showModal={this.props.showShareLinkModal}
+            notebookFilePath={this.props.notebookFilePath}
+            {...this.props}
+          />
+        ];
+      }
     }
 
     return [
       <StartNotebookServerOptions key="options" {...this.props} />,
-      <ServerOptionLaunch key="button" {...this.props} />
+      <ServerOptionLaunch key="button" {...this.props} />,
+      <ShareLinkSessionModal
+        key="shareLinkModal"
+        toggleModal={this.props.toggleShareLinkModal}
+        showModal={this.props.showShareLinkModal}
+        {...this.props}
+      />
     ];
 
   }
@@ -1098,19 +1124,14 @@ class ServerOptionLaunch extends Component {
     this.state = {
       showModal: false,
       current: {},
-      showShareLinkModal: false,
     };
 
     this.checkServer = this.checkServer.bind(this);
     this.toggleModal = this.toggleModal.bind(this);
-    this.toggleShareLinkModal = this.toggleShareLinkModal.bind(this);
   }
 
   toggleModal() {
     this.setState({ showModal: !this.state.showModal });
-  }
-  toggleShareLinkModal() {
-    this.setState({ showShareLinkModal: !this.state.showShareLinkModal });
   }
 
   checkServer() {
@@ -1120,7 +1141,7 @@ class ServerOptionLaunch extends Component {
       c.autosave.branch === filters.branch.name && c.autosave.commit === filters.commit.id.substr(0, 7));
     if (current.length > 0) {
       this.setState({ current: current[0] });
-      this.toggleModal();
+      this.props.toggleShareLinkModal();
     }
     else {
       this.props.handlers.startServer();
@@ -1141,7 +1162,8 @@ class ServerOptionLaunch extends Component {
 
     const hasImage = ciStatus.available;
     const createLink = (
-      <DropdownItem onClick={this.toggleShareLinkModal}><FontAwesomeIcon icon={faLink} /> Create link</DropdownItem>
+      <DropdownItem
+        onClick={this.props.toggleShareLinkModal}><FontAwesomeIcon icon={faLink} /> Create link</DropdownItem>
     );
     const startButton = <Button key="start-session" color="primary" disabled={!hasImage} onClick={this.checkServer}>
       Start session
@@ -1180,10 +1202,6 @@ class ServerOptionLaunch extends Component {
         toggleModal={this.toggleModal.bind(this)}
         showModal={this.state.showModal}
         currentBranch={this.state.current}
-        {...this.props}
-      />,
-      <ShareLinkSessionModal key="shareLinkModal"
-        toggleModal={this.toggleShareLinkModal.bind(this)} showModal={this.state.showShareLinkModal}
         {...this.props}
       />,
       globalNotification
@@ -1283,101 +1301,14 @@ class CheckNotebookIcon extends Component {
     }
 
     return (
-      <React.Fragment>
+      <>
         <span id="checkNotebookIcon" className={aligner}>{link}</span>
         <ThrottledTooltip target="checkNotebookIcon" tooltip={tooltip} />
-      </React.Fragment>
+      </>
     );
   }
 }
 
-const ShareLinkSessionModal = (props) => {
-  const [includeBranch, setIncludeBranch] = useState(false);
-  const [includeCommit, setIncludeCommit] = useState(false);
-  const [url, setUrl] = useState("");
-
-  useEffect(() => {
-    const data = {
-      namespace: props.filters?.namespace,
-      path: props.filters?.project,
-      branch: props.filters.branch.name,
-      commit: props.filters.commit.id,
-    };
-
-    if (!data.namespace || !data.path)
-      return;
-    let urlSession = Url.get(Url.pages.project.session.autostart, data, true);
-    urlSession = includeCommit ? `${urlSession}&commit=${data.commit}` : urlSession;
-    urlSession = includeBranch ? `${urlSession}&branch=${data.branch}` : urlSession;
-    setUrl(urlSession);
-  }, [ includeCommit, includeBranch, props.filters]);
-
-  const setCommit = (checked) => {
-    setIncludeCommit(checked);
-    if (checked)
-      setIncludeBranch(checked);
-  };
-  const setBranch = (checked) => {
-    setIncludeBranch(checked);
-    if (!checked)
-      setIncludeCommit(checked);
-  };
-
-  const markdown = `[![launch - renku](${Url.get(Url.pages.landing, undefined, true)}renku-badge.svg)](${url})`;
-
-  return (
-    <Modal isOpen={props.showModal} toggle={props.toggleModal}>
-      <ModalHeader toggle={props.toggleModal}>Create shareable link</ModalHeader>
-      <ModalBody>
-        <Row>
-          <Col>
-            <Form className="mb-3">
-              <FormGroup key="link-branch" check>
-                <Label check>
-                  <Input type="checkbox" checked={includeBranch}
-                    onChange={e => setBranch(e.target.checked)}/> Branch
-                </Label>
-              </FormGroup>
-              <FormGroup key="link-commit" check>
-                <Label check>
-                  <Input type="checkbox" checked={includeCommit}
-                    onChange={e => setCommit(e.target.checked)}/> Commit
-                </Label>
-              </FormGroup>
-              <FormText>
-                <FontAwesomeIcon id="commit-info" icon={faInfoCircle} />
-                &nbsp;The commit requires including also the branch
-              </FormText>
-            </Form>
-
-            <Table size="sm">
-              <tbody>
-                <tr className="border-bottom">
-                  <th scope="row">URL</th>
-                  <td style={{ wordBreak: "break-all" }}>{url}</td>
-                  <td style={{ width: 1 }}><Clipboard clipboardText={url} /></td>
-                </tr>
-                <tr style={{ borderBottomColor: "transparent" }} >
-                  <th scope="row">Badge</th>
-                  <td colSpan={2} style={{ wordBreak: "break-all" }}>
-                    <small>Paste it in your README to show a </small>
-                    <img src="/renku-badge.svg" alt="renku-badge"/>
-                  </td>
-                </tr>
-                <tr className="border-bottom">
-                  <th scope="row"> </th>
-                  <td style={{ wordBreak: "break-all" }}>{markdown}</td>
-                  <td style={{ width: 1 }}><Clipboard clipboardText={markdown} /></td>
-                </tr>
-              </tbody>
-            </Table>
-          </Col>
-        </Row>
-      </ModalBody>
-    </Modal>
-  );
-};
-
 export {
-  CheckNotebookIcon, StartNotebookServer, mergeEnumOptions, ServerOptionBoolean, ServerOptionEnum, ServerOptionRange
+  CheckNotebookIcon, StartNotebookServer, mergeEnumOptions, ServerOptionBoolean, ServerOptionEnum, ServerOptionRange,
 };
