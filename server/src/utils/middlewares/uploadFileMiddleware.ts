@@ -24,6 +24,21 @@
  */
 import { NextFunction, Request, Response } from "express-serve-static-core";
 
+interface FileResult {
+  content_type: string;
+  created_at: string;
+  file_id: string;
+  file_name: string;
+  file_size: number;
+  is_archive: boolean;
+  is_dir: boolean;
+  relative_path: string;
+  unpack_archive: boolean;
+}
+interface FileUploadResult {
+  error?: string;
+  result?: FileResult[];
+}
 const uploadFileMiddleware = (req: Request, res: Response, next: NextFunction): void => {
   const [oldWrite, oldEnd] = [res.write, res.end];
   const chunks: Buffer[] = [];
@@ -31,7 +46,7 @@ const uploadFileMiddleware = (req: Request, res: Response, next: NextFunction): 
   (res.write as unknown) = (...args: never) => {
     chunks.push(Buffer.from(args[0]));
     const body = Buffer.concat(chunks).toString("utf8");
-    const bodyJson = JSON.parse(body);
+    const bodyJson = body as FileUploadResult;
     if (bodyJson?.error)
       res.status(500);
     oldWrite.apply(res, args);
@@ -41,7 +56,7 @@ const uploadFileMiddleware = (req: Request, res: Response, next: NextFunction): 
     if (args[0])
       chunks.push(Buffer.from(args[0]));
     const body = Buffer.concat(chunks).toString("utf8");
-    const bodyJson = JSON.parse(body);
+    const bodyJson = body as FileUploadResult;
     if (bodyJson?.error)
       res.status(500);
     oldEnd.apply(res, args);
