@@ -90,6 +90,10 @@ function Projects<T extends FixturesConstructor>(Parent: T) {
         `/ui-server/api/renku/cache.project_list`,
         fixture
       ).as(name);
+      cy.intercept(
+        `/ui-server/api/renku/*/cache.project_list`,
+        fixture
+      ).as(name);
       return this;
     }
 
