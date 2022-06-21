@@ -11,12 +11,15 @@ import {
   DropdownItem as WrappedDropdownItem,
   Fade as WrappedFade,
   FormFeedback as WrappedFormFeedback,
+  Form as WrappedForm,
   FormText as WrappedFormText,
   Label as WrappedLabel,
   Modal as WrappedModal,
   ModalBody as WrappedModalBody,
   ModalHeader as WrappedModalHeader,
+  ModalFooter as WrappedModalFooter,
   Row as WrappedRow,
+  Table as WrappedTable,
 } from "reactstrap";
 
 
@@ -95,6 +98,9 @@ function FormFeedback(props) {
   return <WrappedFormFeedback {...props} />;
 }
 
+function Form(props) {
+  return <WrappedForm {...props} />;
+}
 
 function FormText(props) {
   return <WrappedFormText {...props} />;
@@ -124,14 +130,22 @@ function ModalHeader(props) {
   return <WrappedModalHeader {...props} />;
 }
 
+function ModalFooter(props) {
+  return <WrappedModalFooter {...props} />;
+}
+
 function Row(props) {
   return <WrappedRow {...props} />;
+}
+
+function Table(props) {
+  return <WrappedTable {...props} />;
 }
 
 
 export { Alert, Button, ButtonGroup };
 export { Card, CardBody, CardText, CardFooter, Col, DropdownItem };
-export { FormFeedback, FormText, Fade, FormGroup, Input, Label };
+export { FormFeedback, FormText, Fade, Form, FormGroup, Input, Label };
 export { PopoverHeader, PopoverBody };
-export { Modal, ModalBody, ModalHeader, Row };
+export { Modal, ModalBody, ModalHeader, ModalFooter, Row, Table };
 export { UncontrolledPopover, UncontrolledTooltip };

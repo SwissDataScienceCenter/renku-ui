@@ -431,6 +431,8 @@ class NotebooksCoordinator {
       data.branch instanceof Object ? filters.branch = data.branch : filters.branch = { name: data.branch };
     if (data.commit !== undefined)
       data.commit instanceof Object ? filters.commit = data.commit : filters.commit = { id: data.commit };
+    if (data.filePath !== undefined)
+      filters.filePath = data.filePath;
 
     this.model.setObject({ filters });
   }
@@ -449,6 +451,13 @@ class NotebooksCoordinator {
       filters: { commit: { $set: commit } }
     });
     this.fetchNotebooks();
+  }
+
+  setNotebookFilePath(filePath) {
+    this.model.setObject({
+      filePath: filePath,
+      filters: { filePath }
+    });
   }
 
   setMergedBranches(value) {
