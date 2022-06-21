@@ -48,10 +48,11 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
-podSecurityContext:
-  runAsUser: 1000
+podSecurityContext: {}
 
 securityContext:
+  runAsUser: 1000
+  runAsNonRoot: true
   allowPrivilegeEscalation: false
 
 service:
