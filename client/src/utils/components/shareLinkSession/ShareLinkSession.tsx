@@ -102,7 +102,7 @@ const ShareLinkSessionModal = ({ filters, showModal, toggleModal, notebookFilePa
   const markdown = `[![launch - renku](${Url.get(Url.pages.landing, undefined, true)}renku-badge.svg)](${url})`;
   const notebookFilePathLabel = notebookFilePath ? (
     <FormGroup key="notebook-file-path">
-      <Label><b>Notebook:</b> {notebookFilePath}</Label>
+      <Label>With <b>{notebookFilePath}</b> initially open</Label>.
     </FormGroup>
   ) : null;
   return (
@@ -195,7 +195,7 @@ const ShareLinkSessionOpenFileModal = (
   const markdown = `[![launch - renku](${Url.get(Url.pages.landing, undefined, true)}renku-badge.svg)](${url})`;
   const notebookFilePathLabel = filePath ? (
     <FormGroup key="notebook-file-path">
-      <Label>With <b>{filePath}</b> initially open</Label>
+      <Label>With <b>{filePath}</b> initially open</Label>.
     </FormGroup>
   ) : null;
   return (
