@@ -533,7 +533,7 @@ class StartNotebookServer extends Component {
             const autosaveCommit = commits.find(commit => commit.id.startsWith(autosave.commit));
             commit = autosaveCommit;
             autosaveFound = true;
-            if (this.state.autosavesCommit !== autosaveCommit.id)
+            if (autosaveCommit && this.state.autosavesCommit !== autosaveCommit?.id)
               this.setState({ autosavesCommit: autosaveCommit.id });
           }
         }
