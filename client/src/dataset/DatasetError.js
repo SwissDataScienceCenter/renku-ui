@@ -63,6 +63,8 @@ function DatasetError({ fetchError, insideProject, logged }) {
 
   // global page case
   let errorDetails = null;
+  // eslint-disable-next-line max-len
+  const errorDesc = "It is possible that the dataset has been deleted by its owner or you do not have permission to access it.";
   if (fetchError.code === 404) {
     const info = logged ?
       (
@@ -83,11 +85,7 @@ function DatasetError({ fetchError, insideProject, logged }) {
     errorDetails = (
       <NotFound
         title="Dataset not found"
-        description="">
-        <p>
-          It is possible that the dataset has been deleted by its owner or you do not have permission
-          to access it.
-        </p>
+        description={errorDesc}>
         {info}
       </NotFound>
     );

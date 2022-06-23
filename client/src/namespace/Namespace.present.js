@@ -121,11 +121,13 @@ const NamespaceGroupActions = (props) => {
 };
 
 const NamespaceNotFoundActions = (props) => {
+  const description = <p>
+    We could not find a user or group with name <i>{props.namespace}</i>.
+  </p>;
   return (
     <NotFound
       title="User or Group not found"
-      description="">
-      <p>We could not find a user or group with name <i>{props.namespace}</i>.</p>
+      description={description}>
       <p>
         If you know what you were looking for, you can try
         using our search feature.

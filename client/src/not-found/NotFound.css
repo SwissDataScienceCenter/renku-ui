@@ -9,12 +9,12 @@
 }
 
 .not-found-box-text {
-    padding: 10px;
+    padding: 20px;
     background-color: #01192db3;
 }
 .not-found-box-text:first-of-type {
-    padding: 10px;
-    max-width: 500px;
+    padding: 20px;
+    max-width: 700px;
 }
 
 .not-found-box .title {
@@ -29,6 +29,8 @@
 
 .not-found-box p {
     font-size: x-large;
+    line-height: 1.2;
+    word-break: break-all;
 }
 
 .not-found-box ul {

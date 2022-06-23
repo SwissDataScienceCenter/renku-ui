@@ -1294,7 +1294,7 @@ class ProjectViewNotFound extends Component {
     else {
       const to = Url.get(Url.pages.login.link, { pathname: this.props.location.pathname });
       tip = <>
-        <p className="mb-0">
+        <p>
           You might need to be logged in to see this project.
           Please try to <Link className="btn btn-secondary btn-sm" to={to}>Log in</Link>
         </p>
@@ -1302,12 +1302,13 @@ class ProjectViewNotFound extends Component {
     }
 
     // eslint-disable-next-line max-len
-    const notFoundDescription = "It is possible that the project has been deleted by its owner or you don't have permission to access it.";
+    const notFoundDescription = <>
+      <p>We could not find project with path <i>{this.props.projectPathWithNamespace}</i>.</p>
+      <p>It is possible that the project has been deleted by its owner or you do not have permission to access it.</p>
+    </>;
     return (
       <NotFound
-        title="Project not found"
-        description={notFoundDescription}>
-        <p>We could not find project with path {this.props.projectPathWithNamespace}.</p>
+        title="Project not found" description={notFoundDescription}>
         {tip}
       </NotFound>);
   }

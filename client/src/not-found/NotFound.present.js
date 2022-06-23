@@ -32,30 +32,26 @@ import "./NotFound.css";
 
 const NotFound = (props) => {
   const title = props.title ?? "Page not found";
-  const description = props.description ??
-    "We cannot seem to find the page you are looking for, sorry!";
+  const description = props.description ?? "We cannot seem to find the page you are looking for, sorry!";
   return (
     <div className="not-found-box">
       <div className="container-xxl pt-5 renku-container">
         <div className="not-found-box-text">
           <h1 className="title">404</h1>
-          <h3 className="subtitle">
-            {title}
-          </h3>
-          <p>
-            {description}
-          </p>
-          <Link to="/">
-            <Button color="secondary">
-              <FontAwesomeIcon icon={faHome} /> Return Home
-            </Button>
-          </Link>
+          <h3 className="subtitle">{title}</h3>
+          <p>{description}</p>
+          <div className="mt-5">
+            <Link to="/">
+              <Button color="secondary">
+                <FontAwesomeIcon icon={faHome} /> Return Home
+              </Button>
+            </Link>
+          </div>
         </div>
-        <div className="not-found-box-text mt-4">
-          {props.children}
-        </div>
+        {props.children == null ? null : <div className="not-found-box-text mt-4">{props.children}</div>}
       </div>
-    </div>);
+    </div>
+  );
 };
 
 export { NotFound };
