@@ -4,18 +4,14 @@
 
 # Renku-UI
 
-*The Renku platform is under very active development and should be
-considered highly volatile.*
-
 ## Quickstart
 
 The Renku ui depends on a running instance of Renku being present. More
 precisely, it relies on a running instance of the [Renku
 Gateway](https://github.com/SwissDataScienceCenter/renku-gateway) that
 acts as an interface to all backend services APIs, handling
-authentication and exchanging access tokens. Clone the main Renku
-repository and follow these
-[instructions](https://renku.readthedocs.io/en/latest/how-to-guides/admin/index.html)
+authentication and exchanging access tokens. Follow these
+[instructions](https://renku.readthedocs.io/en/latest/how-to-guides/admin/deploying-renku.html)
 to get Renku up and running. You can also deploy an environment in a
 remote development cluster.
 
