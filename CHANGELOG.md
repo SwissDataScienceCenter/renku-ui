@@ -1,6 +1,17 @@
 # Changes
 
-# [2.4.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.3.2...2.4.0) (2022-06-13)
+## [2.4.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.4.0...2.4.1) (2022-06-24)
+
+### Features
+
+* **sessions** allow specifying files in auto start links ([#1781](https://github.com/SwissDataScienceCenter/renku-ui/issues/1781),   [#1905](https://github.com/SwissDataScienceCenter/renku-ui/issues/1905))
+* **home page** remove unwanted sections of home page ([#1886](https://github.com/SwissDataScienceCenter/renku-ui/issues/1886), [#1896](https://github.com/SwissDataScienceCenter/renku-ui/issues/1896))
+
+### Bug Fixes
+
+* **sessions** validate that the autosave commit is in the project commit list  ([#1921](https://github.com/SwissDataScienceCenter/renku-ui/issues/1921))
+
+## [2.4.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.3.2...2.4.0) (2022-06-13)
 
 
 ### Bug Fixes
