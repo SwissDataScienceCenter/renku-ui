@@ -28,7 +28,7 @@ import { Link } from "react-router-dom";
 import { Row, Col } from "reactstrap";
 import { Loader } from "../utils/components/Loader";
 import { ExternalLink } from "../utils/components/ExternalLinks";
-import { InfoAlert } from "../utils/components/Alert";
+import NotFound from "../not-found";
 
 const NamespaceProjects = (props) => {
   const { namespace } = props;
@@ -72,6 +72,7 @@ const NamespaceProjects = (props) => {
       outcome = (
         <NamespaceNotFoundActions namespace={namespace} userUrl={userUrl} groupUrl={groupUrl} projectUrl={projectUrl} />
       );
+      return outcome;
     }
   }
 
@@ -120,24 +121,24 @@ const NamespaceGroupActions = (props) => {
 };
 
 const NamespaceNotFoundActions = (props) => {
-  return (<div>
-    <p>We could not find a user or group with name <i>{props.namespace}</i>.</p>
-
-    <InfoAlert timeout={0}>
+  const description = <p>
+    We could not find a user or group with name <i>{props.namespace}</i>.
+  </p>;
+  return (
+    <NotFound
+      title="User or Group not found"
+      description={description}>
       <p>
         If you know what you were looking for, you can try
         using our search feature.
       </p>
       <p>
-        I was looking for...
+        I was looking for... {" "}
+        <Link className="btn btn-secondary btn-sm me-1" role="button" to={props.projectUrl}>A project</Link>
+        <Link className="btn btn-secondary btn-sm me-1" role="button" to={props.userUrl}>A user</Link>
+        <Link className="btn btn-secondary btn-sm me-1" role="button" to={props.groupUrl}>A group</Link>
       </p>
-      <div>
-        <Link className="btn btn-primary btn-sm me-1" role="button" to={props.projectUrl}>A project</Link>
-        <Link className="btn btn-primary btn-sm me-1" role="button" to={props.userUrl}>A user</Link>
-        <Link className="btn btn-primary btn-sm me-1" role="button" to={props.groupUrl}>A group</Link>
-      </div>
-    </InfoAlert>
-  </div>);
+    </NotFound>);
 };
 
 export { NamespaceProjects };
