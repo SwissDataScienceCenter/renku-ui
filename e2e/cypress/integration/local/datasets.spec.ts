@@ -55,6 +55,8 @@ describe("display a dataset", () => {
     cy.get_cy("list-card-title").contains(datasetName).click();
     cy.wait("@getDatasetById")
       .its("response.body").then( dataset => {
+        // Check that the title is correct
+        cy.get("title").first().should("contain.text", "abcd • Dataset • Dataset for testing purposes");
         // the dataset title is displayed
         cy.get_cy("dataset-title").should("contain.text", dataset?.title);
         // files are displayed

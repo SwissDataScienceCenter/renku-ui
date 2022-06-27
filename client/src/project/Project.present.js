@@ -25,6 +25,7 @@
 
 
 import React, { Component, Fragment, useState, useEffect } from "react";
+import { Helmet } from "react-helmet";
 import { Link, Route, Switch } from "react-router-dom";
 import {
   Alert, Badge, Button, ButtonGroup, Card, CardBody, CardHeader, Col, DropdownItem,
@@ -1376,8 +1377,17 @@ class ProjectView extends Component {
           location={this.props.location} />
       );
     }
+    const projectTitle = this.props.metadata.title;
+    const projectPath = this.props.metadata.pathWithNamespace;
+    const projectDesc = this.props.metadata.description;
+    const pageTitle = projectDesc ?
+      `${projectTitle} • Project • ${projectPath} • ${projectDesc}` :
+      `${projectTitle} • Project • ${projectPath}`;
 
     return [
+      <Helmet key="page-title">
+        <title>{pageTitle}</title>
+      </Helmet>,
       <Switch key="projectHeader">
         <Route exact path={this.props.baseUrl}
           render={props => <ProjectViewHeader {...this.props} minimalistHeader={false}/>} />
