@@ -35,7 +35,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faStar as faStarRegular } from "@fortawesome/free-regular-svg-icons";
 import { faUserClock } from "@fortawesome/free-solid-svg-icons";
 import {
-  faCodeBranch, faExclamationTriangle, faGlobe, faInfoCircle, faLock, faPlay, faSearch,
+  faCodeBranch, faExclamationTriangle, faGlobe, faInfoCircle, faLock, faPlay,
   faStar as faStarSolid, faUserFriends
 } from "@fortawesome/free-solid-svg-icons";
 
@@ -67,6 +67,8 @@ import { RenkuNavLink } from "../utils/components/RenkuNavLink";
 import { Loader } from "../utils/components/Loader";
 import { TimeCaption } from "../utils/components/TimeCaption";
 import { Docs } from "../utils/constants/Docs";
+import { NotFound } from "../not-found/NotFound.present";
+import { ContainerWrap } from "../App";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -1277,7 +1279,7 @@ class ProjectViewNotFound extends Component {
   render() {
     let tip;
     if (this.props.logged) {
-      tip = <InfoAlert timeout={0}>
+      tip = (<>
         <p>
           If you are sure the project exists,
           you may want to try the following:
@@ -1287,31 +1289,28 @@ class ProjectViewNotFound extends Component {
           <li>
             If you received this link from someone, ask that person to make sure you have access to the project.
           </li>
-        </ul>
-      </InfoAlert>;
+        </ul></>);
     }
     else {
       const to = Url.get(Url.pages.login.link, { pathname: this.props.location.pathname });
-      tip = <InfoAlert timeout={0}>
-        <p className="mb-0">
+      tip = <>
+        <p>
           You might need to be logged in to see this project.
-          Please try to <Link className="btn btn-primary btn-sm" to={to}>Log in</Link>
+          Please try to <Link className="btn btn-secondary btn-sm" to={to}>Log in</Link>
         </p>
-      </InfoAlert>;
+      </>;
     }
 
-    return <Row>
-      <Col>
-        <h1>Error 404</h1>
-        <h3>Project not found <FontAwesomeIcon icon={faSearch} flip="horizontal" /></h3>
-        <div>&nbsp;</div>
-        <p>We could not find project with path {this.props.projectPathWithNamespace}.</p>
-        <p>
-          It is possible that the project has been deleted by its owner or you don&apos;t have permission to access it.
-        </p>
+    // eslint-disable-next-line max-len
+    const notFoundDescription = <>
+      <p>We could not find project with path <i>{this.props.projectPathWithNamespace}</i>.</p>
+      <p>It is possible that the project has been deleted by its owner or you do not have permission to access it.</p>
+    </>;
+    return (
+      <NotFound
+        title="Project not found" description={notFoundDescription}>
         {tip}
-      </Col>
-    </Row>;
+      </NotFound>);
   }
 }
 
@@ -1388,33 +1387,35 @@ class ProjectView extends Component {
       <Helmet key="page-title">
         <title>{pageTitle}</title>
       </Helmet>,
-      <Switch key="projectHeader">
-        <Route exact path={this.props.baseUrl}
-          render={props => <ProjectViewHeader {...this.props} minimalistHeader={false}/>} />
-        <Route path={this.props.overviewUrl}
-          render={props => <ProjectViewHeader {...this.props} minimalistHeader={false}/>} />
-        <Route component={()=><ProjectViewHeader {...this.props} minimalistHeader={true}/>} />
-      </Switch>,
-      <ProjectNav key="nav" {...this.props} />,
-      <Row key="content">
-        <Switch>
+      <ContainerWrap key="project-content">
+        <Switch key="projectHeader">
           <Route exact path={this.props.baseUrl}
-            render={props => <ProjectViewOverview key="overview" {...this.props} />} />
+            render={props => <ProjectViewHeader {...this.props} minimalistHeader={false}/>} />
           <Route path={this.props.overviewUrl}
-            render={props => <ProjectViewOverview key="overview" {...this.props} />} />
-          <Route path={this.props.collaborationUrl}
-            render={props => <ProjectViewCollaboration key="collaboration" {...this.props} />} />
-          <Route path={this.props.filesUrl}
-            render={props => <ProjectViewFiles key="files" {...this.props} />} />
-          <Route path={this.props.datasetsUrl}
-            render={props => <ProjectViewDatasets key="datasets" {...this.props} />} />
-          <Route path={this.props.settingsUrl}
-            render={props => <ProjectSettings key="settings" {...this.props} />} />
-          <Route path={this.props.notebookServersUrl}
-            render={props => <ProjectSessions key="sessions" {...this.props} />} />
-          <Route component={NotFoundInsideProject} />
+            render={props => <ProjectViewHeader {...this.props} minimalistHeader={false}/>} />
+          <Route component={()=><ProjectViewHeader {...this.props} minimalistHeader={true}/>} />
         </Switch>
-      </Row>
+        <ProjectNav key="nav" {...this.props} />
+        <Row key="content">
+          <Switch>
+            <Route exact path={this.props.baseUrl}
+              render={props => <ProjectViewOverview key="overview" {...this.props} />} />
+            <Route path={this.props.overviewUrl}
+              render={props => <ProjectViewOverview key="overview" {...this.props} />} />
+            <Route path={this.props.collaborationUrl}
+              render={props => <ProjectViewCollaboration key="collaboration" {...this.props} />} />
+            <Route path={this.props.filesUrl}
+              render={props => <ProjectViewFiles key="files" {...this.props} />} />
+            <Route path={this.props.datasetsUrl}
+              render={props => <ProjectViewDatasets key="datasets" {...this.props} />} />
+            <Route path={this.props.settingsUrl}
+              render={props => <ProjectSettings key="settings" {...this.props} />} />
+            <Route path={this.props.notebookServersUrl}
+              render={props => <ProjectSessions key="sessions" {...this.props} />} />
+            <Route component={NotFoundInsideProject} />
+          </Switch>
+        </Row>
+      </ContainerWrap>
     ];
 
   }

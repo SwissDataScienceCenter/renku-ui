@@ -72,3 +72,14 @@ describe("display the landing page", () => {
       });
   });
 });
+
+describe("404 page", () => {
+  beforeEach(() => {
+    new Fixtures(cy).config().versions().userNone();
+    cy.visit("/xzy");
+  });
+
+  it("show error page", () => {
+    cy.get("h3").should("contain.text", "Page not found");
+  });
+});
