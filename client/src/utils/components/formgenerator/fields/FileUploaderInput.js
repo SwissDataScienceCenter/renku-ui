@@ -392,7 +392,7 @@ function FileUploaderInput({
         return <span> File will be uploaded on submit</span>;
       case FILE_STATUS.FAILED:
         return <div>
-          <span className="me-2 text-danger fst-italic">
+          <span data-cy="upload-error-message" className="me-2 text-danger fst-italic">
             <FontAwesomeIcon icon={faExclamationTriangle}
               className="me-2" color="var(--bs-danger)" style={{ cursor: "text" }} />
             {file.file_error}
@@ -404,9 +404,13 @@ function FileUploaderInput({
             <FontAwesomeIcon color="var(--bs-warning)" icon={faExclamationTriangle} />
             <span className="mb-1">&nbsp;Unzip on upload?</span>
             <span className="me-1">
-              <span className="text-primary text-button" style={{ whiteSpace: "nowrap", cursor: "pointer" }}
+              <span
+                data-cy="upload-compressed-yes"
+                className="text-primary text-button" style={{ whiteSpace: "nowrap", cursor: "pointer" }}
                 onClick={() => uploadCompressedFile(file.file_name, FILE_COMPRESSED.UNCOMPRESS_YES)}>Yes</span> or
-              <span className="text-primary  text-button" style={{ whiteSpace: "nowrap", cursor: "pointer" }}
+              <span
+                data-cy="upload-compressed-no"
+                className="text-primary  text-button" style={{ whiteSpace: "nowrap", cursor: "pointer" }}
                 onClick={() => uploadCompressedFile(file.file_name, FILE_COMPRESSED.UNCOMPRESS_NO)}>No</span>
             </span>
           </div>;
@@ -459,6 +463,7 @@ function FileUploaderInput({
         <FontAwesomeIcon
           style={{ cursor: "pointer" }}
           color="var(--bs-danger)" icon={faTrashAlt}
+          data-cy="delete-file-button"
           onClick={() => deleteFile(file.file_name)}/>
         <ThrottledTooltip
           target={"delete-" + index}
@@ -466,7 +471,9 @@ function FileUploaderInput({
       const retryButton = file.file_status === FILE_STATUS.FAILED ?
         (<div id={"retry-" + index}>
           <FontAwesomeIcon
-            style={{ cursor: "pointer" }} icon={faSyncAlt} onClick={() => retryUpload(file.file_name)}/>
+            style={{ cursor: "pointer" }} icon={faSyncAlt}
+            data-cy="retry-upload-button"
+            onClick={() => retryUpload(file.file_name)}/>
           <ThrottledTooltip
             target={"retry-" + index}
             tooltip="Retry upload file" /></div>) : null;
@@ -480,6 +487,7 @@ function FileUploaderInput({
     else if (isFileUploading(file.file_status) && file.file_uncompress !== FILE_COMPRESSED.WAITING) {
       return (<span
         className="text-primary  text-button"
+        data-cy="cancel-upload-button"
         style={{ whiteSpace: "nowrap", cursor: "pointer" }}
         onClick={() => cancelUpload(file.upload_id)}>Cancel</span>);
     }
@@ -501,7 +509,7 @@ function FileUploaderInput({
         {currentFiles.map((file, index) => (
           <tr key={file.file_name + "file"} onClick={() => { }}>
             <td>{index + 1}</td>
-            <td>
+            <td data-cy="file-name-column">
               <span>{file.file_name}</span>
               {file.file_alias ?
                 <small>
@@ -514,7 +522,9 @@ function FileUploaderInput({
               {fileWillBeOverwritten(file)}
               {file.folder_structure ?
                 <div>
-                  <Button className="pe-0 ps-0 pt-0 pb-0 mb-1" color="link" id={"filesCollapse" + (index + 1)}>
+                  <Button
+                    data-cy="display-zip-files-link"
+                    className="pe-0 ps-0 pt-0 pb-0 mb-1" color="link" id={"filesCollapse" + (index + 1)}>
                     <small>Show unzipped files</small>
                   </Button>
                   <UncontrolledCollapse
@@ -564,6 +574,7 @@ function FileUploaderInput({
       <Input
         type="text"
         name="fileUrl"
+        data-cy="input-fileUrl"
         disabled={disabled}
         id={URL_FILE_ID}
         placeholder="Upload a file using a URL"
@@ -578,7 +589,7 @@ function FileUploaderInput({
     {errorLabelURLInput}
   </>);
 
-  const dropFiles = <div className="dropzone" id="dropzone"/>;
+  const dropFiles = <div className="dropzone" id="dropzone" data-cy="dropzone" />;
 
   const uploadFileDescription = (<>
     <div className="pt-2">

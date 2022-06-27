@@ -68,6 +68,7 @@ function CktextareaInput(
             invalid={alert !== undefined}
             customConfig={{ height: 500 }}
             height={800}
+            data-cy={`ckeditor-${name}`}
             onChange={
               (event, editor) => {
                 const artificialEvent = {
@@ -82,6 +83,7 @@ function CktextareaInput(
           <Input
             id={name + "text-area"}
             name={name}
+            data-cy={`text-area-${name}`}
             type="textarea"
             disabled={disabled}
             value={value || ""}

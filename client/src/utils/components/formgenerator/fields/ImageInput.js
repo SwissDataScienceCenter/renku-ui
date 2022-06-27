@@ -241,7 +241,7 @@ function ImageContentInput({ name, value, placeholder, modes, setInputs,
   return <FormGroup>
     <InputGroup id={inputGroupId}>
       <ImageContentInputMode name={name} modes={modes} mode={mode} setMode={setMode} onClick={onModeButtonClick}/>
-      <Input id={widgetId} name={widgetId} type="text" value={inputValue}
+      <Input id={widgetId} name={widgetId} type="text" value={inputValue} data-cy={`file-input-${name}`}
         onDragOver={e => e.preventDefault()} onDragLeave={e => e.preventDefault()}
         onDrop={onDrop} onChange={onInputChange} disabled={disabled} placeholder={placeholder} />
     </InputGroup>

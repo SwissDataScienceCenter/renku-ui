@@ -75,6 +75,7 @@ function CreatorForm(props: CreatorFormProps) {
           type="text"
           defaultValue={props.creator.name}
           name="name"
+          data-cy={`creator-name`}
           disabled={props.disabled}
           onChange={onChangeCreator}
         />
@@ -86,6 +87,7 @@ function CreatorForm(props: CreatorFormProps) {
         <Input
           bsSize="sm"
           type="email"
+          data-cy={`creator-email`}
           defaultValue={props.creator.email}
           name="email"
           disabled={props.disabled}
@@ -99,6 +101,7 @@ function CreatorForm(props: CreatorFormProps) {
         <Input
           bsSize="sm"
           type="affiliation"
+          data-cy={`creator-affiliation`}
           defaultValue={props.creator.affiliation}
           name="affiliation"
           disabled={props.disabled}
@@ -208,7 +211,7 @@ function CreatorsInput({ name, label, value, alert, setInputs, help, disabled = 
     <HelpText content={help} />
     <Row>
       <Col>
-        <Button size="sm" color="rk-white" disabled={disabled} onClick={addEmptyCreator}>
+        <Button data-cy="addCreatorButton" size="sm" color="rk-white" disabled={disabled} onClick={addEmptyCreator}>
           <FontAwesomeIcon icon={faUserPlus} /> Add Creator
         </Button>
       </Col>

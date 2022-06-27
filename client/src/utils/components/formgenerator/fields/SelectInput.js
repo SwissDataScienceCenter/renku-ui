@@ -33,7 +33,7 @@ function SelectInput(
   { name, label, type, value, alert, options, placeholder, setInputs, help, disabled = false, required = false }) {
   return <FormGroup className="field-group">
     <FormLabel htmlFor={name} label={label} required={required}/>
-    <Input id={name} name={name} type={type} value={value || ""}
+    <Input data-cy={`input-${name}`} id={name} name={name} type={type} value={value || ""}
       onChange={setInputs} placeholder={placeholder} disabled={disabled}>
       {options && options.map(option => <option key={option.value} value={option.value}>{option.name}</option>)}
     </Input>

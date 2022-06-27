@@ -1,0 +1,105 @@
+{
+  "result":{
+    "files":[
+      {
+        "unpack_archive":false,
+        "is_archive":false,
+        "relative_path":"datasetFiles.zip.unpacked/__MACOSX",
+        "created_at":"2022-06-21T12:14:06.478395",
+        "file_size":4096,
+        "is_dir":true,
+        "file_name":"__MACOSX",
+        "content_type":"unknown",
+        "file_id":"c8e799cf5f4a41b7be8d64d94912b43c"
+      },
+      {
+        "unpack_archive":false,
+        "is_archive":false,
+        "relative_path":"datasetFiles.zip.unpacked/New Folder With Items",
+        "created_at":"2022-06-21T12:14:06.481038",
+        "file_size":4096,
+        "is_dir":true,
+        "file_name":"New Folder With Items",
+        "content_type":"unknown",
+        "file_id":"c5ae529f79674cdaa5473fbb5191239f"
+      },
+      {
+        "unpack_archive":false,
+        "is_archive":false,
+        "relative_path":"datasetFiles.zip.unpacked/__MACOSX/New Folder With Items",
+        "created_at":"2022-06-21T12:14:06.482983",
+        "file_size":4096,
+        "is_dir":true,
+        "file_name":"New Folder With Items",
+        "content_type":"unknown",
+        "file_id":"045c7af032134bada2bf46d160a9855d"
+      },
+      {
+        "unpack_archive":false,
+        "is_archive":false,
+        "relative_path":"datasetFiles.zip.unpacked/__MACOSX/New Folder With Items/._titanic.txt",
+        "created_at":"2022-06-21T12:14:06.485803",
+        "file_size":560,
+        "is_dir":false,
+        "file_name":"._titanic.txt",
+        "content_type":"unknown",
+        "file_id":"e632f886a24b4754aba93c5b0908dc7f"
+      },
+      {
+        "unpack_archive":false,
+        "is_archive":false,
+        "relative_path":"datasetFiles.zip.unpacked/__MACOSX/New Folder With Items/._count_flights.txt",
+        "created_at":"2022-06-21T12:14:06.487987",
+        "file_size":584,
+        "is_dir":false,
+        "file_name":"._count_flights.txt",
+        "content_type":"unknown",
+        "file_id":"d0ddfef8a07b41b8acf0ec256c7d6a03"
+      },
+      {
+        "unpack_archive":false,
+        "is_archive":false,
+        "relative_path":"datasetFiles.zip.unpacked/__MACOSX/New Folder With Items/._W.txt",
+        "created_at":"2022-06-21T12:14:06.493451",
+        "file_size":902,
+        "is_dir":false,
+        "file_name":"._W.txt",
+        "content_type":"unknown",
+        "file_id":"695ada2ccc154a989051294a3cf337e8"
+      },
+      {
+        "unpack_archive":false,
+        "is_archive":false,
+        "relative_path":"datasetFiles.zip.unpacked/New Folder With Items/titanic.txt",
+        "created_at":"2022-06-21T12:14:06.496220",
+        "file_size":60302,
+        "is_dir":false,
+        "file_name":"titanic.txt",
+        "content_type":"unknown",
+        "file_id":"9c2408dc23ac46ef984f35440e6d1324"
+      },
+      {
+        "unpack_archive":false,
+        "is_archive":false,
+        "relative_path":"datasetFiles.zip.unpacked/New Folder With Items/count_flights.txt",
+        "created_at":"2022-06-21T12:14:06.498197",
+        "file_size":656,
+        "is_dir":false,
+        "file_name":"count_flights.txt",
+        "content_type":"unknown",
+        "file_id":"862d49fc7f73457fb543cc7854267628"
+      },
+      {
+        "unpack_archive":false,
+        "is_archive":false,
+        "relative_path":"datasetFiles.zip.unpacked/New Folder With Items/W.txt",
+        "created_at":"2022-06-21T12:14:06.500280",
+        "file_size":637561,
+        "is_dir":false,
+        "file_name":"W.txt",
+        "content_type":"unknown",
+        "file_id":"58195ffb22b44a35a3d624cee8fb85e4"
+      }
+    ]
+  }
+}
