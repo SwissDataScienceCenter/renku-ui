@@ -106,8 +106,6 @@ spec:
             periodSeconds: 30
           resources:
 {{ toYaml .Values.resources | indent 12 }}
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
     {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
@@ -120,8 +118,6 @@ spec:
       tolerations:
 {{ toYaml . | indent 8 }}
     {{- end }}
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       {{- if .Values.image.pullSecrets }}
       imagePullSecrets:
       {{- range .Values.image.pullSecrets }}

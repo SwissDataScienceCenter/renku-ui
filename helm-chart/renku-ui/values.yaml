@@ -51,13 +51,6 @@ tolerations: []
 
 affinity: {}
 
-podSecurityContext: {}
-
-securityContext:
-  runAsUser: 101
-  runAsNonRoot: true
-  allowPrivilegeEscalation: false
-
 welcomePage:
   text: |
     ## Welcome to Renku!

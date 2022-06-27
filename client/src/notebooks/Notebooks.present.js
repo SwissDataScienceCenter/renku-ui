@@ -52,6 +52,7 @@ import { EnvironmentLogs, LogDownloadButton, LogTabs, useDownloadLogs } from "..
 import { SessionStatus } from "../utils/constants/Notebooks";
 
 import "./Notebooks.css";
+import ProgressIndicator, { ProgressStyle, ProgressType } from "../utils/components/progress/Progress";
 
 
 // * Constants and helpers * //
@@ -103,7 +104,8 @@ function ShowSession(props) {
 
   // redirect immediately if the session fail
   if (props.history && notebook.data?.status?.state === SessionStatus.failed)
-    props.history.push(urlList);
+    console.log("Error starting session..", notebook.data?.status);
+    // props.history.push(urlList);
 
   // Always add all sub-components and hide them one by one to preserve the iframe navigation where needed
   return (
@@ -167,6 +169,18 @@ function SessionInformation(props) {
       </Button>
     );
 
+  const getStatus = (data) => {
+    const status = data.status.state;
+    if (!status)
+      return null;
+
+    return status === SessionStatus.running ?
+      (<>
+        <span className="fw-bold">Running since</span>
+        <TimeCaption noCaption={true} endPunctuation=" " time={data.started} />
+      </>) : null;
+  };
+
   return (
     <div className="d-flex flex-wrap">
       <div className="p-2 p-lg-3 text-nowrap">
@@ -184,8 +198,7 @@ function SessionInformation(props) {
         <span>{resourceList}</span>
       </div>
       <div className="p-2 p-lg-3 text-nowrap">
-        <span className="fw-bold">{ ready ? "Running since" : "Started" } </span>
-        <TimeCaption noCaption={true} endPunctuation=" " time={notebook.data.started} />
+        {getStatus(notebook.data)}
       </div>
       <div className="p-1 p-lg-2 m-auto me-1 me-lg-2">{menu}</div>
     </div>
@@ -354,7 +367,17 @@ function SessionJupyter(props) {
     else if (invisible) {
       return null;
     }
-    else if (status === SessionStatus.starting || status === SessionStatus.stopping) {
+    else if (status === SessionStatus.starting) {
+      content = (
+        <ProgressIndicator
+          description="Starting the containers for your session"
+          currentStatus={notebook.data?.status?.message}
+          title={"Starting Session"}
+          style={ProgressStyle.Light}
+          type={ProgressType.Indeterminate}/>
+      );
+    }
+    else if (status === SessionStatus.stopping) {
       content = (<Loader />);
     }
   }
@@ -841,6 +864,20 @@ function getStatusObject(status, defaultImage) {
   }
 }
 
+const NotebookStatusDetail = ({ uid, details }) => {
+  if (!details)
+    return null;
+  return (<>
+    <FontAwesomeIcon id={uid} icon={faInfoCircle} className="cursor-pointer mx-2"/>
+    <UncontrolledPopover target={uid} trigger="legacy" placement="bottom">
+      <PopoverHeader>Kubernetes pod status</PopoverHeader>
+      <PopoverBody>
+        <span>{details}</span><br />
+      </PopoverBody>
+    </UncontrolledPopover>
+  </>);
+};
+
 class NotebooksServerRowStatus extends Component {
   render() {
     const { status, details, uid, annotations, startTime } = this.props;
@@ -854,16 +891,8 @@ class NotebooksServerRowStatus extends Component {
 
     const textStatus = status === SessionStatus.running ? `${data.text} since ${startTime}` : data.text;
 
-    const extraInfo = details.message ?
-      (<>
-        {" "}<FontAwesomeIcon id={uid} icon={faInfoCircle} />
-        <UncontrolledPopover target={uid} trigger="legacy" placement="bottom">
-          <PopoverHeader>Kubernetes pod status</PopoverHeader>
-          <PopoverBody>
-            <span>{details.message}</span><br />
-          </PopoverBody>
-        </UncontrolledPopover>
-      </>) : null;
+    const extraInfo = status === SessionStatus.starting ?
+      <NotebookStatusDetail uid={uid} details={details.message} /> : null;
 
     return <>
       <span className={`time-caption font-weight-bold ${textColor[status]}`}>
