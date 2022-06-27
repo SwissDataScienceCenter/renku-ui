@@ -41,6 +41,7 @@ import { Loader } from "../utils/components/Loader";
 import { ThrottledTooltip } from "../utils/components/Tooltip";
 import { CoreErrorAlert } from "../utils/components/errors/CoreErrorAlert";
 import { CoreError } from "../utils/components/errors/CoreErrorHelpers";
+import { ContainerWrap } from "../App";
 
 
 function DisplayFiles(props) {
@@ -341,111 +342,113 @@ export default function DatasetView(props) {
     `${datasetTitle} • Dataset • ${datasetDesc}` :
     `${datasetTitle} • Dataset`;
 
-  return <Col>
-    <ErrorAfterCreation location={props.location} dataset={dataset} />
-    {
-      props.insideProject ? null :
-        <Helmet>
-          <title>{pageTitle}</title>
-        </Helmet>
-    }
-    <Row>
-      <Col md={8} sm={12}>
-        {props.insideProject ?
-          <h3 data-cy="dataset-title" key="datasetTitle" className="mb-4">
-            {dataset.title || dataset.name}
-          </h3>
-          :
-          <h2 data-cy="dataset-title" key="datasetTitle" className="mb-4">
-            {dataset.title || dataset.name}
-          </h2>
-        }
-      </Col>
-      <Col md={4} sm={12} className="d-flex flex-col justify-content-end mb-auto">
-        <AddToProjectButton goToAddToProject={goToAddToProject}
-          insideKg={dataset?.insideKg} locked={locked} logged={props.logged} />
-        <EditDatasetButton
-          dataset={dataset}
-          insideProject={props.insideProject} locked={locked} maintainer={props.maintainer} />
-        <MoreOptionsDatasetButton
-          insideProject={props.insideProject} locked={locked} maintainer={props.maintainer}
-          setDeleteDatasetModalOpen={setDeleteDatasetModalOpen} />
-
-      </Col>
-    </Row>
-    <div className="d-flex">
-      {dataset.mediaContent ?
-        <div className="flex-shrink-0 pe-3" style={{ width: "120px" }}>
-          <img src={dataset.mediaContent} className=" rounded" alt=""
-            style={{ objectFit: "cover", width: "100%", height: "90px" }} />
+  return (<ContainerWrap>
+    <Col>
+      <ErrorAfterCreation location={props.location} dataset={dataset} />
+      {
+        props.insideProject ? null :
+          <Helmet>
+            <title>{pageTitle}</title>
+          </Helmet>
+      }
+      <Row>
+        <Col md={8} sm={12}>
+          {props.insideProject ?
+            <h3 data-cy="dataset-title" key="datasetTitle" className="mb-4">
+              {dataset.title || dataset.name}
+            </h3>
+            :
+            <h2 data-cy="dataset-title" key="datasetTitle" className="mb-4">
+              {dataset.title || dataset.name}
+            </h2>
+          }
+        </Col>
+        <Col md={4} sm={12} className="d-flex flex-col justify-content-end mb-auto">
+          <AddToProjectButton goToAddToProject={goToAddToProject}
+            insideKg={dataset?.insideKg} locked={locked} logged={props.logged} />
+          <EditDatasetButton
+            dataset={dataset}
+            insideProject={props.insideProject} locked={locked} maintainer={props.maintainer} />
+          <MoreOptionsDatasetButton
+            insideProject={props.insideProject} locked={locked} maintainer={props.maintainer}
+            setDeleteDatasetModalOpen={setDeleteDatasetModalOpen} />
+        </Col>
+      </Row>
+      <div className="d-flex">
+        {dataset.mediaContent ?
+          <div className="flex-shrink-0 pe-3" style={{ width: "120px" }}>
+            <img src={dataset.mediaContent} className=" rounded" alt=""
+              style={{ objectFit: "cover", width: "100%", height: "90px" }} />
+          </div>
+          : null}
+        <div className="flex-grow-1">
+          <DisplayInfoTable
+            dataset={dataset}
+            insideProject={props.insideProject}
+            sameAs={props.sameAs}
+          />
         </div>
-        : null}
-      <div className="flex-grow-1">
-        <DisplayInfoTable
-          dataset={dataset}
-          insideProject={props.insideProject}
-          sameAs={props.sameAs}
-        />
       </div>
-    </div>
-    <DisplayDescription
-      projectPathWithNamespace={props.projectPathWithNamespace}
-      projectsUrl={props.projectsUrl}
-      client={props.client}
-      projectId={props.projectId}
-      description={dataset.description}
-      insideProject={props.insideProject}
-      defaultBranch={props.defaultBranch}
-    />
-    <DisplayFiles
-      projectsUrl={props.projectsUrl}
-      fileContentUrl={props.fileContentUrl}
-      lineagesUrl={props.lineagesUrl}
-      files={props.files}
-      insideProject={props.insideProject}
-      loadingDatasets={props.loadingDatasets}
-    />
-    {
-      //here we assume that if the dataset is only in one project
-      //this one project is the current project and we don't display the list
-      (dataset.usedIn && dataset.usedIn.length > 1) || !props.insideProject ?
-        <DisplayProjects
-          projects={dataset.usedIn}
-          projectsUrl={props.projectsUrl}
+      <DisplayDescription
+        projectPathWithNamespace={props.projectPathWithNamespace}
+        projectsUrl={props.projectsUrl}
+        client={props.client}
+        projectId={props.projectId}
+        description={dataset.description}
+        insideProject={props.insideProject}
+        defaultBranch={props.defaultBranch}
+      />
+      <DisplayFiles
+        projectsUrl={props.projectsUrl}
+        fileContentUrl={props.fileContentUrl}
+        lineagesUrl={props.lineagesUrl}
+        files={props.files}
+        insideProject={props.insideProject}
+        loadingDatasets={props.loadingDatasets}
+      />
+      {
+        //here we assume that if the dataset is only in one project
+        //this one project is the current project and we don't display the list
+        (dataset.usedIn && dataset.usedIn.length > 1) || !props.insideProject ?
+          <DisplayProjects
+            projects={dataset.usedIn}
+            projectsUrl={props.projectsUrl}
+          />
+          : null
+      }
+      {
+        dataset.insideKg === false && props.projectInsideKg === true ?
+          <WarnAlert className="not-in-kg-warning">
+            <strong data-cy="not-in-kg-warning">This dataset is not in the Knowledge Graph;</strong>{" "}
+            this means that some
+            operations on it are not possible.
+            <br /><br />
+            If the dataset was created recently, and the Knowledge Graph integration for the project is active,
+            the dataset should be added to the Knowledge Graph soon, you can&nbsp;
+            <Button size="sm" color="warning" onClick={() => window.location.reload()}>
+              refresh the page</Button> to see if the status changed.
+            <br /><br />
+            For more information about the Knowledge Graph status you can go to the&nbsp;
+            <Button size="sm" color="warning" onClick={() => props.history.push(props.overviewStatusUrl)}>
+              status page
+            </Button>.
+          </WarnAlert>
+          : null
+      }
+      {props.insideProject && props.maintainer ?
+        <DeleteDataset
+          client={props.client}
+          dataset={dataset}
+          history={props.history}
+          httpProjectUrl={props.httpProjectUrl}
+          modalOpen={deleteDatasetModalOpen}
+          projectPathWithNamespace={props.projectPathWithNamespace}
+          setModalOpen={setDeleteDatasetModalOpen}
+          user={props.user}
+          versionUrl={props.migration.core.versionUrl}
         />
         : null
-    }
-    {
-      dataset.insideKg === false && props.projectInsideKg === true ?
-        <WarnAlert className="not-in-kg-warning">
-          <strong data-cy="not-in-kg-warning">This dataset is not in the Knowledge Graph;</strong> this means that some
-          operations on it are not possible.
-          <br /><br />
-          If the dataset was created recently, and the Knowledge Graph integration for the project is active,
-          the dataset should be added to the Knowledge Graph soon, you can&nbsp;
-          <Button size="sm" color="warning" onClick={() => window.location.reload()}>
-            refresh the page</Button> to see if the status changed.
-          <br /><br />
-          For more information about the Knowledge Graph status you can go to the&nbsp;
-          <Button size="sm" color="warning" onClick={() => props.history.push(props.overviewStatusUrl)}>
-            status page
-          </Button>.
-        </WarnAlert>
-        : null
-    }
-    {props.insideProject && props.maintainer ?
-      <DeleteDataset
-        client={props.client}
-        dataset={dataset}
-        history={props.history}
-        httpProjectUrl={props.httpProjectUrl}
-        modalOpen={deleteDatasetModalOpen}
-        projectPathWithNamespace={props.projectPathWithNamespace}
-        setModalOpen={setDeleteDatasetModalOpen}
-        user={props.user}
-        versionUrl={props.migration.core.versionUrl}
-      />
-      : null
-    }
-  </Col>;
+      }
+    </Col>
+  </ContainerWrap>);
 }

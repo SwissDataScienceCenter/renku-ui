@@ -50,6 +50,10 @@ import { AddDataset } from "./dataset/addtoproject/DatasetAdd.container";
 import { DatasetCoordinator } from "./dataset/Dataset.state";
 import AppContext from "./utils/context/appContext";
 
+export const ContainerWrap = ({ children }) => {
+  return <div className="container-xxl py-4 mt-2 renku-container">{children}</div>;
+};
+
 function CentralContentContainer(props) {
   const { notifications, user } = props;
 
@@ -71,42 +75,44 @@ function CentralContentContainer(props) {
     location: props.location,
   };
 
-  return <div className="container-xxl pt-4 mt-2 renku-container">
+  return <div>
     <AppContext.Provider value={appContext}>
       <Helmet>
         <title>Reproducible Data Science | Open Research | Renku</title>
       </Helmet>
       <Switch>
         <Route exact path="/login" render={
-          p => <Login key="login" {...p} {...props} />} />
+          p => <ContainerWrap><Login key="login" {...p} {...props} /></ContainerWrap>} />
         <Route exact path={Url.get(Url.pages.landing)} render={
           p => (props.user.logged) ?
-            <Landing.Home
-              key="landing" welcomePage={props.params["WELCOME_PAGE"]}
-              user={props.user}
-              client={props.client}
-              model={props.model}
-              {...p} /> : null
+            <ContainerWrap>
+              <Landing.Home
+                key="landing" welcomePage={props.params["WELCOME_PAGE"]}
+                user={props.user}
+                client={props.client}
+                model={props.model}
+                {...p} />
+            </ContainerWrap> : null
         } />
         <Route path={Url.get(Url.pages.help)} render={
           p => <Help key="help" {...p} {...props} />} />
         <Route exact
           path={[Url.get(Url.pages.projects), Url.get(Url.pages.projects.starred), Url.get(Url.pages.projects.all)]}
-          render={p => <ProjectList
+          render={p => <ContainerWrap><ProjectList
             key="projects"
             user={props.user}
             client={props.client}
             statusSummary={props.statusSummary}
             {...p}
-          />}
+          /></ContainerWrap>}
         />
         <Route exact path={Url.get(Url.pages.project.new)} render={
-          p => <NewProject
+          p => <ContainerWrap><NewProject
             key="newProject"
             model={props.model}
             user={props.user}
             {...p}
-          />}
+          /></ContainerWrap>}
         />
         <Route path="/projects/:subUrl+" render={
           p => <Project.View
@@ -121,14 +127,14 @@ function CentralContentContainer(props) {
           />}
         />
         <Route exact path="/sessions" render={
-          p => <Notebooks
+          p => <ContainerWrap><Notebooks
             key="sessions"
             standalone={true}
             client={props.client}
             model={props.model}
             blockAnonymous={blockAnonymous}
             {...p}
-          />}
+          /></ContainerWrap>}
         />
         <Route path="/datasets/:identifier/add" render={
           p => <AddDataset
@@ -153,31 +159,31 @@ function CentralContentContainer(props) {
           />}
         />
         <Route path="/datasets" render={
-          p => <DatasetList key="datasets"
+          p => <ContainerWrap><DatasetList key="datasets"
             client={props.client}
             model={props.model}
             {...p}
-          />}
+          /></ContainerWrap>}
         />
         <Route path="/privacy" render={
-          p => <Privacy key="privacy"
+          p => <ContainerWrap><Privacy key="privacy"
             params={props.params}
             {...p}
-          />}
+          /></ContainerWrap>}
         />
         <Route path="/notifications" render={
-          p => <NotificationsPage key="notifications"
+          p => <ContainerWrap><NotificationsPage key="notifications"
             client={props.client}
             model={props.model}
             notifications={notifications}
             {...p}
-          />}
+          /></ContainerWrap>}
         />
         <Route path="/style-guide" render={
-          p => <StyleGuide key="style-guide"
+          p => <ContainerWrap><StyleGuide key="style-guide"
             baseUrl="/style-guide"
             {...p}
-          />}
+          /></ContainerWrap>}
         />
         <Route path="*" render={p => <NotFound {...p} />} />
       </Switch>
