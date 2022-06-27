@@ -83,12 +83,12 @@ export default class NotebookRender extends React.PureComponent<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      notebook: fromJS(props.notebook),
+      notebook: fromJS(props?.notebook),
     };
   }
 
   static getDerivedStateFromProps(props: Props, state: State) {
-    if (props.notebook !== state.notebook) return { notebook: fromJS(props.notebook) };
+    if (props?.notebook !== state.notebook) return { notebook: fromJS(props?.notebook) };
     return null;
   }
 
@@ -155,10 +155,10 @@ export default class NotebookRender extends React.PureComponent<Props, State> {
                 remarkPlugins = [math, remark2rehype, katex, stringify];
                 remarkRenderers = {
                   math: function blockMath({ node, props }: { node: unknown; props: { value: string } }) {
-                    return <BlockMath>{props.value}</BlockMath>;
+                    return <BlockMath>{props?.value}</BlockMath>;
                   },
                   inlineMath: function inlineMath({ node, props }: { node: unknown; props: { value: string } }) {
-                    return <InlineMath>{props.value}</InlineMath>;
+                    return <InlineMath>{props?.value}</InlineMath>;
                   },
                   element: function remarkElement(node: { tagName: string; properties: any; children: any }) {
                     if (node.tagName === "math") return node.children;
