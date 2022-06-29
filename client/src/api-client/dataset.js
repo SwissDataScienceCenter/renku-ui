@@ -170,17 +170,20 @@ export default function addDatasetMethods(client) {
       if (response.data.error !== undefined)
         return response;
 
-      const currentProjects = response.data.result.projects.find(project => project.git_url === projectUrl);
+      const cleanUrl = (url) => url.replace(".git", "");
+
+      const currentProjects = response.data.result.projects
+        .find(project => cleanUrl(project.git_url) === cleanUrl(projectUrl));
       // We need to do this because there is a BUG in the CORE SERVICE!!!
       // ref is missing from the list of cloned projects and that makes it impossible for us
       // to know which project id to use, in this case we need to clone the project
       // for every operation we do on master
       // ----->    :(     :(       :(
-      if (currentProjects.length > 1)
-        return undefined;
-      return currentProjects;
+      if (currentProjects?.length > 1)
+        return Promise.resolve(undefined);
+      return Promise.resolve(currentProjects);
     }).then(cloned_project => {
-      if (cloned_project.project_id !== undefined)
+      if (cloned_project && cloned_project?.project_id !== undefined)
         return cloned_project.project_id;
 
       return client.cloneProjectInCache(projectUrl, null, versionUrl).then(project_id => {
@@ -277,26 +280,16 @@ export default function addDatasetMethods(client) {
     headers.append("Content-Type", "application/json");
     headers.append("X-Requested-With", "XMLHttpRequest");
 
-    let project_id;
+    const url = client.versionedCoreUrl("datasets.import", versionUrl);
 
-    return client.getProjectIdFromCoreService(projectUrl, versionUrl)
-      .then(response => {
-        if (response.data !== undefined && response.data.error !== undefined)
-          return response;
-
-        project_id = response;
-
-        const url = client.versionedCoreUrl("datasets.import", versionUrl);
-
-        return client.clientFetch(url, {
-          method: "POST",
-          headers,
-          body: JSON.stringify({
-            "dataset_uri": datasetUrl,
-            "project_id": project_id
-          })
-        });
-      });
+    return client.clientFetch(url, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        "dataset_uri": datasetUrl,
+        "git_url": projectUrl,
+      })
+    });
   };
 
   client.listProjectDatasetsFromCoreService = (git_url, versionUrl = null) => {
