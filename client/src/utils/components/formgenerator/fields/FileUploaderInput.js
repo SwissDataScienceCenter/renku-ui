@@ -211,7 +211,6 @@ function FileUploaderInput({
             "atLocation": fileInZip.relative_path.replace(currentFile.file_path, ""),
             "id": fileInZip.file_id
           })));
-        currentFile.file_size = resultFile.file_size ?? 0;
         currentFile.file_id = currentFile.folder_structure?.tree?.map(file => file.id);
       }
       updateAndSetDisplayFilesAfterChanges(currentFile);
