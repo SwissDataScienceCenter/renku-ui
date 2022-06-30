@@ -172,7 +172,7 @@ function Section1(props) {
         <Row>
           <Col className="rk-pt-s rk-w-s">
             <HashLink className="btn btn-outline-rk-pink" role="button"
-              to="#rk-anon-home-section2">
+              to="#rk-anon-home-section-features">
             Learn more
             </HashLink>
           </Col>
