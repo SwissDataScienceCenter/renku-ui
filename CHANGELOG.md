@@ -1,5 +1,29 @@
 # Changes
 
+## [2.5.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.4.1...2.5.0) (2022-07-01)
+
+### Features
+
+**dataset**
+
+* add dropzone component for large files ([#1830](https://github.com/SwissDataScienceCenter/renku-ui/issues/1830), [#1882](https://github.com/SwissDataScienceCenter/renku-ui/issues/1882))
+
+**misc**
+
+* set page title to project or dataset title ([#1881](https://github.com/SwissDataScienceCenter/renku-ui/issues/1881))
+* add custom error 404 page ([#1910](https://github.com/SwissDataScienceCenter/renku-ui/issues/1910),  [#1915](https://github.com/SwissDataScienceCenter/renku-ui/issues/1915))
+
+
+### Bug Fixes
+
+* **dataset** use git_url instead of project_id to import dataset ([#1925](https://github.com/SwissDataScienceCenter/renku-ui/issues/1925))
+* **notebook** add validation when opening a notebook ([#1906](https://github.com/SwissDataScienceCenter/renku-ui/issues/1906), [#1926](https://github.com/SwissDataScienceCenter/renku-ui/issues/1926))
+
+
+### BREAKING CHANGES
+
+* requires renku-python >= 1.5.0
+
 ## [2.4.1](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.4.0...2.4.1) (2022-06-24)
 
 ### Features
