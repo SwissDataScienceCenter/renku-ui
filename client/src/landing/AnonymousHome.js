@@ -31,8 +31,12 @@ import { Button, Row, Col } from "reactstrap";
 import { Navbar, Nav, Collapse, NavItem } from "reactstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  faBars
+  faBars, faBook
 } from "@fortawesome/free-solid-svg-icons";
+
+import {
+  faYoutube, faTwitter, faMedium, faGithub
+} from "@fortawesome/free-brands-svg-icons";
 
 import { Url } from "../utils/helpers/url";
 import { StatuspageBanner } from "../statuspage";
@@ -62,7 +66,7 @@ import logo_SDSC from "./Logos/SDSC.svg";
 
 
 import { RenkuNavLink } from "../utils/components/RenkuNavLink";
-import { ExternalLink } from "../utils/components/ExternalLinks";
+import { ExternalIconLink, ExternalLink } from "../utils/components/ExternalLinks";
 import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
 import { Docs } from "../utils/constants/Docs";
 
@@ -70,6 +74,13 @@ function HomeHeader(props) {
   const [isOpen, setIsOpen] = useState(false);
   const toggleOpen = () => setIsOpen(!isOpen);
   const { urlMap } = props;
+  const externalLinks = {
+    medium: "https://medium.com/the-renku-blog",
+    twitter: "https://twitter.com/RenkuIO",
+    youtube: "https://www.youtube.com/channel/UCMF2tBtWU1sKWvtPl_HpI4A",
+    github: "https://github.com/SwissDataScienceCenter/renku",
+    docs: Docs.READ_THE_DOCS_ROOT
+  };
   return <Fragment>
     <Row key="statuspage">
       <Col>
@@ -82,23 +93,50 @@ function HomeHeader(props) {
       <div className="align-self-center flex-grow-1">
         <img src={logo} alt="Renku" height="68" className="d-block my-1" />
       </div>
-      <div className="px-2 mt-3 align-self-center bg-primary">
-        <ExternalLink
-          title="Docs"
-          className="btn btn-outline-rk-pink d-none d-md-inline-block me-2" role="button"
-          showLinkIcon={true}
-          url={Docs.READ_THE_DOCS_ROOT} />{" "}
-        <ExternalLink
-          title="GitHub"
-          className="btn btn-outline-rk-pink d-none d-md-inline-block me-2" role="button"
-          showLinkIcon={true}
-          url="https://github.com/SwissDataScienceCenter/renku"/>{" "}
+      <div
+        className="px-2 mt-3 d-flex justify-content-center icons-menu
+        align-items-center bg-primary gap-3">
+        <div className="d-none d-md-inline-block">
+          <ExternalIconLink
+            className="text-white text-decoration-none"
+            tooltip="Documentation"
+            role="link"
+            url={externalLinks.docs}
+            icon={faBook} />
+        </div>
+        <div className="d-none d-md-inline-block">
+          <ExternalIconLink
+            className="text-white"
+            tooltip="Twitter" role="link"
+            url={externalLinks.twitter}
+            icon={faTwitter} />
+        </div>
+        <div className="d-none d-md-inline-block">
+          <ExternalIconLink
+            className="text-white"
+            tooltip="Medium" role="link"
+            url={externalLinks.medium}
+            icon={faMedium} />
+        </div>
+        <div className="d-none d-md-inline-block">
+          <ExternalIconLink
+            className="text-white"
+            tooltip="Youtube"
+            role="link"
+            url={externalLinks.youtube}
+            icon={faYoutube} />
+        </div>
+        <div className="d-none d-md-inline-block">
+          <ExternalIconLink
+            className="text-white"
+            tooltip="Github" role="link"
+            url={externalLinks.github}
+            icon={faGithub} />
+        </div>
         <Link className="btn btn-outline-secondary" role="button" id="login-button" to="/login">
           Login
         </Link>
-      </div>
-      <div className="px-2 mt-1 align-self-center bg-primary">
-        <Button onClick={toggleOpen} id="nav-hamburger" className="border-0 mt-3">
+        <Button onClick={toggleOpen} id="nav-hamburger" className="border-0">
           <FontAwesomeIcon icon={faBars} id="userIcon" />
         </Button>
       </div>
@@ -120,16 +158,14 @@ function HomeHeader(props) {
             <NavItem>
               <RenkuNavLink to="/sessions" title="Sessions" id="link-sessions" />
             </NavItem>
-            <NavItem>
-              <RenkuToolbarHelpMenu />
-            </NavItem>
             <NavItem className="d-inline d-md-none">
               <ExternalLink
                 className="nav-link"
                 title="Docs"
                 role="text"
                 showLinkIcon={true}
-                url={Docs.READ_THE_DOCS_ROOT} />
+                customIcon={faBook}
+                url={externalLinks.docs} />
             </NavItem>
             <NavItem className="d-inline d-md-none">
               <ExternalLink
@@ -137,7 +173,38 @@ function HomeHeader(props) {
                 title="GitHub"
                 role="text"
                 showLinkIcon={true}
-                url="https://github.com/SwissDataScienceCenter/renku" />
+                customIcon={faGithub}
+                url={externalLinks.github} />
+            </NavItem>
+            <NavItem className="d-inline d-md-none">
+              <ExternalLink
+                className="nav-link"
+                title="Youtube"
+                role="text"
+                showLinkIcon={true}
+                customIcon={faYoutube}
+                url={externalLinks.youtube} />
+            </NavItem>
+            <NavItem className="d-inline d-md-none">
+              <ExternalLink
+                className="nav-link"
+                title="Medium"
+                role="text"
+                showLinkIcon={true}
+                customIcon={faMedium}
+                url={externalLinks.medium} />
+            </NavItem>
+            <NavItem className="d-inline d-md-none">
+              <ExternalLink
+                className="nav-link"
+                title="Twitter"
+                role="text"
+                showLinkIcon={true}
+                customIcon={faTwitter}
+                url={externalLinks.twitter} />
+            </NavItem>
+            <NavItem>
+              <RenkuToolbarHelpMenu />
             </NavItem>
             <NavItem className="nav-item">
               <RenkuToolbarNotifications {...props} />

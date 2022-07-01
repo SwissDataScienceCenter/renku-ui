@@ -3,3 +3,11 @@
     padding: 0.5rem;
     white-space: nowrap;
 }
+
+.icons-menu a {
+    vertical-align: middle;
+    outline-style: none;
+}
+.icons-menu svg {
+    outline-style: none;
+}
