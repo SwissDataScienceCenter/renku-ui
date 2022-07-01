@@ -123,6 +123,46 @@ function Datasets<T extends FixturesConstructor>(Parent: T) {
       ).as(name);
       return this;
     }
+
+    uploadDatasetFile(name = "uploadDatasetFile", resultFile = "datasets/upload-dataset-file.json", options?) {
+      const fixture = this.useMockedData ?
+        { fixture: resultFile,
+          statusCode: options?.statusCode ?? 200,
+        } : undefined;
+      let params = options && options.override_existing ?
+        `?override_existing=${options.override_existing}` : "*";
+
+      params = options && options.unpack_archive ?
+        `${params}&unpack_archive=${options.unpack_archive}` : "*";
+
+      cy.intercept(
+        "/ui-server/api/renku/*/cache.files_upload" + params,
+        fixture,
+      ).as(name);
+      cy.intercept(
+        "/ui-server/api/renku/cache.files_upload" + params,
+        fixture,
+      ).as(name);
+      return this;
+    }
+
+    createDataset(name = "createDataset", resultFile = "datasets/create-dataset.json") {
+      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
+      cy.intercept(
+        "/ui-server/api/renku/*/datasets.create",
+        fixture,
+      ).as(name);
+      return this;
+    }
+
+    addFileDataset(name = "addFile", resultFile = "datasets/add-file.json") {
+      const fixture = this.useMockedData ? { fixture: resultFile } : undefined;
+      cy.intercept(
+        "/ui-server/api/renku/*/datasets.add",
+        fixture,
+      ).as(name);
+      return this;
+    }
   };
 }
 

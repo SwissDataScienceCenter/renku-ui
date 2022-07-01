@@ -572,7 +572,7 @@ const datasetFormSchema = new Schema({
     validators: [{
       id: "files-length",
       isValidFun: expression => FormGenerator.Validators.filesReady(expression),
-      alert: "Some queued files have not finished uploading. Please see the status messages and reply to any questions."
+      alert: "Some queued files have not finished uploading."
     }]
   },
   image: {

@@ -249,6 +249,14 @@ class APIClient {
     const urlAddition = version ? version : "";
     return `${this.baseUrl}/renku${urlAddition}/${endpoint}`;
   }
+
+  /**
+   * Return upload file endpoint url.
+   * @returns string
+   */
+  uploadFileURL() {
+    return `${this.baseUrl}/renku/cache.files_upload?override_existing=true`;
+  }
 }
 
 export default APIClient;

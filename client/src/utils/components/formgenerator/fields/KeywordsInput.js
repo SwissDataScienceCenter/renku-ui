@@ -86,7 +86,7 @@ function KeywordsInput(
       <li className="input-tag__tags__input">
         <input type="text" onKeyDown={inputKeyDown}
           ref={c => { tagInput.current = c; }}
-          disabled={disabled}
+          disabled={disabled} data-cy={`input-${name}`}
         />
       </li>
     </ul>

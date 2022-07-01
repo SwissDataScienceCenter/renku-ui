@@ -60,7 +60,7 @@ function TextInput({ name, label, type, value, alert, placeholder, setInputs,
     :
     <FormGroup>
       <FormLabel htmlFor={name} label={label} required={required}/>
-      <Input id={name} name={name} type={type} value={value || ""}
+      <Input id={name} data-cy={`input-${name}`} name={name} type={type} value={value || ""}
         onChange={setInputs} disabled={disabled} placeholder={placeholder} />
       {help && <FormText color="muted">{help}</FormText>}
       {alert && <ErrorLabel text={alert} />}

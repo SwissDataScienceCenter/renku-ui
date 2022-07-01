@@ -1,0 +1,11 @@
+{
+   "result":{
+      "projects":[
+         {
+            "project_id":"afc0206e87d6455b9b4cfdebf0d9ccb8",
+            "initialized":true,
+            "git_url":"https://dev.renku.ch/gitlab/e2e/local-test-project.git"
+         }
+      ]
+   }
+}

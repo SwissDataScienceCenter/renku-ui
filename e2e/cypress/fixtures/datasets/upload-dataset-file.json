@@ -1,0 +1,17 @@
+{
+  "result":{
+    "files":[
+      {
+        "relative_path":"filter_flights.txt",
+        "is_archive":false,
+        "created_at":"2022-06-17T12:42:35.386017",
+        "is_dir":false,
+        "file_name":"filter_flights.txt",
+        "file_id":"268cbd72195d427db67f80a425484b0a",
+        "file_size":539,
+        "content_type":"unknown",
+        "unpack_archive":false
+      }
+    ]
+  }
+}

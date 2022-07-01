@@ -40,7 +40,6 @@ export default function addDatasetMethods(client) {
   function createFileUploadFormData(file) {
     const data = new FormData();
     data.append("file", file);
-    data.append("file_name", file.name);
     return data;
   }
 

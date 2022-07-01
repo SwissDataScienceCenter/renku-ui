@@ -40,3 +40,32 @@
   width: 400%;
   z-index: 1; /* stack above subsequent cells */
 }
+
+/* dropzone customization */
+.dz-message button {
+  border: none;
+  background-color: transparent;
+  font-size:0.9rem;
+  font-weight: lighter;
+  color: var(--bs-body-color);
+}
+
+.dz-message button span {
+  text-decoration: underline;
+}
+
+.upload-file-box {
+  border: 1px solid var(--bs-light);
+}
+
+.dz-clickable {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  min-height: 127px;
+  background-color: #F3F3F3;
+  border-style: dashed;
+  border-color: #D3D3D3;
+  margin-top: 20px;
+}
