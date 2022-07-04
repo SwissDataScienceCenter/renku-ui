@@ -22,6 +22,7 @@ import showdown from "showdown";
 import showdownHighlight from "showdown-highlight";
 // Version 0.8.0 of showdown-katex breaks the tests so do not update the library
 import showdownKatex from "showdown-katex";
+import showdownMermaid from "showdown-mermaid";
 import DOMPurify from "dompurify";
 import XRegExp from "xregexp";
 
@@ -173,6 +174,7 @@ function sanitizedHTMLFromMarkdown(markdown, singleLine = false) {
     ...showdownOptions,
     extensions: [
       ...bindings,
+      showdownMermaid(),
       showdownHighlight({ pre: true }),
       showdownKatex({
         throwOnError: false,
