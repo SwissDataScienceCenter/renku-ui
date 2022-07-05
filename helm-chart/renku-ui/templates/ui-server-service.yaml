@@ -5,9 +5,9 @@ metadata:
   labels:
 {{ include "ui-server.labels" . | indent 4 }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.server.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    - port: {{ .Values.server.service.port }}
       targetPort: 8080
       protocol: TCP
       name: http
