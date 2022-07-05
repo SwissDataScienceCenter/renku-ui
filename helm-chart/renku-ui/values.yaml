@@ -12,127 +12,240 @@ global:
   ## Set to true if using https
   useHTTPS: false
 
-replicaCount: 1
+  ## Specify a secret that containes the certificate
+  ## if you would like to use a custom CA. The key for the secret
+  ## should have the .crt extension otherwise it is ignored. The
+  ## keys across all secrets are mounted as files in one location so
+  ## the keys across all secrets have to be unique.
+  certificates:
+    image:
+      repository: renku/certificates
+      tag: '0.0.1'
+    customCAs: []
+      # - secret:
 
-image:
-  repository: renku/renku-ui
-  tag: "2.5.0"
-  pullPolicy: IfNotPresent
+  ## Specify the information required to connect to a redis instance.
+  ## All the values below are required.
+  redis:
+    sentinel:
+      enabled: true
+      masterSet: mymaster
+    dbIndex:
+      uiServer: "2"
+    host: renku-redis
+    port: 26379
+    clientLabel:
+      renku-redis-host: "true"
+    existingSecret: redis-secret
+    existingSecretPasswordKey: redis-password
 
-  ## Optionally specify an array of imagePullSecrets.
-  ## Secrets must be manually created in the namespace.
-  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-  ##
-  # pullSecrets:
-  #   - myRegistrKeySecretName
+client: 
+  replicaCount: 1
 
-service:
-  type: ClusterIP
-  port: 80
-
-ingress:
-  enabled: false
-
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #  cpu: 100m
-  #  memory: 128Mi
-  # requests:
-  #  cpu: 100m
-  #  memory: 128Mi
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
-
-podSecurityContext: {}
-
-securityContext:
-  runAsUser: 101
-  runAsNonRoot: true
-  allowPrivilegeEscalation: false
-
-welcomePage:
-  text: |
-    ## Welcome to Renku!
-    Renku is software for collaborative data science. With Renku you can share code and data,
-    discuss problems and solutions, and coordinate data-science projects.
-
-templates:
-  custom: true
-  repositories:
-    - url: https://github.com/SwissDataScienceCenter/renku-project-template
-      ref: 0.1.15
-      name: Renku
-
-# This defines the threshold for automatically showing a preview when browsing projects' files.
-# Above the soft limit, the user receives a warning. Above the hard limit, no preview is available.
-previewSizeThreshold:
-  soft: 1048576 # 1MB
-  hard: 10485760 # 10MB
-
-# This defines the threshold for displaying a message when a user is trying to upload a large file
-# so that they know it's not necessary to wait for this. There is only hard limit for now.
-uploadSizeThreshold:
-  soft: 104857600 # 100MB
-
-# Any string here, other than 'false', will enable the maintenance page and be added on it as an info.
-# Setting 'true' will display a standard message embedded in maintenace page.
-maintenance: false
-
-sentry:
-  enabled: false
-  dsn: ""
-  environment: ""
-  sampleRate: 0 # number between 0 and 1. (e.g., to send 20% of transactions, set 0.2.)
-
-# If you want to enable the privacy page, please create also a configMap and set its name in the
-# privacy.page.configMapName value. As a reference, you can use the sample configMap generated when
-# enabling the feature.
-privacy:
-  enabled: false
-  page:
-    enabled: false
-    #configMapName: privacy-page
-    #configMapKey: privacy_statement
-  banner:
-    content: |
-      This website requires cookies in order to ensure basic functionality. By clicking
-      or navigating the site, you consent to the use of cookies in accordance with
-      our <u><a class="text-white" href="/privacy">Privacy Policy</a></u>.
-    layout:
-      cookieName: RenkuLabPrivacy
-      disableStyles: true
-      containerClasses: fixed-bottom p-3 bg-dark
-      contentClasses: text-white small
-      buttonClasses: btn btn-sm btn-light me-2
-      buttonWrapperClasses: mt-2
-## If you maintain a statuspage.io page for the status of your RenkuLab instance, put the id for it here.
-statuspage:
-  id: ""
-
-homepage:
-  custom:
-    # If you want to enable a custom content on the homepage, you can enable it and provide content here
-    enabled: false
-    main:
-      contentMd: |
-        # Welcome to RenkuLab
-      backgroundImage:
-        url: ""
-  # The default is to show the tutorial from the docs, but can also link to an
-  # internal project
-  tutorialLink: https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html
-  # Projects to highlight on the homepage
-  projects: []
-canary:
-  enabled: false
   image:
     repository: renku/renku-ui
-    tag: "0.11.16"
+    tag: "2.5.0"
+    pullPolicy: IfNotPresent
+
+    ## Optionally specify an array of imagePullSecrets.
+    ## Secrets must be manually created in the namespace.
+    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+    ##
+    # pullSecrets:
+    #   - myRegistrKeySecretName
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  ingress:
+    enabled: false
+
+  resources: {}
+    # We usually recommend not to specify default resources and to leave this as a conscious
+    # choice for the user. This also increases chances charts run on environments with little
+    # resources, such as Minikube. If you do want to specify resources, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+    # limits:
+    #  cpu: 100m
+    #  memory: 128Mi
+    # requests:
+    #  cpu: 100m
+    #  memory: 128Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  podSecurityContext: {}
+
+  securityContext:
+    runAsUser: 101
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+
+  welcomePage:
+    text: |
+      ## Welcome to Renku!
+      Renku is software for collaborative data science. With Renku you can share code and data,
+      discuss problems and solutions, and coordinate data-science projects.
+
+  templates:
+    custom: true
+    repositories:
+      - url: https://github.com/SwissDataScienceCenter/renku-project-template
+        ref: 0.1.15
+        name: Renku
+
+  # This defines the threshold for automatically showing a preview when browsing projects' files.
+  # Above the soft limit, the user receives a warning. Above the hard limit, no preview is available.
+  previewSizeThreshold:
+    soft: 1048576 # 1MB
+    hard: 10485760 # 10MB
+
+  # This defines the threshold for displaying a message when a user is trying to upload a large file
+  # so that they know it's not necessary to wait for this. There is only hard limit for now.
+  uploadSizeThreshold:
+    soft: 104857600 # 100MB
+
+  # Any string here, other than 'false', will enable the maintenance page and be added on it as an info.
+  # Setting 'true' will display a standard message embedded in maintenace page.
+  maintenance: false
+
+  sentry:
+    enabled: false
+    dsn: ""
+    environment: ""
+    sampleRate: 0 # number between 0 and 1. (e.g., to send 20% of transactions, set 0.2.)
+
+  # If you want to enable the privacy page, please create also a configMap and set its name in the
+  # privacy.page.configMapName value. As a reference, you can use the sample configMap generated when
+  # enabling the feature.
+  privacy:
+    enabled: false
+    page:
+      enabled: false
+      #configMapName: privacy-page
+      #configMapKey: privacy_statement
+    banner:
+      content: |
+        This website requires cookies in order to ensure basic functionality. By clicking
+        or navigating the site, you consent to the use of cookies in accordance with
+        our <u><a class="text-white" href="/privacy">Privacy Policy</a></u>.
+      layout:
+        cookieName: RenkuLabPrivacy
+        disableStyles: true
+        containerClasses: fixed-bottom p-3 bg-dark
+        contentClasses: text-white small
+        buttonClasses: btn btn-sm btn-light me-2
+        buttonWrapperClasses: mt-2
+  ## If you maintain a statuspage.io page for the status of your RenkuLab instance, put the id for it here.
+  statuspage:
+    id: ""
+
+  homepage:
+    custom:
+      # If you want to enable a custom content on the homepage, you can enable it and provide content here
+      enabled: false
+      main:
+        contentMd: |
+          # Welcome to RenkuLab
+        backgroundImage:
+          url: ""
+    # The default is to show the tutorial from the docs, but can also link to an
+    # internal project
+    tutorialLink: https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html
+    # Projects to highlight on the homepage
+    projects: []
+  canary:
+    enabled: false
+    image:
+      repository: renku/renku-ui
+      tag: "0.11.16"
+
+server:
+  replicaCount: 1
+
+  image:
+    repository: renku/renku-ui-server
+    tag: "2.5.0"
+    pullPolicy: IfNotPresent
+
+  imagePullSecrets: []
+  nameOverride: ""
+  fullnameOverride: ""
+
+  serviceAccount:
+    # Specifies whether a service account should be created
+    create: true
+    # The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template
+    name: ""
+
+  podSecurityContext: {}
+
+  securityContext:
+    runAsUser: 1000
+    runAsNonRoot: true
+    allowPrivilegeEscalation: false
+
+  service:
+    type: ClusterIP
+    port: 80
+
+  ingress:
+    enabled: false
+    annotations: {}
+      # kubernetes.io/ingress.class: nginx
+      # kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: chart-example.local
+        paths: []
+
+    tls: []
+    #  - secretName: chart-example-tls
+    #    hosts:
+    #      - chart-example.local
+
+  ## Configure autoscaling
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 5
+    cpuUtilization: 95
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+
+  nodeSelector: {}
+
+  tolerations: []
+
+  affinity: {}
+
+  serverData:
+    url:
+    port: 8080
+    prefix: /ui-server
+
+  gateway:
+    url:
+    loginSuffix: /auth/login
+    logoutSuffix: /auth/logout
+
+  sentry:
+    enabled: false
+    dsn: ""
+    environment: ""
+    sampleRate: 0
+    debugMode: false
+
+  authentication:
+    url:
+    id: renku-ui
+    # secret: 1234abcd # do not provide any value here to use the global gateway client secret
+    expirationTolerance: 10 # in seconds

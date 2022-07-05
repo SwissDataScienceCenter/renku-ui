@@ -5,8 +5,8 @@ metadata:
   labels:
 {{ include "ui-server.labels" . | indent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
+  {{- if not .Values.server.autoscaling.enabled }}
+  replicas: {{ .Values.server.replicaCount }}
   {{- end }}
   selector:
     matchLabels:
@@ -20,59 +20,59 @@ spec:
         # The label below enables the gateway to connect to redis
         {{ .Values.global.redis.clientLabel | toYaml | nindent 8 }}
     spec:
-    {{- with .Values.imagePullSecrets }}
+    {{- with .Values.server.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
     {{- end }}
       automountServiceAccountToken: false
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        {{- toYaml .Values.server.podSecurityContext | nindent 8 }}
       initContainers:
         {{- include "certificates.initContainer" . | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+            {{- toYaml .Values.server.securityContext | nindent 12 }}
+          image: "{{ .Values.server.image.repository }}:{{ .Values.server.image.tag }}"
+          imagePullPolicy: {{ .Values.server.image.pullPolicy }}
           ports:
             - name: http
               containerPort: 8080
               protocol: TCP
           env:
             - name: SERVER_URL
-              value: {{ .Values.serverData.url | default (printf "https://%s" .Values.global.renku.domain) | quote }}
+              value: {{ .Values.server.serverData.url | default (printf "https://%s" .Values.global.renku.domain) | quote }}
             - name: UI_SERVER_VERSION
               value: {{ .Chart.Version | quote }}
             - name: SERVER_PORT
-              value: {{ .Values.serverData.port | default (printf "8080") | quote }}
+              value: {{ .Values.server.serverData.port | default (printf "8080") | quote }}
             - name: SERVER_PREFIX
-              value: {{ .Values.serverData.prefix | default (printf "/ui-server") | quote }}
+              value: {{ .Values.server.serverData.prefix | default (printf "/ui-server") | quote }}
             - name: GATEWAY_URL
-              value: {{ .Values.gateway.url | default (printf "https://%s/api" .Values.global.renku.domain) | quote }}
+              value: {{ .Values.server.gateway.url | default (printf "https://%s/api" .Values.global.renku.domain) | quote }}
             - name: GATEWAY_LOGIN_PATH
-              value: {{ .Values.gateway.loginSuffix | default (printf "/auth/login") | quote }}
+              value: {{ .Values.server.gateway.loginSuffix | default (printf "/auth/login") | quote }}
             - name: GATEWAY_LOGOUT_PATH
-              value: {{ .Values.gateway.logoutSuffix | default (printf "/auth/logout") | quote }}
+              value: {{ .Values.server.gateway.logoutSuffix | default (printf "/auth/logout") | quote }}
             - name: AUTH_SERVER_URL
-              value: {{ .Values.authentication.url | default (printf "https://%s/auth/realms/Renku" .Values.global.renku.domain) | quote }}
+              value: {{ .Values.server.authentication.url | default (printf "https://%s/auth/realms/Renku" .Values.global.renku.domain) | quote }}
             - name: AUTH_CLIENT_ID
-              value: {{ .Values.authentication.id | default (printf "renku-ui") | quote }}
+              value: {{ .Values.server.authentication.id | default (printf "renku-ui") | quote }}
             - name: AUTH_CLIENT_SECRET
-              value: {{ .Values.authentication.secret | default (printf "%s" .Values.global.uiserver.clientSecret) | quote }}
+              value: {{ .Values.server.authentication.secret | default (printf "%s" .Values.global.uiserver.clientSecret) | quote }}
             - name: AUTH_TOKEN_TOLERANCE
-              value: {{ .Values.authentication.expirationTolerance | default (printf "10") | quote }}
-            {{- if .Values.sentry.enabled }}
+              value: {{ .Values.server.authentication.expirationTolerance | default (printf "10") | quote }}
+            {{- if .Values.server.sentry.enabled }}
             - name: SENTRY_ENABLED
-              value: {{ .Values.sentry.enabled | quote }}
+              value: {{ .Values.server.sentry.enabled | quote }}
             - name: SENTRY_URL
-              value: {{ .Values.sentry.dsn | quote }}
+              value: {{ .Values.server.sentry.dsn | quote }}
             - name: SENTRY_NAMESPACE
-              value: {{ .Values.sentry.environment | default (printf "%s" .Release.Namespace) | quote }}
+              value: {{ .Values.server.sentry.environment | default (printf "%s" .Release.Namespace) | quote }}
             - name: SENTRY_TRACE_RATE
-              value: {{ .Values.sentry.sampleRate | quote }}
+              value: {{ .Values.server.sentry.sampleRate | quote }}
             - name: SENTRY_DEBUG
-              value: {{ .Values.sentry.debugMode | quote }}
+              value: {{ .Values.server.sentry.debugMode | quote }}
             {{- end }}
             - name: REDIS_HOST
               value: {{ .Values.global.redis.host | quote }}
@@ -104,18 +104,18 @@ spec:
             failureThreshold: 10
             periodSeconds: 5
           resources:
-            {{- toYaml .Values.resources | nindent 12 }}
+            {{- toYaml .Values.server.resources | nindent 12 }}
           volumeMounts:
             {{- include "certificates.volumeMounts.system" . | nindent 12 }}
-      {{- with .Values.nodeSelector }}
+      {{- with .Values.server.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
       {{- end }}
-    {{- with .Values.affinity }}
+    {{- with .Values.server.affinity }}
       affinity:
         {{- toYaml . | nindent 8 }}
     {{- end }}
-    {{- with .Values.tolerations }}
+    {{- with .Values.server.tolerations }}
       tolerations:
         {{- toYaml . | nindent 8 }}
     {{- end }}
