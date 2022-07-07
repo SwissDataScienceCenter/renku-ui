@@ -25,8 +25,9 @@
 
 import React, { Component } from "react";
 
-import { Button, Form, FormGroup, FormText, Label } from "reactstrap";
+import { Form, FormGroup, FormText, Label } from "reactstrap";
 import { Badge, Input } from "reactstrap";
+import { InlineSubmitButton } from "../../utils/components/Button";
 
 class ProjectTag extends Component {
   render() {
@@ -63,28 +64,49 @@ class ProjectTags extends Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    const update = { value: ProjectTags.tagListString(nextProps) };
+    const update = { value: ProjectTags.tagListString(nextProps), pristine: true };
     return { ...update, ...prevState };
   }
 
-  handleChange(e) { this.setState({ value: e.target.value }); }
+  handleChange(e) {
+    if (e.target.values !== this.state.value)
+      this.setState({ value: e.target.value, updated: false, pristine: false });
+  }
 
-  handleSubmit(e) { e.preventDefault(); this.props.onProjectTagsChange(this.state.value); }
+  handleSubmit(e) {
+    e.preventDefault();
+    this.setState({ value: this.state.value, updating: true });
+    this.props.onProjectTagsChange(this.state.value)
+      .then(() => {
+        this.setState({ value: this.state.value, updated: true, updating: false });
+      });
+  }
 
   render() {
-    const inputField = this.props.settingsReadOnly ?
+    const inputField = this.props.settingsReadOnly || this.state.updating ?
       <Input id="projectTags" readOnly value={this.state.value} /> :
       <Input id="projectTags" value={this.state.value} onChange={this.onValueChange} />;
-    let submit = (ProjectTags.tagListString(this.props) !== this.state.value) ?
-      <Button className="mb-3 updateProjectSettings" color="primary">Update</Button> :
-      <span></span>;
+    const submitButton = this.props.settingsReadOnly ? null :
+      <InlineSubmitButton
+        id="update-tag"
+        submittingText="Updating"
+        doneText="Updated"
+        text="Update"
+        isDone={this.state.updated}
+        isReadOnly={this.state.updating || this.state.pristine}
+        isSubmitting={this.state.updating}
+        pristine={this.state.pristine}
+        tooltipPristine="Modify tag value to enable button"
+      />;
     return <Form onSubmit={this.onSubmit}>
       <FormGroup>
         <Label for="projectTags">Project Tags</Label>
-        {inputField}
+        <div className="d-flex">
+          {inputField}
+          {submitButton}
+        </div>
         <FormText>Comma-separated list of tags</FormText>
       </FormGroup>
-      {submit}
     </Form>;
   }
 }

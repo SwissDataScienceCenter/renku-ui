@@ -208,7 +208,7 @@ function ImageContentInputMode({ name, modes, mode, setMode, onClick }) {
 }
 
 function ImageContentInput({ name, value, placeholder, modes, setInputs,
-  help, maxSize, format, disabled, options }) {
+  help, maxSize, format, disabled, options, readOnly }) {
   const [mode, setMode] = useState(modes[0]);
   const [sizeAlert, setSizeAlert] = useState(null);
   const fileInput = useRef(null);
@@ -243,7 +243,7 @@ function ImageContentInput({ name, value, placeholder, modes, setInputs,
       <ImageContentInputMode name={name} modes={modes} mode={mode} setMode={setMode} onClick={onModeButtonClick}/>
       <Input id={widgetId} name={widgetId} type="text" value={inputValue} data-cy={`file-input-${name}`}
         onDragOver={e => e.preventDefault()} onDragLeave={e => e.preventDefault()}
-        onDrop={onDrop} onChange={onInputChange} disabled={disabled} placeholder={placeholder} />
+        onDrop={onDrop} onChange={onInputChange} disabled={disabled} readOnly={readOnly} placeholder={placeholder} />
     </InputGroup>
     <InputHintLabel text={helpValue} />
     <input id={hiddenInputId} name={hiddenInputId} style={{ display: "none" }}
@@ -272,6 +272,7 @@ function ImageContentInput({ name, value, placeholder, modes, setInputs,
  * @param {boolean} disabled True if the component is not editable
  * @param {boolean} required True if a value is required
  * @param {boolean} optional True if a value is optional
+ * @param {boolean} submitting True if a a submit process is in progress
  */
 function ImageInput(
   {
@@ -286,7 +287,8 @@ function ImageInput(
     format = "image/*",
     disabled = false,
     required = false,
-    optional
+    optional,
+    submitting
   }) {
   const options = value.options;
   const selectedIndex = value.selected;
@@ -296,20 +298,23 @@ function ImageInput(
   const allowedModes = (modes) ? modes : [ImageInputMode.FILE, ImageInputMode.URL];
   const helpIsString = (typeof help) == "string" || help == null;
   const previewHelp = !helpIsString && help["preview"] ? help["preview"] : null;
+  const contentImage = disabled ? null : (
+    <div className="flex-grow-1">
+      <ImageContentInput name={name} value={selected}
+        setInputs={setInputs} help={help} maxSize={maxSize} readOnly={submitting}
+        disabled={disabled} options={options} modes={allowedModes} format={format} />
+      {alert && <ErrorLabel text={alert} />}
+    </div>
+  );
 
   return [
     <Row key="row-title">
       <InputLabel className="ps-3" text={label} isRequired={required} />
     </Row>,
-    !disabled ? (<Row key="row-content" className="field-group">
+    <Row key="row-content" className="field-group">
       <Col xs={12}>
         <div className="d-block d-md-flex d-lg-flex gap-5">
-          <div className="flex-grow-1">
-            <ImageContentInput name={name} value={selected}
-              setInputs={setInputs} help={help} maxSize={maxSize}
-              disabled={disabled} options={options} modes={allowedModes} format={format} />
-            {alert && <ErrorLabel text={alert} />}
-          </div>
+          {contentImage}
           <div className="pe-2">
             <ImagePreview
               name={name}
@@ -319,14 +324,7 @@ function ImageInput(
           </div>
         </div>
       </Col>
-    </Row>) : (
-      <div key="row-content" className="pe-2">
-        <ImagePreview
-          value={value} selected={selected}
-          disabled={disabled} setInputs={setInputs} />
-        <InputHintLabel text={previewHelp} />
-      </div>
-    )
+    </Row>
   ];
 }
 

@@ -580,10 +580,10 @@ class View extends Component {
 
   eventHandlers = {
     onProjectTagsChange: (tags) => {
-      this.projectCoordinator.setTags(this.props.client, tags);
+      return this.projectCoordinator.setTags(this.props.client, tags);
     },
     onProjectDescriptionChange: (description) => {
-      this.projectCoordinator.setDescription(this.props.client, description);
+      return this.projectCoordinator.setDescription(this.props.client, description);
     },
     onAvatarChange: (avatarFile) => {
       return this.projectCoordinator.setAvatar(this.props.client, avatarFile);
@@ -640,6 +640,18 @@ class View extends Component {
     },
     onMigrateProject: (gitUrl, branch, options) => {
       return this.migrateProject(gitUrl, branch, options);
+    },
+    fetchProject: (usePendingRefresh) => {
+      if (usePendingRefresh) {
+        const pendingRefreshing = this.projectCoordinator.get("metadata.pendingRefresh");
+        if (pendingRefreshing) {
+          this.projectCoordinator.fetchProject(this.props.client);
+          this.projectCoordinator.set("metadata.pendingRefresh", false);
+        }
+      }
+      else {
+        this.projectCoordinator.fetchProject(this.props.client);
+      }
     }
   };
 
