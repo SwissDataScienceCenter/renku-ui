@@ -152,8 +152,10 @@ function ExternalIconLinkWithTooltip(props) {
     className += ` ${props.className}`;
 
   return <span>
-    <a href={props.url} role="button" target="_blank" rel="noreferrer noopener">
-      <FontAwesomeIcon className={className} icon={props.icon} id={uniqueId} />
+    <a href={props.url} role="button"
+      className={props.className}
+      target="_blank" rel="noreferrer noopener">
+      <FontAwesomeIcon className={className} icon={props.icon} id={uniqueId} /> {props.title}
     </a>
     <ThrottledTooltip target={uniqueId} tooltip={props.tooltip} />
   </span>;
