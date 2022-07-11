@@ -6,7 +6,7 @@ global:
   uiserver:
     clientSecret: "secret"
 
-baseUrl: "http://localhost:3000"
-
-ingress:
-  enabled: false
+ui:
+  baseUrl: "http://localhost:3000"
+  ingress:
+    enabled: false
