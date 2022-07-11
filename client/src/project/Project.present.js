@@ -1362,9 +1362,9 @@ class ProjectView extends Component {
     }
     else if (available == null || available === SpecialPropVal.UPDATING || this.props.projectId) {
       return (
-        <ProjectViewLoading
+        <ContainerWrap><ProjectViewLoading
           projectPathWithNamespace={this.props.projectPathWithNamespace}
-          projectId={this.props.projectId} />
+          projectId={this.props.projectId} /></ContainerWrap>
       );
     }
     else if (available === false) {
