@@ -39,7 +39,7 @@ const VisibilityIcon = ({ visibility }) => {
     internal: <FontAwesomeIcon icon={faUserFriends} />
   };
   const baseUrl = client.baseUrl;
-  const { hostname } = baseUrl ? new URL(baseUrl) : { hostname: "Renkulab.io" };
+  const { hostname } = baseUrl ? new URL(baseUrl) : { hostname: "renkulab.io" };
 
   const tooltip = {
     public: "Public: Anyone on in the internet can access your project.",
