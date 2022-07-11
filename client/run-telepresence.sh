@@ -167,6 +167,24 @@ tee > ./public/config.json << EOF
 }
 EOF
 
+tee > "./public/sitemap.xml" << EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>${BASE_URL}</loc>
+  </url>
+  <url>
+    <loc>${BASE_URL}/projects</loc>
+  </url>
+  <url>
+    <loc>${BASE_URL}/datasets</loc>
+  </url>
+  <url>
+    <loc>${BASE_URL}/help</loc>
+  </url>
+</urlset>
+EOF
+
 # The following is necessary if we start telepresence with --run-shell
 # echo "================================================================================================================="
 # echo "Once telepresence has started, type the following command to start the development server:"

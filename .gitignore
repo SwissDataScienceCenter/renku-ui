@@ -1,5 +1,6 @@
 # Machine-specific configuration files
 client/public/config.json
+client/public/sitemap.xml
 
 # Typescript generated stuff
 server/dist/
