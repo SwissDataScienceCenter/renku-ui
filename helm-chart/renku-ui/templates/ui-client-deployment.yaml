@@ -1,0 +1,10 @@
+{{- $fullName := include "ui.fullname" . -}}
+{{- $appName := include "ui.name" . -}}
+{{- $imageName := (print .Values.client.image.repository ":" .Values.client.image.tag) -}}
+{{- include "ui-client-deployment-template" (merge (dict "deploymentName" $fullName "appName" $appName "imageName" $imageName) .) }}
+---
+{{- if .Values.client.canary.enabled }}
+{{- $imageName := (print .Values.client.canary.image.repository ":" .Values.client.canary.image.tag) -}}
+{{- $canaryValues := dict "deploymentName" (print $fullName "-canary") "appName" (print $appName "-canary") "imageName" $imageName -}}
+{{- include "ui-client-deployment-template" (merge $canaryValues .) }}
+{{- end }}
