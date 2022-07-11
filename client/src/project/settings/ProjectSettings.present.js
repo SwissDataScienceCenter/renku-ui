@@ -214,7 +214,7 @@ class ProjectDescription extends Component {
         isReadOnly={this.state.updating || this.state.pristine}
         isSubmitting={this.state.updating}
         pristine={this.state.pristine}
-        tooltipPristine="Modify description value to enable button"
+        tooltipPristine="Modify description to update value"
       />;
     return <Form onSubmit={this.onSubmit}>
       <FormGroup>
