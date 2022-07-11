@@ -8,9 +8,9 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.client.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    - port: {{ .Values.client.service.port }}
       targetPort: 8080
       protocol: TCP
       name: http
@@ -18,7 +18,7 @@ spec:
     app: {{ template "ui.name" . }}
     release: {{ .Release.Name }}
 ---
-{{- if .Values.canary.enabled }}
+{{- if .Values.client.canary.enabled }}
 apiVersion: v1
 kind: Service
 metadata:
@@ -29,9 +29,9 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  type: {{ .Values.service.type }}
+  type: {{ .Values.client.service.type }}
   ports:
-    - port: {{ .Values.service.port }}
+    - port: {{ .Values.client.service.port }}
       targetPort: 8080
       protocol: TCP
       name: http
