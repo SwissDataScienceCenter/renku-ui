@@ -207,6 +207,7 @@ class ProjectDescription extends Component {
     const submitButton = this.props.settingsReadOnly ? null :
       <InlineSubmitButton
         id="update-desc"
+        className="updateProjectSettings"
         submittingText="Updating"
         doneText="Updated"
         text="Update"

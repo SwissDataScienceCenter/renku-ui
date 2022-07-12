@@ -115,7 +115,8 @@ function GoBackButton({ className, label, url }) {
  */
 
 function InlineSubmitButton(
-  { id, isSubmitting, isDone, isReadOnly, doneText, submittingText, text, onSubmit, pristine, tooltipPristine }) {
+  { id, isSubmitting, isDone, isReadOnly, doneText, submittingText,
+    text, onSubmit, pristine, tooltipPristine, className }) {
   if (isDone)
     return <SuccessLabel text={doneText} />;
   const loader = isSubmitting ?
@@ -124,6 +125,7 @@ function InlineSubmitButton(
   const submit = !isDone ?
     <Button
       onClick={onSubmit}
+      className={className}
       color="primary inlineSubmit"
       disabled={isSubmitting || isReadOnly}>{ isSubmitting ? submittingText : text} {loader}</Button> :
     null;

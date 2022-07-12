@@ -89,6 +89,7 @@ class ProjectTags extends Component {
     const submitButton = this.props.settingsReadOnly ? null :
       <InlineSubmitButton
         id="update-tag"
+        className="updateProjectSettings"
         submittingText="Updating"
         doneText="Updated"
         text="Update"
