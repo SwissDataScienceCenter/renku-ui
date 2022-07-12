@@ -195,10 +195,13 @@ EOF
 # suid bins need to run. Please switch the following two lines when trying to run multiple telepresence.
 # Reference: https://www.telepresence.io/reference/methods
 
-if [[ "$INJECTTCP" ]]
-then
-  # More info on the methods: https://www.telepresence.io/docs/v1/reference/methods/
-  BROWSER=none telepresence --method inject-tcp --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 3000:8080 --run npm start
-else
-  BROWSER=none telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 3000:8080 --run npm start
-fi
+# if [[ "$INJECTTCP" ]]
+# then
+#   # More info on the methods: https://www.telepresence.io/docs/v1/reference/methods/
+#   BROWSER=none telepresence --method inject-tcp --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 3000:8080 --run npm start
+# else
+#   BROWSER=none telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 3000:8080 --run npm start
+# fi
+
+echo "BROWSER=none telepresence intercept --namespace ${DEV_NAMESPACE} ${SERVICE_NAME} --port 3000:80 connect npm start"
+BROWSER=none telepresence intercept --namespace ${DEV_NAMESPACE} ${SERVICE_NAME} --port 3000:80 connect npm start
