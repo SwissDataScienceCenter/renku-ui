@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 
-import React, { Fragment } from "react";
+import React, { Fragment, useContext, useRef } from "react";
 import { Link } from "react-router-dom";
 import { Col } from "reactstrap";
 import Masonry from "react-masonry-css";
@@ -24,24 +24,42 @@ import { faGlobe, faLock, faUserFriends } from "@fortawesome/free-solid-svg-icon
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { ProjectTagList } from "../../project/shared";
-import { toCapitalized } from "../helpers/HelperFunctions";
 import { TimeCaption } from "./TimeCaption";
 import { Pagination } from "./Pagination";
+import { ThrottledTooltip } from "./Tooltip";
+import AppContext from "../context/appContext";
 
 const VisibilityIcon = ({ visibility }) => {
+  const ref = useRef(null);
+  const { client } = useContext(AppContext);
   if (!visibility) return null;
   const icon = {
     public: <FontAwesomeIcon icon={faGlobe} />,
     private: <FontAwesomeIcon icon={faLock} />,
     internal: <FontAwesomeIcon icon={faUserFriends} />
   };
+  const baseUrl = client.baseUrl;
+  const { hostname } = baseUrl ? new URL(baseUrl) : { hostname: "renkulab.io" };
+
+  const tooltip = {
+    public: "Public: Anyone on in the internet can access your project.",
+    private: "Private: Only members explicitly added to this project can access it.",
+    internal: `Internal: Anyone signed-in to ${hostname} can access your project.` //pending for other deployments
+  };
+
   const style = {
     position: "relative",
     top: "-3px"
   };
-  return <span className="text-rk-text" style={style} title={toCapitalized(visibility)}>
-    { icon[visibility] || "" }
-  </span>;
+
+  return <>
+    <span ref={ref} className="text-rk-text" style={style}>
+      { icon[visibility] || "" }
+    </span>
+    <ThrottledTooltip
+      target={ref}
+      tooltip={tooltip[visibility]} />
+  </>;
 };
 
 /**
