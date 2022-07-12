@@ -175,7 +175,7 @@ for (let key in methods) {
     });
   };
 }
-client.baseUrl = "some-url";
+client.baseUrl = "https://renkulab.io";
 client.uiserverUrl = "https://dev.renku.ch/ui-server";
 
 export default client;
