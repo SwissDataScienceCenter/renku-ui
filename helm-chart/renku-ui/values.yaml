@@ -79,10 +79,12 @@ client:
 
   affinity: {}
 
-  podSecurityContext: {}
+  podSecurityContext:
+    runAsUser: 1000
+    runAsGroup: 1000
 
   securityContext:
-    runAsUser: 101
+    runAsUser: 1000
     runAsNonRoot: true
     allowPrivilegeEscalation: false
 
