@@ -84,7 +84,7 @@ class QuickNavPresent extends Component {
     };
 
     return (
-      <div id="quick-nav" className="input-group flex-nowrap input-group-sm pe-2">
+      <div id="quick-nav" className="quick-nav input-group flex-nowrap input-group-sm pe-2">
         <Autosuggest
           suggestions={this.props.suggestions}
           getSuggestionValue={this.props.callbacks.getSuggestionValue}
@@ -98,7 +98,8 @@ class QuickNavPresent extends Component {
           inputProps={inputProps}
           theme={theme}
           renderSuggestion={this.onRenderSuggestion} />
-        <span className="input-group-text" id="addon-wrapping" onClick={this.props.callbacks.onSubmit}>
+        <span className="quick-nav-icon d-flex justify-content-center align-items-center mx-2"
+          id="addon-wrapping" onClick={this.props.callbacks.onSubmit}>
           <FontAwesomeIcon icon={faSearch} />
         </span>
       </div>

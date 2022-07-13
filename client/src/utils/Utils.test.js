@@ -29,7 +29,7 @@ import { MemoryRouter } from "react-router-dom";
 
 import { StateModel, globalSchema } from "../model";
 import { Time } from "./helpers/Time";
-import { RefreshButton } from "./components/Button";
+import { RefreshButton } from "./components/buttons/Button";
 import { CommitsUtils, CommitsView } from "./components/commits/Commits";
 import {
   convertUnicodeToAscii, formatBytes,

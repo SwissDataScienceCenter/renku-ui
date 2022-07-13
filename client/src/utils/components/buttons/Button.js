@@ -27,38 +27,49 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsisV, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { Button, ButtonDropdown, DropdownToggle, DropdownMenu, UncontrolledTooltip, Col } from "reactstrap";
-import { simpleHash } from "../helpers/HelperFunctions";
-import { Loader } from "./Loader";
-import { SuccessLabel } from "./formlabels/FormLabels";
-import { ThrottledTooltip } from "./Tooltip";
+import { simpleHash } from "../../helpers/HelperFunctions";
+import { SuccessLabel } from "../formlabels/FormLabels";
+import { Loader } from "../Loader";
+import { ThrottledTooltip } from "../Tooltip";
 
 /**
  * A button with a menu (dropdown button)
  *
  * @param {component} [default] - The main, default item to show
  * @param {[DropdownItem]} [children] - The items to show in the menu
+ * @param {"rk-blue" | "rk-green"| "rk-pink" } props.color - Indicate the color of the button
+ * @param {string} props.id - Identifier
  */
 function ButtonWithMenu(props) {
   const [dropdownOpen, setOpen] = useState(false);
   const toggleOpen = () => setOpen(!dropdownOpen);
   const size = (props.size) ? props.size : "md";
+  let bgColor = props.color || "rk-blue";
+
+  const options = props.children ?
+    (<>
+      <DropdownToggle data-cy="more-menu" >
+        <FontAwesomeIcon
+          data-cy="more-options-button"
+          className={`text-${props.color || "rk-blue"} btn-with-menu-icon`} icon={faEllipsisV}/>
+      </DropdownToggle>
+      <DropdownMenu className="btn-with-menu-options" end>
+        {props.children}
+      </DropdownMenu>
+    </>)
+    : null;
 
   return <ButtonDropdown
-    className={props.className}
+    id={props.id}
+    className={`${props.className} btn-with-menu`}
     size={size}
     isOpen={dropdownOpen}
     toggle={toggleOpen}
-    color={props.color || "primary"}
+    color={bgColor}
     direction={props.direction}
-    disabled={props.disabled}
-  >
+    disabled={props.disabled}>
     {props.default}
-    <DropdownToggle data-cy="more-menu" color={props.color || "primary"}>
-      <FontAwesomeIcon icon={faEllipsisV}/>
-    </DropdownToggle>
-    <DropdownMenu end>
-      {props.children}
-    </DropdownMenu>
+    {options}
   </ButtonDropdown>;
 }
 
@@ -116,18 +127,19 @@ function GoBackButton({ className, label, url }) {
 
 function InlineSubmitButton(
   { id, isSubmitting, isDone, isReadOnly, doneText, submittingText,
-    text, onSubmit, pristine, tooltipPristine, className }) {
+    text, onSubmit, pristine, tooltipPristine, className, isMainButton }) {
   if (isDone)
     return <SuccessLabel text={doneText} />;
-  const loader = isSubmitting ?
-    <Loader className="mx-1" inline={true} size={16} /> : null;
+  if (isSubmitting)
+    return <div className="inlineSubmit"> <Loader className="mx-1" inline={true} size={16} /></div>;
 
   const submit = !isDone ?
     <Button
       onClick={onSubmit}
-      className={className}
-      color="primary inlineSubmit"
-      disabled={isSubmitting || isReadOnly}>{ isSubmitting ? submittingText : text} {loader}</Button> :
+      className={`${className} ${isMainButton ? "btn-rk-green" : "btn-outline-rk-green"}`}
+      color="inlineSubmit"
+      size="sm"
+      disabled={isReadOnly}>{text}</Button> :
     null;
 
   const tooltip = pristine ? (

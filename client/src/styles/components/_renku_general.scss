@@ -1,3 +1,6 @@
+a:focus-visible, svg:focus, svg:focus-visible {
+  outline: none;
+}
 .container-fluid.renku-container {
   padding-right: 2em;
   padding-left:2em;
@@ -33,4 +36,19 @@
 
 .cursor-pointer {
   cursor: pointer;
+}
+
+.card {
+  border-radius: 8px;
+  border: 0;
+}
+.card-header {
+  border-radius: 8px 8px 0 0;
+}
+.modal-content {
+  border-radius: 8px;
+  border: 0;
+}
+.break-word {
+  word-break: break-word;
 }

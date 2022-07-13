@@ -39,7 +39,7 @@ import _ from "lodash";
 import { ErrorAlert } from "../../utils/components/Alert";
 import { ExternalIconLink } from "../../utils/components/ExternalLinks";
 import { TooltipToggleButton } from "../../utils/components/Tooltip";
-import { GoBackButton } from "../../utils/components/Button";
+import { GoBackButton } from "../../utils/components/buttons/Button";
 import { RenkuMarkdown } from "../../utils/components/markdown/RenkuMarkdown";
 import { TimeCaption } from "../../utils/components/TimeCaption";
 

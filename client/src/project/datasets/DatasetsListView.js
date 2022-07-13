@@ -63,8 +63,7 @@ function AddDatasetButton({ accessLevel, locked, newDatasetUrl }) {
   if (accessLevel < ACCESS_LEVELS.MAINTAINER) return null;
   if (locked) {
     return <div id="add-dataset-button">
-      <Button data-cy="add-dataset-button" disabled={true}>
-        <span className="arrow-right pt-2 pb-2">  </span>
+      <Button data-cy="add-dataset-button" className="btn-outline-rk-pink" disabled={true}>
         Add Dataset
       </Button>
       <ThrottledTooltip
@@ -74,8 +73,7 @@ function AddDatasetButton({ accessLevel, locked, newDatasetUrl }) {
   }
 
   return <div>
-    <Link className="btn btn-sm btn-secondary" role="button" to={newDatasetUrl}>
-      <span className="arrow-right pt-2 pb-2">  </span>
+    <Link className="btn btn-outline-rk-pink" role="button" to={newDatasetUrl}>
       Add Dataset
     </Link>
   </div>;

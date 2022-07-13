@@ -30,7 +30,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 
 import { ErrorAlert, InfoAlert, SuccessAlert, WarnAlert } from "../utils/components/Alert";
-import { ButtonWithMenu } from "../utils/components/Button";
+import { ButtonWithMenu } from "../utils/components/buttons/Button";
 import { Clipboard } from "../utils/components/Clipboard";
 import { ExternalLink } from "../utils/components/ExternalLinks";
 import { JupyterIcon } from "../utils/components/Icon";
@@ -877,7 +877,7 @@ class StartNotebookOptionsRunning extends Component {
           </div>
           <div>
             <Link className="btn btn-secondary" to={localUrl}>Open</Link>{" "}
-            <ExternalLink url={url} title="Open in new tab" showLinkIcon={true} />
+            <ExternalLink className="btn-outline-rk-green" url={url} title="Open in new tab" showLinkIcon={true} />
           </div>
         </FormGroup>
       );
@@ -1163,12 +1163,13 @@ class ServerOptionLaunch extends Component {
     const hasImage = ciStatus.available;
     const createLink = (
       <DropdownItem
-        onClick={this.props.toggleShareLinkModal}><FontAwesomeIcon icon={faLink} /> Create link</DropdownItem>
+        onClick={this.props.toggleShareLinkModal}>
+        <FontAwesomeIcon className="text-rk-green" icon={faLink} /> Create link</DropdownItem>
     );
-    const startButton = <Button key="start-session" color="primary" disabled={!hasImage} onClick={this.checkServer}>
+    const startButton = <Button key="start-session" color="rk-green" disabled={!hasImage} onClick={this.checkServer}>
       Start session
     </Button>;
-    const startButtonWithMenu = <ButtonWithMenu key="button-menu" color="primary" default={startButton} direction="up">
+    const startButtonWithMenu = <ButtonWithMenu key="button-menu" color="rk-green" default={startButton} direction="up">
       {createLink}
     </ButtonWithMenu>;
 

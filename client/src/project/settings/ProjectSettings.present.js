@@ -48,7 +48,7 @@ import { ExternalLink } from "../../utils/components/ExternalLinks";
 import LoginAlert from "../../utils/components/loginAlert/LoginAlert";
 import { Docs } from "../../utils/constants/Docs";
 import { SuccessLabel } from "../../utils/components/formlabels/FormLabels";
-import { InlineSubmitButton } from "../../utils/components/Button";
+import { InlineSubmitButton } from "../../utils/components/buttons/Button";
 
 
 //** Navigation **//
@@ -235,7 +235,7 @@ function CommandRow(props) {
     <tr>
       <th scope="row">{props.application}</th>
       <td>
-        <code>{props.command}</code>
+        <code className="break-word">{props.command}</code>
       </td>
       <td style={{ width: 1 }}><Clipboard clipboardText={props.command} /></td>
     </tr>
@@ -262,7 +262,7 @@ function RepositoryUrlRow(props) {
   return (
     <tr>
       <th scope="row">{props.urlType}</th>
-      <td>{props.url}</td>
+      <td className="break-word">{props.url}</td>
       <td style={{ width: 1 }}><Clipboard clipboardText={props.url} /></td>
     </tr>
   );
@@ -525,7 +525,7 @@ function SessionsDiv(props) {
 function SessionsOptionReset(props) {
   const { disabled, onChange, option } = props;
   return (
-    <Fragment>
+    <>
       <Button disabled={disabled} id={`${option}_reset`} color="" size="sm"
         className="border-0" onClick={(event) => onChange(event, null, true)}>
         <FontAwesomeIcon icon={faTimesCircle} />
@@ -533,7 +533,7 @@ function SessionsOptionReset(props) {
       <UncontrolledTooltip key="tooltip" placement="top" target={`${option}_reset`}>
         Reset value
       </UncontrolledTooltip>
-    </Fragment>
+    </>
   );
 }
 

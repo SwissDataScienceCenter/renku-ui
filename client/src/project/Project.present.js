@@ -59,7 +59,7 @@ import { ProjectSettingsGeneral, ProjectSettingsNav, ProjectSettingsSessions } f
 
 import "./Project.css";
 import { ExternalLink } from "../utils/components/ExternalLinks";
-import { ButtonWithMenu, GoBackButton } from "../utils/components/Button";
+import { ButtonWithMenu, GoBackButton } from "../utils/components/buttons/Button";
 import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
 import { ErrorAlert, InfoAlert, WarnAlert } from "../utils/components/Alert";
 import { CoreErrorAlert } from "../utils/components/errors/CoreErrorAlert";
@@ -69,6 +69,7 @@ import { TimeCaption } from "../utils/components/TimeCaption";
 import { Docs } from "../utils/constants/Docs";
 import { NotFound } from "../not-found/NotFound.present";
 import { ContainerWrap } from "../App";
+import { ThrottledTooltip } from "../utils/components/Tooltip";
 
 function filterPaths(paths, blacklist) {
   // Return paths to do not match the blacklist of regexps.
@@ -194,7 +195,8 @@ function GitLabConnectButton(props) {
   const { userLogged, gitlabIDEUrl } = props;
   if (!props.externalUrl)
     return null;
-  const gitlabProjectButton = <ExternalLink url={props.externalUrl} title="View in GitLab" />;
+  const gitlabProjectButton = <ExternalLink className="btn-outline-rk-green"
+    url={props.externalUrl} title="View in GitLab" />;
 
   const onClick = () => window.open(gitlabIDEUrl, "_blank");
   const gitlabIDEButton = userLogged ?
@@ -202,8 +204,8 @@ function GitLabConnectButton(props) {
     null;
 
   let button = gitlabIDEButton ?
-    (<ButtonWithMenu default={gitlabProjectButton} size={size}>{gitlabIDEButton}</ButtonWithMenu>) :
-    (<ExternalLink url={props.externalUrl} size={size} title="View in GitLab" />);
+    (<ButtonWithMenu color="rk-green" default={gitlabProjectButton} size={size}>{gitlabIDEButton}</ButtonWithMenu>) :
+    (<ExternalLink className="btn-outline-rk-green" url={props.externalUrl} size={size} title="View in GitLab" />);
 
   return (<div>{button}</div>);
 }
@@ -238,9 +240,12 @@ class ForkProjectModal extends Component {
     }
     return (
       <Fragment>
-        <Button outline color="primary" className="border-light"
+        <Button className="btn-outline-rk-green" id="fork-project"
           disabled={this.props.forkProjectDisabled} onClick={this.toggleFunction}>
-          <FontAwesomeIcon icon={faCodeBranch} /> fork
+          Fork
+          <ThrottledTooltip
+            target="fork-project"
+            tooltip="Fork this project" />
         </Button>
         <Modal isOpen={this.state.open} toggle={this.toggleFunction}>
           {content}
@@ -414,7 +419,7 @@ class ProjectViewHeaderOverview extends Component {
     let starElement;
     let starText;
     if (this.state.updating_star) {
-      starElement = (<Loader inline size={14} />);
+      starElement = (<Loader className="mr-2" inline size={14} />);
       if (this.props.starred)
         starText = "un-starring...";
       else
@@ -422,16 +427,16 @@ class ProjectViewHeaderOverview extends Component {
     }
     else {
       const starred = this.props.starred;
-      if (starred == null) {
+      if (starred === null) {
         starElement = (<Loader inline size={14} />);
         starText = "";
       }
       else if (starred) {
-        starText = "unstar";
+        starText = "";
         starElement = (<FontAwesomeIcon icon={faStarSolid} />);
       }
       else {
-        starText = "star";
+        starText = "";
         starElement = (<FontAwesomeIcon icon={faStarRegular} />);
       }
     }
@@ -449,19 +454,11 @@ class ProjectViewHeaderOverview extends Component {
     return (
       <Fragment>
         <Row className="d-flex rk-project-header gy-2 gx-2 pb-2 justify-content-md-between justify-content-sm-start">
-          <Col className={"order-1 d-flex " + titleColSize}>
-            { this.props.metadata.avatarUrl ?
-              <div className="flex-shrink-0 pe-3" style={{ width: "120px" }}>
-                <img src={this.props.metadata.avatarUrl} className=" rounded" alt=""
-                  style={{ objectFit: "cover", width: "100%", height: "90px" }}/>
+          <Col className="col-12">
+            <div className="d-flex gap-1 gap-md-3 justify-content-end flex-wrap">
+              <div className="pt-1">
+                <TimeCaption key="time-caption" time={this.props.metadata.lastActivityAt} className="text-rk-text"/>
               </div>
-              : null }
-            <div className="flex-grow-1">
-              <span className="text-rk-text fs-small">{description}</span>
-            </div>
-          </Col>
-          <Col className="text-sm-start text-md-end order-2 col-12 col-md-4 ">
-            <ButtonGroup size="sm">
               <ForkProjectModal
                 client={this.props.client}
                 history={this.props.history}
@@ -473,38 +470,48 @@ class ProjectViewHeaderOverview extends Component {
                 projectVisibility={this.props.metadata.visibility}
               />
               <Button
-                outline
-                color="primary"
-                className="border-light"
+                id="project-forks"
+                className="btn-outline-rk-green btn-icon-text"
                 disabled={forkProjectDisabled}
                 href={`${this.props.externalUrl}/-/forks`} target="_blank" rel="noreferrer noopener">
-                {metadata.forksCount}
+                <FontAwesomeIcon size="sm" icon={faCodeBranch} /> {metadata.forksCount}
+                <ThrottledTooltip
+                  target="project-forks"
+                  tooltip="Forks" />
               </Button>
-            </ButtonGroup>
-            <ButtonGroup size="sm" className="ms-1">
-              <Button outline color="primary"
-                className="border-light"
-                disabled={this.state.updating_star || this.props.starred == null}
-                onClick={this.star.bind(this)}>
-                {starElement} {starText}
-              </Button>
-              <Button outline color="primary"
-                className="border-light"
-                style={{ cursor: "default" }}>{metadata.starCount}</Button>
-            </ButtonGroup>
-            <ButtonGroup size="sm" className="ms-1">
-              <GitLabConnectButton size="sm"
+              <div id="project-stars">
+                <Button
+                  className="btn-outline-rk-green btn-icon-text"
+                  disabled={this.state.updating_star || this.props.starred == null}
+                  onClick={this.star.bind(this)}>
+                  {starElement} {starText} {metadata.starCount}
+                </Button>
+                <ThrottledTooltip
+                  target="project-stars"
+                  tooltip="Stars" />
+              </div>
+              <GitLabConnectButton
                 externalUrl={this.props.externalUrl}
                 gitlabIDEUrl={gitlabIDEUrl}
                 userLogged={this.props.user.logged} />
-            </ButtonGroup>
-            { this.props.metadata.tagList.length > 0 ?
-              <div className="pt-2">
-                <ProjectTagList tagList={this.props.metadata.tagList} />
+            </div>
+            <div className="d-flex gap-2 justify-content-end">
+              { this.props.metadata.tagList.length > 0 ?
+                <div className="pt-2">
+                  <ProjectTagList tagList={this.props.metadata.tagList} />
+                </div>
+                : null }
+            </div>
+          </Col>
+          <Col className={"d-flex " + titleColSize}>
+            { this.props.metadata.avatarUrl ?
+              <div className="flex-shrink-0 pe-3" style={{ width: "120px" }}>
+                <img src={this.props.metadata.avatarUrl} className=" rounded" alt=""
+                  style={{ objectFit: "cover", width: "100%", height: "90px" }}/>
               </div>
               : null }
-            <div className="pt-1">
-              <TimeCaption key="time-caption" time={this.props.metadata.lastActivityAt} className="text-rk-text"/>
+            <div className="flex-grow-1">
+              <span className="text-rk-text fs-small">{description}</span>
             </div>
           </Col>
         </Row>
@@ -516,13 +523,14 @@ function StartSessionButton(props) {
   const { launchNotebookUrl, sessionAutostartUrl } = props;
 
   const defaultAction = (
-    <Link className="btn btn-primary btn-sm" to={sessionAutostartUrl}>
-      <FontAwesomeIcon className="me-1" icon={faPlay} /> Start
+    <Link
+      className="btn btn-rk-green btn-sm btn-icon-text" to={sessionAutostartUrl}>
+      <FontAwesomeIcon icon={faPlay} /> Start
     </Link>
   );
   return (
     <ButtonGroup size="sm" className="ms-1">
-      <ButtonWithMenu className="startButton" size="sm" default={defaultAction} color="primary">
+      <ButtonWithMenu className="startButton" size="sm" default={defaultAction} color="rk-green">
         <DropdownItem>
           <Link className="text-decoration-none" to={launchNotebookUrl}>Start with options</Link>
         </DropdownItem>
