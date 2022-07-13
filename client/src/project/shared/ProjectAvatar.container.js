@@ -29,7 +29,7 @@ import React, { useEffect, useState } from "react";
 import ImageInput, { ImageFieldPropertyName as Prop } from "../../utils/components/formgenerator/fields/ImageInput";
 import { ImageInputMode } from "../../utils/components/formgenerator/fields/ImageInput";
 import { ExternalLink } from "../../utils/components/ExternalLinks";
-import { InlineSubmitButton } from "../../utils/components/Button";
+import { InlineSubmitButton } from "../../utils/components/buttons/Button";
 
 const CURRENT_AVATAR_NAME = "[Current Avatar]";
 
@@ -70,6 +70,7 @@ function ProjectAvatarSubmitButtons(
     onSubmit={submit}
     pristine={pristine}
     textPristine="Select Image to enable button"
+    isMainButton={true}
   />;
 
   return <div className="d-flex flex-row-reverse">
@@ -77,8 +78,8 @@ function ProjectAvatarSubmitButtons(
       {submitButton}
     </div>
     { !updated ?
-      <div className="pe-3">
-        <Button outline={true} disabled={submitting} color="primary"
+      <div>
+        <Button disabled={submitting} className="btn-outline-rk-green"
           onClick={(e) => { onCancel(); }}>
           Cancel
         </Button>

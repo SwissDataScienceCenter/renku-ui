@@ -10,8 +10,8 @@ header.rk-anon-home .nav-link {
 nav.rk-anon-home .nav-link {
   color: $rk-white;
   &:hover {
-    color: $rk-blue;
-    background-color: $rk-green;
+    color: $rk-green-highlight;
+    background-color: transparent;
   }
 }
 
@@ -78,7 +78,7 @@ nav.rk-anon-home .nav-link {
 
 .rk-anon-home-section-bg-gray {
   @extend .section-content;
-  background-color: $rk-background;
+  background-color: $rk-background-0;
   color: $rk-dark;
   min-height: 600px;
 }

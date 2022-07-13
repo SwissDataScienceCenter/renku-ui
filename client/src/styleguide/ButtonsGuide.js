@@ -22,7 +22,7 @@ import { Button, ButtonGroup, DropdownItem, Table } from "reactstrap";
 import { Loader } from "../utils/components/Loader";
 import { ErrorAlert, InfoAlert, SuccessAlert, WarnAlert } from "../utils/components/Alert";
 import { Clipboard } from "../utils/components/Clipboard";
-import { ButtonWithMenu, GoBackButton } from "../utils/components/Button";
+import { ButtonWithMenu, GoBackButton } from "../utils/components/buttons/Button";
 import { ExternalLink } from "../utils/components/ExternalLinks";
 
 function Switch(props) {

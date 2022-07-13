@@ -27,7 +27,7 @@ import React, { Component } from "react";
 
 import { Form, FormGroup, FormText, Label } from "reactstrap";
 import { Badge, Input } from "reactstrap";
-import { InlineSubmitButton } from "../../utils/components/Button";
+import { InlineSubmitButton } from "../../utils/components/buttons/Button";
 
 class ProjectTag extends Component {
   render() {

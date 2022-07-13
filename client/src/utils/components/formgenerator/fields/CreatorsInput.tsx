@@ -114,10 +114,8 @@ function CreatorForm(props: CreatorFormProps) {
       <FormGroup>
         <Button
           size="sm"
-          outline
-          color="danger"
           disabled={props.disabled}
-          className="mb-3"
+          className="mb-3 p-0 border-0 text-danger bg-transparent"
           onClick={props.deleteCreator}>
           <FontAwesomeIcon icon={faUserMinus} />
         </Button>
