@@ -37,9 +37,15 @@ USER root
 RUN touch /usr/share/nginx/html/config.json
 RUN chmod a+r /usr/share/nginx/html/config.json
 RUN chown nginx /usr/share/nginx/html/config.json
+
+RUN touch /usr/share/nginx/html/robots.txt
+RUN chmod a+r /usr/share/nginx/html/robots.txt
+RUN chown nginx /usr/share/nginx/html/robots.txt
+
 RUN touch /usr/share/nginx/html/sitemap.xml
 RUN chmod a+r /usr/share/nginx/html/sitemap.xml
 RUN chown nginx /usr/share/nginx/html/sitemap.xml
+
 RUN touch /usr/share/nginx/html/privacy-statement.md
 RUN chmod a+r /usr/share/nginx/html/privacy-statement.md
 RUN chown nginx /usr/share/nginx/html/privacy-statement.md
