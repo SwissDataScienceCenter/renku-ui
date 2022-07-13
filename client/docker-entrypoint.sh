@@ -88,6 +88,11 @@ tee > "${NGINX_PATH}/sitemap.xml" << EOF
 EOF
 echo "sitemap.xml created in ${NGINX_PATH}"
 
+tee > "${NGINX_PATH}/robots.txt" << EOF
+Sitemap: ${BASE_URL}/sitemap.xml
+EOF
+echo "robots.txt created in ${NGINX_PATH}"
+
 FILE=/config-privacy/statement.md
 if [ -f "$FILE" ]; then
   more /config-privacy/statement.md | base64 | tr -d \\n > "${NGINX_PATH}/privacy-statement.md"
