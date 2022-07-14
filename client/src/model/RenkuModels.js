@@ -270,6 +270,7 @@ const projectSchema = new Schema({
 
       fetched: { [Prop.INITIAL]: null },
       fetching: { [Prop.INITIAL]: false },
+      pendingRefresh: { [Prop.INITIAL]: false },
     })
   },
   migration: {

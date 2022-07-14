@@ -28,6 +28,9 @@ import { faEllipsisV, faSyncAlt } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 import { Button, ButtonDropdown, DropdownToggle, DropdownMenu, UncontrolledTooltip, Col } from "reactstrap";
 import { simpleHash } from "../helpers/HelperFunctions";
+import { Loader } from "./Loader";
+import { SuccessLabel } from "./formlabels/FormLabels";
+import { ThrottledTooltip } from "./Tooltip";
 
 /**
  * A button with a menu (dropdown button)
@@ -100,4 +103,42 @@ function GoBackButton({ className, label, url }) {
   </Col>;
 }
 
-export { RefreshButton, ButtonWithMenu, GoBackButton };
+/**
+ *
+ * @param {string} props.isSubmitting status is submitting
+ * @param {string} props.isDone status is done
+ * @param {string} props.isReadOnly status is read only
+ * @param {string} props.doneText text to display when the status is done
+ * @param {string} props.submittingText text to display when the status is submitting
+ * @param {string} props.text text to display when is active
+ * @param {string} props.onSubmit function when click button
+ */
+
+function InlineSubmitButton(
+  { id, isSubmitting, isDone, isReadOnly, doneText, submittingText,
+    text, onSubmit, pristine, tooltipPristine, className }) {
+  if (isDone)
+    return <SuccessLabel text={doneText} />;
+  const loader = isSubmitting ?
+    <Loader className="mx-1" inline={true} size={16} /> : null;
+
+  const submit = !isDone ?
+    <Button
+      onClick={onSubmit}
+      className={className}
+      color="primary inlineSubmit"
+      disabled={isSubmitting || isReadOnly}>{ isSubmitting ? submittingText : text} {loader}</Button> :
+    null;
+
+  const tooltip = pristine ? (
+    <ThrottledTooltip
+      target={id}
+      tooltip={tooltipPristine} />) : null;
+
+  return <div id={id}>
+    {submit}
+    {tooltip}
+  </div>;
+}
+
+export { RefreshButton, ButtonWithMenu, GoBackButton, InlineSubmitButton };

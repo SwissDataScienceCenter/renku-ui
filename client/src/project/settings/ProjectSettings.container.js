@@ -23,7 +23,7 @@
  *  Project settings container components.
  */
 
-import React, { Component, useState } from "react";
+import React, { Component } from "react";
 import { connect } from "react-redux";
 
 import { ProjectSettingsSessions as ProjectSettingsSessionsPresent } from "./ProjectSettings.present";
@@ -53,6 +53,45 @@ class ProjectSettingsSessionsMapper extends Component {
     this.handlers = {
       refreshConfig: this.refreshConfig.bind(this)
     };
+    this.setConfig = this.setConfig.bind(this);
+  }
+
+  setConfigValue(key, value) {
+    const config = this.projectCoordinator.get("config.data.config");
+    config[key] = value;
+    this.projectCoordinator.set("config.data.config", config);
+  }
+
+  async setConfig(key, value, keyName) {
+    const pristineNewConfig = {
+      updating: false,
+      keyName: null,
+      value: null,
+      updated: false,
+      error: null
+    };
+
+    const currentConfig = this.projectCoordinator.get("config.data.config");
+    const previousValue = currentConfig[key];
+    this.setConfigValue(key, value);
+    this.setState({ ...pristineNewConfig, keyName, key, updating: true, error: null });
+    try {
+      const config = { [key]: value };
+      const response = await this.props.client
+        .setProjectConfig(this.props.externalUrl, config, this.props?.migration?.core?.versionUrl);
+      if (response?.data?.error) {
+        this.setConfigValue(key, previousValue);
+        this.setState({ ...this.state, keyName, key, updating: false, error: response.data.error });
+      }
+      else {
+        const value = response.data.result.config[Object.keys(response.data.result.config)[0]];
+        this.setState({ ...this.state, updating: false, updated: true, error: null, keyName, key, value });
+      }
+    }
+    catch (error) {
+      this.setConfigValue(key, previousValue);
+      this.setState({ ...this.state, keyName, key, error: error?.message ? error.message : "Unexpected error." });
+    }
   }
 
   // Refresh on update since componentDidMount may still need operations to finish
@@ -108,71 +147,16 @@ class ProjectSettingsSessionsMapper extends Component {
     };
   }
   render() {
-    const ProjectSettingsSessionsConnected = connect(this.mapStateToProps.bind(this))(ProjectSettingsSessions);
+    const ProjectSettingsSessionsConnected = connect(this.mapStateToProps.bind(this))(ProjectSettingsSessionsPresent);
     return (
       <ProjectSettingsSessionsConnected
-        projectCoordinator={this.projectCoordinator}
-        store={this.model.reduxStore}
-        handlers={this.handlers}
         location={this.props.location}
         lockStatus={this.props.lockStatus}
-        client={this.props.client}
-        repositoryUrl={this.props.externalUrl}
+        newConfig={this.state}
+        setConfig={this.setConfig}
       />
     );
   }
-}
-
-/**
- * Component to manage project level sessions settings.
- */
-function ProjectSettingsSessions(props) {
-  const { backend, client, config, handlers, location, metadata, options, repositoryUrl, user } = props;
-  const { lockStatus } = props;
-
-  const pristineNewConfig = {
-    updating: false,
-    keyName: null,
-    value: null,
-    updated: false,
-    error: null
-  };
-
-  const [newConfig, setNewConfig] = useState({ ...pristineNewConfig });
-
-  // Set target project config value
-  const setConfig = async (key, value, keyName) => {
-    setNewConfig({ ...pristineNewConfig, keyName, updating: true, error: null });
-    try {
-      const config = { [key]: value };
-      const response = await client.setProjectConfig(repositoryUrl, config, backend.versionUrl);
-      if (response?.data?.error) {
-        setNewConfig({ ...newConfig, keyName, updating: false, error: response.data.error });
-      }
-      else {
-        const value = response.data.result.config[Object.keys(response.data.result.config)[0]];
-        setNewConfig({ ...newConfig, updating: false, updated: true, error: null, keyName, value });
-        await handlers.refreshConfig();
-      }
-    }
-    catch (error) {
-      setNewConfig({ ...newConfig, keyName, error: error?.message ? error.message : "Unexpected error." });
-    }
-  };
-
-  return (
-    <ProjectSettingsSessionsPresent
-      backend={backend}
-      config={config}
-      location={location}
-      lockStatus={lockStatus}
-      metadata={metadata}
-      newConfig={newConfig}
-      options={options}
-      setConfig={setConfig}
-      user={user}
-    />
-  );
 }
 
 export { ProjectSettingsSessionsMapper as ProjectSettingsSessions };

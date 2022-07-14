@@ -23,7 +23,7 @@
  *  Project settings presentational components.
  */
 
-import React, { Component, Fragment, useState } from "react";
+import React, { Component, Fragment, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Button, Col, Collapse, Form, FormGroup,
@@ -47,6 +47,8 @@ import { CoreErrorAlert } from "../../utils/components/errors/CoreErrorAlert";
 import { ExternalLink } from "../../utils/components/ExternalLinks";
 import LoginAlert from "../../utils/components/loginAlert/LoginAlert";
 import { Docs } from "../../utils/constants/Docs";
+import { SuccessLabel } from "../../utils/components/formlabels/FormLabels";
+import { InlineSubmitButton } from "../../utils/components/Button";
 
 
 //** Navigation **//
@@ -68,6 +70,22 @@ function ProjectSettingsNav(props) {
 //** General settings **//
 
 function ProjectSettingsGeneral(props) {
+  useEffect(() => {
+    return function cleanup () {
+      props?.fetchProject(true);
+    };
+  }, []); // eslint-disable-line
+
+  const gitCommands = (
+    <>
+      <RepositoryClone {...props} />
+      <RepositoryUrls {...props} />
+    </>
+  );
+
+  if (props.settingsReadOnly)
+    return gitCommands;
+
   return (
     <Fragment>
       <Row className="mt-2">
@@ -79,8 +97,7 @@ function ProjectSettingsGeneral(props) {
           <ProjectDescription {...props} />
         </Col>
         <Col xs={12} lg={6}>
-          <RepositoryClone {...props} />
-          <RepositoryUrls {...props} />
+          {gitCommands}
         </Col>
       </Row>
       <Row>
@@ -163,29 +180,52 @@ class ProjectDescription extends Component {
   }
 
   static getDerivedStateFromProps(nextProps, prevState) {
-    const update = { value: nextProps.metadata.description };
+    const update = { value: nextProps.metadata.description, pristine: true };
     return { ...update, ...prevState };
   }
 
-  handleChange(e) { this.setState({ value: e.target.value }); }
+  handleChange(e) {
+    if (e.target.values !== this.state.value)
+      this.setState({ value: e.target.value, updated: false, pristine: false });
+  }
 
-  handleSubmit(e) { e.preventDefault(); this.props.onProjectDescriptionChange(this.state.value); }
+  handleSubmit(e) {
+    e.preventDefault();
+    this.setState({ value: this.state.value, updating: true });
+    this.props.onProjectDescriptionChange(this.state.value)
+      .then(() => {
+        this.setState({ value: this.state.value, updated: true, updating: false });
+      });
+  }
 
   render() {
-    const inputField = this.props.settingsReadOnly ?
+    const inputField = this.props.settingsReadOnly || this.state.updating ?
       <Input id="projectDescription" readOnly value={this.state.value} /> :
       <Input id="projectDescription" onChange={this.onValueChange}
         value={this.state.value === null ? "" : this.state.value} />;
-    let submit = (this.props.metadata.description !== this.state.value) ?
-      <Button className="mb-3 updateProjectSettings" color="primary">Update</Button> :
-      <span></span>;
+
+    const submitButton = this.props.settingsReadOnly ? null :
+      <InlineSubmitButton
+        id="update-desc"
+        className="updateProjectSettings"
+        submittingText="Updating"
+        doneText="Updated"
+        text="Update"
+        isDone={this.state.updated}
+        isReadOnly={this.state.updating || this.state.pristine}
+        isSubmitting={this.state.updating}
+        pristine={this.state.pristine}
+        tooltipPristine="Modify description to update value"
+      />;
     return <Form onSubmit={this.onSubmit}>
       <FormGroup>
         <Label for="projectDescription">Project Description</Label>
-        {inputField}
+        <div className="d-flex">
+          {inputField}
+          {submitButton}
+        </div>
         <FormText>A short description for the project</FormText>
       </FormGroup>
-      {submit}
     </Form>;
   }
 }
@@ -236,7 +276,7 @@ function ProjectSettingsSessions(props) {
   const { accessLevel, repositoryUrl } = metadata;
   const devAccess = accessLevel > ACCESS_LEVELS.DEVELOPER ? true : false;
   const locked = props.lockStatus?.locked ?? false;
-  const disabled = !devAccess || newConfig.updating;
+  const disabled = !devAccess || newConfig?.updating;
 
   // ? Anonymous users may have problem with notebook options, depending on the deployment
   if (!user.logged) {
@@ -352,8 +392,10 @@ function ProjectSettingsSessions(props) {
   );
 }
 
-function OptionCol({ option, devAccess, disabled, defaults, globalOptions, setConfig }) {
-  return <Col key={option} xs={12} md={5} lg={4}>
+function OptionCol({ option, devAccess, disabled, defaults, globalOptions, setConfig, newConfig }) {
+  const configKey = `${NotebooksHelper.sessionConfigPrefix}${option}`;
+  const newConfigOption = newConfig?.key === configKey ? newConfig : null;
+  return <Col key={option} xs={12} md={6} lg={5}>
     <SessionsElement
       configPrefix={NotebooksHelper.sessionConfigPrefix}
       devAccess={devAccess}
@@ -363,20 +405,21 @@ function OptionCol({ option, devAccess, disabled, defaults, globalOptions, setCo
       projectDefault={defaults.project[option]}
       rendering={globalOptions[option]}
       setConfig={setConfig}
+      newConfigOption={newConfigOption}
     />
   </Col>;
 
 }
 
 function SessionConfigKnown(props) {
-  const { availableOptions, defaults, devAccess, disabled, globalOptions, setConfig } = props;
+  const { availableOptions, defaults, devAccess, disabled, globalOptions, setConfig, newConfig } = props;
   const optionsRows = [];
   let options = availableOptions.known;
   if (options.includes("default_url")) {
     const option = "default_url";
     const row = <Row key="default_url">
       <OptionCol option={option} defaults={defaults}
-        devAccess={devAccess} disabled={disabled}
+        devAccess={devAccess} disabled={disabled} newConfig={newConfig}
         globalOptions={globalOptions} setConfig={setConfig} />
     </Row>;
     optionsRows.push(row);
@@ -391,7 +434,8 @@ function SessionConfigKnown(props) {
   chunks.forEach((c, i) => {
     const elements = c.map(option => <OptionCol key={option} option={option} defaults={defaults}
       devAccess={devAccess} disabled={disabled}
-      globalOptions={globalOptions} setConfig={setConfig} />);
+      globalOptions={globalOptions} setConfig={setConfig} newConfig={newConfig}
+    />);
     const row = <Row key={i}>{elements}</Row>;
     optionsRows.push(row);
   });
@@ -495,7 +539,7 @@ function SessionsOptionReset(props) {
 
 function SessionsElement(props) {
   const {
-    configPrefix, devAccess, disabled, globalDefault, option, projectDefault, rendering, setConfig
+    configPrefix, devAccess, disabled, globalDefault, option, projectDefault, rendering, setConfig, newConfigOption
   } = props;
 
 
@@ -550,11 +594,15 @@ function SessionsElement(props) {
     (<SessionsOptionReset disabled={disabled} onChange={onChange} option={option} />) :
     null;
 
+  const labelLoader = newConfigOption?.updating ?
+    (<Loader className="mx-2" size="14" inline="true" />) : null;
+
+  const labelDone = newConfigOption?.updated ?
+    <span className="mx-2"><SuccessLabel text="Updated." /></span> : null;
+
   // Render proper type
   if (rendering.type === "enum") {
-    const warning = projectDefault && !rendering.options.includes(projectDefault) && option !== "default_url" ?
-      true :
-      false;
+    const warning = projectDefault && !rendering.options.includes(projectDefault) && option !== "default_url";
     if (warning) {
       info = (<FormText color="danger">
         <FontAwesomeIcon className="cursor-default" icon={faExclamationTriangle} /> Unsupported value on RenkuLab.
@@ -565,14 +613,10 @@ function SessionsElement(props) {
       info = (<FormText>Cannot be changed on this server</FormText>);
     }
 
-    const labelLoader = newValueApplied ?
-      (<Loader size="14" inline="true" />) :
-      null;
-
     const separator = rendering.options.length === 1 ? null : (<br />);
     return (
       <FormGroup>
-        <Label className="me-2">{rendering.displayName} {labelLoader}</Label>
+        <Label className="me-2">{rendering.displayName} {labelLoader}{labelDone}</Label>
         {separator}
         <ServerOptionEnum {...rendering} selected={newValueApplied ? newValue : projectDefault}
           onChange={onChange} warning={warning ? projectDefault : null} disabled={disabled} />
@@ -587,6 +631,7 @@ function SessionsElement(props) {
         <ServerOptionBoolean {...rendering} selected={newValueApplied ? newValue : projectDefault}
           onChange={onChange} disabled={disabled} />
         {reset}
+        {labelLoader}{labelDone}
       </FormGroup>
     );
   }

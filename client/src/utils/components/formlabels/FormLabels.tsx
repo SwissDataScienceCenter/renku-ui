@@ -25,7 +25,7 @@
 import * as React from "react";
 import { FormText, FormFeedback, Label } from "../../ts-wrappers";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExclamationTriangle } from "@fortawesome/free-solid-svg-icons";
+import { faExclamationTriangle, faCheck } from "@fortawesome/free-solid-svg-icons";
 
 import "./FormLabels.css";
 import { Loader } from "../Loader";
@@ -73,4 +73,12 @@ const ErrorLabel = ({ text, children }: LabelProps) => {
   );
 };
 
-export { InputLabel, LoadingLabel, HelperLabel, InputHintLabel, ErrorLabel };
+const SuccessLabel = ({ text, children }: LabelProps) => {
+  return (
+    <FormFeedback className="success-feedback">
+      <FontAwesomeIcon icon={faCheck} /> {text} {children}
+    </FormFeedback>
+  );
+};
+
+export { InputLabel, LoadingLabel, HelperLabel, InputHintLabel, ErrorLabel, SuccessLabel };

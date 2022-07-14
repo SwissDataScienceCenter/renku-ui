@@ -29,10 +29,15 @@ import React, { useEffect, useState } from "react";
 import ImageInput, { ImageFieldPropertyName as Prop } from "../../utils/components/formgenerator/fields/ImageInput";
 import { ImageInputMode } from "../../utils/components/formgenerator/fields/ImageInput";
 import { ExternalLink } from "../../utils/components/ExternalLinks";
+import { InlineSubmitButton } from "../../utils/components/Button";
 
 const CURRENT_AVATAR_NAME = "[Current Avatar]";
 
-function ProjectAvatarSubmitButtons({ value, onCancel, onAvatarChange, externalUrl }) {
+function ProjectAvatarSubmitButtons(
+  { value, onCancel, onAvatarChange, externalUrl, readOnly, updated, submitting, pristine }) {
+
+  if (readOnly)
+    return null;
   // No options, no submit button
   if (value.options.length < 1) return null;
   // The current avatar is selected, no submit button
@@ -49,21 +54,35 @@ function ProjectAvatarSubmitButtons({ value, onCancel, onAvatarChange, externalU
     </div>;
   }
 
+  const submit = () => {
+    onAvatarChange(selectedFile);
+  };
 
   const selectedFile = value.options[value.selected][Prop.FILE];
+  const submitButton = <InlineSubmitButton
+    id="update-avatar"
+    submittingText="Updating"
+    doneText="Avatar Updated"
+    text="Submit"
+    isDone={updated}
+    isReadOnly={readOnly || pristine}
+    isSubmitting={submitting}
+    onSubmit={submit}
+    pristine={pristine}
+    textPristine="Select Image to enable button"
+  />;
+
   return <div className="d-flex flex-row-reverse">
     <div>
-      <Button color="primary"
-        onClick={(e) => { onAvatarChange(selectedFile); }}>
-        Submit
-      </Button>
+      {submitButton}
     </div>
-    <div className="pe-3">
-      <Button
-        onClick={(e) => { onCancel(); }}>
-        Cancel
-      </Button>
-    </div>
+    { !updated ?
+      <div className="pe-3">
+        <Button outline={true} disabled={submitting} color="primary"
+          onClick={(e) => { onCancel(); }}>
+          Cancel
+        </Button>
+      </div> : null }
   </div>;
 }
 
@@ -74,14 +93,38 @@ function ProjectAvatarEdit({ avatarUrl, onAvatarChange, externalUrl, settingsRea
       { options: [], selected: -1 };
   const [value, setValue] = useState(initial);
   const [alert, setAlert] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [updated, setUpdated] = useState(false);
+  const [pristine, setPristine] = useState(true);
+
   useEffect(() => {
     setAlert(null);
   }, [value.selected]);
+
+  const onCancel = () => {
+    setValue(initial);
+    setUpdated(false);
+  };
+
+  const changeValue = (value) => {
+    setUpdated(false);
+    setValue(value);
+    setPristine(false);
+  };
+
+  const submitAvatar = (f) => {
+    setSubmitting(true);
+    return onAvatarChange(f)
+      .then(() => setUpdated(true))
+      .finally(() => setSubmitting(false))
+      .catch(e => { setAlert(e.errorData.message.avatar); });
+  };
+
   const maxSize = 200 * 1024; // 200KB
   // format: image/png, image/jpeg, image/gif, image/tiff
   return <div className="mb-3">
-    <div>Project Avatar</div>
     <ImageInput name="project-avatar"
+      label="Project Avatar"
       value={value}
       help={null}
       maxSize={maxSize}
@@ -89,11 +132,16 @@ function ProjectAvatarEdit({ avatarUrl, onAvatarChange, externalUrl, settingsRea
       modes={[ImageInputMode.FILE]}
       format="image/png,image/jpeg,image/gif,image/tiff"
       disabled={settingsReadOnly}
-      setInputs={(e) => { setValue(e.target.value); }} />
+      submitting={submitting}
+      setInputs={(e) => { changeValue(e.target.value); }} />
     <ProjectAvatarSubmitButtons value={value}
-      onCancel={() => setValue(initial)}
+      onCancel={onCancel}
       externalUrl={externalUrl}
-      onAvatarChange={(f) => onAvatarChange(f).catch(e => { setAlert(e.errorData.message.avatar); })} />
+      readOnly={settingsReadOnly || pristine}
+      updated={updated}
+      submitting={submitting}
+      pristine={pristine}
+      onAvatarChange={(f) => submitAvatar(f)} />
   </div>;
 
 }

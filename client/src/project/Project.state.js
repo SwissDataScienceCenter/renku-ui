@@ -199,18 +199,17 @@ const ProjectAttributesMixin = {
   setAvatar(client, avatarFile) {
     // this.setUpdating({ core: { avatar_url: [true] } });
     return client.setAvatar(this.get("metadata.id"), avatarFile)
-      .then(() => { this.fetchProject(client, this.get("metadata.id")); });
+      .then(() => { this.set("metadata.pendingRefresh", true); });
   },
   setDescription(client, description) {
     this.setUpdating({ metadata: { description: true } });
-    client.setDescription(this.get("metadata.id"), description).then(() => {
-      this.fetchProject(client, this.get("metadata.id"));
-    });
+    return client.setDescription(this.get("metadata.id"), description)
+      .then(() => { this.set("metadata.pendingRefresh", true); });
   },
   setTags(client, tags) {
     this.setUpdating({ metadata: { tagList: [true] } });
-    client.setTags(this.get("metadata.id"), tags)
-      .then(() => { this.fetchProject(client, this.get("metadata.id")); });
+    return client.setTags(this.get("metadata.id"), tags)
+      .then(() => { this.set("metadata.pendingRefresh", true); });
   },
   setStars(num) {
     this.set("metadata.starCount", num);
@@ -432,8 +431,11 @@ class ProjectCoordinator {
   }
 
   fetchProject(client, projectPathWithNamespace) {
+    const identifier = !projectPathWithNamespace ?
+      this.get("metadata.id") : projectPathWithNamespace;
+
     this.setUpdating({ metadata: { exists: true } });
-    return client.getProject(projectPathWithNamespace, { statistics: true })
+    return client.getProject(identifier, { statistics: true })
       .then(resp => resp.data)
       .then(d => {
         this.setProjectData(d, true);
