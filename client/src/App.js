@@ -95,7 +95,7 @@ function CentralContentContainer(props) {
             </ContainerWrap> : null
         } />
         <Route path={Url.get(Url.pages.help)} render={
-          p => <Help key="help" {...p} {...props} />} />
+          p => <ContainerWrap><Help key="help" {...p} {...props} /></ContainerWrap>} />
         <Route exact
           path={[Url.get(Url.pages.projects), Url.get(Url.pages.projects.starred), Url.get(Url.pages.projects.all)]}
           render={p => <ContainerWrap><ProjectList

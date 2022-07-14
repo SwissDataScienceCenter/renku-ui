@@ -31,6 +31,7 @@ import { MemoryRouter } from "react-router-dom";
 import { ProjectSettingsGeneral, ProjectSettingsNav, ProjectSettingsSessions } from "./index";
 import { testClient as client } from "../../api-client";
 import { StateModel, globalSchema } from "../../model";
+import { Provider } from "react-redux";
 
 
 const model = new StateModel(globalSchema);
@@ -60,9 +61,12 @@ describe("rendering", () => {
     const div = document.createElement("div");
     document.body.appendChild(div);
     await act(async () => {
-      ReactDOM.render(<MemoryRouter>
-        <ProjectSettingsGeneral {...props} />
-      </MemoryRouter>, div);
+      ReactDOM.render(
+        <Provider store={model.reduxStore}>
+          <MemoryRouter>
+            <ProjectSettingsGeneral {...props} />
+          </MemoryRouter>
+        </Provider>, div);
     });
   });
 
@@ -70,15 +74,19 @@ describe("rendering", () => {
     const props = {
       client,
       location: fakeLocation,
-      model
+      model,
+      store: model.reduxStore
     };
 
     const div = document.createElement("div");
     document.body.appendChild(div);
     await act(async () => {
-      ReactDOM.render(<MemoryRouter>
-        <ProjectSettingsSessions {...props} />
-      </MemoryRouter>, div);
+      ReactDOM.render(
+        <Provider store={model.reduxStore}>
+          <MemoryRouter>
+            <ProjectSettingsSessions {...props} />
+          </MemoryRouter>
+        </Provider>, div);
     });
   });
 });

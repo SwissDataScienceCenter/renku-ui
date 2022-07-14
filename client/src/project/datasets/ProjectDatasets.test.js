@@ -35,6 +35,7 @@ import ChangeDataset from "./change/index";
 import DatasetImport from "./import/index";
 import DatasetsListView from "./DatasetsListView";
 import { generateFakeUser } from "../../user/User.test";
+import AppContext from "../../utils/context/appContext";
 
 describe("rendering", () => {
   const model = new StateModel(globalSchema);
@@ -46,6 +47,13 @@ describe("rendering", () => {
     initialIndex: 0,
   });
   const migration = { core: { versionUrl: "" } };
+  const templates = { custom: false, repositories: [{}] };
+  const fakeLocation = { pathname: "" };
+  const appContext = {
+    client: client,
+    params: { "TEMPLATES": templates },
+    location: fakeLocation,
+  };
 
   fakeHistory.push({
     pathname: "/projects/namespace/project-name/datasets/new"
@@ -83,9 +91,11 @@ describe("rendering", () => {
     const div = document.createElement("div");
     ReactDOM.render(
       <MemoryRouter>
-        <DatasetsListView
-          {...props}
-        />
+        <AppContext.Provider value={appContext}>
+          <DatasetsListView
+            {...props}
+          />
+        </AppContext.Provider>
       </MemoryRouter>
       , div);
   });
