@@ -22,32 +22,42 @@
  *  RenkuMarkdown code and presentation.
  */
 
-import React, { Component } from "react";
+import React, { useEffect } from "react";
+import mermaid from "mermaid";
 import RenkuMarkdownWithPathTranslation from "./RenkuMarkdownWithPathTranslation";
 import { sanitizedHTMLFromMarkdown } from "../../helpers/HelperFunctions";
 
+mermaid.initialize({
+  startOnLoad: true,
+});
+
 /**
- * Safely render markdown.
+ * Safely render RenkuMarkdown.
  * @param {string} markdownText the markdown text to display
+ * @param {string} className any className to apply
  * @param {boolean} singleLine if true, render the output as a single line without line breaks
  * @param {object} style any styles to apply
  */
-class RenkuMarkdown extends Component {
-  render() {
-    const { singleLine, style, fixRelativePaths } = this.props;
-    if (fixRelativePaths)
-      return <RenkuMarkdownWithPathTranslation {...this.props} />;
+function RenkuMarkdown(props) {
+  useEffect(() => {
+    mermaid.contentLoaded();
+  });
 
-    let className = "text-break renku-markdown";
-    if (singleLine)
-      className += " children-no-spacing";
-    if (this.props.className)
-      className += " " + this.props.className;
+  if (props.fixRelativePaths)
+    return <RenkuMarkdownWithPathTranslation {...props} />;
 
-    return <div className={className} style={style}
-      dangerouslySetInnerHTML={{ __html: sanitizedHTMLFromMarkdown(this.props.markdownText, singleLine) }}>
-    </div>;
-  }
+  const { singleLine, className, markdownText, style } = props;
+  let classNameMarkdown = "text-break renku-markdown";
+  if (singleLine)
+    classNameMarkdown += " children-no-spacing";
+  if (className)
+    classNameMarkdown += " " + className;
+
+  return <div
+    className={classNameMarkdown}
+    style={style}
+    dangerouslySetInnerHTML={{ __html: sanitizedHTMLFromMarkdown(markdownText, singleLine) }}>
+  </div>;
 }
 
 /**
