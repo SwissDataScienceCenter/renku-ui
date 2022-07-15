@@ -102,3 +102,6 @@ virtualenv
 
 # All traces of the GitLab server running locally
 /gitlab
+
+# Ignore helm charts requirements lock file
+requirements.lock
