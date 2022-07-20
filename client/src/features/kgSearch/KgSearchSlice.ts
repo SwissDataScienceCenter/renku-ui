@@ -22,6 +22,7 @@ import { TypeEntitySelection } from "../../utils/components/typeEntityFilter/Typ
 import { VisibilitiesFilter } from "../../utils/components/visibilityFilter/VisibilityFilter";
 import { SortingOptions } from "../../utils/components/sortingEntities/SortingEntities";
 import { KgAuthor } from "./KgSearch";
+import { dateFilterTypes, DatesFilter } from "../../utils/components/dateFilter/DateFilter";
 
 export interface KgSearchFormState {
   phrase: string;
@@ -31,6 +32,9 @@ export interface KgSearchFormState {
   type: TypeEntitySelection;
   author: KgAuthor;
   visibility: VisibilitiesFilter;
+  since: string;
+  until: string;
+  typeDate: dateFilterTypes;
 }
 
 const initialState: KgSearchFormState = {
@@ -48,6 +52,9 @@ const initialState: KgSearchFormState = {
     public: false,
     internal: false,
   },
+  since: "",
+  until: "",
+  typeDate: dateFilterTypes.all
 };
 
 type RootStateWithKgSearchForm = { kgSearchForm: KgSearchFormState };
@@ -72,6 +79,11 @@ export const kgSearchFormSlice = createSlice({
       state.type = action.payload;
       state.page = 1;
     },
+    setDates: (state, action: PayloadAction<DatesFilter>) => {
+      state.since = action.payload.since ?? "";
+      state.until = action.payload.until ?? "";
+      state.typeDate = action.payload.type ?? dateFilterTypes.all;
+    },
     setVisibility: (state, action: PayloadAction<VisibilitiesFilter>) => {
       state.visibility = action.payload;
       state.page = 1;
@@ -95,12 +107,23 @@ export const kgSearchFormSlice = createSlice({
       state.phrase = "";
       state.page = 1;
     },
+    removeFilters: (state, action: PayloadAction) => {
+      state.type = initialState.type;
+      state.author = initialState.author;
+      state.page = initialState.page;
+      state.typeDate = initialState.typeDate;
+      state.since = initialState.since;
+      state.until = initialState.until;
+      state.visibility = initialState.visibility;
+      state.sort = initialState.sort;
+    },
     reset: () => initialState
   },
 });
 
 export const {
-  setAuthor, setVisibility, setPage, setPhrase, setSort, setType, setMyDatasets, setMyProjects, reset } =
+  setAuthor, setDates, setVisibility, setPage, setPhrase, setSort, setType,
+  setMyDatasets, setMyProjects, reset, removeFilters } =
   kgSearchFormSlice.actions;
 export const useKgSearchFormSelector: TypedUseSelectorHook<RootStateWithKgSearchForm> =
   useSelector;

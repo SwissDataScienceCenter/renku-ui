@@ -25,12 +25,13 @@ import { FilterEntitySearch } from "../../utils/components/entitySearchFilter/En
 import { SearchResultsHeader } from "../../utils/components/searchResultsHeader/SearchResultsHeader";
 import { SearchResultsContent } from "../../utils/components/searchResultsContent/SearchResultsContent";
 import { useSearchEntitiesQuery } from "./KgSearchApi";
-import { setPage, setSort, reset, useKgSearchFormSelector } from "./KgSearchSlice";
+import { setPage, setSort, removeFilters, useKgSearchFormSelector } from "./KgSearchSlice";
 import { KgAuthor } from "./KgSearch";
 import { TypeEntitySelection } from "../../utils/components/typeEntityFilter/TypeEntityFilter";
 import { VisibilitiesFilter } from "../../utils/components/visibilityFilter/VisibilityFilter";
 import { faAngleDown, faAngleUp } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { DatesFilter } from "../../utils/components/dateFilter/DateFilter";
 
 interface SearchPageProps {
   isLoggedUser: boolean;
@@ -46,6 +47,7 @@ interface ModalFilterProps {
   isOpen: boolean;
   onToggle: Function;
   isLoggedUser: boolean;
+  valuesDate: DatesFilter;
 }
 
 const ModalFilter = ({
@@ -57,6 +59,7 @@ const ModalFilter = ({
   isOpen,
   onToggle,
   isLoggedUser,
+  valuesDate
 }: ModalFilterProps) => {
   return (
     <Modal isOpen={isOpen} toggle={onToggle} className="filter-modal">
@@ -65,7 +68,8 @@ const ModalFilter = ({
       </ModalHeader>
       <ModalBody>
         <div className="bg-white px-4 pb-4 w-100">
-          <FilterEntitySearch author={author} type={type} visibility={visibility} isLoggedUser={isLoggedUser} />
+          <FilterEntitySearch
+            valuesDate={valuesDate} author={author} type={type} visibility={visibility} isLoggedUser={isLoggedUser} />
           <SortingEntities styleType="mobile" sort={sort} setSort={handleSort} />
         </div>
       </ModalBody>
@@ -74,7 +78,7 @@ const ModalFilter = ({
 };
 
 function SearchPage({ userName, isLoggedUser }: SearchPageProps) {
-  const { phrase, sort, page, type, author, visibility, perPage } = useKgSearchFormSelector(
+  const { phrase, sort, page, type, author, visibility, perPage, since, until, typeDate } = useKgSearchFormSelector(
     (state) => state.kgSearchForm
   );
   const [isOpenFilterModal, setIsOpenFilterModal] = useState(false);
@@ -88,9 +92,17 @@ function SearchPage({ userName, isLoggedUser }: SearchPageProps) {
     type,
     visibility,
     userName,
+    since,
+    until,
+  };
+
+  const valuesDate = {
+    since,
+    until,
+    type: typeDate
   };
   const onRemoveFilters = () => {
-    dispatch(reset());
+    dispatch(removeFilters());
   };
 
   const { data, isFetching, isLoading } = useSearchEntitiesQuery(searchRequest);
@@ -102,7 +114,8 @@ function SearchPage({ userName, isLoggedUser }: SearchPageProps) {
         </div>
       </div>
       <div className="bg-white p-4 rounded-2 d-none d-sm-none d-md-none d-lg-block d-xl-block d-xxl-block">
-        <FilterEntitySearch author={author} type={type} visibility={visibility} isLoggedUser={isLoggedUser} />
+        <FilterEntitySearch
+          valuesDate={valuesDate} author={author} type={type} visibility={visibility} isLoggedUser={isLoggedUser} />
       </div>
     </>
   );
@@ -136,6 +149,7 @@ function SearchPage({ userName, isLoggedUser }: SearchPageProps) {
               isOpen={isOpenFilterModal}
               onToggle={() => setIsOpenFilterModal(!isOpenFilterModal)}
               isLoggedUser={isLoggedUser}
+              valuesDate={valuesDate}
             />
           </div>
         </Col>
