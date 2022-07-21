@@ -54,7 +54,7 @@ const AuthorFilter = ({ handler, value }: AuthorFilterProps) => {
           className="author-input"
           checked={value === item.value}
           data-cy={nameInput}/>
-        <label className="px-2 author-label"
+        <label className="px-2 author-label cursor-pointer"
           onClick={() => changeAuthor(item.value)}>{item.title}</label>
       </div>
     );

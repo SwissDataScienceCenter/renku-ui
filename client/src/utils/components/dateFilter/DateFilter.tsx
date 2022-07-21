@@ -130,7 +130,8 @@ const DateFilter = ({ handler, values }: DateFilterProps) => {
           className="author-input"
           checked={values.type === item.value}
           data-cy={nameInput}/>
-        <label className="px-2 author-label" onClick={() => changeDateType(item.value)}>{item.title}</label>
+        <label className="px-2 author-label cursor-pointer"
+          onClick={() => changeDateType(item.value)}>{item.title}</label>
       </div>
     );
   });

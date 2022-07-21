@@ -70,9 +70,9 @@ const TypeEntityFilter = ({ handler, value }: TypeFilterProps) => {
           onChange={(e: ChangeEvent<HTMLInputElement>) => changeType(item.value, e.target.checked)}
           className="type-entity-input"
           data-cy={nameInput}/>
-        <label className="px-2 type-entity-label"
+        <label className="px-2 type-entity-label cursor-pointer"
           onClick={() => changeType(item.value, !value[itemValueAsKey])}>{item.title}</label>
-        <img className="type-entity-icon" src={item.pathIcon}
+        <img className="type-entity-icon cursor-pointer" src={item.pathIcon}
           onClick={() => changeType(item.value, !value[itemValueAsKey])}/>
       </div>
     );
