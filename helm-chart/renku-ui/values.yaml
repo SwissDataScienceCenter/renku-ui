@@ -39,131 +39,130 @@ global:
     existingSecret: redis-secret
     existingSecretPasswordKey: redis-password
 
-client: 
-  replicaCount: 1
+replicaCount: 1
 
+image:
+  repository: renku/renku-ui
+  tag: "2.5.0"
+  pullPolicy: IfNotPresent
+
+  ## Optionally specify an array of imagePullSecrets.
+  ## Secrets must be manually created in the namespace.
+  ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
+  ##
+  # pullSecrets:
+  #   - myRegistrKeySecretName
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #  cpu: 100m
+  #  memory: 128Mi
+  # requests:
+  #  cpu: 100m
+  #  memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+podSecurityContext: {}
+
+securityContext:
+  runAsUser: 101
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
+
+welcomePage:
+  text: |
+    ## Welcome to Renku!
+    Renku is software for collaborative data science. With Renku you can share code and data,
+    discuss problems and solutions, and coordinate data-science projects.
+
+templates:
+  custom: true
+  repositories:
+    - url: https://github.com/SwissDataScienceCenter/renku-project-template
+      ref: 0.1.15
+      name: Renku
+
+# This defines the threshold for automatically showing a preview when browsing projects' files.
+# Above the soft limit, the user receives a warning. Above the hard limit, no preview is available.
+previewSizeThreshold:
+  soft: 1048576 # 1MB
+  hard: 10485760 # 10MB
+
+# This defines the threshold for displaying a message when a user is trying to upload a large file
+# so that they know it's not necessary to wait for this. There is only hard limit for now.
+uploadSizeThreshold:
+  soft: 104857600 # 100MB
+
+# Any string here, other than 'false', will enable the maintenance page and be added on it as an info.
+# Setting 'true' will display a standard message embedded in maintenace page.
+maintenance: false
+
+sentry:
+  enabled: false
+  dsn: ""
+  environment: ""
+  sampleRate: 0 # number between 0 and 1. (e.g., to send 20% of transactions, set 0.2.)
+
+# If you want to enable the privacy page, please create also a configMap and set its name in the
+# privacy.page.configMapName value. As a reference, you can use the sample configMap generated when
+# enabling the feature.
+privacy:
+  enabled: false
+  page:
+    enabled: false
+    #configMapName: privacy-page
+    #configMapKey: privacy_statement
+  banner:
+    content: |
+      This website requires cookies in order to ensure basic functionality. By clicking
+      or navigating the site, you consent to the use of cookies in accordance with
+      our <u><a class="text-white" href="/privacy">Privacy Policy</a></u>.
+    layout:
+      cookieName: RenkuLabPrivacy
+      disableStyles: true
+      containerClasses: fixed-bottom p-3 bg-dark
+      contentClasses: text-white small
+      buttonClasses: btn btn-sm btn-light me-2
+      buttonWrapperClasses: mt-2
+## If you maintain a statuspage.io page for the status of your RenkuLab instance, put the id for it here.
+statuspage:
+  id: ""
+
+homepage:
+  custom:
+    # If you want to enable a custom content on the homepage, you can enable it and provide content here
+    enabled: false
+    main:
+      contentMd: |
+        # Welcome to RenkuLab
+      backgroundImage:
+        url: ""
+  # The default is to show the tutorial from the docs, but can also link to an
+  # internal project
+  tutorialLink: https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html
+  # Projects to highlight on the homepage
+  projects: []
+canary:
+  enabled: false
   image:
     repository: renku/renku-ui
-    tag: "2.5.0"
-    pullPolicy: IfNotPresent
-
-    ## Optionally specify an array of imagePullSecrets.
-    ## Secrets must be manually created in the namespace.
-    ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
-    ##
-    # pullSecrets:
-    #   - myRegistrKeySecretName
-
-  service:
-    type: ClusterIP
-    port: 80
-
-  ingress:
-    enabled: false
-
-  resources: {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #  cpu: 100m
-    #  memory: 128Mi
-    # requests:
-    #  cpu: 100m
-    #  memory: 128Mi
-
-  nodeSelector: {}
-
-  tolerations: []
-
-  affinity: {}
-
-  podSecurityContext: {}
-
-  securityContext:
-    runAsUser: 101
-    runAsNonRoot: true
-    allowPrivilegeEscalation: false
-
-  welcomePage:
-    text: |
-      ## Welcome to Renku!
-      Renku is software for collaborative data science. With Renku you can share code and data,
-      discuss problems and solutions, and coordinate data-science projects.
-
-  templates:
-    custom: true
-    repositories:
-      - url: https://github.com/SwissDataScienceCenter/renku-project-template
-        ref: 0.1.15
-        name: Renku
-
-  # This defines the threshold for automatically showing a preview when browsing projects' files.
-  # Above the soft limit, the user receives a warning. Above the hard limit, no preview is available.
-  previewSizeThreshold:
-    soft: 1048576 # 1MB
-    hard: 10485760 # 10MB
-
-  # This defines the threshold for displaying a message when a user is trying to upload a large file
-  # so that they know it's not necessary to wait for this. There is only hard limit for now.
-  uploadSizeThreshold:
-    soft: 104857600 # 100MB
-
-  # Any string here, other than 'false', will enable the maintenance page and be added on it as an info.
-  # Setting 'true' will display a standard message embedded in maintenace page.
-  maintenance: false
-
-  sentry:
-    enabled: false
-    dsn: ""
-    environment: ""
-    sampleRate: 0 # number between 0 and 1. (e.g., to send 20% of transactions, set 0.2.)
-
-  # If you want to enable the privacy page, please create also a configMap and set its name in the
-  # privacy.page.configMapName value. As a reference, you can use the sample configMap generated when
-  # enabling the feature.
-  privacy:
-    enabled: false
-    page:
-      enabled: false
-      #configMapName: privacy-page
-      #configMapKey: privacy_statement
-    banner:
-      content: |
-        This website requires cookies in order to ensure basic functionality. By clicking
-        or navigating the site, you consent to the use of cookies in accordance with
-        our <u><a class="text-white" href="/privacy">Privacy Policy</a></u>.
-      layout:
-        cookieName: RenkuLabPrivacy
-        disableStyles: true
-        containerClasses: fixed-bottom p-3 bg-dark
-        contentClasses: text-white small
-        buttonClasses: btn btn-sm btn-light me-2
-        buttonWrapperClasses: mt-2
-  ## If you maintain a statuspage.io page for the status of your RenkuLab instance, put the id for it here.
-  statuspage:
-    id: ""
-
-  homepage:
-    custom:
-      # If you want to enable a custom content on the homepage, you can enable it and provide content here
-      enabled: false
-      main:
-        contentMd: |
-          # Welcome to RenkuLab
-        backgroundImage:
-          url: ""
-    # The default is to show the tutorial from the docs, but can also link to an
-    # internal project
-    tutorialLink: https://renku.readthedocs.io/en/latest/tutorials/01_firststeps.html
-    # Projects to highlight on the homepage
-    projects: []
-  canary:
-    enabled: false
-    image:
-      repository: renku/renku-ui
-      tag: "0.11.16"
+    tag: "0.11.16"
 
 server:
   replicaCount: 1

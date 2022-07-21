@@ -1,7 +1,7 @@
-{{- if .Values.client.ingress.enabled -}}
+{{- if .Values.ingress.enabled -}}
 {{- $fullName := include "ui.fullname" . -}}
-{{- $servicePort := .Values.client.service.port -}}
-{{- $ingressPath := .Values.client.ingress.path -}}
+{{- $servicePort := .Values.service.port -}}
+{{- $ingressPath := .Values.ingress.path -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
@@ -11,14 +11,14 @@ metadata:
     chart: {{ template "ui.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-{{- with .Values.client.ingress.annotations }}
+{{- with .Values.ingress.annotations }}
   annotations:
 {{ toYaml . | indent 4 }}
 {{- end }}
 spec:
-{{- if .Values.client.ingress.tls }}
+{{- if .Values.ingress.tls }}
   tls:
-  {{- range .Values.client.ingress.tls }}
+  {{- range .Values.ingress.tls }}
     - hosts:
       {{- range .hosts }}
         - {{ . }}
@@ -27,7 +27,7 @@ spec:
   {{- end }}
 {{- end }}
   rules:
-  {{- range .Values.client.ingress.hosts }}
+  {{- range .Values.ingress.hosts }}
     - host: {{ . }}
       http:
         paths:
@@ -41,7 +41,7 @@ spec:
   {{- end }}
 {{- end }}
 ---
-{{- if .Values.client.canary.enabled }}
+{{- if .Values.canary.enabled }}
 {{- $fullName := include "ui.fullname" . -}}
 apiVersion: networking.k8s.io/v1
 kind: Ingress

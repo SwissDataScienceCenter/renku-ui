@@ -9,7 +9,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  replicas: {{ .Values.client.replicaCount }}
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: {{ .appName }}
@@ -20,24 +20,24 @@ spec:
         app: {{ .appName }}
         release: {{ .Release.Name }}
     spec:
-      {{- if and .Values.client.privacy.enabled .Values.client.privacy.page.enabled }}
+      {{- if and .Values.privacy.enabled .Values.privacy.page.enabled }}
       volumes:
         - name: privacy
           configMap:
-            name: {{ .Values.client.privacy.page.configMapName | default (printf "%s-privacy-sample" (include "ui.fullname" .)) | quote }}
+            name: {{ .Values.privacy.page.configMapName | default (printf "%s-privacy-sample" (include "ui.fullname" .)) | quote }}
             items:
-            - key: {{ .Values.client.privacy.page.configMapKey | default (printf "privacy_statement") | quote }}
+            - key: {{ .Values.privacy.page.configMapKey | default (printf "privacy_statement") | quote }}
               path: statement.md
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           image: {{ .imageName }}
-          imagePullPolicy: {{ .Values.client.image.pullPolicy }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.client.service.port }}
+              containerPort: {{ .Values.service.port }}
               protocol: TCP
-          {{- if and .Values.client.privacy.enabled .Values.client.privacy.page.enabled }}
+          {{- if and .Values.privacy.enabled .Values.privacy.page.enabled }}
           volumeMounts:
             - mountPath: /config-privacy
               name: privacy
@@ -48,34 +48,34 @@ spec:
             - name: GATEWAY_URL
               value: {{ .Values.gatewayUrl | default (printf "%s://%s/api" (include "ui.protocol" .) .Values.global.renku.domain) | quote }}
             - name: UISERVER_URL
-              value: {{ .Values.client.uiserverUrl | default (printf "%s://%s/ui-server" (include "ui.protocol" .) .Values.global.renku.domain) | quote }}
+              value: {{ .Values.uiserverUrl | default (printf "%s://%s/ui-server" (include "ui.protocol" .) .Values.global.renku.domain) | quote }}
             - name: WELCOME_PAGE
-              value: {{ .Values.client.welcomePage.text | b64enc | quote }}
-            {{- if .Values.client.statuspage }}
+              value: {{ .Values.welcomePage.text | b64enc | quote }}
+            {{- if .Values.statuspage }}
             - name: STATUSPAGE_ID
-              value: {{ .Values.client.statuspage.id | quote }}
+              value: {{ .Values.statuspage.id | quote }}
             {{- end }}
-            {{- if .Values.client.sentry.enabled }}
+            {{- if .Values.sentry.enabled }}
             - name: SENTRY_URL
-              value: {{ .Values.client.sentry.dsn | quote }}
+              value: {{ .Values.sentry.dsn | quote }}
             - name: SENTRY_NAMESPACE
-              value: {{ .Values.client.sentry.environment | default (printf "%s" .Release.Namespace) | quote }}
+              value: {{ .Values.sentry.environment | default (printf "%s" .Release.Namespace) | quote }}
             - name: SENTRY_SAMPLE_RATE
-              value: {{ .Values.client.sentry.sampleRate | quote }}
+              value: {{ .Values.sentry.sampleRate | quote }}
             {{- end }}
-            {{- if .Values.client.maintenance }}
+            {{- if .Values.maintenance }}
             - name: MAINTENANCE
-              value: {{ .Values.client.maintenance | default (printf "false") | quote }}
+              value: {{ .Values.maintenance | default (printf "false") | quote }}
             {{- end }}
             - name: ANONYMOUS_SESSIONS
               value: {{ .Values.global.anonymousSessions.enabled | default (printf "false") | quote }}
             - name: PRIVACY_ENABLED
-              value: {{ .Values.client.privacy.enabled | quote }}
-            {{- if .Values.client.privacy.enabled }}
+              value: {{ .Values.privacy.enabled | quote }}
+            {{- if .Values.privacy.enabled }}
             - name: PRIVACY_BANNER_CONTENT
-              value: {{ .Values.client.privacy.banner.content | default (printf "") | b64enc | quote }}
+              value: {{ .Values.privacy.banner.content | default (printf "") | b64enc | quote }}
             - name: PRIVACY_BANNER_LAYOUT
-              value: {{ toJson .Values.client.privacy.banner.layout | default (printf "") | quote }}
+              value: {{ toJson .Values.privacy.banner.layout | default (printf "") | quote }}
             {{ else }}
             - name: PRIVACY_BANNER_CONTENT
               value: ""
@@ -83,15 +83,15 @@ spec:
               value: "{}"
             {{- end }}
             - name: TEMPLATES
-              value: {{ toJson .Values.client.templates | quote }}
+              value: {{ toJson .Values.templates | quote }}
             - name: PREVIEW_THRESHOLD
-              value: {{ toJson .Values.client.previewSizeThreshold | quote }}
+              value: {{ toJson .Values.previewSizeThreshold | quote }}
             - name: UPLOAD_THRESHOLD
-              value: {{ toJson .Values.client.uploadSizeThreshold | quote }}
+              value: {{ toJson .Values.uploadSizeThreshold | quote }}
             - name: UI_VERSION
               value: {{ .Chart.Version | quote }}
             - name: HOMEPAGE
-              value: {{ toJson .Values.client.homepage | quote }}
+              value: {{ toJson .Values.homepage | quote }}
           livenessProbe:
             httpGet:
               path: /
@@ -105,26 +105,26 @@ spec:
             initialDelaySeconds: 30
             periodSeconds: 30
           resources:
-{{ toYaml .Values.client.resources | indent 12 }}
+{{ toYaml .Values.resources | indent 12 }}
           securityContext:
-            {{- toYaml .Values.client.securityContext | nindent 12 }}
-    {{- with .Values.client.nodeSelector }}
+            {{- toYaml .Values.securityContext | nindent 12 }}
+    {{- with .Values.nodeSelector }}
       nodeSelector:
 {{ toYaml . | indent 8 }}
     {{- end }}
-    {{- with .Values.client.affinity }}
+    {{- with .Values.affinity }}
       affinity:
 {{ toYaml . | indent 8 }}
     {{- end }}
-    {{- with .Values.client.tolerations }}
+    {{- with .Values.tolerations }}
       tolerations:
 {{ toYaml . | indent 8 }}
     {{- end }}
       securityContext:
-        {{- toYaml .Values.client.podSecurityContext | nindent 8 }}
-      {{- if .Values.client.image.pullSecrets }}
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- if .Values.image.pullSecrets }}
       imagePullSecrets:
-      {{- range .Values.client.image.pullSecrets }}
+      {{- range .Values.image.pullSecrets }}
         - name: {{ . }}
       {{- end}}
       {{- end }}
