@@ -75,7 +75,7 @@ client:
   podSecurityContext: {}
 
   securityContext:
-    runAsUser: 101
+    runAsUser: 1000
     runAsNonRoot: true
     allowPrivilegeEscalation: false
 
