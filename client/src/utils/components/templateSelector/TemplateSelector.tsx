@@ -199,7 +199,8 @@ function TemplateGalleryRow({
       <Col key={t.id}>
         <Card
           id={id}
-          className={`template-card mb-2 text-center ${selectedClass} ${invalidTemplate} ${statusTemplate}`}
+          className={
+            `template-card mb-2 text-center box-shadow-cards ${selectedClass} ${invalidTemplate} ${statusTemplate}`}
           onClick={() => {
             handleSelectedTemplate(t.id);
           }}
@@ -208,7 +209,7 @@ function TemplateGalleryRow({
           <CardBody className="p-1">
             <img src={imgSrc} alt={t.id + " template image"} />
           </CardBody>
-          <CardFooter className="p-1">
+          <CardFooter className="p-1 bg-white">
             <CardText className="small">{t.name}</CardText>
           </CardFooter>
         </Card>

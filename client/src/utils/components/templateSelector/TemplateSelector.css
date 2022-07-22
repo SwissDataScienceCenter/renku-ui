@@ -24,3 +24,7 @@
 .template-card img {
     height: 60px;
 }
+
+.template-card .card-footer {
+    border-radius: 0 0 8px 8px;
+}
