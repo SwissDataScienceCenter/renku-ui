@@ -814,7 +814,7 @@ function ProjectViewDatasets(props) {
     if (datasetsLoading || !props.migration.core.fetched || props.migration.core.fetching)
       return;
     props.fetchDatasets(props.location.state && props.location.state.reload);
-  }, [props.migration.core.fetched]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [props.migration.core.fetched, props.datasets.core]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (props.migration.core.fetched && !props.migration.core.backendAvailable) {
     const overviewStatusUrl = Url.get(Url.pages.project.overview.status, {

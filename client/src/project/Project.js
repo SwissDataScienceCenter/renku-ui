@@ -610,11 +610,10 @@ class View extends Component {
     fetchFiles: () => {
       this.fetchProjectFilesTree();
     },
-    fetchDatasets: (forceReFetch) => {
+    fetchDatasets: async (forceReFetch) => {
       this.fetchProjectDatasetsFromKg();
-      this.fetchProjectDatasets(forceReFetch).then(() => {
-        this.fetchProjectLockStatus();
-      });
+      await this.fetchProjectDatasets(forceReFetch);
+      this.fetchProjectLockStatus();
     },
     setOpenFolder: (filePath) => {
       this.setProjectOpenFolder(filePath);
