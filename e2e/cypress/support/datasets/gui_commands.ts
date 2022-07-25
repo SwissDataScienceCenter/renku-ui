@@ -58,7 +58,7 @@ Cypress.Commands.add("gui_new_dataset", (newDataset: Dataset) => {
   }
   if (newDataset.keywords?.length) {
     newDataset.keywords.forEach((keyword) => {
-      cy.get_cy("input-keywords").type(keyword).type('{enter}');
+      cy.get_cy("input-keywords").type(keyword).type("{enter}");
     });
   }
 
