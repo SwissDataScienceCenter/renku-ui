@@ -22,7 +22,6 @@ import React, { Fragment } from "react";
 import "./SessionCheatSheet.css";
 import { Clipboard } from "../utils/components/Clipboard";
 import { ExternalDocsLink } from "../utils/components/ExternalLinks";
-import Time from "../utils/helpers/Time";
 import { RenkuPythonDocs } from "../utils/constants/Docs";
 
 function CommandDesc({ command = "", desc = "", clipboard = true }) {
@@ -88,30 +87,16 @@ function RunningAndTrackingCommands() {
   </Fragment>;
 }
 
-function SavingProgress() {
-  return <Fragment>
-    <CommandsRow>
-      <div>
-        <h2>Saving Progress on a Project</h2>
-      </div>
-    </CommandsRow>
-    <CommandsRow>
-      <CommandDesc command="git status"
-        desc="See what has changed since the last commit." />
-      <CommandDesc command="renku save [-m <message>]"
-        desc="Save (commit) and push all local changes. With -m, provide a message for the changes made." />
-    </CommandsRow>
-  </Fragment>;
-}
-
 function ManagingContents() {
   const addDesc = <span>Add data from &lt;url&gt; to a dataset.
-    &lt;url&gt; can be a local file path, an http(s) address or a Git git+http or git+ssh repository.
-    Use --target &lt;path&gt; to retrieve just a subset of the data.</span>;
+    &lt;url&gt; can be a local file path, an http(s) address or a Git git+http or git+ssh repository.</span>;
+
+  const importDesc = "Import a dataset. <uri> can be a Renku, Zenodo or Dataverse URL\n" +
+    "or DOI.";
   return <Fragment>
     <CommandsRow>
       <div>
-        <h2>Managing Contents</h2>
+        <h2>Working with Renku Datasets</h2>
       </div>
     </CommandsRow>
     <CommandsRow>
@@ -125,6 +110,8 @@ function ManagingContents() {
         desc={addDesc} />
     </CommandsRow>
     <CommandsRow>
+      <CommandDesc command="renku dataset import <uri>"
+        desc={importDesc} />
       <CommandDesc command="renku storage pull <path> …"
         desc="Retrieve the contents of the file <path> to make them available locally." />
     </CommandsRow>
@@ -163,47 +150,9 @@ function UndoCommit() {
     </CommandsRow>
     <CommandsRow>
       <div>
-        <CommandDesc command="git reset --hard HEAD^"
-          desc="Undo the most recent renku command." />
-        <p className="renku-info">This discards the most recent renku command.
-          Use it with care, but it can be useful. For more options on reverting work,
-          see the <ExternalDocsLink url="https://git-scm.com/docs/git-reset" title="git reset documentation" />.
-        </p>
+        <CommandDesc command="renku rollback"
+          desc="Rollback project to a previous point in time." />
       </div>
-    </CommandsRow>
-  </Fragment>;
-}
-
-function Autosaves({ branch }) {
-  const defaultBranchName = branch;
-  const nowString = Time.formatDateTime(new Date());
-  const nowIdString = Time.formatDateTime(new Date(), { d3FormatString: "%Y-%m-%d_%H-%M" });
-  const gitCheckoutFragment = `git checkout -b unsaved-${nowIdString}`;
-  const gitAddFragment = "git add .";
-  const gitCommitFragment = `git commit -m 'wip: save unsaved work ${nowString}'`;
-  const gitPushFragment = `git push --set-upstream origin unsaved-${nowIdString}`;
-  const twoLineCommand = `${gitCheckoutFragment};${gitAddFragment};${gitCommitFragment};${gitPushFragment}`;
-  return <Fragment>
-    <CommandsRow>
-      <div>
-        <h2>Autosave</h2>
-        <b className="mb-1">To see unsaved work, diff the contents</b>
-      </div>
-    </CommandsRow>
-    <CommandsRow>
-      <CommandDesc command="git diff HEAD"
-        desc="Diff against the previous state." />
-      <CommandDesc command={`git diff origin/${defaultBranchName}`}
-        desc="Diff against the server state." />
-    </CommandsRow>
-    <CommandsRow>
-      <b className="mb-1">To manage unsaved work</b>
-    </CommandsRow>
-    <CommandsRow>
-      <CommandDesc command={`git reset --hard origin/${defaultBranchName}`}
-        desc="Discard unsaved work and return to latest version." />
-      <CommandDesc command={twoLineCommand}
-        desc="Keep this work around for later." />
     </CommandsRow>
   </Fragment>;
 }
@@ -217,10 +166,10 @@ function LearnMore() {
     </CommandsRow>
     <CommandsRow>
       <div>
-        For a brief explanation of the commands, refer to the {" "}
+        For a more detailed overview of common commands, see the {" "}
         {/* eslint-disable-next-line max-len */}
         <ExternalDocsLink url={`${RenkuPythonDocs.READ_THE_DOCS_ROOT}/_static/cheatsheet/cheatsheet.pdf`}
-          title="cheat sheet"/>.
+          title="renku python cheat sheet"/>.
       </div>
       <div>
         The <ExternalDocsLink url={`${RenkuPythonDocs.READ_THE_DOCS_ROOT}/reference/commands.html`}
@@ -236,11 +185,9 @@ function SessionCheatSheet({ branch }) {
     <h1 className="mb-5">Renku Cheat Sheet</h1>
     <TypicalWorkflow />
     <RunningAndTrackingCommands />
-    <SavingProgress />
     <ManagingContents />
     <Collaboration />
     <UndoCommit />
-    <Autosaves branch={branch}/>
     <LearnMore />
   </div>;
 }
