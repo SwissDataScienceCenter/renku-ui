@@ -42,7 +42,7 @@ const VisibilityIcon = ({ visibility }) => {
   const { hostname } = baseUrl ? new URL(baseUrl) : { hostname: "renkulab.io" };
 
   const tooltip = {
-    public: "Public: Anyone on in the internet can access your project.",
+    public: "Public: Anyone can access your project.",
     private: "Private: Only members explicitly added to this project can access it.",
     internal: `Internal: Anyone signed-in to ${hostname} can access your project.` //pending for other deployments
   };

@@ -112,7 +112,7 @@ function AutoUpdateButton({ externalUrl, maintainer, migration_status, onMigrate
   </p>;
 }
 
-const docUrl = Docs.rtdHowToGuide("upgrading-renku.html#upgrading-your-image-to-use-the-latest-renku-cli-version");
+const docUrl = Docs.rtdHowToGuide("general/upgrading-renku.html");
 
 function RenkuVersionAutomaticUpdateSection({
   backendAvailable, current_metadata_version, externalUrl, launchNotebookUrl, maintainer,
