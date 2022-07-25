@@ -813,7 +813,9 @@ function ProjectViewDatasets(props) {
     const datasetsLoading = props.datasets.core === SpecialPropVal.UPDATING;
     if (datasetsLoading || !props.migration.core.fetched || props.migration.core.fetching)
       return;
-    props.fetchDatasets(props.location.state && props.location.state.reload);
+
+    if (props.datasets.core.datasets === null)
+      props.fetchDatasets(props.location.state && props.location.state.reload);
   }, [props.migration.core.fetched, props.datasets.core]); // eslint-disable-line react-hooks/exhaustive-deps
 
   if (props.migration.core.fetched && !props.migration.core.backendAvailable) {

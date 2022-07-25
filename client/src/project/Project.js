@@ -282,7 +282,8 @@ class View extends Component {
       const migrationData = await this.fetchMigrationCheck(gitUrl, defaultBranch);
       const projectVersion = migrationData.core_compatibility_status?.project_metadata_version;
       await this.checkCoreAvailability(projectVersion);
-      this.fetchProjectDatasets();
+      await this.fetchProjectDatasets();
+      await this.fetchProjectLockStatus();
     }
   }
 

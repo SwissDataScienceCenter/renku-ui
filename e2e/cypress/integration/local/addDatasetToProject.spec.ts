@@ -59,6 +59,7 @@ describe("Add dataset to existing project", () => {
     fixtures.projectKGDatasetList(projectSelected);
     fixtures.projectDatasetList();
     fixtures.projectTest();
+    fixtures.projectLockStatus();
     cy.gui_select_project_autosuggestion_list(projectSelected, fixtures, "projects/migration-check_43781.json");
     cy.get_cy("add-dataset-submit-button").click();
     cy.wait("@importToProject");
