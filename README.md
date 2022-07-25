@@ -15,6 +15,8 @@ authentication and exchanging access tokens. Follow these
 to get Renku up and running. You can also deploy an environment in a
 remote development cluster.
 
+TRIGGER IT!
+
 ## Developing the UI
 
 Once you have a development instance of Renku running locally or in the
