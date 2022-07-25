@@ -282,7 +282,8 @@ class View extends Component {
       const migrationData = await this.fetchMigrationCheck(gitUrl, defaultBranch);
       const projectVersion = migrationData.core_compatibility_status?.project_metadata_version;
       await this.checkCoreAvailability(projectVersion);
-      this.fetchProjectDatasets();
+      await this.fetchProjectDatasets();
+      await this.fetchProjectLockStatus();
     }
   }
 
@@ -610,11 +611,10 @@ class View extends Component {
     fetchFiles: () => {
       this.fetchProjectFilesTree();
     },
-    fetchDatasets: (forceReFetch) => {
+    fetchDatasets: async (forceReFetch) => {
       this.fetchProjectDatasetsFromKg();
-      this.fetchProjectDatasets(forceReFetch).then(() => {
-        this.fetchProjectLockStatus();
-      });
+      await this.fetchProjectDatasets(forceReFetch);
+      this.fetchProjectLockStatus();
     },
     setOpenFolder: (filePath) => {
       this.setProjectOpenFolder(filePath);
