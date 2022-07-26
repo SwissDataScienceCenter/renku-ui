@@ -26,7 +26,7 @@ import _ from "lodash/collection";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { ExternalLink } from "../../utils/components/ExternalLinks";
 import { RenkuNavLink } from "../../utils/components/RenkuNavLink";
-import { GoBackButton } from "../../utils/components/Button";
+import { GoBackButton } from "../../utils/components/buttons/Button";
 import { CommitsView } from "../../utils/components/commits/Commits";
 
 

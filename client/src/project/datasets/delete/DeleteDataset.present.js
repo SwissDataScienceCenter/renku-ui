@@ -52,11 +52,11 @@ function DeleteDatasetPresent(props) {
           : null
         }
         <Button type="submit" onClick={props.deleteDataset}
-          disabled={props.submitLoader.value} className="float-right mt-1" color="secondary">
+          disabled={props.submitLoader.value} className="float-right mt-1 btn-rk-pink" >
           Delete dataset
         </Button>
-        <Button disabled={props.submitLoader.value} className="float-right mt-1 ms-2"
-          color="primary" onClick={props.closeModal}>
+        <Button disabled={props.submitLoader.value} className="float-right mt-1 ms-2 btn-outline-rk-pink"
+          onClick={props.closeModal}>
           Cancel
         </Button>
       </Fragment>

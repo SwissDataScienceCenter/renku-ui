@@ -44,7 +44,7 @@ function checkDatasetDisplay(cy, fixtures, datasets) {
     cy.get_cy("dataset-title").should("contain.text", d.title);
 
     cy.get_cy("edit-dataset-button").should("exist");
-    cy.get_cy("more-options-button").click();
+    cy.get("#project-dataset-menu").find(`[data-cy='more-options-button']`).click();
     cy.get_cy("delete-dataset-button").should("exist");
 
     cy.get_cy("go-back-button").click();
@@ -69,7 +69,7 @@ function checkDatasetLimitedPermissionDisplay(cy, fixtures, datasets, editDisabl
       cy.get_cy("edit-dataset-button").should("not.exist");
       cy.get_cy("add-to-project-button").should("be.visible");
     }
-    cy.get_cy("more-options-button").should("not.exist");
+    cy.get("#project-dataset-menu").find(`[data-cy='more-options-button']`).should("not.exist");
 
     cy.get_cy("go-back-button").click();
   });

@@ -3,14 +3,20 @@
 // RENKU UI COLORS
 $rk-blue: #01192D;
 $rk-green: #009568;
-$rk-pink: #D26A98;
+$rk-green-highlight: #00B27D;
+$rk-pink: #CA4E86;
+$rk-pink-highlight: #E35896;
 $rk-yellow:#D1BB4C;
-$rk-dark:#3D3D3D; // titles
+$rk-dark:#3A3A3D; // titles
 $rk-text:#838383; // text
 $rk-text-medium-light:#b3b3b3;
 $rk-text-light: #e9e9e9;
 $rk-light:#E4E7EA; // borders
-$rk-background: #F5F5F5;
+//backgrounds
+$rk-background-0: #F5F6FA;
+$rk-background-0-dark: #01192D;
+$rk-background-1: #FFFFFF;
+$rk-background-2: #F5F6FA;
 $rk-green-background: rgb(34,53,52);
 $rk-white: #FFFFFF;
 $rk-hover:#f9f9f9;
@@ -70,7 +76,7 @@ $theme-colors: map-merge($theme-colors, $rk-colors);
 // Table styles
 $table-border-color: $rk-table-border;
 
-$body-bg: $rk-background; //background color
+$body-bg: $rk-background-0; //background color
 $body-color: $rk-dark; //text color
 $input-bg: #FFFFFF;
 

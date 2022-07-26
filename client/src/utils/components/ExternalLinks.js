@@ -104,7 +104,7 @@ function ExternalLink(props) {
       (<FontAwesomeIcon icon={iconType} size={props.iconSize} color="dark" />);
     displayTitle = props.iconAfter ?
       (<span>{props.title} {icon}</span>) :
-      (<span>{icon} {props.title}</span>);
+      (<span className="btn-icon-text">{icon} {props.title}</span>);
   }
   const myProps = { ...props, title: displayTitle };
   if (role === "link" || role === "text")

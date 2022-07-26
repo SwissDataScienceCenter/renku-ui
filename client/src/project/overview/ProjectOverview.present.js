@@ -37,7 +37,7 @@ import { StatusHelper } from "../../model/Model";
 import { CommitsView } from "../../utils/components/commits/Commits";
 import { Loader } from "../../utils/components/Loader";
 import { ExternalLink } from "../../utils/components/ExternalLinks";
-import { RefreshButton } from "../../utils/components/Button";
+import { RefreshButton } from "../../utils/components/buttons/Button";
 import { Pagination } from "../../utils/components/Pagination";
 
 

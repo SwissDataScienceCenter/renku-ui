@@ -1,5 +1,15 @@
 #quick-nav > .react-autosuggest__container {
   flex-grow: 1;
+  border: 0;
+  border-radius: var(--ck-border-radius);
+}
+.quick-nav {
+  background-color: white;
+  border-radius: 1000px;
+}
+.quick-nav .react-autosuggest__container > input {
+  border: 0;
+  border-radius: 1000px;
 }
 
 .searchBarSuggestionsContainer {
@@ -26,4 +36,8 @@
   border-bottom: 0px !important;
   font-size: 0.875rem;
   padding: 0px;
+}
+.quick-nav-icon {
+  color: var(--bs-rk-green);
+  font-size: 20px;
 }

@@ -142,7 +142,8 @@ const AddDatasetExistingProject = (
     <div className="mt-4 d-flex justify-content-end">
       <Button
         data-cy="add-dataset-submit-button"
-        color="primary"
+        color="rk-pink"
+        className="text-white"
         disabled={currentStatus?.status !== "validProject"}
         onClick={startImportDataset}>
         Add Dataset to existing Project

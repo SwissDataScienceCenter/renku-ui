@@ -49,7 +49,7 @@ function LogBody({ fetchLogs, logs, name }) {
 
   return <div>
     <p data-cy="no-logs-available">No logs available for this pod yet.</p>
-    <p>You can try to <Button color="primary" onClick={() => { fetchLogs(name); }}>Refresh</Button>
+    <p>You can try to <Button className="btn-outline-rk-green" onClick={() => { fetchLogs(name); }}>Refresh</Button>
       {" "}them after a while.</p>
   </div>;
 }
@@ -119,7 +119,7 @@ const LogDownloadButton = ({ logs, downloading, save, size, color }) => {
   };
 
   return (
-    <Button data-cy="session-log-download-button" color={color ?? "primary"} size={size ?? "s"}
+    <Button data-cy="session-log-download-button" color={color ?? "rk-green"} size={size ?? "s"}
       disabled={!canDownload(logs)} onClick={() => { save(); }}>
       <FontAwesomeIcon icon={faSave} />
       { downloading ? " Downloading " : " Download"}
@@ -189,7 +189,7 @@ const EnvironmentLogs = ({ logs, name, toggleLogs, fetchLogs, annotations }) => 
       </ModalBody>
       <ModalFooter className="bg-body">
         <LogDownloadButton logs={logs} downloading={downloading} save={save}/>
-        <Button color="primary" disabled={logs.fetching} onClick={() => { fetchLogs(name); }}>
+        <Button className="btn-outline-rk-green" disabled={logs.fetching} onClick={() => { fetchLogs(name); }}>
           <FontAwesomeIcon icon={faRedo} /> Refresh
         </Button>
       </ModalFooter>

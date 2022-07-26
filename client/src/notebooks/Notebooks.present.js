@@ -25,7 +25,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faBook, faCheckCircle, faExclamationTriangle, faExternalLinkAlt, faFileAlt, faHistory,
-  faInfoCircle, faQuestionCircle, faStopCircle, faSyncAlt, faTimesCircle
+  faInfoCircle, faPlus, faQuestionCircle, faStopCircle, faSyncAlt, faTimesCircle
 } from "@fortawesome/free-solid-svg-icons";
 import _ from "lodash";
 
@@ -41,7 +41,7 @@ import { Url } from "../utils/helpers/url";
 import Sizes from "../utils/constants/Media";
 import { Docs } from "../utils/constants/Docs";
 import { ExternalLink } from "../utils/components/ExternalLinks";
-import { ButtonWithMenu } from "../utils/components/Button";
+import { ButtonWithMenu } from "../utils/components/buttons/Button";
 import { TimeCaption } from "../utils/components/TimeCaption";
 import { Loader } from "../utils/components/Loader";
 import { InfoAlert, } from "../utils/components/Alert";
@@ -154,10 +154,11 @@ function SessionInformation(props) {
   const ready = notebook.data?.status?.state === SessionStatus.running ? true : false;
   const stopContent = (<Fragment><FontAwesomeIcon icon={faStopCircle} /> Stop</Fragment>);
   const stopButton = (<DropdownItem onClick={stop} disabled={stopping}>{stopContent}</DropdownItem>);
-  const defaultAction = <ExternalLink color="primary" url={url} disabled={stopping} showLinkIcon={true} title="Open" />;
+  const defaultAction = <ExternalLink
+    className="btn-outline-rk-green" url={url} disabled={stopping} showLinkIcon={true} title="Open" />;
   const menu = ready ?
     (
-      <ButtonWithMenu className="sessionsButton" color="primary" size="sm" default={defaultAction}>
+      <ButtonWithMenu className="sessionsButton" color="rk-blue" size="sm" default={defaultAction}>
         {stopButton}
       </ButtonWithMenu>
     ) :
@@ -248,7 +249,7 @@ function SessionLogs(props) {
       body = (
         <p>
           Logs unavailable. Please{" "}
-          <Button color="primary" size="sm" onClick={() => { fetchLogs(); }}>download</Button>
+          <Button className="btn-outline-rk-green" size="sm" onClick={() => { fetchLogs(); }}>download</Button>
           {" "}them again.
         </p>
       );
@@ -263,7 +264,7 @@ function SessionLogs(props) {
             <p>No logs available for this pod yet.</p>
             <p>
               You can try to{" "}
-              <Button color="primary" size="sm" onClick={() => { fetchLogs(); }}>refresh</Button>
+              <Button className="btn-outline-rk-green" size="sm" onClick={() => { fetchLogs(); }}>refresh</Button>
               {" "}them after a while.
             </p>
           </Fragment>
@@ -277,7 +278,7 @@ function SessionLogs(props) {
   return (
     <Fragment>
       <div className="p-2 p-lg-3 text-nowrap">
-        <Button key="button" color="secondary" size="sm" style={{ marginRight: 8 }}
+        <Button key="button" color="rk-green" size="sm" style={{ marginRight: 8 }}
           id="session-refresh-logs" onClick={() => fetchLogs()} disabled={logs.fetching} >
           <FontAwesomeIcon icon={faSyncAlt} /> Refresh logs
         </Button>
@@ -444,8 +445,8 @@ class NotebooksHeader extends Component {
     return (<Fragment>
       <h3>Sessions</h3>
       <div>
-        <Link className="btn btn-sm btn-secondary" role="button" to={this.props.urlNewSession}>
-          <span className="arrow-right pt-2 pb-2">  </span>
+        <Link className="btn btn-outline-rk-green btn-icon-text" role="button" to={this.props.urlNewSession}>
+          <FontAwesomeIcon icon={faPlus} />
           New session
         </Link>
       </div>
@@ -925,33 +926,33 @@ const NotebookServerRowAction = memo((props) => {
   };
   let defaultAction = null;
   actions.logs = (<DropdownItem data-cy="session-log-button" onClick={() => props.toggleLogs(name)} color="secondary">
-    <FontAwesomeIcon icon={faFileAlt} /> Get logs
+    <FontAwesomeIcon className="text-rk-green" icon={faFileAlt} /> Get logs
   </DropdownItem>);
 
   if (status !== SessionStatus.stopping) {
     actions.stop = <Fragment>
       <DropdownItem divider />
       <DropdownItem onClick={() => props.stopNotebook(name)}>
-        <FontAwesomeIcon icon={faStopCircle} /> Stop
+        <FontAwesomeIcon className="text-rk-green" icon={faStopCircle} /> Stop
       </DropdownItem>
     </Fragment>;
   }
   if (status === SessionStatus.running) {
     const state = scope?.filePath ? { filePath: scope?.filePath } : undefined;
     defaultAction = (
-      <Link className="btn btn-secondary text-white" to={{ pathname: props.localUrl, state }}>Open</Link>);
+      <Link className="btn btn-outline-rk-green" to={{ pathname: props.localUrl, state }}>Open</Link>);
     actions.openExternal = (<DropdownItem href={props.url} target="_blank" >
-      <FontAwesomeIcon icon={faExternalLinkAlt} /> Open in new tab
+      <FontAwesomeIcon className="text-rk-green" icon={faExternalLinkAlt} /> Open in new tab
     </DropdownItem>);
   }
   else {
-    const classes = { color: "secondary", className: "text-nowrap" };
+    const classes = { className: "text-nowrap btn-outline-rk-green" };
     defaultAction = (<Button {...classes} onClick={() => props.toggleLogs(name)}>Get logs</Button>);
   }
 
   return (
     <ButtonWithMenu
-      data-cy="sessions-button" className="sessionsButton" size="sm" default={defaultAction} color="secondary">
+      data-cy="sessions-button" className="sessionsButton" size="sm" default={defaultAction} color="rk-green">
       {actions.openExternal}
       {actions.logs}
       {actions.stop}

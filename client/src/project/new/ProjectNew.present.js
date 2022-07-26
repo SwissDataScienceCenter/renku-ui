@@ -109,15 +109,16 @@ function ForkProjectFooter(props) {
   }
   else {
     if (forkUrl)
-      forkButton = (<Link className="btn btn-primary" to={forkUrl}>Go to forked project</Link>);
+      forkButton = (<Link className="btn btn-secondary" to={forkUrl}>Go to forked project</Link>);
     else
-      forkButton = (<Button color="primary" disabled={!!error} onClick={fork}>Fork Project</Button>);
+      forkButton = (<Button color="secondary" disabled={!!error} onClick={fork}>Fork Project</Button>);
   }
 
   let closeButton = null;
-  if (toggleModal)
-    closeButton = <Button outline color="primary" onClick={toggleModal}>{forking ? "Close" : "Cancel"}</Button>;
-
+  if (toggleModal) {
+    closeButton = <Button className="btn-outline-rk-green" onClick={toggleModal}>
+      { forking ? "Close" : "Cancel" }</Button>;
+  }
 
   if (fetching.namespaces || fetching.projects)
     return null;
