@@ -79,8 +79,8 @@ function CollaborationList(props) {
     <Loader className={loaderClassName} />
     <div className={`d-flex flex-column ${iframeClassName}`}>
       <div className="mb-3">
-        <ExternalLink url={frameUrl} showLinkIcon={true} iconAfter={true}
-          title="Open in Tab" className="d-inline" />
+        <ExternalLink url={frameUrl} showLinkIcon={true} iconAfter={false}
+          title="Open in Tab" className="btn-outline-rk-green" />
       </div>
       <div>
         <CollaborationIframe

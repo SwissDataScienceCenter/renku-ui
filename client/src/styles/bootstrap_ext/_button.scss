@@ -1,4 +1,36 @@
 @use "sass:color";
+$borderRadius: 1000px;
+.btn {
+  border-radius: $borderRadius;
+  padding: 5px 20px;
+  font-weight: normal;
+}
+
+.btn-group .btn {
+  border-radius: 0;
+  padding: 5px 10px;
+}
+.btn-with-menu .btn:nth-child(1) {
+  border-radius: 1000px;
+  padding: 5px 20px;
+  margin-right: 5px;
+}
+.btn-with-menu .btn:nth-child(2) {
+  background-color: transparent;
+  border: none;
+  box-shadow: none;
+}
+.btn-with-menu .btn:nth-child(2):focus {
+  color: $rk-green-highlight;
+}
+.btn-with-menu-options svg {
+  margin-right: 12px;
+}
+
+.input-group .btn {
+  border-radius: 0;
+  padding: 5px 10px;
+}
 
 .btn-secondary, .btn-info, .btn-warning {
   color: $rk-white;
@@ -41,6 +73,45 @@
   }
 }
 
+.btn-rk-pink {
+  color: white;
+
+  &:hover {
+    color: white;
+  }
+
+  &:focus {
+    color: white;
+  }
+
+  &:active {
+    color: white;
+  }
+
+  &:disabled {
+    color: white;
+  }
+}
+
+.btn-rk-green {
+  color: white;
+  &:hover {
+    color: white;
+  }
+
+  &:focus {
+    color: white;
+  }
+
+  &:active {
+    color: white;
+  }
+
+  &:disabled {
+    color: white;
+  }
+}
+
 .rk-btn-group-light {
   border-style: solid;
   border-width: 1px;
@@ -68,12 +139,42 @@
   }
 }
 
-.btn-outline-primary {
+.btn-outline-rk-blue {
   background-color: white;
-  color: $primary;
-  &.active{
-    background-color: $primary;
-    color: white;
+  color: $rk-blue;
+
+  &:hover, &:focus, &.active {
+    background-color: transparent;
+    color: $rk-blue;
+  }
+}
+.btn-outline-rk-green {
+  background-color: white;
+  color: $rk-green;
+
+  &:hover, &:focus, &.active {
+    background-color: transparent;
+    color: $rk-green-highlight;
+  }
+  &:disabled {
+    color: $rk-green;
+    opacity: 0.6;
+  }
+}
+.btn-outline-rk-pink {
+  background-color: white;
+  color: $rk-pink;
+  border-color: $rk-pink;
+
+  &:hover, &:focus, &.active {
+    background-color: transparent;
+    color: $rk-pink-highlight;
+  }
+  &.disabled{
+    background-color: transparent;
+    color: $rk-pink-highlight;
+    border-color: $rk-pink-highlight;
+    opacity: 0.5;
   }
 }
 
@@ -82,4 +183,39 @@
   &:focus{
     box-shadow: unset;
   }
+}
+
+.btn-secondary-home {
+  background-color: transparent;
+  color: $rk-pink;
+  border-color: $rk-pink;
+
+  &:hover, &:focus, &.active {
+    background-color: $rk-pink-highlight;
+    color: white;
+  }
+}
+
+.btn-icon-text svg {
+  margin-right: 12px;
+}
+
+.btn-with-menu .btn-with-menu-icon {
+  margin-right: 0;
+}
+
+.btn-with-menu-options {
+  background: #FFFFFF;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  border: none;
+  color: $rk-dark;
+  margin: 5px 0;
+}
+
+.btn-with-menu-options a, .btn-with-menu-options button {
+  color: $rk-dark;
+}
+.btn-with-menu-options button:focus, .btn-with-menu-options button:active {
+  background-color: transparent;
 }

@@ -22,7 +22,15 @@ import {
   Button, ButtonDropdown, Col, DropdownItem, DropdownMenu, DropdownToggle, Form, Input, InputGroup,
   Nav, NavItem, Row
 } from "reactstrap";
-import { faCheck, faSearch, faSortAmountDown, faSortAmountUp, faBars, faTh } from "@fortawesome/free-solid-svg-icons";
+import {
+  faCheck,
+  faSearch,
+  faSortAmountDown,
+  faSortAmountUp,
+  faBars,
+  faTh,
+  faPlus
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 import { Url } from "../../utils/helpers/url";
@@ -138,7 +146,7 @@ function SearchOrder(props) {
     </Col>
     <Col className="col-auto">
       <Button color="rk-white" onClick={() => { searchWithValues({ ascending: !params.ascending }); }}>
-        <FontAwesomeIcon icon={orderingIcon} />
+        <FontAwesomeIcon className="m-0" icon={orderingIcon} />
       </Button>
     </Col>
   </Fragment>;
@@ -193,16 +201,14 @@ function ProjectListSearch(props) {
           <SearchOrder params={params} orderByMap={orderByMap} searchWithValues={searchWithValues} />
           <Col className="col-auto">
             <Button color="rk-white" id="searchButton" onClick={() => searchWithValues()}>
-              <FontAwesomeIcon icon={faSearch} />
+              <FontAwesomeIcon className="m-0" icon={faSearch} />
             </Button>
           </Col>
           <Col className="col-auto">
-            <Button color="rk-white" id="displayButton" onClick={() => setGridDisplay(!gridDisplay)}>
-              {
-                gridDisplay ?
-                  <FontAwesomeIcon icon={faBars} /> :
-                  <FontAwesomeIcon icon={faTh} />
-              }
+            <Button className="btn-icon-text" color="rk-white" id="displayButton"
+              onClick={() => setGridDisplay(!gridDisplay)}>
+              <FontAwesomeIcon className={!gridDisplay ? "text-rk-green" : ""} icon={faBars} />
+              <FontAwesomeIcon className={gridDisplay ? "text-rk-green m-0" : "m-0"} icon={faTh} />
             </Button>
           </Col>
         </Form>
@@ -351,8 +357,8 @@ function ProjectList(props) {
 
   const newProjectButton = loggedIn ?
     (<div>
-      <Link className="btn btn-secondary" role="button" to={projectNew}>
-        <span className="arrow-right">  </span>
+      <Link className="btn btn-secondary btn-icon-text" role="button" to={projectNew}>
+        <FontAwesomeIcon icon={faPlus} />
         New project
       </Link></div>) :
     null;

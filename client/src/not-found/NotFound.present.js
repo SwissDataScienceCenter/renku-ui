@@ -42,7 +42,7 @@ const NotFound = (props) => {
           <p>{description}</p>
           <div className="mt-5">
             <Link to="/">
-              <Button color="secondary">
+              <Button className="btn-rk-green btn-icon-text">
                 <FontAwesomeIcon icon={faHome} /> Return Home
               </Button>
             </Link>

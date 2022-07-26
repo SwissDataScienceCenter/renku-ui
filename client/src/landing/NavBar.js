@@ -87,7 +87,7 @@ class RenkuToolbarItemUser extends Component {
         <DropdownToggle className="nav-link" nav caret id="profile-dropdown">
           <FontAwesomeIcon icon={faUser} id="userIcon" />
         </DropdownToggle>
-        <DropdownMenu className="user-menu" end key="user-bar" aria-labelledby="user-menu">
+        <DropdownMenu className="user-menu btn-with-menu-options" end key="user-bar" aria-labelledby="user-menu">
           <DropdownItem className="p-0">
             <ExternalLink url={`${gatewayURL}/auth/user-profile`}
               title="Account" className="dropdown-item" role="link" />
@@ -139,7 +139,7 @@ class RenkuToolbarItemPlus extends Component {
         <DropdownToggle className="nav-link" nav caret id="plus-dropdown">
           <FontAwesomeIcon icon={faPlus} id="createPlus" />
         </DropdownToggle>
-        <DropdownMenu className="plus-menu" end key="plus-bar" aria-labelledby="plus-menu">
+        <DropdownMenu className="plus-menu btn-with-menu-options" end key="plus-bar" aria-labelledby="plus-menu">
           {projectDropdown}
           {issueDropdown}
           {datasetDropdown}
@@ -156,7 +156,7 @@ function RenkuToolbarHelpMenu(props) {
       <DropdownToggle className="nav-link" nav caret>
         <FontAwesomeIcon icon={faQuestionCircle} id="helpDropdownToggle" />
       </DropdownToggle>
-      <DropdownMenu className="help-menu" key="help-bar" aria-labelledby="help-menu">
+      <DropdownMenu className="help-menu btn-with-menu-options" key="help-bar" aria-labelledby="help-menu">
         <DropdownItem className="p-0">
           <Link className="dropdown-item" to="/help">Help</Link>
         </DropdownItem>
@@ -201,7 +201,7 @@ function RenkuToolbarGitLabMenu(props) {
       <DropdownToggle className="nav-link" nav caret id="gitLab-menu">
         <FontAwesomeIcon icon={faGitlab} id="gitLabDropdownToggle" />
       </DropdownToggle>
-      <DropdownMenu className="gitLab-menu" end key="gitLab-bar" aria-labelledby="gitLab-menu">
+      <DropdownMenu className="gitLab-menu btn-with-menu-options" end key="gitLab-bar" aria-labelledby="gitLab-menu">
         <DropdownItem className="p-0">
           <ExternalLink url={gitLabUrl}
             title="GitLab" className="dropdown-item" role="link" />

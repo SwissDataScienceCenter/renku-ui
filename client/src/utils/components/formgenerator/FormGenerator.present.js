@@ -49,13 +49,13 @@ function SubmitButtonGroup(props) {
   const submitButton = submitCallback !== undefined ?
     <Button
       data-cy="submit-button"
-      type="submit" disabled={submitLoader} className="float-end mt-1" color="secondary">
+      type="submit" disabled={submitLoader} className="float-end mt-1" color="rk-pink">
       {btnName}
     </Button>
     : null;
   const cancelButton = onCancel !== undefined ?
-    <Button disabled={submitLoader} className="float-end mt-1 me-1"
-      color="secondary" outline onClick={(e)=>onCancel(e, props.handlers)}>
+    <Button disabled={submitLoader} className="float-end mt-1 me-1 btn-outline-rk-pink"
+      onClick={(e)=>onCancel(e, props.handlers)}>
       {cancelBtnName ? cancelBtnName : "Cancel"}
     </Button>
     : null;

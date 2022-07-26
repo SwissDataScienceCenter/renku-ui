@@ -73,8 +73,8 @@ function OrderByDropdown(props) {
     <Col className="col-auto">
       <Button color="rk-white" onClick={props.handlers.toggleSearchSorting}>
         {props.orderSearchAsc ?
-          <FontAwesomeIcon icon={faSortAmountUp} /> :
-          <FontAwesomeIcon icon={faSortAmountDown} />
+          <FontAwesomeIcon className="m-0" icon={faSortAmountUp} /> :
+          <FontAwesomeIcon className="m-0" icon={faSortAmountDown} />
         }
       </Button>
     </Col>
@@ -113,11 +113,11 @@ class DatasetSearchForm extends Component {
           <Col className="col-auto">
             { this.props.loading ?
               <Button color="rk-white" id="cancelButton" onClick={this.props.handlers.onCancelSearch}>
-                <FontAwesomeIcon icon={faStop}/>
+                <FontAwesomeIcon className="m-0" icon={faStop}/>
               </Button> :
               <Button color="rk-white" id="searchButton" onClick={this.props.handlers.onSearchSubmit}
                 data-cy="search-dataset-submit">
-                <FontAwesomeIcon icon={faSearch}/>
+                <FontAwesomeIcon className="m-0" icon={faSearch}/>
               </Button>
             }
           </Col>
@@ -158,11 +158,10 @@ class DatasetSearchForm extends Component {
           </UncontrolledCollapse>
         </Col>
         <Col className="d-flex pt-4">
-          <Button color="rk-white" id="displayButton" onClick={() => this.props.onGridDisplayToggle()}>
-            {
-              this.props.gridDisplay ?
-                <FontAwesomeIcon icon={faBars} /> : <FontAwesomeIcon icon={faTh} />
-            }
+          <Button className="btn-icon-text" color="rk-white" id="displayButton"
+            onClick={() => this.props.onGridDisplayToggle()}>
+            <FontAwesomeIcon className={this.props.gridDisplay ? "" : "text-rk-pink"} icon={faBars} />
+            <FontAwesomeIcon className={!this.props.gridDisplay ? "m-0" : "text-rk-pink m-0"} icon={faTh} />
           </Button>
         </Col>
       </Col>
