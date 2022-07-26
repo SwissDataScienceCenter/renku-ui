@@ -1,5 +1,21 @@
 # Changes
 
+## [2.6.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.5.0...2.6.0) (2022-07-26)
+
+### Features
+
+* add confirmation when changing a value in the project settings ([#1922](https://github.com/SwissDataScienceCenter/renku-ui/issues/1922), [#1945](https://github.com/SwissDataScienceCenter/renku-ui/issues/1945))
+* add visibility tooltip on the project card ([#1916](https://github.com/SwissDataScienceCenter/renku-ui/issues/1916), [#1940](https://github.com/SwissDataScienceCenter/renku-ui/issues/1940))
+* add support for mermaid format in markdown view ([#1807](https://github.com/SwissDataScienceCenter/renku-ui/issues/1807), [#1941](https://github.com/SwissDataScienceCenter/renku-ui/issues/1941))
+* update layout: buttons, cards, font, colors ([#1885](https://github.com/SwissDataScienceCenter/renku-ui/issues/1885), [#1953](https://github.com/SwissDataScienceCenter/renku-ui/issues/1953))
+* include renku social media links in landing page ([#1923](https://github.com/SwissDataScienceCenter/renku-ui/issues/1923), [#1938](https://github.com/SwissDataScienceCenter/renku-ui/issues/1938))
+* update cheatsheet ([#1961](https://github.com/SwissDataScienceCenter/renku-ui/issues/1961))
+
+
+### BREAKING CHANGES
+
+* requires renku >= 0.15.0
+
 ## [2.5.0](https://github.com/SwissDataScienceCenter/renku-ui/compare/2.4.1...2.5.0) (2022-07-01)
 
 ### Features
