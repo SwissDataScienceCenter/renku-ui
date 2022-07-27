@@ -107,24 +107,5 @@
 
 .search-box {
   width: 100%;
-  margin: 10px 0 0 0;
+  max-width: 900px;
 }
-
-@media (min-width: 992px) {
-  .search-box{
-    max-width: 500px;
-  }
-}
-
-@media (min-width: 1080px) {
-  .search-box{
-    max-width: 600px;
-  }
-}
-
-@media (min-width: 1440px) {
-  .search-box{
-    max-width: 800px;
-  }
-}
-
