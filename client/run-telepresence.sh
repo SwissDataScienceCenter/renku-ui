@@ -71,7 +71,7 @@ then
   HOMEPAGE_PROJECTS="[]"
   echo "HOMEPAGE_SHOW_PROJECTS is set to '${HOMEPAGE_PROJECTS}'"
 else
-  HOMEPAGE_PROJECTS='[{"projectPath": "julia/flights-tutorial-julia"}, {"projectPath": "cramakri/covid-19-dashboard"}]'
+  HOMEPAGE_PROJECTS='[{"id": 1, "title":"Learn Renku", "description": "Check out our in-depth learning paths on Renku.", "imageUrl": "https://andrea.dev.renku.ch/static/media/logo.f48d7ddd.svg", "projectUrl": "https://renkulab.io/gitlab/learn-renku"}, {"id": 2, "title": "Renku Gallery", "description": "A showcase of computational tools brought to Renku.", "imageUrl": "https://andrea.dev.renku.ch/gitlab-logo.svg", "projectUrl": "https://renkulab.io/gitlab/renku-stories"}]'
   echo "HOMEPAGE_SHOW_PROJECTS is set to '${HOMEPAGE_PROJECTS}'"
 fi
 

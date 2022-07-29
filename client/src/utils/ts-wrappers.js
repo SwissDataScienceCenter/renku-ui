@@ -37,6 +37,14 @@ import {
 
 import { FormGroup as WrappedFormGroup, Input as WrappedInput } from "reactstrap";
 
+import {
+  Carousel as WrappedCarousel,
+  CarouselItem as WrappedCarouselItem,
+  CarouselControl as WrappedCarouselControl,
+  CarouselIndicators as WrappedCarouselIndicators,
+  CarouselCaption as WrappedCarouselCaption,
+} from "reactstrap";
+
 function Alert(props) {
   return <WrappedAlert {...props} />;
 }
@@ -142,6 +150,25 @@ function Table(props) {
   return <WrappedTable {...props} />;
 }
 
+function Carousel(props) {
+  return <WrappedCarousel {...props} />;
+}
+function CarouselItem(props) {
+  return <WrappedCarouselItem {...props} />;
+}
+
+function CarouselControl(props) {
+  return <WrappedCarouselControl {...props} />;
+}
+
+function CarouselIndicators(props) {
+  return <WrappedCarouselIndicators {...props} />;
+}
+
+function CarouselCaption(props) {
+  return <WrappedCarouselCaption {...props} />;
+}
+
 
 export { Alert, Button, ButtonGroup };
 export { Card, CardBody, CardText, CardFooter, Col, DropdownItem };
@@ -149,3 +176,10 @@ export { FormFeedback, FormText, Fade, Form, FormGroup, Input, Label };
 export { PopoverHeader, PopoverBody };
 export { Modal, ModalBody, ModalHeader, ModalFooter, Row, Table };
 export { UncontrolledPopover, UncontrolledTooltip };
+export {
+  Carousel,
+  CarouselItem,
+  CarouselControl,
+  CarouselIndicators,
+  CarouselCaption
+};

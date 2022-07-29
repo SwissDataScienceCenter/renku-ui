@@ -116,7 +116,7 @@ nav.rk-anon-home .nav-link {
 
 #rk-anon-home-section5 {
   @extend .section-content;
-  background-color: $rk-white;
+  background-color: $rk-background-0;
   color: $rk-dark;
   min-height: 600px;
 }
@@ -214,3 +214,21 @@ nav.rk-anon-home .nav-link {
   background-color: rgba($rk-pink, var(--rk-bg-opacity)) !important;
   border-radius: .375rem;
 }
+
+.showcase-project-card {
+  background-color: white;
+  margin: auto;
+  max-width: 600px;
+
+  img {
+    width: 200px;
+    height: auto;
+  }
+
+}
+.carousel-control-next-icon,
+.carousel-control-prev-icon,
+.carousel-indicators{
+  filter: invert(1);
+}
+

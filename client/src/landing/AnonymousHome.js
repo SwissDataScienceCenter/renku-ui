@@ -69,6 +69,7 @@ import { RenkuNavLink } from "../utils/components/RenkuNavLink";
 import { ExternalIconLink, ExternalLink } from "../utils/components/ExternalLinks";
 import { RenkuMarkdown } from "../utils/components/markdown/RenkuMarkdown";
 import { Docs } from "../utils/constants/Docs";
+import RenkuCarousel from "../utils/components/carousel/Carousel";
 
 function HomeHeader(props) {
   const [isOpen, setIsOpen] = useState(false);
@@ -310,13 +311,42 @@ function Section4(props) {
   </div>;
 }
 
+/* Project showcase section */
 function Section5(props) {
-  return (props.projects == null) || (props.projects.length < 1) ?
+  if (props.projects == null)
+    return;
+
+  const openInNewTab = url => {
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
+  const items = props.projects.map((project) => {
+    const content = (
+      <div
+        className="card showcase-project-card p-5 d-flex align-items-center
+        flex-sm-column flex-md-row flex-lg-row gap-3 cursor-pointer my-5"
+        onClick={() => openInNewTab(project.projectUrl)}>
+        <img src={project.imageUrl} alt={project.title} />
+        <div>
+          <h3>{project.title}</h3>
+          <p>{project.description}</p>
+        </div>
+      </div>
+    );
+
+    return {
+      content: content,
+      id: project.id,
+    };
+  });
+
+  return (items == null) || (items.length < 1) ?
     null :
     <div id="rk-anon-home-section5">
       <div className="rk-anon-home-section-content">
         <div className="rk-pt-l">
-          <h3 className="text-rk-pink">Look at some example projects</h3>
+          <h3 className="text-rk-pink">See Renku in Action</h3>
+          <RenkuCarousel items={items} />
         </div>
       </div>
     </div>;
@@ -329,9 +359,9 @@ function Section6(props) {
       backgroundImage: `url(${backgroundUrl})`
     }}>
     <div className="rk-anon-home-section-content">
-      <div>
-        <div><img src={logo} alt="Renku" height="92" className="d-block my-1" /></div>
-        <Row className="rk-pt-l bg-white" style={{ "--bs-bg-opacity": .9 }} >
+      <div className="rk-pt-l">
+        <div><img src={logo} alt="Renku" height="92" className="d-block my-3" /></div>
+        <Row className="bg-white" style={{ "--bs-bg-opacity": .9 }} >
           <Col xs={12} lg={4}>
             <h3>Developed at</h3>
             <a target="_blank" rel="noreferrer noopener" href="https://datascience.ch/">
