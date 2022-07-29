@@ -1,10 +1,21 @@
 .input-tag {
   background: white;
-  border: 1px solid #ced4da;
-  /* border-radius: 0.25rem; */
-  display: flex; 
+  border: 1px solid var(--bs-rk-border-input);
+  border-radius: 8px;
+  display: flex;
   flex-wrap: wrap;
   padding: 5px 5px 0;
+}
+
+.form-rk-green {
+  .input-tag:focus, .input-tag--active {
+    border: 1px solid var(--bs-rk-green);
+  }
+}
+.form-rk-pink {
+  .input-tag:focus, .input-tag--active {
+    border: 1px solid var(--bs-rk-pink);
+  }
 }
 
 .input-tag.disabled{
@@ -15,7 +26,7 @@
 
 .input-tag input {
   border: none;
-	width: 100%;	
+	width: 100%;
 }
 
 .input-tag input:disabled{
@@ -24,14 +35,12 @@
   pointer-events:none;
 }
 
-.input-tag input:focus{
-	color: $rk-dark;
+.input-tag input:focus {
+  color: $rk-dark;
   background-color: #fff;
-  border-color: $primary;
-	border-width: 1px solid;
+  border: none;
   outline: 0;
-	box-shadow: 0 0 0 0.2rem $rk-hover-blue;
-	// border-radius: 0.25rem;
+  box-shadow: none;
 }
 
 .input-tag__tags {

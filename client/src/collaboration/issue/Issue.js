@@ -84,6 +84,7 @@ function New(props) {
         <FormGenerator
           title="Create Issue"
           btnName="Create Issue"
+          className="form-rk-green"
           submitCallback={submitCallback}
           model={iFormSchema}
           modelTop={props.model}

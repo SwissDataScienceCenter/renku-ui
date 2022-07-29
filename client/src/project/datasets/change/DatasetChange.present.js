@@ -108,6 +108,7 @@ function DatasetChange(props) {
     showAddDatasetOptions={!edit}
     addDatasetOptionSelected="addDataset"
     setShowHeader={setShowHeader}
+    className="form-rk-pink"
   />;
 
   const title = edit ? "Modify Dataset" : "Add Dataset";

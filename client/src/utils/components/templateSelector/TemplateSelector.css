@@ -1,3 +1,8 @@
+.template-card:hover {
+    border: 1px solid;
+    border-color: var(--bs-rk-green);
+}
+
 .template--invalid {
     border-color: var(--bs-danger);
 }
@@ -17,7 +22,7 @@
 }
 
 .template--active.selected {
-    border: 3px solid #009568;
+    border: 2.5px solid #009568;
     color: #009568;
 }
 

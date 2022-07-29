@@ -6,6 +6,7 @@
 
 .react-autosuggest__input--focused {
   outline: none;
+  border-bottom-width: 0;
 }
 
 .react-autosuggest__input--open {
@@ -20,13 +21,24 @@
 .react-autosuggest__suggestions-container--open {
   display: block;
   position: absolute;
-  top: 40px;
+  top: 38px;
   width: 100%;
   border: 1px solid #aaa;
+  border-top-width: 0;
   background-color: #fff;
   z-index: 2;
   max-height: 560px;
   overflow-y: auto;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.form-rk-green .react-autosuggest__suggestions-container--open {
+  border-color: var(--bs-rk-green);
+}
+
+.form-rk-pink .react-autosuggest__suggestions-container--open {
+  border-color: var(--bs-rk-pink);
 }
 
 .react-autosuggest__suggestions-list {
@@ -49,7 +61,7 @@
 }
 
 .react-autosuggest__section-container {
-  border-top: 1px solid #ccc;
+  border: 1px solid var(--bs-rk-border-input);
 }
 
 .react-autosuggest__section-container--first {
@@ -78,8 +90,8 @@ svg.no-pointer {
   line-height: 1.5;
   color: #495057;
   vertical-align: middle;
-  background-color: #fff;
-  border: 1px solid #ced4da;
+  background-color: white;
+  border: 1px solid var(--bs-rk-border-input);
   -webkit-appearance: none;
      -moz-appearance: none;
           appearance: none;
@@ -88,6 +100,13 @@ svg.no-pointer {
 .react-autosuggest__container > input:focus{
   box-shadow: none;
   border: 1px solid #ced4da;
+}
+
+.form-rk-green .react-autosuggest__container > input:focus {
+  border-radius: 8px 8px 0 0;
+  border-width: 1px;
+  border-color: var(--bs-rk-green);
+
 }
 
 .react-autosuggest__container > input::-ms-clear{

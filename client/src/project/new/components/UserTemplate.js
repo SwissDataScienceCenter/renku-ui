@@ -152,7 +152,7 @@ class UserTemplate extends Component {
         </FormGroup>
         <FormGroup className="field-group">
           <Button
-            id="fetch-custom-templates" color="primary" size="sm"
+            id="fetch-custom-templates" className="btn-outline-rk-green" size="sm"
             data-cy="fetch-templates-button"
             onClick={() => this.fetchTemplates()}>Fetch templates
           </Button>

@@ -160,7 +160,7 @@ function StartNotebookServer(props) {
         <ProjectSessionLockAlert lockStatus={props.lockStatus} />
         <LaunchErrorAlert autosaves={autosaves} launchError={props.launchError} ci={props.ci} />
         {messageOutput}
-        <Form>
+        <Form className="form-rk-green">
           {advancedSelection}
           {options}
           {loader}
@@ -1018,21 +1018,22 @@ class ServerOptionEnum extends Component {
     if (selected && options && options.length && !options.includes(selected))
       options = options.concat(selected);
     if (options.length === 1)
-      return (<Badge color="primary">{this.props.options[0]}</Badge>);
+      return (<Badge className="btn-outline-rk-green text-white">{this.props.options[0]}</Badge>);
 
     return (
-      <ButtonGroup className="rk-btn-group-light" >
+      <ButtonGroup>
         {options.map((optionName, i) => {
           let color = "rk-white";
           if (optionName === selected) {
             color = this.props.warning != null && this.props.warning === optionName ?
               "danger" :
-              "rk-white";
+              undefined;
           }
           const size = this.props.size ? this.props.size : null;
           return (
             <Button
-              key={optionName} color={color} size={size} disabled={disabled} active={optionName === selected}
+              key={optionName} color={color} className="btn-outline-rk-green" size={size}
+              disabled={disabled} active={optionName === selected}
               onClick={event => this.props.onChange(event, optionName)}>{optionName}</Button>
           );
         })}
@@ -1244,7 +1245,7 @@ class AutosavedDataModal extends Component {
             <p>Please refer to this {docsLink} to get further information.</p>
           </ModalBody>
           <ModalFooter>
-            <Button color="primary" onClick={this.props.handlers.startServer}>Launch session</Button>
+            <Button className="btn-rk-green" onClick={this.props.handlers.startServer}>Launch session</Button>
           </ModalFooter>
         </Modal>
       </div>

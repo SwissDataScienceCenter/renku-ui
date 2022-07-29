@@ -42,8 +42,6 @@ const TemplateSource = ({ handlers, input, isRequired }: TemplateSourceProps) =>
       <br />
       <ButtonGroup size="sm">
         <Button
-          color="primary"
-          outline
           active={!input.userRepo}
           data-cy="renkulab-source-button"
           onClick={(_e: unknown) => handlers.setProperty("userRepo", false)}
@@ -51,8 +49,6 @@ const TemplateSource = ({ handlers, input, isRequired }: TemplateSourceProps) =>
           RenkuLab
         </Button>
         <Button
-          color="primary"
-          outline
           active={!!input.userRepo}
           data-cy="custom-source-button"
           onClick={(_e: unknown) => handlers.setProperty("userRepo", true)}

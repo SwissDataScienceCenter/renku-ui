@@ -44,17 +44,18 @@ function capitalize(string) {
 }
 
 function SubmitButtonGroup(props) {
-  const { submitCallback, submitLoader, btnName } = props;
+  const { submitCallback, submitLoader, btnName, formClassName } = props;
   const { onCancel, cancelBtnName } = props;
+  const colorButton = formClassName === "form-rk-green" ? "rk-green" : "rk-pink";
   const submitButton = submitCallback !== undefined ?
     <Button
       data-cy="submit-button"
-      type="submit" disabled={submitLoader} className="float-end mt-1" color="rk-pink">
+      type="submit" disabled={submitLoader} className="float-end mt-1" color={colorButton}>
       {btnName}
     </Button>
     : null;
   const cancelButton = onCancel !== undefined ?
-    <Button disabled={submitLoader} className="float-end mt-1 me-1 btn-outline-rk-pink"
+    <Button disabled={submitLoader} className={`float-end mt-1 me-1 btn-outline-${colorButton}`}
       onClick={(e)=>onCancel(e, props.handlers)}>
       {cancelBtnName ? cancelBtnName : "Cancel"}
     </Button>
@@ -69,7 +70,7 @@ function SubmitButtonGroup(props) {
 function FormPanel({
   btnName, draft, edit, formLocation, formatServerErrorsAndWarnings, handlers, inputs, loading,
   onCancel, setInputs, setSubmit, submitCallback, addDatasetOptionSelected, versionUrl,
-  toggleNewDataset, showAddDatasetOptions, setShowHeader
+  toggleNewDataset, showAddDatasetOptions, setShowHeader, className
 }) {
 
   const submitLoader = draft?.submitLoader && draft?.submitLoader.value;
@@ -176,7 +177,7 @@ function FormPanel({
           feedback={feedbackProgress}
         />
       ) : (
-        <Form onSubmit={setSubmit}>
+        <Form onSubmit={setSubmit} className={className}>
           <div className="d-flex flex-column">
             {addDatasetButtons}
             {inputs.map(input => renderInput(input))}
@@ -189,7 +190,7 @@ function FormPanel({
               :
               <SubmitButtonGroup
                 submitCallback={submitCallback} submitLoader={submitLoader} btnName={btnName} errorFields={errorFields}
-                onCancel={onCancel} cancelBtnName={secondaryButtonText} handlers={handlers}
+                onCancel={onCancel} cancelBtnName={secondaryButtonText} handlers={handlers} formClassName={className}
               />
             }
             {errorMessage}

@@ -87,12 +87,14 @@ function DatasetAdd({ dataset, model, handlers, isDatasetValid, currentStatus, i
       <ButtonGroup className="d-flex">
         <Button disabled={disabled}
           data-cy="add-dataset-existing-project-option-button"
-          color="primary" outline active={!isNewProject} onClick={() => setIsNewProject(false)}>
+          className="btn-rk-green"
+          active={!isNewProject} onClick={() => setIsNewProject(false)}>
           Existing Project
         </Button>
         <Button disabled={disabled}
           data-cy="add-dataset-new-project-option-button"
-          color="primary" outline active={isNewProject} onClick={() => setIsNewProject(true)}>
+          className="btn-rk-green"
+          active={isNewProject} onClick={() => setIsNewProject(true)}>
           New Project
         </Button>
       </ButtonGroup>
@@ -125,7 +127,7 @@ function DatasetAdd({ dataset, model, handlers, isDatasetValid, currentStatus, i
   return (
     <ContainerWrap>
       <Row className="mb-3">
-        <Col md={10} lg={9} xl={8}>
+        <Col md={10} lg={9} xl={8} className="form-rk-green">
           <HeaderAddDataset dataset={dataset} />
           {mainContent}
         </Col>

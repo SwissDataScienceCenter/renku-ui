@@ -59,6 +59,7 @@ function DatasetImport(props) {
       showAddDatasetOptions={true}
       addDatasetOptionSelected="importDataset"
       setShowHeader={setShowHeader}
+      className="form-rk-pink"
     />);
 
   const title = "Import Dataset";
