@@ -23,6 +23,7 @@ function datasetToDict(datasetsUrl, dataset_kg, graphStatus, gridDisplay, datase
     url: `${datasetsUrl}/${encodeURIComponent(dataset.name)}/`,
     itemType: "dataset",
     title: dataset.title || dataset.name,
+    tagList: dataset.keywords,
     description: dataset.description !== undefined && dataset.description !== null ?
       <Fragment>
         <MarkdownTextExcerpt markdownText={dataset.description} singleLine={gridDisplay ? false : true}
