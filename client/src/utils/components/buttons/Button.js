@@ -44,14 +44,14 @@ function ButtonWithMenu(props) {
   const [dropdownOpen, setOpen] = useState(false);
   const toggleOpen = () => setOpen(!dropdownOpen);
   const size = (props.size) ? props.size : "md";
-  let bgColor = props.color || "rk-blue";
+  let bgColor = props.color || "rk-green";
 
   const options = props.children ?
     (<>
       <DropdownToggle data-cy="more-menu" >
         <FontAwesomeIcon
           data-cy="more-options-button"
-          className={`text-${props.color || "rk-blue"} btn-with-menu-icon`} icon={faEllipsisV}/>
+          className={`text-${props.color || "rk-green"} btn-with-menu-icon`} icon={faEllipsisV}/>
       </DropdownToggle>
       <DropdownMenu className="btn-with-menu-options" end>
         {props.children}

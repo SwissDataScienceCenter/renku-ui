@@ -384,16 +384,14 @@ function NotebookDisplayForm(props) {
 
   const overrideControl = (displayMode === NotebookSourceDisplayMode.DEFAULT) ?
     null :
-    <ButtonGroup key="controls" className="rk-btn-group-light mt-2" size="sm">
+    <ButtonGroup key="controls" className="mt-2" size="sm">
       <Button
-        color="rk-white" className="btn-rk-white-dark-active"
         onClick={() => setLocalMode(NotebookSourceDisplayMode.SHOWN)}
         active={displayMode === NotebookSourceDisplayMode.SHOWN}
       >
         Visible
       </Button>
       <Button
-        color="rk-white" className="btn-rk-white-dark-active"
         onClick={() => setLocalMode(NotebookSourceDisplayMode.HIDDEN)}
         active={displayMode === NotebookSourceDisplayMode.HIDDEN}
       >
@@ -413,7 +411,9 @@ function NotebookDisplayForm(props) {
           onChange={() => { setOverride(displayMode === NotebookSourceDisplayMode.DEFAULT); }} />
         <Label for="code-visibility-override" check className="me-4">Override Code Visibility</Label>
       </div>
-      {overrideControl}
+      <div className="form-rk-green">
+        {overrideControl}
+      </div>
     </ListGroupItem>
   </ListGroup>;
 }

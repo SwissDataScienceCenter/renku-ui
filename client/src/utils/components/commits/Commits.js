@@ -138,9 +138,9 @@ function SingleCommit(props) {
             <TimeCaption caption={"authored"} time={props.commit.committed_date} />
           </Col>
           <Col xs={12} md="auto" className="d-md-flex">
-            <ButtonGroup className="text-monospace m-auto" size="sm">
+            <ButtonGroup className="text-monospace m-auto commit-buttons" size="sm">
               <Button color="rk-background" className="border" disabled>{props.commit.short_id}</Button>
-              <Button color="rk-background" className="border" id={idCopyButton}>
+              <Button color="rk-background rounded-0" className="border" id={idCopyButton}>
                 <Clipboard clipboardText={props.commit.id} />
               </Button>
               <UncontrolledTooltip placement="top" target={idCopyButton}>
@@ -151,7 +151,7 @@ function SingleCommit(props) {
                 title={<FontAwesomeIcon icon={faFolderOpen} />}
                 url={urlBrowse}
                 color="rk-background"
-                className="border text-primary"
+                className="text-primary last-item-button-group border"
               />
               <UncontrolledTooltip placement="top" target={idBrowseButton}>
                 Browse files

@@ -114,14 +114,12 @@ class TreeContainer extends Component {
 
     return (
       <div className="d-flex flex-column" style={style}>
-        <div className="d-block">
-          <ButtonGroup className="d-flex rk-btn-group-light">
-            <Button color="rk-white" className="btn-rk-white-dark-active"
-              onClick={togglePage} active={fileView}>
+        <div className="d-block form-rk-green">
+          <ButtonGroup className="d-flex">
+            <Button onClick={togglePage} active={fileView}>
               Contents
             </Button>
-            <Button color="rk-white" className="btn-rk-white-dark-active"
-              onClick={togglePage} active={!fileView}>
+            <Button onClick={togglePage} active={!fileView}>
               Lineage
             </Button>
           </ButtonGroup>

@@ -93,9 +93,9 @@ function ImagePreviewControls({ value, options, rotate, disabled, currentImageIn
 function ImagePreview({ name, value, selected, disabled, setInputs }) {
   const options = value.options.length > 0 ? value.options.filter(o => o.URL && o.URL.length > 0) : [];
   const selectedIndex = value.selected;
-  const imageSize = { width: 160, height: 135 };
+  const imageSize = { width: 160, height: 135, borderRadius: "8px" };
   const imageStyle = { ...imageSize, objectFit: "cover" };
-  const imagePreviewStyle = { ...imageStyle, backgroundColor: "#C4C4C4" };
+  const imagePreviewStyle = { ...imageStyle, backgroundColor: "#C4C4C4", borderRadius: "8px" };
   const displayValue = selected[Prop.NAME] ?? "Current Image";
 
   const image = (selectedIndex > -1 && selected[Prop.URL]) ?
@@ -117,7 +117,7 @@ function ImagePreview({ name, value, selected, disabled, setInputs }) {
     />
     : null;
   return (<div className="m-auto" style={imageSize}>
-    <div className="d-flex justify-content-around border">
+    <div className="d-flex justify-content-around card">
       <div style={imageSize}>{image}</div>
     </div>
     {imageControls}
@@ -185,13 +185,13 @@ const ImageInputMode = {
   FILE: "Choose File"
 };
 
-function ImageContentInputMode({ name, modes, mode, setMode, onClick }) {
+function ImageContentInputMode({ name, modes, mode, setMode, onClick, color }) {
   const [isOpen, setOpen] = useState(false);
   const toggle = () => setOpen(!isOpen);
   const buttonId = `${name}-button`;
 
   if (modes.length < 2)
-    return <Button color="primary" onClick={onClick}>{mode}</Button>;
+    return <Button className={`btn-outline-${color}`} onClick={onClick}>{mode}</Button>;
   return <ButtonDropdown isOpen={isOpen} toggle={toggle}>
     <Button id={buttonId} color="primary" onClick={onClick}>{mode}</Button>
     <DropdownToggle split color="primary" />
@@ -208,7 +208,7 @@ function ImageContentInputMode({ name, modes, mode, setMode, onClick }) {
 }
 
 function ImageContentInput({ name, value, placeholder, modes, setInputs,
-  help, maxSize, format, disabled, options, readOnly }) {
+  help, maxSize, format, disabled, options, readOnly, color }) {
   const [mode, setMode] = useState(modes[0]);
   const [sizeAlert, setSizeAlert] = useState(null);
   const fileInput = useRef(null);
@@ -239,8 +239,9 @@ function ImageContentInput({ name, value, placeholder, modes, setInputs,
   if (disabled) return null;
   const sizeAlertLabel = sizeAlert ? <ErrorLabel text={sizeAlert} /> : null;
   return <FormGroup>
-    <InputGroup id={inputGroupId}>
-      <ImageContentInputMode name={name} modes={modes} mode={mode} setMode={setMode} onClick={onModeButtonClick}/>
+    <InputGroup id={inputGroupId} className="input-right">
+      <ImageContentInputMode
+        name={name} modes={modes} mode={mode} setMode={setMode} onClick={onModeButtonClick} color={color}/>
       <Input id={widgetId} name={widgetId} type="text" value={inputValue} data-cy={`file-input-${name}`}
         onDragOver={e => e.preventDefault()} onDragLeave={e => e.preventDefault()}
         onDrop={onDrop} onChange={onInputChange} disabled={disabled} readOnly={readOnly} placeholder={placeholder} />
@@ -288,7 +289,7 @@ function ImageInput(
     disabled = false,
     required = false,
     optional,
-    submitting
+    submitting,
   }) {
   const options = value.options;
   const selectedIndex = value.selected;

@@ -12,6 +12,7 @@ $rk-text:#838383; // text
 $rk-text-medium-light:#b3b3b3;
 $rk-text-light: #e9e9e9;
 $rk-light:#E4E7EA; // borders
+$rk-border-input: #DCE4EC;
 //backgrounds
 $rk-background-0: #F5F6FA;
 $rk-background-0-dark: #01192D;
@@ -46,7 +47,9 @@ $rk-colors : (
   "rk-white": $rk-white,
   "rk-hover": $rk-hover,
   "rk-danger-shadow": $rk-danger-shadow,
-  "rk-dark-bg": $rk-dark-bg
+  "rk-dark-bg": $rk-dark-bg,
+  "rk-background-0": $rk-background-0,
+  "rk-border-input": $rk-border-input
 );
 
 // We overwrite bootstraps variables

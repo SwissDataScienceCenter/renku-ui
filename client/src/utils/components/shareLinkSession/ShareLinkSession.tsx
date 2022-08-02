@@ -111,7 +111,7 @@ const ShareLinkSessionModal = ({ filters, showModal, toggleModal, notebookFilePa
       <ModalBody>
         <Row>
           <Col>
-            <Form className="mb-3">
+            <Form className="mb-3 form-rk-green">
               {notebookFilePathLabel}
               <FormGroup key="link-branch" check>
                 <Label check>
