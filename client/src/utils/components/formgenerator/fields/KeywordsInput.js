@@ -35,6 +35,7 @@ function KeywordsInput(
   { name, label, value, alert, setInputs, help, disabled = false, required = false, optional = false }) {
 
   const [tags, setTags] = React.useState(value);
+  const [active, setActive] = React.useState(false);
   const tagInput = React.useRef(null);
 
   const removeTag = (i) => {
@@ -73,9 +74,11 @@ function KeywordsInput(
     //eslint-disable-next-line
   }, [tags]);
 
-  const disabledClass = disabled === true ? "disabled" : "";
 
-  let tagsList = <div className={"input-tag " + disabledClass} >
+  const disabledClass = disabled === true ? "disabled" : "";
+  const activeClass = active === true ? "input-tag--active" : "";
+
+  let tagsList = <div className={`input-tag ${disabledClass} ${activeClass}`} >
     <ul className="input-tag__tags">
       { tags.map((tag, i) => (
         <li key={tag}>
@@ -84,7 +87,8 @@ function KeywordsInput(
         </li>
       ))}
       <li className="input-tag__tags__input">
-        <input type="text" onKeyDown={inputKeyDown}
+        <input type="text" onKeyDown={inputKeyDown} onFocus={() => setActive(true)}
+          onBlur={() => setActive(false)}
           ref={c => { tagInput.current = c; }}
           disabled={disabled} data-cy={`input-${name}`}
         />

@@ -569,7 +569,7 @@ function FileUploaderInput({
     <div className="pb-1">
       <span className="text-muted"><small>{ "Insert a URL and press enter:" }</small></span>
     </div>
-    <InputGroup size="sm">
+    <InputGroup size="sm" className="input-left">
       <Input
         type="text"
         name="fileUrl"
@@ -581,7 +581,7 @@ function FileUploaderInput({
         onChange={e => onUrlInputChange(e)}
         value={urlInputValue}
       />
-      <Button color="primary" id="addFileButton" onClick={e=>onUrlInputEnter(e)}>
+      <Button className="btn-outline-rk-pink" id="addFileButton" onClick={e=>onUrlInputEnter(e)}>
         Add File from URL
       </Button>
     </InputGroup>

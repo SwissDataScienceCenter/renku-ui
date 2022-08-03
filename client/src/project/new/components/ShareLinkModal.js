@@ -126,7 +126,7 @@ function ShareLinkModal(props) {
 
   const labels = Object.keys(include).map(item => (
     <FormGroup key={item} check>
-      <Label check className={`text-capitalize${available[item] ? "" : " text-muted"}`}>
+      <Label check className={`text-capitalize${available[item] ? " cursor-pointer" : " text-muted cursor-pointer"}`}>
         <Input
           type="checkbox"
           disabled={available[item] ? false : true}
@@ -159,7 +159,7 @@ function ShareLinkModal(props) {
               You can control which values should be pre-filled.
             </p>
 
-            <Form className="mb-3">
+            <Form className="mb-3 form-rk-green">
               {labels}
               {feedback}
             </Form>

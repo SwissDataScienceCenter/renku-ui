@@ -158,7 +158,7 @@ function SessionInformation(props) {
     className="btn-outline-rk-green" url={url} disabled={stopping} showLinkIcon={true} title="Open" />;
   const menu = ready ?
     (
-      <ButtonWithMenu className="sessionsButton" color="rk-blue" size="sm" default={defaultAction}>
+      <ButtonWithMenu className="sessionsButton" size="sm" default={defaultAction}>
         {stopButton}
       </ButtonWithMenu>
     ) :

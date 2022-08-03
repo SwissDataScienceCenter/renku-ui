@@ -87,7 +87,7 @@ function ProjectSettingsGeneral(props) {
     return gitCommands;
 
   return (
-    <Fragment>
+    <div className="form-rk-green">
       <Row className="mt-2">
         <Col xs={12} lg={6}>
           <ProjectTags
@@ -107,7 +107,7 @@ function ProjectSettingsGeneral(props) {
             settingsReadOnly={props.settingsReadOnly} />
         </Col>
       </Row>
-    </Fragment>
+    </div>
   );
 }
 
@@ -517,7 +517,9 @@ function SessionsDiv(props) {
   return (
     <div className="mt-2">
       <h3>Session settings</h3>
-      {props.children}
+      <div className="form-rk-green">
+        {props.children}
+      </div>
     </div>
   );
 }
@@ -619,7 +621,9 @@ function SessionsElement(props) {
         <Label className="me-2">{rendering.displayName} {labelLoader}{labelDone}</Label>
         {separator}
         <ServerOptionEnum {...rendering} selected={newValueApplied ? newValue : projectDefault}
-          onChange={onChange} warning={warning ? projectDefault : null} disabled={disabled} />
+          onChange={onChange} warning={warning ? projectDefault : null} disabled={disabled}
+          className="btn-outline-rk-green"
+        />
         {reset}
         {info ? (<Fragment><br />{info}</Fragment>) : null}
       </FormGroup>
@@ -744,12 +748,12 @@ function SessionPinnedImage(props) {
   let image;
   if (modifyString) {
     image = (<Fragment>
-      <InputGroup disabled={disabled}>
+      <InputGroup disabled={disabled} className="input-left">
         <Input value={newString} onChange={e => setNewString(e.target.value)} />
-        <Button id="advanced_image_confirm" color="secondary" onClick={() => setValue(newString)}>
+        <Button id="advanced_image_confirm" className="btn btn-rk-green m-0" onClick={() => setValue(newString)}>
           <FontAwesomeIcon icon={faCheck} />
         </Button>
-        <Button id="advanced_image_back" color="outline-primary" onClick={toggleModifyString}
+        <Button id="advanced_image_back" className="btn btn-outline-rk-green m-0" onClick={toggleModifyString}
           style={{ borderLeft: 0 }}>
           <FontAwesomeIcon icon={faTrash} />
         </Button>

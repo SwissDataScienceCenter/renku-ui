@@ -186,12 +186,12 @@ function ForkProjectContent(props) {
   };
 
   return (
-    <Fragment>
+    <div className="form-rk-green">
       <Title handlers={handlers} input={input} meta={meta} />
       <Namespaces handlers={handlers} input={input} namespaces={namespaces} user={user} />
       <ProjectIdentifier input={input} isRequired={true} />
       <Visibility handlers={handlers} input={input} meta={meta}/>
-    </Fragment>
+    </div>
   );
 }
 
@@ -215,7 +215,7 @@ const NewProjectForm = (
 
   const errorTemplateAlert = <ErrorTemplateFeedback templates={templates} meta={meta} input={input}/>;
   return (
-    <Form data-cy="create-project-form" className="mb-4">
+    <Form data-cy="create-project-form" className="form-rk-green mb-4">
       {creation}
       <Automated automated={automated} removeAutomated={handlers.removeAutomated} />
       <Title handlers={handlers} meta={meta} input={input} />

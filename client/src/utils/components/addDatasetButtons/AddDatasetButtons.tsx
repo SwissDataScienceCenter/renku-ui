@@ -32,11 +32,11 @@ export interface AddDatasetButtonsProps {
 
 const AddDatasetButtons = ({ optionSelected, toggleNewDataset }: AddDatasetButtonsProps) => {
   return (
-    <ButtonGroup className="rk-btn-group-light mb-4">
-      <Button color="rk-white" onClick={toggleNewDataset} active={optionSelected === "addDataset"}>
+    <ButtonGroup className="mb-4">
+      <Button className="btn-outline-rk-pink" onClick={toggleNewDataset} active={optionSelected === "addDataset"}>
         Create Dataset
       </Button>
-      <Button color="rk-white" onClick={toggleNewDataset} active={optionSelected === "importDataset"}>
+      <Button className="btn-outline-rk-pink" onClick={toggleNewDataset} active={optionSelected === "importDataset"}>
         Import Dataset
       </Button>
     </ButtonGroup>

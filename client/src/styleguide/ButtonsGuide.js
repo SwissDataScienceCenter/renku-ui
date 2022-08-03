@@ -33,20 +33,19 @@ function Switch(props) {
     else setMode(0);
   }
 
-  return <ButtonGroup key="controls" className="rk-btn-group-light mt-2" size="sm">
-    <Button
-      color="rk-white" className="btn-rk-white-dark-active"
-      onClick={toggleMode}
-      active={mode === 0}>
-      State 1
-    </Button>
-    <Button
-      color="rk-white" className="btn-rk-white-dark-active"
-      onClick={toggleMode}
-      active={mode === 1}>
-      State 2
-    </Button>
-  </ButtonGroup>;
+  return <div className="form-rk-green">
+    <ButtonGroup key="controls" className="mt-2" size="sm">
+      <Button
+        onClick={toggleMode}
+        active={mode === 0}>
+        State 1
+      </Button>
+      <Button
+        onClick={toggleMode}
+        active={mode === 1}>
+        State 2
+      </Button>
+    </ButtonGroup></div>;
 }
 
 
