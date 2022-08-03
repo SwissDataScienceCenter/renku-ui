@@ -32,7 +32,7 @@ import { useState } from "react";
 
 export interface RenkuCarouselItem {
   id: string;
-  content: any;
+  content: React.ReactNode;
 }
 export interface RenkuCarouselProps {
   items: RenkuCarouselItem[];
