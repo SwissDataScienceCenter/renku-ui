@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Copyright 2020 - Swiss Data Science Center (SDSC)
+# Copyright 2022 - Swiss Data Science Center (SDSC)
 # A partnership between École Polytechnique Fédérale de Lausanne (EPFL) and
 # Eidgenössische Technische Hochschule Zürich (ETHZ).
 #
@@ -18,90 +18,60 @@
 
 set -e
 
+COLOR_RED="\033[0;31m"
+COLOR_RESET="\033[0m"
 
-CURRENT_CONTEXT=`kubectl config current-context`
-
-if [[ "$DEBUG" ]]
+echo -e "If you target a CI deployment, you can type the PR number"
+if [[ ! $DEV_NAMESPACE ]]
 then
-  echo "*** DEBUG MODE ENABLED ***"
-  echo "You will be able to attach an external debugger."
-  echo "The configuration for the VScode remote debugger for NPM is the following:"
-  echo '{ "name": "uiserver", "type": "node", "request": "attach", "address": "localhost",'
-  echo '"port": 9229, "protocol": "inspector", "restart": true }'
-elif [[ "$CONSOLE" ]]
-then
-  echo "*** CONSOLE MODE ENABLED ***"
-  echo "The ui-server telepresence pod will start in console mode."
-else
-  echo "*** NO DEBUG ***"
-  echo "If you need to debug or attach an external debugger (E.G. VScode remote debugger for NPM),"
-  echo "consider starting the ui-server telepresence in debug mode by setting the DEBUG variable to 1."
-  echo "DEBUG=1 ./run-telepresence.sh"
-  echo "You can use CONSOLE=1 if you prefer full control in the ui-server pod."
-  echo "CONSOLE=1 ./run-telepresence.sh"
-fi
-echo ""
-
-if [[ $CURRENT_CONTEXT == 'minikube' ]]
-then
-  echo "Exchanging k8s deployments using the following context: ${CURRENT_CONTEXT}"
-  echo "WARNING: minikube has not been tested! You may need to adapt the telepresence script file."
-  SERVICE_NAME=renku-ui
-  DEV_NAMESPACE=renku
-else
-  # if the target context is not dev, have the user confirm
-  if [[ $CURRENT_CONTEXT != 'switch-dev' ]]
-  then
-    echo "You are going to exchange k8s deployments using the following context/namespace: ${CURRENT_CONTEXT}/${DEV_NAMESPACE}"
-    read -p "Do you want to proceed? [y/n]"
-    if [[ ! $REPLY =~ ^[Yy]$ ]]
-    then
-        exit 1
-    fi
-  fi
-
-  if [[ ! $DEV_NAMESPACE ]]
-  then
-    read -p "enter your k8s namespace: "
+    read -p "No dev namespace found. Please specify one: " -r
     DEV_NAMESPACE=$REPLY
-  else
-    echo "Exchanging k8s deployments for the following context/namespace: ${CURRENT_CONTEXT}/${DEV_NAMESPACE}"
-  fi
-  if [[ ! $SERVICE_NAME ]]
-  then
+else
+    echo -e "Your current dev namespace is: ${COLOR_RED}${DEV_NAMESPACE}${COLOR_RESET}"
+    read -p "Press enter to use it, or type a different one [skip]: " -r
+    if [[ $REPLY ]]
+    then
+        DEV_NAMESPACE=$REPLY
+    fi
+fi
+if [[ ! $DEV_NAMESPACE ]]
+then
+    echo "ERROR: you need to provide a namespace"
+    exit 1
+fi
+if [[ $DEV_NAMESPACE =~ ^[0-9]+$ ]]
+then
+    DEV_NAMESPACE=renku-ci-ui-${DEV_NAMESPACE}
+    SERVICE_NAME=${DEV_NAMESPACE}-uiserver
+else
     SERVICE_NAME=${DEV_NAMESPACE}-renku-uiserver
-  else
-    echo "Exchanging k8s deployments for the following service name: ${SERVICE_NAME}"
-  fi
 fi
 
-
-if [[ "$CONSOLE" ]]
+echo -e "The service will start by default. You can switch to console mode to manually start the service."
+read -p "Do you want to use console mode? [Y/n]: " -r
+if [[ $REPLY =~ ^([yY][eE][sS]|[yY])$ ]]
 then
-  echo "***** CONSOLE MODE *****"
-  echo "You can start the server in debug mode with:"
-  echo "> npm run dev-debug"
-  telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --expose 9229:9229 --run-shell
-elif [[ "$DEBUG" ]]
-then
-  echo "***** CONSOLE MODE *****"
-  telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --expose 9229:9229 --run npm run dev-debug
-elif [[ "$SENTRY" ]]
-then
-  SENTRY_ENABLED=true
-  SENTRY_URL="https://14558ba28035458ba9c7d206b7a48cb5@sentry.dev.renku.ch/4"
-  SENTRY_NAMESPACE="${DEV_NAMESPACE}"
-  SENTRY_TRACE_RATE=1.0
-  SENTRY_DEBUG_MODE=true
-  echo "***** SENTRY ENABLED *****"
-  echo "SENTRY_ENABLED=${SENTRY_ENABLED}"
-  echo "SENTRY_URL=${SENTRY_URL}"
-  echo "SENTRY_NAMESPACE=${SENTRY_NAMESPACE}"
-  echo "SENTRY_TRACE_RATE=${SENTRY_TRACE_RATE}"
-  echo "TELEPRESENCE=true"
-  echo "DEBUG_MODE=${SENTRY_DEBUG_MODE}"
-  echo ""
-  SENTRY_ENABLED=${SENTRY_ENABLED} SENTRY_URL=${SENTRY_URL} SENTRY_NAMESPACE=${SENTRY_NAMESPACE} SENTRY_TRACE_RATE=${SENTRY_TRACE_RATE} SENTRY_DEBUG=${SENTRY_DEBUG_MODE} TELEPRESENCE=true telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --run npm run dev
+    SERVICE_CONSOLE_MODE=1
+    SERVICE_CONSOLE_MODE_TEXT="on"
 else
-  telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 8080:8080 --run npm run dev
+    SERVICE_CONSOLE_MODE=0
+    SERVICE_CONSOLE_MODE_TEXT="off"
+fi
+
+echo -e ""
+echo -e "Telepresence will start in the dev namespace ${COLOR_RED}${DEV_NAMESPACE}${COLOR_RESET}"
+echo -e "Target service: ${COLOR_RED}${SERVICE_NAME}${COLOR_RESET}"
+echo -e "Console mode: ${COLOR_RED}${SERVICE_CONSOLE_MODE_TEXT}${COLOR_RESET}"
+if [[ $SERVICE_CONSOLE_MODE == 1 ]]
+then
+    echo -e "You can start the service and wait for a debugger to attach with:"
+    echo -e "${COLOR_RED}> npm run dev-debug${COLOR_RESET}"
+fi
+echo -e "\U26A0 Please enter the sudo password when asked."
+
+if [[ $SERVICE_CONSOLE_MODE == 1 ]]
+then
+    telepresence intercept -n ${DEV_NAMESPACE} ${SERVICE_NAME} --port 8080 --mount=true -- bash
+else
+    telepresence intercept -n ${DEV_NAMESPACE} ${SERVICE_NAME} --port 8080 --mount=true -- npm run dev-debug
 fi
