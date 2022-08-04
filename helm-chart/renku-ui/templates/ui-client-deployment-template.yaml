@@ -35,7 +35,7 @@ spec:
           imagePullPolicy: {{ .Values.client.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: {{ .Values.client.service.port }}
+              containerPort: 8080
               protocol: TCP
           {{- if and .Values.client.privacy.enabled .Values.client.privacy.page.enabled }}
           volumeMounts:
