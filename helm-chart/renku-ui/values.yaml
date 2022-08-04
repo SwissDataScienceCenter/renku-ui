@@ -184,7 +184,9 @@ server:
     # If not set and create is true, a name is generated using the fullname template
     name: ""
 
-  podSecurityContext: {}
+  podSecurityContext:
+   runAsUser: 1000
+   runAsGroup: 1000
 
   securityContext:
     runAsUser: 1000
