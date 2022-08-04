@@ -42,29 +42,15 @@ The second category is fully managed by the service, errors included.
 ## Developing the UI server
 
 Once you have a development instance of Renku running locally or in the cloud,
-you can [install telepresence v1](https://www.telepresence.io/docs/v1/reference/install).
+you can [install telepresence v2.6.x](https://www.telepresence.io/docs/latest/install/).
 Clone the repository and run `npm install` (remember to re-run it every time there are
 changes on the requirements file!).
-Now you can start a development environment by using the `run-telepresence.sh` script from the `server` folder.
+Now you can start a development environment by using the `./run-telepresence.sh`
+script from the `server` folder.
 
-The script will print some information, ask you for an admin password (required by telepresence) and then run the npm server.
-
-**TIP**: If you need to debug, you should set the environment variable `DEBUG=1`.\
-That supports also attaching external debuggers to hit breakpoints (E.G. [VScode](https://code.visualstudio.com)).
-
-```
-$ cd server
-$ npm install
-$ DEBUG=1 ./run-telepresence.sh
-```
+The script will ask some questions necessary for configuration and then start an npm server that intecepts the trafic to the ui-server.
 
 **TIP**: When you are developing, you may need to restart the server after a crash. Re-creating
-the telepresence pod each time you save a file is tedious. You could instead enable the console
-mode by setting `CONSOLE=1`. This will give you access to a console on the pods where you can
-start and stop the service manually. Keep in mind it's a bit more fragile and you may accidentally have stale services hanging on the target port.
-
-```
-$ cd server
-$ CONSOLE=1 ./run-telepresence.sh
-(tel)$ npm run dev-debug
-```
+the telepresence pod each time you save a file is tedious. You could instead use the console
+mode. This will give you access to a console on the pods where you can start and stop the service manually. Keep in mind it's a bit more fragile and you may accidentally have stale services hanging on the target port. If the debugger cannot be attached
+anymore, you should check if a pending npm process is still running: `lsof -i :9229`.

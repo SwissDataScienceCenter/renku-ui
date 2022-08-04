@@ -185,20 +185,9 @@ tee > "./public/sitemap.xml" << EOF
 </urlset>
 EOF
 
-# The following is necessary if we start telepresence with --run-shell
-# echo "================================================================================================================="
-# echo "Once telepresence has started, type the following command to start the development server:"
-# echo "BROWSER=none npm start"
-# echo "================================================================================================================="
-
-# The `inject-tcp` proxying switch helps when running multiple instances of telepresence but creates problems when
-# suid bins need to run. Please switch the following two lines when trying to run multiple telepresence.
-# Reference: https://www.telepresence.io/reference/methods
-
-if [[ "$INJECTTCP" ]]
+if [[ $SERVICE_CONSOLE_MODE == 1 ]]
 then
-  # More info on the methods: https://www.telepresence.io/docs/v1/reference/methods/
-  BROWSER=none telepresence --method inject-tcp --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 3000:8080 --run npm start
+  BROWSER=none telepresence intercept ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --port 3000:http -- bash
 else
-  BROWSER=none telepresence --swap-deployment ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --expose 3000:8080 --run npm start
+  BROWSER=none telepresence intercept ${SERVICE_NAME} --namespace ${DEV_NAMESPACE} --port 3000:http -- npm run start
 fi
