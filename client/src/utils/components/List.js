@@ -63,6 +63,36 @@ const VisibilityIcon = ({ visibility, className }) => {
   </>;
 };
 
+function Slug({ display, slug }) {
+  if (!slug) return null;
+  if (display === "list") {
+    return <div className="card-text text-truncate creators text-rk-text-light">
+      {slug}
+    </div>;
+  }
+
+  return <span className="slug font-weight-light text-rk-text ms-2">
+    {slug}
+  </span>;
+}
+
+function Creators({ display, creators }) {
+  if (!creators) return null;
+  if (display === "list") {
+    return <div className="card-text creators text-truncate text-rk-text-light">
+      {creators.slice(0, 3).map((creator) => creator.name).join(", ")}
+      {creators.length > 3 ? ", et al." : null}
+    </div>;
+  }
+
+  return <div className="creators text-truncate text-rk-text">
+    <small style={{ display: "block" }} className="font-weight-light">
+      {creators.slice(0, 3).map((creator) => creator.name).join(", ")}
+      {creators.length > 3 ? ", et al." : null}
+    </small>
+  </div>;
+}
+
 /**
  * ListCard/ListBar returns a card or a bar displaying an item in a List.
  *
@@ -147,21 +177,8 @@ function ListCard(props) {
             <div className="card-title text-truncate lh-sm" data-cy="list-card-title">
               {title}
             </div>
-            {
-              slug ?
-                <div className="card-text text-truncate creators text-rk-text-light">
-                  {slug}
-                </div>
-                : null
-            }
-            {
-              creators ?
-                <div className="card-text creators text-truncate text-rk-text-light">
-                  {creators.slice(0, 3).map((creator) => creator.name).join(", ")}
-                  {creators.length > 3 ? ", et al." : null}
-                </div>
-                : null
-            }
+            <Slug display="list" slug={slug} />
+            <Creators display="list" creators={creators} />
             <div className="card-text text-rk-text-light" style={descriptionStyles}>
               {description ? description : null}
             </div>
@@ -195,24 +212,9 @@ function ListBar(props) {
     <Col className="d-flex align-items-start flex-column col-10 overflow-hidden">
       <div className="title d-inline-block text-truncate">
         {title}
-        {
-          slug ?
-            <span className="slug font-weight-light text-rk-text ms-2">
-              {slug}
-            </span>
-            : null
-        }
+        <Slug display="bar" slug={slug} />
       </div>
-      {
-        creators ?
-          <div className="creators text-truncate text-rk-text">
-            <small style={{ display: "block" }} className="font-weight-light">
-              {creators.slice(0, 3).map((creator) => creator.name).join(", ")}
-              {creators.length > 3 ? ", et al." : null}
-            </small>
-          </div>
-          : null
-      }
+      <Creators display="bar" creators={creators} />
       <div className="description card-description text-truncate text-rk-text d-flex">
         {description}
       </div>
