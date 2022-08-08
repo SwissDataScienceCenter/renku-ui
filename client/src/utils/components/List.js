@@ -23,7 +23,6 @@ import Masonry from "react-masonry-css";
 import { Briefcase, HddStack, Globe, People, Lock } from "react-bootstrap-icons";
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
 
-import { ProjectTagList } from "../../project/shared";
 import { TimeCaption } from "./TimeCaption";
 import { Pagination } from "./Pagination";
 import { ThrottledTooltip } from "./Tooltip";
@@ -93,6 +92,83 @@ function Creators({ display, creators }) {
   </div>;
 }
 
+
+function EntityLabel({ type }) {
+  switch (type) {
+    case "project":
+      return (
+        <div className="card-type-label text-rk-green gap-2 d-flex align-items-center">
+          <Briefcase/>
+          Project
+        </div>);
+    case "dataset":
+      return (
+        <div className="card-type-label text-rk-pink gap-2 d-flex align-items-center">
+          <HddStack />
+          Dataset
+        </div>
+      );
+    default:
+      return null;
+  }
+}
+
+function EntityButton({ type, slug }) {
+  const history = useHistory();
+  const carButtonRef = useRef(null);
+  let handleClick;
+
+  switch (type) {
+    case "project":
+      handleClick = (e) => {
+        e.preventDefault();
+        history.push(`/projects/${slug}/sessions/new?autostart=1`);
+      };
+      return (
+        <>
+          <div ref={carButtonRef} className="card-button">
+            <CardButton color="rk-green" icon={faPlay} handleClick={handleClick} />
+          </div>
+          <ThrottledTooltip
+            target={carButtonRef}
+            tooltip="Start a session of this project" />
+        </>
+      );
+    case "dataset":
+      return null; // no defined yet
+    default:
+      return null;
+  }
+}
+
+function EntityDescription({ description }) {
+  const descriptionStyles = {
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    display: "-webkit-box",// eslint-disable-line
+    lineClamp: 3,
+    WebkitLineClamp: 3,// eslint-disable-line
+    WebkitBoxOrient: "vertical",// eslint-disable-line
+    margin: "12px 0",
+    minHeight: "75px",
+    height: "75px",
+  };
+
+  return (<div className="card-text text-rk-text-light" style={descriptionStyles}>
+    {description ? description : null}
+  </div>);
+}
+
+function EntityTags ({ tagList, itemType }) {
+  const colorText = itemType === "project" ? "text-rk-green" : "text-rk-pink";
+
+  return (
+    <div className={`tagList card-tags text-truncate ${colorText}`}>
+      {tagList?.map(tag => `#${tag}`).join(" ")}
+    </div>
+  );
+}
+
 /**
  * ListCard/ListBar returns a card or a bar displaying an item in a List.
  *
@@ -110,81 +186,26 @@ function ListCard(props) {
   const { url, title, description, tagList, timeCaption,
     labelCaption, creators, itemType, slug, visibility } = props;
 
-  const history = useHistory();
-  const carButtonRef = useRef(null);
-
-  // styles and elements by item type
-  let typeLabel, colorText, cardButton;
-  if (itemType === "project") {
-    typeLabel = (
-      <div className="card-type-label text-rk-green gap-2 d-flex align-items-center">
-        <Briefcase />
-        Project
-      </div>);
-    colorText = "text-rk-green";
-    const openSessionUrl = `/projects/${slug}/sessions/new?autostart=1`;
-    const handleClick = (e) => {
-      e.preventDefault();
-      history.push(openSessionUrl);
-    };
-    cardButton = (
-      <>
-        <div ref={carButtonRef} className="card-button">
-          <CardButton color="rk-green" icon={faPlay} handleClick={handleClick} />
-        </div>
-        <ThrottledTooltip
-          target={carButtonRef}
-          tooltip="Start a session of this project" />
-      </>
-    );
-  }
-  else {
-    typeLabel = (
-      <div className="card-type-label text-rk-pink gap-2 d-flex align-items-center">
-        <HddStack />
-        Dataset
-      </div>
-    );
-    colorText = "text-rk-pink";
-  }
-
-
-  const descriptionStyles = {
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    display: "-webkit-box",// eslint-disable-line
-    lineClamp: 3,
-    WebkitLineClamp: 3,// eslint-disable-line
-    WebkitBoxOrient: "vertical",// eslint-disable-line
-    margin: "12px 0",
-    minHeight: "75px",
-    height: "75px",
-  };
-
   return (
     <div data-cy="list-card" className="col text-decoration-none p-2 rk-search-result-card">
       <Link to={url} className="col text-decoration-none">
         <div className="card card-entity">
           <div className={`card-header-entity card-header-entity--${itemType}`}>
             <div className="d-flex justify-content-between align-items-center m-3">
-              {typeLabel}
+              <EntityLabel type={itemType} />
               <VisibilityIcon visibility={visibility} />
             </div>
             <div className="card-bg-title">{title}</div>
           </div>
-          { cardButton }
+          <EntityButton type={itemType} slug={slug} />
           <div className="card-body">
             <div className="card-title text-truncate lh-sm" data-cy="list-card-title">
               {title}
             </div>
             <Slug display="list" slug={slug} />
             <Creators display="list" creators={creators} />
-            <div className="card-text text-rk-text-light" style={descriptionStyles}>
-              {description ? description : null}
-            </div>
-            <div className={`tagList card-tags text-truncate ${colorText}`}>
-              {tagList?.map(tag => `#${tag}`).join(" ")}
-            </div>
+            <EntityDescription description={description} />
+            <EntityTags tagList={tagList} itemType={itemType} />
             <p className="card-text my-1">
               <TimeCaption caption={labelCaption || "Updated"} time={timeCaption} className="text-rk-text-light"/>
             </p>
@@ -218,13 +239,7 @@ function ListBar(props) {
       <div className="description card-description text-truncate text-rk-text d-flex">
         {description}
       </div>
-      {
-        tagList ?
-          <div className="tagList">
-            <ProjectTagList tagList={tagList} />
-          </div>
-          : null
-      }
+      <EntityTags tagList={tagList} itemType={itemType} />
       {
         timeCaption ?
           <div className="mt-auto">
