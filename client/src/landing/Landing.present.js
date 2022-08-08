@@ -122,10 +122,10 @@ class YourProjects extends Component {
     }
 
     const title = this.props.lastVisited ? "Recent Projects" : "Your Projects";
-    return <Fragment>
+    return <div className="landing-projects-section">
       <h3 key="header">{title}</h3>
       {projectsComponent}
-    </Fragment>;
+    </div>;
   }
 }
 
