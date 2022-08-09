@@ -117,7 +117,7 @@ class QuickNavPresent extends Component {
     return (
       <div className="d-flex flex-nowrap w-100 flex-sm-grow-1 mx-0 mx-lg-2">
         <div className="search-box flex-nowrap justify-content-center m-auto">
-          <div id="quick-nav" className="input-group flex-nowrap input-group-sm justify-content-center">
+          <div id="quick-nav" className="quick-nav input-group flex-nowrap input-group-sm justify-content-center pe-2">
             <Autosuggest
               suggestions={suggestionList}
               getSuggestionValue={this.props.callbacks.getSuggestionValue}
@@ -134,7 +134,8 @@ class QuickNavPresent extends Component {
               focusInputOnSuggestionClick={false}
               alwaysRenderSuggestions={false}
               renderSuggestion={this.onRenderSuggestion} />
-            <span className="input-group-text search-button cursor-pointer" id="addon-wrapping"
+            <span className="quick-nav-icon d-flex justify-content-center align-items-center mx-2 cursor-pointer"
+              id="addon-wrapping"
               onClick={this.props.callbacks.onSubmit}>
               <FontAwesomeIcon icon={faSearch} />
             </span>
